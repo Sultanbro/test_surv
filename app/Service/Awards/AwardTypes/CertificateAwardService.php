@@ -43,10 +43,11 @@ class CertificateAwardService implements AwardInterface
                 }, 'category'])
                 ->get();
 
-
+            $courseIds = collect(CourseResult::activeCourses($user->id))->pluck('id')->toArray();
             $result['available']  = Course::whereDoesntHave('courseAwards', function ($query) use ($user){
                 $query->where('award_course.user_id', $user->id);
             })->whereHas('award')
+                ->whereIn('id', $courseIds)
                 ->with('award', 'award.category')
                 ->get();
 

@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 
 use App\Http\Controllers\Admin\ActivityController;
+use App\Http\Controllers\Admin\AdminController;
+use App\Http\Controllers\Admin\ProjectController;
 use App\Http\Controllers\Admin\AnalyticsController;
 use App\Http\Controllers\Admin\BookController;
 use App\Http\Controllers\Admin\BpartnersController;
@@ -100,7 +102,7 @@ Route::middleware([
     InitializeTenancyBySubdomain::class,
     PreventAccessFromCentralDomains::class,
 ])->group(function () {
-    \Auth::routes(); 
+    //\Auth::routes(); 
 
     // Authentication Routes...
     Route::get('login', [LoginController::class, 'showLoginForm'])->name('login');
@@ -126,6 +128,9 @@ Route::middleware([
     
     WebSocketsRouter::webSocket('/messenger/app/{appKey}', MessengerWebSocketHandler::class);
 
+    Route::get('/login/{subdomain}', [ProjectController::class, 'login']);
+    Route::post('/projects/create', [ProjectController::class, 'create']);
+    
     Route::get('/impersonate/{token}', function ($token) {
         return \Stancl\Tenancy\Features\UserImpersonation::makeResponse($token);
     });
@@ -401,7 +406,6 @@ Route::middleware([
     Route::any('/timetracking/fines', [TimetrackingController::class, 'fines']);
     Route::any('/timetracking/info', [TimetrackingController::class, 'info']);
     Route::any('/timetracking/set-day', [TimetrackingController::class, 'setDay']);
-    Route::any('/timetracking/history', [TimetrackingController::class, 'getHistory']);
     Route::any('/timetracking/settings', [TimetrackingController::class, 'settings']);
     Route::any('/timetracking/settings/positions', [TimetrackingController::class, 'positions']);
     Route::any('/timetracking/settings/positions/get', [TimetrackingController::class, 'getPosition']);
@@ -429,12 +433,11 @@ Route::middleware([
     Route::any('/timetracking/groups', [TimetrackingController::class, 'getgroups']);
     Route::post('/timetracking/groups/restore', [TimetrackingController::class, 'restoreGroup']);
     Route::any('/timetracking/reports/add-editors', [TimetrackingController::class, 'usereditreports']);
-    Route::any('/timetracking/reports/get-editors', [TimetrackingController::class, 'modalcheckuserrole']);
+
     Route::any('/timetracking/reports/check-user', [TimetrackingController::class, 'checkuserrole']);
     Route::any('/timetracking/reports/enter-report', [TimetrackingController::class, 'enterreport']);
     Route::post('/timetracking/reports/enter-report/setmanual', [TimetrackingController::class, 'enterreportManually']);
     Route::any('/timetracking/zarplata-table', [TimetrackingController::class, 'zarplatatable']);
-    Route::post('/order-persons-to-group', [TimetrackingController::class, 'orderPersonsToGroup']); // Заказ сотрудников в группы для Руководителей
     Route::post('/timetracking/apply-person', [TimetrackingController::class, 'applyPerson']); // Принятие на штат стажера
     Route::post('/timetracking/get-totals-of-reports', [TimetrackingController::class, 'getTotalsOfReports']);
 
@@ -640,13 +643,15 @@ Route::middleware([
         'as'     => 'awards.',
         'middleware' => 'auth'
     ], function () {
-        Route::post('/reward', [AwardController::class, 'reward'])->middleware('is_admin')->name('reward');
-        Route::delete('/reward-delete', [AwardController::class, 'deleteReward'])->middleware('is_admin')->name('delete-reward');
+        Route::post('/reward', [AwardController::class, 'reward'])->name('reward');
+        Route::delete('/reward-delete', [AwardController::class, 'deleteReward'])->name('delete-reward');
         Route::get('/my', [AwardController::class, 'myAwards'])->name('my-awards');
         Route::get('/course', [AwardController::class, 'courseAward'])->name('course-awards');
+        Route::get('/courses', [AwardController::class, 'coursesAward'])->name('courses-awards');
+        Route::post('/courses/store/{award}', [AwardController::class, 'storeCoursesAward'])->name('courses-awards-store');
         Route::get('/type', [AwardController::class, 'awardsByType'])->name('type-awards');
         Route::get('/get', [AwardController::class, 'index'])->middleware('is_admin')->name('get');
-        Route::post('/store', [AwardController::class, 'store'])->middleware('is_admin')->name('store');
+        Route::post('/store', [AwardController::class, 'store'])->name('store');
         Route::put('/update/{award}', [AwardController::class, 'update'])->middleware('is_admin')->name('update');
         Route::delete('/delete/{award}', [AwardController::class, 'destroy'])->name('destroy');
         Route::get('/download/{award}', [AwardController::class, 'downloadFile'])->name('downloadFile');

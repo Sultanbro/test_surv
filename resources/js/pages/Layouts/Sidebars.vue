@@ -1,6 +1,6 @@
 <template>
 <div class="container header__container">
-    <profile-sidebar></profile-sidebar>
+    <profile-sidebar v-show="isProfileVisible"/>
 
     <div class="header">
         <left-sidebar></left-sidebar>
@@ -81,6 +81,11 @@ export default {
       checklistData: {},
       checklistSettings: null,
       checklistTimer: null
+    }
+  },
+  computed: {
+    isProfileVisible(){
+      return this.$viewportSize.width >= 1360
     }
   },
   methods: {

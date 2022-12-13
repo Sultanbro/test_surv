@@ -91,8 +91,10 @@ class KnowBase extends Model implements CourseInterface
         $corp_book_ids = self::getBooks(); // книги в группе
         if(count($corp_book_ids) == 0) return null;
        
-        $books = KnowBase::
-            where('text', '!=' ,'')
+        $books = KnowBase::query()
+            ->with('questions')
+            ->where('text', '!=' , '')
+            ->whereNotNull('text')
             ->whereIn('id', $corp_book_ids)
             ->get();
 
@@ -127,20 +129,22 @@ class KnowBase extends Model implements CourseInterface
         return array_unique($arr); 
     }
 
-    private static function getBooks($access = 0) {
+    private static function getBooks($access = 0, User $user = null) {
         
+        $user = $user ?? auth()->user();
+
         $books = [];
-        if(auth()->user()->is_admin == 1)  {
+        if($user->is_admin == 1)  {
             $books = KnowBase::get('id')->pluck('id')->toArray();
         } else {
 
-            $groups = auth()->user()->inGroups();
+            $groups = $user->inGroups();
             $group_ids = collect($groups)->pluck('id')->toArray();
-            $position_id =  auth()->user()->position_id;
-            $user_id =  auth()->id();
+            $position_id =  $user->position_id;
+            $user_id =  $user->id;
 
-            $up = KnowBaseModel::
-                where(function($query) use ($group_ids, $access) {
+            $up = KnowBaseModel::query()
+                ->where(function($query) use ($group_ids, $access) {
                     $query->where('model_type', 'App\\ProfileGroup')
                         ->whereIn('model_id', $group_ids);
                     if($access == 2) $query->where('access', 2);
@@ -162,8 +166,7 @@ class KnowBase extends Model implements CourseInterface
                
             $books = array_merge($books, $up);
             
-           
-            $books_with_read_access =  KnowBase::withTrashed()
+            $books_with_read_access = KnowBase::withTrashed()
                 ->whereIn('access', $access == 2 ? [2] : [1,2])
                 ->get('id')->pluck('id')
                 ->toArray();

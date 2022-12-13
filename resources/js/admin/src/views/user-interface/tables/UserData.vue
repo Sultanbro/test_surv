@@ -119,7 +119,7 @@ function formatDateTime(dateZ: string){
             {{ formatDateTime(item.created_at) }}
           </td>
           <td class="text-center">
-            {{ formatDateTime(item.login_at) }}
+            {{ item.login_at ? formatDateTime(item.login_at) : '' }}
           </td>
           <td class="text-center">
             <template v-if="item.subdomains">
@@ -132,13 +132,15 @@ function formatDateTime(dateZ: string){
             </template>
           </td>
           <td class="text-center">
-            <a :href="item.lead" target="_blank">{{ item.lead.split('/').reverse()[0] }}</a>
+            <a v-if="item.lead" :href="item.lead" target="_blank">
+              {{ item.lead.split('/').reverse()[0] }}
+            </a>
           </td>
           <td class="text-center">
             {{ item.balance }}
           </td>
           <td class="text-center">
-            {{ formatDate(item.birthday) }}
+            {{ item.birthday ? formatDate(item.birthday) : '' }}
           </td>
           <td class="text-center">
             {{ item.country }}

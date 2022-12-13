@@ -43,8 +43,7 @@
                 <template #label>
                     <label class="with-info">Описание награды <img src="/images/dist/profit-info.svg" class="img-info" alt="info icon" id="info2"></label>
                     <b-popover target="info2" triggers="hover" placement="right">
-                        <p style="font-size: 15px">Краткое или детальное описание награды. Будет хранить в себе
-                            информацию по этому виду награды</p>
+                        <p style="font-size: 15px">Краткое или детальное описание награды.</p>
                     </b-popover>
                 </template>
                 <BFormTextarea
@@ -107,7 +106,6 @@
                     </b-popover>
                     </span>
                 </div>
-                <p class="text-danger" v-if="!selectedType" ref="selectedtype" style="display: none;">Выберите тип награды*</p>
             </BFormGroup>
 
             <BFormGroup class="file-type">
@@ -125,30 +123,25 @@
                         @remove-course="removeCourse"
                         @add-course-all="addCourseAll"
                         @remove-course-all="removeCourseAll"
+                        @has-change-constructor="hasChangeConstructor"
                         v-if="type === 2"
                         :awards="awards"
                         :id="category_id"
                         required
                 />
 
-                <superselect
+                <ChoiceTop
                         v-if="type === 3"
-                        class="w-50 mb-4"
-                        :key="1"
-                        :onlytype="2"
-                        @choose="superselectChoice"
-                        :single="true"
-                        :placeholder="'Выберите должность или отдел'"
-                        :disable_type="1"
-                        :value_id="targetable_id"
-                        :pre_build="true"
-                        :select_all_btn="false"/>
+                        :targetable_id="targetable_id"
+                        @choiced-top="choicedTop"
+                />
             </BFormGroup>
 
             <BFormGroup class="custom-switch custom-switch-sm" id="input-group-4" v-if="type === 1 || type === 2 ">
                 <b-form-checkbox v-model="hide" switch>Отображать пользователям награды других участников
                 </b-form-checkbox>
             </BFormGroup>
+            <hr class="mb-4">
             <BButton type="submit" variant="primary">Сохранить</BButton>
         </BForm>
     </sidebar>
@@ -156,7 +149,7 @@
 
 <script>
     import UploadFile from "./types/UploadFile.vue";
-    import FormUsers from "./types/FormUsers.vue";
+    import ChoiceTop from "./types/ChoiceTop.vue";
     import UploadSertificate from "./types/UploadSertificate.vue";
     import VuePdfEmbed from "vue-pdf-embed/dist/vue2-pdf-embed";
 
@@ -164,7 +157,7 @@
         name: "EditAwardSidebar",
         components: {
             UploadFile,
-            FormUsers,
+            ChoiceTop,
             UploadSertificate,
             VuePdfEmbed
         },
@@ -177,6 +170,7 @@
         },
         data() {
             return {
+                constructorChange: false,
                 isShow: false,
                 readonly: false,
                 dropDownText: 'Выберите тип награды',
@@ -188,15 +182,23 @@
                 targetable_type: null,
                 name: '',
                 description: '',
-                hide: false,
+                hide: true,
                 type: null,
                 course_ids: [],
                 styles: '',
                 awards: [],
-                invalidName: true
+                invalidName: true,
+                hasFileCertificate: false
             };
         },
         methods: {
+            choicedTop(data){
+                this.targetable_id = data.id;
+                this.targetable_type = data.type;
+            },
+            hasChangeConstructor(arg){
+                this.constructorChange = arg;
+            },
             addCourse(id) {
                 this.course_ids.push(id);
             },
@@ -211,21 +213,18 @@
             removeCourseAll(){
                 this.course_ids = [];
             },
-            superselectChoice(val) {
-                console.log(val);
-                this.targetable_id = val.id;
-                if (val.type === 2) {
-                    this.targetable_type = 'App\\ProfileGroup';
-                }
-                if (val.type === 3) {
-                    this.targetable_type = 'App\\Position';
-                }
-            },
             async saveCategory() {
+                let hidePhp = null;
+                if (this.hide) {
+                    hidePhp = 0;
+                } else {
+                    hidePhp = 1;
+                }
+
                 const formDataCategories = new FormData();
                 formDataCategories.append('name', this.name);
                 formDataCategories.append('description', this.description);
-                formDataCategories.append('hide', this.hide);
+                formDataCategories.append('hide', hidePhp);
                 if (Object.keys(this.item).length === 0) {
                     formDataCategories.append('type', this.type);
                     await this.axios
@@ -262,6 +261,12 @@
             },
             async saveAwards() {
                 const formData = new FormData();
+                formData.append('award_category_id', this.category_id);
+                if (this.type === 1 && this.uploadFiles.length > 0) {
+                    for (let i = 0; i < this.uploadFiles.length; i++) {
+                        formData.append('file[]', this.uploadFiles[i]);
+                    }
+                }
                 if (this.type === 2) {
                     for (let j = 0; j < this.course_ids.length; j++) {
                         formData.append('course_ids[]', this.course_ids[j]);
@@ -274,12 +279,6 @@
                 if (this.type === 3) {
                     formData.append('targetable_type', this.targetable_type);
                     formData.append('targetable_id', this.targetable_id);
-                }
-                formData.append('award_category_id', this.category_id);
-                if (this.type === 1 && this.uploadFiles.length > 0) {
-                    for (let i = 0; i < this.uploadFiles.length; i++) {
-                        formData.append('file[]', this.uploadFiles[i]);
-                    }
                 }
 
                 if (Object.keys(this.item).length > 0 && this.type !== 1) {
@@ -296,7 +295,6 @@
                             this.$refs.newSertificateForm.reset();
                         })
                         .catch(function (error) {
-                            console.log("error");
                             console.log(error);
                         });
                 } else if (Object.keys(this.item).length === 0 || this.type === 1) {
@@ -312,32 +310,69 @@
                             this.$refs.newSertificateForm.reset();
                         })
                         .catch(function (error) {
-                            console.log("error");
                             console.log(error);
                         });
                 }
             },
             async onSubmit() {
-                if(!this.selectedType && Object.keys(this.item).length === 0){
-                    this.$refs.selectedtype.style.display = 'block';
-                }
-                if (this.type) {
-                    if(this.name.length > 2){
-                        this.invalidName = true;
-                    let loader = this.$loading.show();
-                    if (this.hide) {
-                        this.hide = 0;
-                    } else {
-                        this.hide = 1;
+                if (!this.selectedType && Object.keys(this.item).length === 0) {
+                    this.$toast.error('Выберите тип награды', {
+                        timeout: 5000
+                    });
+                } else {
+                    if (this.type) {
+                        if (this.name.length > 2) {
+                            let loader = this.$loading.show();
+                            this.invalidName = true;
+
+                            if (this.type === 1) {
+                                await this.saveCategory();
+                                await this.saveAwards();
+                            }
+
+                            if (this.type === 2) {
+                                if(this.hasFileCertificate){
+                                    if (this.constructorChange) {
+                                        if(this.course_ids.length > 0){
+                                            await this.saveCategory();
+                                            await this.saveAwards();
+                                        } else {
+                                            this.$toast.error('Выберите один или несколько курсов', {
+                                                timeout: 5000
+                                            });
+                                        }
+                                    } else {
+                                        this.$toast.error('Сперва отредактируйте выбранный шаблон', {
+                                            timeout: 5000
+                                        });
+                                    }
+                                } else {
+                                    this.$toast.error('Загрузите шаблон', {
+                                        timeout: 5000
+                                    });
+                                }
+                            }
+
+                            if (this.type === 3) {
+                                if(this.targetable_type && this.targetable_id){
+                                    await this.saveCategory();
+                                    await this.saveAwards();
+                                } else{
+                                    this.$toast.error('Выберите должность или отдел', {
+                                        timeout: 5000
+                                    });
+                                }
+                            }
+
+
+                            loader.hide();
+                        } else {
+                            this.invalidName = false;
+                        }
                     }
-                    await this.saveCategory();
-                    await this.saveAwards();
-                    loader.hide();
-                    } else {
-                        this.invalidName = false;
-                    }
                 }
-            },
+
+        },
             setFileType(type) {
                 this.type = type;
                 this.selectedType = true;
@@ -354,8 +389,9 @@
             formFile(files) {
                 this.uploadFiles = files;
             },
-            formFileCertificate(file) {
+            formFileCertificate(file, bool) {
                 this.fileCertificate = file;
+                this.hasFileCertificate = bool;
             },
             styleChange(styles) {
                 this.styles = JSON.stringify(styles);
@@ -364,9 +400,10 @@
         async mounted() {
             setTimeout(() => {
                 this.isShow = true;
-            }, 20)
+            }, 20);
             if (Object.keys(this.item).length > 0) {
                 let loader = this.$loading.show();
+                this.hasFileCertificate = true;
                 await this.axios
                     .get('/award-categories/get/awards/' + this.item.id)
                     .then(response => {
@@ -380,13 +417,12 @@
                 this.type = this.item.type;
                 this.name = this.item.name;
                 this.description = this.item.description;
-                if (this.item.hide === 1) {
+                if(this.item.hide === 1){
                     this.hide = false;
                 }
-                if (this.item.hide === 0) {
+                if(this.item.hide === 0){
                     this.hide = true;
                 }
-
                 if (this.type === 2){
                     this.styles = this.awards[0].styles;
                 }

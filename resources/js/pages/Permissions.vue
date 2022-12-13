@@ -2,23 +2,23 @@
 <div class="p-3 permissions">
 
 <h4 class="title d-flex">
-  
-  <div>Настройка доступов
-    <span v-if="role != null">: Роли</span>
-  </div>
 
-  <input 
-    v-if="role == null"
-    class="searcher"
-    v-model="searchText"
-    type="text"
-    placeholder="Поиск..."
-    @keyup="onSearch()">
+    <div>Настройка доступов
+        <span v-if="role != null">: Роли</span>
+    </div>
+
+    <input
+        v-if="role == null"
+        class="searcher"
+        v-model="searchText"
+        type="text"
+        placeholder="Поиск..."
+    >
 
     <div v-if="role == null" class="d-flex">
-     <div class=" d-flex ml-3">
-        <button class="btn btn-default btn-sm" @click="addItem">Добавить</button>
-      </div>
+        <div class=" d-flex ml-3">
+            <button class="btn btn-default btn-sm" @click="addItem">Добавить</button>
+        </div>
     </div>
 </h4>
 
@@ -29,19 +29,19 @@
       <div class="item d-flex contrast">
         <div class="person"></div>
         <div class="role">Роль</div>
-        <div class="groups">Отделы  
-              <i class="fa fa-info-circle ml-2" 
-                v-b-popover.hover.right.html="'Выберите только те отделы, которые будет видеть сотрудник(-и)'" 
+        <div class="groups">Отделы
+              <i class="fa fa-info-circle ml-2"
+                v-b-popover.hover.right.html="'Выберите только те отделы, которые будет видеть сотрудник(-и)'"
                 title="Доступ к отделам">
             </i>
         </div>
-        <div class="actions"></div>
+        <div class="actions"/>
       </div>
-      
-      <permission-item 
+
+      <permission-item
         v-for="(item, i) in filtered_items"
-        class="item d-flex" 
-        :key="i" 
+        class="item d-flex"
+        :key="item.id"
         @deleteItem="deleteItem(i)"
         @updateItem="updateItem(i)"
         :item="item"
@@ -50,11 +50,11 @@
         :roles="roles"
       />
 
-     
-      
+
+
     </div>
 
-  
+
     <!-- Edit роль -->
     <div v-if="role" class="edit-role">
       <div class="d-flex mb-3">
@@ -73,7 +73,7 @@
         <template v-for="(page, i) in pages">
 
             <div class="item d-flex" :key="i">
-              <div class="name mr-3" @click="page.opened = !page.opened">{{page.name}} 
+              <div class="name mr-3" @click="page.opened = !page.opened">{{page.name}}
                 <i class="fa fa-chevron-up" v-if="page.opened && page.children.length > 0"></i>
                 <i class="fa fa-chevron-down" v-if="!page.opened && page.children.length > 0"></i>
               </div>
@@ -105,7 +105,7 @@
               </div>
             </template>
         </template>
-     
+
       </div>
 
       <div class="mt-3">
@@ -118,7 +118,7 @@
       <div class="roles">
         <div class="contrast role-title"><b>Список ролей</b></div>
         <div class="item d-flex" v-for="(item, i) in roles" :key="i">
-          <div class="name" @click="editRole(i)">{{ item.name }}</div> 
+          <div class="name" @click="editRole(i)">{{ item.name }}</div>
           <div class="actions">
             <i class="far fa-edit" @click="editRole(i)" />
             <i class="fa fa-times" @click="deleteRole(i)"/>
@@ -135,20 +135,43 @@
 <script>
 export default {
   name: "Permissions",
-  data() { 
+  data() {
     return {
       role: null,
       searchText: '',
       users: [], // all select
       groups: [], // all select
       items: [],
-      filtered_items: [],
       roles: [],
       values: [],
       pages: [],
       permissions: [],
       showRoles: false,
     };
+  },
+  computed: {
+    filtered_items(){
+      if(!this.searchText) return this.items
+      const lowerText = this.searchText.toLowerCase()
+      return this.items.filter((el, index) => {
+        if(el.targets){
+          const inTarget = el.targets.findIndex(target => target.name.toLowerCase().indexOf(lowerText) > -1)
+          if(inTarget > -1) return true
+        }
+
+        if(el.groups){
+          const inGroups = el.groups.findIndex(target => target.name.toLowerCase().indexOf(lowerText) > -1)
+          if(inGroups > -1) return true
+        }
+
+        if(el.roles){
+          const inRoles = el.roles.findIndex(target => target.name.toLowerCase().indexOf(lowerText) > -1)
+          if(inRoles > -1) return true
+        }
+
+        return false
+      });
+    }
   },
   created() {
     this.fetchData();
@@ -168,7 +191,6 @@ export default {
           this.groups = response.data.groups;
           this.pages = response.data.pages;
           this.items = response.data.items;
-          this.filtered_items = response.data.items;
 
           loader.hide();
         })
@@ -180,7 +202,6 @@ export default {
 
     addItem() {
       this.searchText = '';
-      this.onSearch();
       this.items.unshift(
         {
           id: 0,
@@ -195,16 +216,14 @@ export default {
     deleteItem(i) {
 
       if(!confirm('Вы точно хотите удалить доступ этой цели?')) {
-         return false; 
+         return false;
        }
 
       if(this.filtered_items[i].id == 0) {
-        
+
         let index = this.items.findIndex(it => it.id == this.filtered_items[i].id);
         if(index != -1) this.items.splice(index, 1);
-
-        this.filtered_items.splice(i,1)
-        return false; 
+        return false;
       }
 
       let loader = this.$loading.show();
@@ -215,14 +234,12 @@ export default {
         .then((response) => {
           let index = this.items.findIndex(it => it.id == this.filtered_items[i].id);
           if(index != -1) this.items.splice(index, 1);
-          
-          this.filtered_items.splice(i,1);
 
           loader.hide();
            this.$toast.success('Доступ удален!');
         })
         .catch((error) => {
-          loader.hide(); 
+          loader.hide();
           alert(error);
         });
 
@@ -231,11 +248,11 @@ export default {
     deleteItemsFromBoth(i) {
 
     },
- 
+
     updateItem(i) {
 
-     
-      let loader = this.$loading.show(); 
+
+      let loader = this.$loading.show();
        axios
         .post( '/permissions/update-target', {
           item: this.filtered_items[i],
@@ -251,45 +268,22 @@ export default {
         .catch((error) => {
           loader.hide();
           alert(error);
-        }); 
+        });
     },
 
-    onSearch() { 
-        if(this.searchText == '') {
-            this.filtered_items = this.items; 
-        } else {
-            this.filtered_items = this.items.filter((el, index) => {
-              let has = false;
-              el.targets.forEach(target => {
-                 if(target.name.toLowerCase().indexOf(this.searchText.toLowerCase()) > -1) has = true;
-              });
-
-              el.groups.forEach(target => {
-                 if(target.name.toLowerCase().indexOf(this.searchText.toLowerCase()) > -1) has = true;
-              });
-
-              el.roles.forEach(target => {
-                 if(target.name.toLowerCase().indexOf(this.searchText.toLowerCase()) > -1) has = true;
-              });
-
-              return has; 
-
-            });
-        }
-     },
 
     back() {
       this.showRoles = false;
       this.role = null;
     },
-    
+
     editRole(i) {
       this.showEditRole = true;
 
       let role = this.roles[i];
       this.role = role;
       this.showRoles = false;
-    }, 
+    },
 
     showRolesPage() {
       this.role = null;
@@ -306,22 +300,19 @@ export default {
 
     updateRole() {
       let loader = this.$loading.show();
-      
+
       this.permissions = [];
             console.log(this.role.perms);
-            
+
         Object.keys(this.role.perms).forEach((key, index) => {
           if(this.role.perms[key]) this.permissions.push(key)
-
-    
-    
         });
 
         console.log(this.permissions);
 
       axios
         .post('/permissions/update-role', {
-          role: this.role,  
+          role: this.role,
           permissions: this.permissions
         })
         .then((response) => {
@@ -335,9 +326,9 @@ export default {
           }
 
           this.role = null;
-          loader.hide(); 
+          loader.hide();
           this.$toast.success('Роль сохранена!');
-        }) 
+        })
         .catch((error) => {
           loader.hide();
           alert(error);
@@ -347,12 +338,12 @@ export default {
     deleteRole(i) {
 
        if(!confirm('Вы уверены удалить роль?')) {
-         return false; 
+         return false;
        }
 
       if(this.roles[i].id == null) {
         this.roles.splice(i,1);
-        return false; 
+        return false;
       }
 
       let loader = this.$loading.show();
@@ -376,18 +367,16 @@ export default {
       let checked = this.role.perms[page.key + '_' + ability];
 
       if(ability == 'edit') {
-        this.role.perms[page.key + '_view'] = checked; 
+        this.role.perms[page.key + '_view'] = checked;
         page.children.forEach(c => {
           this.role.perms[c.key + '_view'] = checked;
           this.role.perms[c.key + '_edit'] = checked;
-        });      
+        });
       } else {
         page.children.forEach(c => {
           this.role.perms[c.key + '_view'] = checked;
-        });      
+        });
       }
-
-      
     },
 
     checkChild(i, ability) {
@@ -397,10 +386,7 @@ export default {
       if(ability == 'edit') {
         this.role.perms[page.key + '_view'] = checked;
       }
-      
     }
-
-  
   },
 };
 </script>

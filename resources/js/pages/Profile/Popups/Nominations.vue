@@ -10,7 +10,7 @@
                 <span class="next" @click="tabIndex++"><i class="fa fa-chevron-right"></i></span>
             </div>
             <template v-if="nominations.length > 0">
-                <b-tab no-body :title="award.name" v-for="(award, index) in nominations" :key="award.id">
+                <b-tab no-body  @click="activeteTab(award.description)" :title="award.name" v-for="(award, index) in nominations" :key="award.id">
                     <b-tabs class="inside-tabs">
                         <b-tab no-body title="Мои номинации" active>
                             <div class="certificates__title">
@@ -19,13 +19,14 @@
                                 <span v-else>0</span>
                                 из
                                 <span class="all" v-if="award.hasOwnProperty('my')">{{award.available.length + award.my.length}}</span>
-                                <span class="all" v-else>{{award.available.length}}</span>
+                                <span class="all" v-else-if="award.hasOwnProperty('available')">{{award.available.length}}</span>
+                                <span class="all" v-else>0</span>
                             </div>
 
                             <BRow v-if="award.hasOwnProperty('my')">
                                 <BCol cols="12" md="4" lg="3" class="mb-5" v-for="(item, key) in award.my"
                                       :key="item.id">
-                                    <div class="certificates__item" @click="modalShow(item, award.name)">
+                                    <div class="certificates__item" @click="modalShow(item, award.name, true)">
                                         <img :src="item.tempPath" alt="certificate image" v-if="item.format !== 'pdf'">
                                         <vue-pdf-embed :source="item.tempPath" v-else />
                                     </div>
@@ -35,16 +36,19 @@
 
                         <b-tab no-body title="Доступные номинации">
                             <div class="certificates__title">
-                                Сертификатов: <span
-                                    class="current">{{award.available.length}}</span> из
+                                Сертификатов:
+                                <span class="current" v-if="award.hasOwnProperty('available')">{{award.available.length}}</span>
+                                <span v-else>0</span>
+                                из
                                 <span class="all" v-if="award.hasOwnProperty('my')">{{award.available.length + award.my.length}}</span>
-                                <span class="all" v-else>{{award.available.length}}</span>
+                                <span class="all" v-else-if="award.hasOwnProperty('available')">{{award.available.length}}</span>
+                                <span class="all" v-else>0</span>
                             </div>
 
                             <BRow v-if="award.hasOwnProperty('available')">
                                 <BCol cols="12" md="4" lg="3" class="mb-5" v-for="(item, key) in award.available"
                                       :key="item.id">
-                                    <div class="certificates__item" @click="modalShow(item, award.name)">
+                                    <div class="certificates__item" @click="modalShow(item, award.name, false)">
                                         <img :src="item.tempPath" alt="certificate image" v-if="item.format !== 'pdf'">
                                         <vue-pdf-embed :source="item.tempPath" v-else />
                                     </div>
@@ -55,7 +59,7 @@
                             <BRow v-if="award.hasOwnProperty('other')">
                                 <BCol cols="12" md="4" lg="3" class="mb-5" v-for="(item, key) in award.other"
                                       :key="item.id">
-                                    <div class="certificates__item" @click="modalShow(item, award.name)">
+                                    <div class="certificates__item" @click="modalShow(item, award.name, false)">
                                         <img :src="item.tempPath" alt="certificate image" v-if="item.format !== 'pdf'">
                                         <vue-pdf-embed :source="item.tempPath" v-else />
                                     </div>
@@ -70,22 +74,23 @@
             </template>
 
            <template v-if="certificates.length > 0">
-               <b-tab no-body :title="award.name" v-for="(award, index) in certificates" :key="award.id">
+               <b-tab no-body :title="award.name" @click="activeteTab(award.description)" v-for="(award, index) in certificates" :key="award.id">
                    <b-tabs class="inside-tabs">
-                       <b-tab no-body title="Мои номинации" active>
+                       <b-tab no-body title="Мои сертификаты" active>
                            <div class="certificates__title">
                                Сертификатов:
                                <span class="current" v-if="award.hasOwnProperty('my')">{{award.my.length}}</span>
                                <span v-else>0</span>
                                из
                                <span class="all" v-if="award.hasOwnProperty('my')">{{award.available.length + award.my.length}}</span>
-                               <span class="all" v-else>{{award.available.length}}</span>
+                               <span class="all" v-else-if="award.hasOwnProperty('available')">{{award.available.length}}</span>
+                               <span class="all" v-else>0</span>
                            </div>
 
                            <BRow v-if="award.hasOwnProperty('my')">
                                <BCol cols="12" md="4" lg="3" class="mb-5" v-for="(item, key) in award.my"
                                      :key="item.id">
-                                   <div class="certificates__item" @click="modalShow(item, award.name)">
+                                   <div class="certificates__item" @click="modalShow(item, award.name, true)">
                                        <img :src="item.tempPath" alt="certificate image" v-if="item.format !== 'pdf'">
                                        <vue-pdf-embed :source="item.tempPath" v-else />
                                    </div>
@@ -93,30 +98,36 @@
                            </BRow>
                        </b-tab>
 
-                       <b-tab no-body title="Доступные номинации">
+                       <b-tab no-body title="Доступные сертификаты за курсы">
                            <div class="certificates__title">
-                               Сертификатов: <span
-                                   class="current">{{award.available.length}}</span> из
+                               Сертификатов:
+                               <span class="current" v-if="award.hasOwnProperty('available')">{{award.available.length}}</span>
+                               <span v-else>0</span>
+                               из
                                <span class="all" v-if="award.hasOwnProperty('my')">{{award.available.length + award.my.length}}</span>
-                               <span class="all" v-else>{{award.available.length}}</span>
+                               <span class="all" v-else-if="award.hasOwnProperty('available')">{{award.available.length}}</span>
+                               <span class="all" v-else>0</span>
                            </div>
 
 
                            <BRow v-if="award.hasOwnProperty('available')">
                                <BCol cols="12" md="4" lg="3" class="mb-5" v-for="(item, key) in award.available"
                                      :key="item.id">
-                                   <div class="certificates__item" @click="modalShow(item, award.name)">
-                                       <img :src="item.tempPath" alt="certificate image" v-if="item.format !== 'pdf'">
-                                       <vue-pdf-embed :source="item.tempPath" v-else />
+                                   <div class="certificate-available" @click="modalShow(item, award.name, false)">
+                                       <div class="certificates__item">
+                                           <img :src="item.tempPath" alt="certificate image" v-if="item.format !== 'pdf'">
+                                           <vue-pdf-embed :source="item.tempPath" v-else />
+                                       </div>
+                                       <div class="available-name">{{item.course_name}}</div>
                                    </div>
                                </BCol>
                            </BRow>
                        </b-tab>
-                       <b-tab no-body title="Номинации других участников">
+                       <b-tab no-body title="Сертификаты за курсы других участников">
                            <BRow v-if="award.hasOwnProperty('other')">
                                <BCol cols="12" md="4" lg="3" class="mb-5" v-for="(item, key) in award.other"
                                      :key="item.id">
-                                   <div class="certificates__item" @click="modalShow(item, award.name)">
+                                   <div class="certificates__item" @click="modalShow(item, award.name, false)">
                                        <img :src="item.tempPath" alt="certificate image" v-if="item.format !== 'pdf'">
                                        <vue-pdf-embed :source="item.tempPath" v-else />
                                    </div>
@@ -131,14 +142,13 @@
            </template>
 
             <template v-if="accrual.length > 0">
-                <b-tab class="accrual-tab" no-body :title="award.name" active v-for="(award, index) in accrual"
+                <b-tab class="accrual-tab" @click="activeteTab(award.description)" no-body :title="award.name" active v-for="(award, index) in accrual"
                        :key="index">
                     <BRow>
                         <BCol cols="12" md="4" v-for="(item, index) in award.top" :key="item.id + index">
                             <div class="nominations__item" :class="{green: index === 1}">
                                 <div class="nominations__item-title">
-                                    Процент успешных
-                                    исходящих продаж
+                                    {{item.group}}
                                 </div>
                                 <div class="nominations__item-avatar" :class="'gift-' + (index + 1)">
                                     <img :src="item.path" alt="profile avatar" v-if="item.path.length > 10">
@@ -177,12 +187,12 @@
         <div v-else>
             <h4 class="not-awards">У Вас пока нет ни одной награды</h4>
         </div>
-        <b-modal v-if="itemModal" modal-class="awards-profile-modal-preview" centered size="xl" v-model="modal" :title="itemModal.name">
+        <b-modal v-if="itemModal" modal-class="awards-profile-modal-preview" centered size="xl" v-model="modal" :title="itemModal.awardName">
             <img :src="itemModal.tempPath" class="img-fluid" alt="certificate image" v-if="itemModal.format !== 'pdf'">
             <vue-pdf-embed :source="itemModal.tempPath" v-else />
             <template #modal-footer>
                 <BButton variant="primary" @click="modal = !modal">Закрыть</BButton>
-                <BButton variant="success" @click="downloadImage(itemModal)">Скачать</BButton>
+                <BButton variant="success" v-if="itemModal.isMy" @click="downloadImage(itemModal)">Скачать</BButton>
             </template>
         </b-modal>
 
@@ -250,8 +260,24 @@
                     console.log(error);
                 });
             this.loading = false;
+            if (this.nominations.length > 0) {
+                let text = this.nominations[0].description;
+                this.$emit('get-desc', text);
+                return true;
+            } else if (this.certificates.length > 0) {
+                let text = this.certificates[0].description;
+                this.$emit('get-desc', text);
+                return true;
+            } else if (this.accrual.length > 0) {
+                let text = this.accrual[0].description;
+                this.$emit('get-desc', text);
+                return true;
+            }
         },
         methods: {
+            activeteTab(text){
+                this.$emit('get-desc', text)
+            },
             downloadImage(data) {
                 console.log(data);
                 var xhr = new XMLHttpRequest();
@@ -285,9 +311,14 @@
 
                 xhr.send();
             },
-            modalShow(item, name) {
+            modalShow(item, name, isMy) {
                 this.itemModal = item;
-                this.itemModal.awardName = name;
+                if(item.hasOwnProperty('course_name')){
+                    this.itemModal.awardName = item.course_name;
+                } else {
+                    this.itemModal.awardName = name;
+                }
+                this.itemModal.isMy = isMy;
                 this.modal = !this.modal;
             },
         }
@@ -450,6 +481,33 @@
             width: 100%;
             display: block;
         }
+        
+        .certificate-available{
+            box-shadow: rgb(50 50 93 / 25%) 0px 13px 27px -5px, rgb(0 0 0 / 30%) 0px 8px 16px -8px;
+            overflow: hidden;
+            border: 1px solid #ddd;
+            border-radius: 10px;
+            cursor: pointer;
+            .certificates__item{
+                box-shadow: none;
+                border-radius: 0;
+                border: none;
+            }
+            .available-name{
+                font-size: 14px;
+                padding: 15px 10px;
+                background-color: #AEBEE0;
+                text-align: center;
+                border-top: 1px solid #ddd;
+                color: #fff;
+                transition: 0.15s all ease;
+            }
+            &:hover{
+                .available-name{
+                    background-color: #ED2353;
+                }
+            }
+        }
 
         .certificates__item {
             height: 200px;
@@ -461,7 +519,6 @@
             border: 1px solid #ddd;
             border-radius: 10px;
             box-shadow: rgb(50 50 93 / 25%) 0px 13px 27px -5px, rgb(0 0 0 / 30%) 0px 8px 16px -8px;
-
             img {
                 width: 100%;
                 height: 200px;
@@ -469,7 +526,8 @@
             }
             canvas{
                 width: 100%!important;
-                height: auto !important;
+                height: 200px !important;
+                object-fit: cover;
             }
         }
 

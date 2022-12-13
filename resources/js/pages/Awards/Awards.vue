@@ -1,9 +1,12 @@
 <template>
     <div id="awards-page">
-        <BButton variant="success" class="mb-2" @click="addAwardButtonClickHandler"
-        >Создать награду
-        </BButton
-        >
+        <BButton variant="success" class="mb-2" @click="addAwardButtonClickHandler">Создать награду</BButton>
+
+<!--        <BButton variant="danger" class="mb-2" @click="modalRegenerate = !modalRegenerate">Регенерация</BButton>-->
+<!--        <b-modal hide-footer no-close-on-backdrop no-close-on-esc no-enforce-focus v-model="modalRegenerate" size="lg" centered title="Принудительно обновление всех сертификатов по курсу">-->
+<!--            <RegenerateCertificates/>-->
+<!--        </b-modal>-->
+
         <div class="table-container" v-if="tableItems.length > 0">
             <BTableSimple
                     id="awards-table"
@@ -26,7 +29,12 @@
                     <BTr v-for="(item, key) in tableItems" :key="item.name + key">
                         <BTd>{{ key + 1 }}</BTd>
                         <BTd><div class="clickable" @click="rowClickedHandler(item)">{{ item.name }}</div></BTd>
-                        <BTd class="td-desc"><div class="desc">{{ item.description }}</div></BTd>
+                        <BTd class="td-desc">
+                            <div class="desc">{{ item.description }}</div>
+                            <div class="full-text">
+                                {{item.description}}
+                            </div>
+                        </BTd>
                         <BTd v-if="item.type === 1">Картинка</BTd>
                         <BTd v-if="item.type === 2">Конструктор</BTd>
                         <BTd v-if="item.type === 3">Данные начислений</BTd>
@@ -43,7 +51,6 @@
             <hr class="my-4">
             <h4 class="no-awards-title">Пока нет ни одного сертификата</h4>
         </div>
-        <!--        <Draggable/>-->
 
         <EditAwardSidebar
                 v-if="showEditAwardSidebar"
@@ -64,14 +71,15 @@
 
 <script>
     import EditAwardSidebar from "./EditAwardSidebar.vue";
-
+    // import RegenerateCertificates from "./types/RegenerateCertificates";
     export default {
         name: "Awards",
         components: {
-            EditAwardSidebar
+            EditAwardSidebar,
         },
         data() {
             return {
+                modalRegenerate: false,
                 modal: false,
                 itemRemove: null,
                 showEditAwardSidebar: false,
@@ -158,7 +166,6 @@
         }
         .table-container{
             border: 1px solid #ddd;
-            overflow: hidden;
             border-radius: 10px;
         }
         #awards-table {
@@ -192,6 +199,32 @@
                 cursor: pointer;
                 .td-desc{
                     max-width: calc(100vw - 1000px);
+                    position: relative;
+                    .full-text{
+                        position: absolute;
+                        top: 20px;
+                        left: 10px;
+                        max-width: 400px;
+                        visibility: hidden;
+                        opacity: 0;
+                        padding: 10px 20px;
+                        background-color: #fff;
+                        font-size: 14px;
+                        border: 1px solid #999;
+                        line-height: 1.3;
+                        text-align: left;
+                        border-radius: 10px;
+                        box-shadow: rgb(0 0 0 / 10%) 0px 10px 15px -3px, rgb(0 0 0 / 5%) 0px 4px 6px -2px;
+                        transition: 0.2s all ease;
+                    }
+                    &:hover{
+                        .full-text{
+                            visibility: visible;
+                            opacity: 1;
+                            top: 40px;
+                            z-index: 11;
+                        }
+                    }
                 }
                 .desc{
                     overflow: hidden;

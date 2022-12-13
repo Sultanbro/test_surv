@@ -178,7 +178,7 @@
                 <template v-if="sidebarHistory && sidebarHistory.length > 0">
                     <div class="history">
                         <div v-for="(item,index) in sidebarHistory" :key="index" class="mb-3">
-                            <p class="fz12"><b class="text-black">Дата:</b> {{ (new Date(item.created_at)).addHours(6).toLocaleString('ru-RU') }}</p>
+                            <p class="fz12"><b class="text-black">Дата:</b> {{ (new Date(item.created_at)).addHours(-6).toLocaleString('ru-RU') }}</p>
                             <p class="fz12"><b class="text-black">Автор:</b> {{ item.author }} <br></p>
                             <p class="fz14 mb-0" v-html="item.description"> </p><br>
                             <hr>

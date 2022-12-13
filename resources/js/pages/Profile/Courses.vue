@@ -53,6 +53,9 @@
                         &nbsp;
                     </template>
                 </div>
+                <div class="courses__regress" v-if="getResults(course.id).is_regressed">
+                    <div class="courses__regress-message">Курс обнулен!</div>
+                </div>
                 <a :href="'/my-courses?id=' + course.id" class="courses__button">
                     <span>{{ coursesMap[course.id] ? 'Продолжить курс' : 'Начать курс' }}</span>
                 </a>
@@ -78,21 +81,31 @@
                     <div class="profit__info-text mobile" v-html="activeCourse.text"></div>
                     <div class="profit__info__wrapper">
 
-                        <div v-for="(item, index) in items" 
-                            :key="index"
-                            class="info__wrapper-item"
-                            :class="{'done': item.status == 1}"
-                        >
-                            <a class="info__item-box">
-                                <img src="/images/dist/info-circle.png" alt="play image" onerror="this.src = '/images/course.jpg';">
-                                <p>{{ item.completed_stages }} / {{ item.all_stages }}</p>
-                            </a>
-                            <div class="info__item-value">{{ itemProgress(item) }}%</div>
-                            <div class="info__item-value" v-if="item.item_model == 'App\\Models\\Books\\Book'">Книга</div>
-                            <div class="info__item-value" v-if="item.item_model == 'App\\Models\\Videos\\VideoPlaylist'">Видеоплейлист</div>
-                            <div class="info__item-value" v-if="item.item_model == 'App\\KnowBase'">База знаний</div>
-                            <div class="info__item-value">{{ item.title }}</div>
-                        </div>
+                        <template v-if="items[activeCourse.id]">
+                            <div
+                                v-for="(item, index) in items[activeCourse.id]"
+                                :key="index"
+                                class="info__wrapper-item"
+                                :class="{'done': item.status == 1}"
+                            >
+                                <a :href="`/my-courses?id=${activeCourse.id}`" class="info__item-box">
+                                    <i
+                                        class="info__item-icon"
+                                        :class="{
+                                            'icon-ci-book': item.item_model == 'App\\Models\\Books\\Book',
+                                            'icon-ci-play': item.item_model == 'App\\Models\\Videos\\VideoPlaylist',
+                                            'icon-ci-database': item.item_model == 'App\\KnowBase',
+                                        }"
+                                    />
+                                    <p class="info__item-stages">{{ item.completed_stages }} / {{ item.all_stages }}</p>
+                                </a>
+                                <div class="info__item-value">{{ itemProgress(item) }}%</div>
+                                <div class="info__item-value" v-if="item.item_model == 'App\\Models\\Books\\Book'">Книга</div>
+                                <div class="info__item-value" v-if="item.item_model == 'App\\Models\\Videos\\VideoPlaylist'">Видеоплейлист</div>
+                                <div class="info__item-value" v-if="item.item_model == 'App\\KnowBase'">База знаний</div>
+                                <div class="info__item-value">{{ item.title }}</div>
+                            </div>
+                        </template>
                     </div>
                 </div>
             </div>
@@ -103,12 +116,12 @@
 
 <script>
 export default {
-    name: 'Courses', 
+    name: 'Courses',
     props: {},
     data: function () {
         return {
-            data: [], 
-            items: [],
+            data: [],
+            items: {},
             courses: [],
             activeCourse: null,
             loading: false
@@ -136,12 +149,19 @@ export default {
 
     methods: {
         /**
-         * Загрузка данных 
+         * Загрузка данных
          */
         fetchData() {
             axios.post('/profile/courses').then(response => {
                 this.data = response.data
                 this.$nextTick(() => this.initSlider())
+
+                setTimeout(() => {
+                    // preload course items
+                    this.data.forEach(course => {
+                        this.fetchCourse(course.id)
+                    })
+                }, 1000);
             }).catch((e) => console.log(e))
 
             axios.get('/my-courses/get', {}).then(response => {
@@ -154,16 +174,13 @@ export default {
          */
         selectCourse(index) {
             this.activeCourse = this.data[index]
-            this.fetchCourse();
-            // this.$nextTick(() => this.initInnerSlider())
         },
 
-        fetchCourse() {
+        fetchCourse(id) {
             this.loading = true
 
-            axios.get('/my-courses/get/' + this.activeCourse.id).then(response => {
-                this.items = response.data.items
-                // this.$nextTick(() => this.initSlider())
+            axios.get('/my-courses/get/' + id).then(response => {
+                this.items[id] = response.data.items
                 this.loading = false
             }).catch((e) => console.log(e));
         },
@@ -173,7 +190,6 @@ export default {
          */
         back() {
             this.activeCourse = null;
-            this.items = [];
         },
 
         /**
@@ -181,8 +197,67 @@ export default {
          */
         initSlider() {
             VJQuery('.courses__content__wrapper').slick({
-                variableWidth: true,
-                infinite: false
+                variableWidth: false,
+                infinite: false,
+                slidesToShow: 6,
+                responsive: [
+                    {
+                        breakpoint: 2140,
+                        settings: {
+                            variableWidth: false,
+                            infinite: false,
+                            slidesToShow: 5,
+                        }
+                    },
+                    {
+                        breakpoint: 1800,
+                        settings: {
+                            variableWidth: false,
+                            infinite: false,
+                            slidesToShow: 4,
+                        }
+                    },
+                    {
+                        breakpoint: 1600,
+                        settings: {
+                            variableWidth: false,
+                            infinite: false,
+                            slidesToShow: 3,
+                        }
+                    },
+                    {
+                        breakpoint: 1360,
+                        settings: {
+                            variableWidth: false,
+                            infinite: false,
+                            slidesToShow: 4,
+                        }
+                    },
+                    {
+                        breakpoint: 1200,
+                        settings: {
+                            variableWidth: false,
+                            infinite: false,
+                            slidesToShow: 3,
+                        }
+                    },
+                    {
+                        breakpoint: 940,
+                        settings: {
+                            variableWidth: false,
+                            infinite: false,
+                            slidesToShow: 2,
+                        }
+                    },
+                    {
+                        breakpoint: 520,
+                        settings: {
+                            variableWidth: false,
+                            infinite: false,
+                            slidesToShow: 1,
+                        }
+                    }
+                ]
             });
 
             // https://github.com/kenwheeler/slick/issues/3694
@@ -195,6 +270,13 @@ export default {
                 if (rOffset < (wraRect.x + wraRect.width)) {
                     $slick_slider.find('.slick-next').addClass('slick-disabled')
                 }
+            })
+            $slick_slider.on('breakpoint', (e, slick) => {
+                setTimeout(() => {
+                    $slick_slider.find('.slick-slide').forEach(el => {
+                        el.style.width = (parseFloat(el.style.width) - 4) + 'px'
+                    })
+                }, 1)
             })
         },
 
@@ -216,7 +298,6 @@ export default {
                             swipeToSlide: false,
                             slidesToScroll: 2,
                             slidesToShow: 9,
-
                         }
                     },
                     {
@@ -227,7 +308,6 @@ export default {
                             swipeToSlide: false,
                             slidesToScroll: 2,
                             slidesToShow: 6,
-
                         }
                     },
                     {
@@ -238,7 +318,6 @@ export default {
                             swipeToSlide: false,
                             slidesToScroll: 2,
                             slidesToShow: 5,
-
                         }
                     },
                     {
@@ -248,7 +327,6 @@ export default {
                             variableWidth: true,
                             swipeToSlide: true,
                             slidesToShow: 1,
-
                         }
                     },
 
@@ -283,8 +361,8 @@ export default {
          * count progress of course item
          */
         itemProgress(item) {
-            return item.all_stages > 0 
-                ? Number(item.completed_stages / item.all_stages).toFixed(1)
+            return item.all_stages > 0
+                ? Number((item.completed_stages / item.all_stages) * 100).toFixed(1)
                 : 0;
         },
 
@@ -305,9 +383,46 @@ export default {
     pointer-events: none;
 }
 
+
+.courses__content__wrapper{}
 .courses__item{
+    position: relative;
+    text-align: center;
+    box-sizing: border-box;
     &:hover{
         box-shadow: inset 0 0 5px #8FAF00;
+        .courses__regress{
+            display: block;
+        }
+    }
+}
+.courses__regress{
+    display: none;
+    border-radius: 2rem;
+
+    position: absolute;
+    z-index: 10;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+
+    background-color: rgba(0,0,0,0.25);
+
+    pointer-events: none;
+
+    &-message{
+        position: absolute;
+        top: 50%;
+        left: 50%;
+
+        text-align: center;
+        color: red;
+        font-size: 1.4rem;
+        font-weight: 700;
+        text-shadow: 0 -2px 1px #fff, 0 2px 1px #fff, 2px 0 1px #fff, -2px 0 1px #fff;
+
+        transform: translate(-50%, -50%);
     }
 }
 </style>

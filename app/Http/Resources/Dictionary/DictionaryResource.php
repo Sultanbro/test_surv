@@ -12,7 +12,9 @@ class DictionaryResource extends JsonResource
     public function toArray($request): array
     {
         return [
-            'users' => DictionaryEmployeeResource::collection(User::all()),
+            'users' => DictionaryEmployeeResource::collection(User::query()->whereHas('description', function ($query){
+                $query->where('is_trainee',0);
+            })->get()),
             'positions' => DictionaryPositionResource::collection(Position::all()),
             'profile_groups' => DictionaryProfileGroupResource::collection(ProfileGroup::all()),
         ];

@@ -1,15 +1,15 @@
 <template>
 <div class="super-select" ref="select" :class="posClass" v-click-outside="close">
     <div class="selected-items flex-wrap noscrollbar" @click="toggleShow">
-        <div 
+        <div
             v-for="(value, i) in valueList"
             :key="i"
             class="selected-item"
             :class="'value' + value.type">
             {{ value.name }}
-            <i class="fa fa-times" @click.stop="removeValue(i)" v-if="!one_choice_made"></i>
+            <i class="fa fa-times" @click.stop="removeValue(i, value.id)" v-if="!one_choice_made"></i>
         </div>
-        <div 
+        <div
             id="placeholder"
             class="selected-item placeholder">
             {{ placeholder }}
@@ -17,16 +17,16 @@
     </div>
     <div class="show" v-if="show">
         <div class="search">
-            <input 
+            <input
                 v-model="searchText"
                 type="text"
                 placeholder="Поиск..."
                 ref="search"
                 @keyup="onSearch()">
         </div>
-        
+
         <div class="options-window">
-            <div class="types"> 
+            <div class="types">
                 <div class="type" v-if="disable_type !== 1" :class="{'active': type == 1}" @click="changeType(1)" >
                     <div class="text">Сотрудники</div>
                     <i class="fa fa-user"></i>
@@ -42,32 +42,45 @@
 
                 <div class="type mt-5 active all" v-if="select_all_btn && !single" @click="selectAll">
                     <div class="text">Все</div>
-                    <i class="fa fa-check"></i>  
+                    <i class="fa fa-check"></i>
                 </div>
             </div>
-            
-    
+
+
             <div class="options">
 
-                <div 
-                    class="option"
-                    v-for="(option, index) in filtered_options"
-                    :key="index"
-                    @click="addValue(index)"
-                    :class="{'selected': option.selected}" 
-                >
-                    <i class="fa fa-user" v-if="option.type == 1"></i> 
-                    <i class="fa fa-users" v-if="option.type == 2"></i> 
-                    <i class="fa fa-briefcase" v-if="option.type == 3"></i> 
-                    {{ option.name }}
-                    <i class="fa fa-times" v-if="option.selected" @click.stop="removeValueFromList(index)"></i> 
-                </div>
+                <template v-for="(option, index) in filtered_options">
+                    <div
+                            class="option shown-profile"
+                            :key="index"
+                            v-if="option.shownProfile"
+                    >
+                        <i class="fa fa-user" v-if="option.type == 1"></i>
+                        <i class="fa fa-users" v-if="option.type == 2"></i>
+                        <i class="fa fa-briefcase" v-if="option.type == 3"></i>
+                        {{ option.name }}
+                        <i class="fa fa-times" v-if="option.selected" @click.stop="removeValueFromList(index)"></i>
+                    </div>
+                    <div
+                            class="option"
+                            :key="index"
+                            @click="addValue(index)"
+                            :class="{'selected': option.selected}"
+                            v-else
+                    >
+                        <i class="fa fa-user" v-if="option.type == 1"></i>
+                        <i class="fa fa-users" v-if="option.type == 2"></i>
+                        <i class="fa fa-briefcase" v-if="option.type == 3"></i>
+                        {{ option.name }}
+                        <i class="fa fa-times" v-if="option.selected" @click.stop="removeValueFromList(index)"></i>
+                    </div>
+                </template>
 
             </div>
         </div>
     </div>
-   
- 
+
+
 </div>
 </template>
 
@@ -115,6 +128,10 @@ export default {
             type: Boolean,
             default: false
         },
+        available_courses: {
+            type: Array,
+            default: () => []
+        }
     },
     data() {
         return {
@@ -145,11 +162,19 @@ export default {
                     } else{
                         this.options = response.data.options;
                     }
+                    if(this.available_courses.length > 0){
+                        this.available_courses.forEach(item => {
+                            this.options.filter((option, index) => {
+                                if(option.id === item.id && option.type === item.type){
+                                    this.options[index].shownProfile = true;
+                                }
+                            })
+                        })
+                    }
                     if(this.value_id){
                         this.valueList.push(this.options.find(x => x.id === this.value_id));
                         document.getElementById('placeholder').style.display = "none";
                     }
-                    console.log(this.options);
                     this.first_time = false;
                     this.filterType();
                     this.addSelectedAttr();
@@ -157,10 +182,10 @@ export default {
         }
         this.valueList = this.values;
         if(this.one_choice && this.valueList.length > 0) this.one_choice_made = true;
-        this.checkSelectedAll(); 
+        this.checkSelectedAll();
         if(this.onlytype > 0){
             this.changeType(2);
-        } 
+        }
     },
     methods: {
         hidePlaceholder(){
@@ -171,12 +196,12 @@ export default {
                 && this.valueList[0]['id']== 0
                 && this.valueList[0]['type'] == 0) {
                 this.selected_all = true;
-                 console.log('okay');
+                //  console.log('okay');
             } else {
-                console.log('wtf');
+                // console.log('wtf');
             }
         },
-        
+
         filterType() {
             this.filtered_options = this.options.filter((el, index) => {
                 return el.type == this.type
@@ -193,7 +218,7 @@ export default {
             if(this.one_choice_made) {
                 return;
             }
-             
+
             this.show = !this.show;
             if(this.show){
                 document.getElementById('placeholder').style.display = "none";
@@ -228,9 +253,9 @@ export default {
             if(this.single) this.show = false;
             if(this.single && this.valueList.length > 0) {
                 return;
-            }; 
+            };
 
-            
+
             if(this.selected_all) return;
 
             let item = this.filtered_options[index];
@@ -250,22 +275,30 @@ export default {
             }
         },
 
-        removeValue(i) {
+        removeValue(i, id) {
             if(this.ask_before_delete != '') {
                 if(!confirm(this.ask_before_delete)) return;
             }
-            
+
             let v = this.valueList[i];
-            console.log(v);
+            // console.log(v);
             if(v.id == 0 && v.type == 0 && v.name == 'Все') this.selected_all = false;
 
             this.valueList.splice(i, 1);
 
-            let index = this.filtered_options.findIndex(o => v.id == o.id && v.type == o.type);
-            if(index != -1) {
-                this.filtered_options.splice(index, 1);
-                this.$emit('remove');
-            }
+            this.filtered_options.filter((option, index) => {
+                if(option.id === id){
+                    this.filtered_options[index].selected = false;
+                    this.filtered_options[index].shownProfile = false;
+                }
+            });
+            this.$emit('remove');
+
+            // let index = this.filtered_options.findIndex(o => v.id == o.id && v.type == o.type);
+            // if(index != -1) {
+                // this.filtered_options.splice(index, 1);
+                // this.$emit('remove');
+            // }
         },
 
         removeValueFromList(i) {
@@ -278,17 +311,17 @@ export default {
         },
 
         onSearch() {
-              
+
             if(this.searchText == '') {
-                this.filtered_options = this.options; 
+                this.filtered_options = this.options;
             } else {
                 this.filtered_options = this.options.filter((el, index) => {
                     return el.name.toLowerCase().indexOf(this.searchText.toLowerCase()) > -1
-                }); 
+                });
             }
 
             this.addSelectedAttr();
-        }, 
+        },
 
         close() {
             this.show = false;
@@ -317,7 +350,7 @@ export default {
         },
 
         selectAll() {
-            if(this.selected_all) return; 
+            if(this.selected_all) return;
             this.valueList.splice(0, this.valueList.length);
             this.valueList.push({
                 name: 'Все',
@@ -336,5 +369,29 @@ export default {
     .placeholder{
        color: rgba(0,0,0,0.5);
         background-color: transparent!important;
+    }
+    .options{
+        .shown-profile{
+            background-color: #f2f2f2;
+            color: #999;
+            position: relative;
+            cursor: default;
+            i{
+                opacity: 0.3;
+            }
+            &:before{
+                content: 'Уже создан';
+                position: absolute;
+                top: 10px;
+                right: 5px;
+                font-size: 12px;
+                color: #666;
+                font-weight: 600;
+            }
+            &:hover{
+                background-color: #f2f2f2;
+                cursor: default;
+            }
+        }
     }
 </style>

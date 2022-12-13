@@ -2,14 +2,11 @@
 
 namespace App\Http\Controllers\Auth;
 
+use App\Http\Controllers\Auth\Traits\LoginToSubDomain;
 use App\Http\Controllers\Controller;
-use App\Models\CentralUser;
-use App\Providers\RouteServiceProvider;
-use App\User;
 use Illuminate\Foundation\Auth\AuthenticatesUsers;
 use Illuminate\Http\Request;
 use Illuminate\Validation\ValidationException;
-
 
 class LoginController extends Controller
 {
@@ -23,8 +20,7 @@ class LoginController extends Controller
     | to conveniently provide its functionality to your applications.
     |
     */
-
-    use AuthenticatesUsers;
+    use AuthenticatesUsers, LoginToSubDomain;
 
     /**
      * Where to redirect users after login.
@@ -83,9 +79,16 @@ class LoginController extends Controller
         return $field;
     }
 
-
+    /**
+     * Login
+     * 
+     * @param Request $request
+     * 
+     * @return \Illuminate\Http\RedirectResponse
+     */
     public function login(Request $request)
     {   
+        // create credentials
         $field = $this->username();
 
         $request[$field] = $request->username;
@@ -95,48 +98,29 @@ class LoginController extends Controller
             'password' => $request->password,
         ];
         
-
-        if (\Auth::attempt($credentials)) {
-
-            $request->session()->regenerate();
-            
-            // admin.jobtron.org
-            if(request()->getHost() == 'admin.' .config('app.domain')) {
-                return redirect('/');
-            }
-
-            // login in central app
-            if(request()->getHost() == config('app.domain')) {
-                
-                $centralUser = CentralUser::with('tenants')->where('email', auth()->user()->email)->first();
-
-                if($centralUser) {
-
-                    $tenant = $centralUser->tenants->first();
-
-                    tenancy()->initialize($tenant);
-                   
-                    $domain = $tenant->id .".". config('app.domain');
-
-                    $tenantUser = User::where('email', $centralUser->email)->first();
-
-                    $token = tenancy()->impersonate($tenant, $tenantUser->id, '/profile');
-        
-                    return redirect("https://". $domain ."/impersonate/{$token->token}");
-                }   
-
-            } 
-            
-            return redirect($this->redirectTo);
-
-        } else {
+        // failed to login
+        if ( !\Auth::attempt($credentials) ) {
             return back()->withErrors([
                 'email' => 'The provided credentials do not match our records.',
             ])->onlyInput('email');
-        }   
+        } 
+
+        // login was success
+        $request->session()->regenerate();
+            
+        // redirect to - admin.jobtron.org
+        if(request()->getHost() == 'admin.' .config('app.domain')) {
+            return redirect('/');
+        }
+
+        // login from central app  - jobtron.org/login
+        // redirect to subdomain with auth
+        if(request()->getHost() == config('app.domain')) {
+            return $this->loginToSubDomain();
+        } 
         
-     
-       
+        // login from tenant app
+        return redirect($this->redirectTo);
     }
 }
 

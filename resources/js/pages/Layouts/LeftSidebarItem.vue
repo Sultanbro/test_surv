@@ -43,7 +43,7 @@ export default {
 <style lang="scss">
 .header__nav-link{
   &:hover{
-    .header__nav-popover{    
+    .header__nav-popover{
       opacity: 1;
       visibility: visible;
     }
@@ -58,7 +58,7 @@ export default {
 
   position: fixed;
   z-index: 1005;
-  left: 9rem;
+  left: 8rem;
 
   background: #fff;
   color: #657A9F;

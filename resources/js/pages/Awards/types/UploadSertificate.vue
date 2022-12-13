@@ -13,7 +13,7 @@
             >
             </BFormFile>
             <BButton
-                    v-if="hasImage || awards.length > 0"
+                    v-if="imageSrc"
                     variant="danger"
                     class="ml-3 clear-btn"
                     @click="clearImage"
@@ -23,11 +23,17 @@
         </div>
         <small class="mb-4 d-block mt-1">Загрузите подготовленный шаблон в формате PDF</small>
         <br>
-        <div v-if="hasImage || awards.length > 0" class="sertificate-prewiev">
+        <div v-if="imageSrc" class="sertificate-prewiev">
             <div class="sertificate-modal">
-                <div class="preview-canvas" @click="modalCertificate = !modalCertificate">
-                    <vue-pdf-embed v-if="imageSrc" ref="vuePdfUploadCertificate" :source="imageSrc"/>
-                </div>
+                       <div class="preview-canvas" @click="openModalCertificate">
+                           <vue-pdf-embed v-if="imageSrc" ref="vuePdfUploadCertificate" :source="imageSrc"/>
+                       </div>
+                     <div class="info-type2">
+                         <i class="fa fa-info"></i>
+                        <span> Внимание! Нажмите на картинку, чтобы отредактировать загруженный шаблон.
+                         Обязательно расположите текст в нужные Вам места. В противном случае сертификат будет
+                         сгенерирован неправильно!</span>
+                     </div>
                 <BModal v-model="modalCertificate" modal-class="upload-certificate-modal"
                         title="Контсруктор сертификата"
                         size="xl" hide-footer centered>
@@ -68,6 +74,7 @@
 
 <script>
     import UploadSertificateModal from "../types/UploadSertificateModal.vue";
+    import RegenerateCertificates from "./RegenerateCertificates";
     import VuePdfEmbed from "vue-pdf-embed/dist/vue2-pdf-embed";
     import Multiselect from "vue-multiselect";
 
@@ -83,6 +90,7 @@
         name: "UploadSertificate",
         components: {
             UploadSertificateModal,
+            RegenerateCertificates,
             Multiselect,
             VuePdfEmbed
         },
@@ -112,23 +120,19 @@
             if (this.awards.length > 0) {
                 this.imageSrc = this.awards[0].tempPath;
                 this.styles = this.awards[0].styles;
-                console.log(this.$refs.vuePdfUploadCertificate);
+                this.$emit('has-change-constructor', true);
             }
             this.getCourses();
-        },
-        computed: {
-            hasImage() {
-                return !!this.image;
-            },
         },
         watch: {
             image(newValue) {
                 this.imageSrc = null;
+                this.$emit('has-change-constructor', false);
                 if (newValue) {
                     base64Encode(newValue)
                         .then((val) => {
                             this.imageSrc = val;
-                            this.$emit("image-download", this.image);
+                            this.$emit("image-download", this.image, true);
                         })
                         .catch(() => {
                             this.imageSrc = null;
@@ -137,6 +141,10 @@
             },
         },
         methods: {
+            openModalCertificate() {
+                this.modalCertificate = !this.modalCertificate;
+                this.$emit('has-change-constructor', true)
+            },
             selectAll() {
                 this.value = [];
                 this.$emit("remove-course-all");
@@ -175,17 +183,19 @@
                         loader.hide();
                     })
             },
-            saveStyles(fullName, courseName, hours, date) {
+            saveStyles(fullName, courseName, date) {
                 const styles = {};
                 styles.fullName = fullName;
                 styles.courseName = courseName;
-                styles.hours = hours;
                 styles.date = date;
+                this.styles = JSON.stringify(styles);
                 this.$emit("styles-change", styles);
             },
             clearImage() {
                 this.image = null;
                 this.imageSrc = null;
+                this.$emit("image-download", null, false);
+                this.$emit('has-change-constructor', false)
             },
         },
     };
@@ -218,6 +228,29 @@
     }
 
     .upload-certificate {
+        .info-type2{
+            padding: 20px;
+            margin-left: 50px;
+            border-radius: 10px;
+            background-color: rgba(224,168,0,0.2);
+            display: flex;
+            align-items: flex-start;
+            span{
+                font-size: 14px;
+                line-height: 1.5;
+                font-weight: 600;
+                margin-left: 20px;
+            }
+            i{
+                background-color: #ffc107;
+                min-width: 50px;
+                min-height: 50px;
+                border-radius: 50%;
+                display: inline-flex;
+                align-items: center;
+                justify-content: center;
+            }
+        }
         .multiselect__tags {
             overflow: hidden;
         }
@@ -228,6 +261,7 @@
         }
 
         .preview-canvas {
+            min-width: 250px;
             cursor: pointer;
             border: 1px solid #999;
             border-radius: 10px;
@@ -242,12 +276,15 @@
 
             canvas {
                 height: 170px !important;
-                width: auto !important;
+                width: 100% !important;
+                object-fit: cover;
             }
         }
 
         .sertificate-modal {
             margin-bottom: 20px;
+            display: flex;
+            align-items: flex-start;
         }
 
         .form-file {

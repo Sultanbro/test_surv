@@ -89,22 +89,26 @@ class AccrualAwardService implements AwardInterface
     public function getAccrual($user, $type): array
     {
         $result = [];
-        $groups = $user->groups->pluck('id')->toArray();
+        $group = $user->inGroups()->first();
+        if (!$group){
+            $group = $user->inGroups(true)->first();
+        }
 
+        $group_id = $group->id;
         $today = Carbon::now();
         $date = Carbon::createFromDate($today->year, $today->month, 1);
 
 
         $awardCategories = AwardCategory::query()
             ->where('type', $type)
-            ->withWhereHas('awards',function ($query) use ($user, $groups) {
-                $query->where( function ($q) use ($user, $groups){
+            ->withWhereHas('awards',function ($query) use ($user, $group_id) {
+                $query->where( function ($q) use ($user, $group_id){
                     $q->orWhere(function ($qu) use ($user) {
                         $qu->where('targetable_id',$user->position_id)
                             ->where('targetable_type', self::POSITION);
                     })
-                        ->orWhere(function ($qu) use ($groups) {
-                            $qu->whereIn('targetable_id', $groups)
+                        ->orWhere(function ($qu) use ($group_id) {
+                            $qu->where('targetable_id', $group_id)
                                 ->where('targetable_type', self::GROUP);
                         });
                 });
@@ -124,19 +128,21 @@ class AccrualAwardService implements AwardInterface
                 $result[] = [
                     'name' => $awardCategory->name,
                     'description'=>$awardCategory->description,
-                    'top' => $this->getTopSalaryEmployees($user_ids, $date, $targetable_id),
+                    'top' => $this->getTopSalaryEmployees($user_ids, $date),
                 ];
             }
 
             if ($targetable_type == self::POSITION && $user->position_id == $targetable_id){
-                $user_ids = Position::query()
-                    ->findOrFail($targetable_id)
-                    ->users
+                $user_ids = User::whereHas('description', function ($query) use ($targetable_id) {
+                    $query->where('position_id', $targetable_id)
+                    ->where('is_trainee',0);
+                })
+                    ->get()
                     ->pluck('id');
                 $result[] = [
                     'name' => $awardCategory->name,
                     'description'=>$awardCategory->description,
-                    'top' => $this->getTopSalaryEmployees($user_ids, $date, $groups[0]),
+                    'top' => $this->getTopSalaryEmployees($user_ids, $date),
 
                 ];
 
@@ -146,15 +152,19 @@ class AccrualAwardService implements AwardInterface
         return $result;
     }
 
-    public function getTopSalaryEmployees($user_ids,Carbon $date,$group_id){
+    public function getTopSalaryEmployees($user_ids,Carbon $date){
         $result = [];
         $month = $date->startOfMonth();
-        $group = ProfileGroup::find($group_id);
 
         $users = Salary::getUsersData($month, $user_ids);
 
-        $internship_pay_rate = $group->paid_internship == 1 ? 0.5 : 0;
+        $internship_pay_rate = 0;
         foreach ($users as $user){
+
+            $group = $user->inGroups()->first();
+            if (!$group){
+                $group = $user->inGroups(true)->first();
+            }
             $userFot = $user->calculateFot($internship_pay_rate, $date);
             $result[] = [
                 'kpi' => $userFot['kpi'],
@@ -162,6 +172,7 @@ class AccrualAwardService implements AwardInterface
                 'bonuses' => $userFot['bonuses'],
                 'total' => array_sum(array_values($userFot)),
                 'position' => $user->position?->position,
+                'group' => $group->name ?? '',
                 'name' => $user->name,
                 'last_name' => $user->last_name,
                 'path'=> 'users_img/' . $user->img_url,
