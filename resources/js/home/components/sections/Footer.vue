@@ -8,9 +8,17 @@
           </a>
         </div>
         <div class="jFooter-col">
-          <p>{{ $lang(lang, 'footer-prices') }}</p>
-          <p>{{ $lang(lang, 'footer-reviews') }}</p>
-          <p>{{ $lang(lang, 'footer-platform') }}</p>
+          <ul class="jFooter-menu-items">
+            <li class="jFooter-menu-item">
+              <FooterLink :lang="lang" href="#prices" text="prices"/>
+            </li>
+            <li class="jFooter-menu-item">
+              <FooterLink :lang="lang" href="#reviews" text="reviews"/>
+            </li>
+            <li class="jFooter-menu-item">
+              <FooterLink :lang="lang" href="#features" text="features"/>
+            </li>
+          </ul>
           <p class="jFooter-sub">{{ $lang(lang, 'footer-subscribe') }}</p>
           <div class="jFooter-social">
             <a class="jFooter-social-link jFooter-social-tg" href="#"></a>
@@ -19,9 +27,20 @@
           </div>
         </div>
         <div class="jFooter-col">
-          <p>{{ $lang(lang, 'footer-docs') }}</p>
-          <p>{{ $lang(lang, 'footer-info') }}</p>
-          <p>{{ $lang(lang, 'footer-lic') }}</p>
+          <ul class="jFooter-menu-items">
+            <li class="jFooter-menu-item">
+              <FooterLink :lang="lang" href="#" text="footer-docs"/>
+            </li>
+            <li class="jFooter-menu-item">
+              <FooterLink :lang="lang" href="#" text="footer-info"/>
+            </li>
+            <li class="jFooter-menu-item">
+              <FooterLink :lang="lang" href="#" text="footer-lic"/>
+            </li>
+          </ul>
+<!--          <p>{{ $lang(lang, 'footer-docs') }}</p>-->
+<!--          <p>{{ $lang(lang, 'footer-info') }}</p>-->
+<!--          <p>{{ $lang(lang, 'footer-lic') }}</p>-->
           <p class="jFooter-sub">{{ $lang(lang, 'footer-pay') }}</p>
           <div class="jFooter-pay">
             <a class="jFooter-pay-link jFooter-pay-mir" href="#"></a>
@@ -54,7 +73,11 @@
 </template>
 
 <script>
+import FooterLink from '../footer/FooterLink'
 export default {
+  components: {
+    FooterLink
+  },
   computed: {
     lang() {
       return this.$root.$data.lang
@@ -85,6 +108,10 @@ export default {
       text-decoration: underline;
     }
   }
+
+  li {
+    list-style: none;
+  }
 }
 
 .jFooter-separator {
@@ -93,6 +120,10 @@ export default {
 
 .jFooter-cols {
   padding-bottom: 2rem;
+}
+
+.jFooter-menu-items {
+  padding: 0;
 }
 
 .jFooter-sub {

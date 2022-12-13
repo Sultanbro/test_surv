@@ -47,7 +47,6 @@ export default {
   width: fit-content;
   margin-left: auto;
   margin-right: auto;
-  margin-bottom: 5rem;
   position: relative;
 
   &:before {
@@ -70,7 +69,7 @@ export default {
 .jSec3-block-title {
   margin-bottom: 1rem;
   font-size: 1.25rem;
-  font-weight: 500;
+  font-weight: 700;
 }
 
 .jSec3-block-1 {

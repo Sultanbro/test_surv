@@ -148,7 +148,7 @@ export default {
 }
 
 .jTariffs-th {
-  font-weight: 500;
+  font-weight: 700;
   padding: 0.6875rem;
 }
 
