@@ -119,7 +119,14 @@ export default {
 }
 
 .jFooter-cols {
+  display: flex;
   padding-bottom: 2rem;
+}
+
+.jFooter-cols > .jFooter-col:nth-child(1) {
+  display: flex;
+  align-items: center;
+
 }
 
 .jFooter-menu-items {
