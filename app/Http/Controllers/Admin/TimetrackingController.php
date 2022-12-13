@@ -768,14 +768,9 @@ class TimetrackingController extends Controller
     public function getReports(Request $request)
     {
 
-        $year = $request['year'];
-        $month = $request->month;
-
-        $date = Carbon::createFromDate($request->year, $request->month, 1);
-
-        $group = ProfileGroup::with('users')->find($request['group_id']);
-
         $currentUser = auth()->user();
+        $date = Carbon::createFromDate($request->year, $request->month, 1);
+        $group = ProfileGroup::find($request->group_id);
 
         // Доступ к группе
         $group_editors = is_array(json_decode($group->editors_id)) ? json_decode($group->editors_id) : [];
@@ -800,11 +795,9 @@ class TimetrackingController extends Controller
             $users = (new UserService)->getTrainees($request->group_id, $date->format('Y-m-d'));
         }
 
-        $users = collect($users);
-
-        $_user_ids = $users->pluck('id')->toArray();
+        $_user_ids = collect($users)->pluck('id')->toArray();
         
-        $users = Timetracking::getTimeTrackingReportPaginate($request, $_user_ids, $year);
+        $users = Timetracking::getTimeTrackingReportPaginate($request, $_user_ids, $request->year);
 
         // ээээм
         $data = [];
@@ -838,13 +831,13 @@ class TimetrackingController extends Controller
                 '2' => 0,
             ];
 
-            for ($i = 1; $i <= $month->daysInMonth; $i++) {
+            for ($i = 1; $i <= $date->daysInMonth; $i++) {
                 $fines[$i] = $user->fines->where('date', $i)->where('status', 1)->pluck('fine_id') ?? [];
 
                 $x = $user->daytypes->where('day', $i)->first();
                 $daytypes[$i] = $x->type ?? null;
 
-                $weekdays[$i] = $user->weekdays[(int)$month->day($i)->dayOfWeek] == 1 ? 1 : 0;
+                $weekdays[$i] = $user->weekdays[(int)$date->day($i)->dayOfWeek] == 1 ? 1 : 0;
                
                 if($x && in_array($x->type,[2,5,7]) && $enable_comment['1'] == 0) {
                     $enable_comment['1'] = $x->day;
