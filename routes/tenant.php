@@ -406,7 +406,6 @@ Route::middleware([
     Route::any('/timetracking/fines', [TimetrackingController::class, 'fines']);
     Route::any('/timetracking/info', [TimetrackingController::class, 'info']);
     Route::any('/timetracking/set-day', [TimetrackingController::class, 'setDay']);
-    Route::any('/timetracking/history', [TimetrackingController::class, 'getHistory']);
     Route::any('/timetracking/settings', [TimetrackingController::class, 'settings']);
     Route::any('/timetracking/settings/positions', [TimetrackingController::class, 'positions']);
     Route::any('/timetracking/settings/positions/get', [TimetrackingController::class, 'getPosition']);
@@ -434,12 +433,11 @@ Route::middleware([
     Route::any('/timetracking/groups', [TimetrackingController::class, 'getgroups']);
     Route::post('/timetracking/groups/restore', [TimetrackingController::class, 'restoreGroup']);
     Route::any('/timetracking/reports/add-editors', [TimetrackingController::class, 'usereditreports']);
-    Route::any('/timetracking/reports/get-editors', [TimetrackingController::class, 'modalcheckuserrole']);
+
     Route::any('/timetracking/reports/check-user', [TimetrackingController::class, 'checkuserrole']);
     Route::any('/timetracking/reports/enter-report', [TimetrackingController::class, 'enterreport']);
     Route::post('/timetracking/reports/enter-report/setmanual', [TimetrackingController::class, 'enterreportManually']);
     Route::any('/timetracking/zarplata-table', [TimetrackingController::class, 'zarplatatable']);
-    Route::post('/order-persons-to-group', [TimetrackingController::class, 'orderPersonsToGroup']); // Заказ сотрудников в группы для Руководителей
     Route::post('/timetracking/apply-person', [TimetrackingController::class, 'applyPerson']); // Принятие на штат стажера
     Route::post('/timetracking/get-totals-of-reports', [TimetrackingController::class, 'getTotalsOfReports']);
 
