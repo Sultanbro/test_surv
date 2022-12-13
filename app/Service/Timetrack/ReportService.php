@@ -2,6 +2,7 @@
 
 namespace App\Service\Timetrack;
 
+use App\Helpers\UserHelper as Helper;
 use App\Repositories\ProfileGroupRepository;
 use App\Repositories\UserFineRepository;
 use App\Repositories\UserRepository;
@@ -40,6 +41,20 @@ class ReportService
         ];
     }
 
+    /**
+     * @Post {
+     *  "groupId": 26,
+     *  "year": 2022,
+     *  "month": 2,
+     *  "day": 1
+     * }
+     *
+     * @param int $groupId
+     * @param int $year
+     * @param int $month
+     * @param int $day
+     * @return array
+     */
     public function post(
         int $groupId,
         int $year,
@@ -47,18 +62,41 @@ class ReportService
         int $day
     )
     {
-        $group = $this->profileGroupRepository->getGroup($groupId);
         $userIds = (new UserService)->getEmployeeIds($groupId, $this->getData($year, $month, $day)->format('Y-m-d'));
-        $users = $this->userRepository->userTimeTrackRelation($userIds, $year, $month);
+        $users   = $this->userRepository->userTimeTrackRelation($userIds, $year, $month);
+        $data    = [];
 
         foreach ($users as $user)
         {
-            $fines = $this->userFineRepository->getUserFines($user->id, $year, $month);
+            $userFines = $this->userFineRepository->getUserFines($user->id, $year, $month);
             $days = $user->timetracking->pluck('date')->unique()->toArray();
-            dd( $days);
+
+            if (Helper::showFiredEmployee($user, $year, $month))
+            {
+                foreach ($days as $day) {
+                    $data[$user->id][$day] = $user->timetracking->where('date', $day)->min('enter')->format('H:i');
+                }
+
+                $fines = [];
+                for ($i = 1; $i <= $this->getData($year, $month, $day)->daysInMonth; $i++) {
+                    $d = $i;
+                    if(strlen ($i) == 1) $d = '0' . $i;
+
+                    $x = $userFines->where('day', $d);
+                    if($x->count() > 0) {
+                        $fines[$i] = ['yes'];
+                    } else {
+                        $fines[$i] = [];
+                    }
+                }
+
+                $data[$user->id]['fines']   = $fines;
+                $data[$user->id]['name']    = $user->full_name;
+                $data[$user->id]['user_id'] = $user->id;
+            }
         }
 
-        dd('here');
+        return $data;
     }
 
     /**
