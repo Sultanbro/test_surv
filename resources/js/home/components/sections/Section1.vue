@@ -136,9 +136,10 @@ export default {
   background-image: url("../../assets/img/s1-bg.svg");
   background-repeat: no-repeat;
 }
-.jSec1-header {
-  font-weight: 700;
-}
+//.jSec1-header {
+//  font-weight: 700;
+//}
+
 .jSec1-tabs {
   display: flex;
   flex-flow: column nowrap;
@@ -196,6 +197,7 @@ export default {
   margin: 0 0 2.375rem;
   line-height: 1.56;
   color: #000;
+  padding: 0;
 }
 .jSec1-profile-list-item {
   list-style: none;

@@ -1,17 +1,17 @@
 @import './app.variables';
 
 @font-face {
-	font-family: 'Gotham Pro';
+	font-family: 'Gotham Pro Regular';
 	src: url("assets/fonts/GothamPro.eot");
 	src: local('Gotham Pro'), local('GothamPro'), url("assets/fonts/GothamPro.eot?#iefix") format('embedded-opentype'), url("assets/fonts/GothamPro.woff") format('woff'), url("assets/fonts/GothamPro.ttf") format('truetype');
 	font-weight: normal;
 	font-style: normal;
-	font-family: 'Gotham Pro';
+	font-family: 'Gotham Pro Medium';
 	src: url("assets/fonts/GothamPro-Medium.eot");
 	src: local('Gotham Pro Medium'), local('GothamPro-Medium'), url("assets/fonts/GothamPro-Medium.eot?#iefix") format('embedded-opentype'), url("assets/fonts/GothamPro-Medium.woff") format('woff'), url("assets/fonts/GothamPro-Medium.ttf") format('truetype');
 	font-weight: 500;
 	font-style: normal;
-	font-family: 'Gotham Pro';
+	font-family: 'Gotham Pro Bold';
 	src: url("assets/fonts/GothamPro-Bold.eot");
 	src: local('Gotham Pro Bold'), local('GothamPro-Bold'), url("assets/fonts/GothamPro-Bold.eot?#iefix") format('embedded-opentype'), url("assets/fonts/GothamPro-Bold.woff") format('woff'), url("assets/fonts/GothamPro-Bold.ttf") format('truetype');
 	font-weight: bold;
@@ -43,7 +43,7 @@ button {
 .jHeader {
 	font-size: 1.75rem;
 	line-height: 1;
-	font-weight: 500;
+	font-weight: 700;
 	text-align: center;
 }
 .jButton {

@@ -87,6 +87,7 @@ export default {
   font-size: 1.125rem;
   line-height: 1.39;
   text-align: center;
+  width: 16.5rem;
 }
 
 .jSec2-item-1 {
