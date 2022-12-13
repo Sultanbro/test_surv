@@ -197,8 +197,67 @@ export default {
          */
         initSlider() {
             VJQuery('.courses__content__wrapper').slick({
-                variableWidth: true,
-                infinite: false
+                variableWidth: false,
+                infinite: false,
+                slidesToShow: 6,
+                responsive: [
+                    {
+                        breakpoint: 2140,
+                        settings: {
+                            variableWidth: false,
+                            infinite: false,
+                            slidesToShow: 5,
+                        }
+                    },
+                    {
+                        breakpoint: 1800,
+                        settings: {
+                            variableWidth: false,
+                            infinite: false,
+                            slidesToShow: 4,
+                        }
+                    },
+                    {
+                        breakpoint: 1600,
+                        settings: {
+                            variableWidth: false,
+                            infinite: false,
+                            slidesToShow: 3,
+                        }
+                    },
+                    {
+                        breakpoint: 1360,
+                        settings: {
+                            variableWidth: false,
+                            infinite: false,
+                            slidesToShow: 4,
+                        }
+                    },
+                    {
+                        breakpoint: 1200,
+                        settings: {
+                            variableWidth: false,
+                            infinite: false,
+                            slidesToShow: 3,
+                        }
+                    },
+                    {
+                        breakpoint: 940,
+                        settings: {
+                            variableWidth: false,
+                            infinite: false,
+                            slidesToShow: 2,
+                        }
+                    },
+                    {
+                        breakpoint: 520,
+                        settings: {
+                            variableWidth: false,
+                            infinite: false,
+                            slidesToShow: 1,
+                        }
+                    }
+                ]
             });
 
             // https://github.com/kenwheeler/slick/issues/3694
@@ -211,6 +270,13 @@ export default {
                 if (rOffset < (wraRect.x + wraRect.width)) {
                     $slick_slider.find('.slick-next').addClass('slick-disabled')
                 }
+            })
+            $slick_slider.on('breakpoint', (e, slick) => {
+                setTimeout(() => {
+                    $slick_slider.find('.slick-slide').forEach(el => {
+                        el.style.width = (parseFloat(el.style.width) - 4) + 'px'
+                    })
+                }, 1)
             })
         },
 
@@ -232,7 +298,6 @@ export default {
                             swipeToSlide: false,
                             slidesToScroll: 2,
                             slidesToShow: 9,
-
                         }
                     },
                     {
@@ -243,7 +308,6 @@ export default {
                             swipeToSlide: false,
                             slidesToScroll: 2,
                             slidesToShow: 6,
-
                         }
                     },
                     {
@@ -254,7 +318,6 @@ export default {
                             swipeToSlide: false,
                             slidesToScroll: 2,
                             slidesToShow: 5,
-
                         }
                     },
                     {
@@ -264,7 +327,6 @@ export default {
                             variableWidth: true,
                             swipeToSlide: true,
                             slidesToShow: 1,
-
                         }
                     },
 
@@ -321,8 +383,12 @@ export default {
     pointer-events: none;
 }
 
+
+.courses__content__wrapper{}
 .courses__item{
     position: relative;
+    text-align: center;
+    box-sizing: border-box;
     &:hover{
         box-shadow: inset 0 0 5px #8FAF00;
         .courses__regress{
