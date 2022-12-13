@@ -143,16 +143,36 @@
                     <div v-html="corp_book_page.text"/>
 
                     <button
-                        @click="hideBook"
+                        @click="testBook"
                         :disabled="!!bookTimer"
                         id="readCorpBook"
                         class="button-blue m-auto mt-5"
                     >
-                    <span v-if="bookTimer" class="timer">{{ bookTimer }}</span>
-                    <span v-else class="text">Я прочитал</span>
+                        <span v-if="bookTimer" class="timer">{{ bookTimer }}</span>
+                        <span v-else class="text">Я прочитал</span>
                     </button>
                 </div>
             </div>
+        </b-modal>
+
+        <b-modal
+            v-model="isBookTest"
+            size="xl"
+            class="modalle"
+            hide-footer
+            hide-header
+            no-close-on-backdrop
+        >
+            <questions
+                v-if="corp_book_page"
+                :course_item_id="0"
+                :questions="corp_book_page.questions"
+                :pass_grade="corp_book_page.questions.length"
+                type="kb"
+                :dont-repat="true"
+                @passed="hideBook"
+                @failed="repeatBook"
+            />
         </b-modal>
     </div>
 </template>
@@ -188,6 +208,7 @@ export default {
             showCorpBookPage: false,
             bookTimer: 0,
             bookTimerInterval: 0,
+            isBookTest: false,
         };
     },
     computed: {
@@ -446,10 +467,21 @@ export default {
          * Set read corp book page
          */
         hideBook() {
-            if(this.bookTimer) return
             axios.post('/corp_book/set-read/', {})
                 .then(res => this.showCorpBookPage = false)
                 .catch(error => console.log(error))
+        },
+
+        repeatBook(){
+            this.showCorpBookPage = true
+            this.isBookTest = false
+            this.bookCounter()
+        },
+
+        testBook(){
+            if(this.bookTimer) return
+            this.isBookTest = true
+            this.showCorpBookPage = false
         },
     }
 };
