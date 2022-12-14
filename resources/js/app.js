@@ -10,6 +10,10 @@ require('./newprofile').default; // new design for profile. There is jquery
 window.Vue = require('vue').default;
 window.collect = require('collect.js')// globally
 
+import VueRouter from 'vue-router'
+import router from '@/router'
+Vue.use(VueRouter)
+
 import BootstrapVue from 'bootstrap-vue'
 import JQuery from 'jquery'
 window.VJQuery = JQuery
