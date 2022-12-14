@@ -11,7 +11,7 @@ use App\Repositories\PositionRepository;
 use App\Service\Timetrack\SettingService as TimeTrackSetting;
 use Throwable;
 
-class TimeTrackSettingController extends Controller
+class SettingController extends Controller
 {
     public function __construct(
         public PositionRepository $positionRepository

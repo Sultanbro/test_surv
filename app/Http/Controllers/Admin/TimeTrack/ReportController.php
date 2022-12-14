@@ -5,7 +5,9 @@ namespace App\Http\Controllers\Admin\TimeTrack;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\TimeTrack\GetReportRequest;
+use App\Http\Requests\TimeTrack\StoreManuallyReportRequest;
 use App\Repositories\ProfileGroupRepository;
+use App\Service\Timetrack\ManuallyReportService;
 use App\Service\Timetrack\ReportService as TimeTrackReport;
 use App\User;
 use Illuminate\Support\Facades\View;
@@ -53,5 +55,29 @@ final class ReportController extends Controller
         );
 
         return \response()->success($response);
+    }
+
+    /**
+     * @Post {
+     *  "user_id": 5,
+     *  "year": 2022,
+     *  "month": 6,
+     *  "day": 2,
+     *  "time": "12:10",
+     *  "comment": "Было изменено"
+     * }
+     *
+     * Изменение время прихода в вручную.
+     */
+    public function manually(StoreManuallyReportRequest $request, ManuallyReportService $service)
+    {
+        $response = $service->handle(
+            $request->toDto()->userId,
+            $request->toDto()->year,
+            $request->toDto()->month,
+            $request->toDto()->day,
+            $request->toDto()->time,
+            $request->toDto()->comment
+        );
     }
 }
