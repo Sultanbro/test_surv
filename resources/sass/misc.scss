@@ -328,12 +328,35 @@ tspan:last-child {
 nav {
     margin: 0 -15px;
 }
-.nav-tabs a.active {
-    border: 2px solid #ddd;
+
+.nav-tabs{
+    border-bottom: 1px solid #EAEAEA;
+    .nav-item{
+        .nav-link{
+            border: none;
+            color: #8DA0C1;
+            font-size: 16px;
+            font-weight: 600;
+            padding: 0 0 20px 0;
+            margin-right: 24px;
+            background-color: transparent;
+            &.active{
+                color: #156AE8;
+                font-weight: 600;
+                border-bottom: 2px solid #156AE8;
+            }
+            &:hover{
+                color: #156AE8;
+            }
+        }
+        &:last-child{
+            .nav-link{
+                margin-right: 0;
+            }
+        }
+    }
 }
-.nav-tabs .nav-link.active {
-    border-color: transparent transparent #1076b0;
-}
+
 .b-popover {
     font-size: 16px;
     * {

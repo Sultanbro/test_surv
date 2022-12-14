@@ -1,94 +1,100 @@
 <template>
   <div>
+      <b-row class="align-items-center">
+          <b-col cols="12" lg="4">
+             <b-form-group label="Должность">
+                 <b-form-select v-model="activebtn" :options="positions" size="md" @change="selectPosition" class="group-select col-lg-6 d-flex">
+                     <template #first>
+                         <b-form-select-option :value="null" disabled>Выберите должность из списка</b-form-select-option>
+                     </template>
+                 </b-form-select>
+             </b-form-group>
+          </b-col>
+          <b-col cols="12" lg="4">
+              <b-form-group label="Название должности" class="add-grade">
+                  <b-form-input type="text" v-model="new_position"></b-form-input>
+                  <button @click='addPosition' class="btn btn-success ml-4" title="Добавить должность"><i class="fa fa-plus"></i></button>
+              </b-form-group>
+          </b-col>
+          <b-col cols="12" lg="4">
+              <b-form-group label="Название должности">
+                  <b-form-input type="text" class="form-control group-select" v-model="new_name"></b-form-input>
+              </b-form-group>
+          </b-col>
+      </b-row>
 
-      <div class="row align-items-center">
-          
-          <div class="col-lg-3 col-md-6">
-              <b-form-select v-model="activebtn" :options="positions" size="md" @change="selectPosition" class="group-select col-lg-6 d-flex">
-                  <template #first>
-                      <b-form-select-option :value="null" disabled>Выберите должность из списка</b-form-select-option>
-                  </template>
-              </b-form-select>
-          </div>
-          <div class="col-lg-3 col-md-6">
-              
-              <div class="add-grade">
-                  <input type="text" class="form-control" v-model="new_position">
-                  <button @click='addPosition' class="btn btn-success">Добавить должность</button>
-              </div>
-          </div>
-          <div class="col-lg-3 col-md-6 " style="text-align:right">
-              Название должности
-          </div>
-          <div class="col-lg-3 col-md-6">
-              <input type="text" class="form-control group-select" v-model="new_name">
-          </div>
-      </div>
+      <template v-if="activebtn != null">
+          <b-row class="align-items-center my-4">
+              <b-col cols="12" md="4">
+                  <b-form-group label="Сумма индексации">
+                      <b-form-input type="text" class="form-control group-select" v-model="sum"
+                                    v-if="indexation"></b-form-input>
+                      <b-form-input type="text" class="form-control group-select" v-model="sum" v-else
+                                    disabled></b-form-input>
+                  </b-form-group>
+              </b-col>
+              <b-col cols="12" md="4">
+                  <b-form-group class="mt-5">
+                      <b-form-checkbox
+                              v-model="indexation"
+                              :value="1"
+                              :unchecked-value="0"
+                              switch
+                      >
+                          Индексация зарплаты
+                      </b-form-checkbox>
+                  </b-form-group>
+              </b-col>
+          </b-row>
+          <b-row>
+              <b-col cols="12" class="my-4">
+                  <b-form-checkbox
+                          v-model="desc.show"
+                          :value="1"
+                          switch
+                          :unchecked-value="0"
+                  >
+                      Показывать таблицу в профиле
+                  </b-form-checkbox>
+              </b-col>
 
-      <div v-if="activebtn != null" class="row align-items-center">
-          
-          
-          <div class="col-lg-2 mb-3 mt-3">
-            <b-form-checkbox
-                    v-model="indexation"
-                    :value="1"
-                    :unchecked-value="0"
-                    >
-                    Индексация зарплаты 
-                </b-form-checkbox>
-          </div>
-
-          <div class="col-lg-4 col-md-6 mb-3 mt-3 d-flex align-items-center" >
-            <p class="p mr-3 mb-0">Сумма индексации</p>
-            <input type="text" class="form-control group-select" v-model="sum" v-if="indexation">
-            <input type="text" class="form-control group-select" v-model="sum" v-else disabled>
-          </div>
-
-          <div class="col-lg-12 mb-3 mt-3">
-            <b-form-checkbox
-                    v-model="desc.show"
-                    :value="1"
-                    :unchecked-value="0"
-                    >
-                    Показывать таблицу в профиле
-                </b-form-checkbox>
-          </div>
-
-          <div class="col-lg-12 mb-3 mt-3">
-            <table class="table b-table table-striped table-bordered table-sm pos-desc pos-desc-1">
-              <tr>
-                <th>Следующая ступень карьерного роста</th>
-                <th>Требования к кандидату</th>
-                <th>Что нужно делать</th>
-                <th>График работы</th>
-                <th>Заработная плата</th>
-                <th>Нужные знания для перехода на следующую должность</th>
-              </tr>
-              <tr>
-                <td><textarea v-model="desc.next_step" class="form-control"></textarea></td>
-                <td><textarea v-model="desc.require" class="form-control"></textarea></td>
-                <td><textarea v-model="desc.actions" class="form-control"></textarea></td>
-                <td><textarea v-model="desc.time" class="form-control"></textarea></td>
-                <td><textarea v-model="desc.salary" class="form-control"></textarea></td>
-                <td><textarea v-model="desc.knowledge" class="form-control"></textarea></td>
-              </tr>
-            </table>
-          </div>
-
-
-
-          <div class="col-lg-12 mb-3 mt-3">
+              <b-col cols="12" class="my-4">
+                  <div class="table-container">
+                      <b-table-simple class="table b-table table-sm pos-desc pos-desc-1">
+                         <b-thead>
+                             <b-tr>
+                                 <b-th>Следующая ступень карьерного роста</b-th>
+                                 <b-th>Требования к кандидату</b-th>
+                                 <b-th>Что нужно делать</b-th>
+                                 <b-th>График работы</b-th>
+                                 <b-th>Заработная плата</b-th>
+                                 <b-th>Нужные знания для перехода на следующую должность</b-th>
+                             </b-tr>
+                         </b-thead>
+                       <b-tbody>
+                           <b-tr>
+                               <b-td><b-textarea v-model="desc.next_step"></b-textarea></b-td>
+                               <b-td><b-textarea v-model="desc.require"></b-textarea></b-td>
+                               <b-td><b-textarea v-model="desc.actions"></b-textarea></b-td>
+                               <b-td><b-textarea v-model="desc.time"></b-textarea></b-td>
+                               <b-td><b-textarea v-model="desc.salary"></b-textarea></b-td>
+                               <b-td><b-textarea v-model="desc.knowledge"></b-textarea></b-td>
+                           </b-tr>
+                       </b-tbody>
+                      </b-table-simple>
+                  </div>
+              </b-col>
+          </b-row>
+          <div class="mt-3">
               <button @click='savePosition' class="btn btn-success mr-2">Сохранить</button>
-              <button @click.stop="deletePosition(position_id,activebtn)" class="btn btn-danger mr-2"><i class="fa fa-trash"></i> Удалить</button>
+              <button @click.stop="deletePosition(position_id,activebtn)" class="btn btn-danger mr-2"><i
+                      class="fa fa-trash mr-2"></i> Удалить
+              </button>
           </div>
-
-      </div>
-
+      </template>
   </div>
 
 
-
-  
 </template>
 
 <script>
@@ -283,31 +289,9 @@ span.before {
 .pos-desc td textarea {
       font-size: 12px;
     resize: none;
-    overflow: hidden;
+    overflow: auto;
     min-height: 350px;
 }
-.pos-desc-1 th,
-.pos-desc-1 td {
-  &:nth-child(1) {
-    width: 16.666%;
-  }
-  &:nth-child(2) {
-   width: 16.666%;
-  }
-  &:nth-child(3) {
-    width: 12.222%
-  }
-  &:nth-child(4) {
-    width: 10.222%;
-  }
-  &:nth-child(5) {
-    width: 16.666%;
-  }
-  &:nth-child(6) {
-    width: 12.222%;
-  }
-}
-
 
 @media(min-width: 1000px) {
     .multiselect__tags-wrap {

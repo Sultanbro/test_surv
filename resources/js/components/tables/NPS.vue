@@ -21,45 +21,49 @@
     </div>
 
 
-    <div class="table-resonsive  mt-3">
-        <table class="table b-table table-sm  table-bordered" :key="ukey">
-            <tr>
-                <template v-for="(field, key) in fields">
-                    <th :class="field.klass" style="background:#76c8ec">
-                        <div>{{ field.name }}</div>
-                    </th>
-                </template>
-            </tr>
-            <tr v-for="(item, index) in users" :key="index">
-                <template v-for="(field, key) in fields"> 
-                    <td :class="field.klass">
-                        <div class="inner">
-                            <div>{{ item[field.key] }}</div>
-                            
+    <div class="table-resonsive table-container mt-4">
+        <table class="table b-table table-sm custom-table-nps table-bordered" :key="ukey">
+          <thead>
+          <tr>
+              <template v-for="(field, key) in fields">
+                  <th :class="field.klass" style="background:#76c8ec">
+                      <div>{{ field.name }}</div>
+                  </th>
+              </template>
+          </tr>
+          </thead>
+           <tbody>
+           <tr v-for="(item, index) in users" :key="index">
+               <template v-for="(field, key) in fields">
+                   <td :class="field.klass">
+                       <div class="inner">
+                           <div>{{ item[field.key] }}</div>
 
-                            <div class="inner-text">
-                                <b v-if="item.texts[field.key] !== undefined">Оценки ({{ item.grades[field.key] }})</b>
-                                <div class="d-flex">
-                                    <div class="w-50">
-                                        <b>Плюсы ({{ item.texts[field.key] !== undefined ? item.texts[field.key].length : 0 }})</b>
-                                        <div v-for="(text, index) in item.texts[field.key]">
-                                            <b>{{ index + 1}}:</b> {{ text }}
-                                        </div>
-                                    </div>
-                                    
-                                    <div class="w-50">
-                                        <b>Минусы ({{ item.minuses[field.key] !== undefined ? item.minuses[field.key].length : 0 }})</b>
-                                        <div v-for="(text, index) in item.minuses[field.key]">
-                                            <b>{{ index + 1}}:</b> {{ text }}
-                                        </div>
-                                    </div>
-                                </div>
-                                
-                            </div>
-                        </div>
-                    </td>
-                </template>
-            </tr>
+
+                           <div class="inner-text">
+                               <b v-if="item.texts[field.key] !== undefined">Оценки ({{ item.grades[field.key] }})</b>
+                               <div class="d-flex">
+                                   <div class="w-50">
+                                       <b>Плюсы ({{ item.texts[field.key] !== undefined ? item.texts[field.key].length : 0 }})</b>
+                                       <div v-for="(text, index) in item.texts[field.key]">
+                                           <b>{{ index + 1}}:</b> {{ text }}
+                                       </div>
+                                   </div>
+
+                                   <div class="w-50">
+                                       <b>Минусы ({{ item.minuses[field.key] !== undefined ? item.minuses[field.key].length : 0 }})</b>
+                                       <div v-for="(text, index) in item.minuses[field.key]">
+                                           <b>{{ index + 1}}:</b> {{ text }}
+                                       </div>
+                                   </div>
+                               </div>
+
+                           </div>
+                       </div>
+                   </td>
+               </template>
+           </tr>
+           </tbody>
 
         </table>
     </div> 
@@ -173,7 +177,27 @@ export default {
 };
 </script>
 
-<style scoped>
+<style lang="scss" scoped>
+    .custom-table-nps{
+        thead{
+            th,td{
+                padding: 10px 15px!important;
+                color: #fff;
+                border-left: 1px solid #cccccc!important;
+                &:first-child{
+                    border-left: none !important;
+                }
+            }
+        }
+       tbody{
+           th,td{
+               padding: 0!important;
+               .inner{
+                   padding: 10px 15px;
+               }
+           }
+       }
+    }
 .month {
     width: 90px;
 }
