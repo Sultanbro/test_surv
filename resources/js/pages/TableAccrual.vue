@@ -114,7 +114,7 @@
                 show-empty
                 emptyText="Нет данных">
 
-                <template slot="cell(name)" slot-scope="data">
+                <template #cell(name)="data">
                     <div>{{ data.value }}
                         <i
                             v-if="data.index == 0"
@@ -126,38 +126,38 @@
                     </div>
                 </template>
 
-                <template slot="cell(bonus)" slot-scope="data">
+                <template #cell(bonus)="data">
                     <div @click="defineClickNumber('bonus', data)" class="pointer">
                         {{ data.value }} <div class="cell-border" v-if="data.item.edited_bonus !== null && data.index != 0"></div>
                     </div>
                 </template>
 
-                <template slot="cell(kpi)" slot-scope="data">
+                <template #cell(kpi)="data">
                     <div @click="defineClickNumber('kpi', data)" class="pointer">
                         {{ data.value }} <div class="cell-border" v-if="data.item.edited_kpi !== null && data.index != 0"></div>
                     </div>
                 </template>
 
-                <template slot="cell(total)" slot-scope="data">
+                <template #cell(total)="data">
                     <div>{{ data.value }}</div>
                 </template>
 
-                <template slot="cell(fines)" slot-scope="data">
+                <template #cell(fines)="data">
                     <div>{{ data.value }}</div>
                 </template>
 
-                <template slot="cell(avans)" slot-scope="data">
+                <template #cell(avans)="data">
                     <div>{{ data.value }}</div>
                 </template>
 
-                <template slot="cell(final)" slot-scope="data">
+                <template #cell(final)="data">
                     <div @click="defineClickNumber('final', data)" class="pointer" v-if="user_types == '1'">
                         {{ data.value }} <div class="cell-border" v-if="data.item.edited_salary !== null && data.index != 0"></div>
                     </div>
                     <div v-else>{{ data.value }}</div>
                 </template>
 
-                <template slot="cell()" slot-scope="data">
+                <template #cell()="data">
                     <div @click="detectClick(data)"
                         :class="{
                             'fine': data.item.fine !== undefined && data.item.fine[data.field.key.toString()].length > 0,

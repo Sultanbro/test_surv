@@ -31,7 +31,7 @@
                          @stop="handleRecording" @error="handleError"
                          @start="setRecordingAudio(true)" @delete="setRecordingAudio(false)">
 
-          <template slot-scope="{ isRecording, startRecording, stopRecording, deleteRecording }">
+          <template #default="{ isRecording, startRecording, stopRecording, deleteRecording }">
 
             <template v-if="!isRecording">
 

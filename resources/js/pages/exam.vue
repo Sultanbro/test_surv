@@ -24,13 +24,13 @@
 
                     <b-tab title="Экзамены по книгам" key="1">
                         <b-table responsive striped :sticky-header="true" class="text-nowrap text-center my-table" id="tabelTable" :small="true" :bordered="true" :items="items" :fields="fields" show-empty emptyText="Нет данных">
-                            <template slot="cell(success)" slot-scope="data" >
+                            <template #cell(success)="data">
                                 <input type="checkbox" @change="updateExam('success',data)" v-model="data.value"  :disabled="!data.item.link">
                             </template>
-                            <template slot="cell(exam_date)" slot-scope="data" > 
+                            <template #cell(exam_date)="data">
                                 {{ data.value }}
                             </template>
-                            <template slot="cell(link)" slot-scope="data" >
+                            <template #cell(link)="data">
                                 <input class="form-control cell-input" @change="updateExam('link',data)" v-model="data.value" :disabled="dateInfo.currentMonth !== curMonth">
                             </template>
                         </b-table>
@@ -44,25 +44,25 @@
                                 <th>Тэги</th>
                                 <th>Ответы</th>
                             </tr>
-                            <tr v-for="skill in data.skills" :key="skill.id"> 
+                            <tr v-for="skill in data.skills" :key="skill.id">
                                 <td style="background:aliceblue">
                                     {{ skill.name }}
-                                    
+
                                 </td>
                                 <td v-html="skill.last_time"></td>
                                 <td>
                                     <b-badge v-if="skill.head" pill variant="success">
-                                        #Руководил 
+                                        #Руководил
                                     </b-badge>
                                 </td>
                                 <td v-html="skill.text"></td>
                             </tr>
-                        </table>   
+                        </table>
                     </b-tab>
 
                 </b-tabs>
 
-                
+
 
 
 
@@ -131,10 +131,10 @@
                 var index = data.index
 
                 if(from == 'success') {
-                    data.item.success = data.value 
+                    data.item.success = data.value
                 }
                 if(from == 'link') {
-                    data.item.link = data.value 
+                    data.item.link = data.value
                 }
 
                 console.log(data.value)
@@ -147,7 +147,7 @@
                     user_id: data.item.user_id,
                     book_id: data.item.book_id,
                     month: this.$moment(this.dateInfo.currentMonth, 'MMMM').format('M'),
-                    year: this.$moment(this.dateInfo.date, 'YYYY').format('YYYY'), 
+                    year: this.$moment(this.dateInfo.date, 'YYYY').format('YYYY'),
                     group_id: this.currentGroup
                 }).then(response => {
                     if (response.data.errors) {

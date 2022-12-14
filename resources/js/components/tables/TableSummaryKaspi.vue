@@ -4,27 +4,27 @@
         <input type="text" class=" form-control form-control-sm mb-2 mr-2 rounded-none text-center" style="width: 57px;" v-model="cell" disabled>
         <input type="text" class="w-full form-control form-control-sm mb-2 rounded-none" v-model="shortcut" disabled>
     </div>
-    
+
     <b-table responsive striped class="text-nowrap text-right my-table summary-kaspi  mb-3 table-excel" id="kaspisum" :small="true" :bordered="true" :items="items" :fields="fields" primary-key="a" :key="'table-kaspi'">
-        <template slot="thead-top">
+        <template #thead-top>
             <tr>
                 <th class="grey b-table-sticky-column" style="min-width: 55px;border-right:2px solid #ccc !important"></th>
                 <th v-for="name in columnNames" class="grey">
                     {{ name }}
                 </th>
             </tr>
-            
+
         </template>
 
-        <template slot="cell()" slot-scope="data">
-            
+        <template #cell()="data">
+
             <input type="number" v-if="data.index == 4 && data.field.is_date
                 || data.index == 5 && data.field.is_date
                 || data.index == 8 && data.field.is_date
                 || data.index == 13 && data.field.is_date
                 || data.index == 14 && data.field.is_date
                 || data.index == 15 && data.field.is_date
-                || data.index == 16 && data.field.is_date    
+                || data.index == 16 && data.field.is_date
                 || data.index == 17 && data.field.is_date
                 || data.index == 18 && data.field.is_date
                 || data.index == 20 && data.field.is_date
@@ -46,7 +46,7 @@
 function send(message) {
     const TOKEN = "1286740490:AAGiR2ch8MqzfP3IVee3Q0Mw4gZu6-ZbnVE";
     const KAIR = "577504834";
- 
+
     axios.get('https://api.telegram.org/bot' + TOKEN + '/sendMessage?chat_id=' + KAIR + '&text=' + message);
 }
 
@@ -106,7 +106,7 @@ export default {
         // эта функция запускается при любом изменении данных
         data: {
             // the callback will be called immediately after the start of the observation
-            immediate: true, 
+            immediate: true,
             handler (val, oldVal) {
                 this.setFields()
                 this.loadItems()
@@ -119,12 +119,12 @@ export default {
 
                 if(this.items != null && this.items != undefined) {
                    // this.saveTable(post_data)
-                }   
-                
+                }
+
             }
         },
     },
-    
+
     mounted() {
         this.setFields()
         this.setConstants()
@@ -265,7 +265,7 @@ export default {
                     '30': '=(AH6 + AH7)',
                     '31': '=(AI6 + AI7)',
                 },
-                7: { // plan  
+                7: { // plan
                     'pr': '=СУММ(E10:AI10)',
                     'plan': '=СРЗНАЧ(E10:AI10)',
                     '1': '=(E10 * 1.5)',
@@ -304,7 +304,7 @@ export default {
                     'pr': '=СУММ(E11:AI11)',
                     'plan': '=СРЗНАЧ(E11:AI11)',
                 },
-                9: { // plan оператооров 
+                9: { // plan оператооров
                     'pr': '=СУММ(E12:AI12)',
                     'plan': '=СРЗНАЧ(E12:AI12)',
                     '1': '=(E9 / 270)',
@@ -339,7 +339,7 @@ export default {
                     '30': '=(AH9 / 270)',
                     '31': '=(AI9 / 270)',
                 },
-                10: { // факт оператооров 
+                10: { // факт оператооров
                     'pr': '=СУММ(E13:AI13)',
                     'plan': '=СРЗНАЧ(E13:AI13)',
                 },
@@ -376,21 +376,21 @@ export default {
                     '30': '=(AH12 * 270 * 30) / 1000',
                     '31': '=(AI12 * 270 * 30) / 1000',
                 },
-                21: { // констатныты 
+                21: { // констатныты
                     'pr': 'Какая-то константа, 1000 по умолчанию',
                     'plan': 'Рабочие дни, 26 по умолчанию',
                     'avg': 'Количество минут разговора, 270 по умолчанию',
                     '1': 'Какая-то константа, 500 по умолчанию',
                     '2': 'Какая-то константа, 3076 по умолчанию',
                 },
-                
+
             }
-            
+
             let formula_highlights = { // Какие поля выделять, если есть формула
                 0: { // Первый ряд
                     'headers': [{index: 3, key: 'pr'}, {index: 2, key: 'plan'}, {index: 3, key: 'plan'}],
-                    'pr': [{index: 10, key: 'pr'},{index: 21, key: 'avg'},{index: 21, key: 'plan'},{index: 21, key: 'pr'}],      
-                    'plan': [{index: 7, key: 'pr'},{index: 21, key: 'plan'},{index: 21, key: 'pr'}] 
+                    'pr': [{index: 10, key: 'pr'},{index: 21, key: 'avg'},{index: 21, key: 'plan'},{index: 21, key: 'pr'}],
+                    'plan': [{index: 7, key: 'pr'},{index: 21, key: 'plan'},{index: 21, key: 'pr'}]
                 },
                 1: { // Impl
                     'pr': [{index: 3, key: 'pr'}, {index: 0, key: 'pr'}],
@@ -428,14 +428,14 @@ export default {
                     '31': [{index: 3, key: '31'}, {index: 12, key: '31'}],
                 },
                 2: { // Pr, cst
-                    'plan': [{index: 10, key: 'pr'},{index: 21, key: '1'},{index: 21, key: 'pr'}],  
+                    'plan': [{index: 10, key: 'pr'},{index: 21, key: '1'},{index: 21, key: 'pr'}],
                 },
                 3: { // Pr, cstll
                     'pr': [{index: 3, key: '1'},  {index: 3, key: '5'}, {index: 3, key: '10'},  {index: 3, key: '20'}, {index: 3, key: '25'}, {index: 3, key: '30'}],
                     'plan': [{index: 10, key: 'pr'},{index: 21, key: 'pr'},{index: 21, key: '2'}],
                     'avg': [{index: 3, key: '1'},  {index: 3, key: '5'}, {index: 3, key: '10'},  {index: 3, key: '20'}, {index: 3, key: '25'}, {index: 3, key: '30'}],
                     '1': [{index: 6, key: '1'}],
-                    '2': [{index: 6, key: '2'}], 
+                    '2': [{index: 6, key: '2'}],
                     '3': [{index: 6, key: '3'}],
                     '4': [{index: 6, key: '4'}],
                     '5': [{index: 6, key: '5'}],
@@ -548,7 +548,7 @@ export default {
                     'pr': [{index: 8, key: '1'},  {index: 8, key: '5'}, {index: 8, key: '10'},  {index: 8, key: '20'}, {index: 8, key: '25'}, {index: 8, key: '30'}],
                     'plan': [{index: 8, key: '1'},  {index: 8, key: '5'}, {index: 8, key: '10'},  {index: 8, key: '20'}, {index: 8, key: '25'}, {index: 8, key: '30'}],
                 },
-                9: { // plan оператооров 
+                9: { // plan оператооров
                     'pr': [{index: 9, key: '1'},  {index: 9, key: '5'}, {index: 9, key: '10'},  {index: 9, key: '20'}, {index: 9, key: '25'}, {index: 9, key: '30'}],
                     'plan': [{index: 9, key: '1'},  {index: 9, key: '5'}, {index: 9, key: '10'},  {index: 9, key: '20'}, {index: 9, key: '25'}, {index: 9, key: '30'}],
                     '1': [{index: 7, key: '1'}],
@@ -583,7 +583,7 @@ export default {
                     '30': [{index: 7, key: '30'}],
                     '31': [{index: 7, key: '31'}],
                 },
-                10: { // факт оператооров 
+                10: { // факт оператооров
                     'pr': [{index: 10, key: '1'},  {index: 10, key: '5'}, {index: 10, key: '10'},  {index: 10, key: '20'}, {index: 10, key: '25'}, {index: 10, key: '30'}],
                     'plan': [{index: 10, key: '1'},  {index: 10, key: '5'}, {index: 10, key: '10'},  {index: 10, key: '20'}, {index: 10, key: '25'}, {index: 10, key: '30'}],
                 },
@@ -621,9 +621,9 @@ export default {
                     '31': [{index: 10, key: '31'},{index: 21, key: 'avg'},{index: 21, key: 'plan'},{index: 21, key: 'pr'}],
                 },
             }
-            
+
             this.highlighted.forEach(el => { // если был выделен, убираем выделяющий класс
-                if(this.items[el.index] !== undefined && this.items[el.index]._cellVariants !== undefined 
+                if(this.items[el.index] !== undefined && this.items[el.index]._cellVariants !== undefined
                         && this.items[el.index]._cellVariants[el.key] !== undefined) {
                     this.items[el.index]._cellVariants[el.key] = this.items[el.index]._cellVariants[el.key].replace("high", "")
                 }
@@ -632,30 +632,30 @@ export default {
             this.highlighted = []; // чистим ранее выделенных
 
             if(formulas[data.index] !== undefined && formulas[data.index][data.field.key] !== undefined) this.shortcut = formulas[data.index][data.field.key]
-            
+
 
             let highlighted_one = []; // собираем новый массив
 
-            if(formula_highlights[data.index] !== undefined && formula_highlights[data.index][data.field.key] !== undefined) { 
-                formula_highlights[data.index][data.field.key].forEach(el => { // добавляем ячейкам классы для выделения 
+            if(formula_highlights[data.index] !== undefined && formula_highlights[data.index][data.field.key] !== undefined) {
+                formula_highlights[data.index][data.field.key].forEach(el => { // добавляем ячейкам классы для выделения
                     if(this.items[el.index]._cellVariants[el.key] !== undefined) {
                         this.items[el.index]._cellVariants[el.key] = this.items[el.index]._cellVariants[el.key].replace(" high", "")
                         this.items[el.index]._cellVariants[el.key] += ' high';
                     } else {
                         this.items[el.index]._cellVariants[el.key] = ' high';
-                    }    
+                    }
 
-                    highlighted_one.push({ 
+                    highlighted_one.push({
                         index: el.index,
                         key: el.key
                     });
                 });
             }
-            
-            this.highlighted = highlighted_one 
-            
+
+            this.highlighted = highlighted_one
+
             this.setCellName(data)
-            
+
         },
 
         setCellName(data) {
@@ -741,7 +741,7 @@ export default {
             ];
 
             let days = this.month.daysInMonth;
-            
+
             // let days = 8;
 
             let now = new Date()
@@ -818,7 +818,7 @@ export default {
                 items.push({headers: "Минуты действующих",rownumber: 6});
                 items.push({headers: "Минуты стажеров",rownumber: 7});
             }
-            
+
 
 
             items.push({headers: "Факт",rownumber: 8});
@@ -839,7 +839,7 @@ export default {
             items.push({headers: "Константы",rownumber: 23});
             items.push({headers: "Отсутствие связи: remote",rownumber: 23});
             items.push({headers: "Отсутствие связи: in house",rownumber: 24});
-           
+
 
             // let consentPerDay = this.data.consentPerDay;
             // let consentStagerPerDay = this.data.consentStagerPerDay;
@@ -885,7 +885,7 @@ export default {
                 items[S21_CONSTANTS]['2'] = 3076
             }
 
-            
+
 
 
 
@@ -897,16 +897,16 @@ export default {
 
 
             //Кол-во некоррект диалогов
-            
+
                 // Object.keys(notCorrectCalls).forEach(key => {
                 //     items[S18_RED_NOTICE][key] = notCorrectCalls[key]
                 // })
-            
-            
+
+
                 // Object.keys(consentPerDay).forEach(key => {
                 //     items[S4_MINUTE_1_5][key] = Number(consentPerDay[key]) || 0
                 // })
-            
+
                 // Object.keys(consentStagerPerDay).forEach(key => {
                 //     items[S5_OTHER][key] = Number(consentStagerPerDay[key]) || 0
                 //     // items[FACT][key] = consentPerDay[key]
@@ -963,7 +963,7 @@ export default {
                 }*/
 
                 factOperators = Number(this.totals[i]) / 9;
-                items[S10_FACT_OPERATORS][i] = isNaN(factOperators) ? 0 : Number(factOperators).toFixed(1)  
+                items[S10_FACT_OPERATORS][i] = isNaN(factOperators) ? 0 : Number(factOperators).toFixed(1)
 
                 // 11 строка, в среднем минут на оператора
                 items[S11_AVR_MINUTE_OPERATOR][i] = factOperators > 0 ? this.toFloat(fact / factOperators / 9) : 0;
@@ -1011,7 +1011,7 @@ export default {
                     items[S23_CONNECTION_LACK_INHOUSE][i] = settings[S23_CONNECTION_LACK_INHOUSE][i] || null
                 }
 
-                
+
 
                 if (settings &&
                     typeof settings[S15_OVD] != 'undefined' &&
@@ -1077,12 +1077,12 @@ export default {
             this.items[S19_TWO_GROUP]._cellVariants['pr'] = 'success';
             this.items[S19_TWO_GROUP]._cellVariants['plan'] = 'success';
 
-  
+
 
         },
 
         changeFn(data) {
-        
+
             this.$emit('changeFn', data)
         },
 
@@ -1102,13 +1102,13 @@ export default {
                 }
             }
 
-            
-                
+
+
             let settings = []
 
             this.setShortcut(data)
 
-            
+
             let year = this.currentYear
 
             let post_data = {
@@ -1136,8 +1136,8 @@ export default {
             this.data.settings = this.items;
             this.loadItems();
             this.saveTable(post_data)
-            
-            
+
+
         },
 
         async saveTable(post_data) {
@@ -1311,7 +1311,7 @@ export default {
                 if (this.items[S12_EMPTY] && typeof this.items[S12_EMPTY][i] !== 'undefined' && this.items[S12_EMPTY][i]) {
                     s12Empty = this.toFloat(parseFloat(this.items[S10_FACT_OPERATORS][i] * this.items[S21_CONSTANTS]['avg'] * 30 / this.items[S21_CONSTANTS]['pr']))
                     this.items[S12_EMPTY][i] = s12Empty
-                
+
                 }
 
                 // 13 строка, 1-5 ежедневный
@@ -1362,7 +1362,7 @@ export default {
                     s20ClaimsCount++
                 }
 
-   
+
                 if (this.items[S22_CONNECTION_LACK_REMOTE] && typeof this.items[S22_CONNECTION_LACK_REMOTE][i] !== 'undefined' && this.items[S22_CONNECTION_LACK_REMOTE][i]) {
                     s22_total += parseInt(settings[S22_CONNECTION_LACK_REMOTE][i])
                     s22_count++
@@ -1373,7 +1373,7 @@ export default {
                     s23_count++
                 }
 
-                    
+
 
                 // 3 строка, cstll, формула day = ((6)Факт * workDays)/this.items[S21_CONSTANTS]['pr']
                 // формула cst = ((10)Факт операторов * 3076)/this.items[S21_CONSTANTS]['pr']
@@ -1437,7 +1437,7 @@ export default {
             this.items[S1_IMPL]['plan'] = "kair-4"
 
             this.items[S4_MINUTE_1_5]['pr'] = s4Minute1_5Total
-     
+
             this.items[S4_MINUTE_1_5]['avg'] = isNaN(s4Minute1_5Avg) ? 0 : s4Minute1_5Avg
 
             this.items[S5_OTHER]['pr'] = s5_OtherTotal
@@ -1445,26 +1445,26 @@ export default {
             this.items[S5_OTHER]['avg'] = isNaN(s5_OtherAvg) ? 0 : s5_OtherAvg
 
             this.items[S6_FACT]['pr'] = s6FactTotal || 0
-            this.items[S6_FACT]['avg'] =  isNaN(s6FactAvg) ? 0 : s6FactAvg 
+            this.items[S6_FACT]['avg'] =  isNaN(s6FactAvg) ? 0 : s6FactAvg
 
-            this.items[S7_PLAN]['pr'] = Number(s7PlanTotal).toFixed(0) 
+            this.items[S7_PLAN]['pr'] = Number(s7PlanTotal).toFixed(0)
             if (isNaN(s7PlanAvg)) {
                 s7PlanAvg = 0
             }
-            this.items[S7_PLAN]['avg'] = isNaN(s7PlanAvg) ? 0 : Number(s7PlanAvg).toFixed(0) 
+            this.items[S7_PLAN]['avg'] = isNaN(s7PlanAvg) ? 0 : Number(s7PlanAvg).toFixed(0)
 
-            this.items[S8_LIDS]['pr'] =  isNaN(totalLids) ? 0 : totalLids 
+            this.items[S8_LIDS]['pr'] =  isNaN(totalLids) ? 0 : totalLids
 
             if (isNaN(s8LidsAvg)) {
                 s8LidsAvg = 0
             }
             this.items[S8_LIDS]['avg'] =  isNaN(s8LidsAvg) ? 0 : s8LidsAvg;
 
-            this.items[S9_PLAN_OPERATORS]['pr'] = Number(s9PlanOreratorsTotal).toFixed(0) 
+            this.items[S9_PLAN_OPERATORS]['pr'] = Number(s9PlanOreratorsTotal).toFixed(0)
             if (isNaN(s9PlanOreratorsAvg)) {
                 s9PlanOreratorsAvg = 0
             }
-            this.items[S9_PLAN_OPERATORS]['avg'] = Number(s9PlanOreratorsAvg).toFixed(0) 
+            this.items[S9_PLAN_OPERATORS]['avg'] = Number(s9PlanOreratorsAvg).toFixed(0)
 
             this.items[S10_FACT_OPERATORS]['pr'] = Number(s10FactOperatorsTotal).toFixed(1)
             this.items[S10_FACT_OPERATORS]['avg'] = s10FactOperatorsAvg
@@ -1512,9 +1512,9 @@ export default {
             s3PrCsrllAvg = this.toFloat(s3PrCsrllTotal / s3PrCsrllCount)
             s3PrCsrllCst = this.toFloat(parseFloat((this.items[S10_FACT_OPERATORS]['pr'] * this.items[S21_CONSTANTS]['2']) / this.items[S21_CONSTANTS]['pr']))
             this.items[S3_PRCSTLL]['pr'] = this.toFloat(s3PrCsrllTotal)
-    
+
             this.items[S3_PRCSTLL]['avg'] =  isNaN(s3PrCsrllAvg) ? 0 : s3PrCsrllAvg;
-            
+
             s2PrCstCst = this.toFloat(parseFloat((this.items[S10_FACT_OPERATORS]['pr'] * this.items[S21_CONSTANTS]['1']) / this.items[S21_CONSTANTS]['pr']))
             this.items[S2_PRCST]['plan'] = s2PrCstCst
 
@@ -1529,7 +1529,7 @@ export default {
             s0Cst = Number(s0Cst).toFixed(1);
             this.items[S0_TOTAL]['plan'] = s0Cst
 
-              
+
             s1ImplPr = parseFloat(s3PrCsrllTotal / s0Pr).toFixed(4)
             s1ImplPr = isNaN(s1ImplPr) ? 0 : s1ImplPr;
 
@@ -1537,7 +1537,7 @@ export default {
 
             s1ImplCrt = parseFloat(s3PrCsrllTotal / s0Cst).toFixed(4)
             s1ImplCrt = isNaN(s1ImplCrt) ? 0 : s1ImplCrt;
-            this.items[S1_IMPL]['plan'] = parseFloat(s1ImplCrt * 100).toFixed(1) + "%" 
+            this.items[S1_IMPL]['plan'] = parseFloat(s1ImplCrt * 100).toFixed(1) + "%"
 
         }
     }
@@ -1656,7 +1656,7 @@ export default {
 @keyframes hightlight {
     from {
         border-color: #0065ff;
-    } 
+    }
     50% {
         border-color: #77a6ff;
     }

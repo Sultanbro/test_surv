@@ -1,16 +1,16 @@
 <template>
 <div>
-    <div class="d-flex">  
+    <div class="d-flex">
         <b-table responsive striped class="text-nowrap text-right my-table  my-table-ma mb-3 recruiter_stats" id="recruiter_stats" :small="true" :bordered="true" :items="items[currentDay]" :fields="fields" primary-key="a" :key="componentKey">
-            
-            <template slot="cell()" slot-scope="data">
-                <div>{{ data.value }}</div>
-            </template> 
 
-            <template slot="cell(name)" slot-scope="data">
+            <template #cell()="data">
+                <div>{{ data.value }}</div>
+            </template>
+
+            <template #cell(name)="data">
                 <div class="d-flex justify-between bg-white">
                     <div>{{ data.value }}</div>
-                    <select class="form-control form-control-sm special-select" 
+                    <select class="form-control form-control-sm special-select"
                         v-model="data.item.profile" v-if="data.value != 'ИТОГО' && ![9974,9975,5263,7372].includes(data.item.user_id)"
                         @change="changeProfile(data.index)">
                         <option value="0">кз</option>
@@ -23,14 +23,14 @@
                         <option value="7">чаты</option>
                     </select>
                 </div>
-            </template> 
+            </template>
 
-            <template slot="cell(agrees)" slot-scope="data">
+            <template #cell(agrees)="data">
                 <div v-html="data.value"></div>
-            </template>            
+            </template>
 
         </b-table>
-            
+
         <div class="ml-3 f-200">
             <button class="mt- mb-2 text-black fz-14 btn btn-primary btn-sm rounded" @click="showModal = !showModal" v-if="editable">
                 <b>Кол-во лидов</b>
@@ -46,7 +46,7 @@
             </p>
         </div>
     </div>
-    
+
 
 
     <b-modal v-model="showModal"  hide-footer title="Количество лидов">
@@ -115,7 +115,7 @@ export default {
     },
     watch: {
         data: {
-            immediate: true, 
+            immediate: true,
             handler (val, oldVal) {
                 this.fields[0].label = 'Сотрудники: ' + this.rates[this.currentDay];
                 this.items  = this.data;
@@ -137,11 +137,11 @@ export default {
         this.currentDay = this.daysInMonth
     },
     methods: {
-      
+
 
         setFields() {
 
-            let times = {                
+            let times = {
                 9: '09-10',
                 10: '10-11',
                 11: '11-12',
@@ -161,11 +161,11 @@ export default {
                     class: `day`
                 });
             })
- 
+
         },
 
         changeProfile(index) {
-            
+
             if(!this.editable) return '';
 
             axios.post('/timetracking/analytics/recruting/change-profile', {
@@ -181,7 +181,7 @@ export default {
                 //alert(error)
             });
         }
-   
+
     }
 };
 </script>
@@ -195,8 +195,8 @@ export default {
     }
     table{
         max-width: 100px;
-    }   
-    
+    }
+
     th {
         background: #1176b0!important;
         color: #fff !important;
@@ -231,14 +231,14 @@ p.heading {
     color: #fff;
         width: 45px;
     margin-left: 9px;
-    font-size: 11px;    
+    font-size: 11px;
     cursor: pointer;
 }
 
 .special-select:focus,
 .special-select:active {
     background: #1076b0;
-    color: #fff;    
+    color: #fff;
 }
 .justify-between {
     justify-content: space-between;

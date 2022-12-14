@@ -89,7 +89,7 @@
                 :current-page="currentPage"
                 :per-page="perPage">
 
-                <template slot="cell(name)" slot-scope="data">
+                <template #cell(name)="data">
                     <div>
                         <span v-if="activeuserpos == 46">
                             <a :href="'/timetracking/edit-person?id=' + data.item.id" target="_blank" :title="data.item.id">{{ data.value }}</a>
@@ -108,15 +108,19 @@
                     </div>
                 </template>
 
-                <template slot="cell(total)" slot-scope="data">
+                <template #cell(total)="data">
                     <div>
                         {{ data.value }}
                     </div>
                 </template>
 
-                <template slot="cell()" slot-scope="data">
+                <template #cell()="data">
 
-                    <div @mouseover="dayInfo(data)" @click="detectClick(data)" :class="{'updated': data.value.updated}">
+                    <div
+                        @mouseover="dayInfo(data)"
+                        @click="detectClick(data)"
+                        :class="{'updated': data.value.updated}"
+                    >
 
                         <template v-if="data.value.hour">
                             <b-form-input

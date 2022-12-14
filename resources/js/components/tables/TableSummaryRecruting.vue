@@ -2,15 +2,15 @@
 <div>
 
     <b-table responsive striped class="text-nowrap text-right my-table my-table-max mb-3 summary-recruiting" :small="true" :bordered="true" :items="items" :fields="fields" primary-key="a">
-        <template slot="cell()" slot-scope="data">
+        <template #cell()="data">
 
             <div v-if="data.index == S_EMPTY7 || data.index == S_EMPTY8 || data.index == S_EMPTY11"></div>
             <div v-else>
                 <input type="number" v-if="data.field.key == 'plan' && (data.index != S_APPLIED || data.index != S_FIRED)" class="form-control cell-input" @change="updateSettings($event,data)" :value="data.value">
-                <div v-else>{{ data.value }}</div>   
+                <div v-else>{{ data.value }}</div>
             </div>
 
-            
+
         </template>
     </b-table>
 
@@ -53,7 +53,7 @@ export default {
         // эта функция запускается при любом изменении данных
         records: {
             // the callback will be called immediately after the start of the observation
-            immediate: true, 
+            immediate: true,
             handler (val, oldVal) {
                 this.setFields()
                 this.items = val
@@ -61,7 +61,7 @@ export default {
             }
         },
     },
-    
+
     mounted() {
         this.setFields()
         this.calcConversionAuto()
@@ -87,8 +87,8 @@ export default {
     },
 
     methods: {
-       
-        
+
+
         setFields() {
             let fields = [];
 
@@ -127,11 +127,11 @@ export default {
         },
 
         updateSettings(e, data) {
-            
-            this.updateTable(e, data); 
+
+            this.updateTable(e, data);
 
             let loader = this.$loading.show();
-         
+
             axios.post('/timetracking/update-settings', {
                 date: this.$moment(`${this.month.currentMonth} ${new Date().getFullYear()}`, 'MMMM YYYY').format('YYYY-MM-DD'),
                 group_id: 48,
@@ -139,7 +139,7 @@ export default {
             }).then(response => {
                 loader.hide()
             })
-            
+
         },
 
         updateTable(e, data) {
@@ -153,22 +153,22 @@ export default {
         },
 
         calcTotal(index) {
-          
+
             let sum = 0;
             for(let i = 1; i <= this.month.daysInMonth; i++) {
                 if (isNaN(this.records[index][i])) continue;
-                
+
                 sum += Number(this.records[index][i]);
             }
             this.records[index].fact = Number(sum)
-            
-           
+
+
 
             if(index == S_CONVERTED || index == S_APPLIED) {
                 this.calcConversion(index)
             }
-        },  
-        
+        },
+
         calcConversion(index) {
 
             let array = {
@@ -183,14 +183,14 @@ export default {
 
             if(index == S_APPLIED) {
                 this.records[index].conversion =  Number(array.applied / array.converted * 100).toFixed(1)
-            }   
+            }
 
             if (isNaN(this.records[index].conversion)) {
                 this.records[index].conversion = '0%'
-            } 
+            }
 
             this.calcConversionAuto()
-        },  
+        },
 
 
         calcConversionAuto() {
@@ -265,13 +265,13 @@ export default {
             .t-name {
                 div {
                     font-weight: 700;
-                }   
+                }
             }
         }
     }
-   
+
     td {
-        
+
         input {
             min-width: 50px;
         }
@@ -283,7 +283,7 @@ export default {
     }
     th {
         background: #2dad4a !important;
-    }   
+    }
     .table-striped tbody  {
 
         tr:nth-child(6),
@@ -291,7 +291,7 @@ export default {
         tr:nth-child(13) {
             background: #e9eff6;
         }
-        
+
     }
 }
 .summary-recruiting

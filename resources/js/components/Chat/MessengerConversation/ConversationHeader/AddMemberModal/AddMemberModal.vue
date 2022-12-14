@@ -1,10 +1,10 @@
 <template>
   <ModalWindow v-on="$listeners" :closeButton="false">
-    <template v-slot:header>
+    <template #header>
       <template v-if="chat && chat.private">Создать групповой чат</template>
       <template v-else>Пригласить в чат</template>
     </template>
-    <template v-slot:body>
+    <template #body>
       <div class="form-group" v-if="chat.private">
         <label for="name">Название</label>
         <input type="text" class="form-control" id="name" v-model="title" placeholder="Название чата">
@@ -22,14 +22,14 @@
                      :allow-empty="false"
                      placeholder="Выберите участников"
         >
-          <template slot="singleLabel" slot-scope="{ option }">
+          <template #singleLabel="{ option }">
             <!--            <strong>{{ option.name }}</strong>-->
             опция
           </template>
         </multiselect>
       </div>
     </template>
-    <template v-slot:footer>
+    <template #footer>
       <button type="button" class="messenger__add-button" @click="submitForm">Добавить</button>
     </template>
   </ModalWindow>
