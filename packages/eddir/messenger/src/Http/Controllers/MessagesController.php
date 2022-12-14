@@ -35,25 +35,6 @@ class MessagesController {
         $including      = request()->boolean( 'including' );
 
         $messages = MessengerFacade::fetchMessages( $chatId, $count, $startMessageId, $including );
-
-        // last message should contain readers
-        $lastMessage = $messages->first();
-        if ( $lastMessage ) {
-            $lastMessage->readers = $lastMessage->readers()->get();
-            // exclude current user from readers
-            $lastMessage->readers = $lastMessage->readers->filter( function ( $reader ) {
-                return $reader->id !== Auth::user()->id;
-            } );
-            // set default avatar if user has no img_url
-            $lastMessage->readers->transform( function ( $reader ) {
-                if ( ! $reader->img_url ) {
-                    $reader->img_url = config( 'messenger.user_avatar.default' ) ?? asset( 'vendor/messenger/images/users.png' );
-                }
-
-                return $reader;
-            } );
-        }
-
         $messages = $messages->toArray();
 
         return response()->json( $messages );
@@ -67,15 +48,36 @@ class MessagesController {
      * @return JsonResponse
      */
     public function searchMessages( Request $request ): JsonResponse {
-        $search = $request->get( 'q' );
-        // select where user is member of chat and message contains search text
-        $messages = MessengerMessage::whereHas( 'chat', function ( $query ) {
-            $query->whereHas( 'users', function ( $query ) {
-                $query->where( 'user_id', Auth::user()->id );
-            } );
-        } )->where( 'body', 'like', "%$search%" )->get();
+        $search     = $request->get( 'q' );
+        $chat_id    = $request->get( 'chat_id' );
+        $only_files = $request->boolean( 'only_files' );
+        $date       = $request->get( 'date' );
 
-        return response()->json( $messages );
+        $messages = MessengerMessage::with('sender');
+
+        if ( $chat_id ) {
+            $messages = $messages->where( 'chat_id', $chat_id );
+        } else {
+            $messages = $messages->whereHas( 'chat', function ( $query ) {
+                $query->whereHas( 'members', function ( $query ) {
+                    $query->where( 'user_id', Auth::user()->id );
+                } );
+            } );
+        }
+
+        if ( $only_files ) {
+            $messages = $messages->with('files')->whereHas( 'files', function ( $query ) use ( $search ) {
+                $query->where( 'name', 'like', "%$search%" );
+            } );
+        } else {
+            $messages = $messages->where( 'body', 'like', "%$search%" );
+        }
+
+        if ( $date ) {
+            $messages = $messages->whereDate( 'created_at', $date );
+        }
+
+        return response()->json( $messages->get() );
     }
 
     /**
@@ -102,10 +104,10 @@ class MessagesController {
             $parts = str_split( $request->message, 1000 );
             // send each part
             foreach ( $parts as $part ) {
-                $message = MessengerFacade::sendMessage( $chatId, Auth::user()->id, $part );
+                $message = MessengerFacade::sendMessage( $chatId, Auth::user()->id, $part, [], $request->get( 'cite_message_id' ) );
             }
         } else {
-            $message = MessengerFacade::sendMessage( $chatId, Auth::user()->id, $request->get( 'message' ) );
+            $message = MessengerFacade::sendMessage( $chatId, Auth::user()->id, $request->get( 'message' ), [], $request->get( 'cite_message_id' ) );
         }
 
         return response()->json( $message );
@@ -134,6 +136,36 @@ class MessagesController {
         } else {
             // return error
             return response()->json( [ 'message' => 'Message is too long' ], 400 );
+        }
+
+        return response()->json( $response );
+    }
+
+    /**
+     * Set emoji reaction to message
+     *
+     * @param int $messageId
+     * @param Request $request
+     *
+     * @return JsonResponse
+     */
+    public function setReaction( int $messageId, Request $request ): JsonResponse {
+        $chat = MessengerFacade::getChatByMessageId( $messageId );
+        if ( ! $chat ) {
+            return response()->json( [ 'message' => 'Chat not found' ], 404 );
+        }
+        // check if user is member of chat
+        if ( ! MessengerFacade::isMember( $chat->id, Auth::user()->id ) ) {
+            return response()->json( [ 'message' => 'You are not member of this chat' ], 403 );
+        }
+        // get emoji as int
+        $emoji = (int) $request->emoji;
+        // check if emoji is too long
+        if ( $emoji >= 0 && $emoji <= 255 ) {
+            $response = MessengerFacade::setReaction( $messageId, Auth::user(), $emoji );
+        } else {
+            // return error
+            return response()->json( [ 'message' => 'Emoji is too long' ], 400 );
         }
 
         return response()->json( $response );
@@ -169,7 +201,7 @@ class MessagesController {
         // select messages by ids where user is a member of chat of each message
         $messages = MessengerMessage::whereIn( 'id', $messageIds )
                                     ->whereHas( 'chat', function ( $query ) {
-                                        $query->whereHas( 'users', function ( $query ) {
+                                        $query->whereHas( 'members', function ( $query ) {
                                             $query->where( 'user_id', Auth::user()->id );
                                         } );
                                     } )
@@ -180,7 +212,7 @@ class MessagesController {
 
             // return get chats last messages
             return response()->json( [
-                'left' => $messages->first()->chat->getUnreadMessagesCount(Auth::user()),
+                'left' => $messages->first()->chat->getUnreadMessagesCount( Auth::user() ),
             ] );
         }
 

@@ -17,6 +17,16 @@ export default {
   },
 
   /**
+   * Fetch company
+   * @param {Function} callback
+   */
+  fetchCompany(callback) {
+    return axios.get(REST_URI + 'company').then(response => {
+      callback(response.data);
+    });
+  },
+
+  /**
    * Fetch users
    * @param {Function} callback
    */
@@ -45,13 +55,19 @@ export default {
   /**
    * Search messages
    * @param {String} search
+   * @param chatId
+   * @param date
+   * @param onlyFiles
    * @param {Function} callback
    * @return {Promise}
    */
-  searchMessages(search, callback) {
+  searchMessages(search, chatId = null, date = null, onlyFiles = false, callback = () => {}) {
     return axios.get(REST_URI + 'search/messages', {
       params: {
         q: search,
+        chat_id: chatId,
+        only_files: onlyFiles,
+        date: date,
       }
     }).then(response => {
       callback(response.data);
@@ -111,12 +127,14 @@ export default {
    * Send message
    * @param {Number} chatId
    * @param {String} message
+   * @param citedMessageId
    * @param successCallback
    * @param errorCallback
    */
-  sendMessage(chatId, message, successCallback = () => {}, errorCallback = () => {}) {
+  sendMessage(chatId, message, citedMessageId, successCallback = () => {}, errorCallback = () => {}) {
     axios.post(REST_URI + 'chat/' + chatId + '/messages', {
       message: message,
+      cite_message_id: citedMessageId,
     }).then(response => {
       successCallback(response.data);
     }).catch(error => {
@@ -303,6 +321,60 @@ export default {
     }).catch(error => {
       callback_error(error.response.data);
     });
-  }
+  },
+
+  /**
+   * Upload chat avatar
+   * @param chatId
+   * @param file
+   */
+  uploadChatAvatar(chatId, file) {
+    let formData = new FormData();
+    formData.append('avatar', file);
+
+    return axios.post(REST_URI + 'chat/' + chatId + '/avatar', formData, {
+      headers: {
+        'Content-Type': 'multipart/form-data'
+      }
+    });
+  },
+
+  /**
+   * Set emoji reaction to message
+   * @param {Number} messageId
+   * @param {String} emoji
+   * @param {Function} callback
+   */
+  reactMessage(messageId, emoji, callback = () => {}) {
+    axios.post(REST_URI + 'message/' + messageId + '/reaction', {
+      emoji: emoji,
+    }).then(response => {
+      callback(response.data);
+    });
+  },
+
+  /**
+   * Set user as chat admin
+   * @param {Number} chatId
+   * @param {Number} userId
+   * @param {Function} callback
+   */
+  setChatAdmin(chatId, userId, callback = () => {}) {
+    axios.post(REST_URI + 'chat/' + chatId + '/setAdmin/' + userId).then(response => {
+      callback(response.data);
+    });
+  },
+
+  /**
+   * Remove user from chat admin
+   * @param {Number} chatId
+   * @param {Number} userId
+   * @param {Function} callback
+   */
+  unsetChatAdmin(chatId, userId, callback = () => {}) {
+    axios.post(REST_URI + 'chat/' + chatId + '/unsetAdmin/' + userId).then(response => {
+      callback(response.data);
+    });
+  },
 }
 </script>

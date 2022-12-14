@@ -3,7 +3,9 @@
 namespace Eddir\Messenger\Http\Controllers;
 
 use Eddir\Messenger\Facades\MessengerFacade;
+use Eddir\Messenger\Messenger;
 use Eddir\Messenger\Models\MessengerFile;
+use Eddir\Messenger\Models\MessengerMessage;
 use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Auth;
@@ -66,8 +68,8 @@ class FilesController {
                     $fileModel->name .= '.' . $file->getClientOriginalExtension();
                 }
 
-               // $fileModel->file_path = $file->storeAs( 'messenger', $fileModel->name );
-                
+                //$fileModel->file_path = $file->storeAs( 'messenger', $fileModel->name );
+
                 $fileModel->file_path = Storage::disk('s3')->putFileAs( 'messenger', $file, $fileModel->name );
 
                 // if file is image, create thumbnail
@@ -78,7 +80,9 @@ class FilesController {
 
                     // upload thumbnail to storage
                     $fileModel->thumbnail_path = 'messenger/thumbs/thumb_' . $fileModel->name;
+
                     Storage::disk('s3')->put( 'messenger/thumbs/thumb_' . $fileModel->name, file_get_contents( $tmpFile ) );
+                    //Storage::put( 'messenger/thumbs/thumb_' . $fileModel->name, file_get_contents( $tmpFile ) );
 
                     unlink( $tmpFile );
                 }
@@ -100,6 +104,45 @@ class FilesController {
 
         return response()->json( $message );
     }
+
+    /**
+     * Upload new chat avatar
+     *
+     * @param Request $request
+     * @param int $chat_id
+     *
+     * @return JsonResponse
+     */
+    public function uploadChatAvatar( Request $request, int $chat_id ): JsonResponse {
+        // check if user is authorized
+        if ( ! Auth::check() ) {
+            return response()->json( [ 'message' => 'Unauthorized' ], 401 );
+        }
+        // check if user is member of chat
+        if ( ! MessengerFacade::isMember( $chat_id, Auth::user()->id ) ) {
+            return response()->json( [ 'message' => 'You are not a member of this chat' ], 403 );
+        }
+        // check if file is uploaded
+        if ( ! $request->hasFile( 'avatar' ) ) {
+            return response()->json( [ 'message' => 'File is not uploaded' ], 400 );
+        }
+        // check if file is image
+        $mime = $request->file( 'avatar' )->getMimeType();
+        if ( ! in_array($mime, [ 'image/jpeg', 'image/png', 'image/gif' ]) ) {
+            return response()->json( [ 'message' => 'File is not an image' ], 400 );
+        }
+        // check if file is too big
+        if ( $request->file( 'avatar' )->getSize() > 1024 * 1024 * 5 ) {
+            return response()->json( [ 'message' => 'File is too big' ], 400 );
+        }
+        $milliseconds = round( microtime( true ) * 1000 );
+        $path = $request->file( 'avatar' )
+                        ->storeAs( 'messenger', 'chat_' . $chat_id . '_' . $milliseconds . '.jpg' );
+        $chat = MessengerFacade::uploadChatAvatar( $chat_id, $path );
+
+        return response()->json( $chat );
+    }
+
 
     public function resize_crop_image( $max_width, $max_height, $source_file, $dst_dir, $quality = 80 ): bool {
         $img_size = getimagesize( $source_file );
