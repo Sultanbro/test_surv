@@ -1,5 +1,5 @@
+const path = require('path')
 const mix = require('laravel-mix');
-
 /*
  |--------------------------------------------------------------------------
  | Mix Asset Management
@@ -22,7 +22,10 @@ mix.js('resources/js/app.js', 'public/js').vue()
 
 mix.webpackConfig({
     resolve: {
-        fallback: { "timers": require.resolve('timers-browserify') }
+        fallback: { timers: require.resolve('timers-browserify') },
+        alias: {
+            '@': path.resolve(__dirname, 'resources/js'),
+        },
     }
 });
 

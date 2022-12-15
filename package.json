@@ -92,6 +92,7 @@
         "vue-observe-visibility": "^1.0.0",
         "vue-pdf": "^4.3.0",
         "vue-pdf-embed": "^1.1.5",
+        "vue-router": "^3.6.5",
         "vue-select": "^3.11.2",
         "vue-simple-context-menu": "^3.4.2",
         "vue-simple-flowchart": "^0.1.8",

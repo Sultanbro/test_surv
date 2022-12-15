@@ -28,6 +28,10 @@ import VueCircle from 'vue2-circle-progress'
 import axios from 'axios'
 import VueAxios from 'vue-axios'
 
+import VueRouter from 'vue-router'
+import router from '@/router'
+Vue.use(VueRouter)
+
 import Croppa from 'vue-croppa';
 import 'vue-croppa/dist/vue-croppa.css';
 Vue.use(Croppa);
@@ -216,7 +220,7 @@ Vue.component('page-playlist-edit', require('./pages/PlaylistEdit.vue').default)
 Vue.component('page-playlists', require('./pages/Playlists.vue').default); // редактирование плейлиста
 
 Vue.component('booklist', require('./pages/booklist.vue').default); // база знаний раздел
-Vue.component('page-kb', require('./pages/KBPage.vue').default); // база знаний раздел
+// Vue.component('page-kb', require('./pages/KBPage.vue').default); // база знаний раздел
 
 // Учет времени
 Vue.component('page-top', require('./pages/Top.vue').default); // четверг
@@ -261,17 +265,17 @@ Vue.component('quartal-premium', require('./pages/kpi/QuartalPremium.vue').defau
 
 // NEWS
 
-Vue.component('news-pages', require('./pages/News/NewsPages').default); // новостная лента раздел
-Vue.component('news-feed', require('./pages/News/NewsFeed').default); // новостная лента раздел
-Vue.component('news-create', require('./pages/News/NewsCreate').default);
-Vue.component('drop-zone', require('./pages/News/DropZone').default);
-Vue.component('post-component', require('./pages/News/PostComponent').default);
-Vue.component('comments-component', require('./pages/News/CommentsComponent').default);
-Vue.component('filter-component', require('./pages/News/FilterComponent').default);
-Vue.component('reactions', require('./pages/News/ReactionComponent').default);
+// Vue.component('news-pages', require('./pages/News/NewsPages').default); // новостная лента раздел
+// Vue.component('news-feed', require('./pages/News/NewsFeed').default); // новостная лента раздел
+// Vue.component('news-create', require('./pages/News/NewsCreate').default);
+// Vue.component('drop-zone', require('./pages/News/DropZone').default);
+// Vue.component('post-component', require('./pages/News/PostComponent').default);
+// Vue.component('comments-component', require('./pages/News/CommentsComponent').default);
+// Vue.component('filter-component', require('./pages/News/FilterComponent').default);
+// Vue.component('reactions', require('./pages/News/ReactionComponent').default);
 
-Vue.component('birthday-feed', require('./pages/News/BirthdayFeed').default);
-Vue.component('birthday-user', require('./pages/News/BirthdayUser').default);
+// Vue.component('birthday-feed', require('./pages/News/BirthdayFeed').default);
+// Vue.component('birthday-user', require('./pages/News/BirthdayUser').default);
 
 
 
@@ -284,21 +288,21 @@ Vue.component('award-user-sidebar', require('./components/sidebars/AwardUserSide
 /**
  * new design Profile page
  */
-Vue.component('page-profile', require('./pages/Profile/ProfilePage.vue').default);
+// Vue.component('page-profile', require('./pages/Profile/ProfilePage.vue').default);
 
-Vue.component('new-intro-stats', require('./pages/Profile/IntroStats.vue').default);
-Vue.component('new-intro-smart-table', require('./pages/Profile/IntroSmartTable.vue').default);
-Vue.component('new-intro-top', require('./pages/Profile/IntroTop.vue').default);
-Vue.component('new-profit', require('./pages/Profile/Profit.vue').default);
-Vue.component('new-courses', require('./pages/Profile/Courses.vue').default);
-Vue.component('new-trainee-estimation', require('./pages/Profile/TraineeEstimation.vue').default);
-Vue.component('new-compare-indicators', require('./pages/Profile/CompareIndicators.vue').default);
+// Vue.component('new-intro-stats', require('./pages/Profile/IntroStats.vue').default);
+// Vue.component('new-intro-smart-table', require('./pages/Profile/IntroSmartTable.vue').default);
+// Vue.component('new-intro-top', require('./pages/Profile/IntroTop.vue').default);
+// Vue.component('new-profit', require('./pages/Profile/Profit.vue').default);
+// Vue.component('new-courses', require('./pages/Profile/Courses.vue').default);
+// Vue.component('new-trainee-estimation', require('./pages/Profile/TraineeEstimation.vue').default);
+// Vue.component('new-compare-indicators', require('./pages/Profile/CompareIndicators.vue').default);
 
-Vue.component('popup-quartal', require('./pages/Profile/Popups/PopupQuartal.vue').default);
-Vue.component('popup-kpi', require('./pages/Profile/Popups/Kpi.vue').default);
-Vue.component('popup-balance', require('./pages/Profile/Popups/Balance.vue').default);
-Vue.component('popup-bonuses', require('./pages/Profile/Popups/Bonuses.vue').default);
-Vue.component('popup-nominations', require('./pages/Profile/Popups/Nominations.vue').default);
+// Vue.component('popup-quartal', require('./pages/Profile/Popups/PopupQuartal.vue').default);
+// Vue.component('popup-kpi', require('./pages/Profile/Popups/Kpi.vue').default);
+// Vue.component('popup-balance', require('./pages/Profile/Popups/Balance.vue').default);
+// Vue.component('popup-bonuses', require('./pages/Profile/Popups/Bonuses.vue').default);
+// Vue.component('popup-nominations', require('./pages/Profile/Popups/Nominations.vue').default);
 
 
 /**
@@ -358,8 +362,10 @@ Vue.prototype.$can = function (permission, authorId = false) {
   }
 }
 
-
+import App from '@/App.vue'
 
 const app = new Vue({
-  el: '.right-panel-app'
-});
+  // el: '.right-panel-app'
+  router,
+  render: h => h(App)
+}).$mount('.right-panel-app')
