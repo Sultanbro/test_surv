@@ -18,6 +18,7 @@ use App\Http\Controllers\Admin\KpiController as OldKpiController;
 use App\Http\Controllers\Admin\LeadController;
 use App\Http\Controllers\Admin\NpsController;
 use App\Http\Controllers\Admin\PositionController;
+use App\Http\Controllers\Admin\Position\PositionController as TimeTrackPositionController;
 use App\Http\Controllers\Admin\ProfileController;
 use App\Http\Controllers\Admin\QualityController;
 use App\Http\Controllers\Admin\QuartalBonusController;
@@ -420,6 +421,17 @@ Route::middleware([
     Route::any('/timetracking/settings/positions/get', [TimetrackingController::class, 'getPosition']);
     Route::any('/timetracking/settings/positions/save', [TimetrackingController::class, 'savePositions']);
     Route::post('/timetracking/settings/positions/add', [TimetrackingController::class, 'addPosition']);
+
+    /**
+     * Route's после рефактора должностей
+     */
+    Route::post('/timetracking/settings/positions/add-new', [TimeTrackPositionController::class, 'store']);
+    Route::delete('/timetracking/settings/positions/delete-new', [TimeTrackPositionController::class, 'destroy']);
+    Route::get('/timetracking/settings/positions/get-new', [TimeTrackPositionController::class, 'get']);
+    Route::any('/timetracking/settings/positions/save-new', [TimeTrackPositionController::class, 'savePositionWithDescription']);
+    Route::any('/timetracking/settings/positions-new', [TimeTrackPositionController::class, 'all']);
+
+    #==========================
     Route::post('/timetracking/settings/positions/delete', [TimetrackingController::class, 'deletePosition']);
     Route::post('timetracking/settings/get_time_addresses', [TimetrackingController::class, 'getTimeAddresses']);
     Route::post('timetracking/settings/save_time_addresses', [TimetrackingController::class, 'saveTimeAddresses']);

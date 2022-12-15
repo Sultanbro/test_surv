@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 
 namespace App\Service\Timetrack;
 
@@ -11,7 +12,7 @@ use Illuminate\Support\Facades\DB;
 /**
 * Класс для работы с Service.
 */
-class ManuallyReportService
+final class ManuallyReportService
 {
     public function __construct(
         public TimeTrackingRepository $timeTrackingRepository,
