@@ -9,6 +9,7 @@ use App\Http\Requests\Position\GetPositionRequest;
 use App\Http\Requests\Position\StorePositionWithDescriptionRequest;
 use App\Service\Position\PositionService;
 use Dflydev\DotAccessData\Data;
+use Exception;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
@@ -104,7 +105,7 @@ final class PositionController extends Controller
 
     /**
      * @return mixed
-     * @throws \Exception
+     * @throws Exception
      */
     public function all()
     {
