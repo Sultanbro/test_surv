@@ -1,5 +1,4 @@
 import VueRouter from 'vue-router'
-import axios from 'axios'
 
 import ProfileView from '@/views/ProfileView'
 import CabinetView from '@/views/CabinetView'
@@ -8,6 +7,24 @@ import KnowledgeBaseView from '@/views/KnowledgeBaseView'
 import UpbooksView from '@/views/UpbooksView'
 import PlaylistsView from '@/views/PlaylistsView'
 import CoursesView from '@/views/CoursesView'
+
+// import MyCoursesView from '@/views/MyCoursesView'
+// import StructureView from '@/views/StructureView'
+// import TimetrackingView from '@/views/TimetrackingView'
+// import EntertimeView from '@/views/EntertimeView'
+// import HRView from '@/views/HRView'
+// import TopView from '@/views/TopView'
+// import AnalyticsView from '@/views/AnalyticsView'
+// import SalaryView from '@/views/SalaryView'
+// import QualityControlView from '@/views/QualityControlView'
+// import MapView from '@/views/MapView'
+// import KPIView from '@/views/KPIView'
+// import FAQView from '@/views/FAQView'
+// import FinesView from '@/views/FinesView'
+// import UserEditView from '@/views/UserEditView'
+
+// Cтраницу настроек наверное тоже разделим если нужно 
+// import SettingsView from '@/views/SettingsView'
 
 const router = new VueRouter({
     mode: 'history',
@@ -33,7 +50,15 @@ const router = new VueRouter({
             name: 'NewsView',
             component: NewsView,
             meta: {
-                title: 'NEWS',
+                title: 'Новости',
+            },
+        },
+        {
+            path: '/structure',
+            name: 'StructureView',
+            component: StructureView,
+            meta: {
+                title: 'Структура компании',
             },
         },
         {
@@ -69,115 +94,115 @@ const router = new VueRouter({
             },
         },
         {
-            path: '/timetracking/reports',
-            name: 'KnowledgeBaseView',
-            component: KnowledgeBaseView,
+            path: '/my-courses',
+            name: 'MyCoursesView',
+            component: MyCoursesView,
             meta: {
-                title: 'База знаний',
+                title: 'Мои курсы',
+            },
+        },
+        {
+            path: '/timetracking/reports',
+            name: 'TimetrackingView',
+            component: TimetrackingView,
+            meta: {
+                title: 'Табель - Учет времени',
             },
         },
         {
             path: '/timetracking/top',
-            name: 'KnowledgeBaseView',
-            component: KnowledgeBaseView,
+            name: 'TopView',
+            component: TopView,
             meta: {
-                title: 'База знаний',
+                title: 'ТОП',
             },
         },
         {
             path: '/timetracking/reports/enter-report',
-            name: 'KnowledgeBaseView',
-            component: KnowledgeBaseView,
+            name: 'EntertimeView',
+            component: EntertimeView,
             meta: {
-                title: 'База знаний',
+                title: 'Время прихода - Учет времени',
             },
         },
         {
             path: '/timetracking/analytics',
-            name: 'KnowledgeBaseView',
-            component: KnowledgeBaseView,
+            name: 'HRView',
+            component: HRView,
             meta: {
-                title: 'База знаний',
+                title: 'HR - аналитика рекрутинга',
             },
         },
         {
             path: '/timetracking/an',
-            name: 'KnowledgeBaseView',
-            component: KnowledgeBaseView,
+            name: 'AnalyticsView',
+            component: AnalyticsView,
             meta: {
-                title: 'База знаний',
+                title: 'Аналитика отделов',
             },
         },
         {
             path: '/timetracking/salaries',
-            name: 'KnowledgeBaseView',
-            component: KnowledgeBaseView,
+            name: 'SalaryView',
+            component: SalaryView,
             meta: {
-                title: 'База знаний',
+                title: 'Начисления',
             },
         },
         {
             path: '/timetracking/quality-control',
-            name: 'KnowledgeBaseView',
-            component: KnowledgeBaseView,
+            name: 'QualityControlView',
+            component: QualityControlView,
             meta: {
-                title: 'База знаний',
+                title: 'Контроль качества',
             },
         },
         {
             path: '/maps',
-            name: 'KnowledgeBaseView',
-            component: KnowledgeBaseView,
+            name: 'MapView',
+            component: MapView,
             meta: {
-                title: 'База знаний',
+                title: 'Карта сотрудников',
             },
         },
         {
             path: '/kpi',
-            name: 'KnowledgeBaseView',
-            component: KnowledgeBaseView,
+            name: 'KPIView',
+            component: KPIView,
             meta: {
-                title: 'База знаний',
+                title: 'KPI - показателей',
             },
         },
         {
             path: '/timetracking/info',
-            name: 'KnowledgeBaseView',
-            component: KnowledgeBaseView,
+            name: 'FAQView',
+            component: FAQView,
             meta: {
-                title: 'База знаний',
+                title: 'ЧАВО - FAQ',
             },
         },
         {
             path: '/timetracking/fines',
-            name: 'KnowledgeBaseView',
-            component: KnowledgeBaseView,
+            name: 'FinesView',
+            component: FinesView,
             meta: {
-                title: 'База знаний',
-            },
-        },
-        {
-            path: '/callibro/login',
-            name: 'KnowledgeBaseView',
-            component: KnowledgeBaseView,
-            meta: {
-                title: 'База знаний',
+                title: 'Депремирование',
             },
         },
         {
             path: '/timetracking/settings',
-            name: 'KnowledgeBaseView',
-            component: KnowledgeBaseView,
+            name: 'SettingsView',
+            component: SettingsView,
             meta: {
-                title: 'База знаний',
+                title: 'Настройки',
             },
         },
         {
             path: '/timetracking/edit-person',
-            name: 'KnowledgeBaseView',
-            component: KnowledgeBaseView,
+            name: 'UserEditView',
+            component: UserEditView,
             meta: {
-                title: 'База знаний',
+                title: 'Редактирование профиля сотрудника',
             },
         },
     ],
