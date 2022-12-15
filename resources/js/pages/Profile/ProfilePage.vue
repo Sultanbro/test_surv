@@ -64,7 +64,22 @@
 </template>
 
 <script>
+import Vue from 'vue'
 import MobileProfileSidebar from '../Layouts/MobileProfileSidebar.vue'
+
+Vue.component('new-intro-stats', require('@/pages/Profile/IntroStats.vue').default);
+Vue.component('new-intro-smart-table', require('@/pages/Profile/IntroSmartTable.vue').default);
+Vue.component('new-intro-top', require('@/pages/Profile/IntroTop.vue').default);
+Vue.component('new-profit', require('@/pages/Profile/Profit.vue').default);
+Vue.component('new-courses', require('@/pages/Profile/Courses.vue').default);
+Vue.component('new-trainee-estimation', require('@/pages/Profile/TraineeEstimation.vue').default);
+Vue.component('new-compare-indicators', require('@/pages/Profile/CompareIndicators.vue').default);
+
+Vue.component('popup-quartal', require('@/pages/Profile/Popups/PopupQuartal.vue').default);
+Vue.component('popup-kpi', require('@/pages/Profile/Popups/Kpi.vue').default);
+Vue.component('popup-balance', require('@/pages/Profile/Popups/Balance.vue').default);
+Vue.component('popup-bonuses', require('@/pages/Profile/Popups/Bonuses.vue').default);
+Vue.component('popup-nominations', require('@/pages/Profile/Popups/Nominations.vue').default);
 
 export default {
     name: 'ProfilePage',

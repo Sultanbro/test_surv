@@ -111,10 +111,12 @@ export default {
             project: window.location.hostname.split('.')[0],
             tenants: Laravel.tenants,
             isCreatingProject: false,
+            resizeObserver: null,
         };
     },
     methods: {
         onResize(){
+            if(!this.$refs.nav) return
             this.height = this.$refs.nav.offsetHeight
         },
         onNewProject(){
@@ -332,13 +334,20 @@ export default {
         },
         isOwner(){
             return this.tenants && this.tenants.includes(this.project)
+        },
+        updateAvatar(avatar){
+            this.avatar = avatar
         }
     },
     mounted(){
         this.onResize()
-        new ResizeObserver(this.onResize).observe(this.$refs.nav)
+        this.resizeObserver = new ResizeObserver(this.onResize).observe(this.$refs.nav)
 
-        bus.$on('user-avatar-update', avatar => (this.avatar = avatar))
+        bus.$on('user-avatar-update', this.updateAvatar)
+    },
+    beforeUnmount(){
+        if(this.resizeObserver) this.resizeObserver.disconnect()
+        bus.$off('user-avatar-update', this.updateAvatar)
     }
 };
 </script>

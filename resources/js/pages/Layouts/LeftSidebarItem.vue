@@ -1,6 +1,6 @@
 <template>
   <div class="header__nav-link">
-    <a :href="href" class="header__nav-link-a">
+    <router-link :to="href || ''" class="header__nav-link-a">
       <span v-if="icon" :class="icon" class="header__nav-icon"></span>
       <img
         v-if="img"
@@ -9,7 +9,7 @@
         :class="img.className"
       >
       <span class="header__nav-name">{{ name }}</span>
-    </a>
+    </router-link>
     <div v-if="popover" class="header__nav-popover">{{ popover }}</div>
     <LeftSidebarMenu
       v-if="menu"
