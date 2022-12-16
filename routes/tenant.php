@@ -5,6 +5,7 @@ declare(strict_types=1);
 
 use App\Http\Controllers\Admin\ActivityController;
 use App\Http\Controllers\Admin\AdminController;
+use App\Http\Controllers\Admin\Group\GroupUserController;
 use App\Http\Controllers\Admin\ProjectController;
 use App\Http\Controllers\Admin\AnalyticsController;
 use App\Http\Controllers\Admin\BookController;
@@ -80,7 +81,7 @@ use Eddir\Messenger\Handlers\MessengerWebSocketHandler;
 use Illuminate\Support\Facades\Route;
 use Stancl\Tenancy\Middleware\InitializeTenancyBySubdomain;
 use Stancl\Tenancy\Middleware\PreventAccessFromCentralDomains;
-
+use App\Http\Controllers\Admin\Group\GroupController as TimeTrackGroupController;
 
 /*
 |--------------------------------------------------------------------------
@@ -410,12 +411,6 @@ Route::middleware([
     Route::any('/timetracking/set-day', [TimetrackingController::class, 'setDay']);
     Route::any('/timetracking/history', [TimetrackingController::class, 'getHistory']);
 
-    /**
-     * Route после рефактора метода settings в TimetrackController
-     */
-    Route::any('/timetracking/settings-new', [TimeTrackSetting::class, 'setting']);
-    #=======================
-
     Route::any('/timetracking/settings', [TimetrackingController::class, 'settings']);
     Route::any('/timetracking/settings/positions', [TimetrackingController::class, 'positions']);
     Route::any('/timetracking/settings/positions/get', [TimetrackingController::class, 'getPosition']);
@@ -441,6 +436,7 @@ Route::middleware([
     /**
      * Route-ы после рефактора методов addsettings, deletesettings в TimetrackController
      */
+    Route::any('/timetracking/settings-new', [TimeTrackSetting::class, 'setting']);
     Route::post('/timetracking/settings/add-new', [TimeTrackSetting::class, 'create']);
     Route::delete('/timetracking/settings/delete-new', [TimeTrackSetting::class, 'delete']);
     #==============================
@@ -475,7 +471,20 @@ Route::middleware([
     Route::post('/timetracking/reports/enter-report/setmanual-new', [\App\Http\Controllers\Admin\TimeTrack\ReportController::class, 'manually']);
     #==================
 
+    /**
+     * Route after refactor Group in TimetrackController
+     */
+    Route::post('/timetracking/group/save-new', [TimeTrackGroupController::class, 'store']);
+    Route::post('/timetracking/group/delete-new', [TimeTrackGroupController::class, 'deactivate']);
+    Route::get('/timetracking/groups-new', [TimeTrackGroupController::class, 'get']);
+    Route::post('/timetracking/groups/restore-new', [TimeTrackGroupController::class, 'restore']);
+    #==================================
 
+    /**
+     * Route after refactor GroupUser in TimetrackController
+     */
+    Route::any('/timetracking/users-new', [GroupUserController::class, 'get']);
+    #==================================
     Route::any('/timetracking/zarplata-table', [TimetrackingController::class, 'zarplatatable']);
     Route::post('/order-persons-to-group', [TimetrackingController::class, 'orderPersonsToGroup']); // Заказ сотрудников в группы для Руководителей
     Route::post('/timetracking/apply-person', [TimetrackingController::class, 'applyPerson']); // Принятие на штат стажера

@@ -68,6 +68,7 @@ final class ReportController extends Controller
      * }
      *
      * Изменение время прихода в вручную.
+     * @throws \Exception
      */
     public function manually(StoreManuallyReportRequest $request, ManuallyReportService $service)
     {
@@ -79,5 +80,7 @@ final class ReportController extends Controller
             $request->toDto()->time,
             $request->toDto()->comment
         );
+
+        return \response()->success($response);
     }
 }

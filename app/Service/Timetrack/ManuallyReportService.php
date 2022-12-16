@@ -8,6 +8,7 @@ use App\Repositories\TimeTrackingRepository;
 use Carbon\Carbon;
 use Exception;
 use Illuminate\Support\Facades\DB;
+use Symfony\Component\HttpFoundation\Response;
 
 /**
 * Класс для работы с Service.
@@ -27,7 +28,7 @@ final class ManuallyReportService
      * @param int $day
      * @param string $time
      * @param string|null $comment
-     * @return void
+     * @return int
      * @throws Exception
      */
     public function handle(
@@ -37,7 +38,7 @@ final class ManuallyReportService
         int $day,
         string $time,
         ?string $comment
-    )
+    ): int
     {
         $enter = $this->setEnterTime($year, $month, $day, $time);
         try {
@@ -55,6 +56,8 @@ final class ManuallyReportService
 
                 $this->historyRepository->createHistory($userId, $updateOrCreate, $enter);
             });
+
+            return Response::HTTP_CREATED;
 
         } catch (\Throwable $e) {
             throw new Exception($e->getMessage());
