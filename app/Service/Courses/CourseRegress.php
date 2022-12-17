@@ -25,6 +25,7 @@ class CourseRegress implements RegressInterface
         try {
             DB::transaction(function () use ($data) {
                 (new CourseResultRepository)->resetResult($data['course_id'], $data['user_id']);
+                (new CourseResultRepository)->setIsRegressed($data['course_id'], $data['user_id']);
 
                 $this->resetTestResult($data['course_id'], $data['user_id']);
                 $this->resetTestBonus($data['course_id'], $data['user_id']);
@@ -46,7 +47,7 @@ class CourseRegress implements RegressInterface
         $items = (new CourseRepository)->getCourseItems($courseId)->pluck('id')->toArray();
         $courseItemModelIds = CourseItemModel::query()->where('user_id', $userId)->whereIn('course_item_id', $items)->get()->pluck('id')->toArray();
 
-        TestResult::query()->where('user_id', $userId)->whereIn('course_item_model_id', $courseItemModelIds)->delete();
+        TestResult::query()->where('user_id', $userId)->whereIn('course_item_model_id', $items)->delete();
         $this->deleteFromCourseItemModels($courseItemModelIds);
     }
 

@@ -1,7 +1,7 @@
 <?php
 
 namespace App\Repositories;
-use App\Models\Award as Model;
+use App\Models\Award\Award as Model;
 
 class AwardRepository extends CoreRepository
 {
@@ -23,10 +23,11 @@ class AwardRepository extends CoreRepository
      * Связь между award и user.
      * Pivot таблица: award_user
      * @param $user
+     * @param int $type
      * @param string $operator
      * @return mixed
      */
-    public function relationAwardUser($user, $type, string $operator = '='):array
+    public function relationAwardUser($user,int  $type, string $operator = '='):array
     {
         $query = $this->model()
             ->join('award_user as au', 'au.award_id', '=', 'awards.id')
@@ -35,7 +36,7 @@ class AwardRepository extends CoreRepository
             ->where('au.user_id', $operator, $user->id);
 
             if ($type){
-                $query->where('at.id', $type->id);
+                $query->where('at.id', $type);
             }
         return $query->get([
             'au.award_id',
@@ -97,14 +98,28 @@ class AwardRepository extends CoreRepository
 
     /**
      * Вознаграждаем сотрудника в профиле.
-     * @param $id
+     * @param $award
      * @param $userId
+     * @param string $path
      * @return mixed
      */
-    public function attachUser($award, $userId, $path = '')
+    public function attachUser($award, $userId, $path = '', $format = '')
     {
 
-        return $award->users()->attach($userId, ['path' => $path]);
+        return $award->users()->attach($userId, ['path' => $path, 'format' => $format]);
+    }
+
+    /**
+     * Вознаграждаем сотрудника по курсу в профиле.
+     * @param $award
+     * @param $courseId
+     * @param $userId
+     * @param string $path
+     * @return mixed
+     */
+    public function attachUserCourse($award, $courseId, $userId, string $path = '', $format = '')
+    {
+        return $award->courses()->attach($courseId, ['user_id' => $userId, 'path' => $path, 'format' => $format]);
     }
 
     /**
@@ -116,5 +131,17 @@ class AwardRepository extends CoreRepository
     public function detachUser($id, $userId)
     {
         return $this->getById($id)->users()->detach($userId);
+    }
+
+    /**
+     * Удаляем вознаграждение для сотрудника.
+     * @param $id
+     * @param $courseId
+     * @param $userId
+     * @return mixed
+     */
+    public function detachUserCourse($id, $courseId, $userId)
+    {
+        return $this->getById($id)->courses()->wherePivot('user_id', $userId)->detach($courseId);
     }
 }

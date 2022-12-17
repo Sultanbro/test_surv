@@ -91,9 +91,6 @@ class UserStat extends Model
 
                 if($activity->type == 'quality') {
 
-                    $working = ProfileGroup::employees($group_id, $date, 1);
-                    $fired =  ProfileGroup::employees($group_id, $date, 2);
-
                     $working = (new UserService)->getEmployees($group_id, $date);
                     $working = collect($working)->pluck('id')->toArray();
 
@@ -101,6 +98,16 @@ class UserStat extends Model
                     $fired = collect($fired)->pluck('id')->toArray();
 
                     $users_ids = array_unique(array_merge($working, $fired));
+
+                    $hasRecords = QualityRecordWeeklyStat::query()
+                        ->where('month', $carbon->month)
+                        ->where('year', $carbon->year)
+                        ->where('group_id', $group_id)
+                        ->select('user_id')
+                        ->pluck('user_id')
+                        ->toArray(); 
+
+                    $users_ids = array_unique(array_merge($users_ids, $hasRecords));
 
                     $item['records'] = QualityRecordWeeklyStat::table($users_ids, $date);
                 }    

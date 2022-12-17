@@ -1,14 +1,28 @@
 <?php
 
-
 namespace App\External\Bitrix;
-
 
 class Bitrix {
     
-    public $link = 'https://infinitys.bitrix24.kz/rest/2/09av6uq61up4ymhb/';
- 
-    private function updateLead(int $lead_id, array $lead_fields)
+    public $link;
+    
+    public function __construct(String $line = 'common')
+    {
+        $this->link = config('bitrix.host') . config('bitrix.token') . '/';
+
+        // Headhunter 
+        if($line == 'hh') {
+            $this->link = 'https://infinitys.bitrix24.kz/rest/1/h42tawdhk8sf2m41/';
+        }
+
+        // Intellect dialog
+        if($line == 'intellect') {
+            $this->link = 'https://infinitys.bitrix24.kz/rest/2/dnd7yenlqg9mhbnj/';
+        }
+        
+    }
+
+    public function updateLead(int $lead_id, array $lead_fields)
     {
         $fields = [
             'id' =>  $lead_id,
@@ -91,7 +105,7 @@ class Bitrix {
             'fields' => $fields,
             'params' => ['REGISTER_SONET_EVENT' => 'Y'],
         ]);
-        
+       
         $result = $this->curl_post($this->link . 'crm.lead.add.json', $query);
         
         return $result;

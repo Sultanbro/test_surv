@@ -3,13 +3,10 @@
         <BRow class="m-0 cestificates-constructor">
             <BCol cols="3">
                 <div class="settings">
-                    <BFormGroup>
-                        <b-form-checkbox v-model="border">Убрать вспомогательные элементы</b-form-checkbox>
+                    <BFormGroup class="custom-switch custom-switch-sm">
+                        <b-form-checkbox switch v-model="bgOp">Затемнить фон</b-form-checkbox>
                     </BFormGroup>
                     <div v-if="selectedEdit === 1">
-                        <BFormGroup>
-                            <h4>Имя и Фамилия</h4>
-                        </BFormGroup>
                         <BFormGroup
                                 label="Имя и Фамилия (Впишите любое)"
                                 description="Это поле будет брать имя и фамилию того сотрудника, который пройдет курс"
@@ -22,25 +19,30 @@
                         <BFormGroup label="Размер текста">
                             <BFormInput v-model="fullName.size"></BFormInput>
                         </BFormGroup>
-                        <BFormGroup
-                                description="Это позволит выводить текст по центру"
-                        >
-                            <b-form-checkbox v-model="fullName.fullWidth">На всю ширину</b-form-checkbox>
+                        <BFormGroup class="custom-switch" label="Ширина блока">
+                            <b-form-checkbox switch v-model="fullName.fullWidth">На всю ширину</b-form-checkbox>
+                            <b-form-input v-model="fullName.width" :disabled="fullName.fullWidth"></b-form-input>
                         </BFormGroup>
-                        <BFormGroup label="Цвет текста"><input type="color" class="color-picker" v-model="fullName.color">
+                        <BFormGroup label="Цвет текста"><input type="color" class="color-picker"
+                                                               v-model="fullName.color">
                         </BFormGroup>
-                        <b-form-group label="Заглавность">
-                            <b-form-radio v-model="fullName.uppercase" name="some-radios" value="lowercase">Первая заглавная
+                        <b-form-group label="Формат текста">
+                            <b-form-radio v-model="fullName.uppercase" name="some-radios" value="none" :checked="true">По умолчанию
                             </b-form-radio>
-                            <b-form-radio v-model="fullName.uppercase" name="some-radios" value="uppercase">Все заглавные
+                            <b-form-radio v-model="fullName.uppercase" name="some-radios" value="uppercase">Все
+                                заглавные
+                            </b-form-radio>
+                        </b-form-group>
+                        <b-form-group label="Курсив">
+                            <b-form-radio v-model="fullName.fontStyle" name="font-style-fullname" value="italic">
+                                Да
+                            </b-form-radio>
+                            <b-form-radio v-model="fullName.fontStyle" name="font-style-fullname" value="normal" :checked="true">
+                                Нет
                             </b-form-radio>
                         </b-form-group>
                     </div>
-
                     <div v-if="selectedEdit === 2">
-                        <BFormGroup>
-                            <h4>Название курса</h4>
-                        </BFormGroup>
                         <BFormGroup
                                 label="Название курса"
                                 description="Это поле будет брать название курса, который пройдет сотрудник"
@@ -53,56 +55,30 @@
                         <BFormGroup label="Размер текста">
                             <BFormInput v-model="courseName.size"></BFormInput>
                         </BFormGroup>
-                        <BFormGroup
-                                description="Это позволит выводить текст по центру"
-                        >
-                            <b-form-checkbox v-model="courseName.fullWidth">На всю ширину</b-form-checkbox>
+                        <BFormGroup class="custom-switch" label="Ширина блока">
+                            <b-form-checkbox switch v-model="courseName.fullWidth">На всю ширину</b-form-checkbox>
+                            <b-form-input v-model="courseName.width" :disabled="courseName.fullWidth"></b-form-input>
                         </BFormGroup>
-                        <BFormGroup label="Цвет текста"><input type="color" class="color-picker" v-model="courseName.color">
+                        <BFormGroup label="Цвет текста"><input type="color" class="color-picker"
+                                                               v-model="courseName.color">
                         </BFormGroup>
-                        <b-form-group label="Заглавность">
-                            <b-form-radio v-model="courseName.uppercase" name="some-radios" value="lowercase">Первая
-                                заглавная
+                        <b-form-group label="Формат текста">
+                            <b-form-radio v-model="courseName.uppercase" name="some-radios" value="none">По умолчанию
                             </b-form-radio>
-                            <b-form-radio v-model="courseName.uppercase" name="some-radios" value="uppercase">Все заглавные
+                            <b-form-radio v-model="courseName.uppercase" name="some-radios" value="uppercase">Все
+                                заглавные
                             </b-form-radio>
                         </b-form-group>
-                    </div>
-                    <div v-if="selectedEdit === 3">
-                        <BFormGroup>
-                            <h4>Количетсво потраченных часов на курс</h4>
-                        </BFormGroup>
-                        <BFormGroup
-                                label="Потраченное время на курс"
-                                description="Здесь будет время, за которое пройден курс"
-                        >
-                            <BFormInput v-model="textHours"></BFormInput>
-                        </BFormGroup>
-                        <BFormGroup label="Жирность текста">
-                            <BFormSelect v-model="hours.fontWeight" :options="fontWeightList"></BFormSelect>
-                        </BFormGroup>
-                        <BFormGroup label="Размер текста">
-                            <BFormInput v-model="hours.size"></BFormInput>
-                        </BFormGroup>
-                        <BFormGroup
-                                description="Это позволит выводить текст по центру"
-                        >
-                            <b-form-checkbox v-model="hours.fullWidth">На всю ширину</b-form-checkbox>
-                        </BFormGroup>
-                        <BFormGroup label="Цвет текста"><input type="color" class="color-picker" v-model="hours.color">
-                        </BFormGroup>
-                        <b-form-group label="Заглавность">
-                            <b-form-radio v-model="hours.uppercase" name="some-radios" value="lowercase">Первая
-                                заглавная
+                        <b-form-group label="Курсив">
+                            <b-form-radio v-model="courseName.fontStyle" name="font-style-course" value="italic">
+                                Да
                             </b-form-radio>
-                            <b-form-radio v-model="hours.uppercase" name="some-radios" value="uppercase">Все заглавные
+                            <b-form-radio v-model="courseName.fontStyle" name="font-style-course" value="normal" :checked="true">
+                                Нет
                             </b-form-radio>
                         </b-form-group>
                     </div>
                     <div v-if="selectedEdit === 4">
-                        <BFormGroup>
-                            <h4>Дата завершения курса</h4>
-                        </BFormGroup>
                         <BFormGroup
                                 label="Дата"
                                 description="Здесь будет дата окончания курса"
@@ -113,20 +89,26 @@
                             <BFormSelect v-model="date.fontWeight" :options="fontWeightList"></BFormSelect>
                         </BFormGroup>
                         <BFormGroup label="Размер текста">
-                            <BFormInput v-model="date.size"></BFormInput>
+                            <BFormInput type="number" v-model="date.size"></BFormInput>
                         </BFormGroup>
-                        <BFormGroup
-                                description="Это позволит выводить текст по центру"
-                        >
-                            <b-form-checkbox v-model="date.fullWidth">На всю ширину</b-form-checkbox>
+                        <BFormGroup class="custom-switch" label="Ширина блока">
+                            <b-form-checkbox switch v-model="date.fullWidth">На всю ширину</b-form-checkbox>
+                            <b-form-input type="number" v-model="date.width" :disabled="date.fullWidth"></b-form-input>
                         </BFormGroup>
                         <BFormGroup label="Цвет текста"><input type="color" class="color-picker" v-model="date.color">
                         </BFormGroup>
-                        <b-form-group label="Заглавность">
-                            <b-form-radio v-model="date.uppercase" name="some-radios" value="lowercase">Первая
-                                заглавная
+<!--                        <b-form-group label="Формат текста">-->
+<!--                            <b-form-radio v-model="date.uppercase" name="some-radios" value="none">По умолчанию-->
+<!--                            </b-form-radio>-->
+<!--                            <b-form-radio v-model="date.uppercase" name="some-radios" value="uppercase">Все заглавные-->
+<!--                            </b-form-radio>-->
+<!--                        </b-form-group>-->
+                        <b-form-group label="Курсив">
+                            <b-form-radio v-model="date.fontStyle" name="font-style-date" value="italic">
+                                Да
                             </b-form-radio>
-                            <b-form-radio v-model="date.uppercase" name="some-radios" value="uppercase">Все заглавные
+                            <b-form-radio v-model="date.fontStyle" name="font-style-date" value="normal" :checked="true">
+                                Нет
                             </b-form-radio>
                         </b-form-group>
                     </div>
@@ -135,32 +117,34 @@
             <BCol cols="9">
                 <div class="draggable-container">
                     <div class="draggable-edit">
-                        <div ref="fullName" name="fullName" class="draggable" :data-x="fullName.screenX" :data-y="fullName.screenY" follow-text="Имя и фамилия"
+                        <div ref="fullName" name="fullName" class="draggable no-border" :data-x="fullName.screenX"
+                             :data-y="fullName.screenY" follow-text="Имя и фамилия"
                              :style="[styleFullName, transformFullName]" style="margin-top: 40px;"
-                             :class="{'no-border': border, 'active': selectedEdit === 1}" @click="selectEdit(1)">
+                             :class="{'darkened': bgOp, 'active': selectedEdit === 1}" @click="selectEdit(1)">
                             {{textFullName}}
                         </div>
-                        <div ref="courseName" name="courseName" class="draggable" :data-x="courseName.screenX" :data-y="courseName.screenY" follow-text="Название курса"
+                        <div ref="courseName" name="courseName" class="draggable no-border" :data-x="courseName.screenX"
+                             :data-y="courseName.screenY" follow-text="Название курса"
                              :style="[styleCourseName, transformCourseName]" style="margin-top: 120px;"
-                             :class="{'no-border': border, 'active': selectedEdit === 2}" @click="selectEdit(2)">
+                             :class="{'darkened': bgOp, 'active': selectedEdit === 2}" @click="selectEdit(2)">
                             {{textCourseName}}
                         </div>
-                        <div ref="hours" name="hours" class="draggable" :data-x="hours.screenX" :data-y="hours.screenY" follow-text="Потраченное время на курсы"
-                             :style="[styleHours, transformHoursName]" style="margin-top: 200px;"
-                             :class="{'no-border': border, 'active': selectedEdit === 3}" @click="selectEdit(3)">
-                            {{textHours}}
-                        </div>
-                        <div ref="date" name="date" class="draggable" :data-x="date.screenX" :data-y="date.screenY" follow-text="Дата завершения курса"
+                        <div ref="date" name="date" class="draggable no-border" :data-x="date.screenX" :data-y="date.screenY"
+                             follow-text="Дата завершения курса"
                              :style="[styleDate, transformDateName]" style="margin-top: 280px;"
-                             :class="{'no-border': border, 'active': selectedEdit === 4}" @click="selectEdit(4)">
+                             :class="{'darkened': bgOp, 'active': selectedEdit === 4}" @click="selectEdit(4)">
                             {{textDate}}
                         </div>
-                        <vue-pdf-embed v-if="img" :source="img"/>
+                        <div ref="pdfpdf" class="vue-pdf-container" :class="bgOp ? 'darkened' : ''">
+                            <vue-pdf-embed v-if="img" :source="img"/>
+                        </div>
                     </div>
                 </div>
             </BCol>
         </BRow>
-        <BButton variant="success" @click="saveChanges">Сохранить</BButton>
+        <div class="modal-footer">
+            <BButton variant="success" @click="saveChanges">Сохранить</BButton>
+        </div>
     </div>
 </template>
 
@@ -171,9 +155,15 @@
     export default {
         name: "Draggable",
         props: {
-            sertificate: File,
-            img: String,
-            styles: String
+            img: {
+                type: String,
+                default: ''
+            },
+            styles: {
+                type: String,
+                default: ''
+            },
+            modalCertificate: Boolean
         },
         components: {
             VuePdfEmbed
@@ -181,7 +171,7 @@
         data() {
             return {
                 selectedUppercase: [],
-                border: false,
+                bgOp: false,
                 selectedEdit: 1,
                 textFullName: 'Иван Иванович Иванов',
                 textCourseName: 'Название курса',
@@ -189,148 +179,233 @@
                 textDate: new Date().toLocaleDateString(),
                 transformFullName: {},
                 transformCourseName: {},
-                transformHoursName: {},
+                // transformHoursName: {},
                 transformDateName: {},
                 fullName: {
                     screenX: 0,
                     screenY: 0,
                     size: 32,
                     fontWeight: 700,
-                    uppercase: 'lowercase',
+                    uppercase: 'none',
                     fullWidth: false,
-                    color: '#000000'
+                    color: '#000000',
+                    fontStyle: 'normal',
+                    width: 500
                 },
                 courseName: {
                     screenX: 0,
                     screenY: 0,
-                    text: 'Название курса',
-                    size: 20,
+                    size: 24,
                     fontWeight: 400,
-                    uppercase: 'lowercase',
+                    uppercase: 'none',
                     fullWidth: false,
-                    color: '#000000'
-                },
-                hours: {
-                    screenX: 0,
-                    screenY: 0,
-                    text: 'Название курса',
-                    size: 16,
-                    fontWeight: 400,
-                    uppercase: 'lowercase',
-                    fullWidth: false,
-                    color: '#000000'
+                    color: '#000000',
+                     width: 230
                 },
                 date: {
                     screenX: 0,
                     screenY: 0,
-                    text: 'Название курса',
-                    size: 16,
+                    size: 24,
                     fontWeight: 400,
-                    uppercase: 'lowercase',
+                    uppercase: 'none',
                     fullWidth: false,
-                    color: '#000000'
+                    color: '#000000',
+                     width: 170
                 },
                 fontWeightList: [200, 300, 400, 500, 600, 700, 800, 900]
             };
         },
-        mounted () {
-            if(this.styles.length > 0){
-                const getStyles = JSON.parse(JSON.parse(this.styles).replace(/\\"/g,'\''));
+        mounted() {
+            this.$refs.pdfpdf.style.filter = "brightness(0.3)";
+
+            this.$refs.fullName.style.transition = "0.5s all ease";
+            this.$refs.fullName.style.backgroundColor = "#fff";
+            this.$refs.fullName.style.color = "#333";
+            this.$refs.fullName.style.padding = "10px 20px";
+            this.$refs.fullName.style.marginLeft = "20px";
+            this.$refs.fullName.style.borderRadius = "10px";
+
+            this.$refs.courseName.style.transition = "0.5s all ease";
+            this.$refs.courseName.style.backgroundColor = "#fff";
+            this.$refs.courseName.style.color = "#333";
+            this.$refs.courseName.style.padding = "10px 20px";
+            this.$refs.courseName.style.marginLeft = "20px";
+            this.$refs.courseName.style.borderRadius = "10px";
+
+            this.$refs.date.style.transition = "0.5s all ease";
+            this.$refs.date.style.backgroundColor = "#fff";
+            this.$refs.date.style.color = "#333";
+            this.$refs.date.style.padding = "10px 20px";
+            this.$refs.date.style.marginLeft = "20px";
+            this.$refs.date.style.borderRadius = "10px";
+
+            setTimeout( () => {
+                this.$refs.pdfpdf.style.filter = "brightness(1)";
+
+                this.$refs.fullName.style.backgroundColor = "transparent";
+                this.$refs.fullName.style.color = "#000000";
+                this.$refs.fullName.style.padding = 0;
+                this.$refs.fullName.style.marginLeft = 0;
+                this.$refs.fullName.style.borderRadius = 0;
+
+                this.$refs.courseName.style.backgroundColor = "transparent";
+                this.$refs.courseName.style.color = "#000000";
+                this.$refs.courseName.style.padding = 0;
+                this.$refs.courseName.style.marginLeft = 0;
+                this.$refs.courseName.style.borderRadius = 0;
+
+                this.$refs.date.style.backgroundColor = "transparent";
+                this.$refs.date.style.color = "#000000";
+                this.$refs.date.style.padding = 0;
+                this.$refs.date.style.marginLeft = 0;
+                this.$refs.date.style.borderRadius = 0;
+            }, 1000);
+
+            setTimeout( () => {
+                this.$refs.fullName.style.transition = "none";
+                this.$refs.courseName.style.transition = "none";
+                this.$refs.date.style.transition = "none";
+            }, 1500);
+
+            if (this.styles.length > 0) {
+                const getStyles = JSON.parse(this.styles);
                 this.fullName = getStyles.fullName;
                 this.courseName = getStyles.courseName;
-                this.hours = getStyles.hours;
                 this.date = getStyles.date;
                 this.transformFullName = {transform: `translate(${this.fullName.screenX}px, ${this.fullName.screenY}px)`};
                 this.transformCourseName = {transform: `translate(${this.courseName.screenX}px, ${this.courseName.screenY}px)`};
-                this.transformHoursName = {transform: `translate(${this.hours.screenX}px, ${this.hours.screenY}px)`};
                 this.transformDateName = {transform: `translate(${this.date.screenX}px, ${this.date.screenY}px)`};
             }
             let fullNameEdit = this.$refs.fullName;
             let courseNameEdit = this.$refs.courseName;
-            let hoursEdit = this.$refs.hours;
             let dateEdit = this.$refs.date;
             this.initInteract(fullNameEdit);
             this.initInteract(courseNameEdit);
-            this.initInteract(hoursEdit);
             this.initInteract(dateEdit);
+            this.$emit('save-changes', this.fullName, this.courseName, this.date);
         },
         computed: {
             styleFullName() {
-                let width = 'auto';
                 if (this.fullName.fullWidth) {
-                    width = '100%';
+                    this.fullName.width = 1000;
+                } else {
+                    if(this.fullName.width === 1000){
+                        this.fullName.width = 500;
+                    }
                 }
                 return {
                     fontWeight: this.fullName.fontWeight,
                     fontSize: `${this.fullName.size}px`,
                     textTransform: this.fullName.uppercase,
-                    width: width,
-                    color: this.fullName.color
+                    width: this.fullName.width + 'px',
+                    color: this.fullName.color,
+                    fontStyle: this.fullName.fontStyle
                 };
             },
             styleCourseName() {
-                let width = 'auto';
                 if (this.courseName.fullWidth) {
-                    width = '100%';
+                    this.courseName.width = 1000;
+                } else {
+                    if(this.courseName.width === 1000){
+                        this.courseName.width = 230;
+                    }
                 }
                 return {
                     fontWeight: this.courseName.fontWeight,
                     fontSize: `${this.courseName.size}px`,
                     textTransform: this.courseName.uppercase,
-                    width: width,
-                    color: this.courseName.color
-                };
-            },
-            styleHours() {
-                let width = 'auto';
-                if (this.hours.fullWidth) {
-                    width = '100%';
-                }
-                return {
-                    fontWeight: this.hours.fontWeight,
-                    fontSize: `${this.hours.size}px`,
-                    textTransform: this.hours.uppercase,
-                    width: width,
-                    color: this.hours.color
+                    width: this.courseName.width + 'px',
+                    color: this.courseName.color,
+                    fontStyle: this.courseName.fontStyle
                 };
             },
             styleDate() {
-                let width = 'auto';
                 if (this.date.fullWidth) {
-                    width = '100%';
+                    this.date.width = 1000;
+                } else {
+                    if(this.date.width === 1000){
+                        this.date.width = 170;
+                    }
                 }
                 return {
                     fontWeight: this.date.fontWeight,
                     fontSize: `${this.date.size}px`,
-                    textTransform: this.date.uppercase,
-                    width: width,
-                    color: this.date.color
+                    width: this.date.width + 'px',
+                    color: this.date.color,
+                    fontStyle: this.date.fontStyle
                 };
             }
         },
+        watch: {
+            fullName: {
+                handler(val){
+                    if(val.fullWidth){
+                        this.fullName.screenX = 0;
+                        this.$refs.fullName.setAttribute('data-x', 0);
+                        this.$refs.fullName.style.transform = `translate(0px, ${this.fullName.screenY}px)`;
+                    }
+                    if(val.size > 200){
+                        this.fullName.size = 200
+                    }
+                    if(val.width > 999 && !val.fullWidth){
+                        this.fullName.width = 999
+                    }
+                },
+                deep: true
+            },
+            courseName: {
+                handler(val){
+                    if(val.fullWidth){
+                        this.courseName.screenX = 0;
+                        this.$refs.courseName.setAttribute('data-x', 0);
+                        this.$refs.courseName.style.transform = `translate(0px, ${this.courseName.screenY}px)`;
+                    }
+                    if(val.size > 200){
+                        this.courseName.size = 200
+                    }
+                    if(val.width > 999 && !val.fullWidth){
+                        this.courseName.width = 999
+                    }
+                },
+                deep: true
+            },
+            date: {
+                handler(val){
+                    if(val.fullWidth){
+                        this.date.screenX = 0;
+                        this.$refs.date.setAttribute('data-x', 0);
+                        this.$refs.date.style.transform = `translate(0px, ${this.date.screenY}px)`;
+                    }
+                    if(val.size > 200){
+                        this.date.size = 200
+                    }
+                    if(val.width > 999 && !val.fullWidth){
+                        this.date.width = 999
+                    }
+                },
+                deep: true
+            }
+        },
         methods: {
-            saveChanges(){
-              this.$emit('save-changes', this.fullName, this.courseName, this.hours, this.date)
+            saveChanges() {
+                this.$emit('save-changes', this.fullName, this.courseName, this.date);
+                this.$emit('update:modalCertificate', false);
+
             },
             selectEdit(val) {
                 this.selectedEdit = val;
             },
             initInteract: function (selector) {
                 interact(selector).draggable({
-                    // enable inertial throwing
                     inertia: true,
-                    // keep the element within the area of it's parent
                     restrict: {
                         restriction: "parent",
                         endOnly: true,
                         elementRect: {top: 0, left: 0, bottom: 1, right: 1}
                     },
-                    // enable autoScroll
                     autoScroll: true,
 
-                    // call this function on every dragmove event
                     onmove: this.dragMoveListener,
-                    // call this function on every dragend event
                     onend: this.onDragEnd
                 });
             },
@@ -341,15 +416,21 @@
                 let y = null;
                 if (name === 'fullName') {
                     x = (parseFloat(target.getAttribute("data-x")) || this.fullName.screenX) + event.dx;
+                    if(this.fullName.fullWidth){
+                        x = 0;
+                    }
                 }
                 if (name === 'courseName') {
                     x = (parseFloat(target.getAttribute("data-x")) || this.courseName.screenX) + event.dx;
-                }
-                if (name === 'hours') {
-                    x = (parseFloat(target.getAttribute("data-x")) || this.hours.screenX) + event.dx;
+                    if(this.courseName.fullWidth){
+                        x = 0;
+                    }
                 }
                 if (name === 'date') {
                     x = (parseFloat(target.getAttribute("data-x")) || this.date.screenX) + event.dx;
+                    if(this.date.fullWidth){
+                        x = 0;
+                    }
                 }
 
                 if (name === 'fullName') {
@@ -357,9 +438,6 @@
                 }
                 if (name === 'courseName') {
                     y = (parseFloat(target.getAttribute("data-y")) || this.courseName.screenY) + event.dy;
-                }
-                if (name === 'hours') {
-                    y = (parseFloat(target.getAttribute("data-y")) || this.hours.screenY) + event.dy;
                 }
                 if (name === 'date') {
                     y = (parseFloat(target.getAttribute("data-y")) || this.date.screenY) + event.dy;
@@ -380,10 +458,6 @@
                     this.courseName.screenX = (parseFloat(target.getAttribute("data-x")) || this.courseName.screenX);
                     this.courseName.screenY = (parseFloat(target.getAttribute("data-y")) || this.courseName.screenY)
                 }
-                if (name === 'hours') {
-                    this.hours.screenX = (parseFloat(target.getAttribute("data-x")) || this.hours.screenX);
-                    this.hours.screenY = (parseFloat(target.getAttribute("data-y")) || this.hours.screenY)
-                }
                 if (name === 'date') {
                     this.date.screenX = (parseFloat(target.getAttribute("data-x")) || this.date.screenX);
                     this.date.screenY = (parseFloat(target.getAttribute("data-y")) || this.date.screenY)
@@ -393,18 +467,37 @@
     };
 </script>
 
-<!-- Add "scoped" attribute to limit CSS to this component only -->
 <style lang="scss">
-    .cestificates-constructor{
-        canvas{
-            width: 600px !important;
-            height: auto!important;
+    .cestificates-constructor {
+        .vue-pdf-container{
+            transition: 0.5s all ease;
+            &.darkened{
+                filter: brightness(0.5) !important;
+            }
         }
+        canvas {
+            width: 1000px !important;
+            height: auto !important;
+            border: 3px solid #333;
+
+        }
+
+        .form-control, .custom-select{
+            height: 40px;
+            &:disabled{
+                background-color: #f2f2f2;
+                border: none;
+                color: #999;
+            }
+        }
+
         .draggable-container {
-            padding: 50px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
+            padding: 40px 0;
+            margin: 0 auto;
+            max-width: 1010px;
+            max-height: calc(100vh - 95px);
+            width: 100%;
+            overflow: auto;
         }
 
         .form-group {
@@ -432,10 +525,7 @@
 
         .draggable-edit {
             position: relative;
-            border: 3px solid #333;
-            max-width: 700px;
-            overflow: auto;
-            max-height: calc(100vh - 200px);
+
             img {
                 width: 100%;
                 height: auto;
@@ -453,6 +543,9 @@
                 border: 1px dashed #ddd;
                 box-shadow: 0 0 5px 0 #333;
                 background-color: #fff;
+                &.darkened{
+                    background: rgba(255,255,255,0.35) !important;
+                }
                 &:before {
                     content: attr(follow-text);
                     position: absolute;
@@ -473,9 +566,7 @@
                     border-radius: 0;
                     background: transparent;
                     box-shadow: none;
-                    &:before {
-                        content: none;
-                    }
+
                     &.active {
                         border: 1px dashed #000;
                         background-color: rgba(255, 255, 255, 0.4);
@@ -499,13 +590,23 @@
                 &:active {
                     border: 1px dashed #000;
                     background-color: #d4d4d4;
+                    &:before{
+                        background-color: green;
+                        color: #fff;
+                    }
+                }
+                &.active{
+                    &:before{
+                        background-color: green;
+                        color: #fff;
+                    }
                 }
             }
         }
 
         .settings {
-            max-height: calc(100vh - 130px);
-            min-height: calc(100vh - 130px);
+            max-height: calc(100vh - 95px);
+            min-height: calc(100vh - 95px);
             padding: 20px 10px;
             overflow: auto;
             border-right: 1px solid #ddd;
@@ -516,6 +617,95 @@
         .color-picker {
             width: 100%;
             height: 40px;
+        }
+        .custom-switch {
+            padding-left: 0;
+
+            input[type="checkbox"] {
+                position: absolute;
+                margin: 8px 0 0 16px;
+            }
+
+            input[type="checkbox"] + label {
+                position: relative;
+                padding: 5px 0 0 50px;
+                line-height: 1;
+                margin: 10px 0;
+            }
+
+            input[type="checkbox"] + label:before {
+                content: "";
+                position: absolute;
+                display: block;
+                left: 0;
+                top: 0;
+                width: 40px; /* x*5 */
+                height: 24px; /* x*3 */
+                border-radius: 16px; /* x*2 */
+                background: #fff;
+                border: 1px solid #d9d9d9;
+                -webkit-transition: all 0.3s;
+                transition: all 0.3s;
+            }
+
+            input[type="checkbox"] + label:after {
+                content: "";
+                position: absolute;
+                display: block;
+                left: 0px;
+                top: 0px;
+                width: 24px; /* x*3 */
+                height: 24px; /* x*3 */
+                border-radius: 16px; /* x*2 */
+                background: #fff;
+                border: 1px solid #d9d9d9;
+                -webkit-transition: all 0.3s;
+                transition: all 0.3s;
+            }
+
+            input[type="checkbox"] + label:hover:after {
+                box-shadow: 0 0 5px rgba(0, 0, 0, 0.3);
+            }
+
+            input[type="checkbox"]:checked + label:after {
+                margin-left: 16px;
+            }
+
+            input[type="checkbox"]:checked + label:before {
+                background: #55D069;
+            }
+
+            &.custom-switch-small {
+                input[type="checkbox"] {
+                    margin: 5px 0 0 10px;
+                }
+
+                input[type="checkbox"] + label {
+                    position: relative;
+                    padding: 0 0 0 32px;
+                    line-height: 1.3em;
+                }
+
+                input[type="checkbox"] + label:before {
+                    width: 25px; /* x*5 */
+                    height: 15px; /* x*3 */
+                    border-radius: 10px; /* x*2 */
+                }
+
+                input[type="checkbox"] + label:after {
+                    width: 15px; /* x*3 */
+                    height: 15px; /* x*3 */
+                    border-radius: 10px; /* x*2 */
+                }
+
+                input[type="checkbox"] + label:hover:after {
+                    box-shadow: 0 0 3px rgba(0, 0, 0, 0.3);
+                }
+
+                input[type="checkbox"]:checked + label:after {
+                    margin-left: 10px; /* x*2 */
+                }
+            }
         }
     }
 </style>

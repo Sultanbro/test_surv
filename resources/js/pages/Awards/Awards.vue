@@ -1,51 +1,56 @@
 <template>
     <div id="awards-page">
-        <BButton variant="success" class="mb-2" @click="addAwardButtonClickHandler"
-        >Создать награду
-        </BButton
-        >
-        <BTableSimple
-                id="awards-table"
-                class="mb-3"
-                bordered
-                hover
-                small
-                @row-clicked="rowClickedHandler"
-                v-if="tableItems.length > 0"
-        >
-            <BThead>
-                <BTr>
-                    <BTh>№</BTh>
-                    <BTh>Название</BTh>
-                    <BTh>Описание</BTh>
-                    <BTh>Тип</BTh>
-                    <BTh>Дата создания</BTh>
-                    <BTh>Постановщик</BTh>
-                </BTr>
-            </BThead>
-            <BTbody>
-                <BTr v-for="(item, key) in tableData" :key="item.name + key" @click="rowClickedHandler(item)">
-                    <BTd>{{ key + 1 }}</BTd>
-                    <BTd>{{ item.name }}</BTd>
-                    <BTd>{{ item.description }}</BTd>
-                    <BTd v-if="item.award_type_id === 1">Картинка</BTd>
-                    <BTd v-if="item.award_type_id === 2">Конструктор</BTd>
-                    <BTd v-if="item.award_type_id === 3">Данные начислений</BTd>
-                    <BTd>{{ item.created_at }}</BTd>
-                    <BTd>{{ item.awardCreator }}</BTd>
-                    <BTd @click.stop>
-                        <bButton size="sm" pill variant="danger" @click="modalShow(item)"><i class="fa fa-trash"></i>
-                        </bButton>
-                    </BTd>
-                </BTr>
-            </BTbody>
-        </BTableSimple>
+        <BButton variant="success" class="mb-2" @click="addAwardButtonClickHandler">Создать награду</BButton>
 
-        <div v-else>
-            <hr>
-            <h4>Пока нет ни одного сертификата.</h4>
+<!--        <BButton variant="danger" class="mb-2" @click="modalRegenerate = !modalRegenerate">Регенерация</BButton>-->
+<!--        <b-modal hide-footer no-close-on-backdrop no-close-on-esc no-enforce-focus v-model="modalRegenerate" size="lg" centered title="Принудительно обновление всех сертификатов по курсу">-->
+<!--            <RegenerateCertificates/>-->
+<!--        </b-modal>-->
+
+        <div class="table-container" v-if="tableItems.length > 0">
+            <BTableSimple
+                    id="awards-table"
+                    striped
+                    :hover="false"
+                    @row-clicked="rowClickedHandler"
+            >
+                <BThead>
+                    <BTr>
+                        <BTh>№</BTh>
+                        <BTh>Название</BTh>
+                        <BTh class="text-left">Описание</BTh>
+                        <BTh>Тип</BTh>
+                        <BTh>Дата создания</BTh>
+                        <BTh>Постановщик</BTh>
+                        <BTh></BTh>
+                    </BTr>
+                </BThead>
+                <BTbody>
+                    <BTr v-for="(item, key) in tableItems" :key="item.name + key">
+                        <BTd>{{ key + 1 }}</BTd>
+                        <BTd><div class="clickable" @click="rowClickedHandler(item)">{{ item.name }}</div></BTd>
+                        <BTd class="td-desc">
+                            <div class="desc">{{ item.description }}</div>
+                            <div class="full-text">
+                                {{item.description}}
+                            </div>
+                        </BTd>
+                        <BTd v-if="item.type === 1">Картинка</BTd>
+                        <BTd v-if="item.type === 2">Конструктор</BTd>
+                        <BTd v-if="item.type === 3">Данные начислений</BTd>
+                        <BTd>{{ item.created_at | splitDate(item.created_at) }}</BTd>
+                        <BTd>{{ item.creator.name }} {{ item.creator.last_name }}</BTd>
+                        <BTd @click.stop>
+                            <i class="fa fa-trash delete" @click="modalShow(item)"></i>
+                        </BTd>
+                    </BTr>
+                </BTbody>
+            </BTableSimple>
         </div>
-        <!--        <Draggable/>-->
+        <div v-else>
+            <hr class="my-4">
+            <h4 class="no-awards-title">Пока нет ни одного сертификата</h4>
+        </div>
 
         <EditAwardSidebar
                 v-if="showEditAwardSidebar"
@@ -65,8 +70,8 @@
 </template>
 
 <script>
-    import EditAwardSidebar from "./EditAwardSidebar(delete).vue";
-
+    import EditAwardSidebar from "./EditAwardSidebar.vue";
+    // import RegenerateCertificates from "./types/RegenerateCertificates";
     export default {
         name: "Awards",
         components: {
@@ -74,54 +79,37 @@
         },
         data() {
             return {
-                img: {
-                    name: 'Хайруллин Тимур',
-                    certificate: 'За лучшие заслуги лучших',
-                    date: Date.now().toLocaleDateString,
-                    time: 'Пройдено за 50 часа(ов) вместе с домашними заданиями'
-                },
+                modalRegenerate: false,
                 modal: false,
                 itemRemove: null,
                 showEditAwardSidebar: false,
-                item: false,
+                item: null,
                 tableItems: [],
             };
         },
-        mounted(){
-            this.getAwards();
-            this.axios
-            .get('http://bp.localhost:8000/award-types/get')
-            .then(res => {
-                console.log(res);
-            })
-            .catch(err=> {
-                console.log(err);
-            })
+        filters: {
+            splitDate: function(val){
+                return val.split('T')[0];
+            }
         },
-        computed:{
-            tableData() {
-                return this.tableItems;
-            },
+        mounted() {
+            this.getAwards();
         },
         methods: {
-            modalShow(item){
+            modalShow(item) {
                 this.itemRemove = item;
                 this.modal = !this.modal;
             },
-            async getAwards(){
+            async getAwards() {
                 let loader = this.$loading.show();
                 this.tableItems = [];
-                this.axios
-                    .get("/awards/get")
+                await this.axios
+                    .get("/award-categories/get")
                     .then(response => {
-                        const data = response.data.data;
-                        for(let i = 0; i < data.length; i++){
-                            this.tableItems.push(data[i]);
-                        }
+                        this.tableItems = response.data.data;
                         loader.hide();
                     })
                     .catch(function (error) {
-                        console.log("error");
                         console.log(error);
                         loader.hide();
                     });
@@ -132,34 +120,27 @@
             },
             addAwardButtonClickHandler() {
                 this.showEditAwardSidebar = true;
-                this.item = false;
+                this.item = {};
             },
-            saveAward(data) {
-                // this.tableItems.push(data);
+            saveAward() {
                 this.getAwards();
             },
             updateTable() {
-            this.getAwards();
+                this.getAwards();
             },
             async remove(item) {
-                 this.modal = !this.modal;
-                 let loader = this.$loading.show();
+                this.modal = !this.modal;
+                let loader = this.$loading.show();
                 await this.axios
-                     .delete("/awards/delete/" + item.id)
-                     .then(response =>  {
-                         this.getAwards();
-                         // for( let i = 0; i < this.tableItems.length; i++){
-                         //     if ( this.tableItems[i].id === item.id) {
-                         //         this.tableItems.splice(i, 1);
-                         //     }
-                         // }
-                         loader.hide();
-                     })
-                     .catch(function (error) {
-                         console.log("error");
-                         console.log(error);
-                         loader.hide();
-                     });
+                    .delete("/award-categories/delete/" + item.id)
+                    .then(response => {
+                        this.getAwards();
+                        loader.hide();
+                    })
+                    .catch(function (error) {
+                        console.log(error);
+                        loader.hide();
+                    });
             },
         }
     };
@@ -167,9 +148,119 @@
 
 <style lang="scss">
     #awards-page {
+        #edit-award-sidebar{
+            .ui-sidebar__body{
+                transform: translateX(100%);
+            }
+            &.show{
+                .ui-sidebar__body{
+                    transform: translateX(0);
+                }
+            }
+        }
+        .no-awards-title{
+            font-size: 20px;
+            font-weight: 500;
+            color: #999;
+            text-transform: uppercase;
+        }
+        .table-container{
+            border: 1px solid #ddd;
+            border-radius: 10px;
+        }
         #awards-table {
+            margin: 0;
+            thead{
+                white-space: nowrap;
+                tr{
+                    position: relative;
+                    z-index: 2;
+                    box-shadow: 0 3px 5px 0 rgba(0,0,0,0.15);
+                }
+                td,th{
+                    padding: 15px 20px;
+                    text-transform: uppercase;
+                    font-weight: 700;
+                    font-size: 12px;
+                    color: #666666;
+                    border-bottom: none;
+                }
+            }
             tbody {
+                tr{
+                    cursor: default;
+                    &:nth-child(odd){
+                        background-color: #efeef5;
+                    }
+                    td,th{
+                        border-top: none;
+                    }
+                }
                 cursor: pointer;
+                .td-desc{
+                    max-width: calc(100vw - 1000px);
+                    position: relative;
+                    .full-text{
+                        position: absolute;
+                        top: 20px;
+                        left: 10px;
+                        max-width: 400px;
+                        visibility: hidden;
+                        opacity: 0;
+                        padding: 10px 20px;
+                        background-color: #fff;
+                        font-size: 14px;
+                        border: 1px solid #999;
+                        line-height: 1.3;
+                        text-align: left;
+                        border-radius: 10px;
+                        box-shadow: rgb(0 0 0 / 10%) 0px 10px 15px -3px, rgb(0 0 0 / 5%) 0px 4px 6px -2px;
+                        transition: 0.2s all ease;
+                    }
+                    &:hover{
+                        .full-text{
+                            visibility: visible;
+                            opacity: 1;
+                            top: 40px;
+                            z-index: 11;
+                        }
+                    }
+                }
+                .desc{
+                    overflow: hidden;
+                    text-overflow: ellipsis;
+                    white-space: nowrap;
+                    padding: 5px 10px;
+                    text-align: left;
+                }
+                .clickable{
+                    cursor: pointer;
+                    height: 35px;
+                    padding: 0 15px;
+                    border-radius: 50px;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    transition: 0.15s all ease;
+                    &:hover{
+                        background-color: rgba(0,0,0,0.1);
+                    }
+                }
+                .delete{
+                    width: 30px;
+                    height: 30px;
+                    display: inline-flex;
+                    align-items: center;
+                    justify-content: center;
+                    cursor: pointer;
+                    border-radius: 50%;
+                    font-size: 16px;
+                    color: #dc3545;
+                    transition: 0.15s all ease;
+                    &:hover{
+                        background-color: rgba(220,53, 69, 0.2);
+                    }
+                }
             }
         }
     }

@@ -1,12 +1,12 @@
 <template>
 <div class="item d-flex">
     <div class="person">
-        <superselect :values="item.targets" class="w-full single" /> 
+        <superselect :values="item.targets" class="w-full single" />
     </div>
 
     <div class="role">
-        <multiselect 
-            ref="role_select" 
+        <multiselect
+            ref="role_select"
             v-model="item.roles"
             :options="local_roles"
             :multiple="true"
@@ -17,8 +17,8 @@
             track-by="name" />
     </div>
     <div class="groups">
-        <multiselect 
-            ref="group_select" 
+        <multiselect
+            ref="group_select"
             v-model="item.groups"
             :options="local_groups"
             :multiple="true"
@@ -38,7 +38,7 @@
         </button>
         <button class="btn btn-default btn-sm" @click="$emit('deleteItem')">
             <i class="fa fa-times" />
-        </button> 
+        </button>
     </div>
 </div>
 </template>
@@ -61,9 +61,6 @@ export default {
         },
     },
     created() {
-
-        console.log(this.item,'wwwssss')
-
         this.local_groups = this.groups;
         this.local_roles = this.roles;
         if(this.item.groups_all) {
@@ -71,7 +68,7 @@ export default {
             this.item.groups.splice(0,this.item.groups.length + 1)
             this.item.groups.push({
                 id: 0,
-                name: 'Все отделы' 
+                name: 'Все отделы'
             });
             this.item.groups_all = true;
         }
@@ -81,14 +78,14 @@ export default {
             if(selectedOption.id == 0) {
                 this.selectAll();
                 //this.$refs.group_select.close();
-            }   
+            }
         },
         selectAll() {
             this.local_groups = [];
             // this.item.groups.splice(0,this.item.groups.length + 1)
             // this.item.groups.push({
             //     id: 0,
-            //     name: 'Все отделы' 
+            //     name: 'Все отделы'
             // });
             this.item.groups_all = true;
         },
@@ -96,9 +93,9 @@ export default {
             if(removedOption.id == 0) {
                 this.local_groups = this.groups;
                 this.item.groups_all = false;
-            }   
+            }
         },
-        
+
     }
 
 }

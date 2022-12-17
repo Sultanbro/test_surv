@@ -19,6 +19,17 @@
   font-weight: normal;
   font-style: normal;
 }
+@font-face {
+  font-family: 'course-icons';
+  src: url('../fonts/course-icons/font/course-icons.eot?24595367');
+  src: url('../fonts/course-icons/font/course-icons.eot?24595367#iefix') format('embedded-opentype'),
+       url('../fonts/course-icons/font/course-icons.woff2?24595367') format('woff2'),
+       url('../fonts/course-icons/font/course-icons.woff?24595367') format('woff'),
+       url('../fonts/course-icons/font/course-icons.ttf?24595367') format('truetype'),
+       url('../fonts/course-icons/font/course-icons.svg?24595367#course-icons') format('svg');
+  font-weight: normal;
+  font-style: normal;
+}
 
 [class^="_icon-"], [class*=" _icon-"] {
   /* use !important to prevent issues with browser extensions that change fonts */
@@ -73,7 +84,10 @@
 }
 
 
-[class^="icon-nd-"]:before, [class*=" icon-nd-"]:before {
+[class^="icon-nd-"]:before,
+[class*=" icon-nd-"]:before,
+[class^="icon-ci-"]:before,
+[class*=" icon-ci-"]:before {
   font-family: "icon-nd";
   font-style: normal;
   font-weight: normal;
@@ -107,6 +121,10 @@
   /* Uncomment for 3D effect */
   /* text-shadow: 1px 1px 1px rgba(127, 127, 127, 0.3); */
 }
+[class^="icon-ci-"]:before,
+[class*=" icon-ci-"]:before{
+  font-family: "course-icons";
+}
 
 .icon-nd-analytics:before { content: '\e800'; } /* '' */
 .icon-nd-books:before { content: '\e801'; } /* '' */
@@ -132,3 +150,7 @@
 .icon-nd-deduction:before { content: '\e815'; } /* '' */
 .icon-nd-kpi:before { content: '\e816'; } /* '' */
 .icon-nd-news:before { content: '\e817'; } /* '' */
+
+.icon-ci-play:before { content: '\e800'; } /* '' */
+.icon-ci-book:before { content: '\e801'; } /* '' */
+.icon-ci-database:before { content: '\f1c0'; } /* '' */

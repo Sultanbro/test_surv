@@ -13,45 +13,47 @@
     </div>
     <div class="popup__award">
 
-        <template v-for="item in items">
-            <div class="award__title popup__content-title">
-                За период с {{ new Date(item.items.from).toLocaleDateString('RU')  }} до {{ new Date(item.items.to).toLocaleDateString('RU') }}
-            </div>
-            <table class="award__table">
-                <tr>
-                    <td class="blue">Сумма премии</td>
-                    <td>{{ item.items.sum }}</td>
-                </tr>
-                <tr v-if="item.items.activity">
-                    <td class="blue">План</td>
-                    <td>
-                        <div>
-                            <b>Активность: {{ item.items.activity.name }}</b>
-                        </div>
-                        <div>{{ item.items.plan }}</div>
-                    </td>
-                </tr>
-                <tr>
-                    <td class="blue">Условия</td>
-                    <td>{{ item.items.text }}</td>
-                </tr>
-            </table>
+        <template v-if="items.length">
+            <template v-for="item in items">
+                <div class="award__title popup__content-title">
+                    За период с {{ new Date(item.items.from).toLocaleDateString('RU') }} до {{ new Date(item.items.to).toLocaleDateString('RU') }}
+                </div>
+                <table class="award__table">
+                    <tr>
+                        <td class="blue">Сумма премии</td>
+                        <td>{{ item.items.sum }}</td>
+                    </tr>
+                    <tr v-if="item.items.activity">
+                        <td class="blue">План</td>
+                        <td>
+                            <div>
+                                <b>Активность: {{ item.items.activity.name }}</b>
+                            </div>
+                            <div>{{ item.items.plan }}</div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="blue">Условия</td>
+                        <td>{{ item.items.text }}</td>
+                    </tr>
+                </table>
+            </template>
         </template>
 
-       
+        <p v-else>Обратитесь к своему руководителю, если хотите чтобы вам была назначена квартальная премия</p>
     </div>
 </div>
 </template>
 
 <script>
 export default {
-    name: "PopupQuartal", 
+    name: "PopupQuartal",
     props: {},
     data: function () {
         return {
-            items: [], 
-            activities: [], 
-            groups: [], 
+            items: [],
+            activities: [],
+            groups: [],
             currentMonth: null,
             dateInfo: {
                 currentMonth: null,
@@ -100,9 +102,9 @@ export default {
             this.loading = true
 
             axios.post('/statistics/quartal-premiums', {
-                filters: filters 
+                filters: filters
             }).then(response => {
-                    
+
                 this.items = response.data[0];
 
                 // this.defineSourcesAndGroups('t');

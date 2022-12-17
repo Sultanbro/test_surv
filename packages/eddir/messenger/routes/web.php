@@ -24,6 +24,11 @@ Route::post('/chat/auth', 'ChatsController@pusherAuth')->name('api.pusher.auth')
 Route::get('/v2/chats', 'ChatsController@fetchChats')->name('api.chats.fetch');
 
 /**
+ * Get company data
+ */
+Route::get('/v2/company', 'ChatsController@fetchCompany')->name('api.company.fetch');
+
+/**
  * Get users list
  */
 Route::get('/v2/users', 'ChatsController@fetchUsers')->name('api.users.fetch');
@@ -62,6 +67,11 @@ Route::post('/v2/chat/{chat_id}/messages', 'MessagesController@sendMessage')->na
  * Edit message. Message id should be integer
  */
 Route::post('/v2/message/{message_id}', 'MessagesController@editMessage')->name('api.v2.editMessage')->whereNumber('message_id');
+
+/**
+ * Set emoji reaction to message
+ */
+Route::post('/v2/message/{message_id}/reaction', 'MessagesController@setReaction')->name('api.v2.setReaction')->whereNumber('message_id');
 
 /**
  * Delete message
@@ -124,6 +134,21 @@ Route::post('/v2/chat/{chat_id}/edit', 'ChatsController@editChat')->name('api.v2
 Route::post('/v2/messages/read', 'MessagesController@setMessagesAsRead')->name('api.v2.setMessagesAsRead');
 
 /**
+ * Set user as chat admin
+ */
+Route::post('/v2/chat/{chat_id}/setAdmin/{user_id}', 'ChatsController@setAdmin')->name('api.v2.setAdmin');
+
+/**
+ * Remove user as chat admin
+ */
+Route::post('/v2/chat/{chat_id}/unsetAdmin/{user_id}', 'ChatsController@removeAdmin')->name('api.v2.removeAdmin');
+
+/**
  * Upload file
  */
 Route::post('/v2/chat/{chat_id}/upload', 'FilesController@upload')->name('api.v2.upload');
+
+/**
+ * Upload chat avatar
+ */
+Route::post('/v2/chat/{chat_id}/avatar', 'FilesController@uploadChatAvatar')->name('api.v2.uploadChatAvatar');

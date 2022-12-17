@@ -67,7 +67,7 @@
       <drop-zone ref="dropZone" @sendFiles="updateFileList"></drop-zone>
     </div>
 
-    <div v-show="showAccessModal" class="access-modal-bg" @click.self="toggleAccessModal(false)">
+    <div v-show="showAccessModal" class="access-modal-bg" @click.self="toggleAccessModal(false)" v-scroll-lock="showAccessModal">
       <div class="access-modal">
 
         <div class="access-modal__tabs">
@@ -305,16 +305,6 @@ export default {
     },
 
     toggleAccessModal(show) {
-      if (show) {
-        let scrollTop = document.documentElement.scrollTop;
-        let scrollLeft = document.documentElement.scrollLeft;
-        window.onscroll = function () {
-          window.scrollTo(scrollLeft, scrollTop);
-        };
-      } else {
-        window.onscroll = function () {
-        };
-      }
       this.showAccessModal = show;
     },
 
@@ -548,8 +538,9 @@ export default {
 
       formData.append('title', this.postTitle);
       formData.append('content', this.editorData);
+      formData.append('_method', 'put');
 
-      await axios.put('/news/' + this.editableId, formData, {
+      await axios.post('/news/' + this.editableId, formData, {
         headers: {
           'Content-Type': 'application/json',
           'Accept': 'application/json'

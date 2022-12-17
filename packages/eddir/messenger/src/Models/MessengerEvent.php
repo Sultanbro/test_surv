@@ -29,12 +29,14 @@ class MessengerEvent extends Model {
     public const TYPE_BLOCK = 'block';
     public const TYPE_UNBLOCK = 'unblock';
     public const TYPE_RENAME = 'rename';
-    public const TYPE_PHOTO = 'photo';
+    public const TYPE_CHAT_PHOTO = 'chat_photo';
     public const TYPE_DESCRIPTION = 'description';
     public const TYPE_INVITE_LINK = 'invite_link';
     public const TYPE_INVITE_LINKS = 'invite_links';
     public const TYPE_ONLINE = 'online';
     public const TYPE_OFFLINE = 'offline';
+    public const TYPE_REACTION = 'reaction';
+    public const TYPE_CHAT_ADMIN = 'chat_admin';
 
     public static array $save_events = [
         self::TYPE_CHAT_CREATED,

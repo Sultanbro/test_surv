@@ -122,6 +122,7 @@
                       :key="activeCourseKey"
                       @nextElement="nextElement"
                       @changeProgress="completed_stages++"
+                      @forGenerateCertificate="generateCertificateStart"
                     />
                   </div>
  
@@ -139,6 +140,7 @@
                           :key="activeCourseKey"
                           @nextElement="nextElement"
                           @changeProgress="completed_stages++"
+                          @forGenerateCertificate="generateCertificateStart"
                       />
                   </div>
 
@@ -159,6 +161,7 @@
                         :completed_stages="completed_stages"
                         :key="activeCourseKey"
                         @changeProgress="completed_stages++"
+                        @forGenerateCertificate="generateCertificateStart"
                         @nextElement="nextElement"
                       /> 
 
@@ -170,7 +173,7 @@
                   <h1>Поздравляем с завершением курса! 😁 😁 😆 </h1>
                   <p>Спасибо, что прошли курс несмотря ни на что!</p>
               </div>
-
+                <saveCertificate v-if="generateCertificate" @generate-success="generateSuccess" :course_id="activeCourseItem.course_id" :user_id="user_id" :title="activeCourseItem.title"/>
             </div>
 
       </div>
@@ -183,8 +186,18 @@
 </template>
 
 <script>
+    import saveCertificate from './Awards/types/saveCertificate';
 export default {
   name: "MyCourse",
+    components: {
+        saveCertificate
+    },
+    props:{
+        user_id: {
+            type: Number,
+            default: null
+        }
+    },
   data() {
     return {
       test: "dsa",
@@ -198,14 +211,14 @@ export default {
       all_stages: 0,
       completed_stages: 0,
       disable_course: false,
-      activeCourseKey: 1
+      activeCourseKey: 1,
+        generateCertificate: false
     };
   },
 
   created() {
     this.fetchData();
-
-    // бывор группы
+      // бывор группы
     const urlParams = new URLSearchParams(window.location.search);
     let id = urlParams.get("id");
     if (id) {
@@ -222,7 +235,20 @@ export default {
   mounted() {},
   
   methods: {
-
+      generateCertificateStart(model){
+          console.log(model);
+          if(model === 0){
+              this.generateCertificate = true;
+          }
+      },
+      generateSuccess(){
+          this.$toast.success('Ваш сертификат готов! Можете посмотреть и загрузить его в своем профиле во вкладке "Номинации"', {
+              timeout: 5000
+          });
+          this.activeCourseItem.status = 1;
+          this.activeCourseItem = null;
+          this.congrats = true;
+      },
     after_click_next_element() {
       let index = this.items.findIndex(el => el.id == this.activeCourseItem.id);
 
@@ -231,12 +257,13 @@ export default {
         this.activeCourseItem.status = 1;
         this.activeCourseItem = this.items[index + 1];  
         this.activeCourseItem.status = 2;
+          this.generateCertificate = false;
       } else {
-        this.activeCourseItem.status = 1;
-        this.activeCourseItem = null;
-        this.congrats = true;
         this.$toast.success('Поздравляем с завершением курса!');
-      } 
+        this.$toast.warning('Подождите пару секунд, Ваш сертификат почти готов...', {
+            timeout: 5000
+        });
+      }
       
     },
 

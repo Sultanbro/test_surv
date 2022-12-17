@@ -2,6 +2,7 @@
 
 namespace App\Http;
 
+use App\Http\Middleware\CheckIsAdminMiddleware;
 use Illuminate\Foundation\Http\Kernel as HttpKernel;
 
 class Kernel extends HttpKernel
@@ -78,6 +79,9 @@ class Kernel extends HttpKernel
         'partner' => \App\Http\Middleware\Partner::class,
         'referral' => \App\Http\Middleware\Referral::class,
         'timezone' => \App\Http\Middleware\Timezone::class,
-        'superuser' => \App\Http\Middleware\CheckSuperUser::class,  
+        'superuser' => \App\Http\Middleware\CheckSuperUser::class,
+        'admin_subdomain' => \App\Http\Middleware\IsAdminSubDomain::class,
+        'not_admin_subdomain' => \App\Http\Middleware\IsNotAdminSubDomain::class,
+        'is_admin' => CheckIsAdminMiddleware::class,
     ];
 }

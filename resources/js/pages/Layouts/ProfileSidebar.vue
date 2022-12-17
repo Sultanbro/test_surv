@@ -32,8 +32,8 @@
                     v-if="showButton"
                     :status="buttonStatus"
                     :workdayStatus="workdayStatus"
-                    @currentBalance="currentBalance"
-                ></start-day-btn>
+                    @clickStart="startDay"
+                />
                 <div class="profile__balance">
                     Текущий баланс
                     <p>{{ balance }} <span>{{ currency }}</span></p>
@@ -126,39 +126,65 @@
 
 
         <!-- Corp book page when day has started -->
-        <b-modal v-model="showCorpBookPage" title="Н" size="xl" class="modalle" hide-footer hide-header no-close-on-backdrop>
+        <b-modal
+            v-model="showCorpBookPage"
+            title="Н"
+            size="xl"
+            class="modalle"
+            hide-footer
+            hide-header
+            no-close-on-backdrop
+        >
             <div class="corpbook" v-if="corp_book_page !== undefined && corp_book_page !== null">
                 <div class="inner">
-                    <h5 class="text-center aet mb-3">Ознакомьтесь с одной из страниц Вашей корпоративной книги</h5>
+                    <h5 class="text-center aet mb-3">Ознакомьтесь с одной из страниц Вашей базы знаний</h5>
                     <h3 class="text-center">{{ corp_book_page.title }}</h3>
 
-                    <div v-html="corp_book_page.text"></div>
+                    <div v-html="corp_book_page.text"/>
 
-                    <button href="#profitInfo" class="button-blue m-auto mt-5" id="readCorpBook" @click="hideBook" disabled>
-                        <span class="text">Я прочитал</span>
-                        <span class="timer"></span>
+                    <button
+                        @click="testBook"
+                        :disabled="!!bookTimer"
+                        id="readCorpBook"
+                        class="button-blue m-auto mt-5"
+                    >
+                        <span v-if="bookTimer" class="timer">{{ bookTimer }}</span>
+                        <span v-else class="text">Я прочитал</span>
                     </button>
                 </div>
             </div>
+        </b-modal>
+
+        <b-modal
+            v-model="isBookTest"
+            size="xl"
+            class="modalle"
+            hide-footer
+            hide-header
+            no-close-on-backdrop
+        >
+            <questions
+                v-if="corp_book_page"
+                :course_item_id="0"
+                :questions="corp_book_page.questions"
+                :pass_grade="corp_book_page.questions.length"
+                type="kb"
+                :dont-repat="true"
+                @passed="hideBook"
+                @failed="repeatBook"
+            />
         </b-modal>
     </div>
 </template>
 
 <script>
-import axios from 'axios';
+import Vue from 'vue'
+import axios from 'axios'
+import { bus } from '../../bus'
 
 export default {
     name: 'ProfileSidebar',
     props: {},
-    computed: {
-        canChangeLogo(){
-            return this.$laravel.is_admin == 1 || this.$laravel.is_admin == 18
-        },
-        showButton(){
-            if(this.$can('ucalls_view') && !this.$laravel.is_admin) return false
-            return this.workdayStatus === 'started' || (this.userInfo.user && this.userInfo.user.user_type === 'remote')
-        }
-    },
     data: function () {
         return {
             fields: [],
@@ -180,10 +206,21 @@ export default {
             // corp book
             corp_book_page: null,
             showCorpBookPage: false,
+            bookTimer: 0,
+            bookTimerInterval: 0,
+            isBookTest: false,
         };
     },
+    computed: {
+        canChangeLogo(){
+            return this.$laravel.is_admin == 1 || this.$laravel.is_admin == 18
+        },
+        showButton(){
+            if(this.$can('ucalls_view') && !this.$laravel.is_admin) return false
+            return this.workdayStatus === 'started' || (this.userInfo.user && this.userInfo.user.user_type === 'remote')
+        }
+    },
     mounted(){
-        this.getLogo();
         const isRoot = window.location.pathname === '/'
         const isProfile = window.location.pathname === '/profile'
         if(!isRoot && !isProfile){
@@ -196,39 +233,55 @@ export default {
         scrollObserver.observe(this.$el)
     },
     created(){
+        bus.$data.profileSidebar = Vue.observable({
+            userInfo: {},
+            balance: 0,
+            currency: 'KZT',
+            buttonStatus: this.buttonStatus,
+            workdayStatus: this.workdayStatus,
+        })
+        bus.$on('MobileProfileSidebarStartDay', this.startDay)
+
+        window.addEventListener('blur', this.pauseBookTimer)
+        window.addEventListener('focus', this.unpauseBookTimer)
+
+        this.getLogo()
         this.fetchUserInfo()
         this.fetchTTStatus()
     },
     methods: {
         getLogo(){
-            const _this = this;
             axios.post('/settings/get', {
                 type: 'company'
-            }).then((response) => {
+            }).then(response => {
                 const settings = response.data.settings;
                 if (settings.logo){
-                    _this.logo.image =  settings.logo;
+                    this.logo.image =  settings.logo;
                 }
                 console.log(settings)
                 console.log(settings.logo)
-                console.log(_this.logo.image)
+                console.log(this.logo.image)
             }).catch((error) => {
-                alert(error);
+                this.$toast(error);
             });
         },
+
         /**
          * Загрузить лого открыть модальный окно
          */
         modalLogo() {
             this.$bvModal.show('modal-sm');
         },
+
         modalHideLogo() {
             this.$bvModal.hide('modal-sm');
         },
+
         change({ coordinates, canvas }) {
             this.logo.canvas = canvas;
             console.log(coordinates, canvas)
         },
+
         /**
          * Загрузить лого
          */
@@ -264,6 +317,7 @@ export default {
             this.imagePreview = '';
             this.showPreview = false;
         },
+
         handleFileUpload(){
             this.file = this.$refs.file.files[0];
             let reader = new FileReader();
@@ -283,6 +337,7 @@ export default {
                 this.$toast.error('Неподдерживаемый формат: ' + this.file.name.split('.').reverse()[0])
             }
         },
+
         /**
          * Добавить виджет
          */
@@ -304,6 +359,7 @@ export default {
 
             axios.get('/profile/personal-info').then(response => {
                 this.userInfo = response.data
+                bus.$data.profileSidebar.userInfo = this.userInfo
                 this.loading = false
             }).catch((e) => console.log(e))
         },
@@ -318,13 +374,15 @@ export default {
             axios.post('/timetracking/status', {}).then((response) => {
                 this.workdayStatus = response.data.status
 
-                if(this.workdayStatus === 'started' && response.data.corp_book.has) {
-                    this.corp_book_page = response.data.corp_book.page
+                if(this.workdayStatus === 'started' && response.data.corp_book) {
+                    this.corp_book_page = response.data.corp_book
                     this.showCorpBookPage = this.corp_book_page !== null
                     this.bookCounter()
                 }
 
-                this.$emit('currentBalance', response.data.balance)
+                this.currentBalance(response.data.balance)
+                bus.$data.profileSidebar.balance = this.balance
+                bus.$data.profileSidebar.currency = this.currency
 
                 this.buttonStatus = 'init'
             })
@@ -344,6 +402,7 @@ export default {
             if(this.workdayStatus === 'started') params = {stop: moment().format('HH:mm:ss')};
             return params;
         },
+
         /**
          * Начать или завершить день
          */
@@ -386,19 +445,22 @@ export default {
          *  Time to read book before "I have read" btn became active
          */
         bookCounter() {
-            let seconds = 60;
-            let interv = setInterval(() => {
-                seconds--;
-                VJQuery('#readCorpBook .timer').text(seconds);
-                if(seconds == 0) {
-                    VJQuery('#readCorpBook .timer').text('');
-                    clearInterval(interv);
-                }
-            }, 1000);
+            this.bookTimer = 60
+            this.unpauseBookTimer()
+        },
 
-            setTimeout(() => {
-                VJQuery('#readCorpBook').prop('disabled', false);
-            }, seconds * 1000);
+        pauseBookTimer(){
+            clearInterval(this.bookTimerInterval)
+        },
+
+        unpauseBookTimer(){
+            if(this.bookTimer === 0) return
+            this.bookTimerInterval = setInterval(() => {
+                --this.bookTimer
+                if(this.bookTimer === 0) {
+                    clearInterval(this.bookTimerInterval)
+                }
+            }, 1000)
         },
 
         /**
@@ -406,8 +468,20 @@ export default {
          */
         hideBook() {
             axios.post('/corp_book/set-read/', {})
-                .then((res) => this.showCorpBookPage = false)
-                .catch((error) => console.log(error))
+                .then(res => this.showCorpBookPage = false)
+                .catch(error => console.log(error))
+        },
+
+        repeatBook(){
+            this.showCorpBookPage = true
+            this.isBookTest = false
+            this.bookCounter()
+        },
+
+        testBook(){
+            if(this.bookTimer) return
+            this.isBookTest = true
+            this.showCorpBookPage = false
         },
     }
 };
@@ -543,24 +617,33 @@ export default {
     border-radius: 0.5rem;
 }
 @media(max-width:1359px){
+    .header__profile{
+        border-radius: 1.5rem;
+    }
     .profile__content{
         display: flex;
         flex-flow: row nowrap;
         padding: 2rem 7rem 1rem;
         justify-content: space-evenly;
     }
+    .profile__about{
+        margin-top: 0;
+    }
     .profile__col{
         flex: 0 1 28rem;
     }
 }
 @media(max-width:1200px){
+    .profile__content{
+        gap: 2rem;
+        padding: 2rem 2rem 1rem;
+    }
     .profile__col{
-        flex: 0 1 30%;
+        flex: 0 1 50%;
     }
 }
 @media(max-width:900px){
     .profile__content{
-        padding-top: 6rem;
         flex-flow: row wrap;
     }
     .profile__col{
@@ -585,6 +668,9 @@ export default {
         margin: auto;
         max-height: 100%;
         position:relative;
+    }
+    .profile__col{
+        flex: 1 1 auto;
     }
 }
 @media(min-width:1360px){

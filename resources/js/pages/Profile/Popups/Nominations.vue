@@ -1,329 +1,198 @@
 <template>
     <div class="popup__content awards-profile mt-5">
-        <div class="spinner-container" v-if="Object.keys(nominations).length === 0">
+        <div class="spinner-container" v-if="loading">
             <div class="throbber-loader"></div>
         </div>
-        <b-tabs>
-            <b-tab no-body title="Номинации" active v-if="Object.keys(nominations).length !== 0">
-                <b-tabs class="inside-tabs">
-                    <b-tab no-body title="Мои номинации" active>
-                        <div class="certificates__title">
-                            Сертификатов: <span class="current">{{nominations.my.length}}</span> из <span
-                                class="all">{{nominations.available.length}}</span>
-                        </div>
+        <b-tabs ref="tabis" v-model="tabIndex"
+                v-if="nominations.length > 0 || certificates.length > 0 || accrual.length > 0">
+            <div class="prev-next">
+                <span class="prev" @click="tabIndex--"><i class="fa fa-chevron-left"></i></span>
+                <span class="next" @click="tabIndex++"><i class="fa fa-chevron-right"></i></span>
+            </div>
+            <template v-if="nominations.length > 0">
+                <b-tab no-body  @click="activeteTab(award.description)" :title="award.name" v-for="(award, index) in nominations" :key="award.id">
+                    <b-tabs class="inside-tabs">
+                        <b-tab no-body title="Мои номинации" active>
+                            <div class="certificates__title">
+                                Сертификатов:
+                                <span class="current" v-if="award.hasOwnProperty('my')">{{award.my.length}}</span>
+                                <span v-else>0</span>
+                                из
+                                <span class="all" v-if="award.hasOwnProperty('my')">{{award.available.length + award.my.length}}</span>
+                                <span class="all" v-else-if="award.hasOwnProperty('available')">{{award.available.length}}</span>
+                                <span class="all" v-else>0</span>
+                            </div>
 
-                        <BRow>
-                            <BCol cols="12" md="4" lg="3" class="mb-5" v-for="(award, key) in nominations.my"
-                                  :key="award.id + key">
-                                <div class="certificates__item" @click="modalShow(award)">
-                                    <img :src="award.path" alt="certificate image">
-                                </div>
-                            </BCol>
-                        </BRow>
-                    </b-tab>
+                            <BRow v-if="award.hasOwnProperty('my')">
+                                <BCol cols="12" md="4" lg="3" class="mb-5" v-for="(item, key) in award.my"
+                                      :key="item.id">
+                                    <div class="certificates__item" @click="modalShow(item, award.name, true)">
+                                        <img :src="item.tempPath" alt="certificate image" v-if="item.format !== 'pdf'">
+                                        <vue-pdf-embed :source="item.tempPath" v-else />
+                                    </div>
+                                </BCol>
+                            </BRow>
+                        </b-tab>
 
-                    <b-tab no-body title="Доступные номинации">
-                        <div class="certificates__title">
-                            Сертификатов: <span
-                                class="current">{{nominations.available.length - nominations.my.length}}</span> из <span
-                                class="all">{{nominations.available.length}}</span>
-                        </div>
+                        <b-tab no-body title="Доступные номинации">
+                            <div class="certificates__title">
+                                Сертификатов:
+                                <span class="current" v-if="award.hasOwnProperty('available')">{{award.available.length}}</span>
+                                <span v-else>0</span>
+                                из
+                                <span class="all" v-if="award.hasOwnProperty('my')">{{award.available.length + award.my.length}}</span>
+                                <span class="all" v-else-if="award.hasOwnProperty('available')">{{award.available.length}}</span>
+                                <span class="all" v-else>0</span>
+                            </div>
 
-                        <BRow>
-                            <BCol cols="12" md="4" lg="3" class="mb-5" v-for="(award, key) in nominations.availableResult"
-                                  :key="award.id + key">
-                                <div class="certificates__item" @click="modalShow(award)">
-                                    <img :src="award.path" alt="certificate image">
-                                </div>
-                            </BCol>
-                        </BRow>
-                    </b-tab>
-                    <b-tab no-body title="Номинации других участников">
-                        <BRow>
-                            <BCol cols="12" md="4" lg="3" class="mb-5" v-for="(award, key) in nominations.other"
-                                  :key="award.id + key">
-                                <div class="certificates__item" @click="modalShow(award)">
-                                    <img :src="award.path" alt="certificate image">
-                                </div>
-                            </BCol>
-                        </BRow>
-                    </b-tab>
+                            <BRow v-if="award.hasOwnProperty('available')">
+                                <BCol cols="12" md="4" lg="3" class="mb-5" v-for="(item, key) in award.available"
+                                      :key="item.id">
+                                    <div class="certificates__item" @click="modalShow(item, award.name, false)">
+                                        <img :src="item.tempPath" alt="certificate image" v-if="item.format !== 'pdf'">
+                                        <vue-pdf-embed :source="item.tempPath" v-else />
+                                    </div>
+                                </BCol>
+                            </BRow>
+                        </b-tab>
+                        <b-tab no-body title="Номинации других участников">
+                            <BRow v-if="award.hasOwnProperty('other')">
+                                <BCol cols="12" md="4" lg="3" class="mb-5" v-for="(item, key) in award.other"
+                                      :key="item.id">
+                                    <div class="certificates__item" @click="modalShow(item, award.name, false)">
+                                        <img :src="item.tempPath" alt="certificate image" v-if="item.format !== 'pdf'">
+                                        <vue-pdf-embed :source="item.tempPath" v-else />
+                                    </div>
+                                </BCol>
+                            </BRow>
+                            <div v-else class="certificates__title">
+                                Ни один из участников еще не получил награды
+                            </div>
+                        </b-tab>
+                    </b-tabs>
+                </b-tab>
+            </template>
 
-                </b-tabs>
-            </b-tab>
-            <!--
-            <b-tab no-body title="Сертификаты">
-                <b-tabs class="inside-tabs">
-                    <b-tab no-body title="Мои номинации">
-                        <div class="certificates__title">
-                            Сертификатов: <span class="current">{{myAwards.length}}</span> из <span
-                                class="all">{{availableAwards.length}}</span>
-                        </div>
+           <template v-if="certificates.length > 0">
+               <b-tab no-body :title="award.name" @click="activeteTab(award.description)" v-for="(award, index) in certificates" :key="award.id">
+                   <b-tabs class="inside-tabs">
+                       <b-tab no-body title="Мои сертификаты" active>
+                           <div class="certificates__title">
+                               Сертификатов:
+                               <span class="current" v-if="award.hasOwnProperty('my')">{{award.my.length}}</span>
+                               <span v-else>0</span>
+                               из
+                               <span class="all" v-if="award.hasOwnProperty('my')">{{award.available.length + award.my.length}}</span>
+                               <span class="all" v-else-if="award.hasOwnProperty('available')">{{award.available.length}}</span>
+                               <span class="all" v-else>0</span>
+                           </div>
 
-                        <BRow>
-                            <BCol cols="12" md="4" lg="3" v-for="(award, key) in myAwards"
-                                  :key="award.id + key">
-                                <div class="certificates__item" @click="modalShow(award)">
-                                    <img :src="award.path" alt="certificate image">
-                                </div>
-                            </BCol>
-                        </BRow>
-                    </b-tab>
-                    <b-tab no-body title="Доступные номинации">
-                        <div class="certificates__title">
-                            Сертификатов: <span class="current">{{myAwards.length}}</span> из <span
-                                class="all">{{availableAwards.length}}</span>
-                        </div>
+                           <BRow v-if="award.hasOwnProperty('my')">
+                               <BCol cols="12" md="4" lg="3" class="mb-5" v-for="(item, key) in award.my"
+                                     :key="item.id">
+                                   <div class="certificates__item" @click="modalShow(item, award.name, true)">
+                                       <img :src="item.tempPath" alt="certificate image" v-if="item.format !== 'pdf'">
+                                       <vue-pdf-embed :source="item.tempPath" v-else />
+                                   </div>
+                               </BCol>
+                           </BRow>
+                       </b-tab>
 
-                        <BRow>
-                            <BCol cols="12" md="4" lg="3" v-for="(award, key) in myAwards"
-                                  :key="award.id + key">
-                                <div class="certificates__item" @click="modalShow(award)">
-                                    <img :src="award.path" alt="certificate image">
-                                </div>
-                            </BCol>
-                        </BRow>
-                    </b-tab>
-                    <b-tab no-body title="Номинации других участников">
-                        <div class="certificates__title">
-                            Сертификатов: <span class="current">{{myAwards.length}}</span> из <span
-                                class="all">{{availableAwards.length}}</span>
-                        </div>
+                       <b-tab no-body title="Доступные сертификаты за курсы">
+                           <div class="certificates__title">
+                               Сертификатов:
+                               <span class="current" v-if="award.hasOwnProperty('available')">{{award.available.length}}</span>
+                               <span v-else>0</span>
+                               из
+                               <span class="all" v-if="award.hasOwnProperty('my')">{{award.available.length + award.my.length}}</span>
+                               <span class="all" v-else-if="award.hasOwnProperty('available')">{{award.available.length}}</span>
+                               <span class="all" v-else>0</span>
+                           </div>
 
-                        <BRow>
-                            <BCol cols="12" md="4" lg="3" v-for="(award, key) in myAwards"
-                                  :key="award.id + key">
-                                <div class="certificates__item" @click="modalShow(award)">
-                                    <img :src="award.path" alt="certificate image">
-                                </div>
-                            </BCol>
-                        </BRow>
-                    </b-tab>
-                </b-tabs>
-            </b-tab>
-            -->
-            <b-tab no-body title="Лучшие сотрудники">
-                <b-tabs class="inside-tabs">
-                    <b-tab no-body title="По отделу" active>
-                        <BRow>
-                            <BCol cols="12" md="4">
-                                <div class="nominations__item">
-                                    <div class="nominations__item-title">
-                                        Процент успешных
-                                        исходящих продаж
-                                    </div>
-                                    <div class="nominations__item-avatar gift-1">
-                                        <img src="images/dist/profile-avatar.png" alt="profile avatar">
-                                    </div>
-                                    <div class="nominations__item-name">
-                                        Елена Линовская
-                                    </div>
-                                    <div class="nominations__item-subtext">
-                                        колл-центр
-                                    </div>
-                                    <div class="nominations__item-value">
-                                        15 500 ₸
-                                    </div>
-                                    <div class="nominations__item-wrapper">
-                                        <div class="nominations__item-row">
-                                            <p>KPI</p>
-                                            <p>1300 ₸</p>
-                                        </div>
-                                        <div class="nominations__item-row">
-                                            <p>БОНУСЫ</p>
-                                            <p>200 ₸</p>
-                                        </div>
-                                        <div class="nominations__item-row">
-                                            <p>ОКЛАД</p>
-                                            <p>14000 ₸</p>
-                                        </div>
-                                    </div>
-                                </div>
-                            </BCol>
-                            <BCol cols="12" md="4">
-                                <div class="nominations__item green">
-                                    <div class="nominations__item-title">
-                                        Процент успешных
-                                        исходящих продаж
-                                    </div>
-                                    <div class="nominations__item-avatar gift-2">
-                                        <img src="images/dist/profile-avatar.png" alt="profile avatar">
-                                    </div>
-                                    <div class="nominations__item-name">
-                                        Елена Линовская
-                                    </div>
-                                    <div class="nominations__item-subtext">
-                                        колл-центр
-                                    </div>
-                                    <div class="nominations__item-value">
-                                        15 500 ₸
-                                    </div>
-                                    <div class="nominations__item-wrapper">
-                                        <div class="nominations__item-row">
-                                            <p>KPI</p>
-                                            <p>1300 ₸</p>
-                                        </div>
-                                        <div class="nominations__item-row">
-                                            <p>БОНУСЫ</p>
-                                            <p>200 ₸</p>
-                                        </div>
-                                        <div class="nominations__item-row">
-                                            <p>ОКЛАД</p>
-                                            <p>14000 ₸</p>
-                                        </div>
-                                    </div>
-                                </div>
-                            </BCol>
-                            <BCol cols="12" md="4">
-                                <div class="nominations__item">
-                                    <div class="nominations__item-title">
-                                        Процент успешных
-                                        исходящих продаж
-                                    </div>
-                                    <div class="nominations__item-avatar gift-3">
-                                        <img src="images/dist/profile-avatar.png" alt="profile avatar">
-                                    </div>
-                                    <div class="nominations__item-name">
-                                        Елена Линовская
-                                    </div>
-                                    <div class="nominations__item-subtext">
-                                        колл-центр
-                                    </div>
-                                    <div class="nominations__item-value">
-                                        15 500 ₸
-                                    </div>
-                                    <div class="nominations__item-wrapper">
-                                        <div class="nominations__item-row">
-                                            <p>KPI</p>
-                                            <p>1300 ₸</p>
-                                        </div>
-                                        <div class="nominations__item-row">
-                                            <p>БОНУСЫ</p>
-                                            <p>200 ₸</p>
-                                        </div>
-                                        <div class="nominations__item-row">
-                                            <p>ОКЛАД</p>
-                                            <p>14000 ₸</p>
-                                        </div>
-                                    </div>
-                                </div>
-                            </BCol>
-                        </BRow>
-                    </b-tab>
-                    <b-tab no-body title="По должностям">
-                        <BRow>
-                            <BCol cols="12" md="4">
-                                <div class="nominations__item">
-                                    <div class="nominations__item-title">
-                                        Процент успешных
-                                        исходящих продаж
-                                    </div>
-                                    <div class="nominations__item-avatar gift-1">
-                                        <img src="images/dist/profile-avatar.png" alt="profile avatar">
-                                    </div>
-                                    <div class="nominations__item-name">
-                                        Елена Линовская
-                                    </div>
-                                    <div class="nominations__item-subtext">
-                                        колл-центр
-                                    </div>
-                                    <div class="nominations__item-value">
-                                        15 500 ₸
-                                    </div>
-                                    <div class="nominations__item-wrapper">
-                                        <div class="nominations__item-row">
-                                            <p>KPI</p>
-                                            <p>1300 ₸</p>
-                                        </div>
-                                        <div class="nominations__item-row">
-                                            <p>БОНУСЫ</p>
-                                            <p>200 ₸</p>
-                                        </div>
-                                        <div class="nominations__item-row">
-                                            <p>ОКЛАД</p>
-                                            <p>14000 ₸</p>
-                                        </div>
-                                    </div>
-                                </div>
-                            </BCol>
-                            <BCol cols="12" md="4">
-                                <div class="nominations__item green">
-                                    <div class="nominations__item-title">
-                                        Процент успешных
-                                        исходящих продаж
-                                    </div>
-                                    <div class="nominations__item-avatar gift-2">
-                                        <img src="images/dist/profile-avatar.png" alt="profile avatar">
-                                    </div>
-                                    <div class="nominations__item-name">
-                                        Елена Линовская
-                                    </div>
-                                    <div class="nominations__item-subtext">
-                                        колл-центр
-                                    </div>
-                                    <div class="nominations__item-value">
-                                        15 500 ₸
-                                    </div>
-                                    <div class="nominations__item-wrapper">
-                                        <div class="nominations__item-row">
-                                            <p>KPI</p>
-                                            <p>1300 ₸</p>
-                                        </div>
-                                        <div class="nominations__item-row">
-                                            <p>БОНУСЫ</p>
-                                            <p>200 ₸</p>
-                                        </div>
-                                        <div class="nominations__item-row">
-                                            <p>ОКЛАД</p>
-                                            <p>14000 ₸</p>
-                                        </div>
-                                    </div>
-                                </div>
-                            </BCol>
-                            <BCol cols="12" md="4">
-                                <div class="nominations__item">
-                                    <div class="nominations__item-title">
-                                        Процент успешных
-                                        исходящих продаж
-                                    </div>
-                                    <div class="nominations__item-avatar gift-3">
-                                        <img src="images/dist/profile-avatar.png" alt="profile avatar">
-                                    </div>
-                                    <div class="nominations__item-name">
-                                        Елена Линовская
-                                    </div>
-                                    <div class="nominations__item-subtext">
-                                        колл-центр
-                                    </div>
-                                    <div class="nominations__item-value">
-                                        15 500 ₸
-                                    </div>
-                                    <div class="nominations__item-wrapper">
-                                        <div class="nominations__item-row">
-                                            <p>KPI</p>
-                                            <p>1300 ₸</p>
-                                        </div>
-                                        <div class="nominations__item-row">
-                                            <p>БОНУСЫ</p>
-                                            <p>200 ₸</p>
-                                        </div>
-                                        <div class="nominations__item-row">
-                                            <p>ОКЛАД</p>
-                                            <p>14000 ₸</p>
-                                        </div>
-                                    </div>
-                                </div>
-                            </BCol>
-                        </BRow>
-                    </b-tab>
 
-                </b-tabs>
-            </b-tab>
+                           <BRow v-if="award.hasOwnProperty('available')">
+                               <BCol cols="12" md="4" lg="3" class="mb-5" v-for="(item, key) in award.available"
+                                     :key="item.id">
+                                   <div class="certificate-available" @click="modalShow(item, award.name, false)">
+                                       <div class="certificates__item">
+                                           <img :src="item.tempPath" alt="certificate image" v-if="item.format !== 'pdf'">
+                                           <vue-pdf-embed :source="item.tempPath" v-else />
+                                       </div>
+                                       <div class="available-name">{{item.course_name}}</div>
+                                   </div>
+                               </BCol>
+                           </BRow>
+                       </b-tab>
+                       <b-tab no-body title="Сертификаты за курсы других участников">
+                           <BRow v-if="award.hasOwnProperty('other')">
+                               <BCol cols="12" md="4" lg="3" class="mb-5" v-for="(item, key) in award.other"
+                                     :key="item.id">
+                                   <div class="certificates__item" @click="modalShow(item, award.name, false)">
+                                       <img :src="item.tempPath" alt="certificate image" v-if="item.format !== 'pdf'">
+                                       <vue-pdf-embed :source="item.tempPath" v-else />
+                                   </div>
+                               </BCol>
+                           </BRow>
+                           <div v-else class="certificates__title">
+                               Ни один из участников еще не получил награды
+                           </div>
+                       </b-tab>
+                   </b-tabs>
+               </b-tab>
+           </template>
+
+            <template v-if="accrual.length > 0">
+                <b-tab class="accrual-tab" @click="activeteTab(award.description)" no-body :title="award.name" active v-for="(award, index) in accrual"
+                       :key="index">
+                    <BRow>
+                        <BCol cols="12" md="4" v-for="(item, index) in award.top" :key="item.id + index">
+                            <div class="nominations__item" :class="{green: index === 1}">
+                                <div class="nominations__item-title">
+                                    {{item.group}}
+                                </div>
+                                <div class="nominations__item-avatar" :class="'gift-' + (index + 1)">
+                                    <img :src="item.path" alt="profile avatar" v-if="item.path.length > 10">
+                                    <img src="images/avatar.png" alt="profile avatar" v-else>
+                                </div>
+                                <div class="nominations__item-name">
+                                    {{item.name}} {{item.last_name}}
+                                </div>
+                                <div class="nominations__item-subtext">
+                                    {{item.position}}
+                                </div>
+                                <div class="nominations__item-value">
+                                    {{item.total | splitNumber(item.total)}} ₸
+                                </div>
+                                <div class="nominations__item-wrapper">
+                                    <div class="nominations__item-row">
+                                        <p>KPI</p>
+                                        <p> {{item.kpi | splitNumber(item.kpi)}} ₸</p>
+                                    </div>
+                                    <div class="nominations__item-row">
+                                        <p>БОНУСЫ</p>
+                                        <p>{{item.bonuses | splitNumber(item.bonuses)}} ₸</p>
+                                    </div>
+                                    <div class="nominations__item-row">
+                                        <p>ОКЛАД</p>
+                                        <p>{{item.earnings | splitNumber(item.earnings)}} ₸</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </BCol>
+                    </BRow>
+                </b-tab>
+            </template>
+
         </b-tabs>
-        <b-modal v-if="itemModal" centered size="xl" v-model="modal" :title="itemModal.name">
-            <img :src="itemModal.path" alt="" class="img-fluid">
+        <div v-else>
+            <h4 class="not-awards">У Вас пока нет ни одной награды</h4>
+        </div>
+        <b-modal v-if="itemModal" modal-class="awards-profile-modal-preview" centered size="xl" v-model="modal" :title="itemModal.awardName">
+            <img :src="itemModal.tempPath" class="img-fluid" alt="certificate image" v-if="itemModal.format !== 'pdf'">
+            <vue-pdf-embed :source="itemModal.tempPath" v-else />
             <template #modal-footer>
                 <BButton variant="primary" @click="modal = !modal">Закрыть</BButton>
+                <BButton variant="success" v-if="itemModal.isMy" @click="downloadImage(itemModal)">Скачать</BButton>
             </template>
         </b-modal>
 
@@ -332,85 +201,124 @@
 
 
 <script>
-    import { SpinnerPlugin } from 'bootstrap-vue';
-
+    import {SpinnerPlugin} from 'bootstrap-vue';
+    import VuePdfEmbed from "vue-pdf-embed/dist/vue2-pdf-embed";
     export default {
         name: "PopupNominations",
-        components: {SpinnerPlugin},
+        components: {SpinnerPlugin, VuePdfEmbed},
         props: {},
         data: function () {
             return {
+                tabIndex: 0,
+                loading: true,
                 modal: false,
                 itemModal: null,
                 fields: [],
                 awardTypes: null,
-                nominations: {},
-                certificates: {},
-                favorites: {}
+                nominations: [],
+                certificates: [],
+                accrual: [],
             };
         },
-        mounted() {
-            let loader = this.$loading.show();
-            this.axios
-                .get('/awards/type?award_type_id=1')
+        filters: {
+            splitNumber: function (val) {
+                return val.toString().replace(/\B(?=(\d{3})+(?!\d))/g, " ");
+            }
+        },
+        watch: {
+            tabIndex(val) {
+                let buttons = this.$refs.tabis.$refs.buttons;
+                buttons[val].$refs.link.$el.scrollIntoView({inline: "end", behavior: "smooth"});
+            }
+        },
+        async mounted() {
+            await this.axios
+                .get('/awards/type?key=nomination')
                 .then(response => {
-                    if(response.data.data){
+                    if (response.data.data) {
                         this.nominations = response.data.data;
-                        this.nominations.availableResult = [];
-                        const arrMy = [];
-                        const arrAv = [];
-                        response.data.data.my.forEach(item => {
-                            arrMy.push(item.award_id);
-                        });
-                        response.data.data.available.forEach(item => {
-                            arrAv.push(item.id);
-                        });
-                        const resArr = arrAv.filter(e => !arrMy.includes(e));
-                        this.nominations.available.map(item => {
-                            resArr.forEach(i => {
-                                if(item.id === i){
-                                    this.nominations.availableResult.push(item);
-                                }
-                            })
-                        });
-                        console.log(this.nominations);
                     }
-                    loader.hide();
                 })
                 .catch(error => {
                     console.log(error);
-                    loader.hide();
                 });
 
-            // this.axios
-            //     .get('/awards/type?award_type_id=2')
-            //     .then(response => {
-            //         const data = response.data.data;
-            //         for (let i = 0; i < data.length; i++) {
-            //             this.certificates.push(data[i]);
-            //         }
-            //         loader.hide();
-            //     })
-            //     .catch(error => {
-            //         console.log(error);
-            //         loader.hide();
-            //     });
-            //
-            this.axios
-                .get('/awards/type?award_type_id=3')
+            await this.axios
+                .get('/awards/type?key=certificate')
                 .then(response => {
-                    console.log(response);
-                    this.favorites = response.data.data;
-                    loader.hide();
+                    this.certificates = response.data.data;
                 })
                 .catch(error => {
                     console.log(error);
-                    loader.hide();
                 });
+            await this.axios
+                .get('/awards/type?key=accrual')
+                .then(response => {
+                    this.accrual = response.data.data;
+                })
+                .catch(error => {
+                    console.log(error);
+                });
+            this.loading = false;
+            if (this.nominations.length > 0) {
+                let text = this.nominations[0].description;
+                this.$emit('get-desc', text);
+                return true;
+            } else if (this.certificates.length > 0) {
+                let text = this.certificates[0].description;
+                this.$emit('get-desc', text);
+                return true;
+            } else if (this.accrual.length > 0) {
+                let text = this.accrual[0].description;
+                this.$emit('get-desc', text);
+                return true;
+            }
         },
         methods: {
-            modalShow(item) {
+            activeteTab(text){
+                this.$emit('get-desc', text)
+            },
+            downloadImage(data) {
+                console.log(data);
+                var xhr = new XMLHttpRequest();
+                console.log(data);
+                xhr.open("GET", data.tempPath, true);
+
+                xhr.responseType = "arraybuffer";
+
+                xhr.onload = function (e) {
+                    var arrayBufferView = new Uint8Array(this.response);
+                    let options = {};
+                    if (data.format === 'png') {
+                        options.type = 'image/png'
+                    }
+                    if (data.format === 'jpg') {
+                        options.type = 'image/jpeg'
+                    }
+                    if (data.format === 'pdf') {
+                        options.type = 'application/pdf'
+                    }
+                    var blob = new Blob([arrayBufferView], options);
+                    var imageUrl = window.URL.createObjectURL(blob);
+                    var a = document.createElement('a');
+                    a.href = imageUrl;
+                    a.download = `${data.awardName}-${data.award_id | data.id}.${data.format}`;
+                    document.body.appendChild(a);
+                    a.click();
+                    console.log(a);
+                    document.body.removeChild(a);
+                };
+
+                xhr.send();
+            },
+            modalShow(item, name, isMy) {
                 this.itemModal = item;
+                if(item.hasOwnProperty('course_name')){
+                    this.itemModal.awardName = item.course_name;
+                } else {
+                    this.itemModal.awardName = name;
+                }
+                this.itemModal.isMy = isMy;
                 this.modal = !this.modal;
             },
         }
@@ -419,12 +327,85 @@
 
 
 <style lang="scss">
+    .awards-profile-modal-preview{
+        .img-fluid{
+            width: 100% !important;
+        }
+        canvas{
+            width: 100%!important;
+            height: auto!important;
+        }
+    }
     .awards-profile {
         position: relative;
+        .prev-next {
+            position: absolute;
+            top: 0;
+            right: 0;
+            height: 63px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-top: 1px solid #dee2e6;
+            border-bottom: 1px solid #dee2e6;
+            background-color: #fff;
+            width: 120px;
+            span {
+                width: 40px;
+                height: 40px;
+                border-radius: 50px;
+                display: inline-flex;
+                align-items: center;
+                justify-content: center;
+                border: 1px solid #ED2353;
+                cursor: pointer;
+
+                i {
+                    font-size: 18px;
+                    color: #ED2353;
+                }
+
+                &:hover {
+                    background-color: #ED2353;
+
+                    i {
+                        color: #fff;
+                    }
+                }
+            }
+
+            .next {
+                margin-left: 10px;
+            }
+        }
+
+        .not-awards {
+            font-size: 3.1rem;
+            text-transform: uppercase;
+            color: rgba(64, 64, 64, 0.4);
+        }
+
+        .nominations__item-avatar {
+            img {
+                width: 150px;
+                height: 150px;
+                border-radius: 50%;
+            }
+        }
+
         .tabs {
+            .accrual-tab {
+                margin-top: 30px;
+                overflow-x: hidden;
+                padding-bottom: 30px;
+            }
+
             .nav-tabs {
                 border-top: 1px solid #dee2e6;
-
+                flex-wrap: nowrap;
+                white-space: nowrap;
+                overflow: hidden;
+                margin-right: 120px;
                 .nav-item {
                     .nav-link {
                         font-size: 2.1rem;
@@ -492,10 +473,40 @@
                 }
             }
         }
+        .img-fluid{
+            width: 100% !important;
+        }
 
         .nominations__wrapper {
             width: 100%;
             display: block;
+        }
+        
+        .certificate-available{
+            box-shadow: rgb(50 50 93 / 25%) 0px 13px 27px -5px, rgb(0 0 0 / 30%) 0px 8px 16px -8px;
+            overflow: hidden;
+            border: 1px solid #ddd;
+            border-radius: 10px;
+            cursor: pointer;
+            .certificates__item{
+                box-shadow: none;
+                border-radius: 0;
+                border: none;
+            }
+            .available-name{
+                font-size: 14px;
+                padding: 15px 10px;
+                background-color: #AEBEE0;
+                text-align: center;
+                border-top: 1px solid #ddd;
+                color: #fff;
+                transition: 0.15s all ease;
+            }
+            &:hover{
+                .available-name{
+                    background-color: #ED2353;
+                }
+            }
         }
 
         .certificates__item {
@@ -508,14 +519,19 @@
             border: 1px solid #ddd;
             border-radius: 10px;
             box-shadow: rgb(50 50 93 / 25%) 0px 13px 27px -5px, rgb(0 0 0 / 30%) 0px 8px 16px -8px;
-
             img {
-                width: auto;
+                width: 100%;
                 height: 200px;
                 object-fit: cover;
             }
+            canvas{
+                width: 100%!important;
+                height: 200px !important;
+                object-fit: cover;
+            }
         }
-        .certificates__title{
+
+        .certificates__title {
             margin-top: 0;
         }
 
@@ -531,7 +547,7 @@
             }
         }
 
-        .spinner-container{
+        .spinner-container {
             position: absolute;
             top: 0;
             left: 0;
@@ -543,6 +559,7 @@
             align-items: center;
             justify-content: center;
         }
+
         .throbber-loader {
             animation: throbber-loader 2000ms 300ms infinite ease-out;
             background: #dde2e7;
@@ -554,6 +571,7 @@
             margin: 0 1.6em;
             z-index: 22;
         }
+
         .throbber-loader:before, .throbber-loader:after {
             background: #dde2e7;
             content: '\x200B';
@@ -563,12 +581,14 @@
             position: absolute;
             top: 0;
         }
+
         .throbber-loader:before {
             -moz-animation: throbber-loader 2000ms 150ms infinite ease-out;
             -webkit-animation: throbber-loader 2000ms 150ms infinite ease-out;
             animation: throbber-loader 2000ms 150ms infinite ease-out;
             left: -1.6em;
         }
+
         .throbber-loader:after {
             -moz-animation: throbber-loader 2000ms 450ms infinite ease-out;
             -webkit-animation: throbber-loader 2000ms 450ms infinite ease-out;

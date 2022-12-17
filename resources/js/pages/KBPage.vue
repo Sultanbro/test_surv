@@ -214,18 +214,16 @@
           class="form-control mb-2"
         />
 
-        <div>
+        <div :key="superselectKey">
           <p class="mb-2">Кто может видеть</p>
           <superselect 
             :values="who_can_read"
             class="w-full mb-4" 
-            :key="1"
             :select_all_btn="true" /> 
           <p class="mb-2">Кто может редактировать</p>
           <superselect
             :values="who_can_edit" 
             class="w-full mb-4" 
-            :key="2"
             :select_all_btn="true" /> 
         </div>
         <button class="btn btn-primary rounded m-auto" @click="updateSection">
@@ -309,6 +307,7 @@ export default {
       who_can_edit: [],
       showEdit: false,
       show_page_id: 0,
+      superselectKey: 1,
       section_name: '',
       update_book: null,
       search: {
@@ -466,6 +465,7 @@ export default {
 
 
       this.showEdit = true;
+      
       this.update_book = book;
       console.log(book)
       axios
@@ -475,6 +475,7 @@ export default {
         .then((response) => {
           this.who_can_edit = response.data.who_can_edit;
           this.who_can_read = response.data.who_can_read;
+          this.superselectKey++;
         })
         .catch((error) => {
           alert(error);

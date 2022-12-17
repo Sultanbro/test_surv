@@ -28,6 +28,7 @@ use Spatie\Permission\Models\Role;
 use Spatie\Permission\Models\Permission;
 use App\QualityRecordWeeklyStat;
 use App\Http\Controllers\IntellectController;
+use App\Models\Admin\ObtainedBonus;
 use App\Models\Analytics\AnalyticColumn;
 use App\Models\Analytics\RecruiterStat;
 use App\Models\Analytics\TraineeReport;
@@ -37,17 +38,27 @@ use App\Models\GroupUser;
 use App\Models\Tenant;
 use App\Salary;
 use App\Service\Department\UserService;
+use App\Timetracking;
 use Illuminate\Support\Facades\Http;
 
 class TestController extends Controller { 
   
 	
 	public function test() { 
-		$centralUser = CentralUser::with('tenants')->where('email', 'ali.akpanov@yandex.ru')->first();
+		 
+        
+		$tt = Timetracking::where('user_id', 5)
+			->whereDate('enter', '2022-12-14')
+			->first();
+		
+        dd($tt);
+	}
 
-		dd($centralUser->tenants());
-	}  
-
+    public function testMethodForCheck()
+    {
+		$account = new Callibro('user580158@bpartners.kz');
+        dd($account);
+    }
 	private function getSegmentAndSaveForLead($id) {
 
 		$res =	(new Bitrix)->getLeads(0, '', 'ALL', 'ASC', '2010-01-01', '2050-01-01', "DATE_CREATE", $id, 'title');

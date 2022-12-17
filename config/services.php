@@ -40,6 +40,11 @@ return [
         'password' => env('ONEPAY_PASSWORD'),
         'serviceID' => env('ONEPAY_SERVICEID'),
         'account' => env('ONEPAY_ACCOUNT'),
-    ]
+    ],
+
+    'recaptcha' => [
+        'key' => env('GOOGLE_RECAPTCHA_KEY'),
+        'secret' => env('GOOGLE_RECAPTCHA_SECRET'),
+    ],
 
 ];

@@ -219,6 +219,7 @@ return [
         App\Providers\TenancyServiceProvider::class, // <-- here
         App\Providers\RepositoryServiceProvider::class, // <-- here
         Eddir\Messenger\MessengerServiceProvider::class,
+        App\Providers\ObserverServiceProvider::class,
 
        // Spatie\Permission\PermissionServiceProvider::class,
 

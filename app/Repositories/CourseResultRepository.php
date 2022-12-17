@@ -40,14 +40,14 @@ class CourseResultRepository extends CoreRepository
      * @param int $userId
      * @param int $courseId
      * @param int $points
-     * @param int $progress
+     * @param float $progress
      * @return void
      */
     public function removeItemPoints(
         int $userId,
         int $courseId,
         int $points,
-        int $progress
+        float $progress
     )
     {
         $result = $this->model()->where([
@@ -57,8 +57,29 @@ class CourseResultRepository extends CoreRepository
         ])->first();
 
         $result->points   -= $points;
-        $result->progress -= $progress;
+        $result->progress -= round($progress * 100, 2);
 
+        if ($result->progress < 0)
+        {
+            $result->progress = 0;
+        }
         $result->save();
+    }
+
+    /**
+     * @param int $courseId
+     * @param int $userId
+     * @return void
+     */
+    public function setIsRegressed(
+        int $courseId,
+        int $userId
+    ): void
+    {
+        $this->model()->where('user_id', $userId)->where('course_id', $courseId)->update(
+            [
+            'is_regressed' => 1
+            ]
+        );
     }
 }

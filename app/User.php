@@ -7,7 +7,7 @@ use App\External\Bitrix\Bitrix;
 use App\Http\Controllers\IntellectController as IC;
 use App\Models\Admin\ObtainedBonus;
 use App\Models\Article\Article;
-use App\Models\Award;
+use App\Models\Award\Award;
 use App\Models\AwardUser;
 use App\Models\CentralUser;
 use App\Models\CourseResult;
@@ -317,9 +317,16 @@ class User extends Authenticatable implements Authorizable
             $award_date = Carbon::createFromFormat('m-Y', $month->month . '-' . $month->year);
             $bonusesSum += ObtainedBonus::onDay($this->id, $award_date->day($i)->format('Y-m-d'));
 
-            //test bonuses
-            $bonusesSum += $this->testBonuses->sum('amount');
+
+
+
+
         }
+        //test bonuses
+        $bonusesSum += $this->testBonuses
+            ->where('date','>=', now()->format('Y-m-d'))
+            ->sum('amount');
+
         $kpi = SavedKpi::where('user_id', $this->id)
             ->where('date', $date->format('Y-m-d'))
             ->first();
@@ -430,7 +437,7 @@ class User extends Authenticatable implements Authorizable
             
         return ProfileGroup::whereIn('id', array_values($groups))
             //->where('active', 1)
-            ->select(['id', 'name', 'work_start', 'work_end'])
+            ->select(['id', 'name', 'work_start', 'work_end', 'has_analytics'])
             ->get();
     }
 

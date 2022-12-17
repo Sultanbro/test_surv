@@ -120,25 +120,29 @@ class ObtainedBonus extends Model
                 ->get();
 
         $manual_bonus_all = Salary::where('user_id', $user_id)
+            ->selectRaw('date, bonus, comment_bonus, day(date) as day')
             ->whereYear('date', $month->year)
             ->whereMonth('date', $month->month)
             ->get();
-            
+
+       
+
         for ($i = $month->daysInMonth; $i > 0; $i--) {
 
             $bonuses = $bonuses_all->where('date', $month->day($i)->format('Y-m-d'));
             $test_bonuses = $test_bonuses_all->where('date', $month->day($i)->format('Y-m-d'));
-            $manual_bonus = $manual_bonus_all->where('date', $month->day($i)->format('Y-m-d'))->first();
-            
+            $manual_bonus = $manual_bonus_all->where('day', $i)->first();
+
             $item = [];
 
             $sum = 0;
             $comment = '';
 
+            
             if($manual_bonus) {
                 $item['date'] = $manual_bonus->date->format('Y-m-d') ?? '';
-                $sum = $manual_bonus->bonus * $currency_rate;
-                $comment = $manual_bonus->comment_bonus;
+                $sum += $manual_bonus->bonus * $currency_rate;
+                $comment .= $manual_bonus->comment_bonus;
             }
 
             if($bonuses->count() > 0) {
@@ -153,7 +157,6 @@ class ObtainedBonus extends Model
                 }
             }
 
-
             if($test_bonuses->count() > 0) {
                 foreach ($test_bonuses as $key => $bon) {
                     $item['date'] = $bon->date;
@@ -165,8 +168,6 @@ class ObtainedBonus extends Model
                     }
                 }
             }
-
-            
 
             $item['sum'] = $sum;
             $item['comment'] = $comment;

@@ -62,6 +62,11 @@ class ProfileController extends Controller
      */
     public function newprofile()
     {
+        // admin.jobtron.org
+        if(request()->getHost() === 'admin.' .config('app.domain')) {
+            return view('admin');
+        }
+
         return view('newprofile');
     }
 

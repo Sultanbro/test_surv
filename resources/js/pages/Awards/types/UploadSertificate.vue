@@ -1,213 +1,312 @@
 <template>
-  <div>
-    <div class="d-flex file">
-      <BFormFile
-        v-model="image"
-        class="form-file"
-        placeholder="Выберите Сертификат"
-        drop-placeholder="Перетащите файл сюда..."
-        accept=".pdf"
-        type="file"
-        id="file"
-        ref="file"
-      >
-        <template slot="file-name" slot-scope="{ names }">
-          <div class="file-name" v-for="(name, key) in names" :key="key">
-            <BBadge class="badge-img" variant="dark">{{ name }}</BBadge>
-          </div>
-        </template></BFormFile
-      >
-      <BButton
-        v-if="hasImage"
-        variant="danger"
-        class="ml-3 clear-btn"
-        @click="clearImage"
-        >Очистить</BButton
-      >
+    <div class="upload-certificate">
+        <div class="d-flex file">
+            <BFormFile
+                    v-model="image"
+                    class="form-file"
+                    placeholder="Выберите Сертификат"
+                    drop-placeholder="Перетащите файл сюда..."
+                    accept=".pdf"
+                    type="file"
+                    id="file"
+                    ref="file"
+            >
+            </BFormFile>
+            <BButton
+                    v-if="imageSrc"
+                    variant="danger"
+                    class="ml-3 clear-btn"
+                    @click="clearImage"
+            >
+                Очистить
+            </BButton>
+        </div>
+        <small class="mb-4 d-block mt-1">Загрузите подготовленный шаблон в формате PDF</small>
+        <br>
+        <div v-if="imageSrc" class="sertificate-prewiev">
+            <div class="sertificate-modal">
+                       <div class="preview-canvas" @click="openModalCertificate">
+                           <vue-pdf-embed v-if="imageSrc" ref="vuePdfUploadCertificate" :source="imageSrc"/>
+                       </div>
+                     <div class="info-type2">
+                         <i class="fa fa-info"></i>
+                        <span> Внимание! Нажмите на картинку, чтобы отредактировать загруженный шаблон.
+                         Обязательно расположите текст в нужные Вам места. В противном случае сертификат будет
+                         сгенерирован неправильно!</span>
+                     </div>
+                <BModal v-model="modalCertificate" modal-class="upload-certificate-modal"
+                        title="Контсруктор сертификата"
+                        size="xl" hide-footer centered>
+                    <UploadSertificateModal :styles="styles" :img="imageSrc" :modalCertificate.sync="modalCertificate"
+                                            @save-changes="saveStyles"/>
+                </BModal>
+            </div>
+        </div>
+        <b-row>
+            <b-col cols="12" md="7">
+                <Multiselect
+                        v-model="value"
+                        :options="options"
+                        :multiple="true"
+                        :close-on-select="false"
+                        :clear-on-select="false"
+                        :preserve-search="true"
+                        placeholder="Выберите курсы"
+                        label="name"
+                        track-by="name"
+                        @select="onSelect"
+                        @remove="onRemove"
+                        :preselect-first="false"
+
+                />
+            </b-col>
+            <b-col cols="12" md="5">
+                <div class="d-flex">
+                    <b-button variant="outline-success" class="ml-2 btn-multiselect" @click="selectAll">Выбрать все <i
+                            class="fa fa-check ml-2"></i></b-button>
+                    <b-button variant="outline-danger" class="ml-2 btn-multiselect" @click="clearAll">Убрать все <i
+                            class="fa fa-trash ml-2"></i></b-button>
+                </div>
+            </b-col>
+        </b-row>
     </div>
-
-
-    <template v-if="imagePath.length > 0">
-      <div class="sertificate-prewiev">
-        <div class="sertificate-modal">
-          <div class="preview-canvas" v-b-modal="'modal-constructor'">
-            <vue-pdf-embed :source="imagePath"/>
-          </div>
-          <BModal id="modal-constructor" title="Контсруктор сертификата" size="xl" hide-footer centered>
-            <UploadSertificateModal :styles="styles" :img="imagePath" @save-changes="saveStyles"/>
-          </BModal>
-        </div>
-        </div>
-    </template>
-    <template v-else>
-      <div v-if="hasImage" class="sertificate-prewiev">
-        <div class="sertificate-modal">
-          <div class="preview-canvas" v-b-modal="'modal-constructor'">
-            <vue-pdf-embed v-if="imageSrc" :source="imageSrc"/>
-          </div>
-          <BModal id="modal-constructor" title="Контсруктор сертификата" size="xl" hide-footer centered>
-            <UploadSertificateModal :styles="styles" :img="imageSrc" @save-changes="saveStyles"/>
-          </BModal>
-        </div>
-      </div>
-    </template>
-  </div>
 </template>
 
 <script>
-import UploadSertificateModal from "../types/UploadSertificateModal.vue";
-import VuePdfEmbed from "vue-pdf-embed/dist/vue2-pdf-embed";
+    import UploadSertificateModal from "../types/UploadSertificateModal.vue";
+    import RegenerateCertificates from "./RegenerateCertificates";
+    import VuePdfEmbed from "vue-pdf-embed/dist/vue2-pdf-embed";
+    import Multiselect from "vue-multiselect";
 
-const base64Encode = (data) =>
-  new Promise((resolve, reject) => {
-    const reader = new FileReader();
-    reader.readAsDataURL(data);
-    reader.onload = () => resolve(reader.result);
-    reader.onerror = (error) => reject(error);
-  });
+    const base64Encode = (data) =>
+        new Promise((resolve, reject) => {
+            const reader = new FileReader();
+            reader.readAsDataURL(data);
+            reader.onload = () => resolve(reader.result);
+            reader.onerror = (error) => reject(error);
+        });
 
-export default {
-  name: "UploadSertificate",
-  components: {
-    UploadSertificateModal,
-    VuePdfEmbed
-  },
-  props: {
-    path: String,
-    format: String,
-    styles: String
-  },
-  data() {
-    return {
-      file: "",
-      image: null,
-      imageSrc: null,
-      imagePath: ''
+    export default {
+        name: "UploadSertificate",
+        components: {
+            UploadSertificateModal,
+            RegenerateCertificates,
+            Multiselect,
+            VuePdfEmbed
+        },
+        props: {
+            awards: {
+                type: Array,
+                default: []
+            },
+            id: {
+                type: Number,
+                default: null
+            }
+        },
+        data() {
+            return {
+                modalCertificate: false,
+                value: [],
+                options: [],
+                image: null,
+                imageSrc: null,
+                styles: '',
+                textAll: 'Выбрать все',
+                variant: 'success'
+            };
+        },
+        mounted() {
+            if (this.awards.length > 0) {
+                this.imageSrc = this.awards[0].tempPath;
+                this.styles = this.awards[0].styles;
+                this.$emit('has-change-constructor', true);
+            }
+            this.getCourses();
+        },
+        watch: {
+            image(newValue) {
+                this.imageSrc = null;
+                this.$emit('has-change-constructor', false);
+                if (newValue) {
+                    base64Encode(newValue)
+                        .then((val) => {
+                            this.imageSrc = val;
+                            this.$emit("image-download", this.image, true);
+                        })
+                        .catch(() => {
+                            this.imageSrc = null;
+                        });
+                }
+            },
+        },
+        methods: {
+            openModalCertificate() {
+                this.modalCertificate = !this.modalCertificate;
+                this.$emit('has-change-constructor', true)
+            },
+            selectAll() {
+                this.value = [];
+                this.$emit("remove-course-all");
+                this.value = this.options;
+                this.$emit("add-course-all", this.value);
+            },
+            clearAll() {
+                this.value = [];
+                this.$emit("remove-course-all");
+            },
+            onSelect(val) {
+                this.$emit("add-course", val.id);
+            },
+            onRemove(val) {
+                this.$emit("remove-course", val.id);
+            },
+            async getCourses() {
+                let loader = this.$loading.show();
+                await this.axios
+                    .get('/admin/courses/get')
+                    .then(response => {
+                        const data = response.data.courses;
+                        for (let i = 0; i < data.length; i++) {
+                            this.options.push(data[i]);
+                            if (this.awards.length > 0) {
+                                if (data[i].award_id === this.awards[0].id) {
+                                    this.value.push(data[i]);
+                                }
+                            }
+                        }
+                        this.$emit("add-course-all", this.value);
+                        loader.hide();
+                    })
+                    .catch(error => {
+                        console.log(error);
+                        loader.hide();
+                    })
+            },
+            saveStyles(fullName, courseName, date) {
+                const styles = {};
+                styles.fullName = fullName;
+                styles.courseName = courseName;
+                styles.date = date;
+                this.styles = JSON.stringify(styles);
+                this.$emit("styles-change", styles);
+            },
+            clearImage() {
+                this.image = null;
+                this.imageSrc = null;
+                this.$emit("image-download", null, false);
+                this.$emit('has-change-constructor', false)
+            },
+        },
     };
-  },
-  mounted(){
-    this.imagePath = this.path;
-  },
-  computed: {
-    hasImage() {
-      this.$emit("image-download", this.image);
-      return !!this.image;
-    },
-  },
-  watch: {
-    image(newValue, oldValue) {
-      let newValueString = newValue.name + newValue.size;
-      let oldValueString = null;
-      if (oldValue !== null) {
-        oldValueString = oldValue.name + oldValue.size;
-      }
-      if (newValueString !== oldValueString) {
-        this.imageSrc = '';
-        if (newValue) {
-          base64Encode(newValue)
-                  .then((val) => {
-                    this.imageSrc = val;
-                    // this.$emit("image-download", this.image);
-                  })
-                  .catch(() => {
-                    this.imageSrc = '';
-                  });
-        } else {
-          this.imageSrc = '';
-        }
-      }
-    },
-  },
-  methods: {
-    saveStyles(fullName, courseName, hours, date){
-      const styles = {};
-      styles.fullName = fullName;
-      styles.courseName = courseName;
-      styles.hours = hours;
-      styles.date = date;
-      this.$emit("styles-change", styles);
-    },
-    clearImage() {
-      this.image = null;
-    },
-    onSubmit() {
-      if (!this.image) {
-        alert("Please select an image.");
-        return;
-      }
-
-      alert("Form submitted!");
-    },
-  },
-};
 </script>
 
-<style lang="scss" scoped>
-  .preview-canvas{
-    cursor: pointer;
-    border: 1px solid #999;
-    border-radius: 10px;
-    overflow: hidden;
-    display: inline-block;
-    transition: 0.2s all ease;
-    &:hover{
-      transform: scale(1.05);
-      box-shadow: 0 0 6px 0 #999;
+<style lang="scss">
+    .upload-certificate-modal {
+        .modal-dialog {
+            max-width: 100% !important;
+            width: 100% !important;
+            height: 100vh !important;
+            margin: 0 !important;
+
+            .modal-content {
+                height: 100vh !important;
+            }
+
+            .modal-footer {
+                position: absolute;
+                bottom: 0;
+                left: 0;
+                width: 100%;
+                padding: 10px 20px;
+                border-top: 1px solid #ddd;
+                display: flex;
+                align-items: center;
+                justify-content: flex-end;
+            }
+        }
     }
-    canvas{
-      height: 170px!important;
-      width: auto!important;
+
+    .upload-certificate {
+        .info-type2{
+            padding: 20px;
+            margin-left: 50px;
+            border-radius: 10px;
+            background-color: rgba(224,168,0,0.2);
+            display: flex;
+            align-items: flex-start;
+            span{
+                font-size: 14px;
+                line-height: 1.5;
+                font-weight: 600;
+                margin-left: 20px;
+            }
+            i{
+                background-color: #ffc107;
+                min-width: 50px;
+                min-height: 50px;
+                border-radius: 50%;
+                display: inline-flex;
+                align-items: center;
+                justify-content: center;
+            }
+        }
+        .multiselect__tags {
+            overflow: hidden;
+        }
+
+        .btn-multiselect {
+            height: 40px;
+            width: 100%;
+        }
+
+        .preview-canvas {
+            min-width: 250px;
+            cursor: pointer;
+            border: 1px solid #999;
+            border-radius: 10px;
+            overflow: hidden;
+            display: inline-block;
+            transition: 0.2s all ease;
+
+            &:hover {
+                transform: scale(1.05);
+                box-shadow: 0 0 6px 0 #999;
+            }
+
+            canvas {
+                height: 170px !important;
+                width: 100% !important;
+                object-fit: cover;
+            }
+        }
+
+        .sertificate-modal {
+            margin-bottom: 20px;
+            display: flex;
+            align-items: flex-start;
+        }
+
+        .form-file {
+            height: 50px;
+
+            .custom-file-input {
+                height: 50px;
+            }
+
+            .custom-file-label {
+                height: 40px;
+                padding: 0 20px;
+                display: inline-flex;
+                align-items: center;
+
+                &:after {
+                    display: inline-flex;
+                    align-items: center;
+                    padding: 0 20px;
+                }
+            }
+        }
     }
-  }
-.sertificate-modal {
-  margin-top: 20px;
-}
-.img {
-  object-fit: cover;
-  width: 100%;
-  height: 100%;
-}
-.custom-file .custom-file-label {
-  position: relative;
-  height: auto;
-}
-.custom-file-input {
-  display: none;
-}
-.file {
-  height: auto;
-  margin: auto;
-}
-.custom-file {
-  height: auto;
-}
-.form-file {
-  margin: auto;
-}
-.file-name {
-  text-overflow: ellipsis;
-  overflow: hidden;
-  -webkit-line-clamp: 3;
-  -webkit-box-orient: vertical;
-}
-.badge-img {
-  text-overflow: ellipsis;
-  overflow: hidden;
-  -webkit-line-clamp: 3;
-  -webkit-box-orient: vertical;
-}
-.sertificate-prewiev {
-  display: flex;
-  flex-direction: column;
-  flex-wrap: wrap;
-  justify-content: space-between;
-}
-.edit-sertificate-btn {
-  height: 40px;
-  width: 120px;
-}
-.clear-btn {
-  height: 40px;
-}
 
 </style>

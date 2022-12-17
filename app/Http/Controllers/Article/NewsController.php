@@ -14,7 +14,8 @@ class NewsController extends Controller
 {
     public function index()
     {
-       View::share('title', 'NEWS');
+
+        View::share('title', 'Новости');
         View::share('menu', 'news');
 
         return view('news')->with([

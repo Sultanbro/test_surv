@@ -659,6 +659,9 @@ class KpiStatisticService
                 'items.histories' => function($query) use ($last_date) {
                     $query->whereDate('created_at', '<=', $last_date);
                 },
+                'items' => function($query) use ($last_date) {
+                    $query->withTrashed()->whereDate('created_at', '<=', $last_date);
+                },
                 'items.activity'
             ]);
 
@@ -706,7 +709,7 @@ class KpiStatisticService
                     $kpi->items = $kpi->items->whereIn('id', $payload['children']);
                 }
             }
-          
+
             //  
             $kpi->avg = 0; // avg percent from kpi_items' percent
     
@@ -828,7 +831,6 @@ class KpiStatisticService
                 $exists = collect($user['items'])
                         ->where('activity_id', $item['activity_id'])
                         ->first();
-                       
                 // assign keys
                 if($exists) {
                     $item['fact']          = $exists->fact;
@@ -1209,7 +1211,6 @@ class KpiStatisticService
         
         if($kpi_item->activity 
         && $kpi_item->activity->view == Activity::VIEW_CELL) {
-           
             // ->where('created_at', '<=', $date)->toArray());
 
            
@@ -1217,11 +1218,10 @@ class KpiStatisticService
             //     $payload = json_decode($kpi->histories->first()->payload, true);
                 
             // }
-            
             $item['fact'] = AnalyticStat::getCellValue(
                 $kpi_item->activity->group_id,
                 $kpi_item->cell,
-                $date->format('Y-m-d'),
+                $date->firstOfMonth()->format('Y-m-d'),
                 2
             );
 

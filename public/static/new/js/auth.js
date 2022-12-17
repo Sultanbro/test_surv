@@ -5,6 +5,12 @@ jQuery(function($){
         y = 0,
         friction = 1 / 30;
 
+    $.ajaxSetup({
+        headers: {
+            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+        }
+    });
+
     function moveBackground() {
         x += (lFollowX - x) * friction;
         y += (lFollowY - y) * friction;
@@ -48,6 +54,70 @@ jQuery(function($){
         $('#tab-30, #tab-31').addClass('js-tab-hidden').removeClass('active');
         $('#forgetPass').removeClass('js-tab-hidden');
     });
+
+    function animatePreloader(){
+        var preloader = $('.preloader');
+        var frontpage = $('.frontpage');
+        var properties = {
+            'top': `0`
+        };
+        var options    = {
+            duration: 1000,
+            easing: 'swing',
+            complete(){
+                preloader.remove();
+            }
+        };
+        frontpage.delay(500).animate(properties, options);
+    }
+
+    $('#register-form').submit(function(e){
+        e.preventDefault();
+        $('.preloader').addClass('preloader_active');
+        $('.help-block').remove();
+
+        var form = document.querySelector('#register-form');
+
+        // form data
+        var formData = new FormData(form);
+
+        var data = {};
+        formData.forEach(function(value, key){
+            data[key] = value;
+        });
+
+        $.ajax({
+            url: form.action,
+            data: data,
+            processData: true,
+            type: 'POST',
+            cache: false,
+            success: function ( data ) {
+                console.log(data);
+                $('.preloader__status-text').html('Начнем работу!');
+                animatePreloader();
+                setTimeout(function(){
+                    location.assign(data.link);
+                }, 3000);
+            },
+            error :function( response ) {
+                console.log(response)
+                $('.preloader').removeClass('preloader_active');
+                if( response.status === 422 ) {
+                    for(var inputName in response.responseJSON.errors){
+                        var errorMessage = response.responseJSON.errors[inputName];
+                        $('#' + inputName)
+                            .closest('.form-registration-row')
+                            .after('<span class="help-block"><strong>' + errorMessage + '</strong></span>');
+                    }
+                } else {
+                    alert('Ошибка на стороне сервера')
+                }
+                if(document.querySelector('.g-recaptcha')) grecaptcha.reset();
+            }
+        });
+    });
+
 
     $('form#forget').submit(function(e){
         e.preventDefault();

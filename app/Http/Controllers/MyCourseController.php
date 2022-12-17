@@ -217,7 +217,7 @@ class MyCourseController extends Controller
                 if($course_finished) {
                     $cr->status = CourseResult::COMPLETED;
                     $cr->ended_at = now();
-                    event(new TrackCourseItemFinishedEvent($course_item->course, $user_id));
+//                    event(new TrackCourseItemFinishedEvent($course_item->course, $user_id));
                 }
 
                 $cr->save();

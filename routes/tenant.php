@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 
 use App\Http\Controllers\Admin\ActivityController;
+use App\Http\Controllers\Admin\AdminController;
+use App\Http\Controllers\Admin\ProjectController;
 use App\Http\Controllers\Admin\AnalyticsController;
 use App\Http\Controllers\Admin\BookController;
 use App\Http\Controllers\Admin\BpartnersController;
@@ -33,13 +35,14 @@ use App\Http\Controllers\Article\Comments\ArticleCommentController;
 use App\Http\Controllers\Article\NewsController;
 use App\Http\Controllers\AttendanceController;
 use App\Http\Controllers\Auth\LoginController;
-use App\Http\Controllers\AwardController;
-use App\Http\Controllers\AwardTypeController;
+use App\Http\Controllers\Award\AwardCategoryController;
+use App\Http\Controllers\Award\AwardController;
 use App\Http\Controllers\Birthday\BirthdayController;
 use App\Http\Controllers\CabinetController;
 use App\Http\Controllers\CallibroController;
 use App\Http\Controllers\Course\RegressCourseController;
 use App\Http\Controllers\CourseController;
+use App\Http\Controllers\CourseProgressController;
 use App\Http\Controllers\CourseResultController;
 use App\Http\Controllers\Department\UserController as DepartmentUserController;
 use App\Http\Controllers\Dictionary\DictionaryController;
@@ -92,24 +95,14 @@ use Stancl\Tenancy\Middleware\PreventAccessFromCentralDomains;
 /**
  * Custom websocket handler
  */
-WebSocketsRouter::webSocket('/messenger/app/{appKey}', MessengerWebSocketHandler::class);
+//WebSocketsRouter::webSocket('/messenger/app/{appKey}', MessengerWebSocketHandler::class);
 
 Route::middleware([
     'web',
     InitializeTenancyBySubdomain::class,
     PreventAccessFromCentralDomains::class,
 ])->group(function () {
-    \Auth::routes(); 
-    
-
-    WebSocketsRouter::webSocket('/messenger/app/{appKey}', MessengerWebSocketHandler::class);
-
-    Route::get('/impersonate/{token}', function ($token) {
-        return \Stancl\Tenancy\Features\UserImpersonation::makeResponse($token);
-    });
-    
-  
- 
+    //\Auth::routes(); 
 
     // Authentication Routes...
     Route::get('login', [LoginController::class, 'showLoginForm'])->name('login');
@@ -122,10 +115,26 @@ Route::middleware([
     Route::get('password/reset/{token}', [ResetPasswordController::class, 'showResetForm'])->name('password.reset');
     Route::post('password/reset', [ResetPasswordController::class, 'reset']);
 
-    // admin routes 
-    Route::get('/admino', [\App\Http\Controllers\Admin\AdminController::class, 'index']);    
+    Route::any('/', [ProfileController::class, 'newprofile']);
+});
 
 
+Route::middleware([
+    'web',
+    'not_admin_subdomain',
+    InitializeTenancyBySubdomain::class,
+    PreventAccessFromCentralDomains::class,
+])->group(function () {
+    
+    WebSocketsRouter::webSocket('/messenger/app/{appKey}', MessengerWebSocketHandler::class);
+
+    Route::get('/login/{subdomain}', [ProjectController::class, 'login']);
+    Route::post('/projects/create', [ProjectController::class, 'create']);
+    
+    Route::get('/impersonate/{token}', function ($token) {
+        return \Stancl\Tenancy\Features\UserImpersonation::makeResponse($token);
+    });
+    
     Route::get('/newprofile', [ProfileController::class, 'newprofile']);
 
 
@@ -143,11 +152,9 @@ Route::middleware([
     Route::any('/bless', function() {
         return 'This is your multi-tenant application. The id of the current tenant is ' . tenant('id');
     });
-    
-    
-    // Profile
-    // Route::any('/', [UserProfileController::class, 'getProfile']); // old
-    Route::any('/', [ProfileController::class, 'newprofile']);
+
+    Route::get('/test-for-check', [TestController::class, 'testMethodForCheck'])->name('testMethodForCheck');
+
     Route::view('/doc', 'docs.index');
     Route::view('/html', 'design');
 
@@ -169,7 +176,14 @@ Route::middleware([
         Route::any('/payment-terms', [UserProfileController::class, 'paymentTerms']);
     });
 
-    Route::post('course/regress', [RegressCourseController::class, 'regress']);
+    Route::group([
+        'prefix' => 'course',
+        'as'    => 'course.'
+    ], function () {
+        Route::post('/regress', [RegressCourseController::class, 'regress']);
+        Route::get('/progress', CourseProgressController::class);
+    });
+
 
     Route::group([
         'prefix' => 'notifications',
@@ -183,10 +197,6 @@ Route::middleware([
 
     Route::any('/bonuses', [UserProfileController::class, 'getBonuses']);
 
-    Route::post('logout', [LoginController::class, 'logout']);//->name('logout');
-
-
-   
     Route::post('/corp_book/set-read/', [UserController::class, 'corp_book_read']); // Прочитать страницу из корп книги @TODO при назначении книги
     Route::any('/timetracking/user/{id}', [UserController::class, 'profile']);
     Route::post('/timetracking/change-password', [UserController::class, 'changePassword']);
@@ -200,8 +210,6 @@ Route::middleware([
     Route::post('/timetracking/edit-person/book', [UserController::class, 'editPersonBook']); // Удалять добавлять корп книги пользователю
     Route::any('/timetracking/delete-person', [UserController::class, 'deleteUser'])->name('removeUser');
     Route::any('/timetracking/recover-person', [UserController::class, 'recoverUser'])->name('recoverUser');
-
-    ///
 
     /* Самостоятельная отметка стажеров */
     Route::get('/autocheck/{id}', [TraineeController::class, 'autocheck']); // cтраница со ссылками для отметки стажерами
@@ -398,7 +406,6 @@ Route::middleware([
     Route::any('/timetracking/fines', [TimetrackingController::class, 'fines']);
     Route::any('/timetracking/info', [TimetrackingController::class, 'info']);
     Route::any('/timetracking/set-day', [TimetrackingController::class, 'setDay']);
-    Route::any('/timetracking/history', [TimetrackingController::class, 'getHistory']);
     Route::any('/timetracking/settings', [TimetrackingController::class, 'settings']);
     Route::any('/timetracking/settings/positions', [TimetrackingController::class, 'positions']);
     Route::any('/timetracking/settings/positions/get', [TimetrackingController::class, 'getPosition']);
@@ -426,12 +433,11 @@ Route::middleware([
     Route::any('/timetracking/groups', [TimetrackingController::class, 'getgroups']);
     Route::post('/timetracking/groups/restore', [TimetrackingController::class, 'restoreGroup']);
     Route::any('/timetracking/reports/add-editors', [TimetrackingController::class, 'usereditreports']);
-    Route::any('/timetracking/reports/get-editors', [TimetrackingController::class, 'modalcheckuserrole']);
+
     Route::any('/timetracking/reports/check-user', [TimetrackingController::class, 'checkuserrole']);
     Route::any('/timetracking/reports/enter-report', [TimetrackingController::class, 'enterreport']);
     Route::post('/timetracking/reports/enter-report/setmanual', [TimetrackingController::class, 'enterreportManually']);
     Route::any('/timetracking/zarplata-table', [TimetrackingController::class, 'zarplatatable']);
-    Route::post('/order-persons-to-group', [TimetrackingController::class, 'orderPersonsToGroup']); // Заказ сотрудников в группы для Руководителей
     Route::post('/timetracking/apply-person', [TimetrackingController::class, 'applyPerson']); // Принятие на штат стажера
     Route::post('/timetracking/get-totals-of-reports', [TimetrackingController::class, 'getTotalsOfReports']);
 
@@ -615,13 +621,18 @@ Route::middleware([
      * Типы награды для сотрудников.
      */
     Route::group([
-        'prefix' => 'award-types',
-        'as'     => 'award-types.',
+        'prefix' => 'award-categories',
+        'as'     => 'award-categories.',
+        'middleware' => 'is_admin'
     ], function () {
-        Route::get('/get', [AwardTypeController::class, 'index'])->name('get');
-        Route::post('/store', [AwardTypeController::class, 'store'])->name('store');
-        Route::put('/update/{awardType}', [AwardTypeController::class, 'update'])->name('update');
-        Route::delete('/delete/{awardType}', [AwardTypeController::class, 'destroy'])->name('destroy');
+        Route::get('/get', [AwardCategoryController::class, 'index'])->name('get');
+        Route::get('/get/{awardCategory}', [AwardCategoryController::class, 'show'])->name('show');
+        Route::get('/get/awards/{awardCategory}', [AwardCategoryController::class, 'categoryAwards'])->name('awards');
+
+        Route::post('/store', [AwardCategoryController::class, 'store'])->name('store');
+        Route::put('/update/{awardCategory}', [AwardCategoryController::class, 'update'])->name('update');
+        Route::delete('/delete/{awardCategory}', [AwardCategoryController::class, 'destroy'])->name('destroy');
+
     });
 
     /**
@@ -630,17 +641,20 @@ Route::middleware([
     Route::group([
         'prefix' => 'awards',
         'as'     => 'awards.',
+        'middleware' => 'auth'
     ], function () {
         Route::post('/reward', [AwardController::class, 'reward'])->name('reward');
         Route::delete('/reward-delete', [AwardController::class, 'deleteReward'])->name('delete-reward');
         Route::get('/my', [AwardController::class, 'myAwards'])->name('my-awards');
         Route::get('/course', [AwardController::class, 'courseAward'])->name('course-awards');
+        Route::get('/courses', [AwardController::class, 'coursesAward'])->name('courses-awards');
+        Route::post('/courses/store/{award}', [AwardController::class, 'storeCoursesAward'])->name('courses-awards-store');
         Route::get('/type', [AwardController::class, 'awardsByType'])->name('type-awards');
-        Route::get('/get', [AwardController::class, 'index'])->name('get');
-        Route::get('/get/{award}', [AwardController::class, 'show'])->name('show');
+        Route::get('/get', [AwardController::class, 'index'])->middleware('is_admin')->name('get');
         Route::post('/store', [AwardController::class, 'store'])->name('store');
-        Route::put('/update/{award}', [AwardController::class, 'update'])->name('update');
+        Route::put('/update/{award}', [AwardController::class, 'update'])->middleware('is_admin')->name('update');
         Route::delete('/delete/{award}', [AwardController::class, 'destroy'])->name('destroy');
+        Route::get('/download/{award}', [AwardController::class, 'downloadFile'])->name('downloadFile');
     });
 
 
@@ -720,10 +734,6 @@ Route::middleware([
         ->name('articles.')
         ->middleware([
             'auth',
-        ])
-        ->whereNumber([
-            'article_id',
-            'comment_id',
         ])
         ->group(function () {
             Route::get('', [NewsController::class, 'index'])->name('index');
@@ -819,9 +829,6 @@ Route::middleware([
         ->middleware([
             'auth',
         ])
-        ->whereNumber([
-            'file_id',
-        ])
         ->group(function () {
 
             Route::post('', [FileController::class, 'store'])
@@ -842,127 +849,124 @@ Route::middleware([
                 ->name('store');
         });
 
-
-
-
     Route::any('/getnewimage',[UserController::class,'getProfileImage']);
 
-    Route::group([
-        'prefix'   => 'messenger/api',
-    ], function() {
+    // Route::group([
+    //     'prefix'   => 'messenger/api',
+    // ], function() {
 
-        /**
-         * Get chats list
-         */
-        Route::get('/v2/chats', 'ChatsController@fetchChats')->name('api.chats.fetch');
+    //     /**
+    //      * Get chats list
+    //      */
+    //     Route::get('/v2/chats', 'ChatsController@fetchChats')->name('api.chats.fetch');
 
-        /**
-         * Get users list
-         */
-        Route::get('/v2/users', 'ChatsController@fetchUsers')->name('api.users.fetch');
+    //     /**
+    //      * Get users list
+    //      */
+    //     Route::get('/v2/users', 'ChatsController@fetchUsers')->name('api.users.fetch');
 
-        /**
-         * Search chat by name
-         */
-        Route::get('/v2/search/chats', 'ChatsController@search')->name('api.chats.search');
+    //     /**
+    //      * Search chat by name
+    //      */
+    //     Route::get('/v2/search/chats', 'ChatsController@search')->name('api.chats.search');
 
-        /**
-         * Search messages by text
-         */
-        Route::get('/v2/search/messages', 'MessagesController@searchMessages')->name('api.messages.search');
+    //     /**
+    //      * Search messages by text
+    //      */
+    //     Route::get('/v2/search/messages', 'MessagesController@searchMessages')->name('api.messages.search');
 
-        /**
-         * Get chat messages
-         */
-        Route::get('/v2/chat/{chat_id}/messages', 'MessagesController@fetchMessages')->name('api.messages.fetch');
+    //     /**
+    //      * Get chat messages
+    //      */
+    //     Route::get('/v2/chat/{chat_id}/messages', 'MessagesController@fetchMessages')->name('api.messages.fetch');
 
-        /**
-         * Get private chat info
-         */
-        Route::get('/v2/private/{user_id}', 'ChatsController@getPrivateChat')->name('api.v2.getPrivateChat');
+    //     /**
+    //      * Get private chat info
+    //      */
+    //     Route::get('/v2/private/{user_id}', 'ChatsController@getPrivateChat')->name('api.v2.getPrivateChat');
 
-        /**
-         * Get chat info
-         */
-        Route::get('/v2/chat/{chat_id}', 'ChatsController@getChat')->name('api.v2.getChat');
+    //     /**
+    //      * Get chat info
+    //      */
+    //     Route::get('/v2/chat/{chat_id}', 'ChatsController@getChat')->name('api.v2.getChat');
 
-        /**
-         * Send message
-         */
-        Route::post('/v2/chat/{chat_id}/messages', 'MessagesController@sendMessage')->name('api.v2.sendMessage');
+    //     /**
+    //      * Send message
+    //      */
+    //     Route::post('/v2/chat/{chat_id}/messages', 'MessagesController@sendMessage')->name('api.v2.sendMessage');
 
-        /**
-         * Edit message. Message id should be integer
-         */
-        Route::post('/v2/message/{message_id}', 'MessagesController@editMessage')->name('api.v2.editMessage')->whereNumber('message_id');
+    //     /**
+    //      * Edit message. Message id should be integer
+    //      */
+    //     Route::post('/v2/message/{message_id}', 'MessagesController@editMessage')->name('api.v2.editMessage')->whereNumber('message_id');
 
-        /**
-         * Delete message
-         */
-        Route::delete('/v2/message/{message_id}', 'MessagesController@deleteMessage')->name('api.v2.deleteMessage');
+    //     /**
+    //      * Delete message
+    //      */
+    //     Route::delete('/v2/message/{message_id}', 'MessagesController@deleteMessage')->name('api.v2.deleteMessage');
 
-        /**
-         * Pin message
-         */
-        Route::post('/v2/message/{message_id}/pin', 'MessagesController@pinMessage')->name('api.v2.pinMessage');
+    //     /**
+    //      * Pin message
+    //      */
+    //     Route::post('/v2/message/{message_id}/pin', 'MessagesController@pinMessage')->name('api.v2.pinMessage');
 
-        /**
-         * Unpin message
-         */
-        Route::delete('/v2/message/{message_id}/pin', 'MessagesController@unpinMessage')->name('api.v2.unpinMessage');
+    //     /**
+    //      * Unpin message
+    //      */
+    //     Route::delete('/v2/message/{message_id}/pin', 'MessagesController@unpinMessage')->name('api.v2.unpinMessage');
 
-        /**
-         * Pin chat
-         */
-        Route::post('/v2/chat/{chat_id}/pin', 'ChatsController@pinChat')->name('api.v2.pinChat');
+    //     /**
+    //      * Pin chat
+    //      */
+    //     Route::post('/v2/chat/{chat_id}/pin', 'ChatsController@pinChat')->name('api.v2.pinChat');
 
-        /**
-         * Unpin chat
-         */
-        Route::delete('/v2/chat/{chat_id}/pin', 'ChatsController@unpinChat')->name('api.v2.unpinChat');
+    //     /**
+    //      * Unpin chat
+    //      */
+    //     Route::delete('/v2/chat/{chat_id}/pin', 'ChatsController@unpinChat')->name('api.v2.unpinChat');
 
-        /**
-         * Create chat
-         */
-        Route::post('/v2/chat', 'ChatsController@createChat')->name('api.v2.createChat');
+    //     /**
+    //      * Create chat
+    //      */
+    //     Route::post('/v2/chat', 'ChatsController@createChat')->name('api.v2.createChat');
 
-        /**
-         * Remove chat
-         */
-        Route::delete('/v2/chat/{chat_id}', 'ChatsController@removeChat')->name('api.v2.removeChat');
+    //     /**
+    //      * Remove chat
+    //      */
+    //     Route::delete('/v2/chat/{chat_id}', 'ChatsController@removeChat')->name('api.v2.removeChat');
 
-        /**
-         * Leave chat
-         */
-        Route::post('/v2/chat/{chat_id}/leave', 'ChatsController@leaveChat')->name('api.v2.leaveChat');
+    //     /**
+    //      * Leave chat
+    //      */
+    //     Route::post('/v2/chat/{chat_id}/leave', 'ChatsController@leaveChat')->name('api.v2.leaveChat');
 
-        /**
-         * Add user to chat
-         */
-        Route::post('/v2/chat/{chat_id}/addUser', 'ChatsController@addUser')->name('api.v2.addUser');
+    //     /**
+    //      * Add user to chat
+    //      */
+    //     Route::post('/v2/chat/{chat_id}/addUser', 'ChatsController@addUser')->name('api.v2.addUser');
 
-        /**
-         * Remove user from chat
-         */
-        Route::post('/v2/chat/{chat_id}/removeUser/{user_id}', 'ChatsController@removeUser')->name('api.v2.removeUser');
+    //     /**
+    //      * Remove user from chat
+    //      */
+    //     Route::post('/v2/chat/{chat_id}/removeUser/{user_id}', 'ChatsController@removeUser')->name('api.v2.removeUser');
 
-        /**
-         * Edit chat
-         */
-        Route::post('/v2/chat/{chat_id}/edit', 'ChatsController@editChat')->name('api.v2.editChat');
+    //     /**
+    //      * Edit chat
+    //      */
+    //     Route::post('/v2/chat/{chat_id}/edit', 'ChatsController@editChat')->name('api.v2.editChat');
 
-        /**
-         * Set messages as read
-         */
-        Route::post('/v2/messages/read', 'MessagesController@setMessagesAsRead')->name('api.v2.setMessagesAsRead');
+    //     /**
+    //      * Set messages as read
+    //      */
+    //     Route::post('/v2/messages/read', 'MessagesController@setMessagesAsRead')->name('api.v2.setMessagesAsRead');
 
-        /**
-         * Upload file
-         */
-        Route::post('/v2/chat/{chat_id}/upload', 'FilesController@upload')->name('api.v2.upload');
+    //     /**
+    //      * Upload file
+    //      */
+    //     Route::post('/v2/chat/{chat_id}/upload', 'FilesController@upload')->name('api.v2.upload');
 
                                 
-    });
+    // });
 });
 
 
@@ -977,6 +981,7 @@ Route::middleware([
  */
 Route::middleware([
     'api',
+    'not_admin_subdomain',
     InitializeTenancyBySubdomain::class,
     PreventAccessFromCentralDomains::class,
 ])->group(function () {
@@ -1018,4 +1023,35 @@ Route::middleware([
 
     
 
+});
+
+
+
+/**
+ * Owners list
+ * Admin.jobtron.org routes
+ */
+Route::middleware([
+    'web',
+    'admin_subdomain',
+    InitializeTenancyBySubdomain::class,
+    PreventAccessFromCentralDomains::class,
+])->group(function () {
+
+    Route::group([
+        'prefix' => 'admin',
+        'as' => 'admin.'
+    ], function () {
+        Route::get('/owners', [\App\Http\Controllers\Admin\AdminController::class, 'owners']);
+    });
+
+    Route::group([
+        'prefix' => 'admins',
+        'as' => 'admins.'
+    ], function () {
+        Route::get('/', [\App\Http\Controllers\Admin\AdminController::class, 'admins']);   
+        Route::post('/add', [\App\Http\Controllers\Admin\AdminController::class, 'addAdmin']);   
+        Route::delete('/delete/{user}', [\App\Http\Controllers\Admin\AdminController::class, 'deleteAdmin']);
+    });
+    
 });

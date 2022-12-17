@@ -30,12 +30,6 @@
   opacity:1;
   visibility: visible;
   transition: all 0.5s;
-
-  &.closed{
-    transform:translateX(30px);
-    opacity:0;
-    visibility: hidden;
-  }
 }
 
 .header__right-nav{
@@ -436,9 +430,7 @@
         height: .9rem;
         background: url("../images/dist/popup-filter.svg") center no-repeat;
         background-size: cover;
-
       }
-
     }
 
   }
@@ -467,6 +459,11 @@
     // .loop, .red {
     //   display: none;
     // }
+    &.closed{
+      transform:translateX(30px);
+      opacity:0;
+      visibility: hidden;
+    }
   }
   .header {
     display: block;

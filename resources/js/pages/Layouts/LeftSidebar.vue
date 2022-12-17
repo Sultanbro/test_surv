@@ -1,11 +1,29 @@
 <template>
-<div class="header__left closedd">
+<div class="header__left closed">
     <!-- avatar  -->
     <div class="header__avatar">
-        <img :src="$laravel.avatar" alt="avatar image" >
+        <img :src="avatar" alt="avatar image" >
 
         <!-- hover menu -->
         <div class="header__menu">
+            <div v-if="isOwner" class="header__menu-project" v-scroll-lock="isCreatingProject">
+                <img src="/images/dist/icon-settings.svg" alt="settings icon">
+                Проект: {{ project }}
+                <div class="header__submenu">
+                    <a
+                        v-for="tenant in tenants"
+                        :href="tenant === project ? 'javascript:void(0)' : `/login/${tenant}`"
+                        class="header__submenu-item"
+                        :class="{'header__submenu-item_active': tenant === project}"
+                    >
+                        {{ tenant }}
+                    </a>
+                    <div class="header__submenu-divider"/>
+                    <div @click="onNewProject" class="header__submenu-item">
+                        Добавить проект
+                    </div>
+                </div>
+            </div>
             <div class="header__menu-title">
                 Пользователь <a class="header__menu-userid" href="#">#{{ $laravel.userId }}</a>
                 <p class="header__menu-email">{{ $laravel.email }}</p>
@@ -24,7 +42,11 @@
         </div>
     </div>
 
-    <nav class="header__nav" ref="nav">
+    <nav
+        ref="nav"
+        class="header__nav"
+        :class="{'header__nav_even': height - filteredItems.totalHeight < 50}"
+    >
         <template v-for="item in filteredItems.visible">
             <LeftSidebarItem
                 :key="item.name"
@@ -71,6 +93,7 @@
 
 <script>
 import LeftSidebarItem from './LeftSidebarItem'
+import { bus } from '../../bus'
 
 export default {
     name: 'LeftSidebar',
@@ -82,12 +105,43 @@ export default {
         return {
             height: 300,
             fields: [],
+            avatar: this.$laravel.avatar,
             token: Laravel.csrfToken,
+            isAdmin: this.$laravel.is_admin,
+            project: window.location.hostname.split('.')[0],
+            tenants: Laravel.tenants,
+            isCreatingProject: false,
         };
     },
     methods: {
         onResize(){
             this.height = this.$refs.nav.offsetHeight
+        },
+        onNewProject(){
+            if(!confirm('Вы уверены? Создатся еще один кабинет под другим субдоменом. Вам это нужно ?')) return
+            this.isCreatingProject = true
+            const loader = this.$loading.show({
+                zIndex: 99999
+            })
+            this.$toast.info('Ваш кабинет создается', {
+                timeout: 20000,
+                closeOnClick: false,
+                pauseOnFocusLoss: true,
+                pauseOnHover: true,
+                draggable: false,
+                showCloseButtonOnHover: false,
+                hideProgressBar: true,
+                closeButton: false,
+                icon: true
+            })
+            axios.post('/projects/create', {}).then(response => {
+                if(response.data) location.assign(response.data.link)
+            }).catch(error => {
+                loader.hide()
+                this.isCreatingProject = false
+                this.$toast.error('Ошибка при создании кабинета')
+                console.error(error)
+            })
         }
     },
     computed: {
@@ -128,7 +182,7 @@ export default {
                   href: '/news',
                   icon: 'icon-nd-news',
                   height: 0,
-                  hide: !this.$can('table_view')
+                  // hide: !this.$can('news_edit')
                 },
                 {
                     name: 'Структура',
@@ -260,11 +314,10 @@ export default {
             ]
         },
         filteredItems(){
-            let h = this.items[0].height
             return this.items.reduce((res, item) => {
                 if(item.hide) return res;
-                h += item.height + 4
-                if(this.height - h > 0){
+                res.totalHeight += item.height + 4
+                if(this.height - res.totalHeight > 0){
                     res.visible.push(item)
                 }
                 else{
@@ -273,13 +326,19 @@ export default {
                 return res;
             }, {
                 visible: [],
-                more: []
+                more: [],
+                totalHeight: this.items[0].height
             })
+        },
+        isOwner(){
+            return this.tenants && this.tenants.includes(this.project)
         }
     },
     mounted(){
         this.onResize()
         new ResizeObserver(this.onResize).observe(this.$refs.nav)
+
+        bus.$on('user-avatar-update', avatar => (this.avatar = avatar))
     }
 };
 </script>
@@ -294,27 +353,20 @@ export default {
     max-height: inherit;
     padding-top: 0.5rem;
     padding-bottom: 1rem;
-    background-color: #F6F7FC;
+    background-color: darken(#F6F7FC, 3%);
     transform:translateX(0);
     opacity:1;
     visibility: visible;
     transition: all 0.5s;
     // box-shadow: -0.1rem 0px 0.5rem rgba(0, 0, 0, 0.25);
-
-    &.closed{
-        transform:translateX(-30px);
-        opacity:0;
-        visibility: hidden;
-    }
 }
 
 .header__avatar{
     cursor:pointer;
     display: block;
-    width: 8rem;
-    max-width: 8rem;
+    width: 6rem;
+    max-width: 6rem;
     margin-bottom: 0.5rem;
-    padding: 0 1.2rem;
     position:relative;
     border-radius: 10px;
     z-index: 1003;
@@ -337,6 +389,85 @@ export default {
         }
     }
 }
+
+.header__menu-project{
+    padding: 1.2rem 1.3rem;
+    text-align: left;
+    cursor: pointer;
+    position: relative;
+    &:hover{
+        background: #FAFCFD;
+        .header__submenu{
+            opacity: 1;
+            visibility: visible;
+        }
+    }
+}
+.header__submenu{
+    display: flex;
+    width: auto;
+    flex-direction: column;
+    padding-top: 0;
+
+    position: absolute;
+    z-index: 1010;
+    top: 100%;
+    right: 0;
+
+    background: #fff;
+    color: #657A9F;
+    font-size: 1.3rem;
+    box-shadow: 1rem 0 2rem rgba(0, 0, 0, 0.25);
+    opacity: 0;
+    visibility: hidden;
+    transition: .5s;
+}
+.header__submenu-item{
+    display: flex;
+    gap:1rem;
+    align-items: center;
+
+    height: 3.4rem;
+    padding: 1rem 2rem;
+
+    background: #fff;
+    cursor:pointer;
+    color:#657A9F;
+
+    &:first-of-type{
+        border-radius: 0 1rem 0 0;
+    }
+
+    &:last-of-type{
+        border-radius: 0 0 1rem 0;
+    }
+
+    &:hover{
+        background: #FAFCFD;
+        color: #156AE8;
+        .menu__item-title,
+        .menu__item-icon{
+            color: #156AE8;
+        }
+    }
+}
+.header__submenu-item_active{
+    cursor: default;
+    font-weight: 700;
+    &:hover{
+        background: #fff;
+        color: #657A9F;
+        .menu__item-title,
+        .menu__item-icon{
+            color: #657A9F;
+        }
+    }
+}
+.header__submenu-divider{
+    margin: 0.5rem 0;
+    border-top: 1px solid lighten(#657A9F, 25%);
+}
+
 .header__nav{
     display: flex;
     flex-direction: column;
@@ -346,6 +477,9 @@ export default {
     &::-webkit-scrollbar {
         width: 0; /* высота для горизонтального скролла */
         height: 0;
+    }
+    &_even{
+        justify-content: space-evenly;
     }
 }
 
@@ -393,11 +527,11 @@ export default {
 
     width: 100%;
     height: 100%;
-    padding:  0.9rem 1.2rem;
+    padding:  0.9rem 0.5rem;
 
     text-align: center;
     font-size: 1.2rem;
-    font-weight: 600;
+    font-weight: 400;
     color:#8DA0C1;
 
     transition:.3s;
@@ -410,6 +544,7 @@ export default {
     font-size:2rem;
     &::before{
         transition:.2s;
+        width: auto;
     }
 }
 
@@ -422,7 +557,7 @@ export default {
 
     position: fixed;
     z-index: 1005;
-    left: 8rem;
+    left: 7rem;
 
     background: #fff;
     color: #657A9F;
@@ -491,6 +626,16 @@ export default {
 .header__nav-link-more{
     .header__menu{
         transform: translateY(calc(-100% + 5rem));
+    }
+}
+
+@media(max-width:900px){
+    .header__left{
+        &.closed{
+            transform:translateX(-30px);
+            opacity:0;
+            visibility: hidden;
+        }
     }
 }
 </style>

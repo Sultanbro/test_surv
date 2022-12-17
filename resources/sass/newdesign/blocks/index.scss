@@ -135,50 +135,6 @@
 
 }
 
-.indicators-table-fixed{
-  table-layout: fixed;
-  border-radius: 1.2rem 0 0 0;
-  th, td{
-    width: 5rem;
-    &[colspan="2"]{
-      width: 10rem;
-    }
-  }
-  th{
-    background: #F8F9FD;
-  }
-  tr:first-of-type{
-    th:first-of-type,
-    th:last-of-type{
-      border: none;
-    }
-  }
-  .sticky-left{
-    outline: 1px solid #E7EAEA;
-  }
-  .indicators-table-fixed-name{
-    width: 20rem;
-    left: 0;
-  }
-  .indicators-table-fixed-hmonth,
-  .indicators-table-fixed-avg{
-    width: 8rem;
-    left: 20rem;
-  }
-  .indicators-table-fixed-hplan,
-  .indicators-table-fixed-month{
-    width: 8rem;
-    left: 28rem;
-  }
-  .indicators-table-fixed-plan{
-    width: 8rem;
-    left: 36rem;
-  }
-  .indicators-table-fixed-percent{
-    width: 8rem;
-    left: 44rem;
-  }
-}
 
 .cell-input {
   background: none;
@@ -235,6 +191,54 @@
   }
 }
 
+.btn-surv{
+  padding: 1.5rem 3rem;
+  border-radius: 0.6rem;
+
+  display: flex;
+  flex-flow: row nowrap;
+  align-items: center;
+  gap: 1.5rem;
+
+  font-family: "Inter", sans-serif;
+  font-weight: 600;
+  font-size: 1.4rem;
+  line-height: 3rem;
+  letter-spacing: -0.02em;
+}
+// .btn-surv-icon{}
+.input-surv{
+  padding: 1.5rem 2rem;
+  border: none;
+  border-radius: 0.6rem;
+
+  display: flex;
+  flex-flow: row nowrap;
+  align-items: center;
+
+  background: #F7FAFC;
+}
+.label-surv{
+  display: flex;
+  align-items: center;
+}
+.multiselect-surv{
+  .multiselect__tags{
+    padding: 1.5rem 4rem 1rem 2rem;
+    border: none;
+    border-radius: 0.6rem;
+
+    display: flex;
+    flex-flow: row nowrap;
+    align-items: center;
+
+    background: #F7FAFC;
+  }
+  .multiselect__select{
+    top: 1rem;
+  }
+}
+
 @media(max-width:440px){
   .index__tabs{
     display: none;
@@ -255,6 +259,51 @@
 @media(min-width:1300px){
   .intro__stats{
     justify-content: unset;
+  }
+
+  .indicators-table-fixed{
+    table-layout: fixed;
+    border-radius: 1.2rem 0 0 0;
+    th, td{
+      width: 5rem;
+      &[colspan="2"]{
+        width: 10rem;
+      }
+    }
+    th{
+      background: #F8F9FD;
+    }
+    tr:first-of-type{
+      th:first-of-type,
+      th:last-of-type{
+        border: none;
+      }
+    }
+    .sticky-left{
+      outline: 1px solid #E7EAEA;
+    }
+    .indicators-table-fixed-name{
+      width: 20rem;
+      left: 0;
+    }
+    .indicators-table-fixed-hmonth,
+    .indicators-table-fixed-avg{
+      width: 8rem;
+      left: 20rem;
+    }
+    .indicators-table-fixed-hplan,
+    .indicators-table-fixed-month{
+      width: 8rem;
+      left: 28rem;
+    }
+    .indicators-table-fixed-plan{
+      width: 8rem;
+      left: 36rem;
+    }
+    .indicators-table-fixed-percent{
+      width: 8rem;
+      left: 44rem;
+    }
   }
 }
 

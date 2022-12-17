@@ -55,36 +55,57 @@
 
     <table class="indicators-table-fixed" :class="{'inverted' : color_invert}">
         <tr>
-            <th class="indicators-table-fixed-name sticky-left text-left max-content pl-4">
+            <th
+                class="indicators-table-fixed-name text-left max-content pl-4"
+                :class="{'sticky-left': isDesktop}"
+            >
                 <div class="max-content">Сотрудник</div>
                  <i v-if="show_headers" class="fa fa-sort ml-2" @click="sort('fullname')"></i>
             </th>
 
             <template v-if="activity.plan_unit == 'minutes'">
-                <th class="indicators-table-fixed-avg sticky-left text-center">
+                <th
+                    class="indicators-table-fixed-avg text-center"
+                    :class="{'sticky-left': isDesktop}"
+                >
                     <div>Ср.</div>
                     <i v-if="show_headers" class="fa fa-sort ml-2" @click="sort('avg')"></i>
                 </th>
-                <th class="indicators-table-fixed-month sticky-left text-center">
+                <th
+                    class="indicators-table-fixed-month text-center"
+                    :class="{'sticky-left': isDesktop}"
+                >
                     <div>План</div>
                     <i v-if="show_headers" class="fa fa-sort ml-2" @click="sort('month')"></i>
                 </th>
-                <th class="indicators-table-fixed-plan sticky-left text-center plan">
+                <th
+                    class="indicators-table-fixed-plan text-center plan"
+                    :class="{'sticky-left': isDesktop}"
+                >
                     <div>Вып.</div>
                     <i v-if="show_headers" class="fa fa-sort ml-2" @click="sort('plan')"></i>
                 </th>
-                <th class="indicators-table-fixed-percent sticky-left text-center">
+                <th
+                    class="indicators-table-fixed-percent text-center"
+                    :class="{'sticky-left': isDesktop}"
+                >
                     <div>%</div>
                     <i v-if="show_headers" class="fa fa-sort ml-2" @click="sort('_percent')"></i>
                 </th>
             </template>
 
             <template v-else>
-                <th class="indicators-table-fixed-hmonth sticky-left text-center">
+                <th
+                    class="indicators-table-fixed-hmonth text-center"
+                    :class="{'sticky-left': isDesktop}"
+                >
                     <div>План</div>
                     <i v-if="show_headers" class="fa fa-sort ml-2" @click="sort('month')"></i>
                 </th>
-                <th class="indicators-table-fixed-hplan sticky-left text-center">
+                <th
+                    class="indicators-table-fixed-hplan text-center"
+                    :class="{'sticky-left': isDesktop}"
+                >
                     <div>Вып.</div>
                     <i v-if="show_headers" class="fa fa-sort ml-2" @click="sort('plan')"></i>
                 </th>
@@ -106,13 +127,18 @@
                 'prize third-place': item.show_cup == 3,
             }"
         >
-            <td v-if="item.name == 'SPECIAL_BTN'" class="indicators-table-fixed-name sticky-left">
+            <td
+                v-if="item.name == 'SPECIAL_BTN'"
+                class="indicators-table-fixed-name"
+                :class="{'sticky-left': isDesktop}"
+            >
                 <button class="btn btn-light rounded btn-sm" @click="switchAction">Сумма\Среднее</button>
             </td>
 
             <td
                 v-else
-                class="indicators-table-fixed-name sticky-left text-left max-content"
+                class="indicators-table-fixed-name text-left max-content"
+                :class="{'sticky-left': isDesktop}"
                 :title="item.id + ' ' + item.email"
             >
                 <div class="d-flex max-content">
@@ -121,15 +147,33 @@
             </td>
 
             <template v-if="activity.plan_unit == 'minutes'">
-                <td class="indicators-table-fixed-avg sticky-left class blue"><div>{{ item.avg }}</div></td>
-                <td class="indicators-table-fixed-month sticky-left class blue"><div :title="activity.daily_plan + ' * ' + item.applied_from">{{ item.month }}</div></td>
-                <td class="indicators-table-fixed-plan sticky-left class blue plan"><div>{{ item.plan }}</div></td>
-                <td class="indicators-table-fixed-percent sticky-left class blue"><div>{{ item.percent }}</div></td>
+                <td
+                    class="indicators-table-fixed-avg class blue"
+                    :class="{'sticky-left': isDesktop}"
+                ><div>{{ item.avg }}</div></td>
+                <td
+                    class="indicators-table-fixed-month class blue"
+                    :class="{'sticky-left': isDesktop}"
+                ><div :title="activity.daily_plan + ' * ' + item.applied_from">{{ item.month }}</div></td>
+                <td
+                    class="indicators-table-fixed-plan class blue plan"
+                    :class="{'sticky-left': isDesktop}"
+                ><div>{{ item.plan }}</div></td>
+                <td
+                    class="indicators-table-fixed-percent class blue"
+                    :class="{'sticky-left': isDesktop}"
+                ><div>{{ item.percent }}</div></td>
             </template>
 
             <template v-else>
-                <td class="indicators-table-fixed-hmonth sticky-left class blue"><div>{{ item.month }}</div></td>
-                <td class="indicators-table-fixed-hplan sticky-left class blue"><div>{{ item.plan }}</div></td>
+                <td
+                    class="indicators-table-fixed-hmonth class blue"
+                    :class="{'sticky-left': isDesktop}"
+                ><div>{{ item.month }}</div></td>
+                <td
+                    class="indicators-table-fixed-hplan class blue"
+                    :class="{'sticky-left': isDesktop}"
+                ><div>{{ item.plan }}</div></td>
             </template>
 
 
@@ -280,6 +324,11 @@ export default {
             showExcelImport: false,
             loading: false
         };
+    },
+    computed: {
+        isDesktop(){
+            return this.$viewportSize.width >= 1300
+        },
     },
     watch: {
         activity: function(newVal, oldVal) { // watch it

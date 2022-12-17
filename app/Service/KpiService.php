@@ -43,13 +43,15 @@ class KpiService
      * @return array
      */
     public function fetch($filters): array
-    {   
-        if($filters !== null) {} 
-        
+    {
+        if($filters !== null) {}
+
         $last_date = Carbon::now()->endOfMonth()->format('Y-m-d');
 
         $kpis = Kpi::with([
-            'items',
+            'items' => function($query) use ($last_date) {
+                $query->withTrashed()->whereDate('created_at', '<=', $last_date);
+            },
             'creator',
             'updater',
             'histories' => function($query) use ($last_date) {
@@ -59,7 +61,6 @@ class KpiService
                 $query->whereDate('created_at', '<=', $last_date);
             },
         ])->get();
-        
         $kpis_final = [];
 
         foreach ($kpis as $key => $kpi) {

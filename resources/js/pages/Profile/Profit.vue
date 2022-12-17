@@ -48,15 +48,17 @@
         >
             <div class="profit__inner-item right-slide" v-for="(slide, i) in data.positions" :key="i">
                 <div  class="profit__inner-right" :class="{'profit__inner__one': !hasGroups}">
-                    <div class="profit__inner-title">
-                        {{ slide.title }}
-                        <a href="javascript:void(0)">
-                            <img
-                                src="/images/dist/profit-info.svg"
-                                alt="info icon"
-                                v-b-popover.hover.right.html="'У Вас обязательно будет карьерный рост в компании, и здесь описаны требования, необходимые знания и навыки для перехода на следующую ступень карьерной лестницы. Обязательно ознакомьтесь с разделом и задайте возникшие вопросы по карьерному росту Вашему руководителю.'"
-                            >
-                        </a>
+                    <div class="profit__left-wrapper">
+                        <div class="profit__inner-title">
+                            {{ slide.title }}
+                            <a href="javascript:void(0)">
+                                <img
+                                    src="/images/dist/profit-info.svg"
+                                    alt="info icon"
+                                    v-b-popover.hover.right.html="'У Вас обязательно будет карьерный рост в компании, и здесь описаны требования, необходимые знания и навыки для перехода на следующую ступень карьерной лестницы. Обязательно ознакомьтесь с разделом и задайте возникшие вопросы по карьерному росту Вашему руководителю.'"
+                                >
+                            </a>
+                        </div>
                     </div>
                     <div class="profit__inner-text profit-right" v-html="slide.text"></div>
                 </div>
@@ -262,25 +264,23 @@ export default {
             /**
              * set some style
             *  */
+            if(this.$viewportSize.width > 767){
+                let leftSlides = document.getElementsByClassName("left-slide");
+                let rightSlides = document.getElementsByClassName("right-slide");
+                let height = 0;
 
-            let leftSlides = document.getElementsByClassName("left-slide");
-            let rightSlides = document.getElementsByClassName("right-slide");
-            let height = 0;
-
-            for(let i = 0; i < leftSlides.length; i++) {
-                for(let j = 0; j < rightSlides.length; j++) {
-                    const leftHeight = leftSlides[i].offsetHeight;
-                    const rightHeight = rightSlides[j].offsetHeight;
-                    height = leftHeight > rightHeight ? leftHeight : rightHeight;
+                for(let i = 0; i < leftSlides.length; i++) {
+                    for(let j = 0; j < rightSlides.length; j++) {
+                        const leftHeight = leftSlides[i].offsetHeight;
+                        const rightHeight = rightSlides[j].offsetHeight;
+                        height = leftHeight > rightHeight ? leftHeight : rightHeight;
+                    }
                 }
-            }
 
-            console.log('height');
-            console.log(height);
-            const arr = [1,1,1,2,3,4];
-            console.log(leftSlides);
-            [...leftSlides].forEach(data => {data.style.minHeight = height + "px"});
-            [...rightSlides].forEach(data => {data.style.minHeight = height + "px"});
+                const arr = [1,1,1,2,3,4];
+                [...leftSlides].forEach(data => {data.style.minHeight = height + "px"});
+                [...rightSlides].forEach(data => {data.style.minHeight = height + "px"});
+            }
         }
     }
 };

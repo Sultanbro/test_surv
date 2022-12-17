@@ -48,7 +48,7 @@ class MessengerServiceProvider extends ServiceProvider {
             $this->commands( [ InstallCommand::class ] );
 
             // Messenger migrations.
-            $this->loadMigrationsFrom( __DIR__ . '/../database/migrations' );
+            $this->loadMigrationsFrom( __DIR__ . '/../database/migrations/tenant' );
 
             // Publishing the configuration file.
             $this->publishes( [
