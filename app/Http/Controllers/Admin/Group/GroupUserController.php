@@ -5,7 +5,9 @@ namespace App\Http\Controllers\Admin\Group;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\GroupUser\GetUsersRequest;
+use App\Http\Requests\GroupUser\SaveUsersRequest;
 use App\Service\Timetrack\GetGroupUserService;
+use Exception;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
@@ -24,11 +26,17 @@ final class GroupUserController extends Controller
      *
      * @param GetUsersRequest $request
      * @return JsonResponse
+     * @throws Exception
      */
     public function get(GetUsersRequest $request): JsonResponse
     {
         $type = isset($request->toDto()->id) ? 'group' : 'default';
         $response = $this->service->handle($type, $request->toDto()->id);
         return response()->success($response);
+    }
+
+    public function save(SaveUsersRequest $request)
+    {
+        dd('her');
     }
 }

@@ -484,6 +484,7 @@ Route::middleware([
      * Route after refactor GroupUser in TimetrackController
      */
     Route::any('/timetracking/users-new', [GroupUserController::class, 'get']);
+    Route::any('/timetracking/users/group/save-new', [GroupUserController::class, 'save']);
     #==================================
     Route::any('/timetracking/zarplata-table', [TimetrackingController::class, 'zarplatatable']);
     Route::post('/order-persons-to-group', [TimetrackingController::class, 'orderPersonsToGroup']); // Заказ сотрудников в группы для Руководителей
