@@ -50,16 +50,16 @@
                                          src="/icon/news/news-popup/copy-link.svg">
                                     <span class="news-menu-popup__text" v-html="'Скопировать ссылку'"/>
                                 </div>
-                                <div v-show="currentPost.author ? currentPost.author.id : null" class="news-menu-popup__item"
-                                     @click="editPost">
-                                    <img class="news-menu-popup__img" alt="img" src="/icon/news/news-popup/edit.svg">
-                                    <span class="news-menu-popup__text" v-html="'Редактировать'"/>
-                                </div>
-                                <div v-show="currentPost.author ? currentPost.author.id : null" class="news-menu-popup__item"
-                                     @click="deletePost(currentPost.id)">
-                                    <img class="news-menu-popup__img" alt="img" src="/icon/news/news-popup/delete.svg">
-                                    <span class="news-menu-popup__text" v-html="'Удалить'"/>
-                                </div>
+                              <div v-show="currentPost.author ? ((this.$can('news_edit') ||  currentPost.author.id === me.id) ? currentPost.author.id: null ) : null" class="news-menu-popup__item"
+                                   @click="editPost">
+                                <img class="news-menu-popup__img" alt="img" src="/icon/news/news-popup/edit.svg">
+                                <span class="news-menu-popup__text" v-html="'Редактировать'"/>
+                              </div>
+                              <div v-show="currentPost.author ? ((this.$can('news_edit') ||  currentPost.author.id === me.id) ? currentPost.author.id: null ) : null" class="news-menu-popup__item"
+                                   @click="deletePost(currentPost.id)">
+                                <img class="news-menu-popup__img" alt="img" src="/icon/news/news-popup/delete.svg">
+                                <span class="news-menu-popup__text" v-html="'Удалить'"/>
+                              </div>
                             </div>
                         </div>
                     </div>
