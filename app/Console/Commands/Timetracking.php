@@ -4,7 +4,7 @@ namespace App\Console\Commands;
 
 use Carbon\Carbon;
 use Illuminate\Console\Command;
-use App\Timetracking;
+use App\Timetracking as Model;
 
 class Timetracking extends Command
 {
@@ -24,7 +24,7 @@ class Timetracking extends Command
      */
     public function handle()
     {
-        $records = Timetracking::with('user')
+        $records = Model::with('user')
             ->where(function($query) {
                 $query->whereDate('enter', now())
                     ->orWhereDate('enter', now()->subDay());
@@ -49,7 +49,7 @@ class Timetracking extends Command
             }
 
             $record->setExit($workEndTime)
-                ->setStatus(Timetracking::DAY_ENDED)
+                ->setStatus(Model::DAY_ENDED)
                 ->addTime($workEndTime)
                 ->save();
 
