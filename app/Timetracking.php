@@ -111,6 +111,18 @@ class Timetracking extends Model
         return $this->setTimes($arr);
     }
 
+    public function scopeWorkdayStarted($query)
+    {
+        return $query->where('status', self::DAY_STARTED);
+    }
+
+    public function isWorkEndTimeSetToNextDay(Carbon $worktimeEnd) : bool
+    {
+        return $worktimeEnd->hour < 9 
+            && Carbon::now($worktimeEnd->timezone)
+                ->hour >= 9;
+    }
+
     public static function getSumHoursPerDayByUsersIds($from_date, $to_date, $users_ids)
     {
         $hours = Timetracking::whereIn('user_id', $users_ids)
