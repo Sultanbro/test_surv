@@ -46,12 +46,10 @@ class TestController extends Controller {
 	
 	public function test() { 
 		 
-        
-		$tt = Timetracking::where('user_id', 5)
-			->whereDate('enter', '2022-12-14')
-			->first();
-		
-        dd($tt);
+        $user = User::find(5);
+		$a = Carbon::now($user->timezone())->timezone;
+		$b = Carbon::now($a);
+        dd($b);
 	}
 
     public function testMethodForCheck()

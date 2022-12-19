@@ -58,4 +58,12 @@ class Position extends Model
     {
         return $this->hasMany('App\User', 'position_id', 'id');
     }
+
+    /**
+     * @return HasMany
+     */
+    public function descriptions(): HasMany
+    {
+        return $this->hasMany(PositionDescription::class, 'position_id');
+    }
 }

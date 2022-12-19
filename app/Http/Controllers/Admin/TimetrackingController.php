@@ -2,14 +2,10 @@
 
 namespace App\Http\Controllers\Admin;
 
-use App\Classes\Helpers\InsertData;
-use App\Components\TelegramBot;
+
 use App\DayType;
-use App\Events\TransferUserInGroupEvent;
 use App\Fine;
-use App\GroupPlan;
 use App\Http\Controllers\Controller;
-use App\Http\Requests\GetReportsRequest;
 use App\Position;
 use App\Salary;
 use App\Service\GroupUserService;
@@ -17,11 +13,9 @@ use App\TimetrackingHistory;
 use App\UserAbsenceCause;
 use App\UserFine;
 use App\ProfileGroup;
-use App\Setting;
 use App\Timetracking;
 use App\User;
 use App\UserDescription;
-use App\Trainee;
 use App\Kpi;
 use App\UserNotification;
 use App\Models\Books\BookGroup;
@@ -33,7 +27,6 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\View;
 use App\External\Bitrix\Bitrix;
 use App\Models\Bitrix\Lead;
-use App\AnalyticsSettingsIndividually;
 use App\Downloads;
 use App\Http\Controllers\IntellectController as IC;
 use App\Classes\Helpers\Phone;
@@ -41,7 +34,6 @@ use App\Models\Kpi\Bonus;
 use App\Classes\Helpers\Currency;
 use App\Models\User\NotificationTemplate;
 use App\Models\Analytics\Activity;
-use App\Models\Analytics\KpiIndicator;
 use App\Models\Admin\ObtainedBonus;
 use App\Models\TestBonus;
 use App\Models\Admin\EditedBonus;
@@ -270,6 +262,18 @@ class TimetrackingController extends Controller
         return 'true';
     }
 
+
+    public function saveMinutesFromWorktimePeriod($running)
+    {
+        $t_start = strtotime(json_decode(json_encode($running->enter), true)['date']);
+        $t_end = strtotime(json_decode(json_encode($running->exit), true)['date']);
+
+        $running->total_hours = round(($t_end - $t_start)/60);;
+        $running->updated_at = date('Y-m-d H:i:s');
+
+        return $running->save() ? true : false;
+    }
+
     /**
      * Handle startDay btn clicks
      */
@@ -281,15 +285,9 @@ class TimetrackingController extends Controller
         $userClickedEnd   = $request->has('stop');
 
         try {
-
-           
-
             $status = $userClickedStart
                 ? $this->startDay()
                 : $this->endDay();
-
-            
-
         } catch (\Throwable $e) {
             return response()->json([
                 'error' => [
