@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 
 namespace App\Service\Timetrack;
 
@@ -12,7 +13,7 @@ use Carbon\Carbon;
 /**
 * Класс для работы с Service.
 */
-class ReportService
+final class ReportService
 {
     public function __construct(
         public ProfileGroupRepository $profileGroupRepository,

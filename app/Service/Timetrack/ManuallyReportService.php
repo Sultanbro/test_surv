@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 
 namespace App\Service\Timetrack;
 
@@ -7,11 +8,12 @@ use App\Repositories\TimeTrackingRepository;
 use Carbon\Carbon;
 use Exception;
 use Illuminate\Support\Facades\DB;
+use Symfony\Component\HttpFoundation\Response;
 
 /**
 * Класс для работы с Service.
 */
-class ManuallyReportService
+final class ManuallyReportService
 {
     public function __construct(
         public TimeTrackingRepository $timeTrackingRepository,
@@ -26,7 +28,7 @@ class ManuallyReportService
      * @param int $day
      * @param string $time
      * @param string|null $comment
-     * @return void
+     * @return int
      * @throws Exception
      */
     public function handle(
@@ -36,7 +38,7 @@ class ManuallyReportService
         int $day,
         string $time,
         ?string $comment
-    )
+    ): int
     {
         $enter = $this->setEnterTime($year, $month, $day, $time);
         try {
@@ -54,6 +56,8 @@ class ManuallyReportService
 
                 $this->historyRepository->createHistory($userId, $updateOrCreate, $enter);
             });
+
+            return Response::HTTP_CREATED;
 
         } catch (\Throwable $e) {
             throw new Exception($e->getMessage());
