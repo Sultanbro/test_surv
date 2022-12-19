@@ -50,6 +50,19 @@
   }
 }
 
+.custom-checkbox{
+  padding-left: 25px;
+  min-height: 20px;
+  line-height: 1.2;
+  .custom-control-label{
+    &:before, &:after{
+      width: 20px;
+      height: 20px;
+      top: 0;
+    }
+  }
+}
+
 textarea.form-control {
   padding: 15px 20px !important;
   height: auto!important;

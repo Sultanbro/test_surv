@@ -3,7 +3,7 @@
 
     <div class="d-flex relative">
         <input 
-            class="searcher mr-2 pr-3"
+            class="searcher form-control mr-2 pr-3"
             v-model="searchText"
             type="text"
             placeholder="Поиск по совпадениям..."
