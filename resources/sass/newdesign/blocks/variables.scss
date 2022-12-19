@@ -139,6 +139,12 @@ a:hover {
   }
 }
 
+.no-profile{
+  .container.container-left-padding {
+    padding-top: 0;
+  }
+}
+
 @media(max-width:440px){
   .content{
     margin-top: 3rem;
@@ -162,11 +168,23 @@ a:hover {
     padding-left: 9rem;
     padding-right: 8rem;
   }
+  .no-profile{
+    .container.container-left-padding {
+      padding-left: 7rem;
+      padding-left: 6rem;
+    }
+  }
 }
 @media(min-width: 938px){
   .container.container-left-padding {
     padding-left: 9rem;
     padding-right: 8rem;
+  }
+  .no-profile{
+    .container.container-left-padding {
+      padding-left: 9rem;
+      padding-right: 8rem;
+    }
   }
 }
 @media(min-width:1360px){
@@ -177,13 +195,18 @@ a:hover {
   }
   .no-profile{
     .container.container-left-padding {
-      padding-left: 9rem;
+      padding-left: 7rem;
     }
   }
 }
 
 @media(min-width:1910px){
   .container.container-left-padding {
-    padding-right: 10rem;
+    padding-right: 8rem;
+  }
+  .no-profile{
+    .container.container-left-padding {
+      padding-right: 8rem;
+    }
   }
 }

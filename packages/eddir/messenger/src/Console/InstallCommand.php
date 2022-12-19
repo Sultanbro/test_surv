@@ -20,8 +20,10 @@ class InstallCommand extends Command {
                    ] + $packages;
         } );
 
-        Artisan::call( 'migrate', [
-            '--force' => true,
+        $this->info("Running migrations...");
+
+        Artisan::call( 'tenants:migrate', [
+           // '--force' => true,
         ] );
 
         $this->call( 'vendor:publish', [

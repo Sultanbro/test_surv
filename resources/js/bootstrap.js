@@ -36,6 +36,10 @@ import Echo from 'laravel-echo';
 import Pusher from 'pusher-js';
 window.Pusher = Pusher;
 
+console.log(process.env.VITE_PUSHER_HOST ?? window.location.hostname)
+console.log(process.env.VITE_PUSHER_PATH)
+console.log(process.env)
+console.log('HEEEEEEY ECHO')
 window.Echo = new Echo({
     broadcaster: 'pusher',
     authEndpoint: '/messenger/api/chat/auth',
@@ -44,8 +48,7 @@ window.Echo = new Echo({
     wssHost: process.env.VITE_PUSHER_HOST ?? window.location.hostname,
     wsPort: process.env.VITE_PUSHER_PORT ?? 6001,
     wssPort: process.env.VITE_PUSHER_PORT ?? 6001,
-    wssPort: process.env.VITE_PUSHER_PORT ?? 6001,
-    forceTLS: true,
+    forceTLS: process.env.VITE_PUSHER_SECURE ?? false,
     wsPath: process.env.VITE_PUSHER_PATH ?? '/messenger',
     wssPath: process.env.VITE_PUSHER_PATH ?? '/messenger',
     enabledTransports: ['ws', 'wss'],

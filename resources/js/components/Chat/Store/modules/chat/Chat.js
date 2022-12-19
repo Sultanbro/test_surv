@@ -24,11 +24,11 @@ export default {
     removeChat(state, chat) {
       state.chats = state.chats.filter(c => c.id !== chat.id);
     },
-    markChatAsSeen(state) {
-      state.chat.unread_messages_count = 0;
+    markChatAsSeen(state, left = 0) {
+      state.chat.unread_messages_count = left;
       state.chats = state.chats.map(chat => {
         if (chat.id === state.chat.id) {
-          chat.unread_messages_count = 0;
+          chat.unread_messages_count = left;
         }
         return chat;
       });
@@ -52,10 +52,14 @@ export default {
       chatFromList.title = chat.title;
       chatFromList.description = chat.description;
       chatFromList.pinned = chat.pinned;
+      chatFromList.image = chat.image;
+      chatFromList.users = chat.users;
       if (state.chat && state.chat.id === chat.id) {
         state.chat.title = chat.title;
         state.chat.description = chat.description;
         state.chat.pinned = chat.pinned;
+        state.chat.image = chat.image;
+        state.chat.users = chat.users;
       }
     },
     setChatOnline(state, online) {
@@ -66,6 +70,9 @@ export default {
     chats: state => state.chats,
     sortedChats: state => {
       return state.chats.sort((a, b) => {
+        if (a.pinned && b.pinned) {
+          return b.id - a.id;
+        }
         if (a.pinned) {
           return -1;
         }
@@ -77,7 +84,7 @@ export default {
         return new Date(date2) - new Date(date1);
       });
     },
-    chat: state => state.chat,
+    chat: state => state.chat
   },
   actions: {
     async loadChats({commit, getters, dispatch}) {
@@ -87,11 +94,11 @@ export default {
         dispatch('updateUser', response.user);
       });
     },
-    async loadChat({commit, getters, dispatch}, chatId) {
+    async loadChat({commit, getters, dispatch}, {chatId, callback: callback = () => {}}) {
       await API.getChatInfo(chatId, chat => {
         commit('setChat', chat);
         commit('setPinnedMessage', chat.pinned_message);
-        dispatch('loadMessages', {reset: true});
+        dispatch('loadMessages', {reset: true, callback: callback});
         dispatch('cancelEditMessage');
       });
     },
@@ -102,7 +109,7 @@ export default {
     },
     async createChat({commit, getters, dispatch}, {title, description, members}) {
       await API.createChat(title, description, members).then(response => {
-        dispatch('loadChat', response.data.id);
+        dispatch('loadChat', {chatId: response.data.id});
       });
     },
     async searchChats({commit}, search) {
@@ -122,6 +129,16 @@ export default {
           dispatch('escapeChat');
         }
         commit('removeChat', chat);
+        commit('setPinnedMessage', null);
+      });
+    },
+    async removeChat({commit, getters, dispatch}, chat) {
+      await API.removeChat(chat.id, () => {
+        if (getters.chat && getters.chat.id === chat.id) {
+          dispatch('escapeChat');
+        }
+        commit('removeChat', chat);
+        commit('setPinnedMessage', null);
       });
     },
     async addMembers({commit, getters, dispatch}, members) {
@@ -140,6 +157,9 @@ export default {
       await API.editChat(getters.chat.id, getters.chat.title, getters.chat.description);
       commit('updateChat', getters.chat);
     },
+    async uploadChatAvatar({commit, getters, dispatch}, file) {
+      await API.uploadChatAvatar(getters.chat.id, file);
+    },
     async pinChat({commit, getters, dispatch}, chat) {
       await API.pinChat(chat.id);
       chat.pinned = true;
@@ -149,6 +169,12 @@ export default {
       await API.unpinChat(chat.id);
       chat.pinned = false;
       commit('updateChat', chat);
+    },
+    async setChatAdmin({commit, getters, dispatch}, {chat, user}) {
+      API.setChatAdmin(chat.id, user.id);
+    },
+    async unsetChatAdmin({commit, getters, dispatch}, {chat, user}) {
+      API.unsetChatAdmin(chat.id, user.id);
     }
   }
 }

@@ -56,7 +56,7 @@
           <option value="1">Открытый вопрос</option>
         </select>
 
-     
+
         <div class="variants" v-if="q.type == 0">
           <div
             class="variant d-flex aic"
@@ -65,14 +65,14 @@
           >
 
             <label class="d-flex  w-full" v-if="mode == 'edit'">
-              <input 
+              <input
                 type="checkbox"
-                v-model="v.right" 
-                class="mr-2" 
+                v-model="v.right"
+                class="mr-2"
                 @change="changed = true"
                 title="Отметьте галочкой, если думаете, что ответ правильный. Правильных вариантов может быть несколько"
-              /> 
-              
+              />
+
               <input
                 type="text"
                 v-model="v.text"
@@ -82,12 +82,12 @@
                 :ref="`variant${q_index}_${v_index}`"
               />
             </label>
-            
+
             <label class="d-flex w-full" v-if="mode == 'read'" :class="{'right':scores && v.right == true}">
-              <input 
+              <input
                   type="checkbox"
-                  v-model="v.checked" 
-                  class="mr-2" 
+                  v-model="v.checked"
+                  class="mr-2"
                   @change="changed = true"
                   title="Отметьте галочкой, если думаете, что ответ правильный. Правильных вариантов может быть несколько"
               />
@@ -99,8 +99,8 @@
               ></i>
 
             </label>
-          
-         
+
+
           </div>
 
           <button class="btn btn-default btn-sm mt-2 mb-2" @click.stop="addVariant(q_index, -1)" v-if="mode == 'edit'">
@@ -111,14 +111,14 @@
         <div v-else>
           <input type="text" v-model="q.success" />
         </div>
-        
+
 
 
         <div class="d-flex jcsb">
           <div class="points mr-3" v-if="mode == 'edit'">
-            <p>Бонусы 
-              <i class="fa fa-info-circle ml-2 mr-2" 
-                  v-b-popover.hover.right.html="'Количество бонусов на счет сотрудника при правильном ответе'" 
+            <p>Бонусы
+              <i class="fa fa-info-circle ml-2 mr-2"
+                  v-b-popover.hover.right.html="'Количество бонусов на счет сотрудника при правильном ответе'"
                   title="Бонусы">
               </i>
 
@@ -126,16 +126,16 @@
             <input type="number" v-model="q.points" min="0" max="999" />
           </div>
         </div>
-          
-          
-     
+
+
+
 
       </div>
     </div>
 
     <template v-if="mode == 'read'">
       <div class="d-flex">
-        <button class="btn btn-success mr-2" 
+        <button class="btn btn-success mr-2"
         @click.stop="checkAnswers"
         v-if="points == -1 || !scores"
         :disabled="timer_turned_on"
@@ -156,14 +156,14 @@
           <span v-if="scores">Вы заработали: <b>{{ points }}</b> бонусов из <b>{{ total }}</b></span>
           <span v-else>Вы не набрали проходной балл...</span>
         </p>
-        <button class="net-btn btn btn-primary" 
+        <button class="net-btn btn btn-primary"
           v-if="mode == 'read' && passed"
           @click="$emit('nextElement')" >
           Продолжить
           <i class="fa fa-angle-double-right ml-2"></i>
         </button>
       </div>
-      
+
     </template>
 
     <template v-if="mode == 'edit'">
@@ -173,36 +173,36 @@
       <div>
         <button
           v-if="['kb','video'].includes(type)"
-          class="btn btn-success mr-2" 
+          class="btn btn-success mr-2"
           @click.stop="saveTest"
           >
             Сохранить
         </button>
-        
+
         <button class="btn" @click.stop="addQuestion" >Добавить вопрос</button>
       </div>
-      
+
 
           <div class="d-flex aic pass__ball">
-            <p class="mr-3" style="width:200px">Проходной балл:  
-              <i class="fa fa-info-circle" 
-                    v-b-popover.hover.right.html="'Правильных ответов для прохода'" 
+            <p class="mr-3" style="width:200px">Проходной балл:
+              <i class="fa fa-info-circle"
+                    v-b-popover.hover.right.html="'Правильных ответов для прохода'"
                     title="Проходной балл">
                 </i>
             </p>
 
             <div class="d-flex aic mb-3">
-                <input class="form-control  mr-1" 
-                  v-model="pass_grade_local" 
+                <input class="form-control  mr-1"
+                  v-model="pass_grade_local"
                   type="number"
                   :min="0"
                   :max="100"
-                  @change="$emit('changePassGrade', pass_grade_local)" 
+                  @change="$emit('changePassGrade', pass_grade_local)"
                   @focus="$event.target.select()"
                 />
                 <span> <b>из {{ questions.length }}</b></span>
             </div>
-        
+
 
           </div>
 
@@ -238,6 +238,10 @@ export default {
     pass_grade: {
       default: 1
     },
+    dontRepat: {
+      type: Boolean,
+      default: false
+    }
   },
   data() {
     return {
@@ -253,13 +257,13 @@ export default {
       right_ans: 0 // правильно отвеченные
     };
   },
-  computed: { 
+  computed: {
     scores() {
       let pass_grade_local = this.pass_grade_local > this.questions.length ? this.questions.length : this.pass_grade_local;
       return Number(this.right_ans) - Number(pass_grade_local) >= 0
     }
   },
-  watch: {  
+  watch: {
       pass_grade_local(grade) {
 
         // let len = this.questions.length;
@@ -273,8 +277,8 @@ export default {
       pass_grade() {
         this.pass_grade_local = this.pass_grade
       },
-      
-     
+
+
       mode: {
         handler (val, oldVal) {
           if(val == 'edit') {
@@ -287,7 +291,7 @@ export default {
 
       timer: {
           handler(value) {
-            
+
 
               if (value > 0) {
                   setTimeout(() => {
@@ -301,7 +305,7 @@ export default {
       }
 
   },
-  
+
   created() {
     this.pass_grade_local = this.pass_grade;
     this.setResults();
@@ -318,9 +322,9 @@ export default {
         this.points = this.total;
         this.page = this.page;
       }
-      
+
       if(this.$cookie.get('q_timer') != null) {
-        
+
         this.$cookie.set('q_timer', 60, { expires: '60s' });
         this.timer_turned_on = true;
         this.timer = 60;
@@ -339,7 +343,7 @@ export default {
   },
   mounted() {},
   methods: {
-    
+
     setResults() {
       this.questions.forEach((q) => {
         if(q.result == null) return;
@@ -371,24 +375,24 @@ export default {
       if(IS_QUESTIONS_DIV) {
         this.questions.forEach((q) => (q.editable = false));
       }
-      
+
     },
 
     checkAnswers() {
       // read
 
-  
+
       if(this.timer_turned_on && this.$cookie.get('q_timer') != null) {
         this.$toast.error('Вы не можете пока ответить еще ' + this.timer + ' секунд');
         return;
       }
- 
-      // start count 
+
+      // start count
       this.points = 0;
       this.right_ans = 0;
 
       let not_answered_question = false;
-   
+
       this.questions.forEach((q) => {
         let answer = {}
         let results = {};
@@ -439,7 +443,7 @@ export default {
         };
 
       });
-      
+
       //
       if(not_answered_question) {
         this.$toast.error('Ответьте на все вопросы!');
@@ -449,19 +453,25 @@ export default {
       if(this.scores) {
         if(this.count_points) {
           this.count_points = false;
-        } 
+        }
         // else {
         //   this.$emit('passed');
         // }
          this.$emit('passed');
          this.passed = true;
       } else {
-        this.timer_turned_on = true;
-        this.timer = 60;
-        this.$cookie.set('q_timer', 60, { expires: '60s' });
+        if(this.dontRepat){
+          this.$emit('failed');
+        }
+        else{
+          this.timer_turned_on = true;
+          this.timer = 60;
+          this.$cookie.set('q_timer', 60, { expires: '60s' });
 
-        this.$toast.error('Вы ответили неверно. Вот Вам еще минутка чтобы найти на странице правильный ответ!');
-        this.points = -1;
+          this.$toast.error('Вы ответили неверно. Вот Вам еще минутка чтобы найти на странице правильный ответ!');
+          this.points = -1;
+        }
+
       }
     },
 
@@ -486,7 +496,7 @@ export default {
           input.focus();
         });
       }
-      
+
       this.changed = true;
     },
 
@@ -515,7 +525,7 @@ export default {
         return false;
       }
 
-      
+
 
       this.questions[q_index].editable = false;
       this.$emit('validate', true)
@@ -562,7 +572,7 @@ export default {
             .post("/playlists/delete-question", {
               id: this.questions[q_index].id
             })
-            .then((response) => {  
+            .then((response) => {
               this.questions.splice(q_index, 1);
             })
         }
@@ -581,7 +591,7 @@ export default {
           v
         ].text;
       }
-      
+
       this.changed = true;
     },
 
@@ -629,14 +639,14 @@ export default {
         });
       });
 
-      // save 
+      // save
       axios
         .post(url, {
           id: this.id,
           pass_grade: this.pass_grade,
           questions: _questions,
         })
-        .then((response) => { 
+        .then((response) => {
           this.$toast.success("Вопросы сохранены!");
           this.questions.forEach((item, index) => {
             item.id = response.data[index];

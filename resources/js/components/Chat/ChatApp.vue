@@ -1,7 +1,6 @@
 <template>
-  <div>
-    <div @keydown.esc="escapeChat" v-click-outside="toggle" v-show="isOpen"
-         class="messenger__card-window" id="messengerWindow">
+  <div class="messenger__wrapper" v-click-outside="toggle" v-show="isOpen">
+    <div @keydown.esc="escapeChat" class="messenger__card-window" id="messengerWindow">
       <SearchBox></SearchBox>
       <div class="messenger__chat-container">
         <ChatsList :fullscreen="true"></ChatsList>
@@ -17,6 +16,7 @@
       @onopen="openGallery"
       @close="hideGallery"
     />
+    <ConfirmDialog></ConfirmDialog>
   </div>
 </template>
 
@@ -29,7 +29,7 @@ import ChinBox from "./ChinBox/ChinBox.vue";
 import InfoPanel from "./InfoPanel/InfoPanel";
 import clickOutside from "./directives/clickOutside.ts";
 import ImageGallery from "./ImageGallery/ImageGallery.vue";
-
+import ConfirmDialog from "./ConfirmDialog/ConfirmDialog.vue";
 // noinspection JSUnusedGlobalSymbols
 export default {
   name: "ChatApp",
@@ -39,7 +39,8 @@ export default {
     MessengerConversation,
     ChinBox,
     InfoPanel,
-    ImageGallery
+    ImageGallery,
+    ConfirmDialog
   },
   directives: {
     clickOutside
@@ -47,11 +48,11 @@ export default {
   watch: {
     isOpen: function (val) {
       if (val) {
-        // set div modal-open class
-        document.body.classList.add('modal-open');
+        // set div messenger__open class
+        document.body.classList.add('messenger__open');
       } else {
-        // remove div modal-open class
-        document.body.classList.remove('modal-open');
+        // remove div messenger__open class
+        document.body.classList.remove('messenger__open');
       }
     }
   },
@@ -89,14 +90,24 @@ export default {
 
 <style>
 
-body.modal-open {
+/*noinspection CssUnusedSymbol*/
+body.messenger__open {
   overflow: hidden;
   position: fixed;
 }
 
+.messenger__wrapper {
+  width: 90vw;
+  height: 100vh;
+  position: fixed;
+  right: 0;
+  bottom: 0;
+  z-index: 10001;
+}
+
 .messenger__card-window {
   position: fixed;
-  margin-right: 6rem;
+  padding-right: 6rem;
   right: 0;
   bottom: 0;
   width: 90vw;
@@ -109,7 +120,13 @@ body.modal-open {
   overflow-wrap: break-word;
   white-space: normal;
   -webkit-tap-highlight-color: transparent;
-  z-index: 1002;
+  z-index: 1000;
+}
+
+@media only screen and (max-width: 670px) {
+  .messenger__card-window {
+    width: 100vw;
+  }
 }
 
 .messenger__chat-container {

@@ -32,7 +32,7 @@
        </b-row>
         <div class="row">
             <div class="col mt-2 mb-4">
-                <button type="button" @click="addFine()" title="Добавить новый штраф" class="btn btn-success">
+                <button type="button" @click="addFine()" title="Добавить новый штраф" class="btn btn-primary">
                     Добавить
                 </button>
                 <button type="button" @click="saveFines()" title="Сохранить изменения в штрафах" class="btn btn-success">

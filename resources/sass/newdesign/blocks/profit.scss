@@ -56,16 +56,19 @@
 }
 .profit__left-wrapper{
   display: flex;
-  gap: 1rem;
+  padding-right: 6rem;
 }
 
 .profit__inner-title{
-  max-width: 35rem;
+  display: flex;
+  margin-bottom: 2.5rem;
+
+  flex-flow: row nowrap;
+  gap: 1rem;
+
   font-size:1.8rem;
   font-weight: 600;
   color:#5B6166;
-  margin-bottom: 2.5rem;
-
 }
 .profit__inner-text{
   font-size:1.3rem;
@@ -268,7 +271,7 @@
 
   .courses__image{
     width: 100%;
-    max-width: 240px;
+    max-width: 280px;
     object-fit: cover;
     margin-bottom: 3rem;
     border-radius: 10px;
@@ -740,20 +743,12 @@
   .profit__inner .slick-next{
     right: 2rem;
   }
-  .profit__inner-title{
-    max-width: 26rem;
-  }
 }
 @media(min-width:1440px){
-  .profit__inner-title{
-    max-width: 29rem;
-  }
+
 }
 
 @media(min-width:1910px){
-  .profit__inner-title{
-    max-width: 35rem;
-  }
   .profit__inner .slick-prev{
     right: 6rem;
   }

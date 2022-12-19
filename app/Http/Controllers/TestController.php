@@ -38,6 +38,7 @@ use App\Models\GroupUser;
 use App\Models\Tenant;
 use App\Salary;
 use App\Service\Department\UserService;
+use App\Timetracking;
 use Illuminate\Support\Facades\Http;
 
 class TestController extends Controller { 
@@ -45,32 +46,18 @@ class TestController extends Controller {
 	
 	public function test() { 
 		 
-        // create tenant
-        $tenant = Tenant::create(['id' => 'admin']);
-
-        // create domain
-        $tenant->createDomain('admin');
-
-        // attach to owner
-        $centralUser = CentralUser::where('email', 'karim_a@list.ru')->first();
-
-		if($centralUser) {
-            $centralUser->tenants()->attach($tenant);
-        }   
-
-		dd('ok');
+        
+		$tt = Timetracking::where('user_id', 5)
+			->whereDate('enter', '2022-12-14')
+			->first();
+		
+        dd($tt);
 	}
 
     public function testMethodForCheck()
     {
-        $stat = AnalyticStat::getCellValue(
-            42,
-            'D15',
-            '2022-11-01',
-            2
-        );
-
-        dd($stat);
+		$account = new Callibro('user580158@bpartners.kz');
+        dd($account);
     }
 	private function getSegmentAndSaveForLead($id) {
 

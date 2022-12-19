@@ -210,7 +210,6 @@ export default {
 
     addItem() {
       this.searchText = '';
-      this.onSearch();
       this.items.unshift(
         {
           id: 0,

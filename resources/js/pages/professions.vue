@@ -11,7 +11,7 @@
              </b-form-group>
           </b-col>
           <b-col cols="12" lg="4">
-              <b-form-group label="Название должности" class="add-grade">
+              <b-form-group label="Добавить должность" class="add-grade">
                   <b-form-input type="text" v-model="new_position"></b-form-input>
                   <button @click='addPosition' class="btn btn-success ml-4" title="Добавить должность"><i class="fa fa-plus"></i></button>
               </b-form-group>

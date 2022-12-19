@@ -1,4 +1,9 @@
 .multiselect{
+    &--active{
+        .multiselect__tags{
+            box-shadow: rgba(50, 50, 93, 0.25) 0px 2px 5px -1px, rgba(0, 0, 0, 0.3) 0px 1px 3px -1px;
+        }
+    }
     .multiselect__select{
         height: 45px;
     }
@@ -6,7 +11,7 @@
         min-height: 45px!important;
         background-color: #F7FAFC;
         border-radius: 6px!important;
-        box-shadow: rgba(50, 50, 93, 0.25) 0px 2px 5px -1px, rgba(0, 0, 0, 0.3) 0px 1px 3px -1px;
+        //box-shadow: rgba(50, 50, 93, 0.25) 0px 2px 5px -1px, rgba(0, 0, 0, 0.3) 0px 1px 3px -1px;
         padding: 8px 40px 0 20px;
         .multiselect__single, .multiselect__input, .multiselect__placeholder{
             padding-left: 0;

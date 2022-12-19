@@ -126,20 +126,53 @@
 
 
         <!-- Corp book page when day has started -->
-        <b-modal v-model="showCorpBookPage" title="Н" size="xl" class="modalle" hide-footer hide-header no-close-on-backdrop>
+        <b-modal
+            v-model="showCorpBookPage"
+            title="Н"
+            size="xl"
+            class="modalle"
+            hide-footer
+            hide-header
+            no-close-on-backdrop
+        >
             <div class="corpbook" v-if="corp_book_page !== undefined && corp_book_page !== null">
                 <div class="inner">
-                    <h5 class="text-center aet mb-3">Ознакомьтесь с одной из страниц Вашей корпоративной книги</h5>
+                    <h5 class="text-center aet mb-3">Ознакомьтесь с одной из страниц Вашей базы знаний</h5>
                     <h3 class="text-center">{{ corp_book_page.title }}</h3>
 
-                    <div v-html="corp_book_page.text"></div>
+                    <div v-html="corp_book_page.text"/>
 
-                    <button href="#profitInfo" class="button-blue m-auto mt-5" id="readCorpBook" @click="hideBook" disabled>
-                        <span class="text">Я прочитал</span>
-                        <span class="timer"></span>
+                    <button
+                        @click="testBook"
+                        :disabled="!!bookTimer"
+                        id="readCorpBook"
+                        class="button-blue m-auto mt-5"
+                    >
+                        <span v-if="bookTimer" class="timer">{{ bookTimer }}</span>
+                        <span v-else class="text">Я прочитал</span>
                     </button>
                 </div>
             </div>
+        </b-modal>
+
+        <b-modal
+            v-model="isBookTest"
+            size="xl"
+            class="modalle"
+            hide-footer
+            hide-header
+            no-close-on-backdrop
+        >
+            <questions
+                v-if="corp_book_page"
+                :course_item_id="0"
+                :questions="corp_book_page.questions"
+                :pass_grade="corp_book_page.questions.length"
+                type="kb"
+                :dont-repat="true"
+                @passed="hideBook"
+                @failed="repeatBook"
+            />
         </b-modal>
     </div>
 </template>
@@ -173,6 +206,9 @@ export default {
             // corp book
             corp_book_page: null,
             showCorpBookPage: false,
+            bookTimer: 0,
+            bookTimerInterval: 0,
+            isBookTest: false,
         };
     },
     computed: {
@@ -205,6 +241,10 @@ export default {
             workdayStatus: this.workdayStatus,
         })
         bus.$on('MobileProfileSidebarStartDay', this.startDay)
+
+        window.addEventListener('blur', this.pauseBookTimer)
+        window.addEventListener('focus', this.unpauseBookTimer)
+
         this.getLogo()
         this.fetchUserInfo()
         this.fetchTTStatus()
@@ -405,19 +445,22 @@ export default {
          *  Time to read book before "I have read" btn became active
          */
         bookCounter() {
-            let seconds = 60;
-            let interv = setInterval(() => {
-                seconds--;
-                VJQuery('#readCorpBook .timer').text(seconds);
-                if(seconds == 0) {
-                    VJQuery('#readCorpBook .timer').text('');
-                    clearInterval(interv);
-                }
-            }, 1000);
+            this.bookTimer = 60
+            this.unpauseBookTimer()
+        },
 
-            setTimeout(() => {
-                VJQuery('#readCorpBook').prop('disabled', false);
-            }, seconds * 1000);
+        pauseBookTimer(){
+            clearInterval(this.bookTimerInterval)
+        },
+
+        unpauseBookTimer(){
+            if(this.bookTimer === 0) return
+            this.bookTimerInterval = setInterval(() => {
+                --this.bookTimer
+                if(this.bookTimer === 0) {
+                    clearInterval(this.bookTimerInterval)
+                }
+            }, 1000)
         },
 
         /**
@@ -425,8 +468,20 @@ export default {
          */
         hideBook() {
             axios.post('/corp_book/set-read/', {})
-                .then((res) => this.showCorpBookPage = false)
-                .catch((error) => console.log(error))
+                .then(res => this.showCorpBookPage = false)
+                .catch(error => console.log(error))
+        },
+
+        repeatBook(){
+            this.showCorpBookPage = true
+            this.isBookTest = false
+            this.bookCounter()
+        },
+
+        testBook(){
+            if(this.bookTimer) return
+            this.isBookTest = true
+            this.showCorpBookPage = false
         },
     }
 };
