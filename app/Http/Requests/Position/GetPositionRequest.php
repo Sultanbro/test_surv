@@ -26,7 +26,7 @@ class GetPositionRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'id' => ['required', 'numeric', 'exists:position,id']
+            'name' => ['required', 'numeric', 'exists:position,id']
         ];
     }
 
@@ -37,7 +37,7 @@ class GetPositionRequest extends FormRequest
     {
         $validated = $this->validated();
 
-        $id = Arr::get($validated, 'id');
+        $id = Arr::get($validated, 'name');
 
         return new GetPositionDTO($id);
     }

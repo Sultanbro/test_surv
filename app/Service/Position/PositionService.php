@@ -57,7 +57,7 @@ final class PositionService
     )
     {
         try {
-            return $this->positionRepository->deleteByName($name);
+            return $this->positionRepository->deleteById($name);
         }catch (\Throwable $exception) {
             throw new Exception($exception->getMessage());
         }

@@ -38,7 +38,7 @@ final class PositionController extends Controller
 
     /**
      * @Get{
-     *  "id": 30
+     *  "name": 30
      * }
      *
      * @param GetPositionRequest $request
@@ -53,7 +53,7 @@ final class PositionController extends Controller
 
     /**
      * @Delete{
-     *  "position": "name"
+     *  "position": "76"
      * }
      *
      * @param AnyPositionRequest $request

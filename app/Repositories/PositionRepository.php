@@ -64,7 +64,7 @@ class PositionRepository extends CoreRepository
      * @param string $id
      * @return bool
      */
-    public function deleteByName(
+    public function deleteById(
         string $id
     ): bool
     {
