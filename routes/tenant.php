@@ -420,9 +420,9 @@ Route::middleware([
     /**
      * Route's после рефактора должностей
      */
-    Route::post('/timetracking/settings/positions/add-new', [TimeTrackPositionController::class, 'store']);
-    Route::delete('/timetracking/settings/positions/delete-new', [TimeTrackPositionController::class, 'destroy']);
-    Route::get('/timetracking/settings/positions/get-new', [TimeTrackPositionController::class, 'get']);
+    Route::post('/timetracking/settings/positions/add', [TimeTrackPositionController::class, 'store']);
+    Route::post('/timetracking/settings/positions/delete', [TimeTrackPositionController::class, 'destroy']);
+    Route::post('/timetracking/settings/positions/get', [TimeTrackPositionController::class, 'get']);
     Route::any('/timetracking/settings/positions/save-new', [TimeTrackPositionController::class, 'savePositionWithDescription']);
     Route::any('/timetracking/settings/positions-new', [TimeTrackPositionController::class, 'all']);
 
