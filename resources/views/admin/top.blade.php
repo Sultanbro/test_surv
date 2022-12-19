@@ -15,14 +15,17 @@
                     @if(auth()->user()->can('salaries_view'))<a class="nav-item nav-link " id="nav-salary-tab" href="/timetracking/salaries">Начисления</a>@endif
                     @if(auth()->user()->can('quality_view'))<a class="nav-item nav-link" id="nav-quality-tab" href="/timetracking/quality-control">ОКК</a>@endif
                 </div>
-            </nav>    
+            </nav>
         </div>
         <div class="top-page col-md-12">
-            <page-top :data="{{json_encode($data)}}" activeuserid="{{json_encode(auth()->id())}}" />
+            <page-top
+                :data="{{json_encode($data)}}"
+                activeuserid="{{json_encode(auth()->id())}}"
+            />
         </div>
     </div>
 </div>
- 
+
 @endsection
 @section('scripts')
 
@@ -32,7 +35,7 @@
 }
 @media (min-width: 1360px) {
 .container.container-left-padding {
-    padding-left: 7rem !important; 
+    padding-left: 7rem !important;
 }
 }
 </style>

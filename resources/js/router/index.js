@@ -7,23 +7,22 @@ import KnowledgeBaseView from '@/views/KnowledgeBaseView'
 import UpbooksView from '@/views/UpbooksView'
 import PlaylistsView from '@/views/PlaylistsView'
 import CoursesView from '@/views/CoursesView'
+import TimetrackingView from '@/views/TimetrackingView'
 
-// import MyCoursesView from '@/views/MyCoursesView'
+import MyCoursesView from '@/views/MyCoursesView'
 // import StructureView from '@/views/StructureView'
-// import TimetrackingView from '@/views/TimetrackingView'
-// import EntertimeView from '@/views/EntertimeView'
-// import HRView from '@/views/HRView'
-// import TopView from '@/views/TopView'
-// import AnalyticsView from '@/views/AnalyticsView'
-// import SalaryView from '@/views/SalaryView'
-// import QualityControlView from '@/views/QualityControlView'
-// import MapView from '@/views/MapView'
-// import KPIView from '@/views/KPIView'
-// import FAQView from '@/views/FAQView'
+import EntertimeView from '@/views/EntertimeView'
+import HRView from '@/views/HRView'
+import TopView from '@/views/TopView'
+import AnalyticsView from '@/views/AnalyticsView'
+import SalaryView from '@/views/SalaryView'
+import QualityControlView from '@/views/QualityControlView'
+import MapView from '@/views/MapView'
+import KPIView from '@/views/KPIView'
 // import FinesView from '@/views/FinesView'
 // import UserEditView from '@/views/UserEditView'
 
-// Cтраницу настроек наверное тоже разделим если нужно 
+// Cтраницу настроек наверное тоже разделим если нужно
 // import SettingsView from '@/views/SettingsView'
 
 const router = new VueRouter({
@@ -53,14 +52,14 @@ const router = new VueRouter({
                 title: 'Новости',
             },
         },
-        {
-            path: '/structure',
-            name: 'StructureView',
-            component: StructureView,
-            meta: {
-                title: 'Структура компании',
-            },
-        },
+        // {
+        //     path: '/structure',
+        //     name: 'StructureView',
+        //     component: StructureView,
+        //     meta: {
+        //         title: 'Структура компании',
+        //     },
+        // },
         {
             path: '/kb',
             name: 'KnowledgeBaseView',
@@ -176,7 +175,7 @@ const router = new VueRouter({
         {
             path: '/timetracking/info',
             name: 'FAQView',
-            component: FAQView,
+            component: () => import(/* webpackChunkName: "FAQView" */ '@/views/FAQView'),
             meta: {
                 title: 'ЧАВО - FAQ',
             },
@@ -184,27 +183,27 @@ const router = new VueRouter({
         {
             path: '/timetracking/fines',
             name: 'FinesView',
-            component: FinesView,
+            component: () => import(/* webpackChunkName: "FinesView" */ '@/views/FinesView'),
             meta: {
                 title: 'Депремирование',
             },
         },
-        {
-            path: '/timetracking/settings',
-            name: 'SettingsView',
-            component: SettingsView,
-            meta: {
-                title: 'Настройки',
-            },
-        },
-        {
-            path: '/timetracking/edit-person',
-            name: 'UserEditView',
-            component: UserEditView,
-            meta: {
-                title: 'Редактирование профиля сотрудника',
-            },
-        },
+        // {
+        //     path: '/timetracking/settings',
+        //     name: 'SettingsView',
+        //     component: SettingsView,
+        //     meta: {
+        //         title: 'Настройки',
+        //     },
+        // },
+        // {
+        //     path: '/timetracking/edit-person',
+        //     name: 'UserEditView',
+        //     component: UserEditView,
+        //     meta: {
+        //         title: 'Редактирование профиля сотрудника',
+        //     },
+        // },
     ],
 })
 export default router

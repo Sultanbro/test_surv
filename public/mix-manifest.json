@@ -1,9 +1,10 @@
 {
     "/js/app.js": "/js/app.js",
     "/js/home.js": "/js/home.js",
-    "/js/NewsView.js": "/js/NewsView.js",
-    "/css/admin/app.css": "/css/admin/app.css",
     "/js/ProfilePage.js": "/js/ProfilePage.js",
     "/js/NewsPage.js": "/js/NewsPage.js",
-    "/js/KBPage.js": "/js/KBPage.js"
+    "/js/KBPage.js": "/js/KBPage.js",
+    "/css/admin/app.css": "/css/admin/app.css",
+    "/js/FAQView.js": "/js/FAQView.js",
+    "/js/FinesView.js": "/js/FinesView.js"
 }
