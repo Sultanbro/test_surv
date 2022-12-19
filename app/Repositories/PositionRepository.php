@@ -1,0 +1,132 @@
+<?php
+
+namespace App\Repositories;
+
+use App\Position;
+use App\Position as Model;
+use Psr\Container\ContainerExceptionInterface;
+use Psr\Container\NotFoundExceptionInterface;
+
+/**
+ * Класс для работы с Repository.
+ */
+class PositionRepository extends CoreRepository
+{
+    /**
+     * Здесь используется модель для работы с Repository {{ App\Models\{name} }}
+     *
+     * @return string
+     */
+    protected function getModelClass()
+    {
+        return Model::class;
+    }
+
+    /**
+     * @return array
+     * @throws ContainerExceptionInterface
+     * @throws NotFoundExceptionInterface
+     */
+    public function getPositionIdNameWithPluck(): array
+    {
+        return $this->model()->get()->pluck('position','id')->toArray();
+    }
+
+    /**
+     * @return array
+     */
+    public function getPositionIdName(): array
+    {
+        return $this->model()->select('position as name', 'id')->get()->toArray();
+    }
+
+    /**
+     * @param string $positionName
+     * @return mixed
+     */
+    public function createPosition(string $positionName)
+    {
+        return $this->model()->create([
+            'position' => $positionName
+        ]);
+    }
+
+    /**
+     * @param int $positionId
+     * @return mixed
+     */
+    public function deletePosition(int $positionId)
+    {
+        return $this->model()->findOrFail($positionId)->delete();
+    }
+
+    /**
+     * @param string $name
+     * @return bool
+     */
+    public function deleteByName(
+        string $name
+    ): bool
+    {
+        return $this->model()->where('position', $name)->delete();
+    }
+
+    /**
+     * @param int $id
+     * @return mixed
+     */
+    public function getPositionDescriptions(
+        int $id
+    ): mixed
+    {
+        return $this->model()->join('position_descriptions as pd', 'pd.position_id', '=', 'position.id')->where('position.id', $id)->get();
+    }
+
+    /**
+     * @param int $id
+     * @param string|null $newName
+     * @param int|null $indexation
+     * @param int|null $sum
+     * @param array|null $description
+     * @return bool
+     */
+    public function updatePositionWithDescription(
+        int $id,
+        ?string $newName,
+        ?int $indexation,
+        ?int $sum,
+        ?array $description
+    )
+    {
+         $positionUpdated = $this->model()->findOrFail($id)->update([
+             'position' => $newName,
+             'indexation' => $indexation,
+             'sum' => $sum
+         ]);
+
+         if ($positionUpdated && isset($description))
+         {
+             $this->model()->findOrFail($id)->descriptions()->update([
+                 'require'  => $description['require'],
+                 'actions'  =>$description['actions'],
+                 'time'     => $description['time'],
+                 'salary'   => $description['salary'],
+                 'knowledge' => $description['knowledge'],
+                 'next_step' => $description['next_step'],
+                 'show' => $description['show'],
+             ]);
+         }
+
+         return true;
+    }
+
+    /**
+     * @return mixed
+     * @throws ContainerExceptionInterface
+     * @throws NotFoundExceptionInterface
+     */
+    public function allPositionsNameToArray()
+    {
+        return $this->model()->get()->pluck('position')->toArray();
+    }
+}

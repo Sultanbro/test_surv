@@ -42,6 +42,7 @@ class User extends Authenticatable implements Authorizable
 
     const USER_TYPE_OFFICE = 'office';
     const USER_TYPE_REMOTE = 'remote';
+    const OWNER_ID = 18;
 
     protected $table = 'users';
 
