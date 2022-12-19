@@ -134,6 +134,7 @@ class TimetrackService
         ];
     }
 
+
     public function getUserTimetracking(User $user, int $year, int $month, string $user_applied_at, string $operator ){
         return Timetracking::select([
             DB::raw('DAY(enter) as date'),
