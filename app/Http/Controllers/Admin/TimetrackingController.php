@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Admin;
 
+use App\Classes\Helpers\InsertData;
 use App\Components\TelegramBot;
 use App\DayType;
 use App\Events\TransferUserInGroupEvent;
@@ -9,7 +10,6 @@ use App\Fine;
 use App\GroupPlan;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\GetReportsRequest;
-use App\Models\Anviz\Time;
 use App\Position;
 use App\Salary;
 use App\Service\Fines\FineService;
@@ -57,7 +57,7 @@ class TimetrackingController extends Controller
 {
     public function __construct()
     {
-//        $this->middleware('auth');
+        $this->middleware('auth');
     }
 
     public function settings()

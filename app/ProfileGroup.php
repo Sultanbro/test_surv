@@ -3,11 +3,14 @@
 namespace App;
 
 use App\Helpers\FileHelper;
+use App\Models\Analytics\Activity;
+use App\Models\KnowBaseModel;
 use Illuminate\Database\Eloquent\Model;
 use App\Models\Books\BookGroup;
 use App\User;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
 use Illuminate\Http\Request;
 use Spatie\Permission\Traits\HasRoles;
@@ -72,9 +75,25 @@ class ProfileGroup extends Model
     /**
      * @return MorphMany
      */
+    public function knowBases(): MorphMany
+    {
+        return $this->morphMany(KnowBaseModel::class, 'modelable', 'model_type', 'model_id');
+    }
+
+    /**
+     * @return MorphMany
+     */
     public function qpremium(): MorphMany
     {
         return $this->morphMany('App\Models\QuartalPremium', 'targetable', 'targetable_type', 'targetable_id');
+    }
+
+    /**
+     * @return HasMany
+     */
+    public function activities(): HasMany
+    {
+        return $this->hasMany(Activity::class, 'group_id');
     }
 
     /**
