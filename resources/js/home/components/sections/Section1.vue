@@ -1,9 +1,16 @@
 <template>
   <section id="jSec1">
-    <a name="features" id="features" class="ancor"/>
+    <a
+      name="features"
+      id="features"
+      class="ancor"
+    />
     <div class="section-content">
       <h1 class="jSec1-header jHeader">{{ $lang(lang, 's1-header') }}</h1>
-      <div class="jSec1-tabs">
+      <div
+        class="jSec1-tabs"
+        :class="{'jSec1-tabs-popup-active' :isPopupVisible}"
+      >
         <ul class="jSec1-tabs-buttons">
           <li class="jSec1-tabs-button">
             <a
@@ -15,6 +22,7 @@
             <a
               href="javascript:void(0)"
               class="jSec1-tabs-qm"
+              @click="setPopup('profile')"
             />
           </li>
           <li class="jSec1-tabs-button">
@@ -27,6 +35,7 @@
             <a
               href="javascript:void(0)"
               class="jSec1-tabs-qm"
+              @click="setPopup('db')"
             />
           </li>
           <li class="jSec1-tabs-button">
@@ -39,6 +48,7 @@
             <a
               href="javascript:void(0)"
               class="jSec1-tabs-qm"
+              @click="setPopup('kpi')"
             />
           </li>
           <li class="jSec1-tabs-button">
@@ -51,6 +61,7 @@
             <a
               href="javascript:void(0)"
               class="jSec1-tabs-qm"
+              @click="setPopup('courses')"
             />
           </li>
           <li class="jSec1-tabs-button">
@@ -63,6 +74,7 @@
             <a
               href="javascript:void(0)"
               class="jSec1-tabs-qm"
+              @click="setPopup('struct')"
             />
           </li>
           <li class="jSec1-tabs-button">
@@ -75,11 +87,20 @@
             <a
               href="javascript:void(0)"
               class="jSec1-tabs-qm"
+              @click="setPopup('news')"
             />
           </li>
         </ul>
+        <Section1Popup
+          :type="activePopup"
+          :lang="lang"
+          v-click-outside="hidePopup"
+        />
         <div class="jSec1-tabs-content">
-          <div class="jSec1-tabs-item jSec1-profile" v-show="activeTab === 'profile'">
+          <div
+            class="jSec1-tabs-item jSec1-profile"
+            v-show="activeTab === 'profile'"
+          >
             <div class="jSec1-profile-text">
               <h3 class="jSec1-profile-title">{{ $lang(lang, 's1-for-worker') }}</h3>
               <ul class="jSec1-profile-list">
@@ -95,13 +116,23 @@
                 <li class="jSec1-profile-list-item">{{ $lang(lang, 's1-for-super-3') }}</li>
                 <li class="jSec1-profile-list-item">{{ $lang(lang, 's1-for-super-4') }}</li>
               </ul>
-              <a href="javascript:void(0)" class="jSec1-profile-button jButton">{{ $lang(lang, 's1-for-free') }}</a>
+              <a
+                href="/register"
+                class="jSec1-profile-button jButton"
+              >{{ $lang(lang, 's1-for-free') }}</a>
             </div>
             <div class="jSec1-profile-banner">
-              <img :src="require('../../assets/img/s1-profile-banner.png').default" alt="" class="jSec1-profile-banner-img">
+              <img
+                :src="require('../../assets/img/s1-profile-banner.png').default"
+                alt=""
+                class="jSec1-profile-banner-img"
+              >
             </div>
           </div>
-          <div class="jSec1-tabs-item" v-show="activeTab === 'news'"></div>
+          <div
+            class="jSec1-tabs-item"
+            v-show="activeTab === 'news'"
+          ></div>
         </div>
       </div>
     </div>
@@ -109,7 +140,12 @@
 </template>
 
 <script>
+import Section1Popup from '../section1/Section1Popup'
+
 export default {
+  components: {
+    Section1Popup
+  },
   computed: {
     lang () {
       return this.$root.$data.lang
@@ -117,12 +153,23 @@ export default {
   },
   data(){
     return {
-      activeTab: 'profile'
+      activeTab: 'profile',
+      activePopup: 'profile',
+      isPopupVisible: false
     }
   },
   methods: {
     setTab(key){
       this.activeTab = key
+    },
+    setPopup(key){
+      setTimeout(() => {
+        this.activePopup = key
+        this.isPopupVisible = true
+      }, 1);
+    },
+    hidePopup(){
+      if(this.isPopupVisible) this.isPopupVisible = false
     }
   }
 }
@@ -136,14 +183,29 @@ export default {
   background-image: url("../../assets/img/s1-bg.svg");
   background-repeat: no-repeat;
 }
-//.jSec1-header {
-//  font-weight: 700;
-//}
+.jSec1-header {
+  //  font-weight: 700;
+  font-size: 2.5rem;
+  line-height: 1;
+}
 
 .jSec1-tabs {
   display: flex;
   flex-flow: column nowrap;
   align-items: center;
+  position: relative;
+  .Section1Popup{
+    top: 3.5rem;
+    visibility: hidden;
+    opacity: 0;
+    transition: all 0.3s;
+  }
+}
+.jSec1-tabs-popup-active{
+  .Section1Popup{
+    visibility: visible;
+    opacity: 1;
+  }
 }
 .jSec1-tabs-buttons {
   margin: 0;

@@ -1,9 +1,11 @@
 import Vue from 'vue'
 import App from './home/App.vue'
 import lang from './home/plugins/lang'
+import clickOutside from './home/plugins/clickOutside'
 
 Vue.config.productionTip = false
 Vue.use(lang)
+Vue.use(clickOutside)
 
 new Vue({
   data: {
