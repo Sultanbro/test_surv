@@ -48,7 +48,7 @@ final class PositionController extends Controller
     public function get(GetPositionRequest $request): JsonResponse
     {
         $response = $this->service->get($request->toDto()->id);
-        return response()->success($response);
+        return response()->json($response);
     }
 
     /**
