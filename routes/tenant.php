@@ -133,7 +133,6 @@ Route::middleware([
     
     Route::get('/newprofile', [ProfileController::class, 'newprofile']);
 
-
     Route::get('/send-mail', function() {
         $mailData = [
             'name' => "sad sadsdads",
@@ -142,9 +141,7 @@ Route::middleware([
         
         \Mail::to("abik50000@gmail.com")->send(new \App\Mail\SendInvitation($mailData));
     });
-    
-
-    
+        
     Route::any('/bless', function() {
         return 'This is your multi-tenant application. The id of the current tenant is ' . tenant('id');
     });
