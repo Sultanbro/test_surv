@@ -4,19 +4,14 @@ declare(strict_types=1);
 
 
 use App\Http\Controllers\Admin\ActivityController;
-use App\Http\Controllers\Admin\AdminController;
 use App\Http\Controllers\Admin\Group\GroupUserController;
 use App\Http\Controllers\Admin\ProjectController;
 use App\Http\Controllers\Admin\AnalyticsController;
-use App\Http\Controllers\Admin\BookController;
-use App\Http\Controllers\Admin\BpartnersController;
 use App\Http\Controllers\Admin\CheckListController;
 use App\Http\Controllers\Admin\DecompositionController;
-use App\Http\Controllers\Admin\ExamController;
 use App\Http\Controllers\Admin\FineController;
 use App\Http\Controllers\Admin\GroupAnalyticsController;
 use App\Http\Controllers\Admin\KpiController as OldKpiController;
-use App\Http\Controllers\Admin\LeadController;
 use App\Http\Controllers\Admin\NpsController;
 use App\Http\Controllers\Admin\PositionController;
 use App\Http\Controllers\Admin\Position\PositionController as TimeTrackPositionController;
@@ -62,14 +57,12 @@ use App\Http\Controllers\Kpi\KpiController as KpisController;
 use App\Http\Controllers\Kpi\KpiStatController;
 use App\Http\Controllers\Kpi\QuartalPremiumController;
 use App\Http\Controllers\LearningController;
-use App\Http\Controllers\LinkController;
 use App\Http\Controllers\MapsController;
 use App\Http\Controllers\MyCourseController;
 use App\Http\Controllers\NotificationControlller;
 use App\Http\Controllers\PermissionController;
 use App\Http\Controllers\ProfileSalaryController;
 use App\Http\Controllers\SettingController;
-use App\Http\Controllers\TestController;
 use App\Http\Controllers\UpbookController;
 use App\Http\Controllers\Uploads\UploadController;
 use App\Http\Controllers\Video\VideoCategoryController;
@@ -156,7 +149,7 @@ Route::middleware([
         return 'This is your multi-tenant application. The id of the current tenant is ' . tenant('id');
     });
 
-    Route::get('/test-for-check', [TestController::class, 'testMethodForCheck'])->name('testMethodForCheck');
+
 
     Route::view('/doc', 'docs.index');
     Route::view('/html', 'design');
@@ -253,15 +246,15 @@ Route::middleware([
     Route::post('/glossary/save', [GlossaryController::class, 'save']);
     Route::post('/glossary/delete', [GlossaryController::class, 'delete']);
 
-    Route::post('/setting/reset', [SettingController::class, 'reset']);
+   
 
+    // Video
     Route::get('/playlists/get', [VideoPlaylistController::class, 'get']);
     Route::post('/playlists/video', [VideoPlaylistController::class, 'getVideo']);
     Route::post('/playlists/get', [VideoPlaylistController::class, 'getPlaylist']);
     Route::post('/playlists/add-video', [VideoPlaylistController::class, 'add_video']);
     Route::post('/playlists/save-video', [VideoPlaylistController::class, 'save_video']);
     Route::post('/playlists/save-video-fast', [VideoPlaylistController::class, 'save_video_fast']);
-
     Route::post('/playlists/delete-video', [VideoPlaylistController::class, 'delete_video']);
     Route::post('/playlists/remove-video', [VideoPlaylistController::class, 'remove_video']);
     Route::post('/playlists/save', [VideoPlaylistController::class, 'save']);
@@ -270,19 +263,14 @@ Route::middleware([
     Route::post('/playlists/save-test', [VideoPlaylistController::class, 'saveTest']);
     Route::post('/playlists/add', [VideoPlaylistController::class, 'add']);
     Route::get('/video_playlists', [VideoPlaylistController::class, 'index']);
-
-
     Route::get('/video_playlists/{category}/{playlist}', [VideoPlaylistController::class, 'saveIndex']);
     Route::get('/video_playlists/{category}/{playlist}/{video}', [VideoPlaylistController::class, 'saveIndexVideo']);
-
     Route::post('/playlists/groups/create', [VideoGroupController::class, 'create']);
     Route::post('/playlists/groups/save', [VideoGroupController::class, 'save']);
     Route::post('/playlists/groups/delete', [VideoGroupController::class, 'delete']);
-
     Route::post('/playlists/delete-cat', [VideoCategoryController::class, 'delete']);
     Route::post('/playlists/add-cat', [VideoCategoryController::class, 'add']);
     Route::post('/playlists/save-cat', [VideoCategoryController::class, 'save']);
-
     Route::post('/playlists/video/update', [VideoController::class, 'updateVideo']);
     Route::post('/videos/upload', [VideoController::class, 'upload'])->name('videos.upload');
     Route::post('/videos/save-order', [VideoPlaylistController::class, 'saveOrder']);
@@ -291,6 +279,7 @@ Route::middleware([
     Route::post('/videos/add_comment', [VideoController::class, 'add_comment'])->name('videos.add_comment');
     Route::post('/videos/get_comment', [VideoController::class, 'get_comment'])->name('videos.get_comment');
     Route::post('/videos/upload_progress', [VideoController::class, 'upload_progress'])->name('videos.upload_progress');
+    Route::post('/playlists/delete-question',[VideoPlaylistController::class, 'deleteQuestion']);
 
     // Настройка субдомена
     Route::get('/cabinet', [CabinetController::class, 'index'] );
@@ -299,7 +288,6 @@ Route::middleware([
     Route::any('/profile/edit/user/cart/', [CabinetController::class, 'editUserProfile']); ///profile save name,last_name,date ///profile save name,last_name,date
     Route::post('/profile/remove/card/', [CabinetController::class, 'removeCardProfile']); ///удаление карты индивидуально
     Route::post('/profile/save-cropped-image', [CabinetController::class, 'uploadCroppedImageProfile']); /// загрузка аватарки vue внутри profile
-
 
     ///Настройка профайл
     Route::post('/profile/upload/image/profile/', [UserController::class, 'uploadImageProfile']); /// загрузка обрезаной аватарки vue внутри profile
@@ -319,30 +307,14 @@ Route::middleware([
     Route::post('/admin/upbooks/segments/save', [UpbookController::class, 'saveSegment']);
     Route::post('/admin/upbooks/segments/delete', [UpbookController::class, 'deleteSegment']);
 
-    Route::post('/playlists/delete-question',[VideoPlaylistController::class, 'deleteQuestion']);
-
-
-    // @TODO CHECK AND DELETE THIS ROUTES
-    Route::get('/bp_books', [BookController::class, 'index']);
-    Route::get('/bp_books/groups', [BookController::class, 'groups']);
-    Route::post('/bp_books/groups', [BookController::class, 'group']);
-    Route::post('/bp_books/groups/add', [BookController::class, 'createBookGroup']);
-    Route::post('/bp_books/groups/delete', [BookController::class, 'deleteGroup']);
-    Route::post('/bp_books/groups/add_books_to_group', [BookController::class, 'addBooksToGroup']);
-    Route::post('/bp_books/books', [BookController::class, 'books']);
-    Route::post('/bp_books/book/add', [BookController::class, 'createBook']);
-    Route::post('/bp_books/book/edit', [BookController::class, 'editBook']);
-    Route::post('/bp_books/book/delete', [BookController::class, 'deleteBook']);
-    Route::post('/bp_books/position_groups', [BookController::class, 'positionGroups']);
-    Route::post('/bp_books/position_groups/save', [BookController::class, 'savePositionGroups']);
+    // Settings
+    Route::post('/setting/reset', [SettingController::class, 'reset']);
+    Route::post('/settings/get/', [SettingController::class, 'getSettings']);
+    Route::post('/settings/save', [SettingController::class, 'saveSettings']);
 
     // База знаний
     Route::get('/kb', [KnowBaseController::class, 'index']);
     Route::get('/kb/get', [KnowBaseController::class, 'get']);
-    
-    Route::post('/settings/get/', [SettingController::class, 'getSettings']);
-    Route::post('/settings/save', [SettingController::class, 'saveSettings']);
-
     Route::post('/kb/get', [KnowBaseController::class, 'getPage']);
     Route::post('/kb/search', [KnowBaseController::class, 'search']);
     Route::get('/kb/get-archived', [KnowBaseController::class, 'getArchived']);
@@ -357,14 +329,12 @@ Route::middleware([
     Route::post('/kb/page/delete', [KnowBaseController::class, 'deletePage']);
     Route::post('/kb/page/update-section', [KnowBaseController::class, 'updateSection']);
     Route::post('/kb/page/get-access', [KnowBaseController::class, 'getAccess']);
-
     Route::get('/kb/get-settings', [KnowBaseController::class, 'getSettings']);
     Route::post('/kb/save-settings', [KnowBaseController::class, 'saveSettings']);
 
-
+    // Permissions
     Route::get('/permissions', [PermissionController::class, 'index']);
     Route::get('/permissions/get', [PermissionController::class, 'get']); 
-
     Route::post('/permissions/create-role', [PermissionController::class, 'createRole']);
     Route::post('/permissions/update-role', [PermissionController::class, 'updateRole']);
     Route::post('/permissions/update-target', [PermissionController::class, 'updateTarget']);
@@ -372,36 +342,36 @@ Route::middleware([
     Route::post('/permissions/delete-role', [PermissionController::class, 'deleteRole']);
 
 
+    // test
+    Route::get('/test', [\App\Http\Controllers\TestController::class, 'test'])->name('test');
 
-    Route::get('/test', [TestController::class, 'test'])->name('test');
-    Route::get('/wami', [TestController::class, 'send_whatsapp']);
-
+    // ????
     Route::post('/timetracking/settings/groups/importexcel', [GroupsController::class, 'import']);
     Route::post('/timetracking/settings/groups/importexcel/save', [GroupsController::class, 'saveTimes']);
     Route::any('/timetracking/users/bonus/save', [GroupsController::class, 'saveBonuses']);
 
+    // Import active
     Route::post('/timetracking/analytics/activity/importexcel', [ActivityController::class, 'import']);
     Route::post('/timetracking/analytics/activity/importexcel/save', [ActivityController::class, 'saveTimes']);
 
     Route::post('/timetracking/analytics/decomposition/save', [DecompositionController::class, 'save']);
     Route::delete('/timetracking/analytics/decomposition/delete', [DecompositionController::class, 'delete']);
 
+    // штрафы
     Route::get('/timetracking/fine', [FineController::class, 'index']);
     Route::put('/timetracking/fine', [FineController::class, 'update']);
+    Route::post('/timetracking/user-fine', [UserFineController::class, 'update']);
 
-    Route::get('/timetracking/exam', [ExamController::class, 'index']);
-    Route::post('/timetracking/exam', [ExamController::class, 'getexams']);
-    Route::post('/timetracking/exam/update', [ExamController::class, 'update']);
-
+    // old kpi
     Route::post('/timetracking/kpi_save', [OldKpiController::class, 'saveKPI']);
     Route::post('/timetracking/kpi_get', [OldKpiController::class, 'getKPI']);
     Route::post('/timetracking/kpi_save_individual', [OldKpiController::class, 'saveKpiIndividual']);
     Route::post('/timetracking/kpi_get_individual', [OldKpiController::class, 'getKpiIndividual']);
 
+    // nps
     Route::any('/estimate_your_trainer', [NpsController::class, 'estimate_your_trainer']); // анкета
     Route::get('/timetracking/nps', [NpsController::class, 'index']);
     Route::post('/timetracking/nps', [NpsController::class, 'fetch']);
-
 
     // Учет времени @TODO DIVIDE to controllers by context
     Route::any('/timetracking', [TimetrackingController::class, 'index']);
@@ -537,10 +507,8 @@ Route::middleware([
     Route::post('/timetracking/top/top_edited_value/update', [TopController::class, 'updateTopEditedValue']);
     Route::post('/timetracking/top/proceeds/update', [TopController::class, 'updateProceeds']);
 
-
+    // Quality control
     Route::any('/timetracking/quality-control/', [QualityController::class, 'index']);
-
-
     Route::any('/timetracking/quality-control/export', [QualityController::class, 'exportExcel']);
     Route::any('/timetracking/quality-control/change-type', [QualityController::class, 'changeType']);
     Route::any('/timetracking/quality-control/exportall', [QualityController::class, 'exportAllExcel']);
@@ -550,7 +518,7 @@ Route::middleware([
     Route::post('/timetracking/quality-control/records', [QualityController::class, 'getRecords']);
     Route::post('/timetracking/quality-control/crits/save', [QualityController::class, 'saveCrits']);
 
-
+    // salaries
     Route::get('/timetracking/salaries', [SalaryController::class, 'index']);
     Route::get('/timetracking/salaries/export', [SalaryController::class, 'exportExcel']);
     Route::post('/timetracking/salaries/get-total', [SalaryController::class, 'getTotal']);
@@ -561,7 +529,7 @@ Route::middleware([
     Route::post('/timetracking/salaries/approve-salary', [SalaryController::class, 'approveSalary']);
     Route::post('/timetracking/salaries/bonuses', [SalaryController::class, 'bonuses']);
 
-
+    // HR analytics
     Route::any('/timetracking/analytics/save-call-base', [GroupAnalyticsController::class, 'saveCallBase']);
     Route::any('/timetracking/analytics', [GroupAnalyticsController::class, 'index']);
     Route::any('/timetracking/analytics/skypes/{id}', [GroupAnalyticsController::class, 'redirectToBitrixDeal']);
@@ -575,10 +543,11 @@ Route::middleware([
     Route::post('/timetracking/update-activity-total', [GroupAnalyticsController::class, 'update_activity_total']);
     Route::any('/timetracking/update-settings-individually', [GroupAnalyticsController::class, 'updateIndividually']);
     Route::get('/timetracking/analytics/activity/export', [GroupAnalyticsController::class, 'exportActivityExcel']);
-
     Route::get('/hr/ref-links', [GroupAnalyticsController::class, 'getRefLinks']);
     Route::post('/hr/ref-links/save', [GroupAnalyticsController::class, 'saveRefLinks']);
+    Route::post('/timetracking/getactivetrainees',[GroupAnalyticsController::class,'getActiveTrainees']);
 
+    // analytics 
     Route::any('/timetracking/an', [AnalyticsController::class, 'index']);
     Route::any('/timetracking/analytics-page/getanalytics', [AnalyticsController::class, 'get']);
     Route::get('/timetracking/analytics/activity/exportxx', [AnalyticsController::class, 'exportActivityExcel']);
@@ -587,7 +556,6 @@ Route::middleware([
     Route::post('/timetracking/analytics/dependency/remove', [AnalyticsController::class, 'removeDependency']);
     Route::post('/timetracking/analytics/edit-stat', [AnalyticsController::class, 'editStat']);
     Route::post('/timetracking/analytics/set-decimals', [AnalyticsController::class, 'setDecimals']);
-    
     Route::post('/timetracking/analytics/new-group', [AnalyticsController::class, 'newGroup']);
     Route::post('/timetracking/analytics/create-activity', [AnalyticsController::class, 'createActivity']);
     Route::post('/timetracking/analytics/edit-activity', [AnalyticsController::class, 'editActivity']);
@@ -604,9 +572,8 @@ Route::middleware([
     Route::post('/timetracking/analytics/add-formula-1-31', [AnalyticsController::class, 'addFormula_1_31']);
     Route::post('/timetracking/analytics/add-remote-inhouse', [AnalyticsController::class, 'addRemoteInhouse']);
     Route::post('/timetracking/analytics/add-salary', [AnalyticsController::class, 'addSalary']);
-    Route::post('/timetracking/getactivetrainees',[GroupAnalyticsController::class,'getActiveTrainees']);
-
     Route::any('/timetracking/user-statistics-by-month', [AnalyticsController::class, 'getUserStatisticsByMonth']);
+    
     /**
      * Редактирование бонусов
      */
@@ -626,7 +593,7 @@ Route::middleware([
      */
     Route::group([
         'prefix'     => 'quartal-premiums',
-//        'middleware' => 'auth'
+        //        'middleware' => 'auth'
     ], function(){
         Route::post('get',[QuartalPremiumController::class,'get'])->name('quartal-premium.get');
         Route::post('save',[QuartalPremiumController::class,'save'])->name('quartal-premium.save');
@@ -707,13 +674,6 @@ Route::middleware([
     });
 
 
-    Route::get('/books/{id?}', [BpartnersController::class, 'books']);
-    Route::any('/pages/update/', [BpartnersController::class, 'pagesupdate']);
-    Route::any('/pages/delete/', [BpartnersController::class, 'pagesdelete']);
-    Route::any('/upload/images/', [BpartnersController::class, 'uploadimages']);
-    Route::any('/upload/audio/', [BpartnersController::class, 'uploadaudio']);
-
-
     /* Intellect Recruiting */
     Route::get('/bpr/{hash}', [IntellectController::class, 'contract']);
     Route::post('/bpr/{hash}', [IntellectController::class, 'contract']);
@@ -723,12 +683,11 @@ Route::middleware([
     Route::any('/bp/choose_time', [IntellectController::class, 'choose_time']);
 
     // Controllers with one method
-
     Route::post('/file/upload', [FileUploadController::class, 'uploadLargeFiles'])->name('files.upload.large');
 
-    Route::get('/corp_book/{id}', [LinkController::class, 'opened_corp_book']);
-    Route::any('/timetracking/analytics/funnels', [LeadController::class, 'funnel_segment']);
-    Route::post('/timetracking/user-fine', [UserFineController::class, 'update']);
+    Route::get('/corp_book/{id}', [\App\Http\Controllers\LinkController::class, 'opened_corp_book']);
+    Route::any('/timetracking/analytics/funnels', [\App\Http\Controllers\Admin\LeadController::class, 'funnel_segment']);
+ 
     Route::post('/user/save/answer', [ProfileController::class, 'saveAnswer']);
     Route::post('/position/save/desc', [PositionController::class, 'savePositionDesc']);
 
