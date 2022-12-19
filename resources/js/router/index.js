@@ -19,7 +19,6 @@ import SalaryView from '@/views/SalaryView'
 import QualityControlView from '@/views/QualityControlView'
 import MapView from '@/views/MapView'
 import KPIView from '@/views/KPIView'
-// import FinesView from '@/views/FinesView'
 // import UserEditView from '@/views/UserEditView'
 
 // Cтраницу настроек наверное тоже разделим если нужно
@@ -188,14 +187,14 @@ const router = new VueRouter({
                 title: 'Депремирование',
             },
         },
-        // {
-        //     path: '/timetracking/settings',
-        //     name: 'SettingsView',
-        //     component: SettingsView,
-        //     meta: {
-        //         title: 'Настройки',
-        //     },
-        // },
+        {
+            path: '/timetracking/settings',
+            name: 'SettingsView',
+            component: SettingsView,
+            meta: {
+                title: 'Настройки',
+            },
+        },
         // {
         //     path: '/timetracking/edit-person',
         //     name: 'UserEditView',
