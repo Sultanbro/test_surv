@@ -413,21 +413,21 @@ Route::middleware([
 
     Route::any('/timetracking/settings', [TimetrackingController::class, 'settings']);
     Route::any('/timetracking/settings/positions', [TimetrackingController::class, 'positions']);
-//    Route::any('/timetracking/settings/positions/get', [TimetrackingController::class, 'getPosition']);
+    Route::any('/timetracking/settings/positions/get', [TimetrackingController::class, 'getPosition']);
     Route::any('/timetracking/settings/positions/save', [TimetrackingController::class, 'savePositions']);
-//    Route::post('/timetracking/settings/positions/add', [TimetrackingController::class, 'addPosition']);
+    Route::post('/timetracking/settings/positions/add', [TimetrackingController::class, 'addPosition']);
 
     /**
      * Route's после рефактора должностей
      */
-    Route::post('/timetracking/settings/positions/add', [TimeTrackPositionController::class, 'store']);
-    Route::post('/timetracking/settings/positions/delete', [TimeTrackPositionController::class, 'destroy']);
-    Route::post('/timetracking/settings/positions/get', [TimeTrackPositionController::class, 'get']);
+    Route::post('/timetracking/settings/positions/add-new', [TimeTrackPositionController::class, 'store']);
+    Route::post('/timetracking/settings/positions/delete-new', [TimeTrackPositionController::class, 'destroy']);
+    Route::post('/timetracking/settings/positions/get-new', [TimeTrackPositionController::class, 'get']);
     Route::any('/timetracking/settings/positions/save-new', [TimeTrackPositionController::class, 'savePositionWithDescription']);
     Route::any('/timetracking/settings/positions-new', [TimeTrackPositionController::class, 'all']);
 
     #==========================
-//    Route::post('/timetracking/settings/positions/delete', [TimetrackingController::class, 'deletePosition']);
+    Route::post('/timetracking/settings/positions/delete', [TimetrackingController::class, 'deletePosition']);
     Route::post('timetracking/settings/get_time_addresses', [TimetrackingController::class, 'getTimeAddresses']);
     Route::post('timetracking/settings/save_time_addresses', [TimetrackingController::class, 'saveTimeAddresses']);
     Route::any('/timetracking/settings/add', [TimetrackingController::class, 'addsettings']);
