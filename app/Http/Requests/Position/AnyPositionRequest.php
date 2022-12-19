@@ -26,7 +26,7 @@ class AnyPositionRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'position' => ['required', 'string', 'min:3', 'max:255']
+            'position' => ['required', 'string']
         ];
     }
 
