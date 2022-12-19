@@ -9,6 +9,10 @@ class Fine extends Model
     const COLUMN_PENALTY_AMOUNT = 'penalty_amount';
     const TYPE_LATE_MORE_5 = 1; // больше 5 минут опоздание
     const TYPE_LATE_LESS_5 = 2; // меньше 5 минут опоздание
+
+    const STATUS_FIRST = 1;
+    const STATUS_SECOND = 2;
+
     /**
      * Добавление нового штрафа
      *

@@ -22,6 +22,7 @@ use App\Http\Controllers\Admin\ProfileController;
 use App\Http\Controllers\Admin\QualityController;
 use App\Http\Controllers\Admin\QuartalBonusController;
 use App\Http\Controllers\Admin\SalaryController;
+use App\Http\Controllers\Admin\TimeTrack\SettingController as TimeTrackSetting;
 use App\Http\Controllers\Admin\TimetrackingController;
 use App\Http\Controllers\Admin\TopController;
 use App\Http\Controllers\Admin\TraineeController;
@@ -406,6 +407,14 @@ Route::middleware([
     Route::any('/timetracking/fines', [TimetrackingController::class, 'fines']);
     Route::any('/timetracking/info', [TimetrackingController::class, 'info']);
     Route::any('/timetracking/set-day', [TimetrackingController::class, 'setDay']);
+    Route::any('/timetracking/history', [TimetrackingController::class, 'getHistory']);
+
+    /**
+     * Route после рефактора метода settings в TimetrackController
+     */
+    Route::any('/timetracking/settings-new', [TimeTrackSetting::class, 'setting']);
+    #=======================
+
     Route::any('/timetracking/settings', [TimetrackingController::class, 'settings']);
     Route::any('/timetracking/settings/positions', [TimetrackingController::class, 'positions']);
     Route::any('/timetracking/settings/positions/get', [TimetrackingController::class, 'getPosition']);
@@ -416,6 +425,15 @@ Route::middleware([
     Route::post('timetracking/settings/save_time_addresses', [TimetrackingController::class, 'saveTimeAddresses']);
     Route::any('/timetracking/settings/add', [TimetrackingController::class, 'addsettings']);
     Route::any('/timetracking/settings/delete', [TimetrackingController::class, 'deletesettings']);
+
+    /**
+     * Route-ы после рефактора методов addsettings, deletesettings в TimetrackController
+     */
+    Route::post('/timetracking/settings/add-new', [TimeTrackSetting::class, 'create']);
+    Route::delete('/timetracking/settings/delete-new', [TimeTrackSetting::class, 'delete']);
+    #==============================
+
+
     Route::any('/timetracking/user/save', [TimetrackingController::class, 'saveprofile']);
     Route::post('/timetracking/settings/notifications/update', [TimetrackingController::class, 'updateNotificationTemplate']);
     Route::get('/timetracking/settings/notifications/get', [TimetrackingController::class, 'getNotificationTemplates']);
@@ -433,11 +451,21 @@ Route::middleware([
     Route::any('/timetracking/groups', [TimetrackingController::class, 'getgroups']);
     Route::post('/timetracking/groups/restore', [TimetrackingController::class, 'restoreGroup']);
     Route::any('/timetracking/reports/add-editors', [TimetrackingController::class, 'usereditreports']);
-
+    Route::any('/timetracking/reports/get-editors', [TimetrackingController::class, 'modalcheckuserrole']);
     Route::any('/timetracking/reports/check-user', [TimetrackingController::class, 'checkuserrole']);
     Route::any('/timetracking/reports/enter-report', [TimetrackingController::class, 'enterreport']);
+    Route::any('/timetracking/reports/enter-report-post', [\App\Http\Controllers\Admin\TimeTrack\ReportController::class, 'enter']);
     Route::post('/timetracking/reports/enter-report/setmanual', [TimetrackingController::class, 'enterreportManually']);
+
+    /**
+     * Route после рефактора  enterReportManually
+     */
+    Route::post('/timetracking/reports/enter-report/setmanual-new', [\App\Http\Controllers\Admin\TimeTrack\ReportController::class, 'manually']);
+    #==================
+
+
     Route::any('/timetracking/zarplata-table', [TimetrackingController::class, 'zarplatatable']);
+    Route::post('/order-persons-to-group', [TimetrackingController::class, 'orderPersonsToGroup']); // Заказ сотрудников в группы для Руководителей
     Route::post('/timetracking/apply-person', [TimetrackingController::class, 'applyPerson']); // Принятие на штат стажера
     Route::post('/timetracking/get-totals-of-reports', [TimetrackingController::class, 'getTotalsOfReports']);
 
