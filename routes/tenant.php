@@ -202,7 +202,6 @@ Route::middleware([
 
     Route::post('/corp_book/set-read/', [UserController::class, 'corp_book_read']); // Прочитать страницу из корп книги @TODO при назначении книги
     Route::any('/timetracking/user/{id}', [UserController::class, 'profile']);
-    Route::post('/timetracking/change-password', [UserController::class, 'changePassword']);
     Route::any('/timetracking/get-persons', [UserController::class, 'getpersons']);
     Route::get('/timetracking/create-person', [UserController::class, 'createPerson'])->name('users.create');
     Route::post('/timetracking/person/store', [UserController::class, 'storePerson'])->name('users.store');
@@ -210,7 +209,6 @@ Route::middleware([
     Route::post('/timetracking/person/update', [UserController::class, 'updatePerson'])->name('users.update');
     Route::post('/timetracking/edit-person/group', [UserController::class, 'editPersonGroup']); // Удалять добавлять пользователя в группы
     Route::post('/timetracking/edit-person/head_in_groups', [UserController::class, 'setUserHeadInGroups']); // Удалять добавлять пользователя руководителем групп
-    Route::post('/timetracking/edit-person/book', [UserController::class, 'editPersonBook']); // Удалять добавлять корп книги пользователю
     Route::any('/timetracking/delete-person', [UserController::class, 'deleteUser'])->name('removeUser');
     Route::any('/timetracking/recover-person', [UserController::class, 'recoverUser'])->name('recoverUser');
 
@@ -298,13 +296,14 @@ Route::middleware([
     Route::get('/cabinet', [CabinetController::class, 'index'] );
     Route::get('/cabinet/get', [CabinetController::class, 'get']);
     Route::post('/cabinet/save', [CabinetController::class, 'save']);
+    Route::any('/profile/edit/user/cart/', [CabinetController::class, 'editUserProfile']); ///profile save name,last_name,date ///profile save name,last_name,date
+    Route::post('/profile/remove/card/', [CabinetController::class, 'removeCardProfile']); ///удаление карты индивидуально
+    Route::post('/profile/save-cropped-image', [CabinetController::class, 'uploadCroppedImageProfile']); /// загрузка аватарки vue внутри profile
+
 
     ///Настройка профайл
-    Route::post('/profile/save-cropped-image', [UserController::class, 'uploadCroppedImageProfile']); /// загрузка аватарки vue внутри profile
     Route::post('/profile/upload/image/profile/', [UserController::class, 'uploadImageProfile']); /// загрузка обрезаной аватарки vue внутри profile
     Route::any('/profile/upload/edit/', [UserController::class, 'uploadPhoto'])->name('uploadPhoto'); /// загрузка аватарки со стороны Blade javascript
-    Route::any('/profile/edit/user/cart/', [UserController::class, 'editUserProfile']); ///profile save name,last_name,date ///profile save name,last_name,date
-    Route::post('/profile/remove/card/', [UserController::class, 'removeCardProfile']); ///удаление карты индивидуально
     Route::post('/profile/country/city/', [UserController::class, 'searchCountry']); /// поиск городов через Профиль
 
     // Книги
@@ -899,7 +898,6 @@ Route::middleware([
                 ->name('store');
         });
 
-    Route::any('/getnewimage',[UserController::class,'getProfileImage']);
 
     // Route::group([
     //     'prefix'   => 'messenger/api',
