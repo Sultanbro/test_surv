@@ -22,8 +22,7 @@
                   :data-col="dkey"
                   class="jTariffs-th jTariffs-cell"
                   @mouseover="activeCol = dkey"
-              >{{ td }}
-              </th>
+              >{{ td }}</th>
             </template>
             <template v-else>
               <td
@@ -32,9 +31,21 @@
                   :data-col="dkey"
                   class="jTariffs-td jTariffs-cell"
                   @mouseover="activeCol = dkey"
-              >{{ td }}
-              </td>
+              >{{ td }}</td>
             </template>
+          </tr>
+          <tr>
+            <th></th>
+            <td
+              v-for="td in 4"
+            >
+              <a
+                href="/register"
+                class="jReviews-free jButton"
+              >
+                {{ $lang(lang, 'prices-register') }}
+              </a>
+            </td>
           </tr>
           </tbody>
         </table>

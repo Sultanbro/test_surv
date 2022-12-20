@@ -734,6 +734,9 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
+//
 
 
 
@@ -1222,6 +1225,17 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = ({
   computed: {
@@ -1371,6 +1385,7 @@ __webpack_require__.r(__webpack_exports__);
   'review-free': 'Try for free',
   'prices-header': 'Tariffs',
   'prices-table': [['', 'Free', 'Base', 'Standard', 'PRO'], ['Number of users', 'up to 5', 'up to 20', 'up to 50', 'up to 100'], ['Space', '5 GB', '20 GB', ' 50 GB', '1 TB'], ['Knowledge base', '+', '+', '+', '+'], ['News', '+', '+', '+', '+'], ['Education', '+', '+', '+', '+'], ['Analytics', '+', '+', '+', '+'], ['Quality control', '+', '+', '+', '+'], ['Chat', '+', '+', '+', '+'], ['The structure of the company', '+', '+', '+', '+'], ['Support', '+', '+', '-', '+'], ['Administration/Audit', '-', '-', '+', '+'], ['Transfer to client server', '-', '-', '-', '+'], ['Client\'s individual domain', '-', '-', '+', '+'], ['Cabinet branding (logo placement, corporate color)', '+', '+', '+', '+'], ['Payment per month', '', '9 000', '27 000', '100 000'], ['Payment per year', '', '108 000', '291 600', '960 000'], ['Discount', '', '', '20%', '20%']],
+  'prices-register': 'Register',
   's3-header': 'Working with JOBTRON is easy and convenient',
   's3-subheader': 'We care about our clients and provide an individual approach that will be useful to everyone',
   's3-b1-title': 'Integration with your CRM system',
@@ -1474,6 +1489,7 @@ __webpack_require__.r(__webpack_exports__);
   'review-free': 'Попробовать бесплатно',
   'prices-header': 'Тарифы',
   'prices-table': [['', 'Бесплатный', 'База', 'Стандарт', 'PRO'], ['Количество пользователей', 'до 5', 'до 20', 'до 50', 'до 100'], ['Место', '5 Гб', '20 Гб', ' 50 Гб', '1 Т'], ['База знаний', '+', '+', '+', '+'], ['Новости', '+', '+', '+', '+'], ['Обучение', '+', '+', '+', '+'], ['Аналитика', '+', '+', '+', '+'], ['Контроль качества', '+', '+', '+', '+'], ['Чат', '+', '+', '+', '+'], ['Структура компании', '+', '+', '+', '+'], ['Поддержка', '+', '+', '+', '+'], ['Индивидуальный домен', '-', '+', '+', '+'], ['Оплата в месяц', '', '9 000', '27 000', '100 000'], ['Оплата в год', '', '108 000', '291 600', '960 000'], ['Скидка при оплате за год', '', '', '20%', '20%']],
+  'prices-register': 'Зарегистрировать',
   's3-header': 'С JOBTRON работать легко и удобно',
   's3-subheader': 'Мы заботимся о наших клиентах и предоставляем индивидуальный подход, который будет полезен каждому',
   's3-b1-title': 'Интеграция с вашей  CRM-системой',
@@ -1864,7 +1880,7 @@ __webpack_require__.r(__webpack_exports__);
 var ___CSS_LOADER_EXPORT___ = _node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_0___default()(function(i){return i[1]});
 var ___CSS_LOADER_URL_REPLACEMENT_0___ = _node_modules_css_loader_dist_runtime_getUrl_js__WEBPACK_IMPORTED_MODULE_1___default()(_assets_img_reviews_bg_svg__WEBPACK_IMPORTED_MODULE_2__["default"]);
 // Module
-___CSS_LOADER_EXPORT___.push([module.id, "#jReviews {\n  width: 100%;\n  background: url(" + ___CSS_LOADER_URL_REPLACEMENT_0___ + ") no-repeat;\n  background-position-x: 85%;\n}\n.jReviews-header {\n  position: relative;\n  margin-bottom: 3rem;\n}\n.jReviews-header:after {\n  content: \"\";\n  display: block;\n  width: 8.5625rem;\n  position: absolute;\n  bottom: -0.75rem;\n  left: 50%;\n  transform: translateX(-50%);\n  border-bottom: 0.1875rem solid #42b1f4;\n}\n.jReviews-types .jButton {\n  margin-bottom: 1.25rem;\n}\n.jButton.jReviews-video {\n  background: #ffd86b;\n  color: #303b4d;\n}\n.jButton.jReviews-video:hover {\n  background: #ffdc7a;\n}\n.jReviews-item-player {\n  position: relative;\n  padding-top: 56.25%;\n  background: #000;\n}\n.jReviews-item-iflame {\n  width: 100%;\n  height: 100%;\n  position: absolute;\n  top: 0;\n  left: 0;\n}\n.jReviews-item-image {\n  max-width: 100%;\n}\n.jReviews-item-thumbnails {\n  display: flex;\n  gap: 0.625rem;\n  margin-top: 1.125rem;\n}\n.jReviews-item-thumbnails .hooper {\n  margin: 0 -5px;\n  flex: 100% 1 1;\n}\n.jReviews-item-thumbnail {\n  margin: 0 5px;\n  background-size: cover;\n  cursor: pointer;\n}\n.jReviews-item-thumbnail:after {\n  content: \"\";\n  display: block;\n  padding-bottom: 56.25%;\n}\n.jReviews-title {\n  margin-top: 1.75rem;\n}\n.jReviews-free {\n  margin-top: 1.75rem;\n}\n@media screen and (min-width: 780px) {\n.jReviews-types {\n    display: flex;\n    gap: 2rem;\n}\n}\n@media screen and (min-width: 1260px) {\n#jReviews {\n    padding-bottom: 3rem;\n}\n.jReviews-types {\n    display: block;\n}\n.jReviews-wrapper {\n    display: grid;\n    grid-template-columns: 1fr 2fr;\n}\n.jReviews-items-wrapper {\n    grid-column: 2;\n    grid-row: 1/3;\n}\n.jReviews-items {\n    display: flex;\n    gap: 0.75rem;\n    flex-flow: row nowrap;\n}\n.jReviews-item-watch {\n    flex: 0 1 100%;\n}\n.jReviews-item-thumbnails {\n    flex: 0 0 12rem;\n    flex-flow: column nowrap;\n    justify-content: space-between;\n    margin: 0;\n}\n.jReviews-item-thumbnails .hooper {\n    margin: -5px 0;\n}\n.jReviews-item-thumbnail {\n    margin: 5px 0;\n}\n.jReviews-footer {\n    padding-right: 2rem;\n}\n}", ""]);
+___CSS_LOADER_EXPORT___.push([module.id, "#jReviews {\n  width: 100%;\n  background: url(" + ___CSS_LOADER_URL_REPLACEMENT_0___ + ") no-repeat;\n  background-position-x: 85%;\n}\n.jReviews-header {\n  position: relative;\n  margin-bottom: 3rem;\n}\n.jReviews-header:after {\n  content: \"\";\n  display: block;\n  width: 8.5625rem;\n  position: absolute;\n  bottom: -0.75rem;\n  left: 50%;\n  transform: translateX(-50%);\n  border-bottom: 0.1875rem solid #42b1f4;\n}\n.jReviews-types .jButton {\n  margin-bottom: 1.25rem;\n}\n.jButton.jReviews-video {\n  background: #ffd86b;\n  color: #303b4d;\n}\n.jButton.jReviews-video:hover {\n  background: #ffdc7a;\n}\n.jReviews-item-player {\n  position: relative;\n  padding-top: 56.25%;\n  background: #000;\n}\n.jReviews-item-iflame {\n  width: 100%;\n  height: 100%;\n  position: absolute;\n  top: 0;\n  left: 0;\n}\n.jReviews-item-image {\n  max-width: 100%;\n}\n.jReviews-item-thumbnails {\n  display: flex;\n  gap: 0.625rem;\n  margin-top: 1.125rem;\n}\n.jReviews-item-thumbnails .hooper {\n  margin: 0 -5px;\n  flex: 100% 1 1;\n}\n.jReviews-item-thumbnail {\n  margin: 0 5px;\n  background-size: cover;\n  cursor: pointer;\n}\n.jReviews-item-thumbnail:after {\n  content: \"\";\n  display: block;\n  padding-bottom: 56.25%;\n}\n.jReviews-title {\n  margin-top: 1.75rem;\n}\n.jReviews-free {\n  margin-top: 1.75rem;\n}\n@media screen and (min-width: 780px) {\n.jReviews-types {\n    display: flex;\n    gap: 2rem;\n}\n}\n@media screen and (min-width: 1260px) {\n#jReviews {\n    padding-bottom: 6rem;\n}\n.jReviews-types {\n    display: block;\n}\n.jReviews-wrapper {\n    display: grid;\n    grid-template-columns: 1fr 2fr;\n}\n.jReviews-items-wrapper {\n    grid-column: 2;\n    grid-row: 1/3;\n}\n.jReviews-items {\n    display: flex;\n    gap: 0.75rem;\n    flex-flow: row nowrap;\n}\n.jReviews-item-watch {\n    flex: 0 1 100%;\n}\n.jReviews-item-thumbnails {\n    flex: 0 0 12rem;\n    flex-flow: column nowrap;\n    justify-content: space-between;\n    margin: 0;\n}\n.jReviews-item-thumbnails .hooper {\n    margin: -5px 0;\n}\n.jReviews-item-thumbnail {\n    margin: 5px 0;\n}\n.jReviews-footer {\n    padding-right: 2rem;\n}\n}", ""]);
 // Exports
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (___CSS_LOADER_EXPORT___);
 
@@ -8322,49 +8338,78 @@ var render = function () {
             _c(
               "tbody",
               { staticClass: "jTariffs-tbody" },
-              _vm._l(_vm.table, function (tr, rkey) {
-                return _c(
+              [
+                _vm._l(_vm.table, function (tr, rkey) {
+                  return _c(
+                    "tr",
+                    { key: "r" + rkey, staticClass: "jTariffs-tr" },
+                    [
+                      rkey === 0 || rkey >= _vm.table.length - 3
+                        ? _vm._l(tr, function (td, dkey) {
+                            return _c(
+                              "th",
+                              {
+                                key: "r" + rkey + "d" + dkey,
+                                staticClass: "jTariffs-th jTariffs-cell",
+                                attrs: { "data-col": dkey },
+                                on: {
+                                  mouseover: function ($event) {
+                                    _vm.activeCol = dkey
+                                  },
+                                },
+                              },
+                              [_vm._v(_vm._s(td))]
+                            )
+                          })
+                        : _vm._l(tr, function (td, dkey) {
+                            return _c(
+                              "td",
+                              {
+                                key: "r" + rkey + "d" + dkey,
+                                staticClass: "jTariffs-td jTariffs-cell",
+                                attrs: { "data-col": dkey },
+                                on: {
+                                  mouseover: function ($event) {
+                                    _vm.activeCol = dkey
+                                  },
+                                },
+                              },
+                              [_vm._v(_vm._s(td))]
+                            )
+                          }),
+                    ],
+                    2
+                  )
+                }),
+                _vm._v(" "),
+                _c(
                   "tr",
-                  { key: "r" + rkey, staticClass: "jTariffs-tr" },
                   [
-                    rkey === 0 || rkey >= _vm.table.length - 3
-                      ? _vm._l(tr, function (td, dkey) {
-                          return _c(
-                            "th",
-                            {
-                              key: "r" + rkey + "d" + dkey,
-                              staticClass: "jTariffs-th jTariffs-cell",
-                              attrs: { "data-col": dkey },
-                              on: {
-                                mouseover: function ($event) {
-                                  _vm.activeCol = dkey
-                                },
-                              },
-                            },
-                            [_vm._v(_vm._s(td) + "\n            ")]
-                          )
-                        })
-                      : _vm._l(tr, function (td, dkey) {
-                          return _c(
-                            "td",
-                            {
-                              key: "r" + rkey + "d" + dkey,
-                              staticClass: "jTariffs-td jTariffs-cell",
-                              attrs: { "data-col": dkey },
-                              on: {
-                                mouseover: function ($event) {
-                                  _vm.activeCol = dkey
-                                },
-                              },
-                            },
-                            [_vm._v(_vm._s(td) + "\n            ")]
-                          )
-                        }),
+                    _c("th"),
+                    _vm._v(" "),
+                    _vm._l(4, function (td) {
+                      return _c("td", [
+                        _c(
+                          "a",
+                          {
+                            staticClass: "jReviews-free jButton",
+                            attrs: { href: "/register" },
+                          },
+                          [
+                            _vm._v(
+                              "\n              " +
+                                _vm._s(_vm.$lang(_vm.lang, "prices-register")) +
+                                "\n            "
+                            ),
+                          ]
+                        ),
+                      ])
+                    }),
                   ],
                   2
-                )
-              }),
-              0
+                ),
+              ],
+              2
             ),
           ]
         ),

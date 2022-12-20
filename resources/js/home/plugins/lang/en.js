@@ -80,6 +80,7 @@ export default {
     ['Payment per year', '', '108 000', '291 600', '960 000'],
     ['Discount', '', '', '20%', '20%']
   ],
+  'prices-register': 'Register',
 
   's3-header': 'Working with JOBTRON is easy and convenient',
   's3-subheader': 'We care about our clients and provide an individual approach that will be useful to everyone',

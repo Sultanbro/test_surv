@@ -67,7 +67,10 @@
         </div>
         <div class="jReviews-footer">
           <p class="jReviews-title">{{ $lang(lang, 'review-title') }}</p>
-          <a class="jReviews-free jButton" href="/register">
+          <a
+            href="/register"
+            class="jReviews-free jButton"
+          >
             {{ $lang(lang, 'review-free') }}
           </a>
         </div>
@@ -268,7 +271,7 @@ export default {
 
 @media screen and (min-width: $medium) {
   #jReviews {
-    padding-bottom: 3rem;
+    padding-bottom: 6rem;
   }
   .jReviews-types {
     display: block;
