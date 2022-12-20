@@ -1,6 +1,6 @@
 <script>
 export default {
-    name: 'Section1Profile',
+    name: 'Section1News',
     computed: {
         lang () {
             return this.$root.$data.lang

@@ -257,6 +257,31 @@ __webpack_require__.r(__webpack_exports__);
 
 /***/ }),
 
+/***/ "./node_modules/babel-loader/lib/index.js??clonedRuleSet-5[0].rules[0].use[0]!./node_modules/vue-loader/lib/index.js??vue-loader-options!./resources/js/home/components/section1/Section1Tab.vue?vue&type=script&lang=js&":
+/*!********************************************************************************************************************************************************************************************************************************!*\
+  !*** ./node_modules/babel-loader/lib/index.js??clonedRuleSet-5[0].rules[0].use[0]!./node_modules/vue-loader/lib/index.js??vue-loader-options!./resources/js/home/components/section1/Section1Tab.vue?vue&type=script&lang=js& ***!
+  \********************************************************************************************************************************************************************************************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = ({
+  name: 'Section1Tab',
+  props: {
+    activeTab: String,
+    tabId: String
+  },
+  computed: {
+    lang: function lang() {
+      return this.$root.$data.lang;
+    }
+  }
+});
+
+/***/ }),
+
 /***/ "./node_modules/babel-loader/lib/index.js??clonedRuleSet-5[0].rules[0].use[0]!./node_modules/vue-loader/lib/index.js??vue-loader-options!./resources/js/home/components/section3/S3Block.vue?vue&type=script&lang=js&":
 /*!****************************************************************************************************************************************************************************************************************************!*\
   !*** ./node_modules/babel-loader/lib/index.js??clonedRuleSet-5[0].rules[0].use[0]!./node_modules/vue-loader/lib/index.js??vue-loader-options!./resources/js/home/components/section3/S3Block.vue?vue&type=script&lang=js& ***!
@@ -588,6 +613,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
 /* harmony export */ });
 /* harmony import */ var _section1_Section1Popup__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../section1/Section1Popup */ "./resources/js/home/components/section1/Section1Popup.vue");
+/* harmony import */ var _section1_Section1Tab__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../section1/Section1Tab */ "./resources/js/home/components/section1/Section1Tab.vue");
 //
 //
 //
@@ -687,53 +713,13 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
+
 
 
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = ({
   components: {
-    Section1Popup: _section1_Section1Popup__WEBPACK_IMPORTED_MODULE_0__["default"]
+    Section1Popup: _section1_Section1Popup__WEBPACK_IMPORTED_MODULE_0__["default"],
+    Section1Tab: _section1_Section1Tab__WEBPACK_IMPORTED_MODULE_1__["default"]
   },
   computed: {
     lang: function lang() {
@@ -3318,6 +3304,44 @@ component.options.__file = "resources/js/home/components/section1/Section1Popup.
 
 /***/ }),
 
+/***/ "./resources/js/home/components/section1/Section1Tab.vue":
+/*!***************************************************************!*\
+  !*** ./resources/js/home/components/section1/Section1Tab.vue ***!
+  \***************************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
+/* harmony import */ var _Section1Tab_vue_vue_type_template_id_5e36d726___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./Section1Tab.vue?vue&type=template&id=5e36d726& */ "./resources/js/home/components/section1/Section1Tab.vue?vue&type=template&id=5e36d726&");
+/* harmony import */ var _Section1Tab_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./Section1Tab.vue?vue&type=script&lang=js& */ "./resources/js/home/components/section1/Section1Tab.vue?vue&type=script&lang=js&");
+/* harmony import */ var _node_modules_vue_loader_lib_runtime_componentNormalizer_js__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! !../../../../../node_modules/vue-loader/lib/runtime/componentNormalizer.js */ "./node_modules/vue-loader/lib/runtime/componentNormalizer.js");
+
+
+
+
+
+/* normalize component */
+;
+var component = (0,_node_modules_vue_loader_lib_runtime_componentNormalizer_js__WEBPACK_IMPORTED_MODULE_2__["default"])(
+  _Section1Tab_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_1__["default"],
+  _Section1Tab_vue_vue_type_template_id_5e36d726___WEBPACK_IMPORTED_MODULE_0__.render,
+  _Section1Tab_vue_vue_type_template_id_5e36d726___WEBPACK_IMPORTED_MODULE_0__.staticRenderFns,
+  false,
+  null,
+  null,
+  null
+  
+)
+
+/* hot reload */
+if (false) { var api; }
+component.options.__file = "resources/js/home/components/section1/Section1Tab.vue"
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (component.exports);
+
+/***/ }),
+
 /***/ "./resources/js/home/components/section3/S3Block.vue":
 /*!***********************************************************!*\
   !*** ./resources/js/home/components/section3/S3Block.vue ***!
@@ -3783,6 +3807,21 @@ __webpack_require__.r(__webpack_exports__);
 
 /***/ }),
 
+/***/ "./resources/js/home/components/section1/Section1Tab.vue?vue&type=script&lang=js&":
+/*!****************************************************************************************!*\
+  !*** ./resources/js/home/components/section1/Section1Tab.vue?vue&type=script&lang=js& ***!
+  \****************************************************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
+/* harmony import */ var _node_modules_babel_loader_lib_index_js_clonedRuleSet_5_0_rules_0_use_0_node_modules_vue_loader_lib_index_js_vue_loader_options_Section1Tab_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! -!../../../../../node_modules/babel-loader/lib/index.js??clonedRuleSet-5[0].rules[0].use[0]!../../../../../node_modules/vue-loader/lib/index.js??vue-loader-options!./Section1Tab.vue?vue&type=script&lang=js& */ "./node_modules/babel-loader/lib/index.js??clonedRuleSet-5[0].rules[0].use[0]!./node_modules/vue-loader/lib/index.js??vue-loader-options!./resources/js/home/components/section1/Section1Tab.vue?vue&type=script&lang=js&");
+ /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (_node_modules_babel_loader_lib_index_js_clonedRuleSet_5_0_rules_0_use_0_node_modules_vue_loader_lib_index_js_vue_loader_options_Section1Tab_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_0__["default"]); 
+
+/***/ }),
+
 /***/ "./resources/js/home/components/section3/S3Block.vue?vue&type=script&lang=js&":
 /*!************************************************************************************!*\
   !*** ./resources/js/home/components/section3/S3Block.vue?vue&type=script&lang=js& ***!
@@ -4218,6 +4257,22 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */   "staticRenderFns": () => (/* reexport safe */ _node_modules_vue_loader_lib_loaders_templateLoader_js_vue_loader_options_node_modules_vue_loader_lib_index_js_vue_loader_options_Section1Popup_vue_vue_type_template_id_36ca9bf8___WEBPACK_IMPORTED_MODULE_0__.staticRenderFns)
 /* harmony export */ });
 /* harmony import */ var _node_modules_vue_loader_lib_loaders_templateLoader_js_vue_loader_options_node_modules_vue_loader_lib_index_js_vue_loader_options_Section1Popup_vue_vue_type_template_id_36ca9bf8___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! -!../../../../../node_modules/vue-loader/lib/loaders/templateLoader.js??vue-loader-options!../../../../../node_modules/vue-loader/lib/index.js??vue-loader-options!./Section1Popup.vue?vue&type=template&id=36ca9bf8& */ "./node_modules/vue-loader/lib/loaders/templateLoader.js??vue-loader-options!./node_modules/vue-loader/lib/index.js??vue-loader-options!./resources/js/home/components/section1/Section1Popup.vue?vue&type=template&id=36ca9bf8&");
+
+
+/***/ }),
+
+/***/ "./resources/js/home/components/section1/Section1Tab.vue?vue&type=template&id=5e36d726&":
+/*!**********************************************************************************************!*\
+  !*** ./resources/js/home/components/section1/Section1Tab.vue?vue&type=template&id=5e36d726& ***!
+  \**********************************************************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "render": () => (/* reexport safe */ _node_modules_vue_loader_lib_loaders_templateLoader_js_vue_loader_options_node_modules_vue_loader_lib_index_js_vue_loader_options_Section1Tab_vue_vue_type_template_id_5e36d726___WEBPACK_IMPORTED_MODULE_0__.render),
+/* harmony export */   "staticRenderFns": () => (/* reexport safe */ _node_modules_vue_loader_lib_loaders_templateLoader_js_vue_loader_options_node_modules_vue_loader_lib_index_js_vue_loader_options_Section1Tab_vue_vue_type_template_id_5e36d726___WEBPACK_IMPORTED_MODULE_0__.staticRenderFns)
+/* harmony export */ });
+/* harmony import */ var _node_modules_vue_loader_lib_loaders_templateLoader_js_vue_loader_options_node_modules_vue_loader_lib_index_js_vue_loader_options_Section1Tab_vue_vue_type_template_id_5e36d726___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! -!../../../../../node_modules/vue-loader/lib/loaders/templateLoader.js??vue-loader-options!../../../../../node_modules/vue-loader/lib/index.js??vue-loader-options!./Section1Tab.vue?vue&type=template&id=5e36d726& */ "./node_modules/vue-loader/lib/loaders/templateLoader.js??vue-loader-options!./node_modules/vue-loader/lib/index.js??vue-loader-options!./resources/js/home/components/section1/Section1Tab.vue?vue&type=template&id=5e36d726&");
 
 
 /***/ }),
@@ -4658,6 +4713,55 @@ var render = function () {
         ]
       ),
     ]),
+  ])
+}
+var staticRenderFns = []
+render._withStripped = true
+
+
+
+/***/ }),
+
+/***/ "./node_modules/vue-loader/lib/loaders/templateLoader.js??vue-loader-options!./node_modules/vue-loader/lib/index.js??vue-loader-options!./resources/js/home/components/section1/Section1Tab.vue?vue&type=template&id=5e36d726&":
+/*!*************************************************************************************************************************************************************************************************************************************!*\
+  !*** ./node_modules/vue-loader/lib/loaders/templateLoader.js??vue-loader-options!./node_modules/vue-loader/lib/index.js??vue-loader-options!./resources/js/home/components/section1/Section1Tab.vue?vue&type=template&id=5e36d726& ***!
+  \*************************************************************************************************************************************************************************************************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "render": () => (/* binding */ render),
+/* harmony export */   "staticRenderFns": () => (/* binding */ staticRenderFns)
+/* harmony export */ });
+var render = function () {
+  var _vm = this
+  var _h = _vm.$createElement
+  var _c = _vm._self._c || _h
+  return _c("li", { staticClass: "jSec1-tabs-button" }, [
+    _c(
+      "a",
+      {
+        staticClass: "jSec1-tabs-link",
+        class: { "jSec1-tabs-link--active": _vm.activeTab === _vm.tabId },
+        attrs: { href: "javascript:void(0)" },
+        on: {
+          click: function ($event) {
+            return _vm.$emit("content")
+          },
+        },
+      },
+      [_vm._v(_vm._s(_vm.$lang(_vm.lang, "s1-" + _vm.tabId)))]
+    ),
+    _vm._v(" "),
+    _c("a", {
+      staticClass: "jSec1-tabs-qm",
+      attrs: { href: "javascript:void(0)" },
+      on: {
+        click: function ($event) {
+          return _vm.$emit("popup")
+        },
+      },
+    }),
   ])
 }
 var staticRenderFns = []
@@ -5224,177 +5328,84 @@ var render = function () {
           class: { "jSec1-tabs-popup-active": _vm.isPopupVisible },
         },
         [
-          _c("ul", { staticClass: "jSec1-tabs-buttons" }, [
-            _c("li", { staticClass: "jSec1-tabs-button" }, [
-              _c(
-                "a",
-                {
-                  staticClass: "jSec1-tabs-link",
-                  class: {
-                    "jSec1-tabs-link--active": _vm.activeTab === "profile",
-                  },
-                  attrs: { href: "javascript:void(0)" },
-                  on: {
-                    click: function ($event) {
-                      return _vm.setTab("profile")
-                    },
-                  },
-                },
-                [_vm._v(_vm._s(_vm.$lang(_vm.lang, "s1-profile")))]
-              ),
-              _vm._v(" "),
-              _c("a", {
-                staticClass: "jSec1-tabs-qm",
-                attrs: { href: "javascript:void(0)" },
+          _c(
+            "ul",
+            { staticClass: "jSec1-tabs-buttons" },
+            [
+              _c("Section1Tab", {
+                attrs: { "tab-id": "profile", "active-tab": _vm.activeTab },
                 on: {
-                  click: function ($event) {
+                  content: function ($event) {
+                    return _vm.setTab("profile")
+                  },
+                  popup: function ($event) {
                     return _vm.setPopup("profile")
                   },
                 },
               }),
-            ]),
-            _vm._v(" "),
-            _c("li", { staticClass: "jSec1-tabs-button" }, [
-              _c(
-                "a",
-                {
-                  staticClass: "jSec1-tabs-link",
-                  class: { "jSec1-tabs-link--active": _vm.activeTab === "db" },
-                  attrs: { href: "javascript:void(0)" },
-                  on: {
-                    click: function ($event) {
-                      return _vm.setTab("db")
-                    },
-                  },
-                },
-                [_vm._v(_vm._s(_vm.$lang(_vm.lang, "s1-db")))]
-              ),
               _vm._v(" "),
-              _c("a", {
-                staticClass: "jSec1-tabs-qm",
-                attrs: { href: "javascript:void(0)" },
+              _c("Section1Tab", {
+                attrs: { "tab-id": "db", "active-tab": _vm.activeTab },
                 on: {
-                  click: function ($event) {
+                  content: function ($event) {
+                    return _vm.setTab("db")
+                  },
+                  popup: function ($event) {
                     return _vm.setPopup("db")
                   },
                 },
               }),
-            ]),
-            _vm._v(" "),
-            _c("li", { staticClass: "jSec1-tabs-button" }, [
-              _c(
-                "a",
-                {
-                  staticClass: "jSec1-tabs-link",
-                  class: { "jSec1-tabs-link--active": _vm.activeTab === "kpi" },
-                  attrs: { href: "javascript:void(0)" },
-                  on: {
-                    click: function ($event) {
-                      return _vm.setTab("kpi")
-                    },
-                  },
-                },
-                [_vm._v(_vm._s(_vm.$lang(_vm.lang, "s1-kpi")))]
-              ),
               _vm._v(" "),
-              _c("a", {
-                staticClass: "jSec1-tabs-qm",
-                attrs: { href: "javascript:void(0)" },
+              _c("Section1Tab", {
+                attrs: { "tab-id": "kpi", "active-tab": _vm.activeTab },
                 on: {
-                  click: function ($event) {
+                  content: function ($event) {
+                    return _vm.setTab("kpi")
+                  },
+                  popup: function ($event) {
                     return _vm.setPopup("kpi")
                   },
                 },
               }),
-            ]),
-            _vm._v(" "),
-            _c("li", { staticClass: "jSec1-tabs-button" }, [
-              _c(
-                "a",
-                {
-                  staticClass: "jSec1-tabs-link",
-                  class: {
-                    "jSec1-tabs-link--active": _vm.activeTab === "courses",
-                  },
-                  attrs: { href: "javascript:void(0)" },
-                  on: {
-                    click: function ($event) {
-                      return _vm.setTab("courses")
-                    },
-                  },
-                },
-                [_vm._v(_vm._s(_vm.$lang(_vm.lang, "s1-courses")))]
-              ),
               _vm._v(" "),
-              _c("a", {
-                staticClass: "jSec1-tabs-qm",
-                attrs: { href: "javascript:void(0)" },
+              _c("Section1Tab", {
+                attrs: { "tab-id": "courses", "active-tab": _vm.activeTab },
                 on: {
-                  click: function ($event) {
+                  content: function ($event) {
+                    return _vm.setTab("courses")
+                  },
+                  popup: function ($event) {
                     return _vm.setPopup("courses")
                   },
                 },
               }),
-            ]),
-            _vm._v(" "),
-            _c("li", { staticClass: "jSec1-tabs-button" }, [
-              _c(
-                "a",
-                {
-                  staticClass: "jSec1-tabs-link",
-                  class: {
-                    "jSec1-tabs-link--active": _vm.activeTab === "struct",
-                  },
-                  attrs: { href: "javascript:void(0)" },
-                  on: {
-                    click: function ($event) {
-                      return _vm.setTab("struct")
-                    },
-                  },
-                },
-                [_vm._v(_vm._s(_vm.$lang(_vm.lang, "s1-struct")))]
-              ),
               _vm._v(" "),
-              _c("a", {
-                staticClass: "jSec1-tabs-qm",
-                attrs: { href: "javascript:void(0)" },
+              _c("Section1Tab", {
+                attrs: { "tab-id": "struct", "active-tab": _vm.activeTab },
                 on: {
-                  click: function ($event) {
+                  content: function ($event) {
+                    return _vm.setTab("struct")
+                  },
+                  popup: function ($event) {
                     return _vm.setPopup("struct")
                   },
                 },
               }),
-            ]),
-            _vm._v(" "),
-            _c("li", { staticClass: "jSec1-tabs-button" }, [
-              _c(
-                "a",
-                {
-                  staticClass: "jSec1-tabs-link",
-                  class: {
-                    "jSec1-tabs-link--active": _vm.activeTab === "news",
-                  },
-                  attrs: { href: "javascript:void(0)" },
-                  on: {
-                    click: function ($event) {
-                      return _vm.setTab("news")
-                    },
-                  },
-                },
-                [_vm._v(_vm._s(_vm.$lang(_vm.lang, "s1-news")))]
-              ),
               _vm._v(" "),
-              _c("a", {
-                staticClass: "jSec1-tabs-qm",
-                attrs: { href: "javascript:void(0)" },
+              _c("Section1Tab", {
+                attrs: { "tab-id": "news", "active-tab": _vm.activeTab },
                 on: {
-                  click: function ($event) {
+                  content: function ($event) {
+                    return _vm.setTab("news")
+                  },
+                  popup: function ($event) {
                     return _vm.setPopup("news")
                   },
                 },
               }),
-            ]),
-          ]),
+            ],
+            1
+          ),
           _vm._v(" "),
           _c("Section1Popup", {
             directives: [

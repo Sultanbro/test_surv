@@ -1,6 +1,6 @@
 <script>
 export default {
-    name: 'Section1Profile',
+    name: 'Section1KPI',
     computed: {
         lang () {
             return this.$root.$data.lang
