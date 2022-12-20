@@ -3,49 +3,95 @@
     <div class="section-content">
       <div class="jFooter-cols">
         <div class="jFooter-col">
-          <a class="jNav-logo" href="">
-            <img alt="" class="jNav-logo-img" :src="require('../../assets/img/footer-logo.svg').default">
+          <a
+            href="javascript:void(0)"
+            class="jNav-logo"
+          >
+            <img
+              :src="require('../../assets/img/footer-logo.svg').default"
+              alt=""
+              class="jNav-logo-img"
+            >
           </a>
         </div>
         <div class="jFooter-col">
           <ul class="jFooter-menu-items">
             <li class="jFooter-menu-item">
-              <FooterLink :lang="lang" href="#prices" text="prices"/>
+              <FooterLink
+                :lang="lang"
+                href="#prices"
+                text="prices"
+              />
             </li>
             <li class="jFooter-menu-item">
-              <FooterLink :lang="lang" href="#reviews" text="reviews"/>
+              <FooterLink
+                :lang="lang"
+                href="#reviews"
+                text="reviews"
+              />
             </li>
             <li class="jFooter-menu-item">
-              <FooterLink :lang="lang" href="#features" text="features"/>
+              <FooterLink
+                :lang="lang"
+                href="#features"
+                text="features"
+              />
             </li>
           </ul>
           <p class="jFooter-sub">{{ $lang(lang, 'footer-subscribe') }}</p>
           <div class="jFooter-social">
-            <a class="jFooter-social-link jFooter-social-tg" href="#"></a>
-            <a class="jFooter-social-link jFooter-social-ig" href="#"></a>
-            <a class="jFooter-social-link jFooter-social-yt" href="#"></a>
+            <a
+              href="javascript:void(0)"
+              class="jFooter-social-link jFooter-social-tg"
+            />
+            <a
+              href="javascript:void(0)"
+              class="jFooter-social-link jFooter-social-ig"
+            />
+            <a
+              href="javascript:void(0)"
+              class="jFooter-social-link jFooter-social-yt"
+            />
           </div>
         </div>
         <div class="jFooter-col">
           <ul class="jFooter-menu-items">
             <li class="jFooter-menu-item">
-              <FooterLink :lang="lang" href="#" text="footer-docs"/>
+              <FooterLink
+                :lang="lang"
+                href="javascript:void(0)"
+                text="footer-docs"
+              />
             </li>
             <li class="jFooter-menu-item">
-              <FooterLink :lang="lang" href="#" text="footer-info"/>
+              <FooterLink
+                :lang="lang"
+                href="javascript:void(0)"
+                text="footer-info"
+              />
             </li>
             <li class="jFooter-menu-item">
-              <FooterLink :lang="lang" href="#" text="footer-lic"/>
+              <FooterLink
+                :lang="lang"
+                href="javascript:void(0)"
+                text="footer-lic"
+              />
             </li>
           </ul>
-<!--          <p>{{ $lang(lang, 'footer-docs') }}</p>-->
-<!--          <p>{{ $lang(lang, 'footer-info') }}</p>-->
-<!--          <p>{{ $lang(lang, 'footer-lic') }}</p>-->
           <p class="jFooter-sub">{{ $lang(lang, 'footer-pay') }}</p>
           <div class="jFooter-pay">
-            <a class="jFooter-pay-link jFooter-pay-mir" href="#"></a>
-            <a class="jFooter-pay-link jFooter-pay-visa" href="#"></a>
-            <a class="jFooter-pay-link jFooter-pay-ym" href="#"></a>
+            <a
+              href="javascript:void(0)"
+              class="jFooter-pay-link jFooter-pay-mir"
+            />
+            <a
+              href="javascript:void(0)"
+              class="jFooter-pay-link jFooter-pay-visa"
+            />
+            <a
+              href="javascript:void(0)"
+              class="jFooter-pay-link jFooter-pay-ym"
+            />
           </div>
         </div>
         <div class="jFooter-col">
@@ -62,7 +108,10 @@
     <div class="section-content">
       <div class="jFooter-bottom">
         <div class="jFooter-rules">
-          <a href="#">{{ $lang(lang, 'footer-conf') }}</a>
+          <a
+            href="javascript:void(0)"
+            class="jFooter-rules-link jFooter-link"
+          >{{ $lang(lang, 'footer-conf') }}</a>
         </div>
         <div class="jFooter-copy">
           <p>{{ '© ' + year + ' ' + $lang(lang, 'footer-copy') }}</p>
@@ -99,18 +148,14 @@ export default {
   padding-top: 2rem;
   background: #424d53;
   color: #fff;
+}
 
-  a {
-    color: #fff;
-    text-decoration: none;
+.jFooter-link{
+  color: #fff;
+  text-decoration: none;
 
-    &:hover {
-      text-decoration: underline;
-    }
-  }
-
-  li {
-    list-style: none;
+  &:hover {
+    text-decoration: underline;
   }
 }
 
@@ -124,14 +169,11 @@ export default {
   flex-flow: column;
 }
 
-.jFooter-cols > .jFooter-col:nth-child(1) {
-  display: flex;
-  align-items: center;
-
-}
-
 .jFooter-menu-items {
   padding: 0;
+}
+.jFooter-menu-item {
+  list-style: none;
 }
 
 .jFooter-sub {
@@ -201,44 +243,49 @@ export default {
   background-image: url("../../assets/img/footer-ym.svg");
 }
 
-.jFooter-rules {
-  display: flex;
-  order: 2;
-  gap: 1rem;
-
-  a {
-    display: block;
-  }
-}
-
-@media screen and (min-width $small) {
+@media screen and (min-width: $small) {
   .jFooter-cols {
     display: flex;
     flex-flow: row wrap;
     align-items: flex-start;
   }
+  .jFooter-col {
+    flex: 0 0 50%;
+  }
+
+  .jFooter-bottom {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    white-space: nowrap;
+    flex-flow: column;
+  }
+
+
+  .jFooter-cols > .jFooter-col:nth-child(1) {
+    display: flex;
+    align-self: center;
+  }
+
+  .jFooter-rules {
+    display: flex;
+    order: 2;
+    gap: 1rem;
+  }
+
+  .jFooter-copy {
+    order: 1;
+  }
 }
 
-.jFooter-col {
-  //flex: 0 0 50%;
-  flex: 0 0 25%;
-}
 
-.jFooter-bottom {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  white-space: nowrap;
-  flex-flow: column;
-}
 
-.jFooter-copy {
-  order: 1;
-}
-
-@media screen and (min-width $medium) {
+@media screen and (min-width: $medium) {
   .jFooter-cols {
     flex-flow: row nowrap;
+  }
+  .jFooter-col {
+    flex: 0 0 25%;
   }
   .jFooter-bottom {
     flex-flow: row nowrap;

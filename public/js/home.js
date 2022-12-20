@@ -535,6 +535,55 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 
 
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = ({
@@ -1657,7 +1706,7 @@ __webpack_require__.r(__webpack_exports__);
 
 var ___CSS_LOADER_EXPORT___ = _node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_0___default()(function(i){return i[1]});
 // Module
-___CSS_LOADER_EXPORT___.push([module.id, ".jFooter-menu-link {\n  display: inline-block;\n  margin: 0.5rem 0;\n  position: relative;\n  font-size: 1rem;\n}\n.jFooter-menu-link:hover:after {\n  content: \"\";\n  display: block;\n  position: absolute;\n  left: 0;\n  right: 0;\n  bottom: 0;\n  border-bottom: 0.125rem dotted #000;\n}", ""]);
+___CSS_LOADER_EXPORT___.push([module.id, ".jFooter-menu-link {\n  display: inline-block;\n  margin: 0.5rem 0;\n  position: relative;\n  font-size: 1rem;\n}\n.jFooter-menu-link:hover {\n  text-decoration: none;\n}\n.jFooter-menu-link:hover:after {\n  content: \"\";\n  display: block;\n  position: absolute;\n  left: 0;\n  right: 0;\n  bottom: 0;\n  border-bottom: 0.125rem dotted #000;\n}", ""]);
 // Exports
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (___CSS_LOADER_EXPORT___);
 
@@ -1822,7 +1871,7 @@ var ___CSS_LOADER_URL_REPLACEMENT_3___ = _node_modules_css_loader_dist_runtime_g
 var ___CSS_LOADER_URL_REPLACEMENT_4___ = _node_modules_css_loader_dist_runtime_getUrl_js__WEBPACK_IMPORTED_MODULE_1___default()(_assets_img_footer_visa_svg__WEBPACK_IMPORTED_MODULE_6__["default"]);
 var ___CSS_LOADER_URL_REPLACEMENT_5___ = _node_modules_css_loader_dist_runtime_getUrl_js__WEBPACK_IMPORTED_MODULE_1___default()(_assets_img_footer_ym_svg__WEBPACK_IMPORTED_MODULE_7__["default"]);
 // Module
-___CSS_LOADER_EXPORT___.push([module.id, "#jFooter {\n  width: 100%;\n  padding-top: 2rem;\n  background: #424d53;\n  color: #fff;\n}\n#jFooter a {\n  color: #fff;\n  text-decoration: none;\n}\n#jFooter a:hover {\n  text-decoration: underline;\n}\n#jFooter li {\n  list-style: none;\n}\n.jFooter-separator {\n  border-top: 0.0625rem solid white;\n}\n.jFooter-cols {\n  display: flex;\n  padding-bottom: 2rem;\n  flex-flow: column;\n}\n.jFooter-cols > .jFooter-col:nth-child(1) {\n  display: flex;\n  align-items: center;\n}\n.jFooter-menu-items {\n  padding: 0;\n}\n.jFooter-sub {\n  margin: 2rem 0 0.5rem;\n}\n.jFooter-contact {\n  margin: -0.25rem 0 0.75rem;\n}\n.jFooter-social {\n  display: flex;\n  align-items: center;\n  gap: 0.75rem;\n}\n.jFooter-social-link {\n  display: inline-block;\n  background-size: cover;\n}\n.jFooter-social-tg {\n  width: 1.5rem;\n  height: 1.5rem;\n  background-image: url(" + ___CSS_LOADER_URL_REPLACEMENT_0___ + ");\n}\n.jFooter-social-ig {\n  width: 1.25rem;\n  height: 1.25rem;\n  background-image: url(" + ___CSS_LOADER_URL_REPLACEMENT_1___ + ");\n}\n.jFooter-social-yt {\n  width: 2rem;\n  height: 2rem;\n  background-image: url(" + ___CSS_LOADER_URL_REPLACEMENT_2___ + ");\n}\n.jFooter-pay {\n  display: flex;\n  align-items: center;\n  gap: 0.75rem;\n  padding-top: 0.5rem;\n}\n.jFooter-pay-link {\n  display: inline-block;\n  background-size: cover;\n}\n.jFooter-pay-mir {\n  width: 3.4375rem;\n  height: 0.9375rem;\n  background-image: url(" + ___CSS_LOADER_URL_REPLACEMENT_3___ + ");\n}\n.jFooter-pay-visa {\n  width: 2.9375rem;\n  height: 0.9375rem;\n  background-image: url(" + ___CSS_LOADER_URL_REPLACEMENT_4___ + ");\n}\n.jFooter-pay-ym {\n  width: 4.75rem;\n  height: 1rem;\n  background-image: url(" + ___CSS_LOADER_URL_REPLACEMENT_5___ + ");\n}\n.jFooter-rules {\n  display: flex;\n  order: 2;\n  gap: 1rem;\n}\n.jFooter-rules a {\n  display: block;\n}\n@media screen and (min-width 780px) {\n.jFooter-cols {\n    display: flex;\n    flex-flow: row wrap;\n    align-items: flex-start;\n}\n}\n.jFooter-col {\n  flex: 0 0 25%;\n}\n.jFooter-bottom {\n  display: flex;\n  justify-content: space-between;\n  align-items: center;\n  white-space: nowrap;\n  flex-flow: column;\n}\n.jFooter-copy {\n  order: 1;\n}\n@media screen and (min-width 1260px) {\n.jFooter-cols {\n    flex-flow: row nowrap;\n}\n.jFooter-bottom {\n    flex-flow: row nowrap;\n}\n}", ""]);
+___CSS_LOADER_EXPORT___.push([module.id, "#jFooter {\n  width: 100%;\n  padding-top: 2rem;\n  background: #424d53;\n  color: #fff;\n}\n.jFooter-link {\n  color: #fff;\n  text-decoration: none;\n}\n.jFooter-link:hover {\n  text-decoration: underline;\n}\n.jFooter-separator {\n  border-top: 0.0625rem solid white;\n}\n.jFooter-cols {\n  display: flex;\n  padding-bottom: 2rem;\n  flex-flow: column;\n}\n.jFooter-menu-items {\n  padding: 0;\n}\n.jFooter-menu-item {\n  list-style: none;\n}\n.jFooter-sub {\n  margin: 2rem 0 0.5rem;\n}\n.jFooter-contact {\n  margin: -0.25rem 0 0.75rem;\n}\n.jFooter-social {\n  display: flex;\n  align-items: center;\n  gap: 0.75rem;\n}\n.jFooter-social-link {\n  display: inline-block;\n  background-size: cover;\n}\n.jFooter-social-tg {\n  width: 1.5rem;\n  height: 1.5rem;\n  background-image: url(" + ___CSS_LOADER_URL_REPLACEMENT_0___ + ");\n}\n.jFooter-social-ig {\n  width: 1.25rem;\n  height: 1.25rem;\n  background-image: url(" + ___CSS_LOADER_URL_REPLACEMENT_1___ + ");\n}\n.jFooter-social-yt {\n  width: 2rem;\n  height: 2rem;\n  background-image: url(" + ___CSS_LOADER_URL_REPLACEMENT_2___ + ");\n}\n.jFooter-pay {\n  display: flex;\n  align-items: center;\n  gap: 0.75rem;\n  padding-top: 0.5rem;\n}\n.jFooter-pay-link {\n  display: inline-block;\n  background-size: cover;\n}\n.jFooter-pay-mir {\n  width: 3.4375rem;\n  height: 0.9375rem;\n  background-image: url(" + ___CSS_LOADER_URL_REPLACEMENT_3___ + ");\n}\n.jFooter-pay-visa {\n  width: 2.9375rem;\n  height: 0.9375rem;\n  background-image: url(" + ___CSS_LOADER_URL_REPLACEMENT_4___ + ");\n}\n.jFooter-pay-ym {\n  width: 4.75rem;\n  height: 1rem;\n  background-image: url(" + ___CSS_LOADER_URL_REPLACEMENT_5___ + ");\n}\n@media screen and (min-width: 780px) {\n.jFooter-cols {\n    display: flex;\n    flex-flow: row wrap;\n    align-items: flex-start;\n}\n.jFooter-col {\n    flex: 0 0 50%;\n}\n.jFooter-bottom {\n    display: flex;\n    justify-content: space-between;\n    align-items: center;\n    white-space: nowrap;\n    flex-flow: column;\n}\n.jFooter-cols > .jFooter-col:nth-child(1) {\n    display: flex;\n    align-self: center;\n}\n.jFooter-rules {\n    display: flex;\n    order: 2;\n    gap: 1rem;\n}\n.jFooter-copy {\n    order: 1;\n}\n}\n@media screen and (min-width: 1260px) {\n.jFooter-cols {\n    flex-flow: row nowrap;\n}\n.jFooter-col {\n    flex: 0 0 25%;\n}\n.jFooter-bottom {\n    flex-flow: row nowrap;\n}\n}", ""]);
 // Exports
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (___CSS_LOADER_EXPORT___);
 
@@ -6484,7 +6533,10 @@ var render = function () {
   var _c = _vm._self._c || _h
   return _c(
     "a",
-    { staticClass: "jFooter-menu-link", attrs: { href: _vm.href } },
+    {
+      staticClass: "jFooter-menu-link jFooter-link",
+      attrs: { href: _vm.href },
+    },
     [_vm._v("\n  " + _vm._s(_vm.$lang(_vm.lang, _vm.text)) + "\n")]
   )
 }
@@ -7315,15 +7367,19 @@ var render = function () {
     _c("div", { staticClass: "section-content" }, [
       _c("div", { staticClass: "jFooter-cols" }, [
         _c("div", { staticClass: "jFooter-col" }, [
-          _c("a", { staticClass: "jNav-logo", attrs: { href: "" } }, [
-            _c("img", {
-              staticClass: "jNav-logo-img",
-              attrs: {
-                alt: "",
-                src: (__webpack_require__(/*! ../../assets/img/footer-logo.svg */ "./resources/js/home/assets/img/footer-logo.svg")["default"]),
-              },
-            }),
-          ]),
+          _c(
+            "a",
+            { staticClass: "jNav-logo", attrs: { href: "javascript:void(0)" } },
+            [
+              _c("img", {
+                staticClass: "jNav-logo-img",
+                attrs: {
+                  src: (__webpack_require__(/*! ../../assets/img/footer-logo.svg */ "./resources/js/home/assets/img/footer-logo.svg")["default"]),
+                  alt: "",
+                },
+              }),
+            ]
+          ),
         ]),
         _vm._v(" "),
         _c("div", { staticClass: "jFooter-col" }, [
@@ -7380,7 +7436,11 @@ var render = function () {
               { staticClass: "jFooter-menu-item" },
               [
                 _c("FooterLink", {
-                  attrs: { lang: _vm.lang, href: "#", text: "footer-docs" },
+                  attrs: {
+                    lang: _vm.lang,
+                    href: "javascript:void(0)",
+                    text: "footer-docs",
+                  },
                 }),
               ],
               1
@@ -7391,7 +7451,11 @@ var render = function () {
               { staticClass: "jFooter-menu-item" },
               [
                 _c("FooterLink", {
-                  attrs: { lang: _vm.lang, href: "#", text: "footer-info" },
+                  attrs: {
+                    lang: _vm.lang,
+                    href: "javascript:void(0)",
+                    text: "footer-info",
+                  },
                 }),
               ],
               1
@@ -7402,7 +7466,11 @@ var render = function () {
               { staticClass: "jFooter-menu-item" },
               [
                 _c("FooterLink", {
-                  attrs: { lang: _vm.lang, href: "#", text: "footer-lic" },
+                  attrs: {
+                    lang: _vm.lang,
+                    href: "javascript:void(0)",
+                    text: "footer-lic",
+                  },
                 }),
               ],
               1
@@ -7445,9 +7513,14 @@ var render = function () {
     _c("div", { staticClass: "section-content" }, [
       _c("div", { staticClass: "jFooter-bottom" }, [
         _c("div", { staticClass: "jFooter-rules" }, [
-          _c("a", { attrs: { href: "#" } }, [
-            _vm._v(_vm._s(_vm.$lang(_vm.lang, "footer-conf"))),
-          ]),
+          _c(
+            "a",
+            {
+              staticClass: "jFooter-rules-link jFooter-link",
+              attrs: { href: "javascript:void(0)" },
+            },
+            [_vm._v(_vm._s(_vm.$lang(_vm.lang, "footer-conf")))]
+          ),
         ]),
         _vm._v(" "),
         _c("div", { staticClass: "jFooter-copy" }, [
@@ -7469,17 +7542,17 @@ var staticRenderFns = [
     return _c("div", { staticClass: "jFooter-social" }, [
       _c("a", {
         staticClass: "jFooter-social-link jFooter-social-tg",
-        attrs: { href: "#" },
+        attrs: { href: "javascript:void(0)" },
       }),
       _vm._v(" "),
       _c("a", {
         staticClass: "jFooter-social-link jFooter-social-ig",
-        attrs: { href: "#" },
+        attrs: { href: "javascript:void(0)" },
       }),
       _vm._v(" "),
       _c("a", {
         staticClass: "jFooter-social-link jFooter-social-yt",
-        attrs: { href: "#" },
+        attrs: { href: "javascript:void(0)" },
       }),
     ])
   },
@@ -7490,17 +7563,17 @@ var staticRenderFns = [
     return _c("div", { staticClass: "jFooter-pay" }, [
       _c("a", {
         staticClass: "jFooter-pay-link jFooter-pay-mir",
-        attrs: { href: "#" },
+        attrs: { href: "javascript:void(0)" },
       }),
       _vm._v(" "),
       _c("a", {
         staticClass: "jFooter-pay-link jFooter-pay-visa",
-        attrs: { href: "#" },
+        attrs: { href: "javascript:void(0)" },
       }),
       _vm._v(" "),
       _c("a", {
         staticClass: "jFooter-pay-link jFooter-pay-ym",
-        attrs: { href: "#" },
+        attrs: { href: "javascript:void(0)" },
       }),
     ])
   },
