@@ -1055,10 +1055,9 @@ public function planRequired($arr) {
 
     /**
      * Таблица кадров в рекрутинг -> Причины увольнения
-     * @return array
      */
-    public static function staff($year) {
-
+    public static function staff(int $year) : array
+    {
         $users_on = \DB::table('users')
             ->leftJoin('user_descriptions as ud', 'ud.user_id', '=', 'users.id')
             ->where('ud.is_trainee', 0)
@@ -1100,21 +1099,11 @@ public function planRequired($arr) {
                 }
             }
             
-            
             $staff[2]['m'.$i] =  $staff[0]['m'.$i] - $staff[1]['m'.$i];
+            $staff[4]['m'.$i] =  0; // self::getWorkerQuantity(Carbon::createFromDate($year, $i, 1));
 
-            
-            
-            $staff[4]['m'.$i] =  self::getWorkerQuantity(Carbon::createFromDate($year, $i, 1));
-            
-            $staff[3]['m'.$i] = '0%';
-            if($i != 1) {
-                $a = $staff[4]['m'.($i - 1)] + $staff[0]['m'.$i];
-                if($a > 0) {
-                    $staff[3]['m'.$i] = round(( $staff[1]['m'.$i] / $a ) * 100, 1) . '%';
-                } 
-            }
-
+            $a = $i != 1 ? $staff[4]['m'.($i - 1)] + $staff[0]['m'.$i] : 0;
+            $staff[3]['m'.$i] = $a > 0 ? round(( $staff[1]['m'.$i] / $a ) * 100, 1) . '%' : '0%';
         }
 
         return $staff;
@@ -1122,10 +1111,9 @@ public function planRequired($arr) {
 
     /**
      * Таблица кадров в рекрутинг -> Продолжительность жизни сотрудников
-     * @return array
      */
-    public static function staff_longevity($year) {
-
+    public static function staff_longevity(int $year) : array
+    {
         $staff = [];
         $staff[0]['name'] = 'менее 2 нед';
         $staff[1]['name'] = 'до 1 мес';
@@ -1138,13 +1126,11 @@ public function planRequired($arr) {
 
         for ($i=1; $i <=12; $i++) { 
 
-            $users = \DB::table('users')
-                ->whereNotNull('deleted_at')
-                ->leftJoin('user_descriptions as ud', 'ud.user_id', '=', 'users.id')
-                ->where('is_trainee', 0)
+            $users = User::withTrashed()
+                ->employees()
                 ->whereMonth('deleted_at', $i)
                 ->whereYear('deleted_at', $year)
-                ->get(['users.id', 'users.deleted_at']);
+                ->get(['id', 'deleted_at']);
 
             $staff[0]['m'.$i] = 0;
             $staff[1]['m'.$i] = 0;
@@ -1156,11 +1142,9 @@ public function planRequired($arr) {
             $staff[7]['m'.$i] = 0;
 
             $total_fired = 0;
-            foreach ($users as $key => $user) {
+            foreach ($users as $user) {
 
-                $_user = User::withTrashed()->find($user->id);
-                if(!$user) continue;
-                $worked = $_user->wasPartOfTeam();
+                $worked = $user->wasPartOfTeam();
 
                 // which cat to count user
                 switch ($worked) {
@@ -1195,101 +1179,47 @@ public function planRequired($arr) {
                 if($x >=0) {
                     $staff[$x]['m'.$i] += 1;
                     $total_fired++;
-                }
-                
+                }  
             }
 
+            if($total_fired <= 0) {
+                continue;
+            }
+            
             for($j = 0;$j<=7;$j++) {
-                if($total_fired > 0) {
-                    $percent = floor($staff[$j]['m'.$i] / $total_fired * 100);
-                    $staff[$j]['m'.$i] = $staff[$j]['m'.$i] . ' / ' . $percent . '%';
-                } 
-              
-            }
-           
-           
-
+                $percent = floor($staff[$j]['m'.$i] / $total_fired * 100);
+                $staff[$j]['m'.$i] = $staff[$j]['m'.$i] . ' / ' . $percent . '%';
+            } 
+            
         }
-
+           
         return $staff;
     }
 
     /**
      * Таблица кадров в рекрутинг -> Причины увольнения
-     * @return array
      */
-    public static function staff_by_group($year) {
-
+    public static function staff_by_group(int $year) : array
+    {
         $date = Carbon::createFromDate($year, 1, 1);
         $groups = ProfileGroup::where('active', 1)->get();
+        $userService = new UserService();
 
         $staffy = [];
 
         foreach ($groups as $key => $group) {
-            $user_ids = ProfileGroup::employees($group->id, $date, 1) + ProfileGroup::employees($group->id, $date, 2);
-            
-            
-           
             $staffy[$key]['name'] = $group->name;
+
             for ($i=1; $i <=12; $i++) { 
-                
-                // $pgu = PGU::where('date', $date->month($i)->format('Y-m-d'))->where('group_id', $group->id)->first();
-
-                $assigned = 0;
-                $fired = 0;
-
-                // if($pgu) {
-                //     $assigneds = \DB::table('users')
-                //         ->leftJoin('user_descriptions as ud', 'ud.user_id', '=', 'users.id')
-                //         ->whereIn('users.id', $pgu->assigned)
-                //         ->where('is_trainee', 0)
-                //         ->get();
-
-                //     $assigned = $assigneds->count();
-
-                //     $fireds = \DB::table('users')
-                //         ->leftJoin('user_descriptions as ud', 'ud.user_id', '=', 'users.id')
-                //         ->whereIn('users.id', $pgu->fired)
-                //         ->where('is_trainee', 0)
-                //         ->get();
-                    
-                //     $fired = $fireds->count();
-
-                // }
-                
-                $service = new UserService();
-                
-                $assigned = $service->getEmployees($group->id, $date->month($i)->format('Y-m-d'));
-                $fired    = $service->getFiredEmployees($group->id, $date->month($i)->format('Y-m-d'));
-
-                $fired    = count($fired);
-                $assigned = count($assigned);
+                $assigned = count( $userService->getEmployees($group->id, $date->month($i)->format('Y-m-d')) );
+                $fired    = count( $userService->getFiredEmployees($group->id, $date->month($i)->format('Y-m-d')) );
 
                 $worked = $assigned + $fired;
               
-                $staffy[$key]['m'.$i] = '0%';
-                if($worked > 0) {
-                    $staffy[$key]['m'.$i] = round(( $fired / $worked ) * 100, 1) . '%';
-                } 
-
-                if($date->format('Y-m-d') == '2022-07-01') {
-                    if($group->id == 23) $staffy[$key]['m'.$i] = '26.3%';
-                    if($group->id == 26) $staffy[$key]['m'.$i] = '33.3%';
-                    if($group->id == 31) $staffy[$key]['m'.$i] = '7.1%'; 
-                    if($group->id == 34) $staffy[$key]['m'.$i] = '0%';
-                    if($group->id == 42) $staffy[$key]['m'.$i] = '18.7%';
-                    if($group->id == 48) $staffy[$key]['m'.$i] = '33.3%';
-                    if($group->id == 63) $staffy[$key]['m'.$i] = '42.8%';
-                    if($group->id == 70) $staffy[$key]['m'.$i] = '76.9%';
-                    if($group->id == 71) $staffy[$key]['m'.$i] = '33.3%';
-                    if($group->id == 79) $staffy[$key]['m'.$i] = '25.0%';
-                    if($group->id == 88) $staffy[$key]['m'.$i] = '0%';
-                }
-                
+                $percent = $worked > 0 ? round(( $fired / $worked ) * 100, 1) : 0;
+                $staffy[$key]['m'.$i] = $percent . '%';
             }
-
         }
-
 
         return $staffy;
     }
@@ -1297,8 +1227,6 @@ public function planRequired($arr) {
     /**
      * Текучка у группы в определенный месяц
      */
-
-    
     public static function staff_on_group($date, $group_id) {
 
         $date = Carbon::parse($date)->day(1);

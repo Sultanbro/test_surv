@@ -2,15 +2,14 @@
 
 namespace App\Console\Commands;
 
-use Carbon\Carbon;
 use Illuminate\Console\Command;
 use App\Timetracking as Model;
 
-class Timetracking extends Command
+class SetExitTimetracking extends Command
 {
     protected $signature = 'timetracking:check';
 
-    protected $description = 'Запуск проверки таблиц учетам времени';
+    protected $description = 'Автоматическое завершение рабочего дня';
 
     public function __construct()
     {
@@ -50,7 +49,7 @@ class Timetracking extends Command
 
             $record->setExit($workEndTime)
                 ->setStatus(Model::DAY_ENDED)
-                ->addTime($workEndTime)
+                ->addTime($workEndTime, $record->user->timezone())
                 ->save();
 
             $this->line("Для сотрудника с ID ".$record->user_id." рабочий день завершен автоматический в ".$workEndTime->format('H:i'));
