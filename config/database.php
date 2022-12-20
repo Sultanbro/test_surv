@@ -98,7 +98,7 @@ return [
             'host' => env('DB_ANVIZ_HOST', '127.0.0.1'),
             'port' => env('DB_ANVIZ_PORT', '1433'),
             'database' => env('DB_ANVIZ_DATABASE', 'forge'),
-            'username' => env('DB_ANVIZ_DATABASE', 'forge'),
+            'username' => env('DB_ANVIZ_USERNAME', 'forge'),
             'password' => env('DB_ANVIZ_PASSWORD', ''),
             'charset' => 'utf8',
             'collation' => 'utf8_unicode_ci',

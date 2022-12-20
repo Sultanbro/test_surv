@@ -218,7 +218,7 @@ class GroupAnalyticsController extends Controller
             'date' => $month->startOfMonth()->format('Y-m-d'),
             'records' => $data, // Сводная таблица
             'hrs' => [], // Подробные таблицы рекрутеров
-            'skypes' => [], //Lead::fetch($date), // Cконвертированные сделки. Раньше собирали скайпы (Нужно переименовать)
+            'skypes' => Lead::fetch($date), // Cконвертированные сделки. Раньше собирали скайпы (Нужно переименовать)
             'segments' => Segment::pluck('name', 'id'), // Cегменты
             'indicators' => $indicators, // Разные показатели на главной
             'sgroups' => $groups, // Группы для приглашения
