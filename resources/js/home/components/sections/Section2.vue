@@ -3,15 +3,24 @@
     <div class="section-content">
       <h2 class="jSec2-header jHeader">{{ $lang(lang, 's2-header') }}</h2>
       <ul class="jSec2-items" ref="items">
-        <li class="jSec2-item jSec2-item-1" :class="{'jSec2-highlight': isBlock1Highlight}">
+        <li
+          class="jSec2-item jSec2-item-1"
+          :class="{'jSec2-highlight': isBlock1Highlight}"
+        >
           <span class="jSec2-item-value">{{ $lang(lang, 's2-b1-value') }}</span>
           <span class="jSec2-item-text">{{ $lang(lang, 's2-b1-text') }}</span>
         </li>
-        <li class="jSec2-item jSec2-item-2" :class="{'jSec2-highlight': isBlock2Highlight}">
+        <li
+          class="jSec2-item jSec2-item-2"
+          :class="{'jSec2-highlight': isBlock2Highlight}"
+        >
           <span class="jSec2-item-value">{{ $lang(lang, 's2-b2-value') }}</span>
           <span class="jSec2-item-text">{{ $lang(lang, 's2-b2-text') }}</span>
         </li>
-        <li class="jSec2-item jSec2-item-3" :class="{'jSec2-highlight': isBlock3Highlight}">
+        <li
+          class="jSec2-item jSec2-item-3"
+          :class="{'jSec2-highlight': isBlock3Highlight}"
+        >
           <span class="jSec2-item-value">{{ $lang(lang, 's2-b3-value') }}</span>
           <span class="jSec2-item-text">{{ $lang(lang, 's2-b3-text') }}</span>
         </li>

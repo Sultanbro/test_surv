@@ -49,7 +49,7 @@
               class="jFooter-social-link jFooter-social-ig"
             />
             <a
-              href="javascript:void(0)"
+              href="https://www.youtube.com/channel/UCsCbkgQJ6ErBgta8Q6xeU-w"
               class="jFooter-social-link jFooter-social-yt"
             />
           </div>
@@ -96,11 +96,31 @@
         </div>
         <div class="jFooter-col">
           <p>{{ $lang(lang, 'footer-sellcenter') }}</p>
-          <p class="jFooter-contact">8 777 788 08 00</p>
-          <p class="jFooter-contact">8 495 136 42 82</p>
-          <p class="jFooter-contact">sales@jobtron.com</p>
+          <p class="jFooter-contact">
+            <a
+              href="tel:87777880800"
+              class="jFooter-link"
+            >8 777 788 08 00</a>
+          </p>
+          <p class="jFooter-contact">
+            <a
+              href="tel:84951364282"
+              class="jFooter-link"
+            >8 495 136 42 82</a>
+          </p>
+          <p class="jFooter-contact">
+            <a
+              href="mailto:sales@jobtron.com"
+              class="jFooter-link"
+            >sales@jobtron.com</a>
+          </p>
           <p>{{ $lang(lang, 'footer-sellcenter') }}</p>
-          <p class="jFooter-contact">sales@jobtron.com</p>
+          <p class="jFooter-contact">
+            <a
+              href="mailto:support@jobtron.com"
+              class="jFooter-link"
+            >support@jobtron.com</a>
+          </p>
         </div>
       </div>
     </div>
@@ -241,6 +261,10 @@ export default {
   width: 4.75rem;
   height: 1rem;
   background-image: url("../../assets/img/footer-ym.svg");
+}
+
+.jFooter-rules{
+  font-size: 0.875rem;
 }
 
 @media screen and (min-width: $small) {

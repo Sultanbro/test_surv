@@ -83,7 +83,6 @@ export default {
 
 .jSec3-block-3 {
   background: url("../../assets/img/s3-bg3.svg") center no-repeat;
-  background-size: contain;
 }
 
 @media screen and (min-width: $medium) {
