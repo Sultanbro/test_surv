@@ -140,7 +140,7 @@
                                                          :max-height="600"
                                                          :show-no-results="false"
                                                          :hide-selected="true"
-                                                         @search-change="null">
+                                                         >
                                                 <template slot="clear" slot-scope="props">
                                                     <div class="multiselect__clear"
                                                          v-if="item.selectedGroups.length"
@@ -212,7 +212,7 @@
                                                          :max-height="600"
                                                          :show-no-results="false"
                                                          :hide-selected="true"
-                                                         @search-change="null">
+                                                         >
                                                 <template slot="clear" slot-scope="props">
                                                     <div class="multiselect__clear"
                                                          v-if="item.selectedGroups.length"
@@ -298,7 +298,7 @@
                                                          :max-height="600"
                                                          :show-no-results="false"
                                                          :hide-selected="true"
-                                                         @search-change="null">
+                                                         >
                                                 <template slot="clear" slot-scope="props">
                                                     <div class="multiselect__clear"
                                                          v-if="item.selectedGroups.length"
