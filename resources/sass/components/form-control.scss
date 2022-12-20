@@ -1,4 +1,4 @@
-.form-control, .custom-select {
+input.form-control, select.form-control, .custom-select, .b-form-btn-label-control {
   height: 45px !important;
   background-color: #F7FAFC !important;
   padding: 0 20px !important;
@@ -47,6 +47,23 @@
         width: 100%;
       }
     }
+  }
+}
+
+.b-calendar-nav{
+  justify-content: center;
+}
+
+.b-form-btn-label-control{
+  display: flex;
+  align-items: center;
+  .btn{
+    height: auto;
+  }
+  .form-control{
+    border: none;
+    margin: 0;
+    background-color: transparent;
   }
 }
 
