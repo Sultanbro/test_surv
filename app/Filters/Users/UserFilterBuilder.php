@@ -1,12 +1,13 @@
 <?php
+declare(strict_types=1);
 
-namespace App\Filters\Persons;
+namespace App\Filters\Users;
 
 use App\Repositories\UserRepository;
 use App\Support\Interfaces\Filters\UserFilterBuilderInterface;
 use Illuminate\Database\Eloquent\Builder;
 
-class UserFilterBuilder
+final class UserFilterBuilder
 {
     private UserFilterBuilderInterface $filterBuilder;
 
@@ -35,7 +36,7 @@ class UserFilterBuilder
                 break;
         }
 
-        return $filter;
+        return $filter->get();
     }
 
     /**

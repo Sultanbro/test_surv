@@ -7,13 +7,13 @@ use Illuminate\Http\Request;
 
 interface UserFilterBuilderInterface
 {
-    public function all(array $request);
+    public function all(array $request): object;
 
-    public function deactivated(array $request);
+    public function deactivated(array $request): object;
 
-    public function nonFilled();
+    public function nonFilled(): object;
 
-    public function trainees(array $request);
+    public function trainees(array $request): object;
 
-    public function active(array $request);
+    public function active(array $request): object;
 }

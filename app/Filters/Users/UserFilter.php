@@ -1,20 +1,25 @@
 <?php
+declare(strict_types=1);
 
-namespace App\Filters\Persons;
+namespace App\Filters\Users;
 
 use App\Repositories\UserRepository;
 use App\Support\Interfaces\Filters\UserFilterBuilderInterface;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\Request;
 
-class UserFilter implements UserFilterBuilderInterface
+final class UserFilter implements UserFilterBuilderInterface
 {
     public function __construct(
         public UserRepository $userRepository
     )
     {}
 
-    public function all(array $filters)
+    /**
+     * @param array $filters
+     * @return object
+     */
+    public function all(array $filters): object
     {
         return $this->userRepository->userWithDescription(
             $filters['filter'],
@@ -30,7 +35,11 @@ class UserFilter implements UserFilterBuilderInterface
         );
     }
 
-    public function deactivated(array $filters)
+    /**
+     * @param array $filters
+     * @return object
+     */
+    public function deactivated(array $filters): object
     {
         return $this->userRepository->userWithDescription(
             $filters['filter'],
@@ -45,12 +54,19 @@ class UserFilter implements UserFilterBuilderInterface
         );
     }
 
-    public function nonFilled()
+    /**
+     * @return object
+     */
+    public function nonFilled(): object
     {
         return $this->userRepository->userWithDownloads();
     }
 
-    public function trainees(array $filters)
+    /**
+     * @param array $filters
+     * @return object
+     */
+    public function trainees(array $filters): object
     {
         return $this->userRepository->getTrainees(
             $filters['job'] ?? null,
@@ -61,7 +77,11 @@ class UserFilter implements UserFilterBuilderInterface
         );
     }
 
-    public function active(array $filters)
+    /**
+     * @param array $filters
+     * @return object
+     */
+    public function active(array $filters): object
     {
         return $this->userRepository->userWithDescription(
             $filters['filter'] ?? null,

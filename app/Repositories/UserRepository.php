@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 
 namespace App\Repositories;
 
@@ -10,7 +11,7 @@ use Matrix\Builder;
 /**
  * Класс для работы с Repository.
  */
-class UserRepository extends CoreRepository
+final class UserRepository extends CoreRepository
 {
     /**
      * Здесь используется модель для работы с Repository {{ App\Models\{name} }}
@@ -87,7 +88,7 @@ class UserRepository extends CoreRepository
             ->when($endDateDeactivate, fn($q) => $q->whereDate('users.deleted_at', '<=', $endDateDeactivate))
             ->when($startDateApplied, fn($q) => $q->whereDate('users.applied', '>=', $startDateApplied))
             ->when($endDateApplied, fn($q) => $q->whereDate('users.applied', '<=', $endDateApplied))
-            ->when($segment != 0, fn($q) => $q->where('users.segment', $segment))->get();
+            ->when($segment != 0, fn($q) => $q->where('users.segment', $segment));
     }
 
     /**
@@ -106,7 +107,7 @@ class UserRepository extends CoreRepository
                     ->orWhereNull('users.working_day_id')
                     ->orWhereNull('users.working_time_id');
             }
-        )->get();
+        );
     }
 
     /**
@@ -134,6 +135,6 @@ class UserRepository extends CoreRepository
             ->when($startDate, fn($q) => $q->whereDate('users.created_at', '>=', $startDate))
             ->when($endDate, fn($q) => $q->whereDate('users.created_at', '<=', $endDate))
             ->when($startDateDeactivate, fn($q) => $q->whereDate('users.deleted_at', '>=', $startDateDeactivate))
-            ->when($endDateDeactivate, fn($q) => $q->whereDate('users.deleted_at', '<=', $endDateDeactivate))->get();
+            ->when($endDateDeactivate, fn($q) => $q->whereDate('users.deleted_at', '<=', $endDateDeactivate));
      }
 }
