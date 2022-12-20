@@ -21,11 +21,6 @@
 /public/mix-manifest.json
 /storage/*.key
 /storage/tenant*
-!/storage/.gitignore
-!/storage/app
-!/storage/debugbar
-!/storage/framework
-!/storage/logs
 /config/database.php
 /vendor
 Homestead.json
@@ -38,5 +33,3 @@ yarn-error.log
 .env
 .htaccess
 .DS_Store
-.env.example
-.env.save

@@ -1,1 +1,0 @@
-<?php /**PATH /var/www/job/resources/views/admin/notification_email.blade.php ENDPATH**/ ?>
