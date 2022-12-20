@@ -21,7 +21,7 @@
     </div>
 
 
-    <div class="table-resonsive table-container mt-4">
+    <div class="table-resonsive mt-4">
         <table class="table b-table table-sm custom-table-nps table-bordered" :key="ukey">
           <thead>
           <tr>

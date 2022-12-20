@@ -49,15 +49,15 @@
 
 
 
-    <h4 class="d-flex align-items-center">
-      <div class="mr-2 mt-2">{{ groupName }}</div>
-    </h4>
+<!--    <h4 class="d-flex align-items-center">-->
+<!--      <div class="mr-2 mt-2">{{ groupName }}</div>-->
+<!--    </h4>-->
     <div v-if="this.hasPermission">
-      <b-tabs type="card" :defaultActiveKey="3">
+      <b-tabs type="card" class="mt-5" :defaultActiveKey="3">
         <b-tab title="Оценка диалогов" :key="1" card>
-          <b-tabs type="card" v-if="dataLoaded" >
+          <b-tabs type="card" v-if="dataLoaded" class="mt-5">
             <b-tab title="Неделя" :key="1" card>
-              <div class="table-responsive my-table">
+              <div class="table-responsive my-table mt-4">
                 <table class="table b-table table-bordered table-sm">
                   <tr>
                     <th class="b-table-sticky-column text-left t-name wd">
@@ -106,7 +106,7 @@
               </div>
             </b-tab>
             <b-tab title="Месяц " :key="2" card>
-              <div class="table-responsive my-table">
+              <div class="table-responsive my-table mt-4">
                 <table class="table b-table table-sm table-bordered">
                   <tr>
                     <th class="b-table-sticky-column text-left t-name wd">
@@ -454,9 +454,9 @@
         </b-tab>
 
         <b-tab title="Чек Лист" :key="3" type="card" card :active="check == 3">
-                    <b-tabs type="card">
+                    <b-tabs type="card" class="mt-5">
             <b-tab title="Неделя" :key="1" >
-                            <table class="table b-table table-bordered table-sm">
+                            <table class="table b-table table-bordered table-sm mt-4">
                 <tr>
                   <th class="b-table-sticky-column text-left t-name wd">
                     <div>
@@ -522,7 +522,7 @@
               </table>
             </b-tab>
             <b-tab title="Месяц" :key="2">
-                            <table class="table b-table table-sm table-bordered">
+                            <table class="table b-table table-sm table-bordered mt-4">
                 <tr>
                   <th class="b-table-sticky-column text-left t-name wd">
                     <div>Сотрудник</div>

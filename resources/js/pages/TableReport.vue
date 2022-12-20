@@ -75,7 +75,7 @@
                 </div>
             </div>
 
-            <div class="table-container">
+            <div>
                 <b-table
                         responsive striped
                         :sticky-header="true"

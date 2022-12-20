@@ -81,7 +81,7 @@
 
 
       <b-tab title="Выручка" key="3" card>
-        <div class="table-responsive table-container mt-4">
+        <div class="table-responsive mt-4">
           <table class="table tops b-table table-striped table-bordered table-sm proceed no-table"
                  >
             <thead>
@@ -177,7 +177,7 @@
       <b-tab title="Прогноз" key="4" card>
         <b-row class="m-0">
           <b-col cols="12" md="6" class="p-0 mt-4">
-            <div class="table-container forecast">
+            <div class="forecast">
               <table class="table tops table-custom-forecast b-table table-striped table-bordered">
                 <thead>
                 <th class="text-left t-name table-title" style="background:#90d3ff">Отдел
