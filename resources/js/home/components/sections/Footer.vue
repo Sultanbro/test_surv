@@ -121,6 +121,7 @@ export default {
 .jFooter-cols {
   display: flex;
   padding-bottom: 2rem;
+  flex-flow: column;
 }
 
 .jFooter-cols > .jFooter-col:nth-child(1) {
@@ -228,6 +229,7 @@ export default {
   justify-content: space-between;
   align-items: center;
   white-space: nowrap;
+  flex-flow: column;
 }
 
 .jFooter-copy {
@@ -236,6 +238,9 @@ export default {
 
 @media screen and (min-width $medium) {
   .jFooter-cols {
+    flex-flow: row nowrap;
+  }
+  .jFooter-bottom {
     flex-flow: row nowrap;
   }
 }

@@ -6,7 +6,6 @@
       <div class="jReviews-wrapper">
         <div class="jReviews-types">
           <button class="jReviews-video jButton">{{ $lang(lang, 'review-video') }}</button>
-          <button class="jReviews-text jButton" disabled>{{ $lang(lang, 'review-text') }}</button>
           <button class="jReviews-photo jButton" disabled>{{ $lang(lang, 'review-photo') }}</button>
         </div>
         <div class="jReviews-items-wrapper">
@@ -23,20 +22,33 @@
                 />
               </div>
             </div>
-            <div class="jReviews-item-thumbnails">
-              <div
+            <div
+              ref="carouselWrap"
+              class="jReviews-item-thumbnails"
+            >
+              <Hooper
+                ref="carousel"
+                :itemsToShow="3"
+                :vertical="isHooperVertical"
+                :trimWhiteSpace="true"
+              >
+                <Slide
                   v-for="(item, key) in items"
                   :key="'jTmb' + key"
-                  :style="`background-image: url(${item.thumbnail});`"
-                  class="jReviews-item-thumbnail"
-                  @click="activeItem = key"
-              ></div>
+                >
+                  <div
+                    :style="`background-image: url(${item.thumbnail});`"
+                    class="jReviews-item-thumbnail"
+                    @click="activeItem = key"
+                  />
+                </Slide>
+              </Hooper>
             </div>
           </div>
         </div>
         <div class="jReviews-footer">
           <p class="jReviews-title">{{ $lang(lang, 'review-title') }}</p>
-          <a class="jReviews-free jButton" href="javascript:void(0)">
+          <a class="jReviews-free jButton" href="/register">
             {{ $lang(lang, 'review-free') }}
           </a>
         </div>
@@ -46,10 +58,20 @@
 </template>
 
 <script>
+import { Hooper, Slide } from 'hooper'
+import 'hooper/dist/hooper.css'
+
 export default {
+  components: {
+    Hooper,
+    Slide,
+  },
   computed: {
     lang() {
       return this.$root.$data.lang
+    },
+    isHooperVertical(){
+      return this.$viewportSize.width >= 1260
     }
   },
   data() {
@@ -69,8 +91,23 @@ export default {
           thumbnail: 'https://i3.ytimg.com/vi/LQtmJnljYyk/maxresdefault.jpg',
           video: 'LQtmJnljYyk'
         },
-      ]
+        {
+          thumbnail: 'https://i3.ytimg.com/vi/LQtmJnljYyk/maxresdefault.jpg',
+          video: 'LQtmJnljYyk'
+        },
+        {
+          thumbnail: 'https://i3.ytimg.com/vi/LQtmJnljYyk/maxresdefault.jpg',
+          video: 'LQtmJnljYyk'
+        },
+      ],
+      resizeObserver: null
     }
+  },
+  mounted(){
+    this.resizeObserver = new ResizeObserver(() => {
+      this.$refs.carousel.update()
+    })
+    this.resizeObserver.observe(this.$refs.carouselWrap)
   }
 }
 </script>
@@ -135,10 +172,14 @@ export default {
   display: flex;
   gap: 0.625rem;
   margin-top: 1.125rem;
+  .hooper{
+    margin: 0 -5px;
+    flex: 100% 1 1;
+  }
 }
 
 .jReviews-item-thumbnail {
-  flex: 0 1 33%;
+  margin: 0 5px;
   background-size: cover;
   cursor: pointer;
 
@@ -194,6 +235,12 @@ export default {
     flex-flow: column nowrap;
     justify-content: space-between;
     margin: 0;
+    .hooper{
+      margin: -5px 0;
+    }
+  }
+  .jReviews-item-thumbnail{
+    margin: 5px 0;
   }
   .jReviews-footer {
     padding-right: 2rem;
