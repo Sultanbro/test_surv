@@ -122,6 +122,7 @@ export default {
 #jSec1 {
   width: 100%;
   padding-top: 1rem;
+  padding-bottom: 8rem;
   background-image: url("../../assets/img/s1-bg.svg");
   background-repeat: no-repeat;
 }

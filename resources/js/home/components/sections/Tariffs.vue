@@ -165,6 +165,7 @@ export default {
 
 @media screen and (min-width: $medium) {
   #jTariffs {
+    margin-top: -5rem;
     padding-bottom: 5rem;
   }
   .jTariffs-cell {

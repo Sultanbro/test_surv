@@ -41,6 +41,7 @@ export default {
 
 #jSec3 {
   width: 100%;
+  padding-bottom: 3rem;
 }
 
 .jSec3-header {
