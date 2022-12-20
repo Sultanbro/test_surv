@@ -4,7 +4,6 @@ import lang from './home/plugins/lang'
 import clickOutside from './home/plugins/clickOutside'
 import ViewportSize from './plugins/ViewportSize'
 
-
 Vue.config.productionTip = false
 Vue.use(lang)
 Vue.use(clickOutside)

@@ -195,6 +195,7 @@ export default {
 
 .jReviews-types {
   .jButton {
+    display: inline-block;
     margin-bottom: 1.25rem;
   }
 }
@@ -237,6 +238,7 @@ export default {
   .hooper{
     margin: 0 -5px;
     flex: 100% 1 1;
+    height: auto;
   }
 }
 
@@ -265,6 +267,9 @@ export default {
   .jReviews-types {
     display: flex;
     gap: 2rem;
+    .jButton{
+      display: block;
+    }
   }
 }
 

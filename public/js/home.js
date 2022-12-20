@@ -683,6 +683,47 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 
 
 
@@ -894,14 +935,16 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
 /* harmony export */ });
-/* harmony import */ var _section1_Section1Popup__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../section1/Section1Popup */ "./resources/js/home/components/section1/Section1Popup.vue");
-/* harmony import */ var _section1_Section1Tab__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../section1/Section1Tab */ "./resources/js/home/components/section1/Section1Tab.vue");
-/* harmony import */ var _section1_Section1Profile__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../section1/Section1Profile */ "./resources/js/home/components/section1/Section1Profile.vue");
-/* harmony import */ var _section1_Section1DB__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../section1/Section1DB */ "./resources/js/home/components/section1/Section1DB.vue");
-/* harmony import */ var _section1_Section1KPI__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ../section1/Section1KPI */ "./resources/js/home/components/section1/Section1KPI.vue");
-/* harmony import */ var _section1_Section1Courses__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ../section1/Section1Courses */ "./resources/js/home/components/section1/Section1Courses.vue");
-/* harmony import */ var _section1_Section1Struct__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ../section1/Section1Struct */ "./resources/js/home/components/section1/Section1Struct.vue");
-/* harmony import */ var _section1_Section1News__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ../section1/Section1News */ "./resources/js/home/components/section1/Section1News.vue");
+/* harmony import */ var hooper__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! hooper */ "./node_modules/hooper/dist/hooper.esm.js");
+/* harmony import */ var hooper_dist_hooper_css__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! hooper/dist/hooper.css */ "./node_modules/hooper/dist/hooper.css");
+/* harmony import */ var _section1_Section1Popup__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../section1/Section1Popup */ "./resources/js/home/components/section1/Section1Popup.vue");
+/* harmony import */ var _section1_Section1Tab__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../section1/Section1Tab */ "./resources/js/home/components/section1/Section1Tab.vue");
+/* harmony import */ var _section1_Section1Profile__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ../section1/Section1Profile */ "./resources/js/home/components/section1/Section1Profile.vue");
+/* harmony import */ var _section1_Section1DB__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ../section1/Section1DB */ "./resources/js/home/components/section1/Section1DB.vue");
+/* harmony import */ var _section1_Section1KPI__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ../section1/Section1KPI */ "./resources/js/home/components/section1/Section1KPI.vue");
+/* harmony import */ var _section1_Section1Courses__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ../section1/Section1Courses */ "./resources/js/home/components/section1/Section1Courses.vue");
+/* harmony import */ var _section1_Section1Struct__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! ../section1/Section1Struct */ "./resources/js/home/components/section1/Section1Struct.vue");
+/* harmony import */ var _section1_Section1News__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! ../section1/Section1News */ "./resources/js/home/components/section1/Section1News.vue");
 //
 //
 //
@@ -971,6 +1014,35 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+
+
 
 
 
@@ -982,19 +1054,16 @@ __webpack_require__.r(__webpack_exports__);
 
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = ({
   components: {
-    Section1Popup: _section1_Section1Popup__WEBPACK_IMPORTED_MODULE_0__["default"],
-    Section1Tab: _section1_Section1Tab__WEBPACK_IMPORTED_MODULE_1__["default"],
-    Section1Profile: _section1_Section1Profile__WEBPACK_IMPORTED_MODULE_2__["default"],
-    Section1DB: _section1_Section1DB__WEBPACK_IMPORTED_MODULE_3__["default"],
-    Section1KPI: _section1_Section1KPI__WEBPACK_IMPORTED_MODULE_4__["default"],
-    Section1Courses: _section1_Section1Courses__WEBPACK_IMPORTED_MODULE_5__["default"],
-    Section1Struct: _section1_Section1Struct__WEBPACK_IMPORTED_MODULE_6__["default"],
-    Section1News: _section1_Section1News__WEBPACK_IMPORTED_MODULE_7__["default"]
-  },
-  computed: {
-    lang: function lang() {
-      return this.$root.$data.lang;
-    }
+    Section1Popup: _section1_Section1Popup__WEBPACK_IMPORTED_MODULE_2__["default"],
+    Section1Tab: _section1_Section1Tab__WEBPACK_IMPORTED_MODULE_3__["default"],
+    Section1Profile: _section1_Section1Profile__WEBPACK_IMPORTED_MODULE_4__["default"],
+    Section1DB: _section1_Section1DB__WEBPACK_IMPORTED_MODULE_5__["default"],
+    Section1KPI: _section1_Section1KPI__WEBPACK_IMPORTED_MODULE_6__["default"],
+    Section1Courses: _section1_Section1Courses__WEBPACK_IMPORTED_MODULE_7__["default"],
+    Section1Struct: _section1_Section1Struct__WEBPACK_IMPORTED_MODULE_8__["default"],
+    Section1News: _section1_Section1News__WEBPACK_IMPORTED_MODULE_9__["default"],
+    Hooper: hooper__WEBPACK_IMPORTED_MODULE_0__.Hooper,
+    Slide: hooper__WEBPACK_IMPORTED_MODULE_0__.Slide
   },
   data: function data() {
     return {
@@ -1002,6 +1071,14 @@ __webpack_require__.r(__webpack_exports__);
       activePopup: 'profile',
       isPopupVisible: false
     };
+  },
+  computed: {
+    isMedium: function isMedium() {
+      return this.$viewportSize.width >= 1260;
+    },
+    lang: function lang() {
+      return this.$root.$data.lang;
+    }
   },
   methods: {
     setTab: function setTab(key) {
@@ -1032,6 +1109,8 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
 /* harmony export */ });
+/* harmony import */ var hooper__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! hooper */ "./node_modules/hooper/dist/hooper.esm.js");
+/* harmony import */ var hooper_dist_hooper_css__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! hooper/dist/hooper.css */ "./node_modules/hooper/dist/hooper.css");
 function _typeof(obj) { "@babel/helpers - typeof"; return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (obj) { return typeof obj; } : function (obj) { return obj && "function" == typeof Symbol && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }, _typeof(obj); }
 function _regeneratorRuntime() { "use strict"; /*! regenerator-runtime -- Copyright (c) 2014-present, Facebook, Inc. -- license (MIT): https://github.com/facebook/regenerator/blob/main/LICENSE */ _regeneratorRuntime = function _regeneratorRuntime() { return exports; }; var exports = {}, Op = Object.prototype, hasOwn = Op.hasOwnProperty, defineProperty = Object.defineProperty || function (obj, key, desc) { obj[key] = desc.value; }, $Symbol = "function" == typeof Symbol ? Symbol : {}, iteratorSymbol = $Symbol.iterator || "@@iterator", asyncIteratorSymbol = $Symbol.asyncIterator || "@@asyncIterator", toStringTagSymbol = $Symbol.toStringTag || "@@toStringTag"; function define(obj, key, value) { return Object.defineProperty(obj, key, { value: value, enumerable: !0, configurable: !0, writable: !0 }), obj[key]; } try { define({}, ""); } catch (err) { define = function define(obj, key, value) { return obj[key] = value; }; } function wrap(innerFn, outerFn, self, tryLocsList) { var protoGenerator = outerFn && outerFn.prototype instanceof Generator ? outerFn : Generator, generator = Object.create(protoGenerator.prototype), context = new Context(tryLocsList || []); return defineProperty(generator, "_invoke", { value: makeInvokeMethod(innerFn, self, context) }), generator; } function tryCatch(fn, obj, arg) { try { return { type: "normal", arg: fn.call(obj, arg) }; } catch (err) { return { type: "throw", arg: err }; } } exports.wrap = wrap; var ContinueSentinel = {}; function Generator() {} function GeneratorFunction() {} function GeneratorFunctionPrototype() {} var IteratorPrototype = {}; define(IteratorPrototype, iteratorSymbol, function () { return this; }); var getProto = Object.getPrototypeOf, NativeIteratorPrototype = getProto && getProto(getProto(values([]))); NativeIteratorPrototype && NativeIteratorPrototype !== Op && hasOwn.call(NativeIteratorPrototype, iteratorSymbol) && (IteratorPrototype = NativeIteratorPrototype); var Gp = GeneratorFunctionPrototype.prototype = Generator.prototype = Object.create(IteratorPrototype); function defineIteratorMethods(prototype) { ["next", "throw", "return"].forEach(function (method) { define(prototype, method, function (arg) { return this._invoke(method, arg); }); }); } function AsyncIterator(generator, PromiseImpl) { function invoke(method, arg, resolve, reject) { var record = tryCatch(generator[method], generator, arg); if ("throw" !== record.type) { var result = record.arg, value = result.value; return value && "object" == _typeof(value) && hasOwn.call(value, "__await") ? PromiseImpl.resolve(value.__await).then(function (value) { invoke("next", value, resolve, reject); }, function (err) { invoke("throw", err, resolve, reject); }) : PromiseImpl.resolve(value).then(function (unwrapped) { result.value = unwrapped, resolve(result); }, function (error) { return invoke("throw", error, resolve, reject); }); } reject(record.arg); } var previousPromise; defineProperty(this, "_invoke", { value: function value(method, arg) { function callInvokeWithMethodAndArg() { return new PromiseImpl(function (resolve, reject) { invoke(method, arg, resolve, reject); }); } return previousPromise = previousPromise ? previousPromise.then(callInvokeWithMethodAndArg, callInvokeWithMethodAndArg) : callInvokeWithMethodAndArg(); } }); } function makeInvokeMethod(innerFn, self, context) { var state = "suspendedStart"; return function (method, arg) { if ("executing" === state) throw new Error("Generator is already running"); if ("completed" === state) { if ("throw" === method) throw arg; return doneResult(); } for (context.method = method, context.arg = arg;;) { var delegate = context.delegate; if (delegate) { var delegateResult = maybeInvokeDelegate(delegate, context); if (delegateResult) { if (delegateResult === ContinueSentinel) continue; return delegateResult; } } if ("next" === context.method) context.sent = context._sent = context.arg;else if ("throw" === context.method) { if ("suspendedStart" === state) throw state = "completed", context.arg; context.dispatchException(context.arg); } else "return" === context.method && context.abrupt("return", context.arg); state = "executing"; var record = tryCatch(innerFn, self, context); if ("normal" === record.type) { if (state = context.done ? "completed" : "suspendedYield", record.arg === ContinueSentinel) continue; return { value: record.arg, done: context.done }; } "throw" === record.type && (state = "completed", context.method = "throw", context.arg = record.arg); } }; } function maybeInvokeDelegate(delegate, context) { var methodName = context.method, method = delegate.iterator[methodName]; if (undefined === method) return context.delegate = null, "throw" === methodName && delegate.iterator["return"] && (context.method = "return", context.arg = undefined, maybeInvokeDelegate(delegate, context), "throw" === context.method) || "return" !== methodName && (context.method = "throw", context.arg = new TypeError("The iterator does not provide a '" + methodName + "' method")), ContinueSentinel; var record = tryCatch(method, delegate.iterator, context.arg); if ("throw" === record.type) return context.method = "throw", context.arg = record.arg, context.delegate = null, ContinueSentinel; var info = record.arg; return info ? info.done ? (context[delegate.resultName] = info.value, context.next = delegate.nextLoc, "return" !== context.method && (context.method = "next", context.arg = undefined), context.delegate = null, ContinueSentinel) : info : (context.method = "throw", context.arg = new TypeError("iterator result is not an object"), context.delegate = null, ContinueSentinel); } function pushTryEntry(locs) { var entry = { tryLoc: locs[0] }; 1 in locs && (entry.catchLoc = locs[1]), 2 in locs && (entry.finallyLoc = locs[2], entry.afterLoc = locs[3]), this.tryEntries.push(entry); } function resetTryEntry(entry) { var record = entry.completion || {}; record.type = "normal", delete record.arg, entry.completion = record; } function Context(tryLocsList) { this.tryEntries = [{ tryLoc: "root" }], tryLocsList.forEach(pushTryEntry, this), this.reset(!0); } function values(iterable) { if (iterable) { var iteratorMethod = iterable[iteratorSymbol]; if (iteratorMethod) return iteratorMethod.call(iterable); if ("function" == typeof iterable.next) return iterable; if (!isNaN(iterable.length)) { var i = -1, next = function next() { for (; ++i < iterable.length;) { if (hasOwn.call(iterable, i)) return next.value = iterable[i], next.done = !1, next; } return next.value = undefined, next.done = !0, next; }; return next.next = next; } } return { next: doneResult }; } function doneResult() { return { value: undefined, done: !0 }; } return GeneratorFunction.prototype = GeneratorFunctionPrototype, defineProperty(Gp, "constructor", { value: GeneratorFunctionPrototype, configurable: !0 }), defineProperty(GeneratorFunctionPrototype, "constructor", { value: GeneratorFunction, configurable: !0 }), GeneratorFunction.displayName = define(GeneratorFunctionPrototype, toStringTagSymbol, "GeneratorFunction"), exports.isGeneratorFunction = function (genFun) { var ctor = "function" == typeof genFun && genFun.constructor; return !!ctor && (ctor === GeneratorFunction || "GeneratorFunction" === (ctor.displayName || ctor.name)); }, exports.mark = function (genFun) { return Object.setPrototypeOf ? Object.setPrototypeOf(genFun, GeneratorFunctionPrototype) : (genFun.__proto__ = GeneratorFunctionPrototype, define(genFun, toStringTagSymbol, "GeneratorFunction")), genFun.prototype = Object.create(Gp), genFun; }, exports.awrap = function (arg) { return { __await: arg }; }, defineIteratorMethods(AsyncIterator.prototype), define(AsyncIterator.prototype, asyncIteratorSymbol, function () { return this; }), exports.AsyncIterator = AsyncIterator, exports.async = function (innerFn, outerFn, self, tryLocsList, PromiseImpl) { void 0 === PromiseImpl && (PromiseImpl = Promise); var iter = new AsyncIterator(wrap(innerFn, outerFn, self, tryLocsList), PromiseImpl); return exports.isGeneratorFunction(outerFn) ? iter : iter.next().then(function (result) { return result.done ? result.value : iter.next(); }); }, defineIteratorMethods(Gp), define(Gp, toStringTagSymbol, "Generator"), define(Gp, iteratorSymbol, function () { return this; }), define(Gp, "toString", function () { return "[object Generator]"; }), exports.keys = function (val) { var object = Object(val), keys = []; for (var key in object) { keys.push(key); } return keys.reverse(), function next() { for (; keys.length;) { var key = keys.pop(); if (key in object) return next.value = key, next.done = !1, next; } return next.done = !0, next; }; }, exports.values = values, Context.prototype = { constructor: Context, reset: function reset(skipTempReset) { if (this.prev = 0, this.next = 0, this.sent = this._sent = undefined, this.done = !1, this.delegate = null, this.method = "next", this.arg = undefined, this.tryEntries.forEach(resetTryEntry), !skipTempReset) for (var name in this) { "t" === name.charAt(0) && hasOwn.call(this, name) && !isNaN(+name.slice(1)) && (this[name] = undefined); } }, stop: function stop() { this.done = !0; var rootRecord = this.tryEntries[0].completion; if ("throw" === rootRecord.type) throw rootRecord.arg; return this.rval; }, dispatchException: function dispatchException(exception) { if (this.done) throw exception; var context = this; function handle(loc, caught) { return record.type = "throw", record.arg = exception, context.next = loc, caught && (context.method = "next", context.arg = undefined), !!caught; } for (var i = this.tryEntries.length - 1; i >= 0; --i) { var entry = this.tryEntries[i], record = entry.completion; if ("root" === entry.tryLoc) return handle("end"); if (entry.tryLoc <= this.prev) { var hasCatch = hasOwn.call(entry, "catchLoc"), hasFinally = hasOwn.call(entry, "finallyLoc"); if (hasCatch && hasFinally) { if (this.prev < entry.catchLoc) return handle(entry.catchLoc, !0); if (this.prev < entry.finallyLoc) return handle(entry.finallyLoc); } else if (hasCatch) { if (this.prev < entry.catchLoc) return handle(entry.catchLoc, !0); } else { if (!hasFinally) throw new Error("try statement without catch or finally"); if (this.prev < entry.finallyLoc) return handle(entry.finallyLoc); } } } }, abrupt: function abrupt(type, arg) { for (var i = this.tryEntries.length - 1; i >= 0; --i) { var entry = this.tryEntries[i]; if (entry.tryLoc <= this.prev && hasOwn.call(entry, "finallyLoc") && this.prev < entry.finallyLoc) { var finallyEntry = entry; break; } } finallyEntry && ("break" === type || "continue" === type) && finallyEntry.tryLoc <= arg && arg <= finallyEntry.finallyLoc && (finallyEntry = null); var record = finallyEntry ? finallyEntry.completion : {}; return record.type = type, record.arg = arg, finallyEntry ? (this.method = "next", this.next = finallyEntry.finallyLoc, ContinueSentinel) : this.complete(record); }, complete: function complete(record, afterLoc) { if ("throw" === record.type) throw record.arg; return "break" === record.type || "continue" === record.type ? this.next = record.arg : "return" === record.type ? (this.rval = this.arg = record.arg, this.method = "return", this.next = "end") : "normal" === record.type && afterLoc && (this.next = afterLoc), ContinueSentinel; }, finish: function finish(finallyLoc) { for (var i = this.tryEntries.length - 1; i >= 0; --i) { var entry = this.tryEntries[i]; if (entry.finallyLoc === finallyLoc) return this.complete(entry.completion, entry.afterLoc), resetTryEntry(entry), ContinueSentinel; } }, "catch": function _catch(tryLoc) { for (var i = this.tryEntries.length - 1; i >= 0; --i) { var entry = this.tryEntries[i]; if (entry.tryLoc === tryLoc) { var record = entry.completion; if ("throw" === record.type) { var thrown = record.arg; resetTryEntry(entry); } return thrown; } } throw new Error("illegal catch attempt"); }, delegateYield: function delegateYield(iterable, resultName, nextLoc) { return this.delegate = { iterator: values(iterable), resultName: resultName, nextLoc: nextLoc }, "next" === this.method && (this.arg = undefined), ContinueSentinel; } }, exports; }
 function asyncGeneratorStep(gen, resolve, reject, _next, _throw, key, arg) { try { var info = gen[key](arg); var value = info.value; } catch (error) { reject(error); return; } if (info.done) { resolve(value); } else { Promise.resolve(value).then(_next, _throw); } }
@@ -1067,8 +1146,43 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+
+
 
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = ({
+  components: {
+    Hooper: hooper__WEBPACK_IMPORTED_MODULE_0__.Hooper,
+    Slide: hooper__WEBPACK_IMPORTED_MODULE_0__.Slide
+  },
   data: function data() {
     return {
       isBlock1Highlight: false,
@@ -1080,6 +1194,9 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
   computed: {
     lang: function lang() {
       return this.$root.$data.lang;
+    },
+    isMedium: function isMedium() {
+      return this.$viewportSize.width >= 1260;
     }
   },
   mounted: function mounted() {
@@ -1189,7 +1306,9 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
 /* harmony export */ });
-/* harmony import */ var _components_InputText__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../components/InputText */ "./resources/js/home/components/InputText.vue");
+/* harmony import */ var hooper__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! hooper */ "./node_modules/hooper/dist/hooper.esm.js");
+/* harmony import */ var hooper_dist_hooper_css__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! hooper/dist/hooper.css */ "./node_modules/hooper/dist/hooper.css");
+/* harmony import */ var _components_InputText__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../../components/InputText */ "./resources/js/home/components/InputText.vue");
 function _typeof(obj) { "@babel/helpers - typeof"; return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (obj) { return typeof obj; } : function (obj) { return obj && "function" == typeof Symbol && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }, _typeof(obj); }
 function _regeneratorRuntime() { "use strict"; /*! regenerator-runtime -- Copyright (c) 2014-present, Facebook, Inc. -- license (MIT): https://github.com/facebook/regenerator/blob/main/LICENSE */ _regeneratorRuntime = function _regeneratorRuntime() { return exports; }; var exports = {}, Op = Object.prototype, hasOwn = Op.hasOwnProperty, defineProperty = Object.defineProperty || function (obj, key, desc) { obj[key] = desc.value; }, $Symbol = "function" == typeof Symbol ? Symbol : {}, iteratorSymbol = $Symbol.iterator || "@@iterator", asyncIteratorSymbol = $Symbol.asyncIterator || "@@asyncIterator", toStringTagSymbol = $Symbol.toStringTag || "@@toStringTag"; function define(obj, key, value) { return Object.defineProperty(obj, key, { value: value, enumerable: !0, configurable: !0, writable: !0 }), obj[key]; } try { define({}, ""); } catch (err) { define = function define(obj, key, value) { return obj[key] = value; }; } function wrap(innerFn, outerFn, self, tryLocsList) { var protoGenerator = outerFn && outerFn.prototype instanceof Generator ? outerFn : Generator, generator = Object.create(protoGenerator.prototype), context = new Context(tryLocsList || []); return defineProperty(generator, "_invoke", { value: makeInvokeMethod(innerFn, self, context) }), generator; } function tryCatch(fn, obj, arg) { try { return { type: "normal", arg: fn.call(obj, arg) }; } catch (err) { return { type: "throw", arg: err }; } } exports.wrap = wrap; var ContinueSentinel = {}; function Generator() {} function GeneratorFunction() {} function GeneratorFunctionPrototype() {} var IteratorPrototype = {}; define(IteratorPrototype, iteratorSymbol, function () { return this; }); var getProto = Object.getPrototypeOf, NativeIteratorPrototype = getProto && getProto(getProto(values([]))); NativeIteratorPrototype && NativeIteratorPrototype !== Op && hasOwn.call(NativeIteratorPrototype, iteratorSymbol) && (IteratorPrototype = NativeIteratorPrototype); var Gp = GeneratorFunctionPrototype.prototype = Generator.prototype = Object.create(IteratorPrototype); function defineIteratorMethods(prototype) { ["next", "throw", "return"].forEach(function (method) { define(prototype, method, function (arg) { return this._invoke(method, arg); }); }); } function AsyncIterator(generator, PromiseImpl) { function invoke(method, arg, resolve, reject) { var record = tryCatch(generator[method], generator, arg); if ("throw" !== record.type) { var result = record.arg, value = result.value; return value && "object" == _typeof(value) && hasOwn.call(value, "__await") ? PromiseImpl.resolve(value.__await).then(function (value) { invoke("next", value, resolve, reject); }, function (err) { invoke("throw", err, resolve, reject); }) : PromiseImpl.resolve(value).then(function (unwrapped) { result.value = unwrapped, resolve(result); }, function (error) { return invoke("throw", error, resolve, reject); }); } reject(record.arg); } var previousPromise; defineProperty(this, "_invoke", { value: function value(method, arg) { function callInvokeWithMethodAndArg() { return new PromiseImpl(function (resolve, reject) { invoke(method, arg, resolve, reject); }); } return previousPromise = previousPromise ? previousPromise.then(callInvokeWithMethodAndArg, callInvokeWithMethodAndArg) : callInvokeWithMethodAndArg(); } }); } function makeInvokeMethod(innerFn, self, context) { var state = "suspendedStart"; return function (method, arg) { if ("executing" === state) throw new Error("Generator is already running"); if ("completed" === state) { if ("throw" === method) throw arg; return doneResult(); } for (context.method = method, context.arg = arg;;) { var delegate = context.delegate; if (delegate) { var delegateResult = maybeInvokeDelegate(delegate, context); if (delegateResult) { if (delegateResult === ContinueSentinel) continue; return delegateResult; } } if ("next" === context.method) context.sent = context._sent = context.arg;else if ("throw" === context.method) { if ("suspendedStart" === state) throw state = "completed", context.arg; context.dispatchException(context.arg); } else "return" === context.method && context.abrupt("return", context.arg); state = "executing"; var record = tryCatch(innerFn, self, context); if ("normal" === record.type) { if (state = context.done ? "completed" : "suspendedYield", record.arg === ContinueSentinel) continue; return { value: record.arg, done: context.done }; } "throw" === record.type && (state = "completed", context.method = "throw", context.arg = record.arg); } }; } function maybeInvokeDelegate(delegate, context) { var methodName = context.method, method = delegate.iterator[methodName]; if (undefined === method) return context.delegate = null, "throw" === methodName && delegate.iterator["return"] && (context.method = "return", context.arg = undefined, maybeInvokeDelegate(delegate, context), "throw" === context.method) || "return" !== methodName && (context.method = "throw", context.arg = new TypeError("The iterator does not provide a '" + methodName + "' method")), ContinueSentinel; var record = tryCatch(method, delegate.iterator, context.arg); if ("throw" === record.type) return context.method = "throw", context.arg = record.arg, context.delegate = null, ContinueSentinel; var info = record.arg; return info ? info.done ? (context[delegate.resultName] = info.value, context.next = delegate.nextLoc, "return" !== context.method && (context.method = "next", context.arg = undefined), context.delegate = null, ContinueSentinel) : info : (context.method = "throw", context.arg = new TypeError("iterator result is not an object"), context.delegate = null, ContinueSentinel); } function pushTryEntry(locs) { var entry = { tryLoc: locs[0] }; 1 in locs && (entry.catchLoc = locs[1]), 2 in locs && (entry.finallyLoc = locs[2], entry.afterLoc = locs[3]), this.tryEntries.push(entry); } function resetTryEntry(entry) { var record = entry.completion || {}; record.type = "normal", delete record.arg, entry.completion = record; } function Context(tryLocsList) { this.tryEntries = [{ tryLoc: "root" }], tryLocsList.forEach(pushTryEntry, this), this.reset(!0); } function values(iterable) { if (iterable) { var iteratorMethod = iterable[iteratorSymbol]; if (iteratorMethod) return iteratorMethod.call(iterable); if ("function" == typeof iterable.next) return iterable; if (!isNaN(iterable.length)) { var i = -1, next = function next() { for (; ++i < iterable.length;) { if (hasOwn.call(iterable, i)) return next.value = iterable[i], next.done = !1, next; } return next.value = undefined, next.done = !0, next; }; return next.next = next; } } return { next: doneResult }; } function doneResult() { return { value: undefined, done: !0 }; } return GeneratorFunction.prototype = GeneratorFunctionPrototype, defineProperty(Gp, "constructor", { value: GeneratorFunctionPrototype, configurable: !0 }), defineProperty(GeneratorFunctionPrototype, "constructor", { value: GeneratorFunction, configurable: !0 }), GeneratorFunction.displayName = define(GeneratorFunctionPrototype, toStringTagSymbol, "GeneratorFunction"), exports.isGeneratorFunction = function (genFun) { var ctor = "function" == typeof genFun && genFun.constructor; return !!ctor && (ctor === GeneratorFunction || "GeneratorFunction" === (ctor.displayName || ctor.name)); }, exports.mark = function (genFun) { return Object.setPrototypeOf ? Object.setPrototypeOf(genFun, GeneratorFunctionPrototype) : (genFun.__proto__ = GeneratorFunctionPrototype, define(genFun, toStringTagSymbol, "GeneratorFunction")), genFun.prototype = Object.create(Gp), genFun; }, exports.awrap = function (arg) { return { __await: arg }; }, defineIteratorMethods(AsyncIterator.prototype), define(AsyncIterator.prototype, asyncIteratorSymbol, function () { return this; }), exports.AsyncIterator = AsyncIterator, exports.async = function (innerFn, outerFn, self, tryLocsList, PromiseImpl) { void 0 === PromiseImpl && (PromiseImpl = Promise); var iter = new AsyncIterator(wrap(innerFn, outerFn, self, tryLocsList), PromiseImpl); return exports.isGeneratorFunction(outerFn) ? iter : iter.next().then(function (result) { return result.done ? result.value : iter.next(); }); }, defineIteratorMethods(Gp), define(Gp, toStringTagSymbol, "Generator"), define(Gp, iteratorSymbol, function () { return this; }), define(Gp, "toString", function () { return "[object Generator]"; }), exports.keys = function (val) { var object = Object(val), keys = []; for (var key in object) { keys.push(key); } return keys.reverse(), function next() { for (; keys.length;) { var key = keys.pop(); if (key in object) return next.value = key, next.done = !1, next; } return next.done = !0, next; }; }, exports.values = values, Context.prototype = { constructor: Context, reset: function reset(skipTempReset) { if (this.prev = 0, this.next = 0, this.sent = this._sent = undefined, this.done = !1, this.delegate = null, this.method = "next", this.arg = undefined, this.tryEntries.forEach(resetTryEntry), !skipTempReset) for (var name in this) { "t" === name.charAt(0) && hasOwn.call(this, name) && !isNaN(+name.slice(1)) && (this[name] = undefined); } }, stop: function stop() { this.done = !0; var rootRecord = this.tryEntries[0].completion; if ("throw" === rootRecord.type) throw rootRecord.arg; return this.rval; }, dispatchException: function dispatchException(exception) { if (this.done) throw exception; var context = this; function handle(loc, caught) { return record.type = "throw", record.arg = exception, context.next = loc, caught && (context.method = "next", context.arg = undefined), !!caught; } for (var i = this.tryEntries.length - 1; i >= 0; --i) { var entry = this.tryEntries[i], record = entry.completion; if ("root" === entry.tryLoc) return handle("end"); if (entry.tryLoc <= this.prev) { var hasCatch = hasOwn.call(entry, "catchLoc"), hasFinally = hasOwn.call(entry, "finallyLoc"); if (hasCatch && hasFinally) { if (this.prev < entry.catchLoc) return handle(entry.catchLoc, !0); if (this.prev < entry.finallyLoc) return handle(entry.finallyLoc); } else if (hasCatch) { if (this.prev < entry.catchLoc) return handle(entry.catchLoc, !0); } else { if (!hasFinally) throw new Error("try statement without catch or finally"); if (this.prev < entry.finallyLoc) return handle(entry.finallyLoc); } } } }, abrupt: function abrupt(type, arg) { for (var i = this.tryEntries.length - 1; i >= 0; --i) { var entry = this.tryEntries[i]; if (entry.tryLoc <= this.prev && hasOwn.call(entry, "finallyLoc") && this.prev < entry.finallyLoc) { var finallyEntry = entry; break; } } finallyEntry && ("break" === type || "continue" === type) && finallyEntry.tryLoc <= arg && arg <= finallyEntry.finallyLoc && (finallyEntry = null); var record = finallyEntry ? finallyEntry.completion : {}; return record.type = type, record.arg = arg, finallyEntry ? (this.method = "next", this.next = finallyEntry.finallyLoc, ContinueSentinel) : this.complete(record); }, complete: function complete(record, afterLoc) { if ("throw" === record.type) throw record.arg; return "break" === record.type || "continue" === record.type ? this.next = record.arg : "return" === record.type ? (this.rval = this.arg = record.arg, this.method = "return", this.next = "end") : "normal" === record.type && afterLoc && (this.next = afterLoc), ContinueSentinel; }, finish: function finish(finallyLoc) { for (var i = this.tryEntries.length - 1; i >= 0; --i) { var entry = this.tryEntries[i]; if (entry.finallyLoc === finallyLoc) return this.complete(entry.completion, entry.afterLoc), resetTryEntry(entry), ContinueSentinel; } }, "catch": function _catch(tryLoc) { for (var i = this.tryEntries.length - 1; i >= 0; --i) { var entry = this.tryEntries[i]; if (entry.tryLoc === tryLoc) { var record = entry.completion; if ("throw" === record.type) { var thrown = record.arg; resetTryEntry(entry); } return thrown; } } throw new Error("illegal catch attempt"); }, delegateYield: function delegateYield(iterable, resultName, nextLoc) { return this.delegate = { iterator: values(iterable), resultName: resultName, nextLoc: nextLoc }, "next" === this.method && (this.arg = undefined), ContinueSentinel; } }, exports; }
 function asyncGeneratorStep(gen, resolve, reject, _next, _throw, key, arg) { try { var info = gen[key](arg); var value = info.value; } catch (error) { reject(error); return; } if (info.done) { resolve(value); } else { Promise.resolve(value).then(_next, _throw); } }
@@ -1247,11 +1366,44 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+
+
 
 
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = ({
   components: {
-    InputText: _components_InputText__WEBPACK_IMPORTED_MODULE_0__["default"]
+    InputText: _components_InputText__WEBPACK_IMPORTED_MODULE_2__["default"],
+    Hooper: hooper__WEBPACK_IMPORTED_MODULE_0__.Hooper,
+    Slide: hooper__WEBPACK_IMPORTED_MODULE_0__.Slide
   },
   data: function data() {
     return {
@@ -1266,6 +1418,9 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
   computed: {
     lang: function lang() {
       return this.$root.$data.lang;
+    },
+    isMedium: function isMedium() {
+      return this.$viewportSize.width >= 1260;
     }
   },
   mounted: function mounted() {
@@ -1830,7 +1985,7 @@ __webpack_require__.r(__webpack_exports__);
 
 var ___CSS_LOADER_EXPORT___ = _node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_0___default()(function(i){return i[1]});
 // Module
-___CSS_LOADER_EXPORT___.push([module.id, ".jNav-menu-button {\n  display: inline-block;\n  padding: 0.875rem 1.1875rem;\n  margin: 0.5rem 0;\n  vertical-align: middle;\n  background: #43a9fe;\n  border-radius: 3.125rem;\n  font-size: 0.938rem;\n  line-height: 0.875rem;\n  text-decoration: none;\n  color: #fff;\n}\n.jNav-menu-button:hover {\n  background: #76c0fe;\n}", ""]);
+___CSS_LOADER_EXPORT___.push([module.id, ".jNav-menu-button {\n  display: inline-block;\n  padding: 0.5rem 0.75rem;\n  margin: 0.5rem 0;\n  vertical-align: middle;\n  background: #43a9fe;\n  border-radius: 3.125rem;\n  font-size: 0.75rem;\n  line-height: 0.875rem;\n  text-decoration: none;\n  color: #fff;\n}\n.jNav-menu-button:hover {\n  background: #76c0fe;\n}\n@media screen and (min-width: 1260px) {\n.jNav-menu-button {\n    padding: 0.875rem 1.1875rem;\n    font-size: 0.938rem;\n}\n}", ""]);
 // Exports
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (___CSS_LOADER_EXPORT___);
 
@@ -2001,7 +2156,7 @@ __webpack_require__.r(__webpack_exports__);
 var ___CSS_LOADER_EXPORT___ = _node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_0___default()(function(i){return i[1]});
 var ___CSS_LOADER_URL_REPLACEMENT_0___ = _node_modules_css_loader_dist_runtime_getUrl_js__WEBPACK_IMPORTED_MODULE_1___default()(_assets_img_user_svg__WEBPACK_IMPORTED_MODULE_2__["default"]);
 // Module
-___CSS_LOADER_EXPORT___.push([module.id, "#jNav {\n  width: 100vw;\n  position: sticky;\n  z-index: 9000;\n  top: 0;\n  left: 0;\n  right: 0;\n  background: #fff;\n  box-shadow: 0 0.25rem 1rem rgba(0, 0, 0, 0.05);\n}\n.jNav-content {\n  display: flex;\n  justify-content: space-between;\n  align-items: center;\n}\n.jNav-logo-img {\n  width: 12.25rem;\n}\n.jNav-menu-active .jNav-menu-items {\n  display: flex;\n}\n.jNav-menu-active .jNav-menu-bg {\n  display: block;\n}\n.jNav-menu-hamburger.jButton {\n  display: block;\n  width: 2rem;\n  height: 2rem;\n  padding: 1.25rem;\n  position: relative;\n}\n.jNav-menu-hamburger.jButton:before {\n  content: \"\";\n  width: 50%;\n  height: 0.75rem;\n  position: absolute;\n  top: 50%;\n  left: 50%;\n  transform: translate(-50%, -45%);\n  background: repeating-linear-gradient(#fff, #fff 0.125rem, transparent 0.125rem, transparent 0.25rem);\n}\n.jNav-menu-bg {\n  display: none;\n  position: fixed;\n  z-index: 9004;\n  top: 0;\n  left: 0;\n  right: 0;\n  bottom: 0;\n  background: rgba(0, 0, 0, 0.25);\n  -webkit-backdrop-filter: blur(6px);\n          backdrop-filter: blur(6px);\n}\n.jNav-menu-items {\n  display: none;\n  max-width: 85vw;\n  padding: 0.625rem;\n  margin: 0;\n  flex-flow: column nowrap;\n  position: fixed;\n  z-index: 9005;\n  top: 0;\n  right: 0;\n  bottom: 0;\n  background: #fff;\n  box-shadow: 0 0 0.125rem rgba(0, 0, 0, 0.25);\n}\n.jNav-menu-item {\n  display: block;\n  list-style: none;\n}\n.jNav-menu-auth {\n  display: flex;\n  justify-content: space-between;\n  align-items: center;\n  gap: 1rem;\n}\n.jNav-menu-user {\n  display: inline-block;\n  width: 2.625rem;\n  height: 2.625rem;\n  border: none;\n  border-radius: 2.625rem;\n  vertical-align: middle;\n  background: #6f4f28 url(" + ___CSS_LOADER_URL_REPLACEMENT_0___ + ") center center no-repeat;\n}\n@media screen and (min-width: 780px) {\n.jNav-logo-img {\n    width: 15.25rem;\n}\n}\n@media screen and (min-width: 1260px) {\n.jNav-menu-active,\n.jNav-menu-bg {\n    display: none;\n}\n.jNav-menu-hamburger.jButton {\n    display: none;\n}\n.jNav-menu-items {\n    display: flex;\n    align-items: center;\n    max-width: none;\n    padding: 0.625rem;\n    margin: 0;\n    flex-flow: row nowrap;\n    position: static;\n    background: none;\n    box-shadow: none;\n}\n.jNav-menu-item {\n    margin-left: 2.5rem;\n}\n.jNav-menu-auth {\n    margin-left: 2.5rem;\n}\n.jNav-menu-user {\n    margin-left: 2.5rem;\n}\n}", ""]);
+___CSS_LOADER_EXPORT___.push([module.id, "#jNav {\n  width: 100vw;\n  position: sticky;\n  z-index: 9000;\n  top: 0;\n  left: 0;\n  right: 0;\n  background: #fff;\n  box-shadow: 0 0.25rem 1rem rgba(0, 0, 0, 0.05);\n}\n.jNav-content {\n  display: flex;\n  justify-content: space-between;\n  align-items: center;\n}\n.jNav-logo-img {\n  width: 8rem;\n}\n.jNav-menu-active .jNav-menu-items {\n  display: flex;\n}\n.jNav-menu-active .jNav-menu-bg {\n  display: block;\n}\n.jNav-menu-bg {\n  display: none;\n  position: fixed;\n  z-index: 9004;\n  top: 0;\n  left: 0;\n  right: 0;\n  bottom: 0;\n  background: rgba(0, 0, 0, 0.25);\n  -webkit-backdrop-filter: blur(6px);\n          backdrop-filter: blur(6px);\n}\n.jNav-menu-items {\n  display: flex;\n  align-items: center;\n  max-width: none;\n  padding: 0.625rem;\n  margin: 0;\n  flex-flow: row nowrap;\n}\n.jNav-menu-item {\n  display: block;\n  list-style: none;\n}\n.jNav-menu-auth {\n  display: flex;\n  justify-content: space-between;\n  align-items: center;\n  gap: 0.5rem;\n}\n.jNav-menu-user {\n  display: inline-block;\n  width: 2.625rem;\n  height: 2.625rem;\n  border: none;\n  border-radius: 2.625rem;\n  vertical-align: middle;\n  background: #6f4f28 url(" + ___CSS_LOADER_URL_REPLACEMENT_0___ + ") center center no-repeat;\n}\n.jNav-menu-item-md {\n  display: none;\n}\n@media screen and (min-width: 780px) {\n.jNav-logo-img {\n    width: 15.25rem;\n}\n}\n@media screen and (min-width: 1260px) {\n.jNav-menu-active,\n.jNav-menu-bg {\n    display: none;\n}\n.jNav-menu-hamburger.jButton {\n    display: none;\n}\n.jNav-menu-items {\n    display: flex;\n    align-items: center;\n    max-width: none;\n    padding: 0.625rem;\n    margin: 0;\n    flex-flow: row nowrap;\n    position: static;\n    background: none;\n    box-shadow: none;\n}\n.jNav-menu-item {\n    margin-left: 2.5rem;\n}\n.jNav-menu-auth {\n    margin-left: 2.5rem;\n    gap: 1rem;\n}\n.jNav-menu-user {\n    margin-left: 2.5rem;\n}\n.jNav-menu-item-md {\n    display: block;\n}\n}", ""]);
 // Exports
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (___CSS_LOADER_EXPORT___);
 
@@ -2030,7 +2185,7 @@ __webpack_require__.r(__webpack_exports__);
 var ___CSS_LOADER_EXPORT___ = _node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_0___default()(function(i){return i[1]});
 var ___CSS_LOADER_URL_REPLACEMENT_0___ = _node_modules_css_loader_dist_runtime_getUrl_js__WEBPACK_IMPORTED_MODULE_1___default()(_assets_img_reviews_bg_svg__WEBPACK_IMPORTED_MODULE_2__["default"]);
 // Module
-___CSS_LOADER_EXPORT___.push([module.id, "#jReviews {\n  width: 100%;\n  background: url(" + ___CSS_LOADER_URL_REPLACEMENT_0___ + ") no-repeat;\n  background-position-x: 85%;\n}\n.jReviews-header {\n  position: relative;\n  margin-bottom: 3rem;\n}\n.jReviews-header:after {\n  content: \"\";\n  display: block;\n  width: 8.5625rem;\n  position: absolute;\n  bottom: -0.75rem;\n  left: 50%;\n  transform: translateX(-50%);\n  border-bottom: 0.1875rem solid #42b1f4;\n}\n.jReviews-types .jButton {\n  margin-bottom: 1.25rem;\n}\n.jButton.jReviews-video {\n  background: #ffd86b;\n  color: #303b4d;\n}\n.jButton.jReviews-video:hover {\n  background: #ffdc7a;\n}\n.jReviews-item-player {\n  position: relative;\n  padding-top: 56.25%;\n  background: #000;\n}\n.jReviews-item-iflame {\n  width: 100%;\n  height: 100%;\n  position: absolute;\n  top: 0;\n  left: 0;\n}\n.jReviews-item-image {\n  max-width: 100%;\n}\n.jReviews-item-thumbnails {\n  display: flex;\n  gap: 0.625rem;\n  margin-top: 1.125rem;\n}\n.jReviews-item-thumbnails .hooper {\n  margin: 0 -5px;\n  flex: 100% 1 1;\n}\n.jReviews-item-thumbnail {\n  margin: 0 5px;\n  background-size: cover;\n  cursor: pointer;\n}\n.jReviews-item-thumbnail:after {\n  content: \"\";\n  display: block;\n  padding-bottom: 56.25%;\n}\n.jReviews-title {\n  margin-top: 1.75rem;\n}\n.jReviews-free {\n  margin-top: 1.75rem;\n}\n@media screen and (min-width: 780px) {\n.jReviews-types {\n    display: flex;\n    gap: 2rem;\n}\n}\n@media screen and (min-width: 1260px) {\n#jReviews {\n    padding-bottom: 15rem;\n}\n.jReviews-types {\n    display: block;\n}\n.jReviews-wrapper {\n    display: grid;\n    grid-template-columns: 1fr 2fr;\n}\n.jReviews-items-wrapper {\n    grid-column: 2;\n    grid-row: 1/3;\n}\n.jReviews-items {\n    display: flex;\n    gap: 0.75rem;\n    flex-flow: row nowrap;\n}\n.jReviews-item-watch {\n    flex: 0 1 100%;\n}\n.jReviews-item-thumbnails {\n    flex: 0 0 12rem;\n    flex-flow: column nowrap;\n    justify-content: space-between;\n    margin: 0;\n}\n.jReviews-item-thumbnails .hooper {\n    margin: -5px 0;\n}\n.jReviews-item-thumbnail {\n    margin: 5px 0;\n}\n.jReviews-footer {\n    padding-right: 2rem;\n}\n}", ""]);
+___CSS_LOADER_EXPORT___.push([module.id, "#jReviews {\n  width: 100%;\n  background: url(" + ___CSS_LOADER_URL_REPLACEMENT_0___ + ") no-repeat;\n  background-position-x: 85%;\n}\n.jReviews-header {\n  position: relative;\n  margin-bottom: 3rem;\n}\n.jReviews-header:after {\n  content: \"\";\n  display: block;\n  width: 8.5625rem;\n  position: absolute;\n  bottom: -0.75rem;\n  left: 50%;\n  transform: translateX(-50%);\n  border-bottom: 0.1875rem solid #42b1f4;\n}\n.jReviews-types .jButton {\n  display: inline-block;\n  margin-bottom: 1.25rem;\n}\n.jButton.jReviews-video {\n  background: #ffd86b;\n  color: #303b4d;\n}\n.jButton.jReviews-video:hover {\n  background: #ffdc7a;\n}\n.jReviews-item-player {\n  position: relative;\n  padding-top: 56.25%;\n  background: #000;\n}\n.jReviews-item-iflame {\n  width: 100%;\n  height: 100%;\n  position: absolute;\n  top: 0;\n  left: 0;\n}\n.jReviews-item-image {\n  max-width: 100%;\n}\n.jReviews-item-thumbnails {\n  display: flex;\n  gap: 0.625rem;\n  margin-top: 1.125rem;\n}\n.jReviews-item-thumbnails .hooper {\n  margin: 0 -5px;\n  flex: 100% 1 1;\n  height: auto;\n}\n.jReviews-item-thumbnail {\n  margin: 0 5px;\n  background-size: cover;\n  cursor: pointer;\n}\n.jReviews-item-thumbnail:after {\n  content: \"\";\n  display: block;\n  padding-bottom: 56.25%;\n}\n.jReviews-title {\n  margin-top: 1.75rem;\n}\n.jReviews-free {\n  margin-top: 1.75rem;\n}\n@media screen and (min-width: 780px) {\n.jReviews-types {\n    display: flex;\n    gap: 2rem;\n}\n.jReviews-types .jButton {\n    display: block;\n}\n}\n@media screen and (min-width: 1260px) {\n#jReviews {\n    padding-bottom: 15rem;\n}\n.jReviews-types {\n    display: block;\n}\n.jReviews-wrapper {\n    display: grid;\n    grid-template-columns: 1fr 2fr;\n}\n.jReviews-items-wrapper {\n    grid-column: 2;\n    grid-row: 1/3;\n}\n.jReviews-items {\n    display: flex;\n    gap: 0.75rem;\n    flex-flow: row nowrap;\n}\n.jReviews-item-watch {\n    flex: 0 1 100%;\n}\n.jReviews-item-thumbnails {\n    flex: 0 0 12rem;\n    flex-flow: column nowrap;\n    justify-content: space-between;\n    margin: 0;\n}\n.jReviews-item-thumbnails .hooper {\n    margin: -5px 0;\n}\n.jReviews-item-thumbnail {\n    margin: 5px 0;\n}\n.jReviews-footer {\n    padding-right: 2rem;\n}\n}", ""]);
 // Exports
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (___CSS_LOADER_EXPORT___);
 
@@ -2068,7 +2223,7 @@ var ___CSS_LOADER_URL_REPLACEMENT_1___ = _node_modules_css_loader_dist_runtime_g
 var ___CSS_LOADER_URL_REPLACEMENT_2___ = _node_modules_css_loader_dist_runtime_getUrl_js__WEBPACK_IMPORTED_MODULE_1___default()(_assets_img_s1_dot_svg__WEBPACK_IMPORTED_MODULE_4__["default"]);
 var ___CSS_LOADER_URL_REPLACEMENT_3___ = _node_modules_css_loader_dist_runtime_getUrl_js__WEBPACK_IMPORTED_MODULE_1___default()(_assets_img_s1_bg_2_svg__WEBPACK_IMPORTED_MODULE_5__["default"]);
 // Module
-___CSS_LOADER_EXPORT___.push([module.id, "#jSec1 {\n  width: 100%;\n  padding-top: 1rem;\n  padding-bottom: 8rem;\n  background-image: url(" + ___CSS_LOADER_URL_REPLACEMENT_0___ + ");\n  background-repeat: no-repeat;\n}\n.jSec1-header {\n  font-size: 2.5rem;\n  line-height: 1;\n}\n.jSec1-tabs {\n  display: flex;\n  flex-flow: column nowrap;\n  align-items: center;\n  position: relative;\n}\n.jSec1-tabs .Section1Popup {\n  top: 3.5rem;\n  visibility: hidden;\n  opacity: 0;\n  transition: all 0.3s;\n}\n.jSec1-tabs-popup-active .Section1Popup {\n  visibility: visible;\n  opacity: 1;\n}\n.jSec1-tabs-buttons {\n  margin: 0;\n  padding: 0;\n  text-align: center;\n}\n.jSec1-tabs-button {\n  display: inline-block;\n  margin: 0.25rem;\n  list-style: none;\n  text-align: center;\n}\n.jSec1-tabs-link {\n  display: inline-block;\n  padding: 0.75rem 0;\n  margin-bottom: -0.0625rem;\n  text-decoration: none;\n  color: #252525;\n}\n.jSec1-tabs-link--active {\n  border-bottom: 0.1875rem solid #42b1f4;\n}\n.jSec1-tabs-qm {\n  display: inline-block;\n  width: 1.25rem;\n  height: 1.25rem;\n  margin-left: 0.0625rem;\n  background-image: url(" + ___CSS_LOADER_URL_REPLACEMENT_1___ + ");\n  background-size: contain;\n  vertical-align: super;\n}\n.jSec1-tabs-content {\n  width: 100%;\n}\n.jSec1-tabs-item {\n  display: flex;\n  flex-flow: row wrap;\n  padding-top: 3.875rem;\n}\n.jSec1-profile-text {\n  order: 2;\n}\n.jSec1-profile-banner {\n  order: 1;\n}\n.jSec1-profile-title {\n  color: #42b1f4;\n  font-size: 1.25rem;\n}\n.jSec1-profile-list {\n  margin: 0 0 2.375rem;\n  line-height: 1.56;\n  color: #000;\n  padding: 0;\n}\n.jSec1-profile-list-item {\n  list-style: none;\n}\n.jSec1-profile-list-item:before {\n  content: \"\";\n  display: inline-block;\n  width: 0.5rem;\n  height: 0.75rem;\n  margin-right: 0.5625rem;\n  transform: matrix(0.83, 0.56, 0.56, -0.83, 0, 0);\n  background-image: url(" + ___CSS_LOADER_URL_REPLACEMENT_2___ + ");\n  background-size: cover;\n}\n.jSec1-profile-button {\n  margin: 0 0 2.375rem;\n}\n.jSec1-profile-banner-img {\n  max-width: 100%;\n}\n@media screen and (min-width: 780px) {\n#jSec1 {\n    background-position: 100%;\n}\n}\n@media screen and (min-width: 1260px) {\n#jSec1 {\n    background-image: url(" + ___CSS_LOADER_URL_REPLACEMENT_0___ + "), url(" + ___CSS_LOADER_URL_REPLACEMENT_3___ + ");\n    background-repeat: no-repeat, no-repeat;\n    background-position: 100% 50%, 0% 50%;\n}\n.jSec1-tabs-buttons {\n    display: flex;\n    justify-content: center;\n    gap: 1.125rem;\n    width: -moz-fit-content;\n    width: fit-content;\n    border-bottom: 0.0625rem solid #d9d9d9;\n}\n.jSec1-tabs-button {\n    display: block;\n    margin: 0;\n}\n.jSec1-tabs-item {\n    display: flex;\n}\n.jSec1-profile-text {\n    flex: 0 0 45%;\n    order: 1;\n}\n.jSec1-profile-banner {\n    flex: 0 0 55%;\n    order: 2;\n}\n}\n@media screen and (min-width: 1920px) {\n.jSec1-profile-banner-img {\n    position: absolute;\n    max-width: 920px;\n}\n}", ""]);
+___CSS_LOADER_EXPORT___.push([module.id, "#jSec1 {\n  width: 100%;\n  padding-top: 1rem;\n  padding-bottom: 4rem;\n  background-image: url(" + ___CSS_LOADER_URL_REPLACEMENT_0___ + ");\n  background-repeat: no-repeat;\n}\n#jSec1 .hooper {\n  height: auto;\n}\n.jSec1-header.jHeader {\n  font-size: 1.25rem;\n  line-height: 1;\n}\n.jSec1-tabs {\n  display: flex;\n  flex-flow: column nowrap;\n  align-items: center;\n  position: relative;\n}\n.jSec1-tabs .Section1Popup {\n  top: 3.5rem;\n  visibility: hidden;\n  opacity: 0;\n  transition: all 0.3s;\n}\n.jSec1-tabs-popup-active .Section1Popup {\n  visibility: visible;\n  opacity: 1;\n}\n.jSec1-tabs-buttons {\n  margin: 0;\n  padding: 0;\n  text-align: center;\n}\n.jSec1-tabs-button {\n  display: inline-block;\n  margin: 0.25rem;\n  list-style: none;\n  text-align: center;\n}\n.jSec1-tabs-link {\n  display: inline-block;\n  padding: 0.75rem 0;\n  margin-bottom: -0.0625rem;\n  text-decoration: none;\n  color: #252525;\n}\n.jSec1-tabs-link--active {\n  border-bottom: 0.1875rem solid #42b1f4;\n}\n.jSec1-tabs-qm {\n  display: inline-block;\n  width: 1.25rem;\n  height: 1.25rem;\n  margin-left: 0.0625rem;\n  background-image: url(" + ___CSS_LOADER_URL_REPLACEMENT_1___ + ");\n  background-size: contain;\n  vertical-align: super;\n}\n.jSec1-tabs-content {\n  width: 100%;\n}\n.jSec1-tabs-item {\n  display: flex;\n  flex-flow: row wrap;\n  padding-top: 3.875rem;\n}\n.jSec1-profile-text {\n  order: 2;\n}\n.jSec1-profile-banner {\n  order: 1;\n}\n.jSec1-profile-title {\n  color: #42b1f4;\n  font-size: 1.25rem;\n}\n.jSec1-profile-list {\n  margin: 0 0 2.375rem;\n  line-height: 1.56;\n  color: #000;\n  padding: 0;\n}\n.jSec1-profile-list-item {\n  list-style: none;\n}\n.jSec1-profile-list-item:before {\n  content: \"\";\n  display: inline-block;\n  width: 0.5rem;\n  height: 0.75rem;\n  margin-right: 0.5625rem;\n  transform: matrix(0.83, 0.56, 0.56, -0.83, 0, 0);\n  background-image: url(" + ___CSS_LOADER_URL_REPLACEMENT_2___ + ");\n  background-size: cover;\n}\n.jSec1-profile-button {\n  margin: 0 0 2.375rem;\n}\n.jSec1-profile-banner-img {\n  max-width: 100%;\n}\n@media screen and (min-width: 780px) {\n#jSec1 {\n    background-position: 100%;\n}\n}\n@media screen and (min-width: 1260px) {\n#jSec1 {\n    padding-bottom: 8rem;\n    background-image: url(" + ___CSS_LOADER_URL_REPLACEMENT_0___ + "), url(" + ___CSS_LOADER_URL_REPLACEMENT_3___ + ");\n    background-repeat: no-repeat, no-repeat;\n    background-position: 100% 50%, 0% 50%;\n}\n.jSec1-header.jHeader {\n    font-size: 2.5rem;\n}\n.jSec1-tabs-buttons {\n    display: flex;\n    justify-content: center;\n    gap: 1.125rem;\n    width: -moz-fit-content;\n    width: fit-content;\n    border-bottom: 0.0625rem solid #d9d9d9;\n}\n.jSec1-tabs-button {\n    display: block;\n    margin: 0;\n}\n.jSec1-tabs-item {\n    display: flex;\n}\n.jSec1-profile-text {\n    flex: 0 0 45%;\n    order: 1;\n}\n.jSec1-profile-banner {\n    flex: 0 0 55%;\n    order: 2;\n}\n}\n@media screen and (min-width: 1920px) {\n.jSec1-profile-banner-img {\n    position: absolute;\n    max-width: 920px;\n}\n}", ""]);
 // Exports
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (___CSS_LOADER_EXPORT___);
 
@@ -2097,7 +2252,7 @@ __webpack_require__.r(__webpack_exports__);
 var ___CSS_LOADER_EXPORT___ = _node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_0___default()(function(i){return i[1]});
 var ___CSS_LOADER_URL_REPLACEMENT_0___ = _node_modules_css_loader_dist_runtime_getUrl_js__WEBPACK_IMPORTED_MODULE_1___default()(_assets_img_s2_bg_svg__WEBPACK_IMPORTED_MODULE_2__["default"]);
 // Module
-___CSS_LOADER_EXPORT___.push([module.id, "#jSec2 {\n  width: 100%;\n}\n.jSec2-header {\n  width: -moz-fit-content;\n  width: fit-content;\n  margin-left: auto;\n  margin-right: auto;\n  margin-bottom: 5rem;\n  position: relative;\n}\n.jSec2-header:before {\n  content: \"\";\n  display: block;\n  width: 10.625rem;\n  height: 6.625rem;\n  position: absolute;\n  z-index: -1;\n  top: -2.5rem;\n  left: -1rem;\n  background-image: url(" + ___CSS_LOADER_URL_REPLACEMENT_0___ + ");\n}\n.jSec2-items {\n  display: flex;\n  flex-flow: row wrap;\n  justify-content: stretch;\n  padding: 0;\n  margin: 0 0 3rem;\n  list-style: none;\n}\n.jSec2-item {\n  display: flex;\n  flex-flow: column nowrap;\n  align-items: center;\n  flex: 0 0 100%;\n  padding: 2rem;\n  margin-bottom: 1.25rem;\n  border-radius: 0.9375rem;\n  position: relative;\n  overflow: hidden;\n}\n.jSec2-item:before {\n  content: \"\";\n  width: 0;\n  height: 0;\n  border-radius: 100vw;\n  position: absolute;\n  z-index: 1;\n  top: 50%;\n  left: 50%;\n  transform: translate(-50%, -50%);\n  background-color: rgba(0, 0, 0, 0.25);\n  transition: all 0.35s;\n}\n.jSec2-item-value {\n  margin-bottom: 0.5rem;\n  font-weight: 700;\n  font-size: 3.125rem;\n  line-height: 2;\n  position: relative;\n  z-index: 5;\n  transition: text-shadow 0.35s;\n}\n.jSec2-item-text {\n  font-size: 1.125rem;\n  line-height: 1.39;\n  text-align: center;\n  width: 16.5rem;\n  position: relative;\n  z-index: 5;\n}\n.jSec2-item-1 {\n  background: #edf8ff;\n}\n.jSec2-item-1 .jSec2-item-value {\n  color: #72c6f9;\n}\n.jSec2-item-2 {\n  background: #fff9ea;\n}\n.jSec2-item-2 .jSec2-item-value {\n  color: #ffd86b;\n}\n.jSec2-item-3 {\n  background: #f3f0fc;\n}\n.jSec2-item-3 .jSec2-item-value {\n  color: #9082bb;\n}\n.jSec2-highlight:before {\n  width: 120%;\n  height: 120%;\n}\n.jSec2-highlight .jSec2-item-value {\n  text-shadow: 0 0 2px #aaa, 0 0 1rem #fff, 0 0 1rem #fff, 0 0 1rem #fff, 0 0 1rem #fff;\n}\n@media screen and (min-width: 1260px) {\n.jSec2-items {\n    flex-flow: row nowrap;\n    justify-content: stretch;\n    align-items: stretch;\n    gap: 1.25rem;\n}\n.jSec2-item {\n    flex: 0 1 33%;\n    padding: 2rem 3rem;\n}\n}", ""]);
+___CSS_LOADER_EXPORT___.push([module.id, "#jSec2 {\n  width: 100%;\n}\n#jSec2 .hooper {\n  height: auto;\n}\n.jSec2-header {\n  width: -moz-fit-content;\n  width: fit-content;\n  margin-left: auto;\n  margin-right: auto;\n  margin-bottom: 5rem;\n  position: relative;\n}\n.jSec2-header:before {\n  content: \"\";\n  display: block;\n  width: 10.625rem;\n  height: 6.625rem;\n  position: absolute;\n  z-index: -1;\n  top: -2.5rem;\n  left: -1rem;\n  background-image: url(" + ___CSS_LOADER_URL_REPLACEMENT_0___ + ");\n}\n.jSec2-items {\n  display: flex;\n  flex-flow: row wrap;\n  justify-content: stretch;\n  padding: 0;\n  margin: 0 0 3rem;\n  list-style: none;\n}\n.jSec2-item {\n  display: flex;\n  flex-flow: column nowrap;\n  align-items: center;\n  flex: 0 0 100%;\n  padding: 2rem;\n  margin-bottom: 1.25rem;\n  border-radius: 0.9375rem;\n  position: relative;\n  overflow: hidden;\n}\n.jSec2-item:before {\n  content: \"\";\n  width: 0;\n  height: 0;\n  border-radius: 100vw;\n  position: absolute;\n  z-index: 1;\n  top: 50%;\n  left: 50%;\n  transform: translate(-50%, -50%);\n  background-color: rgba(0, 0, 0, 0.25);\n  transition: all 0.35s;\n}\n.jSec2-item-value {\n  margin-bottom: 0.5rem;\n  font-weight: 700;\n  font-size: 3.125rem;\n  line-height: 2;\n  position: relative;\n  z-index: 5;\n  transition: text-shadow 0.35s;\n}\n.jSec2-item-text {\n  font-size: 1.125rem;\n  line-height: 1.39;\n  text-align: center;\n  width: 16.5rem;\n  position: relative;\n  z-index: 5;\n}\n.jSec2-item-1 {\n  background: #edf8ff;\n}\n.jSec2-item-1 .jSec2-item-value {\n  color: #72c6f9;\n}\n.jSec2-item-2 {\n  background: #fff9ea;\n}\n.jSec2-item-2 .jSec2-item-value {\n  color: #ffd86b;\n}\n.jSec2-item-3 {\n  background: #f3f0fc;\n}\n.jSec2-item-3 .jSec2-item-value {\n  color: #9082bb;\n}\n.jSec2-highlight:before {\n  width: 120%;\n  height: 120%;\n}\n.jSec2-highlight .jSec2-item-value {\n  text-shadow: 0 0 2px #aaa, 0 0 1rem #fff, 0 0 1rem #fff, 0 0 1rem #fff, 0 0 1rem #fff;\n}\n@media screen and (min-width: 1260px) {\n.jSec2-items {\n    flex-flow: row nowrap;\n    justify-content: stretch;\n    align-items: stretch;\n    gap: 1.25rem;\n}\n.jSec2-item {\n    flex: 0 1 33%;\n    padding: 2rem 3rem;\n}\n}", ""]);
 // Exports
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (___CSS_LOADER_EXPORT___);
 
@@ -2135,7 +2290,7 @@ var ___CSS_LOADER_URL_REPLACEMENT_1___ = _node_modules_css_loader_dist_runtime_g
 var ___CSS_LOADER_URL_REPLACEMENT_2___ = _node_modules_css_loader_dist_runtime_getUrl_js__WEBPACK_IMPORTED_MODULE_1___default()(_assets_img_s3_bg2_svg__WEBPACK_IMPORTED_MODULE_4__["default"]);
 var ___CSS_LOADER_URL_REPLACEMENT_3___ = _node_modules_css_loader_dist_runtime_getUrl_js__WEBPACK_IMPORTED_MODULE_1___default()(_assets_img_s3_bg3_svg__WEBPACK_IMPORTED_MODULE_5__["default"]);
 // Module
-___CSS_LOADER_EXPORT___.push([module.id, "#jSec3 {\n  width: 100%;\n  padding-bottom: 3rem;\n}\n.jSec3-header {\n  width: -moz-fit-content;\n  width: fit-content;\n  margin-left: auto;\n  margin-right: auto;\n  position: relative;\n}\n.jSec3-header:before {\n  content: \"\";\n  display: block;\n  width: 10.625rem;\n  height: 6.625rem;\n  position: absolute;\n  z-index: -1;\n  top: -2.5rem;\n  left: -3rem;\n  background-image: url(" + ___CSS_LOADER_URL_REPLACEMENT_0___ + ");\n}\n.jSec3-subheader {\n  text-align: center;\n}\n.jSec3-block-title {\n  margin-bottom: 1rem;\n  font-size: 1.25rem;\n  font-weight: 700;\n}\n.jSec3-block-1 {\n  background: url(" + ___CSS_LOADER_URL_REPLACEMENT_1___ + ") center no-repeat;\n}\n.jSec3-block-2 {\n  background: url(" + ___CSS_LOADER_URL_REPLACEMENT_2___ + ") center no-repeat;\n}\n.jSec3-block-3 {\n  background: url(" + ___CSS_LOADER_URL_REPLACEMENT_3___ + ") center no-repeat;\n}\n@media screen and (min-width: 1260px) {\n.jSec3-block-title {\n    margin-bottom: 1rem;\n    font-size: 1.5rem;\n}\n.jSec3-block-text {\n    line-height: 1.875;\n}\n}", ""]);
+___CSS_LOADER_EXPORT___.push([module.id, "#jSec3 {\n  width: 100%;\n  padding-bottom: 3rem;\n  margin-top: 5rem;\n}\n.jSec3-header {\n  width: -moz-fit-content;\n  width: fit-content;\n  margin-left: auto;\n  margin-right: auto;\n  position: relative;\n}\n.jSec3-header:before {\n  content: \"\";\n  display: block;\n  width: 10.625rem;\n  height: 6.625rem;\n  position: absolute;\n  z-index: -1;\n  top: -2.5rem;\n  left: -3rem;\n  background-image: url(" + ___CSS_LOADER_URL_REPLACEMENT_0___ + ");\n}\n.jSec3-subheader {\n  text-align: center;\n}\n.jSec3-block-title {\n  margin-bottom: 1rem;\n  font-size: 1.25rem;\n  font-weight: 700;\n}\n.jSec3-block-1 {\n  background: url(" + ___CSS_LOADER_URL_REPLACEMENT_1___ + ") center no-repeat;\n}\n.jSec3-block-2 {\n  background: url(" + ___CSS_LOADER_URL_REPLACEMENT_2___ + ") center no-repeat;\n}\n.jSec3-block-3 {\n  background: url(" + ___CSS_LOADER_URL_REPLACEMENT_3___ + ") center no-repeat;\n}\n@media screen and (min-width: 1260px) {\n.jSec3 {\n    margin-top: 0;\n}\n.jSec3-block-title {\n    margin-bottom: 1rem;\n    font-size: 1.5rem;\n}\n.jSec3-block-text {\n    line-height: 1.875;\n}\n}", ""]);
 // Exports
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (___CSS_LOADER_EXPORT___);
 
@@ -2164,7 +2319,7 @@ __webpack_require__.r(__webpack_exports__);
 var ___CSS_LOADER_EXPORT___ = _node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_0___default()(function(i){return i[1]});
 var ___CSS_LOADER_URL_REPLACEMENT_0___ = _node_modules_css_loader_dist_runtime_getUrl_js__WEBPACK_IMPORTED_MODULE_1___default()(_assets_img_s2_bg_svg__WEBPACK_IMPORTED_MODULE_2__["default"]);
 // Module
-___CSS_LOADER_EXPORT___.push([module.id, "#jSec4 {\n  width: 100%;\n  padding-bottom: 2rem;\n}\n.jSec4-header {\n  width: -moz-fit-content;\n  width: fit-content;\n  margin-left: auto;\n  margin-right: auto;\n  margin-bottom: 5rem;\n  position: relative;\n}\n.jSec4-header:before {\n  content: \"\";\n  display: block;\n  width: 10.625rem;\n  height: 6.625rem;\n  position: absolute;\n  z-index: -1;\n  top: -2.5rem;\n  left: -3rem;\n  background-image: url(" + ___CSS_LOADER_URL_REPLACEMENT_0___ + ");\n}\n.jSec4-subheader {\n  text-align: center;\n  font-size: 1.125rem;\n}\n.jSec4-items {\n  display: flex;\n  flex-flow: row wrap;\n  justify-content: stretch;\n  padding: 0;\n  margin: 0;\n  list-style: none;\n}\n.jSec4-item {\n  display: flex;\n  flex-flow: column nowrap;\n  align-items: center;\n  flex: 0 0 100%;\n  padding: 2rem;\n  margin-bottom: 1.25rem;\n  border-radius: 0.9375rem;\n  position: relative;\n  overflow: hidden;\n}\n.jSec4-item:before {\n  content: \"\";\n  width: 0;\n  height: 0;\n  border-radius: 100vw;\n  position: absolute;\n  z-index: 1;\n  top: 50%;\n  left: 50%;\n  transform: translate(-50%, -50%);\n  background-color: rgba(0, 0, 0, 0.25);\n  transition: all 0.35s;\n}\n.jSec4-item-title {\n  margin-bottom: 0.5rem;\n  font-weight: 700;\n  font-size: 3.125rem;\n  line-height: 2;\n  position: relative;\n  z-index: 5;\n  transition: text-shadow 0.35s;\n}\n.jSec4-item-text {\n  font-size: 1.125rem;\n  line-height: 1.39;\n  text-align: center;\n  width: 16rem;\n}\n.jSec4-item-1 {\n  background: #edf8ff;\n}\n.jSec4-item-1 .jSec4-item-title {\n  color: #72c6f9;\n}\n.jSec4-item-2 {\n  background: #fff9ea;\n}\n.jSec4-item-2 .jSec4-item-title {\n  color: #ffd86b;\n}\n.jSec4-item-3 {\n  background: #f3f0fc;\n}\n.jSec4-item-3 .jSec4-item-title {\n  color: #9082bb;\n}\n.jSec4-highlight:before {\n  width: 120%;\n  height: 120%;\n}\n.jSec4-highlight .jSec4-item-title {\n  text-shadow: 0 0 2px #aaa, 0 0 1rem #fff, 0 0 1rem #fff, 0 0 1rem #fff, 0 0 1rem #fff;\n}\n.jSec4-form,\n.jSec4-form-inputs {\n  display: flex;\n  flex-flow: column;\n  align-items: center;\n  gap: 1rem;\n}\n@media screen and (min-width: 1260px) {\n#jSec4 {\n    padding-bottom: 5rem;\n}\n.jSec4-items {\n    flex-flow: row nowrap;\n    justify-content: stretch;\n    align-items: stretch;\n    gap: 1.25rem;\n}\n.jSec4-item {\n    flex: 0 1 33%;\n    padding: 2rem 3rem;\n}\n.jSec4-form {\n    display: flex;\n    flex-flow: row nowrap;\n    align-items: center;\n    gap: 1.25rem;\n}\n.jSec4-form .jButton {\n    white-space: nowrap;\n}\n.jSec4-form-inputs {\n    display: flex;\n    flex-flow: row nowrap;\n    gap: 1.25rem;\n}\n.jSec4-footer {\n    flex: 1 1 30%;\n    font-size: 1.125rem;\n    line-height: 1.39;\n}\n}", ""]);
+___CSS_LOADER_EXPORT___.push([module.id, "#jSec4 {\n  width: 100%;\n  padding-bottom: 2rem;\n}\n#jSec4 .hooper {\n  height: auto;\n}\n.jSec4-header {\n  width: -moz-fit-content;\n  width: fit-content;\n  margin-left: auto;\n  margin-right: auto;\n  margin-bottom: 5rem;\n  position: relative;\n}\n.jSec4-header:before {\n  content: \"\";\n  display: block;\n  width: 10.625rem;\n  height: 6.625rem;\n  position: absolute;\n  z-index: -1;\n  top: -2.5rem;\n  left: -3rem;\n  background-image: url(" + ___CSS_LOADER_URL_REPLACEMENT_0___ + ");\n}\n.jSec4-subheader {\n  text-align: center;\n  font-size: 1.125rem;\n}\n.jSec4-items {\n  display: flex;\n  flex-flow: row wrap;\n  justify-content: stretch;\n  padding: 0;\n  margin: 0;\n  list-style: none;\n}\n.jSec4-item {\n  display: flex;\n  flex-flow: column nowrap;\n  align-items: center;\n  flex: 0 0 100%;\n  padding: 2rem;\n  margin-bottom: 1.25rem;\n  border-radius: 0.9375rem;\n  position: relative;\n  overflow: hidden;\n}\n.jSec4-item:before {\n  content: \"\";\n  width: 0;\n  height: 0;\n  border-radius: 100vw;\n  position: absolute;\n  z-index: 1;\n  top: 50%;\n  left: 50%;\n  transform: translate(-50%, -50%);\n  background-color: rgba(0, 0, 0, 0.25);\n  transition: all 0.35s;\n}\n.jSec4-item-title {\n  margin-bottom: 0.5rem;\n  font-weight: 700;\n  font-size: 3.125rem;\n  line-height: 2;\n  position: relative;\n  z-index: 5;\n  transition: text-shadow 0.35s;\n}\n.jSec4-item-text {\n  font-size: 1.125rem;\n  line-height: 1.39;\n  text-align: center;\n  width: 16rem;\n}\n.jSec4-item-1 {\n  background: #edf8ff;\n}\n.jSec4-item-1 .jSec4-item-title {\n  color: #72c6f9;\n}\n.jSec4-item-2 {\n  background: #fff9ea;\n}\n.jSec4-item-2 .jSec4-item-title {\n  color: #ffd86b;\n}\n.jSec4-item-3 {\n  background: #f3f0fc;\n}\n.jSec4-item-3 .jSec4-item-title {\n  color: #9082bb;\n}\n.jSec4-highlight:before {\n  width: 120%;\n  height: 120%;\n}\n.jSec4-highlight .jSec4-item-title {\n  text-shadow: 0 0 2px #aaa, 0 0 1rem #fff, 0 0 1rem #fff, 0 0 1rem #fff, 0 0 1rem #fff;\n}\n.jSec4-form,\n.jSec4-form-inputs {\n  display: flex;\n  flex-flow: column;\n  align-items: center;\n  gap: 1rem;\n}\n@media screen and (min-width: 1260px) {\n#jSec4 {\n    padding-bottom: 5rem;\n}\n.jSec4-items {\n    flex-flow: row nowrap;\n    justify-content: stretch;\n    align-items: stretch;\n    gap: 1.25rem;\n}\n.jSec4-item {\n    flex: 0 1 33%;\n    padding: 2rem 3rem;\n}\n.jSec4-form {\n    display: flex;\n    flex-flow: row nowrap;\n    align-items: center;\n    gap: 1.25rem;\n}\n.jSec4-form .jButton {\n    white-space: nowrap;\n}\n.jSec4-form-inputs {\n    display: flex;\n    flex-flow: row nowrap;\n    gap: 1.25rem;\n}\n.jSec4-footer {\n    flex: 1 1 30%;\n    font-size: 1.125rem;\n    line-height: 1.39;\n}\n}", ""]);
 // Exports
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (___CSS_LOADER_EXPORT___);
 
@@ -2193,7 +2348,7 @@ __webpack_require__.r(__webpack_exports__);
 var ___CSS_LOADER_EXPORT___ = _node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_0___default()(function(i){return i[1]});
 var ___CSS_LOADER_URL_REPLACEMENT_0___ = _node_modules_css_loader_dist_runtime_getUrl_js__WEBPACK_IMPORTED_MODULE_1___default()(_assets_img_s2_bg_svg__WEBPACK_IMPORTED_MODULE_2__["default"]);
 // Module
-___CSS_LOADER_EXPORT___.push([module.id, "#jTariffs {\n  width: 100%;\n}\n.jTariffs-header {\n  width: -moz-fit-content;\n  width: fit-content;\n  margin-left: auto;\n  margin-right: auto;\n  margin-bottom: 5rem;\n  position: relative;\n}\n.jTariffs-header:before {\n  content: \"\";\n  display: block;\n  width: 10.625rem;\n  height: 6.625rem;\n  position: absolute;\n  z-index: -1;\n  top: -2.5rem;\n  left: -5rem;\n  background-image: url(" + ___CSS_LOADER_URL_REPLACEMENT_0___ + ");\n}\n.jTariffs-content {\n  overflow-x: auto;\n}\n.jTariffs-table {\n  width: 100%;\n  border-collapse: collapse;\n}\n.jTariffs-table[data-col=\"1\"] [data-col=\"1\"] {\n  background: #f0f9ff;\n}\n.jTariffs-table[data-col=\"2\"] [data-col=\"2\"] {\n  background: #f0f9ff;\n}\n.jTariffs-table[data-col=\"3\"] [data-col=\"3\"] {\n  background: #f0f9ff;\n}\n.jTariffs-table[data-col=\"4\"] [data-col=\"4\"] {\n  background: #f0f9ff;\n}\n.jTariffs-tr {\n  border-radius: 1rem;\n}\n.jTariffs-tr:nth-of-type(odd) .jTariffs-cell,\n.jTariffs-tr:hover .jTariffs-cell {\n  background: #f0f9ff;\n}\n.jTariffs-cell {\n  min-width: 8rem;\n  padding: 0.5rem;\n  text-align: center;\n  white-space: nowrap;\n}\n.jTariffs-cell[data-col=\"0\"] {\n  text-align: left;\n  white-space: normal;\n  border-radius: 1rem 0 0 1rem;\n}\n.jTariffs-cell[data-col=\"4\"] {\n  border-radius: 0 1rem 1rem 0;\n}\n.jTariffs-th {\n  font-weight: 700;\n  padding: 0.6875rem;\n}\n@media screen and (min-width: 1260px) {\n#jTariffs {\n    margin-top: -5rem;\n    padding-bottom: 5rem;\n}\n.jTariffs-cell {\n    min-width: 14.375rem;\n    padding: 0.6875rem;\n    font-size: 1.125rem;\n}\n.jTariffs-th {\n    padding: 1.125rem;\n}\n}", ""]);
+___CSS_LOADER_EXPORT___.push([module.id, "#jTariffs {\n  width: 100%;\n  margin-top: 5rem;\n}\n.jTariffs-header {\n  width: -moz-fit-content;\n  width: fit-content;\n  margin-left: auto;\n  margin-right: auto;\n  margin-bottom: 5rem;\n  position: relative;\n}\n.jTariffs-header:before {\n  content: \"\";\n  display: block;\n  width: 10.625rem;\n  height: 6.625rem;\n  position: absolute;\n  z-index: -1;\n  top: -2.5rem;\n  left: -5rem;\n  background-image: url(" + ___CSS_LOADER_URL_REPLACEMENT_0___ + ");\n}\n.jTariffs-content {\n  overflow-x: auto;\n}\n.jTariffs-table {\n  width: 100%;\n  border-collapse: collapse;\n}\n.jTariffs-table[data-col=\"1\"] [data-col=\"1\"] {\n  background: #f0f9ff;\n}\n.jTariffs-table[data-col=\"2\"] [data-col=\"2\"] {\n  background: #f0f9ff;\n}\n.jTariffs-table[data-col=\"3\"] [data-col=\"3\"] {\n  background: #f0f9ff;\n}\n.jTariffs-table[data-col=\"4\"] [data-col=\"4\"] {\n  background: #f0f9ff;\n}\n.jTariffs-tr {\n  border-radius: 1rem;\n}\n.jTariffs-tr:nth-of-type(odd) .jTariffs-cell,\n.jTariffs-tr:hover .jTariffs-cell {\n  background: #f0f9ff;\n}\n.jTariffs-cell {\n  min-width: 8rem;\n  padding: 0.5rem;\n  text-align: center;\n  white-space: nowrap;\n}\n.jTariffs-cell[data-col=\"0\"] {\n  text-align: left;\n  white-space: normal;\n  border-radius: 1rem 0 0 1rem;\n}\n.jTariffs-cell[data-col=\"4\"] {\n  border-radius: 0 1rem 1rem 0;\n}\n.jTariffs-th {\n  font-weight: 700;\n  padding: 0.6875rem;\n}\n@media screen and (min-width: 1260px) {\n#jTariffs {\n    margin-top: -5rem;\n    padding-bottom: 5rem;\n}\n.jTariffs-cell {\n    min-width: 14.375rem;\n    padding: 0.6875rem;\n    font-size: 1.125rem;\n}\n.jTariffs-th {\n    padding: 1.125rem;\n}\n}", ""]);
 // Exports
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (___CSS_LOADER_EXPORT___);
 
@@ -7764,19 +7919,10 @@ var render = function () {
         "div",
         { staticClass: "jNav-menu", class: { "jNav-menu-active": _vm.menu } },
         [
-          _c("button", {
-            staticClass: "jNav-menu-hamburger jButton",
-            on: {
-              click: function ($event) {
-                _vm.menu = !_vm.menu
-              },
-            },
-          }),
-          _vm._v(" "),
           _c("ul", { staticClass: "jNav-menu-items" }, [
             _c(
               "li",
-              { staticClass: "jNav-menu-item" },
+              { staticClass: "jNav-menu-item jNav-menu-item-md" },
               [
                 _c("NavbarLink", {
                   attrs: { lang: _vm.lang, href: "#prices", text: "prices" },
@@ -7787,7 +7933,7 @@ var render = function () {
             _vm._v(" "),
             _c(
               "li",
-              { staticClass: "jNav-menu-item" },
+              { staticClass: "jNav-menu-item jNav-menu-item-md" },
               [
                 _c("NavbarLink", {
                   attrs: { lang: _vm.lang, href: "#reviews", text: "reviews" },
@@ -7798,7 +7944,7 @@ var render = function () {
             _vm._v(" "),
             _c(
               "li",
-              { staticClass: "jNav-menu-item" },
+              { staticClass: "jNav-menu-item jNav-menu-item-md" },
               [
                 _c("NavbarLink", {
                   attrs: {
@@ -7853,7 +7999,7 @@ var render = function () {
             _vm._v(" "),
             _c(
               "li",
-              { staticClass: "jNav-menu-item" },
+              { staticClass: "jNav-menu-item jNav-menu-item-md" },
               [
                 _c("NavbarLang", {
                   attrs: { lang: _vm.lang },
@@ -8062,185 +8208,229 @@ var render = function () {
       attrs: { name: "features", id: "features" },
     }),
     _vm._v(" "),
-    _c("div", { staticClass: "section-content" }, [
-      _c("h1", { staticClass: "jSec1-header jHeader" }, [
-        _vm._v(_vm._s(_vm.$lang(_vm.lang, "s1-header"))),
-      ]),
-      _vm._v(" "),
-      _c(
-        "div",
-        {
-          staticClass: "jSec1-tabs",
-          class: { "jSec1-tabs-popup-active": _vm.isPopupVisible },
-        },
-        [
-          _c(
-            "ul",
-            { staticClass: "jSec1-tabs-buttons" },
-            [
-              _c("Section1Tab", {
-                attrs: { "tab-id": "profile", "active-tab": _vm.activeTab },
-                on: {
-                  content: function ($event) {
-                    return _vm.setTab("profile")
-                  },
-                  popup: function ($event) {
-                    return _vm.setPopup("profile")
-                  },
-                },
-              }),
-              _vm._v(" "),
-              _c("Section1Tab", {
-                attrs: { "tab-id": "db", "active-tab": _vm.activeTab },
-                on: {
-                  content: function ($event) {
-                    return _vm.setTab("db")
-                  },
-                  popup: function ($event) {
-                    return _vm.setPopup("db")
-                  },
-                },
-              }),
-              _vm._v(" "),
-              _c("Section1Tab", {
-                attrs: { "tab-id": "kpi", "active-tab": _vm.activeTab },
-                on: {
-                  content: function ($event) {
-                    return _vm.setTab("kpi")
-                  },
-                  popup: function ($event) {
-                    return _vm.setPopup("kpi")
-                  },
-                },
-              }),
-              _vm._v(" "),
-              _c("Section1Tab", {
-                attrs: { "tab-id": "courses", "active-tab": _vm.activeTab },
-                on: {
-                  content: function ($event) {
-                    return _vm.setTab("courses")
-                  },
-                  popup: function ($event) {
-                    return _vm.setPopup("courses")
-                  },
-                },
-              }),
-              _vm._v(" "),
-              _c("Section1Tab", {
-                attrs: { "tab-id": "struct", "active-tab": _vm.activeTab },
-                on: {
-                  content: function ($event) {
-                    return _vm.setTab("struct")
-                  },
-                  popup: function ($event) {
-                    return _vm.setPopup("struct")
-                  },
-                },
-              }),
-              _vm._v(" "),
-              _c("Section1Tab", {
-                attrs: { "tab-id": "news", "active-tab": _vm.activeTab },
-                on: {
-                  content: function ($event) {
-                    return _vm.setTab("news")
-                  },
-                  popup: function ($event) {
-                    return _vm.setPopup("news")
-                  },
-                },
-              }),
-            ],
-            1
-          ),
-          _vm._v(" "),
-          _c("Section1Popup", {
-            directives: [
+    _c(
+      "div",
+      { staticClass: "section-content" },
+      [
+        _c("h1", { staticClass: "jSec1-header jHeader" }, [
+          _vm._v(_vm._s(_vm.$lang(_vm.lang, "s1-header"))),
+        ]),
+        _vm._v(" "),
+        _vm.isMedium
+          ? _c(
+              "div",
               {
-                name: "click-outside",
-                rawName: "v-click-outside",
-                value: _vm.hidePopup,
-                expression: "hidePopup",
+                staticClass: "jSec1-tabs",
+                class: { "jSec1-tabs-popup-active": _vm.isPopupVisible },
               },
-            ],
-            attrs: { type: _vm.activePopup, lang: _vm.lang },
-          }),
-          _vm._v(" "),
-          _c(
-            "div",
-            { staticClass: "jSec1-tabs-content" },
-            [
-              _c("Section1Profile", {
-                directives: [
-                  {
-                    name: "show",
-                    rawName: "v-show",
-                    value: _vm.activeTab === "profile",
-                    expression: "activeTab === 'profile'",
-                  },
-                ],
-              }),
-              _vm._v(" "),
-              _c("Section1DB", {
-                directives: [
-                  {
-                    name: "show",
-                    rawName: "v-show",
-                    value: _vm.activeTab === "db",
-                    expression: "activeTab === 'db'",
-                  },
-                ],
-              }),
-              _vm._v(" "),
-              _c("Section1KPI", {
-                directives: [
-                  {
-                    name: "show",
-                    rawName: "v-show",
-                    value: _vm.activeTab === "kpi",
-                    expression: "activeTab === 'kpi'",
-                  },
-                ],
-              }),
-              _vm._v(" "),
-              _c("Section1Courses", {
-                directives: [
-                  {
-                    name: "show",
-                    rawName: "v-show",
-                    value: _vm.activeTab === "courses",
-                    expression: "activeTab === 'courses'",
-                  },
-                ],
-              }),
-              _vm._v(" "),
-              _c("Section1Struct", {
-                directives: [
-                  {
-                    name: "show",
-                    rawName: "v-show",
-                    value: _vm.activeTab === "struct",
-                    expression: "activeTab === 'struct'",
-                  },
-                ],
-              }),
-              _vm._v(" "),
-              _c("Section1News", {
-                directives: [
-                  {
-                    name: "show",
-                    rawName: "v-show",
-                    value: _vm.activeTab === "news",
-                    expression: "activeTab === 'news'",
-                  },
-                ],
-              }),
-            ],
-            1
-          ),
-        ],
-        1
-      ),
-    ]),
+              [
+                _c(
+                  "ul",
+                  { staticClass: "jSec1-tabs-buttons" },
+                  [
+                    _c("Section1Tab", {
+                      attrs: {
+                        "tab-id": "profile",
+                        "active-tab": _vm.activeTab,
+                      },
+                      on: {
+                        content: function ($event) {
+                          return _vm.setTab("profile")
+                        },
+                        popup: function ($event) {
+                          return _vm.setPopup("profile")
+                        },
+                      },
+                    }),
+                    _vm._v(" "),
+                    _c("Section1Tab", {
+                      attrs: { "tab-id": "db", "active-tab": _vm.activeTab },
+                      on: {
+                        content: function ($event) {
+                          return _vm.setTab("db")
+                        },
+                        popup: function ($event) {
+                          return _vm.setPopup("db")
+                        },
+                      },
+                    }),
+                    _vm._v(" "),
+                    _c("Section1Tab", {
+                      attrs: { "tab-id": "kpi", "active-tab": _vm.activeTab },
+                      on: {
+                        content: function ($event) {
+                          return _vm.setTab("kpi")
+                        },
+                        popup: function ($event) {
+                          return _vm.setPopup("kpi")
+                        },
+                      },
+                    }),
+                    _vm._v(" "),
+                    _c("Section1Tab", {
+                      attrs: {
+                        "tab-id": "courses",
+                        "active-tab": _vm.activeTab,
+                      },
+                      on: {
+                        content: function ($event) {
+                          return _vm.setTab("courses")
+                        },
+                        popup: function ($event) {
+                          return _vm.setPopup("courses")
+                        },
+                      },
+                    }),
+                    _vm._v(" "),
+                    _c("Section1Tab", {
+                      attrs: {
+                        "tab-id": "struct",
+                        "active-tab": _vm.activeTab,
+                      },
+                      on: {
+                        content: function ($event) {
+                          return _vm.setTab("struct")
+                        },
+                        popup: function ($event) {
+                          return _vm.setPopup("struct")
+                        },
+                      },
+                    }),
+                    _vm._v(" "),
+                    _c("Section1Tab", {
+                      attrs: { "tab-id": "news", "active-tab": _vm.activeTab },
+                      on: {
+                        content: function ($event) {
+                          return _vm.setTab("news")
+                        },
+                        popup: function ($event) {
+                          return _vm.setPopup("news")
+                        },
+                      },
+                    }),
+                  ],
+                  1
+                ),
+                _vm._v(" "),
+                _c("Section1Popup", {
+                  directives: [
+                    {
+                      name: "click-outside",
+                      rawName: "v-click-outside",
+                      value: _vm.hidePopup,
+                      expression: "hidePopup",
+                    },
+                  ],
+                  attrs: { type: _vm.activePopup, lang: _vm.lang },
+                }),
+                _vm._v(" "),
+                _c(
+                  "div",
+                  { staticClass: "jSec1-tabs-content" },
+                  [
+                    _c("Section1Profile", {
+                      directives: [
+                        {
+                          name: "show",
+                          rawName: "v-show",
+                          value: _vm.activeTab === "profile",
+                          expression: "activeTab === 'profile'",
+                        },
+                      ],
+                    }),
+                    _vm._v(" "),
+                    _c("Section1DB", {
+                      directives: [
+                        {
+                          name: "show",
+                          rawName: "v-show",
+                          value: _vm.activeTab === "db",
+                          expression: "activeTab === 'db'",
+                        },
+                      ],
+                    }),
+                    _vm._v(" "),
+                    _c("Section1KPI", {
+                      directives: [
+                        {
+                          name: "show",
+                          rawName: "v-show",
+                          value: _vm.activeTab === "kpi",
+                          expression: "activeTab === 'kpi'",
+                        },
+                      ],
+                    }),
+                    _vm._v(" "),
+                    _c("Section1Courses", {
+                      directives: [
+                        {
+                          name: "show",
+                          rawName: "v-show",
+                          value: _vm.activeTab === "courses",
+                          expression: "activeTab === 'courses'",
+                        },
+                      ],
+                    }),
+                    _vm._v(" "),
+                    _c("Section1Struct", {
+                      directives: [
+                        {
+                          name: "show",
+                          rawName: "v-show",
+                          value: _vm.activeTab === "struct",
+                          expression: "activeTab === 'struct'",
+                        },
+                      ],
+                    }),
+                    _vm._v(" "),
+                    _c("Section1News", {
+                      directives: [
+                        {
+                          name: "show",
+                          rawName: "v-show",
+                          value: _vm.activeTab === "news",
+                          expression: "activeTab === 'news'",
+                        },
+                      ],
+                    }),
+                  ],
+                  1
+                ),
+              ],
+              1
+            )
+          : _vm._e(),
+        _vm._v(" "),
+        !_vm.isMedium
+          ? _c(
+              "Hooper",
+              {
+                ref: "carousel",
+                attrs: {
+                  infiniteScroll: true,
+                  autoPlay: true,
+                  playSpeed: 3000,
+                },
+              },
+              [
+                _c("Slide", [_c("Section1Profile")], 1),
+                _vm._v(" "),
+                _c("Slide", [_c("Section1DB")], 1),
+                _vm._v(" "),
+                _c("Slide", [_c("Section1KPI")], 1),
+                _vm._v(" "),
+                _c("Slide", [_c("Section1Courses")], 1),
+                _vm._v(" "),
+                _c("Slide", [_c("Section1Struct")], 1),
+                _vm._v(" "),
+                _c("Slide", [_c("Section1News")], 1),
+              ],
+              1
+            )
+          : _vm._e(),
+      ],
+      1
+    ),
   ])
 }
 var staticRenderFns = []
@@ -8266,64 +8456,135 @@ var render = function () {
   var _h = _vm.$createElement
   var _c = _vm._self._c || _h
   return _c("section", { attrs: { id: "jSec2" } }, [
-    _c("div", { staticClass: "section-content" }, [
-      _c("h2", { staticClass: "jSec2-header jHeader" }, [
-        _vm._v(_vm._s(_vm.$lang(_vm.lang, "s2-header"))),
-      ]),
-      _vm._v(" "),
-      _c("ul", { ref: "items", staticClass: "jSec2-items" }, [
+    _c(
+      "div",
+      { staticClass: "section-content" },
+      [
+        _c("h2", { staticClass: "jSec2-header jHeader" }, [
+          _vm._v(_vm._s(_vm.$lang(_vm.lang, "s2-header"))),
+        ]),
+        _vm._v(" "),
         _c(
-          "li",
+          "ul",
           {
-            staticClass: "jSec2-item jSec2-item-1",
-            class: { "jSec2-highlight": _vm.isBlock1Highlight },
+            directives: [
+              {
+                name: "show",
+                rawName: "v-show",
+                value: _vm.isMedium,
+                expression: "isMedium",
+              },
+            ],
+            ref: "items",
+            staticClass: "jSec2-items",
           },
           [
-            _c("span", { staticClass: "jSec2-item-value" }, [
-              _vm._v(_vm._s(_vm.$lang(_vm.lang, "s2-b1-value"))),
-            ]),
+            _c(
+              "li",
+              {
+                staticClass: "jSec2-item jSec2-item-1",
+                class: { "jSec2-highlight": _vm.isBlock1Highlight },
+              },
+              [
+                _c("span", { staticClass: "jSec2-item-value" }, [
+                  _vm._v(_vm._s(_vm.$lang(_vm.lang, "s2-b1-value"))),
+                ]),
+                _vm._v(" "),
+                _c("span", { staticClass: "jSec2-item-text" }, [
+                  _vm._v(_vm._s(_vm.$lang(_vm.lang, "s2-b1-text"))),
+                ]),
+              ]
+            ),
             _vm._v(" "),
-            _c("span", { staticClass: "jSec2-item-text" }, [
-              _vm._v(_vm._s(_vm.$lang(_vm.lang, "s2-b1-text"))),
-            ]),
+            _c(
+              "li",
+              {
+                staticClass: "jSec2-item jSec2-item-2",
+                class: { "jSec2-highlight": _vm.isBlock2Highlight },
+              },
+              [
+                _c("span", { staticClass: "jSec2-item-value" }, [
+                  _vm._v(_vm._s(_vm.$lang(_vm.lang, "s2-b2-value"))),
+                ]),
+                _vm._v(" "),
+                _c("span", { staticClass: "jSec2-item-text" }, [
+                  _vm._v(_vm._s(_vm.$lang(_vm.lang, "s2-b2-text"))),
+                ]),
+              ]
+            ),
+            _vm._v(" "),
+            _c(
+              "li",
+              {
+                staticClass: "jSec2-item jSec2-item-3",
+                class: { "jSec2-highlight": _vm.isBlock3Highlight },
+              },
+              [
+                _c("span", { staticClass: "jSec2-item-value" }, [
+                  _vm._v(_vm._s(_vm.$lang(_vm.lang, "s2-b3-value"))),
+                ]),
+                _vm._v(" "),
+                _c("span", { staticClass: "jSec2-item-text" }, [
+                  _vm._v(_vm._s(_vm.$lang(_vm.lang, "s2-b3-text"))),
+                ]),
+              ]
+            ),
           ]
         ),
         _vm._v(" "),
-        _c(
-          "li",
-          {
-            staticClass: "jSec2-item jSec2-item-2",
-            class: { "jSec2-highlight": _vm.isBlock2Highlight },
-          },
-          [
-            _c("span", { staticClass: "jSec2-item-value" }, [
-              _vm._v(_vm._s(_vm.$lang(_vm.lang, "s2-b2-value"))),
-            ]),
-            _vm._v(" "),
-            _c("span", { staticClass: "jSec2-item-text" }, [
-              _vm._v(_vm._s(_vm.$lang(_vm.lang, "s2-b2-text"))),
-            ]),
-          ]
-        ),
-        _vm._v(" "),
-        _c(
-          "li",
-          {
-            staticClass: "jSec2-item jSec2-item-3",
-            class: { "jSec2-highlight": _vm.isBlock3Highlight },
-          },
-          [
-            _c("span", { staticClass: "jSec2-item-value" }, [
-              _vm._v(_vm._s(_vm.$lang(_vm.lang, "s2-b3-value"))),
-            ]),
-            _vm._v(" "),
-            _c("span", { staticClass: "jSec2-item-text" }, [
-              _vm._v(_vm._s(_vm.$lang(_vm.lang, "s2-b3-text"))),
-            ]),
-          ]
-        ),
-      ]),
-    ]),
+        !_vm.isMedium
+          ? _c(
+              "Hooper",
+              {
+                attrs: {
+                  infiniteScroll: true,
+                  autoPlay: true,
+                  playSpeed: 3000,
+                },
+              },
+              [
+                _c("Slide", [
+                  _c("div", { staticClass: "jSec2-item jSec2-item-1" }, [
+                    _c("span", { staticClass: "jSec2-item-value" }, [
+                      _vm._v(_vm._s(_vm.$lang(_vm.lang, "s2-b1-value"))),
+                    ]),
+                    _vm._v(" "),
+                    _c("span", { staticClass: "jSec2-item-text" }, [
+                      _vm._v(_vm._s(_vm.$lang(_vm.lang, "s2-b1-text"))),
+                    ]),
+                  ]),
+                ]),
+                _vm._v(" "),
+                _c("Slide", [
+                  _c("div", { staticClass: "jSec2-item jSec2-item-2" }, [
+                    _c("span", { staticClass: "jSec2-item-value" }, [
+                      _vm._v(_vm._s(_vm.$lang(_vm.lang, "s2-b2-value"))),
+                    ]),
+                    _vm._v(" "),
+                    _c("span", { staticClass: "jSec2-item-text" }, [
+                      _vm._v(_vm._s(_vm.$lang(_vm.lang, "s2-b2-text"))),
+                    ]),
+                  ]),
+                ]),
+                _vm._v(" "),
+                _c("Slide", [
+                  _c("div", { staticClass: "jSec2-item jSec2-item-3" }, [
+                    _c("span", { staticClass: "jSec2-item-value" }, [
+                      _vm._v(_vm._s(_vm.$lang(_vm.lang, "s2-b3-value"))),
+                    ]),
+                    _vm._v(" "),
+                    _c("span", { staticClass: "jSec2-item-text" }, [
+                      _vm._v(_vm._s(_vm.$lang(_vm.lang, "s2-b3-text"))),
+                    ]),
+                  ]),
+                ]),
+              ],
+              1
+            )
+          : _vm._e(),
+      ],
+      1
+    ),
   ])
 }
 var staticRenderFns = []
@@ -8424,115 +8685,188 @@ var render = function () {
   var _h = _vm.$createElement
   var _c = _vm._self._c || _h
   return _c("section", { attrs: { id: "jSec4" } }, [
-    _c("div", { staticClass: "section-content" }, [
-      _c("h2", { staticClass: "jSec4-header jHeader" }, [
-        _vm._v(_vm._s(_vm.$lang(_vm.lang, "s4-header"))),
-      ]),
-      _vm._v(" "),
-      _c("p", { staticClass: "jSec4-subheader" }, [
-        _vm._v(_vm._s(_vm.$lang(_vm.lang, "s4-subheader"))),
-      ]),
-      _vm._v(" "),
-      _c("ul", { ref: "items", staticClass: "jSec4-items" }, [
-        _c(
-          "li",
-          {
-            staticClass: "jSec4-item jSec4-item-1",
-            class: { "jSec4-highlight": _vm.isBlock1Highlight },
-          },
-          [
-            _c("span", { staticClass: "jSec4-item-title" }, [
-              _vm._v(_vm._s(_vm.$lang(_vm.lang, "s4-b1-title"))),
-            ]),
-            _vm._v(" "),
-            _c("span", { staticClass: "jSec4-item-text" }, [
-              _vm._v(_vm._s(_vm.$lang(_vm.lang, "s4-b1-text"))),
-            ]),
-          ]
-        ),
+    _c(
+      "div",
+      { staticClass: "section-content" },
+      [
+        _c("h2", { staticClass: "jSec4-header jHeader" }, [
+          _vm._v(_vm._s(_vm.$lang(_vm.lang, "s4-header"))),
+        ]),
+        _vm._v(" "),
+        _c("p", { staticClass: "jSec4-subheader" }, [
+          _vm._v(_vm._s(_vm.$lang(_vm.lang, "s4-subheader"))),
+        ]),
         _vm._v(" "),
         _c(
-          "li",
+          "ul",
           {
-            staticClass: "jSec4-item jSec4-item-2",
-            class: { "jSec4-highlight": _vm.isBlock2Highlight },
-          },
-          [
-            _c("span", { staticClass: "jSec4-item-title" }, [
-              _vm._v(_vm._s(_vm.$lang(_vm.lang, "s4-b2-title"))),
-            ]),
-            _vm._v(" "),
-            _c("span", { staticClass: "jSec4-item-text" }, [
-              _vm._v(_vm._s(_vm.$lang(_vm.lang, "s4-b2-text"))),
-            ]),
-          ]
-        ),
-        _vm._v(" "),
-        _c(
-          "li",
-          {
-            staticClass: "jSec4-item jSec4-item-3",
-            class: { "jSec4-highlight": _vm.isBlock3Highlight },
-          },
-          [
-            _c("span", { staticClass: "jSec4-item-title" }, [
-              _vm._v(_vm._s(_vm.$lang(_vm.lang, "s4-b3-title"))),
-            ]),
-            _vm._v(" "),
-            _c("span", { staticClass: "jSec4-item-text" }, [
-              _vm._v(_vm._s(_vm.$lang(_vm.lang, "s4-b3-text"))),
-            ]),
-          ]
-        ),
-      ]),
-      _vm._v(" "),
-      _c(
-        "form",
-        {
-          staticClass: "jSec4-form",
-          attrs: { action: "" },
-          on: { submit: _vm.onSubmit },
-        },
-        [
-          _c("p", { staticClass: "jSec4-footer" }, [
-            _vm._v(_vm._s(_vm.$lang(_vm.lang, "s4-footer"))),
-          ]),
-          _vm._v(" "),
-          _c(
-            "div",
-            { staticClass: "jSec4-form-inputs" },
-            [
-              _c("InputText", {
-                attrs: { label: _vm.$lang(_vm.lang, "s4-name") },
-                model: {
-                  value: _vm.name,
-                  callback: function ($$v) {
-                    _vm.name = $$v
-                  },
-                  expression: "name",
-                },
-              }),
-              _vm._v(" "),
-              _c("InputText", {
-                attrs: { label: _vm.$lang(_vm.lang, "s4-phone") },
-                model: {
-                  value: _vm.phone,
-                  callback: function ($$v) {
-                    _vm.phone = $$v
-                  },
-                  expression: "phone",
-                },
-              }),
+            directives: [
+              {
+                name: "show",
+                rawName: "v-show",
+                value: _vm.isMedium,
+                expression: "isMedium",
+              },
             ],
-            1
-          ),
-          _vm._v(" "),
-          _c("button", { staticClass: "jButton", attrs: { type: "submit" } }, [
-            _vm._v(_vm._s(_vm.$lang(_vm.lang, "s4-free"))),
-          ]),
-        ]
-      ),
-    ]),
+            ref: "items",
+            staticClass: "jSec4-items",
+          },
+          [
+            _c(
+              "li",
+              {
+                staticClass: "jSec4-item jSec4-item-1",
+                class: { "jSec4-highlight": _vm.isBlock1Highlight },
+              },
+              [
+                _c("span", { staticClass: "jSec4-item-title" }, [
+                  _vm._v(_vm._s(_vm.$lang(_vm.lang, "s4-b1-title"))),
+                ]),
+                _vm._v(" "),
+                _c("span", { staticClass: "jSec4-item-text" }, [
+                  _vm._v(_vm._s(_vm.$lang(_vm.lang, "s4-b1-text"))),
+                ]),
+              ]
+            ),
+            _vm._v(" "),
+            _c(
+              "li",
+              {
+                staticClass: "jSec4-item jSec4-item-2",
+                class: { "jSec4-highlight": _vm.isBlock2Highlight },
+              },
+              [
+                _c("span", { staticClass: "jSec4-item-title" }, [
+                  _vm._v(_vm._s(_vm.$lang(_vm.lang, "s4-b2-title"))),
+                ]),
+                _vm._v(" "),
+                _c("span", { staticClass: "jSec4-item-text" }, [
+                  _vm._v(_vm._s(_vm.$lang(_vm.lang, "s4-b2-text"))),
+                ]),
+              ]
+            ),
+            _vm._v(" "),
+            _c(
+              "li",
+              {
+                staticClass: "jSec4-item jSec4-item-3",
+                class: { "jSec4-highlight": _vm.isBlock3Highlight },
+              },
+              [
+                _c("span", { staticClass: "jSec4-item-title" }, [
+                  _vm._v(_vm._s(_vm.$lang(_vm.lang, "s4-b3-title"))),
+                ]),
+                _vm._v(" "),
+                _c("span", { staticClass: "jSec4-item-text" }, [
+                  _vm._v(_vm._s(_vm.$lang(_vm.lang, "s4-b3-text"))),
+                ]),
+              ]
+            ),
+          ]
+        ),
+        _vm._v(" "),
+        !_vm.isMedium
+          ? _c(
+              "Hooper",
+              {
+                attrs: {
+                  infiniteScroll: true,
+                  autoPlay: true,
+                  playSpeed: 3000,
+                },
+              },
+              [
+                _c("Slide", [
+                  _c("div", { staticClass: "jSec4-item jSec4-item-1" }, [
+                    _c("span", { staticClass: "jSec4-item-title" }, [
+                      _vm._v(_vm._s(_vm.$lang(_vm.lang, "s4-b1-title"))),
+                    ]),
+                    _vm._v(" "),
+                    _c("span", { staticClass: "jSec4-item-text" }, [
+                      _vm._v(_vm._s(_vm.$lang(_vm.lang, "s4-b1-text"))),
+                    ]),
+                  ]),
+                ]),
+                _vm._v(" "),
+                _c("Slide", [
+                  _c("div", { staticClass: "jSec4-item jSec4-item-2" }, [
+                    _c("span", { staticClass: "jSec4-item-title" }, [
+                      _vm._v(_vm._s(_vm.$lang(_vm.lang, "s4-b2-title"))),
+                    ]),
+                    _vm._v(" "),
+                    _c("span", { staticClass: "jSec4-item-text" }, [
+                      _vm._v(_vm._s(_vm.$lang(_vm.lang, "s4-b2-text"))),
+                    ]),
+                  ]),
+                ]),
+                _vm._v(" "),
+                _c("Slide", [
+                  _c("div", { staticClass: "jSec4-item jSec4-item-3" }, [
+                    _c("span", { staticClass: "jSec4-item-title" }, [
+                      _vm._v(_vm._s(_vm.$lang(_vm.lang, "s4-b3-title"))),
+                    ]),
+                    _vm._v(" "),
+                    _c("span", { staticClass: "jSec4-item-text" }, [
+                      _vm._v(_vm._s(_vm.$lang(_vm.lang, "s4-b3-text"))),
+                    ]),
+                  ]),
+                ]),
+              ],
+              1
+            )
+          : _vm._e(),
+        _vm._v(" "),
+        _c(
+          "form",
+          {
+            staticClass: "jSec4-form",
+            attrs: { action: "" },
+            on: { submit: _vm.onSubmit },
+          },
+          [
+            _c("p", { staticClass: "jSec4-footer" }, [
+              _vm._v(_vm._s(_vm.$lang(_vm.lang, "s4-footer"))),
+            ]),
+            _vm._v(" "),
+            _c(
+              "div",
+              { staticClass: "jSec4-form-inputs" },
+              [
+                _c("InputText", {
+                  attrs: { label: _vm.$lang(_vm.lang, "s4-name") },
+                  model: {
+                    value: _vm.name,
+                    callback: function ($$v) {
+                      _vm.name = $$v
+                    },
+                    expression: "name",
+                  },
+                }),
+                _vm._v(" "),
+                _c("InputText", {
+                  attrs: { label: _vm.$lang(_vm.lang, "s4-phone") },
+                  model: {
+                    value: _vm.phone,
+                    callback: function ($$v) {
+                      _vm.phone = $$v
+                    },
+                    expression: "phone",
+                  },
+                }),
+              ],
+              1
+            ),
+            _vm._v(" "),
+            _c(
+              "button",
+              { staticClass: "jButton", attrs: { type: "submit" } },
+              [_vm._v(_vm._s(_vm.$lang(_vm.lang, "s4-free")))]
+            ),
+          ]
+        ),
+      ],
+      1
+    ),
   ])
 }
 var staticRenderFns = []

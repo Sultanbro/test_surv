@@ -3,7 +3,11 @@
     <div class="section-content">
       <h2 class="jSec4-header jHeader">{{ $lang(lang, 's4-header') }}</h2>
       <p class="jSec4-subheader">{{ $lang(lang, 's4-subheader') }}</p>
-      <ul class="jSec4-items" ref="items">
+      <ul
+        v-show="isMedium"
+        ref="items"
+        class="jSec4-items"
+      >
         <li
           class="jSec4-item jSec4-item-1"
           :class="{'jSec4-highlight': isBlock1Highlight}"
@@ -26,6 +30,31 @@
           <span class="jSec4-item-text">{{ $lang(lang, 's4-b3-text') }}</span>
         </li>
       </ul>
+      <Hooper
+        v-if="!isMedium"
+        :infiniteScroll="true"
+        :autoPlay="true"
+        :playSpeed="3000"
+      >
+        <Slide>
+          <div class="jSec4-item jSec4-item-1">
+            <span class="jSec4-item-title">{{ $lang(lang, 's4-b1-title') }}</span>
+            <span class="jSec4-item-text">{{ $lang(lang, 's4-b1-text') }}</span>
+          </div>
+        </Slide>
+        <Slide>
+          <div class="jSec4-item jSec4-item-2">
+            <span class="jSec4-item-title">{{ $lang(lang, 's4-b2-title') }}</span>
+            <span class="jSec4-item-text">{{ $lang(lang, 's4-b2-text') }}</span>
+          </div>
+        </Slide>
+        <Slide>
+          <div class="jSec4-item jSec4-item-3">
+            <span class="jSec4-item-title">{{ $lang(lang, 's4-b3-title') }}</span>
+            <span class="jSec4-item-text">{{ $lang(lang, 's4-b3-text') }}</span>
+          </div>
+        </Slide>
+      </Hooper>
       <form
         action=""
         class="jSec4-form"
@@ -52,11 +81,15 @@
 </template>
 
 <script>
+import { Hooper, Slide } from 'hooper'
+import 'hooper/dist/hooper.css'
 import InputText from '../../components/InputText'
 
 export default {
   components: {
-    InputText
+    InputText,
+    Hooper,
+    Slide,
   },
   data() {
     return {
@@ -71,7 +104,10 @@ export default {
   computed: {
     lang() {
       return this.$root.$data.lang
-    }
+    },
+    isMedium(){
+      return this.$viewportSize.width >= 1260
+    },
   },
   mounted(){
     this.observer = new IntersectionObserver(this.animate, {
@@ -111,6 +147,9 @@ export default {
 #jSec4 {
   width: 100%;
   padding-bottom: 2rem;
+  .hooper{
+    height: auto;
+  }
 }
 
 .jSec4-header {

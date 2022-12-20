@@ -8,6 +8,7 @@
     <div class="section-content">
       <h1 class="jSec1-header jHeader">{{ $lang(lang, 's1-header') }}</h1>
       <div
+        v-if="isMedium"
         class="jSec1-tabs"
         :class="{'jSec1-tabs-popup-active': isPopupVisible}"
       >
@@ -63,11 +64,39 @@
           <Section1News v-show="activeTab === 'news'"/>
         </div>
       </div>
+      <Hooper
+        v-if="!isMedium"
+        ref="carousel"
+        :infiniteScroll="true"
+        :autoPlay="true"
+        :playSpeed="3000"
+      >
+        <Slide>
+          <Section1Profile/>
+        </Slide>
+        <Slide>
+          <Section1DB/>
+        </Slide>
+        <Slide>
+          <Section1KPI/>
+        </Slide>
+        <Slide>
+          <Section1Courses/>
+        </Slide>
+        <Slide>
+          <Section1Struct/>
+        </Slide>
+        <Slide>
+          <Section1News/>
+        </Slide>
+      </Hooper>
     </div>
   </section>
 </template>
 
 <script>
+import { Hooper, Slide } from 'hooper'
+import 'hooper/dist/hooper.css'
 import Section1Popup from '../section1/Section1Popup'
 import Section1Tab from '../section1/Section1Tab'
 import Section1Profile from '../section1/Section1Profile'
@@ -87,17 +116,22 @@ export default {
     Section1Courses,
     Section1Struct,
     Section1News,
-  },
-  computed: {
-    lang () {
-      return this.$root.$data.lang
-    }
+    Hooper,
+    Slide,
   },
   data(){
     return {
       activeTab: 'profile',
       activePopup: 'profile',
       isPopupVisible: false
+    }
+  },
+  computed:{
+    isMedium(){
+      return this.$viewportSize.width >= 1260
+    },
+    lang () {
+      return this.$root.$data.lang
     }
   },
   methods: {
@@ -122,13 +156,16 @@ export default {
 #jSec1 {
   width: 100%;
   padding-top: 1rem;
-  padding-bottom: 8rem;
+  padding-bottom: 4rem;
   background-image: url("../../assets/img/s1-bg.svg");
   background-repeat: no-repeat;
+  .hooper{
+    height: auto;
+  }
 }
-.jSec1-header {
+.jSec1-header.jHeader {
   //  font-weight: 700;
-  font-size: 2.5rem;
+  font-size: 1.25rem;
   line-height: 1;
 }
 
@@ -238,9 +275,13 @@ export default {
 
 @media screen and (min-width: $medium) {
   #jSec1 {
+    padding-bottom: 8rem;
     background-image: url("../../assets/img/s1-bg.svg"), url("../../assets/img/s1-bg-2.svg");
     background-repeat: no-repeat, no-repeat;
     background-position: 100% 50%, 0% 50%;
+  }
+  .jSec1-header.jHeader {
+    font-size: 2.5rem;
   }
   .jSec1-tabs-buttons {
     display: flex;

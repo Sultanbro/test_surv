@@ -42,6 +42,7 @@ export default {
 #jSec3 {
   width: 100%;
   padding-bottom: 3rem;
+  margin-top: 5rem;
 }
 
 .jSec3-header {
@@ -86,6 +87,9 @@ export default {
 }
 
 @media screen and (min-width: $medium) {
+  .jSec3{
+    margin-top: 0;
+  }
   .jSec3-block-title {
     margin-bottom: 1rem;
     font-size: 1.5rem;
