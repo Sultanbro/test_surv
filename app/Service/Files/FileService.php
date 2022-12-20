@@ -6,7 +6,7 @@ use App\Entities\DataTransferObjects\FileStoreDTO;
 use App\Exceptions\News\BusinessLogicException;
 use App\Helpers\FileHelper;
 use App\Models\File\File;
-use App\Repositories\Interfaces\Articles\FileRepositoryInterface;
+use App\Repositories\Interfaces\Article\FileRepositoryInterface;
 use Illuminate\Http\UploadedFile;
 
 class FileService

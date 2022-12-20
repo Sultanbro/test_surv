@@ -2,7 +2,7 @@
 
 namespace App\Http\Resources\Articles;
 
-use App\Repositories\Interfaces\Articles\ArticleRepositoryInterface;
+use App\Repositories\Interfaces\Article\ArticleRepositoryInterface;
 use Illuminate\Http\Resources\Json\JsonResource;
 use Illuminate\Support\Facades\Auth;
 

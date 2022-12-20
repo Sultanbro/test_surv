@@ -2,60 +2,60 @@
 
 namespace App\Http\Controllers\Admin;
 
+use App\Classes\Helpers\Currency;
 use App\Classes\Helpers\InsertData;
-use App\Components\TelegramBot;
+use App\Classes\Helpers\Phone;
 use App\DayType;
-use App\Events\TransferUserInGroupEvent;
+use App\Downloads;
+use App\External\Bitrix\Bitrix;
 use App\Fine;
-use App\GroupPlan;
 use App\Http\Controllers\Controller;
-use App\Http\Requests\GetReportsRequest;
-use App\Position;
-use App\Salary;
-use App\Service\Fines\FineService;
-use App\Service\GroupUserService;
-use App\Service\Timetrack\TimetrackService;
-use App\TimetrackingHistory;
-use App\UserAbsenceCause;
-use App\UserFine;
-use App\ProfileGroup;
-use App\Setting;
-use App\Timetracking;
-use App\User;
-use App\UserDescription;
-use App\Trainee;
+use App\Http\Controllers\IntellectController as IC;
 use App\Kpi;
-use App\UserNotification;
+use App\Models\Admin\EditedBonus;
+use App\Models\Admin\EditedKpi;
+use App\Models\Admin\ObtainedBonus;
+use App\Models\Analytics\Activity;
+use App\Models\Bitrix\Lead;
 use App\Models\Books\BookGroup;
+use App\Models\Kpi\Bonus;
+use App\Models\TestBonus;
+use App\Models\User\NotificationTemplate;
+use App\Position;
+use App\PositionDescription;
+use App\ProfileGroup;
+use App\ProfileGroupUser as PGU;
+use App\Salary;
+use App\Service\Bonus\ObtainedBonusService;
+use App\Service\Bonus\TestBonusService;
+use App\Service\Department\UserService;
+use App\Service\Fine\FineService;
+use App\Service\GroupUserService;
+use App\Service\Salary\SalaryService;
+use App\Service\Timetrack\TimetrackService;
+use App\Timeboard\UserPresence;
+use App\Timetracking;
+use App\TimetrackingHistory;
+use App\User;
+use App\UserAbsenceCause;
+use App\UserDescription;
+use App\UserFine;
+use App\UserNotification;
 use Carbon\Carbon;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\View;
-use App\External\Bitrix\Bitrix;
-use App\Models\Bitrix\Lead;
-use App\AnalyticsSettingsIndividually;
-use App\Downloads;
-use App\Http\Controllers\IntellectController as IC;
-use App\Classes\Helpers\Phone;
-use App\Models\Kpi\Bonus;
-use App\Classes\Helpers\Currency;
-use App\Models\User\NotificationTemplate;
-use App\Models\Analytics\Activity;
-use App\Models\Analytics\KpiIndicator;
-use App\Models\Admin\ObtainedBonus;
-use App\Models\TestBonus;
-use App\Models\Admin\EditedBonus;
-use App\Models\Admin\EditedKpi;
-use App\Timeboard\UserPresence;
-use App\PositionDescription;
-use App\ProfileGroupUser as PGU;
-use App\Service\Department\UserService;
 
 class TimetrackingController extends Controller
 {
-    public function __construct()
+    public function __construct(
+        public SalaryService        $salaryService,
+        public FineService          $fineService,
+        public ObtainedBonusService $obtainedBonusesService,
+        public TestBonusService     $testBonusService,
+    )
     {
         $this->middleware('auth');
     }
@@ -156,7 +156,7 @@ class TimetrackingController extends Controller
     public function fines()
     {
         View::share('menu', 'fines');
-        $fines = (new FineService)->getFines();
+        $fines = $this->fineService->getFines();
         return view('admin.fines', compact('fines'));
     }
 
@@ -1322,22 +1322,17 @@ class TimetrackingController extends Controller
     public function zarplatatable(Request $request)
     {
         $user = User::bitrixUser();
-        $month = $request->month;
-        $year = date('Y');
-        $date = Carbon::createFromDate($year, $month, 1);
-        try {
-            $currency_rate = (float)Currency::rates()[$user->currency];
-        } catch(\Exception $e) {
-            $currency_rate = 0.00001;
-        }
 
-        $userFinesInformation = (new FineService)->getUserFines($month, $user, $currency_rate);
-        $salaryBonuses = (new UserService)->getSalaryBonuses($month, $year, $user);
-        $obtainedBonuses = (new UserService)->getObtainedBonuses($month, $year,$user);
-        $testBonuses =  (new UserService)->getTestBonuses($month, $year,$user);
-        $avanses = (new UserService)->getAvanses($month, $year, $user);
+        $date = Carbon::createFromDate(date('Y'), $request->month, 1);
+        $currency_rate = (float)(Currency::rates()[$user->currency] ??  0.00001);
 
-        return (new TimetrackService())->getUserFinalSalary($salaryBonuses, $obtainedBonuses, $testBonuses, $userFinesInformation, $avanses,  $user, $month, $year, $date, $currency_rate);
+        $userFinesInformation = $this->fineService->getUserFines($date->month, $user, $currency_rate);
+        $salaryBonuses = $this->salaryService->getUserBonuses($date, $user);
+        $obtainedBonuses = $this->obtainedBonusesService->getUserBonuses($date,$user);
+        $testBonuses =  $this->testBonusService->getUserBonuses($date,$user);
+        $advances = $this->salaryService->getUserAdvances($date, $user);
+
+        return (new TimetrackService())->getUserFinalSalary($salaryBonuses, $obtainedBonuses, $testBonuses, $userFinesInformation['fines'],$userFinesInformation['total'], $advances,  $user, $date, $currency_rate);
     }
 
     public function setDay(Request $request)

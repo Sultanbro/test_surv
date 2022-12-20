@@ -2,99 +2,16 @@
 
 namespace App\Service\Department;
 
-use App\Classes\Helpers\Currency;
-use App\DayType;
-use App\Models\Admin\EditedBonus;
-use App\Models\Admin\ObtainedBonus;
 use App\Models\GroupUser;
-use App\Models\History;
-use App\Models\TestBonus;
 use App\ProfileGroup;
-use App\Salary;
-use App\Service\Fines\FineService;
-use App\Timetracking;
 use App\User;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\HigherOrderWhenProxy;
 
 class UserService
 {
-
-    /**
-     * @param int $month
-     * @param int $year
-     * @param User $user
-     * @return array
-     */
-    public function getSalaryBonuses(int $month, int $year, User $user)
-    {
-        return Salary::where('user_id', $user->id)
-            ->whereYear('date',  $year)
-            ->whereMonth('date', $month)
-            ->where('bonus', '!=', 0)
-            ->orderBy('id','desc')
-            ->get()
-            ->groupBy(function($b) {
-                return Carbon::parse($b->date)->format('d');
-            });
-
-    }
-
-    /**
-     * @param int $month
-     * @param int $year
-     * @param User $user
-     * @return array
-     */
-    public function getObtainedBonuses(int $month, int $year, User $user){
-        return ObtainedBonus::where('user_id', $user->id)
-            ->whereYear('date', $year)
-            ->whereMonth('date',$month)
-            ->where('amount', '>', 0)
-            ->get()
-            ->groupBy(function($b) {
-                return Carbon::parse($b->date)->format('d');
-            });
-    }
-
-    /**
-     * @param int $month
-     * @param int $year
-     * @param User $user
-     * @return array
-     */
-    public function getTestBonuses(int $month, int $year, User $user){
-        return  TestBonus::where('user_id', $user->id)
-            ->whereYear('date', $year)
-            ->whereMonth('date', $month)
-            ->where('amount', '>', 0)
-            ->get()
-            ->groupBy(function($b) {
-                return Carbon::parse($b->date)->format('d');
-            });
-    }
-
-    /**
-     * @param int $month
-     * @param int $year
-     * @param User $user
-     * @return array
-     */
-    public function getAvanses(int $month, int $year, User $user){
-        return  Salary::where('user_id', $user->id)
-            ->whereYear('date',  $year)
-            ->whereMonth('date', $month)
-            ->where('paid', '!=', 0)
-            ->orderBy('id','desc')
-            ->get()
-            ->groupBy(function($b) {
-                return Carbon::parse($b->date)->format('d');
-            });
-    }
 
     /**
      * @param int $user
