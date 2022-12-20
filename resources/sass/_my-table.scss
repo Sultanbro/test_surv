@@ -11,6 +11,21 @@
             }
         }
     }
+    th,td{
+        padding: 0!important;
+        input{
+            padding: 0 10px!important;
+            background-color: transparent!important;
+            height: 40px!important;
+        }
+    }
+    thead{
+        tr{
+            td,th{
+               border-left: 1px solid #ddd!important;
+            }
+        }
+    }
     th {
         background-color: #fff !important;
         box-shadow: 5px 2px 4px 0px rgba(0, 0, 0, 0.14);
@@ -43,7 +58,7 @@
                 height: 100%;
                 line-height: 25px;
                 border: 2px solid transparent;
-                padding: 0.3rem 0 !important;
+                padding: 5px 10px !important;
             }
             .t-name div {
                 padding: 0px 7px !important;
@@ -57,24 +72,17 @@
         }
     }
     .day {
-        min-width: 45px;
-        padding: .2rem .3rem !important;
         vertical-align: middle;
         text-align: center;
         position: relative;
         font-weight: 700;
         font-size: .8rem;
         >div {
-            position: absolute;
-            width: 100%;
-            height: 100%;
-            left: 0;
-            top: 0;
-            display: flex;
+            min-width: 45px;
+            min-height: 35px;
+            display: inline-flex;
             align-items: center;
-            text-align: center;
             justify-content: center;
-            cursor: pointer;
             &:hover {
                 background: rgba(184, 218, 255, 0.384);
             }
