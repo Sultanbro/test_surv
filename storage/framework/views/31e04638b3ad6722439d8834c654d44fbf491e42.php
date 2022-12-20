@@ -1,0 +1,1 @@
+<?php /**PATH /var/www/job/resources/views/layouts/popups.blade.php ENDPATH**/ ?>

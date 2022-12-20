@@ -1,0 +1,6 @@
+.*
+!/.gitignore
+!/app
+!/debugbar
+!/framework
+!/logs

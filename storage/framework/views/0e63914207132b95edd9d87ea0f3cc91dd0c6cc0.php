@@ -1,0 +1,1 @@
+<?php /**PATH /var/www/job/resources/views/surv/settings.blade.php ENDPATH**/ ?>

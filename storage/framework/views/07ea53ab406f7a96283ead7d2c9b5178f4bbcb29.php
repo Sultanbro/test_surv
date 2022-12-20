@@ -1,0 +1,1 @@
+<?php /**PATH /var/www/job/resources/views/includes/corp_book_page.blade.php ENDPATH**/ ?>
