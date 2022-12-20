@@ -5,21 +5,40 @@
       <h2 class="jReviews-header jHeader">{{ $lang(lang, 'review-header') }}</h2>
       <div class="jReviews-wrapper">
         <div class="jReviews-types">
-          <button class="jReviews-video jButton">{{ $lang(lang, 'review-video') }}</button>
-          <button class="jReviews-photo jButton" disabled>{{ $lang(lang, 'review-photo') }}</button>
+          <button
+            @click="setMode('videos')"
+            class="jReviews-video jButton"
+          >{{ $lang(lang, 'review-video') }}</button>
+          <button
+            @click="setMode('photos')"
+            class="jReviews-photo jButton"
+            disabled
+          >{{ $lang(lang, 'review-photo') }}</button>
         </div>
         <div class="jReviews-items-wrapper">
           <div class="jReviews-items">
             <div class="jReviews-item-watch">
-              <div class="jReviews-item-player">
+              <div
+                v-if="mode === 'videos'"
+                class="jReviews-item-player"
+              >
                 <iframe
-                    :src="prefix + items[activeItem].video"
+                    :src="prefix + videos[activeVideo].video"
                     allow="accelerometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
                     allowfullscreen
                     class="jReviews-item-iflame"
                     frameborder="0"
                     title="YouTube video player"
                 />
+              </div>
+              <div
+                v-if="mode === 'photos'"
+                class="jReviews-item-full"
+              >
+                <img
+                  :src="photos[activePhoto].full"
+                  class="jReviews-item-image"
+                >
               </div>
             </div>
             <div
@@ -33,13 +52,13 @@
                 :trimWhiteSpace="true"
               >
                 <Slide
-                  v-for="(item, key) in items"
+                  v-for="(item, key) in videos"
                   :key="'jTmb' + key"
                 >
                   <div
                     :style="`background-image: url(${item.thumbnail});`"
                     class="jReviews-item-thumbnail"
-                    @click="activeItem = key"
+                    @click="mode === 'videos' ? (activeVideo = key) : (activePhoto = key)"
                   />
                 </Slide>
               </Hooper>
@@ -72,13 +91,19 @@ export default {
     },
     isHooperVertical(){
       return this.$viewportSize.width >= 1260
+    },
+    items() {
+      if(this.mode === 'photos') return this.photos
+      return this.videos
     }
   },
   data() {
     return {
-      activeItem: 0,
+      activeVideo: 0,
+      activePhoto: 0,
+      mode: 'videos',
       prefix: 'https://www.youtube.com/embed/',
-      items: [
+      videos: [
         {
           thumbnail: 'https://i3.ytimg.com/vi/LQtmJnljYyk/maxresdefault.jpg',
           video: 'LQtmJnljYyk'
@@ -100,6 +125,28 @@ export default {
           video: 'LQtmJnljYyk'
         },
       ],
+      photos: [
+        {
+          thumbnail: 'https://i3.ytimg.com/vi/LQtmJnljYyk/maxresdefault.jpg',
+          full: 'https://placekitten.com/1024/576'
+        },
+        {
+          thumbnail: 'https://i3.ytimg.com/vi/LQtmJnljYyk/maxresdefault.jpg',
+          full: 'https://placekitten.com/1024/576'
+        },
+        {
+          thumbnail: 'https://i3.ytimg.com/vi/LQtmJnljYyk/maxresdefault.jpg',
+          full: 'https://placekitten.com/1024/576'
+        },
+        {
+          thumbnail: 'https://i3.ytimg.com/vi/LQtmJnljYyk/maxresdefault.jpg',
+          full: 'https://placekitten.com/1024/576'
+        },
+        {
+          thumbnail: 'https://i3.ytimg.com/vi/LQtmJnljYyk/maxresdefault.jpg',
+          full: 'https://placekitten.com/1024/576'
+        },
+      ],
       resizeObserver: null
     }
   },
@@ -108,7 +155,13 @@ export default {
       this.$refs.carousel.update()
     })
     this.resizeObserver.observe(this.$refs.carouselWrap)
-  }
+  },
+  methods: {
+    setMode(mode){
+      this.mode = mode
+      this.$refs.carousel.update()
+    }
+  },
 }
 </script>
 
@@ -166,6 +219,12 @@ export default {
   position: absolute;
   top: 0;
   left: 0;
+}
+
+.jReviews-item-full{}
+
+.jReviews-item-image{
+  max-width: 100%;
 }
 
 .jReviews-item-thumbnails {
