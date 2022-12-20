@@ -438,9 +438,6 @@ export default {
     bottom: 0 !important;
 
 }
-#example-datepicker__dialog_ {
-    bottom: -300px !important;
-}
 </style>
 <style lang="scss" scoped>
 .relative {

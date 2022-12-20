@@ -109,15 +109,15 @@
                         0
                     </td>
                     <td>
-                        <i class="fa fa-arrow-up btn btn-primary p-1 mx-2" @click="restoreItem(i)" v-if="item.deleted != undefined && item.deleted"></i>
-                        <i class="fa fa-trash btn btn-primary p-1 mx-2" @click="deleteItem(i)" v-else></i>
+                        <i class="fa fa-arrow-up btn btn-danger btn-icon" @click="restoreItem(i)" v-if="item.deleted != undefined && item.deleted"></i>
+                        <i class="fa fa-trash btn btn-danger btn-icon" @click="deleteItem(i)" v-else></i>
                     </td>
                 </tr>
 
                 <tr>
                     <td></td>
                     <td colspan="8" class="plus-item" @click="addItem">
-                        <div class="px-2 py-1">
+                        <div class="p-4">
                             <i class="fa fa-plus mr-2"></i> <b>Добавить активность</b>
                         </div>
                     </td>

@@ -66,6 +66,5 @@ export default {
   box-shadow: 1rem 0 2rem rgba(0, 0, 0, 0.15);
   opacity: 0;
   visibility: hidden;
-  transition: .5s;
 }
 </style>

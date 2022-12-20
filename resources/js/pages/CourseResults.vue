@@ -1,5 +1,5 @@
 <template>
-<div class="course-results">
+<div class="course-results mt-4">
     <div class="d-flex mb-2">
         <button class="btn btn-grey mr-2 rounded" :class="{'btn-primary': type == BY_USER}" @click="type = BY_USER">
             <span>По сотрудникам</span>

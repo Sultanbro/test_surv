@@ -1,8 +1,8 @@
 <template>
-<div class="kpi px-3 py-1">
+<div class="kpi">
 
     <!-- top line -->
-    <div class="d-flex mb-2 mt-2 jcsb aifs">
+    <div class="d-flex my-4 jcsb aifs">
         
          <div class="d-flex aic mr-2">
             <div class="d-flex aic mr-2">
@@ -32,7 +32,6 @@
     </div>
     
     <!-- table -->
-
     <table class="j-table">
         <thead>
             <tr class="table-heading">
@@ -85,8 +84,8 @@
 
                         <div v-else-if="field.key == 'stats'" :class="field.class">
                             
-                            <a v-bind:href="'/kpi?target='+ (item.target ? item.target.name : '')" target="_blank">   
-                                <i class="fa fa-chart-bar btn btn-primary p-1"></i>
+                            <a v-bind:href="'/kpi?target='+ (item.target ? item.target.name : '')" target="_blank" class="btn btn-primary btn-icon">
+                                <i class="fa fa-chart-bar"></i>
                             </a>
                         </div>
 
@@ -108,15 +107,15 @@
 
                     </td>
                     <td >
-                        <i class="fa fa-save ml-2 mr-1 btn btn-success p-1" @click="saveKpi(i)"></i>
-                        <i class="fa fa-trash btn btn-danger p-1" @click="deleteKpi(i)"></i>
+                        <i class="fa fa-save ml-2 mr-1 btn btn-success btn-icon" @click="saveKpi(i)"></i>
+                        <i class="fa fa-trash btn btn-danger btn-icon" @click="deleteKpi(i)"></i>
                     </td>
                 </tr>
 
                 <template v-if="item.items !== undefined">
                     <tr class="collapsable" :class="{'active': item.expanded}" :key="i + 'a'">
                         <td :colspan="fields.length + 2">
-                            <div class="table__wrapper">
+                            <div class="table__wrapper w-100">
                                 <kpi-items
                                     :kpi_id="item.id"
                                     :items="item.items" 
@@ -140,7 +139,6 @@
           
         </tbody>
      </table>
-      
 
     <!-- pagination -->
     <jw-pagination
@@ -168,7 +166,7 @@
      
       <div class="row">
 
-         <div class="col-md-4 mb-2" v-for="(field, f) in all_fields">
+         <div class="col-md-4 mb-4" v-for="(field, f) in all_fields">
             <b-form-checkbox
                 v-model="show_fields[field.key]"
                 :value="true"

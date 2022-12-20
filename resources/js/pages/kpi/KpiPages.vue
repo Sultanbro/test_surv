@@ -2,7 +2,7 @@
     <div class="kpi-pages">
         
         <div v-if="access == 'edit'">
-            <b-tabs type="card" :value="active" @activate-tab="(n,p,e) => active = n" >
+            <b-tabs type="card" class="mt-4" :value="active" @activate-tab="(n,p,e) => active = n" >
                 <b-tab title="KPI" :key="0" card>
                     <kpi v-if="active == 0"></kpi>
                 </b-tab>

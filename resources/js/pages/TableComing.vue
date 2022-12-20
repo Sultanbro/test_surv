@@ -39,22 +39,23 @@
                 <b-form-input v-model="comment" placeholder="Комментарий" :required="true"></b-form-input>
             </b-modal>
 
-            
-            <b-table responsive striped :sticky-header="true" class="text-nowrap text-right my-table" id="comingTable" :small="true" :bordered="true" :items="items" :fields="fields" show-empty emptyText="Нет данных">
-                <template slot="cell(name)" slot-scope="data">
-                    <div>
-                        {{ data.value }}
-                        <b-badge v-if="data.field.key == 'name'" pill variant="success">{{data.item.user_type}}</b-badge>
-                    </div>
-                </template>
- 
-                <template slot="cell()" slot-scope="data">
-                    <div @click="setCurrentEditingCell(data)" :class="{ fine: data.item.fines[data.field.key.toString()].length > 0}">
-                        <b-form-input @mouseover="$event.preventDefault()" class="form-control cell-input" type="time" :value="data.value" :readonly="true" ondblclick="this.readOnly='';" @change="changeTimeInCell" v-on:keyup.enter="openModal">
-                        </b-form-input>
-                    </div>
-                </template>
-            </b-table>
+            <div class="table-container">
+                <b-table responsive striped :sticky-header="true" class="text-nowrap text-right my-table" id="comingTable" :small="true" :bordered="true" :items="items" :fields="fields" show-empty emptyText="Нет данных">
+                    <template slot="cell(name)" slot-scope="data">
+                        <div>
+                            {{ data.value }}
+                            <b-badge v-if="data.field.key == 'name'" pill variant="success">{{data.item.user_type}}</b-badge>
+                        </div>
+                    </template>
+
+                    <template slot="cell()" slot-scope="data">
+                        <div @click="setCurrentEditingCell(data)" :class="{ fine: data.item.fines[data.field.key.toString()].length > 0}">
+                            <b-form-input @mouseover="$event.preventDefault()" class="form-control cell-input" type="time" :value="data.value" :readonly="true" ondblclick="this.readOnly='';" @change="changeTimeInCell" v-on:keyup.enter="openModal">
+                            </b-form-input>
+                        </div>
+                    </template>
+                </b-table>
+            </div>
         </div>
         <div v-else>
             <p>У вас нет доступа к этой группе</p>

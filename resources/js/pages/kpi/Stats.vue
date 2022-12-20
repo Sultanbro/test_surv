@@ -1,7 +1,7 @@
 <template>
 <div class="stats px-3 py-1">
     <!-- top line -->
-    <div class="d-flex mb-2 mt-2 jcsb aifs">
+    <div class="d-flex my-4 jcsb aifs">
         
          <div class="d-flex aic mr-2">
             <div class="d-flex aic mr-2">
