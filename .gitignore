@@ -20,7 +20,7 @@
 /public/static/profiles/
 /public/mix-manifest.json
 /storage/*.key
-/storage/.*
+/storage/tenant*
 !/storage/.gitignore
 !/storage/app
 !/storage/debugbar
