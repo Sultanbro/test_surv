@@ -61,11 +61,15 @@
                   href="/login"
                   text="auth"
                 />
-                <NavbarButton
+                <a
+                  href="/register"
+                  class="jNav-menu-user"
+                />
+                <!-- <NavbarButton
                   :lang="lang"
                   href="/register"
                   text="register"
-                />
+                /> -->
               </template>
             </span>
           </li>
@@ -204,8 +208,8 @@ export default {
 
 .jNav-menu-user {
   display: inline-block;
-  width: 2.625rem;
-  height: 2.625rem;
+  width: 2rem;
+  height: 2rem;
   border: none;
   border-radius: 2.625rem;
   vertical-align: middle;
@@ -254,6 +258,8 @@ export default {
   }
 
   .jNav-menu-user {
+    width: 2.625rem;
+    height: 2.625rem;
     margin-left: 2.5rem;
   }
 
