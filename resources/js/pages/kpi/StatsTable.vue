@@ -50,8 +50,8 @@
 
                 <template v-if="wrap_item.users != undefined && wrap_item.users.length > 0">
                     <tr class="collapsable" :class="{'active': wrap_item.expanded || !editable }" :key="w + 'a'">
-                        <td :colspan="editable ? 3 : 7">
-                            <div class="table__wrapper">
+                        <td :colspan="editable ? 4 : 7">
+                            <div class="table__wrapper w-100">
                             <table class="child-table">
                                 <template v-for="(user, i) in wrap_item.users">
                                     <tr :key="i" class="child-row" v-if="editable">
@@ -71,7 +71,7 @@
                                     <template v-if="user.items !== undefined">
                                         <tr class="collapsable" :class="{'active': user.expanded}" :key="i + 'a'">
                                             <td :colspan="fields.length + 2">
-                                                <div class="table__wrapper__second">
+                                                <div class="table__wrapper__second w-100">
                                                     <kpi-items
                                                         :my_sum="user.full_time == 1 ? wrap_item.completed_100 : wrap_item.completed_100 / 2"
                                                         :kpi_id="user.id"

@@ -2,7 +2,7 @@
     <div class="bonuses px-3 py-1">
     
         <!-- top line -->
-        <div class="d-flex mb-2 mt-2 jcsb aifs">
+        <div class="d-flex my-4 jcsb aifs">
             
             <div class="d-flex aic mr-2">
                 <div class="d-flex aic mr-2">
@@ -46,14 +46,14 @@
             </tr>
             <template v-if="bonus && newBonusesArray.length > 0">
                 <tr>
-                    <td>
+                    <td class="p-3">
                         <div class="d-flex px-2" @click="bonus.expanded = !bonus.expanded">
                             <i class="fa fa-minus mt-1" v-if="bonus.expanded"></i>
                             <i class="fa fa-plus mt-1" v-else></i>
                             <span class="ml-2"> new </span>
                         </div>
                     </td>
-                    <td class="text-left">
+                    <td class="p-3 text-left">
                         <div v-if="all_fields[0].key == 'target'" class="d-flex">
                             <superselect
                             v-if="bonus.id == 0"
@@ -194,7 +194,7 @@
                 <tr>
                     <td 
                         @click="expand(p)"
-                        class="pointer b-table-sticky-column"
+                        class="pointer p-3 b-table-sticky-column"
                     >
                             <div class="d-flex px-2">
                                 <i class="fa fa-minus mt-1" v-if="page_item.expanded"></i>
@@ -202,7 +202,7 @@
                                 <span class="ml-2">{{ p + 1 }}</span>
                             </div>
                         </td>
-                    <td class="text-left">
+                    <td class="p-3 text-left">
                        <!-- <superselect
                             v-if="item.target == null" 
                             class="w-full" 
@@ -227,7 +227,7 @@
                         :class="{'active': page_item.expanded}"
                     >
                         <td :colspan="fields.length + 2">
-                            <div class="table__wrapper">
+                            <div class="table__wrapper w-100">
                                 <table class="table b-table table-bordered table-sm table-responsive mb-0 table-inner">
                                     <tr>
                                         <th class="b-table-sticky-column text-center px-1">
@@ -340,23 +340,25 @@
                                             </div>
                                         </td>
                                         <td>
-                                            <i
-                                                class="fa fa-save btn btn-success p-1 ml-1"
-                                                @click="saveItemFromTable(p, i)"
-                                            />
-                                            <i
-                                                class="fa fa-edit btn btn-primary p-1"
-                                                @click="openSidebar(p, i)"
-                                            />
-                                            <i
-                                                class="fa fa-trash btn btn-danger p-1"
-                                                @click="deleteItem(p, i)"
-                                            />
+                                            <div class="d-flex px-2">
+                                                <i
+                                                        class="fa fa-save btn btn-success btn-icon"
+                                                        @click="saveItemFromTable(p, i)"
+                                                />
+                                                <i
+                                                        class="fa fa-edit btn btn-primary btn-icon"
+                                                        @click="openSidebar(p, i)"
+                                                />
+                                                <i
+                                                        class="fa fa-trash btn btn-danger btn-icon"
+                                                        @click="deleteItem(p, i)"
+                                                />
+                                            </div>
                                         </td>
                                     </tr>
                                     <tr>
                                         <td></td> <td colspan="8" class="plus-item">
-                                            <div class="px-2 py-1" @click="addBonusGroup(page_item)"><i class="fa fa-plus mr-2"></i> <b>Добавить бонус</b></div>
+                                            <div class="p-4" @click="addBonusGroup(page_item)"><i class="fa fa-plus mr-2"></i> <b>Добавить бонус</b></div>
                                         </td>
                                     </tr>    
                                 </table>

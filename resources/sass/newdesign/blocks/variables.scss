@@ -182,8 +182,8 @@ a:hover {
   }
   .no-profile{
     .container.container-left-padding {
-      padding-left: 7rem;
-      padding-right: 6rem;
+      padding-left: 9rem;
+      padding-right: 8rem;
     }
   }
 }
@@ -196,17 +196,6 @@ a:hover {
   .no-profile{
     .container.container-left-padding {
       padding-left: 7rem;
-    }
-  }
-}
-
-@media(min-width:1910px){
-  .container.container-left-padding {
-    padding-right: 8rem;
-  }
-  .no-profile{
-    .container.container-left-padding {
-      padding-right: 8rem;
     }
   }
 }

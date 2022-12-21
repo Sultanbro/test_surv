@@ -41,7 +41,7 @@
                         <BTd>{{ item.created_at | splitDate(item.created_at) }}</BTd>
                         <BTd>{{ item.creator.name }} {{ item.creator.last_name }}</BTd>
                         <BTd @click.stop>
-                            <i class="fa fa-trash delete" @click="modalShow(item)"></i>
+                            <b-button class="btn btn-danger btn-icon"  @click="modalShow(item)"> <i class="fa fa-trash"></i></b-button>
                         </BTd>
                     </BTr>
                 </BTbody>
@@ -164,39 +164,11 @@
             color: #999;
             text-transform: uppercase;
         }
-        .table-container{
-            border: 1px solid #ddd;
-            border-radius: 10px;
-        }
         #awards-table {
-            margin: 0;
             thead{
                 white-space: nowrap;
-                tr{
-                    position: relative;
-                    z-index: 2;
-                    box-shadow: 0 3px 5px 0 rgba(0,0,0,0.15);
-                }
-                td,th{
-                    padding: 15px 20px;
-                    text-transform: uppercase;
-                    font-weight: 700;
-                    font-size: 12px;
-                    color: #666666;
-                    border-bottom: none;
-                }
             }
             tbody {
-                tr{
-                    cursor: default;
-                    &:nth-child(odd){
-                        background-color: #efeef5;
-                    }
-                    td,th{
-                        border-top: none;
-                    }
-                }
-                cursor: pointer;
                 .td-desc{
                     max-width: calc(100vw - 1000px);
                     position: relative;
@@ -244,21 +216,6 @@
                     transition: 0.15s all ease;
                     &:hover{
                         background-color: rgba(0,0,0,0.1);
-                    }
-                }
-                .delete{
-                    width: 30px;
-                    height: 30px;
-                    display: inline-flex;
-                    align-items: center;
-                    justify-content: center;
-                    cursor: pointer;
-                    border-radius: 50%;
-                    font-size: 16px;
-                    color: #dc3545;
-                    transition: 0.15s all ease;
-                    &:hover{
-                        background-color: rgba(220,53, 69, 0.2);
                     }
                 }
             }

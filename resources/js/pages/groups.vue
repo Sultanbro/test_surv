@@ -3,50 +3,49 @@
     <b-alert v-if="message!=null" variant="info">
       {{ message}}
     </b-alert>
-    <div class="row align-items-center">
-      <div class="col-lg-3 col-md-6">
+    <b-row class="align-items-center">
+      <b-col cols="12" lg="4" md="6">
+      <b-form-group label="Группа">
         <b-form-select
-          v-model="activebtn"
-          :options="statuses"
-          size="md"
-          @change="selectGroup"
-          class="group-select col-lg-6 d-flex"
+                v-model="activebtn"
+                :options="statuses"
+                size="md"
+                @change="selectGroup"
+                class="group-select col-lg-6 d-flex"
         >
           <template #first>
-            <b-form-select-option :value="null" disabled
-              >Выберите группу из списка</b-form-select-option
-            >
+            <b-form-select-option :value="null" disabled>Выберите группу из списка</b-form-select-option>
           </template>
         </b-form-select>
-      </div>
-      <div class="col-lg-3 col-md-6">
-        <div class="add-grade">
-          <input type="text" class="form-control" v-model="new_status" />
-          <button @click="addStatus" class="btn btn-success">
-            Добавить группу
+      </b-form-group>
+      </b-col>
+      <b-col cols="12" lg="4" md="6" class="col-lg-3 col-md-6">
+        <b-form-group label="Добавить группу" class="add-grade">
+          <b-form-input type="text" class="form-control" v-model="new_status" />
+          <button @click="addStatus" class="btn btn-success ml-4">
+            <i class="fa fa-plus"></i>
           </button>
-        </div>
-      </div>
-      <div class="col-lg-3 col-md-6 я" style="text-align: right">
-        <div class="d-flex justify-content-between">
           <button
-            class="btn btn-info rounded add-s ml-2"
-            @click="showArchiveModal = true"
-            title="Восстановить из архива"
+                  class="btn btn-info rounded add-s ml-4"
+                  @click="showArchiveModal = true"
+                  title="Восстановить из архива"
           >
             <i class="fa fa-archive"></i>
           </button>
-          <p class="mb-0">Название</p>
-        </div>
-      </div>
-      <div class="col-lg-3 col-md-6">
-        <input type="text" class="form-control" v-model="gname" />
-      </div>
-    </div>
+        </b-form-group>
+      </b-col>
+      <b-col cols="12" md="5" lg="4">
+       <b-form-group label="Название" class="add-grade">
+         <b-form-input type="text" v-model="gname"/>
+       </b-form-group>
+      </b-col>
+    </b-row>
+
+    <hr v-if="activebtn != null" class="my-4">
 
     <div v-if="activebtn != null" class="row">
-      <div class="col-lg-6 mb-3 mt-4">
-        <div class="dialerlist bg mb-2">
+      <div class="col-lg-6 mb-3">
+        <div class="dialerlist">
           <div class="fl">Время работы с</div>
           <div class="fl">
             <input
@@ -66,7 +65,7 @@
           </div>
         </div>
 
-        <div class="dialerlist bg mb-2">
+        <div class="dialerlist">
           <div class="fl">
             Подтягивать время
             <i class="fa fa-cogs ml-2" @click="editTimeAddress()"></i>
@@ -86,7 +85,7 @@
 
      
 
-        <div class="dialerlist bg mb-2">
+        <div class="dialerlist">
           <div class="fl">Кол-во рабочих дней</div>
           <div class="fl">
             <input
@@ -99,21 +98,23 @@
           </div>
         </div>
 
-        <div class="dialerlist bg mb-2 py-1">
+        <div class="dialerlist">
           <b-form-checkbox
             v-model="editable_time"
             :value="1"
             :unchecked-value="0"
+            switch
           >
             Табель редактируется
           </b-form-checkbox>
         </div>
 
-        <div class="dialerlist bg mb-2 py-1">
+        <div class="dialerlist">
           <b-form-checkbox
             v-model="paid_internship"
             :value="1"
-            :unchecked-value="0" 
+            :unchecked-value="0"
+            switch
           >
             Оплачиваемая стажировка
           </b-form-checkbox>
@@ -135,7 +136,7 @@
 
       </div>
 
-      <div class="col-lg-6 mb-3 mt-4 sssz">
+      <div class="col-lg-6 mb-3 sssz">
         
         <div class="dialerlist blu">
           <multiselect
@@ -160,12 +161,14 @@
             v-model="show_payment_terms"
             :value="1"
             :unchecked-value="0"
+            switch
           >
             Показывать в профиле
           </b-form-checkbox>
 
-          <h5 class="mt-3">Условия оплаты труда</h5>
-          <textarea v-model="payment_terms" class="form-control"></textarea>
+         <b-form-group label="Условия оплаты труда">
+           <b-textarea v-model="payment_terms" style="min-height: 150px;"></b-textarea>
+         </b-form-group>
         </div>
       </div>
 
@@ -921,11 +924,7 @@ export default {
 .dialerlist {
   display: flex;
   align-items: center;
-  margin: 0;
-  &.bg {
-    background: #f1f1f1;
-    padding-left: 15px;
-  }
+  margin: 0 0 20px 0;
   .fl {
     flex: 1;
     display: flex;

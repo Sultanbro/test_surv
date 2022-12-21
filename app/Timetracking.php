@@ -77,13 +77,13 @@ class Timetracking extends Model
 
     public function setEnter(Carbon $value)
     {
-        $this->exit = $value;
+        $this->enter = $value->setTimezone('UTC');
         return $this;
     }
 
     public function setExit(Carbon $value)
     {
-        $this->exit = $value;
+        $this->exit = $value->setTimezone('UTC');
         return $this;
     }
 
@@ -93,20 +93,20 @@ class Timetracking extends Model
         return $this;
     }
 
-    public function addTime(Carbon $value)
+    public function addTime(Carbon $value, $tz = 'UTC')
     {   
         $arr = $this->times;
         
         if(!$arr) {
             $arr = [];
-            $arr[] = $this->enter->format('H:i');
+            $arr[] = $this->enter->setTimezone($tz)->format('H:i');
 
             if($this->exit) {
-                $arr[] = $this->exit->format('H:i');
+                $arr[] = $this->exit->setTimezone($tz)->format('H:i');
             }
         }
         
-        $arr[] = $value->format('H:i');
+        $arr[] = $value->setTimezone($tz)->format('H:i');
 
         return $this->setTimes($arr);
     }

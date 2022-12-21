@@ -1,136 +1,144 @@
 <template>
-<div class="p-3 permissions">
+    <div class="p-3 permissions">
 
-<h4 class="title d-flex">
+        <h4 class="title d-flex">
 
-    <div>Настройка доступов
-        <span v-if="role != null">: Роли</span>
-    </div>
-
-    <input
-        v-if="role == null"
-        class="searcher"
-        v-model="searchText"
-        type="text"
-        placeholder="Поиск..."
-    >
-
-    <div v-if="role == null" class="d-flex">
-        <div class=" d-flex ml-3">
-            <button class="btn btn-default btn-sm" @click="addItem">Добавить</button>
-        </div>
-    </div>
-</h4>
-
-<!-- Главная страница -->
-<section>
-  <div class="d-flex mb-3">
-    <div class="list" v-if="role == null">
-      <div class="item d-flex contrast">
-        <div class="person"></div>
-        <div class="role">Роль</div>
-        <div class="groups">Отделы
-              <i class="fa fa-info-circle ml-2"
-                v-b-popover.hover.right.html="'Выберите только те отделы, которые будет видеть сотрудник(-и)'"
-                title="Доступ к отделам">
-            </i>
-        </div>
-        <div class="actions"/>
-      </div>
-
-      <permission-item
-        v-for="(item, i) in filtered_items"
-        class="item d-flex"
-        :key="item.id"
-        @deleteItem="deleteItem(i)"
-        @updateItem="updateItem(i)"
-        :item="item"
-        :groups="groups"
-        :users="users"
-        :roles="roles"
-      />
-
-
-
-    </div>
-
-
-    <!-- Edit роль -->
-    <div v-if="role" class="edit-role">
-      <div class="d-flex mb-3">
-        <button class="btn btn-primary btn-sm mr-2" @click="back">Назад</button>
-      </div>
-
-      <input type="text" v-model="role.name" class="role-title form-control mb-3" />
-
-      <div class="pages">
-        <div class="item d-flex contrast">
-          <div class="name mr-3">Страница</div>
-          <div class="check d-flex">Просмотр</div>
-          <div class="check d-flex">Редактирование</div>
-        </div>
-
-        <template v-for="(page, i) in pages">
-
-            <div class="item d-flex" :key="i">
-              <div class="name mr-3" @click="page.opened = !page.opened">{{page.name}}
-                <i class="fa fa-chevron-up" v-if="page.opened && page.children.length > 0"></i>
-                <i class="fa fa-chevron-down" v-if="!page.opened && page.children.length > 0"></i>
-              </div>
-              <div class="check d-flex">
-                  <label class="mb-0 pointer">
-                    <input class="pointer" v-model="role.perms[page.key + '_view']"  type="checkbox" @change="checkParent(i, 'view')"  />
-                  </label>
-              </div>
-                <div class="check d-flex">
-                  <label class="mb-0 pointer">
-                    <input class="pointer" v-model="role.perms[page.key + '_edit']"  type="checkbox" @change="checkParent(i, 'edit')" />
-                  </label>
-              </div>
+            <div>Настройка доступов
+                <span v-if="role != null">: Роли</span>
             </div>
+        </h4>
+        <b-form-group class="add-grade">
+            <b-form-input
+                    v-if="role == null"
+                    v-model="searchText"
+                    type="text"
+                    placeholder="Поиск..."
+            />
+            <button v-if="role == null" class="btn btn-success ml-4" @click="addItem">Добавить</button>
+        </b-form-group>
 
-            <template v-if="page.children.length > 0">
-              <div  class="item d-flex child" v-for="children in page.children" v-if="page.opened">
-                <div class="name mr-3">{{children.name}}</div>
-                <div class="check d-flex">
-                    <label class="mb-0 pointer">
-                      <input class="pointer" v-model="role.perms[children.key + '_view']"  type="checkbox" @change="checkChild(i, 'view')"  />
-                    </label>
-                </div>
-                  <div class="check d-flex">
-                    <label class="mb-0 pointer">
-                      <input class="pointer" v-model="role.perms[children.key + '_edit']"  type="checkbox" @change="checkChild(i, 'edit')" />
-                    </label>
-                </div>
-              </div>
-            </template>
-        </template>
 
-      </div>
+        <!-- Главная страница -->
+        <section>
+            <b-row>
+                <b-col cols="12" md="9">
+                    <div class="table-container" v-if="role == null">
+                        <b-table-simple class="custom-table-permissions">
+                            <b-thead>
+                                <b-tr>
+                                    <b-th></b-th>
+                                    <b-th>Роль</b-th>
+                                    <b-th>Отделы
+                                        <i class="fa fa-info-circle ml-2"
+                                           v-b-popover.hover.right.html="'Выберите только те отделы, которые будет видеть сотрудник(-и)'"
+                                           title="Доступ к отделам">
+                                        </i>
+                                    </b-th>
+                                    <b-th></b-th>
+                                </b-tr>
+                            </b-thead>
+                            <b-tbody>
+                                <permission-item
+                                        v-for="(item, i) in filtered_items"
+                                        :key="item.id"
+                                        @deleteItem="deleteItem(i)"
+                                        @updateItem="updateItem(i)"
+                                        :item="item"
+                                        :groups="groups"
+                                        :users="users"
+                                        :roles="roles"
+                                />
+                            </b-tbody>
+                        </b-table-simple>
+                    </div>
 
-      <div class="mt-3">
-        <button class="btn btn-success btn-sm" @click="updateRole">Сохранить</button>
-      </div>
+                    <!-- Edit роль -->
+                    <div v-if="role" class="edit-role">
+                        <div class="d-flex mb-3">
+                            <button class="btn btn-primary btn-sm mr-2" @click="back">Назад</button>
+                        </div>
+
+                        <input type="text" v-model="role.name" class="role-title form-control mb-3"/>
+
+                        <div class="pages table-container">
+                            <div class="item d-flex contrast">
+                                <div class="name mr-3">Страница</div>
+                                <div class="check d-flex">Просмотр</div>
+                                <div class="check d-flex">Редактирование</div>
+                            </div>
+
+                            <template v-for="(page, i) in pages">
+
+                                <div class="item d-flex" :key="i">
+                                    <div class="name mr-3" @click="page.opened = !page.opened">{{page.name}}
+                                        <i class="fa fa-chevron-up" v-if="page.opened && page.children.length > 0"></i>
+                                        <i class="fa fa-chevron-down"
+                                           v-if="!page.opened && page.children.length > 0"></i>
+                                    </div>
+                                    <div class="check d-flex">
+                                        <label class="mb-0 pointer">
+                                            <input class="pointer" v-model="role.perms[page.key + '_view']"
+                                                   type="checkbox" @change="checkParent(i, 'view')"/>
+                                        </label>
+                                    </div>
+                                    <div class="check d-flex">
+                                        <label class="mb-0 pointer">
+                                            <input class="pointer" v-model="role.perms[page.key + '_edit']"
+                                                   type="checkbox" @change="checkParent(i, 'edit')"/>
+                                        </label>
+                                    </div>
+                                </div>
+
+                                <template v-if="page.children.length > 0">
+                                    <div class="item d-flex child" v-for="children in page.children" v-if="page.opened">
+                                        <div class="name mr-3">{{children.name}}</div>
+                                        <div class="check d-flex">
+                                            <label class="mb-0 pointer">
+                                                <input class="pointer" v-model="role.perms[children.key + '_view']"
+                                                       type="checkbox" @change="checkChild(i, 'view')"/>
+                                            </label>
+                                        </div>
+                                        <div class="check d-flex">
+                                            <label class="mb-0 pointer">
+                                                <input class="pointer" v-model="role.perms[children.key + '_edit']"
+                                                       type="checkbox" @change="checkChild(i, 'edit')"/>
+                                            </label>
+                                        </div>
+                                    </div>
+                                </template>
+                            </template>
+
+                        </div>
+
+                        <div class="mt-3">
+                            <button class="btn btn-success btn-sm" @click="updateRole">Сохранить</button>
+                        </div>
+                    </div>
+                </b-col>
+                <b-col cols="12" md="3">
+                    <!-- Показать все роли -->
+                    <div class="roles-list">
+                        <div class="roles">
+                            <div class="contrast role-title"><b>Список ролей</b></div>
+                           <div class="role-body">
+                               <div class="role-item" v-for="(item, i) in roles" :key="i">
+                                   <div class="name" @click="editRole(i)">{{ item.name }}</div>
+                                   <div class="actions">
+                                       <span class="btn btn-primary btn-sm btn-icon"  @click="editRole(i)"><i class="far fa-edit"/></span>
+                                       <span class="btn btn-danger btn-sm btn-icon"  @click="deleteRole(i)"><i class="fa fa-times"/></span>
+                                   </div>
+                               </div>
+                           </div>
+                            <div class="role-footer">
+                                <button class="btn btn-success btn-sm" @click="addRole">Добавить роль</button>
+                            </div>
+                        </div>
+                    </div>
+                </b-col>
+            </b-row>
+        </section>
+
     </div>
-
-    <!-- Показать все роли -->
-    <div class="roles-list">
-      <div class="roles">
-        <div class="contrast role-title"><b>Список ролей</b></div>
-        <div class="item d-flex" v-for="(item, i) in roles" :key="i">
-          <div class="name" @click="editRole(i)">{{ item.name }}</div>
-          <div class="actions">
-            <i class="far fa-edit" @click="editRole(i)" />
-            <i class="fa fa-times" @click="deleteRole(i)"/>
-          </div>
-        </div>
-      </div>
-      <button class="btn btn-default btn-sm mt-3" @click="addRole">Добавить роль</button>
-    </div>
-  </div>
-</section>
-
-</div>
 </template>
 <script>
 export default {
@@ -390,3 +398,19 @@ export default {
   },
 };
 </script>
+
+<style lang="scss">
+    .custom-table-permissions {
+        th, td {
+            text-align: left;
+            border-left: 1px solid #ddd !important;
+            &:first-child{
+                border-left: none !important;
+            }
+        }
+
+        tr {
+            border-bottom: 1px solid #ddd;
+        }
+    }
+</style>

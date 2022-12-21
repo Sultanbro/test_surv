@@ -21,11 +21,11 @@
     </div>
     <div class="col-3 justify-content-end d-flex align-items-start">
       
-      <a href="/timetracking/create-person" class="btn btn-success btn-sm rounded">Пригласить</a>
-      <b-button @click="showModal = !showModal" class="btn-primary btn-sm rounded ml-1" title="Показывать поля">
+      <a href="/timetracking/create-person" class="btn btn-success rounded">Пригласить</a>
+      <b-button @click="showModal = !showModal" class="btn-primary rounded ml-1" title="Показывать поля">
         <i class="fa fa-eye" aria-hidden="true"></i>
       </b-button>
-      <b-button @click="showFilterModal = !showFilterModal" class="btn-primary btn-sm rounded ml-1" title="Дополнительные фильтры таблицы">
+      <b-button @click="showFilterModal = !showFilterModal" class="btn-primary rounded ml-1" title="Дополнительные фильтры таблицы">
         <i class="fa fa-filter" aria-hidden="true"></i>
       </b-button>
     </div>
@@ -36,7 +36,7 @@
 
   <div style="clear: both;"></div>
     
-    <div class="table-responsive ul"> 
+    <div class="table-responsive ul table-container">
     <b-table striped hover show-empty emptyText="Ничего нет" ref="table" small 
               stacked="md" 
               :items="itemProvider"
@@ -100,7 +100,7 @@
         <b-badge variant="primary" class="mr-1" v-for="group_id in row.value" :key="group_id">{{groups[group_id]}}</b-badge>
       </template>
       <template slot="cell(created_at)" slot-scope="row">
-        {{ row.value }}
+        {{ $moment(row.value).format('DD.MM.YYYY') }}
       </template>
       <template slot="cell(full_time)" slot-scope="row">
         <div v-if="row.value  == 1">
@@ -118,11 +118,11 @@
     </b-table>
   </div>
 
-  <div class="my-2 d-flex align-items-center">
-    <b-pagination v-model="currentPage" :total-rows="totalRows" :per-page="perPage" align="fill" size="sm" class="my-0 p-0"></b-pagination>
-     <a href="#" @click="exportData()" class="btn btn-success btn-sm ml-2 rounded d-block block" v-if="[5,18].includes(currentUser)">
-                <i class="far fa-file-excel"></i>
-                Экспорт</a>
+  <div class="my-2 d-flex align-items-center justify-content-end">
+   <div>
+       <b-pagination v-model="currentPage" :total-rows="totalRows" :per-page="perPage" align="fill" size="sm" class="my-0 p-0"></b-pagination>
+<!--       <a href="#" @click="exportData()" class="btn btn-success btn-sm ml-2 rounded d-block" v-if="[5,18].includes(currentUser)"><i class="far fa-file-excel"></i>Экспорт</a>-->
+   </div>
   </div>
 
 

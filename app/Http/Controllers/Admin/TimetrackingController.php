@@ -42,6 +42,7 @@ use App\Timeboard\UserPresence;
 use App\PositionDescription;
 use App\ProfileGroupUser as PGU;
 use App\Service\Department\UserService;
+use App\Setting;
 
 class TimetrackingController extends Controller
 {
@@ -329,7 +330,7 @@ class TimetrackingController extends Controller
 
         $workday->setExit($exit)
             ->setStatus(Timetracking::DAY_ENDED)
-            ->addTime($exit)
+            ->addTime($exit, $user->timezone())
             ->save();
 
         return 'stopped';
@@ -363,15 +364,15 @@ class TimetrackingController extends Controller
         if($workday) {
             $workday->setEnter($now)
                 ->setStatus(Timetracking::DAY_STARTED)
-                ->addTime($now)
+                ->addTime($now, $user->timezone())
                 ->save();
         }
 
         if( !$workday ) {
             Timetracking::create([
-                'enter' => $now,
+                'enter' => $now->setTimezone('UTC'),
                 'user_id' => $user->id,
-                'times' => [$now->format('H:i')],
+                'times' => [$now->setTimezone('UTC')->format('H:i')],
                 'status' => Timetracking::DAY_STARTED
             ]);
         }   
@@ -1250,7 +1251,7 @@ class TimetrackingController extends Controller
                 ? json_decode($group->editors_id)
                 : [];
 
-            if(!in_array($currentUser->id, $group_editors)) {
+            if(!in_array($currentUser->id, $group_editors) && !$currentUser->is_admin) {
                 return [
                     'error' => 'access',
                 ];
@@ -1287,7 +1288,11 @@ class TimetrackingController extends Controller
                 
                
                 foreach ($days as $day) {
-                    $data[$userData->id][$day] = $userData->timetracking->where('date', $day)->min('enter')->format('H:i');
+                    $data[$userData->id][$day] = $userData->timetracking
+                        ->where('date', $day)
+                        ->min('enter')
+                        ->setTimezone(Setting::TIMEZONES[6])
+                        ->format('H:i');
                 }
 
                 $fines = [];

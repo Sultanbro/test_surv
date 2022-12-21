@@ -45,11 +45,26 @@ class TestController extends Controller {
   
 	
 	public function test() { 
-		 
-        $user = User::find(5);
-		$a = Carbon::now($user->timezone())->timezone;
-		$b = Carbon::now($a);
-        dd($b);
+		
+        // $records = Timetracking::query()
+		// 	->whereMonth('enter', 12)
+		// 	->whereYear('enter', 2022)
+		// 	->get();
+
+
+		// foreach ($records as $key => $record) {
+		// 	if($record->enter->hour >= 6) {
+		// 		$record->enter = $record->enter->subHours(6);
+		// 	} 
+			
+		// 	if($record->exit && $record->exit->hour >= 6) $record->exit = $record->exit->subHours(6);
+
+		// 	$record->save();
+		// }
+
+		// dd($records->count() . '  finished at ' . now());
+
+       
 	}
 
     public function testMethodForCheck()

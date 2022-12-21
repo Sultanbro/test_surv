@@ -1,7 +1,7 @@
 <template>
 
     <div class="check-page mt-2">
-        <div class="col-md-12 p-0 row">
+        <div class="row">
             <div class="col-md-2">
                 <a id="showCheckSideBar" @click="addNewCheckModalShow()"  class="btn btn-success" style="color: white">Создать чек лист</a>
             </div>
@@ -11,55 +11,54 @@
             </div>
         </div>
 
-        <div class="col-md-12 mt-4">
-            <i class="bi bi-reception-4"></i>
-            <div class="view-table">
-                <table class="table table-hover">
-                    <thead>
-                    <tr>
-                        <th scope="col">Сотрудники/отдел</th>
-                        <th scope="col">Кол-показов
-                            <i class="fa fa-info-circle" style="cursor: pointer"
-                               v-b-popover.hover.right.html="'Сколько раз будет уведомление Чек лист автоматически будет всплывать в кабинете сотрудника'"
-                               title="Работают">
-                            </i>
-                        </th>
-                        <th scope="col"  >Постановщик</th>
-                        <th scope="col" >Статитика</th>
-                    </tr>
-                    </thead>
-                    <tbody>
+      <div class="mt-4">
+          <i class="bi bi-reception-4"></i>
+          <div class="table-container">
+              <b-table-simple class="table table-hover table-striped">
+                  <b-thead>
+                      <b-tr>
+                          <b-th scope="col">Сотрудники/отдел</b-th>
+                          <b-th scope="col">Кол-показов
+                              <i class="fa fa-info-circle" style="cursor: pointer"
+                                 v-b-popover.hover.right.html="'Сколько раз будет уведомление Чек лист автоматически будет всплывать в кабинете сотрудника'"
+                                 title="Работают">
+                              </i>
+                          </b-th>
+                          <b-th scope="col">Постановщик</b-th>
+                          <b-th scope="col">Статитика</b-th>
+                          <b-th></b-th>
+                      </b-tr>
+                  </b-thead>
+                  <b-tbody>
+                      <b-tr class="p-0" v-for="(arrCheckList, index) in filteredRows" :key="`employee-${index}`">
+                          <b-td>
+                              <a v-html="highlightMatches(arrCheckList.title)"  @click="editCheck(arrCheckList.id,arrCheckList.item_type)" >
+                                  {{arrCheckList.title}}
+                              </a>
+                          </b-td>
+                          <b-td>
+                              {{arrCheckList.show_count}}
+                          </b-td>
+                          <b-td>
+                              {{arrCheckList.creator.name}}  {{arrCheckList.creator.last_name}}
+                          </b-td>
+                          <b-td class="position-relative">
+                              <a  v-bind:href="'/timetracking/quality-control'" target="_blank" class="btn btn-primary btn-icon">
+                                  <i class="fa fa-signal" aria-hidden="true"></i>
+                              </a>
+                          </b-td>
+                          <b-td>
+                              <a @click="arrCheckDelete(arrCheckList.id)" class="btn btn-danger btn-icon">
+                                  <i class="fa fa-trash" aria-hidden="true"></i>
+                              </a>
+                          </b-td>
+                      </b-tr>
+                  </b-tbody>
+              </b-table-simple>
 
 
-                      <tr class="p-0" v-for="(arrCheckList, index) in filteredRows" :key="`employee-${index}`">
-                        <td  >
-                            <a v-html="highlightMatches(arrCheckList.title)"  @click="editCheck(arrCheckList.id,arrCheckList.item_type)" >
-                               {{arrCheckList.title}}
-                            </a>
-                        </td>
-                        <td  >
-                            {{arrCheckList.show_count}}
-                        </td>
-                        <td>
-                           {{arrCheckList.creator.name}}  {{arrCheckList.creator.last_name}}
-                        </td>
-                        <td class=" position-relative" >
-
-                            <a  v-bind:href="'/timetracking/quality-control'" target="_blank">
-                                <i class="pl-4 fa fa-signal" aria-hidden="true" style="font-size: 20px"></i>
-                            </a>
-
-                            <a class="position-absolute" @click="arrCheckDelete(arrCheckList.id)" style="right: 0">
-                                <i class="fa fa-trash" style="font-size: 25px" aria-hidden="true"></i>
-                            </a>
-                        </td>
-                    </tr>
-                    </tbody>
-                </table>
-
-
-            </div>
-        </div>
+          </div>
+      </div>
 
 
         <sidebar
