@@ -1541,6 +1541,34 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = ({
   computed: {
@@ -1549,11 +1577,15 @@ __webpack_require__.r(__webpack_exports__);
     },
     table: function table() {
       return this.$lang(this.lang, 'prices-table');
+    },
+    isMedium: function isMedium() {
+      return this.$viewportSize.width >= 1260;
     }
   },
   data: function data() {
     return {
-      activeCol: -1
+      activeCol: -1,
+      image: (__webpack_require__(/*! ../../assets/img/tariffs.png */ "./resources/js/home/assets/img/tariffs.png")["default"])
     };
   }
 });
@@ -2348,7 +2380,7 @@ __webpack_require__.r(__webpack_exports__);
 var ___CSS_LOADER_EXPORT___ = _node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_0___default()(function(i){return i[1]});
 var ___CSS_LOADER_URL_REPLACEMENT_0___ = _node_modules_css_loader_dist_runtime_getUrl_js__WEBPACK_IMPORTED_MODULE_1___default()(_assets_img_s2_bg_svg__WEBPACK_IMPORTED_MODULE_2__["default"]);
 // Module
-___CSS_LOADER_EXPORT___.push([module.id, "#jTariffs {\n  width: 100%;\n  margin-top: 5rem;\n}\n.jTariffs-header {\n  width: -moz-fit-content;\n  width: fit-content;\n  margin-left: auto;\n  margin-right: auto;\n  margin-bottom: 5rem;\n  position: relative;\n}\n.jTariffs-header:before {\n  content: \"\";\n  display: block;\n  width: 10.625rem;\n  height: 6.625rem;\n  position: absolute;\n  z-index: -1;\n  top: -2.5rem;\n  left: -5rem;\n  background-image: url(" + ___CSS_LOADER_URL_REPLACEMENT_0___ + ");\n}\n.jTariffs-content {\n  overflow-x: auto;\n}\n.jTariffs-table {\n  width: 100%;\n  border-collapse: collapse;\n}\n.jTariffs-table[data-col=\"1\"] [data-col=\"1\"] {\n  background: #f0f9ff;\n}\n.jTariffs-table[data-col=\"2\"] [data-col=\"2\"] {\n  background: #f0f9ff;\n}\n.jTariffs-table[data-col=\"3\"] [data-col=\"3\"] {\n  background: #f0f9ff;\n}\n.jTariffs-table[data-col=\"4\"] [data-col=\"4\"] {\n  background: #f0f9ff;\n}\n.jTariffs-tr {\n  border-radius: 1rem;\n}\n.jTariffs-tr:nth-of-type(odd) .jTariffs-cell,\n.jTariffs-tr:hover .jTariffs-cell {\n  background: #f0f9ff;\n}\n.jTariffs-cell {\n  min-width: 8rem;\n  padding: 0.5rem;\n  text-align: center;\n  white-space: nowrap;\n}\n.jTariffs-cell[data-col=\"0\"] {\n  text-align: left;\n  white-space: normal;\n  border-radius: 1rem 0 0 1rem;\n}\n.jTariffs-cell[data-col=\"4\"] {\n  border-radius: 0 1rem 1rem 0;\n}\n.jTariffs-th {\n  font-weight: 700;\n  padding: 0.6875rem;\n}\n@media screen and (min-width: 1260px) {\n#jTariffs {\n    margin-top: -5rem;\n    padding-bottom: 5rem;\n}\n.jTariffs-cell {\n    min-width: 14.375rem;\n    padding: 0.6875rem;\n    font-size: 1.125rem;\n}\n.jTariffs-th {\n    padding: 1.125rem;\n}\n}", ""]);
+___CSS_LOADER_EXPORT___.push([module.id, "#jTariffs {\n  width: 100%;\n  margin-top: 5rem;\n}\n.jTariffs-header {\n  width: -moz-fit-content;\n  width: fit-content;\n  margin-left: auto;\n  margin-right: auto;\n  margin-bottom: 5rem;\n  position: relative;\n}\n.jTariffs-header:before {\n  content: \"\";\n  display: block;\n  width: 10.625rem;\n  height: 6.625rem;\n  position: absolute;\n  z-index: -1;\n  top: -2.5rem;\n  left: -5rem;\n  background-image: url(" + ___CSS_LOADER_URL_REPLACEMENT_0___ + ");\n}\n.jTariffs-content {\n  overflow-x: auto;\n}\n.jTariffs-image-wrap {\n  display: flex;\n  flex-flow: column;\n  align-items: center;\n  gap: 1rem;\n}\n.jTariffs-image {\n  max-width: 100%;\n}\n.jTariffs-table {\n  width: 100%;\n  border-collapse: collapse;\n}\n.jTariffs-table[data-col=\"1\"] [data-col=\"1\"] {\n  background: #f0f9ff;\n}\n.jTariffs-table[data-col=\"2\"] [data-col=\"2\"] {\n  background: #f0f9ff;\n}\n.jTariffs-table[data-col=\"3\"] [data-col=\"3\"] {\n  background: #f0f9ff;\n}\n.jTariffs-table[data-col=\"4\"] [data-col=\"4\"] {\n  background: #f0f9ff;\n}\n.jTariffs-tr {\n  border-radius: 1rem;\n}\n.jTariffs-tr:nth-of-type(odd) .jTariffs-cell,\n.jTariffs-tr:hover .jTariffs-cell {\n  background: #f0f9ff;\n}\n.jTariffs-cell {\n  min-width: 8rem;\n  padding: 0.5rem;\n  text-align: center;\n  white-space: nowrap;\n}\n.jTariffs-cell[data-col=\"0\"] {\n  text-align: left;\n  white-space: normal;\n  border-radius: 1rem 0 0 1rem;\n}\n.jTariffs-cell[data-col=\"4\"] {\n  border-radius: 0 1rem 1rem 0;\n}\n.jTariffs-th {\n  font-weight: 700;\n  padding: 0.6875rem;\n}\n@media screen and (min-width: 1260px) {\n#jTariffs {\n    margin-top: -5rem;\n    padding-bottom: 5rem;\n}\n.jTariffs-cell {\n    min-width: 14.375rem;\n    padding: 0.6875rem;\n    font-size: 1.125rem;\n}\n.jTariffs-th {\n    padding: 1.125rem;\n}\n}", ""]);
 // Exports
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (___CSS_LOADER_EXPORT___);
 
@@ -2773,6 +2805,20 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
 /* harmony export */ });
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = ("/images/select-arrow.svg?e9ec7054f9b848bc804a5d20f0a19942");
+
+/***/ }),
+
+/***/ "./resources/js/home/assets/img/tariffs.png":
+/*!**************************************************!*\
+  !*** ./resources/js/home/assets/img/tariffs.png ***!
+  \**************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = ("/images/tariffs.png?c645d5092a7c38ad5cbd3714ecc60829");
 
 /***/ }),
 
@@ -8900,96 +8946,130 @@ var render = function () {
       ]),
       _vm._v(" "),
       _c("div", { staticClass: "jTariffs-content" }, [
-        _c(
-          "table",
-          {
-            staticClass: "jTariffs-table",
-            attrs: { "data-col": _vm.activeCol },
-            on: {
-              mouseout: function ($event) {
-                _vm.activeCol = -1
+        _vm.isMedium
+          ? _c(
+              "table",
+              {
+                staticClass: "jTariffs-table",
+                attrs: { "data-col": _vm.activeCol },
+                on: {
+                  mouseout: function ($event) {
+                    _vm.activeCol = -1
+                  },
+                },
               },
-            },
-          },
-          [
-            _c(
-              "tbody",
-              { staticClass: "jTariffs-tbody" },
               [
-                _vm._l(_vm.table, function (tr, rkey) {
-                  return _c(
-                    "tr",
-                    { key: "r" + rkey, staticClass: "jTariffs-tr" },
-                    [
-                      rkey === 0 || rkey >= _vm.table.length - 3
-                        ? _vm._l(tr, function (td, dkey) {
-                            return _c(
-                              "th",
-                              {
-                                key: "r" + rkey + "d" + dkey,
-                                staticClass: "jTariffs-th jTariffs-cell",
-                                attrs: { "data-col": dkey },
-                                on: {
-                                  mouseover: function ($event) {
-                                    _vm.activeCol = dkey
-                                  },
-                                },
-                              },
-                              [_vm._v(_vm._s(td))]
-                            )
-                          })
-                        : _vm._l(tr, function (td, dkey) {
-                            return _c(
-                              "td",
-                              {
-                                key: "r" + rkey + "d" + dkey,
-                                staticClass: "jTariffs-td jTariffs-cell",
-                                attrs: { "data-col": dkey },
-                                on: {
-                                  mouseover: function ($event) {
-                                    _vm.activeCol = dkey
-                                  },
-                                },
-                              },
-                              [_vm._v(_vm._s(td))]
-                            )
-                          }),
-                    ],
-                    2
-                  )
-                }),
-                _vm._v(" "),
                 _c(
-                  "tr",
+                  "tbody",
+                  { staticClass: "jTariffs-tbody" },
                   [
-                    _c("th"),
-                    _vm._v(" "),
-                    _vm._l(4, function (td) {
-                      return _c("td", [
-                        _c(
-                          "a",
-                          {
-                            staticClass: "jReviews-free jButton",
-                            attrs: { href: "/register" },
-                          },
-                          [
-                            _vm._v(
-                              "\n              " +
-                                _vm._s(_vm.$lang(_vm.lang, "prices-register")) +
-                                "\n            "
-                            ),
-                          ]
-                        ),
-                      ])
+                    _vm._l(_vm.table, function (tr, rkey) {
+                      return _c(
+                        "tr",
+                        { key: "r" + rkey, staticClass: "jTariffs-tr" },
+                        [
+                          rkey === 0 || rkey >= _vm.table.length - 3
+                            ? _vm._l(tr, function (td, dkey) {
+                                return _c(
+                                  "th",
+                                  {
+                                    key: "r" + rkey + "d" + dkey,
+                                    staticClass: "jTariffs-th jTariffs-cell",
+                                    attrs: { "data-col": dkey },
+                                    on: {
+                                      mouseover: function ($event) {
+                                        _vm.activeCol = dkey
+                                      },
+                                    },
+                                  },
+                                  [_vm._v(_vm._s(td))]
+                                )
+                              })
+                            : _vm._l(tr, function (td, dkey) {
+                                return _c(
+                                  "td",
+                                  {
+                                    key: "r" + rkey + "d" + dkey,
+                                    staticClass: "jTariffs-td jTariffs-cell",
+                                    attrs: { "data-col": dkey },
+                                    on: {
+                                      mouseover: function ($event) {
+                                        _vm.activeCol = dkey
+                                      },
+                                    },
+                                  },
+                                  [_vm._v(_vm._s(td))]
+                                )
+                              }),
+                        ],
+                        2
+                      )
                     }),
+                    _vm._v(" "),
+                    _c(
+                      "tr",
+                      [
+                        _c("th"),
+                        _vm._v(" "),
+                        _vm._l(4, function (td) {
+                          return _c("td", { key: td }, [
+                            _c(
+                              "a",
+                              {
+                                staticClass: "jButton",
+                                attrs: { href: "/register" },
+                              },
+                              [
+                                _vm._v(
+                                  "\n              " +
+                                    _vm._s(
+                                      _vm.$lang(_vm.lang, "prices-register")
+                                    ) +
+                                    "\n            "
+                                ),
+                              ]
+                            ),
+                          ])
+                        }),
+                      ],
+                      2
+                    ),
                   ],
                   2
                 ),
-              ],
-              2
-            ),
-          ]
-        ),
+              ]
+            )
+          : _vm._e(),
+        _vm._v(" "),
+        !_vm.isMedium
+          ? _c("div", { staticClass: "jTariffs-image-wrap" }, [
+              _c(
+                "a",
+                {
+                  staticClass: "jTariffs-image-link",
+                  attrs: { href: _vm.image, target: "_blank" },
+                },
+                [
+                  _c("img", {
+                    staticClass: "jTariffs-image",
+                    attrs: { src: _vm.image, alt: "" },
+                  }),
+                ]
+              ),
+              _vm._v(" "),
+              _c(
+                "a",
+                { staticClass: "jButton", attrs: { href: "/register" } },
+                [
+                  _vm._v(
+                    "\n          " +
+                      _vm._s(_vm.$lang(_vm.lang, "prices-register")) +
+                      "\n        "
+                  ),
+                ]
+              ),
+            ])
+          : _vm._e(),
       ]),
     ]),
   ])
