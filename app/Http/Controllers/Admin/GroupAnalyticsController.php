@@ -230,7 +230,7 @@ class GroupAnalyticsController extends Controller
             'ratings' => RM::ratingsGroups($date), // Оценки операторов по Отделам
             'staff' => RM::staff($request->year), // Таблица кадров во вкладке причина увольнения
             'staff_by_group' => RM::staff_by_group($request->year), // Таблица кадров во вкладке причина увольнения // 5.2 sec
-            'staff_longevity' => [],// RM::staff_longevity($request->year), // Таблица кадров во вкладке причина увольнения
+            'staff_longevity' =>  RM::staff_longevity($request->year), // Таблица кадров во вкладке причина увольнения
             'quiz' => RM::getQuizTable($month->startOfMonth()), // Анкета уволенных
             'ocenka_svod' => RM::ocenka_svod($month->startOfMonth()), // Анкета уволенных // 4.1 sec
             'ratings_dates' => RM::ratingsDates($date), // Оценки операторов по датам

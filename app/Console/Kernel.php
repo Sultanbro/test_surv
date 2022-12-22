@@ -100,6 +100,8 @@ class Kernel extends ConsoleKernel
     protected function commands()
     {
         $this->load(__DIR__.'/Commands');
+
+        tenancy()->initialize( \App\Models\Tenant::where('id', 'bp')->first() );
         require base_path('routes/console.php');
     }
 }

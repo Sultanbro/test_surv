@@ -1,10 +1,12 @@
 import ru from './lang/ru.js'
 import en from './lang/en.js'
+import kz from './lang/kz.js'
 import Vue from 'vue'
 
 const l = {
   ru,
-  en
+  en,
+  kz,
 }
 
 export default {
