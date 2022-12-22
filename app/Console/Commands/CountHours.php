@@ -54,7 +54,7 @@ class CountHours extends Command
 
         foreach($timetrackingRecords as $record) {
 
-            if( !$record->user ) {
+            if( !$record->user || !$record->exit) {
                 continue;
             }
 
