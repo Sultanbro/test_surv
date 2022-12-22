@@ -1,5 +1,5 @@
 <template>
-<div class="mt-3">
+<div class="mt-4">
     <div class="mb-0">
 
         <div class="row mb-3">
@@ -75,83 +75,80 @@
                 </div>
             </div>
 
-            <b-table
-                responsive striped
-                :sticky-header="true"
-                class="text-nowrap text-right my-table"
-                id="tabelTable"
-                :small="true"
-                :bordered="true"
-                :items="items"
-                :fields="fields"
-                show-empty
-                emptyText="Нет данных"
-                :current-page="currentPage"
-                :per-page="perPage">
+            <div>
+                <b-table
+                        responsive striped
+                        :sticky-header="true"
+                        class="text-nowrap text-right my-table table-custom-report"
+                        id="tabelTable"
+                        :small="true"
+                        :bordered="true"
+                        :items="items"
+                        :fields="fields"
+                        show-empty
+                        emptyText="Нет данных"
+                        :current-page="currentPage"
+                        :per-page="perPage">
 
-                <template #cell(name)="data">
-                    <div>
-                        <span v-if="activeuserpos == 46">
-                            <a :href="'/timetracking/edit-person?id=' + data.item.id" target="_blank" :title="data.item.id">{{ data.value }}</a>
-                        </span>
-                        <span v-else>
+                    <template #cell(name)="data">
+                        <div>
+                            <span v-if="activeuserpos == 46">
+                                <a :href="'/timetracking/edit-person?id=' + data.item.id" target="_blank" :title="data.item.id">{{ data.value }}</a>
+                            </span>
+                                <span v-else>
+                                {{ data.value }}
+                            </span>
+                                <b-badge v-if="data.field.key == 'name'" pill variant="success">
+                                    {{ data.item.user_type }}
+                                </b-badge>
+
+
+                                <span v-if="data.field.key == 'name' && data.item.is_trainee" class="badgy badge-warning badge-pill">
+                                Стажер
+                            </span>
+                        </div>
+                    </template>
+                    <template #cell(total)="data">
+                        <div>
                             {{ data.value }}
-                        </span>
-                        <b-badge v-if="data.field.key == 'name'" pill variant="success">
-                            {{ data.item.user_type }}
-                        </b-badge>
+                        </div>
+                    </template>
 
+                    <template #cell()="data">
 
-                        <span v-if="data.field.key == 'name' && data.item.is_trainee" class="badgy badge-warning badge-pill">
-                            Стажер
-                        </span>
-                    </div>
-                </template>
+                        <div @mouseover="dayInfo(data)" @click="detectClick(data)" :class="{'updated': data.value.updated}">
 
-                <template #cell(total)="data">
-                    <div>
-                        {{ data.value }}
-                    </div>
-                </template>
+                            <template v-if="data.value.hour">
+                                <b-form-input
+                                        class="form-control cell-input"
+                                        type="number"
+                                        @mouseover="$event.preventDefault()"
+                                        :min="0"
+                                        :max="24"
+                                        :step="0.1"
+                                        :value="data.value.hour"
+                                        :readonly="true"
+                                        @dblclick="readOnlyFix"
+                                        @change="openModal"
+                                ></b-form-input>
+                            </template>
 
-                <template #cell()="data">
+                            <template v-else>
+                                {{ data.value.hour ? data.value.hour : data.value }}
+                            </template>
 
-                    <div
-                        @mouseover="dayInfo(data)"
-                        @click="detectClick(data)"
-                        :class="{'updated': data.value.updated}"
-                    >
+                            <div class="cell-border" :id="`cell-border-${data.item.id}-${data.field.key}`" v-if="data.value.tooltip"></div>
+                            <b-popover :target="`cell-border-${data.item.id}-${data.field.key}`" triggers="hover" placement="top">
+                                <template #title>Время работы</template>
+                                <div v-html="data.value.tooltip"></div>
+                            </b-popover>
 
-                        <template v-if="data.value.hour">
-                            <b-form-input
-                                class="form-control cell-input"
-                                type="number"
-                                @mouseover="$event.preventDefault()"
-                                :min="0"
-                                :max="24"
-                                :step="0.1"
-                                :value="data.value.hour"
-                                :readonly="true"
-                                @dblclick="readOnlyFix"
-                                @change="openModal"
-                            ></b-form-input>
-                        </template>
+                        </div>
 
-                        <template v-else>
-                            {{ data.value.hour ? data.value.hour : data.value }}
-                        </template>
+                    </template>
 
-                        <div class="cell-border" :id="`cell-border-${data.item.id}-${data.field.key}`" v-if="data.value.tooltip"></div>
-                        <b-popover :target="`cell-border-${data.item.id}-${data.field.key}`" triggers="hover" placement="top">
-                            <template #title>Время работы</template>
-                             <div v-html="data.value.tooltip"></div>
-                        </b-popover>
-
-                    </div>
-
-                </template>
-
-            </b-table>
+                </b-table>
+            </div>
 
             <p>{{ dayInfoText }}</p>
 
@@ -1196,6 +1193,7 @@ export default {
 </script>
 
 <style lang="scss">
+
 .editmode {
     opacity: 0;
     height: 36px;

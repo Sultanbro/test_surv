@@ -22,7 +22,7 @@ import KPIView from '@/views/KPIView'
 // import UserEditView from '@/views/UserEditView'
 
 // Cтраницу настроек наверное тоже разделим если нужно
-// import SettingsView from '@/views/SettingsView'
+import SettingsView from '@/views/SettingsView'
 
 const router = new VueRouter({
     mode: 'history',

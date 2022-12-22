@@ -209,6 +209,8 @@ export default {
             bookTimer: 0,
             bookTimerInterval: 0,
             isBookTest: false,
+            isRoot: false,
+            isProfile: false,
         };
     },
     computed: {
@@ -221,9 +223,7 @@ export default {
         }
     },
     mounted(){
-        const isRoot = window.location.pathname === '/'
-        const isProfile = window.location.pathname === '/profile'
-        if(!isRoot && !isProfile){
+        if(!this.isRoot && !this.isProfile){
             this.hide = true
             document.body.classList.add('no-profile')
         }
@@ -233,6 +233,9 @@ export default {
         scrollObserver.observe(this.$el)
     },
     created(){
+        this.isRoot = window.location.pathname === '/'
+        this.isProfile = window.location.pathname === '/profile'
+
         bus.$data.profileSidebar = Vue.observable({
             userInfo: {},
             balance: 0,
@@ -445,6 +448,7 @@ export default {
          *  Time to read book before "I have read" btn became active
          */
         bookCounter() {
+            if(!this.isRoot && !this.isProfile) return
             this.bookTimer = 60
             this.unpauseBookTimer()
         },

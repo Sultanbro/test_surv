@@ -242,7 +242,6 @@ Vue.component('professions', require('./pages/professions.vue').default); // д�
 Vue.component('groups', require('./pages/groups.vue').default); // Группы
 Vue.component('fines', require('./pages/Fines.vue').default); // штрафы table
 Vue.component('s-notifications', require('./pages/Notifications.vue').default); // Уведомления
-Vue.component('bookgroups', require('./pages/bookgroups.vue').default); // обучение книги
 Vue.component('check-list', require('./pages/checkList.vue').default); // чек
 Vue.component('awards', require('./pages/Awards/Awards.vue').default); // награды
 

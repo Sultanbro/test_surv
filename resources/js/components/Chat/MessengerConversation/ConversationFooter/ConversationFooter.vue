@@ -6,6 +6,12 @@
       </template>
       <template v-else>
         <div class="messenger__message-input messenger__message-text-input">
+          <div v-if="citedMessage" class="messenger__message-input_cite">
+            <div class="messenger__message-input_cite-body">
+              {{ citedMessage.sender.name }}: {{ citedMessage.body }}
+            </div>
+            <span @click="closeCitation">x</span>
+          </div>
           <textarea v-model="body"
                     @keydown.enter="performMessage" @paste="pasteMessage"
                     id="messengerMessageInput" class="messenger__textarea"
@@ -27,14 +33,15 @@
       </template>
       <div class="messenger__message-input" id="messengerInput">
 
-        <AudioDictaphone class="messenger__attachment"
-                         @stop="handleRecording" @error="handleError"
-                         @start="setRecordingAudio(true)" @delete="setRecordingAudio(false)">
-
+        <AudioDictaphone
+          class="messenger__attachment"
+          @stop="handleRecording"
+          @error="handleError"
+          @start="setRecordingAudio(true)"
+          @delete="setRecordingAudio(false)"
+        >
           <template #default="{ isRecording, startRecording, stopRecording, deleteRecording }">
-
             <template v-if="!isRecording">
-
               <EmojiPopup @append="appendEmoji"></EmojiPopup>
 
               <div class="messenger__attachment-item" @click="$refs.messengerFile.click()">
@@ -106,7 +113,7 @@ export default {
     };
   },
   computed: {
-    ...mapGetters(['chat', 'editMessage'])
+    ...mapGetters(['chat', 'editMessage', 'citedMessage'])
   },
   watch: {
     editMessage(message) {
@@ -122,10 +129,10 @@ export default {
           this.recordingTime = duration + 1;
         }, 10);
       }
-    }
+    },
   },
   methods: {
-    ...mapActions(["sendMessage", "editMessageAction", "uploadFiles", "appendMessage"]),
+    ...mapActions(["sendMessage", "editMessageAction", "uploadFiles", "citeMessage"]),
     performMessage(e) {
       let text = this.body.trim();
       if ((text || this.files.length > 0) && this.chat) {
@@ -133,7 +140,7 @@ export default {
           this.editMessageAction(text);
         } else {
           e.preventDefault();
-          if (this.files) {
+          if (this.files.length > 0) {
             this.uploadFiles({'files': this.files, 'caption': text});
             this.files = [];
           } else {
@@ -168,9 +175,6 @@ export default {
         this.files.push(file);
       }
     },
-    handleError() {
-      console.log("Голосовая запись не поддерживается или не разрешена");
-    },
     handleRecording({blob}) {
       this.uploadFiles({'files': [blob], 'caption': ""});
       this.isRecordingAudio = false;
@@ -178,7 +182,11 @@ export default {
     setRecordingAudio(value) {
       this.isRecordingAudio = value;
       this.recordingTime += 1;
-    }
+    },
+    closeCitation(event) {
+      event.stopPropagation();
+      this.citeMessage(null);
+    },
   },
   filters: {
     countdownFormat(value) {
@@ -206,7 +214,7 @@ export default {
 .messenger__chat-footer {
   width: 100%;
   border-bottom-right-radius: 4px;
-  border-top: 2px solid #5ebee9;
+  border-top: 2px solid #e2e2e2;
   max-height: 30vh;
   overflow-y: auto;
   overflow-x: hidden;
@@ -225,12 +233,13 @@ export default {
   overflow-x: hidden !important;
   overflow-y: auto !important;
   width: 100%;
+  height: 100%;
   line-height: 20px;
   outline: 0;
   resize: none;
   border: none;
   box-sizing: content-box;
-  font-size: 16px;
+  font-size: 14px;
   background: #fff;
   color: #0a0a0a;
   caret-color: #1976d2;
@@ -324,6 +333,31 @@ export default {
   align-items: center;
   justify-content: center;
   padding: 7px;
+}
+
+.messenger__message-input_cite {
+  display: flex;
+  flex-direction: row;
+  align-items: flex-start;
+  justify-content: space-between;
+  width: 100%;
+  max-height: 40px;
+  padding: 5px 10px 0 5px;
+  background: #fff;
+  border-radius: 4px;
+  margin-bottom: 5px;
+}
+
+.messenger__message-input_cite-body {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.messenger__message-input_cite span {
+  font-size: 14px;
+  color: #0a0a0a;
+  cursor: pointer;
 }
 
 </style>

@@ -19,6 +19,7 @@ class MessengerMessage extends Model {
     protected $fillable = [
         'sender_id',
         'chat_id',
+        'parent_id',
         'body',
         'read',
         'deleted',
@@ -32,9 +33,11 @@ class MessengerMessage extends Model {
         return $this->belongsTo( MessengerChat::class, 'chat_id' );
     }
 
-    // users who has been seen this message
+    // users who have been seen this message
     public function readers(): BelongsToMany {
-        return $this->belongsToMany( User::class, 'messenger_message_users_read', 'message_id', 'user_id' );
+        return $this->belongsToMany(
+            User::class, 'messenger_message_users_read', 'message_id', 'user_id'
+        )->withPivot('reaction');
     }
 
     public function files(): HasMany {
@@ -43,6 +46,10 @@ class MessengerMessage extends Model {
 
     public function event(): BelongsTo {
         return $this->belongsTo( MessengerEvent::class, 'id', 'message_id' );
+    }
+
+    public function parent(): BelongsTo {
+        return $this->belongsTo( MessengerMessage::class, 'parent_id' )->with( 'sender' );
     }
 
 }

@@ -909,6 +909,7 @@ export default {
         width: 15px;
     }
 }
+
 .analytics-page .b-form-datepicker .btn {
     padding: 0 11px;
     margin: 0;

@@ -1,10 +1,10 @@
 <template>
-<div class="item d-flex">
-    <div class="person">
+<b-tr>
+    <b-td class="person">
         <superselect :values="item.targets" class="w-full single" />
-    </div>
+    </b-td>
 
-    <div class="role">
+    <b-td class="role">
         <multiselect
             ref="role_select"
             v-model="item.roles"
@@ -15,8 +15,8 @@
             placeholder="Выберите"
             label="name"
             track-by="name" />
-    </div>
-    <div class="groups">
+    </b-td>
+    <b-td class="groups">
         <multiselect
             ref="group_select"
             v-model="item.groups"
@@ -31,16 +31,18 @@
             @remove="onRemove"
             label="name"
             track-by="name" />
-    </div>
-    <div class="actions d-flex">
-        <button class="btn btn-default btn-sm" @click="$emit('updateItem')">
-            <i class="fa fa-save" />
-        </button>
-        <button class="btn btn-default btn-sm" @click="$emit('deleteItem')">
-            <i class="fa fa-times" />
-        </button>
-    </div>
-</div>
+    </b-td>
+    <b-td class="actions">
+        <div class="table-actions">
+            <button class="btn btn-success btn-icon" @click="$emit('updateItem')">
+                <i class="fa fa-save" />
+            </button>
+            <button class="btn btn-danger btn-icon" @click="$emit('deleteItem')">
+                <i class="fa fa-times" />
+            </button>
+        </div>
+    </b-td>
+</b-tr>
 </template>
 
 <script>

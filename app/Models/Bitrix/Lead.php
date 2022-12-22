@@ -144,62 +144,44 @@ class Lead extends Model
      */
     public static function fetch(array $date) {
 
-        $skypes = self::whereNotNull('skyped')->whereMonth('skyped', $date['month'])->whereYear('skyped', $date['year'])->orderBy('skyped','desc')->get();
-        $inhouses = self::whereNotNull('inhouse')->whereMonth('inhouse', $date['month'])->whereYear('inhouse', $date['year'])->orderBy('inhouse','desc')->get();
-        /////////
+        $leads = self::query()
+            ->where(function($query) use ($date) {
+                $query->whereNotNull('skyped')
+                    ->whereMonth('skyped', $date['month'])
+                    ->whereYear('skyped', $date['year']);
+            })
+            ->orWhere(function($query) use ($date) {
+                $query->whereNotNull('inhouse')
+                    ->whereMonth('inhouse', $date['month'])
+                    ->whereYear('inhouse', $date['year']);
+            })
+            ->orderBy('inhouse','desc')
+            ->orderBy('skyped','desc')
+            ->take(200)
+            ->get();
 
-        $groups = ProfileGroup::pluckIdName();
-
-        $skypes = $skypes->merge($inhouses);
-        
-        foreach ($skypes as $skype) {
-            $arr = json_decode($skype->files);
+        $groups = ProfileGroup::get();
+        $respUsers = User::withTrashed()->whereIn('email', $leads->pluck('resp_id')->toArray())->first();
             
-            if(count($arr) > 0) {
-                $skype->file = 'https://' .tenant('id') . '.' . env('APP_DOMAIN', 'jobtron.org') . '/static/uploads/job/' . $arr[0];
-            }
-           
-            
-            $skype->checked = false;
-
-            if(array_key_exists($skype->invite_group_id, $groups)) {
-                $skype->invite_group = $groups[$skype->invite_group_id];
-            } else {
-                $skype->invite_group = '';
-            }
-
-
-            if($skype->skyped) {
-                $skype->os = Carbon::parse($skype->skyped)->timestamp;
-                $skype->skyped = date('d.m.Y H:i', Carbon::parse($skype->skyped)->timestamp);
-                $skype->skyped_old = date('Y-m-d H:i:s', Carbon::parse($skype->skyped)->timestamp);
-                $skype->user_type = 'remote';
-            } else {
-                $skype->os = Carbon::parse($skype->inhouse)->timestamp;
-                $skype->user_type = 'office';
-                $skype->skyped = date('d.m.Y H:i', Carbon::parse($skype->inhouse)->timestamp);
-                $skype->skyped_old = date('Y-m-d H:i:s', Carbon::parse($skype->inhouse)->timestamp);
-            }
-            
-            if($skype->invite_at) {
-                $skype->invited_at = Carbon::parse($skype->invite_at)->format('d.m.Y H:i');
-            }
-
-            $skype->country = Phone::getCountry($skype->phone);
-
-            $skype->resp = '';
-            if($skype->resp_id != '0' && $skype->resp_id != NULL && $skype->resp_id != '') {
-                $resp_user = User::withTrashed()->where('email', $skype->resp_id)->first();
-                $skype->resp = $resp_user ? $resp_user->last_name . '<br>' . $resp_user->name : $skype->resp_id; 
-            }
-            
+        foreach ($leads as $lead) {
+          
+            $fileLink = 'https://' .tenant('id') . '.' . env('APP_DOMAIN', 'jobtron.org') . '/static/uploads/job/';
+            $signedAt = $lead->skyped ?? $lead->inhouse;
+            $respUser = $respUsers->where('email', $lead->resp_id)->first();
+                
+            $lead->user_type = $lead->skyped ? 'remote' : 'office';
+            $lead->file = count( json_decode($lead->files) ) > 0 ?  $fileLink . json_decode($lead->files)[0] : '';
+            $lead->invite_group = $groups->where('id', $lead->invite_group_id)->first()?->name;
+            $lead->invited_at = $lead->invite_at ? Carbon::parse($lead->invite_at)->format('d.m.Y H:i') : '';
+            $lead->skyped_old = date('Y-m-d H:i:s', Carbon::parse($signedAt)->timestamp);
+            $lead->skyped = date('d.m.Y H:i', Carbon::parse($signedAt)->timestamp);
+            $lead->os = Carbon::parse($signedAt)->timestamp;
+            $lead->country = Phone::getCountry($lead->phone);
+            $lead->checked = false;
+            $lead->resp = $respUser ? $respUser->last_name . '<br>' . $respUser->name : '';
         }
 
-        $skypes = $skypes->sortByDesc('os')->all();
-        $skypes = array_values($skypes);
-
-
-        return $skypes;
+        return array_values( $leads->sortByDesc('os')->toArray() );
     }
 
     /**

@@ -1,7 +1,6 @@
 @extends('layouts.app')
 @section('title', 'Настройки')
 @section('content')
-
 <script type="application/json" id="async-page-data">
     {
     @if($active_tab == 1 && (auth()->user()->can('users_view') || auth()->user()->can('settings_view')))

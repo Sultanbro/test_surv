@@ -127,10 +127,23 @@
                                             </div>
                                         @endif
 
+                                        <div class="form-subregistration-text">
+                                            <label for="pravila" class="control control-checkbox" style="font-weight: normal;">
+                                                <input type="checkbox" name="pravila" id="pravila" checked="checked" required>
+                                                <div class="control_indicator"></div>
+                                                Я согласен(а) с правилами использования сервиса
+                                            </label>
+                                            <p>Регистрируясь, я подтверждаю, что принимаю <a href="https://jobtron.org/aggreement" target="_blank">Пользовательское соглашение</a>,
+                                                ознакомлен с <a href="https://jobtron.org/offer" target="_blank">договором оферты</a> и <a href="https://jobtron.org/terms" target="_blank">Политикой конфеденциальности.</a>
+                                            </p>
+                                        </div>
+
                                         <button type="submit" class="btn-form-login">
                                             Зарегистрироваться
                                         </button>
                                     </div>
+
+                                    
                                 </form>
                             </div>
 
@@ -316,7 +329,10 @@
     color: white;
 }
 
-
+/* captcha */
+.g-recaptcha {
+    transform: scale(0.97) translate(-5px, 0);
+}
 </style>
 @endsection
 

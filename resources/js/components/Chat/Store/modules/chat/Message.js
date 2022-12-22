@@ -1,12 +1,13 @@
 import API from "../../API.vue";
 import Vue from "vue";
 
-import {MESSAGES_MAX_COUNT, MESSAGES_LOAD_COUNT, MESSAGES_LOAD_COUNT_ON_RESET} from "./constants.js";
+import {MESSAGES_MAX_COUNT, MESSAGES_LOAD_COUNT, MESSAGES_LOAD_COUNT_ON_RESET, REACTIONS} from "./constants.js";
 
 export default {
   state: {
     messages: [],
     editMessage: null,
+    citedMessage: null,
     pinnedMessage: null,
     messagesLoadMoreCount: MESSAGES_LOAD_COUNT,
     startMessageId: null,
@@ -15,7 +16,10 @@ export default {
     messagesLoading: false
   },
   actions: {
-    async loadMessages({commit, getters, dispatch}, {reset = false, goto = 0} = {}) {
+    async loadMessages({commit, getters, dispatch}, {
+      reset = false, goto = 0, callback = () => {
+      }
+    } = {}) {
       if (getters.messagesLoading) {
         return;
       }
@@ -23,13 +27,12 @@ export default {
 
       let count, startMessageId, including;
       if (reset) {
-        commit('resetMessages');
         count = MESSAGES_LOAD_COUNT_ON_RESET;
         startMessageId = null;
-        including = false;
+        including = !!goto;
       } else if (goto > 0) {
-        commit('resetMessages');
-        count = -MESSAGES_MAX_COUNT;
+
+        count = MESSAGES_MAX_COUNT;
         startMessageId = goto;
         including = true;
       } else {
@@ -52,8 +55,8 @@ export default {
           messages = Object.keys(messages).map(key => messages[key]).reverse();
           dispatch('markMessagesAsRead', messages);
 
-          if (getters.chat.unread_messages_count > 0 && getters.chat.unread_messages_count <= messages.length) {
-            commit('markChatAsSeen');
+          if (reset || goto) {
+            commit('resetMessages');
           }
 
           if (reset) {
@@ -65,8 +68,22 @@ export default {
             commit('appendMessages', messages);
           }
 
+          if (goto > 0) {
+
+            // after 4 seconds
+            setTimeout(() => {
+              // next tick
+              let mc = document.getElementById('messenger_container');
+              let message = document.getElementById('messenger_message_' + goto);
+              if (message) {
+                mc.scrollTop = message.offsetTop - 100;
+              }
+            }, 1000);
+          }
+
         }
         commit('setMessagesLoading', false);
+        callback();
       });
     },
     async loadMoreOldMessages({commit, getters, dispatch}) {
@@ -80,17 +97,20 @@ export default {
       dispatch('loadMessages');
     },
     async sendMessage({commit, getters, dispatch}, message) {
+      let citedMessageId = getters.citedMessage ? getters.citedMessage.id : null;
       const guid = Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
       let newMessage = {
         id: guid,
         body: message,
         created_at: new Date().toISOString(),
         chat_id: getters.chat.id,
-        sender_id: getters.user.id
+        sender_id: getters.user.id,
+        parent: getters.citedMessage
       }
       commit('addMessage', newMessage);
       dispatch('requestScroll', 0);
-      return API.sendMessage(getters.chat.id, message, response => {
+      commit('setCitedMessage', null);
+      return API.sendMessage(getters.chat.id, message, citedMessageId, response => {
         response.new_id = response.id;
         response.id = guid;
         commit('updateMessage', response);
@@ -110,6 +130,7 @@ export default {
     async newMessage({commit, getters, dispatch}, message) {
       if (getters.chat.id === message.chat_id && (getters.user.id !== message.sender_id)) {
         commit('addMessage', message);
+        dispatch('markMessagesAsRead', [message]);
       }
       let chat = getters.chats.find(chat => chat.id === message.chat_id);
       // add chat if not exists
@@ -125,7 +146,13 @@ export default {
     async newServiceMessage({commit, getters, dispatch}, message) {
       switch (message.event.type) {
         case 'join':
-          commit('addMembers', [message.event.payload.user]);
+          if (getters.chat && getters.chat.id === message.chat_id) {
+            commit('addMembers', [message.event.payload.user]);
+          } else if (getters.user.id === message.event.payload.user.id) {
+            await API.getChatInfo(message.chat_id, chat => {
+              commit('addChat', chat);
+            });
+          }
           break;
         case 'leave':
           // check if it is current chat
@@ -146,7 +173,7 @@ export default {
           commit('setPinnedMessage', null);
           break;
         case 'rename':
-          commit('updateChat', message.event.payload.chat);
+          commit('updateChat', message.chat);
           break
         case 'online':
           if (getters.chat.private && getters.chat.users.find(member => member.id === message.sender.id)) {
@@ -155,7 +182,7 @@ export default {
           return true;
         case 'offline':
           // if user is in current chat
-          if (getters.chat.private && getters.chat.users.find(member => member.id === message.sender.id)) {
+          if (getters.chat && getters.chat.private && getters.chat.users.find(member => member.id === message.sender.id)) {
             commit('setChatOnline', false);
           }
           return true;
@@ -165,9 +192,26 @@ export default {
         case 'read':
           commit('setMessageRead', {messageId: message.event.payload.message_id, reader: message.sender});
           return true;
+        case 'delete_chat':
+          commit('removeChat', message.chat);
+          commit('setPinnedMessage', null);
+          break;
+        case 'reaction':
+          commit('addReaction', {
+            messageId: message.event.payload.message_id,
+            reaction: message.event.payload.reaction,
+            user: message.sender
+          });
+          return;
+        case 'chat_photo':
+          commit('updateChat', message.chat);
+          return;
+        case 'chat_admin':
+          commit('updateChat', message.chat);
+          return;
       }
 
-      if (getters.chat.id === message.chat_id) {
+      if (getters.chat && getters.chat.id === message.chat_id) {
         commit('addMessage', message);
       }
     },
@@ -178,9 +222,7 @@ export default {
       messages = messages.filter(message => !message.readers || !message.readers.find(reader => reader.id === getters.user.id));
       if (messages.length > 0) {
         await API.setMessagesAsRead(messages.map(message => message.id), (response) => {
-          if (response.left === 0) {
-            commit('markChatAsSeen');
-          }
+          commit('markChatAsSeen', response.left);
         });
       }
     },
@@ -191,6 +233,7 @@ export default {
     },
     async startEditMessage({commit}, message) {
       commit('setEditMessage', message);
+      document.getElementById('messengerMessageInput').focus();
     },
     async cancelEditMessage({commit}) {
       commit('setEditMessage', null);
@@ -204,6 +247,9 @@ export default {
       return API.unpinMessage(getters.pinnedMessage.id, () => {
         commit('setPinnedMessage', null);
       });
+    },
+    async citeMessage({commit, getters, dispatch}, message) {
+      commit('setCitedMessage', message);
     },
     async uploadFiles({commit, getters, dispatch}, {files, caption = ""}) {
       const guid = Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
@@ -227,7 +273,10 @@ export default {
         newMessage.body = "Ошибка загрузки файла";
         commit('updateMessage', newMessage);
       });
-    }
+    },
+    async reactMessage({commit, getters, dispatch}, {message, emoji_id}) {
+      return API.reactMessage(message.id, emoji_id);
+    },
   },
   mutations: {
     setMessages(state, messages) {
@@ -288,17 +337,63 @@ export default {
     },
     setMessageRead(state, {messageId, reader}) {
       let message = state.messages.find(m => m.id === messageId);
-      if (message) {
-        if (!message.readers) {
-          message.readers = [];
-        }
-        message.readers.push(reader);
+      if (message && !(message.readers && message.readers.find(r => r.id === reader.id))) {
+        let readers = message.readers || [];
+        readers.push(reader);
+        Vue.set(message, 'readers', readers);
       }
+    },
+    reactMessage(state, {message, user, emoji}) {
+      if (!message.reactions) {
+        message.reactions = [];
+      }
+      let reaction = message.reactions.find(r => r.emoji === emoji);
+      if (reaction) {
+        reaction.push(user);
+      } else {
+        message.reactions.push({emoji, users: [user]});
+      }
+    },
+    addReaction(state, {messageId, reaction, user}) {
+      let message = state.messages.find(m => m.id === messageId);
+      if (message) {
+        // update user reaction in readers or add if he didn't read
+        user.pivot = {
+          reaction: reaction,
+          message_id: messageId,
+          user_id: user.id
+        };
+        let reader = message.readers.find(r => r.id === user.id);
+        if (reader) {
+          reader.pivot = user.pivot;
+          Vue.set(message.readers, message.readers.indexOf(reader), reader);
+        } else {
+          message.readers.push(user);
+        }
+      }
+    },
+    setCitedMessage(state, message) {
+      state.citedMessage = message;
     }
   },
   getters: {
     messages: state => state.messages,
+    messagesMap: state => {
+      let uniqueDates = [];
+      let messagesMap = {};
+      state.messages.forEach(message => {
+        let date = new Date(message.created_at);
+        let dateKey = date.toLocaleDateString();
+        if (!uniqueDates.includes(dateKey)) {
+          uniqueDates.push(dateKey);
+          messagesMap[dateKey] = [];
+        }
+        messagesMap[dateKey].push(message);
+      }, {});
+      return messagesMap;
+    },
     editMessage: state => state.editMessage,
+    citedMessage: state => state.citedMessage,
     pinnedMessage: state => state.pinnedMessage,
     unreadCount: (state, getters) => getters.chats.reduce((sum, chat) => sum + chat.unread_messages_count, 0),
     messagesLoadMoreCount: state => state.messagesLoadMoreCount,

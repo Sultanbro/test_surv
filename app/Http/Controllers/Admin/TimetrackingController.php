@@ -2,14 +2,10 @@
 
 namespace App\Http\Controllers\Admin;
 
-use App\Classes\Helpers\InsertData;
-use App\Components\TelegramBot;
+
 use App\DayType;
-use App\Events\TransferUserInGroupEvent;
 use App\Fine;
-use App\GroupPlan;
 use App\Http\Controllers\Controller;
-use App\Http\Requests\GetReportsRequest;
 use App\Position;
 use App\Salary;
 use App\Service\GroupUserService;
@@ -17,11 +13,9 @@ use App\TimetrackingHistory;
 use App\UserAbsenceCause;
 use App\UserFine;
 use App\ProfileGroup;
-use App\Setting;
 use App\Timetracking;
 use App\User;
 use App\UserDescription;
-use App\Trainee;
 use App\Kpi;
 use App\UserNotification;
 use App\Models\Books\BookGroup;
@@ -33,7 +27,6 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\View;
 use App\External\Bitrix\Bitrix;
 use App\Models\Bitrix\Lead;
-use App\AnalyticsSettingsIndividually;
 use App\Downloads;
 use App\Http\Controllers\IntellectController as IC;
 use App\Classes\Helpers\Phone;
@@ -41,7 +34,6 @@ use App\Models\Kpi\Bonus;
 use App\Classes\Helpers\Currency;
 use App\Models\User\NotificationTemplate;
 use App\Models\Analytics\Activity;
-use App\Models\Analytics\KpiIndicator;
 use App\Models\Admin\ObtainedBonus;
 use App\Models\TestBonus;
 use App\Models\Admin\EditedBonus;
@@ -50,6 +42,7 @@ use App\Timeboard\UserPresence;
 use App\PositionDescription;
 use App\ProfileGroupUser as PGU;
 use App\Service\Department\UserService;
+use App\Setting;
 
 class TimetrackingController extends Controller
 {
@@ -270,94 +263,121 @@ class TimetrackingController extends Controller
         return 'true';
     }
 
-    public function timetracking(Request $request)
+
+    public function saveMinutesFromWorktimePeriod($running)
     {
+        $t_start = strtotime(json_decode(json_encode($running->enter), true)['date']);
+        $t_end = strtotime(json_decode(json_encode($running->exit), true)['date']);
+
+        $running->total_hours = round(($t_end - $t_start)/60);;
+        $running->updated_at = date('Y-m-d H:i:s');
+
+        return $running->save() ? true : false;
+    }
+
+    /**
+     * Handle startDay btn clicks
+     */
+    public function timetracking(Request $request) : JsonResponse
+    {
+     
+
         $userClickedStart = $request->has('start');
         $userClickedEnd   = $request->has('stop');
 
-        $message = '';
-        
-        $user = User::find(auth()->id());
-
-        // Рабочий график
-        $schedule = $user->schedule();
-
-        // Время фиксации начала дня
-        $workdayStarted = $user->timetracking()->running()->first();
-
-        // Уже начинал работу
-        if ( $workdayStarted ) { 
-
-            // конец рабочего дня прошел
-            if ( $schedule['end']->isPast() ) {
-
-                $workdayStarted->exit = $schedule['end'];
-                $workdayStarted->save();
-                $status = 'stopped';
-
-            // Нажал "Завершиить день"
-            } else if ( $userClickedEnd ) { 
-
-                $workdayStarted->exit = Carbon::now($user->timezone());
-                $workdayStarted->save();
-                $status = 'stopped';
-
-            }
-
-        } 
-   
-        // Не наничал работу и Нажал "Начать день"
-        if( !$workdayStarted  && $userClickedStart ) {
-
-            // Не может начать по причине что Выходной
-            if ( !$user->canWorkThisDay() ) {
-                $message = 'Вы не можете работать в выходной день';
-            // Не может, время не пришло
-            } else if ( $schedule['start']->isFuture() ) {
-                $message = 'Вы не можете начать день до ' . $schedule['start']->format('H:i');
-            // Не может, время конца работы уже прошло
-            } else if ( $schedule['end']->isPast() ) {
-                $message = 'Вы не можете работать после ' . $schedule['end']->format('H:i');
-            // Может начать день. Начинаем день
-            } else {
-                $status = 'started';
-                
-                $timeTrack = Timetracking::query()
-                    ->where('user_id', $user->id)
-                    ->whereDate('enter', Carbon::now( $user->timezone())->format('Y-m-d' ))
-                    ->first();
-
-                // @TODO: If exists, save times to JSON field in Timetracking. It will be useful for Frontend 
-                if( !$timeTrack ) {
-                    Timetracking::create([
-                        'enter' => Carbon::now( $user->timezone() ),
-                        'user_id' => $user->id,
-                    ]);
-                }
-                
-            }
-
-        } 
-
-        // Если есть конфликтное сообщение
-        if ($message != '') {
+        try {
+            $status = $userClickedStart
+                ? $this->startDay()
+                : $this->endDay();
+        } catch (\Throwable $e) {
             return response()->json([
                 'error' => [
-                    'message' => $message
+                    'message' => $e->getMessage()
                 ]
             ], 200);
         }
 
         return response()->json([
+            
             // status Started or Stopped day
-            'status' => isset($status) ? $status : 'stopped',
+            'status' => $status,  
 
             // Cтраница из Базы знаний 
             // Показывается при начале дня Сотрудника
             // Сотрудник обязан читать минимум 60 сек
-            'corp_book' => $user->getCorpbook()
+            'corp_book' => auth()->user()->getCorpbook()
         ]);
 
+    }
+    
+    private function endDay() : String
+    {
+        $user = auth()->user();
+        $schedule = $user->schedule();
+        $now = Carbon::now($user->timezone());
+        
+        $workday = $user->timetracking()->whereDate('enter', $now->format('Y-m-d'))->first();
+
+        if(!$workday) {
+            throw new \Exception('Вы еще не начинали рабочий день!');
+        }
+
+        if( $workday && $workday->isEnded() ) {
+            throw new \Exception('Вы уже завершили рабочий день!');
+        }
+
+        $exit = $schedule['end']->isPast() ? $schedule['end'] : $now;
+
+        $workday->setExit($exit)
+            ->setStatus(Timetracking::DAY_ENDED)
+            ->addTime($exit, $user->timezone())
+            ->save();
+
+        return 'stopped';
+    }
+
+    private function startDay() : String
+    {   
+        $user = auth()->user();
+        $schedule = $user->schedule();
+        $now = Carbon::now($user->timezone());
+        
+        $workday = $user->timetracking()->whereDate('enter', $now->format('Y-m-d'))->first();
+
+        // Не наничал работу и Нажал "Начать день"
+        if( $workday && $workday->isStarted() ) {
+            throw new \Exception('Вы уже начали рабочий день!');
+        }
+
+        if ( !$user->canWorkThisDay() ) {
+            throw new \Exception('Вы не можете работать в выходной день!');
+        }
+        
+        if ( $schedule['start']->isFuture() ) {
+            throw new \Exception('Вы не можете начать день до ' . $schedule['start']->format('H:i'));
+        }
+        
+        if ( $schedule['end']->isPast() ) {
+            throw new \Exception('Вы не можете работать после ' . $schedule['end']->format('H:i'));
+        }
+
+        if($workday) {
+            $workday->setEnter($now)
+                ->setStatus(Timetracking::DAY_STARTED)
+                ->addTime($now, $user->timezone())
+                ->save();
+        }
+
+        if( !$workday ) {
+            Timetracking::create([
+                'enter' => $now->setTimezone('UTC'),
+                'user_id' => $user->id,
+                'times' => [$now->setTimezone('UTC')->format('H:i')],
+                'status' => Timetracking::DAY_STARTED
+            ]);
+        }   
+
+        return 'started';
     }
 
     /**
@@ -1231,7 +1251,7 @@ class TimetrackingController extends Controller
                 ? json_decode($group->editors_id)
                 : [];
 
-            if(!in_array($currentUser->id, $group_editors)) {
+            if(!in_array($currentUser->id, $group_editors) && !$currentUser->is_admin) {
                 return [
                     'error' => 'access',
                 ];
@@ -1268,7 +1288,11 @@ class TimetrackingController extends Controller
                 
                
                 foreach ($days as $day) {
-                    $data[$userData->id][$day] = $userData->timetracking->where('date', $day)->min('enter')->format('H:i');
+                    $data[$userData->id][$day] = $userData->timetracking
+                        ->where('date', $day)
+                        ->min('enter')
+                        ->setTimezone(Setting::TIMEZONES[6])
+                        ->format('H:i');
                 }
 
                 $fines = [];

@@ -184,7 +184,7 @@ export default {
                   href: '/news',
                   icon: 'icon-nd-news',
                   height: 0,
-                  hide: !this.$can('news_edit')
+                  // hide: !this.$can('news_edit')
                 },
                 {
                     name: 'Структура',
@@ -373,11 +373,12 @@ export default {
 .header__avatar{
     cursor:pointer;
     display: block;
-    width: 6rem;
-    max-width: 6rem;
+    width: 100%;
+    max-width: 100%;
     margin-bottom: 0.5rem;
     position:relative;
     border-radius: 10px;
+    padding: 0 5px;
     z-index: 1003;
     .header__menu{
         max-width: 24rem;
@@ -574,7 +575,6 @@ export default {
     box-shadow: 1rem 0 2rem rgba(0, 0, 0, 0.15);
     opacity: 0;
     visibility: hidden;
-    transition: .5s;
 }
 
 .header__menu-title{

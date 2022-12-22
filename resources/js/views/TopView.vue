@@ -83,31 +83,47 @@ export default {
             <div class="row">
                 <div class="col-md-12 mt-4 mb-3">
                     <nav>
-                        <div
-                            class="nav nav-tabs"
+                        <ul
                             id="nav-tab"
+                            class="nav nav-tabs"
                         >
                             <template v-for="tab in tabs">
-                                <router-link
+                                <li
                                     v-if="$can(tab.access)"
                                     :key="tab.id"
-                                    :to="tab.path"
-                                    :id="tab.id"
-                                    class="nav-item nav-link"
-                                    :class="{active: tab === activeTab}"
-                                >{{ tab.title }}</router-link>
+                                    class="nav-item"
+                                >
+                                    <router-link
+                                        :to="tab.path"
+                                        :id="tab.id"
+                                        class="nav-link"
+                                        :class="{active: tab === activeTab}"
+                                    >{{ tab.title }}</router-link>
+                                </li>
                             </template>
-                        </div>
+                        </ul>
                     </nav>
-                    <div class="col-md-12">
-                        <TopPage
-                            v-show="activeuserid"
-                            :data="data"
-                            :activeuserid="activeuserid"
-                        />
-                    </div>
+                </div>
+
+                <div class="col-md-12">
+                    <TopPage
+                        v-show="activeuserid"
+                        :data="data"
+                        :activeuserid="activeuserid"
+                    />
                 </div>
             </div>
         </div>
     </DefaultLayout>
 </template>
+
+<style>
+.header__profile {
+    display:none !important;
+}
+@media (min-width: 1360px) {
+    .container.container-left-padding {
+        padding-left: 9rem !important;
+    }
+}
+</style>

@@ -134,23 +134,27 @@ export default {
                         <div id="app">
                             <div class="default-tab">
                                 <nav class="normal mt-4">
-                                    <div
+                                    <ul
                                         id="nav-tab"
                                         class="nav nav-tabs set-tabs"
                                         role="tablist"
                                     >
                                         <template v-for="tab in tabs">
-                                            <a
+                                            <li
                                                 :key="tab.htmlId"
                                                 :id="`${tab.htmlId}-tab`"
-                                                class="nav-item nav-link"
-                                                :class="{active: tab.id === activeTab}"
-                                                :href="tab.path"
-                                                :aria-controls="tab.htmlId"
-                                                :aria-selected="tab.id === activeTab ? 'true' : 'false'"
-                                            >{{ tab.title }}</a>
+                                                class="nav-item"
+                                            >
+                                                <a
+                                                    :href="tab.path"
+                                                    :aria-controls="tab.htmlId"
+                                                    :aria-selected="tab.id === activeTab ? 'true' : 'false'"
+                                                    class="nav-link"
+                                                    :class="{active: tab.id === activeTab}"
+                                                >{{ tab.title }}</a>
+                                            </li>
                                         </template>
-                                    </div>
+                                    </ul>
                                 </nav>
                                 <div
                                     id="nav-tabContent"
@@ -159,7 +163,7 @@ export default {
                                     <div
                                         v-if="activeTab === '1' && can(['users_view', 'settings_view'])"
                                         id="nav-person"
-                                        class="tab-pane fade show active p-3"
+                                        class="tab-pane fade show active py-3"
                                         role="tabpanel"
                                         aria-labelledby="nav-person-tab"
                                     >
@@ -172,7 +176,7 @@ export default {
                                     </div>
                                     <div
                                         v-if="activeTab === '2' && can(['positions_view', 'settings_view'])"
-                                        class="tab-pane fade show active p-3"
+                                        class="tab-pane fade show active py-3"
                                         id="nav-home"
                                         role="tabpanel"
                                         aria-labelledby="nav-home-tab"
@@ -184,7 +188,7 @@ export default {
                                     <div
                                         v-if="activeTab === '3' && can(['groups_view', 'settings_view'])"
                                         id="nav-profile"
-                                        class="tab-pane fade show active p-3"
+                                        class="tab-pane fade show active py-3"
                                         role="tabpanel"
                                         aria-labelledby="nav-profile-tab"
                                     >
@@ -199,7 +203,7 @@ export default {
                                     <div
                                         v-if="activeTab === '4' && can(['fines_view', 'settings_view'])"
                                         id="nav-fines"
-                                        class="tab-pane fade show active p-3"
+                                        class="tab-pane fade show active py-3"
                                         role="tabpanel"
                                         aria-labelledby="nav-fines-tab"
                                     >
@@ -207,7 +211,7 @@ export default {
                                     </div>
                                     <div
                                         v-if="activeTab === '5' && can(['notification_view', 'settings_view'])"
-                                        class="tab-pane fade show active p-3"
+                                        class="tab-pane fade show active py-3"
                                         id="nav-notifications"
                                         role="tabpanel"
                                         aria-labelledby="nav-notifications-tab"
@@ -220,7 +224,7 @@ export default {
                                     </div>
                                     <div
                                         v-if="activeTab === '6' && can(['permissions_view', 'settings_view'])"
-                                        class="tab-pane fade show active p-3"
+                                        class="tab-pane fade show active py-3"
                                         id="nav-bookgroups"
                                         role="tabpanel"
                                         aria-labelledby="nav-bookgroups-tab"
@@ -229,7 +233,7 @@ export default {
                                     </div>
                                     <div
                                         v-if="activeTab === '7' && can(['checklists_view', 'settings_view'])"
-                                        class="tab-pane fade show active p-3"
+                                        class="tab-pane fade show active py-3"
                                         id="checkList"
                                         role="tabpanel"
                                         aria-labelledby="nav-checkList-tab"
@@ -238,7 +242,7 @@ export default {
                                     </div>
                                     <div
                                         v-if="activeTab === '8' && can('is_admin')"
-                                        class="tab-pane fade show active p-3"
+                                        class="tab-pane fade show active py-3"
                                         id="integrations"
                                         role="tabpanel"
                                         aria-labelledby="nav-integrations-tab"
@@ -257,7 +261,7 @@ export default {
                                     </div>
                                     <div
                                         v-if="activeTab === '9' && can('is_admin')"
-                                        class="tab-pane fade show active p-3"
+                                        class="tab-pane fade show active py-3"
                                         id="awards"
                                         role="tabpanel"
                                         aria-labelledby="nav-awards-tab"
@@ -291,7 +295,7 @@ export default {
 }
 @media (min-width: 1360px) {
     .container.container-left-padding {
-        padding-left: 7rem !important;
+        padding-left: 9rem !important;
     }
 }
 </style>

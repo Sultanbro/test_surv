@@ -21,11 +21,11 @@
     </div>
     <div class="col-3 justify-content-end d-flex align-items-start">
 
-      <a href="/timetracking/create-person" class="btn btn-success btn-sm rounded">Пригласить</a>
-      <b-button @click="showModal = !showModal" class="btn-primary btn-sm rounded ml-1" title="Показывать поля">
+      <a href="/timetracking/create-person" class="btn btn-success rounded">Пригласить</a>
+      <b-button @click="showModal = !showModal" class="btn-primary rounded ml-1" title="Показывать поля">
         <i class="fa fa-eye" aria-hidden="true"></i>
       </b-button>
-      <b-button @click="showFilterModal = !showFilterModal" class="btn-primary btn-sm rounded ml-1" title="Дополнительные фильтры таблицы">
+      <b-button @click="showFilterModal = !showFilterModal" class="btn-primary rounded ml-1" title="Дополнительные фильтры таблицы">
         <i class="fa fa-filter" aria-hidden="true"></i>
       </b-button>
     </div>
@@ -34,9 +34,9 @@
     </div>
   </div>
 
-  <div style="clear: both;"/>
+  <div style="clear: both;"></div>
 
-    <div class="table-responsive ul">
+    <div class="table-responsive ul table-container">
     <b-table
       striped
       hover
@@ -73,9 +73,9 @@
         'hide-12': !showFields.applied,
         'hide-13': !showFields.full_time,
       }"
-      >
-      <template #cell(index)="data">
-        {{ data.index + 1 }}
+    >
+      <template #cell(index)="row">
+        {{ row.index + 1 }}
       </template>
       <template #cell(id)="data">
         <a
@@ -119,8 +119,8 @@
           class="mr-1"
         >{{ groups[group_id] }}</b-badge>
       </template>
-      <template #cell(created_at)="data">
-        {{ data.value }}
+      <template #cell(created_at)="row">
+        {{ $moment(row.value).format('DD.MM.YYYY') }}
       </template>
       <template #cell(full_time)="data">
         <div v-if="data.value == 1">
@@ -138,24 +138,18 @@
     </b-table>
   </div>
 
-  <div class="my-2 d-flex align-items-center">
-    <b-pagination
-      v-model="currentPage"
-      :total-rows="totalRows"
-      :per-page="perPage"
-      align="fill"
-      size="sm"
-      class="my-0 p-0"
-    />
-    <a
-      href="#"
-      @click="exportData()"
-      class="btn btn-success btn-sm ml-2 rounded d-block block"
-      v-if="[5,18].includes(currentUser)"
-    >
-      <i class="far fa-file-excel"></i>
-      Экспорт
-    </a>
+  <div class="my-2 d-flex align-items-center justify-content-end">
+   <div>
+      <b-pagination
+        v-model="currentPage"
+        :total-rows="totalRows"
+        :per-page="perPage"
+        align="fill"
+        size="sm"
+        class="my-0 p-0"
+      />
+<!--       <a href="#" @click="exportData()" class="btn btn-success btn-sm ml-2 rounded d-block" v-if="[5,18].includes(currentUser)"><i class="far fa-file-excel"></i>Экспорт</a>-->
+   </div>
   </div>
 
 

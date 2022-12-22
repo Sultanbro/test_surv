@@ -1,40 +1,41 @@
 <template>
 <div>
 
-     <b-tabs type="card" :defaultActiveKey='"1"' class="specialtab">
+     <b-tabs type="card" :defaultActiveKey='"1"' class="specialtab pt-4">
 
         <!-- user notis -->
         <b-tab title="Индивидуальные" key="1">
-
-            <div class="row align-items-ceter">
-
+            <div class="row align-items-center py-4">
                 <div class="col-lg-3 col-md-6">
 
-                    <v-select label="name"
-                        :options="user_with_notifications"
-                        v-model="activeuser"
-                        placeholder="Выберите сотрудника из списка"
-                        ></v-select>
+                    <multiselect
+                            label="name"
+                            :options="user_with_notifications"
+                            v-model="activeuser"
+                            placeholder="Выберите сотрудника из списка"
+                    ></multiselect>
 
                 </div>
                 <div class="col-lg-3 col-md-6">
 
                     <button v-if="activeuser"
                         @click="deleteUser"
-                        class="btn-primary btn btn-sm rounded">
+                        class="btn-primary btn">
                         Исключить сотрудника
                     </button>
 
                 </div>
                 <div class="col-lg-3 col-md-6">
-                    <v-select label="name"
-                        :options="users"
-                        v-model="newUser"
-                        placeholder="Выберите из списка"></v-select>
+                    <multiselect
+                            label="name"
+                            :options="users"
+                            v-model="newUser"
+                            placeholder="Выберите из списка">
+                    </multiselect>
                 </div>
                 <div class="col-lg-3 col-md-6">
                     <button @click="addUser"
-                        class="btn-primary btn btn-sm rounded">
+                        class="btn-primary btn">
                         Добавить сотрудника</button>
                 </div>
 
@@ -44,31 +45,39 @@
                 <div class="">
                     <h5 class="mr-2"> Уведомления</h5>
                     <button class="btn-primary btn btn-sm rounded" @click="addNotiToUser">Добавить уведомление</button>
-                        <button class="btn-success btn btn-sm rounded" @click="saveUser">Сохранить</button>
+                    <button class="btn-success btn btn-sm rounded" @click="saveUser">Сохранить</button>
                 </div>
 
                 <div class="row mt-2" v-for="noti in activeuser_notifications">
                     <div class="col-lg-3">
-
-                            <v-select label="title"
+                            <multiselect
+                                label="title"
                                 :options="templates"
                                 v-model="noti[0]"
-                                @option:selected="optionSelected"
-                                placeholder="Выберите из списка"></v-select>
+                                placeholder="Выберите из списка"
+                            />
                     </div>
                     <div class="col-lg-6">
                         <div  v-if="noti[0] != null && need_group.hasOwnProperty(Number(noti[0].id)) && need_group[noti[0].id]">
-                            <multiselect v-model="noti[1]"
-
-                                label="name" track-by="id"
+                            <multiselect
+                                v-model="noti[1]"
+                                label="name"
+                                track-by="id"
                                 placeholder="Выберите группы"
                                 open-direction="bottom"
                                 :options="groups"
                                 :multiple="true"
                                 :searchable="true"
                                 :loading="isLoading"
-                                :internal-search="false" :clear-on-select="false" :close-on-select="false" :options-limit="300" :limit="100" :max-height="600" :show-no-results="false"
-                                :hide-selected="true">
+                                :internal-search="false"
+                                :clear-on-select="false"
+                                :close-on-select="false"
+                                :options-limit="300"
+                                :limit="100"
+                                :max-height="600"
+                                :show-no-results="false"
+                                :hide-selected="true"
+                            >
                             </multiselect>
                         </div>
 
@@ -86,254 +95,244 @@
 
 
         <b-tab title="Шаблоны" key="2">
-
-
-            <b-tabs type="card" defaultActiveKey='1' class="specialtab">
-
+            <b-tabs type="card" defaultActiveKey='1' class="specialtab mt-5">
                 <b-tab title="Индивидуальные" key="1" card>
                     <!-- individual notis -->
-                    <div id="noti-individual" class="mb-4">
-                        <div class="d-flex border">
-                            <div class="col-lg-3 border-r">Название</div>
-                            <div class="col-lg-4 border-r">Текст</div>
-                            <div class="col-lg-5">Сотрудники</div>
-                        </div>
-
-                        <div class="d-flex flex-wrap border-3"
-                            v-for="(item, status_index) in user_templates"
-                            :class="{ active: item.editable }"
-                            :key="item.id">
-                            <div class="col-lg-3 border-r d-flex">
-                                <input type="checkbox"
-                                    class="mt-2 mr-2"
-                                    v-model="item.editable" />
-                                <p :style="{ background: '#' + item.color }"
-                                    class="fz-14">
-                                    {{item.title}}
-                                </p>
-                            </div>
-
-                            <div class="col-lg-4 border-r">
-                                <div class="relative">
-                                    <div class="absolute non"></div>
-                                    <div class="p-2"
-                                        v-html="item.message">
-                                    </div>
-                                    <div class="description" v-html="item.note">
-
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div class="col-lg-5 d-flex align-items-center">
-                                <multiselect v-model="item.selectedGroups"
-                                    id="ajax"
-                                    label="name"
-                                    track-by="id"
-                                    placeholder="Выберите сотрудников"
-                                    open-direction="bottom"
-                                    :options="users"
-                                    :multiple="true"
-                                    :disabled="!item.editable"
-                                    :searchable="true"
-                                    :loading="isLoading"
-                                    :internal-search="false"
-                                    :clear-on-select="false"
-                                    :close-on-select="false"
-                                    :options-limit="300"
-                                    :limit="100"
-                                    :max-height="600"
-                                    :show-no-results="false"
-                                    :hide-selected="true"
-                                    @search-change="null">
-                                    <template #clear="props">
-                                        <div class="multiselect__clear"
-                                            v-if="item.selectedGroups.length"
-                                            @mousedown.prevent.stop="clearAll(props.search)">
-                                        </div>
-                                    </template>
-                                    <template #noResult><span>Упс! Не найдено ни одного сотрудника :(</span></template>
-                                </multiselect>
-                            </div>
-                            <div v-if="item.editable"
-                                class="col-lg-12 border-t d-flex justify-content-center">
-                                <transition name="slide-fade">
-                                    <button class="btn btn-primary my-3 rounded"
-                                        @click="updateNotification(item, status_index)">
-                                        Сохранить
-                                    </button>
-                                </transition>
-                            </div>
+                    <div id="noti-individual" class="py-4">
+                        <div class="table-container">
+                            <b-table-simple class="table-custom-notice">
+                                <b-thead>
+                                    <b-tr>
+                                        <b-th>Название</b-th>
+                                        <b-th>Текст</b-th>
+                                        <b-th>Сотрудники</b-th>
+                                        <b-th></b-th>
+                                    </b-tr>
+                                </b-thead>
+                                <b-tbody>
+                                    <b-tr v-for="(item, status_index) in user_templates" :class="{ active: item.editable }" :key="item.id">
+                                        <b-td>
+                                            <b-form-checkbox switch v-model="item.editable">
+                                                {{item.title}}
+                                            </b-form-checkbox>
+                                        </b-td>
+                                        <b-td>
+                                            <div class="p-2"
+                                                 v-html="item.message">
+                                            </div>
+                                            <div class="description" v-html="item.note">
+                                            </div>
+                                        </b-td>
+                                        <b-td>
+                                            <multiselect v-model="item.selectedGroups"
+                                                         id="ajax"
+                                                         label="name"
+                                                         track-by="id"
+                                                         placeholder="Выберите сотрудников"
+                                                         open-direction="bottom"
+                                                         :options="users"
+                                                         :multiple="true"
+                                                         :disabled="!item.editable"
+                                                         :searchable="true"
+                                                         :loading="isLoading"
+                                                         :internal-search="false"
+                                                         :clear-on-select="false"
+                                                         :close-on-select="false"
+                                                         :options-limit="300"
+                                                         :limit="100"
+                                                         :max-height="600"
+                                                         :show-no-results="false"
+                                                         :hide-selected="true"
+                                                         >
+                                                <template #clear="props">
+                                                    <div
+                                                        v-if="item.selectedGroups.length"
+                                                        class="multiselect__clear"
+                                                        @mousedown.prevent.stop="clearAll(props.search)"
+                                                    >
+                                                    </div>
+                                                </template>
+                                                <template #noResult><span>Упс! Не найдено ни одного сотрудника :(</span></template>
+                                            </multiselect>
+                                        </b-td>
+                                        <b-td>
+                                            <button
+                                                class="btn btn-primary btn-sm rounded"
+                                                @click="updateNotification(item, status_index)"
+                                                :disabled="!item.editable"
+                                            >
+                                                Сохранить
+                                            </button>
+                                        </b-td>
+                                    </b-tr>
+                                </b-tbody>
+                            </b-table-simple>
                         </div>
                     </div>
                     <!-- end of individual notis -->
                 </b-tab>
-
-                <b-tab title="Должностные" key="2" card>
+                <b-tab title="Должностные" key="2">
                     <!-- position notis -->
-                    <div id="noti-positions" class="mb-4">
+                    <div id="noti-positions" class="py-4">
+                        <div class="table-container">
+                            <b-table-simple class="table-custom-notice">
+                                <b-thead>
+                                    <b-tr>
+                                        <b-th>Название</b-th>
+                                        <b-th>Текст</b-th>
+                                        <b-th>Должности</b-th>
+                                        <b-th></b-th>
+                                    </b-tr>
+                                </b-thead>
+                                <b-tbody>
+                                    <b-tr v-for="(item, status_index) in position_templates" :class="{ active: item.editable }" :key="item.id">
+                                        <b-td>
+                                            <b-form-checkbox switch v-model="item.editable">
+                                                {{item.title}}
+                                            </b-form-checkbox>
+                                        </b-td>
+                                        <b-td>
+                                            <div class="p-2"
+                                                 v-html="item.message">
+                                            </div>
+                                            <div class="description" v-html="item.note">
 
-                        <div class="d-flex border">
-                            <div class="col-lg-3 border-r">Название</div>
-                            <div class="col-lg-4 border-r">Текст</div>
-                            <div class="col-lg-5">Должности</div>
+                                            </div>
+                                        </b-td>
+                                        <b-td>
+                                            <multiselect v-model="item.selectedGroups"
+                                                         id="ajax"
+                                                         label="name"
+                                                         track-by="id"
+                                                         placeholder="Выберите позиции"
+                                                         open-direction="bottom"
+                                                         :options="positions"
+                                                         :multiple="true"
+                                                         :disabled="!item.editable"
+                                                         :searchable="true"
+                                                         :loading="isLoading"
+                                                         :internal-search="false"
+                                                         :clear-on-select="false"
+                                                         :close-on-select="false"
+                                                         :options-limit="300"
+                                                         :limit="100"
+                                                         :max-height="600"
+                                                         :show-no-results="false"
+                                                         :hide-selected="true"
+                                                         >
+                                                <template #clear="props">
+                                                    <div
+                                                        v-if="item.selectedGroups.length"
+                                                        class="multiselect__clear"
+                                                        @mousedown.prevent.stop="clearAll(props.search)"
+                                                    >
+                                                    </div>
+                                                </template>
+                                                <template #noResult><span>Упс! Не найдено ни одной позиции :(</span></template>
+                                            </multiselect>
+                                        </b-td>
+                                        <b-td>
+                                            <button
+                                                class="btn btn-primary btn-sm rounded"
+                                                @click="updateNotification(item, status_index)"
+                                                :disabled="!item.editable"
+                                            >
+                                                Сохранить
+                                            </button>
+                                        </b-td>
+                                    </b-tr>
+                                </b-tbody>
+                            </b-table-simple>
                         </div>
-
-                        <div class="d-flex flex-wrap border-3"
-                            v-for="(item, status_index) in position_templates"
-                            :class="{ active: item.editable }"
-                            :key="item.id">
-                            <div class="col-lg-3 border-r d-flex">
-                                <input type="checkbox"
-                                    class="mt-2 mr-2"
-                                    v-model="item.editable" />
-                                <p :style="{ background: '#' + item.color }"
-                                    class="fz-14">
-                                    {{item.title}}
-                                </p>
-                            </div>
-
-                            <div class="col-lg-4 border-r">
-                                <div class="relative">
-                                    <div class="absolute non"></div>
-                                    <div class="p-2"
-                                        v-html="item.message">
-                                    </div>
-                                    <div class="description" v-html="item.note">
-
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div class="col-lg-5 d-flex align-items-center">
-                                <multiselect v-model="item.selectedGroups"
-                                    id="ajax"
-                                    label="name"
-                                    track-by="id"
-                                    placeholder="Выберите позиции"
-                                    open-direction="bottom"
-                                    :options="positions"
-                                    :multiple="true"
-                                    :disabled="!item.editable"
-                                    :searchable="true"
-                                    :loading="isLoading"
-                                    :internal-search="false"
-                                    :clear-on-select="false"
-                                    :close-on-select="false"
-                                    :options-limit="300"
-                                    :limit="100"
-                                    :max-height="600"
-                                    :show-no-results="false"
-                                    :hide-selected="true"
-                                    @search-change="null">
-                                    <template #clear="props">
-                                        <div class="multiselect__clear"
-                                            v-if="item.selectedGroups.length"
-                                            @mousedown.prevent.stop="clearAll(props.search)">
-                                        </div>
-                                    </template>
-                                    <template #noResult><span>Упс! Не найдено ни одной позиции :(</span></template>
-                                </multiselect>
-                            </div>
-                            <div v-if="item.editable"
-                                class="col-lg-12 border-t d-flex justify-content-center">
-                                <transition name="slide-fade">
-                                    <button class="btn btn-primary my-3 rounded"
-                                        @click="updateNotification(item, status_index)">
-                                        Сохранить
-                                    </button>
-                                </transition>
-                            </div>
-                        </div>
-
                     </div>
                     <!-- end of position notis -->
                 </b-tab>
 
                 <b-tab title="Групповые" key="3" card>
                     <!-- group notis -->
-                    <div id="noti-groups" class="mb-4">
-                        <div class="d-flex border">
-                            <div class="col-lg-2 border-r">Название</div>
-                            <div class="col-lg-2 border-r">Роботы</div>
-                            <div class="col-lg-3 border-r">Текст</div>
-                            <div class="col-lg-5">Группы</div>
-                        </div>
+                    <div id="noti-groups" class="py-4">
+                        <div class="table-container">
+                            <b-table-simple class="table-custom-notice">
+                                <b-thead>
+                                    <b-tr>
+                                        <b-th>Название</b-th>
+                                        <b-th>Роботы</b-th>
+                                        <b-th>Текст</b-th>
+                                        <b-th>Группы</b-th>
+                                        <b-th></b-th>
+                                    </b-tr>
+                                </b-thead>
+                                <b-tbody>
+                                    <b-tr v-for="(item, status_index) in group_templates" :class="{ active: item.editable }" :key="item.id">
+                                        <b-td>
+                                            <b-form-checkbox switch v-model="item.editable">
+                                                {{item.title}}
+                                            </b-form-checkbox>
+                                        </b-td>
+                                        <b-td>
+                                            <b-form-select
+                                                    v-model="item.action"
+                                                    :disabled="!item.editable"
+                                                    style="min-width: 200px;">
+                                                <b-form-select-option :value="action.value"
+                                                        v-for="(action, index) in actions"
+                                                        :key="index">
+                                                    {{ action.title }}
+                                                </b-form-select-option>
+                                            </b-form-select>
+                                        </b-td>
+                                        <b-td>
+                                            <div class="p-2"
+                                                 v-html="item.message">
+                                            </div>
+                                            <div class="description" v-html="item.note">
 
-                        <div class="d-flex flex-wrap border-3"
-                            v-for="(item, status_index) in group_templates"
-                            :class="{ active: item.editable }"
-                            :key="item.id">
-                            <div class="col-lg-2 border-r d-flex">
-                                <input type="checkbox"
-                                    class="mt-2 mr-2"
-                                    v-model="item.editable" />
-                                <p :style="{ background: '#' + item.color }"
-                                    class="fz-14">
-                                    {{item.title}}
-                                </p>
-                            </div>
-                            <div class="col-lg-2 border-r">
-                                <select class="notifications_table_2_item2"
-                                    v-model="item.action"
-                                    :disabled="!item.editable">
-                                    <option :value="action.value"
-                                        v-for="(action, index) in actions"
-                                        :key="index">
-                                        {{ action.title }}
-                                    </option>
-                                </select>
-                            </div>
-                            <div class="col-lg-3 border-r">
-                                <div class="relative">
-                                    <div class="absolute non"></div>
-                                    <div class="p-2"
-                                        v-html="item.message">
-                                    </div>
-                                    <div class="description" v-html="item.note">
-
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="col-lg-5 d-flex align-items-center">
-                                <multiselect v-model="item.selectedGroups"
-                                    id="ajax"
-                                    label="name"
-                                    track-by="id"
-                                    placeholder="Выберите группы"
-                                    open-direction="bottom"
-                                    :options="groups"
-                                    :multiple="true"
-                                    :disabled="!item.editable"
-                                    :searchable="true"
-                                    :loading="isLoading"
-                                    :internal-search="false"
-                                    :clear-on-select="false"
-                                    :close-on-select="false"
-                                    :options-limit="300"
-                                    :limit="100"
-                                    :max-height="600"
-                                    :show-no-results="false"
-                                    :hide-selected="true"
-                                    @search-change="null">
-                                    <template #clear="props">
-                                        <div class="multiselect__clear"
-                                            v-if="item.selectedGroups.length"
-                                            @mousedown.prevent.stop="clearAll(props.search)">
-                                        </div>
-                                    </template>
-                                    <template #noResult><span>Упс! Не найдено ни одной группы :(</span></template>
-                                </multiselect>
-                            </div>
-                            <div v-if="item.editable"
-                                class="col-lg-12 border-t d-flex justify-content-center">
-                                <transition name="slide-fade">
-                                    <button class="btn btn-primary my-3 rounded"
-                                        @click="updateNotification(item, status_index)">
-                                        Сохранить
-                                    </button>
-                                </transition>
-                            </div>
+                                            </div>
+                                        </b-td>
+                                        <b-td>
+                                            <multiselect v-model="item.selectedGroups"
+                                                         id="ajax"
+                                                         label="name"
+                                                         track-by="id"
+                                                         placeholder="Выберите группы"
+                                                         open-direction="bottom"
+                                                         :options="groups"
+                                                         :multiple="true"
+                                                         :disabled="!item.editable"
+                                                         :searchable="true"
+                                                         :loading="isLoading"
+                                                         :internal-search="false"
+                                                         :clear-on-select="false"
+                                                         :close-on-select="false"
+                                                         :options-limit="300"
+                                                         :limit="100"
+                                                         :max-height="600"
+                                                         :show-no-results="false"
+                                                         :hide-selected="true"
+                                                         >
+                                                <template #clear="props">
+                                                    <div
+                                                        v-if="item.selectedGroups.length"
+                                                        class="multiselect__clear"
+                                                        @mousedown.prevent.stop="clearAll(props.search)"
+                                                    >
+                                                    </div>
+                                                </template>
+                                                <template #noResult><span>Упс! Не найдено ни одной группы :(</span></template>
+                                            </multiselect>
+                                        </b-td>
+                                        <b-td>
+                                            <button
+                                                class="btn btn-primary btn-sm rounded"
+                                                @click="updateNotification(item, status_index)"
+                                                :disabled="!item.editable"
+                                            >
+                                                Сохранить
+                                            </button>
+                                        </b-td>
+                                    </b-tr>
+                                </b-tbody>
+                            </b-table-simple>
                         </div>
                     </div>
                     <!-- end of group notis -->
@@ -341,44 +340,46 @@
 
                 <b-tab title="Другие" key="4" card>
                     <!-- group notis -->
-                    <div id="noti-groups" class="mb-4">
-                        <div class="d-flex border">
-                            <div class="col-lg-2 border-r">Название</div>
-                            <div class="col-lg-2 border-r">Роботы</div>
-                            <div class="col-lg-4 border-r">Текст</div>
-                            <div class="col-lg-4 border-r">Заметка</div>
-                        </div>
-
-                        <div class="d-flex flex-wrap border-3 active"
-                            v-for="item in other_templates"
-                            :key="item.id">
-                            <div class="col-lg-2 border-r d-flex">
-                                <p class="fz-14">
-                                    {{item.title}}
-                                </p>
-                            </div>
-                            <div class="col-lg-2 border-r">
-                                <select class="notifications_table_2_item2"
-                                    v-model="item.action"
-                                    :disabled="true">
-                                    <option :value="action.value"
-                                        v-for="(action, index) in actions"
-                                        :key="index">
-                                        {{ action.title }}
-                                    </option>
-                                </select>
-                            </div>
-                            <div class="col-lg-4 border-r">
-                                <div class="relative">
-                                    <div class="absolute non"></div>
-                                    <div class="p-2"
-                                        v-html="item.message">
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="col-lg-4 border-r">
-                                <div class="description" v-html="item.note"></div>
-                            </div>
+                    <div id="noti-groups" class="py-4">
+                        <div class="table-container">
+                            <b-table-simple class="table-custom-notice">
+                                <b-thead>
+                                    <b-tr>
+                                        <b-th>Название</b-th>
+                                        <b-th>Роботы</b-th>
+                                        <b-th>Текст</b-th>
+                                        <b-th>Заметка</b-th>
+                                    </b-tr>
+                                </b-thead>
+                                <b-tbody>
+                                    <b-tr v-for="(item, status_index) in other_templates" :class="{ active: item.editable }" :key="item.id">
+                                        <b-td>
+                                            {{item.title}}
+                                        </b-td>
+                                        <b-td>
+                                            <b-form-select
+                                                    v-model="item.action"
+                                                    :disabled="true"
+                                            style="min-width: 200px;"
+                                            >
+                                                <b-form-select-option :value="action.value"
+                                                                      v-for="(action, index) in actions"
+                                                                      :key="index">
+                                                    {{ action.title }}
+                                                </b-form-select-option>
+                                            </b-form-select>
+                                        </b-td>
+                                        <b-td>
+                                            <div class="p-2"
+                                                 v-html="item.message">
+                                            </div>
+                                        </b-td>
+                                        <b-td>
+                                            <div class="description" v-html="item.note"></div>
+                                        </b-td>
+                                    </b-tr>
+                                </b-tbody>
+                            </b-table-simple>
                         </div>
                     </div>
                     <!-- end of group notis -->
@@ -614,146 +615,187 @@ export default {
 </script>
 <style src="vue-multiselect/dist/vue-multiselect.min.css"></style>
 <style scoped>
-.vs__clear {
-    display: none !important;
-}
+    .vs__clear {
+        display: none !important;
+    }
 </style>
-<style  lang="scss" scoped>
-.groupstatus.active {
-  background: #f3f3f3;
-}
+<style lang="scss" scoped>
+    .table-custom-notice{
+        th,td{
+            text-align: left;
+            border-left: 1px solid #ddd !important;
+            &:first-child{
+                border-left: none;
+            }
+        }
+        tbody{
+            tr{
+                border-bottom: 1px solid #ddd;
+            }
+            th,td{
+                vertical-align: top;
+            }
+        }
+    }
+    .groupstatus.active {
+        background: #f3f3f3;
+    }
 
 
-.notifications_table_2_item2 {
-width: 100%;
-    max-width: 100%;
-    border-radius: 4px;
-    margin: 15px auto;
-    cursor: pointer;
-    padding: 6px 5px;
-    border-color: #e6e6e6;
-    font-size: 13px;
-}
-select {
-  color: #202226;
-  font-family: "Open Sans";
-  font-size: 12px;
-  font-weight: 600;
-  padding: 0 10px;
-}
-.textarea {
-    margin-top: 10px;
-    margin-bottom: 5px;
-    min-height: 70px;
-    border: 1px solid rgb(230, 230, 230);
-    border-radius: 5px;
-    background: rgb(251, 251, 251);
-    color: rgb(0, 0, 0);
-    padding: 8px;
-    width: 100%;
-}
-.custom__tag {
-    position: relative;
-    display: inline-block;
-    padding: 4px 26px 4px 10px;
-    border-radius: 5px;
-    margin-right: 10px;
-    color: #fff;
-    line-height: 1;
-    background: #41b883;
-    margin-bottom: 5px;
-    white-space: nowrap;
-    overflow: hidden;
-    max-width: 100%;
-    text-overflow: ellipsis;
-}
-.save-block {
-      display: flex;
-    justify-content: center;
-    padding: 15px;
-}
-.save-block .btn {
-  border-radius: 3px;
-}
-/* Enter and leave animations can use different */
-/* durations and timing functions.              */
-.slide-fade-enter-active {
-  transition: all .3s ease;
-}
-.slide-fade-leave-active {
-  transition: all .3s cubic-bezier(1.0, 0.5, 0.8, 1.0);
-}
-.slide-fade-enter, .slide-fade-leave-to
-/* .slide-fade-leave-active below version 2.1.8 */ {
-  transform: translateY(10px);
-  opacity: 0;
-}
-.specialtab {
-    min-height: 100vh;
-}
+    .notifications_table_2_item2 {
+        width: 100%;
+        max-width: 100%;
+        border-radius: 4px;
+        margin: 15px auto;
+        cursor: pointer;
+        padding: 6px 5px;
+        border-color: #e6e6e6;
+        font-size: 13px;
+    }
+
+    select {
+        color: #202226;
+        font-family: "Open Sans";
+        font-size: 12px;
+        font-weight: 600;
+        padding: 0 10px;
+    }
+
+    .textarea {
+        margin-top: 10px;
+        margin-bottom: 5px;
+        min-height: 70px;
+        border: 1px solid rgb(230, 230, 230);
+        border-radius: 5px;
+        background: rgb(251, 251, 251);
+        color: rgb(0, 0, 0);
+        padding: 8px;
+        width: 100%;
+    }
+
+    .custom__tag {
+        position: relative;
+        display: inline-block;
+        padding: 4px 26px 4px 10px;
+        border-radius: 5px;
+        margin-right: 10px;
+        color: #fff;
+        line-height: 1;
+        background: #41b883;
+        margin-bottom: 5px;
+        white-space: nowrap;
+        overflow: hidden;
+        max-width: 100%;
+        text-overflow: ellipsis;
+    }
+
+    .save-block {
+        display: flex;
+        justify-content: center;
+        padding: 15px;
+    }
+
+    .save-block .btn {
+        border-radius: 3px;
+    }
+
+    /* Enter and leave animations can use different */
+    /* durations and timing functions.              */
+    .slide-fade-enter-active {
+        transition: all .3s ease;
+    }
+
+    .slide-fade-leave-active {
+        transition: all .3s cubic-bezier(1.0, 0.5, 0.8, 1.0);
+    }
+
+    .slide-fade-enter, .slide-fade-leave-to
+        /* .slide-fade-leave-active below version 2.1.8 */
+    {
+        transform: translateY(10px);
+        opacity: 0;
+    }
+
+    .specialtab {
+        min-height: 100vh;
+    }
 </style>
 <style scoped>
-.multiselect {
-    margin-top: 0;
-    min-height: 30px;
-}
+    .multiselect {
+        margin-top: 0;
+        min-height: 30px;
+    }
 
-.multiselect__select {
-    position: absolute;
-    width: 33px;
-    height: 30px
-}
-.multiselect__tags {
-    min-height: 28px;
-    padding-top: 5px;
-    font-size: 12px;
-}
-.multiselect__placeholder {
-    margin-bottom: 0;
-}
-.border {
-    border: 1px solid #e9ecef;
-}
-.border-3 {
-    border-left: 1px solid #e9ecef;
-    border-right: 1px solid #e9ecef;
-    border-bottom: 1px solid #e9ecef;
-}
-.border-r {
-    border-right: 1px solid #e9ecef;
-}
-.flex-wrap  {
-    flex-wrap: wrap;
-}
-.border-t {
-    border-top: 1px solid #e9ecef;
-}
-.fz-14 {
-    font-size: 14px;
-}
-.absolute {
-    position: absolute;
-}
-.relative {
-    position: relative;
-}
-.non {
-    width: 100%;
-    height: 100%;
-    z-index: 2222;
-}
-.description {
-    margin-top: 10px;
-    margin-bottom: 10px;
-    padding: 10px;
-    font-size: 12px;
-    background: aliceblue;
-}
-.mmm {
-    height: 150px;
-}
-.vs__dropdown-menu {
-    position: absolute;
-    top: 100000;
-}
+    .multiselect__select {
+        position: absolute;
+        width: 33px;
+        height: 30px
+    }
+
+    .multiselect__tags {
+        min-height: 28px;
+        padding-top: 5px;
+        font-size: 12px;
+    }
+
+    .multiselect__placeholder {
+        margin-bottom: 0;
+    }
+
+    .border {
+        border: 1px solid #e9ecef;
+    }
+
+    .border-3 {
+        border-left: 1px solid #e9ecef;
+        border-right: 1px solid #e9ecef;
+        border-bottom: 1px solid #e9ecef;
+    }
+
+    .border-r {
+        border-right: 1px solid #e9ecef;
+    }
+
+    .flex-wrap {
+        flex-wrap: wrap;
+    }
+
+    .border-t {
+        border-top: 1px solid #e9ecef;
+    }
+
+    .fz-14 {
+        font-size: 14px;
+    }
+
+    .absolute {
+        position: absolute;
+    }
+
+    .relative {
+        position: relative;
+    }
+
+    .non {
+        width: 100%;
+        height: 100%;
+        z-index: 2222;
+    }
+
+    .description {
+        margin-top: 10px;
+        margin-bottom: 10px;
+        padding: 10px;
+        font-size: 12px;
+        background: aliceblue;
+    }
+
+    .mmm {
+        height: 150px;
+    }
+
+    .vs__dropdown-menu {
+        position: absolute;
+        top: 100000;
+    }
 </style>

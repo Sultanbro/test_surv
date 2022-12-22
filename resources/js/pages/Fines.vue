@@ -1,29 +1,38 @@
 <template>
     <div>
-        <div class="row">
-            <div class="col-8 font-weight-bold">
-                <h6 class="fines-header">Система депремирования</h6>
-            </div>
-            <div class="col font-weight-bold">
-                <h6>Сумма тенге</h6>
-            </div>
-        </div>
-        <template v-for="(fine, index) in fines">
-            <div class="row">
-                <div class="col-8">
-                    <textarea rows="1" class="w-100 form-control form-control-sm" v-model.trim="fine.name"></textarea>
-                </div>
-                <div class="col d-flex mb-1">
-                    <input type="number" v-model.trim="fine.penalty_amount" class="form-control form-control-sm mw103">
-                    <button type="button" :data-id="fine.id" title="Удалить штраф" @click="deleteFine(index)" class="btn btn-primary btn-sm">
-                        <i class="fa fa-trash" aria-hidden="true"></i>
-                    </button>
-                </div>
-            </div>
-        </template>
+       <b-row>
+           <b-col cols="12" lg="8">
+               <div class="table-container">
+                   <b-table-simple class="table-striped table-hover">
+                       <b-thead>
+                           <b-tr>
+                               <b-th class="text-left">Система депремирования</b-th>
+                               <b-th class="text-left">Сумма тенге</b-th>
+                               <b-th></b-th>
+                           </b-tr>
+                       </b-thead>
+                       <b-tbody>
+                           <b-tr v-for="(fine, index) in fines" :key="index">
+                               <b-td>
+                                   <b-textarea class="in-table-textarea" v-model.trim="fine.name"></b-textarea>
+                               </b-td>
+                               <b-td>
+                                   <b-form-input type="number" v-model.trim="fine.penalty_amount"/>
+                               </b-td>
+                               <b-td>
+                                   <button type="button" :data-id="fine.id" title="Удалить штраф" @click="deleteFine(index)" class="btn btn-danger">
+                                       <i class="fa fa-trash" aria-hidden="true"></i>
+                                   </button>
+                               </b-td>
+                           </b-tr>
+                       </b-tbody>
+                   </b-table-simple>
+               </div>
+           </b-col>
+       </b-row>
         <div class="row">
             <div class="col mt-2 mb-4">
-                <button type="button" @click="addFine()" title="Добавить новый штраф" class="btn btn-success">
+                <button type="button" @click="addFine()" title="Добавить новый штраф" class="btn btn-primary">
                     Добавить
                 </button>
                 <button type="button" @click="saveFines()" title="Сохранить изменения в штрафах" class="btn btn-success">
@@ -163,11 +172,11 @@
     }
 </script>
 
-<style scoped>
-    .fines-header {
-        color: #236fa1;
+<style lang="scss" scoped>
+    .table-container{
+        .in-table-textarea{
+            padding: 5px 20px!important;
+            min-width: 500px;
+        }
     }
-.mw103 {
-    max-width: 103px;
-}
 </style>

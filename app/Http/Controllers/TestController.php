@@ -38,39 +38,39 @@ use App\Models\GroupUser;
 use App\Models\Tenant;
 use App\Salary;
 use App\Service\Department\UserService;
+use App\Timetracking;
 use Illuminate\Support\Facades\Http;
 
 class TestController extends Controller { 
   
 	
 	public function test() { 
-		 
-        // create tenant
-        $tenant = Tenant::create(['id' => 'admin']);
+		
+        // $records = Timetracking::query()
+		// 	->whereMonth('enter', 12)
+		// 	->whereYear('enter', 2022)
+		// 	->get();
 
-        // create domain
-        $tenant->createDomain('admin');
 
-        // attach to owner
-        $centralUser = CentralUser::where('email', 'karim_a@list.ru')->first();
+		// foreach ($records as $key => $record) {
+		// 	if($record->enter->hour >= 6) {
+		// 		$record->enter = $record->enter->subHours(6);
+		// 	} 
+			
+		// 	if($record->exit && $record->exit->hour >= 6) $record->exit = $record->exit->subHours(6);
 
-		if($centralUser) {
-            $centralUser->tenants()->attach($tenant);
-        }   
+		// 	$record->save();
+		// }
 
-		dd('ok');
+		// dd($records->count() . '  finished at ' . now());
+
+       
 	}
 
     public function testMethodForCheck()
     {
-        $stat = AnalyticStat::getCellValue(
-            42,
-            'D15',
-            '2022-11-01',
-            2
-        );
-
-        dd($stat);
+		$account = new Callibro('user580158@bpartners.kz');
+        dd($account);
     }
 	private function getSegmentAndSaveForLead($id) {
 

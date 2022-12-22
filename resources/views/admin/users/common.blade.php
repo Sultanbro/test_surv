@@ -13,11 +13,6 @@
 .xtab-content  .form-group {
     margin-bottom: 8px;
 }
- .btn-phone {
-    font-size: 14px;
-    background: #8c8e92;
-    color: aliceblue;
-}
  .box a {
     font-weight: 600;
     font-size: 12px;
