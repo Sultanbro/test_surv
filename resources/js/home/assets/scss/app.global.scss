@@ -71,6 +71,7 @@ button {
 .section-content {
 	width: 78.125rem;
 	max-width: 100%;
+	padding: 0 1rem;
 	margin: 0 auto;
 }
 .ancor {
@@ -81,14 +82,19 @@ button {
 }
 
 @media screen and (min-width: $small) {
-    .JHeader {
-        font-size: 2.5rem;
+	.JHeader {
+		font-size: 2.5rem;
     }
+}
+
+@media screen and (min-width: $medium) {
+	.section-content{
+		padding: 0 0.75rem;
+	}
 }
 
 @media screen and (min-width: $large) {
     html, body {
         font-size: 32px;
-
     }
 }

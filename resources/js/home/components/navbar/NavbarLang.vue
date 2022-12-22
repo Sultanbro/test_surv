@@ -9,6 +9,7 @@
     <div class="jNav-menu-lang-popup">
       <div class="jNav-menu-lang-button" @click="$emit('change', 'ru')">Russian</div>
       <div class="jNav-menu-lang-button" @click="$emit('change', 'en')">English</div>
+      <div class="jNav-menu-lang-button" @click="$emit('change', 'kz')">Kazakh</div>
     </div>
   </a>
 </template>
