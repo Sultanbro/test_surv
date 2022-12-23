@@ -1,128 +1,151 @@
 <template>
   <section id="jSec1">
-    <a name="features" id="features" class="ancor"/>
+    <a
+      name="features"
+      id="features"
+      class="ancor"
+    />
     <div class="section-content">
       <h1 class="jSec1-header jHeader">{{ $lang(lang, 's1-header') }}</h1>
-      <div class="jSec1-tabs">
+      <div
+        v-if="isMedium"
+        class="jSec1-tabs"
+        :class="{'jSec1-tabs-popup-active': isPopupVisible}"
+      >
         <ul class="jSec1-tabs-buttons">
-          <li class="jSec1-tabs-button">
-            <a
-              href="javascript:void(0)"
-              class="jSec1-tabs-link"
-              :class="{'jSec1-tabs-link--active': activeTab === 'profile'}"
-              @click="setTab('profile')"
-            >{{ $lang(lang, 's1-profile') }}</a>
-            <a
-              href="javascript:void(0)"
-              class="jSec1-tabs-qm"
-            />
-          </li>
-          <li class="jSec1-tabs-button">
-            <a
-              href="javascript:void(0)"
-              class="jSec1-tabs-link"
-              :class="{'jSec1-tabs-link--active': activeTab === 'db'}"
-              @click="setTab('db')"
-            >{{ $lang(lang, 's1-db') }}</a>
-            <a
-              href="javascript:void(0)"
-              class="jSec1-tabs-qm"
-            />
-          </li>
-          <li class="jSec1-tabs-button">
-            <a
-              href="javascript:void(0)"
-              class="jSec1-tabs-link"
-              :class="{'jSec1-tabs-link--active': activeTab === 'kpi'}"
-              @click="setTab('kpi')"
-            >{{ $lang(lang, 's1-kpi') }}</a>
-            <a
-              href="javascript:void(0)"
-              class="jSec1-tabs-qm"
-            />
-          </li>
-          <li class="jSec1-tabs-button">
-            <a
-              href="javascript:void(0)"
-              class="jSec1-tabs-link"
-              :class="{'jSec1-tabs-link--active': activeTab === 'courses'}"
-              @click="setTab('courses')"
-            >{{ $lang(lang, 's1-courses') }}</a>
-            <a
-              href="javascript:void(0)"
-              class="jSec1-tabs-qm"
-            />
-          </li>
-          <li class="jSec1-tabs-button">
-            <a
-              href="javascript:void(0)"
-              class="jSec1-tabs-link"
-              :class="{'jSec1-tabs-link--active': activeTab === 'struct'}"
-              @click="setTab('struct')"
-            >{{ $lang(lang, 's1-struct') }}</a>
-            <a
-              href="javascript:void(0)"
-              class="jSec1-tabs-qm"
-            />
-          </li>
-          <li class="jSec1-tabs-button">
-            <a
-              href="javascript:void(0)"
-              class="jSec1-tabs-link"
-              :class="{'jSec1-tabs-link--active': activeTab === 'news'}"
-              @click="setTab('news')"
-            >{{ $lang(lang, 's1-news') }}</a>
-            <a
-              href="javascript:void(0)"
-              class="jSec1-tabs-qm"
-            />
-          </li>
+          <Section1Tab
+            tab-id="profile"
+            :active-tab="activeTab"
+            @content="setTab('profile')"
+            @popup="setPopup('profile')"
+          />
+          <Section1Tab
+            tab-id="db"
+            :active-tab="activeTab"
+            @content="setTab('db')"
+            @popup="setPopup('db')"
+          />
+          <Section1Tab
+            tab-id="kpi"
+            :active-tab="activeTab"
+            @content="setTab('kpi')"
+            @popup="setPopup('kpi')"
+          />
+          <Section1Tab
+            tab-id="courses"
+            :active-tab="activeTab"
+            @content="setTab('courses')"
+            @popup="setPopup('courses')"
+          />
+          <Section1Tab
+            tab-id="struct"
+            :active-tab="activeTab"
+            @content="setTab('struct')"
+            @popup="setPopup('struct')"
+          />
+          <Section1Tab
+            tab-id="news"
+            :active-tab="activeTab"
+            @content="setTab('news')"
+            @popup="setPopup('news')"
+          />
         </ul>
+        <Section1Popup
+          :type="activePopup"
+          :lang="lang"
+          v-click-outside="hidePopup"
+        />
         <div class="jSec1-tabs-content">
-          <div class="jSec1-tabs-item jSec1-profile" v-show="activeTab === 'profile'">
-            <div class="jSec1-profile-text">
-              <h3 class="jSec1-profile-title">{{ $lang(lang, 's1-for-worker') }}</h3>
-              <ul class="jSec1-profile-list">
-                <li class="jSec1-profile-list-item">{{ $lang(lang, 's1-for-worker-1') }}</li>
-                <li class="jSec1-profile-list-item">{{ $lang(lang, 's1-for-worker-2') }}</li>
-                <li class="jSec1-profile-list-item">{{ $lang(lang, 's1-for-worker-3') }}</li>
-                <li class="jSec1-profile-list-item">{{ $lang(lang, 's1-for-worker-4') }}</li>
-              </ul>
-              <h3 class="jSec1-profile-title">{{ $lang(lang, 's1-for-super') }}</h3>
-              <ul class="jSec1-profile-list">
-                <li class="jSec1-profile-list-item">{{ $lang(lang, 's1-for-super-1') }}</li>
-                <li class="jSec1-profile-list-item">{{ $lang(lang, 's1-for-super-2') }}</li>
-                <li class="jSec1-profile-list-item">{{ $lang(lang, 's1-for-super-3') }}</li>
-                <li class="jSec1-profile-list-item">{{ $lang(lang, 's1-for-super-4') }}</li>
-              </ul>
-              <a href="javascript:void(0)" class="jSec1-profile-button jButton">{{ $lang(lang, 's1-for-free') }}</a>
-            </div>
-            <div class="jSec1-profile-banner">
-              <img :src="require('../../assets/img/s1-profile-banner.png').default" alt="" class="jSec1-profile-banner-img">
-            </div>
-          </div>
-          <div class="jSec1-tabs-item" v-show="activeTab === 'news'"></div>
+          <Section1Profile v-show="activeTab === 'profile'"/>
+          <Section1DB v-show="activeTab === 'db'"/>
+          <Section1KPI v-show="activeTab === 'kpi'"/>
+          <Section1Courses v-show="activeTab === 'courses'"/>
+          <Section1Struct v-show="activeTab === 'struct'"/>
+          <Section1News v-show="activeTab === 'news'"/>
         </div>
       </div>
+      <Hooper
+        v-if="!isMedium"
+        ref="carousel"
+        :infiniteScroll="true"
+        :autoPlay="true"
+        :playSpeed="3000"
+      >
+        <Slide>
+          <Section1Profile/>
+        </Slide>
+        <Slide>
+          <Section1DB/>
+        </Slide>
+        <Slide>
+          <Section1KPI/>
+        </Slide>
+        <Slide>
+          <Section1Courses/>
+        </Slide>
+        <Slide>
+          <Section1Struct/>
+        </Slide>
+        <Slide>
+          <Section1News/>
+        </Slide>
+      </Hooper>
     </div>
   </section>
 </template>
 
 <script>
+import { Hooper, Slide } from 'hooper'
+import 'hooper/dist/hooper.css'
+import Section1Popup from '../section1/Section1Popup'
+import Section1Tab from '../section1/Section1Tab'
+import Section1Profile from '../section1/Section1Profile'
+import Section1DB from '../section1/Section1DB'
+import Section1KPI from '../section1/Section1KPI'
+import Section1Courses from '../section1/Section1Courses'
+import Section1Struct from '../section1/Section1Struct'
+import Section1News from '../section1/Section1News'
+
 export default {
-  computed: {
-    lang () {
-      return this.$root.$data.lang
-    }
+  components: {
+    Section1Popup,
+    Section1Tab,
+    Section1Profile,
+    Section1DB,
+    Section1KPI,
+    Section1Courses,
+    Section1Struct,
+    Section1News,
+    Hooper,
+    Slide,
   },
   data(){
     return {
-      activeTab: 'profile'
+      activeTab: 'profile',
+      activePopup: 'profile',
+      isPopupVisible: false
+    }
+  },
+  computed:{
+    isMedium(){
+      return this.$viewportSize.width >= 1260
+    },
+    lang () {
+      return this.$root.$data.lang
     }
   },
   methods: {
     setTab(key){
       this.activeTab = key
+    },
+    setPopup(key){
+      setTimeout(() => {
+        this.activePopup = key
+        this.isPopupVisible = true
+      }, 1);
+    },
+    hidePopup(){
+      if(this.isPopupVisible) this.isPopupVisible = false
     }
   }
 }
@@ -133,17 +156,36 @@ export default {
 #jSec1 {
   width: 100%;
   padding-top: 1rem;
+  padding-bottom: 4rem;
   background-image: url("../../assets/img/s1-bg.svg");
   background-repeat: no-repeat;
+  .hooper{
+    height: auto;
+  }
 }
-//.jSec1-header {
-//  font-weight: 700;
-//}
+.jSec1-header.jHeader {
+  //  font-weight: 700;
+  font-size: 1.25rem;
+  line-height: 1;
+}
 
 .jSec1-tabs {
   display: flex;
   flex-flow: column nowrap;
   align-items: center;
+  position: relative;
+  .Section1Popup{
+    top: 3.5rem;
+    visibility: hidden;
+    opacity: 0;
+    transition: all 0.3s;
+  }
+}
+.jSec1-tabs-popup-active{
+  .Section1Popup{
+    visibility: visible;
+    opacity: 1;
+  }
 }
 .jSec1-tabs-buttons {
   margin: 0;
@@ -233,9 +275,13 @@ export default {
 
 @media screen and (min-width: $medium) {
   #jSec1 {
+    padding-bottom: 8rem;
     background-image: url("../../assets/img/s1-bg.svg"), url("../../assets/img/s1-bg-2.svg");
     background-repeat: no-repeat, no-repeat;
     background-position: 100% 50%, 0% 50%;
+  }
+  .jSec1-header.jHeader {
+    font-size: 2.5rem;
   }
   .jSec1-tabs-buttons {
     display: flex;

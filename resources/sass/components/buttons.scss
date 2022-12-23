@@ -1,26 +1,12 @@
 .btn {
-  height: 45px;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  padding: 0 25px;
-  font-size: 14px;
-  border-radius: 6px !important;
-  font-weight: 600;
-
-  &.btn-sm {
-    height: 30px;
-    padding: 0 12px;
-    &.btn-icon{
-      width: 25px;
-      height: 25px;
-    }
-  }
-
   &.btn-icon {
     width: 35px;
     height: 35px;
+    min-width: 35px;
     padding: 0;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
     border-radius: 50% !important;
     border: none!important;
 
@@ -53,12 +39,6 @@
   }
 }
 
-.b-calendar-grid{
-  .btn{
-    height: auto!important;
-
-  }
-}
 
 .table-actions{
   display: flex;

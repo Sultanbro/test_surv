@@ -153,27 +153,25 @@ class GroupAnalyticsController extends Controller
      */
     private function recrutingAnalytics(Request $request)
     {
+
+        $START = microtime(true);
+
         $month = Carbon::createFromFormat('m-Y', $request->month . '-' . $request->year)->startOfMonth();
         $date = [
             'month' => $request->month,
             'year' => $request->year,
         ];
 
+
+
+        
         $settings = RM::getSummaryTable($month);
+    
         $data = $settings ? $settings->data : RM::defaultSummaryTable();
         
-        $users_ids = $this->getUserIds([
-            'group_id' => RM::GROUP_ID,
-            'year' => $month->year,
-            'month' => $month->month,
-            'users' => $settings ? $settings->users : [],
-        ]);
-
         $absence_causes = RM::getAbsenceCauses($date); // Причины отсутствия на 1 и 2 день стажировки
-        $rec_tables = RM::getTableRecruiters($users_ids, $date);
 
-        $hrs = $rec_tables['hrs']; // Для подробной таблицы
-
+      
         $trainees = DayType::whereYear('date', $request->year) // Стажеры 
             ->whereMonth('date', $request->month)
             ->whereDay('date', RM::getLastDay($month))
@@ -194,7 +192,6 @@ class GroupAnalyticsController extends Controller
 
         $indicators = []; 
         $indicators['info']['trainees'] = $data[RM::S_CONVERTED]['fact'] > 0 ? $trainees . ' - ' . round($trainees / $data[RM::S_CONVERTED]['fact'] * 100). '%' : 0; // Cтажировались в этом месяце
-        // $indicators['info']['training'] = $data[RM::S_TRAINING_TODAY]['plan']; // Cтажируются сегодня
         $indicators['info']['training'] = $trainees; // Cтажируются сегодня
         $indicators['info']['applied'] = $data[RM::S_CONVERTED]['fact'] > 0 ? $data[RM::S_APPLIED]['fact']. ' - ' . round($data[RM::S_APPLIED]['fact'] / $data[RM::S_CONVERTED]['fact'] * 100). '%' : 0; // Принято сотрудников
         $indicators['info']['remain_apply'] = $remain_apply > 0 ? $remain_apply : 0; // Осталось аринять
@@ -205,14 +202,17 @@ class GroupAnalyticsController extends Controller
         $indicators['info']['applied_plan'] = $data[RM::S_APPLIED]['plan'];// План по принятию на штат на месяц
         $indicators['info']['remain_days'] = RM::daysRemain($date); // Осталось рабочих дней до конца месяца
         $indicators['info']['working'] = $settings && $settings->extra && array_key_exists('working', $settings->extra) ? $settings->extra['working'] : RM::getWorkerQuantity(); // Кол-во работающих (Ставка)
-        $indicators['recruiters'] = $rec_tables['recruiters']; // Для графической аналитики
+        $indicators['recruiters'] = []; // Для графической аналитики
         $indicators['orders'] = RM::getOrders(); // Заказы стажеров от руководителей 
         $indicators['today'] = date('d');
         $indicators['month'] = $request->month;
 
-        $igroups = ProfileGroup::where('active', 1)->get()->pluck('name', 'id')->toArray();
+        $groups = ProfileGroup::where('active', 1)->get();
+
+        $inviteGroups = $groups->pluck('name', 'id')->toArray();
+        $inviteGroups[0] = 'Все группы';
         
-        $igroups[0] = 'Все группы';
+        // dd( microtime(true) - $START );
 
         return [
             'date' => $month->startOfMonth()->format('Y-m-d'),
@@ -221,8 +221,8 @@ class GroupAnalyticsController extends Controller
             'skypes' => Lead::fetch($date), // Cконвертированные сделки. Раньше собирали скайпы (Нужно переименовать)
             'segments' => Segment::pluck('name', 'id'), // Cегменты
             'indicators' => $indicators, // Разные показатели на главной
-            'sgroups' => ProfileGroup::where('active', 1)->get(), // Группы для приглашения
-            'invite_groups' => $igroups, // Фильтр для таблицы "стажеры"
+            'sgroups' => $groups, // Группы для приглашения
+            'invite_groups' => $inviteGroups, // Фильтр для таблицы "стажеры"
             'causes' => RM::fireCauses($date), // причины увольнения
             'absents_first' => $absence_causes['first_day'], 
             'absents_second' => $absence_causes['second_day'],
@@ -230,11 +230,11 @@ class GroupAnalyticsController extends Controller
             'ratings' => RM::ratingsGroups($date), // Оценки операторов по Отделам
             'staff' => RM::staff($request->year), // Таблица кадров во вкладке причина увольнения
             'staff_by_group' => RM::staff_by_group($request->year), // Таблица кадров во вкладке причина увольнения // 5.2 sec
-            'staff_longevity' => RM::staff_longevity($request->year), // Таблица кадров во вкладке причина увольнения
+            'staff_longevity' =>  RM::staff_longevity($request->year), // Таблица кадров во вкладке причина увольнения
             'quiz' => RM::getQuizTable($month->startOfMonth()), // Анкета уволенных
             'ocenka_svod' => RM::ocenka_svod($month->startOfMonth()), // Анкета уволенных // 4.1 sec
             'ratings_dates' => RM::ratingsDates($date), // Оценки операторов по датам
-            'ratings_heads' => UserDescription::getHeadsRatings($month->startOfMonth()), // Оценки операторов по руководителям // 12.2 sec
+            'ratings_heads' => [], // UserDescription::getHeadsRatings($month->startOfMonth()), // Оценки операторов по руководителям // 12.2 sec
             'recruiter_stats' => RecruiterStat::tables($month->startOfMonth()->format('Y-m-d')), // Почасовая таблица на главной
             'recruiter_stats_rates' => $recruiter_stats_rates, // Кол-во рекрутеров (Ставка)
             'recruiter_stats_leads' => RecruiterStat::leads($month->startOfMonth()->format('Y-m-d')), // Кол-во лидов битрикс в статусе "В работе"

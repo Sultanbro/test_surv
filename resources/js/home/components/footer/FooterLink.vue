@@ -1,5 +1,5 @@
 <template>
-  <a :href="href" class="jFooter-menu-link">
+  <a :href="href" class="jFooter-menu-link jFooter-link">
     {{ $lang(lang, text) }}
   </a>
 </template>
@@ -21,6 +21,7 @@ export default {
   position: relative;
   font-size: 1rem;
   &:hover {
+    text-decoration: none;
     &:after {
       content: '';
       display: block;

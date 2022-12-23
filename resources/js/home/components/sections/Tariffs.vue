@@ -1,43 +1,82 @@
 <template>
   <section id="jTariffs">
-    <a id="prices" class="ancor" name="prices"/>
+    <a
+      id="prices"
+      class="ancor"
+      name="prices"
+    />
     <div class="section-content">
       <h2 class="jTariffs-header jHeader">{{ $lang(lang, 'prices-header') }}</h2>
       <div class="jTariffs-content">
         <table
-            :data-col="activeCol"
-            class="jTariffs-table"
-            @mouseout="activeCol = -1"
+          v-if="isMedium"
+          :data-col="activeCol"
+          class="jTariffs-table"
+          @mouseout="activeCol = -1"
         >
           <tbody class="jTariffs-tbody">
           <tr
-              v-for="(tr, rkey) in table"
-              :key="'r' + rkey"
-              class="jTariffs-tr"
+            v-for="(tr, rkey) in table"
+            :key="'r' + rkey"
+            class="jTariffs-tr"
           >
             <template v-if="rkey === 0 || rkey >= table.length - 3">
               <th
-                  v-for="(td, dkey) in tr"
-                  :key="'r' + rkey + 'd' + dkey"
-                  :data-col="dkey"
-                  class="jTariffs-th jTariffs-cell"
-                  @mouseover="activeCol = dkey"
-              >{{ td }}
-              </th>
+                v-for="(td, dkey) in tr"
+                :key="'r' + rkey + 'd' + dkey"
+                :data-col="dkey"
+                class="jTariffs-th jTariffs-cell"
+                @mouseover="activeCol = dkey"
+              >{{ td }}</th>
             </template>
             <template v-else>
               <td
-                  v-for="(td, dkey) in tr"
-                  :key="'r' + rkey + 'd' + dkey"
-                  :data-col="dkey"
-                  class="jTariffs-td jTariffs-cell"
-                  @mouseover="activeCol = dkey"
-              >{{ td }}
-              </td>
+                v-for="(td, dkey) in tr"
+                :key="'r' + rkey + 'd' + dkey"
+                :data-col="dkey"
+                class="jTariffs-td jTariffs-cell"
+                @mouseover="activeCol = dkey"
+              >{{ td }}</td>
             </template>
+          </tr>
+          <tr>
+            <th></th>
+            <td
+              v-for="td in 4"
+              :key="td"
+            >
+              <a
+                href="/register"
+                class="jButton"
+              >
+                {{ $lang(lang, 'prices-register') }}
+              </a>
+            </td>
           </tr>
           </tbody>
         </table>
+        <div
+          v-if="!isMedium"
+          class="jTariffs-image-wrap"
+        >
+          <a
+            :href="image"
+            target="_blank"
+            class="jTariffs-image-link"
+          >
+            <img
+              :src="image"
+              alt=""
+              class="jTariffs-image"
+            >
+          </a>
+          <a
+            href="/register"
+            class="jButton"
+          >
+            {{ $lang(lang, 'prices-register') }}
+          </a>
+        </div>
       </div>
     </div>
   </section>
@@ -51,11 +90,15 @@ export default {
     },
     table() {
       return this.$lang(this.lang, 'prices-table')
-    }
+    },
+    isMedium(){
+      return this.$viewportSize.width >= 1260
+    },
   },
   data() {
     return {
-      activeCol: -1
+      activeCol: -1,
+      image: require('../../assets/img/tariffs.png').default
     }
   }
 }
@@ -66,6 +109,7 @@ export default {
 
 #jTariffs {
   width: 100%;
+  margin-top: 5rem;
 }
 
 .jTariffs-header {
@@ -90,6 +134,16 @@ export default {
 
 .jTariffs-content {
   overflow-x: auto;
+}
+
+.jTariffs-image-wrap{
+  display: flex;
+  flex-flow: column;
+  align-items: center;
+  gap: 1rem;
+}
+.jTariffs-image{
+  max-width: 100%;
 }
 
 .jTariffs-table {
@@ -154,6 +208,7 @@ export default {
 
 @media screen and (min-width: $medium) {
   #jTariffs {
+    margin-top: -5rem;
     padding-bottom: 5rem;
   }
   .jTariffs-cell {
