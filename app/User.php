@@ -344,18 +344,15 @@ class User extends Authenticatable implements Authorizable
     /**
      * Работал у нас дней
      */
-    public function wasPartOfTeam($check_ud = false) {
-        if($check_ud) {
-            $ud = UserDescription::where('user_id', $this->id)->first();
-            if(!$ud) return 0;
-            if($ud && $ud->is_trainee == 1) return 0;
-        }   
-        
-        $date = Carbon::parse($this->applied_at())->timestamp;
+    public function wasPartOfTeam() {
+        if(!$this->user_description) {
+            return 0;
+        }
+         
+        $date = Carbon::parse( $this->user_description->applied )->timestamp;
         $fired = Carbon::parse($this->deleted_at)->timestamp;
 
-        $diff = ($fired - $date) / 86400;
-        return (int)$diff;
+        return (int) ($fired - $date) / 86400;
     }
 
     /**

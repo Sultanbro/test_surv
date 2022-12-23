@@ -5,16 +5,25 @@
       <h2 class="jReviews-header jHeader">{{ $lang(lang, 'review-header') }}</h2>
       <div class="jReviews-wrapper">
         <div class="jReviews-types">
-          <button class="jReviews-video jButton">{{ $lang(lang, 'review-video') }}</button>
-          <button class="jReviews-text jButton" disabled>{{ $lang(lang, 'review-text') }}</button>
-          <button class="jReviews-photo jButton" disabled>{{ $lang(lang, 'review-photo') }}</button>
+          <button
+            @click="setMode('videos')"
+            class="jReviews-video jButton"
+          >{{ $lang(lang, 'review-video') }}</button>
+          <button
+            @click="setMode('photos')"
+            class="jReviews-photo jButton"
+            disabled
+          >{{ $lang(lang, 'review-photo') }}</button>
         </div>
         <div class="jReviews-items-wrapper">
           <div class="jReviews-items">
             <div class="jReviews-item-watch">
-              <div class="jReviews-item-player">
+              <div
+                v-if="mode === 'videos'"
+                class="jReviews-item-player"
+              >
                 <iframe
-                    :src="prefix + items[activeItem].video"
+                    :src="prefix + videos[activeVideo].video"
                     allow="accelerometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
                     allowfullscreen
                     class="jReviews-item-iflame"
@@ -22,21 +31,46 @@
                     title="YouTube video player"
                 />
               </div>
-            </div>
-            <div class="jReviews-item-thumbnails">
               <div
-                  v-for="(item, key) in items"
+                v-if="mode === 'photos'"
+                class="jReviews-item-full"
+              >
+                <img
+                  :src="photos[activePhoto].full"
+                  class="jReviews-item-image"
+                >
+              </div>
+            </div>
+            <div
+              ref="carouselWrap"
+              class="jReviews-item-thumbnails"
+            >
+              <Hooper
+                ref="carousel"
+                :itemsToShow="3"
+                :vertical="isHooperVertical"
+                :trimWhiteSpace="true"
+              >
+                <Slide
+                  v-for="(item, key) in videos"
                   :key="'jTmb' + key"
-                  :style="`background-image: url(${item.thumbnail});`"
-                  class="jReviews-item-thumbnail"
-                  @click="activeItem = key"
-              ></div>
+                >
+                  <div
+                    :style="`background-image: url(${item.thumbnail});`"
+                    class="jReviews-item-thumbnail"
+                    @click="mode === 'videos' ? (activeVideo = key) : (activePhoto = key)"
+                  />
+                </Slide>
+              </Hooper>
             </div>
           </div>
         </div>
         <div class="jReviews-footer">
           <p class="jReviews-title">{{ $lang(lang, 'review-title') }}</p>
-          <a class="jReviews-free jButton" href="javascript:void(0)">
+          <a
+            href="/register"
+            class="jReviews-free jButton"
+          >
             {{ $lang(lang, 'review-free') }}
           </a>
         </div>
@@ -46,17 +80,33 @@
 </template>
 
 <script>
+import { Hooper, Slide } from 'hooper'
+import 'hooper/dist/hooper.css'
+
 export default {
+  components: {
+    Hooper,
+    Slide,
+  },
   computed: {
     lang() {
       return this.$root.$data.lang
+    },
+    isHooperVertical(){
+      return this.$viewportSize.width >= 1260
+    },
+    items() {
+      if(this.mode === 'photos') return this.photos
+      return this.videos
     }
   },
   data() {
     return {
-      activeItem: 0,
+      activeVideo: 0,
+      activePhoto: 0,
+      mode: 'videos',
       prefix: 'https://www.youtube.com/embed/',
-      items: [
+      videos: [
         {
           thumbnail: 'https://i3.ytimg.com/vi/LQtmJnljYyk/maxresdefault.jpg',
           video: 'LQtmJnljYyk'
@@ -69,9 +119,52 @@ export default {
           thumbnail: 'https://i3.ytimg.com/vi/LQtmJnljYyk/maxresdefault.jpg',
           video: 'LQtmJnljYyk'
         },
-      ]
+        {
+          thumbnail: 'https://i3.ytimg.com/vi/LQtmJnljYyk/maxresdefault.jpg',
+          video: 'LQtmJnljYyk'
+        },
+        {
+          thumbnail: 'https://i3.ytimg.com/vi/LQtmJnljYyk/maxresdefault.jpg',
+          video: 'LQtmJnljYyk'
+        },
+      ],
+      photos: [
+        {
+          thumbnail: 'https://i3.ytimg.com/vi/LQtmJnljYyk/maxresdefault.jpg',
+          full: 'https://placekitten.com/1024/576'
+        },
+        {
+          thumbnail: 'https://i3.ytimg.com/vi/LQtmJnljYyk/maxresdefault.jpg',
+          full: 'https://placekitten.com/1024/576'
+        },
+        {
+          thumbnail: 'https://i3.ytimg.com/vi/LQtmJnljYyk/maxresdefault.jpg',
+          full: 'https://placekitten.com/1024/576'
+        },
+        {
+          thumbnail: 'https://i3.ytimg.com/vi/LQtmJnljYyk/maxresdefault.jpg',
+          full: 'https://placekitten.com/1024/576'
+        },
+        {
+          thumbnail: 'https://i3.ytimg.com/vi/LQtmJnljYyk/maxresdefault.jpg',
+          full: 'https://placekitten.com/1024/576'
+        },
+      ],
+      resizeObserver: null
     }
-  }
+  },
+  mounted(){
+    this.resizeObserver = new ResizeObserver(() => {
+      this.$refs.carousel.update()
+    })
+    this.resizeObserver.observe(this.$refs.carouselWrap)
+  },
+  methods: {
+    setMode(mode){
+      this.mode = mode
+      this.$refs.carousel.update()
+    }
+  },
 }
 </script>
 
@@ -102,6 +195,7 @@ export default {
 
 .jReviews-types {
   .jButton {
+    display: inline-block;
     margin-bottom: 1.25rem;
   }
 }
@@ -131,14 +225,25 @@ export default {
   left: 0;
 }
 
+.jReviews-item-full{}
+
+.jReviews-item-image{
+  max-width: 100%;
+}
+
 .jReviews-item-thumbnails {
   display: flex;
   gap: 0.625rem;
   margin-top: 1.125rem;
+  .hooper{
+    margin: 0 -5px;
+    flex: 100% 1 1;
+    height: auto;
+  }
 }
 
 .jReviews-item-thumbnail {
-  flex: 0 1 33%;
+  margin: 0 5px;
   background-size: cover;
   cursor: pointer;
 
@@ -162,13 +267,16 @@ export default {
   .jReviews-types {
     display: flex;
     gap: 2rem;
+    .jButton{
+      display: block;
+    }
   }
 }
 
 
 @media screen and (min-width: $medium) {
   #jReviews {
-    padding-bottom: 3rem;
+    padding-bottom: 15rem;
   }
   .jReviews-types {
     display: block;
@@ -194,6 +302,12 @@ export default {
     flex-flow: column nowrap;
     justify-content: space-between;
     margin: 0;
+    .hooper{
+      margin: -5px 0;
+    }
+  }
+  .jReviews-item-thumbnail{
+    margin: 5px 0;
   }
   .jReviews-footer {
     padding-right: 2rem;

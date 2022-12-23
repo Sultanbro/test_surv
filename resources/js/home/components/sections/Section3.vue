@@ -41,6 +41,8 @@ export default {
 
 #jSec3 {
   width: 100%;
+  padding-bottom: 3rem;
+  margin-top: 5rem;
 }
 
 .jSec3-header {
@@ -82,10 +84,12 @@ export default {
 
 .jSec3-block-3 {
   background: url("../../assets/img/s3-bg3.svg") center no-repeat;
-  background-size: contain;
 }
 
 @media screen and (min-width: $medium) {
+  .jSec3{
+    margin-top: 0;
+  }
   .jSec3-block-title {
     margin-bottom: 1rem;
     font-size: 1.5rem;
