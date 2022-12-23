@@ -10,7 +10,7 @@
                 <input type="number" min="1" max="100" v-model="pageSize" class="form-control ml-2 input-sm" />
             </div>
             <input 
-                class="searcher mr-2 input-sm"
+                class="searcher mr-2 form-control"
                 v-model="searchText"
                 type="text"
                 placeholder="Поиск по совпадениям..."
@@ -23,72 +23,71 @@
     </div>
     
     <!-- table NEW -->
-    <table class="table b-table table-bordered table-sm table-responsive mb-3">
+    <table class="table table-responsive j-table thead-word-break-normal">
+        <thead>
         <tr>
-            <th class="b-table-sticky-column text-center px-1">
+            <th class="b-table-sticky-column text-center">
                 <i class="fa fa-cogs" @click="adjustFields"></i>
             </th>
-            <th 
-                v-for="(field, i) in fields"
-                :class="[
+            <th
+                    v-for="(field, i) in fields"
+                    :class="[
                      field.class,
-                    {'b-table-sticky-column l-2' : field.key == 'name'
+                    {'b-table-sticky-column l-60' : field.key == 'name'
                 }]"
             >
                 {{ field.name }}
             </th>
         </tr>
-        <tr>
-            
-        </tr>
-
+        </thead>
+        <tbody>
         <template v-for="(item, i) in page_items">
             <tr>
-                <td class="b-table-sticky-column text-left">
-                    <span class="ml-2">{{ i + 1 }}</span>
+                <td class="b-table-sticky-column text-center">
+                    {{ i + 1 }}
                 </td>
                 <td v-for="(field, f) in fields"  :class="[
                      field.class,
-                    {'b-table-sticky-column l-2' : field.key == 'name'
+                    {'b-table-sticky-column l-60' : field.key == 'name'
                 }]">
 
-                    <div v-if="field.key == 'created_by' && item.creator != null">
+                    <template v-if="field.key == 'created_by' && item.creator != null">
                         {{ item.creator.last_name + ' ' + item.creator.name }}
-                    </div>
+                    </template>
 
-                    <div v-else-if="field.key == 'updated_by' && item.updater != null">
+                    <template v-else-if="field.key == 'updated_by' && item.updater != null">
                         {{ item.updater.last_name + ' ' + item.updater.name }}
-                    </div>
+                    </template>
 
-                    <div v-else-if="non_editable_fields.includes(field.key)">
+                    <template v-else-if="non_editable_fields.includes(field.key)">
                         {{ item[field.key] }}
-                    </div>
+                    </template>
 
-                    <div v-else-if="field.key == 'source' && item.source != undefined">
-                        <div class="d-flex">
-                            <div v-if="sources[item.source] !== undefined">{{ sources[item.source] }}</div>
+                    <template v-else-if="field.key == 'source' && item.source != undefined">
+                        <div class="d-flex text-left">
+                            <div class="mr-4" v-if="sources[item.source] !== undefined">{{ sources[item.source] }}</div>
                             <div v-if="Number(item.source) == 1 && groups[item.group_id] !== undefined">{{ groups[item.group_id] }}</div>
                         </div>
-                    </div>
+                    </template>
 
-                    <div v-else-if="field.key == 'method'">
+                    <template v-else-if="field.key == 'method'">
                         <div v-if="methods[item.method] !== undefined">{{ methods[item.method] }}</div>
-                    </div>
+                    </template>
 
-                    <div v-else-if="field.key == 'view'">
+                    <template v-else-if="field.key == 'view'">
                         <div v-if="views[item.view] !== undefined">{{ views[item.method] }}</div>
-                    </div>
+                    </template>
 
-                    <div v-else>
+                    <template v-else>
                         <input
-                            :type="field.type"
-                            class="form-control"
-                            v-model="item[field.key]"
-                        /> 
-                    </div>
+                                :type="field.type"
+                                v-model="item[field.key]"
+                        />
+                    </template>
                 </td>
             </tr>
         </template>
+        </tbody>
     </table>
 
     <!-- pagination -->

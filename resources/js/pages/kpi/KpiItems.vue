@@ -1,7 +1,7 @@
 <template>
 <div class="kpi-item">
 
-    <table class="table table-inner">
+    <table class="table table-responsive table-inner">
         <thead>
             <tr>
                 <th></th>
@@ -29,23 +29,22 @@
                         'j-deleted': item.deleted != undefined && item.deleted,
                     }"
                 >
-                    <td class="first-column text-light"><center>{{ i + 1 }}</center></td>
+                    <td class="first-column text-center">{{ i + 1 }}</td>
                     <td>
-                        <input type="text" class="form-control" v-model="item.name" />
+                        <input type="text" v-model="item.name" />
                     </td>
                     <td class="text-center"> 
-                        <select v-model="item.method" class="form-control small">
+                        <select v-model="item.method">
                             <option v-for="key in Object.keys(methods)" :key="key"
                                 :value="key">
                                 {{ methods[key] }}
                             </option>
                         </select>
                     </td>
-                    <td class="text-center">
+                    <td class="text-center no-hover">
                         <div class="d-flex">
-                            <select 
+                            <select
                                 v-model="item.source"
-                                class="form-control small"
                                 @change="++source_key"
                             >
                                 <option v-for="key in Object.keys(sources)" :key="key"
@@ -57,7 +56,6 @@
                             <select 
                                 v-if="item.source == 1"
                                 v-model="item.group_id"
-                                class="form-control small"
                                 :key="'c' + source_key"
                                 @change="++source_key"
                             >
@@ -68,7 +66,6 @@
                             <select 
                                 :class="{'hidden' : item.source == 0}"
                                 v-model="item.activity_id"
-                                class="form-control small"
                                 :key="'d' + source_key"
                             >
                                 <option value="0" selected>-</option>
@@ -78,7 +75,6 @@
                             <select 
                                 v-if="item.source == 1 && !isCell(item.activity_id)"
                                 v-model="item.common"
-                                class="form-control small"
                             >
                                 <option value="0" selected>Свой</option>
                                 <option value="1">Всего отдела</option>
@@ -87,20 +83,19 @@
                             <input  
                                 v-if="item.source == 1 && isCell(item.activity_id)"
                                 type="text"
-                                class="form-control"
                                 v-model="item.cell"
                                 placeholder="Ячейка: C7"
                             />
                         </div>
                     </td>
                     <td class="text-center w-sm">
-                        <input type="text" class="form-control w-sm" v-model="item.unit" />
+                        <input type="text" v-model="item.unit" />
                     </td>
                     <td class="text-center">
-                        <input type="number" class="form-control" v-model="item.plan"  />
+                        <input type="number" v-model="item.plan"  />
                     </td>
                     <td class="text-center">
-                        <input type="number" class="form-control" v-model="item.share" min="0"  max="100"/>
+                        <input type="number" v-model="item.share" min="0"  max="100"/>
                     </td>
                     <td class="text-center">
                         {{ item.sum }}
@@ -108,15 +103,14 @@
                     <td class="text-center">
                         0
                     </td>
-                    <td>
-                        <i class="fa fa-arrow-up btn btn-danger btn-icon" @click="restoreItem(i)" v-if="item.deleted != undefined && item.deleted"></i>
-                        <i class="fa fa-trash btn btn-danger btn-icon" @click="deleteItem(i)" v-else></i>
+                    <td class="no-hover">
+                        <i class="fa fa-arrow-up mx-3 btn btn-danger btn-icon" @click="restoreItem(i)" v-if="item.deleted != undefined && item.deleted"></i>
+                        <i class="fa fa-trash mx-3 btn btn-danger btn-icon" @click="deleteItem(i)" v-else></i>
                     </td>
                 </tr>
 
                 <tr>
-                    <td></td>
-                    <td colspan="8" class="plus-item" @click="addItem">
+                    <td colspan="10" class="plus-item" @click="addItem">
                         <div class="p-4">
                             <i class="fa fa-plus mr-2"></i> <b>Добавить активность</b>
                         </div>
@@ -132,14 +126,14 @@
                         'j-hidden': !expanded,
                     }"
                 >
-                    <td class="first-column text-light"><center>{{ i + 1 }}</center></td>
+                    <td class="text-center">{{ i + 1 }}</td>
                     <td class="px-2">{{ item.name }}</td>
                     <td class="text-center">{{ methods[item.method] }}</td>
                     <td class="text-center"><b>{{ item.plan }} {{ item.unit }}</b></td>
                     <td class="text-center">{{ item.share }}</td>
                     <td class="text-center" v-if="editable">
-                        <input v-if="[1,3,5].includes(item.method)" type="number" class="form-control" v-model="item.fact" min="0" @change="updateStat(i)" />
-                        <input v-else type="number" class="form-control" v-model="item.avg" min="0" @change="updateStat(i)" />
+                        <input v-if="[1,3,5].includes(item.method)" type="number" v-model="item.fact" min="0" @change="updateStat(i)" />
+                        <input v-else type="number" v-model="item.avg" min="0" @change="updateStat(i)" />
                     </td>
                     <td class="text-center" v-else> 
                         <!-- sum or avg by method -->
