@@ -19,12 +19,10 @@
                     <indicators v-if="active == 4"></indicators>
                 </b-tab>
             </b-tabs>
-        
-           
         </div>
 
         <div v-else>
-            <b-tabs type="card" :value="active" @activate-tab="(n,p,e) => active = n">
+            <b-tabs type="card" class="mt-4" :value="active" @activate-tab="(n,p,e) => active = n">
                 <b-tab title="Статистика" :key="0" card>
                     <stats v-if="active == 0"></stats>
                 </b-tab>

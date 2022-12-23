@@ -153,9 +153,7 @@
                         this.transformDateName = `translate(${this.styles.date.screenX}px, ${this.styles.date.screenY}px)`;
 
                         if(this.award.course_results.length === 0 || Object.keys(this.award.course_results).length === 0){
-                            this.$toast.error('Курс еще не завершен. Генерация сертификата не выполнена', {
-                                timeout: 5000
-                            });
+                           console.log('Ошибка генерации сертификата');
                         } else {
                             this.loading = false;
                         }
