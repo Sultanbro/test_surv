@@ -101,7 +101,12 @@ class Kernel extends ConsoleKernel
     {
         $this->load(__DIR__.'/Commands');
 
-        tenancy()->initialize( \App\Models\Tenant::where('id', 'bp')->first() );
+        if(config('tenancy.default_tenant')) {
+            if($tenant = \App\Models\Tenant::where('id', config('tenancy.default_tenant'))->first()) {
+                tenancy()->initialize( $tenant);
+            };
+        }
+        
         require base_path('routes/console.php');
     }
 }
