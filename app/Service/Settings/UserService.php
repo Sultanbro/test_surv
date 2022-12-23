@@ -2,16 +2,31 @@
 
 namespace App\Service\Settings;
 
+use App\DTO\Settings\StoreUserDTO;
+use App\Events\TimeTrack\CreateTimeTrackHistoryEvent;
 use App\Exports\UserExport;
 use App\Filters\Users\UserFilter;
 use App\Filters\Users\UserFilterBuilder;
+use App\Helpers\FileHelper as Helper;
+use App\Position;
+use App\Repositories\CardRepository;
+use App\Repositories\DayTypeRepository;
 use App\Repositories\ProfileGroupRepository;
+use App\Repositories\TimeTrackHistoryRepository;
+use App\Repositories\UserContactRepository;
+use App\Repositories\UserDescriptionRepository;
+use App\Repositories\UserRepository;
 use App\User;
 use Carbon\Carbon;
 use Exception;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Mail;
 use Maatwebsite\Excel\Facades\Excel;
 use Symfony\Component\HttpFoundation\BinaryFileResponse;
+use Symfony\Component\HttpFoundation\RedirectResponse;
+use App\Service\Department\UserService as DepartmentUserService;
+use Symfony\Component\HttpFoundation\Response;
+use Throwable;
 
 /**
 * Класс для работы с Service.
@@ -20,7 +35,9 @@ class UserService
 {
     public function __construct(
         public UserFilterBuilder $builder,
-        public UserFilter $filter
+        public UserFilter $filter,
+        public UserRepository $userRepository,
+        public UserDescriptionRepository $descriptionRepository
     )
     {}
 
@@ -64,6 +81,150 @@ class UserService
         } catch (\Throwable $exception) {
             throw new Exception($exception->getMessage());
         }
+    }
+
+    /**
+     * @throws Exception
+     */
+    public function userStore(
+        StoreUserDTO $dto
+    ): int|RedirectResponse
+    {
+        try {
+            $user = $this->userRepository->getUserByEmail($dto->email);
+
+            if ($user->deleted_at)
+            {
+                $this->userRepository->restoreUser($user);
+            }
+
+            $this->userRepository->updateOrCreateNewEmployee($dto->toArray());
+
+            (new DepartmentUserService)->setGroup($dto->group, $user->id, 'add');
+
+            if ($dto->headGroup != 0 && $dto->positionId == Position::GROUP_HEAD)
+            {
+                $this->setProfileGroupHead($user->id, $dto->headGroup);
+            }
+
+            $this->setUserDescription($user->id, $dto->isTrainee);
+
+            if ($dto->contacts)
+            {
+                $this->saveContacts($user->id, $dto->contacts['phone']);
+            }
+
+            if ($dto->cards)
+            {
+                $this->saveCards($user->id, $dto->cards);
+            }
+
+            Helper::storeDocumentsFile([
+                'dog_okaz_usl' => $dto->file1,
+                'sohr_kom_tainy' => $dto->file2,
+                'dog_o_nekonk'  => $dto->file3,
+                'trud_dog'      => $dto->file4,
+                'ud_lich'       => $dto->file5,
+                'photo'         => $dto->file6,
+                'archive'       => $dto->file7
+            ], $user->id);
+
+            $this->userRepository->updateOrCreateSalary(
+                $user->id,
+                $dto->salary,
+                $dto->cardNumber,
+                $dto->kaspi,
+                $dto->jysan,
+                $dto->cardKaspi,
+                $dto->cardJysan,
+                $dto->kaspiCardholder,
+                $dto->jysanCardholder
+            );
+
+            return Response::HTTP_CREATED;
+        } catch (Throwable $exception) {
+            return back()->withErrors(
+                'При сохранений произошла ошибка повторите попытку еще раз, если не получится сообщите Админам. С любовью ваши любимые разработчики <3'
+            );
+        }
+    }
+
+    /**
+     * @param int $userId
+     * @param array $cards
+     * @return void
+     */
+    private function saveCards(
+        int $userId,
+        array $cards
+    ): void
+    {
+        $cardsData = [];
+        foreach ($cards as $card)
+        {
+            $cardsData[] = $card;
+        }
+
+        (new CardRepository)->createMultipleCard($cardsData);
+    }
+    /**
+     * Сохранение доп телефонов для пользователя
+     *
+     * @param int $userId
+     * @param array $phones
+     * @return void
+     */
+    private function saveContacts(
+        int $userId,
+        array $phones
+    ): void
+    {
+        $contactsData = [];
+        foreach ($phones as $phone)
+        {
+            $contactsData[] = [
+                'user_id' => $userId,
+                'value' => $phone['value'],
+                'name' => $phone['name'],
+                'type'  => 'phone'
+            ];
+        }
+        (new UserContactRepository)->createMultipleContact($contactsData);
+    }
+    
+    /**
+     * @throws Exception
+     */
+    private function setUserDescription(
+        int $userId,
+        ?bool $isTrainee = false
+    ): void
+    {
+        try {
+            if($isTrainee) {
+                $this->descriptionRepository->setEmployee($userId);
+                (new DayTypeRepository)->createNew($userId);
+            }
+
+            $this->descriptionRepository->createDescription($userId);
+            CreateTimeTrackHistoryEvent::dispatch($userId);
+
+        } catch (Exception) {
+            throw new Exception("Couldn't create a description for user");
+        }
+    }
+    
+    /**
+     * @param int $userId
+     * @param int $groupId
+     * @return void
+     */
+    private function setProfileGroupHead(
+        int $userId,
+        int $groupId
+    ): void
+    {
+        (new ProfileGroupRepository)->setHead($userId, $groupId);
     }
 
     /**

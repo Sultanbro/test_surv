@@ -3,9 +3,12 @@ declare(strict_types=1);
 
 namespace App\Repositories;
 
+use App\Classes\Helpers\Phone;
 use App\Enums\UserFilterEnum;
+use App\Events\EmailNotificationEvent;
 use App\User as Model;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Hash;
 use Matrix\Builder;
 
 /**
@@ -21,6 +24,13 @@ final class UserRepository extends CoreRepository
     protected function getModelClass()
     {
         return Model::class;
+    }
+
+    public function getUserByEmail(
+        string $email
+    )
+    {
+        return $this->model()->where('email', $email)->first() ?? null;
     }
 
     /**
@@ -136,5 +146,89 @@ final class UserRepository extends CoreRepository
             ->when($endDate, fn($q) => $q->whereDate('users.created_at', '<=', $endDate))
             ->when($startDateDeactivate, fn($q) => $q->whereDate('users.deleted_at', '>=', $startDateDeactivate))
             ->when($endDateDeactivate, fn($q) => $q->whereDate('users.deleted_at', '<=', $endDateDeactivate));
-     }
+    }
+
+    /**
+     * @param array $userData
+     * @return void
+     */
+    public function updateOrCreateNewEmployee(
+        array $userData
+    ): void
+    {
+        $password = str_random(8);
+        $this->model()->updateOrCreate(
+            [
+                'email' => $userData['email']
+            ],
+            [
+                'email'             => strtolower($userData['email']),
+                'name'              => $userData['name'],
+                'last_name'         => $userData['last_name'],
+                'description'       => $userData['description'],
+                'password'          => Hash::make($password),
+                'position_id'       => $userData['position_id'],
+                'user_type'         => $userData['user_type'],
+                'timezone'          => 6,
+                'birthday'          => $userData['birthday'],
+                'program_id'        => $userData['program_type'],
+                'working_day_id'    => $userData['working_days'],
+                'working_time_id'   => $userData['working_times'],
+                'phone'             => Phone::normalize($userData['phone']),
+                'full_time'         => $userData['full_time'],
+                'work_start'        => $userData['work_start_time'],
+                'work_end'          => $userData['work_end_time'],
+                'currency'          => $userData['currency'] ?? 'kzt',
+                'weekdays'          => $userData['weekdays'],
+                'working_country'   => $userData['working_country'],
+                'working_city'      => $userData['working_city'],
+                'role_id'           => $userData['role_id'] ?? 1,
+                'is_admin'          => $userData['is_admin'] ?? 0,
+                'img_url'           => $userData['file_name']
+            ]
+        );
+        EmailNotificationEvent::dispatch($userData['name'], $userData['email'], $password);
+    }
+
+    /**
+     * @param Model $user
+     * @return void
+     */
+    public function restoreUser(
+        Model $user
+    ): void
+    {
+        $user->update([
+            'deleted_at' => null
+        ]);
+    }
+
+    public function updateOrCreateSalary(
+        int $userId,
+        ?string $salary = '70000',
+        ?string $cardNumber,
+        ?string $kaspi,
+        ?string $jysan,
+        ?string $cardKaspi,
+        ?string $cardJysan,
+        ?string $kaspiCardholder,
+        ?string $jysanCardholder
+    )
+    {
+        $this->model()->find($userId)->zarplata()->updateOrCreate(
+            [
+                'user_id' => $userId
+            ],
+            [
+                'zarplata' => $salary,
+                'card_number' => $cardNumber,
+                'kaspi' => $kaspi,
+                'jysan' => $jysan,
+                'card_kaspi' => $cardKaspi,
+                'card_jysan' => $cardJysan,
+                'kaspi_cardholder' => $kaspiCardholder,
+                'jysan_cardholder' => $jysanCardholder,
+            ]
+        );
+    }
 }
