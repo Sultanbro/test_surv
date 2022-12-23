@@ -16,7 +16,7 @@
                 placeholder="Поиск по совпадениям..."
                 @keyup="onSearch"
             >
-            <span class="ml-2"> 
+            <span class="ml-2 whitespace-no-wrap">
                 Найдено: {{ items.length }}
             </span>
         </div>

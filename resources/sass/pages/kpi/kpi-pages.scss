@@ -4,8 +4,13 @@ $bon-bg-grey: #e8ebef;
 $color-user: rgb(38, 98, 166); 
 $color-group: rgb(208, 138, 33);
 $color-position: rgb(54, 182, 73);
-
+.whitespace-no-wrap {
+    white-space: nowrap;
+}
 .kpi-pages {
+    .kpi-item{
+        overflow: auto;
+    }
     // another
     .searcher {
         border: 1px solid #ced4da;

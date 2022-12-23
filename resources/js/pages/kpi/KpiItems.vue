@@ -1,7 +1,7 @@
 <template>
 <div class="kpi-item">
 
-    <table class="table table-responsive table-inner">
+    <table class="table table-inner">
         <thead>
             <tr>
                 <th></th>
