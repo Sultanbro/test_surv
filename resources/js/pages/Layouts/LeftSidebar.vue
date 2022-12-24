@@ -159,7 +159,7 @@ export default {
             return this.$can('top_view')
                 || this.$can('tabel_view')
                 || this.$can('entertime_view')
-                || this.$can('hr_view')
+                || (this.$can('hr_view') && window.location.host.split('.')[0] == 'bp')
                 || this.$can('analytics_view')
                 || this.$can('salaries_view')
                 || this.$can('quality_view')
@@ -248,7 +248,7 @@ export default {
                             name: 'HR',
                             icon: 'icon-nd-hr',
                             href: '/timetracking/analytics',
-                            hide: !this.$can('hr_view')
+                            hide: ! (this.$can('hr_view') && window.location.host.split('.')[0] == 'bp')
                         },
                         {
                             name: 'Аналитика',

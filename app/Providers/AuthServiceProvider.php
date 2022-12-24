@@ -30,7 +30,12 @@ class AuthServiceProvider extends ServiceProvider
         $tenant = tenant('id');
 
         Gate::before(function ($user, $ability) use ($tenant) {
-            if($ability == 'ucalls_view') return $user->is_admin == 1 && $tenant == 'bp' ? true : false;
+            if(in_array($ability, [
+                'ucalls_view',
+                'hr_view'
+            ])) {
+                return $user->is_admin == 1 && $tenant == 'bp' ? true : false;
+            }
             
             return $user->is_admin == 1  ? true : null;
         });
