@@ -2,43 +2,29 @@
 
 namespace App\Http\Controllers\Admin;
 
-use App\Components\TelegramBot;
-use App\DayType;
 use App\Http\Controllers\Controller;
-use App\Models\CheckList;
+use Illuminate\Http\Request;
+use Maatwebsite\Excel\Facades\Excel;
+use Carbon\Carbon;
+use App\Service\Department\UserService;
 use App\Models\CheckReports;
-use App\Models\CheckUsers;
 use App\ProfileGroup;
-use App\Timetracking;
-use App\UserDescription;
 use App\User;
-use App\Trainee;
-use App\Kpi;
 use App\QualityParam;
 use App\QualityParamValue;
 use App\QualityRecord;
 use App\QualityRecordWeeklyStat;
 use App\QualityRecordMonthlyStat;
-use Maatwebsite\Excel\Facades\Excel;
-use Carbon\Carbon;
-use DB;
-use Illuminate\Http\Request;
-use View;
-use App\Models\Analytics\Activity;
 use App\Models\Analytics\UserStat;
-use Auth;
 use App\Models\CallibroDialer;
-use App\Service\Department\UserService;
 use App\UserNotification;
 
 class QualityController extends Controller
 {
-    private $users;
-    
     public function __construct()
     {
-        View::share('title', 'Отдел Контроля Качества');
-        View::share('menu', 'timetrackingqc');
+        \View::share('title', 'Отдел Контроля Качества');
+        \View::share('menu', 'timetrackingqc');
         $this->middleware('auth');
     }
 
@@ -48,23 +34,21 @@ class QualityController extends Controller
         if(!auth()->user()->can('quality_view')) {
             return redirect('/');
         }
-
-       // $acts = Activity::where('type', 'quality')->get()->pluck('group_id')->toArray();
        
         $groups = ProfileGroup::where('active', 1)->get();
-        $group_id = $groups[0]->id;
+        $group_id = $groups->count() > 0 ? $groups->first()->id : 0;
         if(isset($request['user_id'])){
             $user = User::find($request['user_id']);
-            $group_id = $user->inGroups()[0]->id;
+            $userGroups = $user->inGroups();
+            $group_id = $userGroups->count() > 0 ? $userGroups->first()->id : 0;
         }
 
         return view('admin.quality_control',
             compact('groups','group_id','check'));
     }
 
-    public function getRecords(Request $request) {
-
-
+    public function getRecords(Request $request)
+    {
         $currentUser = User::bitrixUser();
         $group = ProfileGroup::find($request->group_id);
 
@@ -72,24 +56,15 @@ class QualityController extends Controller
             'error' => 'access',
         ];
 
-
         $group_editors = is_array(json_decode($group->editors_id)) ? json_decode($group->editors_id) : [];
-        // Доступ к группе
-        //if(auth()->user()->id == 84) dd(auth()->user()->can('quality_view'));
-        if(auth()->user()->is_admin == 1) {
-
-        } else if (!in_array($currentUser->id, $group_editors)) {
+      
+        if (auth()->user()->is_admin != 1 && !in_array($currentUser->id, $group_editors)) {
             return [
                 'error' => 'access',
             ];
         }
 
         $date = Carbon::createFromDate($request->year, $request->month, 1)->format('Y-m-d');
-        
-        // dd('test');
-
-        // $working = ProfileGroup::employees($request->group_id, $date, 1);
-        // $fired =  ProfileGroup::employees($request->group_id, $date, 2);
 
         $working = (new UserService)->getEmployees($request->group_id, $date); 
         $working = collect($working)->pluck('id')->toArray();
@@ -321,10 +296,9 @@ class QualityController extends Controller
             'individual_current' => $check_users['individual_current'] ?? null,
         ]);
     }
-    /**
-     * Create weeks array with days 
-     */
-    private function weeksArray($month, $year) {
+
+    private function weeksArray($month, $year)
+    {
         $weeks = [];
         $week_number = 1;
         $week = [];
@@ -348,7 +322,8 @@ class QualityController extends Controller
         return $weeks;
     }
 
-    public function saveRecord(Request $request) {
+    public function saveRecord(Request $request)
+    {
     
         $user_id = User::bitrixUser()->id;
         
@@ -478,7 +453,8 @@ class QualityController extends Controller
 
     }
 
-    public function deleteRecord(Request $request) {
+    public function deleteRecord(Request $request)
+    {
         $record = QualityRecord::find($request->id);
         if($record) $record->delete();
     }
@@ -551,7 +527,8 @@ class QualityController extends Controller
         
     }
 
-    private function countAvgOfTotal($records) {
+    private function countAvgOfTotal($records)
+    {
         $sum_month = $records->sum('total');
         $count_month = $records->count();
             if($count_month == 0) {
@@ -562,37 +539,8 @@ class QualityController extends Controller
         return $avg_month;
     }
 
-    private function employees($group_id) {
-        $users = []; 
-        $groups = ProfileGroup::where('id', $group_id)->get();
-
-        foreach($groups as $group) {
-            $gr = $group->groupUsers();
-            
-            if($gr != null ) {
-                foreach($gr as $g) {
-                    array_push($users, $g->id); 
-                }
-            }
-        }
-        
-        $trainees = UserDescription::where('is_trainee', 1)->pluck('user_id')->toArray();
-
-        $users = array_unique($users);
-        $users = array_diff($users, $trainees);
-      
-        return $users;
-    }
-
-
-    /**
-     * Save weekly, where not have daily records
-     * 
-     * @TODO
-     * there is mistake 
-     * not have group-id 
-     */
-    public function saveWeeklyRecord(Request $request){
+    public function saveWeeklyRecord(Request $request)
+    {
         $rec = QualityRecordWeeklyStat::where([
             'day' => $request->day,
             'month' => $request->month,
@@ -618,7 +566,8 @@ class QualityController extends Controller
         return $rec;
     }
 
-    public function exportAllExcel(Request $request){
+    public function exportAllExcel(Request $request)
+    {
         
         $segments = [
             1 => '1-5',
@@ -710,9 +659,6 @@ class QualityController extends Controller
         })->export('xls');
     }
 
-    /**
-     * 
-     */
     public function changeType(Request $request)
     {
         $group = ProfileGroup::find($request->group_id);

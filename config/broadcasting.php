@@ -39,6 +39,7 @@ return [
                 'cluster' => env('PUSHER_APP_CLUSTER'),
                 //'encrypted' => true,
                 'encrypted' => false,
+                'useTLS' => true,
                 'port' => 6001,
                 'scheme' => 'https',
                 'host' => env('PUSHER_HOST'),

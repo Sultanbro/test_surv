@@ -45,9 +45,7 @@ class TestController extends Controller {
   
 	
 	public function test() { 
-		
-        dd(auth()->user()->can('ucalls_view'));
-       
+        dd(config());
 	}
 
     public function testMethodForCheck()
