@@ -27,7 +27,11 @@ class AuthServiceProvider extends ServiceProvider
     {
         $this->registerPolicies();
 
-        Gate::before(function ($user, $ability) {
+        $tenant = tenant('id');
+
+        Gate::before(function ($user, $ability) use ($tenant) {
+            if($ability == 'ucalls_view') return $user->is_admin == 1 && $tenant == 'bp' ? true : false;
+            
             return $user->is_admin == 1  ? true : null;
         });
 

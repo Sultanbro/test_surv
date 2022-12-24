@@ -309,7 +309,7 @@ export default {
                     href: '/callibro/login',
                     icon: 'icon-nd-u-calls',
                     height: 0,
-                    hide: !this.$can('ucalls_view')
+                    hide: !(this.$can('ucalls_view') && window.location.host.split('.')[0] == 'bp')
                 },
             ]
         },

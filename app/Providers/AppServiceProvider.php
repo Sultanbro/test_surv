@@ -5,12 +5,6 @@ namespace App\Providers;
 use Illuminate\Support\Facades\Response;
 use \Symfony\Component\HttpFoundation\Response as HttpFoundation;
 use Illuminate\Support\ServiceProvider;
-use Illuminate\Support\Facades\File;
-use Illuminate\Support\Facades\DB;
-use App\Notification;
-use App\UserNotification;
-use App\User;
-use Carbon\Carbon;
 use Illuminate\Pagination\Paginator;
 
 class AppServiceProvider extends ServiceProvider
@@ -31,35 +25,11 @@ class AppServiceProvider extends ServiceProvider
 
         \View::composer('layouts.app', function($view) {
 
-            if(!\Auth::guest()) {
+            $data = $this->dataToVue();
 
-                $permissions = auth()->user()->getAllPermissions()->pluck('name')->toArray(); // Spatie permissions
-
-                if(auth()->user()->program_id === 1) {
-                    $permissions[] = 'ucalls_view';
-                } 
-
-                $view->with([
-                    'laravelToVue' => [
-                        'csrfToken'   => csrf_token(),
-                        'userId'      => auth()->id(),
-                        'avatar'      => isset(auth()->user()->img_url) && !is_null(auth()->user()->img_url) && auth()->user()->img_url !== ''
-                            ? '/users_img/' . auth()->user()->img_url
-                            : 'https://cp.callibro.org/files/img/8.png',
-                        'email'       => auth()->user()->email,
-                        'is_admin'    => auth()->user()->is_admin == 1,
-                        'permissions' => $permissions,
-                        'tenants'     => auth()->user()->tenants()->pluck('id')->toArray()
-                    ]
-                ]);
-
-            } else {
-                $view->with([
-                    'laravelToVue' => [
-                        'csrfToken'   => csrf_token(),
-                    ]
-                ]);
-            }
+            $view->with([
+                'laravelToVue' => $data
+            ]);
 
         });
 
@@ -87,5 +57,28 @@ class AppServiceProvider extends ServiceProvider
     public function register()
     {
         //
+    }
+
+    private function dataToVue() : array
+    {
+        if(\Auth::guest()) return ['csrfToken' => csrf_token()];
+
+        $permissions = auth()->user()->getAllPermissions()->pluck('name')->toArray(); 
+
+        if(auth()->user()->program_id === 1 && tenant('id') == 'bp') {
+            $permissions[] = 'ucalls_view';
+        } 
+        
+        return [
+            'csrfToken'   => csrf_token(),
+            'userId'      => auth()->id(),
+            'avatar'      => isset(auth()->user()->img_url) && !is_null(auth()->user()->img_url) && auth()->user()->img_url !== ''
+                ? '/users_img/' . auth()->user()->img_url
+                : 'https://cp.callibro.org/files/img/8.png',
+            'email'       => auth()->user()->email,
+            'is_admin'    => auth()->user()->is_admin == 1,
+            'permissions' => $permissions,
+            'tenants'     => auth()->user()->tenants()->pluck('id')->toArray()
+        ]; 
     }
 }
