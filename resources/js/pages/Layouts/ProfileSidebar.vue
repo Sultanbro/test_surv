@@ -520,6 +520,11 @@ export default {
 }
 // .profile__content{}
 .profile__logo{
+    font-size: 21px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 24px 0;
     // display: flex;
     // margin: 0 auto 2rem;
     // justify-content: center;
@@ -531,7 +536,6 @@ export default {
     // text-transform: uppercase;
     // position: relative;
     width: 100%;
-    padding-bottom: 30.77%;
     margin-bottom: 2rem;
     position: relative;
     background-image: url("data:image/svg+xml;utf8,<svg width='100%' height='100%' xmlns='http://www.w3.org/2000/svg'><rect width='98%' height='98%' x='1%' y='1%' ry='12%' rx='12%' style='fill: none; stroke: %23D9D9D9; stroke-width: 1; stroke-dasharray: 8'/></svg>");
