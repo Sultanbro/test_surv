@@ -85,7 +85,7 @@ class NotifyManagersAboutForeigners extends Command
 
                         $msg_fragment .= 'Период: ' . $from . ' - ' . $to . '<br>';
                         $msg_fragment .= 'Сумма: ' . $salaries . ' тг<br>';
-                        $msg_fragment .= '<a href="https://bp.jobtron.org/timetracking/salaries">Страница начислений</a>';
+                        $msg_fragment .= '<a href="https://'.tenant('id').'.jobtron.org/timetracking/salaries">Страница начислений</a>';
 
                         $timestamp = now();
                         

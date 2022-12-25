@@ -695,7 +695,6 @@ class UserController extends Controller
         }
 
         
-
         /*==============================================================*/
         /*******  Сохранение доп телефонов для пользователя  */
         /*==============================================================*/
@@ -1017,7 +1016,7 @@ class UserController extends Controller
                 $seg = Segment::find($user->segment);
                 $segment = $seg ? $seg->name : '';
 
-                $msg_fragment = '<a href="https://bp.jobtron.org/timetracking/edit-person?id=';
+                $msg_fragment = '<a href="https://'.tenant('id').'.jobtron.org/timetracking/edit-person?id=';
                 $msg_fragment .= $user->id .'">' . $user->last_name . ' ' . $user->name . '</a>';
                 $msg_fragment .= '<br/>Дата принятия: ' . Carbon::parse($ud->applied)->format('d.m.Y');
                 $msg_fragment .= '<br/>Сегмент: ' . $segment . '<br/>Примечание: '. $comment;

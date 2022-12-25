@@ -3,7 +3,6 @@
 namespace App\Mail;
 
 use Illuminate\Bus\Queueable;
-use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Mail\Mailable;
 use Illuminate\Queue\SerializesModels;
 
@@ -19,6 +18,7 @@ class SendInvitation extends Mailable
      */
     public function __construct($mailData)
     {
+        $mailData['hostname'] = 'https://'. tenant('id') .'.' . config('app.domain');
         $this->mailData = $mailData;
     }
 

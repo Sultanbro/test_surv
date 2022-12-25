@@ -9,7 +9,7 @@ use App\Http\Controllers\PrivacyController;
 |--------------------------------------------------------------------------
 |
 | Here is central app routes of Jobtron.org
-| Subdomain routes is located in tenant.php, like bp.jobtron.org
+| Subdomain routes is located in tenant.php, like dev.jobtron.org
 |
  */
 

@@ -77,7 +77,6 @@ class Kernel extends HttpKernel
         'can' => \Illuminate\Auth\Middleware\Authorize::class,
         'guest' => \App\Http\Middleware\RedirectIfAuthenticated::class,
         'throttle' => \Illuminate\Routing\Middleware\ThrottleRequests::class,
-        'bitrix' => \App\Http\Middleware\BitrixAuth::class,
         'admin' => \App\Http\Middleware\Admin::class,
         'adminbook' => \App\Http\Middleware\AdminBook::class,
         'admin.basic.auth' => \App\Http\Middleware\BasicAuth::class,

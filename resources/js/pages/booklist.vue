@@ -1029,7 +1029,7 @@ export default {
 
     copyLink(book) {
       var Url = this.$refs["mylink" + book.id];
-      Url.value = "https://bp.jobtron.org/corp_book/" + book.hash;
+      Url.value = window.location.origin + "/corp_book/" + book.hash;
 
       Url.select();
       document.execCommand("copy");

@@ -6,4 +6,4 @@
 <b>Логин:</b>&nbsp;{{$email}}<br>
 <b>Пароль:</b>&nbsp;@if($original_password) {{$original_password}}@endif <br>
 
-Используйте выданный Вам пароль к Вашему кабинету по ссылке <a target="_blank" href="https://bp.jobtron.org/">bp.jobtron.org</a>.<br>
+Используйте выданный Вам пароль к Вашему кабинету по ссылке <a target="_blank" href="{{ $hostname }}">{{ $hostname }}</a>.<br>

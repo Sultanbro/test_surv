@@ -255,7 +255,7 @@ class SetAbsent extends Command
         $lead = Lead::where('user_id', $targetUser->id)->first();
 
         $group_name = '(' . $group_name . ')';
-        $editPersonLink = 'https://bp.jobtron.org/timetracking/edit-person?id=' . $targetUser->id;
+        $editPersonLink = 'https://'.tenant('id').'.jobtron.org/timetracking/edit-person?id=' . $targetUser->id;
 
         $abs_msg = 'Система: '. $group_name .'  Стажер не был на обучении: <br> <a href="' . $editPersonLink . '" target="_blank">';
         $abs_msg .= $targetUser->last_name . ' ' . $targetUser->name  . ' </a>';

@@ -103,7 +103,7 @@ class ProfileController extends Controller
                     $file->move($file_path, $filename);
                     
                     array_push($files, $file_path . $filename);
-                    array_push($files_full, 'https://bp.jobtron.org/' . $file_path . $filename);
+                    array_push($files_full, 'https://'.tenant('id').'.jobtron.org/' . $file_path . $filename);
                 }
                 
                 UserExperience::make($request->user_id, $request->question, json_encode($files));
