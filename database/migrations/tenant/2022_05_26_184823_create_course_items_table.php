@@ -20,6 +20,7 @@ class CreateCourseItemsTable extends Migration
             $table->string('item_model');
             $table->integer('order')->default(0);
             $table->timestamps();
+            $table->softDeletes();
             $table->string('title');
         });
     }

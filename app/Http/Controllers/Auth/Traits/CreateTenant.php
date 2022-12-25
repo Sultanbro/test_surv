@@ -69,6 +69,8 @@ trait CreateTenant
             'phone' => $user['phone'],
             'currency' => $user['currency'],
             'password' => $user['password'],
+            'position_id' => 1,
+            'program_id' => 1,
             'is_admin' => 1
         ]);
 
