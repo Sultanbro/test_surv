@@ -2,9 +2,7 @@
 
 namespace App\Service;
 
-use App\AnalyticsSettingsIndividually;
 use App\Http\Requests\BonusesFilterRequest;
-use App\Models\GroupUser;
 use App\Models\Kpi\Bonus;
 use App\Models\QuartalPremium;
 use App\Position;
@@ -12,7 +10,6 @@ use App\Service\Department\UserService;
 use App\Traits\KpiHelperTrait;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Carbon\Carbon;
@@ -25,7 +22,6 @@ use App\Models\Analytics\UserStat;
 use App\Models\Analytics\UpdatedUserStat;
 use App\Models\Analytics\Activity;
 use App\Models\Analytics\AnalyticStat;
-use App\Models\History;
 use Illuminate\Support\Arr;
 
 class KpiStatisticService
@@ -639,12 +635,6 @@ class KpiStatisticService
                         ->whereYear('date', $date->year)
                         ->orderBy('date', 'desc')
                         ->get();
-        
-        $this->asis = AnalyticsSettingsIndividually::query()
-            ->whereMonth('date', $date->month)
-            ->whereYear('date', $date->year)
-            ->get();
-
         /**
          * get kpis
          */ 
@@ -912,12 +902,6 @@ class KpiStatisticService
                 $this->takeCellValue(   $_item, $date, $item);
                 $this->takeRentability( $_item, $date, $item);
                 
-              
-                // for Bpartners
-                if($kpi->targetable_type == 'App\ProfileGroup' && $kpi->targetable_id == 48) {
-                   // $this->takeRecruiterValues($_item, $date, $item, $user['id']);
-                }
-
                 $this->takeUpdatedValue($_item->id,
                     $item['activity_id'],
                     $date,
@@ -999,50 +983,8 @@ class KpiStatisticService
         return $users;
     }
 
-    /**
-     * get Recruiter values
-     * 
-     * @param KpiItem $kpi_item
-     * @param Carbon $date
-     * @param array &$item
-     * 
-     * @return array
-     */
-    private function takeRecruiterValues(KpiItem $kpi_item, Carbon $date, array &$item, $user_id) : void
-    {
-        $asi = $this->asis->where('employee_id', $user_id)->first();
-        $activities = (new RecruitingActivityService)->activities;
-        $activity_id = in_array($kpi_item->activity_id, $activities) ? $kpi_item->activity_id : 0;
-        if($asi && $activity_id != 0) {
-            $data = json_decode($asi->data, true);
-        
-            $index = array_search($activity_id, $activities);
-            if($index) {
-                $sum = 0;
-                $count = 0;
-                for($i = 1; $i <= 31; $i++) {
-                    if(isset($data[$index][$i]) && $data[$index][$i] != null && $data[$index][$i] != '') {
-                        $sum += (float) $data[$index][$i];
-                        $count++;
-                    }
-                }
-            }
-
-        
-
-            $item['fact'] = round($sum, 2);
-            $item['records_count'] = $count;
-            if($count > 0) {
-                $item['avg'] = round($sum / $count, 2);
-            }
-
-        }
-        
-    }
-
     private function takeCommonValue(KpiItem $kpi_item, Carbon $date, array &$item) : void
     {
-        
         /**
          * take quality value
          * avg goes with weeks 

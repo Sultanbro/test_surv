@@ -3,22 +3,14 @@
 namespace App\Console\Commands\Bitrix;
 
 use Illuminate\Console\Command;
-use Illuminate\Support\Facades\DB;
 use App\Models\Bitrix\Lead;
 use App\External\Bitrix\Bitrix;
 use Carbon\Carbon;
 use App\User;
-use App\UserDescription;
-use App\Account;
 use App\ProfileGroup;
 use App\AnalyticsSettings;
-use App\AnalyticsSettingsIndividually;
 use App\Classes\Analytics\Recruiting;
-use App\Components\TelegramBot;
-use App\Trainee;
 use App\DayType;
-use App\Classes\Helpers\Phone;
-use App\Models\Analytics\RecruiterStat;
 use App\Classes\Analytics\FunnelTable;
 
 class FunnelStats extends Command
@@ -120,12 +112,8 @@ class FunnelStats extends Command
     private function getData() {
      
         $group = ProfileGroup::find(Recruiting::GROUP_ID);
-        $users = json_decode($group->users);
-        $funnel = new FunnelTable();
-        /// Requests to Infinitys.Bitrix.com 
 
-        $start_hour = $this->date . 'T' . $this->hour . ':00:00';
-        $end_hour = $this->date . 'T' . $this->hour . ':59:59';
+        /// Requests to Infinitys.Bitrix.com 
 
         if($this->argument('segment')) {
             if($this->argument('segment') == 'alina')  $segments = [Lead::SEGMENT_ALINA =>'alina'];
@@ -137,11 +125,7 @@ class FunnelStats extends Command
         } else {
             $segments = [
                 Lead::SEGMENT_TARGET => 'insta',
-               // Lead::SEGMENT_ALINA =>'alina',
                 Lead::SEGMENT_HH => 'hh',
-                // Lead::SEGMENT_SALTANAT =>'saltanat',
-                // Lead::SEGMENT_AKZHOL =>'akzhol',
-                // Lead::SEGMENT_DARKHAN =>'darkhan',
             ];
         }
         
@@ -183,10 +167,7 @@ class FunnelStats extends Command
                 $data = $as->data;
                 $this->line('Created AS '. $segment); 
             }
-            //dump( Carbon::parse($this->date)->startOfMonth()->format('Y-m-d'));
-            //dump($data);
-            /** feth */
-
+          
             if($segment == 'hh') {
                 $data[1][$week_number] = $fetch['created'];
                 $data[2][$week_number] = $fetch['converted'];
@@ -212,22 +193,16 @@ class FunnelStats extends Command
             }
 
             /** save */
-
             $as->data = $data;
             $as->save();
             $this->line('Segment fetched: '. $segment);
 
-        }
-
-        
-        
-
-        
-            
+        }    
 
     }
 
-    public function fetch($segment, $segment_id) {
+    public function fetch($segment, $segment_id)
+    {
         
 
         $not_this_month = Carbon::parse($this->date)->endOfWeek()->month != Carbon::parse($this->date)->month;
@@ -252,11 +227,6 @@ class FunnelStats extends Command
         $start_hour = $start . 'T00:00:00';
         $end_hour = $end . 'T23:59:59'; 
         
-        //dump(Carbon::parse($this->date)->endOfWeek()->day);
-        //dump($start);
-        //dump($start_hour);
-        //dump($end_hour);
-        /***** */
         if(in_array($segment, ['hh', 'insta'])) {
             $created = $this->bitrix->getLeads(0, '', 'ALL', 'ASC', $start_hour . '+06:00', $end_hour . '+06:00', 'DATE_CREATE', 0, $segment);
                 usleep(1000000); // 1 sec
@@ -269,19 +239,7 @@ class FunnelStats extends Command
             usleep(1000000); // 1 sec
             $converted = array_key_exists('total', $converted) ? $converted['total'] : 0;
         dump($converted);
-        // $hired = $this->bitrix->getDeals(0, 'C4:WON',  'ASC', $start_hour . '+06:00', $end_hour . '+06:00', 'DATE_CREATE', $segment);
-        //     usleep(1000000); // 1 sec
-            
-        //     $hired = array_key_exists('total', $hired) ? $hired['total'] : 0;
-        
-        // $hired_users = \DB::table('users')
-        //     ->leftJoin('user_descriptions as ud', 'ud.user_id', '=', 'users.id')
-        //     ->leftJoin('bitrix_leads as bl', 'bl.user_id', '=', 'users.id')
-        //     ->where('bl.segment', $segment_id)
-        //     ->where('ud.is_trainee', 0)
-        //     ->whereDate('bl.created_at', '>=', $start)
-        //     ->whereDate('bl.created_at', '<=', $end)
-        //     ->get();
+       
         
         $hired_users = User::withTrashed()
             ->with('user_description')
@@ -296,7 +254,6 @@ class FunnelStats extends Command
             })
             ->get(['id','full_time']);
 
-      //  if($hired_users->count() > 0)dd($hired_users->toArray());
         dump('hired  users   '. $hired_users->count());
 
         $hired = 0;
@@ -315,19 +272,8 @@ class FunnelStats extends Command
             ->whereNotNull('invite_at')
             ->get();
         
-        //$leads = Lead::whereBetween('created_at', [$start, $end])->get();
-        // foreach($leads as $lead) {
-        //     if($segment_id == 1) {
-        //         dump($lead->invite_at);
-        //         dump($lead->segment . ' - ' . $lead->skyped . ' '. $lead->inhouse);
-        //     }
-        // }
-        // if($segment_id == 1) {
-        //     dump([$start, $end]);
-        //     dd($leads->count());
-        // }
         foreach($leads as $lead) {
-           // dump($lead->invite_at . '  == ' . $lead->day_second);
+         
             if($lead->user_id != 0) {
                 $user = User::where('id', $lead->user_id)->first();
 
@@ -357,7 +303,7 @@ class FunnelStats extends Command
                         ->where('user_id', $user->id)
                         ->first();
                     
-                    if($daytypex) $training++; //dump($daytype->toArray()['user_id']); //$training++;
+                    if($daytypex) $training++;
                 }
 
             }

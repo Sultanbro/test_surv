@@ -1,19 +1,8 @@
 <?php
 namespace App\Classes\Analytics;
 
-use DB;
-use App\User;
-use App\UserDescription;
-use App\Trainee;
-use App\DayType;
-use App\ProfileGroup;
 use App\AnalyticsSettings;
-use App\AnalyticsSettingsIndividually;
-use App\Models\Analytics\RecruiterStat;
 use Carbon\Carbon;
-use App\Models\Bitrix\Lead;
-use App\External\Bitrix\Bitrix;
-use App\Models\Admin\History;
 use App\Classes\Analytics\Recruiting;
 
 class FunnelTable 

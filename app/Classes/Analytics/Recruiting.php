@@ -1,23 +1,20 @@
 <?php
+
 namespace App\Classes\Analytics;
 
-use DB;
 use App\User;
 use App\UserDescription;
-use App\Trainee;
 use App\DayType;
 use App\ProfileGroup;
-use App\AnalyticsSettings;
-use App\AnalyticsSettingsIndividually;
 use App\Models\Analytics\RecruiterStat;
 use App\Classes\Analytics\LayoffQuiz;
 use Carbon\Carbon;
 use App\External\Bitrix\Bitrix;
 use App\Models\Bitrix\Lead;
 use App\Models\Admin\History;
-use App\UserNotification;
 use App\ProfileGroupUser as PGU;
 use App\Service\Department\UserService;
+use App\Timetracking;
 use App\UserAbsenceCause;
 
 class Recruiting 
@@ -153,26 +150,10 @@ class Recruiting
 
     }
 
-    /**
-     * 
-     * $date  Carbon 
-     * @return AnalyticsSettings
-     */
     public static function getSummaryTable($date) {
-        $table = AnalyticsSettings::whereDate('date', $date)
-            ->where('group_id', self::GROUP_ID)
-            ->where('type', 'basic')
-            ->first();
-        
-        return $table;
+        return [];
     }
 
-
-    /**
-     * 
-     * $table  AnalyticsSettings 
-     * @return void
-     */
     public function sumFacts($arr, $date) {
 
         $arr[self::S_CREATED]['fact'] = 0; // Создано новых лидов за день
@@ -194,7 +175,6 @@ class Recruiting
 
         $arr = $this->sumCommons($arr, $date);
         $arr = $this->sumIndividuals($arr, $date);
-        //$arr = $this->sumBotIndexes($arr, $date);
 
         $arr = $this->sumOnline($arr, $date);
 
@@ -304,107 +284,10 @@ class Recruiting
         return $value;
     }
 
-    /**
-     * $arr   array
-     * $date  Carbon month
-     * @return void
-     */
-    public function sumBotIndexes($arr, $date) {
-        $asi = AnalyticsSettingsIndividually::whereDate('date', $date)
-                    ->where('group_id', self::GROUP_ID)
-                    ->where('employee_id', 0)
-                    ->first();
-
-        if($asi) {
-            $data = json_decode($asi->data,true);
-
-            if(!array_key_exists(self::S_FAILED, $arr)) { 
-                $arr[self::S_FAILED]['fact'] = 0;
-            }
-           
-            if(array_key_exists(self::B_FAILED, $data)) {
-                for ($i = 1; $i <= $date->daysInMonth; $i++) {
-                    $x = array_key_exists($i, $data[self::B_FAILED]) ? $data[self::B_FAILED][$i] : 0;
-                    $arr[self::S_FAILED][$i] = $x;
-                    $arr[self::S_FAILED]['fact'] += $x;
-                }  
-            } 
-            
-        }
-
+    public function sumIndividuals($arr, $date) : array
+    {
         return $arr;
     }   
-
-    /**
-     * 
-     * $arr   array
-     * $date  Carbon month
-     * @return void
-     */
-    public function sumIndividuals($arr, $date) {
-     
-        $asi = AnalyticsSettingsIndividually::whereDate('date', $date)
-                    ->where('group_id', self::GROUP_ID)
-                    ->where('employee_id', '!=', 0)
-                    ->get();
-   
-        if($asi->count() > 0) {
-            for ($i = 1; $i <= $date->daysInMonth; $i++) {
-        
-                $count = 0;  // План наборов с ожиданием 7 гудков
-                $count2 = 0; //  успешных ИСХ ОТ 10 с
-                $count4 = 0; // Обработано успешных входящих
-                $count5 = 0; // Пропущенные
-                $count6 = 0; // Сконвертировано
-                
-             
-                foreach($asi as $asi_user) {
-                    
-                    $data = json_decode($asi_user->data, true);
-                  
-                    if(array_key_exists($i, $data[self::I_CALL_PLAN])) $count += (int)$data[self::I_CALL_PLAN][$i];
-                    if(array_key_exists($i, $data[self::I_CALLS_OUT])) $count2 += (int)$data[self::I_CALLS_OUT][$i];
-                    if(array_key_exists($i, $data[self::I_CALLS_IN])) $count4 += (int)$data[self::I_CALLS_IN][$i];
-                    if(array_key_exists($i, $data[self::I_CALLS_MISSED])) $count5 += (int)$data[self::I_CALLS_MISSED][$i];
-                    if(array_key_exists($i, $data[self::I_CONVERTED])) $count6 += (int)$data[self::I_CONVERTED][$i];
-                
-                }
-                
-                
-                if($count != 0) {
-                    $arr[self::S_CALLS_OUT][$i] = $count;
-                    $arr[self::S_CALLS_OUT]['fact'] += $count;
-                } 
-
-                if($count != 0) {
-                    $arr[self::S_CALLS_OUT_10][$i] = $count2;
-                    $arr[self::S_CALLS_OUT_10]['fact'] += $count2;
-                } 
-    
-                if($count4 != 0) {
-                    $arr[self::S_CALLS_IN][$i] = $count4;
-                    $arr[self::S_CALLS_IN]['fact'] += $count4;
-                } 
-    
-                if($count5 != 0) {
-                    $arr[self::S_CALLS_MISSED][$i] = $count5;
-                    $arr[self::S_CALLS_MISSED]['fact'] += $count5;
-                } 
-    
-                if($count6 != 0) {
-                    $arr[self::S_CONVERTED][$i] = $count6;
-                    $arr[self::S_CONVERTED]['fact'] += $count6;
-                } 
-
-    
-            }       
-        }
-
-          
-
-        return $arr;
-    }   
-
 
     public function sumTrainees($arr, $date) {
         $_i = self::getLastDay($date);
@@ -568,33 +451,8 @@ public function planRequired($arr) {
      * Получить колво работающих на сегодняшний день
      */
     public static function getWorkerQuantity($date = null) {
-        
-        if($date) {
-            $settings = AnalyticsSettings::where([
-                'date' => $date->format('Y-m-d'),
-                'type' => 'basic',
-                'group_id' => self::GROUP_ID,
-            ])->first();
-                
-                $x_count = $settings && array_key_exists('working', $settings->extra ?? []) ? $settings->extra['working'] : 0;
-            } else {
-               // $x_trainees = Trainee::whereNull('applied')->get()->pluck('user_id')->toArray();
-                
-                $x_users = \DB::table('users')
-                    ->whereNull('deleted_at')
-                    ->leftJoin('user_descriptions as ud', 'ud.user_id', '=', 'users.id')
-                    ->where('ud.is_trainee', 0)
-                    ->get();
-                
-                $x_count = 0;
-                foreach ($x_users as $x_user) {
-                    $x_count += $x_user->full_time == 1 ? 1 : 0.5;
-                } 
-                
-            }
-            
-            return $x_count;
-        }
+        return Timetracking::whereDate('enter', $date)->get()->count();
+    }
         
     /**
      * Таблица с ответами из анкеты уволенных
@@ -714,10 +572,7 @@ public function planRequired($arr) {
         $start = Carbon::parse($date)->startOfMonth();
         $end = Carbon::parse($date)->endOfMonth();
 
-        $asi  = AnalyticsSettingsIndividually::where('date',$start->format('Y-m-d'))
-                    ->where('group_id', self::GROUP_ID)
-                    ->where('employee_id', $user_id)
-                    ->first();
+        $asi = null;
             
         $user = User::withTrashed()->find($user_id);
         if(!$user) return [];
@@ -904,11 +759,7 @@ public function planRequired($arr) {
                 $workdays = $wd;
             }
 
-            $asi = AnalyticsSettingsIndividually::where('group_id', self::GROUP_ID)
-                ->where('employee_id', $user_id)
-                ->whereYear('date', $date['year'])
-                ->whereMonth('date', $date['month'])
-                ->first();
+            $asi = null;
             
             if($asi) {
                 
@@ -941,7 +792,6 @@ public function planRequired($arr) {
                  
             } 
             
-            
         }
         
         usort($recruiters, function($a, $b) {
@@ -961,11 +811,7 @@ public function planRequired($arr) {
      * @return array
      */
     public static function getTableChatbot(array $date) {
-        $asi = AnalyticsSettingsIndividually::where('group_id', self::GROUP_ID)
-                ->where('employee_id', 0)
-                ->whereYear('date', $date['year'])
-                ->whereMonth('date', $date['month'])
-                ->first();
+        $asi = null;
     
         return $asi ? [
             'name' => 'Чатбот',
@@ -1280,10 +1126,6 @@ public function planRequired($arr) {
 
         $prev_date = Carbon::parse($date)->startOfMonth()->subMonth();
         $date = Carbon::parse($date)->startOfMonth();
-
-        // $prev_employees = array_merge(ProfileGroup::employees($group_id, $prev_date, 1), ProfileGroup::employees($group_id, $prev_date, 2));
-        // $employees = array_merge(ProfileGroup::employees($group_id, $date, 1), ProfileGroup::employees($group_id, $date, 2));
-        
 
         $pgu_prev = PGU::where('group_id', $group_id)
             ->where('date', $prev_date->format('Y-m-d'))

@@ -2,28 +2,22 @@
 
 namespace App\Http\Controllers\Admin;
 
-use App\Components\TelegramBot;
 use App\Fine;
 use App\Exam;
 use App\DayType;
 use App\Http\Controllers\Controller;
 use App\Models\Tax;
 use App\ProfileGroup;
-use App\ProfileGroupUser;
 use App\Salary; 
 use App\GroupSalary; 
 use App\Kpi;
-use App\Trainee;
 use App\Timetracking;
 use App\TimetrackingHistory;
-use App\AnalyticsSettingsIndividually;
 use App\User;
 use App\UserFine;
 use App\SalaryApproval;
 use Carbon\Carbon;
-use DateTime;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Collection;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\View;
 use Maatwebsite\Excel\Facades\Excel;
@@ -39,8 +33,6 @@ use App\Models\Admin\ObtainedBonus;
 use App\Models\Admin\EditedKpi;
 use App\Models\Admin\EditedBonus;
 use App\Models\Admin\EditedSalary;
-use Maatwebsite\Excel\Concerns\FromCollection;
-use App\Imports\UsersImport;
 use App\Service\Department\UserService;
 
 class SalaryController extends Controller

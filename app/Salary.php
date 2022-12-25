@@ -2,16 +2,12 @@
 
 namespace App;
 
-use App\Repositories\SavedKpiRepository;
-use App\Repositories\UpdatedUserStatRepository;
-use App\Service\UpdatedUserStatService;
 use App\User;
 use Illuminate\Database\Eloquent\Model;
 use Carbon\Carbon;
 use DB;
 use Auth;
 use App\UserFine;
-use App\ProfileGroupUser;
 use App\Models\Admin\ObtainedBonus;
 use App\Models\Admin\EditedKpi;
 use App\Models\Admin\EditedBonus;
@@ -82,33 +78,7 @@ class Salary extends Model
         $okpi = 0;
         $osal = 0;
         $obon = 0;
-
-        $pgu = ProfileGroupUser::where('group_id', $group_id)
-            ->whereMonth('date', $month->month)
-            ->whereYear('date', $month->year)
-            ->first();
             
-        // if($user_types == 1 && $pgu) {
-        //     $user_ids = $pgu->assigned;
-        // } else if($user_types == 2) {
-            
-        //     $x_users = User::withTrashed()
-        //         ->whereDate('deleted_at', '>=', Carbon::createFromDate($month->year, $month->month, 1)->format('Y-m-d'))
-        //         ->get(['id','last_group']);
-
-        //     $fired_users = [];
-        //     foreach($x_users as $d_user) {
-        //         if($d_user->last_group) {
-        //             $lg = json_decode($d_user->last_group);
-        //             if(in_array($group_id, $lg)) {
-        //                 array_push($fired_users, $d_user->id);
-        //             }
-        //         } 
-        //     }
-
-        //     $user_ids = array_unique(array_values($fired_users));
-        // } 
-      
         foreach ($users as $key => $user) {
 
             if($user->user_description && $user->user_description->is_trainee == 0) {
@@ -122,35 +92,18 @@ class Salary extends Model
 
             $groups = $user->inGroups();
 
-            if(in_array($user->id, [
-                6401,
-                5084,
-                5975,
-                9873,
-                7211,
-                6634,
-                7203,
-                10147,
-                15936, 15691  
-            ])) {
-
-            } else if(count($groups) > 0) {
-                if($groups[0]->id != $group_id) {
-                    continue;
-                }
+            if(count($groups) > 0 && $groups[0]->id != $group_id) {
+                continue;
             }
-
-            ////////////
+            
             $hourly_pay = $user->hourly_pay($month->format('Y-m-d'));
 
             // Вычисление даты принятия
             $user_applied_at = $user->applied_at();
-
-            /////// TTS 
+ 
             $tts = $user->timetracking
                 ->where('time', '>=', Carbon::parse($user_applied_at)->timestamp); 
                 
-               
             $trainee_days = $user->daytypes->whereIn('type', [5,6,7]);
 
             $tts_before_apply = $user->timetracking

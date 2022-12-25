@@ -11,12 +11,9 @@ use DB;
 use App\User;
 use App\UserDescription;
 use App\ProfileGroup;
-use App\ProfileGroupUser;
 use App\QualityRecordWeeklyStat;
 use App\QualityRecordMonthlyStat;
-use App\Models\Analytics\KpiIndicator;
 use App\Models\Analytics\IndividualKpiIndicator;
-use App\Models\Analytics\IndividualKpi;
 use App\Models\Kpi\Bonus;
 use App\Service\Department\UserService;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -291,16 +288,12 @@ class UserStat extends Model
         }
 
         if($act->type == 'staff') {
-            $pgu = ProfileGroupUser::where('group_id', $act->group_id)
-                    ->where('date', $date)
-                    ->first();
-                
-                $users = $pgu ? $pgu->assigned : [];
 
-                $total = UserDescription::where('is_trainee', 0)
-                    ->whereIn('user_id', $pgu->assigned)
-                    ->get()
-                    ->count();
+            $userIds = [];
+            $total = UserDescription::where('is_trainee', 0)
+                ->whereIn('user_id', $userIds)
+                ->get()
+                ->count();
         }
 
         if($act->type == 'turnover') {
