@@ -506,7 +506,7 @@ class Bonus extends Model
         $stat = UserStat::where([
             'date' => $date->format('Y-m-d'),
             'user_id' => $user_id,
-            'activity_id' => $bonus->activity_id;
+            'activity_id' => $bonus->activity_id
         ])->first();
             
         return $stat ? $stat->value : 0;
