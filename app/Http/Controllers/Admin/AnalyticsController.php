@@ -34,21 +34,11 @@ class AnalyticsController extends Controller
         $this->middleware('auth');
     }
 
-    /**
-     * Permission control
-     */
-    public function redirect_if_has_not_permission() {
+    public function index()
+    {
         if(!auth()->user()->can('analytics_view')) {
             return redirect('/');
         }
-    }
-
-    /**
-     * index page
-     */
-    public function index()
-    {
-        $this->redirect_if_has_not_permission();
 
         $groups = ProfileGroup::whereIn('has_analytics', [0,1]);
 
@@ -71,27 +61,24 @@ class AnalyticsController extends Controller
         return view('admin.analytics-page', compact('groups'));
     }
 
-    /**
-     * Axios get analytics
-     */
     public function get(Request $request)
     {
         $group_id = $request->group_id;
         $month = $request->month;
         $year = $request->year;
         $date = Carbon::createFromDate($year, $month, 1);
+        $currentUser = auth()->user();
 
         $group = ProfileGroup::find($group_id);
-        $currentUser = User::bitrixUser() ?? User::find(18);
+        if (!$group) {
+            return [
+                'error' => 'access',
+            ];
+        }
 
-        $superusers = User::where('is_admin', 1)->get(['id'])->pluck('id')->toArray();
-
-        $analyticService = new AnalyticService();
-        if(!in_array(auth()->id(), $superusers)) {
-
+        if($currentUser->is_admin != 1) {
             $group_editors = is_array(json_decode($group->editors_id)) ? json_decode($group->editors_id) : [];
-            // Доступ к группе
-            if (!$group || !in_array($currentUser->id, $group_editors) && $currentUser->id != 18) {
+            if (!in_array($currentUser->id, $group_editors)) {
                 return [
                     'error' => 'access',
                 ];
@@ -118,9 +105,7 @@ class AnalyticsController extends Controller
             $call_bases = CallBase::formTable($date->format('Y-m-d'));
         }
 
-        // Ed 
-        $ffp = Recruiting::getFiredInfo($date->subMonth()->format('Y-m-d'), $group_id);
-        $ff = Recruiting::getFiredInfo($date->addMonth()->format('Y-m-d'), $group_id);
+        $analyticService = new AnalyticService();
         $fired_percent_prev = $analyticService->getFiredUsersPerMonthPercent($group, $date->subMonth());
         $fired_percent = $analyticService->getFiredUsersPerMonthPercent($group, $date->addMonth());
         $fired_number_prev = $analyticService->getFiredUsersPerMonth($group, $date->subMonth());
@@ -750,7 +735,7 @@ class AnalyticsController extends Controller
         $group = ProfileGroup::find($request->group_id);
         
         $request->month = (int) $request->month;
-        $currentUser = User::bitrixUser();
+        $currentUser = auth()->user();
 
         $group_editors = is_array(json_decode($group->editors_id)) ? json_decode($group->editors_id) : [];
         // Доступ к группе 

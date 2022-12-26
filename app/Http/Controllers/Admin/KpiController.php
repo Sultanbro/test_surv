@@ -39,7 +39,7 @@ class KpiController extends Controller
 
     public function saveKPI(Request $request)
     {
-        $user = User::bitrixUser();
+        $user = auth()->user();
         $user_id = ['user_id' => $user->id];
         $inputs = $request->only([
             'group_id',
@@ -260,7 +260,7 @@ class KpiController extends Controller
 
     public function getKPI(Request $request)
     {
-        $user = User::bitrixUser();
+        $user = auth()->user();
         
         // GET KPI
         $issetKpi =  Kpi::where('group_id', $request->group_id)->first();

@@ -49,7 +49,7 @@ class QualityController extends Controller
 
     public function getRecords(Request $request)
     {
-        $currentUser = User::bitrixUser();
+        $currentUser = auth()->user();
         $group = ProfileGroup::find($request->group_id);
 
         if(!$group)  return [
@@ -325,7 +325,7 @@ class QualityController extends Controller
     public function saveRecord(Request $request)
     {
     
-        $user_id = User::bitrixUser()->id;
+        $user_id = auth()->id();
         
 
         

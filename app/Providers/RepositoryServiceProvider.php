@@ -2,9 +2,9 @@
 
 namespace App\Providers;
 
-use App\Repositories\Interfaces\Articles\ArticleRepositoryInterface;
-use App\Repositories\Interfaces\Articles\CommentRepositoryInterface;
-use App\Repositories\Interfaces\Articles\FileRepositoryInterface;
+use App\Repositories\Interfaces\Article\ArticleRepositoryInterface;
+use App\Repositories\Interfaces\Article\CommentRepositoryInterface;
+use App\Repositories\Interfaces\Article\FileRepositoryInterface;
 use App\Repositories\Articles\ArticleRepository;
 use App\Repositories\Articles\CommentRepository;
 use App\Repositories\Articles\FileRepository;

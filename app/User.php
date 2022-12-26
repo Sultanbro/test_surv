@@ -232,14 +232,6 @@ class User extends Authenticatable implements Authorizable
     }
 
     /**
-     * Получает пользователя из системных таблицы Битрикса
-     */
-    public static function bitrixUser()
-    {
-        return Auth::user();
-    }
-
-    /**
      * Дни до индексации зарплаты по должности
      */
     public function days_before_indexation() {
@@ -632,11 +624,9 @@ class User extends Authenticatable implements Authorizable
         return substr(str_shuffle(str_repeat($x = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ', ceil($length / strlen($x)))), 1, $length);
     }
 
-  
-
     public static function logo()
     {
-        $user = User::find(self::bitrixUser()->id);
+        $user = User::find(auth()->id());
         if (!$user->UF_LOGO) {
             return '/static/images/userlogo.jpg';
         }

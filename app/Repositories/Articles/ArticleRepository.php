@@ -6,7 +6,7 @@ namespace App\Repositories\Articles;
 use App\Entities\DataTransferObjects\News\ArticleStoreDTO;
 use App\Models\Article\Article;
 use App\Models\File\File;
-use App\Repositories\Interfaces\Articles\ArticleRepositoryInterface;
+use App\Repositories\Interfaces\Article\ArticleRepositoryInterface;
 use App\User;
 
 class ArticleRepository implements ArticleRepositoryInterface

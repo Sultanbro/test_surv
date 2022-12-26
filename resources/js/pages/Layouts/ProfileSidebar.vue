@@ -518,23 +518,13 @@ export default {
         justify-content: center;
     }
 }
-// .profile__content{}
-.profile__logo{
+.profile__logo {
     font-size: 21px;
     display: flex;
     justify-content: center;
     align-items: center;
     padding: 24px 0;
-    // display: flex;
-    // margin: 0 auto 2rem;
-    // justify-content: center;
-    // align-items: center;
-    // min-height: 8rem;
-    // color:#5B6166;
-    // font-size:1.5rem;
-    // font-weight: 600;
-    // text-transform: uppercase;
-    // position: relative;
+    min-height: 80px;
     width: 100%;
     margin-bottom: 2rem;
     position: relative;
@@ -579,7 +569,7 @@ export default {
 .logo-img{
     display: block;
     width: 100%;
-    border-radius: 12%/18%;
+    border-radius: 1rem;
     position: absolute;
     top: 0;
     left: 0;

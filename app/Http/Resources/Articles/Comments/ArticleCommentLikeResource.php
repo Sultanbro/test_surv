@@ -3,7 +3,7 @@
 namespace App\Http\Resources\Articles\Comments;
 
 use App\Models\Comment\Comment;
-use App\Repositories\Interfaces\Articles\CommentRepositoryInterface;
+use App\Repositories\Interfaces\Article\CommentRepositoryInterface;
 use Illuminate\Http\Resources\Json\JsonResource;
 use Illuminate\Support\Facades\Auth;
 

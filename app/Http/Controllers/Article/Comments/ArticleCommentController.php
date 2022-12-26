@@ -11,7 +11,7 @@ use App\Http\Requests\Article\Comments\ArticleCommentStoreRequest;
 use App\Http\Resources\Articles\Comments\ArticleCommentCollection;
 use App\Http\Resources\Articles\Comments\ArticleCommentResource;
 use App\Http\Resources\Responses\JsonSuccessResponse;
-use App\Service\Articles\Comments\CommentService;
+use App\Service\Article\Comment\CommentService;
 use Illuminate\Http\JsonResponse;
 
 class ArticleCommentController extends Controller

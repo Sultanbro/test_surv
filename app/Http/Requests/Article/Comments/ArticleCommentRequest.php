@@ -5,7 +5,7 @@ namespace App\Http\Requests\Article\Comments;
 
 use App\Http\Requests\Article\ArticleRequest;
 use App\Models\Comment\Comment;
-use App\Repositories\Interfaces\Articles\CommentRepositoryInterface;
+use App\Repositories\Interfaces\Article\CommentRepositoryInterface;
 
 class ArticleCommentRequest extends ArticleRequest
 {

@@ -125,7 +125,7 @@ class SalaryController extends Controller
         $year  = $request->year;
         $month = $request->month;
 
-        $currentUser = User::bitrixUser();
+        $currentUser = auth()->user();
 
         $date = Carbon::createFromDate($year, $month, 1);
 
@@ -379,7 +379,7 @@ class SalaryController extends Controller
             'group_id' => 'required',
         ];
 
-        $currentUser = User::bitrixUser();
+        $currentUser = auth()->user();
 
         $validator = validator($request->all(), $rules);
 
