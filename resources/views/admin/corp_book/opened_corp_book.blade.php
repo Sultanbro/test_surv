@@ -35,7 +35,7 @@ function replaceSrc()
     for(var i = 0; i < images.length; i++)
     {
         var img = images[i];
-        var link = 'https://bp.jobtron.org/corp_book/';
+        var link = window.location.origin + '/corp_book/';
        
         if(img.src .substring(link.length, 0) == link)
         {

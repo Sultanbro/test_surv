@@ -5,16 +5,11 @@ namespace App\Http\Controllers;
 use App\Models\Analytics\AnalyticColumn;
 use App\Models\Analytics\AnalyticStat;
 use App\Models\Analytics\UserStat;
-use App\ProfileGroupUser;
 use Illuminate\Http\Request;
 use Auth;
-use DB;
-use App\Group;
 use App\ProfileGroup;
 use App\Timetracking;
 use App\TimetrackingHistory;
-use App\AnalyticsSettings;
-use App\AnalyticsSettingsIndividually;
 use App\User;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\View;
@@ -31,8 +26,8 @@ class GroupsController extends Controller
         $this->middleware('auth');
     }
 
-    public function saveTimes(Request $request) {
-        
+    public function saveTimes(Request $request)
+    {
         $date = $request->date;
         $group_id = $request->group;
         $additional_minutes_remote = $this->getAdditionalMinutes($date, 'remote', $group_id); // Отсутствие связи доп время для сотрудников Remote
@@ -40,68 +35,62 @@ class GroupsController extends Controller
 
         $edited_users = [];
 
-        
-
         foreach($request->items as $item) {
-            if($item['id'] != 0) {
-
-                
-                $record = Timetracking::where('user_id', $item['id'])
-                    ->whereDate('enter', $date)
-                    ->orderBy('enter', 'desc')->first();
-                
-                $user = User::where('position_id', 32)->find($item['id']);
-                if(!$user)continue;
-                if(!$user->user_type)continue;
-                if($user->user_type == 'remote') {
-                    $additional_minutes = $additional_minutes_remote;
-                } else {
-                    $additional_minutes = $additional_minutes_office;
-                }
-
-                array_push($edited_users, $item['id']);
-
-                $minutes = round($item['hours'] * 60);
-
-                if($minutes < 0) $minutes = 0;
-
-                $total_minutes = (int) $minutes + (int) $additional_minutes;
-
-                if($record) {
-                    $record->total_hours = $total_minutes;
-                    $record->updated = 1;
-                    $record->save();
-                } else {
-                    Timetracking::create([
-                        'enter' => $date,
-                        'exit' => $date,
-                        'updated' => 1,
-                        'user_id' => $item['id'],
-                        'total_hours' => $total_minutes,
-                    ]);
-                }
-
-                //$this->saveKaspiHours($item['id'], $minutes, $date);
-
-                $add_text = $additional_minutes != 0 ? ', плюс ' . $additional_minutes . ' минут за отсутствие связи' : '';
-
-                TimetrackingHistory::create([
-                    'author_id' => Auth::user()->id,
-                    'author' => Auth::user()->last_name .' '. Auth::user()->name,
-                    'user_id' => $item['id'],
-                    'date' => $date,
-                    'description' => 'Импорт из EXCEL файла: '. $minutes .' минут ('. $request->filename .') '. $add_text
-                ]);
+            if($item['id'] == 0) {
+                continue;
             }
             
+            $record = Timetracking::where('user_id', $item['id'])
+                ->whereDate('enter', $date)
+                ->orderBy('enter', 'desc')->first();
+            
+            $user = User::where('position_id', 32)->find($item['id']);
+            if(!$user)continue;
+            if(!$user->user_type)continue;
+            if($user->user_type == 'remote') {
+                $additional_minutes = $additional_minutes_remote;
+            } else {
+                $additional_minutes = $additional_minutes_office;
+            }
+
+            array_push($edited_users, $item['id']);
+
+            $minutes = round($item['hours'] * 60);
+
+            if($minutes < 0) $minutes = 0;
+
+            $total_minutes = (int) $minutes + (int) $additional_minutes;
+
+            if($record) {
+                $record->total_hours = $total_minutes;
+                $record->updated = 1;
+                $record->save();
+            } else {
+                Timetracking::create([
+                    'enter' => $date,
+                    'exit' => $date,
+                    'updated' => 1,
+                    'user_id' => $item['id'],
+                    'total_hours' => $total_minutes,
+                ]);
+            }
+
+            $add_text = $additional_minutes != 0 ? ', плюс ' . $additional_minutes . ' минут за отсутствие связи' : '';
+
+            TimetrackingHistory::create([
+                'author_id' => Auth::user()->id,
+                'author' => Auth::user()->last_name .' '. Auth::user()->name,
+                'user_id' => $item['id'],
+                'date' => $date,
+                'description' => 'Импорт из EXCEL файла: '. $minutes .' минут ('. $request->filename .') '. $add_text
+            ]);
         }
 
-     
         $this->setZeroToUsersStartedTheDay($edited_users, $date, $group_id);
     }
 
-
-    public function setZeroToUsersStartedTheDay($user_ids, $date, $group_id) {
+    public function setZeroToUsersStartedTheDay($user_ids, $date, $group_id)
+    {
 
         $group = ProfileGroup::find($group_id); 
         
@@ -135,7 +124,8 @@ class GroupsController extends Controller
 
     }
 
-    public function getAdditionalMinutes($date, $type, $group_id) {
+    public function getAdditionalMinutes($date, $type, $group_id)
+    {
 
         $day = Carbon::parse($date)->day;
         $column = AnalyticColumn::where('group_id', $group_id)
@@ -153,201 +143,136 @@ class GroupsController extends Controller
         return $stat ? $stat->value : 0;
     }
 
-    public function import(Request $request) {
+    /**
+     * @TODO исправить для всех кабинетов
+     * ЭТОТ МЕТОД ТОЛЬКО РАБОТАЕТ в BP.jobtron.org
+     */
+    public function import(Request $request)
+    {
         $user = auth()->user();
         $group_id = $request->group_id;
         
 
         if ($request->isMethod('post') && $request->hasFile('file')) {
 
-            //if ($request->file('file')->isValid()) {
+            $import = new TimetrackingImport;
+            Excel::import($import, $request->file('file'));
+            
+            $headings = $import->headings; // first row
+            $sheet = $import->data[0]; // first Sheet
 
-                $import = new TimetrackingImport;
-                Excel::import($import, $request->file('file'));
+            $date_field = 'Дата и время создания';
+            
+            $excel_date = count($sheet) > 0 ? \PhpOffice\PhpSpreadsheet\Shared\Date::excelToDateTimeObject($sheet[0][$date_field]) : Carbon::now();
+            $date = $excel_date ? $excel_date->format('Y-m-d') : date('Y-m-d');
+
+            foreach($sheet as $key => $item) {
+                $sheet[$key]['fullname'] = $item['Фамилия сотрудника'] . ' ' . $item['Имя сотрудника'];
+            }
+
+            $usernames = [];
+            foreach($sheet as $element) {
+                $usernames[$element['fullname']][] = $element;
+            }
+
+            if($group_id == 42) {
+                $gusers = $this->groupUsers(42);
+                $gusers = collect($gusers)->sortBy('name');
+            }
+
+            if($group_id == 88) {
+                $gusers = $this->groupUsers(88);
+                $gusers = collect($gusers)->sortBy('name');
+            }
+            
+            $items = [];
+            
+            foreach($usernames as $username => $values) {
+                $item = [];
+                $item['name'] = $username;
+                $item['id'] = 0;
+                $item['dinner'] = true;
+
+                foreach($values as $val) {
+                    if(is_null($val[$date_field])) continue;
                 
-                $headings = $import->headings; // first row
-                $sheet = $import->data[0]; // first Sheet
-
-                //$missingFields = $this->getMissingFields($heading);
-
-                $date_field = 'Дата и время создания';
-             
-                $excel_date = count($sheet) > 0 ? \PhpOffice\PhpSpreadsheet\Shared\Date::excelToDateTimeObject($sheet[0][$date_field]) : Carbon::now();
-                $date = $excel_date ? $excel_date->format('Y-m-d') : date('Y-m-d');
-
-                foreach($sheet as $key => $item) {
-                    $sheet[$key]['fullname'] = $item['Фамилия сотрудника'] . ' ' . $item['Имя сотрудника'];
-                }
-
-
-                
-
-                $usernames = [];
-                foreach($sheet as $element) {
-                    $usernames[$element['fullname']][] = $element;
-                }
-
-                if($group_id == 42) {
-                    $gusers = $this->groupUsers(42);
-                    $gusers = collect($gusers)->sortBy('name');
-                }
-
-                if($group_id == 88) {
-                    $gusers = $this->groupUsers(88);
-                    $gusers = collect($gusers)->sortBy('name');
-                }
-                
-                $items = [];
-                
-                
-                foreach($usernames as $username => $values) {
-                    $item = [];
-                    $item['name'] = $username;
-                    $item['id'] = 0;
-                    $item['dinner'] = true;
-
-                 
-                    foreach($values as $val) {
-                        if(is_null($val[$date_field])) continue;
-                  
-                        try {
-                            $val[$date_field] = \PhpOffice\PhpSpreadsheet\Shared\Date::excelToDateTimeObject($val[$date_field])->getTimestamp(); 
-                        } catch(\Exception $e) {
-                            continue;
-                        }
+                    try {
+                        $val[$date_field] = \PhpOffice\PhpSpreadsheet\Shared\Date::excelToDateTimeObject($val[$date_field])->getTimestamp(); 
+                    } catch(\Exception $e) {
+                        continue;
                     }
+                }
 
-                
-                    $values = collect($values)->sortBy($date_field);
-
-                    $_fv = $values->first();
+                $values = collect($values)->sortBy($date_field);
+                if($_fv = $values->first()) {
+                    $possible_user = $gusers->where('name' , $_fv['Имя сотрудника'])->where('last_name',$_fv['Фамилия сотрудника'])->first();
                     
-                    if($_fv) {
-                        
-                        $possible_user = $gusers->where('name' , $_fv['Имя сотрудника'])->where('last_name',$_fv['Фамилия сотрудника'])->first();
-                        
-                        if($possible_user) {
-                            $item['id'] = $possible_user->id;
-                        }
+                    if($possible_user) {
+                        $item['id'] = $possible_user->id;
+                    }
+                }
+                
+                $earliest = 9999999999;
+                $latest = 0;
+                $hours = 0;
+                $last_date = null;
+                $last_duration = 0;
+                
+                foreach($values as $val) {
+                    if(is_null($val[$date_field])) continue;
+                    $ts = \PhpOffice\PhpSpreadsheet\Shared\Date::excelToDateTimeObject($val[$date_field])->getTimestamp();
+
+                    try {
+                        $_duration = \PhpOffice\PhpSpreadsheet\Shared\Date::excelToDateTimeObject($val['Длительность разговора'])->getTimestamp();
+                        $duration = date('H', $_duration) * 3600 + date('i', $_duration) * 60 + date('s', $_duration);
+                    } catch(\Exception $e) {
+                        $duration = 0;
                     }
                     
-                    
-                    //
 
-                    $earliest = 9999999999;
-                    $latest = 0;
-
-
-                    $hours = 0;
-                    $last_date = null;
-                    $last_duration = 0;
-                    
-                    
-                    foreach($values as $val) {
-                        if(is_null($val[$date_field])) continue;
-                        $ts = \PhpOffice\PhpSpreadsheet\Shared\Date::excelToDateTimeObject($val[$date_field])->getTimestamp();
-
-                        try {
-                            $_duration = \PhpOffice\PhpSpreadsheet\Shared\Date::excelToDateTimeObject($val['Длительность разговора'])->getTimestamp();
-                            $duration = date('H', $_duration) * 3600 + date('i', $_duration) * 60 + date('s', $_duration);
-                        } catch(\Exception $e) {
-                            $duration = 0;
-                        }
+                    if($last_date) {
                         
-
-                        if($last_date) {
+                        if($ts - $last_date - $last_duration > 930){ // Разница больше 15 минут без разговоров
+                            $hours +=  $latest - $earliest + $last_duration;
                             
-                            if($ts - $last_date - $last_duration > 930){ // Разница больше 15 минут без разговоров
-                                $hours +=  $latest - $earliest + $last_duration;
-                                
-                                $earliest = $ts;
-                                $latest = $ts;
-                            }
+                            $earliest = $ts;
+                            $latest = $ts;
                         }
+                    }
 
-                     
 
-                        $last_date = $ts;
-                        $last_duration = $duration;
+                    $last_date = $ts;
+                    $last_duration = $duration;
 
-                        if($ts < $earliest) $earliest = $ts;
-                        if($ts > $latest) $latest = $ts; 
-                    }  
+                    if($ts < $earliest) $earliest = $ts;
+                    if($ts > $latest) $latest = $ts; 
+                }  
 
-                  
-                    $hours +=  $latest - $earliest;
-         
-                    $diff = number_format($hours / 3600, 1);
-
-                    if($diff > 11) $diff = 11;
-                    $item['hours'] = $diff;
-                    
-              
-                 
-
-                    array_push($items, $item);
-                }
-                    
-                return response()->json([
-                    'items' => $items,
-                    'filename' => '',
-                    'users' => $gusers->values()->all(),
-                    'date' => $date,
-                    'errors' => []
-                ]);
-            
-        }
-    }
-
-    private function getMissingFields(array $array_excel) {
-        $missingFields = [
-            "Имя сотрудника",
-            "Фамилия сотрудника",
-            "Длительность разговора",
-            $date_field
-        ];
-
-        foreach($array_excel as $key => $value) {
-            if($value == 'Фамилия сотрудника') {
-                if (($keyx = array_search($value, $missingFields)) !== false) {
-                    unset($missingFields[$keyx]);
-                }
-            }
-
-            if($value == 'Имя сотрудника') {
-                if (($keyx = array_search($value, $missingFields)) !== false) {
-                    unset($missingFields[$keyx]);
-                }
-            }
-
-            if($value == 'Длительность разговора') {
-                if (($keyx = array_search($value, $missingFields)) !== false) {
-                    unset($missingFields[$keyx]);
-                }
-            }
-
-            if($value == $date_field) {
-                if (($keyx = array_search($value, $missingFields)) !== false) {
-                    unset($missingFields[$keyx]);
-                }
-            }
-            
-        }
+                $hours +=  $latest - $earliest;
         
-        return $missingFields;
+                $diff = number_format($hours / 3600, 1);
+
+                if($diff > 11) $diff = 11;
+                $item['hours'] = $diff;
+                
+                array_push($items, $item);
+            }
+                
+            return response()->json([
+                'items' => $items,
+                'filename' => '',
+                'users' => $gusers->values()->all(),
+                'date' => $date,
+                'errors' => []
+            ]);
+        }
     }
 
-    /**
-     * get users 
-     * 
-     * @return array
-     */
     private function groupUsers($group_id) : array
     {
         return (new UserService)->getEmployees($group_id, date('Y-m-d'));
     }
 
-    
     public function saveKaspiHours($user_id, $minutes, $date) 
     {
         $date = Carbon::parse($date);
@@ -372,9 +297,6 @@ class GroupsController extends Controller
         
     }
 
-    /**
-     * Сохранить настройки бонусов группы
-     */
     public function saveBonuses(Request $request) 
     {
         $group_id = 0;

@@ -2,26 +2,13 @@
 
 namespace App\Http\Controllers;
 
-use Auth;
-use App\ProfileGroup;
-use App\AnalyticsSettingsIndividually;
-use App\User;
-use Carbon\Carbon;
 use Illuminate\Http\Request;
-use App\Classes\Analytics\Impl;
-use App\Classes\Analytics\PrCstll;
-use App\External\HeadHunter\HeadHunter;
-use App\Models\Analytics\AnalyticStat;
-use App\Models\Analytics\UserStat;
-use App\Models\CentralUser;
 use App\Models\Tenant;
-use App\Models\TenantUser;
 
-class TenantController extends Controller {
-	
+class TenantController extends Controller
+{
 	public function __construct() {
 		$this->middleware('auth');
-
 		if(auth()->id() != 1) redirect('/');
 	}  
 

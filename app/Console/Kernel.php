@@ -69,27 +69,27 @@ class Kernel extends ConsoleKernel
         |
         */
 
-        $schedule->command('tenants:run timetracking:check --tenants=bp')->everyMinute(); // автоматически завершить рабочий день если забыли нажать на кнопку
-        $schedule->command('tenants:run set:absent --tenants=bp')->everyMinute(); // Автоматически отмечать отсутстовваших в стажировке после истечения 30 минутной ссылки
-        $schedule->command('tenants:run salary:group --tenants=bp')->everyTenMinutes(55); // Сохранить заработанное группой без вычета шт и ав
-        $schedule->command('tenants:run salary:update --tenants=bp')->hourly(); // обновление зарплаты: за текущий день
-        $schedule->command('tenants:run count:hours --tenants=bp')->hourly(); // обновление минут
-        $schedule->command('tenants:run check:late --tenants=bp')->hourly(); // Опоздание
-        $schedule->command('tenants:run bonus:update --tenants=bp')->hourly(); // Бонусы сотрудников
-        $schedule->command('tenants:run user:save_kpi --tenants=bp')->hourlyAt(50); // Сохранить kpi для быстрой загрузки аналитики
-        $schedule->command('tenants:run quality:totals --tenants=bp')->hourly(); // Расчет недельных и месячных средних значений по контролю качества в Каспи
-        $schedule->command('tenants:run timetracking:mark_trainees --tenants=bp')->dailyAt('00:00'); // Отметка стажеров в табели в 6 утра
-        $schedule->command('tenants:run userxxxxxxxxxxxxx:delete:dontusethisitsnotforsuign --tenants=bp')->dailyAt('00:00'); // Удаление сотрудников с отработкой в 6 утра
-        $schedule->command('tenants:run usernotification:adaptation --tenants=bp')->dailyAt('02:40'); // Уведомление о заполнении адаптации
-        $schedule->command('tenants:run salary:indexation --tenants=bp')->dailyAt('17:02'); // Индексация зарплаты
-        $schedule->command('tenants:run timetracking:salary_trainees --tenants=bp')->dailyAt('17:30'); // Расчет оплаты стажерам
-        $schedule->command('tenants:run check:timetrackers --tenants=bp')->dailyAt('20:00'); // Автоматически завершать день в 2 часа ночи, тем кто забыл завершить
-        $schedule->command('tenants:run fine:check --tenants=bp')->weeklyOn(1, '00:00'); // Каждый понедельник в 6 утра проверка на отсутствие в воскресенье 
-        $schedule->command('tenants:run fine:check --tenants=bp')->weeklyOn(2, '00:00'); // Каждый вторник в 6 утра проверка на отсутствие в понедельник
-        $schedule->command('tenants:run analytics:pivots --tenants=bp')->monthly(); // создать сводные таблицы отделов в аналитике 
-        $schedule->command('tenants:run analytics:parts --tenants=bp')->monthly(); // создать декомпозицию и спидометры в аналитике
-        //$schedule->command('tenants:run checklist:update --tenants=bp')->dailyAt('00:00'); //Ставить чек листы каждый день для сотрудников
-        //$schedule->command('tenants:run trainee:count_days --tenants=bp')->dailyAt('00:00'); //Запись дней в аналитику по стажерам 1й день 2й+ день
+        $schedule->command('tenants:run timetracking:check')->everyMinute(); // автоматически завершить рабочий день если забыли нажать на кнопку
+        $schedule->command('tenants:run set:absent')->everyMinute(); // Автоматически отмечать отсутстовваших в стажировке после истечения 30 минутной ссылки
+        $schedule->command('tenants:run salary:group')->everyTenMinutes(55); // Сохранить заработанное группой без вычета шт и ав
+        $schedule->command('tenants:run salary:update')->hourly(); // обновление зарплаты: за текущий день
+        $schedule->command('tenants:run count:hours')->hourly(); // обновление минут
+        $schedule->command('tenants:run check:late')->hourly(); // Опоздание
+        $schedule->command('tenants:run bonus:update')->hourly(); // Бонусы сотрудников
+        $schedule->command('tenants:run user:save_kpi')->hourlyAt(50); // Сохранить kpi для быстрой загрузки аналитики
+        $schedule->command('tenants:run quality:totals')->hourly(); // Расчет недельных и месячных средних значений по контролю качества в Каспи
+        $schedule->command('tenants:run timetracking:mark_trainees')->dailyAt('00:00'); // Отметка стажеров в табели в 6 утра
+        $schedule->command('tenants:run userxxxxxxxxxxxxx:delete:dontusethisitsnotforsuign')->dailyAt('00:00'); // Удаление сотрудников с отработкой в 6 утра
+        $schedule->command('tenants:run usernotification:adaptation')->dailyAt('02:40'); // Уведомление о заполнении адаптации
+        $schedule->command('tenants:run salary:indexation')->dailyAt('17:02'); // Индексация зарплаты
+        $schedule->command('tenants:run timetracking:salary_trainees')->dailyAt('17:30'); // Расчет оплаты стажерам
+        $schedule->command('tenants:run check:timetrackers')->dailyAt('20:00'); // Автоматически завершать день в 2 часа ночи, тем кто забыл завершить
+        $schedule->command('tenants:run fine:check')->weeklyOn(1, '00:00'); // Каждый понедельник в 6 утра проверка на отсутствие в воскресенье 
+        $schedule->command('tenants:run fine:check')->weeklyOn(2, '00:00'); // Каждый вторник в 6 утра проверка на отсутствие в понедельник
+        $schedule->command('tenants:run analytics:pivots')->monthly(); // создать сводные таблицы отделов в аналитике 
+        $schedule->command('tenants:run analytics:parts')->monthly(); // создать декомпозицию и спидометры в аналитике
+        //$schedule->command('tenants:run checklist:update')->dailyAt('00:00'); //Ставить чек листы каждый день для сотрудников
+        //$schedule->command('tenants:run trainee:count_days')->dailyAt('00:00'); //Запись дней в аналитику по стажерам 1й день 2й+ день
     }
 
     /**

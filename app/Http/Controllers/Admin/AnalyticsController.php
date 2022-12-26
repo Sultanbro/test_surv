@@ -6,62 +6,25 @@ use App\Service\AnalyticService;
 use App\Service\Department\UserService;
 use DB;
 use View;
-use Auth;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
-use App\Components\TelegramBot;
 use Maatwebsite\Excel\Facades\Excel;
 use App\Http\Controllers\Controller;
-use App\Http\Controllers\IntellectController as IC;
-use App\Classes\Helpers\Phone;
-use App\External\Bitrix\Bitrix;
 use App\Classes\Analytics\Recruiting;
-use App\Classes\Analytics\Ozon;
-use App\Classes\Analytics\Lerua;
 use App\Classes\Analytics\DM;
-use App\Classes\Analytics\HomeCredit;
-use App\Classes\Analytics\Eurasian;
-use App\Classes\Analytics\Tinkoff;
 use App\User;
-use App\Account;
-use App\Trainee;
-use App\UserDescription;
-use App\UserNotification;
-use App\Kpi;
-use App\Zarplata;
-use App\DayType;
-use App\Salary;
 use App\ProfileGroup;
 use App\CallBase;
 use App\Timetracking;
 use App\TimetrackingHistory;
-use App\AnalyticsSettings;
-use App\AnalyticsSettingsIndividually;
 use App\Models\Analytics\Activity;
-use App\Models\Analytics\ActivityTotal;
-use App\Models\Analytics\ActivityPlan;
-use App\Models\Bitrix\Lead;
-use App\Models\Bitrix\Segment;
-use App\QualityRecordMonthlyStat;
-use App\Models\CallCenter\Directory;
-use App\Models\CallCenter\Agent;
-use App\Models\Analytics\RecruiterStat;
-use App\Classes\Analytics\FunnelTable;
-use App\Models\User\NotificationTemplate;
 use App\Models\Analytics\DecompositionValue;
-use App\Models\Analytics\DecompositionItem;
 use App\Models\Analytics\TopValue;
-use App\QualityRecordWeeklyStat;
-use App\Models\Kpi\Bonus;
-use App\Models\Admin\ObtainedBonus;
-use App\Models\Admin\EditedKpi;
-use App\Models\Admin\EditedBonus;
 use App\Models\Analytics\AnalyticColumn;
 use App\Models\Analytics\AnalyticRow;
 use App\Models\Analytics\AnalyticStat;
 use App\Models\Analytics\UserStat;
 use App\Imports\AnalyticsImport;
-use App\Exports\AnalyticsExport;
 
 class AnalyticsController extends Controller
 {
@@ -550,6 +513,10 @@ class AnalyticsController extends Controller
             Timetracking::updateTimes($request->employee_id, $date, $request->value * 60);
         }
 
+        if(tenant('id') != 'bp') {
+            return null;
+        }
+        
         if($request->group_id == 31 && $request->id == 20) { // DM and 20 колво действий
             DM::updateTimesNew($request->employee_id, $date);
         }

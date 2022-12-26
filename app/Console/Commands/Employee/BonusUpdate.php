@@ -6,7 +6,6 @@ use Illuminate\Console\Command;
 use App\Models\Kpi\Bonus;
 use App\Models\Admin\ObtainedBonus;
 use App\ProfileGroup;
-use App\ProfileGroupUser;
 use App\User;
 use App\Salary;
 use App\UserNotification;
@@ -159,7 +158,6 @@ class BonusUpdate extends Command
      */
     public function notify($date) {
         $this->comment('Уведомления :');
-        $timestamp = now();
         $noti = NotificationTemplate::find(15); // Сегодня получили бонусы
 
 
@@ -173,41 +171,33 @@ class BonusUpdate extends Command
                 continue;
             }
 
-            $pgu =  ProfileGroupUser::where('group_id', $group_id)
-                ->where('date', Carbon::now()->startOfMonth()->format('Y-m-d'))
-                ->first();
+            $workingUsers = (new UserService)->getEmployees($group_id, Carbon::now()->startOfMonth()->format('Y-m-d')); 
+            $workingUsers = collect($workingUsers)->pluck('id')->toArray();
 
-            if($pgu) {
-                $notification_receivers = $pgu->assigned;
+            foreach ($workingUsers as $user_id) {
 
-                foreach ($notification_receivers as $key => $user_id) {
+                $noti = UserNotification::where('user_id', $user_id)
+                    ->where('title', 'Сегодня получили бонусы')
+                    ->whereDate('created_at', date('Y-m-d'))
+                    ->first();
 
-                    $noti = UserNotification::where('user_id', $user_id)
-                        ->where('title', 'Сегодня получили бонусы')
-                        ->whereDate('created_at', date('Y-m-d'))
-                        ->first();
-
-                    if($noti) {
-                        $noti->message = $msg;
-                        $noti->note = $group_id;
-                        $noti->save();
-                    } else {
-                        UserNotification::create([
-                            'user_id' => $user_id,
-                            'about_id' => 0,
-                            'title' => 'Сегодня получили бонусы',
-                            'group' => now(),
-                            'message' => $msg,
-                            'note' => $group_id,
-                        ]);
-                    }
-
-
+                if($noti) {
+                    $noti->message = $msg;
+                    $noti->note = $group_id;
+                    $noti->save();
+                } else {
+                    UserNotification::create([
+                        'user_id' => $user_id,
+                        'about_id' => 0,
+                        'title' => 'Сегодня получили бонусы',
+                        'group' => now(),
+                        'message' => $msg,
+                        'note' => $group_id,
+                    ]);
                 }
             }
-
+            
             $this->line($group_id . ' Users have notified');
-
         }
 
     }

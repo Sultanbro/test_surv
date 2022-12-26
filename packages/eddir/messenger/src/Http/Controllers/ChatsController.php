@@ -28,6 +28,7 @@ class ChatsController extends Controller {
      * @return JsonResponse
      */
     public function pusherAuth( Request $request ): JsonResponse {
+
         // Auth data
         $authData = json_encode( [
             'user_id'   => Auth::user()->id,
@@ -45,7 +46,7 @@ class ChatsController extends Controller {
             )
             ) );
         }
-
+        
         // if not authorized
         return response()->json( [ 'message' => 'Unauthorized' ], 401 );
     }

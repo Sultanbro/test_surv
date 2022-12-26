@@ -2,15 +2,9 @@
 namespace App\Classes\Analytics;
 
 use Auth;
-use App\User;
 use Carbon\Carbon;
-use App\Trainee;
 use App\Timetracking;
 use App\TimetrackingHistory;
-use App\DayType;
-use App\ProfileGroup;
-use App\AnalyticsSettings;
-use App\AnalyticsSettingsIndividually as ASI;
 use App\Models\Analytics\UserStat;
 
 class DM 
@@ -63,156 +57,6 @@ class DM
         ];
     }
 
-    public static function getHoursTotal(Carbon $date) {
-        $asis = ASI::where([
-            'date' => $date->startOfMonth()->format('Y-m-d'),
-            'group_id' => self::GROUP_ID,
-            'type' => 19, // часы работы
-        ])->get();
-        
-        $total = 0;
-
-        for($i = 1; $i <= $date->daysInMonth; $i++) {
-            foreach($asis as $asi) {
-                $data = json_decode($asi->data, true);
-                if(array_key_exists($i, $data)) {
-                    $total += $data[$i];
-                }
-            }
-        }
-
-        return $total;
-    }
-
-    /**
-     * Получить качество среднее
-     */
-    public static function getQualityAvg(Carbon $date) {
-
-        $local_date = $date->format('Y-m-d');
-
-        $as = AnalyticsSettings::where([
-            'date' => Carbon::parse($local_date)->startOfMonth()->format('Y-m-d'),
-            'group_id' => self::ID,
-        ])->first();
-        
-        $value = 0;
-
-        $day = Carbon::parse($local_date)->day;
-
-        if($as && array_key_exists(self::S_DIALOGS_QUALITY, $as->data)
-               && array_key_exists('avg', $as->data[self::S_DIALOGS_QUALITY])) {
-            $value = $as->data[self::S_DIALOGS_QUALITY]['avg'];
-        }
-        
-        return (float)$value;
-    }
-
-    public static function getHoursPlan(Carbon $date) {
-        $as = AnalyticsSettings::where([
-            'date' => $date->startOfMonth()->format('Y-m-d'),
-            'group_id' => self::GROUP_ID,
-        ])->first();
-
-       
-        $plan = 0;
-        if($as) {
-            $data = $as->data[self::S_PLAN];
-            for($i = 1; $i <= $date->daysInMonth; $i++) {
-                if(array_key_exists($i, $data)) {
-                    $plan += $data[$i];
-                }
-            }
-
-        }
-
-        return $plan;
-    }
-
-    public static function getTotals(Carbon $date) {
-        $arr = [
-            self::S_HOURS => [],
-            self::S_DIALOGS => [],
-            self::S_MANAGERS => [],
-        ];
-
-        $asis = [
-            self::S_HOURS =>  ASI::where([
-                    'date' => $date->startOfMonth()->format('Y-m-d'),
-                    'group_id' => self::GROUP_ID,
-                    'type' => 19, // часы работы
-                ])->get(),
-            self::S_DIALOGS =>  ASI::where([
-                    'date' => $date->startOfMonth()->format('Y-m-d'),
-                    'group_id' => self::GROUP_ID,
-                    'type' => 20, // колво действий
-                ])->get(),
-            self::S_MANAGERS =>  ASI::where([
-                    'date' => $date->startOfMonth()->format('Y-m-d'),
-                    'group_id' => self::GROUP_ID,
-                    'type' => 21, // учет времени
-                ])->get(),
-        ];
-
-
-        for($i = 1; $i <= $date->daysInMonth; $i++) {
-            $arr[self::S_HOURS][$i] = 0;
-            foreach($asis[self::S_HOURS] as $asi) {
-                
-                $data = json_decode($asi->data, true);
-                if(array_key_exists($i, $data)) {
-                    $arr[self::S_HOURS][$i] += $data[$i];
-                }
-            }
-        }
-        
-        for($i = 1; $i <= $date->daysInMonth; $i++) {
-            $arr[self::S_DIALOGS][$i] = 0;
-            foreach($asis[self::S_DIALOGS] as $asi) {
-                $data = json_decode($asi->data, true);
-                if(array_key_exists($i, $data)) {
-                    $arr[self::S_DIALOGS][$i] += $data[$i];
-                }
-            }
-        }
-
-        for($i = 1; $i <= $date->daysInMonth; $i++) {
-            $arr[self::S_MANAGERS][$i] = 0;
-            foreach($asis[self::S_MANAGERS] as $asi) {
-                $data = json_decode($asi->data, true);
-                if(array_key_exists($i, $data)) {
-                    $arr[self::S_MANAGERS][$i] += $data[$i];
-                }
-            }
-        }
-           
-        return $arr;
-    }
-
-    public static function getEmployeeHours(int $user_id, Carbon $date) {
-        $day = (int)$date->format('d');
-        
-        $local_date = $date->format('Y-m-d');
-        $asi = ASI::where([
-            'date' => Carbon::parse($local_date)->startOfMonth()->format('Y-m-d'),
-            'group_id' => self::GROUP_ID,
-            'type' => 21, // учет времени
-            'employee_id' => $user_id, 
-            ])->first();
-            
-            
-            $hours = 0;
-            if($asi) {
-                $data = json_decode($asi->data, true);
-                if(array_key_exists($day, $data)) {
-                    $hours = $data[$day];
-                } 
-            }
-            
-            return $hours;
-            
-    }   
-    
     /**
      * Обновить часы работы и учет времени от количества действий
      * @param int $user_id 
@@ -221,71 +65,56 @@ class DM
      * @return void 
      */
     public static function updateTimes(int $user_id, $date, $day) {
-        $setting = ASI::where(['date' => $date, 'group_id' => DM::GROUP_ID, 'employee_id' => $user_id, 'type' => 20])->first();
 
         $carbon = Carbon::parse($date)->day($day);
-        
-        if($setting) {  
-            $data = json_decode($setting->data, true);
-           
-            $actions = (int)$data[$day];
 
-            $activity19 = ASI::where(['date' => $date, 'group_id' => DM::GROUP_ID, 'employee_id' => $user_id, 'type' => 19])->first();
+        $stat = UserStat::where([
+            'date' => $carbon->format('Y-m-d'),
+            'employee_id' => $user_id,
+            'activity_id' => 20
+        ])->first();
 
-            $div = $actions / 12;
+        if($stat) {  
 
-            
-            // if($carbon->timestamp >= 1642636800) { // 20.01.2022
-            //     $value_for_19 = floor($div) > 9 ? 9 : floor($div);
-            // } else {
-            //     $value_for_19 = floor($div) > 20 ? 20 : floor($div);
-            // }
-    
+            $actions = (int)$stat->value;
+
+            $activity19 = UserStat::where([
+                'date' => $carbon->format('Y-m-d'),
+                'employee_id' => $user_id,
+                'activity_id' => 19
+            ])->first();
+
             $value_for_19 = self::getHoursByActionsForRussia($actions);
 
-            
             if($activity19) {
-                $data19 = json_decode($activity19->data, true);
-                $data19[$day] = $value_for_19;
-
-                $activity19->data = json_encode($data19);
+                $activity19->value = $value_for_19;
                 $activity19->save();
             } else {
-                ASI::create([
-                    'date' => $date, 
-                    'user_id' => Auth::user()->id, 
-                    'group_id' => DM::GROUP_ID, 
-                    'employee_id' => $user_id, 
-                    'type' => 19,
-                    'data' => json_encode([
-                        $day => $value_for_19
-                    ]),
+                UserStat::create([
+                    'date' => $carbon->format('Y-m-d'),
+                    'employee_id' => $user_id,
+                    'activity_id' => 19,
+                    'value' => $value_for_19
                 ]);
             }
 
-            $activity21 = ASI::where(['date' => $date, 'group_id' => DM::GROUP_ID, 'employee_id' => $user_id, 'type' => 21])->first();
+            $activity21 =  UserStat::where([
+                'date' => $carbon->format('Y-m-d'),
+                'employee_id' => $user_id,
+                'activity_id' => 21
+            ])->first();
 
-            // if($carbon->timestamp >= 1642464000) { // 18.01.2022
-            //     $value_for_21 = self::getHoursByActionsWithoutOvertime($actions);
-            // } else {
-            // }
             $value_for_21 = self::getHoursByActions($actions);
 
             if($activity21) {
-                $data21 = json_decode($activity21->data, true);
-                $data21[$day] = $value_for_21;
-                $activity21->data = json_encode($data21);
+                $activity21->data = $value_for_21;
                 $activity21->save();
             } else {
-                ASI::create([
-                    'date' => $date, 
-                    'user_id' => Auth::user()->id, 
-                    'group_id' => DM::GROUP_ID, 
-                    'employee_id' => $user_id, 
-                    'type' => 21,
-                    'data' => json_encode([
-                        $day => $value_for_21
-                    ]),
+                UserStat::create([
+                    'date' => $carbon->format('Y-m-d'),
+                    'employee_id' => $user_id,
+                    'activity_id' => 21,
+                    'value' => $value_for_21
                 ]);
             }
             

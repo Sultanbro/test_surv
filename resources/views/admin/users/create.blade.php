@@ -348,7 +348,7 @@
 
                                             <div class="form-group row">
                                                 <label for="workingDays"
-                                                       class="col-sm-4 col-form-label font-weight-bold">Найти город <span class="red">*</span></label>
+                                                       class="col-sm-4 col-form-label font-weight-bold">Город <span class="red">*</span></label>
                                                 <div class="col-sm-8">
                                                     <div class="mb-3 xfade">
                                                         <div class="form-group row " id="selectedCityRU" >
@@ -753,7 +753,7 @@
                                              <div class="col-sm-12">
                                                  <input  class="phone_mask form-control mr-1 col-sm-8" type="text"
                                                  value="@if(isset($user)){{$user->phone}}@else{{old('phone')}}@endif"
-                                                 name="phone" id="phone" placeholder="Телефон">
+                                                 name="phone" id="phone" placeholder="Телефон" required>
                                              </div>
 
                                          </div>
@@ -1417,7 +1417,7 @@ function submitx() {
     let profile_errors = 0;
 
     if (selectedCityInput.length < 2) {
-        $('#beforeSubmit .texter').append('<div>Поиск: <b>Стран</b> <b>Город</b></div>');
+        $('#beforeSubmit .texter').append('<div>Профиль: <b>Город</b></div>');
         counter++;
         profile_errors++
     }
@@ -1541,8 +1541,10 @@ function submit_trainee() {
 
     let profile_errors = 0;
 
+    
+
     if (country.length < 2) {
-        $('#beforeSubmit .texter').append('<div>Найти:<b>страну</b>  <b>Город</b> : </div>');
+        $('#beforeSubmit .texter').append('<div>Профиль: <b>Город</b> </div>');
         counter++;
         profile_errors++
     }
@@ -1571,7 +1573,11 @@ function submit_trainee() {
         profile_errors++
     }
 
-
+    if (phone == null || phone.length < 2) {
+        $('#beforeSubmit .texter').append('<div>Контакты: <b>Мобильный</b></div>');
+        counter++;
+        profile_errors++
+    }
     ///////////////////////////////////////
     if(profile_errors != 0){
         $('.listo1').text(profile_errors);

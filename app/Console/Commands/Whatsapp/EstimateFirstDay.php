@@ -111,7 +111,7 @@ class EstimateFirstDay extends Command
 
     public function msg($id) {
         $line_break = '%0a';
-        $link = 'https://bp.jobtron.org/efd?phone=' . $id;
+        $link = 'https://'.tenant('id').'.jobtron.org/efd?phone=' . $id;
 
         $msg = 'Добрый день!' . $line_break; 
         $msg .= 'Пройдите небольшой анонимный опрос, чтобы оценить качество обучения вашим тренером\руководителем:' . $line_break;

@@ -121,7 +121,7 @@ Route::middleware([
     InitializeTenancyBySubdomain::class,
     PreventAccessFromCentralDomains::class,
 ])->group(function () {
-    
+            
     WebSocketsRouter::webSocket('/messenger/app/{appKey}', MessengerWebSocketHandler::class);
 
     Route::get('/login/{subdomain}', [ProjectController::class, 'login']);
@@ -536,7 +536,6 @@ Route::middleware([
     Route::post('/timetracking/analytics/recruting/change-profile', [GroupAnalyticsController::class, 'changeRecruiterProfile']); // Сменить профиль рекрутера
     Route::any('/timetracking/get_kpi_totals', [GroupAnalyticsController::class, 'get_kpi_totals']);
     Route::any('/timetracking/update-settings', [GroupAnalyticsController::class, 'update']);
-    Route::any('/timetracking/update-settings-extra', [GroupAnalyticsController::class, 'updateExtra']);
     Route::post('/timetracking/update-activity-total', [GroupAnalyticsController::class, 'update_activity_total']);
     Route::any('/timetracking/update-settings-individually', [GroupAnalyticsController::class, 'updateIndividually']);
     Route::get('/timetracking/analytics/activity/export', [GroupAnalyticsController::class, 'exportActivityExcel']);
