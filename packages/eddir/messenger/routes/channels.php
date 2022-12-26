@@ -2,7 +2,7 @@
 
 use Illuminate\Support\Facades\Broadcast;
 
-Broadcast::channel('messages.{userId}', function ($user, $userId) {
+Broadcast::channel('private-messages.{userId}', function ($user, $userId) {
     return true;
 });
 

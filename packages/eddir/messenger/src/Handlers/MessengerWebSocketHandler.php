@@ -14,8 +14,6 @@ class MessengerWebSocketHandler extends WebSocketHandler {
 
     protected $channelManager;
 
-    const APP_ID = '12345';
-
     public function __construct( ChannelManager $channelManager ) {
         $this->channelManager = $channelManager;
         MessengerUserOnline::truncate();
@@ -23,11 +21,8 @@ class MessengerWebSocketHandler extends WebSocketHandler {
     }
 
     public function onOpen( ConnectionInterface $conn ) {
-        $conn->app = App::findById( self::APP_ID );
-        
-       // dd(tenant('id'));
+        $conn->app = App::findById( config('websockets.apps.0.id') );
 
-        
         parent::onOpen( $conn );
 
         $this->userJoin( $conn->socketId, $conn->resourceId );
@@ -87,7 +82,7 @@ WHERE t1.user_id = {$user_id}" );
         // for each user trigger event
         foreach ( $users as $user ) {
             echo "Send user escape event to user {$user->user_id}";
-            $this->channelManager->find(self::APP_ID, 'private-messages.' . $user->user_id )->broadcast([
+            $this->channelManager->find(config('websockets.apps.0.id'), 'private-messages.' . $user->user_id )->broadcast([
                 'event' => 'newMessage',
                 'channel' => 'private-messages.' . $user->user_id,
                 'data'  => json_encode([
