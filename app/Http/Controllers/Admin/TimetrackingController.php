@@ -392,7 +392,7 @@ class TimetrackingController extends Controller
      */
     public function trackerstatus(Request $request)
     {
-        $user = User::bitrixUser();
+        $user = auth()->user();
 
         // count bonuses
         $bonuses = Salary::where('user_id', $user->id)
