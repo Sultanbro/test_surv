@@ -27,9 +27,12 @@ class AuthServiceProvider extends ServiceProvider
     {
         $this->registerPolicies();
 
-        $tenant = tenant('id');
+        
+        Gate::before(function ($user, $ability)  {
+            
+            $host = explode('.', request()->getHttpHost());
+            $tenant = count($host) == 3 ? $host[0] : null;
 
-        Gate::before(function ($user, $ability) use ($tenant) {
             if(in_array($ability, [
                 'ucalls_view',
                 'hr_view'
