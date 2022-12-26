@@ -3,14 +3,12 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Classes\Helpers\Currency;
-use App\Classes\Helpers\InsertData;
 use App\Classes\Helpers\Phone;
 use App\DayType;
 use App\Downloads;
 use App\External\Bitrix\Bitrix;
 use App\Fine;
 use App\Http\Controllers\Controller;
-use App\Http\Controllers\IntellectController as IC;
 use App\Kpi;
 use App\Models\Admin\EditedBonus;
 use App\Models\Admin\EditedKpi;
@@ -47,23 +45,6 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\View;
-use App\External\Bitrix\Bitrix;
-use App\Models\Bitrix\Lead;
-use App\Downloads;
-use App\Http\Controllers\IntellectController as IC;
-use App\Classes\Helpers\Phone;
-use App\Models\Kpi\Bonus;
-use App\Classes\Helpers\Currency;
-use App\Models\User\NotificationTemplate;
-use App\Models\Analytics\Activity;
-use App\Models\Admin\ObtainedBonus;
-use App\Models\TestBonus;
-use App\Models\Admin\EditedBonus;
-use App\Models\Admin\EditedKpi;
-use App\Timeboard\UserPresence;
-use App\PositionDescription;
-use App\ProfileGroupUser as PGU;
-use App\Service\Department\UserService;
 use App\Setting;
 
 class TimetrackingController extends Controller
