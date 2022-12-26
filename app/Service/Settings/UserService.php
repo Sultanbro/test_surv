@@ -2,21 +2,28 @@
 
 namespace App\Service\Settings;
 
+use App\AdaptationTalk;
 use App\DTO\Settings\StoreUserDTO;
 use App\Events\TimeTrack\CreateTimeTrackHistoryEvent;
 use App\Exports\UserExport;
 use App\Filters\Users\UserFilter;
 use App\Filters\Users\UserFilterBuilder;
-use App\Helpers\FileHelper as Helper;
+use App\Helpers\FileHelper;
+use App\Helpers\UserHelper;
+use App\Models\Bitrix\Segment;
 use App\Position;
 use App\Repositories\CardRepository;
 use App\Repositories\DayTypeRepository;
 use App\Repositories\ProfileGroupRepository;
+use App\Repositories\ProgramRepository;
 use App\Repositories\TimeTrackHistoryRepository;
 use App\Repositories\UserContactRepository;
 use App\Repositories\UserDescriptionRepository;
 use App\Repositories\UserRepository;
+use App\Setting;
 use App\User;
+use App\WorkingDay;
+use App\WorkingTime;
 use Carbon\Carbon;
 use Exception;
 use Illuminate\Support\Facades\Auth;
@@ -119,7 +126,7 @@ class UserService
                 $this->saveCards($user->id, $dto->cards);
             }
 
-            Helper::storeDocumentsFile([
+            FileHelper::storeDocumentsFile([
                 'dog_okaz_usl' => $dto->file1,
                 'sohr_kom_tainy' => $dto->file2,
                 'dog_o_nekonk'  => $dto->file3,
@@ -149,6 +156,64 @@ class UserService
         }
     }
 
+    /**
+     * @param int|null $id
+     * @return array
+     */
+    public function createUser(
+        ?int $id
+    ): array
+    {
+        return [
+            'positions' => Position::all(),
+            'user'      => isset($id) ? $this->userData($id) : null,
+            'corpBooks' => isset($id) ? $this->userRepository->userWithKnowBaseModel($id)->get([
+                'kb.*'
+            ]) : [],
+            'groups'    => (new ProfileGroupRepository)->getActive(),
+            'programs'  => (new ProgramRepository)->getProgramByDesc(),
+            'workingDays'   => WorkingDay::all(),
+            'workingTimes'  => WorkingTime::all(),
+            'timezones'     => Setting::TIMEZONES
+        ];
+    }
+
+    /**
+     * @param int $userId
+     * @return array
+     */
+    private function userData(
+        int $userId
+    ): array
+    {
+        $user = $this->userRepository->allUsers($userId, [
+            'zarplata',
+            'downloads',
+            'user_description',
+            'cards',
+            'lead',
+            'groups'
+        ]);
+
+        $user->segment = Segment::query()->find(0)->name ?? '';
+
+        UserHelper::workWithUs($user);
+        $fireCauses = UserHelper::fireCause($user->user_description->is_trainee);
+        $user->applied_at = $user->user_description->is_trainee ? $user->applied : $user->created_at;
+        $user->head_in_groups = $user->inGroups(true)->toArray();
+
+        if($user->user_description)
+        {
+            $user->in_books  = '[]';
+        }
+
+        $user->adaptation_talks = AdaptationTalk::getTalks($user->id);
+
+        return [
+            'fire_causes' => $fireCauses,
+            'user' => $user
+        ];
+    }
     /**
      * @param int $userId
      * @param array $cards

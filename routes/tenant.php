@@ -202,6 +202,14 @@ Route::middleware([
     Route::any('/timetracking/delete-person', [UserController::class, 'deleteUser'])->name('removeUser');
     Route::any('/timetracking/recover-person', [UserController::class, 'recoverUser'])->name('recoverUser');
 
+    /**
+     * Route's new for Admin/UserController->getPersons
+     */
+    Route::post('/timetracking/get-persons-new', [\App\Http\Controllers\Admin\Settings\UserController::class, 'get']);
+    Route::post('/timetracking/person/store-new', [\App\Http\Controllers\Admin\Settings\UserController::class, 'store']);
+    Route::get('/timetracking/create-person-new', [\App\Http\Controllers\Admin\Settings\UserController::class, 'create']);
+    #======================
+
     /* Самостоятельная отметка стажеров */
     Route::get('/autocheck/{id}', [TraineeController::class, 'autocheck']); // cтраница со ссылками для отметки стажерами
     Route::post('/autocheck/{id}', [TraineeController::class, 'save']); //

@@ -25,18 +25,18 @@ class StoreUserDTO
      * @param string|null $weekdays
      * @param string $workingCountry
      * @param string $workingCity
-     * @param string|null $fileName
+     * @param UploadedFile|null $fileName
      * @param int|null $headGroup
      * @param bool|null $isTrainee
      * @param array|null $contacts
      * @param array|null $cards
-     * @param string|null $file1
-     * @param string|null $file2
-     * @param string|null $file3
-     * @param string|null $file4
-     * @param string|null $file5
-     * @param string|null $file6
-     * @param string|null $file7
+     * @param UploadedFile|null $file1
+     * @param UploadedFile|null $file2
+     * @param UploadedFile|null $file3
+     * @param UploadedFile|null $file4
+     * @param UploadedFile|null $file5
+     * @param UploadedFile|null $file6
+     * @param UploadedFile|null $file7
      * @param int|null $group
      * @param string|null $salary
      * @param string|null $cardNumber

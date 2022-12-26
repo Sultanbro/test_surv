@@ -231,4 +231,30 @@ final class UserRepository extends CoreRepository
             ]
         );
     }
+
+    /**
+     * @param int $id
+     * @return object
+     */
+    public function userWithKnowBaseModel(
+        int $id
+    ): object
+    {
+        return $this->model()->join('knowbase_model as kbm', function ($q) {
+            $q->on('kbm.model_id', '=', 'users.id');
+            $q->where('kbm.model_type', '=', 'App\User');
+        })
+            ->join('kb', 'kb.id', '=', 'kbm.book_id')
+            ->where('kbm.model_id', $id);
+    }
+
+    public function allUsers(
+        int $userId,
+        array $relations = []
+    )
+    {
+        return $this->model()->withTrashed()
+            ->when(isset($relations), fn ($user) => $user->with($relations))
+            ->findOrFail($userId);
+    }
 }

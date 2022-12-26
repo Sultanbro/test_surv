@@ -14,6 +14,7 @@ use App\Models\CourseResult;
 use App\Models\GroupUser;
 use App\Models\Tax;
 use App\Models\Traits\HasTenants;
+use App\Models\User\Card;
 use App\OauthClientToken as Oauth;
 use App\Service\Department\UserService;
 use Carbon\Carbon;
@@ -94,6 +95,14 @@ class User extends Authenticatable implements Authorizable
      * Валюты для профиля.
      */
     const CURRENCY = ['KZT', 'RUB', 'UZS', 'KGS','BYN', 'UAH'];
+
+    /**
+     * @return HasMany
+     */
+    public function cards(): HasMany
+    {
+        return $this->hasMany(Card::class, 'user_id');
+    }
 
     public function favouriteArticles(): BelongsToMany
     {
