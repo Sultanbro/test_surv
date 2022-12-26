@@ -1123,7 +1123,7 @@ class TimetrackingController extends Controller
 
     public function getgroups(Request $request)
     {
-        $user = User::bitrixUser();
+        $user = auth()->user();
         $groups = ProfileGroup::where('active', 1)->get();
 
         $array = [];
@@ -1198,10 +1198,10 @@ class TimetrackingController extends Controller
                 'updated' => 1
             ]);
         }
-
+       
         TimetrackingHistory::create([
-            'author_id' => User::bitrixUser()->id,
-            'author' => User::bitrixUser()->name.' '.User::bitrixUser()->last_name,
+            'author_id' => auth()->user()->id,
+            'author' => auth()->user()->name.' '.auth()->user()->last_name,
             'user_id' => $request->user_id,
             'description' => $description,
             'date' => $enter
@@ -1231,7 +1231,7 @@ class TimetrackingController extends Controller
             $groups = $_groups;
         }
         
-        $currentUser = User::bitrixUser();
+        $currentUser = auth()->user();
         
         if ($request->isMethod('post')) {
 
@@ -1318,7 +1318,7 @@ class TimetrackingController extends Controller
 
     public function zarplatatable(Request $request)
     {
-        $user = User::bitrixUser();
+        $user = auth()->user();
 
         $date = Carbon::createFromDate(date('Y'), $request->month, 1);
         $currency_rate = (float)(Currency::rates()[$user->currency] ??  0.00001);
@@ -1334,12 +1334,7 @@ class TimetrackingController extends Controller
 
     public function setDay(Request $request)
     {
-        // $request->validate([
-        //     //'type' => 'in:' . implode(',', array_values(DayType::DAY_TYPES)),
-        //    // 'user_id' => 'exists:users,ID',
-        // ]);
-
-        $user = User::bitrixUser();
+        $user = auth()->user();
         $targetUser = User::withTrashed()->find($request->user_id);
            
         if($targetUser == null) {return ['success' => 1, 'history' => null];}
@@ -1347,10 +1342,7 @@ class TimetrackingController extends Controller
         $year = date('Y');
         $date = Carbon::parse($year . '-' . $request->month . '-' . $request->day);
         $daytype = DayType::where('user_id', $request->user_id)->where('date', $date->format('Y-m-d'))->first();
-        //info($daytype);
-        // if ($request->type == 0 && isset($daytype)) {
-        //     return ['success' => 0, 'history' => null];
-        // }
+   
         if (!$daytype) {
             $daytype = DayType::create([
                 'user_id' => $request->user_id,

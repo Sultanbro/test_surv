@@ -52,7 +52,7 @@ class GroupAnalyticsController extends Controller
             return redirect('/');
         }
 
-        $currentUser = User::bitrixUser();
+        $currentUser = auth()->user();
 
         $recruting = ProfileGroup::find(48);
    
@@ -537,7 +537,7 @@ class GroupAnalyticsController extends Controller
         $group = ProfileGroup::find($request->group_id);
         
         $request->month = (int) $request->month;
-        $currentUser = User::bitrixUser();
+        $currentUser = auth()->user();
 
         $group_editors = is_array(json_decode($group->editors_id)) ? json_decode($group->editors_id) : [];
 
