@@ -45,6 +45,7 @@ export default {
   border: none;
   border-radius: 1rem;
   font-size: 1rem;
+  text-align: center;
   line-height: 1;
   color: #000;
   background: #fff;
@@ -60,12 +61,11 @@ export default {
 }
 .input-text-input:not(:placeholder-shown) ~ .input-text-label,
 .input-text-input:focus ~ .input-text-label {
-  left: 1.5rem;
   top: -0.357rem;
   font-size: 0.875rem;
   line-height: 1;
   color: #000;
-  transform: none;
+  transform: translate(-50%, 0);
 }
 .input-text-label {
   position: absolute;

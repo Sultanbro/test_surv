@@ -56,6 +56,11 @@ class Kernel extends HttpKernel
             'throttle:60,1',
             'bindings',
         ],
+
+        'tenant' => [
+            \Stancl\Tenancy\Middleware\InitializeTenancyBySubdomain::class,
+            \Stancl\Tenancy\Middleware\PreventAccessFromCentralDomains::class,
+        ]
     ];
 
     /**
@@ -72,7 +77,6 @@ class Kernel extends HttpKernel
         'can' => \Illuminate\Auth\Middleware\Authorize::class,
         'guest' => \App\Http\Middleware\RedirectIfAuthenticated::class,
         'throttle' => \Illuminate\Routing\Middleware\ThrottleRequests::class,
-        'bitrix' => \App\Http\Middleware\BitrixAuth::class,
         'admin' => \App\Http\Middleware\Admin::class,
         'adminbook' => \App\Http\Middleware\AdminBook::class,
         'admin.basic.auth' => \App\Http\Middleware\BasicAuth::class,

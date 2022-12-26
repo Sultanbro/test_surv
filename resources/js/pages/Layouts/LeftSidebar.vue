@@ -159,7 +159,7 @@ export default {
             return this.$can('top_view')
                 || this.$can('tabel_view')
                 || this.$can('entertime_view')
-                || this.$can('hr_view')
+                || (this.$can('hr_view') && window.location.host.split('.')[0] == 'bp')
                 || this.$can('analytics_view')
                 || this.$can('salaries_view')
                 || this.$can('quality_view')
@@ -248,7 +248,7 @@ export default {
                             name: 'HR',
                             icon: 'icon-nd-hr',
                             href: '/timetracking/analytics',
-                            hide: !this.$can('hr_view')
+                            hide: ! (this.$can('hr_view') && window.location.host.split('.')[0] == 'bp')
                         },
                         {
                             name: 'Аналитика',
@@ -309,7 +309,7 @@ export default {
                     href: '/callibro/login',
                     icon: 'icon-nd-u-calls',
                     height: 0,
-                    hide: !this.$can('ucalls_view')
+                    hide: !(this.$can('ucalls_view') && window.location.host.split('.')[0] == 'bp')
                 },
             ]
         },
@@ -364,11 +364,12 @@ export default {
 .header__avatar{
     cursor:pointer;
     display: block;
-    width: 6rem;
-    max-width: 6rem;
+    width: 100%;
+    max-width: 100%;
     margin-bottom: 0.5rem;
     position:relative;
     border-radius: 10px;
+    padding: 0 5px;
     z-index: 1003;
     .header__menu{
         max-width: 24rem;
@@ -565,7 +566,6 @@ export default {
     box-shadow: 1rem 0 2rem rgba(0, 0, 0, 0.15);
     opacity: 0;
     visibility: hidden;
-    transition: .5s;
 }
 
 .header__menu-title{

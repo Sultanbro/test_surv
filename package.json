@@ -58,6 +58,7 @@
         "dropzone": "^6.0.0-beta.2",
         "expr-eval": "^2.0.2",
         "fs": "0.0.1-security",
+        "hooper": "^0.3.4",
         "html2pdf.js": "^0.10.1",
         "interactjs": "^1.10.17",
         "jexcel": "^3.8.2",

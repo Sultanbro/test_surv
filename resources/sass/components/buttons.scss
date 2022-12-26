@@ -1,0 +1,52 @@
+.btn {
+  &.btn-icon {
+    width: 35px;
+    height: 35px;
+    min-width: 35px;
+    padding: 0;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50% !important;
+    border: none!important;
+
+    &.btn-success {
+      background-color: transparent;
+      color: #28a745;
+      &:hover{
+        background-color: rgba(40, 167, 69, 0.2);
+      }
+    }
+    &.btn-danger {
+      background-color: transparent;
+      color: #dc3545;
+      &:hover{
+        color: #dc3545;
+        background-color: rgba(220, 53, 69, 0.2);
+      }
+    }
+    &.btn-primary {
+      background-color: transparent;
+      color: #156AE8;
+      &:hover{
+        background-color: rgba(21, 106, 232, 0.2);
+      }
+    }
+  }
+
+  &.btn-primary {
+    background-color: #156AE8;
+  }
+}
+
+
+.table-actions{
+  display: flex;
+  align-items: center;
+  .btn{
+    margin-right: 10px;
+    &:last-child{
+      margin-right: 0;
+    }
+  }
+}

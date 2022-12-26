@@ -1,7 +1,7 @@
 <template>
 <div class="stats px-3 py-1">
     <!-- top line -->
-    <div class="d-flex mb-2 mt-2 jcsb aifs">
+    <div class="d-flex my-4 jcsb aifs">
         
          <div class="d-flex aic mr-2">
             <div class="d-flex aic mr-2">
@@ -64,7 +64,7 @@
         @changePage="onChangePage"
         :pageSize="+pageSize"
         v-if="s_type_main == 1"
-    ></jw-pagination>
+    />
 
 </div>
 </template>
@@ -134,7 +134,6 @@ export default {
         },
  
         fetchData(filters) {
-            console.log(filters.data_from);
             let loader = this.$loading.show();
             this.s_type_main = filters.data_from ? filters.data_from.s_type : 1;
             this.month = filters.data_from ? filters.data_from.month : new Date().getMonth();

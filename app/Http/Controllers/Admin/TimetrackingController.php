@@ -47,6 +47,24 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\View;
+use App\External\Bitrix\Bitrix;
+use App\Models\Bitrix\Lead;
+use App\Downloads;
+use App\Http\Controllers\IntellectController as IC;
+use App\Classes\Helpers\Phone;
+use App\Models\Kpi\Bonus;
+use App\Classes\Helpers\Currency;
+use App\Models\User\NotificationTemplate;
+use App\Models\Analytics\Activity;
+use App\Models\Admin\ObtainedBonus;
+use App\Models\TestBonus;
+use App\Models\Admin\EditedBonus;
+use App\Models\Admin\EditedKpi;
+use App\Timeboard\UserPresence;
+use App\PositionDescription;
+use App\ProfileGroupUser as PGU;
+use App\Service\Department\UserService;
+use App\Setting;
 
 class TimetrackingController extends Controller
 {
@@ -333,7 +351,7 @@ class TimetrackingController extends Controller
 
         $workday->setExit($exit)
             ->setStatus(Timetracking::DAY_ENDED)
-            ->addTime($exit)
+            ->addTime($exit, $user->timezone())
             ->save();
 
         return 'stopped';
@@ -367,15 +385,15 @@ class TimetrackingController extends Controller
         if($workday) {
             $workday->setEnter($now)
                 ->setStatus(Timetracking::DAY_STARTED)
-                ->addTime($now)
+                ->addTime($now, $user->timezone())
                 ->save();
         }
 
         if( !$workday ) {
             Timetracking::create([
-                'enter' => $now,
+                'enter' => $now->setTimezone('UTC'),
                 'user_id' => $user->id,
-                'times' => [$now->format('H:i')],
+                'times' => [$now->setTimezone('UTC')->format('H:i')],
                 'status' => Timetracking::DAY_STARTED
             ]);
         }   
@@ -681,7 +699,7 @@ class TimetrackingController extends Controller
         
         
         ///////////////////////////////////////////    
-        $editPersonLink = 'https://bp.jobtron.org/timetracking/edit-person?id=' . $request->user_id;
+        $editPersonLink = 'https://'.tenant('id').'.jobtron.org/timetracking/edit-person?id=' . $request->user_id;
         $recruiters = User::where('position_id', 46)->get();
 
         $timestamp = now();
@@ -742,12 +760,6 @@ class TimetrackingController extends Controller
         }
         
         // Приглашение в битрикс
-
-        $whatsapp = new IC();
-        $wphone = Phone::normalize($user->phone);
-        $invite_link = 'https://infinitys.bitrix24.kz/?secret=bbqdx89w';
-        //$whatsapp->send_msg($wphone, 'Ваша ссылка для регистрации в портале Битрикс24: %0a'. $invite_link . '.  %0a%0aВойти в учет времени: https://bp.jobtron.org/login. %0aЛогин: ' . $user->email . ' %0aПароль: 12345.%0a%0a *Важно*: Если не можете через некоторое время войти в учет времени, попробуйте войти через e-mail, с которым зарегистрировались в Битрикс.');
-
         $lead = Lead::where('user_id', $user->id)->orderBy('id', 'desc')->first();
             if($lead && $lead->deal_id != 0) {
                 $bitrix = new Bitrix();
@@ -1254,7 +1266,7 @@ class TimetrackingController extends Controller
                 ? json_decode($group->editors_id)
                 : [];
 
-            if(!in_array($currentUser->id, $group_editors)) {
+            if(!in_array($currentUser->id, $group_editors) && !$currentUser->is_admin) {
                 return [
                     'error' => 'access',
                 ];
@@ -1291,7 +1303,11 @@ class TimetrackingController extends Controller
                 
                
                 foreach ($days as $day) {
-                    $data[$userData->id][$day] = $userData->timetracking->where('date', $day)->min('enter')->format('H:i');
+                    $data[$userData->id][$day] = $userData->timetracking
+                        ->where('date', $day)
+                        ->min('enter')
+                        ->setTimezone(Setting::TIMEZONES[6])
+                        ->format('H:i');
                 }
 
                 $fines = [];
@@ -1410,9 +1426,8 @@ class TimetrackingController extends Controller
             $trainee = UserDescription::where('is_trainee', 1)->where('user_id', $request->user_id)->first();
             
             if($trainee) {
-                $editPersonLink = 'https://bp.jobtron.org/timetracking/edit-person?id=' . $request->user_id;
-                $recruiters = User::where('position_id', 46)->get();
-                
+                $editPersonLink = 'https://'.tenant('id').'.jobtron.org/timetracking/edit-person?id=' . $request->user_id;
+    
                 // Поиск ID лида или сделки
                 if($trainee->lead_id != 0) {
                     $lead_id = $trainee->lead_id;
@@ -1569,7 +1584,7 @@ class TimetrackingController extends Controller
             
             if($trainee) {
                 
-                $editPersonLink = 'https://bp.jobtron.org/timetracking/edit-person?id=' . $request->user_id;
+                $editPersonLink = 'https://'.tenant('id').'.jobtron.org/timetracking/edit-person?id=' . $request->user_id;
                 $recruiters = User::where('position_id', 46)->get();
                 
                 // Поиск ID лида или сделки

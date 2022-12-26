@@ -344,18 +344,15 @@ class User extends Authenticatable implements Authorizable
     /**
      * Работал у нас дней
      */
-    public function wasPartOfTeam($check_ud = false) {
-        if($check_ud) {
-            $ud = UserDescription::where('user_id', $this->id)->first();
-            if(!$ud) return 0;
-            if($ud && $ud->is_trainee == 1) return 0;
-        }   
-        
-        $date = Carbon::parse($this->applied_at())->timestamp;
+    public function wasPartOfTeam() {
+        if(!$this->user_description) {
+            return 0;
+        }
+         
+        $date = Carbon::parse( $this->user_description->applied )->timestamp;
         $fired = Carbon::parse($this->deleted_at)->timestamp;
 
-        $diff = ($fired - $date) / 86400;
-        return (int)$diff;
+        return (int) ($fired - $date) / 86400;
     }
 
     /**
@@ -440,6 +437,20 @@ class User extends Authenticatable implements Authorizable
             //->where('active', 1)
             ->select(['id', 'name', 'work_start', 'work_end', 'has_analytics'])
             ->get();
+    }
+
+    /**
+     * Уволенные группы пользователя.
+     *
+     * @return array
+     */
+    public function firedGroups(): array
+    {
+        return GroupUser::where('status', 'fired')
+            ->where('user_id', $this->id)
+            ->get()
+            ->pluck('group_id')
+            ->toArray();
     }
 
     /**
@@ -549,7 +560,7 @@ class User extends Authenticatable implements Authorizable
 
                 $wphone = Phone::normalize($user->phone);
 
-                if($wphone) $whatsapp->send_msg($wphone, 'Уважаемый коллега! Какими бы ни были причины расставания, мы благодарим Вас за время, силы, знания и энергию, которые Вы отдали для успешной работы и развития нашей организации, и просим заполнить эту небольшую анкету. %0a https://bp.jobtron.org/quiz_after_fire?phone='. $wphone);
+                if($wphone) $whatsapp->send_msg($wphone, 'Уважаемый коллега! Какими бы ни были причины расставания, мы благодарим Вас за время, силы, знания и энергию, которые Вы отдали для успешной работы и развития нашей организации, и просим заполнить эту небольшую анкету. %0a https://'.tenant('id').'.jobtron.org/quiz_after_fire?phone='. $wphone);
                     
                 if($bitrix_id != 0) {
                     $ud->bitrix_id = 0;

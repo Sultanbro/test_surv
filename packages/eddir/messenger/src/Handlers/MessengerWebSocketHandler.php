@@ -24,7 +24,10 @@ class MessengerWebSocketHandler extends WebSocketHandler {
 
     public function onOpen( ConnectionInterface $conn ) {
         $conn->app = App::findById( self::APP_ID );
+        
+       // dd(tenant('id'));
 
+        
         parent::onOpen( $conn );
 
         $this->userJoin( $conn->socketId, $conn->resourceId );

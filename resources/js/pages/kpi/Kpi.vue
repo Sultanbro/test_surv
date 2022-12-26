@@ -1,8 +1,8 @@
 <template>
-<div class="kpi px-3 py-1">
+<div class="kpi">
 
     <!-- top line -->
-    <div class="d-flex mb-2 mt-2 jcsb aifs">
+    <div class="d-flex my-4 jcsb aifs">
         
          <div class="d-flex aic mr-2">
             <div class="d-flex aic mr-2">
@@ -25,20 +25,19 @@
             </span>
         </div>
 
-        <button class="btn rounded btn-outline-success" @click="addKpi">
+        <button class="btn rounded btn-success" @click="addKpi">
             <i class="fa fa-plus mr-2"></i>
             <span>Добавить</span>
         </button>
     </div>
     
     <!-- table -->
-
     <table class="j-table">
         <thead>
             <tr class="table-heading">
-                
-                <th class="first-column">
-                    <i class="fa fa-cogs" @click="adjustFields"></i>
+
+                <th class="first-column text-center pointer" @click="adjustFields">
+                    <i class="fa fa-cogs"></i>
                 </th>
 
                 <th v-for="(field, i) in fields" :key="i" :class="field.class">
@@ -55,12 +54,12 @@
 
             <template v-for="(item, i) in page_items" v-if="(item.target && item.target.name.includes(searchText)) || searchText.length == 0">
                 <!-- <tr v-if="item.target.name.includes(searchText) || searchText.length == 0 || (item.creator && (item.creator.last_name + ' ' + item.creator.name).includes(searchText)) || (item.updater && (item.updater.last_name + ' ' + item.updater.name).includes(searchText)) || (item.items.filter( i => { return i.name.includes(searchText)  } ).length > 0)"></tr> -->
-                <tr :key="i" > 
+                <tr :key="i" >
                     <td  @click="expand(i)" class="pointer">
-                        <div class="d-flex px-2">
+                        <div class="d-flex align-items-center px-2">
+                            <span class="mr-2">{{ i + 1 }}</span>
                             <i class="fa fa-minus mt-1" v-if="item.expanded"></i>
                             <i class="fa fa-plus mt-1" v-else></i>
-                            <span class="ml-2">{{ i + 1 }}</span>
                         </div>
                     </td>
                     <td  v-for="(field, f) in fields" :key="f" :class="field.class"> 
@@ -79,14 +78,14 @@
                                 <i class="fa fa-users ml-2" v-if="item.target.type == 2"></i> 
                                 <i class="fa fa-briefcase ml-2" v-if="item.target.type == 3"></i> 
                                 <span class="ml-2">{{ item.target.name }}</span>
-                                
+
                             </div>
                         </div>
 
                         <div v-else-if="field.key == 'stats'" :class="field.class">
                             
-                            <a v-bind:href="'/kpi?target='+ (item.target ? item.target.name : '')" target="_blank">   
-                                <i class="fa fa-chart-bar btn btn-primary p-1"></i>
+                            <a v-bind:href="'/kpi?target='+ (item.target ? item.target.name : '')" target="_blank" class="btn btn-primary btn-icon">
+                                <i class="fa fa-chart-bar"></i>
                             </a>
                         </div>
 
@@ -103,20 +102,22 @@
                         </div>
 
                         <div v-else :class="field.class">
-                            <input type="text" class="form-control" v-model="item[field.key]" @change="validate(item[field.key], field.key)" /> 
+                            <input type="text" v-model="item[field.key]" @change="validate(item[field.key], field.key)" />
                         </div>
 
                     </td>
                     <td >
-                        <i class="fa fa-save ml-2 mr-1 btn btn-success p-1" @click="saveKpi(i)"></i>
-                        <i class="fa fa-trash btn btn-danger p-1" @click="deleteKpi(i)"></i>
+                        <div class="d-flex">
+                            <i class="fa fa-save ml-2 mr-1 btn btn-success btn-icon" @click="saveKpi(i)"></i>
+                            <i class="fa fa-trash btn btn-danger btn-icon" @click="deleteKpi(i)"></i>
+                        </div>
                     </td>
                 </tr>
 
                 <template v-if="item.items !== undefined">
                     <tr class="collapsable" :class="{'active': item.expanded}" :key="i + 'a'">
                         <td :colspan="fields.length + 2">
-                            <div class="table__wrapper">
+                            <div class="table__wrapper w-100">
                                 <kpi-items
                                     :kpi_id="item.id"
                                     :items="item.items" 
@@ -140,7 +141,6 @@
           
         </tbody>
      </table>
-      
 
     <!-- pagination -->
     <jw-pagination
@@ -168,7 +168,7 @@
      
       <div class="row">
 
-         <div class="col-md-4 mb-2" v-for="(field, f) in all_fields">
+         <div class="col-md-4 mb-4" v-for="(field, f) in all_fields">
             <b-form-checkbox
                 v-model="show_fields[field.key]"
                 :value="true"

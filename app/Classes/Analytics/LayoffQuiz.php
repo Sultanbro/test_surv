@@ -1,15 +1,6 @@
 <?php
-namespace App\Classes\Analytics;
 
-use DB;
-use App\User;
-use App\UserDescription;
-use App\Trainee;
-use App\DayType;
-use App\ProfileGroup;
-use App\AnalyticsSettings;
-use App\AnalyticsSettingsIndividually;
-use App\Models\Analytics\RecruiterStat;
+namespace App\Classes\Analytics;
 
 class LayoffQuiz 
 {

@@ -1,7 +1,7 @@
 <template>
-  <div class="px-3">
+  <div>
 
-    <div class="row mb-3 ">
+    <div class="row mr-4">
       <div class="col-3">
         <select class="form-control" v-model="monthInfo.currentMonth" @change="fetchData">
           <option v-for="month in $moment.months()" :value="month" :key="month">{{ month }}</option>
@@ -21,7 +21,7 @@
     </div>
 
     <!-- <a href="/timetracking/nps" class="btn link-btn" target="_blank">NPS</a> -->
-    <b-tabs type="card" defaultActiveKey='1'>
+    <b-tabs type="card" class="mt-4" defaultActiveKey='1'>
 
 
       <b-tab title="Полезность" key="1" card>
@@ -81,7 +81,7 @@
 
 
       <b-tab title="Выручка" key="3" card>
-        <div class="table-responsive">
+        <div class="table-responsive mt-4">
           <table class="table tops b-table table-striped table-bordered table-sm proceed no-table"
                  >
             <thead>
@@ -167,53 +167,59 @@
         </div>
 
       </b-tab>
-      <b-tab title="" key="6" card>
-      </b-tab>
-      <b-tab title="" key="7" card>
-      </b-tab>
-      <b-tab title="" key="8" card>
-      </b-tab>
+<!--      <b-tab title="" key="6" card>-->
+<!--      </b-tab>-->
+<!--      <b-tab title="" key="7" card>-->
+<!--      </b-tab>-->
+<!--      <b-tab title="" key="8" card>-->
+<!--      </b-tab>-->
 
       <b-tab title="Прогноз" key="4" card>
-        <table class="table tops b-table table-striped table-bordered table-sm w-700">
-          <thead>
-          <th class="text-left t-name table-title" style="background:#90d3ff">Отдел
+        <b-row class="m-0">
+          <b-col cols="12" md="6" class="p-0 mt-4">
+            <div class="forecast">
+              <table class="table tops table-custom-forecast b-table table-striped table-bordered">
+                <thead>
+                <th class="text-left t-name table-title" style="background:#90d3ff">Отдел
 
-            <i class="fa fa-info-circle"
-               v-b-popover.hover.right.html="'Прогноз по принятию сотрудников на месяц'"
-               title="Отдел">
-            </i>
+                  <i class="fa fa-info-circle"
+                     v-b-popover.hover.right.html="'Прогноз по принятию сотрудников на месяц'"
+                     title="Отдел">
+                  </i>
 
-          </th>
-          <th class="text-center t-name table-title">План
+                </th>
+                <th class="text-center t-name table-title">План
 
-            <i class="fa fa-info-circle"
-               v-b-popover.hover.right.html="'Общий план операторов на проект от Заказчика'"
-               title="План">
-            </i>
-          </th>
-          <th class="text-center t-name table-title">Факт
+                  <i class="fa fa-info-circle"
+                     v-b-popover.hover.right.html="'Общий план операторов на проект от Заказчика'"
+                     title="План">
+                  </i>
+                </th>
+                <th class="text-center t-name table-title">Факт
 
-            <i class="fa fa-info-circle"
-               v-b-popover.hover.right.html="'Фактически работают в группе на должности оператора'"
-               title="Факт">
-            </i>
-          </th>
-          <th class="text-center t-name table-title">Осталось принять</th>
-          </thead>
-          <tbody>
-          <tr v-for="(group, index) in prognoz_groups">
-            <td class="text-left t-name table-title align-middle" style="background:#90d3ff">{{ group.name }}</td>
-            <td class="text-center t-name table-title align-middle">
-              <input type="number" v-model="group.plan" @change="saveGroupPlan(index)">
-            </td>
-            <td class="text-center t-name table-title align-middle">{{ group.applied }}</td>
-            <td class="text-center t-name table-title align-middle">
-              {{ isNaN(group.left_to_apply) ? 0 : Number(group.left_to_apply) }}
-            </td>
-          </tr>
-          </tbody>
-        </table>
+                  <i class="fa fa-info-circle"
+                     v-b-popover.hover.right.html="'Фактически работают в группе на должности оператора'"
+                     title="Факт">
+                  </i>
+                </th>
+                <th class="text-center t-name table-title">Осталось принять</th>
+                </thead>
+                <tbody>
+                <tr v-for="(group, index) in prognoz_groups">
+                  <td class="text-left t-name table-title align-middle" style="background:#90d3ff">{{ group.name }}</td>
+                  <td class="text-center t-name table-title align-middle">
+                    <input type="number" v-model="group.plan" @change="saveGroupPlan(index)">
+                  </td>
+                  <td class="text-center t-name table-title align-middle">{{ group.applied }}</td>
+                  <td class="text-center t-name table-title align-middle">
+                    {{ isNaN(group.left_to_apply) ? 0 : Number(group.left_to_apply) }}
+                  </td>
+                </tr>
+                </tbody>
+              </table>
+            </div>
+          </b-col>
+        </b-row>
       </b-tab>
 
       <b-tab title="NPS" key="5" card>
@@ -406,6 +412,19 @@ export default {
 </script>
 
 <style lang="scss">
+  .table-custom-forecast{
+    border: 1px solid #cccccc;
+    tbody{
+      td,th{
+        padding: 0!important;
+        input{
+          padding: 0 20px;
+          background-color: transparent;
+          height: 30px;
+        }
+      }
+    }
+  }
 
 .weekend {
   background: orange !important;
@@ -484,7 +503,7 @@ export default {
 
 table.tops th:first-child,
 table.tops td:first-child {
-  background: #f0f0f0;
+  background: #ebedf5;
   font-weight: bold;
   min-width: 200px;
   text-align: left !important;
@@ -493,6 +512,12 @@ table.tops td:first-child {
   border-right: 2px solid #a1b7cc !important;
   border-left: 2px solid #a1b7cc !important;
 }
+
+table.tops thead td,
+table.tops thead th{
+  border-left: 1px solid #cccccc!important;
+}
+
 
 table.proceed tr:last-child td {
   font-weight: 700;

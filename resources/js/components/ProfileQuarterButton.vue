@@ -1,6 +1,6 @@
 <template>
   <div>
-    <a id="clickQuarter" class="btn-block btn btn-sm btn-primary text-white rounded" @click="toggle()">
+    <a id="clickQuarter" class="btn-block btn btn-primary text-white rounded" @click="toggle()">
       Квартальная премия
     </a>
 

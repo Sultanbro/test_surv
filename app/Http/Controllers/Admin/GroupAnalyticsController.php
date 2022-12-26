@@ -3,9 +3,7 @@
 namespace App\Http\Controllers\Admin;
 
 use DB;
-use Illuminate\Support\Facades\DB as DBconnection;
 use View;
-use Auth;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Maatwebsite\Excel\Facades\Excel;
@@ -13,11 +11,6 @@ use App\Http\Controllers\Controller;
 use App\Classes\Helpers\Phone;
 use App\External\Bitrix\Bitrix;
 use App\Classes\Analytics\Recruiting as RM;
-use App\Classes\Analytics\Ozon;
-use App\Classes\Analytics\Lerua;
-use App\Classes\Analytics\DM;
-use App\Classes\Analytics\HomeCredit;
-use App\Classes\Analytics\Tinkoff;
 use App\User;
 use App\UserDescription;
 use App\UserNotification;
@@ -25,9 +18,6 @@ use App\Zarplata;
 use App\DayType;
 use App\CallBase;
 use App\ProfileGroup;
-use App\Timetracking;
-use App\TimetrackingHistory;
-use App\AnalyticsSettings;
 use App\Models\Analytics\Activity;
 use App\Models\Bitrix\Lead;
 use App\Models\Bitrix\Segment;
@@ -114,66 +104,30 @@ class GroupAnalyticsController extends Controller
     }
 
     /**
-     * Получить ID нужных пользователей
-     * Когда увольняют или исключают пользотвателя из группы, то сводная статистика без этих пользователей меняется. 
-     * Для этого есть поле users в AnalyticsSettings
-     * @param $args 
-     *  int month
-     *  int year
-     *  int group_id
-     *  array users
-     * @return array
-     */
-    private function getUserIds(array $args) {
-        $group = ProfileGroup::find($args['group_id']);
-
-        $users_ids = [];
-
-        if($group) {
-            $users_ids = json_decode($group->users);
-        }
-        
-        /** Уволенные */
-        $d_users = User::withTrashed()
-            ->whereYear('deleted_at', $args['year'])
-            ->whereMonth('deleted_at', $args['month'])
-            ->where('last_group', '[' . $args['group_id'] . ']')
-            ->get()
-            ->pluck('id')
-            ->toArray();
-
-        $users_ids = array_merge($users_ids, $d_users);
-
-        return $users_ids;
-    }
-
-    /**
      * Аналитика РЕКРУТИНГА
      * $request
      */
     private function recrutingAnalytics(Request $request)
     {
+
+        $START = microtime(true);
+
         $month = Carbon::createFromFormat('m-Y', $request->month . '-' . $request->year)->startOfMonth();
         $date = [
             'month' => $request->month,
             'year' => $request->year,
         ];
 
+
+
+        
         $settings = RM::getSummaryTable($month);
+    
         $data = $settings ? $settings->data : RM::defaultSummaryTable();
         
-        $users_ids = $this->getUserIds([
-            'group_id' => RM::GROUP_ID,
-            'year' => $month->year,
-            'month' => $month->month,
-            'users' => $settings ? $settings->users : [],
-        ]);
-
         $absence_causes = RM::getAbsenceCauses($date); // Причины отсутствия на 1 и 2 день стажировки
-        $rec_tables = RM::getTableRecruiters($users_ids, $date);
 
-        $hrs = $rec_tables['hrs']; // Для подробной таблицы
-
+      
         $trainees = DayType::whereYear('date', $request->year) // Стажеры 
             ->whereMonth('date', $request->month)
             ->whereDay('date', RM::getLastDay($month))
@@ -194,7 +148,6 @@ class GroupAnalyticsController extends Controller
 
         $indicators = []; 
         $indicators['info']['trainees'] = $data[RM::S_CONVERTED]['fact'] > 0 ? $trainees . ' - ' . round($trainees / $data[RM::S_CONVERTED]['fact'] * 100). '%' : 0; // Cтажировались в этом месяце
-        // $indicators['info']['training'] = $data[RM::S_TRAINING_TODAY]['plan']; // Cтажируются сегодня
         $indicators['info']['training'] = $trainees; // Cтажируются сегодня
         $indicators['info']['applied'] = $data[RM::S_CONVERTED]['fact'] > 0 ? $data[RM::S_APPLIED]['fact']. ' - ' . round($data[RM::S_APPLIED]['fact'] / $data[RM::S_CONVERTED]['fact'] * 100). '%' : 0; // Принято сотрудников
         $indicators['info']['remain_apply'] = $remain_apply > 0 ? $remain_apply : 0; // Осталось аринять
@@ -205,14 +158,17 @@ class GroupAnalyticsController extends Controller
         $indicators['info']['applied_plan'] = $data[RM::S_APPLIED]['plan'];// План по принятию на штат на месяц
         $indicators['info']['remain_days'] = RM::daysRemain($date); // Осталось рабочих дней до конца месяца
         $indicators['info']['working'] = $settings && $settings->extra && array_key_exists('working', $settings->extra) ? $settings->extra['working'] : RM::getWorkerQuantity(); // Кол-во работающих (Ставка)
-        $indicators['recruiters'] = $rec_tables['recruiters']; // Для графической аналитики
+        $indicators['recruiters'] = []; // Для графической аналитики
         $indicators['orders'] = RM::getOrders(); // Заказы стажеров от руководителей 
         $indicators['today'] = date('d');
         $indicators['month'] = $request->month;
 
-        $igroups = ProfileGroup::where('active', 1)->get()->pluck('name', 'id')->toArray();
+        $groups = ProfileGroup::where('active', 1)->get();
+
+        $inviteGroups = $groups->pluck('name', 'id')->toArray();
+        $inviteGroups[0] = 'Все группы';
         
-        $igroups[0] = 'Все группы';
+        // dd( microtime(true) - $START );
 
         return [
             'date' => $month->startOfMonth()->format('Y-m-d'),
@@ -221,8 +177,8 @@ class GroupAnalyticsController extends Controller
             'skypes' => Lead::fetch($date), // Cконвертированные сделки. Раньше собирали скайпы (Нужно переименовать)
             'segments' => Segment::pluck('name', 'id'), // Cегменты
             'indicators' => $indicators, // Разные показатели на главной
-            'sgroups' => ProfileGroup::where('active', 1)->get(), // Группы для приглашения
-            'invite_groups' => $igroups, // Фильтр для таблицы "стажеры"
+            'sgroups' => $groups, // Группы для приглашения
+            'invite_groups' => $inviteGroups, // Фильтр для таблицы "стажеры"
             'causes' => RM::fireCauses($date), // причины увольнения
             'absents_first' => $absence_causes['first_day'], 
             'absents_second' => $absence_causes['second_day'],
@@ -230,11 +186,11 @@ class GroupAnalyticsController extends Controller
             'ratings' => RM::ratingsGroups($date), // Оценки операторов по Отделам
             'staff' => RM::staff($request->year), // Таблица кадров во вкладке причина увольнения
             'staff_by_group' => RM::staff_by_group($request->year), // Таблица кадров во вкладке причина увольнения // 5.2 sec
-            'staff_longevity' => RM::staff_longevity($request->year), // Таблица кадров во вкладке причина увольнения
+            'staff_longevity' =>  RM::staff_longevity($request->year), // Таблица кадров во вкладке причина увольнения
             'quiz' => RM::getQuizTable($month->startOfMonth()), // Анкета уволенных
             'ocenka_svod' => RM::ocenka_svod($month->startOfMonth()), // Анкета уволенных // 4.1 sec
             'ratings_dates' => RM::ratingsDates($date), // Оценки операторов по датам
-            'ratings_heads' => UserDescription::getHeadsRatings($month->startOfMonth()), // Оценки операторов по руководителям // 12.2 sec
+            'ratings_heads' => [], // UserDescription::getHeadsRatings($month->startOfMonth()), // Оценки операторов по руководителям // 12.2 sec
             'recruiter_stats' => RecruiterStat::tables($month->startOfMonth()->format('Y-m-d')), // Почасовая таблица на главной
             'recruiter_stats_rates' => $recruiter_stats_rates, // Кол-во рекрутеров (Ставка)
             'recruiter_stats_leads' => RecruiterStat::leads($month->startOfMonth()->format('Y-m-d')), // Кол-во лидов битрикс в статусе "В работе"
@@ -547,125 +503,9 @@ class GroupAnalyticsController extends Controller
         return $msg;
     }
 
-    /**
-     * ЗАЧЕМ НУЖНА ЭТА ФУНКЦИЯ?????
-     */
-    public function updateExtra(Request $request)
-    { // Нужно потом объеденить с update()
-        $currentUser = User::bitrixUser();
-        $settings = AnalyticsSettings::where('date', $request->date)
-            ->where('group_id', $request->group_id)
-            ->where('type', $request->type)
-            ->first();   
-
-        $data = array_filter($request->settings);
-
-        if (!is_null($settings)) {
-            $settings->data = $data;
-            $settings->save();
-            return;
-        }
-
-        $settings = AnalyticsSettings::create([
-            'group_id' => $request->group_id,
-            'date' => $request->date,
-            'type' => $request->type,
-            'data' => $data,
-            'user_id' => $currentUser->id,
-        ]);
-    }
-
-    /**
-     * Сохранить изменения в сводной таблице
-     */
     public function update(Request $request)
     {
-        $currentUser = User::bitrixUser();
-        $settings = AnalyticsSettings::where('date', $request->date)
-            ->where('group_id', $request->group_id)
-            ->where('type', 'basic')
-            ->first();
-
-
-        if($request->group_id == 42 && $request->add_hours) {
-            $date = Carbon::parse($request->date)->day($request->add_hours['day'])->format('Y-m-d');
-            $group_users = json_decode(ProfileGroup::find(42)->users);
-            $tts = Timetracking::whereIn('user_id', $group_users)
-                ->whereDate('enter', $date)
-                ->orderBy('enter', 'desc')
-                ->get();
-
-            
-            $marked_users = [];
-
-            $value = (int)$request->add_hours['value'];
-            $day = $request->add_hours['day'];
-            $user_type = $request->add_hours['user_type'];
-
-            $old_value = 0;
-
-            if($user_type == 'remote') {
-                $field_index = 22;
-            } else {
-                $field_index = 23;
-            }
-            
-            if($settings && array_key_exists($field_index, $settings->data) && array_key_exists($day, $settings->data[$field_index])) {
-                $old_value = (int)$settings->data[$field_index][$day];
-            }
-
-            foreach($tts as $tt) {
-                $user = User::find($tt->user_id);
-                if(!$user)continue;
-                if(!$user->user_type)continue;
-                if($user->user_type != $user_type) continue;
-
-                if(!in_array($tt->user_id, $marked_users)) {
-
-                    $new_value = $tt->total_hours + $value - $old_value;
-                    if($new_value < 0) $new_value = 0;
-                    $tt->total_hours = $new_value; 
-
-                    $tt->updated =  1;
-                    $tt->save();
-                    
-                    array_push($marked_users, $tt->user_id);
-
-                    if($value == 0) {
-                        $desc = 'Отмена: Минуты за "Отсутствие связи"';
-                    } else {
-                        $old_text = $old_value != 0 ? ', минус предыдущие добавленные ' . $old_value . ' минут' : '';
-                        $desc = 'Отсутствие связи. <br> Добавлено '. $value . ' минут ' . $old_text;
-                    }
-
-                    TimetrackingHistory::create([
-                        'user_id' => $tt->user_id,
-                        'author_id' => Auth::user()->id,
-                        'author' => Auth::user()->last_name . ' ' . Auth::user()->name,
-                        'date' => $date,
-                        'description' => $desc,
-                    ]);
-                        
-                    
-                }
-            }
-        } 
-
-        $data = array_filter($request->settings);
-
-        if (!is_null($settings)) {
-            $settings->data = $data;
-            $settings->save();
-            return;
-        }
-
-        $settings = AnalyticsSettings::create([
-            'group_id' => $request->group_id,
-            'date' => $request->date,
-            'type' => 'basic',
-            'data' => $data,
-            'user_id' => $currentUser->id,
-        ]);
+       
     }
 
     /**
@@ -730,111 +570,55 @@ class GroupAnalyticsController extends Controller
 
         $minute_headings = Activity::getHeadings($date, Activity::UNIT_MINUTES);
         $percent_headings = Activity::getHeadings($date, Activity::UNIT_PERCENTS);
-      
-        if($request->group_id == DM::GROUP_ID) {
-     
-            $sheets = [
-                [
-                    'title' => 'Сводная таблица',
-                    'headings' => AnalyticsSettings::getHeadings(DM::GROUP_ID, $date),
-                    'sheet' => AnalyticsSettings::getSheet(DM::GROUP_ID, $date)
-                ], 
-                [
-                    'title' => 'Часы работы',
-                    'headings' => $minute_headings,
-                    'sheet' => Activity::getSheet($data[0]['records'], $date, Activity::UNIT_MINUTES)
-                ],
-                [
-                    'title' => 'Количество действий',
-                    'headings' => $minute_headings,
-                    'sheet' => Activity::getSheet($data[1]['records'], $date, Activity::UNIT_MINUTES)
-                ],
-                [
-                    'title' => 'Учет времени',
-                    'headings' => $minute_headings,
-                    'sheet' => Activity::getSheet($data[2]['records'], $date, Activity::UNIT_MINUTES)
-                ]
-            ];
-        } else if(in_array($request->group_id, Ozon::GROUP_ID)) {
-            $sheets = [
-                [
-                    'title' => 'Часы работы',
-                    'headings' => $minute_headings,
-                    'sheet' => Activity::getSheet($data[0]['records'], $date, Activity::UNIT_MINUTES)
-                ],
-                [
-                    'title' => 'Количество тикетов',
-                    'headings' => $minute_headings,
-                    'sheet' => Activity::getSheet($data[1]['records'], $date, Activity::UNIT_MINUTES)
-                ]
-            ];
-        } else if(in_array($request->group_id, Lerua::GROUP_ID)) {
-            $sheets = [
-                [
-                    'title' => 'Минуты',
-                    'headings' => $minute_headings,
-                    'sheet' => Activity::getSheet($data[0]['records'], $date, Activity::UNIT_MINUTES)
-                ],
-                [
-                    'title' => 'Закрыто тикетов',
-                    'headings' => $minute_headings,
-                    'sheet' => Activity::getSheet($data[1]['records'], $date, Activity::UNIT_MINUTES)
-                ]
-            ];
-        } else if(in_array($request->group_id, [53])) { 
-            $sheets = [];
-            foreach($data as $item) {
-                $_headings = $item['plan_unit'] == 'minutes' ? $minute_headings : $percent_headings;
-                $_units = $item['plan_unit'] == 'minutes' ? Activity::UNIT_MINUTES : Activity::UNIT_PERCENTS;
-                $sheets[] = [
-                    'title' => $item['name'],
-                    'headings' => $_headings,
-                    'sheet' => Activity::getSheet($item['records'], $date, $_units),
-                ];
-            }
-        } else if(in_array($request->group_id, HomeCredit::GROUP_ID)) {
-            $sheets = [
-                [
-                    'title' => 'Минуты',
-                    'headings' => $minute_headings,
-                    'sheet' => Activity::getSheet($data[0]['records'], $date, Activity::UNIT_MINUTES)
-                ],
-                [
-                    'title' => 'Согласия',
-                    'headings' => $minute_headings,
-                    'sheet' => Activity::getSheet($data[1]['records'], $date, Activity::UNIT_MINUTES)
-                ]
-            ];
-        }  else if(in_array($request->group_id, Tinkoff::GROUP_ID)) {
-            $sheets = [
-                [
-                    'title' => 'Минуты',
-                    'headings' => $minute_headings,
-                    'sheet' => Activity::getSheet($data[0]['records'], $date, Activity::UNIT_MINUTES)
-                ],
-                [
-                    'title' => 'Согласия',
-                    'headings' => $minute_headings,
-                    'sheet' => Activity::getSheet($data[1]['records'], $date, Activity::UNIT_MINUTES)
-                ]
-            ];
-        } else {
-            $sheets = [
-                [
-                    'title' => 'Минуты разговора',
-                    'headings' => $minute_headings,
-                    'sheet' => Activity::getSheet($data[0]['records'], $date, Activity::UNIT_MINUTES)
-                ],
-                [
-                    'title' => 'Количество сбора',
-                    'headings' => Activity::getHeadings($date, Activity::UNIT_MINUTES, true),
-                    'sheet' => array_key_exists(1, $data) ? Activity::getSheet($data[1]['records'], $date, Activity::UNIT_MINUTES, true) : []
-                ]
-            ];
+        
+        $sheets = [
+            [
+                'title' => 'Минуты разговора',
+                'headings' => $minute_headings,
+                'sheet' => Activity::getSheet($data[0]['records'], $date, Activity::UNIT_MINUTES)
+            ],
+            [
+                'title' => 'Количество сбора',
+                'headings' => Activity::getHeadings($date, Activity::UNIT_MINUTES, true),
+                'sheet' => array_key_exists(1, $data) ? Activity::getSheet($data[1]['records'], $date, Activity::UNIT_MINUTES, true) : []
+            ]
+        ];
 
+        // @TODO Наверное не нужен 
+        if(tenant('id') == 'bp') {
+            if($request->group_id == 31) {
+     
+                $sheets = [
+                    [
+                        'title' => 'Часы работы',
+                        'headings' => $minute_headings,
+                        'sheet' => Activity::getSheet($data[0]['records'], $date, Activity::UNIT_MINUTES)
+                    ],
+                    [
+                        'title' => 'Количество действий',
+                        'headings' => $minute_headings,
+                        'sheet' => Activity::getSheet($data[1]['records'], $date, Activity::UNIT_MINUTES)
+                    ],
+                    [
+                        'title' => 'Учет времени',
+                        'headings' => $minute_headings,
+                        'sheet' => Activity::getSheet($data[2]['records'], $date, Activity::UNIT_MINUTES)
+                    ]
+                ];
+            } else if(in_array($request->group_id, [53])) { 
+                $sheets = [];
+                foreach($data as $item) {
+                    $_headings = $item['plan_unit'] == 'minutes' ? $minute_headings : $percent_headings;
+                    $_units = $item['plan_unit'] == 'minutes' ? Activity::UNIT_MINUTES : Activity::UNIT_PERCENTS;
+                    $sheets[] = [
+                        'title' => $item['name'],
+                        'headings' => $_headings,
+                        'sheet' => Activity::getSheet($item['records'], $date, $_units),
+                    ];
+                }
+            } 
         }
        
-
         /******==================================== */
 
         if(ob_get_length() > 0) ob_clean(); //  ob_end_clean();

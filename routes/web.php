@@ -2,15 +2,14 @@
 
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\TenantController;
-use App\Http\Controllers\FileUploadController;
-
+use App\Http\Controllers\PrivacyController;
 /*
 |--------------------------------------------------------------------------
 | Web Routes
 |--------------------------------------------------------------------------
 |
 | Here is central app routes of Jobtron.org
-| Subdomain routes is located in tenant.php, like bp.jobtron.org
+| Subdomain routes is located in tenant.php, like dev.jobtron.org
 |
  */
 
@@ -45,10 +44,8 @@ Route::get('/projects/edit/{id}', [TenantController::class, 'edit']);
 Route::post('/projects/save', [TenantController::class, 'save']);
 Route::post('/projects/update', [TenantController::class, 'update']);
 
-// misc routes
-Route::get('upload_file', function () {
-    return view('upload');
-});
-
-Route::post('store_file', [FileUploadController::class, 'fileStore']);
+// документы компании
+Route::get('/aggreement', [PrivacyController::class, 'aggreement']);
+Route::get('/offer', [PrivacyController::class, 'offer']);
+Route::get('/terms', [PrivacyController::class, 'terms']);
 

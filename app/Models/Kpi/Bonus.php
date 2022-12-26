@@ -5,12 +5,9 @@ namespace App\Models\Kpi;
 use App\Models\Admin\ObtainedBonus;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use App\Models\Analytics\Activity;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use App\User;
-use App\Salary;
-use App\AnalyticsSettingsIndividually;
 use Carbon\Carbon;
 use App\ProfileGroup;
 use App\Models\Analytics\UserStat;
@@ -21,7 +18,6 @@ use App\Models\Kpi\Traits\WithActivityFields;
 use App\Models\Kpi\Traits\WithCreatorAndUpdater;
 use App\Service\Department\UserService;
 use DB;
-use Illuminate\Support\Facades\DB as FacadesDB;
 
 class Bonus extends Model
 {      
@@ -416,30 +412,21 @@ class Bonus extends Model
     }  
 
     /**
-     * Fetch value from AnalyticsSettingsIndividually
+     * Fetch value from 
      */
     public static function fetch_value_from_activity($activity_id, $user_id, $date)
     {
         if($activity_id == 0) return 0;
         
         $date = Carbon::parse($date);
-        $day = $date->day;
-        $date->startOfMonth();
 
-        $activity = AnalyticsSettingsIndividually::where([
+        $stat = UserStat::where([
             'date' => $date->format('Y-m-d'),
-            'employee_id' => $user_id,
-            'type' => $activity_id
+            'user_id' => $user_id,
+            'activity_id' => $activity_id
         ])->first();
 
-        if($activity) { 
-            $data = json_decode($activity->data, true);
-            if(array_key_exists($day, $data)) {
-                return $data[$day];
-            }
-        } 
-            
-        return 0;
+        return $stat ? $stat->value : 0;
     }
 
     /**
@@ -472,7 +459,7 @@ class Bonus extends Model
     }
 
     /**
-     * Fetch value from AnalyticsSettingsIndividually for recruting TEMPORARY
+     * Fetch value from 
      * 
      * @return int|float
      */
@@ -516,24 +503,13 @@ class Bonus extends Model
             return $records->get()->sum('calls');
         }
         
-        $day = $date->day;
-        $date->startOfMonth();
-
-        $activity = AnalyticsSettingsIndividually::where([
+        $stat = UserStat::where([
             'date' => $date->format('Y-m-d'),
-            'employee_id' => $user_id,
+            'user_id' => $user_id,
+            'activity_id' => $bonus->activity_id
         ])->first();
-
-        if($activity) { 
-            $data = json_decode($activity->data, true);
             
-            $index = $indexes[$bonus->activity_id];
-            if(array_key_exists($index, $data) && array_key_exists($day, $data[$index])) {
-                return $data[$index][$day];
-            }
-        } 
-            
-        return 0;
+        return $stat ? $stat->value : 0;
     }
 
     public static function getPotentialBonusesHtml($group_id)

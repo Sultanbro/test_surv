@@ -107,28 +107,28 @@
                                      @endif
 
 
-
+                                    @if(isset($user))
+                                       <div class="text-center">
+                                           <button
+                                                   href="#"
+                                                   onclick="document.dispatchEvent(new CustomEvent('award-user-sidebar', { detail: '{{$user->id}}' }))"
+                                                   class="btn btn-success">
+                                               Наградить
+                                           </button>
+                                       </div>
+                                        <hr style="margin: 10px -10px !important;">
+                                    @endif
                                     <label class="my-label-6 img_url_md" for="upload_image" style="cursor:pointer;border: 1px solid #f8f8f8;background-color: unset" >
                                         @if(isset($user) && !is_null($user->img_url))
 
-                                        <img style="width: 200px;height: 200px" id="{{$user->img_url}}"
+                                        <img style="width: 200px;height: 200px; border-radius: 10px" id="{{$user->img_url}}"
                                             src="/users_img/{{$user->img_url}}"  >
                                         @else
-                                        <img style="width: 200px;height: 200px" src="/users_img/noavatar.png" alt="img">
-                                        @endif
-
-                                        @if(isset($user))
-                                        <b-badge
-                                            href="#"
-                                            onclick="document.dispatchEvent(new CustomEvent('award-user-sidebar', { detail: '{{$user->id}}' }))"
-                                            variant="success"
-                                            class="position-absolute mt-1">
-                                                Наградить
-                                        </b-badge>
+                                        <img style="width: 200px;height: 200px; border-radius: 10px" src="/users_img/noavatar.png" alt="img">
                                         @endif
                                     </label>
 
-                                    <div class="mt-2 font-weight-bold font-sm text-center " style="width:100%">
+                                    <div class="mt-2 font-weight-bold font-sm text-center " style="width:100%; font-size: 16px; margin-bottom: 10px;">
                                         
                                         @if(isset($user))
                                             {{$user->last_name}} {{$user->name }}
@@ -137,11 +137,6 @@
                                         @endif
                                         
                                     </div>
-                                    @if(isset($user)) 
-                                    <div class="mt-0 mb-3 font-sm text-center " style="width:100%">
-                                    {{$user->email}}
-                                    </div>
-                                    @endif
                                     <div class="mt-0 mb-3 font-weight-bold font-sm text-center " style="width:100%">
                                         @if(isset($user))
                                             @if($user->position_id)
@@ -161,34 +156,34 @@
 
                                     </div>
 
-
+                                    <hr style="margin: 10px -10px !important;">
                                     <div class="list-item">
                                         <ul class="p-0">
                                             <li  class="bg-this" id="bg-this-1" style="background-color: #e2e2e2" onclick="showBlock('1',this)">
                                                 <a href="#" >Основные данные </a>
-                                                <span id="check-1"  class="ml-2 fa fa-check none-check" ></span>
+                                                <span id="check-1"  class="ml-2 fa fa-check none-check" style="color: #28a745"></span>
                                             </li>
 
                                             <li class="bg-this" id="bg-this-9" onclick="showBlock('9',this)">
                                                 <a href="#" >Документы</a>
-                                                <span id="check-9"  class="ml-2 fa fa-check none-check" style="color: #272c33;display: none"></span>
+                                                <span id="check-9"  class="ml-2 fa fa-check none-check" style="color: #28a745;display: none"></span>
                                             </li>
                                             <li class="bg-this" id="bg-this-4" onclick="showBlock('4',this)">
                                                 <a href="#" >Контакты</a>
-                                                <span id="check-4"  class="ml-2 fa fa-check none-check" style="color: #272c33;display: none"></span>
+                                                <span id="check-4"  class="ml-2 fa fa-check none-check" style="color: #28a745;display: none"></span>
                                             </li>
                                             <li class="bg-this" id="bg-this-5"  onclick="showBlock('5',this)">
                                                 <a href="#">Оплата</a>
-                                                <span id="check-5"  class="ml-2 fa fa-check none-check" style="color: #272c33;display: none"></span>
+                                                <span id="check-5"  class="ml-2 fa fa-check none-check" style="color: #28a745;display: none"></span>
                                             </li>
-                                            <li class="bg-this" id="bg-this-6" onclick="showBlock('6',this)">
-                                                <a href="#" >Прочие данные</a>
-                                                <span id="check-6"  class="ml-2 fa fa-check none-check" style="color: #272c33;display: none"></span>
-                                            </li>
+{{--                                            <li class="bg-this" id="bg-this-6" onclick="showBlock('6',this)">--}}
+{{--                                                <a href="#" >Прочие данные</a>--}}
+{{--                                                <span id="check-6"  class="ml-2 fa fa-check none-check" style="color: #28a745;display: none"></span>--}}
+{{--                                            </li>--}}
                                             @if(isset($user))
                                             <li class="bg-this" id="bg-this-7" onclick="showBlock('7',this)">
                                                 <a href="#" >Адаптационные  данные</a>
-                                                <span id="check-7"  class="ml-2 fa fa-check none-check" style="color: #272c33;display: none"></span>
+                                                <span id="check-7"  class="ml-2 fa fa-check none-check" style="color: #28a745;display: none"></span>
                                             </li>
                                             @endif
 
@@ -204,14 +199,14 @@
 
 
 
-                            <div class="xtab-content card scrollspy-example bg-white p-30" id="xmyTabContent"  data-spy="scroll" data-target="#list-example">
+                            <div class="xtab-content card scrollspy-example bg-transparent p-30" id="xmyTabContent"  data-spy="scroll" data-target="#list-example">
                                 <!-- first tab -->
                                 <div class="xtab-pane xfade show active" id="contact" role="tabpanel"
                                     aria-labelledby="contact-tab">
 
                                     <!-- PROFILE INFO -->
                                     <div class="d-flex row">
-                                        <div class="contacts-info col-md-6 none-block" id="profile_d">
+                                        <div class="contacts-info col-md-6 none-block mt-0" id="profile_d">
                                             <h5 class="mb-4">Профиль сотрудника </h5>
                                             <div class="form-group row">
                                                 <label for="firstName"
@@ -353,7 +348,7 @@
 
                                             <div class="form-group row">
                                                 <label for="workingDays"
-                                                       class="col-sm-4 col-form-label font-weight-bold">Найти город <span class="red">*</span></label>
+                                                       class="col-sm-4 col-form-label font-weight-bold">Город <span class="red">*</span></label>
                                                 <div class="col-sm-8">
                                                     <div class="mb-3 xfade">
                                                         <div class="form-group row " id="selectedCityRU" >
@@ -453,13 +448,9 @@
                                         <div class="col-md-6 add_info">
 
                                             <div id="add_info" class="none-block" >
+                                                <h5 class="mb-4">Дополнительная информация </h5>
                                                 <div class="table-responsive">
                                                     <table class="my-table table user-list">
-                                                        <thead>
-                                                        <tr>
-                                                            <th colspan="2"><span>Дополнительная информация</span></th>
-                                                        </tr>
-                                                        </thead>
                                                         <tbody>
                                                         <tr>
                                                             <td>
@@ -543,7 +534,7 @@
 
                                             <!-- groups tab -->
                                             <div class="mb-3 xfade none-block" id="iphones3" >
-                                                <h5 class="mb-4">Группы</h5>
+                                                <h5 class="mt-4">Группы</h5>
                                                 @if(isset($user))
                                                 <profile-groups :groups="{{ $groups }}" :user_id="{{ $user->id }}" :in_groups="{{ json_encode($user->in_groups) }}" />
                                                 @else
@@ -559,163 +550,133 @@
 
 
                                             <!-- end of groups and books tab -->
+                                        </div>
+                                        <div class="col-9 add_info">
                                             <!-- documents tab -->
                                             <div class="xtab-pane xfade none-block" id="iphones4" style="display: none">
-                                                <!--  -->
-                                                <h5 class="mb-4 mt-1">Документы (RAR, ZIP)</h5>
+                                                <h5 class="mb-5">Документы (RAR, ZIP)</h5>
+                                                <div class="row file-uploads-container">
 
-                                                <div class="box mb-4 data-information file-uploads">
-
-
-
-                                                    <div class="d-inline-block text-center">
-                                                        <input type="file" name="file5" id="file-5"
-                                                            class="inputfile inputfile-1 d-none"
-                                                            data-multiple-caption="{count} files selected">
-                                                        @if(isset($user->downloads) && $user->downloads->ud_lich)
-                                                        <label for="file-5">
-                                                            <svg width="20" height="30" class="iconsfile">
-                                                                <use
-                                                                    xlink:href="#{{ pathinfo($user->downloads->ud_lich, PATHINFO_EXTENSION) }}-icon">
-                                                                </use>
-                                                            </svg>
-                                                            <span>Удостоверение личности</span>
-                                                        </label>
-                                                        <a download="" class="d-block"
-                                                            href="/static/profiles/{{$user->id}}/ud_lich/{{$user->downloads->ud_lich}}">Скачать</a>
-                                                        @else
-                                                        <label for="file-5">
-                                                            <svg width="20" height="30" class="iconsfile">
-                                                                <use xlink:href="#download-icon"></use>
-                                                            </svg>
-                                                            <span>Удостоверение личности</span>
-                                                        </label>
-                                                        @endif
+                                                    <div class="col-12 col-md-4 mb-4">
+                                                        <div class="file-item">
+                                                            <input type="file" name="file5" id="file-5"
+                                                                   class="inputfile inputfile-1 d-none"
+                                                                   data-multiple-caption="{count} files selected">
+                                                            @if(isset($user->downloads) && $user->downloads->ud_lich)
+                                                                <label class="active" for="file-5">
+                                                                    <i class="fa fa-check"></i>
+                                                                    <span>Удостоверение личности</span>
+                                                                </label>
+                                                                <a download="" class="btn btn-success btn-sm btn-block"
+                                                                   href="/static/profiles/{{$user->id}}/ud_lich/{{$user->downloads->ud_lich}}">Скачать</a>
+                                                            @else
+                                                                <label for="file-5">
+                                                                    <i class="fa fa-upload"></i>
+                                                                    <span>Удостоверение личности</span>
+                                                                </label>
+                                                            @endif
+                                                        </div>
                                                     </div>
-                                                    <div class="d-inline-block text-center">
-                                                        <input type="file" name="file1" id="file-1"
-                                                            class="inputfile inputfile-1 d-none"
-                                                            data-multiple-caption="{count} files selected">
-                                                        @if (isset($user->downloads) && $user->downloads->dog_okaz_usl)
-                                                        <label for="file-1">
-                                                            <svg width="20" height="30" class="iconsfile">
-                                                                <use
-                                                                    xlink:href="#{{ pathinfo($user->downloads->dog_okaz_usl, PATHINFO_EXTENSION) }}-icon">
-                                                                </use>
-                                                            </svg>
-                                                            <span>Договор оказания услуг</span>
-                                                        </label>
-                                                        <a download="" class="d-block"
-                                                            href="/static/profiles/{{$user->id}}/dog_okaz_usl/{{$user->downloads->dog_okaz_usl}}">Скачать</a>
-                                                        @else
-                                                        <label for="file-1">
-                                                            <svg width="20" height="30" class="iconsfile">
-                                                                <use xlink:href="#download-icon"></use>
-                                                            </svg>
-                                                            <span>Договор оказания услуг</span>
-                                                        </label>
-                                                        @endif
+                                                    <div class="col-12 col-md-4 mb-4">
+                                                        <div class="file-item">
+                                                            <input type="file" name="file1" id="file-1"
+                                                                   class="inputfile inputfile-1 d-none"
+                                                                   data-multiple-caption="{count} files selected">
+                                                            @if (isset($user->downloads) && $user->downloads->dog_okaz_usl)
+                                                                <label class="active" for="file-1">
+                                                                    <i class="fa fa-check"></i>
+                                                                    <span>Договор оказания услуг</span>
+                                                                </label>
+                                                                <a download="" class="btn btn-success btn-sm btn-block"
+                                                                   href="/static/profiles/{{$user->id}}/dog_okaz_usl/{{$user->downloads->dog_okaz_usl}}">Скачать</a>
+                                                            @else
+                                                                <label for="file-1">
+                                                                    <i class="fa fa-upload"></i>
+                                                                    <span>Договор оказания услуг</span>
+                                                                </label>
+                                                            @endif
+                                                        </div>
                                                     </div>
-                                                    <div class="d-inline-block text-center align-text-bottom">
-                                                        <input type="file" name="file2" id="file-2"
-                                                            class="inputfile inputfile-1 d-none"
-                                                            data-multiple-caption="{count} files selected">
-                                                        @if (isset($user->downloads) && $user->downloads->sohr_kom_tainy)
-                                                        <label for="file-2">
-                                                            <svg width="20" height="30" class="iconsfile">
-                                                                <use
-                                                                    xlink:href="#{{ pathinfo($user->downloads->sohr_kom_tainy, PATHINFO_EXTENSION) }}-icon">
-                                                                </use>
-                                                            </svg>
-                                                            <span>Сохранение комм. тайны</span>
-                                                        </label>
-                                                        <a download="" class="d-block"
-                                                            href="/static/profiles/{{$user->id}}/sohr_kom_tainy/{{$user->downloads->sohr_kom_tainy}}">Скачать</a>
-                                                        @else
-                                                        <label for="file-2">
-                                                            <svg width="20" height="30" class="iconsfile">
-                                                                <use xlink:href="#download-icon"></use>
-                                                            </svg>
-                                                            <span>Сохранение комм. тайны</span>
-                                                        </label>
-                                                        @endif
+                                                    <div class="col-12 col-md-4 mb-4">
+                                                        <div class="file-item">
+                                                            <input type="file" name="file2" id="file-2"
+                                                                   class="inputfile inputfile-1 d-none"
+                                                                   data-multiple-caption="{count} files selected">
+                                                            @if (isset($user->downloads) && $user->downloads->sohr_kom_tainy)
+                                                                <label class="active" for="file-2">
+                                                                    <i class="fa fa-check"></i>
+                                                                    <span>Сохранение комм. тайны</span>
+                                                                </label>
+                                                                <a download="" class="btn btn-success btn-sm btn-block"
+                                                                   href="/static/profiles/{{$user->id}}/sohr_kom_tainy/{{$user->downloads->sohr_kom_tainy}}">Скачать</a>
+                                                            @else
+                                                                <label for="file-2">
+                                                                    <i class="fa fa-upload"></i>
+                                                                    <span>Сохранение комм. тайны</span>
+                                                                </label>
+                                                            @endif
+                                                        </div>
                                                     </div>
-                                                </div>
-
-                                                <div class="box mb-4 data-information file-uploads">
-
-                                                    <div class="d-inline-block text-center align-text-bottom">
-                                                        <input type="file" name="file3" id="file-3"
-                                                            class="inputfile inputfile-1 d-none"
-                                                            data-multiple-caption="{count} files selected">
-                                                        @if (isset($user->downloads) && $user->downloads->dog_o_nekonk)
-                                                        <label for="file-3">
-                                                            <svg width="20" height="30" class="iconsfile">
-                                                                <use
-                                                                    xlink:href="#{{ pathinfo($user->downloads->dog_o_nekonk, PATHINFO_EXTENSION) }}-icon">
-                                                                </use>
-                                                            </svg>
-                                                            <span>Договор о неконкуренции</span>
-                                                        </label>
-                                                        <a download="" class="d-block"
-                                                            href="/static/profiles/{{$user->id}}/dog_o_nekonk/{{$user->downloads->dog_o_nekonk}}">Скачать</a>
-                                                        @else
-                                                        <label for="file-3">
-                                                            <svg width="20" height="30" class="iconsfile">
-                                                                <use xlink:href="#download-icon"></use>
-                                                            </svg>
-                                                            <span>Договор о неконкуренции</span>
-                                                        </label>
-                                                        @endif
+                                                    <div class="col-12 col-md-4 mb-4">
+                                                        <div class="file-item">
+                                                            <input type="file" name="file3" id="file-3"
+                                                                   class="inputfile inputfile-1 d-none"
+                                                                   data-multiple-caption="{count} files selected">
+                                                            @if (isset($user->downloads) && $user->downloads->dog_o_nekonk)
+                                                                <label class="active" for="file-3">
+                                                                    <i class="fa fa-check"></i>
+                                                                    <span>Договор о неконкуренции</span>
+                                                                </label>
+                                                                <a download="" class="btn btn-success btn-sm btn-block"
+                                                                   href="/static/profiles/{{$user->id}}/dog_o_nekonk/{{$user->downloads->dog_o_nekonk}}">Скачать</a>
+                                                            @else
+                                                                <label for="file-3">
+                                                                    <i class="fa fa-upload"></i>
+                                                                    <span>Договор о неконкуренции</span>
+                                                                </label>
+                                                            @endif
+                                                        </div>
                                                     </div>
-                                                    <div class="d-inline-block text-center">
-                                                        <input type="file" name="file4" id="file-4"
-                                                            class="inputfile inputfile-1 d-none"
-                                                            data-multiple-caption="{count} files selected">
-                                                        @if (isset($user->downloads) && $user->downloads->trud_dog)
-                                                        <label for="file-4">
-                                                            <svg width="20" height="30" class="iconsfile">
-                                                                <use
-                                                                    xlink:href="#{{ pathinfo($user->downloads->trud_dog, PATHINFO_EXTENSION) }}-icon">
-                                                                </use>
-                                                            </svg>
-                                                            <span>Трудовой <br> договор</span>
-                                                        </label>
-                                                        <a download="" class="d-block"
-                                                            href="/static/profiles/{{$user->id}}/trud_dog/{{$user->downloads->trud_dog}}">Скачать</a>
-                                                        @else
-                                                        <label for="file-4">
-                                                            <svg width="20" height="30" class="iconsfile">
-                                                                <use xlink:href="#download-icon"></use>
-                                                            </svg>
-                                                            <span>Трудовой <br> договор</span>
-                                                        </label>
-                                                        @endif
+                                                    <div class="col-12 col-md-4 mb-4">
+                                                        <div class="file-item">
+                                                            <input type="file" name="file4" id="file-4"
+                                                                   class="inputfile inputfile-1 d-none"
+                                                                   data-multiple-caption="{count} files selected">
+                                                            @if (isset($user->downloads) && $user->downloads->trud_dog)
+                                                                <label class="active" for="file-4">
+                                                                    <i class="fa fa-check"></i>
+                                                                    <span>Трудовой <br> договор</span>
+                                                                </label>
+                                                                <a download="" class="btn btn-success btn-sm btn-block"
+                                                                   href="/static/profiles/{{$user->id}}/trud_dog/{{$user->downloads->trud_dog}}">Скачать</a>
+                                                            @else
+                                                                <label for="file-4">
+                                                                    <i class="fa fa-upload"></i>
+                                                                    <span>Трудовой <br> договор</span>
+                                                                </label>
+                                                            @endif
+                                                        </div>
                                                     </div>
 
-                                                    <div class="d-inline-block text-center">
-                                                        <input type="file" name="file7" id="file-7"
-                                                            class="inputfile inputfile-1 d-none"
-                                                            data-multiple-caption="{count} files selected">
-                                                        @if (isset($user->downloads) && $user->downloads->archive)
-                                                        <label for="file-7">
-                                                            <svg width="20" height="30" class="iconsfile">
-                                                                <use
-                                                                    xlink:href="#{{ pathinfo($user->downloads->archive, PATHINFO_EXTENSION) }}-icon">
-                                                                </use>
-                                                            </svg>
-                                                            <span>Архив <br>документов</span>
-                                                        </label>
-                                                        <a download="" class="d-block"
-                                                            href="/static/profiles/{{$user->id}}/archive/{{$user->downloads->archive}}">Скачать</a>
-                                                        @else
-                                                        <label for="file-7">
-                                                            <svg width="20" height="30" class="iconsfile">
-                                                                <use xlink:href="#download-icon"></use>
-                                                            </svg>
-                                                            <span>Архив <br> документов</span>
-                                                        </label>
-                                                        @endif
+                                                    <div class="col-12 col-md-4 mb-4">
+                                                        <div class="file-item">
+                                                            <input type="file" name="file7" id="file-7"
+                                                                   class="inputfile inputfile-1 d-none"
+                                                                   data-multiple-caption="{count} files selected">
+                                                            @if (isset($user->downloads) && $user->downloads->archive)
+                                                                <label class="active" for="file-7">
+                                                                    <i class="fa fa-check"></i>
+                                                                    <span>Архив <br>документов</span>
+                                                                </label>
+                                                                <a download="" class="btn btn-success btn-sm btn-block"
+                                                                   href="/static/profiles/{{$user->id}}/archive/{{$user->downloads->archive}}">Скачать</a>
+                                                            @else
+                                                                <label for="file-7">
+                                                                    <i class="fa fa-upload"></i>
+                                                                    <span>Архив <br> документов</span>
+                                                                </label>
+                                                            @endif
+                                                        </div>
                                                     </div>
 
 
@@ -723,12 +684,10 @@
 
                                                     <!-- может лишний -->
                                                     <input type="file" name="logo" id="file-6" class="inputfile inputfile-1"
-                                                        data-multiple-caption="{count} files selected" style="    display: none;"
-                                                        accept="image/*,.pdf">
+                                                           data-multiple-caption="{count} files selected" style="    display: none;"
+                                                           accept="image/*,.pdf">
                                                     <!-- -------- -->
                                                 </div>
-
-                                                <!--  -->
                                             </div>
                                             <!-- end of documents -->
                                         </div>
@@ -737,31 +696,31 @@
 
 
                                                 <div id="adaptation_conversations" class="none-block" style="display: none">
-                                                    <p class="adaptation-title mt-3 mb-2">Адаптационные беседы</p>
+                                                    <h5 class="adaptation-title mb-5">Адаптационные беседы</h5>
 
 
 
                                                     @foreach($user->adaptation_talks as $key => $talk)
                                                         <div class="d-flex phone-row form-group mb-2 adaptation_talk">
 
-                                                            <div  class="col-sm-3 col-md-2 col-lg-2">{{ $talk['day'] }} й день
-                                                                <input type="hidden" name="adaptation_talks[{{ $key }}][day]" value="{{ $talk['day'] }}">
+                                                            <div  class="col-12 col-md-3">{{ $talk['day'] }} й день
+                                                                <input type="hidden" class="form-control" name="adaptation_talks[{{ $key }}][day]" value="{{ $talk['day'] }}">
                                                             </div>
 
-                                                            <div class="col-sm-3 col-md-2 col-lg-2">
-                                                                <input class="mr-2" type="text" name="adaptation_talks[{{ $key }}][inter_id]" placeholder="Кто провел" value="{{ $talk['inter_id'] }}">
+                                                            <div class="col-12 col-md-3">
+                                                                <input class="form-control" type="text" name="adaptation_talks[{{ $key }}][inter_id]" placeholder="Кто провел" value="{{ $talk['inter_id'] }}">
                                                             </div>
 
-                                                            <div class="col-sm-3 col-md-2 col-lg-2">
-                                                                <input  class="form-control ml-2" type="date" name="adaptation_talks[{{ $key }}][date]"
+                                                            <div class="col-12 col-md-3">
+                                                                <input  class="form-control" type="date" name="adaptation_talks[{{ $key }}][date]"
                                                                         @if($talk['date'] != null)
                                                                         value="{{ \Carbon\Carbon::parse($talk['date'])->format('Y-m-d')}}"
                                                                         @endif>
                                                             </div>
 
 
-                                                            <div class="col-sm-4 col-md-3 col-lg-3">
-                                                                <textarea class="btn btn-block"  name="adaptation_talks[{{ $key }}][text]" placeholder="Комментарии">{{ $talk['text'] }}</textarea>
+                                                            <div class="col-12 col-md-3">
+                                                                <textarea class="form-control"  name="adaptation_talks[{{ $key }}][text]" placeholder="Комментарии" style="min-height: 40px; padding: 5px 20px 0 20px!important;">{{ $talk['text'] }}</textarea>
                                                             </div>
 
                                                         </div>
@@ -794,7 +753,7 @@
                                              <div class="col-sm-12">
                                                  <input  class="phone_mask form-control mr-1 col-sm-8" type="text"
                                                  value="@if(isset($user)){{$user->phone}}@else{{old('phone')}}@endif"
-                                                 name="phone" id="phone" placeholder="Телефон">
+                                                 name="phone" id="phone" placeholder="Телефон" required>
                                              </div>
 
                                          </div>
@@ -804,7 +763,7 @@
 
 
                                         <div class="d-flex phone-row form-group mb-2">
-                                            <label for="phone_1" class="col-sm-4 col-form-label font-weight-bold">Домашний <span class="red">*</span></label>
+                                            <label for="phone_1" class="col-sm-4 col-form-label font-weight-bold">Домашний</label>
                                             <div class="col-sm-12">
                                                 <input class="phone_mask form-control mr-1 col-sm-8" type="text"
                                                 value="@if(isset($user)){{$user->phone_1}}@else{{old('phone_1')}}@endif"
@@ -814,7 +773,7 @@
                                         </div>
 
                                         <div class="d-flex phone-row form-group mb-2">
-                                            <label for="phone_2" class="col-sm-4 col-form-label font-weight-bold">Супруга/Муж <span class="red">*</span></label>
+                                            <label for="phone_2" class="col-sm-4 col-form-label font-weight-bold">Супруга/Муж</label>
                                             <div class="col-sm-12">
                                                 <input class="phone_mask form-control mr-1 col-sm-8" type="text"
                                                 value="@if(isset($user)){{$user->phone_2}}@else{{old('phone_2')}}@endif"
@@ -822,7 +781,7 @@
                                             </div>
                                         </div>
                                         <div class="d-flex phone-row form-group mb-2">
-                                            <label for="phone_3" class="col-sm-4 col-form-label font-weight-bold">Друг/Брат/Сестра <span class="red">*</span></label>
+                                            <label for="phone_3" class="col-sm-4 col-form-label font-weight-bold">Друг/Брат/Сестра</label>
                                             <div class="col-sm-12">
                                                 <input class="phone_mask form-control mr-1 col-sm-8" type="text"
                                                 value="@if(isset($user)){{$user->phone_3}}@else{{old('phone_3')}}@endif"
@@ -855,10 +814,14 @@
                                             @endforeach
                                             @endif
 
-                                            <button class="btn btn-phone btn-rounded mb-2 mt-2" type="button"
-                                                onclick="addPhone()">
-                                                <i class="fa fa-plus"></i> Добавить телефон
-                                            </button>
+                                           <div class="row">
+                                               <div class="col-12 col-md-8 offset-md-4">
+                                                   <button class="btn btn-phone btn-success btn-rounded mb-2 mt-2" type="button"
+                                                           onclick="addPhone()">
+                                                       <i class="fa fa-plus mr-2"></i> Добавить телефон
+                                                   </button>
+                                               </div>
+                                           </div>
                                         </div>
                                         <!-- end of phones -->
 
@@ -960,25 +923,28 @@
 
                                             @if(isset($user))
                                             <div class="form-group row">
-                                                <label for="headphones_amount_checkbox"
-                                                       class="col-sm-3 col-form-label font-weight-bold">Выдано оборудование в счет зарплаты <br>
-                                                    @if(isset($user))
-                                                        {{ $user->headphones_date }}
-                                                    @endif
-                                                </label>
-
-                                                <div class="col-sm-1">
-                                                    <input type="checkbox" class="form-control" id="headphones_amount_checkbox"
-                                                           @if(isset($user))
-                                                                 @if($user->headphones_sum > 0) checked @endif
-                                                           @endif
-                                                    >
-                                                </div>
-                                                <div class="col-sm-2" >
-                                                    <label for="headphones_amount"
-                                                           class="col-form-label font-weight-bold">На сумму</label>
+                                                <div class="col-sm-3">
                                                 </div>
                                                 <div class="col-sm-3">
+                                                    <div class="custom-control custom-checkbox">
+                                                        <input type="checkbox" class="custom-control-input" id="headphones_amount_checkbox"
+                                                               @if(isset($user))
+                                                               @if($user->headphones_sum > 0) checked @endif
+                                                                @endif
+                                                        >
+                                                        <label for="headphones_amount_checkbox"
+                                                               class="custom-control-label">
+                                                            Выдано оборудование в счет зарплаты <br>
+                                                            @if(isset($user))
+                                                                {{ $user->headphones_date }}
+                                                            @endif
+                                                        </label>
+                                                    </div>
+                                                </div>
+                                                <div class="col-sm-3">
+                                                    <label for="headphones_amount" class="font-weight-bold">На сумму</label>
+                                                </div>
+                                                <div class="col-sm-3 pl-0">
                                                     <input name="headphones_amount" class="form-control" type="number"
                                                            id="headphones_amount" value="{{ $user->headphones_sum }}" @if(isset($user)) @if($user->headphones_sum == 0) disabled @endif @endif>
                                                 </div>
@@ -989,12 +955,12 @@
                                                 @if(isset($user))
                                                     @foreach($user->cards as $card)
                                                         <div class="d-flex form-group m0 card-row">
-                                                            <input  class="form-control mr-1 col-sm-2" type="text" name="cards[1{{$card->id}}][bank]" placeholder="Банк" value="{{ $card->bank }}">
+                                                            <input  class="form-control mr-1 col-sm-2" type="text" name="cards[1{{$card->id}}][bank]" placeholder="Банк/Кошелек/..." value="{{ $card->bank }}">
                                                             <input  class="form-control mr-1 col-sm-2" type="text" name="cards[1{{$card->id}}][country]" placeholder="Страна" value="{{ $card->country }}">
                                                             <input  class="form-control mr-1 col-sm-2" type="text" name="cards[1{{$card->id}}][cardholder]" placeholder="Имя на карте" value="{{ $card->cardholder }}">
                                                             <input  class="form-control mr-1 col-sm-2" type="text" name="cards[1{{$card->id}}][phone]" placeholder="Телефон" value="{{ $card->phone }}">
-                                                            <input  class="form-control mr-1 col-sm-3 card-number mr-5" type="text" name="cards[1{{$card->id}}][number]" placeholder="Номер карты" value="{{ $card->number }}">
-                                                            <button class="btn btn-danger btn-sm card-delete rounded ml-5" type="button" onclick="deleteCard(event)"><i class="fa fa-trash"></i></button>
+                                                            <input  class="form-control mr-1 col-sm-3 card-number" type="text" name="cards[1{{$card->id}}][number]" placeholder="Номер карты/счета" value="{{ $card->number }}">
+                                                            <button class="btn btn-danger card-delete rounded ml-1" type="button" onclick="deleteCard(event)"><i class="fa fa-trash"></i></button>
                                                         </div>
                                                     @endforeach
                                                 @endif
@@ -1007,21 +973,21 @@
                                                             <input  class="form-control mr-1 col-sm-2" type="text" name="taxes[{{$tax->id}}][name]" placeholder="Название" value="{{ $tax->name }}">
                                                             <input  class="form-control mr-1 col-sm-2" type="text" name="taxes[{{$tax->id}}][amount]" placeholder="Сумма" value="{{ $tax->amount }}">
                                                             <input  class="form-control mr-1 col-sm-2" type="text" name="taxes[{{$tax->id}}][percent]" placeholder="Процент" value="{{ $tax->percent }}">
-                                                            <button class="btn btn-danger btn-sm tax-delete rounded ml-5" type="button" onclick="deleteTax(event)"><i class="fa fa-trash"></i></button>
+                                                            <button class="btn btn-danger tax-delete rounded ml-1" type="button" onclick="deleteTax(event)"><i class="fa fa-trash"></i></button>
                                                         </div>
                                                     @endforeach
                                                 @endif
                                             </div>
 
-                                            <button class="btn btn-phone btn-rounded mb-2 mt-2" type="button"
+                                            <button class="btn btn-success btn-rounded mb-2 mt-2" type="button"
                                                     onclick="addCard()">
-                                                    <i class="fa fa-plus"></i> Добавить карту
+                                                    <i class="fa fa-plus mr-2"></i> Добавить карту
                                             </button>
 
                                             @isset($user->zarplata)
-                                                <button class="btn btn-phone btn-rounded mb-2 mt-2" type="button"
+                                                <button class="btn btn-success btn-rounded mb-2 mt-2" type="button"
                                                         onclick="addTax({{$user->id}}, {{$user->zarplata->zarplata}})">
-                                                    <i class="fa fa-plus"></i> Добавить налог
+                                                    <i class="fa fa-plus mr-2"></i> Добавить налог
                                                 </button>
                                             @endisset
 
@@ -1343,22 +1309,22 @@ function showBlock(type,elem) {
 
     if(type == 1){
         $("#profile_d").show();
-        $("#add_info").show(" ");///доп инф
-        $("#profile_books").show(" "); /// база знание
-        $("#iphones3").show(" "); /// группы
+        $("#add_info").show();///доп инф
+        $("#profile_books").show(); /// база знание
+        $("#iphones3").show(); /// группы
     }else if(type == 7){
-        $("#adaptation_conversations").show(" ")
+        $("#adaptation_conversations").show()
     }else if(type == 2){
-        $("#iphones3").show(" ");
+        $("#iphones3").show();
     }else if(type == 5){
-        $("#profile_salary").show(" ");
+        $("#profile_salary").show();
     }else if(type == 9){
-        $("#iphones4").show(" ");
+        $("#iphones4").show();
     }else if(type == 4){
-        $("#profile_contacts").show(" ");
+        $("#profile_contacts").show();
     }else if(type == 6){
-        $("#other_data").show(" ");
-        $("#other_data_bitrix").show(" ");
+        $("#other_data").show();
+        $("#other_data_bitrix").show();
     }
 
 }
@@ -1451,7 +1417,7 @@ function submitx() {
     let profile_errors = 0;
 
     if (selectedCityInput.length < 2) {
-        $('#beforeSubmit .texter').append('<div>Поиск: <b>Стран</b> <b>Город</b></div>');
+        $('#beforeSubmit .texter').append('<div>Профиль: <b>Город</b></div>');
         counter++;
         profile_errors++
     }
@@ -1575,8 +1541,10 @@ function submit_trainee() {
 
     let profile_errors = 0;
 
+    
+
     if (country.length < 2) {
-        $('#beforeSubmit .texter').append('<div>Найти:<b>страну</b>  <b>Город</b> : </div>');
+        $('#beforeSubmit .texter').append('<div>Профиль: <b>Город</b> </div>');
         counter++;
         profile_errors++
     }
@@ -1605,7 +1573,11 @@ function submit_trainee() {
         profile_errors++
     }
 
-
+    if (phone == null || phone.length < 2) {
+        $('#beforeSubmit .texter').append('<div>Контакты: <b>Мобильный</b></div>');
+        counter++;
+        profile_errors++
+    }
     ///////////////////////////////////////
     if(profile_errors != 0){
         $('.listo1').text(profile_errors);
@@ -1654,12 +1626,12 @@ var cardIndex = 1;
 function addCard(e) {
     var index = cardIndex++;
     $('.cards').append(`<div class="d-flex form-group m0 card-row">
-        <input class="form-control mr-1 col-sm-2" type="text" name="cards[${index}][bank]" placeholder="Банк">
+        <input class="form-control mr-1 col-sm-2" type="text" name="cards[${index}][bank]" placeholder="Банк/Кошелек/...">
         <input class="form-control mr-1 col-sm-2" type="text" name="cards[${index}][country]" placeholder="Страна">
         <input class="form-control mr-1 col-sm-2" type="text" name="cards[${index}][cardholder]" placeholder="Имя на карте">
         <input class="form-control mr-1 col-sm-2" type="text" name="cards[${index}][phone]" placeholder="Телефон">
-        <input class="form-control mr-1 col-sm-3 card-number mr-5" type="text" name="cards[${index}][number]" placeholder="Номер карты">
-        <button class="btn btn-danger btn-sm card-delete rounded ml-5" type="button" onclick="deleteCard(event)"><i class="fa fa-trash"></i></button>
+        <input class="form-control mr-1 col-sm-3 card-number" type="text" name="cards[${index}][number]" placeholder="Номер карты/счета">
+        <button class="btn btn-danger card-delete rounded ml-1" type="button" onclick="deleteCard(event)"><i class="fa fa-trash"></i></button>
     </div>`);
 
     $(".card-number").inputmask({"mask": "9999 9999 9999 9999"});
@@ -1674,7 +1646,7 @@ function addTax(userId, salary) {
         <input class="form-control mr-1 col-sm-2" type="text" name="tax[${index}][amount]" placeholder="Сумма">
         <input class="form-control mr-1 col-sm-2" type="text" name="tax[${index}][percent]" placeholder="Процент">
         <input class="form-control mr-1 col-sm-2" type="hidden" name="tax[${index}][user_id]" value="${userId}">
-        <button class="btn btn-danger btn-sm card-delete rounded ml-5" type="button" onclick="deleteTax(event)"><i class="fa fa-trash"></i></button>
+        <button class="btn btn-danger card-delete rounded ml-1" type="button" onclick="deleteTax(event)"><i class="fa fa-trash"></i></button>
     </div>`);
 }
 
@@ -1729,9 +1701,9 @@ $(document).ready(function() {
     });
 
     $("#profile_d").show();
-    $("#add_info").show(" ");///доп инф
-    $("#profile_books").show(" "); /// база знание
-    $("#iphones3").show(" "); /// группы
+    $("#add_info").show();///доп инф
+    $("#profile_books").show(); /// база знание
+    $("#iphones3").show(); /// группы
 
     document.getElementById('selectedCityInput').onkeyup = function() {
         let _token   = $('meta[name="csrf-token"]').attr('content');
@@ -1949,7 +1921,11 @@ function selectedCountry() {
 @section('styles')
 @include('admin.users.common')
 <style>
-
+    @media (min-width: 1360px) {
+        .container.container-left-padding {
+            padding-left: 7rem !important;
+        }
+    }
 .adap_day{
  margin-right: -80px;
 }
@@ -1989,7 +1965,7 @@ function selectedCountry() {
       max-width: 290px;
       overflow-x: hidden;
       float: left;
-      padding: 10px;
+      padding: 20px 10px !important;
       background: #f8f8f8;
       display: flex;
       height: 100%;
@@ -2003,7 +1979,8 @@ function selectedCountry() {
   }
 
   .list-item li{
-      padding: 5px;
+      padding: 10px 15px;
+      border-radius: 6px;
 
   }
 
@@ -2087,9 +2064,8 @@ input[type="radio"] {
     width: auto !important;
 }
 
-.add_info{
-
-    margin-top: 80px;
+.xtab-pane{
+    margin-bottom: 0!important;
 }
 </style>
 @endsection

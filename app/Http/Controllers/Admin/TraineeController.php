@@ -8,16 +8,10 @@ use App\ProfileGroup;
 use App\User;
 use App\UserNotification;
 use App\TimetrackingHistory;
-use App\Trainee;
 use App\DayType;
-use App\Models\Books\BookGroup;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\View;
-use App\External\Bitrix\Bitrix;
-use App\Models\Bitrix\Lead;
-use App\AnalyticsSettingsIndividually;
 use App\Service\Department\UserService;
 use App\Timeboard\UserPresence;
 

@@ -4,15 +4,8 @@ namespace App\Models\Analytics;
 
 use Illuminate\Database\Eloquent\Model;
 use Carbon\Carbon;
-use App\User;
 use App\ProfileGroup;
-use App\Classes\Analytics\Ozon;
-use App\Classes\Analytics\DM;
-use App\Classes\Analytics\HomeCredit;
-use App\Classes\Analytics\Eurasian;
-use App\Classes\Analytics\Kaspi;
 use App\CallBaseTotal;
-use App\AnalyticsSettings;
 use App\Models\Analytics\UserStat;
 use App\Models\Analytics\AnalyticStat;
 use App\GroupSalary;
@@ -45,7 +38,8 @@ class TopValue extends Model
         'reversed', // 
     ];
     
-    public function getOptions() {
+    public function getOptions()
+    {
 
         $arr = json_decode($this->options, true);
 
@@ -110,11 +104,8 @@ class TopValue extends Model
         return $result;
     }
 
-
-    /**
-     * Спидометры полезности
-     */
-    public static function getUtilityGauges($date, $group_ids = []) {
+    public static function getUtilityGauges($date, $group_ids = [])
+    {
 
         if(count($group_ids) == 0) {
             $carbon = Carbon::createFromFormat('Y-m-d', $date);
@@ -188,10 +179,8 @@ class TopValue extends Model
         return $gauge_groups;
     } 
     
-    /**
-     * Получить динамические показатели
-     */
-    public static function getDynamicValue($group_id, $date, $top_value) {
+    public static function getDynamicValue($group_id, $date, $top_value)
+    {
         $value = (float)$top_value->value;
         $min_value = (float)$top_value->min_value;
         $max_value = (float)$top_value->max_value;
@@ -221,7 +210,6 @@ class TopValue extends Model
             $sections = $options['staticLabels']['labels']; // Уязвимый
         }
          
-
         $gauge_sections = self::getGaugeSections([
             'value' => $value,
             'min_value' => $min_value,
@@ -232,19 +220,9 @@ class TopValue extends Model
             'round' => $top_value->round,
         ]);
 
-
-
-        
         $sections = $gauge_sections['sections'];
         $options = $gauge_sections['options'];
 
-
-  
-
-        
-    
-
-        
         if($top_value->activity_id != 0) {
          
             if($top_value->activity_id == -1) {
@@ -267,9 +245,6 @@ class TopValue extends Model
                         ->get()
                         ->avg('total');
 
-                    // $count = $items->count();
-                    // $avg = $count > 0 ? round($items->sum('total') / $count, 1) : 0;
-                    // $value = $avg;
                 } else {
                     $value = UserStat::total_for_month($top_value->activity_id, $date, $top_value->value_type);
                 }
@@ -289,29 +264,11 @@ class TopValue extends Model
                 'round' => $top_value->round,
             ]);
 
-            // if($top_value->reversed == 1) {
-
-          
-            //     dump($gauge_sections['options']);
-            //     dd(json_decode($top_value->options, true));
-            // }
             $sections = $gauge_sections['sections'];
-
-            // if($top_value->reversed == 1) {
-            //     dump($options);
-            //     $options = $gauge_sections['options'];
-            //     dd($options);
-            // }
-          
-             $options = $gauge_sections['options'];
-           
-            
-            //$options = json_decode($top_value->options, true);
-
-            //if( $top_value->reversed == 1) dd($options);
+            $options = $gauge_sections['options'];
         } 
     
-        if($group_id == Eurasian::ID) {
+        if($group_id == 53) {
 
           
             if($top_value->value_type == 'pcb') {
@@ -366,10 +323,6 @@ class TopValue extends Model
             
         }
 
-
-
-        
-
         $top_value->value = $value;
         $top_value->min_value = $min_value;
         $top_value->max_value = $max_value;
@@ -379,8 +332,6 @@ class TopValue extends Model
         if($alter_name != '') {
             $top_value->name = $alter_name;
         }
-
-        //$options['staticLabels']['fractionDigits'] = $top_value->round;
 
         return [
             'name' => $top_value->name,
@@ -395,8 +346,8 @@ class TopValue extends Model
     
     }
 
-    public static function getGaugeSections($args) {
-
+    public static function getGaugeSections($args)
+    {
         $value = $args['value'];
         $min = (float)$args['min_value'];
         $max = (float)$args['max_value'];
@@ -450,9 +401,6 @@ class TopValue extends Model
 
     }
 
-    /**
-     * Спидометры рентабельности all
-     */
     public static function getRentabilityGauges($date, $common_name = '')
     {
         $gauges = [];
@@ -475,9 +423,6 @@ class TopValue extends Model
         return $gauges;
     }
 
-    /**
-     * Спидометры рентабельности of group
-     */
     public static function getRentabilityGaugesOfGroup($date, $group_id, $common_name = '')
     {
         $gauges = [];
@@ -491,9 +436,6 @@ class TopValue extends Model
         return $gauges;
     }
 
-    /**
-     * one gauge of rentability
-     */
     private static function getRentabilityGauge($date, $group_id, $common_name)
     {
         $group = ProfileGroup::find($group_id);
@@ -546,8 +488,6 @@ class TopValue extends Model
 
     /**
      * table on TOP page -> rentability tab
-     * 
-     * @return array
      */
     public  static function getPivotRentability($year, $month) : array
     {
@@ -669,11 +609,6 @@ class TopValue extends Model
         return $table;
     }
 
-    /**
-     * get month of getPivotRentability
-     * 
-     * @return array
-     */
     public  static function getPivotRentabilityOnMonth($year, $month) : array
     {
         $table = [];

@@ -2,17 +2,9 @@
 
 namespace App\Http\Controllers;
 
-use App\Components\TelegramBot;
 use App\Setting;
 use App\User;
 use Illuminate\Http\Request;
-use Carbon\Carbon;
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Storage;
-use Illuminate\Support\Facades\View;
-use Illuminate\Support\Facades\Mail;
-use function React\Promise\Stream\first;
 
 class SettingController extends Controller
 {
@@ -66,7 +58,6 @@ class SettingController extends Controller
      *  ]
      * 
      */
-    
     public function getSettings(Request $request)
     {
         $keys = $this->setting_names($request->type);
@@ -79,8 +70,8 @@ class SettingController extends Controller
 
             if ($setting){
                 $settings[$key] = $setting->value == 1;
-
-                if ($request->type == 'company'){
+               
+                if ($request->type == 'company' && $setting->value){
                     $settings['logo'] = $disk->temporaryUrl(
                         $setting->value, now()->addMinutes(360)
                     );

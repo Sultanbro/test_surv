@@ -1,5 +1,5 @@
 <template>
-<div class="mt-3">
+<div class="mt-4">
     <div class="mb-0">
 
         <div class="row mb-3">
@@ -75,79 +75,81 @@
                 </div>
             </div>
 
-            <b-table
-                responsive striped
-                :sticky-header="true"
-                class="text-nowrap text-right my-table"
-                id="tabelTable"
-                :small="true"
-                :bordered="true"
-                :items="items"
-                :fields="fields"
-                show-empty
-                emptyText="Нет данных"
-                :current-page="currentPage"
-                :per-page="perPage">
+            <div>
+                <b-table
+                        responsive striped
+                        :sticky-header="true"
+                        class="text-nowrap text-right my-table table-custom-report"
+                        id="tabelTable"
+                        :small="true"
+                        :bordered="true"
+                        :items="items"
+                        :fields="fields"
+                        show-empty
+                        emptyText="Нет данных"
+                        :current-page="currentPage"
+                        :per-page="perPage">
 
-                <template slot="cell(name)" slot-scope="data">
-                    <div>
+                    <template slot="cell(name)" slot-scope="data">
+                        <div>
                         <span v-if="activeuserpos == 46">
                             <a :href="'/timetracking/edit-person?id=' + data.item.id" target="_blank" :title="data.item.id">{{ data.value }}</a>
                         </span>
-                        <span v-else>
+                            <span v-else>
                             {{ data.value }}
                         </span>
-                        <b-badge v-if="data.field.key == 'name'" pill variant="success">
-                            {{ data.item.user_type }}
-                        </b-badge>
+                            <b-badge v-if="data.field.key == 'name'" pill variant="success">
+                                {{ data.item.user_type }}
+                            </b-badge>
 
 
-                        <span v-if="data.field.key == 'name' && data.item.is_trainee" class="badgy badge-warning badge-pill">
+                            <span v-if="data.field.key == 'name' && data.item.is_trainee" class="badgy badge-warning badge-pill">
                             Стажер
                         </span>
-                    </div>
-                </template>
+                        </div>
+                    </template>
 
-                <template slot="cell(total)" slot-scope="data">
-                    <div>
-                        {{ data.value }}
-                    </div>
-                </template>
+                    <template slot="cell(total)" slot-scope="data">
+                        <div>
+                            {{ data.value }}
+                        </div>
+                    </template>
 
-                <template slot="cell()" slot-scope="data">
+                    <template slot="cell()" slot-scope="data">
 
-                    <div @mouseover="dayInfo(data)" @click="detectClick(data)" :class="{'updated': data.value.updated}">
+                        <div @mouseover="dayInfo(data)" @click="detectClick(data)" :class="{'updated': data.value.updated}">
 
-                        <template v-if="data.value.hour">
-                            <b-form-input
-                                class="form-control cell-input"
-                                type="number"
-                                @mouseover="$event.preventDefault()"
-                                :min="0"
-                                :max="24"
-                                :step="0.1"
-                                :value="data.value.hour"
-                                :readonly="true"
-                                @dblclick="readOnlyFix"
-                                @change="openModal"
-                            ></b-form-input>
-                        </template>
+                            <template v-if="data.value.hour">
+                                <b-form-input
+                                        class="form-control cell-input"
+                                        type="number"
+                                        @mouseover="$event.preventDefault()"
+                                        :min="0"
+                                        :max="24"
+                                        :step="0.1"
+                                        :value="data.value.hour"
+                                        :readonly="true"
+                                        @dblclick="readOnlyFix"
+                                        @change="openModal"
+                                ></b-form-input>
+                            </template>
 
-                        <template v-else>
-                            {{ data.value.hour ? data.value.hour : data.value }}
-                        </template>
+                            <template v-else>
+                                {{ data.value.hour ? data.value.hour : data.value }}
+                            </template>
 
-                        <div class="cell-border" :id="`cell-border-${data.item.id}-${data.field.key}`" v-if="data.value.tooltip"></div>
-                        <b-popover :target="`cell-border-${data.item.id}-${data.field.key}`" triggers="hover" placement="top">
-                            <template #title>Время работы</template>
-                             <div v-html="data.value.tooltip"></div>
-                        </b-popover>
+                            <div class="cell-border" :id="`cell-border-${data.item.id}-${data.field.key}`" v-if="data.value.tooltip"></div>
+                            <b-popover :target="`cell-border-${data.item.id}-${data.field.key}`" triggers="hover" placement="top">
+                                <template #title>Время работы</template>
+                                <div v-html="data.value.tooltip"></div>
+                            </b-popover>
 
-                    </div>
+                        </div>
 
-                </template>
+                    </template>
 
-            </b-table>
+                </b-table>
+            </div>
 
             <p>{{ dayInfoText }}</p>
 
@@ -455,8 +457,6 @@ export default {
     },
 
     created() {
-
-
         this.dateInfo.currentMonth = this.dateInfo.currentMonth ? this.dateInfo.currentMonth : this.$moment().format('MMMM')
         let currentMonth = this.$moment(this.dateInfo.currentMonth, 'MMMM')
 
@@ -470,13 +470,11 @@ export default {
         this.currentGroup = this.currentGroup ? this.currentGroup : this.groups[0]['id']
 
         this.fetchData()
-
-        // this.maxScrollWidth =  this.$refs.tableContainer[0].scrollWidth
     },
     methods: {
         copy() {
             var Url = this.$refs['mylink' + this.currentGroup];
-            Url.value = 'https://bp.jobtron.org/autocheck/' + this.currentGroup;
+            Url.value = window.location.origin + '/autocheck/' + this.currentGroup;
 
             Url.select();
             document.execCommand("copy");
@@ -589,9 +587,6 @@ export default {
                     'Решил(-а) работать оффлайн',
                     'Слишком большая нагрузка',
                 ];
-
-
-
             }
         },
 
@@ -1192,6 +1187,7 @@ export default {
 </script>
 
 <style lang="scss">
+
 .editmode {
     opacity: 0;
     height: 36px;

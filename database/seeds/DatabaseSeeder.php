@@ -12,6 +12,14 @@ class DatabaseSeeder extends Seeder
     public function run()
     {
         $this->call([
+            PositionSeeder::class,
+            ProgramSeeder::class,
+            ProfileGroupSeeder::class,
+            PageAndPermissionSeeder::class,
+            WorkingDaySeeder::class,
+            WorkingTimeSeeder::class,
+            SettingSeeder::class,
+
             KpiSeeder::class,
             KpiItemSeeder::class,
             QuartalPremiumSeeder::class,

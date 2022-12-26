@@ -3,22 +3,14 @@
 namespace App\Console\Commands\Bitrix;
 
 use Illuminate\Console\Command;
-use Illuminate\Support\Facades\DB;
 use App\Models\Bitrix\Lead;
 use App\External\Bitrix\Bitrix;
 use Carbon\Carbon;
 use App\User;
 use App\UserDescription;
-use App\Account;
 use App\ProfileGroup;
-use App\AnalyticsSettings;
-use App\AnalyticsSettingsIndividually;
 use App\Classes\Analytics\Recruiting;
-use App\Components\TelegramBot;
-use App\Trainee;
-use App\DayType;
 use App\Classes\Helpers\Phone;
-use App\Models\Analytics\RecruiterStat;
 use App\Service\Department\UserService;
 use App\Service\RecruitingActivityService;
 
@@ -100,10 +92,7 @@ class BitrixStats extends Command
 
         $helper = new Recruiting();
 
-        
-        $asis = AnalyticsSettingsIndividually::whereYear('date', $this->year)->whereMonth('date', $this->month)
-                        ->where('group_id', Recruiting::GROUP_ID)
-                        ->get();
+        $asis = [];
                         
         foreach ($users as $user_id) {
             
@@ -236,25 +225,18 @@ class BitrixStats extends Command
                 $data[Recruiting::I_APPLIED][(int)$this->day] = $applied != 0 ? $applied : ""; // Приняты на работу
                 
 
-                if ((int)$total_out == 0 &&
+                if (!(
+                    (int)$total_out == 0 &&
                     (int)$total_out_success == 0 &&
                     (int)$total_in == 0 &&
                     (int)$converted == 0 &&
                     (int)$applied == 0 &&
                     (int)$total_passed == 0 &&
                     $time_f == '00:00' &&
-                    $time_l == '00:00') {
-
-                    } else {
-                        AnalyticsSettingsIndividually::create([
-                            'date' => $this->year . '-' . $this->month . '-01',
-                            'group_id' => Recruiting::GROUP_ID,
-                            'user_id' => 5,
-                            'type' => 0,
-                            'employee_id' => $user_id,
-                            'data' => json_encode($data),
-                        ]);
-                    }
+                    $time_l == '00:00'
+                )) {
+                    // save to userstat
+                }
 
                 
             }
@@ -303,10 +285,7 @@ class BitrixStats extends Command
         $bot_converted = array_key_exists('total', $bot_converted_leads) ? $bot_converted_leads['total'] : 0;
         $bot_failed = array_key_exists('total', $bot_failed_leads) ? $bot_failed_leads['total'] : 0;
 
-        $asi = AnalyticsSettingsIndividually::whereYear('date', $this->year)->whereMonth('date', $this->month)
-                        ->where('group_id', Recruiting::GROUP_ID)
-                        ->where('employee_id', 0)
-                        ->first();
+        $asi = null;
         
         if($asi) {
             $data = json_decode($asi->data, true);
@@ -320,22 +299,6 @@ class BitrixStats extends Command
             $asi->save();    
             
            
-        }
-
-        $as = AnalyticsSettings::whereYear('date', $this->year)
-                        ->whereMonth('date', $this->month)
-                        ->where('group_id', Recruiting::GROUP_ID)
-                        ->where('type', 'basic')
-                        ->first();
-
-        if($as) {
-            $data = $as->data;
-            $data[Recruiting::S_CREATED][(int)$this->day] = $created != 0 ? $created : ""; // Созданные лиды
-            $data[Recruiting::S_FAILED][(int)$this->day] = $failed != 0 ? $failed : ""; // Забракованы лиды
-            $data[Recruiting::S_CONVERTED][(int)$this->day] = $converted != 0 ? $converted : ""; // Сконвертированы лиды
-
-            $as->data = $data;
-            $as->save();
         }
 
         $this->line('------ Chatbot fetched'); 

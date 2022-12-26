@@ -10,19 +10,11 @@ use App\Http\Requests\SetHeadToGroupRequest;
 use App\KnowBase;
 use App\Models\User\Card;
 use App\Models\User\NotificationTemplate;
-use App\Repositories\TaxRepository;
-use App\Repositories\Timetrack\TimetrackRepository;
-use App\Repositories\UserDescriptionRepository;
 use App\Service\TaxService;
-use App\Service\UserProfileService;
-use App\Traits\BitrixLead;
 use Exception;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\View;
-use Illuminate\Mail\Mailer;
-use Swift_Mailer;
-use Swift_SmtpTransport;
 use Illuminate\Http\Request;
 use Carbon\Carbon;
 use App\Downloads;
@@ -36,28 +28,22 @@ use App\ProfileGroup;
 use App\Setting;
 use App\DayType;
 use App\User;
-use App\Trainee;
 use App\UserDescription;
 use App\UserDeletePlan;
 use App\UserContact;
 use App\Zarplata;
 use App\TimetrackingHistory;
 use App\Photo;
-use App\UserAbsenceCause;
 use App\External\Bitrix\Bitrix;
 use App\Models\Bitrix\Lead;
 use App\Models\Bitrix\Segment;
 use App\Http\Controllers\IntellectController as IC;
 use App\Classes\Helpers\Phone;
-use App\Classes\Analytics\Recruiting as RM;
 use Maatwebsite\Excel\Facades\Excel;
-use App\Models\Admin\History;
 use App\UserReport;
 use App\AdaptationTalk;
 use App\Models\GroupUser;
 use \App\Service\Admin\UserService as AdminUserService;
-use Illuminate\Support\Facades\Hash;
-use PhpParser\Node\Stmt\GroupUse;
 
 class UserController extends Controller
 {
@@ -67,49 +53,6 @@ class UserController extends Controller
     {
         $this->userService = $userService;
         $this->middleware('auth');
-    }
-
-    /**
-     * surv
-     */
-    public function surv(Request $request)
-    {
-        View::share('menu', 'timetrackinguser');
-        return view('test');
-    }
-
-    /**
-     * Kairat quarter
-     */
-    public function quarter(\DateTime $dateTime)
-    {
-        return (int) ceil($dateTime->format('n') / 3);
-    }
-
-    /**
-     * change pass
-     */
-    public function changePassword(Request $request)
-    {
-
-        $user = Auth::user();
-
-        if(!empty($request->password) && $request->password == $request->repassword) {
-            $salt = User::randString(8);
-            $password = $salt.md5($salt.$request->password);
-            $user->password = $password;
-            $user->save();
-
-            Auth::logout();
-            
-            return [
-                'code' => 200
-            ];   
-        } else {
-            return [
-                'code' => 500
-            ];   
-        }
     }
 
     public function getpersons(Request $request)
@@ -229,7 +172,6 @@ class UserController extends Controller
                 ->where('is_trainee', 0);
             }
             
-           // $trainees = Trainee::whereNull('applied')->get()->pluck('user_id')->toArray();
             if ($request['start_date']) $users = $users->whereDate('created_at', '>=', $request['start_date']);
             if ($request['end_date']) $users = $users->whereDate('created_at', '<=', $request['end_date']);
             if ($request['segment']) $users = $users->where('segment', $request['segment']);
@@ -651,10 +593,10 @@ class UserController extends Controller
                 'description' => $request['description'],
                 'password' => $user_password,
                 'created_at' => DB::raw('NOW()'),
-                'position_id' => $request['position'],
+                'position_id' => $request['position'] ?? 0,
                 'user_type' => $request->user_type,
                 'timezone' => 6,
-                'bitrhday' => $request['birthday'],
+                'birthday' => $request['birthday'],
                 'program_id' => (int)$request['program_type'],
                 'working_day_id' => (int)$request['working_days'],
                 'working_time_id' => (int)$request['working_times'],
@@ -674,7 +616,7 @@ class UserController extends Controller
                 'last_name' => $request['last_name'],
                 'description' => $request['description'],
                 'password' => $user_password,
-                'position_id' => $request['position'],
+                'position_id' => $request['position'] ?? 0,
                 'user_type' => $request->user_type,
                 'timezone' => 6,
                 'bitrhday' => $request['birthday'],
@@ -726,19 +668,16 @@ class UserController extends Controller
         /*******  Стажер или нет  */
         /*==============================================================*/
 
-        if($request->is_trainee == 'true')  {
-            $is_trainee = 1;
-            // $user->created_at = null;
-            // $user->save();
-            $trainee = Trainee::where('user_id', $user->id)->first();
-            if(!$trainee) Trainee::create(['user_id' => $user->id]);
+        $is_trainee = $request->is_trainee == 'true' ? true : false;
 
-            UserDescription::make([
-                'user_id' => $user->id,
-                'is_trainee' => $is_trainee,
-            ]);
+        UserDescription::make([
+            'user_id' => $user->id,
+            'is_trainee' => $is_trainee,
+            'applied' =>  $is_trainee ? null : now(),
+        ]);
 
-            $daytype = DayType::create([
+        if($is_trainee)  {
+            DayType::create([
                 'user_id' => $user->id,
                 'type' => 5, // Стажировка
                 'email' => 'x',
@@ -746,19 +685,6 @@ class UserController extends Controller
                 'admin_id' => Auth::user()->id,
             ]);
         } else {
-            $is_trainee = 0;
-
-            $whatsapp = new IC();
-            $wphone = Phone::normalize($user->phone);
-            $invite_link = 'https://infinitys.bitrix24.kz/?secret=bbqdx89w';
-            //$whatsapp->send_msg($wphone, 'Ваша ссылка для регистрации в портале Битрикс24: %0a'. $invite_link . '.  %0a%0aВойти в учет времени: https://bp.jobtron.org/login. %0aЛогин: ' . $user->email . ' %0aПароль: 12345.%0a%0a *Важно*: Если не можете через некоторое время войти в учет времени, попробуйте войти через e-mail, с которым зарегистрировались в Битрикс.');
-            
-            UserDescription::make([
-                'user_id' => $user->id,
-                'is_trainee' => $is_trainee,
-                'applied' =>  DB::raw('NOW()'),
-            ]);
-
             TimetrackingHistory::create([
                 'author_id' => Auth::user()->id,
                 'author' => Auth::user()->name.' '.Auth::user()->last_name,
@@ -769,7 +695,6 @@ class UserController extends Controller
         }
 
         
-
         /*==============================================================*/
         /*******  Сохранение доп телефонов для пользователя  */
         /*==============================================================*/
@@ -932,7 +857,6 @@ class UserController extends Controller
         /********** Есть момент, что можно посмотреть любого пользователя (не сотрудника ), не знаю баг или нет  */
         /*==============================================================*/
 
-        //if(Auth::user()->id == 5) dd($request->all());
         $id = $request['id'];
         $user = User::with('zarplata')->where('id', $id)->withTrashed()->first();
         $photo = Photo::where('user_id', $id)->first();
@@ -967,17 +891,6 @@ class UserController extends Controller
             
             
         }
-//        else {
-////            // Если нет другого аккаунта с новым email, то меняем уже сущ аккаунт в калибро
-////            $old_account = Account::where('email', $user->id)->where('owner_uid', 5)->first();
-////            if ($old_account) {
-////                $old_account->email = strtolower($request['email']);
-////                $old_account->status = Account::ACTIVE_STATUS;
-////                $old_account->save();
-////            }
-//        }
-
-
 
         /*==============================================================*/
         /********** Редактирование user  */
@@ -1015,7 +928,7 @@ class UserController extends Controller
         $user->full_time = $request['full_time'];
         $user->description = $request['description'];
         $user->currency = $request['currency'] ?? 'kzt';
-        $user->position_id = $request['position'];
+        $user->position_id = $request['position'] ?? 0;
         $user->user_type = $request['user_type'];
         $user->timezone = 6;
         $user->program_id = (int)$request['program_type'];
@@ -1103,7 +1016,7 @@ class UserController extends Controller
                 $seg = Segment::find($user->segment);
                 $segment = $seg ? $seg->name : '';
 
-                $msg_fragment = '<a href="https://bp.jobtron.org/timetracking/edit-person?id=';
+                $msg_fragment = '<a href="https://'.tenant('id').'.jobtron.org/timetracking/edit-person?id=';
                 $msg_fragment .= $user->id .'">' . $user->last_name . ' ' . $user->name . '</a>';
                 $msg_fragment .= '<br/>Дата принятия: ' . Carbon::parse($ud->applied)->format('d.m.Y');
                 $msg_fragment .= '<br/>Сегмент: ' . $segment . '<br/>Примечание: '. $comment;
@@ -1287,9 +1200,7 @@ class UserController extends Controller
             ]);
         }
 
-        //////////////////////
-        /******************* */
-        //////////////////////
+        // Test 
         $_groups = [];
 
         $groups = ProfileGroup::where('active', 1)->get();
@@ -1314,48 +1225,7 @@ class UserController extends Controller
             
         }
 
-         //////////////////////
-        /******************* */
-        //////////////////////
-        
-        
         return redirect()->to('/timetracking/edit-person?id=' . $user->id);
-
-    }
-
-    /**
-     * editPersonBook
-     *
-     * @param Request $request
-     */
-    public function editPersonBook(Request $request)
-    {
-
-        $user_id = $request->user_id;
-        $book_id = $request->book_id;
-
-        $ud = UserDescription::where('user_id', $user_id)->first();
-
-        if(is_null($ud)) $ud = UserDescription::create(['user_id' => $user_id]);
-
-        $books = json_decode($ud->books, true);
-        
-        if($request['action'] == 'add') {
-
-            array_push($books, $book_id); 
-            $books = array_unique($books);
-        }
-
-        if($request['action'] == 'delete') {
-            if (($key = array_search($book_id, $books)) !== false) {
-                unset($books[$key]);
-                $books = array_values($books);
-            }
-        }
-        
-        $ud->books = json_encode($books);
-        $ud->save();
-
     }
 
     /**
@@ -1607,19 +1477,6 @@ class UserController extends Controller
             $bitrixUser = $bitrix->searchUser($user->email);
             usleep(1000000); // 1 sec
             if($bitrixUser) $success = $bitrix->recoverUser($bitrixUser['ID']);
-
-            /*** Восстановить с битрикс */
-
-            // $bitrix = new Bitrix();
-            // $bitrixUser = $bitrix->searchUser($user->email);
-            // $success = false;
-            // if($bitrixUser) $success = $bitrix->recoverUser($bitrixUser['id']);
-            // if($success) {
-            //     // Восстановлен в битрикс
-            // } else {
-            //     // Не Восстановлен
-            // }
-
          
         } 
 
@@ -1644,67 +1501,18 @@ class UserController extends Controller
     }
 
     /**
-     * добавление карты и измение данный через профиль
-     */
-    public function editUserProfile(Request $request)
-    {
-        if (isset($request->cards) && !empty($request->cards)){
-            Card::where('user_id',auth()->user()->getAuthIdentifier())->delete();
-            foreach ($request->cards as $card) {
-                Card::create([
-                    'user_id' => auth()->user()->getAuthIdentifier(),
-                    'bank' => $card['bank'],
-                    'country'=> $card['country'],
-                    'cardholder'=> $card['cardholder'],
-                    'phone' => $card['phone'],
-                    'number'=> $card['number'],
-                ]);
-            }
-        }
-
-        $user = User::find(auth()->user()->getAuthIdentifier());
-        $user['name'] = $request['query']['name'];
-        $user['birthday'] = $request['birthday'];
-        if (isset($request->password) && !empty($request->password)){
-            $user['password'] = Hash::make($request->password);
-        }
-        $user['last_name'] = $request['query']['last_name'];
-        $user['working_country'] = $request['working_country'];
-        $user['working_city'] = $request['working_city'];
-        if ($user->save()){
-            return response(['success'=>'1']);
-        }
-
-
-
-
-    }
-
-    /**
      * загрузка аватарки через настроки ( в шаблоне blade ) Kairat
      */
     public function uploadPhoto(Request $request)
     {
-
-
-
-
-
         $data = $request["image"];
-
-
         $image_array_1 = explode(";", $data);
 
-
-
         $image_array_2 = explode(",", $image_array_1[1]);
-
 
         $data = base64_decode($image_array_2[1]);
 
         $imageName = time() . '.png';
-
-
 
         if (isset($request['user_id']) && $request['user_id'] != 'new_user') {
             $update_user = User::withTrashed()->find($request['user_id']);
@@ -1714,9 +1522,7 @@ class UserController extends Controller
 
                 if (file_exists($filename)) {
                     unlink(public_path('users_img/'.$update_user->img_url));
-//                    unlink("users_img/".$update_user->img_url);
                 }
-
             }
 
             $update_user->img_url = $imageName;
@@ -1738,7 +1544,6 @@ class UserController extends Controller
 
                 if (file_exists($filename)) {
                     unlink( public_path('users_img/'.$request['file_name'] ));
-//                    unlink("users_img/".$update_user->img_url);
                 }
             }
 
@@ -1749,19 +1554,6 @@ class UserController extends Controller
 
             return response(['src'=>$img,'filename'=>$imageName]);
         }
-
-
-
-
-
-    }
-
-    /**
-     * Удаление карты через профиль индивидуально Kairat
-     */
-    public function removeCardProfile(Request$request)
-    {
-        Card::find($request['card_id'])->delete();
 
     }
 
@@ -1824,66 +1616,4 @@ class UserController extends Controller
 
 
     }
-
-    /**
-     * Kairat uploadCroppedImageProfile
-     */
-    public function uploadCroppedImageProfile(Request $request)
-    {
-
-
-        $user = User::withTrashed()->find(auth()->user()->getAuthIdentifier());
-
-
-
-        if ($user->cropped_img_url){
-            $filename = "cropped_users_img/".$user->cropped_img_url;
-            if (file_exists($filename)) {
-                unlink(public_path('cropped_users_img/'.$user->cropped_img_url));
-            }
-        }
-
-
-
-
-        if ($request->file == "null" || $request->file == 'undefined'){
-            $user->cropped_img_url = null;
-            $user->save();
-
-            $img = '<img src="'.url('/cropped_users_img').'/'.'noavatar.png'.'" alt="avatar" />';
-
-            return response(['img'=>$img,'filename'=>'noavatar.png','type'=>0]);
-
-        }else{
-
-            $request->validate([
-                'file' => 'required|mimes:jpg,jpeg,png'
-            ]);
-
-
-
-            $upload_path = public_path('cropped_users_img/');
-            $generated_new_name = time() . '.' .'png';
-            $request->file->move($upload_path, $generated_new_name);
-            $user->cropped_img_url = $generated_new_name;
-            $user->save();
-
-            $img = '<img src="'.url('/cropped_users_img/').'/'.$generated_new_name.'" alt="avatar" />';
-            return response(['img'=>$img,'filename'=>$generated_new_name,'type'=>1]);
-        }
-
-
-
-    }
-
-    /**
-     * Kairat getProfileImage
-     */
-    public function getProfileImage(Request $request)
-    {
-        $user = User::find($request['id']);
-        $filename = $user->img_url;
-        return $filename;
-    }
-
 }
