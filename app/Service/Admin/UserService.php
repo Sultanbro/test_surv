@@ -49,7 +49,7 @@ class UserService
          * Группы пользователя
          */
         $groups = '<div><div><b>Отделы:</b></div>';
-        $gs = $user->inGroups();
+        $gs = $user->inGroups( $user->position_id == 45 );
 
         foreach($gs as $group) {
             $groups .= '<div>' . $group['name'] . '</div>';

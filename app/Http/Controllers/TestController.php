@@ -5,7 +5,17 @@ namespace App\Http\Controllers;
 class TestController extends Controller
 { 
 	public function test() { 
-        dd(config());
+		$user = \App\Models\GroupUser::where('user_id', 14772)
+		->where([
+			['status', 'active'],
+			//'is_head', false]
+		])
+		->whereNull('to')
+		->get()
+		->pluck('group_id')
+		->toArray();
+
+        dd($user);
 	}
 
 	public function hhRefresher() {
