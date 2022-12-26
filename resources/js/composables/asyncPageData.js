@@ -6,7 +6,7 @@ function getDataFromScript(dataScript){
     return data
 }
 
-function getDataFromResponse(data){
+export function useDataFromResponse(data){
     const doc = document.createElement('div')
     // const html = data.split('<body ontouchstart="">')[1]
     // doc.innerHTML = html.replace('</body>', '').replace('</html>', '')
@@ -20,7 +20,7 @@ export function useAsyncPageData(url){
         const dataScript = document.getElementById('async-page-data')
         if(dataScript) return resolve(getDataFromScript(dataScript))
         axios.get(url).then(({ data }) => {
-            const responseData = getDataFromResponse(data)
+            const responseData = useDataFromResponse(data)
             if(responseData) return resolve(responseData)
             reject('No data')
         }).catch(reject)

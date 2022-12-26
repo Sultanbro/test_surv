@@ -115,7 +115,7 @@ export default {
         },
         updatePageData(){
             this.pageData = {}
-            useAsyncPageData(`/timetracking/settings?tab=${this.activeTab}#${activeTabItem.htmlId}`).then(data => {
+            useAsyncPageData(`/timetracking/settings?tab=${this.activeTab}#${this.activeTabItem.htmlId}`).then(data => {
                 this.pageData = data
             }).catch(error => {
                 console.error('useAsyncPageData', error)
