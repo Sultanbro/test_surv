@@ -9,7 +9,7 @@ use App\Http\Resources\Likes\LikeResource;
 use App\Http\Resources\Reactions\ReactionCollection;
 use App\Http\Resources\Users\UserResource;
 use App\Models\Comment\Comment;
-use App\Repositories\Interfaces\Articles\CommentRepositoryInterface;
+use App\Repositories\Interfaces\Article\CommentRepositoryInterface;
 use Illuminate\Http\Resources\Json\JsonResource;
 use Illuminate\Support\Facades\Auth;
 

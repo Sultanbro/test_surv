@@ -13,7 +13,7 @@ use App\Http\Resources\Articles\ArticleResource;
 use App\Http\Resources\Pagination\PaginationResource;
 use App\Http\Resources\Responses\JsonSuccessResponse;
 use App\Models\Article\Article;
-use App\Service\Articles\ArticleService;
+use App\Service\Article\ArticleService;
 use App\Service\PaginationService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Auth;

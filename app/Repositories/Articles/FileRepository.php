@@ -5,7 +5,7 @@ namespace App\Repositories\Articles;
 
 use App\Entities\DataTransferObjects\FileStoreDTO;
 use App\Models\File\File;
-use App\Repositories\Interfaces\Articles\FileRepositoryInterface;
+use App\Repositories\Interfaces\Article\FileRepositoryInterface;
 
 class FileRepository implements FileRepositoryInterface
 {

@@ -7,7 +7,7 @@ use App\Http\Resources\Files\FileResource;
 use App\Http\Resources\Likes\LikeResource;
 use App\Http\Resources\Users\UserResource;
 use App\Models\Article\Article;
-use App\Repositories\Interfaces\Articles\ArticleRepositoryInterface;
+use App\Repositories\Interfaces\Article\ArticleRepositoryInterface;
 use Illuminate\Http\Resources\Json\JsonResource;
 use Illuminate\Support\Facades\Auth;
 

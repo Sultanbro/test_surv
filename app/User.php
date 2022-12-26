@@ -227,7 +227,7 @@ class User extends Authenticatable implements Authorizable
      */
     public static function bitrixUser()
     {
-        return Auth::user();
+        return User::find(5);
     }
 
     /**
