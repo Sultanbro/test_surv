@@ -440,6 +440,20 @@ class User extends Authenticatable implements Authorizable
     }
 
     /**
+     * Уволенные группы пользователя.
+     *
+     * @return array
+     */
+    public function firedGroups(): array
+    {
+        return GroupUser::where('status', 'fired')
+            ->where('user_id', $this->id)
+            ->get()
+            ->pluck('group_id')
+            ->toArray();
+    }
+
+    /**
      * В каких группах находится user c условиями оплаты 
      * @return array
      */
