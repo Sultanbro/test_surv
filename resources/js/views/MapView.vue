@@ -76,7 +76,7 @@ export default {
     </DefaultLayout>
 </template>
 
-<style>
+<style scoped>
 .leaflet-marker-icon{
     margin-left: -15px;
     margin-top: -15px;

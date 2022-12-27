@@ -403,7 +403,7 @@ export default {
     </DefaultLayout>
 </template>
 
-<style>
+<style scoped>
     .text-black p strong{color:#383838}
 ul,
 ol {

@@ -63,7 +63,7 @@ export default {
     </DefaultLayout>
 </template>
 
-<style>
+<style scoped>
 ul,
 ol {
     padding-left: 30px;

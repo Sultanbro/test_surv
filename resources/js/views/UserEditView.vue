@@ -1233,7 +1233,7 @@ export default {
     </DefaultLayout>
 </template>
 
-<style lang="scss">
+<style lang="scss" scoped>
 .sticky {
     position: sticky;top: 20px;height: 300px;
 }

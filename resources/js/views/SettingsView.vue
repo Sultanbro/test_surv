@@ -280,7 +280,7 @@ export default {
     </DefaultLayout>
 </template>
 
-<style>
+<style scoped>
 .integrations-item{
     width: 150px;
     height: 120px;

@@ -122,7 +122,7 @@ export default {
     </DefaultLayout>
 </template>
 
-<style>
+<style scoped>
 .header__profile {
     display:none !important;
 }

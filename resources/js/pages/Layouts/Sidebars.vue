@@ -3,10 +3,10 @@
     <profile-sidebar v-show="isProfileVisible"/>
 
     <div class="header">
-        <left-sidebar></left-sidebar>
-        <right-sidebar @pop="pop"></right-sidebar>
+        <left-sidebar :class="{closed: !isLeft}"></left-sidebar>
+        <right-sidebar :class="{closed: !isRight}" @pop="pop"></right-sidebar>
 
-        <div class="header__arrow">
+        <div class="header__arrow" :class="{show: isRight}">
             <a href="#"><img src="/images/dist/header-arrow.svg" alt="arrow icon"></a>
         </div>
     </div>
@@ -67,7 +67,10 @@
 <script>
 export default {
   name: 'Sidebars',
-  props: {},
+  props: {
+    isLeft: Boolean,
+    isRight: Boolean,
+  },
 
   data() {
     return {
