@@ -15,7 +15,7 @@ export default {
         }
     },
     mounted(){
-        useAsyncPageData('/page').then(data => {
+        useAsyncPageData('/cabinet').then(data => {
             this.auth_role = data.auth_role || null
         }).catch(error => {
             console.error('useAsyncPageData', error)
