@@ -1,5 +1,8 @@
 <template>
-<div class="mt-2 px-3">
+<div
+    v-if="groupss"
+    class="mt-2 px-3"
+>
     <div class="mb-0">
 
         <!-- filters -->
@@ -507,6 +510,9 @@ export default {
         },
         selectedGroup(val) {
             this.fetchData()
+        },
+        groupss(){
+            this.init()
         }
     },
     data() {
@@ -582,23 +588,24 @@ export default {
         };
     },
     created() {
-
-        this.dateInfo.currentMonth = this.dateInfo.currentMonth ?
-            this.dateInfo.currentMonth :
-            this.$moment().format("MMMM");
-        let currentMonth = this.$moment(this.dateInfo.currentMonth, "MMMM");
-
-        //Расчет выходных дней
-        this.dateInfo.monthEnd = currentMonth.endOf("month"); //Конец месяца
-        this.dateInfo.weekDays = currentMonth.weekdayCalc(this.dateInfo.monthEnd, [6]); //Колличество выходных
-        this.dateInfo.daysInMonth = currentMonth.daysInMonth(); //Колличество дней в месяце
-        this.dateInfo.workDays = this.dateInfo.daysInMonth - this.dateInfo.weekDays; //Колличество рабочих дней
-
-        this.groups = this.groupss;
-        this.selectedGroup = this.groups[0];
     },
     methods: {
+        init(){
 
+            this.dateInfo.currentMonth = this.dateInfo.currentMonth ?
+                this.dateInfo.currentMonth :
+                this.$moment().format("MMMM");
+            let currentMonth = this.$moment(this.dateInfo.currentMonth, "MMMM");
+
+            //Расчет выходных дней
+            this.dateInfo.monthEnd = currentMonth.endOf("month"); //Конец месяца
+            this.dateInfo.weekDays = currentMonth.weekdayCalc(this.dateInfo.monthEnd, [6]); //Колличество выходных
+            this.dateInfo.daysInMonth = currentMonth.daysInMonth(); //Колличество дней в месяце
+            this.dateInfo.workDays = this.dateInfo.daysInMonth - this.dateInfo.weekDays; //Колличество рабочих дней
+
+            this.groups = this.groupss;
+            this.selectedGroup = this.groups[0];
+        },
         //Установка выбранного года
         setYear() {
             this.dateInfo.currentYear = this.dateInfo.currentYear ?

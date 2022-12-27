@@ -1,10 +1,10 @@
-@extends('layouts.app')
+@extends('layouts.spa')
 @section('title', 'Настройки')
 @section('content')
 <script type="application/json" id="async-page-data">
     {
     @if($active_tab == 1 && (auth()->user()->can('users_view') || auth()->user()->can('settings_view')))
-        "is_admin": "{{ auth()->user()->is_admin == 1 ? 'true' : 'false' }}",
+        "is_admin": {{ auth()->user()->is_admin == 1 ? 'true' : 'false' }},
         "subdomain": "{{ tenant('id') }}",
         "positions": {{ json_encode(\App\Position::all()) }}
     @endif

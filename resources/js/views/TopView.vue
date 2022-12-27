@@ -11,7 +11,7 @@ export default {
     },
     data(){
         return {
-            data: '',
+            data: null,
             activeuserid: 0,
             activeTab: 'nav-top-tab',
             tabs: [
@@ -46,12 +46,6 @@ export default {
                     access: 'analytics_view'
                 },
                 {
-                    id: 'nav-top-tab',
-                    path: '/timetracking/top',
-                    title: 'TOП',
-                    access: 'top_view'
-                },
-                {
                     id: 'nav-salary-tab',
                     path: '/timetracking/salaries',
                     title: 'Начисления',
@@ -68,8 +62,8 @@ export default {
     },
     mounted(){
         useAsyncPageData('/timetracking/top').then(data => {
-            this.data = data.data
-            this.activeuserid = data.activeuserid
+            this.data = data.data || null
+            this.activeuserid = '' + data.activeuserid
         }).catch(error => {
             console.error('useAsyncPageData', error)
         })

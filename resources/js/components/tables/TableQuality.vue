@@ -1,6 +1,9 @@
 <template>
-  <div class="mt-2 px-3 quality quality-page">
-    
+  <div
+    v-if="groups"
+    class="mt-2 px-3 quality quality-page"
+  >
+
     <div class="row">
 
       <div class="col-3" v-if="individual_request">
@@ -442,7 +445,7 @@
                   :total-rows="records.total"
                 ></b-pagination>
 
-                
+
               </div>
             </b-tab>
           </b-tabs>
@@ -489,7 +492,7 @@
                          <template v-for="(checked_day,index) in check_r.day">
                            <template v-if="index == field.name">
                              <div  v-on:click="showSidebar(check_r.user_id, index)" >{{checked_day}}</div>
-                            
+
                            </template>
                          </template>
 
@@ -607,8 +610,8 @@
         <div class="col-12 d-flex mb-3">
 
           <div class="fl">Источник оценок
-            <i class="fa fa-info-circle ml-2" 
-                v-b-popover.hover.right.html="'Заполнять оценки диалогов и критерии на странице <b>Контроль качества</b>, либо подтягивать их по крону с cp.callibro.org'" 
+            <i class="fa fa-info-circle ml-2"
+                v-b-popover.hover.right.html="'Заполнять оценки диалогов и критерии на странице <b>Контроль качества</b>, либо подтягивать их по крону с cp.callibro.org'"
                 title="Оценки контроля качества">
             </i>
           </div>
@@ -621,9 +624,9 @@
 
         <div class="col-12" v-if="!can_add_records">
            <div class="bg mb-2">
-            <div class="fl">ID диалера 
-              <i class="fa fa-info-circle ml-2" 
-                  v-b-popover.hover.right.html="'Нужен, чтобы <b>подтягивать часы</b> или <b>оценки диалогов</b> для контроля качества.<br>С сервиса cp.callibro.org'" 
+            <div class="fl">ID диалера
+              <i class="fa fa-info-circle ml-2"
+                  v-b-popover.hover.right.html="'Нужен, чтобы <b>подтягивать часы</b> или <b>оценки диалогов</b> для контроля качества.<br>С сервиса cp.callibro.org'"
                   title="Диалер в U-Calls">
               </i>
             </div>
@@ -657,10 +660,10 @@
               </div>
             </div>
         </div>
-             
+
         <div class="col-12 mt-3">
           <button class="btn btn-sm btn-primary rounded" @click="saveSettings">
-            Сохранить 
+            Сохранить
           </button>
         </div>
       </div>
@@ -710,11 +713,14 @@ export default {
     },
     active_group: String,
     check: String,
-    user: String
+    user: {
+      type: Object,
+      default: {}
+    }
   },
   data() {
     return {
-      auth_user: JSON.parse(this.user),
+      auth_user: this.user,
       showChecklist: false,
       checklists:{},
       fields: [],
@@ -779,7 +785,7 @@ export default {
         11: "6_30 RED",
         12: "6_30",
       },
-      loader: null, 
+      loader: null,
       fill:{ gradient: ["#1890ff", "#28a745"] },
       items: [],
       params: [],
@@ -807,13 +813,16 @@ export default {
       checklist_tab: false,
     };
   },
-
-  created() {
-    this.fetchData();
-
-
+  watch: {
+    groups(){
+      this.init()
+    }
   },
+  created() {},
   methods: {
+    init(){
+      this.fetchData();
+    },
     saveChecklist(){
       axios.post("/checklist/save-checklist",{
         checklists: this.checklists
@@ -825,7 +834,7 @@ export default {
     showSidebar(user_id, day){
       this.toggle();
       var date = this.currentYear + '-' + this.monthInfo.month.padStart(2, "0") + '-' + day.padStart(2, "0");
-      
+
       axios.post("/checklist/get-checklist-by-user",{
         user_id:user_id,
         created_date: date
@@ -947,7 +956,7 @@ export default {
       // console.log(this.individual_type,'this.individual_type')
       // console.log(this.flagGroup,'this.flagGroup')
       // console.log(this.currentGroup,'this.currentGroup')
-          
+
       if (this.individual_type_id != null){
         if (this.flagGroup == 'index'){
           if (this.individual_type == 2 || this.individual_type == 3){
@@ -1016,7 +1025,7 @@ export default {
           this.normalizeItems();
           this.createUserIdList();
           this.setChecklistWeekTable();
-          this.setWeeksTable();    
+          this.setWeeksTable();
           this.setMonthsTable();
 
           this.setRecordsTable();

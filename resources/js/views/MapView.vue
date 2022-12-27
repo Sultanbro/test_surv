@@ -18,13 +18,11 @@ export default {
             scriptTag.src = 'https://maps.api.2gis.ru/2.0/loader.js?pkg=full'
             scriptTag.id = 'map-script'
             scriptTag.addEventListener('load', () => {
-                const kis = JSON.parse(this.json);
+                const kis = this.json;
 
                 DG.then(function() {
                     const map = DG.map('map', {
-                        center:
-                            [42.885933,71.369987]
-                        ,
+                        center: [42.885933,71.369987],
                         zoom: 4.5
                     })
 
@@ -73,7 +71,7 @@ export default {
     <DefaultLayout>
         <!-- <script src="https://maps.api.2gis.ru/2.0/loader.js?pkg=full"></script> -->
         <div class="old__content">
-            <div id="coordinates-maps"/>
+            <div id="map" style="width:100%;height:1500px;"/>
         </div>
     </DefaultLayout>
 </template>

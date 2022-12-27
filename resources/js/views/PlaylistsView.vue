@@ -20,11 +20,11 @@ export default {
     },
     mounted(){
         useAsyncPageData('/video_playlists').then(data => {
-            this.token = data.token
-            this.can_edit = data.can_edit
-            this.category = data.category
-            this.playlist = data.playlist
-            this.video = data.video
+            this.token = '' + data.token
+            this.can_edit = !!data.can_edit
+            this.category = +data.category
+            this.playlist = +data.playlist
+            this.video = +data.video
         }).catch(error => {
             console.error('useAsyncPageData', error)
         })

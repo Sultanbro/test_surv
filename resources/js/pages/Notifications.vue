@@ -1,5 +1,5 @@
 <template>
-<div>
+<div v-if="positions">
 
      <b-tabs type="card" :defaultActiveKey='"1"' class="specialtab pt-4">
 
@@ -412,6 +412,9 @@ export default {
                 this.selectUser()
             }
         },
+        positions(){
+            this.init()
+        }
     },
     data() {
         return {
@@ -458,15 +461,15 @@ export default {
             }
         }
     },
-    created() {
-        this.fetchData();
-    },
-    mounted: function () {
-        this.groups = JSON.parse(this.groups_with_id);
-    },
+    created() {},
+    mounted() {},
     methods: {
+        init(){
+            this.fetchData();
+            this.groups = this.groups_with_id;
+        },
         clearAll () {
-          this.selectedGroups = []
+            this.selectedGroups = []
         },
         addTag(newTag) {
             const tag = {
@@ -610,7 +613,6 @@ export default {
         },
 
     },
-    computed: {},
 }
 </script>
 <style src="vue-multiselect/dist/vue-multiselect.min.css"></style>

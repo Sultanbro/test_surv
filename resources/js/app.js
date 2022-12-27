@@ -233,7 +233,7 @@ Vue.component('analytics-page', require('./pages/AnalyticsPage.vue').default); /
 Vue.component('course-results', require('./pages/CourseResults.vue').default); // результаты по курсам
 Vue.component('my-course', require('./pages/MyCourse.vue').default); // курсы мои
 Vue.component('permissions', require('./pages/Permissions.vue').default); // курсы мои
-Vue.component('cabinet', require('./pages/Cabinet.vue').default); // курсы мои
+// Vue.component('cabinet', require('./pages/Cabinet.vue').default); // курсы мои
 
 
 // Настройки

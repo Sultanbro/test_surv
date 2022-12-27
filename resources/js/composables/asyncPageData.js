@@ -1,9 +1,15 @@
 import axios from 'axios'
 
 function getDataFromScript(dataScript){
-    const data = JSON.parse(dataScript.innerHTML)
-    dataScript.remove()
-    return data
+    try{
+        const data = JSON.parse(dataScript.innerHTML.replace(/&quot;/g,'"'))
+        dataScript.remove()
+        return data
+    }
+    catch(err){
+        console.error(err)
+        console.info('dataScript', dataScript, dataScript.innerHTML.replace(/&quot;/g,'"'))
+    }
 }
 
 export function useDataFromResponse(data){

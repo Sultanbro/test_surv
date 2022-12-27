@@ -1,4 +1,4 @@
-@extends('layouts.app')
+@extends('layouts.spa')
 @section('title', 'ТОП')
 @section('content')
 <script type="application/json" id="async-page-data">

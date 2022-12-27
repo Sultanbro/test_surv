@@ -11,9 +11,9 @@ export default {
     },
     data(){
         return {
-            groups: '',
-            active_group: 0,
-            check: 0,
+            groups: null,
+            active_group: '',
+            check: '',
             user: '',
             activeTab: 'nav-quality-tab',
             tabs: [
@@ -48,12 +48,6 @@ export default {
                     access: 'analytics_view'
                 },
                 {
-                    id: 'nav-top-tab',
-                    path: '/timetracking/top',
-                    title: 'TOП',
-                    access: 'top_view'
-                },
-                {
                     id: 'nav-salary-tab',
                     path: '/timetracking/salaries',
                     title: 'Начисления',
@@ -70,10 +64,10 @@ export default {
     },
     mounted(){
         useAsyncPageData('/timetracking/reports').then(data => {
-            this.groups = data.groups
-            this.active_group = data.active_group
-            this.check = data.check
-            this.user = data.user
+            this.groups = data.groups || null
+            this.active_group = '' + data.active_group
+            this.check = '' + data.check
+            this.user = '' + data.user
         }).catch(error => {
             console.error('useAsyncPageData', error)
         })
@@ -101,7 +95,7 @@ export default {
                                         :to="tab.path"
                                         :id="tab.id"
                                         class="nav-link"
-                                        :class="{active: tab === activeTab}"
+                                        :class="{active: tab.id === activeTab}"
                                     >{{ tab.title }}</router-link>
                                 </li>
                             </template>
@@ -110,7 +104,7 @@ export default {
                 </div>
                 <div class="col-md-12">
                     <TableQuality
-                        v-show="activeuserid"
+                        v-show="groups"
                         :groups="groups"
                         :active_group="active_group"
                         :check="check"

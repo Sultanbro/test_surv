@@ -14,7 +14,7 @@ export default {
     },
     mounted(){
         useAsyncPageData('/page').then(data => {
-            this.fines = data.fines
+            this.fines = data.fines || []
         }).catch(error => {
             console.error('useAsyncPageData', error)
         })

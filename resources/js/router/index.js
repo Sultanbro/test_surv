@@ -26,6 +26,7 @@ import SettingsView from '@/views/SettingsView'
 const router = new VueRouter({
     mode: 'history',
     routes: [
+        // newprofile.blade.php
         {
             path: '/',
             name: 'ProfileView',
@@ -34,6 +35,7 @@ const router = new VueRouter({
                 title: 'Мой профиль',
             },
         },
+        // cabinet.blade.php
         {
             path: '/cabinet',
             name: 'CabinetView',
@@ -42,6 +44,7 @@ const router = new VueRouter({
                 title: 'Настройка кабинета',
             },
         },
+        // news.blade.php
         {
             path: '/news',
             name: 'NewsView',
@@ -50,6 +53,7 @@ const router = new VueRouter({
                 title: 'Новости',
             },
         },
+        // ???.blade.php
         // {
         //     path: '/structure',
         //     name: 'StructureView',
@@ -58,6 +62,7 @@ const router = new VueRouter({
         //         title: 'Структура компании',
         //     },
         // },
+        // surv/kb.blade.php
         {
             path: '/kb',
             name: 'KnowledgeBaseView',
@@ -66,6 +71,7 @@ const router = new VueRouter({
                 title: 'База знаний',
             },
         },
+        // upbooks.blade.php
         {
             path: '/admin/upbooks',
             name: 'UpbooksView',
@@ -74,6 +80,7 @@ const router = new VueRouter({
                 title: 'Редактор книг',
             },
         },
+        // admin/playlists/index.blade.php
         {
             path: '/video_playlists',
             name: 'PlaylistsView',
@@ -82,6 +89,7 @@ const router = new VueRouter({
                 title: 'Плейлисты - Видео обучение',
             },
         },
+        // surv/courses.blade.php
         {
             path: '/courses',
             name: 'CoursesView',
@@ -90,6 +98,7 @@ const router = new VueRouter({
                 title: 'Курсы',
             },
         },
+        // admin/mycourse.blade.php
         {
             path: '/my-courses',
             name: 'MyCoursesView',
@@ -98,6 +107,7 @@ const router = new VueRouter({
                 title: 'Мои курсы',
             },
         },
+        // admin/reports.blade.php
         {
             path: '/timetracking/reports',
             name: 'TimetrackingView',
@@ -106,6 +116,7 @@ const router = new VueRouter({
                 title: 'Табель - Учет времени',
             },
         },
+        // admin/top.blade.php
         {
             path: '/timetracking/top',
             name: 'TopView',
@@ -114,6 +125,7 @@ const router = new VueRouter({
                 title: 'ТОП',
             },
         },
+        // admin/enter-report.blade.php
         {
             path: '/timetracking/reports/enter-report',
             name: 'EntertimeView',
@@ -122,6 +134,7 @@ const router = new VueRouter({
                 title: 'Время прихода - Учет времени',
             },
         },
+        // admin/analytics.blade.php
         {
             path: '/timetracking/analytics',
             name: 'HRView',
@@ -130,6 +143,7 @@ const router = new VueRouter({
                 title: 'HR - аналитика рекрутинга',
             },
         },
+        // admin/analytics-page.blade.php
         {
             path: '/timetracking/an',
             name: 'AnalyticsView',
@@ -138,6 +152,7 @@ const router = new VueRouter({
                 title: 'Аналитика отделов',
             },
         },
+        // admin/salary.blade.php
         {
             path: '/timetracking/salaries',
             name: 'SalaryView',
@@ -146,6 +161,7 @@ const router = new VueRouter({
                 title: 'Начисления',
             },
         },
+        // admin/quality_control.blade.php
         {
             path: '/timetracking/quality-control',
             name: 'QualityControlView',
@@ -154,6 +170,7 @@ const router = new VueRouter({
                 title: 'Контроль качества',
             },
         },
+        // surv/maps.blade.php
         {
             path: '/maps',
             name: 'MapView',
@@ -162,6 +179,7 @@ const router = new VueRouter({
                 title: 'Карта сотрудников',
             },
         },
+        // kpi.blade.php
         {
             path: '/kpi',
             name: 'KPIView',
@@ -170,6 +188,7 @@ const router = new VueRouter({
                 title: 'KPI - показателей',
             },
         },
+        // admin/info.blade.php
         {
             path: '/timetracking/info',
             name: 'FAQView',
@@ -178,6 +197,7 @@ const router = new VueRouter({
                 title: 'ЧАВО - FAQ',
             },
         },
+        // admin/fines.blade.php
         {
             path: '/timetracking/fines',
             name: 'FinesView',
@@ -186,6 +206,7 @@ const router = new VueRouter({
                 title: 'Депремирование',
             },
         },
+        // admin/settingtimetracking.blade.php
         {
             path: '/timetracking/settings',
             name: 'SettingsView',
@@ -194,6 +215,7 @@ const router = new VueRouter({
                 title: 'Настройки',
             },
         },
+        // admin/users/create.blade.php
         {
             path: '/timetracking/edit-person',
             name: 'UserEditView',

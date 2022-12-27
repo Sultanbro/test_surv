@@ -1,6 +1,5 @@
 <template>
-  <div>
-
+  <div v-if="data">
     <div class="row mr-4">
       <div class="col-3">
         <select class="form-control" v-model="monthInfo.currentMonth" @change="fetchData">
@@ -43,7 +42,7 @@
                        height="75px"
                        width="125px"
                        gaugeValueClass="gauge-span"/>
-              
+
             </div>
 
             <p class="text-center font-bold" style="font-size: 14px;margin-bottom: 0;">
@@ -232,8 +231,6 @@
 
     <div class="empty-space"></div>
   </div>
-
-
 </template>
 
 <script>
@@ -287,14 +284,20 @@ export default {
       ukey: 1
     }
   },
-  created() {
-    this.utility = this.data.utility;
-    this.proceeds = this.data.proceeds;
-    this.prognoz_groups = this.data.prognoz_groups
-    this.setMonth()
-    this.fetchData()
+  watch: {
+    data(){
+      this.init()
+    }
   },
+  created() {},
   methods: {
+    init(){
+      this.utility = this.data.utility;
+      this.proceeds = this.data.proceeds;
+      this.prognoz_groups = this.data.prognoz_groups
+      this.setMonth()
+      this.fetchData()
+    },
     showIcons(){
       this.rentability = this.data.rentability;
     },
@@ -365,7 +368,7 @@ export default {
         group_id: this.prognoz_groups[index].id,
         plan: this.prognoz_groups[index].plan,
       }).then(response => {
-            
+
             this.$toast.success('Успешно сохранено!')
             this.prognoz_groups[index].left_to_apply = Number(this.prognoz_groups[index].plan) - Number(this.prognoz_groups[index].fired);
             loader.hide()
@@ -401,7 +404,7 @@ export default {
       this.proceeds.fields.forEach(field => {
         obj[field] = null;
       });
-      
+
       obj['group_id'] = this.proceeds.lowest_id - 1;
 
       this.proceeds.records.splice(length - 1, 0, obj);
@@ -567,4 +570,4 @@ input.form-control.form-control-sm.wiwi {
 .no-table {
     width: auto !important;
 }
-</style> 
+</style>

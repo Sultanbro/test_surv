@@ -1,5 +1,8 @@
 <template>
-  <div class="d-flex">
+  <div
+    v-if="auth_role"
+    class="d-flex"
+  >
     <!-- left sidebar -->
     <div class="lp">
       <h1 class="page-title">Настройка кабинета</h1>
@@ -112,9 +115,9 @@
               </div>
             </div>
             <div class="form-group row">
-              <label class="col-sm-4 col-form-label font-weight-bold label-surv"
-                >Фамилия <span class="red">*</span></label
-              >
+              <label
+                class="col-sm-4 col-form-label font-weight-bold label-surv"
+              >Фамилия <span class="red">*</span></label>
               <div class="col-sm-8 p-0">
                 <input
                   class="form-control input-surv"
@@ -128,9 +131,9 @@
               </div>
             </div>
             <div class="form-group row">
-              <label class="col-sm-4 col-form-label font-weight-bold label-surv"
-                >Email <span class="red">*</span></label
-              >
+              <label
+                class="col-sm-4 col-form-label font-weight-bold label-surv"
+              >Email <span class="red">*</span></label>
               <div class="col-sm-8 p-0">
                 <input
                   class="form-control input-surv"
@@ -144,9 +147,9 @@
               </div>
             </div>
             <div class="form-group row">
-              <label class="col-sm-4 col-form-label font-weight-bold label-surv"
-                >Новый пароль
-              </label>
+              <label
+                class="col-sm-4 col-form-label font-weight-bold label-surv"
+              >Новый пароль</label>
               <div class="col-sm-8 p-0">
                 <input
                   v-model="password"
@@ -160,9 +163,9 @@
               </div>
             </div>
             <div class="form-group row">
-              <label class="col-sm-4 col-form-label font-weight-bold label-surv"
-                >День рождения <span class="red">*</span></label
-              >
+              <label
+                class="col-sm-4 col-form-label font-weight-bold label-surv"
+              >День рождения <span class="red">*</span></label>
               <div class="col-sm-8 p-0">
                 <input
                   v-model="birthday"
@@ -175,9 +178,9 @@
               </div>
             </div>
             <div class="form-group row">
-              <label class="col-sm-4 col-form-label font-weight-bold label-surv"
-                >Город<span class="red">*</span></label
-              >
+              <label
+                class="col-sm-4 col-form-label font-weight-bold label-surv"
+              >Город<span class="red">*</span></label>
               <div class="col-sm-8 p-0">
 
                   <input
@@ -378,16 +381,11 @@ import { bus } from '../bus'
 
 export default {
   name: "Cabinet",
-  props: {
-    auth_role: {},
-  },
-  computed: {
-    uploadedImage() {
-      return Object.keys(this.myCroppa).length !== 0;
-    }
-  },
   components:{
     Cropper
+  },
+  props: {
+    auth_role: {},
   },
   data() {
     return {
@@ -436,37 +434,47 @@ export default {
       croppie: null
     };
   },
+  computed: {
+    uploadedImage() {
+      return Object.keys(this.myCroppa).length !== 0;
+    }
+  },
   watch: {
     keywords(after, before) {
       this.fetch();
     },
-
+    auth_role(){
+      this.init()
+    }
   },
   mounted() {
           // this.drawProfile();
           // this.hasImage = this.$root.$children[1].hasImage;
   },
   created() {
-    this.fetchData();
-    this.user = JSON.parse(this.auth_role);
-    this.format_date(this.user.birthday);
-
-    if (this.user.img_url != null) {
-      this.image = "/users_img/" + this.user.img_url;
+    if(this.auth_role){
+      this.init()
     }
-    console.log(this.user.cropped_img_url);
-    if(this.user.cropped_img_url != null && this.user.cropped_img_url !== ''){
-      this.crop_image.image = "/cropped_users_img/" + this.user.cropped_img_url;
-    }
-    else if(this.user.img_url != null && this.user.img_url !== ''){
-      this.crop_image.image = "/users_img/" + this.user.img_url;
-    }else{
-      this.crop_image.hide = true;
-    }
-
-    console.log(this.$bvModal);
   },
   methods: {
+    init(){
+      this.fetchData();
+      this.user = this.auth_role;
+      this.format_date(this.user.birthday);
+
+      if (this.user.img_url != null) {
+        this.image = "/users_img/" + this.user.img_url;
+      }
+
+      if(this.user.cropped_img_url != null && this.user.cropped_img_url !== ''){
+        this.crop_image.image = "/cropped_users_img/" + this.user.cropped_img_url;
+      }
+      else if(this.user.img_url != null && this.user.img_url !== ''){
+        this.crop_image.image = "/users_img/" + this.user.img_url;
+      }else{
+        this.crop_image.hide = true;
+      }
+    },
     drawProfile(){
       // this.canvas_image.src = this.image;
       //this.myCanvas.drawImage(this.canvas_image, 0, 0, 250, 250);

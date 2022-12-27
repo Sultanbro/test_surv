@@ -16,7 +16,7 @@ export default {
     },
     mounted(){
         useAsyncPageData('/my-courses').then(data => {
-            this.user_id = data.user_id
+            this.user_id = +data.user_id
         }).catch(error => {
             console.error('useAsyncPageData', error)
         })

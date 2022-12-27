@@ -3,12 +3,10 @@
 @section('content')
 <script type="application/json" id="async-page-data">
     {
-        "auth_role": "{{ auth()->user() }}"
+        "auth_role": {{ auth()->user() }}
     }
 </script>
 @endsection
 
 @section('scripts')
-
-
 @endsection

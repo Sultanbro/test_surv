@@ -46,12 +46,6 @@ export default {
                     access: 'analytics_view'
                 },
                 {
-                    id: 'nav-top-tab',
-                    path: '/timetracking/top',
-                    title: 'TOП',
-                    access: 'top_view'
-                },
-                {
                     id: 'nav-salary-tab',
                     path: '/timetracking/salaries',
                     title: 'Начисления',

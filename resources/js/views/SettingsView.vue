@@ -25,7 +25,6 @@ export default {
     },
     data(){
         return {
-            activeTab: this.$route.query.tab || '1',
             tabs: [
                 {
                     id: '1',
@@ -95,6 +94,9 @@ export default {
         }
     },
     computed: {
+        activeTab(){
+            return this.$route.query.tab || '1'
+        },
         activeTabItem(){
             return this.tabs.find(item => item.id === this.activeTab)
         }
@@ -145,13 +147,13 @@ export default {
                                                 :id="`${tab.htmlId}-tab`"
                                                 class="nav-item"
                                             >
-                                                <a
-                                                    :href="tab.path"
+                                                <router-link
+                                                    :to="tab.path"
                                                     :aria-controls="tab.htmlId"
                                                     :aria-selected="tab.id === activeTab ? 'true' : 'false'"
                                                     class="nav-link"
                                                     :class="{active: tab.id === activeTab}"
-                                                >{{ tab.title }}</a>
+                                                >{{ tab.title }}</router-link>
                                             </li>
                                         </template>
                                     </ul>

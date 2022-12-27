@@ -11,9 +11,9 @@ export default {
     },
     data(){
         return {
-            groups: '',
-            years: '',
-            activeuserid: 0,
+            groups: null,
+            years: null,
+            activeuserid: '',
             activeuserpos: 0,
             is_admin: false,
             can_edit: false,
@@ -50,12 +50,6 @@ export default {
                     access: 'analytics_view'
                 },
                 {
-                    id: 'nav-top-tab',
-                    path: '/timetracking/top',
-                    title: 'TOП',
-                    access: 'top_view'
-                },
-                {
                     id: 'nav-salary-tab',
                     path: '/timetracking/salaries',
                     title: 'Начисления',
@@ -72,12 +66,12 @@ export default {
     },
     mounted(){
         useAsyncPageData('/timetracking/reports').then(data => {
-            this.groups = data.groups
-            this.years = data.years
-            this.activeuserid = data.activeuserid
-            this.activeuserpos = data.activeuserpos
-            this.is_admin = data.is_admin
-            this.can_edit = data.can_edit
+            this.groups = data.groups || null
+            this.years = data.years || null
+            this.activeuserid = '' + data.activeuserid
+            this.activeuserpos = +data.activeuserpos
+            this.is_admin = !!data.is_admin
+            this.can_edit = !!data.can_edit
         }).catch(error => {
             console.error('useAsyncPageData', error)
         })
@@ -115,7 +109,7 @@ export default {
                 <div class="col-md-12">
                     <TableAccrual
                         v-show="activeuserid"
-                        :groups="groups"
+                        :groupss="groups"
                         :years="years"
                         :activeuserid="activeuserid"
                         :activeuserpos="activeuserpos"

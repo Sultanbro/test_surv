@@ -11,8 +11,8 @@ export default {
     },
     data(){
         return {
-            groups: '',
-            activeuserid: 0,
+            groups: null,
+            activeuserid: '0',
             activeTab: 'nav-profilex-tab',
             tabs: [
                 {
@@ -46,12 +46,6 @@ export default {
                     access: 'analytics_view'
                 },
                 {
-                    id: 'nav-top-tab',
-                    path: '/timetracking/top',
-                    title: 'TOП',
-                    access: 'top_view'
-                },
-                {
                     id: 'nav-salary-tab',
                     path: '/timetracking/salaries',
                     title: 'Начисления',
@@ -68,8 +62,8 @@ export default {
     },
     mounted(){
         useAsyncPageData('/timetracking/analytics').then(data => {
-            this.groups = data.groups
-            this.activeuserid = data.activeuserid
+            this.groups = data.groups || null
+            this.activeuserid = '' + data.activeuserid
         }).catch(error => {
             console.error('useAsyncPageData', error)
         })

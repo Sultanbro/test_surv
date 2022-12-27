@@ -1,5 +1,5 @@
 <template>
-<div>
+<div v-if="positions">
 
   <div class="row mb-2">
     <div class="col-3 text-left">
@@ -389,7 +389,10 @@ export default {
       type: String,
       default: 'nosub'
     },
-    positions: String,
+    positions: {
+      type: Object,
+      default: {}
+    },
   },
   data() {
     return {
@@ -546,15 +549,12 @@ export default {
         localStorage.showFields = JSON.stringify(val);
       },
       deep: true
+    },
+    positions(){
+      this.init()
     }
   },
   created() {
-    this.my_positions = JSON.parse(this.positions);
-    this.my_positions.forEach((value, index) => {
-      this.jobFilters.push({ text: value.position, value: value.id });
-    });
-    this.getUsers()
-    this.setDefaultShowFields()
   },
   computed: {
     sortOptions() {
@@ -619,7 +619,14 @@ export default {
     this.totalRows =  this.filtered.length
   },
   methods: {
-
+    init(){
+      this.my_positions = this.positions;
+      this.my_positions.forEach((value, index) => {
+        this.jobFilters.push({ text: value.position, value: value.id });
+      });
+      this.getUsers()
+      this.setDefaultShowFields()
+    },
 
 
     setDefaultShowFields() {

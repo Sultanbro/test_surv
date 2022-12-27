@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div v-if="token">
     <div class="upbooks-page" v-if="activeBook === null">
       <div class="lp">
         <h1 class="page-title">Темы</h1>
@@ -12,7 +12,7 @@
           @click="selectCategory(c_index)"
         >
           <p>{{ cat.name }}</p>
-          <div class="d-flex aic ml-2" 
+          <div class="d-flex aic ml-2"
              :style="'position:absolute; right: 0; z-index: 2'"
              >
                  <i
@@ -23,13 +23,13 @@
 
           <i
             class="fa fa-trash"
-            v-if="cat.id != 0 && mode == 'edit'" 
+            v-if="cat.id != 0 && mode == 'edit'"
             @click.stop="deleteCat(c_index)"
           ></i>
           </div>
-        
 
-         
+
+
         </div>
 
         <button class="btn-add" @click="modals.add_category.show = true" v-if="mode == 'edit'">
@@ -103,11 +103,11 @@
       </div>
     </div>
 
-    <page-upbooks-read v-else 
-      :book_id="activeBook.id" 
+    <page-upbooks-read v-else
+      :book_id="activeBook.id"
       mode="read"
       @back="back"
-      :showBackBtn="true"  
+      :showBackBtn="true"
     />
 
     <b-modal
@@ -124,7 +124,7 @@
         placeholder="Название категории..."
         class="form-control mb-2"
       />
-      
+
       <button class="btn btn-primary rounded m-auto" @click="createCategory">
         <span>Сохранить</span>
       </button>
@@ -155,7 +155,7 @@
               v-model="modals.upload_book.file.model.title"
               placeholder="Название книги..."
               class="form-control mt-2 mb-2"
-            /> 
+            />
              <p class="mb-2 font-bold">Название автора</p>
             <input
               type="text"
@@ -174,7 +174,7 @@
             </select>
 
             <p class="mb-2 font-bold">Описание книги</p>
-             <textarea 
+             <textarea
               class="form-control mt-2 mb-2"
               placeholder="Описание..."
               v-model="modals.upload_book.file.model.description"
@@ -189,14 +189,14 @@
               v-else
               v-model="file_img"
               :state="Boolean(file_img)"
-              placeholder="Выберите или перетащите файл сюда..." 
+              placeholder="Выберите или перетащите файл сюда..."
               drop-placeholder="Перетащите файл сюда..."
               class="mt-3"
-              ></b-form-file> 
+              ></b-form-file>
           </div>
         </div>
-       
-   
+
+
         <button class="btn btn-primary rounded m-auto" @click="saveBook">
           <span>Сохранить</span>
         </button>
@@ -209,7 +209,7 @@
         :open="details != null"
         @close="details = null"
         width="40%"
-      > 
+      >
 
       <div class="d-flex" v-if="details != null">
         <div class="left f-70">
@@ -248,7 +248,7 @@
               v-model="modals.edit_book.item.title"
               placeholder="Название книги..."
               class="form-control mt-2 mb-2"
-            /> 
+            />
             <p class="mb-2 font-bold">Название автора</p>
             <input
               type="text"
@@ -257,7 +257,7 @@
               class="form-control mt-2 mb-2"
             />
             <p class="mb-2 font-bold">Описание книги</p>
-             <textarea 
+             <textarea
               class="form-control mt-2 mb-2"
               placeholder="Описание..."
               v-model="modals.edit_book.item.description"
@@ -286,14 +286,14 @@
               ref="edit_img"
               v-model="file_img"
               :state="Boolean(file_img)"
-              placeholder="Выберите или перетащите файл сюда..." 
+              placeholder="Выберите или перетащите файл сюда..."
               drop-placeholder="Перетащите файл сюда..."
               class="mt-3"
-              ></b-form-file> 
+              ></b-form-file>
           </div>
         </div>
 
-        
+
         <div class="segments mb-2" v-if="modals.edit_book.segments.length > 0">
           <div class="row mb-3">
             <div class="col-3">
@@ -312,11 +312,11 @@
             v-for="(segment, s) in modals.edit_book.segments"
             :key="s"
           />
-          
+
         </div>
 
         <div class="d-flex">
-          
+
           <button class="btn rounded" @click="addSegment">
             <span>Добавить тест</span>
           </button>
@@ -347,7 +347,7 @@
       </button>
 
     </sidebar>
-    
+
 
 
     <!-- Переименовать категорию -->
@@ -367,7 +367,7 @@
       <button class="btn btn-primary rounded m-auto" @click="saveCat">
         <span>Сохранить</span>
       </button>
-    </b-modal>  
+    </b-modal>
 
   </div>
 </template>
@@ -416,11 +416,16 @@ export default {
       },
     };
   },
-  created() {
-
-    this.fetchData();
+  watch: {
+    token(){
+      this.init()
+    }
   },
+  created() {},
   methods: {
+    init(){
+      this.fetchData();
+    },
     deleteSegment(i) {
       this.modals.edit_book.segments.splice(i,1);
     },
@@ -471,7 +476,7 @@ export default {
 
     deleteCat(i) {
       if (confirm("Вы уверены удалить категорию книг?")) {
-        
+
         let loader = this.$loading.show();
 
         axios
@@ -555,13 +560,13 @@ export default {
           });
         }
 
-      
+
     },
 
     editBook(book) {
       let loader = this.$loading.show();
 
-      this.modals.edit_book.show = true; 
+      this.modals.edit_book.show = true;
       this.modals.edit_book.item = book;
 
       axios
@@ -596,15 +601,15 @@ export default {
           this.modals.upload_book.show = false;
           this.modals.upload_book.file = null;
           data.img  = response.data;
-          
+
 
           if(data.group_id != this.activeCategory.id) {
             let i = this.activeCategory.books.findIndex(el => el.id == data.id);
             let j = this.categories.findIndex(el => el.id == data.group_id);
-            
+
             if(i != -1) {
               this.activeCategory.books.splice(i, 1)
-            } 
+            }
 
             if(j != -1) {
               this.categories[j].books.push(data);
@@ -654,7 +659,7 @@ export default {
             this.modals.edit_book.item.img = response.data
             this.categories[nc].books.push(this.modals.edit_book.item);
           }
-          
+
 
           this.modals.edit_book.show = false;
           this.modals.edit_book.item = null;
@@ -716,7 +721,7 @@ export default {
           id: this.editcat_id,
         })
         .then((response) => {
-        
+
 
           let i = this.categories.findIndex(el => el.id == this.editcat_id)
           if(i != -1) this.categories[i].name = this.editcat_name

@@ -1,6 +1,8 @@
 <template>
-    <div class="kpi-pages">
-        
+    <div
+        v-if="page"
+        class="kpi-pages"
+    >
         <div v-if="access == 'edit'">
             <b-tabs type="card" class="mt-4" :value="active" @activate-tab="(n,p,e) => active = n" >
                 <b-tab title="KPI" :key="0" card>
@@ -19,8 +21,8 @@
                     <indicators v-if="active == 4"></indicators>
                 </b-tab>
             </b-tabs>
-        
-           
+
+
         </div>
 
         <div v-else>
@@ -33,13 +35,13 @@
                 </b-tab>
             </b-tabs>
         </div>
-        
+
     </div>
     </template>
-    
+
     <script>
     export default {
-        name: "KPIPages", 
+        name: "KPIPages",
         props: {
             page: {
                 type: String,
@@ -54,36 +56,42 @@
                 active: 0,
             }
         },
-    
+        watch:{
+            page(){
+                this.init()
+            }
+        },
         created() {
-           // this.fetchData()
-           let uri = window.location.search.substring(1); 
-            let params = new URLSearchParams(uri);
-            this.active = params.get("target") ? 3 : 0;
         },
         mounted() {
-            let uri = window.location.search.substring(1); 
+            let uri = window.location.search.substring(1);
             let params = new URLSearchParams(uri);
             if(params.get("target")){
-                window.history.pushState({}, document.title, "/" + "kpi"); 
+                // может быть проблемой для spa
+                window.history.pushState({}, document.title, "/" + "kpi");
             }
         },
         methods: {
-    
+            init(){
+                // this.fetchData()
+                let uri = window.location.search.substring(1);
+                let params = new URLSearchParams(uri);
+                this.active = params.get("target") ? 3 : 0;
+            },
             fetchData() {
                 let loader = this.$loading.show();
-    
+
                 axios.post('/kpi/' + this.page, {
                     month: this.$moment(this.monthInfo.currentMonth, 'MMMM').format('M'),
                 }).then(response => {
-                  
+
                     loader.hide()
                 }).catch(error => {
                     loader.hide()
                     alert(error)
                 });
             },
-     
-        } 
+
+        }
     }
     </script>

@@ -1,5 +1,8 @@
 <template>
-<div class="mt-2 px-3">
+<div
+    v-if="groups"
+    class="mt-2 px-3"
+>
     <div class="mb-0">
         <div class="row mb-3">
             <div class="col-3">
@@ -83,6 +86,9 @@ export default {
             var container = document.querySelector(".table-responsive");
             container.scrollLeft = value;
         },
+        groups(){
+            this.init()
+        }
     },
     data() {
         return {
@@ -114,27 +120,29 @@ export default {
         };
     },
     created() {
-        this.dateInfo.currentMonth = this.dateInfo.currentMonth ?
-            this.dateInfo.currentMonth :
-            this.$moment().format("MMMM");
-        let currentMonth = this.$moment(this.dateInfo.currentMonth, "MMMM");
-
-        //Расчет выходных дней
-        this.dateInfo.monthEnd = currentMonth.endOf("month"); //Конец месяца
-        this.dateInfo.weekDays = currentMonth.weekdayCalc(this.dateInfo.monthEnd, [
-            6,
-        ]); //Колличество выходных
-        this.dateInfo.daysInMonth = currentMonth.daysInMonth(); //Колличество дней в месяце
-        this.dateInfo.workDays = this.dateInfo.daysInMonth - this.dateInfo.weekDays; //Колличество рабочих дней
-
-        //Текущая группа
-        this.currentGroup = this.currentGroup ?
-            this.currentGroup :
-            this.groups[0]["id"];
-
-        this.fetchData();
     },
     methods: {
+        init(){
+            this.dateInfo.currentMonth = this.dateInfo.currentMonth ?
+                this.dateInfo.currentMonth :
+                this.$moment().format("MMMM");
+            let currentMonth = this.$moment(this.dateInfo.currentMonth, "MMMM");
+
+            //Расчет выходных дней
+            this.dateInfo.monthEnd = currentMonth.endOf("month"); //Конец месяца
+            this.dateInfo.weekDays = currentMonth.weekdayCalc(this.dateInfo.monthEnd, [
+                6,
+            ]); //Колличество выходных
+            this.dateInfo.daysInMonth = currentMonth.daysInMonth(); //Колличество дней в месяце
+            this.dateInfo.workDays = this.dateInfo.daysInMonth - this.dateInfo.weekDays; //Колличество рабочих дней
+
+            //Текущая группа
+            this.currentGroup = this.currentGroup ?
+                this.currentGroup :
+                this.groups[0]["id"];
+
+            this.fetchData();
+        },
         //Установка выбранного года
         setYear() {
             this.dateInfo.currentYear = this.dateInfo.currentYear ?

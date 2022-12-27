@@ -11,8 +11,8 @@ export default {
     },
     data(){
         return {
-            groups: '',
-            years: '',
+            groups: null,
+            years: null,
             activeuserid: '',
             activeTab: 'nav-entertime-tab',
             tabs: [
@@ -47,12 +47,6 @@ export default {
                     access: 'analytics_view'
                 },
                 {
-                    id: 'nav-top-tab',
-                    path: '/timetracking/top',
-                    title: 'TOП',
-                    access: 'top_view'
-                },
-                {
                     id: 'nav-salary-tab',
                     path: '/timetracking/salaries',
                     title: 'Начисления',
@@ -71,7 +65,7 @@ export default {
         useAsyncPageData('/timetracking/reports/enter-report').then(data => {
             this.groups = data.groups
             this.years = data.years
-            this.activeuserid = data.activeuserid
+            this.activeuserid = '' + (data.activeuserid || '')
         }).catch(error => {
             console.error('useAsyncPageData', error)
         })

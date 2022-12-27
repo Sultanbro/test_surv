@@ -1,11 +1,14 @@
 <template>
-<div class="d-flex mycourse">
+<div
+  v-if="user_id"
+  class="d-flex mycourse"
+>
 
   <div class="disable_course" v-if="disable_course">
 
         <!-- <div v-if="activeCourse != null" class="d-left">
            <div class="gggggg">
-            <h1 class="page-title">{{ activeCourse.name }}</h1> 
+            <h1 class="page-title">{{ activeCourse.name }}</h1>
 
               <div class="mb-3">
                 <img class="course-img w-full mr-3 mb-2"
@@ -15,10 +18,10 @@
                 <div class="mt-3" v-html="activeCourse.text"></div>
               </div>
 
-             
+
 
               <p><b>Блоки курса</b></p>
-              <div class="course-item pass" 
+              <div class="course-item pass"
                 v-for="(item, c_index) in items"
                 :key="item.id"
               >
@@ -38,12 +41,12 @@
             <button class="btn btn-primary" @click="getCourse(0)">Вернуться к текущему курсу</button>
           </div>
         </div>
-       
+
   </div>
 
   <!-- левый сайдбар -->
   <div class="lp">
-   
+
     <!-- список курсов -->
     <div v-if="activeCourse == null">
          <div class="section d-flex aic jcsb my-2"
@@ -58,7 +61,7 @@
     <!-- выбранный курс -->
     <div v-else>
       <div class="gggggg">
-        <h1 class="page-title">{{ activeCourse.name }}</h1> 
+        <h1 class="page-title">{{ activeCourse.name }}</h1>
 
           <div>
             <img class="course-img w-full"
@@ -100,8 +103,8 @@
   <div class="rp" style="flex: 1 1 0%; padding-bottom: 0px;">
     <div class="content mt-3" :class="{'knowbase': activeCourseItem && activeCourseItem.item_model == 'App\\KnowBase'}">
       <div v-if="activeCourse" class="">
-       
-    
+
+
         <!-- поле курса -->
 
             <div class="mmmm-block">
@@ -125,9 +128,9 @@
                       @forGenerateCertificate="generateCertificateStart"
                     />
                   </div>
- 
+
                   <div class="px-3 pt-3" v-if="activeCourseItem.item_model == 'App\\Models\\Videos\\VideoPlaylist' || activeCourseItem.item_model == 'App\\Models\\Videos\\Video'">
-                      <page-playlist-edit 
+                      <page-playlist-edit
                           ref="playlist"
                           :id="activeCourseItem.item_id"
                           :course_item_id="activeCourseItem.id"
@@ -145,25 +148,25 @@
                   </div>
 
                   <div v-if="activeCourseItem.item_model == 'App\\KnowBase'" class="opopoppop">
-                  
-                       <booklist 
+
+                       <booklist
                         ref="knowbase"
-                        :trees="trees" 
-                        :parent_name="activeCourseItem.title" 
+                        :trees="trees"
+                        :parent_name="activeCourseItem.title"
                         :course_item_id="activeCourseItem.id"
                         :parent_id="activeCourseItem.item_id"
-                        :show_page_id="activeCourseItem.last_item" 
+                        :show_page_id="activeCourseItem.last_item"
                         :mode="'read'"
                         :course_page="true"
                         :enable_url_manipulation="false"
-                        :auth_user_id="0" 
+                        :auth_user_id="0"
                         :all_stages="all_stages"
                         :completed_stages="completed_stages"
                         :key="activeCourseKey"
                         @changeProgress="completed_stages++"
                         @forGenerateCertificate="generateCertificateStart"
                         @nextElement="nextElement"
-                      /> 
+                      />
 
                   </div>
 
@@ -180,7 +183,7 @@
     </div>
   </div>
 
- 
+
 
 </div>
 </template>
@@ -195,7 +198,7 @@ export default {
     props:{
         user_id: {
             type: Number,
-            default: null
+            default: 0
         }
     },
   data() {
@@ -215,15 +218,12 @@ export default {
         generateCertificate: false
     };
   },
-
-  created() {
-    this.fetchData();
-      // бывор группы
-    const urlParams = new URLSearchParams(window.location.search);
-    let id = urlParams.get("id");
-    if (id) {
-      this.getCourse(id);
+  watch:{
+    user_id(){
+      this.init()
     }
+  },
+  created() {
   },
 
   computed: {
@@ -233,8 +233,17 @@ export default {
   },
 
   mounted() {},
-  
+
   methods: {
+      init(){
+        this.fetchData();
+          // бывор группы
+        const urlParams = new URLSearchParams(window.location.search);
+        let id = urlParams.get("id");
+        if (id) {
+          this.getCourse(id);
+        }
+      },
       generateCertificateStart(model){
           console.log(model);
           if(model === 0){
@@ -255,7 +264,7 @@ export default {
 
       if(index != -1 && this.items.length - 1 != index) {
         this.activeCourseItem.status = 1;
-        this.activeCourseItem = this.items[index + 1];  
+        this.activeCourseItem = this.items[index + 1];
         this.activeCourseItem.status = 2;
           this.generateCertificate = false;
       } else {
@@ -264,11 +273,11 @@ export default {
             timeout: 5000
         });
       }
-      
+
     },
 
     nextElement() {
-      
+
       if(this.activeCourseItem.item_model == 'App\\KnowBase') {
         this.$refs.knowbase.nextElement();
       }
@@ -280,8 +289,8 @@ export default {
       if(this.activeCourseItem.item_model == 'App\\Models\\Videos\\Video') {
         this.$refs.playlist.nextElement();
       }
-      
-     
+
+
     },
 
 
@@ -296,7 +305,7 @@ export default {
         } else {
           this.congrats = true;
         }
-     
+
       }
     },
     selectCourse(i) {
@@ -321,16 +330,16 @@ export default {
     },
 
     selectCourseItem(i) {
-      
+
       if(this.canSelect(this.items[i].status)) {
-  
+
         this.congrats = false;
         this.activeCourseItem = this.items[i];
-        
+
       }
-        
+
     },
-      
+
     canSelect(status) {
       const COMPLETED = 1;
       const STARTED = 2;
@@ -349,20 +358,20 @@ export default {
       this.activeStep = step;
     },
 
- 
+
     nextStep() {
       let index = this.activeCourseItem.steps.findIndex(s => s.id == this.activeStep.id);
-      
+
       this.$toast.info(index);
       this.$toast.info(this.activeCourseItem.steps[index]);
       if(this.activeCourseItem.steps[index].status != 1) {
         this.$toast.info('Ответьте на вопросы правильно!');
         return ;
       }
-   
+
 
       if(this.activeCourseItem.steps.length - 1  == index) {
-         
+
         let c_index = this.items.findIndex(s => s.id == this.activeCourseItem.id);
         if(this.items.length - 1 == c_index) {
           this.$toast.info('Конец курса!');
@@ -376,7 +385,7 @@ export default {
         this.activeCourseItem.steps[index + 1];
       }
 
-     
+
     },
 
     getCourse(id) {
@@ -393,7 +402,7 @@ export default {
           if(this.activeCourse != null && !this.activeCourse.is_active) {
             this.disable_course = true;
           }
-          
+
           this.completed_stages = response.data.completed_stages;
           this.all_stages = response.data.all_stages;
 

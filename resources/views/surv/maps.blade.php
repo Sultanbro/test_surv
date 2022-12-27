@@ -3,7 +3,7 @@
 @section('content')
 <script type="application/json" id="async-page-data">
     {
-        "json": {{json_encode($maps_array,true)}}
+        "json": {{json_encode($maps_array)}}
     }
 </script>
 @endsection

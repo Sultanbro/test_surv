@@ -4,19 +4,19 @@ import { useAsyncPageData } from '@/composables/asyncPageData'
 const Cabinet = () => import(/* webpackChunkName: "CabinetPage" */ '@/pages/Cabinet')
 
 export default {
-    name: 'Cabinet',
+    name: 'CabinetView',
     components: {
         DefaultLayout,
         Cabinet,
     },
     data(){
         return {
-            auth_role: '',
+            auth_role: null,
         }
     },
     mounted(){
         useAsyncPageData('/page').then(data => {
-            this.auth_role = data.auth_role
+            this.auth_role = data.auth_role || null
         }).catch(error => {
             console.error('useAsyncPageData', error)
         })
@@ -28,7 +28,7 @@ export default {
     <DefaultLayout>
         <div class="old__content">
             <Cabinet
-                v-show="page"
+                v-show="auth_role"
                 :auth_role="auth_role"
             />
         </div>

@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div v-if="positions">
       <b-row class="align-items-center">
           <b-col cols="12" lg="4">
              <b-form-group label="Должность">
@@ -141,12 +141,12 @@ export default {
           this.indexation = response.data.indexation;
           this.sum = response.data.sum;
           this.desc = response.data.desc;
-          
+
         }).catch(error => {
           console.log(error.response)
         })
-        
-        
+
+
   // if (response.data) {
   //                   this.gname = this.activebtn
   //                   this.value = response.data.users
@@ -159,7 +159,7 @@ export default {
   //               } else {
   //                   this.value = []
   //               }
-    },  
+    },
 
     addPosition() {
       axios.post('/timetracking/settings/positions/add', {
@@ -172,7 +172,7 @@ export default {
            this.positions.push(response.data.pos)
           this.new_position = ''
         }
-       
+
       }).catch(error => {
         console.log(error.response)
       })
@@ -284,7 +284,7 @@ span.before {
     background: #017cff !important;
 }
 .pos-desc td {
-  padding: 0; 
+  padding: 0;
 }
 .pos-desc td textarea {
       font-size: 12px;
@@ -320,7 +320,7 @@ span.before {
         /* margin-left: 1% !important; */
         margin-right: 1% !important;
         max-width: 24% !important;
-    }    
+    }
 }
 .scscsc {
     margin-left: 15px;

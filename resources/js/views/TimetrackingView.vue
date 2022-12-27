@@ -11,10 +11,10 @@ export default {
     },
     data(){
         return {
-            groups: '',
-            fines: '',
-            years: '',
-            can_edit: '',
+            groups: null,
+            fines: null,
+            years: null,
+            can_edit: false,
             activeuserid: '',
             activeuserpos: '',
             activeTab: 'nav-home-tab',
@@ -50,12 +50,6 @@ export default {
                     access: 'analytics_view'
                 },
                 {
-                    id: 'nav-top-tab',
-                    path: '/timetracking/top',
-                    title: 'TOП',
-                    access: 'top_view'
-                },
-                {
                     id: 'nav-salary-tab',
                     path: '/timetracking/salaries',
                     title: 'Начисления',
@@ -72,12 +66,12 @@ export default {
     },
     mounted(){
         useAsyncPageData('/timetracking/reports').then(data => {
-            this.groups = data.groups
-            this.fines = data.fines
-            this.years = data.years
-            this.can_edit = data.can_edit
-            this.activeuserid = data.activeuserid
-            this.activeuserpos = data.activeuserpos
+            this.groups = data.groups || null
+            this.fines = data.fines || null
+            this.years = data.years || null
+            this.can_edit = !!data.can_edit
+            this.activeuserid = '' + data.activeuserid
+            this.activeuserpos = '' + data.activeuserpos
         }).catch(error => {
             console.error('useAsyncPageData', error)
         })
