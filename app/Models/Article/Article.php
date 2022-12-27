@@ -18,6 +18,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Carbon;
+use Illuminate\Database\Eloquent\Casts\Attribute;
 
 /**
  * @property int $id
@@ -46,6 +47,10 @@ use Illuminate\Support\Carbon;
 class Article extends Model
 {
     use SoftDeletes, Filterable;
+
+    protected $appends = [
+        'content',
+    ];
 
     protected $fillable = [
         'author_id',
@@ -81,6 +86,38 @@ class Article extends Model
     public function files(): MorphMany
     {
         return $this->morphMany(File::class, 'fileable', 'fileable_type', 'fileable_id');
+    }
+
+    public function getContentAttribute()
+    {   
+        $content = $this->attributes['content'];
+
+        preg_match_all('/<img[^>]+>/i', $content, $result); 
+
+        $doc = new \DOMDocument();
+        $doc->loadHTML('<?xml encoding="utf-8" ?>' .$content);
+        $imageTags = $doc->getElementsByTagName('img');
+
+        foreach($imageTags as $tag) {
+            $url = $tag->getAttribute('src');
+            $host = parse_url($url, PHP_URL_HOST);
+            $path = parse_url($url, PHP_URL_PATH);
+
+            if($host !== 'storage.oblako.kz') continue;
+            if($path == '') continue;
+            
+            $path = str_replace('/tenant'.tenant('id'), '', $path);
+
+            $tempUrl = \Storage::disk('s3')->temporaryUrl(
+                $path, now()->addMinutes(360)
+            );
+            
+            $tag->setAttribute('src', $tempUrl);
+
+            //$content = str_replace(utf8_decode($url), $tempUrl, $content);
+        }
+
+        return $doc->saveHTML();
     }
 
     public function views(): BelongsToMany

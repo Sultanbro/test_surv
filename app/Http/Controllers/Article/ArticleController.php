@@ -30,6 +30,7 @@ class ArticleController extends Controller
 
         $articles = Article::availableFor($user)->filter($filter)->orderByDesc('created_at');
 
+       
         $pinArticles = (clone $articles)
             ->whereHas('pins', function ($q) use ($user) {
                 $q->where('user_id', $user->id);
@@ -39,6 +40,8 @@ class ArticleController extends Controller
         $articles->whereNotIn('id', $pinArticles->pluck('id')->toArray());
 
         $paginationArticles = $paginationService->paginate($articles, $request->getPagination());
+
+        //if($user->id == 4444) $paginationArticles = $this->service->parseImages($paginationArticles);
 
         return response()->json(new JsonSuccessResponse(
             __('model/article.index'),
