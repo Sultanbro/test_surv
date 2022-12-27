@@ -51,6 +51,9 @@ class UpbookController extends Controller
         $disk = \Storage::disk('s3');
         
         foreach ($cats as $xkey => $cat) {
+
+            if(!$cat->books) continue;
+
             foreach ($cat->books as $key => $book) {
                 if($book->domain == 'storage.oblako.kz') {
                     $book->link = $disk->temporaryUrl(
