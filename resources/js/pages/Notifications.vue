@@ -461,7 +461,11 @@ export default {
             }
         }
     },
-    created() {},
+    created() {
+        if(this.positions){
+            this.init()
+        }
+    },
     mounted() {},
     methods: {
         init(){

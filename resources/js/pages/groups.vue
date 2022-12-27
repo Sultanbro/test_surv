@@ -594,7 +594,11 @@ export default {
       this.init()
     }
   },
-  created() {},
+  created() {
+    if(this.activeuserid){
+      this.init()
+    }
+  },
   mounted() {},
   methods: {
     init(){

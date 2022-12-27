@@ -121,6 +121,11 @@ export default {
       }
     }
   },
+  watch:{
+    positions(value){
+        this.data = value
+    }
+  },
   mounted() {
     // this.getPositions()
   },

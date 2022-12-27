@@ -555,6 +555,9 @@ export default {
     }
   },
   created() {
+    if(this.positions){
+      this.init()
+    }
   },
   computed: {
     sortOptions() {

@@ -462,7 +462,9 @@ export default {
     },
 
     created() {
-
+        if(this.groups){
+            this.init()
+        }
     },
     methods: {
         init(){

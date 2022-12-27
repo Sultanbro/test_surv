@@ -323,6 +323,9 @@ export default {
   },
 
   created() {
+    if(this.auth_user_id){
+      this.init()
+    }
   },
 
   methods: {

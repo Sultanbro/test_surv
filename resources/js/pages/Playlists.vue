@@ -337,7 +337,11 @@ export default {
       this.init()
     }
   },
-  created() {},
+  created() {
+    if(this.token){
+      this.init()
+    }
+  },
 
   methods: {
     init(){

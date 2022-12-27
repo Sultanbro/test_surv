@@ -289,7 +289,11 @@ export default {
       this.init()
     }
   },
-  created() {},
+  created() {
+    if(this.data){
+      this.init()
+    }
+  },
   methods: {
     init(){
       this.utility = this.data.utility;

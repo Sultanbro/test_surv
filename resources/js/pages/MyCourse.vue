@@ -224,6 +224,9 @@ export default {
     }
   },
   created() {
+    if(this.user_id){
+      this.init()
+    }
   },
 
   computed: {

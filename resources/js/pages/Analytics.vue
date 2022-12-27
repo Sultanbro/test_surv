@@ -363,7 +363,11 @@ export default {
             this.init()
         }
     },
-    created() {},
+    created() {
+        if(this.groups){
+            this.init()
+        }
+    },
     methods: {
         init(){
             // бывор группы

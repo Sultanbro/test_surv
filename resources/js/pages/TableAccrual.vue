@@ -588,6 +588,9 @@ export default {
         };
     },
     created() {
+        if(this.groupss){
+            this.init()
+        }
     },
     methods: {
         init(){

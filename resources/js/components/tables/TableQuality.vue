@@ -818,7 +818,11 @@ export default {
       this.init()
     }
   },
-  created() {},
+  created() {
+    if(this.groups){
+      this.init()
+    }
+  },
   methods: {
     init(){
       this.fetchData();
