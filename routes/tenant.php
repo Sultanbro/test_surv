@@ -2,79 +2,66 @@
 
 declare(strict_types=1);
 
-
-use App\Http\Controllers\Admin\ActivityController;
-use App\Http\Controllers\Admin\Group\GroupUserController;
-use App\Http\Controllers\Admin\ProjectController;
-use App\Http\Controllers\Admin\AnalyticsController;
-use App\Http\Controllers\Admin\CheckListController;
-use App\Http\Controllers\Admin\DecompositionController;
-use App\Http\Controllers\Admin\FineController;
-use App\Http\Controllers\Admin\GroupAnalyticsController;
-use App\Http\Controllers\Admin\KpiController as OldKpiController;
-use App\Http\Controllers\Admin\NpsController;
-use App\Http\Controllers\Admin\PositionController;
-use App\Http\Controllers\Admin\Position\PositionController as TimeTrackPositionController;
-use App\Http\Controllers\Admin\ProfileController;
-use App\Http\Controllers\Admin\QualityController;
-use App\Http\Controllers\Admin\QuartalBonusController;
-use App\Http\Controllers\Admin\SalaryController;
-use App\Http\Controllers\Admin\TimeTrack\SettingController as TimeTrackSetting;
-use App\Http\Controllers\Admin\TimetrackingController;
-use App\Http\Controllers\Admin\TopController;
-use App\Http\Controllers\Admin\TraineeController;
-use App\Http\Controllers\Admin\UserController;
-use App\Http\Controllers\Admin\UserFineController;
-use App\Http\Controllers\Admin\UserProfileController;
+use App\Http\Controllers\Settings\Group\GroupUserController;
+use App\Http\Controllers\Analytics\AnalyticsController;
+use App\Http\Controllers\Settings\CheckListController;
+use App\Http\Controllers\Settings\FineController;
+use App\Http\Controllers\Analytics\HRController;
+use App\Http\Controllers\Analytics\TopController;
+use App\Http\Controllers\Analytics\GroupsController;
+use App\Http\Controllers\Analytics\NpsController;
+use App\Http\Controllers\Analytics\QualityController;
+use App\Http\Controllers\Salary\QuartalBonusController;
+use App\Http\Controllers\Salary\SalaryController;
+use App\Http\Controllers\Settings\SettingController;
+use App\Http\Controllers\Settings\PositionController;
+use App\Http\Controllers\Timetrack\TimetrackingController;
+use App\Http\Controllers\User\TraineeController;
+use App\Http\Controllers\User\EmployeeController;
+use App\Http\Controllers\User\CabinetController;
+use App\Http\Controllers\User\ProjectController;
+use App\Http\Controllers\User\ProfileController;
 use App\Http\Controllers\Article\ArticleActionController;
 use App\Http\Controllers\Article\ArticleController;
 use App\Http\Controllers\Article\Comments\ArticleCommentActionController;
 use App\Http\Controllers\Article\Comments\ArticleCommentController;
 use App\Http\Controllers\Article\NewsController;
-use App\Http\Controllers\AttendanceController;
 use App\Http\Controllers\Auth\LoginController;
-use App\Http\Controllers\Award\AwardCategoryController;
-use App\Http\Controllers\Award\AwardController;
-use App\Http\Controllers\Birthday\BirthdayController;
-use App\Http\Controllers\CabinetController;
-use App\Http\Controllers\CallibroController;
+use App\Http\Controllers\Settings\Award\AwardCategoryController;
+use App\Http\Controllers\Settings\Award\AwardController;
 use App\Http\Controllers\Course\RegressCourseController;
-use App\Http\Controllers\CourseController;
-use App\Http\Controllers\CourseProgressController;
-use App\Http\Controllers\CourseResultController;
-use App\Http\Controllers\Department\UserController as DepartmentUserController;
-use App\Http\Controllers\Dictionary\DictionaryController;
-use App\Http\Controllers\Files\FileController;
-use App\Http\Controllers\FileUploadController;
-use App\Http\Controllers\GlossaryController;
-use App\Http\Controllers\GroupsController;
-use App\Http\Controllers\HomeController;
-use App\Http\Controllers\IntellectController;
-use App\Http\Controllers\KnowBaseController;
+use App\Http\Controllers\Course\CourseController;
+use App\Http\Controllers\Course\CourseProgressController;
+use App\Http\Controllers\Course\CourseResultController;
+use App\Http\Controllers\Api\DepartmentUserController;
+use App\Http\Controllers\Learning\GlossaryController;
+use App\Http\Controllers\Learning\KnowBaseController;
+use App\Http\Controllers\Learning\UpbookController;
+use App\Http\Controllers\Learning\MyCourseController;
+use App\Http\Controllers\Learning\LearningController;
+use App\Http\Controllers\PageController;
+use App\Http\Controllers\Services\CallibroController;
+use App\Http\Controllers\Services\IntellectController;
 use App\Http\Controllers\Kpi\BonusController;
 use App\Http\Controllers\Kpi\IndicatorController;
 use App\Http\Controllers\Kpi\KpiController as KpisController;
 use App\Http\Controllers\Kpi\KpiStatController;
 use App\Http\Controllers\Kpi\QuartalPremiumController;
-use App\Http\Controllers\LearningController;
-use App\Http\Controllers\MapsController;
-use App\Http\Controllers\MyCourseController;
-use App\Http\Controllers\NotificationControlller;
-use App\Http\Controllers\PermissionController;
-use App\Http\Controllers\ProfileSalaryController;
-use App\Http\Controllers\SettingController;
-use App\Http\Controllers\UpbookController;
-use App\Http\Controllers\Uploads\UploadController;
-use App\Http\Controllers\Video\VideoCategoryController;
-use App\Http\Controllers\Video\VideoController;
-use App\Http\Controllers\Video\VideoGroupController;
-use App\Http\Controllers\Video\VideoPlaylistController;
+use App\Http\Controllers\Services\MapController;
+use App\Http\Controllers\Services\NotificationControlller;
+use App\Http\Controllers\Settings\PermissionController;
+use App\Http\Controllers\Salary\ProfileSalaryController;
+use App\Http\Controllers\Settings\OtherSettingController;
+use App\Http\Controllers\Learning\Video\VideoCategoryController;
+use App\Http\Controllers\Learning\Video\VideoController;
+use App\Http\Controllers\Learning\Video\VideoGroupController;
+use App\Http\Controllers\Learning\Video\VideoPlaylistController;
 use BeyondCode\LaravelWebSockets\Facades\WebSocketsRouter;
 use Eddir\Messenger\Handlers\MessengerWebSocketHandler;
 use Illuminate\Support\Facades\Route;
 use Stancl\Tenancy\Middleware\InitializeTenancyBySubdomain;
 use Stancl\Tenancy\Middleware\PreventAccessFromCentralDomains;
-use App\Http\Controllers\Admin\Group\GroupController as TimeTrackGroupController;
+use App\Http\Controllers\Settings\Group\GroupController;
 
 /*
 |--------------------------------------------------------------------------
@@ -122,7 +109,7 @@ Route::middleware([
     PreventAccessFromCentralDomains::class,
 ])->group(function () {
             
-    WebSocketsRouter::webSocket('/messenger/app/{appKey}', MessengerWebSocketHandler::class);
+    //WebSocketsRouter::webSocket('/messenger/app/{appKey}', MessengerWebSocketHandler::class);
 
     Route::get('/login/{subdomain}', [ProjectController::class, 'login']);
     Route::post('/projects/create', [ProjectController::class, 'create']);
@@ -156,17 +143,17 @@ Route::middleware([
         'prefix' => 'profile',
         'as' => 'profile.'
     ], function () {
-        // Route::post('/', [UserProfileController::class, 'profile']);
-        // Route::any('/', [UserProfileController::class, 'getProfile']);
+        // Route::post('/', [ProfileController::class, 'profile']);
+        // Route::any('/', [ProfileController::class, 'getProfile']);
 
         Route::get('/', [ProfileController::class, 'newprofile']);
-        Route::any('/personal-info', [UserProfileController::class, 'personalInfo']);
-        Route::any('/recruter-stats', [UserProfileController::class, 'recruterStatsRates']);
-        Route::any('/activities', [UserProfileController::class, 'activities']);
-        Route::any('/courses', [UserProfileController::class, 'courses']);
-        Route::any('/courses/{id}', [UserProfileController::class, 'course']);
-        Route::any('/trainee-report', [UserProfileController::class, 'traineeReport']);
-        Route::any('/payment-terms', [UserProfileController::class, 'paymentTerms']);
+        Route::any('/personal-info', [ProfileController::class, 'personalInfo']);
+        Route::any('/recruter-stats', [ProfileController::class, 'recruterStatsRates']);
+        Route::any('/activities', [ProfileController::class, 'activities']);
+        Route::any('/courses', [ProfileController::class, 'courses']);
+        Route::any('/courses/{id}', [ProfileController::class, 'course']);
+        Route::any('/trainee-report', [ProfileController::class, 'traineeReport']);
+        Route::any('/payment-terms', [ProfileController::class, 'paymentTerms']);
     });
 
     Route::group([
@@ -188,19 +175,18 @@ Route::middleware([
     });
 
 
-    Route::any('/bonuses', [UserProfileController::class, 'getBonuses']);
-
-    Route::post('/corp_book/set-read/', [UserController::class, 'corp_book_read']); // Прочитать страницу из корп книги @TODO при назначении книги
-    Route::any('/timetracking/user/{id}', [UserController::class, 'profile']);
-    Route::any('/timetracking/get-persons', [UserController::class, 'getpersons']);
-    Route::get('/timetracking/create-person', [UserController::class, 'createPerson'])->name('users.create');
-    Route::post('/timetracking/person/store', [UserController::class, 'storePerson'])->name('users.store');
-    Route::get('/timetracking/edit-person', [UserController::class, 'editperson'])->name('users.edit');
-    Route::post('/timetracking/person/update', [UserController::class, 'updatePerson'])->name('users.update');
-    Route::post('/timetracking/edit-person/group', [UserController::class, 'editPersonGroup']); // Удалять добавлять пользователя в группы
-    Route::post('/timetracking/edit-person/head_in_groups', [UserController::class, 'setUserHeadInGroups']); // Удалять добавлять пользователя руководителем групп
-    Route::any('/timetracking/delete-person', [UserController::class, 'deleteUser'])->name('removeUser');
-    Route::any('/timetracking/recover-person', [UserController::class, 'recoverUser'])->name('recoverUser');
+    Route::any('/bonuses', [ProfileController::class, 'getBonuses']);
+    Route::post('/corp_book/set-read/', [EmployeeController::class, 'corp_book_read']); // Прочитать страницу из корп книги @TODO при назначении книги
+    Route::any('/timetracking/user/{id}', [EmployeeController::class, 'profile']);
+    Route::any('/timetracking/get-persons', [EmployeeController::class, 'getpersons']);
+    Route::get('/timetracking/create-person', [EmployeeController::class, 'createPerson'])->name('users.create');
+    Route::post('/timetracking/person/store', [EmployeeController::class, 'storePerson'])->name('users.store');
+    Route::get('/timetracking/edit-person', [EmployeeController::class, 'editperson'])->name('users.edit');
+    Route::post('/timetracking/person/update', [EmployeeController::class, 'updatePerson'])->name('users.update');
+    Route::post('/timetracking/edit-person/group', [EmployeeController::class, 'editPersonGroup']); // Удалять добавлять пользователя в группы
+    Route::post('/timetracking/edit-person/head_in_groups', [EmployeeController::class, 'setUserHeadInGroups']); // Удалять добавлять пользователя руководителем групп
+    Route::any('/timetracking/delete-person', [EmployeeController::class, 'deleteUser'])->name('removeUser');
+    Route::any('/timetracking/recover-person', [EmployeeController::class, 'recoverUser'])->name('recoverUser');
 
     /* Самостоятельная отметка стажеров */
     Route::get('/autocheck/{id}', [TraineeController::class, 'autocheck']); // cтраница со ссылками для отметки стажерами
@@ -209,10 +195,10 @@ Route::middleware([
     Route::post('/autochecker/{id}', [TraineeController::class, 'open']);  // включить возможность отметки
 
 
-    Route::get('/login-as-employee/{id}', [HomeController::class, 'loginAs']); // войти через test  на страницу профиля
-    Route::get('/quiz_after_fire', [HomeController::class, 'quiz_after_fire']); // анкета
-    Route::get('/estimate_trainer', [HomeController::class, 'estimate_trainer']);  // анкета
-    Route::any('/efd', [HomeController::class, 'estimate_first_day']);  // анкета
+    Route::get('/login-as-employee/{id}', [PageController::class, 'loginAs']); // войти через test  на страницу профиля
+    Route::get('/quiz_after_fire', [PageController::class, 'quiz_after_fire']); // анкета
+    Route::get('/estimate_trainer', [PageController::class, 'estimate_trainer']);  // анкета
+    Route::any('/efd', [PageController::class, 'estimate_first_day']);  // анкета
 
 
     Route::post('/timetracking/quarter/store', [QuartalBonusController::class, 'storePersonQuartal']); /// добавление квартала
@@ -287,9 +273,9 @@ Route::middleware([
     Route::post('/profile/save-cropped-image', [CabinetController::class, 'uploadCroppedImageProfile']); /// загрузка аватарки vue внутри profile
 
     ///Настройка профайл
-    Route::post('/profile/upload/image/profile/', [UserController::class, 'uploadImageProfile']); /// загрузка обрезаной аватарки vue внутри profile
-    Route::any('/profile/upload/edit/', [UserController::class, 'uploadPhoto'])->name('uploadPhoto'); /// загрузка аватарки со стороны Blade javascript
-    Route::post('/profile/country/city/', [UserController::class, 'searchCountry']); /// поиск городов через Профиль
+    Route::post('/profile/upload/image/profile/', [EmployeeController::class, 'uploadImageProfile']); /// загрузка обрезаной аватарки vue внутри profile
+    Route::any('/profile/upload/edit/', [EmployeeController::class, 'uploadPhoto'])->name('uploadPhoto'); /// загрузка аватарки со стороны Blade javascript
+    Route::post('/profile/country/city/', [EmployeeController::class, 'searchCountry']); /// поиск городов через Профиль
 
     // Книги
     Route::get('/admin/upbooks', [UpbookController::class, 'index']);
@@ -305,9 +291,9 @@ Route::middleware([
     Route::post('/admin/upbooks/segments/delete', [UpbookController::class, 'deleteSegment']);
 
     // Settings
-    Route::post('/setting/reset', [SettingController::class, 'reset']);
-    Route::post('/settings/get/', [SettingController::class, 'getSettings']);
-    Route::post('/settings/save', [SettingController::class, 'saveSettings']);
+    Route::post('/setting/reset', [OtherSettingController::class, 'reset']);
+    Route::post('/settings/get/', [OtherSettingController::class, 'getSettings']);
+    Route::post('/settings/save', [OtherSettingController::class, 'saveSettings']);
 
     // База знаний
     Route::get('/kb', [KnowBaseController::class, 'index']);
@@ -348,22 +334,16 @@ Route::middleware([
     Route::any('/timetracking/users/bonus/save', [GroupsController::class, 'saveBonuses']);
 
     // Import active
-    Route::post('/timetracking/analytics/activity/importexcel', [ActivityController::class, 'import']);
-    Route::post('/timetracking/analytics/activity/importexcel/save', [ActivityController::class, 'saveTimes']);
+    Route::post('/timetracking/analytics/activity/importexcel', [\App\Http\Controllers\Analytics\ActivityController::class, 'import']);
+    Route::post('/timetracking/analytics/activity/importexcel/save', [\App\Http\Controllers\Analytics\ActivityController::class, 'saveTimes']);
 
-    Route::post('/timetracking/analytics/decomposition/save', [DecompositionController::class, 'save']);
-    Route::delete('/timetracking/analytics/decomposition/delete', [DecompositionController::class, 'delete']);
+    Route::post('/timetracking/analytics/decomposition/save', [\App\Http\Controllers\Analytics\DecompositionController::class, 'save']);
+    Route::delete('/timetracking/analytics/decomposition/delete', [\App\Http\Controllers\Analytics\DecompositionController::class, 'delete']);
 
     // штрафы
     Route::get('/timetracking/fine', [FineController::class, 'index']);
     Route::put('/timetracking/fine', [FineController::class, 'update']);
-    Route::post('/timetracking/user-fine', [UserFineController::class, 'update']);
-
-    // old kpi
-    Route::post('/timetracking/kpi_save', [OldKpiController::class, 'saveKPI']);
-    Route::post('/timetracking/kpi_get', [OldKpiController::class, 'getKPI']);
-    Route::post('/timetracking/kpi_save_individual', [OldKpiController::class, 'saveKpiIndividual']);
-    Route::post('/timetracking/kpi_get_individual', [OldKpiController::class, 'getKpiIndividual']);
+    Route::post('/timetracking/user-fine', [\App\Http\Controllers\User\FineController::class, 'update']);
 
     // nps
     Route::any('/estimate_your_trainer', [NpsController::class, 'estimate_your_trainer']); // анкета
@@ -386,11 +366,11 @@ Route::middleware([
     /**
      * Route's после рефактора должностей
      */
-    Route::post('/timetracking/settings/positions/add-new', [TimeTrackPositionController::class, 'store']);
-    Route::post('/timetracking/settings/positions/delete', [TimeTrackPositionController::class, 'destroy']);
-    Route::post('/timetracking/settings/positions/get-new', [TimeTrackPositionController::class, 'get']);
-    Route::any('/timetracking/settings/positions/save-new', [TimeTrackPositionController::class, 'savePositionWithDescription']);
-    Route::any('/timetracking/settings/positions-new', [TimeTrackPositionController::class, 'all']);
+    Route::post('/timetracking/settings/positions/add-new', [PositionController::class, 'store']);
+    Route::post('/timetracking/settings/positions/delete', [PositionController::class, 'destroy']);
+    Route::post('/timetracking/settings/positions/get-new', [PositionController::class, 'get']);
+    Route::any('/timetracking/settings/positions/save-new', [PositionController::class, 'savePositionWithDescription']);
+    Route::any('/timetracking/settings/positions-new', [PositionController::class, 'all']);
 
     #==========================
     //Route::post('/timetracking/settings/positions/delete', [TimetrackingController::class, 'deletePosition']);
@@ -402,9 +382,9 @@ Route::middleware([
     /**
      * Route-ы после рефактора методов addsettings, deletesettings в TimetrackController
      */
-    Route::any('/timetracking/settings-new', [TimeTrackSetting::class, 'setting']);
-    Route::post('/timetracking/settings/add-new', [TimeTrackSetting::class, 'create']);
-    Route::delete('/timetracking/settings/delete-new', [TimeTrackSetting::class, 'delete']);
+    Route::any('/timetracking/settings-new', [SettingController::class, 'setting']);
+    Route::post('/timetracking/settings/add-new', [SettingController::class, 'create']);
+    Route::delete('/timetracking/settings/delete-new', [SettingController::class, 'delete']);
     #==============================
 
 
@@ -428,22 +408,22 @@ Route::middleware([
     Route::any('/timetracking/reports/get-editors', [TimetrackingController::class, 'modalcheckuserrole']);
     Route::any('/timetracking/reports/check-user', [TimetrackingController::class, 'checkuserrole']);
     Route::any('/timetracking/reports/enter-report', [TimetrackingController::class, 'enterreport']);
-    Route::any('/timetracking/reports/enter-report-post', [\App\Http\Controllers\Admin\TimeTrack\ReportController::class, 'enter']);
+    Route::any('/timetracking/reports/enter-report-post', [\App\Http\Controllers\Timetrack\EnterReportController::class, 'enter']);
     Route::post('/timetracking/reports/enter-report/setmanual', [TimetrackingController::class, 'enterreportManually']);
 
     /**
      * Route после рефактора  enterReportManually
      */
-    Route::post('/timetracking/reports/enter-report/setmanual-new', [\App\Http\Controllers\Admin\TimeTrack\ReportController::class, 'manually']);
+    Route::post('/timetracking/reports/enter-report/setmanual-new', [\App\Http\Controllers\Timetrack\EnterReportController::class, 'manually']);
     #==================
 
     /**
      * Route after refactor Group in TimetrackController
      */
-    Route::post('/timetracking/group/save-new', [TimeTrackGroupController::class, 'store']);
-    Route::post('/timetracking/group/delete-new', [TimeTrackGroupController::class, 'deactivate']);
-    Route::get('/timetracking/groups-new', [TimeTrackGroupController::class, 'get']);
-    Route::post('/timetracking/groups/restore-new', [TimeTrackGroupController::class, 'restore']);
+    Route::post('/timetracking/group/save-new', [GroupController::class, 'store']);
+    Route::post('/timetracking/group/delete-new', [GroupController::class, 'deactivate']);
+    Route::get('/timetracking/groups-new', [GroupController::class, 'get']);
+    Route::post('/timetracking/groups/restore-new', [GroupController::class, 'restore']);
     #==================================
 
     /**
@@ -463,33 +443,6 @@ Route::middleware([
         Route::post('/save', [TimetrackingController::class, 'addUsers']);
         Route::post('/drop', [TimetrackingController::class, 'dropUsers']);
     });
-
-    Route::group(['prefix' => 'bitrix'], function (){
-        Route::get('/tasks/list', [\App\Http\Controllers\IntegrationController::class, 'getAllTasksFromBitrix']);
-        Route::get('/leads/list', [\App\Http\Controllers\IntegrationController::class, 'getLeads']);
-    });
-
-    Route::group([
-        'prefix' => 'department',
-        'as'     => 'department.'
-    ], function () {
-        Route::get('/users/{id?}/{date?}', [DepartmentUserController::class, 'getUsers'])->name('users');
-        Route::get('/employees/{id?}/{date?}', [DepartmentUserController::class, 'getEmployees'])->name('employees');
-        Route::get('/trainees/{id?}/{date?}', [DepartmentUserController::class, 'getTrainees'])->name('trainees');
-        Route::get('/fired-users/{id?}/{date?}', [DepartmentUserController::class, 'getFiredUsers'])->name('fired-users');
-        Route::get('/fired-trainees/{id?}/{date?}', [DepartmentUserController::class, 'getFiredTrainees'])->name('fired-trainees');
-
-        Route::get('/check/user/{id}', [DepartmentUserController::class, 'userInGroup']);
-    });
-
-    /**
-     * Отслеживаем посещение стажеров на стажировке.
-     */
-    Route::resource('attendance', AttendanceController::class);
-    Route::get('/attendance', [AttendanceController::class, 'getDayAttendance']);
-
-
-    Route::get('/bitrix/tasks/list', [\App\Http\Controllers\IntegrationController::class, 'getAllTasksFromBitrix']);
 
     Route::get('/timetracking/top', [TopController::class, 'index']);
     Route::post('/timetracking/top', [TopController::class, 'fetch']);
@@ -527,21 +480,21 @@ Route::middleware([
     Route::post('/timetracking/salaries/bonuses', [SalaryController::class, 'bonuses']);
 
     // HR analytics
-    Route::any('/timetracking/analytics/save-call-base', [GroupAnalyticsController::class, 'saveCallBase']);
-    Route::any('/timetracking/analytics', [GroupAnalyticsController::class, 'index']);
-    Route::any('/timetracking/analytics/skypes/{id}', [GroupAnalyticsController::class, 'redirectToBitrixDeal']);
-    Route::any('/timetracking/getanalytics', [GroupAnalyticsController::class, 'getanalytics']);
-    Route::any('/timetracking/analytics/invite-users', [GroupAnalyticsController::class, 'inviteUsers']); // Приглашение стажеров
-    Route::post('/timetracking/analytics/recruting/create-lead', [GroupAnalyticsController::class, 'createRecrutingLead']); // Создание лидов вручную
-    Route::post('/timetracking/analytics/recruting/change-profile', [GroupAnalyticsController::class, 'changeRecruiterProfile']); // Сменить профиль рекрутера
-    Route::any('/timetracking/get_kpi_totals', [GroupAnalyticsController::class, 'get_kpi_totals']);
-    Route::any('/timetracking/update-settings', [GroupAnalyticsController::class, 'update']);
-    Route::post('/timetracking/update-activity-total', [GroupAnalyticsController::class, 'update_activity_total']);
-    Route::any('/timetracking/update-settings-individually', [GroupAnalyticsController::class, 'updateIndividually']);
-    Route::get('/timetracking/analytics/activity/export', [GroupAnalyticsController::class, 'exportActivityExcel']);
-    Route::get('/hr/ref-links', [GroupAnalyticsController::class, 'getRefLinks']);
-    Route::post('/hr/ref-links/save', [GroupAnalyticsController::class, 'saveRefLinks']);
-    Route::post('/timetracking/getactivetrainees',[GroupAnalyticsController::class,'getActiveTrainees']);
+    Route::any('/timetracking/analytics/save-call-base', [HRController::class, 'saveCallBase']);
+    Route::any('/timetracking/analytics', [HRController::class, 'index']);
+    Route::any('/timetracking/analytics/skypes/{id}', [HRController::class, 'redirectToBitrixDeal']);
+    Route::any('/timetracking/getanalytics', [HRController::class, 'getanalytics']);
+    Route::any('/timetracking/analytics/invite-users', [HRController::class, 'inviteUsers']); // Приглашение стажеров
+    Route::post('/timetracking/analytics/recruting/create-lead', [HRController::class, 'createRecrutingLead']); // Создание лидов вручную
+    Route::post('/timetracking/analytics/recruting/change-profile', [HRController::class, 'changeRecruiterProfile']); // Сменить профиль рекрутера
+    Route::any('/timetracking/get_kpi_totals', [HRController::class, 'get_kpi_totals']);
+    Route::any('/timetracking/update-settings', [HRController::class, 'update']);
+    Route::post('/timetracking/update-activity-total', [HRController::class, 'update_activity_total']);
+    Route::any('/timetracking/update-settings-individually', [HRController::class, 'updateIndividually']);
+    Route::get('/timetracking/analytics/activity/export', [HRController::class, 'exportActivityExcel']);
+    Route::get('/hr/ref-links', [HRController::class, 'getRefLinks']);
+    Route::post('/hr/ref-links/save', [HRController::class, 'saveRefLinks']);
+    Route::post('/timetracking/getactivetrainees',[HRController::class,'getActiveTrainees']);
 
     // analytics 
     Route::any('/timetracking/an', [AnalyticsController::class, 'index']);
@@ -679,17 +632,12 @@ Route::middleware([
     Route::any('/bp/choose_time', [IntellectController::class, 'choose_time']);
 
     // Controllers with one method
-    Route::post('/file/upload', [FileUploadController::class, 'uploadLargeFiles'])->name('files.upload.large');
+    Route::post('/file/upload', [\App\Http\Controllers\Learning\FileUploadController::class, 'uploadLargeFiles'])->name('files.upload.large');
 
-    Route::get('/corp_book/{id}', [\App\Http\Controllers\LinkController::class, 'opened_corp_book']);
-    Route::any('/timetracking/analytics/funnels', [\App\Http\Controllers\Admin\LeadController::class, 'funnel_segment']);
- 
-    Route::post('/user/save/answer', [ProfileController::class, 'saveAnswer']);
-    Route::post('/position/save/desc', [PositionController::class, 'savePositionDesc']);
+    Route::get('/corp_book/{id}', [\App\Http\Controllers\Learning\LinkController::class, 'opened_corp_book']);
 
-    
-    Route::get('/maps', [MapsController::class, 'index'])->name('maps');
-    Route::post('/selected-country/search/', [MapsController::class, 'selectedCountryAjaxSearch']);
+    Route::get('/maps', [MapController::class, 'index'])->name('maps');
+    Route::post('/selected-country/search/', [MapController::class, 'selectedCountryAjaxSearch']);
 
 
     Route::post('/checklist/tasks', [ChecklistController::class, 'getTasks']);
@@ -810,7 +758,7 @@ Route::middleware([
         ])
         ->group(function () {
 
-            Route::get('', [DictionaryController::class, 'index'])
+            Route::get('', [\App\Http\Controllers\Dictionary\Article\DictionaryController::class, 'index'])
                 ->name('index');
         });
 
@@ -821,10 +769,10 @@ Route::middleware([
         ])
         ->group(function () {
 
-            Route::get('', [BirthdayController::class, 'index'])
+            Route::get('', [\App\Http\Controllers\Article\Birthday\BirthdayController::class, 'index'])
                 ->name('index');
 
-            Route::post('{user}/send-gift', [BirthdayController::class, 'sendGift'])
+            Route::post('{user}/send-gift', [\App\Http\Controllers\Article\Birthday\BirthdayController::class, 'sendGift'])
                 ->name('send_gift');
         });
 
@@ -835,10 +783,10 @@ Route::middleware([
         ])
         ->group(function () {
 
-            Route::post('', [FileController::class, 'store'])
+            Route::post('', [\App\Http\Controllers\Article\Files\FileController::class, 'store'])
                 ->name('store');
 
-            Route::delete('{file_id}', [FileController::class, 'delete'])
+            Route::delete('{file_id}', [\App\Http\Controllers\Article\Files\FileController::class, 'delete'])
                 ->name('delete');
         });
 
@@ -849,131 +797,11 @@ Route::middleware([
         ])
         ->group(function () {
 
-            Route::post('', [UploadController::class, 'store'])
+            Route::post('', [\App\Http\Controllers\Article\Uploads\UploadController::class, 'store'])
                 ->name('store');
         });
 
-
-    // Route::group([
-    //     'prefix'   => 'messenger/api',
-    // ], function() {
-
-    //     /**
-    //      * Get chats list
-    //      */
-    //     Route::get('/v2/chats', 'ChatsController@fetchChats')->name('api.chats.fetch');
-
-    //     /**
-    //      * Get users list
-    //      */
-    //     Route::get('/v2/users', 'ChatsController@fetchUsers')->name('api.users.fetch');
-
-    //     /**
-    //      * Search chat by name
-    //      */
-    //     Route::get('/v2/search/chats', 'ChatsController@search')->name('api.chats.search');
-
-    //     /**
-    //      * Search messages by text
-    //      */
-    //     Route::get('/v2/search/messages', 'MessagesController@searchMessages')->name('api.messages.search');
-
-    //     /**
-    //      * Get chat messages
-    //      */
-    //     Route::get('/v2/chat/{chat_id}/messages', 'MessagesController@fetchMessages')->name('api.messages.fetch');
-
-    //     /**
-    //      * Get private chat info
-    //      */
-    //     Route::get('/v2/private/{user_id}', 'ChatsController@getPrivateChat')->name('api.v2.getPrivateChat');
-
-    //     /**
-    //      * Get chat info
-    //      */
-    //     Route::get('/v2/chat/{chat_id}', 'ChatsController@getChat')->name('api.v2.getChat');
-
-    //     /**
-    //      * Send message
-    //      */
-    //     Route::post('/v2/chat/{chat_id}/messages', 'MessagesController@sendMessage')->name('api.v2.sendMessage');
-
-    //     /**
-    //      * Edit message. Message id should be integer
-    //      */
-    //     Route::post('/v2/message/{message_id}', 'MessagesController@editMessage')->name('api.v2.editMessage')->whereNumber('message_id');
-
-    //     /**
-    //      * Delete message
-    //      */
-    //     Route::delete('/v2/message/{message_id}', 'MessagesController@deleteMessage')->name('api.v2.deleteMessage');
-
-    //     /**
-    //      * Pin message
-    //      */
-    //     Route::post('/v2/message/{message_id}/pin', 'MessagesController@pinMessage')->name('api.v2.pinMessage');
-
-    //     /**
-    //      * Unpin message
-    //      */
-    //     Route::delete('/v2/message/{message_id}/pin', 'MessagesController@unpinMessage')->name('api.v2.unpinMessage');
-
-    //     /**
-    //      * Pin chat
-    //      */
-    //     Route::post('/v2/chat/{chat_id}/pin', 'ChatsController@pinChat')->name('api.v2.pinChat');
-
-    //     /**
-    //      * Unpin chat
-    //      */
-    //     Route::delete('/v2/chat/{chat_id}/pin', 'ChatsController@unpinChat')->name('api.v2.unpinChat');
-
-    //     /**
-    //      * Create chat
-    //      */
-    //     Route::post('/v2/chat', 'ChatsController@createChat')->name('api.v2.createChat');
-
-    //     /**
-    //      * Remove chat
-    //      */
-    //     Route::delete('/v2/chat/{chat_id}', 'ChatsController@removeChat')->name('api.v2.removeChat');
-
-    //     /**
-    //      * Leave chat
-    //      */
-    //     Route::post('/v2/chat/{chat_id}/leave', 'ChatsController@leaveChat')->name('api.v2.leaveChat');
-
-    //     /**
-    //      * Add user to chat
-    //      */
-    //     Route::post('/v2/chat/{chat_id}/addUser', 'ChatsController@addUser')->name('api.v2.addUser');
-
-    //     /**
-    //      * Remove user from chat
-    //      */
-    //     Route::post('/v2/chat/{chat_id}/removeUser/{user_id}', 'ChatsController@removeUser')->name('api.v2.removeUser');
-
-    //     /**
-    //      * Edit chat
-    //      */
-    //     Route::post('/v2/chat/{chat_id}/edit', 'ChatsController@editChat')->name('api.v2.editChat');
-
-    //     /**
-    //      * Set messages as read
-    //      */
-    //     Route::post('/v2/messages/read', 'MessagesController@setMessagesAsRead')->name('api.v2.setMessagesAsRead');
-
-    //     /**
-    //      * Upload file
-    //      */
-    //     Route::post('/v2/chat/{chat_id}/upload', 'FilesController@upload')->name('api.v2.upload');
-
-                                
-    // });
 });
-
-
-
 
 
 /**
@@ -1020,6 +848,18 @@ Route::middleware([
             'prefix' => 'statistics',
         ], function (){
             Route::any('/workdays', [KpiStatController::class, 'workdays']);
+        });
+
+        Route::group([
+            'prefix' => 'department',
+            'as'     => 'department.'
+        ], function () {
+            Route::get('/users/{id?}/{date?}', [DepartmentUserController::class, 'getUsers'])->name('users');
+            Route::get('/employees/{id?}/{date?}', [DepartmentUserController::class, 'getEmployees'])->name('employees');
+            Route::get('/trainees/{id?}/{date?}', [DepartmentUserController::class, 'getTrainees'])->name('trainees');
+            Route::get('/fired-users/{id?}/{date?}', [DepartmentUserController::class, 'getFiredUsers'])->name('fired-users');
+            Route::get('/fired-trainees/{id?}/{date?}', [DepartmentUserController::class, 'getFiredTrainees'])->name('fired-trainees');
+            Route::get('/check/user/{id}', [DepartmentUserController::class, 'userInGroup']);
         });
 
     });
