@@ -1,11 +1,13 @@
 <!DOCTYPE html>
 <html style="font-size:10px;">
+
 <head>
-    <meta charset="utf-8">
+
+	<meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no">
 
-    <title>@yield('title')</title>
+	<title>@yield('title')</title>
 
     <link rel="icon" type="image/x-icon" href="/favicon.ico?ver1.2"/>
 
@@ -20,10 +22,10 @@
     <link rel="stylesheet" href="/admin/css/all.min.css">
     <link rel="stylesheet" href="/admin/css/croppie.css">
 
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Open+Sans:ital,wght@0,400;0,600;1,400;1,600&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="{{ url('/css/admin/app.css') }}">
+	<link rel="preconnect" href="https://fonts.googleapis.com">
+	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+	<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Open+Sans:ital,wght@0,400;0,600;1,400;1,600&display=swap" rel="stylesheet">
+	<link rel="stylesheet" href="{{ url('/css/admin/app.css') }}">
 
     @yield('head')
     @yield('styles')
@@ -31,8 +33,42 @@
 
 <body ontouchstart="">
 
-    <div class="right-panel-app"></div>
-    <div class="hidden">@yield('content')</div>
+    <div class="right-panel-app">
+
+
+        <sidebars></sidebars>
+
+        <chat-app></chat-app>
+
+        <!-- Main -->
+        <div class="wrapper">
+
+            <main class="main">
+                <div class="container container-left-padding">
+
+                    <!-- Mobile menu buttons -->
+                    <div class="header__top">
+                        <a href="#" class="header__top-button burger-left">Раскрыть меню</a>
+                        <div class="header__top-wrapper">
+                            <a href="#" class="header__top-button burger-right">Раскрыть меню</a>
+                            <!-- <a href="#" class="header__right-icon">
+                                <img src="images/dist/header-right-3.svg" alt="nav icon" class="header__icon-img">
+                            </a>
+                            <a href="#" class="header__right-icon red">
+                                <img src="images/dist/header-right-2.svg" alt="nav icon" class="header__icon-img">
+                            </a>-->
+                        </div>
+                    </div>
+
+                    @yield('content')
+
+                </div>
+            </main>
+
+            <footer class="footer"></footer>
+
+        </div>
+    </div>
 
     <script>
 
