@@ -11,12 +11,12 @@ use Illuminate\Support\Facades\Route;
 /**
  * Custom websocket handler
  */
-WebSocketsRouter::webSocket('/messenger/app/{appKey}', MessengerWebSocketHandler::class);
+WebSocketsRouter::webSocket('/messenger/app/{appKey}', MessengerWebSocketHandler::class); // или это
 
 /**
  * Authentication for pusher private channels
  */
-Route::post('/chat/auth', 'ChatsController@pusherAuth')->name('api.pusher.auth');
+Route::post('/chat/auth', 'ChatsController@pusherAuth')->name('api.pusher.auth'); // это
 
 /**
  * Get chats list
