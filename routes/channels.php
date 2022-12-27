@@ -24,3 +24,4 @@ Broadcast::channel('messenger', function () {
 Broadcast::channel('private-messenger', function () {
     return true;
 });
+

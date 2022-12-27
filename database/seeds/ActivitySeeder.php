@@ -19,12 +19,12 @@ class ActivitySeeder extends Seeder
         $items = [];
         $faker = Faker::create();
 
-        for ($i = 1; $i <= 10; $i++)
+        for ($i = 1; $i <= 2; $i++)
         {
             $items[] = [
                 'id'              => $i,
                 'name'            => $faker->word,
-                'group_id'        => $faker->numberBetween(1, 100),
+                'group_id'        => 1,
                 'daily_plan'      => $faker->numberBetween(1, 100),
                 'share'     => $faker->numberBetween(1, 100),
                 'unit'            => '',

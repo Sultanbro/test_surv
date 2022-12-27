@@ -1,44 +1,89 @@
 <template>
   <nav id="jNav">
     <div class="section-content jNav-content">
-      <a class="jNav-logo" href="">
-        <img :src="require('../../assets/img/logo.svg').default" alt="logo-img" class="jNav-logo-img">
+      <a
+        href=""
+        class="jNav-logo"
+      >
+        <img
+          :src="require('../../assets/img/logo.svg').default"
+          alt="logo-img"
+          class="jNav-logo-img"
+        >
       </a>
       <div
-          :class="{'jNav-menu-active': menu}"
-          class="jNav-menu"
+        :class="{'jNav-menu-active': menu}"
+        class="jNav-menu"
       >
-        <button
-            class="jNav-menu-hamburger jButton"
-            @click="menu = !menu"
-        />
+        <!-- <button
+          class="jNav-menu-hamburger jButton"
+          @click="menu = !menu"
+        /> -->
         <ul class="jNav-menu-items">
-          <li class="jNav-menu-item">
-            <NavbarLink :lang="lang" href="#prices" text="prices"/>
+          <li class="jNav-menu-item jNav-menu-item-md">
+            <NavbarLink
+              :lang="lang"
+              href="#prices"
+              text="prices"
+            />
           </li>
-          <li class="jNav-menu-item">
-            <NavbarLink :lang="lang" href="#reviews" text="reviews"/>
+          <li class="jNav-menu-item jNav-menu-item-md">
+            <NavbarLink
+              :lang="lang"
+              href="#reviews"
+              text="reviews"
+            />
           </li>
-          <li class="jNav-menu-item">
-            <NavbarLink :lang="lang" href="#features" text="features"/>
+          <li class="jNav-menu-item jNav-menu-item-md">
+            <NavbarLink
+              :lang="lang"
+              href="#features"
+              text="features"
+            />
           </li>
           <li class="jNav-menu-item">
             <span class="jNav-menu-auth">
-              <form v-if="csrf" method="POST" action="/logout">
-                <input type="hidden" :value="csrf" name="csrf">
+              <form
+                v-if="csrf"
+                method="POST"
+                action="/logout"
+              >
+                <input
+                  type="hidden"
+                  :value="csrf"
+                  name="csrf"
+                >
                 <button class="jNav-menu-user"/>
               </form>
               <template v-else>
-                <NavbarButton :lang="lang" href="/login" text="auth"/>
-                <NavbarButton :lang="lang" href="/register" text="register"/>
+                <NavbarButton
+                  :lang="lang"
+                  href="/login"
+                  text="auth"
+                />
+                <a
+                  href="/register"
+                  class="jNav-menu-user"
+                />
+                <!-- <NavbarButton
+                  :lang="lang"
+                  href="/register"
+                  text="register"
+                /> -->
               </template>
             </span>
           </li>
-          <li class="jNav-menu-item">
-            <NavbarLang :lang="lang" @change="$root.$data.setLang($event)"/>
+          <li class="jNav-menu-item jNav-menu-item-md">
+            <NavbarLang
+              :lang="lang"
+              @change="$root.$data.setLang($event)"
+            />
           </li>
         </ul>
-        <div class="jNav-menu-bg" @click="menu = false"></div>
+        <div
+          class="jNav-menu-bg"
+          @click="menu = false"
+        />
       </div>
     </div>
   </nav>
@@ -94,7 +139,7 @@ export default {
 }
 
 .jNav-logo-img {
-  width: 12.25rem;
+  width: 8rem;
 }
 
 .jNav-menu-active {
@@ -107,26 +152,26 @@ export default {
   }
 }
 
-.jNav-menu-hamburger {
-  &.jButton {
-    display: block;
-    width: 2rem;
-    height: 2rem;
-    padding: 1.25rem;
-    position: relative;
+// .jNav-menu-hamburger {
+//   &.jButton {
+//     display: block;
+//     width: 2rem;
+//     height: 2rem;
+//     padding: 1.25rem;
+//     position: relative;
 
-    &:before {
-      content: '';
-      width: 50%;
-      height: 0.75rem;
-      position: absolute;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -45%);
-      background: repeating-linear-gradient(#fff, #fff 0.125rem, transparent 0.125rem, transparent 0.25rem);
-    }
-  }
-}
+//     &:before {
+//       content: '';
+//       width: 50%;
+//       height: 0.75rem;
+//       position: absolute;
+//       top: 50%;
+//       left: 50%;
+//       transform: translate(-50%, -45%);
+//       background: repeating-linear-gradient(#fff, #fff 0.125rem, transparent 0.125rem, transparent 0.25rem);
+//     }
+//   }
+// }
 
 .jNav-menu-bg {
   display: none;
@@ -141,18 +186,12 @@ export default {
 }
 
 .jNav-menu-items {
-  display: none;
-  max-width: 85vw;
+  display: flex;
+  align-items: center;
+  max-width: none;
   padding: 0.625rem;
   margin: 0;
-  flex-flow: column nowrap;
-  position: fixed;
-  z-index: 9005;
-  top: 0;
-  right: 0;
-  bottom: 0;
-  background: #fff;
-  box-shadow: 0 0 0.125rem rgba(0, 0, 0, 0.25);
+  flex-flow: row nowrap;
 }
 
 .jNav-menu-item {
@@ -164,17 +203,21 @@ export default {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  gap: 1rem;
+  gap: 0.5rem;
 }
 
 .jNav-menu-user {
   display: inline-block;
-  width: 2.625rem;
-  height: 2.625rem;
+  width: 2rem;
+  height: 2rem;
   border: none;
   border-radius: 2.625rem;
   vertical-align: middle;
   background: #6f4f28 url("../../assets/img/user.svg") center center no-repeat;
+}
+
+.jNav-menu-item-md{
+  display: none;
 }
 
 @media screen and (min-width: $small) {
@@ -211,10 +254,17 @@ export default {
 
   .jNav-menu-auth {
     margin-left: 2.5rem;
+    gap: 1rem;
   }
 
   .jNav-menu-user {
+    width: 2.625rem;
+    height: 2.625rem;
     margin-left: 2.5rem;
+  }
+
+  .jNav-menu-item-md{
+    display: block;
   }
 }
 </style>

@@ -18,6 +18,7 @@ class CreateVideosTable extends Migration
             $table->string('title');
             $table->text('text')->nullable();
             $table->string('poster')->nullable();
+            $table->string('domain')->default('local')->nullable();
             $table->unsignedInteger('group_id')->default(0);
             $table->text('links');
             $table->unsignedInteger('duration')->default(0);

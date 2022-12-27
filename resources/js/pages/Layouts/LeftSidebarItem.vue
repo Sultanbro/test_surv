@@ -5,7 +5,11 @@
       :to="to || ''"
       class="header__nav-link-a"
     >
-      <span v-if="icon" :class="icon" class="header__nav-icon"></span>
+      <span
+        v-if="icon"
+        :class="icon"
+        class="header__nav-icon"
+      />
       <img
         v-if="img"
         :style="img.style"
@@ -19,7 +23,11 @@
       :href="href || 'javascript:void(0)'"
       class="header__nav-link-a"
     >
-      <span v-if="icon" :class="icon" class="header__nav-icon"></span>
+      <span
+        v-if="icon"
+        :class="icon"
+        class="header__nav-icon"
+      />
       <img
         v-if="img"
         :style="img.style"

@@ -23,7 +23,11 @@ return [
     */
     'routes' => [
         'prefix' => env('MESSENGER_ROUTES_PREFIX', 'messenger/api'),
-        'middleware' => env('MESSENGER_ROUTES_MIDDLEWARE', ['web','auth']),
+        'middleware' => env('MESSENGER_ROUTES_MIDDLEWARE', [
+            'web',
+            'auth',
+            'tenant'
+        ]),
         'namespace' => env('MESSENGER_ROUTES_NAMESPACE', 'Eddir\Messenger\Http\Controllers'),
     ],
 

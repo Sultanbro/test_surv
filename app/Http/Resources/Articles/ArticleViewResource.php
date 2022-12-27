@@ -3,7 +3,7 @@
 namespace App\Http\Resources\Articles;
 
 use App\Models\Article\Article;
-use App\Repositories\Interfaces\Articles\ArticleRepositoryInterface;
+use App\Repositories\Interfaces\Article\ArticleRepositoryInterface;
 use Illuminate\Http\Resources\Json\JsonResource;
 
 /**

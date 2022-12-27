@@ -518,20 +518,14 @@ export default {
         justify-content: center;
     }
 }
-// .profile__content{}
-.profile__logo{
-    // display: flex;
-    // margin: 0 auto 2rem;
-    // justify-content: center;
-    // align-items: center;
-    // min-height: 8rem;
-    // color:#5B6166;
-    // font-size:1.5rem;
-    // font-weight: 600;
-    // text-transform: uppercase;
-    // position: relative;
+.profile__logo {
+    font-size: 21px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 24px 0;
+    min-height: 80px;
     width: 100%;
-    padding-bottom: 30.77%;
     margin-bottom: 2rem;
     position: relative;
     background-image: url("data:image/svg+xml;utf8,<svg width='100%' height='100%' xmlns='http://www.w3.org/2000/svg'><rect width='98%' height='98%' x='1%' y='1%' ry='12%' rx='12%' style='fill: none; stroke: %23D9D9D9; stroke-width: 1; stroke-dasharray: 8'/></svg>");
@@ -575,7 +569,7 @@ export default {
 .logo-img{
     display: block;
     width: 100%;
-    border-radius: 12%/18%;
+    border-radius: 1rem;
     position: absolute;
     top: 0;
     left: 0;

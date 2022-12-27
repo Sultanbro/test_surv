@@ -481,12 +481,10 @@ export default {
             this.currentGroup = this.currentGroup ? this.currentGroup : this.groups[0]['id']
 
             this.fetchData()
-
-            // this.maxScrollWidth =  this.$refs.tableContainer[0].scrollWidth
         },
         copy() {
             var Url = this.$refs['mylink' + this.currentGroup];
-            Url.value = 'https://bp.jobtron.org/autocheck/' + this.currentGroup;
+            Url.value = window.location.origin + '/autocheck/' + this.currentGroup;
 
             Url.select();
             document.execCommand("copy");
@@ -599,9 +597,6 @@ export default {
                     'Решил(-а) работать оффлайн',
                     'Слишком большая нагрузка',
                 ];
-
-
-
             }
         },
 

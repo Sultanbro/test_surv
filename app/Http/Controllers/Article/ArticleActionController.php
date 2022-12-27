@@ -9,7 +9,7 @@ use App\Http\Resources\Articles\ArticleLikeResource;
 use App\Http\Resources\Articles\ArticlePinResource;
 use App\Http\Resources\Articles\ArticleViewResource;
 use App\Http\Resources\Responses\JsonSuccessResponse;
-use App\Service\Articles\ArticleActionService;
+use App\Service\Article\ArticleActionService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Auth;
 

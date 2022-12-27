@@ -11,21 +11,6 @@ use App\Http\Controllers\Controller;
 use App\User;
 use App\ProfileGroup;
 use App\EstimateGrade;
-use App\AnalyticsSettings;
-use App\AnalyticsSettingsIndividually;
-use App\Models\Analytics\TopValue;
-use App\Models\Analytics\Proceed;
-use App\Classes\Analytics\PrCstll;
-use App\Classes\Analytics\Ozon;
-use App\Classes\Analytics\DM;
-use App\Classes\Analytics\HomeCredit;
-use App\Classes\Analytics\Eurasian;
-use App\Classes\Analytics\Kaspi;
-use App\Classes\Analytics\Impl;
-use App\Classes\Analytics\Recruiting as RM;
-use App\Models\Analytics\AnalyticStat;
-use App\Models\Analytics\UserStat;
-use App\Models\Analytics\Activity;
 
 class NpsController extends Controller
 {

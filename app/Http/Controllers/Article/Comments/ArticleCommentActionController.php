@@ -8,7 +8,7 @@ use App\Http\Requests\Article\Comments\ArticleCommentRequest;
 use App\Http\Resources\Articles\Comments\ArticleCommentLikeResource;
 use App\Http\Resources\Reactions\ReactionCollection;
 use App\Http\Resources\Responses\JsonSuccessResponse;
-use App\Service\Articles\Comments\CommentActionService;
+use App\Service\Article\Comment\CommentActionService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Auth;
 

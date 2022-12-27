@@ -154,7 +154,7 @@ class Assessment extends Command
 
     public function msg($phone) {
         $line_break = '%0a';
-        $link = 'https://bp.jobtron.org/estimate_trainer?phone=' . $phone;
+        $link = 'https://'.tenant('id').'.jobtron.org/estimate_trainer?phone=' . $phone;
 
         $msg = 'Добрый день!' . $line_break; 
         $msg .= 'Оцените по 10 бальной шкале, насколько вы считаете, что тренер классно обучает:' . $line_break;

@@ -223,14 +223,6 @@ class User extends Authenticatable implements Authorizable
     }
 
     /**
-     * Получает пользователя из системных таблицы Битрикса
-     */
-    public static function bitrixUser()
-    {
-        return Auth::user();
-    }
-
-    /**
      * Дни до индексации зарплаты по должности
      */
     public function days_before_indexation() {
@@ -440,6 +432,20 @@ class User extends Authenticatable implements Authorizable
     }
 
     /**
+     * Уволенные группы пользователя.
+     *
+     * @return array
+     */
+    public function firedGroups(): array
+    {
+        return GroupUser::where('status', 'fired')
+            ->where('user_id', $this->id)
+            ->get()
+            ->pluck('group_id')
+            ->toArray();
+    }
+
+    /**
      * В каких группах находится user c условиями оплаты 
      * @return array
      */
@@ -546,7 +552,7 @@ class User extends Authenticatable implements Authorizable
 
                 $wphone = Phone::normalize($user->phone);
 
-                if($wphone) $whatsapp->send_msg($wphone, 'Уважаемый коллега! Какими бы ни были причины расставания, мы благодарим Вас за время, силы, знания и энергию, которые Вы отдали для успешной работы и развития нашей организации, и просим заполнить эту небольшую анкету. %0a https://bp.jobtron.org/quiz_after_fire?phone='. $wphone);
+                if($wphone) $whatsapp->send_msg($wphone, 'Уважаемый коллега! Какими бы ни были причины расставания, мы благодарим Вас за время, силы, знания и энергию, которые Вы отдали для успешной работы и развития нашей организации, и просим заполнить эту небольшую анкету. %0a https://'.tenant('id').'.jobtron.org/quiz_after_fire?phone='. $wphone);
                     
                 if($bitrix_id != 0) {
                     $ud->bitrix_id = 0;
@@ -609,11 +615,9 @@ class User extends Authenticatable implements Authorizable
         return substr(str_shuffle(str_repeat($x = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ', ceil($length / strlen($x)))), 1, $length);
     }
 
-  
-
     public static function logo()
     {
-        $user = User::find(self::bitrixUser()->id);
+        $user = User::find(auth()->id());
         if (!$user->UF_LOGO) {
             return '/static/images/userlogo.jpg';
         }

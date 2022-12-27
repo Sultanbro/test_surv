@@ -20,7 +20,7 @@
 
                     <input type="text" :ref="'mylink' + segment" class="hider">
                     <span>{{data.field.label}}</span>
-                    <a :href="'https://bp.jobtron.org/timetracking/analytics/funnels?type=' + segment" target="_blank">
+                    <a :href="window.location.origin +'/timetracking/analytics/funnels?type=' + segment" target="_blank">
                         <i class="fa fa-external-link ffpointer ml-2 mr-2" aria-hidden="true"></i>
                     </a>
 
@@ -143,38 +143,12 @@ export default {
         this.items = this.table
         this.fields[0].label = this.title
         this.calc()
-
-        console.log(this.items)
-       // console.log(this.type)
-    },
-    mounted() {
-
-
-        // this.items.forEach(el => {
-        //     this.updateTable(el)
-        // });
-        // this.chartOptions.data = [];
-        // for(let i = 0; i < this.table.length; i++) {
-        //     if(this.table[i].show == 1) {
-        //         let obj = {
-        //             value: this.table[i].totals,
-        //             backgroundColor: '#28a74' + i,
-        //             label: this.table[i].name,
-        //         };
-        //         this.chartOptions.data.push(obj)
-        //     }
-
-        // }
-
-        // this.chart = new D3Funnel('#funnel-' + this.id)
-        // this.chart.draw(this.chartOptions.data, this.chartOptions.options);
     },
     methods: {
 
         copy() {
             var Url = this.$refs['mylink' + this.segment];
-            Url.value = 'https://bp.jobtron.org/timetracking/analytics/funnels?type=' + this.segment;
-            //Url.value = 'https://bp.jobtron.org/timetracking/analytics/funnels/' + this.type;
+            Url.value = window.location.origin + '/timetracking/analytics/funnels?type=' + this.segment;
 
             this.$toast.success('Ссылка скопирована ' +  this.segment)
             Url.select();

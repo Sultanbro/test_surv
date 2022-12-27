@@ -24,7 +24,7 @@ export default defineConfig({
         },
         origin: 'https://jobtron.org/',
         hmr: {
-            host: 'bp.jobtron.org',
+            host: 'jobtron.org',
         },
     },
 });

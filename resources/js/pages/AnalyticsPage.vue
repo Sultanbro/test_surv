@@ -24,12 +24,10 @@
                     <i class="fa fa-redo-alt"></i>
                 </div>
             </div>
-            <div class="col-2" v-if="(activeuserid == 18 || activeuserid == 5 || activeuserid == 157)">
-                <button v-if="activeuserid == 5" class="btn btn-info rounded add-s" @click="add_analytics()" title="Создать аналитику"><i class="fa fa-plus-square"></i></button>
+            <div class="col-2" v-if="$laravel.is_admin">
+                <button v-if="!firstEnter && !dataLoaded" class="btn btn-info rounded add-s" @click="add_analytics()" title="Создать аналитику"><i class="fa fa-plus-square"></i></button>
 
-                <button v-if="noan" class="btn btn-info rounded add-s" @click="add_analytics()" title="Создать аналитику"><i class="fa fa-plus-square"></i></button>
-
-                <button v-else class="btn btn-info rounded add-s" @click="archive()" title="Архивировать"><i class="fa fa-trash"></i></button>
+                <button v-if="!noan" class="btn btn-info rounded add-s" @click="archive()" title="Архивировать"><i class="fa fa-trash"></i></button>
 
                 <button class="btn btn-info rounded add-s ml-2" @click="showArchive = true" title="Восстановить из архива"><i class="fa fa-archive"></i></button>
             </div>
@@ -53,7 +51,7 @@
 
             <div v-if="!firstEnter">
                 <div v-if="this.hasPremission" :key="askey">
-                    <div v-if="this.dataLoaded">
+                    <div v-if="dataLoaded">
                         <div class="wrap">
                             <div class="d-flex justify-content-between">
                                 <div>
@@ -306,6 +304,9 @@
                 archived_groups: [],
                 call_bases: [], // euras call base unique table
                 restore_group: null,
+                noan: false, // нет аналитики
+                showActivityModal:false, // activity
+                dataLoaded: false,
                 noan: false, // нет аналитики
                 showActivityModal:false, // activity
                 active_sub_tab: 0,

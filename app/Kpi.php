@@ -10,29 +10,20 @@ use Carbon\Carbon;
 use App\User;
 use App\SavedKpi;
 use App\KpiChange;
-use App\Models\Kpi\Bonus;
 use App\Models\Analytics\KpiIndicator;
 use App\Models\Analytics\IndividualKpiIndicator;
 use App\Models\Analytics\IndividualKpi;
-use App\Classes\Analytics\Impl;
 use App\Models\Analytics\UserStat;
 
 class Kpi extends Model
 {   
     use SoftDeletes;
+
     public $timestamps = true;
 
     protected $table = 'kpi';
 
     protected $dates = ['deleted_at'];
-    
-
-    /**
-     * The attributes that should be mutated to dates.
-     *
-     * @var array
-     */
-    
 
     protected $fillable = [
         'user_id',
@@ -43,12 +34,12 @@ class Kpi extends Model
         'verh_porok',
     ];
 
-
     /**
      * $date Y-m-d
      * return @int
      */
-    public static function userKpi(int $user_id, string $date = '', $renew = 0) {
+    public static function userKpi(int $user_id, string $date = '', $renew = 0)
+    {
        
         if($renew == 0) { // if not require renew, return saved value
             
@@ -106,94 +97,57 @@ class Kpi extends Model
     private static function indKpi(int $user_id, string $date = '') {
        
         $kpi_configs = IndividualKpi::where('user_id', $user_id)->first();
-
         $nijn_porok = $kpi_configs->nijn_porok;
         $verh_porok = $kpi_configs->verh_porok;
         $kpi_80_99 = $kpi_configs->kpi_80_99;
         $kpi_100 = $kpi_configs->kpi_100;
-        
-
         $user = User::withTrashed()->find($user_id);
         $time_rate = $user->full_time == 1 ? 1: 0.5;
-
         $kpi_80_99 = $kpi_80_99 * $time_rate;
         $kpi_100 = $kpi_100 * $time_rate;
-
-        // GET ACTIVITY
-
         $kpi_indicators = IndividualKpiIndicator::where('user_id', $user_id)->where('activity_id', '!=', 0)->get();
-        // $activity_ids = array_unique($indicators);
-        // $activities = Activity::whereIn('id', $activity_ids)->get();
-        
         $ind_kpi = 0;
     
         foreach ($kpi_indicators as $kpi_indicator) {
 
             $activity = Activity::withTrashed()->find($kpi_indicator->activity_id);
 
-            //$activity->completed = AnalyticsSettingsIndividually::getActivityProgress($user_id, $group_id, $activity, $date);
-            
-            if(in_array($kpi_indicator->activity_id, [67,68,69,70,71])) { // Impl
+            if($kpi_indicator->group_id == 0)  {
+                $kpi_indicator->completed = 0;
+            } else if(in_array($kpi_indicator->group_id, [48])) { 
 
-                $im = new Impl($kpi_indicator->group_id);     
-                $impl = $im->setDate($date)->get();
+                $kpi_indicator->completed = 0;
+                if($activity->type == 'conversion') { // Conversion in TableSummaryRecruiting
+                    $as = \App\AnalyticsSettings::where('group_id', $kpi_indicator->group_id)->where('date', $date)->where('type', 'basic')->first();
+                    if($as && array_key_exists(9, $as->data) &&  array_key_exists(0, $as->data) && array_key_exists('fact', $as->data[0]) && array_key_exists('fact', $as->data[9])) {
+                        $kpi_indicator->completed = round($as->data[9]['fact'] / $as->data[0]['fact'] * 100 , 2);
+                    }
+                } 
                 
-                // TODOABIK IMpl from new AS
-
-                $kpi_indicator->completed = $kpi_indicator->plan > 0 ? $impl / $kpi_indicator->plan * 100 : 0;
-            
             } else {
-                
-                if($kpi_indicator->group_id == 0)  {
-                    $kpi_indicator->completed = 0;
-                } else if(in_array($kpi_indicator->group_id, [48])) { 
-
-                    $kpi_indicator->completed = 0;
-                    if($activity->type == 'conversion') { // Conversion in TableSummaryRecruiting
-                        $as = \App\AnalyticsSettings::where('group_id', $kpi_indicator->group_id)->where('date', $date)->where('type', 'basic')->first();
-                        if($as && array_key_exists(9, $as->data) &&  array_key_exists(0, $as->data) && array_key_exists('fact', $as->data[0]) && array_key_exists('fact', $as->data[9])) {
-                            $kpi_indicator->completed = round($as->data[9]['fact'] / $as->data[0]['fact'] * 100 , 2);
-                        }
-                    } else {
-                        $kpi_indicator->completed = AnalyticsSettingsIndividually::getTotalActivityProgress($user_id, $activity, $date);
-                    }
-                    
-                } else {
-                    $kpi_indicator->completed = 0;
-                    if($activity) {
-                        $kpi_indicator->completed = UserStat::getTotalActivityProgress($user_id, $activity, $date);
-                    }
-                    
-                   
+                $kpi_indicator->completed = 0;
+                if($activity) {
+                    $kpi_indicator->completed = UserStat::getTotalActivityProgress($user_id, $activity, $date);
                 }
-                
             }
-            
-
                 
             if($kpi_indicator->completed > 100) {
                 $kpi_indicator->completed = 100;
             }
-           // $activity->completed = 0;
-            //me($activity->completed);
-
-            //$activity->sum_prem = $kpi_100 * $activity->ud_ves / 100;
             
             if($activity && $activity->plan_unit == 'less_sum') {
                 $nijn_porok = 0;
                 $kpi_80_99 = $kpi_100;
             }
 
-            
             $ind_kpi += self::sumOfActivity($nijn_porok, $verh_porok, $kpi_indicator->completed, $kpi_indicator->ud_ves, $kpi_80_99, $kpi_100);
-           
         }
          
-        
         return (int)$ind_kpi;
     }
 
-    private static function groupKpi(int $user_id, int $group_id, string $date = '') {
+    private static function groupKpi(int $user_id, int $group_id, string $date = '')
+    {
         $nijn_porok = 80;
         $verh_porok = 100;
         $kpi_80_99 = 0;
@@ -209,21 +163,12 @@ class Kpi extends Model
             $kpi_100 = $kpi_configs->kpi_100;
         } 
 
-
         $user = User::withTrashed()->find($user_id);
         $time_rate = $user->full_time == 1 ? 1: 0.5;
-
         $kpi_80_99 = $kpi_80_99 * $time_rate;
         $kpi_100 = $kpi_100 * $time_rate;
-        
-
- 
-        // GET ACTIVITY
-
         $indicators = KpiIndicator::where('group_id', $group_id)->get()->pluck('activity_id')->toArray();
-       
         $activity_ids = array_unique($indicators);
-        //memp($activity_ids);
         $activities = Activity::withTrashed()->whereIn('id', $activity_ids)->get();
         
         $group_kpi = 0;
@@ -245,29 +190,13 @@ class Kpi extends Model
                 }
             }
             
-
-           
-            $xdate = Carbon::parse($date)->timestamp;
-       
-            if(in_array($group_id, [48])) { 
-                $completed =  AnalyticsSettingsIndividually::getActivityProgress($user_id, $group_id, $activity, $date);
-            } else {
-                
-                $completed = UserStat::getActivityProgress($user_id, $group_id, $activity, $date);
-                // dump($completed);
-            }
-            
-            // if(in_array($group_id, [42])) { 
-            //     $completed =  AnalyticsSettingsIndividually::getActivityProgress($user_id, $group_id, $activity, $date);
-            // }
+            $completed = UserStat::getActivityProgress($user_id, $group_id, $activity, $date);
 
             if($completed > 100) {
                 $completed = 100;
             }
             $activity->completed = $completed;
-            //me($activity->completed);
 
-            
             $activity->sum_prem = $kpi_100 * $activity->ud_ves / 100;
             
             if($activity->plan_unit == 'less_sum') {
@@ -277,9 +206,6 @@ class Kpi extends Model
 
            
             $group_kpi += self::sumOfActivity($nijn_porok, $verh_porok, $activity->completed, $activity->ud_ves, $kpi_80_99, $kpi_100);
-            
-          //  memp('hey');
-            //memp($group_kpi); 
         }
          
         

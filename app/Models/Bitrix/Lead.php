@@ -165,7 +165,7 @@ class Lead extends Model
             
         foreach ($leads as $lead) {
           
-            $fileLink = 'https://' .tenant('id') . '.' . env('APP_DOMAIN', 'jobtron.org') . '/static/uploads/job/';
+            $fileLink = 'https://' .tenant('id') . '.' . config('app.domain') . '/static/uploads/job/';
             $signedAt = $lead->skyped ?? $lead->inhouse;
             $respUser = $respUsers->where('email', $lead->resp_id)->first();
                 

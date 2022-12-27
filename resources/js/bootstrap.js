@@ -36,10 +36,6 @@ import Echo from 'laravel-echo';
 import Pusher from 'pusher-js';
 window.Pusher = Pusher;
 
-console.log(process.env.VITE_PUSHER_HOST ?? window.location.hostname)
-console.log(process.env.VITE_PUSHER_PATH)
-console.log(process.env)
-console.log('HEEEEEEY ECHO')
 window.Echo = new Echo({
     broadcaster: 'pusher',
     authEndpoint: '/messenger/api/chat/auth',

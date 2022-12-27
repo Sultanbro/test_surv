@@ -3,17 +3,16 @@
 namespace App\Service\Department;
 
 use App\Models\GroupUser;
-use App\Models\History;
 use App\ProfileGroup;
 use App\User;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\HigherOrderWhenProxy;
 
 class UserService
 {
+
     /**
      * @param int $user
      * @return array

@@ -3,7 +3,7 @@
 namespace App\Repositories\Articles;
 
 
-use App\Repositories\Interfaces\Articles\BirthdayRepositoryInterface;
+use App\Repositories\Interfaces\Article\BirthdayRepositoryInterface;
 
 class BirthdayRepository implements BirthdayRepositoryInterface
 {

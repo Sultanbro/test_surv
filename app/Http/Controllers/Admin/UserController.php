@@ -28,7 +28,6 @@ use App\ProfileGroup;
 use App\Setting;
 use App\DayType;
 use App\User;
-use App\Trainee;
 use App\UserDescription;
 use App\UserDeletePlan;
 use App\UserContact;
@@ -173,7 +172,6 @@ class UserController extends Controller
                 ->where('is_trainee', 0);
             }
             
-           // $trainees = Trainee::whereNull('applied')->get()->pluck('user_id')->toArray();
             if ($request['start_date']) $users = $users->whereDate('created_at', '>=', $request['start_date']);
             if ($request['end_date']) $users = $users->whereDate('created_at', '<=', $request['end_date']);
             if ($request['segment']) $users = $users->where('segment', $request['segment']);
@@ -595,10 +593,10 @@ class UserController extends Controller
                 'description' => $request['description'],
                 'password' => $user_password,
                 'created_at' => DB::raw('NOW()'),
-                'position_id' => $request['position'],
+                'position_id' => $request['position'] ?? 0,
                 'user_type' => $request->user_type,
                 'timezone' => 6,
-                'bitrhday' => $request['birthday'],
+                'birthday' => $request['birthday'],
                 'program_id' => (int)$request['program_type'],
                 'working_day_id' => (int)$request['working_days'],
                 'working_time_id' => (int)$request['working_times'],
@@ -618,7 +616,7 @@ class UserController extends Controller
                 'last_name' => $request['last_name'],
                 'description' => $request['description'],
                 'password' => $user_password,
-                'position_id' => $request['position'],
+                'position_id' => $request['position'] ?? 0,
                 'user_type' => $request->user_type,
                 'timezone' => 6,
                 'bitrhday' => $request['birthday'],
@@ -670,19 +668,16 @@ class UserController extends Controller
         /*******  Стажер или нет  */
         /*==============================================================*/
 
-        if($request->is_trainee == 'true')  {
-            $is_trainee = 1;
-            // $user->created_at = null;
-            // $user->save();
-            $trainee = Trainee::where('user_id', $user->id)->first();
-            if(!$trainee) Trainee::create(['user_id' => $user->id]);
+        $is_trainee = $request->is_trainee == 'true' ? true : false;
 
-            UserDescription::make([
-                'user_id' => $user->id,
-                'is_trainee' => $is_trainee,
-            ]);
+        UserDescription::make([
+            'user_id' => $user->id,
+            'is_trainee' => $is_trainee,
+            'applied' =>  $is_trainee ? null : now(),
+        ]);
 
-            $daytype = DayType::create([
+        if($is_trainee)  {
+            DayType::create([
                 'user_id' => $user->id,
                 'type' => 5, // Стажировка
                 'email' => 'x',
@@ -690,19 +685,6 @@ class UserController extends Controller
                 'admin_id' => Auth::user()->id,
             ]);
         } else {
-            $is_trainee = 0;
-
-            $whatsapp = new IC();
-            $wphone = Phone::normalize($user->phone);
-            $invite_link = 'https://infinitys.bitrix24.kz/?secret=bbqdx89w';
-            //$whatsapp->send_msg($wphone, 'Ваша ссылка для регистрации в портале Битрикс24: %0a'. $invite_link . '.  %0a%0aВойти в учет времени: https://bp.jobtron.org/login. %0aЛогин: ' . $user->email . ' %0aПароль: 12345.%0a%0a *Важно*: Если не можете через некоторое время войти в учет времени, попробуйте войти через e-mail, с которым зарегистрировались в Битрикс.');
-            
-            UserDescription::make([
-                'user_id' => $user->id,
-                'is_trainee' => $is_trainee,
-                'applied' =>  DB::raw('NOW()'),
-            ]);
-
             TimetrackingHistory::create([
                 'author_id' => Auth::user()->id,
                 'author' => Auth::user()->name.' '.Auth::user()->last_name,
@@ -713,7 +695,6 @@ class UserController extends Controller
         }
 
         
-
         /*==============================================================*/
         /*******  Сохранение доп телефонов для пользователя  */
         /*==============================================================*/
@@ -947,7 +928,7 @@ class UserController extends Controller
         $user->full_time = $request['full_time'];
         $user->description = $request['description'];
         $user->currency = $request['currency'] ?? 'kzt';
-        $user->position_id = $request['position'];
+        $user->position_id = $request['position'] ?? 0;
         $user->user_type = $request['user_type'];
         $user->timezone = 6;
         $user->program_id = (int)$request['program_type'];
@@ -1035,7 +1016,7 @@ class UserController extends Controller
                 $seg = Segment::find($user->segment);
                 $segment = $seg ? $seg->name : '';
 
-                $msg_fragment = '<a href="https://bp.jobtron.org/timetracking/edit-person?id=';
+                $msg_fragment = '<a href="https://'.tenant('id').'.jobtron.org/timetracking/edit-person?id=';
                 $msg_fragment .= $user->id .'">' . $user->last_name . ' ' . $user->name . '</a>';
                 $msg_fragment .= '<br/>Дата принятия: ' . Carbon::parse($ud->applied)->format('d.m.Y');
                 $msg_fragment .= '<br/>Сегмент: ' . $segment . '<br/>Примечание: '. $comment;

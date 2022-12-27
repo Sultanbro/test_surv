@@ -23,8 +23,9 @@ export default {
         }
       });
 
+      const domain = window.location.hostname;
       // new message notification
-      window.Echo.private(`messages.${getters.user.id}`)
+      window.Echo.private(`messages.${domain}.${getters.user.id}`)
         .listen('.newMessage', e => {
           if (e.message.event) {
             dispatch('newServiceMessage', e.message);

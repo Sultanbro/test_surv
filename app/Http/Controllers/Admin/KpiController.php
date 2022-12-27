@@ -2,25 +2,20 @@
 
 namespace App\Http\Controllers\Admin;
 
-use App\Components\TelegramBot;
 use App\KpiChange;
 use App\Models\Analytics\Activity;
 use App\Models\Analytics\ActivityPlan;
 use App\Models\Analytics\AnalyticStat;
 use App\User;
-use App\UserDescription;
 use App\ProfileGroup;
 use App\Kpi;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
-use App\AnalyticsSettingsIndividually;
 use App\Models\Analytics\KpiIndicator;
 use App\Models\Analytics\IndividualKpiIndicator;
 use App\Models\Analytics\IndividualKpi;
-use App\Classes\Analytics\Impl;
 use App\Models\Analytics\UserStat;
-use App\ProfileGroupUser;
 use Illuminate\Support\Facades\View;
 
 class KpiController extends Controller
@@ -44,7 +39,7 @@ class KpiController extends Controller
 
     public function saveKPI(Request $request)
     {
-        $user = User::bitrixUser();
+        $user = auth()->user();
         $user_id = ['user_id' => $user->id];
         $inputs = $request->only([
             'group_id',
@@ -265,7 +260,7 @@ class KpiController extends Controller
 
     public function getKPI(Request $request)
     {
-        $user = User::bitrixUser();
+        $user = auth()->user();
         
         // GET KPI
         $issetKpi =  Kpi::where('group_id', $request->group_id)->first();
@@ -283,22 +278,10 @@ class KpiController extends Controller
             ]);
         }
 
-      
         $time_rate = $user->full_time == 1 ? 1: 0.5;
 
         $kpi->kpi_80_99 = $kpi->kpi_80_99 * $time_rate;
         $kpi->kpi_100 = $kpi->kpi_100 * $time_rate;
-
-        // temp 
-        // if(!$request->is_admin && $request->activeuserid) {
-        //     return response()->json([
-        //         'kpi' => $kpi,
-        //         'activities' => [],
-        //         'kpi_indicators' => []
-        //     ]);
-        // }
-
-        // GET ACTIVITY
 
         $group = ProfileGroup::find($request->group_id);
         $activities = Activity::withTrashed()->where('group_id', $request->group_id)->get(['name', 'id'])->toArray();
@@ -326,11 +309,9 @@ class KpiController extends Controller
                 $kpi_indicator->workdays = $applied_from;
             }
 
-
             if($kpi_indicator->activity_id != 0) {
                 $activity = Activity::withTrashed()->find($kpi_indicator->activity_id);
                 
-                // count workdays 
                 $ignore = [0,6,5,4,3,2,1];
                 for($i=0;$i<$activity->weekdays;$i++) array_pop($ignore);  // Какие дни не учитывать в месяце
                 $kpi_indicator->workdays = workdays(date('Y'), date('m'), $ignore);
@@ -345,30 +326,13 @@ class KpiController extends Controller
                 if($request->activeuserid && $kpi_indicator->activity_id != 0) {
                     $activity = Activity::withTrashed()->find($kpi_indicator->activity_id);
                     
-                    
-                    // count workdays 
                     $ignore = [0,6,5,4,3,2,1];
                     for($i=0;$i<$activity->weekdays;$i++) array_pop($ignore);  // Какие дни не учитывать в месяце
                     $workdays = workdays(date('Y'), date('m'), $ignore);
                     $kpi_indicator->workdays = workdays(date('Y'), date('m'), $ignore);
                
-                    if($request->group_id == 48) {
-                        $completed =  AnalyticsSettingsIndividually::getActivityProgress($request->activeuserid, $request->group_id, $activity, '', true);
-                       
-                    } else if(in_array($request->group_id, [31,42,53,57,58,63]) && time() < 1648771200) { // 1 april 2022 
-                        $completed =  AnalyticsSettingsIndividually::getActivityProgress($request->activeuserid, $request->group_id, $activity, '', true);
-                    } else {
-                        $completed = UserStat::getActivityProgress($request->activeuserid, $request->group_id, $activity, '', true);
-                        // dump($completed);
-                    }
+                    $completed = UserStat::getActivityProgress($request->activeuserid, $request->group_id, $activity, '', true);
                     
-                    // if(in_array($request->group_id, [42])) { 
-                    //     $completed =  AnalyticsSettingsIndividually::getActivityProgress($request->activeuserid, $request->group_id, $activity, '', true);
-                    // }
-
-
-
-
                     if($completed['percent'] > 100) { // перевыполнение не учитывается
                         $completed['percent'] = 100;
                     }
@@ -381,8 +345,6 @@ class KpiController extends Controller
                 }
             }
             
-           
-
             $kpi_indicator->sum_prem = 0;
             $kpi_indicator->result = 0;
 
@@ -397,7 +359,6 @@ class KpiController extends Controller
      
         }
 
-        // RESPONSE
         return response()->json([
             'kpi' => $kpi,
             'activities' => $activities,
@@ -536,16 +497,8 @@ class KpiController extends Controller
                     } else if($activity->type == 'staff') {
 
                         $date = Carbon::now()->startOfMonth()->format('Y-m-d');
-                        $pgu = ProfileGroupUser::where('group_id', $activity->group_id)
-                            ->where('date', $date)
-                            ->first();
-                        
-                        $users = $pgu ? $pgu->assigned : [];
-
-                        $kpi_indicator->completed_value = $pgu ? UserDescription::where('is_trainee', 0)
-                            ->whereIn('user_id', $pgu->assigned)
-                            ->get()
-                            ->count() : 0;
+                     
+                        $kpi_indicator->completed_value = 0;
 
                         $completed = 0;
                         if((float)$activity->daily_plan > 0) {
@@ -587,7 +540,7 @@ class KpiController extends Controller
                                     $completed['value'] =  $res;
                                 }
                             } else {
-                                $completed = AnalyticsSettingsIndividually::getTotalActivityProgress($request->activeuserid, $activity, '', true);
+                                $completed = UserStat::getTotalActivityProgress($request->activeuserid, $activity, '', true);
                             }
 
                             

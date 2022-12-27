@@ -6,62 +6,25 @@ use App\Service\AnalyticService;
 use App\Service\Department\UserService;
 use DB;
 use View;
-use Auth;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
-use App\Components\TelegramBot;
 use Maatwebsite\Excel\Facades\Excel;
 use App\Http\Controllers\Controller;
-use App\Http\Controllers\IntellectController as IC;
-use App\Classes\Helpers\Phone;
-use App\External\Bitrix\Bitrix;
 use App\Classes\Analytics\Recruiting;
-use App\Classes\Analytics\Ozon;
-use App\Classes\Analytics\Lerua;
 use App\Classes\Analytics\DM;
-use App\Classes\Analytics\HomeCredit;
-use App\Classes\Analytics\Eurasian;
-use App\Classes\Analytics\Tinkoff;
 use App\User;
-use App\Account;
-use App\Trainee;
-use App\UserDescription;
-use App\UserNotification;
-use App\Kpi;
-use App\Zarplata;
-use App\DayType;
-use App\Salary;
 use App\ProfileGroup;
 use App\CallBase;
 use App\Timetracking;
 use App\TimetrackingHistory;
-use App\AnalyticsSettings;
-use App\AnalyticsSettingsIndividually;
 use App\Models\Analytics\Activity;
-use App\Models\Analytics\ActivityTotal;
-use App\Models\Analytics\ActivityPlan;
-use App\Models\Bitrix\Lead;
-use App\Models\Bitrix\Segment;
-use App\QualityRecordMonthlyStat;
-use App\Models\CallCenter\Directory;
-use App\Models\CallCenter\Agent;
-use App\Models\Analytics\RecruiterStat;
-use App\Classes\Analytics\FunnelTable;
-use App\Models\User\NotificationTemplate;
 use App\Models\Analytics\DecompositionValue;
-use App\Models\Analytics\DecompositionItem;
 use App\Models\Analytics\TopValue;
-use App\QualityRecordWeeklyStat;
-use App\Models\Kpi\Bonus;
-use App\Models\Admin\ObtainedBonus;
-use App\Models\Admin\EditedKpi;
-use App\Models\Admin\EditedBonus;
 use App\Models\Analytics\AnalyticColumn;
 use App\Models\Analytics\AnalyticRow;
 use App\Models\Analytics\AnalyticStat;
 use App\Models\Analytics\UserStat;
 use App\Imports\AnalyticsImport;
-use App\Exports\AnalyticsExport;
 
 class AnalyticsController extends Controller
 {
@@ -71,21 +34,11 @@ class AnalyticsController extends Controller
         $this->middleware('auth');
     }
 
-    /**
-     * Permission control
-     */
-    public function redirect_if_has_not_permission() {
+    public function index()
+    {
         if(!auth()->user()->can('analytics_view')) {
             return redirect('/');
         }
-    }
-
-    /**
-     * index page
-     */
-    public function index()
-    {
-        $this->redirect_if_has_not_permission();
 
         $groups = ProfileGroup::whereIn('has_analytics', [0,1]);
 
@@ -108,27 +61,24 @@ class AnalyticsController extends Controller
         return view('admin.analytics-page', compact('groups'));
     }
 
-    /**
-     * Axios get analytics
-     */
     public function get(Request $request)
     {
         $group_id = $request->group_id;
         $month = $request->month;
         $year = $request->year;
         $date = Carbon::createFromDate($year, $month, 1);
+        $currentUser = auth()->user();
 
         $group = ProfileGroup::find($group_id);
-        $currentUser = User::bitrixUser() ?? User::find(18);
+        if (!$group) {
+            return [
+                'error' => 'access',
+            ];
+        }
 
-        $superusers = User::where('is_admin', 1)->get(['id'])->pluck('id')->toArray();
-
-        $analyticService = new AnalyticService();
-        if(!in_array(auth()->id(), $superusers)) {
-
+        if($currentUser->is_admin != 1) {
             $group_editors = is_array(json_decode($group->editors_id)) ? json_decode($group->editors_id) : [];
-            // Доступ к группе
-            if (!$group || !in_array($currentUser->id, $group_editors) && $currentUser->id != 18) {
+            if (!in_array($currentUser->id, $group_editors)) {
                 return [
                     'error' => 'access',
                 ];
@@ -155,9 +105,7 @@ class AnalyticsController extends Controller
             $call_bases = CallBase::formTable($date->format('Y-m-d'));
         }
 
-        // Ed 
-        $ffp = Recruiting::getFiredInfo($date->subMonth()->format('Y-m-d'), $group_id);
-        $ff = Recruiting::getFiredInfo($date->addMonth()->format('Y-m-d'), $group_id);
+        $analyticService = new AnalyticService();
         $fired_percent_prev = $analyticService->getFiredUsersPerMonthPercent($group, $date->subMonth());
         $fired_percent = $analyticService->getFiredUsersPerMonthPercent($group, $date->addMonth());
         $fired_number_prev = $analyticService->getFiredUsersPerMonth($group, $date->subMonth());
@@ -550,6 +498,10 @@ class AnalyticsController extends Controller
             Timetracking::updateTimes($request->employee_id, $date, $request->value * 60);
         }
 
+        if(tenant('id') != 'bp') {
+            return null;
+        }
+        
         if($request->group_id == 31 && $request->id == 20) { // DM and 20 колво действий
             DM::updateTimesNew($request->employee_id, $date);
         }
@@ -783,7 +735,7 @@ class AnalyticsController extends Controller
         $group = ProfileGroup::find($request->group_id);
         
         $request->month = (int) $request->month;
-        $currentUser = User::bitrixUser();
+        $currentUser = auth()->user();
 
         $group_editors = is_array(json_decode($group->editors_id)) ? json_decode($group->editors_id) : [];
         // Доступ к группе 

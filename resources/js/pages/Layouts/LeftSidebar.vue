@@ -6,7 +6,11 @@
 
         <!-- hover menu -->
         <div class="header__menu">
-            <div v-if="isOwner" class="header__menu-project" v-scroll-lock="isCreatingProject">
+            <div
+                v-if="isOwner"
+                class="header__menu-project"
+                v-scroll-lock="isCreatingProject"
+            >
                 <img src="/images/dist/icon-settings.svg" alt="settings icon">
                 Проект: {{ project }}
                 <div class="header__submenu">
@@ -19,13 +23,19 @@
                         {{ tenant }}
                     </a>
                     <div class="header__submenu-divider"/>
-                    <div @click="onNewProject" class="header__submenu-item">
+                    <div
+                        @click="onNewProject"
+                        class="header__submenu-item"
+                    >
                         Добавить проект
                     </div>
                 </div>
             </div>
             <div class="header__menu-title">
-                Пользователь <a class="header__menu-userid" href="javascript:void(0)">#{{ $laravel.userId }}</a>
+                Пользователь <a
+                    class="header__menu-userid"
+                    href="javascript:void(0)"
+                >#{{ $laravel.userId }}</a>
                 <p class="header__menu-email">{{ $laravel.email }}</p>
             </div>
             <router-link to="/cabinet" class="menu__item">
@@ -37,7 +47,11 @@
                     <img src="/images/dist/icon-exit.svg" alt="settings icon">
                     <span class="menu__item-title">Выход</span>
                 </button>
-                <input type="hidden" :value="$laravel.csrfToken" name="_token" />
+                <input
+                    type="hidden"
+                    :value="$laravel.csrfToken"
+                    name="_token"
+                />
             </form>
         </div>
     </div>
@@ -166,7 +180,7 @@ export default {
             return this.$can('top_view')
                 || this.$can('tabel_view')
                 || this.$can('entertime_view')
-                || this.$can('hr_view')
+                || (this.$can('hr_view') && window.location.host.split('.')[0] == 'bp')
                 || this.$can('analytics_view')
                 || this.$can('salaries_view')
                 || this.$can('quality_view')
@@ -255,7 +269,7 @@ export default {
                             name: 'HR',
                             icon: 'icon-nd-hr',
                             to: '/timetracking/analytics',
-                            hide: !this.$can('hr_view')
+                            hide: !(this.$can('hr_view') && window.location.host.split('.')[0] === 'bp')
                         },
                         {
                             name: 'Аналитика',
@@ -316,7 +330,7 @@ export default {
                     href: '/callibro/login',
                     icon: 'icon-nd-u-calls',
                     height: 0,
-                    hide: !this.$can('ucalls_view')
+                    hide: !(this.$can('ucalls_view') && window.location.host.split('.')[0] == 'bp')
                 },
             ]
         },
