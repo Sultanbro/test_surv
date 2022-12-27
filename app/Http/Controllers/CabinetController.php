@@ -8,6 +8,7 @@ use Illuminate\Support\Facades\View;
 use Illuminate\Http\Request;
 use App\Models\User\Card;
 use App\User;
+use App\Service\Tenancy\UserSyncService;
 
 class CabinetController extends Controller
 {
@@ -73,12 +74,24 @@ class CabinetController extends Controller
      * добавление карты и измение данный через профиль
      */
     public function editUserProfile(Request $request)
-    {
-        if (isset($request->cards) && !empty($request->cards)){
-            Card::where('user_id',auth()->user()->getAuthIdentifier())->delete();
+    {   
+        $user = User::find( auth()->id() );
+         
+        (new UserSyncService)->update($user->email, [
+            'password' => isset($request->password) ? Hash::make($request->password) : $user->password,
+            'working_country' => $request->working_country,
+            'working_city' => $request->working_city,
+            'birthday' => $request->birthday,
+            'name' => $request['query']['name'],
+            'last_name' =>  $request['query']['last_name'], 
+        ]);
+
+        if (isset($request->cards)){
+            Card::where('user_id', $user->id)->delete();
+
             foreach ($request->cards as $card) {
                 Card::create([
-                    'user_id' => auth()->user()->getAuthIdentifier(),
+                    'user_id' => $user->id,
                     'bank' => $card['bank'],
                     'country'=> $card['country'],
                     'cardholder'=> $card['cardholder'],
@@ -88,18 +101,7 @@ class CabinetController extends Controller
             }
         }
 
-        $user = User::find(auth()->user()->getAuthIdentifier());
-        $user['name'] = $request['query']['name'];
-        $user['birthday'] = $request['birthday'];
-        if (isset($request->password) && !empty($request->password)){
-            $user['password'] = Hash::make($request->password);
-        }
-        $user['last_name'] = $request['query']['last_name'];
-        $user['working_country'] = $request['working_country'];
-        $user['working_city'] = $request['working_city'];
-        if ($user->save()){
-            return response(['success'=>'1']);
-        }
+        return response(['success'=>'1']);
     }
 
 
