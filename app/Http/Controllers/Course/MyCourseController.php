@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\Learning;
+namespace App\Http\Controllers\Course;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\View;
