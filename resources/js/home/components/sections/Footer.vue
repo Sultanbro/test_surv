@@ -41,16 +41,16 @@
           <p class="jFooter-sub">{{ $lang(lang, 'footer-subscribe') }}</p>
           <div class="jFooter-social">
             <a
+                href="https://www.youtube.com/channel/UCsCbkgQJ6ErBgta8Q6xeU-w"
+                class="jFooter-social-link jFooter-social-yt"
+            />
+            <a
+                href="javascript:void(0)"
+                class="jFooter-social-link jFooter-social-ig"
+            />
+            <a
               href="javascript:void(0)"
               class="jFooter-social-link jFooter-social-tg"
-            />
-            <a
-              href="javascript:void(0)"
-              class="jFooter-social-link jFooter-social-ig"
-            />
-            <a
-              href="https://www.youtube.com/channel/UCsCbkgQJ6ErBgta8Q6xeU-w"
-              class="jFooter-social-link jFooter-social-yt"
             />
           </div>
         </div>
@@ -218,19 +218,31 @@ export default {
 .jFooter-social-tg {
   width: 1.5rem;
   height: 1.5rem;
-  background-image: url("../../assets/img/footer-tg.svg");
+  background-image: url("../../assets/img/footer-tg.png");
+}
+
+.jFooter-social-tg:hover {
+  background-image: url("../../assets/img/footer-tg-hover.png");
 }
 
 .jFooter-social-ig {
   width: 1.25rem;
   height: 1.25rem;
-  background-image: url("../../assets/img/footer-ig.svg");
+  background-image: url("../../assets/img/footer-ig.png");
+}
+
+.jFooter-social-ig:hover {
+  background-image: url("../../assets/img/footer-ig-hover.png");
 }
 
 .jFooter-social-yt {
   width: 2rem;
   height: 2rem;
-  background-image: url("../../assets/img/footer-yt.svg");
+  background-image: url("../../assets/img/footer-yt.png");
+}
+
+.jFooter-social-yt:hover {
+  background-image: url("../../assets/img/footer-yt-hover.png");
 }
 
 .jFooter-pay {
