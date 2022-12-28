@@ -7,17 +7,20 @@ use App\Http\Requests\Settings\CreateUserRequest;
 use App\Http\Requests\Settings\GetUserRequest;
 use App\Http\Requests\Settings\StoreUserRequest;
 use App\Service\Settings\UserService;
+use App\Service\Settings\UserUpdateService;
 use App\User;
 use Exception;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\View;
 use Symfony\Component\HttpFoundation\Response;
+use function Termwind\terminal;
 
 class UserController extends Controller
 {
     public function __construct(
-        public UserService $service
+        public UserService $service,
+        public UserUpdateService $updateService
     )
     {}
 
@@ -91,12 +94,41 @@ class UserController extends Controller
     {
         $user = auth()->user() ?? User::query()->findOrFail(5);
         abort_if(!$user->can('users_view'), Response::HTTP_FORBIDDEN, 'Access denied');
+
         View::share('title', 'Новый сотрудник');
         View::share('menu', 'timetrackingusercreate');
 
         $response = $this->service->createUser($request->toDto()->userId);
+
         return $this->response(
             message: 'Success',
+            data: $response
+        );
+    }
+
+    /**
+     * @OA\Put(
+     *     summary="Update User",
+     *     path="/timetracking/update-person",
+     *     description="Update user in settings page"
+     *     @OA\Response(
+     *          response=200,
+     *          description="Success"
+     *      ),
+     * )
+     * @param StoreUserRequest $request
+     * @return JsonResponse
+     * @throws Exception
+     */
+    public function update(StoreUserRequest $request): JsonResponse
+    {
+        $user = auth()->user() ?? User::query()->find(5);
+        abort_if(!$user, Response::HTTP_FORBIDDEN, 'Access denied');
+
+        $response = $this->updateService->updateUser($request->toDto());
+
+        return $this->response(
+            message: 'Successfully Updated',
             data: $response
         );
     }

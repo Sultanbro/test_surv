@@ -7,6 +7,7 @@ use Illuminate\Http\UploadedFile;
 class StoreUserDTO
 {
     /**
+     * @param int|null $userId
      * @param string $name
      * @param string $lastName
      * @param string $email
@@ -18,6 +19,10 @@ class StoreUserDTO
      * @param int $workingDays
      * @param int|null $workTimes
      * @param string $phone
+     * @param string|null $phoneHome
+     * @param string|null $phoneHusband
+     * @param string|null $phoneRelatives
+     * @param string|null $phoneChildren
      * @param int $fullTime
      * @param string|null $workStartTime
      * @param string|null $workEndTime
@@ -29,6 +34,7 @@ class StoreUserDTO
      * @param int|null $headGroup
      * @param bool|null $isTrainee
      * @param array|null $contacts
+     * @param array|null $adaptationTalks
      * @param array|null $cards
      * @param UploadedFile|null $file1
      * @param UploadedFile|null $file2
@@ -46,8 +52,13 @@ class StoreUserDTO
      * @param string|null $cardJysan
      * @param string|null $kaspiCardholder
      * @param string|null $jysanCardholder
+     * @param string|null $newPassword
+     * @param array|null $tax
+     * @param array|null $taxes
+     * @param int|null $bitrixId
      */
     public function __construct(
+        public ?int $userId,
         public string $name,
         public string $lastName,
         public string $email,
@@ -59,6 +70,10 @@ class StoreUserDTO
         public int $workingDays,
         public ?int $workTimes,
         public string $phone,
+        public ?string $phoneHome,
+        public ?string $phoneHusband,
+        public ?string $phoneRelatives,
+        public ?string $phoneChildren,
         public int $fullTime,
         public ?string $workStartTime,
         public ?string $workEndTime,
@@ -70,6 +85,7 @@ class StoreUserDTO
         public ?int $headGroup,
         public ?bool $isTrainee,
         public ?array $contacts,
+        public ?array $adaptationTalks,
         public ?array $cards,
         public ?UploadedFile $file1,
         public ?UploadedFile $file2,
@@ -86,13 +102,18 @@ class StoreUserDTO
         public ?string $cardKaspi,
         public ?string $cardJysan,
         public ?string $kaspiCardholder,
-        public ?string $jysanCardholder
+        public ?string $jysanCardholder,
+        public ?string $newPassword,
+        public ?array $tax,
+        public ?array $taxes,
+        public ?int $bitrixId
     )
     {}
 
     public function toArray(): array
     {
         return [
+            'user_id'           => $this->userId,
             'name'              => $this->name,
             'last_name'         => $this->lastName,
             'email'             => $this->email,
@@ -104,6 +125,10 @@ class StoreUserDTO
             'working_days'      => $this->workingDays,
             'working_times'     => $this->workTimes,
             'phone'             => $this->phone,
+            'phone_home'        => $this->phone,
+            'phone_husband'     => $this->phone,
+            'phone_relatives'   => $this->phone,
+            'phone_children'    => $this->phone,
             'full_time'         => $this->fullTime,
             'work_start_time'   => $this->workStartTime,
             'work_end_time'     => $this->workEndTime,
@@ -115,6 +140,7 @@ class StoreUserDTO
             'head_group'        => $this->headGroup,
             'is_trainee'        => $this->isTrainee,
             'contacts'          => $this->contacts,
+            'adaptation_talks'  => $this->adaptationTalks,
             'cards'             => $this->cards,
             'file1'             => $this->file1,
             'file2'             => $this->file2,
@@ -131,7 +157,11 @@ class StoreUserDTO
             'card_kaspi'        => $this->cardKaspi,
             'card_jysan'        => $this->cardJysan,
             'kaspi_cardholder'  => $this->kaspiCardholder,
-            'jysan_cardholder'  => $this->jysanCardholder
+            'jysan_cardholder'  => $this->jysanCardholder,
+            'new_password'      => $this->newPassword,
+            'tax'               => $this->tax,
+            'taxes'             => $this->taxes,
+            'bitrix_id'         => $this->bitrixId
         ];
     }
 }

@@ -208,6 +208,7 @@ Route::middleware([
     Route::post('/timetracking/get-persons-new', [\App\Http\Controllers\Admin\Settings\UserController::class, 'get']);
     Route::post('/timetracking/person/store-new', [\App\Http\Controllers\Admin\Settings\UserController::class, 'store']);
     Route::get('/timetracking/create-person-new', [\App\Http\Controllers\Admin\Settings\UserController::class, 'create']);
+    Route::post('/timetracking/person/update-new', [\App\Http\Controllers\Admin\Settings\UserController::class, 'update']);
     #======================
 
     /* Самостоятельная отметка стажеров */

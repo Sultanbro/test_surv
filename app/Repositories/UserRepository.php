@@ -248,10 +248,15 @@ final class UserRepository extends CoreRepository
             ->where('kbm.model_id', $id);
     }
 
-    public function allUsers(
+    /**
+     * @param int $userId
+     * @param array $relations
+     * @return object
+     */
+    public function userWithRelations(
         int $userId,
         array $relations = []
-    )
+    ): object
     {
         return $this->model()->withTrashed()
             ->when(isset($relations), fn ($user) => $user->with($relations))

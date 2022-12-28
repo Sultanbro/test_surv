@@ -118,23 +118,31 @@ class UserService
 
             if ($dto->contacts)
             {
-                $this->saveContacts($user->id, $dto->contacts['phone']);
+                UserHelper::saveContacts($user->id, $dto->contacts['phone']);
             }
 
             if ($dto->cards)
             {
-                $this->saveCards($user->id, $dto->cards);
+                UserHelper::saveCards($user->id, $dto->cards);
             }
 
-            FileHelper::storeDocumentsFile([
-                'dog_okaz_usl' => $dto->file1,
-                'sohr_kom_tainy' => $dto->file2,
-                'dog_o_nekonk'  => $dto->file3,
-                'trud_dog'      => $dto->file4,
-                'ud_lich'       => $dto->file5,
-                'photo'         => $dto->file6,
-                'archive'       => $dto->file7
-            ], $user->id);
+            if (
+                $dto->file1 || $dto->file2 ||
+                $dto->file3 || $dto->file4 ||
+                $dto->file5 || $dto->file6 ||
+                $dto->file7
+            )
+            {
+                FileHelper::storeDocumentsFile([
+                    'dog_okaz_usl' => $dto->file1,
+                    'sohr_kom_tainy' => $dto->file2,
+                    'dog_o_nekonk'  => $dto->file3,
+                    'trud_dog'      => $dto->file4,
+                    'ud_lich'       => $dto->file5,
+                    'photo'         => $dto->file6,
+                    'archive'       => $dto->file7
+                ], $user->id);
+            }
 
             $this->userRepository->updateOrCreateSalary(
                 $user->id,
@@ -214,48 +222,7 @@ class UserService
             'user' => $user
         ];
     }
-    /**
-     * @param int $userId
-     * @param array $cards
-     * @return void
-     */
-    private function saveCards(
-        int $userId,
-        array $cards
-    ): void
-    {
-        $cardsData = [];
-        foreach ($cards as $card)
-        {
-            $cardsData[] = $card;
-        }
 
-        (new CardRepository)->createMultipleCard($cardsData);
-    }
-    /**
-     * Сохранение доп телефонов для пользователя
-     *
-     * @param int $userId
-     * @param array $phones
-     * @return void
-     */
-    private function saveContacts(
-        int $userId,
-        array $phones
-    ): void
-    {
-        $contactsData = [];
-        foreach ($phones as $phone)
-        {
-            $contactsData[] = [
-                'user_id' => $userId,
-                'value' => $phone['value'],
-                'name' => $phone['name'],
-                'type'  => 'phone'
-            ];
-        }
-        (new UserContactRepository)->createMultipleContact($contactsData);
-    }
     
     /**
      * @throws Exception
@@ -295,7 +262,7 @@ class UserService
     /**
      * @param $users
      * @param $groups
-     * @return BinaryFileResponse
+     * @return BinaryFileResponsed
      */
     private function export($users, $groups): BinaryFileResponse
     {
