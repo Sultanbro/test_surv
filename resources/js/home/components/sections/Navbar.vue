@@ -1,19 +1,22 @@
 <template>
   <nav id="jNav">
-    <div class="section-content jNav-content">
+    <div
+        :class="{'jNav-scroll': isScroll}"
+        class="jNav-content"
+    >
       <a
-        href=""
-        class="jNav-logo"
+          class="jNav-logo"
+          href=""
       >
         <img
-          :src="require('../../assets/img/logo.svg').default"
-          alt="logo-img"
-          class="jNav-logo-img"
+            :src="require('../../assets/img/logo.svg').default"
+            alt="logo-img"
+            class="jNav-logo-img"
         >
       </a>
       <div
-        :class="{'jNav-menu-active': menu}"
-        class="jNav-menu"
+          :class="{'jNav-menu-active': menu}"
+          class="jNav-menu"
       >
         <!-- <button
           class="jNav-menu-hamburger jButton"
@@ -22,48 +25,48 @@
         <ul class="jNav-menu-items">
           <li class="jNav-menu-item jNav-menu-item-md">
             <NavbarLink
-              :lang="lang"
-              href="#prices"
-              text="prices"
+                :lang="lang"
+                href="#prices"
+                text="prices"
             />
           </li>
           <li class="jNav-menu-item jNav-menu-item-md">
             <NavbarLink
-              :lang="lang"
-              href="#reviews"
-              text="reviews"
+                :lang="lang"
+                href="#reviews"
+                text="reviews"
             />
           </li>
           <li class="jNav-menu-item jNav-menu-item-md">
             <NavbarLink
-              :lang="lang"
-              href="#features"
-              text="features"
+                :lang="lang"
+                href="#features"
+                text="features"
             />
           </li>
           <li class="jNav-menu-item">
             <span class="jNav-menu-auth">
               <form
-                v-if="csrf"
-                method="POST"
-                action="/logout"
+                  v-if="csrf"
+                  action="/logout"
+                  method="POST"
               >
                 <input
-                  type="hidden"
-                  :value="csrf"
-                  name="csrf"
+                    :value="csrf"
+                    name="csrf"
+                    type="hidden"
                 >
                 <button class="jNav-menu-user"/>
               </form>
               <template v-else>
                 <NavbarButton
-                  :lang="lang"
-                  href="/login"
-                  text="auth"
+                    :lang="lang"
+                    href="/login"
+                    text="auth"
                 />
                 <a
-                  href="/register"
-                  class="jNav-menu-user"
+                    class="jNav-menu-user"
+                    href="/register"
                 />
                 <!-- <NavbarButton
                   :lang="lang"
@@ -75,14 +78,14 @@
           </li>
           <li class="jNav-menu-item jNav-menu-item-md">
             <NavbarLang
-              :lang="lang"
-              @change="$root.$data.setLang($event)"
+                :lang="lang"
+                @change="$root.$data.setLang($event)"
             />
           </li>
         </ul>
         <div
-          class="jNav-menu-bg"
-          @click="menu = false"
+            class="jNav-menu-bg"
+            @click="menu = false"
         />
       </div>
     </div>
@@ -101,19 +104,37 @@ export default {
     NavbarButton,
     NavbarLang
   },
+
   computed: {
     lang() {
       return this.$root.$data.lang
     }
   },
+
   data() {
     return {
       menu: false,
-      csrf: ''
+      csrf: '',
+      isScroll: false
     }
   },
-  mounted(){
+
+  methods: {
+    changeLogoSizeByScroll() {
+      document.body.scrollTop > 20
+      || document.documentElement.scrollTop > 20
+          ? this.isScroll = true
+          : this.isScroll = false
+    },
+  },
+
+  mounted() {
+    window.addEventListener('scroll', this.changeLogoSizeByScroll);
     this.csrf = document.getElementById('csrf')?.value
+  },
+
+  beforeDestroy() {
+    window.removeEventListener('scroll', this.changeLogoSizeByScroll);
   }
 }
 </script>
@@ -122,24 +143,36 @@ export default {
 @import '../../assets/scss/app.variables.scss';
 
 #jNav {
-  width: 100vw;
+  display: flex;
+  align-items: center;
   position: sticky;
+  width: 100vw;
+  height: 4.875rem;
   z-index: 9000;
-  top: 0;
-  left: 0;
-  right: 0;
+  top: -1.125rem;
   background: #fff;
   box-shadow: 0 0.25rem 1rem rgba(0, 0, 0, 0.05);
 }
 
 .jNav-content {
   display: flex;
+  position: sticky;
+  top: 0;
   justify-content: space-between;
   align-items: center;
+  margin: 0 auto;
+  width: 78.125rem;
+  height: 3.75rem;
 }
 
-.jNav-logo-img {
-  width: 8rem;
+.jNav-scroll .jNav-logo-img {
+  width: 11.25rem;
+}
+
+@media (min-width: $large) {
+  .jNav-logo-img {
+    width: 15.25rem;
+  }
 }
 
 .jNav-menu-active {
@@ -216,14 +249,8 @@ export default {
   background: #6f4f28 url("../../assets/img/user.svg") center center no-repeat;
 }
 
-.jNav-menu-item-md{
+.jNav-menu-item-md {
   display: none;
-}
-
-@media screen and (min-width: $small) {
-  .jNav-logo-img {
-    width: 15.25rem;
-  }
 }
 
 @media screen and (min-width: $medium) {
@@ -263,7 +290,7 @@ export default {
     margin-left: 2.5rem;
   }
 
-  .jNav-menu-item-md{
+  .jNav-menu-item-md {
     display: block;
   }
 }
