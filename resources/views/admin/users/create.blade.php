@@ -39,7 +39,7 @@
                     </button>
                     @endif
 
-                  
+
                 @else
 
                 <button type="button" class="btn btn-success rounded" v-b-modal.modal-activate>
@@ -81,7 +81,7 @@
 
 
                         <div class="data-information mt-4 user-flex">
-                                
+
                             <div id="list-example" class="list-group user-nav sticky">
 
 
@@ -129,13 +129,13 @@
                                     </label>
 
                                     <div class="mt-2 font-weight-bold font-sm text-center " style="width:100%; font-size: 16px; margin-bottom: 10px;">
-                                        
+
                                         @if(isset($user))
                                             {{$user->last_name}} {{$user->name }}
                                         @else
                                             Новый сотрудник
                                         @endif
-                                        
+
                                     </div>
                                     <div class="mt-0 mb-3 font-weight-bold font-sm text-center " style="width:100%">
                                         @if(isset($user))
@@ -146,7 +146,7 @@
                                                     @endif
                                                 @endforeach
                                             @else
-                                                Пользователь CP.U_MARKETING.ORG 
+                                                Пользователь CP.U_MARKETING.ORG
                                             @endif
                                         @else
                                             Новый пользователь
@@ -727,7 +727,7 @@
                                                     @endforeach
 
 
-                                      
+
                                                 </div>
 
 
@@ -1113,22 +1113,21 @@
                                                        value="{{ $user->bitrix_id }}"
                                                        name="bitrix_id"
                                                        placeholder="ID профиля в битриксе">
-                                                <profile-kpi-button :user_id="{{ $user->id }}"/>
                                             </div>
                                         </div>
                                         @endif
 
 
-                                        
+
 
 
                                     </div>
                                     <!--  -->
                                 </div>
 
-                                
 
-                                
+
+
                             </div>
                         </div>
                         @if($errors->any())
@@ -1159,7 +1158,7 @@
 
                         {{ csrf_field() }}
                         <div class="row align-items-center justify-content-center p-3" style="padding-bottom:0!important">
-                            
+
                             <div class="col-md-12 mb-2">
                                 <select name="cause" id="cause" class="form-control form-control-sm">
                                     <option value="" selected disabled>Выберите причину</option>
@@ -1169,7 +1168,7 @@
                                 </select>
                             </div>
 
-                            
+
                             @if(isset($user) && !$user->is_trainee)
                             <div class="col-md-6">
                                 <div class="box">
@@ -1194,7 +1193,7 @@
                                         </label>
                                         @endif
                                     </div>
-                                </div>  
+                                </div>
                             </div>
                             <div class="col-md-6 d-flex justify-content-between flex-column">
                                 <button type="submit" class="btn btn-success rounded mb-2" id="deleteUser">Да</button>
@@ -1211,16 +1210,16 @@
                                 <button type="reset" class="btn btn-primary rounded" data-dismiss="modal">Нет</button>
                             </div>
                             @endif
-                            
-                            
-                                            
 
-                            
+
+
+
+
                         </div>
                         <div class="row mt-2 px-5">
                             <span id="deleteError" style="color:red;text-align:center;width:100%"></span>
                         </div>
-                        
+
                     </form>
                 </div>
             </div>
@@ -1288,7 +1287,7 @@
 
 <script src="/admin/js/vendor/jquery-2.1.4.min.js"></script>
 <script src="{{ url('/js/jquery.maskedinput.js') }}"></script>
-   
+
 <script>
     $(".phone_mask").mask("+7(999)999-99-99");
 </script>
@@ -1391,8 +1390,8 @@ function pasteSearchInput(type_id){
 
 function bitrix_quarter_editor(){
     $('#bitrix_quarter_id_input').show();
-}   
-    
+}
+
 function submitx() {
 
     counter = 0;
@@ -1541,7 +1540,7 @@ function submit_trainee() {
 
     let profile_errors = 0;
 
-    
+
 
     if (country.length < 2) {
         $('#beforeSubmit .texter').append('<div>Профиль: <b>Город</b> </div>');
@@ -1750,7 +1749,7 @@ $(document).ready(function() {
     $('#submitx').click(function(e) {
         console.log('test')
         e.preventDefault();
-        
+
         $('#trainee').val(false)
         submitx();
     });
@@ -1786,14 +1785,14 @@ $(document).ready(function() {
 
     $('#deleteUser').click(function(e) {
         e.preventDefault();
-        
+
         if(($('#file-8').val() =='' || $('#file-8').val() == null) && $('#cause').val() != 'Дубликат, 2 учетки') {
             $('#deleteError').text('Прикрепите Заявление об увольнении!');
         } else {
             $('#deleteError').text('');
             $('#deleteForm').submit();
         }
-        
+
     });
 
 });
@@ -1819,7 +1818,7 @@ var position = document.querySelector('#position');
 var position_group = document.querySelector('#position_group');
 
 function raf() {
-    if(document.querySelector('#position_group') == null) return; 
+    if(document.querySelector('#position_group') == null) return;
     if(document.querySelector('#position').value == '45') {
         document.querySelector('#position_group').style.display = 'block';
     } else {
@@ -2042,7 +2041,7 @@ function selectedCountry() {
     height: 30px;
     font-size: 12px;
 
-}  
+}
 .adaptation_talk .div_2 {
     display: flex;
     flex-direction:column;
@@ -2055,7 +2054,7 @@ function selectedCountry() {
 .adaptation_talk .div_3 textarea{
     width: 100%;
 
-   
+
     border-radius:3px;
     font-size: 12px;
 }
