@@ -1,53 +1,55 @@
 <template>
   <section id="jTariffs">
     <a
-      id="prices"
-      class="ancor"
-      name="prices"
+        id="prices"
+        class="ancor"
+        name="prices"
     />
     <div class="section-content">
       <h2 class="jTariffs-header jHeader">{{ $lang(lang, 'prices-header') }}</h2>
       <div class="jTariffs-content">
         <table
-          v-if="isMedium"
-          :data-col="activeCol"
-          class="jTariffs-table"
-          @mouseout="activeCol = -1"
+            v-if="isMedium"
+            :data-col="activeCol"
+            class="jTariffs-table"
+            @mouseout="activeCol = -1"
         >
           <tbody class="jTariffs-tbody">
           <tr
-            v-for="(tr, rkey) in table"
-            :key="'r' + rkey"
-            class="jTariffs-tr"
+              v-for="(tr, rkey) in table"
+              :key="'r' + rkey"
+              class="jTariffs-tr"
           >
             <template v-if="rkey === 0 || rkey >= table.length - 3">
               <th
-                v-for="(td, dkey) in tr"
-                :key="'r' + rkey + 'd' + dkey"
-                :data-col="dkey"
-                class="jTariffs-th jTariffs-cell"
-                @mouseover="activeCol = dkey"
-              >{{ td }}</th>
+                  v-for="(td, dkey) in tr"
+                  :key="'r' + rkey + 'd' + dkey"
+                  :data-col="dkey"
+                  class="jTariffs-th jTariffs-cell"
+                  @mouseover="activeCol = dkey"
+              >{{ td }}
+              </th>
             </template>
             <template v-else>
               <td
-                v-for="(td, dkey) in tr"
-                :key="'r' + rkey + 'd' + dkey"
-                :data-col="dkey"
-                class="jTariffs-td jTariffs-cell"
-                @mouseover="activeCol = dkey"
-              >{{ td }}</td>
+                  v-for="(td, dkey) in tr"
+                  :key="'r' + rkey + 'd' + dkey"
+                  :data-col="dkey"
+                  class="jTariffs-td jTariffs-cell"
+                  @mouseover="activeCol = dkey"
+              >{{ td }}
+              </td>
             </template>
           </tr>
           <tr>
             <th></th>
             <td
-              v-for="td in 4"
-              :key="td"
+                v-for="td in 4"
+                :key="td"
             >
               <a
-                href="/register"
-                class="jButton"
+                  class="jButton jButton-tariffs"
+                  href="/register"
               >
                 {{ $lang(lang, 'prices-register') }}
               </a>
@@ -56,23 +58,23 @@
           </tbody>
         </table>
         <div
-          v-if="!isMedium"
-          class="jTariffs-image-wrap"
+            v-if="!isMedium"
+            class="jTariffs-image-wrap"
         >
           <a
-            :href="image"
-            target="_blank"
-            class="jTariffs-image-link"
+              :href="image"
+              class="jTariffs-image-link"
+              target="_blank"
           >
             <img
-              :src="image"
-              alt=""
-              class="jTariffs-image"
+                :src="image"
+                alt=""
+                class="jTariffs-image"
             >
           </a>
           <a
-            href="/register"
-            class="jButton"
+              class="jButton"
+              href="/register"
           >
             {{ $lang(lang, 'prices-register') }}
           </a>
@@ -91,7 +93,7 @@ export default {
     table() {
       return this.$lang(this.lang, 'prices-table')
     },
-    isMedium(){
+    isMedium() {
       return this.$viewportSize.width >= 1260
     },
   },
@@ -136,13 +138,14 @@ export default {
   overflow-x: auto;
 }
 
-.jTariffs-image-wrap{
+.jTariffs-image-wrap {
   display: flex;
   flex-flow: column;
   align-items: center;
   gap: 1rem;
 }
-.jTariffs-image{
+
+.jTariffs-image {
   max-width: 100%;
 }
 
@@ -219,5 +222,10 @@ export default {
   .jTariffs-th {
     padding: 1.125rem;
   }
+}
+
+a.jButton-tariffs {
+  margin: 1rem auto;
+  font-size: 0.8rem;
 }
 </style>
