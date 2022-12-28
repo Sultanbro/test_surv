@@ -128,7 +128,6 @@ Vue.component('sidebar', require('./components/ui/Sidebar.vue').default); // с�
 Vue.component('group-premission', require('./components/modals/GroupPremission.vue').default); // доступы к группе
 Vue.component('progress-bar', require('./components/ProgressBar.vue').default) // в ответах quiz
 Vue.component('rating', require('./components/ui/Rating.vue').default); // звездочки
-Vue.component('profile-kpi-button', require('./components/ProfileKpiButton.vue').default); // кнопка Индивид KPI в настройках User
 Vue.component('profile-groups', require('./components/profile/ProfileGroups.vue').default); // настройки user
 Vue.component('base-knowledge', require('./components/profile/ProfileBaseKnowledge.vue').default); // настройки user База знание
 Vue.component('profile-books', require('./components/profile/ProfileBooks.vue').default); // настройки user
@@ -164,7 +163,6 @@ Vue.component('book-segment', require('./components/BookSegment.vue').default); 
 /**
  * Tables
  */
-Vue.component('t-kpi', require('./components/tables/TableKPI.vue').default); // KPI
 Vue.component('t-quarter', require('./components/tables/TableQuarter.vue').default); // Quarter
 Vue.component('t-decomposition', require('./components/tables/TableDecomposition.vue').default); // Декомпозиция
 Vue.component('t-user-analytics', require('./components/tables/TableUserAnalytics.vue').default); // Ваши показатели
