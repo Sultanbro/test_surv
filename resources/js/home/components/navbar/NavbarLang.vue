@@ -33,7 +33,7 @@ export default {
   padding: 0.25rem 0;
   margin: 0.5rem 0;
   position: relative;
-  font-size: 1.125rem;
+  font-size: 0.9rem;
   color: #000;
   text-decoration: none;
   &:after {
@@ -54,6 +54,7 @@ export default {
   right: 0;
   background: #fff;
   box-shadow: 0 0.125rem 0.1875rem rgba(0,0,0,0.5);
+  border-radius: 0.8rem;
 }
 .jNav-menu-lang-active {
   .jNav-menu-lang-popup {
@@ -61,6 +62,6 @@ export default {
   }
 }
 .jNav-menu-lang-button {
-  padding: 0.25rem;
+  padding: 1.25rem;
 }
 </style>
