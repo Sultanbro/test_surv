@@ -31,12 +31,12 @@
           v-model="course.text"
           :style="'height:285px'"
           class="form-control"
-          placeholder="Описание курса" 
-        ></textarea>
+          placeholder="Описание курса"
+        />
       </div>
-  
+
       <!-- profile image -->
-      <div class="ml-3"> 
+      <div class="ml-3">
 
           <croppa
             v-model="myCroppa"
@@ -52,7 +52,7 @@
             :zoom-speed="20"
             :initial-image="image"
             :key="croppa_key"
-          ></croppa>
+          />
 
           <button
             style="width: 250px; display: block"
@@ -61,7 +61,7 @@
           >
             Обрезать и сохранить
           </button>
-      
+
       </div>
 
     </div>
@@ -71,19 +71,17 @@
         <p class="title mr-3">Курс состоит из ({{ course.elements.length }}):</p>
         <div class="btns w-50 pr-5">
           <div class="d-flex mb-2">
-           
-            <superselect-alt
-              :values="course.elements"
-              class="w-full mb-4" 
+            <SuperSelectAlt
               :key="1"
+              :values="course.elements"
+              class="w-full mb-4"
               :hide_selected="true"
-              />
-
+            />
           </div>
         </div>
       </div>
 
-      <draggable
+      <Draggable
         class="dragArea ml-0 mr-5"
         tag="ul"
         handle=".fa-bars"
@@ -107,7 +105,7 @@
                 {{ el.name }}
                 <i class="fa fa-info-circle pointer ml-2"
                   v-if="el.deleted != undefined  && el.deleted"
-                  v-b-popover.hover.right.html="'Элемент был удален'" 
+                  v-b-popover.hover.right.html="'Элемент был удален'"
                   title="Не найдено">
                 </i>
               </p>
@@ -118,35 +116,45 @@
             </div>
           </li>
         </template>
-      </draggable>
+      </Draggable>
 
 
       <div class="mt-3 pr-5">
         Курс проходят:
 
-        <superselect 
-            :values="course.targets"
-            class="w-50 mb-4" 
-            :key="superselectKey"
-            :select_all_btn="true" />
-        
+        <SuperSelect
+          :key="superselectKey"
+          :values="course.targets"
+          class="w-50 mb-4"
+          :select_all_btn="true"
+        />
+
       </div>
     </div>
   </div>
 </template>
 
 <script>
+import Draggable from 'vuedraggable'
+import SuperSelectAlt from '@/components/SuperSelectAlt'
+import SuperSelect from '@/components/SuperSelect'
+
 export default {
-  name: "Course",
-  props: ["id"],
+  name: 'Course',
+  components: {
+    Draggable,
+    SuperSelectAlt,
+    SuperSelect,
+  },
+  props: ['id'],
   data() {
     return {
-      test: "dsa",
+      test: 'dsa',
       hover: false,
       file: null,
       myCroppa: {},
       newItem: null,
-      users: [], 
+      users: [],
       course: {
         id: 0,
         elements: [],
@@ -219,8 +227,8 @@ export default {
     deleteItem(i) {
       this.course.elements.splice(i, 1);
     },
-    
-    
+
+
 
     addTag(newTag) {
       const tag = {

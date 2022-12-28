@@ -1,29 +1,29 @@
 <template>
 <div class="mb-3">
     <div class="d-flex align-items-center mb-2" v-if="show_headers">
-        
+
         <h4 class="mr-2">{{ activity.name }} <i class="fa fa-cogs show" @click="editActivity()"></i> </h4>
 
         <div class="my-2 d-flex ml-auto mr-3">
             <div class="d-flex">
                 <div class="mr-2">
                     <b-form-radio v-model="user_types"  name="some-radios" value="0">Действующие</b-form-radio>
-                </div>  
+                </div>
                 <div class="mr-2">
                     <b-form-radio v-model="user_types"  name="some-radios" value="1">Уволенные</b-form-radio>
-                </div>   
+                </div>
                 <div class="mr-2">
                     <b-form-radio v-model="user_types"  name="some-radios" value="2">Стажеры</b-form-radio>
-                </div>  
+                </div>
             </div>
-                
+
             <b-form-checkbox
-                v-model="filter.fulltime" 
+                v-model="filter.fulltime"
                 :value="1"
                 :unchecked-value="0"
                 class="mr-2"
                 >
-                Full-Time 
+                Full-Time
             </b-form-checkbox>
             <b-form-checkbox
                 v-model="filter.parttime"
@@ -31,14 +31,14 @@
                 :unchecked-value="0"
                 class="mr-2"
                 >
-                Part-Time 
+                Part-Time
             </b-form-checkbox>
-            
+
         </div>
 
-        
+
         <div >
-           
+
             <a @click='showExcelImport = !showExcelImport'  v-if="group_id == 42 || group_id == 88 || (group_id == 71 && activity.id == 149) || (group_id == 71 && activity.id == 151)"
                 class="btn btn-success btn-sm rounded mr-2 text-white">
                 <i class="fa fa-upload"></i>
@@ -53,7 +53,7 @@
         </div>
 
     </div>
-    
+
     <table class="table b-table table-bordered table-sm table-responsive" :class="{'inverted' : color_invert}">
         <tr>
             <th class="b-table-sticky-column text-left px-1 t-name bg-white">
@@ -62,7 +62,7 @@
             </th>
 
             <template v-if="activity.plan_unit == 'minutes'">
-                <th class="text-center px-1 day-minute"> 
+                <th class="text-center px-1 day-minute">
                     <div>Ср.</div>
                     <i v-if="show_headers" class="fa fa-sort ml-2" @click="sort('avg')"></i>
                 </th>
@@ -79,7 +79,7 @@
                     <i v-if="show_headers" class="fa fa-sort ml-2" @click="sort('_percent')"></i>
                 </th>
             </template>
-            
+
             <template v-else>
                 <th class="text-center px-1 day-minute">
                     <div>План</div>
@@ -90,7 +90,7 @@
                     <i v-if="show_headers" class="fa fa-sort ml-2" @click="sort('plan')"></i>
                 </th>
             </template>
-            
+
             <template v-for="day in month.daysInMonth">
                 <th class="text-center px-1" :key="day">
                     <div>{{ day }}</div>
@@ -99,12 +99,12 @@
         </tr>
 
         <tr v-for="(item, index) in filtered" :key="index">
-            
+
 
             <td v-if="item.name == 'SPECIAL_BTN'">
                 <button class="btn btn-light rounded btn-sm" @click="switchAction">Сумма\Среднее</button>
             </td>
-            
+
             <td class="table-primary b-table-sticky-column text-left px-2 t-name" :title="item.id + ' ' + item.email" v-else>
                 <div class="wd d-flex">
                     {{ item.lastname }} {{ item.name }}
@@ -134,7 +134,7 @@
                 <td class="px-2 stat day-minute "><div>{{ item.month }}</div></td>
                 <td class="px-2 stat day-minute"><div>{{ item.plan }}</div></td>
             </template>
-            
+
 
             <template v-for="day in month.daysInMonth">
                 <td v-if="item.editable && editable" :class="'px-0 day-minute text-center Fri table-' + item._cellVariants[day]">
@@ -156,13 +156,24 @@
         </tr>
     </table>
 
-    <sidebar title="Импорт EXCEL" :open="showExcelImport" @close="showExcelImport=false" v-if="showExcelImport" width="75%">
-        <activity-excel-import :group_id="group_id" table="minutes" @close="showExcelImport=false" :activity_id="activity.id"></activity-excel-import>
-    </sidebar>
+    <Sidebar
+        v-if="showExcelImport"
+        :open="showExcelImport"
+        title="Импорт EXCEL"
+        @close="showExcelImport=false"
+        width="75%"
+    >
+        <ActivityExcelImport
+            :group_id="group_id"
+            table="minutes"
+            @close="showExcelImport=false"
+            :activity_id="activity.id"
+        />
+    </Sidebar>
 
     <!-- Modal edit -->
-    <b-modal v-model="showEditModal"  title="Настройки активности" @ok="saveActivity()" size="lg" class="modalle">
-        
+    <b-modal v-model="showEditModal" title="Настройки активности" @ok="saveActivity()" size="lg" class="modalle">
+
         <div class="row">
             <div class="col-5">
                 <p class="">Название активности</p>
@@ -182,7 +193,7 @@
                 </select>
             </div>
         </div>
- 
+
         <div class="row">
             <div class="col-5">
                 <p class="">План (Если сумма, на день)</p>
@@ -191,7 +202,7 @@
                 <input type="number" class="form-control form-control-sm" v-model="local_activity.daily_plan">
             </div>
         </div>
-        
+
         <div class="row">
             <div class="col-5">
                 <p class="">Кол-во рабочих дней в неделе</p>
@@ -216,16 +227,22 @@
                 <input type="checkbox" class="form-control form-control-sm" v-model="local_activity.editable">
             </div>
         </div>
-        
+
      </b-modal>
 
 </div>
 </template>
 
 <script>
+import Sidebar from '@/components/ui/Sidebar' // сайдбар table
+import ActivityExcelImport from '@/components/imports/ActivityExcelImport' // импорт в активности
 
 export default {
-    name: "TableActivityNew",
+    name: 'TableActivityNew',
+    components: {
+        Sidebar,
+        ActivityExcelImport,
+    },
     props: {
         month: Object,
         activity: Object,
@@ -280,7 +297,7 @@ export default {
             showExcelImport: false
         };
     },
-    watch: { 
+    watch: {
         activity: function(newVal, oldVal) { // watch it
             this.fetchData();
         },
@@ -319,7 +336,7 @@ export default {
             }
             console.log(sat);*/
             var d = new Date(this.month.currentYear +'-'+ this.month.month +'-01');
-            
+
             for(var i = 1;i <= this.month.daysInMonth; i++){
                 var newDate = new Date(d.getFullYear(),d.getMonth(),i)
                 if(newDate.getDay()==0){   //if Sunday
@@ -354,7 +371,7 @@ export default {
                     this.itemsArray[index]["avg"] = account.avg;
                     this.itemsArray[index]["month"] = account.month;
                 }
-                
+
             });
         },
 
@@ -364,7 +381,7 @@ export default {
 
             let first_item = this.itemsArray[0];
             //this.itemsArray.shift();
-        
+
             arr.sort((a, b) => Number(a.plan) < Number(b.plan)  ?
                 1 : Number(a.plan) > Number(b.plan) ? -1 : 0);
 
@@ -372,7 +389,7 @@ export default {
                 arr[0].show_cup = 1;
                 arr[1].show_cup = 2;
                 arr[2].show_cup = 3;
-            } 
+            }
 
 
             //this.itemsArray.unshift(first_item);
@@ -380,10 +397,10 @@ export default {
 
         fetchData() {
             let loader = this.$loading.show();
-            
+
             this.records = this.activity.records;
             this.accountsNumber = this.activity.records.length
-            
+
             if(this.show_headers) this.setFirstRowAsTotals()
             this.calculateRecordsValues()
             if(this.show_headers) this.calculateTotalsRow()
@@ -395,7 +412,7 @@ export default {
 
             this.addButtonToFirstItem();
 
-            loader.hide();    
+            loader.hide();
 
 
         },
@@ -415,7 +432,7 @@ export default {
                 this.currentAction = 'avg'
 
                 Object.keys(this.sum).forEach((key) => {
-                    this.items[0][key] = this.percentage[key] > 0 
+                    this.items[0][key] = this.percentage[key] > 0
                         ? Number(this.sum[key] / this.percentage[key]).toFixed(2)
                         : 0;
                 });
@@ -426,29 +443,29 @@ export default {
 
         addButtonToFirstItem() {
             if(this.itemsArray.length == 0) return;
-            
+
             this.itemsArray[0].name = 'SPECIAL_BTN';
         },
 
         updateTable(items) {
             let loader = this.$loading.show();
-            
+
             this.records = items;
             this.calculateRecordsValues();
             if(this.show_headers)  this.calculateTotalsRow();
             this.updateAvgValuesOfRecords();
-       
-            
+
+
             this.items = this.itemsArray;
-            
+
             this.addCellVariantsArrayToRecords();
             this.setCellVariants();
             loader.hide();
         },
         setAvgCell() {
-    
+
         },
-        
+
         filterTable() {
             this.filtered = this.items.filter((el, index) => {
 
@@ -468,7 +485,7 @@ export default {
                     pass_b = false
                 }
 
-                if(!pass_b) a = a && b  
+                if(!pass_b) a = a && b
 
                 if(this.filter.fulltime == 1) {
                     c = c || el.full_time == 1
@@ -482,13 +499,13 @@ export default {
 
                 if(!pass_c) a = a && c
 
-                return a 
+                return a
             })
         },
 
         calculateTotalsRow() {
-            
-            
+
+
             // вот здесь я считаю итоговые суммы минут по всем сотрудникам, и мне их видимо придется сохранить в бд
 
             let total = 0, quantity = 0;
@@ -517,7 +534,7 @@ export default {
 
             console.log('TOTAL ' + total)
 
-          
+
 
             if(this.activity.plan_unit == 'minutes') {
                 this.itemsArray[0]['plan'] = Number(total).toFixed(0);
@@ -528,17 +545,17 @@ export default {
             }
 
 
-            
+
 
         },
 
         setCellVariants() {
             if (typeof this.activity === "object") {
-            
+
                 let minutes = this.filtered;
-                
+
                 if(this.activity.plan_unit != 'less_sum') {
-                     
+
                     minutes.forEach((account, index) => {
                         if (index > 0 || !this.show_headers) {
                             for (let key in account) {
@@ -546,7 +563,7 @@ export default {
                                     if (key >= 1 && key <= 31 && account[key] !== undefined && account[key] !== null) {
                                         if (account[key] >= this.activity.daily_plan) {
                                             this.filtered[index]._cellVariants[key] = "success";
-                                        } else { 
+                                        } else {
                                             this.filtered[index]._cellVariants[key] = "danger";
                                         }
                                     }
@@ -554,7 +571,7 @@ export default {
                                     if (key >= 1 && key <= 31 && account[key] !== undefined && account[key] !== null) {
                                         if (account[key] > this.activity.daily_plan) {
                                             this.filtered[index]._cellVariants[key] = "danger";
-                                        } else { 
+                                        } else {
                                             this.filtered[index]._cellVariants[key] = "success";
                                         }
                                     }
@@ -565,7 +582,7 @@ export default {
 
                 }
             }
-            
+
         },
 
         editMode(item) {
@@ -577,7 +594,7 @@ export default {
         },
 
         updateSettings(e, data, index, key) {
-           
+
             data.editable = false
             console.log(key);
             var clearedValue = e.target.value.replace(",", ".");
@@ -593,20 +610,20 @@ export default {
             if(value > 999) {
                 this.filtered[index][key] = 999;
             }
-            
+
             this.filtered[index][key] = Number(this.filtered[index][key])
             let employee_id = data.id;
-    
+
             let filtered = this.filtered;
-           
+
             let loader = this.$loading.show();
             let year = new Date().getFullYear();
 
-            this.updateTable(filtered); 
-            
+            this.updateTable(filtered);
 
 
-            axios 
+
+            axios
                 .post("/timetracking/analytics/update-stat", {
                     month: this.month.month,
                     year: this.month.currentYear,
@@ -619,7 +636,7 @@ export default {
                 .then((response) => {
                     loader.hide();
                 });
-            
+
         },
 
         exportData() {
@@ -649,37 +666,37 @@ export default {
             } else {
                 this.itemsArray = [];
             }
-            
+
             this.totalCountDays = 0;
             this.avgOfAverage = 0;
             this.percentage = []
 
-            let row0_avg = 0; 
+            let row0_avg = 0;
             let row0_avg_items = 0;
-            
+
             let avg_of_column = 0;
             let quan_of_column = 0;
 
             this.records.forEach((account, index) => {
                 let countWorkedDays = 0;
                 let cellValues = [];
-                
 
-                
+
+
                 if (account.name != this.totalRowName) {
                     let sumForOne = 0;
                     for (let key in account) {
                         let value = account[key];
-                        
+
                         if (key >= 1 && key <= 31) {
                             cellValues[key] = Number(value);
 
                             if (isNaN(this.sum[key])) this.sum[key] = 0;
 
                             if (isNaN(this.percentage[key])) this.percentage[key] = 0;
-                            
+
                             this.sum[key] = this.sum[key] + Number(account[key]); // vertical sum
-                            
+
                             if(Number(account[key]) > 0) {
                                 this.percentage[key] = this.percentage[key] + 1;
 
@@ -690,28 +707,28 @@ export default {
 
                         }
                     }
-           
+
                     cellValues["plan_unit"] = this.activity.plan_unit;
-                     
+
                     let daily_plan = Number(this.activity.daily_plan);
-                    
-                  
+
+
 
                     if(this.activity.plan_unit == 'minutes') {
                         if(account.full_time == 0)  daily_plan = Number(daily_plan / 2);
-                        
+
                         cellValues["plan"] = sumForOne;
-                        
+
                         let average = (sumForOne / countWorkedDays).toFixed(2);
                         let finishAverage = !isNaN(average) ? average : 0;
                         cellValues["avg"] = finishAverage;
-                        
+
                         if(finishAverage != 0) {
                             quan_of_column++;
                             avg_of_column += Number(finishAverage);
                         }
-                        
-                        
+
+
                         let wd = Number(this.activity.workdays);
                         cellValues["month"] = account.applied_from != 0 ? Number(account.applied_from) * daily_plan : Number(wd) * daily_plan;
 
@@ -735,12 +752,12 @@ export default {
                         cellValues["month"] = daily_plan;
                         cellValues["plan"] = finishAverage;
                         cellValues["avg"] = finishAverage;
-                        
+
                         if(finishAverage != 0) {
                             quan_of_column++;
                             avg_of_column += Number(finishAverage);
                         }
-                        
+
                         this.avgOfAverage = parseFloat(this.avgOfAverage) + parseFloat(finishAverage);
 
                     }
@@ -750,8 +767,8 @@ export default {
                         let finishAverage = !isNaN(average) ? average : 0;
                         cellValues["month"] = daily_plan;
                         cellValues["plan"] = finishAverage;
-                        
-                        
+
+
                         this.avgOfAverage = parseFloat(this.avgOfAverage) + parseFloat(finishAverage);
 
                         if(finishAverage != 0) {
@@ -763,9 +780,9 @@ export default {
                     if(this.activity.plan_unit == 'less_sum') {
                         cellValues["month"] = daily_plan;
                         cellValues["plan"] =  Number(sumForOne).toFixed(0);
-                        
+
                         this.avgOfAverage = parseFloat(this.avgOfAverage) + Number(sumForOne);
-                        
+
                     }
                 }
 
@@ -783,11 +800,11 @@ export default {
                         full_time: account.full_time,
                         email: account.email,
                         ...cellValues,
-                    });  
-                } 
-                
+                    });
+                }
+
             });
-            
+
             let avg = quan_of_column > 0 ? avg_of_column / quan_of_column : '';
 
             if(this.show_headers)  {
@@ -797,18 +814,18 @@ export default {
                     this.itemsArray[0]['plan'] = Number(avg).toFixed(2);
                 }
             }
-            
+
             this.records.forEach((account, index) => {
                 if(parseFloat(account['plan']) != 0 && account['plan'] != undefined) {
 
                     row0_avg += parseFloat(account['plan']);
                     row0_avg_items++;
                 }
-            })    
+            })
 
-            
 
-            
+
+
         },
 
         toFloat(number) {
@@ -834,13 +851,13 @@ export default {
                 this.$toast.error('Ошибка!')
                 alert(error)
             });
-        }, 
+        },
 
         sort(field) {
 
             if(this.sorts[field] === undefined) {
                 this.sorts[field] = 'asc';
-            } 
+            }
 
             let item = this.items[0];
 
@@ -851,7 +868,7 @@ export default {
                 } else {
                     this.items.sort((a, b) => (Number(a[field]) > Number(b[field])) ? 1 : -1);
                 }
-              
+
                 this.sorts[field] = 'asc';
             } else {
                 if(field == 'name') {
@@ -861,7 +878,7 @@ export default {
                 }
                 this.sorts[field] = 'desc';
             }
-            
+
             this.items.unshift(item);
         },
     },
@@ -877,7 +894,7 @@ export default {
     padding: 0 !important;
     text-align: center;
     vertical-align: middle;
-    
+
     div {
         font-size: 0.8rem;
     }
@@ -942,7 +959,7 @@ export default {
     padding: 0;
     color: #000;
     border-radius: 0;
- 
+
     &:focus {
         outline: none;
     }

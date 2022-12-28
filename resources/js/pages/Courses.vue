@@ -5,8 +5,8 @@
     <h1 class="page-title">Курсы</h1>
 
 
-    <draggable 
-      class="sss" 
+    <Draggable
+      class="sss"
       tag="div"
       :handle="'.fa-bars'"
       :list="courses"
@@ -27,7 +27,7 @@
         <div class="d-flex aic jcsb w-full">
            <p class="mb-0">{{ course.name }}</p>
             <div class="d-flex">
-             
+
             <i
               class="fa fa-trash ml-2"
               v-if="course.id != 0"
@@ -35,9 +35,9 @@
             ></i>
            </div>
         </div>
-       
+
       </div>
-    </draggable>
+    </Draggable>
 
     <button class="btn-add" @click="modals.add_course.show = true">
       Добавить курс
@@ -62,7 +62,7 @@
     </div>
     <div class="content mt-3">
       <div v-if="activeCourse" class="p-3">
-        <course :id="activeCourse.id" /> 
+        <Course :id="activeCourse.id" />
       </div>
     </div>
   </div>
@@ -89,8 +89,15 @@
 </template>
 
 <script>
+import Draggable from 'vuedraggable'
+import Course from '@/pages/Course.vue'
+
 export default {
-  name: "Courses",
+  name: 'Courses',
+  components: {
+    Draggable,
+    Course,
+  },
   data() {
     return {
       test: 'dsa',
@@ -115,7 +122,7 @@ export default {
       axios.post('/courses/save-order', {
         id: event.item.id,
         order: event.newIndex, // oldIndex
-      }) 
+      })
       .then(response => {
           this.$toast.success('Очередь сохранена');
       })
@@ -165,7 +172,7 @@ export default {
 
     deleteCourse(i) {
        if (confirm("Вы уверены удалить курс?")) {
-        
+
         let loader = this.$loading.show();
 
         axios
@@ -194,14 +201,14 @@ export default {
 
            const urlParams = new URLSearchParams(window.location.search);
           let course_id = urlParams.get('id');
-       
+
           if(course_id != null) {
             let i = this.courses.findIndex(el => el.id == course_id)
             if(i != -1) this.activeCourse = this.courses[i]
           } else if (this.courses.length > 0) {
             this.activeCourse = this.courses[0];
           }
-          
+
           loader.hide();
         })
         .catch((error) => {
@@ -211,6 +218,6 @@ export default {
     },
   },
 
-  
+
 };
 </script>

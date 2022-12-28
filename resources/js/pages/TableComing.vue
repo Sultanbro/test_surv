@@ -69,7 +69,7 @@
 <script>
 
 export default {
-    name: "TableComing",
+    name: 'TableComing',
     props: {
         groups: Array,
         years: Array,

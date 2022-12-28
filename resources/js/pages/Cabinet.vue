@@ -60,7 +60,7 @@
           <div class="form-group">
             Администраторы
 
-            <multiselect
+            <Multiselect
               v-model="admins"
               :options="users"
               :multiple="true"
@@ -373,16 +373,18 @@
   </div>
 </template>
 <script>
-import VueAvatar from "../components/vue-avatar-editor/src/components/VueAvatar.vue";
-import VueAvatarScale from "../components/vue-avatar-editor/src/components/VueAvatarScale";
-import { Cropper } from 'vue-advanced-cropper';
-import 'vue-advanced-cropper/dist/style.css';
+import VueAvatar from '../components/vue-avatar-editor/src/components/VueAvatar.vue'
+import VueAvatarScale from '../components/vue-avatar-editor/src/components/VueAvatarScale'
+import Multiselect from 'vue-multiselect'
+import { Cropper } from 'vue-advanced-cropper'
+import 'vue-advanced-cropper/dist/style.css'
 import { bus } from '../bus'
 
 export default {
-  name: "Cabinet",
+  name: 'Cabinet',
   components:{
-    Cropper
+    Cropper,
+    Multiselect,
   },
   props: {
     auth_role: {},
