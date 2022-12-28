@@ -102,7 +102,7 @@ export default {
   's4-footer': 'Improve the quality and efficiency of your business with us',
   's4-name': 'Your name',
   's4-phone': 'Phone number',
-  's4-free': 'Try for free',
+  's4-free': 'Сall me back',
 
   'footer-prices': 'Prices',
   'footer-reviews': 'Reviews',

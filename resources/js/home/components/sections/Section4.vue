@@ -74,6 +74,7 @@
         <button
           class="jButton"
           type="submit"
+          @click="callMeBack"
         >{{ $lang(lang, 's4-free') }}</button>
       </form>
     </div>
@@ -119,7 +120,11 @@ export default {
   methods: {
     onSubmit(e) {
       e.preventDefault()
-      alert(`name: ${this.name}, phone: ${this.phone}`)
+      if (this.name && this.phone) {
+        alert(`${this.name}, мы Вам перезвоним в ближайшее время.`)
+      } else {
+        alert(`Заполните пожалуйста все поля.`)
+      }
     },
     wait(ms){
       return new Promise(resolve => {
@@ -136,6 +141,9 @@ export default {
       this.isBlock3Highlight = true
       await this.wait(350)
       this.isBlock3Highlight = false
+    },
+    callMeBack() {
+
     }
   }
 }
@@ -298,6 +306,7 @@ export default {
     flex-flow: row nowrap;
     align-items: center;
     gap: 1.25rem;
+    padding-top: 1rem;
 
     .jButton {
       white-space: nowrap;
