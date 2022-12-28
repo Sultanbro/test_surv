@@ -4,13 +4,13 @@
       <div class="jFooter-cols">
         <div class="jFooter-col">
           <a
-            href="javascript:void(0)"
-            class="jNav-logo"
+              class="jNav-logo"
+              href="javascript:void(0)"
           >
             <img
-              :src="require('../../assets/img/footer-logo.svg').default"
-              alt=""
-              class="jNav-logo-img"
+                :src="require('../../assets/img/footer-logo.svg').default"
+                alt=""
+                class="jNav-logo-img"
             >
           </a>
         </div>
@@ -18,79 +18,40 @@
           <ul class="jFooter-menu-items">
             <li class="jFooter-menu-item">
               <FooterLink
-                :lang="lang"
-                href="#prices"
-                text="prices"
+                  :lang="lang"
+                  href="#prices"
+                  text="prices"
               />
             </li>
             <li class="jFooter-menu-item">
               <FooterLink
-                :lang="lang"
-                href="#reviews"
-                text="reviews"
+                  :lang="lang"
+                  href="#reviews"
+                  text="reviews"
               />
             </li>
             <li class="jFooter-menu-item">
               <FooterLink
-                :lang="lang"
-                href="#features"
-                text="features"
+                  :lang="lang"
+                  href="#features"
+                  text="features"
               />
             </li>
           </ul>
-          <p class="jFooter-sub">{{ $lang(lang, 'footer-subscribe') }}</p>
+          <p class="jFooter-sub-social">{{ $lang(lang, 'footer-subscribe') }}</p>
           <div class="jFooter-social">
             <a
-                href="https://www.youtube.com/channel/UCsCbkgQJ6ErBgta8Q6xeU-w"
                 class="jFooter-social-link jFooter-social-yt"
+                href="https://www.youtube.com/@businesspartner8793"
+                target="_blank"
             />
             <a
-                href="javascript:void(0)"
                 class="jFooter-social-link jFooter-social-ig"
-            />
-            <a
-              href="javascript:void(0)"
-              class="jFooter-social-link jFooter-social-tg"
-            />
-          </div>
-        </div>
-        <div class="jFooter-col">
-          <ul class="jFooter-menu-items">
-            <li class="jFooter-menu-item">
-              <FooterLink
-                :lang="lang"
                 href="javascript:void(0)"
-                text="footer-docs"
-              />
-            </li>
-            <li class="jFooter-menu-item">
-              <FooterLink
-                :lang="lang"
-                href="javascript:void(0)"
-                text="footer-info"
-              />
-            </li>
-            <li class="jFooter-menu-item">
-              <FooterLink
-                :lang="lang"
-                href="javascript:void(0)"
-                text="footer-lic"
-              />
-            </li>
-          </ul>
-          <p class="jFooter-sub">{{ $lang(lang, 'footer-pay') }}</p>
-          <div class="jFooter-pay">
-            <a
-              href="javascript:void(0)"
-              class="jFooter-pay-link jFooter-pay-mir"
             />
             <a
-              href="javascript:void(0)"
-              class="jFooter-pay-link jFooter-pay-visa"
-            />
-            <a
-              href="javascript:void(0)"
-              class="jFooter-pay-link jFooter-pay-ym"
+                class="jFooter-social-link jFooter-social-tg"
+                href="javascript:void(0)"
             />
           </div>
         </div>
@@ -98,29 +59,46 @@
           <p>{{ $lang(lang, 'footer-sellcenter') }}</p>
           <p class="jFooter-contact">
             <a
-              href="tel:87777880800"
-              class="jFooter-link"
+                class="jFooter-link"
+                href="tel:87777880800"
             >8 777 788 08 00</a>
           </p>
           <p class="jFooter-contact">
             <a
-              href="tel:84951364282"
-              class="jFooter-link"
+                class="jFooter-link"
+                href="tel:84951364282"
             >8 495 136 42 82</a>
           </p>
           <p class="jFooter-contact">
             <a
-              href="mailto:sales@jobtron.com"
-              class="jFooter-link"
+                class="jFooter-link"
+                href="mailto:sales@jobtron.com"
             >sales@jobtron.com</a>
           </p>
-          <p>{{ $lang(lang, 'footer-sellcenter') }}</p>
+          <p class="jFooter-support">{{ $lang(lang, 'footer-support') }}</p>
           <p class="jFooter-contact">
             <a
-              href="mailto:support@jobtron.com"
-              class="jFooter-link"
+                class="jFooter-link"
+                href="mailto:support@jobtron.com"
             >support@jobtron.com</a>
           </p>
+        </div>
+        <div class="jFooter-col">
+          <p class="jFooter-sub-pay">{{ $lang(lang, 'footer-pay') }}</p>
+          <div class="jFooter-pay">
+            <a
+                class="jFooter-pay-link jFooter-pay-mir"
+                href="javascript:void(0)"
+            />
+            <a
+                class="jFooter-pay-link jFooter-pay-visa"
+                href="javascript:void(0)"
+            />
+            <a
+                class="jFooter-pay-link jFooter-pay-ym"
+                href="javascript:void(0)"
+            />
+          </div>
         </div>
       </div>
     </div>
@@ -129,8 +107,8 @@
       <div class="jFooter-bottom">
         <div class="jFooter-rules">
           <a
-            href="javascript:void(0)"
-            class="jFooter-rules-link jFooter-link"
+              class="jFooter-rules-link jFooter-link"
+              href="javascript:void(0)"
           >{{ $lang(lang, 'footer-conf') }}</a>
         </div>
         <div class="jFooter-copy">
@@ -143,6 +121,7 @@
 
 <script>
 import FooterLink from '../footer/FooterLink'
+
 export default {
   components: {
     FooterLink
@@ -170,7 +149,7 @@ export default {
   color: #fff;
 }
 
-.jFooter-link{
+.jFooter-link {
   color: #fff;
   text-decoration: none;
 
@@ -192,12 +171,17 @@ export default {
 .jFooter-menu-items {
   padding: 0;
 }
+
 .jFooter-menu-item {
   list-style: none;
 }
 
-.jFooter-sub {
+.jFooter-sub-social {
   margin: 2rem 0 0.5rem;
+}
+
+.jFooter-sub-pay {
+  margin-bottom: 0.3rem;
 }
 
 .jFooter-contact {
@@ -245,6 +229,10 @@ export default {
   background-image: url("../../assets/img/footer-yt-hover.png");
 }
 
+.jFooter-support {
+  margin-top: 2rem;
+}
+
 .jFooter-pay {
   display: flex;
   align-items: center;
@@ -275,7 +263,7 @@ export default {
   background-image: url("../../assets/img/footer-ym.svg");
 }
 
-.jFooter-rules{
+.jFooter-rules {
   font-size: 0.875rem;
 }
 
@@ -313,7 +301,6 @@ export default {
     order: 1;
   }
 }
-
 
 
 @media screen and (min-width: $medium) {
