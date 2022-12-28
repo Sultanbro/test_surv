@@ -556,6 +556,11 @@ Route::middleware(['web','tenant','not_admin_subdomain'])->group(function () {
     Route::prefix('uploads')->name('uploads.')->middleware(['auth:web',])->group(function () {
         Route::post('/', [Article\Uploads\UploadController::class, 'store'])->name('store');
     });
+
+
+    Route::any('/upload/images/', [Learning\KnowBaseController::class, 'uploadimages']);
+    Route::any('/upload/audio/', [Learning\KnowBaseController::class, 'uploadaudio']);
+
 });
 
 /**

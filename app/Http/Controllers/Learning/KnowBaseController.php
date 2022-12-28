@@ -680,4 +680,22 @@ class KnowBaseController extends Controller
 
     }
 
+    public function uploadimages(Request $request) {
+        
+        $image = $request->file('attachment');
+        $image_name = time() . '.' . $image->getClientOriginalExtension();
+        $image->move("bpartners", $image_name);
+        
+        return json_encode(array('location' => "/bpartners/".$image_name));
+    }
+
+    public function uploadaudio(Request $request) {
+    
+        $audio = $request->file('attachment');
+        $audio_name = time() . '.' . $audio->getClientOriginalExtension();
+        $audio->move("bpartners/audio/", $audio_name);
+        
+        return json_encode(array('location' => "/bpartners/audio/".$audio_name));
+    }
+
 }
