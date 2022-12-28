@@ -61,15 +61,11 @@
                   href="/login"
                   text="auth"
                 />
-                <a
-                  href="/register"
-                  class="jNav-menu-user"
-                />
-                <!-- <NavbarButton
+                <NavbarButton
                   :lang="lang"
                   href="/register"
                   text="register"
-                /> -->
+                />
               </template>
             </span>
           </li>
