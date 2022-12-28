@@ -402,21 +402,21 @@ Route::middleware(['web','tenant','not_admin_subdomain'])->group(function () {
     Route::post('/timetracking/top/proceeds/update', [Analytics\TopController::class, 'updateProceeds']);
 
     // HR analytics
-    Route::any('/timetracking/analytics/save-call-base', [Analytics\HRController::class, 'saveCallBase']);
-    Route::any('/timetracking/analytics', [Analytics\HRController::class, 'index']);
-    Route::any('/timetracking/analytics/skypes/{id}', [Analytics\HRController::class, 'redirectToBitrixDeal']);
-    Route::any('/timetracking/getanalytics', [Analytics\HRController::class, 'getanalytics']);
-    Route::any('/timetracking/analytics/invite-users', [Analytics\HRController::class, 'inviteUsers']); // Приглашение стажеров
-    Route::post('/timetracking/analytics/recruting/create-lead', [Analytics\HRController::class, 'createRecrutingLead']); // Создание лидов вручную
-    Route::post('/timetracking/analytics/recruting/change-profile', [Analytics\HRController::class, 'changeRecruiterProfile']); // Сменить профиль рекрутера
-    Route::any('/timetracking/get_kpi_totals', [Analytics\HRController::class, 'get_kpi_totals']);
-    Route::any('/timetracking/update-settings', [Analytics\HRController::class, 'update']);
-    Route::post('/timetracking/update-activity-total', [Analytics\HRController::class, 'update_activity_total']);
-    Route::any('/timetracking/update-settings-individually', [Analytics\HRController::class, 'updateIndividually']);
-    Route::get('/timetracking/analytics/activity/export', [Analytics\HRController::class, 'exportActivityExcel']);
-    Route::get('/hr/ref-links', [Analytics\HRController::class, 'getRefLinks']);
-    Route::post('/hr/ref-links/save', [Analytics\HRController::class, 'saveRefLinks']);
-    Route::post('/timetracking/getactivetrainees',[Analytics\HRController::class,'getActiveTrainees']);
+    Route::any('/timetracking/analytics/save-call-base', [Analytics\HrController::class, 'saveCallBase']);
+    Route::any('/timetracking/analytics', [Analytics\HrController::class, 'index']);
+    Route::any('/timetracking/analytics/skypes/{id}', [Analytics\HrController::class, 'redirectToBitrixDeal']);
+    Route::any('/timetracking/getanalytics', [Analytics\HrController::class, 'getanalytics']);
+    Route::any('/timetracking/analytics/invite-users', [Analytics\HrController::class, 'inviteUsers']); // Приглашение стажеров
+    Route::post('/timetracking/analytics/recruting/create-lead', [Analytics\HrController::class, 'createRecrutingLead']); // Создание лидов вручную
+    Route::post('/timetracking/analytics/recruting/change-profile', [Analytics\HrController::class, 'changeRecruiterProfile']); // Сменить профиль рекрутера
+    Route::any('/timetracking/get_kpi_totals', [Analytics\HrController::class, 'get_kpi_totals']);
+    Route::any('/timetracking/update-settings', [Analytics\HrController::class, 'update']);
+    Route::post('/timetracking/update-activity-total', [Analytics\HrController::class, 'update_activity_total']);
+    Route::any('/timetracking/update-settings-individually', [Analytics\HrController::class, 'updateIndividually']);
+    Route::get('/timetracking/analytics/activity/export', [Analytics\HrController::class, 'exportActivityExcel']);
+    Route::get('/hr/ref-links', [Analytics\HrController::class, 'getRefLinks']);
+    Route::post('/hr/ref-links/save', [Analytics\HrController::class, 'saveRefLinks']);
+    Route::post('/timetracking/getactivetrainees',[Analytics\HrController::class,'getActiveTrainees']);
 
     // analytics 
     Route::any('/timetracking/an', [Analytics\AnalyticsController::class, 'index']);

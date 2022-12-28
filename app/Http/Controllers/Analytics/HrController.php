@@ -28,7 +28,7 @@ use App\Models\Analytics\DecompositionValue;
 use App\Models\Analytics\TraineeReport;
 use App\Models\GroupUser;
 
-class HRController extends Controller
+class HrController extends Controller
 {
     public $users;
 
