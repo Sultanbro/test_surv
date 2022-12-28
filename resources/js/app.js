@@ -283,27 +283,6 @@ Vue.component('profile-salary-info', require('./pages/ProfileSalaryInfo.vue').de
 
 Vue.component('award-user-sidebar', require('./components/sidebars/AwardUserSidebar.vue').default); // сайдбар для награждения пользователя
 
-
-/**
- * new design Profile page
- */
-// Vue.component('page-profile', require('./pages/Profile/ProfilePage.vue').default);
-
-// Vue.component('new-intro-stats', require('./pages/Profile/IntroStats.vue').default);
-// Vue.component('new-intro-smart-table', require('./pages/Profile/IntroSmartTable.vue').default);
-// Vue.component('new-intro-top', require('./pages/Profile/IntroTop.vue').default);
-// Vue.component('new-profit', require('./pages/Profile/Profit.vue').default);
-// Vue.component('new-courses', require('./pages/Profile/Courses.vue').default);
-// Vue.component('new-trainee-estimation', require('./pages/Profile/TraineeEstimation.vue').default);
-// Vue.component('new-compare-indicators', require('./pages/Profile/CompareIndicators.vue').default);
-
-// Vue.component('popup-quartal', require('./pages/Profile/Popups/PopupQuartal.vue').default);
-// Vue.component('popup-kpi', require('./pages/Profile/Popups/Kpi.vue').default);
-// Vue.component('popup-balance', require('./pages/Profile/Popups/Balance.vue').default);
-// Vue.component('popup-bonuses', require('./pages/Profile/Popups/Bonuses.vue').default);
-// Vue.component('popup-nominations', require('./pages/Profile/Popups/Nominations.vue').default);
-
-
 /**
  * Layout of new design
  */
@@ -312,7 +291,6 @@ Vue.component('right-sidebar', require('./pages/Layouts/RightSidebar.vue').defau
 Vue.component('profile-sidebar', require('./pages/Layouts/ProfileSidebar.vue').default);
 Vue.component('profile-info', require('./pages/Widgets/ProfileInfo.vue').default);
 Vue.component('start-day-btn', require('./pages/Widgets/StartDayBtn.vue').default);
-Vue.component('popup', require('./pages/Layouts/Popup.vue').default);
 Vue.component('sidebars', require('./pages/Layouts/Sidebars.vue').default);
 
 Vue.component('popup-checklist', require('./pages/Layouts/CheckListPopup.vue').default);
@@ -321,12 +299,6 @@ Vue.component('popup-faq', require('./pages/Layouts/FaqPopup.vue').default);
 Vue.component('popup-search', require('./pages/Layouts/SearchPopup.vue').default);
 Vue.component('popup-mail', require('./pages/Layouts/MailPopup.vue').default);
 
-/**
- * Tables of activity
- */
-Vue.component('t-collection', require('./pages/Tables/Collection.vue').default);
-Vue.component('t-default', require('./pages/Tables/Default.vue').default);
-Vue.component('t-quality-new', require('./pages/Tables/Quality.vue').default);
 
 
 /**

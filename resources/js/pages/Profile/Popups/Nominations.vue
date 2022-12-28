@@ -205,7 +205,10 @@
     import VuePdfEmbed from "vue-pdf-embed/dist/vue2-pdf-embed";
     export default {
         name: "PopupNominations",
-        components: {SpinnerPlugin, VuePdfEmbed},
+        components: {
+            SpinnerPlugin,
+            VuePdfEmbed,
+        },
         props: {},
         data: function () {
             return {
@@ -481,7 +484,7 @@
             width: 100%;
             display: block;
         }
-        
+
         .certificate-available{
             box-shadow: rgb(50 50 93 / 25%) 0px 13px 27px -5px, rgb(0 0 0 / 30%) 0px 8px 16px -8px;
             overflow: hidden;
