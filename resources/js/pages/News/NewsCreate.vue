@@ -64,7 +64,10 @@
     </div>
 
     <div v-show="editorOpen && fileInputOpen" class="news-create__files">
-      <drop-zone ref="dropZone" @sendFiles="updateFileList"></drop-zone>
+      <DropZone
+        ref="dropZone"
+        @sendFiles="updateFileList"
+      />
     </div>
 
     <div v-show="showAccessModal" class="access-modal-bg" @click.self="toggleAccessModal(false)" v-scroll-lock="showAccessModal">
@@ -166,6 +169,7 @@
 
 <script>
 import ClassicEditor from '/ckeditor5-custom/build/ckeditor';
+import DropZone from '@/pages/News/DropZone'
 
 function SimpleUploadAdapterPlugin(editor) {
   editor.plugins.get('FileRepository').createUploadAdapter = (loader) => {
@@ -236,9 +240,11 @@ class UploadAdapter {
   }
 }
 
-
 export default {
-  name: "NewsCreate",
+  name: 'NewsCreate',
+  components: {
+    DropZone,
+  },
   props: {
     me: {
       required: true

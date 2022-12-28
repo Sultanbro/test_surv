@@ -29,10 +29,11 @@
                         </div>
                     </div>
 
-                    <reactions
+                    <ReactionComponent
                         :articleId="postId"
                         :commentId="comment.id"
-                        :reactions="comment.reactions"/>
+                        :reactions="comment.reactions"
+                    />
                 </div>
             </div>
 
@@ -64,10 +65,11 @@
                         </div>
                     </div>
 
-                    <reactions
+                    <ReactionComponent
                         :articleId="postId"
                         :commentId="childComment.id"
-                        :reactions="childComment.reactions"/>
+                        :reactions="childComment.reactions"
+                    />
                 </div>
             </div>
         </div>
@@ -75,9 +77,12 @@
 </template>
 
 <script>
-
+import ReactionComponent from '@/pages/News/ReactionComponent'
 export default {
-    name: "CommentsComponent",
+    name: 'CommentsComponent',
+    components: {
+        ReactionComponent,
+    },
     props: {
         me: {
             required: true
