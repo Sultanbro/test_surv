@@ -30,7 +30,7 @@
                     <div class="login-panel">
 
                         <a href="/" class="">
-                            <img src="https://{{ tenant('id') }}.jobtron.org/admin/images/logo.png" style="max-width: 150px;">
+                            <img src="/images/logo.svg" style="max-width: 150px;">
                         </a>
 
 

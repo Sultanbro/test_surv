@@ -93,8 +93,8 @@ class Messenger {
 
         if ( $chat->private ) {
             // get second user in private chat
-
             $second_user    = $chat->users->firstWhere( 'id', '!=', $user->id );
+
 
             $chat->title    = "Багнутый чат";
             $chat->image    = "";
@@ -104,10 +104,8 @@ class Messenger {
                 $chat->title    = $second_user->name . " " . $second_user->last_name;
                 $chat->image    = $second_user->img_url;
                 $chat->isOnline = MessengerUserOnline::query()->where( 'user_id', $second_user->id )->exists();
-            }   
-            
+            }
         }
-
         $chat->users = $chat->users->map( function ( $user ) {
             return collect( $user->toArray() )
                 ->only( [ 'id', 'name', 'last_name' ] )
@@ -498,10 +496,11 @@ class Messenger {
             $message->files;
         }
         $message->parent;
+        $message->sender;
 
         $users = MessengerUserOnline::getOnlineMembers( $chatId );
         $users->each( function ( $user ) use ( $message ) {
-            $this->push( 'messages.' . $user->user_id, 'newMessage', [
+            $this->push( 'messages.' . request()->getHost() . '.' . $user->user_id, 'newMessage', [
                 'message' => $message->toArray(),
             ] );
         } );
@@ -855,7 +854,7 @@ class Messenger {
 
         $users = MessengerUserOnline::getOnlineMembers( $chat->id );
         $users->each( function ( $user ) use ( $messageData ) {
-            $this->push( 'messages.' . $user->user_id, 'newMessage', [
+            $this->push( 'messages.' . request()->getHost() . '.' .  $user->user_id, 'newMessage', [
                 'message' => $messageData,
             ] );
         } );
@@ -920,7 +919,7 @@ WHERE t1.user_id = {$user_id}" );
 
                 // for each user trigger event
                 foreach ( $users as $user ) {
-                    $this->push( 'messages.' . $user->user_id, 'newMessage', [
+                    $this->push( 'messages.' . request()->getHost() . '.' .  $user->user_id, 'newMessage', [
                         'message' => [
                             'event'  => [
                                 'type' => MessengerEvent::TYPE_ONLINE,

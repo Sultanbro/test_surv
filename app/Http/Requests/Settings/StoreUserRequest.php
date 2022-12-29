@@ -26,6 +26,7 @@ class StoreUserRequest extends FormRequest
     public function rules(): array
     {
         return [
+            'id'                => ['numeric', 'exists:users,id'],
             'name'              => ['required', 'string', 'min:3', 'max:60'],
             'last_name'         => ['required', 'string', 'min:3', 'max:60'],
             'email'             => ['required', 'string', 'email'],
@@ -36,10 +37,14 @@ class StoreUserRequest extends FormRequest
             'program_type'      => ['required', 'numeric'],
             'working_days'      => ['required', 'numeric'],
             'working_times'     => ['required', 'numeric'],
-            'phone'             => ['required', 'string'],
+            'phone'             => ['required', 'string', 'numeric', 'min:10'],
+            'phone_home'        => ['string', 'numeric', 'min:10'],
+            'phone_husband'     => ['string', 'numeric', 'min:10'],
+            'phone_relatives'   => ['string', 'numeric', 'min:10'],
+            'phone_children'    => ['string', 'numeric', 'min:10'],
             'full_time'         => ['required', 'numeric'],
-            'work_start_time'   => ['string'],
-            'work_end_time'     => ['string'],
+            'work_start_time'   => ['required', 'string'],
+            'work_end_time'     => ['required', 'string'],
             'currency'          => ['string'],
             'weekdays'          => ['required', 'string'],
             'selectedCityInput' => ['required', 'string'],
@@ -48,6 +53,11 @@ class StoreUserRequest extends FormRequest
             'head_group'        => ['numeric', 'exists:profile_groups,id'],
             'is_trainee'        => ['boolean'],
             'contacts'          => ['array'],
+            'adaptation_talks'  => ['array'],
+            'adaptation_talks.*.date'   => ['string'],
+            'adaptation_talks.*.day'    => ['string'],
+            'adaptation_talks.*.text'   => ['string'],
+            'adaptation_talks.*.inter_id'  => ['string'],
             'contacts.phone'    => ['required_with:contacts', 'array'],
             'contacts.phone.*.name'  => ['string'],
             'contacts.phone.*.value' => ['string'],
@@ -72,7 +82,19 @@ class StoreUserRequest extends FormRequest
             'card_kaspi'        => ['string'],
             'card_jysan'        => ['string'],
             'kaspi_cardholder'  => ['string'],
-            'jysan_cardholder'  => ['string']
+            'jysan_cardholder'  => ['string'],
+            'new_password'      => ['string', 'min:8', 'regex:/[a-z]/', 'regex:/[A-Z]/', 'regex:/[0-9]/'],
+            'tax'               => ['array'],
+            'tax.*.amount'      => ['numeric'],
+            'tax.*.percent'     => ['numeric'],
+            'tax.*.user_id'     => ['numeric', 'exists:users,id'],
+            'tax.*.name'        => ['string'],
+            'taxes'             => ['array'],
+            'taxes.*.amount'    => ['numeric'],
+            'taxes.*.percent'   => ['numeric'],
+            'taxes.*.user_id'   => ['numeric', 'exists:users,id'],
+            'taxes.*.name'      => ['string'],
+            'bitrix_id'         => ['numeric']
         ];
     }
 
@@ -80,6 +102,7 @@ class StoreUserRequest extends FormRequest
     {
         $validated = $this->validated();
 
+        $id = Arr::get($validated, 'id');
         $name = Arr::get($validated, 'name');
         $lastName = Arr::get($validated, 'last_name');
         $email = Arr::get($validated, 'email');
@@ -91,6 +114,10 @@ class StoreUserRequest extends FormRequest
         $workingDays = Arr::get($validated, 'working_days');
         $workTimes = Arr::get($validated, 'working_times');
         $phone = Arr::get($validated, 'phone');
+        $phoneHome = Arr::get($validated, 'phone_home');
+        $phoneHusband = Arr::get($validated, 'phone_husband');
+        $phoneRelatives = Arr::get($validated, 'phone_relatives');
+        $phoneChildren = Arr::get($validated, 'phone_children');
         $fullTime = Arr::get($validated, 'full_time');
         $workStartTime = Arr::get($validated, 'work_start_time');
         $workEndTime = Arr::get($validated, 'work_end_time');
@@ -102,6 +129,7 @@ class StoreUserRequest extends FormRequest
         $headGroup = Arr::get($validated, 'head_group');
         $isTrainee = Arr::get($validated, 'is_trainee');
         $contacts = Arr::get($validated, 'contacts');
+        $adaptationTalks = Arr::get($validated, 'adaptation_talks');
         $cards = Arr::get($validated, 'cards');
         $file1 = Arr::get($validated, 'file1');
         $file2 = Arr::get($validated, 'file2');
@@ -119,8 +147,13 @@ class StoreUserRequest extends FormRequest
         $cardJysan = Arr::get($validated, 'card_jysan');
         $kaspiCardholder = Arr::get($validated, 'kaspi_cardholder');
         $jysanCardholder = Arr::get($validated, 'jysan_cardholder');
+        $newPassword = Arr::get($validated, 'new_password');
+        $tax = Arr::get($validated, 'tax');
+        $taxes = Arr::get($validated, 'taxes');
+        $bitrixId = Arr::get($validated, 'bitrix_id');
 
         return new StoreUserDTO(
+            $id,
             $name,
             $lastName,
             $email,
@@ -132,6 +165,10 @@ class StoreUserRequest extends FormRequest
             $workingDays,
             $workTimes,
             $phone,
+            $phoneHome,
+            $phoneHusband,
+            $phoneRelatives,
+            $phoneChildren,
             $fullTime,
             $workStartTime,
             $workEndTime,
@@ -143,6 +180,7 @@ class StoreUserRequest extends FormRequest
             $headGroup,
             $isTrainee,
             $contacts,
+            $adaptationTalks,
             $cards,
             $file1,
             $file2,
@@ -159,7 +197,11 @@ class StoreUserRequest extends FormRequest
             $cardKaspi,
             $cardJysan,
             $kaspiCardholder,
-            $jysanCardholder
+            $jysanCardholder,
+            $newPassword,
+            $tax,
+            $taxes,
+            $bitrixId
         );
     }
 }

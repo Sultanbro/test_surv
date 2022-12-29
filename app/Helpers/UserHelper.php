@@ -2,6 +2,8 @@
 
 namespace App\Helpers;
 
+use App\Repositories\CardRepository;
+use App\Repositories\UserContactRepository;
 use App\User;
 use Carbon\Carbon;
 
@@ -111,5 +113,50 @@ class UserHelper
         }
 
         return $fireCauses;
+    }
+
+    /**
+     * @param int $userId
+     * @param array $cards
+     * @return void
+     */
+    public static function saveCards(
+        int $userId,
+        array $cards
+    ): void
+    {
+        $cardsData = [];
+        foreach ($cards as $card)
+        {
+            $cardsData[] = $card;
+        }
+
+        (new CardRepository)->createMultipleCard($cardsData);
+    }
+
+    /**
+     * Сохранение доп телефонов для пользователя
+     *
+     * @param int $userId
+     * @param array $phones
+     * @return void
+     */
+    public static function saveContacts(
+        int $userId,
+        array $phones
+    ): void
+    {
+
+        $contactsData = [];
+        foreach ($phones as $phone)
+        {
+            $contactsData[] = [
+                'user_id' => $userId,
+                'value' => $phone['value'],
+                'name' => $phone['name'],
+                'type'  => 'phone'
+            ];
+        }
+        (new UserContactRepository)->createMultipleContact($contactsData);
     }
 }

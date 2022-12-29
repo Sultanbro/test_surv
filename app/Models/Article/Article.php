@@ -18,6 +18,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Carbon;
+use Illuminate\Database\Eloquent\Casts\Attribute;
 
 /**
  * @property int $id
@@ -47,6 +48,10 @@ class Article extends Model
 {
     use SoftDeletes, Filterable;
 
+    protected $appends = [
+        'content',
+    ];
+
     protected $fillable = [
         'author_id',
         'title',
@@ -60,7 +65,7 @@ class Article extends Model
 
     public function author(): BelongsTo
     {
-        return $this->belongsTo(User::class, 'author_id', 'id');
+        return $this->belongsTo(User::class, 'author_id', 'id')->withTrashed();
     }
 
     public function comments(): HasMany
@@ -83,19 +88,52 @@ class Article extends Model
         return $this->morphMany(File::class, 'fileable', 'fileable_type', 'fileable_id');
     }
 
+    public function getContentAttribute()
+    {   
+        $content = $this->attributes['content'];
+
+        preg_match_all('/<img[^>]+>/i', $content, $result); 
+
+        $doc = new \DOMDocument();
+        libxml_use_internal_errors(true);
+        $doc->loadHTML('<?xml encoding="utf-8" ?>' .$content);
+        $imageTags = $doc->getElementsByTagName('img');
+
+        foreach($imageTags as $tag) {
+            $url = $tag->getAttribute('src');
+            $host = parse_url($url, PHP_URL_HOST);
+            $path = parse_url($url, PHP_URL_PATH);
+
+            if($host !== 'storage.oblako.kz') continue;
+            if($path == '') continue;
+            
+            $path = str_replace('/tenant'.tenant('id'), '', $path);
+
+            $tempUrl = \Storage::disk('s3')->temporaryUrl(
+                $path, now()->addMinutes(360)
+            );
+            
+            $tag->setAttribute('src', $tempUrl);
+
+            //$content = str_replace(utf8_decode($url), $tempUrl, $content);
+        }
+
+        return $doc->saveHTML();
+    }
+
     public function views(): BelongsToMany
     {
-        return $this->belongsToMany(User::class, 'article_views_users', 'article_id', 'user_id');
+        return $this->belongsToMany(User::class, 'article_views_users', 'article_id', 'user_id')->withTrashed();
     }
 
     public function favourites(): BelongsToMany
     {
-        return $this->belongsToMany(User::class, 'article_favourites_users', 'article_id', 'user_id');
+        return $this->belongsToMany(User::class, 'article_favourites_users', 'article_id', 'user_id')->withTrashed();
     }
 
     public function pins(): BelongsToMany
     {
-        return $this->belongsToMany(User::class, 'article_pins_users', 'article_id', 'user_id');
+        return $this->belongsToMany(User::class, 'article_pins_users', 'article_id', 'user_id')->withTrashed();
     }
 
     public static function scopeAvailableFor(Builder $builder, User $user): Builder

@@ -154,6 +154,12 @@ class FileHelper
             $downloads['archive'] = $name;
             $file->move("static/profiles/" . $userId . $path, $name);
         }
-        Downloads::query()->create($downloads);
+
+        Downloads::query()->updateOrCreate(
+            [
+                'user_id' => $userId
+            ],
+            $downloads
+        );
     }
 }

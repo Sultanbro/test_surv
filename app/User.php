@@ -174,6 +174,30 @@ class User extends Authenticatable implements Authorizable
         return $this->belongsToMany('App\ProfileGroup', 'group_user', 'user_id', 'group_id')
             ->withPivot(['created_at', 'updated_at', 'deleted_at'])->withTimestamps();
     }
+    /**
+     * Mutator's
+     */
+
+    /**
+     * @param $value
+     * @return void
+     */
+    public function setPasswordAttribute($value): void
+    {
+        $this->attributes['password'] = bcrypt($value);
+    }
+
+    /**
+     * @param $value
+     * @return void
+     */
+    public function setNewEmailAttribute($value): void
+    {
+        $this->attributes['email'] = strtolower($value);
+    }
+
+    /* End Mutator's */
+
 
     public function scopeGetDeletedFromGroupUser($query, $date)
     {
