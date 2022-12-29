@@ -47,4 +47,10 @@ return [
         'secret' => env('GOOGLE_RECAPTCHA_SECRET'),
     ],
 
+    'intellect' => [
+        'message_webhook' => 'https://connect.intellectdialog.com/api/w/event/c10977c8-2b3b-400b-b870-b21c8953cd2e',
+        'contract_link' => 'https://bpartners.kz/bcontract?hash=',
+        'time_link' => 'https://bpartners.kz/btime?hash=',
+    ],
+
 ];

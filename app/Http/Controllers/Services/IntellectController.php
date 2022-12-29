@@ -16,10 +16,6 @@ use App\Http\Controllers\Controller;
 
 class IntellectController extends Controller
 {
-    public $message_webhook = 'https://connect.intellectdialog.com/api/w/event/c10977c8-2b3b-400b-b870-b21c8953cd2e';
-    public $contract_link = 'https://bpartners.kz/bcontract?hash=';
-    public $time_link = 'https://bpartners.kz/btime?hash=';
-
     /**
      * Start chat bot in Whatsapp
      */
@@ -62,9 +58,9 @@ class IntellectController extends Controller
             }
            
             // Update bitrix fields
-            $a = (new Bitrix('intellect'))->updateLead($request->lead_id, [
-                'UF_CRM_1624530685082' => $this->time_link . $hash, // Ссылка для офисных кандидатов
-                'UF_CRM_1624530730434' => $this->contract_link . $hash, // Ссылка для удаленных кандидатов
+            (new Bitrix('intellect'))->updateLead($request->lead_id, [
+                'UF_CRM_1624530685082' => config('services.intellect.time_link') . $hash, // Ссылка для офисных кандидатов
+                'UF_CRM_1624530730434' => config('services.intellect.contract_link') . $hash, // Ссылка для удаленных кандидатов
             ]); 
            
             $this->send_msg($phone, 'Добрый день, ' . $request->namex . '! %0aВы откликнулись на нашу вакансию менеджера по работе с клиентами. %0aМеня зовут Мадина 😊 . %0aЯ чат-бот, который поможет Вам устроиться на работу 😉');
@@ -113,8 +109,8 @@ class IntellectController extends Controller
 
             // Update bitrix fields
             (new Bitrix('intellect'))->updateLead($request->lead_id, [
-                'UF_CRM_1624530685082' => $this->time_link . $hash, // Ссылка для офисных кандидатов
-                'UF_CRM_1624530730434' => $this->contract_link . $hash, // Ссылка для удаленных кандидатов
+                'UF_CRM_1624530685082' => config('services.intellect.time_link') . $hash, // Ссылка для офисных кандидатов
+                'UF_CRM_1624530730434' => config('services.intellect.contract_link') . $hash, // Ссылка для удаленных кандидатов
             ]);
         }    
 
@@ -487,8 +483,8 @@ class IntellectController extends Controller
                 "TITLE" => "Кандидат QR - " . $request->name, 
                 "NAME" => $request->name,  
                 "ASSIGNED_BY_ID" => 23900,
-                'UF_CRM_1624530685082' => $this->time_link . $hash, // Ссылка для офисных кандидатов
-                'UF_CRM_1624530730434' => $this->contract_link . $hash, // Ссылка для удаленных кандидатов
+                'UF_CRM_1624530685082' => config('services.intellect.time_link') . $hash, // Ссылка для офисных кандидатов
+                'UF_CRM_1624530730434' => config('services.intellect.contract_link') . $hash, // Ссылка для удаленных кандидатов
                 "PHONE"=> [["VALUE" => $request->phone, "VALUE_TYPE" => "WORK"]]
             ]);
 
@@ -516,14 +512,14 @@ class IntellectController extends Controller
      */
     public function send_msg(String $phone, String $message)
     {
-        return $this->curl_get($this->message_webhook . '?phone=' . $phone .'&message='. $message);
+        return $this->curl_get(config('services.intellect.message_webhook') . '?phone=' . $phone .'&message='. $message);
     }  
 
     /**
      * Запрос с intellect
      */
-	public function save(Request $request) {
-        
+	public function save(Request $request)
+    {
         if($request->has('phone')) {
 
             /// Для битрикса
@@ -700,12 +696,12 @@ class IntellectController extends Controller
                     $lead->save();
                 }
                 
-                return response()->json(['link' => $this->contract_link . $lead->hash ], 200);    
+                return response()->json(['link' => config('services.intellect.contract_link') . $lead->hash ], 200);    
             } 
 
             // ссылка для выбора времени для офисных
             if($request->link == 2) { 
-                return response()->json(['link' => $this->time_link . $lead->hash ], 200);
+                return response()->json(['link' => config('services.intellect.time_link') . $lead->hash ], 200);
             } 
 
         }

@@ -7,7 +7,6 @@ use App\Models\Admin\Headhunter\Negotiation;
 use App\Models\Admin\Headhunter\Vacancy;
 use Illuminate\Console\Command;
 use App\External\Bitrix\Bitrix;
-use App\Http\Controllers\IntellectController;
 use Carbon\Carbon;
 use App\Classes\Helpers\Phone;
 use App\Models\Bitrix\Lead;
@@ -157,20 +156,18 @@ class HeadhunterNegotiations extends Command
 
     public function createLead(Negotiation $negotiation)
     {
-        $ic = new IntellectController();
         $hash = md5(uniqid().mt_rand());
+        $countries = [
+            'KZ' => '2330',
+            'RU' => '2332',
+            'KG' => '2334',
+            'UZ' => '2336',
+            'UA' => '2388',
+            'BY' => '2390',
+            'UN' => '0', // Неизвестно
+        ];
 
         try {
-
-            $countries = [
-                'KZ' => '2330',
-                'RU' => '2332',
-                'KG' => '2334',
-                'UZ' => '2336',
-                'UA' => '2388',
-                'BY' => '2390',
-                'UN' => '0', // Неизвестно
-            ];
 
             $vac = Vacancy::where('vacancy_id', $negotiation->vacancy_id)->first();
             
@@ -186,8 +183,8 @@ class HeadhunterNegotiations extends Command
                 "UF_CRM_1635442762" => $countries[Phone::getCountry($negotiation->phone)], //страна
                 "ASSIGNED_BY_ID" => 23900, // Валерия Сидоренко
                 "UF_CRM_1635487718862" => 'https://wa.me/+' . Phone::normalize($negotiation->phone), // Ватсап линк 
-                'UF_CRM_1624530685082' => $ic->time_link . $hash, // Ссылка для офисных кандидатов
-                'UF_CRM_1624530730434' => $ic->contract_link . $hash, // Ссылка для удаленных кандидатов
+                'UF_CRM_1624530685082' => config('services.intellect.time_link') . $hash, // Ссылка для офисных кандидатов
+                'UF_CRM_1624530730434' => config('services.intellect.contract_link') . $hash, // Ссылка для удаленных кандидатов
                 "PHONE"=> [["VALUE" => $negotiation->phone, "VALUE_TYPE" => "WORK"]],
                 "UF_CRM_1658397129" => $vac ? $vac->city : '' // город
             ]);
