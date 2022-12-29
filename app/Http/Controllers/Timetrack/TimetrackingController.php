@@ -31,7 +31,7 @@ use App\Service\Fine\FineService;
 use App\Service\GroupUserService;
 use App\Service\Salary\SalaryService;
 use App\Service\Timetrack\TimetrackService;
-use App\Timeboard\UserPresence;
+use App\Models\Timetrack\UserPresence;
 use App\Timetracking;
 use App\TimetrackingHistory;
 use App\User;

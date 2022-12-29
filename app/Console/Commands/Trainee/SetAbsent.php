@@ -9,7 +9,7 @@ use App\DayType;
 use App\ProfileGroup;
 use Illuminate\Console\Command;
 use App\TimetrackingHistory;
-use App\Timeboard\UserPresence;
+use App\Models\Timetrack\UserPresence;
 use App\Models\User\NotificationTemplate;
 use App\UserNotification;
 use App\Models\Bitrix\Lead;
