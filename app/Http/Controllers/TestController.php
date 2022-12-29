@@ -2,10 +2,13 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\CentralUser;
+
 class TestController extends Controller
 { 
 	public function test() { 
-
+		$user = CentralUser::with('cabinets')->get()->toArray();
+		dd($user);
 	}
 
 	public function hhRefresher() {
