@@ -165,8 +165,16 @@ export default {
   height: 3.75rem;
 }
 
-.jNav-scroll .jNav-logo-img {
-  width: 11.25rem;
+@media (max-width: $medium) {
+  .jNav-logo-img {
+    width: 8rem;
+  }
+}
+
+@media screen and (min-width: $medium) {
+  .jNav-scroll .jNav-logo-img {
+    width: 11.25rem;
+  }
 }
 
 @media (min-width: $large) {
