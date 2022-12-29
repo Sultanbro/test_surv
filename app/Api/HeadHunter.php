@@ -10,7 +10,7 @@
  * $res->getStatusCode();// "200"
  * $res->getHeader('content-type')[0]; // 'application/json; charset=utf8'
  */
-namespace App\External\HeadHunter;
+namespace App\Api;
 
 use GuzzleHttp\Client as Guzzle;
 use App\OauthClientToken;
