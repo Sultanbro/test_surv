@@ -11,7 +11,7 @@
  * 
  */
 
-namespace App\External\PHPAnviz;
+namespace App\Api\PHPAnviz;
 
 use GearmanClient;
 
