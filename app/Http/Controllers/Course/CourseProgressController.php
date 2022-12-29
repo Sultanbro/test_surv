@@ -8,7 +8,7 @@ use App\Http\Controllers\Controller;
 
 class CourseProgressController extends Controller
 {
-    public function __invoke(ProgressCourseRequest $request)
+    public function progress(ProgressCourseRequest $request)
     {
         $service = new CourseProgressService($request->toDto());
         $response = $service->handle();
