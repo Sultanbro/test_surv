@@ -3,7 +3,7 @@
 @section('content')
 <script type="application/json" id="async-page-data">
     {
-        "csrf": "{{ csrf_field() }}",
+        "csrf": "{{ csrf_token() }}",
         "user": {{json_encode($user)}},
         "groups": {{json_encode($groups)}},
         "positions": {{json_encode($positions)}},

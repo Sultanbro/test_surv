@@ -43,12 +43,12 @@ export default {
             working_city: this.user?.working_city || '',
             cities: [],
             isSearchResult: false,
-            weekdays: (this.user.weekdays || '0000000').split(''),
+            weekdays: (this.user?.weekdays || '0000000').split(''),
         }
     },
     computed:{
         showPositionGroup(){
-            return user && user.position_id === 45
+            return this.user && this.user.position_id === 45
         }
     },
     watch: {
@@ -208,7 +208,7 @@ export default {
                     v-if="showPositionGroup"
                     id="position_group"
                     :groups="groups"
-                    :user_id="user.id"
+                    :user_id="user ? user.id : '0'"
                     :in_groups="in_groups"
                     :user_role="2"
                 />

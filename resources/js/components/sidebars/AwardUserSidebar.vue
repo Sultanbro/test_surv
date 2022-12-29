@@ -206,7 +206,11 @@
     import Multiselect from "vue-multiselect";
     export default {
         name: 'AwardUserSidebar',
-        components: {UploadModal, VuePdfEmbed, Multiselect},
+        components: {
+            UploadModal,
+            VuePdfEmbed,
+            Multiselect
+        },
         data() {
             return {
                 btnLoading: false,
@@ -274,6 +278,7 @@
                 return this.modalSelect;
             },
             tabIndex(val) {
+                if(!this.$refs.tabAwardUser.$refs.buttons) return
                 let buttons = this.$refs.tabAwardUser.$refs.buttons;
                 buttons[val].$refs.link.$el.scrollIntoView({inline: "end", behavior: "smooth"});
             }

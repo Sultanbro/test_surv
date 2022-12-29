@@ -33,14 +33,14 @@ export default {
         return {
             activeUserId: this.$route.query.id || '',
             csrf: '',
-            user: '',
-            groups: '',
+            user: null,
+            groups: [],
             positions: [],
-            programs: '',
-            workingDays: '',
-            workingTimes: '',
-            errors: '',
-            fire_causes: '',
+            programs: [],
+            workingDays: [],
+            workingTimes: [],
+            errors: [],
+            fire_causes: [],
             auth_identifier: '',
             old_name: '',
             old_last_name: '',
@@ -58,7 +58,7 @@ export default {
             old_jysan_cardholder: '',
             old_jysan: '',
             old_card_jysan: '',
-            in_groups: '',
+            in_groups: [],
             showBlocks: {
                 main: true,
                 additional: true,
@@ -182,7 +182,7 @@ export default {
             this.in_groups = data.in_groups
         },
         updatePageData(){
-            useAsyncPageData(`/timetracking/edit-person?id=${activeUserId}`).then(this.setData).catch(error => {
+            useAsyncPageData(`/timetracking/edit-person?id=${this.activeUserId}`).then(this.setData).catch(error => {
                 console.error('useAsyncPageData', error)
             })
         },
@@ -603,6 +603,7 @@ export default {
                                             </template>
 
                                             <label
+                                                v-if="user"
                                                 class="my-label-6 img_url_md"
                                                 for="upload_image"
                                                 style="cursor:pointer;border: 1px solid #f8f8f8;background-color: unset"
@@ -734,6 +735,7 @@ export default {
                                                         :userApplied="userApplied"
                                                         :userAppliedDays="userAppliedDays"
                                                         :isTrainee="isTrainee"
+                                                        :userDeleted="userDeleted"
                                                         :userDeletedAt="userDeletedAt"
                                                     />
 
