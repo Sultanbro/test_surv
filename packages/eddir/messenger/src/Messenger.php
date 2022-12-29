@@ -95,7 +95,6 @@ class Messenger {
             // get second user in private chat
             $second_user    = $chat->users->firstWhere( 'id', '!=', $user->id );
 
-
             $chat->title    = "Багнутый чат";
             $chat->image    = "";
             $chat->isOnline = false;
@@ -106,12 +105,12 @@ class Messenger {
                 $chat->isOnline = MessengerUserOnline::query()->where( 'user_id', $second_user->id )->exists();
             }
         }
+
         $chat->users = $chat->users->map( function ( $user ) {
             return collect( $user->toArray() )
                 ->only( [ 'id', 'name', 'last_name' ] )
                 ->all();
         } );
-
 
         return $chat;
     }
@@ -908,14 +907,14 @@ class Messenger {
                 }
 
                 $users = DB::select( "
-SELECT DISTINCT t2.user_id
-FROM `messenger_chat_users` t1
-         INNER JOIN `messenger_chat_users` t2
-                    ON t1.chat_id = t2.chat_id
-                        AND t1.user_id != t2.user_id
-         INNER JOIN `messenger_users_online` o
-                    ON o.user_id = t2.user_id
-WHERE t1.user_id = {$user_id}" );
+                        SELECT DISTINCT t2.user_id
+                        FROM `messenger_chat_users` t1
+                                INNER JOIN `messenger_chat_users` t2
+                                            ON t1.chat_id = t2.chat_id
+                                                AND t1.user_id != t2.user_id
+                                INNER JOIN `messenger_users_online` o
+                                            ON o.user_id = t2.user_id
+                        WHERE t1.user_id = {$user_id}" );
 
                 // for each user trigger event
                 foreach ( $users as $user ) {
