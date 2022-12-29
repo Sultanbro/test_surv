@@ -50,7 +50,7 @@ class EmployeeController extends Controller
     public function __construct(AdminUserService $userService)
     {
         $this->userService = $userService;
-//        $this->middleware('auth');
+        $this->middleware('auth');
     }
 
     public function getpersons(Request $request)
@@ -325,16 +325,15 @@ class EmployeeController extends Controller
      */
     public function editPerson(Request $request,$type = null)
     {
-//        if(!Auth::user()) return redirect('/');
-//
-//        View::share('title', 'Редактировать сотрудника');
-//        View::share('menu', 'timetrackingusercreate');
-//
-//        if(!auth()->user()->can('users_view')) {
-//            return redirect('/');
-//        }
-//        return view('admin.users.create', $this->preparePersonInputs($request->id));
-        return $this->response(message: 'success', data: $this->preparePersonInputs($request->id));
+        if(!Auth::user()) return redirect('/');
+
+        View::share('title', 'Редактировать сотрудника');
+        View::share('menu', 'timetrackingusercreate');
+
+        if(!auth()->user()->can('users_view')) {
+            return redirect('/');
+        }
+        return view('admin.users.create', $this->preparePersonInputs($request->id));
     }
 
     /**
@@ -455,8 +454,8 @@ class EmployeeController extends Controller
                     array_push($head_in_groups, $gr);
                 }
 
-//                $delete_plan = UserDeletePlan::where('user_id', $user->id)->orderBy('id', 'desc')->first();
-//                if($delete_plan) $user->delete_time = $delete_plan->delete_time;
+                $delete_plan = UserDeletePlan::where('user_id', $user->id)->orderBy('id', 'desc')->first();
+                if($delete_plan) $user->delete_time = $delete_plan->delete_time;
 
                 
                 if($user->user_description){
