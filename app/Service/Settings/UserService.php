@@ -168,14 +168,15 @@ class UserService
      * @param int|null $id
      * @return array
      */
-    public function createUser(
+    public function userSetting(
         ?int $id
     ): array
     {
         return [
-            'positions' => Position::all(),
-            'user'      => isset($id) ? $this->userData($id) : null,
-            'corpBooks' => isset($id) ? $this->userRepository->userWithKnowBaseModel($id)->get([
+            'positions'     => Position::all(),
+            'user'          => isset($id) ? $this->userData($id)['user'] : null,
+            'fire_causes'   => isset($id) ? $this->userData($id)['fire_causes'] : null,
+            'corpBooks'     => isset($id) ? $this->userRepository->userWithKnowBaseModel($id)->get([
                 'kb.*'
             ]) : [],
             'groups'    => (new ProfileGroupRepository)->getActive(),
@@ -194,7 +195,7 @@ class UserService
         int $userId
     ): array
     {
-        $user = $this->userRepository->allUsers($userId, [
+        $user = $this->userRepository->userWithRelations($userId, [
             'zarplata',
             'downloads',
             'user_description',
