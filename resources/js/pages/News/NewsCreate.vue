@@ -258,6 +258,10 @@ export default {
       editorData: '',
       editorConfig: {
         extraPlugins: [SimpleUploadAdapterPlugin,],
+        mediaEmbed: {
+          previewsInData: true
+        },
+        allowedContent: true
       },
 
       editorOpen: false,
