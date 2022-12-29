@@ -91,10 +91,10 @@ class HeadHunter {
             'server' => 'hh'
         ])->first();
 
-        if(strtotime($oauth->expires_at) - time() < 0) { // Если срок токена истек
-
+        if($oauth && strtotime($oauth->expires_at) - time() < 0) { 
+            // Если срок токена истек do something
         } 
-
+        
         $this->oauth = $oauth;
     }
     
