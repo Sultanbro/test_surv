@@ -6,7 +6,7 @@ use App\Classes\Helpers\Currency;
 use App\Classes\Helpers\Phone;
 use App\DayType;
 use App\Downloads;
-use App\External\Bitrix\Bitrix;
+use App\Api\BitrixOld as Bitrix;
 use App\Fine;
 use App\Http\Controllers\Controller;
 use App\Kpi;

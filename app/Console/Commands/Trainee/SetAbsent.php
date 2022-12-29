@@ -13,7 +13,7 @@ use App\Timeboard\UserPresence;
 use App\Models\User\NotificationTemplate;
 use App\UserNotification;
 use App\Models\Bitrix\Lead;
-use App\External\Bitrix\Bitrix;
+use App\Api\BitrixOld as Bitrix;
 
 class SetAbsent extends Command
 {

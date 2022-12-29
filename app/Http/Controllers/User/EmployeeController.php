@@ -34,7 +34,7 @@ use App\UserContact;
 use App\Zarplata;
 use App\TimetrackingHistory;
 use App\Photo;
-use App\External\Bitrix\Bitrix;
+use App\Api\BitrixOld as Bitrix;
 use App\Models\Bitrix\Lead;
 use App\Models\Bitrix\Segment;
 use Maatwebsite\Excel\Facades\Excel;

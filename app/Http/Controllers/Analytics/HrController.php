@@ -9,7 +9,7 @@ use Illuminate\Http\Request;
 use Maatwebsite\Excel\Facades\Excel;
 use App\Http\Controllers\Controller;
 use App\Classes\Helpers\Phone;
-use App\External\Bitrix\Bitrix;
+use App\Api\BitrixOld as Bitrix;
 use App\Classes\Analytics\Recruiting as RM;
 use App\User;
 use App\UserDescription;

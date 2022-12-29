@@ -6,7 +6,7 @@ use App\Api\HeadHunter;
 use App\Models\Admin\Headhunter\Negotiation;
 use App\Models\Admin\Headhunter\Vacancy;
 use Illuminate\Console\Command;
-use App\External\Bitrix\Bitrix;
+use App\Api\BitrixOld as Bitrix;
 use Carbon\Carbon;
 use App\Classes\Helpers\Phone;
 use App\Models\Bitrix\Lead;
