@@ -101,7 +101,7 @@ class Messenger {
 
             if($second_user) {
                 $chat->title    = $second_user->name . " " . $second_user->last_name;
-                $chat->image    = $second_user->img_url;
+                $chat->image    = 'https://bp.jobtron.org/users_img/' . $second_user->img_url;
                 $chat->isOnline = MessengerUserOnline::query()->where( 'user_id', $second_user->id )->exists();
             }
         }
@@ -149,7 +149,10 @@ class Messenger {
                    ->where( 'name', 'like', "%$name%" )
                    ->orWhere( 'last_name', 'like', "%$name%" )
                    ->limit( $limit )
-                   ->get();
+                   ->get()->map(function($item) { 
+                        $item->image = 'https://bp.jobtron.org/users_img/' . $item->img_url;   
+                        return $item;
+                   });
     }
 
     /**

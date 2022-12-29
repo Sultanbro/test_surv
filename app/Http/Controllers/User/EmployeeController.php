@@ -364,7 +364,7 @@ class EmployeeController extends Controller
 
 
 
-        $programs = Program::orderBy('id', 'desc')->get();
+        $programs = \App\Models\Program::orderBy('id', 'desc')->get();
         $workingDays = WorkingDay::all();
         $workingTimes = WorkingTime::all();
         $timezones = Setting::TIMEZONES;
