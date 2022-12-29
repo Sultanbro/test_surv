@@ -81,9 +81,9 @@
           </div>
         </div>
 
-     
 
-     
+
+
 
         <div class="dialerlist">
           <div class="fl">Кол-во рабочих дней</div>
@@ -137,7 +137,7 @@
       </div>
 
       <div class="col-lg-6 mb-3 sssz">
-        
+
         <div class="dialerlist blu">
           <multiselect
             v-model="corps"
@@ -206,21 +206,6 @@
         </button>
       </div>
     </div>
-
-       <sidebar
-        title="KPI"
-        :open="showKPI"
-        @close="showKPI = false"
-        v-if="showKPI"
-        width="72%"
-      >
-        <t-kpi
-          :activeuserid="activeuserid"
-          :is_admin="true"
-          :group="activebtn"
-          :group_id="group_id"
-        />
-      </sidebar>
 
       <sidebar
         title="Бонусы"
@@ -399,15 +384,15 @@
           </select>
         </div>
 
-       
+
 
       </div>
 
       <div class="row" v-if="time_address == -1">
         <div class="col-5 mt-1">
-          <div class="fl">ID диалера 
-            <i class="fa fa-info-circle ml-2" 
-                v-b-popover.hover.right.html="'Нужен, чтобы <b>подтягивать часы</b> или <b>оценки диалогов</b> для контроля качества.<br>С сервиса cp.callibro.org'" 
+          <div class="fl">ID диалера
+            <i class="fa fa-info-circle ml-2"
+                v-b-popover.hover.right.html="'Нужен, чтобы <b>подтягивать часы</b> или <b>оценки диалогов</b> для контроля качества.<br>С сервиса cp.callibro.org'"
                 title="Диалер в U-Calls">
             </i>
           </div>
@@ -419,12 +404,12 @@
           </div>
         </div>
       </div>
-      
+
       <div class="row" v-if="time_address == -1">
         <div class="col-5 mt-1">
           <div class="fl">Сколько минут считать, за полный рабочий день
-            <i class="fa fa-info-circle ml-2" 
-                v-b-popover.hover.right.html="'Запишите сколько минут разговора с сервиса cp.callibro.org считать, за полный рабочий день. <br>Пример: 250 минут считается как 8 часов'" 
+            <i class="fa fa-info-circle ml-2"
+                v-b-popover.hover.right.html="'Запишите сколько минут разговора с сервиса cp.callibro.org считать, за полный рабочий день. <br>Пример: 250 минут считается как 8 часов'"
                 title="Ставить полный рабочий день">
             </i>
           </div>
@@ -514,7 +499,7 @@ export default {
       new_status: "",
       value: [], // selected users
       options: [], // users options
-   
+
       corps: [], // selected corp_books
 
       corp_books: [], // corp_books options
@@ -560,7 +545,7 @@ export default {
         {
           title: "За все, каждому",
           value: "all",
-        }, 
+        },
       ],
       dayparts: [
         {
@@ -673,7 +658,7 @@ export default {
           if (response.data) {
             this.gname = response.data.name;
             this.value = response.data.users;
-           
+
             this.timeon = response.data.timeon;
             this.timeoff = response.data.timeoff;
             this.group_id = response.data.group_id;
@@ -717,7 +702,7 @@ export default {
           group: this.activebtn,
           gname: this.gname,
           users: this.value,
-          corp_books: this.corps, 
+          corp_books: this.corps,
           timeon: this.timeon,
           timeoff: this.timeoff,
           zoom_link: this.zoom_link,
@@ -893,7 +878,7 @@ export default {
           alert(error);
         });
 
-      
+
     }
   },
 };
@@ -976,7 +961,7 @@ span.before {
   }
 }
 @media (min-width: 1700px) {
-   .groups .multiselect__tag { 
+   .groups .multiselect__tag {
     flex: 0 0 24%;
     /* margin-left: 1% !important; */
     margin-right: 1% !important;

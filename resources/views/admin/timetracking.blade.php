@@ -498,19 +498,7 @@ $('.answer').submit(function(e) {
 });
 
 function send(question, answer) {
-    $.ajax({
-        url: '/user/save/answer',
-        type: 'POST',
-        data: {
-            user_id: {{ auth()->user()->id }},
-            question: question,
-            answer: answer,
-        },
-        success: function(response) {
-            $('.answer[data-id="'+ question +'"').removeClass('active');
-            $('.answer[data-id="'+ question +'"').slideUp();
-        }
-    });
+   
 }
 
 function sendFile() {
@@ -521,29 +509,6 @@ function sendFile() {
         fd.append("answers[]", document.getElementById('answer-5').files[index]);
    }
 
-    if(document.getElementById('answer-5').files.length > 0){
-        fd.append('question',5);
-        fd.append('user_id',{{ auth()->user()->id }});
-    
-        $.ajax({
-            url: '/user/save/answer',
-            type: 'POST',
-            dataType: 'json',
-            data: fd,
-            contentType: false,
-            processData: false,
-            success: function(response) {
-                //response = JSON.parse(response);
-                $('.certificates').html('');
-                response.files.forEach(file => {
-                    
-                    $('.certificates').append('<a href="' + file + '" target="_blank" class="link">Файл</a><br>');
-                });
-                
-            }
-        });
-
-    }
 }
 
 

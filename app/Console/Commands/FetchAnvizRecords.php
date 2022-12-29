@@ -2,10 +2,8 @@
 
 namespace App\Console\Commands;
 
-use App\User;
-use App\Http\Controllers\Admin\AnvizController;
+use App\Service\Timetrack\AnvizService;
 use Illuminate\Console\Command;
-use Illuminate\Support\Facades\DB;
 
 class FetchAnvizRecords extends Command
 {
@@ -39,11 +37,8 @@ class FetchAnvizRecords extends Command
      * @return mixed
      */
     public function handle() {
-        $argDate = $this->argument('date');
-        $date = date('Y-m-d');
-        if (!is_null($argDate)) $date = $argDate;
-
-        $controller = new AnvizController();
-		$controller->checkInOut($date);
+		(new AnvizService)->fetchMarkTimes(
+            $this->argument('date') ?? date('Y-m-d')
+        );
     }
 }

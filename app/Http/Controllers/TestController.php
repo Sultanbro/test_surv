@@ -5,17 +5,28 @@ namespace App\Http\Controllers;
 class TestController extends Controller
 { 
 	public function test() { 
-		$user = \App\Models\GroupUser::where('user_id', 14772)
-		->where([
-			['status', 'active'],
-			//'is_head', false]
-		])
-		->whereNull('to')
-		->get()
-		->pluck('group_id')
-		->toArray();
 
-        dd($user);
+		$token = 'ef5694ded56055c14fa81a3b72f5a38e6dc4d42ac41ea85935a5d0ae6491e2e3';
+
+		$api = new \App\Api\OneCloudApi($token);
+
+		$disk = \Storage::build([
+			'driver' => 's3',
+			'key' => 'O4493_tenRuslan',
+			'secret' => 'ock9m7L55JqA',
+			'region' => 'us-east-1', 
+			'bucket' => 'tenantbp',
+			'endpoint' => 'https://storage.oblako.kz:443',
+			'use_path_style_endpoint' => true,
+			'throw' => false,
+			'visibility' => 'public',
+		]);
+
+		dd($disk->files('/books'));
+		// dd ($api->changePassword(4832));
+		//dd ($api->unblockStorageUser(1) );
+		dd ($api->getStorageUsers() );
+		dd ($api->createStorageUser('tenRuslan'));
 	}
 
 	public function hhRefresher() {

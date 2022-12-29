@@ -46,9 +46,9 @@
               </p>
               <!---->
             </div>
-            <div class="control-btns d-flex" v-if="activeCategory != null">
+            <div class="control-btns d-flex">
               <button
-                v-if="mode == 'edit'"
+                v-if="mode == 'edit' && activeCategory != null"
                 class="btn btn-success"
                 @click="modals.upload_book.show = true"
               >
