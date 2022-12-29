@@ -124,7 +124,6 @@ Vue.component('draggable', draggable); // драг
 Vue.component('multiselect', Multiselect); // select c множественным выбором
 Vue.component('v-select', vSelect) // select с поиском
 Vue.component('vue-circle', VueCircle) // circle indicator
-Vue.component('editor', require('@tinymce/tinymce-vue').default); // booklist
 Vue.component('pagination', require('laravel-vue-pagination').default); // только в ОКК
 Vue.component('u-modal', require('./components/ui/UModal.vue').default); // модалка НАДО УБРАТЬ
 Vue.component('sidebar', require('./components/ui/Sidebar.vue').default); // сайдбар table
@@ -191,8 +190,6 @@ Vue.component('video-uploader', require('./components/VideoUploader.vue').defaul
 
 
 Vue.component('superselect', require('./components/SuperSelect.vue').default); // with User ProfileGroup and Position
-
-Vue.component('glossary', require('./components/Glossary.vue').default); //
 
 
 /**

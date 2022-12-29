@@ -7,7 +7,7 @@
       </div>
       <div class="btn btn-grey mb-3" @click="$emit('back')"  v-if="!course_page">
         <i class="fa fa-arrow-left"></i>
-        <span>Вернуться к разделам</span> 
+        <span>Вернуться к разделам</span>
       </div>
 
       <div class="kb-wrap noscrollbar">
@@ -16,30 +16,30 @@
           <div class="d-flex">
             <span class="font-16 font-bold">{{ parent_title }}</span>
             <div class="chapter-btns">
-              <i class="fa fa-plus" v-if="mode =='edit'" @click="addPageToTree"></i> 
+              <i class="fa fa-plus" v-if="mode =='edit'" @click="addPageToTree"></i>
             </div>
           </div>
         </div>
 
-        <nested-course
+        <NestedCourse
           v-if="course_page"
           :tasks="tree"
           :active="activesbook != null ? activesbook.id : 0"
           @showPage="showPage"
         />
 
-        <nested-draggable
+        <NestedDraggable
           v-else
           :tasks="tree"
           :mode="mode"
-          :auth_user_id="auth_user_id" 
+          :auth_user_id="auth_user_id"
           :opened="true"
           @showPage="showPage"
           @addPage="addPage"
           :parent_id="id"
         />
       </div>
-      
+
     </aside>
     <!-- /#left-panel -->
 
@@ -65,7 +65,7 @@
 
           <div class="control-btns" v-if="can_edit">
 
-           
+
 
             <div class="d-flex justify-content-end" :asd="auth_user_id" v-if="activesbook != null">
               <input
@@ -96,7 +96,7 @@
               >
                 <i class="fas fa-volume-up"></i>
               </button>
-         
+
               <button
                 class="form-control btn-delete btn-medium ml-2"
                 @click="deletePage"
@@ -121,7 +121,7 @@
               >
                 <i class="fa fa-clone"></i>
               </button>
-              
+
               <button
                 v-if="mode == 'edit'"
                 class="form-control btn-danger btn-medium ml-2"
@@ -138,9 +138,9 @@
                 Редактировать
               </button>
 
-            
+
             </template>
-             
+
             </div>
           </div>
         </div>
@@ -158,7 +158,7 @@
 
       <div class="content mt-3">
         <template v-if="activesbook != null && edit_actives_book">
-          <editor
+          <Editor
             @onKeyUp="editorSave"
             @onChange="editorSave"
             v-model="activesbook.text"
@@ -171,13 +171,13 @@
                 editor.on('init change', function () {
                     editor.uploadImages();
                 });
-            },
-             images_upload_handler: submit_tinymce,
+              },
+              images_upload_handler: submit_tinymce,
               //paste_data_images: false,
-              resize: true, 
+              resize: true,
               autosave_ask_before_unload: true,
               powerpaste_allow_local_images: true,
-              browser_spellcheck: true, 
+              browser_spellcheck: true,
               contextmenu: true,
               spellchecker_whitelist: ['Ephox', 'Moxiecode'],
               language: 'ru',
@@ -212,7 +212,7 @@
                 '.lineheight40px { line-height: 40px; }' +
                 'body { padding: 20px;max-width: 960px;margin: 0 auto; }' +
                 '.tablerow1 { background-color: #D3D3D3; }',
-              formats: {
+                formats: {
                 lineheight20px: {
                   selector:
                     'span,p,h1,h2,h3,h4,h5,h6,td,th,div,ul,ol,li,table,img',
@@ -286,23 +286,21 @@
                 '//fonts.googleapis.com/css?family=Lato:300,300i,400,400i',
               ],
             }"
-          ></editor>
+          />
 
 
             <questions
-                  :course_item_id="course_item_id"
-                  :questions="activesbook.questions"
-                  :id="activesbook.id"
-                  type="kb"
-                  :mode="mode"
-                  :count_points="true"
-                  @passed="passed"
-                  :key="questions_key"
-                  :pass_grade="activesbook.pass_grade"
-                  @changePassGrade="changePassGrade"
-                />
-
-        
+              :course_item_id="course_item_id"
+              :questions="activesbook.questions"
+              :id="activesbook.id"
+              type="kb"
+              :mode="mode"
+              :count_points="true"
+              @passed="passed"
+              :key="questions_key"
+              :pass_grade="activesbook.pass_grade"
+              @changePassGrade="changePassGrade"
+            />
         </template>
 
         <template  v-if="activesbook != null && !edit_actives_book">
@@ -313,34 +311,34 @@
                 <p class="edited"><span>Cоздано:</span> {{ activesbook.created }} {{ activesbook.author }}</p>
                 <p class="edited"><span>Изменено:</span> {{ activesbook.edited_at }} {{ activesbook.editor }}</p>
               </div>
-            </div> 
+            </div>
             <div class="bp-text" v-html="activesbook.text">
-            
+
             </div>
 
-            <questions
-                  :questions="activesbook.questions"
-                  :id="activesbook.id"
-                  type="kb"
-                  :mode="mode"
-                  :count_points="true"
-                  @passed="passed"
-                  :pass="activesbook.item_model !== null"
-                  :key="questions_key"
-                  :pass_grade="activesbook.pass_grade"
-                  @changePassGrade="changePassGrade"
-                  :course_item_id="course_item_id" 
-                  @nextElement="nextElement"
-                />
-              <div class="pb-5"></div> 
+            <Questions
+              :questions="activesbook.questions"
+              :id="activesbook.id"
+              type="kb"
+              :mode="mode"
+              :count_points="true"
+              @passed="passed"
+              :pass="activesbook.item_model !== null"
+              :key="questions_key"
+              :pass_grade="activesbook.pass_grade"
+              @changePassGrade="changePassGrade"
+              :course_item_id="course_item_id"
+              @nextElement="nextElement"
+            />
+            <div class="pb-5"></div>
 
 
-                <button class="next-btn btn btn-primary" 
-                  v-if="course_page && activesbook.questions.length == 0"
-                  @click="nextElement()">
-                  Продолжить курс 
-                  <i class="fa fa-angle-double-right ml-2"></i>
-                </button>
+            <button class="next-btn btn btn-primary"
+              v-if="course_page && activesbook.questions.length == 0"
+              @click="nextElement()">
+              Продолжить курс
+              <i class="fa fa-angle-double-right ml-2"></i>
+            </button>
 
           </div>
         </template>
@@ -348,7 +346,7 @@
 
     </div>
 
-  
+
     <!-- .content -->
 
     <!-- Right Panel -->
@@ -374,7 +372,7 @@
           </div>
         </div>
       </form>
-      <progress-bar
+      <ProgressBar
         :percentage="myprogress"
         label="Загрузка"
       />
@@ -430,8 +428,8 @@
             class="form-control"
           />
           <button class="search-btn btn" v-if="search.input != ''" @click="searchInput">Искать</button>
-        </div> 
-        
+        </div>
+
 
         <div class="s-content">
           <div class="sss" v-if="search.input.length >=3 && search.items.length == 0">
@@ -443,7 +441,7 @@
            <div class="text" v-html="item.text"></div>
          </div>
         </div>
-        
+
       </div>
 
     </b-modal>
@@ -452,11 +450,21 @@
 </template>
 
 <script>
-import nestedDraggable from "../components/nested";
-import nestedCourse from "../components/nested_course";
+import NestedDraggable from '@/components/nested'
+import NestedCourse from '@/components/nested_course'
+import Editor from '@tinymce/tinymce-vue'
+import Questions from '@/pages/Questions'
+import ProgressBar from '@/components/ProgressBar'
 
-export default { 
-  name: "booklist",
+export default {
+  name: 'booklist',
+  components: {
+    NestedDraggable,
+    NestedCourse,
+    Editor,
+    Questions,
+    ProgressBar,
+  },
   props: [
     "trees",
     'parent_id',
@@ -499,10 +507,6 @@ export default {
       default: 0
     },
   },
-  components: { 
-    nestedDraggable,
-    nestedCourse
-  }, 
   data() {
     return {
       activesbook: null,
@@ -510,7 +514,7 @@ export default {
       ids: [], // array of books ids
 
       // misc
-      can_save: false, // сохранять без тестов 
+      can_save: false, // сохранять без тестов
       myprogress: 0,
       id: 0,
       loader: false,
@@ -522,8 +526,8 @@ export default {
       editorHeight: window.innerHeight - 128,
       attachment: null,
       breadcrumbs: [],
-      
-      // modals 
+
+      // modals
       showImageModal: false,
       showAudioModal: false,
       showPermissionModal: false,
@@ -533,9 +537,9 @@ export default {
       // courses
       passedTest: false,
       questions_key: 1,
-      text_was: '',                                                        
-      title_was: '',     
-      item_models: []                                                   
+      text_was: '',
+      title_was: '',
+      item_models: []
     }
   },
 
@@ -560,19 +564,19 @@ export default {
     },
 
     nextElement() {
-   
-  
-      this.setSegmentPassed();
-      
 
-      
-      // find next element 
-      let index2 = this.ids.findIndex(el => el.id == this.activesbook.id); 
-      
+
+      this.setSegmentPassed();
+
+
+
+      // find next element
+      let index2 = this.ids.findIndex(el => el.id == this.activesbook.id);
+
       if(index2 != -1 && this.ids.length - 1 > index2) {
         let el = this.findItem(this.ids[index2 + 1]);
         this.showPage(el.id);
-      } else { 
+      } else {
         // move to next course item
         this.$parent.after_click_next_element();
       }
@@ -589,10 +593,10 @@ export default {
 
       this.passedTest = true;
 
-      // find element 
+      // find element
 
-      let index = this.ids.findIndex(el => el.id == this.activesbook.id);  
-   
+      let index = this.ids.findIndex(el => el.id == this.activesbook.id);
+
       if(index != -1 && this.ids.length - 1 > index) {
 
         let el = this.findItem(this.ids[index + 1]);
@@ -601,31 +605,31 @@ export default {
         if(el.item_model == null && this.course_item_id == 0) {
           this.setSegmentPassed();
         }
-      } 
-      
-  
-      //test 
+      }
+
+
+      //test
       let i = this.item_models.findIndex(im => im.item_id == this.activesbook.id);
       if(i == -1) this.item_models.push({
         item_id: this.activesbook.id,
         status: 1
       });
-      
+
       this.connectItemModels(this.tree)
-     
+
     },
 
     setSegmentPassed() {
 
       let el = null;
-      // find element 
-      let index = this.ids.findIndex(el => el.id == this.activesbook.id);  
+      // find element
+      let index = this.ids.findIndex(el => el.id == this.activesbook.id);
       if(index != -1) {
         el = this.findItem(this.ids[index]);
-       // if(el.item_model != null) return; 
-      } 
+       // if(el.item_model != null) return;
+      }
 
-      // pass 
+      // pass
       axios
         .post("/my-courses/pass", {
           id: this.activesbook.id,
@@ -638,7 +642,7 @@ export default {
         .then((response) => {
             this.$emit('changeProgress');
             this.$emit('forGenerateCertificate', response.data.item_model);
-            if(el != null) el.item_model = {status: 1}; 
+            if(el != null) el.item_model = {status: 1};
             this.activesbook.item_model = response.data.item_model;
         })
         .catch((error) => {
@@ -661,7 +665,7 @@ export default {
           id: this.parent_id,
           can_read: this.course_page,
           course_item_id: this.course_item_id
-        }) 
+        })
         .then((response) => {
           this.tree = response.data.trees;
           this.item_models = response.data.item_models;
@@ -678,21 +682,21 @@ export default {
           this.returnArray(this.tree);
 
           if(this.course_page) {
-               
+
             book_id = this.show_page_id
 
             if(this.show_page_id == 0 || this.show_page_id == null) {
               this.showPage(this.tree[0].id);
             } else {
-              // find element 
-              let index = this.ids.findIndex(el => el.id == this.show_page_id); 
-              
+              // find element
+              let index = this.ids.findIndex(el => el.id == this.show_page_id);
+
               if(index != -1) {
                 let el = this.findItem(this.ids[index]);
                 this.showPage(el.id);
               }
             }
-            
+
 
           } else { // not course page
 
@@ -702,8 +706,8 @@ export default {
                 result = this.deepSearchId(obj, book_id)
 
 
-                if (result != null) { 
-        
+                if (result != null) {
+
                   this.showPage(book_id, false, true);
                   return false;
                 }
@@ -711,24 +715,24 @@ export default {
               });
 
           }
-          
+
           // passed steps
           this.connectItemModels(this.tree)
-          
+
         })
         .catch((error) => {
           alert(error);
         });
     },
 
-    returnArray(items, indexes = []) { 
+    returnArray(items, indexes = []) {
       items.forEach((item, i_index) => {
           let arr = [...indexes, i_index];
           this.ids.push({
             id: item.id,
             i: arr
           })
-          
+
           if(item.children !== undefined) this.returnArray(item.children, arr);
       });
     },
@@ -747,16 +751,16 @@ export default {
         }
       });
     },
-    
+
     searchInput() {
       if(this.search.input.length <= 2) return null;
-      
+
       axios
         .post("/kb/search", {
           text: this.search.input,
         })
         .then((response) => {
-         
+
           this.search.items = response.data.items;
           this.emphasizeTexts();
 
@@ -766,7 +770,7 @@ export default {
         });
     },
 
-    emphasizeTexts() { 
+    emphasizeTexts() {
       this.search.items.forEach(item => {
          item.text = item.text.replace(new RegExp(this.search.input,"gi"), "<b>" + this.search.input +  "</b>");
       });
@@ -786,7 +790,7 @@ export default {
           pass_grade: this.activesbook.pass_grade,
           id: this.activesbook.id,
         })
-        .then((response) => { 
+        .then((response) => {
           this.text_was = this.activesbook.text;
           this.title = this.activesbook.title;
           this.edit_actives_book = false;
@@ -841,18 +845,18 @@ export default {
     },
 
     deepSearchId(obj, targetId) {
-      
+
       if (obj.id == targetId) {
         return obj
       }
-    
+
       for (let item of obj.children) {
         let check = this.deepSearchId(item, targetId)
         if (check) {
           return check
         }
       }
-      
+
       return null
     },
 
@@ -885,7 +889,7 @@ export default {
       }
 
       if(this.activesbook && this.activesbook.id == id) return '';
-      
+
       let loader = this.$loading.show();
       axios.post("/kb/get", {
         id: id,
@@ -893,27 +897,27 @@ export default {
         refresh: refreshTree
       }).then((response) => {
         loader.hide()
- 
-        // @TODO 
-        this.activesbook = response.data.book;  
-  
-      
+
+        // @TODO
+        this.activesbook = response.data.book;
+
+
 
         this.questions_key++
         this.text_was = this.activesbook.text;
         this.title_was = this.activesbook.title;
         this.breadcrumbs = response.data.breadcrumbs;
         this.edit_actives_book = false;
-        
+
         if(refreshTree) {
           this.id = response.data.top_parent.id;
-          this.parent_title = response.data.top_parent.title 
+          this.parent_title = response.data.top_parent.title
           this.tree = response.data.tree
           this.showSearch = false;
           this.search.input = false;
           this.search.items = [];
         }
-        
+
         // for course
         this.passedTest = false;
         if(this.activesbook != null && this.activesbook.questions.length == 0) {
@@ -922,35 +926,35 @@ export default {
 
         if(expand) this.expandTree();
         this.setTargetBlank();
-        
+
         if(this.enable_url_manipulation) {
           window.history.replaceState({ id: "100" }, "База знаний", "/kb?s=" + this.id + '&b=' + id);
         }
-        
-        
+
+
       })
       .catch((e) => {loader.hide()})
-      
+
     },
-    
+
     expandTree() {
       let item = null;
-      
+
       this.breadcrumbs.forEach(bc => {
 
         let s_index = this.tree.findIndex(t => t.id == bc.id);
 
           if(s_index != -1) {
-           
+
             if(item != null) {
               item = item.children[s_index];
             } else {
               item = this.tree[s_index]
             }
              item.opened = true;
-        
+
         }
-        
+
       });
     },
 
@@ -959,7 +963,7 @@ export default {
         var links = document.querySelectorAll(".bp-text a");
         links.forEach(l => l.setAttribute("target", "_blank"));
       })
-      
+
     },
 
     editorSave() {},
@@ -985,7 +989,7 @@ export default {
     },
 
     submit_tinymce(blobInfo, success, failure) {
-      
+
       this.loader = true;
       const config = { "content-type": "multipart/form-data" };
       const formData = new FormData();
@@ -1002,7 +1006,7 @@ export default {
 
     submit() {
       this.loader = true;
-      const config = { 
+      const config = {
         onUploadProgress: progressEvent => {
           let { progress } = this.myprogress;
           progress = (progressEvent.loaded / progressEvent.total) * 100;

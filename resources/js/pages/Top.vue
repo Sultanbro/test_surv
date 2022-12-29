@@ -222,7 +222,7 @@
       </b-tab>
 
       <b-tab title="NPS" key="5" card>
-        <nps :activeuserid="activeuserid" :show_header="false"></nps>
+        <nps :activeuserid="+activeuserid" :show_header="false"></nps>
       </b-tab>
 
 

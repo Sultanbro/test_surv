@@ -445,8 +445,12 @@ export default {
             const urlParams = new URLSearchParams(window.location.search);
             let group = urlParams.get('group');
             let active = urlParams.get('active');
-
-            this.currentGroup = (group == null) ? this.groups[0].id : parseFloat(group)
+            if(group == null){
+                this.currentGroup = this.groups && this.groups[0] ? this.groups[0].id : ''
+            }
+            else{
+                this.currentGroup = parseFloat(group)
+            }
             this.active = (active == null) ? '1' : active
 
             this.setMonth()
