@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers\User;
 
-use App\Events\TrackGroupChangingEvent;
 use App\Events\TrackUserFiredEvent;
 use App\Exports\UserExport;
 use App\Http\Controllers\Controller;
@@ -970,11 +969,11 @@ class EmployeeController extends Controller
         /**
          * Сохранение налоговых начислений.
          */
-        try {
-            (new TaxService)->userTax($request);
-        } catch (\Exception $e) {
-            throw new \Exception($e->getMessage());
-        }
+        // try {
+        //     (new TaxService)->userTax($request);
+        // } catch (\Exception $e) {
+        //     throw new \Exception($e->getMessage());
+        // }
 
         /**
          *  Битрикс ID профиля
