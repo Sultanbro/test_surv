@@ -111,9 +111,7 @@ class User extends Authenticatable implements Authorizable
 
         return $centralUser
             ? $centralUser->cabinets->map(function ($user) {
-                return collect($user->toArray())
-                    ->only(['user_id', 'tenant_id', 'owner'])
-                    ->all();
+                return $user->only(['user_id', 'tenant_id', 'owner']);
             })
             : collect([]);
     }
