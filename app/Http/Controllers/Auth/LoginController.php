@@ -110,17 +110,29 @@ class LoginController extends Controller
             
         // redirect to - admin.jobtron.org
         if(request()->getHost() == 'admin.' .config('app.domain')) {
-            return redirect('/');
+            return [
+                'link' => $this->redirectTo
+            ];
         }
 
         // login from central app  - jobtron.org/login
         // redirect to subdomain with auth
         if(request()->getHost() == config('app.domain')) {
-            return $this->loginToSubDomain();
+            $links = $this->loginLinks( $request->email );
+
+            return $links > 1
+                ? [
+                    'links' => $links
+                ]
+                : [
+                    'link' => $links[0]['link']
+                ];
         } 
         
         // login from tenant app
-        return redirect($this->redirectTo);
+        return [
+            'link' => $this->redirectTo
+        ];
     }
 }
 
