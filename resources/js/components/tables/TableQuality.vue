@@ -57,8 +57,9 @@
         <b-tab title="Оценка диалогов" :key="1" card>
           <b-tabs type="card" v-if="dataLoaded" class="mt-5">
             <b-tab title="Неделя" :key="1" card>
-              <div class="table-responsive my-table mt-4">
-                <table class="table b-table table-bordered table-sm">
+              <div class="table-responsive table-container mt-4">
+                <table class="table table-bordered custom-table-quality">
+                  <thead>
                   <tr>
                     <th class="b-table-sticky-column text-left t-name wd">
                       <div>Сотрудник</div>
@@ -69,30 +70,30 @@
                       </th>
                     </template>
                   </tr>
-
+                  </thead>
+                  <tbody>
                   <tr v-for="(item, index) in items" :key="index">
                     <td class="b-table-sticky-column text-left t-name wd">
                       <div>
                         {{ item.name }}
                         <b-badge
-                          variant="success"
-                          v-if="item.groupName == 'Просрочники'"
-                          >{{ item.groupName }}</b-badge
+                                variant="success"
+                                v-if="item.groupName == 'Просрочники'"
+                        >{{ item.groupName }}</b-badge
                         >
                         <b-badge variant="primary" v-else>{{
                           item.groupName
-                        }}</b-badge>
+                          }}</b-badge>
                       </div>
                     </td>
                     <template v-for="(field, key) in fields">
                       <td :class="field.klass" :key="key">
                         <input
-                          v-if="field.type == 'day' && can_add_records != true"
-                          type="number"
-                          :title="field.key + ' :' + item.name"
-                          class="form-control cell-input"
-                          @change="updateWeekValue(item, field.key)"
-                          v-model="item.weeks[field.key]"
+                                v-if="field.type == 'day' && can_add_records != true"
+                                type="number"
+                                :title="field.key + ' :' + item.name"
+                                @change="updateWeekValue(item, field.key)"
+                                v-model="item.weeks[field.key]"
                         />
                         <div v-else>
                           <div v-if="item.weeks[field.key] != 0">
@@ -102,34 +103,38 @@
                       </td>
                     </template>
                   </tr>
+                  </tbody>
                 </table>
               </div>
             </b-tab>
             <b-tab title="Месяц " :key="2" card>
-              <div class="table-responsive my-table mt-4">
-                <table class="table b-table table-sm table-bordered">
-                  <tr>
-                    <th class="b-table-sticky-column text-left t-name wd">
-                      <div>Сотрудник</div>
-                    </th>
-                    <template v-for="(field, key) in monthFields">
-                      <th :class="field.klass">
-                        <div>{{ field.name }}</div>
-                      </th>
-                    </template>
-                  </tr>
+              <div class="table-responsive table-container mt-4">
+                <table class="table table-bordered custom-table-quality">
+                 <thead>
+                 <tr>
+                   <th class="b-table-sticky-column text-left t-name wd">
+                     <div>Сотрудник</div>
+                   </th>
+                   <template v-for="(field, key) in monthFields">
+                     <th :class="field.klass">
+                       <div>{{ field.name }}</div>
+                     </th>
+                   </template>
+                 </tr>
+                 </thead>
+                  <tbody>
                   <tr v-for="(item, index) in items" :key="index">
                     <td class="b-table-sticky-column text-left t-name wd">
                       <div>
                         {{ item.name }}
                         <b-badge
-                          variant="success"
-                          v-if="item.groupName == 'Просрочники'"
-                          >{{ item.groupName }}</b-badge
+                                variant="success"
+                                v-if="item.groupName == 'Просрочники'"
+                        >{{ item.groupName }}</b-badge
                         >
                         <b-badge variant="primary" v-else>{{
                           item.groupName
-                        }}</b-badge>
+                          }}</b-badge>
                       </div>
                     </td>
 
@@ -139,6 +144,7 @@
                       </td>
                     </template>
                   </tr>
+                  </tbody>
                 </table>
               </div>
             </b-tab>
@@ -455,111 +461,123 @@
 
         <b-tab title="Чек Лист" :key="3" type="card" card :active="check == 3">
                     <b-tabs type="card" class="mt-5">
-            <b-tab title="Неделя" :key="1" >
-                            <table class="table b-table table-bordered table-sm mt-4">
-                <tr>
-                  <th class="b-table-sticky-column text-left t-name wd">
-                    <div>
-      Сотрудник</div>
-                  </th>
-                  <template v-for="(field, key) in checklist_fields">
-                    <th >
+                      <b-tab title="Неделя" :key="1">
+                        <div class="table-container table-responsive">
+                          <table class="table table-bordered whitespace-no-wrap mt-4">
+                            <thead>
+                            <tr>
+                              <th class="b-table-sticky-column text-left t-name wd">
+                                <div>
+                                  Сотрудник
+                                </div>
+                              </th>
+                              <template v-for="(field, key) in checklist_fields">
+                                <th>
 
-                      <div>{{ field.name }}</div>
-                    </th>
-                  </template>
-                </tr>
-               <template v-for="( check_r,index ) in check_result">
-                 <tr :key="index">
-                   <th class="b-table-sticky-column text-left t-name wd">
-                     {{ check_r.last_name }} {{ check_r.name }}
-                   </th>
-                   <template v-for="(field, key) in fields">
-
-
-
-                     <td :class="field.klass" :key="key">
-                       <template v-if="currentGroup == check_r.gr_id" >
-
-                         <div v-if="field.name == 'Итог' ">
-                           {{check_r.total_day}}
-                         </div>
+                                  <div>{{ field.name }}</div>
+                                </th>
+                              </template>
+                            </tr>
+                            </thead>
+                           <tbody>
+                           <template v-for="( check_r,index ) in check_result">
+                             <tr :key="index">
+                               <th class="b-table-sticky-column text-left t-name wd">
+                                 {{ check_r.last_name }} {{ check_r.name }}
+                               </th>
+                               <template v-for="(field, key) in fields">
 
 
-                         <template v-for="(checked_day,index) in check_r.day">
-                           <template v-if="index == field.name">
-                             <div  v-on:click="showSidebar(check_r.user_id, index)" >{{checked_day}}</div>
-                            
+                                 <td :class="field.klass" :key="key">
+                                   <template v-if="currentGroup == check_r.gr_id">
+
+                                     <div v-if="field.name == 'Итог' ">
+                                       {{check_r.total_day}}
+                                     </div>
+
+
+                                     <template v-for="(checked_day,index) in check_r.day">
+                                       <template v-if="index == field.name">
+                                         <div v-on:click="showSidebar(check_r.user_id, index)">{{checked_day}}</div>
+
+                                       </template>
+                                     </template>
+
+                                     <template v-if="field.name === 'Ср. 1'">
+                                       {{check_r.average[1]}}
+                                     </template>
+
+                                     <template v-if="field.name === 'Ср. 2'">
+                                       {{check_r.average[2]}}
+                                     </template>
+
+                                     <template v-if="field.name === 'Ср. 3'">
+                                       {{check_r.average[3]}}
+                                     </template>
+
+                                     <template v-if="field.name === 'Ср. 4'">
+                                       {{check_r.average[4]}}
+                                     </template>
+
+                                     <template v-if="field.name === 'Ср. 5'">
+                                       {{check_r.average[5]}}
+                                     </template>
+
+
+                                   </template>
+                                 </td>
+                               </template>
+                             </tr>
                            </template>
-                         </template>
+                           </tbody>
+                          </table>
+                        </div>
+                      </b-tab>
+                      <b-tab title="Месяц" :key="2">
+                        <div class="table-container table-responsive">
+                          <table class="table table-bordered whitespace-no-wrap mt-4">
+                            <thead>
+                            <tr>
+                              <th class="b-table-sticky-column text-left t-name wd">
+                                <div>Сотрудник</div>
+                              </th>
+                              <template v-for="(field, key) in monthFields">
+                                <th :class="field.klass">
+                                  <div>{{ field.name }}</div>
+                                </th>
+                              </template>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <template v-for="( check_r,index ) in check_result">
+                              <tr :key="index">
+                                <th class="b-table-sticky-column text-left t-name wd">
+                                  {{ check_r.name }}
+                                </th>
+                                <template v-for="(field, key) in monthFields">
+                                  <td :class="field.klass" :key="key">
 
-                         <template  v-if="field.name === 'Ср. 1'">
-                           {{check_r.average[1]}}
-                         </template>
+                                    <template v-if="currentGroup == check_r.gr_id">
 
-                         <template  v-if="field.name === 'Ср. 2'">
-                           {{check_r.average[2]}}
-                         </template>
+                                      <div v-if="field.name == 'Итог' ">
+                                        {{check_r.total_month}}
+                                      </div>
+                                      <template v-for="(checked_m,index) in check_r.month">
+                                        <template v-if="index == field.key">
+                                          {{checked_m}}
+                                        </template>
 
-                         <template  v-if="field.name === 'Ср. 3'">
-                           {{check_r.average[3]}}
-                         </template>
-
-                         <template  v-if="field.name === 'Ср. 4'">
-                           {{check_r.average[4]}}
-                         </template>
-
-                         <template  v-if="field.name === 'Ср. 5'">
-                           {{check_r.average[5]}}
-                         </template>
-
-
-                       </template>
-                     </td>
-                   </template>
-                 </tr>
-               </template>
-              </table>
-            </b-tab>
-            <b-tab title="Месяц" :key="2">
-                            <table class="table b-table table-sm table-bordered mt-4">
-                <tr>
-                  <th class="b-table-sticky-column text-left t-name wd">
-                    <div>Сотрудник</div>
-                  </th>
-                  <template v-for="(field, key) in monthFields">
-                    <th :class="field.klass">
-                      <div>{{ field.name }}</div>
-                    </th>
-                  </template>
-                </tr>
-                <template v-for="( check_r,index ) in check_result">
-                  <tr :key="index">
-                    <th class="b-table-sticky-column text-left t-name wd">
-                      {{ check_r.name }}
-                    </th>
-                    <template v-for="(field, key) in monthFields">
-                      <td :class="field.klass" :key="key">
-
-                        <template v-if="currentGroup == check_r.gr_id" >
-
-                          <div v-if="field.name == 'Итог' ">
-                            {{check_r.total_month}}
-                          </div>
-                          <template v-for="(checked_m,index) in check_r.month">
-                            <template v-if="index == field.key">
-                              {{checked_m}}
+                                      </template>
+                                    </template>
+                                  </td>
+                                </template>
+                              </tr>
                             </template>
-
-                          </template>
-                        </template>
-                      </td>
-                    </template>
-                  </tr>
-                </template>
-              </table>
-            </b-tab>
-          </b-tabs>
+                            </tbody>
+                          </table>
+                        </div>
+                      </b-tab>
+                    </b-tabs>
         </b-tab>
       </b-tabs>
     </div>
@@ -1617,7 +1635,7 @@ export default {
 };
 </script>
 
-<style>
+<style lang="scss">
 
 .check_list_mon{
   color: #999999;
