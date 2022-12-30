@@ -166,4 +166,23 @@ final class ProfileGroupRepository extends CoreRepository
     {
         return $this->getGroup($id)->payment_terms;
     }
+
+    /**
+     * @param int $userId
+     * @param int $groupId
+     * @return void
+     */
+    public function setHead(
+        int $userId,
+        int $groupId
+    ): void
+    {
+        $group = $this->getGroup($groupId);
+        $heads = json_decode($group->head_id);
+        $heads[] = $userId;
+
+        $group->update([
+            'head_id' => json_encode($heads)
+        ]);
+    }
 }
