@@ -35,6 +35,7 @@ class SaveUsersRequest extends FormRequest
             'group_info.*.work_end'     => ['string'],
             'group_info.*.name'         => ['string'],
             'group_info.*.zoom_link'    => ['string', 'url'],
+            'group_info.*.bp_link'      => ['string', 'url'],
             'group_info.*.workdays'     => ['numeric'],
             'group_info.*.payment_terms'    => ['string', 'min:3', 'max:255'],
             'group_info.*.editable_time'    => ['boolean'],
