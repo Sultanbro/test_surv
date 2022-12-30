@@ -6,6 +6,7 @@ namespace App\Repositories;
 use App\ProfileGroup as Model;
 use App\Repositories\CoreRepository;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\DB;
 use Symfony\Component\HttpFoundation\Response;
 
 final class ProfileGroupRepository extends CoreRepository
@@ -184,5 +185,93 @@ final class ProfileGroupRepository extends CoreRepository
         $group->update([
             'head_id' => json_encode($heads)
         ]);
+    }
+
+    /**
+     * @param int $groupId
+     * @param array $relations
+     * @return object
+     */
+    public function profileGroupWithRelation(
+        int $groupId,
+        array $relations = []
+    ): object
+    {
+        return $this->model()->with($relations)->find($groupId);
+    }
+
+    /**
+     * @param Model $group
+     * @param $users
+     * @return void
+     */
+    public function storeMultipleUsers(
+        Model $group,
+        $users
+    ): void
+    {
+        $data = [];
+
+        foreach ($users as $userId)
+        {
+            $exist = $group->users()
+                ->where('user_id', $userId)
+                ->exists();
+
+            if (!$exist)
+            {
+                $data[] = [
+                    'user_id'    => $userId,
+                    'group_id'   => $group->id,
+                    'from'       => Carbon::now()->toDateString(),
+                    'created_at' => now(),
+                    'updated_at' => now()
+                ];
+            }
+        }
+
+        DB::table('group_user')->insert($data);
+    }
+
+    /**
+     * @param Model $group
+     * @param array $data
+     * @return void
+     */
+    public function updateGroupData(
+        Model $group,
+        array $data
+    ): void
+    {
+        $group->update($data);
+    }
+
+    /**
+     * @param int $groupId
+     * @param int|null $dialerId
+     * @param int|null $scriptId
+     * @param int|null $talkHours
+     * @param int|null $talkMinutes
+     * @return void
+     */
+    public function updateOrCreateDialer(
+        int $groupId,
+        ?int $dialerId,
+        ?int $scriptId,
+        ?int $talkHours,
+        ?int $talkMinutes
+    ): void
+    {
+        $this->getGroup($groupId)->dialer()->updateOrCreate(
+            [
+                'dialer_id' => $dialerId
+            ],
+            [
+                'script_id'     => $scriptId,
+                'talk_hours'    => $talkHours,
+                'talk_minutes'  => $talkMinutes
+            ]
+        );
+
     }
 }

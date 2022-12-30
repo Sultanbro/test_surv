@@ -2,7 +2,9 @@
 
 namespace App\Http\Requests\GroupUser;
 
+use App\DTO\GroupUser\SaveUsersDTO;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Support\Arr;
 
 class SaveUsersRequest extends FormRequest
 {
@@ -26,15 +28,49 @@ class SaveUsersRequest extends FormRequest
         return [
             'group_id'  => ['required', 'numeric', 'exists:profile_groups,id'],
             'users'     => ['required', 'array'],
-            'users.id'  => ['numeric', 'exists:users,id'],
-            'corp_books'    => ['required', 'array'],
-            'corp_books.id' => ['numeric', 'exists:books,id'],
+            'users.*.id'  => ['numeric', 'exists:users,id'],
             'group_info'    => ['required', 'array'],
             'group_info.*'  => ['required_with:group_info'],
+            'group_info.*.work_start'   => ['string'],
+            'group_info.*work_end'      => ['string'],
+            'group_info.*.name'         => ['string'],
+            'group_info.*.zoom_link'    => ['string', 'url'],
+            'group_info.*.workdays'     => ['numeric'],
+            'group_info.*.payment_terms'    => ['string', 'min:3', 'max:255'],
+            'group_info.*.editable_time'    => ['boolean'],
+            'group_info.*.paid_internship'  => ['boolean'],
+            'group_info.*.quality'          => ['string', 'in:local,ucalls'],
+            'group_info.*.show_payment_terms'  => ['boolean'],
             'dialer_id'     => ['numeric'],
             'script_id'     => ['numeric'],
             'talk_hours'    => ['numeric'],
             'talk_minutes'  => ['numeric']
         ];
+    }
+
+    /**
+     * @return SaveUsersDTO
+     */
+    public function toDto(): SaveUsersDTO
+    {
+        $validated = $this->validated();
+
+        $groupId = Arr::get($validated, 'group_id');
+        $users = Arr::get($validated, 'users');
+        $groupInfo = Arr::get($validated, 'group_info');
+        $dialerId = Arr::get($validated, 'dialer_id');
+        $scriptId = Arr::get($validated, 'script_id');
+        $talkHours = Arr::get($validated, 'talk_hours');
+        $talkMinutes = Arr::get($validated, 'talk_minutes');
+
+        return new SaveUsersDTO(
+            $groupId,
+            $users,
+            $groupInfo,
+            $dialerId,
+            $scriptId,
+            $talkHours,
+            $talkMinutes
+        );
     }
 }

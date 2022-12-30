@@ -1,19 +1,17 @@
 <?php
 declare(strict_types=1);
 
-namespace App\Service\Timetrack;
+namespace App\Service\Timetrack\Group;
 
-use App\ProfileGroup;
 use App\Repositories\KnowBase\KnowBaseRepository;
 use App\Repositories\ProfileGroupRepository;
 use App\Service\Department\UserService;
 use Exception;
-use Symfony\Component\HttpFoundation\Response;
 
 /**
 * Класс для работы с Service.
 */
-final class GetGroupUserService
+final class GetUserService
 {
     public function __construct(
         public ProfileGroupRepository $profileGroupRepository,
