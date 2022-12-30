@@ -45,7 +45,7 @@ class CentralUser extends Model
     public function cabinets(): BelongsToMany
     {
         return $this->belongsToMany(Tenant::class, 'tenant_pivot', 'user_id', 'tenant_id')
-            ->withPivot(['owner']);
+            ->withPivot(['owner as owner', 'user_id as user_id', 'tenant_id as tenant_id']);
     }
 
     public function getFullNameAttribute()

@@ -29,6 +29,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Http\Request;
 use Illuminate\Notifications\Notifiable;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Spatie\Permission\Traits\HasRoles;
@@ -102,6 +103,19 @@ class User extends Authenticatable implements Authorizable
     public function cards(): HasMany
     {
         return $this->hasMany(Card::class, 'user_id');
+    }
+
+    public function cabinets(): Collection
+    {
+        $centralUser = CentralUser::with('cabinets')->where('email', $this->email)->first();
+
+        return $centralUser
+            ? $centralUser->cabinets->map(function ($user) {
+                return collect($user->toArray())
+                    ->only(['user_id', 'tenant_id', 'owner'])
+                    ->all();
+            })
+            : collect([]);
     }
 
     public function favouriteArticles(): BelongsToMany

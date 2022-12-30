@@ -7,8 +7,9 @@ use App\Models\CentralUser;
 class TestController extends Controller
 { 
 	public function test() { 
-		$user = CentralUser::with('cabinets')->get()->toArray();
-		dd($user);
+		dd( \Storage::disk('s3')
+		->temporaryUrl('awards/jkmL5AUeOZcUlqyQwegx3sn0YiKvBHCnHnGwEAHH.jpg',
+			now()->addMinutes(360)));
 	}
 
 	public function hhRefresher() {

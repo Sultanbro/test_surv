@@ -16,23 +16,33 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot()
     {
-        // Instead of Tailwind 
         Paginator::useBootstrap();
 
         \Validator::extend('recaptcha', 'App\\Validators\\ReCaptcha@validate');
 
         \Schema::defaultStringLength(125);
 
+        $this->registerMacros();
+
         \View::composer('layouts.app', function($view) {
-
-            $data = $this->dataToVue();
-
             $view->with([
-                'laravelToVue' => $data
+                'laravelToVue' => $this->dataToVue()
             ]);
-
         });
+    }
 
+    /**
+     * Register any application services.
+     *
+     * @return void
+     */
+    public function register()
+    {
+        //
+    }
+
+    private function registerMacros() : void
+    {
         Response::macro('success', function ($data, $statusCode = HttpFoundation::HTTP_OK, $message = 'success',) {
             return response()->json([
                 'status'  => $statusCode,
@@ -47,16 +57,6 @@ class AppServiceProvider extends ServiceProvider
                 'message' => $message
             ]);
         });
-    }
-
-    /**
-     * Register any application services.
-     *
-     * @return void
-     */
-    public function register()
-    {
-        //
     }
 
     private function dataToVue() : array
@@ -78,7 +78,8 @@ class AppServiceProvider extends ServiceProvider
             'email'       => auth()->user()->email,
             'is_admin'    => auth()->user()->is_admin == 1,
             'permissions' => $permissions,
-            'tenants'     => auth()->user()->tenants()->pluck('id')->toArray()
+            'tenants'     => auth()->user()->tenants()->pluck('id')->toArray(),
+            'cabinets'    => auth()->user()->cabinets()->toArray()
         ]; 
     }
 }
