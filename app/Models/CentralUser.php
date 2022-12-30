@@ -36,8 +36,7 @@ class CentralUser extends Model
      */
     public function tenants(): BelongsToMany
     {
-        return $this->belongsToMany(Tenant::class, 'tenant_user', 'user_id', 'tenant_id')
-            ->withPivot(['owner']);
+        return $this->belongsToMany(Tenant::class, 'tenant_user', 'user_id', 'tenant_id');
     }
 
     /**
