@@ -952,12 +952,16 @@ __webpack_require__.r(__webpack_exports__);
         itemsToShow: 1,
         centerMode: true,
         trimWhiteSpace: true,
+        autoPlay: true,
+        playSpeed: 3000,
         breakpoints: {
           1260: {
             centerMode: false,
             itemsToShow: 2.8,
             vertical: true,
-            trimWhiteSpace: true
+            trimWhiteSpace: true,
+            autoPlay: true,
+            playSpeed: 3000
           }
         }
       }
@@ -1313,6 +1317,8 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
 /* harmony export */ });
 /* harmony import */ var _section3_S3Block__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../section3/S3Block */ "./resources/js/home/components/section3/S3Block.vue");
+/* harmony import */ var hooper__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! hooper */ "./node_modules/hooper/dist/hooper.esm.js");
+/* harmony import */ var hooper_dist_hooper_css__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! hooper/dist/hooper.css */ "./node_modules/hooper/dist/hooper.css");
 //
 //
 //
@@ -1336,15 +1342,55 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+
+
 
 
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = ({
   components: {
-    S3Block: _section3_S3Block__WEBPACK_IMPORTED_MODULE_0__["default"]
+    S3Block: _section3_S3Block__WEBPACK_IMPORTED_MODULE_0__["default"],
+    Hooper: hooper__WEBPACK_IMPORTED_MODULE_1__.Hooper,
+    Slide: hooper__WEBPACK_IMPORTED_MODULE_1__.Slide,
+    HooperNavigation: hooper__WEBPACK_IMPORTED_MODULE_1__.Navigation
+  },
+  data: function data() {
+    return {
+      hooperSettings: {
+        itemsToShow: 1,
+        infiniteScroll: true,
+        autoPlay: true,
+        playSpeed: 3000
+      }
+    };
   },
   computed: {
     lang: function lang() {
       return this.$root.$data.lang;
+    },
+    isDesktop: function isDesktop() {
+      return this.$viewportSize.width >= 1260;
     }
   }
 });
@@ -2502,7 +2548,7 @@ var ___CSS_LOADER_URL_REPLACEMENT_1___ = _node_modules_css_loader_dist_runtime_g
 var ___CSS_LOADER_URL_REPLACEMENT_2___ = _node_modules_css_loader_dist_runtime_getUrl_js__WEBPACK_IMPORTED_MODULE_1___default()(_assets_img_s3_bg2_svg__WEBPACK_IMPORTED_MODULE_4__["default"]);
 var ___CSS_LOADER_URL_REPLACEMENT_3___ = _node_modules_css_loader_dist_runtime_getUrl_js__WEBPACK_IMPORTED_MODULE_1___default()(_assets_img_s3_bg3_svg__WEBPACK_IMPORTED_MODULE_5__["default"]);
 // Module
-___CSS_LOADER_EXPORT___.push([module.id, "#jSec3 {\n  width: 100%;\n  padding-bottom: 3rem;\n  margin-top: 5rem;\n}\n.jSec3-header {\n  width: -moz-fit-content;\n  width: fit-content;\n  margin-left: auto;\n  margin-right: auto;\n  position: relative;\n}\n.jSec3-header:before {\n  content: \"\";\n  display: block;\n  width: 10.625rem;\n  height: 6.625rem;\n  position: absolute;\n  z-index: -1;\n  top: -2.5rem;\n  left: -3rem;\n  background-image: url(" + ___CSS_LOADER_URL_REPLACEMENT_0___ + ");\n}\n.jSec3-subheader {\n  text-align: center;\n}\n.jSec3-block-title {\n  margin-bottom: 1rem;\n  font-size: 1.25rem;\n  font-weight: 700;\n}\n.jSec3-block-1 {\n  background: url(" + ___CSS_LOADER_URL_REPLACEMENT_1___ + ") center no-repeat;\n}\n.jSec3-block-2 {\n  background: url(" + ___CSS_LOADER_URL_REPLACEMENT_2___ + ") center no-repeat;\n}\n.jSec3-block-3 {\n  background: url(" + ___CSS_LOADER_URL_REPLACEMENT_3___ + ") center no-repeat;\n}\n@media screen and (min-width: 1260px) {\n.jSec3 {\n    margin-top: 0;\n}\n.jSec3-block-title {\n    margin-bottom: 1rem;\n    font-size: 1.5rem;\n}\n.jSec3-block-text {\n    line-height: 1.875;\n}\n}", ""]);
+___CSS_LOADER_EXPORT___.push([module.id, "#jSec3 {\n  width: 100%;\n  padding-bottom: 3rem;\n  margin-top: 5rem;\n}\n.jSec3-header {\n  width: -moz-fit-content;\n  width: fit-content;\n  margin-left: auto;\n  margin-right: auto;\n  position: relative;\n}\n.jSec3-header:before {\n  content: \"\";\n  display: block;\n  width: 10.625rem;\n  height: 6.625rem;\n  position: absolute;\n  z-index: -1;\n  top: -2.5rem;\n  left: -3rem;\n  background-image: url(" + ___CSS_LOADER_URL_REPLACEMENT_0___ + ");\n}\n.jSec3-subheader {\n  text-align: center;\n}\n.jSec3-block-title {\n  margin-bottom: 1rem;\n  font-size: 1.25rem;\n  font-weight: 700;\n}\n.jSec3-block-1 {\n  background: url(" + ___CSS_LOADER_URL_REPLACEMENT_1___ + ") center no-repeat;\n}\n.jSec3-block-2 {\n  background: url(" + ___CSS_LOADER_URL_REPLACEMENT_2___ + ") center no-repeat;\n}\n.jSec3-block-3 {\n  background: url(" + ___CSS_LOADER_URL_REPLACEMENT_3___ + ") center no-repeat;\n}\n@media screen and (min-width: 1260px) {\n.jSec3 {\n    margin-top: 0;\n}\n.jSec3-block-title {\n    margin-bottom: 1rem;\n    font-size: 1.5rem;\n}\n.jSec3-block-text {\n    line-height: 1.875;\n}\n}\n.jSec3-blocks .hooper {\n  height: auto;\n}", ""]);
 // Exports
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (___CSS_LOADER_EXPORT___);
 
@@ -8967,46 +9013,119 @@ var render = function () {
         _vm._v(_vm._s(_vm.$lang(_vm.lang, "s3-subheader"))),
       ]),
       _vm._v(" "),
-      _c(
-        "div",
-        { staticClass: "jSec3-blocks" },
-        [
-          _c("S3Block", { staticClass: "jSec3-block-1" }, [
-            _c("h3", { staticClass: "jSec3-block-title" }, [
-              _vm._v(_vm._s(_vm.$lang(_vm.lang, "s3-b1-title"))),
-            ]),
-            _vm._v(" "),
-            _c("p", { staticClass: "jSec3-block-text" }, [
-              _vm._v(_vm._s(_vm.$lang(_vm.lang, "s3-b1-text"))),
-            ]),
-          ]),
-          _vm._v(" "),
-          _c(
-            "S3Block",
-            { staticClass: "jSec3-block-2", attrs: { right: true } },
+      _vm.isDesktop
+        ? _c(
+            "div",
+            { staticClass: "jSec3-blocks" },
             [
-              _c("h3", { staticClass: "jSec3-block-title" }, [
-                _vm._v(_vm._s(_vm.$lang(_vm.lang, "s3-b2-title"))),
+              _c("S3Block", { staticClass: "jSec3-block-1" }, [
+                _c("h3", { staticClass: "jSec3-block-title" }, [
+                  _vm._v(_vm._s(_vm.$lang(_vm.lang, "s3-b1-title"))),
+                ]),
+                _vm._v(" "),
+                _c("p", { staticClass: "jSec3-block-text" }, [
+                  _vm._v(_vm._s(_vm.$lang(_vm.lang, "s3-b1-text"))),
+                ]),
               ]),
               _vm._v(" "),
-              _c("p", { staticClass: "jSec3-block-text" }, [
-                _vm._v(_vm._s(_vm.$lang(_vm.lang, "s3-b2-text"))),
+              _c(
+                "S3Block",
+                { staticClass: "jSec3-block-2", attrs: { right: true } },
+                [
+                  _c("h3", { staticClass: "jSec3-block-title" }, [
+                    _vm._v(_vm._s(_vm.$lang(_vm.lang, "s3-b2-title"))),
+                  ]),
+                  _vm._v(" "),
+                  _c("p", { staticClass: "jSec3-block-text" }, [
+                    _vm._v(_vm._s(_vm.$lang(_vm.lang, "s3-b2-text"))),
+                  ]),
+                ]
+              ),
+              _vm._v(" "),
+              _c("S3Block", { staticClass: "jSec3-block-3" }, [
+                _c("h3", { staticClass: "jSec3-block-title" }, [
+                  _vm._v(_vm._s(_vm.$lang(_vm.lang, "s3-b3-title"))),
+                ]),
+                _vm._v(" "),
+                _c("p", { staticClass: "jSec3-block-text" }, [
+                  _vm._v(_vm._s(_vm.$lang(_vm.lang, "s3-b3-text"))),
+                ]),
               ]),
-            ]
-          ),
-          _vm._v(" "),
-          _c("S3Block", { staticClass: "jSec3-block-3" }, [
-            _c("h3", { staticClass: "jSec3-block-title" }, [
-              _vm._v(_vm._s(_vm.$lang(_vm.lang, "s3-b3-title"))),
-            ]),
-            _vm._v(" "),
-            _c("p", { staticClass: "jSec3-block-text" }, [
-              _vm._v(_vm._s(_vm.$lang(_vm.lang, "s3-b3-text"))),
-            ]),
-          ]),
-        ],
-        1
-      ),
+            ],
+            1
+          )
+        : _vm._e(),
+      _vm._v(" "),
+      !_vm.isDesktop
+        ? _c(
+            "div",
+            { staticClass: "jSec3-blocks" },
+            [
+              _c(
+                "Hooper",
+                { attrs: { settings: _vm.hooperSettings } },
+                [
+                  _c(
+                    "Slide",
+                    [
+                      _c("S3Block", { staticClass: "jSec3-block-1" }, [
+                        _c("h3", { staticClass: "jSec3-block-title" }, [
+                          _vm._v(_vm._s(_vm.$lang(_vm.lang, "s3-b1-title"))),
+                        ]),
+                        _vm._v(" "),
+                        _c("p", { staticClass: "jSec3-block-text" }, [
+                          _vm._v(_vm._s(_vm.$lang(_vm.lang, "s3-b1-text"))),
+                        ]),
+                      ]),
+                    ],
+                    1
+                  ),
+                  _vm._v(" "),
+                  _c(
+                    "Slide",
+                    [
+                      _c(
+                        "S3Block",
+                        {
+                          staticClass: "jSec3-block-2",
+                          attrs: { right: true },
+                        },
+                        [
+                          _c("h3", { staticClass: "jSec3-block-title" }, [
+                            _vm._v(_vm._s(_vm.$lang(_vm.lang, "s3-b2-title"))),
+                          ]),
+                          _vm._v(" "),
+                          _c("p", { staticClass: "jSec3-block-text" }, [
+                            _vm._v(_vm._s(_vm.$lang(_vm.lang, "s3-b2-text"))),
+                          ]),
+                        ]
+                      ),
+                    ],
+                    1
+                  ),
+                  _vm._v(" "),
+                  _c(
+                    "Slide",
+                    [
+                      _c("S3Block", { staticClass: "jSec3-block-3" }, [
+                        _c("h3", { staticClass: "jSec3-block-title" }, [
+                          _vm._v(_vm._s(_vm.$lang(_vm.lang, "s3-b3-title"))),
+                        ]),
+                        _vm._v(" "),
+                        _c("p", { staticClass: "jSec3-block-text" }, [
+                          _vm._v(_vm._s(_vm.$lang(_vm.lang, "s3-b3-text"))),
+                        ]),
+                      ]),
+                    ],
+                    1
+                  ),
+                ],
+                1
+              ),
+            ],
+            1
+          )
+        : _vm._e(),
     ]),
   ])
 }

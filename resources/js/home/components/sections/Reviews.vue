@@ -191,12 +191,16 @@ export default {
         itemsToShow: 1,
         centerMode: true,
         trimWhiteSpace: true,
+        autoPlay: true,
+        playSpeed: 3000,
         breakpoints: {
           1260: {
             centerMode: false,
             itemsToShow: 2.8,
             vertical: true,
             trimWhiteSpace: true,
+            autoPlay: true,
+            playSpeed: 3000,
           }
         }
       }
