@@ -37,7 +37,7 @@
   <div style="clear: both;"></div>
     
     <div class="table-responsive ul table-container">
-    <b-table striped hover show-empty emptyText="Ничего нет" ref="table" small 
+    <b-table bordered show-empty emptyText="Ничего нет" ref="table"
               stacked="md" 
               :items="itemProvider"
               :fields="fields"

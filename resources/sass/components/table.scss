@@ -1,79 +1,114 @@
-.table-container{
-  box-shadow: 0px 8px 16px 4px rgba(137, 143, 150, 0.04);
-  .table{
-    border: 1px solid #EBEBF9!important;
-    margin: 0;
-    border-collapse: separate;
-    border-radius: 12px;
-    thead{
-      tr{
+.table-container {
+  .table {
+    //border: 1px solid #EBEBF9!important;
+    border-spacing: 0;
+    color: #62788B;
+    border-radius: 1.2rem 1.2rem 0 0;
+
+    &.table-bordered {
+      th, td {
+        border: 1px solid #E7EAEA;
+      }
+
+      thead {
+        td, th {
+          &:first-child {
+            border: none;
+            outline: 1px solid #E7EAEA;
+            position: relative;
+          }
+
+          &:last-child {
+            border: none;
+            outline: 1px solid #E7EAEA;
+            position: relative;
+          }
+        }
+      }
+    }
+    td,th{
+      &.Sat, &.Sun{
+        background-color: #fef2cb;
+        border-color: #e5dab6;
+      }
+    }
+
+    .b-table-sticky-column {
+      position: sticky !important;
+      background-color: #fff;
+      outline: 1px solid #E7EAEA;
+    }
+
+    thead {
+      tr {
         position: relative;
         z-index: 2;
-        box-shadow: 0 3px 5px 0 rgba(110,110,110,0.15);
-        &:first-child{
-          th,td{
-            &:first-child{
+
+        &:first-child {
+          th, td {
+            &:first-child {
               border-radius: 12px 0 0 0;
             }
-            &:last-child{
-                border-radius: 0 12px 0 0;
+
+            &:last-child {
+              border-radius: 0 12px 0 0;
             }
           }
         }
       }
-      td,th{
+
+      td, th {
         padding: 10px 15px;
-        text-transform: uppercase;
-        font-weight: 700;
         line-height: 1.2;
-        font-size: 12px;
-        color: #6087A0;
-        border: none;
+        font-size: 14px;
+        background-color: #F8F9FD;
+      }
+
+      .b-table-sticky-column {
+        background-color: #F8F9FD;
       }
     }
+
     tbody {
-      tr{
+      tr {
         cursor: default;
-        td,th{
+
+        td, th {
           border-top: none;
           padding: 10px 15px;
         }
-       &:last-child{
-         th,td{
-           &:first-child{
-               border-radius: 0 0 0 12px;
-           }
-           &:last-child{
-               border-radius: 0 0 12px 0;
-           }
-         }
-       }
       }
     }
-    &.table-striped{
+
+    &.table-striped {
       tbody {
-        tr{
+        tr {
           cursor: default;
-          &:nth-child(odd){
+
+          &:nth-child(odd) {
             background-color: #F7FAFC;
-            &:hover{
+
+            &:hover {
               background-color: #f4f7f9;
             }
           }
-          &:hover{
+
+          &:hover {
             background-color: #f4f7f9;
           }
-          td,th{
+
+          td, th {
             border-top: none;
             padding: 10px 15px;
           }
         }
       }
     }
-    &.table-hover{
-      tbody{
-        tr{
-          &:hover{
+
+    &.table-hover {
+      tbody {
+        tr {
+          &:hover {
             background-color: #f4f7f9;
           }
         }

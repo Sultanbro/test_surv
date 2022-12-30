@@ -100,12 +100,11 @@
         </div>
 
         <!-- table -->
-        <div v-if="hasPermission">
+        <div class="table-container" v-if="hasPermission">
             <b-table
                 responsive
-                striped
                 :sticky-header="true"
-                class="text-nowrap text-right my-table salar accrual-table"
+                class="text-nowrap text-right salar accrual-table"
                 :class="{'hide-special': special_fields}"
                 :small="true"
                 :bordered="true"
@@ -115,14 +114,15 @@
                 emptyText="Нет данных">
 
                 <template slot="cell(name)" slot-scope="data">
-                    <div>{{ data.value }}
+                    <div>
+                        <b-badge pill variant="success" class="mr-2">{{data.item.user_type}}</b-badge>
+                        {{ data.value }}
                         <i
                             v-if="data.index == 0"
                             class="fa fa-info-circle"
                             v-b-popover.hover.right.html="'В суммах этого ряда не учитываются Сотрудники, у которых <b>К выдаче</b> меньше 0'"
                             title="Заметка">
                         </i>
-                        <b-badge pill variant="success">{{data.item.user_type}}</b-badge>
                     </div>
                 </template>
 
@@ -1242,6 +1242,7 @@ $training: orange;
 
 .training {
     background: $training;
+    color: #fff;
     &.fine {background: linear-gradient(110deg, $training 50%, $fine 50%);}
 }
 
@@ -1311,6 +1312,22 @@ hr {
     z-index: 2;
 }
 .accrual-table {
+    th,td{
+        padding: 0 !important;
+        & > div{
+            padding: 0 15px;
+            height: 40px;
+            min-width: 50px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        &:first-child{
+            & > div{
+                justify-content: start;
+            }
+        }
+    }
     .cell-border {
         border-left-color: red !important;
     }
@@ -1319,102 +1336,57 @@ hr {
         &:nth-child(1) {
             left:0 !important;
             div {
-                width: 278px;
+                width: 288px;
+                white-space: normal;
             }
         }
         &:nth-child(2) {
-            left:278px !important;
-            div {
-                width: 60px;
-            }
+            left:289px !important;
         }
         &:nth-child(3) {
-            left:338px!important;
-            div {
-                width: 60px;
-            }
+            left:360px!important;
         }
         &:nth-child(4) {
-            left:398px!important;
-            div {
-                width: 60px;
-            }
+            left:431px!important;
         }
         &:nth-child(5) {
-            left:458px!important;
-            div {
-                width: 60px;
-            }
+            left:502px!important;
         }
         &:nth-child(6) {
-            left:518px!important;
-            div {
-                width: 60px;
-            }
+            left:573px!important;
         }
         &:nth-child(7) {
-            left:578px!important;
-            div {
-                width: 60px;
-            }
-        }
-    }
-
-    th {
-
-        &:nth-child(1) {
-            vertical-align: middle;
-            background: #94ccff !important;
-            div {
-                font-size: 12px;
-                text-align: left;
-            }
+            left:644px!important;
         }
         &:nth-child(2),
         &:nth-child(3),
         &:nth-child(4),
         &:nth-child(5),
-        &:nth-child(6),
-        &:nth-child(7) {
-            vertical-align: middle;
-            background: #6d95bb !important;
-            div {
-                font-size: 11px;
-                text-align: center;
+        &:nth-child(6){
+            div{
+                width: 70px;
             }
-        }
-
-        &:nth-child(7) {
-            background: #28a745 !important;
         }
     }
 
     td {
-        &:nth-child(1) {
-            vertical-align: middle;
-            background: #94ccff !important;
-            div {
-                font-size: 13px;
-                text-align: left;
-            }
-    }
         &:nth-child(2),
         &:nth-child(3),
         &:nth-child(4),
         &:nth-child(5),
-        &:nth-child(6),
-        &:nth-child(7) {
-            vertical-align: middle;
-            background: #6d95bb !important;
+        &:nth-child(6) {
+            background: #DDE9FF !important;
+             outline-color: #c1cee5 !important;
             div {
                 font-size: 13px;
-                font-weight: 700;
                 text-align: center;
             }
         }
 
         &:nth-child(7) {
             background: #28a745 !important;
+            outline-color: #228f3b !important;
+            color: #fff;
         }
 
     }
