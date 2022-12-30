@@ -29,6 +29,13 @@ class AppServiceProvider extends ServiceProvider
                 'laravelToVue' => $this->dataToVue()
             ]);
         });
+
+        \View::composer('home', function($view) {
+            $view->with([
+                'laravelToVue' => $this->dataToHomeVue()
+            ]);
+        });
+
     }
 
     /**
@@ -57,6 +64,20 @@ class AppServiceProvider extends ServiceProvider
                 'message' => $message
             ]);
         });
+    }
+
+    private function dataToHomeVue() : array
+    {
+        if(\Auth::guest()) return ['csrfToken' => csrf_token()];
+
+        return [
+            'csrfToken'   => csrf_token(),
+            'userId'      => auth()->id(),
+            'fullname'    => auth()->user()->last_name . ' ' . auth()->user()->name,
+            'avatar'      => 'https://cp.callibro.org/files/img/8.png',
+            'email'       => auth()->user()->email,
+            'cabinets'    => auth()->user()->cabinets()->toArray()
+        ]; 
     }
 
     private function dataToVue() : array
