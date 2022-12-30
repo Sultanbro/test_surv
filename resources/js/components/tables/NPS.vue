@@ -21,13 +21,13 @@
     </div>
 
 
-    <div class="table-resonsive mt-4">
-        <table class="table b-table table-sm custom-table-nps table-bordered" :key="ukey">
+    <div class="table-responsive table-container mt-4">
+        <table class="table custom-table-nps table-bordered" :key="ukey">
           <thead>
           <tr>
               <template v-for="(field, key) in fields">
-                  <th :class="field.klass" style="background:#76c8ec">
-                      <div>{{ field.name }}</div>
+                  <th :class="field.klass">
+                      {{ field.name }}
                   </th>
               </template>
           </tr>
@@ -36,10 +36,9 @@
            <tr v-for="(item, index) in users" :key="index">
                <template v-for="(field, key) in fields">
                    <td :class="field.klass">
-                       <div class="inner">
+                       <div class="inner" :class="{'inner-text-top': index > fields.length - 4}">
+                           {{index}}
                            <div>{{ item[field.key] }}</div>
-
-
                            <div class="inner-text">
                                <b v-if="item.texts[field.key] !== undefined">Оценки ({{ item.grades[field.key] }})</b>
                                <div class="d-flex">
@@ -140,21 +139,21 @@ export default {
                 key: 'group_id',
                 name: 'Отдел',
                 order: order++,
-                klass: ' text-left px-1 bg-blue w-200'
+                klass: ' text-left bg-blue w-200'
             }) 
 
             fieldsArray.push({
                 key: 'position',
                 name: 'Должность',
                 order: order++,
-                klass: ' text-left px-1 bg-blue'
+                klass: ' text-left bg-blue'
             })  
 
             fieldsArray.push({
                 key: 'name',
                 name: 'ФИО',
                 order: order++,
-                klass: ' text-left px-1 bg-blue w-200'
+                klass: ' text-left bg-blue w-200'
             }) 
             
 
@@ -179,28 +178,20 @@ export default {
 
 <style lang="scss" scoped>
     .custom-table-nps{
-        thead{
-            th,td{
-                padding: 10px 15px!important;
-                color: #fff;
-                border-left: 1px solid #cccccc!important;
-                &:first-child{
-                    border-left: none !important;
-                }
-            }
-        }
        tbody{
            th,td{
                padding: 0!important;
                .inner{
-                   padding: 10px 15px;
+                   height: 40px;
+                   padding: 0 10px;
+                   display: flex;
+                   align-items: center;
+                   justify-content: center;
                }
            }
        }
     }
-.month {
-    width: 90px;
-}
+
 .month:hover div.inner {
     position: relative;
 }
@@ -211,22 +202,36 @@ export default {
 div.inner-text {
     display: none;
 }
+
 .month:hover div.inner-text {
     position: absolute;
-    top: 110%;
-    left: -185px;
+    right: 0;
     padding: 15px;
     width: 400px;
     max-width: 400px;
-    max-height: 300px;
+    max-height: 200px;
     text-align: left;
-    font-size: 11px;
+    font-size: 13px;
     background: #fff7c8;
     border-radius: 5px;
     cursor: pointer;
     display: block;
+    border: 1px solid #ddd;
     overflow-y:auto;
 }
+.inner{
+    &:not(.inner-text-top){
+        .inner-text{
+            top: 40px;
+        }
+    }
+    &.inner-text-top{
+        .inner-text{
+            bottom: 40px;
+        }
+    }
+}
+
 .bg-blue {
     background: aliceblue;
 }

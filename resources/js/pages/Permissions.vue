@@ -23,7 +23,7 @@
             <b-row>
                 <b-col cols="12" md="9">
                     <div class="table-container" v-if="role == null">
-                        <b-table-simple class="custom-table-permissions">
+                        <b-table-simple class="table-bordered custom-table-permissions">
                             <b-thead>
                                 <b-tr>
                                     <b-th></b-th>
@@ -401,16 +401,15 @@ export default {
 
 <style lang="scss">
     .custom-table-permissions {
-        th, td {
-            text-align: left;
-            border-left: 1px solid #ddd !important;
-            &:first-child{
-                border-left: none !important;
+        table-layout: fixed;
+        thead{
+            tr{
+                th,td {
+                    &:last-child{
+                        width: 100px;
+                    }
+                }
             }
-        }
-
-        tr {
-            border-bottom: 1px solid #ddd;
         }
     }
 </style>

@@ -14,7 +14,7 @@
       <div class="mt-4">
           <i class="bi bi-reception-4"></i>
           <div class="table-container">
-              <b-table-simple class="table table-hover table-striped">
+              <b-table-simple class="table table-bordered">
                   <b-thead>
                       <b-tr>
                           <b-th scope="col">Сотрудники/отдел</b-th>
