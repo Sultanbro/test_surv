@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers\User;
 
-use App\Events\TrackGroupChangingEvent;
 use App\Events\TrackUserFiredEvent;
 use App\Exports\UserExport;
 use App\Http\Controllers\Controller;
@@ -10,6 +9,7 @@ use App\Http\Requests\SetHeadToGroupRequest;
 use App\KnowBase;
 use App\Models\User\Card;
 use App\Models\User\NotificationTemplate;
+use App\Service\Department\UserService;
 use App\Service\TaxService;
 use Exception;
 use Illuminate\Support\Facades\Auth;
@@ -969,11 +969,11 @@ class EmployeeController extends Controller
         /**
          * Сохранение налоговых начислений.
          */
-        try {
-            (new TaxService)->userTax($request);
-        } catch (\Exception $e) {
-            throw new \Exception($e->getMessage());
-        }
+        // try {
+        //     (new TaxService)->userTax($request);
+        // } catch (\Exception $e) {
+        //     throw new \Exception($e->getMessage());
+        // }
 
         /**
          *  Битрикс ID профиля
@@ -1233,29 +1233,11 @@ class EmployeeController extends Controller
      */
     public function editPersonGroup(Request $request) {
 
-        $group = ProfileGroup::find($request['group_id']);
-        $exist = $group->users()->where([
-            ['user_id', $request['user_id']],
-            ['status', 'active']
-        ])->whereNull('to')->exists();
-
-        try {
-            if($request['action'] == 'add' && !$exist) {
-                $group->users()->attach($request['user_id'], [
-                    'from' => Carbon::now()->toDateString()
-                ]);
-            }
-
-            if($request['action'] == 'delete') {
-                event(new TrackGroupChangingEvent($request['user_id'], $request['group_id']));
-                $group->users()->where('user_id', $request['user_id'])->whereNull('to')->update([
-                    'to' => Carbon::now()->toDateString(),
-                    'status'     => 'drop'
-                ]);
-            }
-        }catch (\Exception $exception) {
-            throw new \Exception($exception);
-        }
+        (new UserService)->setGroup(
+            $request['group_id'],
+            $request['user_id'],
+            $request['action']
+        );
     }
 
     /**

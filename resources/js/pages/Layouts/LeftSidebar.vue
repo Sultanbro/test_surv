@@ -6,7 +6,7 @@
 
         <!-- hover menu -->
         <div class="header__menu">
-            <div v-if="isOwner" class="header__menu-project" v-scroll-lock="isCreatingProject">
+            <div class="header__menu-project" v-scroll-lock="isCreatingProject">
                 <img src="/images/dist/icon-settings.svg" alt="settings icon">
                 Проект: {{ project }}
                 <div class="header__submenu">
@@ -19,7 +19,7 @@
                         {{ tenant }}
                     </a>
                     <div class="header__submenu-divider"/>
-                    <div @click="onNewProject" class="header__submenu-item">
+                    <div v-if="isOwner" @click="onNewProject" class="header__submenu-item">
                         Добавить проект
                     </div>
                 </div>
@@ -32,7 +32,7 @@
                 <img src="/images/dist/icon-settings.svg" alt="settings icon">
                 <span class="menu__item-title">Настройки</span>
             </a>
-            <form action="/logout" method="POST">
+            <form action="/logout" method="POST"> 
                 <button class="menu__item w-full">
                     <img src="/images/dist/icon-exit.svg" alt="settings icon">
                     <span class="menu__item-title">Выход</span>
