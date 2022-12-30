@@ -12,14 +12,13 @@
           </button>
           <button
               class="jReviews-photo jButton"
-              disabled
               @click="setMode('photos')"
           >{{ $lang(lang, 'review-photo') }}
           </button>
         </div>
-        <div class="jReviews-items-wrapper">
+        <div v-if="isDesktop" class="jReviews-items-wrapper">
           <div class="jReviews-items">
-            <div v-if="isDesktop" class="jReviews-item-watch">
+            <div class="jReviews-item-watch">
               <div
                   v-if="mode === 'videos'"
                   class="jReviews-item-player"
@@ -52,17 +51,51 @@
                   :settings="hooperSettings"
               >
                 <Slide
-                    v-for="(item, key) in videos"
+                    v-for="(item, key) in content"
                     :key="'jTmb' + key"
                 >
                   <div
                       :style="`background-image: url(${item.thumbnail}); background-position: 0 -1rem;`"
                       class="jReviews-item-thumbnail"
-                      @click="mode === 'videos' ? (activeVideo = key) : (activePhoto = key)"
                   />
                 </Slide>
                 <hooper-navigation slot="hooper-addons"></hooper-navigation>
               </Hooper>
+            </div>
+          </div>
+        </div>
+        <div v-if="!isDesktop" class="jReviews-items-wrapper">
+          <div class="jReviews-items">
+            <div class="jReviews-item-watch">
+              <div
+                  class="jReviews-item-player"
+              >
+                <Hooper
+                    ref="carousel"
+                    :settings="hooperSettings"
+                >
+                  <Slide
+                      v-for="(item, key) in content"
+                      :key="'jTmb' + key"
+                  >
+                    <iframe
+                        v-if="mode === 'videos'"
+                        :src="prefix + videos[key].videos"
+                        allow="accelerometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                        allowfullscreen
+                        class="jReviews-item-iflame"
+                        frameborder="0"
+                        title="YouTube video player"
+                    />
+                    <img
+                        v-if="mode === 'photos'"
+                        :src="item.thumbnail"
+                        class="jReviews-item-image"
+                        alt="photos">
+                  </Slide>
+                  <hooper-navigation slot="hooper-addons"></hooper-navigation>
+                </Hooper>
+              </div>
             </div>
           </div>
         </div>
@@ -97,9 +130,10 @@ export default {
     isDesktop() {
       return this.$viewportSize.width >= 1260
     },
-    items() {
-      if (this.mode === 'photos') return this.photos
-      return this.videos
+    content() {
+      return this.mode === 'photos'
+          ? this.photos
+          : this.videos
     }
   },
   data() {
@@ -132,23 +166,23 @@ export default {
       ],
       photos: [
         {
-          thumbnail: 'https://i3.ytimg.com/vi/LQtmJnljYyk/maxresdefault.jpg',
+          thumbnail: 'https://chudo-prirody.com/uploads/posts/2021-08/1628879740_153-p-foto-kotyat-prikolnie-161.jpg',
           full: 'https://placekitten.com/1024/576'
         },
         {
-          thumbnail: 'https://i3.ytimg.com/vi/LQtmJnljYyk/maxresdefault.jpg',
+          thumbnail: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQeUE8cuMRSgVfaLre3jpUHoORbJxaXyZjsmuGURFp4F1W5eW9JLa-s233pH4UHXBHNso0&usqp=CAU',
           full: 'https://placekitten.com/1024/576'
         },
         {
-          thumbnail: 'https://i3.ytimg.com/vi/LQtmJnljYyk/maxresdefault.jpg',
+          thumbnail: 'https://damion.club/uploads/posts/2022-01/1643042029_80-damion-club-p-samie-nyashnie-kotiki-83.jpg',
           full: 'https://placekitten.com/1024/576'
         },
         {
-          thumbnail: 'https://i3.ytimg.com/vi/LQtmJnljYyk/maxresdefault.jpg',
+          thumbnail: 'https://img1.goodfon.ru/wallpaper/nbig/9/3e/kotenok-koshka-horoshenkiy-3793.jpg',
           full: 'https://placekitten.com/1024/576'
         },
         {
-          thumbnail: 'https://i3.ytimg.com/vi/LQtmJnljYyk/maxresdefault.jpg',
+          thumbnail: 'https://img1.goodfon.ru/wallpaper/big/2/85/koshka-kot-kotenok-ryzhiy-yazyk.jpg',
           full: 'https://placekitten.com/1024/576'
         },
       ],
@@ -232,6 +266,14 @@ export default {
   background: #000;
 }
 
+@media (max-width: $medium) {
+  .jReviews-item-player {
+    position: relative;
+    padding-top: 0;
+    background: #000;
+  }
+}
+
 .jReviews-item-iflame {
   width: 100%;
   height: 100%;
@@ -244,7 +286,7 @@ export default {
 }
 
 .jReviews-item-image {
-  max-width: 100%;
+  width: 100%;
 }
 
 .jReviews-item-thumbnails {
