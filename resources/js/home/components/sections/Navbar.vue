@@ -23,27 +23,36 @@
           @click="menu = !menu"
         /> -->
         <ul class="jNav-menu-items">
-          <li class="jNav-menu-item jNav-menu-item-md">
-            <NavbarLink
-                :lang="lang"
-                href="#prices"
-                text="prices"
-            />
-          </li>
-          <li class="jNav-menu-item jNav-menu-item-md">
-            <NavbarLink
-                :lang="lang"
-                href="#reviews"
-                text="reviews"
-            />
-          </li>
-          <li class="jNav-menu-item jNav-menu-item-md">
-            <NavbarLink
-                :lang="lang"
-                href="#features"
-                text="features"
-            />
-          </li>
+          <a
+              href="javascript:void(0)"
+              class="jNav-menu-hamburger jButton"
+              :class="{'jNav-menu-lang-active': active}"
+              @click="active = !active"
+          >
+            <div class="jNav-menu-lang-popup">
+              <li class="jNav-menu-item jNav-menu-item-md">
+                <NavbarLink
+                    :lang="lang"
+                    href="#prices"
+                    text="prices"
+                />
+              </li>
+              <li class="jNav-menu-item jNav-menu-item-md">
+                <NavbarLink
+                    :lang="lang"
+                    href="#reviews"
+                    text="reviews"
+                />
+              </li>
+              <li class="jNav-menu-item jNav-menu-item-md">
+                <NavbarLink
+                    :lang="lang"
+                    href="#features"
+                    text="features"
+                />
+              </li>
+            </div>
+          </a>
           <li class="jNav-menu-item">
             <span class="jNav-menu-auth">
               <form
@@ -61,12 +70,14 @@
               <template v-else>
                 <NavbarButton
                     :lang="lang"
-                    href="/login"
-                    text="auth"
+                    href="/register"
+                    text="register"
                 />
                 <a
+                    :title="$lang(lang, 'auth')"
                     class="jNav-menu-user"
-                    href="/register"
+                    href="/login"
+
                 />
                 <!-- <NavbarButton
                   :lang="lang"
@@ -115,16 +126,17 @@ export default {
     return {
       menu: false,
       csrf: '',
-      isScroll: false
+      isScroll: false,
+      active: false,
     }
   },
 
   methods: {
     changeLogoSizeByScroll() {
-      document.body.scrollTop > 20
-      || document.documentElement.scrollTop > 20
-          ? this.isScroll = true
-          : this.isScroll = false
+        document.body.scrollTop > 20
+        || document.documentElement.scrollTop > 20
+            ? this.isScroll = true
+            : this.isScroll = false
     },
   },
 
@@ -163,17 +175,28 @@ export default {
   margin: 0 auto;
   width: 78.125rem;
   height: 3.75rem;
+  padding: 0 1rem;
 }
 
 @media (max-width: $medium) {
   .jNav-logo-img {
     width: 8rem;
   }
+
+  .jNav-scroll .jNav-logo-img {
+    width: 7rem;
+    transition: 0.5s;
+  }
 }
 
 @media screen and (min-width: $medium) {
+  .jNav-logo-img {
+    width: 15.25rem;
+  }
+
   .jNav-scroll .jNav-logo-img {
     width: 11.25rem;
+    transition: 0.5s;
   }
 }
 
@@ -193,26 +216,37 @@ export default {
   }
 }
 
-// .jNav-menu-hamburger {
-//   &.jButton {
-//     display: block;
-//     width: 2rem;
-//     height: 2rem;
-//     padding: 1.25rem;
-//     position: relative;
+ .jNav-menu-hamburger {
+   &.jButton {
+     display: block;
+     width: 2rem;
+     height: 2rem;
+     padding: 1.25rem;
+     position: relative;
 
-//     &:before {
-//       content: '';
-//       width: 50%;
-//       height: 0.75rem;
-//       position: absolute;
-//       top: 50%;
-//       left: 50%;
-//       transform: translate(-50%, -45%);
-//       background: repeating-linear-gradient(#fff, #fff 0.125rem, transparent 0.125rem, transparent 0.25rem);
-//     }
-//   }
-// }
+     &:before {
+       content: '';
+       width: 50%;
+       height: 0.75rem;
+       position: absolute;
+       top: 50%;
+       left: 50%;
+       transform: translate(-50%, -45%);
+       background: repeating-linear-gradient(#fff, #fff 0.125rem, transparent 0.125rem, transparent 0.25rem);
+     }
+   }
+ }
+
+@media (max-width: $medium) {
+  .jNav-menu-hamburger.jButton {
+    display: none;
+  }
+}
+
+.jNav-menu-item .jNav-menu-link {
+  font-size: 0.9rem;
+  padding: 1.25rem;
+}
 
 .jNav-menu-bg {
   display: none;
@@ -267,10 +301,6 @@ export default {
     display: none;
   }
 
-  .jNav-menu-hamburger.jButton {
-    display: none;
-  }
-
   .jNav-menu-items {
     display: flex;
     align-items: center;
@@ -287,15 +317,25 @@ export default {
     margin-left: 2.5rem;
   }
 
+  .jNav-menu-lang-popup .jNav-menu-item {
+    margin-left: 0;
+    display: flex;
+    justify-content: center;
+  }
+
+  .jNav-menu-lang-popup .jNav-menu-lang:after {
+    display: none;
+  }
+
   .jNav-menu-auth {
-    margin-left: 2.5rem;
+    //margin-left: 2.5rem;
     gap: 1rem;
   }
 
   .jNav-menu-user {
     width: 2.625rem;
     height: 2.625rem;
-    margin-left: 2.5rem;
+    //margin-left: 2.5rem;
   }
 
   .jNav-menu-item-md {

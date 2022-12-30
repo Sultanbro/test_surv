@@ -710,6 +710,17 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 
 
 
@@ -730,7 +741,8 @@ __webpack_require__.r(__webpack_exports__);
     return {
       menu: false,
       csrf: '',
-      isScroll: false
+      isScroll: false,
+      active: false
     };
   },
   methods: {
@@ -2106,7 +2118,7 @@ __webpack_require__.r(__webpack_exports__);
 
 var ___CSS_LOADER_EXPORT___ = _node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_0___default()(function(i){return i[1]});
 // Module
-___CSS_LOADER_EXPORT___.push([module.id, ".jFooter-menu-link {\n  display: inline-block;\n  margin: 0.5rem 0;\n  position: relative;\n  font-size: 1rem;\n}\n.jFooter-menu-link:hover {\n  text-decoration: none;\n}\n.jFooter-menu-link:hover:after {\n  content: \"\";\n  display: block;\n  position: absolute;\n  left: 0;\n  right: 0;\n  bottom: 0;\n  border-bottom: 0.125rem dotted #000;\n}", ""]);
+___CSS_LOADER_EXPORT___.push([module.id, ".jFooter-menu-link {\n  display: inline-block;\n  margin: 0.5rem 0;\n  position: relative;\n  font-size: 1rem;\n}\n.jFooter-menu-link:hover {\n  text-decoration: none;\n  border-bottom: 0;\n}\n.jFooter-menu-link:hover:after {\n  content: \"\";\n  display: block;\n  position: absolute;\n  left: 0;\n  right: 0;\n  bottom: 0;\n}", ""]);
 // Exports
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (___CSS_LOADER_EXPORT___);
 
@@ -2181,7 +2193,7 @@ __webpack_require__.r(__webpack_exports__);
 
 var ___CSS_LOADER_EXPORT___ = _node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_0___default()(function(i){return i[1]});
 // Module
-___CSS_LOADER_EXPORT___.push([module.id, ".jNav-menu-link {\n  display: inline-block;\n  padding: 0.25rem 0;\n  margin: 0.5rem 0;\n  position: relative;\n  font-size: 1.125rem;\n  color: #000;\n  text-decoration: none;\n}\n.jNav-menu-link:hover:after {\n  content: \"\";\n  display: block;\n  position: absolute;\n  left: 0;\n  right: 0;\n  bottom: 0;\n  border-bottom: 0.125rem dotted #000;\n}", ""]);
+___CSS_LOADER_EXPORT___.push([module.id, ".jNav-menu-link {\n  display: inline-block;\n  padding: 0.25rem 0;\n  margin: 0.5rem 0;\n  position: relative;\n  font-size: 1.125rem;\n  color: #000;\n  text-decoration: none;\n  text-align: center;\n}\n.jNav-menu-link:hover {\n  border-bottom: 0;\n}\n.jNav-menu-link:hover:after {\n  content: \"\";\n  display: block;\n  position: absolute;\n  left: 0;\n  right: 0;\n  bottom: 0;\n}", ""]);
 // Exports
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (___CSS_LOADER_EXPORT___);
 
@@ -2309,7 +2321,7 @@ __webpack_require__.r(__webpack_exports__);
 var ___CSS_LOADER_EXPORT___ = _node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_0___default()(function(i){return i[1]});
 var ___CSS_LOADER_URL_REPLACEMENT_0___ = _node_modules_css_loader_dist_runtime_getUrl_js__WEBPACK_IMPORTED_MODULE_1___default()(_assets_img_user_svg__WEBPACK_IMPORTED_MODULE_2__["default"]);
 // Module
-___CSS_LOADER_EXPORT___.push([module.id, "#jNav {\n  display: flex;\n  align-items: center;\n  position: sticky;\n  width: 100vw;\n  height: 4.875rem;\n  z-index: 9000;\n  top: -1.125rem;\n  background: #fff;\n  box-shadow: 0 0.25rem 1rem rgba(0, 0, 0, 0.05);\n}\n.jNav-content {\n  display: flex;\n  position: sticky;\n  top: 0;\n  justify-content: space-between;\n  align-items: center;\n  margin: 0 auto;\n  width: 78.125rem;\n  height: 3.75rem;\n}\n@media (max-width: 1260px) {\n.jNav-logo-img {\n    width: 8rem;\n}\n}\n@media screen and (min-width: 1260px) {\n.jNav-scroll .jNav-logo-img {\n    width: 11.25rem;\n}\n}\n@media (min-width: 2560px) {\n.jNav-logo-img {\n    width: 15.25rem;\n}\n}\n.jNav-menu-active .jNav-menu-items {\n  display: flex;\n}\n.jNav-menu-active .jNav-menu-bg {\n  display: block;\n}\n.jNav-menu-bg {\n  display: none;\n  position: fixed;\n  z-index: 9004;\n  top: 0;\n  left: 0;\n  right: 0;\n  bottom: 0;\n  background: rgba(0, 0, 0, 0.25);\n  -webkit-backdrop-filter: blur(6px);\n          backdrop-filter: blur(6px);\n}\n.jNav-menu-items {\n  display: flex;\n  align-items: center;\n  max-width: none;\n  padding: 0.625rem;\n  margin: 0;\n  flex-flow: row nowrap;\n}\n.jNav-menu-item {\n  display: block;\n  list-style: none;\n}\n.jNav-menu-auth {\n  display: flex;\n  justify-content: space-between;\n  align-items: center;\n  gap: 0.5rem;\n}\n.jNav-menu-user {\n  display: inline-block;\n  width: 2rem;\n  height: 2rem;\n  border: none;\n  border-radius: 2.625rem;\n  vertical-align: middle;\n  background: #6f4f28 url(" + ___CSS_LOADER_URL_REPLACEMENT_0___ + ") center center no-repeat;\n}\n.jNav-menu-item-md {\n  display: none;\n}\n@media screen and (min-width: 1260px) {\n.jNav-menu-active,\n.jNav-menu-bg {\n    display: none;\n}\n.jNav-menu-hamburger.jButton {\n    display: none;\n}\n.jNav-menu-items {\n    display: flex;\n    align-items: center;\n    max-width: none;\n    padding: 0.625rem;\n    margin: 0;\n    flex-flow: row nowrap;\n    position: static;\n    background: none;\n    box-shadow: none;\n}\n.jNav-menu-item {\n    margin-left: 2.5rem;\n}\n.jNav-menu-auth {\n    margin-left: 2.5rem;\n    gap: 1rem;\n}\n.jNav-menu-user {\n    width: 2.625rem;\n    height: 2.625rem;\n    margin-left: 2.5rem;\n}\n.jNav-menu-item-md {\n    display: block;\n}\n}", ""]);
+___CSS_LOADER_EXPORT___.push([module.id, "#jNav {\n  display: flex;\n  align-items: center;\n  position: sticky;\n  width: 100vw;\n  height: 4.875rem;\n  z-index: 9000;\n  top: -1.125rem;\n  background: #fff;\n  box-shadow: 0 0.25rem 1rem rgba(0, 0, 0, 0.05);\n}\n.jNav-content {\n  display: flex;\n  position: sticky;\n  top: 0;\n  justify-content: space-between;\n  align-items: center;\n  margin: 0 auto;\n  width: 78.125rem;\n  height: 3.75rem;\n  padding: 0 1rem;\n}\n@media (max-width: 1260px) {\n.jNav-logo-img {\n    width: 8rem;\n}\n.jNav-scroll .jNav-logo-img {\n    width: 7rem;\n    transition: 0.5s;\n}\n}\n@media screen and (min-width: 1260px) {\n.jNav-logo-img {\n    width: 15.25rem;\n}\n.jNav-scroll .jNav-logo-img {\n    width: 11.25rem;\n    transition: 0.5s;\n}\n}\n@media (min-width: 2560px) {\n.jNav-logo-img {\n    width: 15.25rem;\n}\n}\n.jNav-menu-active .jNav-menu-items {\n  display: flex;\n}\n.jNav-menu-active .jNav-menu-bg {\n  display: block;\n}\n.jNav-menu-hamburger.jButton {\n  display: block;\n  width: 2rem;\n  height: 2rem;\n  padding: 1.25rem;\n  position: relative;\n}\n.jNav-menu-hamburger.jButton:before {\n  content: \"\";\n  width: 50%;\n  height: 0.75rem;\n  position: absolute;\n  top: 50%;\n  left: 50%;\n  transform: translate(-50%, -45%);\n  background: repeating-linear-gradient(#fff, #fff 0.125rem, transparent 0.125rem, transparent 0.25rem);\n}\n@media (max-width: 1260px) {\n.jNav-menu-hamburger.jButton {\n    display: none;\n}\n}\n.jNav-menu-item .jNav-menu-link {\n  font-size: 0.9rem;\n  padding: 1.25rem;\n}\n.jNav-menu-bg {\n  display: none;\n  position: fixed;\n  z-index: 9004;\n  top: 0;\n  left: 0;\n  right: 0;\n  bottom: 0;\n  background: rgba(0, 0, 0, 0.25);\n  -webkit-backdrop-filter: blur(6px);\n          backdrop-filter: blur(6px);\n}\n.jNav-menu-items {\n  display: flex;\n  align-items: center;\n  max-width: none;\n  padding: 0.625rem;\n  margin: 0;\n  flex-flow: row nowrap;\n}\n.jNav-menu-item {\n  display: block;\n  list-style: none;\n}\n.jNav-menu-auth {\n  display: flex;\n  justify-content: space-between;\n  align-items: center;\n  gap: 0.5rem;\n}\n.jNav-menu-user {\n  display: inline-block;\n  width: 2rem;\n  height: 2rem;\n  border: none;\n  border-radius: 2.625rem;\n  vertical-align: middle;\n  background: #6f4f28 url(" + ___CSS_LOADER_URL_REPLACEMENT_0___ + ") center center no-repeat;\n}\n.jNav-menu-item-md {\n  display: none;\n}\n@media screen and (min-width: 1260px) {\n.jNav-menu-active,\n.jNav-menu-bg {\n    display: none;\n}\n.jNav-menu-items {\n    display: flex;\n    align-items: center;\n    max-width: none;\n    padding: 0.625rem;\n    margin: 0;\n    flex-flow: row nowrap;\n    position: static;\n    background: none;\n    box-shadow: none;\n}\n.jNav-menu-item {\n    margin-left: 2.5rem;\n}\n.jNav-menu-lang-popup .jNav-menu-item {\n    margin-left: 0;\n    display: flex;\n    justify-content: center;\n}\n.jNav-menu-lang-popup .jNav-menu-lang:after {\n    display: none;\n}\n.jNav-menu-auth {\n    gap: 1rem;\n}\n.jNav-menu-user {\n    width: 2.625rem;\n    height: 2.625rem;\n}\n.jNav-menu-item-md {\n    display: block;\n}\n}", ""]);
 // Exports
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (___CSS_LOADER_EXPORT___);
 
@@ -8123,44 +8135,65 @@ var render = function () {
           [
             _c("ul", { staticClass: "jNav-menu-items" }, [
               _c(
-                "li",
-                { staticClass: "jNav-menu-item jNav-menu-item-md" },
-                [
-                  _c("NavbarLink", {
-                    attrs: { lang: _vm.lang, href: "#prices", text: "prices" },
-                  }),
-                ],
-                1
-              ),
-              _vm._v(" "),
-              _c(
-                "li",
-                { staticClass: "jNav-menu-item jNav-menu-item-md" },
-                [
-                  _c("NavbarLink", {
-                    attrs: {
-                      lang: _vm.lang,
-                      href: "#reviews",
-                      text: "reviews",
+                "a",
+                {
+                  staticClass: "jNav-menu-hamburger jButton",
+                  class: { "jNav-menu-lang-active": _vm.active },
+                  attrs: { href: "javascript:void(0)" },
+                  on: {
+                    click: function ($event) {
+                      _vm.active = !_vm.active
                     },
-                  }),
-                ],
-                1
-              ),
-              _vm._v(" "),
-              _c(
-                "li",
-                { staticClass: "jNav-menu-item jNav-menu-item-md" },
+                  },
+                },
                 [
-                  _c("NavbarLink", {
-                    attrs: {
-                      lang: _vm.lang,
-                      href: "#features",
-                      text: "features",
-                    },
-                  }),
-                ],
-                1
+                  _c("div", { staticClass: "jNav-menu-lang-popup" }, [
+                    _c(
+                      "li",
+                      { staticClass: "jNav-menu-item jNav-menu-item-md" },
+                      [
+                        _c("NavbarLink", {
+                          attrs: {
+                            lang: _vm.lang,
+                            href: "#prices",
+                            text: "prices",
+                          },
+                        }),
+                      ],
+                      1
+                    ),
+                    _vm._v(" "),
+                    _c(
+                      "li",
+                      { staticClass: "jNav-menu-item jNav-menu-item-md" },
+                      [
+                        _c("NavbarLink", {
+                          attrs: {
+                            lang: _vm.lang,
+                            href: "#reviews",
+                            text: "reviews",
+                          },
+                        }),
+                      ],
+                      1
+                    ),
+                    _vm._v(" "),
+                    _c(
+                      "li",
+                      { staticClass: "jNav-menu-item jNav-menu-item-md" },
+                      [
+                        _c("NavbarLink", {
+                          attrs: {
+                            lang: _vm.lang,
+                            href: "#features",
+                            text: "features",
+                          },
+                        }),
+                      ],
+                      1
+                    ),
+                  ]),
+                ]
               ),
               _vm._v(" "),
               _c("li", { staticClass: "jNav-menu-item" }, [
@@ -8185,14 +8218,17 @@ var render = function () {
                           _c("NavbarButton", {
                             attrs: {
                               lang: _vm.lang,
-                              href: "/login",
-                              text: "auth",
+                              href: "/register",
+                              text: "register",
                             },
                           }),
                           _vm._v(" "),
                           _c("a", {
                             staticClass: "jNav-menu-user",
-                            attrs: { href: "/register" },
+                            attrs: {
+                              title: _vm.$lang(_vm.lang, "auth"),
+                              href: "/login",
+                            },
                           }),
                         ],
                   ],
