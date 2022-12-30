@@ -484,6 +484,10 @@ export default {
 
         testBook(){
             if(this.bookTimer) return
+            if(!(this.corp_book_page.questions && this.corp_book_page.questions.length)){
+                this.showCorpBookPage = false
+                return
+            }
             this.isBookTest = true
             this.showCorpBookPage = false
         },
