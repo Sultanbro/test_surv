@@ -3,7 +3,7 @@
 namespace App;
 
 use App\Classes\Helpers\Phone;
-use App\External\Bitrix\Bitrix;
+use App\Api\BitrixOld as Bitrix;
 use App\Http\Controllers\IntellectController as IC;
 use App\Models\Admin\ObtainedBonus;
 use App\Models\Article\Article;
@@ -14,6 +14,7 @@ use App\Models\CourseResult;
 use App\Models\GroupUser;
 use App\Models\Tax;
 use App\Models\Traits\HasTenants;
+use App\Models\User\Card;
 use App\OauthClientToken as Oauth;
 use App\Service\Department\UserService;
 use Carbon\Carbon;
@@ -95,6 +96,14 @@ class User extends Authenticatable implements Authorizable
      */
     const CURRENCY = ['KZT', 'RUB', 'UZS', 'KGS','BYN', 'UAH'];
 
+    /**
+     * @return HasMany
+     */
+    public function cards(): HasMany
+    {
+        return $this->hasMany(Card::class, 'user_id');
+    }
+
     public function favouriteArticles(): BelongsToMany
     {
         return $this->belongsToMany(
@@ -165,6 +174,30 @@ class User extends Authenticatable implements Authorizable
         return $this->belongsToMany('App\ProfileGroup', 'group_user', 'user_id', 'group_id')
             ->withPivot(['created_at', 'updated_at', 'deleted_at'])->withTimestamps();
     }
+    /**
+     * Mutator's
+     */
+
+    /**
+     * @param $value
+     * @return void
+     */
+    public function setPasswordAttribute($value): void
+    {
+        $this->attributes['password'] = bcrypt($value);
+    }
+
+    /**
+     * @param $value
+     * @return void
+     */
+    public function setNewEmailAttribute($value): void
+    {
+        $this->attributes['email'] = strtolower($value);
+    }
+
+    /* End Mutator's */
+
 
     public function scopeGetDeletedFromGroupUser($query, $date)
     {

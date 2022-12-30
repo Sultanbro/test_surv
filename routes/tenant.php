@@ -90,9 +90,12 @@ Route::middleware(['web','tenant','not_admin_subdomain'])->group(function () {
     Route::get('/test', [Root\TestController::class, 'test'])->name('test');
 
     // courses
-    Route::group(['prefix' => 'course','as'    => 'course.'], function () {
+    Route::group([
+        'prefix' => 'course',
+        'as'    => 'course.'
+    ], function () {
         Route::post('/regress', [Course\RegressCourseController::class, 'regress']);
-        Route::get('/progress', [Course\CourseProgressController::class]);
+        Route::get('/progress', [Course\CourseProgressController::class, 'progress']);
     });
 
     Route::get('/courses', [Course\CourseController::class, 'index']);

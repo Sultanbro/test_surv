@@ -1,9 +1,9 @@
 <?php
 
-namespace App\External\Bitrix;
+namespace App\Api;
 
-class Bitrix {
-    
+class BitrixOld
+{
     public $link;
     
     public function __construct(String $line = 'common')
@@ -163,8 +163,6 @@ class Bitrix {
         } else {
             return null;
         }
-        
-
     }
     
     public function changeDeal(int $deal_id, array $deal_fields)

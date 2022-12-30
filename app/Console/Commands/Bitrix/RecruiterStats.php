@@ -4,7 +4,7 @@ namespace App\Console\Commands\Bitrix;
 
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\DB;
-use App\External\Bitrix\Bitrix;
+use App\Api\BitrixOld as Bitrix;
 use Carbon\Carbon;
 use App\User;
 use App\UserDescription;
@@ -19,9 +19,6 @@ class RecruiterStats extends Command
     /**
      * The name and signature of the console command.
      *
-     * ex: php artisan recruiter:stats 0 14 2022-08-15 13429 
-     * //$a = (new \App\External\Bitrix\Bitrix())->getDeals(99356, '', 'ASC', '2022-08-15T15:00:00+06:00', '2022-08-15T18:59:00+06:00', 'DATE_CREATE');
-     * 
      * @var string 
      */
     protected $signature = 'recruiter:stats {count_last_hour?} {hour?} {date?} {user?}'; 
