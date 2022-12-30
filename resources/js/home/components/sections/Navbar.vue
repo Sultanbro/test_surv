@@ -44,18 +44,18 @@
           <li class="jNav-menu-item">
             <span class="jNav-menu-auth">
               <template
-                v-if="auth"
+                v-if="authorized"
               >
                 <div class="jNav-menu-user-info">
                   <div class="jNav-menu-user-data">
                     <div
                       class="jNav-menu-user-name"
-                      :title="window.Laravel.fullname"
-                    >{{ window.Laravel.fullname }}</div>
+                      :title="laravel.fullname"
+                    >{{ laravel.fullname }}</div>
                     <div
                       class="jNav-menu-user-email"
-                      :title="window.Laravel.email"
-                    >{{ window.Laravel.email }}</div>
+                      :title="laravel.email"
+                    >{{ laravel.email }}</div>
                   </div>
                 </div>
                 <div
@@ -66,8 +66,8 @@
                     v-if="isUserMenu"
                     class="jNav-menu-user-menu"
                   >
-                    <div class="jNav-menu-user-menu-item" v-for="cabinet in cabinets">
-                      <a :href="'/login/' + cabinet.tenant_id">{{ cabinet.tenant_id }} + window.location.hostname</a>
+                    <div class="jNav-menu-user-menu-item" v-for="cabinet in laravel.cabinets">
+                      <a :href="'/login/' + cabinet.tenant_id">{{ cabinet.tenant_id }}.{{ hostname }}</a>
                     </div>
 
                     <form
@@ -78,8 +78,8 @@
                     >
                       <input
                         type="hidden"
-                        :value="csrf"
-                        name="csrf"
+                        :value="laravel.csrfToken"
+                        name="_token"
                       >
                       <button @click="$refs.formLogout.submit()" class="jNav-menu-user-menu-exit">
                         Выход
@@ -133,15 +133,21 @@ export default {
   computed: {
     lang() {
       return this.$root.$data.lang
+    },
+    laravel() {
+      return window.Laravel
+    },
+    authorized() {
+      return window.Laravel.email !== undefined
+    },
+    hostname() {
+      return window.location.hostname
     }
   },
   data() {
     return {
       menu: false,
-      csrf: window.Laravel.csrfToken,
       isUserMenu: false,
-      cabinets: window.Laravel.cabinets,
-      auth: window.Laravel.email !== undefined
     }
   },
 }
