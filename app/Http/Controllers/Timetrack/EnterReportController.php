@@ -14,10 +14,8 @@ use Symfony\Component\HttpFoundation\Response;
 
 final class EnterReportController extends Controller
 {
-    public function __construct(TimeTrackReport $reportService)
-    {
-        
-    }
+    public function __construct(public TimeTrackReport $reportService)
+    {}
 
     public function getEnter()
     {
