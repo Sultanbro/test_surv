@@ -3,13 +3,12 @@
 namespace App\Http\Controllers;
 
 use App\Models\CentralUser;
+use App\Service\Tenancy\CabinetService;
 
 class TestController extends Controller
 { 
 	public function test() { 
-		dd( \Storage::disk('s3')
-		->temporaryUrl('awards/jkmL5AUeOZcUlqyQwegx3sn0YiKvBHCnHnGwEAHH.jpg',
-			now()->addMinutes(360)));
+		dd((new \Database\Seeders\PositionSeeder));
 	}
 
 	public function hhRefresher() {

@@ -119,7 +119,7 @@
         <div id="sub-footer">
             <div class="sub-footer">
                 <div class="col-lg-12 col-md-2 col-sm-2 col-xs-12">
-                    <p class="copy">© 2022 jobtron.org</p>
+                    <p class="copy">© 2023 jobtron.org</p>
                 </div>
 
             </div>
@@ -175,10 +175,10 @@ function delete_cookie( name, path, domain ) {
             processData: true,
             type: 'POST',
             cache: false,
-            success: function (data) {
-                if(data.link) return location.assign(data.link);
-                if(data.links) {
-                    $loginForm.after('<div class="list-group mt-4">' + createLinks(data.links) + '</div>');
+            success: function (dataset) {
+                if(dataset.link) return window.location.replace(dataset.link);
+                if(dataset.links) {
+                    $loginForm.after('<div class="list-group mt-4">' + createLinks(dataset.links) + '</div>');
                 }
             },
             error: function (response) {
@@ -189,10 +189,16 @@ function delete_cookie( name, path, domain ) {
                             .closest('.form-registration-row')
                             .append('<span class="help-block"><strong>' + errorMessage + '</strong></span>');
                     }
+
+                    return;
                 }
-                else {
-                    alert('Ошибка на стороне сервера');
+
+                if(response.status === 401) {
+                    alert('Введенный email или пароль не совпадает');
+                    return;
                 }
+
+                alert('Ошибка на стороне сервера');
             },
         });
     });

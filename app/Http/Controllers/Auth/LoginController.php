@@ -90,7 +90,7 @@ class LoginController extends Controller
     {   
         // create credentials
         $field = $this->username();
-
+       
         $request[$field] = $request->username;
 
         $credentials = [
@@ -100,14 +100,15 @@ class LoginController extends Controller
         
         // failed to login
         if ( !\Auth::attempt($credentials) ) {
-            return back()->withErrors([
-                'email' => 'The provided credentials do not match our records.',
-            ])->onlyInput('email');
+            return response()->json([
+                'message' => 'Введенный email или пароль не совпадает'
+            ], 401);
         } 
 
         // login was success
         $request->session()->regenerate();
-            
+
+        
         // redirect to - admin.jobtron.org
         if(request()->getHost() == 'admin.' .config('app.domain')) {
             return [
@@ -120,7 +121,7 @@ class LoginController extends Controller
         if(request()->getHost() == config('app.domain')) {
             $links = $this->loginLinks( $request->email );
 
-            return $links > 1
+            return count($links) > 1
                 ? [
                     'links' => $links
                 ]

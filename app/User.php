@@ -52,6 +52,10 @@ class User extends Authenticatable implements Authorizable
 
     protected $primaryKey = 'id';
 
+    protected $hidden = [
+        'password'
+    ];
+
     protected $fillable = [
         'name',
         'last_name',
@@ -190,14 +194,14 @@ class User extends Authenticatable implements Authorizable
      * Mutator's
      */
 
-    /**
-     * @param $value
-     * @return void
-     */
-    public function setPasswordAttribute($value): void
-    {
-        $this->attributes['password'] = bcrypt($value);
-    }
+    // /**
+    //  * @param $value
+    //  * @return void
+    //  */
+    // public function setPasswordAttribute($value): void
+    // {
+    //     $this->attributes['password'] = bcrypt($value);
+    // }
 
     /**
      * @param $value

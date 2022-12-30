@@ -40,6 +40,7 @@ use Maatwebsite\Excel\Facades\Excel;
 use App\AdaptationTalk;
 use App\Models\GroupUser;
 use \App\Service\Admin\UserService as AdminUserService;
+use App\Service\Tenancy\CabinetService;
 
 class EmployeeController extends Controller
 {
@@ -832,7 +833,7 @@ class EmployeeController extends Controller
             ]);
         }
 
-
+        (new CabinetService)->add(tenant('id'), $user);
 
         return redirect()->to('/timetracking/edit-person?id=' . $user->id);
     }
@@ -1221,6 +1222,8 @@ class EmployeeController extends Controller
             
         }
 
+        (new CabinetService)->remove(tenant('id'), $user);
+
         return redirect()->to('/timetracking/edit-person?id=' . $user->id);
     }
 
@@ -1411,7 +1414,9 @@ class EmployeeController extends Controller
                 if($delete_plan) $delete_plan->delete();
 
                 $fire_date = now();
+                (new CabinetService)->remove(tenant('id'), $user);
                 User::deleteUser($request);
+
             }
 
             // Причина увольенения
@@ -1455,7 +1460,9 @@ class EmployeeController extends Controller
             $bitrixUser = $bitrix->searchUser($user->email);
             usleep(1000000); // 1 sec
             if($bitrixUser) $success = $bitrix->recoverUser($bitrixUser['ID']);
-         
+            
+
+            (new CabinetService)->add(tenant('id'), $user);
         } 
 
         View::share('title', 'Сотрудник восстановлен');
