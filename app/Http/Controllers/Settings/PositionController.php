@@ -4,7 +4,7 @@ declare(strict_types=1);
 namespace App\Http\Controllers\Settings;
 
 use App\Http\Controllers\Controller;
-use App\Http\Requests\Position\AnyPositionRequest;
+use App\Http\Requests\Position\StorePositionRequest;
 use App\Http\Requests\Position\GetPositionRequest;
 use App\Http\Requests\Position\StorePositionWithDescriptionRequest;
 use App\Service\Position\PositionService;
@@ -23,11 +23,11 @@ final class PositionController extends Controller
      *  "position": "name"
      * }
      *
-     * @param AnyPositionRequest $request
+     * @param StorePositionRequest $request
      * @return JsonResponse
      * @throws \Throwable
      */
-    public function store(AnyPositionRequest $request): JsonResponse
+    public function store(StorePositionRequest $request): JsonResponse
     {
         $response = $this->service->add($request->toDto()->position);
         return response()->success($response);
@@ -53,11 +53,11 @@ final class PositionController extends Controller
      *  "position": "76"
      * }
      *
-     * @param AnyPositionRequest $request
+     * @param StorePositionRequest $request
      * @return JsonResponse
      * @throws \Exception
      */
-    public function destroy(AnyPositionRequest $request): JsonResponse
+    public function destroy(StorePositionRequest $request): JsonResponse
     {
         $response = $this->service->delete($request->toDto()->position);
         return response()->success($response);

@@ -6,7 +6,7 @@ use App\DTO\Position\AnyPositionDTO;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Support\Arr;
 
-class AnyPositionRequest extends FormRequest
+class StorePositionRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -26,7 +26,7 @@ class AnyPositionRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'position' => ['required', 'numeric']
+            'position' => ['required', 'string']
         ];
     }
 
