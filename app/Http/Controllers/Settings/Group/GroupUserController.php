@@ -12,10 +12,8 @@ use Illuminate\Http\JsonResponse;
 
 final class GroupUserController extends Controller
 {
-    public function __construct(GetGroupUserService $service)
-    {
-        
-    }
+    public function __construct(public GetGroupUserService $service)
+    {}
 
     /**
      * @Post{

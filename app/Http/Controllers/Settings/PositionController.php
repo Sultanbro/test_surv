@@ -13,7 +13,7 @@ use Illuminate\Http\JsonResponse;
 
 final class PositionController extends Controller
 {
-    public function __construct(PositionService $service)
+    public function __construct(public PositionService $service)
     {
 
     }

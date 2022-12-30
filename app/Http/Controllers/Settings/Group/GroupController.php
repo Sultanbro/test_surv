@@ -13,10 +13,8 @@ use Illuminate\Http\JsonResponse;
 
 final class GroupController extends Controller
 {
-    public function __construct(GroupService $service)
-    {
-        
-    }
+    public function __construct(public GroupService $service)
+    {}
 
     /**
      * @return JsonResponse
