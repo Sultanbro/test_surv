@@ -334,12 +334,12 @@
 </template>
 
 <script>
+import { useYearOptions } from '../composables/yearOptions'
 export default {
     name: "TableReport",
     props: {
         groups: Array,
         fines: Array,
-        years: Array,
         activeuserid: String,
         activeuserpos: String,
         can_edit: Boolean
@@ -453,6 +453,7 @@ export default {
                 schedule: '',
             },
             fire_causes: [],
+            years: useYearOptions(),
         }
     },
 

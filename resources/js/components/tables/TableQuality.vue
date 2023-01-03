@@ -1,6 +1,6 @@
 <template>
   <div class="mt-2 px-3 quality quality-page">
-    
+
     <div class="row">
 
       <div class="col-3" v-if="individual_request">
@@ -448,7 +448,7 @@
                   :total-rows="records.total"
                 ></b-pagination>
 
-                
+
               </div>
             </b-tab>
           </b-tabs>
@@ -625,8 +625,8 @@
         <div class="col-12 d-flex mb-3">
 
           <div class="fl">Источник оценок
-            <i class="fa fa-info-circle ml-2" 
-                v-b-popover.hover.right.html="'Заполнять оценки диалогов и критерии на странице <b>Контроль качества</b>, либо подтягивать их по крону с cp.callibro.org'" 
+            <i class="fa fa-info-circle ml-2"
+                v-b-popover.hover.right.html="'Заполнять оценки диалогов и критерии на странице <b>Контроль качества</b>, либо подтягивать их по крону с cp.callibro.org'"
                 title="Оценки контроля качества">
             </i>
           </div>
@@ -639,9 +639,9 @@
 
         <div class="col-12" v-if="!can_add_records">
            <div class="bg mb-2">
-            <div class="fl">ID диалера 
-              <i class="fa fa-info-circle ml-2" 
-                  v-b-popover.hover.right.html="'Нужен, чтобы <b>подтягивать часы</b> или <b>оценки диалогов</b> для контроля качества.<br>С сервиса cp.callibro.org'" 
+            <div class="fl">ID диалера
+              <i class="fa fa-info-circle ml-2"
+                  v-b-popover.hover.right.html="'Нужен, чтобы <b>подтягивать часы</b> или <b>оценки диалогов</b> для контроля качества.<br>С сервиса cp.callibro.org'"
                   title="Диалер в U-Calls">
               </i>
             </div>
@@ -675,10 +675,10 @@
               </div>
             </div>
         </div>
-             
+
         <div class="col-12 mt-3">
           <button class="btn btn-sm btn-primary rounded" @click="saveSettings">
-            Сохранить 
+            Сохранить
           </button>
         </div>
       </div>
@@ -714,6 +714,7 @@
 </template>
 
 <script>
+import { useYearOptions } from '../../composables/yearOptions'
 // import Template from "../../../../public/static/partner/templates/template.html";
 export default {
   name: "TableQuality",
@@ -781,7 +782,7 @@ export default {
       groupName: "Контроль качества",
       monthInfo: {},
       user_ids: {},
-      years: [2020, 2021, 2022],
+      years: useYearOptions(),
       currentYear: new Date().getFullYear(),
       hasPermission: false,
       dataLoaded: true,
@@ -797,7 +798,7 @@ export default {
         11: "6_30 RED",
         12: "6_30",
       },
-      loader: null, 
+      loader: null,
       fill:{ gradient: ["#1890ff", "#28a745"] },
       items: [],
       params: [],
@@ -843,7 +844,7 @@ export default {
     showSidebar(user_id, day){
       this.toggle();
       var date = this.currentYear + '-' + this.monthInfo.month.padStart(2, "0") + '-' + day.padStart(2, "0");
-      
+
       axios.post("/checklist/get-checklist-by-user",{
         user_id:user_id,
         created_date: date
@@ -965,7 +966,7 @@ export default {
       // console.log(this.individual_type,'this.individual_type')
       // console.log(this.flagGroup,'this.flagGroup')
       // console.log(this.currentGroup,'this.currentGroup')
-          
+
       if (this.individual_type_id != null){
         if (this.flagGroup == 'index'){
           if (this.individual_type == 2 || this.individual_type == 3){
@@ -1034,7 +1035,7 @@ export default {
           this.normalizeItems();
           this.createUserIdList();
           this.setChecklistWeekTable();
-          this.setWeeksTable();    
+          this.setWeeksTable();
           this.setMonthsTable();
 
           this.setRecordsTable();
