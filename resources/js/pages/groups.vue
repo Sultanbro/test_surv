@@ -1,5 +1,8 @@
 <template>
-  <div class="groups">
+  <div
+    v-if="activeuserid"
+    class="groups"
+  >
     <b-alert v-if="message!=null" variant="info">
       {{ message}}
     </b-alert>
@@ -571,20 +574,26 @@ export default {
       ],
     };
   },
+  watch:{
+    activeuserid(){
+      this.init()
+    }
+  },
   created() {
-    axios.post("/timetracking/users", {}).then((response) => {
-      this.options = response.data.users;
-    });
+    if(this.activeuserid){
+      this.init()
+    }
   },
-
-  mounted() {
-    this.statuses = JSON.parse(this.statuseses);
-    this.archived_groups = JSON.parse(this.archived_groupss);
-
-    this.corp_books = JSON.parse(this.corpbooks);
-  },
-
+  mounted() {},
   methods: {
+    init(){
+      axios.post("/timetracking/users", {}).then((response) => {
+        this.options = response.data.users;
+      });
+      this.statuses = this.statuseses;
+      this.archived_groups = this.archived_groupss;
+      this.corp_books = this.corpbooks;
+    },
     saveBonus() {
       axios
         .post("/timetracking/users/bonus/save", {

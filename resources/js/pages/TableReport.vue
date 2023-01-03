@@ -1,5 +1,8 @@
 <template>
-<div class="mt-4">
+<div
+    v-if="groups"
+    class="mt-4"
+>
     <div class="mb-0">
 
         <div class="row mb-3">
@@ -90,32 +93,31 @@
                         :current-page="currentPage"
                         :per-page="perPage">
 
-                    <template slot="cell(name)" slot-scope="data">
+                    <template #cell(name)="data">
                         <div>
-                        <span v-if="activeuserpos == 46">
-                            <a :href="'/timetracking/edit-person?id=' + data.item.id" target="_blank" :title="data.item.id">{{ data.value }}</a>
-                        </span>
-                            <span v-else>
+                            <span v-if="activeuserpos == 46">
+                                <a :href="'/timetracking/edit-person?id=' + data.item.id" target="_blank" :title="data.item.id">{{ data.value }}</a>
+                            </span>
+                                <span v-else>
+                                {{ data.value }}
+                            </span>
+                                <b-badge v-if="data.field.key == 'name'" pill variant="success">
+                                    {{ data.item.user_type }}
+                                </b-badge>
+
+
+                                <span v-if="data.field.key == 'name' && data.item.is_trainee" class="badgy badge-warning badge-pill">
+                                Стажер
+                            </span>
+                        </div>
+                    </template>
+                    <template #cell(total)="data">
+                        <div>
                             {{ data.value }}
-                        </span>
-                            <b-badge v-if="data.field.key == 'name'" pill variant="success">
-                                {{ data.item.user_type }}
-                            </b-badge>
-
-
-                            <span v-if="data.field.key == 'name' && data.item.is_trainee" class="badgy badge-warning badge-pill">
-                            Стажер
-                        </span>
                         </div>
                     </template>
 
-                    <template slot="cell(total)" slot-scope="data">
-                        <div>
-                            {{ data.value }}
-                        </div>
-                    </template>
-
-                    <template slot="cell()" slot-scope="data">
+                    <template #cell()="data">
 
                         <div @mouseover="dayInfo(data)" @click="detectClick(data)" class="td-div" :class="{'updated': data.value.updated}">
 
@@ -352,6 +354,9 @@ export default {
         user_types(val) {
             this.fetchData()
         },
+        groups(){
+            this.init()
+        }
     },
     data() {
         return {
@@ -458,21 +463,26 @@ export default {
     },
 
     created() {
-        this.dateInfo.currentMonth = this.dateInfo.currentMonth ? this.dateInfo.currentMonth : this.$moment().format('MMMM')
-        let currentMonth = this.$moment(this.dateInfo.currentMonth, 'MMMM')
-
-        //Расчет выходных дней
-        this.dateInfo.monthEnd = currentMonth.endOf('month'); //Конец месяца
-        this.dateInfo.weekDays = currentMonth.weekdayCalc(this.dateInfo.monthEnd, [6]) //Колличество выходных
-        this.dateInfo.daysInMonth = currentMonth.daysInMonth() //Колличество дней в месяце
-        this.dateInfo.workDays = this.dateInfo.daysInMonth - this.dateInfo.weekDays //Колличество рабочих дней
-
-        //Текущая группа
-        this.currentGroup = this.currentGroup ? this.currentGroup : this.groups[0]['id']
-
-        this.fetchData()
+        if(this.groups){
+            this.init()
+        }
     },
     methods: {
+        init(){
+            this.dateInfo.currentMonth = this.dateInfo.currentMonth ? this.dateInfo.currentMonth : this.$moment().format('MMMM')
+            let currentMonth = this.$moment(this.dateInfo.currentMonth, 'MMMM')
+
+            //Расчет выходных дней
+            this.dateInfo.monthEnd = currentMonth.endOf('month'); //Конец месяца
+            this.dateInfo.weekDays = currentMonth.weekdayCalc(this.dateInfo.monthEnd, [6]) //Колличество выходных
+            this.dateInfo.daysInMonth = currentMonth.daysInMonth() //Колличество дней в месяце
+            this.dateInfo.workDays = this.dateInfo.daysInMonth - this.dateInfo.weekDays //Колличество рабочих дней
+
+            //Текущая группа
+            this.currentGroup = this.currentGroup ? this.currentGroup : this.groups[0]['id']
+
+            this.fetchData()
+        },
         copy() {
             var Url = this.$refs['mylink' + this.currentGroup];
             Url.value = window.location.origin + '/autocheck/' + this.currentGroup;

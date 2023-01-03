@@ -1,5 +1,8 @@
 <template>
-    <div class="mt-2 analytics-page px-3">
+    <div
+        v-if="groups"
+        class="mt-2 analytics-page px-3"
+    >
         <div class="row mb-3 ">
             <div class="col-3">
                 <select class="form-control" v-model="currentGroup" @change="fetchData">
@@ -308,6 +311,8 @@
                 archived_groups: [],
                 call_bases: [], // euras call base unique table
                 restore_group: null,
+                noan: false, // нет аналитики
+                showActivityModal:false, // activity
                 dataLoaded: false,
                 noan: false, // нет аналитики
                 showActivityModal:false, // activity
@@ -335,31 +340,39 @@
                 statistics: [] // year table of activity
             }
         },
-        created() {
-
-            // выбор группы
-            const urlParams = new URLSearchParams(window.location.search);
-            let group = urlParams.get('group');
-            let active = urlParams.get('active');
-            let load = urlParams.get('load');
-
-            this.ggroups = this.groups
-            this.currentGroup = (group == null) ? this.groups[0].id : parseFloat(group)
-
-            this.active = (active == null) ? '1' : active
-
-            this.setMonth()
-            this.setYear()
-            this.setActivityYearTableFields()
-
-            if(load != null) {
-                this.fetchData()
+        watch: {
+            groups(){
+                this.init()
             }
-
-
+        },
+        created() {
+            if(this.groups){
+                this.init()
+            }
         },
         methods: {
+            init(){
 
+                // выбор группы
+                // переделать на роуты
+                const urlParams = new URLSearchParams(window.location.search);
+                let group = urlParams.get('group');
+                let active = urlParams.get('active');
+                let load = urlParams.get('load');
+
+                this.ggroups = this.groups
+                this.currentGroup = (group == null) ? this.groups[0].id : parseFloat(group)
+
+                this.active = (active == null) ? '1' : active
+
+                this.setMonth()
+                this.setYear()
+                this.setActivityYearTableFields()
+
+                if(load != null) {
+                    this.fetchData()
+                }
+            },
             /**
              * ACTIVITY YEAR
              */

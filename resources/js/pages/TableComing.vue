@@ -1,5 +1,8 @@
 <template>
-<div class="mt-2 px-3">
+<div
+    v-if="groups"
+    class="mt-2 px-3"
+>
     <div class="mb-0">
         <div class="row mb-3">
             <div class="col-3">
@@ -38,17 +41,16 @@
                 </template>
                 <b-form-input v-model="comment" placeholder="Комментарий" :required="true"></b-form-input>
             </b-modal>
-
             <div class="table-container">
                 <b-table responsive :sticky-header="true" class="text-nowrap text-right table-custom-table-coming" id="comingTable" :small="true" :bordered="true" :items="items" :fields="fields" show-empty emptyText="Нет данных">
-                    <template slot="cell(name)" slot-scope="data">
+                    <template #cell(name)="data">
                         <div>
                             {{ data.value }}
                             <b-badge v-if="data.field.key == 'name'" pill variant="success">{{data.item.user_type}}</b-badge>
                         </div>
                     </template>
 
-                    <template slot="cell()" slot-scope="data">
+                    <template #cell()="data">
                         <div @click="setCurrentEditingCell(data)" :class="{ fine: data.item.fines[data.field.key.toString()].length > 0}">
                             <input @mouseover="$event.preventDefault()" class="cell-input" type="time" :value="data.value" :readonly="true" ondblclick="this.readOnly='';" @change="changeTimeInCell" v-on:keyup.enter="openModal">
 
@@ -84,6 +86,9 @@ export default {
             var container = document.querySelector(".table-responsive");
             container.scrollLeft = value;
         },
+        groups(){
+            this.init()
+        }
     },
     data() {
         return {
@@ -116,27 +121,32 @@ export default {
         };
     },
     created() {
-        this.dateInfo.currentMonth = this.dateInfo.currentMonth ?
-            this.dateInfo.currentMonth :
-            this.$moment().format("MMMM");
-        let currentMonth = this.$moment(this.dateInfo.currentMonth, "MMMM");
-
-        //Расчет выходных дней
-        this.dateInfo.monthEnd = currentMonth.endOf("month"); //Конец месяца
-        this.dateInfo.weekDays = currentMonth.weekdayCalc(this.dateInfo.monthEnd, [
-            6,
-        ]); //Колличество выходных
-        this.dateInfo.daysInMonth = currentMonth.daysInMonth(); //Колличество дней в месяце
-        this.dateInfo.workDays = this.dateInfo.daysInMonth - this.dateInfo.weekDays; //Колличество рабочих дней
-
-        //Текущая группа
-        this.currentGroup = this.currentGroup ?
-            this.currentGroup :
-            this.groups[0]["id"];
-
-        this.fetchData();
+        if(this.groups){
+            this.init()
+        }
     },
     methods: {
+        init(){
+            this.dateInfo.currentMonth = this.dateInfo.currentMonth ?
+                this.dateInfo.currentMonth :
+                this.$moment().format("MMMM");
+            let currentMonth = this.$moment(this.dateInfo.currentMonth, "MMMM");
+
+            //Расчет выходных дней
+            this.dateInfo.monthEnd = currentMonth.endOf("month"); //Конец месяца
+            this.dateInfo.weekDays = currentMonth.weekdayCalc(this.dateInfo.monthEnd, [
+                6,
+            ]); //Колличество выходных
+            this.dateInfo.daysInMonth = currentMonth.daysInMonth(); //Колличество дней в месяце
+            this.dateInfo.workDays = this.dateInfo.daysInMonth - this.dateInfo.weekDays; //Колличество рабочих дней
+
+            //Текущая группа
+            this.currentGroup = this.currentGroup ?
+                this.currentGroup :
+                this.groups[0]["id"];
+
+            this.fetchData();
+        },
         //Установка выбранного года
         setYear() {
             this.dateInfo.currentYear = this.dateInfo.currentYear ?

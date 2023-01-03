@@ -1,0 +1,303 @@
+<script>
+import DefaultLayout from '@/layouts/DefaultLayout'
+import { useAsyncPageData } from '@/composables/asyncPageData'
+const Userlist = () => import(/* webpackChunkName: "UserlistPage" */ '@/pages/userlist.vue')
+const Professions = () => import(/* webpackChunkName: "ProfessionsPage" */ '@/pages/professions.vue')
+const Groups = () => import(/* webpackChunkName: "GroupsPage" */ '@/pages/groups.vue')
+const Fines = () => import(/* webpackChunkName: "FinesPage" */ '@/pages/Fines.vue')
+const Notifications = () => import(/* webpackChunkName: "NotificationsPage" */ '@/pages/Notifications.vue')
+const Permissions = () => import(/* webpackChunkName: "PermissionsPage" */ '@/pages/Permissions.vue')
+const CheckList = () => import(/* webpackChunkName: "checkListPage" */ '@/pages/checkList.vue')
+const Awards = () => import(/* webpackChunkName: "AwardsSettingsPage" */ '@/pages/Awards/Awards.vue')
+
+export default {
+    name: 'SettingsView',
+    components: {
+        DefaultLayout,
+        Userlist,
+        Professions,
+        Groups,
+        Fines,
+        Notifications,
+        Permissions,
+        CheckList,
+        Awards,
+    },
+    data(){
+        return {
+            tabs: [
+                {
+                    id: '1',
+                    htmlId: 'nav-person',
+                    path: '/timetracking/settings?tab=1#nav-person',
+                    title: 'Сотрудники',
+                    access: ['users_view', 'settings_view']
+                },
+                {
+                    id: '2',
+                    htmlId: 'nav-home',
+                    path: '/timetracking/settings?tab=2#nav-home',
+                    title: 'Должности',
+                    access: ['positions_view', 'settings_view']
+                },
+                {
+                    id: '3',
+                    htmlId: 'nav-profile',
+                    path: '/timetracking/settings?tab=3#nav-profile',
+                    title: 'Отделы',
+                    access: ['groups_view', 'settings_view']
+                },
+                {
+                    id: '4',
+                    htmlId: 'nav-fines',
+                    path: '/timetracking/settings?tab=4#nav-fines',
+                    title: 'Штрафы',
+                    access: ['fines_view', 'settings_view']
+                },
+                {
+                    id: '5',
+                    htmlId: 'nav-notifications',
+                    path: '/timetracking/settings?tab=5',
+                    title: 'Уведомления',
+                    access: ['notifications_view', 'settings_view']
+                },
+                {
+                    id: '6',
+                    htmlId: 'nav-permissions',
+                    path: '/timetracking/settings?tab=6#nav-permissions',
+                    title: 'Доступы',
+                    access: ['permissions_view', 'settings_view']
+                },
+                {
+                    id: '7',
+                    htmlId: 'nav-checkList',
+                    path: '/timetracking/settings?tab=7#nav-checkList',
+                    title: 'Чек-листы',
+                    access: ['checklists_view', 'settings_view']
+                },
+                {
+                    id: '8',
+                    htmlId: 'nav-integrations',
+                    path: '/timetracking/settings?tab=8#nav-integrations',
+                    title: 'Интеграции',
+                    access: 'is_admin'
+                },
+                {
+                    id: '9',
+                    htmlId: 'nav-awards',
+                    path: '/timetracking/settings?tab=9#nav-awards',
+                    title: 'Награды',
+                    access: 'is_admin'
+                },
+            ],
+            pageData: {}
+        }
+    },
+    computed: {
+        activeTab(){
+            return this.$route.query.tab || '1'
+        },
+        activeTabItem(){
+            return this.tabs.find(item => item.id === this.activeTab)
+        }
+    },
+    watch: {
+        activeTab(value){
+            this.updatePageData()
+        }
+    },
+    mounted(){
+        this.updatePageData()
+    },
+    methods:{
+        can(access){
+            if(access === 'is_admin') return this.$laravel.is_admin
+            if(typeof access === 'string') return this.$can(access)
+            return access.some(item => this.$can(item))
+        },
+        updatePageData(){
+            this.pageData = {}
+            useAsyncPageData(`/timetracking/settings?tab=${this.activeTab}#${this.activeTabItem.htmlId}`).then(data => {
+                this.pageData = data
+            }).catch(error => {
+                console.error('useAsyncPageData', error)
+            })
+        }
+    },
+}
+</script>
+
+<template>
+    <DefaultLayout>
+        <div class="old__content">
+            <div class="">
+                <div class="">
+                    <div class="c">
+                        <div id="app">
+                            <div class="default-tab">
+                                <nav class="normal mt-4">
+                                    <ul
+                                        id="nav-tab"
+                                        class="nav nav-tabs set-tabs"
+                                        role="tablist"
+                                    >
+                                        <template v-for="tab in tabs">
+                                            <li
+                                                :key="tab.htmlId"
+                                                :id="`${tab.htmlId}-tab`"
+                                                class="nav-item"
+                                            >
+                                                <router-link
+                                                    :to="tab.path"
+                                                    :aria-controls="tab.htmlId"
+                                                    :aria-selected="tab.id === activeTab ? 'true' : 'false'"
+                                                    class="nav-link"
+                                                    :class="{active: tab.id === activeTab}"
+                                                >{{ tab.title }}</router-link>
+                                            </li>
+                                        </template>
+                                    </ul>
+                                </nav>
+                                <div
+                                    id="nav-tabContent"
+                                    class="tab-content"
+                                >
+                                    <div
+                                        v-if="activeTab === '1' && can(['users_view', 'settings_view'])"
+                                        id="nav-person"
+                                        class="tab-pane fade show active py-3"
+                                        role="tabpanel"
+                                        aria-labelledby="nav-person-tab"
+                                    >
+                                        <Userlist
+                                            v-show="pageData.subdomain"
+                                            :is_admin="$laravel.is_admin"
+                                            :subdomain="pageData.subdomain"
+                                            :positions="pageData.positions"
+                                        />
+                                    </div>
+                                    <div
+                                        v-if="activeTab === '2' && can(['positions_view', 'settings_view'])"
+                                        class="tab-pane fade show active py-3"
+                                        id="nav-home"
+                                        role="tabpanel"
+                                        aria-labelledby="nav-home-tab"
+                                    >
+                                        <Professions
+                                            :positions="pageData.positions"
+                                        />
+                                    </div>
+                                    <div
+                                        v-if="activeTab === '3' && can(['groups_view', 'settings_view'])"
+                                        id="nav-profile"
+                                        class="tab-pane fade show active py-3"
+                                        role="tabpanel"
+                                        aria-labelledby="nav-profile-tab"
+                                    >
+                                        <Groups
+                                            :statuseses="pageData.statuseses"
+                                            :archived_groupss="pageData.archived_groupss"
+                                            :book_groups="pageData.book_groups"
+                                            :corpbooks="pageData.corpbooks"
+                                            :activeuserid="pageData.activeuserid"
+                                        />
+                                    </div>
+                                    <div
+                                        v-if="activeTab === '4' && can(['fines_view', 'settings_view'])"
+                                        id="nav-fines"
+                                        class="tab-pane fade show active py-3"
+                                        role="tabpanel"
+                                        aria-labelledby="nav-fines-tab"
+                                    >
+                                        <Fines/>
+                                    </div>
+                                    <div
+                                        v-if="activeTab === '5' && can(['notification_view', 'settings_view'])"
+                                        class="tab-pane fade show active py-3"
+                                        id="nav-notifications"
+                                        role="tabpanel"
+                                        aria-labelledby="nav-notifications-tab"
+                                    >
+                                        <Notifications
+                                            :groups_with_id="pageData.groups_with_id"
+                                            :users="pageData.users"
+                                            :positions="pageData.positions"
+                                        />
+                                    </div>
+                                    <div
+                                        v-if="activeTab === '6' && can(['permissions_view', 'settings_view'])"
+                                        class="tab-pane fade show active py-3"
+                                        id="nav-bookgroups"
+                                        role="tabpanel"
+                                        aria-labelledby="nav-bookgroups-tab"
+                                    >
+                                        <Permissions/>
+                                    </div>
+                                    <div
+                                        v-if="activeTab === '7' && can(['checklists_view', 'settings_view'])"
+                                        class="tab-pane fade show active py-3"
+                                        id="checkList"
+                                        role="tabpanel"
+                                        aria-labelledby="nav-checkList-tab"
+                                    >
+                                        <CheckList/>
+                                    </div>
+                                    <div
+                                        v-if="activeTab === '8' && can('is_admin')"
+                                        class="tab-pane fade show active py-3"
+                                        id="integrations"
+                                        role="tabpanel"
+                                        aria-labelledby="nav-integrations-tab"
+                                    >
+                                        <div class="d-flex">
+                                            <div class="d-flex jcc aic mr-2 flex-column integrations-item">
+                                                Bitrix24 <span class="integrations-status">Не настроен</span>
+                                            </div>
+                                            <div class="d-flex jcc aic mr-2 flex-column integrations-item">
+                                                AmoCRM <span class="integrations-status">Не подключен</span>
+                                            </div>
+                                            <div class="d-flex jcc aic mr-2 flex-column integrations-item">
+                                                Callibro <span class="integrations-status">Не настроен</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div
+                                        v-if="activeTab === '9' && can('is_admin')"
+                                        class="tab-pane fade show active py-3"
+                                        id="awards"
+                                        role="tabpanel"
+                                        aria-labelledby="nav-awards-tab"
+                                    >
+                                        <Awards/>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </DefaultLayout>
+</template>
+
+<style scoped>
+.integrations-item{
+    width: 150px;
+    height: 120px;
+    padding: 7.5px 10px;
+    background: #f8fcfe;
+    border: 1px solid #daecf5;
+}
+.integrations-status{
+    color: red;
+    font-size: 8px;
+}
+.header__profile {
+    display:none !important;
+}
+@media (min-width: 1360px) {
+    .container.container-left-padding {
+        padding-left: 9rem !important;
+    }
+}
+</style>

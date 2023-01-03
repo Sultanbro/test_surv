@@ -1,8 +1,9 @@
 <template>
-  <div class="mt-2 px-3 quality quality-page">
-
+  <div
+    v-if="groups"
+    class="mt-2 px-3 quality quality-page"
+  >
     <div class="row">
-
       <div class="col-3" v-if="individual_request">
         <select class="form-control" v-model="currentGroup" @change="fetchData('selected_group')">
           <option v-for="group in groups" :value="group.id" :key="group.id" >
@@ -499,7 +500,6 @@
                                      <template v-for="(checked_day,index) in check_r.day">
                                        <template v-if="index == field.name">
                                          <div v-on:click="showSidebar(check_r.user_id, index)">{{checked_day}}</div>
-
                                        </template>
                                      </template>
 
@@ -729,11 +729,14 @@ export default {
     },
     active_group: String,
     check: String,
-    user: String
+    user: {
+      type: Object,
+      default: {}
+    }
   },
   data() {
     return {
-      auth_user: JSON.parse(this.user),
+      auth_user: this.user,
       showChecklist: false,
       checklists:{},
       fields: [],
@@ -826,13 +829,20 @@ export default {
       checklist_tab: false,
     };
   },
-
+  watch: {
+    groups(){
+      this.init()
+    }
+  },
   created() {
-    this.fetchData();
-
-
+    if(this.groups){
+      this.init()
+    }
   },
   methods: {
+    init(){
+      this.fetchData();
+    },
     saveChecklist(){
       axios.post("/checklist/save-checklist",{
         checklists: this.checklists

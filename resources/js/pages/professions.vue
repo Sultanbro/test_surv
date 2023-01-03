@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div v-if="positions">
       <b-row class="align-items-center">
           <b-col cols="12" lg="4">
              <b-form-group label="Должность">
@@ -121,6 +121,11 @@ export default {
       }
     }
   },
+  watch:{
+    positions(value){
+        this.data = value
+    }
+  },
   mounted() {
     // this.getPositions()
   },
@@ -131,6 +136,15 @@ export default {
           name: this.activebtn,
         }).then(response => {
           //this.$toast.info('Добавлена');
+<<<<<<< HEAD
+          console.log(response.data)
+          this.new_name = response.data.position;
+          this.position_id = response.data.id;
+          this.indexation = response.data.indexation;
+          this.sum = response.data.sum;
+          this.desc = response.data.desc;
+
+=======
           const data = response.data?.data
           if(!data[0]) return console.error(response)
           this.new_name = data[0].position;
@@ -146,6 +160,7 @@ export default {
             next_step: data[0].next_step,
             show: data[0].show,
           }
+>>>>>>> main
         }).catch(error => {
           console.log(error.response)
         })

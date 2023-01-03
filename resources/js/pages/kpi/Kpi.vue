@@ -3,7 +3,7 @@
 
     <!-- top line -->
     <div class="d-flex my-4 jcsb aifs">
-        
+
          <div class="d-flex aic mr-2">
             <div class="d-flex aic mr-2">
                 <span>Показывать:</span>
@@ -13,14 +13,14 @@
                 ref="child"
                 :groups="groups"
             />
-            <!--<input 
+            <!--<input
                 class="searcher mr-2 input-sm"
                 v-model="searchText"
                 type="text"
                 placeholder="Поиск по совпадениям..."
                 @keyup="onSearch"
             >-->
-            <span class="ml-2"> 
+            <span class="ml-2">
                 Найдено: {{ items.length }}
             </span>
         </div>
@@ -30,7 +30,7 @@
             <span>Добавить</span>
         </button>
     </div>
-    
+
     <!-- table -->
     <table class="j-table">
         <thead>
@@ -52,9 +52,13 @@
 
         <tbody>
 
-            <template v-for="(item, i) in page_items" v-if="(item.target && item.target.name.includes(searchText)) || searchText.length == 0">
+            <!-- v-if && v-for in one element !!! -->
+            <template
+                v-for="(item, i) in page_items"
+                v-if="(item.target && item.target.name.includes(searchText)) || searchText.length == 0"
+            >
                 <!-- <tr v-if="item.target.name.includes(searchText) || searchText.length == 0 || (item.creator && (item.creator.last_name + ' ' + item.creator.name).includes(searchText)) || (item.updater && (item.updater.last_name + ' ' + item.updater.name).includes(searchText)) || (item.items.filter( i => { return i.name.includes(searchText)  } ).length > 0)"></tr> -->
-                <tr :key="i" >
+                <tr :key="i">
                     <td  @click="expand(i)" class="pointer">
                         <div class="d-flex align-items-center px-2">
                             <span class="mr-2">{{ i + 1 }}</span>
@@ -62,28 +66,28 @@
                             <i class="fa fa-plus mt-1" v-else></i>
                         </div>
                     </td>
-                    <td  v-for="(field, f) in fields" :key="f" :class="field.class"> 
+                    <td  v-for="(field, f) in fields" :key="f" :class="field.class">
 
                         <div v-if="field.key == 'target'" >
                             <superselect
                                 v-if="item.target == null || item.id == 0"
-                                class="w-full" 
-                                :values="item.target == null ? [] : [item.target]" 
+                                class="w-full"
+                                :values="item.target == null ? [] : [item.target]"
                                 :single="true"
                                 @choose="(target) => item.target = target"
                                 @remove="() => item.target = null"
-                                :key="i" /> 
+                                :key="i" />
                             <div v-else class="d-flex aic">
-                                <i class="fa fa-user ml-2" v-if="item.target.type == 1"></i> 
-                                <i class="fa fa-users ml-2" v-if="item.target.type == 2"></i> 
-                                <i class="fa fa-briefcase ml-2" v-if="item.target.type == 3"></i> 
+                                <i class="fa fa-user ml-2" v-if="item.target.type == 1"></i>
+                                <i class="fa fa-users ml-2" v-if="item.target.type == 2"></i>
+                                <i class="fa fa-briefcase ml-2" v-if="item.target.type == 3"></i>
                                 <span class="ml-2">{{ item.target.name }}</span>
 
                             </div>
                         </div>
 
                         <div v-else-if="field.key == 'stats'" :class="field.class">
-                            
+
                             <a v-bind:href="'/kpi?target='+ (item.target ? item.target.name : '')" target="_blank" class="btn btn-primary btn-icon">
                                 <i class="fa fa-chart-bar"></i>
                             </a>
@@ -102,7 +106,7 @@
                         </div>
 
                         <div v-else :class="field.class">
-                            <input type="text" v-model="item[field.key]" @change="validate(item[field.key], field.key)" />
+                            <input type="text" class="form-control" v-model="item[field.key]" @change="validate(item[field.key], field.key)" />
                         </div>
 
                     </td>
@@ -120,7 +124,7 @@
                             <div class="table__wrapper w-100">
                                 <kpi-items
                                     :kpi_id="item.id"
-                                    :items="item.items" 
+                                    :items="item.items"
                                     :expanded="item.expanded"
                                     :activities="activities"
                                     :groups="groups"
@@ -133,12 +137,12 @@
                                 />
                             </div>
                         </td>
-                    </tr>                
+                    </tr>
                 </template>
-              
+
             </template>
 
-          
+
         </tbody>
      </table>
 
@@ -159,13 +163,13 @@
 
 
     <!-- modal Adjust Visible fields -->
-    <b-modal 
+    <b-modal
         v-model="modalAdjustVisibleFields"
         title="Настройка списка «KPI»"
         @ok="modalAdjustVisibleFields = !modalAdjustVisibleFields"
         ok-text="Закрыть"
         size="lg">
-     
+
       <div class="row">
 
          <div class="col-md-4 mb-4" v-for="(field, f) in all_fields">
@@ -178,7 +182,7 @@
             </b-form-checkbox>
         </div>
 
-      </div>  
+      </div>
     </b-modal>
 
 </div>
@@ -189,9 +193,9 @@ import {kpi_fields, newKpi} from "./kpis.js";
 import {findModel, groupBy} from "./helpers.js";
 
 export default {
-    name: "KPI", 
+    name: "KPI",
     props: {
-        
+
     },
     watch: {
         show_fields: {
@@ -207,7 +211,7 @@ export default {
                     val = 1;
                     return;
                 }
-                
+
                 if(val > 100) {
                     val = 100;
                     return;
@@ -240,14 +244,14 @@ export default {
                 'updated_by',
             ]
         }
-    }, 
+    },
 
     created() {
         this.fetchKPI()
-    
+
         this.setDefaultShowFields()
-        this.prepareFields(); 
-        this.addStatusToItems(); 
+        this.prepareFields();
+        this.addStatusToItems();
     },
     mounted() {
         this.$watch(
@@ -271,9 +275,9 @@ export default {
             let loader = this.$loading.show();
 
             axios.post(this.uri + '/' + 'get', {
-                filters: filter 
+                filters: filter
             }).then(response => {
-                
+
                 this.items = response.data.kpis;
                 this.all_items = response.data.kpis;
                 this.activities = response.data.activities;
@@ -290,7 +294,7 @@ export default {
 
         setDefaultShowFields() {
             let obj = {}; // Какие поля показывать
-            kpi_fields.forEach(field => obj[field.key] = true); 
+            kpi_fields.forEach(field => obj[field.key] = true);
 
             if(localStorage.kpi_show_fields) {
                 this.show_fields = JSON.parse(localStorage.getItem('kpi_show_fields'));
@@ -313,14 +317,14 @@ export default {
                 });
 
                 el.on_edit = false
-            
+
             });
         },
 
         prepareFields() {
             let visible_fields = [],
                 show_fields = this.show_fields;
-            
+
             kpi_fields.forEach((field, i) => {
                 if(this.show_fields[field.key] != undefined
                     && this.show_fields[field.key]
@@ -333,7 +337,7 @@ export default {
         },
 
         addKpi() {
-            this.items.unshift(newKpi()); 
+            this.items.unshift(newKpi());
             //this.page_items.unshift(newKpi());
            // this.page_items = this.items.slice(0, this.pageSize);
             this.$toast.info('Добавлен KPI');
@@ -343,7 +347,7 @@ export default {
             let msg = '';
 
             if(item.target == null)    msg = 'Выберите Кому назначить'
-            
+
             let share = 0;
 
             if(item.items != undefined) {
@@ -351,22 +355,22 @@ export default {
                 item.items.every((el, i) => {
 
                     if(!(el.deleted !== undefined && el.deleted)) share += Math.abs(el.share);
- 
-                     
+
+
                     if(el.name.length <= 1) {
                         msg = 'Заполните название активности #' + (i+1);
                         return false;
                     }
 
                     if(
-                        (el.activity_id == 0 || el.activity_id == undefined) 
+                        (el.activity_id == 0 || el.activity_id == undefined)
                         && el.source != 0
-                    ) { 
+                    ) {
                         msg = 'Выберите показатель #' + (i+1);
                         return false;
                     }
 
-                   
+
                     // if(Number(el.plan) <= 0) {
                     //     msg = 'План должен быть больше 0 #' + (i+1);
                     //     return false;
@@ -376,7 +380,7 @@ export default {
                     return true;
                 });
             }
-            
+
             return msg;
         },
 
@@ -394,26 +398,26 @@ export default {
                 return;
             }
 
-            
+
             let loader = this.$loading.show();
 
             let fields = {
                 id: item.id,
-                targetable_id: item.target.id, 
+                targetable_id: item.target.id,
                 targetable_type: findModel(item.target.type),
                 completed_80: item.completed_80,
                 completed_100: item.completed_100,
                 upper_limit: item.upper_limit,
                 lower_limit: item.lower_limit,
-                items: item.items 
+                items: item.items
             };
- 
-            let req = this.items[i].id == 0 
+
+            let req = this.items[i].id == 0
                 ? axios.post(this.uri + '/' + method, fields)
                 : axios.put(this.uri + '/' + method, fields);
 
             req.then(response => {
-                
+
                 item.id = response.data.id;
                 item.items.forEach((el, index) => {
                     el.id = response.data.items[index]
@@ -428,13 +432,13 @@ export default {
                 if(error.message == 'Request failed with status code 409') {
                     m = 'Выберите другую цель "Кому". Этому объекту уже назначен KPI';
                 }
-                
+
                 loader.hide()
                 alert(m)
             });
 
 
-        },  
+        },
 
         removeDeletedItems(items) {
             let indexes = [];
@@ -444,7 +448,7 @@ export default {
                     indexes.push(index)
                 }
             });
-   
+
             indexes.forEach(index => {
                 items.splice(index-counter, 1);
                 counter++;
@@ -453,7 +457,7 @@ export default {
         },
 
         deleteKpi(i) {
-         
+
             let item = this.items[i]
             let a = this.all_items.findIndex(el => el.id == item.id);
 
@@ -471,7 +475,7 @@ export default {
             let loader = this.$loading.show();
             axios.delete(this.uri + '/delete/' + item.id).then(response => {
 
-             
+
                 if(a != -1) this.all_items.splice(a, 1);
                 this.onSearch();
 
@@ -487,9 +491,9 @@ export default {
             this.$toast.info('Показать статистику');
         },
 
-        onSearch() { 
+        onSearch() {
             let text = this.searchText;
-     
+
             if(this.searchText == '') {
                this.items = this.all_items;
             } else {
@@ -529,8 +533,8 @@ export default {
                         has = true;
                     }
 
-                    return has; 
-                }); 
+                    return has;
+                });
             }
 
             this.page_items = this.items.slice(0, this.pageSize);
@@ -547,6 +551,6 @@ export default {
             }
         }
     },
- 
+
 }
 </script>

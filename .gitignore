@@ -1,4 +1,7 @@
 /node_modules
+/public
+/public/js/admino
+/public/hot
 /public/.htaccess
 /public/files/import
 /public/storage

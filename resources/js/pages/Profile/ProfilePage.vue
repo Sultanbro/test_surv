@@ -6,15 +6,40 @@
             :profit="intro['profit']"
             :estimation="intro['estimation']"
             :indicators="intro['indicators']"
+            :class="{ _active: anim.intro }"
         />
-        <new-intro-stats @pop="pop"/>
+        <new-intro-stats
+            @pop="pop"
+            ref="intro"
+            :class="{ _active: anim.intro }"
+        />
         <!-- <new-intro-smart-table></new-intro-smart-table> -->
     </div>
-    <MobileProfileSidebar v-show="isProfileVisible"/>
-    <new-courses @init="intro['courses'] = true"/>
-    <new-profit @init="intro['profit'] = true"/>
-    <new-trainee-estimation @init="intro['estimation'] = true"/>
-    <new-compare-indicators @init="intro['indicators'] = true"/>
+    <MobileProfileSidebar
+        v-show="isProfileVisible"
+        ref="profileSidebar"
+        :class="{ _active: anim.profileSidebar }"
+    />
+    <new-courses
+        @init="intro['courses'] = true"
+        ref="courses"
+        :class="{ _active: anim.courses }"
+    />
+    <new-profit
+        @init="intro['profit'] = true"
+        ref="profit"
+        :class="{ _active: anim.profit }"
+    />
+    <new-trainee-estimation
+        @init="intro['estimation'] = true"
+        ref="estimation"
+        :class="{ _active: anim.estimation }"
+    />
+    <new-compare-indicators
+        @init="intro['indicators'] = true"
+        ref="indicators"
+        :class="{ _active: anim.indicators }"
+    />
 
     <popup v-if="popBalance"
         title="Баланс оклада"
@@ -64,7 +89,22 @@
 </template>
 
 <script>
+import Vue from 'vue'
 import MobileProfileSidebar from '../Layouts/MobileProfileSidebar.vue'
+
+Vue.component('new-intro-stats', require('@/pages/Profile/IntroStats.vue').default);
+Vue.component('new-intro-smart-table', require('@/pages/Profile/IntroSmartTable.vue').default);
+Vue.component('new-intro-top', require('@/pages/Profile/IntroTop.vue').default);
+Vue.component('new-profit', require('@/pages/Profile/Profit.vue').default);
+Vue.component('new-courses', require('@/pages/Profile/Courses.vue').default);
+Vue.component('new-trainee-estimation', require('@/pages/Profile/TraineeEstimation.vue').default);
+Vue.component('new-compare-indicators', require('@/pages/Profile/CompareIndicators.vue').default);
+
+Vue.component('popup-quartal', require('@/pages/Profile/Popups/PopupQuartal.vue').default);
+Vue.component('popup-kpi', require('@/pages/Profile/Popups/Kpi.vue').default);
+Vue.component('popup-balance', require('@/pages/Profile/Popups/Balance.vue').default);
+Vue.component('popup-bonuses', require('@/pages/Profile/Popups/Bonuses.vue').default);
+Vue.component('popup-nominations', require('@/pages/Profile/Popups/Nominations.vue').default);
 
 export default {
     name: 'ProfilePage',
@@ -86,7 +126,16 @@ export default {
                 profit: false,
                 estimation: false,
                 indicators: false,
-            }
+            },
+            anim: {
+                intro: false,
+                profileSidebar: false,
+                courses: false,
+                profit: false,
+                estimation: false,
+                indicators: false
+            },
+            intersectionObserver: null
         };
     },
     computed: {
@@ -100,9 +149,11 @@ export default {
            return this.$viewportSize.width < 1360
         }
     },
+    mounted(){
+        this.initAnimOnScroll()
+    },
     methods: {
         pop(window) {
-            console.log(window)
             if(window == 'balance') this.popBalance = true;
             if(window == 'kpi') this.popKpi = true;
             if(window == 'bonus') this.popBonuses = true;
@@ -111,6 +162,36 @@ export default {
         },
         getDesc(text){
             this.desc = text;
+        },
+        initAnimOnScroll(){
+            const w = this.$viewportSize.width
+            if(w > 900){
+                this.intersectionObserver = new IntersectionObserver(this.animOnScroll, {
+                    threshold: 0.1
+                })
+                this.intersectionObserver.observe(this.$refs.intro.$el)
+                this.intersectionObserver.observe(this.$refs.profileSidebar.$el)
+                this.intersectionObserver.observe(this.$refs.courses.$el)
+                this.intersectionObserver.observe(this.$refs.profit.$el)
+                this.intersectionObserver.observe(this.$refs.estimation.$el)
+                this.intersectionObserver.observe(this.$refs.indicators.$el)
+                console.warn('this.$refs.intro.$el', this.$refs.intro, this.$refs.intro.$el)
+                return
+            }
+            Object.keys(this.anim).forEach(key => {
+                this.anim[key] = true
+            })
+        },
+        animOnScroll(entries){
+            entries.forEach(entry => {
+                if(entry.isIntersecting){
+                    Object.keys(this.anim).forEach(key => {
+                        if(this.$refs[key].$el === entry.target){
+                            this.anim[key] = true
+                        }
+                    })
+                }
+            })
         }
     }
 };

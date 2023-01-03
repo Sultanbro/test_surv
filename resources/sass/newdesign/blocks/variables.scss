@@ -95,8 +95,7 @@ a:hover {
 }
 
 .block{
-  opacity:0;
-  visibility: hidden;
+  opacity:0.01;
   transform:translateY(20px);
   transition:1.5s;
 

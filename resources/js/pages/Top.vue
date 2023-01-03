@@ -1,6 +1,5 @@
 <template>
-  <div>
-
+  <div v-if="data">
     <div class="row mr-4">
       <div class="col-3">
         <select class="form-control" v-model="monthInfo.currentMonth" @change="fetchData">
@@ -230,8 +229,6 @@
 
     <div class="empty-space"></div>
   </div>
-
-
 </template>
 
 <script>
@@ -286,16 +283,24 @@ export default {
       ukey: 1
     }
   },
+  watch: {
+    data(){
+      this.init()
+    }
+  },
   created() {
-    this.utility = this.data.utility;
-    this.proceeds = this.data.proceeds;
-    this.prognoz_groups = this.data.prognoz_groups
-    this.setMonth()
-    this.fetchData()
-
-    console.log(this.proceeds);
+    if(this.data){
+      this.init()
+    }
   },
   methods: {
+    init(){
+      this.utility = this.data.utility;
+      this.proceeds = this.data.proceeds;
+      this.prognoz_groups = this.data.prognoz_groups
+      this.setMonth()
+      this.fetchData()
+    },
     showIcons(){
       this.rentability = this.data.rentability;
     },
