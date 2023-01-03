@@ -420,7 +420,7 @@ export default {
 </script>
 
 <template>
-    <DefaultLayout>
+    <DefaultLayout class="no-profile">
         <div class="old__content">
             <div class="user-page">
                 <div class="mt-3">

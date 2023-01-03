@@ -29,7 +29,7 @@ export default {
 </script>
 
 <template>
-    <DefaultLayout>
+    <DefaultLayout class="no-profile">
         <link rel="stylesheet" href="/css/news.css"/>
         <div class="news-page">
             <NewsPages
