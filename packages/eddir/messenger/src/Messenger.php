@@ -154,7 +154,7 @@ class Messenger {
                    ->orWhere( 'last_name', 'like', "%$name%" )
                    ->limit( $limit )
                    ->get()->map(function($item) { 
-                    $item->image = 'https://bp.jobtron.org/users_img/' . $item->img_url;   
+                    $item->image = 'https://'.\request()->getHost().'/users_img/' . $item->img_url;   
                     return $item;
                });
     }
@@ -898,10 +898,9 @@ class Messenger {
      * @return string
      * @throws GuzzleException
      */
-    public function pusherAuth( string $channel_name, string $socket_id, string $data = null, int $user_id = null ): string {
+    public function pusherAuth( string $channel_name, string $socket_id, string $data = null, int $user_id = null, string $domain = null ): string {
         try {
             $response = $this->pusher->socketAuth( $channel_name, $socket_id, $data );
-
             if ( $user_id ) {
                 // create MessengerUserOnline if not exists or update last_seen
                 // this is used to show online status
@@ -913,6 +912,7 @@ class Messenger {
                     MessengerUserOnline::create( [
                         'user_id'   => $user_id,
                         'socket_id' => $socket_id,
+                        'domain' => $domain,
                     ] );
                 }
 
