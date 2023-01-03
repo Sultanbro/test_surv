@@ -223,6 +223,9 @@ export default {
         }
     },
     mounted(){
+        if(!this.isRoot && !this.isProfile){
+            this.hide = true
+        }
         const scrollObserver = new IntersectionObserver(() => {
             this.inViewport = true
         })
