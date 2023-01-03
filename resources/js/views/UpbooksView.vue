@@ -27,7 +27,7 @@ export default {
 </script>
 
 <template>
-    <DefaultLayout>
+    <DefaultLayout class="no-padding">
         <div class="old__content">
             <Upbooks
                 v-show="token"
