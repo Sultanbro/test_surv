@@ -605,7 +605,8 @@ export default {
             this.modalVisibleFines = true
         },
 
-        openModal(hour) {
+        openModal(event) {
+            const hour = event.target.value
             let clearedValue = hour.replace(',', '.')
             let value = parseFloat(clearedValue) * 60
             this.currentMinutes = value
