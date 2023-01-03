@@ -220,9 +220,8 @@ export default {
                     loader.hide();
                 });
         },
-        changeTimeInCell(time) {
-            console.log("changeTimeInCell");
-            this.currentTime = time;
+        changeTimeInCell({target}) {
+            this.currentTime = target.value;
         },
         setCurrentEditingCell(data) {
             this.currentTime = null;
