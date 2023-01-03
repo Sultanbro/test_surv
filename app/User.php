@@ -29,6 +29,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Http\Request;
 use Illuminate\Notifications\Notifiable;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Spatie\Permission\Traits\HasRoles;
@@ -50,6 +51,10 @@ class User extends Authenticatable implements Authorizable
     public $timestamps = true;
 
     protected $primaryKey = 'id';
+
+    protected $hidden = [
+        'password'
+    ];
 
     protected $fillable = [
         'name',
@@ -102,6 +107,17 @@ class User extends Authenticatable implements Authorizable
     public function cards(): HasMany
     {
         return $this->hasMany(Card::class, 'user_id');
+    }
+
+    public function cabinets(): Collection
+    {
+        $centralUser = CentralUser::with('cabinets')->where('email', $this->email)->first();
+
+        return $centralUser
+            ? $centralUser->cabinets->map(function ($user) {
+                return $user->only(['user_id', 'tenant_id', 'owner']);
+            })
+            : collect([]);
     }
 
     public function favouriteArticles(): BelongsToMany
@@ -178,14 +194,14 @@ class User extends Authenticatable implements Authorizable
      * Mutator's
      */
 
-    /**
-     * @param $value
-     * @return void
-     */
-    public function setPasswordAttribute($value): void
-    {
-        $this->attributes['password'] = bcrypt($value);
-    }
+    // /**
+    //  * @param $value
+    //  * @return void
+    //  */
+    // public function setPasswordAttribute($value): void
+    // {
+    //     $this->attributes['password'] = bcrypt($value);
+    // }
 
     /**
      * @param $value

@@ -6,38 +6,52 @@
 
         <!-- hover menu -->
         <div class="header__menu">
-            <div class="header__menu-project" v-scroll-lock="isCreatingProject">
+            <div
+                class="header__menu-project"
+                v-scroll-lock="isCreatingProject"
+            >
                 <img src="/images/dist/icon-settings.svg" alt="settings icon">
                 Проект: {{ project }}
                 <div class="header__submenu">
                     <a
-                        v-for="tenant in tenants"
-                        :href="tenant === project ? 'javascript:void(0)' : `/login/${tenant}`"
+                        v-for="cabinet in cabinets"
+                        :href="cabinet.tenant_id === project ? 'javascript:void(0)' : `/login/${cabinet.tenant_id}`"
                         class="header__submenu-item"
-                        :class="{'header__submenu-item_active': tenant === project}"
+                        :class="{'header__submenu-item_active': cabinet.tenant_id === project}"
                     >
-                        {{ tenant }}
+                        {{ cabinet.tenant_id }} <i v-if="cabinet.owner === 1" aria-hidden="true" class="fa fa-star"></i>
                     </a>
                     <div class="header__submenu-divider"/>
-                    <div v-if="isOwner" @click="onNewProject" class="header__submenu-item">
+                    <div
+                        v-if="isOwner"
+                        @click="onNewProject"
+                        class="header__submenu-item"
+                    >
                         Добавить проект
                     </div>
                 </div>
             </div>
             <div class="header__menu-title">
-                Пользователь <a class="header__menu-userid" href="#">#{{ $laravel.userId }}</a>
+                Пользователь <a
+                    class="header__menu-userid"
+                    href="javascript:void(0)"
+                >#{{ $laravel.userId }}</a>
                 <p class="header__menu-email">{{ $laravel.email }}</p>
             </div>
-            <a href="/cabinet" class="menu__item">
+            <router-link to="/cabinet" class="menu__item">
                 <img src="/images/dist/icon-settings.svg" alt="settings icon">
                 <span class="menu__item-title">Настройки</span>
-            </a>
-            <form action="/logout" method="POST"> 
+            </router-link>
+            <form action="/logout" method="POST">
                 <button class="menu__item w-full">
                     <img src="/images/dist/icon-exit.svg" alt="settings icon">
                     <span class="menu__item-title">Выход</span>
                 </button>
-                <input type="hidden" :value="$laravel.csrfToken" name="_token" />
+                <input
+                    type="hidden"
+                    :value="$laravel.csrfToken"
+                    name="_token"
+                />
             </form>
         </div>
     </div>
@@ -54,6 +68,7 @@
                 @calcsize="item.height = $event.offsetHeight"
                 :name="item.name"
                 :class="item.className"
+                :to="item.to"
                 :href="item.href"
                 :icon="item.icon"
                 :img="item.img"
@@ -68,6 +83,7 @@
                 :name="filteredItems.more[0].name"
                 :class="filteredItems.more[0].className"
                 :href="filteredItems.more[0].href"
+                :to="filteredItems.more[0].to"
                 :icon="filteredItems.more[0].icon"
                 :img="filteredItems.more[0].img"
                 :menu="filteredItems.more[0].menu"
@@ -86,7 +102,7 @@
         name="Настройка"
         class="last"
         icon="icon-nd-settings"
-        href="/timetracking/settings"
+        to="/timetracking/settings"
     />
 </div>
 </template>
@@ -105,16 +121,18 @@ export default {
         return {
             height: 300,
             fields: [],
-            avatar: this.$laravel.avatar,
+            avatar: Laravel.avatar,
             token: Laravel.csrfToken,
             isAdmin: this.$laravel.is_admin,
             project: window.location.hostname.split('.')[0],
-            tenants: Laravel.tenants,
+            cabinets: Laravel.cabinets,
             isCreatingProject: false,
+            resizeObserver: null,
         };
     },
     methods: {
         onResize(){
+            if(!this.$refs.nav) return
             this.height = this.$refs.nav.offsetHeight
         },
         onNewProject(){
@@ -142,6 +160,9 @@ export default {
                 this.$toast.error('Ошибка при создании кабинета')
                 console.error(error)
             })
+        },
+        updateAvatar(avatar){
+            this.avatar = avatar
         }
     },
     computed: {
@@ -173,27 +194,27 @@ export default {
             return [
                 {
                     name: 'Профиль',
-                    href: '/',
+                    to: '/',
                     icon: 'icon-nd-profile',
                     height: 0
                 },
                 {
                   name: 'Новости',
-                  href: '/news',
+                  to: '/news',
                   icon: 'icon-nd-news',
                   height: 0,
                   // hide: !this.$can('news_edit')
                 },
                 {
                     name: 'Структура',
-                    // href: '/struct',
+                    // to: '/struct',
                     icon: 'icon-nd-struct',
                     popover: 'Структура - Этот функционал в разработке',
                     height: 0
                 },
                 {
                     name: 'База знаний',
-                    href: '/kb',
+                    to: '/kb',
                     icon: 'icon-nd-kdb',
                     height: 0
                 },
@@ -205,101 +226,101 @@ export default {
                         {
                             name: 'Читать книги',
                             icon: 'icon-nd-books',
-                            href: '/admin/upbooks'
+                            to: '/admin/upbooks'
                         },
                         {
                             name: 'Смотреть видео',
                             icon: 'icon-nd-video',
-                            href: '/video_playlists'
+                            to: '/video_playlists'
                         },
                         {
                             name: 'Курсы',
                             icon: 'icon-nd-courses',
-                            href: '/courses'
+                            to: '/courses'
                         }
                     ]
                 },
                 {
                     hide: !this.showReports,
                     name: 'Отчеты',
-                    href: '/timetracking/reports',
+                    to: '/timetracking/reports',
                     icon: 'icon-nd-reports',
                     height: 0,
                     menu: [
                         {
                             name: 'ТОП',
                             icon: 'icon-nd-dashboard',
-                            href: '/timetracking/top',
+                            to: '/timetracking/top',
                             hide: !this.$can('top_view')
                         },
                         {
                             name: 'Табель',
                             icon: 'icon-nd-tabel',
-                            href: '/timetracking/reports',
+                            to: '/timetracking/reports',
                             hide: !this.$can('tabel_view')
                         },
                         {
                             name: 'Время прихода',
                             icon: 'icon-nd-enter-time',
-                            href: '/timetracking/reports/enter-report',
+                            to: '/timetracking/reports/enter-report',
                             hide: !this.$can('entertime_view')
                         },
                         {
                             name: 'HR',
                             icon: 'icon-nd-hr',
-                            href: '/timetracking/analytics',
-                            hide: ! (this.$can('hr_view') && window.location.host.split('.')[0] == 'bp')
+                            to: '/timetracking/analytics',
+                            hide: !(this.$can('hr_view') && window.location.host.split('.')[0] === 'bp')
                         },
                         {
                             name: 'Аналитика',
                             icon: 'icon-nd-analytics',
-                            href: '/timetracking/an',
+                            to: '/timetracking/an',
                             hide: !this.$can('analytics_view')
                         },
                         {
                             name: 'Начисления',
                             icon: 'icon-nd-salary',
-                            href: '/timetracking/salaries',
+                            to: '/timetracking/salaries',
                             hide: !this.$can('salaries_view')
                         },
                         {
                             name: 'Контроль качества',
                             icon: 'icon-nd-quality',
-                            href: '/timetracking/quality-control',
+                            to: '/timetracking/quality-control',
                             hide: !this.$can('quality_view')
                         },
                     ]
                 },
                 {
                     name: 'Карта',
-                    href: '/maps',
+                    to: '/maps',
                     icon: 'icon-nd-map',
                     height: 0
                 },
                 {
                     name: 'KPI',
-                    href: '/kpi',
+                    to: '/kpi',
                     icon: 'icon-nd-kpi',
                     height: 0,
                     hide: !this.$can('kpi_view')
                 },
                 {
                     name: 'KK',
-                    href: '/',
+                    to: '/',
                     icon: 'icon-nd-kk',
                     height: 0,
                     hide: true
                 },
                 {
                     name: 'Частые вопросы',
-                    href: '/timetracking/info',
+                    to: '/timetracking/info',
                     icon: 'icon-nd-questions',
                     height: 0,
                     hide: !this.$can('faq_view')
                 },
                 {
                     name: 'Депре мирование',
-                    href: '/timetracking/fines',
+                    to: '/timetracking/fines',
                     icon: 'icon-nd-deduction',
                     height: 0,
                     hide: !this.$can('penalties_view')
@@ -331,14 +352,18 @@ export default {
             })
         },
         isOwner(){
-            return this.tenants && this.tenants.includes(this.project)
+            return this.cabinets && this.cabinets.includes(this.project)
         }
     },
     mounted(){
         this.onResize()
-        new ResizeObserver(this.onResize).observe(this.$refs.nav)
+        this.resizeObserver = new ResizeObserver(this.onResize).observe(this.$refs.nav)
 
-        bus.$on('user-avatar-update', avatar => (this.avatar = avatar))
+        bus.$on('user-avatar-update', this.updateAvatar)
+    },
+    beforeUnmount(){
+        if(this.resizeObserver) this.resizeObserver.disconnect()
+        bus.$off('user-avatar-update', this.updateAvatar)
     }
 };
 </script>

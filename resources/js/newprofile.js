@@ -8,52 +8,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
 	// Custom JS
 
-        const animItems = document.querySelectorAll('._anim')
 
-        if (animItems.length > 0) {
-            window.addEventListener('scroll', animOnScroll)
-
-            function animOnScroll() {
-                for (let index = 0; index < animItems.length; index++) {
-                    const animItem = animItems[index]
-                    const animItemHeight = animItem.offsetHeight
-                    const animItemOffset = offset(animItem)
-                    const animStart = 5
-
-                    let animItemPoint = window.innerHeight - animItemHeight / animStart
-
-                    if (animItemHeight > window.innerHeight) {
-                        animItemPoint = window.innerHeight - window.innerHeight / animStart
-                    }
-
-                    if ((pageYOffset > animItemOffset - animItemPoint) && pageYOffset < (animItemOffset + animItemHeight)) {
-                        animItem.classList.add('_active');
-                        if(animItem.classList.contains('schedule')){
-                            animItem.dispatchEvent(new Event('change'));
-                            VJQuery('.schedule__table tbody td:first-child').addClass('anim')
-                        }
-                    } else {
-                        if (!animItem.classList.contains('_anim-no-hide'))
-                            animItem.classList.remove('_active')
-                    }
-                }
-            }
-
-            function offset(el) {
-                const rect = el.getBoundingClientRect(),
-                    scrollTop = window.pageYOffset || document.documentElement.scrollTop
-                return (rect.top + scrollTop)
-
-            }
-
-
-            if(window.innerWidth>900){
-                animOnScroll()
-            } else{
-                VJQuery('._anim').addClass('_active');
-            }
-
-        }
 
 
 
@@ -94,28 +49,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Smooth Scroll
 
-    VJQuery(".intro__button").on("click", function (event) {
-        event.preventDefault();
-        var id  = VJQuery(this).attr('href'),
-            top = VJQuery(id).offset().top;
-        VJQuery('body,html').animate({scrollTop: top-150}, 1000);
-    });
-
     // Header burger
-
-    VJQuery('.intro__top-burger, .burger-left').on('click', function(event){
-        event.preventDefault();
-        VJQuery('.burger-left').toggleClass('opened')
-        VJQuery('.header__left').toggleClass('closed')
-
-    })
-    VJQuery('.header__right-arrow, .header__arrow, .burger-right').on('click', function(event){
-        event.preventDefault();
-        VJQuery('.header__right').toggleClass('closed')
-        VJQuery('.burger-right').toggleClass('opened')
-        VJQuery('.header__arrow').toggleClass('show')
-
-    })
 
 
 
@@ -136,70 +70,70 @@ document.addEventListener('DOMContentLoaded', () => {
     VJQuery('.popup').fadeOut(0);
 
     // Project popup
-    VJQuery('.header__nav-link a[href$="award"], .stat__item[data-item$="award"]').on('click', function(e){
-        e.preventDefault();
-        openPopup(popupAward, modalOverlay);
-    })
+    // VJQuery('.header__nav-link a[href$="award"], .stat__item[data-item$="award"]').on('click', function(e){
+    //     e.preventDefault();
+    //     openPopup(popupAward, modalOverlay);
+    // })
     // VJQuery('.header__nav-link a[href$="kpi"], .stat__item[data-item$="kpi"]').on('click', function(e){
     //     e.preventDefault();
     //     openPopup(popupKPI, modalOverlay);
     // })
-    VJQuery('.header__nav-link a[href$="balance"], .stat__item[data-item$="balance"]').on('click', function(e){
-        e.preventDefault();
-        openPopup(popupBalance, modalOverlay);
-    })
-    VJQuery('.header__nav-link a[href$="kaspi"], .stat__item[data-item$="kaspi"]').on('click', function(e){
-        e.preventDefault();
-        openPopup(popupKASPI, modalOverlay);
-    })
-    VJQuery('.header__nav-link a[href$="nominations"], .stat__item[data-item$="nominations"]').on('click', function(e){
-        e.preventDefault();
-        openPopup(popupNominations, modalOverlay);
-    })
-    VJQuery('.header__right-icon.bell').on('click', function(e){
-        e.preventDefault();
-        openPopup(popupNotifications, modalOverlay);
-    })
-    VJQuery('.header__right-icon.check').on('click', function(e){
-        e.preventDefault();
-        openPopup(popupCheck, modalOverlay);
-    })
+    // VJQuery('.header__nav-link a[href$="balance"], .stat__item[data-item$="balance"]').on('click', function(e){
+    //     e.preventDefault();
+    //     openPopup(popupBalance, modalOverlay);
+    // })
+    // VJQuery('.header__nav-link a[href$="kaspi"], .stat__item[data-item$="kaspi"]').on('click', function(e){
+    //     e.preventDefault();
+    //     openPopup(popupKASPI, modalOverlay);
+    // })
+    // VJQuery('.header__nav-link a[href$="nominations"], .stat__item[data-item$="nominations"]').on('click', function(e){
+    //     e.preventDefault();
+    //     openPopup(popupNominations, modalOverlay);
+    // })
+    // VJQuery('.header__right-icon.bell').on('click', function(e){
+    //     e.preventDefault();
+    //     openPopup(popupNotifications, modalOverlay);
+    // })
+    // VJQuery('.header__right-icon.check').on('click', function(e){
+    //     e.preventDefault();
+    //     openPopup(popupCheck, modalOverlay);
+    // })
 
 
 
-    function openPopup(popup,overlay){
-        overlay.addClass('active');
-        VJQuery(document.body).addClass('modal-open')
-        VJQuery('html').addClass('modal-open')
-        popup.fadeIn(500);
-        closeModalOverlay(popup,overlay)
-        closeModal(closePopup,overlay,popup)
-    }
+    // function openPopup(popup,overlay){
+    //     overlay.addClass('active');
+    //     VJQuery(document.body).addClass('modal-open')
+    //     VJQuery('html').addClass('modal-open')
+    //     popup.fadeIn(500);
+    //     closeModalOverlay(popup,overlay)
+    //     closeModal(closePopup,overlay,popup)
+    // }
 
 
-    function closeModalOverlay(formPopup,object){
-        VJQuery(document).mousedown(function (e) {
-            if (e.target !== formPopup[0] && formPopup.has(e.target).length === 0) {
-                object.removeClass('active')
-                VJQuery(document.body).removeClass('modal-open')
-                VJQuery('html').removeClass('modal-open')
-                formPopup.fadeOut(500);
-                VJQuery(document).off('mousedown')
-            }
+    // function closeModalOverlay(formPopup,object){
+    //     VJQuery(document).mousedown(function (e) {
+    //         if (e.target !== formPopup[0] && formPopup.has(e.target).length === 0) {
+    //             object.removeClass('active')
+    //             VJQuery(document.body).removeClass('modal-open')
+    //             VJQuery('html').removeClass('modal-open')
+    //             formPopup.fadeOut(500);
+    //             VJQuery(document).off('mousedown')
+    //         }
 
-        })
-    }
+    //     })
+    // }
 
-    function closeModal(close,object,popup) {
-        close.click(function (e){
-            e.preventDefault();
-            object.removeClass('active')
-            VJQuery('.popup').removeClass('extra');
-            VJQuery(document.body).removeClass('modal-open')
-            VJQuery('html').removeClass('modal-open')
-            popup.fadeOut(500);
-        })
-    }
+    // function closeModal(close,object,popup) {
+    //     close.click(function (e){
+    //         e.preventDefault();
+    //         object.removeClass('active')
+    //         VJQuery('.popup').removeClass('extra');
+    //         VJQuery(document.body).removeClass('modal-open')
+    //         VJQuery('html').removeClass('modal-open')
+    //         popup.fadeOut(500);
+    //     })
+    // }
 
     /**
      * maybe animate circle
@@ -290,36 +224,36 @@ document.addEventListener('DOMContentLoaded', () => {
     //         }
     //     })
 
-    let switchTabs = (tab) => {
-        // get all tab list items and remove the is-active class
-        let tabs = tab.closest('.tabs').querySelectorAll('.tab__item');
-        tabs.forEach(t => {t.classList.remove("is-active");});
-        // set is-active on the passed tab element
-        tab.classList.add("is-active");
-        // get all content elements and remove is-active
-        let contents = tab.closest('.tabs').querySelectorAll(".tab__content .tab__content-item");
-        contents.forEach(t => {t.classList.remove("is-active");});
-        // get the data-index data attribute from the selected tab (passed here)
-        let activeTabIndex = tab.getAttribute("data-index");
-        // get the corresonding tab content via the data-content attribute
-        let activeContent = tab.closest('.tabs').querySelector(`[data-content='${activeTabIndex}']`);
-        // set is-active on the corresponding tab content
-        activeContent.classList.add("is-active");
-    }
+    // let switchTabs = (tab) => {
+    //     // get all tab list items and remove the is-active class
+    //     let tabs = tab.closest('.tabs').querySelectorAll('.tab__item');
+    //     tabs.forEach(t => {t.classList.remove("is-active");});
+    //     // set is-active on the passed tab element
+    //     tab.classList.add("is-active");
+    //     // get all content elements and remove is-active
+    //     let contents = tab.closest('.tabs').querySelectorAll(".tab__content .tab__content-item");
+    //     contents.forEach(t => {t.classList.remove("is-active");});
+    //     // get the data-index data attribute from the selected tab (passed here)
+    //     let activeTabIndex = tab.getAttribute("data-index");
+    //     // get the corresonding tab content via the data-content attribute
+    //     let activeContent = tab.closest('.tabs').querySelector(`[data-content='${activeTabIndex}']`);
+    //     // set is-active on the corresponding tab content
+    //     activeContent.classList.add("is-active");
+    // }
 
-    VJQuery('.mobile-select').change(function(){
+    // VJQuery('.mobile-select').change(function(){
 
-        let selectTab = (VJQuery(this).closest('.tabs').find(`.tab__item[data-index=${VJQuery(this).val()}]`));
-        switchTabs(selectTab[0])
-    })
+    //     let selectTab = (VJQuery(this).closest('.tabs').find(`.tab__item[data-index=${VJQuery(this).val()}]`));
+    //     switchTabs(selectTab[0])
+    // })
 
 
-    VJQuery(window).on('resize',function(e){
+    // VJQuery(window).on('resize',function(e){
 
-    })
+    // })
 
-    VJQuery('.point-close').click(function(){
-        VJQuery(this).closest('.profile-box').find('.profile-slick').slideToggle(700, 'swing')
-        VJQuery(this).closest('.profile-box').find('.profile__title').toggleClass('_slicked')
-    })
+    // VJQuery('.point-close').click(function(){
+    //     VJQuery(this).closest('.profile-box').find('.profile-slick').slideToggle(700, 'swing')
+    //     VJQuery(this).closest('.profile-box').find('.profile__title').toggleClass('_slicked')
+    // })
 })

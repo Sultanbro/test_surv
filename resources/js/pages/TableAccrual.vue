@@ -1,5 +1,8 @@
 <template>
-<div class="mt-2 px-3">
+<div
+    v-if="groupss"
+    class="mt-2 px-3"
+>
     <div class="mb-0">
 
         <!-- filters -->
@@ -100,12 +103,11 @@
         </div>
 
         <!-- table -->
-        <div v-if="hasPermission">
+        <div class="table-container" v-if="hasPermission">
             <b-table
                 responsive
-                striped
                 :sticky-header="true"
-                class="text-nowrap text-right my-table salar accrual-table"
+                class="text-nowrap text-right salar accrual-table"
                 :class="{'hide-special': special_fields}"
                 :small="true"
                 :bordered="true"
@@ -114,50 +116,51 @@
                 show-empty
                 emptyText="Нет данных">
 
-                <template slot="cell(name)" slot-scope="data">
-                    <div>{{ data.value }}
+                <template #cell(name)="data">
+                    <div>
+                        <b-badge pill variant="success" class="mr-2">{{data.item.user_type}}</b-badge>
+                        {{ data.value }}
                         <i
                             v-if="data.index == 0"
                             class="fa fa-info-circle"
                             v-b-popover.hover.right.html="'В суммах этого ряда не учитываются Сотрудники, у которых <b>К выдаче</b> меньше 0'"
                             title="Заметка">
                         </i>
-                        <b-badge pill variant="success">{{data.item.user_type}}</b-badge>
                     </div>
                 </template>
 
-                <template slot="cell(bonus)" slot-scope="data">
+                <template #cell(bonus)="data">
                     <div @click="defineClickNumber('bonus', data)" class="pointer">
                         {{ data.value }} <div class="cell-border" v-if="data.item.edited_bonus !== null && data.index != 0"></div>
                     </div>
                 </template>
 
-                <template slot="cell(kpi)" slot-scope="data">
+                <template #cell(kpi)="data">
                     <div @click="defineClickNumber('kpi', data)" class="pointer">
                         {{ data.value }} <div class="cell-border" v-if="data.item.edited_kpi !== null && data.index != 0"></div>
                     </div>
                 </template>
 
-                <template slot="cell(total)" slot-scope="data">
+                <template #cell(total)="data">
                     <div>{{ data.value }}</div>
                 </template>
 
-                <template slot="cell(fines)" slot-scope="data">
+                <template #cell(fines)="data">
                     <div>{{ data.value }}</div>
                 </template>
 
-                <template slot="cell(avans)" slot-scope="data">
+                <template #cell(avans)="data">
                     <div>{{ data.value }}</div>
                 </template>
 
-                <template slot="cell(final)" slot-scope="data">
+                <template #cell(final)="data">
                     <div @click="defineClickNumber('final', data)" class="pointer" v-if="user_types == '1'">
                         {{ data.value }} <div class="cell-border" v-if="data.item.edited_salary !== null && data.index != 0"></div>
                     </div>
                     <div v-else>{{ data.value }}</div>
                 </template>
 
-                <template slot="cell()" slot-scope="data">
+                <template #cell()="data">
                     <div @click="detectClick(data)"
                         :class="{
                             'fine': data.item.fine !== undefined && data.item.fine[data.field.key.toString()].length > 0,
@@ -483,12 +486,12 @@
 </template>
 
 <script>
+import { useYearOptions } from '../composables/yearOptions'
 
 export default {
     name: "TableAccrual",
     props: {
         groupss: Array,
-        years: Array,
         activeuserid: String,
         activeuserpos: Number,
         can_edit: Boolean,
@@ -507,6 +510,9 @@ export default {
         },
         selectedGroup(val) {
             this.fetchData()
+        },
+        groupss(){
+            this.init()
         }
     },
     data() {
@@ -578,27 +584,32 @@ export default {
             dayPercentage: (new Date().getDate() / 31) * 100,
             delay: 700,
             clicks: 0,
-            timer: null
+            timer: null,
+            years: useYearOptions(),
         };
     },
     created() {
-
-        this.dateInfo.currentMonth = this.dateInfo.currentMonth ?
-            this.dateInfo.currentMonth :
-            this.$moment().format("MMMM");
-        let currentMonth = this.$moment(this.dateInfo.currentMonth, "MMMM");
-
-        //Расчет выходных дней
-        this.dateInfo.monthEnd = currentMonth.endOf("month"); //Конец месяца
-        this.dateInfo.weekDays = currentMonth.weekdayCalc(this.dateInfo.monthEnd, [6]); //Колличество выходных
-        this.dateInfo.daysInMonth = currentMonth.daysInMonth(); //Колличество дней в месяце
-        this.dateInfo.workDays = this.dateInfo.daysInMonth - this.dateInfo.weekDays; //Колличество рабочих дней
-
-        this.groups = this.groupss;
-        this.selectedGroup = this.groups[0];
+        if(this.groupss){
+            this.init()
+        }
     },
     methods: {
+        init(){
 
+            this.dateInfo.currentMonth = this.dateInfo.currentMonth ?
+                this.dateInfo.currentMonth :
+                this.$moment().format("MMMM");
+            let currentMonth = this.$moment(this.dateInfo.currentMonth, "MMMM");
+
+            //Расчет выходных дней
+            this.dateInfo.monthEnd = currentMonth.endOf("month"); //Конец месяца
+            this.dateInfo.weekDays = currentMonth.weekdayCalc(this.dateInfo.monthEnd, [6]); //Колличество выходных
+            this.dateInfo.daysInMonth = currentMonth.daysInMonth(); //Колличество дней в месяце
+            this.dateInfo.workDays = this.dateInfo.daysInMonth - this.dateInfo.weekDays; //Колличество рабочих дней
+
+            this.groups = this.groupss;
+            this.selectedGroup = this.groups[0];
+        },
         //Установка выбранного года
         setYear() {
             this.dateInfo.currentYear = this.dateInfo.currentYear ?
@@ -1242,6 +1253,7 @@ $training: orange;
 
 .training {
     background: $training;
+    color: #fff;
     &.fine {background: linear-gradient(110deg, $training 50%, $fine 50%);}
 }
 
@@ -1311,6 +1323,22 @@ hr {
     z-index: 2;
 }
 .accrual-table {
+    th,td{
+        padding: 0 !important;
+        & > div{
+            padding: 0 15px;
+            height: 40px;
+            min-width: 50px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        &:first-child{
+            & > div{
+                justify-content: start;
+            }
+        }
+    }
     .cell-border {
         border-left-color: red !important;
     }
@@ -1319,102 +1347,57 @@ hr {
         &:nth-child(1) {
             left:0 !important;
             div {
-                width: 278px;
+                width: 288px;
+                white-space: normal;
             }
         }
         &:nth-child(2) {
-            left:278px !important;
-            div {
-                width: 60px;
-            }
+            left:289px !important;
         }
         &:nth-child(3) {
-            left:338px!important;
-            div {
-                width: 60px;
-            }
+            left:360px!important;
         }
         &:nth-child(4) {
-            left:398px!important;
-            div {
-                width: 60px;
-            }
+            left:431px!important;
         }
         &:nth-child(5) {
-            left:458px!important;
-            div {
-                width: 60px;
-            }
+            left:502px!important;
         }
         &:nth-child(6) {
-            left:518px!important;
-            div {
-                width: 60px;
-            }
+            left:573px!important;
         }
         &:nth-child(7) {
-            left:578px!important;
-            div {
-                width: 60px;
-            }
-        }
-    }
-
-    th {
-
-        &:nth-child(1) {
-            vertical-align: middle;
-            background: #94ccff !important;
-            div {
-                font-size: 12px;
-                text-align: left;
-            }
+            left:644px!important;
         }
         &:nth-child(2),
         &:nth-child(3),
         &:nth-child(4),
         &:nth-child(5),
-        &:nth-child(6),
-        &:nth-child(7) {
-            vertical-align: middle;
-            background: #6d95bb !important;
-            div {
-                font-size: 11px;
-                text-align: center;
+        &:nth-child(6){
+            div{
+                width: 70px;
             }
-        }
-
-        &:nth-child(7) {
-            background: #28a745 !important;
         }
     }
 
     td {
-        &:nth-child(1) {
-            vertical-align: middle;
-            background: #94ccff !important;
-            div {
-                font-size: 13px;
-                text-align: left;
-            }
-    }
         &:nth-child(2),
         &:nth-child(3),
         &:nth-child(4),
         &:nth-child(5),
-        &:nth-child(6),
-        &:nth-child(7) {
-            vertical-align: middle;
-            background: #6d95bb !important;
+        &:nth-child(6) {
+            background: #DDE9FF !important;
+             outline-color: #c1cee5 !important;
             div {
                 font-size: 13px;
-                font-weight: 700;
                 text-align: center;
             }
         }
 
         &:nth-child(7) {
             background: #28a745 !important;
+            outline-color: #228f3b !important;
+            color: #fff;
         }
 
     }

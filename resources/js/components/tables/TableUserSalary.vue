@@ -1,7 +1,7 @@
 <template>
 <div class="mt-3">
     <div class="mb-0" :key="myTable">
-      
+
 
         <b-table v-if="dataLoaded"
             responsive
@@ -30,17 +30,17 @@
               </i>
 
           </template>
-          <template slot="cell(avanses)" slot-scope="data">
+          <template #cell(avanses)="data">
               <div v-if="data.index == 1">
                 {{data.value.value}}
               </div>
           </template>
-          <template slot="cell(fines)" slot-scope="data" >
+          <template #cell(fines)="data">
             <div v-if="data.index == 1">
               {{data.value.value}}
             </div>
           </template>
-          <template slot="cell()" slot-scope="data">
+          <template #cell()="data">
                 <div :class="{
                     'day-fine':data.value.hasFine,
                     'day-training':data.value.training,
@@ -126,7 +126,7 @@
         <div  class="mb-5">
             <template v-for="item in sidebarContent.avanses">
                 <div :key="item">
-                    
+
                     <div>
                         <b>
                             {{ item.paid }} KZT
@@ -135,7 +135,7 @@
                     <div>
                         {{ item.comment_paid }}
                     </div>
-                    
+
                 </div>
             </template>
             <p v-if="sidebarContent.avanses.length == 0">
@@ -150,7 +150,7 @@
 
 export default {
     name: "TableUserSalary",
-    props: { 
+    props: {
         activeuserid: {
             type: Number,
         },
@@ -166,7 +166,7 @@ export default {
                 this.fetchData()
             },
         },
-    }, 
+    },
 
     data() {
         return {
@@ -203,7 +203,7 @@ export default {
         this.fetchData()
     },
     methods: {
-     
+
         //Установка заголовока таблицы
         setFields() {
             let fields = []
@@ -258,20 +258,20 @@ export default {
             }).then(response => {
 
                 this.myTable++
-                
+
                 this.setMonth()
                 this.setFields()
 
                 this.data = response.data.data
                 this.totalFines = response.data.totalFines
                 this.total_avanses = response.data.total_avanses
-                
-             
+
+
                 this.loadItems()
                 this.dataLoaded = true
                 this.myTable++
-                
-                
+
+
                 loader.hide()
             })
         },
@@ -434,7 +434,7 @@ export default {
         }
     }
 
-   
+
 
 }
 
@@ -457,7 +457,7 @@ export default {
     &::-webkit-inner-spin-button {
         -webkit-appearance: none;
         margin: 0;
-    } 
+    }
 }
 
 </style>

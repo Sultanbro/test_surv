@@ -3,12 +3,12 @@
 namespace App\Http\Controllers;
 
 use App\Models\CentralUser;
+use App\Service\Tenancy\CabinetService;
 
 class TestController extends Controller
 { 
 	public function test() { 
-		$user = CentralUser::with('cabinets')->get()->toArray();
-		dd($user);
+		dd((new \Database\Seeders\PositionSeeder));
 	}
 
 	public function hhRefresher() {

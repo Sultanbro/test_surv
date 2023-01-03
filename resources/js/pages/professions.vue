@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div v-if="positions">
       <b-row class="align-items-center">
           <b-col cols="12" lg="4">
              <b-form-group label="Должность">
@@ -60,7 +60,7 @@
 
               <b-col cols="12" class="my-4">
                   <div class="table-container">
-                      <b-table-simple class="table b-table table-sm pos-desc pos-desc-1">
+                      <b-table-simple class="table table-bordered pos-desc pos-desc-1">
                          <b-thead>
                              <b-tr>
                                  <b-th>Следующая ступень карьерного роста</b-th>
@@ -119,6 +119,11 @@ export default {
         next_step:'',
         show: 0
       }
+    }
+  },
+  watch:{
+    positions(value){
+        this.data = value
     }
   },
   mounted() {

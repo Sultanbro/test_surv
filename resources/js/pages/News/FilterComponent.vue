@@ -46,7 +46,9 @@
                         format="DD.MM.YYYY"
                         range-separator=" – "
                         placeholder="Диапазон">
-                        <img slot="icon-calendar" alt="img" src="/icon/news/inputs/date-picker.svg">
+                        <template v-slot:icon-calendar>
+                            <img alt="img" src="/icon/news/inputs/date-picker.svg">
+                        </template>
                         <template v-slot:content="slotProps">
                             <calendar-panel :value="innerValue" :get-classes="getClasses"
                                             @select="handleSelect"></calendar-panel>
@@ -61,7 +63,7 @@
                         @clear="clearDatePicer"
                         format="DD.MM.YYYY"
                         placeholder="Точная дата">
-                        <img slot="icon-calendar" alt="img" src="/icon/news/inputs/date-picker.svg">
+                        <template v-slot:icon-calendar><img alt="img" src="/icon/news/inputs/date-picker.svg"></template>
                         <template v-slot:content="slotProps">
                             <calendar-panel :value="datePickerValue" @select="selectSingleDate"></calendar-panel>
                         </template>

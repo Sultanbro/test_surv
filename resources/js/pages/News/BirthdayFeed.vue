@@ -20,6 +20,9 @@
 </template>
 
 <script>
+import Vue from 'vue'
+Vue.component('birthday-user', require('@/pages/News/BirthdayUser').default);
+
 export default {
     name: 'BirthdayFeed',
     data() {

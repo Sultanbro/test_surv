@@ -7,7 +7,7 @@
         </div> -->
         <div class="col-12">
 
-            <b-table responsive striped 
+            <b-table responsive striped
                 class="text-nowrap text-right my-table my-table-ma mb-3 table-funnel"
                 :small="true"
                 :bordered="true"
@@ -15,9 +15,9 @@
                 :fields="fields"
                 :key="tableKey"
                 primary-key="a">
-                
-                <template slot="head(name)"  slot-scope="data">
-                   
+
+                <template #head(name)="data">
+
                     <input type="text" :ref="'mylink' + segment" class="hider">
                     <span>{{data.field.label}}</span>
                  
@@ -25,27 +25,27 @@
                     <i class="fa fa-clone ffpointer" @click="copy()"></i>
                 </template>
 
-                <template slot="cell(name)" slot-scope="data">
+                <template #cell(name)="data">
                     <div>
                         {{data.value}}
                     </div>
-                </template> 
+                </template>
 
-                <template slot="cell()" slot-scope="data">
+                <template #cell()="data">
                     <div v-if="data.item.show == 1 && type == 'week'">
                         <input type="number" v-model="data.value" @change="updateSettings($event,data)"
-                            class="form-control form-control-sm"> 
+                            class="form-control form-control-sm">
                     </div>
-                    <div v-else> 
+                    <div v-else>
                         {{data.value}}
                     </div>
-                </template> 
+                </template>
 
             </b-table>
 
         </div>
     </div>
-    
+
 
 </div>
 </template>
@@ -69,7 +69,7 @@ export default {
         // }
     },
     data: function () {
-        return { 
+        return {
             items: [],
             days: [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31],
             chart : null,
@@ -100,9 +100,9 @@ export default {
                             if(label == 'Сконвертировано') return 'Создано сделок на основе лидов'
                             if(label == 'Стажируются') return 'Количество стажеров присутствовавших на сегодняшнем обучении'
                             if(label == 'Приняты в BP') return 'Приняты сотрудниками'
-                            
+
                         }
-                    }, 
+                    },
                     label: {
                         fontFamily: 'Open Sans',
                         fontSize: '12px',
@@ -117,7 +117,7 @@ export default {
                 }
                 },
                 data: [],
-            }, 
+            },
         };
     },
     watch: {
@@ -143,13 +143,13 @@ export default {
         this.calc()
     },
     methods: {
-      
+
         copy() {
             
         },
 
         setFields() {
-            
+
             this.fields = [
                 {
                     key: "name",
@@ -158,9 +158,9 @@ export default {
                     class: "text-left rownumber b-table-sticky-column"
                 },
             ];
-            
+
             if(this.type == 'month') {
-                let months = {                
+                let months = {
                     1: 'Январь',
                     2: 'Февраль',
                     3: 'Март',
@@ -187,25 +187,25 @@ export default {
                     this.keys.push(key);
                 })
 
-                
-            }  
-            
+
+            }
+
             if(this.type == 'week') {
                 let date = this.$moment(this.date, "YYYY-MM-DD"),
                     daysInMonth = date.daysInMonth(),
                     isoWeek = date.isoWeek(),
                     weekNumber = 1;
-                    
+
                 let firstDayOfWeek = date.format('DD.MM');
 
-                   
+
 
                 for(let i = 1; i <= daysInMonth; i++) {
-             
-                   
+
+
                     if(date.isoWeek() != isoWeek) {
 
-                   
+
                         this.fields.push({
                             key: `${weekNumber}`,
                             label: firstDayOfWeek + ' - ' + date.subtract(1, 'days').format('DD.MM'),
@@ -217,7 +217,7 @@ export default {
 
                         isoWeek = date.isoWeek();
                         weekNumber++;
-        
+
                     }
 
                     if(i == daysInMonth) {
@@ -234,17 +234,17 @@ export default {
 
                 // console.log(date.add(1, 'days').format('YYYY-MM-DD'));
 
-                
+
             }
-            
- 
+
+
         },
 
         updateSettings(e, data) {
             if(this.type == 'month') return '';
             this.items[data.index][data.field.key] = data.value;
             this.updateTable(data.field.key)
-            
+
             axios.post('/timetracking/update-settings-extra', {
                 date: this.date,
                 group_id: 48,
@@ -255,7 +255,7 @@ export default {
             }).catch(error => {
                 this.$toast.error('Ошибка');
             })
-            
+
         },
 
         calc() {
@@ -291,10 +291,10 @@ export default {
                 this.items[9][key] = this.divide(this.items[0][key], this.items[4][key]); // CPL Затраты / Создано лидов
                 this.items[13][key] = this.divide(this.items[0][key], this.items[12][key]); // CAC (Стоимость привлечения оператора) Затраты / Принято
                 this.items[8][key] = this.divide(this.items[0][key], this.items[3][key]); // CPC (Стоимость клика) Затраты / Переходы
-            } 
+            }
 
             if(this.segment == 'alina' || this.segment == 'saltanat' || this.segment == 'akzhol' || this.segment == 'darkhan') {
-                this.items[4][key] = this.percentage(this.items[5][key], this.items[0][key]); // Конверсия 
+                this.items[4][key] = this.percentage(this.items[5][key], this.items[0][key]); // Конверсия
             }
         },
 
@@ -329,7 +329,7 @@ export default {
     max-width: 960px;
     .b-table-sticky-column {
         width: 310px;
-        font-weight: 700;   
+        font-weight: 700;
     }
     // table {
     //     max-width: 100px;

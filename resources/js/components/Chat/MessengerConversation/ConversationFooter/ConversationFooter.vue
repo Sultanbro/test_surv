@@ -33,9 +33,14 @@
       </template>
       <div class="messenger__message-input" id="messengerInput">
 
-        <AudioDictaphone class="messenger__attachment"
-                         @stop="handleRecording" @start="setRecordingAudio(true)" @delete="setRecordingAudio(false)">
-          <template slot-scope="{ isRecording, startRecording, stopRecording, deleteRecording }">
+        <AudioDictaphone
+          class="messenger__attachment"
+          @stop="handleRecording"
+          @error="handleError"
+          @start="setRecordingAudio(true)"
+          @delete="setRecordingAudio(false)"
+        >
+          <template #default="{ isRecording, startRecording, stopRecording, deleteRecording }">
             <template v-if="!isRecording">
               <EmojiPopup @append="appendEmoji"></EmojiPopup>
 

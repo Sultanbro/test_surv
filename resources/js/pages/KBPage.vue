@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div v-if="auth_user_id">
     <!-- PAGE -->
     <div class="kb-sections d-flex" v-if="activeBook === null">
 
@@ -13,18 +13,18 @@
         <div class="btn btn-grey mb-3" v-if="activeBook === null" @click="openGlossary">
           <span>Глоссарий</span>
         </div>
-        
+
         <div class="btn btn-grey mb-3" @click="showArchive = false" v-if="showArchive">
           <i class="fa fa-arrow-left"></i>
           <span>Выйти из архива</span>
         </div>
-        
+
         <!-- Существующие разделы -->
-        <div class="sections-wrap noscrollbar" v-if="!showArchive" :class="{ 'expand' : mode == 'read'}"> 
+        <div class="sections-wrap noscrollbar" v-if="!showArchive" :class="{ 'expand' : mode == 'read'}">
 
 
-          <draggable 
-            class="dragArea ml-0" 
+          <draggable
+            class="dragArea ml-0"
             tag="div"
             handle=".fa-bars"
             :list="books"
@@ -43,7 +43,7 @@
                       <i class="fa fa-bars mover mr-2" v-if="mode == 'edit'"></i>
                       <p>{{ book.title }}</p>
                     </div>
-                    
+
                     <div class="section-btns"  v-if="mode == 'edit'">
                       <i class="fa fa-trash mr-1" @click.stop="deleteSection(b_index)"></i>
                       <i class="fa fa-cogs " @click.stop="editAccess(book)"></i>
@@ -52,15 +52,15 @@
             </template>
           </draggable>
 
-          
+
         </div>
-        
+
         <!-- Архивные разделы -->
         <div class="sections-wrap noscrollbar" v-else>
           <template v-for="(book, b_index) in archived_books">
             <div
               class="section d-flex aic jcsb"
-             
+
               v-if="can_edit"
               @click.stop="selectSection(book)"
             >
@@ -75,7 +75,7 @@
         <!-- Кнопки внизу сайдбара -->
         <div  v-if="mode == 'edit'">
           <div class="d-flex jscb" v-if="!showArchive">
-            
+
             <div class="btn btn-grey w-full mr-1" @click="showCreate = true" v-if="can_edit">
               <i class="fa fa-plus"></i>
               <span>Добавить</span>
@@ -121,16 +121,16 @@
 
     <!-- PAGE -->
     <div v-else>
-      <booklist 
+      <booklist
         ref="booklist"
-        :trees="trees" 
+        :trees="trees"
         :can_edit="activeBook.access == 2 || can_edit"
-        :parent_name="activeBook.title" 
+        :parent_name="activeBook.title"
         :parent_id="activeBook.id"
         :show_page_id="show_page_id"
         :course_item_id="0"
-        @back="back" 
-        @toggleMode="toggleMode" 
+        @back="back"
+        @toggleMode="toggleMode"
         :mode="mode"
         :enable_url_manipulation="true"
         :auth_user_id="auth_user_id" />
@@ -216,21 +216,21 @@
 
         <div :key="superselectKey">
           <p class="mb-2">Кто может видеть</p>
-          <superselect 
+          <superselect
             :values="who_can_read"
-            class="w-full mb-4" 
-            :select_all_btn="true" /> 
+            class="w-full mb-4"
+            :select_all_btn="true" />
           <p class="mb-2">Кто может редактировать</p>
           <superselect
-            :values="who_can_edit" 
-            class="w-full mb-4" 
-            :select_all_btn="true" /> 
+            :values="who_can_edit"
+            class="w-full mb-4"
+            :select_all_btn="true" />
         </div>
         <button class="btn btn-primary rounded m-auto" @click="updateSection">
           <span>Сохранить</span>
         </button>
       </div>
-      
+
     </b-modal>
 
     <!-- Поиск -->
@@ -265,9 +265,9 @@
            <div class="text" v-html="item.text"></div>
          </div>
         </div>
-        
+
       </div>
-        
+
     </b-modal>
 
   </div>
@@ -284,7 +284,7 @@ export default {
    can_edit: {
       type: Boolean,
       default: false
-    } 
+    }
   },
   data() {
     return {
@@ -316,23 +316,30 @@ export default {
       }
     };
   },
-  watch: {},
+  watch: {
+    auth_user_id(){
+      this.init()
+    }
+  },
 
   created() {
-    
-    this.fetchData();
-
-    // бывор группы
-    const urlParams = new URLSearchParams(window.location.search);
-    let section = urlParams.get('s');
-    if(section) {
-      console.log(section)
-      this.selectSection({id: section})
+    if(this.auth_user_id){
+      this.init()
     }
   },
 
   methods: {
+    init(){
+      this.fetchData();
 
+      // бывор группы
+      const urlParams = new URLSearchParams(window.location.search);
+      let section = urlParams.get('s');
+      if(section) {
+        console.log(section)
+        this.selectSection({id: section})
+      }
+    },
     fetchData() {
       axios
         .get("/kb/get", {})
@@ -343,7 +350,7 @@ export default {
           alert(error);
         });
     },
-    
+
     get_settings() {
 
       axios
@@ -436,16 +443,16 @@ export default {
       this.activeBook = null;
       window.history.replaceState({ id: "100" }, "База знаний", "/kb");
     },
-    
+
     searchInput() {
       if(this.search.input.length <= 2) return null;
-      
+
       axios
         .post("kb/search", {
           text: this.search.input,
         })
         .then((response) => {
-         
+
           this.search.items = response.data.items;
           this.emphasizeTexts();
 
@@ -465,7 +472,7 @@ export default {
 
 
       this.showEdit = true;
-      
+
       this.update_book = book;
       console.log(book)
       axios
@@ -515,7 +522,7 @@ export default {
       axios
         .get("/kb/get-archived")
         .then((response) => {
-         
+
           this.archived_books = response.data.books
           this.showArchive = true
           loader.hide();
@@ -534,7 +541,7 @@ export default {
 
       let loader = this.$loading.show();
 
-      axios 
+      axios
         .post("/kb/page/update-section", {
           title: this.update_book.title,
           who_can_read: this.who_can_read,
@@ -553,18 +560,18 @@ export default {
           this.who_can_read = [];
           this.who_can_edit = [];
 
-          this.$toast.success("Изменения сохранены!"); 
+          this.$toast.success("Изменения сохранены!");
           loader.hide();
         })
         .catch((error) => {
           loader.hide();
           alert(error);
         });
-    },    
+    },
 
     saveOrder(event) {
         console.log(event)
-        axios.post('/kb/page/save-order', { 
+        axios.post('/kb/page/save-order', {
           id: event.item.id,
           order: event.newIndex, // oldIndex
           parent_id: null
@@ -578,7 +585,7 @@ export default {
     toggleMode() {
       this.mode = (this.mode == 'read') ? 'edit' : 'read';
     },
- 
+
     startChangeOrder(event) {
         console.log(event)
     },
@@ -586,7 +593,7 @@ export default {
     openGlossary() {
       this.show_glossary = true;
     }
-    
+
   },
 };
 </script>

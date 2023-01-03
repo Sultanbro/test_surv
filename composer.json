@@ -48,7 +48,7 @@
         "psr-4": {
             "App\\": "app/",
             "Database\\Factories\\": "database/factories/",
-            "Database\\Seeders\\": "database/seeders/",
+            "Database\\Seeders\\": "database/seeds/",
             "Eddir\\Messenger\\": "packages/eddir/messenger/src/"
         }
     },

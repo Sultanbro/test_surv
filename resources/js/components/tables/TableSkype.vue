@@ -2,9 +2,9 @@
 <div>
 
     <div class="skypo">
-       
+
         <div class="row mb-2 align-items-center">
-             
+
             <div class="col-4 col-md-4 d-flex align-items-right">
                 <!-- <select class="form-control" v-model="currentDay">
                     0">Все дни</option>
@@ -29,7 +29,7 @@
                 <select class="form-control form-control-sm mt-2" v-model="filter.lang">
                     <option v-for="(lang, index) in langs" :value="index">{{ lang }}</option>
                 </select>
-            </div>   
+            </div>
             <div class="col-md-2 mb-2">
                 <select class="form-control form-control-sm mt-2" v-model="filter.wishtime">
                     <option v-for="(wishtime, index) in wishtimes" :value="index">{{ wishtime }}</option>
@@ -44,7 +44,7 @@
                 <b>   Кол-во:</b> {{records.length }}
             </div>
             <div class="col-md-4">
-               
+
             </div>
             <div class="col-md-4">
                 <div class="d-flex justify-content-end">
@@ -67,26 +67,26 @@
                     <b-button @click="showModal = !showModal" class="btn btn-primary btn-sm rounded py-1">+ Добавить</b-button>
                     <b-button @click="showSkypeFieldsModal = !showSkypeFieldsModal" class="btn-primary btn-sm rounded ml-1" title="Показывать поля"><i class="fa fa-cogs" aria-hidden="true"></i></b-button>
                 </div>
-                
+
             </div>
         </div>
-        
-        
-        
-
-        
- 
-        
-
-        
 
 
-    
+
+
+
+
+
+
+
+
+
+
     </div>
 
     <div class="mb-5">
-        <b-table responsive striped 
-            class="text-nowrap text-right my-table my-table-max mb-3 skypes-table" 
+        <b-table responsive striped
+            class="text-nowrap text-right my-table my-table-max mb-3 skypes-table"
             :small="true"
             :bordered="true"
             :items="records"
@@ -111,31 +111,31 @@
                 'hide-14': !showSkypeFields.phone,
                 'hide-15': !showSkypeFields.file,
               }">
-            <!-- <template slot="head(checked)">
+            <!-- <template #head(checked)>
                 <input type="checkbox" v-model="checker" :value="false">
             </template> -->
 
-            <template slot="cell()" slot-scope="data">
-                <div>{{ data.value}}</div>
-            </template>     
+            <template #cell()="data">
+                <div>{{ data.value }}</div>
+            </template>
 
-            <template slot="cell(checked)" slot-scope="data">
+            <template #cell(checked)="data">
                 <input type="checkbox" v-model="checkedBoxes" :value="data.item.id">
-            </template> 
+            </template>
 
-            <template slot="cell(lead_id)" slot-scope="data">
+            <template #cell(lead_id)="data">
                 <div><a :href="'/timetracking/analytics/skypes/' + data.value" target="_blank">Сделка</a></div>
-            </template> 
+            </template>
 
-            <template slot="cell(name)" slot-scope="data">
+            <template #cell(name)="data">
                 <div>
                 <span class="badge badge-success badge-pill" v-if="data.item.user_type == 'office'" pill variant="success">
-                    office 
+                    office
                 </span>
                  {{ data.value }}</div>
             </template>
-            
-            <template slot="cell(invite_group)" slot-scope="data">
+
+            <template #cell(invite_group)="data">
                 <div>
                     <div>
                         {{ data.value }}
@@ -143,13 +143,13 @@
                 </div>
             </template>
 
-            <template slot="cell(resp)" slot-scope="data">
+            <template #cell(resp)="data">
                 <div>
                     <div class="resp_user" v-html="data.value"></div>
                 </div>
-            </template> 
+            </template>
 
-            <template slot="cell(country)" slot-scope="data">
+            <template #cell(country)="data">
                 <div>
                     <div v-if="countries.hasOwnProperty(data.value)" class="country" :title="data.value">
                         {{ countries[data.value] }}
@@ -158,9 +158,9 @@
                         {{ data.value }}
                     </div>
                 </div>
-            </template> 
+            </template>
 
-            <template slot="cell(lang)" slot-scope="data">
+            <template #cell(lang)="data">
                 <div>
                     <div v-if="data.value  != '1' && data.value  != '2' && data.value  != '3'">
                         {{ data.value }}
@@ -169,9 +169,9 @@
                         {{ langs[data.value] }}
                     </div>
                 </div>
-            </template> 
+            </template>
 
-            <template slot="cell(net)" slot-scope="data">
+            <template #cell(net)="data">
                 <div>
                     <div v-if="data.value  != '1' && data.value  != '2' && data.value  != '3' && data.value  != '4' && data.value  != '5'">
                         {{ data.value }}
@@ -180,9 +180,9 @@
                         {{ nets[data.value] }}
                     </div>
                 </div>
-            </template> 
+            </template>
 
-            <template slot="cell(segment)" slot-scope="data">
+            <template #cell(segment)="data">
                 <div>
                     <div v-if="segments.hasOwnProperty(data.value)">
                         {{ segments[data.value] }}
@@ -193,9 +193,9 @@
                 </div>
             </template>
 
-            
 
-            <template slot="cell(wishtime)" slot-scope="data">
+
+            <template #cell(wishtime)="data">
                 <div>
                     <div v-if="data.value  != '1' && data.value  != '2' && data.value  != '3' && data.value  != '4' && data.value  != '5'  && data.value  != '6'">
                         {{ data.value }}
@@ -206,19 +206,19 @@
                 </div>
             </template>
 
-            <template slot="cell(file)" slot-scope="data">
+            <template #cell(file)="data">
                 <div style="position:relative;" :title="data.item.name">
                     <a :href="data.value" target="_blank" class="imagy imagy1">
                         <i class="fa fa-image" aria-hidden="true"></i>
                     </a>
                 </div>
-            </template> 
-            
+            </template>
 
-            
+
+
         </b-table>
     </div>
-    
+
     <div class="mb-2">
          <b-pagination v-model="currentPage" :total-rows="totalRows" :per-page="perPage" align="fill" size="sm" class="my-0"></b-pagination>
     </div>
@@ -230,20 +230,20 @@
                     <select  required="required"  v-model="selected.group_id" class="form-control form-control-sm">
                         <option :value="group.id" v-for="group in groups">{{ group.name }}</option>
                     </select>
-            </div> 
-            
+            </div>
+
             <div class="col-sm-3">
-                <b-form-datepicker id="example-datepicker" 
-                    v-model="selected.date" 
+                <b-form-datepicker id="example-datepicker"
+                    v-model="selected.date"
                     v-bind="datepickerLabels"
-                    class="form-control form-control-sm" 
-                    locale="ru"  
+                    class="form-control form-control-sm"
+                    locale="ru"
                     :min="new Date()"
                     :start-weekday="1"></b-form-datepicker>
             </div>
             <div class="col-sm-1">
                 <input type="time"
-                    class="form-control form-control-sm timer" 
+                    class="form-control form-control-sm timer"
                     v-model="selected.time">
             </div>
             <div class="col-sm-2">
@@ -256,14 +256,14 @@
                 <div class="ml-2">
                     Выбрано: <b>{{ checkedBoxes.length }}</b> из <b>{{ records.length }}</b>
                 </div>
-                
+
             </div>
         </div>
-        
-        
+
+
     </div>
 
-    
+
     <b-modal v-model="showModal" ok-text="Сохранить" cancel-text="Отмена" title="Новый лид" @ok="saveLead" size="lg" class="modalle">
         <template v-for="error in errors">
             <b-alert show variant="danger" :key="error">{{ error }}</b-alert>
@@ -277,15 +277,15 @@
             <select  required="required"  v-model="lead.wishtime" class="form-control form-control-sm">
                 <option :value="index" v-for="(wishtime, index) in wishtimes">{{ wishtime }}</option>
             </select>
-        </div>  
-        
+        </div>
+
     </b-modal>
 
     <b-modal v-model="showSkypeFieldsModal"  title="Настройка списка" @ok="showSkypeFieldsModal = !showSkypeFieldsModal" ok-text="Закрыть"  size="lg" class="modalle">
       <template v-for="error in errors">
           <b-alert show variant="danger" :key="error">{{ error }}</b-alert>
       </template>
-     
+
       <div class="row">
 
         <div class="col-md-4 mb-2" v-for="(field, key) in showSkypeFields">
@@ -293,11 +293,11 @@
               v-model="showSkypeFields[key]"
               :unchecked-value="false"
               >
-              {{showSkypeFieldsDesc[key]}} 
+              {{showSkypeFieldsDesc[key]}}
           </b-form-checkbox>
         </div>
 
-      </div>  
+      </div>
     </b-modal>
 
 </div>
@@ -367,7 +367,7 @@ export default {
                 user_type: 'all',
                 wishtime: 0,
                 segment: 0,
-                dates: [], // выбор нексольких дней 
+                dates: [], // выбор нексольких дней
                 currentInviteGroup: 0 // select приглашенная Отдел
             },
             user_types: {
@@ -405,7 +405,7 @@ export default {
                 'UA': '🇺🇦',
                 'UN': '❓',
             },
-            wishtimes: { 
+            wishtimes: {
                 0: 'Все графики',
                 1: 'с 08:45 - 19:00',
                 2: 'с 13:00 - 23:00',
@@ -488,7 +488,7 @@ export default {
             deep: true
         }
     },
-    
+
     mounted() {
         this.setDefaultShowFields()
         this.setFields()
@@ -509,7 +509,7 @@ export default {
 
         setDefaultShowFields() {
 
-            localStorage.clear(); 
+            localStorage.clear();
 
             if(localStorage.showSkypeFields) {
                 this.showSkypeFields = JSON.parse(localStorage.getItem('showSkypeFields'));
@@ -554,7 +554,7 @@ export default {
         },
 
         saveLead() {
-            
+
             axios.post('/timetracking/analytics/recruting/create-lead', {
                     name: this.lead.name,
                     phone: this.lead.phone,
@@ -563,7 +563,7 @@ export default {
                 })
                 .then(response => {
 
-                    
+
                     this.$toast.success('Новый лид сохранен')
                     this.skypes.unshift({
                         name: this.lead.name,
@@ -584,7 +584,7 @@ export default {
                     };
 
                     this.showModal = false
-                    
+
                 })
                 .catch(error => alert('Ошибка'))
         },
@@ -602,7 +602,7 @@ export default {
                 {
                     key: "lead_id",
                     label: 'Сделка',
-                    variant: "title", 
+                    variant: "title",
                     class: "text-left t-name"
                 },
                 {
@@ -689,9 +689,9 @@ export default {
         },
 
         async loadItems() {
-            
+
             this.workDays = this.month.workDays
-       
+
             let days = this.month.daysInMonth
 
             let obj = {};
@@ -699,16 +699,16 @@ export default {
                 for (let i = 1; i <= days; i++) {
 
                     let logins = '';
-                 
+
                     this.skypes[i].forEach(el => {
                         logins += el.skype + ' ';
                     });
 
                     obj[i] = logins
                 }
-            this.records.push(obj) 
+            this.records.push(obj)
 
-          
+
         },
 
         inviteUsers() {
@@ -739,14 +739,14 @@ export default {
                         this.$toast.success('Успешно приглашены')
                         this.checkedBoxes = []
                     }
-                    
+
                 })
                 .catch(error => alert('Ошибка'))
         },
 
         filterTable() {
             this.workDays = this.month.workDays
-       
+
             let days = this.month.daysInMonth
 
             this.records = []
@@ -756,37 +756,37 @@ export default {
             this.filtered = this.skypes.filter((el, index) => {
 
                 let a = true
-           
+
                 let lang = false
                 if(this.filter.lang != 0) {
                     lang = lang || el.lang == this.filter.lang
                     a = a && lang
-                } 
-                
+                }
+
                 let wishtime = false
                 if(this.filter.wishtime != 0) {
                     wishtime = wishtime || el.wishtime == this.filter.wishtime
                     a = a && wishtime
-                } 
+                }
 
                 let segment = false
                 if(this.filter.segment != 0) {
                     segment = segment || el.segment == this.filter.segment
                     a = a && segment
-                } 
+                }
 
                 let group = false;
                 if(this.filter.currentInviteGroup != 0) {
                     group = group || el.invite_group_id == Number(this.filter.currentInviteGroup)
                     a = a && group
-                } 
+                }
 
                 let user_type = false
                 if(this.filter.user_type != 'all') {
                     user_type = user_type || el.user_type == this.filter.user_type
                     a = a && user_type
-                } 
-                
+                }
+
                 let ld = false;
                 if(dates.length > 0) {
                     dates.forEach(day => {
@@ -795,7 +795,7 @@ export default {
                 } else {
                     ld = true
                 }
-                
+
                 return a && ld
             })
 
@@ -814,7 +814,7 @@ export default {
                 user_type: 'all',
                 wishtime: 0,
                 segment: 0,
-                dates: [], // выбор нексольких дней 
+                dates: [], // выбор нексольких дней
                 currentInviteGroup: 0 // select приглашенная Отдел
             }
             this.currentDay = 0
@@ -859,7 +859,7 @@ export default {
             // this.copied = true;
             // setTimeout(() => this.copied = false,3000)
             // this.$root.$emit('bv::enable::tooltip', '#text' + key)
-            
+
         },
 
         detailsClassFn(item, rowType) {
@@ -873,7 +873,7 @@ export default {
                 if(item.user_type == 'office') {
                     return "bg-green-3 office"
                 } else {
-                    return "bg-green-3"    
+                    return "bg-green-3"
                 }
             }
             if (item.invited == 4) return "bg-green-4"
@@ -892,7 +892,7 @@ export default {
     color: #fff;
 }
 .resp_user {
-    font-size: 0.6rem; 
+    font-size: 0.6rem;
     line-height: 1em;
 }
 @for $i from 2 through 15 {
@@ -910,6 +910,11 @@ export default {
     }
 }
 
+.analytics-page .b-form-datepicker .btn {
+    padding: 0 11px;
+    margin: 0;
+    margin-right: 5px;
+}
 .analytics-page .pick-panel .btn {
     padding: 1px;
 }
@@ -1036,14 +1041,14 @@ input[type="time"]::-webkit-calendar-picker-indicator {
 .imagy4 img{
     transform: rotate(180deg);
 }
-.imagy:hover img { 
-    display:block; 
+.imagy:hover img {
+    display:block;
 }
 .bottomvars {
     position: fixed;
     bottom: 0;
     width: calc(100vw - 127px);
-    left: 70px; 
+    left: 70px;
     z-index: 999;
     background: #d6dfe5;
     border-top: 1px solid #e9e9e9;

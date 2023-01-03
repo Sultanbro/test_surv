@@ -4,7 +4,8 @@
     Выберите сотрудников, которым будет разрешено редактировать время
 
     <multiselect v-model="group_editors" :options="users" :multiple="true" :close-on-select="false" :clear-on-select="false" :preserve-search="true" placeholder="Выберите" label="email" track-by="email">
-      <template slot="selection" slot-scope="{ values, search, isOpen }"><span class="multiselect__single" v-if="values.length &amp;&amp; !isOpen">{{ values.length }} выбрано</span>
+      <template #selection="{ values, search, isOpen }">
+        <span class="multiselect__single" v-if="values.length &amp;&amp; !isOpen">{{ values.length }} выбрано</span>
       </template>
     </multiselect>
   </b-modal>
@@ -72,7 +73,7 @@ export default {
 
     },
     checkPremissions(activeuserid) {
-      
+
       let premission = false
       this.group_editors.forEach(editor => {
         if (editor.id == parseInt(activeuserid)) premission = true
