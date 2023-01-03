@@ -572,8 +572,8 @@ export default {
     };
   },
   created() {
-    axios.post("/timetracking/users", {}).then((response) => {
-      this.options = response.data.users;
+    axios.post("/timetracking/users-new", {}).then((response) => {
+      this.options = response.data?.data.users;
     });
   },
 
@@ -651,36 +651,38 @@ export default {
       let loader = this.$loading.show();
 
       axios
-        .post("/timetracking/users", {
-          group: this.activebtn,
+        .post("/timetracking/users-new", {
+          id: this.activebtn,
         })
         .then((response) => {
-          if (response.data) {
-            this.gname = response.data.name;
-            this.value = response.data.users;
+          if (response.data?.data) {
+            const data = response.data.data
+            console.warn(data)
+            this.gname = data.name;
+            this.value = data.users;
 
-            this.timeon = response.data.timeon;
-            this.timeoff = response.data.timeoff;
-            this.group_id = response.data.group_id;
-            this.zoom_link = response.data.zoom_link;
-            this.bp_link = response.data.bp_link;
-            this.dialer_id = response.data.dialer_id;
-            this.talk_minutes = response.data.talk_minutes;
-            this.talk_hours = response.data.talk_hours;
-            this.script_id = response.data.script_id;
-            this.quality = response.data.quality;
-            this.corps = response.data.corp_books;
-            this.bonuses = response.data.bonuses;
-            this.activities = response.data.activities;
-            this.payment_terms = response.data.payment_terms;
-            this.time_address = response.data.time_address;
-            this.workdays = response.data.workdays;
-            this.paid_internship = response.data.paid_internship;
-            this.show_payment_terms = response.data.show_payment_terms;
-            this.statuses = response.data.groups;
-            this.archived_groups = response.data.archived_groups;
+            this.timeon = data.timeon;
+            this.timeoff = data.timeoff;
+            this.group_id = data.group_id;
+            this.zoom_link = data.zoom_link;
+            this.bp_link = data.bp_link;
+            this.dialer_id = data.dialer_id;
+            this.talk_minutes = data.talk_minutes;
+            this.talk_hours = data.talk_hours;
+            this.script_id = data.script_id;
+            this.quality = data.quality;
+            this.corps = data.corp_books;
+            this.bonuses = data.bonuses;
+            this.activities = data.activities;
+            this.payment_terms = data.payment_terms;
+            this.time_address = data.time_address;
+            this.workdays = data.workdays;
+            this.paid_internship = data.paid_internship;
+            this.show_payment_terms = data.show_payment_terms;
+            this.statuses = data.groups;
+            this.archived_groups = data.archived_groups;
 
-            this.editable_time = response.data.editable_time;
+            this.editable_time = data.editable_time;
             if (this.time_address != -1 || this.time_address != 0)
               this.time_address_text = "Из аналитики";
             if (this.time_address == -1) this.time_address_text = "Из U-calls";
@@ -698,25 +700,26 @@ export default {
       let loader = this.$loading.show();
 
       axios
-        .post("/timetracking/users/group/save", {
-          group: this.activebtn,
-          gname: this.gname,
+        .post("/timetracking/users/group/save-new", {
+          group_id: this.activebtn,
           users: this.value,
-          corp_books: this.corps,
-          timeon: this.timeon,
-          timeoff: this.timeoff,
-          zoom_link: this.zoom_link,
-          workdays: this.workdays,
+          group_info: {
+            work_start: this.timeon,
+            work_end: this.timeoff,
+            name: this.gname,
+            zoom_link: this.zoom_link,
+            workdays: this.workdays,
+            payment_terms: this.payment_terms,
+            editable_time: this.editable_time,
+            paid_internship: this.paid_internship,
+            quality: this.quality,
+            show_payment_terms: this.show_payment_terms,
+            bp_link: this.bp_link,
+          },
           script_id: this.script_id,
           dialer_id: this.dialer_id,
           talk_hours: this.talk_hours,
           talk_minutes: this.talk_minutes,
-          bp_link: this.bp_link,
-          payment_terms: this.payment_terms,
-          editable_time: this.editable_time,
-          quality: this.quality,
-          paid_internship: this.paid_internship,
-          show_payment_terms: this.show_payment_terms,
         })
         .then((response) => {
           this.statuses = response.data.groups;
@@ -735,11 +738,11 @@ export default {
     addStatus() {
       if (this.new_status.length > 0) {
         axios
-          .post("/timetracking/group/save", {
-            group: this.new_status,
+          .post("/timetracking/group/save-new", {
+            name: this.new_status,
           })
           .then((response) => {
-            if (response.data.status == 1) {
+            if (response.data.status == 200) {
               this.$toast.success("Добавлено");
               this.statuses.push(this.new_status);
             } else {
@@ -758,7 +761,7 @@ export default {
     deleted() {
       if (confirm("Вы уверены что хотите удалить группу?")) {
         axios
-          .post("/timetracking/group/delete", {
+          .post("/timetracking/group/delete-new", {
             group: this.activebtn,
           })
           .then((response) => {
@@ -814,7 +817,7 @@ export default {
 
       let loader = this.$loading.show();
       axios
-        .post("/timetracking/groups/restore", {
+        .post("/timetracking/groups/restore-new", {
           id: this.restore_group,
         })
         .then((response) => {
