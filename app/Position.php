@@ -42,7 +42,12 @@ class Position extends Model
      * ID рекрутера по должности
      */
     const RECRUITER_ID = 48;
-    
+
+    /**
+     * ID Руководитель группы.
+     */
+    const GROUP_HEAD = 45;
+
     /**
      * @return MorphMany
      */

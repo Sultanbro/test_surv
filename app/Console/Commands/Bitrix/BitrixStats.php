@@ -4,7 +4,7 @@ namespace App\Console\Commands\Bitrix;
 
 use Illuminate\Console\Command;
 use App\Models\Bitrix\Lead;
-use App\External\Bitrix\Bitrix;
+use App\Api\BitrixOld as Bitrix;
 use Carbon\Carbon;
 use App\User;
 use App\UserDescription;

@@ -45,7 +45,7 @@
                     </div>
                 </div>
                 <div class="col-6 d-flex align-items-center">
-                    <b-form-group class="d-flex ddf mb-0">
+                    <b-form-group class="d-flex ddf mb-0 ml-5">
                         <b-form-radio v-model="user_types"  name="some-radios" value="0">Действующие</b-form-radio>
                         <b-form-radio v-model="user_types"  name="some-radios" value="2">Стажеры</b-form-radio>
                         <b-form-radio v-model="user_types"  name="some-radios" value="1">Уволенные</b-form-radio>
@@ -78,14 +78,14 @@
                 </div>
             </div>
 
-            <div>
+            <div class="table-container">
                 <b-table
-                        responsive striped
+                        responsive
+                        bordered
                         :sticky-header="true"
-                        class="text-nowrap text-right my-table table-custom-report"
+                        class="text-nowrap text-right table-custom-report"
                         id="tabelTable"
                         :small="true"
-                        :bordered="true"
                         :items="items"
                         :fields="fields"
                         show-empty
@@ -122,8 +122,8 @@
                         <div @mouseover="dayInfo(data)" @click="detectClick(data)" :class="{'updated': data.value.updated}">
 
                             <template v-if="data.value.hour">
-                                <b-form-input
-                                        class="form-control cell-input"
+                                <input
+                                        class="cell-input"
                                         type="number"
                                         @mouseover="$event.preventDefault()"
                                         :min="0"
@@ -133,7 +133,7 @@
                                         :readonly="true"
                                         @dblclick="readOnlyFix"
                                         @change="openModal"
-                                ></b-form-input>
+                                >
                             </template>
 
                             <template v-else>
@@ -141,7 +141,7 @@
                             </template>
 
                             <div class="cell-border" :id="`cell-border-${data.item.id}-${data.field.key}`" v-if="data.value.tooltip"></div>
-                            <b-popover :target="`cell-border-${data.item.id}-${data.field.key}`" triggers="hover" placement="top">
+                            <b-popover :target="`cell-border-${data.item.id}-${data.field.key}`" triggers="hover" placement="top" v-if="data.value.tooltip">
                                 <template #title>Время работы</template>
                                 <div v-html="data.value.tooltip"></div>
                             </b-popover>
@@ -153,7 +153,7 @@
                 </b-table>
             </div>
 
-            <p>{{ dayInfoText }}</p>
+            <p class="hovered-text">{{ dayInfoText }}</p>
 
         </div>
 
@@ -336,12 +336,12 @@
 </template>
 
 <script>
+import { useYearOptions } from '../composables/yearOptions'
 export default {
     name: "TableReport",
     props: {
         groups: Array,
         fines: Array,
-        years: Array,
         activeuserid: String,
         activeuserpos: String,
         can_edit: Boolean
@@ -458,6 +458,7 @@ export default {
                 schedule: '',
             },
             fire_causes: [],
+            years: useYearOptions(),
         }
     },
 
@@ -786,7 +787,7 @@ export default {
 
         dayInfo(data) {
             // if (!isNaN(data.field.key))
-            this.dayInfoText = `${data.item.name} -${data.field.key} ${this.dateInfo.currentMonth}`
+            this.dayInfoText = `${data.item.name} - ${data.field.key} ${this.dateInfo.currentMonth}`
         },
 
         //Установка выбранного года
@@ -826,7 +827,6 @@ export default {
                     key: 'name',
                     stickyColumn: true,
                     label: 'Имя',
-                    variant: 'primary',
                     sortable: true,
                     class: 'text-left px-3 t-name',
                 },
@@ -834,7 +834,7 @@ export default {
                     key: 'total',
                     label: '',
                     sortable: true,
-                    class: 'text-center font-bold px-3 table-yellowgreen font-opensans',
+                    class: 'text-center td-lightgreen',
                 }
             ];
 
@@ -1197,6 +1197,63 @@ export default {
 </script>
 
 <style lang="scss">
+    .hovered-text{
+        margin-top: 15px;
+        color: #62788B;
+    }
+    .table-custom-report{
+        th,td{
+            padding: 0 15px !important;
+            height: 40px;
+            position: relative;
+        }
+        .td-lightgreen{
+            background-color: #B7E100;
+        }
+        .table-day-2 {
+            color: #fff;
+            background-color: red;
+
+            input {
+                color: #fff;
+            }
+        }
+        .table-day-3 {
+            color: rgb(0, 0, 0);
+            background-color: aqua !important;
+        }
+
+        .table-day-4 {
+            color: rgb(0, 0, 0);
+            background-color: rgb(200, 162, 200) !important;
+        }
+
+        .table-day-5 {
+            color: rgb(0, 0, 0);
+            background-color: orange !important;
+        }
+
+        .table-day-6 {
+            color: #fff;
+            background-color: pink !important;
+        }
+
+        .table-day-7 {
+            color: #fff;
+            background-color: #ffc107 !important;
+        }
+        .cell-border {
+            position: absolute;
+            right: -1px;
+            bottom: -4px;
+            border-top: 6px solid transparent;
+            border-bottom: 6px solid transparent;
+            border-left: 6px solid #b8daff;
+            -webkit-transform: rotate(45deg);
+            transform: rotate(45deg);
+        }
+    }
+
 
 .editmode {
     opacity: 0;
@@ -1214,9 +1271,14 @@ export default {
     }
 }
 
+    .fines-modal {
+        overflow-y: auto;
+        max-height: 500px;
+    }
+
 
 .b-table-sticky-header {
-    max-height: 450px;
+    max-height: calc(100vh - 250px);
 }
 
 .table-day-1 {
@@ -1224,55 +1286,13 @@ export default {
     background: #fef1cb !important;
 }
 
-.table-day-2 {
-    color: #fff;
-    background: red;
-
-    input {
-        color: #fff;
-        font-weight: bold;
-    }
-}
 
 .my-table .day.Sat.table-day-2, .my-table .day.Sun.table-day-2 {
     color: #fff;
-    background: red;
+    background-color: red;
 }
 
-.table-day-3 {
-    color: rgb(0, 0, 0);
-    background: aqua !important;
-}
-.table-yellowgreen {
-    background: yellowgreen !important;
-}
-.font-opensans {
-    font-family: 'Open Sans' !important;
-}
-.table-day-4 {
-    color: rgb(0, 0, 0);
-    background: rgb(200, 162, 200) !important;
-}
 
-.table-day-5 {
-    color: rgb(0, 0, 0);
-    background: orange !important;
-}
-
-.table-day-6 {
-    color: #fff;
-    background: pink !important;
-}
-
-.table-day-7 {
-    color: #fff;
-    background: #ffc107 !important;
-}
-
-.fines-modal {
-    overflow-y: auto;
-    max-height: 500px;
-}
 
 .updated {
     .cell-border {
@@ -1280,40 +1300,7 @@ export default {
     }
 }
 
-.cell-input {
-    background: transparent;
-    border: none;
-    text-align: center;
-    -moz-appearance: textfield;
-    font-size: .8rem;
-    font-weight: normal;
-    padding: 0;
-    color: #000;
-    border-radius: 0;
-    outline: none;
-    height: 100%;
 
-    &:read-only:hover {
-        cursor: pointer;
-    }
-
-    &:focus {
-        background-color: #fff;
-        color: #000;
-        box-shadow: none;
-    }
-
-    &::-webkit-outer-spin-button,
-    &::-webkit-inner-spin-button {
-        -webkit-appearance: none;
-        margin: 0;
-    }
-}
-
-.form-control:disabled,
-.form-control[readonly] {
-    background-color: transparent;
-}
 .badgy {
     font-size: 0.75em;
 }

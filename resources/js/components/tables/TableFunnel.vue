@@ -20,9 +20,7 @@
 
                     <input type="text" :ref="'mylink' + segment" class="hider">
                     <span>{{data.field.label}}</span>
-                    <a :href="window.location.origin +'/timetracking/analytics/funnels?type=' + segment" target="_blank">
-                        <i class="fa fa-external-link ffpointer ml-2 mr-2" aria-hidden="true"></i>
-                    </a>
+                 
 
                     <i class="fa fa-clone ffpointer" @click="copy()"></i>
                 </template>
@@ -147,12 +145,7 @@ export default {
     methods: {
 
         copy() {
-            var Url = this.$refs['mylink' + this.segment];
-            Url.value = window.location.origin + '/timetracking/analytics/funnels?type=' + this.segment;
-
-            this.$toast.success('Ссылка скопирована ' +  this.segment)
-            Url.select();
-            document.execCommand("copy");
+            
         },
 
         setFields() {

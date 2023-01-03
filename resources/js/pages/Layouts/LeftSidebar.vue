@@ -7,7 +7,6 @@
         <!-- hover menu -->
         <div class="header__menu">
             <div
-                v-if="isOwner"
                 class="header__menu-project"
                 v-scroll-lock="isCreatingProject"
             >
@@ -15,15 +14,16 @@
                 Проект: {{ project }}
                 <div class="header__submenu">
                     <a
-                        v-for="tenant in tenants"
-                        :href="tenant === project ? 'javascript:void(0)' : `/login/${tenant}`"
+                        v-for="cabinet in cabinets"
+                        :href="cabinet.tenant_id === project ? 'javascript:void(0)' : `/login/${cabinet.tenant_id}`"
                         class="header__submenu-item"
-                        :class="{'header__submenu-item_active': tenant === project}"
+                        :class="{'header__submenu-item_active': cabinet.tenant_id === project}"
                     >
-                        {{ tenant }}
+                        {{ cabinet.tenant_id }} <i v-if="cabinet.owner === 1" aria-hidden="true" class="fa fa-star"></i>
                     </a>
                     <div class="header__submenu-divider"/>
                     <div
+                        v-if="isOwner"
                         @click="onNewProject"
                         class="header__submenu-item"
                     >
@@ -125,7 +125,7 @@ export default {
             token: Laravel.csrfToken,
             isAdmin: this.$laravel.is_admin,
             project: window.location.hostname.split('.')[0],
-            tenants: Laravel.tenants,
+            cabinets: Laravel.cabinets,
             isCreatingProject: false,
             resizeObserver: null,
         };
@@ -352,7 +352,7 @@ export default {
             })
         },
         isOwner(){
-            return this.tenants && this.tenants.includes(this.project)
+            return this.cabinets && this.cabinets.includes(this.project)
         }
     },
     mounted(){

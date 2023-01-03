@@ -28,7 +28,7 @@ class ArticleController extends Controller
     {
         $user = Auth::user();
 
-        $articles = Article::availableFor($user)->filter($filter)->orderByDesc('created_at');
+         $articles = Article::availableFor($user)->filter($filter)->orderByDesc('created_at');
 
        
         $pinArticles = (clone $articles)

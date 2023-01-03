@@ -2,7 +2,7 @@
 
 namespace App\Traits;
 
-use App\External\Bitrix\Bitrix;
+use App\Api\BitrixOld as Bitrix;
 use App\Models\Bitrix\Lead;
 use App\User;
 

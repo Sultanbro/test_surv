@@ -38,12 +38,10 @@
 
     <div class="table-responsive ul table-container">
     <b-table
-      striped
-      hover
+      ref="table"
+      bordered
       show-empty
       emptyText="Ничего нет"
-      ref="table"
-      small
       stacked="md"
       :items="itemProvider"
       :fields="fields"

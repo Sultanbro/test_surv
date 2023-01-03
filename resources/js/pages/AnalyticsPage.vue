@@ -92,14 +92,14 @@
 
                             <b-tab title="Подробная" key="2" card>
 
-                                <b-tabs type="card" @change="showSubTab" :defaultActiveKey='active_sub_tab'>
+                                <b-tabs type="card" class="mt-4" @change="showSubTab" :defaultActiveKey='active_sub_tab'>
 
                                     <template v-for="(activity, index) in data.activities">
                                         <b-tab :title="activity.name" :key="index"  @change="showcubTab(index)">
 
                                             <!-- Switch month and year of Activity in detailed -->
-                                            <button class="btn btn-default btn-sm rounded mt-2" @click="switchToMonthInActivity(index)">Месяц</button>
-                                            <button class="btn btn-default btn-sm rounded mt-2" @click="switchToYearInActivity(index)">Год</button>
+                                            <button class="btn btn-default rounded mt-2" @click="switchToMonthInActivity(index)">Месяц</button>
+                                            <button class="btn btn-default rounded mt-2" @click="switchToYearInActivity(index)">Год</button>
 
                                             <!-- tabs -->
                                             <div v-if="activityStates[index] !== undefined" class="mt-2">
@@ -139,19 +139,24 @@
                                                     <h4 class="mb-2">{{ activity.name }}</h4>
 
                                                     <!-- Year table -->
-                                                    <table class="table b-table table-sm table-bordered">
-                                                        <tr>
-                                                            <th v-for="(field, key) in yearActivityTableFields" :class="field.classes">
-                                                                <div>{{ field.name }}</div>
-                                                            </th>
-                                                        </tr>
-
-                                                        <tr v-for="( row, index ) in yearActivityTable" :key="index">
-                                                            <td v-for="(field, key) in yearActivityTableFields" :class="field.classes">
-                                                                <div>{{ row[field.key] }}</div>
-                                                            </td>
-                                                        </tr>
-                                                    </table>
+                                                    <div class="table-container table-responsive">
+                                                        <table class="table table-bordered">
+                                                            <thead>
+                                                            <tr>
+                                                                <th v-for="(field, key) in yearActivityTableFields" :class="field.classes">
+                                                                    <div>{{ field.name }}</div>
+                                                                </th>
+                                                            </tr>
+                                                            </thead>
+                                                            <tbody>
+                                                            <tr v-for="( row, index ) in yearActivityTable" :key="index">
+                                                                <td v-for="(field, key) in yearActivityTableFields" :class="field.classes">
+                                                                    <div>{{ row[field.key] }}</div>
+                                                                </td>
+                                                            </tr>
+                                                            </tbody>
+                                                        </table>
+                                                    </div>
                                                 </div>
 
                                             </div>
@@ -276,10 +281,12 @@
 
 
     </div>
-</template>
+    </template>
 
-<script>
+    <script>
+    import { useYearOptions } from '../composables/yearOptions'
     export default {
+
         name: "AnalyticsPage",
         props: ['groups', 'activeuserid'],
         data() {
@@ -288,7 +295,7 @@
                 ggroups: [],
                 active: '1',
                 hasPremission: false, // доступ
-                years: [2020, 2021, 2022],
+                years: useYearOptions(),
                 yearActivityTableFields: [],
                 yearActivityTable: [],
                 activityStates: {},

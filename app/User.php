@@ -3,7 +3,7 @@
 namespace App;
 
 use App\Classes\Helpers\Phone;
-use App\External\Bitrix\Bitrix;
+use App\Api\BitrixOld as Bitrix;
 use App\Http\Controllers\IntellectController as IC;
 use App\Models\Admin\ObtainedBonus;
 use App\Models\Article\Article;
@@ -14,6 +14,7 @@ use App\Models\CourseResult;
 use App\Models\GroupUser;
 use App\Models\Tax;
 use App\Models\Traits\HasTenants;
+use App\Models\User\Card;
 use App\OauthClientToken as Oauth;
 use App\Service\Department\UserService;
 use Carbon\Carbon;
@@ -28,6 +29,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Http\Request;
 use Illuminate\Notifications\Notifiable;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Spatie\Permission\Traits\HasRoles;
@@ -49,6 +51,10 @@ class User extends Authenticatable implements Authorizable
     public $timestamps = true;
 
     protected $primaryKey = 'id';
+
+    protected $hidden = [
+        'password'
+    ];
 
     protected $fillable = [
         'name',
@@ -94,6 +100,25 @@ class User extends Authenticatable implements Authorizable
      * Валюты для профиля.
      */
     const CURRENCY = ['KZT', 'RUB', 'UZS', 'KGS','BYN', 'UAH'];
+
+    /**
+     * @return HasMany
+     */
+    public function cards(): HasMany
+    {
+        return $this->hasMany(Card::class, 'user_id');
+    }
+
+    public function cabinets(): Collection
+    {
+        $centralUser = CentralUser::with('cabinets')->where('email', $this->email)->first();
+
+        return $centralUser
+            ? $centralUser->cabinets->map(function ($user) {
+                return $user->only(['user_id', 'tenant_id', 'owner']);
+            })
+            : collect([]);
+    }
 
     public function favouriteArticles(): BelongsToMany
     {
@@ -165,6 +190,30 @@ class User extends Authenticatable implements Authorizable
         return $this->belongsToMany('App\ProfileGroup', 'group_user', 'user_id', 'group_id')
             ->withPivot(['created_at', 'updated_at', 'deleted_at'])->withTimestamps();
     }
+    /**
+     * Mutator's
+     */
+
+    // /**
+    //  * @param $value
+    //  * @return void
+    //  */
+    // public function setPasswordAttribute($value): void
+    // {
+    //     $this->attributes['password'] = bcrypt($value);
+    // }
+
+    /**
+     * @param $value
+     * @return void
+     */
+    public function setNewEmailAttribute($value): void
+    {
+        $this->attributes['email'] = strtolower($value);
+    }
+
+    /* End Mutator's */
+
 
     public function scopeGetDeletedFromGroupUser($query, $date)
     {

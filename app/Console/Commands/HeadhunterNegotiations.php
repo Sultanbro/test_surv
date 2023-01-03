@@ -2,14 +2,11 @@
 
 namespace App\Console\Commands;
 
-use App\User;
-use App\External\HeadHunter\HeadHunter;
+use App\Api\HeadHunter;
 use App\Models\Admin\Headhunter\Negotiation;
 use App\Models\Admin\Headhunter\Vacancy;
 use Illuminate\Console\Command;
-use Illuminate\Support\Facades\DB;
-use App\External\Bitrix\Bitrix;
-use App\Http\Controllers\IntellectController;
+use App\Api\BitrixOld as Bitrix;
 use Carbon\Carbon;
 use App\Classes\Helpers\Phone;
 use App\Models\Bitrix\Lead;
@@ -39,18 +36,16 @@ class HeadhunterNegotiations extends Command
     public function __construct()
     {
         parent::__construct();
+
+        $this->bitrix = new Bitrix('hh');
+        $this->hh = new HeadHunter();
+        $this->date = Carbon::now()->subDays(7)->format('Y-m-d');
     }
 
-    /**
-     * 
-     */
     protected $hh;
 
     protected $date;
 
-    /**
-     * 
-     */
     protected $bitrix;
 
     /**
@@ -58,44 +53,30 @@ class HeadhunterNegotiations extends Command
      *
      * @return mixed
      */
-    public function handle() {
-       
-        $this->bitrix = new Bitrix('hh');
-        $this->hh = new HeadHunter();
+    public function handle()
+    {
         $stage = $this->argument('stage');
         
-        $this->date = Carbon::now()->subDays(7)->format('Y-m-d');
-
         $this->line("Start from " . $this->date);
         
-        
-        if($stage == 0) {
-            $this->updateVacancies();
-        }
-
-        if($stage == 1) {
-            $vacancies = Vacancy::where('status', Vacancy::OPEN)
-                ->whereIn('manager_id', HeadHunter::MANAGERS)
-                ->get();
-
-            foreach($vacancies as $key => $vacancy) {
-                $this->updateNegotiations($vacancy);
-            }
-        }
-        
-        if($stage == 2)  $this->getPhonesByResume();
-        
+        if($stage == 0) $this->updateVacancies();
+        if($stage == 1) $this->updateNegotiations();
+        if($stage == 2) $this->getPhonesByResume();
         if($stage == 3) $this->createLeadsOnBitrix();
-
-
     }
 
-    public function createLeadsOnBitrix() {
-        $negotiations = Negotiation::where('has_updated', 1)->where('lead_id', 0)->where('phone', '!=', '')->where('phone', '!=', 'null')->get()->take(5);
+    public function createLeadsOnBitrix() : void
+    {
+        $negotiations = Negotiation::where('has_updated', 1)
+            ->where('lead_id', 0)
+            ->where('phone', '!=', '')
+            ->where('phone', '!=', 'null')
+            ->get()
+            ->take(5);
 
-        
         $this->line('createLeadsOnBitrix: '. $negotiations->count());
-        foreach($negotiations as $key => $n) {
+
+        foreach($negotiations as $n) {
             $phone = Phone::normalize($n->phone);
 
             $leads = Lead::where('phone', $phone)
@@ -130,25 +111,22 @@ class HeadhunterNegotiations extends Command
             try {
                 $this->hh->put('/negotiations/consider/'. $n->negotiation_id);
             } catch(\Exception $e) {
-                $title = $e->getCode() == 403 ? 'Отклик архивирован hh.ru' : 'Ошибка hh.ru';
-                History::system($title, [
+                History::system($e->getCode() == 403 ? 'Отклик архивирован hh.ru' : 'Ошибка hh.ru', [
                     'lead_id' => $leads->first()->lead_id,
                     'phone' => $n->phone, 
                     'negotiation_id' => $n->negotiation_id,
                 ]);
             }
-
-            
         }
     }
 
-    public function getPhonesByResume() {
+    public function getPhonesByResume() : void
+    {
         $negotiations = Negotiation::whereDate('time', '>=', $this->date)->where('has_updated', 1)->where('lead_id', 0)->where('phone', '')->where('phone', '!=', 'null')->where('resume_id', '!=', '')->get();
 
         $this->line('getPhonesByResume: '. $negotiations->count());
-        foreach($negotiations as $key => $n) {
 
-            
+        foreach($negotiations as $n) {
 
             $this->line('resume: '. $n->resume_id);
 
@@ -162,42 +140,34 @@ class HeadhunterNegotiations extends Command
                 break;
             }
             
-
             $phone = $this->hh->getPhone($resume->contact);
             $neg = Negotiation::where('id', '!=', $n->id)->where('phone', $phone)->where('time', '>', Carbon::now()->subDays(3))->first();
 
             if($phone == '') $phone = 'null';
             if($neg) {
-               // $n->lead_id = $neg->lead_id;
                 $n->phone = $phone;
                 $n->save();
             } else {
                 $n->phone = $phone;
                 $n->save();
             }
-
-            
         }
     }
 
-    public function createLead(Negotiation $negotiation) {
-
-        $ic = new IntellectController();
+    public function createLead(Negotiation $negotiation)
+    {
         $hash = md5(uniqid().mt_rand());
-        
-        //Phone::getCountry('+998 (99)278-71sd380')
+        $countries = [
+            'KZ' => '2330',
+            'RU' => '2332',
+            'KG' => '2334',
+            'UZ' => '2336',
+            'UA' => '2388',
+            'BY' => '2390',
+            'UN' => '0', // Неизвестно
+        ];
 
         try {
-
-            $countries = [
-                'KZ' => '2330',
-                'RU' => '2332',
-                'KG' => '2334',
-                'UZ' => '2336',
-                'UA' => '2388',
-                'BY' => '2390',
-                'UN' => '0', // Неизвестно
-            ];
 
             $vac = Vacancy::where('vacancy_id', $negotiation->vacancy_id)->first();
             
@@ -206,9 +176,6 @@ class HeadhunterNegotiations extends Command
                 $title = "inhouse " . $negotiation->name . ' : hh.ru';
             }
             
-            
-
-            // lead_id
             $lead_id = $this->bitrix->createLead([
                 "TITLE" => $title, 
                 "NAME" => $negotiation->name,  
@@ -216,13 +183,12 @@ class HeadhunterNegotiations extends Command
                 "UF_CRM_1635442762" => $countries[Phone::getCountry($negotiation->phone)], //страна
                 "ASSIGNED_BY_ID" => 23900, // Валерия Сидоренко
                 "UF_CRM_1635487718862" => 'https://wa.me/+' . Phone::normalize($negotiation->phone), // Ватсап линк 
-                'UF_CRM_1624530685082' => $ic->time_link . $hash, // Ссылка для офисных кандидатов
-                'UF_CRM_1624530730434' => $ic->contract_link . $hash, // Ссылка для удаленных кандидатов
+                'UF_CRM_1624530685082' => config('services.intellect.time_link') . $hash, // Ссылка для офисных кандидатов
+                'UF_CRM_1624530730434' => config('services.intellect.contract_link') . $hash, // Ссылка для удаленных кандидатов
                 "PHONE"=> [["VALUE" => $negotiation->phone, "VALUE_TYPE" => "WORK"]],
                 "UF_CRM_1658397129" => $vac ? $vac->city : '' // город
             ]);
             
-
             // bitrix_leads
             $lead = Lead::where('lead_id', $lead_id['result'])->latest()->first();
             if($lead) {
@@ -244,24 +210,29 @@ class HeadhunterNegotiations extends Command
                 ]);
             }
             
-
             $negotiation->lead_id = $lead_id['result'];
             $negotiation->save();
-
-          
 
             return $lead_id['result']; 
         } catch(\Exception $e) {
             // save logs
-            //dd($e);
             return 'НЕ СОЗДАЛСЯ'; 
         }
-
-        
     }
 
-    public function updateNegotiations($vacancy) {
+    public function updateNegotiations() : void
+    {
+        $vacancies = Vacancy::where('status', Vacancy::OPEN)
+            ->whereIn('manager_id', HeadHunter::MANAGERS)
+            ->get();
 
+        foreach($vacancies as $vacancy) {
+            $this->updateNegotiationsOnVacancy($vacancy);
+        }
+    }
+
+    private function updateNegotiationsOnVacancy($vacancy) : void
+    {
         try {
             $negotiations = $this->hh->getNegotiations($vacancy->vacancy_id, $this->date);
         } catch (\Throwable $e) {
@@ -271,7 +242,7 @@ class HeadhunterNegotiations extends Command
             }
         }
 
-        $this->line('updateNegotiations: '. count($negotiations));
+        $this->line('updateNegotiationsOnVacancy: '. count($negotiations));
 
         foreach ($negotiations as $key => $hh_neg) {
             $neg = Negotiation::where('negotiation_id', $hh_neg->id)->first();
@@ -294,7 +265,6 @@ class HeadhunterNegotiations extends Command
                 $neg->name = $name;
                 $neg->save();
             } else {
-
                 Negotiation::create([
                     'vacancy_id' => $vacancy->vacancy_id,
                     'negotiation_id' => $hh_neg->id,
@@ -309,47 +279,29 @@ class HeadhunterNegotiations extends Command
         }
     }
 
-    public function updateVacancies() {
+    public function updateVacancies() : void
+    {
         $vacancies = $this->hh->getVacancies();
 
-        $last_vac = Vacancy::orderBy('updated_at', 'desc')->first();
-        
-        // if(!((int)Carbon::now()->format('H') == 0 && in_array((int)Carbon::now()->format('i'), [0,1,2]))) {
-        //     $this->line('updateVacancies: is not the time');
-        //     return null;
-        // }
-
-        // if(!((int)Carbon::now()->format('H') == 12 && in_array((int)Carbon::now()->format('i'), [0,1,2]))) {
-        //     $this->line('updateVacancies: is not the time');
-        //     return null;
-        // }
-
         $this->line('updateVacancies: '. count($vacancies));
-
+       
         foreach($vacancies as $vacancy) {
             $vac = Vacancy::where('vacancy_id', $vacancy->id)->first();
             
             $hh_vacancy = $this->hh->getVacancy($vacancy->id);
 
             $this->line('vacancy: '. $vacancy->id);
-            if($hh_vacancy) {
 
+            if($hh_vacancy) {
                 try {
                     $manager_id = $hh_vacancy->manager->id;
                 } catch(\Exception $e) {
                     // save logs
-                    //dd($hh_vacancy);
-                }
-                
-                $status = $hh_vacancy->type->id;
-                
-                if($status == 'open') {
-                    $status = Vacancy::OPEN;
-                } else {
-                    $status = Vacancy::CLOSED;
                 }
 
+                $status = $hh_vacancy->type->id == 'open' ? Vacancy::OPEN : Vacancy::CLOSED;
                 $city = $hh_vacancy->area->name ? $hh_vacancy->area->name : 'Не указан';
+
                 if(!$vac) {
                     Vacancy::create([
                         'vacancy_id' => $hh_vacancy->id,
@@ -368,8 +320,5 @@ class HeadhunterNegotiations extends Command
             }   
             
         }
-        
-
-
     }
 }

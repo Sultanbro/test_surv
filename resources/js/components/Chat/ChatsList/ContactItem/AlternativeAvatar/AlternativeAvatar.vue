@@ -4,6 +4,7 @@
     'messenger__avatar--small': inline,
   }">
     <img :src="image" :alt="title" @error="imageError = true">
+    <span class="messenger_tooltip">{{ title }}</span>
   </div>
   <div v-else :class="{
     'messenger__avatar_container': !inline,
@@ -117,6 +118,24 @@ export default {
   overflow: hidden;
   text-overflow: ellipsis;
   text-align: center;
+}
+
+.messenger_tooltip {
+  visibility: hidden;
+  width: 120px;
+  background-color: black;
+  color: #fff;
+  text-align: center;
+  border-radius: 6px;
+  padding: 5px 0;
+
+  /* Position the tooltip */
+  position: absolute;
+  z-index: 1;
+}
+
+.messenger__avatar:hover .messenger_tooltip {
+  visibility: visible;
 }
 
 </style>

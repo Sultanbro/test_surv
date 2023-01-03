@@ -2168,3 +2168,10 @@
 .hover-pointer {
     cursor: pointer;
 }
+
+.news-item__content .media {
+    clear: both;
+    display: block;
+    margin: 0.9em 0;
+    min-width: 15em;
+}

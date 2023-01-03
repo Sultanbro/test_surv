@@ -90,7 +90,7 @@ class LoginController extends Controller
     {   
         // create credentials
         $field = $this->username();
-
+       
         $request[$field] = $request->username;
 
         $credentials = [
@@ -100,27 +100,40 @@ class LoginController extends Controller
         
         // failed to login
         if ( !\Auth::attempt($credentials) ) {
-            return back()->withErrors([
-                'email' => 'The provided credentials do not match our records.',
-            ])->onlyInput('email');
+            return response()->json([
+                'message' => 'Введенный email или пароль не совпадает'
+            ], 401);
         } 
 
         // login was success
         $request->session()->regenerate();
-            
+
+        
         // redirect to - admin.jobtron.org
         if(request()->getHost() == 'admin.' .config('app.domain')) {
-            return redirect('/');
+            return [
+                'link' => $this->redirectTo
+            ];
         }
 
         // login from central app  - jobtron.org/login
         // redirect to subdomain with auth
         if(request()->getHost() == config('app.domain')) {
-            return $this->loginToSubDomain();
+            $links = $this->loginLinks( $request->email );
+
+            return count($links) > 1
+                ? [
+                    'links' => $links
+                ]
+                : [
+                    'link' => $links[0]['link']
+                ];
         } 
         
         // login from tenant app
-        return redirect($this->redirectTo);
+        return [
+            'link' => $this->redirectTo
+        ];
     }
 }
 

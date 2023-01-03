@@ -271,6 +271,7 @@
 <script>
 import TableStaffTurnover from '../components/tables/TableStaffTurnover.vue';
 import Rating from '../components/ui/Rating.vue';
+import { useYearOptions } from '../composables/yearOptions'
 export default {
   components: { TableStaffTurnover, Rating },
     name: "Analytics",
@@ -317,7 +318,7 @@ export default {
             records: [],
             hasPremission: false,
             firstEnter: true,
-            years: [2020, 2021, 2022],
+            years: useYearOptions(),
             currentYear: new Date().getFullYear(),
             monthInfo: {
                 currentMonth: null,
