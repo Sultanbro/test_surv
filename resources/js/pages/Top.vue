@@ -43,7 +43,7 @@
                        height="75px"
                        width="125px"
                        gaugeValueClass="gauge-span"/>
-              
+
             </div>
 
             <p class="text-center font-bold" style="font-size: 14px;margin-bottom: 0;">
@@ -235,6 +235,7 @@
 </template>
 
 <script>
+import { useYearOptions } from '../composables/yearOptions'
 export default {
   name: "Top",
   props: ['data', 'activeuserid'],
@@ -245,7 +246,7 @@ export default {
       utility: [], // вторая
       proceeds: [], // третья
       prognoz_groups: [], //
-      years: [2020, 2021, 2022],
+      years: useYearOptions(),
       currentYear: new Date().getFullYear(),
       monthInfo: {
         currentMonth: null,
@@ -365,7 +366,7 @@ export default {
         group_id: this.prognoz_groups[index].id,
         plan: this.prognoz_groups[index].plan,
       }).then(response => {
-            
+
             this.$toast.success('Успешно сохранено!')
             this.prognoz_groups[index].left_to_apply = Number(this.prognoz_groups[index].plan) - Number(this.prognoz_groups[index].fired);
             loader.hide()
@@ -401,7 +402,7 @@ export default {
       this.proceeds.fields.forEach(field => {
         obj[field] = null;
       });
-      
+
       obj['group_id'] = this.proceeds.lowest_id - 1;
 
       this.proceeds.records.splice(length - 1, 0, obj);
@@ -561,4 +562,4 @@ input.form-control.form-control-sm.wiwi {
 .no-table {
     width: auto !important;
 }
-</style> 
+</style>
