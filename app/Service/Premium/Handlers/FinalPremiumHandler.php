@@ -8,8 +8,8 @@ use App\Service\Premium\Types\FinalPremiumType;
 
 class FinalPremiumHandler extends PremiumType
 {
-    public function getType(): PremiumTypeInterface
+    public function getType(int $userId, string $amount, string $comment, string $date): PremiumTypeInterface
     {
-        return new FinalPremiumType();
+        return new FinalPremiumType($userId, $amount, $comment, $date);
     }
 }

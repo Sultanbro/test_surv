@@ -2,13 +2,13 @@
 
 namespace App\Repositories;
 
-use App\Models\Admin\EditedKpi as Model;
 use Carbon\Carbon;
+use App\Models\Admin\EditedSalary as Model;
 
 /**
 * Класс для работы с Repository.
 */
-class EditedKpiRepository extends CoreRepository
+class EditedSalaryRepository extends CoreRepository
 {
     /**
      * Здесь используется модель для работы с Repository {{ App\Models\{name} }}
@@ -25,7 +25,7 @@ class EditedKpiRepository extends CoreRepository
      * @param string $date
      * @return object|null
      */
-    public function getUserEditedKpiPerDate(
+    public function getUserEditedSalaryPerDate(
         int $userId,
         string $date
     ): object|null
@@ -43,7 +43,7 @@ class EditedKpiRepository extends CoreRepository
      * @param string $date
      * @return void
      */
-    public function createEditedKpi(
+    public function createEditedSalary(
         int $userId,
         string $amount,
         string $comment,
@@ -55,8 +55,7 @@ class EditedKpiRepository extends CoreRepository
             'author_id' => auth()->id() ?? 5,
             'amount'    => $amount,
             'comment'   => $comment,
-            'date'      => $date,
-            'final'     => 1
+            'date'      => $date
         ]);
     }
 
@@ -83,8 +82,7 @@ class EditedKpiRepository extends CoreRepository
                 'author_id' => auth()->id() ?? 5,
                 'amount'    => $amount,
                 'comment'   => $comment,
-                'date'      => $date,
-                'final'     => 1
+                'date'      => $date
             ]
         );
     }

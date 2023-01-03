@@ -8,8 +8,8 @@ use App\Service\Premium\Types\BonusPremiumType;
 
 class BonusPremiumHandler extends PremiumType
 {
-    public function getType(): PremiumTypeInterface
+    public function getType(int $userId, string $amount, string $comment, string $date): PremiumTypeInterface
     {
-        return new BonusPremiumType();
+        return new BonusPremiumType($userId, $amount, $comment, $date);
     }
 }

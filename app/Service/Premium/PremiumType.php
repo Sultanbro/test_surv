@@ -18,7 +18,7 @@ abstract class PremiumType
         string $amount,
         string $comment,
         string $date
-    ): PremiumTypeInterface
+    )
     {
         return $this->getType($userId, $amount, $comment, $date)->executeType();
     }

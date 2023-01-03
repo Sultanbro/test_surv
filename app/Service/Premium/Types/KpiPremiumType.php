@@ -5,6 +5,7 @@ namespace App\Service\Premium\Types;
 
 use App\Repositories\EditedKpiRepository;
 use App\Service\Interfaces\Premium\PremiumTypeInterface;
+use Symfony\Component\HttpFoundation\Response;
 
 class KpiPremiumType implements PremiumTypeInterface
 {
@@ -29,13 +30,13 @@ class KpiPremiumType implements PremiumTypeInterface
         $this->repository = new EditedKpiRepository();
     }
 
-    public function executeType()
+    /**
+     * @return int
+     */
+    public function executeType(): int
     {
-        $exist = $this->repository->getUserEditedKpiPerDate($this->userId, $this->date);
+        $this->repository->updateOrCreate($this->userId, $this->amount, $this->comment, $this->date);
 
-        if (!$exist)
-        {
-            $this->repository->createEditedKpi($this->userId, $this->amount, $this->comment, $this->date);
-        }
+        return Response::HTTP_CREATED;
     }
 }

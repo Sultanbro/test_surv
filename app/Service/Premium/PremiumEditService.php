@@ -17,10 +17,9 @@ final class PremiumEditService
     )
     {
         $pathToType = new ('App\\Service\\Premium\\Handlers\\' . ucfirst($type) . 'PremiumHandler');
-        $handler    = $pathToType->handle(
+
+        return $pathToType->handle(
             $userId, $amount, $comment, $date
         );
-
-        return $handler->executeType();
     }
 }
