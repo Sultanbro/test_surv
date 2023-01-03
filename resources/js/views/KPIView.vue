@@ -27,7 +27,7 @@ export default {
 </script>
 
 <template>
-    <DefaultLayout>
+    <DefaultLayout class="no-profile">
         <div class="old__content">
             <KpiPages
                 v-if="access"
