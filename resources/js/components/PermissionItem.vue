@@ -33,7 +33,7 @@
             track-by="name" />
     </b-td>
     <b-td class="actions">
-        <div class="table-actions">
+        <div class="d-flex align-items-center">
             <button class="btn btn-success btn-icon" @click="$emit('updateItem')">
                 <i class="fa fa-save" />
             </button>

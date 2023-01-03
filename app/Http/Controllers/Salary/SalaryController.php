@@ -3,7 +3,6 @@
 namespace App\Http\Controllers\Salary;
 
 use App\Fine;
-use App\Exam;
 use App\DayType;
 use App\Http\Controllers\Controller;
 use App\Models\Tax;
@@ -698,18 +697,8 @@ class SalaryController extends Controller
             
             // проверка сданных экзаменов  
             $wage = $user->salary; // WAGE: оклад + бонус от экзамена
-            $bonusFromExam = 0; // бонус от экзамена
-            $exam = Exam::where('user_id', $user->id) // Проверка сдавал ли сотрудник книгу в этом месяце
-                ->where('month', $date->month)
-                ->where('year', $date->year)
-                ->first();
-            
-                   
 
-            if(!is_null($exam) && $exam->success == 1) {
-                $bonusFromExam = 10000;
-                $wage += $bonusFromExam;
-            }      
+              
 
             // ставка
             $allTotal[7] += intval($wage) ?? 0;
@@ -902,7 +891,7 @@ class SalaryController extends Controller
                         8 => (int)$edited_salary->amount, // начислено 
                         9 => 0, // KPI
                         10 => 0, // стажировочные
-                        11 => 0, //  7 => $user->salary ?? 0, // оклад //8 => $bonusFromExam ?? 0, // ставка  
+                        11 => 0, //
                         12 => (int)$edited_salary->amount, // ИТОГО доход, 
                         13 => 0, // Авансы
                         14 => 0, // Штрафы    //11 => $total, // Итого
@@ -928,7 +917,7 @@ class SalaryController extends Controller
                         8 => (int)$salary, // начислено 
                         9 => $kpi, // KPI
                         10 => $trainee_fees ?? 0, // стажировочные
-                        11 => $bonus, //  7 => $user->salary ?? 0, // оклад //8 => $bonusFromExam ?? 0, // ставка  
+                        11 => $bonus,  
                         12 => $total_income, // ИТОГО доход, 
                         13 => $prepaid, // Авансы
                         14 => $penalty, // Штрафы    //11 => $total, // Итого

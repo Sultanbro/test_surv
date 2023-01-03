@@ -9,7 +9,7 @@ use App\ProfileGroup;
 use App\Models\Analytics\RecruiterStat;
 use App\Classes\Analytics\LayoffQuiz;
 use Carbon\Carbon;
-use App\External\Bitrix\Bitrix;
+use App\Api\BitrixOld as Bitrix;
 use App\Models\Bitrix\Lead;
 use App\Models\Admin\History;
 use App\ProfileGroupUser as PGU;

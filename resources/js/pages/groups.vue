@@ -968,6 +968,14 @@ span.before {
     max-width: 24% !important;
   }
 }
+.custom-table-permissions{
+  .groups .multiselect__tag{
+    flex: 0 0 auto!important;
+    max-width: 100%!important;
+    margin-right: 5px !important
+  }
+}
+
 .scscsc {
   margin-left: 15px;
 }

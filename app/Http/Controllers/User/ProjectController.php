@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Http\Controllers\Auth\Traits\LoginToSubDomain;
 use App\Http\Controllers\Auth\Traits\CreateTenant;
+use App\Models\Tenant;
 
 class ProjectController extends Controller
 {   
@@ -35,19 +36,19 @@ class ProjectController extends Controller
      */
     public function login(String $subdomain)
     {   
-        // $subdomain = array_first(explode('.', request()->getHost()));
-        // Find tenant
-        $tenant = auth()->user()->tenants()
-            ->where('id', trim( strtolower($subdomain) ))
+        $cabinet = auth()->user()->cabinets()
+            ->where('tenant_id', trim( strtolower($subdomain) ))
             ->first();
-
-        // can't login cause tenant not found
-        if( !$tenant ) {
+            
+        if( !$cabinet ) {
             return redirect('/');
         }
+
+        $tenant = Tenant::findOrFail(strtolower($subdomain));
         
-        // login
-        return $this->loginToSubDomain($tenant, auth()->user()->email);
+        return redirect(
+            $this->loginToSubDomain($tenant, auth()->user()->email)
+        );
     }
 
     /**

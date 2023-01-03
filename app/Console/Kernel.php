@@ -99,10 +99,11 @@ class Kernel extends ConsoleKernel
      */
     protected function commands()
     {
-        $this->load(__DIR__.'/Commands');
-
         if(config('tenancy.default_tenant')) {
             if($tenant = \App\Models\Tenant::where('id', config('tenancy.default_tenant'))->first()) {
+
+                $this->load(__DIR__.'/Commands');
+
                 tenancy()->initialize( $tenant);
             };
         }

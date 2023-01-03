@@ -90,9 +90,12 @@ Route::middleware(['web','tenant','not_admin_subdomain'])->group(function () {
     Route::get('/test', [Root\TestController::class, 'test'])->name('test');
 
     // courses
-    Route::group(['prefix' => 'course','as'    => 'course.'], function () {
+    Route::group([
+        'prefix' => 'course',
+        'as'    => 'course.'
+    ], function () {
         Route::post('/regress', [Course\RegressCourseController::class, 'regress']);
-        Route::get('/progress', [Course\CourseProgressController::class]);
+        Route::get('/progress', [Course\CourseProgressController::class, 'progress']);
     });
 
     Route::get('/courses', [Course\CourseController::class, 'index']);
@@ -296,8 +299,8 @@ Route::middleware(['web','tenant','not_admin_subdomain'])->group(function () {
 
     #==================================
     // REPLACES @TODO
-    Route::post('/timetracking/reports/enter-report/setmanual', [Timetrack\TimetrackingController::class, 'enterreportManually']);
-    Route::post('/timetracking/reports/enter-report/setmanual-new', [Timetrack\EnterReportController::class, 'manually']);
+//    Route::post('/timetracking/reports/enter-report/setmanual', [Timetrack\TimetrackingController::class, 'enterreportManually']);
+    Route::post('/timetracking/reports/enter-report/setmanual', [Timetrack\EnterReportController::class, 'manually']);
     
     Route::any('/timetracking/reports/enter-report', [Timetrack\TimetrackingController::class, 'enterreport']);
     Route::any('/timetracking/reports/enter-report-post', [Timetrack\EnterReportController::class, 'enter']);

@@ -40,7 +40,7 @@
             </b-modal>
 
             <div class="table-container">
-                <b-table responsive striped :sticky-header="true" class="text-nowrap text-right my-table" id="comingTable" :small="true" :bordered="true" :items="items" :fields="fields" show-empty emptyText="Нет данных">
+                <b-table responsive :sticky-header="true" class="text-nowrap text-right table-custom-table-coming" id="comingTable" :small="true" :bordered="true" :items="items" :fields="fields" show-empty emptyText="Нет данных">
                     <template slot="cell(name)" slot-scope="data">
                         <div>
                             {{ data.value }}
@@ -50,8 +50,8 @@
 
                     <template slot="cell()" slot-scope="data">
                         <div @click="setCurrentEditingCell(data)" :class="{ fine: data.item.fines[data.field.key.toString()].length > 0}">
-                            <b-form-input @mouseover="$event.preventDefault()" class="form-control cell-input" type="time" :value="data.value" :readonly="true" ondblclick="this.readOnly='';" @change="changeTimeInCell" v-on:keyup.enter="openModal">
-                            </b-form-input>
+                            <input @mouseover="$event.preventDefault()" class="cell-input" type="time" :value="data.value" :readonly="true" ondblclick="this.readOnly='';" @change="changeTimeInCell" v-on:keyup.enter="openModal">
+
                         </div>
                     </template>
                 </b-table>
@@ -169,13 +169,11 @@ export default {
                 key: "name",
                 stickyColumn: true,
                 label: "Имя",
-                variant: "primary",
                 sortable: true,
                 class: "text-left px-3 t-name",
             }, ];
 
             let days = this.dateInfo.daysInMonth;
-
             for (let i = 1; i <= days; i++) {
                 let dayName = this.$moment(`${i} ${this.dateInfo.date}`, "D MMMM YYYY")
                     .locale("en")
@@ -270,40 +268,12 @@ export default {
 </script>
 
 <style lang="scss">
-.cell-input {
-    background: transparent;
-    border: none;
-    text-align: center;
-    -moz-appearance: textfield;
-    font-size: 0.8rem;
-    font-weight: normal;
-    padding: 0;
-    color: #000;
-    border-radius: 0;
-    outline: none;
-    height: 100%;
-
-    &:read-only:hover {
-        cursor: pointer;
+    .table-custom-table-coming{
+        th,td{
+            padding: 0 15px !important;
+            height: 40px;
+        }
     }
-
-    &:focus {
-        background-color: #fff;
-        color: #000;
-        box-shadow: none;
-    }
-
-    &::-webkit-outer-spin-button,
-    &::-webkit-inner-spin-button {
-        -webkit-appearance: none;
-        margin: 0;
-    }
-}
-
-.form-control:disabled,
-.form-control[readonly] {
-    background-color: transparent;
-}
 
 .fine {
     background: red;

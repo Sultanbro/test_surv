@@ -10,7 +10,7 @@
  * $res->getStatusCode();// "200"
  * $res->getHeader('content-type')[0]; // 'application/json; charset=utf8'
  */
-namespace App\External\HeadHunter;
+namespace App\Api;
 
 use GuzzleHttp\Client as Guzzle;
 use App\OauthClientToken;
@@ -91,10 +91,10 @@ class HeadHunter {
             'server' => 'hh'
         ])->first();
 
-        if(strtotime($oauth->expires_at) - time() < 0) { // Если срок токена истек
-
+        if($oauth && strtotime($oauth->expires_at) - time() < 0) { 
+            // Если срок токена истек do something
         } 
-
+        
         $this->oauth = $oauth;
     }
     

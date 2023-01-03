@@ -2,22 +2,9 @@
 
 namespace App\Console\Commands;
 
-use App\Components\TelegramBot;
 use App\Salary;
-use App\User;
-use App\Exam;
-use App\UserFine;
-use App\Account;
-use App\DayType;
 use App\Zarplata;
-
-use App\Setting;
-use App\Timetracking;
-use Carbon\Carbon;
 use Illuminate\Console\Command;
-use Illuminate\Support\Facades\DB;
-
-const UCALLS = 1;
 
 class DailySalaryUpdate extends Command
 {
@@ -91,29 +78,28 @@ class DailySalaryUpdate extends Command
 
         foreach($users as $key => $user_id) {
             $salary = $salaries->where('user_id', $user_id)->first();
-
             $zarplata = Zarplata::where('user_id', $user_id)->first();
+
             $salary_amount = $zarplata ? $zarplata->zarplata : 70000;
 
-
             if($salary) {
-                dump($key . '+');
-                // $salary->amount = $salary_amount;
-                // $salary->save();
-            } else {
-                dump($key . '-');
-                Salary::create([
-                    'user_id' => $user_id,
-                    'date' => $argDate, 
-                    'note' => '',
-                    'paid' => 0,
-                    'bonus' => 0,
-                    'comment_paid' => '',
-                    'comment_bonus' => '',
-                    'comment_award' => '',
-                    'amount' => $salary_amount,
-                ]);
-            }
+                $this->line($key . '+ Начисление не изменено');
+                continue;
+            } 
+
+            $this->line($key . '- Начисление обновлено');
+
+            Salary::create([
+                'user_id' => $user_id,
+                'date' => $argDate, 
+                'note' => '',
+                'paid' => 0,
+                'bonus' => 0,
+                'comment_paid' => '',
+                'comment_bonus' => '',
+                'comment_award' => '',
+                'amount' => $salary_amount,
+            ]);
         }
 
 

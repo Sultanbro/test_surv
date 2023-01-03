@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Timeboard;
+namespace App\Models\Timetrack;
 
 use Illuminate\Database\Eloquent\Model;
 

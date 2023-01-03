@@ -3,10 +3,12 @@
     <h4 class="d-flex align-items-center justify-content-between">
         <div class="mr-2">Декомпозиция на месяц</div>
     </h4>
-    
-    <table class="table b-table table-bordered table-sm table-responsive strt">
+
+<div class="table-container">
+    <table class="table table-bordered table-responsive strt">
+        <thead>
         <tr>
-            <th class="b-table-sticky-column text-left px-1 bg-white border-blue" rowspan="2">
+            <th class="b-table-sticky-column text-left">
                 <div class="wd"></div>
             </th>
             <th class="text-center px-1 border-r-2" colspan="2">
@@ -21,8 +23,8 @@
                 <div>{{ day }}</div>
             </th>
         </tr>
-
         <tr>
+            <th class="b-table-sticky-column text-left"></th>
             <th>план</th>
             <th>факт</th>
             <template v-for="day in month.daysInMonth">
@@ -30,14 +32,15 @@
                 <th class="border-r-2">факт</th>
             </template>
         </tr>
-
+        </thead>
+        <tbody>
         <tr v-for="(item, index) in items" :key="index">
-            <td class="table-primary b-table-sticky-column text-left px-2 t-name border-blue" :title="item.id">
+            <td class="b-table-sticky-column text-left px-2 t-name" :title="item.id">
                 <div class="wd d-flex align-items-center">
                     <input type="text"
-                        v-model="item.name"
-                        class="form-control cell-input form-control-sm w-250 text-left"
-                        @change="updateSettings($event, item, index, 'name')">
+                           v-model="item.name"
+                           class=" w-250 text-left"
+                           @change="updateSettings($event, item, index, 'name')">
                     <i class="fa fa-pencil pointer mr-2" @click="showModal(index)" title="Поставить план"></i>
                     <i class="fa fa-trash pointer" @click="deleteRecord(item.id, index)" title="Удалить строку"></i>
                 </div>
@@ -45,26 +48,25 @@
             <td>{{ Number(item.total_plan).toFixed(0) }}</td>
             <td class="border-r-2">{{ Number(item.total_fact).toFixed(0) }}</td>
             <template v-for="day in month.daysInMonth">
-                <td v-if="item.editable" 
+                <td v-if="item.editable"
                     class="px-0 day-minute text-center"
                     :class="{
                         'weekend' : is_weekday[day],
                     }"
-                    >
+                >
                     <div>
                         <input type="number"
-                            v-model="item[day].plan"
-                            @change="updateSettings($event, item, index, day)"
-                            class="form-control cell-input ">
+                               v-model="item[day].plan"
+                               @change="updateSettings($event, item, index, day)">
                     </div>
                 </td>
-                <td v-else 
+                <td v-else
                     @click="editMode(item)"
                     class="px-0 day-minute text-center"
                     :class="{
                         'weekend' : is_weekday[day],
                     }"
-                    >
+                >
                     <div>{{ item[day].plan }}</div>
                 </td>
                 <td v-if="item.editable"
@@ -76,9 +78,9 @@
                     }">
                     <div>
                         <input type="number"
-                            v-model="item[day].fact"
-                            @change="updateSettings($event, item, index, day)"
-                            class="form-control cell-input">
+                               v-model="item[day].fact"
+                               @change="updateSettings($event, item, index, day)"
+                               class="form-control cell-input">
                     </div>
                 </td>
                 <td v-else
@@ -93,9 +95,10 @@
                 </td>
             </template>
         </tr>
-
+        </tbody>
     </table>
-    <button class="btn btn-sm btn-success"
+</div>
+    <button class="btn btn-success"
         @click="addRecord">+ Добавить</button>
 
 
@@ -500,23 +503,36 @@ export default {
         }
     }
 }
-.border-blue {
-    background: #e9ecef !important;
-    border-right: 2px solid #a1b7cc !important;
-}
+
 .strt tr:nth-child(2) th {
-    background: #e9ecef !important;
-    border-bottom: 2px solid #a1b7cc !important;
+    background-color: #DDE9FF !important;
     text-align: center !important;
+    border-top: 1px solid #b5c1d7 !important;
+    border-left: 1px solid #b5c1d7 !important;
+    border-bottom: 1px solid #b5c1d7 !important;
+    border-right: 2px solid #b5c1d7 !important;
 }
+
+.strt{
+    input{
+        height: 40px;
+    }
+    tbody{
+        th,td{
+            padding: 0 10px !important;
+        }
+    }
+}
+
 .day-minute div {
     font-size: 0.8rem;
     font-weight: 500;
 }
 .border-r-2 {
-    border-right: 2px solid #d4d9de !important;
+    border-right: 2px solid #b5c1d7 !important;
 }
 .weekend {
     background: #FEF2CB;
+    border: 1px solid #d18700!important;
 }
 </style>
