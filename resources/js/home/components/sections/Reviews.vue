@@ -80,7 +80,7 @@
                   >
                     <iframe
                         v-if="mode === 'videos'"
-                        :src="prefix + videos[key].videos"
+                        :src="prefix + videos[key].video"
                         allow="accelerometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
                         allowfullscreen
                         class="jReviews-item-iflame"
