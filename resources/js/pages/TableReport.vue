@@ -117,7 +117,7 @@
 
                     <template slot="cell()" slot-scope="data">
 
-                        <div @mouseover="dayInfo(data)" @click="detectClick(data)" :class="{'updated': data.value.updated}">
+                        <div @mouseover="dayInfo(data)" @click="detectClick(data)" class="td-div" :class="{'updated': data.value.updated}">
 
                             <template v-if="data.value.hour">
                                 <input
@@ -1193,9 +1193,16 @@ export default {
     }
     .table-custom-report{
         th,td{
-            padding: 0 15px !important;
-            height: 40px;
-            position: relative;
+            padding: 0 !important;
+            .td-div{
+                height: 40px;
+                min-width: 50px;
+                position: relative;
+                display: inline-flex;
+                align-items: center;
+                cursor: pointer;
+                justify-content: center;
+            }
         }
         .td-lightgreen{
             background-color: #B7E100;
@@ -1235,7 +1242,7 @@ export default {
         .cell-border {
             position: absolute;
             right: -1px;
-            bottom: -4px;
+            bottom: -5px;
             border-top: 6px solid transparent;
             border-bottom: 6px solid transparent;
             border-left: 6px solid #b8daff;
