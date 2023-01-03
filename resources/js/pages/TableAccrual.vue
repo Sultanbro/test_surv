@@ -483,12 +483,12 @@
 </template>
 
 <script>
+import { useYearOptions } from '../composables/yearOptions'
 
 export default {
     name: "TableAccrual",
     props: {
         groupss: Array,
-        years: Array,
         activeuserid: String,
         activeuserpos: Number,
         can_edit: Boolean,
@@ -578,7 +578,8 @@ export default {
             dayPercentage: (new Date().getDate() / 31) * 100,
             delay: 700,
             clicks: 0,
-            timer: null
+            timer: null,
+            years: useYearOptions(),
         };
     },
     created() {

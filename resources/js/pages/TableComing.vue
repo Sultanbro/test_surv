@@ -30,7 +30,7 @@
             </div>
             <div class="col-2"></div>
         </div>
- 
+
         <div v-if="hasPremission">
             <b-modal v-model="modalVisible" ok-text="Да" cancel-text="Нет" title="Вы уверены?" @ok="setTimeManually" size="md">
                 <template v-for="error in errors">
@@ -65,12 +65,12 @@
 </template>
 
 <script>
+import { useYearOptions } from '../composables/yearOptions'
 
 export default {
     name: "TableComing",
     props: {
         groups: Array,
-        years: Array,
         activeuserid: String,
     },
     watch: {
@@ -112,6 +112,7 @@ export default {
             currentEditingCell: null,
             scrollLeft: 0,
             modalVisible: false,
+            years: useYearOptions()
         };
     },
     created() {
@@ -219,9 +220,8 @@ export default {
                     loader.hide();
                 });
         },
-        changeTimeInCell(time) {
-            console.log("changeTimeInCell");
-            this.currentTime = time;
+        changeTimeInCell({target}) {
+            this.currentTime = target.value;
         },
         setCurrentEditingCell(data) {
             this.currentTime = null;
@@ -245,7 +245,7 @@ export default {
                         user_id: this.currentEditingCell.item.user_id,
                     })
                     .then((response) => {
-                        this.currentEditingCell = null; 
+                        this.currentEditingCell = null;
                         this.currentTime = null;
                         this.modalVisible = false;
                         this.comment = "";
@@ -258,7 +258,7 @@ export default {
         //Добавление загруженных данных в таблицу
         loadItems() {
             this.items = this.data;
-            
+
             // if (item.selectedFines[key]) {
             //     fine = item.selectedFines[key]
             // }
