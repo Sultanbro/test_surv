@@ -225,7 +225,6 @@ export default {
     mounted(){
         if(!this.isRoot && !this.isProfile){
             this.hide = true
-            document.body.classList.add('no-profile')
         }
         const scrollObserver = new IntersectionObserver(() => {
             this.inViewport = true
