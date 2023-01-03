@@ -156,5 +156,5 @@ export default {
   'footer-sellcenter': 'Sales department:',
   'footer-copy': '"Jobton", All rights reserved',
   'footer-rules': 'Site rules',
-  'footer-conf': 'Privacy Policy'
+  'footer-conf': 'Documents'
 }

@@ -162,10 +162,33 @@ export default {
   border-top: 0.0625rem solid white;
 }
 
-.jFooter-cols {
-  display: flex;
-  padding-bottom: 2rem;
-  flex-flow: column;
+@media (max-width: $small) {
+  .jFooter-cols {
+    display: flex;
+    padding-bottom: 2rem;
+    flex-flow: column;
+  }
+
+  .jFooter-col .jFooter-menu-items,
+  .jFooter-support,
+  .jFooter-contact:nth-child(4) {
+    display: none;
+  }
+
+  .jFooter-bottom {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding-top: 1rem;
+  }
+}
+
+@media (max-width: $medium) {
+  .jFooter-col {
+    display: flex;
+    flex-flow: column;
+    align-items: center;
+  }
 }
 
 .jFooter-menu-items {
@@ -270,19 +293,20 @@ export default {
 @media screen and (min-width: $small) {
   .jFooter-cols {
     display: flex;
-    flex-flow: row wrap;
-    align-items: flex-start;
+    //flex-flow: row;
+    justify-content: space-around;
+    padding-bottom: 2rem
   }
-  .jFooter-col {
-    flex: 0 0 50%;
-  }
+  //.jFooter-col {
+  //  flex: 0 0 50%;
+  //}
 
   .jFooter-bottom {
     display: flex;
     justify-content: space-between;
     align-items: center;
     white-space: nowrap;
-    flex-flow: column;
+    //flex-flow: column;
   }
 
 

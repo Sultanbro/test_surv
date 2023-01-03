@@ -155,5 +155,5 @@ export default {
   'footer-sellcenter': 'Сату бөлімі:',
   'footer-copy': 'Джобтон, Барлық құқықтар қорғалған',
   'footer-rules': 'Сайт ережелері',
-  'footer-conf': 'Құпиялылық саясаты'
+  'footer-conf': 'Құжаттар'
 }

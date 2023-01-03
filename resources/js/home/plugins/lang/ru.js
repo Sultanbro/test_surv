@@ -156,5 +156,5 @@ export default {
   'footer-support': 'Отдел поддержки:',
   'footer-copy': '«Jobton», Все права защищены',
   'footer-rules': 'Правила сайта',
-  'footer-conf': 'Политика конфиденциальности'
+  'footer-conf': 'Документы'
 }
