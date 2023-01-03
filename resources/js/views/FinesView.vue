@@ -34,7 +34,7 @@ export default {
 </script>
 
 <template>
-    <DefaultLayout class="no-profile">
+    <DefaultLayout>
         <div class="old__content">
             <div class="container p-4">
                 <div class="card p-3 content">
