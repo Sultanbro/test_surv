@@ -2,13 +2,11 @@
 
 namespace App\Console\Commands;
 
-use App\Components\TelegramBot;
 use App\Salary;
 use App\GroupSalary;
 use App\ProfileGroup;
 use Carbon\Carbon;
 use Illuminate\Console\Command;
-use Illuminate\Support\Facades\DB;
 
 class SaveGroupSalary extends Command
 {

@@ -9,11 +9,11 @@ export default {
             type: Object,
             default: null,
         },
-        old_phone: string,
-        old_phone_1: string,
-        old_phone_2: string,
-        old_phone_3: string,
-        old_phone_4: string,
+        old_phone: String,
+        old_phone_1: String,
+        old_phone_2: String,
+        old_phone_3: String,
+        old_phone_4: String,
     },
     methods:{
         addPhone(){
@@ -33,7 +33,6 @@ export default {
     <div
         id="profile_contacts"
         class="phones col-md-6 none-block"
-        style="display: none"
     >
         <h5 class="mb-4">Контакты</h5>
         <div class="d-flex phone-row form-group mb-2">

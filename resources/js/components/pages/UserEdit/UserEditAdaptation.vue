@@ -14,7 +14,6 @@ export default {
         v-if="user"
         id="adaptation_conversations"
         class="none-block"
-        style="display: none"
     >
         <h5 class="adaptation-title mb-5">Адаптационные беседы</h5>
         <div

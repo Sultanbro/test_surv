@@ -28,6 +28,7 @@ const router = new VueRouter({
     mode: 'history',
     routes: [
         // newprofile.blade.php
+        { path: '/profile', redirect: '/' },
         {
             path: '/',
             name: 'ProfileView',

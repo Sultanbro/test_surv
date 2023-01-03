@@ -33,14 +33,14 @@ export default {
         return {
             activeUserId: this.$route.query.id || '',
             csrf: '',
-            user: '',
-            groups: '',
+            user: null,
+            groups: [],
             positions: [],
-            programs: '',
-            workingDays: '',
-            workingTimes: '',
-            errors: '',
-            fire_causes: '',
+            programs: [],
+            workingDays: [],
+            workingTimes: [],
+            errors: [],
+            fire_causes: [],
             auth_identifier: '',
             old_name: '',
             old_last_name: '',
@@ -58,7 +58,7 @@ export default {
             old_jysan_cardholder: '',
             old_jysan: '',
             old_card_jysan: '',
-            in_groups: '',
+            in_groups: [],
             showBlocks: {
                 main: true,
                 additional: true,
@@ -182,7 +182,7 @@ export default {
             this.in_groups = data.in_groups
         },
         updatePageData(){
-            useAsyncPageData(`/timetracking/edit-person?id=${activeUserId}`).then(this.setData).catch(error => {
+            useAsyncPageData(`/timetracking/edit-person?id=${this.activeUserId}`).then(this.setData).catch(error => {
                 console.error('useAsyncPageData', error)
             })
         },
@@ -524,6 +524,7 @@ export default {
                                 class="form-horizontal"
                                 id="form"
                                 name="user_form"
+                                @submit.prevent=""
                             >
                                 <input
                                     v-if="user"
@@ -594,8 +595,7 @@ export default {
                                             <template v-if="user">
                                                 <div class="text-center">
                                                     <button
-                                                        href="javasctipt:void(0)"
-                                                        @click="onClickAward"
+                                                        @click.prevent="onClickAward"
                                                         class="btn btn-success"
                                                     >Наградить</button>
                                                 </div>
@@ -603,6 +603,7 @@ export default {
                                             </template>
 
                                             <label
+                                                v-if="user"
                                                 class="my-label-6 img_url_md"
                                                 for="upload_image"
                                                 style="cursor:pointer;border: 1px solid #f8f8f8;background-color: unset"
@@ -714,6 +715,7 @@ export default {
                                             <!-- PROFILE INFO -->
                                             <div class="d-flex row">
                                                 <UserEditMain
+                                                    v-show="showBlocks.main"
                                                     :formUserName="formUserName"
                                                     :formUserLastName="formUserLastName"
                                                     :formUserEmail="formUserEmail"
@@ -729,16 +731,19 @@ export default {
 
                                                 <div class="col-md-6 add_info">
                                                     <UserEditAdditional
+                                                        v-show="showBlocks.additional"
                                                         :user="user"
                                                         :userCreated="userCreated"
                                                         :userApplied="userApplied"
                                                         :userAppliedDays="userAppliedDays"
                                                         :isTrainee="isTrainee"
+                                                        :userDeleted="userDeleted"
                                                         :userDeletedAt="userDeletedAt"
                                                     />
 
                                                     <!-- groups tab -->
                                                     <UserEditGroups
+                                                        v-show="showBlocks.groups"
                                                         :user="user"
                                                         :groups="groups"
                                                         :in_groups="in_groups"
@@ -747,11 +752,17 @@ export default {
                                                 </div>
                                                 <div class="col-9 add_info">
                                                     <!-- documents tab -->
-                                                    <UserEditDocuments :user="user"/>
+                                                    <UserEditDocuments
+                                                        v-show="showBlocks.documents"
+                                                        :user="user"
+                                                    />
                                                     <!-- end of documents -->
                                                 </div>
                                                 <div class="col-md-12 add_info">
-                                                    <UserEditAdaptation :user="user"/>
+                                                    <UserEditAdaptation
+                                                        v-show="showBlocks.adaptation"
+                                                        :user="user"
+                                                    />
                                                 </div>
                                             </div>
                                         </div>
@@ -766,6 +777,7 @@ export default {
                                             <!-- PROFILE PHONES -->
                                             <div class="profile-contacts mb-3 row">
                                                 <UserEditPhones
+                                                    v-show="showBlocks.phones"
                                                     :user="user"
                                                     :old_phone="old_phone"
                                                     :old_phone_1="old_phone_1"
@@ -777,6 +789,7 @@ export default {
 
                                                 <!-- zarplata tab -->
                                                 <UserEditSalary
+                                                    v-show="showBlocks.salary"
                                                     :user="user"
                                                     :old_zarplata="old_zarplata"
                                                     :old_kaspi_cardholder="old_kaspi_cardholder"
@@ -788,11 +801,16 @@ export default {
                                                 />
 
                                                 <!-- additional tab -->
-                                                <UserEditMisc :user="user"/>
+                                                <UserEditMisc
+                                                    v-show="showBlocks.misc"
+                                                    :user="user"
+                                                />
 
-                                                <UserEditBitrix :user="user"/>
+                                                <UserEditBitrix
+                                                    v-show="showBlocks.bitrix"
+                                                    :user="user"
+                                                />
                                             </div>
-                                            <!--  -->
                                         </div>
                                     </div>
                                 </div>
@@ -1700,11 +1718,6 @@ background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/s
 }
 .none-check{
     color: #28a745;
-}
-
-
-.none-block{
-    display: none;
 }
 
 .my-label-6{

@@ -1,22 +1,25 @@
 <template>
 <div class="mt-5 quality">
     <div class="mb-3">Кол-во показателей: <b>{{total_count}}</b> , Среднее значение: <b>{{ total_avg }}</b></div>
-    <div class="table-responsive my-table">
-        <table class="table b-table table-bordered table-sm">
-            <tr>
-                <th class="b-table-sticky-column text-left t-name wd">
-                    <div>Сотрудник</div>  
-                </th>
-                <template v-for="(field, key) in fields">
-                    <th :class="field.klass">
-                        <div>{{ field.name }}</div>
-                    </th>
-                </template>
-            </tr>
-            <tr v-for="(item, index) in users" :key="index"> 
+    <div class="table-responsive table-container">
+        <table class="table table-bordered">
+           <thead>
+               <tr>
+                   <th class="b-table-sticky-column text-left t-name wd">
+                       <div>Сотрудник</div>
+                   </th>
+                   <template v-for="(field, key) in fields">
+                       <th :class="field.klass">
+                           <div>{{ field.name }}</div>
+                       </th>
+                   </template>
+               </tr>
+           </thead>
+            <tbody>
+            <tr v-for="(item, index) in users" :key="index">
                 <td class="b-table-sticky-column text-left t-name wd bg-white">
                     <div class="d-flex">{{ item.name }}
-                        
+
                         <div v-if="item.show_cup == 1">
                             <img src="/images/goldencup.png" class="goldencup ml-2" alt="">
                         </div>
@@ -26,15 +29,16 @@
                         <div v-if="item.show_cup == 3">
                             <img src="/images/bronzecup.png" class="goldencup ml-2" alt="">
                         </div>
-                        
-                    </div> 
+
+                    </div>
                 </td>
-                <template v-for="(field, key) in fields"> 
+                <template v-for="(field, key) in fields">
                     <td :class="field.klass" :key="key">
                         <div v-if="item[field.key] != 0">{{ item[field.key] }}</div>
                     </td>
                 </template>
             </tr>
+            </tbody>
         </table>
     </div>
 </div>
@@ -220,10 +224,12 @@ export default {
 
     th.averages,
     td.averages {
-        background:#01c601;
+        background-color:#28a745 !important;
+        color: #fff;
     }
     .t-total {
-        background: #519951;
+        background-color: #28a745 !important;
+        color: #fff;
     }
 
    .bg-white {

@@ -4,8 +4,8 @@
 
         <h4 class="mr-2">{{ activity.name }} <i class="fa fa-cogs show" @click="editActivity()"></i> </h4>
 
-        <div class="my-2 d-flex ml-auto mr-3">
-            <div class="d-flex">
+        <div class="my-2 d-flex ml-auto mr-5">
+            <div class="d-flex mr-5">
                 <div class="mr-2">
                     <b-form-radio v-model="user_types"  name="some-radios" value="0">Действующие</b-form-radio>
                 </div>
@@ -40,121 +40,125 @@
         <div >
 
             <a @click='showExcelImport = !showExcelImport'  v-if="group_id == 42 || group_id == 88 || (group_id == 71 && activity.id == 149) || (group_id == 71 && activity.id == 151)"
-                class="btn btn-success btn-sm rounded mr-2 text-white">
+                class="btn btn-success rounded mr-2">
                 <i class="fa fa-upload"></i>
                 Импорт</a>
         </div>
 
 
         <div>
-            <a href="#" @click="exportData()" class="btn btn-success btn-sm rounded">
+            <a href="#" @click="exportData()" class="btn btn-success rounded">
                 <i class="far fa-file-excel"></i>
                 Экспорт</a>
         </div>
 
     </div>
 
-    <table class="table b-table table-bordered table-sm table-responsive" :class="{'inverted' : color_invert}">
-        <tr>
-            <th class="b-table-sticky-column text-left px-1 t-name bg-white">
-                <div class="wd">Сотрудник</div>
-                 <i v-if="show_headers" class="fa fa-sort ml-2" @click="sort('fullname')"></i>
-            </th>
+   <div class="table-container whitespace-no-wrap">
+       <table class="table b-table table-bordered table-responsive" :class="{'inverted' : color_invert}">
+          <thead>
+          <tr>
+              <th class="b-table-sticky-column text-left px-1 t-name bg-white">
+                  <div class="wd">Сотрудник  <i v-if="show_headers" class="fa fa-sort ml-2" @click="sort('fullname')"></i></div>
+              </th>
 
-            <template v-if="activity.plan_unit == 'minutes'">
-                <th class="text-center px-1 day-minute">
-                    <div>Ср.</div>
-                    <i v-if="show_headers" class="fa fa-sort ml-2" @click="sort('avg')"></i>
-                </th>
-                <th class="text-center px-1 day-minute">
-                    <div>План</div>
-                    <i v-if="show_headers" class="fa fa-sort ml-2" @click="sort('month')"></i>
-                </th>
-                <th class="text-center px-1 day-minute plan">
-                    <div>Вып.</div>
-                    <i v-if="show_headers" class="fa fa-sort ml-2" @click="sort('plan')"></i>
-                </th>
-                <th class="text-center px-1 day-minute">
-                    <div>%</div>
-                    <i v-if="show_headers" class="fa fa-sort ml-2" @click="sort('_percent')"></i>
-                </th>
-            </template>
+              <template v-if="activity.plan_unit == 'minutes'">
+                  <th class="text-center px-1 day-minute">
+                      Ср.
+                      <i v-if="show_headers" class="fa fa-sort ml-2" @click="sort('avg')"></i>
+                  </th>
+                  <th class="text-center px-1 day-minute">
+                      План
+                      <i v-if="show_headers" class="fa fa-sort ml-2" @click="sort('month')"></i>
+                  </th>
+                  <th class="text-center px-1 day-minute plan">
+                      Вып.
+                      <i v-if="show_headers" class="fa fa-sort ml-2" @click="sort('plan')"></i>
+                  </th>
+                  <th class="text-center px-1 day-minute">
+                      %
+                      <i v-if="show_headers" class="fa fa-sort ml-2" @click="sort('_percent')"></i>
+                  </th>
+              </template>
 
-            <template v-else>
-                <th class="text-center px-1 day-minute">
-                    <div>План</div>
-                    <i v-if="show_headers" class="fa fa-sort ml-2" @click="sort('month')"></i>
-                </th>
-                <th class="text-center px-1 day-minute">
-                    <div>Вып.</div>
-                    <i v-if="show_headers" class="fa fa-sort ml-2" @click="sort('plan')"></i>
-                </th>
-            </template>
+              <template v-else>
+                  <th class="text-center px-1 day-minute">
+                      План
+                      <i v-if="show_headers" class="fa fa-sort ml-2" @click="sort('month')"></i>
+                  </th>
+                  <th class="text-center px-1 day-minute">
+                      Вып.
+                      <i v-if="show_headers" class="fa fa-sort ml-2" @click="sort('plan')"></i>
+                  </th>
+              </template>
 
-            <template v-for="day in month.daysInMonth">
-                <th class="text-center px-1" :key="day">
-                    <div>{{ day }}</div>
-                </th>
-            </template>
-        </tr>
-
-        <tr v-for="(item, index) in filtered" :key="index">
-
-
-            <td v-if="item.name == 'SPECIAL_BTN'">
-                <button class="btn btn-light rounded btn-sm" @click="switchAction">Сумма\Среднее</button>
-            </td>
-
-            <td class="table-primary b-table-sticky-column text-left px-2 t-name" :title="item.id + ' ' + item.email" v-else>
-                <div class="wd d-flex">
-                    {{ item.lastname }} {{ item.name }}
-                    <b-badge variant="success" v-if="item.group == 'Просрочники'">{{ item.group }}</b-badge>
-                    <b-badge variant="primary" v-else>{{ item.group }}</b-badge>
-
-                    <div v-if="item.show_cup == 1">
-                        <img src="/images/goldencup.png" class="goldencup ml-2" alt="">
-                    </div>
-                    <div v-if="item.show_cup == 2">
-                        <img src="/images/silvercup.png" class="goldencup ml-2" alt="">
-                    </div>
-                    <div v-if="item.show_cup == 3">
-                        <img src="/images/bronzecup.png" class="goldencup ml-2" alt="">
-                    </div>
-                </div>
-            </td>
-
-            <template v-if="activity.plan_unit == 'minutes'">
-                <td class="px-2 stat da"><div>{{ item.avg }}</div></td>
-                <td class="px-2 stat da"><div :title="activity.daily_plan + ' * ' + item.applied_from">{{ item.month }}</div></td>
-                <td class="px-2 stat da plan"><div>{{ item.plan }}</div></td>
-                <td class="px-2 stat da"><div>{{ item.percent }}</div></td>
-            </template>
-
-            <template v-else>
-                <td class="px-2 stat day-minute "><div>{{ item.month }}</div></td>
-                <td class="px-2 stat day-minute"><div>{{ item.plan }}</div></td>
-            </template>
+              <template v-for="day in month.daysInMonth">
+                  <th class="text-center px-1" :key="day">
+                      {{ day }}
+                  </th>
+              </template>
+          </tr>
+          </thead>
+           <tbody>
+           <tr v-for="(item, index) in filtered" :key="index">
 
 
-            <template v-for="day in month.daysInMonth">
-                <td v-if="item.editable && editable" :class="'px-0 day-minute text-center Fri table-' + item._cellVariants[day]">
-                    <div><input type="number" v-model="item[day]" @change="updateSettings($event, item, index, day)" class="form-control cell-input"></div>
-                </td>
-                <td v-else-if="holidays.includes(day) &&  item[day] > 0" @click="editMode(item)" :class="'px-0 day-minute text-center Fri table-' + item._cellVariants[day]">
+               <td v-if="item.name == 'SPECIAL_BTN'" class="b-table-sticky-column text-left">
+                   <button class="btn btn-light rounded btn-sm" @click="switchAction">Сумма\Среднее</button>
+               </td>
 
-                    <div v-if="item[day]">{{ item[day] }}{{ activity.unit }}</div>
-                </td>
-                <td v-else-if="holidays.includes(day)" @click="editMode(item)" :class="'px-0 day-minute text-center Fri mywarning'">
+               <td class="table-primary b-table-sticky-column text-left px-2 t-name" :title="item.id + ' ' + item.email" v-else>
+                   <div class="wd d-flex">
+                       {{ item.lastname }} {{ item.name }}
+                       <b-badge variant="success" v-if="item.group == 'Просрочники'">{{ item.group }}</b-badge>
+                       <b-badge variant="primary" v-else>{{ item.group }}</b-badge>
 
-                    <div v-if="item[day]">{{ item[day] }}{{ activity.unit }}</div>
-                </td>
-                <td v-else @click="editMode(item)" :class="[item[day] > 0 || holidays.includes(day) ? 'px-0 day-minute text-center Fri table-' + item._cellVariants[day] : 'px-0 day-minute text-center Fri table-text-center']">
+                       <div v-if="item.show_cup == 1">
+                           <img src="/images/goldencup.png" class="goldencup ml-2" alt="">
+                       </div>
+                       <div v-if="item.show_cup == 2">
+                           <img src="/images/silvercup.png" class="goldencup ml-2" alt="">
+                       </div>
+                       <div v-if="item.show_cup == 3">
+                           <img src="/images/bronzecup.png" class="goldencup ml-2" alt="">
+                       </div>
+                   </div>
+               </td>
 
-                    <div v-if="item[day]">{{ item[day] }}{{ activity.unit }}</div>
-                </td>
-            </template>
-        </tr>
-    </table>
+               <template v-if="activity.plan_unit == 'minutes'">
+                   <td class="px-2 stat da"><div>{{ item.avg }}</div></td>
+                   <td class="px-2 stat da"><div :title="activity.daily_plan + ' * ' + item.applied_from">{{ item.month }}</div></td>
+                   <td class="px-2 stat da plan"><div>{{ item.plan }}</div></td>
+                   <td class="px-2 stat da"><div>{{ item.percent }}</div></td>
+               </template>
+
+               <template v-else>
+                   <td class="px-2 stat day-minute "><div>{{ item.month }}</div></td>
+                   <td class="px-2 stat day-minute"><div>{{ item.plan }}</div></td>
+               </template>
+
+
+               <template v-for="day in month.daysInMonth">
+                   <td v-if="item.editable && editable" :class="'px-0 day-minute text-center Fri table-' + item._cellVariants[day]">
+                       <div><input type="number" v-model="item[day]" @change="updateSettings($event, item, index, day)" class="form-control cell-input"></div>
+                   </td>
+                   <td v-else-if="holidays.includes(day) &&  item[day] > 0" @click="editMode(item)" :class="'px-0 day-minute text-center Fri table-' + item._cellVariants[day]">
+
+                       <div v-if="item[day]">{{ item[day] }}{{ activity.unit }}</div>
+                   </td>
+                   <td v-else-if="holidays.includes(day)" @click="editMode(item)" :class="'px-0 day-minute text-center Fri mywarning'">
+
+                       <div v-if="item[day]">{{ item[day] }}{{ activity.unit }}</div>
+                   </td>
+                   <td v-else @click="editMode(item)" :class="[item[day] > 0 || holidays.includes(day) ? 'px-0 day-minute text-center Fri table-' + item._cellVariants[day] : 'px-0 day-minute text-center Fri table-text-center']">
+
+                       <div v-if="item[day]">{{ item[day] }}{{ activity.unit }}</div>
+                   </td>
+               </template>
+           </tr>
+           </tbody>
+       </table>
+   </div>
 
     <Sidebar
         v-if="showExcelImport"
@@ -172,9 +176,9 @@
     </Sidebar>
 
     <!-- Modal edit -->
-    <b-modal v-model="showEditModal" title="Настройки активности" @ok="saveActivity()" size="lg" class="modalle">
+    <b-modal v-model="showEditModal"  title="Настройки активности" @ok="saveActivity()" size="lg" class="modalle">
 
-        <div class="row">
+        <div class="row mb-3">
             <div class="col-5">
                 <p class="">Название активности</p>
             </div>
@@ -183,7 +187,7 @@
             </div>
         </div>
 
-        <div class="row">
+        <div class="row mb-3">
             <div class="col-5">
                 <p class="">Метод</p>
             </div>
@@ -194,7 +198,7 @@
             </div>
         </div>
 
-        <div class="row">
+        <div class="row mb-3">
             <div class="col-5">
                 <p class="">План (Если сумма, на день)</p>
             </div>
@@ -203,7 +207,7 @@
             </div>
         </div>
 
-        <div class="row">
+        <div class="row mb-3">
             <div class="col-5">
                 <p class="">Кол-во рабочих дней в неделе</p>
             </div>
@@ -212,7 +216,7 @@
             </div>
         </div>
 
-        <div class="row">
+        <div class="row mb-3">
             <div class="col-5">
                 <p class="">Ед. измерения (Символ в конце показателя)</p>
             </div>
@@ -891,7 +895,7 @@ export default {
 }
 
 .day-minute {
-    padding: 0 !important;
+    padding: 0 10px!important;
     text-align: center;
     vertical-align: middle;
 
@@ -929,7 +933,8 @@ export default {
     min-width: 32px;
 }
 .table .stat {
-    background: #d9edff;
+    background-color: #d9edff;
+    border: 1px solid #bbd3e9!important;
 }
 .table {
     position: relative;
@@ -945,7 +950,7 @@ export default {
     font-weight: 500;
 }
 .table .stat.plan{
-    background: #007bff;
+    background-color: #779bbb;
     color: #fff;
 }
 

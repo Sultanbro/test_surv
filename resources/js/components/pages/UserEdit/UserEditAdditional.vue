@@ -8,8 +8,9 @@ export default {
         },
         userCreated: String,
         userApplied: String,
-        userAppliedDays: String,
+        userAppliedDays: Number,
         isTrainee: Boolean,
+        userDeleted: String,
         userDeletedAt: String,
     }
 }

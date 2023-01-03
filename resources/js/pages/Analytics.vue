@@ -332,6 +332,7 @@ import TableSkype from '@/components/tables/TableSkype' // Стажеры
 import SvodTable from '@/components/SvodTable' //сводная таблица для аналитики
 import TableFunnel from '@/components/tables/TableFunnel' // Воронка
 import ProgressBar from '@/components/ProgressBar' // в ответах quiz
+import { useYearOptions } from '../composables/yearOptions'
 
 export default {
     name: 'Analytics',
@@ -388,7 +389,7 @@ export default {
             records: [],
             hasPremission: false,
             firstEnter: true,
-            years: [2020, 2021, 2022],
+            years: useYearOptions(),
             currentYear: new Date().getFullYear(),
             monthInfo: {
                 currentMonth: null,

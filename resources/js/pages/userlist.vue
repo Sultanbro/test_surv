@@ -38,12 +38,10 @@
 
     <div class="table-responsive ul table-container">
     <b-table
-      striped
-      hover
+      ref="table"
+      bordered
       show-empty
       emptyText="Ничего нет"
-      ref="table"
-      small
       stacked="md"
       :items="itemProvider"
       :fields="fields"
@@ -390,13 +388,13 @@ export default {
       default: 'nosub'
     },
     positions: {
-      type: Object,
-      default: {}
+      type: Array,
+      default: () => []
     },
   },
   data() {
     return {
-      my_positions: {},
+      my_positions: [],
       position: 0,
       jobFilters: [{ text: 'Должность', value: 0 }],
       sel: false,

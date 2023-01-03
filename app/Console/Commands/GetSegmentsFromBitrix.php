@@ -3,7 +3,7 @@
 namespace App\Console\Commands;
 
 use Illuminate\Console\Command;
-use App\External\Bitrix\Bitrix;
+use App\Api\BitrixOld as Bitrix;
 use App\Models\Bitrix\Lead;
 
 class GetSegmentsFromBitrix extends Command

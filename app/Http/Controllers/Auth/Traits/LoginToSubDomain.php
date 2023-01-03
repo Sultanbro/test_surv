@@ -10,18 +10,52 @@ trait LoginToSubDomain
 {   
     /**
      * Login to subdomain through UserImpersonate
+     * or get
      *
      * @param  \App\Models\Tenant $tenant null
      * @param  String $email null
      * @return \Illuminate\Http\RedirectResponse
      */
     public function loginToSubDomain(Tenant $tenant = null, String $email = null)
-    { 
-        return redirect( $this->loginLinkToSubDomain( $tenant, $email ) );
+    {   
+        if($tenant) return $this->loginLinkToSubDomain( $tenant, $email );
+
+        $links = $this->loginLinks($email);
+
+        if($links == 0) throw new \Exception('User has not tenants to login');
+
+        return $links[0]['link'];
     }
 
     /**
-     * Login to subdomain through UserImpersonate
+     * Login links to subdomain through UserImpersonate
+     *
+     * @param  \App\Models\Tenant $tenant null
+     * @return String
+     */
+    public function loginLinks(String $email = null)
+    {   
+        $email = $email ?? auth()->user()->email;
+
+        // find owner in central app
+        $centralUser = $this->getCentralUser( $email );
+
+        // create links array
+        $links = [];
+        foreach($centralUser->cabinets as $cabinet) {
+
+            // $tenant = 
+            $links[] = [
+                'id' => $cabinet->id,
+                'link' => $this->getSubDomainLink( $cabinet, $email )
+            ];
+        } 
+
+        return $links;
+    }
+
+    /**
+     * Login link to subdomain through UserImpersonate
      *
      * @param  \App\Models\Tenant $tenant null
      * @param  String $email null
@@ -36,7 +70,7 @@ trait LoginToSubDomain
 
         // choose tenant
         $tenant = $tenant ?? $centralUser->tenants->first();
-
+     
         // redirect to subdomain login link
         return $this->getSubDomainLink( $tenant, $email );
     }
@@ -49,7 +83,7 @@ trait LoginToSubDomain
      */
     protected function getCentralUser(String $email)
     {
-        $centralUser = CentralUser::with('tenants')
+        $centralUser = CentralUser::with(['tenants', 'cabinets'])
             ->where('email', $email)
             ->first();
 
@@ -74,12 +108,24 @@ trait LoginToSubDomain
 
         // initialize tenant
         tenancy()->initialize( $tenant );
-        
+
         // find user in tenant app
         $tenantUser = User::where('email', $email)->first();
 
         if( !$tenantUser ) {
-            throw new \Exception('Can\'t login with '. $email . ' in ' . $subdomain .' . Owner account was not found in tenant app (Tenant'. $tenant->id .' DB)');
+
+            $centralUser = $this->getCentralUser( $email );
+
+            $tenantUser = User::create([
+                'email' => $centralUser->email,
+                'phone' => $centralUser->phone,
+                'name' => $centralUser->name,
+                'last_name' => $centralUser->last_name,
+                'working_country' => $centralUser->country,
+                'working_city' => $centralUser->city,
+                'birthday' => $centralUser->birthday,
+                'is_admin' => 0
+            ]);
         }
 
         // redirect link to subdomain  

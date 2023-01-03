@@ -2,10 +2,14 @@
 
 namespace App\Providers;
 
+use App\Events\EmailNotificationEvent;
+use App\Events\TimeTrack\CreateTimeTrackHistoryEvent;
 use App\Events\TrackCourseItemFinishedEvent;
 use App\Events\TrackGroupChangingEvent;
 use App\Events\TrackUserFiredEvent;
 use App\Events\TransferUserInGroupEvent;
+use App\Listeners\EmailNotificationListener;
+use App\Listeners\TimeTrack\CreateTimeTrackHistoryListener;
 use App\Listeners\TrackCourseItemFinishedListener;
 use App\Listeners\TrackGroupChangingListener;
 use App\Listeners\TrackUserFiredListener;
@@ -50,6 +54,12 @@ class EventServiceProvider extends ServiceProvider
         ],
         TrackCourseItemFinishedEvent::class => [
             TrackCourseItemFinishedListener::class
+        ],
+        CreateTimeTrackHistoryEvent::class => [
+            CreateTimeTrackHistoryListener::class
+        ],
+        EmailNotificationEvent::class => [
+            EmailNotificationListener::class
         ]
     ];
 

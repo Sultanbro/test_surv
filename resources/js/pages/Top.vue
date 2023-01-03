@@ -80,15 +80,14 @@
 
 
       <b-tab title="Выручка" key="3" card>
-        <div class="table-responsive mt-4">
-          <table class="table tops b-table table-striped table-bordered table-sm proceed no-table"
-                 >
+        <div class="table-responsive table-container mt-4">
+          <table class="table table-bordered whitespace-no-wrap custom-table-revenue">
             <thead>
             <tr>
               <th v-for="(field, findex) in proceeds.fields" :key="findex"
                   class="t-name table-title"
                   :class="{
-                                                'w-295': findex == 0,
+                                                'w-295 b-table-sticky-column': findex == 0,
                                                 'w-125': findex == 1,
                                                 'w-80': findex == 2,
                                                 'w-60': findex == 3,
@@ -115,12 +114,11 @@
             </thead>
             <tbody>
             <tr v-for="(record, rindex) in proceeds.records" :key="rindex">
-
-
               <td v-for="(field, findex) in proceeds.fields" :key="findex"
-                  class="text-center t-name table-title" :class="{
+                  class="t-name table-title" :class="{
                     'bg-grey': ['w1', 'w2', 'w3', 'w4', 'w5', 'w6'].includes(field),
-                    'weekend': isWeekend(field)
+                    'weekend': isWeekend(field),
+                    'text-left b-table-sticky-column': ['Отдел'].includes(field)
                   }">
 
                 <template v-if="!['%', 'План', 'Итого', '+/-', 'Отдел'].includes(field)">
@@ -175,11 +173,11 @@
 
       <b-tab title="Прогноз" key="4" card>
         <b-row class="m-0">
-          <b-col cols="12" md="6" class="p-0 mt-4">
-            <div class="forecast">
-              <table class="table tops table-custom-forecast b-table table-striped table-bordered">
+          <b-col cols="12" md="8" class="p-0 mt-4">
+            <div class="forecast table-container">
+              <table class="table table-bordered table-custom-forecast">
                 <thead>
-                <th class="text-left t-name table-title" style="background:#90d3ff">Отдел
+                <th class="text-left t-name table-title td-blue">Отдел
 
                   <i class="fa fa-info-circle"
                      v-b-popover.hover.right.html="'Прогноз по принятию сотрудников на месяц'"
@@ -205,7 +203,7 @@
                 </thead>
                 <tbody>
                 <tr v-for="(group, index) in prognoz_groups">
-                  <td class="text-left t-name table-title align-middle" style="background:#90d3ff">{{ group.name }}</td>
+                  <td class="text-left t-name table-title td-blue align-middle">{{ group.name }}</td>
                   <td class="text-center t-name table-title align-middle">
                     <input type="number" v-model="group.plan" @change="saveGroupPlan(index)">
                   </td>
@@ -234,6 +232,7 @@
 </template>
 
 <script>
+import { useYearOptions } from '../composables/yearOptions'
 export default {
   name: "Top",
   props: ['data', 'activeuserid'],
@@ -244,7 +243,7 @@ export default {
       utility: [], // вторая
       proceeds: [], // третья
       prognoz_groups: [], //
-      years: [2020, 2021, 2022],
+      years: useYearOptions(),
       currentYear: new Date().getFullYear(),
       monthInfo: {
         currentMonth: null,
@@ -420,21 +419,15 @@ export default {
 
 <style lang="scss">
   .table-custom-forecast{
-    border: 1px solid #cccccc;
-    tbody{
-      td,th{
-        padding: 0!important;
-        input{
-          padding: 0 20px;
-          background-color: transparent;
-          height: 30px;
-        }
-      }
+    .td-blue{
+      background-color: #DDE9FF;
+      border: 1px solid #bdcff1!important;
     }
   }
 
 .weekend {
-  background: orange !important;
+  background-color: orange !important;
+  color: #fff;
 }
 .gauge-title {
   font-weight: bold;

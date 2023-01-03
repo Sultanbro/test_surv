@@ -85,9 +85,9 @@ export default {
     ...mapActions(['loadChat', 'toggleMessenger', 'leftChat', 'pinChat', 'unpinChat', 'removeChat', 'setLoading']),
     openChat(chat, event) {
       event.stopPropagation();
-      this.setLoading(true);
       this.contextMenuVisible = false;
       if (!this.chat || this.chat.id !== chat.id) {
+        this.setLoading(true);
         this.loadChat({chatId: chat.id, callback: () => {
           this.setLoading(false);
         }});

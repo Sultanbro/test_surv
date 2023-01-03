@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use App\Models\Tenant;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 
 class CentralUser extends Model
 {
@@ -31,11 +32,20 @@ class CentralUser extends Model
     ];
 
     /**
-     * Кабинеты user-a
+     * Кабинеты user-a где он owner
      */
-    public function tenants(): \Illuminate\Database\Eloquent\Relations\BelongsToMany
+    public function tenants(): BelongsToMany
     {
         return $this->belongsToMany(Tenant::class, 'tenant_user', 'user_id', 'tenant_id');
+    }
+
+    /**
+     * Кабинеты user-a 
+     */
+    public function cabinets(): BelongsToMany
+    {
+        return $this->belongsToMany(Tenant::class, 'tenant_pivot', 'user_id', 'tenant_id')
+            ->withPivot(['owner as owner', 'user_id as user_id', 'tenant_id as tenant_id']);
     }
 
     public function getFullNameAttribute()

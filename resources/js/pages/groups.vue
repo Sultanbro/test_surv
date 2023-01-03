@@ -210,21 +210,6 @@
       </div>
     </div>
 
-       <sidebar
-        title="KPI"
-        :open="showKPI"
-        @close="showKPI = false"
-        v-if="showKPI"
-        width="72%"
-      >
-        <t-kpi
-          :activeuserid="activeuserid"
-          :is_admin="true"
-          :group="activebtn"
-          :group_id="group_id"
-        />
-      </sidebar>
-
       <sidebar
         title="Бонусы"
         :open="showBonuses"
@@ -992,6 +977,14 @@ span.before {
     max-width: 24% !important;
   }
 }
+.custom-table-permissions{
+  .groups .multiselect__tag{
+    flex: 0 0 auto!important;
+    max-width: 100%!important;
+    margin-right: 5px !important
+  }
+}
+
 .scscsc {
   margin-left: 15px;
 }

@@ -2,10 +2,12 @@
 
 namespace App\Service\Department;
 
+use App\Events\TrackGroupChangingEvent;
 use App\Models\GroupUser;
 use App\ProfileGroup;
 use App\User;
 use Carbon\Carbon;
+use Exception;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\HigherOrderWhenProxy;
@@ -396,5 +398,39 @@ class UserService
         $users = $users->merge(collect($fired));
         
         return $users;
+    }
+
+    /**
+     * @throws Exception
+     */
+    public function setGroup(
+        int $groupId,
+        int $userId,
+        string $action
+    ): void
+    {
+        $group = ProfileGroup::query()->find($groupId);
+        $exist = $group->users()->where([
+            ['user_id', $userId],
+            ['status', 'active']
+        ])->whereNull('to')->exists();
+
+        try {
+            if($action == 'add' && !$exist) {
+                $group->users()->attach($userId, [
+                    'from' => Carbon::now()->toDateString()
+                ]);
+            }
+
+            if($action == 'delete') {
+                event(new TrackGroupChangingEvent($userId, $groupId));
+                $group->users()->where('user_id', $userId)->whereNull('to')->update([
+                    'to' => Carbon::now()->toDateString(),
+                    'status'     => 'drop'
+                ]);
+            }
+        }catch (Exception $exception) {
+            throw new Exception($exception);
+        }
     }
 }

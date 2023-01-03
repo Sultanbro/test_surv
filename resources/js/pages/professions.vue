@@ -60,7 +60,7 @@
 
               <b-col cols="12" class="my-4">
                   <div class="table-container">
-                      <b-table-simple class="table b-table table-sm pos-desc pos-desc-1">
+                      <b-table-simple class="table table-bordered pos-desc pos-desc-1">
                          <b-thead>
                              <b-tr>
                                  <b-th>Следующая ступень карьерного роста</b-th>
@@ -130,23 +130,27 @@ export default {
     // this.getPositions()
   },
   methods: {
-
     selectPosition(value) {
-
         this.activebtn = value
-        console.log(this.activebtn)
-
-        axios.post('/timetracking/settings/positions/get', {
+        axios.post('/timetracking/settings/positions/get-new', {
           name: this.activebtn,
         }).then(response => {
           //this.$toast.info('Добавлена');
-          console.log(response.data)
-          this.new_name = response.data.position;
-          this.position_id = response.data.id;
-          this.indexation = response.data.indexation;
-          this.sum = response.data.sum;
-          this.desc = response.data.desc;
-
+          const data = response.data?.data
+          if(!data[0]) return console.error(response)
+          this.new_name = data[0].position;
+          this.position_id = data[0].id;
+          this.indexation = data[0].indexation;
+          this.sum = data[0].sum;
+          this.desc = {
+            require: data[0].require,
+            actions: data[0].actions,
+            time: data[0].time,
+            salary: data[0].salary,
+            knowledge: data[0].knowledge,
+            next_step: data[0].next_step,
+            show: data[0].show,
+          }
         }).catch(error => {
           console.log(error.response)
         })
@@ -167,15 +171,16 @@ export default {
     },
 
     addPosition() {
-      axios.post('/timetracking/settings/positions/add', {
+      // /timetracking/settings/positions/add-new
+      axios.post('/timetracking/settings/positions/add-new', {
         position: this.new_position,
       }).then(response => {
         if(response.data.code == 201) {
           this.$toast.error('Должность с таким названием уже существует!');
         } else {
-           this.$toast.success('Добавлена');
-           this.positions.push(response.data.pos)
-          this.new_position = ''
+            this.$toast.success('Добавлена');
+            this.positions.push(response.data.pos)
+            this.new_position = ''
         }
 
       }).catch(error => {
@@ -186,7 +191,7 @@ export default {
 
 
 
-        axios.post('/timetracking/settings/positions/save', {
+        axios.post('/timetracking/settings/positions/save-new', {
           id: this.position_id,
           new_name: this.new_name,
           indexation: this.indexation,

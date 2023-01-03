@@ -41,6 +41,7 @@ final class ManuallyReportService
     ): int
     {
         $enter = $this->setEnterTime($year, $month, $day, $time);
+
         try {
 
             DB::transaction(function () use ($userId, $year, $month, $day, $time, $enter, $comment) {
@@ -78,6 +79,6 @@ final class ManuallyReportService
         string $time
     ): string
     {
-        return Carbon::create($year, $month, $day)->setTimeFromTimeString($time)->format('Y-m-d H:i:s');
+        return Carbon::create($year, $month, $day)->setTimeFromTimeString($time)->subHours(6)->format('Y-m-d H:i:s');
     }
 }

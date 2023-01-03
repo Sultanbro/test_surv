@@ -65,7 +65,7 @@ class Article extends Model
 
     public function author(): BelongsTo
     {
-        return $this->belongsTo(User::class, 'author_id', 'id');
+        return $this->belongsTo(User::class, 'author_id', 'id')->withTrashed();
     }
 
     public function comments(): HasMany
@@ -95,6 +95,7 @@ class Article extends Model
         preg_match_all('/<img[^>]+>/i', $content, $result); 
 
         $doc = new \DOMDocument();
+        libxml_use_internal_errors(true);
         $doc->loadHTML('<?xml encoding="utf-8" ?>' .$content);
         $imageTags = $doc->getElementsByTagName('img');
 
@@ -122,17 +123,17 @@ class Article extends Model
 
     public function views(): BelongsToMany
     {
-        return $this->belongsToMany(User::class, 'article_views_users', 'article_id', 'user_id');
+        return $this->belongsToMany(User::class, 'article_views_users', 'article_id', 'user_id')->withTrashed();
     }
 
     public function favourites(): BelongsToMany
     {
-        return $this->belongsToMany(User::class, 'article_favourites_users', 'article_id', 'user_id');
+        return $this->belongsToMany(User::class, 'article_favourites_users', 'article_id', 'user_id')->withTrashed();
     }
 
     public function pins(): BelongsToMany
     {
-        return $this->belongsToMany(User::class, 'article_pins_users', 'article_id', 'user_id');
+        return $this->belongsToMany(User::class, 'article_pins_users', 'article_id', 'user_id')->withTrashed();
     }
 
     public static function scopeAvailableFor(Builder $builder, User $user): Builder
