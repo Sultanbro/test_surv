@@ -114,15 +114,13 @@ export default {
     ['Quality control', '+', '+', '+', '+'],
     ['Chat', '+', '+', '+', '+'],
     ['The structure of the company', '+', '+', '+', '+'],
-    ['Support', '+', '+', '-', '+'],
-    ['Administration/Audit', '-', '-', '+', '+'],
-    ['Transfer to client server', '-', '-', '-', '+'],
-    ['Client\'s individual domain', '-', '-', '+', '+'],
-    ['Cabinet branding (logo placement, corporate color)', '+', '+', '+', '+'],
-    ['Payment per month', '', '9 000', '27 000', '100 000'],
-    ['Payment per year', '', '108 000', '291 600', '960 000'],
+    ['Support', '+', '+', '+', '+'],
+    ['Client\'s individual domain', '-', '+', '+', '+'],
+    ['Payment per month', '', '9000', '27000', '100000'],
+    ['Payment per year', '', '108000', '259200', '960000'],
     ['Discount', '', '', '20%', '20%']
   ],
+
   'prices-register': 'Register',
 
   's3-header': 'Working with JOBTRON is easy and convenient',

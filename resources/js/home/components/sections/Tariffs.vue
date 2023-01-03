@@ -85,23 +85,78 @@
 </template>
 
 <script>
+import axios from "axios";
 export default {
   computed: {
     lang() {
       return this.$root.$data.lang
     },
     table() {
-      return this.$lang(this.lang, 'prices-table')
+      return this.$lang(this.lang, 'prices-table').map((item, index) => {
+        if (index >= 12 && index <= 13) {
+          return item.map((item, index) => {
+            if (index >= 2 && index <= 4) {
+              if (this.lang === 'en') {
+                return `${this.separateThousands(Math.round(Number(item) / this.usdRate))} $`
+              } if (this.lang === 'kz') {
+                return `${this.separateThousands(Math.round(Number(item) * (100 / this.kztRate)))} ₸`
+              }
+              return `${this.separateThousands(item)} ₽`
+            } else {
+              return item
+            }
+          })
+        } else {
+          return item
+        }
+      })
     },
     isMedium() {
       return this.$viewportSize.width >= 1260
     },
   },
+  methods: {
+    async USD() {
+      const rates = await axios('https://www.cbr-xml-daily.ru/daily_json.js')
+      this.usdRate = rates.data.Valute.USD.Value
+      this.kztRate = rates.data.Valute.KZT.Value
+    },
+    separateThousands(number) {
+      const num = number.toString();
+      return num.replace(/(\d{1,3}(?=(?:\d\d\d)+(?!\d)))/g, "$1" + ' ');
+    }
+  },
   data() {
     return {
       activeCol: -1,
-      image: require('../../assets/img/tariffs.png').default
+      image: require('../../assets/img/tariffs.png').default,
+      usdRate: 0,
+      kztRate: 0
+
     }
+  },
+  async mounted() {
+    await this.USD()
+    console.log(this.usdRate, 'usdRate')
+    console.log(this.kztRate, 'kztRate')
+    // console.log(this.$lang(this.lang, 'prices-table').map((item, index) => {
+    //   if (index >= 12 && index <= 13) {
+    //     return item.map((item, index) => {
+    //       if (index >= 2 && index <= 4) {
+    //         if (this.lang === 'en') {
+    //           return `${this.separateThousands(Math.round(Number(item) / this.usdRate))} $`
+    //         } if (this.lang === 'kz') {
+    //           return `${this.separateThousands(Math.round(Number(item) / this.kztRate))} ₸`
+    //         }
+    //         return this.separateThousands(item)
+    //       } else {
+    //         return item
+    //       }
+    //     })
+    //   } else {
+    //     return item
+    //   }
+    // }), 'TABLE')
   }
 }
 </script>
