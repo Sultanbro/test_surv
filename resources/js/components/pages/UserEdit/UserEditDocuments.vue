@@ -13,7 +13,6 @@ export default {
     <div
         id="iphones4"
         class="xtab-pane xfade none-block"
-        style="display: none"
     >
         <h5 class="mb-5">Документы (RAR, ZIP)</h5>
         <div class="row file-uploads-container">

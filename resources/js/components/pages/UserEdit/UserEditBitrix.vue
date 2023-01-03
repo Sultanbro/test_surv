@@ -24,7 +24,6 @@ export default {
         v-if="user"
         id="other_data_bitrix"
         class="none-block"
-        style="display: none"
     >
         <div class="col-md-12">
             <p v-if="user.bitrix_id">

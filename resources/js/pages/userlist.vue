@@ -390,13 +390,13 @@ export default {
       default: 'nosub'
     },
     positions: {
-      type: Object,
-      default: {}
+      type: Array,
+      default: () => []
     },
   },
   data() {
     return {
-      my_positions: {},
+      my_positions: [],
       position: 0,
       jobFilters: [{ text: 'Должность', value: 0 }],
       sel: false,

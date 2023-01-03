@@ -13,7 +13,6 @@ export default {
     <div
         id="other_data"
         class="none-block"
-        style="display: none"
     >
         <div class="col-md-12 mt-3">
             <h5 class="mb-4">Прочие данные</h5>

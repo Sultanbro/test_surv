@@ -6,6 +6,7 @@
             :class="isShow ? 'show' : ''"
             @close="open = false"
             width="70%"
+            v-scroll-lock="open"
     >
         <b-button variant="primary" class="mx-auto d-block my-3" @click="openModalAdd">
             Загрузить файл награды
@@ -278,9 +279,9 @@
                 return this.modalSelect;
             },
             tabIndex(val) {
-                if(!this.$refs.tabAwardUser.$refs.buttons) return
-                let buttons = this.$refs.tabAwardUser.$refs.buttons;
-                buttons[val].$refs.link.$el.scrollIntoView({inline: "end", behavior: "smooth"});
+                const buttons = this.$refs.tabAwardUser.$refs.buttons;
+                if(!buttons) return
+                buttons.$refs.link.$el.scrollIntoView({inline: "end", behavior: "smooth"});
             }
         },
         methods: {

@@ -59,7 +59,6 @@ export default {
     <div
         id="profile_salary"
         class="col-md-12 mt-3 none-block"
-        style="display: none"
     >
         <h5 class="mb-4">Оплата</h5>
 
