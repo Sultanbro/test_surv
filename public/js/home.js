@@ -3571,6 +3571,7 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
 //
 //
 //
+//
 
 
 
@@ -3588,6 +3589,7 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
       isBlock1Highlight: false,
       isBlock2Highlight: false,
       isBlock3Highlight: false,
+      isButtonDisabled: false,
       observer: null
     };
   },
@@ -3597,6 +3599,29 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
     },
     isMedium: function isMedium() {
       return this.$viewportSize.width >= 1260;
+    },
+    callMeButtonContent: function callMeButtonContent() {
+      if (!this.isButtonDisabled) {
+        if (this.lang === 'ru') {
+          return 'Перезвонить мне';
+        }
+        if (this.lang === 'en') {
+          return 'Call me back';
+        }
+        if (this.lang === 'kz') {
+          return 'маған қайта қоңырау шал';
+        }
+      } else {
+        if (this.lang === 'ru') {
+          return 'Ожидайте звонка';
+        }
+        if (this.lang === 'en') {
+          return 'Expect a call';
+        }
+        if (this.lang === 'kz') {
+          return 'Қоңырау күтіңіз';
+        }
+      }
     }
   },
   mounted: function mounted() {
@@ -3650,7 +3675,11 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
         }, _callee);
       }))();
     },
-    callMeBack: function callMeBack() {}
+    callMeBack: function callMeBack() {
+      if (this.name && this.phone) {
+        this.isButtonDisabled = true;
+      }
+    }
   }
 });
 
@@ -4881,7 +4910,7 @@ __webpack_require__.r(__webpack_exports__);
 var ___CSS_LOADER_EXPORT___ = _node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_0___default()(function(i){return i[1]});
 var ___CSS_LOADER_URL_REPLACEMENT_0___ = _node_modules_css_loader_dist_runtime_getUrl_js__WEBPACK_IMPORTED_MODULE_1___default()(_assets_img_s2_bg_svg__WEBPACK_IMPORTED_MODULE_2__["default"]);
 // Module
-___CSS_LOADER_EXPORT___.push([module.id, "#jSec4 {\n  width: 100%;\n  padding-bottom: 2rem;\n}\n#jSec4 .hooper {\n  height: auto;\n}\n.jSec4-header {\n  width: -moz-fit-content;\n  width: fit-content;\n  margin-left: auto;\n  margin-right: auto;\n  margin-bottom: 5rem;\n  position: relative;\n}\n.jSec4-header:before {\n  content: \"\";\n  display: block;\n  width: 10.625rem;\n  height: 6.625rem;\n  position: absolute;\n  z-index: -1;\n  top: -2.5rem;\n  left: -3rem;\n  background-image: url(" + ___CSS_LOADER_URL_REPLACEMENT_0___ + ");\n}\n.jSec4-subheader {\n  text-align: center;\n  font-size: 1.125rem;\n}\n.jSec4-items {\n  display: flex;\n  flex-flow: row wrap;\n  justify-content: stretch;\n  padding: 0;\n  margin: 0;\n  list-style: none;\n}\n.jSec4-item {\n  display: flex;\n  flex-flow: column nowrap;\n  align-items: center;\n  flex: 0 0 100%;\n  padding: 2rem;\n  margin-bottom: 1.25rem;\n  border-radius: 0.9375rem;\n  position: relative;\n  overflow: hidden;\n}\n.jSec4-item:before {\n  content: \"\";\n  width: 0;\n  height: 0;\n  border-radius: 100vw;\n  position: absolute;\n  z-index: 1;\n  top: 50%;\n  left: 50%;\n  transform: translate(-50%, -50%);\n  background-color: rgba(0, 0, 0, 0.25);\n  transition: all 0.35s;\n}\n.jSec4-item-title {\n  margin-bottom: 0.5rem;\n  font-weight: 700;\n  font-size: 3.125rem;\n  line-height: 2;\n  position: relative;\n  z-index: 5;\n  transition: text-shadow 0.35s;\n}\n.jSec4-item-text {\n  font-size: 1.125rem;\n  line-height: 1.39;\n  text-align: center;\n  width: 16rem;\n}\n.jSec4-item-1 {\n  background: #edf8ff;\n}\n.jSec4-item-1 .jSec4-item-title {\n  color: #72c6f9;\n}\n.jSec4-item-2 {\n  background: #fff9ea;\n}\n.jSec4-item-2 .jSec4-item-title {\n  color: #ffd86b;\n}\n.jSec4-item-3 {\n  background: #f3f0fc;\n}\n.jSec4-item-3 .jSec4-item-title {\n  color: #9082bb;\n}\n.jSec4-highlight:before {\n  width: 120%;\n  height: 120%;\n}\n.jSec4-highlight .jSec4-item-title {\n  text-shadow: 0 0 2px #aaa, 0 0 1rem #fff, 0 0 1rem #fff, 0 0 1rem #fff, 0 0 1rem #fff;\n}\n.jSec4-form,\n.jSec4-form-inputs {\n  display: flex;\n  flex-flow: column;\n  align-items: center;\n  gap: 1rem;\n}\n@media screen and (min-width: 1260px) {\n#jSec4 {\n    padding-bottom: 5rem;\n}\n.jSec4-items {\n    flex-flow: row nowrap;\n    justify-content: stretch;\n    align-items: stretch;\n    gap: 1.25rem;\n}\n.jSec4-item {\n    flex: 0 1 33%;\n    padding: 2rem 3rem;\n}\n.jSec4-form {\n    display: flex;\n    flex-flow: row nowrap;\n    align-items: center;\n    gap: 1.25rem;\n    padding-top: 1rem;\n}\n.jSec4-form .jButton {\n    white-space: nowrap;\n}\n.jSec4-form-inputs {\n    display: flex;\n    flex-flow: row nowrap;\n    gap: 1.25rem;\n}\n.jSec4-footer {\n    flex: 1 1 30%;\n    font-size: 1.125rem;\n    line-height: 1.39;\n}\n}", ""]);
+___CSS_LOADER_EXPORT___.push([module.id, "#jSec4 {\n  width: 100%;\n  padding-bottom: 2rem;\n}\n#jSec4 .hooper {\n  height: auto;\n}\n.jSec4-header {\n  width: -moz-fit-content;\n  width: fit-content;\n  margin-left: auto;\n  margin-right: auto;\n  margin-bottom: 5rem;\n  position: relative;\n}\n.jSec4-header:before {\n  content: \"\";\n  display: block;\n  width: 10.625rem;\n  height: 6.625rem;\n  position: absolute;\n  z-index: -1;\n  top: -2.5rem;\n  left: -3rem;\n  background-image: url(" + ___CSS_LOADER_URL_REPLACEMENT_0___ + ");\n}\n.jSec4-subheader {\n  text-align: center;\n  font-size: 1.125rem;\n}\n.jSec4-items {\n  display: flex;\n  flex-flow: row wrap;\n  justify-content: stretch;\n  padding: 0;\n  margin: 0;\n  list-style: none;\n}\n.jSec4-item {\n  display: flex;\n  flex-flow: column nowrap;\n  align-items: center;\n  flex: 0 0 100%;\n  padding: 2rem;\n  margin-bottom: 1.25rem;\n  border-radius: 0.9375rem;\n  position: relative;\n  overflow: hidden;\n}\n.jSec4-item:before {\n  content: \"\";\n  width: 0;\n  height: 0;\n  border-radius: 100vw;\n  position: absolute;\n  z-index: 1;\n  top: 50%;\n  left: 50%;\n  transform: translate(-50%, -50%);\n  background-color: rgba(0, 0, 0, 0.25);\n  transition: all 0.35s;\n}\n.jSec4-item-title {\n  font-weight: 700;\n  font-size: 3.125rem;\n  line-height: 2;\n  position: relative;\n  z-index: 5;\n  transition: text-shadow 0.35s;\n}\n.jSec4-item-text {\n  font-size: 1.125rem;\n  line-height: 1.39;\n  text-align: center;\n  width: 16rem;\n}\n.jSec4-item-1 {\n  background: #edf8ff;\n}\n.jSec4-item-1 .jSec4-item-title {\n  color: #72c6f9;\n}\n.jSec4-item-2 {\n  background: #fff9ea;\n}\n.jSec4-item-2 .jSec4-item-title {\n  color: #ffd86b;\n}\n.jSec4-item-3 {\n  background: #f3f0fc;\n}\n.jSec4-item-3 .jSec4-item-title {\n  color: #9082bb;\n}\n.jSec4-highlight:before {\n  width: 120%;\n  height: 120%;\n}\n.jSec4-highlight .jSec4-item-title {\n  text-shadow: 0 0 2px #aaa, 0 0 1rem #fff, 0 0 1rem #fff, 0 0 1rem #fff, 0 0 1rem #fff;\n}\n.jSec4-form,\n.jSec4-form-inputs {\n  display: flex;\n  flex-flow: column;\n  align-items: center;\n  gap: 1rem;\n}\n@media screen and (min-width: 1260px) {\n#jSec4 {\n    padding-bottom: 5rem;\n}\n.jSec4-items {\n    flex-flow: row nowrap;\n    justify-content: stretch;\n    align-items: stretch;\n    gap: 1.25rem;\n}\n.jSec4-item {\n    flex: 0 1 33%;\n    padding: 2rem 3rem;\n}\n.jSec4-form {\n    display: flex;\n    flex-flow: row nowrap;\n    align-items: center;\n    gap: 1.25rem;\n    padding-top: 1rem;\n}\n.jSec4-form .jButton {\n    white-space: nowrap;\n}\n.jSec4-form-inputs {\n    display: flex;\n    flex-flow: row nowrap;\n    gap: 1.25rem;\n}\n.jSec4-footer {\n    flex: 1 1 30%;\n    font-size: 1.125rem;\n    line-height: 1.39;\n}\n}", ""]);
 // Exports
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (___CSS_LOADER_EXPORT___);
 
@@ -11943,10 +11972,10 @@ var render = function () {
               "button",
               {
                 staticClass: "jButton",
-                attrs: { type: "submit" },
+                attrs: { type: "submit", disabled: _vm.isButtonDisabled },
                 on: { click: _vm.callMeBack },
               },
-              [_vm._v(_vm._s(_vm.$lang(_vm.lang, "s4-free")))]
+              [_vm._v(_vm._s(_vm.callMeButtonContent))]
             ),
           ]
         ),
