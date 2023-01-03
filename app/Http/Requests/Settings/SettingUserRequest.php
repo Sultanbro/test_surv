@@ -1,12 +1,12 @@
 <?php
 
-namespace App\Http\Requests\Position;
+namespace App\Http\Requests\Settings;
 
-use App\DTO\Position\AnyPositionDTO;
+use App\DTO\Settings\CreateUserDTO;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Support\Arr;
 
-class AnyPositionRequest extends FormRequest
+class SettingUserRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -26,19 +26,19 @@ class AnyPositionRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'position' => ['required', 'numeric']
+            'id' => ['numeric', 'exists:users,id']
         ];
     }
 
     /**
-     * @return AnyPositionDTO
+     * @return CreateUserDTO
      */
-    public function toDto(): AnyPositionDTO
+    public function toDto(): CreateUserDTO
     {
         $validated = $this->validated();
 
-        $position = Arr::get($validated, 'position');
+        $id = Arr::get($validated, 'id');
 
-        return new AnyPositionDTO($position);
+        return new CreateUserDTO($id);
     }
 }

@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers\User;
 
-use App\Events\TrackGroupChangingEvent;
 use App\Events\TrackUserFiredEvent;
 use App\Exports\UserExport;
 use App\Http\Controllers\Controller;
@@ -10,6 +9,7 @@ use App\Http\Requests\SetHeadToGroupRequest;
 use App\KnowBase;
 use App\Models\User\Card;
 use App\Models\User\NotificationTemplate;
+use App\Service\Department\UserService;
 use App\Service\TaxService;
 use Exception;
 use Illuminate\Support\Facades\Auth;
@@ -40,6 +40,7 @@ use Maatwebsite\Excel\Facades\Excel;
 use App\AdaptationTalk;
 use App\Models\GroupUser;
 use \App\Service\Admin\UserService as AdminUserService;
+use App\Service\Tenancy\CabinetService;
 
 class EmployeeController extends Controller
 {
@@ -832,7 +833,7 @@ class EmployeeController extends Controller
             ]);
         }
 
-
+        (new CabinetService)->add(tenant('id'), $user);
 
         return redirect()->to('/timetracking/edit-person?id=' . $user->id);
     }
@@ -969,11 +970,11 @@ class EmployeeController extends Controller
         /**
          * Сохранение налоговых начислений.
          */
-        try {
-            (new TaxService)->userTax($request);
-        } catch (\Exception $e) {
-            throw new \Exception($e->getMessage());
-        }
+        // try {
+        //     (new TaxService)->userTax($request);
+        // } catch (\Exception $e) {
+        //     throw new \Exception($e->getMessage());
+        // }
 
         /**
          *  Битрикс ID профиля
@@ -1221,6 +1222,8 @@ class EmployeeController extends Controller
             
         }
 
+        (new CabinetService)->remove(tenant('id'), $user);
+
         return redirect()->to('/timetracking/edit-person?id=' . $user->id);
     }
 
@@ -1233,29 +1236,11 @@ class EmployeeController extends Controller
      */
     public function editPersonGroup(Request $request) {
 
-        $group = ProfileGroup::find($request['group_id']);
-        $exist = $group->users()->where([
-            ['user_id', $request['user_id']],
-            ['status', 'active']
-        ])->whereNull('to')->exists();
-
-        try {
-            if($request['action'] == 'add' && !$exist) {
-                $group->users()->attach($request['user_id'], [
-                    'from' => Carbon::now()->toDateString()
-                ]);
-            }
-
-            if($request['action'] == 'delete') {
-                event(new TrackGroupChangingEvent($request['user_id'], $request['group_id']));
-                $group->users()->where('user_id', $request['user_id'])->whereNull('to')->update([
-                    'to' => Carbon::now()->toDateString(),
-                    'status'     => 'drop'
-                ]);
-            }
-        }catch (\Exception $exception) {
-            throw new \Exception($exception);
-        }
+        (new UserService)->setGroup(
+            $request['group_id'],
+            $request['user_id'],
+            $request['action']
+        );
     }
 
     /**
@@ -1429,7 +1414,9 @@ class EmployeeController extends Controller
                 if($delete_plan) $delete_plan->delete();
 
                 $fire_date = now();
+                (new CabinetService)->remove(tenant('id'), $user);
                 User::deleteUser($request);
+
             }
 
             // Причина увольенения
@@ -1473,7 +1460,9 @@ class EmployeeController extends Controller
             $bitrixUser = $bitrix->searchUser($user->email);
             usleep(1000000); // 1 sec
             if($bitrixUser) $success = $bitrix->recoverUser($bitrixUser['ID']);
-         
+            
+
+            (new CabinetService)->add(tenant('id'), $user);
         } 
 
         View::share('title', 'Сотрудник восстановлен');

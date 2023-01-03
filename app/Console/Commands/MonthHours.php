@@ -2,7 +2,6 @@
 
 namespace App\Console\Commands;
 
-use App\Components\TelegramBot;
 use App\Setting;
 use Carbon\Carbon;
 use Illuminate\Console\Command;

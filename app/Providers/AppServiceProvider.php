@@ -16,23 +16,40 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot()
     {
-        // Instead of Tailwind 
         Paginator::useBootstrap();
 
         \Validator::extend('recaptcha', 'App\\Validators\\ReCaptcha@validate');
 
         \Schema::defaultStringLength(125);
 
+        $this->registerMacros();
+
         \View::composer('layouts.app', function($view) {
-
-            $data = $this->dataToVue();
-
             $view->with([
-                'laravelToVue' => $data
+                'laravelToVue' => $this->dataToVue()
             ]);
-
         });
 
+        \View::composer('home', function($view) {
+            $view->with([
+                'laravelToVue' => $this->dataToHomeVue()
+            ]);
+        });
+
+    }
+
+    /**
+     * Register any application services.
+     *
+     * @return void
+     */
+    public function register()
+    {
+        //
+    }
+
+    private function registerMacros() : void
+    {
         Response::macro('success', function ($data, $statusCode = HttpFoundation::HTTP_OK, $message = 'success',) {
             return response()->json([
                 'status'  => $statusCode,
@@ -49,14 +66,18 @@ class AppServiceProvider extends ServiceProvider
         });
     }
 
-    /**
-     * Register any application services.
-     *
-     * @return void
-     */
-    public function register()
+    private function dataToHomeVue() : array
     {
-        //
+        if(\Auth::guest()) return ['csrfToken' => csrf_token()];
+
+        return [
+            'csrfToken'   => csrf_token(),
+            'userId'      => auth()->id(),
+            'fullname'    => auth()->user()->last_name . ' ' . auth()->user()->name,
+            'avatar'      => 'https://cp.callibro.org/files/img/8.png',
+            'email'       => auth()->user()->email,
+            'cabinets'    => auth()->user()->cabinets()->toArray()
+        ]; 
     }
 
     private function dataToVue() : array
@@ -78,7 +99,8 @@ class AppServiceProvider extends ServiceProvider
             'email'       => auth()->user()->email,
             'is_admin'    => auth()->user()->is_admin == 1,
             'permissions' => $permissions,
-            'tenants'     => auth()->user()->tenants()->pluck('id')->toArray()
+            'tenants'     => auth()->user()->tenants()->pluck('id')->toArray(),
+            'cabinets'    => auth()->user()->cabinets()->toArray()
         ]; 
     }
 }

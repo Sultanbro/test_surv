@@ -9,22 +9,23 @@ use App\Http\Requests\TimeTrack\GetSettingRequest;
 use App\Http\Requests\TimeTrack\StoreSettingRequest;
 use App\Repositories\PositionRepository;
 use App\Service\Timetrack\SettingService as TimeTrackSetting;
+use Illuminate\Http\JsonResponse;
 use Throwable;
 
 class SettingController extends Controller
 {
-    public function __construct(PositionRepository $positionRepository)
+    public function __construct(public PositionRepository $positionRepository)
     {
-        // $this->middleware('auth');
+         $this->middleware('auth');
     }
 
     /**
      * @param GetSettingRequest $request
      * @param TimeTrackSetting $service
-     * @return mixed
+     * @return JsonResponse
      * @throws Throwable
      */
-    public function setting(GetSettingRequest $request, TimeTrackSetting $service)
+    public function setting(GetSettingRequest $request, TimeTrackSetting $service): JsonResponse
     {
         $type = TimeTrackSettingEnum::TABS[$request->toDto()->tab];
         $response = $service->handle($type);
@@ -34,9 +35,9 @@ class SettingController extends Controller
 
     /**
      * @param StoreSettingRequest $request
-     * @return mixed
+     * @return JsonResponse
      */
-    public function create(StoreSettingRequest $request)
+    public function create(StoreSettingRequest $request): JsonResponse
     {
         $response = $this->positionRepository->createPosition($request->toDto()->position);
         return response()->success($response);
@@ -44,9 +45,9 @@ class SettingController extends Controller
 
     /**
      * @param DeleteSettingRequest $request
-     * @return mixed
+     * @return JsonResponse
      */
-    public function delete(DeleteSettingRequest $request)
+    public function delete(DeleteSettingRequest $request): JsonResponse
     {
         $response = $this->positionRepository->deletePosition($request->toDto()->positionId);
         return response()->success($response);

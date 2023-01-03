@@ -2,81 +2,86 @@
 <div class="mb-3" :key="skey">
    
     
-    <table class="table b-table table-bordered table-sm table-responsive r-to">
-        <tr>
-            <th></th>
-            <th></th>
+    <div class="table-container">
+        <table class="table table-bordered table-responsive whitespace-no-wrap custom-table-rentability">
+            <thead>
+            <tr>
+                <th class="b-table-sticky-column"></th>
+                <th></th>
 
-            <template v-for="(m, key) in months">
-                <th colspan="2" class="text-center">{{m}}</th>   
-                <th class="br1 text-center">{{ tops[key]  }}</th>   
-            </template>
-        </tr>
+                <template v-for="(m, key) in months">
+                    <th colspan="2" class="text-center">{{m}}</th>
+                    <th class="br1 text-center">{{ tops[key]  }}</th>
+                </template>
+            </tr>
 
-        <tr>
-            <th> 
-                <div class="d-flex align-items-center">
-                    <p @click="sort('name')" class="mb-0 fz-12">Название <i class="fa fa-sort ml-1"></i></p>
-                </div>
-                
-            </th>
-            <th>
-                <div class="d-flex align-items-center">
-                    <p @click="sort('date')" class="mb-0 fz-12">Дата <i class="fa fa-sort ml-1"></i></p>
-                </div>
-            </th>
-            <template v-for="i in 12">
-               <th class="font-bold text-center  bb1" @click="sort('l' + i)" :key="i">
-                   <div class="d-flex align-items-center">
-                       выручка <i class="fa fa-sort ml-1"></i>
-                   </div>
-                </th> 
-                <th class="font-bold text-center bb1" @click="sort('c' + i)" :key="i">
+            <tr>
+                <th class="b-table-sticky-column">
                     <div class="d-flex align-items-center">
-                      ФОТ <i class="fa fa-sort ml-1"></i>
-                   </div>
+                        <p @click="sort('name')" class="mb-0 fz-12">Название <i class="fa fa-sort ml-1"></i></p>
+                    </div>
+
                 </th>
-                <th class="font-bold text-center br1 bb1" @click="sort('r' + i)" :key="i">
+                <th>
                     <div class="d-flex align-items-center">
-                        Маржа <i class="fa fa-sort ml-1"></i>
-                   </div>
+                        <p @click="sort('date')" class="mb-0 fz-12">Дата <i class="fa fa-sort ml-1"></i></p>
+                    </div>
                 </th>
-            </template>
-        </tr>
-
-        <tr v-for="(item, index) in items" :key="index">
-            <td class="table-primary b-table-sticky-column text-left px-2 t-name wdf">
-                <div>{{ item.name }}</div>
-            </td>
-            
-            <td class="text-center">
-                <div>{{ item.date_formatted }}</div>
-            </td>
-
-            <template v-for="i in 12">
-                <td class="text-center" :class="{'p-0': index != 0}">
-                    <input v-if="index != 0" class="input" 
-                    :class="{'edited':item['ed' + i]}"
-                    type="number" v-model="item['l' + i]" @change="update(i, index)">
-                    <div v-else>{{ item['l' + i] }}</div>
+                <template v-for="i in 12">
+                    <th class="font-bold text-center  bb1" @click="sort('l' + i)" :key="i">
+                        <div class="d-flex align-items-center">
+                            выручка <i class="fa fa-sort ml-1"></i>
+                        </div>
+                    </th>
+                    <th class="font-bold text-center bb1" @click="sort('c' + i)" :key="i">
+                        <div class="d-flex align-items-center">
+                            ФОТ <i class="fa fa-sort ml-1"></i>
+                        </div>
+                    </th>
+                    <th class="font-bold text-center br1 bb1" @click="sort('r' + i)" :key="i">
+                        <div class="d-flex align-items-center">
+                            Маржа <i class="fa fa-sort ml-1"></i>
+                        </div>
+                    </th>
+                </template>
+            </tr>
+            </thead>
+            <tbody>
+            <tr v-for="(item, index) in items" :key="index">
+                <td class="table-primary b-table-sticky-column text-left px-2 t-name wdf">
+                    <div>{{ item.name }}</div>
                 </td>
+
                 <td class="text-center">
-                    
-                   {{  numberWithCommas( item['c' + i] ) }}
-                    
+                    <div>{{ item.date_formatted }}</div>
                 </td>
-                <td class="text-center br1"
-                    :class="{
-                        'c-red': item['rc' + i] < 20 && item['rc' + i] != '',
+
+                <template v-for="i in 12">
+                    <td class="text-center" :class="{'p-0': index != 0}">
+                        <input v-if="index != 0" class="input"
+                               :class="{'edited':item['ed' + i]}"
+                               type="number" v-model="item['l' + i]" @change="update(i, index)">
+                        <div v-else>{{ item['l' + i] }}</div>
+                    </td>
+                    <td class="text-center">
+
+                        {{  numberWithCommas( item['c' + i] ) }}
+
+                    </td>
+                    <td class="text-center br1"
+                        :class="{
+                        'c-red text-white': item['rc' + i] < 20 && item['rc' + i] != '',
                         'c-orange': item['rc' + i] >= 20 && item['rc' + i] < 50,
                         'c-yellow': item['rc' + i] >= 50 && item['rc' + i] < 75,
-                        'c-green': item['rc' + i] >= 75,
+                        'c-green text-white': item['rc' + i] >= 75,
                     }"
-                >{{ item['r' + i] }}</td>
-            </template>
-            
-        </tr>
-    </table>
+                    >{{ item['r' + i] }}</td>
+                </template>
+
+            </tr>
+            </tbody>
+        </table>
+    </div>
 </div>
 </template>
 
@@ -208,7 +213,13 @@ export default {
     },
 };
 </script>
-<style scoped>
+<style lang="scss" scoped>
+    .custom-table-rentability{
+        th,td {
+            padding: 0 15px!important;
+            height: 40px;
+        }
+    }
 .br1 {
     border-right: 1px solid #bababa;
 }

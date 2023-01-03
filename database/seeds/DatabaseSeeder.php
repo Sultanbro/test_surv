@@ -1,5 +1,7 @@
 <?php
 
+namespace Database\Seeders;
+
 use Illuminate\Database\Seeder;
 
 class DatabaseSeeder extends Seeder
@@ -20,11 +22,11 @@ class DatabaseSeeder extends Seeder
             WorkingTimeSeeder::class,
             SettingSeeder::class,
 
-            KpiSeeder::class,
-            KpiItemSeeder::class,
-            QuartalPremiumSeeder::class,
-            BonusSeeder::class,
-            ActivitySeeder::class,
+            // KpiSeeder::class,
+            //KpiItemSeeder::class,
+            //QuartalPremiumSeeder::class,
+            //BonusSeeder::class,
+            //ActivitySeeder::class,
         ]);
     }
 }

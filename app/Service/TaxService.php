@@ -35,14 +35,16 @@ class TaxService
      * @return void
      * @throws Exception
      */
-    public function userTax(Request $request): void
+    public function userTax(
+        array $taxArray
+    ): void
     {
         try{
-            $taxes  = $request->input('taxes') ?? null;
-            $id     = $request->id ?? null;
+            $taxes  = $taxArray['taxes'] ?? null;
+            $id     = $taxArray['id'] ?? null;
 
-            if($request->input('tax')) {
-                $this->repository->insertMultipleTaxes($request->input('tax'));
+            if($taxArray['tax']) {
+                $this->repository->insertMultipleTaxes($taxArray['tax']);
             }else if($taxes) {
                 $taxIds = [];
                 foreach ($taxes as $id => $tax)
@@ -50,7 +52,7 @@ class TaxService
                     $taxIds[] = $id;
                 }
 
-                $this->repository->updateOrDelete($request->id, $taxIds, $taxes);
+                $this->repository->updateOrDelete($taxArray['id'], $taxIds, $taxes);
             }else $this->repository->deleteAll($id);
 
         } catch (Exception $exception) {

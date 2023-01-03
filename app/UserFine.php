@@ -2,7 +2,6 @@
 
 namespace App;
 
-use App\Components\TelegramBot;
 use App\Fine;
 use App\UserNotification;
 use App\TimetrackingHistory;

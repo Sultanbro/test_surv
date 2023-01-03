@@ -93,16 +93,19 @@ class Messenger {
 
         if ( $chat->private ) {
             // get second user in private chat
-            $second_user    = $chat->users->firstWhere( 'id', '!=', $user->id );
+            $second_user = $chat->users->firstWhere( 'id', '!=', $user->id );
 
-            $chat->title    = "Багнутый чат";
-            $chat->image    = "";
-            $chat->isOnline = false;
-
-            if($second_user) {
-                $chat->title    = $second_user->name . " " . $second_user->last_name;
-                $chat->image    = 'https://bp.jobtron.org/users_img/' . $second_user->img_url;
-                $chat->isOnline = MessengerUserOnline::query()->where( 'user_id', $second_user->id )->exists();
+            if ( $second_user ) {
+                $chat->second_user = $second_user;
+                $chat->title       = $second_user->name . " " . $second_user->last_name;
+                $chat->image       = $second_user->img_url;
+                $chat->isOnline    = MessengerUserOnline::query()->where( 'user_id', $second_user->id )->exists();
+            } else {
+                // todo: выяснить, почему в приватном чате может не быть второго пользователя
+                $chat->second_user = null;
+                $chat->title       = "";
+                $chat->image       = "";
+                $chat->isOnline    = false;
             }
         }
 
@@ -111,6 +114,7 @@ class Messenger {
                 ->only( [ 'id', 'name', 'last_name' ] )
                 ->all();
         } );
+
 
         return $chat;
     }
@@ -150,9 +154,9 @@ class Messenger {
                    ->orWhere( 'last_name', 'like', "%$name%" )
                    ->limit( $limit )
                    ->get()->map(function($item) { 
-                        $item->image = 'https://bp.jobtron.org/users_img/' . $item->img_url;   
-                        return $item;
-                   });
+                    $item->image = 'https://bp.jobtron.org/users_img/' . $item->img_url;   
+                    return $item;
+               });
     }
 
     /**
@@ -187,12 +191,14 @@ class Messenger {
      *
      * @param int $userId
      * @param int $otherUserId
+     * @param bool $create
      *
-     * @return Builder|Model
+     * @return Builder|Model|null
      */
-    public function getPrivateChat( int $userId, int $otherUserId ): Builder|Model {
+    public function getPrivateChat( int $userId, int $otherUserId, bool $create = true ): Builder|Model|null {
         // get chat when has user userId
         $chat = MessengerChat::query()
+                             ->where( 'private', true )
                              ->whereHas( 'members', function ( Builder $query ) use ( $userId ) {
                                  $query->where( 'user_id', $userId );
                              } )
@@ -202,6 +208,8 @@ class Messenger {
                              ->first();
         if ( $chat ) {
             return $chat;
+        } else if ( ! $create ) {
+            return null;
         }
         // create new chat if it doesn't exist
         $chat = MessengerChat::query()
@@ -218,7 +226,6 @@ class Messenger {
 
         return $chat;
     }
-
 
     /**
      * Fetch chat messages with pagination.
@@ -847,16 +854,16 @@ class Messenger {
             $message->event;
             $messageData = $message->toArray();
         } else {
-            $messageData                  = $message->toArray();
-            $messageData['event']         = $event->toArray();
-            $messageData['chat']          = $chat->toArray();
+            $messageData          = $message->toArray();
+            $messageData['event'] = $event->toArray();
+            $messageData['chat']  = $chat->toArray();
         }
         $messageData['chat']['users'] = $chat->users->toArray();
 
 
         $users = MessengerUserOnline::getOnlineMembers( $chat->id );
         $users->each( function ( $user ) use ( $messageData ) {
-            $this->push( 'messages.' . request()->getHost() . '.' .  $user->user_id, 'newMessage', [
+            $this->push( 'messages.' . request()->getHost() . '.' . $user->user_id, 'newMessage', [
                 'message' => $messageData,
             ] );
         } );
@@ -910,18 +917,18 @@ class Messenger {
                 }
 
                 $users = DB::select( "
-                        SELECT DISTINCT t2.user_id
-                        FROM `messenger_chat_users` t1
-                                INNER JOIN `messenger_chat_users` t2
-                                            ON t1.chat_id = t2.chat_id
-                                                AND t1.user_id != t2.user_id
-                                INNER JOIN `messenger_users_online` o
-                                            ON o.user_id = t2.user_id
-                        WHERE t1.user_id = {$user_id}" );
+SELECT DISTINCT t2.user_id
+FROM `messenger_chat_users` t1
+         INNER JOIN `messenger_chat_users` t2
+                    ON t1.chat_id = t2.chat_id
+                        AND t1.user_id != t2.user_id
+         INNER JOIN `messenger_users_online` o
+                    ON o.user_id = t2.user_id
+WHERE t1.user_id = {$user_id}" );
 
                 // for each user trigger event
                 foreach ( $users as $user ) {
-                    $this->push( 'messages.' . request()->getHost() . '.' .  $user->user_id, 'newMessage', [
+                    $this->push( 'messages.' . request()->getHost() . '.' . $user->user_id, 'newMessage', [
                         'message' => [
                             'event'  => [
                                 'type' => MessengerEvent::TYPE_ONLINE,

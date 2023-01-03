@@ -6,20 +6,20 @@
 
         <!-- hover menu -->
         <div class="header__menu">
-            <div v-if="isOwner" class="header__menu-project" v-scroll-lock="isCreatingProject">
+            <div class="header__menu-project" v-scroll-lock="isCreatingProject">
                 <img src="/images/dist/icon-settings.svg" alt="settings icon">
                 Проект: {{ project }}
                 <div class="header__submenu">
                     <a
-                        v-for="tenant in tenants"
-                        :href="tenant === project ? 'javascript:void(0)' : `/login/${tenant}`"
+                        v-for="cabinet in cabinets"
+                        :href="cabinet.tenant_id === project ? 'javascript:void(0)' : `/login/${cabinet.tenant_id}`"
                         class="header__submenu-item"
-                        :class="{'header__submenu-item_active': tenant === project}"
+                        :class="{'header__submenu-item_active': cabinet.tenant_id === project}"
                     >
-                        {{ tenant }}
+                        {{ cabinet.tenant_id }} <i v-if="cabinet.owner === 1" aria-hidden="true" class="fa fa-star"></i>
                     </a>
                     <div class="header__submenu-divider"/>
-                    <div @click="onNewProject" class="header__submenu-item">
+                    <div v-if="isOwner" @click="onNewProject" class="header__submenu-item">
                         Добавить проект
                     </div>
                 </div>
@@ -32,7 +32,7 @@
                 <img src="/images/dist/icon-settings.svg" alt="settings icon">
                 <span class="menu__item-title">Настройки</span>
             </a>
-            <form action="/logout" method="POST">
+            <form action="/logout" method="POST"> 
                 <button class="menu__item w-full">
                     <img src="/images/dist/icon-exit.svg" alt="settings icon">
                     <span class="menu__item-title">Выход</span>
@@ -109,7 +109,7 @@ export default {
             token: Laravel.csrfToken,
             isAdmin: this.$laravel.is_admin,
             project: window.location.hostname.split('.')[0],
-            tenants: Laravel.tenants,
+            cabinets: Laravel.cabinets,
             isCreatingProject: false,
         };
     },
@@ -331,7 +331,7 @@ export default {
             })
         },
         isOwner(){
-            return this.tenants && this.tenants.includes(this.project)
+            return this.cabinets && this.cabinets.includes(this.project)
         }
     },
     mounted(){
