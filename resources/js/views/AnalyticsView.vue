@@ -30,7 +30,7 @@ export default {
 </script>
 
 <template>
-    <DefaultLayout>
+    <DefaultLayout class="no-profile">
         <div class="old__content">
             <div class="row">
                 <div class="col-md-12 mt-4 mb-3">
