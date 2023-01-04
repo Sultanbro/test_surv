@@ -29,7 +29,8 @@
         "old_jysan_cardholder": "{{old('jysan_cardholder')}}",
         "old_jysan": "{{old('jysan')}}",
         "old_card_jysan": "{{old('card_jysan')}}",
-        "in_groups": {{ json_encode($user->head_in_groups) }}
+        "head_in_groups": {{ json_encode($user->head_in_groups) }},
+        "in_groups": {{ json_encode($user->in_groups) }}
     }
 </script>
 @endsection
