@@ -55,6 +55,7 @@
           </a>
           <li class="jNav-menu-item">
             <span class="jNav-menu-auth">
+
               <form
                   v-if="csrf"
                   action="/logout"
@@ -66,6 +67,8 @@
                     type="hidden"
                     >
               </form>
+
+
               <template
                 v-if="authorized"
               >
@@ -121,7 +124,6 @@
                     :title="$lang(lang, 'auth')"
                     class="jNav-menu-user"
                     href="/login"
-
                 />
               </template>
             </span>
@@ -173,6 +175,8 @@ export default {
   data() {
     return {
       menu: false,
+
+
       csrf: '',
       isScroll: false,
       active: false,
@@ -264,6 +268,8 @@ export default {
   }
 }
 
+
+
  .jNav-menu-hamburger {
    &.jButton {
      display: block;
@@ -271,6 +277,31 @@ export default {
      height: 2rem;
      padding: 1.25rem;
      position: relative;
+
+
+     &:before {
+       content: '';
+       width: 50%;
+       height: 0.75rem;
+       position: absolute;
+       top: 50%;
+       left: 50%;
+       transform: translate(-50%, -45%);
+       background: repeating-linear-gradient(#fff, #fff 0.125rem, transparent 0.125rem, transparent 0.25rem);
+     }
+   }
+ }
+
+@media (max-width: $medium) {
+  .jNav-menu-hamburger.jButton {
+    display: none;
+  }
+}
+
+.jNav-menu-item .jNav-menu-link {
+  font-size: 0.9rem;
+  padding: 1.25rem;
+}
 
 .jNav-menu-user-info{
   display: flex;
@@ -299,29 +330,19 @@ export default {
 //     padding: 1.25rem;
 //     position: relative;
 
-     &:before {
-       content: '';
-       width: 50%;
-       height: 0.75rem;
-       position: absolute;
-       top: 50%;
-       left: 50%;
-       transform: translate(-50%, -45%);
-       background: repeating-linear-gradient(#fff, #fff 0.125rem, transparent 0.125rem, transparent 0.25rem);
-     }
-   }
- }
+//     &:before {
+//       content: '';
+//       width: 50%;
+//       height: 0.75rem;
+//       position: absolute;
+//       top: 50%;
+//       left: 50%;
+//       transform: translate(-50%, -45%);
+//       background: repeating-linear-gradient(#fff, #fff 0.125rem, transparent 0.125rem, transparent 0.25rem);
+//     }
+//   }
+// }
 
-@media (max-width: $medium) {
-  .jNav-menu-hamburger.jButton {
-    display: none;
-  }
-}
-
-.jNav-menu-item .jNav-menu-link {
-  font-size: 0.9rem;
-  padding: 1.25rem;
-}
 
 .jNav-menu-bg {
   display: none;
@@ -397,6 +418,7 @@ export default {
     width: 15.25rem;
   }
 }
+
 
 @media screen and (min-width: $medium) {
   .jNav-menu-active,

@@ -2829,6 +2829,8 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
 
 
 
@@ -2892,8 +2894,6 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ });
 /* harmony import */ var hooper__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! hooper */ "./node_modules/hooper/dist/hooper.esm.js");
 /* harmony import */ var hooper_dist_hooper_css__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! hooper/dist/hooper.css */ "./node_modules/hooper/dist/hooper.css");
-//
-//
 //
 //
 //
@@ -4809,7 +4809,7 @@ __webpack_require__.r(__webpack_exports__);
 var ___CSS_LOADER_EXPORT___ = _node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_0___default()(function(i){return i[1]});
 var ___CSS_LOADER_URL_REPLACEMENT_0___ = _node_modules_css_loader_dist_runtime_getUrl_js__WEBPACK_IMPORTED_MODULE_1___default()(_assets_img_user_svg__WEBPACK_IMPORTED_MODULE_2__["default"]);
 // Module
-___CSS_LOADER_EXPORT___.push([module.id, "#jNav {\n  display: flex;\n  align-items: center;\n  position: sticky;\n  width: 100vw;\n  height: 4.875rem;\n  z-index: 9000;\n  top: -1.125rem;\n  background: #fff;\n  box-shadow: 0 0.25rem 1rem rgba(0, 0, 0, 0.05);\n}\n.jNav-content {\n  display: flex;\n  position: sticky;\n  top: 0;\n  justify-content: space-between;\n  align-items: center;\n  margin: 0 auto;\n  width: 78.125rem;\n  height: 3.75rem;\n  padding: 0 1rem;\n}\n@media (max-width: 1260px) {\n.jNav-logo-img {\n    width: 8rem;\n}\n.jNav-scroll .jNav-logo-img {\n    width: 7rem;\n    transition: 0.5s;\n}\n}\n@media screen and (min-width: 1260px) {\n.jNav-logo-img {\n    width: 15.25rem;\n}\n.jNav-scroll .jNav-logo-img {\n    width: 11.25rem;\n    transition: 0.5s;\n}\n}\n@media (min-width: 2560px) {\n.jNav-logo-img {\n    width: 15.25rem;\n}\n}\n.jNav-menu-active .jNav-menu-items {\n  display: flex;\n}\n.jNav-menu-active .jNav-menu-bg {\n  display: block;\n}\n.jNav-menu-hamburger.jButton {\n  display: block;\n  width: 2rem;\n  height: 2rem;\n  padding: 1.25rem;\n  position: relative;\n}\n.jNav-menu-hamburger.jButton .jNav-menu-user-info {\n  display: flex;\n  flex-flow: row nowrap;\n  flex: 1 1 auto;\n  align-items: center;\n}\n.jNav-menu-hamburger.jButton .jNav-menu-user-data {\n  display: flex;\n  flex-flow: column;\n  flex: 0 1 10em;\n  overflow: hidden;\n}\n.jNav-menu-hamburger.jButton .jNav-menu-user-name,\n.jNav-menu-hamburger.jButton .jNav-menu-user-email {\n  max-width: 10em;\n  overflow: hidden;\n  text-overflow: ellipsis;\n}\n.jNav-menu-hamburger.jButton:before {\n  content: \"\";\n  width: 50%;\n  height: 0.75rem;\n  position: absolute;\n  top: 50%;\n  left: 50%;\n  transform: translate(-50%, -45%);\n  background: repeating-linear-gradient(#fff, #fff 0.125rem, transparent 0.125rem, transparent 0.25rem);\n}\n@media (max-width: 1260px) {\n.jNav-menu-hamburger.jButton {\n    display: none;\n}\n}\n.jNav-menu-item .jNav-menu-link {\n  font-size: 0.9rem;\n  padding: 1.25rem;\n}\n.jNav-menu-bg {\n  display: none;\n  position: fixed;\n  z-index: 9004;\n  top: 0;\n  left: 0;\n  right: 0;\n  bottom: 0;\n  background: rgba(0, 0, 0, 0.25);\n  -webkit-backdrop-filter: blur(6px);\n          backdrop-filter: blur(6px);\n}\n.jNav-menu-items {\n  display: flex;\n  align-items: center;\n  max-width: none;\n  padding: 0.625rem;\n  margin: 0;\n  flex-flow: row nowrap;\n}\n.jNav-menu-item {\n  display: block;\n  list-style: none;\n}\n.jNav-menu-auth {\n  display: flex;\n  justify-content: space-between;\n  align-items: center;\n  gap: 0.5rem;\n}\n.jNav-menu-user {\n  display: inline-block;\n  width: 2rem;\n  height: 2rem;\n  border: none;\n  border-radius: 2.625rem;\n  position: relative;\n  vertical-align: middle;\n  background: #6f4f28 url(" + ___CSS_LOADER_URL_REPLACEMENT_0___ + ") center center no-repeat;\n}\n.jNav-menu-item-md {\n  display: none;\n}\n.jNav-menu-user-menu {\n  padding: 0.5rem;\n  position: absolute;\n  z-index: 5;\n  top: 100%;\n  right: 0;\n  background-color: #fff;\n  box-shadow: 0 0.125rem 0.1875rem rgba(0, 0, 0, 0.5);\n}\n.jNav-menu-user-menu-item {\n  white-space: nowrap;\n  cursor: pointer;\n}\n.jNav-menu-user-menu-exit {\n  padding: 0;\n  border: none;\n  background: none;\n  cursor: pointer;\n}\n@media screen and (min-width: 780px) {\n.jNav-logo-img {\n    width: 15.25rem;\n}\n}\n@media screen and (min-width: 1260px) {\n.jNav-menu-active,\n.jNav-menu-bg {\n    display: none;\n}\n.jNav-menu-items {\n    display: flex;\n    align-items: center;\n    max-width: none;\n    padding: 0.625rem;\n    margin: 0;\n    flex-flow: row nowrap;\n    position: static;\n    background: none;\n    box-shadow: none;\n}\n.jNav-menu-item {\n    margin-left: 2.5rem;\n}\n.jNav-menu-lang-popup .jNav-menu-item {\n    margin-left: 0;\n    display: flex;\n    justify-content: center;\n}\n.jNav-menu-lang-popup .jNav-menu-lang:after {\n    display: none;\n}\n.jNav-menu-auth {\n    gap: 1rem;\n}\n.jNav-menu-user {\n    width: 2.625rem;\n    height: 2.625rem;\n}\n.jNav-menu-item-md {\n    display: block;\n}\n}", ""]);
+___CSS_LOADER_EXPORT___.push([module.id, "#jNav {\n  display: flex;\n  align-items: center;\n  position: sticky;\n  width: 100vw;\n  height: 4.875rem;\n  z-index: 9000;\n  top: -1.125rem;\n  background: #fff;\n  box-shadow: 0 0.25rem 1rem rgba(0, 0, 0, 0.05);\n}\n.jNav-content {\n  display: flex;\n  position: sticky;\n  top: 0;\n  justify-content: space-between;\n  align-items: center;\n  margin: 0 auto;\n  width: 78.125rem;\n  height: 3.75rem;\n  padding: 0 1rem;\n}\n@media (max-width: 1260px) {\n.jNav-logo-img {\n    width: 8rem;\n}\n.jNav-scroll .jNav-logo-img {\n    width: 7rem;\n    transition: 0.5s;\n}\n}\n@media screen and (min-width: 1260px) {\n.jNav-logo-img {\n    width: 15.25rem;\n}\n.jNav-scroll .jNav-logo-img {\n    width: 11.25rem;\n    transition: 0.5s;\n}\n}\n@media (min-width: 2560px) {\n.jNav-logo-img {\n    width: 15.25rem;\n}\n}\n.jNav-menu-active .jNav-menu-items {\n  display: flex;\n}\n.jNav-menu-active .jNav-menu-bg {\n  display: block;\n}\n.jNav-menu-hamburger.jButton {\n  display: block;\n  width: 2rem;\n  height: 2rem;\n  padding: 1.25rem;\n  position: relative;\n}\n.jNav-menu-hamburger.jButton:before {\n  content: \"\";\n  width: 50%;\n  height: 0.75rem;\n  position: absolute;\n  top: 50%;\n  left: 50%;\n  transform: translate(-50%, -45%);\n  background: repeating-linear-gradient(#fff, #fff 0.125rem, transparent 0.125rem, transparent 0.25rem);\n}\n@media (max-width: 1260px) {\n.jNav-menu-hamburger.jButton {\n    display: none;\n}\n}\n.jNav-menu-item .jNav-menu-link {\n  font-size: 0.9rem;\n  padding: 1.25rem;\n}\n.jNav-menu-user-info {\n  display: flex;\n  flex-flow: row nowrap;\n  flex: 1 1 auto;\n  align-items: center;\n}\n.jNav-menu-user-data {\n  display: flex;\n  flex-flow: column;\n  flex: 0 1 10em;\n  overflow: hidden;\n}\n.jNav-menu-user-name,\n.jNav-menu-user-email {\n  max-width: 10em;\n  overflow: hidden;\n  text-overflow: ellipsis;\n}\n.jNav-menu-bg {\n  display: none;\n  position: fixed;\n  z-index: 9004;\n  top: 0;\n  left: 0;\n  right: 0;\n  bottom: 0;\n  background: rgba(0, 0, 0, 0.25);\n  -webkit-backdrop-filter: blur(6px);\n          backdrop-filter: blur(6px);\n}\n.jNav-menu-items {\n  display: flex;\n  align-items: center;\n  max-width: none;\n  padding: 0.625rem;\n  margin: 0;\n  flex-flow: row nowrap;\n}\n.jNav-menu-item {\n  display: block;\n  list-style: none;\n}\n.jNav-menu-auth {\n  display: flex;\n  justify-content: space-between;\n  align-items: center;\n  gap: 0.5rem;\n}\n.jNav-menu-user {\n  display: inline-block;\n  width: 2rem;\n  height: 2rem;\n  border: none;\n  border-radius: 2.625rem;\n  position: relative;\n  vertical-align: middle;\n  background: #6f4f28 url(" + ___CSS_LOADER_URL_REPLACEMENT_0___ + ") center center no-repeat;\n}\n.jNav-menu-item-md {\n  display: none;\n}\n.jNav-menu-user-menu {\n  padding: 0.5rem;\n  position: absolute;\n  z-index: 5;\n  top: 100%;\n  right: 0;\n  background-color: #fff;\n  box-shadow: 0 0.125rem 0.1875rem rgba(0, 0, 0, 0.5);\n}\n.jNav-menu-user-menu-item {\n  white-space: nowrap;\n  cursor: pointer;\n}\n.jNav-menu-user-menu-exit {\n  padding: 0;\n  border: none;\n  background: none;\n  cursor: pointer;\n}\n@media screen and (min-width: 780px) {\n.jNav-logo-img {\n    width: 15.25rem;\n}\n}\n@media screen and (min-width: 1260px) {\n.jNav-menu-active,\n.jNav-menu-bg {\n    display: none;\n}\n.jNav-menu-items {\n    display: flex;\n    align-items: center;\n    max-width: none;\n    padding: 0.625rem;\n    margin: 0;\n    flex-flow: row nowrap;\n    position: static;\n    background: none;\n    box-shadow: none;\n}\n.jNav-menu-item {\n    margin-left: 2.5rem;\n}\n.jNav-menu-lang-popup .jNav-menu-item {\n    margin-left: 0;\n    display: flex;\n    justify-content: center;\n}\n.jNav-menu-lang-popup .jNav-menu-lang:after {\n    display: none;\n}\n.jNav-menu-auth {\n    gap: 1rem;\n}\n.jNav-menu-user {\n    width: 2.625rem;\n    height: 2.625rem;\n}\n.jNav-menu-item-md {\n    display: block;\n}\n}", ""]);
 // Exports
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (___CSS_LOADER_EXPORT___);
 
@@ -4839,7 +4839,7 @@ __webpack_require__.r(__webpack_exports__);
 var ___CSS_LOADER_EXPORT___ = _node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_0___default()(function(i){return i[1]});
 var ___CSS_LOADER_URL_REPLACEMENT_0___ = _node_modules_css_loader_dist_runtime_getUrl_js__WEBPACK_IMPORTED_MODULE_1___default()(_assets_img_reviews_bg_svg__WEBPACK_IMPORTED_MODULE_2__["default"]);
 // Module
-___CSS_LOADER_EXPORT___.push([module.id, "#jReviews {\n  width: 100%;\n  background: url(" + ___CSS_LOADER_URL_REPLACEMENT_0___ + ") no-repeat;\n  background-position-x: 85%;\n}\n.jReviews-header {\n  position: relative;\n  margin-bottom: 3rem;\n}\n.jReviews-header:after {\n  content: \"\";\n  display: block;\n  width: 8.5625rem;\n  position: absolute;\n  bottom: -0.75rem;\n  left: 50%;\n  transform: translateX(-50%);\n  border-bottom: 0.1875rem solid #42b1f4;\n}\n.jReviews-types .jButton {\n  display: inline-block;\n  margin-bottom: 1.25rem;\n}\n.jButton.jReviews-video {\n  background: #ffd86b;\n  color: #303b4d;\n}\n.jButton.jReviews-video:hover {\n  background: #ffdc7a;\n}\n.jReviews-item-player {\n  position: relative;\n  padding-top: 56.25%;\n  background: #000;\n}\n@media (max-width: 1260px) {\n.jReviews-item-player {\n    position: relative;\n    padding-top: 0;\n    background: #000;\n}\n}\n.jReviews-item-iflame {\n  width: 100%;\n  height: 100%;\n  position: absolute;\n  top: 0;\n  left: 0;\n}\n.jReviews-item-image {\n  width: 100%;\n}\n.jReviews-item-thumbnails {\n  display: flex;\n  gap: 0.625rem;\n  margin-top: 1.125rem;\n}\n.jReviews-item-thumbnails .hooper {\n  margin: 0 -5px;\n  flex: 100% 1 1;\n  height: auto;\n}\n.jReviews-item-thumbnail {\n  margin: 0 5px;\n  background-size: cover;\n  cursor: pointer;\n}\n.jReviews-item-thumbnail:after {\n  content: \"\";\n  display: block;\n  padding-bottom: 56.25%;\n}\n.jReviews-title {\n  margin-top: 1.75rem;\n}\n.jReviews-free {\n  margin-top: 1.75rem;\n}\n@media (max-width: 500px) {\n.jReviews-types {\n    display: flex;\n    justify-content: space-around;\n}\n}\n@media screen and (min-width: 500px) {\n.jReviews-types {\n    display: flex;\n    gap: 2rem;\n}\n.jReviews-types .jButton {\n    display: block;\n}\n}\n@media screen and (min-width: 1260px) {\n#jReviews {\n    padding-bottom: 15rem;\n}\n.jReviews-types {\n    display: block;\n}\n.jReviews-wrapper {\n    display: grid;\n    grid-template-columns: 1fr 2fr;\n}\n.jReviews-items-wrapper {\n    grid-column: 2;\n    grid-row: 1/3;\n}\n.jReviews-items {\n    display: flex;\n    gap: 0.75rem;\n    flex-flow: row nowrap;\n}\n.jReviews-item-watch {\n    flex: 0 1 100%;\n}\n.jReviews-item-thumbnails {\n    flex: 0 0 12rem;\n    flex-flow: column nowrap;\n    justify-content: space-between;\n    margin: 0;\n    padding: 1.5rem 0;\n}\n.jReviews-item-thumbnails .hooper {\n    margin: -5px 0;\n}\n.jReviews-item-thumbnail {\n    margin: 5px 0;\n}\n.jReviews-footer {\n    padding-right: 2rem;\n}\n.hooper-navigation.is-vertical .hooper-prev {\n    top: -42px;\n    bottom: auto;\n    right: 72px;\n    left: auto;\n    transform: initial;\n}\n.hooper-navigation.is-vertical .hooper-next {\n    right: 64px;\n    top: auto;\n    bottom: -49px;\n    transform: initial;\n}\n}\n@media screen and (min-width: 2560px) {\n.hooper-navigation.is-vertical .hooper-prev {\n    top: -84px;\n    bottom: auto;\n    right: 154px;\n    left: auto;\n    transform: scale(2);\n}\n.hooper-navigation.is-vertical .hooper-next {\n    right: 142px;\n    top: auto;\n    bottom: -86px;\n    transform: scale(2);\n}\n}", ""]);
+___CSS_LOADER_EXPORT___.push([module.id, "#jReviews {\n  width: 100%;\n  background: url(" + ___CSS_LOADER_URL_REPLACEMENT_0___ + ") no-repeat;\n  background-position-x: 85%;\n}\n#jReviews .hooper {\n  height: auto;\n}\n.jReviews-header {\n  position: relative;\n  margin-bottom: 3rem;\n}\n.jReviews-header:after {\n  content: \"\";\n  display: block;\n  width: 8.5625rem;\n  position: absolute;\n  bottom: -0.75rem;\n  left: 50%;\n  transform: translateX(-50%);\n  border-bottom: 0.1875rem solid #42b1f4;\n}\n.jReviews-types .jButton {\n  display: inline-block;\n  margin-bottom: 1.25rem;\n}\n.jButton.jReviews-video {\n  background: #ffd86b;\n  color: #303b4d;\n}\n.jButton.jReviews-video:hover {\n  background: #ffdc7a;\n}\n.jReviews-item-player {\n  position: relative;\n  padding-top: 56.25%;\n  background: #000;\n}\n.jReviews-item-iflame {\n  width: 100%;\n  height: 100%;\n  position: absolute;\n  top: 0;\n  left: 0;\n}\n.jReviews-item-image {\n  width: 100%;\n}\n.jReviews-item-thumbnails {\n  display: flex;\n  gap: 0.625rem;\n  margin-top: 1.125rem;\n}\n.jReviews-item-thumbnails .hooper {\n  margin: 0 -5px;\n  flex: 100% 1 1;\n}\n.jReviews-item-thumbnail {\n  margin: 0 5px;\n  background-size: cover;\n  cursor: pointer;\n}\n.jReviews-item-thumbnail:after {\n  content: \"\";\n  display: block;\n  padding-bottom: 56.25%;\n}\n.jReviews-title {\n  margin-top: 1.75rem;\n}\n.jReviews-free {\n  margin-top: 1.75rem;\n}\n@media (max-width: 500px) {\n.jReviews-types {\n    display: flex;\n    justify-content: space-around;\n}\n}\n@media screen and (min-width: 500px) {\n.jReviews-types {\n    display: flex;\n    gap: 2rem;\n}\n.jReviews-types .jButton {\n    display: block;\n}\n}\n@media screen and (min-width: 1260px) {\n#jReviews {\n    padding-bottom: 15rem;\n}\n.jReviews-types {\n    display: block;\n}\n.jReviews-wrapper {\n    display: grid;\n    grid-template-columns: 1fr 2fr;\n}\n.jReviews-items-wrapper {\n    grid-column: 2;\n    grid-row: 1/3;\n}\n.jReviews-items {\n    display: flex;\n    gap: 0.75rem;\n    flex-flow: row nowrap;\n}\n.jReviews-item-watch {\n    flex: 0 1 100%;\n}\n.jReviews-item-thumbnails {\n    flex: 0 0 12rem;\n    flex-flow: column nowrap;\n    justify-content: space-between;\n    margin: 0;\n    padding: 1.5rem 0;\n}\n.jReviews-item-thumbnails .hooper {\n    margin: -5px 0;\n}\n.jReviews-item-thumbnail {\n    margin: 5px 0;\n}\n.jReviews-footer {\n    padding-right: 2rem;\n}\n.hooper-navigation.is-vertical .hooper-prev {\n    top: -42px;\n    bottom: auto;\n    right: 72px;\n    left: auto;\n    transform: initial;\n}\n.hooper-navigation.is-vertical .hooper-next {\n    right: 64px;\n    top: auto;\n    bottom: -49px;\n    transform: initial;\n}\n}\n@media screen and (min-width: 2560px) {\n.hooper-navigation.is-vertical .hooper-prev {\n    top: -84px;\n    bottom: auto;\n    right: 154px;\n    left: auto;\n    transform: scale(2);\n}\n.hooper-navigation.is-vertical .hooper-next {\n    right: 142px;\n    top: auto;\n    bottom: -86px;\n    transform: scale(2);\n}\n}", ""]);
 // Exports
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (___CSS_LOADER_EXPORT___);
 
@@ -11322,25 +11322,25 @@ var render = function () {
         !_vm.isDesktop
           ? _c("div", { staticClass: "jReviews-items-wrapper" }, [
               _c("div", { staticClass: "jReviews-items" }, [
-                _c("div", { staticClass: "jReviews-item-watch" }, [
-                  _c(
-                    "div",
-                    { staticClass: "jReviews-item-player" },
-                    [
-                      _c(
-                        "Hooper",
-                        {
-                          ref: "carousel",
-                          attrs: { settings: _vm.hooperSettings },
-                        },
-                        [
-                          _vm._l(_vm.content, function (item, key) {
-                            return _c("Slide", { key: "jTmb" + key }, [
+                _c(
+                  "div",
+                  { staticClass: "jReviews-item-watch" },
+                  [
+                    _c(
+                      "Hooper",
+                      {
+                        ref: "carousel",
+                        attrs: { settings: _vm.hooperSettings },
+                      },
+                      [
+                        _vm._l(_vm.content, function (item, key) {
+                          return _c("Slide", { key: "jTmb" + key }, [
+                            _c("div", { staticClass: "jReviews-item-player" }, [
                               _vm.mode === "videos"
                                 ? _c("iframe", {
                                     staticClass: "jReviews-item-iflame",
                                     attrs: {
-                                      src: _vm.prefix + _vm.videos[key].video,
+                                      src: _vm.prefix + _vm.content[key].video,
                                       allow:
                                         "accelerometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture",
                                       allowfullscreen: "",
@@ -11349,30 +11349,27 @@ var render = function () {
                                     },
                                   })
                                 : _vm._e(),
-                              _vm._v(" "),
-                              _vm.mode === "photos"
-                                ? _c("img", {
-                                    staticClass: "jReviews-item-image",
-                                    attrs: {
-                                      src: item.thumbnail,
-                                      alt: "photos",
-                                    },
-                                  })
-                                : _vm._e(),
-                            ])
-                          }),
-                          _vm._v(" "),
-                          _c("hooper-navigation", {
-                            attrs: { slot: "hooper-addons" },
-                            slot: "hooper-addons",
-                          }),
-                        ],
-                        2
-                      ),
-                    ],
-                    1
-                  ),
-                ]),
+                            ]),
+                            _vm._v(" "),
+                            _vm.mode === "photos"
+                              ? _c("img", {
+                                  staticClass: "jReviews-item-image",
+                                  attrs: { src: item.thumbnail, alt: "photos" },
+                                })
+                              : _vm._e(),
+                          ])
+                        }),
+                        _vm._v(" "),
+                        _c("hooper-navigation", {
+                          attrs: { slot: "hooper-addons" },
+                          slot: "hooper-addons",
+                        }),
+                      ],
+                      2
+                    ),
+                  ],
+                  1
+                ),
               ]),
             ])
           : _vm._e(),
