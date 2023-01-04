@@ -25,7 +25,13 @@
 
       <b-tab title="Полезность" key="1" card>
         <div class="d-flex" style="margin-bottom: 350px">
-          <top-gauges :utility_items="utility" :editable="true" wrapper_class="  br-1" :key="ukey" page="top"/>
+          <TopGauges
+            :utility_items="utility"
+            :editable="true"
+            wrapper_class="  br-1"
+            :key="ukey"
+            page="top"
+          />
         </div>
       </b-tab>
 
@@ -34,7 +40,7 @@
         <div class="d-flex flex-wrap mb-5" :key="ukey">
           <div v-for="(gauge, g_index) in rentability" :key="gauge.name">
             <div @click="gauge.editable = !gauge.editable">
-              <v-gauge :value="gauge.value"
+              <VGauge :value="gauge.value"
                        unit="%"
                        :options="gauge.options"
                        :maxValue="Number(gauge.max_value)"
@@ -74,7 +80,10 @@
         </div>
 
 
-        <t-rentability :year="currentYear" :month="monthInfo.month"></t-rentability>
+        <TableRentability
+          :year="currentYear"
+          :month="monthInfo.month"
+        />
 
       </b-tab>
 
@@ -87,13 +96,13 @@
               <th v-for="(field, findex) in proceeds.fields" :key="findex"
                   class="t-name table-title"
                   :class="{
-                                                'w-295 b-table-sticky-column': findex == 0,
-                                                'w-125': findex == 1,
-                                                'w-80': findex == 2,
-                                                'w-60': findex == 3,
-                                                'text-center': findex != 0,
-                                                'text-left': findex == 0,
-                                            }">
+                      'w-295 b-table-sticky-column': findex == 0,
+                      'w-125': findex == 1,
+                      'w-80': findex == 2,
+                      'w-60': findex == 3,
+                      'text-center': findex != 0,
+                      'text-left': findex == 0,
+                  }">
 
 
                 <template v-if="['+/-'].includes(field)">
@@ -220,7 +229,10 @@
       </b-tab>
 
       <b-tab title="NPS" key="5" card>
-        <nps :activeuserid="+activeuserid" :show_header="false"></nps>
+        <NPS
+          :activeuserid="+activeuserid"
+          :show_header="false"
+        />
       </b-tab>
 
 
@@ -232,9 +244,20 @@
 </template>
 
 <script>
+const VGauge = () => import(/* webpackChunkName: "TopGauges" */ 'vgauge')
+const TopGauges = () => import(/* webpackChunkName: "TopGauges" */ '@/components/TopGauges')  // TOП спидометры, есть и в аналитике
+import TableRentability from '@/components/tables/TableRentability' // ТОП рентабельность
+import NPS from '@/components/tables/NPS' // Оценка руководителей
 import { useYearOptions } from '../composables/yearOptions'
+
 export default {
   name: "Top",
+  components: {
+    TopGauges,
+    VGauge,
+    TableRentability,
+    NPS,
+  },
   props: ['data', 'activeuserid'],
   data() {
     return {

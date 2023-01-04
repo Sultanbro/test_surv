@@ -57,7 +57,13 @@
                         <div class="wrap">
                             <div class="d-flex justify-content-between">
                                 <div>
-                                    <top-gauges :utility_items="data.utility" :editable="false"  wrapper_class="d-flex"  :key="123" page="analytics"/>
+                                    <TopGauges
+                                        :utility_items="data.utility"
+                                        :editable="false"
+                                        wrapper_class="d-flex"
+                                        :key="123"
+                                        page="analytics"
+                                    />
                                 </div>
                                 <div class="p-4">
                                     <p class="ap-text">Процент текучки кадров за прошлый месяц: <span>{{ data.fired_percent_prev }}%</span> </p>
@@ -316,6 +322,7 @@
     import TableActivityNew from '@/components/tables/TableActivityNew'
     import TableActivityCollection from '@/components/tables/TableActivityCollection'
     import TableQualityWeekly from '@/components/tables/TableQualityWeekly'
+    const TopGauges = () => import(/* webpackChunkName: "TopGauges" */ '@/components/TopGauges')  // TOП спидометры, есть и в аналитике
     import { useYearOptions } from '../composables/yearOptions'
 
     export default {
@@ -328,6 +335,7 @@
             TableActivityNew,
             TableActivityCollection,
             TableQualityWeekly,
+            TopGauges,
         },
         props: ['groups', 'activeuserid'],
         data() {

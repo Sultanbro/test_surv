@@ -41,7 +41,7 @@
                             align="fill"
                             size="sm"
                             class="my-0"
-                        ></b-pagination>
+                        />
                     </div>
                 </div>
                 <div class="col-6 d-flex align-items-center">
@@ -165,18 +165,20 @@
 
 
 
-    <sidebar v-if="showExcelImport"
+    <Sidebar
+        v-if="showExcelImport"
         title="Импорт EXCEL"
         :open="showExcelImport"
         @close="showExcelImport=false"
-        width="75%">
-        <group-excel-import :group_id="currentGroup"></group-excel-import>
-    </sidebar>
+        width="75%"
+    >
+        <GroupExcelImport :group_id="currentGroup"/>
+    </Sidebar>
 
 
 
 
-    <sidebar :title="sidebarTitle" :open="openSidebar" @close="openSidebar=false" v-if="openSidebar" width="350px">
+    <Sidebar :title="sidebarTitle" :open="openSidebar" @close="openSidebar=false" v-if="openSidebar" width="350px">
         <b-tabs content-class="mt-3" justified>
             <b-tab title="🕒" active>
                 <template v-if="sidebarHistory && sidebarHistory.length > 0">
@@ -260,7 +262,7 @@
                 </b-tab>
             </template>
         </b-tabs>
-    </sidebar>
+    </Sidebar>
 
 
     <b-modal v-model="modalVisibleFines" ok-text="Да" cancel-text="Нет" title="Вы уверены?" @ok="saveFines" size="md">
@@ -315,11 +317,11 @@
         <b-form-file
             v-if="firingItems.type == 2"
             v-model="firingItems.file"
-                            :state="Boolean(firingItems.file)"
-                            placeholder="Выберите или перетащите файл сюда..."
-                            drop-placeholder="Перетащите файл сюда..."
-                            class="mt-3"
-                            ></b-form-file>
+            :state="Boolean(firingItems.file)"
+            placeholder="Выберите или перетащите файл сюда..."
+            drop-placeholder="Перетащите файл сюда..."
+            class="mt-3"
+            ></b-form-file>
 
     </b-modal>
 
@@ -336,9 +338,16 @@
 </template>
 
 <script>
+import Sidebar from '@/components/ui/Sidebar' // сайдбар table
+import GroupExcelImport from '@/components/imports/GroupExcelImport' // импорт в табели
 import { useYearOptions } from '../composables/yearOptions'
+
 export default {
-    name: "TableReport",
+    name: 'TableReport',
+    components: {
+        Sidebar,
+        GroupExcelImport,
+    },
     props: {
         groups: Array,
         fines: Array,

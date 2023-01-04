@@ -18,7 +18,6 @@ window.VJQuery = JQuery
 import moment from 'moment'
 import Notifications from 'vue-notification'
 import VueMask from 'v-mask'
-import VGauge from 'vgauge';
 import draggable from 'vuedraggable'
 import Multiselect from 'vue-multiselect'
 import Vue from 'vue'
@@ -59,7 +58,6 @@ import 'vue-loading-overlay/dist/vue-loading.css'
 // Vue Konva for canvas
 import VueKonva from 'vue-konva';
 Vue.use(VueKonva);
-import VueVideoPlayer from 'vue-video-player'
 
 import DatePicker from 'vue2-datepicker';
 import 'vue2-datepicker/index.css';
@@ -72,10 +70,6 @@ Vue.use( VueObserveVisibility );
 
 Vue.use(DatePicker)
 
-Vue.use(VueVideoPlayer, /* {
-  options: global default options,
-  events: global videojs events
-} */)
 
 
 moment.locale('ru')
@@ -99,7 +93,6 @@ Vue.prototype.$laravel = Laravel;
 Vue.use(BootstrapVue)
 
 Vue.use(Loading)
-Vue.use(VGauge);
 Vue.use(VueMask);
 
 Vue.use(Notifications)
@@ -142,18 +135,13 @@ Vue.component('chat-search-button', require('./components/Chat/ChatSearchButton/
 /**
  * Components
  */
-Vue.component('upload-files', require('./components/UploadFiles.vue').default); // загрузка файлов
 Vue.component('t-kpi-indicator', require('./components/tables/TableKpiIndicator.vue').default); // ряд активности в таблице KPI
 Vue.component('selectgroup', require('./components/selectgroup.vue').default); // booklist
 Vue.component('selectgroupbook', require('./components/selectgroupbook.vue').default); // booklist
-Vue.component('group-excel-import', require('./components/imports/GroupExcelImport.vue').default); // импорт в табели
 Vue.component('activity-excel-import', require('./components/imports/ActivityExcelImport.vue').default); // импорт в активности
-Vue.component('nps', require('./components/tables/NPS.vue').default); // Оценка руководителей
 Vue.component('trainee-report', require('./components/TraineeReport.vue').default);
 Vue.component('profile', require('./components/profile/Profile.vue').default); // шапка
 Vue.component('user-earnings', require('./components/profile/UserEarnings/UserEarnings.vue').default); // Блок начислений в профиле
-Vue.component('top-gauges', require('./components/TopGauges.vue').default); // TOП спидометры, есть и в аналитике
-Vue.component('book-segment', require('./components/BookSegment.vue').default); //
 
 /**
  * Tables
@@ -163,7 +151,6 @@ Vue.component('t-user-analytics', require('./components/tables/TableUserAnalytic
 Vue.component('t-summary-recruting', require('./components/tables/TableSummaryRecruting.vue').default); // Сводная рекрутинг
 Vue.component('t-recruting-user', require('./components/tables/TableRecrutingUser.vue').default); // Таблица рекрутера
 
-Vue.component('t-rentability', require('./components/tables/TableRentability.vue').default); // ТОП рентабельность
 Vue.component('t-activity', require('./components/tables/TableActivity.vue').default); // Старая активность
 Vue.component('t-activity-new', require('./components/tables/TableActivityNew.vue').default); // Активность
 Vue.component('t-activity-collection', require('./components/tables/TableActivityCollection.vue').default); // Сборы
@@ -184,30 +171,13 @@ Vue.component('superselect', require('./components/SuperSelect.vue').default); /
 /**
  * Pages
  */
-Vue.component('page-upbooks', require('./pages/Upbooks.vue').default); // книги редактирование
-
 // Vue.component('page-playlist-read', require('./pages/PlaylistRead.vue').default); // чтение плейлиста
-
-Vue.component('page-playlists', require('./pages/Playlists.vue').default); // редактирование плейлиста
 
 // Vue.component('page-kb', require('./pages/KBPage.vue').default); // база знаний раздел
 
 // Учет времени
-Vue.component('page-top', require('./pages/Top.vue').default); // четверг
 Vue.component('exam', require('./pages/exam.vue').default); // повышение квалификации
-Vue.component('t-report', require('./pages/TableReport.vue').default);  // табель
-Vue.component('permissions', require('./pages/Permissions.vue').default); // курсы мои
 // Vue.component('cabinet', require('./pages/Cabinet.vue').default); // курсы мои
-
-
-// Настройки
-Vue.component('userlist', require('./pages/userlist.vue').default); // Сотрудники
-Vue.component('professions', require('./pages/professions.vue').default); // должности
-Vue.component('groups', require('./pages/groups.vue').default); // Группы
-Vue.component('fines', require('./pages/Fines.vue').default); // штрафы table
-Vue.component('s-notifications', require('./pages/Notifications.vue').default); // Уведомления
-Vue.component('check-list', require('./pages/checkList.vue').default); // чек
-Vue.component('awards', require('./pages/Awards/Awards.vue').default); // награды
 
 
 // temp

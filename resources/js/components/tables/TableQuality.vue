@@ -684,7 +684,7 @@
         </div>
       </div>
     </b-modal>
-    <sidebar
+    <Sidebar
         title="Индивидуальный чек лист"
         :open="showChecklist"
         @close="toggle()"
@@ -710,17 +710,19 @@
                 </button>
             </div>
         </div>
-    </sidebar>
+    </Sidebar>
   </div>
 </template>
 
 <script>
+import Sidebar from '@/components/ui/Sidebar' // сайдбар table
 import CourseResults from '@/pages/CourseResults' // результаты по курсам
 import { useYearOptions } from '../../composables/yearOptions'
 // import Template from "../../../../public/static/partner/templates/template.html";
 export default {
   name: 'TableQuality',
   components: {
+    Sidebar,
     CourseResults,
   },
   props: {

@@ -210,7 +210,7 @@
       </div>
     </div>
 
-      <sidebar
+      <Sidebar
         title="Бонусы"
         :open="showBonuses"
         @close="showBonuses = false"
@@ -326,7 +326,7 @@
             Удалить
           </button>
         </div>
-      </sidebar>
+      </Sidebar>
 
       <b-modal id="bv-modal" hide-footer>
         <template #modal-title> Подтвердите удаление </template>
@@ -483,8 +483,12 @@
 </template>
 
 <script>
+import Sidebar from '@/components/ui/Sidebar' // сайдбар table
 export default {
   name: "groups",
+  components: {
+    Sidebar,
+  },
   props: [
     "statuseses",
     "corpbooks",
