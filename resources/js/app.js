@@ -196,7 +196,6 @@ Vue.component('page-playlists', require('./pages/Playlists.vue').default); // р
 Vue.component('page-top', require('./pages/Top.vue').default); // четверг
 Vue.component('exam', require('./pages/exam.vue').default); // повышение квалификации
 Vue.component('t-report', require('./pages/TableReport.vue').default);  // табель
-Vue.component('t-accrual', require('./pages/TableAccrual.vue').default); // начисления
 Vue.component('permissions', require('./pages/Permissions.vue').default); // курсы мои
 // Vue.component('cabinet', require('./pages/Cabinet.vue').default); // курсы мои
 
