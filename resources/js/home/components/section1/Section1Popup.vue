@@ -88,7 +88,7 @@ export default {
 }
 @media screen and (min-width: $medium) {
     .Section1Popup{
-        padding: 4rem 6rem;
+        padding: 3rem 6rem;
     }
     .Section1Popup-subitems{
         flex-flow: row nowrap;

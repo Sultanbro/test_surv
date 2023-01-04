@@ -3,7 +3,7 @@
     <div class="section-content">
       <h2 class="jSec3-header jHeader">{{ $lang(lang, 's3-header') }}</h2>
       <p class="jSec3-subheader">{{ $lang(lang, 's3-subheader') }}</p>
-      <div class="jSec3-blocks">
+      <div v-if="isDesktop" class="jSec3-blocks">
         <S3Block class="jSec3-block-1">
           <h3 class="jSec3-block-title">{{ $lang(lang, 's3-b1-title') }}</h3>
           <p class="jSec3-block-text">{{ $lang(lang, 's3-b1-text') }}</p>
@@ -17,21 +17,61 @@
           <p class="jSec3-block-text">{{ $lang(lang, 's3-b3-text') }}</p>
         </S3Block>
       </div>
+      <div v-if="!isDesktop" class="jSec3-blocks">
+        <Hooper :settings="hooperSettings">
+          <Slide>
+            <S3Block class="jSec3-block-1">
+              <h3 class="jSec3-block-title">{{ $lang(lang, 's3-b1-title') }}</h3>
+              <p class="jSec3-block-text">{{ $lang(lang, 's3-b1-text') }}</p>
+            </S3Block>
+          </Slide>
+          <Slide>
+            <S3Block :right="true" class="jSec3-block-2">
+              <h3 class="jSec3-block-title">{{ $lang(lang, 's3-b2-title') }}</h3>
+              <p class="jSec3-block-text">{{ $lang(lang, 's3-b2-text') }}</p>
+            </S3Block>
+          </Slide>
+          <Slide>
+            <S3Block class="jSec3-block-3">
+              <h3 class="jSec3-block-title">{{ $lang(lang, 's3-b3-title') }}</h3>
+              <p class="jSec3-block-text">{{ $lang(lang, 's3-b3-text') }}</p>
+            </S3Block>
+          </Slide>
+        </Hooper>
+      </div>
     </div>
   </section>
 </template>
 
 <script>
 import S3Block from '../section3/S3Block'
+import {Hooper, Navigation as HooperNavigation, Slide} from 'hooper'
+import 'hooper/dist/hooper.css'
 
 export default {
   components: {
-    S3Block
+    S3Block,
+    Hooper,
+    Slide,
+    HooperNavigation
+  },
+  data() {
+    return {
+      hooperSettings: {
+        itemsToShow: 1,
+        infiniteScroll: true,
+        autoPlay: true,
+        playSpeed: 3000
+      }
+    }
   },
   computed: {
     lang() {
       return this.$root.$data.lang
-    }
+    },
+    isDesktop() {
+      return this.$viewportSize.width >= 1260
+    },
   },
 }
 </script>
@@ -87,7 +127,7 @@ export default {
 }
 
 @media screen and (min-width: $medium) {
-  .jSec3{
+  .jSec3 {
     margin-top: 0;
   }
   .jSec3-block-title {
@@ -97,5 +137,9 @@ export default {
   .jSec3-block-text {
     line-height: 1.875;
   }
+}
+
+.jSec3-blocks .hooper {
+  height: auto;
 }
 </style>

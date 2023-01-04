@@ -39,7 +39,7 @@
                     <div class="login-panel">
 
                         <a href="/" class="">
-                            <img src="/images/logo.png" style="max-width: 220px;">
+                            <img src="/images/logo.svg" style="max-width: 220px;">
                         </a>
 
 
@@ -147,6 +147,10 @@ function delete_cookie( name, path, domain ) {
       ((domain)?";domain="+domain:"") +
       ";expires=Thu, 01 Jan 1970 00:00:01 GMT";
 }
+<<<<<<< HEAD
+</script>
+@endsection
+=======
 
 (function(){
     var $loginForm = $('#login');
@@ -205,3 +209,4 @@ function delete_cookie( name, path, domain ) {
 })();
 </script>
 @endsection
+>>>>>>> 2881b794fe63f4cd0846841350f2ab20bd8a7ba3
