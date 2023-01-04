@@ -303,6 +303,10 @@ export default {
                         'training': this.data[key][keyt]['training'],
                     })
 
+                    if(key === 'times' && temp[key][keyt].value){
+                        temp[key][keyt].value = this.$moment.utc(temp[key][keyt].value, 'hh:mm').local().format('hh:mm')
+                    }
+
                     if(key == 'salaries' || key == 'hours') {
                         let val = Number(this.data[key][keyt]['value']);
                         total[key] += isNaN(val) ? 0 : val;

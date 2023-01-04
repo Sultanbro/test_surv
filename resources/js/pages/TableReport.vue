@@ -119,7 +119,15 @@
 
                     <template #cell()="data">
 
-                        <div @mouseover="dayInfo(data)" @click="detectClick(data)" class="td-div" :class="{'updated': data.value.updated}">
+                        <div
+                            @mouseover="dayInfo(data)"
+                            @click="detectClick(data)"
+                            class="td-div"
+                            :class="{
+                                'updated': data.value.updated,
+                                'pointer': data.item._cellVariants
+                            }"
+                        >
 
                             <template v-if="data.value.hour">
                                 <input
@@ -787,6 +795,7 @@ export default {
         },
 
         dayInfo(data) {
+            if(!data.item?._cellVariants) return
             // if (!isNaN(data.field.key))
             this.dayInfoText = `${data.item.name} - ${data.field.key} ${this.dateInfo.currentMonth}`
         },
@@ -1173,6 +1182,7 @@ export default {
         },
 
         detectClick(data) {
+            if(!data.item?._cellVariants) return
             //if([48,53,65,66].includes(this.currentGroup) || this.activeuserid == 5) { // if RECRUITING GROUP ENABLE EDIT HOURS ON DBLCLICK
             if(this.editable_time && this.can_edit) {
                 this.numClicks++
@@ -1211,7 +1221,6 @@ export default {
                 position: relative;
                 display: inline-flex;
                 align-items: center;
-                cursor: pointer;
                 justify-content: center;
             }
         }
