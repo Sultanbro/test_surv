@@ -1,24 +1,23 @@
 <template>
-  <div class="video-playlists">
-
-
-      
-
+  <div
+    v-if="token"
+    class="video-playlists"
+  >
       <div class="d-flex">
 
         <div class="lp">
           <h1 class="page-title">Темы</h1>
 
-           
+
           <div
             class="section d-flex aic jcsb my-2"
-            v-for="(cat, index) in categories" 
+            v-for="(cat, index) in categories"
             :key="cat.id"
             :class="{'active': activeCat != null && activeCat.id == cat.id}"
             @click="selectCat(index)"
           >
             <p class="mb-0">{{ cat.title }}</p>
-              
+
               <div class="d-flex">
                   <i
                   class="fa fa-edit ml-2"
@@ -32,7 +31,7 @@
                 ></i>
               </div>
           </div>
-            
+
 
           <button class="btn-add" @click="showAddCategory = true" v-if="mode == 'edit'">
             Добавить категорию
@@ -40,7 +39,7 @@
 
         </div>
 
-        
+
         <div class="rp" style="flex: 1 1 0%;overflow:auto;">
 
           <div class="hat">
@@ -48,7 +47,7 @@
               <div class="bc">
                 <a href="#" @click="back">Темы</a>
                 <template v-if="activeCat">
-                  <i class="fa fa-chevron-right"></i> 
+                  <i class="fa fa-chevron-right"></i>
                   <a href="#"  @click="back">{{ activeCat.title + ' (' + activeCat.playlists.length + ')' }}</a>
                 </template>
                 <template v-if="activePlaylist">
@@ -69,7 +68,7 @@
                 <i class="btn btn-success fa fa-plus ml-2 d-flex px-2 aic"  @click="showAddPlaylist = true" v-if="mode == 'edit' && activePlaylist == null" />
 
 
-               
+
 
                 <!-- buttons for playlist like Save Group -->
                 <template v-if="activePlaylist && mode == 'edit'">
@@ -81,26 +80,26 @@
 
               </div>
             </div>
-            <div><!----></div> 
+            <div><!----></div>
           </div>
 
 
           <div class="content mt-3">
-            
+
             <div v-if="activeCat != null" class="p-3 ">
 
 
               <div v-if="activePlaylist != null" class="">
-                <page-playlist-edit 
+                <page-playlist-edit
                   ref="playlist"
-                  @back="back" 
+                  @back="back"
                   :token="token"
                   :id="activePlaylist.id"
                   :is_course="false"
                   :auth_user_id="user_id"
                   :mode="mode"
                   :myvideo="myvideo" />
-         
+
               </div>
 
               <div v-else>
@@ -115,7 +114,7 @@
 
                         <div class="right">
                             <div class="title">  {{ playlist.title }}</div>
-                             <div class="d-flex btns mb-2"  v-if="mode == 'edit'"> 
+                             <div class="d-flex btns mb-2"  v-if="mode == 'edit'">
                                 <i
                                   class="fa fa-edit"
                                   v-if="playlist.id != 0"
@@ -129,16 +128,16 @@
                                 ></i>
                             </div>
                             <div class="text">  {{ playlist.text }}</div>
-                              
+
                         </div>
 
                       </div>
-                  
+
                   </div>
               </div>
 
             </div>
-            
+
           </div>
         </div>
       </div>
@@ -199,7 +198,7 @@
       <button class="btn btn-primary rounded m-auto" @click="saveCat">
         <span>Сохранить</span>
       </button>
-    </b-modal>  
+    </b-modal>
 
      <!-- Редактировать плейлист -->
      <sidebar
@@ -251,10 +250,10 @@
               ref="edit_img"
               v-model="file_img"
               :state="Boolean(file_img)"
-              placeholder="Выберите или перетащите файл сюда..." 
+              placeholder="Выберите или перетащите файл сюда..."
               drop-placeholder="Перетащите файл сюда..."
               class="mt-3"
-              ></b-form-file> 
+              ></b-form-file>
           </div>
         </div>
 
@@ -304,7 +303,7 @@ export default {
     },
     category: Number,
     playlist: Number,
-    video: Number 
+    video: Number
   },
   data: function() {
     return {
@@ -333,13 +332,21 @@ export default {
       myvideo: this.video,
     };
   },
-
+  watch:{
+    token(){
+      this.init()
+    }
+  },
   created() {
-     this.fetchData();
+    if(this.token){
+      this.init()
+    }
   },
 
   methods: {
-
+    init(){
+      this.fetchData();
+    },
     addGroup() {
       this.$refs.playlist.addGroup()
     },
@@ -375,11 +382,11 @@ export default {
         });
     },
 
-    selectPl(i) { 
+    selectPl(i) {
       this.activePlaylist = this.activeCat.playlists[i];
       this.data_playlist = i+1;
 
-    
+
       if (history.pushState) {
           var newUrl = this.mylink.concat('/'+this.data_category, '/'+this.data_playlist);
           history.pushState(null, null, newUrl);
@@ -417,8 +424,8 @@ export default {
         this.activeCat = this.categories[i];
         this.activePlaylist = null;
         this.data_category = i+1;
-        this.data_playlist = 0; 
-     
+        this.data_playlist = 0;
+
 
         if (history.pushState) {
             var newUrl = this.mylink.concat('/'+this.data_category, '/'+this.data_playlist);
@@ -459,7 +466,7 @@ export default {
           if(this.editingPlaylist.category_id != this.activeCat.id) {
             this.deleteItemFrom(this.editingPlaylist.id, this.activeCat.playlists);
             let i = this.categories.findIndex(el => el.id == this.editingPlaylist.category_id);
-            
+
             if(i != -1) {
               if(response.data !== '') this.editingPlaylist.img = response.data;
               this.categories[i].playlists.push(this.editingPlaylist);
@@ -482,7 +489,7 @@ export default {
       let i = from.findIndex(el => el.id == id);
       if(i != -1) from.splice(i, 1);
     },
-    
+
      back() {
         this.activePlaylist = null;
         window.history.replaceState({ id: "100" }, "Плейлисты", "/video_playlists");
@@ -546,7 +553,7 @@ export default {
         axios
           .post("/playlists/delete-cat", {
             id: this.categories[i].id
-          })  
+          })
           .then((response) => {
             this.categories.splice(i, 1);
             this.activeCat = null;
@@ -614,7 +621,7 @@ export default {
           alert(error);
         });
     },
-    
+
   },
 };
 </script>

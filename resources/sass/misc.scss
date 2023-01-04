@@ -5,7 +5,7 @@
 }
 
 .pointer {
-    cursor: pointer;
+    cursor: pointer!important;
 }
 
 .table-bordered td,
@@ -116,18 +116,6 @@ tspan:last-child {
             background-color: #2cca50 !important;
         }
     }
-}
-
-.b-table-sticky-header>.table.b-table>thead>tr>.b-table-sticky-column,
-.b-table-sticky-header>.table.b-table>tbody>tr>.b-table-sticky-column,
-.b-table-sticky-header>.table.b-table>tfoot>tr>.b-table-sticky-column,
-.table-responsive>.table.b-table>thead>tr>.b-table-sticky-column,
-.table-responsive>.table.b-table>tbody>tr>.b-table-sticky-column,
-.table-responsive>.table.b-table>tfoot>tr>.b-table-sticky-column,
-[class*=table-responsive-]>.table.b-table>thead>tr>.b-table-sticky-column,
-[class*=table-responsive-]>.table.b-table>tbody>tr>.b-table-sticky-column,
-[class*=table-responsive-]>.table.b-table>tfoot>tr>.b-table-sticky-column {
-    left: -2px;
 }
 
 .font-bold {
@@ -451,23 +439,6 @@ $text-grey: #62788B;
         }
         .box svg {
             height: 50px;
-        }
-
-        // ОКК
-        .quality-page { 
-            .table td.month,
-            .table th.month, 
-            .table thead th.month,
-            .wd div,
-            .table th,
-            .cell-input {
-                font-size: 1.2rem;
-            }
-
-            .table-sm td,
-            .table-sm th {
-                padding: 3px 4px;
-            }
         }
 
         // HR

@@ -13,7 +13,7 @@ use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use App\Service\Department\UserService;
-use App\Timeboard\UserPresence;
+use App\Models\Timetrack\UserPresence;
 
 class TraineeController extends Controller
 {

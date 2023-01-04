@@ -7,29 +7,12 @@
         }
 
         .expanded {
-            background: #c0def2;
-            
-            td {
-                padding: 5px 10px !important;
-                font-weight: 600;
-
-                div {
-                    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', 'Helvetica Neue', Helvetica, Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol';
-                }
-            }
+            background-color: #c0def2;
         }
 
         .expanded-title {
-            background: #4ba4e0;
-
-            td {
-                font-weight: 600;
-
-                div {
-                    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', 'Helvetica Neue', Helvetica, Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol';
-                }
-            }
-
+            background-color: #4ba4e0;
+            color: #fff;
         }
     }
 

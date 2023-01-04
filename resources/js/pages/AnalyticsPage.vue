@@ -1,5 +1,8 @@
 <template>
-    <div class="mt-2 analytics-page px-3">
+    <div
+        v-if="groups"
+        class="mt-2 analytics-page px-3"
+    >
         <div class="row mb-3 ">
             <div class="col-3">
                 <select class="form-control" v-model="currentGroup" @change="fetchData">
@@ -23,29 +26,29 @@
             </div>
             <div class="col-2" v-if="$laravel.is_admin">
                 <button v-if="!firstEnter && !dataLoaded" class="btn btn-info rounded add-s" @click="add_analytics()" title="Создать аналитику"><i class="fa fa-plus-square"></i></button>
-    
+
                 <button v-if="!noan" class="btn btn-info rounded add-s" @click="archive()" title="Архивировать"><i class="fa fa-trash"></i></button>
-    
+
                 <button class="btn btn-info rounded add-s ml-2" @click="showArchive = true" title="Восстановить из архива"><i class="fa fa-archive"></i></button>
             </div>
             <div class="col-1" v-else>
-    
+
             </div>
             <div class="col-2">
-                <button 
+                <button
                     class="btn btn-success rounded btn-sm"
                     @click="add_activity()">
                     <i class="fa fa-plus-square" style="font-size:14px"></i>
                 </button>
-                <button 
+                <button
                     class="btn btn-primary rounded  btn-sm"
                     @click="showOrder = true">
                     <i class="fas fa-sort-amount-down"></i>
                 </button>
             </div>
         </div>
-        <div> 
-            
+        <div>
+
             <div v-if="!firstEnter">
                 <div v-if="this.hasPremission" :key="askey">
                     <div v-if="dataLoaded">
@@ -62,42 +65,42 @@
                                 </div>
                             </div>
                         </div>
-    
+
                         <b-tabs type="card"  :defaultActiveKey='active' @change="onTabChange" >
-    
+
                             <b-tab title="Сводная" key="1" card>
                                 <div class="mb-5">
-                                    <analytic-stat :table="data.table" 
-                                        :fields="data.columns" 
+                                    <analytic-stat :table="data.table"
+                                        :fields="data.columns"
                                         :activeuserid="activeuserid"
-                                        :monthInfo="monthInfo" 
-                                        :group_id="currentGroup" 
+                                        :monthInfo="monthInfo"
+                                        :group_id="currentGroup"
                                         :activities="activity_select"
                                         />
                                 </div>
-                                
-    
+
+
                                  <call-bases :data="call_bases" :monthInfo="monthInfo" v-if="currentGroup == 53"></call-bases>
-    
-                                <t-decomposition 
+
+                                <t-decomposition
                                     :month="monthInfo"
                                     :data="data.decomposition"
                                 ></t-decomposition>
-    
-                                
+
+
                             </b-tab>
-    
+
                             <b-tab title="Подробная" key="2" card>
-    
-                                <b-tabs type="card" @change="showSubTab" :defaultActiveKey='active_sub_tab'>
-    
-                                    <template v-for="(activity, index) in data.activities"> 
+
+                                <b-tabs type="card" class="mt-4" @change="showSubTab" :defaultActiveKey='active_sub_tab'>
+
+                                    <template v-for="(activity, index) in data.activities">
                                         <b-tab :title="activity.name" :key="index"  @change="showcubTab(index)">
-                                            
+
                                             <!-- Switch month and year of Activity in detailed -->
-                                            <button class="btn btn-default btn-sm rounded mt-2" @click="switchToMonthInActivity(index)">Месяц</button>
-                                            <button class="btn btn-default btn-sm rounded mt-2" @click="switchToYearInActivity(index)">Год</button>
-    
+                                            <button class="btn btn-default rounded mt-2" @click="switchToMonthInActivity(index)">Месяц</button>
+                                            <button class="btn btn-default rounded mt-2" @click="switchToYearInActivity(index)">Год</button>
+
                                             <!-- tabs -->
                                             <div v-if="activityStates[index] !== undefined" class="mt-2">
                                                 <!-- Month tab of activity in detailed -->
@@ -112,7 +115,7 @@
                                                         :work_days="monthInfo.workDays"
                                                         :editable="activity.editable == 1 ? true : false"
                                                     ></t-activity-new>
-    
+
                                                     <t-activity-collection v-if="activity.type == 'collection'"
                                                         :month="monthInfo"
                                                         :activity="activity"
@@ -120,7 +123,7 @@
                                                         :key="activity.id"
                                                         :price="activity.price"
                                                     ></t-activity-collection>
-    
+
                                                     <t-quality-weekly v-if="activity.type == 'quality'"
                                                         :monthInfo="monthInfo"
                                                         :items="activity.records"
@@ -128,7 +131,7 @@
                                                         :editable="activity.editable == 1 ? true : false"
                                                     ></t-quality-weekly>
                                                 </div>
-    
+
                                                 <!-- Year tab of activity in detailed -->
                                                 <div :class="{
                                                     'hidden' : activityStates[index] == 'month'
@@ -136,55 +139,60 @@
                                                     <h4 class="mb-2">{{ activity.name }}</h4>
 
                                                     <!-- Year table -->
-                                                    <table class="table b-table table-sm table-bordered">
-                                                        <tr>
-                                                            <th v-for="(field, key) in yearActivityTableFields" :class="field.classes">
-                                                                <div>{{ field.name }}</div>
-                                                            </th>
-                                                        </tr>
-    
-                                                        <tr v-for="( row, index ) in yearActivityTable" :key="index">
-                                                            <td v-for="(field, key) in yearActivityTableFields" :class="field.classes">
-                                                                <div>{{ row[field.key] }}</div>
-                                                            </td>
-                                                        </tr>
-                                                    </table>
+                                                    <div class="table-container table-responsive">
+                                                        <table class="table table-bordered">
+                                                            <thead>
+                                                            <tr>
+                                                                <th v-for="(field, key) in yearActivityTableFields" :class="field.classes">
+                                                                    <div>{{ field.name }}</div>
+                                                                </th>
+                                                            </tr>
+                                                            </thead>
+                                                            <tbody>
+                                                            <tr v-for="( row, index ) in yearActivityTable" :key="index">
+                                                                <td v-for="(field, key) in yearActivityTableFields" :class="field.classes">
+                                                                    <div>{{ row[field.key] }}</div>
+                                                                </td>
+                                                            </tr>
+                                                            </tbody>
+                                                        </table>
+                                                    </div>
                                                 </div>
-    
+
                                             </div>
-                                            
-    
+
+
                                         </b-tab>
                                     </template>
-                            
-    
+
+
                                 </b-tabs>
                             </b-tab>
-                        
+
                         </b-tabs>
                     </div>
-    
+
                     <div v-else>
                         <p class="no-info">Аналитика для группы еще не создана</p>
                     </div>
                 </div>
-                
+
                 <div v-else>
                     <p class="no-info">У вас нет доступа к этой группе</p>
                 </div>
-            </div> 
-            
-    
+            </div>
+
+
             <div class="empty-space"></div>
-            
+
         </div>
-    
-    
-            
-    
+
+
+
+
         <!-- Modal restore archived group -->
         <b-modal v-model="showArchive"  title="Восстановить из архива" @ok="restore_analytics()" size="lg" class="modalle" >
-        
+
             <div class="row">
                 <div class="col-5">
                     <p class="">Отдел</p>
@@ -195,26 +203,26 @@
                     </select>
                 </div>
             </div>
-            
+
         </b-modal>
-    
+
         <!-- Modal Create activity -->
         <b-modal v-model="showOrder"  title="Порядок активностей" @ok="save_order()" size="md">
             <div :key="askey">
                 <draggable :list="activity_select"  @end="onEndSortcat('test')" >
                     <div v-for="act in activity_select" :key="act.id" class="drag_item">
-                        
+
                         <span>{{act.name}}</span>
                         <i @click="delete_activity(act)" class="fa fa-trash pointer"></i>
                     </div>
-                </draggable> 
+                </draggable>
             </div>
         </b-modal>
-    
-    
+
+
         <!-- Modal Create activity -->
         <b-modal v-model="showActivityModal"  title="Добавить активность" @ok="create_activity()" size="lg" class="modalle">
-        
+
             <div class="row">
                 <div class="col-5">
                     <p class="">Название активности</p>
@@ -223,7 +231,7 @@
                     <input type="text" class="form-control form-control-sm" v-model="activity.name">
                 </div>
             </div>
-            
+
             <div class="row">
                 <div class="col-5">
                     <p class="">Метод</p>
@@ -234,7 +242,7 @@
                     </select>
                 </div>
             </div>
-     
+
             <div class="row">
                 <div class="col-5">
                     <p class="">План (Если сумма, на день)</p>
@@ -243,7 +251,7 @@
                     <input type="number" class="form-control form-control-sm" v-model="activity.daily_plan">
                 </div>
             </div>
-    
+
             <div class="row">
                 <div class="col-5">
                     <p class="">Кол-во рабочих дней в неделе</p>
@@ -252,7 +260,7 @@
                     <input type="number" class="form-control form-control-sm" v-model="activity.weekdays" min="1" max="7">
                 </div>
             </div>
-    
+
             <div class="row">
                 <div class="col-5">
                     <p class="">Ед. измерения (Символ в конце показателя)</p>
@@ -261,24 +269,25 @@
                     <input type="text" class="form-control form-control-sm" v-model="activity.unit">
                 </div>
             </div>
-    
+
             <div class="row">
                 <div class="col-5 d-flex align-items-center">
                     <p class="mb-0">Редактируемый</p>
                     <input type="checkbox" class="form-control form-control-sm" v-model="activity.editable">
                 </div>
             </div>
-    
+
         </b-modal>
-    
-    
+
+
     </div>
     </template>
-    
+
     <script>
+    import { useYearOptions } from '../composables/yearOptions'
     export default {
-    
-        name: "AnalyticsPage", 
+
+        name: "AnalyticsPage",
         props: ['groups', 'activeuserid'],
         data() {
             return {
@@ -286,7 +295,7 @@
                 ggroups: [],
                 active: '1',
                 hasPremission: false, // доступ
-                years: [2020, 2021, 2022],
+                years: useYearOptions(),
                 yearActivityTableFields: [],
                 yearActivityTable: [],
                 activityStates: {},
@@ -302,9 +311,11 @@
                 archived_groups: [],
                 call_bases: [], // euras call base unique table
                 restore_group: null,
+                noan: false, // нет аналитики
+                showActivityModal:false, // activity
                 dataLoaded: false,
-                noan: false, // нет аналитики 
-                showActivityModal:false, // activity 
+                noan: false, // нет аналитики
+                showActivityModal:false, // activity
                 active_sub_tab: 0,
                 activity: {// activity
                     name: null,
@@ -329,31 +340,39 @@
                 statistics: [] // year table of activity
             }
         },
-        created() {
-    
-            // выбор группы
-            const urlParams = new URLSearchParams(window.location.search);
-            let group = urlParams.get('group');
-            let active = urlParams.get('active');
-            let load = urlParams.get('load');
-    
-            this.ggroups = this.groups
-            this.currentGroup = (group == null) ? this.groups[0].id : parseFloat(group)
-            
-            this.active = (active == null) ? '1' : active
-        
-            this.setMonth()
-            this.setYear()
-            this.setActivityYearTableFields()
-    
-            if(load != null) {
-                this.fetchData()
+        watch: {
+            groups(){
+                this.init()
             }
-    
-            
+        },
+        created() {
+            if(this.groups){
+                this.init()
+            }
         },
         methods: {
-            
+            init(){
+
+                // выбор группы
+                // переделать на роуты
+                const urlParams = new URLSearchParams(window.location.search);
+                let group = urlParams.get('group');
+                let active = urlParams.get('active');
+                let load = urlParams.get('load');
+
+                this.ggroups = this.groups
+                this.currentGroup = (group == null) ? this.groups[0].id : parseFloat(group)
+
+                this.active = (active == null) ? '1' : active
+
+                this.setMonth()
+                this.setYear()
+                this.setActivityYearTableFields()
+
+                if(load != null) {
+                    this.fetchData()
+                }
+            },
             /**
              * ACTIVITY YEAR
              */
@@ -361,17 +380,17 @@
                 this.activityStates[index] = 'month'
                 console.log(index)
             },
-            
+
             /**
              * ACTIVITY YEAR
              */
             switchToYearInActivity(index) {
                 this.activityStates[index] = 'year'
                 console.log(index)
-    
+
                 this.fetchYearTableOfActivity(this.data.activities[index].id);
             },
-            
+
             /**
              * ACTIVITY YEAR
              * full name
@@ -381,10 +400,10 @@
                     ? user.last_name + ' ' + user.name
                     : user.last_name
             },
- 
+
             /**
              * ACTIVITY YEAR
-             * server returns total key 
+             * server returns total key
              * and if there is no result not returns total key
              */
             normalizeStat(obj) {
@@ -423,8 +442,8 @@
              */
             fetchYearTableOfActivity(activity_id) {
                 let loader = this.$loading.show();
-    
-    
+
+
                 axios.post('/timetracking/user-statistics-by-month', {
                     group_id: this.currentGroup,
                     date: {
@@ -433,25 +452,25 @@
                     },
                     activity_id: activity_id
                 }).then(response => {
-                    
+
                     this.users = response.data.data.users
 
                     this.formYearActivityTable(response.data.data.statistics)
-    
+
                     loader.hide()
                 }).catch(error => {
                     loader.hide()
                     alert(error)
                 });
             },
-            
+
             /**
              * ACTIVITY YEAR
              */
             setActivityYearTableFields() {
                 let fieldsArray = [];
                 let order = 1;
-                
+
                 fieldsArray.push({
                     key: "name",
                     name: "Сотрудник",
@@ -461,7 +480,7 @@
 
                 for (let i = 1; i <= 12; i++) {
                     if (i.length == 1) i = "0" + i;
-    
+
                     fieldsArray.push({
                         key: i,
                         name: moment(this.currentYear + "-" + i + "-01").format("MMMM"),
@@ -469,16 +488,16 @@
                         classes: "text-center px-1 month",
                     });
                 }
-    
+
                 this.yearActivityTableFields = fieldsArray;
-    
-                
+
+
             },
-    
+
             onTabClick() {
-                console.log('horay')    
+                console.log('horay')
             },
-    
+
             setMonth() {
                 this.monthInfo.currentMonth = this.monthInfo.currentMonth ? this.monthInfo.currentMonth : this.$moment().format('MMMM')
                 this.monthInfo.month = this.monthInfo.currentMonth ? this.$moment(this.monthInfo.currentMonth, 'MMMM').format('M') : this.$moment().format('M')
@@ -490,24 +509,24 @@
                 this.monthInfo.daysInMonth = new Date(this.$moment().format('YYYY'), this.$moment(this.monthInfo.currentMonth, 'MMMM').format('M'), 0).getDate() //Колличество дней в месяце
                 this.monthInfo.workDays = this.monthInfo.daysInMonth - this.monthInfo.weekDays //Колличество рабочих дней
                 this.monthInfo.workDays5 = this.monthInfo.daysInMonth - this.monthInfo.weekDays5 //Колличество рабочих дней
-                
+
             },
-            //Установка выбранного года 
+            //Установка выбранного года
             setYear() {
                 this.currentYear = this.currentYear ? this.currentYear : this.$moment().format('YYYY')
                 this.monthInfo.currentYear = this.currentYear;
             },
-    
+
             onTabChange(active) {
                 console.log(active)
                 this.active = active;
                 window.history.replaceState({ id: "100" }, "Аналитика групп", "/timetracking/an?group=" + this.currentGroup + "&active=" + this.active);
             },
-    
+
             fetchData() {
                 let loader = this.$loading.show();
-    
-    
+
+
                 axios.post('/timetracking/analytics-page/getanalytics', {
                     month: this.$moment(this.monthInfo.currentMonth, 'MMMM').format('M'),
                     year: this.currentYear,
@@ -519,20 +538,20 @@
                         return;
                     }
                     this.hasPremission = true
-                    
+
                     this.setMonth()
                     this.setYear()
-                    
+
                     let urlParamss = new URLSearchParams(window.location.search);
-    
+
                      this.firstEnter = false
-                    
-    
+
+
                     let active = urlParamss.get('active');
                     this.active = (active == null) ? '1' : active
-                    
+
                     console.log(active, this.active)
-    
+
                     if(response.data.error !== undefined) {
                         this.dataLoaded = false
                         this.noan = true;
@@ -542,27 +561,27 @@
                     } else {
                         this.dataLoaded = true
                         this.data = response.data
-                        this.noan = false;    
-    
+                        this.noan = false;
+
                         this.activity_select = [];
-    
+
                         let activityStatesObj = {};
                         this.data.activities.forEach((a, index) => {
                             this.activity_select.push({
                                 'name':a.name,
                                 'id':a.id,
                             });
-    
+
                             activityStatesObj[index] = 'month';
                         })
-    
+
                         this.activityStates = activityStatesObj;
-    
+
                         this.call_bases = response.data.call_bases;
-                        this.archived_groups = response.data.archived_groups; 
+                        this.archived_groups = response.data.archived_groups;
                         this.ggroups = response.data.groups;
                     }
-    
+
                     this.askey++;
                     window.history.replaceState({ id: "100" }, "Аналитика групп", "/timetracking/an?group=" + this.currentGroup + "&active=" + this.active);
                     this.monthInfo.workDays = this.work_days = this.getBusinessDateCount(this.monthInfo.month,this.monthInfo.currentYear, response.data.workdays)
@@ -572,33 +591,33 @@
                     alert(error)
                 });
             },
-    
+
             getBusinessDateCount(month, year, workdays) {
-      
-                month = month - 1; 
-                let next_month = (month + 1) == 12 ? 0 : month + 1; 
-                let next_year = (month + 1) == 12 ? year + 1 : year; 
-    
+
+                month = month - 1;
+                let next_month = (month + 1) == 12 ? 0 : month + 1;
+                let next_year = (month + 1) == 12 ? year + 1 : year;
+
                 var start = new Date(year, month, 1);
                 var end = new Date(next_year, next_month, 1);
-    
+
                 let days = (end - start) / 86400000;
-    
+
                 let business_days = 0,
                     weekends = workdays == 5 ? [0,6] : [0];
-    
+
                 for(let i = 1; i <= days; i++) {
-                    let d = new Date(year, month, i).getDay(); 
+                    let d = new Date(year, month, i).getDay();
                     if(!weekends.includes(d)) business_days++;
                 }
-                
+
                 return business_days;
             },
-    
+
             add_activity() {
                 this.showActivityModal = true;
             },
-     
+
             create_activity() {
                 let loader = this.$loading.show();
                 axios.post('/timetracking/analytics/create-activity', {
@@ -609,7 +628,7 @@
                 }).then(response => {
                     this.$toast.success('Активность для группы добавлена!')
                     this.fetchData();
-    
+
                     this.activity = {
                         name: null,
                         daily_plan: null,
@@ -618,7 +637,7 @@
                         editable: 1,
                         weekdays: 6,
                     };
-    
+
                     this.data.activities = response.data;
                     this.showActivityModal = false
                     loader.hide()
@@ -628,7 +647,7 @@
                     alert(error)
                 });
             },
-    
+
             add_analytics() {
                 let loader = this.$loading.show();
                 axios.post('/timetracking/analytics/new-group', {
@@ -645,11 +664,11 @@
                     alert(error)
                 });
             },
-    
+
             onEndSortcat(test) {
                 console.log(test)
             },
-    
+
             save_order() {
                 let loader = this.$loading.show();
                  axios.post('/timetracking/analytics/change_order', {
@@ -665,13 +684,13 @@
                     alert(error)
                 });
             },
-    
+
             delete_activity(act) {
-    
+
                 if (!confirm("Вы уверены что хотите удалить активность '" + act.name + "' ?")) {
                     return "";
                 }
-            
+
                 let loader = this.$loading.show();
                 axios.post('/timetracking/analytics/delete_activity', {
                     id: act.id
@@ -685,13 +704,13 @@
                     alert(error)
                 });
             },
-    
+
             restore_analytics() {
-                
+
                 if (!confirm("Вы уверены что хотите восстановить аналитику группы?")) {
                     return "";
                 }
-                
+
                 let loader = this.$loading.show();
                 axios.post('/timetracking/analytics/restore_analytics', {
                     id: this.restore_group
@@ -708,14 +727,14 @@
                     this.$toast.error('Ошибка!');
                     alert(error)
                 });
-            
+
             },
-    
+
             archive() {
                 if (!confirm("Вы уверены что хотите архивировать аналитику группы ?")) {
                     return "";
                 }
-                    
+
                 let loader = this.$loading.show();
                 axios.post('/timetracking/analytics/archive_analytics', {
                     id: this.currentGroup
@@ -730,16 +749,16 @@
                     alert(error)
                 });
             },
-    
+
             showSubTab(tab) {
                  this.active_sub_tab = tab
             },
-    
-    
-        } 
+
+
+        }
     }
     </script>
-    
+
     <style>
     .mw30 {
         min-width: 30px;
@@ -755,7 +774,7 @@
       position: relative;
       padding: 0;
     }
-    
+
     .rating-upper {
       color: #c52b2f;
       padding: 0;
@@ -766,7 +785,7 @@
       left: 0;
       overflow: hidden;
     }
-    
+
     .rating-lower {
       padding: 0;
       display: flex;
@@ -802,5 +821,4 @@
         border: 1px solid #dde8ee;
         border-radius: 5px;
     }
-    </style> 
-    
+    </style>

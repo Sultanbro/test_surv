@@ -53,7 +53,7 @@
 
                         <div class="tab-content">
                             <div id="tab-30" class="tab @if(!isset($_GET['tab'])) active @else js-tab-hidden  @endif">
-                                <form class="form-horizontal" method="POST" action="{{ route('login') }}">
+                                <form id="login" class="form-horizontal" method="POST" action="{{ route('login') }}">
                                     {{ csrf_field() }}
 
                                     <div class="form-subregistration">
@@ -119,7 +119,7 @@
         <div id="sub-footer">
             <div class="sub-footer">
                 <div class="col-lg-12 col-md-2 col-sm-2 col-xs-12">
-                    <p class="copy">© 2022 jobtron.org</p>
+                    <p class="copy">© 2023 jobtron.org</p>
                 </div>
 
             </div>
@@ -138,7 +138,7 @@
 
 @section('scripts')
 <script>
-delete_cookie('XSRF-TOKEN', '/', '.jobtron.org')
+delete_cookie('XSRF-TOKEN', '/', '.jobtron.org');
 
 function delete_cookie( name, path, domain ) {
     document.cookie = name + "=" +
@@ -147,5 +147,66 @@ function delete_cookie( name, path, domain ) {
       ((domain)?";domain="+domain:"") +
       ";expires=Thu, 01 Jan 1970 00:00:01 GMT";
 }
+<<<<<<< HEAD
 </script>
 @endsection
+=======
+
+(function(){
+    var $loginForm = $('#login');
+    var loginUrl = `{{ route('login') }}`;
+    var $loginButton = $loginForm.find('.btn-form-login');
+    function createLinks(links){
+        return links.reduce((result, item) => {
+            return `${result}<a href="${item.link}" class="list-group-item">${item.id}</a>`
+        }, '')
+    }
+    $loginForm.on('submit', function(event){
+        event.preventDefault();
+        var formData = new FormData($loginForm.get(0));
+
+        var data = {};
+        formData.forEach(function(value, key){
+            data[key] = value;
+        });
+
+        $('.help-block').remove();
+
+        $loginButton.prop({disabled: true});
+        $.ajax({
+            url: loginUrl,
+            data: data,
+            processData: true,
+            type: 'POST',
+            cache: false,
+            success: function (dataset) {
+                if(dataset.link) return window.location.replace(dataset.link);
+                if(dataset.links) {
+                    $loginForm.after('<div class="list-group mt-4">' + createLinks(dataset.links) + '</div>');
+                }
+            },
+            error: function (response) {
+                if(response.status === 422) {
+                    for(var inputName in response.responseJSON.errors){
+                        var errorMessage = response.responseJSON.errors[inputName];
+                        $('#' + inputName)
+                            .closest('.form-registration-row')
+                            .append('<span class="help-block"><strong>' + errorMessage + '</strong></span>');
+                    }
+
+                    return;
+                }
+
+                if(response.status === 401) {
+                    alert('Введенный email или пароль не совпадает');
+                    return;
+                }
+
+                alert('Ошибка на стороне сервера');
+            },
+        });
+    });
+})();
+</script>
+@endsection
+>>>>>>> 2881b794fe63f4cd0846841350f2ab20bd8a7ba3

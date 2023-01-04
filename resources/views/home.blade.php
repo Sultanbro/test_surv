@@ -15,6 +15,10 @@
     @else
     @csrf
     @endguest
+    
+    <script>
+        window.Laravel = @json($laravelToVue);
+    </script>
     <script src=/js/home.js></script>
     <script>
             (function(w,d,u){

@@ -14,6 +14,7 @@ class MessengerUserOnline extends Model {
     protected $fillable = [
         'user_id',
         'socket_id',
+        'domain',
         'last_seen',
     ];
 

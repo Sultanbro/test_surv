@@ -1,5 +1,8 @@
 <template>
-<div class="mt-4">
+<div
+    v-if="groups"
+    class="mt-4"
+>
     <div class="mb-0">
 
         <div class="row mb-3">
@@ -42,7 +45,7 @@
                     </div>
                 </div>
                 <div class="col-6 d-flex align-items-center">
-                    <b-form-group class="d-flex ddf mb-0">
+                    <b-form-group class="d-flex ddf mb-0 ml-5">
                         <b-form-radio v-model="user_types"  name="some-radios" value="0">Действующие</b-form-radio>
                         <b-form-radio v-model="user_types"  name="some-radios" value="2">Стажеры</b-form-radio>
                         <b-form-radio v-model="user_types"  name="some-radios" value="1">Уволенные</b-form-radio>
@@ -75,14 +78,14 @@
                 </div>
             </div>
 
-            <div>
+            <div class="table-container">
                 <b-table
-                        responsive striped
+                        responsive
+                        bordered
                         :sticky-header="true"
-                        class="text-nowrap text-right my-table table-custom-report"
+                        class="text-nowrap text-right table-custom-report"
                         id="tabelTable"
                         :small="true"
-                        :bordered="true"
                         :items="items"
                         :fields="fields"
                         show-empty
@@ -90,38 +93,45 @@
                         :current-page="currentPage"
                         :per-page="perPage">
 
-                    <template slot="cell(name)" slot-scope="data">
+                    <template #cell(name)="data">
                         <div>
-                        <span v-if="activeuserpos == 46">
-                            <a :href="'/timetracking/edit-person?id=' + data.item.id" target="_blank" :title="data.item.id">{{ data.value }}</a>
-                        </span>
-                            <span v-else>
+                            <span v-if="activeuserpos == 46">
+                                <a :href="'/timetracking/edit-person?id=' + data.item.id" target="_blank" :title="data.item.id">{{ data.value }}</a>
+                            </span>
+                                <span v-else>
+                                {{ data.value }}
+                            </span>
+                                <b-badge v-if="data.field.key == 'name'" pill variant="success">
+                                    {{ data.item.user_type }}
+                                </b-badge>
+
+
+                                <span v-if="data.field.key == 'name' && data.item.is_trainee" class="badgy badge-warning badge-pill">
+                                Стажер
+                            </span>
+                        </div>
+                    </template>
+                    <template #cell(total)="data">
+                        <div>
                             {{ data.value }}
-                        </span>
-                            <b-badge v-if="data.field.key == 'name'" pill variant="success">
-                                {{ data.item.user_type }}
-                            </b-badge>
-
-
-                            <span v-if="data.field.key == 'name' && data.item.is_trainee" class="badgy badge-warning badge-pill">
-                            Стажер
-                        </span>
                         </div>
                     </template>
 
-                    <template slot="cell(total)" slot-scope="data">
-                        <div>
-                            {{ data.value }}
-                        </div>
-                    </template>
+                    <template #cell()="data">
 
-                    <template slot="cell()" slot-scope="data">
-
-                        <div @mouseover="dayInfo(data)" @click="detectClick(data)" :class="{'updated': data.value.updated}">
+                        <div
+                            @mouseover="dayInfo(data)"
+                            @click="detectClick(data)"
+                            class="td-div"
+                            :class="{
+                                'updated': data.value.updated,
+                                'pointer': data.item._cellVariants
+                            }"
+                        >
 
                             <template v-if="data.value.hour">
-                                <b-form-input
-                                        class="form-control cell-input"
+                                <input
+                                        class="cell-input"
                                         type="number"
                                         @mouseover="$event.preventDefault()"
                                         :min="0"
@@ -131,7 +141,7 @@
                                         :readonly="true"
                                         @dblclick="readOnlyFix"
                                         @change="openModal"
-                                ></b-form-input>
+                                >
                             </template>
 
                             <template v-else>
@@ -139,7 +149,7 @@
                             </template>
 
                             <div class="cell-border" :id="`cell-border-${data.item.id}-${data.field.key}`" v-if="data.value.tooltip"></div>
-                            <b-popover :target="`cell-border-${data.item.id}-${data.field.key}`" triggers="hover" placement="top">
+                            <b-popover :target="`cell-border-${data.item.id}-${data.field.key}`" triggers="hover" placement="top" v-if="data.value.tooltip">
                                 <template #title>Время работы</template>
                                 <div v-html="data.value.tooltip"></div>
                             </b-popover>
@@ -151,7 +161,7 @@
                 </b-table>
             </div>
 
-            <p>{{ dayInfoText }}</p>
+            <p class="hovered-text">{{ dayInfoText }}</p>
 
         </div>
 
@@ -334,12 +344,12 @@
 </template>
 
 <script>
+import { useYearOptions } from '../composables/yearOptions'
 export default {
     name: "TableReport",
     props: {
         groups: Array,
         fines: Array,
-        years: Array,
         activeuserid: String,
         activeuserpos: String,
         can_edit: Boolean
@@ -352,6 +362,9 @@ export default {
         user_types(val) {
             this.fetchData()
         },
+        groups(){
+            this.init()
+        }
     },
     data() {
         return {
@@ -453,25 +466,31 @@ export default {
                 schedule: '',
             },
             fire_causes: [],
+            years: useYearOptions(),
         }
     },
 
     created() {
-        this.dateInfo.currentMonth = this.dateInfo.currentMonth ? this.dateInfo.currentMonth : this.$moment().format('MMMM')
-        let currentMonth = this.$moment(this.dateInfo.currentMonth, 'MMMM')
-
-        //Расчет выходных дней
-        this.dateInfo.monthEnd = currentMonth.endOf('month'); //Конец месяца
-        this.dateInfo.weekDays = currentMonth.weekdayCalc(this.dateInfo.monthEnd, [6]) //Колличество выходных
-        this.dateInfo.daysInMonth = currentMonth.daysInMonth() //Колличество дней в месяце
-        this.dateInfo.workDays = this.dateInfo.daysInMonth - this.dateInfo.weekDays //Колличество рабочих дней
-
-        //Текущая группа
-        this.currentGroup = this.currentGroup ? this.currentGroup : this.groups[0]['id']
-
-        this.fetchData()
+        if(this.groups){
+            this.init()
+        }
     },
     methods: {
+        init(){
+            this.dateInfo.currentMonth = this.dateInfo.currentMonth ? this.dateInfo.currentMonth : this.$moment().format('MMMM')
+            let currentMonth = this.$moment(this.dateInfo.currentMonth, 'MMMM')
+
+            //Расчет выходных дней
+            this.dateInfo.monthEnd = currentMonth.endOf('month'); //Конец месяца
+            this.dateInfo.weekDays = currentMonth.weekdayCalc(this.dateInfo.monthEnd, [6]) //Колличество выходных
+            this.dateInfo.daysInMonth = currentMonth.daysInMonth() //Колличество дней в месяце
+            this.dateInfo.workDays = this.dateInfo.daysInMonth - this.dateInfo.weekDays //Колличество рабочих дней
+
+            //Текущая группа
+            this.currentGroup = this.currentGroup ? this.currentGroup : this.groups[0]['id']
+
+            this.fetchData()
+        },
         copy() {
             var Url = this.$refs['mylink' + this.currentGroup];
             Url.value = window.location.origin + '/autocheck/' + this.currentGroup;
@@ -594,7 +613,8 @@ export default {
             this.modalVisibleFines = true
         },
 
-        openModal(hour) {
+        openModal(event) {
+            const hour = event.target.value
             let clearedValue = hour.replace(',', '.')
             let value = parseFloat(clearedValue) * 60
             this.currentMinutes = value
@@ -775,8 +795,9 @@ export default {
         },
 
         dayInfo(data) {
+            if(!data.item?._cellVariants) return
             // if (!isNaN(data.field.key))
-            this.dayInfoText = `${data.item.name} -${data.field.key} ${this.dateInfo.currentMonth}`
+            this.dayInfoText = `${data.item.name} - ${data.field.key} ${this.dateInfo.currentMonth}`
         },
 
         //Установка выбранного года
@@ -816,7 +837,6 @@ export default {
                     key: 'name',
                     stickyColumn: true,
                     label: 'Имя',
-                    variant: 'primary',
                     sortable: true,
                     class: 'text-left px-3 t-name',
                 },
@@ -824,7 +844,7 @@ export default {
                     key: 'total',
                     label: '',
                     sortable: true,
-                    class: 'text-center font-bold px-3 table-yellowgreen font-opensans',
+                    class: 'text-center td-lightgreen',
                 }
             ];
 
@@ -1162,6 +1182,7 @@ export default {
         },
 
         detectClick(data) {
+            if(!data.item?._cellVariants) return
             //if([48,53,65,66].includes(this.currentGroup) || this.activeuserid == 5) { // if RECRUITING GROUP ENABLE EDIT HOURS ON DBLCLICK
             if(this.editable_time && this.can_edit) {
                 this.numClicks++
@@ -1187,6 +1208,69 @@ export default {
 </script>
 
 <style lang="scss">
+    .hovered-text{
+        margin-top: 15px;
+        color: #62788B;
+    }
+    .table-custom-report{
+        th,td{
+            padding: 0 !important;
+            .td-div{
+                height: 40px;
+                min-width: 50px;
+                position: relative;
+                display: inline-flex;
+                align-items: center;
+                justify-content: center;
+            }
+        }
+        .td-lightgreen{
+            background-color: #B7E100;
+        }
+        .table-day-2 {
+            color: #fff;
+            background-color: red;
+
+            input {
+                color: #fff;
+            }
+        }
+        .table-day-3 {
+            color: rgb(0, 0, 0);
+            background-color: aqua !important;
+        }
+
+        .table-day-4 {
+            color: rgb(0, 0, 0);
+            background-color: rgb(200, 162, 200) !important;
+        }
+
+        .table-day-5 {
+            color: rgb(0, 0, 0);
+            background-color: orange !important;
+        }
+
+        .table-day-6 {
+            color: #fff;
+            background-color: pink !important;
+        }
+
+        .table-day-7 {
+            color: #fff;
+            background-color: #ffc107 !important;
+        }
+        .cell-border {
+            position: absolute;
+            right: -1px;
+            bottom: -5px;
+            border-top: 6px solid transparent;
+            border-bottom: 6px solid transparent;
+            border-left: 6px solid #b8daff;
+            -webkit-transform: rotate(45deg);
+            transform: rotate(45deg);
+        }
+    }
+
 
 .editmode {
     opacity: 0;
@@ -1204,9 +1288,14 @@ export default {
     }
 }
 
+    .fines-modal {
+        overflow-y: auto;
+        max-height: 500px;
+    }
+
 
 .b-table-sticky-header {
-    max-height: 450px;
+    max-height: calc(100vh - 250px);
 }
 
 .table-day-1 {
@@ -1214,55 +1303,13 @@ export default {
     background: #fef1cb !important;
 }
 
-.table-day-2 {
-    color: #fff;
-    background: red;
-
-    input {
-        color: #fff;
-        font-weight: bold;
-    }
-}
 
 .my-table .day.Sat.table-day-2, .my-table .day.Sun.table-day-2 {
     color: #fff;
-    background: red;
+    background-color: red;
 }
 
-.table-day-3 {
-    color: rgb(0, 0, 0);
-    background: aqua !important;
-}
-.table-yellowgreen {
-    background: yellowgreen !important;
-}
-.font-opensans {
-    font-family: 'Open Sans' !important;
-}
-.table-day-4 {
-    color: rgb(0, 0, 0);
-    background: rgb(200, 162, 200) !important;
-}
 
-.table-day-5 {
-    color: rgb(0, 0, 0);
-    background: orange !important;
-}
-
-.table-day-6 {
-    color: #fff;
-    background: pink !important;
-}
-
-.table-day-7 {
-    color: #fff;
-    background: #ffc107 !important;
-}
-
-.fines-modal {
-    overflow-y: auto;
-    max-height: 500px;
-}
 
 .updated {
     .cell-border {
@@ -1270,40 +1317,7 @@ export default {
     }
 }
 
-.cell-input {
-    background: transparent;
-    border: none;
-    text-align: center;
-    -moz-appearance: textfield;
-    font-size: .8rem;
-    font-weight: normal;
-    padding: 0;
-    color: #000;
-    border-radius: 0;
-    outline: none;
-    height: 100%;
 
-    &:read-only:hover {
-        cursor: pointer;
-    }
-
-    &:focus {
-        background-color: #fff;
-        color: #000;
-        box-shadow: none;
-    }
-
-    &::-webkit-outer-spin-button,
-    &::-webkit-inner-spin-button {
-        -webkit-appearance: none;
-        margin: 0;
-    }
-}
-
-.form-control:disabled,
-.form-control[readonly] {
-    background-color: transparent;
-}
 .badgy {
     font-size: 0.75em;
 }

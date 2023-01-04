@@ -28,7 +28,6 @@ class ChatsController extends Controller {
      * @return JsonResponse
      */
     public function pusherAuth( Request $request ): JsonResponse {
-
         // Auth data
         $authData = json_encode( [
             'user_id'   => Auth::user()->id,
@@ -38,15 +37,16 @@ class ChatsController extends Controller {
         ] );
         // check if user authorized
         if ( Auth::check() ) {
-            return response()->json( json_decode( MessengerFacade::pusherAuth(
+            $response = json_decode(MessengerFacade::pusherAuth(
                 $request['channel_name'],
                 $request['socket_id'],
                 $authData,
-                Auth::user()->id
-            )
-            ) );
+                Auth::user()->id,
+                \request()->getHost()
+            ));
+            return response()->json(  $response );
         }
-        
+
         // if not authorized
         return response()->json( [ 'message' => 'Unauthorized' ], 401 );
     }
@@ -341,9 +341,16 @@ class ChatsController extends Controller {
      *
      * @return JsonResponse
      */
-    public function leaveChat( int $chat_id ): JsonResponse {
+    public function leaveChat( string $chat_id ): JsonResponse {
+        // if chat_id contains prefix user, find chat with both users
+        if ( str_contains( $chat_id, 'user' ) ) {
+            $chat_id = MessengerFacade::getPrivateChat( Auth::user()->id, str_replace( 'user', '', $chat_id ) )->id;
+            if ( ! $chat_id ) {
+                return response()->json( [ 'message' => 'Chat not found' ], 404 );
+            }
+        }
         // check if user is member of chat
-        if ( ! MessengerFacade::isMember( $chat_id, Auth::user()->id ) ) {
+        else if ( ! MessengerFacade::isMember( (int) $chat_id, Auth::user()->id ) ) {
             return response()->json( [ 'message' => 'You are not a member of this chat' ], 403 );
         }
         // leave chat

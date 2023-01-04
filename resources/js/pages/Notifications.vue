@@ -1,13 +1,11 @@
 <template>
-<div>
+<div v-if="positions">
 
      <b-tabs type="card" :defaultActiveKey='"1"' class="specialtab pt-4">
 
         <!-- user notis -->
         <b-tab title="Индивидуальные" key="1">
-
             <div class="row align-items-center py-4">
-        
                 <div class="col-lg-3 col-md-6">
 
                     <multiselect
@@ -43,55 +41,61 @@
 
             </div>
 
-            <div class="mt-4" v-if="activeuser"> 
+            <div class="mt-4" v-if="activeuser">
                 <div class="">
                     <h5 class="mr-2"> Уведомления</h5>
-                    <button class="btn-primary btn btn-sm rounded" @click="addNotiToUser">Добавить уведомление</button>  
-                        <button class="btn-success btn btn-sm rounded" @click="saveUser">Сохранить</button>
+                    <button class="btn-primary btn btn-sm rounded" @click="addNotiToUser">Добавить уведомление</button>
+                    <button class="btn-success btn btn-sm rounded" @click="saveUser">Сохранить</button>
                 </div>
-                
+
                 <div class="row mt-2" v-for="noti in activeuser_notifications">
                     <div class="col-lg-3">
-                     
-                            <multiselect label="title"
+                            <multiselect
+                                label="title"
                                 :options="templates"
                                 v-model="noti[0]"
-                                placeholder="Выберите из списка"></multiselect>
-                    </div> 
+                                placeholder="Выберите из списка"
+                            />
+                    </div>
                     <div class="col-lg-6">
                         <div  v-if="noti[0] != null && need_group.hasOwnProperty(Number(noti[0].id)) && need_group[noti[0].id]">
-                            <multiselect v-model="noti[1]" 
-                               
-                                label="name" track-by="id" 
-                                placeholder="Выберите группы" 
-                                open-direction="bottom" 
-                                :options="groups" 
-                                :multiple="true" 
-                                :searchable="true" 
-                                :loading="isLoading" 
-                                :internal-search="false" :clear-on-select="false" :close-on-select="false" :options-limit="300" :limit="100" :max-height="600" :show-no-results="false" 
-                                :hide-selected="true">
+                            <multiselect
+                                v-model="noti[1]"
+                                label="name"
+                                track-by="id"
+                                placeholder="Выберите группы"
+                                open-direction="bottom"
+                                :options="groups"
+                                :multiple="true"
+                                :searchable="true"
+                                :loading="isLoading"
+                                :internal-search="false"
+                                :clear-on-select="false"
+                                :close-on-select="false"
+                                :options-limit="300"
+                                :limit="100"
+                                :max-height="600"
+                                :show-no-results="false"
+                                :hide-selected="true"
+                            >
                             </multiselect>
                         </div>
-                        
-                    </div> 
+
+                    </div>
                  </div>
                  <div class="row">
                      <div class="col-lg-12">
 
-                          
+
                      </div>
                  </div>
-            </div> 
+            </div>
         </b-tab>
         <!-- end of user notis -->
 
-       
-        <b-tab title="Шаблоны" key="2">
-            
 
+        <b-tab title="Шаблоны" key="2">
             <b-tabs type="card" defaultActiveKey='1' class="specialtab mt-5">
-                
                 <b-tab title="Индивидуальные" key="1" card>
                     <!-- individual notis -->
                     <div id="noti-individual" class="py-4">
@@ -117,7 +121,6 @@
                                                  v-html="item.message">
                                             </div>
                                             <div class="description" v-html="item.note">
-
                                             </div>
                                         </b-td>
                                         <b-td>
@@ -141,18 +144,23 @@
                                                          :show-no-results="false"
                                                          :hide-selected="true"
                                                          >
-                                                <template slot="clear" slot-scope="props">
-                                                    <div class="multiselect__clear"
-                                                         v-if="item.selectedGroups.length"
-                                                         @mousedown.prevent.stop="clearAll(props.search)">
+                                                <template #clear="props">
+                                                    <div
+                                                        v-if="item.selectedGroups.length"
+                                                        class="multiselect__clear"
+                                                        @mousedown.prevent.stop="clearAll(props.search)"
+                                                    >
                                                     </div>
                                                 </template>
-                                                <span slot="noResult">Упс! Не найдено ни одного сотрудника :(</span>
+                                                <template #noResult><span>Упс! Не найдено ни одного сотрудника :(</span></template>
                                             </multiselect>
                                         </b-td>
                                         <b-td>
-                                            <button class="btn btn-primary btn-sm rounded"
-                                                    @click="updateNotification(item, status_index)" :disabled="!item.editable">
+                                            <button
+                                                class="btn btn-primary btn-sm rounded"
+                                                @click="updateNotification(item, status_index)"
+                                                :disabled="!item.editable"
+                                            >
                                                 Сохранить
                                             </button>
                                         </b-td>
@@ -160,10 +168,9 @@
                                 </b-tbody>
                             </b-table-simple>
                         </div>
-                    </div>            
+                    </div>
                     <!-- end of individual notis -->
                 </b-tab>
-                
                 <b-tab title="Должностные" key="2">
                     <!-- position notis -->
                     <div id="noti-positions" class="py-4">
@@ -213,18 +220,23 @@
                                                          :show-no-results="false"
                                                          :hide-selected="true"
                                                          >
-                                                <template slot="clear" slot-scope="props">
-                                                    <div class="multiselect__clear"
-                                                         v-if="item.selectedGroups.length"
-                                                         @mousedown.prevent.stop="clearAll(props.search)">
+                                                <template #clear="props">
+                                                    <div
+                                                        v-if="item.selectedGroups.length"
+                                                        class="multiselect__clear"
+                                                        @mousedown.prevent.stop="clearAll(props.search)"
+                                                    >
                                                     </div>
                                                 </template>
-                                                <span slot="noResult">Упс! Не найдено ни одной позиции :(</span>
+                                                <template #noResult><span>Упс! Не найдено ни одной позиции :(</span></template>
                                             </multiselect>
                                         </b-td>
                                         <b-td>
-                                            <button class="btn btn-primary btn-sm rounded"
-                                                    @click="updateNotification(item, status_index)" :disabled="!item.editable">
+                                            <button
+                                                class="btn btn-primary btn-sm rounded"
+                                                @click="updateNotification(item, status_index)"
+                                                :disabled="!item.editable"
+                                            >
                                                 Сохранить
                                             </button>
                                         </b-td>
@@ -235,11 +247,10 @@
                     </div>
                     <!-- end of position notis -->
                 </b-tab>
-                
+
                 <b-tab title="Групповые" key="3" card>
                     <!-- group notis -->
                     <div id="noti-groups" class="py-4">
-
                         <div class="table-container">
                             <b-table-simple class="table-custom-notice">
                                 <b-thead>
@@ -299,18 +310,23 @@
                                                          :show-no-results="false"
                                                          :hide-selected="true"
                                                          >
-                                                <template slot="clear" slot-scope="props">
-                                                    <div class="multiselect__clear"
-                                                         v-if="item.selectedGroups.length"
-                                                         @mousedown.prevent.stop="clearAll(props.search)">
+                                                <template #clear="props">
+                                                    <div
+                                                        v-if="item.selectedGroups.length"
+                                                        class="multiselect__clear"
+                                                        @mousedown.prevent.stop="clearAll(props.search)"
+                                                    >
                                                     </div>
                                                 </template>
-                                                <span slot="noResult">Упс! Не найдено ни одной группы :(</span>
+                                                <template #noResult><span>Упс! Не найдено ни одной группы :(</span></template>
                                             </multiselect>
                                         </b-td>
                                         <b-td>
-                                            <button class="btn btn-primary btn-sm rounded"
-                                                    @click="updateNotification(item, status_index)" :disabled="!item.editable">
+                                            <button
+                                                class="btn btn-primary btn-sm rounded"
+                                                @click="updateNotification(item, status_index)"
+                                                :disabled="!item.editable"
+                                            >
                                                 Сохранить
                                             </button>
                                         </b-td>
@@ -369,13 +385,13 @@
                     <!-- end of group notis -->
                 </b-tab>
             </b-tabs>
-            
+
 
         </b-tab>
         <!-- end of group notis -->
 
-    
-   
+
+
      </b-tabs>
 
     <div class="mmm"></div>
@@ -393,9 +409,12 @@ export default {
     watch: {
         activeuser: {
             handler (val, oldVal) {
-                this.selectUser() 
+                this.selectUser()
             }
         },
+        positions(){
+            this.init()
+        }
     },
     data() {
         return {
@@ -443,14 +462,18 @@ export default {
         }
     },
     created() {
-        this.fetchData();
+        if(this.positions){
+            this.init()
+        }
     },
-    mounted: function () {
-        this.groups = JSON.parse(this.groups_with_id);
-    },
+    mounted() {},
     methods: {
+        init(){
+            this.fetchData();
+            this.groups = this.groups_with_id;
+        },
         clearAll () {
-          this.selectedGroups = []
+            this.selectedGroups = []
         },
         addTag(newTag) {
             const tag = {
@@ -474,7 +497,7 @@ export default {
                 }
 
                 if(status.type == 0) {
-                    this.user_templates[status_index].editable = false;    
+                    this.user_templates[status_index].editable = false;
                 }
                 this.$toast.success('Успешно изменено!');
 
@@ -508,7 +531,7 @@ export default {
             this.newUser = null;
             this.$toast.info('Добавьте сотруднику уведомления и сохраните');
 
-            
+
             this.selectUser()
         },
 
@@ -552,11 +575,11 @@ export default {
                     this.activeuser_notifications = [];
 
                     let id = this.activeuser.id;
-               
+
                     let index = this.user_with_notifications.findIndex(x => x.id == id);
                     this.user_with_notifications.splice(index, 1)
                     this.activeuser = null
-                 
+
                 })
                 .catch(error => {
                     console.log(error)
@@ -594,7 +617,6 @@ export default {
         },
 
     },
-    computed: {},
 }
 </script>
 <style src="vue-multiselect/dist/vue-multiselect.min.css"></style>

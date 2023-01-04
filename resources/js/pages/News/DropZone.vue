@@ -1,7 +1,7 @@
 <template>
     <div class="news-create__dropzone">
         <vue-dropzone ref="myVueDropzone" id="dropzone"
-                      :options="dropzoneOptions" :useCustomSlot=true
+                      :options="dropzoneOptions" :useCustomSlot="true"
                       :include-styling="false"
                       @vdropzone-sending="sendingEvent"
                       @vdropzone-thumbnail="thumbnail"

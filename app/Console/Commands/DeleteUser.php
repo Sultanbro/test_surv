@@ -3,7 +3,6 @@
 namespace App\Console\Commands;
 
 use Illuminate\Console\Command;
-use App\Components\TelegramBot;
 use App\User;
 use App\UserDeletePlan;
 use Illuminate\Http\Request;

@@ -6,16 +6,19 @@ namespace App\Http\Controllers\Settings\Group;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\GroupUser\GetUsersRequest;
 use App\Http\Requests\GroupUser\SaveUsersRequest;
-use App\Service\Timetrack\GetGroupUserService;
+use App\Service\Timetrack\Group\GetUserService;
+use App\Service\Timetrack\Group\StoreUserService;
 use Exception;
 use Illuminate\Http\JsonResponse;
+use Throwable;
 
 final class GroupUserController extends Controller
 {
-    public function __construct(GetGroupUserService $service)
-    {
-        
-    }
+    public function __construct(
+        public GetUserService $getUserService,
+        public StoreUserService $storeUserService
+    )
+    {}
 
     /**
      * @Post{
@@ -30,12 +33,32 @@ final class GroupUserController extends Controller
     public function get(GetUsersRequest $request): JsonResponse
     {
         $type = isset($request->toDto()->id) ? 'group' : 'default';
-        $response = $this->service->handle($type, $request->toDto()->id);
+        $response = $this->getUserService->handle($type, $request->toDto()->id);
         return response()->success($response);
     }
 
-    public function save(SaveUsersRequest $request)
+    /**
+     * @OA\Post(
+     *     summary="Store user in group",
+     *     path="/timetracking/users/group/save",
+     *     description="For store multiple users in group_user"
+     *     @OA\Response(
+     *          response=200,
+     *          description="Successfully saved"
+     *     ),
+     * )
+     *
+     * @param SaveUsersRequest $request
+     * @return JsonResponse
+     * @throws Throwable
+     */
+    public function save(SaveUsersRequest $request): JsonResponse
     {
-        dd('her');
+        $response = $this->storeUserService->handle($request->toDto());
+
+        return $this->response(
+            message: 'Successfully saved',
+            data: $response
+        );
     }
 }

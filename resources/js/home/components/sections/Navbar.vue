@@ -55,6 +55,7 @@
           </a>
           <li class="jNav-menu-item">
             <span class="jNav-menu-auth">
+<<<<<<< HEAD
               <form
                   v-if="csrf"
                   action="/logout"
@@ -64,15 +65,60 @@
                     :value="csrf"
                     name="csrf"
                     type="hidden"
+=======
+              <template
+                v-if="authorized"
+              >
+                <div class="jNav-menu-user-info">
+                  <div class="jNav-menu-user-data">
+                    <div
+                      class="jNav-menu-user-name"
+                      :title="laravel.fullname"
+                    >{{ laravel.fullname }}</div>
+                    <div
+                      class="jNav-menu-user-email"
+                      :title="laravel.email"
+                    >{{ laravel.email }}</div>
+                  </div>
+                </div>
+                <div
+                  class="jNav-menu-user"
+                  @click="isUserMenu = !isUserMenu"
+>>>>>>> 2881b794fe63f4cd0846841350f2ab20bd8a7ba3
                 >
-                <button class="jNav-menu-user"/>
-              </form>
+                  <div
+                    v-if="isUserMenu"
+                    class="jNav-menu-user-menu"
+                  >
+                    <div class="jNav-menu-user-menu-item" v-for="cabinet in laravel.cabinets">
+                      <a :href="'/login/' + cabinet.tenant_id">{{ cabinet.tenant_id }}.{{ hostname }}</a>
+                    </div>
+
+                    <form
+                      ref="formLogout"
+                      class="jNav-menu-user-menu-item"
+                      method="POST"
+                      action="/logout"
+                    >
+                      <input
+                        type="hidden"
+                        :value="laravel.csrfToken"
+                        name="_token"
+                      >
+                      <button @click="$refs.formLogout.submit()" class="jNav-menu-user-menu-exit">
+                        Выход
+                      </button>
+                    </form>
+                  </div>
+                </div>
+              </template>
               <template v-else>
                 <NavbarButton
                     :lang="lang"
                     href="/register"
                     text="register"
                 />
+<<<<<<< HEAD
                 <a
                     :title="$lang(lang, 'auth')"
                     class="jNav-menu-user"
@@ -80,10 +126,13 @@
 
                 />
                 <!-- <NavbarButton
+=======
+                <NavbarButton
+>>>>>>> 2881b794fe63f4cd0846841350f2ab20bd8a7ba3
                   :lang="lang"
                   href="/register"
                   text="register"
-                /> -->
+                />
               </template>
             </span>
           </li>
@@ -119,12 +168,22 @@ export default {
   computed: {
     lang() {
       return this.$root.$data.lang
+    },
+    laravel() {
+      return window.Laravel
+    },
+    authorized() {
+      return window.Laravel.email !== undefined
+    },
+    hostname() {
+      return window.location.hostname
     }
   },
 
   data() {
     return {
       menu: false,
+<<<<<<< HEAD
       csrf: '',
       isScroll: false,
       active: false,
@@ -148,6 +207,11 @@ export default {
   beforeDestroy() {
     window.removeEventListener('scroll', this.changeLogoSizeByScroll);
   }
+=======
+      isUserMenu: false,
+    }
+  },
+>>>>>>> 2881b794fe63f4cd0846841350f2ab20bd8a7ba3
 }
 </script>
 
@@ -216,6 +280,7 @@ export default {
   }
 }
 
+<<<<<<< HEAD
  .jNav-menu-hamburger {
    &.jButton {
      display: block;
@@ -223,6 +288,34 @@ export default {
      height: 2rem;
      padding: 1.25rem;
      position: relative;
+=======
+.jNav-menu-user-info{
+  display: flex;
+  flex-flow: row nowrap;
+  flex: 1 1 auto;
+  align-items: center;
+}
+.jNav-menu-user-data{
+  display: flex;
+  flex-flow: column;
+  flex: 0 1 10em;
+  overflow: hidden;
+}
+.jNav-menu-user-name,
+.jNav-menu-user-email{
+  max-width: 10em;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+// .jNav-menu-hamburger {
+//   &.jButton {
+//     display: block;
+//     width: 2rem;
+//     height: 2rem;
+//     padding: 1.25rem;
+//     position: relative;
+>>>>>>> 2881b794fe63f4cd0846841350f2ab20bd8a7ba3
 
      &:before {
        content: '';
@@ -287,6 +380,7 @@ export default {
   height: 2rem;
   border: none;
   border-radius: 2.625rem;
+  position: relative;
   vertical-align: middle;
   background: #6f4f28 url("../../assets/img/user.svg") center center no-repeat;
 }
@@ -295,6 +389,36 @@ export default {
   display: none;
 }
 
+<<<<<<< HEAD
+=======
+.jNav-menu-user-menu{
+  padding: 0.5rem;
+  position: absolute;
+  z-index: 5;
+  top: 100%;
+  right: 0;
+  background-color: #fff;
+  box-shadow: 0 0.125rem 0.1875rem rgba(0,0,0,0.5);
+}
+.jNav-menu-user-menu-item{
+  white-space: nowrap;
+  cursor: pointer;
+}
+.jNav-menu-user-menu-exit{
+  padding: 0;
+  border: none;
+  background: none;
+  cursor: pointer;
+}
+
+
+@media screen and (min-width: $small) {
+  .jNav-logo-img {
+    width: 15.25rem;
+  }
+}
+
+>>>>>>> 2881b794fe63f4cd0846841350f2ab20bd8a7ba3
 @media screen and (min-width: $medium) {
   .jNav-menu-active,
   .jNav-menu-bg {

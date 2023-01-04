@@ -10,12 +10,12 @@
 	<title>@yield('title')</title>
 
     <link rel="icon" type="image/x-icon" href="/favicon.ico?ver1.2"/>
-    
+
     <title>@yield('title')</title>
 
     <meta name="description" content="Jobtron">
     <meta name="csrf-token" content="{{ csrf_token() }}">
-    
+
     <link rel="stylesheet" href="/admin/css/normalize.css">
     <link rel="stylesheet" href="/admin/css/bootstrap.min.css">
     <link rel="stylesheet" href="/admin/css/custom.css">
@@ -25,7 +25,7 @@
 	<link rel="preconnect" href="https://fonts.googleapis.com">
 	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 	<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Open+Sans:ital,wght@0,400;0,600;1,400;1,600&display=swap" rel="stylesheet">
-	<link rel="stylesheet" href="{{ url('/css/admin/app.css') }}">
+	<link rel="stylesheet" href="{{ url('/css/admin/app.css') }}?v=2.0.0">
 
     @yield('head')
     @yield('styles')
@@ -37,15 +37,15 @@
 
 
         <sidebars></sidebars>
-        
+
         <chat-app></chat-app>
 
         <!-- Main -->
         <div class="wrapper">
 
-            <main class="main"> 
+            <main class="main">
                 <div class="container container-left-padding">
-                    
+
                     <!-- Mobile menu buttons -->
                     <div class="header__top">
                         <a href="#" class="header__top-button burger-left">Раскрыть меню</a>
@@ -57,7 +57,7 @@
                             <a href="#" class="header__right-icon red">
                                 <img src="images/dist/header-right-2.svg" alt="nav icon" class="header__icon-img">
                             </a>-->
-                        </div> 
+                        </div>
                     </div>
 
                     @yield('content')
@@ -115,8 +115,8 @@
        @yield('scripts')
     <script src="{{ url('/js/croppie.js') }}"></script>
     <script src="{{ url('/js/croppie.min.js') }}"></script>
-	<script src="{{ url('/js/app.js') }}"></script>
+	<script src="{{ url('/js/app.js') }}?v=2.0.0"></script>
 
- 
+
 </body>
 </html>

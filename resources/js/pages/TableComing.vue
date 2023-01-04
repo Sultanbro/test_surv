@@ -1,5 +1,8 @@
 <template>
-<div class="mt-2 px-3">
+<div
+    v-if="groups"
+    class="mt-2 px-3"
+>
     <div class="mb-0">
         <div class="row mb-3">
             <div class="col-3">
@@ -30,7 +33,7 @@
             </div>
             <div class="col-2"></div>
         </div>
- 
+
         <div v-if="hasPremission">
             <b-modal v-model="modalVisible" ok-text="Да" cancel-text="Нет" title="Вы уверены?" @ok="setTimeManually" size="md">
                 <template v-for="error in errors">
@@ -38,20 +41,19 @@
                 </template>
                 <b-form-input v-model="comment" placeholder="Комментарий" :required="true"></b-form-input>
             </b-modal>
-
             <div class="table-container">
-                <b-table responsive striped :sticky-header="true" class="text-nowrap text-right my-table" id="comingTable" :small="true" :bordered="true" :items="items" :fields="fields" show-empty emptyText="Нет данных">
-                    <template slot="cell(name)" slot-scope="data">
+                <b-table responsive :sticky-header="true" class="text-nowrap text-right table-custom-table-coming" id="comingTable" :small="true" :bordered="true" :items="items" :fields="fields" show-empty emptyText="Нет данных">
+                    <template #cell(name)="data">
                         <div>
                             {{ data.value }}
                             <b-badge v-if="data.field.key == 'name'" pill variant="success">{{data.item.user_type}}</b-badge>
                         </div>
                     </template>
 
-                    <template slot="cell()" slot-scope="data">
+                    <template #cell()="data">
                         <div @click="setCurrentEditingCell(data)" :class="{ fine: data.item.fines[data.field.key.toString()].length > 0}">
-                            <b-form-input @mouseover="$event.preventDefault()" class="form-control cell-input" type="time" :value="data.value" :readonly="true" ondblclick="this.readOnly='';" @change="changeTimeInCell" v-on:keyup.enter="openModal">
-                            </b-form-input>
+                            <input @mouseover="$event.preventDefault()" class="cell-input" type="time" :value="data.value" :readonly="true" ondblclick="this.readOnly='';" @change="changeTimeInCell" v-on:keyup.enter="openModal">
+
                         </div>
                     </template>
                 </b-table>
@@ -65,12 +67,12 @@
 </template>
 
 <script>
+import { useYearOptions } from '../composables/yearOptions'
 
 export default {
     name: "TableComing",
     props: {
         groups: Array,
-        years: Array,
         activeuserid: String,
     },
     watch: {
@@ -84,6 +86,9 @@ export default {
             var container = document.querySelector(".table-responsive");
             container.scrollLeft = value;
         },
+        groups(){
+            this.init()
+        }
     },
     data() {
         return {
@@ -112,30 +117,36 @@ export default {
             currentEditingCell: null,
             scrollLeft: 0,
             modalVisible: false,
+            years: useYearOptions()
         };
     },
     created() {
-        this.dateInfo.currentMonth = this.dateInfo.currentMonth ?
-            this.dateInfo.currentMonth :
-            this.$moment().format("MMMM");
-        let currentMonth = this.$moment(this.dateInfo.currentMonth, "MMMM");
-
-        //Расчет выходных дней
-        this.dateInfo.monthEnd = currentMonth.endOf("month"); //Конец месяца
-        this.dateInfo.weekDays = currentMonth.weekdayCalc(this.dateInfo.monthEnd, [
-            6,
-        ]); //Колличество выходных
-        this.dateInfo.daysInMonth = currentMonth.daysInMonth(); //Колличество дней в месяце
-        this.dateInfo.workDays = this.dateInfo.daysInMonth - this.dateInfo.weekDays; //Колличество рабочих дней
-
-        //Текущая группа
-        this.currentGroup = this.currentGroup ?
-            this.currentGroup :
-            this.groups[0]["id"];
-
-        this.fetchData();
+        if(this.groups){
+            this.init()
+        }
     },
     methods: {
+        init(){
+            this.dateInfo.currentMonth = this.dateInfo.currentMonth ?
+                this.dateInfo.currentMonth :
+                this.$moment().format("MMMM");
+            let currentMonth = this.$moment(this.dateInfo.currentMonth, "MMMM");
+
+            //Расчет выходных дней
+            this.dateInfo.monthEnd = currentMonth.endOf("month"); //Конец месяца
+            this.dateInfo.weekDays = currentMonth.weekdayCalc(this.dateInfo.monthEnd, [
+                6,
+            ]); //Колличество выходных
+            this.dateInfo.daysInMonth = currentMonth.daysInMonth(); //Колличество дней в месяце
+            this.dateInfo.workDays = this.dateInfo.daysInMonth - this.dateInfo.weekDays; //Колличество рабочих дней
+
+            //Текущая группа
+            this.currentGroup = this.currentGroup ?
+                this.currentGroup :
+                this.groups[0]["id"];
+
+            this.fetchData();
+        },
         //Установка выбранного года
         setYear() {
             this.dateInfo.currentYear = this.dateInfo.currentYear ?
@@ -169,13 +180,11 @@ export default {
                 key: "name",
                 stickyColumn: true,
                 label: "Имя",
-                variant: "primary",
                 sortable: true,
                 class: "text-left px-3 t-name",
             }, ];
 
             let days = this.dateInfo.daysInMonth;
-
             for (let i = 1; i <= days; i++) {
                 let dayName = this.$moment(`${i} ${this.dateInfo.date}`, "D MMMM YYYY")
                     .locale("en")
@@ -221,9 +230,8 @@ export default {
                     loader.hide();
                 });
         },
-        changeTimeInCell(time) {
-            console.log("changeTimeInCell");
-            this.currentTime = time;
+        changeTimeInCell({target}) {
+            this.currentTime = target.value;
         },
         setCurrentEditingCell(data) {
             this.currentTime = null;
@@ -247,7 +255,7 @@ export default {
                         user_id: this.currentEditingCell.item.user_id,
                     })
                     .then((response) => {
-                        this.currentEditingCell = null; 
+                        this.currentEditingCell = null;
                         this.currentTime = null;
                         this.modalVisible = false;
                         this.comment = "";
@@ -260,7 +268,7 @@ export default {
         //Добавление загруженных данных в таблицу
         loadItems() {
             this.items = this.data;
-            
+
             // if (item.selectedFines[key]) {
             //     fine = item.selectedFines[key]
             // }
@@ -270,40 +278,12 @@ export default {
 </script>
 
 <style lang="scss">
-.cell-input {
-    background: transparent;
-    border: none;
-    text-align: center;
-    -moz-appearance: textfield;
-    font-size: 0.8rem;
-    font-weight: normal;
-    padding: 0;
-    color: #000;
-    border-radius: 0;
-    outline: none;
-    height: 100%;
-
-    &:read-only:hover {
-        cursor: pointer;
+    .table-custom-table-coming{
+        th,td{
+            padding: 0 15px !important;
+            height: 40px;
+        }
     }
-
-    &:focus {
-        background-color: #fff;
-        color: #000;
-        box-shadow: none;
-    }
-
-    &::-webkit-outer-spin-button,
-    &::-webkit-inner-spin-button {
-        -webkit-appearance: none;
-        margin: 0;
-    }
-}
-
-.form-control:disabled,
-.form-control[readonly] {
-    background-color: transparent;
-}
 
 .fine {
     background: red;

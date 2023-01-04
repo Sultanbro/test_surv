@@ -7,7 +7,7 @@
 <!--            <RegenerateCertificates/>-->
 <!--        </b-modal>-->
 
-        <div class="table-container" v-if="tableItems.length > 0">
+        <div class="table-container" v-if="tableItems && tableItems.length > 0">
             <BTableSimple
                     id="awards-table"
                     striped

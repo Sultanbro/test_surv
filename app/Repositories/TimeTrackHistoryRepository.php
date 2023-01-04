@@ -23,13 +23,13 @@ class TimeTrackHistoryRepository extends CoreRepository
     /**
      * @param int $userId
      * @param string $description
-     * @param string $enter
+     * @param string $date
      * @return mixed
      */
     public function createHistory(
         int $userId,
         string $description,
-        string $enter
+        string $date
     )
     {
         return $this->model()->create([
@@ -37,7 +37,7 @@ class TimeTrackHistoryRepository extends CoreRepository
             'author'    => auth()->user()->full_name ?? User::find(5)->full_name,
             'user_id'   => $userId,
             'description' => $description,
-            'date'      => $enter
+            'date'      => $date
         ]);
     }
 }
