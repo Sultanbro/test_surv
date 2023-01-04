@@ -55,7 +55,6 @@
           </a>
           <li class="jNav-menu-item">
             <span class="jNav-menu-auth">
-<<<<<<< HEAD
               <form
                   v-if="csrf"
                   action="/logout"
@@ -65,7 +64,8 @@
                     :value="csrf"
                     name="csrf"
                     type="hidden"
-=======
+                    >
+              </form>
               <template
                 v-if="authorized"
               >
@@ -84,7 +84,6 @@
                 <div
                   class="jNav-menu-user"
                   @click="isUserMenu = !isUserMenu"
->>>>>>> 2881b794fe63f4cd0846841350f2ab20bd8a7ba3
                 >
                   <div
                     v-if="isUserMenu"
@@ -118,20 +117,11 @@
                     href="/register"
                     text="register"
                 />
-<<<<<<< HEAD
                 <a
                     :title="$lang(lang, 'auth')"
                     class="jNav-menu-user"
                     href="/login"
 
-                />
-                <!-- <NavbarButton
-=======
-                <NavbarButton
->>>>>>> 2881b794fe63f4cd0846841350f2ab20bd8a7ba3
-                  :lang="lang"
-                  href="/register"
-                  text="register"
                 />
               </template>
             </span>
@@ -183,7 +173,6 @@ export default {
   data() {
     return {
       menu: false,
-<<<<<<< HEAD
       csrf: '',
       isScroll: false,
       active: false,
@@ -192,10 +181,10 @@ export default {
 
   methods: {
     changeLogoSizeByScroll() {
-        document.body.scrollTop > 20
-        || document.documentElement.scrollTop > 20
-            ? this.isScroll = true
-            : this.isScroll = false
+      document.body.scrollTop > 20
+      || document.documentElement.scrollTop > 20
+          ? this.isScroll = true
+          : this.isScroll = false
     },
   },
 
@@ -207,11 +196,6 @@ export default {
   beforeDestroy() {
     window.removeEventListener('scroll', this.changeLogoSizeByScroll);
   }
-=======
-      isUserMenu: false,
-    }
-  },
->>>>>>> 2881b794fe63f4cd0846841350f2ab20bd8a7ba3
 }
 </script>
 
@@ -280,7 +264,6 @@ export default {
   }
 }
 
-<<<<<<< HEAD
  .jNav-menu-hamburger {
    &.jButton {
      display: block;
@@ -288,7 +271,7 @@ export default {
      height: 2rem;
      padding: 1.25rem;
      position: relative;
-=======
+
 .jNav-menu-user-info{
   display: flex;
   flex-flow: row nowrap;
@@ -315,7 +298,6 @@ export default {
 //     height: 2rem;
 //     padding: 1.25rem;
 //     position: relative;
->>>>>>> 2881b794fe63f4cd0846841350f2ab20bd8a7ba3
 
      &:before {
        content: '';
@@ -389,8 +371,6 @@ export default {
   display: none;
 }
 
-<<<<<<< HEAD
-=======
 .jNav-menu-user-menu{
   padding: 0.5rem;
   position: absolute;
@@ -418,7 +398,6 @@ export default {
   }
 }
 
->>>>>>> 2881b794fe63f4cd0846841350f2ab20bd8a7ba3
 @media screen and (min-width: $medium) {
   .jNav-menu-active,
   .jNav-menu-bg {
