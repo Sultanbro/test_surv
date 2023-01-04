@@ -283,7 +283,7 @@
 <script>
 import Draggable from 'vuedraggable'
 import Glossary from '../components/Glossary.vue'
-import Booklist from '@/pages/booklist' // база знаний разде
+const Booklist = () => import(/* webpackChunkName: "Booklist" */ '@/pages/booklist') // база знаний разде
 import Sidebar from '@/components/ui/Sidebar' // сайдбар table
 import SuperSelect from '@/components/SuperSelect' // with User ProfileGroup and Position
 

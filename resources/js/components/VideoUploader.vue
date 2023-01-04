@@ -17,7 +17,7 @@
 
     <!-- first step -->
     <div v-if="step == 1">
-        <upload-files
+        <UploadFiles
             :token="token"
             type="video"
             :id="playlist_id"
@@ -64,8 +64,12 @@
 </template>
 
 <script>
+import UploadFiles from '@/components/UploadFiles' // загрузка файлов
 export default {
     name: 'VideoUploader',
+    components: {
+        UploadFiles,
+    },
     props: {
         token: String,
         playlist_id: Number,
@@ -84,7 +88,7 @@ export default {
     },
 
     created() {
-      
+
     },
 
     methods: {
@@ -123,10 +127,10 @@ export default {
                     video: this.file.model,
                     group_id: this.group_id
                 })
-                .then((response) => {   
+                .then((response) => {
                     loader.hide()
                     this.step = 1;
-                    this.$emit('addVideoToPlaylist', response.data.video) 
+                    this.$emit('addVideoToPlaylist', response.data.video)
                     this.$toast.success("Добавлен");
                     this.file = null;
 
@@ -137,7 +141,7 @@ export default {
                     alert(error);
                 });
         },
-    
+
     }
 }
 </script>

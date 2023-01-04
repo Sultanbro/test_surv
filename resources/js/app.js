@@ -37,10 +37,6 @@ import 'vue-croppa/dist/vue-croppa.css';
 Vue.use(Croppa);
 Vue.use(VueAxios, axios)
 
-// pagination
-import JwPagination from 'jw-vue-pagination';
-Vue.component('jw-pagination', JwPagination);
-
 // Toast
 import Toast from "vue-toastification";
 import "vue-toastification/dist/index.css";
@@ -175,16 +171,12 @@ Vue.component('t-quality', require('./components/tables/TableQuality.vue').defau
 Vue.component('t-quality-weekly', require('./components/tables/TableQualityWeekly.vue').default); // Недельные оценки качества
 Vue.component('t-usersalary', require('./components/tables/TableUserSalary.vue').default); // таблица начислений
 Vue.component('questions', require('./pages/Questions.vue').default); // вопросы тестов
-Vue.component('v-player', require('./components/VideoPlayerItem.vue').default); // плеер
 
 Vue.component('permission-item', require('./components/PermissionItem.vue').default); //
 
-Vue.component('video-accordion', require('./components/VideoAccordion.vue').default); //
 
 
-Vue.component('video-list', require('./components/VideoList.vue').default); //
 
-Vue.component('video-uploader', require('./components/VideoUploader.vue').default); //
 
 
 Vue.component('superselect', require('./components/SuperSelect.vue').default); // with User ProfileGroup and Position
@@ -193,16 +185,12 @@ Vue.component('superselect', require('./components/SuperSelect.vue').default); /
 /**
  * Pages
  */
-Vue.component('page-upbooks-read', require('./pages/UpbooksRead.vue').default); // книга чтение
 Vue.component('page-upbooks', require('./pages/Upbooks.vue').default); // книги редактирование
-
-Vue.component('page-playlist-edit', require('./pages/PlaylistEdit.vue').default); // редактирование плейлиста
 
 // Vue.component('page-playlist-read', require('./pages/PlaylistRead.vue').default); // чтение плейлиста
 
 Vue.component('page-playlists', require('./pages/Playlists.vue').default); // редактирование плейлиста
 
-Vue.component('booklist', require('./pages/booklist.vue').default); // база знаний раздел
 // Vue.component('page-kb', require('./pages/KBPage.vue').default); // база знаний раздел
 
 // Учет времени
@@ -211,7 +199,6 @@ Vue.component('exam', require('./pages/exam.vue').default); // повышени�
 Vue.component('t-report', require('./pages/TableReport.vue').default);  // табель
 Vue.component('t-accrual', require('./pages/TableAccrual.vue').default); // начисления
 Vue.component('course-results', require('./pages/CourseResults.vue').default); // результаты по курсам
-Vue.component('my-course', require('./pages/MyCourse.vue').default); // курсы мои
 Vue.component('permissions', require('./pages/Permissions.vue').default); // курсы мои
 // Vue.component('cabinet', require('./pages/Cabinet.vue').default); // курсы мои
 
@@ -224,22 +211,6 @@ Vue.component('fines', require('./pages/Fines.vue').default); // штрафы ta
 Vue.component('s-notifications', require('./pages/Notifications.vue').default); // Уведомления
 Vue.component('check-list', require('./pages/checkList.vue').default); // чек
 Vue.component('awards', require('./pages/Awards/Awards.vue').default); // награды
-
-
-// KPI
-
-Vue.component('super-filter', require('./pages/kpi/SuperFilter.vue').default); // filter like bitrix
-
-Vue.component('kpi-pages', require('./pages/kpi/KpiPages.vue').default); // kpi
-Vue.component('kpi', require('./pages/kpi/Kpi.vue').default); // kpi
-Vue.component('kpi-items', require('./pages/kpi/KpiItems.vue').default); // kpi
-Vue.component('indicators', require('./pages/kpi/Indicators.vue').default); // kpi
-Vue.component('stats', require('./pages/kpi/Stats.vue').default); // kpi
-Vue.component('t-stats', require('./pages/kpi/StatsTable.vue').default); // kpi
-Vue.component('t-stats-bonus', require('./pages/kpi/StatsTableBonus.vue').default); // kpi
-Vue.component('t-stats-quartal', require('./pages/kpi/StatsTableQuartal.vue').default); // kpi
-Vue.component('bonuses', require('./pages/kpi/Bonuses.vue').default); // kpi
-Vue.component('quartal-premium', require('./pages/kpi/QuartalPremium.vue').default); // kpi
 
 
 // temp

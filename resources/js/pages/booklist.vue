@@ -289,7 +289,7 @@
           />
 
 
-            <questions
+            <Questions
               :course_item_id="course_item_id"
               :questions="activesbook.questions"
               :id="activesbook.id"

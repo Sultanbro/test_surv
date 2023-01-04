@@ -44,7 +44,7 @@
         />
       </li>
     </template>
-  </draggable>
+  </Draggable>
 </template>
 <script>
 import Draggable from 'vuedraggable'

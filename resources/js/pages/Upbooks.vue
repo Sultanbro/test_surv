@@ -103,7 +103,8 @@
       </div>
     </div>
 
-    <page-upbooks-read v-else
+    <UpbooksRead
+      v-else
       :book_id="activeBook.id"
       mode="read"
       @back="back"
@@ -374,9 +375,14 @@
 
 <script>
 import Questions from "./Questions.vue";
+const UpbooksRead = () => import(/* webpackChunkName: "UpbooksRead" */ '@/pages/UpbooksRead') // книга чтение
+
 export default {
-  components: { Questions },
   name: "Upbooks",
+  components: {
+    Questions,
+    UpbooksRead,
+  },
   props: {
     token: {
       type: String
