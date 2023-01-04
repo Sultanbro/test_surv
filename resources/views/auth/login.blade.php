@@ -10,7 +10,7 @@
     background: #fefefe;
     width: 20%;
     min-width: 360px;
-   
+
 }
 #sub-wrapper .login .login-content {
     width: 100%;
@@ -39,23 +39,23 @@
                     <div class="login-panel">
 
                         <a href="/" class="">
-                            <img src="/images/logo.png" style="max-width: 220px;">
+                            <img src="/images/logo.svg" style="max-width: 220px;">
                         </a>
 
 
                     </div>
-             
+
                     <!-- <div style="margin: 10px;display:flex;justify-content:center">
                         <a href="/register" class="active">Регистрация </a>
                     </div> -->
 
                     <div class="tab-row fade-tabset">
-                       
+
                         <div class="tab-content">
                             <div id="tab-30" class="tab @if(!isset($_GET['tab'])) active @else js-tab-hidden  @endif">
                                 <form class="form-horizontal" method="POST" action="{{ route('login') }}">
                                     {{ csrf_field() }}
-                                    
+
                                     <div class="form-subregistration">
                                         <div class="form-registration-row">
                                             <input id="username" type="text" class="form-control" name="username"
@@ -92,7 +92,7 @@
                                     </div>
                                 </form>
                             </div>
-                    
+
                             <div id="forgetPass" class="js-tab-hidden">
 
                                 <form class="form-registration" id="forget" action="#">
@@ -124,13 +124,13 @@
 
             </div>
         </div>
-    </div> 
+    </div>
 
 </div>
 
 
 
- 
+
 
 
 
@@ -142,10 +142,10 @@ delete_cookie('XSRF-TOKEN', '/', '.jobtron.org')
 
 function delete_cookie( name, path, domain ) {
     document.cookie = name + "=" +
-       
+
       ((path) ? ";Max-Age=0;path="+path:"")+
       ((domain)?";domain="+domain:"") +
       ";expires=Thu, 01 Jan 1970 00:00:01 GMT";
 }
-</script> 
+</script>
 @endsection

@@ -325,8 +325,15 @@ export default {
   margin-top: 1.75rem;
 }
 
+@media (max-width: 500px) {
+  .jReviews-types {
+    display: flex;
+    justify-content: space-around;
+  }
+}
 
-@media screen and (min-width: $small) {
+
+@media screen and (min-width: 500px) {
   .jReviews-types {
     display: flex;
     gap: 2rem;
