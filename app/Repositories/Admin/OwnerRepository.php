@@ -78,7 +78,7 @@ class OwnerRepository extends CoreRepository
      */
     private function filter(Request $request)
     {   
-        $owners = $this->model()->with('tenants');
+        $owners = $this->model()->has('tenants');
 
         if($request->has('id')) {
             $owners->where('id', $request->id);

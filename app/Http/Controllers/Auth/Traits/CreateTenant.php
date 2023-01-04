@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Auth\Traits;
 
 use App\Models\CentralUser;
 use App\Models\Tenant;
+use App\Service\Tenancy\CabinetService;
 use App\User;
 use App\UserDescription;
 
@@ -41,11 +42,13 @@ trait CreateTenant
         // create domain
         $tenant->createDomain($domain);
 
-        // attach to owner
+        // attach to cabinet as owner
         $centralUser = CentralUser::where('email', $user->email)->first();
 
         if($centralUser) {
             $centralUser->tenants()->attach($tenant);
+
+            (new CabinetService)->add($tenant->id, $user, true);
         }   
      
         return $tenant;
@@ -73,15 +76,12 @@ trait CreateTenant
             'program_id' => 1,
             'is_admin' => 1
         ]);
-
+        
         $ud = UserDescription::create([
             'is_trainee' => 0,
             'user_id'    => $user->id
         ]);
 
-        // run seeders
-        // Setting::create();
-        
         return $user;
     }
 
