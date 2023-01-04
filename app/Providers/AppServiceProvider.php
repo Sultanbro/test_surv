@@ -21,9 +21,12 @@ class AppServiceProvider extends ServiceProvider
         \Validator::extend('recaptcha', 'App\\Validators\\ReCaptcha@validate');
 
         \Schema::defaultStringLength(125);
-
+       
+        $this->setS3DiskForTenant();
+  
         $this->registerMacros();
 
+        // наверное нужно удалить если перешли на layouts.spa
         \View::composer('layouts.app', function($view) {
             $view->with([
                 'laravelToVue' => $this->dataToVue()
@@ -112,6 +115,14 @@ class AppServiceProvider extends ServiceProvider
             'email'       => auth()->user()->email,
             'cabinets'    => auth()->user()->cabinets()->toArray()
         ];
+    }
+
+    private function setS3DiskForTenant() : void
+    {
+        $host = explode('.', request()->getHost());
+        if(count($host) === 3) {
+            app()['config']->set('filesystems.disks.s3.bucket', 'tenant'. $host[0]);
+        }
     }
 
     private function dataToVue() : array
