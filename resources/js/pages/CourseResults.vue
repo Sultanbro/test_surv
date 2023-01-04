@@ -125,7 +125,7 @@ function formatProgress(num, precision = 2){
 }
 
 export default {
-    name: "CourseResults",
+    name: 'CourseResults',
     watch: {
         monthInfo(val) {
             this.first = true;

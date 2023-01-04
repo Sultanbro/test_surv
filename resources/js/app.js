@@ -167,7 +167,6 @@ Vue.component('t-rentability', require('./components/tables/TableRentability.vue
 Vue.component('t-activity', require('./components/tables/TableActivity.vue').default); // Старая активность
 Vue.component('t-activity-new', require('./components/tables/TableActivityNew.vue').default); // Активность
 Vue.component('t-activity-collection', require('./components/tables/TableActivityCollection.vue').default); // Сборы
-Vue.component('t-quality', require('./components/tables/TableQuality.vue').default); // ОКК
 Vue.component('t-quality-weekly', require('./components/tables/TableQualityWeekly.vue').default); // Недельные оценки качества
 Vue.component('t-usersalary', require('./components/tables/TableUserSalary.vue').default); // таблица начислений
 Vue.component('questions', require('./pages/Questions.vue').default); // вопросы тестов
@@ -198,7 +197,6 @@ Vue.component('page-top', require('./pages/Top.vue').default); // четверг
 Vue.component('exam', require('./pages/exam.vue').default); // повышение квалификации
 Vue.component('t-report', require('./pages/TableReport.vue').default);  // табель
 Vue.component('t-accrual', require('./pages/TableAccrual.vue').default); // начисления
-Vue.component('course-results', require('./pages/CourseResults.vue').default); // результаты по курсам
 Vue.component('permissions', require('./pages/Permissions.vue').default); // курсы мои
 // Vue.component('cabinet', require('./pages/Cabinet.vue').default); // курсы мои
 

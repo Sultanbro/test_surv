@@ -455,9 +455,10 @@
           </b-tabs>
         </b-tab>
         <b-tab title="Прогресс по курсам" :key="2" card>
-
-            <course-results  :monthInfo="monthInfo" :currentGroup="currentGroup" />
-
+          <CourseResults
+            :monthInfo="monthInfo"
+            :currentGroup="currentGroup"
+          />
         </b-tab>
 
         <b-tab title="Чек Лист" :key="3" type="card" card :active="check == 3">
@@ -714,11 +715,14 @@
 </template>
 
 <script>
+import CourseResults from '@/pages/CourseResults' // результаты по курсам
 import { useYearOptions } from '../../composables/yearOptions'
 // import Template from "../../../../public/static/partner/templates/template.html";
 export default {
-  name: "TableQuality",
-  // components: {Template},
+  name: 'TableQuality',
+  components: {
+    CourseResults,
+  },
   props: {
     groups: Array,
     individual_type:{
