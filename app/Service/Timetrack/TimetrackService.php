@@ -26,17 +26,9 @@ class TimetrackService
      */
     public function getUserFinalSalary(array $salaryBonuses,array $obtainedBonuses,array $testBonuses,  $userFines, int $finesSum, array $advances,  User $user, Carbon $date, $currencyRate): array{
 
-        $advancesSum = collect($advances)->sum('paid');
-        for($i = 1; $i <= $date->daysInMonth; $i++) {
-            $m = $i;
-            if(strlen($i) == 1) $m = '0'.$i;
-            $data['salaries'][$i]['fines'] = isset($userFines[$m]) ? $userFines[$m]: [];
-            $data['salaries'][$i]['bonuses'] = isset($salaryBonuses[$m]) ? $salaryBonuses[$m]: [];
-            $data['salaries'][$i]['awards'] = isset($obtainedBonuses[$m]) ? $obtainedBonuses[$m]: [];
-            $data['salaries'][$i]['test_bonus'] = isset($testBonuses[$m]) ? $testBonuses[$m]: [];
-            $data['salaries'][$i]['avanses'] = isset($avanses[$m]) ? $avanses[$m]: [];
 
-        }
+        $advancesSum = collect($advances)->sum('paid');
+
 
         // Вычисление даты принятия
         $userAppliedAt = $user->applied_at();
@@ -45,7 +37,7 @@ class TimetrackService
         $traineeDays = $this->getDateTypes($date, $user);
         $timeTrackingBeforeApply =$this->getUserTimetracking($user, $date->year, $date->month, $userAppliedAt, '<');
 
-        $data += $this->collectSalaryData($date, $user, $timeTracking, $timeTrackingBeforeApply, $traineeDays, $currencyRate);
+        $data = $this->collectSalaryData($date, $user, $timeTracking, $timeTrackingBeforeApply, $traineeDays, $currencyRate);
 
         return [
             'data' => [
@@ -73,6 +65,17 @@ class TimetrackService
             'times' => [],
             'hours' => [],
         ];
+
+        for($i = 1; $i <= $date->daysInMonth; $i++) {
+            $m = $i;
+            if(strlen($i) == 1) $m = '0'.$i;
+            $data['salaries'][$i]['fines'] = isset($userFines[$m]) ? $userFines[$m]: [];
+            $data['salaries'][$i]['bonuses'] = isset($salaryBonuses[$m]) ? $salaryBonuses[$m]: [];
+            $data['salaries'][$i]['awards'] = isset($obtainedBonuses[$m]) ? $obtainedBonuses[$m]: [];
+            $data['salaries'][$i]['test_bonus'] = isset($testBonuses[$m]) ? $testBonuses[$m]: [];
+            $data['salaries'][$i]['avanses'] = isset($avanses[$m]) ? $avanses[$m]: [];
+
+        }
 
         for( $day = 1;$day <= $date->daysInMonth; $day++) {
 
