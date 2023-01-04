@@ -59,6 +59,7 @@ export default {
             old_jysan: '',
             old_card_jysan: '',
             in_groups: [],
+            head_in_groups: [],
             showBlocks: {
                 main: true,
                 additional: true,
@@ -180,6 +181,7 @@ export default {
             this.old_jysan = data.old_jysan
             this.old_card_jysan = data.old_card_jysan
             this.in_groups = data.in_groups
+            this.head_in_groups = data.head_in_groups
         },
         updatePageData(){
             useAsyncPageData(`/timetracking/edit-person?id=${this.activeUserId}`).then(this.setData).catch(error => {
@@ -722,7 +724,7 @@ export default {
                                                     :formUserBirthday="formUserBirthday"
                                                     :positions="positions"
                                                     :groups="groups"
-                                                    :in_groups="in_groups"
+                                                    :in_groups="head_in_groups"
                                                     :programs="programs"
                                                     :workingDays="workingDays"
                                                     :workingTimes="workingTimes"
