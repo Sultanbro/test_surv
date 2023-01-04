@@ -263,7 +263,7 @@ export default {
         fetchData() {
             this.loading = true
 
-            axios.post('/timetracking/zarplata-table', {
+            axios.post('/timetracking/zarplata-table-new', {
                 month: this.$moment(this.currentMonth, 'MMMM').format('M'),
             }).then(response => {
 
