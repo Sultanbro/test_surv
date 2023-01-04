@@ -59,7 +59,7 @@
                       class="jReviews-item-thumbnail"
                   />
                 </Slide>
-                <hooper-navigation slot="hooper-addons"></hooper-navigation>
+                <hooper-navigation slot="hooper-addons"/>
               </Hooper>
             </div>
           </div>
@@ -67,35 +67,33 @@
         <div v-if="!isDesktop" class="jReviews-items-wrapper">
           <div class="jReviews-items">
             <div class="jReviews-item-watch">
-              <div
-                  class="jReviews-item-player"
+              <Hooper
+                  ref="carousel"
+                  :settings="hooperSettings"
               >
-                <Hooper
-                    ref="carousel"
-                    :settings="hooperSettings"
+                <Slide
+                    v-for="(item, key) in content"
+                    :key="'jTmb' + key"
                 >
-                  <Slide
-                      v-for="(item, key) in content"
-                      :key="'jTmb' + key"
-                  >
+                  <div class="jReviews-item-player">
                     <iframe
                         v-if="mode === 'videos'"
-                        :src="prefix + videos[key].videos"
+                        :src="prefix + item.video"
                         allow="accelerometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
                         allowfullscreen
                         class="jReviews-item-iflame"
                         frameborder="0"
                         title="YouTube video player"
                     />
-                    <img
-                        v-if="mode === 'photos'"
-                        :src="item.thumbnail"
-                        class="jReviews-item-image"
-                        alt="photos">
-                  </Slide>
-                  <hooper-navigation slot="hooper-addons"></hooper-navigation>
-                </Hooper>
-              </div>
+                  </div>
+                  <img
+                      v-if="mode === 'photos'"
+                      :src="item.thumbnail"
+                      class="jReviews-item-image"
+                      alt="photos">
+                </Slide>
+                <hooper-navigation slot="hooper-addons"/>
+              </Hooper>
             </div>
           </div>
         </div>
@@ -224,6 +222,9 @@ export default {
   width: 100%;
   background: url("../../assets/img/reviews-bg.svg") no-repeat;
   background-position-x: 85%;
+  .hooper {
+    height: auto;
+  }
 }
 
 .jReviews-header {
@@ -266,14 +267,6 @@ export default {
   background: #000;
 }
 
-@media (max-width: $medium) {
-  .jReviews-item-player {
-    position: relative;
-    padding-top: 0;
-    background: #000;
-  }
-}
-
 .jReviews-item-iflame {
   width: 100%;
   height: 100%;
@@ -282,8 +275,8 @@ export default {
   left: 0;
 }
 
-.jReviews-item-full {
-}
+// .jReviews-item-full {
+// }
 
 .jReviews-item-image {
   width: 100%;
@@ -297,7 +290,6 @@ export default {
   .hooper {
     margin: 0 -5px;
     flex: 100% 1 1;
-    height: auto;
   }
 }
 

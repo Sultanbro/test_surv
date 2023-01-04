@@ -55,17 +55,6 @@
           </a>
           <li class="jNav-menu-item">
             <span class="jNav-menu-auth">
-
-              <form
-                  v-if="csrf"
-                  action="/logout"
-                  method="POST"
-              >
-                <input
-                    :value="csrf"
-                    name="csrf"
-                    type="hidden"
-
               <template
                 v-if="authorized"
               >
@@ -84,7 +73,6 @@
                 <div
                   class="jNav-menu-user"
                   @click="isUserMenu = !isUserMenu"
-                  
                 >
                   <div
                     v-if="isUserMenu"
@@ -118,21 +106,10 @@
                     href="/register"
                     text="register"
                 />
-                
-                
                 <a
-                    :title="$lang(lang, 'auth')"
-                    class="jNav-menu-user"
-                    href="/login"
-
-                />
-                <!-- <NavbarButton
-                
-                <NavbarButton
-                
-                  :lang="lang"
-                  href="/register"
-                  text="register"
+                  :title="$lang(lang, 'auth')"
+                  class="jNav-menu-user"
+                  href="/login"
                 />
               </template>
             </span>
@@ -208,11 +185,6 @@ export default {
   beforeDestroy() {
     window.removeEventListener('scroll', this.changeLogoSizeByScroll);
   }
-
-      isUserMenu: false,
-    }
-  },
-
 }
 </script>
 
