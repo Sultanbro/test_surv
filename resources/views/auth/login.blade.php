@@ -97,7 +97,9 @@
 
                                 <form class="form-registration" id="forget" action="#">
                                     <div class="form-subregistration">
-                                        <div class="message">
+                                        <div
+
+class="message">
                                         </div>
                                         <div class="form-registration-row form-registration-star">
                                             <input type="email" name="email" placeholder="Введите e-mail">
@@ -147,18 +149,15 @@ function delete_cookie( name, path, domain ) {
       ((domain)?";domain="+domain:"") +
       ";expires=Thu, 01 Jan 1970 00:00:01 GMT";
 }
-<<<<<<< HEAD
-</script>
-@endsection
-=======
+
 
 (function(){
     var $loginForm = $('#login');
-    var loginUrl = `{{ route('login') }}`;
+    var loginUrl = {{ route('login') }};
     var $loginButton = $loginForm.find('.btn-form-login');
     function createLinks(links){
         return links.reduce((result, item) => {
-            return `${result}<a href="${item.link}" class="list-group-item">${item.id}</a>`
+            return ${result}<a href="${item.link}" class="list-group-item">${item.id}</a>
         }, '')
     }
     $loginForm.on('submit', function(event){
@@ -209,4 +208,3 @@ function delete_cookie( name, path, domain ) {
 })();
 </script>
 @endsection
->>>>>>> 2881b794fe63f4cd0846841350f2ab20bd8a7ba3
