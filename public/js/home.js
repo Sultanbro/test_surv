@@ -2829,7 +2829,6 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
-//
 
 
 
@@ -11045,10 +11044,6 @@ var render = function () {
                                           ref: "formLogout",
                                           staticClass:
                                             "jNav-menu-user-menu-item",
-                                          staticStyle: {
-                                            display: "flex",
-                                            "justify-content": "center",
-                                          },
                                           attrs: {
                                             action: "/logout",
                                             method: "POST",

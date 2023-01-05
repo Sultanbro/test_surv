@@ -99,7 +99,6 @@
                         action="/logout"
                         class="jNav-menu-user-menu-item"
                         method="POST"
-                        style="display: flex; justify-content: center"
                     >
                       <input
                           :value="laravel.csrfToken"

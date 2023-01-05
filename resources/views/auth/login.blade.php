@@ -153,11 +153,11 @@ function delete_cookie( name, path, domain ) {
 
 (function(){
     var $loginForm = $('#login');
-    var loginUrl = {{ route('login') }};
+    var loginUrl = `{{ route('login') }}`;
     var $loginButton = $loginForm.find('.btn-form-login');
     function createLinks(links){
         return links.reduce((result, item) => {
-            return ${result}<a href="${item.link}" class="list-group-item">${item.id}</a>
+            return `${result}<a href="${item.link}" class="list-group-item">${item.id}</a>`
         }, '')
     }
     $loginForm.on('submit', function(event){
