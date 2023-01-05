@@ -4,7 +4,7 @@
 <script type="application/json" id="async-page-data">
     {
         "csrf": "{{ csrf_token() }}",
-        "user": {{isset($user) ? json_encode($user) : '{}'}},
+        "user": {{isset($user) ? json_encode($user) : 'null'}},
         "groups": {{json_encode($groups)}},
         "positions": {{json_encode($positions)}},
         "programs": {{json_encode($programs)}},
