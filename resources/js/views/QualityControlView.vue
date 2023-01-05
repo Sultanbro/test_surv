@@ -16,7 +16,7 @@ export default {
             groups: null,
             active_group: '',
             check: '',
-            user: '',
+            user: null,
             activeTab: 'nav-quality-tab',
         }
     },
@@ -25,7 +25,7 @@ export default {
             this.groups = data.groups || null
             this.active_group = '' + data.active_group
             this.check = '' + data.check
-            this.user = '' + data.user
+            this.user = data.user || null
         }).catch(error => {
             console.error('useAsyncPageData', error)
         })
