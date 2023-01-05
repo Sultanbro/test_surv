@@ -4,6 +4,7 @@ export default {
   features: 'Особенности платформы',
   auth: 'Вход',
   register: 'Регистрация',
+  logout: 'Выход',
 
   's1-header': 'JOBTRON: удобно для сотрудников, полезно для бизнеса',
   's1-profile': 'Личный профиль',

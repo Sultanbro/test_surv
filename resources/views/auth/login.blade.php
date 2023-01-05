@@ -97,7 +97,9 @@
 
                                 <form class="form-registration" id="forget" action="#">
                                     <div class="form-subregistration">
-                                        <div class="message">
+                                        <div
+
+class="message">
                                         </div>
                                         <div class="form-registration-row form-registration-star">
                                             <input type="email" name="email" placeholder="Введите e-mail">

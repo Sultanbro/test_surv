@@ -137,26 +137,6 @@ export default {
   },
   async mounted() {
     await this.USD()
-    console.log(this.usdRate, 'usdRate')
-    console.log(this.kztRate, 'kztRate')
-    // console.log(this.$lang(this.lang, 'prices-table').map((item, index) => {
-    //   if (index >= 12 && index <= 13) {
-    //     return item.map((item, index) => {
-    //       if (index >= 2 && index <= 4) {
-    //         if (this.lang === 'en') {
-    //           return `${this.separateThousands(Math.round(Number(item) / this.usdRate))} $`
-    //         } if (this.lang === 'kz') {
-    //           return `${this.separateThousands(Math.round(Number(item) / this.kztRate))} ₸`
-    //         }
-    //         return this.separateThousands(item)
-    //       } else {
-    //         return item
-    //       }
-    //     })
-    //   } else {
-    //     return item
-    //   }
-    // }), 'TABLE')
   }
 }
 </script>

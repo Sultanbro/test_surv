@@ -24,9 +24,9 @@
         /> -->
         <ul class="jNav-menu-items">
           <a
-              href="javascript:void(0)"
-              class="jNav-menu-hamburger jButton"
               :class="{'jNav-menu-lang-active': active}"
+              class="jNav-menu-hamburger jButton"
+              href="javascript:void(0)"
               @click="active = !active"
           >
             <div class="jNav-menu-lang-popup">
@@ -55,7 +55,6 @@
           </a>
           <li class="jNav-menu-item">
             <span class="jNav-menu-auth">
-
               <form
                   v-if="csrf"
                   action="/logout"
@@ -65,50 +64,49 @@
                     :value="csrf"
                     name="csrf"
                     type="hidden"
-                    >
+                >
               </form>
-
-
               <template
-                v-if="authorized"
+                  v-if="authorized"
               >
                 <div class="jNav-menu-user-info">
                   <div class="jNav-menu-user-data">
                     <div
-                      class="jNav-menu-user-name"
-                      :title="laravel.fullname"
+                        :title="laravel.fullname"
+                        class="jNav-menu-user-name"
                     >{{ laravel.fullname }}</div>
                     <div
-                      class="jNav-menu-user-email"
-                      :title="laravel.email"
+                        :title="laravel.email"
+                        class="jNav-menu-user-email"
                     >{{ laravel.email }}</div>
                   </div>
                 </div>
                 <div
-                  class="jNav-menu-user"
-                  @click="isUserMenu = !isUserMenu"
+                    :class="{'jNav-menu-user-active': isUserMenu}"
+                    class="jNav-menu-user"
+                    @click="isUserMenu = !isUserMenu"
                 >
                   <div
-                    v-if="isUserMenu"
-                    class="jNav-menu-user-menu"
+                      v-if="isUserMenu"
+                      class="jNav-menu-user-menu"
                   >
-                    <div class="jNav-menu-user-menu-item" v-for="cabinet in laravel.cabinets">
-                      <a :href="'/login/' + cabinet.tenant_id">{{ cabinet.tenant_id }}.{{ hostname }}</a>
-                    </div>
+                    <!--                    <div class="jNav-menu-user-menu-item" v-for="cabinet in laravel.cabinets">-->
+                    <!--                      <a :href="'/login/' + cabinet.tenant_id">{{ cabinet.tenant_id }}.{{ hostname }}</a>-->
+                    <!--                    </div>-->
 
                     <form
-                      ref="formLogout"
-                      class="jNav-menu-user-menu-item"
-                      method="POST"
-                      action="/logout"
+                        ref="formLogout"
+                        action="/logout"
+                        class="jNav-menu-user-menu-item"
+                        method="POST"
                     >
                       <input
-                        type="hidden"
-                        :value="laravel.csrfToken"
-                        name="_token"
+                          :value="laravel.csrfToken"
+                          name="_token"
+                          type="hidden"
                       >
-                      <button @click="$refs.formLogout.submit()" class="jNav-menu-user-menu-exit">
-                        Выход
+                      <button class="jNav-menu-user-menu-exit jNav-menu-link" @click="$refs.formLogout.submit()">
+                        {{ $lang(lang, 'logout') }}
                       </button>
                     </form>
                   </div>
@@ -175,11 +173,10 @@ export default {
   data() {
     return {
       menu: false,
-
-
       csrf: '',
       isScroll: false,
       active: false,
+      isUserMenu: false
     }
   },
 
@@ -268,29 +265,44 @@ export default {
   }
 }
 
+.jNav-menu-user-menu {
+  display: none;
+  width: auto;
+  position: absolute;
+  top: 100%;
+  right: 0;
+  background: #fff;
+  box-shadow: 0 0.125rem 0.1875rem rgba(0, 0, 0, 0.5);
+  border-radius: 0.8rem;
+}
+
+.jNav-menu-user-active {
+  .jNav-menu-user-menu {
+    display: block;
+  }
+}
+
+.jNav-menu-hamburger {
+  &.jButton {
+    display: block;
+    width: 2rem;
+    height: 2rem;
+    padding: 1.25rem;
+    position: relative;
 
 
- .jNav-menu-hamburger {
-   &.jButton {
-     display: block;
-     width: 2rem;
-     height: 2rem;
-     padding: 1.25rem;
-     position: relative;
-
-
-     &:before {
-       content: '';
-       width: 50%;
-       height: 0.75rem;
-       position: absolute;
-       top: 50%;
-       left: 50%;
-       transform: translate(-50%, -45%);
-       background: repeating-linear-gradient(#fff, #fff 0.125rem, transparent 0.125rem, transparent 0.25rem);
-     }
-   }
- }
+    &:before {
+      content: '';
+      width: 50%;
+      height: 0.75rem;
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -45%);
+      background: repeating-linear-gradient(#fff, #fff 0.125rem, transparent 0.125rem, transparent 0.25rem);
+    }
+  }
+}
 
 @media (max-width: $medium) {
   .jNav-menu-hamburger.jButton {
@@ -303,23 +315,39 @@ export default {
   padding: 1.25rem;
 }
 
-.jNav-menu-user-info{
+@media (max-width: $small) {
+  .jNav-menu-item .jNav-menu-link {
+    font-size: 0.8rem;
+    padding: 0.5rem;
+  }
+}
+
+.jNav-menu-user-info {
   display: flex;
   flex-flow: row nowrap;
   flex: 1 1 auto;
   align-items: center;
 }
-.jNav-menu-user-data{
+
+.jNav-menu-user-data {
   display: flex;
   flex-flow: column;
   flex: 0 1 10em;
   overflow: hidden;
 }
+
 .jNav-menu-user-name,
-.jNav-menu-user-email{
+.jNav-menu-user-email {
   max-width: 10em;
   overflow: hidden;
   text-overflow: ellipsis;
+}
+
+@media (max-width: $small) {
+  .jNav-menu-user-name,
+  .jNav-menu-user-email {
+    font-size: 12px;
+  }
 }
 
 // .jNav-menu-hamburger {
@@ -375,6 +403,7 @@ export default {
   justify-content: space-between;
   align-items: center;
   gap: 0.5rem;
+  cursor: pointer;
 }
 
 .jNav-menu-user {
@@ -392,20 +421,22 @@ export default {
   display: none;
 }
 
-.jNav-menu-user-menu{
+.jNav-menu-user-menu {
   padding: 0.5rem;
   position: absolute;
   z-index: 5;
   top: 100%;
   right: 0;
   background-color: #fff;
-  box-shadow: 0 0.125rem 0.1875rem rgba(0,0,0,0.5);
+  box-shadow: 0 0.125rem 0.1875rem rgba(0, 0, 0, 0.5);
 }
-.jNav-menu-user-menu-item{
+
+.jNav-menu-user-menu-item {
   white-space: nowrap;
   cursor: pointer;
 }
-.jNav-menu-user-menu-exit{
+
+.jNav-menu-user-menu-exit {
   padding: 0;
   border: none;
   background: none;
