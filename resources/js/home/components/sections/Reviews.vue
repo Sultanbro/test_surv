@@ -6,21 +6,22 @@
       <div class="jReviews-wrapper">
         <div class="jReviews-types">
           <button
-            @click="setMode('videos')"
-            class="jReviews-video jButton"
-          >{{ $lang(lang, 'review-video') }}</button>
+              class="jReviews-video jButton"
+              @click="setMode('videos')"
+          >{{ $lang(lang, 'review-video') }}
+          </button>
           <button
-            @click="setMode('photos')"
-            class="jReviews-photo jButton"
-            disabled
-          >{{ $lang(lang, 'review-photo') }}</button>
+              class="jReviews-photo jButton"
+              @click="setMode('photos')"
+          >{{ $lang(lang, 'review-photo') }}
+          </button>
         </div>
-        <div class="jReviews-items-wrapper">
+        <div v-if="isDesktop" class="jReviews-items-wrapper">
           <div class="jReviews-items">
             <div class="jReviews-item-watch">
               <div
-                v-if="mode === 'videos'"
-                class="jReviews-item-player"
+                  v-if="mode === 'videos'"
+                  class="jReviews-item-player"
               >
                 <iframe
                     :src="prefix + videos[activeVideo].video"
@@ -32,35 +33,66 @@
                 />
               </div>
               <div
-                v-if="mode === 'photos'"
-                class="jReviews-item-full"
+                  v-if="mode === 'photos'"
+                  class="jReviews-item-full"
               >
                 <img
-                  :src="photos[activePhoto].full"
-                  class="jReviews-item-image"
+                    :src="photos[activePhoto].full"
+                    class="jReviews-item-image"
                 >
               </div>
             </div>
             <div
-              ref="carouselWrap"
-              class="jReviews-item-thumbnails"
+                ref="carouselWrap"
+                class="jReviews-item-thumbnails"
             >
               <Hooper
-                ref="carousel"
-                :itemsToShow="3"
-                :vertical="isHooperVertical"
-                :trimWhiteSpace="true"
+                  ref="carousel"
+                  :settings="hooperSettings"
               >
                 <Slide
-                  v-for="(item, key) in videos"
-                  :key="'jTmb' + key"
+                    v-for="(item, key) in content"
+                    :key="'jTmb' + key"
                 >
                   <div
-                    :style="`background-image: url(${item.thumbnail});`"
-                    class="jReviews-item-thumbnail"
-                    @click="mode === 'videos' ? (activeVideo = key) : (activePhoto = key)"
+                      :style="`background-image: url(${item.thumbnail}); background-position: 0 -1rem;`"
+                      class="jReviews-item-thumbnail"
                   />
                 </Slide>
+                <hooper-navigation slot="hooper-addons"/>
+              </Hooper>
+            </div>
+          </div>
+        </div>
+        <div v-if="!isDesktop" class="jReviews-items-wrapper">
+          <div class="jReviews-items">
+            <div class="jReviews-item-watch">
+              <Hooper
+                  ref="carousel"
+                  :settings="hooperSettings"
+              >
+                <Slide
+                    v-for="(item, key) in content"
+                    :key="'jTmb' + key"
+                >
+                  <div class="jReviews-item-player">
+                    <iframe
+                        v-if="mode === 'videos'"
+                        :src="prefix + content[key].video"
+                        allow="accelerometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                        allowfullscreen
+                        class="jReviews-item-iflame"
+                        frameborder="0"
+                        title="YouTube video player"
+                    />
+                  </div>
+                  <img
+                      v-if="mode === 'photos'"
+                      :src="item.thumbnail"
+                      class="jReviews-item-image"
+                      alt="photos">
+                </Slide>
+                <hooper-navigation slot="hooper-addons"/>
               </Hooper>
             </div>
           </div>
@@ -68,8 +100,8 @@
         <div class="jReviews-footer">
           <p class="jReviews-title">{{ $lang(lang, 'review-title') }}</p>
           <a
-            href="/register"
-            class="jReviews-free jButton"
+              class="jReviews-free jButton"
+              href="/register"
           >
             {{ $lang(lang, 'review-free') }}
           </a>
@@ -80,24 +112,26 @@
 </template>
 
 <script>
-import { Hooper, Slide } from 'hooper'
+import {Hooper, Navigation as HooperNavigation, Slide} from 'hooper'
 import 'hooper/dist/hooper.css'
 
 export default {
   components: {
     Hooper,
     Slide,
+    HooperNavigation
   },
   computed: {
     lang() {
       return this.$root.$data.lang
     },
-    isHooperVertical(){
+    isDesktop() {
       return this.$viewportSize.width >= 1260
     },
-    items() {
-      if(this.mode === 'photos') return this.photos
-      return this.videos
+    content() {
+      return this.mode === 'photos'
+          ? this.photos
+          : this.videos
     }
   },
   data() {
@@ -130,37 +164,54 @@ export default {
       ],
       photos: [
         {
-          thumbnail: 'https://i3.ytimg.com/vi/LQtmJnljYyk/maxresdefault.jpg',
+          thumbnail: 'https://chudo-prirody.com/uploads/posts/2021-08/1628879740_153-p-foto-kotyat-prikolnie-161.jpg',
           full: 'https://placekitten.com/1024/576'
         },
         {
-          thumbnail: 'https://i3.ytimg.com/vi/LQtmJnljYyk/maxresdefault.jpg',
+          thumbnail: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQeUE8cuMRSgVfaLre3jpUHoORbJxaXyZjsmuGURFp4F1W5eW9JLa-s233pH4UHXBHNso0&usqp=CAU',
           full: 'https://placekitten.com/1024/576'
         },
         {
-          thumbnail: 'https://i3.ytimg.com/vi/LQtmJnljYyk/maxresdefault.jpg',
+          thumbnail: 'https://damion.club/uploads/posts/2022-01/1643042029_80-damion-club-p-samie-nyashnie-kotiki-83.jpg',
           full: 'https://placekitten.com/1024/576'
         },
         {
-          thumbnail: 'https://i3.ytimg.com/vi/LQtmJnljYyk/maxresdefault.jpg',
+          thumbnail: 'https://img1.goodfon.ru/wallpaper/nbig/9/3e/kotenok-koshka-horoshenkiy-3793.jpg',
           full: 'https://placekitten.com/1024/576'
         },
         {
-          thumbnail: 'https://i3.ytimg.com/vi/LQtmJnljYyk/maxresdefault.jpg',
+          thumbnail: 'https://img1.goodfon.ru/wallpaper/big/2/85/koshka-kot-kotenok-ryzhiy-yazyk.jpg',
           full: 'https://placekitten.com/1024/576'
         },
       ],
-      resizeObserver: null
+      resizeObserver: null,
+      hooperSettings: {
+        itemsToShow: 1,
+        centerMode: true,
+        trimWhiteSpace: true,
+        autoPlay: true,
+        playSpeed: 3000,
+        breakpoints: {
+          1260: {
+            centerMode: false,
+            itemsToShow: 2.8,
+            vertical: true,
+            trimWhiteSpace: true,
+            autoPlay: true,
+            playSpeed: 3000,
+          }
+        }
+      }
     }
   },
-  mounted(){
+  mounted() {
     this.resizeObserver = new ResizeObserver(() => {
       this.$refs.carousel.update()
     })
     this.resizeObserver.observe(this.$refs.carouselWrap)
   },
   methods: {
-    setMode(mode){
+    setMode(mode) {
       this.mode = mode
       this.$refs.carousel.update()
     }
@@ -175,6 +226,9 @@ export default {
   width: 100%;
   background: url("../../assets/img/reviews-bg.svg") no-repeat;
   background-position-x: 85%;
+  .hooper {
+    height: auto;
+  }
 }
 
 .jReviews-header {
@@ -225,20 +279,21 @@ export default {
   left: 0;
 }
 
-.jReviews-item-full{}
+// .jReviews-item-full {
+// }
 
-.jReviews-item-image{
-  max-width: 100%;
+.jReviews-item-image {
+  width: 100%;
 }
 
 .jReviews-item-thumbnails {
   display: flex;
   gap: 0.625rem;
   margin-top: 1.125rem;
-  .hooper{
+
+  .hooper {
     margin: 0 -5px;
     flex: 100% 1 1;
-    height: auto;
   }
 }
 
@@ -262,12 +317,20 @@ export default {
   margin-top: 1.75rem;
 }
 
+@media (max-width: 500px) {
+  .jReviews-types {
+    display: flex;
+    justify-content: space-around;
+  }
+}
 
-@media screen and (min-width: $small) {
+
+@media screen and (min-width: 500px) {
   .jReviews-types {
     display: flex;
     gap: 2rem;
-    .jButton{
+
+    .jButton {
       display: block;
     }
   }
@@ -302,15 +365,49 @@ export default {
     flex-flow: column nowrap;
     justify-content: space-between;
     margin: 0;
-    .hooper{
+    padding: 1.5rem 0;
+
+    .hooper {
       margin: -5px 0;
     }
   }
-  .jReviews-item-thumbnail{
+  .jReviews-item-thumbnail {
     margin: 5px 0;
   }
   .jReviews-footer {
     padding-right: 2rem;
+  }
+
+  .hooper-navigation.is-vertical .hooper-prev {
+    top: -42px;
+    bottom: auto;
+    right: 72px;
+    left: auto;
+    transform: initial;
+  }
+
+  .hooper-navigation.is-vertical .hooper-next {
+    right: 64px;
+    top: auto;
+    bottom: -49px;
+    transform: initial;
+  }
+}
+
+@media screen and (min-width: $large) {
+  .hooper-navigation.is-vertical .hooper-prev {
+    top: -84px;
+    bottom: auto;
+    right: 154px;
+    left: auto;
+    transform: scale(2);
+  }
+
+  .hooper-navigation.is-vertical .hooper-next {
+    right: 142px;
+    top: auto;
+    bottom: -86px;
+    transform: scale(2);
   }
 }
 </style>

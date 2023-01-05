@@ -266,9 +266,12 @@ export default {
             reader.readAsDataURL(this.files[0])
             this.isUploadImageModal = true
         },
-        submit(isTrainee, increment_provided){
+        async submit(isTrainee, increment_provided){
             this.trainee = isTrainee
             this.increment_provided = increment_provided
+
+            // нужно подождать пока рендер заполнит форму
+            await this.$nextTick()
 
             const formData = new FormData(this.$refs.form)
 
