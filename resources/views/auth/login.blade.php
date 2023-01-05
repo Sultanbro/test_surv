@@ -104,13 +104,17 @@
                                                                     <input type="submit" value="Восстановить пароль" class="btn-form-registarion">
                                                                 </div>
                                                             </form>
-
                                                         </div>
                                                     </div>
                                                 </div>
 
 
                                             </div>
+                                <form class="form-registration" id="forget" action="#">
+                                    <div class="form-subregistration">
+                                        <div
+
+class="message">
                                         </div>
                                     </div>
 
