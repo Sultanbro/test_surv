@@ -75,9 +75,8 @@
                     v-for="(item, key) in content"
                     :key="'jTmb' + key"
                 >
-                  <div class="jReviews-item-player">
+                  <div v-if="mode === 'videos'" class="jReviews-item-player">
                     <iframe
-                        v-if="mode === 'videos'"
                         :src="prefix + content[key].video"
                         allow="accelerometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
                         allowfullscreen
@@ -86,11 +85,13 @@
                         title="YouTube video player"
                     />
                   </div>
+                  <div v-if="mode === 'photos'" class="jReviews-item-player-photos">
                   <img
                       v-if="mode === 'photos'"
                       :src="item.thumbnail"
                       class="jReviews-item-image"
                       alt="photos">
+                  </div>
                 </Slide>
                 <hooper-navigation slot="hooper-addons"/>
               </Hooper>
@@ -268,6 +269,11 @@ export default {
 .jReviews-item-player {
   position: relative;
   padding-top: 56.25%;
+  background: #000;
+}
+
+jReviews-item-player-photos {
+  position: relative;
   background: #000;
 }
 

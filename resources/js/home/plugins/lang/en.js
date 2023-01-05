@@ -4,6 +4,7 @@ export default {
   features: 'Platform Features',
   auth: 'Login',
   register: 'Register',
+  logout: 'Logout',
 
   's1-header': 'JOBTRON: convenient for employees, useful for business',
   's1-profile': 'Personal Profile',
