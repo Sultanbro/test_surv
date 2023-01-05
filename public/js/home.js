@@ -2830,7 +2830,6 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
-//
 
 
 
@@ -2861,7 +2860,8 @@ __webpack_require__.r(__webpack_exports__);
       menu: false,
       csrf: '',
       isScroll: false,
-      active: false
+      active: false,
+      isUserMenu: false
     };
   },
   methods: {
@@ -3935,27 +3935,6 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
               _context2.next = 2;
               return _this3.USD();
             case 2:
-              console.log(_this3.usdRate, 'usdRate');
-              console.log(_this3.kztRate, 'kztRate');
-              // console.log(this.$lang(this.lang, 'prices-table').map((item, index) => {
-              //   if (index >= 12 && index <= 13) {
-              //     return item.map((item, index) => {
-              //       if (index >= 2 && index <= 4) {
-              //         if (this.lang === 'en') {
-              //           return `${this.separateThousands(Math.round(Number(item) / this.usdRate))} $`
-              //         } if (this.lang === 'kz') {
-              //           return `${this.separateThousands(Math.round(Number(item) / this.kztRate))} ₸`
-              //         }
-              //         return this.separateThousands(item)
-              //       } else {
-              //         return item
-              //       }
-              //     })
-              //   } else {
-              //     return item
-              //   }
-              // }), 'TABLE')
-            case 4:
             case "end":
               return _context2.stop();
           }
@@ -4052,6 +4031,7 @@ __webpack_require__.r(__webpack_exports__);
   features: 'Platform Features',
   auth: 'Login',
   register: 'Register',
+  logout: 'Logout',
   's1-header': 'JOBTRON: convenient for employees, useful for business',
   's1-profile': 'Personal Profile',
   's1-db': 'Knowledge base',
@@ -4195,6 +4175,7 @@ __webpack_require__.r(__webpack_exports__);
   features: 'Платформа мүмкіндіктері',
   auth: 'Кіру',
   register: 'Тіркеу',
+  logout: 'шығу',
   's1-header': 'JOBTRON: қызметкерлерге ыңғайлы, бизнеске пайдалы',
   's1-profile': 'Жеке профиль',
   's1-db': 'Білім базасы',
@@ -4338,6 +4319,7 @@ __webpack_require__.r(__webpack_exports__);
   features: 'Особенности платформы',
   auth: 'Вход',
   register: 'Регистрация',
+  logout: 'Выход',
   's1-header': 'JOBTRON: удобно для сотрудников, полезно для бизнеса',
   's1-profile': 'Личный профиль',
   's1-db': 'База знаний',
@@ -4810,7 +4792,7 @@ __webpack_require__.r(__webpack_exports__);
 var ___CSS_LOADER_EXPORT___ = _node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_0___default()(function(i){return i[1]});
 var ___CSS_LOADER_URL_REPLACEMENT_0___ = _node_modules_css_loader_dist_runtime_getUrl_js__WEBPACK_IMPORTED_MODULE_1___default()(_assets_img_user_svg__WEBPACK_IMPORTED_MODULE_2__["default"]);
 // Module
-___CSS_LOADER_EXPORT___.push([module.id, "#jNav {\n  display: flex;\n  align-items: center;\n  position: sticky;\n  width: 100vw;\n  height: 4.875rem;\n  z-index: 9000;\n  top: -1.125rem;\n  background: #fff;\n  box-shadow: 0 0.25rem 1rem rgba(0, 0, 0, 0.05);\n}\n.jNav-content {\n  display: flex;\n  position: sticky;\n  top: 0;\n  justify-content: space-between;\n  align-items: center;\n  margin: 0 auto;\n  width: 78.125rem;\n  height: 3.75rem;\n  padding: 0 1rem;\n}\n@media (max-width: 1260px) {\n.jNav-logo-img {\n    width: 8rem;\n}\n.jNav-scroll .jNav-logo-img {\n    width: 7rem;\n    transition: 0.5s;\n}\n}\n@media screen and (min-width: 1260px) {\n.jNav-logo-img {\n    width: 15.25rem;\n}\n.jNav-scroll .jNav-logo-img {\n    width: 11.25rem;\n    transition: 0.5s;\n}\n}\n@media (min-width: 2560px) {\n.jNav-logo-img {\n    width: 15.25rem;\n}\n}\n.jNav-menu-active .jNav-menu-items {\n  display: flex;\n}\n.jNav-menu-active .jNav-menu-bg {\n  display: block;\n}\n.jNav-menu-hamburger.jButton {\n  display: block;\n  width: 2rem;\n  height: 2rem;\n  padding: 1.25rem;\n  position: relative;\n}\n.jNav-menu-hamburger.jButton:before {\n  content: \"\";\n  width: 50%;\n  height: 0.75rem;\n  position: absolute;\n  top: 50%;\n  left: 50%;\n  transform: translate(-50%, -45%);\n  background: repeating-linear-gradient(#fff, #fff 0.125rem, transparent 0.125rem, transparent 0.25rem);\n}\n@media (max-width: 1260px) {\n.jNav-menu-hamburger.jButton {\n    display: none;\n}\n}\n.jNav-menu-item .jNav-menu-link {\n  font-size: 0.9rem;\n  padding: 1.25rem;\n}\n.jNav-menu-user-info {\n  display: flex;\n  flex-flow: row nowrap;\n  flex: 1 1 auto;\n  align-items: center;\n}\n.jNav-menu-user-data {\n  display: flex;\n  flex-flow: column;\n  flex: 0 1 10em;\n  overflow: hidden;\n}\n.jNav-menu-user-name,\n.jNav-menu-user-email {\n  max-width: 10em;\n  overflow: hidden;\n  text-overflow: ellipsis;\n}\n.jNav-menu-bg {\n  display: none;\n  position: fixed;\n  z-index: 9004;\n  top: 0;\n  left: 0;\n  right: 0;\n  bottom: 0;\n  background: rgba(0, 0, 0, 0.25);\n  -webkit-backdrop-filter: blur(6px);\n          backdrop-filter: blur(6px);\n}\n.jNav-menu-items {\n  display: flex;\n  align-items: center;\n  max-width: none;\n  padding: 0.625rem;\n  margin: 0;\n  flex-flow: row nowrap;\n}\n.jNav-menu-item {\n  display: block;\n  list-style: none;\n}\n.jNav-menu-auth {\n  display: flex;\n  justify-content: space-between;\n  align-items: center;\n  gap: 0.5rem;\n}\n.jNav-menu-user {\n  display: inline-block;\n  width: 2rem;\n  height: 2rem;\n  border: none;\n  border-radius: 2.625rem;\n  position: relative;\n  vertical-align: middle;\n  background: #6f4f28 url(" + ___CSS_LOADER_URL_REPLACEMENT_0___ + ") center center no-repeat;\n}\n.jNav-menu-item-md {\n  display: none;\n}\n.jNav-menu-user-menu {\n  padding: 0.5rem;\n  position: absolute;\n  z-index: 5;\n  top: 100%;\n  right: 0;\n  background-color: #fff;\n  box-shadow: 0 0.125rem 0.1875rem rgba(0, 0, 0, 0.5);\n}\n.jNav-menu-user-menu-item {\n  white-space: nowrap;\n  cursor: pointer;\n}\n.jNav-menu-user-menu-exit {\n  padding: 0;\n  border: none;\n  background: none;\n  cursor: pointer;\n}\n@media screen and (min-width: 780px) {\n.jNav-logo-img {\n    width: 15.25rem;\n}\n}\n@media screen and (min-width: 1260px) {\n.jNav-menu-active,\n.jNav-menu-bg {\n    display: none;\n}\n.jNav-menu-items {\n    display: flex;\n    align-items: center;\n    max-width: none;\n    padding: 0.625rem;\n    margin: 0;\n    flex-flow: row nowrap;\n    position: static;\n    background: none;\n    box-shadow: none;\n}\n.jNav-menu-item {\n    margin-left: 2.5rem;\n}\n.jNav-menu-lang-popup .jNav-menu-item {\n    margin-left: 0;\n    display: flex;\n    justify-content: center;\n}\n.jNav-menu-lang-popup .jNav-menu-lang:after {\n    display: none;\n}\n.jNav-menu-auth {\n    gap: 1rem;\n}\n.jNav-menu-user {\n    width: 2.625rem;\n    height: 2.625rem;\n}\n.jNav-menu-item-md {\n    display: block;\n}\n}", ""]);
+___CSS_LOADER_EXPORT___.push([module.id, "#jNav {\n  display: flex;\n  align-items: center;\n  position: sticky;\n  width: 100vw;\n  height: 4.875rem;\n  z-index: 9000;\n  top: -1.125rem;\n  background: #fff;\n  box-shadow: 0 0.25rem 1rem rgba(0, 0, 0, 0.05);\n}\n.jNav-content {\n  display: flex;\n  position: sticky;\n  top: 0;\n  justify-content: space-between;\n  align-items: center;\n  margin: 0 auto;\n  width: 78.125rem;\n  height: 3.75rem;\n  padding: 0 1rem;\n}\n@media (max-width: 1260px) {\n.jNav-logo-img {\n    width: 8rem;\n}\n.jNav-scroll .jNav-logo-img {\n    width: 7rem;\n    transition: 0.5s;\n}\n}\n@media screen and (min-width: 1260px) {\n.jNav-logo-img {\n    width: 15.25rem;\n}\n.jNav-scroll .jNav-logo-img {\n    width: 11.25rem;\n    transition: 0.5s;\n}\n}\n@media (min-width: 2560px) {\n.jNav-logo-img {\n    width: 15.25rem;\n}\n}\n.jNav-menu-active .jNav-menu-items {\n  display: flex;\n}\n.jNav-menu-active .jNav-menu-bg {\n  display: block;\n}\n.jNav-menu-user-menu {\n  display: none;\n  width: auto;\n  position: absolute;\n  top: 100%;\n  right: 0;\n  background: #fff;\n  box-shadow: 0 0.125rem 0.1875rem rgba(0, 0, 0, 0.5);\n  border-radius: 0.8rem;\n}\n.jNav-menu-user-active .jNav-menu-user-menu {\n  display: block;\n}\n.jNav-menu-hamburger.jButton {\n  display: block;\n  width: 2rem;\n  height: 2rem;\n  padding: 1.25rem;\n  position: relative;\n}\n.jNav-menu-hamburger.jButton:before {\n  content: \"\";\n  width: 50%;\n  height: 0.75rem;\n  position: absolute;\n  top: 50%;\n  left: 50%;\n  transform: translate(-50%, -45%);\n  background: repeating-linear-gradient(#fff, #fff 0.125rem, transparent 0.125rem, transparent 0.25rem);\n}\n@media (max-width: 1260px) {\n.jNav-menu-hamburger.jButton {\n    display: none;\n}\n}\n.jNav-menu-item .jNav-menu-link {\n  font-size: 0.9rem;\n  padding: 1.25rem;\n}\n@media (max-width: 780px) {\n.jNav-menu-item .jNav-menu-link {\n    font-size: 0.8rem;\n    padding: 0.5rem;\n}\n}\n.jNav-menu-user-info {\n  display: flex;\n  flex-flow: row nowrap;\n  flex: 1 1 auto;\n  align-items: center;\n}\n.jNav-menu-user-data {\n  display: flex;\n  flex-flow: column;\n  flex: 0 1 10em;\n  overflow: hidden;\n}\n.jNav-menu-user-name,\n.jNav-menu-user-email {\n  max-width: 10em;\n  overflow: hidden;\n  text-overflow: ellipsis;\n}\n@media (max-width: 780px) {\n.jNav-menu-user-name,\n.jNav-menu-user-email {\n    font-size: 12px;\n}\n}\n.jNav-menu-bg {\n  display: none;\n  position: fixed;\n  z-index: 9004;\n  top: 0;\n  left: 0;\n  right: 0;\n  bottom: 0;\n  background: rgba(0, 0, 0, 0.25);\n  -webkit-backdrop-filter: blur(6px);\n          backdrop-filter: blur(6px);\n}\n.jNav-menu-items {\n  display: flex;\n  align-items: center;\n  max-width: none;\n  padding: 0.625rem;\n  margin: 0;\n  flex-flow: row nowrap;\n}\n.jNav-menu-item {\n  display: block;\n  list-style: none;\n}\n.jNav-menu-auth {\n  display: flex;\n  justify-content: space-between;\n  align-items: center;\n  gap: 0.5rem;\n  cursor: pointer;\n}\n.jNav-menu-user {\n  display: inline-block;\n  width: 2rem;\n  height: 2rem;\n  border: none;\n  border-radius: 2.625rem;\n  position: relative;\n  vertical-align: middle;\n  background: #6f4f28 url(" + ___CSS_LOADER_URL_REPLACEMENT_0___ + ") center center no-repeat;\n}\n.jNav-menu-item-md {\n  display: none;\n}\n.jNav-menu-user-menu {\n  padding: 0.5rem;\n  position: absolute;\n  z-index: 5;\n  top: 100%;\n  right: 0;\n  background-color: #fff;\n  box-shadow: 0 0.125rem 0.1875rem rgba(0, 0, 0, 0.5);\n}\n.jNav-menu-user-menu-item {\n  white-space: nowrap;\n  cursor: pointer;\n}\n.jNav-menu-user-menu-exit {\n  padding: 0;\n  border: none;\n  background: none;\n  cursor: pointer;\n}\n@media screen and (min-width: 780px) {\n.jNav-logo-img {\n    width: 15.25rem;\n}\n}\n@media screen and (min-width: 1260px) {\n.jNav-menu-active,\n.jNav-menu-bg {\n    display: none;\n}\n.jNav-menu-items {\n    display: flex;\n    align-items: center;\n    max-width: none;\n    padding: 0.625rem;\n    margin: 0;\n    flex-flow: row nowrap;\n    position: static;\n    background: none;\n    box-shadow: none;\n}\n.jNav-menu-item {\n    margin-left: 2.5rem;\n}\n.jNav-menu-lang-popup .jNav-menu-item {\n    margin-left: 0;\n    display: flex;\n    justify-content: center;\n}\n.jNav-menu-lang-popup .jNav-menu-lang:after {\n    display: none;\n}\n.jNav-menu-auth {\n    gap: 1rem;\n}\n.jNav-menu-user {\n    width: 2.625rem;\n    height: 2.625rem;\n}\n.jNav-menu-item-md {\n    display: block;\n}\n}", ""]);
 // Exports
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (___CSS_LOADER_EXPORT___);
 
@@ -11042,6 +11024,9 @@ var render = function () {
                             "div",
                             {
                               staticClass: "jNav-menu-user",
+                              class: {
+                                "jNav-menu-user-active": _vm.isUserMenu,
+                              },
                               on: {
                                 click: function ($event) {
                                   _vm.isUserMenu = !_vm.isUserMenu
@@ -11054,54 +11039,26 @@ var render = function () {
                                     "div",
                                     { staticClass: "jNav-menu-user-menu" },
                                     [
-                                      _vm._l(
-                                        _vm.laravel.cabinets,
-                                        function (cabinet) {
-                                          return _c(
-                                            "div",
-                                            {
-                                              staticClass:
-                                                "jNav-menu-user-menu-item",
-                                            },
-                                            [
-                                              _c(
-                                                "a",
-                                                {
-                                                  attrs: {
-                                                    href:
-                                                      "/login/" +
-                                                      cabinet.tenant_id,
-                                                  },
-                                                },
-                                                [
-                                                  _vm._v(
-                                                    _vm._s(cabinet.tenant_id) +
-                                                      "." +
-                                                      _vm._s(_vm.hostname)
-                                                  ),
-                                                ]
-                                              ),
-                                            ]
-                                          )
-                                        }
-                                      ),
-                                      _vm._v(" "),
                                       _c(
                                         "form",
                                         {
                                           ref: "formLogout",
                                           staticClass:
                                             "jNav-menu-user-menu-item",
+                                          staticStyle: {
+                                            display: "flex",
+                                            "justify-content": "center",
+                                          },
                                           attrs: {
-                                            method: "POST",
                                             action: "/logout",
+                                            method: "POST",
                                           },
                                         },
                                         [
                                           _c("input", {
                                             attrs: {
-                                              type: "hidden",
                                               name: "_token",
+                                              type: "hidden",
                                             },
                                             domProps: {
                                               value: _vm.laravel.csrfToken,
@@ -11112,7 +11069,7 @@ var render = function () {
                                             "button",
                                             {
                                               staticClass:
-                                                "jNav-menu-user-menu-exit",
+                                                "jNav-menu-user-menu-exit jNav-menu-link",
                                               on: {
                                                 click: function ($event) {
                                                   return _vm.$refs.formLogout.submit()
@@ -11121,14 +11078,20 @@ var render = function () {
                                             },
                                             [
                                               _vm._v(
-                                                "\n                      Выход\n                    "
+                                                "\n                      " +
+                                                  _vm._s(
+                                                    _vm.$lang(
+                                                      _vm.lang,
+                                                      "logout"
+                                                    )
+                                                  ) +
+                                                  "\n                    "
                                               ),
                                             ]
                                           ),
                                         ]
                                       ),
-                                    ],
-                                    2
+                                    ]
                                   )
                                 : _vm._e(),
                             ]
