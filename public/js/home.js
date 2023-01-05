@@ -2133,11 +2133,10 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
-//
 
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = ({
   props: {
-    label: String,
+    placeholder: String,
     value: String
   },
   data: function data() {
@@ -9797,7 +9796,7 @@ var render = function () {
         },
       ],
       staticClass: "input-text-input",
-      attrs: { type: "text", placeholder: "" },
+      attrs: { type: "text", placeholder: _vm.placeholder },
       domProps: { value: _vm.localValue },
       on: {
         input: function ($event) {
@@ -9808,10 +9807,6 @@ var render = function () {
         },
       },
     }),
-    _vm._v(" "),
-    _c("span", { staticClass: "input-text-label" }, [
-      _vm._v(_vm._s(_vm.label)),
-    ]),
   ])
 }
 var staticRenderFns = []
@@ -12105,7 +12100,7 @@ var render = function () {
               { staticClass: "jSec4-form-inputs" },
               [
                 _c("InputText", {
-                  attrs: { label: _vm.$lang(_vm.lang, "s4-name") },
+                  attrs: { placeholder: _vm.$lang(_vm.lang, "s4-name") },
                   model: {
                     value: _vm.name,
                     callback: function ($$v) {
@@ -12116,7 +12111,7 @@ var render = function () {
                 }),
                 _vm._v(" "),
                 _c("InputText", {
-                  attrs: { label: _vm.$lang(_vm.lang, "s4-phone") },
+                  attrs: { placeholder: _vm.$lang(_vm.lang, "s4-phone") },
                   model: {
                     value: _vm.phone,
                     callback: function ($$v) {
