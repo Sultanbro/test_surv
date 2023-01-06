@@ -2,11 +2,8 @@
 
 namespace App\Service;
 
-use App\Classes\Helpers\Phone;
 use App\Position;
-use App\Response\JsonApiResponse;
-use App\User;
-use GuzzleHttp\Client;
+use App\Support\Response\JsonApiResponse;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
