@@ -11,7 +11,7 @@
                 <v-select :options="groups" label="name" v-model="selectedGroup" class="group-select">
                     <template #option="{ name, salary_approved, id }">
                         <div class="selector">
-                            <p style="margin: 0">{{ name }} : <span v-if="[5,18,84,157].includes(Number(activeuserid))">{{ accruals[id] }}</span></p>
+                            <p style="margin: 0">{{ name }} : <span v-if="showAccruals">{{ accruals[id] }}</span></p>
                             <img src="/images/double-check.png" alt="" v-if="salary_approved">
                         </div>
                     </template>
@@ -62,11 +62,11 @@
                         <b>Итого уволенные ФОТ:</b>
                         {{ group_fired }} тг.
                     </p>
-                    <p class="fz-08 text-black mr-1 mb-0" v-if="[5,18,84,157].includes(Number(activeuserid))">
+                    <p class="fz-08 text-black mr-1 mb-0" v-if="showTotals">
                         <b>Итого все ФОТ (Действующие):</b>
                         {{ allTotal }}тг.
                     </p>
-                    <p class="fz-08 text-black mr-1 mb-0" v-if="[5,18,84,157].includes(Number(activeuserid))">
+                    <p class="fz-08 text-black mr-1 mb-0" v-if="showTotals">
                         <b>Итого все ФОТ (Уволенные):</b>
                         {{ allTotalFired }}тг.
                     </p>
@@ -587,6 +587,14 @@ export default {
             timer: null,
             years: useYearOptions(),
         };
+    },
+    computed: {
+        showAccruals(){
+            return this.activeuserid && [5,18,84,157].includes(Number(this.activeuserid))
+        },
+        showTotals(){
+            return this.activeuserid && [5,18,84,157].includes(Number(this.activeuserid))
+        }
     },
     created() {
         if(this.groupss){
