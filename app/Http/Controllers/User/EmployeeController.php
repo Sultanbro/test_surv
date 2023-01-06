@@ -833,7 +833,7 @@ class EmployeeController extends Controller
             ]);
         }
 
-        (new CabinetService)->add(tenant('id'), $user);
+        (new CabinetService)->add(tenant('id'), $user, false);
 
         return redirect()->to('/timetracking/edit-person?id=' . $user->id);
     }
@@ -1462,7 +1462,7 @@ class EmployeeController extends Controller
             if($bitrixUser) $success = $bitrix->recoverUser($bitrixUser['ID']);
             
 
-            (new CabinetService)->add(tenant('id'), $user);
+            (new CabinetService)->add(tenant('id'), $user, false);
         } 
 
         View::share('title', 'Сотрудник восстановлен');
