@@ -35,6 +35,7 @@ const router = new VueRouter({
             component: ProfileView,
             meta: {
                 title: 'Мой профиль',
+                viewport: true
             },
         },
         // cabinet.blade.php
@@ -53,6 +54,7 @@ const router = new VueRouter({
             component: NewsView,
             meta: {
                 title: 'Новости',
+                viewport: true
             },
         },
         // ???.blade.php
@@ -238,13 +240,21 @@ const router = new VueRouter({
     ],
 })
 
-const DEFAULT_TITLE = 'Jobtron.org'
+const DEFAULT_TITLE = 'Jobtron.org';
+const viewport = document.querySelector('meta[name="viewport"]');
+router.beforeEach((to, from, next) => {
+    viewport.content = ' ';
+    if(to.meta.viewport){
+        viewport.content = 'width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no';
+    }
+    next();
+});
 router.afterEach((to, from) => {
     // Use next tick to handle router history correctly
     // see: https://github.com/vuejs/vue-router/issues/914#issuecomment-384477609
     Vue.nextTick(() => {
         document.title = to.meta.title || DEFAULT_TITLE
     })
-})
+});
 
 export default router
