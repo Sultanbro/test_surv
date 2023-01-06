@@ -21,9 +21,12 @@ class AppServiceProvider extends ServiceProvider
         \Validator::extend('recaptcha', 'App\\Validators\\ReCaptcha@validate');
 
         \Schema::defaultStringLength(125);
-
+       
+        $this->setS3DiskForTenant();
+  
         $this->registerMacros();
 
+        // наверное нужно удалить если перешли на layouts.spa
         \View::composer('layouts.app', function($view) {
             $view->with([
                 'laravelToVue' => $this->dataToVue()
@@ -31,37 +34,9 @@ class AppServiceProvider extends ServiceProvider
         });
 
         \View::composer('layouts.spa', function($view) {
-
-            if(!\Auth::guest()) {
-
-                $permissions = auth()->user()->getAllPermissions()->pluck('name')->toArray(); // Spatie permissions
-
-                if(auth()->user()->program_id === 1) {
-                    $permissions[] = 'ucalls_view';
-                }
-
-                $view->with([
-                    'laravelToVue' => [
-                        'csrfToken'   => csrf_token(),
-                        'userId'      => auth()->id(),
-                        'avatar'      => isset(auth()->user()->img_url) && !is_null(auth()->user()->img_url) && auth()->user()->img_url !== ''
-                            ? '/users_img/' . auth()->user()->img_url
-                            : 'https://cp.callibro.org/files/img/8.png',
-                        'email'       => auth()->user()->email,
-                        'is_admin'    => auth()->user()->is_admin == 1,
-                        'permissions' => $permissions,
-                        'tenants'     => auth()->user()->tenants()->pluck('id')->toArray()
-                    ]
-                ]);
-
-            } else {
-                $view->with([
-                    'laravelToVue' => [
-                        'csrfToken'   => csrf_token(),
-                    ]
-                ]);
-            }
-
+            $view->with([
+                'laravelToVue' => $this->dataToVue()
+            ]);
         });
 
         \View::composer('home', function($view) {
@@ -112,6 +87,14 @@ class AppServiceProvider extends ServiceProvider
             'email'       => auth()->user()->email,
             'cabinets'    => auth()->user()->cabinets()->toArray()
         ];
+    }
+
+    private function setS3DiskForTenant() : void
+    {
+        $host = explode('.', request()->getHost());
+        if(count($host) === 3) {
+            app()['config']->set('filesystems.disks.s3.bucket', 'tenant'. $host[0]);
+        }
     }
 
     private function dataToVue() : array

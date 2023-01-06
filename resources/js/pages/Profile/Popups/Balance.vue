@@ -263,7 +263,7 @@ export default {
         fetchData() {
             this.loading = true
 
-            axios.post('/timetracking/zarplata-table', {
+            axios.post('/timetracking/zarplata-table-new', {
                 month: this.$moment(this.currentMonth, 'MMMM').format('M'),
             }).then(response => {
 
@@ -302,6 +302,10 @@ export default {
                         'hasAvans': this.data[key][keyt]['avanses'] !== undefined && this.data[key][keyt]['avanses'].length,
                         'training': this.data[key][keyt]['training'],
                     })
+
+                    if(key === 'times' && temp[key][keyt].value){
+                        temp[key][keyt].value = this.$moment.utc(temp[key][keyt].value, 'hh:mm').local().format('hh:mm')
+                    }
 
                     if(key == 'salaries' || key == 'hours') {
                         let val = Number(this.data[key][keyt]['value']);

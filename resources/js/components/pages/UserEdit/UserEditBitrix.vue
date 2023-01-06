@@ -62,7 +62,6 @@ export default {
                 class="form-control form-control-sm"
                 placeholder="ID профиля в битриксе"
             >
-            <profile-kpi-button :user_id="user.id"/>
         </div>
     </div>
 </template>

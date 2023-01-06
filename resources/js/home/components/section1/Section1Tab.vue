@@ -24,7 +24,7 @@ export default {
         <a
             href="javascript:void(0)"
             class="jSec1-tabs-qm"
-            @click="$emit('popup')"
+            @click="$emit('popup') && $emit('content')"
         />
     </li>
 </template>

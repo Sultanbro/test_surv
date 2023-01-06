@@ -39,23 +39,24 @@ class MessengerWebSocketHandler extends WebSocketHandler {
     }
 
     public function onClose( ConnectionInterface $conn ) {
-        echo "Connection {$conn->resourceId} has disconnected\n";
         $this->userEscape( $conn->resourceId );
         parent::onClose( $conn );
     }
 
     public function userEscape( $resourceId ) {
-        $user    = MessengerUserOnline::where( 'resource_id', $resourceId );
-        $user_id = $user->first()->user_id;
-        // remove user from online list
-        $user->delete();
+        $user    = MessengerUserOnline::where( 'resource_id', $resourceId )->first();
+        if ($user) {
+            $domain = $user->domain;
+            $user_id = $user->user_id;
+            // remove user from online list
+            $user->delete();
 
-        $this->broadcastOffline( $user_id );
+            $this->broadcastOffline( $user_id, $domain );
+        }
     }
 
     public function userJoin( $socketId, $resourceId ) {
         // в первый раз обмениваем socketId на resourceId
-        echo "userJoin: s:{$socketId}, r:{$resourceId}\n";
         // find by socket id
         $userOnline = MessengerUserOnline::where( 'socket_id', $socketId )->first();
         if ( ! $userOnline ) {
@@ -67,8 +68,9 @@ class MessengerWebSocketHandler extends WebSocketHandler {
         $userOnline->save();
     }
 
-    public function broadcastOffline($user_id) {
+    public function broadcastOffline($user_id, $domain) {
         // select all members of each chat which user is in
+        /** @noinspection SqlNoDataSourceInspection */
         $users = DB::select( "
 SELECT DISTINCT t2.user_id
 FROM `messenger_chat_users` t1
@@ -76,26 +78,30 @@ FROM `messenger_chat_users` t1
                     ON t1.chat_id = t2.chat_id
                         AND t1.user_id != t2.user_id
          INNER JOIN `messenger_users_online` o
-                    ON o.user_id = t2.user_id
+                    ON o.user_id = t2.user_id AND o.domain = '{$domain}'
 WHERE t1.user_id = {$user_id}" );
 
         // for each user trigger event
         foreach ( $users as $user ) {
-            echo "Send user escape event to user {$user->user_id}";
-            $this->channelManager->find(config('websockets.apps.0.id'), 'private-messages.' . $user->user_id )->broadcast([
-                'event' => 'newMessage',
-                'channel' => 'private-messages.' . $user->user_id,
-                'data'  => json_encode([
-                    'message' => [
-                        'event' => [
-                            'type' => 'offline',
-                        ],
-                        'sender' => [
-                            'id' => $user_id
+            try {
+                $this->channelManager->find( config( 'websockets.apps.0.id' ),
+                    'private-messages.' . $domain . '.' . $user->user_id )->broadcast( [
+                    'event'   => 'newMessage',
+                    'channel' => 'private-messages.' . $user->user_id,
+                    'data'    => json_encode( [
+                        'message' => [
+                            'event'  => [
+                                'type' => 'offline',
+                            ],
+                            'sender' => [
+                                'id' => $user_id
+                            ]
                         ]
-                    ]
-                ]),
-            ]);
+                    ] ),
+                ] );
+            } catch ( \Exception $e ) {
+                continue;
+            }
         }
     }
 }

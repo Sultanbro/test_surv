@@ -11,19 +11,19 @@ export default {
 <template>
     <div class="jSec1-tabs-item jSec1-profile">
         <div class="jSec1-profile-text">
-            <h3 class="jSec1-profile-title">{{ $lang(lang, 's1-for-worker') }}</h3>
+            <h3 class="jSec1-profile-title">{{ $lang(lang, 's1-for-worker-profile') }}</h3>
             <ul class="jSec1-profile-list">
-                <li class="jSec1-profile-list-item">{{ $lang(lang, 's1-for-worker-1') }}</li>
-                <li class="jSec1-profile-list-item">{{ $lang(lang, 's1-for-worker-2') }}</li>
-                <li class="jSec1-profile-list-item">{{ $lang(lang, 's1-for-worker-3') }}</li>
-                <li class="jSec1-profile-list-item">{{ $lang(lang, 's1-for-worker-4') }}</li>
+                <li class="jSec1-profile-list-item">{{ $lang(lang, 's1-for-worker-profile-1') }}</li>
+                <li class="jSec1-profile-list-item">{{ $lang(lang, 's1-for-worker-profile-2') }}</li>
+                <li class="jSec1-profile-list-item">{{ $lang(lang, 's1-for-worker-profile-3') }}</li>
+                <li class="jSec1-profile-list-item">{{ $lang(lang, 's1-for-worker-profile-4') }}</li>
             </ul>
-            <h3 class="jSec1-profile-title">{{ $lang(lang, 's1-for-super') }}</h3>
+            <h3 class="jSec1-profile-title">{{ $lang(lang, 's1-for-super-profile') }}</h3>
             <ul class="jSec1-profile-list">
-                <li class="jSec1-profile-list-item">{{ $lang(lang, 's1-for-super-1') }}</li>
-                <li class="jSec1-profile-list-item">{{ $lang(lang, 's1-for-super-2') }}</li>
-                <li class="jSec1-profile-list-item">{{ $lang(lang, 's1-for-super-3') }}</li>
-                <li class="jSec1-profile-list-item">{{ $lang(lang, 's1-for-super-4') }}</li>
+                <li class="jSec1-profile-list-item">{{ $lang(lang, 's1-for-super-profile-1') }}</li>
+                <li class="jSec1-profile-list-item">{{ $lang(lang, 's1-for-super-profile-2') }}</li>
+                <li class="jSec1-profile-list-item">{{ $lang(lang, 's1-for-super-profile-3') }}</li>
+                <li class="jSec1-profile-list-item">{{ $lang(lang, 's1-for-super-profile-4') }}</li>
             </ul>
             <a
                 href="/register"

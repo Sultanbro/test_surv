@@ -39,7 +39,7 @@
                     <div class="login-panel">
 
                         <a href="/" class="">
-                            <img src="/images/logo.png" style="max-width: 220px;">
+                            <img src="/images/logo.svg" style="max-width: 220px;">
                         </a>
 
 
@@ -97,7 +97,9 @@
 
                                 <form class="form-registration" id="forget" action="#">
                                     <div class="form-subregistration">
-                                        <div class="message">
+                                        <div
+
+class="message">
                                         </div>
                                         <div class="form-registration-row form-registration-star">
                                             <input type="email" name="email" placeholder="Введите e-mail">
@@ -147,6 +149,7 @@ function delete_cookie( name, path, domain ) {
       ((domain)?";domain="+domain:"") +
       ";expires=Thu, 01 Jan 1970 00:00:01 GMT";
 }
+
 
 (function(){
     var $loginForm = $('#login');

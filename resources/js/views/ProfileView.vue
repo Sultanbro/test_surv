@@ -12,7 +12,7 @@ export default {
 </script>
 
 <template>
-    <DefaultLayout>
+    <DefaultLayout class="profile-page">
         <ProfilePage/>
     </DefaultLayout>
 </template>

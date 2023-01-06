@@ -79,8 +79,7 @@
                     <div>
                         <input type="number"
                                v-model="item[day].fact"
-                               @change="updateSettings($event, item, index, day)"
-                               class="form-control cell-input">
+                               @change="updateSettings($event, item, index, day)">
                     </div>
                 </td>
                 <td v-else
@@ -515,11 +514,30 @@ export default {
 
 .strt{
     input{
-        height: 40px;
+        height: 30px;
+        text-align: center;
+        color: #333;
+        width: 100px;
     }
     tbody{
         th,td{
-            padding: 0 10px !important;
+            padding: 0 !important;
+            & > div{
+                height: 30px;
+                width: 100px;
+                display: inline-flex;
+                align-items: center;
+                justify-content: center;
+            }
+            &:first-child{
+                & > div{
+                    width: auto;
+                }
+                input{
+                    text-align: left;
+                    width: 100%;
+                }
+            }
         }
     }
 }

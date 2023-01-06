@@ -64,6 +64,7 @@ export default {
             old_jysan: '',
             old_card_jysan: '',
             in_groups: [],
+            head_in_groups: [],
             showBlocks: {
                 main: true,
                 additional: true,
@@ -185,6 +186,7 @@ export default {
             this.old_jysan = data.old_jysan
             this.old_card_jysan = data.old_card_jysan
             this.in_groups = data.in_groups
+            this.head_in_groups = data.head_in_groups
         },
         updatePageData(){
             useAsyncPageData(`/timetracking/edit-person?id=${this.activeUserId}`).then(this.setData).catch(error => {
@@ -269,9 +271,12 @@ export default {
             reader.readAsDataURL(this.files[0])
             this.isUploadImageModal = true
         },
-        submit(isTrainee, increment_provided){
+        async submit(isTrainee, increment_provided){
             this.trainee = isTrainee
             this.increment_provided = increment_provided
+
+            // нужно подождать пока рендер заполнит форму
+            await this.$nextTick()
 
             const formData = new FormData(this.$refs.form)
 
@@ -727,7 +732,7 @@ export default {
                                                     :formUserBirthday="formUserBirthday"
                                                     :positions="positions"
                                                     :groups="groups"
-                                                    :in_groups="in_groups"
+                                                    :in_groups="head_in_groups"
                                                     :programs="programs"
                                                     :workingDays="workingDays"
                                                     :workingTimes="workingTimes"

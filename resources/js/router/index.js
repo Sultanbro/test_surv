@@ -226,6 +226,15 @@ const router = new VueRouter({
                 title: 'Редактирование профиля сотрудника',
             },
         },
+        // admin/users/create.blade.php
+        {
+            path: '/timetracking/create-person',
+            name: 'UserEditViewCreate',
+            component: () => import(/* webpackChunkName: "UserEditView" */ '@/views/UserEditView'),
+            meta: {
+                title: 'Создание профиля сотрудника',
+            },
+        },
     ],
 })
 

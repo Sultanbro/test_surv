@@ -22,6 +22,7 @@ export default {
   font-size: 1rem;
   &:hover {
     text-decoration: none;
+    border-bottom: 0;
     &:after {
       content: '';
       display: block;
@@ -29,7 +30,7 @@ export default {
       left: 0;
       right: 0;
       bottom: 0;
-      border-bottom: 0.125rem dotted #000;
+      //border-bottom: 0.125rem dotted #000;
     }
   }
 }

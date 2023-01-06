@@ -4,37 +4,37 @@
       <h2 class="jSec4-header jHeader">{{ $lang(lang, 's4-header') }}</h2>
       <p class="jSec4-subheader">{{ $lang(lang, 's4-subheader') }}</p>
       <ul
-        v-show="isMedium"
-        ref="items"
-        class="jSec4-items"
+          v-show="isMedium"
+          ref="items"
+          class="jSec4-items"
       >
         <li
-          class="jSec4-item jSec4-item-1"
-          :class="{'jSec4-highlight': isBlock1Highlight}"
+            :class="{'jSec4-highlight': isBlock1Highlight}"
+            class="jSec4-item jSec4-item-1"
         >
           <span class="jSec4-item-title">{{ $lang(lang, 's4-b1-title') }}</span>
           <span class="jSec4-item-text">{{ $lang(lang, 's4-b1-text') }}</span>
         </li>
         <li
-          class="jSec4-item jSec4-item-2"
-          :class="{'jSec4-highlight': isBlock2Highlight}"
+            :class="{'jSec4-highlight': isBlock2Highlight}"
+            class="jSec4-item jSec4-item-2"
         >
           <span class="jSec4-item-title">{{ $lang(lang, 's4-b2-title') }}</span>
           <span class="jSec4-item-text">{{ $lang(lang, 's4-b2-text') }}</span>
         </li>
         <li
-          class="jSec4-item jSec4-item-3"
-          :class="{'jSec4-highlight': isBlock3Highlight}"
+            :class="{'jSec4-highlight': isBlock3Highlight}"
+            class="jSec4-item jSec4-item-3"
         >
           <span class="jSec4-item-title">{{ $lang(lang, 's4-b3-title') }}</span>
           <span class="jSec4-item-text">{{ $lang(lang, 's4-b3-text') }}</span>
         </li>
       </ul>
       <Hooper
-        v-if="!isMedium"
-        :infiniteScroll="true"
-        :autoPlay="true"
-        :playSpeed="3000"
+          v-if="!isMedium"
+          :autoPlay="true"
+          :infiniteScroll="true"
+          :playSpeed="3000"
       >
         <Slide>
           <div class="jSec4-item jSec4-item-1">
@@ -56,32 +56,35 @@
         </Slide>
       </Hooper>
       <form
-        action=""
-        class="jSec4-form"
-        @submit="onSubmit"
+          action=""
+          class="jSec4-form"
+          @submit="onSubmit"
       >
         <p class="jSec4-footer">{{ $lang(lang, 's4-footer') }}</p>
         <div class="jSec4-form-inputs">
           <InputText
-            v-model="name"
-            :label="$lang(lang, 's4-name')"
+              v-model="name"
+              :label="$lang(lang, 's4-name')"
           />
           <InputText
-            v-model="phone"
-            :label="$lang(lang, 's4-phone')"
+              v-model="phone"
+              :label="$lang(lang, 's4-phone')"
           />
         </div>
         <button
-          class="jButton"
-          type="submit"
-        >{{ $lang(lang, 's4-free') }}</button>
+            :disabled="isButtonDisabled"
+            class="jButton"
+            type="submit"
+            @click="callMeBack"
+        >{{ callMeButtonContent }}
+        </button>
       </form>
     </div>
   </section>
 </template>
 
 <script>
-import { Hooper, Slide } from 'hooper'
+import {Hooper, Slide} from 'hooper'
 import 'hooper/dist/hooper.css'
 import InputText from '../../components/InputText'
 
@@ -98,6 +101,7 @@ export default {
       isBlock1Highlight: false,
       isBlock2Highlight: false,
       isBlock3Highlight: false,
+      isButtonDisabled: false,
       observer: null,
     }
   },
@@ -105,11 +109,34 @@ export default {
     lang() {
       return this.$root.$data.lang
     },
-    isMedium(){
+    isMedium() {
       return this.$viewportSize.width >= 1260
     },
+    callMeButtonContent() {
+      if (!this.isButtonDisabled) {
+        if (this.lang === 'ru') {
+          return 'Перезвонить мне'
+        }
+        if (this.lang === 'en') {
+          return 'Call me back'
+        }
+        if (this.lang === 'kz') {
+          return 'маған қайта қоңырау шал'
+        }
+      } else {
+        if (this.lang === 'ru') {
+          return 'Ожидайте звонка'
+        }
+        if (this.lang === 'en') {
+          return 'Expect a call'
+        }
+        if (this.lang === 'kz') {
+          return 'Қоңырау күтіңіз'
+        }
+      }
+    }
   },
-  mounted(){
+  mounted() {
     this.observer = new IntersectionObserver(this.animate, {
       rootMargin: '30px',
       threshold: 1
@@ -119,14 +146,19 @@ export default {
   methods: {
     onSubmit(e) {
       e.preventDefault()
-      alert(`name: ${this.name}, phone: ${this.phone}`)
+      if (this.name && this.phone) {
+        alert(`${this.name}, мы Вам перезвоним в ближайшее время.`)
+      } else {
+        alert(`Заполните пожалуйста все поля.`)
+      }
     },
-    wait(ms){
+    wait(ms) {
       return new Promise(resolve => {
         setTimeout(resolve, ms)
       })
     },
-    async animate(entries, observer){
+    async animate(entries, observer) {
+      if (!entries.some(entry => entry.isIntersecting)) return
       this.isBlock1Highlight = true
       await this.wait(350)
       this.isBlock1Highlight = false
@@ -136,6 +168,12 @@ export default {
       this.isBlock3Highlight = true
       await this.wait(350)
       this.isBlock3Highlight = false
+      this.observer.disconnect()
+    },
+    callMeBack() {
+      if (this.name && this.phone) {
+        this.isButtonDisabled = true
+      }
     }
   }
 }
@@ -147,7 +185,8 @@ export default {
 #jSec4 {
   width: 100%;
   padding-bottom: 2rem;
-  .hooper{
+
+  .hooper {
     height: auto;
   }
 }
@@ -198,7 +237,7 @@ export default {
   position: relative;
   overflow: hidden;
 
-  &:before{
+  &:before {
     content: '';
     width: 0;
     height: 0;
@@ -214,11 +253,9 @@ export default {
 }
 
 .jSec4-item-title {
-  margin-bottom: 0.5rem;
   font-weight: 700;
   font-size: 3.125rem;
   line-height: 2;
-
   position: relative;
   z-index: 5;
 
@@ -256,23 +293,19 @@ export default {
   }
 }
 
-.jSec4-highlight{
-  &:before{
-    width: 120%;
-    height: 120%;
-  }
-  .jSec4-item-title{
+.jSec4-highlight {
+  .jSec4-item-title {
     text-shadow:
-      0 0 2px #aaa,
-      0 0 1rem #fff,
-      0 0 1rem #fff,
-      0 0 1rem #fff,
-      0 0 1rem #fff;
+        0 0 1px #aaa,
+        0 0 1rem #fff,
+        0 0 1rem #fff,
+        0 0 1rem grey,
+        0 0 1rem grey;
   }
 }
 
 .jSec4-form,
-.jSec4-form-inputs{
+.jSec4-form-inputs {
   display: flex;
   flex-flow: column;
   align-items: center;
@@ -298,6 +331,7 @@ export default {
     flex-flow: row nowrap;
     align-items: center;
     gap: 1.25rem;
+    padding-top: 1rem;
 
     .jButton {
       white-space: nowrap;

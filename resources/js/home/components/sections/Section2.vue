@@ -97,6 +97,7 @@ export default {
       })
     },
     async animate(entries, observer){
+      if(!entries.some(entry => entry.isIntersecting)) return
       this.isBlock1Highlight = true
       await this.wait(350)
       this.isBlock1Highlight = false
@@ -106,6 +107,7 @@ export default {
       this.isBlock3Highlight = true
       await this.wait(350)
       this.isBlock3Highlight = false
+      this.observer.disconnect()
     }
   }
 }
@@ -223,20 +225,15 @@ export default {
   }
 }
 
-
-
 .jSec2-highlight{
-  &:before{
-    width: 120%;
-    height: 120%;
-  }
   .jSec2-item-value{
+    transition: 0.5s;
     text-shadow:
-      0 0 2px #aaa,
+      0 0 1px #aaa,
       0 0 1rem #fff,
       0 0 1rem #fff,
-      0 0 1rem #fff,
-      0 0 1rem #fff;
+      0 0 1rem grey,
+      0 0 1rem grey;
   }
 }
 

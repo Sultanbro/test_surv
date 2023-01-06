@@ -4,7 +4,7 @@ namespace App;
 
 use App\Classes\Helpers\Phone;
 use App\Api\BitrixOld as Bitrix;
-use App\Http\Controllers\IntellectController as IC;
+use App\Http\Controllers\Services\IntellectController as IC;
 use App\Models\Admin\ObtainedBonus;
 use App\Models\Article\Article;
 use App\Models\Award\Award;

@@ -37,13 +37,14 @@ class ChatsController extends Controller {
         ] );
         // check if user authorized
         if ( Auth::check() ) {
-            return response()->json( json_decode( MessengerFacade::pusherAuth(
+            $response = json_decode(MessengerFacade::pusherAuth(
                 $request['channel_name'],
                 $request['socket_id'],
                 $authData,
-                Auth::user()->id
-            )
-            ) );
+                Auth::user()->id,
+                \request()->getHost()
+            ));
+            return response()->json(  $response );
         }
 
         // if not authorized
@@ -155,7 +156,7 @@ class ChatsController extends Controller {
                     $position = DB::query()
                         ->select('position.position as position')
                         ->from('position')
-                        ->join('users', 'users.position_id', '=', 'positions.id')
+                        ->join('users', 'users.position_id', '=', 'position.id')
                         ->where('users.id', $user->id)
                         ->first();
                         $chat->position = $position?->position;

@@ -225,7 +225,6 @@ export default {
     mounted(){
         if(!this.isRoot && !this.isProfile){
             this.hide = true
-            document.body.classList.add('no-profile')
         }
         const scrollObserver = new IntersectionObserver(() => {
             this.inViewport = true
@@ -377,7 +376,7 @@ export default {
             axios.post('/timetracking/status', {}).then((response) => {
                 this.workdayStatus = response.data.status
 
-                if(this.workdayStatus === 'started' && response.data.corp_book) {
+                if((this.isProfile || this.isRoot) && this.workdayStatus === 'started' && response.data.corp_book) {
                     this.corp_book_page = response.data.corp_book
                     this.showCorpBookPage = this.corp_book_page !== null
                     this.bookCounter()
@@ -423,7 +422,7 @@ export default {
                     return;
                 }
 
-                if(response.data.status === 'started') {
+                if((this.isProfile || this.isRoot) && response.data.status === 'started') {
                     this.workdayStatus = 'started';
                     if(response.data.corp_book.has) {
                         this.corp_book_page = response.data.corp_book.page
@@ -484,6 +483,10 @@ export default {
 
         testBook(){
             if(this.bookTimer) return
+            if(!(this.corp_book_page.questions && this.corp_book_page.questions.length)){
+                this.showCorpBookPage = false
+                return
+            }
             this.isBookTest = true
             this.showCorpBookPage = false
         },

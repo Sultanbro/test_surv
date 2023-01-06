@@ -25,7 +25,7 @@ export default {
     <ChatApp/>
     <div class="wrapper">
         <main class="main">
-            <div class="container container-left-padding">
+            <div class="container">
                 <!-- Mobile menu buttons -->
                 <div class="header__top">
                     <a

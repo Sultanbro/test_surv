@@ -4,14 +4,14 @@
 <script type="application/json" id="async-page-data">
     {
         "csrf": "{{ csrf_token() }}",
-        "user": {{json_encode($user)}},
+        "user": {{isset($user) ? json_encode($user) : 'null'}},
         "groups": {{json_encode($groups)}},
         "positions": {{json_encode($positions)}},
         "programs": {{json_encode($programs)}},
         "workingDays": {{json_encode($workingDays)}},
         "workingTimes": {{json_encode($workingTimes)}},
         "errors": {{ json_encode($errors->all()) }},
-        "fire_causes": {{ json_encode($fire_causes) }},
+        "fire_causes": {{ isset($fire_causes) ? json_encode($fire_causes) : '[]' }},
         "auth_identifier": "{{auth()->user()->getAuthIdentifier()}}",
         "old_name": "{{old('name')}}",
         "old_last_name": "{{old('last_name')}}",
@@ -29,7 +29,8 @@
         "old_jysan_cardholder": "{{old('jysan_cardholder')}}",
         "old_jysan": "{{old('jysan')}}",
         "old_card_jysan": "{{old('card_jysan')}}",
-        "in_groups": {{ json_encode($user->head_in_groups) }}
+        "head_in_groups": {{ isset($user) ? json_encode($user->head_in_groups) : '[]' }},
+        "in_groups": {{ isset($user) ? json_encode($user->in_groups) : '[]' }}
     }
 </script>
 @endsection

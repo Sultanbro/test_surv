@@ -27,7 +27,7 @@ export default {
 </script>
 
 <template>
-    <DefaultLayout v-show="auth_user_id">
+    <DefaultLayout class="no-padding" v-show="auth_user_id">
         <div class="old__content">
             <KBPage
                 :auth_user_id="auth_user_id"

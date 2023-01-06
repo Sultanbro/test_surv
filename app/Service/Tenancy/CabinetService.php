@@ -9,13 +9,14 @@ use DB;
 
 final class CabinetService
 {   
-    public function add(String $tenantId, User $user): void
+    public function add(String $tenantId, User $user, bool $is_owner): void
     {       
         $centralUser = $this->getCentralUser($user);
 
         $data = [
             'user_id' => $centralUser->id,
             'tenant_id' => $tenantId,
+            'owner' => $is_owner ? 1 : 0,
         ];
 
         $tp = TenantPivot::where($data)->first();

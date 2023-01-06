@@ -1,53 +1,55 @@
 <template>
   <section id="jTariffs">
     <a
-      id="prices"
-      class="ancor"
-      name="prices"
+        id="prices"
+        class="ancor"
+        name="prices"
     />
     <div class="section-content">
       <h2 class="jTariffs-header jHeader">{{ $lang(lang, 'prices-header') }}</h2>
       <div class="jTariffs-content">
         <table
-          v-if="isMedium"
-          :data-col="activeCol"
-          class="jTariffs-table"
-          @mouseout="activeCol = -1"
+            v-if="isMedium"
+            :data-col="activeCol"
+            class="jTariffs-table"
+            @mouseout="activeCol = -1"
         >
           <tbody class="jTariffs-tbody">
           <tr
-            v-for="(tr, rkey) in table"
-            :key="'r' + rkey"
-            class="jTariffs-tr"
+              v-for="(tr, rkey) in table"
+              :key="'r' + rkey"
+              class="jTariffs-tr"
           >
             <template v-if="rkey === 0 || rkey >= table.length - 3">
               <th
-                v-for="(td, dkey) in tr"
-                :key="'r' + rkey + 'd' + dkey"
-                :data-col="dkey"
-                class="jTariffs-th jTariffs-cell"
-                @mouseover="activeCol = dkey"
-              >{{ td }}</th>
+                  v-for="(td, dkey) in tr"
+                  :key="'r' + rkey + 'd' + dkey"
+                  :data-col="dkey"
+                  class="jTariffs-th jTariffs-cell"
+                  @mouseover="activeCol = dkey"
+              >{{ td }}
+              </th>
             </template>
             <template v-else>
               <td
-                v-for="(td, dkey) in tr"
-                :key="'r' + rkey + 'd' + dkey"
-                :data-col="dkey"
-                class="jTariffs-td jTariffs-cell"
-                @mouseover="activeCol = dkey"
-              >{{ td }}</td>
+                  v-for="(td, dkey) in tr"
+                  :key="'r' + rkey + 'd' + dkey"
+                  :data-col="dkey"
+                  class="jTariffs-td jTariffs-cell"
+                  @mouseover="activeCol = dkey"
+              >{{ td }}
+              </td>
             </template>
           </tr>
           <tr>
             <th></th>
             <td
-              v-for="td in 4"
-              :key="td"
+                v-for="td in 4"
+                :key="td"
             >
               <a
-                href="/register"
-                class="jButton"
+                  class="jButton jButton-tariffs"
+                  href="/register"
               >
                 {{ $lang(lang, 'prices-register') }}
               </a>
@@ -56,23 +58,23 @@
           </tbody>
         </table>
         <div
-          v-if="!isMedium"
-          class="jTariffs-image-wrap"
+            v-if="!isMedium"
+            class="jTariffs-image-wrap"
         >
           <a
-            :href="image"
-            target="_blank"
-            class="jTariffs-image-link"
+              :href="image"
+              class="jTariffs-image-link"
+              target="_blank"
           >
             <img
-              :src="image"
-              alt=""
-              class="jTariffs-image"
+                :src="image"
+                alt=""
+                class="jTariffs-image"
             >
           </a>
           <a
-            href="/register"
-            class="jButton"
+              class="jButton"
+              href="/register"
           >
             {{ $lang(lang, 'prices-register') }}
           </a>
@@ -83,23 +85,58 @@
 </template>
 
 <script>
+import axios from "axios";
 export default {
   computed: {
     lang() {
       return this.$root.$data.lang
     },
     table() {
-      return this.$lang(this.lang, 'prices-table')
+      return this.$lang(this.lang, 'prices-table').map((item, index) => {
+        if (index >= 12 && index <= 13) {
+          return item.map((item, index) => {
+            if (index >= 2 && index <= 4) {
+              if (this.lang === 'en') {
+                return `${this.separateThousands(Math.round(Number(item) / this.usdRate))} $`
+              } if (this.lang === 'kz') {
+                return `${this.separateThousands(Math.round(Number(item) * (100 / this.kztRate)))} ₸`
+              }
+              return `${this.separateThousands(item)} ₽`
+            } else {
+              return item
+            }
+          })
+        } else {
+          return item
+        }
+      })
     },
-    isMedium(){
+    isMedium() {
       return this.$viewportSize.width >= 1260
     },
+  },
+  methods: {
+    async USD() {
+      const rates = await axios('https://www.cbr-xml-daily.ru/daily_json.js')
+      this.usdRate = rates.data.Valute.USD.Value
+      this.kztRate = rates.data.Valute.KZT.Value
+    },
+    separateThousands(number) {
+      const num = number.toString();
+      return num.replace(/(\d{1,3}(?=(?:\d\d\d)+(?!\d)))/g, "$1" + ' ');
+    }
   },
   data() {
     return {
       activeCol: -1,
-      image: require('../../assets/img/tariffs.png').default
+      image: require('../../assets/img/tariffs.png').default,
+      usdRate: 0,
+      kztRate: 0
+
     }
+  },
+  async mounted() {
+    await this.USD()
   }
 }
 </script>
@@ -136,13 +173,14 @@ export default {
   overflow-x: auto;
 }
 
-.jTariffs-image-wrap{
+.jTariffs-image-wrap {
   display: flex;
   flex-flow: column;
   align-items: center;
   gap: 1rem;
 }
-.jTariffs-image{
+
+.jTariffs-image {
   max-width: 100%;
 }
 
@@ -219,5 +257,10 @@ export default {
   .jTariffs-th {
     padding: 1.125rem;
   }
+}
+
+a.jButton-tariffs {
+  margin: 1rem auto;
+  font-size: 0.8rem;
 }
 </style>

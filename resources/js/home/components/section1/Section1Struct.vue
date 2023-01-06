@@ -11,19 +11,16 @@ export default {
 <template>
     <div class="jSec1-tabs-item jSec1-profile">
         <div class="jSec1-profile-text">
-            <h3 class="jSec1-profile-title">{{ $lang(lang, 's1-for-worker') }}</h3>
+            <h3 class="jSec1-profile-title">{{ $lang(lang, 's1-for-worker-struct') }}</h3>
             <ul class="jSec1-profile-list">
-                <li class="jSec1-profile-list-item">{{ $lang(lang, 's1-for-worker-1') }}</li>
-                <li class="jSec1-profile-list-item">{{ $lang(lang, 's1-for-worker-2') }}</li>
-                <li class="jSec1-profile-list-item">{{ $lang(lang, 's1-for-worker-3') }}</li>
-                <li class="jSec1-profile-list-item">{{ $lang(lang, 's1-for-worker-4') }}</li>
+                <li class="jSec1-profile-list-item">{{ $lang(lang, 's1-for-worker-struct-1') }}</li>
+                <li class="jSec1-profile-list-item">{{ $lang(lang, 's1-for-worker-struct-2') }}</li>
             </ul>
-            <h3 class="jSec1-profile-title">{{ $lang(lang, 's1-for-super') }}</h3>
+            <h3 class="jSec1-profile-title">{{ $lang(lang, 's1-for-super-struct') }}</h3>
             <ul class="jSec1-profile-list">
-                <li class="jSec1-profile-list-item">{{ $lang(lang, 's1-for-super-1') }}</li>
-                <li class="jSec1-profile-list-item">{{ $lang(lang, 's1-for-super-2') }}</li>
-                <li class="jSec1-profile-list-item">{{ $lang(lang, 's1-for-super-3') }}</li>
-                <li class="jSec1-profile-list-item">{{ $lang(lang, 's1-for-super-4') }}</li>
+                <li class="jSec1-profile-list-item">{{ $lang(lang, 's1-for-super-struct-1') }}</li>
+                <li class="jSec1-profile-list-item">{{ $lang(lang, 's1-for-super-struct-2') }}</li>
+                <li class="jSec1-profile-list-item">{{ $lang(lang, 's1-for-super-struct-3') }}</li>
             </ul>
             <a
                 href="/register"

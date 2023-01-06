@@ -210,9 +210,8 @@ export default {
 }
 .jSec1-tabs-qm {
   display: inline-block;
-  width: 1.25rem;
-  height: 1.25rem;
-  margin-left: 0.0625rem;
+  width: 1rem;
+  height: 1rem;
   background-image: url("../../assets/img/s1-qm.svg");
   background-size: contain;
   vertical-align: super;
@@ -261,11 +260,15 @@ export default {
   max-width: 100%;
 }
 
+@media (max-width: $small) {
+  .jSec1-profile-list {
+    margin: 0;
+  }
 
-
-
-
-
+  .jSec1-profile-button {
+    margin-top: 1.5rem;
+  }
+}
 
 @media screen and (min-width: $small) {
   #jSec1 {
