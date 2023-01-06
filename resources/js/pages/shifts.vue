@@ -166,15 +166,11 @@
                     workEndTime: null,
                     weekdaysString: null
                 },
-                qwerty: ['lorem', 'ipsum', 'dolor'],
                 weekdaysNames: ['Пн', 'Вт', 'Ср', 'Чт', 'Пт', 'Сб', 'Вс'],
                 weekdays: '0000000'.split(''),
             }
         },
         methods: {
-            qqq() {
-                this.qwerty[0] = 'asfasf';
-            },
             convertWeekdaysString(text) {
                 const daysArr = text.split('');
                 for (let i = 0; i < daysArr.length; i++) {

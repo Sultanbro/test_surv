@@ -9,30 +9,17 @@
     <b-row class="align-items-center">
       <b-col cols="12" lg="4" md="6">
       <b-form-group label="Группа">
-<!--        <b-form-select-->
-<!--                v-model="activebtn"-->
-<!--                :options="statuses"-->
-<!--                size="md"-->
-<!--                @change="selectGroup"-->
-<!--                class="group-select col-lg-6 d-flex"-->
-<!--        >-->
-<!--          <template #first>-->
-<!--            <b-form-select-option :value="null" disabled>Выберите группу из списка</b-form-select-option>-->
-<!--          </template>-->
-<!--        </b-form-select>-->
-        <multiselect
+        <b-form-select
                 v-model="activebtn"
                 :options="statuses"
-                @select="selectGroup"
-                placeholder="Выберите группу из списка"
-                track-by="group"
-                label="group"
-                ref="groupMultiselect"
+                size="md"
+                @change="selectGroup"
+                class="group-select col-lg-6 d-flex"
         >
-          <template slot="afterList">
-            <li class="multiselect-add-li"><span class="multiselect-add-btn">Добавить новую группу</span></li>
+          <template #first>
+            <b-form-select-option :value="null" disabled>Выберите группу из списка</b-form-select-option>
           </template>
-        </multiselect>
+        </b-form-select>
       </b-form-group>
       </b-col>
       <b-col cols="12" lg="4" md="6" class="col-lg-3 col-md-6">
@@ -154,6 +141,23 @@
 
       <div class="col-lg-6 mb-3 sssz">
 
+        <div class="dialerlist blu">
+          <multiselect
+            v-model="corps"
+            :options="corp_books"
+            :multiple="true"
+            :close-on-select="false"
+            :clear-on-select="false"
+            :preserve-search="true"
+            placeholder="Выберите корп книги"
+            label="title"
+            track-by="title"
+            :taggable="true"
+            @tag="addTag"
+          >
+          </multiselect>
+        </div>
+
         <div class="blu">
           <b-form-checkbox
             class="mt-3"
@@ -175,34 +179,21 @@
         <h6 class="mb-2">Сотрудники</h6>
         <div class="dialerlist">
           <div class="fl" style="flex-direction: column">
-<!--            <multiselect-->
-<!--              v-model="value"-->
-<!--              :options="options"-->
-<!--              :multiple="true"-->
-<!--              :close-on-select="false"-->
-<!--              :clear-on-select="false"-->
-<!--              :preserve-search="true"-->
-<!--              placeholder="Выберите"-->
-<!--              label="email"-->
-<!--              track-by="email"-->
-<!--              :taggable="true"-->
-<!--              @tag="addTag"-->
-<!--            >-->
-<!--            </multiselect>-->
-            <superselect
-                    style="width: 60%"
-                    :disable_type="2"
-                    :disable_type_position="true"
-                    :values="value"
-                    :single="false"
-                    :pre_build="true"
-                    :visible_values="false"
-                    :visible_values_text="'Выбрано сотрудников'"
-                   />
+            <multiselect
+              v-model="value"
+              :options="options"
+              :multiple="true"
+              :close-on-select="false"
+              :clear-on-select="false"
+              :preserve-search="true"
+              placeholder="Выберите"
+              label="email"
+              track-by="email"
+              :taggable="true"
+              @tag="addTag"
+            >
+            </multiselect>
             <a href="#" @click="showAlert()">Удалить всех пользователей</a>
-            <div v-for="(val, index) in value" :ley="val.id">
-              <p style="background-color: #333; padding: 5px 10px; border-radius: 5px; color: #fff;" @click="removeValue(index)">{{val}}</p>
-            </div>
           </div>
         </div>
       </div>
@@ -496,6 +487,7 @@ export default {
   name: "groups",
   props: [
     "statuseses",
+    "corpbooks",
     "activeuserid",
     "archived_groupss",
   ],
@@ -511,6 +503,9 @@ export default {
       value: [], // selected users
       options: [], // users options
 
+      corps: [], // selected corp_books
+
+      corp_books: [], // corp_books options
       archived_groups: [],
       payment_terms: "", // Условия оплаты труда в группе
       timeon: "09:00",
@@ -591,17 +586,13 @@ export default {
   },
   mounted() {},
   methods: {
-    removeValue(index){
-      this.value.splice(index, 1);
-    },
-     init(){
-      Object.keys(this.statuseses).forEach(item => {
-        this.statuses.push({
-          id: item,
-          group: this.statuseses[item]
-        })
+    init(){
+      axios.post("/timetracking/users-new", {}).then((response) => {
+        this.options = response.data?.data.users;
       });
+      this.statuses = this.statuseses;
       this.archived_groups = this.archived_groupss;
+      this.corp_books = this.corpbooks;
     },
     saveBonus() {
       axios
@@ -650,37 +641,34 @@ export default {
       this.time_exceptions.push(tag);
     },
 
+    addCorpBookTag(newTag) {
+      const tag = {
+        title: newTag,
+        id: newTag,
+      };
+      this.corps.push(tag);
+    },
+
     messageoff() {
       setTimeout(() => {
         this.message = null;
       }, 3000);
     },
-    async selectGroup(value) {
+    selectGroup() {
+
+
       let loader = this.$loading.show();
-      await axios
+
+      axios
         .post("/timetracking/users-new", {
-          id: value.id,
+          id: this.activebtn,
         })
         .then((response) => {
           if (response.data?.data) {
-            const data = response.data.data;
+            const data = response.data.data
+            console.warn(data)
             this.gname = data.name;
-            data.users.forEach(item => {
-              const itemData = {
-                id: item.id,
-                type: 1,
-                selected: true
-              };
-
-              if(item.last_name === null){
-                itemData.name = item.name;
-              } else {
-                itemData.name = `${item.name} ${item.last_name}`;
-              }
-
-              this.value.push(itemData);
-            });
-            this.options = data.users;
+            this.value = data.users;
 
             this.timeon = data.timeon;
             this.timeoff = data.timeoff;
@@ -692,6 +680,7 @@ export default {
             this.talk_hours = data.talk_hours;
             this.script_id = data.script_id;
             this.quality = data.quality;
+            this.corps = data.corp_books;
             this.bonuses = data.bonuses;
             this.activities = data.activities;
             this.payment_terms = data.payment_terms;
@@ -699,6 +688,7 @@ export default {
             this.workdays = data.workdays;
             this.paid_internship = data.paid_internship;
             this.show_payment_terms = data.show_payment_terms;
+            this.statuses = data.groups;
             this.archived_groups = data.archived_groups;
 
             this.editable_time = data.editable_time;

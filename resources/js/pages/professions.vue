@@ -101,7 +101,7 @@
           </div>
           <div class="text-right mt-3">
               <button @click='savePosition' class="btn btn-success mr-2">Сохранить</button>
-              <button v-if="!addNew" @click.stop="deletePosition(activebtn.id)" class="btn btn-danger mr-2"><i
+              <button v-if="!addNew" @click.stop="deletePosition(activebtn)" class="btn btn-danger mr-2"><i
                       class="fa fa-trash mr-2"></i> Удалить
               </button>
           </div>
@@ -176,7 +176,7 @@ export default {
     selectPosition(value) {
         this.activebtn = value.id;
         this.addNew = false;
-        axios.post('/timetracking/settings/positions/get', {
+        axios.post('/timetracking/settings/positions/get-new', {
           name: this.activebtn,
         }).then(response => {
           //this.$toast.info('Добавлена');
@@ -229,7 +229,7 @@ export default {
                 }
                 this.position_id = data.id;
                 this.new_position = data.position;
-                this.activebtn = resObj;
+                this.activebtn = data.id;
                 this.data.push(resObj)
             }
         }).catch(error => {
@@ -237,7 +237,7 @@ export default {
         })
 
         await axios.post('/timetracking/settings/positions/save-new', {
-          id: this.position_id,
+          id: this.activebtn,
           new_name: this.new_position,
           indexation: this.indexation,
           sum: this.sum,
@@ -252,7 +252,7 @@ export default {
     deletePosition(id) {
          if (confirm('Вы уверены что хотите удалить должность?')) {
             axios.post('/timetracking/settings/positions/delete', {
-                    position: status,
+                    position: id,
                 })
                 .then(response => {
                     this.$toast.info('Удалена');
@@ -286,24 +286,6 @@ export default {
         padding: 5px 20px;
         border-radius: 6px;
         background-color: rgba(0,128,0,0.2)
-    }
-    .multiselect{
-        .multiselect-add-li{
-            margin-top: 10px;
-            border-top: 1px solid #ddd;
-            padding: 5px 0;
-        }
-        .multiselect-add-btn{
-            display: block;
-            padding: 10px;
-            background-color: transparent;
-            color: #28a745;
-            cursor: pointer;
-            transition: 0.2s all ease;
-            &:hover{
-                background-color: rgba(40,167,69, 0.2);
-            }
-        }
     }
 .listprof {
   display: flex;

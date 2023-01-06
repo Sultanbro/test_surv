@@ -61,14 +61,14 @@ class PositionRepository extends CoreRepository
     }
 
     /**
-     * @param string $name
+     * @param string $id
      * @return bool
      */
     public function deleteById(
-        string $name
+        string $id
     ): bool
     {
-        return $this->model()->where('position', $name)->delete();
+        return $this->model()->where('id', $id)->delete();
     }
 
     /**

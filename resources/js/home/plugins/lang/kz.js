@@ -4,6 +4,8 @@ export default {
   features: 'Платформа мүмкіндіктері',
   auth: 'Кіру',
   register: 'Тіркеу',
+  logout: 'шығу',
+
 
   's1-header': 'JOBTRON: қызметкерлерге ыңғайлы, бизнеске пайдалы',
   's1-profile': 'Жеке профиль',
