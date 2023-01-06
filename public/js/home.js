@@ -2236,6 +2236,18 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = ({
   props: {
@@ -2245,6 +2257,11 @@ __webpack_require__.r(__webpack_exports__);
     return {
       active: false
     };
+  },
+  methods: {
+    hidePopup: function hidePopup() {
+      if (this.active) this.active = false;
+    }
   }
 });
 
@@ -2828,6 +2845,14 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
 
 
 
@@ -2865,6 +2890,9 @@ __webpack_require__.r(__webpack_exports__);
   methods: {
     changeLogoSizeByScroll: function changeLogoSizeByScroll() {
       document.body.scrollTop > 20 || document.documentElement.scrollTop > 20 ? this.isScroll = true : this.isScroll = false;
+    },
+    hidePopup: function hidePopup() {
+      if (this.active) this.active = false;
     }
   },
   mounted: function mounted() {
@@ -4532,7 +4560,7 @@ var ___CSS_LOADER_URL_REPLACEMENT_9___ = _node_modules_css_loader_dist_runtime_g
 var ___CSS_LOADER_URL_REPLACEMENT_10___ = _node_modules_css_loader_dist_runtime_getUrl_js__WEBPACK_IMPORTED_MODULE_1___default()(_assets_fonts_GothamPro_Bold_woff__WEBPACK_IMPORTED_MODULE_9__["default"]);
 var ___CSS_LOADER_URL_REPLACEMENT_11___ = _node_modules_css_loader_dist_runtime_getUrl_js__WEBPACK_IMPORTED_MODULE_1___default()(_assets_fonts_GothamPro_Bold_ttf__WEBPACK_IMPORTED_MODULE_10__["default"]);
 // Module
-___CSS_LOADER_EXPORT___.push([module.id, "@font-face {\n  font-family: \"Gotham Pro Regular\";\n  src: url(" + ___CSS_LOADER_URL_REPLACEMENT_0___ + ");\n  src: local(\"Gotham Pro\"), local(\"GothamPro\"), url(" + ___CSS_LOADER_URL_REPLACEMENT_1___ + ") format(\"embedded-opentype\"), url(" + ___CSS_LOADER_URL_REPLACEMENT_2___ + ") format(\"woff\"), url(" + ___CSS_LOADER_URL_REPLACEMENT_3___ + ") format(\"truetype\");\n  font-weight: normal;\n  font-style: normal;\n  font-family: \"Gotham Pro Medium\";\n  src: url(" + ___CSS_LOADER_URL_REPLACEMENT_4___ + ");\n  src: local(\"Gotham Pro Medium\"), local(\"GothamPro-Medium\"), url(" + ___CSS_LOADER_URL_REPLACEMENT_5___ + ") format(\"embedded-opentype\"), url(" + ___CSS_LOADER_URL_REPLACEMENT_6___ + ") format(\"woff\"), url(" + ___CSS_LOADER_URL_REPLACEMENT_7___ + ") format(\"truetype\");\n  font-weight: 500;\n  font-style: normal;\n  font-family: \"Gotham Pro Bold\";\n  src: url(" + ___CSS_LOADER_URL_REPLACEMENT_8___ + ");\n  src: local(\"Gotham Pro Bold\"), local(\"GothamPro-Bold\"), url(" + ___CSS_LOADER_URL_REPLACEMENT_9___ + ") format(\"embedded-opentype\"), url(" + ___CSS_LOADER_URL_REPLACEMENT_10___ + ") format(\"woff\"), url(" + ___CSS_LOADER_URL_REPLACEMENT_11___ + ") format(\"truetype\");\n  font-weight: bold;\n  font-style: normal;\n}\n:root * {\n  box-sizing: border-box;\n}\nbody {\n  font-size: 16px;\n  color: #252525;\n  line-height: 1.25;\n}\ninput,\nbutton {\n  font-family: \"Gotham Pro Regular\", sans-serif;\n}\n#app {\n  display: flex;\n  flex-flow: column nowrap;\n  align-items: center;\n  justify-content: center;\n  font-family: \"Gotham Pro Regular\", sans-serif;\n  -webkit-font-smoothing: antialiased;\n  -moz-osx-font-smoothing: grayscale;\n}\n.jHeader {\n  font-size: 1.75rem;\n  line-height: 1;\n  font-weight: 700;\n  text-align: center;\n}\n.jButton {\n  display: block;\n  width: -moz-fit-content;\n  width: fit-content;\n  padding: 0.875rem 1.1875rem;\n  outline: none;\n  border: none;\n  border-radius: 3.125rem;\n  background: #43a9fe;\n  font-size: 1.125rem;\n  line-height: 1;\n  text-decoration: none;\n  color: #fff;\n  cursor: pointer;\n}\n.jButton:disabled {\n  background: #f0f9ff;\n  color: #b1acc1;\n  cursor: default;\n}\n.jButton:hover {\n  background: #76c0fe;\n}\n.section-content {\n  width: 78.125rem;\n  max-width: 100%;\n  padding: 0 1rem;\n  margin: 0 auto;\n}\n.ancor {\n  display: block;\n  height: 0;\n  position: relative;\n  top: -6rem;\n}\n@media screen and (min-width: 780px) {\n.JHeader {\n    font-size: 2.5rem;\n}\n}\n@media screen and (min-width: 1260px) {\n.section-content {\n    padding: 0 0.75rem;\n}\n}\n@media screen and (min-width: 2560px) {\nhtml, body {\n    font-size: 32px;\n}\n}", ""]);
+___CSS_LOADER_EXPORT___.push([module.id, "@font-face {\n  font-family: \"Gotham Pro Regular\";\n  src: url(" + ___CSS_LOADER_URL_REPLACEMENT_0___ + ");\n  src: local(\"Gotham Pro\"), local(\"GothamPro\"), url(" + ___CSS_LOADER_URL_REPLACEMENT_1___ + ") format(\"embedded-opentype\"), url(" + ___CSS_LOADER_URL_REPLACEMENT_2___ + ") format(\"woff\"), url(" + ___CSS_LOADER_URL_REPLACEMENT_3___ + ") format(\"truetype\");\n  font-weight: normal;\n  font-style: normal;\n  font-family: \"Gotham Pro Medium\";\n  src: url(" + ___CSS_LOADER_URL_REPLACEMENT_4___ + ");\n  src: local(\"Gotham Pro Medium\"), local(\"GothamPro-Medium\"), url(" + ___CSS_LOADER_URL_REPLACEMENT_5___ + ") format(\"embedded-opentype\"), url(" + ___CSS_LOADER_URL_REPLACEMENT_6___ + ") format(\"woff\"), url(" + ___CSS_LOADER_URL_REPLACEMENT_7___ + ") format(\"truetype\");\n  font-weight: 500;\n  font-style: normal;\n  font-family: \"Gotham Pro Bold\";\n  src: url(" + ___CSS_LOADER_URL_REPLACEMENT_8___ + ");\n  src: local(\"Gotham Pro Bold\"), local(\"GothamPro-Bold\"), url(" + ___CSS_LOADER_URL_REPLACEMENT_9___ + ") format(\"embedded-opentype\"), url(" + ___CSS_LOADER_URL_REPLACEMENT_10___ + ") format(\"woff\"), url(" + ___CSS_LOADER_URL_REPLACEMENT_11___ + ") format(\"truetype\");\n  font-weight: bold;\n  font-style: normal;\n}\n:root * {\n  box-sizing: border-box;\n}\nbody {\n  font-size: 16px;\n  color: #252525;\n  line-height: 1.25;\n}\ninput,\nbutton {\n  font-family: \"Gotham Pro Regular\", sans-serif;\n}\n#app {\n  display: flex;\n  flex-flow: column nowrap;\n  align-items: center;\n  justify-content: center;\n  font-family: \"Gotham Pro Regular\", sans-serif;\n  -webkit-font-smoothing: antialiased;\n  -moz-osx-font-smoothing: grayscale;\n}\n.jHeader {\n  font-size: 1.75rem;\n  line-height: 1;\n  font-weight: 700;\n  text-align: center;\n}\n.jButton {\n  display: block;\n  width: -moz-fit-content;\n  width: fit-content;\n  padding: 0.875rem 1.1875rem;\n  outline: none;\n  border: none;\n  border-radius: 3.125rem;\n  background-color: #43a9fe;\n  font-size: 1.125rem;\n  line-height: 1;\n  text-decoration: none;\n  color: #fff;\n  cursor: pointer;\n}\n.jButton:disabled {\n  background: #f0f9ff;\n  color: #b1acc1;\n  cursor: default;\n}\n.jButton:hover {\n  background: #76c0fe;\n}\n.section-content {\n  width: 78.125rem;\n  max-width: 100%;\n  padding: 0 1rem;\n  margin: 0 auto;\n}\n.ancor {\n  display: block;\n  height: 0;\n  position: relative;\n  top: -6rem;\n}\n@media screen and (min-width: 780px) {\n.JHeader {\n    font-size: 2.5rem;\n}\n}\n@media screen and (min-width: 1260px) {\n.section-content {\n    padding: 0 0.75rem;\n}\n}\n@media screen and (min-width: 2560px) {\nhtml, body {\n    font-size: 32px;\n}\n}", ""]);
 // Exports
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (___CSS_LOADER_EXPORT___);
 
@@ -4634,7 +4662,7 @@ __webpack_require__.r(__webpack_exports__);
 var ___CSS_LOADER_EXPORT___ = _node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_0___default()(function(i){return i[1]});
 var ___CSS_LOADER_URL_REPLACEMENT_0___ = _node_modules_css_loader_dist_runtime_getUrl_js__WEBPACK_IMPORTED_MODULE_1___default()(_assets_img_select_arrow_svg__WEBPACK_IMPORTED_MODULE_2__["default"]);
 // Module
-___CSS_LOADER_EXPORT___.push([module.id, ".jNav-menu-lang {\n  display: inline-block;\n  padding: 0.25rem 0;\n  margin: 0.5rem 0;\n  position: relative;\n  font-size: 0.9rem;\n  color: #000;\n  text-decoration: none;\n}\n.jNav-menu-lang:after {\n  content: \"\";\n  display: inline-block;\n  width: 0.5rem;\n  height: 0.3125rem;\n  vertical-align: middle;\n  background-image: url(" + ___CSS_LOADER_URL_REPLACEMENT_0___ + ");\n  background-repeat: no-repeat;\n}\n.jNav-menu-lang-popup {\n  display: none;\n  width: auto;\n  position: absolute;\n  top: 100%;\n  right: 0;\n  background: #fff;\n  box-shadow: 0 0.125rem 0.1875rem rgba(0, 0, 0, 0.5);\n  border-radius: 0.8rem;\n}\n.jNav-menu-lang-active .jNav-menu-lang-popup {\n  display: block;\n}\n.jNav-menu-lang-button {\n  padding: 1.25rem;\n}", ""]);
+___CSS_LOADER_EXPORT___.push([module.id, ".jNav-menu-lang {\n  display: inline-block;\n  padding: 0.25rem 0;\n  margin: 0.5rem 0;\n  position: relative;\n  font-size: 0.9rem;\n  color: #000;\n  text-decoration: none;\n}\n.jNav-menu-lang:after {\n  content: \"\";\n  display: inline-block;\n  width: 0.5rem;\n  height: 0.3125rem;\n  vertical-align: middle;\n  background-image: url(" + ___CSS_LOADER_URL_REPLACEMENT_0___ + ");\n  background-repeat: no-repeat;\n}\n.jNav-menu-lang-popup {\n  display: none;\n  width: auto;\n  position: absolute;\n  top: 100%;\n  right: -40px;\n  background: #fff;\n  box-shadow: 0 0.125rem 0.1875rem rgba(0, 0, 0, 0.5);\n  border-radius: 0.8rem;\n}\n.jNav-menu-lang-active .jNav-menu-lang-popup {\n  display: block;\n}\n.jNav-menu-lang-wrapper {\n  display: flex;\n  align-items: center;\n  padding: 0.5rem;\n}\n.jNav-menu-lang-button {\n  width: 54px;\n  margin-right: 1rem;\n}\n@media screen and (min-width: 2560px) {\n.jNav-menu-lang-button {\n    width: 108px;\n}\n}\n.jNav-menu-lang-img {\n  width: 24px;\n  height: 24px;\n}\n@media screen and (min-width: 2560px) {\n.jNav-menu-lang-img {\n    width: 48px;\n    height: 48px;\n}\n}", ""]);
 // Exports
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (___CSS_LOADER_EXPORT___);
 
@@ -4790,7 +4818,7 @@ __webpack_require__.r(__webpack_exports__);
 var ___CSS_LOADER_EXPORT___ = _node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_0___default()(function(i){return i[1]});
 var ___CSS_LOADER_URL_REPLACEMENT_0___ = _node_modules_css_loader_dist_runtime_getUrl_js__WEBPACK_IMPORTED_MODULE_1___default()(_assets_img_user_svg__WEBPACK_IMPORTED_MODULE_2__["default"]);
 // Module
-___CSS_LOADER_EXPORT___.push([module.id, "#jNav {\n  display: flex;\n  align-items: center;\n  position: sticky;\n  width: 100vw;\n  height: 4.875rem;\n  z-index: 9000;\n  top: -1.125rem;\n  background: #fff;\n  box-shadow: 0 0.25rem 1rem rgba(0, 0, 0, 0.05);\n}\n.jNav-content {\n  display: flex;\n  position: sticky;\n  top: 0;\n  justify-content: space-between;\n  align-items: center;\n  margin: 0 auto;\n  width: 78.125rem;\n  height: 3.75rem;\n  padding: 0 1rem;\n}\n@media (max-width: 1260px) {\n.jNav-logo-img {\n    width: 8rem;\n}\n.jNav-scroll .jNav-logo-img {\n    width: 7rem;\n    transition: 0.5s;\n}\n}\n@media screen and (min-width: 1260px) {\n.jNav-logo-img {\n    width: 15.25rem;\n}\n.jNav-scroll .jNav-logo-img {\n    width: 11.25rem;\n    transition: 0.5s;\n}\n}\n@media (min-width: 2560px) {\n.jNav-logo-img {\n    width: 15.25rem;\n}\n}\n.jNav-menu-active .jNav-menu-items {\n  display: flex;\n}\n.jNav-menu-active .jNav-menu-bg {\n  display: block;\n}\n.jNav-menu-user-menu {\n  display: none;\n  width: auto;\n  position: absolute;\n  top: 100%;\n  right: 0;\n  background: #fff;\n  box-shadow: 0 0.125rem 0.1875rem rgba(0, 0, 0, 0.5);\n  border-radius: 0.8rem;\n}\n.jNav-menu-user-active .jNav-menu-user-menu {\n  display: block;\n}\n.jNav-menu-hamburger.jButton {\n  display: block;\n  width: 2rem;\n  height: 2rem;\n  padding: 1.25rem;\n  position: relative;\n}\n.jNav-menu-hamburger.jButton:before {\n  content: \"\";\n  width: 50%;\n  height: 0.75rem;\n  position: absolute;\n  top: 50%;\n  left: 50%;\n  transform: translate(-50%, -45%);\n  background: repeating-linear-gradient(#fff, #fff 0.125rem, transparent 0.125rem, transparent 0.25rem);\n}\n@media (max-width: 1260px) {\n.jNav-menu-hamburger.jButton {\n    display: none;\n}\n}\n.jNav-menu-item .jNav-menu-link {\n  font-size: 0.9rem;\n  padding: 1.25rem;\n}\n@media (max-width: 780px) {\n.jNav-menu-item .jNav-menu-link {\n    font-size: 0.8rem;\n    padding: 0.5rem;\n}\n}\n.jNav-menu-user-info {\n  display: flex;\n  flex-flow: row nowrap;\n  flex: 1 1 auto;\n  align-items: center;\n}\n.jNav-menu-user-data {\n  display: flex;\n  flex-flow: column;\n  flex: 0 1 10em;\n  overflow: hidden;\n}\n.jNav-menu-user-name,\n.jNav-menu-user-email {\n  max-width: 10em;\n  overflow: hidden;\n  text-overflow: ellipsis;\n}\n@media (max-width: 780px) {\n.jNav-menu-user-name,\n.jNav-menu-user-email {\n    font-size: 12px;\n}\n}\n.jNav-menu-bg {\n  display: none;\n  position: fixed;\n  z-index: 9004;\n  top: 0;\n  left: 0;\n  right: 0;\n  bottom: 0;\n  background: rgba(0, 0, 0, 0.25);\n  -webkit-backdrop-filter: blur(6px);\n          backdrop-filter: blur(6px);\n}\n.jNav-menu-items {\n  display: flex;\n  align-items: center;\n  max-width: none;\n  padding: 0.625rem;\n  margin: 0;\n  flex-flow: row nowrap;\n}\n.jNav-menu-item {\n  display: block;\n  list-style: none;\n}\n.jNav-menu-auth {\n  display: flex;\n  justify-content: space-between;\n  align-items: center;\n  gap: 0.5rem;\n  cursor: pointer;\n}\n.jNav-menu-user {\n  display: inline-block;\n  width: 2rem;\n  height: 2rem;\n  border: none;\n  border-radius: 2.625rem;\n  position: relative;\n  vertical-align: middle;\n  background: #6f4f28 url(" + ___CSS_LOADER_URL_REPLACEMENT_0___ + ") center center no-repeat;\n}\n.jNav-menu-item-md {\n  display: none;\n}\n.jNav-menu-user-menu {\n  padding: 0.5rem;\n  position: absolute;\n  z-index: 5;\n  top: 100%;\n  right: 0;\n  background-color: #fff;\n  box-shadow: 0 0.125rem 0.1875rem rgba(0, 0, 0, 0.5);\n}\n.jNav-menu-user-menu-item {\n  white-space: nowrap;\n  cursor: pointer;\n}\n.jNav-menu-user-menu-exit {\n  padding: 0;\n  border: none;\n  background: none;\n  cursor: pointer;\n}\n@media screen and (min-width: 780px) {\n.jNav-logo-img {\n    width: 15.25rem;\n}\n}\n@media screen and (min-width: 1260px) {\n.jNav-menu-active,\n.jNav-menu-bg {\n    display: none;\n}\n.jNav-menu-items {\n    display: flex;\n    align-items: center;\n    max-width: none;\n    padding: 0.625rem;\n    margin: 0;\n    flex-flow: row nowrap;\n    position: static;\n    background: none;\n    box-shadow: none;\n}\n.jNav-menu-item {\n    margin-left: 2.5rem;\n}\n.jNav-menu-lang-popup .jNav-menu-item {\n    margin-left: 0;\n    display: flex;\n    justify-content: center;\n}\n.jNav-menu-lang-popup .jNav-menu-lang:after {\n    display: none;\n}\n.jNav-menu-auth {\n    gap: 1rem;\n}\n.jNav-menu-user {\n    width: 2.625rem;\n    height: 2.625rem;\n}\n.jNav-menu-item-md {\n    display: block;\n}\n}", ""]);
+___CSS_LOADER_EXPORT___.push([module.id, "#jNav {\n  display: flex;\n  align-items: center;\n  position: sticky;\n  width: 100vw;\n  height: 4.875rem;\n  z-index: 9000;\n  top: -1.125rem;\n  background: #fff;\n  box-shadow: 0 0.25rem 1rem rgba(0, 0, 0, 0.05);\n}\n.jNav-content {\n  display: flex;\n  position: sticky;\n  top: 5px;\n  justify-content: space-between;\n  align-items: center;\n  margin: 0 auto;\n  width: 78.125rem;\n  height: 3rem;\n  padding: 0 1rem;\n}\n@media (max-width: 1260px) {\n.jNav-logo-img {\n    width: 8rem;\n}\n.jNav-scroll .jNav-logo-img {\n    width: 7rem;\n    transition: 0.5s;\n}\n}\n@media screen and (min-width: 1260px) {\n.jNav-logo-img {\n    width: 15.25rem;\n}\n.jNav-scroll .jNav-logo-img {\n    width: 11.25rem;\n    transition: 0.5s;\n}\n}\n@media (min-width: 2560px) {\n.jNav-logo-img {\n    width: 15.25rem;\n}\n}\n.jNav-menu-active .jNav-menu-items {\n  display: flex;\n}\n.jNav-menu-active .jNav-menu-bg {\n  display: block;\n}\n.jNav-menu-user-menu {\n  display: none;\n  width: auto;\n  position: absolute;\n  top: 100%;\n  right: 0;\n  background: #fff;\n  box-shadow: 0 0.125rem 0.1875rem rgba(0, 0, 0, 0.5);\n  border-radius: 0.8rem;\n}\n.jNav-menu-user-active .jNav-menu-user-menu {\n  display: block;\n}\n.jNav-menu-hamburger.jButton {\n  display: block;\n  width: 2rem;\n  height: 2rem;\n  padding: 1.25rem;\n  position: relative;\n}\n.jNav-menu-hamburger.jButton:before {\n  content: \"\";\n  width: 50%;\n  height: 0.75rem;\n  position: absolute;\n  top: 50%;\n  left: 50%;\n  transform: translate(-50%, -45%);\n  background: repeating-linear-gradient(#fff, #fff 0.125rem, transparent 0.125rem, transparent 0.3rem);\n}\n@media (max-width: 1260px) {\n.jNav-menu-hamburger.jButton {\n    display: none;\n}\n}\n.jNav-menu-item .jNav-menu-link {\n  font-size: 0.9rem;\n  padding: 1.25rem;\n}\n@media (max-width: 780px) {\n.jNav-menu-item .jNav-menu-link {\n    font-size: 0.8rem;\n    padding: 0.5rem;\n}\n}\n.jNav-menu-user-info {\n  display: flex;\n  flex-flow: row nowrap;\n  flex: 1 1 auto;\n  align-items: center;\n}\n.jNav-menu-user-data {\n  display: flex;\n  flex-flow: column;\n  flex: 0 1 10em;\n  overflow: hidden;\n}\n.jNav-menu-user-name,\n.jNav-menu-user-email {\n  max-width: 10em;\n  overflow: hidden;\n  text-overflow: ellipsis;\n}\n@media (max-width: 780px) {\n.jNav-menu-user-name,\n.jNav-menu-user-email {\n    font-size: 12px;\n}\n}\n.jNav-menu-bg {\n  display: none;\n  position: fixed;\n  z-index: 9004;\n  top: 0;\n  left: 0;\n  right: 0;\n  bottom: 0;\n  background: rgba(0, 0, 0, 0.25);\n  -webkit-backdrop-filter: blur(6px);\n          backdrop-filter: blur(6px);\n}\n.jNav-menu-items {\n  display: flex;\n  align-items: center;\n  max-width: none;\n  padding: 0.625rem;\n  margin: 0;\n  flex-flow: row nowrap;\n}\n.jNav-menu-item {\n  display: block;\n  list-style: none;\n}\n.jNav-menu-auth {\n  display: flex;\n  justify-content: space-between;\n  align-items: center;\n  gap: 0.5rem;\n  cursor: pointer;\n}\n.jNav-menu-user {\n  display: inline-block;\n  width: 2rem;\n  height: 2rem;\n  border: none;\n  border-radius: 2.625rem;\n  position: relative;\n  vertical-align: middle;\n  background: #6f4f28 url(" + ___CSS_LOADER_URL_REPLACEMENT_0___ + ") center center no-repeat;\n}\n.jNav-menu-user {\n  color: #000000;\n  outline: none;\n  text-decoration: none;\n  position: relative;\n}\n.jNav-menu-user span {\n  margin-left: -999em;\n  position: absolute;\n}\n.jNav-menu-user:hover span {\n  font-family: Calibri, Tahoma, Geneva, sans-serif;\n  position: absolute;\n  left: 1em;\n  top: 2em;\n  z-index: 99;\n  margin-left: 0;\n  width: 250px;\n}\n.jNav-menu-user:hover img {\n  border: 0;\n  margin: -10px 0 0 -55px;\n  float: left;\n  position: absolute;\n}\n.jNav-menu-user:hover em {\n  font-size: 1.2em;\n  font-weight: bold;\n  display: block;\n  padding: 0.2em 0 0.6em 0;\n}\n.classic {\n  padding: 0.6em 1em;\n}\n.jNav-menu-user:hover {\n  opacity: 0.8;\n}\n.jNav-menu-item-md {\n  display: none;\n}\n.jNav-menu-user-menu {\n  padding: 0.5rem;\n  position: absolute;\n  z-index: 5;\n  top: 100%;\n  right: 0;\n  background-color: #fff;\n  box-shadow: 0 0.125rem 0.1875rem rgba(0, 0, 0, 0.5);\n}\n.jNav-menu-user-menu-item {\n  white-space: nowrap;\n  cursor: pointer;\n}\n.jNav-menu-user-menu-exit {\n  padding: 0;\n  border: none;\n  background: none;\n  cursor: pointer;\n}\n@media screen and (min-width: 780px) {\n.jNav-logo-img {\n    width: 15.25rem;\n}\n}\n@media screen and (min-width: 1260px) {\n.jNav-menu-active,\n.jNav-menu-bg {\n    display: none;\n}\n.jNav-menu-items {\n    display: flex;\n    align-items: center;\n    max-width: none;\n    padding: 0.625rem;\n    margin: 0;\n    flex-flow: row nowrap;\n    position: static;\n    background: none;\n    box-shadow: none;\n}\n.jNav-menu-item {\n    margin-left: 2.5rem;\n}\n.jNav-menu-lang-popup .jNav-menu-item {\n    margin-left: 0;\n    display: flex;\n    justify-content: center;\n}\n.jNav-menu-lang-popup .jNav-menu-lang:after {\n    display: none;\n}\n.jNav-menu-auth {\n    gap: 1rem;\n}\n.jNav-menu-user {\n    width: 2.625rem;\n    height: 2.625rem;\n}\n.jNav-menu-item-md {\n    display: block;\n}\n}", ""]);
 // Exports
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (___CSS_LOADER_EXPORT___);
 
@@ -4859,7 +4887,7 @@ var ___CSS_LOADER_URL_REPLACEMENT_1___ = _node_modules_css_loader_dist_runtime_g
 var ___CSS_LOADER_URL_REPLACEMENT_2___ = _node_modules_css_loader_dist_runtime_getUrl_js__WEBPACK_IMPORTED_MODULE_1___default()(_assets_img_s1_dot_svg__WEBPACK_IMPORTED_MODULE_4__["default"]);
 var ___CSS_LOADER_URL_REPLACEMENT_3___ = _node_modules_css_loader_dist_runtime_getUrl_js__WEBPACK_IMPORTED_MODULE_1___default()(_assets_img_s1_bg_2_svg__WEBPACK_IMPORTED_MODULE_5__["default"]);
 // Module
-___CSS_LOADER_EXPORT___.push([module.id, "#jSec1 {\n  width: 100%;\n  padding-top: 1rem;\n  padding-bottom: 4rem;\n  background-image: url(" + ___CSS_LOADER_URL_REPLACEMENT_0___ + ");\n  background-repeat: no-repeat;\n}\n#jSec1 .hooper {\n  height: auto;\n}\n.jSec1-header.jHeader {\n  font-size: 1.25rem;\n  line-height: 1;\n}\n.jSec1-tabs {\n  display: flex;\n  flex-flow: column nowrap;\n  align-items: center;\n  position: relative;\n}\n.jSec1-tabs .Section1Popup {\n  top: 3.5rem;\n  visibility: hidden;\n  opacity: 0;\n  transition: all 0.3s;\n}\n.jSec1-tabs-popup-active .Section1Popup {\n  visibility: visible;\n  opacity: 1;\n}\n.jSec1-tabs-buttons {\n  margin: 0;\n  padding: 0;\n  text-align: center;\n}\n.jSec1-tabs-button {\n  display: inline-block;\n  margin: 0.25rem;\n  list-style: none;\n  text-align: center;\n}\n.jSec1-tabs-link {\n  display: inline-block;\n  padding: 0.75rem 0;\n  margin-bottom: -0.0625rem;\n  text-decoration: none;\n  color: #252525;\n}\n.jSec1-tabs-link--active {\n  border-bottom: 0.1875rem solid #42b1f4;\n}\n.jSec1-tabs-qm {\n  display: inline-block;\n  width: 1rem;\n  height: 1rem;\n  background-image: url(" + ___CSS_LOADER_URL_REPLACEMENT_1___ + ");\n  background-size: contain;\n  vertical-align: super;\n}\n.jSec1-tabs-content {\n  width: 100%;\n}\n.jSec1-tabs-item {\n  display: flex;\n  flex-flow: row wrap;\n  padding-top: 3.875rem;\n}\n.jSec1-profile-text {\n  order: 2;\n}\n.jSec1-profile-banner {\n  order: 1;\n}\n.jSec1-profile-title {\n  color: #42b1f4;\n  font-size: 1.25rem;\n}\n.jSec1-profile-list {\n  margin: 0 0 2.375rem;\n  line-height: 1.56;\n  color: #000;\n  padding: 0;\n}\n.jSec1-profile-list-item {\n  list-style: none;\n}\n.jSec1-profile-list-item:before {\n  content: \"\";\n  display: inline-block;\n  width: 0.5rem;\n  height: 0.75rem;\n  margin-right: 0.5625rem;\n  transform: matrix(0.83, 0.56, 0.56, -0.83, 0, 0);\n  background-image: url(" + ___CSS_LOADER_URL_REPLACEMENT_2___ + ");\n  background-size: cover;\n}\n.jSec1-profile-button {\n  margin: 0 0 2.375rem;\n}\n.jSec1-profile-banner-img {\n  max-width: 100%;\n}\n@media (max-width: 780px) {\n.jSec1-profile-list {\n    margin: 0;\n}\n.jSec1-profile-button {\n    margin-top: 1.5rem;\n}\n}\n@media screen and (min-width: 780px) {\n#jSec1 {\n    background-position: 100%;\n}\n}\n@media screen and (min-width: 1260px) {\n#jSec1 {\n    padding-bottom: 8rem;\n    background-image: url(" + ___CSS_LOADER_URL_REPLACEMENT_0___ + "), url(" + ___CSS_LOADER_URL_REPLACEMENT_3___ + ");\n    background-repeat: no-repeat, no-repeat;\n    background-position: 100% 50%, 0% 50%;\n}\n.jSec1-header.jHeader {\n    font-size: 2.5rem;\n}\n.jSec1-tabs-buttons {\n    display: flex;\n    justify-content: center;\n    gap: 1.125rem;\n    width: -moz-fit-content;\n    width: fit-content;\n    border-bottom: 0.0625rem solid #d9d9d9;\n}\n.jSec1-tabs-button {\n    display: block;\n    margin: 0;\n}\n.jSec1-tabs-item {\n    display: flex;\n}\n.jSec1-profile-text {\n    flex: 0 0 45%;\n    order: 1;\n}\n.jSec1-profile-banner {\n    flex: 0 0 55%;\n    order: 2;\n}\n}\n@media screen and (min-width: 1920px) {\n.jSec1-profile-banner-img {\n    position: absolute;\n    max-width: 920px;\n}\n}", ""]);
+___CSS_LOADER_EXPORT___.push([module.id, "#jSec1 {\n  width: 100%;\n  padding-top: 1rem;\n  padding-bottom: 4rem;\n  background-image: url(" + ___CSS_LOADER_URL_REPLACEMENT_0___ + ");\n  background-repeat: no-repeat;\n}\n#jSec1 .hooper {\n  height: auto;\n}\n.jSec1-header.jHeader {\n  font-size: 1.25rem;\n  line-height: 1;\n}\n.jSec1-tabs {\n  display: flex;\n  flex-flow: column nowrap;\n  align-items: center;\n  position: relative;\n}\n.jSec1-tabs .Section1Popup {\n  top: 3.5rem;\n  visibility: hidden;\n  opacity: 0;\n  transition: all 0.3s;\n}\n.jSec1-tabs-popup-active .Section1Popup {\n  visibility: visible;\n  opacity: 1;\n}\n.jSec1-tabs-buttons {\n  margin: 0;\n  padding: 0;\n  text-align: center;\n}\n.jSec1-tabs-button {\n  display: inline-block;\n  margin: 0.25rem;\n  list-style: none;\n  text-align: center;\n}\n.jSec1-tabs-link {\n  display: inline-block;\n  padding: 0.75rem 0;\n  margin-bottom: -0.0625rem;\n  text-decoration: none;\n  color: #252525;\n}\n.jSec1-tabs-link--active {\n  border-bottom: 0.1875rem solid #42b1f4;\n}\n.jSec1-tabs-qm {\n  display: inline-block;\n  width: 1rem;\n  height: 1rem;\n  background-image: url(" + ___CSS_LOADER_URL_REPLACEMENT_1___ + ");\n  background-size: contain;\n  vertical-align: super;\n}\n.jSec1-tabs-content {\n  width: 100%;\n}\n.jSec1-tabs-item {\n  display: flex;\n  flex-flow: row wrap;\n  padding-top: 1.875rem;\n}\n.jSec1-profile-text {\n  order: 2;\n}\n.jSec1-profile-banner {\n  order: 1;\n}\n@media screen and (min-width: 780px) {\n.jSec1-profile-title {\n    margin-top: 0;\n}\n}\n.jSec1-profile-title {\n  color: #42b1f4;\n  font-size: 1.25rem;\n}\n.jSec1-profile-list {\n  margin: 0 0 2.375rem;\n  line-height: 1.56;\n  color: #000;\n  padding: 0;\n}\n.jSec1-profile-list-item {\n  list-style: none;\n}\n.jSec1-profile-list-item:before {\n  content: \"\";\n  display: inline-block;\n  width: 0.5rem;\n  height: 0.75rem;\n  margin-right: 0.5625rem;\n  transform: matrix(0.83, 0.56, 0.56, -0.83, 0, 0);\n  background-image: url(" + ___CSS_LOADER_URL_REPLACEMENT_2___ + ");\n  background-size: cover;\n}\n.jSec1-profile-button {\n  margin: 0 0 2.375rem;\n}\n.jSec1-profile-banner-img {\n  max-width: 100%;\n  border-radius: 0.25rem;\n}\n@media (max-width: 780px) {\n.jSec1-profile-list {\n    margin: 0;\n}\n.jSec1-profile-button {\n    margin-top: 1.5rem;\n}\n}\n@media screen and (min-width: 780px) {\n#jSec1 {\n    background-position: 100%;\n}\n}\n@media screen and (min-width: 1260px) {\n#jSec1 {\n    padding-bottom: 8rem;\n    background-image: url(" + ___CSS_LOADER_URL_REPLACEMENT_0___ + "), url(" + ___CSS_LOADER_URL_REPLACEMENT_3___ + ");\n    background-repeat: no-repeat, no-repeat;\n    background-position: 100% 50%, 0% 50%;\n}\n.jSec1-header.jHeader {\n    font-size: 2.5rem;\n}\n.jSec1-tabs-buttons {\n    display: flex;\n    justify-content: center;\n    gap: 1.125rem;\n    width: -moz-fit-content;\n    width: fit-content;\n    border-bottom: 0.0625rem solid #d9d9d9;\n}\n.jSec1-tabs-button {\n    display: block;\n    margin: 0;\n}\n.jSec1-tabs-item {\n    display: flex;\n}\n.jSec1-profile-text {\n    flex: 0 0 45%;\n    order: 1;\n}\n.jSec1-profile-banner {\n    flex: 0 0 55%;\n    order: 2;\n}\n}\n@media screen and (min-width: 1920px) {\n.jSec1-profile-banner-img {\n    position: absolute;\n    max-width: 920px;\n}\n}", ""]);
 // Exports
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (___CSS_LOADER_EXPORT___);
 
@@ -5154,6 +5182,21 @@ __webpack_require__.r(__webpack_exports__);
 
 /***/ }),
 
+/***/ "./resources/js/home/assets/img/eng.png":
+/*!**********************************************!*\
+  !*** ./resources/js/home/assets/img/eng.png ***!
+  \**********************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = ("/images/eng.png?3d5d5d87444ea1a7277460a6d8f3f903");
+
+/***/ }),
+
 /***/ "./resources/js/home/assets/img/footer-ig-hover.png":
 /*!**********************************************************!*\
   !*** ./resources/js/home/assets/img/footer-ig-hover.png ***!
@@ -5304,6 +5347,21 @@ __webpack_require__.r(__webpack_exports__);
 
 /***/ }),
 
+/***/ "./resources/js/home/assets/img/kz.png":
+/*!*********************************************!*\
+  !*** ./resources/js/home/assets/img/kz.png ***!
+  \*********************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = ("/images/kz.png?8171c63c3064cd2106f46596a9b26ed2");
+
+/***/ }),
+
 /***/ "./resources/js/home/assets/img/logo.svg":
 /*!***********************************************!*\
   !*** ./resources/js/home/assets/img/logo.svg ***!
@@ -5331,6 +5389,21 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
 /* harmony export */ });
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = ("/images/reviews-bg.svg?ebb059feec41f344b69bbf0d62261565");
+
+/***/ }),
+
+/***/ "./resources/js/home/assets/img/rus.png":
+/*!**********************************************!*\
+  !*** ./resources/js/home/assets/img/rus.png ***!
+  \**********************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = ("/images/rus.png?7fbc38a59e03751a0d10594f7c57e430");
 
 /***/ }),
 
@@ -9896,6 +9969,14 @@ var render = function () {
   return _c(
     "a",
     {
+      directives: [
+        {
+          name: "click-outside",
+          rawName: "v-click-outside",
+          value: _vm.hidePopup,
+          expression: "hidePopup",
+        },
+      ],
       staticClass: "jNav-menu-lang",
       class: { "jNav-menu-lang-active": _vm.active },
       attrs: { href: "javascript:void(0)" },
@@ -9911,40 +9992,76 @@ var render = function () {
         _c(
           "div",
           {
-            staticClass: "jNav-menu-lang-button",
+            staticClass: "jNav-menu-lang-wrapper",
             on: {
               click: function ($event) {
                 return _vm.$emit("change", "ru")
               },
             },
           },
-          [_vm._v("Russian")]
-        ),
-        _vm._v(" "),
-        _c(
-          "div",
-          {
-            staticClass: "jNav-menu-lang-button",
-            on: {
-              click: function ($event) {
-                return _vm.$emit("change", "en")
+          [
+            _c("div", { staticClass: "jNav-menu-lang-button" }, [
+              _vm._v("Русский"),
+            ]),
+            _vm._v(" "),
+            _c("img", {
+              staticClass: "jNav-menu-lang-img",
+              attrs: {
+                src: (__webpack_require__(/*! ../../assets/img/rus.png */ "./resources/js/home/assets/img/rus.png")["default"]),
+                alt: "ru",
               },
-            },
-          },
-          [_vm._v("English")]
+            }),
+          ]
         ),
         _vm._v(" "),
         _c(
           "div",
           {
-            staticClass: "jNav-menu-lang-button",
+            staticClass: "jNav-menu-lang-wrapper",
             on: {
               click: function ($event) {
                 return _vm.$emit("change", "kz")
               },
             },
           },
-          [_vm._v("Kazakh")]
+          [
+            _c("div", { staticClass: "jNav-menu-lang-button" }, [
+              _vm._v("Казак"),
+            ]),
+            _vm._v(" "),
+            _c("img", {
+              staticClass: "jNav-menu-lang-img",
+              attrs: {
+                src: (__webpack_require__(/*! ../../assets/img/kz.png */ "./resources/js/home/assets/img/kz.png")["default"]),
+                alt: "kz",
+              },
+            }),
+          ]
+        ),
+        _vm._v(" "),
+        _c(
+          "div",
+          {
+            staticClass: "jNav-menu-lang-wrapper",
+            on: {
+              click: function ($event) {
+                return _vm.$emit("change", "en")
+              },
+            },
+          },
+          [
+            _c("div", { staticClass: "jNav-menu-lang-button" }, [
+              _vm._v("English"),
+            ]),
+            _vm._v(" "),
+            _c("img", {
+              staticClass: "jNav-menu-lang-img",
+              attrs: {
+                src: (__webpack_require__(/*! ../../assets/img/eng.png */ "./resources/js/home/assets/img/eng.png")["default"]),
+                alt: "en",
+              },
+            }),
+          ]
         ),
       ]),
     ]
@@ -10913,6 +11030,14 @@ var render = function () {
               _c(
                 "a",
                 {
+                  directives: [
+                    {
+                      name: "click-outside",
+                      rawName: "v-click-outside",
+                      value: _vm.hidePopup,
+                      expression: "hidePopup",
+                    },
+                  ],
                   staticClass: "jNav-menu-hamburger jButton",
                   class: { "jNav-menu-lang-active": _vm.active },
                   attrs: { href: "javascript:void(0)" },
@@ -11096,13 +11221,22 @@ var render = function () {
                             },
                           }),
                           _vm._v(" "),
-                          _c("a", {
-                            staticClass: "jNav-menu-user",
-                            attrs: {
-                              title: _vm.$lang(_vm.lang, "auth"),
-                              href: "/login",
+                          _c(
+                            "a",
+                            {
+                              staticClass: "jNav-menu-user",
+                              attrs: { href: "/login" },
                             },
-                          }),
+                            [
+                              _c("span", { staticClass: "classic" }, [
+                                _vm._v(
+                                  "\n                  " +
+                                    _vm._s(_vm.$lang(_vm.lang, "auth")) +
+                                    "\n                "
+                                ),
+                              ]),
+                            ]
+                          ),
                         ],
                   ],
                   2

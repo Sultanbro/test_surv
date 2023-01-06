@@ -222,7 +222,7 @@ export default {
 .jSec1-tabs-item {
   display: flex;
   flex-flow: row wrap;
-  padding-top: 3.875rem;
+  padding-top: 1.875rem;
 }
 .jSec1-profile-text {
   order: 2;
@@ -230,7 +230,15 @@ export default {
 .jSec1-profile-banner {
   order: 1;
 }
+
+@media screen and (min-width: $small) {
+  .jSec1-profile-title {
+    margin-top: 0;
+  }
+}
+
 .jSec1-profile-title {
+  //margin-top: 0;
   color: #42b1f4;
   font-size: 1.25rem;
 }
@@ -258,6 +266,7 @@ export default {
 }
 .jSec1-profile-banner-img {
   max-width: 100%;
+  border-radius: 0.25rem;
 }
 
 @media (max-width: $small) {
