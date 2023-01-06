@@ -87,7 +87,7 @@
           </b-row>
           <div class="mt-3">
               <button @click='savePosition' class="btn btn-success mr-2">Сохранить</button>
-              <button @click.stop="deletePosition(position_id,activebtn)" class="btn btn-danger mr-2"><i
+              <button @click.stop="deletePosition(position_id, activebtn)" class="btn btn-danger mr-2"><i
                       class="fa fa-trash mr-2"></i> Удалить
               </button>
           </div>
@@ -130,14 +130,35 @@ export default {
     // this.getPositions()
   },
   methods: {
+    clearInputs(){
+        this.new_name = ''
+        this.position_id = 0
+        this.indexation = 0
+        this.sum = 0
+        this.desc = {
+            require: '',
+            actions: '',
+            time: '',
+            salary: '',
+            knowledge: '',
+            next_step: '',
+            show: 0
+        }
+    },
     selectPosition(value) {
         this.activebtn = value
-        axios.post('/timetracking/settings/positions/get-new', {
+        axios.post('/timetracking/settings/positions/get', {
           name: this.activebtn,
         }).then(response => {
           //this.$toast.info('Добавлена');
           const data = response.data?.data
-          if(!data[0]) return console.error(response)
+          if(!data[0]){
+            console.error('No position', response.data)
+            this.clearInputs()
+            this.new_name = this.data[this.activebtn]
+            this.position_id = +this.activebtn
+            return
+          }
           this.new_name = data[0].position;
           this.position_id = data[0].id;
           this.indexation = data[0].indexation;
@@ -182,17 +203,13 @@ export default {
             this.positions.push(response.data.pos)
             this.new_position = ''
         }
-
       }).catch(error => {
         console.log(error.response)
       })
     },
     savePosition() {
-
-
-
         axios.post('/timetracking/settings/positions/save-new', {
-          id: this.position_id,
+          id: this.activebtn,
           new_name: this.new_name,
           indexation: this.indexation,
           sum: this.sum,
