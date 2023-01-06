@@ -143,6 +143,7 @@ export default {
                                     >
                                         <template v-for="tab in tabs">
                                             <li
+                                                v-if="can(item.access)"
                                                 :key="tab.htmlId"
                                                 :id="`${tab.htmlId}-tab`"
                                                 class="nav-item"

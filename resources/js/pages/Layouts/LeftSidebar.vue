@@ -3,7 +3,7 @@
         <!-- avatar  -->
         <div class="header__avatar">
             <img :src="avatar" alt="avatar image" >
-    
+
             <!-- hover menu -->
             <div class="header__menu">
                 <div
@@ -55,7 +55,7 @@
                 </form>
             </div>
         </div>
-    
+
         <nav
             ref="nav"
             class="header__nav"
@@ -105,12 +105,12 @@
             to="/timetracking/settings"
         />
     </div>
-    </template>
-    
-    <script>
+</template>
+
+<script>
     import LeftSidebarItem from './LeftSidebarItem'
     import { bus } from '../../bus'
-    
+
     export default {
         name: 'LeftSidebar',
         components: {
@@ -359,7 +359,7 @@
         mounted(){
             this.onResize()
             this.resizeObserver = new ResizeObserver(this.onResize).observe(this.$refs.nav)
-    
+
             bus.$on('user-avatar-update', this.updateAvatar)
         },
         beforeUnmount(){
@@ -367,9 +367,9 @@
             bus.$off('user-avatar-update', this.updateAvatar)
         }
     };
-    </script>
-    
-    <style lang="scss">
+</script>
+
+<style lang="scss">
     .header__left{
         display: flex;
         flex-direction: column;
@@ -386,7 +386,7 @@
         transition: all 0.5s;
         // box-shadow: -0.1rem 0px 0.5rem rgba(0, 0, 0, 0.25);
     }
-    
+
     .header__avatar{
         cursor:pointer;
         display: block;
@@ -401,7 +401,7 @@
             max-width: 24rem;
             top: 0.5rem;
         }
-    
+
         > img{
             display: block;
             height: auto;
@@ -416,7 +416,7 @@
             }
         }
     }
-    
+
     .header__menu-project{
         padding: 1.2rem 1.3rem;
         text-align: left;
@@ -435,12 +435,12 @@
         width: auto;
         flex-direction: column;
         padding-top: 0;
-    
+
         position: absolute;
         z-index: 1010;
         top: 100%;
         right: 0;
-    
+
         background: #fff;
         color: #657A9F;
         font-size: 1.3rem;
@@ -453,22 +453,22 @@
         display: flex;
         gap:1rem;
         align-items: center;
-    
+
         height: 3.4rem;
         padding: 1rem 2rem;
-    
+
         background: #fff;
         cursor:pointer;
         color:#657A9F;
-    
+
         &:first-of-type{
             border-radius: 0 1rem 0 0;
         }
-    
+
         &:last-of-type{
             border-radius: 0 0 1rem 0;
         }
-    
+
         &:hover{
             background: #FAFCFD;
             color: #156AE8;
@@ -494,7 +494,7 @@
         margin: 0.5rem 0;
         border-top: 1px solid lighten(#657A9F, 25%);
     }
-    
+
     .header__nav{
         display: flex;
         flex-direction: column;
@@ -509,7 +509,7 @@
             justify-content: space-evenly;
         }
     }
-    
+
     .header__nav-link{
         width: 100%;
         display: flex;
@@ -523,7 +523,7 @@
         position:relative;
         z-index: auto;
         transition:.3s;
-    
+
         &:hover,
         &.opened{
             .header__nav-link-a{
@@ -541,7 +541,7 @@
                 color:#fff;
             }
         }
-    
+
         &.last{
             margin-top: auto;
         }
@@ -551,16 +551,16 @@
         flex-direction: column;
         align-items: center;
         gap:.5rem;
-    
+
         width: 100%;
         height: 100%;
         padding:  0.9rem 0.5rem;
-    
+
         text-align: center;
         font-size: 1.2rem;
         font-weight: 400;
         color:#8DA0C1;
-    
+
         transition:.3s;
         cursor:pointer;
         &:visited{
@@ -574,18 +574,18 @@
             width: auto;
         }
     }
-    
+
     .header__menu{
         display: flex;
         flex-direction: column;
         width: 25rem;
         padding-top: 0;
         border-radius: 0 1rem 1rem 0;
-    
+
         position: fixed;
         z-index: 1005;
         left: 7rem;
-    
+
         background: #fff;
         color: #657A9F;
         font-size: 1.3rem;
@@ -593,13 +593,13 @@
         opacity: 0;
         visibility: hidden;
     }
-    
+
     .header__menu-title{
         padding: 2rem 1.3rem 1.2rem 2rem;
         text-align: left;
         text-transform: uppercase;
     }
-    
+
     .header__menu-email{
         border-bottom: 1px solid #EDEFF3;
         font-size:1.1rem;
@@ -607,31 +607,31 @@
         padding-bottom: 1rem;
         text-transform: none;
     }
-    
+
     .header__menu-userid{
         color:#608EE9;
     }
-    
+
     .menu__item{
         display: flex;
         gap:1rem;
         align-items: center;
-    
+
         height: 3.4rem;
         padding-right: 3rem;
         padding-left: 2rem;
-    
+
         background: #fff;
         cursor:pointer;
-    
+
         &:first-of-type{
             border-radius: 0 1rem 0 0;
         }
-    
+
         &:last-of-type{
             border-radius: 0 0 1rem 0;
         }
-    
+
         &:hover{
             background: #FAFCFD;
             .menu__item-title,
@@ -644,17 +644,17 @@
             padding: 1rem 0;
         }
     }
-    
+
     .menu__item-icon{
         color: #A6B7D4;
     }
-    
+
     .header__nav-link-more{
         .header__menu{
             transform: translateY(calc(-100% + 5rem));
         }
     }
-    
+
     @media(max-width:900px){
         .header__left{
             &.closed{
@@ -664,5 +664,4 @@
             }
         }
     }
-    </style>
-    
+</style>
