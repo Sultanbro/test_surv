@@ -26,7 +26,7 @@ class StorePositionWithDescriptionRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'id'            => ['required', 'numeric'],
+            'id'            => ['required', 'numeric', 'exists:position,id'],
             'new_name'      => ['string'],
             'indexation'    => ['numeric'],
             'sum'           => ['numeric'],

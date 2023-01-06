@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Response;
+namespace App\Support\Response;
 
 class JsonApiResponse implements Response
 {
