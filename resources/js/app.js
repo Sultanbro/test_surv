@@ -8,7 +8,7 @@ require('./bootstrap').default;
 require('./newprofile').default; // new design for profile. There is jquery
 
 window.Vue = require('vue').default;
-window.collect = require('collect.js')// globally
+// window.collect = require('collect.js')// globally
 
 import BootstrapVue from 'bootstrap-vue'
 import JQuery from 'jquery'
@@ -108,23 +108,21 @@ import ViewportSize from './plugins/ViewportSize'
 Vue.use(ViewportSize)
 
 
-Vue.component('timetracking', require('./components/timetracking.vue').default); // шапка начать день
+// Vue.component('timetracking', require('./components/timetracking.vue').default); // шапка начать день
 Vue.component('draggable', draggable); // драг
 Vue.component('multiselect', Multiselect); // select c множественным выбором
 Vue.component('v-select', vSelect) // select с поиском
 Vue.component('vue-circle', VueCircle) // circle indicator
 Vue.component('pagination', require('laravel-vue-pagination').default); // только в ОКК
-Vue.component('u-modal', require('./components/ui/UModal.vue').default); // модалка НАДО УБРАТЬ
 Vue.component('sidebar', require('./components/ui/Sidebar.vue').default); // сайдбар table
-Vue.component('group-premission', require('./components/modals/GroupPremission.vue').default); // доступы к группе
+// Vue.component('group-premission', require('./components/modals/GroupPremission.vue').default); // доступы к группе
 Vue.component('progress-bar', require('./components/ProgressBar.vue').default) // в ответах quiz
-Vue.component('rating', require('./components/ui/Rating.vue').default); // звездочки
-Vue.component('profile-groups', require('./components/profile/ProfileGroups.vue').default); // настройки user
-Vue.component('base-knowledge', require('./components/profile/ProfileBaseKnowledge.vue').default); // настройки user База знание
-Vue.component('profile-books', require('./components/profile/ProfileBooks.vue').default); // настройки user
+// Vue.component('rating', require('./components/ui/Rating.vue').default); // звездочки
+// Vue.component('base-knowledge', require('./components/profile/ProfileBaseKnowledge.vue').default); // настройки user База знание
+// Vue.component('profile-books', require('./components/profile/ProfileBooks.vue').default); // настройки user
 Vue.component('profile-quarter-button', require('./components/ProfileQuarterButton.vue').default); // кнопка Индивид Quarter в настройках User
-Vue.component('auth-check-list', require('./components/auth_check_list.vue').default); // кнопка у кого есть Чек Лист список Чек Листов (Fixed)
-Vue.component('selected-modal-checkList', require('./components/selectedModalCheckList.vue').default); // чек лист selected modal
+// Vue.component('auth-check-list', require('./components/auth_check_list.vue').default); // кнопка у кого есть Чек Лист список Чек Листов (Fixed)
+// Vue.component('selected-modal-checkList', require('./components/selectedModalCheckList.vue').default); // чек лист selected modal
 Vue.component('ref-linker', require('./components/RefLinker.vue').default); // рефералки
 
 // Chat components
@@ -135,26 +133,26 @@ Vue.component('chat-search-button', require('./components/Chat/ChatSearchButton/
 /**
  * Components
  */
-Vue.component('t-kpi-indicator', require('./components/tables/TableKpiIndicator.vue').default); // ряд активности в таблице KPI
+// Vue.component('t-kpi-indicator', require('./components/tables/TableKpiIndicator.vue').default); // ряд активности в таблице KPI
 Vue.component('selectgroup', require('./components/selectgroup.vue').default); // booklist
-Vue.component('selectgroupbook', require('./components/selectgroupbook.vue').default); // booklist
+// Vue.component('selectgroupbook', require('./components/selectgroupbook.vue').default); // booklist
 Vue.component('activity-excel-import', require('./components/imports/ActivityExcelImport.vue').default); // импорт в активности
 Vue.component('trainee-report', require('./components/TraineeReport.vue').default);
-Vue.component('profile', require('./components/profile/Profile.vue').default); // шапка
+// Vue.component('profile', require('./components/profile/Profile.vue').default); // шапка
 Vue.component('user-earnings', require('./components/profile/UserEarnings/UserEarnings.vue').default); // Блок начислений в профиле
 
 /**
  * Tables
  */
 Vue.component('t-quarter', require('./components/tables/TableQuarter.vue').default); // Quarter
-Vue.component('t-user-analytics', require('./components/tables/TableUserAnalytics.vue').default); // Ваши показатели
-Vue.component('t-summary-recruting', require('./components/tables/TableSummaryRecruting.vue').default); // Сводная рекрутинг
-Vue.component('t-recruting-user', require('./components/tables/TableRecrutingUser.vue').default); // Таблица рекрутера
+// Vue.component('t-user-analytics', require('./components/tables/TableUserAnalytics.vue').default); // Ваши показатели
+// Vue.component('t-summary-recruting', require('./components/tables/TableSummaryRecruting.vue').default); // Сводная рекрутинг
+// Vue.component('t-recruting-user', require('./components/tables/TableRecrutingUser.vue').default); // Таблица рекрутера
 
-Vue.component('t-activity', require('./components/tables/TableActivity.vue').default); // Старая активность
-Vue.component('t-activity-new', require('./components/tables/TableActivityNew.vue').default); // Активность
-Vue.component('t-activity-collection', require('./components/tables/TableActivityCollection.vue').default); // Сборы
-Vue.component('t-quality-weekly', require('./components/tables/TableQualityWeekly.vue').default); // Недельные оценки качества
+// Vue.component('t-activity', require('./components/tables/TableActivity.vue').default); // Старая активность
+// Vue.component('t-activity-new', require('./components/tables/TableActivityNew.vue').default); // Активность
+// Vue.component('t-activity-collection', require('./components/tables/TableActivityCollection.vue').default); // Сборы
+// Vue.component('t-quality-weekly', require('./components/tables/TableQualityWeekly.vue').default); // Недельные оценки качества
 Vue.component('t-usersalary', require('./components/tables/TableUserSalary.vue').default); // таблица начислений
 Vue.component('questions', require('./pages/Questions.vue').default); // вопросы тестов
 
@@ -176,14 +174,13 @@ Vue.component('superselect', require('./components/SuperSelect.vue').default); /
 // Vue.component('page-kb', require('./pages/KBPage.vue').default); // база знаний раздел
 
 // Учет времени
-Vue.component('exam', require('./pages/exam.vue').default); // повышение квалификации
+// Vue.component('exam', require('./pages/exam.vue').default); // повышение квалификации
 // Vue.component('cabinet', require('./pages/Cabinet.vue').default); // курсы мои
 
 
 // temp
 Vue.component('profile-salary-info', require('./pages/ProfileSalaryInfo.vue').default);
 
-Vue.component('award-user-sidebar', require('./components/sidebars/AwardUserSidebar.vue').default); // сайдбар для награждения пользователя
 
 /**
  * Layout of new design

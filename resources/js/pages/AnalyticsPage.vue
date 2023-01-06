@@ -318,8 +318,7 @@
     import AnalyticStat from '@/components/AnalyticStat'
     import CallBase from '@/components/CallBase'
     import TableDecomposition from '@/components/tables/TableDecomposition'
-    // V вынести в чанк когда будет готова TableUserAnalytics
-    import TableActivityNew from '@/components/tables/TableActivityNew'
+    const TableActivityNew = () => import(/* webpackChunkName: "TableActivityNew" */ '@/components/tables/TableActivityNew')
     import TableActivityCollection from '@/components/tables/TableActivityCollection'
     import TableQualityWeekly from '@/components/tables/TableQualityWeekly'
     const TopGauges = () => import(/* webpackChunkName: "TopGauges" */ '@/components/TopGauges')  // TOП спидометры, есть и в аналитике

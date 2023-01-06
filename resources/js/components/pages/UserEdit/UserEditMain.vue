@@ -1,8 +1,12 @@
 <script>
 import axios from 'axios'
+import ProfileGroups from '@/components/profile/ProfileGroups' // настройки user
 
 export default {
     name: 'UserEditMain',
+    components: {
+        ProfileGroups,
+    },
     props: {
         formUserName: String,
         formUserLastName: String,
@@ -204,7 +208,7 @@ export default {
                     >{{ position.position }}</option>
                 </select>
 
-                <profile-groups
+                <ProfileGroups
                     v-if="showPositionGroup"
                     id="position_group"
                     :groups="groups"
