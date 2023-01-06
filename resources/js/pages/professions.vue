@@ -101,7 +101,7 @@
           </div>
           <div class="text-right mt-3">
               <button @click='savePosition' class="btn btn-success mr-2">Сохранить</button>
-              <button v-if="!addNew" @click.stop="deletePosition(activebtn)" class="btn btn-danger mr-2"><i
+              <button v-if="!addNew" @click.stop="deletePosition" class="btn btn-danger mr-2"><i
                       class="fa fa-trash mr-2"></i> Удалить
               </button>
           </div>
@@ -174,10 +174,9 @@ export default {
           this.resetState();
       },
     selectPosition(value) {
-        this.activebtn = value.id;
         this.addNew = false;
         axios.post('/timetracking/settings/positions/get-new', {
-          name: this.activebtn,
+          name: value.id,
         }).then(response => {
           //this.$toast.info('Добавлена');
             console.log(response.data);
@@ -216,49 +215,54 @@ export default {
     },
 
     async savePosition() {
-        await axios.post('/timetracking/settings/positions/add-new', {
-            position: this.new_position,
-        }).then(response => {
-            const data = response.data.data;
-            if(response.data.code == 201) {
-                this.$toast.error('Должность с таким названием уже существует!');
-            } else {
-                const resObj = {
-                    id: data.id,
-                    position: data.position
-                }
-                this.position_id = data.id;
-                this.new_position = data.position;
-                this.activebtn = data.id;
-                this.data.push(resObj)
-            }
-        }).catch(error => {
-            console.log(error.response)
-        })
+          if(this.new_position.length){
+              await axios.post('/timetracking/settings/positions/add-new', {
+                  position: this.new_position,
+              }).then(response => {
+                  const data = response.data.data;
+                  if(response.data.code == 201) {
+                      this.$toast.error('Должность с таким названием уже существует!');
+                  } else {
+                      const resObj = {
+                          id: data.id,
+                          position: data.position
+                      }
+                      this.position_id = data.id;
+                      this.new_position = data.position;
+                      this.data.push(resObj)
+                  }
+              }).catch(error => {
+                  console.log(error.response)
+              })
 
-        await axios.post('/timetracking/settings/positions/save-new', {
-          id: this.activebtn,
-          new_name: this.new_position,
-          indexation: this.indexation,
-          sum: this.sum,
-          desc: this.desc,
-        }).then(response => {
-            console.log(response.data);
-            this.$toast.success('Новая должность создана!');
-        }).catch(error => {
-          console.log(error.response)
-        })
+              console.log(typeof this.desc.time);
+
+              await axios.post('/timetracking/settings/positions/save-new', {
+                  id: this.activebtn.id,
+                  new_name: this.new_position,
+                  indexation: this.indexation,
+                  sum: this.sum,
+                  desc: this.desc,
+              }).then(response => {
+                  console.log(response.data);
+                  this.$toast.success('Новая должность создана!');
+              }).catch(error => {
+                  console.log(error.response)
+              })
+          } else {
+              this.$toast.error('Введите нзвание должности!');
+          }
     },
-    deletePosition(id) {
+    deletePosition() {
          if (confirm('Вы уверены что хотите удалить должность?')) {
             axios.post('/timetracking/settings/positions/delete', {
-                    position: id,
+                    position: this.activebtn.id,
                 })
                 .then(response => {
                     this.$toast.info('Удалена');
                 })
 
-            let ind = this.data.findIndex(item => item.id === id);
+            let ind = this.data.findIndex(item => item.id === this.activebtn.id);
             this.data.splice(ind, 1);
             this.addNew = false;
             this.resetState();

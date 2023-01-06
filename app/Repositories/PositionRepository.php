@@ -106,15 +106,20 @@ class PositionRepository extends CoreRepository
 
          if ($positionUpdated && isset($description))
          {
-             $this->model()->findOrFail($id)->descriptions()->update([
-                 'require'  => $description['require'],
-                 'actions'  =>$description['actions'],
-                 'time'     => $description['time'],
-                 'salary'   => $description['salary'],
-                 'knowledge' => $description['knowledge'],
-                 'next_step' => $description['next_step'],
-                 'show' => $description['show'],
-             ]);
+             $this->model()->findOrFail($id)->descriptions()->updateOrCreate(
+                 [
+                     'position_id' => $id
+                 ],
+                 [
+                     'require'  => $description['require'],
+                     'actions'  =>$description['actions'],
+                     'time'     => $description['time'],
+                     'salary'   => $description['salary'],
+                     'knowledge' => $description['knowledge'],
+                     'next_step' => $description['next_step'],
+                     'show' => $description['show'],
+                 ]
+             );
          }
 
          return true;

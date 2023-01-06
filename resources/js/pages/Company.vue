@@ -46,6 +46,8 @@
                         :statuseses="pageData.statuseses"
                         :archived_groupss="pageData.archived_groupss"
                         :activeuserid="pageData.activeuserid"
+                        :book_groups="pageData.book_groups"
+                        :corpbooks="pageData.corpbooks"
                 />
             </div>
             <div

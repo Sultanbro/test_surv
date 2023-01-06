@@ -29,6 +29,9 @@
                                     </div>
                                 </template>
                             </div>
+                            <div v-if="shift.weekdaysString === '0000000'">
+                                Без выходных
+                            </div>
                         </b-td>
                         <b-td>
                             <div class="d-flex mx-2">
