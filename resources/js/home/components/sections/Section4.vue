@@ -195,7 +195,7 @@ export default {
   width: fit-content;
   margin-left: auto;
   margin-right: auto;
-  margin-bottom: 5rem;
+  margin-bottom: 3rem;
   position: relative;
 
   &:before {

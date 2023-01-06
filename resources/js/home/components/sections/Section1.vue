@@ -1,59 +1,54 @@
 <template>
   <section id="jSec1">
-    <a
-      name="features"
-      id="features"
-      class="ancor"
-    />
     <div class="section-content">
       <h1 class="jSec1-header jHeader">{{ $lang(lang, 's1-header') }}</h1>
       <div
-        v-if="isMedium"
-        class="jSec1-tabs"
-        :class="{'jSec1-tabs-popup-active': isPopupVisible}"
+          v-if="isMedium"
+          :class="{'jSec1-tabs-popup-active': isPopupVisible}"
+          class="jSec1-tabs"
       >
         <ul class="jSec1-tabs-buttons">
           <Section1Tab
-            tab-id="profile"
-            :active-tab="activeTab"
-            @content="setTab('profile')"
-            @popup="setPopup('profile')"
+              :active-tab="activeTab"
+              tab-id="profile"
+              @content="setTab('profile')"
+              @popup="setPopup('profile')"
           />
           <Section1Tab
-            tab-id="db"
-            :active-tab="activeTab"
-            @content="setTab('db')"
-            @popup="setPopup('db')"
+              :active-tab="activeTab"
+              tab-id="db"
+              @content="setTab('db')"
+              @popup="setPopup('db')"
           />
           <Section1Tab
-            tab-id="kpi"
-            :active-tab="activeTab"
-            @content="setTab('kpi')"
-            @popup="setPopup('kpi')"
+              :active-tab="activeTab"
+              tab-id="kpi"
+              @content="setTab('kpi')"
+              @popup="setPopup('kpi')"
           />
           <Section1Tab
-            tab-id="courses"
-            :active-tab="activeTab"
-            @content="setTab('courses')"
-            @popup="setPopup('courses')"
+              :active-tab="activeTab"
+              tab-id="courses"
+              @content="setTab('courses')"
+              @popup="setPopup('courses')"
           />
           <Section1Tab
-            tab-id="struct"
-            :active-tab="activeTab"
-            @content="setTab('struct')"
-            @popup="setPopup('struct')"
+              :active-tab="activeTab"
+              tab-id="struct"
+              @content="setTab('struct')"
+              @popup="setPopup('struct')"
           />
           <Section1Tab
-            tab-id="news"
-            :active-tab="activeTab"
-            @content="setTab('news')"
-            @popup="setPopup('news')"
+              :active-tab="activeTab"
+              tab-id="news"
+              @content="setTab('news')"
+              @popup="setPopup('news')"
           />
         </ul>
         <Section1Popup
-          :type="activePopup"
-          :lang="lang"
-          v-click-outside="hidePopup"
+            v-click-outside="hidePopup"
+            :lang="lang"
+            :type="activePopup"
         />
         <div class="jSec1-tabs-content">
           <Section1Profile v-show="activeTab === 'profile'"/>
@@ -65,11 +60,11 @@
         </div>
       </div>
       <Hooper
-        v-if="!isMedium"
-        ref="carousel"
-        :infiniteScroll="true"
-        :autoPlay="true"
-        :playSpeed="3000"
+          v-if="!isMedium"
+          ref="carousel"
+          :autoPlay="true"
+          :infiniteScroll="true"
+          :playSpeed="3000"
       >
         <Slide>
           <Section1Profile/>
@@ -95,7 +90,7 @@
 </template>
 
 <script>
-import { Hooper, Slide } from 'hooper'
+import {Hooper, Slide} from 'hooper'
 import 'hooper/dist/hooper.css'
 import Section1Popup from '../section1/Section1Popup'
 import Section1Tab from '../section1/Section1Tab'
@@ -119,33 +114,33 @@ export default {
     Hooper,
     Slide,
   },
-  data(){
+  data() {
     return {
       activeTab: 'profile',
       activePopup: 'profile',
       isPopupVisible: false
     }
   },
-  computed:{
-    isMedium(){
+  computed: {
+    isMedium() {
       return this.$viewportSize.width >= 1260
     },
-    lang () {
+    lang() {
       return this.$root.$data.lang
     }
   },
   methods: {
-    setTab(key){
+    setTab(key) {
       this.activeTab = key
     },
-    setPopup(key){
+    setPopup(key) {
       setTimeout(() => {
         this.activePopup = key
         this.isPopupVisible = true
       }, 1);
     },
-    hidePopup(){
-      if(this.isPopupVisible) this.isPopupVisible = false
+    hidePopup() {
+      if (this.isPopupVisible) this.isPopupVisible = false
     }
   }
 }
@@ -153,16 +148,19 @@ export default {
 
 <style lang="scss">
 @import '../../assets/scss/app.variables.scss';
+
 #jSec1 {
   width: 100%;
   padding-top: 1rem;
   padding-bottom: 4rem;
   background-image: url("../../assets/img/s1-bg.svg");
   background-repeat: no-repeat;
-  .hooper{
+
+  .hooper {
     height: auto;
   }
 }
+
 .jSec1-header.jHeader {
   //  font-weight: 700;
   font-size: 1.25rem;
@@ -174,30 +172,35 @@ export default {
   flex-flow: column nowrap;
   align-items: center;
   position: relative;
-  .Section1Popup{
+
+  .Section1Popup {
     top: 3.5rem;
     visibility: hidden;
     opacity: 0;
     transition: all 0.3s;
   }
 }
-.jSec1-tabs-popup-active{
-  .Section1Popup{
+
+.jSec1-tabs-popup-active {
+  .Section1Popup {
     visibility: visible;
     opacity: 1;
   }
 }
+
 .jSec1-tabs-buttons {
   margin: 0;
   padding: 0;
   text-align: center;
 }
+
 .jSec1-tabs-button {
   display: inline-block;
   margin: 0.25rem;
   list-style: none;
   text-align: center;
 }
+
 .jSec1-tabs-link {
   display: inline-block;
   padding: 0.75rem 0;
@@ -205,9 +208,11 @@ export default {
   text-decoration: none;
   color: #252525;
 }
+
 .jSec1-tabs-link--active {
   border-bottom: 0.1875rem solid #42b1f4;
 }
+
 .jSec1-tabs-qm {
   display: inline-block;
   width: 1rem;
@@ -216,17 +221,21 @@ export default {
   background-size: contain;
   vertical-align: super;
 }
+
 .jSec1-tabs-content {
   width: 100%;
 }
+
 .jSec1-tabs-item {
   display: flex;
   flex-flow: row wrap;
   padding-top: 1.875rem;
 }
+
 .jSec1-profile-text {
   order: 2;
 }
+
 .jSec1-profile-banner {
   order: 1;
 }
@@ -242,14 +251,17 @@ export default {
   color: #42b1f4;
   font-size: 1.25rem;
 }
+
 .jSec1-profile-list {
   margin: 0 0 2.375rem;
   line-height: 1.56;
   color: #000;
   padding: 0;
 }
+
 .jSec1-profile-list-item {
   list-style: none;
+
   &:before {
     content: '';
     display: inline-block;
@@ -261,9 +273,11 @@ export default {
     background-size: cover;
   }
 }
+
 .jSec1-profile-button {
   margin: 0 0 2.375rem;
 }
+
 .jSec1-profile-banner-img {
   max-width: 100%;
   border-radius: 0.25rem;
@@ -287,6 +301,7 @@ export default {
 
 @media screen and (min-width: $medium) {
   #jSec1 {
+    min-height: 764px;
     padding-bottom: 8rem;
     background-image: url("../../assets/img/s1-bg.svg"), url("../../assets/img/s1-bg-2.svg");
     background-repeat: no-repeat, no-repeat;
@@ -319,10 +334,22 @@ export default {
   }
 }
 
+@media screen and (min-width: $large) {
+  #jSec1 {
+    min-height: 1530px;
+  }
+}
+
 @media screen and (min-width: 1920px) {
   .jSec1-profile-banner-img {
     position: absolute;
     max-width: 920px;
+  }
+}
+
+@media (max-width: $small) {
+  #jSec1 {
+    padding-bottom: 0;
   }
 }
 </style>
