@@ -147,7 +147,7 @@ export default {
     },
     selectPosition(value) {
         this.activebtn = value
-        axios.post('/timetracking/settings/positions/get', {
+        axios.post('/timetracking/settings/positions/get-new', {
           name: this.activebtn,
         }).then(response => {
           //this.$toast.info('Добавлена');
@@ -173,7 +173,7 @@ export default {
             show: data[0].show,
           }
         }).catch(error => {
-          console.log(error.response)
+          console.log('position error', error.response)
         })
 
 
