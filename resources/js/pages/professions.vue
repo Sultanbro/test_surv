@@ -223,12 +223,14 @@ export default {
         })
     },
     deletePosition(index, status) {
-         if (confirm('Вы уверены что хотите удалить должность?')) {
+        if (confirm('Вы уверены что хотите удалить должность?')) {
             axios.post('/timetracking/settings/positions/delete', {
                     position: status,
                 })
                 .then(response => {
                     this.$toast.info('Удалена');
+                    this.clearInputs()
+                    this.activebtn = null
                 })
 
             let ind = this.positions.indexOf(status);
