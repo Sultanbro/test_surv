@@ -65,6 +65,8 @@ export default {
             old_card_jysan: '',
             in_groups: [],
             head_in_groups: [],
+            profileContacts: [],
+            taxes: [],
             showBlocks: {
                 main: true,
                 additional: true,
@@ -187,6 +189,8 @@ export default {
             this.old_card_jysan = data.old_card_jysan
             this.in_groups = data.in_groups
             this.head_in_groups = data.head_in_groups
+            this.profileContacts = data.profileContacts
+            this.taxes = data.taxes
         },
         updatePageData(){
             useAsyncPageData(`/timetracking/edit-person?id=${this.activeUserId}`).then(this.setData).catch(error => {
@@ -789,6 +793,7 @@ export default {
                                                 <UserEditPhones
                                                     v-show="showBlocks.phones"
                                                     :user="user"
+                                                    :profile-contacts="profileContacts"
                                                     :old_phone="old_phone"
                                                     :old_phone_1="old_phone_1"
                                                     :old_phone_2="old_phone_2"
@@ -801,6 +806,7 @@ export default {
                                                 <UserEditSalary
                                                     v-show="showBlocks.salary"
                                                     :user="user"
+                                                    :taxes="taxes"
                                                     :old_zarplata="old_zarplata"
                                                     :old_kaspi_cardholder="old_kaspi_cardholder"
                                                     :old_kaspi="old_kaspi"
@@ -1683,19 +1689,6 @@ background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/s
 .xtab-content .table td:last-child {
     text-align: center;
 }
-.xtab-content .radio {
-    display: flex;
-    font-size: 13px;
-    align-items: center;
-    cursor: pointer;
-    text-align: center;
-    margin-right: 25px;
-}
-.xtab-content .radio input {
-    position: relative;
-    top: 1px;
-    margin-right: 7px;
-}
 .text-red {
     color:red;
 }
@@ -1781,27 +1774,6 @@ background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/s
     overflow-x: hidden;
     max-height: 200px;
     display:none;
-}
-.weekday {
-    text-align: center;
-    display: flex;
-    align-items:center;
-    justify-content: center;
-    width: 20px;
-    height: 20px;
-    border-radius: 3px;
-    border: 1px solid #efefef;
-    margin-right: 3px;
-    cursor: pointer;
-    background: #fff;
-    color: #000;
-    padding: 15px;
-}
-.weekday.active {
-    background: #28a745;
-}
-.weekday:hover {
-    background: green;
 }
 
 

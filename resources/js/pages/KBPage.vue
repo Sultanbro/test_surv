@@ -124,7 +124,7 @@
     </div>
 
     <!-- PAGE -->
-    <div v-else>
+    <div v-if="activeBook">
       <Booklist
         ref="booklist"
         :trees="trees"

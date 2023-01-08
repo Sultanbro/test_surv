@@ -7,7 +7,11 @@ export default {
     props: {
         user: {
             type: Object,
-            default: null
+            default: null,
+        },
+        taxes: {
+            type: Array,
+            default: () => {},
         },
         old_zarplata: String,
         old_kaspi_cardholder: String,
@@ -36,7 +40,7 @@ export default {
             this.user.cards.splice(key, 1)
         },
         addTax(userId){
-            this.user.taxes.push({
+            this.taxes.push({
                 name: '',
                 amount: '',
                 percent: '',
@@ -44,7 +48,7 @@ export default {
             })
         },
         deleteTax(key){
-            this.user.taxes.splice(key, 1)
+            this.taxes.splice(key, 1)
         },
         changeHeadphonesState(){
             this.headphonesState = !this.headphonesState
@@ -326,7 +330,7 @@ export default {
             class="taxes"
         >
             <div
-                v-for="(tax, key) in user.taxes"
+                v-for="(tax, key) in taxes"
                 :key="tax.id"
                 class="d-flex form-group m0 tax-row"
             >

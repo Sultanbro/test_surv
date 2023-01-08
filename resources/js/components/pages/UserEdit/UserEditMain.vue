@@ -53,7 +53,10 @@ export default {
     computed:{
         showPositionGroup(){
             return this.user && this.user.position_id === 45
-        }
+        },
+        weekdayClass(){
+            return this.weekdays.map(day => +day ? 'active' : '')
+        },
     },
     watch: {
         user(user){
@@ -89,7 +92,7 @@ export default {
             this.isSearchResult = false
         },
         toggleWeekDay(id){
-            this.weekdays[id] = this.weekdays[id] === '1' ? '0' : '1'
+            this.$set(this.weekdays, id, this.weekdays[id] === '1' ? '0' : '1')
         }
     }
 }
@@ -509,7 +512,29 @@ export default {
     </div>
 </template>
 
-<style lang="scss">
+<style lang="scss" scoped>
+.weekday {
+    text-align: center;
+    display: flex;
+    align-items:center;
+    justify-content: center;
+    width: 20px;
+    height: 20px;
+    border-radius: 3px;
+    border: 1px solid #efefef;
+    margin-right: 3px;
+    cursor: pointer;
+    background: #fff;
+    color: #000;
+    padding: 15px;
+    user-select: none;
+}
+.weekday.active {
+    background: #28a745;
+}
+.weekday:hover {
+    background: green;
+}
 .searchResultCountry{
     padding: 10px;
     border-bottom: 1px solid white;
@@ -523,5 +548,18 @@ export default {
     padding: 10px;
     cursor: pointer;
     background-color: #f5f5f5;
+}
+.radio {
+    display: flex;
+    font-size: 13px;
+    align-items: center;
+    cursor: pointer;
+    text-align: center;
+    margin-right: 25px;
+    input {
+        position: relative;
+        top: 1px;
+        margin-right: 7px;
+    }
 }
 </style>
