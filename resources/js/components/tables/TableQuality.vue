@@ -35,11 +35,8 @@
         </div>
       </div>
       <div
+        v-if="hasSettingsPermisstion"
         class="col-2"
-        v-if="
-          Number(auth_user.id) == 18 ||
-          Number(auth_user.id) == 5
-        "
       >
         <button class="btn btn-primary d-block ml-auto" @click="showSettings = true">
           <i class="fa fa-cogs mr-2"></i>
@@ -834,6 +831,11 @@ export default {
       flagGroup:'index',
       checklist_tab: false,
     };
+  },
+  computed: {
+    hasSettingsPermisstion(){
+      return this.auth_user && (Number(this.auth_user.id) == 18 || Number(this.auth_user.id) == 5)
+    }
   },
   watch: {
     groups(){

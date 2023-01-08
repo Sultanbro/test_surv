@@ -300,20 +300,6 @@ class Salary extends Model
            
             
         }
-        
-//        if($pgu) {
-//            $user_ids = array_unique($user_ids);
-//            $user_ids = array_values($user_ids);
-//            if($user_types == 1) {
-//                $pgu->assigned = $user_ids;
-//                $pgu->save();
-//            } else if($user_types == 2) {
-//                $pgu->fired = $user_ids;
-//                $pgu->save();
-//            }
-//        }
-      
-        
 
         dump('SAL ' . $osal);
         dump('BON ' . $obon);

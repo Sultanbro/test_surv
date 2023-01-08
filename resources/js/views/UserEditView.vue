@@ -1036,9 +1036,10 @@ export default {
         <div
             v-if="isBeforeSubmit"
             id="beforeSubmit"
-            class="modal"
+            class="modal modal-active"
             tabindex="-1"
             role="dialog"
+            @click="isBeforeSubmit = false"
         >
             <div
                 class="modal-dialog"
@@ -1050,7 +1051,7 @@ export default {
                     </div>
                     <div class="text-left mb-3 texter px-3">
                         <div
-                            v-for="(erorr, i) in frontErrors"
+                            v-for="(error, i) in frontErrors"
                             :key="i"
                             class="beforeSubmit-error"
                             v-html="error"
@@ -1221,8 +1222,9 @@ export default {
         <div
             v-if="isUploadImageModal"
             id="uploadimageModal"
-            class="modal"
+            class="modal modal-active"
             role="dialog"
+            @click="isUploadImageModal = false"
         >
             <div class="modal-dialog">
                 <div class="modal-content">
@@ -1481,6 +1483,9 @@ export default {
     margin: 0;
     margin-bottom: 3px;
     border-radius: 3px;}
+.modal-active{
+    display: block;
+}
  .modal .box label {
     background: #f0f0f0;
     width: 100%;
