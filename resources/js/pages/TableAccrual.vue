@@ -611,7 +611,7 @@ export default {
             this.dateInfo.currentMonth = this.dateInfo.currentMonth ?
                 this.dateInfo.currentMonth :
                 this.$moment().format("MMMM");
-            let currentMonth = this.$moment(this.dateInfo.currentMonth, "MMMM");
+            const currentMonth = this.$moment(`${this.dateInfo.currentYear}-${this.dateInfo.currentMonth}`, "YYYY-MMMM")
 
             //Расчет выходных дней
             this.dateInfo.monthEnd = currentMonth.endOf("month"); //Конец месяца
@@ -642,7 +642,7 @@ export default {
 
             this.dateInfo.date = `${this.dateInfo.currentMonth} ${year}`;
 
-            let currentMonth = this.$moment(this.dateInfo.currentMonth, "MMMM");
+            const currentMonth = this.$moment(`${this.dateInfo.currentYear}-${this.dateInfo.currentMonth}`, "YYYY-MMMM")
             //Расчет выходных дней
             this.dateInfo.monthEnd = currentMonth.endOf("month"); //Конец месяца
             this.dateInfo.weekDays = currentMonth.weekdayCalc(
@@ -801,9 +801,10 @@ export default {
 
         // get salaries total for all group
         getTotals() {
-            let loader = this.$loading.show();
+            const  loader = this.$loading.show();
+            const currentMonth = this.$moment(`${this.dateInfo.currentYear}-${this.dateInfo.currentMonth}`, "YYYY-MMMM")
             axios.post("/timetracking/salaries/get-total", {
-                    month: this.$moment(this.dateInfo.currentMonth, "MMMM").format("M"),
+                    month: currentMonth.format("M"),
                     year: this.dateInfo.currentYear,
                 })
                 .then((response) => {
@@ -1034,16 +1035,17 @@ export default {
 
         // история бонусов для showEditPremiumSidebar
         fetchBonusHistory(user_id) {
+            const currentMonth = this.$moment(`${this.dateInfo.currentYear}-${this.dateInfo.currentMonth}`, "YYYY-MMMM")
             axios.post('/timetracking/salaries/bonuses',{
                 user_id: user_id,
-                date: this.$moment(this.dateInfo.currentMonth, "MMMM").startOf("month").format("YYYY-MM-DD"),
+                date: currentMonth.startOf("month").format("YYYY-MM-DD"),
             }).then((response) => {
                 this.bonus_history = response.data;
             });
         },
 
         editPremium() {
-            let currentMonth = this.$moment(this.dateInfo.currentMonth, "MMMM");
+            const currentMonth = this.$moment(`${this.dateInfo.currentYear}-${this.dateInfo.currentMonth}`, "YYYY-MMMM")
 
             if(this.commentEdit < 3) {
                 this.errors = ['Комментарии обязательны!'];
