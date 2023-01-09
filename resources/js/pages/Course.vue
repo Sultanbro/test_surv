@@ -137,118 +137,118 @@
 
 <script>
 export default {
-  name: "Course",
-  props: ["id"],
-  data() {
-    return {
-      test: "dsa",
-      hover: false,
-      file: null,
-      myCroppa: {},
-      newItem: null,
-      users: [], 
-      course: {
-        id: 0,
-        elements: [],
-        img: ''
-      },
-      image: '/users_img/noavatar.png',
-      croppa_key: 1,
-      superselectKey: 1
-    };
-  },
-  created() {
-    this.get();
-  },
-  watch: {
-    id(val) {
-      this.get();
-    },
-  },
-  mounted() {},
-  methods: {
-    get() {
-      let loader = this.$loading.show()
-      axios
-        .post("/admin/courses/get-item", {
-          id: this.id,
-        })
-        .then((response) => {
-          loader.hide()
-          this.course = response.data.course;
-          this.image = this.course.img;
-          this.croppa_key++;
-          this.superselectKey++;
-        })
-        .catch((error) => {
-          loader.hide()
-          alert(error);
-        });
-    },
+	name: 'Course',
+	props: ['id'],
+	data() {
+		return {
+			test: 'dsa',
+			hover: false,
+			file: null,
+			myCroppa: {},
+			newItem: null,
+			users: [], 
+			course: {
+				id: 0,
+				elements: [],
+				img: ''
+			},
+			image: '/users_img/noavatar.png',
+			croppa_key: 1,
+			superselectKey: 1
+		};
+	},
+	created() {
+		this.get();
+	},
+	watch: {
+		id(val) {
+			this.get();
+		},
+	},
+	mounted() {},
+	methods: {
+		get() {
+			let loader = this.$loading.show()
+			axios
+				.post('/admin/courses/get-item', {
+					id: this.id,
+				})
+				.then((response) => {
+					loader.hide()
+					this.course = response.data.course;
+					this.image = this.course.img;
+					this.croppa_key++;
+					this.superselectKey++;
+				})
+				.catch((error) => {
+					loader.hide()
+					alert(error);
+				});
+		},
 
-    saveCropped() {
-      let loader = this.$loading.show();
-      const formData = new FormData();
+		saveCropped() {
+			let loader = this.$loading.show();
+			const formData = new FormData();
 
-      let _this = this;
-      this.myCroppa.generateBlob(
-        (blob) => {
-          formData.append("file", blob);
-          formData.append("course_id", _this.course.id);
-          axios
-            .post("/admin/courses/upload-image", formData)
-            .then(function (res) {
-              _this.course.img = response.data.img;
-              _this.$toast.success('Сохранено');
-              loader.hide();
-            })
-            .catch(function (err) {
-              console.log(err, "error");
-               loader.hide();
-            });
-        },
-        "image/jpeg",
-        0.8
-      ); // 80% compressed jpeg file
-    },
+			let _this = this;
+			this.myCroppa.generateBlob(
+				(blob) => {
+					formData.append('file', blob);
+					formData.append('course_id', _this.course.id);
+					axios
+						.post('/admin/courses/upload-image', formData)
+						.then(function (res) {
+							_this.course.img = response.data.img;
+							_this.$toast.success('Сохранено');
+							loader.hide();
+						})
+						.catch(function (err) {
+							console.log(err, 'error');
+							loader.hide();
+						});
+				},
+				'image/jpeg',
+				0.8
+			); // 80% compressed jpeg file
+		},
 
-    toggleOpen(el) {},
+		toggleOpen(el) {},
 
-    saveOrder(e) {},
+		saveOrder(e) {},
 
-    deleteItem(i) {
-      this.course.elements.splice(i, 1);
-    },
+		deleteItem(i) {
+			this.course.elements.splice(i, 1);
+		},
     
     
 
-    addTag(newTag) {
-      const tag = {
-        email: newTag,
-        ID: newTag,
-      };
-      this.users.push(tag);
-    },
+		addTag(newTag) {
+			const tag = {
+				email: newTag,
+				ID: newTag,
+			};
+			this.users.push(tag);
+		},
 
-    saveCourse() {
-      let loader = this.$loading.show();
-      axios
-        .post("/admin/courses/save", {
-          course: this.course,
-        })
-        .then((response) => {
-          this.$toast.success("Успешно сохранено!");
-          loader.hide();
-        })
-        .catch((error) => {
-          loader.hide();
-          alert(error);
-        });
-    },
+		saveCourse() {
+			let loader = this.$loading.show();
+			axios
+				.post('/admin/courses/save', {
+					course: this.course,
+				})
+				.then((response) => {
+					this.$toast.success('Успешно сохранено!');
+					loader.hide();
+				})
+				.catch((error) => {
+					loader.hide();
+					alert(error);
+				});
+		},
 
-    limitText(count) {
-      return `и еще ${count}`
-    }
-  },
+		limitText(count) {
+			return `и еще ${count}`
+		}
+	},
 };
 </script>

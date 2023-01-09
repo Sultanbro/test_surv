@@ -133,466 +133,466 @@ const OZON1 = 58;
 const OZON2 = 59;
 
 export default {
-    name: "TActivity",
-    props: {
-        month: Object,
-        activity: Object,
-        group_id: Number,
-        color_invert: {
-            type: Boolean,
-            default: false
-        },
-        work_days: Number, // 5 или 6 дней в неделю
-        editable: {
-            type: Boolean,
-            default: true
-        },
-        show_headers: {
-            type: Boolean,
-            default: true
-        },
-    },
-    data() {
-        return {
-            items: [],
-            filtered: [],
-            fields: [],
-            itemsArray: [],
-            avgOfAverage: 0,
-            totalCountDays: 0,
-            sum: {},
-            percentage: [],
-            records: [],
-            totalRowName: '',
-            accountsNumber: 0,
-            user_types: 0,
-            filter: {
-                group1: 0,
-                group2: 0,
-                fulltime: 0,
-                parttime: 0,
-            },
-            showExcelImport: false
-        };
-    },
-    watch: { 
-        activity: function(newVal, oldVal) { // watch it
-            this.fetchData();
-        },
-        filter: {
-            handler (val, oldVal) {
-                this.filterTable()
-            },
-            deep: true
-        },
-        user_types(val) {
-            this.fetchData()
-        },
-    },
-    created() {
-        this.fetchData();
-    },
-    methods: {
+	name: 'TActivity',
+	props: {
+		month: Object,
+		activity: Object,
+		group_id: Number,
+		color_invert: {
+			type: Boolean,
+			default: false
+		},
+		work_days: Number, // 5 или 6 дней в неделю
+		editable: {
+			type: Boolean,
+			default: true
+		},
+		show_headers: {
+			type: Boolean,
+			default: true
+		},
+	},
+	data() {
+		return {
+			items: [],
+			filtered: [],
+			fields: [],
+			itemsArray: [],
+			avgOfAverage: 0,
+			totalCountDays: 0,
+			sum: {},
+			percentage: [],
+			records: [],
+			totalRowName: '',
+			accountsNumber: 0,
+			user_types: 0,
+			filter: {
+				group1: 0,
+				group2: 0,
+				fulltime: 0,
+				parttime: 0,
+			},
+			showExcelImport: false
+		};
+	},
+	watch: { 
+		activity: function(newVal, oldVal) { // watch it
+			this.fetchData();
+		},
+		filter: {
+			handler (val, oldVal) {
+				this.filterTable()
+			},
+			deep: true
+		},
+		user_types(val) {
+			this.fetchData()
+		},
+	},
+	created() {
+		this.fetchData();
+	},
+	methods: {
 
-        setLeaders() {
-            let arr = this.itemsArray;
-            arr.sort((a, b) => Number(a.plan) < Number(b.plan)  ?
-                1 : Number(a.plan) > Number(b.plan) ? -1 : 0);
+		setLeaders() {
+			let arr = this.itemsArray;
+			arr.sort((a, b) => Number(a.plan) < Number(b.plan)  ?
+				1 : Number(a.plan) > Number(b.plan) ? -1 : 0);
 
-            if(this.itemsArray.length > 3) {
-                arr[0].show_cup = 1;
-                arr[1].show_cup = 2;
-                arr[2].show_cup = 3;
-            } 
-        },
+			if(this.itemsArray.length > 3) {
+				arr[0].show_cup = 1;
+				arr[1].show_cup = 2;
+				arr[2].show_cup = 3;
+			} 
+		},
         
-        setFirstRowAsTotals() {
+		setFirstRowAsTotals() {
 
-            this.totalRowName = 'Итого'
+			this.totalRowName = 'Итого'
 
-            this.records.unshift({
-                is_date: false,
-                name: this.totalRowName,
-            });
-        },
-        addCellVariantsArrayToRecords(){
-            this.itemsArray.forEach((element, key) => {
-                this.itemsArray[key]["_cellVariants"] = [];
-            });
-        },
+			this.records.unshift({
+				is_date: false,
+				name: this.totalRowName,
+			});
+		},
+		addCellVariantsArrayToRecords(){
+			this.itemsArray.forEach((element, key) => {
+				this.itemsArray[key]['_cellVariants'] = [];
+			});
+		},
 
-        updateAvgValuesOfRecords() {
-            this.itemsArray.forEach((account, index) => {
-                this.itemsArray[index]["plan"] = account.plan;
+		updateAvgValuesOfRecords() {
+			this.itemsArray.forEach((account, index) => {
+				this.itemsArray[index]['plan'] = account.plan;
 
-                if(this.activity.plan_unit == 'minutes') {
-                    this.itemsArray[index]["avg"] = account.avg;
-                    this.itemsArray[index]["month"] = account.month;
-                }
+				if(this.activity.plan_unit == 'minutes') {
+					this.itemsArray[index]['avg'] = account.avg;
+					this.itemsArray[index]['month'] = account.month;
+				}
                 
-            });
-        },
-        fetchData() {
-            let loader = this.$loading.show();
+			});
+		},
+		fetchData() {
+			let loader = this.$loading.show();
             
-            this.records = this.activity.records;
-            this.accountsNumber = this.activity.records.length
+			this.records = this.activity.records;
+			this.accountsNumber = this.activity.records.length
             
-            if(this.show_headers) this.setFirstRowAsTotals()
-            this.calculateRecordsValues()
-           if(this.show_headers)  this.calculateTotalsRow()
-            if(this.show_headers) this.setAvgCell()
-            if(!this.show_headers) this.setLeaders()
-            this.items = this.itemsArray;
-            this.filtered = this.itemsArray;
+			if(this.show_headers) this.setFirstRowAsTotals()
+			this.calculateRecordsValues()
+			if(this.show_headers)  this.calculateTotalsRow()
+			if(this.show_headers) this.setAvgCell()
+			if(!this.show_headers) this.setLeaders()
+			this.items = this.itemsArray;
+			this.filtered = this.itemsArray;
 
-            this.addCellVariantsArrayToRecords();
-            this.setCellVariants();
-            loader.hide();    
-        },
+			this.addCellVariantsArrayToRecords();
+			this.setCellVariants();
+			loader.hide();    
+		},
 
        
 
-        updateTable(items) {
-            let loader = this.$loading.show();
+		updateTable(items) {
+			let loader = this.$loading.show();
             
-            this.records = items;
-            this.calculateRecordsValues();
-            if(this.show_headers) this.calculateTotalsRow();
-            this.updateAvgValuesOfRecords();
-            if(this.show_headers) this.setAvgCell()
+			this.records = items;
+			this.calculateRecordsValues();
+			if(this.show_headers) this.calculateTotalsRow();
+			this.updateAvgValuesOfRecords();
+			if(this.show_headers) this.setAvgCell()
             
-            this.items = this.itemsArray;
+			this.items = this.itemsArray;
             
-            this.addCellVariantsArrayToRecords();
-            this.setCellVariants();
-            loader.hide();
-        },
-        setAvgCell() {
-            this.itemsArray[0]["avg"] = (this.avgOfAverage / this.totalCountDays).toFixed(2);
-            if(this.activity.plan_unit == 'minutes') {
-                this.itemsArray[0]['avg'] = '';
-            }
-        },
+			this.addCellVariantsArrayToRecords();
+			this.setCellVariants();
+			loader.hide();
+		},
+		setAvgCell() {
+			this.itemsArray[0]['avg'] = (this.avgOfAverage / this.totalCountDays).toFixed(2);
+			if(this.activity.plan_unit == 'minutes') {
+				this.itemsArray[0]['avg'] = '';
+			}
+		},
         
-        filterTable() {
-            this.filtered = this.items.filter((el, index) => {
+		filterTable() {
+			this.filtered = this.items.filter((el, index) => {
 
-                let a = true
-                let b = false
-                let pass_b = true
-                let c = false
-                let pass_c = true
+				let a = true
+				let b = false
+				let pass_b = true
+				let c = false
+				let pass_c = true
 
-                if(this.filter.group1 == 1) {
-                    b = b || el.group == 'Напоминание'
-                    pass_b = false
-                }
+				if(this.filter.group1 == 1) {
+					b = b || el.group == 'Напоминание'
+					pass_b = false
+				}
 
-                if(this.filter.group2 == 1) {
-                    b = b || el.group == 'Просрочники'
-                    pass_b = false
-                }
+				if(this.filter.group2 == 1) {
+					b = b || el.group == 'Просрочники'
+					pass_b = false
+				}
 
-                if(!pass_b) a = a && b  
+				if(!pass_b) a = a && b  
 
-                if(this.filter.fulltime == 1) {
-                    c = c || el.full_time == 1
-                    pass_c = false
-                }
+				if(this.filter.fulltime == 1) {
+					c = c || el.full_time == 1
+					pass_c = false
+				}
 
-                if(this.filter.parttime == 1) {
-                    c = c || el.full_time == 0
-                    pass_c = false
-                }
+				if(this.filter.parttime == 1) {
+					c = c || el.full_time == 0
+					pass_c = false
+				}
 
-                if(!pass_c) a = a && c
+				if(!pass_c) a = a && c
 
-                return a 
-            })
-        },
+				return a 
+			})
+		},
 
-        calculateTotalsRow() {
+		calculateTotalsRow() {
             
             
-            // вот здесь я считаю итоговые суммы минут по всем сотрудникам, и мне их видимо придется сохранить в бд
+			// вот здесь я считаю итоговые суммы минут по всем сотрудникам, и мне их видимо придется сохранить в бд
 
-            let total = 0, quantity = 0;
+			let total = 0, quantity = 0;
 
-            for (let key in this.sum) {
-                if (this.sum.hasOwnProperty(key)) {
-                    let sum = isNaN(parseFloat(this.sum[key])) ? 0 : parseFloat(this.sum[key]);
-                    let percentage = isNaN(parseFloat(this.percentage[key])) ? 0 : parseFloat(this.percentage[key]);
-                    if(this.activity.plan_unit == 'minutes')  {
-                        this.itemsArray[0][key] = parseFloat(sum).toFixed(0);
-                        if(sum != 0)  {
-                            total += sum;
-                            quantity++;
-                        }
-                    } else {
-                        this.itemsArray[0][key] = parseFloat(sum / percentage).toFixed(1);
-                        if(percentage != 0 && sum != 0) {
-                            total += parseFloat(sum / percentage);
-                            quantity++;
-                        }
-                    }
-                } else {
-                    this.itemsArray[0][key] = 0;
-                }
-            }
+			for (let key in this.sum) {
+				if (this.sum.hasOwnProperty(key)) {
+					let sum = isNaN(parseFloat(this.sum[key])) ? 0 : parseFloat(this.sum[key]);
+					let percentage = isNaN(parseFloat(this.percentage[key])) ? 0 : parseFloat(this.percentage[key]);
+					if(this.activity.plan_unit == 'minutes')  {
+						this.itemsArray[0][key] = parseFloat(sum).toFixed(0);
+						if(sum != 0)  {
+							total += sum;
+							quantity++;
+						}
+					} else {
+						this.itemsArray[0][key] = parseFloat(sum / percentage).toFixed(1);
+						if(percentage != 0 && sum != 0) {
+							total += parseFloat(sum / percentage);
+							quantity++;
+						}
+					}
+				} else {
+					this.itemsArray[0][key] = 0;
+				}
+			}
 
-            let avg;
-                avg = quantity != 0 ? total / quantity : 0;
-            console.log('TOTAL ' + total)
-            console.log('AVG ' + avg)
-            let plan = quantity == 0 ? '' : Number(avg).toFixed(1);
-            this.itemsArray[0]['plan'] = this.activity.unit == '%' && plan != '' ? plan + '%' : plan;
+			let avg;
+			avg = quantity != 0 ? total / quantity : 0;
+			console.log('TOTAL ' + total)
+			console.log('AVG ' + avg)
+			let plan = quantity == 0 ? '' : Number(avg).toFixed(1);
+			this.itemsArray[0]['plan'] = this.activity.unit == '%' && plan != '' ? plan + '%' : plan;
 
-        },
+		},
 
-        setCellVariants() {
-            if (typeof this.activity === "object") {
+		setCellVariants() {
+			if (typeof this.activity === 'object') {
             
-                let minutes = this.filtered;
+				let minutes = this.filtered;
                 
-                if(this.activity.plan_unit != 'less_sum') {
+				if(this.activity.plan_unit != 'less_sum') {
                      
-                    minutes.forEach((account, index) => {
-                        if (index > 0) {
-                            for (let key in account) {
-                                if(this.activity.plan_unit != 'less_avg') {
-                                    if (key >= 1 && key <= 31 && account[key] !== undefined && account[key] !== null) {
-                                        if (account[key] >= this.activity.daily_plan) {
-                                            this.filtered[index]._cellVariants[key] = "success";
-                                        } else { 
-                                            this.filtered[index]._cellVariants[key] = "danger";
-                                        }
-                                    }
-                                } else {
-                                    if (key >= 1 && key <= 31 && account[key] !== undefined && account[key] !== null) {
-                                        if (account[key] > this.activity.daily_plan) {
-                                            this.filtered[index]._cellVariants[key] = "danger";
-                                        } else { 
-                                            this.filtered[index]._cellVariants[key] = "success";
-                                        }
-                                    }
-                                }
+					minutes.forEach((account, index) => {
+						if (index > 0) {
+							for (let key in account) {
+								if(this.activity.plan_unit != 'less_avg') {
+									if (key >= 1 && key <= 31 && account[key] !== undefined && account[key] !== null) {
+										if (account[key] >= this.activity.daily_plan) {
+											this.filtered[index]._cellVariants[key] = 'success';
+										} else { 
+											this.filtered[index]._cellVariants[key] = 'danger';
+										}
+									}
+								} else {
+									if (key >= 1 && key <= 31 && account[key] !== undefined && account[key] !== null) {
+										if (account[key] > this.activity.daily_plan) {
+											this.filtered[index]._cellVariants[key] = 'danger';
+										} else { 
+											this.filtered[index]._cellVariants[key] = 'success';
+										}
+									}
+								}
                                 
-                            }
-                        }
-                    });
+							}
+						}
+					});
 
-                }
-            }
+				}
+			}
             
-        },
+		},
 
-        editMode(item) {
-            this.filtered.forEach((account, index) => {
-                account.editable = false
-            })
+		editMode(item) {
+			this.filtered.forEach((account, index) => {
+				account.editable = false
+			})
 
-            item.editable = item.name == 'Итого' ? false : true;
-        },
+			item.editable = item.name == 'Итого' ? false : true;
+		},
 
-        updateSettings(e, data, index, key) {
+		updateSettings(e, data, index, key) {
            
-            data.editable = false
+			data.editable = false
             
-            var clearedValue = e.target.value.replace(",", ".");
-            var value = null;
-            if(this.activity.plan_unit == 'minutes') value = parseFloat(clearedValue);
-            if(this.activity.plan_unit == 'less_sum') value = parseFloat(clearedValue);
-            if(this.activity.plan_unit == 'percent') value = parseFloat(clearedValue).toFixed(1);
-            if(this.activity.plan_unit == 'less_avg') value = parseFloat(clearedValue).toFixed(1);
-            if(value < 0) {
-                this.filtered[index][key] = 0;
-            }
+			var clearedValue = e.target.value.replace(',', '.');
+			var value = null;
+			if(this.activity.plan_unit == 'minutes') value = parseFloat(clearedValue);
+			if(this.activity.plan_unit == 'less_sum') value = parseFloat(clearedValue);
+			if(this.activity.plan_unit == 'percent') value = parseFloat(clearedValue).toFixed(1);
+			if(this.activity.plan_unit == 'less_avg') value = parseFloat(clearedValue).toFixed(1);
+			if(value < 0) {
+				this.filtered[index][key] = 0;
+			}
 
-            if(value > 999) {
-                this.filtered[index][key] = 999;
-            }
+			if(value > 999) {
+				this.filtered[index][key] = 999;
+			}
             
-            this.filtered[index][key] = Number(this.filtered[index][key])
-            let employee_id = data.id;
+			this.filtered[index][key] = Number(this.filtered[index][key])
+			let employee_id = data.id;
     
-            let filtered = this.filtered;
+			let filtered = this.filtered;
            
-            let loader = this.$loading.show();
-            let year = new Date().getFullYear();
+			let loader = this.$loading.show();
+			let year = new Date().getFullYear();
 
-            this.updateTable(filtered); 
+			this.updateTable(filtered); 
             
-            axios 
-                .post("/timetracking/update-settings-individually", {
-                    date: this.$moment(
-                        `${this.month.currentMonth} ${this.month.currentYear}`,
-                        "MMMM YYYY"
-                    ).format("YYYY-MM-DD"),
-                    group_id: this.activity.group_id,
-                    employee_id: employee_id,
-                    day: key,
-                    table_type: this.activity.id,
-                    settings: this.itemsArray[index], // data of employee for 1 month
-                })
-                .then((response) => {
-                    loader.hide();
-                });
+			axios 
+				.post('/timetracking/update-settings-individually', {
+					date: this.$moment(
+						`${this.month.currentMonth} ${this.month.currentYear}`,
+						'MMMM YYYY'
+					).format('YYYY-MM-DD'),
+					group_id: this.activity.group_id,
+					employee_id: employee_id,
+					day: key,
+					table_type: this.activity.id,
+					settings: this.itemsArray[index], // data of employee for 1 month
+				})
+				.then((response) => {
+					loader.hide();
+				});
             
-        },
+		},
 
-        exportData() {
-            var link = "/timetracking/analytics/activity/export";
-            link += "?month=" + this.$moment(
-                        `${this.month.currentMonth}`,
-                        "MMMM YYYY"
-                    ).format("MM");
-            link += "&year=" + new Date().getFullYear();
-            link += "&group_id=" + this.activity.group_id;
+		exportData() {
+			var link = '/timetracking/analytics/activity/export';
+			link += '?month=' + this.$moment(
+				`${this.month.currentMonth}`,
+				'MMMM YYYY'
+			).format('MM');
+			link += '&year=' + new Date().getFullYear();
+			link += '&group_id=' + this.activity.group_id;
 
-            if(this.filter.group1 == 1 && this.filter.group2 == 0) link += "&only_nap=1";
-            if(this.filter.group1 == 0 && this.filter.group2 == 1) link += "&only_pros=1";
-            if(this.filter.fulltime == 1 && this.filter.parttime == 0) link += "&only_full=1";
-            if(this.filter.fulltime == 0 && this.filter.parttime == 1) link += "&only_part=1";
+			if(this.filter.group1 == 1 && this.filter.group2 == 0) link += '&only_nap=1';
+			if(this.filter.group1 == 0 && this.filter.group2 == 1) link += '&only_pros=1';
+			if(this.filter.fulltime == 1 && this.filter.parttime == 0) link += '&only_full=1';
+			if(this.filter.fulltime == 0 && this.filter.parttime == 1) link += '&only_part=1';
 
-            window.location.href = link;
-        },
+			window.location.href = link;
+		},
 
-        calculateRecordsValues() {
-            this.sum = {};
-            if(this.show_headers) {
-                this.itemsArray = [{}];
-            } else {
-                this.itemsArray = [];
-            }
-            this.totalCountDays = 0;
-            this.avgOfAverage = 0;
-            this.percentage = []
+		calculateRecordsValues() {
+			this.sum = {};
+			if(this.show_headers) {
+				this.itemsArray = [{}];
+			} else {
+				this.itemsArray = [];
+			}
+			this.totalCountDays = 0;
+			this.avgOfAverage = 0;
+			this.percentage = []
 
-            let row0_avg = 0; 
-            let row0_avg_items = 0;
+			let row0_avg = 0; 
+			let row0_avg_items = 0;
 
-            this.records.forEach((account, index) => {
-                let countWorkedDays = 0;
-                let cellValues = [];
+			this.records.forEach((account, index) => {
+				let countWorkedDays = 0;
+				let cellValues = [];
                 
 
                 
-                if (account.name != this.totalRowName) {
-                    let sumForOne = 0;
-                    for (let key in account) {
-                        let value = account[key];
+				if (account.name != this.totalRowName) {
+					let sumForOne = 0;
+					for (let key in account) {
+						let value = account[key];
                         
-                        if (key >= 1 && key <= 31) {
-                            cellValues[key] = Number(value);
+						if (key >= 1 && key <= 31) {
+							cellValues[key] = Number(value);
 
-                            if (isNaN(this.sum[key])) this.sum[key] = 0;
-                            if (isNaN(this.percentage[key])) this.percentage[key] = 0;
+							if (isNaN(this.sum[key])) this.sum[key] = 0;
+							if (isNaN(this.percentage[key])) this.percentage[key] = 0;
                             
-                            this.sum[key] = this.sum[key] + Number(account[key]); // vertical sum
+							this.sum[key] = this.sum[key] + Number(account[key]); // vertical sum
                             
-                            if(Number(account[key]) > 0) {
-                                this.percentage[key] = this.percentage[key] + 1;
+							if(Number(account[key]) > 0) {
+								this.percentage[key] = this.percentage[key] + 1;
 
-                                sumForOne += Number(account[key]); // horizontal sum
-                                countWorkedDays++;
-                                this.totalCountDays++;
-                            }
+								sumForOne += Number(account[key]); // horizontal sum
+								countWorkedDays++;
+								this.totalCountDays++;
+							}
 
-                        }
-                    }
+						}
+					}
            
-                    cellValues["plan_unit"] = this.activity.plan_unit;
+					cellValues['plan_unit'] = this.activity.plan_unit;
                      
-                    let daily_plan = Number(this.activity.daily_plan);
+					let daily_plan = Number(this.activity.daily_plan);
                     
                     
 
-                    if(this.activity.plan_unit == 'minutes') {
-                        if(account.full_time == 0)  daily_plan = Number(daily_plan / 2);
+					if(this.activity.plan_unit == 'minutes') {
+						if(account.full_time == 0)  daily_plan = Number(daily_plan / 2);
                         
-                        cellValues["plan"] = sumForOne;
+						cellValues['plan'] = sumForOne;
                         
-                        let average = (sumForOne / countWorkedDays).toFixed(0);
-                        let finishAverage = !isNaN(average) ? average : 0;
-                        cellValues["avg"] = finishAverage;
+						let average = (sumForOne / countWorkedDays).toFixed(0);
+						let finishAverage = !isNaN(average) ? average : 0;
+						cellValues['avg'] = finishAverage;
                         
-                        cellValues["month"] = account.applied_from != 0 ? Number(account.applied_from) * daily_plan : Number(this.activity.workdays) * daily_plan;
+						cellValues['month'] = account.applied_from != 0 ? Number(account.applied_from) * daily_plan : Number(this.activity.workdays) * daily_plan;
 
-                        cellValues["percent"] =
+						cellValues['percent'] =
                             this.toFloat(
-                                Number(sumForOne) / (Number(cellValues["month"]) / 100)
-                            ) + "%";
-                        this.avgOfAverage = parseFloat(this.avgOfAverage) + parseFloat(finishAverage);
+                            	Number(sumForOne) / (Number(cellValues['month']) / 100)
+                            ) + '%';
+						this.avgOfAverage = parseFloat(this.avgOfAverage) + parseFloat(finishAverage);
 
-                        cellValues["plan"] = Number(sumForOne).toFixed(2);
-                    }
+						cellValues['plan'] = Number(sumForOne).toFixed(2);
+					}
 
-                    if(this.activity.plan_unit == 'percent') {
-                        let average = (sumForOne / countWorkedDays).toFixed(2);
-                        let finishAverage = !isNaN(average) ? average : 0;
-                        cellValues["month"] = daily_plan;
-                        cellValues["plan"] = finishAverage;
-                        cellValues["avg"] = finishAverage;
+					if(this.activity.plan_unit == 'percent') {
+						let average = (sumForOne / countWorkedDays).toFixed(2);
+						let finishAverage = !isNaN(average) ? average : 0;
+						cellValues['month'] = daily_plan;
+						cellValues['plan'] = finishAverage;
+						cellValues['avg'] = finishAverage;
                         
                         
-                        this.avgOfAverage = parseFloat(this.avgOfAverage) + parseFloat(finishAverage);
+						this.avgOfAverage = parseFloat(this.avgOfAverage) + parseFloat(finishAverage);
 
-                    }
+					}
 
-                    if(this.activity.plan_unit == 'less_avg') {
-                        let average = (sumForOne / countWorkedDays).toFixed(2);
-                        let finishAverage = !isNaN(average) ? average : 0;
-                        cellValues["month"] = daily_plan;
-                        cellValues["plan"] = finishAverage;
+					if(this.activity.plan_unit == 'less_avg') {
+						let average = (sumForOne / countWorkedDays).toFixed(2);
+						let finishAverage = !isNaN(average) ? average : 0;
+						cellValues['month'] = daily_plan;
+						cellValues['plan'] = finishAverage;
                         
                         
-                        this.avgOfAverage = parseFloat(this.avgOfAverage) + parseFloat(finishAverage);
+						this.avgOfAverage = parseFloat(this.avgOfAverage) + parseFloat(finishAverage);
 
-                    }
+					}
 
-                    if(this.activity.plan_unit == 'less_sum') {
-                        cellValues["month"] = daily_plan;
-                        cellValues["plan"] =  Number(sumForOne).toFixed(0);
+					if(this.activity.plan_unit == 'less_sum') {
+						cellValues['month'] = daily_plan;
+						cellValues['plan'] =  Number(sumForOne).toFixed(0);
                         
-                        this.avgOfAverage = parseFloat(this.avgOfAverage) + Number(sumForOne);
-                    }
-                }
+						this.avgOfAverage = parseFloat(this.avgOfAverage) + Number(sumForOne);
+					}
+				}
 
-                if((this.user_types == 1 && account.fired == 1) || (this.user_types == 0 && account.fired == 0)) {
-                    this.itemsArray.push({
-                        name: account.name,
-                        lastname: account.lastname,
-                        id: account.id,
-                        editable: false,
-                        group: account.group,
-                        fired: account.fired,
-                        show_cup: 0,
-                        applied_from: account.applied_from == 0 ? this.activity.workdays : account.applied_from,
-                        full_time: account.full_time,
-                        email: account.email,
-                        ...cellValues,
-                    });  
-                } 
+				if((this.user_types == 1 && account.fired == 1) || (this.user_types == 0 && account.fired == 0)) {
+					this.itemsArray.push({
+						name: account.name,
+						lastname: account.lastname,
+						id: account.id,
+						editable: false,
+						group: account.group,
+						fired: account.fired,
+						show_cup: 0,
+						applied_from: account.applied_from == 0 ? this.activity.workdays : account.applied_from,
+						full_time: account.full_time,
+						email: account.email,
+						...cellValues,
+					});  
+				} 
                 
-            });
+			});
 
-            this.records.forEach((account, index) => {
-                if(parseFloat(account['plan']) != 0 && account['plan'] != undefined) {
+			this.records.forEach((account, index) => {
+				if(parseFloat(account['plan']) != 0 && account['plan'] != undefined) {
 
-                    row0_avg += parseFloat(account['plan']);
-                    row0_avg_items++;
-                }
-            })    
+					row0_avg += parseFloat(account['plan']);
+					row0_avg_items++;
+				}
+			})    
 
-            let a = row0_avg / row0_avg_items;
-            if(this.show_headers) this.itemsArray[0]['plan'] = isNaN(a) ? '' : Number(a).toFixed(2);
-        },
+			let a = row0_avg / row0_avg_items;
+			if(this.show_headers) this.itemsArray[0]['plan'] = isNaN(a) ? '' : Number(a).toFixed(2);
+		},
 
-        toFloat(number) {
-            return Number(number).toFixed(2);
-        },
-    },
+		toFloat(number) {
+			return Number(number).toFixed(2);
+		},
+	},
 };
 </script>
 

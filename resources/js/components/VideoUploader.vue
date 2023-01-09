@@ -65,79 +65,79 @@
 
 <script>
 export default {
-    name: 'VideoUploader',
-    props: {
-        token: String,
-        playlist_id: Number,
-        group_id: Number
-    },
-    data(){
-        return {
-          step: 1,
-          file: null,
-          video: {
-            title: "",
-            links: "",
-            text: "",
-          },
-        }
-    },
+	name: 'VideoUploader',
+	props: {
+		token: String,
+		playlist_id: Number,
+		group_id: Number
+	},
+	data(){
+		return {
+			step: 1,
+			file: null,
+			video: {
+				title: '',
+				links: '',
+				text: '',
+			},
+		}
+	},
 
-    created() {
+	created() {
       
-    },
+	},
 
-    methods: {
-        onupload(item) {
-            console.log("onupload");
-            console.log(item);
-            this.file = item;
-            this.step = 2;
-        },
+	methods: {
+		onupload(item) {
+			console.log('onupload');
+			console.log(item);
+			this.file = item;
+			this.step = 2;
+		},
 
-        moveToStep(i) {
-            if (i == 2 && this.file === null) return;
-            this.step = i;
-        },
+		moveToStep(i) {
+			if (i == 2 && this.file === null) return;
+			this.step = i;
+		},
 
-        deleteVideo() {
-            axios
-                .post("/playlists/delete-video", {
-                    id: this.file.model.id,
-                })
-                .then((response) => {
-                    this.$toast.success("Файл удален");
-                    this.file = null;
-                    this.step = 1;
-                })
-                .catch((error) => {
-                    alert(error);
-                });
-        },
+		deleteVideo() {
+			axios
+				.post('/playlists/delete-video', {
+					id: this.file.model.id,
+				})
+				.then((response) => {
+					this.$toast.success('Файл удален');
+					this.file = null;
+					this.step = 1;
+				})
+				.catch((error) => {
+					alert(error);
+				});
+		},
 
-        saveVideo() {
-            let loader = this.$loading.show();
-            axios
-                .post("/playlists/save-video", {
-                    id: this.playlist_id,
-                    video: this.file.model,
-                    group_id: this.group_id
-                })
-                .then((response) => {   
-                    loader.hide()
-                    this.step = 1;
-                    this.$emit('addVideoToPlaylist', response.data.video) 
-                    this.$toast.success("Добавлен");
-                    this.file = null;
+		saveVideo() {
+			let loader = this.$loading.show();
+			axios
+				.post('/playlists/save-video', {
+					id: this.playlist_id,
+					video: this.file.model,
+					group_id: this.group_id
+				})
+				.then((response) => {   
+					loader.hide()
+					this.step = 1;
+					this.$emit('addVideoToPlaylist', response.data.video) 
+					this.$toast.success('Добавлен');
+					this.file = null;
 
-                    this.$emit('close');
-                })
-                .catch((error) => {
-                    loader.hide()
-                    alert(error);
-                });
-        },
+					this.$emit('close');
+				})
+				.catch((error) => {
+					loader.hide()
+					alert(error);
+				});
+		},
     
-    }
+	}
 }
 </script>

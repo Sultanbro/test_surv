@@ -142,260 +142,260 @@
 </template>
 <script>
 export default {
-  name: "Permissions",
-  data() {
-    return {
-      role: null,
-      searchText: '',
-      users: [], // all select
-      groups: [], // all select
-      items: [],
-      roles: [],
-      values: [],
-      pages: [],
-      permissions: [],
-      showRoles: false,
-    };
-  },
-  computed: {
-    filtered_items(){
-      if(!this.searchText) return this.items
-      const lowerText = this.searchText.toLowerCase()
-      return this.items.filter((el, index) => {
-        if(el.targets){
-          const inTarget = el.targets.findIndex(target => target.name.toLowerCase().indexOf(lowerText) > -1)
-          if(inTarget > -1) return true
-        }
+	name: 'Permissions',
+	data() {
+		return {
+			role: null,
+			searchText: '',
+			users: [], // all select
+			groups: [], // all select
+			items: [],
+			roles: [],
+			values: [],
+			pages: [],
+			permissions: [],
+			showRoles: false,
+		};
+	},
+	computed: {
+		filtered_items(){
+			if(!this.searchText) return this.items
+			const lowerText = this.searchText.toLowerCase()
+			return this.items.filter((el, index) => {
+				if(el.targets){
+					const inTarget = el.targets.findIndex(target => target.name.toLowerCase().indexOf(lowerText) > -1)
+					if(inTarget > -1) return true
+				}
 
-        if(el.groups){
-          const inGroups = el.groups.findIndex(target => target.name.toLowerCase().indexOf(lowerText) > -1)
-          if(inGroups > -1) return true
-        }
+				if(el.groups){
+					const inGroups = el.groups.findIndex(target => target.name.toLowerCase().indexOf(lowerText) > -1)
+					if(inGroups > -1) return true
+				}
 
-        if(el.roles){
-          const inRoles = el.roles.findIndex(target => target.name.toLowerCase().indexOf(lowerText) > -1)
-          if(inRoles > -1) return true
-        }
+				if(el.roles){
+					const inRoles = el.roles.findIndex(target => target.name.toLowerCase().indexOf(lowerText) > -1)
+					if(inRoles > -1) return true
+				}
 
-        return false
-      });
-    }
-  },
-  created() {
-    this.fetchData();
-  },
-  mounted() {},
-  methods: {
+				return false
+			});
+		}
+	},
+	created() {
+		this.fetchData();
+	},
+	mounted() {},
+	methods: {
 
-    fetchData() {
-      let loader = this.$loading.show();
+		fetchData() {
+			let loader = this.$loading.show();
 
-      axios
-        .get("/permissions/get", {})
-        .then((response) => {
+			axios
+				.get('/permissions/get', {})
+				.then((response) => {
 
-          this.users = response.data.users;
-          this.roles = response.data.roles;
-          this.groups = response.data.groups;
-          this.pages = response.data.pages;
-          this.items = response.data.items;
+					this.users = response.data.users;
+					this.roles = response.data.roles;
+					this.groups = response.data.groups;
+					this.pages = response.data.pages;
+					this.items = response.data.items;
 
-          loader.hide();
-        })
-        .catch((error) => {
-          loader.hide();
-          alert(error);
-        });
-    },
+					loader.hide();
+				})
+				.catch((error) => {
+					loader.hide();
+					alert(error);
+				});
+		},
 
-    addItem() {
-      this.searchText = '';
-      this.items.unshift(
-        {
-          id: 0,
-          groups_all: false,
-          targets: [],
-          roles: [],
-          groups: []
-        }
-      );
-    },
+		addItem() {
+			this.searchText = '';
+			this.items.unshift(
+				{
+					id: 0,
+					groups_all: false,
+					targets: [],
+					roles: [],
+					groups: []
+				}
+			);
+		},
 
-    deleteItem(i) {
+		deleteItem(i) {
 
-      if(!confirm('Вы точно хотите удалить доступ этой цели?')) {
-         return false;
-       }
+			if(!confirm('Вы точно хотите удалить доступ этой цели?')) {
+				return false;
+			}
 
-      if(this.filtered_items[i].id == 0) {
+			if(this.filtered_items[i].id == 0) {
 
-        let index = this.items.findIndex(it => it.id == this.filtered_items[i].id);
-        if(index != -1) this.items.splice(index, 1);
-        return false;
-      }
+				let index = this.items.findIndex(it => it.id == this.filtered_items[i].id);
+				if(index != -1) this.items.splice(index, 1);
+				return false;
+			}
 
-      let loader = this.$loading.show();
-       axios
-        .post( '/permissions/delete-target', {
-          id: this.filtered_items[i].id
-        })
-        .then((response) => {
-          let index = this.items.findIndex(it => it.id == this.filtered_items[i].id);
-          if(index != -1) this.items.splice(index, 1);
+			let loader = this.$loading.show();
+			axios
+				.post( '/permissions/delete-target', {
+					id: this.filtered_items[i].id
+				})
+				.then((response) => {
+					let index = this.items.findIndex(it => it.id == this.filtered_items[i].id);
+					if(index != -1) this.items.splice(index, 1);
 
-          loader.hide();
-           this.$toast.success('Доступ удален!');
-        })
-        .catch((error) => {
-          loader.hide();
-          alert(error);
-        });
+					loader.hide();
+					this.$toast.success('Доступ удален!');
+				})
+				.catch((error) => {
+					loader.hide();
+					alert(error);
+				});
 
-    },
+		},
 
-    deleteItemsFromBoth(i) {
+		deleteItemsFromBoth(i) {
 
-    },
+		},
 
-    updateItem(i) {
-
-
-      let loader = this.$loading.show();
-       axios
-        .post( '/permissions/update-target', {
-          item: this.filtered_items[i],
-        })
-        .then((response) => {
-
-          let index = this.items.findIndex(it => it.id == this.filtered_items[i].id);
-          if(index != -1) this.items.id = response.data.id;
-
-          loader.hide();
-           this.$toast.success('Цели сохранены!');
-        })
-        .catch((error) => {
-          loader.hide();
-          alert(error);
-        });
-    },
+		updateItem(i) {
 
 
-    back() {
-      this.showRoles = false;
-      this.role = null;
-    },
+			let loader = this.$loading.show();
+			axios
+				.post( '/permissions/update-target', {
+					item: this.filtered_items[i],
+				})
+				.then((response) => {
 
-    editRole(i) {
-      this.showEditRole = true;
+					let index = this.items.findIndex(it => it.id == this.filtered_items[i].id);
+					if(index != -1) this.items.id = response.data.id;
 
-      let role = this.roles[i];
-      this.role = role;
-      this.showRoles = false;
-    },
+					loader.hide();
+					this.$toast.success('Цели сохранены!');
+				})
+				.catch((error) => {
+					loader.hide();
+					alert(error);
+				});
+		},
 
-    showRolesPage() {
-      this.role = null;
-      this.showRoles = true;
-    },
 
-    addRole() {
-      this.role = {
-        name: 'Test',
-        id: null,
-        perms: {}
-      }
-    },
+		back() {
+			this.showRoles = false;
+			this.role = null;
+		},
 
-    updateRole() {
-      let loader = this.$loading.show();
+		editRole(i) {
+			this.showEditRole = true;
 
-      this.permissions = [];
-            console.log(this.role.perms);
+			let role = this.roles[i];
+			this.role = role;
+			this.showRoles = false;
+		},
 
-        Object.keys(this.role.perms).forEach((key, index) => {
-          if(this.role.perms[key]) this.permissions.push(key)
-        });
+		showRolesPage() {
+			this.role = null;
+			this.showRoles = true;
+		},
 
-        console.log(this.permissions);
+		addRole() {
+			this.role = {
+				name: 'Test',
+				id: null,
+				perms: {}
+			}
+		},
 
-      axios
-        .post('/permissions/update-role', {
-          role: this.role,
-          permissions: this.permissions
-        })
-        .then((response) => {
-          if(this.role.id == null) {
-             this.roles.push({
-               id: response.data.id,
-               name: response.data.name,
-               perms: this.role.perms,
-               permissions: []
-             });
-          }
+		updateRole() {
+			let loader = this.$loading.show();
 
-          this.role = null;
-          loader.hide();
-          this.$toast.success('Роль сохранена!');
-        })
-        .catch((error) => {
-          loader.hide();
-          alert(error);
-        });
-    },
+			this.permissions = [];
+			console.log(this.role.perms);
 
-    deleteRole(i) {
+			Object.keys(this.role.perms).forEach((key, index) => {
+				if(this.role.perms[key]) this.permissions.push(key)
+			});
 
-       if(!confirm('Вы уверены удалить роль?')) {
-         return false;
-       }
+			console.log(this.permissions);
 
-      if(this.roles[i].id == null) {
-        this.roles.splice(i,1);
-        return false;
-      }
+			axios
+				.post('/permissions/update-role', {
+					role: this.role,
+					permissions: this.permissions
+				})
+				.then((response) => {
+					if(this.role.id == null) {
+						this.roles.push({
+							id: response.data.id,
+							name: response.data.name,
+							perms: this.role.perms,
+							permissions: []
+						});
+					}
 
-      let loader = this.$loading.show();
-       axios
-        .post( '/permissions/delete-role', {
-          role: this.roles[i]
-        })
-        .then((response) => {
-          loader.hide();
-           this.roles.splice(i,1);
-           this.$toast.success('Роль удалена!');
-        })
-        .catch((error) => {
-          loader.hide();
-          alert(error);
-        });
-    },
+					this.role = null;
+					loader.hide();
+					this.$toast.success('Роль сохранена!');
+				})
+				.catch((error) => {
+					loader.hide();
+					alert(error);
+				});
+		},
 
-    checkParent(i, ability) {
-      let page = this.pages[i];
-      let checked = this.role.perms[page.key + '_' + ability];
+		deleteRole(i) {
 
-      if(ability == 'edit') {
-        this.role.perms[page.key + '_view'] = checked;
-        page.children.forEach(c => {
-          this.role.perms[c.key + '_view'] = checked;
-          this.role.perms[c.key + '_edit'] = checked;
-        });
-      } else {
-        page.children.forEach(c => {
-          this.role.perms[c.key + '_view'] = checked;
-        });
-      }
-    },
+			if(!confirm('Вы уверены удалить роль?')) {
+				return false;
+			}
 
-    checkChild(i, ability) {
-      let page = this.pages[i];
-      let checked = this.role.perms[page.key + '_' + ability];
+			if(this.roles[i].id == null) {
+				this.roles.splice(i,1);
+				return false;
+			}
 
-      if(ability == 'edit') {
-        this.role.perms[page.key + '_view'] = checked;
-      }
-    }
-  },
+			let loader = this.$loading.show();
+			axios
+				.post( '/permissions/delete-role', {
+					role: this.roles[i]
+				})
+				.then((response) => {
+					loader.hide();
+					this.roles.splice(i,1);
+					this.$toast.success('Роль удалена!');
+				})
+				.catch((error) => {
+					loader.hide();
+					alert(error);
+				});
+		},
+
+		checkParent(i, ability) {
+			let page = this.pages[i];
+			let checked = this.role.perms[page.key + '_' + ability];
+
+			if(ability == 'edit') {
+				this.role.perms[page.key + '_view'] = checked;
+				page.children.forEach(c => {
+					this.role.perms[c.key + '_view'] = checked;
+					this.role.perms[c.key + '_edit'] = checked;
+				});
+			} else {
+				page.children.forEach(c => {
+					this.role.perms[c.key + '_view'] = checked;
+				});
+			}
+		},
+
+		checkChild(i, ability) {
+			let page = this.pages[i];
+			let checked = this.role.perms[page.key + '_' + ability];
+
+			if(ability == 'edit') {
+				this.role.perms[page.key + '_view'] = checked;
+			}
+		}
+	},
 };
 </script>
 

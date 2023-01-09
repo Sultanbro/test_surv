@@ -64,125 +64,125 @@
 
 <script>
 export default {
-    name: "TableRecruiterStats",
-    props: {
-        data: Array,
-        rates: Array,
-        leads_data: {
-            default: [],
-            type: Array,
-        },
-        daysInMonth: {
-            default: new Date().getDate(),
-            type: Number,
-        },
-        year: {
-            default: new Date().getFullYear(),
-            type: Number,
-        },
-        month: {
-            default: Number(new Date().getMonth()) + 1,
-            type: Number,
-        },
-        editable: {
-            default: false,
-            type: Boolean,
-        }
-    },
-    data: function () {
-        return {
-            items: [],
-            leads: [],
-            days: [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31],
-            currentDay: 1,
-            componentKey: 0,
-            fields: [
-                {
-                    key: "name",
-                    label: 'Сотрудники',
-                    variant: "title",
-                    class: "text-left rownumber b-table-sticky-column"
-                },
-                {
-                    key: "agrees",
-                    label: "Согласия",
-                    variant: "title",
-                    class: "text-center t-name"
-                },
-            ],
-            showModal: false
-        };
-    },
-    watch: {
-        data: {
-            immediate: true,
-            handler (val, oldVal) {
-                this.fields[0].label = 'Сотрудники: ' + this.rates[this.currentDay];
-                this.items  = this.data;
-                this.leads  = this.leads_data;
-                this.componentKey++;
-            }
-        },
-        currentDay: {
-            handler (val) {
-                this.fields[0].label = 'Сотрудники: ' + this.rates[val];
-                this.items  = this.data;
-                this.leads  = this.leads_data;
-                this.componentKey++;
-            }
-        },
-    },
-    mounted() {
-        this.setFields()
-        this.currentDay = this.daysInMonth
-    },
-    methods: {
+	name: 'TableRecruiterStats',
+	props: {
+		data: Array,
+		rates: Array,
+		leads_data: {
+			default: [],
+			type: Array,
+		},
+		daysInMonth: {
+			default: new Date().getDate(),
+			type: Number,
+		},
+		year: {
+			default: new Date().getFullYear(),
+			type: Number,
+		},
+		month: {
+			default: Number(new Date().getMonth()) + 1,
+			type: Number,
+		},
+		editable: {
+			default: false,
+			type: Boolean,
+		}
+	},
+	data: function () {
+		return {
+			items: [],
+			leads: [],
+			days: [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31],
+			currentDay: 1,
+			componentKey: 0,
+			fields: [
+				{
+					key: 'name',
+					label: 'Сотрудники',
+					variant: 'title',
+					class: 'text-left rownumber b-table-sticky-column'
+				},
+				{
+					key: 'agrees',
+					label: 'Согласия',
+					variant: 'title',
+					class: 'text-center t-name'
+				},
+			],
+			showModal: false
+		};
+	},
+	watch: {
+		data: {
+			immediate: true,
+			handler (val, oldVal) {
+				this.fields[0].label = 'Сотрудники: ' + this.rates[this.currentDay];
+				this.items  = this.data;
+				this.leads  = this.leads_data;
+				this.componentKey++;
+			}
+		},
+		currentDay: {
+			handler (val) {
+				this.fields[0].label = 'Сотрудники: ' + this.rates[val];
+				this.items  = this.data;
+				this.leads  = this.leads_data;
+				this.componentKey++;
+			}
+		},
+	},
+	mounted() {
+		this.setFields()
+		this.currentDay = this.daysInMonth
+	},
+	methods: {
 
 
-        setFields() {
+		setFields() {
 
-            let times = {
-                9: '09-10',
-                10: '10-11',
-                11: '11-12',
-                12: '12-13',
-                13: '13-14',
-                14: '14-15',
-                15: '15-16',
-                16: '16-17',
-                17: '17-18',
-                18: '18-19',
-            };
+			let times = {
+				9: '09-10',
+				10: '10-11',
+				11: '11-12',
+				12: '12-13',
+				13: '13-14',
+				14: '14-15',
+				15: '15-16',
+				16: '16-17',
+				17: '17-18',
+				18: '18-19',
+			};
 
-            Object.keys(times).forEach(key => {
-                this.fields.push({
-                    key: `${key}`,
-                    label: times[key],
-                    class: `day`
-                });
-            })
+			Object.keys(times).forEach(key => {
+				this.fields.push({
+					key: `${key}`,
+					label: times[key],
+					class: 'day'
+				});
+			})
 
-        },
+		},
 
-        changeProfile(index) {
+		changeProfile(index) {
 
-            if(!this.editable) return '';
+			if(!this.editable) return '';
 
-            axios.post('/timetracking/analytics/recruting/change-profile', {
-                user_id: this.items[this.currentDay][index]['user_id'],
-                profile: this.items[this.currentDay][index]['profile'],
-                day: this.currentDay,
-                month: this.month,
-                year: this.year,
-            }).then(response => {
-                this.$toast.success('Успешно!');
-            }).catch(error => {
-                this.$toast.error('Ошибка!');
-                //alert(error)
-            });
-        }
+			axios.post('/timetracking/analytics/recruting/change-profile', {
+				user_id: this.items[this.currentDay][index]['user_id'],
+				profile: this.items[this.currentDay][index]['profile'],
+				day: this.currentDay,
+				month: this.month,
+				year: this.year,
+			}).then(response => {
+				this.$toast.success('Успешно!');
+			}).catch(error => {
+				this.$toast.error('Ошибка!');
+				//alert(error)
+			});
+		}
 
-    }
+	}
 };
 </script>
 <style lang="scss">

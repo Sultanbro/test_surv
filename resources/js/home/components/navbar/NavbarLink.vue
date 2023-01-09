@@ -6,11 +6,11 @@
 
 <script>
 export default {
-  props: {
-    href: String,
-    lang: String,
-    text: String
-  }
+	props: {
+		href: String,
+		lang: String,
+		text: String
+	}
 }
 </script>
 

@@ -100,14 +100,14 @@
 <script>
 import Rating from './ui/Rating.vue';
 export default {
-    components: { Rating },
-    name: "TraineeReport", 
-    props: ['groups', 'trainee_report'],
-    data() {
-        return {
-           report_group_id: 0,
-        }
-    },
+	components: { Rating },
+	name: 'TraineeReport', 
+	props: ['groups', 'trainee_report'],
+	data() {
+		return {
+			report_group_id: 0,
+		}
+	},
 }
 </script>
 

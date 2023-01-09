@@ -31,19 +31,19 @@
 <script>
 export default {
 
-  name: 'Popup',
-  props: {
-    title: {},
-    desc: {},
-    open: {},
-    width: {},
-  },
+	name: 'Popup',
+	props: {
+		title: {},
+		desc: {},
+		open: {},
+		width: {},
+	},
 
-  data() {
-    return {
+	data() {
+		return {
 
-    }
-  }
+		}
+	}
 }
 </script>
 

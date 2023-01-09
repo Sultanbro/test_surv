@@ -171,239 +171,239 @@
 import BalanceItem from './BalanceItem'
 
 export default {
-    name: "PopupBalance",
-    components: {
-        BalanceItem
-    },
-    props: {},
-    watch: {
-        month: {
-            handler: function (val) {
-                this.fetchData()
-            },
-        },
-    },
-    data: function () {
-        return {
-            data: [],
-            items: [],
-            totalFines: null,
-            total_avanses: null,
-            fields: [],
-            dateInfo: {
-                currentMonth: null,
-                monthEnd: 0,
-                workDays: 0,
-                weekDays: 0,
-                daysInMonth: 0
-            },
-            currentMonth: null,
-            currentDay: new Date().getDate(),
-            history: null,
-            loading: false
-        };
-    },
-    created() {
-        this.setMonth()
-        this.setFields()
-        this.fetchData()
-    },
-    methods: {
-        /**
+	name: 'PopupBalance',
+	components: {
+		BalanceItem
+	},
+	props: {},
+	watch: {
+		month: {
+			handler: function (val) {
+				this.fetchData()
+			},
+		},
+	},
+	data: function () {
+		return {
+			data: [],
+			items: [],
+			totalFines: null,
+			total_avanses: null,
+			fields: [],
+			dateInfo: {
+				currentMonth: null,
+				monthEnd: 0,
+				workDays: 0,
+				weekDays: 0,
+				daysInMonth: 0
+			},
+			currentMonth: null,
+			currentDay: new Date().getDate(),
+			history: null,
+			loading: false
+		};
+	},
+	created() {
+		this.setMonth()
+		this.setFields()
+		this.fetchData()
+	},
+	methods: {
+		/**
          * set month
          */
-        setMonth() {
-            let year = moment().format('YYYY')
-            this.dateInfo.currentMonth = this.dateInfo.currentMonth ? this.dateInfo.currentMonth : this.$moment().format('MMMM')
-            this.currentMonth = this.dateInfo.currentMonth;
-            this.dateInfo.date = `${this.dateInfo.currentMonth} ${year}`
+		setMonth() {
+			let year = moment().format('YYYY')
+			this.dateInfo.currentMonth = this.dateInfo.currentMonth ? this.dateInfo.currentMonth : this.$moment().format('MMMM')
+			this.currentMonth = this.dateInfo.currentMonth;
+			this.dateInfo.date = `${this.dateInfo.currentMonth} ${year}`
 
-            let currentMonth = this.$moment(this.dateInfo.currentMonth, 'MMMM')
+			let currentMonth = this.$moment(this.dateInfo.currentMonth, 'MMMM')
 
-            //Расчет выходных дней
-            this.dateInfo.monthEnd = currentMonth.endOf('month'); //Конец месяца
-            this.dateInfo.weekDays = currentMonth.weekdayCalc(this.dateInfo.monthEnd, [6]) //Колличество выходных
-            this.dateInfo.daysInMonth = currentMonth.daysInMonth() //Колличество дней в месяце
-            this.dateInfo.workDays = this.dateInfo.daysInMonth - this.dateInfo.weekDays //Колличество рабочих дней
-        },
+			//Расчет выходных дней
+			this.dateInfo.monthEnd = currentMonth.endOf('month'); //Конец месяца
+			this.dateInfo.weekDays = currentMonth.weekdayCalc(this.dateInfo.monthEnd, [6]) //Колличество выходных
+			this.dateInfo.daysInMonth = currentMonth.daysInMonth() //Колличество дней в месяце
+			this.dateInfo.workDays = this.dateInfo.daysInMonth - this.dateInfo.weekDays //Колличество рабочих дней
+		},
 
-        showHistory(day = 0) {
-            if([
-                '0',
-                'total',
-                'avanses',
-                'fines'
-            ].includes(day)) return;
+		showHistory(day = 0) {
+			if([
+				'0',
+				'total',
+				'avanses',
+				'fines'
+			].includes(day)) return;
 
-            if(day != 0) this.currentDay = day;
+			if(day != 0) this.currentDay = day;
 
-            let data = this.data.salaries[this.currentDay]
+			let data = this.data.salaries[this.currentDay]
 
-            this.history = {
-                fines: data.fines,
-                avanses: data.avanses,
-                bonuses: data.bonuses,
-                test_bonus: data.test_bonus,
-                awards: data.awards,
-                training: data.training,
-                value: data.value,
-                calculated: data.calculated
-            }
+			this.history = {
+				fines: data.fines,
+				avanses: data.avanses,
+				bonuses: data.bonuses,
+				test_bonus: data.test_bonus,
+				awards: data.awards,
+				training: data.training,
+				value: data.value,
+				calculated: data.calculated
+			}
 
-            if(day){
-                setTimeout(() => {
-                    this.$refs.historyElement.scrollIntoView({ behavior: 'smooth' })
-                }, 1)
-            }
-        },
+			if(day){
+				setTimeout(() => {
+					this.$refs.historyElement.scrollIntoView({ behavior: 'smooth' })
+				}, 1)
+			}
+		},
 
-        /**
+		/**
          * Загрузка данных для таблицы
          */
-        fetchData() {
-            this.loading = true
+		fetchData() {
+			this.loading = true
 
-            axios.post('/timetracking/zarplata-table-new', {
-                month: this.$moment(this.currentMonth, 'MMMM').format('M'),
-            }).then(response => {
+			axios.post('/timetracking/zarplata-table-new', {
+				month: this.$moment(this.currentMonth, 'MMMM').format('M'),
+			}).then(response => {
 
-                this.data = response.data.data
-                this.totalFines = response.data.totalFines
-                this.total_avanses = response.data.total_avanses
+				this.data = response.data.data
+				this.totalFines = response.data.totalFines
+				this.total_avanses = response.data.total_avanses
 
-                this.loadItems()
+				this.loadItems()
 
-                this.showHistory()
-                this.loading = false
-            }).catch((e) => console.log(e))
-        },
+				this.showHistory()
+				this.loading = false
+			}).catch((e) => console.log(e))
+		},
 
-        loadItems() {
-            let items = [];
-            let temp = [];
-            let total = {
-                'salaries':0,
-                'hours':0,
-            };
+		loadItems() {
+			let items = [];
+			let temp = [];
+			let total = {
+				'salaries':0,
+				'hours':0,
+			};
 
-            for (let key in this.data) {
-                temp[key] = []
-                for (let keyt in this.data[key]) {
-                    temp[key][keyt] = ({
-                        'value': this.data[key][keyt]['value'],
-                        'fines': this.data[key][keyt]['fines'],
-                        'avanses': this.data[key][keyt]['avanses'],
-                        'bonuses': this.data[key][keyt]['bonuses'],
-                        'test_bonus': this.data[key][keyt]['test_bonus'],
-                        'awards': this.data[key][keyt]['awards'],
-                        'hasFine': this.data[key][keyt]['fines'] !== undefined && this.data[key][keyt]['fines'].length,
-                        'hasBonus': (this.data[key][keyt]['bonuses'] !== undefined && this.data[key][keyt]['bonuses'].length) || (this.data[key][keyt]['awards'] !== undefined && this.data[key][keyt]['awards'].length)
+			for (let key in this.data) {
+				temp[key] = []
+				for (let keyt in this.data[key]) {
+					temp[key][keyt] = ({
+						'value': this.data[key][keyt]['value'],
+						'fines': this.data[key][keyt]['fines'],
+						'avanses': this.data[key][keyt]['avanses'],
+						'bonuses': this.data[key][keyt]['bonuses'],
+						'test_bonus': this.data[key][keyt]['test_bonus'],
+						'awards': this.data[key][keyt]['awards'],
+						'hasFine': this.data[key][keyt]['fines'] !== undefined && this.data[key][keyt]['fines'].length,
+						'hasBonus': (this.data[key][keyt]['bonuses'] !== undefined && this.data[key][keyt]['bonuses'].length) || (this.data[key][keyt]['awards'] !== undefined && this.data[key][keyt]['awards'].length)
                             || (this.data[key][keyt]['test_bonus'] !== undefined && this.data[key][keyt]['test_bonus'].length),
-                        'hasAvans': this.data[key][keyt]['avanses'] !== undefined && this.data[key][keyt]['avanses'].length,
-                        'training': this.data[key][keyt]['training'],
-                    })
+						'hasAvans': this.data[key][keyt]['avanses'] !== undefined && this.data[key][keyt]['avanses'].length,
+						'training': this.data[key][keyt]['training'],
+					})
 
-                    if(key === 'times' && temp[key][keyt].value){
-                        temp[key][keyt].value = this.$moment.utc(temp[key][keyt].value, 'hh:mm').local().format('hh:mm')
-                    }
+					if(key === 'times' && temp[key][keyt].value){
+						temp[key][keyt].value = this.$moment.utc(temp[key][keyt].value, 'hh:mm').local().format('hh:mm')
+					}
 
-                    if(key == 'salaries' || key == 'hours') {
-                        let val = Number(this.data[key][keyt]['value']);
-                        total[key] += isNaN(val) ? 0 : val;
-                    }
-                }
-            }
+					if(key == 'salaries' || key == 'hours') {
+						let val = Number(this.data[key][keyt]['value']);
+						total[key] += isNaN(val) ? 0 : val;
+					}
+				}
+			}
 
-            temp['salaries'][0] = {
-                'value': 'Начисления',
-            };
+			temp['salaries'][0] = {
+				'value': 'Начисления',
+			};
 
-            let total_salary = 0;
-                total_salary = Number(total['salaries']) - Number(this.totalFines) - Number(this.total_avanses);
+			let total_salary = 0;
+			total_salary = Number(total['salaries']) - Number(this.totalFines) - Number(this.total_avanses);
 
-            temp['salaries']['total'] = {
-                'value': Number(total_salary).toFixed(0),
-            };
-            temp['salaries']['avanses'] = {
-              'value': Number(this.total_avanses).toFixed(0)
-            };
-            temp['salaries']['fines'] = {
-                'value': Number(this.totalFines).toFixed(0)
-            };
+			temp['salaries']['total'] = {
+				'value': Number(total_salary).toFixed(0),
+			};
+			temp['salaries']['avanses'] = {
+				'value': Number(this.total_avanses).toFixed(0)
+			};
+			temp['salaries']['fines'] = {
+				'value': Number(this.totalFines).toFixed(0)
+			};
 
 
-            temp['times'][0] = {
-                'value': 'Время прихода',
-            };
-            temp['hours'][0] = {
-                'value': 'Отработанные часы',
-            };
-            temp['hours']['total'] = {
-                'value': Number(total['hours']).toFixed(1),
-            };
-            temp['times']['avanses'] = {
-              'value': 0
-            };
-            temp['times']['fines']= {
-              'value': 0
-            };
-            temp['hours']['avanses'] = {
-              'value': 0
-            };
-            temp['hours']['fines'] = {
-              'value': 0
-            };
-            items.push(temp['times'])
-            items.push(temp['salaries'])
-            items.push(temp['hours'])
-            this.items = items
-        },
+			temp['times'][0] = {
+				'value': 'Время прихода',
+			};
+			temp['hours'][0] = {
+				'value': 'Отработанные часы',
+			};
+			temp['hours']['total'] = {
+				'value': Number(total['hours']).toFixed(1),
+			};
+			temp['times']['avanses'] = {
+				'value': 0
+			};
+			temp['times']['fines']= {
+				'value': 0
+			};
+			temp['hours']['avanses'] = {
+				'value': 0
+			};
+			temp['hours']['fines'] = {
+				'value': 0
+			};
+			items.push(temp['times'])
+			items.push(temp['salaries'])
+			items.push(temp['hours'])
+			this.items = items
+		},
 
-        // Установка заголовка таблицы
-        setFields() {
-            let fields = []
+		// Установка заголовка таблицы
+		setFields() {
+			let fields = []
 
-            fields = [
-                {
-                    key: "0",
-                    label: "Дни",
-                    variant: "title",
-                    class: "text-left t-name"
-                },
-                {
-                    key: "total",
-                    label: "К выдаче",
-                    variant: "title",
-                    class: "text-center t-name"
-                },
-                {
-                    key: "avanses",
-                    label: "Авансы",
-                    variant: "title",
-                    class: "text-center t-name"
-                },
-                {
-                    key: "fines",
-                    label: "Депремирования",
-                    variant: "title",
-                    class: "text-center t-name"
-                }
-            ];
+			fields = [
+				{
+					key: '0',
+					label: 'Дни',
+					variant: 'title',
+					class: 'text-left t-name'
+				},
+				{
+					key: 'total',
+					label: 'К выдаче',
+					variant: 'title',
+					class: 'text-center t-name'
+				},
+				{
+					key: 'avanses',
+					label: 'Авансы',
+					variant: 'title',
+					class: 'text-center t-name'
+				},
+				{
+					key: 'fines',
+					label: 'Депремирования',
+					variant: 'title',
+					class: 'text-center t-name'
+				}
+			];
 
-            let days = this.dateInfo.daysInMonth
+			let days = this.dateInfo.daysInMonth
 
-            for (let i = 1; i <= days; i++) {
-                let dayName = this.$moment(`${i} ${this.dateInfo.date}`, 'D MMMM YYYY').locale('en').format('ddd')
-                fields.push({
-                    key: `${i}`,
-                    label: `${i}`,
-                    sortable: false,
-                    class: `day ${dayName}`,
-                })
-            }
-            this.fields = fields
-        },
-    }
+			for (let i = 1; i <= days; i++) {
+				let dayName = this.$moment(`${i} ${this.dateInfo.date}`, 'D MMMM YYYY').locale('en').format('ddd')
+				fields.push({
+					key: `${i}`,
+					label: `${i}`,
+					sortable: false,
+					class: `day ${dayName}`,
+				})
+			}
+			this.fields = fields
+		},
+	}
 };
 </script>
 

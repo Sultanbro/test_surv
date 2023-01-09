@@ -12,7 +12,8 @@
         "sub-install": "subpkg install",
         "sub-build": "subpkg run build",
         "sub-dev": "subpkg run dev",
-        "sub-lint": "subpkg run lint"
+        "sub-lint": "subpkg run lint",
+        "lint": "eslint resources/js --ext .vue,.js,.jsx,.cjs,.mjs, --fix --ignore-path .gitignore"
     },
     "subPackages": [
         "resources/js/admin"

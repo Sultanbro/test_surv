@@ -2,57 +2,57 @@
 import {mask} from 'vue-the-mask'
 
 export default {
-    name: 'UserEditSalary',
-    directives: {mask},
-    props: {
-        user: {
-            type: Object,
-            default: null
-        },
-        old_zarplata: String,
-        old_kaspi_cardholder: String,
-        old_kaspi: String,
-        old_card_kaspi: String,
-        old_jysan_cardholder: String,
-        old_jysan: String,
-        old_card_jysan: String,
-    },
-    data(){
-        return {
-            headphonesState: this.user?.headphones_sum > 0
-        }
-    },
-    methods: {
-        addCard(){
-            this.user.cards.push({
-                bank: '',
-                country: '',
-                cardholder: '',
-                phone: '',
-                number: '',
-            })
-        },
-        deleteCard(key){
-            this.user.cards.splice(key, 1)
-        },
-        addTax(userId){
-            this.user.taxes.push({
-                name: '',
-                amount: '',
-                percent: '',
-                user_id: userId,
-            })
-        },
-        deleteTax(key){
-            this.user.taxes.splice(key, 1)
-        },
-        changeHeadphonesState(){
-            this.headphonesState = !this.headphonesState
-            if(this.headphonesState && this.user){
-                this.user.headphones_sum = 0
-            }
-        }
-    },
+	name: 'UserEditSalary',
+	directives: {mask},
+	props: {
+		user: {
+			type: Object,
+			default: null
+		},
+		old_zarplata: String,
+		old_kaspi_cardholder: String,
+		old_kaspi: String,
+		old_card_kaspi: String,
+		old_jysan_cardholder: String,
+		old_jysan: String,
+		old_card_jysan: String,
+	},
+	data(){
+		return {
+			headphonesState: this.user?.headphones_sum > 0
+		}
+	},
+	methods: {
+		addCard(){
+			this.user.cards.push({
+				bank: '',
+				country: '',
+				cardholder: '',
+				phone: '',
+				number: '',
+			})
+		},
+		deleteCard(key){
+			this.user.cards.splice(key, 1)
+		},
+		addTax(userId){
+			this.user.taxes.push({
+				name: '',
+				amount: '',
+				percent: '',
+				user_id: userId,
+			})
+		},
+		deleteTax(key){
+			this.user.taxes.splice(key, 1)
+		},
+		changeHeadphonesState(){
+			this.headphonesState = !this.headphonesState
+			if(this.headphonesState && this.user){
+				this.user.headphones_sum = 0
+			}
+		}
+	},
 }
 </script>
 <template>

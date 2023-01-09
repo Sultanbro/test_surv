@@ -6,27 +6,27 @@
 
 <script>
 export default {
-    name: "MailPopup", 
-    props: {},
-    data: function () {
-        return {
-            data: [],
-            loading: false
-        };
-    },
-    created(){
-        // this.fetchData()
-    },
-    methods: {
-        fetchData() {
-            this.loading = true
+	name: 'MailPopup', 
+	props: {},
+	data: function () {
+		return {
+			data: [],
+			loading: false
+		};
+	},
+	created(){
+		// this.fetchData()
+	},
+	methods: {
+		fetchData() {
+			this.loading = true
             
-            axios.post("/checklist", {})
-                .then((response) => {
-                    this.data = response.data
-                    this.loading = false
-                });
-        },
-    }
+			axios.post('/checklist', {})
+				.then((response) => {
+					this.data = response.data
+					this.loading = false
+				});
+		},
+	}
 };
 </script>

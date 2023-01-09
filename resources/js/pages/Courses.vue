@@ -90,126 +90,126 @@
 
 <script>
 export default {
-  name: "Courses",
-  data() {
-    return {
-      test: 'dsa',
-      courses: [],
-      activeCourse: null,
-      modals: {
-        add_course: {
-          show: false,
-          name: ''
-        }
-      },
-    };
-  },
-  created() {
-    this.$emit('init')
-    this.fetchData();
-  },
-  mounted() {},
-  methods: {
-    saveOrder(event) {
+	name: 'Courses',
+	data() {
+		return {
+			test: 'dsa',
+			courses: [],
+			activeCourse: null,
+			modals: {
+				add_course: {
+					show: false,
+					name: ''
+				}
+			},
+		};
+	},
+	created() {
+		this.$emit('init')
+		this.fetchData();
+	},
+	mounted() {},
+	methods: {
+		saveOrder(event) {
 
-      axios.post('/courses/save-order', {
-        id: event.item.id,
-        order: event.newIndex, // oldIndex
-      }) 
-      .then(response => {
-          this.$toast.success('Очередь сохранена');
-      })
-    },
-    selectCourse(i) {
-      this.activeCourse = this.courses[i];
-      window.history.replaceState({ id: "100" }, "Курсы", "/courses?id=" + this.activeCourse.id);
-    },
+			axios.post('/courses/save-order', {
+				id: event.item.id,
+				order: event.newIndex, // oldIndex
+			}) 
+				.then(response => {
+					this.$toast.success('Очередь сохранена');
+				})
+		},
+		selectCourse(i) {
+			this.activeCourse = this.courses[i];
+			window.history.replaceState({ id: '100' }, 'Курсы', '/courses?id=' + this.activeCourse.id);
+		},
 
-    editAccess(i) {
-      alert('Видимость и назначение курса отделам');
-    },
+		editAccess(i) {
+			alert('Видимость и назначение курса отделам');
+		},
 
-    createCourse() {
-      if (this.modals.add_course.name.length <= 2) {
-        alert("Слишком короткое название!");
-        return "";
-      }
+		createCourse() {
+			if (this.modals.add_course.name.length <= 2) {
+				alert('Слишком короткое название!');
+				return '';
+			}
 
-      let loader = this.$loading.show();
+			let loader = this.$loading.show();
 
-      axios
-        .post("/admin/courses/create", {
-          name: this.modals.add_course.name,
-        })
-        .then((response) => {
-          this.modals.add_course.show = false;
-          this.modals.add_course.name = "";
+			axios
+				.post('/admin/courses/create', {
+					name: this.modals.add_course.name,
+				})
+				.then((response) => {
+					this.modals.add_course.show = false;
+					this.modals.add_course.name = '';
 
-          this.courses.push({
-            id: response.data.id,
-            name: response.data.name,
-            items: [],
-          });
+					this.courses.push({
+						id: response.data.id,
+						name: response.data.name,
+						items: [],
+					});
 
-          this.activeCourse = this.courses[this.courses.length - 1]
+					this.activeCourse = this.courses[this.courses.length - 1]
 
 
-          this.$toast.success("Курс успешно создан!");
-          loader.hide();
-        })
-        .catch((error) => {
-          loader.hide();
-          alert(error);
-        });
-    },
+					this.$toast.success('Курс успешно создан!');
+					loader.hide();
+				})
+				.catch((error) => {
+					loader.hide();
+					alert(error);
+				});
+		},
 
-    deleteCourse(i) {
-       if (confirm("Вы уверены удалить курс?")) {
+		deleteCourse(i) {
+			if (confirm('Вы уверены удалить курс?')) {
         
-        let loader = this.$loading.show();
+				let loader = this.$loading.show();
 
-        axios
-          .post("/admin/courses/delete", {
-            id: this.courses[i].id
-          })
-          .then((response) => {
-            this.$toast.success("Курс успешно удален!");
-            this.courses.splice(i,1)
-            this.activeCourse = null;
-            loader.hide();
-          })
-          .catch((error) => {
-            loader.hide();
-            alert(error);
-          });
-        }
-    },
-    fetchData() {
-      let loader = this.$loading.show();
+				axios
+					.post('/admin/courses/delete', {
+						id: this.courses[i].id
+					})
+					.then((response) => {
+						this.$toast.success('Курс успешно удален!');
+						this.courses.splice(i,1)
+						this.activeCourse = null;
+						loader.hide();
+					})
+					.catch((error) => {
+						loader.hide();
+						alert(error);
+					});
+			}
+		},
+		fetchData() {
+			let loader = this.$loading.show();
 
-      axios
-        .get("/admin/courses/get", {})
-        .then((response) => {
-          this.courses = response.data.courses;
+			axios
+				.get('/admin/courses/get', {})
+				.then((response) => {
+					this.courses = response.data.courses;
 
-           const urlParams = new URLSearchParams(window.location.search);
-          let course_id = urlParams.get('id');
+					const urlParams = new URLSearchParams(window.location.search);
+					let course_id = urlParams.get('id');
        
-          if(course_id != null) {
-            let i = this.courses.findIndex(el => el.id == course_id)
-            if(i != -1) this.activeCourse = this.courses[i]
-          } else if (this.courses.length > 0) {
-            this.activeCourse = this.courses[0];
-          }
+					if(course_id != null) {
+						let i = this.courses.findIndex(el => el.id == course_id)
+						if(i != -1) this.activeCourse = this.courses[i]
+					} else if (this.courses.length > 0) {
+						this.activeCourse = this.courses[0];
+					}
           
-          loader.hide();
-        })
-        .catch((error) => {
-          loader.hide();
-          alert(error);
-        });
-    },
-  },
+					loader.hide();
+				})
+				.catch((error) => {
+					loader.hide();
+					alert(error);
+				});
+		},
+	},
 
   
 };

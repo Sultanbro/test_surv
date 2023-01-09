@@ -49,122 +49,122 @@
 
 <script>
 export default {
-  name: "UploadModal",
-  props: {
-    open: Boolean,
-    allowedFileTypes: {
-      type: Array,
-      default: () => ['png']
-    }
-  },
-  emits: ['update:open', 'data'],
-  /* TS
+	name: 'UploadModal',
+	props: {
+		open: Boolean,
+		allowedFileTypes: {
+			type: Array,
+			default: () => ['png']
+		}
+	},
+	emits: ['update:open', 'data'],
+	/* TS
     {
       base64: string;
       file: File
     }
   */
-  data() {
-    return {
-      error: {
-        text: ''
-      },
-      filename: ''
-    }
-  },
-  watch: {
-    open (value) {
-      if (!value) {
-        this.error.text = ''
-        this.file = undefined
-        this.filename = ''
-      }
-    }
-  },
-  methods: {
+	data() {
+		return {
+			error: {
+				text: ''
+			},
+			filename: ''
+		}
+	},
+	watch: {
+		open (value) {
+			if (!value) {
+				this.error.text = ''
+				this.file = undefined
+				this.filename = ''
+			}
+		}
+	},
+	methods: {
 
-    // EVENT HANDLERS
+		// EVENT HANDLERS
     
-    async okHandler (e) {
-      try {
-        if (!this.filename) {
-          e.preventDefault()
-          this.error.text = 'Необходимо выбрать файл'
-          return
-        }
-        const file = this.getFile()
-        const base64 = await this.getBase64(file)
-        this.$emit('data', { base64, file })
-      } catch (error) {
-        console.error(error)
-      }
-    },
-    dropHandler (e) {
-      const data = e.dataTransfer
-      if (data) {
-        this.handleFile(data.files[0])
-      }
-      this.resetFileInput()
-    },
-    changeHandler (e) {
-      if (e.target) {
-        const target = e.target
-        const files = target.files
-        if (files) {
-          this.handleFile(files[0])
-        }
-      }
-      this.resetFileInput()
-    },
+		async okHandler (e) {
+			try {
+				if (!this.filename) {
+					e.preventDefault()
+					this.error.text = 'Необходимо выбрать файл'
+					return
+				}
+				const file = this.getFile()
+				const base64 = await this.getBase64(file)
+				this.$emit('data', { base64, file })
+			} catch (error) {
+				console.error(error)
+			}
+		},
+		dropHandler (e) {
+			const data = e.dataTransfer
+			if (data) {
+				this.handleFile(data.files[0])
+			}
+			this.resetFileInput()
+		},
+		changeHandler (e) {
+			if (e.target) {
+				const target = e.target
+				const files = target.files
+				if (files) {
+					this.handleFile(files[0])
+				}
+			}
+			this.resetFileInput()
+		},
 
-    // HELPERS
+		// HELPERS
 
-    resetFileInput () {
-      const input = this.$refs.input
-      input.value = ''
-    },
-    handleFile (file) {
-      this.error.text = ''
-      this.filename = ''
-      const typeAllowed = this.isFileTypeAllowed(file)
-      const sizeAllowed = this.isFileSizeAllowed(file)
-      if (typeAllowed && sizeAllowed) {
-        this.filename = file.name
-        this.setFile(file)
-      } else {
-        if (!typeAllowed) {
-          this.error.text = 'Недопустимый формат файла'
-        } else if (!sizeValid) {
-          this.error.text = 'Недопустимый размер файла'
-        }
-      }
-    },
-    isFileTypeAllowed (file) {
-      const extension = file.name.split('.').pop() || ''
-      return this.allowedFileTypes.includes(extension)
-    },
-    isFileSizeAllowed () {
-      // TODO
-      return true
-    },
-    getBase64 (file) {
-      return new Promise((resolve, reject) => {
-        const reader = new FileReader()
-        reader.readAsDataURL(file)
-        reader.onload = () => resolve(reader.result)
-        reader.onerror = error => reject(error)
-      })
-    },
-    setFile (file) {
-      this.file = file
-    },
-    getFile () {
-      return this.file
-    }
-  },
-  created () {
-    this.file = undefined
-  }
+		resetFileInput () {
+			const input = this.$refs.input
+			input.value = ''
+		},
+		handleFile (file) {
+			this.error.text = ''
+			this.filename = ''
+			const typeAllowed = this.isFileTypeAllowed(file)
+			const sizeAllowed = this.isFileSizeAllowed(file)
+			if (typeAllowed && sizeAllowed) {
+				this.filename = file.name
+				this.setFile(file)
+			} else {
+				if (!typeAllowed) {
+					this.error.text = 'Недопустимый формат файла'
+				} else if (!sizeValid) {
+					this.error.text = 'Недопустимый размер файла'
+				}
+			}
+		},
+		isFileTypeAllowed (file) {
+			const extension = file.name.split('.').pop() || ''
+			return this.allowedFileTypes.includes(extension)
+		},
+		isFileSizeAllowed () {
+			// TODO
+			return true
+		},
+		getBase64 (file) {
+			return new Promise((resolve, reject) => {
+				const reader = new FileReader()
+				reader.readAsDataURL(file)
+				reader.onload = () => resolve(reader.result)
+				reader.onerror = error => reject(error)
+			})
+		},
+		setFile (file) {
+			this.file = file
+		},
+		getFile () {
+			return this.file
+		}
+	},
+	created () {
+		this.file = undefined
+	}
 }
 </script>
 

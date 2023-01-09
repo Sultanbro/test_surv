@@ -8,9 +8,9 @@ import { VerticalNavLink, VerticalNavSectionTitle } from '@layouts'
 
 const vuetifyTheme = useTheme()
 const upgradeBanner = computed(() => {
-  return vuetifyTheme.global.name.value === 'light'
-    ? upgradeBannerLight
-    : upgradeBannerDark
+	return vuetifyTheme.global.name.value === 'light'
+		? upgradeBannerLight
+		: upgradeBannerDark
 })
 
 const isAdmin = userInfo.is_admin

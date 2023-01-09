@@ -39,62 +39,62 @@
 </template>
 <script>
 export default { 
-  props: {
-    tasks: {
-      required: true,
-      type: Array
-    },
-    parent_id: {
-      default: null
-    },
-    opened: {
-      default: false
-    },
-    auth_user_id: {
-      type: Number
-    },
-    mode: {
-      type: String
-    }
-  },
-  data() {
-    return {
-      hover: false,
-      handle: '.fa-t',
-    }
-  },
-  created() {
-    // if(this.mode == 'edit') {
-    //   this.handle = '.fa-bars';
-    // }
-  },
-  methods: {
-    toggleOpen(el) {
-      this.showPage(el.id, false, true);
-      el.opened = !el.opened
-    },  
-    showPage(id) {
-       this.$emit('showPage', id);
-    },
+	props: {
+		tasks: {
+			required: true,
+			type: Array
+		},
+		parent_id: {
+			default: null
+		},
+		opened: {
+			default: false
+		},
+		auth_user_id: {
+			type: Number
+		},
+		mode: {
+			type: String
+		}
+	},
+	data() {
+		return {
+			hover: false,
+			handle: '.fa-t',
+		}
+	},
+	created() {
+		// if(this.mode == 'edit') {
+		//   this.handle = '.fa-bars';
+		// }
+	},
+	methods: {
+		toggleOpen(el) {
+			this.showPage(el.id, false, true);
+			el.opened = !el.opened
+		},  
+		showPage(id) {
+			this.$emit('showPage', id);
+		},
     
-    addPage(el) {
-      this.$emit('addPage', el);
-    },
-    saveOrder(event) {
-        axios.post('/kb/page/save-order', {
-          id: event.item.id,
-          order: event.newIndex, // oldIndex
-          parent_id: event.to.id
-        })
-        .then(response => {
-           this.$toast.success('Очередь сохранена');
-        })
-    },
+		addPage(el) {
+			this.$emit('addPage', el);
+		},
+		saveOrder(event) {
+			axios.post('/kb/page/save-order', {
+				id: event.item.id,
+				order: event.newIndex, // oldIndex
+				parent_id: event.to.id
+			})
+				.then(response => {
+					this.$toast.success('Очередь сохранена');
+				})
+		},
 
-    log(e) {
-      console.log(e)
-    }
-  },
-  name: "nested-draggable"
+		log(e) {
+			console.log(e)
+		}
+	},
+	name: 'nested-draggable'
 };
 </script>

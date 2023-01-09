@@ -48,22 +48,22 @@
 import LeftSidebarMenu from './LeftSidebarMenu'
 
 export default {
-  name: 'LeftSidebarItem',
-  components: {
-    LeftSidebarMenu
-  },
-  props: [
-    'href',
-    'to',
-    'name',
-    'icon',
-    'img',
-    'menu',
-    'popover'
-  ],
-  mounted(){
-    this.$emit('calcsize', this.$el)
-  }
+	name: 'LeftSidebarItem',
+	components: {
+		LeftSidebarMenu
+	},
+	props: [
+		'href',
+		'to',
+		'name',
+		'icon',
+		'img',
+		'menu',
+		'popover'
+	],
+	mounted(){
+		this.$emit('calcsize', this.$el)
+	}
 }
 </script>
 

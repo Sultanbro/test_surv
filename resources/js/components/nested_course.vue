@@ -32,47 +32,47 @@
 </template>
 <script>
 export default {  
-  name: "nested-course",
-  props: {
-    tasks: {
-      required: true,
-      type: Array
-    },
-    active: {
-      default: 0
-    },
-  },
-  watch: {
-    active: function(v) {
-      if(this.first_active == 0) this.first_active = this.active
-      console.log('watch actibe')
-    }
-  },
-  data() {
-    return {
-      first_active: 0
-    }
-  },
-  methods: {
-    showPage(id) {
+	name: 'nested-course',
+	props: {
+		tasks: {
+			required: true,
+			type: Array
+		},
+		active: {
+			default: 0
+		},
+	},
+	watch: {
+		active: function(v) {
+			if(this.first_active == 0) this.first_active = this.active
+			console.log('watch actibe')
+		}
+	},
+	data() {
+		return {
+			first_active: 0
+		}
+	},
+	methods: {
+		showPage(id) {
 
-      let item = null;
-      let i = this.tasks.findIndex(el => el.id == id);
-      if(i != -1) {
-        item = this.tasks[i]
-      }
+			let item = null;
+			let i = this.tasks.findIndex(el => el.id == id);
+			if(i != -1) {
+				item = this.tasks[i]
+			}
 
-      console.log('nested SHowpage')
-      console.log(item)
-      console.log(this.first_active)
+			console.log('nested SHowpage')
+			console.log(item)
+			console.log(this.first_active)
 
-      if(id != this.first_active) {
-        if(item != null && item.item_model == null) return; 
-      } 
+			if(id != this.first_active) {
+				if(item != null && item.item_model == null) return; 
+			} 
  
-      console.log('nested SHowpage emit')
-      this.$emit('showPage', id);
-    },
-  },
+			console.log('nested SHowpage emit')
+			this.$emit('showPage', id);
+		},
+	},
 };
 </script>

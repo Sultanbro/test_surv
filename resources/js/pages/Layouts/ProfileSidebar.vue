@@ -183,314 +183,314 @@ import axios from 'axios'
 import { bus } from '../../bus'
 
 export default {
-    name: 'ProfileSidebar',
-    props: {},
-    data: function () {
-        return {
-            fields: [],
-            balance: 0,
-            currency: 'KZT',
-            file: '',
-            showPreview: false,
-            imagePreview: '',
-            logo:{
-                image: '',
-                canvas: null
-            },
-            loading: false,
-            hide: false,
-            userInfo: {},
-            inViewport: false,
-            buttonStatus: 'init',
-            workdayStatus: 'stopped',
-            // corp book
-            corp_book_page: null,
-            showCorpBookPage: false,
-            bookTimer: 0,
-            bookTimerInterval: 0,
-            isBookTest: false,
-            isRoot: false,
-            isProfile: false,
-        };
-    },
-    computed: {
-        canChangeLogo(){
-            return this.$laravel.is_admin == 1 || this.$laravel.is_admin == 18
-        },
-        showButton(){
-            if(this.$can('ucalls_view') && !this.$laravel.is_admin) return false
-            return this.workdayStatus === 'started' || (this.userInfo.user && this.userInfo.user.user_type === 'remote')
-        }
-    },
-    mounted(){
-        if(!this.isRoot && !this.isProfile){
-            this.hide = true
-        }
-        const scrollObserver = new IntersectionObserver(() => {
-            this.inViewport = true
-        })
-        scrollObserver.observe(this.$el)
-    },
-    created(){
-        this.isRoot = window.location.pathname === '/'
-        this.isProfile = window.location.pathname === '/profile'
+	name: 'ProfileSidebar',
+	props: {},
+	data: function () {
+		return {
+			fields: [],
+			balance: 0,
+			currency: 'KZT',
+			file: '',
+			showPreview: false,
+			imagePreview: '',
+			logo:{
+				image: '',
+				canvas: null
+			},
+			loading: false,
+			hide: false,
+			userInfo: {},
+			inViewport: false,
+			buttonStatus: 'init',
+			workdayStatus: 'stopped',
+			// corp book
+			corp_book_page: null,
+			showCorpBookPage: false,
+			bookTimer: 0,
+			bookTimerInterval: 0,
+			isBookTest: false,
+			isRoot: false,
+			isProfile: false,
+		};
+	},
+	computed: {
+		canChangeLogo(){
+			return this.$laravel.is_admin == 1 || this.$laravel.is_admin == 18
+		},
+		showButton(){
+			if(this.$can('ucalls_view') && !this.$laravel.is_admin) return false
+			return this.workdayStatus === 'started' || (this.userInfo.user && this.userInfo.user.user_type === 'remote')
+		}
+	},
+	mounted(){
+		if(!this.isRoot && !this.isProfile){
+			this.hide = true
+		}
+		const scrollObserver = new IntersectionObserver(() => {
+			this.inViewport = true
+		})
+		scrollObserver.observe(this.$el)
+	},
+	created(){
+		this.isRoot = window.location.pathname === '/'
+		this.isProfile = window.location.pathname === '/profile'
 
-        bus.$data.profileSidebar = Vue.observable({
-            userInfo: {},
-            balance: 0,
-            currency: 'KZT',
-            buttonStatus: this.buttonStatus,
-            workdayStatus: this.workdayStatus,
-        })
-        bus.$on('MobileProfileSidebarStartDay', this.startDay)
+		bus.$data.profileSidebar = Vue.observable({
+			userInfo: {},
+			balance: 0,
+			currency: 'KZT',
+			buttonStatus: this.buttonStatus,
+			workdayStatus: this.workdayStatus,
+		})
+		bus.$on('MobileProfileSidebarStartDay', this.startDay)
 
-        window.addEventListener('blur', this.pauseBookTimer)
-        window.addEventListener('focus', this.unpauseBookTimer)
+		window.addEventListener('blur', this.pauseBookTimer)
+		window.addEventListener('focus', this.unpauseBookTimer)
 
-        this.getLogo()
-        this.fetchUserInfo()
-        this.fetchTTStatus()
-    },
-    methods: {
-        getLogo(){
-            axios.post('/settings/get', {
-                type: 'company'
-            }).then(response => {
-                const settings = response.data.settings;
-                if (settings.logo){
-                    this.logo.image =  settings.logo;
-                }
-                console.log(settings)
-                console.log(settings.logo)
-                console.log(this.logo.image)
-            }).catch((error) => {
-                this.$toast(error);
-            });
-        },
+		this.getLogo()
+		this.fetchUserInfo()
+		this.fetchTTStatus()
+	},
+	methods: {
+		getLogo(){
+			axios.post('/settings/get', {
+				type: 'company'
+			}).then(response => {
+				const settings = response.data.settings;
+				if (settings.logo){
+					this.logo.image =  settings.logo;
+				}
+				console.log(settings)
+				console.log(settings.logo)
+				console.log(this.logo.image)
+			}).catch((error) => {
+				this.$toast(error);
+			});
+		},
 
-        /**
+		/**
          * Загрузить лого открыть модальный окно
          */
-        modalLogo() {
-            this.$bvModal.show('modal-sm');
-        },
+		modalLogo() {
+			this.$bvModal.show('modal-sm');
+		},
 
-        modalHideLogo() {
-            this.$bvModal.hide('modal-sm');
-        },
+		modalHideLogo() {
+			this.$bvModal.hide('modal-sm');
+		},
 
-        change({ coordinates, canvas }) {
-            this.logo.canvas = canvas;
-            console.log(coordinates, canvas)
-        },
+		change({ coordinates, canvas }) {
+			this.logo.canvas = canvas;
+			console.log(coordinates, canvas)
+		},
 
-        /**
+		/**
          * Загрузить лого
          */
-        uploadLogo(){
-            this.logo.canvas.toBlob(blob => {
-                this.loading = true
+		uploadLogo(){
+			this.logo.canvas.toBlob(blob => {
+				this.loading = true
 
-                const formData = new FormData();
-                formData.append('file', blob);
-                formData.append('type', 'company');
+				const formData = new FormData();
+				formData.append('file', blob);
+				formData.append('type', 'company');
 
-                axios.post('/settings/save',
-                    formData,
-                    {
-                        headers: {
-                            'Content-Type': 'multipart/form-data',
-                        }
-                    }
-                )
-                .then((response) => {
-                    console.log('success')
-                    console.log(response)
-                    this.logo.image = response.data.logo;
-                    this.loading = false
-                })
-                .catch((response)=> {
-                    console.log('failure!!');
-                    console.log(response)
-                    this.loading = false
-                });
-            })
-            this.modalHideLogo();
-            this.imagePreview = '';
-            this.showPreview = false;
-        },
+				axios.post('/settings/save',
+					formData,
+					{
+						headers: {
+							'Content-Type': 'multipart/form-data',
+						}
+					}
+				)
+					.then((response) => {
+						console.log('success')
+						console.log(response)
+						this.logo.image = response.data.logo;
+						this.loading = false
+					})
+					.catch((response)=> {
+						console.log('failure!!');
+						console.log(response)
+						this.loading = false
+					});
+			})
+			this.modalHideLogo();
+			this.imagePreview = '';
+			this.showPreview = false;
+		},
 
-        handleFileUpload(){
-            this.file = this.$refs.file.files[0];
-            let reader = new FileReader();
+		handleFileUpload(){
+			this.file = this.$refs.file.files[0];
+			let reader = new FileReader();
 
-            reader.addEventListener('load', function () {
-                this.showPreview = true;
-                this.imagePreview = reader.result;
-                this.modalLogo();
-            }.bind(this), false);
+			reader.addEventListener('load', function () {
+				this.showPreview = true;
+				this.imagePreview = reader.result;
+				this.modalLogo();
+			}.bind(this), false);
 
-            if( this.file ){
-                if ( /\.(jpe?g|png|gif)$/i.test( this.file.name ) ) {
-                    reader.readAsDataURL( this.file );
-                }
-            }
-            else{
-                this.$toast.error('Неподдерживаемый формат: ' + this.file.name.split('.').reverse()[0])
-            }
-        },
+			if( this.file ){
+				if ( /\.(jpe?g|png|gif)$/i.test( this.file.name ) ) {
+					reader.readAsDataURL( this.file );
+				}
+			}
+			else{
+				this.$toast.error('Неподдерживаемый формат: ' + this.file.name.split('.').reverse()[0])
+			}
+		},
 
-        /**
+		/**
          * Добавить виджет
          */
-        addWidget() {
-            alert('Вы не можете, потому что не работают Виджеты');
-        },
+		addWidget() {
+			alert('Вы не можете, потому что не работают Виджеты');
+		},
 
-        /**
+		/**
          * callback c startDayBtn
          * возвращает текущий баланс
          */
-        currentBalance(balance) {
-            this.balance = balance.sum
-            this.currency = balance.currency
-        },
+		currentBalance(balance) {
+			this.balance = balance.sum
+			this.currency = balance.currency
+		},
 
-        fetchUserInfo(){
-            this.loading = true
+		fetchUserInfo(){
+			this.loading = true
 
-            axios.get('/profile/personal-info').then(response => {
-                this.userInfo = response.data
-                bus.$data.profileSidebar.userInfo = this.userInfo
-                this.loading = false
-            }).catch((e) => console.log(e))
-        },
+			axios.get('/profile/personal-info').then(response => {
+				this.userInfo = response.data
+				bus.$data.profileSidebar.userInfo = this.userInfo
+				this.loading = false
+			}).catch((e) => console.log(e))
+		},
 
-        /**
+		/**
          * Узнать текущий статус
          * Начат или завершен рабочий день
          */
-        fetchTTStatus(){
-            this.buttonStatus = 'loading'
+		fetchTTStatus(){
+			this.buttonStatus = 'loading'
 
-            axios.post('/timetracking/status', {}).then((response) => {
-                this.workdayStatus = response.data.status
+			axios.post('/timetracking/status', {}).then((response) => {
+				this.workdayStatus = response.data.status
 
-                if((this.isProfile || this.isRoot) && this.workdayStatus === 'started' && response.data.corp_book) {
-                    this.corp_book_page = response.data.corp_book
-                    this.showCorpBookPage = this.corp_book_page !== null
-                    this.bookCounter()
-                }
+				if((this.isProfile || this.isRoot) && this.workdayStatus === 'started' && response.data.corp_book) {
+					this.corp_book_page = response.data.corp_book
+					this.showCorpBookPage = this.corp_book_page !== null
+					this.bookCounter()
+				}
 
-                this.currentBalance(response.data.balance)
-                bus.$data.profileSidebar.balance = this.balance
-                bus.$data.profileSidebar.currency = this.currency
+				this.currentBalance(response.data.balance)
+				bus.$data.profileSidebar.balance = this.balance
+				bus.$data.profileSidebar.currency = this.currency
 
-                this.buttonStatus = 'init'
-            })
-            .catch((error) => {
-                this.buttonStatus = 'error'
-                console.log('StartDayBtn:', error)
-            })
-        },
+				this.buttonStatus = 'init'
+			})
+				.catch((error) => {
+					this.buttonStatus = 'error'
+					console.log('StartDayBtn:', error)
+				})
+		},
 
-        /**
+		/**
          * private
          *
          * Получить параметры для начатия и завершения дня
          */
-        getParams() {
-            let params = {start: moment().format('HH:mm:ss')};
-            if(this.workdayStatus === 'started') params = {stop: moment().format('HH:mm:ss')};
-            return params;
-        },
+		getParams() {
+			let params = {start: moment().format('HH:mm:ss')};
+			if(this.workdayStatus === 'started') params = {stop: moment().format('HH:mm:ss')};
+			return params;
+		},
 
-        /**
+		/**
          * Начать или завершить день
          */
-        startDay() {
-            if(this.buttonStatus === 'loading') return
+		startDay() {
+			if(this.buttonStatus === 'loading') return
 
-            this.buttonStatus = 'loading'
+			this.buttonStatus = 'loading'
 
-            axios.post('/timetracking/starttracking', this.getParams()).then((response) => {
+			axios.post('/timetracking/starttracking', this.getParams()).then((response) => {
 
-                this.buttonStatus = 'init'
+				this.buttonStatus = 'init'
 
-                if (response.data.error) {
-                    this.$toast.info(response.data.error.message);
-                    return;
-                }
+				if (response.data.error) {
+					this.$toast.info(response.data.error.message);
+					return;
+				}
 
-                if((this.isProfile || this.isRoot) && response.data.status === 'started') {
-                    this.workdayStatus = 'started';
-                    if(response.data.corp_book.has) {
-                        this.corp_book_page = response.data.corp_book.page
-                        this.showCorpBookPage = this.corp_book_page != null;
-                        this.bookCounter();
-                    }
-                    this.$toast.info('День начат');
-                }
+				if((this.isProfile || this.isRoot) && response.data.status === 'started') {
+					this.workdayStatus = 'started';
+					if(response.data.corp_book.has) {
+						this.corp_book_page = response.data.corp_book.page
+						this.showCorpBookPage = this.corp_book_page != null;
+						this.bookCounter();
+					}
+					this.$toast.info('День начат');
+				}
 
-                if(response.data.status === 'stopped' || response.data.status === '') { // stopped
-                    this.workdayStatus = 'stopped';
-                    this.$toast.info('День завершен');
-                }
-            })
-            .catch((error) => {
-                this.buttonStatus = 'error'
-                console.log(error);
-            });
-        },
+				if(response.data.status === 'stopped' || response.data.status === '') { // stopped
+					this.workdayStatus = 'stopped';
+					this.$toast.info('День завершен');
+				}
+			})
+				.catch((error) => {
+					this.buttonStatus = 'error'
+					console.log(error);
+				});
+		},
 
-        /**
+		/**
          *  Time to read book before "I have read" btn became active
          */
-        bookCounter() {
-            if(!this.isRoot && !this.isProfile) return
-            this.bookTimer = 60
-            this.unpauseBookTimer()
-        },
+		bookCounter() {
+			if(!this.isRoot && !this.isProfile) return
+			this.bookTimer = 60
+			this.unpauseBookTimer()
+		},
 
-        pauseBookTimer(){
-            clearInterval(this.bookTimerInterval)
-        },
+		pauseBookTimer(){
+			clearInterval(this.bookTimerInterval)
+		},
 
-        unpauseBookTimer(){
-            if(this.bookTimer === 0) return
-            this.bookTimerInterval = setInterval(() => {
-                --this.bookTimer
-                if(this.bookTimer === 0) {
-                    clearInterval(this.bookTimerInterval)
-                }
-            }, 1000)
-        },
+		unpauseBookTimer(){
+			if(this.bookTimer === 0) return
+			this.bookTimerInterval = setInterval(() => {
+				--this.bookTimer
+				if(this.bookTimer === 0) {
+					clearInterval(this.bookTimerInterval)
+				}
+			}, 1000)
+		},
 
-        /**
+		/**
          * Set read corp book page
          */
-        hideBook() {
-            axios.post('/corp_book/set-read/', {})
-                .then(res => this.showCorpBookPage = false)
-                .catch(error => console.log(error))
-        },
+		hideBook() {
+			axios.post('/corp_book/set-read/', {})
+				.then(res => this.showCorpBookPage = false)
+				.catch(error => console.log(error))
+		},
 
-        repeatBook(){
-            this.showCorpBookPage = true
-            this.isBookTest = false
-            this.bookCounter()
-        },
+		repeatBook(){
+			this.showCorpBookPage = true
+			this.isBookTest = false
+			this.bookCounter()
+		},
 
-        testBook(){
-            if(this.bookTimer) return
-            if(!(this.corp_book_page.questions && this.corp_book_page.questions.length)){
-                this.showCorpBookPage = false
-                return
-            }
-            this.isBookTest = true
-            this.showCorpBookPage = false
-        },
-    }
+		testBook(){
+			if(this.bookTimer) return
+			if(!(this.corp_book_page.questions && this.corp_book_page.questions.length)){
+				this.showCorpBookPage = false
+				return
+			}
+			this.isBookTest = true
+			this.showCorpBookPage = false
+		},
+	}
 };
 </script>
 

@@ -15,8 +15,8 @@
 
 <script>
 export default {
-    name: 'CheckListPopupItem',
-    props: ['item', 'index']
+	name: 'CheckListPopupItem',
+	props: ['item', 'index']
 }
 </script>
 

@@ -4,36 +4,36 @@ import avatar4 from '@/assets/images/avatars/avatar-4.png'
 import avatar8 from '@/assets/images/avatars/avatar-8.png'
 
 const solidCardData = [
-  {
-    cardBg: '#16B1FF',
-    title: 'Twitter Card',
-    icon: 'mdi-twitter',
-    text: '"Turns out semicolon-less style is easier and safer in TS because most gotcha edge cases are type invalid as well."',
-    avatarImg: avatar4,
-    avatarName: 'Mary Vaughn',
-    likes: '1.2k',
-    share: '80',
-  },
-  {
-    cardBg: '#3B5998',
-    title: 'Facebook Card',
-    icon: 'mdi-facebook',
-    text: 'You\'ve read about the importance of being courageous, rebellious and imaginative. These are all vital ingredients in an.',
-    avatarImg: avatar1,
-    avatarName: 'Eugene Clarke',
-    likes: '3.2k',
-    share: '49',
-  },
-  {
-    cardBg: '#007BB6',
-    title: 'Linkedin Card',
-    icon: 'mdi-linkedin',
-    text: 'With the Internet spreading like wildfire and reaching every part of our daily life, more and more traffic is directed.',
-    avatarImg: avatar8,
-    avatarName: 'Anne Burke1',
-    likes: '1.2k',
-    share: '80',
-  },
+	{
+		cardBg: '#16B1FF',
+		title: 'Twitter Card',
+		icon: 'mdi-twitter',
+		text: '"Turns out semicolon-less style is easier and safer in TS because most gotcha edge cases are type invalid as well."',
+		avatarImg: avatar4,
+		avatarName: 'Mary Vaughn',
+		likes: '1.2k',
+		share: '80',
+	},
+	{
+		cardBg: '#3B5998',
+		title: 'Facebook Card',
+		icon: 'mdi-facebook',
+		text: 'You\'ve read about the importance of being courageous, rebellious and imaginative. These are all vital ingredients in an.',
+		avatarImg: avatar1,
+		avatarName: 'Eugene Clarke',
+		likes: '3.2k',
+		share: '49',
+	},
+	{
+		cardBg: '#007BB6',
+		title: 'Linkedin Card',
+		icon: 'mdi-linkedin',
+		text: 'With the Internet spreading like wildfire and reaching every part of our daily life, more and more traffic is directed.',
+		avatarImg: avatar8,
+		avatarName: 'Anne Burke1',
+		likes: '1.2k',
+		share: '80',
+	},
 ]
 </script>
 

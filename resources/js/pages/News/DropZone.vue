@@ -19,177 +19,177 @@
 import vue2Dropzone from '/vue2-dropzone'
 import '/vue2-dropzone/dist/vue2Dropzone.min.css'
 export default {
-    name: "DropZone",
-    components: {
-        vueDropzone: vue2Dropzone
-    },
-    data() {
-        return {
-            dropzoneOptions: {
-                url: 'https://httpbin.org/post',
-                thumbnailWidth: 200,
-                maxFilesize: 5,
-                addRemoveLinks: true,
-            },
-            files: [],
-        }
-    },
-    methods: {
-        fakeClick() {
-            document.getElementById('dropzone').click();
-        },
+	name: 'DropZone',
+	components: {
+		vueDropzone: vue2Dropzone
+	},
+	data() {
+		return {
+			dropzoneOptions: {
+				url: 'https://httpbin.org/post',
+				thumbnailWidth: 200,
+				maxFilesize: 5,
+				addRemoveLinks: true,
+			},
+			files: [],
+		}
+	},
+	methods: {
+		fakeClick() {
+			document.getElementById('dropzone').click();
+		},
 
-        async sendingEvent(file, xhr, formData) {
-            this.changeRemoveIcon();
+		async sendingEvent(file, xhr, formData) {
+			this.changeRemoveIcon();
 
-            formData.append('file', file);
+			formData.append('file', file);
 
-            await axios.post('/files', formData)
-                .then(res => {
-                    this.$set(this.files, this.files.length, {
-                        id: res.data.data.id,
-                        uuid: file.upload.uuid,
-                        name: file.upload.uuid,
-                    });
+			await axios.post('/files', formData)
+				.then(res => {
+					this.$set(this.files, this.files.length, {
+						id: res.data.data.id,
+						uuid: file.upload.uuid,
+						name: file.upload.uuid,
+					});
 
-                    this.$emit('sendFiles', {
-                        newList: this.files
-                    })
-                })
-                .catch(res => {
-                    console.log(res);
-                })
-        },
+					this.$emit('sendFiles', {
+						newList: this.files
+					})
+				})
+				.catch(res => {
+					console.log(res);
+				})
+		},
 
-        async removeFile(file, error, xhr) {
-            if (file.manuallyAdded) {
-                const el = this.files.filter(item => {
-                    return item.name == file.name;
-                })[0];
+		async removeFile(file, error, xhr) {
+			if (file.manuallyAdded) {
+				const el = this.files.filter(item => {
+					return item.name == file.name;
+				})[0];
 
-                this.files.splice(this.files.indexOf(el), 1);
-            } else {
+				this.files.splice(this.files.indexOf(el), 1);
+			} else {
 
-                const el = this.files.filter(item => {
-                    return item.uuid == file.upload.uuid;
-                })[0];
+				const el = this.files.filter(item => {
+					return item.uuid == file.upload.uuid;
+				})[0];
 
-                this.files.splice(this.files.indexOf(el), 1);
-            }
+				this.files.splice(this.files.indexOf(el), 1);
+			}
 
-            this.$emit('sendFiles', {
-                newList: this.files
-            })
-        },
+			this.$emit('sendFiles', {
+				newList: this.files
+			})
+		},
 
-        removeAllFiles() {
-            this.$refs.myVueDropzone.removeAllFiles(true);
-        },
+		removeAllFiles() {
+			this.$refs.myVueDropzone.removeAllFiles(true);
+		},
 
-        thumbnail: function (file, dataUrl) {
-            let j, len, ref, thumbnailElement, removeElement;
-            console.log(file);
-            if (file.previewElement) {
-                file.previewElement.classList.remove("dz-file-preview");
-                ref = file.previewElement.querySelectorAll("[data-dz-thumbnail-bg]");
-                for (j = 0, len = ref.length; j < len; j++) {
-                    thumbnailElement = ref[j];
-                    thumbnailElement.alt = file.name;
-                    thumbnailElement.style.backgroundImage = 'url("' + dataUrl + '")';
-                }
+		thumbnail: function (file, dataUrl) {
+			let j, len, ref, thumbnailElement, removeElement;
+			console.log(file);
+			if (file.previewElement) {
+				file.previewElement.classList.remove('dz-file-preview');
+				ref = file.previewElement.querySelectorAll('[data-dz-thumbnail-bg]');
+				for (j = 0, len = ref.length; j < len; j++) {
+					thumbnailElement = ref[j];
+					thumbnailElement.alt = file.name;
+					thumbnailElement.style.backgroundImage = 'url("' + dataUrl + '")';
+				}
 
-                ref = file.previewElement.querySelectorAll("[data-dz-thumbnail]");
-                for (j = 0, len = ref.length; j < len; j++) {
-                    thumbnailElement = ref[j];
-                    thumbnailElement.alt = file.name;
-                    if (file.type == 'image/bmp' ||
+				ref = file.previewElement.querySelectorAll('[data-dz-thumbnail]');
+				for (j = 0, len = ref.length; j < len; j++) {
+					thumbnailElement = ref[j];
+					thumbnailElement.alt = file.name;
+					if (file.type == 'image/bmp' ||
                         file.type == 'image/gif' ||
                         file.type == 'image/jpeg' ||
                         file.type == 'image/png' ||
                         file.type == 'image/tiff' ||
                         file.type == 'image/webp') {
-                        thumbnailElement.style.backgroundImage = 'url("' + dataUrl + '")';
-                    } else {
-                        thumbnailElement.style.backgroundImage = 'url("/images/some-files/img.png")';
-                    }
+						thumbnailElement.style.backgroundImage = 'url("' + dataUrl + '")';
+					} else {
+						thumbnailElement.style.backgroundImage = 'url("/images/some-files/img.png")';
+					}
 
-                }
+				}
 
-                let removeIcon = file.previewElement.querySelectorAll("[data-dz-remove]");
-                for (j = 0; j < removeIcon.length; j++) {
-                    removeElement = removeIcon[j];
-                    removeElement.classList.add("remove-icon");
-                    removeElement.innerHTML = "<img src='/icon/news/create-post/remove.svg'>";
-                }
-                return setTimeout(((function (_this) {
-                    return function () {
-                        return file.previewElement.classList.add("dz-image-preview");
-                    };
-                })(this)), 1);
-            }
-        },
+				let removeIcon = file.previewElement.querySelectorAll('[data-dz-remove]');
+				for (j = 0; j < removeIcon.length; j++) {
+					removeElement = removeIcon[j];
+					removeElement.classList.add('remove-icon');
+					removeElement.innerHTML = '<img src=\'/icon/news/create-post/remove.svg\'>';
+				}
+				return setTimeout(((function (_this) {
+					return function () {
+						return file.previewElement.classList.add('dz-image-preview');
+					};
+				})(this)), 1);
+			}
+		},
 
-        getFileTypeByExtension(extension) {
-            switch (extension) {
-                case 'png': {
-                    return 'image/png';
-                }
-                case 'bmp': {
-                    return 'image/bmp';
-                }
-                case 'gif': {
-                    return 'image/git';
-                }
-                case 'jpg': {
-                    return 'image/jpeg';
-                }
-                case 'jpeg': {
-                    return 'image/jpeg';
-                }
-                case 'tif': {
-                    return 'image/tiff';
-                }
-                case 'tiff': {
-                    return 'image/tiff';
-                }
-                case 'webp': {
-                    return 'image/webp';
-                }
-                default: {
-                    return 'file';
-                }
-            }
-        },
+		getFileTypeByExtension(extension) {
+			switch (extension) {
+			case 'png': {
+				return 'image/png';
+			}
+			case 'bmp': {
+				return 'image/bmp';
+			}
+			case 'gif': {
+				return 'image/git';
+			}
+			case 'jpg': {
+				return 'image/jpeg';
+			}
+			case 'jpeg': {
+				return 'image/jpeg';
+			}
+			case 'tif': {
+				return 'image/tiff';
+			}
+			case 'tiff': {
+				return 'image/tiff';
+			}
+			case 'webp': {
+				return 'image/webp';
+			}
+			default: {
+				return 'file';
+			}
+			}
+		},
 
-        manualyAddFiles(files) {
-            files.forEach(file => {
-                this.$set(this.files, this.files.length, {
-                    id: file.id,
-                    uuid: file.id,
-                    name: file.original_name,
-                });
+		manualyAddFiles(files) {
+			files.forEach(file => {
+				this.$set(this.files, this.files.length, {
+					id: file.id,
+					uuid: file.id,
+					name: file.original_name,
+				});
 
-                this.$refs.myVueDropzone.manuallyAddFile({
-                    size: 123,
-                    name: file.original_name,
-                    type: this.getFileTypeByExtension(file.extension)
-                }, file.url);
-            });
+				this.$refs.myVueDropzone.manuallyAddFile({
+					size: 123,
+					name: file.original_name,
+					type: this.getFileTypeByExtension(file.extension)
+				}, file.url);
+			});
 
-            this.$emit('sendFiles', {
-                newList: this.files
-            });
-        },
+			this.$emit('sendFiles', {
+				newList: this.files
+			});
+		},
 
-        changeRemoveIcon() {
-            let j, removeElement;
-            let removeIcon = document.getElementsByClassName('dz-remove');
-            for (j = 0; j < removeIcon.length; j++) {
-                removeElement = removeIcon[j];
-                removeElement.classList.add("remove-icon");
-                removeElement.innerHTML = "<img src='/icon/news/create-post/remove.svg'>";
-            }
-        }
-    }
+		changeRemoveIcon() {
+			let j, removeElement;
+			let removeIcon = document.getElementsByClassName('dz-remove');
+			for (j = 0; j < removeIcon.length; j++) {
+				removeElement = removeIcon[j];
+				removeElement.classList.add('remove-icon');
+				removeElement.innerHTML = '<img src=\'/icon/news/create-post/remove.svg\'>';
+			}
+		}
+	}
 }
 </script>

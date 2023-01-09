@@ -62,154 +62,154 @@
 
 <script>
 export default {
-    name: 'VideoAccordion',
-    props: ['mode','groups', 'active', 'is_course', 'playlist_id', 'token'],
-    data(){
-        return {
-            uploader: false,
-            group_id: 0
-        }
-    },
-    methods: {
+	name: 'VideoAccordion',
+	props: ['mode','groups', 'active', 'is_course', 'playlist_id', 'token'],
+	data(){
+		return {
+			uploader: false,
+			group_id: 0
+		}
+	},
+	methods: {
 
-        addVideoToPlaylist(video) {
-            let i = this.groups.findIndex(el => el.id == this.group_id)
-            if(i == -1) return this.$toast.error('Ошибка при добавлении в отдел в браузере');
-            this.groups[i].videos.push(video);
-        },
+		addVideoToPlaylist(video) {
+			let i = this.groups.findIndex(el => el.id == this.group_id)
+			if(i == -1) return this.$toast.error('Ошибка при добавлении в отдел в браузере');
+			this.groups[i].videos.push(video);
+		},
 
-        toggleGroup(i, open = false) {
-            console.log('togglegroup ' + i)
-            let status = this.groups[i].opened;
-            this.groups.forEach(el => {
-                el.opened = false;
-            });
-            this.groups[i].opened = open ? true : !status;
-        }, 
+		toggleGroup(i, open = false) {
+			console.log('togglegroup ' + i)
+			let status = this.groups[i].opened;
+			this.groups.forEach(el => {
+				el.opened = false;
+			});
+			this.groups[i].opened = open ? true : !status;
+		}, 
 
 
-        showVideo(video, i) {
-            this.$emit('showVideo', video, i);
-        },
+		showVideo(video, i) {
+			this.$emit('showVideo', video, i);
+		},
 
-        moveTo(video) {
-            this.$emit('moveTo', video);
-        },
+		moveTo(video) {
+			this.$emit('moveTo', video);
+		},
 
-        showTests(video, input_focus) {
-            this.$emit('showTests', video, input_focus);
-        },
+		showTests(video, input_focus) {
+			this.$emit('showTests', video, input_focus);
+		},
 
-        deleteVideo(o) {
+		deleteVideo(o) {
 
-            if(!confirm('Вы уверены?')) return;
-            axios
-            .post("/playlists/delete-video", {
-                id: o.video.id,
-            })
-            .then((response) => {
-                this.$toast.success("Файл удален");
+			if(!confirm('Вы уверены?')) return;
+			axios
+				.post('/playlists/delete-video', {
+					id: o.video.id,
+				})
+				.then((response) => {
+					this.$toast.success('Файл удален');
                 
-                // remove video from group
-                if(o.c_index == -1) {
-                    this.groups[o.g_index].videos.splice(o.v_index, 1)
-                } else {
-                    this.groups[o.g_index].children[o.c_index].videos.splice(o.v_index, 1)
-                } 
+					// remove video from group
+					if(o.c_index == -1) {
+						this.groups[o.g_index].videos.splice(o.v_index, 1)
+					} else {
+						this.groups[o.g_index].children[o.c_index].videos.splice(o.v_index, 1)
+					} 
                 
-            })
-            .catch(error => alert(error));
+				})
+				.catch(error => alert(error));
            
-        },
+		},
 
-        addGroup(i) {
-            console.log('add group accrodion')
-            axios
-                .post('/playlists/groups/create', {
-                    parent_id: i == -1 ? 0 : this.groups[i].id,
-                    playlist_id: this.playlist_id
-                })
-                .then((response) => {
+		addGroup(i) {
+			console.log('add group accrodion')
+			axios
+				.post('/playlists/groups/create', {
+					parent_id: i == -1 ? 0 : this.groups[i].id,
+					playlist_id: this.playlist_id
+				})
+				.then((response) => {
 
-                    if(i == -1) {// from playlist_edit
-                        this.groups.push({
-                            id: response.data.id,
-                            title: response.data.title,
-                            opened: true,
-                            children: [],
-                            videos:[]
-                        });
-                    } else {
-                        this.groups[i].children.push({
-                            id: response.data.id,
-                            title: response.data.title,
-                            videos:[],
-                            children: [],
-                            opened: true,
-                        });
-                    }
+					if(i == -1) {// from playlist_edit
+						this.groups.push({
+							id: response.data.id,
+							title: response.data.title,
+							opened: true,
+							children: [],
+							videos:[]
+						});
+					} else {
+						this.groups[i].children.push({
+							id: response.data.id,
+							title: response.data.title,
+							videos:[],
+							children: [],
+							opened: true,
+						});
+					}
 
-                    this.$toast.success("Сохранено!");
-                })
-                .catch((error) => {
-                    alert(error);
-                });
+					this.$toast.success('Сохранено!');
+				})
+				.catch((error) => {
+					alert(error);
+				});
             
            
 
-            this.toggleGroup(i, true)
-        },
+			this.toggleGroup(i, true)
+		},
 
-        saveGroup(i) {    
+		saveGroup(i) {    
             
-            console.log(this.groups[i])
-            axios
-                .post('/playlists/groups/save', {
-                    id: this.groups[i].id,
-                    title: this.groups[i].title,
-                })
-                .then((response) => {
-                    this.$toast.success("Сохранено!");
-                })
-                .catch((error) => {
-                    alert(error);
-                });
+			console.log(this.groups[i])
+			axios
+				.post('/playlists/groups/save', {
+					id: this.groups[i].id,
+					title: this.groups[i].title,
+				})
+				.then((response) => {
+					this.$toast.success('Сохранено!');
+				})
+				.catch((error) => {
+					alert(error);
+				});
 
-            this.toggleGroup(i, true)
-        },
+			this.toggleGroup(i, true)
+		},
 
         
-        uploadVideo(i) {
-            console.log('upload video accordion', i)
-                console.log('upload video accordion', this.groups[i].id)
-            this.group_id = this.groups[i].id
+		uploadVideo(i) {
+			console.log('upload video accordion', i)
+			console.log('upload video accordion', this.groups[i].id)
+			this.group_id = this.groups[i].id
             
-            this.uploader = true
-        },
+			this.uploader = true
+		},
         
-        deleteGroup(i) {
-            var arrStr = [
-                'Вы точно хотите удалить отдел?', ' Думаю, вы случайно нажали удалить отдел. Удалить отдел?', 'Удалить отдел не смотря ни на что?'
-            ]
-            var randElement = arrStr[Math.floor(Math.random() * arrStr.length)];
-            console.log(randElement);
+		deleteGroup(i) {
+			var arrStr = [
+				'Вы точно хотите удалить отдел?', ' Думаю, вы случайно нажали удалить отдел. Удалить отдел?', 'Удалить отдел не смотря ни на что?'
+			]
+			var randElement = arrStr[Math.floor(Math.random() * arrStr.length)];
+			console.log(randElement);
 
-            if(!confirm(randElement)) {
-                return;
-            }
+			if(!confirm(randElement)) {
+				return;
+			}
 
-            axios
-                .post('/playlists/groups/delete', {
-                    id: this.groups[i].id,
-                })
-                .then((response) => {
-                    this.groups.splice(i, 1);
-                    this.$toast.success("Удалено!");
-                })
-                .catch((error) => {
-                    alert(error);
-                });
-        }
-    }
+			axios
+				.post('/playlists/groups/delete', {
+					id: this.groups[i].id,
+				})
+				.then((response) => {
+					this.groups.splice(i, 1);
+					this.$toast.success('Удалено!');
+				})
+				.catch((error) => {
+					alert(error);
+				});
+		}
+	}
 }
 </script>

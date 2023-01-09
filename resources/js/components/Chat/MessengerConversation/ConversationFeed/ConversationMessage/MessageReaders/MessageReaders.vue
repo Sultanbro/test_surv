@@ -23,33 +23,33 @@
 
 <script>
 export default {
-  props: {
-    message: {
-      type: Object,
-      required: true,
-    },
-    user: {
-      type: Object,
-      required: true,
-    },
-  },
-  data: function () {
-    return {
-      showReaders: false,
-      listX: 0,
-      listY: 0,
-    };
-  },
-  methods: {
-    showReadersList: function (event) {
-      this.showReaders = true;
-      this.listX = event.clientX - 200;
-      this.listY = event.clientY - this.message.readers.length * 40;
-    },
-    hideReadersList: function () {
-      this.showReaders = false;
-    },
-  },
+	props: {
+		message: {
+			type: Object,
+			required: true,
+		},
+		user: {
+			type: Object,
+			required: true,
+		},
+	},
+	data: function () {
+		return {
+			showReaders: false,
+			listX: 0,
+			listY: 0,
+		};
+	},
+	methods: {
+		showReadersList: function (event) {
+			this.showReaders = true;
+			this.listX = event.clientX - 200;
+			this.listY = event.clientY - this.message.readers.length * 40;
+		},
+		hideReadersList: function () {
+			this.showReaders = false;
+		},
+	},
 }
 </script>
 

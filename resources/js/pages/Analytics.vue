@@ -273,256 +273,256 @@ import TableStaffTurnover from '../components/tables/TableStaffTurnover.vue';
 import Rating from '../components/ui/Rating.vue';
 import { useYearOptions } from '../composables/yearOptions'
 export default {
-  components: { TableStaffTurnover, Rating },
-    name: "Analytics",
-    props: ['groups', 'activeuserid'],
-    data() {
-        return {
-            trainee_date: new Date(Date.now()).toISOString().substring(0, 10),
-            totals: [],
-            fn: '',
-            data: [],
-            active: '1',
-            activities: [],
-            report_group_id: 42,
-            call_bases: [],
-            call_bases_key: 1,
-            archived_recruiters: [],
-            utility: [], // gauges
-            recruiting: {
-                recrutingTotals: [],
-                recruiterStats: [],
-                recruiterStatsRates: [],
-                recruiter_stats_leads: [],
-                funnels: [],
-                quiz: [], // 48 uvolennye
-                trainee_report: [], //
-                causes: [],
-                staff: [],
-                staff_by_group: [],
-                staff_longevity: [],
-                ocenka_svod: [],
-                //ratings: [],
-                //ratings_dates: [],
-                //ratings_heads: [],
-                absents_first: [],
-                absents_second: [],
-                indicators: null,
-                invite_groups: [], // 48
-                sgroups: [], // 48
-                skypes: [], // 48
-                hrs: [],
-                segments: [],
-            },
-            quality: [],
-            records: [],
-            hasPremission: false,
-            firstEnter: true,
-            years: useYearOptions(),
-            currentYear: new Date().getFullYear(),
-            monthInfo: {
-                currentMonth: null,
-                monthEnd: 0,
-                workDays: 0,
-                weekDays: 0,
-                workDays5: 0,
-                weekDays5: 0,
-                daysInMonth: 0,
-                year: new Date().getFullYear()
-            },
-            dataLoaded: false,
-            currentGroup: 48,
-            minutes: {},
-            loader: null,
-            date: null,
-            coef: 0,
-            months: {
-                1: {month:'Январь', date: null},
-                2: {month:'Февраль', date: null},
-                3: {month:'Март', date: null},
-                4: {month:'Апрель', date: null},
-                5: {month:'Май', date: null},
-                6: {month:'Июнь', date: null},
-                7: {month:'Июль', date: null},
-                8: {month:'Август', date: null},
-                9: {month:'Сентябрь', date: null},
-                10: {month:'Октябрь', date: null},
-                11: {month:'Ноябрь', date: null},
-                12: {month:'Декабрь', date: null},
-            },
-            componentKeys: {
-                5: 0,
-                6: 100000,
-                7: 200000,
-                8: 300000,
-                9: 400000,
-            },
-        }
-    },
-    watch: {
-        groups(){
-            this.init()
-        }
-    },
-    created() {
-        if(this.groups){
-            this.init()
-        }
-    },
-    methods: {
-        init(){
-            // бывор группы
-            const urlParams = new URLSearchParams(window.location.search);
-            let group = urlParams.get('group');
-            let active = urlParams.get('active');
+	components: { TableStaffTurnover, Rating },
+	name: 'Analytics',
+	props: ['groups', 'activeuserid'],
+	data() {
+		return {
+			trainee_date: new Date(Date.now()).toISOString().substring(0, 10),
+			totals: [],
+			fn: '',
+			data: [],
+			active: '1',
+			activities: [],
+			report_group_id: 42,
+			call_bases: [],
+			call_bases_key: 1,
+			archived_recruiters: [],
+			utility: [], // gauges
+			recruiting: {
+				recrutingTotals: [],
+				recruiterStats: [],
+				recruiterStatsRates: [],
+				recruiter_stats_leads: [],
+				funnels: [],
+				quiz: [], // 48 uvolennye
+				trainee_report: [], //
+				causes: [],
+				staff: [],
+				staff_by_group: [],
+				staff_longevity: [],
+				ocenka_svod: [],
+				//ratings: [],
+				//ratings_dates: [],
+				//ratings_heads: [],
+				absents_first: [],
+				absents_second: [],
+				indicators: null,
+				invite_groups: [], // 48
+				sgroups: [], // 48
+				skypes: [], // 48
+				hrs: [],
+				segments: [],
+			},
+			quality: [],
+			records: [],
+			hasPremission: false,
+			firstEnter: true,
+			years: useYearOptions(),
+			currentYear: new Date().getFullYear(),
+			monthInfo: {
+				currentMonth: null,
+				monthEnd: 0,
+				workDays: 0,
+				weekDays: 0,
+				workDays5: 0,
+				weekDays5: 0,
+				daysInMonth: 0,
+				year: new Date().getFullYear()
+			},
+			dataLoaded: false,
+			currentGroup: 48,
+			minutes: {},
+			loader: null,
+			date: null,
+			coef: 0,
+			months: {
+				1: {month:'Январь', date: null},
+				2: {month:'Февраль', date: null},
+				3: {month:'Март', date: null},
+				4: {month:'Апрель', date: null},
+				5: {month:'Май', date: null},
+				6: {month:'Июнь', date: null},
+				7: {month:'Июль', date: null},
+				8: {month:'Август', date: null},
+				9: {month:'Сентябрь', date: null},
+				10: {month:'Октябрь', date: null},
+				11: {month:'Ноябрь', date: null},
+				12: {month:'Декабрь', date: null},
+			},
+			componentKeys: {
+				5: 0,
+				6: 100000,
+				7: 200000,
+				8: 300000,
+				9: 400000,
+			},
+		}
+	},
+	watch: {
+		groups(){
+			this.init()
+		}
+	},
+	created() {
+		if(this.groups){
+			this.init()
+		}
+	},
+	methods: {
+		init(){
+			// бывор группы
+			const urlParams = new URLSearchParams(window.location.search);
+			let group = urlParams.get('group');
+			let active = urlParams.get('active');
 
-            this.currentGroup = (group == null) ? this.groups[0].id : parseFloat(group)
-            this.active = (active == null) ? '1' : active
+			this.currentGroup = (group == null) ? this.groups[0].id : parseFloat(group)
+			this.active = (active == null) ? '1' : active
 
-            this.setMonth()
-            this.setYear()
-            this.setMonthsObject()
-
-
-            this.fetchData()
-        },
-        setMonthsObject() {
-
-            for(let i = 1; i<=12;i++) {
-                let month = i;
-                if(i < 10) {month = '0' + i;}
-
-                this.months[i].date = this.currentYear + '-' + month + '-' + '01';
-            }
-        },
-        setMonth() {
-            this.monthInfo.currentMonth = this.monthInfo.currentMonth ? this.monthInfo.currentMonth : this.$moment().format('MMMM')
-            this.monthInfo.month = this.monthInfo.currentMonth ? this.$moment(this.monthInfo.currentMonth, 'MMMM').format('M') : this.$moment().format('M')
-            let currentMonth = this.$moment(this.monthInfo.currentMonth, 'MMMM')
-            //Расчет выходных дней
-            this.monthInfo.monthEnd = currentMonth.endOf('month'); //Конец месяца
-            this.monthInfo.weekDays = currentMonth.weekdayCalc(currentMonth.startOf('month').toString(), currentMonth.endOf('month').toString(), [6]) //Колличество выходных
-            this.monthInfo.weekDays5 = currentMonth.weekdayCalc(currentMonth.startOf('month').toString(), currentMonth.endOf('month').toString(), [6,0]) //Колличество выходных
-            this.monthInfo.daysInMonth = new Date(this.$moment().format('YYYY'), this.$moment(this.monthInfo.currentMonth, 'MMMM').format('M'), 0).getDate() //Колличество дней в месяце
-            this.monthInfo.workDays = this.monthInfo.daysInMonth - this.monthInfo.weekDays //Колличество рабочих дней
-            this.monthInfo.workDays5 = this.monthInfo.daysInMonth - this.monthInfo.weekDays5 //Колличество рабочих дней
-
-        },
-        //Установка выбранного года
-        setYear() {
-            this.currentYear = this.currentYear ? this.currentYear : this.$moment().format('YYYY')
-            this.monthInfo.currentYear = this.currentYear;
-        },
-
-        getTotals(data) {
-            axios.post('/timetracking/get-totals-of-reports', {
-                    month: this.$moment(this.monthInfo.currentMonth, 'MMMM').format('M'),
-                    year: this.currentYear,
-                    group_id: this.currentGroup
-                })
-                .then(response => {
-                    this.totals = response.data.sum
-                    this.data = data
-                })
-                .catch(error => console.log('Error GetTotals'))
-        },
-
-        fetchData() {
-            let loader = this.$loading.show();
+			this.setMonth()
+			this.setYear()
+			this.setMonthsObject()
 
 
-            axios.post('/timetracking/getanalytics', {
-                month: this.$moment(this.monthInfo.currentMonth, 'MMMM').format('M'),
-                year: this.currentYear,
-                group_id: this.currentGroup
-            }).then(response => {
-                if (response.data.error && response.data.error == 'access') {
-                    this.hasPremission = false
-                    loader.hide();
-                    return;
-                }
-                this.hasPremission = true
+			this.fetchData()
+		},
+		setMonthsObject() {
 
-                this.setMonth()
-                this.setYear()
+			for(let i = 1; i<=12;i++) {
+				let month = i;
+				if(i < 10) {month = '0' + i;}
 
-                this.dataLoaded = true
-                this.firstEnter = false
+				this.months[i].date = this.currentYear + '-' + month + '-' + '01';
+			}
+		},
+		setMonth() {
+			this.monthInfo.currentMonth = this.monthInfo.currentMonth ? this.monthInfo.currentMonth : this.$moment().format('MMMM')
+			this.monthInfo.month = this.monthInfo.currentMonth ? this.$moment(this.monthInfo.currentMonth, 'MMMM').format('M') : this.$moment().format('M')
+			let currentMonth = this.$moment(this.monthInfo.currentMonth, 'MMMM')
+			//Расчет выходных дней
+			this.monthInfo.monthEnd = currentMonth.endOf('month'); //Конец месяца
+			this.monthInfo.weekDays = currentMonth.weekdayCalc(currentMonth.startOf('month').toString(), currentMonth.endOf('month').toString(), [6]) //Колличество выходных
+			this.monthInfo.weekDays5 = currentMonth.weekdayCalc(currentMonth.startOf('month').toString(), currentMonth.endOf('month').toString(), [6,0]) //Колличество выходных
+			this.monthInfo.daysInMonth = new Date(this.$moment().format('YYYY'), this.$moment(this.monthInfo.currentMonth, 'MMMM').format('M'), 0).getDate() //Колличество дней в месяце
+			this.monthInfo.workDays = this.monthInfo.daysInMonth - this.monthInfo.weekDays //Колличество рабочих дней
+			this.monthInfo.workDays5 = this.monthInfo.daysInMonth - this.monthInfo.weekDays5 //Колличество рабочих дней
 
-                this.componentKeys[5]++
+		},
+		//Установка выбранного года
+		setYear() {
+			this.currentYear = this.currentYear ? this.currentYear : this.$moment().format('YYYY')
+			this.monthInfo.currentYear = this.currentYear;
+		},
 
-                if(this.currentGroup == 48) { // recruiting
-                    this.recruiting.hrs = response.data.hrs
-                    this.recruiting.skypes = response.data.skypes
-                    this.recruiting.sgroups = response.data.sgroups
-                    this.recruiting.invite_groups = response.data.invite_groups
-                    this.recruiting.indicators = response.data.indicators
-                    this.recruiting.absents_first = response.data.absents_first
-                    this.recruiting.absents_second = response.data.absents_second
-                    this.recruiting.absents_third = response.data.absents_third
+		getTotals(data) {
+			axios.post('/timetracking/get-totals-of-reports', {
+				month: this.$moment(this.monthInfo.currentMonth, 'MMMM').format('M'),
+				year: this.currentYear,
+				group_id: this.currentGroup
+			})
+				.then(response => {
+					this.totals = response.data.sum
+					this.data = data
+				})
+				.catch(error => console.log('Error GetTotals'))
+		},
 
-                    this.recruiting.staff = response.data.staff
-                    this.recruiting.staff_by_group = response.data.staff_by_group
-                    this.recruiting.staff_longevity = response.data.staff_longevity
-                    this.recruiting.causes = response.data.causes
-                    this.recruiting.quiz = response.data.quiz
-                    this.recruiting.recrutingTotals = response.data.records
-                    this.recruiting.recruiterStats = response.data.recruiter_stats
-                    this.recruiting.recruiterStatsRates = response.data.recruiter_stats_rates
-                    this.recruiting.ocenka_svod = response.data.ocenka_svod
+		fetchData() {
+			let loader = this.$loading.show();
 
-                    this.recruiting.trainee_report = response.data.trainee_report
-                    this.recruiting.recruiter_stats_leads = response.data.recruiter_stats_leads
-                    this.recruiting.funnels = response.data.funnels
-                    this.recruiting.segments = response.data.segments
-                    this.decomposition = response.data.decomposition
 
-                    this.archived_recruiters = localStorage;
+			axios.post('/timetracking/getanalytics', {
+				month: this.$moment(this.monthInfo.currentMonth, 'MMMM').format('M'),
+				year: this.currentYear,
+				group_id: this.currentGroup
+			}).then(response => {
+				if (response.data.error && response.data.error == 'access') {
+					this.hasPremission = false
+					loader.hide();
+					return;
+				}
+				this.hasPremission = true
 
-                    this.date = response.data.date
-                    this.setMonthsObject();
-                    this.componentKeys[6]++
-                    this.componentKeys[7]++
-                    this.componentKeys[8]++
-                    this.componentKeys[9]++
-                }
-                window.history.replaceState({ id: "100" }, "Аналитика групп", "/timetracking/analytics?group=" + this.currentGroup + "&active=" + this.active);
-                this.monthInfo.workDays = this.work_days = this.getBusinessDateCount(this.monthInfo.month,this.monthInfo.currentYear, response.data.workdays)
-                loader.hide()
-            }).catch(error => {
-                loader.hide()
-                alert(error)
-            });
-        },
-        getTraineesByDate(){
-            axios.post('/timetracking/getactivetrainees',{date: this.trainee_date}).then(response => {
-                console.log(response.data.ocenka_svod);
-                this.recruiting.ocenka_svod = response.data.ocenka_svod;
-            });
-        },
-         getBusinessDateCount(month, year, workdays) {
+				this.setMonth()
+				this.setYear()
 
-            month = month - 1;
-            let next_month = (month + 1) == 12 ? 0 : month + 1;
-            let next_year = (month + 1) == 12 ? year + 1 : year;
+				this.dataLoaded = true
+				this.firstEnter = false
 
-            var start = new Date(year, month, 1);
-            var end = new Date(next_year, next_month, 1);
+				this.componentKeys[5]++
 
-            let days = (end - start) / 86400000;
+				if(this.currentGroup == 48) { // recruiting
+					this.recruiting.hrs = response.data.hrs
+					this.recruiting.skypes = response.data.skypes
+					this.recruiting.sgroups = response.data.sgroups
+					this.recruiting.invite_groups = response.data.invite_groups
+					this.recruiting.indicators = response.data.indicators
+					this.recruiting.absents_first = response.data.absents_first
+					this.recruiting.absents_second = response.data.absents_second
+					this.recruiting.absents_third = response.data.absents_third
 
-            let business_days = 0,
-                weekends = workdays == 5 ? [0,6] : [0];
+					this.recruiting.staff = response.data.staff
+					this.recruiting.staff_by_group = response.data.staff_by_group
+					this.recruiting.staff_longevity = response.data.staff_longevity
+					this.recruiting.causes = response.data.causes
+					this.recruiting.quiz = response.data.quiz
+					this.recruiting.recrutingTotals = response.data.records
+					this.recruiting.recruiterStats = response.data.recruiter_stats
+					this.recruiting.recruiterStatsRates = response.data.recruiter_stats_rates
+					this.recruiting.ocenka_svod = response.data.ocenka_svod
 
-            for(let i = 1; i <= days; i++) {
-                let d = new Date(year, month, i).getDay();
-                if(!weekends.includes(d)) business_days++;
-            }
+					this.recruiting.trainee_report = response.data.trainee_report
+					this.recruiting.recruiter_stats_leads = response.data.recruiter_stats_leads
+					this.recruiting.funnels = response.data.funnels
+					this.recruiting.segments = response.data.segments
+					this.decomposition = response.data.decomposition
 
-            return business_days;
-        },
+					this.archived_recruiters = localStorage;
 
-    }
+					this.date = response.data.date
+					this.setMonthsObject();
+					this.componentKeys[6]++
+					this.componentKeys[7]++
+					this.componentKeys[8]++
+					this.componentKeys[9]++
+				}
+				window.history.replaceState({ id: '100' }, 'Аналитика групп', '/timetracking/analytics?group=' + this.currentGroup + '&active=' + this.active);
+				this.monthInfo.workDays = this.work_days = this.getBusinessDateCount(this.monthInfo.month,this.monthInfo.currentYear, response.data.workdays)
+				loader.hide()
+			}).catch(error => {
+				loader.hide()
+				alert(error)
+			});
+		},
+		getTraineesByDate(){
+			axios.post('/timetracking/getactivetrainees',{date: this.trainee_date}).then(response => {
+				console.log(response.data.ocenka_svod);
+				this.recruiting.ocenka_svod = response.data.ocenka_svod;
+			});
+		},
+		getBusinessDateCount(month, year, workdays) {
+
+			month = month - 1;
+			let next_month = (month + 1) == 12 ? 0 : month + 1;
+			let next_year = (month + 1) == 12 ? year + 1 : year;
+
+			var start = new Date(year, month, 1);
+			var end = new Date(next_year, next_month, 1);
+
+			let days = (end - start) / 86400000;
+
+			let business_days = 0,
+				weekends = workdays == 5 ? [0,6] : [0];
+
+			for(let i = 1; i <= days; i++) {
+				let d = new Date(year, month, i).getDay();
+				if(!weekends.includes(d)) business_days++;
+			}
+
+			return business_days;
+		},
+
+	}
 }
 </script>
 

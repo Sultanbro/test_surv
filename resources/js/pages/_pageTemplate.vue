@@ -9,29 +9,29 @@
 
 
 export default {
-    name: "KBPage", 
-    props: {
-        staff: Array,
-        staff_by_group: Array,
-        staff_longevity: Array,
-        causes: Array,
-    },
-    data: function () {
-        return {
-            fields: [], 
-        };
-    },
-    watch: {
-    },
+	name: 'KBPage', 
+	props: {
+		staff: Array,
+		staff_by_group: Array,
+		staff_longevity: Array,
+		causes: Array,
+	},
+	data: function () {
+		return {
+			fields: [], 
+		};
+	},
+	watch: {
+	},
     
-    mounted() {
+	mounted() {
         
-    },
+	},
 
-    methods: {
+	methods: {
         
 
-    }
+	}
 };
 </script>
 

@@ -14,29 +14,29 @@
 
 <script>
 export default {
-    name: "ProgressBar",
-    props: {
-        percentage: Number,
-        label: String,
-    },
-    watch: {
-        // whenever question changes, this function will run
-        percentage: {
-            handler (val, oldVal) {
-                var trans = document.getElementById("mytrans");
-                trans.style.width = `${val}%`;
-                trans.style.transition = `width 0.3s linear`;
-            }
-        }
-      },
-    methods: {
-        beforeEnter (el) {
-            el.style.width = 40;
-        },
-        enter (el) {
-            el.style.width = `${this.percentage}%`
-            el.style.transition = `width 1s linear`
-        }
-    }
+	name: 'ProgressBar',
+	props: {
+		percentage: Number,
+		label: String,
+	},
+	watch: {
+		// whenever question changes, this function will run
+		percentage: {
+			handler (val, oldVal) {
+				var trans = document.getElementById('mytrans');
+				trans.style.width = `${val}%`;
+				trans.style.transition = 'width 0.3s linear';
+			}
+		}
+	},
+	methods: {
+		beforeEnter (el) {
+			el.style.width = 40;
+		},
+		enter (el) {
+			el.style.width = `${this.percentage}%`
+			el.style.transition = 'width 1s linear'
+		}
+	}
 }
 </script>

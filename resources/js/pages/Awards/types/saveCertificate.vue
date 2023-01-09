@@ -50,122 +50,122 @@
 </template>
 
 <script>
-    import VuePdfEmbed from "vue-pdf-embed/dist/vue2-pdf-embed";
-    import VueHtml2pdf from "./Html2pdf";
+import VuePdfEmbed from 'vue-pdf-embed/dist/vue2-pdf-embed';
+import VueHtml2pdf from './Html2pdf';
 
-    export default {
-        name: 'save-certificate',
-        components: {
-            VuePdfEmbed,
-            'vue-html2pdf': VueHtml2pdf,
-        },
-        props: {
-            course_id: {
-                type: Number,
-                default: null
-            },
-            title: {
-                type: String,
-                default: ''
-            },
-            user_id: {
-                type: Number,
-                default: null
-            }
-        },
-        data() {
-            return {
-                loading: true,
-                award: {},
-                transformFullName: {},
-                transformCourseName: {},
-                transformDateName: {},
-                styles: {},
-                canvasHeight: null,
-                canvasWidth: 1000,
-                pdfDownloaded: false,
-                options: {
-                    jsPDF: {
-                        unit: 'mm',
-                        format: [],
-                        orientation: 'portrait'
-                    }
-                }
-            }
-        },
-        methods: {
-            onProgress(progress) {
-                this.progress = progress;
-                console.log(`PDF generation progress: ${progress}%`)
-            },
-            beforeDownload(){
+export default {
+	name: 'save-certificate',
+	components: {
+		VuePdfEmbed,
+		'vue-html2pdf': VueHtml2pdf,
+	},
+	props: {
+		course_id: {
+			type: Number,
+			default: null
+		},
+		title: {
+			type: String,
+			default: ''
+		},
+		user_id: {
+			type: Number,
+			default: null
+		}
+	},
+	data() {
+		return {
+			loading: true,
+			award: {},
+			transformFullName: {},
+			transformCourseName: {},
+			transformDateName: {},
+			styles: {},
+			canvasHeight: null,
+			canvasWidth: 1000,
+			pdfDownloaded: false,
+			options: {
+				jsPDF: {
+					unit: 'mm',
+					format: [],
+					orientation: 'portrait'
+				}
+			}
+		}
+	},
+	methods: {
+		onProgress(progress) {
+			this.progress = progress;
+			console.log(`PDF generation progress: ${progress}%`)
+		},
+		beforeDownload(){
 
-            },
-            hasDownloaded(blobPdf) {
-                this.pdfDownloaded = true;
-                let file = new File([blobPdf], 'qwerty.pdf', {
-                    type: blobPdf.type,
-                });
-                const formData = new FormData();
-                formData.append('course_id', this.course_id);
-                formData.append('award_id', this.award.award_id);
-                formData.append('user_id', this.user_id);
-                formData.append('file', file);
-                console.log(file);
-                this.axios
-                    .post("/awards/reward", formData, {
-                        headers: {
-                            'Content-Type': 'multipart/form-data'
-                        },
-                    })
-                    .then(response => {
-                        console.log('СЕРТИФИКАТ УСПЕШНО СГЕНЕРИРОВАН!');
-                        this.$emit('generate-success');
-                    })
-                    .catch(function (error) {
-                        console.log(error);
-                    });
-            },
-            renderedEmbed() {
-                const canvas = document.querySelector('.vue-pdf-embed canvas');
-                let canvasHeight = canvas.offsetHeight;
-                let canvasWidth = canvas.offsetWidth;
-                let canvasHeightCalc = parseFloat((canvasHeight * 0.264583) + 2).toFixed(2);
-                let canvasWidthCalc = parseFloat(canvasWidth * 0.264583).toFixed(2);
-                this.options.jsPDF.format = [canvasWidthCalc, canvasHeightCalc];
-                if (canvasWidthCalc > canvasHeightCalc) {
-                    this.options.jsPDF.orientation = 'landscape';
-                } else {
-                    this.options.jsPDF.orientation = 'portrait';
-                }
-                this.$refs.html2Pdf.generatePdf();
-            }
-        },
-        async mounted() {
-            if (this.course_id) {
-                await this.axios
-                    .get('/awards/course?course_id=' + this.course_id)
-                    .then(response => {
-                        const data = response.data.data;
-                        this.award = data;
-                        console.log(this.award);
-                        this.styles = JSON.parse(data.award.styles);
-                        this.transformFullName = `translate(${this.styles.fullName.screenX}px, ${this.styles.fullName.screenY}px)`;
-                        this.transformCourseName = `translate(${this.styles.courseName.screenX}px, ${this.styles.courseName.screenY}px)`;
-                        this.transformDateName = `translate(${this.styles.date.screenX}px, ${this.styles.date.screenY}px)`;
+		},
+		hasDownloaded(blobPdf) {
+			this.pdfDownloaded = true;
+			let file = new File([blobPdf], 'qwerty.pdf', {
+				type: blobPdf.type,
+			});
+			const formData = new FormData();
+			formData.append('course_id', this.course_id);
+			formData.append('award_id', this.award.award_id);
+			formData.append('user_id', this.user_id);
+			formData.append('file', file);
+			console.log(file);
+			this.axios
+				.post('/awards/reward', formData, {
+					headers: {
+						'Content-Type': 'multipart/form-data'
+					},
+				})
+				.then(response => {
+					console.log('СЕРТИФИКАТ УСПЕШНО СГЕНЕРИРОВАН!');
+					this.$emit('generate-success');
+				})
+				.catch(function (error) {
+					console.log(error);
+				});
+		},
+		renderedEmbed() {
+			const canvas = document.querySelector('.vue-pdf-embed canvas');
+			let canvasHeight = canvas.offsetHeight;
+			let canvasWidth = canvas.offsetWidth;
+			let canvasHeightCalc = parseFloat((canvasHeight * 0.264583) + 2).toFixed(2);
+			let canvasWidthCalc = parseFloat(canvasWidth * 0.264583).toFixed(2);
+			this.options.jsPDF.format = [canvasWidthCalc, canvasHeightCalc];
+			if (canvasWidthCalc > canvasHeightCalc) {
+				this.options.jsPDF.orientation = 'landscape';
+			} else {
+				this.options.jsPDF.orientation = 'portrait';
+			}
+			this.$refs.html2Pdf.generatePdf();
+		}
+	},
+	async mounted() {
+		if (this.course_id) {
+			await this.axios
+				.get('/awards/course?course_id=' + this.course_id)
+				.then(response => {
+					const data = response.data.data;
+					this.award = data;
+					console.log(this.award);
+					this.styles = JSON.parse(data.award.styles);
+					this.transformFullName = `translate(${this.styles.fullName.screenX}px, ${this.styles.fullName.screenY}px)`;
+					this.transformCourseName = `translate(${this.styles.courseName.screenX}px, ${this.styles.courseName.screenY}px)`;
+					this.transformDateName = `translate(${this.styles.date.screenX}px, ${this.styles.date.screenY}px)`;
 
-                        if(this.award.course_results.length === 0 || Object.keys(this.award.course_results).length === 0){
-                           console.log('Ошибка генерации сертификата');
-                        } else {
-                            this.loading = false;
-                        }
-                    })
-                    .catch(error => {
-                        console.log(error);
-                    })
-            }
-        }
-    }
+					if(this.award.course_results.length === 0 || Object.keys(this.award.course_results).length === 0){
+						console.log('Ошибка генерации сертификата');
+					} else {
+						this.loading = false;
+					}
+				})
+				.catch(error => {
+					console.log(error);
+				})
+		}
+	}
+}
 </script>
 
 

@@ -53,93 +53,81 @@
         <tbody>
 
             <!-- v-if && v-for in one element !!! -->
-            <template
-                v-for="(item, i) in page_items"
-                v-if="(item.target && item.target.name.includes(searchText)) || searchText.length == 0"
-            >
-                <!-- <tr v-if="item.target.name.includes(searchText) || searchText.length == 0 || (item.creator && (item.creator.last_name + ' ' + item.creator.name).includes(searchText)) || (item.updater && (item.updater.last_name + ' ' + item.updater.name).includes(searchText)) || (item.items.filter( i => { return i.name.includes(searchText)  } ).length > 0)"></tr> -->
-                <tr :key="i">
-                    <td  @click="expand(i)" class="pointer">
-                        <div class="d-flex align-items-center px-2">
-                            <span class="mr-2">{{ i + 1 }}</span>
-                            <i class="fa fa-minus mt-1" v-if="item.expanded"></i>
-                            <i class="fa fa-plus mt-1" v-else></i>
-                        </div>
-                    </td>
-                    <td  v-for="(field, f) in fields" :key="f" :class="field.class">
-
-                        <div v-if="field.key == 'target'" >
-                            <superselect
-                                v-if="item.target == null || item.id == 0"
-                                class="w-full"
-                                :values="item.target == null ? [] : [item.target]"
-                                :single="true"
-                                @choose="(target) => item.target = target"
-                                @remove="() => item.target = null"
-                                :key="i" />
-                            <div v-else class="d-flex aic">
-                                <i class="fa fa-user ml-2" v-if="item.target.type == 1"></i>
-                                <i class="fa fa-users ml-2" v-if="item.target.type == 2"></i>
-                                <i class="fa fa-briefcase ml-2" v-if="item.target.type == 3"></i>
-                                <span class="ml-2">{{ item.target.name }}</span>
-
-                            </div>
-                        </div>
-
-                        <div v-else-if="field.key == 'stats'" :class="field.class">
-
-                            <a v-bind:href="'/kpi?target='+ (item.target ? item.target.name : '')" target="_blank" class="btn btn-primary btn-icon">
-                                <i class="fa fa-chart-bar"></i>
-                            </a>
-                        </div>
-
-                        <div v-else-if="field.key == 'created_by' && item.creator != null">
-                            {{ item.creator.last_name + ' ' + item.creator.name }}
-                        </div>
-
-                        <div v-else-if="field.key == 'updated_by' && item.updater != null">
-                            {{ item.updater.last_name + ' ' + item.updater.name }}
-                        </div>
-
-                        <div v-else-if="non_editable_fields.includes(field.key)" :class="field.class">
-                           {{ item[field.key] }}
-                        </div>
-
-                        <div v-else :class="field.class">
-                            <input type="text" class="form-control" v-model="item[field.key]" @change="validate(item[field.key], field.key)" />
-                        </div>
-
-                    </td>
-                    <td >
-                        <div class="d-flex">
-                            <i class="fa fa-save ml-2 mr-1 btn btn-success btn-icon" @click="saveKpi(i)"></i>
-                            <i class="fa fa-trash btn btn-danger btn-icon" @click="deleteKpi(i)"></i>
-                        </div>
-                    </td>
-                </tr>
-
-                <template v-if="item.items !== undefined">
-                    <tr class="collapsable" :class="{'active': item.expanded}" :key="i + 'a'">
-                        <td :colspan="fields.length + 2">
-                            <div class="table__wrapper w-100">
-                                <kpi-items
-                                    :kpi_id="item.id"
-                                    :items="item.items"
-                                    :expanded="item.expanded"
-                                    :activities="activities"
-                                    :groups="groups"
-                                    :completed_80="item.completed_80"
-                                    :completed_100="item.completed_100"
-                                    :lower_limit="item.lower_limit"
-                                    :upper_limit="item.upper_limit"
-                                    :editable="true"
-                                    :kpi_page="true"
-                                />
-                            </div>
-                        </td>
-                    </tr>
-                </template>
-
+            <template v-for="(item, i) in page_items">
+                <template v-if="(item.target && item.target.name.includes(searchText)) || searchText.length == 0">
+					<!-- <tr v-if="item.target.name.includes(searchText) || searchText.length == 0 || (item.creator && (item.creator.last_name + ' ' + item.creator.name).includes(searchText)) || (item.updater && (item.updater.last_name + ' ' + item.updater.name).includes(searchText)) || (item.items.filter( i => { return i.name.includes(searchText)  } ).length > 0)"></tr> -->
+					<tr :key="i">
+						<td  @click="expand(i)" class="pointer">
+							<div class="d-flex align-items-center px-2">
+								<span class="mr-2">{{ i + 1 }}</span>
+								<i class="fa fa-minus mt-1" v-if="item.expanded"></i>
+								<i class="fa fa-plus mt-1" v-else></i>
+							</div>
+						</td>
+						<td  v-for="(field, f) in fields" :key="f" :class="field.class">
+							<div v-if="field.key == 'target'" >
+								<superselect
+									v-if="item.target == null || item.id == 0"
+									class="w-full"
+									:values="item.target == null ? [] : [item.target]"
+									:single="true"
+									@choose="(target) => item.target = target"
+									@remove="() => item.target = null"
+									:key="i" />
+								<div v-else class="d-flex aic">
+									<i class="fa fa-user ml-2" v-if="item.target.type == 1"></i>
+									<i class="fa fa-users ml-2" v-if="item.target.type == 2"></i>
+									<i class="fa fa-briefcase ml-2" v-if="item.target.type == 3"></i>
+									<span class="ml-2">{{ item.target.name }}</span>
+								</div>
+							</div>
+							<div v-else-if="field.key == 'stats'" :class="field.class">
+								<a v-bind:href="'/kpi?target='+ (item.target ? item.target.name : '')" target="_blank" class="btn btn-primary btn-icon">
+									<i class="fa fa-chart-bar"></i>
+								</a>
+							</div>
+							<div v-else-if="field.key == 'created_by' && item.creator != null">
+								{{ item.creator.last_name + ' ' + item.creator.name }}
+							</div>
+							<div v-else-if="field.key == 'updated_by' && item.updater != null">
+								{{ item.updater.last_name + ' ' + item.updater.name }}
+							</div>
+							<div v-else-if="non_editable_fields.includes(field.key)" :class="field.class">
+								{{ item[field.key] }}
+							</div>
+							<div v-else :class="field.class">
+								<input type="text" class="form-control" v-model="item[field.key]" @change="validate(item[field.key], field.key)" />
+							</div>
+						</td>
+						<td >
+							<div class="d-flex">
+								<i class="fa fa-save ml-2 mr-1 btn btn-success btn-icon" @click="saveKpi(i)"></i>
+								<i class="fa fa-trash btn btn-danger btn-icon" @click="deleteKpi(i)"></i>
+							</div>
+						</td>
+					</tr>
+					<template v-if="item.items !== undefined">
+						<tr class="collapsable" :class="{'active': item.expanded}" :key="i + 'a'">
+							<td :colspan="fields.length + 2">
+								<div class="table__wrapper w-100">
+									<kpi-items
+										:kpi_id="item.id"
+										:items="item.items"
+										:expanded="item.expanded"
+										:activities="activities"
+										:groups="groups"
+										:completed_80="item.completed_80"
+										:completed_100="item.completed_100"
+										:lower_limit="item.lower_limit"
+										:upper_limit="item.upper_limit"
+										:editable="true"
+										:kpi_page="true"
+									/>
+								</div>
+							</td>
+						</tr>
+					</template>
+				</template>
             </template>
 
 
@@ -172,7 +160,7 @@
 
       <div class="row">
 
-         <div class="col-md-4 mb-4" v-for="(field, f) in all_fields">
+         <div class="col-md-4 mb-4" v-for="(field, f) in all_fields" :key="f">
             <b-form-checkbox
                 v-model="show_fields[field.key]"
                 :value="true"
@@ -189,368 +177,361 @@
 </template>
 
 <script>
-import {kpi_fields, newKpi} from "./kpis.js";
-import {findModel, groupBy} from "./helpers.js";
+import {kpi_fields, newKpi} from './kpis.js';
+import {findModel/* , groupBy */} from './helpers.js';
 
 export default {
-    name: "KPI",
-    props: {
+	name: 'KPI',
+	props: {
 
-    },
-    watch: {
-        show_fields: {
-            handler: function (val) {
-                localStorage.kpi_show_fields = JSON.stringify(val);
-                this.prepareFields();
-            },
-            deep: true
-        },
-        pageSize: {
-            handler: function(val) {
-                if(val < 1) {
-                    val = 1;
-                    return;
-                }
+	},
+	watch: {
+		show_fields: {
+			handler: function (val) {
+				localStorage.kpi_show_fields = JSON.stringify(val);
+				this.prepareFields();
+			},
+			deep: true
+		},
+		pageSize: {
+			handler: function(val) {
+				if(val < 1) {
+					val = 1;
+					return;
+				}
 
-                if(val > 100) {
-                    val = 100;
-                    return;
-                }
+				if(val > 100) {
+					val = 100;
+					return;
+				}
 
-                this.paginationKey++;
-            }
-        }
-    },
-    data() {
-        return {
-            active: 1,
-            show_fields: [],
-            all_fields: kpi_fields,
-            fields: [],
-            uri: 'kpi',
-            groups: [],
-            searchText: '',
-            modalAdjustVisibleFields: false,
-            page_items: [],
-            pageSize: 100,
-            paginationKey: 1,
-            items: [],
-            all_items: [],
-            activities: [],
-            non_editable_fields: [
-                'created_at',
-                'updated_at',
-                'created_by',
-                'updated_by',
-            ]
-        }
-    },
+				this.paginationKey++;
+			}
+		}
+	},
+	data() {
+		return {
+			active: 1,
+			show_fields: [],
+			all_fields: kpi_fields,
+			fields: [],
+			uri: 'kpi',
+			groups: [],
+			searchText: '',
+			modalAdjustVisibleFields: false,
+			page_items: [],
+			pageSize: 100,
+			paginationKey: 1,
+			items: [],
+			all_items: [],
+			activities: [],
+			non_editable_fields: [
+				'created_at',
+				'updated_at',
+				'created_by',
+				'updated_by',
+			]
+		}
+	},
 
-    created() {
-        this.fetchKPI()
+	created() {
+		this.fetchKPI()
 
-        this.setDefaultShowFields()
-        this.prepareFields();
-        this.addStatusToItems();
-    },
-    mounted() {
-        this.$watch(
-          "$refs.child.searchText",
-          (new_value, old_value) => (this.searchText = new_value)
-        );
-    },
-    methods: {
-        showKpiStats(i){
-            alert(i);
-        },
-        expand(i) {
-            this.page_items[i].expanded = !this.page_items[i].expanded
-        },
+		this.setDefaultShowFields()
+		this.prepareFields();
+		this.addStatusToItems();
+	},
+	mounted() {
+		this.$watch(
+			'$refs.child.searchText',
+			new_value => (this.searchText = new_value)
+		);
+	},
+	methods: {
+		showKpiStats(i){
+			alert(i);
+		},
+		expand(i) {
+			this.page_items[i].expanded = !this.page_items[i].expanded
+		},
 
-        onChangePage(page_items) {
-            this.page_items = page_items;
-        },
+		onChangePage(page_items) {
+			this.page_items = page_items;
+		},
 
-        fetchKPI(filter = null) {
-            let loader = this.$loading.show();
+		fetchKPI(filter = null) {
+			let loader = this.$loading.show();
 
-            axios.post(this.uri + '/' + 'get', {
-                filters: filter
-            }).then(response => {
+			this.$axios.post(this.uri + '/' + 'get', {
+				filters: filter
+			}).then(response => {
 
-                this.items = response.data.kpis;
-                this.all_items = response.data.kpis;
-                this.activities = response.data.activities;
-                this.groups = response.data.groups;
+				this.items = response.data.kpis;
+				this.all_items = response.data.kpis;
+				this.activities = response.data.activities;
+				this.groups = response.data.groups;
 
-                this.page_items = this.items.slice(0, this.pageSize);
+				this.page_items = this.items.slice(0, this.pageSize);
 
-                loader.hide()
-            }).catch(error => {
-                loader.hide()
-                alert(error)
-            });
-        },
+				loader.hide()
+			}).catch(error => {
+				loader.hide()
+				alert(error)
+			});
+		},
 
-        setDefaultShowFields() {
-            let obj = {}; // Какие поля показывать
-            kpi_fields.forEach(field => obj[field.key] = true);
+		setDefaultShowFields() {
+			let obj = {}; // Какие поля показывать
+			kpi_fields.forEach(field => obj[field.key] = true);
 
-            if(localStorage.kpi_show_fields) {
-                this.show_fields = JSON.parse(localStorage.getItem('kpi_show_fields'));
-                if(this.show_fields == null) this.show_fields = obj
-            } else {
-                this.show_fields = obj
-            }
-        },
+			if(localStorage.kpi_show_fields) {
+				this.show_fields = JSON.parse(localStorage.getItem('kpi_show_fields'));
+				if(this.show_fields == null) this.show_fields = obj
+			} else {
+				this.show_fields = obj
+			}
+		},
 
-        adjustFields() {
-            this.modalAdjustVisibleFields = true;
-        },
+		adjustFields() {
+			this.modalAdjustVisibleFields = true;
+		},
 
-        addStatusToItems() {
-            this.items.forEach(el => {
+		addStatusToItems() {
+			this.items.forEach(el => {
 
-                el.items.forEach(a => {
-                    a.source = 0
-                    a.group_id = 0
-                });
+				el.items.forEach(a => {
+					a.source = 0
+					a.group_id = 0
+				});
 
-                el.on_edit = false
+				el.on_edit = false
 
-            });
-        },
+			});
+		},
 
-        prepareFields() {
-            let visible_fields = [],
-                show_fields = this.show_fields;
+		prepareFields() {
+			const visible_fields = []
 
-            kpi_fields.forEach((field, i) => {
-                if(this.show_fields[field.key] != undefined
-                    && this.show_fields[field.key]
-                ) {
-                    visible_fields.push(field)
-                }
-            });
+			kpi_fields.forEach(field => {
+				if(this.show_fields[field.key] != undefined && this.show_fields[field.key]) {
+					visible_fields.push(field)
+				}
+			});
 
-            this.fields = visible_fields;
-        },
+			this.fields = visible_fields;
+		},
 
-        addKpi() {
-            this.items.unshift(newKpi());
-            //this.page_items.unshift(newKpi());
-           // this.page_items = this.items.slice(0, this.pageSize);
-            this.$toast.info('Добавлен KPI');
-        },
+		addKpi() {
+			this.items.unshift(newKpi());
+			//this.page_items.unshift(newKpi());
+			// this.page_items = this.items.slice(0, this.pageSize);
+			this.$toast.info('Добавлен KPI');
+		},
 
-        validateMsg(item) {
-            let msg = '';
+		validateMsg(item) {
+			let msg = '';
 
-            if(item.target == null)    msg = 'Выберите Кому назначить'
+			if(item.target == null) msg = 'Выберите Кому назначить'
 
-            let share = 0;
+			// wtf share ???
+			// eslint-disable-next-line no-unused-vars
+			let share = 0
 
-            if(item.items != undefined) {
+			if(item.items != undefined) {
 
-                item.items.every((el, i) => {
+				item.items.every((el, i) => {
 
-                    if(!(el.deleted !== undefined && el.deleted)) share += Math.abs(el.share);
-
-
-                    if(el.name.length <= 1) {
-                        msg = 'Заполните название активности #' + (i+1);
-                        return false;
-                    }
-
-                    if(
-                        (el.activity_id == 0 || el.activity_id == undefined)
-                        && el.source != 0
-                    ) {
-                        msg = 'Выберите показатель #' + (i+1);
-                        return false;
-                    }
+					if(!(el.deleted !== undefined && el.deleted)) share += Math.abs(el.share);
 
 
-                    // if(Number(el.plan) <= 0) {
-                    //     msg = 'План должен быть больше 0 #' + (i+1);
-                    //     return false;
-                    // }
+					if(el.name.length <= 1) {
+						msg = 'Заполните название активности #' + (i+1);
+						return false;
+					}
+
+					if((el.activity_id == 0 || el.activity_id == undefined) && el.source != 0) {
+						msg = 'Выберите показатель #' + (i+1);
+						return false;
+					}
 
 
-                    return true;
-                });
-            }
+					// if(Number(el.plan) <= 0) {
+					//     msg = 'План должен быть больше 0 #' + (i+1);
+					//     return false;
+					// }
 
-            return msg;
-        },
 
-        saveKpi(i) {
+					return true;
+				});
+			}
 
-            let item = this.items[i]
-            let method = this.items[i].id == 0 ? 'save' : 'update';
+			return msg;
+		},
 
-            /**
+		saveKpi(i) {
+
+			let item = this.items[i]
+			let method = this.items[i].id == 0 ? 'save' : 'update';
+
+			/**
              * validate item
              */
-            let not_validated_msg = this.validateMsg(item);
-            if(not_validated_msg != '') {
-                this.$toast.error(not_validated_msg)
-                return;
-            }
+			let not_validated_msg = this.validateMsg(item);
+			if(not_validated_msg != '') {
+				this.$toast.error(not_validated_msg)
+				return;
+			}
 
 
-            let loader = this.$loading.show();
+			let loader = this.$loading.show();
 
-            let fields = {
-                id: item.id,
-                targetable_id: item.target.id,
-                targetable_type: findModel(item.target.type),
-                completed_80: item.completed_80,
-                completed_100: item.completed_100,
-                upper_limit: item.upper_limit,
-                lower_limit: item.lower_limit,
-                items: item.items
-            };
+			let fields = {
+				id: item.id,
+				targetable_id: item.target.id,
+				targetable_type: findModel(item.target.type),
+				completed_80: item.completed_80,
+				completed_100: item.completed_100,
+				upper_limit: item.upper_limit,
+				lower_limit: item.lower_limit,
+				items: item.items
+			};
 
-            let req = this.items[i].id == 0
-                ? axios.post(this.uri + '/' + method, fields)
-                : axios.put(this.uri + '/' + method, fields);
+			let req = this.items[i].id == 0
+				? this.$axios.post(this.uri + '/' + method, fields)
+				: this.$axios.put(this.uri + '/' + method, fields);
 
-            req.then(response => {
+			req.then(response => {
 
-                item.id = response.data.id;
-                item.items.forEach((el, index) => {
-                    el.id = response.data.items[index]
-                });
+				item.id = response.data.id;
+				item.items.forEach((el, index) => {
+					el.id = response.data.items[index]
+				});
 
-                this.removeDeletedItems(item.items)
+				this.removeDeletedItems(item.items)
 
-                this.$toast.info('KPI Сохранен');
-                loader.hide()
-            }).catch(error => {
-                let m = error;
-                if(error.message == 'Request failed with status code 409') {
-                    m = 'Выберите другую цель "Кому". Этому объекту уже назначен KPI';
-                }
+				this.$toast.info('KPI Сохранен');
+				loader.hide()
+			}).catch(error => {
+				let m = error;
+				if(error.message == 'Request failed with status code 409') {
+					m = 'Выберите другую цель "Кому". Этому объекту уже назначен KPI';
+				}
 
-                loader.hide()
-                alert(m)
-            });
-
-
-        },
-
-        removeDeletedItems(items) {
-            let indexes = [];
-            let counter = 0;
-            items.forEach((el, index) => {
-                if(el.deleted != undefined && el.deleted) {
-                    indexes.push(index)
-                }
-            });
-
-            indexes.forEach(index => {
-                items.splice(index-counter, 1);
-                counter++;
-            });
-
-        },
-
-        deleteKpi(i) {
-
-            let item = this.items[i]
-            let a = this.all_items.findIndex(el => el.id == item.id);
-
-            if(!confirm('Вы уверены?')) {
-                return;
-            }
-
-            if(item.id == 0) {
-                if(a != -1) this.all_items.splice(a, 1);
-                 this.onSearch();
-                this.$toast.info('KPI Удален!');
-                return;
-            }
-
-            let loader = this.$loading.show();
-            axios.delete(this.uri + '/delete/' + item.id).then(response => {
+				loader.hide()
+				alert(m)
+			});
 
 
-                if(a != -1) this.all_items.splice(a, 1);
-                this.onSearch();
+		},
 
-                this.$toast.info('KPI Удален!');
-                loader.hide()
-            }).catch(error => {
-                loader.hide()
-                alert(error)
-            });
-        },
+		removeDeletedItems(items) {
+			let indexes = [];
+			let counter = 0;
+			items.forEach((el, index) => {
+				if(el.deleted != undefined && el.deleted) {
+					indexes.push(index)
+				}
+			});
 
-        showStat() {
-            this.$toast.info('Показать статистику');
-        },
+			indexes.forEach(index => {
+				items.splice(index-counter, 1);
+				counter++;
+			});
 
-        onSearch() {
-            let text = this.searchText;
+		},
 
-            if(this.searchText == '') {
-               this.items = this.all_items;
-            } else {
-                this.items = this.all_items.filter((el, index) => {
-                    let has = false;
+		deleteKpi(i) {
 
-                    if (
-                        el.target != null
-                        && el.target.name.toLowerCase().indexOf(text.toLowerCase()) > -1
-                    ) {
-                        has = true;
-                    }
+			let item = this.items[i]
+			let a = this.all_items.findIndex(el => el.id == item.id);
 
-                    if (
-                        el.title.toLowerCase().indexOf(text.toLowerCase()) > -1
-                    ) {
-                        has = true;
-                    }
+			if(!confirm('Вы уверены?')) {
+				return;
+			}
 
-                    if (
-                        el.creator != null
-                        && (
-                            el.creator.name.toLowerCase().indexOf(text.toLowerCase()) > -1
-                            || el.creator.last_name.toLowerCase().indexOf(text.toLowerCase()) > -1
-                        )
-                    ) {
-                        has = true;
-                    }
+			if(item.id == 0) {
+				if(a != -1) this.all_items.splice(a, 1);
+				this.onSearch();
+				this.$toast.info('KPI Удален!');
+				return;
+			}
 
-                    if (
-                        el.updater != null
-                        && (
-                            el.updater.name.toLowerCase().indexOf(text.toLowerCase()) > -1
-                            || el.updater.last_name.toLowerCase().indexOf(text.toLowerCase()) > -1
-                        )
-                    ) {
-                        has = true;
-                    }
+			let loader = this.$loading.show();
+			this.$axios.delete(this.uri + '/delete/' + item.id).then(() => {
 
-                    return has;
-                });
-            }
 
-            this.page_items = this.items.slice(0, this.pageSize);
-        },
+				if(a != -1) this.all_items.splice(a, 1);
+				this.onSearch();
 
-        validate(value, field) {
-            value = abs(Number(value));
-            if(isNaN(value) || isFinite(value)) {
-                value = 0;
-            }
+				this.$toast.info('KPI Удален!');
+				loader.hide()
+			}).catch(error => {
+				loader.hide()
+				alert(error)
+			});
+		},
 
-            if(['lower_limit', 'upper_limit'].includes(field) && value > 100) {
-                value = 100;
-            }
-        }
-    },
+		showStat() {
+			this.$toast.info('Показать статистику');
+		},
+
+		onSearch() {
+			let text = this.searchText;
+
+			if(this.searchText == '') {
+				this.items = this.all_items;
+			} else {
+				this.items = this.all_items.filter(el => {
+					let has = false;
+
+					if (el.target != null && el.target.name.toLowerCase().indexOf(text.toLowerCase()) > -1) {
+						has = true;
+					}
+
+					if (
+						el.title.toLowerCase().indexOf(text.toLowerCase()) > -1
+					) {
+						has = true;
+					}
+
+					if (
+						el.creator != null
+						&& (
+							el.creator.name.toLowerCase().indexOf(text.toLowerCase()) > -1
+							|| el.creator.last_name.toLowerCase().indexOf(text.toLowerCase()) > -1
+						)
+					) {
+						has = true;
+					}
+
+					if (
+						el.updater != null
+						&& (
+							el.updater.name.toLowerCase().indexOf(text.toLowerCase()) > -1
+							|| el.updater.last_name.toLowerCase().indexOf(text.toLowerCase()) > -1
+						)
+					) {
+						has = true;
+					}
+
+					return has;
+				});
+			}
+
+			this.page_items = this.items.slice(0, this.pageSize);
+		},
+
+		validate(value, field) {
+			value = Math.abs(Number(value));
+			if(isNaN(value) || isFinite(value)) {
+				value = 0;
+			}
+
+			if(['lower_limit', 'upper_limit'].includes(field) && value > 100) {
+				value = 100;
+			}
+		}
+	},
 
 }
 </script>

@@ -19,57 +19,57 @@
 </template>
 
 <script>
-    export default {
-        name: 'choice-top',
-        data() {
-            return {
-                courses: [],
-                done: false
-            }
-        },
-        props: {
-            targetable_id: {
-                type: Number,
-                default: null
-            }
-        },
-        mounted(){
-            let loader = this.$loading.show();
-            this.axios
-                .get('/awards/get')
-                .then(response => {
-                    const data = response.data.data;
-                    data.forEach(item => {
-                            if(item.targetable_id !== null && item.targetable_type !== null){
-                                let type = 0;
-                                if(item.targetable_type === 'App\\ProfileGroup'){
-                                    type = 2;
-                                }
-                                if(item.targetable_type === 'App\\Position'){
-                                    type = 3;
-                                }
-                                this.courses.push({
-                                    id: item.targetable_id,
-                                    type: type
-                                })
-                            }
-                    });
-                    this.done = true;
-                    loader.hide();
-                }).catch(error => {console.log(error)});
-        },
-        methods: {
-            superselectChoice(values) {
-                const data = {};
-                data.id = values.id;
-                if (values.type === 2) {
-                    data.type = 'App\\ProfileGroup';
-                }
-                if (values.type === 3) {
-                    data.type = 'App\\Position';
-                }
-                this.$emit('choiced-top', data);
-            },
-        }
-    }
+export default {
+	name: 'choice-top',
+	data() {
+		return {
+			courses: [],
+			done: false
+		}
+	},
+	props: {
+		targetable_id: {
+			type: Number,
+			default: null
+		}
+	},
+	mounted(){
+		let loader = this.$loading.show();
+		this.axios
+			.get('/awards/get')
+			.then(response => {
+				const data = response.data.data;
+				data.forEach(item => {
+					if(item.targetable_id !== null && item.targetable_type !== null){
+						let type = 0;
+						if(item.targetable_type === 'App\\ProfileGroup'){
+							type = 2;
+						}
+						if(item.targetable_type === 'App\\Position'){
+							type = 3;
+						}
+						this.courses.push({
+							id: item.targetable_id,
+							type: type
+						})
+					}
+				});
+				this.done = true;
+				loader.hide();
+			}).catch(error => {console.log(error)});
+	},
+	methods: {
+		superselectChoice(values) {
+			const data = {};
+			data.id = values.id;
+			if (values.type === 2) {
+				data.type = 'App\\ProfileGroup';
+			}
+			if (values.type === 3) {
+				data.type = 'App\\Position';
+			}
+			this.$emit('choiced-top', data);
+		},
+	}
+}
 </script>

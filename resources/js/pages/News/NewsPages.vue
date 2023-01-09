@@ -15,7 +15,7 @@ Vue.component('comments-component', require('@/pages/News/CommentsComponent').de
 Vue.component('filter-component', require('@/pages/News/FilterComponent').default);
 Vue.component('reactions', require('@/pages/News/ReactionComponent').default);
 export default {
-  name: "Index"
+	name: 'Index'
 }
 </script>
 

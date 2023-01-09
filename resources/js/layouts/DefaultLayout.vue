@@ -3,16 +3,16 @@ import Sidebars from '@/pages/Layouts/Sidebars'
 import ChatApp from '@/components/Chat/ChatApp'
 
 export default {
-    components: {
-        Sidebars,
-        ChatApp,
-    },
-    data(){
-        return {
-            isLeft: false,
-            isRight: false,
-        }
-    }
+	components: {
+		Sidebars,
+		ChatApp,
+	},
+	data(){
+		return {
+			isLeft: false,
+			isRight: false,
+		}
+	}
 }
 </script>
 

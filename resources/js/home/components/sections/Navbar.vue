@@ -156,58 +156,58 @@ import NavbarButton from '../navbar/NavbarButton.vue'
 import NavbarLang from '../navbar/NavbarLang.vue'
 
 export default {
-  name: 'Nav',
-  components: {
-    NavbarLink,
-    NavbarButton,
-    NavbarLang
-  },
+	name: 'Nav',
+	components: {
+		NavbarLink,
+		NavbarButton,
+		NavbarLang
+	},
 
-  computed: {
-    lang() {
-      return this.$root.$data.lang
-    },
-    laravel() {
-      return window.Laravel
-    },
-    authorized() {
-      return window.Laravel.email !== undefined
-    },
-    hostname() {
-      return window.location.hostname
-    }
-  },
+	computed: {
+		lang() {
+			return this.$root.$data.lang
+		},
+		laravel() {
+			return window.Laravel
+		},
+		authorized() {
+			return window.Laravel.email !== undefined
+		},
+		hostname() {
+			return window.location.hostname
+		}
+	},
 
-  data() {
-    return {
-      menu: false,
-      csrf: '',
-      isScroll: false,
-      active: false,
-      isUserMenu: false
-    }
-  },
+	data() {
+		return {
+			menu: false,
+			csrf: '',
+			isScroll: false,
+			active: false,
+			isUserMenu: false
+		}
+	},
 
-  methods: {
-    changeLogoSizeByScroll() {
-      document.body.scrollTop > 20
+	methods: {
+		changeLogoSizeByScroll() {
+			document.body.scrollTop > 20
       || document.documentElement.scrollTop > 20
-          ? this.isScroll = true
-          : this.isScroll = false
-    },
-    hidePopup() {
-      if (this.active) this.active = false
-    }
-  },
+				? this.isScroll = true
+				: this.isScroll = false
+		},
+		hidePopup() {
+			if (this.active) this.active = false
+		}
+	},
 
-  mounted() {
-    window.addEventListener('scroll', this.changeLogoSizeByScroll);
-    this.csrf = document.getElementById('csrf')?.value
-  },
+	mounted() {
+		window.addEventListener('scroll', this.changeLogoSizeByScroll);
+		this.csrf = document.getElementById('csrf')?.value
+	},
 
-  beforeDestroy() {
-    window.removeEventListener('scroll', this.changeLogoSizeByScroll);
-  }
+	beforeDestroy() {
+		window.removeEventListener('scroll', this.changeLogoSizeByScroll);
+	}
 }
 </script>
 

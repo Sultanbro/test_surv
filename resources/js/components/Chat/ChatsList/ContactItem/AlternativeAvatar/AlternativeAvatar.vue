@@ -16,30 +16,30 @@
 
 <script>
 export default {
-  data() {
-    return {
-      imageError: false,
-    };
-  },
-  watch: {
-    imageError() {
-      console.log('imageError', this.image, this.title);
-    },
-  },
-  props: {
-    image: {
-      type: String | null,
-      required: true,
-    },
-    title: {
-      type: String,
-      required: true,
-    },
-    inline: {
-      type: Boolean,
-      default: false,
-    },
-  },
+	data() {
+		return {
+			imageError: false,
+		};
+	},
+	watch: {
+		imageError() {
+			console.log('imageError', this.image, this.title);
+		},
+	},
+	props: {
+		image: {
+			type: String | null,
+			required: true,
+		},
+		title: {
+			type: String,
+			required: true,
+		},
+		inline: {
+			type: Boolean,
+			default: false,
+		},
+	},
 }
 </script>
 

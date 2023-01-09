@@ -252,84 +252,84 @@
 <script>
 import Rating from './ui/Rating.vue';
 export default {
-    components: { Rating },
-    name: "TraineeReport", 
-    props: ['groups', 'trainee_report'],
-    data() {
-        return {
-           report_group_id: 0,
-           all_groups: [],
-        }
-    },
-    created() {
-        this.extractUniqueGroups();
-    },
-    methods:{
-        extractUniqueGroups(){
-            var groups = [];
-            var items =[];
-            var helper = [];
-            this.trainee_report.forEach(function(item){
+	components: { Rating },
+	name: 'TraineeReport', 
+	props: ['groups', 'trainee_report'],
+	data() {
+		return {
+			report_group_id: 0,
+			all_groups: [],
+		}
+	},
+	created() {
+		this.extractUniqueGroups();
+	},
+	methods:{
+		extractUniqueGroups(){
+			var groups = [];
+			var items =[];
+			var helper = [];
+			this.trainee_report.forEach(function(item){
                 
-                if(!groups.includes(item.group)){
-                    groups.push(item.group);
-                    helper.push({group : item.group, repeated : 1});
-                    items.push(structuredClone(item));
-                }else{
-                    if(item['quiz'][4]['avg'] > 0){
-                        helper[groups.indexOf(item.group)].repeated++;
-                        for(let i = 1; i < 4; i++){
-                            for(let j = 0; j < 3; j++){
-                                items.filter(my_item => my_item.group == item.group)[0]['quiz'][i][j].count += item['quiz'][i][j].count;
-                                items.filter(my_item => my_item.group == item.group)[0]['quiz'][i][j].percent += item['quiz'][i][j].percent;
-                            }
-                        }
-                        items.filter(my_item => my_item.group == item.group)[0]['quiz'][4]['avg'] += item['quiz'][4]['avg'];
-                        items.filter(my_item => my_item.group == item.group)[0]['quiz'][4]['count'] += item['quiz'][4]['count'];
-                        items.filter(my_item => my_item.group == item.group)[0]['presence'][0] += item['presence'][0];
+				if(!groups.includes(item.group)){
+					groups.push(item.group);
+					helper.push({group : item.group, repeated : 1});
+					items.push(structuredClone(item));
+				}else{
+					if(item['quiz'][4]['avg'] > 0){
+						helper[groups.indexOf(item.group)].repeated++;
+						for(let i = 1; i < 4; i++){
+							for(let j = 0; j < 3; j++){
+								items.filter(my_item => my_item.group == item.group)[0]['quiz'][i][j].count += item['quiz'][i][j].count;
+								items.filter(my_item => my_item.group == item.group)[0]['quiz'][i][j].percent += item['quiz'][i][j].percent;
+							}
+						}
+						items.filter(my_item => my_item.group == item.group)[0]['quiz'][4]['avg'] += item['quiz'][4]['avg'];
+						items.filter(my_item => my_item.group == item.group)[0]['quiz'][4]['count'] += item['quiz'][4]['count'];
+						items.filter(my_item => my_item.group == item.group)[0]['presence'][0] += item['presence'][0];
 
-                        for(let i = 1; i < 8; i++){
-                            items.filter(my_item => my_item.group == item.group)[0]['presence'][i] += item['presence'][i];
-                        }
-                    }else{
-                        items.filter(my_item => my_item.group == item.group)[0]['presence'][0] += item['presence'][0];
-                        for(let i = 1; i < 8; i++){
-                            items.filter(my_item => my_item.group == item.group)[0]['presence'][i] += item['presence'][i];
-                        }
-                    }
+						for(let i = 1; i < 8; i++){
+							items.filter(my_item => my_item.group == item.group)[0]['presence'][i] += item['presence'][i];
+						}
+					}else{
+						items.filter(my_item => my_item.group == item.group)[0]['presence'][0] += item['presence'][0];
+						for(let i = 1; i < 8; i++){
+							items.filter(my_item => my_item.group == item.group)[0]['presence'][i] += item['presence'][i];
+						}
+					}
                     
 
-                    /*sorted_array.forEach(function(answer, index){
+					/*sorted_array.forEach(function(answer, index){
                         answer.percent += item['quiz'][1][index].percent;
                         answer.count += item['quiz'][1][index].count;
                     });*/
-                }
-            });
-            this.all_groups = items;
+				}
+			});
+			this.all_groups = items;
 
-            this.setAverageData(helper);
+			this.setAverageData(helper);
 
-        },
-        setAverageData(helper){
-            let counter = 0;
-            this.all_groups.forEach(function(object){
-                object['quiz'][1][0].percent /= helper[counter].repeated;
-                object['quiz'][1][1].percent /= helper[counter].repeated;
-                object['quiz'][1][2].percent /= helper[counter].repeated;
+		},
+		setAverageData(helper){
+			let counter = 0;
+			this.all_groups.forEach(function(object){
+				object['quiz'][1][0].percent /= helper[counter].repeated;
+				object['quiz'][1][1].percent /= helper[counter].repeated;
+				object['quiz'][1][2].percent /= helper[counter].repeated;
 
-                object['quiz'][2][0].percent /= helper[counter].repeated;
-                object['quiz'][2][1].percent /= helper[counter].repeated;
-                object['quiz'][2][2].percent /= helper[counter].repeated;
+				object['quiz'][2][0].percent /= helper[counter].repeated;
+				object['quiz'][2][1].percent /= helper[counter].repeated;
+				object['quiz'][2][2].percent /= helper[counter].repeated;
 
-                object['quiz'][3][0].percent /= helper[counter].repeated;
-                object['quiz'][3][1].percent /= helper[counter].repeated;
-                object['quiz'][3][2].percent /= helper[counter].repeated;
+				object['quiz'][3][0].percent /= helper[counter].repeated;
+				object['quiz'][3][1].percent /= helper[counter].repeated;
+				object['quiz'][3][2].percent /= helper[counter].repeated;
 
-                object['quiz'][4]['avg'] /= helper[counter].repeated;
-                counter++;
-            });
-        }
-    }
+				object['quiz'][4]['avg'] /= helper[counter].repeated;
+				counter++;
+			});
+		}
+	}
 }
 </script>
 <style>

@@ -1,15 +1,15 @@
 <script>
 export default {
-    name: 'Section1Tab',
-    props: {
-        activeTab: String,
-        tabId: String,
-    },
-    computed: {
-        lang () {
-            return this.$root.$data.lang
-        }
-    },
+	name: 'Section1Tab',
+	props: {
+		activeTab: String,
+		tabId: String,
+	},
+	computed: {
+		lang () {
+			return this.$root.$data.lang
+		}
+	},
 }
 </script>
 

@@ -54,122 +54,122 @@
 </template>
 
 <script>
-    export default {
-        name: "Fines",
-        data() {
-            return {
-                fines: [],
-                savedfines: [],
-                alert: {
-                    show: false,
-                    message: '',
-                    class: 'alert-danger'
-                },
-                preloaderShow: false
-            }
-        },
-        created() {
-            this.getFines();
-        },
-        methods:{
-            getFines() {
-                axios.get('/timetracking/fine', {}).then(response => {
-                    this.savedfines = JSON.parse(JSON.stringify(response.data.fines))
-                    this.fines = response.data.fines
+export default {
+	name: 'Fines',
+	data() {
+		return {
+			fines: [],
+			savedfines: [],
+			alert: {
+				show: false,
+				message: '',
+				class: 'alert-danger'
+			},
+			preloaderShow: false
+		}
+	},
+	created() {
+		this.getFines();
+	},
+	methods:{
+		getFines() {
+			axios.get('/timetracking/fine', {}).then(response => {
+				this.savedfines = JSON.parse(JSON.stringify(response.data.fines))
+				this.fines = response.data.fines
 
-                }).catch(error => {
-                    console.log(error)
-                });
-            },
-
-
-            addFine() {
-                this.fines.push({
-                    id: 0,
-                    name: "Новый штраф",
-                    penalty_amount: 0
-                });
-            },
+			}).catch(error => {
+				console.log(error)
+			});
+		},
 
 
-            saveFines() {
-                if (this.validateFields() && !this.preloaderShow) {
-                    this.alert.show = false;
-                    let newfines = this.getNewFines()
-                    let deletedfines = this.getDeletedFines()
-                    let editedfines = this.getEditedFines()
-                    this.preloaderShow = true;
-                    axios.put('/timetracking/fine', {
-                        newfines,
-                        editedfines,
-                        deletedfines
-                    }).then(response => {
-                        this.alert.message = response.data.message
-                        this.alert.class = 'alert-success'
-                        this.alert.show = true
-                        this.getFines()
-                        this.preloaderShow = false;
-                    }).catch(error => {
-                        console.log(error)
-                    });
-                }
-            },
+		addFine() {
+			this.fines.push({
+				id: 0,
+				name: 'Новый штраф',
+				penalty_amount: 0
+			});
+		},
 
-            deleteFine(index) {
-                this.fines.splice(index, 1)
-            },
-            closeAlert() {
-                this.alert.show = false;
-            },
-            validateFields() {
-                let result = true;
-                this.fines.forEach((element) => {
-                    if (!element.name || !element.penalty_amount) {
-                        this.alert.message = 'Заполните все поля!'
-                        this.alert.show = true
-                        this.alert.class = 'alert-danger'
-                        result = false
-                        return false
-                    }
-                })
 
-                return result
-            },
-            getNewFines() {
-                let newFines = [];
-                this.fines.forEach((element) => {
-                    if (element.id === 0) {
-                        newFines.push(element)
-                    }
-                })
+		saveFines() {
+			if (this.validateFields() && !this.preloaderShow) {
+				this.alert.show = false;
+				let newfines = this.getNewFines()
+				let deletedfines = this.getDeletedFines()
+				let editedfines = this.getEditedFines()
+				this.preloaderShow = true;
+				axios.put('/timetracking/fine', {
+					newfines,
+					editedfines,
+					deletedfines
+				}).then(response => {
+					this.alert.message = response.data.message
+					this.alert.class = 'alert-success'
+					this.alert.show = true
+					this.getFines()
+					this.preloaderShow = false;
+				}).catch(error => {
+					console.log(error)
+				});
+			}
+		},
 
-                return newFines
-            },
-            getDeletedFines() {
-                let deletedFines = [];
-                this.savedfines.forEach((element) => {
-                    if (!this.fines.find(fine => fine.id === element.id)) {
-                        deletedFines.push(element.id)
-                    }
-                })
+		deleteFine(index) {
+			this.fines.splice(index, 1)
+		},
+		closeAlert() {
+			this.alert.show = false;
+		},
+		validateFields() {
+			let result = true;
+			this.fines.forEach((element) => {
+				if (!element.name || !element.penalty_amount) {
+					this.alert.message = 'Заполните все поля!'
+					this.alert.show = true
+					this.alert.class = 'alert-danger'
+					result = false
+					return false
+				}
+			})
 
-                return deletedFines
-            },
-            getEditedFines() {
-                let editedFines = [];
-                this.savedfines.forEach((element) => {
-                    let foundFine = this.fines.find(fine => fine.id === element.id)
-                    console.log(foundFine);
-                    console.log(element);
-                    if (foundFine && (foundFine.name !== element.name || foundFine.penalty_amount !== element.penalty_amount)) {
-                        editedFines.push(foundFine)
-                    }
-                })
+			return result
+		},
+		getNewFines() {
+			let newFines = [];
+			this.fines.forEach((element) => {
+				if (element.id === 0) {
+					newFines.push(element)
+				}
+			})
 
-                return editedFines
-            }
-        }
-    }
+			return newFines
+		},
+		getDeletedFines() {
+			let deletedFines = [];
+			this.savedfines.forEach((element) => {
+				if (!this.fines.find(fine => fine.id === element.id)) {
+					deletedFines.push(element.id)
+				}
+			})
+
+			return deletedFines
+		},
+		getEditedFines() {
+			let editedFines = [];
+			this.savedfines.forEach((element) => {
+				let foundFine = this.fines.find(fine => fine.id === element.id)
+				console.log(foundFine);
+				console.log(element);
+				if (foundFine && (foundFine.name !== element.name || foundFine.penalty_amount !== element.penalty_amount)) {
+					editedFines.push(foundFine)
+				}
+			})
+
+			return editedFines
+		}
+	}
+}
 </script>
 
 <style lang="scss" scoped>

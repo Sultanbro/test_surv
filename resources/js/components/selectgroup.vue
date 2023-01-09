@@ -14,26 +14,26 @@
 </template>
 
 <script>
-    export default {
-        name: "selectgroup",
-        props: ['tree','selecttree','perenos'],
-        data() {
-            return {
-                selecttrees:null,
-                arr:null
-            }
-        },
-        methods: {
-            log(){
-                this.arr = this.tree.find(x => x.parent_cat_id == this.selecttrees)
+export default {
+	name: 'selectgroup',
+	props: ['tree','selecttree','perenos'],
+	data() {
+		return {
+			selecttrees:null,
+			arr:null
+		}
+	},
+	methods: {
+		log(){
+			this.arr = this.tree.find(x => x.parent_cat_id == this.selecttrees)
 
-            },
-            select(sel){
-                this.$emit('select', sel)
-            }
-        }
+		},
+		select(sel){
+			this.$emit('select', sel)
+		}
+	}
 
-    }
+}
 </script>
 
 <style scoped>

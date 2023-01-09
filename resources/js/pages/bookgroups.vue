@@ -37,85 +37,85 @@
 import books from '../components/books/books.vue'
 
 export default {
-    name: "bookgroups",
-    components: {books},
-    data() {
-        return {
-            groups: [],
-            message: null,
-            selectGroups: [],
-            new_position: '',
-            options: [],
-            value: [],
-            group_id: 0
-        }
-    },
-    created() {
-        this.getGroups()
-    },
-    methods: {
-        addGroup() {
-            axios.post('/bp_books/groups/add', {
-                name: this.new_position,
-            }).then(response => {
-                if (response.data.message) {
-                    this.$toast.info(response.data.message);
-                } else {
-                    this.$toast.info('Список добавлен');
-                }
+	name: 'bookgroups',
+	components: {books},
+	data() {
+		return {
+			groups: [],
+			message: null,
+			selectGroups: [],
+			new_position: '',
+			options: [],
+			value: [],
+			group_id: 0
+		}
+	},
+	created() {
+		this.getGroups()
+	},
+	methods: {
+		addGroup() {
+			axios.post('/bp_books/groups/add', {
+				name: this.new_position,
+			}).then(response => {
+				if (response.data.message) {
+					this.$toast.info(response.data.message);
+				} else {
+					this.$toast.info('Список добавлен');
+				}
 
-                this.getGroups()
-                this.new_position = ''
-            }).catch(error => {
-                console.log(error.response)
-            })
-        },
-        deleteGroup() {
-            if (confirm('Вы уверены что хотите удалить отдел?')) {
-                axios.post('/bp_books/groups/delete', {
-                    id: this.group_id,
-                }).then(response => {
-                    this.$toast.info('Список удален');
-                    this.group_id = 0
-                    this.getGroups()
-                })
-            }
-        },
-        groupselect(value) {
-            axios.post('/bp_books/groups', {
-                group_id: value, 
-            })
-            .then(response => {
-                if (response.data) this.group_id = response.data.group_id
-            })
-        },
-        messageoff() {
-            setTimeout(() => {
-                this.message = null
-            }, 3000)
-        },
-        getGroups() {
-            axios.get('/bp_books/groups', {}).then(response => {
-                this.groups = response.data.groups
-                this.options = response.data.books
-                this.selectGroups = []
-                this.groups.forEach((item) => {
-                    this.selectGroups.push({
-                        'value': item.id,
-                        'text': item.name,
-                    })
-                })
-            }).catch(error => {
-                console.log(error.response)
-            })
-        },
-        refreshPositionsComponent() {
-            this.$refs.positions.getPositions();
-        },
-        refreshBooksComponent() {
-            this.$refs.books.getBooks();
-        },
-    } 
+				this.getGroups()
+				this.new_position = ''
+			}).catch(error => {
+				console.log(error.response)
+			})
+		},
+		deleteGroup() {
+			if (confirm('Вы уверены что хотите удалить отдел?')) {
+				axios.post('/bp_books/groups/delete', {
+					id: this.group_id,
+				}).then(response => {
+					this.$toast.info('Список удален');
+					this.group_id = 0
+					this.getGroups()
+				})
+			}
+		},
+		groupselect(value) {
+			axios.post('/bp_books/groups', {
+				group_id: value, 
+			})
+				.then(response => {
+					if (response.data) this.group_id = response.data.group_id
+				})
+		},
+		messageoff() {
+			setTimeout(() => {
+				this.message = null
+			}, 3000)
+		},
+		getGroups() {
+			axios.get('/bp_books/groups', {}).then(response => {
+				this.groups = response.data.groups
+				this.options = response.data.books
+				this.selectGroups = []
+				this.groups.forEach((item) => {
+					this.selectGroups.push({
+						'value': item.id,
+						'text': item.name,
+					})
+				})
+			}).catch(error => {
+				console.log(error.response)
+			})
+		},
+		refreshPositionsComponent() {
+			this.$refs.positions.getPositions();
+		},
+		refreshBooksComponent() {
+			this.$refs.books.getBooks();
+		},
+	} 
 }
 </script>
 <style src="vue-multiselect/dist/vue-multiselect.min.css"></style>

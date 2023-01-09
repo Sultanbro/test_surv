@@ -36,174 +36,174 @@ const S_APPLIED = 15; // Приняты на работу
 const S_FIRED = 16; // Уволены
 
 export default {
-    name: "TableSummaryRecruting",
-    props: {
-        records: Array,
-        month: Object,
-    },
-    data: function () {
-        return {
-            items: [],
-            fields: [],
-            workDays: 26,
-            hasPremission: false,
-        };
-    },
-    watch: {
-        // эта функция запускается при любом изменении данных
-        records: {
-            // the callback will be called immediately after the start of the observation
-            immediate: true,
-            handler (val, oldVal) {
-                this.setFields()
-                this.items = val
-                this.calcConversionAuto()
-            }
-        },
-    },
+	name: 'TableSummaryRecruting',
+	props: {
+		records: Array,
+		month: Object,
+	},
+	data: function () {
+		return {
+			items: [],
+			fields: [],
+			workDays: 26,
+			hasPremission: false,
+		};
+	},
+	watch: {
+		// эта функция запускается при любом изменении данных
+		records: {
+			// the callback will be called immediately after the start of the observation
+			immediate: true,
+			handler (val, oldVal) {
+				this.setFields()
+				this.items = val
+				this.calcConversionAuto()
+			}
+		},
+	},
 
-    mounted() {
-        this.setFields()
-        this.calcConversionAuto()
-    },
+	mounted() {
+		this.setFields()
+		this.calcConversionAuto()
+	},
 
-    created() {
-        this.S_CREATED = 0; // Создано новых лидов за день
-        this.S_CALLS_OUT = 1; // ИСХ успешные соединения
-        this.S_CALLS_OUT_10 = 2; // Успешные соединения от 10 сек
-        this.S_CALLS_IN = 3; // ВХ успешные соединения
-        this.S_CALLS_MISSED = 4; // Пропущенные звонки
-        this.S_FAILED = 5; // Забраковано Лидов
-        this.S_PROCESSED = 6; // Обработанные лиды FAILED + CONVERTED
-        this.S_ONLINE = 7; // Количество рекрутеров на линии
-        this.S_CONVERTED_CONVERSION = 8; // Конверсия сконвертированных от обработанных
-        this.S_CONVERTED = 9; // Сконвертировано Лидов
-        this.S_EMPTY7 = 11;
-        this.S_EMPTY8 = 12;
-        this.S_TRAINING_TODAY = 13; // Стажируются сегодня
-        this.S_EMPTY11 = 14;
-        this.S_APPLIED = 15; // Приняты на работу
-        this.S_FIRED = 16; // Уволены
-    },
+	created() {
+		this.S_CREATED = 0; // Создано новых лидов за день
+		this.S_CALLS_OUT = 1; // ИСХ успешные соединения
+		this.S_CALLS_OUT_10 = 2; // Успешные соединения от 10 сек
+		this.S_CALLS_IN = 3; // ВХ успешные соединения
+		this.S_CALLS_MISSED = 4; // Пропущенные звонки
+		this.S_FAILED = 5; // Забраковано Лидов
+		this.S_PROCESSED = 6; // Обработанные лиды FAILED + CONVERTED
+		this.S_ONLINE = 7; // Количество рекрутеров на линии
+		this.S_CONVERTED_CONVERSION = 8; // Конверсия сконвертированных от обработанных
+		this.S_CONVERTED = 9; // Сконвертировано Лидов
+		this.S_EMPTY7 = 11;
+		this.S_EMPTY8 = 12;
+		this.S_TRAINING_TODAY = 13; // Стажируются сегодня
+		this.S_EMPTY11 = 14;
+		this.S_APPLIED = 15; // Приняты на работу
+		this.S_FIRED = 16; // Уволены
+	},
 
-    methods: {
-
-
-        setFields() {
-            let fields = [];
-
-            fields = [
-                {
-                    key: "headers",
-                    label: "Рекрутинг",
-                    variant: "title",
-                    class: "text-left t-name b-table-sticky-column bgz"
-                },
-                {
-                    key: "conversion",
-                    label: "Конверсия, %",
-                },
-                {
-                    key: "plan",
-                    label: "План",
-                },
-                {
-                    key: "fact",
-                    label: "Факт",
-                }
-            ];
-
-            for(let i = 1; i <= this.month.daysInMonth; i++) {
-                let dayName = this.$moment(`${i} ${this.month.currentMonth} ${new Date().getFullYear()}`, 'D MMMM YYYY').locale('en').format('ddd')
-                fields.push({
-                    key: `${i}`,
-                    label: `${i}`,
-                    class: ` day  ${dayName}`,
-                    is_date: true
-                });
-            }
-
-            this.fields = fields;
-        },
-
-        updateSettings(e, data) {
-
-            this.updateTable(e, data);
-
-            let loader = this.$loading.show();
-
-            axios.post('/timetracking/update-settings', {
-                date: this.$moment(`${this.month.currentMonth} ${new Date().getFullYear()}`, 'MMMM YYYY').format('YYYY-MM-DD'),
-                group_id: 48,
-                settings: this.records
-            }).then(response => {
-                loader.hide()
-            })
-
-        },
-
-        updateTable(e, data) {
-            var index = data.index
-            var clearedValue = e.target.value.replace(',', '.');
-            var value = parseFloat(clearedValue) || null
-            var key = data.field.key
-            this.records[index][key] = value
-
-            this.calcTotal(index)
-        },
-
-        calcTotal(index) {
-
-            let sum = 0;
-            for(let i = 1; i <= this.month.daysInMonth; i++) {
-                if (isNaN(this.records[index][i])) continue;
-
-                sum += Number(this.records[index][i]);
-            }
-            this.records[index].fact = Number(sum)
+	methods: {
 
 
+		setFields() {
+			let fields = [];
 
-            if(index == S_CONVERTED || index == S_APPLIED) {
-                this.calcConversion(index)
-            }
-        },
+			fields = [
+				{
+					key: 'headers',
+					label: 'Рекрутинг',
+					variant: 'title',
+					class: 'text-left t-name b-table-sticky-column bgz'
+				},
+				{
+					key: 'conversion',
+					label: 'Конверсия, %',
+				},
+				{
+					key: 'plan',
+					label: 'План',
+				},
+				{
+					key: 'fact',
+					label: 'Факт',
+				}
+			];
 
-        calcConversion(index) {
+			for(let i = 1; i <= this.month.daysInMonth; i++) {
+				let dayName = this.$moment(`${i} ${this.month.currentMonth} ${new Date().getFullYear()}`, 'D MMMM YYYY').locale('en').format('ddd')
+				fields.push({
+					key: `${i}`,
+					label: `${i}`,
+					class: ` day  ${dayName}`,
+					is_date: true
+				});
+			}
 
-            let array = {
-                converted: this.records[S_CONVERTED].fact,
-                processed: this.records[S_PROCESSED].fact,
-                applied: this.records[S_APPLIED].fact,
-            }
+			this.fields = fields;
+		},
 
-            if(index == S_CONVERTED) {
-                this.records[index].conversion =  Number(array.converted / array.processed * 100).toFixed(1)
-            }
+		updateSettings(e, data) {
 
-            if(index == S_APPLIED) {
-                this.records[index].conversion =  Number(array.applied / array.converted * 100).toFixed(1)
-            }
+			this.updateTable(e, data);
 
-            if (isNaN(this.records[index].conversion)) {
-                this.records[index].conversion = '0%'
-            }
+			let loader = this.$loading.show();
 
-            this.calcConversionAuto()
-        },
+			axios.post('/timetracking/update-settings', {
+				date: this.$moment(`${this.month.currentMonth} ${new Date().getFullYear()}`, 'MMMM YYYY').format('YYYY-MM-DD'),
+				group_id: 48,
+				settings: this.records
+			}).then(response => {
+				loader.hide()
+			})
+
+		},
+
+		updateTable(e, data) {
+			var index = data.index
+			var clearedValue = e.target.value.replace(',', '.');
+			var value = parseFloat(clearedValue) || null
+			var key = data.field.key
+			this.records[index][key] = value
+
+			this.calcTotal(index)
+		},
+
+		calcTotal(index) {
+
+			let sum = 0;
+			for(let i = 1; i <= this.month.daysInMonth; i++) {
+				if (isNaN(this.records[index][i])) continue;
+
+				sum += Number(this.records[index][i]);
+			}
+			this.records[index].fact = Number(sum)
 
 
-        calcConversionAuto() {
-             this.records[S_CONVERTED].conversion =  Number(this.records[S_CONVERTED].fact / this.records[S_PROCESSED].fact * 100).toFixed(1)
-             if (isNaN(this.records[S_CONVERTED].conversion)) this.records[S_CONVERTED].conversion = 0
-             this.records[S_CONVERTED].conversion = this.records[S_CONVERTED].conversion + '%'
 
-             this.records[S_APPLIED].conversion =  Number(this.records[S_APPLIED].fact / this.records[S_APPLIED].fact * 100).toFixed(1)
-             if (isNaN(this.records[S_APPLIED].conversion)) this.records[S_APPLIED].conversion = 0
-             this.records[S_APPLIED].conversion = this.records[S_APPLIED].conversion + '%'
-        }
+			if(index == S_CONVERTED || index == S_APPLIED) {
+				this.calcConversion(index)
+			}
+		},
 
-    }
+		calcConversion(index) {
+
+			let array = {
+				converted: this.records[S_CONVERTED].fact,
+				processed: this.records[S_PROCESSED].fact,
+				applied: this.records[S_APPLIED].fact,
+			}
+
+			if(index == S_CONVERTED) {
+				this.records[index].conversion =  Number(array.converted / array.processed * 100).toFixed(1)
+			}
+
+			if(index == S_APPLIED) {
+				this.records[index].conversion =  Number(array.applied / array.converted * 100).toFixed(1)
+			}
+
+			if (isNaN(this.records[index].conversion)) {
+				this.records[index].conversion = '0%'
+			}
+
+			this.calcConversionAuto()
+		},
+
+
+		calcConversionAuto() {
+			this.records[S_CONVERTED].conversion =  Number(this.records[S_CONVERTED].fact / this.records[S_PROCESSED].fact * 100).toFixed(1)
+			if (isNaN(this.records[S_CONVERTED].conversion)) this.records[S_CONVERTED].conversion = 0
+			this.records[S_CONVERTED].conversion = this.records[S_CONVERTED].conversion + '%'
+
+			this.records[S_APPLIED].conversion =  Number(this.records[S_APPLIED].fact / this.records[S_APPLIED].fact * 100).toFixed(1)
+			if (isNaN(this.records[S_APPLIED].conversion)) this.records[S_APPLIED].conversion = 0
+			this.records[S_APPLIED].conversion = this.records[S_APPLIED].conversion + '%'
+		}
+
+	}
 };
 </script>
 

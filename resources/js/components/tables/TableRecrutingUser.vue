@@ -66,190 +66,190 @@
 
 <script>
 export default {
-    name: "TableRecrutingUser",
-    props: {
-        name: String,
-        id: Number,
-        records: Array,
-        workdays: {
-            type: Number,
-            default: 27
-        },
-        month: Object,
-        editable: {
-            type: Boolean,
-            default: false
-        },
-        deleted: {
-            type: Boolean,
-            default: false
-        },
-        hr: {
-            type: Object,
-            default: {}
-        }
-    },
-    data: function () {
-        return {
-            fields: [],
-            hasPremission: false,
-            visible: true,
-        };
-    },
-    watch: {
-        // эта функция запускается при любом изменении данных
-        records: {
-            // the callback will be called immediately after the start of the observation
-            immediate: true,
-            handler (val, oldVal) {
-                this.setFields()
-                for (let index = 0; index < 8; index++) {
-                    this.calcTotal(index)
-                }
-                this.calcConversionAuto()
-            }
-        },
-    },
+	name: 'TableRecrutingUser',
+	props: {
+		name: String,
+		id: Number,
+		records: Array,
+		workdays: {
+			type: Number,
+			default: 27
+		},
+		month: Object,
+		editable: {
+			type: Boolean,
+			default: false
+		},
+		deleted: {
+			type: Boolean,
+			default: false
+		},
+		hr: {
+			type: Object,
+			default: {}
+		}
+	},
+	data: function () {
+		return {
+			fields: [],
+			hasPremission: false,
+			visible: true,
+		};
+	},
+	watch: {
+		// эта функция запускается при любом изменении данных
+		records: {
+			// the callback will be called immediately after the start of the observation
+			immediate: true,
+			handler (val, oldVal) {
+				this.setFields()
+				for (let index = 0; index < 8; index++) {
+					this.calcTotal(index)
+				}
+				this.calcConversionAuto()
+			}
+		},
+	},
 
-    mounted() {
-        this.setFields()
-        for (let index = 0; index < 8; index++) {
-            this.calcTotal(index)
-        }
-        this.calcConversionAuto()
-
-
-
-        if(localStorage['recruiter_' + this.id + '_deleted']) {
-            this.hr.deleted = true;
-        } else if(localStorage['recruiter_' + this.id]) {
-            this.visible = JSON.parse(localStorage.getItem('recruiter_' + this.id));
-        }
-
-    },
-
-    methods: {
-        toggleVisible() {
-            this.visible = !this.visible
-            localStorage['recruiter_' + this.id] = this.visible;
-        },
-
-        deleteTable() {
-            this.deleted = true;
-            localStorage['recruiter_' + this.id + '_deleted'] = true;
-        },
-
-        setFields() {
-            let fields = [];
-
-            fields = [
-                {
-                    key: "headers",
-                    label: this.name,
-                    variant: "title",
-                    class: "text-left t-name b-table-sticky-column bgw"
-                },
-                {
-                    key: "conversion",
-                    label: "%",
-                },
-                {
-                    key: "month_plan",
-                    label: "План",
-                },
-                {
-                    key: "plan",
-                    label: "В день",
-                },
-                {
-                    key: "fact",
-                    label: "Факт",
-                }
-            ];
-
-            for (let i = 1; i <= this.month.daysInMonth; i++) {
-                let dayName = this.$moment(`${i} ${this.month.currentMonth} ${new Date().getFullYear()}`, 'D MMMM YYYY').locale('en').format('ddd')
-                fields.push({
-                    key: `${i}`,
-                    label: `${i}`,
-                    class: ` day  ${dayName}`,
-                    is_date: true
-                });
-            }
-            this.fields = fields;
-        },
-
-        updateSettings(e, data) {
-
-            this.updateNumber(e, data);
+	mounted() {
+		this.setFields()
+		for (let index = 0; index < 8; index++) {
+			this.calcTotal(index)
+		}
+		this.calcConversionAuto()
 
 
 
-            let loader = this.$loading.show();
+		if(localStorage['recruiter_' + this.id + '_deleted']) {
+			this.hr.deleted = true;
+		} else if(localStorage['recruiter_' + this.id]) {
+			this.visible = JSON.parse(localStorage.getItem('recruiter_' + this.id));
+		}
 
-            axios.post("/timetracking/update-settings-individually", {
-                    date: this.$moment(
-                        `${this.month.currentMonth} ${new Date().getFullYear()}`,
-                        "MMMM YYYY"
-                    ).format("YYYY-MM-DD"),
-                    group_id: 48,
-                    table_type: 0,
-                    day: data.field.key,
-                    employee_id: this.id,
-                    settings: this.records, // data of employee for 1 month
-                })
-                .then((response) => {
-                    loader.hide();
-                });
+	},
 
-        },
+	methods: {
+		toggleVisible() {
+			this.visible = !this.visible
+			localStorage['recruiter_' + this.id] = this.visible;
+		},
 
-        updateNumber(e, data) {
+		deleteTable() {
+			this.deleted = true;
+			localStorage['recruiter_' + this.id + '_deleted'] = true;
+		},
+
+		setFields() {
+			let fields = [];
+
+			fields = [
+				{
+					key: 'headers',
+					label: this.name,
+					variant: 'title',
+					class: 'text-left t-name b-table-sticky-column bgw'
+				},
+				{
+					key: 'conversion',
+					label: '%',
+				},
+				{
+					key: 'month_plan',
+					label: 'План',
+				},
+				{
+					key: 'plan',
+					label: 'В день',
+				},
+				{
+					key: 'fact',
+					label: 'Факт',
+				}
+			];
+
+			for (let i = 1; i <= this.month.daysInMonth; i++) {
+				let dayName = this.$moment(`${i} ${this.month.currentMonth} ${new Date().getFullYear()}`, 'D MMMM YYYY').locale('en').format('ddd')
+				fields.push({
+					key: `${i}`,
+					label: `${i}`,
+					class: ` day  ${dayName}`,
+					is_date: true
+				});
+			}
+			this.fields = fields;
+		},
+
+		updateSettings(e, data) {
+
+			this.updateNumber(e, data);
 
 
-            var index = data.index
-            var clearedValue = e.target.value.replace(',', '.');
-            var value = parseFloat(clearedValue) || null
-            var key = data.field.key
-            this.records[index][key] = value
 
-            this.calcTotal(index)
-        },
+			let loader = this.$loading.show();
 
-        calcTotal(index) {
+			axios.post('/timetracking/update-settings-individually', {
+				date: this.$moment(
+					`${this.month.currentMonth} ${new Date().getFullYear()}`,
+					'MMMM YYYY'
+				).format('YYYY-MM-DD'),
+				group_id: 48,
+				table_type: 0,
+				day: data.field.key,
+				employee_id: this.id,
+				settings: this.records, // data of employee for 1 month
+			})
+				.then((response) => {
+					loader.hide();
+				});
 
-            let sum = 0;
-            for(let i = 1; i <= this.month.daysInMonth; i++) {
-                if (isNaN(this.records[index][i])) continue;
+		},
 
-                sum += Number(this.records[index][i]);
-            }
-            this.records[index].fact = sum
+		updateNumber(e, data) {
 
-            if(index == 1 || index == 6 || index == 7 || index == 8) {
-                this.calcConversion(index)
-            }
-        },
 
-        calcConversion(index) {
-            this.calcConversionAuto()
+			var index = data.index
+			var clearedValue = e.target.value.replace(',', '.');
+			var value = parseFloat(clearedValue) || null
+			var key = data.field.key
+			this.records[index][key] = value
 
-        },
+			this.calcTotal(index)
+		},
 
-        calcConversionAuto() {
-            if(this.records[1] !== undefined && this.records[6] !== undefined && this.records[0] !== undefined) {
-                this.records[1].conversion =  Number(this.records[1].fact / this.records[0].fact * 100).toFixed(1)
-                if (isNaN(this.records[1].conversion)) this.records[1].conversion = 0
-                this.records[1].conversion = this.records[1].conversion + '%'
+		calcTotal(index) {
 
-                this.records[6].conversion =  Number(this.records[6].fact / this.records[1].fact * 100).toFixed(1)
-                if (isNaN(this.records[6].conversion)) this.records[6].conversion = 0
-                this.records[6].conversion = this.records[6].conversion + '%'
-            }
+			let sum = 0;
+			for(let i = 1; i <= this.month.daysInMonth; i++) {
+				if (isNaN(this.records[index][i])) continue;
 
-        }
+				sum += Number(this.records[index][i]);
+			}
+			this.records[index].fact = sum
 
-    }
+			if(index == 1 || index == 6 || index == 7 || index == 8) {
+				this.calcConversion(index)
+			}
+		},
+
+		calcConversion(index) {
+			this.calcConversionAuto()
+
+		},
+
+		calcConversionAuto() {
+			if(this.records[1] !== undefined && this.records[6] !== undefined && this.records[0] !== undefined) {
+				this.records[1].conversion =  Number(this.records[1].fact / this.records[0].fact * 100).toFixed(1)
+				if (isNaN(this.records[1].conversion)) this.records[1].conversion = 0
+				this.records[1].conversion = this.records[1].conversion + '%'
+
+				this.records[6].conversion =  Number(this.records[6].fact / this.records[1].fact * 100).toFixed(1)
+				if (isNaN(this.records[6].conversion)) this.records[6].conversion = 0
+				this.records[6].conversion = this.records[6].conversion + '%'
+			}
+
+		}
+
+	}
 };
 </script>
 

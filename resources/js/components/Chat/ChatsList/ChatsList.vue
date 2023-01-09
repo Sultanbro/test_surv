@@ -50,74 +50,74 @@
 </template>
 
 <script>
-import {mapActions, mapGetters} from "vuex";
-import ContextMenu from "../ContextMenu/ContextMenu.vue";
-import ContactItem from "./ContactItem/ContactItem.vue";
+import {mapActions, mapGetters} from 'vuex';
+import ContextMenu from '../ContextMenu/ContextMenu.vue';
+import ContactItem from './ContactItem/ContactItem.vue';
 
 export default {
-  name: "ChatsList",
-  components: {
-    ContextMenu,
-    ContactItem,
-  },
-  computed: {
-    ...mapGetters([
-      'sortedChats', 'chat', 'user',
-      'contacts', 'searchMessagesChatsResults',
-      'isSearchMode', 'isOpen'
-    ])
-  },
-  props: {
-    fullscreen: {
-      type: Boolean,
-      default: false
-    }
-  },
-  data() {
-    return {
-      contextMenuVisible: false,
-      contextMenuX: 0,
-      contextMenuY: 0,
-      contextMenuChat: null
-    }
-  },
-  methods: {
-    ...mapActions(['loadChat', 'toggleMessenger', 'leftChat', 'pinChat', 'unpinChat', 'removeChat', 'setLoading']),
-    openChat(chat, event) {
-      event.stopPropagation();
-      this.contextMenuVisible = false;
-      if (!this.chat || this.chat.id !== chat.id) {
-        this.setLoading(true);
-        this.loadChat({chatId: chat.id, callback: () => {
-          this.setLoading(false);
-        }});
-      }
-      if (!this.isOpen) {
-        this.toggleMessenger();
-      }
-    },
-    remove(chat) {
-      this.$root.$emit('messengerConfirm', {
-        title: 'Удалить чат?',
-        message: 'Вы уверены, что хотите удалить чат ' + chat.title + '?',
-        button: {
-          yes: 'Удалить',
-          no: 'Отмена'
-        },
-        callback: confirm => {
-          if (confirm) {
-            this.removeChat(chat);
-          }
-        }
-      });
-    },
-    showChatContextMenu(event, chat) {
-      this.contextMenuVisible = true;
-      this.contextMenuX = event.clientX;
-      this.contextMenuY = event.clientY;
-      this.contextMenuChat = chat;
-    }
-  }
+	name: 'ChatsList',
+	components: {
+		ContextMenu,
+		ContactItem,
+	},
+	computed: {
+		...mapGetters([
+			'sortedChats', 'chat', 'user',
+			'contacts', 'searchMessagesChatsResults',
+			'isSearchMode', 'isOpen'
+		])
+	},
+	props: {
+		fullscreen: {
+			type: Boolean,
+			default: false
+		}
+	},
+	data() {
+		return {
+			contextMenuVisible: false,
+			contextMenuX: 0,
+			contextMenuY: 0,
+			contextMenuChat: null
+		}
+	},
+	methods: {
+		...mapActions(['loadChat', 'toggleMessenger', 'leftChat', 'pinChat', 'unpinChat', 'removeChat', 'setLoading']),
+		openChat(chat, event) {
+			event.stopPropagation();
+			this.contextMenuVisible = false;
+			if (!this.chat || this.chat.id !== chat.id) {
+				this.setLoading(true);
+				this.loadChat({chatId: chat.id, callback: () => {
+					this.setLoading(false);
+				}});
+			}
+			if (!this.isOpen) {
+				this.toggleMessenger();
+			}
+		},
+		remove(chat) {
+			this.$root.$emit('messengerConfirm', {
+				title: 'Удалить чат?',
+				message: 'Вы уверены, что хотите удалить чат ' + chat.title + '?',
+				button: {
+					yes: 'Удалить',
+					no: 'Отмена'
+				},
+				callback: confirm => {
+					if (confirm) {
+						this.removeChat(chat);
+					}
+				}
+			});
+		},
+		showChatContextMenu(event, chat) {
+			this.contextMenuVisible = true;
+			this.contextMenuX = event.clientX;
+			this.contextMenuY = event.clientY;
+			this.contextMenuChat = chat;
+		}
+	}
 }
 </script>
 

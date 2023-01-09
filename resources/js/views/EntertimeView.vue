@@ -5,29 +5,29 @@ const ReportsNav = () => import(/* webpackChunkName: "ReportsNav" */ '@/componen
 const TableComing = () => import(/* webpackChunkName: "TableComingPage" */ '@/pages/TableComing')
 
 export default {
-    name: 'EntertimeView',
-    components: {
-        DefaultLayout,
-        ReportsNav,
-        TableComing,
-    },
-    data(){
-        return {
-            groups: null,
-            years: null,
-            activeuserid: '',
-            activeTab: 'nav-entertime-tab',
-        }
-    },
-    mounted(){
-        useAsyncPageData('/timetracking/reports/enter-report').then(data => {
-            this.groups = data.groups
-            this.years = data.years
-            this.activeuserid = '' + (data.activeuserid || '')
-        }).catch(error => {
-            console.error('useAsyncPageData', error)
-        })
-    }
+	name: 'EntertimeView',
+	components: {
+		DefaultLayout,
+		ReportsNav,
+		TableComing,
+	},
+	data(){
+		return {
+			groups: null,
+			years: null,
+			activeuserid: '',
+			activeTab: 'nav-entertime-tab',
+		}
+	},
+	mounted(){
+		useAsyncPageData('/timetracking/reports/enter-report').then(data => {
+			this.groups = data.groups
+			this.years = data.years
+			this.activeuserid = '' + (data.activeuserid || '')
+		}).catch(error => {
+			console.error('useAsyncPageData', error)
+		})
+	}
 }
 </script>
 

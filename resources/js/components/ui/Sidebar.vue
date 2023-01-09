@@ -17,23 +17,23 @@
 <script>
 export default {
 
-  name: 'sidebar',
-  props: {
-        title: {},
-        open: {},
-        width: {},
-        link: {
-          default: ''
-        },
-    },
+	name: 'sidebar',
+	props: {
+		title: {},
+		open: {},
+		width: {},
+		link: {
+			default: ''
+		},
+	},
 
-  data() {
+	data() {
 
-    return {
+		return {
 
-    }
+		}
 
-  },
+	},
 
 }
 </script>

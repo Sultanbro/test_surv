@@ -283,481 +283,481 @@
     </div>
     </template>
 
-    <script>
-    import { useYearOptions } from '../composables/yearOptions'
-    export default {
+<script>
+import { useYearOptions } from '../composables/yearOptions'
+export default {
 
-        name: "AnalyticsPage",
-        props: ['groups', 'activeuserid'],
-        data() {
-            return {
-                data: [],
-                ggroups: [],
-                active: '1',
-                hasPremission: false, // доступ
-                years: useYearOptions(),
-                yearActivityTableFields: [],
-                yearActivityTable: [],
-                activityStates: {},
-                currentYear: new Date().getFullYear(),
-                monthInfo: {},
-                currentGroup: null,
-                loader: null,
-                showOrder: false,
-                firstEnter: true,
-                showArchive: false,
-                askey: 1,
-                activity_select: [],
-                archived_groups: [],
-                call_bases: [], // euras call base unique table
-                restore_group: null,
-                noan: false, // нет аналитики
-                showActivityModal:false, // activity
-                dataLoaded: false,
-                noan: false, // нет аналитики
-                showActivityModal:false, // activity
-                active_sub_tab: 0,
-                activity: {// activity
-                    name: null,
-                    daily_plan: null,
-                    plan_unit: null,
-                    unit: null,
-                    editable: 1,
-                    weekdays: 6,
-                },
-                plan_units: {// activity
-                    minutes: 'Сумма показателей',
-                    percent: 'Среднее значение',
-                    less_sum: 'Не более, сумма',
-                    less_avg: 'Не более, сред. зн.',
-                },
-                list: [
-                    { name: "John", id: 0 },
-                    { name: "Joao", id: 1 },
-                    { name: "Jean", id: 2 }
-                ],
-                users: [], // year table of activity
-                statistics: [] // year table of activity
-            }
-        },
-        watch: {
-            groups(){
-                this.init()
-            }
-        },
-        created() {
-            if(this.groups){
-                this.init()
-            }
-        },
-        methods: {
-            init(){
+	name: 'AnalyticsPage',
+	props: ['groups', 'activeuserid'],
+	data() {
+		return {
+			data: [],
+			ggroups: [],
+			active: '1',
+			hasPremission: false, // доступ
+			years: useYearOptions(),
+			yearActivityTableFields: [],
+			yearActivityTable: [],
+			activityStates: {},
+			currentYear: new Date().getFullYear(),
+			monthInfo: {},
+			currentGroup: null,
+			loader: null,
+			showOrder: false,
+			firstEnter: true,
+			showArchive: false,
+			askey: 1,
+			activity_select: [],
+			archived_groups: [],
+			call_bases: [], // euras call base unique table
+			restore_group: null,
+			noan: false, // нет аналитики
+			showActivityModal:false, // activity
+			dataLoaded: false,
+			noan: false, // нет аналитики
+			showActivityModal:false, // activity
+			active_sub_tab: 0,
+			activity: {// activity
+				name: null,
+				daily_plan: null,
+				plan_unit: null,
+				unit: null,
+				editable: 1,
+				weekdays: 6,
+			},
+			plan_units: {// activity
+				minutes: 'Сумма показателей',
+				percent: 'Среднее значение',
+				less_sum: 'Не более, сумма',
+				less_avg: 'Не более, сред. зн.',
+			},
+			list: [
+				{ name: 'John', id: 0 },
+				{ name: 'Joao', id: 1 },
+				{ name: 'Jean', id: 2 }
+			],
+			users: [], // year table of activity
+			statistics: [] // year table of activity
+		}
+	},
+	watch: {
+		groups(){
+			this.init()
+		}
+	},
+	created() {
+		if(this.groups){
+			this.init()
+		}
+	},
+	methods: {
+		init(){
 
-                // выбор группы
-                // переделать на роуты
-                const urlParams = new URLSearchParams(window.location.search);
-                let group = urlParams.get('group');
-                let active = urlParams.get('active');
-                let load = urlParams.get('load');
+			// выбор группы
+			// переделать на роуты
+			const urlParams = new URLSearchParams(window.location.search);
+			let group = urlParams.get('group');
+			let active = urlParams.get('active');
+			let load = urlParams.get('load');
 
-                this.ggroups = this.groups
-                this.currentGroup = (group == null) ? this.groups[0].id : parseFloat(group)
+			this.ggroups = this.groups
+			this.currentGroup = (group == null) ? this.groups[0].id : parseFloat(group)
 
-                this.active = (active == null) ? '1' : active
+			this.active = (active == null) ? '1' : active
 
-                this.setMonth()
-                this.setYear()
-                this.setActivityYearTableFields()
+			this.setMonth()
+			this.setYear()
+			this.setActivityYearTableFields()
 
-                if(load != null) {
-                    this.fetchData()
-                }
-            },
-            /**
+			if(load != null) {
+				this.fetchData()
+			}
+		},
+		/**
              * ACTIVITY YEAR
              */
-            switchToMonthInActivity(index) {
-                this.activityStates[index] = 'month'
-                console.log(index)
-            },
+		switchToMonthInActivity(index) {
+			this.activityStates[index] = 'month'
+			console.log(index)
+		},
 
-            /**
+		/**
              * ACTIVITY YEAR
              */
-            switchToYearInActivity(index) {
-                this.activityStates[index] = 'year'
-                console.log(index)
+		switchToYearInActivity(index) {
+			this.activityStates[index] = 'year'
+			console.log(index)
 
-                this.fetchYearTableOfActivity(this.data.activities[index].id);
-            },
+			this.fetchYearTableOfActivity(this.data.activities[index].id);
+		},
 
-            /**
+		/**
              * ACTIVITY YEAR
              * full name
              */
-            fullNameOfUser(user) {
-                return user.last_name !== '' || user.last_name !== null
-                    ? user.last_name + ' ' + user.name
-                    : user.last_name
-            },
+		fullNameOfUser(user) {
+			return user.last_name !== '' || user.last_name !== null
+				? user.last_name + ' ' + user.name
+				: user.last_name
+		},
 
-            /**
+		/**
              * ACTIVITY YEAR
              * server returns total key
              * and if there is no result not returns total key
              */
-            normalizeStat(obj) {
-                let res = {}
+		normalizeStat(obj) {
+			let res = {}
 
-                Object.keys(obj).forEach((key) => {
-                    res[key] = obj[key] == 0
-                        ? 0
-                        : Number(obj[key].total).toFixed(2);
-                });
+			Object.keys(obj).forEach((key) => {
+				res[key] = obj[key] == 0
+					? 0
+					: Number(obj[key].total).toFixed(2);
+			});
 
-                return res
-            },
+			return res
+		},
 
-            /**
+		/**
              * ACTIVITY YEAR
              */
-            formYearActivityTable(stats) {
-                let res = [];
+		formYearActivityTable(stats) {
+			let res = [];
 
-                this.users.forEach((user) => {
+			this.users.forEach((user) => {
 
-                    if(stats[user.id] !== undefined) {
-                        res.push({
-                            name: this.fullNameOfUser(user),
-                            ...this.normalizeStat(stats[user.id]),
-                        });
-                    }
-                });
+				if(stats[user.id] !== undefined) {
+					res.push({
+						name: this.fullNameOfUser(user),
+						...this.normalizeStat(stats[user.id]),
+					});
+				}
+			});
 
-                this.yearActivityTable = res;
-            },
+			this.yearActivityTable = res;
+		},
 
-            /**
+		/**
              * ACTIVITY YEAR
              */
-            fetchYearTableOfActivity(activity_id) {
-                let loader = this.$loading.show();
+		fetchYearTableOfActivity(activity_id) {
+			let loader = this.$loading.show();
 
 
-                axios.post('/timetracking/user-statistics-by-month', {
-                    group_id: this.currentGroup,
-                    date: {
-                        year: this.currentYear,
-                        month: this.monthInfo.month
-                    },
-                    activity_id: activity_id
-                }).then(response => {
+			axios.post('/timetracking/user-statistics-by-month', {
+				group_id: this.currentGroup,
+				date: {
+					year: this.currentYear,
+					month: this.monthInfo.month
+				},
+				activity_id: activity_id
+			}).then(response => {
 
-                    this.users = response.data.data.users
+				this.users = response.data.data.users
 
-                    this.formYearActivityTable(response.data.data.statistics)
+				this.formYearActivityTable(response.data.data.statistics)
 
-                    loader.hide()
-                }).catch(error => {
-                    loader.hide()
-                    alert(error)
-                });
-            },
+				loader.hide()
+			}).catch(error => {
+				loader.hide()
+				alert(error)
+			});
+		},
 
-            /**
+		/**
              * ACTIVITY YEAR
              */
-            setActivityYearTableFields() {
-                let fieldsArray = [];
-                let order = 1;
+		setActivityYearTableFields() {
+			let fieldsArray = [];
+			let order = 1;
 
-                fieldsArray.push({
-                    key: "name",
-                    name: "Сотрудник",
-                    order: order++,
-                    classes: " b-table-sticky-column text-left t-name wd",
-                });
+			fieldsArray.push({
+				key: 'name',
+				name: 'Сотрудник',
+				order: order++,
+				classes: ' b-table-sticky-column text-left t-name wd',
+			});
 
-                for (let i = 1; i <= 12; i++) {
-                    if (i.length == 1) i = "0" + i;
+			for (let i = 1; i <= 12; i++) {
+				if (i.length == 1) i = '0' + i;
 
-                    fieldsArray.push({
-                        key: i,
-                        name: moment(this.currentYear + "-" + i + "-01").format("MMMM"),
-                        order: order++,
-                        classes: "text-center px-1 month",
-                    });
-                }
+				fieldsArray.push({
+					key: i,
+					name: moment(this.currentYear + '-' + i + '-01').format('MMMM'),
+					order: order++,
+					classes: 'text-center px-1 month',
+				});
+			}
 
-                this.yearActivityTableFields = fieldsArray;
-
-
-            },
-
-            onTabClick() {
-                console.log('horay')
-            },
-
-            setMonth() {
-                this.monthInfo.currentMonth = this.monthInfo.currentMonth ? this.monthInfo.currentMonth : this.$moment().format('MMMM')
-                this.monthInfo.month = this.monthInfo.currentMonth ? this.$moment(this.monthInfo.currentMonth, 'MMMM').format('M') : this.$moment().format('M')
-                let currentMonth = this.$moment(this.monthInfo.currentMonth, 'MMMM')
-                //Расчет выходных дней
-                this.monthInfo.monthEnd = currentMonth.endOf('month'); //Конец месяца
-                this.monthInfo.weekDays = currentMonth.weekdayCalc(currentMonth.startOf('month').toString(), currentMonth.endOf('month').toString(), [6]) //Колличество выходных
-                this.monthInfo.weekDays5 = currentMonth.weekdayCalc(currentMonth.startOf('month').toString(), currentMonth.endOf('month').toString(), [6,0]) //Колличество выходных
-                this.monthInfo.daysInMonth = new Date(this.$moment().format('YYYY'), this.$moment(this.monthInfo.currentMonth, 'MMMM').format('M'), 0).getDate() //Колличество дней в месяце
-                this.monthInfo.workDays = this.monthInfo.daysInMonth - this.monthInfo.weekDays //Колличество рабочих дней
-                this.monthInfo.workDays5 = this.monthInfo.daysInMonth - this.monthInfo.weekDays5 //Колличество рабочих дней
-
-            },
-            //Установка выбранного года
-            setYear() {
-                this.currentYear = this.currentYear ? this.currentYear : this.$moment().format('YYYY')
-                this.monthInfo.currentYear = this.currentYear;
-            },
-
-            onTabChange(active) {
-                console.log(active)
-                this.active = active;
-                window.history.replaceState({ id: "100" }, "Аналитика групп", "/timetracking/an?group=" + this.currentGroup + "&active=" + this.active);
-            },
-
-            fetchData() {
-                let loader = this.$loading.show();
+			this.yearActivityTableFields = fieldsArray;
 
 
-                axios.post('/timetracking/analytics-page/getanalytics', {
-                    month: this.$moment(this.monthInfo.currentMonth, 'MMMM').format('M'),
-                    year: this.currentYear,
-                    group_id: this.currentGroup
-                }).then(response => {
-                    if (response.data.error && response.data.error == 'access') {
-                        this.hasPremission = false
-                        loader.hide();
-                        return;
-                    }
-                    this.hasPremission = true
+		},
 
-                    this.setMonth()
-                    this.setYear()
+		onTabClick() {
+			console.log('horay')
+		},
 
-                    let urlParamss = new URLSearchParams(window.location.search);
+		setMonth() {
+			this.monthInfo.currentMonth = this.monthInfo.currentMonth ? this.monthInfo.currentMonth : this.$moment().format('MMMM')
+			this.monthInfo.month = this.monthInfo.currentMonth ? this.$moment(this.monthInfo.currentMonth, 'MMMM').format('M') : this.$moment().format('M')
+			let currentMonth = this.$moment(this.monthInfo.currentMonth, 'MMMM')
+			//Расчет выходных дней
+			this.monthInfo.monthEnd = currentMonth.endOf('month'); //Конец месяца
+			this.monthInfo.weekDays = currentMonth.weekdayCalc(currentMonth.startOf('month').toString(), currentMonth.endOf('month').toString(), [6]) //Колличество выходных
+			this.monthInfo.weekDays5 = currentMonth.weekdayCalc(currentMonth.startOf('month').toString(), currentMonth.endOf('month').toString(), [6,0]) //Колличество выходных
+			this.monthInfo.daysInMonth = new Date(this.$moment().format('YYYY'), this.$moment(this.monthInfo.currentMonth, 'MMMM').format('M'), 0).getDate() //Колличество дней в месяце
+			this.monthInfo.workDays = this.monthInfo.daysInMonth - this.monthInfo.weekDays //Колличество рабочих дней
+			this.monthInfo.workDays5 = this.monthInfo.daysInMonth - this.monthInfo.weekDays5 //Колличество рабочих дней
 
-                     this.firstEnter = false
+		},
+		//Установка выбранного года
+		setYear() {
+			this.currentYear = this.currentYear ? this.currentYear : this.$moment().format('YYYY')
+			this.monthInfo.currentYear = this.currentYear;
+		},
 
+		onTabChange(active) {
+			console.log(active)
+			this.active = active;
+			window.history.replaceState({ id: '100' }, 'Аналитика групп', '/timetracking/an?group=' + this.currentGroup + '&active=' + this.active);
+		},
 
-                    let active = urlParamss.get('active');
-                    this.active = (active == null) ? '1' : active
-
-                    console.log(active, this.active)
-
-                    if(response.data.error !== undefined) {
-                        this.dataLoaded = false
-                        this.noan = true;
-                        this.archived_groups = response.data.archived_groups
-                        this.ggroups = response.data.groups
-                        console.log('error')
-                    } else {
-                        this.dataLoaded = true
-                        this.data = response.data
-                        this.noan = false;
-
-                        this.activity_select = [];
-
-                        let activityStatesObj = {};
-                        this.data.activities.forEach((a, index) => {
-                            this.activity_select.push({
-                                'name':a.name,
-                                'id':a.id,
-                            });
-
-                            activityStatesObj[index] = 'month';
-                        })
-
-                        this.activityStates = activityStatesObj;
-
-                        this.call_bases = response.data.call_bases;
-                        this.archived_groups = response.data.archived_groups;
-                        this.ggroups = response.data.groups;
-                    }
-
-                    this.askey++;
-                    window.history.replaceState({ id: "100" }, "Аналитика групп", "/timetracking/an?group=" + this.currentGroup + "&active=" + this.active);
-                    this.monthInfo.workDays = this.work_days = this.getBusinessDateCount(this.monthInfo.month,this.monthInfo.currentYear, response.data.workdays)
-                    loader.hide()
-                }).catch(error => {
-                    loader.hide()
-                    alert(error)
-                });
-            },
-
-            getBusinessDateCount(month, year, workdays) {
-
-                month = month - 1;
-                let next_month = (month + 1) == 12 ? 0 : month + 1;
-                let next_year = (month + 1) == 12 ? year + 1 : year;
-
-                var start = new Date(year, month, 1);
-                var end = new Date(next_year, next_month, 1);
-
-                let days = (end - start) / 86400000;
-
-                let business_days = 0,
-                    weekends = workdays == 5 ? [0,6] : [0];
-
-                for(let i = 1; i <= days; i++) {
-                    let d = new Date(year, month, i).getDay();
-                    if(!weekends.includes(d)) business_days++;
-                }
-
-                return business_days;
-            },
-
-            add_activity() {
-                this.showActivityModal = true;
-            },
-
-            create_activity() {
-                let loader = this.$loading.show();
-                axios.post('/timetracking/analytics/create-activity', {
-                    month: this.$moment(this.monthInfo.currentMonth, 'MMMM').format('M'),
-                    year: this.currentYear,
-                    activity: this.activity,
-                    group_id: this.currentGroup
-                }).then(response => {
-                    this.$toast.success('Активность для группы добавлена!')
-                    this.fetchData();
-
-                    this.activity = {
-                        name: null,
-                        daily_plan: null,
-                        plan_unit: null,
-                        unit: null,
-                        editable: 1,
-                        weekdays: 6,
-                    };
-
-                    this.data.activities = response.data;
-                    this.showActivityModal = false
-                    loader.hide()
-                }).catch(error => {
-                    loader.hide()
-                    this.$toast.error('Активность для группы не добавлена!')
-                    alert(error)
-                });
-            },
-
-            add_analytics() {
-                let loader = this.$loading.show();
-                axios.post('/timetracking/analytics/new-group', {
-                    month: this.$moment(this.monthInfo.currentMonth, 'MMMM').format('M'),
-                    year: this.currentYear,
-                    group_id: this.currentGroup
-                }).then(response => {
-                    this.$toast.success('Аналитика для группы добавлена!')
-                    this.fetchData();
-                    loader.hide()
-                }).catch(error => {
-                    loader.hide()
-                    this.$toast.error('Аналитика для группы не добавлена!')
-                    alert(error)
-                });
-            },
-
-            onEndSortcat(test) {
-                console.log(test)
-            },
-
-            save_order() {
-                let loader = this.$loading.show();
-                 axios.post('/timetracking/analytics/change_order', {
-                    activities: this.activity_select
-                }).then(response => {
-                    this.$toast.success('Порядок сохранен!');
-                    this.showOrder = false;
-                    this.fetchData();
-                    loader.hide()
-                }).catch(error => {
-                    loader.hide()
-                    this.$toast.error('Ошибка!');
-                    alert(error)
-                });
-            },
-
-            delete_activity(act) {
-
-                if (!confirm("Вы уверены что хотите удалить активность '" + act.name + "' ?")) {
-                    return "";
-                }
-
-                let loader = this.$loading.show();
-                axios.post('/timetracking/analytics/delete_activity', {
-                    id: act.id
-                }).then(response => {
-                    this.$toast.success('Удален!');
-                    this.fetchData();
-                    loader.hide()
-                }).catch(error => {
-                    loader.hide()
-                    this.$toast.error('Ошибка!');
-                    alert(error)
-                });
-            },
-
-            restore_analytics() {
-
-                if (!confirm("Вы уверены что хотите восстановить аналитику группы?")) {
-                    return "";
-                }
-
-                let loader = this.$loading.show();
-                axios.post('/timetracking/analytics/restore_analytics', {
-                    id: this.restore_group
-                }).then(response => {
-                    this.$toast.success('Восстановлен!');
-                    this.currentGroup = this.restore_group
-                    this.ggroups = response.data.groups
-                    this.fetchData();
-                    this.restore_group = null
-                    this.showArchive = false
-                    loader.hide()
-                }).catch(error => {
-                    loader.hide()
-                    this.$toast.error('Ошибка!');
-                    alert(error)
-                });
-
-            },
-
-            archive() {
-                if (!confirm("Вы уверены что хотите архивировать аналитику группы ?")) {
-                    return "";
-                }
-
-                let loader = this.$loading.show();
-                axios.post('/timetracking/analytics/archive_analytics', {
-                    id: this.currentGroup
-                }).then(response => {
-                    this.$toast.success('Архивирован!');
-                    this.currentGroup = this.ggroups[0].id
-                    this.fetchData();
-                    loader.hide()
-                }).catch(error => {
-                    loader.hide()
-                    this.$toast.error('Ошибка!');
-                    alert(error)
-                });
-            },
-
-            showSubTab(tab) {
-                 this.active_sub_tab = tab
-            },
+		fetchData() {
+			let loader = this.$loading.show();
 
 
-        }
-    }
-    </script>
+			axios.post('/timetracking/analytics-page/getanalytics', {
+				month: this.$moment(this.monthInfo.currentMonth, 'MMMM').format('M'),
+				year: this.currentYear,
+				group_id: this.currentGroup
+			}).then(response => {
+				if (response.data.error && response.data.error == 'access') {
+					this.hasPremission = false
+					loader.hide();
+					return;
+				}
+				this.hasPremission = true
+
+				this.setMonth()
+				this.setYear()
+
+				let urlParamss = new URLSearchParams(window.location.search);
+
+				this.firstEnter = false
+
+
+				let active = urlParamss.get('active');
+				this.active = (active == null) ? '1' : active
+
+				console.log(active, this.active)
+
+				if(response.data.error !== undefined) {
+					this.dataLoaded = false
+					this.noan = true;
+					this.archived_groups = response.data.archived_groups
+					this.ggroups = response.data.groups
+					console.log('error')
+				} else {
+					this.dataLoaded = true
+					this.data = response.data
+					this.noan = false;
+
+					this.activity_select = [];
+
+					let activityStatesObj = {};
+					this.data.activities.forEach((a, index) => {
+						this.activity_select.push({
+							'name':a.name,
+							'id':a.id,
+						});
+
+						activityStatesObj[index] = 'month';
+					})
+
+					this.activityStates = activityStatesObj;
+
+					this.call_bases = response.data.call_bases;
+					this.archived_groups = response.data.archived_groups;
+					this.ggroups = response.data.groups;
+				}
+
+				this.askey++;
+				window.history.replaceState({ id: '100' }, 'Аналитика групп', '/timetracking/an?group=' + this.currentGroup + '&active=' + this.active);
+				this.monthInfo.workDays = this.work_days = this.getBusinessDateCount(this.monthInfo.month,this.monthInfo.currentYear, response.data.workdays)
+				loader.hide()
+			}).catch(error => {
+				loader.hide()
+				alert(error)
+			});
+		},
+
+		getBusinessDateCount(month, year, workdays) {
+
+			month = month - 1;
+			let next_month = (month + 1) == 12 ? 0 : month + 1;
+			let next_year = (month + 1) == 12 ? year + 1 : year;
+
+			var start = new Date(year, month, 1);
+			var end = new Date(next_year, next_month, 1);
+
+			let days = (end - start) / 86400000;
+
+			let business_days = 0,
+				weekends = workdays == 5 ? [0,6] : [0];
+
+			for(let i = 1; i <= days; i++) {
+				let d = new Date(year, month, i).getDay();
+				if(!weekends.includes(d)) business_days++;
+			}
+
+			return business_days;
+		},
+
+		add_activity() {
+			this.showActivityModal = true;
+		},
+
+		create_activity() {
+			let loader = this.$loading.show();
+			axios.post('/timetracking/analytics/create-activity', {
+				month: this.$moment(this.monthInfo.currentMonth, 'MMMM').format('M'),
+				year: this.currentYear,
+				activity: this.activity,
+				group_id: this.currentGroup
+			}).then(response => {
+				this.$toast.success('Активность для группы добавлена!')
+				this.fetchData();
+
+				this.activity = {
+					name: null,
+					daily_plan: null,
+					plan_unit: null,
+					unit: null,
+					editable: 1,
+					weekdays: 6,
+				};
+
+				this.data.activities = response.data;
+				this.showActivityModal = false
+				loader.hide()
+			}).catch(error => {
+				loader.hide()
+				this.$toast.error('Активность для группы не добавлена!')
+				alert(error)
+			});
+		},
+
+		add_analytics() {
+			let loader = this.$loading.show();
+			axios.post('/timetracking/analytics/new-group', {
+				month: this.$moment(this.monthInfo.currentMonth, 'MMMM').format('M'),
+				year: this.currentYear,
+				group_id: this.currentGroup
+			}).then(response => {
+				this.$toast.success('Аналитика для группы добавлена!')
+				this.fetchData();
+				loader.hide()
+			}).catch(error => {
+				loader.hide()
+				this.$toast.error('Аналитика для группы не добавлена!')
+				alert(error)
+			});
+		},
+
+		onEndSortcat(test) {
+			console.log(test)
+		},
+
+		save_order() {
+			let loader = this.$loading.show();
+			axios.post('/timetracking/analytics/change_order', {
+				activities: this.activity_select
+			}).then(response => {
+				this.$toast.success('Порядок сохранен!');
+				this.showOrder = false;
+				this.fetchData();
+				loader.hide()
+			}).catch(error => {
+				loader.hide()
+				this.$toast.error('Ошибка!');
+				alert(error)
+			});
+		},
+
+		delete_activity(act) {
+
+			if (!confirm('Вы уверены что хотите удалить активность \'' + act.name + '\' ?')) {
+				return '';
+			}
+
+			let loader = this.$loading.show();
+			axios.post('/timetracking/analytics/delete_activity', {
+				id: act.id
+			}).then(response => {
+				this.$toast.success('Удален!');
+				this.fetchData();
+				loader.hide()
+			}).catch(error => {
+				loader.hide()
+				this.$toast.error('Ошибка!');
+				alert(error)
+			});
+		},
+
+		restore_analytics() {
+
+			if (!confirm('Вы уверены что хотите восстановить аналитику группы?')) {
+				return '';
+			}
+
+			let loader = this.$loading.show();
+			axios.post('/timetracking/analytics/restore_analytics', {
+				id: this.restore_group
+			}).then(response => {
+				this.$toast.success('Восстановлен!');
+				this.currentGroup = this.restore_group
+				this.ggroups = response.data.groups
+				this.fetchData();
+				this.restore_group = null
+				this.showArchive = false
+				loader.hide()
+			}).catch(error => {
+				loader.hide()
+				this.$toast.error('Ошибка!');
+				alert(error)
+			});
+
+		},
+
+		archive() {
+			if (!confirm('Вы уверены что хотите архивировать аналитику группы ?')) {
+				return '';
+			}
+
+			let loader = this.$loading.show();
+			axios.post('/timetracking/analytics/archive_analytics', {
+				id: this.currentGroup
+			}).then(response => {
+				this.$toast.success('Архивирован!');
+				this.currentGroup = this.ggroups[0].id
+				this.fetchData();
+				loader.hide()
+			}).catch(error => {
+				loader.hide()
+				this.$toast.error('Ошибка!');
+				alert(error)
+			});
+		},
+
+		showSubTab(tab) {
+			this.active_sub_tab = tab
+		},
+
+
+	}
+}
+</script>
 
     <style>
     .mw30 {

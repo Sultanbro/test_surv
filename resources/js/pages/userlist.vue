@@ -1,154 +1,154 @@
 <template>
 <div v-if="positions">
 
-  <div class="row mb-2">
-    <div class="col-3 text-left">
-      <b-input-group size="sm">
-        <b-form-input v-model="filter.email" type="search" id="filterInput" placeholder="Поиск" ></b-form-input>
-        <b-input-group-append>
-          <!-- <b-button :disabled="!filter.email" @click="filter.email = ''">Очистить</b-button> -->
-        </b-input-group-append>
-      </b-input-group>
-    </div>
-    <div class="col-2">
-      <b-form-select v-model="filter.group" :options="groups" size="sm"></b-form-select>
-    </div>
-    <div class="col-2  d-flex align-items-center">
-      <b-form-select v-model="tableFilter" :options="tableFilters" size="sm" @change="getUsers()"></b-form-select>
-    </div>
-    <div class="col-2  d-flex align-items-center">
-      <b-form-select v-model="position" :options="jobFilters" size="sm" @change="getUsers()"></b-form-select>
-    </div>
-    <div class="col-3 justify-content-end d-flex align-items-start">
+	<div class="row mb-2">
+		<div class="col-3 text-left">
+			<b-input-group size="sm">
+				<b-form-input v-model="filter.email" type="search" id="filterInput" placeholder="Поиск" ></b-form-input>
+				<b-input-group-append>
+					<!-- <b-button :disabled="!filter.email" @click="filter.email = ''">Очистить</b-button> -->
+				</b-input-group-append>
+			</b-input-group>
+		</div>
+		<div class="col-2">
+			<b-form-select v-model="filter.group" :options="groups" size="sm"></b-form-select>
+		</div>
+		<div class="col-2  d-flex align-items-center">
+			<b-form-select v-model="tableFilter" :options="tableFilters" size="sm" @change="getUsers()"></b-form-select>
+		</div>
+		<div class="col-2  d-flex align-items-center">
+			<b-form-select v-model="position" :options="jobFilters" size="sm" @change="getUsers()"></b-form-select>
+		</div>
+		<div class="col-3 justify-content-end d-flex align-items-start">
 
-      <a href="/timetracking/create-person" class="btn btn-success rounded">Пригласить</a>
-      <b-button @click="showModal = !showModal" class="btn-primary rounded ml-1" title="Показывать поля">
-        <i class="fa fa-eye" aria-hidden="true"></i>
-      </b-button>
-      <b-button @click="showFilterModal = !showFilterModal" class="btn-primary rounded ml-1" title="Дополнительные фильтры таблицы">
-        <i class="fa fa-filter" aria-hidden="true"></i>
-      </b-button>
-    </div>
-    <div class="col-12">
-      <p class="mt-2 mr-2 fz14 mb-0"> <b> Все:</b> {{ filtered.length }}  <b>Рес:</b> {{ staff_res }}</p>
-    </div>
-  </div>
+			<a href="/timetracking/create-person" class="btn btn-success rounded">Пригласить</a>
+			<b-button @click="showModal = !showModal" class="btn-primary rounded ml-1" title="Показывать поля">
+				<i class="fa fa-eye" aria-hidden="true"></i>
+			</b-button>
+			<b-button @click="showFilterModal = !showFilterModal" class="btn-primary rounded ml-1" title="Дополнительные фильтры таблицы">
+				<i class="fa fa-filter" aria-hidden="true"></i>
+			</b-button>
+		</div>
+		<div class="col-12">
+			<p class="mt-2 mr-2 fz14 mb-0"> <b> Все:</b> {{ filtered.length }}  <b>Рес:</b> {{ staff_res }}</p>
+		</div>
+	</div>
 
-  <div style="clear: both;"></div>
+	<div style="clear: both;"></div>
 
-    <div class="table-responsive ul table-container">
-    <b-table
-      ref="table"
-      bordered
-      show-empty
-      emptyText="Ничего нет"
-      stacked="md"
-      :items="itemProvider"
-      :fields="fields"
-      :current-page="currentPage"
-      :per-page="perPage"
-      :filter="filter"
-      :filterIncludedFields="filterOn"
-      :sort-by.sync="sortBy"
-      :sort-desc.sync="sortDesc"
-      :sort-direction="sortDirection"
-      empty-filtered-text="Еще не найдено ни одной записи"
-      empty-text="Не найдено ни одной записи"
-      @filtered="onFiltered"
-      id="table"
-      :class="{
-        'hide-1': !showFields.number,
-        'hide-2': !showFields.id,
-        'hide-3': !showFields.email,
-        'hide-4': !showFields.name,
-        'hide-5': !showFields.last_name,
-        'hide-6': !showFields.groups,
-        'hide-7': !showFields.register_date,
-        'hide-8': !showFields.fire_date,
-        'hide-9': !showFields.fire_cause,
-        'hide-10': !showFields.user_type,
-        'hide-11': !showFields.segment,
-        'hide-12': !showFields.applied,
-        'hide-13': !showFields.full_time,
-      }"
-    >
-      <template #cell(index)="row">
-        {{ row.index + 1 }}
-      </template>
-      <template #cell(id)="data">
-        <a
-          v-if="is_admin && subdomain == 'bp'"
-          :href="'https://test.jobtron.org/login-as-employee/' + data.item.id + '?auth=' + auth_token"
-          target="_blank"
-        >
-          {{ data.value}}
-        </a>
-        <a
-          v-else
-          :href="'/timetracking/edit-person?id='+data.item.id"
-          target="_blank"
-        >
-          {{ data.value}}
-        </a>
-      </template>
-      <template #cell(email)="data">
-        <a
-          :href="'/timetracking/edit-person?id='+data.item.id"
-          target="_blank"
-        >{{ data.value }}</a>
-      </template>
+		<div class="table-responsive ul table-container">
+		<b-table
+			ref="table"
+			bordered
+			show-empty
+			emptyText="Ничего нет"
+			stacked="md"
+			:items="itemProvider"
+			:fields="fields"
+			:current-page="currentPage"
+			:per-page="perPage"
+			:filter="filter"
+			:filterIncludedFields="filterOn"
+			:sort-by.sync="sortBy"
+			:sort-desc.sync="sortDesc"
+			:sort-direction="sortDirection"
+			empty-filtered-text="Еще не найдено ни одной записи"
+			empty-text="Не найдено ни одной записи"
+			@filtered="onFiltered"
+			id="table"
+			:class="{
+				'hide-1': !showFields.number,
+				'hide-2': !showFields.id,
+				'hide-3': !showFields.email,
+				'hide-4': !showFields.name,
+				'hide-5': !showFields.last_name,
+				'hide-6': !showFields.groups,
+				'hide-7': !showFields.register_date,
+				'hide-8': !showFields.fire_date,
+				'hide-9': !showFields.fire_cause,
+				'hide-10': !showFields.user_type,
+				'hide-11': !showFields.segment,
+				'hide-12': !showFields.applied,
+				'hide-13': !showFields.full_time,
+			}"
+		>
+			<template #cell(index)="row">
+				{{ row.index + 1 }}
+			</template>
+			<template #cell(id)="data">
+				<a
+					v-if="is_admin && subdomain == 'bp'"
+					:href="'https://test.jobtron.org/login-as-employee/' + data.item.id + '?auth=' + auth_token"
+					target="_blank"
+				>
+					{{ data.value}}
+				</a>
+				<a
+					v-else
+					:href="'/timetracking/edit-person?id='+data.item.id"
+					target="_blank"
+				>
+					{{ data.value}}
+				</a>
+			</template>
+			<template #cell(email)="data">
+				<a
+					:href="'/timetracking/edit-person?id='+data.item.id"
+					target="_blank"
+				>{{ data.value }}</a>
+			</template>
 
-      <template #cell(segment)="data">
-          <div>
-              <div v-if="segments.hasOwnProperty(data.value)">
-                  {{ segments[data.value] }}
-              </div>
-              <div v-else>
-                  {{ data.value }}
-              </div>
-          </div>
-      </template>
+			<template #cell(segment)="data">
+					<div>
+							<div v-if="segments.hasOwnProperty(data.value)">
+									{{ segments[data.value] }}
+							</div>
+							<div v-else>
+									{{ data.value }}
+							</div>
+					</div>
+			</template>
 
-      <template #cell(groups)="data">
-        <b-badge
-          v-for="group_id in data.value"
-          :key="group_id"
-          variant="primary"
-          class="mr-1"
-        >{{ groups[group_id] }}</b-badge>
-      </template>
-      <template #cell(created_at)="row">
-        {{ $moment(row.value).format('DD.MM.YYYY') }}
-      </template>
-      <template #cell(full_time)="data">
-        <div v-if="data.value == 1">
-            Full
-        </div>
-        <div v-else>
-            Part
-        </div>
-      </template>
-      <template #cell(fire_cause)="data">
-        <div v-if="tableFilter != 'active'">
-          {{data.value}}
-        </div>
-      </template>
-    </b-table>
-  </div>
+			<template #cell(groups)="data">
+				<b-badge
+					v-for="group_id in data.value"
+					:key="group_id"
+					variant="primary"
+					class="mr-1"
+				>{{ groups[group_id] }}</b-badge>
+			</template>
+			<template #cell(created_at)="row">
+				{{ $moment(row.value).format('DD.MM.YYYY') }}
+			</template>
+			<template #cell(full_time)="data">
+				<div v-if="data.value == 1">
+						Full
+				</div>
+				<div v-else>
+						Part
+				</div>
+			</template>
+			<template #cell(fire_cause)="data">
+				<div v-if="tableFilter != 'active'">
+					{{data.value}}
+				</div>
+			</template>
+		</b-table>
+	</div>
 
-  <div class="my-2 d-flex align-items-center justify-content-end">
-   <div>
-      <b-pagination
-        v-model="currentPage"
-        :total-rows="totalRows"
-        :per-page="perPage"
-        align="fill"
-        size="sm"
-        class="my-0 p-0"
-      />
+	<div class="my-2 d-flex align-items-center justify-content-end">
+		<div>
+			<b-pagination
+				v-model="currentPage"
+				:total-rows="totalRows"
+				:per-page="perPage"
+				align="fill"
+				size="sm"
+				class="my-0 p-0"
+			/>
 <!--       <a href="#" @click="exportData()" class="btn btn-success btn-sm ml-2 rounded d-block" v-if="[5,18].includes(currentUser)"><i class="far fa-file-excel"></i>Экспорт</a>-->
-   </div>
-  </div>
+		</div>
+	</div>
 
 
 
@@ -157,219 +157,219 @@
 
 
 
-  <b-modal
-      v-model="showModal"
-      title="Настройка списка «Сотрудники»"
-      @ok="showModal = !showModal"
-      ok-text="Закрыть"
-      size="lg"
-  >
-      <template v-for="error in errors">
-          <b-alert show variant="danger" :key="error">{{ error }}</b-alert>
-      </template>
+	<b-modal
+			v-model="showModal"
+			title="Настройка списка «Сотрудники»"
+			@ok="showModal = !showModal"
+			ok-text="Закрыть"
+			size="lg"
+	>
+		<template v-for="error in errors">
+			<b-alert show variant="danger" :key="error">{{ error }}</b-alert>
+		</template>
 
-      <div class="row">
+		<div class="row">
 
-        <div class="col-md-4 mb-2">
-          <b-form-checkbox
-              v-model="showFields.number"
-              :value="true"
-              :unchecked-value="false"
-              >
-              Номер
-          </b-form-checkbox>
-          <b-form-checkbox
-              v-model="showFields.id"
-              :value="true"
-              :unchecked-value="false"
-              >
-              id
-          </b-form-checkbox>
-          <b-form-checkbox
-              v-model="showFields.email"
-              :value="true"
-              :unchecked-value="false"
-              >
-              Email
-          </b-form-checkbox>
-          <b-form-checkbox
-              v-model="showFields.name"
-              :value="true"
-              :unchecked-value="false"
-              >
-              Имя
-          </b-form-checkbox>
-          <b-form-checkbox
-              v-model="showFields.full_time"
-              :value="true"
-              :unchecked-value="false"
-              >
-              Full / Part-time
-          </b-form-checkbox>
-        </div>
-        <div class="col-md-4 mb-2">
-          <b-form-checkbox
-              v-model="showFields.last_name"
-              :value="true"
-              :unchecked-value="false"
-              >
-              Фамилия
-          </b-form-checkbox>
-          <b-form-checkbox
-              v-model="showFields.groups"
-              :value="true"
-              :unchecked-value="false"
-              >
-              Отделы
-          </b-form-checkbox>
-          <b-form-checkbox
-              v-model="showFields.register_date"
-              :value="true"
-              :unchecked-value="false"
-              >
-              Дата регистрации
-          </b-form-checkbox>
-          <b-form-checkbox
-              v-model="showFields.fire_date"
-              :value="true"
-              :unchecked-value="false"
-              >
-              Дата увольнения
-          </b-form-checkbox>
-          <b-form-checkbox
-              v-model="showFields.fire_cause"
-              :value="true"
-              :unchecked-value="false"
-              >
-              Причина увольнения
-          </b-form-checkbox>
-
-
-        </div>
-
-        <div class="col-md-4 mb-2">
-          <b-form-checkbox
-              v-model="showFields.user_type"
-              :value="true"
-              :unchecked-value="false"
-              >
-              Remote/Office
-          </b-form-checkbox>
-          <b-form-checkbox
-              v-model="showFields.segment"
-              :value="true"
-              :unchecked-value="false"
-              >
-              Сегмент
-          </b-form-checkbox>
-          <b-form-checkbox
-              v-model="showFields.applied"
-              :value="true"
-              :unchecked-value="false"
-              >
-              Дата принятия
-          </b-form-checkbox>
-        </div>
-      </div>
-  </b-modal>
+			<div class="col-md-4 mb-2">
+				<b-form-checkbox
+						v-model="showFields.number"
+						:value="true"
+						:unchecked-value="false"
+						>
+						Номер
+				</b-form-checkbox>
+				<b-form-checkbox
+						v-model="showFields.id"
+						:value="true"
+						:unchecked-value="false"
+						>
+						id
+				</b-form-checkbox>
+				<b-form-checkbox
+						v-model="showFields.email"
+						:value="true"
+						:unchecked-value="false"
+						>
+						Email
+				</b-form-checkbox>
+				<b-form-checkbox
+						v-model="showFields.name"
+						:value="true"
+						:unchecked-value="false"
+						>
+						Имя
+				</b-form-checkbox>
+				<b-form-checkbox
+						v-model="showFields.full_time"
+						:value="true"
+						:unchecked-value="false"
+						>
+						Full / Part-time
+				</b-form-checkbox>
+			</div>
+			<div class="col-md-4 mb-2">
+				<b-form-checkbox
+						v-model="showFields.last_name"
+						:value="true"
+						:unchecked-value="false"
+						>
+						Фамилия
+				</b-form-checkbox>
+				<b-form-checkbox
+						v-model="showFields.groups"
+						:value="true"
+						:unchecked-value="false"
+						>
+						Отделы
+				</b-form-checkbox>
+				<b-form-checkbox
+						v-model="showFields.register_date"
+						:value="true"
+						:unchecked-value="false"
+						>
+						Дата регистрации
+				</b-form-checkbox>
+				<b-form-checkbox
+						v-model="showFields.fire_date"
+						:value="true"
+						:unchecked-value="false"
+						>
+						Дата увольнения
+				</b-form-checkbox>
+				<b-form-checkbox
+						v-model="showFields.fire_cause"
+						:value="true"
+						:unchecked-value="false"
+						>
+						Причина увольнения
+				</b-form-checkbox>
 
 
-  <b-modal
-    v-model="showFilterModal"
-    title="Фильтр «Сотрудники»"
-    @ok="applyFilter"
-    ok-text="Применить"
-    size="md"
-  >
+			</div>
 
-        <div class="row">
-
-          <div class="col-md-6 mb-2">
-            <div class="d-flex align-items-center">
-                <input type="checkbox" v-model="active.date" class="mr-3">
-                <p class="mb-0 pointer" @click="toggleActive('date')">Дата регистрации</p>
-            </div>
-          </div>
-
-          <div class="col-6">
-            <div class="relative ooooo" :class="{'active': active.date}">
-              <div class="d-flex align-items-center">
-                <label for="" class=" mr-2 mb-0">От</label> <input class="form-control mb-1 form-control-sm" type="date" v-model="filter.start_date">
-              </div>
-              <div class="d-flex align-items-center">
-                <label for="" class=" mr-2 mb-0">До</label> <input class="form-control form-control-sm" type="date" v-model="filter.end_date">
-              </div>
-            </div>
-          </div>
-
-        </div>
+			<div class="col-md-4 mb-2">
+				<b-form-checkbox
+						v-model="showFields.user_type"
+						:value="true"
+						:unchecked-value="false"
+						>
+						Remote/Office
+				</b-form-checkbox>
+				<b-form-checkbox
+						v-model="showFields.segment"
+						:value="true"
+						:unchecked-value="false"
+						>
+						Сегмент
+				</b-form-checkbox>
+				<b-form-checkbox
+						v-model="showFields.applied"
+						:value="true"
+						:unchecked-value="false"
+						>
+						Дата принятия
+				</b-form-checkbox>
+			</div>
+		</div>
+	</b-modal>
 
 
-        <div class="row mt-2">
+	<b-modal
+		v-model="showFilterModal"
+		title="Фильтр «Сотрудники»"
+		@ok="applyFilter"
+		ok-text="Применить"
+		size="md"
+	>
 
-          <div class="col-md-6 mb-2">
-            <div class="d-flex align-items-center">
-                <input type="checkbox" v-model="active.date_deactivate" class="mr-3">
-                <p class="mb-0 pointer" @click="toggleActive('date_deactivate')">Дата увольнения</p>
-            </div>
-          </div>
+				<div class="row">
 
-          <div class="col-6">
+					<div class="col-md-6 mb-2">
+						<div class="d-flex align-items-center">
+								<input type="checkbox" v-model="active.date" class="mr-3">
+								<p class="mb-0 pointer" @click="toggleActive('date')">Дата регистрации</p>
+						</div>
+					</div>
 
-            <div class="relative ooooo" :class="{'active': active.date_deactivate}">
-              <div class="d-flex align-items-center">
-                <label for="" class=" mr-2 mb-0">От</label> <input class="form-control mb-1 form-control-sm" type="date" v-model="filter.start_date_deactivate">
-              </div>
-              <div class="d-flex align-items-center">
-                <label for="" class=" mr-2 mb-0">До</label> <input class="form-control form-control-sm" type="date" v-model="filter.end_date_deactivate">
-              </div>
-            </div>
+					<div class="col-6">
+						<div class="relative ooooo" :class="{'active': active.date}">
+							<div class="d-flex align-items-center">
+								<label for="" class=" mr-2 mb-0">От</label> <input class="form-control mb-1 form-control-sm" type="date" v-model="filter.start_date">
+							</div>
+							<div class="d-flex align-items-center">
+								<label for="" class=" mr-2 mb-0">До</label> <input class="form-control form-control-sm" type="date" v-model="filter.end_date">
+							</div>
+						</div>
+					</div>
 
-          </div>
-        </div>
+				</div>
 
-        <div class="row mt-2" v-if="tableFilter != 'trainees'">
-          <div class="col-md-6 mb-2">
-            <div class="d-flex align-items-center">
-                <input type="checkbox" v-model="active.date_applied" class="mr-3">
-                <p class="mb-0 pointer" @click="toggleActive('date_applied')">Дата принятия</p>
-            </div>
-          </div>
 
-          <div class="col-6">
-            <div class="relative ooooo" :class="{'active': active.date_applied}">
-              <div class="d-flex align-items-center">
-                <label for="" class=" mr-2 mb-0">От</label> <input class="form-control mb-1 form-control-sm" type="date" v-model="filter.start_date_applied">
-              </div>
-              <div class="d-flex align-items-center">
-                <label for="" class=" mr-2 mb-0">До</label> <input class="form-control form-control-sm" type="date" v-model="filter.end_date_applied">
-              </div>
-            </div>
-          </div>
-        </div>
+				<div class="row mt-2">
 
-        <div class="row mt-2">
-          <div class="col-md-6 mb-2">
-            <p>Сегмент</p>
-          </div>
+					<div class="col-md-6 mb-2">
+						<div class="d-flex align-items-center">
+								<input type="checkbox" v-model="active.date_deactivate" class="mr-3">
+								<p class="mb-0 pointer" @click="toggleActive('date_deactivate')">Дата увольнения</p>
+						</div>
+					</div>
 
-          <div class="col-6">
-            <div class="d-flex align-items-center">
-              <select  class="form-control mb-1 form-control-sm" v-model="filter.segment">
-                <option value="0">Все сегменты</option>
-                <option value="1">Кандидаты на вакансию (таргет)</option>
-                <option value="2">Кандидаты на вакансию (hh, nur, job)</option>
-                <option value="3">Кандидаты на вакансию (promo акции)</option>
-                <option value="4">Кандидаты на вакансию (месенджеры)</option>
-                <option value="5">Кандидаты на вакансию (Гарантия трудоустройства)</option>
-                <option value="6">Кандидаты на вакансию (Участники семинаров, форумов, встреч)</option>
-              </select>
-            </div>
+					<div class="col-6">
 
-          </div>
-        </div>
+						<div class="relative ooooo" :class="{'active': active.date_deactivate}">
+							<div class="d-flex align-items-center">
+								<label for="" class=" mr-2 mb-0">От</label> <input class="form-control mb-1 form-control-sm" type="date" v-model="filter.start_date_deactivate">
+							</div>
+							<div class="d-flex align-items-center">
+								<label for="" class=" mr-2 mb-0">До</label> <input class="form-control form-control-sm" type="date" v-model="filter.end_date_deactivate">
+							</div>
+						</div>
 
-  </b-modal>
+					</div>
+				</div>
+
+				<div class="row mt-2" v-if="tableFilter != 'trainees'">
+					<div class="col-md-6 mb-2">
+						<div class="d-flex align-items-center">
+								<input type="checkbox" v-model="active.date_applied" class="mr-3">
+								<p class="mb-0 pointer" @click="toggleActive('date_applied')">Дата принятия</p>
+						</div>
+					</div>
+
+					<div class="col-6">
+						<div class="relative ooooo" :class="{'active': active.date_applied}">
+							<div class="d-flex align-items-center">
+								<label for="" class=" mr-2 mb-0">От</label> <input class="form-control mb-1 form-control-sm" type="date" v-model="filter.start_date_applied">
+							</div>
+							<div class="d-flex align-items-center">
+								<label for="" class=" mr-2 mb-0">До</label> <input class="form-control form-control-sm" type="date" v-model="filter.end_date_applied">
+							</div>
+						</div>
+					</div>
+				</div>
+
+				<div class="row mt-2">
+					<div class="col-md-6 mb-2">
+						<p>Сегмент</p>
+					</div>
+
+					<div class="col-6">
+						<div class="d-flex align-items-center">
+							<select  class="form-control mb-1 form-control-sm" v-model="filter.segment">
+								<option value="0">Все сегменты</option>
+								<option value="1">Кандидаты на вакансию (таргет)</option>
+								<option value="2">Кандидаты на вакансию (hh, nur, job)</option>
+								<option value="3">Кандидаты на вакансию (promo акции)</option>
+								<option value="4">Кандидаты на вакансию (месенджеры)</option>
+								<option value="5">Кандидаты на вакансию (Гарантия трудоустройства)</option>
+								<option value="6">Кандидаты на вакансию (Участники семинаров, форумов, встреч)</option>
+							</select>
+						</div>
+
+					</div>
+				</div>
+
+	</b-modal>
 
 
 </div>
@@ -377,410 +377,403 @@
 
 <script>
 export default {
-  name: "Userlist",
-  props: {
-    is_admin: {
-      type: Boolean,
-      default: false,
-    },
-    subdomain: {
-      type: String,
-      default: 'nosub'
-    },
-    positions: {
-      type: Array,
-      default: () => []
-    },
-  },
-  data() {
-    return {
-      my_positions: [],
-      position: 0,
-      jobFilters: [{ text: 'Должность', value: 0 }],
-      sel: false,
-      newtime: '',
-      auth_token: '',
-      staff_res: '', // partitme + fulltime
-      showFilterModal: false, /// Фильтры
-      showModal: false, /// Какие поля показывать
-      showFields: {},
-      errors: [],
-      useractive: {
-        name: '',
-        day: '',
-        time: '',
-      },
-      tableFilter: 'active',
-      segments: {
-          0: 'Нет сегмента',
-          1: 'Таргет',
-          2: 'HH',
-          3: 'promo',
-          4: 'messenger',
-          5: 'Гарантия труд',
-          6: 'HH',
-          7: 'Муса',
-          8: 'Алина',
-          9: 'Салтанат',
-          10: 'Акжол',
-          11: 'Дархан',
-          12: 'Салтанат',
-          13: 'Сайт BP',
-          14: 'Вход. обр.',
-      },
-      tableFilters: {
-          'all': 'Все',
-          'active': 'Работающие',
-          'deactivated': 'Уволенные',
-          'trainees': 'Стажеры',
-          'nonfilled': 'Незаполненные',
-      },
-      mount: 'Январь',
-      items: [],
-      fields: [
-        {
-          key: 'index',
-          label: '№'
-        },
-        {
-          key: 'id',
-          label: 'id'
-        },
-        {
-          key: 'email',
-          label: 'Email'
-        },
-        {
-          key: 'last_name',
-          label: 'Фамилия',
-          sortable: true
-        },
-        {
-          key: 'name',
-          label: 'Имя',
-          sortable: true
-        },
-        {
-          key: 'groups',
-          label: 'Отделы',
-          sortable: true
-        },
-        {
-          key: 'created_at',
-          label: 'Дата регистрации',
-          sortable: true,
-        },
-        {
-          key: 'deleted_at',
-          label: 'Дата увольнения',
-          sortable: true,
-        },
-        {
-          key: 'fire_cause',
-          label: 'Причина увольнения',
-          sortable: true
-        },
-        {
-          key: 'user_type',
-          label: 'Тип',
-          sortable: true
-        },
-        {
-          key: 'segment',
-          label: 'Сегмент',
-          sortable: true
-        },
-        {
-          key: 'applied',
-          label: 'Дата принятия',
-          sortable: true,
-        },
-        {
-          key: 'full_time',
-          label: 'Full/Part',
-          sortable: true
-        },
-      ],
-      groups: {
-        0: 'Выберите отдел'
-      },
-      currentGroup: 0,
-      totalRows: 1,
-      currentPage: 1,
-      perPage: 20,
-      pageOptions: [5, 10, 15],
-      sortBy: 'created_at',
-      sortDesc: true,
-      sortDirection: 'desc',
-      can_login_users: [],
-      currentUser: null,
-      filter: {
-        email: '',
-        group: 0,
-        start_date: null,
-        end_date: '2030-01-01',
-        start_date_deactivate: '2015-01-01',
-        end_date_deactivate: '2030-01-01',
-        start_date_applied: '2015-01-01',
-        end_date_applied: '2030-01-01',
-        segment: 0
-      },
-      active: {
-        date: false,
-        date_deactivate: false,
-        date_applied: false,
-      },
-      filtered:[],
-      filterOn: [],
-      value: [],
-      options: [],
-      infoModal: {
-        id: 'info-modal',
-        title: '',
-        content: ''
-      }
-    }
-  },
-  watch: {
-    showFields: {
-      handler: function (val) {
-        localStorage.showFields = JSON.stringify(val);
-      },
-      deep: true
-    },
-    positions(){
-      this.init()
-    }
-  },
-  created() {
-    if(this.positions){
-      this.init()
-    }
-  },
-  computed: {
-    sortOptions() {
-      return this.fields
-        .filter(f => f.sortable)
-        .map(f => {
-          return {
-            text: f.label,
-            value: f.key
-          }
-        })
-    },
+	name: 'PageUserlist',
+	props: {
+		is_admin: {
+			type: Boolean,
+			default: false,
+		},
+		subdomain: {
+			type: String,
+			default: 'nosub'
+		},
+		positions: {
+			type: Array,
+			default: () => []
+		},
+	},
+	data() {
+		return {
+			my_positions: [],
+			position: 0,
+			jobFilters: [{ text: 'Должность', value: 0 }],
+			sel: false,
+			newtime: '',
+			auth_token: '',
+			showFilterModal: false, /// Фильтры
+			showModal: false, /// Какие поля показывать
+			showFields: {},
+			errors: [],
+			useractive: {
+				name: '',
+				day: '',
+				time: '',
+			},
+			tableFilter: 'active',
+			segments: {
+				0: 'Нет сегмента',
+				1: 'Таргет',
+				2: 'HH',
+				3: 'promo',
+				4: 'messenger',
+				5: 'Гарантия труд',
+				6: 'HH',
+				7: 'Муса',
+				8: 'Алина',
+				9: 'Салтанат',
+				10: 'Акжол',
+				11: 'Дархан',
+				12: 'Салтанат',
+				13: 'Сайт BP',
+				14: 'Вход. обр.',
+			},
+			tableFilters: {
+				'all': 'Все',
+				'active': 'Работающие',
+				'deactivated': 'Уволенные',
+				'trainees': 'Стажеры',
+				'nonfilled': 'Незаполненные',
+			},
+			mount: 'Январь',
+			items: [],
+			fields: [
+				{
+					key: 'index',
+					label: '№'
+				},
+				{
+					key: 'id',
+					label: 'id'
+				},
+				{
+					key: 'email',
+					label: 'Email'
+				},
+				{
+					key: 'last_name',
+					label: 'Фамилия',
+					sortable: true
+				},
+				{
+					key: 'name',
+					label: 'Имя',
+					sortable: true
+				},
+				{
+					key: 'groups',
+					label: 'Отделы',
+					sortable: true
+				},
+				{
+					key: 'created_at',
+					label: 'Дата регистрации',
+					sortable: true,
+				},
+				{
+					key: 'deleted_at',
+					label: 'Дата увольнения',
+					sortable: true,
+				},
+				{
+					key: 'fire_cause',
+					label: 'Причина увольнения',
+					sortable: true
+				},
+				{
+					key: 'user_type',
+					label: 'Тип',
+					sortable: true
+				},
+				{
+					key: 'segment',
+					label: 'Сегмент',
+					sortable: true
+				},
+				{
+					key: 'applied',
+					label: 'Дата принятия',
+					sortable: true,
+				},
+				{
+					key: 'full_time',
+					label: 'Full/Part',
+					sortable: true
+				},
+			],
+			groups: {
+				0: 'Выберите отдел'
+			},
+			currentGroup: 0,
+			currentPage: 1,
+			perPage: 20,
+			pageOptions: [5, 10, 15],
+			sortBy: 'created_at',
+			sortDesc: true,
+			sortDirection: 'desc',
+			can_login_users: [],
+			currentUser: null,
+			filter: {
+				email: '',
+				group: 0,
+				start_date: null,
+				end_date: '2030-01-01',
+				start_date_deactivate: '2015-01-01',
+				end_date_deactivate: '2030-01-01',
+				start_date_applied: '2015-01-01',
+				end_date_applied: '2030-01-01',
+				segment: 0
+			},
+			active: {
+				date: false,
+				date_deactivate: false,
+				date_applied: false,
+			},
+			filtered:[],
+			filterOn: [],
+			value: [],
+			options: [],
+			infoModal: {
+				id: 'info-modal',
+				title: '',
+				content: ''
+			}
+		}
+	},
+	watch: {
+		showFields: {
+			handler: function (val) {
+				localStorage.showFields = JSON.stringify(val);
+			},
+			deep: true
+		},
+		positions(){
+			this.init()
+		}
+	},
+	created() {
+		if(this.positions){
+			this.init()
+		}
+	},
+	computed: {
+		sortOptions() {
+			return this.fields
+				.filter(f => f.sortable)
+				.map(f => {
+					return {
+						text: f.label,
+						value: f.key
+					}
+				})
+		},
 
-    applyFields() {
-      document.querySelector('table').ad
-    },
+		itemProvider() {
+			this.filtered = this.items.filter(el => {
+				if (el.fullname == null)  el.fullname = ''
+				if (el.fullname2 == null)  el.fullname2 = ''
+				if (el.last_name == null)  el.last_name = ''
+				if (el.name == null)  el.name = ''
 
-    itemProvider() {
+				if(Number(this.filter.group) !== 0) {
+					return el.groups.includes(Number(this.filter.group))
+								&& (el.email.toLowerCase().indexOf(this.filter.email.toLowerCase()) > -1
+								|| el.fullname.toLowerCase().indexOf(this.filter.email.toLowerCase()) > -1
+								|| el.fullname2.toLowerCase().indexOf(this.filter.email.toLowerCase()) > -1
+								|| el.last_name.toLowerCase().indexOf(this.filter.email.toLowerCase()) > -1
+								|| el.name.toLowerCase().indexOf(this.filter.email.toLowerCase()) > -1
+								|| el.id.toString().indexOf(this.filter.email.toLowerCase()) > -1)
+				} else {
+					return el.email.toLowerCase().indexOf(this.filter.email.toLowerCase()) > -1
+								|| el.fullname.toLowerCase().indexOf(this.filter.email.toLowerCase()) > -1
+								|| el.fullname2.toLowerCase().indexOf(this.filter.email.toLowerCase()) > -1
+								|| el.last_name.toLowerCase().indexOf(this.filter.email.toLowerCase()) > -1
+								|| el.name.toLowerCase().indexOf(this.filter.email.toLowerCase()) > -1
+								|| el.id.toString().indexOf(this.filter.email.toLowerCase()) > -1
+				}
+			})
 
-
-      this.filtered = this.items.filter((el, index) => {
-        if (el.fullname == null)  el.fullname = ""
-        if (el.fullname2 == null)  el.fullname2 = ""
-        if (el.last_name == null)  el.last_name = ""
-        if (el.name == null)  el.name = ""
-
-        if(Number(this.filter.group) !== 0) {
-          return el.groups.includes(Number(this.filter.group))
-                && (el.email.toLowerCase().indexOf(this.filter.email.toLowerCase()) > -1
-                || el.fullname.toLowerCase().indexOf(this.filter.email.toLowerCase()) > -1
-                || el.fullname2.toLowerCase().indexOf(this.filter.email.toLowerCase()) > -1
-                || el.last_name.toLowerCase().indexOf(this.filter.email.toLowerCase()) > -1
-                || el.name.toLowerCase().indexOf(this.filter.email.toLowerCase()) > -1
-                || el.id.toString().indexOf(this.filter.email.toLowerCase()) > -1)
-        } else {
-          return el.email.toLowerCase().indexOf(this.filter.email.toLowerCase()) > -1
-                || el.fullname.toLowerCase().indexOf(this.filter.email.toLowerCase()) > -1
-                || el.fullname2.toLowerCase().indexOf(this.filter.email.toLowerCase()) > -1
-                || el.last_name.toLowerCase().indexOf(this.filter.email.toLowerCase()) > -1
-                || el.name.toLowerCase().indexOf(this.filter.email.toLowerCase()) > -1
-                || el.id.toString().indexOf(this.filter.email.toLowerCase()) > -1
-        }
-
-      })
-
-      this.staff_res = 0 // parttime + fulltime
-
-      this.filtered.forEach((xx,index) => {
-          if(xx.full_time == 1) {
-            this.staff_res += 1;
-          } else {
-            this.staff_res += 0.5;
-          }
-      })
-
-
-      this.totalRows =  this.filtered.length
-      return  this.filtered
-    },
-  },
-  mounted() {
-    this.totalRows =  this.filtered.length
-  },
-  methods: {
-    init(){
-      this.my_positions = this.positions;
-      this.my_positions.forEach((value, index) => {
-        this.jobFilters.push({ text: value.position, value: value.id });
-      });
-      this.getUsers()
-      this.setDefaultShowFields()
-    },
+			return  this.filtered
+		},
+		staff_res(){
+			let res = 0
+			this.filtered.forEach(xx => {
+				if(xx.full_time == 1) {
+					res += 1;
+				} else {
+					res += 0.5;
+				}
+			})
+			return res
+		},
+		totalRows(){
+			return this.filtered.length
+		}
+	},
+	mounted() {
+		this.totalRows = this.filtered.length
+	},
+	methods: {
+		init(){
+			this.my_positions = this.positions;
+			this.my_positions.forEach(value => {
+				this.jobFilters.push({ text: value.position, value: value.id });
+			});
+			this.getUsers()
+			this.setDefaultShowFields()
+		},
 
 
-    setDefaultShowFields() {
+		setDefaultShowFields() {
 
-      if(localStorage.showFields) {
-        this.showFields = JSON.parse(localStorage.getItem('showFields'));
-      } else {
-        this.showFields = { // Какие поля показывать
-          number: true,
-          id: true,
-          email: true,
-          name: true,
-          last_name: true,
-          groups: true,
-          register_date: true,
-          fire_date: true,
-          fire_cause: false,
-          user_type: false,
-          segment: false,
-          applied: false,
-          full_time: false,
-        };
-      }
+			if(localStorage.showFields) {
+				this.showFields = JSON.parse(localStorage.getItem('showFields'));
+			} else {
+				this.showFields = { // Какие поля показывать
+					number: true,
+					id: true,
+					email: true,
+					name: true,
+					last_name: true,
+					groups: true,
+					register_date: true,
+					fire_date: true,
+					fire_cause: false,
+					user_type: false,
+					segment: false,
+					applied: false,
+					full_time: false,
+				};
+			}
 
-    },
+		},
 
-    resetInfoModal() {
-      this.infoModal.title = ''
-      this.infoModal.content = ''
-    },
+		resetInfoModal() {
+			this.infoModal.title = ''
+			this.infoModal.content = ''
+		},
 
-    applyFilter() {
-        this.showFilterModal = !this.showFilterModal
-        //this.$refs.table.refresh()
-        this.getUsers()
-    },
-    getUsers() {
-      //if(this.filter.start_date.length > 10 || this.filter.end_date.length > 10) return ;
-      //if(this.filter.start_date[0] == '0' || this.filter.end_date[0] == '0' || this.filter.end_date[0] == '1')  return ;
-      let filter = {
-        filter: this.tableFilter,
-        segment: this.filter.segment,
-        job: this.position,
-      }
+		applyFilter() {
+			this.showFilterModal = !this.showFilterModal
+			//this.$refs.table.refresh()
+			this.getUsers()
+		},
+		getUsers() {
+			//if(this.filter.start_date.length > 10 || this.filter.end_date.length > 10) return ;
+			//if(this.filter.start_date[0] == '0' || this.filter.end_date[0] == '0' || this.filter.end_date[0] == '1')  return ;
+			let filter = {
+				filter: this.tableFilter,
+				segment: this.filter.segment,
+				job: this.position,
+			}
 
-      if(this.active.date) {
-        filter.start_date = this.filter.start_date;
-        filter.end_date = this.filter.end_date;
-      }
+			if(this.active.date) {
+				filter.start_date = this.filter.start_date;
+				filter.end_date = this.filter.end_date;
+			}
 
-      if(this.active.date_deactivate && this.tableFilter != 'active') {
-        filter.start_date_deactivate = this.filter.start_date_deactivate;
-        filter.end_date_deactivate = this.filter.end_date_deactivate;
-      }
+			if(this.active.date_deactivate && this.tableFilter != 'active') {
+				filter.start_date_deactivate = this.filter.start_date_deactivate;
+				filter.end_date_deactivate = this.filter.end_date_deactivate;
+			}
 
-      if(this.active.date_applied && this.tableFilter != 'trainees') {
-        filter.start_date_applied = this.filter.start_date_applied;
-        filter.end_date_applied = this.filter.end_date_applied;
-      }
+			if(this.active.date_applied && this.tableFilter != 'trainees') {
+				filter.start_date_applied = this.filter.start_date_applied;
+				filter.end_date_applied = this.filter.end_date_applied;
+			}
 
-      axios.post('/timetracking/get-persons', filter)
-        .then(response => {
-          this.items = response.data.users
-          this.groups = response.data.groups
-          this.segments = response.data.segments
-          this.totalRows = this.items.length
+			this.$axios.post('/timetracking/get-persons', filter)
+				.then(response => {
+					this.items = response.data.users
+					this.groups = response.data.groups
+					this.segments = response.data.segments
+					this.totalRows = this.items.length
 
-          this.can_login_users = response.data.can_login_users
-          this.auth_token = response.data.auth_token
-          this.currentUser = response.data.currentUser
-          if(this.filter.start_date == null) {
-            this.filter.start_date = response.data.start_date
-            this.filter.end_date = response.data.end_date
-            this.filter.start_date_deactivate = response.data.start_date
-            this.filter.end_date_deactivate = response.data.end_date
-            this.filter.start_date_applied = response.data.start_date
-            this.filter.end_date_applied = response.data.end_date
-          }
+					this.can_login_users = response.data.can_login_users
+					this.auth_token = response.data.auth_token
+					this.currentUser = response.data.currentUser
+					if(this.filter.start_date == null) {
+						this.filter.start_date = response.data.start_date
+						this.filter.end_date = response.data.end_date
+						this.filter.start_date_deactivate = response.data.start_date
+						this.filter.end_date_deactivate = response.data.end_date
+						this.filter.start_date_applied = response.data.start_date
+						this.filter.end_date_applied = response.data.end_date
+					}
 
-        })
-    },
+				})
+		},
 
-    exportData() {
+		exportData() {
 
-      var link = "/timetracking/get-persons";
-        link += "?filter=" + this.tableFilter;
+			var link = '/timetracking/get-persons';
+			link += '?filter=' + this.tableFilter;
 
-        if(this.active.date) {
-          link += "&start_date=" + this.filter.start_date;
-          link += "&end_date=" + this.filter.end_date;
-        }
+			if(this.active.date) {
+				link += '&start_date=' + this.filter.start_date;
+				link += '&end_date=' + this.filter.end_date;
+			}
 
-        if(this.active.date_deactivate && this.tableFilter != 'active') {
-          link += "&start_date_deactivate=" + this.filter.start_date_deactivate;
-          link += "&end_date_deactivate=" + this.filter.end_date_deactivate;
-        }
+			if(this.active.date_deactivate && this.tableFilter != 'active') {
+				link += '&start_date_deactivate=' + this.filter.start_date_deactivate;
+				link += '&end_date_deactivate=' + this.filter.end_date_deactivate;
+			}
 
-        if(this.active.date_applied && this.tableFilter != 'trainees') {
-          link += "&start_date_applied=" + this.filter.start_date_applied;
-          link += "&end_date_applied=" + this.filter.end_date_applied;
-        }
+			if(this.active.date_applied && this.tableFilter != 'trainees') {
+				link += '&start_date_applied=' + this.filter.start_date_applied;
+				link += '&end_date_applied=' + this.filter.end_date_applied;
+			}
 
-        link += "&segment=" + this.filter.segment;
-        link += "&excel=1";
-        window.location.href = link;
-    },
+			link += '&segment=' + this.filter.segment;
+			link += '&excel=1';
+			window.location.href = link;
+		},
 
-    toggleActive(item) {
-      this.active[item] = !this.active[item]
-    },
+		toggleActive(item) {
+			this.active[item] = !this.active[item]
+		},
 
-    onFiltered(filteredItems) {
-      this.totalRows = filteredItems.length
-      this.currentPage = 1
-    },
-  }
+		onFiltered(filteredItems) {
+			this.totalRows = filteredItems.length
+			this.currentPage = 1
+		},
+	}
 }
 </script>
 
 <style lang="scss">
 .ul table {
-  border-radius: 3px;
-      border-left: 1px solid #dee2e6;
-      border-right: 1px solid #dee2e6;
-      border-bottom: 1px solid #dee2e6;
+	border-radius: 3px;
+			border-left: 1px solid #dee2e6;
+			border-right: 1px solid #dee2e6;
+			border-bottom: 1px solid #dee2e6;
 }
 
 .ant-btn.ant-btn-primary {
-  display: inline;
+	display: inline;
 }
 .ant-btn {
-  display: none;
+	display: none;
 }
 
 @for $i from 1 through 13 {
  table.hide-#{$i} {
-  td:nth-child(#{$i}),
-  th:nth-child(#{$i}) {
-    display: none;
-  }
+	td:nth-child(#{$i}),
+	th:nth-child(#{$i}) {
+		display: none;
+	}
  }
 }
 .fz14 {
-  font-size: 14px;
+	font-size: 14px;
 }
 .relative.ooooo {
-  position: relative;
-  transition: 0.5s ease all;
-  height: 0;
-    overflow: hidden;
-  &.active {
-    height: auto;
-    overflow: initial;
-  }
+	position: relative;
+	transition: 0.5s ease all;
+	height: 0;
+		overflow: hidden;
+	&.active {
+		height: auto;
+		overflow: initial;
+	}
 }
 </style>

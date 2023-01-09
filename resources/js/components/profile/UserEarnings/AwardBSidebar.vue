@@ -52,134 +52,134 @@
 </template>
 
 <script>
-import AwardsCard from "./AwardsCard";
-const baseUrl = "https://dummyjson.com/users";
+import AwardsCard from './AwardsCard';
+const baseUrl = 'https://dummyjson.com/users';
 
 export default {
-  name: "AwardSidebar",
-  components: { AwardsCard },
-  props: {
-    open: Boolean,
-    awards: Array,
-  },
-  data() {
-    return {
-      id: 1,
-      data: "data",
-      fakeAwardsLocal: [
-        { name: "Сертификаты", content: "fake content sertificate" },
-        { name: "Награды", content: "fake content awards" },
-        { name: "Красавчики", content: "fake content hansome" },
-        { name: "Поездки", content: "fake content trip" },
-      ],
-      //   awardsLocal: this.createAwardsLocal(this.awards),
-      featuredUsers: [
-        { name: "Фамилия Имя Отчество", value: "100 000 тнг." },
-        { name: "Фамилия Имя Отчество", value: "80 000 тнг." },
-        { name: "Фамилия Имя Отчество", value: "69 000 тнг." },
-      ],
-      awardCards: [
-        { type: "my", header: "Мои", values: [] },
-        { type: "all", header: "Все", values: [] },
-      ],
-      nominationsSelected: false,
-    };
-  },
-  methods: {
-    // EVENT HANDLERS
+	name: 'AwardSidebar',
+	components: { AwardsCard },
+	props: {
+		open: Boolean,
+		awards: Array,
+	},
+	data() {
+		return {
+			id: 1,
+			data: 'data',
+			fakeAwardsLocal: [
+				{ name: 'Сертификаты', content: 'fake content sertificate' },
+				{ name: 'Награды', content: 'fake content awards' },
+				{ name: 'Красавчики', content: 'fake content hansome' },
+				{ name: 'Поездки', content: 'fake content trip' },
+			],
+			//   awardsLocal: this.createAwardsLocal(this.awards),
+			featuredUsers: [
+				{ name: 'Фамилия Имя Отчество', value: '100 000 тнг.' },
+				{ name: 'Фамилия Имя Отчество', value: '80 000 тнг.' },
+				{ name: 'Фамилия Имя Отчество', value: '69 000 тнг.' },
+			],
+			awardCards: [
+				{ type: 'my', header: 'Мои', values: [] },
+				{ type: 'all', header: 'Все', values: [] },
+			],
+			nominationsSelected: false,
+		};
+	},
+	methods: {
+		// EVENT HANDLERS
 
-    async getSertificateById(id) {
-      axios
-        .get(`${baseUrl}/` + id)
-        .then((response) => {
-          console.log(response);
-        })
-        .catch((error) => {
-          console.log(error);
-          this.errored = true;
-        })
-        .finally(() => (this.loading = false));
-    },
+		async getSertificateById(id) {
+			axios
+				.get(`${baseUrl}/` + id)
+				.then((response) => {
+					console.log(response);
+				})
+				.catch((error) => {
+					console.log(error);
+					this.errored = true;
+				})
+				.finally(() => (this.loading = false));
+		},
 
-    async awardsClickHandler(index) {
-      try {
-        this.nominationsSelected = false;
-        this.clearAwardCards();
-        this.selectAwardByIndex(index);
-        const fetchedAwards = await this.fetchAwardsById(
-          this.awardsLocal[index].id
-        );
-        this.updateAwardCards(fetchedAwards);
-      } catch (error) {
-        console.error(error);
-      }
-    },
-    async nominationsClickHandler() {
-      try {
-        this.nominationsSelected = true;
-        this.unpressAwards();
-      } catch (error) {
-        console.error(error);
-      }
-    },
+		async awardsClickHandler(index) {
+			try {
+				this.nominationsSelected = false;
+				this.clearAwardCards();
+				this.selectAwardByIndex(index);
+				const fetchedAwards = await this.fetchAwardsById(
+					this.awardsLocal[index].id
+				);
+				this.updateAwardCards(fetchedAwards);
+			} catch (error) {
+				console.error(error);
+			}
+		},
+		async nominationsClickHandler() {
+			try {
+				this.nominationsSelected = true;
+				this.unpressAwards();
+			} catch (error) {
+				console.error(error);
+			}
+		},
 
-    // HELPERS
+		// HELPERS
 
-    selectAwardByIndex(index) {
-      this.unpressAwards();
-      this.awardsLocal[index].pressed = true;
-    },
-    unpressAwards() {
-      this.awardsLocal.forEach((item) => {
-        item.pressed = false;
-      });
-    },
-    createAwardsLocal(awards) {
-      return awards.map((item) => ({ ...item, pressed: false }));
-    },
-    async fetchAwardsById(id) {
-      // ЗДЕСЬ БУДЕТ ЗАПРОС К API
-      return new Promise((resolve) => {
-        const out = {
-          all: [
-            { imgSrc: "all1.png" },
-            { imgSrc: "all1.png" },
-            { imgSrc: "all1.png" },
-            { imgSrc: "all1.png" },
-            { imgSrc: "all1.png" },
-          ],
-          my: [
-            { imgSrc: "myAward1.png" },
-            { imgSrc: "myAward1.png" },
-            { imgSrc: "myAward1.png" },
-            { imgSrc: "myAward1.png" },
-            { imgSrc: "myAward1.png" },
-          ],
-          notMy: [],
-        };
-        const loader = this.$loading.show();
-        setTimeout(() => {
-          loader.hide();
-          resolve(out);
-        }, 500);
-      });
-    },
-    updateAwardCards(awards) {
-      this.awardCards[0].values = awards.all;
-      this.awardCards[1].values = awards.my;
-      this.awardCards[2].values = awards.notMy;
-    },
-    clearAwardCards() {
-      this.updateAwardCards({ all: [], my: [], notMy: [] });
-    },
-  },
-  mounted() {
-    const res = this.getSertificateById(this.id);
-    console.log(res);
-    if (this.awards.length) {
-      this.awardsClickHandler(0);
-    }
-  },
+		selectAwardByIndex(index) {
+			this.unpressAwards();
+			this.awardsLocal[index].pressed = true;
+		},
+		unpressAwards() {
+			this.awardsLocal.forEach((item) => {
+				item.pressed = false;
+			});
+		},
+		createAwardsLocal(awards) {
+			return awards.map((item) => ({ ...item, pressed: false }));
+		},
+		async fetchAwardsById(id) {
+			// ЗДЕСЬ БУДЕТ ЗАПРОС К API
+			return new Promise((resolve) => {
+				const out = {
+					all: [
+						{ imgSrc: 'all1.png' },
+						{ imgSrc: 'all1.png' },
+						{ imgSrc: 'all1.png' },
+						{ imgSrc: 'all1.png' },
+						{ imgSrc: 'all1.png' },
+					],
+					my: [
+						{ imgSrc: 'myAward1.png' },
+						{ imgSrc: 'myAward1.png' },
+						{ imgSrc: 'myAward1.png' },
+						{ imgSrc: 'myAward1.png' },
+						{ imgSrc: 'myAward1.png' },
+					],
+					notMy: [],
+				};
+				const loader = this.$loading.show();
+				setTimeout(() => {
+					loader.hide();
+					resolve(out);
+				}, 500);
+			});
+		},
+		updateAwardCards(awards) {
+			this.awardCards[0].values = awards.all;
+			this.awardCards[1].values = awards.my;
+			this.awardCards[2].values = awards.notMy;
+		},
+		clearAwardCards() {
+			this.updateAwardCards({ all: [], my: [], notMy: [] });
+		},
+	},
+	mounted() {
+		const res = this.getSertificateById(this.id);
+		console.log(res);
+		if (this.awards.length) {
+			this.awardsClickHandler(0);
+		}
+	},
 };
 </script>
 

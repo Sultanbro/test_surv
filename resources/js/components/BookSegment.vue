@@ -32,85 +32,85 @@
 </template>
 <script>
 export default { 
-  props: {
-    segment: {
-      required: true,
-    },
-    book_id: {
-      type: Number
-    }
-  },
-  data() {
-    return {
-      validated: false,
-    }
-  },
-  created() {
+	props: {
+		segment: {
+			required: true,
+		},
+		book_id: {
+			type: Number
+		}
+	},
+	data() {
+		return {
+			validated: false,
+		}
+	},
+	created() {
 
-  },
-  methods: {
+	},
+	methods: {
     
-    validate(status) {
-      this.validated = status
-    },
+		validate(status) {
+			this.validated = status
+		},
 
-    deleteSegment(i) {
-      if(!confirm('Вы уверены? Их потом не восстановить')) {
-        return false;
-      }
+		deleteSegment(i) {
+			if(!confirm('Вы уверены? Их потом не восстановить')) {
+				return false;
+			}
 
-      axios
-        .post("/admin/upbooks/segments/delete", {
-          id: this.segment.id,
-        })
-        .then((response) => {
-          this.$toast.success('Удалено');
-          this.$emit('deleteSegment');
-        })
-        .catch((error) => { 
-          alert(error);
-        });
-    },
+			axios
+				.post('/admin/upbooks/segments/delete', {
+					id: this.segment.id,
+				})
+				.then((response) => {
+					this.$toast.success('Удалено');
+					this.$emit('deleteSegment');
+				})
+				.catch((error) => { 
+					alert(error);
+				});
+		},
 
-    saveSegment(i) {
+		saveSegment(i) {
      
-      this.$refs.questions.validate();
-      if(!this.validated) {
-        return;
-      }
+			this.$refs.questions.validate();
+			if(!this.validated) {
+				return;
+			}
 
-      if(this.segment.questions.length == 0) {
-        this.$toast.error('Добавьте минимум 1 вопрос');
-        return;
-      }
+			if(this.segment.questions.length == 0) {
+				this.$toast.error('Добавьте минимум 1 вопрос');
+				return;
+			}
       
-      axios
-        .post("/admin/upbooks/segments/save", {
-          item: this.segment,
-          book_id: this.book_id
-        })
-        .then((response) => {
-          this.segment.id = response.data.id;
-           this.segment.questions.forEach((item, index) => {
-            item.id = response.data.ids[index];
-          });
-          this.$toast.success('Сохранено');
-        })
-        .catch((error) => {
-          alert(error);
-        });
-    },
+			axios
+				.post('/admin/upbooks/segments/save', {
+					item: this.segment,
+					book_id: this.book_id
+				})
+				.then((response) => {
+					this.segment.id = response.data.id;
+					this.segment.questions.forEach((item, index) => {
+						item.id = response.data.ids[index];
+					});
+					this.$toast.success('Сохранено');
+				})
+				.catch((error) => {
+					alert(error);
+				});
+		},
 
-    changePassGrade(grade) {
-      console.log('pass grade')
+		changePassGrade(grade) {
+			console.log('pass grade')
 
-      this.segment.pass_grade = grade;
-      let len = this.segment.questions.length;
+			this.segment.pass_grade = grade;
+			let len = this.segment.questions.length;
 
-      if(grade > len) this.segment.pass_grade = len;
-      if(grade < 1) this.segment.pass_grade = 1;
-    },
-  },
-  name: "BookSegment"
+			if(grade > len) this.segment.pass_grade = len;
+			if(grade < 1) this.segment.pass_grade = 1;
+		},
+	},
+	name: 'BookSegment'
 };
 </script>

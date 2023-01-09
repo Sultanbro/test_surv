@@ -3,11 +3,11 @@ import DefaultLayout from '@/layouts/DefaultLayout'
 const Courses = () => import(/* webpackChunkName: "CoursesPage" */ '@/pages/Courses')
 
 export default {
-    name: 'CoursesView',
-    components: {
-        DefaultLayout,
-        Courses,
-    },
+	name: 'CoursesView',
+	components: {
+		DefaultLayout,
+		Courses,
+	},
 }
 </script>
 

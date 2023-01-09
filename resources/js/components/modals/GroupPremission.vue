@@ -24,64 +24,64 @@
 import {bus} from '../../bus';
 
 export default {
-  name: "GroupPremission",
-  props: {
-    currentGroup: Number,
-    page: String
-  },
-  watch: {
-    currentGroup(val) {
-      this.loadEditors()
-    }
-  },
-  data() {
-    return {
-      openPremissionModal: false,
-      users: [],
-      group_editors: []
-    }
-  },
-  mounted() {
-    bus.$on('checkPremissions', this.checkPremissions)
-  },
-  created() {
-    this.loadEditors()
-    axios.post('/timetracking/users', {})
-      .then(response => {
-        this.users = response.data.users
-      })
+	name: 'GroupPremission',
+	props: {
+		currentGroup: Number,
+		page: String
+	},
+	watch: {
+		currentGroup(val) {
+			this.loadEditors()
+		}
+	},
+	data() {
+		return {
+			openPremissionModal: false,
+			users: [],
+			group_editors: []
+		}
+	},
+	mounted() {
+		bus.$on('checkPremissions', this.checkPremissions)
+	},
+	created() {
+		this.loadEditors()
+		axios.post('/timetracking/users', {})
+			.then(response => {
+				this.users = response.data.users
+			})
 
-  },
-  methods: {
-    loadEditors() {
-      axios.post('/timetracking/reports/get-editors', {
-        group_id: this.currentGroup,
-        page: this.page
-      }).then(response => {
-        this.group_editors = response.data
-      })
-    },
-    savePremission() {
-      axios.post('/timetracking/reports/add-editors', {
-        users: this.group_editors,
-        group_id: this.currentGroup,
-        page: this.page
-      }).then(response => {}).catch(error => {
-        console.log(error)
-      });
-      this.openPremissionModal = false
+	},
+	methods: {
+		loadEditors() {
+			axios.post('/timetracking/reports/get-editors', {
+				group_id: this.currentGroup,
+				page: this.page
+			}).then(response => {
+				this.group_editors = response.data
+			})
+		},
+		savePremission() {
+			axios.post('/timetracking/reports/add-editors', {
+				users: this.group_editors,
+				group_id: this.currentGroup,
+				page: this.page
+			}).then(response => {}).catch(error => {
+				console.log(error)
+			});
+			this.openPremissionModal = false
 
-    },
-    checkPremissions(activeuserid) {
+		},
+		checkPremissions(activeuserid) {
 
-      let premission = false
-      this.group_editors.forEach(editor => {
-        if (editor.id == parseInt(activeuserid)) premission = true
-      })
-      console.log(premission)
-      return premission;
-    }
-  }
+			let premission = false
+			this.group_editors.forEach(editor => {
+				if (editor.id == parseInt(activeuserid)) premission = true
+			})
+			console.log(premission)
+			return premission;
+		}
+	}
 }
 </script>
 

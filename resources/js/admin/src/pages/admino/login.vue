@@ -13,24 +13,24 @@ const userStore = useUserStore()
 const router = useRouter()
 
 const form = ref({
-  email: '',
-  password: '',
-  remember: false,
+	email: '',
+	password: '',
+	remember: false,
 })
 
 const vuetifyTheme = useTheme()
 const authThemeMask = computed(() => {
-  return vuetifyTheme.global.name.value === 'light'
-    ? authV1MaskLight
-    : authV1MaskDark
+	return vuetifyTheme.global.name.value === 'light'
+		? authV1MaskLight
+		: authV1MaskDark
 })
 
 const isPasswordVisible = ref(false)
 
 function onSubmit() {
-  console.log('onSubmit')
-  userStore.login(form.value.email, form.value.password)
-  router.push('/admino')
+	console.log('onSubmit')
+	userStore.login(form.value.email, form.value.password)
+	router.push('/admino')
 }
 </script>
 

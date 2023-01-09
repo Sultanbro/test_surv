@@ -63,53 +63,53 @@ import { Hooper, Slide } from 'hooper'
 import 'hooper/dist/hooper.css'
 
 export default {
-  components: {
-    Hooper,
-    Slide,
-  },
-  data(){
-    return {
-      isBlock1Highlight: false,
-      isBlock2Highlight: false,
-      isBlock3Highlight: false,
-      observer: null,
-    }
-  },
-  computed: {
-    lang() {
-      return this.$root.$data.lang
-    },
-    isMedium(){
-      return this.$viewportSize.width >= 1260
-    },
-  },
-  mounted(){
-    this.observer = new IntersectionObserver(this.animate, {
-      rootMargin: '30px',
-      threshold: 1
-    })
-    this.observer.observe(this.$refs.items)
-  },
-  methods: {
-    wait(ms){
-      return new Promise(resolve => {
-        setTimeout(resolve, ms)
-      })
-    },
-    async animate(entries, observer){
-      if(!entries.some(entry => entry.isIntersecting)) return
-      this.isBlock1Highlight = true
-      await this.wait(350)
-      this.isBlock1Highlight = false
-      this.isBlock2Highlight = true
-      await this.wait(350)
-      this.isBlock2Highlight = false
-      this.isBlock3Highlight = true
-      await this.wait(350)
-      this.isBlock3Highlight = false
-      this.observer.disconnect()
-    }
-  }
+	components: {
+		Hooper,
+		Slide,
+	},
+	data(){
+		return {
+			isBlock1Highlight: false,
+			isBlock2Highlight: false,
+			isBlock3Highlight: false,
+			observer: null,
+		}
+	},
+	computed: {
+		lang() {
+			return this.$root.$data.lang
+		},
+		isMedium(){
+			return this.$viewportSize.width >= 1260
+		},
+	},
+	mounted(){
+		this.observer = new IntersectionObserver(this.animate, {
+			rootMargin: '30px',
+			threshold: 1
+		})
+		this.observer.observe(this.$refs.items)
+	},
+	methods: {
+		wait(ms){
+			return new Promise(resolve => {
+				setTimeout(resolve, ms)
+			})
+		},
+		async animate(entries, observer){
+			if(!entries.some(entry => entry.isIntersecting)) return
+			this.isBlock1Highlight = true
+			await this.wait(350)
+			this.isBlock1Highlight = false
+			this.isBlock2Highlight = true
+			await this.wait(350)
+			this.isBlock2Highlight = false
+			this.isBlock3Highlight = true
+			await this.wait(350)
+			this.isBlock3Highlight = false
+			this.observer.disconnect()
+		}
+	}
 }
 </script>
 

@@ -75,97 +75,97 @@
 
 <script>
 export default {
-    name: "IntroStats",
-    props: {},
-    data: function () {
-        return {
-            data: {
-                oklad: 80000,
-                kpiMax: 20000
-            },
-            has_quartal_premiums: false,
-            loading: false,
-            isMounted: false
-        };
-    },
-    methods: {
-        fetch() {
-            this.loading = true
+	name: 'IntroStats',
+	props: {},
+	data: function () {
+		return {
+			data: {
+				oklad: 80000,
+				kpiMax: 20000
+			},
+			has_quartal_premiums: false,
+			loading: false,
+			isMounted: false
+		};
+	},
+	methods: {
+		fetch() {
+			this.loading = true
 
-            axios.post('/profile/salary/get', {
-                month: new Date().getMonth() + 1,
-                year: new Date().getFullYear()
-            }).then(response => {
-                this.data = response.data.user_earnings
-                this.has_quartal_premiums = response.data.has_qp
+			axios.post('/profile/salary/get', {
+				month: new Date().getMonth() + 1,
+				year: new Date().getFullYear()
+			}).then(response => {
+				this.data = response.data.user_earnings
+				this.has_quartal_premiums = response.data.has_qp
 
-                this.$nextTick(() => this.OpacityStats())
+				this.$nextTick(() => this.OpacityStats())
 
-                this.loading = false
-            }).catch(error => {
-                this.loading = false
-                alert(error)
-            });
-        },
+				this.loading = false
+			}).catch(error => {
+				this.loading = false
+				alert(error)
+			});
+		},
 
-        /**
+		/**
          * animate opacity in blocks
          */
-        OpacityStats() {
-            let MAXBALANCE = this.data.oklad,
-                MAXKPI = this.data.kpiMax,
-                MAXBONUSES = 1,
-                MAXKVARTAL = 1,
-                MAXNOMINATIONS = 1,
-                maxArray = [MAXBALANCE, MAXKPI,MAXBONUSES, MAXKVARTAL, MAXNOMINATIONS];
+		OpacityStats() {
+			let MAXBALANCE = this.data.oklad,
+				MAXKPI = this.data.kpiMax,
+				MAXBONUSES = 1,
+				MAXKVARTAL = 1,
+				MAXNOMINATIONS = 1,
+				maxArray = [MAXBALANCE, MAXKPI,MAXBONUSES, MAXKVARTAL, MAXNOMINATIONS];
 
-            let values = VJQuery('.stat__value span');
-            for(let i=0;i<values.length;i++){
+			let values = VJQuery('.stat__value span');
+			for(let i=0;i<values.length;i++){
 
-                let value = values[i].textContent.replace(/,/g,"")
-                if(value !== '0'){
-                    VJQuery(values[i]).closest('.stat__value').addClass('active')
-                }
+				let value = values[i].textContent.replace(/,/g,'')
+				if(value !== '0'){
+					VJQuery(values[i]).closest('.stat__value').addClass('active')
+				}
 
-                VJQuery({numberValue: 0}).animate({numberValue: value/maxArray[i] * 100}, {
-                    duration: 4000,
-                    easing: "swing",
-                    step: function(val) {
-                        VJQuery(values[i]).closest('.stat__item').find('.front').css('height',val+'%')
-                    },
-                    complete: function(){
-                        VJQuery(values[i]).closest('.stat__item').find('.front').css('height',value/maxArray[i] * 100 + '%')
-                    }
-                });
-            }
+				VJQuery({numberValue: 0}).animate({numberValue: value/maxArray[i] * 100}, {
+					duration: 4000,
+					easing: 'swing',
+					step: function(val) {
+						VJQuery(values[i]).closest('.stat__item').find('.front').css('height',val+'%')
+					},
+					complete: function(){
+						VJQuery(values[i]).closest('.stat__item').find('.front').css('height',value/maxArray[i] * 100 + '%')
+					}
+				});
+			}
 
-            VJQuery('.stat__value').each(function(){
-                let n = VJQuery(this).children('span').text().replace(/\D/g,'');
-                let element = VJQuery(this);
+			VJQuery('.stat__value').each(function(){
+				let n = VJQuery(this).children('span').text().replace(/\D/g,'');
+				let element = VJQuery(this);
 
-                function separateNumber(x) {
-                    return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
-                    //разделитель можно задать тут вторым аргументом для метода replace. Сейчас, как видно, пробел
-                }
+				function separateNumber(x) {
+					return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+					//разделитель можно задать тут вторым аргументом для метода replace. Сейчас, как видно, пробел
+				}
 
-                VJQuery({numberValue: 0}).animate({numberValue: n}, {
-                    duration: 4000,
-                    easing: "swing",
-                    step: function(val) {
-                        element.children('span').text(separateNumber(Math.round(val)));
-                    },
-                    complete: function(){
-                        element.children('span').text(separateNumber(Math.round(n)));
-                    }
-                });
-            })
-        }, // end of opacity
-    },
-    created() {
-        this.fetch()
-    },
-    mounted(){
-        this.isMounted = true
-    }
+				VJQuery({numberValue: 0}).animate({numberValue: n}, {
+					duration: 4000,
+					easing: 'swing',
+					step: function(val) {
+						element.children('span').text(separateNumber(Math.round(val)));
+					},
+					complete: function(){
+						element.children('span').text(separateNumber(Math.round(n)));
+					}
+				});
+			})
+		}, // end of opacity
+	},
+	created() {
+		this.fetch()
+	},
+	mounted(){
+		this.isMounted = true
+	}
 };
 </script>

@@ -174,487 +174,487 @@
 
 <script>
 
-    import SimpleFlowchart from './SimpleFlowchart.vue'
+import SimpleFlowchart from './SimpleFlowchart.vue'
 
 
-    export default {
+export default {
 
-        name: 'app',
-        components: {
-            SimpleFlowchart
-        },
-        props: ['script_schema', 'script_id'],
-        mounted: function () {
+	name: 'app',
+	components: {
+		SimpleFlowchart
+	},
+	props: ['script_schema', 'script_id'],
+	mounted: function () {
 
-            if (this.script_schema) {
-                this.scene = JSON.parse(JSON.parse(this.script_schema));
-            }
-
-
-        },
-
-        data() {
-
-                this.modalVisibility = false,
-                this.dragObject = {},
-                this.files_upload = [];
-
-            return {
-                length:0,
-                length_sms:0,
-                integrationsms:'',
-                count_sms:0,
-                smsforward:'',
-                forwardphone:'',
-                namesshema:'Новая схема',
-                audiolist:null,
-                audiolisttwo:null,
-                configuration: {
-                    alert:false,
-                    modal: false,
-                    lid:false,
-                },
-                otvetyes:'',
-                otvetno:'',
-                selectaudio:'text',
-                description:'',
-                temp:0,
-                showModal:false,
-                scene: {
-                    centerX: 1024,
-                    centerY: 140,
-                    scale: 1,
-                    nodes: [
-                        {
-                            id: 2,
-                            x: -650,
-                            y: -90,
-                            type: 'start',
-                            label: 'Начало сценарий',
-                            key_button: -1,
-                            action_button: null,
-                            audio_file: null,
-                            templateAudio:null,
-                            lidnoanswer:false,
-                        },
-                        {
-                            id: 7,
-                            x: -650,
-                            y: 240,
-                            type: 'end',
-                            label: 'Конец сценарий',
-                            key_button: -1,
-                            action_button: null,
-                            audio_file: null,
-                            templateAudio:null,
-                            lidnoanswer:false,
-                        }
-                    ],
-                    links: []
-                },
-
-                newNodeConnection:0,
-                    newNodeNumber:'',
-                    newNodeLabel:'',
-                    newNodeKey: 0,
-                    newButtonAction: 0,
-                    nodeKey: [
-                    0, 1, 2, 3, 4, 5 ,6 ,7, 8, 9,
-                ],
-
-                nodeAction: [
-                    // 'Позвонить оператору',
-                    // 'Связать с call-centre',
-                    'Перенести в отдел',
-                    'Связать с номером',
-                    // 'Отправить сообщение',
-                    'Повторить ролик',
-                    'Завершить звонок',
-                    'Следующий уровень'
-                ]
-            }
-        },
-        methods: {
-            simvoli(){
-
-                axios.post('/autocalls/length',{
-                    message: this.smsforward,
-                    latin: 1,
-                }).then(response => {
-                    console.log(response)
-                    this.length = response.data.length
-                    this.length_sms = response.data.length_sms
-                    this.count_sms = response.data.count_sms
-                }).catch(error => {
-
-                    console.log(error)
-                });
-
-            },
-            sintez(){
-                this.audiolisttwo = null
-
-                axios.post('/schema/syntez',{
-                        message:this.description,
-                    }).then(response => {
-                    console.log(response)
-                    this.audiolisttwo=response.data
-
-                }).catch(error => {
-
-                    console.log(error)
-                });
-            },
-            onMouseDown: function (e) {
-                if (e.which != 1) return;
-                console.log('e.which', e.which);
-                var elem = e.target.closest('.draggable');
-                if (!elem) return;
-                console.log('elem', elem);
-                this.dragObject.elem = elem;
-                // запомним, что элемент нажат на текущих координатах pageX/pageY
-                this.dragObject.downX = e.pageX;
-                this.dragObject.downY = e.pageY;
-                return false;
-
-            },
-            onMouseMove: function (e) {
-
-                if (!this.dragObject.elem) return; // элемент не зажат
-
-                if (!this.dragObject.avatar) { // если перенос не начат...
-                    var moveX = e.pageX - this.dragObject.downX;
-                    var moveY = e.pageY - this.dragObject.downY;
-
-                    // если мышь передвинулась в нажатом состоянии недостаточно далеко
-                    // if (Math.abs(moveX) < 1 && Math.abs(moveY) < 1) {
-                    //     return;
-                    // }
-
-                    // начинаем перенос
-                    this.dragObject.avatar = this.createAvatar(e); // создать аватар
-                    if (!this.dragObject.avatar) { // отмена переноса, нельзя "захватить" за эту часть элемента
-                        this.dragObject = {};
-                        return;
-                    }
-
-                    // аватар создан успешно
-                    // создать вспомогательные свойства shiftX/shiftY
-                    var coords = this.getCoords(this.dragObject.avatar);
-                    this.dragObject.shiftX = this.dragObject.downX - coords.left;
-                    this.dragObject.shiftY = this.dragObject.downY - coords.top;
-
-                    this.startDrag(e); // отобразить начало переноса
-                }
-
-                // отобразить перенос объекта при каждом движении мыши
-                this.dragObject.avatar.style.left = e.pageX - this.dragObject.shiftX + 'px';
-                this.dragObject.avatar.style.top = e.pageY - this.dragObject.shiftY + 'px';
-
-                return false;
-            },
-            onMouseUp: function (e,type) {
-
-                if (this.dragObject.avatar) { // если перенос идет
-                    this.finishDrag(e,type);
-                }
-
-                // перенос либо не начинался, либо завершился
-                // в любом случае очистим "состояние переноса" dragObject
-                this.dragObject = {};
-            },
-            finishDrag: function (e,type) {
-               var dropElem = this.findDroppable(e);
-
-                if (!dropElem) {
-
-                    // self.onDragCancel(this.dragObject);
-                    this.dragObject.avatar.rollback();
-                } else {
-                    //      self.onDragEnd(this.dragObject, dropElem);
-                    //   this.dragObject.avatar.rollback();
-
-                    console.log('dropElem',dropElem);
-                 //   console.log('x',e.clientX,' y',e.clientY);
-
-                    this.dragObject.elem.style.display = 'none';
-
-                    this.addNode(type);
-                    this.dragObject.elem.style.display = null;
-                    this.dragObject.avatar.rollback();
+		if (this.script_schema) {
+			this.scene = JSON.parse(JSON.parse(this.script_schema));
+		}
 
 
+	},
 
-                }
-            },
+	data() {
 
-            createAvatar: function (e) {
-                // запомнить старые свойства, чтобы вернуться к ним при отмене переноса
-                var avatar = this.dragObject.elem;
-                var old = {
-                    parent: avatar.parentNode,
-                    nextSibling: avatar.nextSibling,
-                    position: avatar.position || '',
-                    left: avatar.left || '',
-                    top: avatar.top || '',
-                    zIndex: avatar.zIndex || ''
-                };
+		this.modalVisibility = false,
+		this.dragObject = {},
+		this.files_upload = [];
 
-                // функция для отмены переноса
-                avatar.rollback = function() {
-                    old.parent.insertBefore(avatar, old.nextSibling);
-                    avatar.style.position = old.position;
-                    avatar.style.left = old.left;
-                    avatar.style.top = old.top;
-                    avatar.style.zIndex = old.zIndex
-                };
+		return {
+			length:0,
+			length_sms:0,
+			integrationsms:'',
+			count_sms:0,
+			smsforward:'',
+			forwardphone:'',
+			namesshema:'Новая схема',
+			audiolist:null,
+			audiolisttwo:null,
+			configuration: {
+				alert:false,
+				modal: false,
+				lid:false,
+			},
+			otvetyes:'',
+			otvetno:'',
+			selectaudio:'text',
+			description:'',
+			temp:0,
+			showModal:false,
+			scene: {
+				centerX: 1024,
+				centerY: 140,
+				scale: 1,
+				nodes: [
+					{
+						id: 2,
+						x: -650,
+						y: -90,
+						type: 'start',
+						label: 'Начало сценарий',
+						key_button: -1,
+						action_button: null,
+						audio_file: null,
+						templateAudio:null,
+						lidnoanswer:false,
+					},
+					{
+						id: 7,
+						x: -650,
+						y: 240,
+						type: 'end',
+						label: 'Конец сценарий',
+						key_button: -1,
+						action_button: null,
+						audio_file: null,
+						templateAudio:null,
+						lidnoanswer:false,
+					}
+				],
+				links: []
+			},
 
-                return avatar;
-            },
+			newNodeConnection:0,
+			newNodeNumber:'',
+			newNodeLabel:'',
+			newNodeKey: 0,
+			newButtonAction: 0,
+			nodeKey: [
+				0, 1, 2, 3, 4, 5 ,6 ,7, 8, 9,
+			],
 
-            startDrag: function (e) {
-                var avatar = this.dragObject.avatar;
+			nodeAction: [
+				// 'Позвонить оператору',
+				// 'Связать с call-centre',
+				'Перенести в отдел',
+				'Связать с номером',
+				// 'Отправить сообщение',
+				'Повторить ролик',
+				'Завершить звонок',
+				'Следующий уровень'
+			]
+		}
+	},
+	methods: {
+		simvoli(){
 
-                // инициировать начало переноса
+			axios.post('/autocalls/length',{
+				message: this.smsforward,
+				latin: 1,
+			}).then(response => {
+				console.log(response)
+				this.length = response.data.length
+				this.length_sms = response.data.length_sms
+				this.count_sms = response.data.count_sms
+			}).catch(error => {
+
+				console.log(error)
+			});
+
+		},
+		sintez(){
+			this.audiolisttwo = null
+
+			axios.post('/schema/syntez',{
+				message:this.description,
+			}).then(response => {
+				console.log(response)
+				this.audiolisttwo=response.data
+
+			}).catch(error => {
+
+				console.log(error)
+			});
+		},
+		onMouseDown: function (e) {
+			if (e.which != 1) return;
+			console.log('e.which', e.which);
+			var elem = e.target.closest('.draggable');
+			if (!elem) return;
+			console.log('elem', elem);
+			this.dragObject.elem = elem;
+			// запомним, что элемент нажат на текущих координатах pageX/pageY
+			this.dragObject.downX = e.pageX;
+			this.dragObject.downY = e.pageY;
+			return false;
+
+		},
+		onMouseMove: function (e) {
+
+			if (!this.dragObject.elem) return; // элемент не зажат
+
+			if (!this.dragObject.avatar) { // если перенос не начат...
+				var moveX = e.pageX - this.dragObject.downX;
+				var moveY = e.pageY - this.dragObject.downY;
+
+				// если мышь передвинулась в нажатом состоянии недостаточно далеко
+				// if (Math.abs(moveX) < 1 && Math.abs(moveY) < 1) {
+				//     return;
+				// }
+
+				// начинаем перенос
+				this.dragObject.avatar = this.createAvatar(e); // создать аватар
+				if (!this.dragObject.avatar) { // отмена переноса, нельзя "захватить" за эту часть элемента
+					this.dragObject = {};
+					return;
+				}
+
+				// аватар создан успешно
+				// создать вспомогательные свойства shiftX/shiftY
+				var coords = this.getCoords(this.dragObject.avatar);
+				this.dragObject.shiftX = this.dragObject.downX - coords.left;
+				this.dragObject.shiftY = this.dragObject.downY - coords.top;
+
+				this.startDrag(e); // отобразить начало переноса
+			}
+
+			// отобразить перенос объекта при каждом движении мыши
+			this.dragObject.avatar.style.left = e.pageX - this.dragObject.shiftX + 'px';
+			this.dragObject.avatar.style.top = e.pageY - this.dragObject.shiftY + 'px';
+
+			return false;
+		},
+		onMouseUp: function (e,type) {
+
+			if (this.dragObject.avatar) { // если перенос идет
+				this.finishDrag(e,type);
+			}
+
+			// перенос либо не начинался, либо завершился
+			// в любом случае очистим "состояние переноса" dragObject
+			this.dragObject = {};
+		},
+		finishDrag: function (e,type) {
+			var dropElem = this.findDroppable(e);
+
+			if (!dropElem) {
+
+				// self.onDragCancel(this.dragObject);
+				this.dragObject.avatar.rollback();
+			} else {
+				//      self.onDragEnd(this.dragObject, dropElem);
+				//   this.dragObject.avatar.rollback();
+
+				console.log('dropElem',dropElem);
+				//   console.log('x',e.clientX,' y',e.clientY);
+
+				this.dragObject.elem.style.display = 'none';
+
+				this.addNode(type);
+				this.dragObject.elem.style.display = null;
+				this.dragObject.avatar.rollback();
 
 
-                document.body.appendChild(avatar);
-                avatar.style.zIndex = 9999;
-                avatar.style.position = 'absolute';
-            },
 
-            findDroppable: function (e) {
-                // спрячем переносимый элемент
-                this.dragObject.avatar.hidden = true;
+			}
+		},
 
-                // получить самый вложенный элемент под курсором мыши
-                var elem = document.elementFromPoint(event.clientX, event.clientY);
+		createAvatar: function (e) {
+			// запомнить старые свойства, чтобы вернуться к ним при отмене переноса
+			var avatar = this.dragObject.elem;
+			var old = {
+				parent: avatar.parentNode,
+				nextSibling: avatar.nextSibling,
+				position: avatar.position || '',
+				left: avatar.left || '',
+				top: avatar.top || '',
+				zIndex: avatar.zIndex || ''
+			};
 
-                // показать переносимый элемент обратно
-                this.dragObject.avatar.hidden = false;
+			// функция для отмены переноса
+			avatar.rollback = function() {
+				old.parent.insertBefore(avatar, old.nextSibling);
+				avatar.style.position = old.position;
+				avatar.style.left = old.left;
+				avatar.style.top = old.top;
+				avatar.style.zIndex = old.zIndex
+			};
 
-                if (elem == null) {
-                    // такое возможно, если курсор мыши "вылетел" за границу окна
-                    return null;
-                }
+			return avatar;
+		},
 
-                return elem.closest('.flowchart-container');
-            },
-            getCoords: function (elem) {
-                var box = elem.getBoundingClientRect();
+		startDrag: function (e) {
+			var avatar = this.dragObject.avatar;
 
-                return {
-                    top: box.top + pageYOffset,
-                    left: box.left + pageXOffset
-                };
-
-            },
-            oneLogin (data) {
+			// инициировать начало переноса
 
 
-                console.log('data',data);
-                this.selectedNode = data;
-                this.newNodeLabel = data.label;
-                this.newNodeKey = data.key_button;
-                let findInput = this.nodeAction.findIndex(element => element === data.action_button);
-                this.newButtonAction = findInput;
-                this.newNodeConnection = data.connect_with;
-                this.showModal = true;
-                this.description = data.description,
-                    this.otvetyes = data.otvetyes,
-                this.otvetno = data.otvetno,
-                    this.forwardphone = data.forwardphone,
-                    this.integrationsms = data.integrationsms,
-                    this.smsforward = data.smsforward,
-                    this.length = 0
-                this.length_sms = 0
-                this.count_sms = 0
-if (this.smsforward.length>0) {
-    this.simvoli()
+			document.body.appendChild(avatar);
+			avatar.style.zIndex = 9999;
+			avatar.style.position = 'absolute';
+		},
+
+		findDroppable: function (e) {
+			// спрячем переносимый элемент
+			this.dragObject.avatar.hidden = true;
+
+			// получить самый вложенный элемент под курсором мыши
+			var elem = document.elementFromPoint(event.clientX, event.clientY);
+
+			// показать переносимый элемент обратно
+			this.dragObject.avatar.hidden = false;
+
+			if (elem == null) {
+				// такое возможно, если курсор мыши "вылетел" за границу окна
+				return null;
+			}
+
+			return elem.closest('.flowchart-container');
+		},
+		getCoords: function (elem) {
+			var box = elem.getBoundingClientRect();
+
+			return {
+				top: box.top + pageYOffset,
+				left: box.left + pageXOffset
+			};
+
+		},
+		oneLogin (data) {
+
+
+			console.log('data',data);
+			this.selectedNode = data;
+			this.newNodeLabel = data.label;
+			this.newNodeKey = data.key_button;
+			let findInput = this.nodeAction.findIndex(element => element === data.action_button);
+			this.newButtonAction = findInput;
+			this.newNodeConnection = data.connect_with;
+			this.showModal = true;
+			this.description = data.description,
+			this.otvetyes = data.otvetyes,
+			this.otvetno = data.otvetno,
+			this.forwardphone = data.forwardphone,
+			this.integrationsms = data.integrationsms,
+			this.smsforward = data.smsforward,
+			this.length = 0
+			this.length_sms = 0
+			this.count_sms = 0
+			if (this.smsforward.length>0) {
+				this.simvoli()
+			}
+
+
+
+
+			this.lidnoanswer = data.lidnoanswer;
+		},
+		canvasClick(e) {
+			console.log('canvas Click, event:', e)
+		},
+		uploadFile() {
+			this.audiolist = null
+			this.files = this.$refs.file.files[0];
+			this.files_upload.push(this.files);
+
+			var audio = this.$refs.file.files[0];
+
+			this.readFile(audio, (e) => {
+				var result = e.target.result;
+
+				this.audiolist = result
+
+			});
+
+		},
+		readFile: function(file, onLoadCallback){
+			var reader = new FileReader();
+			reader.onload = onLoadCallback;
+			reader.readAsDataURL(file);
+		},
+		templateAudioChange: function(e){
+
+			if (this.temp == 1) {
+
+				e.templateAudio = '/wait.mp3'
+			} else {
+				e.templateAudio = null
+			}
+
+		},
+		addNode(types){
+
+
+
+			let maxID = Math.max(0, ...this.scene.nodes.map((link) => {
+				return link.id
+			}));
+
+			this.scene.nodes.push({
+				id: maxID + 1,
+				x: -300 - maxID*25,
+				y: 50 - maxID*10,
+				type: types,
+				label: 'Описание...',
+				description:'',
+				key_button: null,
+				action_button: null,
+				audio_file: 'Ваш ролик',
+				connect_with: null,
+				templateAudio:null,
+			})
+
+
+
+
+		},
+
+		editNode() {
+			let key;
+			let action;
+			let audio;
+			let connection;
+
+
+
+			if(this.selectedNode.type === 'textsintez'){
+				if(this.files != null) {
+					audio = this.files.name;
+				}
+				else{
+					audio = this.selectedNode.audio_file;
+				}
+				key = -1;
+				action = null;
+				connection=null;
+			}
+			else{
+				key = -1;
+				action = null;
+				audio=null;
+				connection=null;
+
+			}
+			let findNode = this.scene.nodes.find(o => o.id === this.selectedNode.id);
+			findNode.label = this.newNodeLabel ? this.newNodeLabel : `test${maxID + 1}`,
+			findNode.key_button = key,
+			findNode.action_button = action,
+			findNode.audio_file = audio,
+			findNode.connect_with = connection;
+			findNode.description = this.description;
+			findNode.otvetyes = this.otvetyes;
+			findNode.otvetno = this.otvetno;
+			findNode.lidnoanswer = this.selectedNode.lidnoanswer;
+			findNode.forwardphone = this.forwardphone;
+			findNode.smsforward = this.smsforward;
+			findNode.integrationsms = this.integrationsms;
+
+
+			this.showModal = false;
+			this.description = '';
+			this.otvetyes = '';
+			this.otvetno = '';
+			this.forwardphone='';
+			this.integrationsms='';
+			this.smsforward=''
+			this.audiolisttwo=null
+		},
+		nodeClick(id) {
+			console.log('node click', id);
+
+		},
+		nodeDelete(id) {
+			console.log('node delete', id);
+		},
+		linkBreak(id) {
+			console.log('link break', id);
+		},
+		linkAdded(link) {
+			console.log('new link added:', link);
+		},
+
+		schemaSave: function () {
+			var buttonSave = document.getElementById('saveButton');
+			// buttonSave.disabled = true;
+			let formData = new FormData();
+			// alert('Идет сохранение данных...');
+
+
+			var nodes = [];
+			var links = [];
+			var file =  [];
+			_.forEach(this.files_upload, function (item) {
+				file.push(item);
+			});
+			_.forEach(this.scene.nodes, function (item) {
+				nodes.push(item);
+			});
+			_.forEach(this.scene.links, function (item) {
+				links.push(item)
+			});
+			var ins = this.files_upload.length;
+			console.log(ins);
+			for (var x = 0; x < ins; x++) {
+				formData.append('file[]', file[x]);
+			}
+			console.log('nodes',nodes);
+			console.log('links',links);
+			console.log('config',this.configuration);
+
+			if (this.script_id) {
+				formData.append('id', this.script_id);
+			}
+			formData.append('name', this.namesshema);
+			formData.append('file[]', file);
+			formData.append('schema', JSON.stringify(this.scene));
+			formData.append('nodes', JSON.stringify(nodes));
+			formData.append('links', JSON.stringify(this.scene.links));
+			formData.append('config', JSON.stringify(this.configuration));
+
+
+			axios.post('/schema/create',
+				formData,
+			).then(response => {
+				alert('Сценарий успешно сохранен!');
+			}).catch(error => {
+				alert('Ошибка в графике или обратитесь в службу поддержки');
+				console.log(error.response)
+			});
+
+		},
+
+	}
+
 }
-
-
-
-
-this.lidnoanswer = data.lidnoanswer;
-            },
-            canvasClick(e) {
-                console.log('canvas Click, event:', e)
-            },
-            uploadFile() {
-                this.audiolist = null
-                this.files = this.$refs.file.files[0];
-                this.files_upload.push(this.files);
-
-                var audio = this.$refs.file.files[0];
-
-                this.readFile(audio, (e) => {
-                    var result = e.target.result;
-
-                 this.audiolist = result
-
-                });
-
-            },
-            readFile: function(file, onLoadCallback){
-                var reader = new FileReader();
-                reader.onload = onLoadCallback;
-                reader.readAsDataURL(file);
-            },
-            templateAudioChange: function(e){
-
-                if (this.temp == 1) {
-
-                    e.templateAudio = '/wait.mp3'
-                } else {
-                    e.templateAudio = null
-                }
-
-            },
-            addNode(types){
-
-
-
-                    let maxID = Math.max(0, ...this.scene.nodes.map((link) => {
-                        return link.id
-                    }));
-
-                this.scene.nodes.push({
-                    id: maxID + 1,
-                    x: -300 - maxID*25,
-                    y: 50 - maxID*10,
-                    type: types,
-                    label: 'Описание...',
-                    description:'',
-                    key_button: null,
-                    action_button: null,
-                    audio_file: 'Ваш ролик',
-                    connect_with: null,
-                    templateAudio:null,
-                })
-
-
-
-
-            },
-
-            editNode() {
-                let key;
-                let action;
-                let audio;
-                let connection;
-
-
-
-           if(this.selectedNode.type === 'textsintez'){
-                    if(this.files != null) {
-                        audio = this.files.name;
-                    }
-                    else{
-                        audio = this.selectedNode.audio_file;
-                    }
-                    key = -1;
-                    action = null;
-                    connection=null;
-                }
-                else{
-                    key = -1;
-                    action = null;
-                    audio=null;
-                    connection=null;
-
-                }
-                let findNode = this.scene.nodes.find(o => o.id === this.selectedNode.id);
-                    findNode.label = this.newNodeLabel ? this.newNodeLabel : `test${maxID + 1}`,
-                    findNode.key_button = key,
-                    findNode.action_button = action,
-                    findNode.audio_file = audio,
-                    findNode.connect_with = connection;
-                findNode.description = this.description;
-                findNode.otvetyes = this.otvetyes;
-                findNode.otvetno = this.otvetno;
-                findNode.lidnoanswer = this.selectedNode.lidnoanswer;
-                findNode.forwardphone = this.forwardphone;
-                findNode.smsforward = this.smsforward;
-                findNode.integrationsms = this.integrationsms;
-
-
-                this.showModal = false;
-                this.description = '';
-                this.otvetyes = '';
-                this.otvetno = '';
-                this.forwardphone='';
-                this.integrationsms='';
-                this.smsforward=''
-                this.audiolisttwo=null
-            },
-            nodeClick(id) {
-                console.log('node click', id);
-
-            },
-            nodeDelete(id) {
-                console.log('node delete', id);
-            },
-            linkBreak(id) {
-                console.log('link break', id);
-            },
-            linkAdded(link) {
-                console.log('new link added:', link);
-            },
-
-            schemaSave: function () {
-                var buttonSave = document.getElementById('saveButton');
-               // buttonSave.disabled = true;
-                let formData = new FormData();
-               // alert('Идет сохранение данных...');
-
-
-                var nodes = [];
-                var links = [];
-                var file =  [];
-                _.forEach(this.files_upload, function (item) {
-                    file.push(item);
-                });
-                _.forEach(this.scene.nodes, function (item) {
-                    nodes.push(item);
-                });
-                _.forEach(this.scene.links, function (item) {
-                    links.push(item)
-                });
-                var ins = this.files_upload.length;
-                console.log(ins);
-                for (var x = 0; x < ins; x++) {
-                    formData.append('file[]', file[x]);
-                }
-                console.log('nodes',nodes);
-                console.log('links',links);
-                console.log('config',this.configuration);
-
-                if (this.script_id) {
-                   formData.append('id', this.script_id);
-               }
-                formData.append('name', this.namesshema);
-                formData.append('file[]', file);
-                formData.append('schema', JSON.stringify(this.scene));
-                formData.append('nodes', JSON.stringify(nodes));
-                formData.append('links', JSON.stringify(this.scene.links));
-                formData.append('config', JSON.stringify(this.configuration));
-
-
-                axios.post('/schema/create',
-                    formData,
-                ).then(response => {
-                    alert('Сценарий успешно сохранен!');
-                }).catch(error => {
-                    alert('Ошибка в графике или обратитесь в службу поддержки');
-                    console.log(error.response)
-                });
-
-            },
-
-        }
-
-    }
 </script>
 
 <style scoped lang="scss">

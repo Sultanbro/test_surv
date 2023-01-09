@@ -71,118 +71,118 @@
 
 <script>
 
-    export default {
-        name: "TableQuarter",
-        props: {
-            group: {
-                default: 'Ежегодный  квартальный календарь',
-            },
-            activeuserid: {
-                default: 0,
-            },
-            is_admin: {
-                default: false,
-            },
-            user_id: {
-                default: 0,
-            },
-            type: {
-                default: 'common',
-            },
-        },
-        data() {
-            return{
-                    arr:{
-                        sum:[],
-                        text:[],
-                        quartal:[],
-                    },
-                    errors: [],
-                    active: false,
+export default {
+	name: 'TableQuarter',
+	props: {
+		group: {
+			default: 'Ежегодный  квартальный календарь',
+		},
+		activeuserid: {
+			default: 0,
+		},
+		is_admin: {
+			default: false,
+		},
+		user_id: {
+			default: 0,
+		},
+		type: {
+			default: 'common',
+		},
+	},
+	data() {
+		return{
+			arr:{
+				sum:[],
+				text:[],
+				quartal:[],
+			},
+			errors: [],
+			active: false,
 
-                }
-        },
-        created(){
-
-
-            // console.log(this.arr,'iks');
-
-            // this.arr = this.selector();
-            this.getQuartalBonuses();
-        },
-        methods:{
-            getQuartalBonuses(){
-                axios
-                    .post('/timetracking/quarter/get/quarter/', {
-                    user_id:this.user_id
-                })
-                .then(response => {
-                    this.arr = response.data[0];
-                });
-
-            },
-
-            selectedQuarter() {
-                this.errors = [];
-
-                // console.log(this.errors,'imashev kairat');
-
-                for (let i = 1;i <=4;i++){
-
-                    if (this.arr[i]['checked']){
-                        // console.log(this.arr[i]['text'],'pro');
-                        if (!this.arr[i]['text'].length > 0) {
-                            // this.errors.push('Заполните коментарии');
-                            if (i == 1){
-                                this.errors[i] = 'Заполните Комментарии Первого Квартала';
-                            }else if (i == 2){
-                                this.errors[i] = 'Заполните Комментарии Второго Квартала';
-                            }else if (i == 3){
-                                this.errors[i] = 'Заполните Комментарии Третьего Квартала';
-                            }else if (i == 4){
-                                this.errors[i] = 'Заполните Комментарии Четвертого Квартала';
-                            }
+		}
+	},
+	created(){
 
 
-                        }
-                    }
-                }
+		// console.log(this.arr,'iks');
+
+		// this.arr = this.selector();
+		this.getQuartalBonuses();
+	},
+	methods:{
+		getQuartalBonuses(){
+			axios
+				.post('/timetracking/quarter/get/quarter/', {
+					user_id:this.user_id
+				})
+				.then(response => {
+					this.arr = response.data[0];
+				});
+
+		},
+
+		selectedQuarter() {
+			this.errors = [];
+
+			// console.log(this.errors,'imashev kairat');
+
+			for (let i = 1;i <=4;i++){
+
+				if (this.arr[i]['checked']){
+					// console.log(this.arr[i]['text'],'pro');
+					if (!this.arr[i]['text'].length > 0) {
+						// this.errors.push('Заполните коментарии');
+						if (i == 1){
+							this.errors[i] = 'Заполните Комментарии Первого Квартала';
+						}else if (i == 2){
+							this.errors[i] = 'Заполните Комментарии Второго Квартала';
+						}else if (i == 3){
+							this.errors[i] = 'Заполните Комментарии Третьего Квартала';
+						}else if (i == 4){
+							this.errors[i] = 'Заполните Комментарии Четвертого Квартала';
+						}
 
 
-                if (this.arr[1]['checked'] === false && this.arr[2]['checked'] === false && this.arr[3]['checked'] === false && this.arr[4]['checked'] === false){
-
-                    axios.post('/timetracking/quarter/delete', {
-                        arr:this.arr,
-                        user_id:this.user_id,
-                    }).then(response => {
-
-                        if (response.data.success == 1){
-                            this.$toast.success('Успешно удалено');
-                            document.getElementById('clickQuarter').click();
-                        }
-                    })
-                }else{
-                    if (this.errors.length === 0){
-                        axios.post('/timetracking/quarter/store', {
-                            arr:this.arr,
-                            user_id:this.user_id,
-                        }).then(response => {
-                            if (response.data.success == 1){
-                                this.$toast.success('Изменения сохранены');
-                                document.getElementById('clickQuarter').click();
-                            }
-                        })
-                    }
-                }
+					}
+				}
+			}
 
 
+			if (this.arr[1]['checked'] === false && this.arr[2]['checked'] === false && this.arr[3]['checked'] === false && this.arr[4]['checked'] === false){
+
+				axios.post('/timetracking/quarter/delete', {
+					arr:this.arr,
+					user_id:this.user_id,
+				}).then(response => {
+
+					if (response.data.success == 1){
+						this.$toast.success('Успешно удалено');
+						document.getElementById('clickQuarter').click();
+					}
+				})
+			}else{
+				if (this.errors.length === 0){
+					axios.post('/timetracking/quarter/store', {
+						arr:this.arr,
+						user_id:this.user_id,
+					}).then(response => {
+						if (response.data.success == 1){
+							this.$toast.success('Изменения сохранены');
+							document.getElementById('clickQuarter').click();
+						}
+					})
+				}
+			}
 
 
 
-            },
 
-        },
-    }
+
+		},
+
+	},
+}
 
 
 </script>

@@ -194,347 +194,347 @@
 </template>
 
 <script>
-    const base64Encode = (data) =>
-        new Promise((resolve, reject) => {
-            const reader = new FileReader();
-            reader.readAsDataURL(data);
-            reader.onload = () => resolve(reader.result);
-            reader.onerror = (error) => reject(error);
-        });
-    // import AwardsCard from '../profile/UserEarnings/AwardsCard.vue'
-    import UploadModal from '../modals/Upload'
-    import VuePdfEmbed from "vue-pdf-embed/dist/vue2-pdf-embed";
-    import Multiselect from "vue-multiselect";
-    export default {
-        name: 'AwardUserSidebar',
-        components: {
-            UploadModal,
-            VuePdfEmbed,
-            Multiselect
-        },
-        data() {
-            return {
-                btnLoading: false,
-                newFileCheck: false,
-                isShow: false,
-                modalPreview: false,
-                modalPreviewData: {},
-                tabIndex: 0,
-                modalRemoveReward: false,
-                modalRemoveRewardData: null,
-                open: false,
-                uploadModalOpen: false,
-                userId: null,
-                awards: [],
-                modalSelect: false,
-                modalSelectData: {},
-                modalSelectFile: null,
-                modalSelectBase64: null,
-                modalAdd: false,
-                modalAddFile: null,
-                modalAddBase64: null,
-                awardCategories: [],
-                value: null,
-                responseAward: []
+const base64Encode = (data) =>
+	new Promise((resolve, reject) => {
+		const reader = new FileReader();
+		reader.readAsDataURL(data);
+		reader.onload = () => resolve(reader.result);
+		reader.onerror = (error) => reject(error);
+	});
+// import AwardsCard from '../profile/UserEarnings/AwardsCard.vue'
+import UploadModal from '../modals/Upload'
+import VuePdfEmbed from 'vue-pdf-embed/dist/vue2-pdf-embed';
+import Multiselect from 'vue-multiselect';
+export default {
+	name: 'AwardUserSidebar',
+	components: {
+		UploadModal,
+		VuePdfEmbed,
+		Multiselect
+	},
+	data() {
+		return {
+			btnLoading: false,
+			newFileCheck: false,
+			isShow: false,
+			modalPreview: false,
+			modalPreviewData: {},
+			tabIndex: 0,
+			modalRemoveReward: false,
+			modalRemoveRewardData: null,
+			open: false,
+			uploadModalOpen: false,
+			userId: null,
+			awards: [],
+			modalSelect: false,
+			modalSelectData: {},
+			modalSelectFile: null,
+			modalSelectBase64: null,
+			modalAdd: false,
+			modalAddFile: null,
+			modalAddBase64: null,
+			awardCategories: [],
+			value: null,
+			responseAward: []
 
-            }
-        },
-        computed:{
-            modalSize(){
-                if(this.newFileCheck){
-                    return 'lg';
-                } else {
-                    return 'md';
-                }
-            }
-        },
-        mounted() {
-            setTimeout(() => {
-                this.isShow = true;
-            }, 500);
-            document.addEventListener('award-user-sidebar', (e) => {
-                this.open = true;
-                console.log('USER ID:', e.detail);
-                this.userId = e.detail;
-                this.getAll();
-            });
-        },
-        watch: {
-            modalAdd(val) {
-                if (!val) {
-                    this.value = null;
-                    this.modalAddFile = null;
-                    this.modalAddBase64 = null;
-                    this.btnLoading = false;
-                }
-                return this.modalAdd;
-            },
-            modalSelect(val) {
-                if (!val) {
-                    this.modalSelectData = {};
-                    this.modalSelectFile = null;
-                    this.modalSelectBase64 = null;
-                    this.btnLoading = false;
-                }
-                return this.modalSelect;
-            },
-            tabIndex(val) {
-                const buttons = this.$refs.tabAwardUser.$refs.buttons;
-                if(!buttons) return
-                buttons.$refs.link.$el.scrollIntoView({inline: "end", behavior: "smooth"});
-            }
-        },
-        methods: {
-            previewImage(data) {
-                this.modalPreview = !this.modalPreview;
-                this.modalPreviewData = data;
-            },
-            downloadImage(data, name) {
-                var xhr = new XMLHttpRequest();
-                console.log(data);
-                xhr.open("GET", data.tempPath, true);
+		}
+	},
+	computed:{
+		modalSize(){
+			if(this.newFileCheck){
+				return 'lg';
+			} else {
+				return 'md';
+			}
+		}
+	},
+	mounted() {
+		setTimeout(() => {
+			this.isShow = true;
+		}, 500);
+		document.addEventListener('award-user-sidebar', (e) => {
+			this.open = true;
+			console.log('USER ID:', e.detail);
+			this.userId = e.detail;
+			this.getAll();
+		});
+	},
+	watch: {
+		modalAdd(val) {
+			if (!val) {
+				this.value = null;
+				this.modalAddFile = null;
+				this.modalAddBase64 = null;
+				this.btnLoading = false;
+			}
+			return this.modalAdd;
+		},
+		modalSelect(val) {
+			if (!val) {
+				this.modalSelectData = {};
+				this.modalSelectFile = null;
+				this.modalSelectBase64 = null;
+				this.btnLoading = false;
+			}
+			return this.modalSelect;
+		},
+		tabIndex(val) {
+			const buttons = this.$refs.tabAwardUser.$refs.buttons;
+			if(!buttons) return
+			buttons.$refs.link.$el.scrollIntoView({inline: 'end', behavior: 'smooth'});
+		}
+	},
+	methods: {
+		previewImage(data) {
+			this.modalPreview = !this.modalPreview;
+			this.modalPreviewData = data;
+		},
+		downloadImage(data, name) {
+			var xhr = new XMLHttpRequest();
+			console.log(data);
+			xhr.open('GET', data.tempPath, true);
 
-                xhr.responseType = "arraybuffer";
+			xhr.responseType = 'arraybuffer';
 
-                xhr.onload = function (e) {
-                    var arrayBufferView = new Uint8Array(this.response);
-                    let options = {};
-                    if (data.format === 'png') {
-                        options.type = 'image/png'
-                    }
-                    if (data.format === 'jpg') {
-                        options.type = 'image/jpeg'
-                    }
-                    if (data.format === 'pdf') {
-                        options.type = 'application/pdf'
-                    }
-                    var blob = new Blob([arrayBufferView], options);
-                    var imageUrl = window.URL.createObjectURL(blob);
-                    var a = document.createElement('a');
-                    a.href = imageUrl;
-                    a.download = `${name}.${data.format}`;
-                    document.body.appendChild(a);
-                    a.click();
-                    console.log(a);
-                    document.body.removeChild(a);
-                };
+			xhr.onload = function (e) {
+				var arrayBufferView = new Uint8Array(this.response);
+				let options = {};
+				if (data.format === 'png') {
+					options.type = 'image/png'
+				}
+				if (data.format === 'jpg') {
+					options.type = 'image/jpeg'
+				}
+				if (data.format === 'pdf') {
+					options.type = 'application/pdf'
+				}
+				var blob = new Blob([arrayBufferView], options);
+				var imageUrl = window.URL.createObjectURL(blob);
+				var a = document.createElement('a');
+				a.href = imageUrl;
+				a.download = `${name}.${data.format}`;
+				document.body.appendChild(a);
+				a.click();
+				console.log(a);
+				document.body.removeChild(a);
+			};
 
-                xhr.send();
-            },
-            async getAll() {
-                let loader = this.$loading.show();
-                await this.axios
-                    .get('/awards/type?key=nomination&user_id=' + this.userId)
-                    .then(response => {
-                        this.awards = [];
-                        this.awards = response.data.data;
-                        loader.hide();
-                    })
-                    .catch(error => {
-                        console.log(error);
-                        loader.hide();
-                    })
-            },
-            removeRewardUser(item) {
-                let loader = this.$loading.show();
-                this.btnLoading = true;
-                this.axios
-                    .delete('/awards/reward-delete', {data: {user_id: item.user_id, award_id: item.award_id}})
-                    .then(response => {
-                        this.modalRemoveReward = false;
-                        this.$toast.success('Награда убрана');
-                        console.log(response);
-                        this.btnLoading = false;
-                        loader.hide();
-                        this.getAll();
-                    })
-                    .catch(error => {
-                        console.log(error);
-                    })
-            },
-            removeReward(item) {
-                this.modalRemoveReward = !this.modalRemoveReward;
-                this.modalRemoveRewardData = item;
-            },
-            async addAndSaveReward() {
-                let loader = this.$loading.show();
-                this.btnLoading = true;
-                const formData = new FormData();
-                formData.append('award_category_id', this.value.id);
-                formData.append('file[]', this.modalAddFile);
-                await this.axios
-                    .post("/awards/store", formData, {
-                        headers: {
-                            'Content-Type': 'multipart/form-data'
-                        },
-                    })
-                    .then(response => {
-                        this.responseAward = response.data.data;
-                        loader.hide();
-                        this.$toast.success('Добавлено');
-                    })
-                    .catch(function (error) {
-                        console.log(error);
-                        loader.hide();
-                    });
+			xhr.send();
+		},
+		async getAll() {
+			let loader = this.$loading.show();
+			await this.axios
+				.get('/awards/type?key=nomination&user_id=' + this.userId)
+				.then(response => {
+					this.awards = [];
+					this.awards = response.data.data;
+					loader.hide();
+				})
+				.catch(error => {
+					console.log(error);
+					loader.hide();
+				})
+		},
+		removeRewardUser(item) {
+			let loader = this.$loading.show();
+			this.btnLoading = true;
+			this.axios
+				.delete('/awards/reward-delete', {data: {user_id: item.user_id, award_id: item.award_id}})
+				.then(response => {
+					this.modalRemoveReward = false;
+					this.$toast.success('Награда убрана');
+					console.log(response);
+					this.btnLoading = false;
+					loader.hide();
+					this.getAll();
+				})
+				.catch(error => {
+					console.log(error);
+				})
+		},
+		removeReward(item) {
+			this.modalRemoveReward = !this.modalRemoveReward;
+			this.modalRemoveRewardData = item;
+		},
+		async addAndSaveReward() {
+			let loader = this.$loading.show();
+			this.btnLoading = true;
+			const formData = new FormData();
+			formData.append('award_category_id', this.value.id);
+			formData.append('file[]', this.modalAddFile);
+			await this.axios
+				.post('/awards/store', formData, {
+					headers: {
+						'Content-Type': 'multipart/form-data'
+					},
+				})
+				.then(response => {
+					this.responseAward = response.data.data;
+					loader.hide();
+					this.$toast.success('Добавлено');
+				})
+				.catch(function (error) {
+					console.log(error);
+					loader.hide();
+				});
 
-                const formDataReward = new FormData();
-                formDataReward.append('user_id', this.userId);
-                formDataReward.append('award_id', this.responseAward[0].id);
-                formDataReward.append('file', this.modalAddFile);
-                await this.axios
-                    .post('/awards/reward', formDataReward, {
-                        headers: {
-                            'Content-Type': 'multipart/form-data',
-                            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-                        },
-                    })
-                    .then(response => {
-                        console.log(response);
-                        this.modalAdd = false;
-                        this.$toast.success('Награжден');
-                        setTimeout( () => {
-                            this.modalAddFile = null;
-                            this.modalAddBase64 = null;
-                        }, 300);
-                        this.btnLoading = false;
-                        this.getAll();
-                    })
-                    .catch(function (error) {
-                        console.log("error");
-                        console.log(error);
-                    });
-            },
-            openModalAdd() {
-                this.modalAdd = !this.modalAdd;
-                if (this.awardCategories.length === 0) {
-                    let loader = this.$loading.show();
-                    this.axios
-                        .get("/award-categories/get")
-                        .then(response => {
-                            const data = response.data.data;
-                            this.awardCategories = data.filter(n => n.type === 1);
-                            console.log(this.awardCategories);
-                            loader.hide();
-                        })
-                        .catch(function (error) {
-                            console.log(error);
-                            loader.hide();
-                        });
-                }
-            },
-            modalAddEvent(e) {
-                let files = e.target.files || e.dataTransfer.files;
-                if (!files.length) return;
-                this.modalAddFile = files[0];
-                if (this.modalAddFile.size > 2097152) {
-                    this.$toast.error('Максимальный размер файла - 2 МБ', {
-                        timeout: 5000
-                    });
-                } else {
-                    base64Encode(this.modalAddFile)
-                        .then((val) => {
-                            this.modalAddBase64 = val;
-                        })
-                        .catch(() => {
-                            this.modalAddBase64 = null;
-                        });
-                }
+			const formDataReward = new FormData();
+			formDataReward.append('user_id', this.userId);
+			formDataReward.append('award_id', this.responseAward[0].id);
+			formDataReward.append('file', this.modalAddFile);
+			await this.axios
+				.post('/awards/reward', formDataReward, {
+					headers: {
+						'Content-Type': 'multipart/form-data',
+						'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+					},
+				})
+				.then(response => {
+					console.log(response);
+					this.modalAdd = false;
+					this.$toast.success('Награжден');
+					setTimeout( () => {
+						this.modalAddFile = null;
+						this.modalAddBase64 = null;
+					}, 300);
+					this.btnLoading = false;
+					this.getAll();
+				})
+				.catch(function (error) {
+					console.log('error');
+					console.log(error);
+				});
+		},
+		openModalAdd() {
+			this.modalAdd = !this.modalAdd;
+			if (this.awardCategories.length === 0) {
+				let loader = this.$loading.show();
+				this.axios
+					.get('/award-categories/get')
+					.then(response => {
+						const data = response.data.data;
+						this.awardCategories = data.filter(n => n.type === 1);
+						console.log(this.awardCategories);
+						loader.hide();
+					})
+					.catch(function (error) {
+						console.log(error);
+						loader.hide();
+					});
+			}
+		},
+		modalAddEvent(e) {
+			let files = e.target.files || e.dataTransfer.files;
+			if (!files.length) return;
+			this.modalAddFile = files[0];
+			if (this.modalAddFile.size > 2097152) {
+				this.$toast.error('Максимальный размер файла - 2 МБ', {
+					timeout: 5000
+				});
+			} else {
+				base64Encode(this.modalAddFile)
+					.then((val) => {
+						this.modalAddBase64 = val;
+					})
+					.catch(() => {
+						this.modalAddBase64 = null;
+					});
+			}
 
-            },
-            modalSelectDataUploadEvent(e) {
-                let files = e.target.files || e.dataTransfer.files;
-                if (!files.length) return;
-                this.modalSelectFile = files[0];
-                if (this.modalSelectFile.size > 2097152) {
-                    this.$toast.error('Максимальный размер файла - 2 МБ', {
-                        timeout: 5000
-                    });
-                } else {
-                    base64Encode(this.modalSelectFile)
-                        .then((val) => {
-                            this.modalSelectBase64 = val;
-                        })
-                        .catch(() => {
-                            this.modalSelectBase64 = null;
-                        });
-                }
+		},
+		modalSelectDataUploadEvent(e) {
+			let files = e.target.files || e.dataTransfer.files;
+			if (!files.length) return;
+			this.modalSelectFile = files[0];
+			if (this.modalSelectFile.size > 2097152) {
+				this.$toast.error('Максимальный размер файла - 2 МБ', {
+					timeout: 5000
+				});
+			} else {
+				base64Encode(this.modalSelectFile)
+					.then((val) => {
+						this.modalSelectBase64 = val;
+					})
+					.catch(() => {
+						this.modalSelectBase64 = null;
+					});
+			}
 
-            },
-            openModalSelect(item, name) {
-                this.modalSelect = !this.modalSelect;
-                this.modalSelectData = item;
-                this.modalSelectData.name = name;
-                this.modalSelectFile = null;
-                this.modalSelectBase64 = null;
-            },
-            reward(){
-                let loader = this.$loading.show();
-                this.btnLoading = true;
-                const formData = new FormData();
-                formData.append('user_id', this.userId);
-                formData.append('award_id', this.modalSelectData.id);
-                this.axios
-                    .post('/awards/reward', formData, {
-                        headers: {
-                            'Content-Type': 'multipart/form-data',
-                            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-                        },
-                    })
-                    .then(response => {
-                        console.log(response);
-                        this.$toast.success('Добавлено');
-                        setTimeout( () => {
-                            this.modalSelectData = {};
-                            this.modalSelectFile = null;
-                            this.modalSelectBase64 = null;
-                            this.newFileCheck = false;
-                        }, 300);
-                        this.btnLoading = false;
-                        this.modalSelect = false;
-                        loader.hide();
-                        this.getAll();
-                    })
-                    .catch(function (error) {
-                        console.log(error);
-                        loader.hide();
-                    });
-            },
-            rewardNew() {
-                let loader = this.$loading.show();
-                this.btnLoading = true;
-                const formData = new FormData();
-                formData.append('user_id', this.userId);
-                formData.append('award_id', this.modalSelectData.id);
-                formData.append('file', this.modalSelectFile);
-                this.axios
-                    .post('/awards/reward', formData, {
-                        headers: {
-                            'Content-Type': 'multipart/form-data',
-                            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-                        },
-                    })
-                    .then(response => {
-                        console.log(response);
-                        this.$toast.success('Добавлено');
-                        setTimeout( () => {
-                            this.modalSelectData = {};
-                            this.modalSelectFile = null;
-                            this.modalSelectBase64 = null;
-                            this.newFileCheck = false;
-                        }, 300);
-                        this.btnLoading = false;
-                        this.modalSelect = false;
-                        loader.hide();
-                        this.getAll();
-                    })
-                    .catch(function (error) {
-                        console.log(error);
-                        loader.hide();
-                    });
-            }
-        }
-    }
+		},
+		openModalSelect(item, name) {
+			this.modalSelect = !this.modalSelect;
+			this.modalSelectData = item;
+			this.modalSelectData.name = name;
+			this.modalSelectFile = null;
+			this.modalSelectBase64 = null;
+		},
+		reward(){
+			let loader = this.$loading.show();
+			this.btnLoading = true;
+			const formData = new FormData();
+			formData.append('user_id', this.userId);
+			formData.append('award_id', this.modalSelectData.id);
+			this.axios
+				.post('/awards/reward', formData, {
+					headers: {
+						'Content-Type': 'multipart/form-data',
+						'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+					},
+				})
+				.then(response => {
+					console.log(response);
+					this.$toast.success('Добавлено');
+					setTimeout( () => {
+						this.modalSelectData = {};
+						this.modalSelectFile = null;
+						this.modalSelectBase64 = null;
+						this.newFileCheck = false;
+					}, 300);
+					this.btnLoading = false;
+					this.modalSelect = false;
+					loader.hide();
+					this.getAll();
+				})
+				.catch(function (error) {
+					console.log(error);
+					loader.hide();
+				});
+		},
+		rewardNew() {
+			let loader = this.$loading.show();
+			this.btnLoading = true;
+			const formData = new FormData();
+			formData.append('user_id', this.userId);
+			formData.append('award_id', this.modalSelectData.id);
+			formData.append('file', this.modalSelectFile);
+			this.axios
+				.post('/awards/reward', formData, {
+					headers: {
+						'Content-Type': 'multipart/form-data',
+						'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+					},
+				})
+				.then(response => {
+					console.log(response);
+					this.$toast.success('Добавлено');
+					setTimeout( () => {
+						this.modalSelectData = {};
+						this.modalSelectFile = null;
+						this.modalSelectBase64 = null;
+						this.newFileCheck = false;
+					}, 300);
+					this.btnLoading = false;
+					this.modalSelect = false;
+					loader.hide();
+					this.getAll();
+				})
+				.catch(function (error) {
+					console.log(error);
+					loader.hide();
+				});
+		}
+	}
+}
 </script>
 
 <style lang="scss">

@@ -137,258 +137,258 @@
 <script>
 import VuePdfEmbed from 'vue-pdf-embed/dist/vue2-pdf-embed'
 export default {
-  name: "UpbooksRead",
+	name: 'UpbooksRead',
   
-  components: {
-    VuePdfEmbed
-  },
+	components: {
+		VuePdfEmbed
+	},
 
-  props: {
-    book_id: Number,
-    mode: {
-      default: 'read'
-    },
-    showBackBtn: {
-      default: false
-    },
-    course_page: {
-      default: false,
-    },
-    active_page: {
-      default: 0
-    },
-    course_item_id: {
-      default: 0
-    },
-    all_stages: {
-      default: 0
-    },
-    completed_stages: {
-      default: 0
-    },
-  },
+	props: {
+		book_id: Number,
+		mode: {
+			default: 'read'
+		},
+		showBackBtn: {
+			default: false
+		},
+		course_page: {
+			default: false,
+		},
+		active_page: {
+			default: 0
+		},
+		course_item_id: {
+			default: 0
+		},
+		all_stages: {
+			default: 0
+		},
+		completed_stages: {
+			default: 0
+		},
+	},
 
-  data() {
-    return {
-      page: 1,
-      activeCategory: null,
-      activeSegment: null,
-      activeBook: null,
-      pageCount: 0,
-      zoom: 800,
-      isLoading:true,
-      segments: [],
-      segment_key: 1,
-      checkpoint: 1, // last page
-      page_map: [],
-      map_index: 0,
-      pdf_loaded: false,
-    };
-  },
+	data() {
+		return {
+			page: 1,
+			activeCategory: null,
+			activeSegment: null,
+			activeBook: null,
+			pageCount: 0,
+			zoom: 800,
+			isLoading:true,
+			segments: [],
+			segment_key: 1,
+			checkpoint: 1, // last page
+			page_map: [],
+			map_index: 0,
+			pdf_loaded: false,
+		};
+	},
 
-  created() {
-    this.checkpoint = this.pageCount
-    this.getSegments()
-  },
+	created() {
+		this.checkpoint = this.pageCount
+		this.getSegments()
+	},
 
-  mounted() {
-    document.addEventListener("keyup", this.keyup);
-  },
+	mounted() {
+		document.addEventListener('keyup', this.keyup);
+	},
 
-  methods: {
-    moveTo(page, pass) {
-      if(pass) {
-        this.page = page;
+	methods: {
+		moveTo(page, pass) {
+			if(pass) {
+				this.page = page;
         
-        let m = this.page_map.findIndex(el => el.page == page);
-        if(m != -1) {
-          this.map_index = m;
-        }
+				let m = this.page_map.findIndex(el => el.page == page);
+				if(m != -1) {
+					this.map_index = m;
+				}
        
 
-        let i = this.segments.findIndex(el => el.page == page);
-        if(i != -1) {
-          this.activeSegment = this.segments[i]
-          this.segment_key++;
-        } else {
-          this.activeSegment = null; 
-        }
+				let i = this.segments.findIndex(el => el.page == page);
+				if(i != -1) {
+					this.activeSegment = this.segments[i]
+					this.segment_key++;
+				} else {
+					this.activeSegment = null; 
+				}
 
-      }
-    },
+			}
+		},
 
-    loaded() {
-      this.isLoading = false
-      this.pageCount = this.$refs.pdfRef.pageCount
-      this.formPageMap()
-      this.pdf_loaded = true;
-    },
+		loaded() {
+			this.isLoading = false
+			this.pageCount = this.$refs.pdfRef.pageCount
+			this.formPageMap()
+			this.pdf_loaded = true;
+		},
 
-    nextElement() {
+		nextElement() {
 
-      if(this.activeSegment != null && this.activeSegment.item_model == null) {
-        this.setSegmentPassed();
-      }
+			if(this.activeSegment != null && this.activeSegment.item_model == null) {
+				this.setSegmentPassed();
+			}
 
-      if(this.page == this.pageCount && this.course_page) {
-        this.$parent.after_click_next_element();
-        return;
-      }
+			if(this.page == this.pageCount && this.course_page) {
+				this.$parent.after_click_next_element();
+				return;
+			}
 
-      this.nextPage()
+			this.nextPage()
 
-    },
+		},
 
-    setSegmentPassed() {
+		setSegmentPassed() {
 
-      if(this.activeSegment.item_model != null) return; 
+			if(this.activeSegment.item_model != null) return; 
 
-      axios
-        .post("/my-courses/pass", {
-          id: this.activeSegment.id,
-          type: 1,
-          course_item_id: this.course_item_id,
-          questions: this.activeSegment.questions,
-          all_stages: this.all_stages,
-          completed_stages: this.completed_stages + 1,
-        })
-        .then((response) => {
-          this.$emit('changeProgress');
-          this.$emit('forGenerateCertificate', response.data.item_model);
-          this.activeSegment.item_model = {status: 1};
-         // this.activeVideo.item_models.push(response.data.item_model);
-        })
-        .catch((error) => {
-          alert(error);
-        });
-    },
+			axios
+				.post('/my-courses/pass', {
+					id: this.activeSegment.id,
+					type: 1,
+					course_item_id: this.course_item_id,
+					questions: this.activeSegment.questions,
+					all_stages: this.all_stages,
+					completed_stages: this.completed_stages + 1,
+				})
+				.then((response) => {
+					this.$emit('changeProgress');
+					this.$emit('forGenerateCertificate', response.data.item_model);
+					this.activeSegment.item_model = {status: 1};
+					// this.activeVideo.item_models.push(response.data.item_model);
+				})
+				.catch((error) => {
+					alert(error);
+				});
+		},
 
-    getSegments() {
-      let loader = this.$loading.show();
+		getSegments() {
+			let loader = this.$loading.show();
 
-      axios
-        .post("/admin/upbooks/segments/get", {
-          id: this.book_id,
-          course_item_id: this.course_item_id
-        })
-        .then((response) => {
-          this.segments = response.data.segments;
-          this.activeBook = response.data.activeBook;
+			axios
+				.post('/admin/upbooks/segments/get', {
+					id: this.book_id,
+					course_item_id: this.course_item_id
+				})
+				.then((response) => {
+					this.segments = response.data.segments;
+					this.activeBook = response.data.activeBook;
           
     
-          loader.hide();
-        })
-        .catch((error) => {
-          loader.hide();
-          alert(error);
-        });
-    },
+					loader.hide();
+				})
+				.catch((error) => {
+					loader.hide();
+					alert(error);
+				});
+		},
 
-    keyup(e) {
-      if (e.keyCode == 37) {
-        this.prevPage();
-      }
-      if (e.keyCode == 39) {
-        this.nextPage();
-      }
-    },
+		keyup(e) {
+			if (e.keyCode == 37) {
+				this.prevPage();
+			}
+			if (e.keyCode == 39) {
+				this.nextPage();
+			}
+		},
 
-    formPageMap() {
-      let arr = [];
-      let page = 1;
+		formPageMap() {
+			let arr = [];
+			let page = 1;
 
      
-      while (page <= this.pageCount) {
+			while (page <= this.pageCount) {
 
-        arr.push({
-          page: page,
-          has_test: false, 
-        });
+				arr.push({
+					page: page,
+					has_test: false, 
+				});
 
-        let i = this.segments.findIndex(el => el.page == page);
-        if(i != -1) {
-          arr.push({
-            page: page,
-            has_test: true, 
-          });
-        }
+				let i = this.segments.findIndex(el => el.page == page);
+				if(i != -1) {
+					arr.push({
+						page: page,
+						has_test: true, 
+					});
+				}
 
-        page++;
-      }
+				page++;
+			}
      
-      this.page_map = arr;
-    },
+			this.page_map = arr;
+		},
 
-    nextPage() {
+		nextPage() {
 
       
-      if (this.map_index == this.page_map.length - 1 || !this.pdf_loaded) return 0;
+			if (this.map_index == this.page_map.length - 1 || !this.pdf_loaded) return 0;
 
-      // check current test
-      if(this.activeSegment != null && this.activeSegment.item_model == null) {
-        this.$toast.info('Ответьте на вопросы, чтобы пройти дальше');
-        return 0;   
-      }
+			// check current test
+			if(this.activeSegment != null && this.activeSegment.item_model == null) {
+				this.$toast.info('Ответьте на вопросы, чтобы пройти дальше');
+				return 0;   
+			}
        
-      this.map_index++;
+			this.map_index++;
 
-      let next_page = this.page_map[this.map_index];
+			let next_page = this.page_map[this.map_index];
 
-      this.page = next_page.page;
-      // next page has test ?
-      if(next_page.has_test) {
+			this.page = next_page.page;
+			// next page has test ?
+			if(next_page.has_test) {
           
-        let i = this.segments.findIndex(el => el.page == next_page.page);
-        this.activeSegment = this.segments[i]
-        this.segment_key++;
+				let i = this.segments.findIndex(el => el.page == next_page.page);
+				this.activeSegment = this.segments[i]
+				this.segment_key++;
  
-      } else {
+			} else {
      
-        this.activeSegment = null;
-      }
+				this.activeSegment = null;
+			}
 
       
-    }, 
+		}, 
 
-    prevPage() { 
-      if(this.map_index == 0  || !this.pdf_loaded) return 0;
+		prevPage() { 
+			if(this.map_index == 0  || !this.pdf_loaded) return 0;
 
-      this.map_index--;
+			this.map_index--;
 
-      let prev_page = this.page_map[this.map_index];
+			let prev_page = this.page_map[this.map_index];
 
-      this.page = prev_page.page;
+			this.page = prev_page.page;
 
     
-      // prev_page has test ?
-      if(prev_page.has_test) {
+			// prev_page has test ?
+			if(prev_page.has_test) {
 
-        let i = this.segments.findIndex(el => el.page == prev_page.page);
-        this.activeSegment = this.segments[i]
-        this.segment_key++;
+				let i = this.segments.findIndex(el => el.page == prev_page.page);
+				this.activeSegment = this.segments[i]
+				this.segment_key++;
        
-      } else {
-        this.activeSegment = null;
-      }
+			} else {
+				this.activeSegment = null;
+			}
 
       
-    },
+		},
 
-    zoomIn() {
-      if (this.zoom == 0) this.zoom = 1600;
-      if (this.zoom < 1600) {
-        this.zoom += 100;
-      }
-    },
+		zoomIn() {
+			if (this.zoom == 0) this.zoom = 1600;
+			if (this.zoom < 1600) {
+				this.zoom += 100;
+			}
+		},
 
-    zoomOut() {
-      if (this.zoom == 0) this.zoom = 1500;
-      if (this.zoom > 600) {
-        this.zoom -= 100;
-      }
-    },
+		zoomOut() {
+			if (this.zoom == 0) this.zoom = 1500;
+			if (this.zoom > 600) {
+				this.zoom -= 100;
+			}
+		},
 
-  },
+	},
 };
 </script>
 

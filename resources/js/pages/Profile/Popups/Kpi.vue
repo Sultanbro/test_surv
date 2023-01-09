@@ -149,146 +149,146 @@
 </template>
 
 <script>
-import {kpi_fields} from "../../kpi/kpis.js";
+import {kpi_fields} from '../../kpi/kpis.js';
 
 export default {
-    name: "PopupKpi",
-    props: {},
-    data: function () {
-        return {
-            groups: [],
-            editable: false,
-            activities: [],
-            items: [],
-            currentMonth: null,
-            dateInfo: {
-                currentMonth: null,
-                monthEnd: 0,
-                workDays: 0,
-                weekDays: 0,
-                daysInMonth: 0
-            },
-            show_fields: [],
-            all_fields: kpi_fields,
-            fields: [],
-            non_editable_fields: [
-                'created_at',
-                'updated_at',
-                'created_by',
-                'updated_by',
-            ],
-            user_id: 1,
-            loading: false
-        };
-    },
-    created(){
-        this.setMonth()
-        this.prepareFields()
-        this.fetchBefore()
-    },
-    methods: {
-        /**
+	name: 'PopupKpi',
+	props: {},
+	data: function () {
+		return {
+			groups: [],
+			editable: false,
+			activities: [],
+			items: [],
+			currentMonth: null,
+			dateInfo: {
+				currentMonth: null,
+				monthEnd: 0,
+				workDays: 0,
+				weekDays: 0,
+				daysInMonth: 0
+			},
+			show_fields: [],
+			all_fields: kpi_fields,
+			fields: [],
+			non_editable_fields: [
+				'created_at',
+				'updated_at',
+				'created_by',
+				'updated_by',
+			],
+			user_id: 1,
+			loading: false
+		};
+	},
+	created(){
+		this.setMonth()
+		this.prepareFields()
+		this.fetchBefore()
+	},
+	methods: {
+		/**
          * set month
          */
-        setMonth() {
-            let year = moment().format('YYYY')
-            this.dateInfo.currentMonth = this.dateInfo.currentMonth ? this.dateInfo.currentMonth : this.$moment().format('MMMM')
-            this.currentMonth = this.dateInfo.currentMonth;
-            this.dateInfo.date = `${this.dateInfo.currentMonth} ${year}`
+		setMonth() {
+			let year = moment().format('YYYY')
+			this.dateInfo.currentMonth = this.dateInfo.currentMonth ? this.dateInfo.currentMonth : this.$moment().format('MMMM')
+			this.currentMonth = this.dateInfo.currentMonth;
+			this.dateInfo.date = `${this.dateInfo.currentMonth} ${year}`
 
-            let currentMonth = this.$moment(this.dateInfo.currentMonth, 'MMMM')
+			let currentMonth = this.$moment(this.dateInfo.currentMonth, 'MMMM')
 
-            //Расчет выходных дней
-            this.dateInfo.monthEnd = currentMonth.endOf('month'); //Конец месяца
-            this.dateInfo.weekDays = currentMonth.weekdayCalc(this.dateInfo.monthEnd, [6]) //Колличество выходных
-            this.dateInfo.daysInMonth = currentMonth.daysInMonth() //Колличество дней в месяце
-            this.dateInfo.workDays = this.dateInfo.daysInMonth - this.dateInfo.weekDays //Колличество рабочих дней
-        },
+			//Расчет выходных дней
+			this.dateInfo.monthEnd = currentMonth.endOf('month'); //Конец месяца
+			this.dateInfo.weekDays = currentMonth.weekdayCalc(this.dateInfo.monthEnd, [6]) //Колличество выходных
+			this.dateInfo.daysInMonth = currentMonth.daysInMonth() //Колличество дней в месяце
+			this.dateInfo.workDays = this.dateInfo.daysInMonth - this.dateInfo.weekDays //Колличество рабочих дней
+		},
 
-        fetchBefore() {
-            this.fetchData({
-                data_from: {
-                    year: new Date().getFullYear(),
-                    month: this.$moment(this.currentMonth, 'MMMM').format('M')
-                },
-                user_id: this.$laravel.userId
-            })
-        },
+		fetchBefore() {
+			this.fetchData({
+				data_from: {
+					year: new Date().getFullYear(),
+					month: this.$moment(this.currentMonth, 'MMMM').format('M')
+				},
+				user_id: this.$laravel.userId
+			})
+		},
 
-        fetchData(filters = null) {
-            this.loading = true
+		fetchData(filters = null) {
+			this.loading = true
 
-            axios.post('/statistics/kpi', {
-                filters: filters
-            }).then(response => {
+			axios.post('/statistics/kpi', {
+				filters: filters
+			}).then(response => {
 
-                // items
-                this.items = response.data.items;
-                this.items = this.items.map(res=> ({...res, my_sum: 0}))
+				// items
+				this.items = response.data.items;
+				this.items = this.items.map(res=> ({...res, my_sum: 0}))
 
-                this.activities = response.data.activities;
-                this.groups = response.data.groups;
+				this.activities = response.data.activities;
+				this.groups = response.data.groups;
 
-                this.loading = false
-            }).catch(error => {
-                this.loading = false
-                alert(error)
-            });
-        },
+				this.loading = false
+			}).catch(error => {
+				this.loading = false
+				alert(error)
+			});
+		},
 
-        countAvg() {
+		countAvg() {
 
-            this.items.forEach(kpi => {
+			this.items.forEach(kpi => {
 
-                let kpi_sum = 0;
-                let kpi_count = 0;
+				let kpi_sum = 0;
+				let kpi_count = 0;
 
-                kpi.users.forEach(user => {
+				kpi.users.forEach(user => {
 
-                    let count = 0;
-                    let sum = 0;
-                    let avg = 0;
+					let count = 0;
+					let sum = 0;
+					let avg = 0;
 
-                    user.items.forEach(item => {
-                        sum += Number(item.percent);
-                        count++;
-                    });
+					user.items.forEach(item => {
+						sum += Number(item.percent);
+						count++;
+					});
 
-                    /**
+					/**
                      * count avg of user items
                      */
-                    avg = count > 0 ? Number(sum / count).toFixed(2) : 0;
+					avg = count > 0 ? Number(sum / count).toFixed(2) : 0;
 
-                    user.avg = avg;
+					user.avg = avg;
 
-                    // all kpi sum
-                    kpi_sum += Number(avg);
-                    kpi_count++;
-                });
+					// all kpi sum
+					kpi_sum += Number(avg);
+					kpi_count++;
+				});
 
-                console.log(kpi_count, kpi_sum);
-                /**
+				console.log(kpi_count, kpi_sum);
+				/**
                  * count avg completed percent of kpi by users
                  */
-                kpi.avg = kpi_count > 0 ? Number(Number(kpi_sum / kpi_count * 100).toFixed(2)) : 0;
+				kpi.avg = kpi_count > 0 ? Number(Number(kpi_sum / kpi_count * 100).toFixed(2)) : 0;
 
-            });
-        },
+			});
+		},
 
-        prepareFields() {
-            let visible_fields = [],
-                show_fields = this.show_fields;
+		prepareFields() {
+			let visible_fields = [],
+				show_fields = this.show_fields;
 
-            kpi_fields.forEach((field, i) => {
-                if(this.show_fields[field.key] != undefined
+			kpi_fields.forEach((field, i) => {
+				if(this.show_fields[field.key] != undefined
                     && this.show_fields[field.key]
-                ) {
-                    visible_fields.push(field)
-                }
-            });
+				) {
+					visible_fields.push(field)
+				}
+			});
 
-            this.fields = kpi_fields;
-        },
-    }
+			this.fields = kpi_fields;
+		},
+	}
 };
 </script>

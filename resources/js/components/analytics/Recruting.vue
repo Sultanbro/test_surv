@@ -211,224 +211,224 @@
 import D3Funnel from 'd3-funnel';
 
 export default {
-    name: "Recruting", 
-    props: {
-        records: Object,
-        isAnalyticsPage: Boolean,
-    },
-    computed: {
-        percentageHired: function () {
-            return parseFloat(this.info.applied / this.info.applied_plan * 100).toFixed(0)
-        },
-        widthRemain: function () {
-            return (parseFloat((Number(this.maxdays[this.month]) - Number(this.today)) / Number(this.maxdays[this.month]) * 100) - 100) * (-1);
-        },
-        applied_on: function () {
-            let a = parseFloat(this.info.applied / this.info.applied_plan * 100).toFixed(1);
-            return a == 'Infinity' ? 0 : a;
-        }
-    }, 
-    data: function () {
-        return {
-            items: [],
-            orderVisible: false,
-            showPlans: false,
-            chartOptions: {
-                options: {
-                    block: {
-                        dynamicHeight: true,
-                        minHeight: 60,
-                        fill: {
-                            type: 'gradient' // gradient
-                        },
-                        highlight: true
-                    },
-                    chart: {
-                        curve: {
-                            enabled: false
-                        },
-                        animate: 100,
-                        bottomPinch: 0
-                    },
-                    tooltip: {
-                        enabled : true,
-                        format: function(label, value) {
-                            if(label == 'Создано новых лидов за месяц') return 'Лиды с названиями: Удаленный, inhouse'
-                            if(label == 'Обработано') return 'Сконвертировано + Забраковано лидов'
-                            if(label == 'Сконвертировано') return 'Создано сделок на основе лидов'
-                            if(label == 'Стажируются') return 'Количество стажеров присутствовавших на сегодняшнем обучении'
-                            if(label == 'Приняты в BP') return 'Приняты сотрудниками'
+	name: 'Recruting', 
+	props: {
+		records: Object,
+		isAnalyticsPage: Boolean,
+	},
+	computed: {
+		percentageHired: function () {
+			return parseFloat(this.info.applied / this.info.applied_plan * 100).toFixed(0)
+		},
+		widthRemain: function () {
+			return (parseFloat((Number(this.maxdays[this.month]) - Number(this.today)) / Number(this.maxdays[this.month]) * 100) - 100) * (-1);
+		},
+		applied_on: function () {
+			let a = parseFloat(this.info.applied / this.info.applied_plan * 100).toFixed(1);
+			return a == 'Infinity' ? 0 : a;
+		}
+	}, 
+	data: function () {
+		return {
+			items: [],
+			orderVisible: false,
+			showPlans: false,
+			chartOptions: {
+				options: {
+					block: {
+						dynamicHeight: true,
+						minHeight: 60,
+						fill: {
+							type: 'gradient' // gradient
+						},
+						highlight: true
+					},
+					chart: {
+						curve: {
+							enabled: false
+						},
+						animate: 100,
+						bottomPinch: 0
+					},
+					tooltip: {
+						enabled : true,
+						format: function(label, value) {
+							if(label == 'Создано новых лидов за месяц') return 'Лиды с названиями: Удаленный, inhouse'
+							if(label == 'Обработано') return 'Сконвертировано + Забраковано лидов'
+							if(label == 'Сконвертировано') return 'Создано сделок на основе лидов'
+							if(label == 'Стажируются') return 'Количество стажеров присутствовавших на сегодняшнем обучении'
+							if(label == 'Приняты в BP') return 'Приняты сотрудниками'
                             
-                        }
-                    }, 
-                    label: {
-                        fontFamily: 'Open Sans',
-                        fontSize: '12px',
-                        format: '{l}\n{f}'
-                    },
-                    events :{
-                        click: {
-                            block: function(data) {
-                                console.log(data.target)
-                            }
-                        }
-                }
-                },
-                data: [
-                    {  value: 10, backgroundColor: '#39dde0', label: 'Создано новых лидов за месяц', formatted: 'test hehe boy'},
-                    {  value: 10, backgroundColor: '#44d9e0', label: 'Обработано', formatted: 'test hehe boy'},
-                    {  value: 9, backgroundColor: '#5fd3ec', label: 'Сконвертировано',formatted: 'test hehe boy'},
-                    {  value: 5, backgroundColor: '#76b5ec', label: 'Стажируются',formatted: 'test hehe boy'},
-                    {  value: 1, backgroundColor: '#6f8edf', label: 'Приняты в BP',formatted: 'test hehe boy'},
-                ],
-            }, 
-            chart : null,
-            plan: {
-                hired: 35,
-                trainees: 150
-            },
-            fact: {
-                hired: 12,
-                trainees: 32
-            },
-            recruiters: [
-                {
-                    name: 'Кристина Еремеева',
-                    out: {
-                        value: 1452,
-                        percent: 56,
-                        plan: 56,
-                    },
-                    converted: {
-                        value: 120,
-                        percent: 9,
-                        plan: 56,
-                    }
-                }
-            ],
-            orders: [],
-            months: {
-                1: 'января',
-                2: 'февраля',
-                3: 'марта',
-                4: 'апреля',
-                5: 'мая',
-                6: 'июня',
-                7: 'июля',
-                8: 'августа',
-                9: 'сентября',
-                10: 'октября',
-                11: 'ноября',
-                12: 'декабря',
-            },
-            maxdays: {
-                1: 31,
-                2: 28,
-                3: 31,
-                4: 30,
-                5: 31,
-                6: 30,
-                7: 31,
-                8: 31,
-                9: 30,
-                10: 31,
-                11: 30,
-                12: 31,
-            },
-            info: {
-                created: 0,
-                converted: 0,
-                trainees: 0,
-                applied: 0,
-                remain_days: 0,
-                remain_apply: 0,
-                working: 0,
-                training: 0,
-                fired: 0,
-            },
-            month: 1,
-            today: 1,
-            workDays: 26,
-        };
-    },
-    watch: {
-        // эта функция запускается при любом изменении данных
-        records: {
-            // the callback will be called immediately after the start of the observation
-            immediate: true, 
-            handler (val, oldVal) {
-                this.recruiters = this.records.recruiters
+						}
+					}, 
+					label: {
+						fontFamily: 'Open Sans',
+						fontSize: '12px',
+						format: '{l}\n{f}'
+					},
+					events :{
+						click: {
+							block: function(data) {
+								console.log(data.target)
+							}
+						}
+					}
+				},
+				data: [
+					{  value: 10, backgroundColor: '#39dde0', label: 'Создано новых лидов за месяц', formatted: 'test hehe boy'},
+					{  value: 10, backgroundColor: '#44d9e0', label: 'Обработано', formatted: 'test hehe boy'},
+					{  value: 9, backgroundColor: '#5fd3ec', label: 'Сконвертировано',formatted: 'test hehe boy'},
+					{  value: 5, backgroundColor: '#76b5ec', label: 'Стажируются',formatted: 'test hehe boy'},
+					{  value: 1, backgroundColor: '#6f8edf', label: 'Приняты в BP',formatted: 'test hehe boy'},
+				],
+			}, 
+			chart : null,
+			plan: {
+				hired: 35,
+				trainees: 150
+			},
+			fact: {
+				hired: 12,
+				trainees: 32
+			},
+			recruiters: [
+				{
+					name: 'Кристина Еремеева',
+					out: {
+						value: 1452,
+						percent: 56,
+						plan: 56,
+					},
+					converted: {
+						value: 120,
+						percent: 9,
+						plan: 56,
+					}
+				}
+			],
+			orders: [],
+			months: {
+				1: 'января',
+				2: 'февраля',
+				3: 'марта',
+				4: 'апреля',
+				5: 'мая',
+				6: 'июня',
+				7: 'июля',
+				8: 'августа',
+				9: 'сентября',
+				10: 'октября',
+				11: 'ноября',
+				12: 'декабря',
+			},
+			maxdays: {
+				1: 31,
+				2: 28,
+				3: 31,
+				4: 30,
+				5: 31,
+				6: 30,
+				7: 31,
+				8: 31,
+				9: 30,
+				10: 31,
+				11: 30,
+				12: 31,
+			},
+			info: {
+				created: 0,
+				converted: 0,
+				trainees: 0,
+				applied: 0,
+				remain_days: 0,
+				remain_apply: 0,
+				working: 0,
+				training: 0,
+				fired: 0,
+			},
+			month: 1,
+			today: 1,
+			workDays: 26,
+		};
+	},
+	watch: {
+		// эта функция запускается при любом изменении данных
+		records: {
+			// the callback will be called immediately after the start of the observation
+			immediate: true, 
+			handler (val, oldVal) {
+				this.recruiters = this.records.recruiters
 
-                this.chartOptions.data[0]['value'] = this.records.info.created
-                this.chartOptions.data[1]['value'] = this.records.info.processed
-                this.chartOptions.data[2]['value'] = this.records.info.converted
-                this.chartOptions.data[3]['value'] = this.records.info.trainees
-                this.chartOptions.data[4]['value'] = this.records.info.applied 
+				this.chartOptions.data[0]['value'] = this.records.info.created
+				this.chartOptions.data[1]['value'] = this.records.info.processed
+				this.chartOptions.data[2]['value'] = this.records.info.converted
+				this.chartOptions.data[3]['value'] = this.records.info.trainees
+				this.chartOptions.data[4]['value'] = this.records.info.applied 
 
-                this.info = this.records.info;
-                this.orders = this.records.orders
-                this.month = this.records.month
-                this.today = this.records.today
+				this.info = this.records.info;
+				this.orders = this.records.orders
+				this.month = this.records.month
+				this.today = this.records.today
 
-                // this.chart = null;
-                // this.chart = new D3Funnel('#funnel')
-                // this.chart.draw(this.chartOptions.data, this.chartOptions.options);
-            }
-        },
+				// this.chart = null;
+				// this.chart = new D3Funnel('#funnel')
+				// this.chart.draw(this.chartOptions.data, this.chartOptions.options);
+			}
+		},
         
-    },
+	},
     
-    created() {
+	created() {
         
-        this.recruiters = this.records.recruiters
+		this.recruiters = this.records.recruiters
 
-        this.chartOptions.data[0]['value'] = this.records.info.created
-        this.chartOptions.data[1]['value'] = this.records.info.processed
-        this.chartOptions.data[2]['value'] = this.records.info.converted
-        this.chartOptions.data[3]['value'] = this.records.info.trainees
-        this.chartOptions.data[4]['value'] = this.records.info.applied 
+		this.chartOptions.data[0]['value'] = this.records.info.created
+		this.chartOptions.data[1]['value'] = this.records.info.processed
+		this.chartOptions.data[2]['value'] = this.records.info.converted
+		this.chartOptions.data[3]['value'] = this.records.info.trainees
+		this.chartOptions.data[4]['value'] = this.records.info.applied 
 
-        this.info = this.records.info;
-        this.orders = this.records.orders
-        this.month = this.records.month
-        this.today = this.records.today
+		this.info = this.records.info;
+		this.orders = this.records.orders
+		this.month = this.records.month
+		this.today = this.records.today
 
-        if(this.isAnalyticsPage) {
-            this.showPlans = false
-        } else {
-            this.showPlans = false
-        }
+		if(this.isAnalyticsPage) {
+			this.showPlans = false
+		} else {
+			this.showPlans = false
+		}
         
         
-    },
+	},
 
-    mounted() {
-        if(this.isAnalyticsPage) {
-            this.chart = new D3Funnel('#funnel')
-            this.chart.draw(this.chartOptions.data, this.chartOptions.options);
-        }
-    },
-    methods: {
-        reload() {
-            this.recruiters = this.records.recruiters
+	mounted() {
+		if(this.isAnalyticsPage) {
+			this.chart = new D3Funnel('#funnel')
+			this.chart.draw(this.chartOptions.data, this.chartOptions.options);
+		}
+	},
+	methods: {
+		reload() {
+			this.recruiters = this.records.recruiters
 
-            this.chartOptions.data[0]['value'] = this.records.info.created
-            this.chartOptions.data[1]['value'] = this.records.info.converted
-            this.chartOptions.data[2]['value'] = this.records.info.trainees
-            this.chartOptions.data[3]['value'] = this.records.info.applied 
+			this.chartOptions.data[0]['value'] = this.records.info.created
+			this.chartOptions.data[1]['value'] = this.records.info.converted
+			this.chartOptions.data[2]['value'] = this.records.info.trainees
+			this.chartOptions.data[3]['value'] = this.records.info.applied 
     
-            this.info = this.records.info;
-            this.orders = this.records.orders
-            this.month = this.records.month
-            this.today = this.records.today
+			this.info = this.records.info;
+			this.orders = this.records.orders
+			this.month = this.records.month
+			this.today = this.records.today
 
-            if(this.isAnalyticsPage) {
-                this.chart = new D3Funnel('#funnel')
-                this.chart.draw(this.chartOptions.data, this.chartOptions.options);
-            }
+			if(this.isAnalyticsPage) {
+				this.chart = new D3Funnel('#funnel')
+				this.chart.draw(this.chartOptions.data, this.chartOptions.options);
+			}
             
-        },
-    }
+		},
+	}
 };
 </script>
 

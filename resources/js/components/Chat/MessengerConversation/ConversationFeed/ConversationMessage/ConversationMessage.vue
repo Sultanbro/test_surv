@@ -94,110 +94,110 @@
 </template>
 
 <script>
-import {mapActions, mapGetters} from "vuex";
-import moment from "moment";
-import MessageReaders from "./MessageReaders/MessageReaders.vue";
-import AlternativeAvatar from "../../../ChatsList/ContactItem/AlternativeAvatar/AlternativeAvatar.vue";
-import VoiceMessage from "./VoiceMessage/VoiceMessage.vue";
+import {mapActions, mapGetters} from 'vuex';
+import moment from 'moment';
+import MessageReaders from './MessageReaders/MessageReaders.vue';
+import AlternativeAvatar from '../../../ChatsList/ContactItem/AlternativeAvatar/AlternativeAvatar.vue';
+import VoiceMessage from './VoiceMessage/VoiceMessage.vue';
 
 export default {
-  name: "ConversationMessage",
-  components: {
-    MessageReaders, AlternativeAvatar, VoiceMessage
-  },
-  props: {
-    message: {
-      type: Object,
-      required: true
-    },
-    last: {
-      type: Boolean,
-      default: false
-    },
-    active: {
-      type: Boolean,
-      default: false
-    },
-  },
-  computed: {
-    ...mapGetters(['user', 'chat']),
-    messageCardClass() {
-      return {
-        'messenger__message-card': true,
-        'messenger__message__failed': this.message.failed,
-      }
-    },
-    reactions() {
-      // go through each reader and if include reaction type
-      // add to reactions array
-      let reactions = [];
-      this.message.readers.forEach(reader => {
-        if (reader.pivot && reader.pivot.reaction) {
-          // increment reaction count if already in array
-          let reaction = reactions.find(reaction => reaction.type === reader.pivot.reaction);
-          if (reaction) {
-            reaction.count++;
-          } else {
-            reactions.push({
-              type: reader.pivot.reaction,
-              count: 1,
-            });
-          }
-        }
-      });
-      return reactions;
-    },
-  },
-  methods: {
-    ...mapActions(['showGallery', 'reactMessage', 'loadMessages', 'loadMoreNewMessages', 'requestScroll',
-      'setLoading']),
-    isImage(file) {
-      const ext = file.name.split('.').pop();
-      return ['jpg', 'jpeg', 'png', 'gif'].includes(ext);//todo: другой способ определения. Хранить тип файла в БД.
-    },
-    isAudio(file) {
-      const ext = file.name.split('.').pop();
-      return ['mp3', 'wav', 'ogg', 'webm'].includes(ext);
-    },
-    isGallery() {
-      return this.message.files && this.message.files.length > 1 && this.message.files.every(file => this.isImage(file));
-    },
-    getImages() {
-      return this.message.files.filter(file => this.isImage(file)).map(file => file.file_path);
-    },
-    openImage(image) {
-      this.showGallery({
-        images: this.getImages(),
-        index: this.message.files.findIndex(f => f.id === image.id),
-      });
-    },
-    goto(message, event) {
-      event.stopPropagation();
-      this.setLoading(true);
-      this.loadMessages({
-        reset: false, goto: message.id, callback: () => {
-          // after a second
-          setTimeout(() => {
-            this.setLoading(false);
-          }, 1000);
-        }
-      });
-    }
-  },
-  filters: {
-    moment: function (date) {
-      // if today show only hour and minutes
-      if (moment(date).isSame(moment(), 'day')) {
-        return moment(date).format('HH:mm');
-      }
-      // if yesterday show only hour and minutes and yesterday
-      if (moment(date).isSame(moment().subtract(1, 'day'), 'day')) {
-        return 'Вчера, ' + moment(date).format('HH:mm');
-      }
-      // if older than yesterday show hour, minutes, day and month
-      return moment(date).format('DD.MM, HH:mm');
-    },
-  }
+	name: 'ConversationMessage',
+	components: {
+		MessageReaders, AlternativeAvatar, VoiceMessage
+	},
+	props: {
+		message: {
+			type: Object,
+			required: true
+		},
+		last: {
+			type: Boolean,
+			default: false
+		},
+		active: {
+			type: Boolean,
+			default: false
+		},
+	},
+	computed: {
+		...mapGetters(['user', 'chat']),
+		messageCardClass() {
+			return {
+				'messenger__message-card': true,
+				'messenger__message__failed': this.message.failed,
+			}
+		},
+		reactions() {
+			// go through each reader and if include reaction type
+			// add to reactions array
+			let reactions = [];
+			this.message.readers.forEach(reader => {
+				if (reader.pivot && reader.pivot.reaction) {
+					// increment reaction count if already in array
+					let reaction = reactions.find(reaction => reaction.type === reader.pivot.reaction);
+					if (reaction) {
+						reaction.count++;
+					} else {
+						reactions.push({
+							type: reader.pivot.reaction,
+							count: 1,
+						});
+					}
+				}
+			});
+			return reactions;
+		},
+	},
+	methods: {
+		...mapActions(['showGallery', 'reactMessage', 'loadMessages', 'loadMoreNewMessages', 'requestScroll',
+			'setLoading']),
+		isImage(file) {
+			const ext = file.name.split('.').pop();
+			return ['jpg', 'jpeg', 'png', 'gif'].includes(ext);//todo: другой способ определения. Хранить тип файла в БД.
+		},
+		isAudio(file) {
+			const ext = file.name.split('.').pop();
+			return ['mp3', 'wav', 'ogg', 'webm'].includes(ext);
+		},
+		isGallery() {
+			return this.message.files && this.message.files.length > 1 && this.message.files.every(file => this.isImage(file));
+		},
+		getImages() {
+			return this.message.files.filter(file => this.isImage(file)).map(file => file.file_path);
+		},
+		openImage(image) {
+			this.showGallery({
+				images: this.getImages(),
+				index: this.message.files.findIndex(f => f.id === image.id),
+			});
+		},
+		goto(message, event) {
+			event.stopPropagation();
+			this.setLoading(true);
+			this.loadMessages({
+				reset: false, goto: message.id, callback: () => {
+					// after a second
+					setTimeout(() => {
+						this.setLoading(false);
+					}, 1000);
+				}
+			});
+		}
+	},
+	filters: {
+		moment: function (date) {
+			// if today show only hour and minutes
+			if (moment(date).isSame(moment(), 'day')) {
+				return moment(date).format('HH:mm');
+			}
+			// if yesterday show only hour and minutes and yesterday
+			if (moment(date).isSame(moment().subtract(1, 'day'), 'day')) {
+				return 'Вчера, ' + moment(date).format('HH:mm');
+			}
+			// if older than yesterday show hour, minutes, day and month
+			return moment(date).format('DD.MM, HH:mm');
+		},
+	}
 }
 </script>
 

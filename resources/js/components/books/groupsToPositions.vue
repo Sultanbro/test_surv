@@ -37,81 +37,81 @@
 
 <script>
 export default {
-    name: "groupsToPositions",
-    data() {
-        return {
-            message: null,
-            activebtn: {
-                id: null,
-                position: ''
-            },
-            positions: [],
-            new_position: '',
-            value: [],
-            options: [],
-            position_id: 0
-        }
-    },
-    created() {
-        this.getPositions();
-    },
-    mounted() {
-        //this.getPositions();
-    },
-    methods: {
-        addTag(newTag) {
-            const tag = {
-                position: newTag,
-                id: newTag
-            }
-            this.options.push(tag)
-            this.value.push(tag)
-        },
-        messageoff() {
-            setTimeout(() => {
-                this.message = null
-            }, 3000)
-        },
-        positionselect(position, index) {
-            this.activebtn = {
-                id: position.id,
-                position: position.position
-            }
-            axios.post('/bp_books/position_groups', {
-                    position_id: position.id,
-                })
-                .then(response => {
-                    if (response.data) {
-                        this.value = response.data.groups
-                        this.position_id = response.data.position_id
-                    } else {
-                        this.value = []
-                    }
+	name: 'groupsToPositions',
+	data() {
+		return {
+			message: null,
+			activebtn: {
+				id: null,
+				position: ''
+			},
+			positions: [],
+			new_position: '',
+			value: [],
+			options: [],
+			position_id: 0
+		}
+	},
+	created() {
+		this.getPositions();
+	},
+	mounted() {
+		//this.getPositions();
+	},
+	methods: {
+		addTag(newTag) {
+			const tag = {
+				position: newTag,
+				id: newTag
+			}
+			this.options.push(tag)
+			this.value.push(tag)
+		},
+		messageoff() {
+			setTimeout(() => {
+				this.message = null
+			}, 3000)
+		},
+		positionselect(position, index) {
+			this.activebtn = {
+				id: position.id,
+				position: position.position
+			}
+			axios.post('/bp_books/position_groups', {
+				position_id: position.id,
+			})
+				.then(response => {
+					if (response.data) {
+						this.value = response.data.groups
+						this.position_id = response.data.position_id
+					} else {
+						this.value = []
+					}
 
-                })
-        },
-        saveGroups() {
-            axios.post('/bp_books/position_groups/save', {
-                    position: this.activebtn.id,
-                    groups: this.value,
-                })
-                .then(response => {
-                    this.$toast.info('Успешно сохранено');
-                    this.messageoff()
-                })
-                .catch(error => {
-                    console.log(error.response)
-                    this.$toast.info(error.response);
-                });
-        },
-        getPositions() {
-            axios.post('/bp_books/position_groups', {})
-                .then(response => {
-                    this.options = response.data.groups
-                    this.positions = response.data.positions
-                })
-        }
-    }
+				})
+		},
+		saveGroups() {
+			axios.post('/bp_books/position_groups/save', {
+				position: this.activebtn.id,
+				groups: this.value,
+			})
+				.then(response => {
+					this.$toast.info('Успешно сохранено');
+					this.messageoff()
+				})
+				.catch(error => {
+					console.log(error.response)
+					this.$toast.info(error.response);
+				});
+		},
+		getPositions() {
+			axios.post('/bp_books/position_groups', {})
+				.then(response => {
+					this.options = response.data.groups
+					this.positions = response.data.positions
+				})
+		}
+	}
 }
 </script>
 

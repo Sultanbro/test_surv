@@ -7,19 +7,19 @@
 
 <script>
 export default {
-    name: "Profile",
-    props: ['user'],
-    data() {
-        return {
-            u: {},
-        }
-    },
-    mounted() {
-        this.u = JSON.parse(this.user)
-    },
-    methods: {
+	name: 'Profile',
+	props: ['user'],
+	data() {
+		return {
+			u: {},
+		}
+	},
+	mounted() {
+		this.u = JSON.parse(this.user)
+	},
+	methods: {
 
-    }
+	}
 }
 </script>
 

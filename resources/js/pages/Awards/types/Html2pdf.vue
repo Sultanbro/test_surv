@@ -32,261 +32,261 @@
     </div>
 </template>
 <script>
-    import html2pdf from 'html2pdf.js'
+import html2pdf from 'html2pdf.js'
 
-    export default {
-        props: {
-            showLayout: {
-                type: Boolean,
-                default: false
-            },
+export default {
+	props: {
+		showLayout: {
+			type: Boolean,
+			default: false
+		},
 
-            floatLayout: {
-                type: Boolean,
-                default: true
-            },
+		floatLayout: {
+			type: Boolean,
+			default: true
+		},
 
-            enableDownload: {
-                type: Boolean,
-                default: true
-            },
+		enableDownload: {
+			type: Boolean,
+			default: true
+		},
 
-            previewModal: {
-                type: Boolean,
-                default: false
-            },
+		previewModal: {
+			type: Boolean,
+			default: false
+		},
 
-            paginateElementsByHeight: {
-                type: Number
-            },
+		paginateElementsByHeight: {
+			type: Number
+		},
 
-            filename: {
-                type: String,
-                default: `${new Date().getTime()}`
-            },
+		filename: {
+			type: String,
+			default: `${new Date().getTime()}`
+		},
 
-            pdfQuality: {
-                type: Number,
-                default: 2,
-            },
+		pdfQuality: {
+			type: Number,
+			default: 2,
+		},
 
-            pdfFormat: {
-                default: 'a4',
-            },
+		pdfFormat: {
+			default: 'a4',
+		},
 
-            pdfOrientation: {
-                type: String,
-                default: 'portrait'
-            },
+		pdfOrientation: {
+			type: String,
+			default: 'portrait'
+		},
 
-            pdfContentWidth: {
-                default: '800px'
-            },
+		pdfContentWidth: {
+			default: '800px'
+		},
 
-            htmlToPdfOptions: {
-                type: Object
-            },
+		htmlToPdfOptions: {
+			type: Object
+		},
 
-            manualPagination: {
-                type: Boolean,
-                default: false
-            }
-        },
+		manualPagination: {
+			type: Boolean,
+			default: false
+		}
+	},
 
-        data () {
-            return {
-                hasAlreadyParsed: false,
-                progress: 0,
-                pdfWindow: null,
-                pdfFile: null
-            }
-        },
+	data () {
+		return {
+			hasAlreadyParsed: false,
+			progress: 0,
+			pdfWindow: null,
+			pdfFile: null
+		}
+	},
 
-        watch: {
-            progress (val) {
-                this.$emit('progress', val)
-            },
+	watch: {
+		progress (val) {
+			this.$emit('progress', val)
+		},
 
-            paginateElementsByHeight () {
-                this.resetPagination()
-            },
+		paginateElementsByHeight () {
+			this.resetPagination()
+		},
 
-            $props: {
-                handler () {
-                    this.validateProps()
-                },
+		$props: {
+			handler () {
+				this.validateProps()
+			},
 
-                deep: true,
-                immediate: true
-            }
-        },
+			deep: true,
+			immediate: true
+		}
+	},
 
-        methods: {
-            validateProps () {
-                // If manual-pagination is false, paginate-elements-by-height props is required
-                if (!this.manualPagination) {
-                    if (this.paginateElementsByHeight === undefined) {
-                        console.error('Error: paginate-elements-by-height is required if manual-pagination is false')
-                    }
-                }
-            },
+	methods: {
+		validateProps () {
+			// If manual-pagination is false, paginate-elements-by-height props is required
+			if (!this.manualPagination) {
+				if (this.paginateElementsByHeight === undefined) {
+					console.error('Error: paginate-elements-by-height is required if manual-pagination is false')
+				}
+			}
+		},
 
-            resetPagination () {
-                const parentElement = this.$refs.pdfContent.firstChild
-                const pageBreaks = parentElement.getElementsByClassName('html2pdf__page-break')
-                const pageBreakLength = pageBreaks.length - 1
+		resetPagination () {
+			const parentElement = this.$refs.pdfContent.firstChild
+			const pageBreaks = parentElement.getElementsByClassName('html2pdf__page-break')
+			const pageBreakLength = pageBreaks.length - 1
 
-                if (pageBreakLength === -1) return
+			if (pageBreakLength === -1) return
 
-                this.hasAlreadyParsed = false
+			this.hasAlreadyParsed = false
 
-                // Remove All Page Break (For Pagination)
-                for (let x = pageBreakLength; x >= 0; x--) {
-                    pageBreaks[x].parentNode.removeChild(pageBreaks[x])
-                }
-            },
+			// Remove All Page Break (For Pagination)
+			for (let x = pageBreakLength; x >= 0; x--) {
+				pageBreaks[x].parentNode.removeChild(pageBreaks[x])
+			}
+		},
 
-            generatePdf () {
-                this.$emit('startPagination')
-                this.progress = 0
-                this.paginationOfElements()
-            },
+		generatePdf () {
+			this.$emit('startPagination')
+			this.progress = 0
+			this.paginationOfElements()
+		},
 
-            paginationOfElements () {
-                this.progress = 25
+		paginationOfElements () {
+			this.progress = 25
 
-                /*
+			/*
                     When this props is true,
                     the props paginate-elements-by-height will not be used.
                     Instead the pagination process will rely on the elements with a class "html2pdf__page-break"
                     to know where to page break, which is automatically done by html2pdf.js
                 */
-                if (this.manualPagination) {
-                    this.progress = 70
-                    this.$emit('hasPaginated')
-                    this.downloadPdf()
-                    return
-                }
+			if (this.manualPagination) {
+				this.progress = 70
+				this.$emit('hasPaginated')
+				this.downloadPdf()
+				return
+			}
 
-                if (!this.hasAlreadyParsed) {
-                    const parentElement = this.$refs.pdfContent.firstChild
-                    const ArrOfContentChildren = Array.from(parentElement.children)
-                    let childrenHeight = 0
+			if (!this.hasAlreadyParsed) {
+				const parentElement = this.$refs.pdfContent.firstChild
+				const ArrOfContentChildren = Array.from(parentElement.children)
+				let childrenHeight = 0
 
-                    /*
+				/*
                         Loop through Elements and add there height with childrenHeight variable.
                         Once the childrenHeight is >= this.paginateElementsByHeight, create a div with
                         a class named 'html2pdf__page-break' and insert the element before the element
                         that will be in the next page
                     */
-                    for (const childElement of ArrOfContentChildren) {
-                        // Get The First Class of the element
-                        const elementFirstClass = childElement.classList[0]
-                        const isPageBreakClass = elementFirstClass === 'html2pdf__page-break'
-                        if (isPageBreakClass) {
-                            childrenHeight = 0
-                        } else {
-                            // Get Element Height
-                            const elementHeight = childElement.clientHeight
+				for (const childElement of ArrOfContentChildren) {
+					// Get The First Class of the element
+					const elementFirstClass = childElement.classList[0]
+					const isPageBreakClass = elementFirstClass === 'html2pdf__page-break'
+					if (isPageBreakClass) {
+						childrenHeight = 0
+					} else {
+						// Get Element Height
+						const elementHeight = childElement.clientHeight
 
-                            // Get Computed Margin Top and Bottom
-                            const elementComputedStyle = childElement.currentStyle || window.getComputedStyle(childElement)
-                            const elementMarginTopBottom = parseInt(elementComputedStyle.marginTop) + parseInt(elementComputedStyle.marginBottom)
+						// Get Computed Margin Top and Bottom
+						const elementComputedStyle = childElement.currentStyle || window.getComputedStyle(childElement)
+						const elementMarginTopBottom = parseInt(elementComputedStyle.marginTop) + parseInt(elementComputedStyle.marginBottom)
 
-                            // Add Both Element Height with the Elements Margin Top and Bottom
-                            const elementHeightWithMargin = elementHeight + elementMarginTopBottom
+						// Add Both Element Height with the Elements Margin Top and Bottom
+						const elementHeightWithMargin = elementHeight + elementMarginTopBottom
 
-                            if ((childrenHeight + elementHeight) < this.paginateElementsByHeight) {
-                                childrenHeight += elementHeightWithMargin
-                            } else {
-                                const section = document.createElement('div')
-                                section.classList.add('html2pdf__page-break')
-                                parentElement.insertBefore(section, childElement)
+						if ((childrenHeight + elementHeight) < this.paginateElementsByHeight) {
+							childrenHeight += elementHeightWithMargin
+						} else {
+							const section = document.createElement('div')
+							section.classList.add('html2pdf__page-break')
+							parentElement.insertBefore(section, childElement)
 
-                                // Reset Variables made the upper condition false
-                                childrenHeight = elementHeightWithMargin
-                            }
-                        }
-                    }
+							// Reset Variables made the upper condition false
+							childrenHeight = elementHeightWithMargin
+						}
+					}
+				}
 
-                    this.progress = 70
+				this.progress = 70
 
-                    /*
+				/*
                         Set to true so that if would generate again we wouldn't need
                         to parse the HTML to paginate the elements
                     */
-                    this.hasAlreadyParsed = true
-                } else {
-                    this.progress = 70
-                }
+				this.hasAlreadyParsed = true
+			} else {
+				this.progress = 70
+			}
 
-                this.$emit('hasPaginated')
-                this.downloadPdf()
-            },
+			this.$emit('hasPaginated')
+			this.downloadPdf()
+		},
 
-            async downloadPdf () {
-                // Set Element and Html2pdf.js Options
-                const pdfContent = this.$refs.pdfContent
-                let options = this.setOptions()
+		async downloadPdf () {
+			// Set Element and Html2pdf.js Options
+			const pdfContent = this.$refs.pdfContent
+			let options = this.setOptions()
 
-                this.$emit('beforeDownload', { html2pdf, options, pdfContent })
+			this.$emit('beforeDownload', { html2pdf, options, pdfContent })
 
-                const html2PdfSetup = html2pdf().set(options).from(pdfContent)
-                let pdfBlobUrl = null
-                pdfBlobUrl = await html2PdfSetup.output('bloburl');
+			const html2PdfSetup = html2pdf().set(options).from(pdfContent)
+			let pdfBlobUrl = null
+			pdfBlobUrl = await html2PdfSetup.output('bloburl');
 
-                if (this.previewModal) {
-                    this.pdfFile = pdfBlobUrl;
-                }
+			if (this.previewModal) {
+				this.pdfFile = pdfBlobUrl;
+			}
 
-                if (this.enableDownload) {
-                    pdfBlobUrl = await html2PdfSetup.save().output('bloburl')
-                }
+			if (this.enableDownload) {
+				pdfBlobUrl = await html2PdfSetup.save().output('bloburl')
+			}
 
-                if (pdfBlobUrl) {
-                    const res = await fetch(pdfBlobUrl)
-                    const blobFile = await res.blob()
-                    this.$emit('hasDownloaded', blobFile)
-                }
+			if (pdfBlobUrl) {
+				const res = await fetch(pdfBlobUrl)
+				const blobFile = await res.blob()
+				this.$emit('hasDownloaded', blobFile)
+			}
 
-                this.progress = 100
-            },
+			this.progress = 100
+		},
 
-            setOptions () {
-                if (this.htmlToPdfOptions !== undefined && this.htmlToPdfOptions !== null) {
-                    return this.htmlToPdfOptions
-                }
+		setOptions () {
+			if (this.htmlToPdfOptions !== undefined && this.htmlToPdfOptions !== null) {
+				return this.htmlToPdfOptions
+			}
 
-                return {
-                    margin: 0,
+			return {
+				margin: 0,
 
-                    filename: `${this.filename}.pdf`,
+				filename: `${this.filename}.pdf`,
 
-                    image: {
-                        type: 'jpeg',
-                        quality: 0.98
-                    },
+				image: {
+					type: 'jpeg',
+					quality: 0.98
+				},
 
-                    enableLinks: false,
+				enableLinks: false,
 
-                    html2canvas: {
-                        scale: this.pdfQuality,
-                        useCORS: true
-                    },
+				html2canvas: {
+					scale: this.pdfQuality,
+					useCORS: true
+				},
 
-                    jsPDF: {
-                        unit: 'in',
-                        format: this.pdfFormat,
-                        orientation: this.pdfOrientation
-                    }
-                }
-            },
+				jsPDF: {
+					unit: 'in',
+					format: this.pdfFormat,
+					orientation: this.pdfOrientation
+				}
+			}
+		},
 
-            closePreview () {
-                this.pdfFile = null
-            }
-        }
-    }
+		closePreview () {
+			this.pdfFile = null
+		}
+	}
+}
 </script>
 
 <style lang="scss" scoped>

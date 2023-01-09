@@ -63,15 +63,15 @@
 
 <script>
 export default {
-    name: "IntroSmartTable", 
-    props: {},
-    data: function () {
-        return {
-            fields: [], 
-        };
-    },
-    methods: {
+	name: 'IntroSmartTable', 
+	props: {},
+	data: function () {
+		return {
+			fields: [], 
+		};
+	},
+	methods: {
         
-    }
+	}
 };
 </script>

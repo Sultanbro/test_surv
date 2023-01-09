@@ -87,130 +87,130 @@
 
 <script>
 export default {
-    name: "TableRentability",
-    props: {
-        year: Number,
-        month: Number
-    },
-    data() {
-        return {
-            items: [],
-            months: {
-                1: 'Январь',
-                2: 'Февраль',
-                3: 'Март',
-                4: 'Апрель',
-                5: 'Май',
-                6: 'Июнь',
-                7: 'Июль',
-                8: 'Август',
-                9: 'Сентябрь',
-                10: 'Октябрь',
-                11: 'Ноябрь',
-                12: 'Декабрь',
-            },
-            tops: {},
-            skey: 1,
-            sorts: {}
-        };
-    },
-    watch: { 
-        year: function(newVal, oldVal) { 
-            this.fetchData();
-        },
-        month: function(newVal, oldVal) { 
-            this.fetchData();
-        },
-    },
+	name: 'TableRentability',
+	props: {
+		year: Number,
+		month: Number
+	},
+	data() {
+		return {
+			items: [],
+			months: {
+				1: 'Январь',
+				2: 'Февраль',
+				3: 'Март',
+				4: 'Апрель',
+				5: 'Май',
+				6: 'Июнь',
+				7: 'Июль',
+				8: 'Август',
+				9: 'Сентябрь',
+				10: 'Октябрь',
+				11: 'Ноябрь',
+				12: 'Декабрь',
+			},
+			tops: {},
+			skey: 1,
+			sorts: {}
+		};
+	},
+	watch: { 
+		year: function(newVal, oldVal) { 
+			this.fetchData();
+		},
+		month: function(newVal, oldVal) { 
+			this.fetchData();
+		},
+	},
 
-    created() {
-        this.fetchData(); 
-    },
+	created() {
+		this.fetchData(); 
+	},
 
-    methods: {
+	methods: {
           
-        countTop() {
-            Object.keys(this.months).forEach(key => {
-                let s = this.items[0]['c' + key];
-                let a = (this.items[0]['l' + key] - s) / s * 100;
-                this.tops[key] = isNaN(a) ? '' : Number(a).toFixed(1) + '%';
-            });
-        },
+		countTop() {
+			Object.keys(this.months).forEach(key => {
+				let s = this.items[0]['c' + key];
+				let a = (this.items[0]['l' + key] - s) / s * 100;
+				this.tops[key] = isNaN(a) ? '' : Number(a).toFixed(1) + '%';
+			});
+		},
 
-        countRents() {
-            this.items.forEach(item => {
-                for(let i = 1;i<=12;i++) {
-                    let l = item['l' + i];
-                    let c = item['c' + i];
-                    let a = (l- c) / l * 100;
-                    item['r' + i] = !isFinite(a)  ? '' : Number(a).toFixed(1) + '%';
-                    item['rc' + i] = !isFinite(a) ? 0 : Number(a);
-                }
-            });
-        },
+		countRents() {
+			this.items.forEach(item => {
+				for(let i = 1;i<=12;i++) {
+					let l = item['l' + i];
+					let c = item['c' + i];
+					let a = (l- c) / l * 100;
+					item['r' + i] = !isFinite(a)  ? '' : Number(a).toFixed(1) + '%';
+					item['rc' + i] = !isFinite(a) ? 0 : Number(a);
+				}
+			});
+		},
 
-        fetchData() {
-            axios 
-                .post("/timetracking/top/get-rentability", {
-                    year: this.year,
-                    month: this.month
-                })
-                .then((response) => {
-                    this.items = response.data
-                    this.countRents();
-                    this.countTop();
-                    this.skey++;
-                });
-        },
+		fetchData() {
+			axios 
+				.post('/timetracking/top/get-rentability', {
+					year: this.year,
+					month: this.month
+				})
+				.then((response) => {
+					this.items = response.data
+					this.countRents();
+					this.countTop();
+					this.skey++;
+				});
+		},
 
-        update(month, index) {
+		update(month, index) {
 
-            let item = this.items[index];
+			let item = this.items[index];
 
-            axios 
-                .post("/timetracking/top/top_edited_value/update", {
-                    year: this.year,
-                    month: month,
-                    value: item['l' + month],
-                    group_id: item.group_id,
-                })
-                .then((response) => {
-                    let i = month;
+			axios 
+				.post('/timetracking/top/top_edited_value/update', {
+					year: this.year,
+					month: month,
+					value: item['l' + month],
+					group_id: item.group_id,
+				})
+				.then((response) => {
+					let i = month;
 
-                    item['r' + i] = Number(item['c' + i]) > 0 ? Number(Number(item['l' + i]) * 1000 / Number(item['c' + i]) ).toFixed(1) : 0;
-                    item['rc' + i] = item['r' + i] + '%';
+					item['r' + i] = Number(item['c' + i]) > 0 ? Number(Number(item['l' + i]) * 1000 / Number(item['c' + i]) ).toFixed(1) : 0;
+					item['rc' + i] = item['r' + i] + '%';
                     
-                    item['ed' + i] = true;
+					item['ed' + i] = true;
 
-                    this.$toast.success('Сохранено');
-                });
-        },
+					this.$toast.success('Сохранено');
+				});
+		},
 
-        numberWithCommas(x) {
-            return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
-        },
+		numberWithCommas(x) {
+			return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+		},
 
-        sort(field) {
+		sort(field) {
 
-            if(this.sorts[field] === undefined) {
-                this.sorts[field] = 'asc';
-            } 
+			if(this.sorts[field] === undefined) {
+				this.sorts[field] = 'asc';
+			} 
 
-            let item = this.items[0];
+			let item = this.items[0];
 
-            this.items.shift();
-            if(this.sorts[field] === 'desc') {
-                this.items.sort((a, b) => (a[field] > b[field]) ? 1 : -1);
-                this.sorts[field] = 'asc';
-            } else {
-                this.items.sort((a, b) => (a[field] < b[field]) ? 1 : -1);
-                this.sorts[field] = 'desc';
-            }
+			this.items.shift();
+			if(this.sorts[field] === 'desc') {
+				this.items.sort((a, b) => (a[field] > b[field]) ? 1 : -1);
+				this.sorts[field] = 'asc';
+			} else {
+				this.items.sort((a, b) => (a[field] < b[field]) ? 1 : -1);
+				this.sorts[field] = 'desc';
+			}
             
-            this.items.unshift(item);
-        },
+			this.items.unshift(item);
+		},
 
-    },
+	},
 };
 </script>
 <style lang="scss" scoped>

@@ -60,142 +60,142 @@
 </template>
 
 <script>
-import {mapActions, mapGetters} from "vuex";
-import ConversationPinned from "../ConversationPinned/ConversationPinned.vue";
-import AddMemberModal from "./AddMemberModal/AddMemberModal.vue";
-import AlternativeAvatar from "../../ChatsList/ContactItem/AlternativeAvatar/AlternativeAvatar.vue";
+import {mapActions, mapGetters} from 'vuex';
+import ConversationPinned from '../ConversationPinned/ConversationPinned.vue';
+import AddMemberModal from './AddMemberModal/AddMemberModal.vue';
+import AlternativeAvatar from '../../ChatsList/ContactItem/AlternativeAvatar/AlternativeAvatar.vue';
 
 export default {
-  name: "ConversationHeader",
-  components: {
-    ConversationPinned,
-    AddMemberModal,
-    AlternativeAvatar,
-  },
-  computed: {
-    ...mapGetters(['chat', 'user']),
-    members() {
-      if (this.chat) {
-        return this.chat.users;
-      }
-      return [];
-    },
-    isAdmin() {
-      return this.chat.users.find(user => user.id === this.user.id).pivot.is_admin;
-    },
-  },
-  data() {
-    return {
-      showAddMemberModal: false,
-      imageError: false,
-      showMembersNames: false,
-      editTitle: false
-    };
-  },
-  watch: {
-    members() {
-      if (!this.chat.private) {
-        this.$nextTick(() => {
-          this.showMembersNames = this.chat.users.length * 100 < this.$refs.messengerChatNameUsers.clientWidth;
-        });
-      }
-    },
-  },
-  methods: {
-    ...mapActions([
-      'setCurrentChatContacts',
-      'toggleInfoPanel', 'toggleChatSearchMode',
-      'uploadChatAvatar',
-      'setChatAdmin', 'unsetChatAdmin', 'editChatTitle'
-    ]),
-    openAddMemberModal(e) {
-      e.stopPropagation();
-      this.showAddMemberModal = true;
-    },
-    changeAvatar() {
-      if (this.chat.private) {
-        return;
-      }
-      if (this.isAdmin) {
-        let input = document.createElement('input');
-        input.type = 'file';
-        input.accept = 'image/*';
-        input.onchange = e => {
-          let file = e.target.files[0];
-          if (file) {
-            this.uploadChatAvatar(file);
-          }
-        };
-        input.click();
-      } else {
-        this.$root.$emit('messengerConfirm', {
-          title: 'Недостаточно прав',
-          message: 'Для изменения аватара чата необходимо быть администратором чата.',
-        });
-      }
-    },
-    changeTitle(event) {
-      event.stopPropagation();
-      if (this.chat.private) {
-        return;
-      }
-      if (this.isAdmin) {
-        this.editTitle = true;
-        this.title = this.chat.title;
-      } else {
-        this.$root.$emit('messengerConfirm', {
-          title: 'Недостаточно прав',
-          message: 'Для изменения названия чата необходимо быть администратором чата.',
-        });
-      }
-    },
-    saveTitle(event) {
-      event.stopPropagation();
-      this.editChatTitle();
-      this.editTitle = false;
-    },
-    changeAdmin(user) {
-      if (user.id === this.user.id) {
-        return;
-      }
-      if (this.isAdmin) {
-        if (user.pivot.is_admin) {
-          this.$root.$emit('messengerConfirm', {
-            title: 'Забрать права администратора?',
-            message: 'Вы уверены, что хотите забрать права администратора у пользователя ' + user.name + '?',
-            button: {
-              yes: 'Забрать',
-              no: 'Отмена'
-            },
-            callback: confirm => {
-              if (confirm) {
-                this.unsetChatAdmin({chat: this.chat, user: user});
-              }
-            }
-          });
-        } else {
-          this.$root.$emit('messengerConfirm', {
-            title: 'Выдать права администратора?',
-            message: 'Вы уверены, что хотите выдать права администратора пользователю ' + user.name + '?',
-            button: {
-              yes: 'Выдать',
-              no: 'Отмена'
-            },
-            callback: confirm => {
-              if (confirm) {
-                this.setChatAdmin({chat: this.chat, user: user});
-              }
-            }
-          });
-        }
-      } else {
-        this.$root.$emit('messengerConfirm', {
-          title: 'Недостаточно прав',
-          message: 'Вы не можете изменять права администратора в этом чате'
-        });
-      }
-    }
-  }
+	name: 'ConversationHeader',
+	components: {
+		ConversationPinned,
+		AddMemberModal,
+		AlternativeAvatar,
+	},
+	computed: {
+		...mapGetters(['chat', 'user']),
+		members() {
+			if (this.chat) {
+				return this.chat.users;
+			}
+			return [];
+		},
+		isAdmin() {
+			return this.chat.users.find(user => user.id === this.user.id).pivot.is_admin;
+		},
+	},
+	data() {
+		return {
+			showAddMemberModal: false,
+			imageError: false,
+			showMembersNames: false,
+			editTitle: false
+		};
+	},
+	watch: {
+		members() {
+			if (!this.chat.private) {
+				this.$nextTick(() => {
+					this.showMembersNames = this.chat.users.length * 100 < this.$refs.messengerChatNameUsers.clientWidth;
+				});
+			}
+		},
+	},
+	methods: {
+		...mapActions([
+			'setCurrentChatContacts',
+			'toggleInfoPanel', 'toggleChatSearchMode',
+			'uploadChatAvatar',
+			'setChatAdmin', 'unsetChatAdmin', 'editChatTitle'
+		]),
+		openAddMemberModal(e) {
+			e.stopPropagation();
+			this.showAddMemberModal = true;
+		},
+		changeAvatar() {
+			if (this.chat.private) {
+				return;
+			}
+			if (this.isAdmin) {
+				let input = document.createElement('input');
+				input.type = 'file';
+				input.accept = 'image/*';
+				input.onchange = e => {
+					let file = e.target.files[0];
+					if (file) {
+						this.uploadChatAvatar(file);
+					}
+				};
+				input.click();
+			} else {
+				this.$root.$emit('messengerConfirm', {
+					title: 'Недостаточно прав',
+					message: 'Для изменения аватара чата необходимо быть администратором чата.',
+				});
+			}
+		},
+		changeTitle(event) {
+			event.stopPropagation();
+			if (this.chat.private) {
+				return;
+			}
+			if (this.isAdmin) {
+				this.editTitle = true;
+				this.title = this.chat.title;
+			} else {
+				this.$root.$emit('messengerConfirm', {
+					title: 'Недостаточно прав',
+					message: 'Для изменения названия чата необходимо быть администратором чата.',
+				});
+			}
+		},
+		saveTitle(event) {
+			event.stopPropagation();
+			this.editChatTitle();
+			this.editTitle = false;
+		},
+		changeAdmin(user) {
+			if (user.id === this.user.id) {
+				return;
+			}
+			if (this.isAdmin) {
+				if (user.pivot.is_admin) {
+					this.$root.$emit('messengerConfirm', {
+						title: 'Забрать права администратора?',
+						message: 'Вы уверены, что хотите забрать права администратора у пользователя ' + user.name + '?',
+						button: {
+							yes: 'Забрать',
+							no: 'Отмена'
+						},
+						callback: confirm => {
+							if (confirm) {
+								this.unsetChatAdmin({chat: this.chat, user: user});
+							}
+						}
+					});
+				} else {
+					this.$root.$emit('messengerConfirm', {
+						title: 'Выдать права администратора?',
+						message: 'Вы уверены, что хотите выдать права администратора пользователю ' + user.name + '?',
+						button: {
+							yes: 'Выдать',
+							no: 'Отмена'
+						},
+						callback: confirm => {
+							if (confirm) {
+								this.setChatAdmin({chat: this.chat, user: user});
+							}
+						}
+					});
+				}
+			} else {
+				this.$root.$emit('messengerConfirm', {
+					title: 'Недостаточно прав',
+					message: 'Вы не можете изменять права администратора в этом чате'
+				});
+			}
+		}
+	}
 }
 </script>
 

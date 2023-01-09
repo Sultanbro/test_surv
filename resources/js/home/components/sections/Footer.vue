@@ -123,19 +123,19 @@
 import FooterLink from '../footer/FooterLink'
 
 export default {
-  components: {
-    FooterLink
-  },
-  computed: {
-    lang() {
-      return this.$root.$data.lang
-    }
-  },
-  data() {
-    return {
-      year: new Date().getFullYear()
-    }
-  }
+	components: {
+		FooterLink
+	},
+	computed: {
+		lang() {
+			return this.$root.$data.lang
+		}
+	},
+	data() {
+		return {
+			year: new Date().getFullYear()
+		}
+	}
 }
 </script>
 

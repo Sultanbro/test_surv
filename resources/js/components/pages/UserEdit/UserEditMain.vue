@@ -2,92 +2,92 @@
 import axios from 'axios'
 
 export default {
-    name: 'UserEditMain',
-    props: {
-        formUserName: String,
-        formUserLastName: String,
-        formUserEmail: String,
-        formUserBirthday: String,
-        positions:{
-            type: Array,
-            default: () => []
-        },
-        groups:{
-            type: Array,
-            default: () => []
-        },
-        in_groups:{
-            type: Array,
-            default: () => []
-        },
-        programs:{
-            type: Array,
-            default: () => []
-        },
-        workingDays:{
-            type: Array,
-            default: () => []
-        },
-        workingTimes:{
-            type: Array,
-            default: () => []
-        },
-        user: {
-            type: Object,
-            default: null
-        },
-    },
-    data(){
-        return {
-            country: this.user?.working_country || '',
-            working_city: this.user?.working_city || '',
-            cities: [],
-            isSearchResult: false,
-            weekdays: (this.user?.weekdays || '0000000').split(''),
-        }
-    },
-    computed:{
-        showPositionGroup(){
-            return this.user && this.user.position_id === 45
-        }
-    },
-    watch: {
-        user(user){
-            this.country = user?.working_country || ''
-            this.working_city = user?.working_city || ''
-            this.weekdays = (user?.weekdays || '0000000').split('')
-        }
-    },
-    methods: {
-        fetchCity(){
-            const _token = document.querySelector('meta[name="csrf-token"]').getAttribute('content')
-            if(!this.country){
-                this.cities = []
-                this.isSearchResult = false
-                return
-            }
+	name: 'UserEditMain',
+	props: {
+		formUserName: String,
+		formUserLastName: String,
+		formUserEmail: String,
+		formUserBirthday: String,
+		positions:{
+			type: Array,
+			default: () => []
+		},
+		groups:{
+			type: Array,
+			default: () => []
+		},
+		in_groups:{
+			type: Array,
+			default: () => []
+		},
+		programs:{
+			type: Array,
+			default: () => []
+		},
+		workingDays:{
+			type: Array,
+			default: () => []
+		},
+		workingTimes:{
+			type: Array,
+			default: () => []
+		},
+		user: {
+			type: Object,
+			default: null
+		},
+	},
+	data(){
+		return {
+			country: this.user?.working_country || '',
+			working_city: this.user?.working_city || '',
+			cities: [],
+			isSearchResult: false,
+			weekdays: (this.user?.weekdays || '0000000').split(''),
+		}
+	},
+	computed:{
+		showPositionGroup(){
+			return this.user && this.user.position_id === 45
+		}
+	},
+	watch: {
+		user(user){
+			this.country = user?.working_country || ''
+			this.working_city = user?.working_city || ''
+			this.weekdays = (user?.weekdays || '0000000').split('')
+		}
+	},
+	methods: {
+		fetchCity(){
+			const _token = document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+			if(!this.country){
+				this.cities = []
+				this.isSearchResult = false
+				return
+			}
 
-            axios.post('/selected-country/search/', {
-                value: this.country,
-                _token
-            }).then(({data}) => {
-                this.isSearchResult = true
-                if(!data[0] || !data[0].length){
-                    this.cities = []
-                    return
-                }
-                this.cities = data[0]
-            })
-        },
-        pasteSearchInput(city){
-            this.working_city = city.id
-            this.country = `Страна: ${ city.country } Город: ${ city.city }`
-            this.isSearchResult = false
-        },
-        toggleWeekDay(id){
-            this.weekdays[id] = this.weekdays[id] === '1' ? '0' : '1'
-        }
-    }
+			axios.post('/selected-country/search/', {
+				value: this.country,
+				_token
+			}).then(({data}) => {
+				this.isSearchResult = true
+				if(!data[0] || !data[0].length){
+					this.cities = []
+					return
+				}
+				this.cities = data[0]
+			})
+		},
+		pasteSearchInput(city){
+			this.working_city = city.id
+			this.country = `Страна: ${ city.country } Город: ${ city.city }`
+			this.isSearchResult = false
+		},
+		toggleWeekDay(id){
+			this.weekdays[id] = this.weekdays[id] === '1' ? '0' : '1'
+		}
+	}
 }
 </script>
 <template>

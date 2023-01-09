@@ -47,8 +47,8 @@
 
 <script>
 export default {
-  name: 'LeftSidebarMenu',
-  props: ['items']
+	name: 'LeftSidebarMenu',
+	props: ['items']
 }
 </script>
 

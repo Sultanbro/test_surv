@@ -90,233 +90,233 @@
 
 <script>
 export default {
-    name: "books",
-    props: {
-        selectedGroup: Number,
-    },
-    data() {
-        return {
-            items: [],
-            groups: [],
-            addBookWindow: false,
-            lastClickedRow: null,
-            book: {
-                title: '',
-                author: '',
-                link: ''
-            },
-            ebook: {
-                id: null,
-                title: '',
-                author: '',
-                link: ''
-            },
-            fields: [
-                {
-                    key: 'id',
-                    label: 'id'
-                },
-                {
-                    key: 'title',
-                    label: 'Название',
-                    sortable: true
-                },
-                {
-                    key: 'author',
-                    label: 'Автор',
-                    sortable: true
-                },
-                {
-                    key: 'groups',
-                    label: 'Группы',
-                    sortable: true
-                },
-                {
-                    key: 'actions',
-                    label: '',
-                },
-            ],
-            totalRows: 1,
-            currentPage: 1,
-            perPage: 100,
-            pageOptions: [10, 20, 40, 50, {
-                value: 100,
-                text: "Показать 100"
-            }],
-            sortBy: '',
-            sortDesc: false,
-            sortDirection: 'asc',
-            filter: null,
-            filterOn: ["title"]
-        }
-    }, 
-    watch: {
-        selectedGroup: function (newQuestion, oldQuestion) {
-            this.getBooks()
-        },
-        // filter: {
-        //     handler: function () {
-        //         this.$refs.table.refresh()
-        //     },
-        //     deep: true
-        // }
-    },
-    created() {
-        this.getBooks()
-    },
-    computed: {
-        sortOptions() {
-            return this.fields
-                .filter(f => f.sortable)
-                .map(f => {
-                    return {
-                        text: f.label,
-                        value: f.key
-                    }
-                })
-        },
-        itemProvider() {
-            this.filtered = this.items.filter((el) => {
-                console.log(el.groups.includes(this.selectedGroup))
-                return el.title.indexOf(this.filter.title) > -1 && el.groups.includes(this.selectedGroup);
+	name: 'books',
+	props: {
+		selectedGroup: Number,
+	},
+	data() {
+		return {
+			items: [],
+			groups: [],
+			addBookWindow: false,
+			lastClickedRow: null,
+			book: {
+				title: '',
+				author: '',
+				link: ''
+			},
+			ebook: {
+				id: null,
+				title: '',
+				author: '',
+				link: ''
+			},
+			fields: [
+				{
+					key: 'id',
+					label: 'id'
+				},
+				{
+					key: 'title',
+					label: 'Название',
+					sortable: true
+				},
+				{
+					key: 'author',
+					label: 'Автор',
+					sortable: true
+				},
+				{
+					key: 'groups',
+					label: 'Группы',
+					sortable: true
+				},
+				{
+					key: 'actions',
+					label: '',
+				},
+			],
+			totalRows: 1,
+			currentPage: 1,
+			perPage: 100,
+			pageOptions: [10, 20, 40, 50, {
+				value: 100,
+				text: 'Показать 100'
+			}],
+			sortBy: '',
+			sortDesc: false,
+			sortDirection: 'asc',
+			filter: null,
+			filterOn: ['title']
+		}
+	}, 
+	watch: {
+		selectedGroup: function (newQuestion, oldQuestion) {
+			this.getBooks()
+		},
+		// filter: {
+		//     handler: function () {
+		//         this.$refs.table.refresh()
+		//     },
+		//     deep: true
+		// }
+	},
+	created() {
+		this.getBooks()
+	},
+	computed: {
+		sortOptions() {
+			return this.fields
+				.filter(f => f.sortable)
+				.map(f => {
+					return {
+						text: f.label,
+						value: f.key
+					}
+				})
+		},
+		itemProvider() {
+			this.filtered = this.items.filter((el) => {
+				console.log(el.groups.includes(this.selectedGroup))
+				return el.title.indexOf(this.filter.title) > -1 && el.groups.includes(this.selectedGroup);
                 
-            })
+			})
 
-            this.totalRows = this.filtered.length
-            return this.filtered
-        },
-    },
-    mounted() {
-        this.totalRows = this.items.length
-    },
-    methods: {
-        toggleAbbBookWindow() {
-            this.addBookWindow = !this.addBookWindow
-        },
-        clickRow(row) {
-            if (this.lastClickedRow != null) {
-                if (this.lastClickedRow.index == row.index) {
-                    this.lastClickedRow.toggleDetails();
-                    this.lastClickedRow = null
-                } else {
-                    this.lastClickedRow.toggleDetails();
-                    this.lastClickedRow = row;
-                    row.toggleDetails();
-                }
-            } else {
-                row.toggleDetails();
-                this.lastClickedRow = row;
-            }
+			this.totalRows = this.filtered.length
+			return this.filtered
+		},
+	},
+	mounted() {
+		this.totalRows = this.items.length
+	},
+	methods: {
+		toggleAbbBookWindow() {
+			this.addBookWindow = !this.addBookWindow
+		},
+		clickRow(row) {
+			if (this.lastClickedRow != null) {
+				if (this.lastClickedRow.index == row.index) {
+					this.lastClickedRow.toggleDetails();
+					this.lastClickedRow = null
+				} else {
+					this.lastClickedRow.toggleDetails();
+					this.lastClickedRow = row;
+					row.toggleDetails();
+				}
+			} else {
+				row.toggleDetails();
+				this.lastClickedRow = row;
+			}
 
-            this.ebook.id = row.item.id;
-            this.ebook.title = row.item.title;
-            this.ebook.link = row.item.link;
-            this.ebook.author = row.item.author;
-        },
-        onFiltered(filteredItems) {
-            this.totalRows = filteredItems.length
-            this.currentPage = 1
-        },
-        messageoff() {
-            setTimeout(() => {
-                this.message = null
-            }, 3000)
-        },
-        addBook() {
-            axios.post('/bp_books/book/add', {
-                    title: this.book.title,
-                    author: this.book.author,
-                    group_id: this.selectedGroup,
-                    link: this.book.link,
-                })
-                .then(response => {
-                    this.book.title = ''
-                    this.book.author = ''
-                    this.book.link = ''
-                    this.addBookWindow = false
-                    // this.lastClickedRow.toggleDetails();
-                    // this.lastClickedRow = null
-                    this.$toast.success('Успешно сохранено');
-                    this.messageoff()
-                    this.getBooks();
+			this.ebook.id = row.item.id;
+			this.ebook.title = row.item.title;
+			this.ebook.link = row.item.link;
+			this.ebook.author = row.item.author;
+		},
+		onFiltered(filteredItems) {
+			this.totalRows = filteredItems.length
+			this.currentPage = 1
+		},
+		messageoff() {
+			setTimeout(() => {
+				this.message = null
+			}, 3000)
+		},
+		addBook() {
+			axios.post('/bp_books/book/add', {
+				title: this.book.title,
+				author: this.book.author,
+				group_id: this.selectedGroup,
+				link: this.book.link,
+			})
+				.then(response => {
+					this.book.title = ''
+					this.book.author = ''
+					this.book.link = ''
+					this.addBookWindow = false
+					// this.lastClickedRow.toggleDetails();
+					// this.lastClickedRow = null
+					this.$toast.success('Успешно сохранено');
+					this.messageoff()
+					this.getBooks();
 
-                })
-                .catch(error => {
-                    console.log(error.response)
-                    this.$toast.info(error.response);
-                });
-        },
-        editBook() {
-            axios.post('/bp_books/book/edit', {
-                    id: this.ebook.id,
-                    title: this.ebook.title,
-                    author: this.ebook.author,
-                    link: this.ebook.link,
-                })
-                .then(response => {
-                    this.ebook.id = ''
-                    this.ebook.title = ''
-                    this.ebook.link = ''
-                    this.ebook.author = ''
-                    this.lastClickedRow.toggleDetails();
-                    this.lastClickedRow = null
-                    if (response.data.code == 1) {
-                        this.$toast.success(response.data.message);
-                    } else {
-                        this.$toast.error(response.data.message);
-                    }
+				})
+				.catch(error => {
+					console.log(error.response)
+					this.$toast.info(error.response);
+				});
+		},
+		editBook() {
+			axios.post('/bp_books/book/edit', {
+				id: this.ebook.id,
+				title: this.ebook.title,
+				author: this.ebook.author,
+				link: this.ebook.link,
+			})
+				.then(response => {
+					this.ebook.id = ''
+					this.ebook.title = ''
+					this.ebook.link = ''
+					this.ebook.author = ''
+					this.lastClickedRow.toggleDetails();
+					this.lastClickedRow = null
+					if (response.data.code == 1) {
+						this.$toast.success(response.data.message);
+					} else {
+						this.$toast.error(response.data.message);
+					}
 
-                    this.getBooks()
-                    this.messageoff()
-                })
-                .catch(error => {
-                    console.log(error.response)
-                    this.$toast.info(error.response);
-                });
-        },
-        deleteBook(id) {
-                axios.post('/bp_books/book/delete', {
-                    id: id,
-                })
-                .then(response => {
-                    this.$toast.success('Книга удалена')
-                    this.getBooks()
-                    this.messageoff()
-                })
-                .catch(error => {
-                    console.log(error.response)
-                    this.$toast.info(error.response);
-                });
-        },
-        getBooks() {
-            axios.post('/bp_books/books', {
-                    group_id: this.selectedGroup
-                })
-                .then(response => {
-                    this.items = response.data.books
-                    this.groups = response.data.groups
-                    this.totalRows = this.items.length
+					this.getBooks()
+					this.messageoff()
+				})
+				.catch(error => {
+					console.log(error.response)
+					this.$toast.info(error.response);
+				});
+		},
+		deleteBook(id) {
+			axios.post('/bp_books/book/delete', {
+				id: id,
+			})
+				.then(response => {
+					this.$toast.success('Книга удалена')
+					this.getBooks()
+					this.messageoff()
+				})
+				.catch(error => {
+					console.log(error.response)
+					this.$toast.info(error.response);
+				});
+		},
+		getBooks() {
+			axios.post('/bp_books/books', {
+				group_id: this.selectedGroup
+			})
+				.then(response => {
+					this.items = response.data.books
+					this.groups = response.data.groups
+					this.totalRows = this.items.length
 
-                    this.groupFilter()
-                })
-        },
-        groupFilter() {
-            if(this.selectedGroup != 0) {
-                this.items = this.items.filter((el) => {
+					this.groupFilter()
+				})
+		},
+		groupFilter() {
+			if(this.selectedGroup != 0) {
+				this.items = this.items.filter((el) => {
                     
-                    let includes = false
+					let includes = false
 
-                    el.groups.forEach((item) => {
-                        console.log(item)
-                        console.log(this.selectedGroup)
-                        if(item == this.selectedGroup) includes = true})
+					el.groups.forEach((item) => {
+						console.log(item)
+						console.log(this.selectedGroup)
+						if(item == this.selectedGroup) includes = true})
                     
-                    return includes;
-                })
-            }
+					return includes;
+				})
+			}
             
-        }
-    }
+		}
+	}
 }
 </script>
 

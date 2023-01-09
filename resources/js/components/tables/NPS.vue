@@ -74,105 +74,105 @@
 
 <script>
 export default {
-    name: "NPS",
-    props: {activeuserid: Number, show_header: {
-        default: true
-    }},
-    data() {
-        return {
-            users: [],
-            fields: [],
-            years: [2020, 2021, 2022],
-            currentYear: new Date().getFullYear(),
-            monthInfo: {
-                currentMonth: null,
-                monthEnd: 0,
-                workDays: 0,
-                weekDays: 0,
-                daysInMonth: 0
-            },
-            ukey: 1
-        }
-    },
-    created() {
-        this.setMonth();
-        this.setMonthsTableFields();
-        this.fetchData();
-    },
-    methods: {
+	name: 'NPS',
+	props: {activeuserid: Number, show_header: {
+		default: true
+	}},
+	data() {
+		return {
+			users: [],
+			fields: [],
+			years: [2020, 2021, 2022],
+			currentYear: new Date().getFullYear(),
+			monthInfo: {
+				currentMonth: null,
+				monthEnd: 0,
+				workDays: 0,
+				weekDays: 0,
+				daysInMonth: 0
+			},
+			ukey: 1
+		}
+	},
+	created() {
+		this.setMonth();
+		this.setMonthsTableFields();
+		this.fetchData();
+	},
+	methods: {
 
-        setMonth() {
-            this.monthInfo.currentMonth = this.monthInfo.currentMonth ? this.monthInfo.currentMonth : this.$moment().format('MMMM')
-            this.monthInfo.month = this.monthInfo.currentMonth ? this.$moment(this.monthInfo.currentMonth, 'MMMM').format('M') : this.$moment().format('M')
-            let currentMonth = this.$moment(this.monthInfo.currentMonth, 'MMMM')
-            //Расчет выходных дней
-            this.monthInfo.monthEnd = currentMonth.endOf('month'); //Конец месяца
-            this.monthInfo.weekDays = currentMonth.weekdayCalc(currentMonth.startOf('month').toString(), currentMonth.endOf('month').toString(), [6]) //Колличество выходных
-            this.monthInfo.daysInMonth = new Date(2021, this.$moment(this.monthInfo.currentMonth, 'MMMM').format('M'), 0).getDate() //Колличество дней в месяце
-            this.monthInfo.workDays = this.monthInfo.daysInMonth - this.monthInfo.weekDays //Колличество рабочих дней
-        },
+		setMonth() {
+			this.monthInfo.currentMonth = this.monthInfo.currentMonth ? this.monthInfo.currentMonth : this.$moment().format('MMMM')
+			this.monthInfo.month = this.monthInfo.currentMonth ? this.$moment(this.monthInfo.currentMonth, 'MMMM').format('M') : this.$moment().format('M')
+			let currentMonth = this.$moment(this.monthInfo.currentMonth, 'MMMM')
+			//Расчет выходных дней
+			this.monthInfo.monthEnd = currentMonth.endOf('month'); //Конец месяца
+			this.monthInfo.weekDays = currentMonth.weekdayCalc(currentMonth.startOf('month').toString(), currentMonth.endOf('month').toString(), [6]) //Колличество выходных
+			this.monthInfo.daysInMonth = new Date(2021, this.$moment(this.monthInfo.currentMonth, 'MMMM').format('M'), 0).getDate() //Колличество дней в месяце
+			this.monthInfo.workDays = this.monthInfo.daysInMonth - this.monthInfo.weekDays //Колличество рабочих дней
+		},
 
-        fetchData() {
-            let loader = this.$loading.show();
+		fetchData() {
+			let loader = this.$loading.show();
 
-            axios.post('/timetracking/nps', {
-                month: this.$moment(this.monthInfo.currentMonth, 'MMMM').format('M'),
-                year: this.currentYear,
-            }).then(response => {
+			axios.post('/timetracking/nps', {
+				month: this.$moment(this.monthInfo.currentMonth, 'MMMM').format('M'),
+				year: this.currentYear,
+			}).then(response => {
                 
-                this.setMonth()
-                this.users = response.data.users;
-                this.ukey++;
+				this.setMonth()
+				this.users = response.data.users;
+				this.ukey++;
 
-                loader.hide()
-            }).catch(error => {
-                loader.hide()
-                alert(error)
-            });
-        },
+				loader.hide()
+			}).catch(error => {
+				loader.hide()
+				alert(error)
+			});
+		},
 
-        setMonthsTableFields() {
-            let fieldsArray = []
-            let order = 1;
+		setMonthsTableFields() {
+			let fieldsArray = []
+			let order = 1;
             
-            fieldsArray.push({
-                key: 'group_id',
-                name: 'Отдел',
-                order: order++,
-                klass: ' text-left bg-blue w-200'
-            }) 
+			fieldsArray.push({
+				key: 'group_id',
+				name: 'Отдел',
+				order: order++,
+				klass: ' text-left bg-blue w-200'
+			}) 
 
-            fieldsArray.push({
-                key: 'position',
-                name: 'Должность',
-                order: order++,
-                klass: ' text-left bg-blue'
-            })  
+			fieldsArray.push({
+				key: 'position',
+				name: 'Должность',
+				order: order++,
+				klass: ' text-left bg-blue'
+			})  
 
-            fieldsArray.push({
-                key: 'name',
-                name: 'ФИО',
-                order: order++,
-                klass: ' text-left bg-blue w-200'
-            }) 
+			fieldsArray.push({
+				key: 'name',
+				name: 'ФИО',
+				order: order++,
+				klass: ' text-left bg-blue w-200'
+			}) 
             
 
-            for(let i = 1; i <= 12; i++) {
+			for(let i = 1; i <= 12; i++) {
 
-                if(i.length == 1) i = '0' + i
+				if(i.length == 1) i = '0' + i
 
-                fieldsArray.push({
-                    key: i,
-                    name: moment(this.currentYear + '-' + i + '-01').format('MMMM'),
-                    order: order++,
-                    klass: 'text-center px-1 month'
-                })
+				fieldsArray.push({
+					key: i,
+					name: moment(this.currentYear + '-' + i + '-01').format('MMMM'),
+					order: order++,
+					klass: 'text-center px-1 month'
+				})
 
-            } 
+			} 
             
-            this.fields = fieldsArray    
-        },
-    }
+			this.fields = fieldsArray    
+		},
+	}
 };
 </script>
 

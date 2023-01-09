@@ -91,80 +91,80 @@
 </template>
 
 <script>
-import {fields} from "../../kpi/bonuses";
+import {fields} from '../../kpi/bonuses';
 
 export default {
-    name: "PopupBonuses",
-    props: {},
-    data: function () {
-        return {
-            fields: [],
-            bonuses: [],
-            currentMonth: null,
-            dateInfo: {
-                currentMonth: null,
-                monthEnd: 0,
-                workDays: 0,
-                weekDays: 0,
-                daysInMonth: 0
-            },
-            potential_bonuses: '',
-            history: [],
-            loading: false
-        };
-    },
-    created(){
-        this.setMonth()
-        this.fetchData()
-        this.fetchBonuses()
-    },
-    methods: {
-        /**
+	name: 'PopupBonuses',
+	props: {},
+	data: function () {
+		return {
+			fields: [],
+			bonuses: [],
+			currentMonth: null,
+			dateInfo: {
+				currentMonth: null,
+				monthEnd: 0,
+				workDays: 0,
+				weekDays: 0,
+				daysInMonth: 0
+			},
+			potential_bonuses: '',
+			history: [],
+			loading: false
+		};
+	},
+	created(){
+		this.setMonth()
+		this.fetchData()
+		this.fetchBonuses()
+	},
+	methods: {
+		/**
          * set month
          */
-        setMonth() {
-            let year = moment().format('YYYY')
-            this.dateInfo.currentMonth = this.dateInfo.currentMonth ? this.dateInfo.currentMonth : this.$moment().format('MMMM')
-            this.currentMonth = this.dateInfo.currentMonth;
-            this.dateInfo.date = `${this.dateInfo.currentMonth} ${year}`
+		setMonth() {
+			let year = moment().format('YYYY')
+			this.dateInfo.currentMonth = this.dateInfo.currentMonth ? this.dateInfo.currentMonth : this.$moment().format('MMMM')
+			this.currentMonth = this.dateInfo.currentMonth;
+			this.dateInfo.date = `${this.dateInfo.currentMonth} ${year}`
 
-            let currentMonth = this.$moment(this.dateInfo.currentMonth, 'MMMM')
+			let currentMonth = this.$moment(this.dateInfo.currentMonth, 'MMMM')
 
-            //Расчет выходных дней
-            this.dateInfo.monthEnd = currentMonth.endOf('month'); //Конец месяца
-            this.dateInfo.weekDays = currentMonth.weekdayCalc(this.dateInfo.monthEnd, [6]) //Колличество выходных
-            this.dateInfo.daysInMonth = currentMonth.daysInMonth() //Колличество дней в месяце
-            this.dateInfo.workDays = this.dateInfo.daysInMonth - this.dateInfo.weekDays //Колличество рабочих дней
-        },
+			//Расчет выходных дней
+			this.dateInfo.monthEnd = currentMonth.endOf('month'); //Конец месяца
+			this.dateInfo.weekDays = currentMonth.weekdayCalc(this.dateInfo.monthEnd, [6]) //Колличество выходных
+			this.dateInfo.daysInMonth = currentMonth.daysInMonth() //Колличество дней в месяце
+			this.dateInfo.workDays = this.dateInfo.daysInMonth - this.dateInfo.weekDays //Колличество рабочих дней
+		},
 
-        fetchData() {
-            this.loading = true
+		fetchData() {
+			this.loading = true
 
-            axios
-                .post("/bonuses", {
-                    month: this.$moment(this.currentMonth, 'MMMM').format('M'),
-                    year: new Date().getFullYear(),
-                })
-                .then((response) => {
-                    // this.potential_bonuses = response.data.data.potential_bonuses
-                    this.history = response.data.data.history
+			axios
+				.post('/bonuses', {
+					month: this.$moment(this.currentMonth, 'MMMM').format('M'),
+					year: new Date().getFullYear(),
+				})
+				.then((response) => {
+					// this.potential_bonuses = response.data.data.potential_bonuses
+					this.history = response.data.data.history
 
-                    this.loading = false
-                });
-        },
-      fetchBonuses(){
-        this.loading = true
-        const _this = this;
-        axios
-            .post("/bonus/user")
-            .then((response) => {
-                console.log(response);
-                _this.bonuses = response.data.bonuses
+					this.loading = false
+				});
+		},
+		fetchBonuses(){
+			this.loading = true
+			const _this = this;
+			axios
+				.post('/bonus/user')
+				.then((response) => {
+					console.log(response);
+					_this.bonuses = response.data.bonuses
 
-              this.loading = false
-            });
-      }
-    }
+					this.loading = false
+				});
+		}
+	}
 };
 </script>
 

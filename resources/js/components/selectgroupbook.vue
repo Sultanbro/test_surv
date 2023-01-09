@@ -26,24 +26,24 @@
 </template>
 
 <script>
-    export default {
-        name: "selectgroup",
-        props: ['cat', 'indexcat'],
-        methods: {
-            addbook(cat) {
-                this.$emit('addbook', cat)
-            },
-            deletebook(cat, index) {
-                this.$emit('deletebook', cat, index)
-            },
+export default {
+	name: 'selectgroup',
+	props: ['cat', 'indexcat'],
+	methods: {
+		addbook(cat) {
+			this.$emit('addbook', cat)
+		},
+		deletebook(cat, index) {
+			this.$emit('deletebook', cat, index)
+		},
 
-            addbookk(cat) {
+		addbookk(cat) {
 
-                this.$emit('addbookk', cat)
-            }
-        }
+			this.$emit('addbookk', cat)
+		}
+	}
 
-    }
+}
 </script>
 
 <style scoped>

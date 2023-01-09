@@ -149,236 +149,236 @@
 <script>
 
 export default {
-    name: "TableUserSalary",
-    props: {
-        activeuserid: {
-            type: Number,
-        },
-        date: {},
-        month: {}
-    },
+	name: 'TableUserSalary',
+	props: {
+		activeuserid: {
+			type: Number,
+		},
+		date: {},
+		month: {}
+	},
 
 
-    watch: {
-        month: {
-            handler: function (val) {
-                this.dateInfo.currentMonth = val
-                this.fetchData()
-            },
-        },
-    },
+	watch: {
+		month: {
+			handler: function (val) {
+				this.dateInfo.currentMonth = val
+				this.fetchData()
+			},
+		},
+	},
 
-    data() {
-        return {
-            data: {},
-            openSidebar: false,
-            sidebarContent: {},
-            sidebarTitle: 'История',
-            totalFines: 0,
-            total_avanses: 0,
-            items: {
-                salaries: [],
-                times: [],
-                hours: []
-            },
-            fields: [],
-            dayInfoText: '',
-            hasPremission: false,
-            dateInfo: {
-                currentMonth: null,
-                monthEnd: 0,
-                workDays: 0,
-                weekDays: 0,
-                daysInMonth: 0
-            },
-            dataLoaded: false,
-            myTable: 1
-        }
-    },
+	data() {
+		return {
+			data: {},
+			openSidebar: false,
+			sidebarContent: {},
+			sidebarTitle: 'История',
+			totalFines: 0,
+			total_avanses: 0,
+			items: {
+				salaries: [],
+				times: [],
+				hours: []
+			},
+			fields: [],
+			dayInfoText: '',
+			hasPremission: false,
+			dateInfo: {
+				currentMonth: null,
+				monthEnd: 0,
+				workDays: 0,
+				weekDays: 0,
+				daysInMonth: 0
+			},
+			dataLoaded: false,
+			myTable: 1
+		}
+	},
 
-    created() {
-        // //Текущая группа
-        this.setMonth()
-        this.setFields()
-        this.fetchData()
-    },
-    methods: {
+	created() {
+		// //Текущая группа
+		this.setMonth()
+		this.setFields()
+		this.fetchData()
+	},
+	methods: {
 
-        //Установка заголовока таблицы
-        setFields() {
-            let fields = []
+		//Установка заголовока таблицы
+		setFields() {
+			let fields = []
 
-            fields = [
-                {
-                    key: "0",
-                    label: "Дни",
-                    variant: "title",
-                    class: "text-left t-name"
-                },
-                {
-                    key: "total",
-                    label: "К выдаче",
-                    variant: "title",
-                    class: "text-center t-name"
-                },
-                {
-                  key: "avanses",
-                  label: "Авансы",
-                  variant: "title",
-                  class: "text-center t-name"
-                },
-                {
-                  key: "fines",
-                  label: "Штрафы",
-                  variant: "title",
-                  class: "text-center t-name"
-                }
-            ];
+			fields = [
+				{
+					key: '0',
+					label: 'Дни',
+					variant: 'title',
+					class: 'text-left t-name'
+				},
+				{
+					key: 'total',
+					label: 'К выдаче',
+					variant: 'title',
+					class: 'text-center t-name'
+				},
+				{
+					key: 'avanses',
+					label: 'Авансы',
+					variant: 'title',
+					class: 'text-center t-name'
+				},
+				{
+					key: 'fines',
+					label: 'Штрафы',
+					variant: 'title',
+					class: 'text-center t-name'
+				}
+			];
 
-            let days = this.dateInfo.daysInMonth
+			let days = this.dateInfo.daysInMonth
 
-            for (let i = 1; i <= days; i++) {
-                let dayName = this.$moment(`${i} ${this.dateInfo.date}`, 'D MMMM YYYY').locale('en').format('ddd')
-                fields.push({
-                    key: `${i}`,
-                    label: `${i}`,
-                    sortable: false,
-                    class: `day ${dayName}`,
-                })
-            }
-            this.fields = fields
-        },
+			for (let i = 1; i <= days; i++) {
+				let dayName = this.$moment(`${i} ${this.dateInfo.date}`, 'D MMMM YYYY').locale('en').format('ddd')
+				fields.push({
+					key: `${i}`,
+					label: `${i}`,
+					sortable: false,
+					class: `day ${dayName}`,
+				})
+			}
+			this.fields = fields
+		},
 
-        //Загрузка данных для таблицы
-        fetchData() {
-            let loader = this.$loading.show();
+		//Загрузка данных для таблицы
+		fetchData() {
+			let loader = this.$loading.show();
 
-            axios.post('/timetracking/zarplata-table-new', {
-                month: this.$moment(this.month, 'MMMM').format('M'),
-            }).then(response => {
+			axios.post('/timetracking/zarplata-table-new', {
+				month: this.$moment(this.month, 'MMMM').format('M'),
+			}).then(response => {
 
-                this.myTable++
+				this.myTable++
 
-                this.setMonth()
-                this.setFields()
+				this.setMonth()
+				this.setFields()
 
-                this.data = response.data.data
-                this.totalFines = response.data.totalFines
-                this.total_avanses = response.data.total_avanses
-
-
-                this.loadItems()
-                this.dataLoaded = true
-                this.myTable++
+				this.data = response.data.data
+				this.totalFines = response.data.totalFines
+				this.total_avanses = response.data.total_avanses
 
 
-                loader.hide()
-            })
-        },
+				this.loadItems()
+				this.dataLoaded = true
+				this.myTable++
 
-        setMonth() {
-            let year = moment().format('YYYY')
-            this.dateInfo.currentMonth = this.dateInfo.currentMonth ? this.dateInfo.currentMonth : this.$moment().format('MMMM')
 
-            this.dateInfo.date = `${this.dateInfo.currentMonth} ${year}`
+				loader.hide()
+			})
+		},
 
-            let currentMonth = this.$moment(this.dateInfo.currentMonth, 'MMMM')
-            //Расчет выходных дней
-            this.dateInfo.monthEnd = currentMonth.endOf('month'); //Конец месяца
-            this.dateInfo.weekDays = currentMonth.weekdayCalc(this.dateInfo.monthEnd, [6]) //Колличество выходных
-            this.dateInfo.daysInMonth = currentMonth.daysInMonth() //Колличество дней в месяце
-            this.dateInfo.workDays = this.dateInfo.daysInMonth - this.dateInfo.weekDays //Колличество рабочих дней
-        },
+		setMonth() {
+			let year = moment().format('YYYY')
+			this.dateInfo.currentMonth = this.dateInfo.currentMonth ? this.dateInfo.currentMonth : this.$moment().format('MMMM')
 
-        //Добавление загруженных данных в таблицу
-        loadItems() {
-            let items = [];
-            let temp = [];
-            let total = {
-                'salaries':0,
-                'hours':0,
-            };
+			this.dateInfo.date = `${this.dateInfo.currentMonth} ${year}`
 
-            for (let key in this.data) {
-                temp[key] = []
-                for (let keyt in this.data[key]) {
-                    temp[key][keyt] = ({
-                        'value': this.data[key][keyt]['value'],
-                        'fines': this.data[key][keyt]['fines'],
-                        'avanses': this.data[key][keyt]['avanses'],
-                        'bonuses': this.data[key][keyt]['bonuses'],
-                        'test_bonus': this.data[key][keyt]['test_bonus'],
-                        'awards': this.data[key][keyt]['awards'],
-                        'hasFine': this.data[key][keyt]['fines'] !== undefined && this.data[key][keyt]['fines'].length,
-                        'hasBonus': (this.data[key][keyt]['bonuses'] !== undefined && this.data[key][keyt]['bonuses'].length) || (this.data[key][keyt]['awards'] !== undefined && this.data[key][keyt]['awards'].length)
+			let currentMonth = this.$moment(this.dateInfo.currentMonth, 'MMMM')
+			//Расчет выходных дней
+			this.dateInfo.monthEnd = currentMonth.endOf('month'); //Конец месяца
+			this.dateInfo.weekDays = currentMonth.weekdayCalc(this.dateInfo.monthEnd, [6]) //Колличество выходных
+			this.dateInfo.daysInMonth = currentMonth.daysInMonth() //Колличество дней в месяце
+			this.dateInfo.workDays = this.dateInfo.daysInMonth - this.dateInfo.weekDays //Колличество рабочих дней
+		},
+
+		//Добавление загруженных данных в таблицу
+		loadItems() {
+			let items = [];
+			let temp = [];
+			let total = {
+				'salaries':0,
+				'hours':0,
+			};
+
+			for (let key in this.data) {
+				temp[key] = []
+				for (let keyt in this.data[key]) {
+					temp[key][keyt] = ({
+						'value': this.data[key][keyt]['value'],
+						'fines': this.data[key][keyt]['fines'],
+						'avanses': this.data[key][keyt]['avanses'],
+						'bonuses': this.data[key][keyt]['bonuses'],
+						'test_bonus': this.data[key][keyt]['test_bonus'],
+						'awards': this.data[key][keyt]['awards'],
+						'hasFine': this.data[key][keyt]['fines'] !== undefined && this.data[key][keyt]['fines'].length,
+						'hasBonus': (this.data[key][keyt]['bonuses'] !== undefined && this.data[key][keyt]['bonuses'].length) || (this.data[key][keyt]['awards'] !== undefined && this.data[key][keyt]['awards'].length)
                             || (this.data[key][keyt]['test_bonus'] !== undefined && this.data[key][keyt]['test_bonus'].length),
-                        'hasAvans': this.data[key][keyt]['avanses'] !== undefined && this.data[key][keyt]['avanses'].length,
-                        'training': this.data[key][keyt]['training'],
-                    })
+						'hasAvans': this.data[key][keyt]['avanses'] !== undefined && this.data[key][keyt]['avanses'].length,
+						'training': this.data[key][keyt]['training'],
+					})
 
-                    if(key == 'salaries' || key == 'hours') {
-                        let val = Number(this.data[key][keyt]['value']);
-                        total[key] += isNaN(val) ? 0 : val;
-                    }
-                }
-            }
+					if(key == 'salaries' || key == 'hours') {
+						let val = Number(this.data[key][keyt]['value']);
+						total[key] += isNaN(val) ? 0 : val;
+					}
+				}
+			}
 
-            temp['salaries'][0] = {
-                'value': 'Начисления',
-            };
+			temp['salaries'][0] = {
+				'value': 'Начисления',
+			};
 
-            let total_salary = 0;
-                total_salary = Number(total['salaries']) - Number(this.totalFines) - Number(this.total_avanses);
+			let total_salary = 0;
+			total_salary = Number(total['salaries']) - Number(this.totalFines) - Number(this.total_avanses);
 
-            temp['salaries']['total'] = {
-                'value': Number(total_salary).toFixed(0),
-            };
-            temp['salaries']['avanses'] = {
-              'value': Number(this.total_avanses).toFixed(0)
-            };
-            temp['salaries']['fines'] = {
-                'value': Number(this.totalFines).toFixed(0)
-            };
+			temp['salaries']['total'] = {
+				'value': Number(total_salary).toFixed(0),
+			};
+			temp['salaries']['avanses'] = {
+				'value': Number(this.total_avanses).toFixed(0)
+			};
+			temp['salaries']['fines'] = {
+				'value': Number(this.totalFines).toFixed(0)
+			};
 
 
-            temp['times'][0] = {
-                'value': 'Время прихода',
-            };
-            temp['hours'][0] = {
-                'value': 'Отработанные часы',
-            };
-            temp['hours']['total'] = {
-                'value': Number(total['hours']).toFixed(1),
-            };
-            temp['times']['avanses'] = {
-              'value': 0
-            };
-            temp['times']['fines']= {
-              'value': 0
-            };
-            temp['hours']['avanses'] = {
-              'value': 0
-            };
-            temp['hours']['fines'] = {
-              'value': 0
-            };
-            items.push(temp['times'])
-          items.push(temp['salaries'])
-            items.push(temp['hours'])
-            this.items = items
-        },
-        openDay(data) {
-            this.openSidebar = true
-            this.sidebarContent = {
-                fines: data.fines,
-                avanses: data.avanses,
-                bonuses: data.bonuses,
-                test_bonus: data.test_bonus,
-                awards: data.awards,
-                training: data.training,
-            }
-        }
-    }
+			temp['times'][0] = {
+				'value': 'Время прихода',
+			};
+			temp['hours'][0] = {
+				'value': 'Отработанные часы',
+			};
+			temp['hours']['total'] = {
+				'value': Number(total['hours']).toFixed(1),
+			};
+			temp['times']['avanses'] = {
+				'value': 0
+			};
+			temp['times']['fines']= {
+				'value': 0
+			};
+			temp['hours']['avanses'] = {
+				'value': 0
+			};
+			temp['hours']['fines'] = {
+				'value': 0
+			};
+			items.push(temp['times'])
+			items.push(temp['salaries'])
+			items.push(temp['hours'])
+			this.items = items
+		},
+		openDay(data) {
+			this.openSidebar = true
+			this.sidebarContent = {
+				fines: data.fines,
+				avanses: data.avanses,
+				bonuses: data.bonuses,
+				test_bonus: data.test_bonus,
+				awards: data.awards,
+				training: data.training,
+			}
+		}
+	}
 }
 </script>
 

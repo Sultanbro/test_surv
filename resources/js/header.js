@@ -4,14 +4,14 @@
  * building robust, powerful web applications using Vue and Laravel.
  */
 
- require('./bootstrap');
+require('./bootstrap');
 
- window.Vue = require('vue');
+window.Vue = require('vue');
  
 
- Vue.component('timetracking', require('./components/timetracking.vue'));
- Vue.component('profile', require('./components/profile/Profile.vue'));
+Vue.component('timetracking', require('./components/timetracking.vue'));
+Vue.component('profile', require('./components/profile/Profile.vue'));
 
- const app = new Vue({
-     el: '.header-vue'
- }); 
+const app = new Vue({
+	el: '.header-vue'
+}); 

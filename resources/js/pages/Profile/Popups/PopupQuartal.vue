@@ -47,93 +47,93 @@
 
 <script>
 export default {
-    name: "PopupQuartal",
-    props: {},
-    data: function () {
-        return {
-            items: [],
-            activities: [],
-            groups: [],
-            currentMonth: null,
-            dateInfo: {
-                currentMonth: null,
-                monthEnd: 0,
-                workDays: 0,
-                weekDays: 0,
-                daysInMonth: 0
-            },
-            loading: false
-        };
-    },
-    created(){
-        this.setMonth()
-        this.fetchBefore()
-    },
-    methods: {
-        /**
+	name: 'PopupQuartal',
+	props: {},
+	data: function () {
+		return {
+			items: [],
+			activities: [],
+			groups: [],
+			currentMonth: null,
+			dateInfo: {
+				currentMonth: null,
+				monthEnd: 0,
+				workDays: 0,
+				weekDays: 0,
+				daysInMonth: 0
+			},
+			loading: false
+		};
+	},
+	created(){
+		this.setMonth()
+		this.fetchBefore()
+	},
+	methods: {
+		/**
          * set month
          */
-        setMonth() {
-            let year = moment().format('YYYY')
-            this.dateInfo.currentMonth = this.dateInfo.currentMonth ? this.dateInfo.currentMonth : this.$moment().format('MMMM')
-            this.currentMonth = this.dateInfo.currentMonth;
-            this.dateInfo.date = `${this.dateInfo.currentMonth} ${year}`
+		setMonth() {
+			let year = moment().format('YYYY')
+			this.dateInfo.currentMonth = this.dateInfo.currentMonth ? this.dateInfo.currentMonth : this.$moment().format('MMMM')
+			this.currentMonth = this.dateInfo.currentMonth;
+			this.dateInfo.date = `${this.dateInfo.currentMonth} ${year}`
 
-            let currentMonth = this.$moment(this.dateInfo.currentMonth, 'MMMM')
+			let currentMonth = this.$moment(this.dateInfo.currentMonth, 'MMMM')
 
-            //Расчет выходных дней
-            this.dateInfo.monthEnd = currentMonth.endOf('month'); //Конец месяца
-            this.dateInfo.weekDays = currentMonth.weekdayCalc(this.dateInfo.monthEnd, [6]) //Колличество выходных
-            this.dateInfo.daysInMonth = currentMonth.daysInMonth() //Колличество дней в месяце
-            this.dateInfo.workDays = this.dateInfo.daysInMonth - this.dateInfo.weekDays //Колличество рабочих дней
-        },
+			//Расчет выходных дней
+			this.dateInfo.monthEnd = currentMonth.endOf('month'); //Конец месяца
+			this.dateInfo.weekDays = currentMonth.weekdayCalc(this.dateInfo.monthEnd, [6]) //Колличество выходных
+			this.dateInfo.daysInMonth = currentMonth.daysInMonth() //Колличество дней в месяце
+			this.dateInfo.workDays = this.dateInfo.daysInMonth - this.dateInfo.weekDays //Колличество рабочих дней
+		},
 
-        fetchBefore() {
-            this.fetchData({
-                data_from: {
-                    year: new Date().getFullYear(),
-                    month: this.$moment(this.currentMonth, 'MMMM').format('M')
-                },
-                user_id: this.$laravel.userId
-            })
-        },
+		fetchBefore() {
+			this.fetchData({
+				data_from: {
+					year: new Date().getFullYear(),
+					month: this.$moment(this.currentMonth, 'MMMM').format('M')
+				},
+				user_id: this.$laravel.userId
+			})
+		},
 
-        fetchData(filters = null) {
-            this.loading = true
+		fetchData(filters = null) {
+			this.loading = true
 
-            axios.post('/statistics/quartal-premiums', {
-                filters: filters
-            }).then(response => {
+			axios.post('/statistics/quartal-premiums', {
+				filters: filters
+			}).then(response => {
 
-                this.items = response.data[0];
+				this.items = response.data[0];
 
-                // this.defineSourcesAndGroups('t');
+				// this.defineSourcesAndGroups('t');
 
-                this.items.forEach(el => el.expanded = true);
+				this.items.forEach(el => el.expanded = true);
 
-                this.loading = false
-            }).catch(error => {
-                this.loading = false
-                alert(error)
-            });
-        },
+				this.loading = false
+			}).catch(error => {
+				this.loading = false
+				alert(error)
+			});
+		},
 
-        defineSourcesAndGroups(t) {
-            this.items.forEach(p => {
-                p.items.forEach(el => {
-                    el.source = 0;
-                    el.group_id = 0;
+		defineSourcesAndGroups(t) {
+			this.items.forEach(p => {
+				p.items.forEach(el => {
+					el.source = 0;
+					el.group_id = 0;
 
-                    if(el.activity_id != 0) {
-                        let i = this.activities.findIndex(a => a.id == el.activity_id);
-                        if(i != -1) {
-                            el.source = this.activities[i].source
-                            if(el.source == 1) el.group_id = this.activities[i].group_id
-                        }
-                    }
-                });
-            })
-        },
-    }
+					if(el.activity_id != 0) {
+						let i = this.activities.findIndex(a => a.id == el.activity_id);
+						if(i != -1) {
+							el.source = this.activities[i].source
+							if(el.source == 1) el.group_id = this.activities[i].group_id
+						}
+					}
+				});
+			})
+		},
+	}
 };
 </script>

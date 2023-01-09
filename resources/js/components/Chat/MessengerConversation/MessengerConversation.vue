@@ -8,23 +8,23 @@
 </template>
 
 <script>
-import ConversationHeader from "./ConversationHeader/ConversationHeader.vue";
-import ConversationFeed from "./ConversationFeed/ConversationFeed.vue";
-import ConversationFooter from "./ConversationFooter/ConversationFooter.vue";
-import ConversationSearch from "./ConversationSearch/ConversationSearch.vue";
-import {mapGetters} from "vuex";
+import ConversationHeader from './ConversationHeader/ConversationHeader.vue';
+import ConversationFeed from './ConversationFeed/ConversationFeed.vue';
+import ConversationFooter from './ConversationFooter/ConversationFooter.vue';
+import ConversationSearch from './ConversationSearch/ConversationSearch.vue';
+import {mapGetters} from 'vuex';
 
 export default {
-  name: "MessengerConversation",
-  components: {
-    ConversationHeader,
-    ConversationFeed,
-    ConversationFooter,
-    ConversationSearch,
-  },
-  computed: {
-    ...mapGetters(['isChatSearchMode'])
-  },
+	name: 'MessengerConversation',
+	components: {
+		ConversationHeader,
+		ConversationFeed,
+		ConversationFooter,
+		ConversationSearch,
+	},
+	computed: {
+		...mapGetters(['isChatSearchMode'])
+	},
 }
 </script>
 

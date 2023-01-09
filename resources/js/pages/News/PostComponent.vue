@@ -137,113 +137,113 @@
 <script>
 
 export default {
-    name: "PostComponent",
-    props: {
-        post: {
-            required: true
-        },
-        me: {
-            required: true
-        }
-    },
-    data() {
-        return {
-            currentPost: this.post,
+	name: 'PostComponent',
+	props: {
+		post: {
+			required: true
+		},
+		me: {
+			required: true
+		}
+	},
+	data() {
+		return {
+			currentPost: this.post,
 
-            showFiles: false,
-            showComments: false,
-            showPopup: false,
+			showFiles: false,
+			showComments: false,
+			showPopup: false,
 
-            userAccessListShow: false,
-            showFullContent: false,
+			userAccessListShow: false,
+			showFullContent: false,
 
-            commentText: '',
-            parentId: null,
-        }
-    },
-    mounted() {
-        this.showFullContent = this.currentPost.is_pinned == false;
-    },
-    methods: {
+			commentText: '',
+			parentId: null,
+		}
+	},
+	mounted() {
+		this.showFullContent = this.currentPost.is_pinned == false;
+	},
+	methods: {
 
-        getFileTypeByExtension(extension) {
-            switch (extension) {
-                case 'png': {
-                    return 'image/png';
-                }
-                case 'bmp': {
-                    return 'image/bmp';
-                }
-                case 'gif': {
-                    return 'image/git';
-                }
-                case 'jpg': {
-                    return 'image/jpeg';
-                }
-                case 'jpeg': {
-                    return 'image/jpeg';
-                }
-                case 'tif': {
-                    return 'image/tiff';
-                }
-                case 'tiff': {
-                    return 'image/tiff';
-                }
-                case 'webp': {
-                    return 'image/webp';
-                }
-                default: {
-                    return 'file';
-                }
-            }
-        },
+		getFileTypeByExtension(extension) {
+			switch (extension) {
+			case 'png': {
+				return 'image/png';
+			}
+			case 'bmp': {
+				return 'image/bmp';
+			}
+			case 'gif': {
+				return 'image/git';
+			}
+			case 'jpg': {
+				return 'image/jpeg';
+			}
+			case 'jpeg': {
+				return 'image/jpeg';
+			}
+			case 'tif': {
+				return 'image/tiff';
+			}
+			case 'tiff': {
+				return 'image/tiff';
+			}
+			case 'webp': {
+				return 'image/webp';
+			}
+			default: {
+				return 'file';
+			}
+			}
+		},
 
-        async downloadFile(file) {
-            await axios.get(file.url, {responseType: 'blob'})
-                .then(response => {
-                    const blob = new Blob([response.data], {type: this.getFileTypeByExtension(file.extension)});
-                    const link = document.createElement('a');
-                    link.href = URL.createObjectURL(blob);
-                    link.download = file.original_name;
-                    link.click();
-                    URL.revokeObjectURL(link.href);
-                })
-                .catch(console.error)
-        },
+		async downloadFile(file) {
+			await axios.get(file.url, {responseType: 'blob'})
+				.then(response => {
+					const blob = new Blob([response.data], {type: this.getFileTypeByExtension(file.extension)});
+					const link = document.createElement('a');
+					link.href = URL.createObjectURL(blob);
+					link.download = file.original_name;
+					link.click();
+					URL.revokeObjectURL(link.href);
+				})
+				.catch(console.error)
+		},
 
-        toggleShowFullContent() {
-            this.showFullContent = !this.showFullContent;
-        },
+		toggleShowFullContent() {
+			this.showFullContent = !this.showFullContent;
+		},
 
-        toggleUsersAccessList() {
-            if (this.currentPost.available_for != null) {
-                this.userAccessListShow = !this.userAccessListShow;
-            }
-        },
+		toggleUsersAccessList() {
+			if (this.currentPost.available_for != null) {
+				this.userAccessListShow = !this.userAccessListShow;
+			}
+		},
 
-        toggleShowPopup() {
-            this.showPopup = !this.showPopup;
-        },
+		toggleShowPopup() {
+			this.showPopup = !this.showPopup;
+		},
 
-        toggleShowFiles() {
-            this.showFiles = !this.showFiles;
-        },
+		toggleShowFiles() {
+			this.showFiles = !this.showFiles;
+		},
 
-        toggleShowComments() {
-            if (!this.showComments) {
-                this.getPostComments(this.currentPost.id)
-            } else {
-                this.showComments = false;
-            }
-        },
+		toggleShowComments() {
+			if (!this.showComments) {
+				this.getPostComments(this.currentPost.id)
+			} else {
+				this.showComments = false;
+			}
+		},
 
-        copyPostLink() {
-            this.toggleShowPopup();
-            navigator.clipboard.writeText(location.protocol + '//' + location.host + location.pathname + '?post_id=' + this.currentPost.id);
-        },
+		copyPostLink() {
+			this.toggleShowPopup();
+			navigator.clipboard.writeText(location.protocol + '//' + location.host + location.pathname + '?post_id=' + this.currentPost.id);
+		},
 
-        getFilePreview(file) {
-            if (file.extension == 'png' ||
+		getFilePreview(file) {
+			if (file.extension == 'png' ||
                 file.extension == 'jpg' ||
                 file.extension == 'gif' ||
                 file.extension == 'tif' ||
@@ -251,130 +251,130 @@ export default {
                 file.extension == 'webp' ||
                 file.extension == 'jpeg') {
 
-                return file.url;
-            } else if (file.extension == 'doc' || file.extension == 'docx') {
+				return file.url;
+			} else if (file.extension == 'doc' || file.extension == 'docx') {
 
-                return '/images/some-files/word.png';
-            } else if (file.extension == '7z' || file.extension == 'zip' || file.extension == 'rar') {
+				return '/images/some-files/word.png';
+			} else if (file.extension == '7z' || file.extension == 'zip' || file.extension == 'rar') {
 
-                return '/images/some-files/rar.png';
-            } else {
-                return '/images/some-files/img.png';
-            }
-        },
+				return '/images/some-files/rar.png';
+			} else {
+				return '/images/some-files/img.png';
+			}
+		},
 
-        getPostComments(postId) {
-            this.$refs.comments.getComments(postId)
-        },
+		getPostComments(postId) {
+			this.$refs.comments.getComments(postId)
+		},
 
-        getData(data) {
-            const el = this.$refs.NewsCommentInput;
-            if (el) {
-                el.scrollIntoView({block: "center", behavior: "smooth"});
-                el.focus();
-            }
-            this.parentId = data.parentId;
-            this.commentText = data.userName + ', ';
-        },
+		getData(data) {
+			const el = this.$refs.NewsCommentInput;
+			if (el) {
+				el.scrollIntoView({block: 'center', behavior: 'smooth'});
+				el.focus();
+			}
+			this.parentId = data.parentId;
+			this.commentText = data.userName + ', ';
+		},
 
-        changeCommentsCount(data) {
-            this.showComments = true;
-            this.currentPost.comments_count = data.comments_count;
-        },
+		changeCommentsCount(data) {
+			this.showComments = true;
+			this.currentPost.comments_count = data.comments_count;
+		},
 
-        async likePost(id) {
-            await axios.post('/news/' + id + '/like')
-                .then(response => {
-                    if (this.currentPost.is_liked) {
-                        this.currentPost.likes_count--;
-                    } else {
-                        this.currentPost.likes_count++;
-                    }
+		async likePost(id) {
+			await axios.post('/news/' + id + '/like')
+				.then(response => {
+					if (this.currentPost.is_liked) {
+						this.currentPost.likes_count--;
+					} else {
+						this.currentPost.likes_count++;
+					}
 
-                    this.currentPost.is_liked = !this.currentPost.is_liked;
-                })
-                .catch(response => {
-                });
-        },
+					this.currentPost.is_liked = !this.currentPost.is_liked;
+				})
+				.catch(response => {
+				});
+		},
 
-        async viewsChanged(isVisible, entry) {
-            await axios.post('news/' + this.currentPost.id + '/views')
-                .then(res => {
-                    this.currentPost.views_count = res.data.data.views_count;
-                })
-                .catch(res => {
-                    console.log(res)
-                })
-        },
+		async viewsChanged(isVisible, entry) {
+			await axios.post('news/' + this.currentPost.id + '/views')
+				.then(res => {
+					this.currentPost.views_count = res.data.data.views_count;
+				})
+				.catch(res => {
+					console.log(res)
+				})
+		},
 
-        async favouritePost(id) {
-            await axios.post('news/' + id + '/favourite')
-                .then(res => {
-                    console.log(res);
-                    this.toggleShowPopup();
-                    this.$emit('update-news-list');
-                })
-                .catch()
-        },
+		async favouritePost(id) {
+			await axios.post('news/' + id + '/favourite')
+				.then(res => {
+					console.log(res);
+					this.toggleShowPopup();
+					this.$emit('update-news-list');
+				})
+				.catch()
+		},
 
-        async pinPost(id) {
-            await axios.post('/news/' + id + '/pin')
-                .then(response => {
-                    this.post.is_pinned = response.data.data.is_pinned;
-                    this.showFullContent = false;
-                })
-                .catch(response => {
-                    console.log(response);
-                });
-        },
+		async pinPost(id) {
+			await axios.post('/news/' + id + '/pin')
+				.then(response => {
+					this.post.is_pinned = response.data.data.is_pinned;
+					this.showFullContent = false;
+				})
+				.catch(response => {
+					console.log(response);
+				});
+		},
 
-        async sendComment(postId) {
-            if (this.commentText == '') {
-                return
-            }
+		async sendComment(postId) {
+			if (this.commentText == '') {
+				return
+			}
 
-            let formData = new FormData;
-            formData.set('content', this.commentText);
-            this.commentText = '';
-            formData.append('parent_id', this.parentId == null ? '' : this.parentId);
-            this.parentId = null;
+			let formData = new FormData;
+			formData.set('content', this.commentText);
+			this.commentText = '';
+			formData.append('parent_id', this.parentId == null ? '' : this.parentId);
+			this.parentId = null;
 
-            await axios.post('/news/' + postId + '/comments', formData)
-                .then(response => {
-                    this.currentPost.comments_count = this.currentPost.comments_count + 1;
-                    this.getPostComments(postId);
-                })
-                .catch(response => {
-                    console.log(response);
-                });
-        },
+			await axios.post('/news/' + postId + '/comments', formData)
+				.then(response => {
+					this.currentPost.comments_count = this.currentPost.comments_count + 1;
+					this.getPostComments(postId);
+				})
+				.catch(response => {
+					console.log(response);
+				});
+		},
 
-        editPost() {
-            this.toggleShowPopup();
-            window.scrollTo({
-                top: 0,
-                behavior: 'smooth',
-            });
+		editPost() {
+			this.toggleShowPopup();
+			window.scrollTo({
+				top: 0,
+				behavior: 'smooth',
+			});
 
-            this.$emit('editPost', {
-                id: this.currentPost.id,
-                available_for: this.currentPost.available_for,
-                title: this.currentPost.title,
-                content: this.currentPost.content,
-                files: this.currentPost.files,
-            });
-        },
+			this.$emit('editPost', {
+				id: this.currentPost.id,
+				available_for: this.currentPost.available_for,
+				title: this.currentPost.title,
+				content: this.currentPost.content,
+				files: this.currentPost.files,
+			});
+		},
 
-        async deletePost(postId) {
-            await axios.delete('/news/' + postId)
-                .then(response => {
-                    this.toggleShowPopup();
-                    this.$emit('update-news-list');
-                })
-                .catch(response => {
-                    console.log(response);
-                });
-        }
-    }
+		async deletePost(postId) {
+			await axios.delete('/news/' + postId)
+				.then(response => {
+					this.toggleShowPopup();
+					this.$emit('update-news-list');
+				})
+				.catch(response => {
+					console.log(response);
+				});
+		}
+	}
 }
 </script>

@@ -27,40 +27,40 @@
   </div>
   </template>
   
-  <script>
-  export default {
+<script>
+export default {
   
-    name: 'ProfileInfo',
-    props: {
-      data: Object
-    },
+	name: 'ProfileInfo',
+	props: {
+		data: Object
+	},
   
-    data() {
-      return {
-        loading: false
-      }
-    },
+	data() {
+		return {
+			loading: false
+		}
+	},
   
-    created() {
-      // this.fetchData()
-    },
+	created() {
+		// this.fetchData()
+	},
   
-    methods: {
-      /**
+	methods: {
+		/**
        * Загрузка данных
        */
-      fetchData() {
-          this.loading = true
+		fetchData() {
+			this.loading = true
   
-          axios.get('/profile/personal-info')
-            .then(response => {
-                this.data = response.data
-                this.loading = false
-            }).catch((e) => console.log(e))
-      },
-    }
-  }
-  </script>
+			axios.get('/profile/personal-info')
+				.then(response => {
+					this.data = response.data
+					this.loading = false
+				}).catch((e) => console.log(e))
+		},
+	}
+}
+</script>
   
   <style lang="scss" scoped>
   

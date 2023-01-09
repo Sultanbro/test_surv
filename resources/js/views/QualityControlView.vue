@@ -5,31 +5,31 @@ const ReportsNav = () => import(/* webpackChunkName: "ReportsNav" */ '@/componen
 const TableQuality = () => import(/* webpackChunkName: "TableQualityPage" */ '@/components/tables/TableQuality')
 
 export default {
-    name: 'QualityControlView',
-    components: {
-        DefaultLayout,
-        ReportsNav,
-        TableQuality,
-    },
-    data(){
-        return {
-            groups: null,
-            active_group: '',
-            check: '',
-            user: null,
-            activeTab: 'nav-quality-tab',
-        }
-    },
-    mounted(){
-        useAsyncPageData('/timetracking/reports').then(data => {
-            this.groups = data.groups || null
-            this.active_group = '' + data.active_group
-            this.check = '' + data.check
-            this.user = data.user || null
-        }).catch(error => {
-            console.error('useAsyncPageData', error)
-        })
-    }
+	name: 'QualityControlView',
+	components: {
+		DefaultLayout,
+		ReportsNav,
+		TableQuality,
+	},
+	data(){
+		return {
+			groups: null,
+			active_group: '',
+			check: '',
+			user: null,
+			activeTab: 'nav-quality-tab',
+		}
+	},
+	mounted(){
+		useAsyncPageData('/timetracking/reports').then(data => {
+			this.groups = data.groups || null
+			this.active_group = '' + data.active_group
+			this.check = '' + data.check
+			this.user = data.user || null
+		}).catch(error => {
+			console.error('useAsyncPageData', error)
+		})
+	}
 }
 </script>
 

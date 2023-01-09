@@ -105,91 +105,91 @@
 
 <script>
 export default {
-    name: "group-excel-import",
-    props: {
-        status: {
-            type: String,
-        },
-        group_id: {
-            type: Number, 
-        }
-    },
-    data() {
-        return { 
-            message: null,
-            activebtn: null,
-            file: undefined,
-            items: [],
-            date: null,
-            filename: '',
-            showStepTwo: false,
-            errors: [],
-        }
-    },
-    created() {
+	name: 'group-excel-import',
+	props: {
+		status: {
+			type: String,
+		},
+		group_id: {
+			type: Number, 
+		}
+	},
+	data() {
+		return { 
+			message: null,
+			activebtn: null,
+			file: undefined,
+			items: [],
+			date: null,
+			filename: '',
+			showStepTwo: false,
+			errors: [],
+		}
+	},
+	created() {
         
-    },
+	},
 
-    methods: {
-        saveConnects() {
-            let loader = this.$loading.show();
-            axios.post('/timetracking/settings/groups/importexcel/save', {
-                date: this.date,
-                items: this.items,
-                filename: this.filename,
-                group: this.group_id,
-            }).then(response => {
-                this.$toast.info('Сохранено');
-                loader.hide() 
-            }).catch(function(e){
-                loader.hide() 
-                alert(e)
-            })
-        },
-        uploadFile(){
-            let loader = this.$loading.show();
+	methods: {
+		saveConnects() {
+			let loader = this.$loading.show();
+			axios.post('/timetracking/settings/groups/importexcel/save', {
+				date: this.date,
+				items: this.items,
+				filename: this.filename,
+				group: this.group_id,
+			}).then(response => {
+				this.$toast.info('Сохранено');
+				loader.hide() 
+			}).catch(function(e){
+				loader.hide() 
+				alert(e)
+			})
+		},
+		uploadFile(){
+			let loader = this.$loading.show();
             
-            let formData = new FormData();
-            formData.append('file', this.file);
-            formData.append('group_id', this.group_id);
+			let formData = new FormData();
+			formData.append('file', this.file);
+			formData.append('group_id', this.group_id);
 
-            var _this = this; 
+			var _this = this; 
 
-            axios.post( '/timetracking/settings/groups/importexcel', formData, {
-                headers: {
-                    "Content-Type": "multipart/form-data"
-                }
-            }).then(function(response){
-                    if(response.data.errors.length > 0) {
-                        _this.errors = response.data.errors
-                        loader.hide() 
-                        return; 
-                    }
-                    _this.items = response.data.items;
+			axios.post( '/timetracking/settings/groups/importexcel', formData, {
+				headers: {
+					'Content-Type': 'multipart/form-data'
+				}
+			}).then(function(response){
+				if(response.data.errors.length > 0) {
+					_this.errors = response.data.errors
+					loader.hide() 
+					return; 
+				}
+				_this.items = response.data.items;
 
-                    _this.items.sort((a, b) => (a.name > b.name) ? 1 : -1);
+				_this.items.sort((a, b) => (a.name > b.name) ? 1 : -1);
 
-                    _this.errors = []
-                    if(response.data.items.length > 0) _this.showStepTwo = true;
-                    _this.users = response.data.users
-                    _this.users.push({
-                        id: 0,
-                        name: '',
-                        last_name: '',
-                    })
-                    _this.date = response.data.date
-                    _this.filename = response.data.filename
-                    loader.hide();  
-                }).catch(function(e){
-                    loader.hide() 
-                    alert(e)
-                })
+				_this.errors = []
+				if(response.data.items.length > 0) _this.showStepTwo = true;
+				_this.users = response.data.users
+				_this.users.push({
+					id: 0,
+					name: '',
+					last_name: '',
+				})
+				_this.date = response.data.date
+				_this.filename = response.data.filename
+				loader.hide();  
+			}).catch(function(e){
+				loader.hide() 
+				alert(e)
+			})
                 
-      }, 
+		}, 
 
         
 
-    } 
+	} 
 }
 </script>
 

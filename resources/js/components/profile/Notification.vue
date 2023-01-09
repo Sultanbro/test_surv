@@ -52,77 +52,77 @@
 
 <script>
 export default {
-    name: "Notification",
-    props: [
-        'unread',
-        'read_notifications',
-        'unread_notifications',
-    ],
-    data() {
-        return {
-            password: '',
-            showPanel: false
-        }
-    },
-    created() {
-        this.$options.reads = this.read_notifications
-        this.$options.unreads = this.unread_notifications
-        // this.u = JSON.parse(this.user)
-    },
-    methods: {
-        markRead(id){
+	name: 'Notification',
+	props: [
+		'unread',
+		'read_notifications',
+		'unread_notifications',
+	],
+	data() {
+		return {
+			password: '',
+			showPanel: false
+		}
+	},
+	created() {
+		this.$options.reads = this.read_notifications
+		this.$options.unreads = this.unread_notifications
+		// this.u = JSON.parse(this.user)
+	},
+	methods: {
+		markRead(id){
 
-        },
+		},
 
-        test() {
-
-
-            //    $(document).ready(function () {
-            //         $('.tooglenotifi').click(function() {
-            //             $('.kolokolchik .panel').toggle();
-            //             $('.bgpanel').toggleClass('active');
-            //         })
-            //     });
-            //     $(".bgpanel").on("click", function(e) {
-            //         e.preventDefault();
-            //         $('.kolokolchik .panel').toggle();
-            //         $('.bgpanel').toggleClass('active');
-            //     });
-            //     $(".panel_head .panel_in").on("click", function(e) {
-            //         e.preventDefault();
-            //         $('.panel_head .panel_in, .panel_body .panel_out').removeClass('active');
-            //         $(this).addClass('active');
-            //         var numb = $(this).data('tab');
-            //         $('.panel_out[data-id=' + numb + ']').addClass('active');
-            //     });
+		test() {
 
 
+			//    $(document).ready(function () {
+			//         $('.tooglenotifi').click(function() {
+			//             $('.kolokolchik .panel').toggle();
+			//             $('.bgpanel').toggleClass('active');
+			//         })
+			//     });
+			//     $(".bgpanel").on("click", function(e) {
+			//         e.preventDefault();
+			//         $('.kolokolchik .panel').toggle();
+			//         $('.bgpanel').toggleClass('active');
+			//     });
+			//     $(".panel_head .panel_in").on("click", function(e) {
+			//         e.preventDefault();
+			//         $('.panel_head .panel_in, .panel_body .panel_out').removeClass('active');
+			//         $(this).addClass('active');
+			//         var numb = $(this).data('tab');
+			//         $('.panel_out[data-id=' + numb + ']').addClass('active');
+			//     });
 
 
-        },
 
-        // sendPost() {
-        //     this.message = ''
-        //     axios.post('/timetracking/change-password', {
-        //         password: this.password,
-        //         repassword: this.repassword,
-        //     })
-        //     .then(response => {
-        //         if(response.data.code == 200) {
-        //             this.message = 'Пароль успешно изменен!';
-        //             this.messageColor = 'green';
-        //             setTimeout(function() {
-        //                 window.location.reload();      
-        //             },1500)
+
+		},
+
+		// sendPost() {
+		//     this.message = ''
+		//     axios.post('/timetracking/change-password', {
+		//         password: this.password,
+		//         repassword: this.repassword,
+		//     })
+		//     .then(response => {
+		//         if(response.data.code == 200) {
+		//             this.message = 'Пароль успешно изменен!';
+		//             this.messageColor = 'green';
+		//             setTimeout(function() {
+		//                 window.location.reload();      
+		//             },1500)
                       
-        //         }   
-        //         if(response.data.code == 500) {
-        //             this.message = 'Пароли не совпадают!';
-        //             this.messageColor = 'red';
-        //         }
-        //     })
-        // },
-    }
+		//         }   
+		//         if(response.data.code == 500) {
+		//             this.message = 'Пароли не совпадают!';
+		//             this.messageColor = 'red';
+		//         }
+		//     })
+		// },
+	}
 }
 </script>
 

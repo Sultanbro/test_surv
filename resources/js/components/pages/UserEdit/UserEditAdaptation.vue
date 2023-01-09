@@ -1,12 +1,12 @@
 <script>
 export default {
-    name: 'UserEditAdaptation',
-    props: {
-        user: {
-            type: Object,
-            default: null
-        },
-    }
+	name: 'UserEditAdaptation',
+	props: {
+		user: {
+			type: Object,
+			default: null
+		},
+	}
 }
 </script>
 <template>

@@ -5,26 +5,26 @@ const NewsPages = () => import(/* webpackChunkName: "NewsPage" */ '@/pages/News/
 const BirthdayFeed = () => import(/* webpackChunkName: "NewsPage" */ '@/pages/News/BirthdayFeed')
 
 export default {
-    name: 'NewsView',
-    components: {
-        DefaultLayout,
-        NewsPages,
-        BirthdayFeed,
-    },
-    data(){
-        return {
-            page: '',
-            access: '',
-        }
-    },
-    mounted(){
-        useAsyncPageData('/news').then(data => {
-            this.page = data.page
-            this.access = data.access
-        }).catch(error => {
-            console.error('useAsyncPageData', error)
-        })
-    }
+	name: 'NewsView',
+	components: {
+		DefaultLayout,
+		NewsPages,
+		BirthdayFeed,
+	},
+	data(){
+		return {
+			page: '',
+			access: '',
+		}
+	},
+	mounted(){
+		useAsyncPageData('/news').then(data => {
+			this.page = data.page
+			this.access = data.access
+		}).catch(error => {
+			console.error('useAsyncPageData', error)
+		})
+	}
 }
 </script>
 

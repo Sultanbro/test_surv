@@ -80,125 +80,125 @@
 
 <script>
 export default {
-    name: "TableKpiIndicator",
-    props:  {
-        kpi_indicator: {
-            default: null, 
-        },
-        is_admin: {
-            default: false,
-        },
-        nijn_porok: {
-            default: 80,
-        },
-        verh_porok: {
-            default: 100,
-        },
-        kpi_80_99: {
-            default: 0,
-        },
-        kpi_100: {
-            default: 0,
-        },
-        activities: {
-            default: null,
-        },
-        workdays: {
-            default: 27,
-        },
-        type: {
-            default: 'common',
-        },
-        groups: {
-            default: null
-        }
-    },
-    watch: {
-        kpi_indicator: {
-            handler: function(newValue) {this.recalc()},
-            deep: true
-        },
-        nijn_porok: {
-            handler: function(newValue) {this.recalc()},
-        },
-        verh_porok: {
-            handler: function(newValue) {this.recalc()},
-        },
-        kpi_80_99: {
-            handler: function(newValue) {this.recalc()},
-        },
-        kpi_100: {
-            handler: function(newValue) {this.recalc()},
-        }
-    },
-    data() {
-        return {
-            planPlaceholder: '',
-            showInput: false,
-        };
-    },
-    computed: {
-        plan() {
-            if(this.kpi_indicator.plan_unit == 'minutes') {
+	name: 'TableKpiIndicator',
+	props:  {
+		kpi_indicator: {
+			default: null, 
+		},
+		is_admin: {
+			default: false,
+		},
+		nijn_porok: {
+			default: 80,
+		},
+		verh_porok: {
+			default: 100,
+		},
+		kpi_80_99: {
+			default: 0,
+		},
+		kpi_100: {
+			default: 0,
+		},
+		activities: {
+			default: null,
+		},
+		workdays: {
+			default: 27,
+		},
+		type: {
+			default: 'common',
+		},
+		groups: {
+			default: null
+		}
+	},
+	watch: {
+		kpi_indicator: {
+			handler: function(newValue) {this.recalc()},
+			deep: true
+		},
+		nijn_porok: {
+			handler: function(newValue) {this.recalc()},
+		},
+		verh_porok: {
+			handler: function(newValue) {this.recalc()},
+		},
+		kpi_80_99: {
+			handler: function(newValue) {this.recalc()},
+		},
+		kpi_100: {
+			handler: function(newValue) {this.recalc()},
+		}
+	},
+	data() {
+		return {
+			planPlaceholder: '',
+			showInput: false,
+		};
+	},
+	computed: {
+		plan() {
+			if(this.kpi_indicator.plan_unit == 'minutes') {
                 
 
-                if(this.type == 'individual') {
-                    return this.kpi_indicator.daily_plan; //* Number(this.kpi_indicator.workdays);
-                } else {
-                    this.planPlaceholder = this.kpi_indicator.daily_plan.toString() + ' * ' + Number(this.kpi_indicator.workdays);
-                    return this.kpi_indicator.daily_plan * Number(this.kpi_indicator.workdays);
-                }
+				if(this.type == 'individual') {
+					return this.kpi_indicator.daily_plan; //* Number(this.kpi_indicator.workdays);
+				} else {
+					this.planPlaceholder = this.kpi_indicator.daily_plan.toString() + ' * ' + Number(this.kpi_indicator.workdays);
+					return this.kpi_indicator.daily_plan * Number(this.kpi_indicator.workdays);
+				}
                 
-            }
+			}
 
-            if(this.kpi_indicator.plan_unit == 'percent' || this.kpi_indicator.plan_unit == 'less_avg' || this.kpi_indicator.plan_unit == 'less_sum' || this.kpi_indicator.plan_unit == 'more_sum' ) {
-                return this.kpi_indicator.daily_plan.toString() + this.kpi_indicator.unit;
-            }
+			if(this.kpi_indicator.plan_unit == 'percent' || this.kpi_indicator.plan_unit == 'less_avg' || this.kpi_indicator.plan_unit == 'less_sum' || this.kpi_indicator.plan_unit == 'more_sum' ) {
+				return this.kpi_indicator.daily_plan.toString() + this.kpi_indicator.unit;
+			}
             
-        }
-    },
-    created() {
-        this.recalc()
-    }, 
-    methods: { 
-        toggleInput() {
+		}
+	},
+	created() {
+		this.recalc()
+	}, 
+	methods: { 
+		toggleInput() {
             
-        }, 
-        recalc() {
-            this.result();
-            this.sum_prem();
-        },
-        sum_prem() {
-            this.kpi_indicator.sum_prem = Number(
-                this.kpi_100 * (parseFloat(this.kpi_indicator.ud_ves) / 100.0)
-            ).toFixed();
-        },
-        result() {
-            let result; //=ЕСЛИ(F9>$D$3;ЕСЛИ(F9<$E$3;$B$3*D9*(F9-$D$3)*$E$3/($E$3-$D$3);$B$4*D9*F9);0)
+		}, 
+		recalc() {
+			this.result();
+			this.sum_prem();
+		},
+		sum_prem() {
+			this.kpi_indicator.sum_prem = Number(
+				this.kpi_100 * (parseFloat(this.kpi_indicator.ud_ves) / 100.0)
+			).toFixed();
+		},
+		result() {
+			let result; //=ЕСЛИ(F9>$D$3;ЕСЛИ(F9<$E$3;$B$3*D9*(F9-$D$3)*$E$3/($E$3-$D$3);$B$4*D9*F9);0)
 
-            let nijn_porok = parseFloat(this.nijn_porok) / 100.0
-            let verh_porok = parseFloat(this.verh_porok) / 100.0
-            let completed = parseFloat(this.kpi_indicator.completed) / 100.0
-            let ud_ves = parseFloat(this.kpi_indicator.ud_ves) / 100.0
-            let kpi_80_99 = this.kpi_80_99
-            let kpi_100 = this.kpi_100
+			let nijn_porok = parseFloat(this.nijn_porok) / 100.0
+			let verh_porok = parseFloat(this.verh_porok) / 100.0
+			let completed = parseFloat(this.kpi_indicator.completed) / 100.0
+			let ud_ves = parseFloat(this.kpi_indicator.ud_ves) / 100.0
+			let kpi_80_99 = this.kpi_80_99
+			let kpi_100 = this.kpi_100
 
-            if(completed > nijn_porok) {
+			if(completed > nijn_porok) {
                 
-                if (completed < verh_porok) {
-                    result = kpi_80_99 * ud_ves * (completed - nijn_porok) * verh_porok / (verh_porok - nijn_porok)
-                } else {
-                    result = kpi_100 * ud_ves * completed
-                }
-            } else {
-                result = 0;
-            }
+				if (completed < verh_porok) {
+					result = kpi_80_99 * ud_ves * (completed - nijn_porok) * verh_porok / (verh_porok - nijn_porok)
+				} else {
+					result = kpi_100 * ud_ves * completed
+				}
+			} else {
+				result = 0;
+			}
 
             
-            if (result < 0) result = 0;
-            this.kpi_indicator.result = Number(result).toFixed(1);
-        },
-    }
+			if (result < 0) result = 0;
+			this.kpi_indicator.result = Number(result).toFixed(1);
+		},
+	}
     
 };
 </script>

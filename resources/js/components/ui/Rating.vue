@@ -18,20 +18,20 @@
 </template>
 <script>
 export default {
-  name: 'Rating',
-  props: ['grade', 'maxStars', 'hasCounter'],
-  data() {
-    return {
-      stars: this.grade
-    }
-  },
-  methods: {
-    rate(star) {
-      if (typeof star === 'number' && star <= this.maxStars && star >= 0) {
-        this.stars = this.stars === star ? star - 1 : star
-      }
-    }
-  },
+	name: 'Rating',
+	props: ['grade', 'maxStars', 'hasCounter'],
+	data() {
+		return {
+			stars: this.grade
+		}
+	},
+	methods: {
+		rate(star) {
+			if (typeof star === 'number' && star <= this.maxStars && star >= 0) {
+				this.stars = this.stars === star ? star - 1 : star
+			}
+		}
+	},
 }
 </script>
 

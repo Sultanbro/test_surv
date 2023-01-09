@@ -75,181 +75,181 @@
 
 <script>
 export default {
-    name: 'SuperselectAlt',
-    props: {
-        values: {
-            type: Array,
-        },
-        single: {
-            type: Boolean,
-            default: false
-        },
-        select_all_btn: {
-            type: Boolean,
-            default: false
-        },
-        hide_selected: {
-            type: Boolean,
-            default: false
-        }
-    },
-    data() {
-        return {
-            options: [],
-            filtered_options: [],
-            type: 1,
-            show: false,
-            posClass: 'top',
-            searchText: '',
-            first_time: true,
-            selected_all: false
-        };
-    },
-    created() {
+	name: 'SuperselectAlt',
+	props: {
+		values: {
+			type: Array,
+		},
+		single: {
+			type: Boolean,
+			default: false
+		},
+		select_all_btn: {
+			type: Boolean,
+			default: false
+		},
+		hide_selected: {
+			type: Boolean,
+			default: false
+		}
+	},
+	data() {
+		return {
+			options: [],
+			filtered_options: [],
+			type: 1,
+			show: false,
+			posClass: 'top',
+			searchText: '',
+			first_time: true,
+			selected_all: false
+		};
+	},
+	created() {
 
-      console.log(this.values,'019995');
+		console.log(this.values,'019995');
 
-        this.checkSelectedAll();  
-    },
-    methods: {
-        checkSelectedAll() {
-            if(this.values.length == 1
+		this.checkSelectedAll();  
+	},
+	methods: {
+		checkSelectedAll() {
+			if(this.values.length == 1
                 && this.values[0]['id']== 0
                 && this.values[0]['type'] == 0) {
-                this.selected_all = true;
-                 console.log('okay');
-            } else {
-                console.log('wtf');
-            }
-        },
+				this.selected_all = true;
+				console.log('okay');
+			} else {
+				console.log('wtf');
+			}
+		},
         
-        filterType() {
-            this.filtered_options = this.options.filter((el, index) => {
-                return el.type == this.type
-            });
-        },
+		filterType() {
+			this.filtered_options = this.options.filter((el, index) => {
+				return el.type == this.type
+			});
+		},
 
-        addSelectedAttr() {
-            this.filtered_options.forEach(el => {
-                el.selected = this.values.findIndex(v => v.id == el.id && v.type == el.type) != -1
-            });
-        },
+		addSelectedAttr() {
+			this.filtered_options.forEach(el => {
+				el.selected = this.values.findIndex(v => v.id == el.id && v.type == el.type) != -1
+			});
+		},
 
-        toggleShow() {
-            this.show = !this.show;
-            if(this.first_time) {
-                this.fetch();
-            }
+		toggleShow() {
+			this.show = !this.show;
+			if(this.first_time) {
+				this.fetch();
+			}
             
-            this.$nextTick(() => {
-                if(this.$refs.search !== undefined) this.$refs.search.focus();
-            });
-            this.setPosClass();
-        },
+			this.$nextTick(() => {
+				if(this.$refs.search !== undefined) this.$refs.search.focus();
+			});
+			this.setPosClass();
+		},
 
-        setPosClass() {
-            let pos = this.$refs["select"].getBoundingClientRect();
-            let viewport_h = document.documentElement.clientHeight;
-            this.posClass = (viewport_h - pos.top > 450) ? 'bottom' : 'top';
-        },
+		setPosClass() {
+			let pos = this.$refs['select'].getBoundingClientRect();
+			let viewport_h = document.documentElement.clientHeight;
+			this.posClass = (viewport_h - pos.top > 450) ? 'bottom' : 'top';
+		},
 
-        changeType(i) {
-            this.type = i;
-            this.searchText = '';
-            this.filterType();
-            this.addSelectedAttr();
-        },
+		changeType(i) {
+			this.type = i;
+			this.searchText = '';
+			this.filterType();
+			this.addSelectedAttr();
+		},
 
-        addValue(index, type) {
+		addValue(index, type) {
       
-            if(this.single) this.show = false;
-            if(this.single && this.values.length > 0) {
-                return;
-            };
-            if(this.selected_all) return;
+			if(this.single) this.show = false;
+			if(this.single && this.values.length > 0) {
+				return;
+			}
+			if(this.selected_all) return;
 
-            let item = this.filtered_options[index];
+			let item = this.filtered_options[index];
             
-            if(item.disabled) return;
+			if(item.disabled) return;
 
-            if(this.values.findIndex(v => v.id == item.id && v.type == item.type) == -1) {
+			if(this.values.findIndex(v => v.id == item.id && v.type == item.type) == -1) {
 
-                this.values.push({
-                    name: item.name,
-                    id: item.id,
-                    type: item.type,
-                    disabled: false
-                });
+				this.values.push({
+					name: item.name,
+					id: item.id,
+					type: item.type,
+					disabled: false
+				});
 
-                item.selected = true
-            }
-        },
+				item.selected = true
+			}
+		},
 
-        removeValue(i) {
-            let v = this.values[i];
-            if(v.id == 0 && v.type == 0 && v.name == 'Все') this.selected_all = false;
+		removeValue(i) {
+			let v = this.values[i];
+			if(v.id == 0 && v.type == 0 && v.name == 'Все') this.selected_all = false;
 
-            this.values.splice(i, 1);
+			this.values.splice(i, 1);
 
-            let index = this.filtered_options.findIndex(o => v.id == o.id && v.type == o.type);
-            if(index != -1) this.filtered_options.splice(index, 1);
-        },
+			let index = this.filtered_options.findIndex(o => v.id == o.id && v.type == o.type);
+			if(index != -1) this.filtered_options.splice(index, 1);
+		},
 
-        removeValueFromList(i) {
-            let fo = this.filtered_options[i];
-            let index = this.values.findIndex(v => v.id == fo.id && v.type == fo.type);
-            if(index != -1) {
-                this.values.splice(index, 1);
-                fo.selected = false;
-            }
-        },
+		removeValueFromList(i) {
+			let fo = this.filtered_options[i];
+			let index = this.values.findIndex(v => v.id == fo.id && v.type == fo.type);
+			if(index != -1) {
+				this.values.splice(index, 1);
+				fo.selected = false;
+			}
+		},
 
-        onSearch() {
+		onSearch() {
               
-            if(this.searchText == '') {
-                this.filtered_options = this.options; 
-            } else {
-                this.filtered_options = this.options.filter((el, index) => {
-                    return el.name.toLowerCase().indexOf(this.searchText.toLowerCase()) > -1 && !el.disabled
-                }); 
-            }
+			if(this.searchText == '') {
+				this.filtered_options = this.options; 
+			} else {
+				this.filtered_options = this.options.filter((el, index) => {
+					return el.name.toLowerCase().indexOf(this.searchText.toLowerCase()) > -1 && !el.disabled
+				}); 
+			}
 
-            this.addSelectedAttr();
-        }, 
+			this.addSelectedAttr();
+		}, 
 
-        close() {
-            this.show = false;
-        },
+		close() {
+			this.show = false;
+		},
 
-        fetch() {
-            axios
-                .get("/superselect/get-alt", {})
-                .then((response) => {
+		fetch() {
+			axios
+				.get('/superselect/get-alt', {})
+				.then((response) => {
 
-                    this.options = response.data.options;
+					this.options = response.data.options;
 
-                    this.filterType();
-                    this.addSelectedAttr();
-                })
-            .catch((error) => {
-                alert(error,'111');
-            });
-        },
+					this.filterType();
+					this.addSelectedAttr();
+				})
+				.catch((error) => {
+					alert(error,'111');
+				});
+		},
 
-        selectAll() {
-            if(this.selected_all) return; 
-            this.values.splice(0, this.values.length);
-            this.values.push({
-                name: 'Все',
-                id: 0,
-                type: 0,
-                disabled: false
-            });
-            this.show = false;
-            this.selected_all = true;
+		selectAll() {
+			if(this.selected_all) return; 
+			this.values.splice(0, this.values.length);
+			this.values.push({
+				name: 'Все',
+				id: 0,
+				type: 0,
+				disabled: false
+			});
+			this.show = false;
+			this.selected_all = true;
 
-        }
-    },
+		}
+	},
 
 }
 </script>

@@ -294,334 +294,334 @@
 
 <script>
 export default {
-  name: "Playlists",
-  props: {
-    token: String,
-    can_edit: {
-      type: Boolean,
-      default: false
-    },
-    category: Number,
-    playlist: Number,
-    video: Number
-  },
-  data: function() {
-    return {
-      categories: [],
-      showEditCat: false,
-      file_img: null,
-      editingPlaylist: {
-        title: '',
-        text: '',
-        category_id: ''
-      },
-      showEditPlaylist: false,
-      user_id: 0,
-      mode: 'read',
-      activeCat: null,
-      newcat: '',
-      newPlaylist: '',
-      activePlaylist: null,
-      showAddPlaylist: false,
-      showAddCategory: false,
-      showSettings: false,
-      allow_save_video_without_test: false,
-      mylink: window.location.protocol + "//" + window.location.host + window.location.pathname.substring(0,16),
-      data_category: this.category,
-      data_playlist: this.playlist,
-      myvideo: this.video,
-    };
-  },
-  watch:{
-    token(){
-      this.init()
-    }
-  },
-  created() {
-    if(this.token){
-      this.init()
-    }
-  },
+	name: 'Playlists',
+	props: {
+		token: String,
+		can_edit: {
+			type: Boolean,
+			default: false
+		},
+		category: Number,
+		playlist: Number,
+		video: Number
+	},
+	data: function() {
+		return {
+			categories: [],
+			showEditCat: false,
+			file_img: null,
+			editingPlaylist: {
+				title: '',
+				text: '',
+				category_id: ''
+			},
+			showEditPlaylist: false,
+			user_id: 0,
+			mode: 'read',
+			activeCat: null,
+			newcat: '',
+			newPlaylist: '',
+			activePlaylist: null,
+			showAddPlaylist: false,
+			showAddCategory: false,
+			showSettings: false,
+			allow_save_video_without_test: false,
+			mylink: window.location.protocol + '//' + window.location.host + window.location.pathname.substring(0,16),
+			data_category: this.category,
+			data_playlist: this.playlist,
+			myvideo: this.video,
+		};
+	},
+	watch:{
+		token(){
+			this.init()
+		}
+	},
+	created() {
+		if(this.token){
+			this.init()
+		}
+	},
 
-  methods: {
-    init(){
-      this.fetchData();
-    },
-    addGroup() {
-      this.$refs.playlist.addGroup()
-    },
+	methods: {
+		init(){
+			this.fetchData();
+		},
+		addGroup() {
+			this.$refs.playlist.addGroup()
+		},
 
-    uploadVideo() {
-      this.$refs.playlist.uploadVideo()
-    },
+		uploadVideo() {
+			this.$refs.playlist.uploadVideo()
+		},
 
-    savePlaylistEdit() {
-      this.$refs.playlist.savePlaylist()
-    },
+		savePlaylistEdit() {
+			this.$refs.playlist.savePlaylist()
+		},
 
-    clearUrl(){
-      var newUrl = window.location.protocol + "//" + window.location.host + window.location.pathname.substring(0,16);
-      history.pushState(null, null, newUrl);
-    },
+		clearUrl(){
+			var newUrl = window.location.protocol + '//' + window.location.host + window.location.pathname.substring(0,16);
+			history.pushState(null, null, newUrl);
+		},
 
-    fetchData() {
-      axios
-        .get("/playlists/get")
-        .then((response) => {
-          this.categories = response.data.categories;
-          this.user_id = response.data.user_id;
-          if(this.categories.length > 0) {
-            this.activeCat = this.categories[this.category-1];
-            if(this.playlist > 0){
-              this.activePlaylist = this.activeCat.playlists[this.playlist-1];
-            }
-          }
-        })
-        .catch((error) => {
-          alert(error);
-        });
-    },
+		fetchData() {
+			axios
+				.get('/playlists/get')
+				.then((response) => {
+					this.categories = response.data.categories;
+					this.user_id = response.data.user_id;
+					if(this.categories.length > 0) {
+						this.activeCat = this.categories[this.category-1];
+						if(this.playlist > 0){
+							this.activePlaylist = this.activeCat.playlists[this.playlist-1];
+						}
+					}
+				})
+				.catch((error) => {
+					alert(error);
+				});
+		},
 
-    selectPl(i) {
-      this.activePlaylist = this.activeCat.playlists[i];
-      this.data_playlist = i+1;
-
-
-      if (history.pushState) {
-          var newUrl = this.mylink.concat('/'+this.data_category, '/'+this.data_playlist);
-          history.pushState(null, null, newUrl);
-      }
-      else {
-          console.warn('History API не поддерживает ваш браузер');
-      }
-
-    },
-
-    editCat(i) {
-      this.showEditCat = true;
-      this.newcat = this.categories[i].title;
-      this.activeCat = this.categories[i];
-    },
-
-    movePl(i) {
-      this.editingPlaylist = this.activeCat.playlists[i];
-      this.showEditPlaylist = true;
-    },
-
-     deletePl(i) {
-       if (confirm("Вы уверены что хотите удалить плейлист?")) {
-          axios
-            .post("/playlists/delete", {
-              id: this.activeCat.playlists[i].id
-            })
-            .then((response) => {
-              this.activeCat.playlists.splice(i, 1);
-              this.$toast.success("Удалено");
-            });
-        }
-     },
-      selectCat(i) {
-        this.activeCat = this.categories[i];
-        this.activePlaylist = null;
-        this.data_category = i+1;
-        this.data_playlist = 0;
+		selectPl(i) {
+			this.activePlaylist = this.activeCat.playlists[i];
+			this.data_playlist = i+1;
 
 
-        if (history.pushState) {
-            var newUrl = this.mylink.concat('/'+this.data_category, '/'+this.data_playlist);
-            history.pushState(null, null, newUrl);
-        }
-        else {
-            console.warn('History API не поддерживает ваш браузер');
-        }
-        this.myvideo = 0;
+			if (history.pushState) {
+				var newUrl = this.mylink.concat('/'+this.data_category, '/'+this.data_playlist);
+				history.pushState(null, null, newUrl);
+			}
+			else {
+				console.warn('History API не поддерживает ваш браузер');
+			}
 
-      },
+		},
 
-      deleteCat(i) {
-        if (confirm("Вы уверены что хотите удалить категорию?")) {
+		editCat(i) {
+			this.showEditCat = true;
+			this.newcat = this.categories[i].title;
+			this.activeCat = this.categories[i];
+		},
 
-          axios
-            .post("/playlists/delete-cat", {
-              id: this.categories[i].id
-            })
-            .then((response) => {
-              this.categories.splice(i, 1);
-              this.$toast.success("Удалено");
-            });
-        }
-      },
+		movePl(i) {
+			this.editingPlaylist = this.activeCat.playlists[i];
+			this.showEditPlaylist = true;
+		},
 
-    savePlaylist() {
-      let loader = this.$loading.show();
+		deletePl(i) {
+			if (confirm('Вы уверены что хотите удалить плейлист?')) {
+				axios
+					.post('/playlists/delete', {
+						id: this.activeCat.playlists[i].id
+					})
+					.then((response) => {
+						this.activeCat.playlists.splice(i, 1);
+						this.$toast.success('Удалено');
+					});
+			}
+		},
+		selectCat(i) {
+			this.activeCat = this.categories[i];
+			this.activePlaylist = null;
+			this.data_category = i+1;
+			this.data_playlist = 0;
 
-      let formData = new FormData();
-          formData.append('file', this.file_img);
-          formData.append('playlist', JSON.stringify(this.editingPlaylist));
 
-      axios.post( '/playlists/save-fast', formData)
-        .then((response) => {
-          if(response.data !== '') this.editingPlaylist.img = response.data;
+			if (history.pushState) {
+				var newUrl = this.mylink.concat('/'+this.data_category, '/'+this.data_playlist);
+				history.pushState(null, null, newUrl);
+			}
+			else {
+				console.warn('History API не поддерживает ваш браузер');
+			}
+			this.myvideo = 0;
 
-          if(this.editingPlaylist.category_id != this.activeCat.id) {
-            this.deleteItemFrom(this.editingPlaylist.id, this.activeCat.playlists);
-            let i = this.categories.findIndex(el => el.id == this.editingPlaylist.category_id);
+		},
 
-            if(i != -1) {
-              if(response.data !== '') this.editingPlaylist.img = response.data;
-              this.categories[i].playlists.push(this.editingPlaylist);
-            }
+		deleteCat(i) {
+			if (confirm('Вы уверены что хотите удалить категорию?')) {
 
-            this.showEditPlaylist = false;
-            this.editingPlaylist = {};
-          }
+				axios
+					.post('/playlists/delete-cat', {
+						id: this.categories[i].id
+					})
+					.then((response) => {
+						this.categories.splice(i, 1);
+						this.$toast.success('Удалено');
+					});
+			}
+		},
 
-          loader.hide();
-          this.$toast.success("Сохранено");
-        })
-        .catch((error) => {
-          console.log(error);
-          loader.hide();
-        })
-    },
+		savePlaylist() {
+			let loader = this.$loading.show();
 
-    deleteItemFrom(id, from) {
-      let i = from.findIndex(el => el.id == id);
-      if(i != -1) from.splice(i, 1);
-    },
+			let formData = new FormData();
+			formData.append('file', this.file_img);
+			formData.append('playlist', JSON.stringify(this.editingPlaylist));
 
-     back() {
-        this.activePlaylist = null;
-        window.history.replaceState({ id: "100" }, "Плейлисты", "/video_playlists");
-      },
+			axios.post( '/playlists/save-fast', formData)
+				.then((response) => {
+					if(response.data !== '') this.editingPlaylist.img = response.data;
 
-    addCat() {
-       if (this.newcat.length <= 2) {
-        alert("Слишком короткое название!");
-        return "";
-      }
+					if(this.editingPlaylist.category_id != this.activeCat.id) {
+						this.deleteItemFrom(this.editingPlaylist.id, this.activeCat.playlists);
+						let i = this.categories.findIndex(el => el.id == this.editingPlaylist.category_id);
 
-      let loader = this.$loading.show();
+						if(i != -1) {
+							if(response.data !== '') this.editingPlaylist.img = response.data;
+							this.categories[i].playlists.push(this.editingPlaylist);
+						}
 
-      axios
-        .post("/playlists/add-cat", {
-          title: this.newcat,
-        })
-        .then((response) => {
-          this.showAddCategory = false;
-          this.newcat = "";
+						this.showEditPlaylist = false;
+						this.editingPlaylist = {};
+					}
 
-          this.categories.push(response.data);
+					loader.hide();
+					this.$toast.success('Сохранено');
+				})
+				.catch((error) => {
+					console.log(error);
+					loader.hide();
+				})
+		},
 
-          this.$toast.success("Успешно создана!");
-          loader.hide();
-        })
-        .catch((error) => {
-          loader.hide();
-          alert(error);
-        });
-    },
+		deleteItemFrom(id, from) {
+			let i = from.findIndex(el => el.id == id);
+			if(i != -1) from.splice(i, 1);
+		},
 
-    saveCat() {
-      if (this.activeCat.title.length <= 2) {
-        alert("Слишком короткое название!");
-        return "";
-      }
+		back() {
+			this.activePlaylist = null;
+			window.history.replaceState({ id: '100' }, 'Плейлисты', '/video_playlists');
+		},
 
-      let loader = this.$loading.show();
+		addCat() {
+			if (this.newcat.length <= 2) {
+				alert('Слишком короткое название!');
+				return '';
+			}
 
-      axios
-        .post("/playlists/save-cat", {
-          title: this.newcat,
-          id: this.activeCat.id,
-        })
-        .then((response) => {
-          this.showEditCat = false;
-          this.activeCat.title = this.newcat;
-          this.newcat = '';
-          this.$toast.success("Сохранено!");
-          loader.hide();
-        })
-        .catch((error) => {
-          loader.hide();
-          alert(error);
-        });
-    },
+			let loader = this.$loading.show();
 
-    deleteCat(i) {
-      if (confirm("Вы уверены что хотите удалить категорию?")) {
-        axios
-          .post("/playlists/delete-cat", {
-            id: this.categories[i].id
-          })
-          .then((response) => {
-            this.categories.splice(i, 1);
-            this.activeCat = null;
-            this.$toast.success("Удалено");
-          });
-      }
-    },
+			axios
+				.post('/playlists/add-cat', {
+					title: this.newcat,
+				})
+				.then((response) => {
+					this.showAddCategory = false;
+					this.newcat = '';
 
-    addPlaylist() {
-       if (this.newPlaylist.length <= 2) {
-        alert("Слишком короткое название!");
-        return "";
-      }
+					this.categories.push(response.data);
 
-      let loader = this.$loading.show();
+					this.$toast.success('Успешно создана!');
+					loader.hide();
+				})
+				.catch((error) => {
+					loader.hide();
+					alert(error);
+				});
+		},
 
-      axios
-        .post("/playlists/add", {
-          title: this.newPlaylist,
-          cat_id: this.activeCat.id,
-        })
-        .then((response) => {
-          this.showAddPlaylist = false;
-          this.newPlaylist = "";
+		saveCat() {
+			if (this.activeCat.title.length <= 2) {
+				alert('Слишком короткое название!');
+				return '';
+			}
 
-          this.activeCat.playlists.push(response.data);
+			let loader = this.$loading.show();
 
-          this.$toast.success("Успешно создан!");
-          loader.hide();
-        })
-        .catch((error) => {
-          loader.hide();
-          alert(error);
-        });
-    },
+			axios
+				.post('/playlists/save-cat', {
+					title: this.newcat,
+					id: this.activeCat.id,
+				})
+				.then((response) => {
+					this.showEditCat = false;
+					this.activeCat.title = this.newcat;
+					this.newcat = '';
+					this.$toast.success('Сохранено!');
+					loader.hide();
+				})
+				.catch((error) => {
+					loader.hide();
+					alert(error);
+				});
+		},
 
-    toggleMode() {
-      this.mode = (this.mode == 'read') ? 'edit' : 'read';
-    },
+		deleteCat(i) {
+			if (confirm('Вы уверены что хотите удалить категорию?')) {
+				axios
+					.post('/playlists/delete-cat', {
+						id: this.categories[i].id
+					})
+					.then((response) => {
+						this.categories.splice(i, 1);
+						this.activeCat = null;
+						this.$toast.success('Удалено');
+					});
+			}
+		},
 
-    get_settings() {
-      axios
-        .post("/settings/get", {
-          type: 'video'
-        })
-        .then((response) => {
-          this.allow_save_video_without_test = response.data.settings.allow_save_video_without_test;
-          this.showSettings = true;
-        })
-        .catch((error) => {
-          alert(error);
-        });
-    },
+		addPlaylist() {
+			if (this.newPlaylist.length <= 2) {
+				alert('Слишком короткое название!');
+				return '';
+			}
 
-    save_settings() {
-       axios
-        .post("/settings/save", {
-          type: 'video',
-          allow_save_video_without_test: this.allow_save_video_without_test,
-        })
-        .then((response) => {
-          this.showSettings = false;
-        })
-        .catch((error) => {
-          alert(error);
-        });
-    },
+			let loader = this.$loading.show();
 
-  },
+			axios
+				.post('/playlists/add', {
+					title: this.newPlaylist,
+					cat_id: this.activeCat.id,
+				})
+				.then((response) => {
+					this.showAddPlaylist = false;
+					this.newPlaylist = '';
+
+					this.activeCat.playlists.push(response.data);
+
+					this.$toast.success('Успешно создан!');
+					loader.hide();
+				})
+				.catch((error) => {
+					loader.hide();
+					alert(error);
+				});
+		},
+
+		toggleMode() {
+			this.mode = (this.mode == 'read') ? 'edit' : 'read';
+		},
+
+		get_settings() {
+			axios
+				.post('/settings/get', {
+					type: 'video'
+				})
+				.then((response) => {
+					this.allow_save_video_without_test = response.data.settings.allow_save_video_without_test;
+					this.showSettings = true;
+				})
+				.catch((error) => {
+					alert(error);
+				});
+		},
+
+		save_settings() {
+			axios
+				.post('/settings/save', {
+					type: 'video',
+					allow_save_video_without_test: this.allow_save_video_without_test,
+				})
+				.then((response) => {
+					this.showSettings = false;
+				})
+				.catch((error) => {
+					alert(error);
+				});
+		},
+
+	},
 };
 </script>

@@ -1,20 +1,20 @@
 <script>
 export default {
-    name: 'UserEditGroups',
-    props: {
-        user: {
-            type: Object,
-            default: null
-        },
-        groups:{
-            type: Array,
-            default: () => []
-        },
-        in_groups:{
-            type: Array,
-            default: () => []
-        },
-    }
+	name: 'UserEditGroups',
+	props: {
+		user: {
+			type: Object,
+			default: null
+		},
+		groups:{
+			type: Array,
+			default: () => []
+		},
+		in_groups:{
+			type: Array,
+			default: () => []
+		},
+	}
 }
 </script>
 <template>

@@ -22,17 +22,17 @@ import Tariffs from './components/sections/Tariffs.vue'
 import Footer from './components/sections/Footer.vue'
 
 export default {
-  name: 'app',
-  components: {
-    Navbar,
-    Section1,
-    Section2,
-    Section3,
-    Section4,
-    Reviews,
-    Tariffs,
-    Footer
-  }
+	name: 'app',
+	components: {
+		Navbar,
+		Section1,
+		Section2,
+		Section3,
+		Section4,
+		Reviews,
+		Tariffs,
+		Footer
+	}
 }
 </script>
 <style lang="scss">

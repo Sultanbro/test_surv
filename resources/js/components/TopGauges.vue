@@ -203,241 +203,241 @@
 
 <script>
 export default {
-    name: "TopGauges", 
-    props: ['utility_items', 'editable', 'wrapper_class', 'page'],
-    watch: {
-        utility_items() {
-            //vm.$forceUpdate()
-        },
-    },
-    data() {
-        return {
-            utility: [],
-            skey: 1,
-            newGauge: {
-                activity_id: null,
-                group_id: null,
-                name: null,
-                cell: '',
-                value_type: 'sum'
-            }, 
-            showNewGaugeWindow: false,
-            group_activities: [],
-            colors: {
-                '#ca0013': 7, // red
-                '#F03E3E': 2, // red
-                '#fd7e14': 4, // orange
-                '#ffc107': 6, // orange light
-                '#FFDD00': 3, // yellow
-                '#42e467': 5, // green light,
-                '#30B32D': 1, // green,
-            },
-            reverseColors: {
-                '#30B32D': 1, // green,
-                '#42e467': 5, // green light,
-                '#FFDD00': 3, // yellow
-                '#ffc107': 6, // orange light
-                '#fd7e14': 4, // orange
-                '#F03E3E': 2, // red
-                '#ca0013': 7, // red
-            },
-        }
-    },
-    created() {
-        this.utility = this.utility_items;
-        this.normalize();
-    },
+	name: 'TopGauges', 
+	props: ['utility_items', 'editable', 'wrapper_class', 'page'],
+	watch: {
+		utility_items() {
+			//vm.$forceUpdate()
+		},
+	},
+	data() {
+		return {
+			utility: [],
+			skey: 1,
+			newGauge: {
+				activity_id: null,
+				group_id: null,
+				name: null,
+				cell: '',
+				value_type: 'sum'
+			}, 
+			showNewGaugeWindow: false,
+			group_activities: [],
+			colors: {
+				'#ca0013': 7, // red
+				'#F03E3E': 2, // red
+				'#fd7e14': 4, // orange
+				'#ffc107': 6, // orange light
+				'#FFDD00': 3, // yellow
+				'#42e467': 5, // green light,
+				'#30B32D': 1, // green,
+			},
+			reverseColors: {
+				'#30B32D': 1, // green,
+				'#42e467': 5, // green light,
+				'#FFDD00': 3, // yellow
+				'#ffc107': 6, // orange light
+				'#fd7e14': 4, // orange
+				'#F03E3E': 2, // red
+				'#ca0013': 7, // red
+			},
+		}
+	},
+	created() {
+		this.utility = this.utility_items;
+		this.normalize();
+	},
 
-    methods: {
+	methods: {
 
-        normalize() {
-            if(this.page == 'top') {
-                this.utility.forEach(group => {
-                    group.gauges.forEach(gauge => {
-                        if(group.gauges.length > 1) {
-                            gauge.height = '42px';
-                            gauge.width = '75px';
-                            if(gauge.options.staticLabels !== undefined) {
-                                gauge.options.staticLabels.font = "7px sans-serif";
-                            }
-                        } else {
-                            gauge.height = '90px';
-                            gauge.width = '150px';
-                            if(gauge.options.staticLabels !== undefined) {
-                                gauge.options.staticLabels.font = "11px sans-serif";
-                            }
-                        }
-                    });
-                });
-            } else {
-                this.utility.forEach(group => {
-                    group.gauges.forEach(gauge => {
-                        gauge.height = '90px';
-                        gauge.width = '150px';
-                        if(gauge.options.staticLabels !== undefined) {
-                            gauge.options.staticLabels.font = "7px sans-serif";
-                        }
-                    });
-                });
-            }
+		normalize() {
+			if(this.page == 'top') {
+				this.utility.forEach(group => {
+					group.gauges.forEach(gauge => {
+						if(group.gauges.length > 1) {
+							gauge.height = '42px';
+							gauge.width = '75px';
+							if(gauge.options.staticLabels !== undefined) {
+								gauge.options.staticLabels.font = '7px sans-serif';
+							}
+						} else {
+							gauge.height = '90px';
+							gauge.width = '150px';
+							if(gauge.options.staticLabels !== undefined) {
+								gauge.options.staticLabels.font = '11px sans-serif';
+							}
+						}
+					});
+				});
+			} else {
+				this.utility.forEach(group => {
+					group.gauges.forEach(gauge => {
+						gauge.height = '90px';
+						gauge.width = '150px';
+						if(gauge.options.staticLabels !== undefined) {
+							gauge.options.staticLabels.font = '7px sans-serif';
+						}
+					});
+				});
+			}
             
-        },
+		},
 
-        save(group, gauge) {
-            if(!this.editable) return "";
-            let points = JSON.parse(this.utility[group].gauges[gauge].sections)
-            this.utility[group].gauges[gauge].options.angle = Number(this.utility[group].gauges[gauge].angle)
-            this.utility[group].gauges[gauge].options.staticLabels.labels = points
-            this.utility[group].gauges[gauge].options.staticZones = this.getStaticZones(points, this.utility[group].gauges[gauge].unit)
-            this.utility[group].gauges[gauge].key++ 
+		save(group, gauge) {
+			if(!this.editable) return '';
+			let points = JSON.parse(this.utility[group].gauges[gauge].sections)
+			this.utility[group].gauges[gauge].options.angle = Number(this.utility[group].gauges[gauge].angle)
+			this.utility[group].gauges[gauge].options.staticLabels.labels = points
+			this.utility[group].gauges[gauge].options.staticZones = this.getStaticZones(points, this.utility[group].gauges[gauge].unit)
+			this.utility[group].gauges[gauge].key++ 
         
-            this.utility[group].gauges[gauge].editable = false
+			this.utility[group].gauges[gauge].editable = false
 
-            this.saveDB(group, gauge)
-        },
+			this.saveDB(group, gauge)
+		},
 
-        delete_gauge(group, gauge) {
-            if(!this.editable) return "";
+		delete_gauge(group, gauge) {
+			if(!this.editable) return '';
 
-             axios.post('/timetracking/top/delete_gauge', {
-                    gauge: this.utility[group].gauges[gauge]
-                })
-                .then(response => {
-                    this.$toast.success('Успешно удален!')
+			axios.post('/timetracking/top/delete_gauge', {
+				gauge: this.utility[group].gauges[gauge]
+			})
+				.then(response => {
+					this.$toast.success('Успешно удален!')
 
                  
-                    this.utility[group].gauges.splice(gauge, 1);
+					this.utility[group].gauges.splice(gauge, 1);
 
-                }).catch(error => {
-                    alert(error)
-                });
-        },
+				}).catch(error => {
+					alert(error)
+				});
+		},
 
-        saveDB(group, gauge_index) {
-            axios.post('/timetracking/top/save_top_value', {
-                    gauge: this.utility[group].gauges[gauge_index]
-                })
-                .then(response => {
-                    if(response.data.code == 200) {
-                        this.$toast.success('Успешно сохранено!')
+		saveDB(group, gauge_index) {
+			axios.post('/timetracking/top/save_top_value', {
+				gauge: this.utility[group].gauges[gauge_index]
+			})
+				.then(response => {
+					if(response.data.code == 200) {
+						this.$toast.success('Успешно сохранено!')
                         
-                        let this_gauge = this.utility[group].gauges[gauge_index];
+						let this_gauge = this.utility[group].gauges[gauge_index];
 
-                        this_gauge.value = response.data.value;
-                        this_gauge.options = response.data.options;
-                        if(this.utility[group].gauges[gauge_index].is_main == 1) {
-                            this.utility[group].gauges.splice(gauge_index, 1);
-                            this.utility[group].gauges.forEach(item =>  { 
-                                item.is_main = 0;
-                            });
-                            this.utility[group].gauges.unshift(this_gauge);
+						this_gauge.value = response.data.value;
+						this_gauge.options = response.data.options;
+						if(this.utility[group].gauges[gauge_index].is_main == 1) {
+							this.utility[group].gauges.splice(gauge_index, 1);
+							this.utility[group].gauges.forEach(item =>  { 
+								item.is_main = 0;
+							});
+							this.utility[group].gauges.unshift(this_gauge);
 
                          
 
                             
-                        }
+						}
 
-                        this.skey++
+						this.skey++
                         
-                    } else {
-                        this.$toast.error('Попробуйте нажать еще раз')
-                    }
-                }).catch(error => {
-                    alert(error)
-                });
-        },
+					} else {
+						this.$toast.error('Попробуйте нажать еще раз')
+					}
+				}).catch(error => {
+					alert(error)
+				});
+		},
 
-        edit(group, gauge) {
-            if(!this.editable) return "";
-            this.utility[group].gauges[gauge].editable = !this.utility[group].gauges[gauge].editable
+		edit(group, gauge) {
+			if(!this.editable) return '';
+			this.utility[group].gauges[gauge].editable = !this.utility[group].gauges[gauge].editable
 
-            if(this.visible_gauge_group_index != null && this.visible_gauge_index != null) { // Close prev
-                this.utility[this.visible_gauge_group_index].gauges[this.visible_gauge_index].editable = false
-            }
+			if(this.visible_gauge_group_index != null && this.visible_gauge_index != null) { // Close prev
+				this.utility[this.visible_gauge_group_index].gauges[this.visible_gauge_index].editable = false
+			}
 
-            if(this.utility[group].gauges[gauge].editable) {
-                this.visible_gauge_group_index = group;
-                this.visible_gauge_index = gauge;    
-            } else {
-                this.visible_gauge_group_index = null;
-                this.visible_gauge_index = null;
-            }
-        },
+			if(this.utility[group].gauges[gauge].editable) {
+				this.visible_gauge_group_index = group;
+				this.visible_gauge_index = gauge;    
+			} else {
+				this.visible_gauge_group_index = null;
+				this.visible_gauge_index = null;
+			}
+		},
 
-        getStaticZones(points, unit) {
-            let staticZones = [],
-                first = 0,
-                second = 1,
-                colors = this.colors,
-                zone_colors = [];
+		getStaticZones(points, unit) {
+			let staticZones = [],
+				first = 0,
+				second = 1,
+				colors = this.colors,
+				zone_colors = [];
 
-            if(unit == 'мин') {
-                colors = this.reverseColors;
-            }
+			if(unit == 'мин') {
+				colors = this.reverseColors;
+			}
 
-            Object.keys(colors).forEach(function (key) { 
+			Object.keys(colors).forEach(function (key) { 
            
                 
-                if(Number(colors[key]) + 1 <= points.length) {
-                    staticZones.push({
-                        strokeStyle: key,  
-                        min: points[first],
-                        max: points[second] 
-                    });
-                    first++;
-                    second++;
-                }
-            });
+				if(Number(colors[key]) + 1 <= points.length) {
+					staticZones.push({
+						strokeStyle: key,  
+						min: points[first],
+						max: points[second] 
+					});
+					first++;
+					second++;
+				}
+			});
 
-            return staticZones;
-        },
+			return staticZones;
+		},
 
-        showAddWindow(group_id, group_index) {
-            this.newGauge.group_id = group_id
-            this.newGauge.group_index = group_index
+		showAddWindow(group_id, group_index) {
+			this.newGauge.group_id = group_id
+			this.newGauge.group_index = group_index
             
-            axios.post('/timetracking/top/get_activities', {
-                    group_id: group_id,
-                })
-                .then(response => {
-                    this.group_activities = response.data;
-                }).catch(error => {
-                    alert(error)
-                });
+			axios.post('/timetracking/top/get_activities', {
+				group_id: group_id,
+			})
+				.then(response => {
+					this.group_activities = response.data;
+				}).catch(error => {
+					alert(error)
+				});
 
-            this.showNewGaugeWindow = true
-        },
+			this.showNewGaugeWindow = true
+		},
 
-        create_gauge() {
-             axios.post('/timetracking/top/create_gauge', {
-                    group_id: this.newGauge.group_id,
-                    activity_id: this.newGauge.activity_id,
-                    name: this.newGauge.name,
-                    value_type: this.newGauge.value_type,
-                    cell: this.newGauge.cell,
-                })
-                .then(response => {
+		create_gauge() {
+			axios.post('/timetracking/top/create_gauge', {
+				group_id: this.newGauge.group_id,
+				activity_id: this.newGauge.activity_id,
+				name: this.newGauge.name,
+				value_type: this.newGauge.value_type,
+				cell: this.newGauge.cell,
+			})
+				.then(response => {
 
-                    this.utility[this.newGauge.group_index].gauges.push(response.data);
+					this.utility[this.newGauge.group_index].gauges.push(response.data);
 
-                    this.newGauge = {
-                        activity_id: null,
-                        group_id: null,
-                        name: null,
-                        cell:'',
-                        value_type: 'sum'
-                    };
+					this.newGauge = {
+						activity_id: null,
+						group_id: null,
+						name: null,
+						cell:'',
+						value_type: 'sum'
+					};
 
-                    this.skey++
-                    this.normalize();
+					this.skey++
+					this.normalize();
 
-                    this.showNewGaugeWindow = false;
-                    this.$toast.success('Успешно сохранено!')
-                }).catch(error => {
-                    alert(error)
-                });
-        }
-    } 
+					this.showNewGaugeWindow = false;
+					this.$toast.success('Успешно сохранено!')
+				}).catch(error => {
+					alert(error)
+				});
+		}
+	} 
 }
 </script>
 

@@ -218,131 +218,131 @@
 import AwardBSidebar from './AwardBSidebar'
 
 export default {
-    name: "UserEarnings",
-    components: { /* AwardSidebar, */ AwardBSidebar },
-    props: {
-        month: {},
-        data: Object,
-        activeuserid: Number,
-        has_quartal_premiums: Boolean
-    },
+	name: 'UserEarnings',
+	components: { /* AwardSidebar, */ AwardBSidebar },
+	props: {
+		month: {},
+		data: Object,
+		activeuserid: Number,
+		has_quartal_premiums: Boolean
+	},
 
-    data() {
-        return {
-            visible: true,
-            showQuartalBonusSidebar: false,
-            showQuartalPremiumSidebar: false,
-            showBonusSidebar: false,
-            showKpiSidebar: false,
-            showSalarySidebar: false,
-            showAwardSidebar: false,
-            editedBonus: null,
-            activities: [],
-            groups: {},
-            quartal_premiums: [],
-            kpis: [],
-            bonus_groups: [],
-            quartal_groups: [],
-        }
-    },
-    computed: {
-        activeClass () {
-            return this.has_quartal_premiums == 0 ? 'col-md-3' : 'col-md-2'
-        }
-    },
-    methods: {
-        openQuartalPrems(){
-            this.fetchQP({
-                data_from: {
-                    year: new Date().getFullYear(),
-                    month: this.$moment(this.month, 'MMMM').format('M')
-                },
-                user_id: this.activeuserid
-            })
+	data() {
+		return {
+			visible: true,
+			showQuartalBonusSidebar: false,
+			showQuartalPremiumSidebar: false,
+			showBonusSidebar: false,
+			showKpiSidebar: false,
+			showSalarySidebar: false,
+			showAwardSidebar: false,
+			editedBonus: null,
+			activities: [],
+			groups: {},
+			quartal_premiums: [],
+			kpis: [],
+			bonus_groups: [],
+			quartal_groups: [],
+		}
+	},
+	computed: {
+		activeClass () {
+			return this.has_quartal_premiums == 0 ? 'col-md-3' : 'col-md-2'
+		}
+	},
+	methods: {
+		openQuartalPrems(){
+			this.fetchQP({
+				data_from: {
+					year: new Date().getFullYear(),
+					month: this.$moment(this.month, 'MMMM').format('M')
+				},
+				user_id: this.activeuserid
+			})
 
-            this.showQuartalPremiumSidebar = true
-        },
+			this.showQuartalPremiumSidebar = true
+		},
 
-        fetchQP(filters) {
-            let loader = this.$loading.show();
+		fetchQP(filters) {
+			let loader = this.$loading.show();
 
-            axios.post('/statistics/quartal-premiums', {
-                filters: filters 
-            }).then(response => {
+			axios.post('/statistics/quartal-premiums', {
+				filters: filters 
+			}).then(response => {
                 
-                // items
-                this.quartal_premiums = response.data[0].map(res=> ({...res, expanded: false}));
-                // this.quartal_premiums = this.quartal_premiums.map(res=> ({...res, my_sum: 0}))
+				// items
+				this.quartal_premiums = response.data[0].map(res=> ({...res, expanded: false}));
+				// this.quartal_premiums = this.quartal_premiums.map(res=> ({...res, my_sum: 0}))
                 
-                // this.activities = response.data.activities;
-                this.quartal_groups = response.data[1].map(res=> ({...res, expanded: false}));
+				// this.activities = response.data.activities;
+				this.quartal_groups = response.data[1].map(res=> ({...res, expanded: false}));
 
-                loader.hide()
-            }).catch(error => {
-                loader.hide()
-                alert(error)
-            });
-        },
+				loader.hide()
+			}).catch(error => {
+				loader.hide()
+				alert(error)
+			});
+		},
 
-        openBonus(){
-            this.fetchBonus({
-                data_from: {
-                    year: new Date().getFullYear(),
-                    month: this.$moment(this.month, 'MMMM').format('M')
-                },
-                user_id: this.activeuserid
-            })
-            this.showBonusSidebar = true
-        },
+		openBonus(){
+			this.fetchBonus({
+				data_from: {
+					year: new Date().getFullYear(),
+					month: this.$moment(this.month, 'MMMM').format('M')
+				},
+				user_id: this.activeuserid
+			})
+			this.showBonusSidebar = true
+		},
 
-        fetchBonus(filter){
-            let loader = this.$loading.show();
-            axios.post('/statistics/bonus', {
-                filters: filters 
-            }).then(response => {
-                // items
-                this.bonus_groups = response.data;
-                loader.hide()
-            }).catch(error => {
-                loader.hide()
-                alert(error)
-            });
-        },
+		fetchBonus(filter){
+			let loader = this.$loading.show();
+			axios.post('/statistics/bonus', {
+				filters: filters 
+			}).then(response => {
+				// items
+				this.bonus_groups = response.data;
+				loader.hide()
+			}).catch(error => {
+				loader.hide()
+				alert(error)
+			});
+		},
 
-        openKpi(){
-            this.fetchKPI({
-                data_from: {
-                    year: new Date().getFullYear(),
-                    month: this.$moment(this.month, 'MMMM').format('M')
-                },
-                user_id: this.activeuserid
-            })
-            this.showKpiSidebar = true
-        },
+		openKpi(){
+			this.fetchKPI({
+				data_from: {
+					year: new Date().getFullYear(),
+					month: this.$moment(this.month, 'MMMM').format('M')
+				},
+				user_id: this.activeuserid
+			})
+			this.showKpiSidebar = true
+		},
 
        
-        fetchKPI(filters) {
-            let loader = this.$loading.show();
+		fetchKPI(filters) {
+			let loader = this.$loading.show();
 
-            axios.post('/statistics/kpi', {
-                filters: filters 
-            }).then(response => {
+			axios.post('/statistics/kpi', {
+				filters: filters 
+			}).then(response => {
                 
-                // items
-                this.kpis = response.data.items;
-                this.kpis = this.kpis.map(res=> ({...res, my_sum: 0}))
+				// items
+				this.kpis = response.data.items;
+				this.kpis = this.kpis.map(res=> ({...res, my_sum: 0}))
                 
-                this.activities = response.data.activities;
-                this.groups = response.data.groups;
+				this.activities = response.data.activities;
+				this.groups = response.data.groups;
 
-                loader.hide()
-            }).catch(error => {
-                loader.hide()
-                alert(error)
-            });
-        },
+				loader.hide()
+			}).catch(error => {
+				loader.hide()
+				alert(error)
+			});
+		},
 
-    },
+	},
 };
 </script>
 

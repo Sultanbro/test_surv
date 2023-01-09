@@ -54,30 +54,30 @@ import {Hooper, Navigation as HooperNavigation, Slide} from 'hooper'
 import 'hooper/dist/hooper.css'
 
 export default {
-  components: {
-    S3Block,
-    Hooper,
-    Slide,
-    HooperNavigation
-  },
-  data() {
-    return {
-      hooperSettings: {
-        itemsToShow: 1,
-        infiniteScroll: true,
-        autoPlay: true,
-        playSpeed: 3000
-      }
-    }
-  },
-  computed: {
-    lang() {
-      return this.$root.$data.lang
-    },
-    isDesktop() {
-      return this.$viewportSize.width >= 1260
-    },
-  },
+	components: {
+		S3Block,
+		Hooper,
+		Slide,
+		HooperNavigation
+	},
+	data() {
+		return {
+			hooperSettings: {
+				itemsToShow: 1,
+				infiniteScroll: true,
+				autoPlay: true,
+				playSpeed: 3000
+			}
+		}
+	},
+	computed: {
+		lang() {
+			return this.$root.$data.lang
+		},
+		isDesktop() {
+			return this.$viewportSize.width >= 1260
+		},
+	},
 }
 </script>
 

@@ -98,106 +98,106 @@
 
 <script>
 export default {
-    name: 'VideoList',
-    props: ['videos', 'mode','group_edit', 'g_index', 'c_index', 'active' , 'is_course'],
-    data(){
-        return {
-          modal: false,
-          index: -1,
-          playlist: null,
-          group: {
-                id: 0,
-                title: 'Без группы'
-            },
-          playlists: [],
-          groups: []
-        }
-    },
+	name: 'VideoList',
+	props: ['videos', 'mode','group_edit', 'g_index', 'c_index', 'active' , 'is_course'],
+	data(){
+		return {
+			modal: false,
+			index: -1,
+			playlist: null,
+			group: {
+				id: 0,
+				title: 'Без группы'
+			},
+			playlists: [],
+			groups: []
+		}
+	},
 
-    watch: {
-        playlist() {
-            if(this.playlist != null) {
-                let i = this.playlists.findIndex(el => el.id == this.playlist.id)
-                if(i != -1) {
+	watch: {
+		playlist() {
+			if(this.playlist != null) {
+				let i = this.playlists.findIndex(el => el.id == this.playlist.id)
+				if(i != -1) {
                    
-                    this.groups = this.playlists[i].groupses;
-                    this.groups.unshift({
-                        id: 0,
-                        title: 'Без группы'
-                    });
-                     this.group = {
-                        id: 0,
-                        title: 'Без группы'
-                    }
-                }
-            }  
-        }
-    },
+					this.groups = this.playlists[i].groupses;
+					this.groups.unshift({
+						id: 0,
+						title: 'Без группы'
+					});
+					this.group = {
+						id: 0,
+						title: 'Без группы'
+					}
+				}
+			}  
+		}
+	},
 
-    created() {
+	created() {
        
-    },
+	},
 
-    methods: {
+	methods: {
 
-        moveTo(video, i) {
-            this.modal = true;
-            this.fetch();
-            this.index = i
-        },
+		moveTo(video, i) {
+			this.modal = true;
+			this.fetch();
+			this.index = i
+		},
 
-        fetch() {
-            axios.post('/videos/get-playlists-to-move')
-            .then(response => {
-                this.playlists = response.data
+		fetch() {
+			axios.post('/videos/get-playlists-to-move')
+				.then(response => {
+					this.playlists = response.data
 
-                 if(this.videos.length > 0) {
-                    let i = this.playlists.findIndex(el => el.id == this.videos[0].playlist_id)
-                    if(i != -1) {
-                        this.playlist = this.playlists[i]
-                        this.group = {
-                            id: 0,
-                            title: 'Без группы'
-                        };
-                    }
-                }
-            })
-        },  
+					if(this.videos.length > 0) {
+						let i = this.playlists.findIndex(el => el.id == this.videos[0].playlist_id)
+						if(i != -1) {
+							this.playlist = this.playlists[i]
+							this.group = {
+								id: 0,
+								title: 'Без группы'
+							};
+						}
+					}
+				})
+		},  
 
-        move() {
-            axios.post('/videos/move-to-playlist', {
-                video_id: this.videos[this.index].id,
-                playlist_id: this.playlist.id, 
-                group_id: this.group.id
-            })
-            .then(response => {
-                this.$toast.success('Видео перемещено');
-                this.videos.splice(this.index,1);
-            })
-        },   
+		move() {
+			axios.post('/videos/move-to-playlist', {
+				video_id: this.videos[this.index].id,
+				playlist_id: this.playlist.id, 
+				group_id: this.group.id
+			})
+				.then(response => {
+					this.$toast.success('Видео перемещено');
+					this.videos.splice(this.index,1);
+				})
+		},   
 
-        saveOrder(e) {
-            let loader = this.$loading.show(); 
-            axios.post('/videos/save-order', {
-                id: e.item.id,
-                order: e.newIndex, // oldIndex
-            })
-            .then(response => {
-                loader.hide()
-                this.$emit('order-changed')
-                this.$toast.success('Очередь сохранена');
-            })
-            .catch(e => {
-                loader.hide()
-                console.log(e)
-            })
-        },
+		saveOrder(e) {
+			let loader = this.$loading.show(); 
+			axios.post('/videos/save-order', {
+				id: e.item.id,
+				order: e.newIndex, // oldIndex
+			})
+				.then(response => {
+					loader.hide()
+					this.$emit('order-changed')
+					this.$toast.success('Очередь сохранена');
+				})
+				.catch(e => {
+					loader.hide()
+					console.log(e)
+				})
+		},
 
-        showVideo(video, i) {
-            if(video.item_model == null && this.mode == 'read') return;
-            this.$emit('showVideo', video, i);
-        },
-    }
+		showVideo(video, i) {
+			if(video.item_model == null && this.mode == 'read') return;
+			this.$emit('showVideo', video, i);
+		},
+	}
 }
 </script>
 

@@ -86,282 +86,282 @@
 
 <script>
 export default {
-    name: 'Superselect',
-    props: {
-        pre_build: {
-          type: Boolean,
-          default: false
-        },
-        value_id: {
-          type: Number,
-          default: null
-        },
-        disable_type: {
-          type: Number,
-          default: null
-        },
-        onlytype:{
-            type: Number,
-            default: 0
-        },
-        placeholder:{
-            type: String,
-            default: '',
-        },
-        values: {
-            type: Array,
-            default: Array
-        },
-        single: {
-            type: Boolean,
-            default: false
-        },
-        select_all_btn: {
-            type: Boolean,
-            default: false
-        },
-        ask_before_delete: {
-            type: String,
-            default: ''
-        },
-        one_choice: {
-            type: Boolean,
-            default: false
-        },
-        available_courses: {
-            type: Array,
-            default: () => []
-        }
-    },
-    data() {
-        return {
-            valueList: [],
-            show_placeholder: true,
-            options: [],
-            filtered_options: [],
-            type: 1,
-            show: false,
-            posClass: 'top',
-            searchText: '',
-            first_time: true,
-            selected_all: false,
-            one_choice_made: false
-        };
-    },
-    created() {
-        if(this.pre_build){
-            axios
-                .get("/superselect/get", {})
-                .then(response => {
-                    if(this.disable_type){
-                        response.data.options.forEach(item =>{
-                            if(this.disable_type !== item.type){
-                                this.options.push(item);
-                            }
-                        })
-                    } else{
-                        this.options = response.data.options;
-                    }
-                    if(this.available_courses.length > 0){
-                        this.available_courses.forEach(item => {
-                            this.options.filter((option, index) => {
-                                if(option.id === item.id && option.type === item.type){
-                                    this.options[index].shownProfile = true;
-                                }
-                            })
-                        })
-                    }
-                    if(this.value_id){
-                        this.valueList.push(this.options.find(x => x.id === this.value_id));
-                        document.getElementById('placeholder').style.display = "none";
-                    }
-                    this.first_time = false;
-                    this.filterType();
-                    this.addSelectedAttr();
-                })
-        }
-        this.valueList = this.values;
-        if(this.one_choice && this.valueList.length > 0) this.one_choice_made = true;
-        this.checkSelectedAll();
-        if(this.onlytype > 0){
-            this.changeType(2);
-        }
-    },
-    methods: {
-        hidePlaceholder(){
-            this.show_placeholder = !this.show_placeholder;
-        },
-        checkSelectedAll() {
-            if(this.valueList.length == 1
+	name: 'Superselect',
+	props: {
+		pre_build: {
+			type: Boolean,
+			default: false
+		},
+		value_id: {
+			type: Number,
+			default: null
+		},
+		disable_type: {
+			type: Number,
+			default: null
+		},
+		onlytype:{
+			type: Number,
+			default: 0
+		},
+		placeholder:{
+			type: String,
+			default: '',
+		},
+		values: {
+			type: Array,
+			default: Array
+		},
+		single: {
+			type: Boolean,
+			default: false
+		},
+		select_all_btn: {
+			type: Boolean,
+			default: false
+		},
+		ask_before_delete: {
+			type: String,
+			default: ''
+		},
+		one_choice: {
+			type: Boolean,
+			default: false
+		},
+		available_courses: {
+			type: Array,
+			default: () => []
+		}
+	},
+	data() {
+		return {
+			valueList: [],
+			show_placeholder: true,
+			options: [],
+			filtered_options: [],
+			type: 1,
+			show: false,
+			posClass: 'top',
+			searchText: '',
+			first_time: true,
+			selected_all: false,
+			one_choice_made: false
+		};
+	},
+	created() {
+		if(this.pre_build){
+			axios
+				.get('/superselect/get', {})
+				.then(response => {
+					if(this.disable_type){
+						response.data.options.forEach(item =>{
+							if(this.disable_type !== item.type){
+								this.options.push(item);
+							}
+						})
+					} else{
+						this.options = response.data.options;
+					}
+					if(this.available_courses.length > 0){
+						this.available_courses.forEach(item => {
+							this.options.filter((option, index) => {
+								if(option.id === item.id && option.type === item.type){
+									this.options[index].shownProfile = true;
+								}
+							})
+						})
+					}
+					if(this.value_id){
+						this.valueList.push(this.options.find(x => x.id === this.value_id));
+						document.getElementById('placeholder').style.display = 'none';
+					}
+					this.first_time = false;
+					this.filterType();
+					this.addSelectedAttr();
+				})
+		}
+		this.valueList = this.values;
+		if(this.one_choice && this.valueList.length > 0) this.one_choice_made = true;
+		this.checkSelectedAll();
+		if(this.onlytype > 0){
+			this.changeType(2);
+		}
+	},
+	methods: {
+		hidePlaceholder(){
+			this.show_placeholder = !this.show_placeholder;
+		},
+		checkSelectedAll() {
+			if(this.valueList.length == 1
                 && this.valueList[0]['id']== 0
                 && this.valueList[0]['type'] == 0) {
-                this.selected_all = true;
-                //  console.log('okay');
-            } else {
-                // console.log('wtf');
-            }
-        },
+				this.selected_all = true;
+				//  console.log('okay');
+			} else {
+				// console.log('wtf');
+			}
+		},
 
-        filterType() {
-            this.filtered_options = this.options.filter((el, index) => {
-                return el.type == this.type
-            });
-        },
+		filterType() {
+			this.filtered_options = this.options.filter((el, index) => {
+				return el.type == this.type
+			});
+		},
 
-        addSelectedAttr() {
-            this.filtered_options.forEach(el => {
-                el.selected = this.valueList.findIndex(v => v.id == el.id && v.type == el.type) != -1
-            });
-        },
+		addSelectedAttr() {
+			this.filtered_options.forEach(el => {
+				el.selected = this.valueList.findIndex(v => v.id == el.id && v.type == el.type) != -1
+			});
+		},
 
-        toggleShow() {
-            if(this.one_choice_made) {
-                return;
-            }
+		toggleShow() {
+			if(this.one_choice_made) {
+				return;
+			}
 
-            this.show = !this.show;
-            if(this.show){
-                document.getElementById('placeholder').style.display = "none";
-            }else{
-                document.getElementById('placeholder').style.display = "block";
-            }
+			this.show = !this.show;
+			if(this.show){
+				document.getElementById('placeholder').style.display = 'none';
+			}else{
+				document.getElementById('placeholder').style.display = 'block';
+			}
 
-            if(this.first_time) {
-                this.fetch();
-            }
+			if(this.first_time) {
+				this.fetch();
+			}
 
-            this.$nextTick(() => {
-                if(this.$refs.search !== undefined) this.$refs.search.focus();
-            });
-            this.setPosClass();
-        },
+			this.$nextTick(() => {
+				if(this.$refs.search !== undefined) this.$refs.search.focus();
+			});
+			this.setPosClass();
+		},
 
-        setPosClass() {
-            let pos = this.$refs["select"].getBoundingClientRect();
-            let viewport_h = document.documentElement.clientHeight;
-            this.posClass = (viewport_h - pos.top > 450) ? 'bottom' : 'top';
-        },
+		setPosClass() {
+			let pos = this.$refs['select'].getBoundingClientRect();
+			let viewport_h = document.documentElement.clientHeight;
+			this.posClass = (viewport_h - pos.top > 450) ? 'bottom' : 'top';
+		},
 
-        changeType(i) {
-            this.type = i;
-            this.searchText = '';
-            this.filterType();
-            this.addSelectedAttr();
-        },
+		changeType(i) {
+			this.type = i;
+			this.searchText = '';
+			this.filterType();
+			this.addSelectedAttr();
+		},
 
-        addValue(index) {
-            if(this.single) this.show = false;
-            if(this.single && this.valueList.length > 0) {
-                return;
-            };
+		addValue(index) {
+			if(this.single) this.show = false;
+			if(this.single && this.valueList.length > 0) {
+				return;
+			}
 
 
-            if(this.selected_all) return;
+			if(this.selected_all) return;
 
-            let item = this.filtered_options[index];
+			let item = this.filtered_options[index];
 
-            if(this.valueList.findIndex(v => v.id == item.id && v.type == item.type) == -1) {
+			if(this.valueList.findIndex(v => v.id == item.id && v.type == item.type) == -1) {
 
-                let value = {
-                    name: item.name,
-                    id: item.id,
-                    type: item.type
-                };
+				let value = {
+					name: item.name,
+					id: item.id,
+					type: item.type
+				};
 
-                this.$emit('choose', value);
-                this.valueList.push(value);
+				this.$emit('choose', value);
+				this.valueList.push(value);
 
-                item.selected = true
-            }
-        },
+				item.selected = true
+			}
+		},
 
-        removeValue(i, id) {
-            if(this.ask_before_delete != '') {
-                if(!confirm(this.ask_before_delete)) return;
-            }
+		removeValue(i, id) {
+			if(this.ask_before_delete != '') {
+				if(!confirm(this.ask_before_delete)) return;
+			}
 
-            let v = this.valueList[i];
-            // console.log(v);
-            if(v.id == 0 && v.type == 0 && v.name == 'Все') this.selected_all = false;
+			let v = this.valueList[i];
+			// console.log(v);
+			if(v.id == 0 && v.type == 0 && v.name == 'Все') this.selected_all = false;
 
-            this.valueList.splice(i, 1);
+			this.valueList.splice(i, 1);
 
-            this.filtered_options.filter((option, index) => {
-                if(option.id === id){
-                    this.filtered_options[index].selected = false;
-                    this.filtered_options[index].shownProfile = false;
-                }
-            });
-            this.$emit('remove');
+			this.filtered_options.filter((option, index) => {
+				if(option.id === id){
+					this.filtered_options[index].selected = false;
+					this.filtered_options[index].shownProfile = false;
+				}
+			});
+			this.$emit('remove');
 
-            // let index = this.filtered_options.findIndex(o => v.id == o.id && v.type == o.type);
-            // if(index != -1) {
-                // this.filtered_options.splice(index, 1);
-                // this.$emit('remove');
-            // }
-        },
+			// let index = this.filtered_options.findIndex(o => v.id == o.id && v.type == o.type);
+			// if(index != -1) {
+			// this.filtered_options.splice(index, 1);
+			// this.$emit('remove');
+			// }
+		},
 
-        removeValueFromList(i) {
-            let fo = this.filtered_options[i];
-            let index = this.valueList.findIndex(v => v.id == fo.id && v.type == fo.type);
-            if(index != -1) {
-                this.valueList.splice(index, 1);
-                fo.selected = false;
-            }
-        },
+		removeValueFromList(i) {
+			let fo = this.filtered_options[i];
+			let index = this.valueList.findIndex(v => v.id == fo.id && v.type == fo.type);
+			if(index != -1) {
+				this.valueList.splice(index, 1);
+				fo.selected = false;
+			}
+		},
 
-        onSearch() {
+		onSearch() {
 
-            if(this.searchText == '') {
-                this.filtered_options = this.options;
-            } else {
-                this.filtered_options = this.options.filter((el, index) => {
-                    return el.name.toLowerCase().indexOf(this.searchText.toLowerCase()) > -1
-                });
-            }
+			if(this.searchText == '') {
+				this.filtered_options = this.options;
+			} else {
+				this.filtered_options = this.options.filter((el, index) => {
+					return el.name.toLowerCase().indexOf(this.searchText.toLowerCase()) > -1
+				});
+			}
 
-            this.addSelectedAttr();
-        },
+			this.addSelectedAttr();
+		},
 
-        close() {
-            this.show = false;
-        },
+		close() {
+			this.show = false;
+		},
 
-        fetch() {
-            axios
-                .get("/superselect/get", {})
-                .then(response => {
-                    if(this.disable_type){
-                        response.data.options.forEach(item =>{
-                            if(this.disable_type !== item.type){
-                                this.options.push(item);
-                            }
-                        })
-                    } else{
-                        this.options = response.data.options;
-                    }
-                    this.first_time = false;
-                    this.filterType();
-                    this.addSelectedAttr();
-                })
-            .catch((error) => {
-                alert(error,'111');
-            });
-        },
+		fetch() {
+			axios
+				.get('/superselect/get', {})
+				.then(response => {
+					if(this.disable_type){
+						response.data.options.forEach(item =>{
+							if(this.disable_type !== item.type){
+								this.options.push(item);
+							}
+						})
+					} else{
+						this.options = response.data.options;
+					}
+					this.first_time = false;
+					this.filterType();
+					this.addSelectedAttr();
+				})
+				.catch((error) => {
+					alert(error,'111');
+				});
+		},
 
-        selectAll() {
-            if(this.selected_all) return;
-            this.valueList.splice(0, this.valueList.length);
-            this.valueList.push({
-                name: 'Все',
-                id: 0,
-                type: 0
-            });
-            this.show = false;
-            this.selected_all = true;
+		selectAll() {
+			if(this.selected_all) return;
+			this.valueList.splice(0, this.valueList.length);
+			this.valueList.push({
+				name: 'Все',
+				id: 0,
+				type: 0
+			});
+			this.show = false;
+			this.selected_all = true;
 
-        }
-    },
+		}
+	},
 
 }
 </script>

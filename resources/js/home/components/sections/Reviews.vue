@@ -117,106 +117,106 @@ import {Hooper, Navigation as HooperNavigation, Slide} from 'hooper'
 import 'hooper/dist/hooper.css'
 
 export default {
-  components: {
-    Hooper,
-    Slide,
-    HooperNavigation
-  },
-  computed: {
-    lang() {
-      return this.$root.$data.lang
-    },
-    isDesktop() {
-      return this.$viewportSize.width >= 1260
-    },
-    content() {
-      return this.mode === 'photos'
-          ? this.photos
-          : this.videos
-    }
-  },
-  data() {
-    return {
-      activeVideo: 0,
-      activePhoto: 0,
-      mode: 'videos',
-      prefix: 'https://www.youtube.com/embed/',
-      videos: [
-        {
-          thumbnail: 'https://i3.ytimg.com/vi/LQtmJnljYyk/maxresdefault.jpg',
-          video: 'LQtmJnljYyk'
-        },
-        {
-          thumbnail: 'https://i3.ytimg.com/vi/LQtmJnljYyk/maxresdefault.jpg',
-          video: 'LQtmJnljYyk'
-        },
-        {
-          thumbnail: 'https://i3.ytimg.com/vi/LQtmJnljYyk/maxresdefault.jpg',
-          video: 'LQtmJnljYyk'
-        },
-        {
-          thumbnail: 'https://i3.ytimg.com/vi/LQtmJnljYyk/maxresdefault.jpg',
-          video: 'LQtmJnljYyk'
-        },
-        {
-          thumbnail: 'https://i3.ytimg.com/vi/LQtmJnljYyk/maxresdefault.jpg',
-          video: 'LQtmJnljYyk'
-        },
-      ],
-      photos: [
-        {
-          thumbnail: 'https://chudo-prirody.com/uploads/posts/2021-08/1628879740_153-p-foto-kotyat-prikolnie-161.jpg',
-          full: 'https://placekitten.com/1024/576'
-        },
-        {
-          thumbnail: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQeUE8cuMRSgVfaLre3jpUHoORbJxaXyZjsmuGURFp4F1W5eW9JLa-s233pH4UHXBHNso0&usqp=CAU',
-          full: 'https://placekitten.com/1024/576'
-        },
-        {
-          thumbnail: 'https://damion.club/uploads/posts/2022-01/1643042029_80-damion-club-p-samie-nyashnie-kotiki-83.jpg',
-          full: 'https://placekitten.com/1024/576'
-        },
-        {
-          thumbnail: 'https://img1.goodfon.ru/wallpaper/nbig/9/3e/kotenok-koshka-horoshenkiy-3793.jpg',
-          full: 'https://placekitten.com/1024/576'
-        },
-        {
-          thumbnail: 'https://img1.goodfon.ru/wallpaper/big/2/85/koshka-kot-kotenok-ryzhiy-yazyk.jpg',
-          full: 'https://placekitten.com/1024/576'
-        },
-      ],
-      resizeObserver: null,
-      hooperSettings: {
-        itemsToShow: 1,
-        centerMode: true,
-        trimWhiteSpace: true,
-        autoPlay: true,
-        playSpeed: 3000,
-        breakpoints: {
-          1260: {
-            centerMode: false,
-            itemsToShow: 2.8,
-            vertical: true,
-            trimWhiteSpace: true,
-            autoPlay: true,
-            playSpeed: 3000,
-          }
-        }
-      }
-    }
-  },
-  mounted() {
-    this.resizeObserver = new ResizeObserver(() => {
-      this.$refs.carousel.update()
-    })
-    this.resizeObserver.observe(this.$refs.carouselWrap)
-  },
-  methods: {
-    setMode(mode) {
-      this.mode = mode
-      this.$refs.carousel.update()
-    }
-  },
+	components: {
+		Hooper,
+		Slide,
+		HooperNavigation
+	},
+	computed: {
+		lang() {
+			return this.$root.$data.lang
+		},
+		isDesktop() {
+			return this.$viewportSize.width >= 1260
+		},
+		content() {
+			return this.mode === 'photos'
+				? this.photos
+				: this.videos
+		}
+	},
+	data() {
+		return {
+			activeVideo: 0,
+			activePhoto: 0,
+			mode: 'videos',
+			prefix: 'https://www.youtube.com/embed/',
+			videos: [
+				{
+					thumbnail: 'https://i3.ytimg.com/vi/LQtmJnljYyk/maxresdefault.jpg',
+					video: 'LQtmJnljYyk'
+				},
+				{
+					thumbnail: 'https://i3.ytimg.com/vi/LQtmJnljYyk/maxresdefault.jpg',
+					video: 'LQtmJnljYyk'
+				},
+				{
+					thumbnail: 'https://i3.ytimg.com/vi/LQtmJnljYyk/maxresdefault.jpg',
+					video: 'LQtmJnljYyk'
+				},
+				{
+					thumbnail: 'https://i3.ytimg.com/vi/LQtmJnljYyk/maxresdefault.jpg',
+					video: 'LQtmJnljYyk'
+				},
+				{
+					thumbnail: 'https://i3.ytimg.com/vi/LQtmJnljYyk/maxresdefault.jpg',
+					video: 'LQtmJnljYyk'
+				},
+			],
+			photos: [
+				{
+					thumbnail: 'https://chudo-prirody.com/uploads/posts/2021-08/1628879740_153-p-foto-kotyat-prikolnie-161.jpg',
+					full: 'https://placekitten.com/1024/576'
+				},
+				{
+					thumbnail: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQeUE8cuMRSgVfaLre3jpUHoORbJxaXyZjsmuGURFp4F1W5eW9JLa-s233pH4UHXBHNso0&usqp=CAU',
+					full: 'https://placekitten.com/1024/576'
+				},
+				{
+					thumbnail: 'https://damion.club/uploads/posts/2022-01/1643042029_80-damion-club-p-samie-nyashnie-kotiki-83.jpg',
+					full: 'https://placekitten.com/1024/576'
+				},
+				{
+					thumbnail: 'https://img1.goodfon.ru/wallpaper/nbig/9/3e/kotenok-koshka-horoshenkiy-3793.jpg',
+					full: 'https://placekitten.com/1024/576'
+				},
+				{
+					thumbnail: 'https://img1.goodfon.ru/wallpaper/big/2/85/koshka-kot-kotenok-ryzhiy-yazyk.jpg',
+					full: 'https://placekitten.com/1024/576'
+				},
+			],
+			resizeObserver: null,
+			hooperSettings: {
+				itemsToShow: 1,
+				centerMode: true,
+				trimWhiteSpace: true,
+				autoPlay: true,
+				playSpeed: 3000,
+				breakpoints: {
+					1260: {
+						centerMode: false,
+						itemsToShow: 2.8,
+						vertical: true,
+						trimWhiteSpace: true,
+						autoPlay: true,
+						playSpeed: 3000,
+					}
+				}
+			}
+		}
+	},
+	mounted() {
+		this.resizeObserver = new ResizeObserver(() => {
+			this.$refs.carousel.update()
+		})
+		this.resizeObserver.observe(this.$refs.carouselWrap)
+	},
+	methods: {
+		setMode(mode) {
+			this.mode = mode
+			this.$refs.carousel.update()
+		}
+	},
 }
 </script>
 

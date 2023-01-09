@@ -15,206 +15,212 @@
             </tr>
         </thead>
         <tbody>
-            <template v-for="(wrap_item, w) in items.slice().reverse()" v-if="searchText.length == 0 || (wrap_item.target && wrap_item.target.name.includes(searchText))">
-                <tr class="main-row">
-                    <td @click="wrap_item.expanded = !wrap_item.expanded" class="pointer p-2 text-center">
-                        <div class="d-flex align-items-center justify-content-center px-2">
-                            <span class="mr-2">{{ w + 1 }}</span>
-                            <i class="fa fa-minus mt-1" v-if="wrap_item.expanded"></i>
-                            <i class="fa fa-plus mt-1" v-else></i>
-                        </div>
-                    </td>
-                    <td class="p-4">
-                        <span v-if="wrap_item.target != null">{{ wrap_item.target.name }}</span>
-                        <span v-else>---</span>
-                    </td>
-                    <td class="p-4" v-if="editable">{{ wrap_item.avg }}%</td>
-                    <td class="p-4" v-if="!editable">{{ wrap_item.lower_limit }}%</td>
-                    <td class="p-4" v-if="!editable">{{ wrap_item.upper_limit }}%</td>
-                    <td class="p-4" v-if="!editable">{{ wrap_item.users.length > 0 && wrap_item.users[0].full_time == 1 ? wrap_item.completed_80 : wrap_item.completed_80 / 2 }}</td>
-                    <td class="p-4" v-if="!editable">{{ wrap_item.users.length > 0 && wrap_item.users[0].full_time == 1 ? wrap_item.completed_100 : wrap_item.completed_100 / 2 }}</td>
-                    <td class="p-4" v-if="!editable">{{ wrap_item.my_sum }}</td>
-                    <td v-if="editable"></td>
-                </tr>
-                <template v-if="wrap_item.users != undefined && wrap_item.users.length > 0">
-                    <tr class="collapsable" :class="{'active': wrap_item.expanded || !editable }" :key="w + 'a'">
-                        <td :colspan="editable ? 4 : 7">
-                            <div class="table__wrapper w-100">
-                            <table class="child-table">
-                                <template v-for="(user, i) in wrap_item.users">
-                                    <tr :key="i" class="child-row" v-if="editable">
-                                        <td  @click="user.expanded = !user.expanded" class="pointer p-2 text-center">
-                                            <div class="d-flex align-center justify-content-center px-2">
-                                                <span class="mr-2 bg-transparent">{{ i + 1 }}</span>
-                                                <i class="fa fa-minus mt-1" v-if="user.expanded"></i>
-                                                <i class="fa fa-plus mt-1" v-else></i>
-                                            </div>
-                                        </td>
-                                        <td class="p-4">{{ user.name }}</td>
-                                        <template v-if="user.items !== undefined">
-                                            <td class="px-2" v-for="kpi_item in user.items">{{ kpi_item.name }} <b>{{ kpi_item.percent}}%</b></td>
-                                        </template>
-                                    </tr>
-
-                                    <template v-if="user.items !== undefined">
-                                        <tr class="collapsable" :class="{'active': user.expanded}" :key="i + 'a'">
-                                            <td :colspan="fields.length + 2">
-                                                <div class="table__wrapper__second w-100">
-                                                    <kpi-items
-                                                        :my_sum="user.full_time == 1 ? wrap_item.completed_100 : wrap_item.completed_100 / 2"
-                                                        :kpi_id="user.id"
-                                                        :items="user.items" 
-                                                        :expanded="user.expanded"
-                                                        :activities="activities"
-                                                        :groups="groups"
-                                                        :completed_80="wrap_item.completed_80"
-                                                        :completed_100="wrap_item.completed_100"
-                                                        :lower_limit="wrap_item.lower_limit"
-                                                        :upper_limit="wrap_item.upper_limit"
-                                                        :editable="editable"
-                                                        :kpi_page="false"
-                                                        :date="date"
-                                                        @getSum="wrap_item.my_sum = $event"
-                                                        @recalced="countAvg"
-                                                    />
-                                                </div>
-                                            </td>
-                                        </tr>                
-                                    </template>
-                                
-                                </template>
-                            </table>
+            <template v-for="(wrap_item, w) in items.slice().reverse()">
+                <template v-if="searchText.length == 0 || (wrap_item.target && wrap_item.target.name.includes(searchText))">
+                    <tr
+                        :key="w"
+                        class="main-row"
+                    >
+                        <td @click="wrap_item.expanded = !wrap_item.expanded" class="pointer p-2 text-center">
+                            <div class="d-flex align-items-center justify-content-center px-2">
+                                <span class="mr-2">{{ w + 1 }}</span>
+                                <i class="fa fa-minus mt-1" v-if="wrap_item.expanded"></i>
+                                <i class="fa fa-plus mt-1" v-else></i>
                             </div>
                         </td>
+                        <td class="p-4">
+                            <span v-if="wrap_item.target != null">{{ wrap_item.target.name }}</span>
+                            <span v-else>---</span>
+                        </td>
+                        <td class="p-4" v-if="editable">{{ wrap_item.avg }}%</td>
+                        <td class="p-4" v-if="!editable">{{ wrap_item.lower_limit }}%</td>
+                        <td class="p-4" v-if="!editable">{{ wrap_item.upper_limit }}%</td>
+                        <td class="p-4" v-if="!editable">{{ wrap_item.users.length > 0 && wrap_item.users[0].full_time == 1 ? wrap_item.completed_80 : wrap_item.completed_80 / 2 }}</td>
+                        <td class="p-4" v-if="!editable">{{ wrap_item.users.length > 0 && wrap_item.users[0].full_time == 1 ? wrap_item.completed_100 : wrap_item.completed_100 / 2 }}</td>
+                        <td class="p-4" v-if="!editable">{{ wrap_item.my_sum }}</td>
+                        <td v-if="editable"></td>
                     </tr>
+                    <template v-if="wrap_item.users != undefined && wrap_item.users.length > 0">
+                        <tr
+                            :key="w + 'a'"
+                            class="collapsable"
+                            :class="{'active': wrap_item.expanded || !editable }"
+                        >
+                            <td :colspan="editable ? 4 : 7">
+                                <div class="table__wrapper w-100">
+                                <table class="child-table">
+                                    <template v-for="(user, i) in wrap_item.users">
+                                        <tr :key="i" class="child-row" v-if="editable">
+                                            <td  @click="user.expanded = !user.expanded" class="pointer p-2 text-center">
+                                                <div class="d-flex align-center justify-content-center px-2">
+                                                    <span class="mr-2 bg-transparent">{{ i + 1 }}</span>
+                                                    <i class="fa fa-minus mt-1" v-if="user.expanded"></i>
+                                                    <i class="fa fa-plus mt-1" v-else></i>
+                                                </div>
+                                            </td>
+                                            <td class="p-4">{{ user.name }}</td>
+                                            <template v-if="user.items !== undefined">
+                                                <td
+                                                    v-for="kpi_item in user.items"
+                                                    :key="kpi_item.name"
+                                                    class="px-2"
+                                                >{{ kpi_item.name }} <b>{{ kpi_item.percent}}%</b></td>
+                                            </template>
+                                        </tr>
+                                        <template v-if="user.items !== undefined">
+                                            <tr class="collapsable" :class="{'active': user.expanded}" :key="i + 'a'">
+                                                <td :colspan="fields.length + 2">
+                                                    <div class="table__wrapper__second w-100">
+                                                        <kpi-items
+                                                            :my_sum="user.full_time == 1 ? wrap_item.completed_100 : wrap_item.completed_100 / 2"
+                                                            :kpi_id="user.id"
+                                                            :items="user.items"
+                                                            :expanded="user.expanded"
+                                                            :activities="activities"
+                                                            :groups="groups"
+                                                            :completed_80="wrap_item.completed_80"
+                                                            :completed_100="wrap_item.completed_100"
+                                                            :lower_limit="wrap_item.lower_limit"
+                                                            :upper_limit="wrap_item.upper_limit"
+                                                            :editable="editable"
+                                                            :kpi_page="false"
+                                                            :date="date"
+                                                            @getSum="wrap_item.my_sum = $event"
+                                                            @recalced="countAvg"
+                                                        />
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                        </template>
+                                    </template>
+                                </table>
+                                </div>
+                            </td>
+                        </tr>
+                    </template>
                 </template>
-
             </template>
-          
         </tbody>
     </table>
-      
+
 </div>
 </template>
 
-<script> 
-import {kpi_fields} from "./kpis.js";
+<script>
+import {kpi_fields} from './kpis.js';
 
 export default {
-    name: "StatsTable", 
-    props: {
-        searchText: {
-            default: '',
-        },
-        items: {
-            default: [],
-        },
-        activities: {
-            default: [],
-        },
-        groups: {
-            default: [],
-        },
-        editable: {
-            default: false
-        },
-        date: {
-            default: null
-        }
-    },
+	name: 'StatsTable',
+	props: {
+		searchText: {
+			default: '',
+		},
+		items: {
+			default: [],
+		},
+		activities: {
+			default: [],
+		},
+		groups: {
+			default: [],
+		},
+		editable: {
+			default: false
+		},
+		date: {
+			default: null
+		}
+	},
 
-    watch: {
-        show_fields: {
-            handler: function (val) {
-                localStorage.kpi_show_fields = JSON.stringify(val);
-                this.prepareFields();
-            },
-            deep: true
-        },
-    },
+	watch: {
+		show_fields: {
+			handler: function (val) {
+				localStorage.kpi_show_fields = JSON.stringify(val);
+				this.prepareFields();
+			},
+			deep: true
+		},
+	},
 
-    data() {
-        return {
-            show_fields: [],
-            all_fields: kpi_fields,
-            fields: [],
-            non_editable_fields: [
-                'created_at',
-                'updated_at',
-                'created_by',
-                'updated_by',
-            ]
-        }
-    },
+	data() {
+		return {
+			show_fields: [],
+			all_fields: kpi_fields,
+			fields: [],
+			non_editable_fields: [
+				'created_at',
+				'updated_at',
+				'created_by',
+				'updated_by',
+			]
+		}
+	},
 
-    created() {
-       this.prepareFields()
-       this.countAvg();
-    },
-    mounted(){
-    },
-    methods: {
-        
-        expand(w) {
-            this.items[w].expanded = !this.items[w].expanded
-        },
+	created() {
+		this.prepareFields()
+		this.countAvg();
+	},
+	mounted(){
+	},
+	methods: {
 
-        prepareFields() {
-            let visible_fields = [],
-                show_fields = this.show_fields;
-            
-            kpi_fields.forEach((field, i) => {
-                if(this.show_fields[field.key] != undefined
-                    && this.show_fields[field.key]
-                ) {
-                    visible_fields.push(field)
-                }
-            });
+		expand(w) {
+			this.items[w].expanded = !this.items[w].expanded
+		},
 
-            this.fields = kpi_fields;
-        }, 
+		prepareFields() {
+			const visible_fields = [];
 
-        countAvg() {
-            
-            this.items.forEach(kpi => {
+			kpi_fields.forEach(field => {
+				if(this.show_fields[field.key] != undefined && this.show_fields[field.key]) {
+					visible_fields.push(field)
+				}
+			});
 
-                let kpi_sum = 0;
-                let kpi_count = 0;
+			this.fields = kpi_fields;
+		},
 
-                kpi.users.forEach(user => {
+		countAvg() {
 
-                    let count = 0;
-                    let sum = 0;
-                    let avg = 0;
+			this.items.forEach(kpi => {
 
-                    user.items.forEach(item => {
-                        sum += Number(item.percent);
-                        count++;
-                    });
+				let kpi_sum = 0;
+				let kpi_count = 0;
 
-                    /**
+				kpi.users.forEach(user => {
+
+					let count = 0;
+					let sum = 0;
+					let avg = 0;
+
+					user.items.forEach(item => {
+						sum += Number(item.percent);
+						count++;
+					});
+
+					/**
                      * count avg of user items
                      */
-                    avg = count > 0 ? Number(sum / count).toFixed(2) : 0;
+					avg = count > 0 ? Number(sum / count).toFixed(2) : 0;
 
-                    user.avg = avg;
+					user.avg = avg;
 
-                    // all kpi sum 
-                    kpi_sum += Number(avg);
-                    kpi_count++;
-                });
+					// all kpi sum
+					kpi_sum += Number(avg);
+					kpi_count++;
+				});
 
-                console.log(kpi_count, kpi_sum);
-                /** 
+				console.log(kpi_count, kpi_sum);
+				/**
                  * count avg completed percent of kpi by users
                  */
-                kpi.avg = kpi_count > 0 ? Number(Number(kpi_sum / kpi_count * 100).toFixed(2)) : 0;
-                
-            });
-        },
+				kpi.avg = kpi_count > 0 ? Number(Number(kpi_sum / kpi_count * 100).toFixed(2)) : 0;
 
-    } 
-} 
+			});
+		},
+
+	}
+}
 </script>
 
 

@@ -102,47 +102,47 @@ import Section1Struct from '../section1/Section1Struct'
 import Section1News from '../section1/Section1News'
 
 export default {
-  components: {
-    Section1Popup,
-    Section1Tab,
-    Section1Profile,
-    Section1DB,
-    Section1KPI,
-    Section1Courses,
-    Section1Struct,
-    Section1News,
-    Hooper,
-    Slide,
-  },
-  data() {
-    return {
-      activeTab: 'profile',
-      activePopup: 'profile',
-      isPopupVisible: false
-    }
-  },
-  computed: {
-    isMedium() {
-      return this.$viewportSize.width >= 1260
-    },
-    lang() {
-      return this.$root.$data.lang
-    }
-  },
-  methods: {
-    setTab(key) {
-      this.activeTab = key
-    },
-    setPopup(key) {
-      setTimeout(() => {
-        this.activePopup = key
-        this.isPopupVisible = true
-      }, 1);
-    },
-    hidePopup() {
-      if (this.isPopupVisible) this.isPopupVisible = false
-    }
-  }
+	components: {
+		Section1Popup,
+		Section1Tab,
+		Section1Profile,
+		Section1DB,
+		Section1KPI,
+		Section1Courses,
+		Section1Struct,
+		Section1News,
+		Hooper,
+		Slide,
+	},
+	data() {
+		return {
+			activeTab: 'profile',
+			activePopup: 'profile',
+			isPopupVisible: false
+		}
+	},
+	computed: {
+		isMedium() {
+			return this.$viewportSize.width >= 1260
+		},
+		lang() {
+			return this.$root.$data.lang
+		}
+	},
+	methods: {
+		setTab(key) {
+			this.activeTab = key
+		},
+		setPopup(key) {
+			setTimeout(() => {
+				this.activePopup = key
+				this.isPopupVisible = true
+			}, 1);
+		},
+		hidePopup() {
+			if (this.isPopupVisible) this.isPopupVisible = false
+		}
+	}
 }
 </script>
 

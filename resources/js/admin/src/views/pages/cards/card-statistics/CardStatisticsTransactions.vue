@@ -1,29 +1,29 @@
 <script setup lang="ts">
 const statistics = [
-  {
-    title: 'Sales',
-    stats: '245k',
-    icon: 'mdi-trending-up',
-    color: 'primary',
-  },
-  {
-    title: 'Customers',
-    stats: '12.5k',
-    icon: 'mdi-account-outline',
-    color: 'success',
-  },
-  {
-    title: 'Product',
-    stats: '1.54k',
-    icon: 'mdi-cellphone-link',
-    color: 'warning',
-  },
-  {
-    title: 'Revenue',
-    stats: '$88k',
-    icon: 'mdi-currency-usd',
-    color: 'info',
-  },
+	{
+		title: 'Sales',
+		stats: '245k',
+		icon: 'mdi-trending-up',
+		color: 'primary',
+	},
+	{
+		title: 'Customers',
+		stats: '12.5k',
+		icon: 'mdi-account-outline',
+		color: 'success',
+	},
+	{
+		title: 'Product',
+		stats: '1.54k',
+		icon: 'mdi-cellphone-link',
+		color: 'warning',
+	},
+	{
+		title: 'Revenue',
+		stats: '$88k',
+		icon: 'mdi-currency-usd',
+		color: 'info',
+	},
 ]
 </script>
 

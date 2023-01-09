@@ -68,122 +68,122 @@
 </template>
 
 <script>
-import ConversationMessage from "./ConversationMessage/ConversationMessage.vue";
-import {mapActions, mapGetters} from "vuex";
-import ContextMenu from "../../ContextMenu/ContextMenu.vue";
-import ConversationServiceMessage from "./ConversationServiceMessage/ConversationServiceMessage.vue";
-import moment from "moment/moment";
+import ConversationMessage from './ConversationMessage/ConversationMessage.vue';
+import {mapActions, mapGetters} from 'vuex';
+import ContextMenu from '../../ContextMenu/ContextMenu.vue';
+import ConversationServiceMessage from './ConversationServiceMessage/ConversationServiceMessage.vue';
+import moment from 'moment/moment';
 
 export default {
-  name: "ConversationFeed",
-  components: {
-    ConversationMessage,
-    ConversationServiceMessage,
-    ContextMenu
-  },
-  computed: {
-    ...mapGetters([
-      'messagesMap', 'messages',
-      'user',
-      'messagesOldEndReached', 'messagesNewEndReached',
-      'scrollingPosition',
-      'messagesLoading', 'isLoading'
-    ]),
-  },
-  updated() {
-    if (this.scrollingPosition !== -1) {
-      this.scroll();
-    }
-  },
-  data() {
-    return {
-      contextMenuVisible: false,
-      contextMenuTarget: null,
-      contextMenuX: 0,
-      contextMenuY: 0,
-      contextMenuMessage: null,
-      activeMessageId: 0
-    }
-  },
-  methods: {
-    ...mapActions([
-      'startEditMessage', 'citeMessage',
-      'deleteMessage', 'pinMessage', 'reactMessage',
-      'loadMoreNewMessages', 'loadMoreOldMessages',
-      'requestScroll',
-    ]),
-    scroll() {
-      this.$nextTick(function () {
-        let mc = document.getElementById('messenger_container');
-        mc.scrollTop = mc.scrollHeight - this.scrollingPosition;
-        this.requestScroll(-1);
-      });
-    },
-    scrollToMessage(messageId) {
-      this.$nextTick(function () {
-        let mc = document.getElementById('messenger_container');
-        let message = document.getElementById('messenger_message_' + messageId);
-        if (message) {
-          mc.scrollTop = message.offsetTop - 100;
-        }
-      });
-    },
-    scrollBottom() {
-      this.requestScroll(0);
-      this.scroll();
-    },
-    onScroll({target: {scrollTop, scrollHeight, clientHeight}}) {
-      if (scrollTop === 0 && !this.messagesOldEndReached) {
-        if (this.messages.length > 0) {
-          this.loadMoreOldMessages();
-          this.requestScroll(scrollHeight - scrollTop);
-        }
-      }
-      if (scrollHeight - scrollTop - clientHeight < 10) {
-        if (this.messages.length > 0 && !this.messagesNewEndReached) {
-          this.loadMoreNewMessages();
-        }
-      }
-    },
-    showChatContextMenu(message, event) {
-      this.contextMenuVisible = true;
-      this.contextMenuX = event.clientX;
-      this.contextMenuY = event.clientY;
-      this.contextMenuMessage = message;
-    },
-    remove(message) {
-      // ask for confirmation
-      this.$root.$emit('messengerConfirm', {
-        title: 'Удалить сообщение?',
-        button: {
-          yes: 'Удалить',
-          no: 'Отмена'
-        },
-        callback: confirm => {
-          if (confirm) {
-            this.deleteMessage(message);
-          }
-        }
-      });
-    },
-    react(emoji) {
-      this.reactMessage({message: this.contextMenuMessage, emoji_id: emoji});
-    }
-  },
-  filters: {
-    formatDate(date) {
-      // if today show only hour and minutes
-      if (moment(date).isSame(moment(), 'day')) {
-        return moment(date).format('HH:mm');
-      }
-      // if yesterday show only hour and minutes and yesterday
-      if (moment(date).isSame(moment().subtract(1, 'day'), 'day')) {
-        return 'Вчера';
-      }
-      // if older than yesterday show hour, minutes, day and month
-      return moment(date).format('DD.MM');
-    }
-  }
+	name: 'ConversationFeed',
+	components: {
+		ConversationMessage,
+		ConversationServiceMessage,
+		ContextMenu
+	},
+	computed: {
+		...mapGetters([
+			'messagesMap', 'messages',
+			'user',
+			'messagesOldEndReached', 'messagesNewEndReached',
+			'scrollingPosition',
+			'messagesLoading', 'isLoading'
+		]),
+	},
+	updated() {
+		if (this.scrollingPosition !== -1) {
+			this.scroll();
+		}
+	},
+	data() {
+		return {
+			contextMenuVisible: false,
+			contextMenuTarget: null,
+			contextMenuX: 0,
+			contextMenuY: 0,
+			contextMenuMessage: null,
+			activeMessageId: 0
+		}
+	},
+	methods: {
+		...mapActions([
+			'startEditMessage', 'citeMessage',
+			'deleteMessage', 'pinMessage', 'reactMessage',
+			'loadMoreNewMessages', 'loadMoreOldMessages',
+			'requestScroll',
+		]),
+		scroll() {
+			this.$nextTick(function () {
+				let mc = document.getElementById('messenger_container');
+				mc.scrollTop = mc.scrollHeight - this.scrollingPosition;
+				this.requestScroll(-1);
+			});
+		},
+		scrollToMessage(messageId) {
+			this.$nextTick(function () {
+				let mc = document.getElementById('messenger_container');
+				let message = document.getElementById('messenger_message_' + messageId);
+				if (message) {
+					mc.scrollTop = message.offsetTop - 100;
+				}
+			});
+		},
+		scrollBottom() {
+			this.requestScroll(0);
+			this.scroll();
+		},
+		onScroll({target: {scrollTop, scrollHeight, clientHeight}}) {
+			if (scrollTop === 0 && !this.messagesOldEndReached) {
+				if (this.messages.length > 0) {
+					this.loadMoreOldMessages();
+					this.requestScroll(scrollHeight - scrollTop);
+				}
+			}
+			if (scrollHeight - scrollTop - clientHeight < 10) {
+				if (this.messages.length > 0 && !this.messagesNewEndReached) {
+					this.loadMoreNewMessages();
+				}
+			}
+		},
+		showChatContextMenu(message, event) {
+			this.contextMenuVisible = true;
+			this.contextMenuX = event.clientX;
+			this.contextMenuY = event.clientY;
+			this.contextMenuMessage = message;
+		},
+		remove(message) {
+			// ask for confirmation
+			this.$root.$emit('messengerConfirm', {
+				title: 'Удалить сообщение?',
+				button: {
+					yes: 'Удалить',
+					no: 'Отмена'
+				},
+				callback: confirm => {
+					if (confirm) {
+						this.deleteMessage(message);
+					}
+				}
+			});
+		},
+		react(emoji) {
+			this.reactMessage({message: this.contextMenuMessage, emoji_id: emoji});
+		}
+	},
+	filters: {
+		formatDate(date) {
+			// if today show only hour and minutes
+			if (moment(date).isSame(moment(), 'day')) {
+				return moment(date).format('HH:mm');
+			}
+			// if yesterday show only hour and minutes and yesterday
+			if (moment(date).isSame(moment().subtract(1, 'day'), 'day')) {
+				return 'Вчера';
+			}
+			// if older than yesterday show hour, minutes, day and month
+			return moment(date).format('DD.MM');
+		}
+	}
 }
 </script>
 

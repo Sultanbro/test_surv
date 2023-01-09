@@ -42,11 +42,11 @@ import JwPagination from 'jw-vue-pagination';
 Vue.component('jw-pagination', JwPagination);
 
 // Toast
-import Toast from "vue-toastification";
-import "vue-toastification/dist/index.css";
-Vue.use(Toast, {timeout: 1500, pauseOnHover: false, rtl: true, position: "top-left",});
+import Toast from 'vue-toastification';
+import 'vue-toastification/dist/index.css';
+Vue.use(Toast, {timeout: 1500, pauseOnHover: false, rtl: true, position: 'top-left',});
 
-import store from "./components/Chat/Store/index.js";
+import store from './components/Chat/Store/index.js';
 Vue.prototype.$store = store
 
 // Require dependencies
@@ -88,8 +88,8 @@ require('select2')
 
 
 Date.prototype.addHours = function (h) {
-  this.setTime(this.getTime() + (h * 60 * 60 * 1000));
-  return this;
+	this.setTime(this.getTime() + (h * 60 * 60 * 1000));
+	return this;
 }
 
 Vue.prototype.$moment = moment
@@ -330,18 +330,18 @@ Vue.component('t-quality-new', require('./pages/Tables/Quality.vue').default);
 /**
  * click outside event
  */
-Vue.directive("click-outside", {
-  bind(el, binding, vnode) {
-    el.clickOutsideEvent = (event) => {
-      if (!(el === event.target || el.contains(event.target))) {
-        vnode.context[binding.expression](event);
-      }
-    };
-    document.body.addEventListener("click", el.clickOutsideEvent);
-  },
-  unbind(el) {
-    document.body.removeEventListener("click", el.clickOutsideEvent);
-  },
+Vue.directive('click-outside', {
+	bind(el, binding, vnode) {
+		el.clickOutsideEvent = (event) => {
+			if (!(el === event.target || el.contains(event.target))) {
+				vnode.context[binding.expression](event);
+			}
+		};
+		document.body.addEventListener('click', el.clickOutsideEvent);
+	},
+	unbind(el) {
+		document.body.removeEventListener('click', el.clickOutsideEvent);
+	},
 
 //   stopProp(event) { event.stopPropagation() }
 });
@@ -351,18 +351,18 @@ Vue.directive("click-outside", {
  */
 
 Vue.prototype.$can = function (permission, authorId = false) {
-  if (Laravel.is_admin) {
-      return true;
-  }
-  if (Laravel.permissions.indexOf(permission) !== -1) {
-      return true;
-  }
+	if (Laravel.is_admin) {
+		return true;
+	}
+	if (Laravel.permissions.indexOf(permission) !== -1) {
+		return true;
+	}
 }
 
 import App from '@/App.vue'
 
 const app = new Vue({
-  // el: '.right-panel-app'
-  router,
-  render: h => h(App)
+	// el: '.right-panel-app'
+	router,
+	render: h => h(App)
 }).$mount('.right-panel-app')

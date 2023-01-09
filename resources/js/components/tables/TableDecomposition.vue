@@ -129,288 +129,288 @@
 
 <script>
 export default {
-    name: "TableDecomposition",
-    props: {
-        month: Object,
-        data: Object,
-    },
-    data() {
-        return {
-            items: [],
-            fields: [],
-            itemsArray: [],
-            records: [],
-            is_weekday: {},
-            planner: {
-                value: null,
-                from: 1,
-                to: null,
-                index: null,
-            }
-        };
-    },
-    watch: { 
-        data: function(newVal, oldVal) {
-            this.fetchData();
-        },
-    },
-    created() {
-        this.fetchData();
+	name: 'TableDecomposition',
+	props: {
+		month: Object,
+		data: Object,
+	},
+	data() {
+		return {
+			items: [],
+			fields: [],
+			itemsArray: [],
+			records: [],
+			is_weekday: {},
+			planner: {
+				value: null,
+				from: 1,
+				to: null,
+				index: null,
+			}
+		};
+	},
+	watch: { 
+		data: function(newVal, oldVal) {
+			this.fetchData();
+		},
+	},
+	created() {
+		this.fetchData();
 
-        this.getWeekdays()
-        this.planner.to = this.month.daysInMonth
-    },
+		this.getWeekdays()
+		this.planner.to = this.month.daysInMonth
+	},
 
-    methods: {
+	methods: {
         
-        getWeekdays() {
+		getWeekdays() {
             
-            for (let i = 1; i <= this.month.daysInMonth; i++) {
-                let day = i > 9 ? i : '0' + i;
-                let month = Number(this.month.month) > 9 ? this.month.month : '0' + this.month.month;
-                let date = new Date(this.month.currentYear + "-" + month  + "-" + day)
-                if(date.getDay() == 0 || date.getDay() == 6) {
-                    this.is_weekday[i] = true
-                } else {
-                    this.is_weekday[i] = false
-                }
-            }
-        },
+			for (let i = 1; i <= this.month.daysInMonth; i++) {
+				let day = i > 9 ? i : '0' + i;
+				let month = Number(this.month.month) > 9 ? this.month.month : '0' + this.month.month;
+				let date = new Date(this.month.currentYear + '-' + month  + '-' + day)
+				if(date.getDay() == 0 || date.getDay() == 6) {
+					this.is_weekday[i] = true
+				} else {
+					this.is_weekday[i] = false
+				}
+			}
+		},
 
-        fetchData() {
-            let loader = this.$loading.show();
+		fetchData() {
+			let loader = this.$loading.show();
             
-            this.records = this.data.records;
-            this.accountsNumber = this.data.records.length
+			this.records = this.data.records;
+			this.accountsNumber = this.data.records.length
           
-            this.calculateRecordsValues()
-            //this.calcTotals()
+			this.calculateRecordsValues()
+			//this.calcTotals()
 
-            this.items = this.itemsArray;
-            loader.hide();    
-        },
+			this.items = this.itemsArray;
+			loader.hide();    
+		},
 
-        addRecord() {
-            let cells = {
-                name:'test',
-                plan: 0,
-                editable: false,
-            };
+		addRecord() {
+			let cells = {
+				name:'test',
+				plan: 0,
+				editable: false,
+			};
 
-            for (let i = 1; i <= this.month.daysInMonth; i++) {
-                cells[i] = {
-                    'plan' : '',
-                    'fact' : '',
-                }       
-            }
+			for (let i = 1; i <= this.month.daysInMonth; i++) {
+				cells[i] = {
+					'plan' : '',
+					'fact' : '',
+				}       
+			}
 
-            this.items.push(cells)
+			this.items.push(cells)
 
-            this.$toast.info('Пункт добавлен')
-        },
+			this.$toast.info('Пункт добавлен')
+		},
 
-        updateSettings(e, data, index, key) {
-            data.editable = false
-            this.updateTable(this.items); 
+		updateSettings(e, data, index, key) {
+			data.editable = false
+			this.updateTable(this.items); 
 
-            let post_data = {
-                    group_id: this.data.group_id,
-                    id: data.id,
-                    name: data.name,
-                    index: index,
-                    values: this.items[index], 
-                };
+			let post_data = {
+				group_id: this.data.group_id,
+				id: data.id,
+				name: data.name,
+				index: index,
+				values: this.items[index], 
+			};
 
-            this.reqSave(post_data);
-        },
+			this.reqSave(post_data);
+		},
 
-        reqSave(post_data) {
-            let url = "/timetracking/analytics/decomposition/save";
-            let loader = this.$loading.show();  
-            let self = this.items;
-            let year = new Date().getFullYear();
+		reqSave(post_data) {
+			let url = '/timetracking/analytics/decomposition/save';
+			let loader = this.$loading.show();  
+			let self = this.items;
+			let year = new Date().getFullYear();
             
-            post_data.date = this.$moment(
-                `${this.month.currentMonth} ${year}`,
-                "MMMM YYYY"
-            ).format("YYYY-MM-DD");
+			post_data.date = this.$moment(
+				`${this.month.currentMonth} ${year}`,
+				'MMMM YYYY'
+			).format('YYYY-MM-DD');
 
-            axios.post(url, post_data)
-                .then((response) => {
-                    if(post_data.id === undefined) {
-                        self[post_data.index].id = response.data.id
-                    }
-                })
-                .catch(error => {
-                    alert(error)
-                });
-            loader.hide();   
-        },
+			axios.post(url, post_data)
+				.then((response) => {
+					if(post_data.id === undefined) {
+						self[post_data.index].id = response.data.id
+					}
+				})
+				.catch(error => {
+					alert(error)
+				});
+			loader.hide();   
+		},
 
-        showModal(index) {
-            this.planner.index = index;
-            this.$refs['change-plan-modal'].show();
-        },
+		showModal(index) {
+			this.planner.index = index;
+			this.$refs['change-plan-modal'].show();
+		},
 
-        changePlan() {
+		changePlan() {
             
-            if (this.planner.value != null && this.planner.value != '') {
+			if (this.planner.value != null && this.planner.value != '') {
                 
-                // Set plans from to
-                let start = this.planner.from,
-                    end = this.planner.to > this.month.daysInMonth ? this.month.daysInMonth : this.planner.to;
+				// Set plans from to
+				let start = this.planner.from,
+					end = this.planner.to > this.month.daysInMonth ? this.month.daysInMonth : this.planner.to;
                 
-                for (let i = start; i <= end; i++) {
-                    this.items[this.planner.index][i].plan = Number(this.planner.value);
-                }
+				for (let i = start; i <= end; i++) {
+					this.items[this.planner.index][i].plan = Number(this.planner.value);
+				}
                 
-                // POST
-                this.reqSave({
-                    group_id: this.data.group_id,
-                    id: this.items[this.planner.index].id,
-                    name: this.items[this.planner.index].name,
-                    values: this.items[this.planner.index], 
-                    index: this.planner.index
-                });
+				// POST
+				this.reqSave({
+					group_id: this.data.group_id,
+					id: this.items[this.planner.index].id,
+					name: this.items[this.planner.index].name,
+					values: this.items[this.planner.index], 
+					index: this.planner.index
+				});
 
-                // Count total plan
-                let total_plan = 0;
+				// Count total plan
+				let total_plan = 0;
        
-                for (let i = 1; i <= this.month.daysInMonth; i++) {
-                    total_plan += Number(this.items[this.planner.index][i].plan);
-                }
-                this.items[this.planner.index].total_plan = total_plan
-                // Reset planner
-                this.planner = {
-                    value: null,
-                    from: 1,
-                    to: this.month.daysInMonth,
-                    index: null,
-                }
-                this.$toast.info('План проставлен')
-            }
+				for (let i = 1; i <= this.month.daysInMonth; i++) {
+					total_plan += Number(this.items[this.planner.index][i].plan);
+				}
+				this.items[this.planner.index].total_plan = total_plan
+				// Reset planner
+				this.planner = {
+					value: null,
+					from: 1,
+					to: this.month.daysInMonth,
+					index: null,
+				}
+				this.$toast.info('План проставлен')
+			}
             
             
 
             
-            // Hide modal
-            this.$refs['change-plan-modal'].hide();
+			// Hide modal
+			this.$refs['change-plan-modal'].hide();
             
-        },
+		},
 
-        deleteRecord(id, index) {
-            if (!confirm("Вы уверены?")) {
-                return '';
-            }
+		deleteRecord(id, index) {
+			if (!confirm('Вы уверены?')) {
+				return '';
+			}
 
-            if(id != 0) {
+			if(id != 0) {
 
-                let url = "/timetracking/analytics/decomposition/delete";
+				let url = '/timetracking/analytics/decomposition/delete';
 
-                axios.delete(url, {
-                    headers: {},
-                    data: {
-                        id: id
-                    }
-                })
-                .then((response) => {
-                    this.$toast.info('Пункт удален')
-                })
-                .catch(error => {
-                    alert(error)
-                });
-            }
+				axios.delete(url, {
+					headers: {},
+					data: {
+						id: id
+					}
+				})
+					.then((response) => {
+						this.$toast.info('Пункт удален')
+					})
+					.catch(error => {
+						alert(error)
+					});
+			}
 
-            this.items.splice(index, 1);
+			this.items.splice(index, 1);
 
-        },
+		},
 
-        calculateRecordsValues() {
-            this.sum = {};
-            this.itemsArray = [];
+		calculateRecordsValues() {
+			this.sum = {};
+			this.itemsArray = [];
           
-            this.records.forEach((item, index) => {
+			this.records.forEach((item, index) => {
                 
-                let cellValues = [],
-                    totalPlan = 0,
-                    totalFact = 0;
+				let cellValues = [],
+					totalPlan = 0,
+					totalFact = 0;
                 
                 
-                for (let i = 1; i <= this.month.daysInMonth; i++) {
+				for (let i = 1; i <= this.month.daysInMonth; i++) {
                     
-                    cellValues[i] = item[i];
+					cellValues[i] = item[i];
                     
-                    if(item[i] === undefined) {
-                        cellValues[i] = {
-                            'plan': '',
-                            'fact': ''
-                        };
-                        continue;
-                    }
-                    if(item[i].plan !== undefined) {
-                        totalPlan += Number(item[i].plan)
-                    } 
+					if(item[i] === undefined) {
+						cellValues[i] = {
+							'plan': '',
+							'fact': ''
+						};
+						continue;
+					}
+					if(item[i].plan !== undefined) {
+						totalPlan += Number(item[i].plan)
+					} 
 
-                    if(item[i].fact !== undefined) {
-                        totalFact += Number(item[i].fact)
-                    } 
+					if(item[i].fact !== undefined) {
+						totalFact += Number(item[i].fact)
+					} 
 
-                }
+				}
                 
-                this.itemsArray.push({
-                    name: item.name,
-                    id: item.id,
-                    editable: false,
-                    total_plan: totalPlan,
-                    total_fact: totalFact,
-                    group_id: this.data.group_id,
-                    ...cellValues,
-                });  
+				this.itemsArray.push({
+					name: item.name,
+					id: item.id,
+					editable: false,
+					total_plan: totalPlan,
+					total_fact: totalFact,
+					group_id: this.data.group_id,
+					...cellValues,
+				});  
                 
-            });
-        },
+			});
+		},
 
-        updateTable(items) {
-            let loader = this.$loading.show();
+		updateTable(items) {
+			let loader = this.$loading.show();
             
-            this.records = items;
-            this.calculateRecordsValues();
+			this.records = items;
+			this.calculateRecordsValues();
      
-            this.totalColumn()
-            this.items = this.itemsArray;
+			this.totalColumn()
+			this.items = this.itemsArray;
             
-            loader.hide();
-        },
+			loader.hide();
+		},
 
-        addCellVariantsArrayToRecords(){
-            this.itemsArray.forEach((element, key) => {
-                this.itemsArray[key]["_cellVariants"] = [];
-            });
-        },
+		addCellVariantsArrayToRecords(){
+			this.itemsArray.forEach((element, key) => {
+				this.itemsArray[key]['_cellVariants'] = [];
+			});
+		},
 
-        totalColumn() {
-            // let row0_avg = 0;
-            // this.itemsArray.forEach((account, index) => {
-            //     if(parseFloat(account['plan']) != 0 && account['plan'] != undefined) {
-            //         row0_avg += parseFloat(account['plan']);
-            //         console.log(account['plan'])
-            //     }
-            // })    
+		totalColumn() {
+			// let row0_avg = 0;
+			// this.itemsArray.forEach((account, index) => {
+			//     if(parseFloat(account['plan']) != 0 && account['plan'] != undefined) {
+			//         row0_avg += parseFloat(account['plan']);
+			//         console.log(account['plan'])
+			//     }
+			// })    
 
-            // this.itemsArray[0]['plan'] = row0_avg
-        },
+			// this.itemsArray[0]['plan'] = row0_avg
+		},
        
-        editMode(item) {
-            this.items.forEach((account, index) => {
-                account.editable = false
-            })
-            item.editable = true
-        },
+		editMode(item) {
+			this.items.forEach((account, index) => {
+				account.editable = false
+			})
+			item.editable = true
+		},
 
-        toFloat(number) {
-            return Number(number).toFixed(2);
-        },
-    },
+		toFloat(number) {
+			return Number(number).toFixed(2);
+		},
+	},
 };
 </script>
 

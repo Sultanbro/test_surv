@@ -89,93 +89,93 @@ import 'hooper/dist/hooper.css'
 import InputText from '../../components/InputText'
 
 export default {
-  components: {
-    InputText,
-    Hooper,
-    Slide,
-  },
-  data() {
-    return {
-      name: '',
-      phone: '',
-      isBlock1Highlight: false,
-      isBlock2Highlight: false,
-      isBlock3Highlight: false,
-      isButtonDisabled: false,
-      observer: null,
-    }
-  },
-  computed: {
-    lang() {
-      return this.$root.$data.lang
-    },
-    isMedium() {
-      return this.$viewportSize.width >= 1260
-    },
-    callMeButtonContent() {
-      if (!this.isButtonDisabled) {
-        if (this.lang === 'ru') {
-          return 'Перезвонить мне'
-        }
-        if (this.lang === 'en') {
-          return 'Call me back'
-        }
-        if (this.lang === 'kz') {
-          return 'маған қайта қоңырау шал'
-        }
-      } else {
-        if (this.lang === 'ru') {
-          return 'Ожидайте звонка'
-        }
-        if (this.lang === 'en') {
-          return 'Expect a call'
-        }
-        if (this.lang === 'kz') {
-          return 'Қоңырау күтіңіз'
-        }
-      }
-    }
-  },
-  mounted() {
-    this.observer = new IntersectionObserver(this.animate, {
-      rootMargin: '30px',
-      threshold: 1
-    })
-    this.observer.observe(this.$refs.items)
-  },
-  methods: {
-    onSubmit(e) {
-      e.preventDefault()
-      if (this.name && this.phone) {
-        alert(`${this.name}, мы Вам перезвоним в ближайшее время.`)
-      } else {
-        alert(`Заполните пожалуйста все поля.`)
-      }
-    },
-    wait(ms) {
-      return new Promise(resolve => {
-        setTimeout(resolve, ms)
-      })
-    },
-    async animate(entries, observer) {
-      if (!entries.some(entry => entry.isIntersecting)) return
-      this.isBlock1Highlight = true
-      await this.wait(350)
-      this.isBlock1Highlight = false
-      this.isBlock2Highlight = true
-      await this.wait(350)
-      this.isBlock2Highlight = false
-      this.isBlock3Highlight = true
-      await this.wait(350)
-      this.isBlock3Highlight = false
-      this.observer.disconnect()
-    },
-    callMeBack() {
-      if (this.name && this.phone) {
-        this.isButtonDisabled = true
-      }
-    }
-  }
+	components: {
+		InputText,
+		Hooper,
+		Slide,
+	},
+	data() {
+		return {
+			name: '',
+			phone: '',
+			isBlock1Highlight: false,
+			isBlock2Highlight: false,
+			isBlock3Highlight: false,
+			isButtonDisabled: false,
+			observer: null,
+		}
+	},
+	computed: {
+		lang() {
+			return this.$root.$data.lang
+		},
+		isMedium() {
+			return this.$viewportSize.width >= 1260
+		},
+		callMeButtonContent() {
+			if (!this.isButtonDisabled) {
+				if (this.lang === 'ru') {
+					return 'Перезвонить мне'
+				}
+				if (this.lang === 'en') {
+					return 'Call me back'
+				}
+				if (this.lang === 'kz') {
+					return 'маған қайта қоңырау шал'
+				}
+			} else {
+				if (this.lang === 'ru') {
+					return 'Ожидайте звонка'
+				}
+				if (this.lang === 'en') {
+					return 'Expect a call'
+				}
+				if (this.lang === 'kz') {
+					return 'Қоңырау күтіңіз'
+				}
+			}
+		}
+	},
+	mounted() {
+		this.observer = new IntersectionObserver(this.animate, {
+			rootMargin: '30px',
+			threshold: 1
+		})
+		this.observer.observe(this.$refs.items)
+	},
+	methods: {
+		onSubmit(e) {
+			e.preventDefault()
+			if (this.name && this.phone) {
+				alert(`${this.name}, мы Вам перезвоним в ближайшее время.`)
+			} else {
+				alert('Заполните пожалуйста все поля.')
+			}
+		},
+		wait(ms) {
+			return new Promise(resolve => {
+				setTimeout(resolve, ms)
+			})
+		},
+		async animate(entries, observer) {
+			if (!entries.some(entry => entry.isIntersecting)) return
+			this.isBlock1Highlight = true
+			await this.wait(350)
+			this.isBlock1Highlight = false
+			this.isBlock2Highlight = true
+			await this.wait(350)
+			this.isBlock2Highlight = false
+			this.isBlock3Highlight = true
+			await this.wait(350)
+			this.isBlock3Highlight = false
+			this.observer.disconnect()
+		},
+		callMeBack() {
+			if (this.name && this.phone) {
+				this.isButtonDisabled = true
+			}
+		}
+	}
 }
 </script>
 

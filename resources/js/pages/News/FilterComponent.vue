@@ -107,224 +107,224 @@
 </template>
 
 <script>
-import DatePicker from "vue2-datepicker";
-import "vue2-datepicker/index.css";
+import DatePicker from 'vue2-datepicker';
+import 'vue2-datepicker/index.css';
 
 import 'vue2-datepicker/locale/ru';
 
 const {CalendarPanel} = DatePicker;
 
 function isValidDate(date) {
-    return date instanceof Date && !isNaN(date);
+	return date instanceof Date && !isNaN(date);
 }
 
 const moment = require('moment');
 
 export default {
-    name: "FilterComponent",
-    components: {
-        DatePicker,
-        CalendarPanel
-    },
-    data() {
-        return {
-            //date
-            value: [],
+	name: 'FilterComponent',
+	components: {
+		DatePicker,
+		CalendarPanel
+	},
+	data() {
+		return {
+			//date
+			value: [],
 
-            //date-picker
-            datePickerValue: new Date(NaN),
-            datePopupOpen: false,
+			//date-picker
+			datePickerValue: new Date(NaN),
+			datePopupOpen: false,
 
-            //date-range-picker
-            innerValue: [new Date(NaN), new Date(NaN)],
-            daterangePopupOpen: false,
+			//date-range-picker
+			innerValue: [new Date(NaN), new Date(NaN)],
+			daterangePopupOpen: false,
 
-            lang: {
-                formatLocale: {
-                    firstDayOfWeek: 1,
-                },
-                monthBeforeYear: false,
-            },
+			lang: {
+				formatLocale: {
+					firstDayOfWeek: 1,
+				},
+				monthBeforeYear: false,
+			},
 
-            users: [],
+			users: [],
 
-            showFilters: false,
+			showFilters: false,
 
-            query: '',
-            author: '',
-            dateType: '',
-            searchFavourite: false,
-        }
-    },
+			query: '',
+			author: '',
+			dateType: '',
+			searchFavourite: false,
+		}
+	},
 
-    created() {
+	created() {
 
-    },
-    mounted() {
-        let dateInputs = document.getElementsByClassName('mx-input');
+	},
+	mounted() {
+		let dateInputs = document.getElementsByClassName('mx-input');
 
-        for (let i = 0; i < dateInputs.length; i++) {
-            dateInputs[i].disabled = true;
-        }
-        //
-        // dateInputs.forEach(el => {
-        //     el.disabled = true;
-        // });
+		for (let i = 0; i < dateInputs.length; i++) {
+			dateInputs[i].disabled = true;
+		}
+		//
+		// dateInputs.forEach(el => {
+		//     el.disabled = true;
+		// });
 
-        this.getUsers();
-    },
-    watch: {
-        // whenever question changes, this function will run
-        dateType(newQuestion, oldQuestion) {
-            this.value = [];
-            this.datePickerValue = new Date(NaN);
-            this.innerValue = [new Date(NaN), new Date(NaN)];
-        },
-    },
-    methods: {
-        clearDate() {
-            this.dateType = '';
-        },
+		this.getUsers();
+	},
+	watch: {
+		// whenever question changes, this function will run
+		dateType(newQuestion, oldQuestion) {
+			this.value = [];
+			this.datePickerValue = new Date(NaN);
+			this.innerValue = [new Date(NaN), new Date(NaN)];
+		},
+	},
+	methods: {
+		clearDate() {
+			this.dateType = '';
+		},
 
-        clearAuthor() {
-            this.author = '';
-        },
+		clearAuthor() {
+			this.author = '';
+		},
 
-        clearDatePicer() {
-            this.value = [];
-            this.datePickerValue = new Date(NaN);
-            this.innerValue = [new Date(NaN), new Date(NaN)];
-        },
-        //datepicker
-        getClasses(cellDate, currentDates, classes) {
-            if (currentDates.length === 2 &&
+		clearDatePicer() {
+			this.value = [];
+			this.datePickerValue = new Date(NaN);
+			this.innerValue = [new Date(NaN), new Date(NaN)];
+		},
+		//datepicker
+		getClasses(cellDate, currentDates, classes) {
+			if (currentDates.length === 2 &&
                 cellDate.getTime() == currentDates[0].getTime()) {
-                return "left";
-            }
-            if (currentDates.length === 2 &&
+				return 'left';
+			}
+			if (currentDates.length === 2 &&
                 cellDate.getTime() == currentDates[1].getTime()) {
-                return "right";
-            }
-            if (
-                !/disabled|active|not-current-month/.test(classes) &&
+				return 'right';
+			}
+			if (
+				!/disabled|active|not-current-month/.test(classes) &&
                 currentDates.length === 2 &&
                 cellDate.getTime() > currentDates[0].getTime() &&
                 cellDate.getTime() < currentDates[1].getTime()
-            ) {
-                return "in-range";
-            }
-            return "";
-        },
-        handleSelect(date) {
-            const [startValue, endValue] = this.innerValue;
-            if (isValidDate(startValue) && !isValidDate(endValue)) {
-                if (startValue.getTime() > date.getTime()) {
-                    this.innerValue = [date, startValue];
-                } else {
-                    this.innerValue = [startValue, date];
-                }
-                this.daterangePopupOpen = false;
-                this.value = this.innerValue;
-            } else {
-                this.innerValue = [date, new Date(NaN)];
-            }
-        },
+			) {
+				return 'in-range';
+			}
+			return '';
+		},
+		handleSelect(date) {
+			const [startValue, endValue] = this.innerValue;
+			if (isValidDate(startValue) && !isValidDate(endValue)) {
+				if (startValue.getTime() > date.getTime()) {
+					this.innerValue = [date, startValue];
+				} else {
+					this.innerValue = [startValue, date];
+				}
+				this.daterangePopupOpen = false;
+				this.value = this.innerValue;
+			} else {
+				this.innerValue = [date, new Date(NaN)];
+			}
+		},
 
-        selectSingleDate(date) {
-            this.datePickerValue = date;
-            this.value = this.datePickerValue;
-            this.datePopupOpen = false;
-        },
+		selectSingleDate(date) {
+			this.datePickerValue = date;
+			this.value = this.datePickerValue;
+			this.datePopupOpen = false;
+		},
 
 
-        toggleShowFilters(newValue) {
-            if (newValue) {
-                this.$refs.newsFilterInput.focus();
-                this.$emit('toggleWhiteBg');
-            }
-            this.showFilters = newValue;
-        },
+		toggleShowFilters(newValue) {
+			if (newValue) {
+				this.$refs.newsFilterInput.focus();
+				this.$emit('toggleWhiteBg');
+			}
+			this.showFilters = newValue;
+		},
 
-        async getUsers() {
-            await axios.get('/dictionaries')
-                .then(res => {
-                    this.users = res.data.data.users;
-                })
-                .catch(res => {
-                    console.log(res)
-                });
-        },
+		async getUsers() {
+			await axios.get('/dictionaries')
+				.then(res => {
+					this.users = res.data.data.users;
+				})
+				.catch(res => {
+					console.log(res)
+				});
+		},
 
-        async filterNews() {
-            let startDate = null;
-            let endDate = null;
+		async filterNews() {
+			let startDate = null;
+			let endDate = null;
 
-            let getParams = '?';
+			let getParams = '?';
 
-            switch (this.dateType) {
-                case '1': {
-                    startDate = moment().format('DD-MM-YYYY');
-                    endDate = startDate;
-                    break;
-                }
-                case '2': {
-                    startDate = moment().subtract(1, 'd').format('DD-MM-YYYY');
-                    endDate = startDate;
-                    break;
-                }
-                case '3': {
-                    startDate = moment().startOf('week').format('DD-MM-YYYY');
-                    endDate = moment().endOf('week').format('DD-MM-YYYY');
-                    break;
-                }
-                case '4': {
-                    startDate = moment().startOf('month').format('DD-MM-YYYY');
-                    endDate = moment().endOf('month').format('DD-MM-YYYY');
-                    break;
-                }
-                case '5': {
-                    if (this.value == null && this.value.length != 2) {
-                        return
-                    }
-                    startDate = moment(this.value[0]).format('DD-MM-YYYY');
-                    endDate = moment(this.value[1]).format('DD-MM-YYYY');
-                    break;
-                }
-                case '6': {
-                    if (this.value == null) {
-                        return
-                    }
-                    startDate = moment(this.value).format('DD-MM-YYYY');
-                    endDate = startDate;
-                    break;
-                }
-            }
+			switch (this.dateType) {
+			case '1': {
+				startDate = moment().format('DD-MM-YYYY');
+				endDate = startDate;
+				break;
+			}
+			case '2': {
+				startDate = moment().subtract(1, 'd').format('DD-MM-YYYY');
+				endDate = startDate;
+				break;
+			}
+			case '3': {
+				startDate = moment().startOf('week').format('DD-MM-YYYY');
+				endDate = moment().endOf('week').format('DD-MM-YYYY');
+				break;
+			}
+			case '4': {
+				startDate = moment().startOf('month').format('DD-MM-YYYY');
+				endDate = moment().endOf('month').format('DD-MM-YYYY');
+				break;
+			}
+			case '5': {
+				if (this.value == null && this.value.length != 2) {
+					return
+				}
+				startDate = moment(this.value[0]).format('DD-MM-YYYY');
+				endDate = moment(this.value[1]).format('DD-MM-YYYY');
+				break;
+			}
+			case '6': {
+				if (this.value == null) {
+					return
+				}
+				startDate = moment(this.value).format('DD-MM-YYYY');
+				endDate = startDate;
+				break;
+			}
+			}
 
-            if (startDate != null && endDate != null) {
-                getParams = getParams + 'start_date=' + startDate + '&' + 'end_date=' + endDate;
-            }
+			if (startDate != null && endDate != null) {
+				getParams = getParams + 'start_date=' + startDate + '&' + 'end_date=' + endDate;
+			}
 
-            if (this.author != '') {
-                getParams = getParams + '&' + 'author_id=' + this.author;
-            }
+			if (this.author != '') {
+				getParams = getParams + '&' + 'author_id=' + this.author;
+			}
 
-            if (this.query != '') {
-                getParams = getParams + '&' + 'q=' + this.query;
-            }
+			if (this.query != '') {
+				getParams = getParams + '&' + 'q=' + this.query;
+			}
 
-            if (this.query != '') {
-                getParams = getParams + '&' + 'q=' + this.query;
-            }
+			if (this.query != '') {
+				getParams = getParams + '&' + 'q=' + this.query;
+			}
 
-            getParams = getParams + '&' + 'is_favourite=' + (this.searchFavourite == true ? 1 : 0);
+			getParams = getParams + '&' + 'is_favourite=' + (this.searchFavourite == true ? 1 : 0);
 
-            this.$root.$emit('toggle-white-bg', false);
-            this.showFilters = false;
+			this.$root.$emit('toggle-white-bg', false);
+			this.showFilters = false;
 
-            this.$emit('searchNews', {
-                params: getParams,
-            })
-        },
-    }
+			this.$emit('searchNews', {
+				params: getParams,
+			})
+		},
+	}
 }
 </script>

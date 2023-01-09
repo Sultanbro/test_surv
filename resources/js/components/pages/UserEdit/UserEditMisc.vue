@@ -1,12 +1,12 @@
 <script>
 export default {
-    name: 'UserEditMisc',
-    props: {
-        user: {
-            type: Object,
-            default: null
-        },
-    }
+	name: 'UserEditMisc',
+	props: {
+		user: {
+			type: Object,
+			default: null
+		},
+	}
 }
 </script>
 <template>

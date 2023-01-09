@@ -1,27 +1,27 @@
 <script>
 export default {
-    name: 'Section1Popup',
-    props: {
-        lang: String,
-        type: String,
-    },
-    data(){
-        return {}
-    },
-    computed: {
-        maintext(){
-            if(!this.type) return ''
-            return this.$lang(this.lang, `s1-${this.type}-main`)
-        },
-        employeetext(){
-            if(!this.type) return ''
-            return this.$lang(this.lang, `s1-${this.type}-employee`)
-        },
-        employertext(){
-            if(!this.type) return ''
-            return this.$lang(this.lang, `s1-${this.type}-employer`)
-        },
-    }
+	name: 'Section1Popup',
+	props: {
+		lang: String,
+		type: String,
+	},
+	data(){
+		return {}
+	},
+	computed: {
+		maintext(){
+			if(!this.type) return ''
+			return this.$lang(this.lang, `s1-${this.type}-main`)
+		},
+		employeetext(){
+			if(!this.type) return ''
+			return this.$lang(this.lang, `s1-${this.type}-employee`)
+		},
+		employertext(){
+			if(!this.type) return ''
+			return this.$lang(this.lang, `s1-${this.type}-employer`)
+		},
+	}
 }
 </script>
 

@@ -5,26 +5,26 @@
 </template>
 
 <script>
-import {mapActions, mapGetters} from "vuex";
+import {mapActions, mapGetters} from 'vuex';
 
 // noinspection JSUnusedGlobalSymbols
 export default {
-  computed: {
-    ...mapGetters(['isOpen'])
-  },
-  methods: {
-    ...mapActions([
-      "toggleMessenger",
-      "setSearchFocus"
-    ]),
-    click(event) {
-      if (!this.isOpen) {
-        this.setSearchFocus(true);
-      }
-      event.stopPropagation();
-      this.toggleMessenger();
-    }
-  }
+	computed: {
+		...mapGetters(['isOpen'])
+	},
+	methods: {
+		...mapActions([
+			'toggleMessenger',
+			'setSearchFocus'
+		]),
+		click(event) {
+			if (!this.isOpen) {
+				this.setSearchFocus(true);
+			}
+			event.stopPropagation();
+			this.toggleMessenger();
+		}
+	}
 }
 </script>
 

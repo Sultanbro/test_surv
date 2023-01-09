@@ -70,105 +70,105 @@
 </template>
 
 <script>
-    export default {
-        name: "bookitem",
-        props: ['tre', 'tree', 'books'],
-        data() {
-            return {
-                renamebook:false,
-                renamefile:false,
-                open: false,
-                showaddbook: false,
-                newbook: 'Новая книга',
-                showbk: false,
-                newpage: 'Новая страница'
-            }
-        },
-        mounted() {
+export default {
+	name: 'bookitem',
+	props: ['tre', 'tree', 'books'],
+	data() {
+		return {
+			renamebook:false,
+			renamefile:false,
+			open: false,
+			showaddbook: false,
+			newbook: 'Новая книга',
+			showbk: false,
+			newpage: 'Новая страница'
+		}
+	},
+	mounted() {
 
-        },
-        computed: {},
-        methods: {
-            moveto(tre){
+	},
+	computed: {},
+	methods: {
+		moveto(tre){
 
-                this.$emit('moveto', tre)
-            },
-            renamebooks(book){
-                if(book.name != ''){
-                    this.$emit('renamebooks', book)
-                    this.renamebook = false
-                } else { alert('Введите название')}
-            },
-            renames(book){
-                this.renamebook = !this.renamebook
-                setTimeout(()=>{
-                    this.$refs.bookrename[0].select();
-                }, 500);
-            },
-            rename(tre){
-                if(tre.name != ''){
-                    this.$emit('rename', tre)
-                    this.renamefile = false
-                } else { alert('Введите название')}
-            },
-            namefile(tre){
-                this.renamefile = !this.renamefile
-                setTimeout(()=>{
-                    this.$refs.renamefile.select();
-                }, 500);
-            },
-            bookshow(){
-                this.showbk = !this.showbk
+			this.$emit('moveto', tre)
+		},
+		renamebooks(book){
+			if(book.name != ''){
+				this.$emit('renamebooks', book)
+				this.renamebook = false
+			} else { alert('Введите название')}
+		},
+		renames(book){
+			this.renamebook = !this.renamebook
+			setTimeout(()=>{
+				this.$refs.bookrename[0].select();
+			}, 500);
+		},
+		rename(tre){
+			if(tre.name != ''){
+				this.$emit('rename', tre)
+				this.renamefile = false
+			} else { alert('Введите название')}
+		},
+		namefile(tre){
+			this.renamefile = !this.renamefile
+			setTimeout(()=>{
+				this.$refs.renamefile.select();
+			}, 500);
+		},
+		bookshow(){
+			this.showbk = !this.showbk
 
-                setTimeout(()=>{
-                    this.$refs.showbk.select();
-                }, 500);
+			setTimeout(()=>{
+				this.$refs.showbk.select();
+			}, 500);
 
-            },
-            bookshowbook(){
+		},
+		bookshowbook(){
 
-                this.showaddbook = !this.showaddbook
-                setTimeout(()=>{
-                    this.$refs.adddglabook.select();
-                }, 500);
+			this.showaddbook = !this.showaddbook
+			setTimeout(()=>{
+				this.$refs.adddglabook.select();
+			}, 500);
 
-            },
-            onEndSortcat(tree){
-                this.$emit('onEndSortcat', tree)
-            },
-            onEndSort(books, id) {
+		},
+		onEndSortcat(tree){
+			this.$emit('onEndSortcat', tree)
+		},
+		onEndSort(books, id) {
 
-                this.$emit('onEndSort', books, id)
-            },
-            deletebook(book) {
-                this.$emit('deletebook', book)
-            },
-            deletecat(cat) {
-                this.$emit('deletecat', cat)
-            },
-            addpage(id, name) {
-                this.$emit('addpage', id, name)
-                this.newpage = "Новая страница"
-                this.showbk = false
-                this.open = true
-            },
-            addcat(id, name) {
-                this.$emit('addcat', id, name)
-                this.newbook = "Новая книга"
-                this.showaddbook = false
-                this.open = true
-            },
-            opener() {
-                this.open = !this.open
-            },
-            activebook(book) {
-                this.$emit('activebook', book)
-            },
-            active(tre) {
-                this.$emit('active', tre)
-            }
-        }
-    }
+			this.$emit('onEndSort', books, id)
+		},
+		deletebook(book) {
+			this.$emit('deletebook', book)
+		},
+		deletecat(cat) {
+			this.$emit('deletecat', cat)
+		},
+		addpage(id, name) {
+			this.$emit('addpage', id, name)
+			this.newpage = 'Новая страница'
+			this.showbk = false
+			this.open = true
+		},
+		addcat(id, name) {
+			this.$emit('addcat', id, name)
+			this.newbook = 'Новая книга'
+			this.showaddbook = false
+			this.open = true
+		},
+		opener() {
+			this.open = !this.open
+		},
+		activebook(book) {
+			this.$emit('activebook', book)
+		},
+		active(tre) {
+			this.$emit('active', tre)
+		}
+	}
+}
 </script>
 <style scoped>
     .bookendlist {

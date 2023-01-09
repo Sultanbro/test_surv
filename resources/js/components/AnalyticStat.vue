@@ -367,1008 +367,1008 @@
     </div>
     </template>
     
-    <script>
-    const Parser = require('expr-eval').Parser;
-    export default {
-      components: {},
-        name: "AnalyticStat", 
-        props: ['monthInfo', 'activeuserid', 'table', 'group_id', 'fields', 'activities'],
-        data() {
-            return {
-                active: '1',
-                focused_item: null,
-                focused_field: null,
-                focused_subfield: null,
-                editTableMode: false,
-                showVariants: false, // activites
-                showDependy: false, // 
-                coords: null,
-                activity_id: null,
-                depend_id: null,
-                dependencies: [],
-                cell_value: null,
-                cell_type: null,
-                cell_show_value: null,
-                cell_comment: null,
-                showFormula1_31: false,
-                showCommentWindow: false, // for remote/ inhouse add hours
-                comment: '', // for remote/ inhouse add hours
-                comment_i: '', // for remote/ inhouse add hours
-                comment_f: '', // for remote/ inhouse add hours
-                depender: [],
-                formula_1_31: '',
-                formula_1_31_decimals: 0,
-                cell_types: {
-                    initial: 'Обычный',
-                    formula: 'Формула',
-                    time: 'Часы из табеля',
-                    stat: 'Показатели',
-                    avg: 'Среднее',
-                    sum: 'Сумма',
-                    salary: 'Начисления',
-                    remote: 'Отсутствие remote',
-                    inhouse: 'Отсутствие inhouse',
-                },
-                items: [
-                    {
-                        'plan': {
-                            value: 'testplan',
-                            show_value: 'x',
-                            context: false,
-                            type: 'initial',
-                        },
-                    },
-                ],
-                itemy: null,
-                letter_cells: [],
-            }
-        },
+<script>
+const Parser = require('expr-eval').Parser;
+export default {
+	components: {},
+	name: 'AnalyticStat', 
+	props: ['monthInfo', 'activeuserid', 'table', 'group_id', 'fields', 'activities'],
+	data() {
+		return {
+			active: '1',
+			focused_item: null,
+			focused_field: null,
+			focused_subfield: null,
+			editTableMode: false,
+			showVariants: false, // activites
+			showDependy: false, // 
+			coords: null,
+			activity_id: null,
+			depend_id: null,
+			dependencies: [],
+			cell_value: null,
+			cell_type: null,
+			cell_show_value: null,
+			cell_comment: null,
+			showFormula1_31: false,
+			showCommentWindow: false, // for remote/ inhouse add hours
+			comment: '', // for remote/ inhouse add hours
+			comment_i: '', // for remote/ inhouse add hours
+			comment_f: '', // for remote/ inhouse add hours
+			depender: [],
+			formula_1_31: '',
+			formula_1_31_decimals: 0,
+			cell_types: {
+				initial: 'Обычный',
+				formula: 'Формула',
+				time: 'Часы из табеля',
+				stat: 'Показатели',
+				avg: 'Среднее',
+				sum: 'Сумма',
+				salary: 'Начисления',
+				remote: 'Отсутствие remote',
+				inhouse: 'Отсутствие inhouse',
+			},
+			items: [
+				{
+					'plan': {
+						value: 'testplan',
+						show_value: 'x',
+						context: false,
+						type: 'initial',
+					},
+				},
+			],
+			itemy: null,
+			letter_cells: [],
+		}
+	},
     
-        created() {
-            this.items = this.table
-            this.form()
+	created() {
+		this.items = this.table
+		this.form()
             
-            this.calcGlobal()
-            this.setDependencies();
+		this.calcGlobal()
+		this.setDependencies();
            
-            //this.fields = this.columns 
+		//this.fields = this.columns 
     
-        },
+	},
         
-        mounted () {
-            document.addEventListener("keyup", this.nextItem);
-            // this.listener()
-        },
+	mounted () {
+		document.addEventListener('keyup', this.nextItem);
+		// this.listener()
+	},
     
-        methods: {
-            setDependencies() {
-                let arr = [];
+	methods: {
+		setDependencies() {
+			let arr = [];
     
-                this.items.forEach((item, index) => {
+			this.items.forEach((item, index) => {
     
-                    if(![0,1,2,3].includes(index)) {
-                        arr.push({
-                            'row_id': item['name']['row_id'],
-                            'name': index + 1,
-                            'index': item['name']['value'],
-                        });
-                    }
+				if(![0,1,2,3].includes(index)) {
+					arr.push({
+						'row_id': item['name']['row_id'],
+						'name': index + 1,
+						'index': item['name']['value'],
+					});
+				}
     
                     
-                });
-                this.dependencies  = arr
+			});
+			this.dependencies  = arr
     
     
-                let depender = {};
-                this.items.forEach((item, index) => {
+			let depender = {};
+			this.items.forEach((item, index) => {
                     
-                    depender[item['name']['row_id']] = index;
+				depender[item['name']['row_id']] = index;
                     
-                });
+			});
     
                 
-                this.depender = depender
+			this.depender = depender
     
-            },
+		},
     
-            editMode() {
-                this.editTableMode = !this.editTableMode
-            },
+		editMode() {
+			this.editTableMode = !this.editTableMode
+		},
     
-            listener() {
-                var ignoreClickOnMeElement = document.getElementById('wow-table');
+		listener() {
+			var ignoreClickOnMeElement = document.getElementById('wow-table');
     
-                var self = this;
-                document.addEventListener('click', function(event) {
-                    var isClickInsideElement = ignoreClickOnMeElement.contains(event.target);
-                    if (!isClickInsideElement) {
-                        self.hideContextMenu();
-                    }
-                });
-            },
+			var self = this;
+			document.addEventListener('click', function(event) {
+				var isClickInsideElement = ignoreClickOnMeElement.contains(event.target);
+				if (!isClickInsideElement) {
+					self.hideContextMenu();
+				}
+			});
+		},
     
-            calc(combinations) {
-                let expression = this.getExpression(combinations);
+		calc(combinations) {
+			let expression = this.getExpression(combinations);
     
-                let result = 0;
+			let result = 0;
 
-                if(expression !== null && expression.length > 0) {
-                    try {
-                        result = Parser.evaluate(expression);
-                    } catch (e) {
-                        console.log(e)
-                        console.log(result, 'result')
-                    } 
-                } 
+			if(expression !== null && expression.length > 0) {
+				try {
+					result = Parser.evaluate(expression);
+				} catch (e) {
+					console.log(e)
+					console.log(result, 'result')
+				} 
+			} 
                 
-                return result;
-            },
+			return result;
+		},
     
-            add_class(item, clasxs) {
-                let c = item.class
+		add_class(item, clasxs) {
+			let c = item.class
     
-                if(clasxs == 'text-center' && c !== null) {
-                    item.class = item.class.replace('text-left', "");
-                    item.class = item.class.replace('text-right', "");
-                }
+			if(clasxs == 'text-center' && c !== null) {
+				item.class = item.class.replace('text-left', '');
+				item.class = item.class.replace('text-right', '');
+			}
     
-                if(clasxs == 'text-left' && c !== null) {
-                    item.class = item.class.replace('text-center', "");
-                    item.class = item.class.replace('text-right', "");
-                }
+			if(clasxs == 'text-left' && c !== null) {
+				item.class = item.class.replace('text-center', '');
+				item.class = item.class.replace('text-right', '');
+			}
     
-                if(clasxs == 'text-right' && c !== null) {
-                    item.class = item.class.replace('text-left', "");
-                    item.class = item.class.replace('text-center', "");
-                }
+			if(clasxs == 'text-right' && c !== null) {
+				item.class = item.class.replace('text-left', '');
+				item.class = item.class.replace('text-center', '');
+			}
     
-                if(clasxs == 'bg-red' && c !== null) {
-                    item.class = item.class.replace('bg-yellow', "");
-                    item.class = item.class.replace('bg-green', "");
-                    item.class = item.class.replace('bg-blue', "");
-                    item.class = item.class.replace('bg-violet', "");
-                }
+			if(clasxs == 'bg-red' && c !== null) {
+				item.class = item.class.replace('bg-yellow', '');
+				item.class = item.class.replace('bg-green', '');
+				item.class = item.class.replace('bg-blue', '');
+				item.class = item.class.replace('bg-violet', '');
+			}
     
-                if(clasxs == 'bg-yellow' && c !== null) {
-                    item.class = item.class.replace('bg-red', "");
-                    item.class = item.class.replace('bg-green', "");
-                    item.class = item.class.replace('bg-blue', "");
-                    item.class = item.class.replace('bg-violet', "");
-                }
+			if(clasxs == 'bg-yellow' && c !== null) {
+				item.class = item.class.replace('bg-red', '');
+				item.class = item.class.replace('bg-green', '');
+				item.class = item.class.replace('bg-blue', '');
+				item.class = item.class.replace('bg-violet', '');
+			}
     
-                if(clasxs == 'bg-green' && c !== null) {
-                    item.class = item.class.replace('bg-yellow', "");
-                    item.class = item.class.replace('bg-red', "");
-                    item.class = item.class.replace('bg-blue', "");
-                    item.class = item.class.replace('bg-violet', "");
-                }
+			if(clasxs == 'bg-green' && c !== null) {
+				item.class = item.class.replace('bg-yellow', '');
+				item.class = item.class.replace('bg-red', '');
+				item.class = item.class.replace('bg-blue', '');
+				item.class = item.class.replace('bg-violet', '');
+			}
     
-                if(clasxs == 'bg-blue' && c !== null) {
-                    item.class = item.class.replace('bg-yellow', "");
-                    item.class = item.class.replace('bg-green', "");
-                    item.class = item.class.replace('bg-red', "");
-                    item.class = item.class.replace('bg-violet', "");
-                }
+			if(clasxs == 'bg-blue' && c !== null) {
+				item.class = item.class.replace('bg-yellow', '');
+				item.class = item.class.replace('bg-green', '');
+				item.class = item.class.replace('bg-red', '');
+				item.class = item.class.replace('bg-violet', '');
+			}
     
-                if(clasxs == 'bg-violet' && c !== null) {
-                    item.class = item.class.replace('bg-yellow', "");
-                    item.class = item.class.replace('bg-green', "");
-                    item.class = item.class.replace('bg-blue', "");
-                    item.class = item.class.replace('bg-red', "");
-                }
+			if(clasxs == 'bg-violet' && c !== null) {
+				item.class = item.class.replace('bg-yellow', '');
+				item.class = item.class.replace('bg-green', '');
+				item.class = item.class.replace('bg-blue', '');
+				item.class = item.class.replace('bg-red', '');
+			}
     
-                if(c !== null && c.includes(clasxs)) {
-                    item.class = item.class.replace(clasxs, "");
-                } else {
-                    item.class = item.class + ' ' + clasxs;
-                }
+			if(c !== null && c.includes(clasxs)) {
+				item.class = item.class.replace(clasxs, '');
+			} else {
+				item.class = item.class + ' ' + clasxs;
+			}
                 
-                if(item.type == 'formula') {
-                    item.show_value = item.value;
-                    let combinations = this.combinator(item.value);
-                    item.formula  = this.getExpression(combinations, 'db');
-                    item.show_value = this.calc(combinations);
-                }
+			if(item.type == 'formula') {
+				item.show_value = item.value;
+				let combinations = this.combinator(item.value);
+				item.formula  = this.getExpression(combinations, 'db');
+				item.show_value = this.calc(combinations);
+			}
     
-                this.editQueryItem(item);
-            }, 
+			this.editQueryItem(item);
+		}, 
     
-            calcGlobal() {
-                let items = this.formula_searcher()
+		calcGlobal() {
+			let items = this.formula_searcher()
     
-                items.forEach(it => {
-                    let combinations = this.combinator(it.value);
-                    it.formula  = this.getExpression(combinations, 'db');
-                    it.show_value = Number(Number(this.calc(combinations).toFixed(it.decimals)));
-                });
-            },
+			items.forEach(it => {
+				let combinations = this.combinator(it.value);
+				it.formula  = this.getExpression(combinations, 'db');
+				it.show_value = Number(Number(this.calc(combinations).toFixed(it.decimals)));
+			});
+		},
            
-            getExpression(combinations, type = 'local') {
-                let expression = '';
+		getExpression(combinations, type = 'local') {
+			let expression = '';
     
-                if(type == 'local') { // для vue
-                    combinations.forEach(item => {
+			if(type == 'local') { // для vue
+				combinations.forEach(item => {
     
                         
-                        if(item.type == 'formula') {
-                            let inner_combinations = this.combinator(item.value);
-                            let inner_calc = 0;
-                            let inner_item = this.searcher(item.text);
-                            inner_calc = this.calc(inner_combinations);
-                            inner_item.show_value = inner_calc;
-                            expression += inner_calc;
-                        } else if(item.type == 'action'){
-                            expression += item.text;
-                        } else {
-                            item.value = Number(item.value);
-                            expression += !isNaN(item.value) ?  item.value : 0;
-                        }
-                    });
-                }
+					if(item.type == 'formula') {
+						let inner_combinations = this.combinator(item.value);
+						let inner_calc = 0;
+						let inner_item = this.searcher(item.text);
+						inner_calc = this.calc(inner_combinations);
+						inner_item.show_value = inner_calc;
+						expression += inner_calc;
+					} else if(item.type == 'action'){
+						expression += item.text;
+					} else {
+						item.value = Number(item.value);
+						expression += !isNaN(item.value) ?  item.value : 0;
+					}
+				});
+			}
     
-                if(type == 'db') { // для хранения формулы в базе
-                    combinations.forEach(item => {
-                        if(item.type == 'value') expression += item.value
-                        if(item.type == 'cell') expression += item.code
-                        if(item.type == 'formula') expression += item.code
-                        if(item.type == 'action') expression += item.text
-                    });
-                }
+			if(type == 'db') { // для хранения формулы в базе
+				combinations.forEach(item => {
+					if(item.type == 'value') expression += item.value
+					if(item.type == 'cell') expression += item.code
+					if(item.type == 'formula') expression += item.code
+					if(item.type == 'action') expression += item.text
+				});
+			}
     
-                return expression;
-            },
+			return expression;
+		},
     
-            add_row(i_index) {
+		add_row(i_index) {
     
                 
-                let loader = this.$loading.show();
-                axios.post("/timetracking/analytics/add-row", {
-                    group_id: this.group_id,
-                    date: this.$moment(
-                        `${this.monthInfo.currentMonth} ${this.monthInfo.currentYear}`,
-                        "MMMM YYYY"
-                    ).format("YYYY-MM-DD"),
-                    after_row_id: this.items[i_index]['name']['row_id'],
-                })
-                .then((response) => {
-                    this.$toast.success('Добавлено');
+			let loader = this.$loading.show();
+			axios.post('/timetracking/analytics/add-row', {
+				group_id: this.group_id,
+				date: this.$moment(
+					`${this.monthInfo.currentMonth} ${this.monthInfo.currentYear}`,
+					'MMMM YYYY'
+				).format('YYYY-MM-DD'),
+				after_row_id: this.items[i_index]['name']['row_id'],
+			})
+				.then((response) => {
+					this.$toast.success('Добавлено');
     
                  
-                    this.items.splice(i_index + 1, 0, response.data);
-                    //this.setDependencies();
-                    loader.hide()
-                }).catch(error => {
-                    this.$toast.error('Не получилось');
-                    console.log(error)
-                    loader.hide()
-                });
+					this.items.splice(i_index + 1, 0, response.data);
+					//this.setDependencies();
+					loader.hide()
+				}).catch(error => {
+					this.$toast.error('Не получилось');
+					console.log(error)
+					loader.hide()
+				});
      
-            },
+		},
             
     
-            deleteRow(index) {
-               let e = confirm("Вы уверены?");
-               let loader = this.$loading.show();
+		deleteRow(index) {
+			let e = confirm('Вы уверены?');
+			let loader = this.$loading.show();
                 
-               if(e) {
-                   axios.post("/timetracking/analytics/delete-row", {
-                        group_id: this.group_id,
-                        date: this.$moment(
-                            `${this.monthInfo.currentMonth} ${this.monthInfo.currentYear}`,
-                            "MMMM YYYY" 
-                        ).format("YYYY-MM-DD"),
-                        item: this.items[index]
-                    })
-                    .then((response) => {
-                        this.$toast.success('Удалено');
-                        // Delete item from items
-                        this.items.splice(index, 1);
-                        this.setDependencies();
-                        loader.hide()
-                    }).catch(error => {
-                        this.$toast.error('Не получилось');
-                        console.log(error)
-                        loader.hide()
-                    });
-               }
-            },
+			if(e) {
+				axios.post('/timetracking/analytics/delete-row', {
+					group_id: this.group_id,
+					date: this.$moment(
+						`${this.monthInfo.currentMonth} ${this.monthInfo.currentYear}`,
+						'MMMM YYYY' 
+					).format('YYYY-MM-DD'),
+					item: this.items[index]
+				})
+					.then((response) => {
+						this.$toast.success('Удалено');
+						// Delete item from items
+						this.items.splice(index, 1);
+						this.setDependencies();
+						loader.hide()
+					}).catch(error => {
+						this.$toast.error('Не получилось');
+						console.log(error)
+						loader.hide()
+					});
+			}
+		},
     
-            save_depend() {
+		save_depend() {
             
-                axios.post("/timetracking/analytics/add-depend", {
-                    id: this.itemy['row_id'],
-                    depend_id: this.depend_id
-                })
-                .then((response) => {
-                    this.$toast.success('Обновите, чтобы подтянуть данные!');
+			axios.post('/timetracking/analytics/add-depend', {
+				id: this.itemy['row_id'],
+				depend_id: this.depend_id
+			})
+				.then((response) => {
+					this.$toast.success('Обновите, чтобы подтянуть данные!');
                     
-                    this.showDependy = false;
-                    this.depend_id = null;
-                    this.itemy = null
-                }).catch(error => {
-                    this.$toast.error('Не получилось');
-                    console.log(error)
-                });
+					this.showDependy = false;
+					this.depend_id = null;
+					this.itemy = null
+				}).catch(error => {
+					this.$toast.error('Не получилось');
+					console.log(error)
+				});
                
-            },
+		},
     
-            removeDependency(item) {
-                axios.post("/timetracking/analytics/dependency/remove", {
-                    id: item.row_id,
-                })
-                .then((response) => {
-                    this.$toast.success('Обновите, чтобы подтянуть данные!');
-                }).catch(error => {
-                    this.$toast.error('Не получилось');
-                    console.log(error)
-                });
+		removeDependency(item) {
+			axios.post('/timetracking/analytics/dependency/remove', {
+				id: item.row_id,
+			})
+				.then((response) => {
+					this.$toast.success('Обновите, чтобы подтянуть данные!');
+				}).catch(error => {
+					this.$toast.error('Не получилось');
+					console.log(error)
+				});
                
-            },
+		},
     
-            focus(i,f) {
+		focus(i,f) {
     
-                if([1,2,3].includes(i) && f == 0) return ""
+			if([1,2,3].includes(i) && f == 0) return ''
     
       
     
-                if(!(this.focused_item == i && this.focused_field == f)) {
-                     this.hideContextMenu();
-                }
+			if(!(this.focused_item == i && this.focused_field == f)) {
+				this.hideContextMenu();
+			}
     
-                // indexes
-                this.focused_item = i
-                this.focused_field = f
+			// indexes
+			this.focused_item = i
+			this.focused_field = f
     
-                // cell value
-                let item = this.items[i][this.fields[f].key];
+			// cell value
+			let item = this.items[i][this.fields[f].key];
     
-                this.cell_value = item.value
-                this.cell_comment = item.comment
-                this.cell_type = this.cell_types[item.type]
-                this.cell_show_value = item.show_value
-                this.coords = item.cell
+			this.cell_value = item.value
+			this.cell_comment = item.comment
+			this.cell_type = this.cell_types[item.type]
+			this.cell_show_value = item.show_value
+			this.coords = item.cell
     
-            },
+		},
     
-            focusName(i,f, s) {
+		focusName(i,f, s) {
     
-                this.hideContextMenu();
-                // indexes
-                this.focused_item = i
-                this.focused_field = f
+			this.hideContextMenu();
+			// indexes
+			this.focused_item = i
+			this.focused_field = f
     
-                // cell value
-                this.focused_subfield = s;
+			// cell value
+			this.focused_subfield = s;
     
-                let field = s == 2 ? 'plan' : 'name';
+			let field = s == 2 ? 'plan' : 'name';
     
-                this.cell_value = this.items[i][field].value
-                this.cell_comment = this.items[i][field].comment
+			this.cell_value = this.items[i][field].value
+			this.cell_comment = this.items[i][field].comment
 
-                this.cell_type = this.cell_types[this.items[i][field].type]
+			this.cell_type = this.cell_types[this.items[i][field].type]
     
-                this.coords = this.items[i][field].cell
-            },
+			this.coords = this.items[i][field].cell
+		},
     
-            hideContextMenu() {
-                this.items.forEach((item, index) => {
-                    Object.values(item).forEach((value) => {
-                        value.context = false
-                    });
-                })
-            },
+		hideContextMenu() {
+			this.items.forEach((item, index) => {
+				Object.values(item).forEach((value) => {
+					value.context = false
+				});
+			})
+		},
     
-            openContextMenu(item, i_index, f_index) {
-                if(![5,18,157,84,14009].includes(Number(this.activeuserid))) {
-                    return "";
-                }
-                this.focus(i_index, f_index);
-                this.hideContextMenu();
+		openContextMenu(item, i_index, f_index) {
+			if(![5,18,157,84,14009].includes(Number(this.activeuserid))) {
+				return '';
+			}
+			this.focus(i_index, f_index);
+			this.hideContextMenu();
     
-                //if(item.editable == 1) {
-                    item.context = true;
-                //}
+			//if(item.editable == 1) {
+			item.context = true;
+			//}
                 
-            },
+		},
     
-            editQuery(i_index, f_index) {
-                let item = this.items[i_index][f_index];
+		editQuery(i_index, f_index) {
+			let item = this.items[i_index][f_index];
     
-                axios.post("/timetracking/analytics/edit-stat", {
-                    date: this.$moment(
-                        `${this.monthInfo.currentMonth} ${this.monthInfo.currentYear}`,
-                        "MMMM YYYY"
-                    ).format("YYYY-MM-DD"),
-                    column_id: item.column_id,
-                    row_id: item.row_id,
-                    value: item.value, 
-                    show_value: item.show_value,
-                    type: item.type,
-                    group_id: this.group_id,
-                    class: item.class,
-                    formula: item.formula,
-                    comment: this.comment,
-                })
-                .then((response) => {
-                    this.showCommentWindow = false;
-                    this.comment_i = '';
-                    this.comment_f = '';
-                    this.$toast.success('Сохранено');
-                }).catch(error => {
-                    this.$toast.error('Не сохранено');
-                    console.log(error)
-                });
-            },
-    
-            
-    
-            save_cell_time() {
-                 let loader = this.$loading.show();
-                 let item = this.item
-                axios.post('/timetracking/analytics/save-cell-time', {
-                    month: this.$moment(this.monthInfo.currentMonth, 'MMMM').format('M'),
-                    year: this.monthInfo.currentYear,
-                    column_id: item.column_id,
-                    row_id: item.row_id,
-                    group_id: this.group_id,
-                    class: item.class,
-                }).then(response => {
-                    this.$toast.success('Обновите чтобы подтянуть данные!')
-                   
-                    this.item = null;
-                    loader.hide()
-                }).catch(error => {
-                    loader.hide()
-                    this.$toast.error('Ошибка!')
-                    alert(error)
-                });
-            },
+			axios.post('/timetracking/analytics/edit-stat', {
+				date: this.$moment(
+					`${this.monthInfo.currentMonth} ${this.monthInfo.currentYear}`,
+					'MMMM YYYY'
+				).format('YYYY-MM-DD'),
+				column_id: item.column_id,
+				row_id: item.row_id,
+				value: item.value, 
+				show_value: item.show_value,
+				type: item.type,
+				group_id: this.group_id,
+				class: item.class,
+				formula: item.formula,
+				comment: this.comment,
+			})
+				.then((response) => {
+					this.showCommentWindow = false;
+					this.comment_i = '';
+					this.comment_f = '';
+					this.$toast.success('Сохранено');
+				}).catch(error => {
+					this.$toast.error('Не сохранено');
+					console.log(error)
+				});
+		},
     
             
-            save_cell_sum() {
-                 let loader = this.$loading.show();
-                 let item = this.item
-                axios.post('/timetracking/analytics/save-cell-sum', {
-                    month: this.$moment(this.monthInfo.currentMonth, 'MMMM').format('M'),
-                    year: this.monthInfo.currentYear,
-                    column_id: item.column_id,
-                    row_id: item.row_id,
-                    group_id: this.group_id,
-                    class: item.class,
-                }).then(response => {
-                    this.$toast.success('Сумма подтянута!')
+    
+		save_cell_time() {
+			let loader = this.$loading.show();
+			let item = this.item
+			axios.post('/timetracking/analytics/save-cell-time', {
+				month: this.$moment(this.monthInfo.currentMonth, 'MMMM').format('M'),
+				year: this.monthInfo.currentYear,
+				column_id: item.column_id,
+				row_id: item.row_id,
+				group_id: this.group_id,
+				class: item.class,
+			}).then(response => {
+				this.$toast.success('Обновите чтобы подтянуть данные!')
                    
+				this.item = null;
+				loader.hide()
+			}).catch(error => {
+				loader.hide()
+				this.$toast.error('Ошибка!')
+				alert(error)
+			});
+		},
     
-                    this.item.value = response.data
-                    this.item.show_value = response.data
-                    this.item = null;
-                    loader.hide()
-                }).catch(error => {
-                    loader.hide()
-                    this.$toast.error('Ошибка!')
-                    alert(error)
-                });
-            },
-    
-            save_cell_avg() {
-                 let loader = this.$loading.show();
-                 let item = this.item
-                axios.post('/timetracking/analytics/save-cell-avg', {
-                    month: this.$moment(this.monthInfo.currentMonth, 'MMMM').format('M'),
-                    year: this.monthInfo.currentYear,
-                    column_id: item.column_id,
-                    row_id: item.row_id,
-                    group_id: this.group_id,
-                    class: item.class,
-                }).then(response => {
-                    this.$toast.success('Среднее за месяц подтянута!')
-                   
-                    this.item.value = response.data
-                    this.item.show_value = response.data
-                    this.item = null;
-                    loader.hide()
-                }).catch(error => {
-                    loader.hide()
-                    this.$toast.error('Ошибка!')
-                    alert(error)
-                });
-            },
-    
-    
-            save_cell_activity() { 
-                 let loader = this.$loading.show();
-                 let item = this.item
-                axios.post('/timetracking/analytics/save-cell-activity', {
-                    month: this.$moment(this.monthInfo.currentMonth, 'MMMM').format('M'),
-                    year: this.monthInfo.currentYear,
-                    column_id: item.column_id,
-                    row_id: item.row_id,
-                    value: item.value, 
-                    show_value: item.show_value,
-                    group_id: this.group_id,
-                    type: item.type,
-                    class: item.class,
-                    formula: item.formula,
-                    activity_id: this.activity_id
-                }).then(response => {
-                    this.$toast.success('Обновите чтобы подтянуть данные!')
-                   
-    
-                    this.item = null;
-    
-                    this.showVariants = false
-                    loader.hide()
-                }).catch(error => {
-                    loader.hide()
-                    this.$toast.error('Ошибка!')
-                    alert(error)
-                });
-            },
             
-            editQueryItem(item) {
+		save_cell_sum() {
+			let loader = this.$loading.show();
+			let item = this.item
+			axios.post('/timetracking/analytics/save-cell-sum', {
+				month: this.$moment(this.monthInfo.currentMonth, 'MMMM').format('M'),
+				year: this.monthInfo.currentYear,
+				column_id: item.column_id,
+				row_id: item.row_id,
+				group_id: this.group_id,
+				class: item.class,
+			}).then(response => {
+				this.$toast.success('Сумма подтянута!')
+                   
+    
+				this.item.value = response.data
+				this.item.show_value = response.data
+				this.item = null;
+				loader.hide()
+			}).catch(error => {
+				loader.hide()
+				this.$toast.error('Ошибка!')
+				alert(error)
+			});
+		},
+    
+		save_cell_avg() {
+			let loader = this.$loading.show();
+			let item = this.item
+			axios.post('/timetracking/analytics/save-cell-avg', {
+				month: this.$moment(this.monthInfo.currentMonth, 'MMMM').format('M'),
+				year: this.monthInfo.currentYear,
+				column_id: item.column_id,
+				row_id: item.row_id,
+				group_id: this.group_id,
+				class: item.class,
+			}).then(response => {
+				this.$toast.success('Среднее за месяц подтянута!')
+                   
+				this.item.value = response.data
+				this.item.show_value = response.data
+				this.item = null;
+				loader.hide()
+			}).catch(error => {
+				loader.hide()
+				this.$toast.error('Ошибка!')
+				alert(error)
+			});
+		},
+    
+    
+		save_cell_activity() { 
+			let loader = this.$loading.show();
+			let item = this.item
+			axios.post('/timetracking/analytics/save-cell-activity', {
+				month: this.$moment(this.monthInfo.currentMonth, 'MMMM').format('M'),
+				year: this.monthInfo.currentYear,
+				column_id: item.column_id,
+				row_id: item.row_id,
+				value: item.value, 
+				show_value: item.show_value,
+				group_id: this.group_id,
+				type: item.type,
+				class: item.class,
+				formula: item.formula,
+				activity_id: this.activity_id
+			}).then(response => {
+				this.$toast.success('Обновите чтобы подтянуть данные!')
+                   
+    
+				this.item = null;
+    
+				this.showVariants = false
+				loader.hide()
+			}).catch(error => {
+				loader.hide()
+				this.$toast.error('Ошибка!')
+				alert(error)
+			});
+		},
+            
+		editQueryItem(item) {
                
-                axios.post("/timetracking/analytics/edit-stat", {
-                    date: this.$moment(
-                        `${this.monthInfo.currentMonth} ${this.monthInfo.currentYear}`,
-                        "MMMM YYYY"
-                    ).format("YYYY-MM-DD"),
-                    column_id: item.column_id,
-                    row_id: item.row_id,
-                    value: item.value,
-                    show_value: item.show_value,
-                    type: item.type,
-                    class: item.class,
-                    formula: item.formula,
-                    group_id: this.group_id,
-                })
-                .then((response) => {
-                    this.$toast.success('Сохранено');
-                }).catch(error => {
-                    this.$toast.error('Не сохранено');
-                    console.log(error)
-                });
-            },
+			axios.post('/timetracking/analytics/edit-stat', {
+				date: this.$moment(
+					`${this.monthInfo.currentMonth} ${this.monthInfo.currentYear}`,
+					'MMMM YYYY'
+				).format('YYYY-MM-DD'),
+				column_id: item.column_id,
+				row_id: item.row_id,
+				value: item.value,
+				show_value: item.show_value,
+				type: item.type,
+				class: item.class,
+				formula: item.formula,
+				group_id: this.group_id,
+			})
+				.then((response) => {
+					this.$toast.success('Сохранено');
+				}).catch(error => {
+					this.$toast.error('Не сохранено');
+					console.log(error)
+				});
+		},
     
-            change_type(type, i_index, f_index) {
-                let item = this.items[i_index][f_index];
-                item.type = type
+		change_type(type, i_index, f_index) {
+			let item = this.items[i_index][f_index];
+			item.type = type
     
-                if(item.type == 'initial') {
-                    item.show_value = item.value;
+			if(item.type == 'initial') {
+				item.show_value = item.value;
     
-                    this.calcGlobal()
-                       this.editQuery(i_index, f_index);
+				this.calcGlobal()
+				this.editQuery(i_index, f_index);
     
-                }
+			}
     
-                if(item.type == 'formula') {
-                    item.show_value = item.value;
+			if(item.type == 'formula') {
+				item.show_value = item.value;
                     
-                    let combinations = this.combinator(item.value);
+				let combinations = this.combinator(item.value);
     
-                    item.formula  = this.getExpression(combinations, 'db');
+				item.formula  = this.getExpression(combinations, 'db');
     
-                    item.show_value = this.calc(combinations);
+				item.show_value = this.calc(combinations);
     
-                    this.calcGlobal()
+				this.calcGlobal()
     
-                    this.editQuery(i_index, f_index);
-                }
+				this.editQuery(i_index, f_index);
+			}
     
-                if(item.type == 'time'){
-                    this.item = item;
-                    this.save_cell_time();
-                }
+			if(item.type == 'time'){
+				this.item = item;
+				this.save_cell_time();
+			}
     
-                if(item.type == 'sum'){
-                    this.item = item;
-                    this.save_cell_sum();
-                }
+			if(item.type == 'sum'){
+				this.item = item;
+				this.save_cell_sum();
+			}
     
-                if(item.type == 'avg'){
-                    this.item = item;
-                    this.save_cell_avg();
-                }
+			if(item.type == 'avg'){
+				this.item = item;
+				this.save_cell_avg();
+			}
     
-                if(item.type == 'stat'){
-                    this.item = item;
-                    this.showVariants = true;
-                }
+			if(item.type == 'stat'){
+				this.item = item;
+				this.showVariants = true;
+			}
     
                
     
              
-            },
+		},
     
-            selectDepend(item) {
-                this.itemy = item
-                this.showDependy = true;
-            },
+		selectDepend(item) {
+			this.itemy = item
+			this.showDependy = true;
+		},
     
-            add_formula_1_31(item) {
-                this.itemy = item
-                this.showFormula1_31 = true;
-            },
+		add_formula_1_31(item) {
+			this.itemy = item
+			this.showFormula1_31 = true;
+		},
     
-            add_inhouse(item) {
-                this.itemy = item;
-                axios.post("/timetracking/analytics/add-remote-inhouse", {
-                    date: this.$moment(
-                        `${this.monthInfo.currentMonth} ${this.monthInfo.currentYear}`,
-                        "MMMM YYYY"
-                    ).format("YYYY-MM-DD"),
-                    row_id: this.itemy.row_id,
-                    type: 'inhouse'
-                })
-                .then((response) => {
-                    this.$toast.success('Обновите для сохранения');
-                    this.itemy = null;
-                }).catch(error => {
-                    this.$toast.error('Не сохранено');
-                    console.log(error)
-                });
-            },
+		add_inhouse(item) {
+			this.itemy = item;
+			axios.post('/timetracking/analytics/add-remote-inhouse', {
+				date: this.$moment(
+					`${this.monthInfo.currentMonth} ${this.monthInfo.currentYear}`,
+					'MMMM YYYY'
+				).format('YYYY-MM-DD'),
+				row_id: this.itemy.row_id,
+				type: 'inhouse'
+			})
+				.then((response) => {
+					this.$toast.success('Обновите для сохранения');
+					this.itemy = null;
+				}).catch(error => {
+					this.$toast.error('Не сохранено');
+					console.log(error)
+				});
+		},
     
-            add_remote(item) {
-                this.itemy = item;
-                axios.post("/timetracking/analytics/add-remote-inhouse", {
-                    date: this.$moment(
-                        `${this.monthInfo.currentMonth} ${this.monthInfo.currentYear}`,
-                        "MMMM YYYY"
-                    ).format("YYYY-MM-DD"),
-                    row_id: this.itemy.row_id,
-                    type: 'remote'
-                })
-                .then((response) => {
-                    this.$toast.success('Обновите для сохранения');
-                    this.itemy = null;
-                }).catch(error => {
-                    this.$toast.error('Не сохранено');
-                    console.log(error)
-                });
-            },
+		add_remote(item) {
+			this.itemy = item;
+			axios.post('/timetracking/analytics/add-remote-inhouse', {
+				date: this.$moment(
+					`${this.monthInfo.currentMonth} ${this.monthInfo.currentYear}`,
+					'MMMM YYYY'
+				).format('YYYY-MM-DD'),
+				row_id: this.itemy.row_id,
+				type: 'remote'
+			})
+				.then((response) => {
+					this.$toast.success('Обновите для сохранения');
+					this.itemy = null;
+				}).catch(error => {
+					this.$toast.error('Не сохранено');
+					console.log(error)
+				});
+		},
     
-            add_salary(item) {
-                this.itemy = item;
-                axios.post("/timetracking/analytics/add-salary", {
-                    date: this.$moment(
-                        `${this.monthInfo.currentMonth} ${this.monthInfo.currentYear}`,
-                        "MMMM YYYY"
-                    ).format("YYYY-MM-DD"),
-                    row_id: this.itemy.row_id
-                })
-                .then((response) => {
-                    this.$toast.success('Обновите для сохранения');
-                    this.itemy = null;
-                }).catch(error => {
-                    this.$toast.error('Не сохранено');
-                    console.log(error)
-                });
-            },
+		add_salary(item) {
+			this.itemy = item;
+			axios.post('/timetracking/analytics/add-salary', {
+				date: this.$moment(
+					`${this.monthInfo.currentMonth} ${this.monthInfo.currentYear}`,
+					'MMMM YYYY'
+				).format('YYYY-MM-DD'),
+				row_id: this.itemy.row_id
+			})
+				.then((response) => {
+					this.$toast.success('Обновите для сохранения');
+					this.itemy = null;
+				}).catch(error => {
+					this.$toast.error('Не сохранено');
+					console.log(error)
+				});
+		},
      
-            setDecimals(item) {
+		setDecimals(item) {
     
-                axios.post("/timetracking/analytics/set-decimals", {
-                    date: this.$moment(
-                        `${this.monthInfo.currentMonth} ${this.monthInfo.currentYear}`,
-                        "MMMM YYYY"
-                    ).format("YYYY-MM-DD"),
-                    row_id: item.row_id,
-                    column_id: item.column_id,
-                    decimals: item.decimals
-                })
-                .then((response) => {
-                    this.$toast.success('Сохранено!');
-                    this.hideContextMenu();
-                }).catch(error => {
-                    this.$toast.error('Не сохранено');
-                    console.log(error)
-                });
-            },
+			axios.post('/timetracking/analytics/set-decimals', {
+				date: this.$moment(
+					`${this.monthInfo.currentMonth} ${this.monthInfo.currentYear}`,
+					'MMMM YYYY'
+				).format('YYYY-MM-DD'),
+				row_id: item.row_id,
+				column_id: item.column_id,
+				decimals: item.decimals
+			})
+				.then((response) => {
+					this.$toast.success('Сохранено!');
+					this.hideContextMenu();
+				}).catch(error => {
+					this.$toast.error('Не сохранено');
+					console.log(error)
+				});
+		},
     
-            save_formula_1_31() {
-                let rows = [];
+		save_formula_1_31() {
+			let rows = [];
     
-                let text =  this.formula_1_31
+			let text =  this.formula_1_31
     
-                this.items.forEach((item, index) => {
-                    index++;
-                    text = text.replaceAll("{" + index + "}", "{" + item['name']['row_id'] + "}");
-                });
+			this.items.forEach((item, index) => {
+				index++;
+				text = text.replaceAll('{' + index + '}', '{' + item['name']['row_id'] + '}');
+			});
     
-                var regExp = /[a-zA-Z]/g;
+			var regExp = /[a-zA-Z]/g;
                             
-                if(regExp.test(text)){
-                  /* do something if letters are found in your string */
-                  this.$toast.error('Вы не правильно ввели формулу');
-                } else {
-                    axios.post("/timetracking/analytics/add-formula-1-31", {
-                        date: this.$moment(
-                            `${this.monthInfo.currentMonth} ${this.monthInfo.currentYear}`,
-                            "MMMM YYYY"
-                        ).format("YYYY-MM-DD"),
-                        formula: text,
-                        row_id: this.itemy.row_id,
-                        decimals: this.formula_1_31_decimals
-                    })
-                    .then((response) => {
-                        this.$toast.success('Обновите для сохранения');
-                        this.showFormula1_31 = false
-                        this.formula_1_31 = '';
-                        this.formula_1_31_decimals = 9;
-                        this.itemy = null;
-                    }).catch(error => {
-                        this.$toast.error('Не сохранено');
-                        console.log(error)
-                    });
-                }
+			if(regExp.test(text)){
+				/* do something if letters are found in your string */
+				this.$toast.error('Вы не правильно ввели формулу');
+			} else {
+				axios.post('/timetracking/analytics/add-formula-1-31', {
+					date: this.$moment(
+						`${this.monthInfo.currentMonth} ${this.monthInfo.currentYear}`,
+						'MMMM YYYY'
+					).format('YYYY-MM-DD'),
+					formula: text,
+					row_id: this.itemy.row_id,
+					decimals: this.formula_1_31_decimals
+				})
+					.then((response) => {
+						this.$toast.success('Обновите для сохранения');
+						this.showFormula1_31 = false
+						this.formula_1_31 = '';
+						this.formula_1_31_decimals = 9;
+						this.itemy = null;
+					}).catch(error => {
+						this.$toast.error('Не сохранено');
+						console.log(error)
+					});
+			}
     
     
-            },
+		},
     
-            change_stat(i_index, f_index) {
-                let item = this.items[i_index][f_index];
+		change_stat(i_index, f_index) {
+			let item = this.items[i_index][f_index];
     
-                if(item.type == 'initial') {
-                    item.show_value = item.value;
+			if(item.type == 'initial') {
+				item.show_value = item.value;
     
-                    this.calcGlobal();
-                }
+				this.calcGlobal();
+			}
     
-                if(item.type == 'formula') {
-                    item.show_value = item.value;
+			if(item.type == 'formula') {
+				item.show_value = item.value;
                     
-                    let combinations = this.combinator(item.value);
+				let combinations = this.combinator(item.value);
     
-                    item.formula  = this.getExpression(combinations, 'db');
+				item.formula  = this.getExpression(combinations, 'db');
     
-                    item.show_value = this.calc(combinations);
+				item.show_value = this.calc(combinations);
     
-                    this.calcGlobal()
-                }
+				this.calcGlobal()
+			}
     
-                if(item.type == 'remote' || item.type == 'inhouse') {
-                    item.show_value = item.value;
+			if(item.type == 'remote' || item.type == 'inhouse') {
+				item.show_value = item.value;
                     
-                    this.showCommentWindow = true;
-                    this.comment_i = i_index;
-                    this.comment_f = f_index;
+				this.showCommentWindow = true;
+				this.comment_i = i_index;
+				this.comment_f = f_index;
     
-                    return '';
-                }
+				return '';
+			}
     
-                this.editQuery(i_index, f_index);
+			this.editQuery(i_index, f_index);
                 
-            },
+		},
     
-            saveComment() { // for remote/inhouse add hours
-                if(this.comment.length > 5) {
-                    this.editQuery(this.comment_i, this.comment_f);
-                    this.items[this.comment_i][this.comment_f].comment = this.comment;
-                    this.showCommentWindow = false;
-                } else {
-                    this.$toast.info('Пожалуйста, напишите подробнее');
-                }
-            },
+		saveComment() { // for remote/inhouse add hours
+			if(this.comment.length > 5) {
+				this.editQuery(this.comment_i, this.comment_f);
+				this.items[this.comment_i][this.comment_f].comment = this.comment;
+				this.showCommentWindow = false;
+			} else {
+				this.$toast.info('Пожалуйста, напишите подробнее');
+			}
+		},
     
-            form() {
-                this.set_letters(this.fields.length);
-            },
+		form() {
+			this.set_letters(this.fields.length);
+		},
     
-            nextItem () { // move by arrows
-            return '';
-                if (event.keyCode == 38) { // up
-                    if(this.focused_item !== 0) {
-                        this.focused_item--
-                    }
-                    console.log('up')
-                } else if (event.keyCode == 40) { // down
-                    if(this.focused_item !== this.items.length - 1) {
-                        this.focused_item++
-                    }
-                    console.log('down')
-                } else if (event.keyCode == 37) { // left
-                    console.log('left')
-                    if(this.focused_field !== 0) {
-                        this.focused_field--
-                    }
-                } else if (event.keyCode == 39) { // right
-                    console.log('right')
-                    if(this.focused_field !== this.fields.length - 1) {
-                        this.focused_field++
-                    }
-                }
-                this.focus(this.focused_item, this.focused_field);
-            },
+		nextItem () { // move by arrows
+			return '';
+			if (event.keyCode == 38) { // up
+				if(this.focused_item !== 0) {
+					this.focused_item--
+				}
+				console.log('up')
+			} else if (event.keyCode == 40) { // down
+				if(this.focused_item !== this.items.length - 1) {
+					this.focused_item++
+				}
+				console.log('down')
+			} else if (event.keyCode == 37) { // left
+				console.log('left')
+				if(this.focused_field !== 0) {
+					this.focused_field--
+				}
+			} else if (event.keyCode == 39) { // right
+				console.log('right')
+				if(this.focused_field !== this.fields.length - 1) {
+					this.focused_field++
+				}
+			}
+			this.focus(this.focused_item, this.focused_field);
+		},
     
-            letters() {
-                return ['A','B','C', 'D','E','F','G','H','I','J','K','L','M','N','O', 'P','Q','R','S','T','U','V','W','X','Y','Z'];
-            },
+		letters() {
+			return ['A','B','C', 'D','E','F','G','H','I','J','K','L','M','N','O', 'P','Q','R','S','T','U','V','W','X','Y','Z'];
+		},
     
-            set_letters(q) {
-                let letters = this.letters();
+		set_letters(q) {
+			let letters = this.letters();
     
-                this.letter_cells.push('A');
+			this.letter_cells.push('A');
     
-                let fl_pos = 0;
-                let sl_pos = -1;
-                for(let i = 0;i<q - 1;i++) {
-                    fl_pos = (i + 1) % letters.length;
-                    if(fl_pos == 0) sl_pos++;
+			let fl_pos = 0;
+			let sl_pos = -1;
+			for(let i = 0;i<q - 1;i++) {
+				fl_pos = (i + 1) % letters.length;
+				if(fl_pos == 0) sl_pos++;
     
-                    if(sl_pos >= 0) {
-                        this.letter_cells.push(letters[sl_pos] + letters[fl_pos]);
-                    } else {
-                        this.letter_cells.push(letters[fl_pos]);
-                    }
+				if(sl_pos >= 0) {
+					this.letter_cells.push(letters[sl_pos] + letters[fl_pos]);
+				} else {
+					this.letter_cells.push(letters[fl_pos]);
+				}
     
-                } 
+			} 
                 
-            },
+		},
     
-            handleClick (event, item) { // for context menu
-                this.$refs.vueSimpleContextMenu.showMenu(event, item)
-            },
+		handleClick (event, item) { // for context menu
+			this.$refs.vueSimpleContextMenu.showMenu(event, item)
+		},
     
-            optionClicked (event) { // for context menu
-                window.alert(JSON.stringify(event))
-            },
+		optionClicked (event) { // for context menu
+			window.alert(JSON.stringify(event))
+		},
     
-            // get array of expression combinations
-            combinator(text) {
-                if(text === null) return [];
-                //let text = "-12+B4+AA10*12.7*AE31/aR7";
-                var positions = [];
+		// get array of expression combinations
+		combinator(text) {
+			if(text === null) return [];
+			//let text = "-12+B4+AA10*12.7*AE31/aR7";
+			var positions = [];
     
-                text = text.toUpperCase();
-                let combinations =  text.match(/A?[A-Z][1-9]?[0-9]/gi);
-                let floats =  text.match(/(\*|\/|\+|\-|\s|\(|^){1}[0-9]+\.?[0-9]?/gi); // цифры 
+			text = text.toUpperCase();
+			let combinations =  text.match(/A?[A-Z][1-9]?[0-9]/gi);
+			let floats =  text.match(/(\*|\/|\+|\-|\s|\(|^){1}[0-9]+\.?[0-9]?/gi); // цифры 
     
-                if(combinations === null) combinations = [];
-                if(floats === null) floats = [];
-                // find multipliers
-                var multiply = [];
-                for(var i=0; i<text.length;i++) {
-                    if (text[i] === "*") {
-                        multiply.push(i);
-                        positions.push({
-                            text: '*',
-                            index: i,
-                            type: 'action'
-                        });
-                    }
-                }
+			if(combinations === null) combinations = [];
+			if(floats === null) floats = [];
+			// find multipliers
+			var multiply = [];
+			for(var i=0; i<text.length;i++) {
+				if (text[i] === '*') {
+					multiply.push(i);
+					positions.push({
+						text: '*',
+						index: i,
+						type: 'action'
+					});
+				}
+			}
     
-                // find additions
-                var addition = [];
-                for(var i=0; i<text.length;i++) {
-                    if (text[i] === "+") {
-                        addition.push(i);
-                        positions.push({
-                            text: '+',
-                            index: i,
-                            type: 'action'
-                        });
-                    }
-                }
+			// find additions
+			var addition = [];
+			for(var i=0; i<text.length;i++) {
+				if (text[i] === '+') {
+					addition.push(i);
+					positions.push({
+						text: '+',
+						index: i,
+						type: 'action'
+					});
+				}
+			}
     
-                // find substract
-                var substract = [];
-                for(var i=0; i<text.length;i++) {
-                    if (text[i] === "-" && i != 0) {
-                        substract.push(i);
-                        positions.push({
-                            text: '-',
-                            index: i,
-                            type: 'action'
-                        });
-                    }
-                }
+			// find substract
+			var substract = [];
+			for(var i=0; i<text.length;i++) {
+				if (text[i] === '-' && i != 0) {
+					substract.push(i);
+					positions.push({
+						text: '-',
+						index: i,
+						type: 'action'
+					});
+				}
+			}
     
-                // find dividers
-                var divider = [];
-                for(var i=0; i<text.length;i++) {
-                    if (text[i] === "/") {
-                        divider.push(i);
-                        positions.push({
-                            text: '/',
-                            index: i,
-                            type: 'action'
-                        });
-                    }
-                }
+			// find dividers
+			var divider = [];
+			for(var i=0; i<text.length;i++) {
+				if (text[i] === '/') {
+					divider.push(i);
+					positions.push({
+						text: '/',
+						index: i,
+						type: 'action'
+					});
+				}
+			}
     
-                // find parentheses
-                var parentheses = [];
-                for(var i=0; i<text.length;i++) {
-                    if (text[i] === "(" || text[i] === ")") {
-                        parentheses.push(i);
-                        positions.push({
-                            text: text[i],
-                            index: i,
-                            type: 'action'
-                        });
-                    }
-                }
+			// find parentheses
+			var parentheses = [];
+			for(var i=0; i<text.length;i++) {
+				if (text[i] === '(' || text[i] === ')') {
+					parentheses.push(i);
+					positions.push({
+						text: text[i],
+						index: i,
+						type: 'action'
+					});
+				}
+			}
                 
-                // cells
-                let last_pos = -1;
-                for(let i = 0;i<combinations.length;i++) {
-                    // TODO find value of field
-                    last_pos++;
-                    let s = this.searcher(combinations[i]);
+			// cells
+			let last_pos = -1;
+			for(let i = 0;i<combinations.length;i++) {
+				// TODO find value of field
+				last_pos++;
+				let s = this.searcher(combinations[i]);
                  
-                    last_pos = text.indexOf(combinations[i], last_pos),
-                    positions.push({
-                        text: combinations[i],
-                        index: last_pos, 
-                        type: s !== undefined && s.type == 'formula' ? 'formula' : 'cell',
-                        value: s !== undefined ?  s.value : 0,
-                        code: s !== undefined ?  '[' + s.column_id + ':'+ s.row_id + ']' : 0,
-                    });
-                }
+				last_pos = text.indexOf(combinations[i], last_pos),
+				positions.push({
+					text: combinations[i],
+					index: last_pos, 
+					type: s !== undefined && s.type == 'formula' ? 'formula' : 'cell',
+					value: s !== undefined ?  s.value : 0,
+					code: s !== undefined ?  '[' + s.column_id + ':'+ s.row_id + ']' : 0,
+				});
+			}
     
-                // just numbers in expression
-                let last_pos_floats = -1;
-                for(let i = 0;i<floats.length;i++) {
+			// just numbers in expression
+			let last_pos_floats = -1;
+			for(let i = 0;i<floats.length;i++) {
 
-                    last_pos_floats++;
+				last_pos_floats++;
 
-                    last_pos_floats = text.indexOf(floats[i], last_pos_floats);
+				last_pos_floats = text.indexOf(floats[i], last_pos_floats);
 
-                    let f_text = floats[i];
+				let f_text = floats[i];
 
-                    if(['*','/','+', '-', '('].includes(floats[i][0])) {
-                        last_pos_floats++;
-                        f_text = f_text.substr(1,f_text.length);
-                    }
+				if(['*','/','+', '-', '('].includes(floats[i][0])) {
+					last_pos_floats++;
+					f_text = f_text.substr(1,f_text.length);
+				}
 
-                    positions.push({
-                        text: f_text,
-                        index: last_pos_floats,
-                        type: 'value',
-                        value: Number(f_text)
-                    });
-                }
+				positions.push({
+					text: f_text,
+					index: last_pos_floats,
+					type: 'value',
+					value: Number(f_text)
+				});
+			}
     
-                // sort array
-                positions.sort(function(a, b) {
-                    if (a.index < b.index) return -1;
-                    if (a.index > b.index) return 1;
-                    return 0;
-                });
+			// sort array
+			positions.sort(function(a, b) {
+				if (a.index < b.index) return -1;
+				if (a.index > b.index) return 1;
+				return 0;
+			});
                
-                return positions;
-            },
+			return positions;
+		},
     
-            searcher(cell){
+		searcher(cell){
     
-                let res;
-                for (var i=0; i < this.items.length; i++) {
-                    Object.values(this.items[i]).forEach(item => {
-                        if(item.cell == cell) {
-                            res = item;
-                        }
-                    });
-                }
-                return res;
-            },
+			let res;
+			for (var i=0; i < this.items.length; i++) {
+				Object.values(this.items[i]).forEach(item => {
+					if(item.cell == cell) {
+						res = item;
+					}
+				});
+			}
+			return res;
+		},
     
-            formula_searcher(){
+		formula_searcher(){
     
-                let items = [];
-                for (var i=0; i < this.items.length; i++) {
-                    Object.values(this.items[i]).forEach(item => {
-                        if(item.type == 'formula') {
-                            items.push(item);
-                        }
-                    });
-                }
-                return items;
-            }
-        } 
-    }
-    </script>
+			let items = [];
+			for (var i=0; i < this.items.length; i++) {
+				Object.values(this.items[i]).forEach(item => {
+					if(item.type == 'formula') {
+						items.push(item);
+					}
+				});
+			}
+			return items;
+		}
+	} 
+}
+</script>
     
     <style scoped>
     .z-12 {

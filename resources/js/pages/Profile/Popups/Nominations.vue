@@ -201,128 +201,128 @@
 
 
 <script>
-    import {SpinnerPlugin} from 'bootstrap-vue';
-    import VuePdfEmbed from "vue-pdf-embed/dist/vue2-pdf-embed";
-    export default {
-        name: "PopupNominations",
-        components: {SpinnerPlugin, VuePdfEmbed},
-        props: {},
-        data: function () {
-            return {
-                tabIndex: 0,
-                loading: true,
-                modal: false,
-                itemModal: null,
-                fields: [],
-                awardTypes: null,
-                nominations: [],
-                certificates: [],
-                accrual: [],
-            };
-        },
-        filters: {
-            splitNumber: function (val) {
-                return val.toString().replace(/\B(?=(\d{3})+(?!\d))/g, " ");
-            }
-        },
-        watch: {
-            tabIndex(val) {
-                let buttons = this.$refs.tabis.$refs.buttons;
-                buttons[val].$refs.link.$el.scrollIntoView({inline: "end", behavior: "smooth"});
-            }
-        },
-        async mounted() {
-            await this.axios
-                .get('/awards/type?key=nomination')
-                .then(response => {
-                    if (response.data.data) {
-                        this.nominations = response.data.data;
-                    }
-                })
-                .catch(error => {
-                    console.log(error);
-                });
+import {SpinnerPlugin} from 'bootstrap-vue';
+import VuePdfEmbed from 'vue-pdf-embed/dist/vue2-pdf-embed';
+export default {
+	name: 'PopupNominations',
+	components: {SpinnerPlugin, VuePdfEmbed},
+	props: {},
+	data: function () {
+		return {
+			tabIndex: 0,
+			loading: true,
+			modal: false,
+			itemModal: null,
+			fields: [],
+			awardTypes: null,
+			nominations: [],
+			certificates: [],
+			accrual: [],
+		};
+	},
+	filters: {
+		splitNumber: function (val) {
+			return val.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ' ');
+		}
+	},
+	watch: {
+		tabIndex(val) {
+			let buttons = this.$refs.tabis.$refs.buttons;
+			buttons[val].$refs.link.$el.scrollIntoView({inline: 'end', behavior: 'smooth'});
+		}
+	},
+	async mounted() {
+		await this.axios
+			.get('/awards/type?key=nomination')
+			.then(response => {
+				if (response.data.data) {
+					this.nominations = response.data.data;
+				}
+			})
+			.catch(error => {
+				console.log(error);
+			});
 
-            await this.axios
-                .get('/awards/type?key=certificate')
-                .then(response => {
-                    this.certificates = response.data.data;
-                })
-                .catch(error => {
-                    console.log(error);
-                });
-            await this.axios
-                .get('/awards/type?key=accrual')
-                .then(response => {
-                    this.accrual = response.data.data;
-                })
-                .catch(error => {
-                    console.log(error);
-                });
-            this.loading = false;
-            if (this.nominations.length > 0) {
-                let text = this.nominations[0].description;
-                this.$emit('get-desc', text);
-                return true;
-            } else if (this.certificates.length > 0) {
-                let text = this.certificates[0].description;
-                this.$emit('get-desc', text);
-                return true;
-            } else if (this.accrual.length > 0) {
-                let text = this.accrual[0].description;
-                this.$emit('get-desc', text);
-                return true;
-            }
-        },
-        methods: {
-            activeteTab(text){
-                this.$emit('get-desc', text)
-            },
-            downloadImage(data) {
-                console.log(data);
-                var xhr = new XMLHttpRequest();
-                console.log(data);
-                xhr.open("GET", data.tempPath, true);
+		await this.axios
+			.get('/awards/type?key=certificate')
+			.then(response => {
+				this.certificates = response.data.data;
+			})
+			.catch(error => {
+				console.log(error);
+			});
+		await this.axios
+			.get('/awards/type?key=accrual')
+			.then(response => {
+				this.accrual = response.data.data;
+			})
+			.catch(error => {
+				console.log(error);
+			});
+		this.loading = false;
+		if (this.nominations.length > 0) {
+			let text = this.nominations[0].description;
+			this.$emit('get-desc', text);
+			return true;
+		} else if (this.certificates.length > 0) {
+			let text = this.certificates[0].description;
+			this.$emit('get-desc', text);
+			return true;
+		} else if (this.accrual.length > 0) {
+			let text = this.accrual[0].description;
+			this.$emit('get-desc', text);
+			return true;
+		}
+	},
+	methods: {
+		activeteTab(text){
+			this.$emit('get-desc', text)
+		},
+		downloadImage(data) {
+			console.log(data);
+			var xhr = new XMLHttpRequest();
+			console.log(data);
+			xhr.open('GET', data.tempPath, true);
 
-                xhr.responseType = "arraybuffer";
+			xhr.responseType = 'arraybuffer';
 
-                xhr.onload = function (e) {
-                    var arrayBufferView = new Uint8Array(this.response);
-                    let options = {};
-                    if (data.format === 'png') {
-                        options.type = 'image/png'
-                    }
-                    if (data.format === 'jpg') {
-                        options.type = 'image/jpeg'
-                    }
-                    if (data.format === 'pdf') {
-                        options.type = 'application/pdf'
-                    }
-                    var blob = new Blob([arrayBufferView], options);
-                    var imageUrl = window.URL.createObjectURL(blob);
-                    var a = document.createElement('a');
-                    a.href = imageUrl;
-                    a.download = `${data.awardName}-${data.award_id | data.id}.${data.format}`;
-                    document.body.appendChild(a);
-                    a.click();
-                    console.log(a);
-                    document.body.removeChild(a);
-                };
+			xhr.onload = function (e) {
+				var arrayBufferView = new Uint8Array(this.response);
+				let options = {};
+				if (data.format === 'png') {
+					options.type = 'image/png'
+				}
+				if (data.format === 'jpg') {
+					options.type = 'image/jpeg'
+				}
+				if (data.format === 'pdf') {
+					options.type = 'application/pdf'
+				}
+				var blob = new Blob([arrayBufferView], options);
+				var imageUrl = window.URL.createObjectURL(blob);
+				var a = document.createElement('a');
+				a.href = imageUrl;
+				a.download = `${data.awardName}-${data.award_id | data.id}.${data.format}`;
+				document.body.appendChild(a);
+				a.click();
+				console.log(a);
+				document.body.removeChild(a);
+			};
 
-                xhr.send();
-            },
-            modalShow(item, name, isMy) {
-                this.itemModal = item;
-                if(item.hasOwnProperty('course_name')){
-                    this.itemModal.awardName = item.course_name;
-                } else {
-                    this.itemModal.awardName = name;
-                }
-                this.itemModal.isMy = isMy;
-                this.modal = !this.modal;
-            },
-        }
-    };
+			xhr.send();
+		},
+		modalShow(item, name, isMy) {
+			this.itemModal = item;
+			if(item.hasOwnProperty('course_name')){
+				this.itemModal.awardName = item.course_name;
+			} else {
+				this.itemModal.awardName = name;
+			}
+			this.itemModal.isMy = isMy;
+			this.modal = !this.modal;
+		},
+	}
+};
 </script>
 
 

@@ -86,94 +86,94 @@
 </template>
 
 <script>
-    const base64Encode = (data) =>
-        new Promise((resolve, reject) => {
-            const reader = new FileReader();
-            reader.readAsDataURL(data);
-            reader.onload = () => resolve(reader.result);
-            reader.onerror = (error) => reject(error);
-        });
+const base64Encode = (data) =>
+	new Promise((resolve, reject) => {
+		const reader = new FileReader();
+		reader.readAsDataURL(data);
+		reader.onload = () => resolve(reader.result);
+		reader.onerror = (error) => reject(error);
+	});
 
-    import VuePdfEmbed from "vue-pdf-embed/dist/vue2-pdf-embed";
+import VuePdfEmbed from 'vue-pdf-embed/dist/vue2-pdf-embed';
 
-    export default {
-        name: "UploadFile",
-        components: {VuePdfEmbed},
-        props: {
-            awardsObj: {
-                type: Array,
-                default: []
-            }
-        },
-        data() {
-            return {
-                images: null,
-                imageSrc: [],
-                selectedModal: null,
-                modal: false,
-                awards: []
-            };
-        },
-        computed: {
-            hasImage() {
-                if (this.images) {
-                    return !!this.images;
-                }
-            },
-        },
-        mounted() {
-            this.awards = this.awardsObj;
-        },
-        watch: {
-            images(newValue) {
-                if (newValue) {
-                    this.imageSrc = [];
-                    newValue.forEach(item => {
-                        base64Encode(item)
-                            .then((base64) => {
-                                this.imageSrc.push({
-                                    path: base64,
-                                    format: item.type.split('/')[1]
-                                });
-                            })
-                            .catch(() => {
-                                this.imageSrc = [];
-                            });
-                    });
-                    this.$emit("image-download", this.images);
-                    console.log(this.imageSrc);
-                }
-            },
-        },
-        methods: {
-            formatNames(files) {
-                return files.length === 1 ? files[0].name : `Выбрано файлов - ${files.length}`
-            },
-            modalOpen(image) {
-                this.selectedModal = image;
-                this.modal = !this.modal;
-            },
-            async clearImage() {
-                this.images = null;
-                this.imageSrc = [];
-                this.$emit("image-download", this.images);
-            },
-            removeImage(id) {
-                let loader = this.$loading.show();
-                this.axios
-                    .delete('/awards/delete/' + id)
-                    .then(() => {
-                        this.$toast.success('Удалено');
-                        this.awards = this.awards.filter(n => n.id !== id);
-                        loader.hide();
-                    })
-                    .catch(error => {
-                        console.log(error);
-                        loader.hide();
-                    })
-            },
-        },
-    };
+export default {
+	name: 'UploadFile',
+	components: {VuePdfEmbed},
+	props: {
+		awardsObj: {
+			type: Array,
+			default: []
+		}
+	},
+	data() {
+		return {
+			images: null,
+			imageSrc: [],
+			selectedModal: null,
+			modal: false,
+			awards: []
+		};
+	},
+	computed: {
+		hasImage() {
+			if (this.images) {
+				return !!this.images;
+			}
+		},
+	},
+	mounted() {
+		this.awards = this.awardsObj;
+	},
+	watch: {
+		images(newValue) {
+			if (newValue) {
+				this.imageSrc = [];
+				newValue.forEach(item => {
+					base64Encode(item)
+						.then((base64) => {
+							this.imageSrc.push({
+								path: base64,
+								format: item.type.split('/')[1]
+							});
+						})
+						.catch(() => {
+							this.imageSrc = [];
+						});
+				});
+				this.$emit('image-download', this.images);
+				console.log(this.imageSrc);
+			}
+		},
+	},
+	methods: {
+		formatNames(files) {
+			return files.length === 1 ? files[0].name : `Выбрано файлов - ${files.length}`
+		},
+		modalOpen(image) {
+			this.selectedModal = image;
+			this.modal = !this.modal;
+		},
+		async clearImage() {
+			this.images = null;
+			this.imageSrc = [];
+			this.$emit('image-download', this.images);
+		},
+		removeImage(id) {
+			let loader = this.$loading.show();
+			this.axios
+				.delete('/awards/delete/' + id)
+				.then(() => {
+					this.$toast.success('Удалено');
+					this.awards = this.awards.filter(n => n.id !== id);
+					loader.hide();
+				})
+				.catch(error => {
+					console.log(error);
+					loader.hide();
+				})
+		},
+	},
+};
 </script>
 
 <style lang="scss">
