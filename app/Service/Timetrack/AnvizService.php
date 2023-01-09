@@ -34,7 +34,6 @@ class AnvizService
     private function resolveOneDay() : void
     {
         $anvizRecords        = $this->anvizRecords();
-        dd($anvizRecords);
         $usersIds            = $this->getUserIds($anvizRecords);
         $timetrackingRecords = $this->timetrackingRecords($usersIds);
         
@@ -89,9 +88,11 @@ class AnvizService
 
     private function anvizRecords()
     {
-        return AnvizTime::orderBy('CheckTime', 'desc')
+        dump('Anviz records');
+        $records = AnvizTime::orderBy('CheckTime', 'desc')
                     ->whereDate('CheckTime', $this->date)
-                    ->get(); 
+                    ->get();
+        dd($records);
     }
 
     private function getUserIds($records = null) : array
