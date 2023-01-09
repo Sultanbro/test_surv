@@ -35,9 +35,8 @@ class AnvizService
     {
         $anvizRecords        = $this->anvizRecords();
         $usersIds            = $this->getUserIds($anvizRecords);
-        dd($usersIds);
         $timetrackingRecords = $this->timetrackingRecords($usersIds);
-        
+        dd($timetrackingRecords);
         foreach($usersIds as $user_id) {
            
             $user_records = $timetrackingRecords->where('user_id', $user_id);
