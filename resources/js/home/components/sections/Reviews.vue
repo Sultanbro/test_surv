@@ -272,7 +272,7 @@ export default {
   //background: #000;
 }
 
-jReviews-item-player-photos {
+.jReviews-item-player-photos {
   position: relative;
   background: #000;
 }

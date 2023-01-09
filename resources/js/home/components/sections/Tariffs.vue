@@ -6,7 +6,10 @@
         name="prices"
     />
     <div class="section-content">
-      <h2 class="jTariffs-header jHeader">{{ $lang(lang, 'prices-header') }}</h2>
+      <div class="jTariffs-header-wrapper jTariffs-header">
+        <h2 class="jTariffs-header jHeader">{{ $lang(lang, 'prices-header') }}</h2>
+        <TariffsValute @selected="getSelectedValute"/>
+      </div>
       <div class="jTariffs-content">
         <table
             v-if="isMedium"
@@ -86,34 +89,53 @@
 
 <script>
 import axios from "axios";
+import TariffsValute from '../tariffs/TariffsValute'
+
 export default {
+  components: {
+    TariffsValute
+  },
   computed: {
     lang() {
       return this.$root.$data.lang
     },
     table() {
-      return this.$lang(this.lang, 'prices-table').map((item, index) => {
-        if (index >= 12 && index <= 13) {
-          return item.map((item, index) => {
+      return this.$lang(this.lang, 'prices-table').map((row, rowIndex) => {
+        if (rowIndex >= 12 && rowIndex <= 13) {
+          return row.map((item, index) => {
             if (index >= 2 && index <= 4) {
-              if (this.lang === 'en') {
-                return `${this.separateThousands(Math.round(Number(item) / this.usdRate))} $`
-              } if (this.lang === 'kz') {
-                return `${this.separateThousands(Math.round(Number(item) * (100 / this.kztRate)))} ₸`
+              const tariffItem = item.split(" ").join("");
+              if (this.selectedValute === "$") {
+                return `${this.separateThousands(
+                    Math.round(
+                        Number(tariffItem.slice(0, tariffItem.length - 1)) / this.usdRate
+                    )
+                )} $`;
               }
-              return `${this.separateThousands(item)} ₽`
+              if (this.selectedValute === "₸") {
+                return `${this.separateThousands(
+                    Math.round(
+                        Number(tariffItem.slice(0, tariffItem.length - 1)) *
+                        (100 / this.kztRate)
+                    )
+                )} ₸`;
+              }
+              return item;
             } else {
-              return item
+              return item;
             }
-          })
+          });
         } else {
-          return item
+          return row;
         }
-      })
+      });
+    },
+    tableOutput() {
+      console.log(this.table, 'table')
     },
     isMedium() {
       return this.$viewportSize.width >= 1260
-    },
+    }
   },
   methods: {
     async USD() {
@@ -124,6 +146,9 @@ export default {
     separateThousands(number) {
       const num = number.toString();
       return num.replace(/(\d{1,3}(?=(?:\d\d\d)+(?!\d)))/g, "$1" + ' ');
+    },
+    getSelectedValute(selectedValute) {
+      this.selectedValute = selectedValute
     }
   },
   data() {
@@ -131,7 +156,8 @@ export default {
       activeCol: -1,
       image: require('../../assets/img/tariffs.png').default,
       usdRate: 0,
-      kztRate: 0
+      kztRate: 0,
+      selectedValute: ''
 
     }
   },
@@ -156,6 +182,16 @@ export default {
 }
 
 .jTariffs-header {
+  margin-right: 1rem;
+}
+
+.jTariffs-content {
+  overflow-x: auto;
+}
+
+.jTariffs-header-wrapper {
+  display: flex;
+  align-items: center;
   width: fit-content;
   margin-left: auto;
   margin-right: auto;
@@ -173,10 +209,6 @@ export default {
     left: -5rem;
     background-image: url("../../assets/img/s2-bg.svg");
   }
-}
-
-.jTariffs-content {
-  overflow-x: auto;
 }
 
 .jTariffs-image-wrap {
