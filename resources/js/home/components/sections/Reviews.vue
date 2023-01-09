@@ -269,7 +269,7 @@ export default {
 .jReviews-item-player {
   position: relative;
   padding-top: 56.25%;
-  background: #000;
+  //background: #000;
 }
 
 jReviews-item-player-photos {
@@ -283,6 +283,7 @@ jReviews-item-player-photos {
   position: absolute;
   top: 0;
   left: 0;
+  border-radius: 10px;
 }
 
 // .jReviews-item-full {
@@ -290,6 +291,7 @@ jReviews-item-player-photos {
 
 .jReviews-item-image {
   width: 100%;
+  border-radius: 10px;
 }
 
 .jReviews-item-thumbnails {
@@ -324,6 +326,10 @@ jReviews-item-player-photos {
 }
 
 @media (max-width: 500px) {
+  #jReviews {
+    min-height: 663px;
+  }
+
   .jReviews-types {
     display: flex;
     justify-content: space-around;
@@ -345,6 +351,7 @@ jReviews-item-player-photos {
 
 @media screen and (min-width: $medium) {
   #jReviews {
+    min-height: 690px;
     padding-bottom: 15rem;
   }
   .jReviews-types {
@@ -415,5 +422,9 @@ jReviews-item-player-photos {
     bottom: -86px;
     transform: scale(2);
   }
+}
+
+.hooper-list {
+  border-radius: 10px;
 }
 </style>

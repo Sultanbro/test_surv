@@ -85,6 +85,17 @@ export default {
     font-weight: 400;
     font-size: 1rem;
     line-height: 1.875rem;
+
+  &:before {
+    content: '';
+    display: inline-block;
+    width: 0.5rem;
+    height: 0.75rem;
+    margin-right: 0.5625rem;
+    transform: matrix(0.83, 0.56, 0.56, -0.83, 0, 0);
+    background-image: url("../../assets/img/s1-dot.svg");
+    background-size: cover;
+  }
 }
 @media screen and (min-width: $medium) {
     .Section1Popup{

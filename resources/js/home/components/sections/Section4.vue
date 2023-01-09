@@ -64,11 +64,11 @@
         <div class="jSec4-form-inputs">
           <InputText
               v-model="name"
-              :label="$lang(lang, 's4-name')"
+              :placeholder="$lang(lang, 's4-name')"
           />
           <InputText
               v-model="phone"
-              :label="$lang(lang, 's4-phone')"
+              :placeholder="$lang(lang, 's4-phone')"
           />
         </div>
         <button
@@ -195,7 +195,7 @@ export default {
   width: fit-content;
   margin-left: auto;
   margin-right: auto;
-  margin-bottom: 5rem;
+  margin-bottom: 3rem;
   position: relative;
 
   &:before {

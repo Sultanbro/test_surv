@@ -1,5 +1,10 @@
 <template>
   <section id="jSec3">
+    <a
+        name="features"
+        id="features"
+        class="ancor"
+    />
     <div class="section-content">
       <h2 class="jSec3-header jHeader">{{ $lang(lang, 's3-header') }}</h2>
       <p class="jSec3-subheader">{{ $lang(lang, 's3-subheader') }}</p>
@@ -83,6 +88,12 @@ export default {
   width: 100%;
   padding-bottom: 3rem;
   margin-top: 5rem;
+}
+
+@media (max-width: $small) {
+  #jSec3 {
+    padding-bottom: 0;
+  }
 }
 
 .jSec3-header {

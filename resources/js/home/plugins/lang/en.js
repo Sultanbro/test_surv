@@ -117,9 +117,9 @@ export default {
     ['The structure of the company', '+', '+', '+', '+'],
     ['Support', '+', '+', '+', '+'],
     ['Client\'s individual domain', '-', '+', '+', '+'],
-    ['Payment per month', '', '9000', '27000', '100000'],
-    ['Payment per year', '', '108000', '259200', '960000'],
-    ['Discount', '', '', '20%', '20%']
+    ['Payment per month', '0', '1200', '3850', '14250'],
+    ['Payment per year', '0', '15500', '37000', '137000'],
+    ['Discount', '0', '0', '20%', '20%']
   ],
 
   'prices-register': 'Register',

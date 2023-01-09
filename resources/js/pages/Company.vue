@@ -64,9 +64,9 @@
 </template>
 
 <script>
-    const Professions = () => import(/* webpackChunkName: "ProfessionsPage" */ '@/pages/professions.vue')
-    const Groups = () => import(/* webpackChunkName: "GroupsPage" */ '@/pages/groups.vue')
-    const Shifts = () => import(/* webpackChunkName: "GroupsPage" */ '@/pages/shifts.vue')
+    import Professions from '@/pages/professions.vue';
+    import Groups from '@/pages/groups.vue';
+    import Shifts from '@/pages/shifts.vue';
     import {useAsyncPageData} from '@/composables/asyncPageData'
 
     export default {

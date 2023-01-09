@@ -215,43 +215,34 @@ export default {
     },
 
     async savePosition() {
-          if(this.new_position.length){
-              await axios.post('/timetracking/settings/positions/add-new', {
-                  position: this.new_position,
-              }).then(response => {
-                  const data = response.data.data;
-                  if(response.data.code == 201) {
-                      this.$toast.error('Должность с таким названием уже существует!');
-                  } else {
-                      const resObj = {
-                          id: data.id,
-                          position: data.position
-                      }
-                      this.position_id = data.id;
-                      this.new_position = data.position;
-                      this.data.push(resObj)
-                  }
-              }).catch(error => {
-                  console.log(error.response)
-              })
+        try{
+            if(!this.new_position.length) return this.$toast.error('Введите нзвание должности!');
+            const responseAdd = await axios.post('/timetracking/settings/positions/add-new', {position: this.new_position});
+            if(responseAdd.data.code === 201) return this.$toast.error('Должность с таким названием уже существует!');
+            const data = responseAdd.data.data;
+            const dataPush = {
+                id: data.id,
+                position: data.position
+            };
+            this.position_id = data.id;
+            this.new_position = data.position;
 
-              console.log(typeof this.desc.time);
+            this.activebtn = dataPush;
+            this.data.push(dataPush);
 
-              await axios.post('/timetracking/settings/positions/save-new', {
-                  id: this.activebtn.id,
-                  new_name: this.new_position,
-                  indexation: this.indexation,
-                  sum: this.sum,
-                  desc: this.desc,
-              }).then(response => {
-                  console.log(response.data);
-                  this.$toast.success('Новая должность создана!');
-              }).catch(error => {
-                  console.log(error.response)
-              })
-          } else {
-              this.$toast.error('Введите нзвание должности!');
-          }
+            const responseSave = await axios.post('/timetracking/settings/positions/save-new', {
+                id: this.activebtn.id,
+                new_name: this.new_position,
+                indexation: this.indexation,
+                sum: this.sum,
+                desc: this.desc,
+            });
+            if(responseSave.data.status !== 200) return this.$toast.error('Упс! Что-то пошло не так');
+            this.$toast.success('Новая должность создана!');
+        }
+        catch(error){
+            console.error(error.message);
+        }
     },
     deletePosition() {
          if (confirm('Вы уверены что хотите удалить должность?')) {

@@ -3,17 +3,16 @@
     <input
       type="text"
       class="input-text-input"
-      placeholder=""
+      :placeholder="placeholder"
       v-model="localValue"
     >
-    <span class="input-text-label">{{ label }}</span>
   </label>
 </template>
 
 <script>
 export default {
   props: {
-    label: String,
+    placeholder: String,
     value: String
   },
   data(){
