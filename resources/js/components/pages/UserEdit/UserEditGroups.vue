@@ -1,6 +1,11 @@
 <script>
+import ProfileGroups from '@/components/profile/ProfileGroups' // настройки user
+
 export default {
     name: 'UserEditGroups',
+    components: {
+        ProfileGroups,
+    },
     props: {
         user: {
             type: Object,
@@ -23,7 +28,7 @@ export default {
         class="mb-3 xfade none-block"
     >
         <h5 class="mt-4">Группы</h5>
-        <profile-groups
+        <ProfileGroups
             v-if="user"
             :groups="groups"
             :user_id="user.id"

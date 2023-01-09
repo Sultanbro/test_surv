@@ -1,10 +1,12 @@
 <template>
     <div>
-        <div :class="'news-item ' + ((showComments == true || showFiles == true) ? 'news-item--with-comments' : '')"
-             v-observe-visibility="{
-                    callback: viewsChanged,
-                    once: true,
-                }">
+        <div
+            :class="'news-item ' + ((showComments == true || showFiles == true) ? 'news-item--with-comments' : '')"
+            v-observe-visibility="{
+                callback: viewsChanged,
+                once: true,
+            }"
+        >
             <div class="news-item__header">
                 <div class="news-item__info">
                     <img class="news-item__avatar" :src="currentPost.author ? currentPost.author.avatar : null">
@@ -106,11 +108,13 @@
                     <span class="news-item__footer-count">{{ currentPost.views_count }}</span>
                 </div>
             </div>
-            <comments-component
+            <CommentsComponent
+                v-show="showComments"
                 @changeCommentsCount="changeCommentsCount"
                 :me="me"
                 @send="getData"
-                v-show="showComments" ref="comments"/>
+                ref="comments"
+            />
         </div>
 
         <div v-show="showFiles" class="news-file-preview">
@@ -135,9 +139,13 @@
 </template>
 
 <script>
+import CommentsComponent from '@/pages/News/CommentsComponent'
 
 export default {
-    name: "PostComponent",
+    name: 'PostComponent',
+    components: {
+        CommentsComponent,
+    },
     props: {
         post: {
             required: true

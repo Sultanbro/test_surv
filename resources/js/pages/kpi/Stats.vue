@@ -2,56 +2,57 @@
 <div class="stats px-3 py-1">
     <!-- top line -->
     <div class="d-flex my-4 jcsb aifs">
-        
+
          <div class="d-flex aic mr-2">
             <div class="d-flex aic mr-2">
                 <span>Показывать:</span>
                 <input type="number" min="1" max="100" v-model="pageSize" class="form-control ml-2 input-sm" />
             </div>
-            <super-filter
+            <SuperFilter
                 ref="child"
                 :groups="groups"
                 @apply="fetchData"
             />
-            <span class="ml-2" v-if="items"> 
+            <span class="ml-2" v-if="items">
                 Найдено: {{ items.length }}
             </span>
-            <span class="ml-2" v-else> 
+            <span class="ml-2" v-else>
                 Найдено: 0
             </span>
         </div>
 
     </div>
-    
+
     <!-- table -->
-    <t-stats 
+    <StatsTable
+        v-if="s_type_main == 1"
         :activities="activities"
         :groups="groups"
         :items="page_items"
         :editable="true"
         :searchText="searchText"
         :date="date"
-        v-if="s_type_main == 1"
     />
 
-    <t-stats-bonus
+    <StatsTableBonus
+        v-if="s_type_main == 2"
         :groups="bonus_groups"
         :group_names="groups"
         :month="month"
-        v-if="s_type_main == 2"
         :key="bonus_groups"
     />
 
-    <t-stats-quartal
+    <StatsTableQuartal
+        v-if="s_type_main == 3"
         :users="quartal_users"
         :groups="quartal_groups"
         :key="quartal_users"
         :searchText="searchText"
-        v-if="s_type_main == 3"
     />
 
     <!-- pagination -->
-    <jw-pagination
+    <JwPagination
+        v-if="s_type_main == 1"
         class="mt-3"
         :key="paginationKey"
         :items="items"
@@ -63,21 +64,30 @@
         }"
         @changePage="onChangePage"
         :pageSize="+pageSize"
-        v-if="s_type_main == 1"
     />
 
 </div>
 </template>
 
-<script> 
+<script>
+import JwPagination from 'jw-vue-pagination'
+import SuperFilter from '@/pages/kpi/SuperFilter' // filter like bitrix
+import StatsTable from '@/pages/kpi/StatsTable'
+import StatsTableBonus from '@/pages/kpi/StatsTableBonus'
+import StatsTableQuartal from '@/pages/kpi/StatsTableQuartal'
+
 import {formatDate} from "./kpis.js";
 
 export default {
-    name: "Stats", 
-    props: {
-
+    name: 'Stats',
+    components: {
+        JwPagination,
+        SuperFilter,
+        StatsTable,
+        StatsTableBonus,
+        StatsTableQuartal,
     },
-    
+    props: {},
     watch: {
         pageSize: {
             handler: function(val) {
@@ -85,7 +95,7 @@ export default {
                     val = 1;
                     return;
                 }
-                
+
                 if(val > 100) {
                     val = 100;
                     return;
@@ -128,11 +138,11 @@ export default {
         );
     },
     methods: {
-        
+
         onChangePage(page_items) {
             this.page_items = page_items;
         },
- 
+
         fetchData(filters) {
             let loader = this.$loading.show();
             this.s_type_main = filters.data_from ? filters.data_from.s_type : 1;
@@ -140,7 +150,7 @@ export default {
 
             if(this.s_type_main == 1){
                 axios.post('/statistics/kpi', {
-                    filters: filters 
+                    filters: filters
                 }).then(response => {
                     // items
                     this.items = response.data.items;
@@ -150,10 +160,10 @@ export default {
                     // paginate
                     this.page_items = this.items.slice(0, this.pageSize);
 
-                    this.date = filters.data_from != undefined 
+                    this.date = filters.data_from != undefined
                         ? new Date(filters.data_from.year, filters.data_from.month, 1).toISOString().substr(0, 10)
                         : new Date().toISOString().substr(0, 10);
-                        
+
                     loader.hide()
                 }).catch(error => {
                     loader.hide()
@@ -180,7 +190,7 @@ export default {
                 });
             }else if(this.s_type_main == 3){
                 axios.get('/statistics/quartal-premiums').then(response => {
-                    
+
                     //this.quartal_items = response.data;
                     this.quartal_users = response.data[0].map(res=> ({...res, expanded: false}));
                     this.quartal_groups = response.data[1].map(res=> ({...res, expanded: false}));
@@ -193,9 +203,9 @@ export default {
             }else{
                 loader.hide();
                 alert('error!');
-            }          
+            }
         },
 
-    } 
+    }
 }
 </script>

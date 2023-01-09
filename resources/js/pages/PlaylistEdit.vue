@@ -2,7 +2,7 @@
   <div class="video-playlist">
 
     <!-- Header -->
-   
+
     <div class="d-flex mb-3"  v-if="!is_course">
       <div class="d-flex jcsb mb-1 left f-70">
         <div class="s w-full">
@@ -44,10 +44,10 @@
               ref="edit_img"
               v-model="file_img"
               :state="Boolean(file_img)"
-              placeholder="Выберите или перетащите файл сюда..." 
+              placeholder="Выберите или перетащите файл сюда..."
               drop-placeholder="Перетащите файл сюда..."
               class="mt-3"
-              ></b-form-file> 
+              ></b-form-file>
         </div>
     </div>
 
@@ -56,8 +56,12 @@
       <!-- Player and test questions -->
       <div class="col-lg-6 pr-0">
         <div class="block  br" v-if="activeVideo != null">
-            <v-player :src="activeVideoLink" :key="video_changed" :autoplay="course_item_id != 0" />
-           
+            <VideoPlayerItem
+              :src="activeVideoLink"
+              :key="video_changed"
+              :autoplay="course_item_id != 0"
+            />
+
             <div class="row mb-2 mt-3">
               <div class="col-md-12">
                 <input
@@ -77,9 +81,9 @@
               </div>
             </div>
 
- 
+
             <div class="vid mt-3">
-                <questions 
+                <Questions
                     v-if="activeVideo.questions.length > 0 && mode != 'edit'"
                     :questions="activeVideo.questions"
                     :course_item_id="course_item_id"
@@ -91,21 +95,21 @@
                     @passed="passedTest()"
                     :mode="mode"
                     @nextElement="nextElement"
-                    />
+                />
                 <!-- v-if="(activeVideo.questions.length == 0 || activeVideo.item_model != null) && mode == 'read'" -->
                 <button class="next-btn btn btn-primary" v-if="activeVideo.questions.length == 0 && mode == 'read'"
                   @click="nextElement()">
                   Следующее видео
                   <i class="fa fa-angle-double-right ml-2"></i>
                 </button>
-                     
+
             </div>
         </div>
       </div>
 
       <!-- nav accordion -->
       <div class="col-lg-6">
-        <video-accordion 
+        <VideoAccordion
           ref="accordion"
           :groups="playlist.groups"
           :playlist_id="playlist.id"
@@ -117,12 +121,12 @@
           @showTests="showTests"
           @order-changed="formMap"
           />
-          
+
       </div>
     </div>
 
     <!-- edit tests -->
-    <sidebar
+    <Sidebar
       title="Редактировать вопросы к видео"
       :open="show_tests && activeVideo != null"
       @close="show_tests = false"
@@ -139,8 +143,8 @@
           </div>
         </div>
 
-        
-        <questions 
+
+        <Questions
           :questions="activeVideo.questions"
           :id="activeVideo.id"
           :pass_grade="activeVideo.pass_grade"
@@ -148,18 +152,28 @@
           :key="refreshTest"
           @changePassGrade="changePassGrade"
           :mode="'edit'"
-          />
+        />
       </div>
-    </sidebar>
-   
+    </Sidebar>
+
   </div>
 </template>
 
 <script>
+import Sidebar from '@/components/ui/Sidebar' // сайдбар table
+import VideoPlayerItem from '@/components/VideoPlayerItem' // плеер
+import Questions from '@/pages/Questions' // вопросы тестов
+import VideoAccordion from '@/components/VideoAccordion'
 
 import 'videojs-hotkeys'
 export default {
-  name: "PlaylistEdit",
+  name: 'PlaylistEdit',
+  components: {
+    Sidebar,
+    VideoPlayerItem,
+    Questions,
+    VideoAccordion,
+  },
   props: {
     token: String,
     id: Number,
@@ -182,7 +196,7 @@ export default {
       default: 0
     },
   },
-  
+
   data() {
     return {
       ids: [],
@@ -206,12 +220,12 @@ export default {
       },
       show_tests: false, // sidebar
       mylink: window.location.protocol + "//" + window.location.host + window.location.pathname.substring(0,16)
-        
+
     };
   },
 
   watch: {
-  
+
   },
 
   created() {
@@ -220,7 +234,7 @@ export default {
 
   mounted() {},
 
-  methods: { 
+  methods: {
 
     passedTest() {
       // if(this.activeVideo.item_model == null) {
@@ -228,13 +242,13 @@ export default {
       // }
 
       let i = this.item_models.findIndex(im => im.item_id == this.activeVideo.id);
-      if(i == -1) this.item_models.push({ 
+      if(i == -1) this.item_models.push({
         item_id: this.activeVideo.id,
         status: 1
       });
-      
+
       this.connectItemModels(this.playlist.groups)
-     
+
       ////
 
         //this.nextElement()
@@ -250,24 +264,24 @@ export default {
       this.scrollToTop();
 
       if(this.activeVideo.item_model == null) {
-        this.setVideoPassed() 
+        this.setVideoPassed()
       }
 
-      /// 
-      
+      ///
+
       let i = this.item_models.findIndex(im => im.item_id == this.activeVideo.id);
       if(i == -1) this.item_models.push({
         item_id: this.activeVideo.id,
         status: 1
       });
-      
+
       this.connectItemModels(this.playlist.groups)
-      
+
       ////
-      
-      let index = this.ids.findIndex(el => el.id == this.activeVideo.id); 
- 
-      // find next element 
+
+      let index = this.ids.findIndex(el => el.id == this.activeVideo.id);
+
+      // find next element
       if(index != -1 && this.ids.length - 1 > index) {
 
         this.showVideo({
@@ -282,14 +296,14 @@ export default {
 
     setVideoPassed() {
 
-      // find element 
+      // find element
 
       let el = null;
 
       let index = this.ids.findIndex(el => el.id == this.activeVideo.id);
       if(index != -1) {
         el = this.findItem(this.ids[index]);
-       // if(el.item_model != null) return; 
+       // if(el.item_model != null) return;
       }
 
       // pass
@@ -324,7 +338,7 @@ export default {
     },
 
     removeVideo(v_index) {
-      if(!confirm('Вы уверены?')) return; 
+      if(!confirm('Вы уверены?')) return;
       let video = this.playlist.videos[v_index];
 
       axios
@@ -343,11 +357,11 @@ export default {
     openControlsMenu(video) {
       video.show_controls = true;
     },
-    
+
     selectedGroup() {
-      return this.modals.upload.children_index == -1 
+      return this.modals.upload.children_index == -1
         ? this.playlist.groups[this.modals.upload.group_index]
-        : this.playlist.groups[this.modals.upload.group_index].children[this.modals.upload.children_index] 
+        : this.playlist.groups[this.modals.upload.group_index].children[this.modals.upload.children_index]
     },
 
     findLocation(id) {
@@ -367,8 +381,8 @@ export default {
     addGroup() {
       this.$refs.accordion.addGroup(-1)
     },
-        
-        
+
+
     deleteGroup(id) {
 
       let loc = this.findLocation(id);
@@ -407,7 +421,7 @@ export default {
             let video = this.findItem(this.ids[i]);
             video.title = this.activeVideo.title;
           }
-        
+
 
           this.$toast.success("Сохранено");
         })
@@ -465,7 +479,7 @@ export default {
 
            this.activeVideo = response.data.video;
              this.activeVideoLink = this.activeVideo.links;
-         
+
             this.refreshTest++
 
             this.setActiveGroup();
@@ -488,11 +502,11 @@ export default {
         } else {
             console.warn('History API не поддерживает ваш браузер');
         }
-      } 
-     
+      }
+
 
     },
-  
+
     showTests(video, input_focus = false) {
       const NO_AUTOPLAY = false;
       this.showVideo(video, NO_AUTOPLAY);
@@ -502,7 +516,7 @@ export default {
 
     moveTo(video) {
       this.$toast.info('Переместить: ' + video.title);
-    }, 
+    },
 
     fetchData() {
       axios
@@ -513,20 +527,20 @@ export default {
         .then((response) => {
           this.playlist = response.data.playlist;
           this.item_models = response.data.item_models;
-          
-          
+
+
           this.formMap();
-                
+
           this.connectItemModels(this.playlist.groups);
-                     
+
           this.setActiveVideo();
 
         })
         .catch((error) => {
           alert(error);
         });
-    },  
-    
+    },
+
     connectItemModels(groups) {
       groups.forEach((el, e) => {
 
@@ -540,15 +554,15 @@ export default {
           }
         });
 
-        
+
         if(el.children !== undefined) {
           this.connectItemModels(el.children)
         }
-        
+
       });
 
-    
-    
+
+
     },
 
     changePassGrade(grade) {
@@ -559,7 +573,7 @@ export default {
       if(grade < 1) this.activeVideo.pass_grade = 1;
     },
 
-    returnArray(items, indexes = []) { 
+    returnArray(items, indexes = []) {
       items.forEach((item, i_index) => {
 
         let arr = [...indexes, i_index];
@@ -583,26 +597,26 @@ export default {
     setActiveVideo() {
       if(this.myvideo > 0) {
 
-        // find element 
+        // find element
         let index = this.ids.findIndex(el => el.id == this.myvideo);
         if(index != -1) {
           this.activeVideo = this.findItem(this.ids[index]);
         }
 
-      } else if(this.playlist.groups.length > 0 && this.playlist.groups[0].videos.length > 0) { 
+      } else if(this.playlist.groups.length > 0 && this.playlist.groups[0].videos.length > 0) {
           // set active video
           this.activeVideo = this.playlist.groups[0].videos[0];
           this.activeVideoLink = this.activeVideo.links;
-         
+
       } else if(this.ids.length > 0) {
         this.activeVideo = this.findItem(this.ids[0]);
       } else {
         this.noVideoInPlaylist = true;
       }
-      
+
       this.showVideo(this.activeVideo);
-      
-    
+
+
     },
 
     findItem(el) {
@@ -619,13 +633,13 @@ export default {
           found = true;
           x = x.videos[el.i[i]]
         }
-      } 
+      }
 
       return found ? x : null;
     },
-    
+
     setActiveGroup() {
-      
+
       // close all
       this.playlist.groups.forEach(g=>{
         g.opened = false;
@@ -653,7 +667,7 @@ export default {
           l.opened = true;
 
         }
-       
+
       }
 
 
@@ -693,9 +707,9 @@ export default {
         .catch((error) => {
           alert(error);
         });
-      
+
     }
- 
+
   },
 };
 </script>

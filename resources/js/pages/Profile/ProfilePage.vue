@@ -1,14 +1,14 @@
 <template>
-<div id="page-profile" class="">
+<div id="page-profile">
     <div class="intro content">
-        <new-intro-top
+        <IntroTop
             :courses="intro['courses']"
             :profit="intro['profit']"
             :estimation="intro['estimation']"
             :indicators="intro['indicators']"
             :class="{ _active: anim.intro }"
         />
-        <new-intro-stats
+        <IntroStats
             @pop="pop"
             ref="intro"
             :class="{ _active: anim.intro }"
@@ -20,96 +20,117 @@
         ref="profileSidebar"
         :class="{ _active: anim.profileSidebar }"
     />
-    <new-courses
+    <Courses
         @init="intro['courses'] = true"
         ref="courses"
         :class="{ _active: anim.courses }"
     />
-    <new-profit
+    <Profit
         @init="intro['profit'] = true"
         ref="profit"
         :class="{ _active: anim.profit }"
     />
-    <new-trainee-estimation
+    <TraineeEstimation
         @init="intro['estimation'] = true"
         ref="estimation"
         :class="{ _active: anim.estimation }"
     />
-    <new-compare-indicators
+    <CompareIndicators
         @init="intro['indicators'] = true"
         ref="indicators"
         :class="{ _active: anim.indicators }"
     />
 
-    <popup v-if="popBalance"
+    <Popup
+        v-if="popBalance"
         title="Баланс оклада"
         desc="Заработанная сумма именно от окладной части"
         :open="popBalance"
         @close="popBalance=false"
-        :width="popupWidth">
-        <popup-balance/>
-    </popup>
+        :width="popupWidth"
+    >
+        <Balance/>
+    </Popup>
 
-    <popup v-if="popKpi"
+    <Popup
+        v-if="popKpi"
         title="Kpi"
         desc="Выполняя дополнительные активности, заработайте больше денег"
         :open="popKpi"
         @close="popKpi=false"
-        :width="popupWidth">
-        <popup-kpi/>
-    </popup>
+        :width="popupWidth"
+    >
+        <Kpi/>
+    </Popup>
 
-    <popup v-if="popBonuses"
+    <Popup
+        v-if="popBonuses"
         title="Бонусы"
         desc="Зарабатывайте бонусы, выполняя дополнительные активности"
         :open="popBonuses"
         @close="popBonuses=false"
-        :width="popupWidth">
-        <popup-bonuses/>
-    </popup>
+        :width="popupWidth"
+    >
+        <Bonuses/>
+    </Popup>
 
-    <popup v-if="popQuartalPremiums"
+    <Popup
+        v-if="popQuartalPremiums"
         title="Квартальные премии"
         desc=""
         :open="popQuartalPremiums"
         @close="popQuartalPremiums=false"
-        :width="popupWidth">
-        <popup-quartal/>
-    </popup>
+        :width="popupWidth"
+    >
+        <PopupQuartal/>
+    </Popup>
 
-    <popup v-if="popNominations"
+    <Popup
+        v-if="popNominations"
         title="Номинации"
         :desc="desc"
         :open="popNominations"
         @close="popNominations=false"
-        :width="popupWidth">
-        <popup-nominations @get-desc="getDesc"></popup-nominations>
-    </popup>
+        :width="popupWidth"
+    >
+        <Nominations @get-desc="getDesc"/>
+    </Popup>
 </div>
 </template>
 
 <script>
-import Vue from 'vue'
-import MobileProfileSidebar from '../Layouts/MobileProfileSidebar.vue'
-
-Vue.component('new-intro-stats', require('@/pages/Profile/IntroStats.vue').default);
-Vue.component('new-intro-smart-table', require('@/pages/Profile/IntroSmartTable.vue').default);
-Vue.component('new-intro-top', require('@/pages/Profile/IntroTop.vue').default);
-Vue.component('new-profit', require('@/pages/Profile/Profit.vue').default);
-Vue.component('new-courses', require('@/pages/Profile/Courses.vue').default);
-Vue.component('new-trainee-estimation', require('@/pages/Profile/TraineeEstimation.vue').default);
-Vue.component('new-compare-indicators', require('@/pages/Profile/CompareIndicators.vue').default);
-
-Vue.component('popup-quartal', require('@/pages/Profile/Popups/PopupQuartal.vue').default);
-Vue.component('popup-kpi', require('@/pages/Profile/Popups/Kpi.vue').default);
-Vue.component('popup-balance', require('@/pages/Profile/Popups/Balance.vue').default);
-Vue.component('popup-bonuses', require('@/pages/Profile/Popups/Bonuses.vue').default);
-Vue.component('popup-nominations', require('@/pages/Profile/Popups/Nominations.vue').default);
+import IntroTop from '@/pages/Profile/IntroTop.vue'
+import IntroStats from '@/pages/Profile/IntroStats.vue'
+// import IntroSmartTable from '@/pages/Profile/IntroSmartTable.vue'
+import MobileProfileSidebar from '@/pages/Layouts/MobileProfileSidebar.vue'
+import Courses from '@/pages/Profile/Courses.vue'
+import Profit from '@/pages/Profile/Profit.vue'
+import TraineeEstimation from '@/pages/Profile/TraineeEstimation.vue'
+import CompareIndicators from '@/pages/Profile/CompareIndicators.vue'
+import Popup from '@/pages/Layouts/Popup.vue'
+import Balance from '@/pages/Profile/Popups/Balance.vue'
+import Kpi from '@/pages/Profile/Popups/Kpi.vue'
+import Bonuses from '@/pages/Profile/Popups/Bonuses.vue'
+import PopupQuartal from '@/pages/Profile/Popups/PopupQuartal.vue'
+import Nominations from '@/pages/Profile/Popups/Nominations.vue'
 
 export default {
     name: 'ProfilePage',
     components: {
-        MobileProfileSidebar
+        IntroTop,
+        IntroStats,
+        // IntroSmartTable,
+        MobileProfileSidebar,
+        Courses,
+        Profit,
+        TraineeEstimation,
+        CompareIndicators,
+        Popup,
+        Balance,
+        Kpi,
+        Bonuses,
+        PopupQuartal,
+        Nominations,
     },
     props: {},
     data: function () {
@@ -175,7 +196,6 @@ export default {
                 this.intersectionObserver.observe(this.$refs.profit.$el)
                 this.intersectionObserver.observe(this.$refs.estimation.$el)
                 this.intersectionObserver.observe(this.$refs.indicators.$el)
-                console.warn('this.$refs.intro.$el', this.$refs.intro, this.$refs.intro.$el)
                 return
             }
             Object.keys(this.anim).forEach(key => {

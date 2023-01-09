@@ -90,7 +90,7 @@
 
 
               <div v-if="activePlaylist != null" class="">
-                <page-playlist-edit
+                <PlaylistEdit
                   ref="playlist"
                   @back="back"
                   :token="token"
@@ -201,7 +201,7 @@
     </b-modal>
 
      <!-- Редактировать плейлист -->
-     <sidebar
+     <Sidebar
         title="Редактировать плейлист"
         :open="showEditPlaylist"
         @close="showEditPlaylist = false"
@@ -263,11 +263,11 @@
           </button>
         </div>
       </div>
-    </sidebar>
+    </Sidebar>
 
 
     <!-- Настройки раздела -->
-    <sidebar
+    <Sidebar
       title="Настройки видеокурсов"
       :open="showSettings"
       @close="showSettings = false"
@@ -286,15 +286,21 @@
         <span>Сохранить</span>
       </button>
 
-    </sidebar>
+    </Sidebar>
 
 
   </div>
 </template>
 
 <script>
+import Sidebar from '@/components/ui/Sidebar' // сайдбар table
+const PlaylistEdit = () => import(/* webpackChunkName: "PlaylistEdit" */ '@/pages/PlaylistEdit') // редактирование плейлиста
 export default {
-  name: "Playlists",
+  name: 'Playlists',
+  components: {
+    Sidebar,
+    PlaylistEdit,
+  },
   props: {
     token: String,
     can_edit: {

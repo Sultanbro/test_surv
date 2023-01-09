@@ -1,6 +1,6 @@
 <template>
     <div class="video-player">
-         <video-player 
+        <videoPlayer
             class="vjs-custom-skin"
             ref="videoPlayer"
             :options="playerOptions"
@@ -8,13 +8,18 @@
             @play="onPlayerPlay"
             @pause="onPlayerPause"
             @ready="playerReadied"
-            @statechanged="playerStateChanged" />
-
+            @statechanged="playerStateChanged"
+        />
     </div>
 </template>
 
 <script>
+import { videoPlayer } from 'vue-video-player'
+
 export default {
+    components: {
+        videoPlayer,
+    },
     props: {
         src: {
             default: ''
@@ -43,7 +48,7 @@ export default {
                 userActions: {
                     hotkeys: true
                 }
-            }, 
+            },
         }
     },
 

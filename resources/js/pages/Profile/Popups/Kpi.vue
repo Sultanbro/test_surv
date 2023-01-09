@@ -103,7 +103,7 @@
                                                                     class="kpi__activities-outer"
                                                                 >
                                                                     <div class="table__wrapper__second">
-                                                                        <kpi-items
+                                                                        <KpiItems
                                                                             :my_sum="user.full_time == 1 ? wrap_item.completed_100 : wrap_item.completed_100 / 2"
                                                                             :kpi_id="user.id"
                                                                             :items="user.items"
@@ -150,9 +150,13 @@
 
 <script>
 import {kpi_fields} from "../../kpi/kpis.js";
+import KpiItems from '@/pages/kpi/KpiItems.vue'
 
 export default {
     name: "PopupKpi",
+    components: {
+        KpiItems,
+    },
     props: {},
     data: function () {
         return {
