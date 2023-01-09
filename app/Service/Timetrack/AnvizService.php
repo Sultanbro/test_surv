@@ -88,18 +88,16 @@ class AnvizService
 
     private function anvizRecords()
     {
-        dump('Anviz records');
-        $records = AnvizTime::orderBy('CheckTime', 'desc')
+        return AnvizTime::orderBy('CheckTime', 'desc')
                     ->whereDate('CheckTime', $this->date)
                     ->get();
-        dd($records);
     }
 
     private function getUserIds($records = null) : array
     {
         $users_array = [];
         foreach($records->unique('Userid') as $record) {
-            array_push($users_array, $record->Userid);
+            $users_array[] = $record->Userid;
         }
 
         return $users_array; // [1,2,3]
