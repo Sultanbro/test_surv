@@ -149,6 +149,12 @@ export default {
   margin-top: 5rem;
 }
 
+@media (max-width: $small) {
+  #jTariffs {
+    margin-top: 3rem;
+  }
+}
+
 .jTariffs-header {
   width: fit-content;
   margin-left: auto;

@@ -24,6 +24,7 @@
         /> -->
         <ul class="jNav-menu-items">
           <a
+              v-click-outside="hidePopup"
               :class="{'jNav-menu-lang-active': active}"
               class="jNav-menu-hamburger jButton"
               href="javascript:void(0)"
@@ -119,10 +120,17 @@
                     text="register"
                 />
                 <a
-                    :title="$lang(lang, 'auth')"
                     class="jNav-menu-user"
                     href="/login"
-                />
+                >
+                  <span class="classic">
+                    {{ $lang(lang, 'auth') }}
+                  </span>
+                </a>
+                <!--                <a-->
+                <!--                    class="jNav-menu-user-title jNav-menu-user-title-active"-->
+                <!--                    href="/login"-->
+                <!--                >{{ $lang(lang, 'auth') }}</a>-->
               </template>
             </span>
           </li>
@@ -187,6 +195,9 @@ export default {
           ? this.isScroll = true
           : this.isScroll = false
     },
+    hidePopup() {
+      if (this.active) this.active = false
+    }
   },
 
   mounted() {
@@ -218,12 +229,12 @@ export default {
 .jNav-content {
   display: flex;
   position: sticky;
-  top: 0;
+  top: 5px;
   justify-content: space-between;
   align-items: center;
   margin: 0 auto;
   width: 78.125rem;
-  height: 3.75rem;
+  height: 3rem;
   padding: 0 1rem;
 }
 
@@ -292,14 +303,14 @@ export default {
 
 
     &:before {
-      content: '';
+      content: "";
       width: 50%;
       height: 0.75rem;
       position: absolute;
       top: 50%;
       left: 50%;
       transform: translate(-50%, -45%);
-      background: repeating-linear-gradient(#fff, #fff 0.125rem, transparent 0.125rem, transparent 0.25rem);
+      background: repeating-linear-gradient(#fff, #fff 0.125rem, transparent 0.125rem, transparent 0.3rem);
     }
   }
 }
@@ -415,6 +426,51 @@ export default {
   position: relative;
   vertical-align: middle;
   background: #6f4f28 url("../../assets/img/user.svg") center center no-repeat;
+}
+
+.jNav-menu-user {
+  //border-bottom: 1px dotted #000000;
+  color: #000000;
+  outline: none;
+  text-decoration: none;
+  position: relative;
+}
+
+.jNav-menu-user span {
+  margin-left: -999em;
+  position: absolute;
+}
+
+.jNav-menu-user:hover span {
+  font-family: Calibri, Tahoma, Geneva, sans-serif;
+  position: absolute;
+  left: 1em;
+  top: 2em;
+  z-index: 99;
+  margin-left: 0;
+  width: 250px;
+}
+
+.jNav-menu-user:hover img {
+  border: 0;
+  margin: -10px 0 0 -55px;
+  float: left;
+  position: absolute;
+}
+
+.jNav-menu-user:hover em {
+  font-size: 1.2em;
+  font-weight: bold;
+  display: block;
+  padding: 0.2em 0 0.6em 0;
+}
+
+.classic {
+  padding: 0.6em 1em;
+}
+
+.jNav-menu-user:hover {
+  opacity: 0.8;
 }
 
 .jNav-menu-item-md {

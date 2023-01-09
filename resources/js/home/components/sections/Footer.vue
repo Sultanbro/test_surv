@@ -42,7 +42,7 @@
           <div class="jFooter-social">
             <a
                 class="jFooter-social-link jFooter-social-yt"
-                href="https://www.youtube.com/@businesspartner8793"
+                href="https://www.youtube.com/@adilkarimov8362"
                 target="_blank"
             />
             <a
