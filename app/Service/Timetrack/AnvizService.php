@@ -35,6 +35,7 @@ class AnvizService
     {
         $anvizRecords        = $this->anvizRecords();
         $usersIds            = $this->getUserIds($anvizRecords);
+        dd($usersIds);
         $timetrackingRecords = $this->timetrackingRecords($usersIds);
         
         foreach($usersIds as $user_id) {
@@ -88,9 +89,9 @@ class AnvizService
 
     private function anvizRecords()
     {
-        dd(AnvizTime::orderBy('CheckTime', 'desc')
+        return AnvizTime::orderBy('CheckTime', 'desc')
                     ->whereDate('CheckTime', $this->date)
-                    ->get());
+                    ->get();
     }
 
     private function getUserIds($records = null) : array
