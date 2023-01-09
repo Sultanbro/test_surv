@@ -88,9 +88,9 @@ class AnvizService
 
     private function anvizRecords()
     {
-        return AnvizTime::orderBy('CheckTime', 'desc')
+        dd(AnvizTime::orderBy('CheckTime', 'desc')
                     ->whereDate('CheckTime', $this->date)
-                    ->get();
+                    ->get());
     }
 
     private function getUserIds($records = null) : array
