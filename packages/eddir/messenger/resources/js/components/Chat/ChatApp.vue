@@ -97,11 +97,23 @@ body.messenger__open {
 }
 
 .messenger__wrapper {
-  width: 90vw;
-  height: 100vh;
+  /* width: 90vw;
+  height: 100vh; */
   position: fixed;
   right: 0;
   bottom: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.7);
+    top: 0;
+    left: 0;
+    z-index: 10000;
+    overflow-x: hidden;
+    overflow-y: auto;
+    display: flex;
+    opacity: 1;
+    visibility: visible;
+    transition: 0.2s;
 }
 
 .messenger__card-window {
