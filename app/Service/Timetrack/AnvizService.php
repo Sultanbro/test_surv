@@ -35,6 +35,7 @@ class AnvizService
     {
         $anvizRecords        = $this->anvizRecords();
         $usersIds            = $this->getUserIds($anvizRecords);
+        dump($usersIds);
         $timetrackingRecords = $this->timetrackingRecords($usersIds);
         dd($timetrackingRecords);
         foreach($usersIds as $user_id) {
