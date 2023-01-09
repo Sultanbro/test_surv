@@ -34,6 +34,7 @@ class AnvizService
     private function resolveOneDay() : void
     {
         $anvizRecords        = $this->anvizRecords();
+        dd($anvizRecords);
         $usersIds            = $this->getUserIds($anvizRecords);
         $timetrackingRecords = $this->timetrackingRecords($usersIds);
         
