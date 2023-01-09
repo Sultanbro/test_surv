@@ -25,7 +25,13 @@
 
       <b-tab title="Полезность" key="1" card>
         <div class="d-flex" style="margin-bottom: 350px">
-          <top-gauges :utility_items="utility" :editable="true" wrapper_class="  br-1" :key="ukey" page="top"/>
+          <TopGauges
+            :utility_items="utility"
+            :editable="true"
+            wrapper_class="  br-1"
+            :key="ukey"
+            page="top"
+          />
         </div>
       </b-tab>
 
@@ -34,7 +40,7 @@
         <div class="d-flex flex-wrap mb-5" :key="ukey">
           <div v-for="(gauge, g_index) in rentability" :key="gauge.name">
             <div @click="gauge.editable = !gauge.editable">
-              <v-gauge :value="gauge.value"
+              <VGauge :value="gauge.value"
                        unit="%"
                        :options="gauge.options"
                        :maxValue="Number(gauge.max_value)"
@@ -74,7 +80,10 @@
         </div>
 
 
-        <t-rentability :year="currentYear" :month="monthInfo.month"></t-rentability>
+        <TableRentability
+          :year="currentYear"
+          :month="monthInfo.month"
+        />
 
       </b-tab>
 
@@ -87,13 +96,13 @@
               <th v-for="(field, findex) in proceeds.fields" :key="findex"
                   class="t-name table-title"
                   :class="{
-                                                'w-295 b-table-sticky-column': findex == 0,
-                                                'w-125': findex == 1,
-                                                'w-80': findex == 2,
-                                                'w-60': findex == 3,
-                                                'text-center': findex != 0,
-                                                'text-left': findex == 0,
-                                            }">
+                      'w-295 b-table-sticky-column': findex == 0,
+                      'w-125': findex == 1,
+                      'w-80': findex == 2,
+                      'w-60': findex == 3,
+                      'text-center': findex != 0,
+                      'text-left': findex == 0,
+                  }">
 
 
                 <template v-if="['+/-'].includes(field)">
@@ -220,7 +229,10 @@
       </b-tab>
 
       <b-tab title="NPS" key="5" card>
-        <nps :activeuserid="activeuserid" :show_header="false"></nps>
+        <NPS
+          :activeuserid="+activeuserid"
+          :show_header="false"
+        />
       </b-tab>
 
 
@@ -232,88 +244,99 @@
 </template>
 
 <script>
+const VGauge = () => import(/* webpackChunkName: "TopGauges" */ 'vgauge')
+const TopGauges = () => import(/* webpackChunkName: "TopGauges" */ '@/components/TopGauges')  // TOП спидометры, есть и в аналитике
+import TableRentability from '@/components/tables/TableRentability' // ТОП рентабельность
+import NPS from '@/components/tables/NPS' // Оценка руководителей
 import { useYearOptions } from '../composables/yearOptions'
+
 export default {
-	name: 'Top',
-	props: ['data', 'activeuserid'],
-	data() {
-		return {
-			afterCreated: false,
-			rentability: [], // первая вкладка
-			utility: [], // вторая
-			proceeds: [], // третья
-			prognoz_groups: [], //
-			years: useYearOptions(),
-			currentYear: new Date().getFullYear(),
-			monthInfo: {
-				currentMonth: null,
-				monthEnd: 0,
-				workDays: 0,
-				weekDays: 0,
-				daysInMonth: 0,
-				month: new Date().getMonth() + 1
-			},
-			gaugeOptions: {
-				angle: 0,
-				staticLabels: {
-					font: '9px sans-serif', // Specifies font
-					labels: [0, 50, 80, 100, 120], // Print labels at these values
-					color: '#000000', // Optional: Label text color
-					fractionDigits: 0, // Optional: Numerical precision. 0=round off.
-				},
-				staticZones: [
-					{strokeStyle: '#F03E3E', min: 0, max: 49}, // Red
-					{strokeStyle: '#fd7e14', min: 50, max: 79}, // Orange
-					{strokeStyle: '#FFDD00', min: 80, max: 90}, // Yellow
-					{strokeStyle: '#30B32D', min: 91, max: 120}, // Green
-				],
-				pointer: {
-					length: 0.5, // // Relative to gauge radius
-					strokeWidth: 0.025, // The thickness
-					color: '#000000', // Fill color
-				},
-				limitMax: true,
-				limitMin: true,
-				lineWidth: 0.2,
-				radiusScale: 0.8,
-				colorStart: '#6FADCF',
-				generateGradient: true,
-				highDpiSupport: true,
-			},
-			ukey: 1
-		}
-	},
-	watch: {
-		data(){
-			this.init()
-		}
-	},
-	created() {
-		if(this.data){
-			this.init()
-		}
-	},
-	methods: {
-		init(){
-			this.utility = this.data.utility;
-			this.proceeds = this.data.proceeds;
-			this.prognoz_groups = this.data.prognoz_groups
-			this.setMonth()
-			this.fetchData()
-		},
-		showIcons(){
-			this.rentability = this.data.rentability;
-		},
-		setMonth() {
-			this.monthInfo.currentMonth = this.monthInfo.currentMonth ? this.monthInfo.currentMonth : this.$moment().format('MMMM')
-			this.monthInfo.month = this.monthInfo.currentMonth ? this.$moment(this.monthInfo.currentMonth, 'MMMM').format('M') : this.$moment().format('M')
-			let currentMonth = this.$moment(this.monthInfo.currentMonth, 'MMMM')
-			//Расчет выходных дней
-			this.monthInfo.monthEnd = currentMonth.endOf('month'); //Конец месяца
-			this.monthInfo.weekDays = currentMonth.weekdayCalc(currentMonth.startOf('month').toString(), currentMonth.endOf('month').toString(), [6]) //Колличество выходных
-			this.monthInfo.daysInMonth = new Date(2021, this.$moment(this.monthInfo.currentMonth, 'MMMM').format('M'), 0).getDate() //Колличество дней в месяце
-			this.monthInfo.workDays = this.monthInfo.daysInMonth - this.monthInfo.weekDays //Колличество рабочих дней
-		},
+  name: "Top",
+  components: {
+    TopGauges,
+    VGauge,
+    TableRentability,
+    NPS,
+  },
+  props: ['data', 'activeuserid'],
+  data() {
+    return {
+      afterCreated: false,
+      rentability: [], // первая вкладка
+      utility: [], // вторая
+      proceeds: [], // третья
+      prognoz_groups: [], //
+      years: useYearOptions(),
+      currentYear: new Date().getFullYear(),
+      monthInfo: {
+        currentMonth: null,
+        monthEnd: 0,
+        workDays: 0,
+        weekDays: 0,
+        daysInMonth: 0,
+        month: new Date().getMonth() + 1
+      },
+      gaugeOptions: {
+        angle: 0,
+        staticLabels: {
+          font: "9px sans-serif", // Specifies font
+          labels: [0, 50, 80, 100, 120], // Print labels at these values
+          color: "#000000", // Optional: Label text color
+          fractionDigits: 0, // Optional: Numerical precision. 0=round off.
+        },
+        staticZones: [
+          {strokeStyle: "#F03E3E", min: 0, max: 49}, // Red
+          {strokeStyle: "#fd7e14", min: 50, max: 79}, // Orange
+          {strokeStyle: "#FFDD00", min: 80, max: 90}, // Yellow
+          {strokeStyle: "#30B32D", min: 91, max: 120}, // Green
+        ],
+        pointer: {
+          length: 0.5, // // Relative to gauge radius
+          strokeWidth: 0.025, // The thickness
+          color: "#000000", // Fill color
+        },
+        limitMax: true,
+        limitMin: true,
+        lineWidth: 0.2,
+        radiusScale: 0.8,
+        colorStart: "#6FADCF",
+        generateGradient: true,
+        highDpiSupport: true,
+      },
+      ukey: 1
+    }
+  },
+  watch: {
+    data(){
+      this.init()
+    }
+  },
+  created() {
+    if(this.data){
+      this.init()
+    }
+  },
+  methods: {
+    init(){
+      this.utility = this.data.utility;
+      this.proceeds = this.data.proceeds;
+      this.prognoz_groups = this.data.prognoz_groups
+      this.setMonth()
+      this.fetchData()
+    },
+    showIcons(){
+      this.rentability = this.data.rentability;
+    },
+    setMonth() {
+      this.monthInfo.currentMonth = this.monthInfo.currentMonth ? this.monthInfo.currentMonth : this.$moment().format('MMMM')
+      this.monthInfo.month = this.monthInfo.currentMonth ? this.$moment(this.monthInfo.currentMonth, 'MMMM').format('M') : this.$moment().format('M')
+      let currentMonth = this.$moment(this.monthInfo.currentMonth, 'MMMM')
+      //Расчет выходных дней
+      this.monthInfo.monthEnd = currentMonth.endOf('month'); //Конец месяца
+      this.monthInfo.weekDays = currentMonth.weekdayCalc(currentMonth.startOf('month').toString(), currentMonth.endOf('month').toString(), [6]) //Колличество выходных
+      this.monthInfo.daysInMonth = new Date(2021, this.$moment(this.monthInfo.currentMonth, 'MMMM').format('M'), 0).getDate() //Колличество дней в месяце
+      this.monthInfo.workDays = this.monthInfo.daysInMonth - this.monthInfo.weekDays //Колличество рабочих дней
+    },
 
 		fetchData() {
 			let loader = this.$loading.show();

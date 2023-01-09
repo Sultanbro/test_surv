@@ -8,7 +8,7 @@
             </div>
         </div>
 
-        <uploading-file
+        <UploadingFile
             v-for="(file, index) in files"
             v-bind:key="file.file.uniqueIdentifier + index"
             :file="file.file"
@@ -24,35 +24,35 @@ import Resumable from 'resumablejs'
 import UploadingFile from './UploadingFile'
 
 export default {
-	components: { 
-		UploadingFile
-	},
-	data(){
-		return {
-			files: [], // our local files array, we will pack in extra data to force reactivity
-			r: false
-		}
-	},
-	props: [
-		'token',
-		'type',
-		'file_types',
-		'id'
-	],
-	methods: {
-		// finds the file in the local files array
-		findFile(file){
-			let x = this.files.find(item => item.file.uniqueIdentifier === file.uniqueIdentifier && item.status !== 'canceled');
-			return  x ? x : {}
-		},
-		// cancel an individual file
-		cancelFile(file){
-			this.findFile(file).status = 'canceled'
-			file.cancel()
-		}
-	},
-	mounted(){
-		// init resumablejs on mount
+    components: {
+        UploadingFile
+    },
+    data(){
+        return {
+            files: [], // our local files array, we will pack in extra data to force reactivity
+            r: false
+        }
+    },
+    props: [
+        'token',
+        'type',
+        'file_types',
+        'id'
+    ],
+    methods: {
+        // finds the file in the local files array
+        findFile(file){
+            let x = this.files.find(item => item.file.uniqueIdentifier === file.uniqueIdentifier && item.status !== 'canceled');
+            return  x ? x : {}
+        },
+        // cancel an individual file
+        cancelFile(file){
+            this.findFile(file).status = 'canceled'
+            file.cancel()
+        }
+    },
+    mounted(){
+        // init resumablejs on mount
 		this.r = new Resumable({
 			target:'/file/upload',
 			query:{

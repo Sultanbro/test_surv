@@ -26,6 +26,7 @@
           :key="item.name + 'else'"
           :href="item.href"
           class="menu__item"
+          target="_blank"
         >
           <span
             v-if="item.icon"

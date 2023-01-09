@@ -2,39 +2,39 @@
 <div class="d-flex justify-content-start" style="flex-wrap:wrap" :class="{'top': page == 'top'}" :key="skey">
     <div v-for="(group, group_index) in utility" :key="group_index" :class="wrapper_class">
         <div class="text-center font-bold mb-3 mt-2 d-flex justify-content-center" v-if="editable">
-               
+
                 <a :href="'/timetracking/an?group='+ group.id + '&active=1&load=1'" target="_blank">{{ group.name }}</a>
-                <div class=" ml-2 pointer" v-if="page == 'top' && group.gauges.length < 4" 
+                <div class=" ml-2 pointer" v-if="page == 'top' && group.gauges.length < 4"
                     @click="showAddWindow(group.id, group_index)">
                     <i class="fa fa-plus-square"></i>
                 </div>
         </div>
         <div class="d-flex justify-content-center" :style="page == 'top' ? 'flex-wrap:wrap; width: 240px;' : ''" >
             <div v-for="(gauge, gauge_index) in group.gauges"
-                :key="gauge.id" 
+                :key="gauge.id"
                 class="text-center gauge" :class="{
                     'scale': group.gauges.length > 1,
                     'scale-tl': gauge_index == 0,
                     'scale-tr': gauge_index == 1,
                     'scale-bl': gauge_index == 2,
                     'scale-br': gauge_index == 3,
-                    'mr-4': page == 'analytics' && group.gauges.length - 1 != gauge_index 
+                    'mr-4': page == 'analytics' && group.gauges.length - 1 != gauge_index
                 }">
 
                 <p class="text-center g-title" :class="{'underline': gauge.is_main == 1}">
                     {{ gauge.name }} <template v-if="page == 'analytics'">{{gauge.diff}}%</template>
                     <!-- <span class="btn" @click="edit(group_index, gauge_index)"><i class="fa fa-cogs"></i></span> -->
                 </p>
-                
+
                 <div @click="edit(group_index, gauge_index)"
                         title="Нажмите, чтобы редактировать" :key="gauge.key" v-if="page =='top'">
 
-                    <v-gauge 
+                    <VGauge
                         :value="Number(gauge.value)"
                         :height="gauge.height"
                         :options="gauge.options"
                         :width="gauge.width"
-                        
+
                         :unit="gauge.unit.toString()"
                         :minValue="Number(gauge.min_value)"
                         :maxValue="Number(gauge.max_value)"
@@ -44,7 +44,7 @@
                 <div @click="edit(group_index, gauge_index)"
                         title="Нажмите, чтобы редактировать" :key="gauge.key" v-else>
 
-                    <v-gauge 
+                    <VGauge
                         :value="Number(gauge.value)"
                         height="90px"
                         :options="gauge.options"
@@ -59,54 +59,54 @@
                 <p class="text-center text-14">
                     {{ Number(gauge.value) }}{{ gauge.unit }} из {{ gauge.max_value }}{{ gauge.unit }}
                 </p>
-                
+
                 <div v-show="gauge.editable" class="mb-5 edit-window">
                     <div>
                         <div class="d-flex justify-content-between align-items-center">
-                            <span class="pr-2 l-label">Min</span>       
+                            <span class="pr-2 l-label">Min</span>
                             <input type="text" class="form-control form-control-sm w-250 wiwi" v-model="gauge.min_value">
                         </div>
                         <div class="d-flex justify-content-between align-items-center">
-                            <span class="pr-2 l-label">Max</span>    
+                            <span class="pr-2 l-label">Max</span>
                             <input type="text" class="form-control form-control-sm w-250 wiwi" v-model="gauge.max_value">
                         </div>
                         <div class="d-flex justify-content-between align-items-center">
-                            <span class="pr-2 l-label">Сег</span>    
+                            <span class="pr-2 l-label">Сег</span>
                             <input type="text" class="form-control form-control-sm w-250 wiwi" v-model="gauge.sections">
                         </div>
                         <div class="d-flex justify-content-between align-items-center">
-                            <span class="pr-2 l-label">Ед.</span>    
+                            <span class="pr-2 l-label">Ед.</span>
                             <input type="text" class="form-control form-control-sm wiwi" v-model="gauge.unit">
                         </div>
 
                         <template v-if="gauge.fixed == 0">
                             <div class="d-flex justify-content-between align-items-center">
-                                <span class="pr-2 l-label">Наз</span>    
+                                <span class="pr-2 l-label">Наз</span>
                                 <input type="text" class="form-control form-control-sm wiwi" v-model="gauge.name">
                             </div>
                             <div class="d-flex justify-content-between align-items-center">
-                                <span class="pr-2 l-label">Окр</span>    
+                                <span class="pr-2 l-label">Окр</span>
                                 <input type="text" class="form-control form-control-sm wiwi" v-model="gauge.round">
                             </div>
                             <div class="d-flex justify-content-between align-items-center">
-                                <span class="pr-2 l-label">Акт</span>    
+                                <span class="pr-2 l-label">Акт</span>
                                 <select v-model="gauge.activity_id" class="form-control form-control-sm h-23">
                                     <option :value="-1" :key="-1">Ячейка из сводной</option>
                                     <option :value="group_activity.id"  v-for="(group_activity, key) in group.group_activities" :key="key">{{ group_activity.name }}</option>
                                 </select>
                             </div>
                             <div class="d-flex justify-content-between align-items-center" v-if="gauge.activity_id > 0">
-                                <span class="pr-2 l-label">Тип</span>    
+                                <span class="pr-2 l-label">Тип</span>
                                 <select v-model="gauge.value_type" class="form-control form-control-sm h-23">
                                     <option value="sum">Сумма выполненного</option>
                                     <option value="avg">Среднее значение</option>
                                 </select>
                             </div>
                             <div class="d-flex justify-content-between align-items-center mt-1" v-if="gauge.activity_id == -1">
-                                <span class="pr-2">Ячейка</span>    
+                                <span class="pr-2">Ячейка</span>
                                 <input type="text" class="form-control form-control-sm wiwi text-uppercase" v-model="gauge.cell">
                             </div>
-                            
+
                         </template>
 
                         <div>
@@ -115,7 +115,7 @@
                                 :value="1"
                                 :unchecked-value="0"
                                 >
-                                Отразить цвета 
+                                Отразить цвета
                             </b-form-checkbox>
                         </div>
                         <div>
@@ -127,28 +127,28 @@
                                 Ключевой
                             </b-form-checkbox>
                         </div>
-                        
+
                         <div class="d-flex justify-content-between  align-items-center">
                             <input type="range" class="form-control form-control-sm w-250 mr-2 wiwi"  v-model="gauge.angle" min="-0.2" max="0.2" step="0.01">
                             {{ gauge.angle}}
                         </div>
                     </div>
                     <div class="d-flex">
-                        <button @click="save(group_index, gauge_index)" 
+                        <button @click="save(group_index, gauge_index)"
                             class="btn btn-primary btn-sm rounded mt-1 mr-2">Сохранить</button>
-                        <button @click="delete_gauge(group_index, gauge_index)" 
+                        <button @click="delete_gauge(group_index, gauge_index)"
                             class="btn btn-danger btn-sm rounded mt-1">Удалить</button>
                     </div>
                 </div>
             </div>
         </div>
-        
+
     </div>
 
 
      <!-- Modal Create activity -->
     <b-modal v-model="showNewGaugeWindow"  title="Добавить новый спидометр" size="lg" class="modalle" @ok="create_gauge()">
-        
+
         <div class="row">
             <div class="col-5">
                 <p>Название</p>
@@ -157,7 +157,7 @@
                 <input type="text" class="form-control form-control-sm" v-model="newGauge.name">
             </div>
         </div>
-       
+
         <div class="row  mt-1">
             <div class="col-5">
                 <p class="">Выберите откуда брать данные</p>
@@ -168,7 +168,7 @@
                     <option :value="group_activity.id"  v-for="(group_activity, key) in group_activities" :key="key">{{ group_activity.name }}</option>
                 </select>
             </div>
-            
+
         </div>
 
         <div class="row  mt-1" v-if="newGauge.activity_id == -1">
@@ -178,9 +178,9 @@
             <div class="col-7">
                 <input type="text" class="form-control form-control-sm" v-model="newGauge.cell">
             </div>
-            
+
         </div>
-        
+
         <div class="row  mt-1" v-if="newGauge.activity_id != -1">
             <div class="col-5">
                 <p class="">Какое значение</p>
@@ -191,107 +191,111 @@
                     <option value="avg">Среднее значение</option>
                 </select>
             </div>
-            
+
         </div>
 
     </b-modal>
 
-   
-     
+
+
 </div>
 </template>
 
 <script>
+import VGauge from 'vgauge'
 export default {
-	name: 'TopGauges', 
-	props: ['utility_items', 'editable', 'wrapper_class', 'page'],
-	watch: {
-		utility_items() {
-			//vm.$forceUpdate()
-		},
-	},
-	data() {
-		return {
-			utility: [],
-			skey: 1,
-			newGauge: {
-				activity_id: null,
-				group_id: null,
-				name: null,
-				cell: '',
-				value_type: 'sum'
-			}, 
-			showNewGaugeWindow: false,
-			group_activities: [],
-			colors: {
-				'#ca0013': 7, // red
-				'#F03E3E': 2, // red
-				'#fd7e14': 4, // orange
-				'#ffc107': 6, // orange light
-				'#FFDD00': 3, // yellow
-				'#42e467': 5, // green light,
-				'#30B32D': 1, // green,
-			},
-			reverseColors: {
-				'#30B32D': 1, // green,
-				'#42e467': 5, // green light,
-				'#FFDD00': 3, // yellow
-				'#ffc107': 6, // orange light
-				'#fd7e14': 4, // orange
-				'#F03E3E': 2, // red
-				'#ca0013': 7, // red
-			},
-		}
-	},
-	created() {
-		this.utility = this.utility_items;
-		this.normalize();
-	},
+    name: "TopGauges",
+    components:{
+        VGauge,
+    },
+    props: ['utility_items', 'editable', 'wrapper_class', 'page'],
+    watch: {
+        utility_items() {
+            //vm.$forceUpdate()
+        },
+    },
+    data() {
+        return {
+            utility: [],
+            skey: 1,
+            newGauge: {
+                activity_id: null,
+                group_id: null,
+                name: null,
+                cell: '',
+                value_type: 'sum'
+            },
+            showNewGaugeWindow: false,
+            group_activities: [],
+            colors: {
+                '#ca0013': 7, // red
+                '#F03E3E': 2, // red
+                '#fd7e14': 4, // orange
+                '#ffc107': 6, // orange light
+                '#FFDD00': 3, // yellow
+                '#42e467': 5, // green light,
+                '#30B32D': 1, // green,
+            },
+            reverseColors: {
+                '#30B32D': 1, // green,
+                '#42e467': 5, // green light,
+                '#FFDD00': 3, // yellow
+                '#ffc107': 6, // orange light
+                '#fd7e14': 4, // orange
+                '#F03E3E': 2, // red
+                '#ca0013': 7, // red
+            },
+        }
+    },
+    created() {
+        this.utility = this.utility_items;
+        this.normalize();
+    },
 
 	methods: {
 
-		normalize() {
-			if(this.page == 'top') {
-				this.utility.forEach(group => {
-					group.gauges.forEach(gauge => {
-						if(group.gauges.length > 1) {
-							gauge.height = '42px';
-							gauge.width = '75px';
-							if(gauge.options.staticLabels !== undefined) {
-								gauge.options.staticLabels.font = '7px sans-serif';
-							}
-						} else {
-							gauge.height = '90px';
-							gauge.width = '150px';
-							if(gauge.options.staticLabels !== undefined) {
-								gauge.options.staticLabels.font = '11px sans-serif';
-							}
-						}
-					});
-				});
-			} else {
-				this.utility.forEach(group => {
-					group.gauges.forEach(gauge => {
-						gauge.height = '90px';
-						gauge.width = '150px';
-						if(gauge.options.staticLabels !== undefined) {
-							gauge.options.staticLabels.font = '7px sans-serif';
-						}
-					});
-				});
-			}
-            
-		},
+        normalize() {
+            if(this.page == 'top') {
+                this.utility.forEach(group => {
+                    group.gauges.forEach(gauge => {
+                        if(group.gauges.length > 1) {
+                            gauge.height = '42px';
+                            gauge.width = '75px';
+                            if(gauge.options.staticLabels !== undefined) {
+                                gauge.options.staticLabels.font = "7px sans-serif";
+                            }
+                        } else {
+                            gauge.height = '90px';
+                            gauge.width = '150px';
+                            if(gauge.options.staticLabels !== undefined) {
+                                gauge.options.staticLabels.font = "11px sans-serif";
+                            }
+                        }
+                    });
+                });
+            } else {
+                this.utility.forEach(group => {
+                    group.gauges.forEach(gauge => {
+                        gauge.height = '90px';
+                        gauge.width = '150px';
+                        if(gauge.options.staticLabels !== undefined) {
+                            gauge.options.staticLabels.font = "7px sans-serif";
+                        }
+                    });
+                });
+            }
 
-		save(group, gauge) {
-			if(!this.editable) return '';
-			let points = JSON.parse(this.utility[group].gauges[gauge].sections)
-			this.utility[group].gauges[gauge].options.angle = Number(this.utility[group].gauges[gauge].angle)
-			this.utility[group].gauges[gauge].options.staticLabels.labels = points
-			this.utility[group].gauges[gauge].options.staticZones = this.getStaticZones(points, this.utility[group].gauges[gauge].unit)
-			this.utility[group].gauges[gauge].key++ 
-        
-			this.utility[group].gauges[gauge].editable = false
+        },
+
+        save(group, gauge) {
+            if(!this.editable) return "";
+            let points = JSON.parse(this.utility[group].gauges[gauge].sections)
+            this.utility[group].gauges[gauge].options.angle = Number(this.utility[group].gauges[gauge].angle)
+            this.utility[group].gauges[gauge].options.staticLabels.labels = points
+            this.utility[group].gauges[gauge].options.staticZones = this.getStaticZones(points, this.utility[group].gauges[gauge].unit)
+            this.utility[group].gauges[gauge].key++
+
+            this.utility[group].gauges[gauge].editable = false
 
 			this.saveDB(group, gauge)
 		},
@@ -305,47 +309,47 @@ export default {
 				.then(response => {
 					this.$toast.success('Успешно удален!')
 
-                 
-					this.utility[group].gauges.splice(gauge, 1);
+
+                    this.utility[group].gauges.splice(gauge, 1);
 
 				}).catch(error => {
 					alert(error)
 				});
 		},
 
-		saveDB(group, gauge_index) {
-			axios.post('/timetracking/top/save_top_value', {
-				gauge: this.utility[group].gauges[gauge_index]
-			})
-				.then(response => {
-					if(response.data.code == 200) {
-						this.$toast.success('Успешно сохранено!')
-                        
-						let this_gauge = this.utility[group].gauges[gauge_index];
+        saveDB(group, gauge_index) {
+            axios.post('/timetracking/top/save_top_value', {
+                    gauge: this.utility[group].gauges[gauge_index]
+                })
+                .then(response => {
+                    if(response.data.code == 200) {
+                        this.$toast.success('Успешно сохранено!')
 
-						this_gauge.value = response.data.value;
-						this_gauge.options = response.data.options;
-						if(this.utility[group].gauges[gauge_index].is_main == 1) {
-							this.utility[group].gauges.splice(gauge_index, 1);
-							this.utility[group].gauges.forEach(item =>  { 
-								item.is_main = 0;
-							});
-							this.utility[group].gauges.unshift(this_gauge);
+                        let this_gauge = this.utility[group].gauges[gauge_index];
 
-                         
+                        this_gauge.value = response.data.value;
+                        this_gauge.options = response.data.options;
+                        if(this.utility[group].gauges[gauge_index].is_main == 1) {
+                            this.utility[group].gauges.splice(gauge_index, 1);
+                            this.utility[group].gauges.forEach(item =>  {
+                                item.is_main = 0;
+                            });
+                            this.utility[group].gauges.unshift(this_gauge);
 
-                            
-						}
 
-						this.skey++
-                        
-					} else {
-						this.$toast.error('Попробуйте нажать еще раз')
-					}
-				}).catch(error => {
-					alert(error)
-				});
-		},
+
+
+                        }
+
+                        this.skey++
+
+                    } else {
+                        this.$toast.error('Попробуйте нажать еще раз')
+                    }
+                }).catch(error => {
+                    alert(error)
+                });
+        },
 
 		edit(group, gauge) {
 			if(!this.editable) return '';
@@ -355,14 +359,14 @@ export default {
 				this.utility[this.visible_gauge_group_index].gauges[this.visible_gauge_index].editable = false
 			}
 
-			if(this.utility[group].gauges[gauge].editable) {
-				this.visible_gauge_group_index = group;
-				this.visible_gauge_index = gauge;    
-			} else {
-				this.visible_gauge_group_index = null;
-				this.visible_gauge_index = null;
-			}
-		},
+            if(this.utility[group].gauges[gauge].editable) {
+                this.visible_gauge_group_index = group;
+                this.visible_gauge_index = gauge;
+            } else {
+                this.visible_gauge_group_index = null;
+                this.visible_gauge_index = null;
+            }
+        },
 
 		getStaticZones(points, unit) {
 			let staticZones = [],
@@ -375,35 +379,35 @@ export default {
 				colors = this.reverseColors;
 			}
 
-			Object.keys(colors).forEach(function (key) { 
-           
-                
-				if(Number(colors[key]) + 1 <= points.length) {
-					staticZones.push({
-						strokeStyle: key,  
-						min: points[first],
-						max: points[second] 
-					});
-					first++;
-					second++;
-				}
-			});
+            Object.keys(colors).forEach(function (key) {
+
+
+                if(Number(colors[key]) + 1 <= points.length) {
+                    staticZones.push({
+                        strokeStyle: key,
+                        min: points[first],
+                        max: points[second]
+                    });
+                    first++;
+                    second++;
+                }
+            });
 
 			return staticZones;
 		},
 
-		showAddWindow(group_id, group_index) {
-			this.newGauge.group_id = group_id
-			this.newGauge.group_index = group_index
-            
-			axios.post('/timetracking/top/get_activities', {
-				group_id: group_id,
-			})
-				.then(response => {
-					this.group_activities = response.data;
-				}).catch(error => {
-					alert(error)
-				});
+        showAddWindow(group_id, group_index) {
+            this.newGauge.group_id = group_id
+            this.newGauge.group_index = group_index
+
+            axios.post('/timetracking/top/get_activities', {
+                    group_id: group_id,
+                })
+                .then(response => {
+                    this.group_activities = response.data;
+                }).catch(error => {
+                    alert(error)
+                });
 
 			this.showNewGaugeWindow = true
 		},
@@ -431,13 +435,13 @@ export default {
 					this.skey++
 					this.normalize();
 
-					this.showNewGaugeWindow = false;
-					this.$toast.success('Успешно сохранено!')
-				}).catch(error => {
-					alert(error)
-				});
-		}
-	} 
+                    this.showNewGaugeWindow = false;
+                    this.$toast.success('Успешно сохранено!')
+                }).catch(error => {
+                    alert(error)
+                });
+        }
+    }
 }
 </script>
 
@@ -551,4 +555,4 @@ input.form-control.form-control-sm.wiwi {
 .custom-control {
     display: flex;
 }
-</style> 
+</style>

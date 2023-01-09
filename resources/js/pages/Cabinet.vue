@@ -60,7 +60,7 @@
           <div class="form-group">
             Администраторы
 
-            <multiselect
+            <Multiselect
               v-model="admins"
               :options="users"
               :multiple="true"
@@ -373,94 +373,96 @@
   </div>
 </template>
 <script>
-import VueAvatar from '../components/vue-avatar-editor/src/components/VueAvatar.vue';
-import VueAvatarScale from '../components/vue-avatar-editor/src/components/VueAvatarScale';
-import { Cropper } from 'vue-advanced-cropper';
-import 'vue-advanced-cropper/dist/style.css';
+import VueAvatar from '../components/vue-avatar-editor/src/components/VueAvatar.vue'
+import VueAvatarScale from '../components/vue-avatar-editor/src/components/VueAvatarScale'
+import Multiselect from 'vue-multiselect'
+import { Cropper } from 'vue-advanced-cropper'
+import 'vue-advanced-cropper/dist/style.css'
 import { bus } from '../bus'
 
 export default {
-	name: 'Cabinet',
-	components:{
-		Cropper
-	},
-	props: {
-		auth_role: {},
-	},
-	data() {
-		return {
-			// my_crop_image: "",
-			crop_image: {
-				canvas: '',
-				image: '',
-				hide: false
-			},
-			imagePreview: '',
-			file: '',
-			// hasImage: true,
-			// canvas_image: new Image(),
-			showChooseProfileModal: false,
-			test: 'dsa',
-			items: [],
-			myCroppa: {},
-			users: [],
-			user: [],
-			user_card: [],
-			admins: [],
-			activeCourse: null,
-			page: 'profile',
-			img: '',
-			success: '',
-			password: '',
-			working_city: '',
-			birthday: '',
-			cardValidatre: {
-				error: false,
-				type: false,
-			},
-			payments: [
-				{
-					bank: '',
-					cardholder: '',
-					country: '',
-					number: '',
-					phone: '',
-				},
-			],
-			keywords: null,
-			country_results: [],
-			image: '',
-			payments_view:false,
-			croppie: null
-		};
-	},
-	computed: {
-		uploadedImage() {
-			return Object.keys(this.myCroppa).length !== 0;
-		}
-	},
-	watch: {
-		keywords(after, before) {
-			this.fetch();
-		},
-		auth_role(){
-			this.init()
-		}
-	},
-	mounted() {
-		// this.drawProfile();
-		// this.hasImage = this.$root.$children[1].hasImage;
-	},
-	created() {
-		if(this.auth_role){
-			this.init()
-		}
-	},
-	methods: {
-		init(){
-			this.fetchData();
-			this.user = this.auth_role;
-			this.format_date(this.user.birthday);
+  name: 'Cabinet',
+  components:{
+    Cropper,
+    Multiselect,
+  },
+  props: {
+    auth_role: {},
+  },
+  data() {
+    return {
+      // my_crop_image: "",
+      crop_image: {
+        canvas: "",
+        image: "",
+        hide: false
+      },
+      imagePreview: "",
+      file: '',
+      // hasImage: true,
+      // canvas_image: new Image(),
+      showChooseProfileModal: false,
+      test: "dsa",
+      items: [],
+      myCroppa: {},
+      users: [],
+      user: [],
+      user_card: [],
+      admins: [],
+      activeCourse: null,
+      page: "profile",
+      img: "",
+      success: "",
+      password: "",
+      working_city: "",
+      birthday: "",
+      cardValidatre: {
+        error: false,
+        type: false,
+      },
+      payments: [
+        {
+          bank: "",
+          cardholder: "",
+          country: "",
+          number: "",
+          phone: "",
+        },
+      ],
+      keywords: null,
+      country_results: [],
+      image: "",
+      payments_view:false,
+      croppie: null
+    };
+  },
+  computed: {
+    uploadedImage() {
+      return Object.keys(this.myCroppa).length !== 0;
+    }
+  },
+  watch: {
+    keywords(after, before) {
+      this.fetch();
+    },
+    auth_role(){
+      this.init()
+    }
+  },
+  mounted() {
+          // this.drawProfile();
+          // this.hasImage = this.$root.$children[1].hasImage;
+  },
+  created() {
+    if(this.auth_role){
+      this.init()
+    }
+  },
+  methods: {
+    init(){
+      this.fetchData();
+      this.user = this.auth_role;
+      this.format_date(this.user.birthday);
 
 			if (this.user.img_url != null) {
 				this.image = '/users_img/' + this.user.img_url;

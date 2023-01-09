@@ -2175,3 +2175,65 @@
     margin: 0.9em 0;
     min-width: 15em;
 }
+
+@media screen and (max-width: 1360px){
+    .news-birthday-card__gift {
+        width: 40px;
+        height: 40px;
+        position: absolute;
+        top: 0;
+        right: -40px;
+        background: #fff;
+        border: 1px solid #EBEBF9;
+    }
+    .news-birthday-card{
+        grid-template-columns: 50px 1fr 0;
+    }
+    .news-money-title{
+        right: 20px;
+    }
+    .news-birthday-card__image{
+        width: 40px;
+        height: 40px;
+    }
+    .news-birthday-card__name{
+        font-size: 13px;
+    }
+}
+
+@media screen and (max-width: 991px){
+    .news-header__filter--active{
+        width: 100%;
+    }
+    .news-birthday-col{
+        display: none;
+    }
+    .news-item__access-text{
+        width: auto;
+    }
+}
+
+@media screen and (max-width: 550px){
+    .news-container__header{
+        display: block;
+    }
+    .col-posts{
+        padding: 0;
+    }
+    .news-menu-popup{
+        left: -230px;
+    }
+    .news-menu-popup__arrow{
+        left: 84%;
+    }
+    .news-item{
+        padding: 15px;
+    }
+    .news-item__info{
+        display: block;
+    }
+    .news-item__name-time{
+        padding-left: 0;
+        margin-top: 10px;
+    }
+}

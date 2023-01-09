@@ -1,6 +1,6 @@
 <template>
     <div class="video-player">
-         <video-player 
+        <videoPlayer
             class="vjs-custom-skin"
             ref="videoPlayer"
             :options="playerOptions"
@@ -8,44 +8,49 @@
             @play="onPlayerPlay"
             @pause="onPlayerPause"
             @ready="playerReadied"
-            @statechanged="playerStateChanged" />
-
+            @statechanged="playerStateChanged"
+        />
     </div>
 </template>
 
 <script>
-export default {
-	props: {
-		src: {
-			default: ''
-		},
-		autoplay: {
-			default: true
-		}
-	},
+import { videoPlayer } from 'vue-video-player'
 
-	data(){
-		return {
-			playerOptions: {
-				// videojs options
-				muted: false,
-				autoplay: false,
-				height:  360,
-				width: 100,
-				language: 'ru',
-				playbackRates: [0.5, 0.7, 0.8, 0.9, 1.0, 1.1, 1.2, 1.3, 1.4, 1.5, 1.75, 2.0, 3.0],
-				sources: [{
-					src: this.src,
-					type: 'video/mp4'
-				}],
-				//sources: [this.src],
-				poster: '/images/author.jpg',
-				userActions: {
-					hotkeys: true
-				}
-			}, 
-		}
-	},
+export default {
+    components: {
+        videoPlayer,
+    },
+    props: {
+        src: {
+            default: ''
+        },
+        autoplay: {
+            default: true
+        }
+    },
+
+    data(){
+        return {
+            playerOptions: {
+                // videojs options
+                muted: false,
+                autoplay: false,
+                height:  360,
+                width: 100,
+                language: 'ru',
+                playbackRates: [0.5, 0.7, 0.8, 0.9, 1.0, 1.1, 1.2, 1.3, 1.4, 1.5, 1.75, 2.0, 3.0],
+                sources: [{
+                    src: this.src,
+                    type: 'video/mp4'
+                }],
+                //sources: [this.src],
+                poster: "/images/author.jpg",
+                userActions: {
+                    hotkeys: true
+                }
+            },
+        }
+    },
 
 	methods: {
 		// listen event

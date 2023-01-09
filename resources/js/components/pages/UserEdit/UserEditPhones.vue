@@ -2,31 +2,35 @@
 import {mask} from 'vue-the-mask'
 
 export default {
-	name: 'UserEditPhones',
-	directives: {mask},
-	props: {
-		user: {
-			type: Object,
-			default: null,
-		},
-		old_phone: String,
-		old_phone_1: String,
-		old_phone_2: String,
-		old_phone_3: String,
-		old_phone_4: String,
-	},
-	methods:{
-		addPhone(){
-			this.user.profileContacts.push({
-				type: 'phone',
-				name: '',
-				value: ''
-			})
-		},
-		deletePhone(key){
-			this.user.profileContacts.splice(key, 1)
-		}
-	},
+    name: 'UserEditPhones',
+    directives: {mask},
+    props: {
+        user: {
+            type: Object,
+            default: null,
+        },
+        profileContacts: {
+            type: Array,
+            default: () => []
+        },
+        old_phone: String,
+        old_phone_1: String,
+        old_phone_2: String,
+        old_phone_3: String,
+        old_phone_4: String,
+    },
+    methods:{
+        addPhone(){
+            this.profileContacts.push({
+                type: 'phone',
+                name: '',
+                value: ''
+            })
+        },
+        deletePhone(key){
+            this.profileContacts.splice(key, 1)
+        }
+    },
 }
 </script>
 <template>
@@ -121,8 +125,8 @@ export default {
             </div>
         </div>
 
-        <template v-if="user">
-            <template v-for="(key, contact) in user.profileContacts">
+        <template v-if="profileContacts">
+            <template v-for="(contact, key) in profileContacts">
                 <div
                     v-if="contact.type === 'phone'"
                     :key="key"
@@ -139,7 +143,6 @@ export default {
                         :name="`contacts[phone][${key}][value]`"
                         :value="contact.value"
                         type="text"
-                        v-mask="'+7(###) ###-##-##'"
                         class="form-control mr-1"
                         placeholder="Телефон"
                     >

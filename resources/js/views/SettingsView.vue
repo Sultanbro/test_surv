@@ -2,8 +2,7 @@
 import DefaultLayout from '@/layouts/DefaultLayout'
 import { useAsyncPageData } from '@/composables/asyncPageData'
 const Userlist = () => import(/* webpackChunkName: "UserlistPage" */ '@/pages/userlist.vue')
-const Professions = () => import(/* webpackChunkName: "ProfessionsPage" */ '@/pages/professions.vue')
-const Groups = () => import(/* webpackChunkName: "GroupsPage" */ '@/pages/groups.vue')
+const Company = () => import(/* webpackChunkName: "UserlistPage" */ '@/pages/Company.vue')
 const Fines = () => import(/* webpackChunkName: "FinesPage" */ '@/pages/Fines.vue')
 const Notifications = () => import(/* webpackChunkName: "NotificationsPage" */ '@/pages/Notifications.vue')
 const Permissions = () => import(/* webpackChunkName: "PermissionsPage" */ '@/pages/Permissions.vue')
@@ -11,119 +10,111 @@ const CheckList = () => import(/* webpackChunkName: "checkListPage" */ '@/pages/
 const Awards = () => import(/* webpackChunkName: "AwardsSettingsPage" */ '@/pages/Awards/Awards.vue')
 
 export default {
-	name: 'SettingsView',
-	components: {
-		DefaultLayout,
-		Userlist,
-		Professions,
-		Groups,
-		Fines,
-		Notifications,
-		Permissions,
-		CheckList,
-		Awards,
-	},
-	data(){
-		return {
-			tabs: [
-				{
-					id: '1',
-					htmlId: 'nav-person',
-					path: '/timetracking/settings?tab=1#nav-person',
-					title: 'Сотрудники',
-					access: ['users_view', 'settings_view']
-				},
-				{
-					id: '2',
-					htmlId: 'nav-home',
-					path: '/timetracking/settings?tab=2#nav-home',
-					title: 'Должности',
-					access: ['positions_view', 'settings_view']
-				},
-				{
-					id: '3',
-					htmlId: 'nav-profile',
-					path: '/timetracking/settings?tab=3#nav-profile',
-					title: 'Отделы',
-					access: ['groups_view', 'settings_view']
-				},
-				{
-					id: '4',
-					htmlId: 'nav-fines',
-					path: '/timetracking/settings?tab=4#nav-fines',
-					title: 'Штрафы',
-					access: ['fines_view', 'settings_view']
-				},
-				{
-					id: '5',
-					htmlId: 'nav-notifications',
-					path: '/timetracking/settings?tab=5',
-					title: 'Уведомления',
-					access: ['notifications_view', 'settings_view']
-				},
-				{
-					id: '6',
-					htmlId: 'nav-permissions',
-					path: '/timetracking/settings?tab=6#nav-permissions',
-					title: 'Доступы',
-					access: ['permissions_view', 'settings_view']
-				},
-				{
-					id: '7',
-					htmlId: 'nav-checkList',
-					path: '/timetracking/settings?tab=7#nav-checkList',
-					title: 'Чек-листы',
-					access: ['checklists_view', 'settings_view']
-				},
-				{
-					id: '8',
-					htmlId: 'nav-integrations',
-					path: '/timetracking/settings?tab=8#nav-integrations',
-					title: 'Интеграции',
-					access: 'is_admin'
-				},
-				{
-					id: '9',
-					htmlId: 'nav-awards',
-					path: '/timetracking/settings?tab=9#nav-awards',
-					title: 'Награды',
-					access: 'is_admin'
-				},
-			],
-			pageData: {}
-		}
-	},
-	computed: {
-		activeTab(){
-			return this.$route.query.tab || '1'
-		},
-		activeTabItem(){
-			return this.tabs.find(item => item.id === this.activeTab)
-		}
-	},
-	watch: {
-		activeTab(){
-			this.updatePageData()
-		}
-	},
-	mounted(){
-		this.updatePageData()
-	},
-	methods:{
-		can(access){
-			if(access === 'is_admin') return this.$laravel.is_admin
-			if(typeof access === 'string') return this.$can(access)
-			return access.some(item => this.$can(item))
-		},
-		updatePageData(){
-			this.pageData = {}
-			useAsyncPageData(`/timetracking/settings?tab=${this.activeTab}#${this.activeTabItem.htmlId}`).then(data => {
-				this.pageData = data
-			}).catch(error => {
-				console.error('useAsyncPageData', error)
-			})
-		}
-	},
+    name: 'SettingsView',
+    components: {
+        DefaultLayout,
+        Userlist,
+        Company,
+        Fines,
+        Notifications,
+        Permissions,
+        CheckList,
+        Awards,
+    },
+    data(){
+        return {
+            tabs: [
+                {
+                    id: '1',
+                    htmlId: 'nav-person',
+                    path: '/timetracking/settings?tab=1#nav-person',
+                    title: 'Сотрудники',
+                    access: ['users_view', 'settings_view']
+                },
+                {
+                    id: '2',
+                    htmlId: 'nav-company',
+                    path: '/timetracking/settings?tab=2#nav-home',
+                    title: 'Компания',
+                    access: ['positions_view', 'groups_view', 'settings_view']
+                },
+                {
+                    id: '4',
+                    htmlId: 'nav-fines',
+                    path: '/timetracking/settings?tab=4#nav-fines',
+                    title: 'Штрафы',
+                    access: ['fines_view', 'settings_view']
+                },
+                {
+                    id: '5',
+                    htmlId: 'nav-notifications',
+                    path: '/timetracking/settings?tab=5',
+                    title: 'Уведомления',
+                    access: ['notifications_view', 'settings_view']
+                },
+                {
+                    id: '6',
+                    htmlId: 'nav-permissions',
+                    path: '/timetracking/settings?tab=6#nav-permissions',
+                    title: 'Доступы',
+                    access: ['permissions_view', 'settings_view']
+                },
+                {
+                    id: '7',
+                    htmlId: 'nav-checkList',
+                    path: '/timetracking/settings?tab=7#nav-checkList',
+                    title: 'Чек-листы',
+                    access: ['checklists_view', 'settings_view']
+                },
+                {
+                    id: '8',
+                    htmlId: 'nav-integrations',
+                    path: '/timetracking/settings?tab=8#nav-integrations',
+                    title: 'Интеграции',
+                    access: 'is_admin'
+                },
+                {
+                    id: '9',
+                    htmlId: 'nav-awards',
+                    path: '/timetracking/settings?tab=9#nav-awards',
+                    title: 'Награды',
+                    access: 'is_admin'
+                },
+            ],
+            pageData: {}
+        }
+    },
+    computed: {
+        activeTab(){
+            return this.$route.query.tab || '1'
+        },
+        activeTabItem(){
+            return this.tabs.find(item => item.id === this.activeTab)
+        }
+    },
+    watch: {
+        activeTab(value){
+            this.updatePageData()
+        }
+    },
+    mounted(){
+        this.updatePageData()
+    },
+    methods:{
+        can(access){
+            if(access === 'is_admin') return this.$laravel.is_admin
+            if(typeof access === 'string') return this.$can(access)
+            return access.some(item => this.$can(item))
+        },
+        updatePageData(){
+            this.pageData = {}
+            useAsyncPageData(`/timetracking/settings?tab=${this.activeTab}#${this.activeTabItem.htmlId}`).then(data => {
+                this.pageData = data
+            }).catch(error => {
+                console.error('useAsyncPageData', error)
+            })
+        }
+    },
 }
 </script>
 
@@ -178,30 +169,13 @@ export default {
                                         />
                                     </div>
                                     <div
-                                        v-if="activeTab === '2' && can(['positions_view', 'settings_view'])"
+                                        v-if="activeTab === '2' && can(['positions_view', 'groups_view', 'settings_view'])"
                                         class="tab-pane fade show active py-3"
-                                        id="nav-home"
+                                        id="nav-company"
                                         role="tabpanel"
                                         aria-labelledby="nav-home-tab"
                                     >
-                                        <Professions
-                                            :positions="pageData.positions"
-                                        />
-                                    </div>
-                                    <div
-                                        v-if="activeTab === '3' && can(['groups_view', 'settings_view'])"
-                                        id="nav-profile"
-                                        class="tab-pane fade show active py-3"
-                                        role="tabpanel"
-                                        aria-labelledby="nav-profile-tab"
-                                    >
-                                        <Groups
-                                            :statuseses="pageData.statuseses"
-                                            :archived_groupss="pageData.archived_groupss"
-                                            :book_groups="pageData.book_groups"
-                                            :corpbooks="pageData.corpbooks"
-                                            :activeuserid="pageData.activeuserid"
-                                        />
+                                        <Company/>
                                     </div>
                                     <div
                                         v-if="activeTab === '4' && can(['fines_view', 'settings_view'])"

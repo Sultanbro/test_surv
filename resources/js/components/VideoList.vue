@@ -1,7 +1,7 @@
 <template>
 <div class="v-list">
-    <draggable 
-        class="dfsdf" 
+    <Draggable
+        class="dfsdf"
         tag="div"
         handle=".fa-bars"
         :list="videos"
@@ -18,19 +18,19 @@
                 @click="showVideo(video, v_index)"
             >
             <div class="mover" v-if="mode == 'edit' && !group_edit">
-                <i class="fa fa-bars"></i> 
+                <i class="fa fa-bars"></i>
             </div>
             <div class="img">
-                <img src="/images/author.jpg" alt="text" /> 
+                <img src="/images/author.jpg" alt="text" />
             </div>
-            <div class="desc"> 
+            <div class="desc">
                 <h4>
-                    <i class="fa fa-lock mr-1"></i>     
+                    <i class="fa fa-lock mr-1"></i>
                     {{ video.title }}
                 </h4>
                 <div class="text" v-html="video.desc"></div>
             </div>
-            <div class="controls d-flex" 
+            <div class="controls d-flex"
                 v-if="mode == 'edit' && !group_edit"
             >
                 <div class="more">
@@ -50,11 +50,11 @@
                         </div>
                     </div>
                 </div>
-               
-                <i  class="far fa-trash-alt" 
-                    title="Убрать из плейлиста" 
+
+                <i  class="far fa-trash-alt"
+                    title="Убрать из плейлиста"
                     @click.stop="$emit('deleteVideo', {
-                        video: video, 
+                        video: video,
                         v_index: v_index,
                         g_index: g_index,
                         c_index: c_index
@@ -62,18 +62,18 @@
                 ></i>
             </div>
         </div>
-    </draggable>
+    </Draggable>
 
 
     <!-- Переместить -->
-    <sidebar
-      v-model="modal"
-      title="Переместить видео"
+    <Sidebar
+        v-model="modal"
+        title="Переместить видео"
         :open="modal"
         @close="modal = false"
         width="50%"
-    >   
-    
+    >
+
         <div class="d-flex mb-2 p-3 aic">
             <p class="mb-0 mr-2">Плейлист</p>
             <v-select :options="playlists" label="title" v-model="playlist" class="group-select w-full"></v-select>
@@ -90,53 +90,60 @@
                 <span>Сохранить</span>
             </button>
         </div>
-      
-    </sidebar>
+
+    </Sidebar>
 
 </div>
 </template>
 
 <script>
+import Draggable from 'vuedraggable'
+import Sidebar from '@/components/ui/Sidebar' // сайдбар table
+
 export default {
-	name: 'VideoList',
-	props: ['videos', 'mode','group_edit', 'g_index', 'c_index', 'active' , 'is_course'],
-	data(){
-		return {
-			modal: false,
-			index: -1,
-			playlist: null,
-			group: {
-				id: 0,
-				title: 'Без группы'
-			},
-			playlists: [],
-			groups: []
-		}
-	},
+    name: 'VideoList',
+    components: {
+        Sidebar,
+        Draggable,
+    },
+    props: ['videos', 'mode','group_edit', 'g_index', 'c_index', 'active' , 'is_course'],
+    data(){
+        return {
+          modal: false,
+          index: -1,
+          playlist: null,
+          group: {
+                id: 0,
+                title: 'Без группы'
+            },
+          playlists: [],
+          groups: []
+        }
+    },
 
-	watch: {
-		playlist() {
-			if(this.playlist != null) {
-				let i = this.playlists.findIndex(el => el.id == this.playlist.id)
-				if(i != -1) {
-                   
-					this.groups = this.playlists[i].groupses;
-					this.groups.unshift({
-						id: 0,
-						title: 'Без группы'
-					});
-					this.group = {
-						id: 0,
-						title: 'Без группы'
-					}
-				}
-			}  
-		}
-	},
+    watch: {
+        playlist() {
+            if(this.playlist != null) {
+                let i = this.playlists.findIndex(el => el.id == this.playlist.id)
+                if(i != -1) {
 
-	created() {
-       
-	},
+                    this.groups = this.playlists[i].groupses;
+                    this.groups.unshift({
+                        id: 0,
+                        title: 'Без группы'
+                    });
+                     this.group = {
+                        id: 0,
+                        title: 'Без группы'
+                    }
+                }
+            }
+        }
+    },
+
+    created() {
+
+    },
 
 	methods: {
 
@@ -151,47 +158,47 @@ export default {
 				.then(response => {
 					this.playlists = response.data
 
-					if(this.videos.length > 0) {
-						let i = this.playlists.findIndex(el => el.id == this.videos[0].playlist_id)
-						if(i != -1) {
-							this.playlist = this.playlists[i]
-							this.group = {
-								id: 0,
-								title: 'Без группы'
-							};
-						}
-					}
-				})
-		},  
+                 if(this.videos.length > 0) {
+                    let i = this.playlists.findIndex(el => el.id == this.videos[0].playlist_id)
+                    if(i != -1) {
+                        this.playlist = this.playlists[i]
+                        this.group = {
+                            id: 0,
+                            title: 'Без группы'
+                        };
+                    }
+                }
+            })
+        },
 
-		move() {
-			axios.post('/videos/move-to-playlist', {
-				video_id: this.videos[this.index].id,
-				playlist_id: this.playlist.id, 
-				group_id: this.group.id
-			})
-				.then(response => {
-					this.$toast.success('Видео перемещено');
-					this.videos.splice(this.index,1);
-				})
-		},   
+        move() {
+            axios.post('/videos/move-to-playlist', {
+                video_id: this.videos[this.index].id,
+                playlist_id: this.playlist.id,
+                group_id: this.group.id
+            })
+            .then(response => {
+                this.$toast.success('Видео перемещено');
+                this.videos.splice(this.index,1);
+            })
+        },
 
-		saveOrder(e) {
-			let loader = this.$loading.show(); 
-			axios.post('/videos/save-order', {
-				id: e.item.id,
-				order: e.newIndex, // oldIndex
-			})
-				.then(response => {
-					loader.hide()
-					this.$emit('order-changed')
-					this.$toast.success('Очередь сохранена');
-				})
-				.catch(e => {
-					loader.hide()
-					console.log(e)
-				})
-		},
+        saveOrder(e) {
+            let loader = this.$loading.show();
+            axios.post('/videos/save-order', {
+                id: e.item.id,
+                order: e.newIndex, // oldIndex
+            })
+            .then(response => {
+                loader.hide()
+                this.$emit('order-changed')
+                this.$toast.success('Очередь сохранена');
+            })
+            .catch(e => {
+                loader.hide()
+                console.log(e)
+            })
+        },
 
 		showVideo(video, i) {
 			if(video.item_model == null && this.mode == 'read') return;

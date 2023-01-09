@@ -452,9 +452,10 @@
           </b-tabs>
         </b-tab>
         <b-tab title="Прогресс по курсам" :key="2" card>
-
-            <course-results  :monthInfo="monthInfo" :currentGroup="currentGroup" />
-
+          <CourseResults
+            :monthInfo="monthInfo"
+            :currentGroup="currentGroup"
+          />
         </b-tab>
 
         <b-tab title="Чек Лист" :key="3" type="card" card :active="check == 3">
@@ -680,7 +681,7 @@
         </div>
       </div>
     </b-modal>
-    <sidebar
+    <Sidebar
         title="Индивидуальный чек лист"
         :open="showChecklist"
         @close="toggle()"
@@ -706,232 +707,237 @@
                 </button>
             </div>
         </div>
-    </sidebar>
+    </Sidebar>
   </div>
 </template>
 
 <script>
+import Sidebar from '@/components/ui/Sidebar' // сайдбар table
+import CourseResults from '@/pages/CourseResults' // результаты по курсам
 import { useYearOptions } from '../../composables/yearOptions'
 // import Template from "../../../../public/static/partner/templates/template.html";
 export default {
-	name: 'TableQuality',
-	// components: {Template},
-	props: {
-		groups: Array,
-		individual_type:{
-			default:null
-		},
-		individual_type_id:{
-			default:null
-		},
-		active_group: String,
-		check: String,
-		user: {
-			type: Object,
-			default: {}
-		}
-	},
-	data() {
-		return {
-			auth_user: this.user,
-			showChecklist: false,
-			checklists:{},
-			fields: [],
-			checklist_fields: [],
-			monthFields: [],
-			recordFields: [],
-			filters: {
-				currentEmployee: 0,
-				fromDate: moment().format('YYYY-MM-DD'),
-				toDate: moment().format('YYYY-MM-DD'),
-			},
-			can_add_records: false, // like kaspi
-			script_id: null,
-			dialer_id: null,
-			fieldsNumber: 15,
-			pageNumber: 1,
-			currentDay: new Date().getDate(),
-			avgDay: 0,
-			avgMonth: 0,
-			showCritWindow: false,
-			showSettings: false,
-			newRecord: {
-				id: 0,
-				employee_id: 0,
-				name: '',
-				segment: '1-5',
-				segment_id: 1,
-				interlocutor: 'Клиент',
-				phone: '',
-				dayOfDelay: moment().format('YYYY-MM-DD'),
-				date: moment().format('YYYY-MM-DD'),
-				param1: 0,
-				param2: 0,
-				param3: 100,
-				param4: 0,
-				param5: 0,
-				comments: '',
-				changed: true,
-			},
-			records_unique: 0,
-			records: {
-				data: [],
-			},
-			deletingElementIndex: 0,
-			currentGroup: this.active_group,
-			groupName: 'Контроль качества',
-			monthInfo: {},
-			user_ids: {},
-			years: useYearOptions(),
-			currentYear: new Date().getFullYear(),
-			hasPermission: false,
-			dataLoaded: true,
-			segment: {
-				1: '1-5',
-				2: 'Нап',
-				3: '3160',
-				4: '6190',
-				5: 'ОВД',
-				6: '1-5 RED',
-				7: 'Нап RED',
-				10: 'ОВД RED',
-				11: '6_30 RED',
-				12: '6_30',
-			},
-			loader: null,
-			fill:{ gradient: ['#1890ff', '#28a745'] },
-			items: [],
-			params: [],
-			pagination: {
-				current_page: 1,
-				first_page_url: '',
-				from: 1,
-				last_page: 1,
-				last_page_url: '',
-				next_page_url: '',
-				per_page: 100,
-				prev_page_url: null,
-				to: 100,
-				total: 4866,
-			},
-			individual_request:true,
+  name: 'TableQuality',
+  components: {
+    Sidebar,
+    CourseResults,
+  },
+  props: {
+    groups: Array,
+    individual_type:{
+      default:null
+    },
+    individual_type_id:{
+      default:null
+    },
+    active_group: String,
+    check: String,
+    user: {
+      type: Object,
+      default: {}
+    }
+  },
+  data() {
+    return {
+      auth_user: this.user,
+      showChecklist: false,
+      checklists:{},
+      fields: [],
+      checklist_fields: [],
+      monthFields: [],
+      recordFields: [],
+      filters: {
+        currentEmployee: 0,
+        fromDate: moment().format("YYYY-MM-DD"),
+        toDate: moment().format("YYYY-MM-DD"),
+      },
+      can_add_records: false, // like kaspi
+      script_id: null,
+      dialer_id: null,
+      fieldsNumber: 15,
+      pageNumber: 1,
+      currentDay: new Date().getDate(),
+      avgDay: 0,
+      avgMonth: 0,
+      showCritWindow: false,
+      showSettings: false,
+      newRecord: {
+        id: 0,
+        employee_id: 0,
+        name: "",
+        segment: "1-5",
+        segment_id: 1,
+        interlocutor: "Клиент",
+        phone: "",
+        dayOfDelay: moment().format("YYYY-MM-DD"),
+        date: moment().format("YYYY-MM-DD"),
+        param1: 0,
+        param2: 0,
+        param3: 100,
+        param4: 0,
+        param5: 0,
+        comments: "",
+        changed: true,
+      },
+      records_unique: 0,
+      records: {
+        data: [],
+      },
+      deletingElementIndex: 0,
+      currentGroup: this.active_group,
+      groupName: "Контроль качества",
+      monthInfo: {},
+      user_ids: {},
+      years: useYearOptions(),
+      currentYear: new Date().getFullYear(),
+      hasPermission: false,
+      dataLoaded: true,
+      segment: {
+        1: "1-5",
+        2: "Нап",
+        3: "3160",
+        4: "6190",
+        5: "ОВД",
+        6: "1-5 RED",
+        7: "Нап RED",
+        10: "ОВД RED",
+        11: "6_30 RED",
+        12: "6_30",
+      },
+      loader: null,
+      fill:{ gradient: ["#1890ff", "#28a745"] },
+      items: [],
+      params: [],
+      pagination: {
+        current_page: 1,
+        first_page_url: "",
+        from: 1,
+        last_page: 1,
+        last_page_url: "",
+        next_page_url: "",
+        per_page: 100,
+        prev_page_url: null,
+        to: 100,
+        total: 4866,
+      },
+      individual_request:true,
 
-			viewStaticButton:{
-				weekCheck:true,
-				montheCheck:false
-			},
-			active:1,
-			selected_active:1,
-			flagGroup:'index',
-			checklist_tab: false,
-		};
-	},
-	computed: {
-		hasSettingsPermisstion(){
-			return this.auth_user && (Number(this.auth_user.id) == 18 || Number(this.auth_user.id) == 5)
-		}
-	},
-	watch: {
-		groups(){
-			this.init()
-		}
-	},
-	created() {
-		if(this.groups){
-			this.init()
-		}
-	},
-	methods: {
-		init(){
-			this.fetchData();
-		},
-		saveChecklist(){
-			axios.post('/checklist/save-checklist',{
-				checklists: this.checklists
-			}).then(response => {
-				this.toggle();
-				this.$toast.success('Сохранено');
-			});
-		},
-		showSidebar(user_id, day){
-			this.toggle();
-			var date = this.currentYear + '-' + this.monthInfo.month.padStart(2, '0') + '-' + day.padStart(2, '0');
+      viewStaticButton:{
+          weekCheck:true,
+          montheCheck:false
+      },
+      active:1,
+      selected_active:1,
+      flagGroup:'index',
+      checklist_tab: false,
+    };
+  },
+  computed: {
+    hasSettingsPermisstion(){
+      return this.auth_user && (Number(this.auth_user.id) == 18 || Number(this.auth_user.id) == 5)
+    }
+  },
+  watch: {
+    groups(){
+      this.init()
+    }
+  },
+  created() {
+    if(this.groups){
+      this.init()
+    }
+  },
+  methods: {
+    init(){
+      this.fetchData();
+    },
+    saveChecklist(){
+      axios.post("/checklist/save-checklist",{
+        checklists: this.checklists
+      }).then(response => {
+        this.toggle();
+        this.$toast.success('Сохранено');
+      });
+    },
+    showSidebar(user_id, day){
+      this.toggle();
+      var date = this.currentYear + '-' + this.monthInfo.month.padStart(2, "0") + '-' + day.padStart(2, "0");
 
-			axios.post('/checklist/get-checklist-by-user',{
-				user_id:user_id,
-				created_date: date
-			}).then(response => {
-				this.checklists = response.data;
-			});
-		},
-		toggle(){
-			this.showChecklist = !this.showChecklist;
-		},
-		viewStaticCheck(type){
-			if (type == 'w'){
-				this.viewStaticButton.weekCheck = true
-				this.viewStaticButton.montheCheck = false
+      axios.post("/checklist/get-checklist-by-user",{
+        user_id:user_id,
+        created_date: date
+      }).then(response => {
+        this.checklists = response.data;
+      });
+    },
+    toggle(){
+      this.showChecklist = !this.showChecklist;
+    },
+    viewStaticCheck(type){
+        if (type == 'w'){
+            this.viewStaticButton.weekCheck = true
+            this.viewStaticButton.montheCheck = false
 
-			}else if(type == 'm'){
-				this.viewStaticButton.weekCheck = false
-				this.viewStaticButton.montheCheck = true
-			}
-		}  ,
+        }else if(type == 'm'){
+            this.viewStaticButton.weekCheck = false
+            this.viewStaticButton.montheCheck = true
+        }
+      }  ,
 
-		watchChanges(values, oldValues) {
-			const index = values.findIndex(function (v, i) {
-				return v !== oldValues[i];
-			});
-			// console.log(this.records.data[index]);
-			this.records.data[index].changed = true;
-		},
+    watchChanges(values, oldValues) {
+      const index = values.findIndex(function (v, i) {
+        return v !== oldValues[i];
+      });
+      // console.log(this.records.data[index]);
+      this.records.data[index].changed = true;
+    },
 
-		getResults(page = 1) {
-			this.fetchItems('/timetracking/quality-control/records?page=' + page);
-		},
+    getResults(page = 1) {
+      this.fetchItems("/timetracking/quality-control/records?page=" + page);
+    },
 
-		fetchData(flag = null) {
-
-
-
-			if (flag == 'selected_group'){
-				this.flagGroup = 'selected_group'
-			}
-
-			let loader = this.$loading.show();
-			this.setDates();
-			this.fetchItems();
-			loader.hide();
-
-
-		},
-
-		normalizeItems() {
+    fetchData(flag = null) {
 
 
 
-			if (this.items.length > 0) {
-				this.newRecord.employee_id = this.items[0].id;
-				this.newRecord.name = this.items[0].name;
-			}
+      if (flag == 'selected_group'){
+        this.flagGroup = 'selected_group'
+      }
 
-			this.records.data.forEach((record, index) => {
-				record.segment = this.segment[record.segment_id];
-				record.changed = false;
+      let loader = this.$loading.show();
+      this.setDates();
+      this.fetchItems();
+      loader.hide();
 
-				this.params.forEach((param, key) => {
-					record['param' + key] = 0;
-				});
 
-				record.param_values.forEach((item, key) => {
-					this.params.forEach((param, key) => {
-						if (item.param_id == param.id) {
-							record['param' + key] = item.value;
-						}
-					});
-				});
-			});
-		},
+    },
+
+    normalizeItems() {
+
+
+
+      if (this.items.length > 0) {
+        this.newRecord.employee_id = this.items[0].id;
+        this.newRecord.name = this.items[0].name;
+      }
+
+      this.records.data.forEach((record, index) => {
+        record.segment = this.segment[record.segment_id];
+        record.changed = false;
+
+        this.params.forEach((param, key) => {
+          record["param" + key] = 0;
+        });
+
+        record.param_values.forEach((item, key) => {
+          this.params.forEach((param, key) => {
+            if (item.param_id == param.id) {
+              record["param" + key] = item.value;
+            }
+          });
+        });
+      });
+    },
 
 		addParam() {
 			this.params.push({

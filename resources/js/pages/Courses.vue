@@ -5,8 +5,8 @@
     <h1 class="page-title">Курсы</h1>
 
 
-    <draggable 
-      class="sss" 
+    <Draggable
+      class="sss"
       tag="div"
       :handle="'.fa-bars'"
       :list="courses"
@@ -27,7 +27,7 @@
         <div class="d-flex aic jcsb w-full">
            <p class="mb-0">{{ course.name }}</p>
             <div class="d-flex">
-             
+
             <i
               class="fa fa-trash ml-2"
               v-if="course.id != 0"
@@ -35,9 +35,9 @@
             ></i>
            </div>
         </div>
-       
+
       </div>
-    </draggable>
+    </Draggable>
 
     <button class="btn-add" @click="modals.add_course.show = true">
       Добавить курс
@@ -62,7 +62,7 @@
     </div>
     <div class="content mt-3">
       <div v-if="activeCourse" class="p-3">
-        <course :id="activeCourse.id" /> 
+        <Course :id="activeCourse.id" />
       </div>
     </div>
   </div>
@@ -89,41 +89,48 @@
 </template>
 
 <script>
-export default {
-	name: 'Courses',
-	data() {
-		return {
-			test: 'dsa',
-			courses: [],
-			activeCourse: null,
-			modals: {
-				add_course: {
-					show: false,
-					name: ''
-				}
-			},
-		};
-	},
-	created() {
-		this.$emit('init')
-		this.fetchData();
-	},
-	mounted() {},
-	methods: {
-		saveOrder(event) {
+import Draggable from 'vuedraggable'
+import Course from '@/pages/Course.vue'
 
-			axios.post('/courses/save-order', {
-				id: event.item.id,
-				order: event.newIndex, // oldIndex
-			}) 
-				.then(response => {
-					this.$toast.success('Очередь сохранена');
-				})
-		},
-		selectCourse(i) {
-			this.activeCourse = this.courses[i];
-			window.history.replaceState({ id: '100' }, 'Курсы', '/courses?id=' + this.activeCourse.id);
-		},
+export default {
+  name: 'Courses',
+  components: {
+    Draggable,
+    Course,
+  },
+  data() {
+    return {
+      test: 'dsa',
+      courses: [],
+      activeCourse: null,
+      modals: {
+        add_course: {
+          show: false,
+          name: ''
+        }
+      },
+    };
+  },
+  created() {
+    this.$emit('init')
+    this.fetchData();
+  },
+  mounted() {},
+  methods: {
+    saveOrder(event) {
+
+      axios.post('/courses/save-order', {
+        id: event.item.id,
+        order: event.newIndex, // oldIndex
+      })
+      .then(response => {
+          this.$toast.success('Очередь сохранена');
+      })
+    },
+    selectCourse(i) {
+      this.activeCourse = this.courses[i];
+      window.history.replaceState({ id: "100" }, "Курсы", "/courses?id=" + this.activeCourse.id);
+    },
 
 		editAccess(i) {
 			alert('Видимость и назначение курса отделам');
@@ -163,10 +170,10 @@ export default {
 				});
 		},
 
-		deleteCourse(i) {
-			if (confirm('Вы уверены удалить курс?')) {
-        
-				let loader = this.$loading.show();
+    deleteCourse(i) {
+       if (confirm("Вы уверены удалить курс?")) {
+
+        let loader = this.$loading.show();
 
 				axios
 					.post('/admin/courses/delete', {
@@ -192,25 +199,25 @@ export default {
 				.then((response) => {
 					this.courses = response.data.courses;
 
-					const urlParams = new URLSearchParams(window.location.search);
-					let course_id = urlParams.get('id');
-       
-					if(course_id != null) {
-						let i = this.courses.findIndex(el => el.id == course_id)
-						if(i != -1) this.activeCourse = this.courses[i]
-					} else if (this.courses.length > 0) {
-						this.activeCourse = this.courses[0];
-					}
-          
-					loader.hide();
-				})
-				.catch((error) => {
-					loader.hide();
-					alert(error);
-				});
-		},
-	},
+           const urlParams = new URLSearchParams(window.location.search);
+          let course_id = urlParams.get('id');
 
-  
+          if(course_id != null) {
+            let i = this.courses.findIndex(el => el.id == course_id)
+            if(i != -1) this.activeCourse = this.courses[i]
+          } else if (this.courses.length > 0) {
+            this.activeCourse = this.courses[0];
+          }
+
+          loader.hide();
+        })
+        .catch((error) => {
+          loader.hide();
+          alert(error);
+        });
+    },
+  },
+
+
 };
 </script>

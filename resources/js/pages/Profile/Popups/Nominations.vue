@@ -201,47 +201,50 @@
 
 
 <script>
-import {SpinnerPlugin} from 'bootstrap-vue';
-import VuePdfEmbed from 'vue-pdf-embed/dist/vue2-pdf-embed';
-export default {
-	name: 'PopupNominations',
-	components: {SpinnerPlugin, VuePdfEmbed},
-	props: {},
-	data: function () {
-		return {
-			tabIndex: 0,
-			loading: true,
-			modal: false,
-			itemModal: null,
-			fields: [],
-			awardTypes: null,
-			nominations: [],
-			certificates: [],
-			accrual: [],
-		};
-	},
-	filters: {
-		splitNumber: function (val) {
-			return val.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ' ');
-		}
-	},
-	watch: {
-		tabIndex(val) {
-			let buttons = this.$refs.tabis.$refs.buttons;
-			buttons[val].$refs.link.$el.scrollIntoView({inline: 'end', behavior: 'smooth'});
-		}
-	},
-	async mounted() {
-		await this.axios
-			.get('/awards/type?key=nomination')
-			.then(response => {
-				if (response.data.data) {
-					this.nominations = response.data.data;
-				}
-			})
-			.catch(error => {
-				console.log(error);
-			});
+    import {SpinnerPlugin} from 'bootstrap-vue';
+    import VuePdfEmbed from "vue-pdf-embed/dist/vue2-pdf-embed";
+    export default {
+        name: "PopupNominations",
+        components: {
+            SpinnerPlugin,
+            VuePdfEmbed,
+        },
+        props: {},
+        data: function () {
+            return {
+                tabIndex: 0,
+                loading: true,
+                modal: false,
+                itemModal: null,
+                fields: [],
+                awardTypes: null,
+                nominations: [],
+                certificates: [],
+                accrual: [],
+            };
+        },
+        filters: {
+            splitNumber: function (val) {
+                return val.toString().replace(/\B(?=(\d{3})+(?!\d))/g, " ");
+            }
+        },
+        watch: {
+            tabIndex(val) {
+                let buttons = this.$refs.tabis.$refs.buttons;
+                buttons[val].$refs.link.$el.scrollIntoView({inline: "end", behavior: "smooth"});
+            }
+        },
+        async mounted() {
+            await this.axios
+                .get('/awards/type?key=nomination')
+                .then(response => {
+                    if (response.data.data) {
+                        this.nominations = response.data.data;
+                    }
+                })
+                .catch(error => {
+                    console.log(error);
+                });
 
 		await this.axios
 			.get('/awards/type?key=certificate')
@@ -481,7 +484,7 @@ export default {
             width: 100%;
             display: block;
         }
-        
+
         .certificate-available{
             box-shadow: rgb(50 50 93 / 25%) 0px 13px 27px -5px, rgb(0 0 0 / 30%) 0px 8px 16px -8px;
             overflow: hidden;

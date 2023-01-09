@@ -9,7 +9,7 @@
                 <span>Показывать:</span>
                 <input type="number" min="1" max="100" v-model="pageSize" class="form-control ml-2 input-sm" />
             </div>
-            <super-filter
+            <SuperFilter
                 ref="child"
                 :groups="groups"
             />
@@ -52,19 +52,20 @@
                </td>
                <td class="p-3 text-left">
                    <div v-if="all_fields[0].key == 'target'" class="mr-5">
-                       <superselect
-                               v-if="newPremiumArray[0].id == 0"
-                               style="width: 60%;"
-                               :values="(new_target == null && newPremiumArray.length > 0) ? [] : [new_target]"
-                               :single="true"
-                               @choose="(target) => new_target = target"
-                               @remove="() => new_target = null" />
-                       <div v-else class="d-flex aic">
-                           <i class="fa fa-user ml-2 color-user" v-if="newPremiumArray[0].target.type == 1"></i>
-                           <i class="fa fa-users ml-2 color-group" v-if="newPremiumArray[0].target.type == 2"></i>
-                           <i class="fa fa-briefcase ml-2 color-position" v-if="newPremiumArray[0].target.type == 3"></i>
-                           <span class="ml-2">{{ newPremiumArray[0].target.name }}</span>
-                       </div>
+                        <SuperSelect
+                            v-if="newPremiumArray[0].id == 0"
+                            style="width: 60%;"
+                            :values="(new_target == null && newPremiumArray.length > 0) ? [] : [new_target]"
+                            :single="true"
+                            @choose="(target) => new_target = target"
+                            @remove="() => new_target = null"
+                        />
+                        <div v-else class="d-flex aic">
+                            <i class="fa fa-user ml-2 color-user" v-if="newPremiumArray[0].target.type == 1"></i>
+                            <i class="fa fa-users ml-2 color-group" v-if="newPremiumArray[0].target.type == 2"></i>
+                            <i class="fa fa-briefcase ml-2 color-position" v-if="newPremiumArray[0].target.type == 3"></i>
+                            <span class="ml-2">{{ newPremiumArray[0].target.name }}</span>
+                        </div>
                    </div>
                </td>
            </tr>
@@ -358,7 +359,7 @@
     </table>
 
     <!-- pagination -->
-    <jw-pagination
+    <JwPagination
         class=""
         :key="paginationKey"
         :items="items"
@@ -370,7 +371,7 @@
         }"
         @changePage="onChangePage"
         :pageSize="+pageSize"
-    ></jw-pagination>
+    />
 
     <!-- modal Adjust Visible fields -->
     <b-modal
@@ -395,7 +396,7 @@
         </div>
     </b-modal>
 
-    <sidebar
+    <Sidebar
         title="Настроить премию"
         v-if="activeItem != null"
         :open="showSidebar"
@@ -403,17 +404,18 @@
         width="40%"
     >
         <div class="row m-0">
-            <div class="mb-3" v-for="(field, f) in all_fields" :key="f" :class="field.alter_class">
+            <div class="mb-3" v-for="(field, f) in all_fields" :class="field.alter_class">
 
                         <div class="mb-2 mt-2 field">{{ field.name }}</div>
 
                         <div v-if="field.key == 'target'" class="mr-5">
-                            <superselect
+                            <SuperSelect
                                 v-if="activeItem.id == 0"
                                 class="w-full"
                                 :values="activeItem.target == null ? [] : [activeItem.target]"
                                 :single="true"
-                                @choose="(target) => activeItem.target = target" />
+                                @choose="(target) => activeItem.target = target"
+                            />
                             <div v-else class="d-flex aic">
                                 <i class="fa fa-user ml-2 color-user" v-if="activeItem.target.type == 1"></i>
                                 <i class="fa fa-users ml-2 color-group" v-if="activeItem.target.type == 2"></i>
@@ -454,7 +456,7 @@
                                     :key="'a' + source_key"
                                 >
                                     <option value="0" selected>-</option>
-                                    <option v-for="(group, id) in groups" :key="id" :value="id">{{ group }}</option>
+                                    <option v-for="(group, id) in groups" :value="id">{{ group }}</option>
                                 </select>
 
                                 <select
@@ -506,33 +508,96 @@
             </div>
         </div>
 
-    </sidebar>
+    </Sidebar>
 </div>
 </template>
 
 <script>
-import {fields, newQuartalPremium} from './quartal_premiums.js';
-import {findModel, sources} from './helpers.js';
+import JwPagination from 'jw-vue-pagination'
+import SuperFilter from '@/pages/kpi/SuperFilter' // filter like bitrix
+import SuperSelect from '@/components/SuperSelect'
+import Sidebar from '@/components/ui/Sidebar' // сайдбар table
+
+import {fields, newQuartalPremium} from "./quartal_premiums.js";
+import {findModel, sources} from "./helpers.js";
 
 export default {
-	name: 'QuartalPremiums',
-	props: {
+    name: 'QuartalPremiums',
+    components: {
+        JwPagination,
+        SuperFilter,
+        SuperSelect,
+        Sidebar,
+    },
+    props: {},
+    watch: {
+        show_fields: {
+            handler: function (val) {
+                localStorage.quartal_premiums_show_fields = JSON.stringify(val);
+                this.prepareFields();
+            },
+            deep: true
+        },
+        pageSize: {
+            handler: function(val) {
+                if(val < 1) {
+                    val = 1;
+                    return;
+                }
 
-	},
-	watch: {
-		show_fields: {
-			handler: function (val) {
-				localStorage.quartal_premiums_show_fields = JSON.stringify(val);
-				this.prepareFields();
-			},
-			deep: true
-		},
-		pageSize: {
-			handler: function(val) {
-				if(val < 1) {
-					val = 1;
-					return;
-				}
+                if(val > 100) {
+                    val = 100;
+                    return;
+                }
+
+                this.paginationKey++;
+            }
+        },
+        newPremiumArray(after, before){
+            if(after.length == 0){
+                this.counter = 0;
+                this.new_target = null;
+            }
+        }
+    },
+    data() {
+        return {
+            new_target: null,
+            counter: 0,
+            premium: null,
+            newPremiumArray: [],
+            active: 1,
+            activeItem: null,
+            uri: 'quartal-premiums',
+            showSidebar: false,
+            show_fields: [],
+            fields: [],
+            all_fields: fields,
+            groups: [],
+            searchText: "",
+            modalAdjustVisibleFields: false,
+            page_items: [],
+            pageSize: 20,
+            paginationKey: 1,
+            items: [], // after filter changes
+            all_items: [],
+            activities: [],
+            source_key: 1,
+            sources: sources,
+            non_editable_fields: [
+                'created_at',
+                'updated_at',
+                'created_by',
+                'updated_by',
+            ]
+        }
+    },
+
+    created() {
+        this.setDefaultShowFields()
+        this.prepareFields();
+        this.addStatusToItems();
+    },
 
 				if(val > 100) {
 					val = 100;
@@ -597,34 +662,15 @@ export default {
 
 	},
 
-	methods: {
-		addPremiumGroup(page){
-			page.items.push(newQuartalPremium());
-			page.items[page.items.length - 1].target = {
-				id: page.id,
-				type: page.type
-			};
-		},
-		addPremium(){
-			this.newPremiumArray.push(newQuartalPremium());
-		},
-		saveNewQuartal(i){
-			this.newPremiumArray[i].target = this.new_target;
-			this.save(this.newPremiumArray[i],i);
-		},
-		deleteNewQuartal(i){
-			this.newPremiumArray.splice(i,1);
-		},
-		addRowItem(){
-			if(this.counter == 0){
-				this.newPremiumArray.push(newQuartalPremium());
-				this.premium = this.newPremiumArray[0];
-				this.counter++;
-			}
-		},
-		expand(i) {
-			this.page_items[i].expanded = !this.page_items[i].expanded
-		},
+            axios.post( this.uri + '/get', {
+                filters: filter
+            }).then(response => {
+
+
+                this.all_items = response.data.items
+                this.items = response.data.items;
+                this.activities = response.data.activities;
+                this.groups = response.data.groups;
 
 		onChangePage(page_items) {
 			this.page_items = page_items;
@@ -637,13 +683,20 @@ export default {
 				filters: filter
 			}).then(response => {
 
+        openSidebar(p, i) {
+            this.activeItem = this.page_items[p].items[i]
+            this.showSidebar = true
+        },
 
-				this.all_items = response.data.items
-				this.items = response.data.items;
-				this.activities = response.data.activities;
-				this.groups = response.data.groups;
+        closeSidebar() {
+            this.showSidebar = false
+            this.activeItem = null;
+        },
 
-				this.defineSourcesAndGroups();
+        setDefaultShowFields() {
+
+            let obj = {}; // Какие поля показывать
+            fields.forEach(field => obj[field.key] = true);
 
 				this.items.forEach(el => el.expanded = false);
 				this.page_items = this.items.slice(0, this.pageSize);
@@ -665,38 +718,12 @@ export default {
 			this.activeItem = null;
 		},
 
-		setDefaultShowFields() {
+        prepareFields() {
+            let visible_fields = [],
+                show_fields = this.show_fields;
 
-			let obj = {}; // Какие поля показывать
-			fields.forEach(field => obj[field.key] = true);
-
-			if(localStorage.quartal_premiums_show_fields) {
-				this.show_fields = JSON.parse(localStorage.getItem('quartal_premiums_show_fields'));
-				if(this.show_fields == null) this.show_fields = obj
-			} else {
-				this.show_fields = obj
-			}
-
-		},
-
-		adjustFields() {
-			this.modalAdjustVisibleFields = true;
-		},
-
-		addStatusToItems() {
-			this.items.forEach(el => {
-				el.on_edit = false
-				el.source = 0
-				el.group_id = 0
-				el.selected = false
-			});
-		},
-
-		prepareFields() {
-			const visible_fields = []
-
-			fields.forEach(field => {
-				if(this.show_fields[field.key] != undefined
+            fields.forEach((field, i) => {
+                if(this.show_fields[field.key] != undefined
                     && this.show_fields[field.key]
 				) {
 					visible_fields.push(field)
@@ -714,52 +741,56 @@ export default {
 		validateMsg(item) {
 			let msg = '';
 
-			if(item.target == null)    msg = 'Выберите Кому назначить'
-			if(item.title.length <= 1) msg = 'Заполните название'
+            if(item.target == null)    msg = 'Выберите Кому назначить'
+            if(item.title.length <= 1) msg = 'Заполните название'
 
-			// activity id
-			let a;
-			if(item.source == 1) {
-				a = this.activities.findIndex(el => el.source == item.source && el.group_id == item.group_id && el.id == item.activity_id);
-			} else {
-				a = this.activities.findIndex(el => el.source == item.source && el.id == item.activity_id);
-			}
+            // activity id
+            let a;
+            if(item.source == 1) {
+                a = this.activities.findIndex(el => el.source == item.source && el.group_id == item.group_id && el.id == item.activity_id);
+            } else {
+                a = this.activities.findIndex(el => el.source == item.source && el.id == item.activity_id);
+            }
 
-			if(item.activity_id == 0 || item.activity_id == undefined || a == -1) {
-				msg = 'Выберите показатель';
-			}
+            if(item.activity_id == 0 || item.activity_id == undefined || a == -1) {
+                msg = 'Выберите показатель';
+            }
 
-			// another
-			if(item.from == null)      msg = 'Выберите начало периода'
-			if(item.to == null)        msg = 'Выберите конец периода'
-			if(item.quantity <= 0)     msg = 'Кол-во должно быть больше нуля'
-			if(item.sum <= 0)          msg = 'Вознаграждение должно быть больше нуля'
+            // another
+            if(item.from == null)      msg = 'Выберите начало периода'
+            if(item.to == null)        msg = 'Выберите конец периода'
+            if(item.quantity <= 0)     msg = 'Кол-во должно быть больше нуля'
+            if(item.sum <= 0)          msg = 'Вознаграждение должно быть больше нуля'
 
-			return msg;
-		},
+            return msg;
+        },
 
-		save(item, index) {
+        save(item, index) {
 
-			/**
+            /**
              * validate item
              */
-			let not_validated_msg = this.validateMsg(item);
-			if(not_validated_msg != '') {
-				this.$toast.error(not_validated_msg)
-				return;
-			}
+            let not_validated_msg = this.validateMsg(item);
+            if(not_validated_msg != '') {
+                this.$toast.error(not_validated_msg)
+                return;
+            }
 
-			/**
+            /**
              * prepare fields
              */
 			let loader = this.$loading.show();
 			let method = item.id == 0 ? 'save' : 'update';
 
-			let fields = {
-				targetable_id: item.target.id,
-				targetable_type: findModel(item.target.type),
-				...item
-			};
+            let fields = {
+                targetable_id: item.target.id,
+                targetable_type: findModel(item.target.type),
+                ...item
+            };
+
+            let req = item.id == 0
+                ? axios.post(this.uri + '/' + method, fields)
+                : axios.put(this.uri + '/' + method, fields);
 
 			let req = item.id == 0
 				? this.$axios.post(this.uri + '/' + method, fields)
@@ -768,7 +799,13 @@ export default {
 			/**
              * request
              */
-			req.then(response => {
+            req.then(response => {
+
+                if(method == 'save') {
+                    let quartal_premium = response.data.quartal_premium;
+                    item.id = quartal_premium.id;
+                   // this.items.unshift(item);
+
 
 				if(method == 'save') {
 					let quartal_premium = response.data.quartal_premium;
@@ -789,18 +826,27 @@ export default {
 						});
 					}
 
+                this.$toast.info('Сохранено');
+                this.newPremiumArray.splice(index,1);
+                loader.hide()
+            }).catch(error => {
+                let m = error;
+                if(error.message == 'Request failed with status code 409') {
+                    m = 'Выберите другую цель "Кому"';
+                }
+
+                loader.hide()
+                alert(m)
+            });
+        },
 
 					this.showSidebar = false
 				}
 
-				this.$toast.info('Сохранено');
-				this.newPremiumArray.splice(index,1);
-				loader.hide()
-			}).catch(error => {
-				let m = error;
-				if(error.message == 'Request failed with status code 409') {
-					m = 'Выберите другую цель "Кому"';
-				}
+        deleteEvery(id, p, i) {
+
+            // let a = this.all_items.findIndex(el => el.id == id)
+            // if(a != -1) this.all_items.splice(a, 1);
 
 				loader.hide()
 				alert(m)
@@ -818,14 +864,16 @@ export default {
 			});
 		},
 
-		deleteEvery(id, p, i) {
+        saveItem() {
+            this.save(this.activeItem)
+        },
 
 			// let a = this.all_items.findIndex(el => el.id == id)
 			// if(a != -1) this.all_items.splice(a, 1);
 
-			this.all_items[p].items.splice(i, 1);
-			if(this.all_items[p].items.length == 0) this.all_items.splice(p, 1)
-			this.onSearch();
+        deleteItem(p, i) {
+
+            let item = this.page_items[p].items[i]
 
 			this.$toast.info('Удалено');
 		},
@@ -838,9 +886,27 @@ export default {
 			this.save(this.page_items[p].items[i])
 		},
 
-		deleteItem(p, i) {
+        showStat() {
+            this.$toast.info('Показать статистику');
+        },
 
-			let item = this.page_items[p].items[i]
+        onSearch() {
+            let text = this.searchText;
+
+            if(this.searchText == '') {
+               this.items = this.all_items;
+            } else {
+                this.items = this.all_items.filter((el, index) => {
+                    let has = false;
+
+                    if (
+                        el.name.toLowerCase().indexOf(text.toLowerCase()) > -1
+                    ) {
+                        has = true;
+                    }
+                    return has;
+                });
+            }
 
 			if(!confirm('Вы уверены?')) {
 				return;
@@ -858,65 +924,27 @@ export default {
 			this.$toast.info('Показать статистику');
 		},
 
-		onSearch() {
-			let text = this.searchText;
+                    if(el.activity_id != 0) {
+                        let i = this.activities.findIndex(a => a.id == el.activity_id);
+                        if(i != -1) {
+                            el.source = this.activities[i].source
+                            if(el.source == 1) el.group_id = this.activities[i].group_id
+                        }
+                    }
+                });
+            })
 
-			if(this.searchText == '') {
-				this.items = this.all_items;
-			} else {
-				this.items = this.all_items.filter(el => {
-					let has = false;
+        },
 
-					if (
-						el.name.toLowerCase().indexOf(text.toLowerCase()) > -1
-					) {
-						has = true;
-					}
-					return has;
-				});
-			}
-
-			this.page_items = this.items.slice(0, this.pageSize);
-		},
-
-		validate(value, field) {
-			value = Math.abs(Number(value));
-			if(isNaN(value) || isFinite(value)) {
-				value = 0;
-			}
-
-			if(['lower_limit', 'upper_limit'].includes(field) && value > 100) {
-				value = 100;
-			}
-		},
-
-		defineSourcesAndGroups() {
-			this.items.forEach(p => {
-				p.items.forEach(el => {
-					el.source = 0;
-					el.group_id = 0;
-
-					if(el.activity_id != 0) {
-						let i = this.activities.findIndex(a => a.id == el.activity_id);
-						if(i != -1) {
-							el.source = this.activities[i].source
-							if(el.source == 1) el.group_id = this.activities[i].group_id
-						}
-					}
-				});
-			})
-
-		},
-
-		grouped_activities(source, group_id) {
-			if(source == 1) {
-				return this.activities.filter(el => el.source == source && el.group_id == group_id);
-			} else {
-				group_id = 0
-				return this.activities.filter(el => el.source == source);
-			}
-		}
-	},
+        grouped_activities(source, group_id) {
+            if(source == 1) {
+                return this.activities.filter(el => el.source == source && el.group_id == group_id);
+            } else {
+                group_id = 0
+                return this.activities.filter(el => el.source == source);
+            }
+        }
+    },
 
 }
 </script>

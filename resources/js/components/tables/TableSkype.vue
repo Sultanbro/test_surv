@@ -11,6 +11,7 @@
                     <option v-for="day in this.month.daysInMonth" :value="day" :key="day">{{ day }}</option>
                 </select>    -->
                 <div class="p-o pl-3">
+                    <!-- как это вобще работает?????? -->
                     <date-picker value="test"  placeholder="Дата подписи" v-model="filter.dates" :lang="lang" range multiple ></date-picker>
                     <!-- <m-date-picker v-model="filter.dates" lang="ru" :multi="true" :always-display="false" :format="formatDate"></m-date-picker> -->
                 </div>
@@ -41,7 +42,7 @@
                 </select>
             </div> -->
             <div class="col-md-4">
-                <b>   Кол-во:</b> {{records.length }}
+                <b>Кол-во:</b> {{records.length }}
             </div>
             <div class="col-md-4">
 
@@ -227,9 +228,9 @@
     <div v-if="checkedBoxes.length > 0" class="bottomvars">
         <div class="row align-items-center">
             <div class="col-sm-3">
-                    <select  required="required"  v-model="selected.group_id" class="form-control form-control-sm">
-                        <option :value="group.id" v-for="group in groups">{{ group.name }}</option>
-                    </select>
+                <select  required="required"  v-model="selected.group_id" class="form-control form-control-sm">
+                    <option :value="group.id" v-for="group in groups">{{ group.name }}</option>
+                </select>
             </div>
 
             <div class="col-sm-3">

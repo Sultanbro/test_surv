@@ -38,36 +38,38 @@
                 </div>
 
                 <div v-show="dateType == 5" class="news-filter-modal__range">
-                    <date-picker
+                    <DatePicker
                         v-model="value"
                         range
                         :open.sync="daterangePopupOpen"
                         @clear="clearDatePicer"
                         format="DD.MM.YYYY"
                         range-separator=" – "
-                        placeholder="Диапазон">
+                        placeholder="Диапазон"
+                    >
                         <template v-slot:icon-calendar>
                             <img alt="img" src="/icon/news/inputs/date-picker.svg">
                         </template>
                         <template v-slot:content="slotProps">
-                            <calendar-panel :value="innerValue" :get-classes="getClasses"
-                                            @select="handleSelect"></calendar-panel>
+                            <CalendarPanel :value="innerValue" :get-classes="getClasses"
+                                            @select="handleSelect"/>
                         </template>
-                    </date-picker>
+                    </DatePicker>
                 </div>
 
                 <div v-show="dateType == 6" class="news-filter-modal__range">
-                    <date-picker
+                    <DatePicker
                         v-model="value"
                         :open.sync="datePopupOpen"
                         @clear="clearDatePicer"
                         format="DD.MM.YYYY"
-                        placeholder="Точная дата">
+                        placeholder="Точная дата"
+                    >
                         <template v-slot:icon-calendar><img alt="img" src="/icon/news/inputs/date-picker.svg"></template>
                         <template v-slot:content="slotProps">
-                            <calendar-panel :value="datePickerValue" @select="selectSingleDate"></calendar-panel>
+                            <CalendarPanel :value="datePickerValue" @select="selectSingleDate"/>
                         </template>
-                    </date-picker>
+                    </DatePicker>
                 </div>
 
                 <div :class="author != '' ? 'news-select--selected' : 'news-select'">
@@ -121,15 +123,15 @@ function isValidDate(date) {
 const moment = require('moment');
 
 export default {
-	name: 'FilterComponent',
-	components: {
-		DatePicker,
-		CalendarPanel
-	},
-	data() {
-		return {
-			//date
-			value: [],
+    name: 'FilterComponent',
+    components: {
+        DatePicker,
+        CalendarPanel,
+    },
+    data() {
+        return {
+            //date
+            value: [],
 
 			//date-picker
 			datePickerValue: new Date(NaN),

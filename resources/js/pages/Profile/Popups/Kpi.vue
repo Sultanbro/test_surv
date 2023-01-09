@@ -103,7 +103,7 @@
                                                                     class="kpi__activities-outer"
                                                                 >
                                                                     <div class="table__wrapper__second">
-                                                                        <kpi-items
+                                                                        <KpiItems
                                                                             :my_sum="user.full_time == 1 ? wrap_item.completed_100 : wrap_item.completed_100 / 2"
                                                                             :kpi_id="user.id"
                                                                             :items="user.items"
@@ -149,45 +149,49 @@
 </template>
 
 <script>
-import {kpi_fields} from '../../kpi/kpis.js';
+import {kpi_fields} from "../../kpi/kpis.js";
+import KpiItems from '@/pages/kpi/KpiItems.vue'
 
 export default {
-	name: 'PopupKpi',
-	props: {},
-	data: function () {
-		return {
-			groups: [],
-			editable: false,
-			activities: [],
-			items: [],
-			currentMonth: null,
-			dateInfo: {
-				currentMonth: null,
-				monthEnd: 0,
-				workDays: 0,
-				weekDays: 0,
-				daysInMonth: 0
-			},
-			show_fields: [],
-			all_fields: kpi_fields,
-			fields: [],
-			non_editable_fields: [
-				'created_at',
-				'updated_at',
-				'created_by',
-				'updated_by',
-			],
-			user_id: 1,
-			loading: false
-		};
-	},
-	created(){
-		this.setMonth()
-		this.prepareFields()
-		this.fetchBefore()
-	},
-	methods: {
-		/**
+    name: "PopupKpi",
+    components: {
+        KpiItems,
+    },
+    props: {},
+    data: function () {
+        return {
+            groups: [],
+            editable: false,
+            activities: [],
+            items: [],
+            currentMonth: null,
+            dateInfo: {
+                currentMonth: null,
+                monthEnd: 0,
+                workDays: 0,
+                weekDays: 0,
+                daysInMonth: 0
+            },
+            show_fields: [],
+            all_fields: kpi_fields,
+            fields: [],
+            non_editable_fields: [
+                'created_at',
+                'updated_at',
+                'created_by',
+                'updated_by',
+            ],
+            user_id: 1,
+            loading: false
+        };
+    },
+    created(){
+        this.setMonth()
+        this.prepareFields()
+        this.fetchBefore()
+    },
+    methods: {
+        /**
          * set month
          */
 		setMonth() {

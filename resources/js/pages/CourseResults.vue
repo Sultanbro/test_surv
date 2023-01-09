@@ -125,77 +125,77 @@ function formatProgress(num, precision = 2){
 }
 
 export default {
-	name: 'CourseResults',
-	watch: {
-		monthInfo(val) {
-			this.first = true;
-			if(this.type == this.BY_GROUP) {
-				this.fetchData('groups');
-				this.first = false;
-			} else {
-				this.fetchData('users');
-			}
-		},
-		currentGroup() {
-			this.first = true;
-			if(this.type == this.BY_GROUP) {
-				this.fetchData('groups');
-				this.first = false;
-			} else {
-				this.fetchData('users');
-			}
-		},
-		type(val) {
-			if(val == this.BY_GROUP && this.first) {
-				this.fetchData('groups');
-				this.first = false;
-			}
-		},
-	},
-	props: {
-		monthInfo: {
-			required: false
-		},
-		currentGroup: {
-			required: false
-		}
-	},
-	data() {
-		return {
-			data: [],
-			type: BY_USER,
-			first: true,
-			BY_USER: BY_USER,
-			BY_GROUP: BY_GROUP,
-			users: {
-				items: [],
-				fields: [],
-			},
-			groups: {
-				items: [],
-				fields: [],
-			},
-			course2item: {
-				name: 'title',
-				status: 'status',
-				points: 'points',
-				progress: 'progress',
-				progress_on_week: 'progress_on_week',
-				started_at: 'started_at',
-				ended_at: 'ended_at'
-			},
-			courses: {},
-			courseItems: {}
-		}
-	},
-	computed: {
-		courseItemsTable(){
-			const result = {}
-			for(let [userId, userResult] of Object.entries(this.courseItems)){
-				for(let [courseId, courseResult] of Object.entries(userResult)){
-					const course = this.courses[courseId]
-					if(!course) continue
-					const points = course.points / course.stages
+    name: 'CourseResults',
+    watch: {
+        monthInfo(val) {
+            this.first = true;
+            if(this.type == this.BY_GROUP) {
+                this.fetchData('groups');
+                this.first = false;
+            } else {
+                this.fetchData('users');
+            }
+        },
+        currentGroup() {
+            this.first = true;
+            if(this.type == this.BY_GROUP) {
+                this.fetchData('groups');
+                this.first = false;
+            } else {
+                this.fetchData('users');
+            }
+        },
+        type(val) {
+            if(val == this.BY_GROUP && this.first) {
+                this.fetchData('groups');
+                this.first = false;
+            }
+        },
+    },
+    props: {
+        monthInfo: {
+            required: false
+        },
+        currentGroup: {
+            required: false
+        }
+    },
+    data() {
+        return {
+            data: [],
+            type: BY_USER,
+            first: true,
+            BY_USER: BY_USER,
+            BY_GROUP: BY_GROUP,
+            users: {
+                items: [],
+                fields: [],
+            },
+            groups: {
+                items: [],
+                fields: [],
+            },
+            course2item: {
+                name: 'title',
+                status: 'status',
+                points: 'points',
+                progress: 'progress',
+                progress_on_week: 'progress_on_week',
+                started_at: 'started_at',
+                ended_at: 'ended_at'
+            },
+            courses: {},
+            courseItems: {}
+        }
+    },
+    computed: {
+        courseItemsTable(){
+            const result = {}
+            for(let [userId, userResult] of Object.entries(this.courseItems)){
+                for(let [courseId, courseResult] of Object.entries(userResult)){
+                    const course = this.courses[courseId]
+                    if(!course) continue
+                    const points = course.points / course.stages
 
 					if(!result[userId]) result[userId] = {}
 					courseResult.forEach(courseItem => {

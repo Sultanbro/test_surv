@@ -8,14 +8,14 @@
             Добавить
         </button>
     </div>
-    
+
     <!-- words -->
     <div class="block" v-for="(word, i) in filteredWords" :key="i">
         <div class="word">
             <input type="text" v-model="word.word" :disabled="mode == 'read'" class="form-control">
         </div>
         <div class="definition">
-            <textarea v-model="word.definition" :disabled="mode == 'read'" class="form-control"></textarea>
+            <textarea v-model="word.definition" :disabled="mode == 'read'" class="form-control"/>
         </div>
         <div class="action d-flex" v-if="mode == 'edit'">
             <button class="btn btn-sm" @click="save(i)">
@@ -25,7 +25,7 @@
                 <i class="fa fa-trash"></i>
             </button>
         </div>
-    </div>    
+    </div>
 
 </div>
 </template>
@@ -41,15 +41,15 @@ export default {
 		}
 	},
 
-	created(){
-		this.fetch()
-	},
-    
-	computed: {
-		filteredWords() {
-			return this.words.filter(el => el.word.toLowerCase().indexOf(this.search_text.toLowerCase()) > -1);
-		}
-	},
+    created(){
+        this.fetch()
+    },
+
+    computed: {
+        filteredWords() {
+            return this.words.filter(el => el.word.toLowerCase().indexOf(this.search_text.toLowerCase()) > -1);
+        }
+    },
 
 	methods: {
 		fetch() {

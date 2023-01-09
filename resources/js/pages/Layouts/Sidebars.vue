@@ -3,74 +3,95 @@
     <profile-sidebar v-show="isProfileVisible"/>
 
     <div class="header">
-        <left-sidebar :class="{closed: !isLeft}"></left-sidebar>
-        <right-sidebar :class="{closed: !isRight}" @pop="pop"></right-sidebar>
+        <left-sidebar :class="{closed: !isLeft}"/>
+        <right-sidebar
+          :class="{closed: !isRight}"
+          @pop="pop"
+        />
 
-        <div class="header__arrow" :class="{show: isRight}">
+        <div
+          class="header__arrow"
+          :class="{show: isRight}"
+        >
             <a href="#"><img src="/images/dist/header-arrow.svg" alt="arrow icon"></a>
         </div>
     </div>
 
     <!-- popup -->
-    <popup v-if="popNotifications"
+    <Popup
+        v-if="popNotifications"
         title="Уведомления"
         desc="Дополнительное поле с описанием функционала данного окна"
         :open="popNotifications"
         @close="popNotifications=false"
-        width="50%">
-        <popup-notifications></popup-notifications>
-    </popup>
+        width="50%"
+    >
+        <popup-notifications/>
+    </Popup>
 
     <!-- popup -->
-    <popup v-if="popChecklist"
+    <Popup
+        v-if="popChecklist"
         title="Чек лист"
         desc="Важно в течении дня выполнить все пункты чек листа"
         :open="popChecklist"
         @close="popChecklist=false"
-        width="75%">
-        <popup-checklist :data="checklistData"></popup-checklist>
-    </popup>
+        width="75%"
+    >
+        <popup-checklist :data="checklistData"/>
+    </Popup>
 
     <!-- popup -->
-    <popup v-if="popFAQ"
+    <Popup
+        v-if="popFAQ"
         title="Вопросы и ответы"
         desc="Дополнительное поле с описанием функционала данного окна"
         :open="popFAQ"
         @close="popFAQ=false"
-        width="50%">
-        <popup-faq></popup-faq>
-    </popup>
+        width="50%"
+    >
+        <popup-faq/>
+    </Popup>
 
     <!-- popup -->
-    <popup v-if="popSearch"
+    <Popup
+        v-if="popSearch"
         title="Поиск"
         desc="Дополнительное поле с описанием функционала данного окна"
         :open="popSearch"
         @close="popSearch=false"
-        width="50%">
-        <popup-search></popup-search>
-    </popup>
+        width="50%"
+    >
+        <popup-search/>
+    </Popup>
 
     <!-- popup -->
-    <popup v-if="popMail"
+    <Popup
+        v-if="popMail"
         title="Почта или что это?"
         desc="Дополнительное поле с описанием функционала данного окна"
         :open="popMail"
         @close="popMail=false"
-        width="50%">
-        <popup-mail></popup-mail>
-    </popup>
+        width="50%"
+    >
+        <popup-mail/>
+    </Popup>
 
 </div>
 </template>
 
 <script>
+import Popup from '@/pages/Layouts/Popup.vue'
+
 export default {
-	name: 'Sidebars',
-	props: {
-		isLeft: Boolean,
-		isRight: Boolean,
-	},
+  name: 'Sidebars',
+  components: {
+    Popup,
+  },
+  props: {
+    isLeft: Boolean,
+    isRight: Boolean,
+  },
 
 	data() {
 		return {

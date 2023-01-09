@@ -1,6 +1,6 @@
 <template>
   <ul class="dragArea">
-    <li 
+    <li
         v-for="el in tasks"
           class="chapter opened"
           :class="{
@@ -22,39 +22,39 @@
             {{ el.title }}
           </p>
         </div>
-        <nested-course
+        <NestedCourse
           :tasks="el.children"
           @showPage="showPage"
-          :active="active" 
+          :active="active"
         />
     </li>
   </ul>
 </template>
 <script>
-export default {  
-	name: 'nested-course',
-	props: {
-		tasks: {
-			required: true,
-			type: Array
-		},
-		active: {
-			default: 0
-		},
-	},
-	watch: {
-		active: function(v) {
-			if(this.first_active == 0) this.first_active = this.active
-			console.log('watch actibe')
-		}
-	},
-	data() {
-		return {
-			first_active: 0
-		}
-	},
-	methods: {
-		showPage(id) {
+const NestedCourse = {
+  name: 'NestedCourse',
+  props: {
+    tasks: {
+      required: true,
+      type: Array
+    },
+    active: {
+      default: 0
+    },
+  },
+  watch: {
+    active: function(v) {
+      if(this.first_active == 0) this.first_active = this.active
+      console.log('watch actibe')
+    }
+  },
+  data() {
+    return {
+      first_active: 0
+    }
+  },
+  methods: {
+    showPage(id) {
 
 			let item = null;
 			let i = this.tasks.findIndex(el => el.id == id);
@@ -66,13 +66,17 @@ export default {
 			console.log(item)
 			console.log(this.first_active)
 
-			if(id != this.first_active) {
-				if(item != null && item.item_model == null) return; 
-			} 
- 
-			console.log('nested SHowpage emit')
-			this.$emit('showPage', id);
-		},
-	},
+      if(id != this.first_active) {
+        if(item != null && item.item_model == null) return;
+      }
+
+      console.log('nested SHowpage emit')
+      this.$emit('showPage', id);
+    },
+  },
 };
+NestedCourse.components = {
+  NestedCourse
+}
+export default NestedCourse
 </script>

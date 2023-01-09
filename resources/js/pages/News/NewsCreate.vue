@@ -64,7 +64,10 @@
     </div>
 
     <div v-show="editorOpen && fileInputOpen" class="news-create__files">
-      <drop-zone ref="dropZone" @sendFiles="updateFileList"></drop-zone>
+      <DropZone
+        ref="dropZone"
+        @sendFiles="updateFileList"
+      />
     </div>
 
     <div v-show="showAccessModal" class="access-modal-bg" @click.self="toggleAccessModal(false)" v-scroll-lock="showAccessModal">
@@ -166,6 +169,7 @@
 
 <script>
 import ClassicEditor from '/ckeditor5-custom/build/ckeditor';
+import DropZone from '@/pages/News/DropZone'
 
 function SimpleUploadAdapterPlugin(editor) {
 	editor.plugins.get('FileRepository').createUploadAdapter = (loader) => {
@@ -236,349 +240,351 @@ class UploadAdapter {
 	}
 }
 
-
 export default {
-	name: 'NewsCreate',
-	props: {
-		me: {
-			required: true
-		},
-	},
-	data() {
-		return {
-			accessDictionaries: {
-				positions: [],
-				profile_groups: [],
-				users: [],
-			},
-
-			csrf: document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
-
-			editor: ClassicEditor,
-			editorData: '',
-			editorConfig: {
-				extraPlugins: [SimpleUploadAdapterPlugin,],
-				mediaEmbed: {
-					previewsInData: true
-				},
-				allowedContent: true
-			},
-
-			editorOpen: false,
-			fileInputOpen: false,
-
-			accessSearch: '',
-
-			currentAccessTab: 1,
-
-			showAccessModal: false,
-			accessList: [],
-
-			availableToEveryone: false,
-
-			postTitle: '',
-			postFiles: [],
-
-			isEdit: false,
-			editableId: null,
-
-			//Ошибки валидации
-			titleError: false,
-			contentError: false,
-			availableError: false,
-		}
-	},
-	mounted() {
-		this.getAccessDictionaries();
-	},
-	methods: {
-
-		toggleAvailableToEveryone(value) {
-			this.accessList = [];
-			this.availableToEveryone = value;
-			if (value) {
-				this.toggleAccessModal();
-			}
-		},
-
-		enumerate(num, dec) {
-			if (num > 100) num = num % 100;
-			if (num <= 20 && num >= 10) return dec[2];
-			if (num > 20) num = num % 10;
-			return num === 1 ? dec[0] : num > 1 && num < 5 ? dec[1] : dec[2];
-		},
-
-		toggleAccessModal(show) {
-			this.showAccessModal = show;
-		},
-
-		toggleInput(editorOpen, fileInputOpen, fakeClick = null) {
-			this.editorOpen = editorOpen;
-
-			if (editorOpen && fileInputOpen == null) {
-				this.$refs.newsCreateInput.focus();
-			}
-
-			if (fakeClick != null) {
-				this.$refs.dropZone.fakeClick();
-			}
-
-			if (fileInputOpen != null) {
-				this.fileInputOpen = fileInputOpen;
-			}
-		},
-
-		changeAccessTab(newTab) {
-			this.currentAccessTab = newTab;
-		},
-
-		updateFileList(data) {
-			this.postFiles = data.newList;
-		},
-
-		changeAccessList(id, name, type, image = null) {
-			let element = this.accessList.find(item => ((item.id == id) && (item.type == type)));
-
-			if (!element) {
-				this.$set(this.accessList, this.accessList.length, {
-					id: id,
-					name: name,
-					image: image,
-					type: type,
-				});
-
-				if(this.accessList.length > 0) {
-					this.availableToEveryone = false;
-				}
-
-				return;
-			}
-
-
-			const el = this.accessList.filter(item => {
-				return !((item.id != id) || (item.type != type));
-			})[0];
-			this.accessList.splice(this.accessList.indexOf(el), 1);
-
-			if(this.accessList.length > 0) {
-				this.availableToEveryone = false;
-			}
-		},
-
-		clearAccessList() {
-			this.accessList = [];
-		},
-
-		checked(item, type) {
-			return this.accessList.some(el => {
-				return el.id === item.id && el.type === type
-			});
-		},
-
-		getOldData(data) {
-			this.toggleInput(true, data.files.length != 0);
-
-			this.accessList = [];
-
-			if (data.available_for != null) {
-
-				if(data.available_for.length > 0) {
-					this.availableToEveryone = false;
-				}
-
-				data.available_for.forEach(item => {
-					let dictionaries = [];
-					let image = null;
-
-					switch (item.type) {
-					case 1: {
-						dictionaries = this.accessDictionaries.users;
-						break;
-					}
-					case 2: {
-						dictionaries = this.accessDictionaries.profile_groups;
-						break;
-					}
-					case 3: {
-						dictionaries = this.accessDictionaries.positions;
-						break;
-					}
-					}
-
-					dictionaries.forEach(el => {
-						if (el.id == item.id && item.type == 1) {
-							image = el ? el.avatar : '';
-						}
-					});
-
-					this.$set(this.accessList, this.accessList.length, {
-						id: item.id,
-						name: item.name,
-						image: image ?? null,
-						type: item.type,
-					});
-				});
-			} else {
-				this.availableToEveryone = true;
-			}
-
-			this.editableId = data.id;
-			this.postTitle = data.title;
-			this.editorData = data.content;
-
-			this.$refs.dropZone.manualyAddFiles(data.files);
-
-			this.isEdit = true;
-		},
-
-		async createPost() {
-			let formData = new FormData;
-
-			this.titleError = false;
-			this.contentError = false;
-			this.availableError = false;
-
-			if (this.availableToEveryone == false && this.accessList.length == 0) {
-				this.availableError = true;
-			}
-
-			if (this.postTitle == '') {
-				this.titleError = true;
-			}
-
-			if (this.editorData == '') {
-				this.contentError = true;
-			}
-
-			if (this.titleError || this.contentError || this.availableError) {
-				return;
-			}
-
-			if (this.availableToEveryone) {
-				formData.append('available_for', '');
-			} else {
-				formData.append('available_for', JSON.stringify(this.accessList));
-			}
-
-			this.accessList = [];
-			this.availableToEveryone = false;
-
-			if (this.postFiles.length != 0) {
-				let fileIds = [];
-
-				this.postFiles.forEach(item => {
-					fileIds.push(item.id);
-				});
-
-				formData.append('files', JSON.stringify(fileIds));
-			}
-
-			formData.append('title', this.postTitle);
-			formData.append('content', this.editorData);
-
-			await axios.post('/news', formData, {
-				headers: {
-					'Content-Type': 'application/json',
-					'Accept': 'application/json'
-				}
-			})
-				.then(response => {
-					this.$emit('update-news-list');
-					this.postFiles = [];
-					this.postTitle = '';
-					this.editorData = '';
-					this.clearAccessList();
-					this.$refs.dropZone.removeAllFiles();
-					this.toggleInput(false, false);
-				})
-				.catch(response => {
-					console.log(response)
-				});
-			this.isEdit = false;
-		},
-
-		async updatePost() {
-			let formData = new FormData;
-
-			this.titleError = false;
-			this.contentError = false;
-			this.availableError = false;
-
-			if (this.availableToEveryone == false && this.accessList.length == 0) {
-				this.availableError = true;
-			}
-
-			if (this.postTitle == '') {
-				this.titleError = true;
-			}
-
-			if (this.editorData == '') {
-				this.contentError = true;
-			}
-
-			if (this.titleError || this.contentError || this.availableError) {
-				return;
-			}
-
-			if (this.availableToEveryone) {
-				formData.append('available_for', '');
-			} else {
-				formData.append('available_for', JSON.stringify(this.accessList));
-			}
-
-			this.accessList = [];
-			this.availableToEveryone = false;
-
-
-			if (this.postFiles.length != 0) {
-				let fileIds = [];
-
-				this.postFiles.forEach(item => {
-					fileIds.push(item.id);
-				});
-
-				formData.append('files', JSON.stringify(fileIds));
-			}
-
-			formData.append('title', this.postTitle);
-			formData.append('content', this.editorData);
-			formData.append('_method', 'put');
-
-			await axios.post('/news/' + this.editableId, formData, {
-				headers: {
-					'Content-Type': 'application/json',
-					'Accept': 'application/json'
-				}
-			})
-				.then(response => {
-					this.$emit('update-news-list');
-					this.postFiles = [];
-					this.postTitle = '';
-					this.editorData = '';
-					this.editableId = null;
-					this.clearAccessList();
-					this.$refs.dropZone.removeAllFiles();
-					this.toggleInput(false, false);
-				})
-				.catch(response => {
-					console.log(response)
-				});
-			this.isEdit = false;
-		},
-
-		async getAccessDictionaries() {
-			let loader = this.$loading.show();
-
-			await axios.get('/dictionaries')
-				.then(res => {
-					this.accessDictionaries = res.data.data;
-					loader.hide();
-				})
-				.catch(res => {
-					console.log(res)
-				});
-		}
-
-	}
+  name: 'NewsCreate',
+  components: {
+    DropZone,
+  },
+  props: {
+    me: {
+      required: true
+    },
+  },
+  data() {
+    return {
+      accessDictionaries: {
+        positions: [],
+        profile_groups: [],
+        users: [],
+      },
+
+      csrf: document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+
+      editor: ClassicEditor,
+      editorData: '',
+      editorConfig: {
+        extraPlugins: [SimpleUploadAdapterPlugin,],
+        mediaEmbed: {
+          previewsInData: true
+        },
+        allowedContent: true
+      },
+
+      editorOpen: false,
+      fileInputOpen: false,
+
+      accessSearch: '',
+
+      currentAccessTab: 1,
+
+      showAccessModal: false,
+      accessList: [],
+
+      availableToEveryone: false,
+
+      postTitle: '',
+      postFiles: [],
+
+      isEdit: false,
+      editableId: null,
+
+      //Ошибки валидации
+      titleError: false,
+      contentError: false,
+      availableError: false,
+    }
+  },
+  mounted() {
+    this.getAccessDictionaries();
+  },
+  methods: {
+
+    toggleAvailableToEveryone(value) {
+      this.accessList = [];
+      this.availableToEveryone = value;
+      if (value) {
+        this.toggleAccessModal();
+      }
+    },
+
+    enumerate(num, dec) {
+      if (num > 100) num = num % 100;
+      if (num <= 20 && num >= 10) return dec[2];
+      if (num > 20) num = num % 10;
+      return num === 1 ? dec[0] : num > 1 && num < 5 ? dec[1] : dec[2];
+    },
+
+    toggleAccessModal(show) {
+      this.showAccessModal = show;
+    },
+
+    toggleInput(editorOpen, fileInputOpen, fakeClick = null) {
+      this.editorOpen = editorOpen;
+
+      if (editorOpen && fileInputOpen == null) {
+        this.$refs.newsCreateInput.focus();
+      }
+
+      if (fakeClick != null) {
+        this.$refs.dropZone.fakeClick();
+      }
+
+      if (fileInputOpen != null) {
+        this.fileInputOpen = fileInputOpen;
+      }
+    },
+
+    changeAccessTab(newTab) {
+      this.currentAccessTab = newTab;
+    },
+
+    updateFileList(data) {
+      this.postFiles = data.newList;
+    },
+
+    changeAccessList(id, name, type, image = null) {
+      let element = this.accessList.find(item => ((item.id == id) && (item.type == type)));
+
+      if (!element) {
+        this.$set(this.accessList, this.accessList.length, {
+          id: id,
+          name: name,
+          image: image,
+          type: type,
+        });
+
+        if(this.accessList.length > 0) {
+          this.availableToEveryone = false;
+        }
+
+        return;
+      }
+
+
+      const el = this.accessList.filter(item => {
+        return !((item.id != id) || (item.type != type));
+      })[0];
+      this.accessList.splice(this.accessList.indexOf(el), 1);
+
+      if(this.accessList.length > 0) {
+        this.availableToEveryone = false;
+      }
+    },
+
+    clearAccessList() {
+      this.accessList = [];
+    },
+
+    checked(item, type) {
+      return this.accessList.some(el => {
+        return el.id === item.id && el.type === type
+      });
+    },
+
+    getOldData(data) {
+      this.toggleInput(true, data.files.length != 0);
+
+      this.accessList = [];
+
+      if (data.available_for != null) {
+
+        if(data.available_for.length > 0) {
+          this.availableToEveryone = false;
+        }
+
+        data.available_for.forEach(item => {
+          let dictionaries = [];
+          let image = null;
+
+          switch (item.type) {
+            case 1: {
+              dictionaries = this.accessDictionaries.users;
+              break;
+            }
+            case 2: {
+              dictionaries = this.accessDictionaries.profile_groups;
+              break;
+            }
+            case 3: {
+              dictionaries = this.accessDictionaries.positions;
+              break;
+            }
+          }
+
+          dictionaries.forEach(el => {
+            if (el.id == item.id && item.type == 1) {
+              image = el ? el.avatar : '';
+            }
+          });
+
+          this.$set(this.accessList, this.accessList.length, {
+            id: item.id,
+            name: item.name,
+            image: image ?? null,
+            type: item.type,
+          });
+        });
+      } else {
+        this.availableToEveryone = true;
+      }
+
+      this.editableId = data.id;
+      this.postTitle = data.title;
+      this.editorData = data.content;
+
+      this.$refs.dropZone.manualyAddFiles(data.files);
+
+      this.isEdit = true;
+    },
+
+    async createPost() {
+      let formData = new FormData;
+
+      this.titleError = false;
+      this.contentError = false;
+      this.availableError = false;
+
+      if (this.availableToEveryone == false && this.accessList.length == 0) {
+        this.availableError = true;
+      }
+
+      if (this.postTitle == '') {
+        this.titleError = true;
+      }
+
+      if (this.editorData == '') {
+        this.contentError = true;
+      }
+
+      if (this.titleError || this.contentError || this.availableError) {
+        return;
+      }
+
+      if (this.availableToEveryone) {
+        formData.append('available_for', '');
+      } else {
+        formData.append('available_for', JSON.stringify(this.accessList));
+      }
+
+      this.accessList = [];
+      this.availableToEveryone = false;
+
+      if (this.postFiles.length != 0) {
+        let fileIds = [];
+
+        this.postFiles.forEach(item => {
+          fileIds.push(item.id);
+        });
+
+        formData.append('files', JSON.stringify(fileIds));
+      }
+
+      formData.append('title', this.postTitle);
+      formData.append('content', this.editorData);
+
+      await axios.post('/news', formData, {
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json'
+        }
+      })
+          .then(response => {
+            this.$emit('update-news-list');
+            this.postFiles = [];
+            this.postTitle = '';
+            this.editorData = '';
+            this.clearAccessList();
+            this.$refs.dropZone.removeAllFiles();
+            this.toggleInput(false, false);
+          })
+          .catch(response => {
+            console.log(response)
+          });
+      this.isEdit = false;
+    },
+
+    async updatePost() {
+      let formData = new FormData;
+
+      this.titleError = false;
+      this.contentError = false;
+      this.availableError = false;
+
+      if (this.availableToEveryone == false && this.accessList.length == 0) {
+        this.availableError = true;
+      }
+
+      if (this.postTitle == '') {
+        this.titleError = true;
+      }
+
+      if (this.editorData == '') {
+        this.contentError = true;
+      }
+
+      if (this.titleError || this.contentError || this.availableError) {
+        return;
+      }
+
+      if (this.availableToEveryone) {
+        formData.append('available_for', '');
+      } else {
+        formData.append('available_for', JSON.stringify(this.accessList));
+      }
+
+      this.accessList = [];
+      this.availableToEveryone = false;
+
+
+      if (this.postFiles.length != 0) {
+        let fileIds = [];
+
+        this.postFiles.forEach(item => {
+          fileIds.push(item.id);
+        });
+
+        formData.append('files', JSON.stringify(fileIds));
+      }
+
+      formData.append('title', this.postTitle);
+      formData.append('content', this.editorData);
+      formData.append('_method', 'put');
+
+      await axios.post('/news/' + this.editableId, formData, {
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json'
+        }
+      })
+          .then(response => {
+            this.$emit('update-news-list');
+            this.postFiles = [];
+            this.postTitle = '';
+            this.editorData = '';
+            this.editableId = null;
+            this.clearAccessList();
+            this.$refs.dropZone.removeAllFiles();
+            this.toggleInput(false, false);
+          })
+          .catch(response => {
+            console.log(response)
+          });
+      this.isEdit = false;
+    },
+
+    async getAccessDictionaries() {
+      let loader = this.$loading.show();
+
+      await axios.get('/dictionaries')
+          .then(res => {
+            this.accessDictionaries = res.data.data;
+            loader.hide();
+          })
+          .catch(res => {
+            console.log(res)
+          });
+    }
+
+  }
 }
 </script>

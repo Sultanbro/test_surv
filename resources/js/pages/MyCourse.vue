@@ -73,7 +73,7 @@
 
           <div class="mb-4 mt-3">
             Пройдено: {{ progress }}%
-            <progress :value="progress" max="100"></progress>
+            <progress :value="progress" max="100"/>
           </div>
 
           <!-- <div class="mt-3 description" v-html="activeCourse.text"></div> -->
@@ -112,7 +112,7 @@
 
 
                   <div v-if="activeCourseItem.item_model == 'App\\Models\\Books\\Book'">
-                    <page-upbooks-read
+                    <UpbooksRead
                       ref="upbook"
                       :book_id="activeCourseItem.item_id"
                       :mode="'read'"
@@ -130,7 +130,7 @@
                   </div>
 
                   <div class="px-3 pt-3" v-if="activeCourseItem.item_model == 'App\\Models\\Videos\\VideoPlaylist' || activeCourseItem.item_model == 'App\\Models\\Videos\\Video'">
-                      <page-playlist-edit
+                      <PlaylistEdit
                           ref="playlist"
                           :id="activeCourseItem.item_id"
                           :course_item_id="activeCourseItem.id"
@@ -149,7 +149,7 @@
 
                   <div v-if="activeCourseItem.item_model == 'App\\KnowBase'" class="opopoppop">
 
-                       <booklist
+                      <Booklist
                         ref="knowbase"
                         :trees="trees"
                         :parent_name="activeCourseItem.title"
@@ -176,7 +176,13 @@
                   <h1>Поздравляем с завершением курса! 😁 😁 😆 </h1>
                   <p>Спасибо, что прошли курс несмотря ни на что!</p>
               </div>
-                <saveCertificate v-if="generateCertificate" @generate-success="generateSuccess" :course_id="activeCourseItem.course_id" :user_id="user_id" :title="activeCourseItem.title"/>
+                <SaveCertificate
+                  v-if="generateCertificate"
+                  @generate-success="generateSuccess"
+                  :course_id="activeCourseItem.course_id"
+                  :user_id="user_id"
+                  :title="activeCourseItem.title"
+                />
             </div>
 
       </div>
@@ -189,45 +195,52 @@
 </template>
 
 <script>
-import saveCertificate from './Awards/types/saveCertificate';
+import SaveCertificate from './Awards/types/saveCertificate';
+const Booklist = () => import(/* webpackChunkName: "Booklist" */ '@/pages/booklist') // база знаний разде
+const UpbooksRead = () => import(/* webpackChunkName: "UpbooksRead" */ '@/pages/UpbooksRead') // книга чтение
+const PlaylistEdit = () => import(/* webpackChunkName: "PlaylistEdit" */ '@/pages/PlaylistEdit') // редактирование плейлиста
+
 export default {
-	name: 'MyCourse',
-	components: {
-		saveCertificate
-	},
-	props:{
-		user_id: {
-			type: Number,
-			default: 0
-		}
-	},
-	data() {
-		return {
-			test: 'dsa',
-			items: [],
-			courses: [],
-			activeCourseItem: null,
-			activeCourse: null,
-			activeStep: null,
-			trees: [],
-			congrats: false,
-			all_stages: 0,
-			completed_stages: 0,
-			disable_course: false,
-			activeCourseKey: 1,
-			generateCertificate: false
-		};
-	},
-	watch:{
-		user_id(){
-			this.init()
-		}
-	},
-	created() {
-		if(this.user_id){
-			this.init()
-		}
-	},
+  name: 'MyCourse',
+    components: {
+        SaveCertificate,
+        Booklist,
+        UpbooksRead,
+        PlaylistEdit,
+    },
+    props:{
+        user_id: {
+            type: Number,
+            default: 0
+        }
+    },
+  data() {
+    return {
+      test: "dsa",
+      items: [],
+      courses: [],
+      activeCourseItem: null,
+      activeCourse: null,
+      activeStep: null,
+      trees: [],
+      congrats: false,
+      all_stages: 0,
+      completed_stages: 0,
+      disable_course: false,
+      activeCourseKey: 1,
+        generateCertificate: false
+    };
+  },
+  watch:{
+    user_id(){
+      this.init()
+    }
+  },
+  created() {
+    if(this.user_id){
+      this.init()
+    }
+  },
 
 	computed: {
 		progress: function(){

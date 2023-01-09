@@ -37,13 +37,15 @@
             <div class="col-2">
                 <button
                     class="btn btn-success rounded btn-sm"
-                    @click="add_activity()">
-                    <i class="fa fa-plus-square" style="font-size:14px"></i>
+                    @click="add_activity()"
+                >
+                    <i class="fa fa-plus-square" style="font-size:14px"/>
                 </button>
                 <button
-                    class="btn btn-primary rounded  btn-sm"
-                    @click="showOrder = true">
-                    <i class="fas fa-sort-amount-down"></i>
+                    class="btn btn-primary rounded btn-sm"
+                    @click="showOrder = true"
+                >
+                    <i class="fas fa-sort-amount-down"/>
                 </button>
             </div>
         </div>
@@ -55,7 +57,13 @@
                         <div class="wrap">
                             <div class="d-flex justify-content-between">
                                 <div>
-                                    <top-gauges :utility_items="data.utility" :editable="false"  wrapper_class="d-flex"  :key="123" page="analytics"/>
+                                    <TopGauges
+                                        :utility_items="data.utility"
+                                        :editable="false"
+                                        wrapper_class="d-flex"
+                                        :key="123"
+                                        page="analytics"
+                                    />
                                 </div>
                                 <div class="p-4">
                                     <p class="ap-text">Процент текучки кадров за прошлый месяц: <span>{{ data.fired_percent_prev }}%</span> </p>
@@ -66,28 +74,33 @@
                             </div>
                         </div>
 
-                        <b-tabs type="card"  :defaultActiveKey='active' @change="onTabChange" >
-
+                        <b-tabs
+                            type="card"
+                            :defaultActiveKey="active"
+                            @change="onTabChange"
+                        >
                             <b-tab title="Сводная" key="1" card>
                                 <div class="mb-5">
-                                    <analytic-stat :table="data.table"
+                                    <AnalyticStat
+                                        :table="data.table"
                                         :fields="data.columns"
                                         :activeuserid="activeuserid"
                                         :monthInfo="monthInfo"
                                         :group_id="currentGroup"
                                         :activities="activity_select"
-                                        />
+                                    />
                                 </div>
 
+                                <CallBase
+                                    v-if="currentGroup == 53"
+                                    :data="call_bases"
+                                    :monthInfo="monthInfo"
+                                />
 
-                                 <call-bases :data="call_bases" :monthInfo="monthInfo" v-if="currentGroup == 53"></call-bases>
-
-                                <t-decomposition
+                                <TableDecomposition
                                     :month="monthInfo"
                                     :data="data.decomposition"
-                                ></t-decomposition>
-
-
+                                />
                             </b-tab>
 
                             <b-tab title="Подробная" key="2" card>
@@ -95,8 +108,11 @@
                                 <b-tabs type="card" class="mt-4" @change="showSubTab" :defaultActiveKey='active_sub_tab'>
 
                                     <template v-for="(activity, index) in data.activities">
-                                        <b-tab :title="activity.name" :key="index"  @change="showcubTab(index)">
-
+                                        <b-tab
+                                            :title="activity.name"
+                                            :key="index"
+                                            @change="showcubTab(index)"
+                                        >
                                             <!-- Switch month and year of Activity in detailed -->
                                             <button class="btn btn-default rounded mt-2" @click="switchToMonthInActivity(index)">Месяц</button>
                                             <button class="btn btn-default rounded mt-2" @click="switchToYearInActivity(index)">Год</button>
@@ -107,29 +123,32 @@
                                                 <div :class="{
                                                     'hidden' : activityStates[index] == 'year'
                                                 }">
-                                                    <t-activity-new v-if="activity.type == 'default'"
+                                                    <TableActivityNew
+                                                        v-if="activity.type == 'default'"
+                                                        :key="activity.id"
                                                         :month="monthInfo"
                                                         :activity="activity"
-                                                        :key="activity.id"
                                                         :group_id="currentGroup"
                                                         :work_days="monthInfo.workDays"
                                                         :editable="activity.editable == 1 ? true : false"
-                                                    ></t-activity-new>
+                                                    />
 
-                                                    <t-activity-collection v-if="activity.type == 'collection'"
+                                                    <TableActivityCollection
+                                                        v-if="activity.type == 'collection'"
+                                                        :key="activity.id"
                                                         :month="monthInfo"
                                                         :activity="activity"
                                                         :is_admin="true"
-                                                        :key="activity.id"
                                                         :price="activity.price"
-                                                    ></t-activity-collection>
+                                                    />
 
-                                                    <t-quality-weekly v-if="activity.type == 'quality'"
+                                                    <TableQualityWeekly
+                                                        v-if="activity.type == 'quality'"
+                                                        :key="activity.id"
                                                         :monthInfo="monthInfo"
                                                         :items="activity.records"
-                                                        :key="activity.id"
                                                         :editable="activity.editable == 1 ? true : false"
-                                                    ></t-quality-weekly>
+                                                    />
                                                 </div>
 
                                                 <!-- Year tab of activity in detailed -->
@@ -199,7 +218,7 @@
                 </div>
                 <div class="col-7">
                     <select v-model="restore_group" class="form-control form-control-sm">
-                        <option :value="archived_group.id"  v-for="(archived_group, key) in archived_groups" :key="key">{{ archived_group.name }}</option>
+                        <option :value="archived_group.id" v-for="(archived_group, key) in archived_groups" :key="key">{{ archived_group.name }}</option>
                     </select>
                 </div>
             </div>
@@ -207,21 +226,35 @@
         </b-modal>
 
         <!-- Modal Create activity -->
-        <b-modal v-model="showOrder"  title="Порядок активностей" @ok="save_order()" size="md">
+        <b-modal
+            v-model="showOrder"
+            title="Порядок активностей"
+            @ok="save_order()"
+            size="md"
+        >
             <div :key="askey">
-                <draggable :list="activity_select"  @end="onEndSortcat('test')" >
-                    <div v-for="act in activity_select" :key="act.id" class="drag_item">
-
+                <Draggable
+                    :list="activity_select"
+                    @end="onEndSortcat('test')"
+                >
+                    <div
+                        v-for="act in activity_select"
+                        :key="act.id"
+                        class="drag_item"
+                    >
                         <span>{{act.name}}</span>
-                        <i @click="delete_activity(act)" class="fa fa-trash pointer"></i>
+                        <i
+                            @click="delete_activity(act)"
+                            class="fa fa-trash pointer"
+                        />
                     </div>
-                </draggable>
+                </Draggable>
             </div>
         </b-modal>
 
 
         <!-- Modal Create activity -->
-        <b-modal v-model="showActivityModal"  title="Добавить активность" @ok="create_activity()" size="lg" class="modalle">
+        <b-modal v-model="showActivityModal" title="Добавить активность" @ok="create_activity()" size="lg" class="modalle">
 
             <div class="row">
                 <div class="col-5">
@@ -276,82 +309,97 @@
                     <input type="checkbox" class="form-control form-control-sm" v-model="activity.editable">
                 </div>
             </div>
-
         </b-modal>
-
-
     </div>
     </template>
 
 <script>
-import { useYearOptions } from '../composables/yearOptions'
-export default {
+    import Draggable from 'vuedraggable'
+    import AnalyticStat from '@/components/AnalyticStat'
+    import CallBase from '@/components/CallBase'
+    import TableDecomposition from '@/components/tables/TableDecomposition'
+    const TableActivityNew = () => import(/* webpackChunkName: "TableActivityNew" */ '@/components/tables/TableActivityNew')
+    import TableActivityCollection from '@/components/tables/TableActivityCollection'
+    import TableQualityWeekly from '@/components/tables/TableQualityWeekly'
+    const TopGauges = () => import(/* webpackChunkName: "TopGauges" */ '@/components/TopGauges')  // TOП спидометры, есть и в аналитике
+    import { useYearOptions } from '../composables/yearOptions'
 
-	name: 'AnalyticsPage',
-	props: ['groups', 'activeuserid'],
-	data() {
-		return {
-			data: [],
-			ggroups: [],
-			active: '1',
-			hasPremission: false, // доступ
-			years: useYearOptions(),
-			yearActivityTableFields: [],
-			yearActivityTable: [],
-			activityStates: {},
-			currentYear: new Date().getFullYear(),
-			monthInfo: {},
-			currentGroup: null,
-			loader: null,
-			showOrder: false,
-			firstEnter: true,
-			showArchive: false,
-			askey: 1,
-			activity_select: [],
-			archived_groups: [],
-			call_bases: [], // euras call base unique table
-			restore_group: null,
-			noan: false, // нет аналитики
-			showActivityModal:false, // activity
-			dataLoaded: false,
-			noan: false, // нет аналитики
-			showActivityModal:false, // activity
-			active_sub_tab: 0,
-			activity: {// activity
-				name: null,
-				daily_plan: null,
-				plan_unit: null,
-				unit: null,
-				editable: 1,
-				weekdays: 6,
-			},
-			plan_units: {// activity
-				minutes: 'Сумма показателей',
-				percent: 'Среднее значение',
-				less_sum: 'Не более, сумма',
-				less_avg: 'Не более, сред. зн.',
-			},
-			list: [
-				{ name: 'John', id: 0 },
-				{ name: 'Joao', id: 1 },
-				{ name: 'Jean', id: 2 }
-			],
-			users: [], // year table of activity
-			statistics: [] // year table of activity
-		}
-	},
-	watch: {
-		groups(){
-			this.init()
-		}
-	},
-	created() {
-		if(this.groups){
-			this.init()
-		}
-	},
-	methods: {
-		init(){
+    export default {
+        name: 'AnalyticsPage',
+        components: {
+            Draggable,
+            AnalyticStat,
+            CallBase,
+            TableDecomposition,
+            TableActivityNew,
+            TableActivityCollection,
+            TableQualityWeekly,
+            TopGauges,
+        },
+        props: ['groups', 'activeuserid'],
+        data() {
+            return {
+                data: [],
+                ggroups: [],
+                active: '1',
+                hasPremission: false, // доступ
+                years: useYearOptions(),
+                yearActivityTableFields: [],
+                yearActivityTable: [],
+                activityStates: {},
+                currentYear: new Date().getFullYear(),
+                monthInfo: {},
+                currentGroup: null,
+                loader: null,
+                showOrder: false,
+                firstEnter: true,
+                showArchive: false,
+                askey: 1,
+                activity_select: [],
+                archived_groups: [],
+                call_bases: [], // euras call base unique table
+                restore_group: null,
+                noan: false, // нет аналитики
+                showActivityModal:false, // activity
+                dataLoaded: false,
+                noan: false, // нет аналитики
+                showActivityModal:false, // activity
+                active_sub_tab: 0,
+                activity: {// activity
+                    name: null,
+                    daily_plan: null,
+                    plan_unit: null,
+                    unit: null,
+                    editable: 1,
+                    weekdays: 6,
+                },
+                plan_units: {// activity
+                    minutes: 'Сумма показателей',
+                    percent: 'Среднее значение',
+                    less_sum: 'Не более, сумма',
+                    less_avg: 'Не более, сред. зн.',
+                },
+                list: [
+                    { name: "John", id: 0 },
+                    { name: "Joao", id: 1 },
+                    { name: "Jean", id: 2 }
+                ],
+                users: [], // year table of activity
+                statistics: [] // year table of activity
+            }
+        },
+        watch: {
+            groups(){
+                this.init()
+            }
+        },
+        created() {
+            if(this.groups){
+                this.init()
+            }
+        },
+        methods: {
+            init(){
 
 			// выбор группы
 			// переделать на роуты
@@ -755,11 +803,11 @@ export default {
 		},
 
 
-	}
-}
+        }
+    }
 </script>
 
-    <style>
+<style>
     .mw30 {
         min-width: 30px;
     }
@@ -821,4 +869,4 @@ export default {
         border: 1px solid #dde8ee;
         border-radius: 5px;
     }
-    </style>
+</style>

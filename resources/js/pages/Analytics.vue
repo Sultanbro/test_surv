@@ -33,25 +33,33 @@
 
                     <template v-if="currentGroup == 48">
                         <b-tab title="Сводная" key="1" card>
-                            <t-recruiter-stats :data="recruiting.recruiterStats"
-                                            :daysInMonth="new Date().getDate()"
-                                            :rates="recruiting.recruiterStatsRates"
-                                            :year="currentYear"
-                                            :month="monthInfo.month"
-                                            :leads_data="recruiting.recruiter_stats_leads"
-                                            :editable="true"></t-recruiter-stats>
+                            <TableRecruiterStats
+                                :data="recruiting.recruiterStats"
+                                :daysInMonth="new Date().getDate()"
+                                :rates="recruiting.recruiterStatsRates"
+                                :year="currentYear"
+                                :month="monthInfo.month"
+                                :leads_data="recruiting.recruiter_stats_leads"
+                                :editable="true"
+                            />
                             <div class="mb-5"></div>
-                            <g-recruting :records="recruiting.indicators" v-if="recruiting.indicators" :isAnalyticsPage="true"></g-recruting>
+                            <Recruting
+                                v-if="recruiting.indicators"
+                                :isAnalyticsPage="true"
+                                :records="recruiting.indicators"
+                            />
                             <div class="mb-5"></div>
                         </b-tab>
                         <b-tab title="Стажеры" key="3" card>
-                            <t-skypes :month="monthInfo"
+                            <TableSkype
+                                :month="monthInfo"
                                 :skypes="recruiting.skypes"
                                 :groups="recruiting.sgroups"
                                 :invite_groups="recruiting.invite_groups"
-                                :segments="recruiting.segments"></t-skypes>
+                                :segments="recruiting.segments"
+                            />
                         </b-tab>
-                        <b-tab  key="4" card>
+                        <b-tab key="4" card>
 
                             <template #title>
                                 <b-spinner type="grow" small></b-spinner> <b class="roman">II</b> Этап стажировки
@@ -98,7 +106,10 @@
                                 </b-tab>-->
                                 <b-tab title="Оценка тренера" key="2" card>
 
-                                    <svod-table :trainee_report="recruiting.trainee_report" :groups="groups" ></svod-table>
+                                    <SvodTable
+                                        :trainee_report="recruiting.trainee_report"
+                                        :groups="groups"
+                                    />
 
 
                                 </b-tab>
@@ -159,9 +170,33 @@
                                     <div class="row">
 
                                         <div class="col-8">
-                                            <t-funnel class="mb-5" :id="0" :table="recruiting.funnels['all']['all']" title="Сводная таблица" segment="segments" type="month" :date="date" />
-                                            <t-funnel class="mb-5" :id="1" :table="recruiting.funnels['all']['hh']" title="hh.ru" segment="hh" type="month" :date="date" />
-                                            <t-funnel class="mb-5" :id="2" :table="recruiting.funnels['all']['insta']" title="Job.bpartners.kz" segment="insta" type="month" :date="date" />
+                                            <TableFunnel
+                                                class="mb-5"
+                                                :id="0"
+                                                :table="recruiting.funnels['all']['all']"
+                                                title="Сводная таблица"
+                                                segment="segments"
+                                                type="month"
+                                                :date="date"
+                                            />
+                                            <TableFunnel
+                                                class="mb-5"
+                                                :id="1"
+                                                :table="recruiting.funnels['all']['hh']"
+                                                title="hh.ru"
+                                                segment="hh"
+                                                type="month"
+                                                :date="date"
+                                            />
+                                            <TableFunnel
+                                                class="mb-5"
+                                                :id="2"
+                                                :table="recruiting.funnels['all']['insta']"
+                                                title="Job.bpartners.kz"
+                                                segment="insta"
+                                                type="month"
+                                                :date="date"
+                                            />
                                         </div>
 
                                         <!-- partner link creator -->
@@ -173,8 +208,24 @@
                                 </b-tab>
                                 <template v-for="(month, i) in months">
                                     <b-tab :title="month.month" :key="i" card>
-                                        <t-funnel class="mb-5" :table="recruiting.funnels['month'][i]['hh']" title="hh.ru" segment="hh" type="week" :date="month.date" :key="5 * 1000 * (Number(i) +  10 * Number(i))"/>
-                                        <t-funnel class="mb-5" :table="recruiting.funnels['month'][i]['insta']" title="Job.bpartners.kz" segment="insta" type="week" :date="month.date" :key="6 * 1000 * (Number(i) +  10 * Number(i))"/>
+                                        <TableFunnel
+                                            class="mb-5"
+                                            :table="recruiting.funnels['month'][i]['hh']"
+                                            title="hh.ru"
+                                            segment="hh"
+                                            type="week"
+                                            :date="month.date"
+                                            :key="5 * 1000 * (Number(i) +  10 * Number(i))"
+                                        />
+                                        <TableFunnel
+                                            class="mb-5"
+                                            :table="recruiting.funnels['month'][i]['insta']"
+                                            title="Job.bpartners.kz"
+                                            segment="insta"
+                                            type="week"
+                                            :date="month.date"
+                                            :key="6 * 1000 * (Number(i) +  10 * Number(i))"
+                                        />
                                     </b-tab>
                                 </template>
 
@@ -190,12 +241,12 @@
 
                             <b-tabs>
                                 <b-tab title="Причины и процент текучки" key="1" card>
-                                    <table-staff-turnover
+                                    <TableStaffTurnover
                                         :staff="recruiting.staff"
                                         :causes="recruiting.causes"
                                         :staff_longevity="recruiting.staff_longevity"
                                         :staff_by_group="recruiting.staff_by_group"
-                                        />
+                                    />
                                 </b-tab>
 
 
@@ -214,17 +265,21 @@
                                             </div>
                                             <div v-if="quizz['type'] == 'variant'">
                                                 <div v-for="answer in quizz['answers']" :key="answer.id" class="d-flex">
-                                                    <progress-bar
+                                                    <ProgressBar
                                                         :percentage="Number(answer.percent)"
                                                         :label="answer.text + ' (' + answer.count + ')'"
                                                         :class="'active'"
-                                                        ></progress-bar>
+                                                    />
                                                 </div>
                                             </div>
 
                                             <div v-if="quizz['type'] == 'star'">
                                                 <div v-for="answer in quizz['answers']" :key="answer.id" class="d-flex">
-                                                    <Rating :grade="Number(answer.text).toFixed(0)" :maxStars="10" :hasCounter="false" />
+                                                    <Rating
+                                                        :grade="Number(answer.text).toFixed(0)"
+                                                        :maxStars="10"
+                                                        :hasCounter="false"
+                                                    />
                                                     <p class="mb-0">{{ answer.text + ' (' + answer.count + ')' }}</p>
                                                 </div>
                                             </div>
@@ -269,115 +324,135 @@
 </template>
 
 <script>
-import TableStaffTurnover from '../components/tables/TableStaffTurnover.vue';
-import Rating from '../components/ui/Rating.vue';
+import TableStaffTurnover from '../components/tables/TableStaffTurnover.vue'
+import Rating from '../components/ui/Rating.vue'
+import TableRecruiterStats from '@/components/analytics/TableRecruiterStats' // Почасовая таблица рекрутинга
+import Recruting from '@/components/analytics/Recruting' // сводная информация рекрутинг
+import TableSkype from '@/components/tables/TableSkype' // Стажеры
+import SvodTable from '@/components/SvodTable' //сводная таблица для аналитики
+import TableFunnel from '@/components/tables/TableFunnel' // Воронка
+import ProgressBar from '@/components/ProgressBar' // в ответах quiz
 import { useYearOptions } from '../composables/yearOptions'
-export default {
-	components: { TableStaffTurnover, Rating },
-	name: 'Analytics',
-	props: ['groups', 'activeuserid'],
-	data() {
-		return {
-			trainee_date: new Date(Date.now()).toISOString().substring(0, 10),
-			totals: [],
-			fn: '',
-			data: [],
-			active: '1',
-			activities: [],
-			report_group_id: 42,
-			call_bases: [],
-			call_bases_key: 1,
-			archived_recruiters: [],
-			utility: [], // gauges
-			recruiting: {
-				recrutingTotals: [],
-				recruiterStats: [],
-				recruiterStatsRates: [],
-				recruiter_stats_leads: [],
-				funnels: [],
-				quiz: [], // 48 uvolennye
-				trainee_report: [], //
-				causes: [],
-				staff: [],
-				staff_by_group: [],
-				staff_longevity: [],
-				ocenka_svod: [],
-				//ratings: [],
-				//ratings_dates: [],
-				//ratings_heads: [],
-				absents_first: [],
-				absents_second: [],
-				indicators: null,
-				invite_groups: [], // 48
-				sgroups: [], // 48
-				skypes: [], // 48
-				hrs: [],
-				segments: [],
-			},
-			quality: [],
-			records: [],
-			hasPremission: false,
-			firstEnter: true,
-			years: useYearOptions(),
-			currentYear: new Date().getFullYear(),
-			monthInfo: {
-				currentMonth: null,
-				monthEnd: 0,
-				workDays: 0,
-				weekDays: 0,
-				workDays5: 0,
-				weekDays5: 0,
-				daysInMonth: 0,
-				year: new Date().getFullYear()
-			},
-			dataLoaded: false,
-			currentGroup: 48,
-			minutes: {},
-			loader: null,
-			date: null,
-			coef: 0,
-			months: {
-				1: {month:'Январь', date: null},
-				2: {month:'Февраль', date: null},
-				3: {month:'Март', date: null},
-				4: {month:'Апрель', date: null},
-				5: {month:'Май', date: null},
-				6: {month:'Июнь', date: null},
-				7: {month:'Июль', date: null},
-				8: {month:'Август', date: null},
-				9: {month:'Сентябрь', date: null},
-				10: {month:'Октябрь', date: null},
-				11: {month:'Ноябрь', date: null},
-				12: {month:'Декабрь', date: null},
-			},
-			componentKeys: {
-				5: 0,
-				6: 100000,
-				7: 200000,
-				8: 300000,
-				9: 400000,
-			},
-		}
-	},
-	watch: {
-		groups(){
-			this.init()
-		}
-	},
-	created() {
-		if(this.groups){
-			this.init()
-		}
-	},
-	methods: {
-		init(){
-			// бывор группы
-			const urlParams = new URLSearchParams(window.location.search);
-			let group = urlParams.get('group');
-			let active = urlParams.get('active');
 
-			this.currentGroup = (group == null) ? this.groups[0].id : parseFloat(group)
-			this.active = (active == null) ? '1' : active
+export default {
+    name: 'Analytics',
+    components: {
+        TableStaffTurnover,
+        Rating,
+        TableRecruiterStats,
+        Recruting,
+        TableSkype,
+        SvodTable,
+        TableFunnel,
+        ProgressBar,
+    },
+    props: ['groups', 'activeuserid'],
+    data() {
+        return {
+            trainee_date: new Date(Date.now()).toISOString().substring(0, 10),
+            totals: [],
+            fn: '',
+            data: [],
+            active: '1',
+            activities: [],
+            report_group_id: 42,
+            call_bases: [],
+            call_bases_key: 1,
+            archived_recruiters: [],
+            utility: [], // gauges
+            recruiting: {
+                recrutingTotals: [],
+                recruiterStats: [],
+                recruiterStatsRates: [],
+                recruiter_stats_leads: [],
+                funnels: [],
+                quiz: [], // 48 uvolennye
+                trainee_report: [], //
+                causes: [],
+                staff: [],
+                staff_by_group: [],
+                staff_longevity: [],
+                ocenka_svod: [],
+                //ratings: [],
+                //ratings_dates: [],
+                //ratings_heads: [],
+                absents_first: [],
+                absents_second: [],
+                indicators: null,
+                invite_groups: [], // 48
+                sgroups: [], // 48
+                skypes: [], // 48
+                hrs: [],
+                segments: [],
+            },
+            quality: [],
+            records: [],
+            hasPremission: false,
+            firstEnter: true,
+            years: useYearOptions(),
+            currentYear: new Date().getFullYear(),
+            monthInfo: {
+                currentMonth: null,
+                monthEnd: 0,
+                workDays: 0,
+                weekDays: 0,
+                workDays5: 0,
+                weekDays5: 0,
+                daysInMonth: 0,
+                year: new Date().getFullYear()
+            },
+            dataLoaded: false,
+            currentGroup: 48,
+            minutes: {},
+            loader: null,
+            date: null,
+            coef: 0,
+            months: {
+                1: {month:'Январь', date: null},
+                2: {month:'Февраль', date: null},
+                3: {month:'Март', date: null},
+                4: {month:'Апрель', date: null},
+                5: {month:'Май', date: null},
+                6: {month:'Июнь', date: null},
+                7: {month:'Июль', date: null},
+                8: {month:'Август', date: null},
+                9: {month:'Сентябрь', date: null},
+                10: {month:'Октябрь', date: null},
+                11: {month:'Ноябрь', date: null},
+                12: {month:'Декабрь', date: null},
+            },
+            componentKeys: {
+                5: 0,
+                6: 100000,
+                7: 200000,
+                8: 300000,
+                9: 400000,
+            },
+        }
+    },
+    watch: {
+        groups(){
+            this.init()
+        }
+    },
+    created() {
+        if(this.groups){
+            this.init()
+        }
+    },
+    methods: {
+        init(){
+            // бывор группы
+            const urlParams = new URLSearchParams(window.location.search);
+            let group = urlParams.get('group');
+            let active = urlParams.get('active');
+            if(group == null){
+                this.currentGroup = this.groups && this.groups[0] ? this.groups[0].id : ''
+            }
+            else{
+                this.currentGroup = parseFloat(group)
+            }
+            this.active = (active == null) ? '1' : active
 
 			this.setMonth()
 			this.setYear()

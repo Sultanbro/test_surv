@@ -23,7 +23,7 @@
         <div class="sections-wrap noscrollbar" v-if="!showArchive" :class="{ 'expand' : mode == 'read'}">
 
 
-          <draggable
+          <Draggable
             class="dragArea ml-0"
             tag="div"
             handle=".fa-bars"
@@ -31,7 +31,8 @@
             :id="null"
             :group="{ name: 'g1' }"
             @start="startChangeOrder"
-            @end="saveOrder">
+            @end="saveOrder"
+          >
             <template v-for="(book, b_index) in books">
                   <div
                     class="section d-flex aic jcsb"
@@ -50,7 +51,7 @@
                     </div>
                   </div>
             </template>
-          </draggable>
+          </Draggable>
 
 
         </div>
@@ -114,14 +115,17 @@
 
         <!-- Глоссарий -->
         <div class="content mt-3">
-            <glossary v-if="show_glossary" :mode="mode"></glossary>
+            <Glossary
+              v-if="show_glossary"
+              :mode="mode"
+            />
         </div>
       </div>
     </div>
 
     <!-- PAGE -->
-    <div v-else>
-      <booklist
+    <div v-if="activeBook">
+      <Booklist
         ref="booklist"
         :trees="trees"
         :can_edit="activeBook.access == 2 || can_edit"
@@ -133,7 +137,8 @@
         @toggleMode="toggleMode"
         :mode="mode"
         :enable_url_manipulation="true"
-        :auth_user_id="auth_user_id" />
+        :auth_user_id="auth_user_id"
+      />
     </div>
 
 
@@ -160,7 +165,7 @@
 
 
     <!-- Настройки раздела -->
-    <sidebar
+    <Sidebar
       title="Настройки базы знаний"
       :open="showBookSettings"
       @close="showBookSettings = false"
@@ -195,7 +200,7 @@
         <span>Сохранить</span>
       </button>
 
-    </sidebar>
+    </Sidebar>
 
     <!-- Редактирование раздела  -->
     <b-modal
@@ -216,15 +221,17 @@
 
         <div :key="superselectKey">
           <p class="mb-2">Кто может видеть</p>
-          <superselect
+          <SuperSelect
             :values="who_can_read"
             class="w-full mb-4"
-            :select_all_btn="true" />
+            :select_all_btn="true"
+          />
           <p class="mb-2">Кто может редактировать</p>
-          <superselect
+          <SuperSelect
             :values="who_can_edit"
             class="w-full mb-4"
-            :select_all_btn="true" />
+            :select_all_btn="true"
+          />
         </div>
         <button class="btn btn-primary rounded m-auto" @click="updateSection">
           <span>Сохранить</span>
@@ -274,53 +281,65 @@
 </template>
 
 <script>
+import Draggable from 'vuedraggable'
 import Glossary from '../components/Glossary.vue'
+const Booklist = () => import(/* webpackChunkName: "Booklist" */ '@/pages/booklist') // база знаний разде
+import Sidebar from '@/components/ui/Sidebar' // сайдбар table
+import SuperSelect from '@/components/SuperSelect' // with User ProfileGroup and Position
+
 export default {
-	name: 'KBPage',
-	props: {
-		auth_user_id: {
-			type:Number
-		},
-		can_edit: {
-			type: Boolean,
-			default: false
-		}
-	},
-	data() {
-		return {
-			books: [],
-			mode: 'read',
-			archived_books: [],
-			trees: [],
-			settings: null,
-			section: 0,
-			activeBook: null,
-			showCreate: false,
-			show_glossary: false,
-			send_notification_after_edit: false,
-			show_page_from_kb_everyday: false,
-			allow_save_kb_without_test: false,
-			showBookSettings: false,
-			showArchive: false,
-			showSearch: false,
-			who_can_read: [],
-			who_can_edit: [],
-			showEdit: false,
-			show_page_id: 0,
-			superselectKey: 1,
-			section_name: '',
-			update_book: null,
-			search: {
-				input: '',
-				items: []
-			}
-		};
-	},
-	watch: {
-		auth_user_id(){
-			this.init()
-		}
-	},
+  name: 'KBPage',
+  components: {
+    Draggable,
+    Glossary,
+    Booklist,
+    Sidebar,
+    SuperSelect,
+  },
+  props: {
+    auth_user_id: {
+      type:Number
+    },
+   can_edit: {
+      type: Boolean,
+      default: false
+    }
+  },
+  data() {
+    return {
+      books: [],
+      mode: 'read',
+      archived_books: [],
+      trees: [],
+      settings: null,
+      section: 0,
+      activeBook: null,
+      showCreate: false,
+      show_glossary: false,
+      send_notification_after_edit: false,
+      show_page_from_kb_everyday: false,
+      allow_save_kb_without_test: false,
+      showBookSettings: false,
+      showArchive: false,
+      showSearch: false,
+      who_can_read: [],
+      who_can_edit: [],
+      showEdit: false,
+      show_page_id: 0,
+      superselectKey: 1,
+      section_name: '',
+      update_book: null,
+      search: {
+        input: '',
+        items: []
+      }
+    };
+  },
+  watch: {
+    auth_user_id(){
+      this.init()
+    }
+  },
 
 	created() {
 		if(this.auth_user_id){
@@ -332,24 +351,23 @@ export default {
 		init(){
 			this.fetchData();
 
-			// бывор группы
-			const urlParams = new URLSearchParams(window.location.search);
-			let section = urlParams.get('s');
-			if(section) {
-				console.log(section)
-				this.selectSection({id: section})
-			}
-		},
-		fetchData() {
-			axios
-				.get('/kb/get', {})
-				.then((response) => {
-					this.books = response.data.books;
-				})
-				.catch((error) => {
-					alert(error);
-				});
-		},
+      // бывор группы
+      const urlParams = new URLSearchParams(window.location.search);
+      let section = urlParams.get('s');
+      if(section) {
+        this.selectSection({id: section})
+      }
+    },
+    fetchData() {
+      axios
+        .get("/kb/get", {})
+        .then((response) => {
+          this.books = response.data.books;
+        })
+        .catch((error) => {
+          alert(error);
+        });
+    },
 
 		get_settings() {
 

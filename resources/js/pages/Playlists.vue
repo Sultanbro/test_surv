@@ -90,7 +90,7 @@
 
 
               <div v-if="activePlaylist != null" class="">
-                <page-playlist-edit
+                <PlaylistEdit
                   ref="playlist"
                   @back="back"
                   :token="token"
@@ -201,7 +201,7 @@
     </b-modal>
 
      <!-- Редактировать плейлист -->
-     <sidebar
+     <Sidebar
         title="Редактировать плейлист"
         :open="showEditPlaylist"
         @close="showEditPlaylist = false"
@@ -263,11 +263,11 @@
           </button>
         </div>
       </div>
-    </sidebar>
+    </Sidebar>
 
 
     <!-- Настройки раздела -->
-    <sidebar
+    <Sidebar
       title="Настройки видеокурсов"
       :open="showSettings"
       @close="showSettings = false"
@@ -286,62 +286,68 @@
         <span>Сохранить</span>
       </button>
 
-    </sidebar>
+    </Sidebar>
 
 
   </div>
 </template>
 
 <script>
+import Sidebar from '@/components/ui/Sidebar' // сайдбар table
+const PlaylistEdit = () => import(/* webpackChunkName: "PlaylistEdit" */ '@/pages/PlaylistEdit') // редактирование плейлиста
 export default {
-	name: 'Playlists',
-	props: {
-		token: String,
-		can_edit: {
-			type: Boolean,
-			default: false
-		},
-		category: Number,
-		playlist: Number,
-		video: Number
-	},
-	data: function() {
-		return {
-			categories: [],
-			showEditCat: false,
-			file_img: null,
-			editingPlaylist: {
-				title: '',
-				text: '',
-				category_id: ''
-			},
-			showEditPlaylist: false,
-			user_id: 0,
-			mode: 'read',
-			activeCat: null,
-			newcat: '',
-			newPlaylist: '',
-			activePlaylist: null,
-			showAddPlaylist: false,
-			showAddCategory: false,
-			showSettings: false,
-			allow_save_video_without_test: false,
-			mylink: window.location.protocol + '//' + window.location.host + window.location.pathname.substring(0,16),
-			data_category: this.category,
-			data_playlist: this.playlist,
-			myvideo: this.video,
-		};
-	},
-	watch:{
-		token(){
-			this.init()
-		}
-	},
-	created() {
-		if(this.token){
-			this.init()
-		}
-	},
+  name: 'Playlists',
+  components: {
+    Sidebar,
+    PlaylistEdit,
+  },
+  props: {
+    token: String,
+    can_edit: {
+      type: Boolean,
+      default: false
+    },
+    category: Number,
+    playlist: Number,
+    video: Number
+  },
+  data: function() {
+    return {
+      categories: [],
+      showEditCat: false,
+      file_img: null,
+      editingPlaylist: {
+        title: '',
+        text: '',
+        category_id: ''
+      },
+      showEditPlaylist: false,
+      user_id: 0,
+      mode: 'read',
+      activeCat: null,
+      newcat: '',
+      newPlaylist: '',
+      activePlaylist: null,
+      showAddPlaylist: false,
+      showAddCategory: false,
+      showSettings: false,
+      allow_save_video_without_test: false,
+      mylink: window.location.protocol + "//" + window.location.host + window.location.pathname.substring(0,16),
+      data_category: this.category,
+      data_playlist: this.playlist,
+      myvideo: this.video,
+    };
+  },
+  watch:{
+    token(){
+      this.init()
+    }
+  },
+  created() {
+    if(this.token){
+      this.init()
+    }
+  },
 
 	methods: {
 		init(){

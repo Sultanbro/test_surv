@@ -36,7 +36,7 @@ class AnvizService
         $anvizRecords        = $this->anvizRecords();
         $usersIds            = $this->getUserIds($anvizRecords);
         $timetrackingRecords = $this->timetrackingRecords($usersIds);
-        
+
         foreach($usersIds as $user_id) {
            
             $user_records = $timetrackingRecords->where('user_id', $user_id);
@@ -90,14 +90,14 @@ class AnvizService
     {
         return AnvizTime::orderBy('CheckTime', 'desc')
                     ->whereDate('CheckTime', $this->date)
-                    ->get(); 
+                    ->get();
     }
 
     private function getUserIds($records = null) : array
     {
         $users_array = [];
         foreach($records->unique('Userid') as $record) {
-            array_push($users_array, $record->Userid);
+            $users_array[] = $record->Userid;
         }
 
         return $users_array; // [1,2,3]

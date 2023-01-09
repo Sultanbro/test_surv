@@ -1,5 +1,5 @@
 <template>
-    <sidebar
+    <Sidebar
             id="edit-award-sidebar"
             :title="name ? name : 'Сертификат'"
             :open="open"
@@ -144,82 +144,84 @@
             <hr class="mb-4">
             <BButton type="submit" variant="primary">Сохранить</BButton>
         </BForm>
-    </sidebar>
+    </Sidebar>
 </template>
 
 <script>
-import UploadFile from './types/UploadFile.vue';
-import ChoiceTop from './types/ChoiceTop.vue';
-import UploadSertificate from './types/UploadSertificate.vue';
-import VuePdfEmbed from 'vue-pdf-embed/dist/vue2-pdf-embed';
+    import Sidebar from '@/components/ui/Sidebar' // сайдбар table
+    import UploadFile from "./types/UploadFile.vue";
+    import ChoiceTop from "./types/ChoiceTop.vue";
+    import UploadSertificate from "./types/UploadSertificate.vue";
+    import VuePdfEmbed from "vue-pdf-embed/dist/vue2-pdf-embed";
 
-export default {
-	name: 'EditAwardSidebar',
-	components: {
-		UploadFile,
-		ChoiceTop,
-		UploadSertificate,
-		VuePdfEmbed
-	},
-	props: {
-		open: Boolean,
-		item: {
-			type: Object,
-			default: {}
-		},
-	},
-	data() {
-		return {
-			constructorChange: false,
-			isShow: false,
-			readonly: false,
-			dropDownText: 'Выберите тип награды',
-			category_id: null,
-			selectedType: false,
-			uploadFiles: [],
-			fileCertificate: null,
-			targetable_id: null,
-			targetable_type: null,
-			name: '',
-			description: '',
-			hide: true,
-			type: null,
-			course_ids: [],
-			styles: '',
-			awards: [],
-			invalidName: true,
-			hasFileCertificate: false
-		};
-	},
-	methods: {
-		choicedTop(data){
-			this.targetable_id = data.id;
-			this.targetable_type = data.type;
-		},
-		hasChangeConstructor(arg){
-			this.constructorChange = arg;
-		},
-		addCourse(id) {
-			this.course_ids.push(id);
-		},
-		addCourseAll(arr){
-			for(let i = 0; i < arr.length; i++){
-				this.course_ids.push(arr[i].id);
-			}
-		},
-		removeCourse(id) {
-			this.course_ids = this.course_ids.filter(n => n !== id);
-		},
-		removeCourseAll(){
-			this.course_ids = [];
-		},
-		async saveCategory() {
-			let hidePhp = null;
-			if (this.hide) {
-				hidePhp = 0;
-			} else {
-				hidePhp = 1;
-			}
+    export default {
+        name: "EditAwardSidebar",
+        components: {
+            Sidebar,
+            UploadFile,
+            ChoiceTop,
+            UploadSertificate,
+            VuePdfEmbed,
+        },
+        props: {
+            open: Boolean,
+            item: {
+                type: Object,
+                default: {}
+            },
+        },
+        data() {
+            return {
+                constructorChange: false,
+                isShow: false,
+                readonly: false,
+                dropDownText: 'Выберите тип награды',
+                category_id: null,
+                selectedType: false,
+                uploadFiles: [],
+                fileCertificate: null,
+                targetable_id: null,
+                targetable_type: null,
+                name: '',
+                description: '',
+                hide: true,
+                type: null,
+                course_ids: [],
+                styles: '',
+                awards: [],
+                invalidName: true,
+                hasFileCertificate: false
+            };
+        },
+        methods: {
+            choicedTop(data){
+                this.targetable_id = data.id;
+                this.targetable_type = data.type;
+            },
+            hasChangeConstructor(arg){
+                this.constructorChange = arg;
+            },
+            addCourse(id) {
+                this.course_ids.push(id);
+            },
+            addCourseAll(arr){
+                for(let i = 0; i < arr.length; i++){
+                    this.course_ids.push(arr[i].id);
+                }
+            },
+            removeCourse(id) {
+                this.course_ids = this.course_ids.filter(n => n !== id);
+            },
+            removeCourseAll(){
+                this.course_ids = [];
+            },
+            async saveCategory() {
+                let hidePhp = null;
+                if (this.hide) {
+                    hidePhp = 0;
+                } else {
+                    hidePhp = 1;
+                }
 
 			const formDataCategories = new FormData();
 			formDataCategories.append('name', this.name);

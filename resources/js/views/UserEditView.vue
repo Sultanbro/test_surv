@@ -10,196 +10,205 @@ import UserEditSalary from '@/components/pages/UserEdit/UserEditSalary'
 import UserEditMisc from '@/components/pages/UserEdit/UserEditMisc'
 import UserEditBitrix from '@/components/pages/UserEdit/UserEditBitrix'
 import { useAsyncPageData, useDataFromResponse } from '@/composables/asyncPageData'
+import UModal from '@/components/ui/UModal' // модалка НАДО УБРАТЬ
+import AwardUserSidebar from '@/components/sidebars/AwardUserSidebar' // сайдбар для награждения пользователя
+
 import axios from 'axios'
 
 const DATE_YMD = 'YYYY-MM-DD'
 const DATE_DMY = 'DD.MM.YYYY'
 
 export default {
-	name: 'UserEditView',
-	components: {
-		DefaultLayout,
-		UserEditMain,
-		UserEditAdditional,
-		UserEditGroups,
-		UserEditDocuments,
-		UserEditAdaptation,
-		UserEditPhones,
-		UserEditSalary,
-		UserEditMisc,
-		UserEditBitrix,
-	},
-	data(){
-		return {
-			activeUserId: this.$route.query.id || '',
-			csrf: '',
-			user: null,
-			groups: [],
-			positions: [],
-			programs: [],
-			workingDays: [],
-			workingTimes: [],
-			errors: [],
-			fire_causes: [],
-			auth_identifier: '',
-			old_name: '',
-			old_last_name: '',
-			old_email: '',
-			old_birthday: '',
-			old_phone: '',
-			old_phone_1: '',
-			old_phone_2: '',
-			old_phone_3: '',
-			old_phone_4: '',
-			old_zarplata: '',
-			old_kaspi_cardholder: '',
-			old_kaspi: '',
-			old_card_kaspi: '',
-			old_jysan_cardholder: '',
-			old_jysan: '',
-			old_card_jysan: '',
-			in_groups: [],
-			head_in_groups: [],
-			showBlocks: {
-				main: true,
-				additional: true,
-				groups: true,
-				documents: false,
-				adaptation: false,
-				phones: false,
-				salary: false,
-				misc: false,
-				bitrix: false,
-			},
-			isUploadImageModal: false,
-			filename: 'empty',
-			fileurl: this.user?.img_url || 'noavatar.png',
-			frontErrors: [],
-			counter: 0,
-			profile_errors: 0,
-			phone_errors: 0,
-			zarplata_errors: 0,
-			isBeforeSubmit: false,
-			trainee: false,
-			increment_provided: false,
-			delay: 1,
-			deleteError: '',
-			fireCause: '',
-		}
-	},
-	computed: {
-		isTrainee(){
-			return this.user?.user_description?.is_trainee === 1
-		},
-		formAction(){
-			if(this.user) return '/timetracking/person/update'
-			return '/timetracking/person/store'
-		},
-		userName(){
-			if(this.user) return `${this.user.last_name} ${this.user.name}`
-			return 'Новый сотрудник'
-		},
-		userPosition(){
-			if(!this.user) return 'Новый пользователь'
-			if(!this.user.position_id) return 'Пользователь CP.U_MARKETING.ORG'
-			const position = this.positions.find(pos => pos.id === this.user.position_id)
-			if(position) return position.position
-			return ''
-		},
-		formUserName(){
-			if(this.user) return this.user.name
-			return this.old_name
-		},
-		formUserLastName(){
-			if(this.user) return this.user.last_name
-			return this.old_last_name
-		},
-		formUserEmail(){
-			if(this.user) return this.user.email
-			return this.old_email
-		},
-		formUserBirthday(){
-			if(this.user && this.user.birthday) return this.$moment(this.user.birthday).format(DATE_YMD)
-			return this.old_birthday
-		},
-		userCreated(){
-			if(this.user) return this.$moment(this.user.created_at).format(DATE_DMY)
-			return ''
-		},
-		userApplied(){
-			if(this.user?.user_description?.applied) return this.$moment(this.user.user_description.applied).format(DATE_DMY)
-			return ''
-		},
-		userAppliedDays(){
-			if(!this.userApplied) return 0
-			return this.$moment(Date.now()).diff(this.$moment(this.user.user_description.applied), 'days')
-		},
-		userDeleted(){
-			if(this.user?.delete_time) return this.$moment(this.user?.delete_time).format(DATE_DMY)
-			return ''
-		},
-		userDeletedAt(){
-			if(this.user?.deleted_at && this.user.deleted_at !== '0000-00-00 00:00:00')
-				return this.$moment(this.user.deleted_at).format(DATE_DMY)
-			return ''
-		}
-	},
-	watch: {
-		activeUserId(){
-			this.updatePageData()
-		}
-	},
-	mounted(){
-		this.updatePageData()
-	},
-	methods: {
-		setData(data){
-			this.csrf = data.csrf
-			this.user = data.user
-			this.groups = data.groups
-			this.positions = data.positions
-			this.programs = data.programs
-			this.workingDays = data.workingDays
-			this.workingTimes = data.workingTimes
-			this.errors = data.errors
-			this.fire_causes = data.fire_causes
-			this.auth_identifier = data.auth_identifier
-			this.old_name = data.old_name
-			this.old_last_name = data.old_last_name
-			this.old_email = data.old_email
-			this.old_birthday = data.old_birthday
-			this.old_phone = data.old_phone
-			this.old_phone_1 = data.old_phone_1
-			this.old_phone_2 = data.old_phone_2
-			this.old_phone_3 = data.old_phone_3
-			this.old_phone_4 = data.old_phone_4
-			this.old_zarplata = data.old_zarplata
-			this.old_kaspi_cardholder = data.old_kaspi_cardholder
-			this.old_kaspi = data.old_kaspi
-			this.old_card_kaspi = data.old_card_kaspi
-			this.old_jysan_cardholder = data.old_jysan_cardholder
-			this.old_jysan = data.old_jysan
-			this.old_card_jysan = data.old_card_jysan
-			this.in_groups = data.in_groups
-			this.head_in_groups = data.head_in_groups
-		},
-		updatePageData(){
-			useAsyncPageData(`/timetracking/edit-person?id=${this.activeUserId}`).then(this.setData).catch(error => {
-				console.error('useAsyncPageData', error)
-			})
-		},
-		onClickAward(){
-			if(!this.user) return
-			document.dispatchEvent(new CustomEvent('award-user-sidebar', {
-				detail: `${this.user.id}`
-			}))
-		},
-		hideBlocks(){
-			for(const type in this.showBlocks)
-				this.showBlocks[type] = false
-		},
-		showBlock(id){
-			this.hideBlocks()
+    name: 'UserEditView',
+    components: {
+        DefaultLayout,
+        UserEditMain,
+        UserEditAdditional,
+        UserEditGroups,
+        UserEditDocuments,
+        UserEditAdaptation,
+        UserEditPhones,
+        UserEditSalary,
+        UserEditMisc,
+        UserEditBitrix,
+        UModal,
+        AwardUserSidebar,
+    },
+    data(){
+        return {
+            activeUserId: this.$route.query.id || '',
+            csrf: '',
+            user: null,
+            groups: [],
+            positions: [],
+            programs: [],
+            workingDays: [],
+            workingTimes: [],
+            errors: [],
+            fire_causes: [],
+            auth_identifier: '',
+            old_name: '',
+            old_last_name: '',
+            old_email: '',
+            old_birthday: '',
+            old_phone: '',
+            old_phone_1: '',
+            old_phone_2: '',
+            old_phone_3: '',
+            old_phone_4: '',
+            old_zarplata: '',
+            old_kaspi_cardholder: '',
+            old_kaspi: '',
+            old_card_kaspi: '',
+            old_jysan_cardholder: '',
+            old_jysan: '',
+            old_card_jysan: '',
+            in_groups: [],
+            head_in_groups: [],
+            profileContacts: [],
+            taxes: [],
+            showBlocks: {
+                main: true,
+                additional: true,
+                groups: true,
+                documents: false,
+                adaptation: false,
+                phones: false,
+                salary: false,
+                misc: false,
+                bitrix: false,
+            },
+            isUploadImageModal: false,
+            filename: 'empty',
+            fileurl: this.user?.img_url || 'noavatar.png',
+            frontErrors: [],
+            counter: 0,
+            profile_errors: 0,
+            phone_errors: 0,
+            zarplata_errors: 0,
+            isBeforeSubmit: false,
+            trainee: false,
+            increment_provided: false,
+            delay: 1,
+            deleteError: '',
+            fireCause: '',
+        }
+    },
+    computed: {
+        isTrainee(){
+            return this.user?.user_description?.is_trainee === 1
+        },
+        formAction(){
+            if(this.user) return '/timetracking/person/update'
+            return '/timetracking/person/store'
+        },
+        userName(){
+            if(this.user) return `${this.user.last_name} ${this.user.name}`
+            return 'Новый сотрудник'
+        },
+        userPosition(){
+            if(!this.user) return 'Новый пользователь'
+            if(!this.user.position_id) return 'Пользователь CP.U_MARKETING.ORG'
+            const position = this.positions.find(pos => pos.id === this.user.position_id)
+            if(position) return position.position
+            return ''
+        },
+        formUserName(){
+            if(this.user) return this.user.name
+            return this.old_name
+        },
+        formUserLastName(){
+            if(this.user) return this.user.last_name
+            return this.old_last_name
+        },
+        formUserEmail(){
+            if(this.user) return this.user.email
+            return this.old_email
+        },
+        formUserBirthday(){
+            if(this.user && this.user.birthday) return this.$moment(this.user.birthday).format(DATE_YMD)
+            return this.old_birthday
+        },
+        userCreated(){
+            if(this.user) return this.$moment(this.user.created_at).format(DATE_DMY)
+            return ''
+        },
+        userApplied(){
+            if(this.user?.user_description?.applied) return this.$moment(this.user.user_description.applied).format(DATE_DMY)
+            return ''
+        },
+        userAppliedDays(){
+            if(!this.userApplied) return 0
+            return this.$moment(Date.now()).diff(this.$moment(this.user.user_description.applied), 'days')
+        },
+        userDeleted(){
+            if(this.user?.delete_time) return this.$moment(this.user?.delete_time).format(DATE_DMY)
+            return ''
+        },
+        userDeletedAt(){
+            if(this.user?.deleted_at && this.user.deleted_at !== '0000-00-00 00:00:00')
+                return this.$moment(this.user.deleted_at).format(DATE_DMY)
+            return ''
+        }
+    },
+    watch: {
+        activeUserId(){
+            this.updatePageData()
+        }
+    },
+    mounted(){
+        this.updatePageData()
+    },
+    methods: {
+        setData(data){
+            this.csrf = data.csrf
+            this.user = data.user
+            this.groups = data.groups
+            this.positions = data.positions
+            this.programs = data.programs
+            this.workingDays = data.workingDays
+            this.workingTimes = data.workingTimes
+            this.errors = data.errors
+            this.fire_causes = data.fire_causes
+            this.auth_identifier = data.auth_identifier
+            this.old_name = data.old_name
+            this.old_last_name = data.old_last_name
+            this.old_email = data.old_email
+            this.old_birthday = data.old_birthday
+            this.old_phone = data.old_phone
+            this.old_phone_1 = data.old_phone_1
+            this.old_phone_2 = data.old_phone_2
+            this.old_phone_3 = data.old_phone_3
+            this.old_phone_4 = data.old_phone_4
+            this.old_zarplata = data.old_zarplata
+            this.old_kaspi_cardholder = data.old_kaspi_cardholder
+            this.old_kaspi = data.old_kaspi
+            this.old_card_kaspi = data.old_card_kaspi
+            this.old_jysan_cardholder = data.old_jysan_cardholder
+            this.old_jysan = data.old_jysan
+            this.old_card_jysan = data.old_card_jysan
+            this.in_groups = data.in_groups
+            this.head_in_groups = data.head_in_groups
+            this.profileContacts = data.profileContacts
+            this.taxes = data.taxes
+        },
+        updatePageData(){
+            useAsyncPageData(`/timetracking/edit-person?id=${this.activeUserId}`).then(this.setData).catch(error => {
+                console.error('useAsyncPageData', error)
+            })
+        },
+        onClickAward(){
+            if(!this.user) return
+            document.dispatchEvent(new CustomEvent('award-user-sidebar', {
+                detail: `${this.user.id}`
+            }))
+        },
+        hideBlocks(){
+            for(const type in this.showBlocks)
+                this.showBlocks[type] = false
+        },
+        showBlock(id){
+            this.hideBlocks()
 
 			switch (id) {
 			case 1:
@@ -784,6 +793,7 @@ export default {
                                                 <UserEditPhones
                                                     v-show="showBlocks.phones"
                                                     :user="user"
+                                                    :profile-contacts="profileContacts"
                                                     :old_phone="old_phone"
                                                     :old_phone_1="old_phone_1"
                                                     :old_phone_2="old_phone_2"
@@ -796,6 +806,7 @@ export default {
                                                 <UserEditSalary
                                                     v-show="showBlocks.salary"
                                                     :user="user"
+                                                    :taxes="taxes"
                                                     :old_zarplata="old_zarplata"
                                                     :old_kaspi_cardholder="old_kaspi_cardholder"
                                                     :old_kaspi="old_kaspi"
@@ -819,7 +830,7 @@ export default {
                                         </div>
                                     </div>
                                 </div>
-                                <u-modal
+                                <UModal
                                     v-if="errors && errors.length"
                                     :items="errors"
                                     title="Не сохранено"
@@ -1056,7 +1067,7 @@ export default {
             </div>
         </div>
 
-        <award-user-sidebar />
+        <AwardUserSidebar/>
 
         <div class="svg-icons" style="display: none !important;">
             <svg viewBox="0 0 512 512" id="zip-icon" x="0px" y="0px" style="enable-background:new 0 0 512 512;padding: 20px;" xml:space="preserve"><path style="fill:#E2E5E7;" d="M128,0c-17.6,0-32,14.4-32,32v448c0,17.6,14.4,32,32,32h320c17.6,0,32-14.4,32-32V128L352,0H128z"/><path style="fill:#B0B7BD;" d="M384,128h96L352,0v96C352,113.6,366.4,128,384,128z"/><polygon style="fill:#CAD1D8;" points="480,224 384,128 480,128 "/><path style="fill:rgb(220 54 70);" d="M416,416c0,8.8-7.2,16-16,16H48c-8.8,0-16-7.2-16-16V256c0-8.8,7.2-16,16-16h352c8.8,0,16,7.2,16,16  V416z"/><g><path style="fill:#FFFFFF;" d="M132.64,384c-8.064,0-11.264-7.792-6.656-13.296l45.552-60.512h-37.76   c-11.12,0-10.224-15.712,0-15.712h51.568c9.712,0,12.528,9.184,5.632,16.624l-43.632,56.656h41.584   c10.24,0,11.52,16.256-1.008,16.256h-55.28V384z"/><path style="fill:#FFFFFF;" d="M212.048,303.152c0-10.496,16.896-10.88,16.896,0v73.04c0,10.608-16.896,10.88-16.896,0V303.152z"/><path style="fill:#FFFFFF;" d="M251.616,303.152c0-4.224,3.328-8.832,8.704-8.832h29.552c16.64,0,31.616,11.136,31.616,32.48   c0,20.224-14.976,31.488-31.616,31.488h-21.36v16.896c0,5.632-3.584,8.816-8.192,8.816c-4.224,0-8.704-3.184-8.704-8.816   L251.616,303.152L251.616,303.152z M268.496,310.432v31.872h21.36c8.576,0,15.36-7.568,15.36-15.504   c0-8.944-6.784-16.368-15.36-16.368H268.496z"/></g><path style="fill:#CAD1D8;" d="M400,432H96v16h304c8.8,0,16-7.2,16-16v-16C416,424.8,408.8,432,400,432z"/></svg>
@@ -1678,19 +1689,6 @@ background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/s
 .xtab-content .table td:last-child {
     text-align: center;
 }
-.xtab-content .radio {
-    display: flex;
-    font-size: 13px;
-    align-items: center;
-    cursor: pointer;
-    text-align: center;
-    margin-right: 25px;
-}
-.xtab-content .radio input {
-    position: relative;
-    top: 1px;
-    margin-right: 7px;
-}
 .text-red {
     color:red;
 }
@@ -1776,27 +1774,6 @@ background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/s
     overflow-x: hidden;
     max-height: 200px;
     display:none;
-}
-.weekday {
-    text-align: center;
-    display: flex;
-    align-items:center;
-    justify-content: center;
-    width: 20px;
-    height: 20px;
-    border-radius: 3px;
-    border: 1px solid #efefef;
-    margin-right: 3px;
-    cursor: pointer;
-    background: #fff;
-    color: #000;
-    padding: 15px;
-}
-.weekday.active {
-    background: #28a745;
-}
-.weekday:hover {
-    background: green;
 }
 
 

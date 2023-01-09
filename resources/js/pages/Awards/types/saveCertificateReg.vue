@@ -1,6 +1,6 @@
 <template>
     <div class="certificate-creator">
-        <vue-html2pdf
+        <VueHtml2pdf
                 :show-layout="false"
                 :float-layout="true"
                 :pdf-quality="2"
@@ -45,7 +45,7 @@
                     </div>
                 </section>
             </template>
-        </vue-html2pdf>
+        </VueHtml2pdf>
     </div>
 </template>
 
@@ -53,48 +53,48 @@
 import VuePdfEmbed from 'vue-pdf-embed/dist/vue2-pdf-embed';
 import VueHtml2pdf from './Html2pdf';
 
-export default {
-	name: 'save-certificate',
-	components: {
-		VuePdfEmbed,
-		'vue-html2pdf': VueHtml2pdf,
-	},
-	props: {
-		course_id: {
-			type: Number,
-			default: null
-		},
-		item: {
-			type: Object,
-			default: {}
-		}
-	},
-	data() {
-		return {
-			loading: true,
-			award: {},
-			transformFullName: {},
-			transformCourseName: {},
-			transformDateName: {},
-			styles: {},
-			canvasHeight: null,
-			canvasWidth: 1000,
-			pdfDownloaded: false,
-			options: {
-				jsPDF: {
-					unit: 'mm',
-					format: [],
-					orientation: 'portrait'
-				}
-			}
-		}
-	},
-	methods: {
-		onProgress(progress) {
-			this.progress = progress;
-			// console.log(`PDF generation progress: ${progress}%`)
-		},
-		beforeDownload() {
+    export default {
+        name: 'save-certificate',
+        components: {
+            VuePdfEmbed,
+            VueHtml2pdf,
+        },
+        props: {
+            course_id: {
+                type: Number,
+                default: null
+            },
+            item: {
+                type: Object,
+                default: {}
+            }
+        },
+        data() {
+            return {
+                loading: true,
+                award: {},
+                transformFullName: {},
+                transformCourseName: {},
+                transformDateName: {},
+                styles: {},
+                canvasHeight: null,
+                canvasWidth: 1000,
+                pdfDownloaded: false,
+                options: {
+                    jsPDF: {
+                        unit: 'mm',
+                        format: [],
+                        orientation: 'portrait'
+                    }
+                }
+            }
+        },
+        methods: {
+            onProgress(progress) {
+                this.progress = progress;
+                // console.log(`PDF generation progress: ${progress}%`)
+            },
+            beforeDownload() {
 
 		},
 		hasDownloaded(blobPdf) {

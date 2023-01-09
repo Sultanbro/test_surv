@@ -9,17 +9,30 @@
     <b-row class="align-items-center">
       <b-col cols="12" lg="4" md="6">
       <b-form-group label="Группа">
-        <b-form-select
+<!--        <b-form-select-->
+<!--                v-model="activebtn"-->
+<!--                :options="statuses"-->
+<!--                size="md"-->
+<!--                @change="selectGroup"-->
+<!--                class="group-select col-lg-6 d-flex"-->
+<!--        >-->
+<!--          <template #first>-->
+<!--            <b-form-select-option :value="null" disabled>Выберите группу из списка</b-form-select-option>-->
+<!--          </template>-->
+<!--        </b-form-select>-->
+        <multiselect
                 v-model="activebtn"
                 :options="statuses"
-                size="md"
-                @change="selectGroup"
-                class="group-select col-lg-6 d-flex"
+                @select="selectGroup"
+                placeholder="Выберите группу из списка"
+                track-by="group"
+                label="group"
+                ref="groupMultiselect"
         >
-          <template #first>
-            <b-form-select-option :value="null" disabled>Выберите группу из списка</b-form-select-option>
+          <template slot="afterList">
+            <li class="multiselect-add-li"><span class="multiselect-add-btn">Добавить новую группу</span></li>
           </template>
-        </b-form-select>
+        </multiselect>
       </b-form-group>
       </b-col>
       <b-col cols="12" lg="4" md="6" class="col-lg-3 col-md-6">
@@ -141,23 +154,6 @@
 
       <div class="col-lg-6 mb-3 sssz">
 
-        <div class="dialerlist blu">
-          <multiselect
-            v-model="corps"
-            :options="corp_books"
-            :multiple="true"
-            :close-on-select="false"
-            :clear-on-select="false"
-            :preserve-search="true"
-            placeholder="Выберите корп книги"
-            label="title"
-            track-by="title"
-            :taggable="true"
-            @tag="addTag"
-          >
-          </multiselect>
-        </div>
-
         <div class="blu">
           <b-form-checkbox
             class="mt-3"
@@ -179,21 +175,34 @@
         <h6 class="mb-2">Сотрудники</h6>
         <div class="dialerlist">
           <div class="fl" style="flex-direction: column">
-            <multiselect
-              v-model="value"
-              :options="options"
-              :multiple="true"
-              :close-on-select="false"
-              :clear-on-select="false"
-              :preserve-search="true"
-              placeholder="Выберите"
-              label="email"
-              track-by="email"
-              :taggable="true"
-              @tag="addTag"
-            >
-            </multiselect>
+<!--            <multiselect-->
+<!--              v-model="value"-->
+<!--              :options="options"-->
+<!--              :multiple="true"-->
+<!--              :close-on-select="false"-->
+<!--              :clear-on-select="false"-->
+<!--              :preserve-search="true"-->
+<!--              placeholder="Выберите"-->
+<!--              label="email"-->
+<!--              track-by="email"-->
+<!--              :taggable="true"-->
+<!--              @tag="addTag"-->
+<!--            >-->
+<!--            </multiselect>-->
+            <superselect
+                    style="width: 60%"
+                    :disable_type="2"
+                    :disable_type_position="true"
+                    :values="value"
+                    :single="false"
+                    :pre_build="true"
+                    :visible_values="false"
+                    :visible_values_text="'Выбрано сотрудников'"
+                   />
             <a href="#" @click="showAlert()">Удалить всех пользователей</a>
+            <div v-for="(val, index) in value" :ley="val.id">
+              <p style="background-color: #333; padding: 5px 10px; border-radius: 5px; color: #fff;" @click="removeValue(index)">{{val}}</p>
+            </div>
           </div>
         </div>
       </div>
@@ -210,7 +219,7 @@
       </div>
     </div>
 
-      <Sidebar
+      <sidebar
         title="Бонусы"
         :open="showBonuses"
         @close="showBonuses = false"
@@ -326,7 +335,7 @@
             Удалить
           </button>
         </div>
-      </Sidebar>
+      </sidebar>
 
       <b-modal id="bv-modal" hide-footer>
         <template #modal-title> Подтвердите удаление </template>
@@ -483,15 +492,10 @@
 </template>
 
 <script>
-import Sidebar from '@/components/ui/Sidebar' // сайдбар table
 export default {
   name: "groups",
-  components: {
-    Sidebar,
-  },
   props: [
     "statuseses",
-    "corpbooks",
     "activeuserid",
     "archived_groupss",
   ],
@@ -507,396 +511,398 @@ export default {
       value: [], // selected users
       options: [], // users options
 
-			corps: [], // selected corp_books
+      archived_groups: [],
+      payment_terms: "", // Условия оплаты труда в группе
+      timeon: "09:00",
+      timeoff: "18:00",
+      dialer_id: null,
+      script_id: null,
+      talk_minutes: null,
+      talk_hours: null,
+      // time edit
+      time_address: 0,
+      editable_time: 0,
+      time_address_text: "Не выбран",
+      time_variants: [],
+      workdays: 5,
+      quality: 'local',
+      time_exceptions: [],
+      time_exceptions_options: [],
+      showEditTimeAddress: false,
+      paid_internship: 0,
+      show_payment_terms: 1,
+      zarplata: "0",
+      showKPI: false,
+      showBonuses: false,
+      showDeleteButton: false,
+      showArchiveModal: false,
+      showAfterEdit: false,
+      group_id: 0,
+      gname: "", // Название группы
+      zoom_link: "", // Ссылка zoom для обучения стажеров
+      bp_link: "",
+      units: [
+        {
+          title: "За единицу",
+          value: "one",
+        },
+        {
+          title: "За все, первому",
+          value: "first",
+        },
+        {
+          title: "За все, каждому",
+          value: "all",
+        },
+      ],
+      dayparts: [
+        {
+          title: "Весь день",
+          value: 0,
+        },
+        {
+          title: "09:00 - 13:00",
+          value: 1,
+        },
+        {
+          title: "14:00 - 19:00",
+          value: 2,
+        },
+        {
+          title: "12:00 - 16:00",
+          value: 3,
+        },
+        {
+          title: "17:00 - 21:00",
+          value: 4,
+        },
+      ],
+    };
+  },
+  watch:{
+    activeuserid(){
+      this.init()
+    }
+  },
+  created() {
+    if(this.activeuserid){
+      this.init()
+    }
+  },
+  mounted() {},
+  methods: {
+    removeValue(index){
+      this.value.splice(index, 1);
+    },
+     init(){
+      Object.keys(this.statuseses).forEach(item => {
+        this.statuses.push({
+          id: item,
+          group: this.statuseses[item]
+        })
+      });
+      this.archived_groups = this.archived_groupss;
+    },
+    saveBonus() {
+      axios
+        .post("/timetracking/users/bonus/save", {
+          bonuses: this.bonuses,
+        })
+        .then((response) => {
+          this.$toast.info("Успешно сохранено");
+          this.bonuses = response.data.bonuses;
+          this.messageoff();
+        })
+        .catch((error) => {
+          console.log(error.response);
+          this.$toast.info(error.response);
+        });
+    },
 
-			corp_books: [], // corp_books options
-			archived_groups: [],
-			payment_terms: '', // Условия оплаты труда в группе
-			timeon: '09:00',
-			timeoff: '18:00',
-			dialer_id: null,
-			script_id: null,
-			talk_minutes: null,
-			talk_hours: null,
-			// time edit
-			time_address: 0,
-			editable_time: 0,
-			time_address_text: 'Не выбран',
-			time_variants: [],
-			workdays: 5,
-			quality: 'local',
-			time_exceptions: [],
-			time_exceptions_options: [],
-			showEditTimeAddress: false,
-			paid_internship: 0,
-			show_payment_terms: 1,
-			zarplata: '0',
-			showKPI: false,
-			showBonuses: false,
-			showDeleteButton: false,
-			showArchiveModal: false,
-			showAfterEdit: false,
-			group_id: 0,
-			gname: '', // Название группы
-			zoom_link: '', // Ссылка zoom для обучения стажеров
-			bp_link: '',
-			units: [
-				{
-					title: 'За единицу',
-					value: 'one',
-				},
-				{
-					title: 'За все, первому',
-					value: 'first',
-				},
-				{
-					title: 'За все, каждому',
-					value: 'all',
-				},
-			],
-			dayparts: [
-				{
-					title: 'Весь день',
-					value: 0,
-				},
-				{
-					title: '09:00 - 13:00',
-					value: 1,
-				},
-				{
-					title: '14:00 - 19:00',
-					value: 2,
-				},
-				{
-					title: '12:00 - 16:00',
-					value: 3,
-				},
-				{
-					title: '17:00 - 21:00',
-					value: 4,
-				},
-			],
-		};
-	},
-	watch:{
-		activeuserid(){
-			this.init()
-		}
-	},
-	created() {
-		if(this.activeuserid){
-			this.init()
-		}
-	},
-	mounted() {},
-	methods: {
-		init(){
-			axios.post('/timetracking/users-new', {}).then((response) => {
-				this.options = response.data?.data.users;
-			});
-			this.statuses = this.statuseses;
-			this.archived_groups = this.archived_groupss;
-			this.corp_books = this.corpbooks;
-		},
-		saveBonus() {
-			axios
-				.post('/timetracking/users/bonus/save', {
-					bonuses: this.bonuses,
-				})
-				.then((response) => {
-					this.$toast.info('Успешно сохранено');
-					this.bonuses = response.data.bonuses;
-					this.messageoff();
-				})
-				.catch((error) => {
-					console.log(error.response);
-					this.$toast.info(error.response);
-				});
-		},
+    addBonus() {
+      this.bonuses.push({
+        id: 0,
+        title: "Нет названия",
+        sum: 0,
+        group_id: this.group_id,
+        activity_id: 0,
+        unit: "one",
+        quantity: 0,
+        daypart: 0,
+      });
+    },
 
-		addBonus() {
-			this.bonuses.push({
-				id: 0,
-				title: 'Нет названия',
-				sum: 0,
-				group_id: this.group_id,
-				activity_id: 0,
-				unit: 'one',
-				quantity: 0,
-				daypart: 0,
-			});
-		},
+    addTag(newTag) {
+      const tag = {
+        email: newTag,
+        ID: newTag,
+      };
+      this.options.push(tag);
+      this.value.push(tag);
+    },
 
-		addTag(newTag) {
-			const tag = {
-				email: newTag,
-				ID: newTag,
-			};
-			this.options.push(tag);
-			this.value.push(tag);
-		},
+    addExceptionTag(newTag) {
+      const tag = {
+        email: newTag,
+        ID: newTag,
+      };
+      this.time_exceptions_options.push(tag);
+      this.time_exceptions.push(tag);
+    },
 
-		addExceptionTag(newTag) {
-			const tag = {
-				email: newTag,
-				ID: newTag,
-			};
-			this.time_exceptions_options.push(tag);
-			this.time_exceptions.push(tag);
-		},
+    messageoff() {
+      setTimeout(() => {
+        this.message = null;
+      }, 3000);
+    },
+    async selectGroup(value) {
+      let loader = this.$loading.show();
+      await axios
+        .post("/timetracking/users-new", {
+          id: value.id,
+        })
+        .then((response) => {
+          if (response.data?.data) {
+            const data = response.data.data;
+            this.gname = data.name;
+            data.users.forEach(item => {
+              const itemData = {
+                id: item.id,
+                type: 1,
+                selected: true
+              };
 
-		addCorpBookTag(newTag) {
-			const tag = {
-				title: newTag,
-				id: newTag,
-			};
-			this.corps.push(tag);
-		},
+              if(item.last_name === null){
+                itemData.name = item.name;
+              } else {
+                itemData.name = `${item.name} ${item.last_name}`;
+              }
 
-		messageoff() {
-			setTimeout(() => {
-				this.message = null;
-			}, 3000);
-		},
-		selectGroup() {
+              this.value.push(itemData);
+            });
+            this.options = data.users;
 
+            this.timeon = data.timeon;
+            this.timeoff = data.timeoff;
+            this.group_id = data.group_id;
+            this.zoom_link = data.zoom_link;
+            this.bp_link = data.bp_link;
+            this.dialer_id = data.dialer_id;
+            this.talk_minutes = data.talk_minutes;
+            this.talk_hours = data.talk_hours;
+            this.script_id = data.script_id;
+            this.quality = data.quality;
+            this.bonuses = data.bonuses;
+            this.activities = data.activities;
+            this.payment_terms = data.payment_terms;
+            this.time_address = data.time_address;
+            this.workdays = data.workdays;
+            this.paid_internship = data.paid_internship;
+            this.show_payment_terms = data.show_payment_terms;
+            this.archived_groups = data.archived_groups;
 
-			let loader = this.$loading.show();
+            this.editable_time = data.editable_time;
+            if (this.time_address != -1 || this.time_address != 0)
+              this.time_address_text = "Из аналитики";
+            if (this.time_address == -1) this.time_address_text = "Из U-calls";
+            if (this.time_address == 0) this.time_address_text = "Не выбран";
 
-			axios
-				.post('/timetracking/users-new', {
-					id: this.activebtn,
-				})
-				.then((response) => {
-					if (response.data?.data) {
-						const data = response.data.data
-						console.warn(data)
-						this.gname = data.name;
-						this.value = data.users;
+            loader.hide();
+          } else {
+            this.value = [];
+          }
+        });
+    },
 
-						this.timeon = data.timeon;
-						this.timeoff = data.timeoff;
-						this.group_id = data.group_id;
-						this.zoom_link = data.zoom_link;
-						this.bp_link = data.bp_link;
-						this.dialer_id = data.dialer_id;
-						this.talk_minutes = data.talk_minutes;
-						this.talk_hours = data.talk_hours;
-						this.script_id = data.script_id;
-						this.quality = data.quality;
-						this.corps = data.corp_books;
-						this.bonuses = data.bonuses;
-						this.activities = data.activities;
-						this.payment_terms = data.payment_terms;
-						this.time_address = data.time_address;
-						this.workdays = data.workdays;
-						this.paid_internship = data.paid_internship;
-						this.show_payment_terms = data.show_payment_terms;
-						this.statuses = data.groups;
-						this.archived_groups = data.archived_groups;
+    saveusers() {
+      // save group data
+      let loader = this.$loading.show();
 
-						this.editable_time = data.editable_time;
-						if (this.time_address != -1 || this.time_address != 0)
-							this.time_address_text = 'Из аналитики';
-						if (this.time_address == -1) this.time_address_text = 'Из U-calls';
-						if (this.time_address == 0) this.time_address_text = 'Не выбран';
+      axios
+        .post("/timetracking/users/group/save-new", {
+          group_id: this.activebtn,
+          users: this.value,
+          group_info: {
+            work_start: this.timeon,
+            work_end: this.timeoff,
+            name: this.gname,
+            zoom_link: this.zoom_link,
+            workdays: this.workdays,
+            payment_terms: this.payment_terms,
+            editable_time: this.editable_time,
+            paid_internship: this.paid_internship,
+            quality: this.quality,
+            show_payment_terms: this.show_payment_terms,
+            bp_link: this.bp_link,
+          },
+          script_id: this.script_id,
+          dialer_id: this.dialer_id,
+          talk_hours: this.talk_hours,
+          talk_minutes: this.talk_minutes,
+        })
+        .then((response) => {
+          this.statuses = response.data.groups;
+         // this.activebtn = response.data.group;
+          this.$toast.info("Успешно сохранено");
+          this.messageoff();
 
-						loader.hide();
-					} else {
-						this.value = [];
-					}
-				});
-		},
-
-		saveusers() {
-			// save group data
-			let loader = this.$loading.show();
-
-			axios
-				.post('/timetracking/users/group/save-new', {
-					group_id: this.activebtn,
-					users: this.value,
-					group_info: {
-						work_start: this.timeon,
-						work_end: this.timeoff,
-						name: this.gname,
-						zoom_link: this.zoom_link,
-						workdays: this.workdays,
-						payment_terms: this.payment_terms,
-						editable_time: this.editable_time,
-						paid_internship: this.paid_internship,
-						quality: this.quality,
-						show_payment_terms: this.show_payment_terms,
-						bp_link: this.bp_link,
-					},
-					script_id: this.script_id,
-					dialer_id: this.dialer_id,
-					talk_hours: this.talk_hours,
-					talk_minutes: this.talk_minutes,
-				})
-				.then((response) => {
-					this.statuses = response.data.groups;
-					// this.activebtn = response.data.group;
-					this.$toast.info('Успешно сохранено');
-					this.messageoff();
-
-					loader.hide();
-				})
-				.catch((error) => {
-					console.log(error.response);
-					this.$toast.info(error.response);
-					loader.hide();
-				});
-		},
-		addStatus() {
-			if (this.new_status.length > 0) {
-				axios
-					.post('/timetracking/group/save-new', {
-						name: this.new_status,
-					})
-					.then((response) => {
-						if (response.data.status == 200) {
-							this.$toast.success('Добавлено');
-							this.statuses.push(this.new_status);
-						} else {
-							this.$toast.error(
-								'Название "' +
+          loader.hide();
+        })
+        .catch((error) => {
+          console.log(error.response);
+          this.$toast.info(error.response);
+          loader.hide();
+        });
+    },
+    addStatus() {
+      if (this.new_status.length > 0) {
+        axios
+          .post("/timetracking/group/save-new", {
+            name: this.new_status,
+          })
+          .then((response) => {
+            if (response.data.status == 200) {
+              this.$toast.success("Добавлено");
+              this.statuses.push(this.new_status);
+            } else {
+              this.$toast.error(
+                'Название "' +
                   this.new_status +
                   '" не свободно, выберите другое имя для группы!'
-							);
-						}
+              );
+            }
 
-						this.selectGroup(this.new_status);
-						this.new_status = '';
-					});
-			}
-		},
-		deleted() {
-			if (confirm('Вы уверены что хотите удалить группу?')) {
-				axios
-					.post('/timetracking/group/delete-new', {
-						group: this.activebtn,
-					})
-					.then((response) => {
-						this.$toast.info('Удалена');
-					});
+            this.selectGroup(this.new_status);
+            this.new_status = "";
+          });
+      }
+    },
+    deleted() {
+      if (confirm("Вы уверены что хотите удалить группу?")) {
+        axios
+          .post("/timetracking/group/delete-new", {
+            group: this.activebtn,
+          })
+          .then((response) => {
+            this.$toast.info("Удалена");
+          });
 
-				let ind = this.statuses.indexOf(status);
-				if (index > -1) this.statuses.splice(ind, 1);
-				this.statuses.splice(ind, 1);
-				this.activebtn = null;
-			}
-		},
-		showAlert() {
-			if (confirm('Вы уверены что хотите удалить всех пользователей?')) {
-				this.value = [];
-			}
-		},
+        let ind = this.statuses.indexOf(status);
+        if (index > -1) this.statuses.splice(ind, 1);
+        this.statuses.splice(ind, 1);
+        this.activebtn = null;
+      }
+    },
+    showAlert() {
+      if (confirm("Вы уверены что хотите удалить всех пользователей?")) {
+        this.value = [];
+      }
+    },
 
-		before_deleteBonus() {
-			this.bonuses.forEach((bonus, key) => {
-				if (bonus.checked) this.$bvModal.show('bv-modal');
-			});
-		},
-		deleteBonus() {
-			this.bonuses.forEach((bonus, key) => {
-				this.showAfterEdit = true;
-				if (bonus.checked) bonus.deleted = true;
-				this.$bvModal.hide('bv-modal');
-			});
-		},
+    before_deleteBonus() {
+      this.bonuses.forEach((bonus, key) => {
+        if (bonus.checked) this.$bvModal.show("bv-modal");
+      });
+    },
+    deleteBonus() {
+      this.bonuses.forEach((bonus, key) => {
+        this.showAfterEdit = true;
+        if (bonus.checked) bonus.deleted = true;
+        this.$bvModal.hide("bv-modal");
+      });
+    },
 
-		editTimeAddress() {
-			this.showEditTimeAddress = true;
+    editTimeAddress() {
+      this.showEditTimeAddress = true;
 
-			axios
-				.post('/timetracking/settings/get_time_addresses', {
-					group_id: this.activebtn,
-				})
-				.then((response) => {
-					this.time_variants = response.data.time_variants;
-					this.time_exceptions_options = response.data.time_exceptions_options;
-					this.time_exceptions = response.data.time_exceptions;
-				})
-				.catch((error) => {
-					alert(error);
-				});
-		},
+      axios
+        .post("/timetracking/settings/get_time_addresses", {
+          group_id: this.activebtn,
+        })
+        .then((response) => {
+          this.time_variants = response.data.time_variants;
+          this.time_exceptions_options = response.data.time_exceptions_options;
+          this.time_exceptions = response.data.time_exceptions;
+        })
+        .catch((error) => {
+          alert(error);
+        });
+    },
 
-		restoreGroup() {
-			if (!confirm('Вы уверены что хотите восстановить группу?')) {
-				return '';
-			}
+    restoreGroup() {
+      if (!confirm("Вы уверены что хотите восстановить группу?")) {
+        return "";
+      }
 
-			let loader = this.$loading.show();
-			axios
-				.post('/timetracking/groups/restore-new', {
-					id: this.restore_group,
-				})
-				.then((response) => {
-					this.$toast.success('Восстановлен!');
-					this.selectGroup(this.restore_group);
-					this.restore_group = null;
-					this.showArchiveModal = false;
-					loader.hide();
-				})
-				.catch((error) => {
-					loader.hide();
-					this.$toast.error('Ошибка!');
-					alert(error);
-				});
-		},
+      let loader = this.$loading.show();
+      axios
+        .post("/timetracking/groups/restore-new", {
+          id: this.restore_group,
+        })
+        .then((response) => {
+          this.$toast.success("Восстановлен!");
+          this.selectGroup(this.restore_group);
+          this.restore_group = null;
+          this.showArchiveModal = false;
+          loader.hide();
+        })
+        .catch((error) => {
+          loader.hide();
+          this.$toast.error("Ошибка!");
+          alert(error);
+        });
+    },
 
-		saveTimeAddress() {
-			axios
-				.post('/timetracking/settings/save_time_addresses', {
-					group_id: this.activebtn,
-					time_address: this.time_address,
-					time_exceptions: this.time_exceptions,
-				})
-				.then((response) => {
-					if (this.time_address != -1 || this.time_address != 0)
-						this.time_address_text = 'Из аналитики';
-					if (this.time_address == -1) this.time_address_text = 'Из U-calls';
-					if (this.time_address == 0) this.time_address_text = 'Не выбран';
+    saveTimeAddress() {
+      axios
+        .post("/timetracking/settings/save_time_addresses", {
+          group_id: this.activebtn,
+          time_address: this.time_address,
+          time_exceptions: this.time_exceptions,
+        })
+        .then((response) => {
+          if (this.time_address != -1 || this.time_address != 0)
+            this.time_address_text = "Из аналитики";
+          if (this.time_address == -1) this.time_address_text = "Из U-calls";
+          if (this.time_address == 0) this.time_address_text = "Не выбран";
 
-					this.time_address_text =
+          this.time_address_text =
             this.time_variants !== undefined
-            	? this.time_variants[this.time_address]
-            	: 'Не выбран';
-				})
-				.catch((error) => {
-					alert(error);
-				});
+              ? this.time_variants[this.time_address]
+              : "Не выбран";
+        })
+        .catch((error) => {
+          alert(error);
+        });
 
-			this.showEditTimeAddress = false;
-		},
+      this.showEditTimeAddress = false;
+    },
 
-		deleteBonusItem(i) {
-			if(!confirm('Вы уверены?')) {
-				return;
-			}
+    deleteBonusItem(i) {
+      if(!confirm('Вы уверены?')) {
+        return;
+      }
 
-			if(this.bonuses[i].id == 0) {
-				this.bonuses.splice(i, 1);
-				return;
-			}
+      if(this.bonuses[i].id == 0) {
+        this.bonuses.splice(i, 1);
+        return;
+      }
 
-			axios
-				.post('/timetracking/settings/delete-group-bonus', {
-					id: this.bonuses[i].id,
-				})
-				.then((response) => {
-					this.bonuses.splice(i, 1);
-					this.$toast.success('Бонус удален');
-				})
-				.catch((error) => {
-					alert(error);
-				});
+      axios
+        .post("/timetracking/settings/delete-group-bonus", {
+          id: this.bonuses[i].id,
+        })
+        .then((response) => {
+            this.bonuses.splice(i, 1);
+            this.$toast.success('Бонус удален');
+        })
+        .catch((error) => {
+          alert(error);
+        });
 
 
-		}
-	},
+    }
+  },
 };
 </script>
 
