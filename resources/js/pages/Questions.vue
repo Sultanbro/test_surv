@@ -12,7 +12,7 @@
           placeholder="Текст вопроса..."
           @keyup="changed = true"
           v-if="q.editable"
-        ></textarea>
+        />
         <input
           v-else
           type="text"

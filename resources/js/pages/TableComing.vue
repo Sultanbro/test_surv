@@ -70,7 +70,7 @@
 import { useYearOptions } from '../composables/yearOptions'
 
 export default {
-    name: "TableComing",
+    name: 'TableComing',
     props: {
         groups: Array,
         activeuserid: String,

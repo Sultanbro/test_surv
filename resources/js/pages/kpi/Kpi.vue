@@ -9,7 +9,7 @@
                 <span>Показывать:</span>
                 <input type="number" min="1" max="100" v-model="pageSize" class="form-control ml-2 input-sm" />
             </div>
-            <super-filter
+            <SuperFilter
                 ref="child"
                 :groups="groups"
             />
@@ -35,31 +35,24 @@
     <table class="j-table">
         <thead>
             <tr class="table-heading">
-
                 <th class="first-column text-center pointer" @click="adjustFields">
                     <i class="fa fa-cogs"></i>
                 </th>
-
                 <th v-for="(field, i) in fields" :key="i" :class="field.class">
                     {{ field.name }}
                 </th>
-
                 <th>Действия</th>
-
             </tr>
-
         </thead>
 
         <tbody>
-
-            <!-- v-if && v-for in one element !!! -->
-            <template
-                v-for="(item, i) in page_items"
-                v-if="(item.target && item.target.name.includes(searchText)) || searchText.length == 0"
-            >
+            <template v-for="(item, i) in page_items">
                 <!-- <tr v-if="item.target.name.includes(searchText) || searchText.length == 0 || (item.creator && (item.creator.last_name + ' ' + item.creator.name).includes(searchText)) || (item.updater && (item.updater.last_name + ' ' + item.updater.name).includes(searchText)) || (item.items.filter( i => { return i.name.includes(searchText)  } ).length > 0)"></tr> -->
-                <tr :key="i">
-                    <td  @click="expand(i)" class="pointer">
+                <tr
+                    v-if="(item.target && item.target.name.includes(searchText)) || searchText.length == 0"
+                    :key="i"
+                >
+                    <td @click="expand(i)" class="pointer">
                         <div class="d-flex align-items-center px-2">
                             <span class="mr-2">{{ i + 1 }}</span>
                             <i class="fa fa-minus mt-1" v-if="item.expanded"></i>
@@ -69,25 +62,24 @@
                     <td  v-for="(field, f) in fields" :key="f" :class="field.class">
 
                         <div v-if="field.key == 'target'" >
-                            <superselect
+                            <SuperSelect
                                 v-if="item.target == null || item.id == 0"
+                                :key="i"
                                 class="w-full"
                                 :values="item.target == null ? [] : [item.target]"
                                 :single="true"
                                 @choose="(target) => item.target = target"
                                 @remove="() => item.target = null"
-                                :key="i" />
+                            />
                             <div v-else class="d-flex aic">
                                 <i class="fa fa-user ml-2" v-if="item.target.type == 1"></i>
                                 <i class="fa fa-users ml-2" v-if="item.target.type == 2"></i>
                                 <i class="fa fa-briefcase ml-2" v-if="item.target.type == 3"></i>
                                 <span class="ml-2">{{ item.target.name }}</span>
-
                             </div>
                         </div>
 
                         <div v-else-if="field.key == 'stats'" :class="field.class">
-
                             <a v-bind:href="'/kpi?target='+ (item.target ? item.target.name : '')" target="_blank" class="btn btn-primary btn-icon">
                                 <i class="fa fa-chart-bar"></i>
                             </a>
@@ -108,7 +100,6 @@
                         <div v-else :class="field.class">
                             <input type="text" class="form-control" v-model="item[field.key]" @change="validate(item[field.key], field.key)" />
                         </div>
-
                     </td>
                     <td >
                         <div class="d-flex">
@@ -122,7 +113,7 @@
                     <tr class="collapsable" :class="{'active': item.expanded}" :key="i + 'a'">
                         <td :colspan="fields.length + 2">
                             <div class="table__wrapper w-100">
-                                <kpi-items
+                                <KpiItems
                                     :kpi_id="item.id"
                                     :items="item.items"
                                     :expanded="item.expanded"
@@ -139,15 +130,12 @@
                         </td>
                     </tr>
                 </template>
-
             </template>
-
-
         </tbody>
      </table>
 
     <!-- pagination -->
-    <jw-pagination
+    <JwPagination
         class="mt-3"
         :key="paginationKey"
         :items="items"
@@ -159,29 +147,25 @@
         }"
         @changePage="onChangePage"
         :pageSize="+pageSize"
-    ></jw-pagination>
+    />
 
 
     <!-- modal Adjust Visible fields -->
     <b-modal
         v-model="modalAdjustVisibleFields"
         title="Настройка списка «KPI»"
-        @ok="modalAdjustVisibleFields = !modalAdjustVisibleFields"
         ok-text="Закрыть"
-        size="lg">
-
+        size="lg"
+        @ok="modalAdjustVisibleFields = !modalAdjustVisibleFields"
+    >
       <div class="row">
-
          <div class="col-md-4 mb-4" v-for="(field, f) in all_fields">
             <b-form-checkbox
                 v-model="show_fields[field.key]"
                 :value="true"
                 :unchecked-value="false"
-            >
-                {{ field.name }}
-            </b-form-checkbox>
+            >{{ field.name }}</b-form-checkbox>
         </div>
-
       </div>
     </b-modal>
 
@@ -189,14 +173,24 @@
 </template>
 
 <script>
-import {kpi_fields, newKpi} from "./kpis.js";
-import {findModel, groupBy} from "./helpers.js";
+import JwPagination from 'jw-vue-pagination'
+import SuperFilter from '@/pages/kpi/SuperFilter' // filter like bitrix
+import KpiItems from '@/pages/kpi/KpiItems'
+import SuperSelect from '@/components/SuperSelect'
+
+import {kpi_fields, newKpi} from './kpis.js'
+import {findModel, groupBy} from './helpers.js'
+
 
 export default {
-    name: "KPI",
-    props: {
-
+    name: 'KPI',
+    components: {
+        JwPagination,
+        SuperFilter,
+        SuperSelect,
+        KpiItems,
     },
+    props: {},
     watch: {
         show_fields: {
             handler: function (val) {
@@ -260,9 +254,6 @@ export default {
         );
     },
     methods: {
-        showKpiStats(i){
-            alert(i);
-        },
         expand(i) {
             this.page_items[i].expanded = !this.page_items[i].expanded
         },
@@ -551,6 +542,5 @@ export default {
             }
         }
     },
-
 }
 </script>

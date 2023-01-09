@@ -43,32 +43,37 @@
                         </option>
                     </select>
                     <div class="tab__content">
-                        <div v-for="(act, index) in item.activities"
+                        <div
+                            v-for="(act, index) in item.activities"
                             class="tab__content-item index__content"
                             :class="{'is-active': index == 0}"
                             :data-content="index"
                             :key="index"
                         >
-                            <t-collection v-if="act.type == 'collection'"
+                            <Collection
+                                v-if="act.type == 'collection'"
+                                :key="act.id"
                                 :month="monthInfo"
                                 :activity="act"
                                 :is_admin="false"
-                                :key="act.id"
                                 :price="act.price"
-                            ></t-collection>
-                            <t-default v-else-if="act.type == 'default'"
+                            />
+                            <Default
+                                v-else-if="act.type == 'default'"
+                                :key="'d'+act.id"
                                 :month="monthInfo"
                                 :activity="act"
-                                :key="act.id"
                                 :group_id="act.group_id"
                                 :work_days="act.workdays"
                                 :editable="false"
                                 :show_headers="false"
-                            ></t-default>
-                            <t-quality-new v-else-if="act.type == 'quality'"
+                            />
+                            <Quality
+                                v-else-if="act.type == 'quality'"
+                                :key="'q'+act.id"
                                 :monthInfo="monthInfo"
                                 :items="act.records"
-                            ></t-quality-new>
+                            />
 
                             <!-- <tr class="prize first-place">
                             <tr class="prize second-place" >
@@ -90,8 +95,17 @@
 </template>
 
 <script>
+import Collection from '@/pages/Tables/Collection.vue'
+import Default from '@/pages/Tables/Default.vue'
+import Quality from '@/pages/Tables/Quality.vue'
+
 export default {
     name: 'CompareIndicators',
+    components: {
+        Collection,
+        Default,
+        Quality,
+    },
     props: {},
     data: function () {
         return {

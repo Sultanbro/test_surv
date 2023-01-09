@@ -6,18 +6,21 @@
             v-show="reaction.value != 0"
             :class="'news-comment-reactions__item '
             + (reaction.is_reacted ? 'news-comment-reactions__item--reacted' : '')"
-            @click="sendReaction(reaction.icon)">
+            @click="sendReaction(reaction.icon)"
+        >
             <span v-html="reaction.value"/>
             <span v-html="reaction.icon"/>
         </div>
 
         <div
+            v-show="hasReactionWithZero()"
             class="news-comment-reactions__keyboard-container"
-            v-show="hasReactionWithZero()">
-                <span
-                    class="news-comment-reactions__show-keyboard"
-                    @click="toggleEmojiKeyboard(true)"
-                    v-html="'+'"/>
+        >
+            <span
+                class="news-comment-reactions__show-keyboard"
+                @click="toggleEmojiKeyboard(true)"
+                v-html="'+'"
+            />
             <div class="news-emoji-keyboard" v-show="showKeyboard">
                 <div class="news-emoji-keyboard__container">
                     <div class="news-emoji-keyboard__arrow"/>
@@ -26,7 +29,8 @@
                             class="news-emoji-keyboard__item"
                             v-for="reaction in reactionsList"
                             v-html="reaction.icon"
-                            @click="sendReaction(reaction.icon)"/>
+                            @click="sendReaction(reaction.icon)"
+                        />
                     </div>
                 </div>
             </div>
@@ -37,7 +41,7 @@
 <script>
 
 export default {
-    name: "ReactionComponent",
+    name: 'ReactionComponent',
     props: {
         articleId: {
             required: true,
@@ -5527,7 +5531,7 @@ export default {
         }
     },
     mounted() {
-        
+
         this.zeroList = JSON.parse(JSON.stringify(this.reactionsList));
         this.updateReactionList();
     },

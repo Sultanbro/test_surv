@@ -3,55 +3,109 @@
         <img
             class="news-birthday-card__image"
             :src="user.avatar"
-            alt="img">
+            alt="img"
+        >
         <div class="news-birthday-card__body">
-            <span class="news-birthday-card__name" v-html="user.name"/>
-            <span :class="'news-birthday-card__birthday ' + getCardColor(user)"
-                  v-html="user.date_human"/>
+            <span
+                class="news-birthday-card__name"
+                v-html="user.name"
+            />
+            <span
+                :class="'news-birthday-card__birthday ' + getCardColor(user)"
+                v-html="user.date_human"
+            />
         </div>
         <div
             :class="'news-birthday-card__gift ' +(success ? 'news-birthday-card__gift--success' : (hover ? 'news-birthday-card__gift--hover' : ''))"
             @click="togleShowModal(true)"
             @mouseleave="hover=false"
-            @mouseenter="hover=true">
-            <img v-show="!success" alt="" :src="hover ? '/icon/news/birthday/money-hover.svg' : '/icon/news/birthday/money.svg'">
-            <img alt="" v-show="success" src="/icon/news/birthday/arrow.svg">
+            @mouseenter="hover=true"
+        >
+            <img
+                v-show="!success"
+                :src="hover ? '/icon/news/birthday/money-hover.svg' : '/icon/news/birthday/money.svg'"
+                alt=""
+            >
+            <img
+                v-show="success"
+                src="/icon/news/birthday/arrow.svg"
+                alt=""
+            >
         </div>
 
         <div v-show="hover" class="news-money-title">
-            <img alt="" class="news-money-title__img" src="/icon/news/birthday/money-title.svg">
-            <span class="news-money-title__text" v-html="'Подарить деньги'"/>
+            <img
+                src="/icon/news/birthday/money-title.svg"
+                alt=""
+                class="news-money-title__img"
+            >
+            <span class="news-money-title__text">Подарить деньги</span>
         </div>
 
-        <div v-show="showModal && !showSecondModal" class="news-gift-popup" v-scroll-lock="showModal">
+        <div
+            v-show="showModal && !showSecondModal"
+            v-scroll-lock="showModal"
+            class="news-gift-popup"
+        >
             <div class="news-gift-popup__container">
 
-                <img class="news-gift-popup__close" @click="togleShowModal(false)" alt="" src="/icon/news/birthday/close.svg">
+                <img
+                    src="/icon/news/birthday/close.svg"
+                    alt=""
+                    class="news-gift-popup__close"
+                    @click="togleShowModal(false)"
+                >
 
                 <div class="news-gift-popup__header">
-                    <img alt="" class="news-gift-popup__img" src="/icon/news/birthday/money-title.svg">
-                    <span class="news-gift-popup__text" v-html="'Подарить деньги'"/>
+                    <img
+                        src="/icon/news/birthday/money-title.svg"
+                        alt=""
+                        class="news-gift-popup__img"
+                    >
+                    <span class="news-gift-popup__text">Подарить деньги</span>
                 </div>
 
                 <div class="news-gift-popup__body">
-                    <input class="news-gift-popup__input" type="number" placeholder="Укажите сумму" v-model="summ">
+                    <input
+                        class="news-gift-popup__input"
+                        type="number"
+                        placeholder="Укажите сумму"
+                        v-model="summ"
+                    >
                     <a class="news-gift-popup__submit">
-                        <span v-html="'Отправить'" @click="toggleSecondModal(summ)"/>
+                        <span @click="toggleSecondModal(summ)">Отправить</span>
                     </a>
                 </div>
 
                 <div class="news-gift-popup__footer">
-                    <span class="news-gift-popup__button" @click="toggleSecondModal(250)" v-html="'250 KZT'"/>
-                    <span class="news-gift-popup__button" @click="toggleSecondModal(500)" v-html="'500 KZT'"/>
-                    <span class="news-gift-popup__button" @click="toggleSecondModal(1000)" v-html="'1000 KZT'"/>
+                    <span
+                        class="news-gift-popup__button"
+                        @click="toggleSecondModal(250)"
+                    >250 KZT</span>
+                    <span
+                        class="news-gift-popup__button"
+                        @click="toggleSecondModal(500)"
+                    >500 KZT</span>
+                    <span
+                        class="news-gift-popup__button"
+                        @click="toggleSecondModal(1000)"
+                    >1000 KZT</span>
                 </div>
             </div>
         </div>
 
-        <div v-show="showSecondModal" class="news-gift-second">
+        <div
+            v-show="showSecondModal"
+            class="news-gift-second"
+        >
             <div class="news-gift-second__container">
 
-                <img class="news-gift-second__close" @click="closeSecondModal()" alt="" src="/icon/news/birthday/close.svg">
+                <img
+                    src="/icon/news/birthday/close.svg"
+                    alt=""
+                    class="news-gift-second__close"
+                    @click="closeSecondModal()"
+                >
 
                 <div class="news-gift-second__header">
                     <img src="/icon/news/birthday/hand.svg">
@@ -62,16 +116,22 @@
 
                 <div class="news-gift-second__body">
                     <img
-                        class="news-birthday-card__image"
                         :src="user.avatar"
-                        alt="img">
+                        alt="img"
+                        class="news-birthday-card__image"
+                    >
                     <div class="news-birthday-card__body">
-                        <span class="news-birthday-card__name" v-html="user.name"/>
-                        <span :class="'news-birthday-card__birthday ' + getCardColor(user)"
-                              v-html="user.date_human"/>
+                        <span
+                            class="news-birthday-card__name"
+                            v-html="user.name"
+                        />
+                        <span
+                            :class="'news-birthday-card__birthday ' + getCardColor(user)"
+                            v-html="user.date_human"
+                        />
                     </div>
                     <a class="news-gift-second__send">
-                        <span @click="sendMoney" v-html="'Подарить!'"/>
+                        <span @click="sendMoney">Подарить!</span>
                     </a>
                 </div>
             </div>
@@ -81,7 +141,6 @@
 
 <script>
 import moment from "moment/moment";
-
 
 export default {
     name: "BirthdayUser",
@@ -141,7 +200,6 @@ export default {
                 })
         },
         async createAvans(data) {
-
             await axios.post('/timetracking/salaries/update', data.avansData)
                 .then(res => {
                   console.log(res)
@@ -152,7 +210,7 @@ export default {
                 })
         },
         async sendBonuses(data) {
-          await axios.post('/timetracking/salaries/update', data)
+            await axios.post('/timetracking/salaries/update', data)
                 .then(res => {
                   console.log(res)
                   this.success = true;

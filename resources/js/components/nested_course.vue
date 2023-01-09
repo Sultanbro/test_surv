@@ -1,6 +1,6 @@
 <template>
   <ul class="dragArea">
-    <li 
+    <li
         v-for="el in tasks"
           class="chapter opened"
           :class="{
@@ -22,17 +22,17 @@
             {{ el.title }}
           </p>
         </div>
-        <nested-course
+        <NestedCourse
           :tasks="el.children"
           @showPage="showPage"
-          :active="active" 
+          :active="active"
         />
     </li>
   </ul>
 </template>
 <script>
-export default {  
-  name: "nested-course",
+const NestedCourse = {
+  name: 'NestedCourse',
   props: {
     tasks: {
       required: true,
@@ -67,12 +67,16 @@ export default {
       console.log(this.first_active)
 
       if(id != this.first_active) {
-        if(item != null && item.item_model == null) return; 
-      } 
- 
+        if(item != null && item.item_model == null) return;
+      }
+
       console.log('nested SHowpage emit')
       this.$emit('showPage', id);
     },
   },
 };
+NestedCourse.components = {
+  NestedCourse
+}
+export default NestedCourse
 </script>

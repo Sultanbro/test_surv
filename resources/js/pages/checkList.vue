@@ -61,7 +61,7 @@
       </div>
 
 
-        <sidebar
+        <Sidebar
                 title="Создать чек лист"
                 :open="showCheckSideBar"
                 @close="closeSideBar()"
@@ -233,15 +233,20 @@
                     </div>
                 </div>
             </div>
-        </sidebar>
+        </Sidebar>
     </div>
 </template>
 
 
 <script>
+    import Sidebar from '@/components/ui/Sidebar' // сайдбар table
     import Multiselect from 'vue-multiselect'
     export default {
         name: "TableQuarter",
+        components: {
+            Multiselect,
+            Sidebar,
+        },
         // props:['item','groups', 'users', 'roles'],
         props:{
 
@@ -254,9 +259,6 @@
                 default: false
               },
         },
-        components: {
-            Multiselect
-        },
         data() {
             return{
                 deleted_tasks:[],
@@ -265,7 +267,7 @@
                 valueFindGr:[],
                 arrCheckInput:{
                     tasks:[],
-                },                
+                },
                 arrCheckLists:[],
                 filter:'',
                 countView:'1',
@@ -342,7 +344,7 @@
             },
             'values.length'(after,before){
                     this.editValuesChanged = true;
-                
+
             },
 
         },
@@ -377,7 +379,7 @@
                 }
                 this.showCheckSideBar = false;
                 this.editValuesChanged = false;
-                
+
             },
             clearSideBar(){
                 this.values = [];
@@ -587,7 +589,7 @@
                     this.editValueThis = response.data;
                     this.valueFindGr = response.data.item_id;
                     this.countView = response.data.show_count;
-                    
+
                     this.arrCheckInput = response.data;
                     console.log(this.arrCheckInput)
                     this.editValueThis.view = true
