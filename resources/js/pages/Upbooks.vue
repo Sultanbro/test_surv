@@ -103,7 +103,8 @@
       </div>
     </div>
 
-    <page-upbooks-read v-else
+    <UpbooksRead
+      v-else
       :book_id="activeBook.id"
       mode="read"
       @back="back"
@@ -131,13 +132,13 @@
     </b-modal>
 
     <!-- Загрузить книгу -->
-    <sidebar
+    <Sidebar
       title="Загрузить книгу"
       :open="modals.upload_book.show"
       @close="modals.upload_book.show = false"
       width="70%"
     >
-      <upload-files
+      <UploadFiles
         :token="token"
         type="book"
         :id="0"
@@ -201,10 +202,10 @@
           <span>Сохранить</span>
         </button>
       </div>
-    </sidebar>
+    </Sidebar>
 
      <!-- Details -->
-     <sidebar
+     <Sidebar
         title="О книге"
         :open="details != null"
         @close="details = null"
@@ -226,11 +227,11 @@
         </div>
       </div>
 
-    </sidebar>
+    </Sidebar>
 
 
     <!-- Edit book -->
-     <sidebar
+     <Sidebar
         title="Редактировать книгу"
         :open="modals.edit_book.show"
         @close="modals.edit_book.show = false"
@@ -304,7 +305,7 @@
             </div>
           </div>
 
-          <book-segment
+          <BookSegment
             class="mb-3"
             :segment="segment"
             :book_id="modals.edit_book.item.id"
@@ -324,10 +325,10 @@
       </div>
 
 
-      </sidebar>
+      </Sidebar>
 
      <!-- Настройки раздела -->
-    <sidebar
+    <Sidebar
       title="Настройки книг"
       :open="showSettings"
       @close="showSettings = false"
@@ -346,7 +347,7 @@
         <span>Сохранить</span>
       </button>
 
-    </sidebar>
+    </Sidebar>
 
 
 
@@ -374,9 +375,20 @@
 
 <script>
 import Questions from "./Questions.vue";
+import Sidebar from '@/components/ui/Sidebar' // сайдбар table
+const UpbooksRead = () => import(/* webpackChunkName: "UpbooksRead" */ '@/pages/UpbooksRead') // книга чтение
+import UploadFiles from '@/components/UploadFiles' // загрузка файлов
+import BookSegment from '@/components/BookSegment' // загрузка файлов
+
 export default {
-  components: { Questions },
   name: "Upbooks",
+  components: {
+    Questions,
+    Sidebar,
+    UpbooksRead,
+    UploadFiles,
+    BookSegment,
+  },
   props: {
     token: {
       type: String

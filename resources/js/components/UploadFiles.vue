@@ -8,7 +8,7 @@
             </div>
         </div>
 
-        <uploading-file
+        <UploadingFile
             v-for="(file, index) in files"
             v-bind:key="file.file.uniqueIdentifier + index"
             :file="file.file"
@@ -24,7 +24,7 @@ import Resumable from 'resumablejs'
 import UploadingFile from './UploadingFile'
 
 export default {
-    components: { 
+    components: {
         UploadingFile
     },
     data(){

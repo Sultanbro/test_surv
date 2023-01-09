@@ -184,7 +184,7 @@
 
 
     <!-- Premium -->
-    <sidebar
+    <Sidebar
         v-if="editPremiumSidebar"
         :title="sidebarTitle"
         width="400px"
@@ -329,10 +329,10 @@
 
             </div>
         </div>
-    </sidebar>
+    </Sidebar>
 
     <!-- info -->
-    <sidebar
+    <Sidebar
         v-if="openSidebar"
         width="400px"
         :title="sidebarTitle"
@@ -433,7 +433,7 @@
             </div>
         </div>
 
-    </sidebar>
+    </Sidebar>
 
     <!-- premium -->
     <b-modal
@@ -486,10 +486,14 @@
 </template>
 
 <script>
+import Sidebar from '@/components/ui/Sidebar' // сайдбар table
 import { useYearOptions } from '../composables/yearOptions'
 
 export default {
-    name: "TableAccrual",
+    name: 'TableAccrual',
+    components: {
+        Sidebar,
+    },
     props: {
         groupss: Array,
         activeuserid: String,

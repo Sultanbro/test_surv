@@ -1,6 +1,6 @@
 <template>
     <div class="certificate-creator">
-        <vue-html2pdf
+        <VueHtml2pdf
                 :show-layout="false"
                 :float-layout="true"
                 :pdf-quality="2"
@@ -45,7 +45,7 @@
                     </div>
                 </section>
             </template>
-        </vue-html2pdf>
+        </VueHtml2pdf>
     </div>
 </template>
 
@@ -57,7 +57,7 @@
         name: 'save-certificate',
         components: {
             VuePdfEmbed,
-            'vue-html2pdf': VueHtml2pdf,
+            VueHtml2pdf,
         },
         props: {
             course_id: {

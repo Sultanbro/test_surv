@@ -3,24 +3,24 @@
 
     <!-- top line -->
     <div class="d-flex my-4 jcsb aifs">
-        
+
         <div class="d-flex aic mr-2">
             <div class="d-flex aic mr-2">
                 <span>Показывать:</span>
                 <input type="number" min="1" max="100" v-model="pageSize" class="form-control ml-2 input-sm" />
             </div>
-            <super-filter
+            <SuperFilter
                 ref="child"
                 :groups="groups"
             />
-            <!--<input 
+            <!--<input
                 class="searcher mr-2 input-sm"
                 v-model="searchText"
                 type="text"
                 placeholder="Поиск по совпадениям..."
                 @keyup="onSearch"
             >-->
-            <span class="ml-2"> 
+            <span class="ml-2">
                 Найдено: {{ items.length }}
             </span>
         </div>
@@ -30,7 +30,7 @@
             <span>Добавить</span>
         </button>
     </div>
-    
+
     <!-- table NEW -->
     <table class="j-table collapse-table">
       <thead>
@@ -52,19 +52,20 @@
                </td>
                <td class="p-3 text-left">
                    <div v-if="all_fields[0].key == 'target'" class="mr-5">
-                       <superselect
-                               v-if="newPremiumArray[0].id == 0"
-                               style="width: 60%;"
-                               :values="(new_target == null && newPremiumArray.length > 0) ? [] : [new_target]"
-                               :single="true"
-                               @choose="(target) => new_target = target"
-                               @remove="() => new_target = null" />
-                       <div v-else class="d-flex aic">
-                           <i class="fa fa-user ml-2 color-user" v-if="newPremiumArray[0].target.type == 1"></i>
-                           <i class="fa fa-users ml-2 color-group" v-if="newPremiumArray[0].target.type == 2"></i>
-                           <i class="fa fa-briefcase ml-2 color-position" v-if="newPremiumArray[0].target.type == 3"></i>
-                           <span class="ml-2">{{ newPremiumArray[0].target.name }}</span>
-                       </div>
+                        <SuperSelect
+                            v-if="newPremiumArray[0].id == 0"
+                            style="width: 60%;"
+                            :values="(new_target == null && newPremiumArray.length > 0) ? [] : [new_target]"
+                            :single="true"
+                            @choose="(target) => new_target = target"
+                            @remove="() => new_target = null"
+                        />
+                        <div v-else class="d-flex aic">
+                            <i class="fa fa-user ml-2 color-user" v-if="newPremiumArray[0].target.type == 1"></i>
+                            <i class="fa fa-users ml-2 color-group" v-if="newPremiumArray[0].target.type == 2"></i>
+                            <i class="fa fa-briefcase ml-2 color-position" v-if="newPremiumArray[0].target.type == 3"></i>
+                            <span class="ml-2">{{ newPremiumArray[0].target.name }}</span>
+                        </div>
                    </div>
                </td>
            </tr>
@@ -362,7 +363,7 @@
     </table>
 
     <!-- pagination -->
-    <jw-pagination
+    <JwPagination
         class=""
         :key="paginationKey"
         :items="items"
@@ -374,16 +375,16 @@
         }"
         @changePage="onChangePage"
         :pageSize="+pageSize"
-    ></jw-pagination>
+    />
 
     <!-- modal Adjust Visible fields -->
-    <b-modal 
+    <b-modal
         v-model="modalAdjustVisibleFields"
         title="Настройка списка"
         @ok="modalAdjustVisibleFields = !modalAdjustVisibleFields"
         ok-text="Закрыть"
         size="lg">
-     
+
         <div class="row">
 
             <div class="col-md-4 mb-2" v-for="(field, f) in all_fields">
@@ -395,37 +396,38 @@
                     {{ field.name }}
                 </b-form-checkbox>
             </div>
-            
-        </div>  
+
+        </div>
     </b-modal>
 
-    <sidebar
+    <Sidebar
         title="Настроить премию"
         v-if="activeItem != null"
         :open="showSidebar"
         @close="closeSidebar"
         width="40%"
-    >   
+    >
         <div class="row m-0">
             <div class="mb-3" v-for="(field, f) in all_fields" :class="field.alter_class">
-                        
+
                         <div class="mb-2 mt-2 field">{{ field.name }}</div>
 
                         <div v-if="field.key == 'target'" class="mr-5">
-                            <superselect
+                            <SuperSelect
                                 v-if="activeItem.id == 0"
-                                class="w-full" 
-                                :values="activeItem.target == null ? [] : [activeItem.target]" 
+                                class="w-full"
+                                :values="activeItem.target == null ? [] : [activeItem.target]"
                                 :single="true"
-                                @choose="(target) => activeItem.target = target" /> 
+                                @choose="(target) => activeItem.target = target"
+                            />
                             <div v-else class="d-flex aic">
-                                <i class="fa fa-user ml-2 color-user" v-if="activeItem.target.type == 1"></i> 
-                                <i class="fa fa-users ml-2 color-group" v-if="activeItem.target.type == 2"></i> 
-                                <i class="fa fa-briefcase ml-2 color-position" v-if="activeItem.target.type == 3"></i> 
+                                <i class="fa fa-user ml-2 color-user" v-if="activeItem.target.type == 1"></i>
+                                <i class="fa fa-users ml-2 color-group" v-if="activeItem.target.type == 2"></i>
+                                <i class="fa fa-briefcase ml-2 color-position" v-if="activeItem.target.type == 3"></i>
                                 <span class="ml-2">{{ activeItem.target.name }}</span>
                             </div>
                         </div>
-                         
+
                         <div v-else-if="field.key == 'created_by' && activeItem.creator != null">
                             {{ activeItem.creator.last_name + ' ' + activeItem.creator.name }}
                         </div>
@@ -438,11 +440,11 @@
                             {{ activeItem[field.key] }}
                         </div>
 
-                      
+
 
                         <div v-else-if="field.key == 'activity_id' && activeItem.source != undefined">
                             <div class="d-flex">
-                                <select 
+                                <select
                                     v-model="activeItem.source"
                                     @change="++source_key"
                                 >
@@ -452,16 +454,16 @@
                                     </option>
                                 </select>
 
-                                <select 
+                                <select
                                     v-if="Number(activeItem.source) == 1"
                                     v-model="activeItem.group_id"
                                     :key="'a' + source_key"
                                 >
                                     <option value="0" selected>-</option>
                                     <option v-for="(group, id) in groups" :value="id">{{ group }}</option>
-                                </select>      
+                                </select>
 
-                                <select 
+                                <select
                                     v-model="activeItem.activity_id"
                                     :key="'b' + source_key"
                                 >
@@ -470,9 +472,9 @@
                                 </select>
                             </div>
                         </div>
-                        
+
                         <div v-else-if="field.key == 'unit'">
-                            <select 
+                            <select
                                 v-model="activeItem.unit"
                             >
                                 <option value="0" selected>-</option>
@@ -481,7 +483,7 @@
                         </div>
 
                         <div v-else-if="field.key == 'daypart'">
-                            <select 
+                            <select
                                 v-model="activeItem.daypart"
                             >
                                 <option v-for="key in Object.keys(dayparts)" :value="key">{{ dayparts[key] }}</option>
@@ -499,30 +501,39 @@
             </div>
             <div>
                 <button
-                    class="d-flex aic  btn btn-success ml-3" 
+                    class="d-flex aic  btn btn-success ml-3"
                     @click="saveItem"
                 >
-                    <i 
+                    <i
                         class="fa fa-save"
                     />
                     <span class="ml-2">Сохранить</span>
                 </button>
             </div>
         </div>
-        
-    </sidebar>
+
+    </Sidebar>
 </div>
 </template>
 
 <script>
+import JwPagination from 'jw-vue-pagination'
+import SuperFilter from '@/pages/kpi/SuperFilter' // filter like bitrix
+import SuperSelect from '@/components/SuperSelect'
+import Sidebar from '@/components/ui/Sidebar' // сайдбар table
+
 import {fields, newQuartalPremium} from "./quartal_premiums.js";
 import {findModel, sources} from "./helpers.js";
 
 export default {
-    name: "QuartalPremiums", 
-    props: {
-        
+    name: 'QuartalPremiums',
+    components: {
+        JwPagination,
+        SuperFilter,
+        SuperSelect,
+        Sidebar,
     },
+    props: {},
     watch: {
         show_fields: {
             handler: function (val) {
@@ -537,7 +548,7 @@ export default {
                     val = 1;
                     return;
                 }
-                
+
                 if(val > 100) {
                     val = 100;
                     return;
@@ -554,7 +565,7 @@ export default {
         }
     },
     data() {
-        return {            
+        return {
             new_target: null,
             counter: 0,
             premium: null,
@@ -584,12 +595,12 @@ export default {
                 'updated_by',
             ]
         }
-    }, 
-    
+    },
+
     created() {
         this.setDefaultShowFields()
-        this.prepareFields(); 
-        this.addStatusToItems(); 
+        this.prepareFields();
+        this.addStatusToItems();
     },
 
     mounted() {
@@ -638,10 +649,10 @@ export default {
             let loader = this.$loading.show();
 
             axios.post( this.uri + '/get', {
-                filters: filter 
+                filters: filter
             }).then(response => {
-                    
-               
+
+
                 this.all_items = response.data.items
                 this.items = response.data.items;
                 this.activities = response.data.activities;
@@ -660,7 +671,7 @@ export default {
         },
 
         openSidebar(p, i) {
-            this.activeItem = this.page_items[p].items[i]     
+            this.activeItem = this.page_items[p].items[i]
             this.showSidebar = true
         },
 
@@ -668,11 +679,11 @@ export default {
             this.showSidebar = false
             this.activeItem = null;
         },
-        
+
         setDefaultShowFields() {
 
             let obj = {}; // Какие поля показывать
-            fields.forEach(field => obj[field.key] = true); 
+            fields.forEach(field => obj[field.key] = true);
 
             if(localStorage.quartal_premiums_show_fields) {
                 this.show_fields = JSON.parse(localStorage.getItem('quartal_premiums_show_fields'));
@@ -699,7 +710,7 @@ export default {
         prepareFields() {
             let visible_fields = [],
                 show_fields = this.show_fields;
-            
+
             fields.forEach((field, i) => {
                 if(this.show_fields[field.key] != undefined
                     && this.show_fields[field.key]
@@ -721,7 +732,7 @@ export default {
 
             if(item.target == null)    msg = 'Выберите Кому назначить'
             if(item.title.length <= 1) msg = 'Заполните название'
-            
+
             // activity id
             let a;
             if(item.source == 1) {
@@ -729,22 +740,22 @@ export default {
             } else {
                 a = this.activities.findIndex(el => el.source == item.source && el.id == item.activity_id);
             }
-            
+
             if(item.activity_id == 0 || item.activity_id == undefined || a == -1) {
                 msg = 'Выберите показатель';
-            } 
+            }
 
             // another
             if(item.from == null)      msg = 'Выберите начало периода'
             if(item.to == null)        msg = 'Выберите конец периода'
             if(item.quantity <= 0)     msg = 'Кол-во должно быть больше нуля'
             if(item.sum <= 0)          msg = 'Вознаграждение должно быть больше нуля'
-            
+
             return msg;
         },
 
         save(item, index) {
-            
+
             /**
              * validate item
              */
@@ -753,7 +764,7 @@ export default {
                 this.$toast.error(not_validated_msg)
                 return;
             }
-            
+
             /**
              * prepare fields
              */
@@ -765,8 +776,8 @@ export default {
                 targetable_type: findModel(item.target.type),
                 ...item
             };
- 
-            let req = item.id == 0 
+
+            let req = item.id == 0
                 ? axios.post(this.uri + '/' + method, fields)
                 : axios.put(this.uri + '/' + method, fields);
 
@@ -774,12 +785,12 @@ export default {
              * request
              */
             req.then(response => {
-    
+
                 if(method == 'save') {
                     let quartal_premium = response.data.quartal_premium;
                     item.id = quartal_premium.id;
                    // this.items.unshift(item);
-                    
+
 
                     let i = this.all_items.findIndex(el => el.type == item.target.type && el.id == item.target.id);
                     if(i != -1) {
@@ -806,7 +817,7 @@ export default {
                 if(error.message == 'Request failed with status code 409') {
                     m = 'Выберите другую цель "Кому"';
                 }
-                
+
                 loader.hide()
                 alert(m)
             });
@@ -824,7 +835,7 @@ export default {
         },
 
         deleteEvery(id, p, i) {
-            
+
             // let a = this.all_items.findIndex(el => el.id == id)
             // if(a != -1) this.all_items.splice(a, 1);
 
@@ -837,14 +848,14 @@ export default {
 
         saveItem() {
             this.save(this.activeItem)
-        }, 
+        },
 
         saveItemFromTable(p, i) {
             this.save(this.page_items[p].items[i])
         },
 
         deleteItem(p, i) {
-          
+
             let item = this.page_items[p].items[i]
 
             if(!confirm('Вы уверены?')) {
@@ -862,10 +873,10 @@ export default {
         showStat() {
             this.$toast.info('Показать статистику');
         },
- 
-        onSearch() { 
+
+        onSearch() {
             let text = this.searchText;
-     
+
             if(this.searchText == '') {
                this.items = this.all_items;
             } else {
@@ -877,8 +888,8 @@ export default {
                     ) {
                         has = true;
                     }
-                    return has; 
-                }); 
+                    return has;
+                });
             }
 
             this.page_items = this.items.slice(0, this.pageSize);
@@ -910,7 +921,7 @@ export default {
                     }
                 });
             })
-           
+
         },
 
         grouped_activities(source, group_id) {
@@ -922,6 +933,6 @@ export default {
             }
         }
     },
- 
+
 }
 </script>

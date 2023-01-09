@@ -60,10 +60,10 @@
                                         <tr class="collapsable" :class="{'active': user.expanded}" :key="i + 'a'">
                                             <td :colspan="fields.length + 2">
                                                 <div class="table__wrapper__second w-100">
-                                                    <kpi-items
+                                                    <KpiItems
                                                         :my_sum="user.full_time == 1 ? wrap_item.completed_100 : wrap_item.completed_100 / 2"
                                                         :kpi_id="user.id"
-                                                        :items="user.items" 
+                                                        :items="user.items"
                                                         :expanded="user.expanded"
                                                         :activities="activities"
                                                         :groups="groups"
@@ -79,9 +79,9 @@
                                                     />
                                                 </div>
                                             </td>
-                                        </tr>                
+                                        </tr>
                                     </template>
-                                
+
                                 </template>
                             </table>
                             </div>
@@ -90,18 +90,22 @@
                 </template>
 
             </template>
-          
+
         </tbody>
     </table>
-      
+
 </div>
 </template>
 
-<script> 
+<script>
+import KpiItems from '@/pages/kpi/KpiItems'
 import {kpi_fields} from "./kpis.js";
 
 export default {
-    name: "StatsTable", 
+    name: 'StatsTable',
+    components: {
+        KpiItems,
+    },
     props: {
         searchText: {
             default: '',
@@ -154,7 +158,7 @@ export default {
     mounted(){
     },
     methods: {
-        
+
         expand(w) {
             this.items[w].expanded = !this.items[w].expanded
         },
@@ -162,7 +166,7 @@ export default {
         prepareFields() {
             let visible_fields = [],
                 show_fields = this.show_fields;
-            
+
             kpi_fields.forEach((field, i) => {
                 if(this.show_fields[field.key] != undefined
                     && this.show_fields[field.key]
@@ -172,10 +176,10 @@ export default {
             });
 
             this.fields = kpi_fields;
-        }, 
+        },
 
         countAvg() {
-            
+
             this.items.forEach(kpi => {
 
                 let kpi_sum = 0;
@@ -199,22 +203,22 @@ export default {
 
                     user.avg = avg;
 
-                    // all kpi sum 
+                    // all kpi sum
                     kpi_sum += Number(avg);
                     kpi_count++;
                 });
 
                 console.log(kpi_count, kpi_sum);
-                /** 
+                /**
                  * count avg completed percent of kpi by users
                  */
                 kpi.avg = kpi_count > 0 ? Number(Number(kpi_sum / kpi_count * 100).toFixed(2)) : 0;
-                
+
             });
         },
 
-    } 
-} 
+    }
+}
 </script>
 
 

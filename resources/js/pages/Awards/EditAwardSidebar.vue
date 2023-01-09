@@ -1,5 +1,5 @@
 <template>
-    <sidebar
+    <Sidebar
             id="edit-award-sidebar"
             :title="name ? name : 'Сертификат'"
             :open="open"
@@ -144,10 +144,11 @@
             <hr class="mb-4">
             <BButton type="submit" variant="primary">Сохранить</BButton>
         </BForm>
-    </sidebar>
+    </Sidebar>
 </template>
 
 <script>
+    import Sidebar from '@/components/ui/Sidebar' // сайдбар table
     import UploadFile from "./types/UploadFile.vue";
     import ChoiceTop from "./types/ChoiceTop.vue";
     import UploadSertificate from "./types/UploadSertificate.vue";
@@ -156,10 +157,11 @@
     export default {
         name: "EditAwardSidebar",
         components: {
+            Sidebar,
             UploadFile,
             ChoiceTop,
             UploadSertificate,
-            VuePdfEmbed
+            VuePdfEmbed,
         },
         props: {
             open: Boolean,

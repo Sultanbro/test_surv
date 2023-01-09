@@ -8,7 +8,7 @@
                 Экспорт</a> -->
             <div v-if="is_admin">
                 <!-- Ozon -->
-                <a @click='showExcelImport = !showExcelImport' 
+                <a @click='showExcelImport = !showExcelImport'
                     class="btn btn-success btn-sm rounded mr-2 text-white">
                     <i class="fa fa-upload"></i>
                     Импорт</a>
@@ -16,7 +16,7 @@
         </div>
         <!-- <b-button  size="sm" variant="primary" @click=""><i class="fa fa-pencil"></i>  Редактирование таблицы</b-button> -->
     </h4>
-    
+
     <div class="table-container">
         <table class="table table-bordered table-responsive r-to" :id="'sticky-'+ activity.id">
             <thead>
@@ -91,15 +91,33 @@
         </table>
     </div>
 
-    <sidebar title="Импорт EXCEL" :open="showExcelImport" @close="showExcelImport=false" v-if="showExcelImport" width="75%">
-        <activity-excel-import :group_id="42" table="minutes" @close="showExcelImport=false" :activity_id="activity.id"></activity-excel-import>
-    </sidebar>
+    <Sidebar
+        v-if="showExcelImport"
+        title="Импорт EXCEL"
+        :open="showExcelImport"
+        @close="showExcelImport=false"
+        width="75%"
+    >
+        <ActivityExcelImport
+            :group_id="42"
+            table="minutes"
+            @close="showExcelImport=false"
+            :activity_id="activity.id"
+        />
+    </Sidebar>
 </div>
 </template>
 
 <script>
+import Sidebar from '@/components/ui/Sidebar' // сайдбар table
+import ActivityExcelImport from '@/components/imports/ActivityExcelImport' // импорт в активности
+
 export default {
-    name: "TActivityCollection",
+    name: 'TActivityCollection',
+    components: {
+        Sidebar,
+        ActivityExcelImport,
+    },
     props: {
         month: Object,
         activity: Object,
@@ -124,14 +142,14 @@ export default {
             accountsNumber: 0,
         };
     },
-    watch: { 
+    watch: {
         activity: function(newVal, oldVal) { // watch it
             this.fetchData();
         },
     },
     created() {
         this.fetchData();
-        
+
 
     },
     mounted() {
@@ -158,7 +176,7 @@ export default {
         },
         fetchData() {
             let loader = this.$loading.show();
-            
+
             this.records = this.activity.records;
             this.accountsNumber = this.activity.records.length
             if(this.is_admin) this.setFirstRowAsTotals()
@@ -166,28 +184,28 @@ export default {
             if(this.is_admin) this.calculateTotalsRow()
             if(!this.is_admin) this.setLeaders()
             if(this.is_admin) this.setAvgCell()
-            
+
             this.items = this.itemsArray;
 
             this.addCellVariantsArrayToRecords();
             this.setCellVariants();
-            loader.hide();    
+            loader.hide();
         },
         updateTable(items) {
             let loader = this.$loading.show();
-            
+
             this.records = items;
             this.calculateRecordsValues();
             if(this.is_admin) this.calculateTotalsRow();
              if(!this.is_admin) this.setLeaders()
             this.updateAvgValuesOfRecords();
-            
+
             if(this.is_admin) this.setAvgCell()
             this.totalColumn()
-            
+
             this.items = this.itemsArray;
-            
-            
+
+
             this.addCellVariantsArrayToRecords();
             this.setCellVariants();
             loader.hide();
@@ -198,7 +216,7 @@ export default {
 
             let first_item = this.itemsArray[0];
             //this.itemsArray.shift();
-            
+
 
             arr.sort((a, b) => Number(a.plan) < Number(b.plan)  ?
                 1 : Number(a.plan) > Number(b.plan) ? -1 : 0);
@@ -207,7 +225,7 @@ export default {
                 arr[0].show_cup = 1;
                 arr[1].show_cup = 2;
                 arr[2].show_cup = 3;
-            } 
+            }
 
            // this.itemsArray.unshift(first_item);
         },
@@ -219,7 +237,7 @@ export default {
                     row0_avg += parseFloat(account['plan']);
                     console.log(account['plan'])
                 }
-            })    
+            })
 
             if(this.is_admin) this.itemsArray[0]['plan'] = row0_avg
         },
@@ -227,11 +245,11 @@ export default {
             this.itemsArray[0]["avg"] = (this.avgOfAverage / this.totalCountDays).toFixed(2);
             this.itemsArray[0]['avg'] = '';
         },
-        
+
 
         calculateTotalsRow() {
 
-            
+
             let total = 0
             // вот здесь я считаю итоговые суммы минут по всем сотрудникам, и мне их видимо придется сохранить в бд
             for (let key in this.sum) {
@@ -242,12 +260,12 @@ export default {
                     this.itemsArray[0][key] = 0;
                 }
 
-                
-            
+
+
             }
 
             if(this.is_admin) this.itemsArray[0]['plan'] = parseFloat(total) * this.price
-            
+
 
         },
 
@@ -265,11 +283,11 @@ export default {
                                     account[key] !== null
                                 ) {
                                     this.items[index]._cellVariants[key] = "success";
-                                } else if ( 
+                                } else if (
                                     account[key] < SPECIAL_VALUE &&
                                     account[key] !== undefined &&
                                     account[key] !== null
-                                ) { 
+                                ) {
                                     this.items[index]._cellVariants[key] = "danger";
                                 }
                             }
@@ -277,7 +295,7 @@ export default {
                     }
                 });
             }
-            
+
         },
 
         editMode(item) {
@@ -289,12 +307,12 @@ export default {
         },
 
         updateSettings(e, data, index, key) {
-            
+
             data.editable = false
-            
+
             //var index = data.index;
             var clearedValue = e.target.value.replace(",", ".");
-            
+
             var value = parseFloat(clearedValue) || null;
 
             if(value < 0) {
@@ -306,18 +324,18 @@ export default {
             }
 
             this.items[index][key] = Number(this.items[index][key])
-        
+
             let settings = [];
             let employee_id = data.id;
-    
+
             let items = this.items;
-           
+
             let loader = this.$loading.show();
             let year = new Date().getFullYear();
 
-            this.updateTable(items); 
-            
-             axios 
+            this.updateTable(items);
+
+             axios
                 .post("/timetracking/analytics/update-stat", {
                     month: this.month.month,
                     year: this.month.currentYear,
@@ -330,7 +348,7 @@ export default {
                 .then((response) => {
                     loader.hide();
                 });
-            
+
         },
 
         exportData() {
@@ -350,33 +368,33 @@ export default {
             this.avgOfAverage = 0;
             this.percentage = []
 
-            let row0_avg = 0; 
+            let row0_avg = 0;
             let row0_avg_items = 0;
 
             this.records.forEach((account, index) => {
                 let countWorkedDays = 0;
                 let cellValues = [];
-                
 
-                
+
+
                 if (account.name != this.totalRowName) {
                     let sumForOne = 0;
                     for (let key in account) {
                         let value = account[key];
-                        
+
                         if (key >= 1 && key <= 31) {
                             cellValues[key] = Number(value);
 
                             if (isNaN(this.sum[key])) this.sum[key] = 0;
-                            
+
                             if (isNaN(this.percentage[key])) this.percentage[key] = 0;
-                            
+
                             this.sum[key] = this.sum[key] + account[key]; // vertical sum
-                            
-                            
-                            
-                        
-                            
+
+
+
+
+
                             if(account[key] > 0) {
                                 this.percentage[key] = this.percentage[key] + 1;
                             }
@@ -387,23 +405,23 @@ export default {
                                 countWorkedDays++;
                                 this.totalCountDays++;
 
-                                
+
                             }
                         }
                     }
-           
-                        
-                    
+
+
+
                     cellValues["plan_unit"] = this.activity.plan_unit;
                     cellValues["plan"] = sumForOne * this.price;
                     cellValues["count"] = sumForOne;
-                   
 
-                    
+
+
                 }
 
-                
-            
+
+
 
                 this.itemsArray.push({
                     name: account.name,
@@ -415,11 +433,11 @@ export default {
                     email: account.email,
                     show_cup: 0,
                     ...cellValues,
-                });  
-                
+                });
+
             });
 
-            
+
         },
 
         toFloat(number) {
@@ -430,7 +448,7 @@ export default {
 
             if(this.sorts[field] === undefined) {
                 this.sorts[field] = 'asc';
-            } 
+            }
 
             let item = this.items[0];
 
@@ -441,7 +459,7 @@ export default {
                 } else {
                     this.items.sort((a, b) => (Number(a[field]) > Number(b[field])) ? 1 : -1);
                 }
-              
+
                 this.sorts[field] = 'asc';
             } else {
                 if(field == 'name') {
@@ -451,7 +469,7 @@ export default {
                 }
                 this.sorts[field] = 'desc';
             }
-            
+
             this.items.unshift(item);
         },
     },
@@ -468,7 +486,7 @@ export default {
         padding: 0 !important;
         text-align: center;
         vertical-align: middle;
-        
+
         div {
             font-size: 0.8rem;
         }
@@ -522,7 +540,7 @@ export default {
     padding: 0;
     color: #000;
     border-radius: 0;
- 
+
     &:focus {
         outline: none;
     }
