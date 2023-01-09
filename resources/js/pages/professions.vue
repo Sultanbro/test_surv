@@ -2,29 +2,36 @@
   <div v-if="positions">
       <b-row class="align-items-center">
           <b-col cols="12" lg="4">
-             <b-form-group label="Должность">
-                 <b-form-select v-model="activebtn" :options="positions" size="md" @change="selectPosition" class="group-select col-lg-6 d-flex">
-                     <template #first>
-                         <b-form-select-option :value="null" disabled>Выберите должность из списка</b-form-select-option>
+             <b-form-group v-if="data.length">
+                 <multiselect
+                         v-model="activebtn"
+                         :options="data"
+                         @select="selectPosition"
+                         placeholder="Выберите должность"
+                         track-by="position"
+                         label="position"
+                         ref="positionMultiselect"
+                 >
+                     <template slot="afterList">
+                         <li class="multiselect-add-li"><span class="multiselect-add-btn" @click="addNewPosition">Добавить новую должность</span></li>
                      </template>
-                 </b-form-select>
+                 </multiselect>
              </b-form-group>
-          </b-col>
-          <b-col cols="12" lg="4">
-              <b-form-group label="Добавить должность" class="add-grade">
-                  <b-form-input type="text" v-model="new_position"></b-form-input>
-                  <button @click='addPosition' class="btn btn-success ml-4" title="Добавить должность"><i class="fa fa-plus"></i></button>
-              </b-form-group>
-          </b-col>
-          <b-col cols="12" lg="4">
-              <b-form-group label="Название должности">
-                  <b-form-input type="text" class="form-control group-select" v-model="new_name"></b-form-input>
-              </b-form-group>
+              <button class="btn btn-success" v-else @click="addNewPosition">Добавить новую должность</button>
           </b-col>
       </b-row>
 
-      <template v-if="activebtn != null">
-          <b-row class="align-items-center my-4">
+      <template v-if="activebtn != null || addNew">
+          <hr class="my-4">
+          <h4 v-if="addNew" class="position-title-new">Создание новой должности</h4>
+          <b-row class="align-items-center mt-4">
+              <b-col cols="12" md="4">
+                  <b-form-group label="Название должности" class="add-grade">
+                      <b-form-input type="text" v-model="new_position"></b-form-input>
+                  </b-form-group>
+              </b-col>
+          </b-row>
+          <b-row class="align-items-center">
               <b-col cols="12" md="4">
                   <b-form-group label="Сумма индексации">
                       <b-form-input type="text" class="form-control group-select" v-model="sum"
@@ -46,48 +53,55 @@
                   </b-form-group>
               </b-col>
           </b-row>
-          <b-row>
-              <b-col cols="12" class="my-4">
+          <div class="card position-card mt-4">
+              <div class="card-header">
                   <b-form-checkbox
                           v-model="desc.show"
                           :value="1"
                           switch
                           :unchecked-value="0"
                   >
-                      Показывать таблицу в профиле
+                      Показывать в профиле
                   </b-form-checkbox>
-              </b-col>
-
-              <b-col cols="12" class="my-4">
-                  <div class="table-container">
-                      <b-table-simple class="table table-bordered pos-desc pos-desc-1">
-                         <b-thead>
-                             <b-tr>
-                                 <b-th>Следующая ступень карьерного роста</b-th>
-                                 <b-th>Требования к кандидату</b-th>
-                                 <b-th>Что нужно делать</b-th>
-                                 <b-th>График работы</b-th>
-                                 <b-th>Заработная плата</b-th>
-                                 <b-th>Нужные знания для перехода на следующую должность</b-th>
-                             </b-tr>
-                         </b-thead>
-                       <b-tbody>
-                           <b-tr>
-                               <b-td><b-textarea v-model="desc.next_step"></b-textarea></b-td>
-                               <b-td><b-textarea v-model="desc.require"></b-textarea></b-td>
-                               <b-td><b-textarea v-model="desc.actions"></b-textarea></b-td>
-                               <b-td><b-textarea v-model="desc.time"></b-textarea></b-td>
-                               <b-td><b-textarea v-model="desc.salary"></b-textarea></b-td>
-                               <b-td><b-textarea v-model="desc.knowledge"></b-textarea></b-td>
-                           </b-tr>
-                       </b-tbody>
-                      </b-table-simple>
-                  </div>
-              </b-col>
-          </b-row>
-          <div class="mt-3">
+              </div>
+              <div class="card-body">
+                  <b-row>
+                      <b-col cols="12" lg="6">
+                          <b-form-group label="Следующая ступень карьерного роста">
+                              <b-textarea v-model="desc.next_step"></b-textarea>
+                          </b-form-group>
+                      </b-col>
+                      <b-col cols="12" lg="6">
+                          <b-form-group label="Требования к кандидату">
+                              <b-textarea v-model="desc.require"></b-textarea>
+                          </b-form-group>
+                      </b-col>
+                      <b-col cols="12" lg="6">
+                          <b-form-group label="Что нужно делать">
+                              <b-textarea v-model="desc.actions"></b-textarea>
+                          </b-form-group>
+                      </b-col>
+                      <b-col cols="12" lg="6">
+                          <b-form-group label="График работы">
+                              <b-textarea v-model="desc.time"></b-textarea>
+                          </b-form-group>
+                      </b-col>
+                      <b-col cols="12" lg="6">
+                          <b-form-group label="Заработная плата">
+                              <b-textarea v-model="desc.salary"></b-textarea>
+                          </b-form-group>
+                      </b-col>
+                      <b-col cols="12" lg="6">
+                          <b-form-group label="Нужные знания для перехода на следующую должность">
+                              <b-textarea v-model="desc.knowledge"></b-textarea>
+                          </b-form-group>
+                      </b-col>
+                  </b-row>
+              </div>
+          </div>
+          <div class="text-right mt-3">
               <button @click='savePosition' class="btn btn-success mr-2">Сохранить</button>
-              <button @click.stop="deletePosition(position_id, activebtn)" class="btn btn-danger mr-2"><i
+              <button v-if="!addNew" @click.stop="deletePosition" class="btn btn-danger mr-2"><i
                       class="fa fa-trash mr-2"></i> Удалить
               </button>
           </div>
@@ -98,14 +112,16 @@
 </template>
 
 <script>
+    // если в БД таблица position пустая, то в props: ['positions'] прилетает пустой массив
+    // если есть, то прилетает объект, где ключи - id (число), а значение - position (название дложности)
 export default {
   name: "professions",
   props: ['positions'],
   data() {
     return {
-      data: this.positions,
-      new_name: '',
+      data: [],
       new_position: '',
+        addNew: false,
       position_id: 0,
       indexation: 0,
       sum: 0,
@@ -122,44 +138,51 @@ export default {
     }
   },
   watch:{
-    positions(value){
-        this.data = value
-    }
-  },
-  mounted() {
-    // this.getPositions()
+      positions(value) {
+          //конвертирую прилетевший объект в массив для работы vue-multiselect
+          // если данных нет, то в this.data будет пустой массив
+          Object.keys(value).forEach(item => {
+              this.data.push({
+                  id: item,
+                  position: value[item]
+              })
+          })
+      }
   },
   methods: {
-    clearInputs(){
-        this.new_name = ''
-        this.position_id = 0
-        this.indexation = 0
-        this.sum = 0
-        this.desc = {
-            require: '',
-            actions: '',
-            time: '',
-            salary: '',
-            knowledge: '',
-            next_step: '',
-            show: 0
-        }
-    },
+      resetState(){
+          this.new_position = '';
+          this.position_id = 0;
+          this.indexation = 0;
+          this.sum = 0;
+          this.activebtn = null;
+          this.desc = {
+              require: '',
+              actions: '',
+              time: '',
+              salary: '',
+              knowledge: '',
+              next_step: '',
+              show: 0
+          }
+      },
+      addNewPosition() {
+          if(this.$refs.positionMultiselect){
+              this.$refs.positionMultiselect.toggle();
+          }
+          this.addNew = true;
+          this.resetState();
+      },
     selectPosition(value) {
-        this.activebtn = value
+        this.addNew = false;
         axios.post('/timetracking/settings/positions/get-new', {
-          name: this.activebtn,
+          name: value.id,
         }).then(response => {
           //this.$toast.info('Добавлена');
-          const data = response.data?.data
-          if(!data[0]){
-            console.error('No position', response.data)
-            this.clearInputs()
-            this.new_name = this.data[this.activebtn]
-            this.position_id = +this.activebtn
-            return
-          }
-          this.new_name = data[0].position;
+            console.log(response.data);
+            const data = response.data?.data
+          if(!data[0]) return console.error(response)
+          this.new_position = data[0].position;
           this.position_id = data[0].id;
           this.indexation = data[0].indexation;
           this.sum = data[0].sum;
@@ -173,7 +196,7 @@ export default {
             show: data[0].show,
           }
         }).catch(error => {
-          console.log('position error', error.response)
+          console.log(error.response)
         })
 
 
@@ -191,51 +214,49 @@ export default {
   //               }
     },
 
-    addPosition() {
-      // /timetracking/settings/positions/add-new
-      axios.post('/timetracking/settings/positions/add-new', {
-        position: this.new_position,
-      }).then(response => {
-        if(response.data.code == 201) {
-          this.$toast.error('Должность с таким названием уже существует!');
-        } else {
-            this.$toast.success('Добавлена');
-            this.positions.push(response.data.pos)
-            this.new_position = ''
+    async savePosition() {
+        try{
+            if(!this.new_position.length) return this.$toast.error('Введите нзвание должности!');
+            const responseAdd = await axios.post('/timetracking/settings/positions/add-new', {position: this.new_position});
+            if(responseAdd.data.code === 201) return this.$toast.error('Должность с таким названием уже существует!');
+            const data = responseAdd.data.data;
+            const dataPush = {
+                id: data.id,
+                position: data.position
+            };
+            this.position_id = data.id;
+            this.new_position = data.position;
+
+            this.activebtn = dataPush;
+            this.data.push(dataPush);
+
+            const responseSave = await axios.post('/timetracking/settings/positions/save-new', {
+                id: this.activebtn.id,
+                new_name: this.new_position,
+                indexation: this.indexation,
+                sum: this.sum,
+                desc: this.desc,
+            });
+            if(responseSave.data.status !== 200) return this.$toast.error('Упс! Что-то пошло не так');
+            this.$toast.success('Новая должность создана!');
         }
-      }).catch(error => {
-        console.log(error.response)
-      })
+        catch(error){
+            console.error(error.message);
+        }
     },
-    savePosition() {
-        axios.post('/timetracking/settings/positions/save-new', {
-          id: this.activebtn,
-          new_name: this.new_name,
-          indexation: this.indexation,
-          sum: this.sum,
-          desc: this.desc,
-        }).then(response => {
-          this.positions = Object.values(response.data.positions)
-          this.$toast.success('Сохранено');
-          this.activebtn = response.data.pos.position;
-        }).catch(error => {
-          console.log(error.response)
-        })
-    },
-    deletePosition(index, status) {
-        if (confirm('Вы уверены что хотите удалить должность?')) {
+    deletePosition() {
+         if (confirm('Вы уверены что хотите удалить должность?')) {
             axios.post('/timetracking/settings/positions/delete', {
-                    position: status,
+                    position: this.activebtn.id,
                 })
                 .then(response => {
                     this.$toast.info('Удалена');
-                    this.clearInputs()
-                    this.activebtn = null
                 })
 
-            let ind = this.positions.indexOf(status);
-            this.positions.splice(ind, 1)
-            this.activebtn = null
+            let ind = this.data.findIndex(item => item.id === this.activebtn.id);
+            this.data.splice(ind, 1);
+            this.addNew = false;
+            this.resetState();
         }
     },
 
@@ -243,7 +264,24 @@ export default {
 }
 </script>
 
-<style scoped lang="scss" >
+<style scoped lang="scss">
+    .position-card{
+        border: 1px solid #ddd;
+        .card-header, .card-body{
+            padding: 10px 20px;
+        }
+        textarea.form-control{
+            padding: 5px 20px !important;
+            min-height: 80px!important;
+        }
+    }
+    .position-title-new{
+        color: rgb(0 128 0);
+        display: inline-block;
+        padding: 5px 20px;
+        border-radius: 6px;
+        background-color: rgba(0,128,0,0.2)
+    }
 .listprof {
   display: flex;
   margin-top: 20px;

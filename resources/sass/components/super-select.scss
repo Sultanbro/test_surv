@@ -4,7 +4,12 @@
     border: 1px solid #e8ecee;
     position: relative;
    // z-index: 2;
-
+    .visible-values-text{
+        line-height: 1;
+        margin-top: 3px;
+        font-size: 14px;
+        color: #666;
+    }
     &.w-full {
         width: 100% !important;
     }
@@ -48,7 +53,7 @@
         padding: 7px;
         overflow: overlay; 
         width: 100%;
-        min-height: 44px;
+        min-height: 35px;
         
         .selected-item {
             display: flex;

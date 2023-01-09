@@ -1,5 +1,5 @@
 <template>
-    <div class="col-3">
+    <div class="col-12 col-xl-3 col-lg-4 news-birthday-col">
         <div class="news-birthday">
             <div class="news-birthday-header">
                 <p class="news-birthday-header__text">Дни рождения</p>

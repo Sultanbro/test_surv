@@ -1223,7 +1223,6 @@ export default {
     }
     .table-custom-report{
         th,td{
-            padding: 0 !important;
             .td-div{
                 height: 40px;
                 min-width: 50px;
@@ -1231,6 +1230,22 @@ export default {
                 display: inline-flex;
                 align-items: center;
                 justify-content: center;
+            }
+        }
+        thead{
+            th,td{
+                padding: 5px !important;
+                &:first-child{
+                    padding: 0 15px !important;
+                }
+            }
+        }
+        tbody{
+            th,td{
+                padding: 0 !important;
+                &:first-child{
+                    padding: 0 15px !important;
+                }
             }
         }
         .td-lightgreen{

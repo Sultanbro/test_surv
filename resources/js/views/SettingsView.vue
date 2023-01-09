@@ -2,8 +2,7 @@
 import DefaultLayout from '@/layouts/DefaultLayout'
 import { useAsyncPageData } from '@/composables/asyncPageData'
 const Userlist = () => import(/* webpackChunkName: "UserlistPage" */ '@/pages/userlist.vue')
-const Professions = () => import(/* webpackChunkName: "ProfessionsPage" */ '@/pages/professions.vue')
-const Groups = () => import(/* webpackChunkName: "GroupsPage" */ '@/pages/groups.vue')
+const Company = () => import(/* webpackChunkName: "UserlistPage" */ '@/pages/Company.vue')
 const Fines = () => import(/* webpackChunkName: "FinesPage" */ '@/pages/Fines.vue')
 const Notifications = () => import(/* webpackChunkName: "NotificationsPage" */ '@/pages/Notifications.vue')
 const Permissions = () => import(/* webpackChunkName: "PermissionsPage" */ '@/pages/Permissions.vue')
@@ -15,8 +14,7 @@ export default {
     components: {
         DefaultLayout,
         Userlist,
-        Professions,
-        Groups,
+        Company,
         Fines,
         Notifications,
         Permissions,
@@ -35,17 +33,10 @@ export default {
                 },
                 {
                     id: '2',
-                    htmlId: 'nav-home',
+                    htmlId: 'nav-company',
                     path: '/timetracking/settings?tab=2#nav-home',
-                    title: 'Должности',
-                    access: ['positions_view', 'settings_view']
-                },
-                {
-                    id: '3',
-                    htmlId: 'nav-profile',
-                    path: '/timetracking/settings?tab=3#nav-profile',
-                    title: 'Отделы',
-                    access: ['groups_view', 'settings_view']
+                    title: 'Компания',
+                    access: ['positions_view', 'groups_view', 'settings_view']
                 },
                 {
                     id: '4',
@@ -178,30 +169,13 @@ export default {
                                         />
                                     </div>
                                     <div
-                                        v-if="activeTab === '2' && can(['positions_view', 'settings_view'])"
+                                        v-if="activeTab === '2' && can(['positions_view', 'groups_view', 'settings_view'])"
                                         class="tab-pane fade show active py-3"
-                                        id="nav-home"
+                                        id="nav-company"
                                         role="tabpanel"
                                         aria-labelledby="nav-home-tab"
                                     >
-                                        <Professions
-                                            :positions="pageData.positions"
-                                        />
-                                    </div>
-                                    <div
-                                        v-if="activeTab === '3' && can(['groups_view', 'settings_view'])"
-                                        id="nav-profile"
-                                        class="tab-pane fade show active py-3"
-                                        role="tabpanel"
-                                        aria-labelledby="nav-profile-tab"
-                                    >
-                                        <Groups
-                                            :statuseses="pageData.statuseses"
-                                            :archived_groupss="pageData.archived_groupss"
-                                            :book_groups="pageData.book_groups"
-                                            :corpbooks="pageData.corpbooks"
-                                            :activeuserid="pageData.activeuserid"
-                                        />
+                                        <Company/>
                                     </div>
                                     <div
                                         v-if="activeTab === '4' && can(['fines_view', 'settings_view'])"

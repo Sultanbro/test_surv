@@ -1,5 +1,5 @@
 <template>
-    <div class="col-9">
+    <div class="col-12 col-xl-9 col-lg-8 col-posts">
         <NewsCreate
             v-if="isRedactor"
             ref="newsCreate"
