@@ -208,6 +208,7 @@ export default {
     top: -2.5rem;
     left: -5rem;
     background-image: url("../../assets/img/s2-bg.svg");
+    background-repeat: no-repeat;
   }
 }
 
@@ -284,7 +285,7 @@ export default {
 
 @media screen and (min-width: $medium) {
   #jTariffs {
-    margin-top: -5rem;
+    margin-top: 3rem;
     padding-bottom: 5rem;
   }
   .jTariffs-cell {
