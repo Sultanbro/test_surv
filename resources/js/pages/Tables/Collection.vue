@@ -57,7 +57,7 @@
             <tr>
                 <template v-for="day in month.daysInMonth">
                     <th class="stickyy-h2" :key="day">сборы</th>
-                    <th class="stickyy-h2" :key="day">тенге</th>
+                    <th class="stickyy-h2" :key="day + 'a'">тенге</th>
                 </template>
             </tr>
             <tr
@@ -116,7 +116,7 @@
                         {{ Number(item[day]) * price }}
                     </td>
                     <td v-else
-						:key="day + 'a'"
+						:key="day + 'b'"
                         :title="day + ': тенге'"
                         class=""
                     ></td>

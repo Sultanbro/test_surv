@@ -606,12 +606,10 @@ export default {
 			return res
 		},
 		totalRows(){
-			return this.filtered.length
+			return this.filtered.length || 0
 		}
 	},
-	mounted() {
-		this.totalRows = this.filtered.length
-	},
+	mounted() {},
 	methods: {
 		init(){
 			this.my_positions = this.positions;
@@ -686,7 +684,6 @@ export default {
 					this.items = response.data.users
 					this.groups = response.data.groups
 					this.segments = response.data.segments
-					this.totalRows = this.items.length
 
 					this.can_login_users = response.data.can_login_users
 					this.auth_token = response.data.auth_token
@@ -732,8 +729,7 @@ export default {
 			this.active[item] = !this.active[item]
 		},
 
-		onFiltered(filteredItems) {
-			this.totalRows = filteredItems.length
+		onFiltered() {
 			this.currentPage = 1
 		},
 	}

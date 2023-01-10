@@ -181,17 +181,17 @@
                 <td v-if="item.editable && editable" :key="day" :class="'text-center ' + item._cellVariants[day]">
                     <div><input type="number" v-model="item[day]" @change="updateSettings($event, item, index, day)" class="form-control cell-input"></div>
                 </td>
-                <td v-else-if="holidays.includes(day) &&  item[day] > 0" :key="day" @click="editMode(item)" :class="'text-center ' + item._cellVariants[day]">
+                <td v-else-if="holidays.includes(day) &&  item[day] > 0" :key="day + 'a'" @click="editMode(item)" :class="'text-center ' + item._cellVariants[day]">
 
                     <div v-if="item[day]">{{ item[day] }}{{ activity.unit }}</div>
                     <div v-else></div>
                 </td>
-                <td v-else-if="holidays.includes(day)" :key="day" @click="editMode(item)" :class="'text-center mywarning'">
+                <td v-else-if="holidays.includes(day)" :key="day + 'b'" @click="editMode(item)" :class="'text-center mywarning'">
 
                     <div v-if="item[day]">{{ item[day] }}{{ activity.unit }}</div>
                     <div v-else></div>
                 </td>
-                <td v-else @click="editMode(item)" :key="day" :class="[item[day] > 0 || holidays.includes(day) ? 'text-center ' + item._cellVariants[day] : 'text-center']">
+                <td v-else @click="editMode(item)" :key="day + 'c'" :class="[item[day] > 0 || holidays.includes(day) ? 'text-center ' + item._cellVariants[day] : 'text-center']">
 
                     <div v-if="item[day]">{{ item[day] }}{{ activity.unit }}</div>
                     <div v-else></div>

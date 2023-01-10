@@ -249,13 +249,12 @@ router.beforeEach((to, from, next) => {
 	}
 	next();
 });
-router.afterEach((to, from, next) => {
+router.afterEach(to => {
 	// Use next tick to handle router history correctly
 	// see: https://github.com/vuejs/vue-router/issues/914#issuecomment-384477609
 	Vue.nextTick(() => {
 		document.title = to.meta.title || DEFAULT_TITLE
 	})
-	next()
 });
 
 export default router

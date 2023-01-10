@@ -81,8 +81,8 @@
 
 
         <TableRentability
-          :year="currentYear"
-          :month="monthInfo.month"
+          :year="+currentYear"
+          :month="+monthInfo.month"
         />
 
       </b-tab>

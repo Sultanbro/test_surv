@@ -356,7 +356,7 @@
                        </tr>
                        <template v-if="page_item.items !== undefined && page_item.items.length > 0">
                            <tr
-                                   :key="p + 'a'"
+                                   :key="p + 'b'"
                                    class="collapsable"
                                    :class="{'active': page_item.expanded}"
                            >

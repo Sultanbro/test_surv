@@ -53,7 +53,6 @@
                     <template #cell()="data">
                         <div @click="setCurrentEditingCell(data)" :class="{ fine: data.item.fines[data.field.key.toString()].length > 0}">
                             <input @mouseover="$event.preventDefault()" class="cell-input" type="time" :value="data.value" :readonly="true" ondblclick="this.readOnly='';" @change="changeTimeInCell" v-on:keyup.enter="openModal">
-
                         </div>
                     </template>
                 </b-table>

@@ -92,7 +92,7 @@
     </table>
 
     <!-- pagination -->
-    <jw-pagination
+    <JwPagination
         class=""
         :key="paginationKey"
         :items="items"
@@ -104,7 +104,7 @@
         }"
         @changePage="onChangePage"
         :pageSize="+pageSize"
-    ></jw-pagination>
+    />
 
 
     <!-- modal Adjust Visible fields -->
@@ -133,11 +133,15 @@
 </template>
 
 <script>
+import JwPagination from 'jw-vue-pagination'
 import {fields/* , newItem */} from './indicators.js';
 import {sources, methods, views} from './helpers.js';
 
 export default {
 	name: 'KPIIndicators',
+	components: {
+		JwPagination,
+	},
 	props: {},
 	watch: {
 		show_fields: {

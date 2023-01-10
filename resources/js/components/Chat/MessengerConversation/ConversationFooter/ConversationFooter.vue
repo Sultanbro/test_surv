@@ -187,6 +187,9 @@ export default {
 			event.stopPropagation();
 			this.citeMessage(null);
 		},
+		handleError(error) {
+			console.error('ConversationFooter', error)
+		}
 	},
 	filters: {
 		countdownFormat(value) {

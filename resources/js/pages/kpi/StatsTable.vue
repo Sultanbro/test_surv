@@ -99,7 +99,7 @@
                         </tr>
                         <template v-if="wrap_item.users != undefined && wrap_item.users.length > 0">
                             <tr
-                                :key="w + 'a'"
+                                :key="w + 'b'"
                                 class="collapsable"
                                 :class="{'active': wrap_item.expanded || !editable }"
                             >

@@ -29,7 +29,7 @@
             <th>факт</th>
             <template v-for="day in month.daysInMonth">
                 <th :key="day">план</th>
-                <th :key="day" class="border-r-2">факт</th>
+                <th :key="day + 'a'" class="border-r-2">факт</th>
             </template>
         </tr>
         </thead>

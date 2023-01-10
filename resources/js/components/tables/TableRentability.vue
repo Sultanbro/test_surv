@@ -33,12 +33,12 @@
                             выручка <i class="fa fa-sort ml-1"></i>
                         </div>
                     </th>
-                    <th class="font-bold text-center bb1" @click="sort('c' + i)" :key="i">
+                    <th class="font-bold text-center bb1" @click="sort('c' + i)" :key="i + 'a'">
                         <div class="d-flex align-items-center">
                             ФОТ <i class="fa fa-sort ml-1"></i>
                         </div>
                     </th>
-                    <th class="font-bold text-center br1 bb1" @click="sort('r' + i)" :key="i">
+                    <th class="font-bold text-center br1 bb1" @click="sort('r' + i)" :key="i + 'b'">
                         <div class="d-flex align-items-center">
                             Маржа <i class="fa fa-sort ml-1"></i>
                         </div>
@@ -63,12 +63,12 @@
                                type="number" v-model="item['l' + i]" @change="update(i, index)">
                         <div v-else>{{ item['l' + i] }}</div>
                     </td>
-                    <td class="text-center" :key="i">
+                    <td class="text-center" :key="i + 'a'">
 
                         {{  numberWithCommas( item['c' + i] ) }}
 
                     </td>
-                    <td class="text-center br1" :key="i"
+                    <td class="text-center br1" :key="i + 'b'"
                         :class="{
                         'c-red text-white': item['rc' + i] < 20 && item['rc' + i] != '',
                         'c-orange': item['rc' + i] >= 20 && item['rc' + i] < 50,

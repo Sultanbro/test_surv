@@ -2,6 +2,9 @@
     "compilerOptions": {
         "target": "esnext",
         "checkJs": false,
+        "paths": {
+            "@": ["./resources/js"]
+        }
     },
     "exclude": ["node_modules"],
     "javascript.validate.enable": false
