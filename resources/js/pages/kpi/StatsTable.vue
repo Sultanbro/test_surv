@@ -1,173 +1,104 @@
 <template>
-<div class="t-stats">
-    <table class="j-table">
-        <thead>
-            <tr class="table-heading">
-                <th class="first-column"></th>
-                <th class="w">KPI</th>
-                <th class="px-2" v-if="editable">Средний %</th>
-                <th class="px-2" v-if="!editable">Нижний порог отсчета</th>
-                <th class="px-2" v-if="!editable">Верхний порог отсчета</th>
-                <th class="px-2" v-if="!editable">При выполнении на 80-99%</th>
-                <th class="px-2" v-if="!editable">При выполнении на 100%</th>
-                <th class="px-2" v-if="!editable">Заработано</th>
-                <th class="px-2" v-if="editable">Средний %</th>
-            </tr>
-        </thead>
-        <tbody>
-            <template v-for="(wrap_item, w) in items.slice().reverse()">
-                <template v-if="searchText.length == 0 || (wrap_item.target && wrap_item.target.name.includes(searchText))">
-                    <tr :key="w" class="main-row">
-                        <td @click="wrap_item.expanded = !wrap_item.expanded" class="pointer p-2 text-center">
-                            <div class="d-flex align-items-center justify-content-center px-2">
-                                <span class="mr-2">{{ w + 1 }}</span>
-                                <i class="fa fa-minus mt-1" v-if="wrap_item.expanded"></i>
-                                <i class="fa fa-plus mt-1" v-else></i>
-                            </div>
-                        </td>
-                        <td class="p-4">
-                            <span v-if="wrap_item.target != null">{{ wrap_item.target.name }}</span>
-                            <span v-else>---</span>
-                        </td>
-                        <td class="p-4" v-if="editable">{{ wrap_item.avg }}%</td>
-                        <td class="p-4" v-if="!editable">{{ wrap_item.lower_limit }}%</td>
-                        <td class="p-4" v-if="!editable">{{ wrap_item.upper_limit }}%</td>
-                        <td class="p-4" v-if="!editable">{{ wrap_item.users.length > 0 && wrap_item.users[0].full_time == 1 ? wrap_item.completed_80 : wrap_item.completed_80 / 2 }}</td>
-                        <td class="p-4" v-if="!editable">{{ wrap_item.users.length > 0 && wrap_item.users[0].full_time == 1 ? wrap_item.completed_100 : wrap_item.completed_100 / 2 }}</td>
-                        <td class="p-4" v-if="!editable">{{ wrap_item.my_sum }}</td>
-                        <td v-if="editable"></td>
-                    </tr>
-                    <template v-if="wrap_item.users != undefined && wrap_item.users.length > 0">
-                        <tr class="collapsable" :class="{'active': wrap_item.expanded || !editable }" :key="w + 'a'">
-                            <td :colspan="editable ? 4 : 7">
-                                <div class="table__wrapper w-100">
-                                <table class="child-table">
-                                    <template v-for="(user, i) in wrap_item.users">
-                                        <tr :key="i" class="child-row" v-if="editable">
-                                            <td  @click="user.expanded = !user.expanded" class="pointer p-2 text-center">
-                                                <div class="d-flex align-center justify-content-center px-2">
-                                                    <span class="mr-2 bg-transparent">{{ i + 1 }}</span>
-                                                    <i class="fa fa-minus mt-1" v-if="user.expanded"></i>
-                                                    <i class="fa fa-plus mt-1" v-else></i>
-                                                </div>
-                                            </td>
-                                            <td class="p-4">{{ user.name }}</td>
-                                            <template v-if="user.items !== undefined">
-                                                <td class="px-2" v-for="kpi_item in user.items" :key="kpi_item.name">{{ kpi_item.name }} <b>{{ kpi_item.percent}}%</b></td>
-                                            </template>
-                                        </tr>
-                                        <template v-if="user.items !== undefined">
-                                            <tr class="collapsable" :class="{'active': user.expanded}" :key="i + 'a'">
-                                                <td :colspan="fields.length + 2">
-                                                    <div class="table__wrapper__second w-100">
-                                                        <KpiItems
-                                                            :my_sum="user.full_time == 1 ? wrap_item.completed_100 : wrap_item.completed_100 / 2"
-                                                            :kpi_id="user.id"
-                                                            :items="user.items"
-                                                            :expanded="user.expanded"
-                                                            :activities="activities"
-                                                            :groups="groups"
-                                                            :completed_80="wrap_item.completed_80"
-                                                            :completed_100="wrap_item.completed_100"
-                                                            :lower_limit="wrap_item.lower_limit"
-                                                            :upper_limit="wrap_item.upper_limit"
-                                                            :editable="editable"
-                                                            :kpi_page="false"
-                                                            :date="date"
-                                                            @getSum="wrap_item.my_sum = $event"
-                                                            @recalced="countAvg"
-                                                        />
-                                                    </div>
-                                                </td>
-                                            </tr>
-                                        </template>
-                                    </template>
-                                </table>
-                                </div>
-                            </td>
-                            <td class="p-4">
-                                <span v-if="wrap_item.target != null">{{ wrap_item.target.name }}</span>
-                                <span v-else>---</span>
-                            </td>
-                            <td class="p-4" v-if="editable">{{ wrap_item.avg }}%</td>
-                            <td class="p-4" v-if="!editable">{{ wrap_item.lower_limit }}%</td>
-                            <td class="p-4" v-if="!editable">{{ wrap_item.upper_limit }}%</td>
-                            <td class="p-4" v-if="!editable">{{ wrap_item.users.length > 0 && wrap_item.users[0].full_time == 1 ? wrap_item.completed_80 : wrap_item.completed_80 / 2 }}</td>
-                            <td class="p-4" v-if="!editable">{{ wrap_item.users.length > 0 && wrap_item.users[0].full_time == 1 ? wrap_item.completed_100 : wrap_item.completed_100 / 2 }}</td>
-                            <td class="p-4" v-if="!editable">{{ wrap_item.my_sum }}</td>
-                            <td v-if="editable"></td>
-                        </tr>
-                        <template v-if="wrap_item.users != undefined && wrap_item.users.length > 0">
-                            <tr
-                                :key="w + 'b'"
-                                class="collapsable"
-                                :class="{'active': wrap_item.expanded || !editable }"
-                            >
-                                <td :colspan="editable ? 4 : 7">
-                                    <div class="table__wrapper w-100">
-                                    <table class="child-table">
-                                        <template v-for="(user, i) in wrap_item.users">
-                                            <tr :key="i" class="child-row" v-if="editable">
-                                                <td  @click="user.expanded = !user.expanded" class="pointer p-2 text-center">
-                                                    <div class="d-flex align-center justify-content-center px-2">
-                                                        <span class="mr-2 bg-transparent">{{ i + 1 }}</span>
-                                                        <i class="fa fa-minus mt-1" v-if="user.expanded"></i>
-                                                        <i class="fa fa-plus mt-1" v-else></i>
-                                                    </div>
-                                                </td>
-                                                <td class="p-4">{{ user.name }}</td>
-                                                <template v-if="user.items !== undefined">
-                                                    <td
-                                                        v-for="kpi_item in user.items"
-                                                        :key="kpi_item.name"
-                                                        class="px-2"
-                                                    >{{ kpi_item.name }} <b>{{ kpi_item.percent}}%</b></td>
-                                                </template>
-                                            </tr>
-                                            <template v-if="user.items !== undefined">
-                                                <tr class="collapsable" :class="{'active': user.expanded}" :key="i + 'a'">
-                                                    <td :colspan="fields.length + 2">
-                                                        <div class="table__wrapper__second w-100">
-                                                            <kpi-items
-                                                                :my_sum="user.full_time == 1 ? wrap_item.completed_100 : wrap_item.completed_100 / 2"
-                                                                :kpi_id="user.id"
-                                                                :items="user.items"
-                                                                :expanded="user.expanded"
-                                                                :activities="activities"
-                                                                :groups="groups"
-                                                                :completed_80="wrap_item.completed_80"
-                                                                :completed_100="wrap_item.completed_100"
-                                                                :lower_limit="wrap_item.lower_limit"
-                                                                :upper_limit="wrap_item.upper_limit"
-                                                                :editable="editable"
-                                                                :kpi_page="false"
-                                                                :date="date"
-                                                                @getSum="wrap_item.my_sum = $event"
-                                                                @recalced="countAvg"
-                                                            />
-                                                        </div>
-                                                    </td>
-                                                </tr>
-                                            </template>
-                                        </template>
-                                    </table>
-                                    </div>
-                                </td>
-                            </tr>
-                        </template>
-                    </template>
-                </template>
-            </template>
+    <div class="t-stats">
+        <table class="j-table">
+            <thead>
+                <tr class="table-heading">
+                    <th class="first-column"></th>
+                    <th class="w">KPI</th>
+                    <th class="px-2" v-if="editable">Средний %</th>
+                    <th class="px-2" v-if="!editable">Нижний порог отсчета</th>
+                    <th class="px-2" v-if="!editable">Верхний порог отсчета</th>
+                    <th class="px-2" v-if="!editable">При выполнении на 80-99%</th>
+                    <th class="px-2" v-if="!editable">При выполнении на 100%</th>
+                    <th class="px-2" v-if="!editable">Заработано</th>
+                    <th class="px-2" v-if="editable">Средний %</th>
+                </tr>
+            </thead>
+            <tbody>
+                <template v-for="(wrap_item, w) in items.slice().reverse()">
+					<template v-if="searchText.length == 0 || (wrap_item.target && wrap_item.target.name.includes(searchText))">
+						<tr class="main-row" :key="w">
+							<td @click="wrap_item.expanded = !wrap_item.expanded" class="pointer p-2 text-center">
+								<div class="d-flex align-items-center justify-content-center px-2">
+									<span class="mr-2">{{ w + 1 }}</span>
+									<i class="fa fa-minus mt-1" v-if="wrap_item.expanded"></i>
+									<i class="fa fa-plus mt-1" v-else></i>
+								</div>
+							</td>
+							<td class="p-4">
+								<span v-if="wrap_item.target != null">{{ wrap_item.target.name }}</span>
+								<span v-else>---</span>
+							</td>
+							<td class="p-4" v-if="editable">{{ wrap_item.avg }}%</td>
+							<td class="p-4" v-if="!editable">{{ wrap_item.lower_limit }}%</td>
+							<td class="p-4" v-if="!editable">{{ wrap_item.upper_limit }}%</td>
+							<td class="p-4" v-if="!editable">{{ wrap_item.users.length > 0 && wrap_item.users[0].full_time == 1 ? wrap_item.completed_80 : wrap_item.completed_80 / 2 }}</td>
+							<td class="p-4" v-if="!editable">{{ wrap_item.users.length > 0 && wrap_item.users[0].full_time == 1 ? wrap_item.completed_100 : wrap_item.completed_100 / 2 }}</td>
+							<td class="p-4" v-if="!editable">{{ wrap_item.my_sum }}</td>
+							<td v-if="editable"></td>
+						</tr>
+						<template v-if="wrap_item.users != undefined && wrap_item.users.length > 0">
+							<tr class="collapsable" :class="{'active': wrap_item.expanded || !editable }" :key="w + 'a'">
+								<td :colspan="editable ? 4 : 7">
+									<div class="table__wrapper w-100">
+									<table class="child-table">
+										<template v-for="(user, i) in wrap_item.users">
+											<tr :key="i" class="child-row" v-if="editable">
+												<td  @click="user.expanded = !user.expanded" class="pointer p-2 text-center">
+													<div class="d-flex align-center justify-content-center px-2">
+														<span class="mr-2 bg-transparent">{{ i + 1 }}</span>
+														<i class="fa fa-minus mt-1" v-if="user.expanded"></i>
+														<i class="fa fa-plus mt-1" v-else></i>
+													</div>
+												</td>
+												<td class="p-4">{{ user.name }}</td>
+												<template v-if="user.items !== undefined">
+													<td class="px-2" v-for="(kpi_item, index) in user.items" :key="index">{{ kpi_item.name }} <b>{{ kpi_item.percent}}%</b></td>
+												</template>
+											</tr>
+											<template v-if="user.items !== undefined">
+												<tr class="collapsable" :class="{'active': user.expanded}" :key="i + 'a'">
+													<td :colspan="fields.length + 2">
+														<div class="table__wrapper__second w-100">
+															<KpiItems
+																:my_sum="user.full_time == 1 ? wrap_item.completed_100 : wrap_item.completed_100 / 2"
+																:kpi_id="user.id"
+																:items="user.items"
+																:expanded="user.expanded"
+																:activities="activities"
+																:groups="groups"
+																:completed_80="wrap_item.completed_80"
+																:completed_100="wrap_item.completed_100"
+																:lower_limit="wrap_item.lower_limit"
+																:upper_limit="wrap_item.upper_limit"
+																:editable="editable"
+																:kpi_page="false"
+																:date="date"
+																@getSum="wrap_item.my_sum = $event"
+																@recalced="countAvg"
+															/>
+														</div>
+													</td>
+												</tr>
+											</template>
+										</template>
+									</table>
+									</div>
+								</td>
+							</tr>
+						</template>
+					</template>
+				</template>
 
-        </tbody>
-    </table>
+            </tbody>
+        </table>
 
-</div>
+    </div>
 </template>
 
 <script>
 import KpiItems from '@/pages/kpi/KpiItems'
-import {kpi_fields} from './kpis.js';
+import {kpi_fields} from './kpis.js'
 
 export default {
 	name: 'StatsTable',
@@ -236,7 +167,7 @@ export default {
 
 			kpi_fields.forEach(field => {
 				if(this.show_fields[field.key] != undefined
-                    && this.show_fields[field.key]
+					&& this.show_fields[field.key]
 				) {
 					visible_fields.push(field)
 				}
@@ -264,8 +195,8 @@ export default {
 					});
 
 					/**
-                     * count avg of user items
-                     */
+					* count avg of user items
+					*/
 					avg = count > 0 ? Number(sum / count).toFixed(2) : 0;
 
 					user.avg = avg;
@@ -277,8 +208,8 @@ export default {
 
 				console.log(kpi_count, kpi_sum);
 				/**
-                 * count avg completed percent of kpi by users
-                 */
+				* count avg completed percent of kpi by users
+				*/
 				kpi.avg = kpi_count > 0 ? Number(Number(kpi_sum / kpi_count * 100).toFixed(2)) : 0;
 
 			});
@@ -292,16 +223,16 @@ export default {
 <style scoped lang="scss">
 .child-table {width:100%}
 .profile-salary-info {
-    .table td, .table th, .table thead th {
-        vertical-align: middle;
-        min-width: 42px;
-        font-size: 13px;
-        padding: 5px 12px;
-        text-align: center;
-    }
+	.table td, .table th, .table thead th {
+		vertical-align: middle;
+		min-width: 42px;
+		font-size: 13px;
+		padding: 5px 12px;
+		text-align: center;
+	}
 
-    .j-table .table-inner {
-        background: #e9eef3;
-    }
+	.j-table .table-inner {
+		background: #e9eef3;
+	}
 }
 </style>
