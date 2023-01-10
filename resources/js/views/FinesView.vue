@@ -5,10 +5,11 @@ import { useAsyncPageData } from '@/composables/asyncPageData'
 export default {
 	name: 'FinesView',
 	components: {
+		DefaultLayout,
 	},
 	data(){
 		return {
-			fines: [],
+			fines: ,
 		}
 	},
 	mounted(){
