@@ -92,7 +92,7 @@ export default {
 		fetch() {
 			this.loading = true
 
-			this.$axios.post('/profile/salary/get', {
+			this.axios.post('/profile/salary/get', {
 				month: new Date().getMonth() + 1,
 				year: new Date().getFullYear()
 			}).then(response => {

@@ -392,7 +392,7 @@ export default {
 
 			const value = [1,3,5].includes(item.method) ? item.fact : item.avg
 
-			this.$axios.post('/statistics/update-stat', {
+			this.axios.post('/statistics/update-stat', {
 				user_id: this.kpi_id,
 				kpi_item_id: item.id,
 				activity_id: item.activity_id,

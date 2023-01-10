@@ -131,7 +131,7 @@ export default {
 		async remove(item) {
 			this.modal = !this.modal;
 			let loader = this.$loading.show();
-			await this.$axios
+			await this.axios
 				.delete('/award-categories/delete/' + item.id)
 				.then(() => {
 					this.getAwards();

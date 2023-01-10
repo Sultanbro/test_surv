@@ -139,7 +139,7 @@ export default {
 		fetchData() {
 			this.loading = true
 
-			this.$axios
+			this.axios
 				.post('/bonuses', {
 					month: this.$moment(this.currentMonth, 'MMMM').format('M'),
 					year: new Date().getFullYear(),
@@ -154,7 +154,7 @@ export default {
 		fetchBonuses(){
 			this.loading = true
 			const _this = this;
-			this.$axios
+			this.axios
 				.post('/bonus/user')
 				.then((response) => {
 					console.log(response);

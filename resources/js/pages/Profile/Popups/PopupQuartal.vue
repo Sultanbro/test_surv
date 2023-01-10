@@ -101,7 +101,7 @@ export default {
 		fetchData(filters = null) {
 			this.loading = true
 
-			this.$axios.post('/statistics/quartal-premiums', {
+			this.axios.post('/statistics/quartal-premiums', {
 				filters: filters
 			}).then(response => {
 

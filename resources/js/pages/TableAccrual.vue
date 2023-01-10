@@ -740,7 +740,7 @@ export default {
 				'MMMM'
 			).format('M');
 
-			this.$axios.post('/timetracking/salaries', {
+			this.axios.post('/timetracking/salaries', {
 				month: this.$moment(this.dateInfo.currentMonth, 'MMMM').format('M'),
 				year: this.dateInfo.currentYear,
 				group_id: this.selectedGroup.id,
@@ -803,7 +803,7 @@ export default {
 		getTotals() {
 			const  loader = this.$loading.show();
 			const currentMonth = this.$moment(`${this.dateInfo.currentYear}-${this.dateInfo.currentMonth}`, 'YYYY-MMMM')
-			this.$axios.post('/timetracking/salaries/get-total', {
+			this.axios.post('/timetracking/salaries/get-total', {
 				month: currentMonth.format('M'),
 				year: this.dateInfo.currentYear,
 			})
@@ -1034,7 +1034,7 @@ export default {
 		// история бонусов для showEditPremiumSidebar
 		fetchBonusHistory(user_id) {
 			const currentMonth = this.$moment(`${this.dateInfo.currentYear}-${this.dateInfo.currentMonth}`, 'YYYY-MMMM')
-			this.$axios.post('/timetracking/salaries/bonuses',{
+			this.axios.post('/timetracking/salaries/bonuses',{
 				user_id: user_id,
 				date: currentMonth.startOf('month').format('YYYY-MM-DD'),
 			}).then((response) => {
@@ -1050,7 +1050,7 @@ export default {
 				return '';
 			}
 
-			this.$axios.post('/timetracking/salaries/edit-premium', {
+			this.axios.post('/timetracking/salaries/edit-premium', {
 				date: currentMonth.startOf('month').format('YYYY-MM-DD'),
 				user_id: this.editedField.item.user_id,
 				amount: this.amountEdit,
@@ -1081,7 +1081,7 @@ export default {
 
 		// утверждено к выдаче
 		approveSalary() {
-			this.$axios.post('/timetracking/salaries/approve-salary', {
+			this.axios.post('/timetracking/salaries/approve-salary', {
 				group_id: this.selectedGroup.id,
 				month: this.$moment(this.dateInfo.currentMonth, 'MMMM').format('M'),
 				year: this.dateInfo.currentYear,
@@ -1132,7 +1132,7 @@ export default {
 				amount = this.bonus.sum;
 			}
 
-			this.$axios.post('/timetracking/salaries/update', {
+			this.axios.post('/timetracking/salaries/update', {
 				month: this.$moment(this.dateInfo.currentMonth, 'MMMM').format('M'),
 				year: this.dateInfo.currentYear,
 				day: this.selectedCell.field.key,

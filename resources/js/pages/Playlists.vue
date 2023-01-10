@@ -371,7 +371,7 @@ export default {
 		},
 
 		fetchData() {
-			this.$axios
+			this.axios
 				.get('/playlists/get')
 				.then((response) => {
 					this.categories = response.data.categories;
@@ -416,7 +416,7 @@ export default {
 
 		deletePl(i) {
 			if (confirm('Вы уверены что хотите удалить плейлист?')) {
-				this.$axios
+				this.axios
 					.post('/playlists/delete', {
 						id: this.activeCat.playlists[i].id
 					})
@@ -446,7 +446,7 @@ export default {
 
 		deleteCat(i) {
 			if (confirm('Вы уверены что хотите удалить категорию?')) {
-				this.$axios
+				this.axios
 					.post('/playlists/delete-cat', {
 						id: this.categories[i].id
 					})
@@ -465,7 +465,7 @@ export default {
 			formData.append('file', this.file_img);
 			formData.append('playlist', JSON.stringify(this.editingPlaylist));
 
-			this.$axios.post( '/playlists/save-fast', formData)
+			this.axios.post( '/playlists/save-fast', formData)
 				.then((response) => {
 					if(response.data !== '') this.editingPlaylist.img = response.data;
 
@@ -509,7 +509,7 @@ export default {
 
 			let loader = this.$loading.show();
 
-			this.$axios
+			this.axios
 				.post('/playlists/add-cat', {
 					title: this.newcat,
 				})
@@ -536,7 +536,7 @@ export default {
 
 			let loader = this.$loading.show();
 
-			this.$axios
+			this.axios
 				.post('/playlists/save-cat', {
 					title: this.newcat,
 					id: this.activeCat.id,
@@ -562,7 +562,7 @@ export default {
 
 			let loader = this.$loading.show();
 
-			this.$axios
+			this.axios
 				.post('/playlists/add', {
 					title: this.newPlaylist,
 					cat_id: this.activeCat.id,
@@ -587,7 +587,7 @@ export default {
 		},
 
 		get_settings() {
-			this.$axios
+			this.axios
 				.post('/settings/get', {
 					type: 'video'
 				})
@@ -601,7 +601,7 @@ export default {
 		},
 
 		save_settings() {
-			this.$axios
+			this.axios
 				.post('/settings/save', {
 					type: 'video',
 					allow_save_video_without_test: this.allow_save_video_without_test,

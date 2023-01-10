@@ -566,7 +566,7 @@ export default {
 				if(this.questions[q_index].id == 0){
 					this.questions.splice(q_index, 1);
 				}else{
-					this.$axios
+					this.axios
 						.post('/playlists/delete-question', {
 							id: this.questions[q_index].id
 						})
@@ -636,7 +636,7 @@ export default {
 			});
 
 			// save
-			this.$axios
+			this.axios
 				.post(url, {
 					id: this.id,
 					pass_grade: this.pass_grade,

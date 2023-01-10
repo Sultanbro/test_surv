@@ -202,7 +202,7 @@ export default {
 		fetchData() {
 			let loader = this.$loading.show();
 
-			this.$axios
+			this.axios
 				.post('/timetracking/reports/enter-report', {
 					month: this.$moment(this.dateInfo.currentMonth, 'MMMM').format('M'),
 					year: this.dateInfo.currentYear,
@@ -244,7 +244,7 @@ export default {
 			let loader = this.$loading.show();
 
 			if (this.comment.length > 0) {
-				this.$axios
+				this.axios
 					.post('/timetracking/reports/enter-report/setmanual', {
 						month: this.$moment(this.dateInfo.currentMonth, 'MMMM').format('M'),
 						year: this.dateInfo.currentYear,

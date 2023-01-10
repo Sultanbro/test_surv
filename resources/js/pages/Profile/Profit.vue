@@ -102,7 +102,7 @@ export default {
 		fetchData() {
 			this.loading = true
 
-			this.$axios.post('/profile/payment-terms').then(response => {
+			this.axios.post('/profile/payment-terms').then(response => {
 
 				this.showBtn(response.data)
 

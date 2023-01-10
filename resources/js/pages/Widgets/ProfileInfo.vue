@@ -52,7 +52,7 @@ export default {
 		fetchData() {
 			this.loading = true
 
-			this.$axios.get('/profile/personal-info')
+			this.axios.get('/profile/personal-info')
 				.then(response => {
 					this.data = response.data
 					this.loading = false

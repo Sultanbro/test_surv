@@ -618,7 +618,7 @@ export default {
 			}
 
 			// pass
-			this.$axios
+			this.axios
 				.post('/my-courses/pass', {
 					id: this.activesbook.id,
 					type: 3,
@@ -648,7 +648,7 @@ export default {
 		},
 
 		getTree() {
-			this.$axios
+			this.axios
 				.post('/kb/tree', {
 					id: this.parent_id,
 					can_read: this.course_page,
@@ -743,7 +743,7 @@ export default {
 		searchInput() {
 			if(this.search.input.length <= 2) return null;
 
-			this.$axios
+			this.axios
 				.post('/kb/search', {
 					text: this.search.input,
 				})
@@ -771,7 +771,7 @@ export default {
 			}
 
 			let loader = this.$loading.show();
-			this.$axios
+			this.axios
 				.post('/kb/page/update', {
 					text: this.activesbook.text,
 					title: this.activesbook.title,
@@ -791,7 +791,7 @@ export default {
 		},
 
 		addPage(book) {
-			this.$axios.post('/kb/page/create', {
+			this.axios.post('/kb/page/create', {
 				id: book.id
 			}).then((response) => {
 				this.activesbook = response.data;
@@ -802,7 +802,7 @@ export default {
 		},
 
 		addPageToTree() {
-			this.$axios.post('/kb/page/create', {
+			this.axios.post('/kb/page/create', {
 				id: this.id
 			}).then((response) => {
 				this.activesbook = response.data;
@@ -814,7 +814,7 @@ export default {
 
 		deletePage() {
 			if(confirm('Вы уверены?')) {
-				this.$axios
+				this.axios
 					.post('/kb/page/delete', {
 						id: this.activesbook.id,
 					})
@@ -879,7 +879,7 @@ export default {
 			if(this.activesbook && this.activesbook.id == id) return '';
 
 			let loader = this.$loading.show();
-			this.$axios.post('/kb/get', {
+			this.axios.post('/kb/get', {
 				id: id,
 				course_item_id: this.course_item_id,
 				refresh: refreshTree
@@ -986,7 +986,7 @@ export default {
 			const formData = new FormData();
 			formData.append('attachment', blobInfo.blob());
 			formData.append('id', this.activesbook.id);
-			this.$axios
+			this.axios
 				.post('/upload/images/', formData)
 				.then((response) => {
 					success(response.data.location);
@@ -1007,7 +1007,7 @@ export default {
 			const formData = new FormData();
 			formData.append('attachment', this.attachment);
 			formData.append('id', this.activesbook.id);
-			this.$axios
+			this.axios
 				.post('/upload/images/', formData, config)
 				.then((response) => {
 
@@ -1047,7 +1047,7 @@ export default {
 			const formData = new FormData();
 			formData.append('attachment', this.attachment);
 			formData.append('id', this.activesbook.id);
-			this.$axios
+			this.axios
 				.post('/upload/audio/', formData)
 				.then((response) => {
 					this.addaudio(response.data.location);

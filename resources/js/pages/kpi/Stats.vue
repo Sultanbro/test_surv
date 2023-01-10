@@ -149,7 +149,7 @@ export default {
 			this.month = filters.data_from ? filters.data_from.month : new Date().getMonth();
 
 			if(this.s_type_main == 1){
-				this.$axios.post('/statistics/kpi', {
+				this.axios.post('/statistics/kpi', {
 					filters: filters
 				}).then(response => {
 					// items
@@ -170,7 +170,7 @@ export default {
 					alert(error)
 				});
 			}else if(this.s_type_main == 2){
-				this.$axios.get('/statistics/bonuses').then(response => {
+				this.axios.get('/statistics/bonuses').then(response => {
 					console.log(response.data);
 					this.bonus_groups = response.data;
 					/*this.bonus_groups = response.data.groups;
@@ -189,7 +189,7 @@ export default {
 					alert(error);
 				});
 			}else if(this.s_type_main == 3){
-				this.$axios.get('/statistics/quartal-premiums').then(response => {
+				this.axios.get('/statistics/quartal-premiums').then(response => {
 
 					//this.quartal_items = response.data;
 					this.quartal_users = response.data[0].map(res=> ({...res, expanded: false}));

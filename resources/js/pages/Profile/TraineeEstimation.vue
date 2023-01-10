@@ -191,7 +191,7 @@ export default {
 		fetchData() {
 			this.loading = true
 
-			this.$axios.post('/profile/trainee-report', {})
+			this.axios.post('/profile/trainee-report', {})
 				.then((response) => {
 					this.showBtn(response.data)
 

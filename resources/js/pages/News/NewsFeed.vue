@@ -114,14 +114,14 @@ export default {
 		},
 
 		async getMe() {
-			await this.$axios.get('/me')
+			await this.axios.get('/me')
 				.then(response => {
 					this.me = response.data.data;
 				})
 				.catch();
 		},
 		async getPosts(data = null) {
-			await this.$axios.get('/news/get' + (data == null ? '' : data.params))
+			await this.axios.get('/news/get' + (data == null ? '' : data.params))
 				.then(response => {
 					this.nextPageURL = response.data.data.pagination.next_page_url;
 					this.posts = response.data.data.articles;
@@ -138,7 +138,7 @@ export default {
 		async getNextPage() {
 			this.showPaginator = false;
 
-			await this.$axios.get(this.nextPageURL)
+			await this.axios.get(this.nextPageURL)
 				.then(response => {
 					this.nextPageURL = response.data.data.pagination.next_page_url;
 					this.posts = this.posts.concat(response.data.data.articles);

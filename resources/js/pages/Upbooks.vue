@@ -459,7 +459,7 @@ export default {
 		fetchData() {
 			let loader = this.$loading.show();
 
-			this.$axios
+			this.axios
 				.get('/admin/upbooks/get', {})
 				.then((response) => {
 					this.categories = response.data.categories;
@@ -493,7 +493,7 @@ export default {
 
 				let loader = this.$loading.show();
 
-				this.$axios
+				this.axios
 					.post('/admin/upbooks/category/delete', {
 						id: this.categories[i].id
 					})
@@ -517,7 +517,7 @@ export default {
 
 			let loader = this.$loading.show();
 
-			this.$axios
+			this.axios
 				.post('/admin/upbooks/category/create', {
 					name: this.modals.add_category.name,
 				})
@@ -554,7 +554,7 @@ export default {
 
 				let loader = this.$loading.show();
 
-				this.$axios
+				this.axios
 					.post('/admin/upbooks/delete', {
 						id: this.activeCategory.books[i].id
 					})
@@ -583,7 +583,7 @@ export default {
 			this.modals.edit_book.show = true;
 			this.modals.edit_book.item = book;
 
-			this.$axios
+			this.axios
 				.post('/admin/upbooks/segments/get', {
 					id: book.id,
 				})
@@ -609,7 +609,7 @@ export default {
 			formData.append('group_id',  data.group_id);
 			formData.append('file', this.file_img);
 
-			this.$axios.post( '/admin/upbooks/save', formData)
+			this.axios.post( '/admin/upbooks/save', formData)
 				.then((response) => {
 
 					this.modals.upload_book.show = false;
@@ -659,7 +659,7 @@ export default {
 			formData.append('segments', JSON.stringify(this.modals.edit_book.segments));
 			formData.append('cat_id', this.activeCategory.id);
 
-			this.$axios.post( '/admin/upbooks/update', formData, {
+			this.axios.post( '/admin/upbooks/update', formData, {
 				headers: {
 					'Content-Type': 'multipart/form-data'
 				}
@@ -694,7 +694,7 @@ export default {
 		},
 
 		get_settings() {
-			this.$axios
+			this.axios
 				.post('/settings/get', {
 					type: 'book'
 				})
@@ -708,7 +708,7 @@ export default {
 		},
 
 		save_settings() {
-			this.$axios
+			this.axios
 				.post('/settings/save', {
 					type: 'book',
 					allow_save_book_without_test: this.allow_save_book_without_test,
@@ -729,7 +729,7 @@ export default {
 
 			let loader = this.$loading.show();
 
-			this.$axios
+			this.axios
 				.post('/upbooks/save-cat', {
 					title: this.editcat_name,
 					id: this.editcat_id,

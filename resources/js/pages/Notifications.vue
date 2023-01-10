@@ -485,7 +485,7 @@ export default {
 		},
 		updateNotification (status, status_index) {
 
-			this.$axios.post('/timetracking/settings/notifications/update', {
+			this.axios.post('/timetracking/settings/notifications/update', {
 				id: status.id,
 				action: status.action,
 				message: status.message,
@@ -540,7 +540,7 @@ export default {
 		},
 
 		fetchData () {
-			this.$axios.get('/timetracking/settings/notifications/get').then(response => {
+			this.axios.get('/timetracking/settings/notifications/get').then(response => {
 				this.user_templates = response.data[0];
 				this.group_templates = response.data[1];
 				this.position_templates = response.data[2];
@@ -552,7 +552,7 @@ export default {
 		},
 
 		saveUser() {
-			this.$axios.post('/timetracking/settings/notifications/user/save', {
+			this.axios.post('/timetracking/settings/notifications/user/save', {
 				user_id: this.activeuser.id,
 				noti: this.activeuser_notifications,
 			})
@@ -566,7 +566,7 @@ export default {
 		},
 
 		deleteUser() {
-			this.$axios.post('/timetracking/settings/notifications/user/save', {
+			this.axios.post('/timetracking/settings/notifications/user/save', {
 				user_id: this.activeuser.id,
 				noti: [],
 			})
@@ -589,7 +589,7 @@ export default {
 
 		selectUser() {
 
-			this.$axios.post('/timetracking/settings/notifications/user', {
+			this.axios.post('/timetracking/settings/notifications/user', {
 				user_id: this.activeuser,
 			})
 				.then(response => {

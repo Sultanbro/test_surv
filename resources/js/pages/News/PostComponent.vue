@@ -208,7 +208,7 @@ export default {
 		},
 
 		async downloadFile(file) {
-			await this.$axios.get(file.url, {responseType: 'blob'})
+			await this.axios.get(file.url, {responseType: 'blob'})
 				.then(response => {
 					const blob = new Blob([response.data], {type: this.getFileTypeByExtension(file.extension)});
 					const link = document.createElement('a');
@@ -292,7 +292,7 @@ export default {
 		},
 
 		async likePost(id) {
-			await this.$axios.post('/news/' + id + '/like')
+			await this.axios.post('/news/' + id + '/like')
 				.then(() => {
 					if (this.currentPost.is_liked) {
 						this.currentPost.likes_count--;
@@ -307,7 +307,7 @@ export default {
 		},
 
 		async viewsChanged() {
-			await this.$axios.post('news/' + this.currentPost.id + '/views')
+			await this.axios.post('news/' + this.currentPost.id + '/views')
 				.then(res => {
 					this.currentPost.views_count = res.data.data.views_count;
 				})
@@ -317,7 +317,7 @@ export default {
 		},
 
 		async favouritePost(id) {
-			await this.$axios.post('news/' + id + '/favourite')
+			await this.axios.post('news/' + id + '/favourite')
 				.then(res => {
 					console.log(res);
 					this.toggleShowPopup();
@@ -327,7 +327,7 @@ export default {
 		},
 
 		async pinPost(id) {
-			await this.$axios.post('/news/' + id + '/pin')
+			await this.axios.post('/news/' + id + '/pin')
 				.then(response => {
 					this.post.is_pinned = response.data.data.is_pinned;
 					this.showFullContent = false;
@@ -348,7 +348,7 @@ export default {
 			formData.append('parent_id', this.parentId == null ? '' : this.parentId);
 			this.parentId = null;
 
-			await this.$axios.post('/news/' + postId + '/comments', formData)
+			await this.axios.post('/news/' + postId + '/comments', formData)
 				.then(() => {
 					this.currentPost.comments_count = this.currentPost.comments_count + 1;
 					this.getPostComments(postId);
@@ -375,7 +375,7 @@ export default {
 		},
 
 		async deletePost(postId) {
-			await this.$axios.delete('/news/' + postId)
+			await this.axios.delete('/news/' + postId)
 				.then(() => {
 					this.toggleShowPopup();
 					this.$emit('update-news-list');

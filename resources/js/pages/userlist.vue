@@ -681,7 +681,7 @@ export default {
 				filter.end_date_applied = this.filter.end_date_applied;
 			}
 
-			this.$axios.post('/timetracking/get-persons', filter)
+			this.axios.post('/timetracking/get-persons', filter)
 				.then(response => {
 					this.items = response.data.users
 					this.groups = response.data.groups

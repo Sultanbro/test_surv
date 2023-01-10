@@ -494,7 +494,7 @@ export default {
 			}).then(blob => {
 				const formData = new FormData();
 				formData.append('file', blob);
-				this.$axios.post('/profile/upload/image/profile/', formData).then((response) => {
+				this.axios.post('/profile/upload/image/profile/', formData).then((response) => {
 					bus.$emit('user-avatar-update', '/users_img/' + response.data.filename)
 				});
 			})
@@ -521,7 +521,7 @@ export default {
 				let loader = _this.$loading.show();
 				const formData = new FormData();
 				formData.append('file', blob);
-				this.$axios
+				this.axios
 					.post('/profile/save-cropped-image', formData)
 					.then(function (res) {
 						loader.hide();
@@ -609,7 +609,7 @@ export default {
 				this.$toast.success('Успешно Удалено');
 
 				if (type_id != 'dev') {
-					this.$axios
+					this.axios
 						.post('/profile/remove/card/', {
 							card_id: type_id,
 						})
@@ -664,7 +664,7 @@ export default {
 
 
 			if (this.cardValidatre.type) {
-				this.$axios
+				this.axios
 					.post('/profile/edit/user/cart/', {
 						cards: this.payments,
 						query: this.user,
@@ -692,7 +692,7 @@ export default {
 		},
 
 		fetchData() {
-			this.$axios
+			this.axios
 				.get('/cabinet/get')
 				.then((response) => {
 					this.admins = response.data.admins;
@@ -726,7 +726,7 @@ export default {
 		},
 
 		save() {
-			this.$axios
+			this.axios
 				.post('/cabinet/save', {
 					admins: this.admins,
 				})
@@ -744,7 +744,7 @@ export default {
 					this.keywords = '';
 					this.country_results = [];
 				} else {
-					this.$axios
+					this.axios
 						.post('/profile/country/city/', {
 							keyword: this.keywords,
 						})

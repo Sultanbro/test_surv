@@ -243,7 +243,7 @@ export default {
 
 			if(this.activeSegment.item_model != null) return;
 
-			this.$axios
+			this.axios
 				.post('/my-courses/pass', {
 					id: this.activeSegment.id,
 					type: 1,
@@ -266,7 +266,7 @@ export default {
 		getSegments() {
 			let loader = this.$loading.show();
 
-			this.$axios
+			this.axios
 				.post('/admin/upbooks/segments/get', {
 					id: this.book_id,
 					course_item_id: this.course_item_id

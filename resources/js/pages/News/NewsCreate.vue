@@ -482,7 +482,7 @@ export default {
 			formData.append('title', this.postTitle);
 			formData.append('content', this.editorData);
 
-			await this.$axios.post('/news', formData, {
+			await this.axios.post('/news', formData, {
 				headers: {
 					'Content-Type': 'application/json',
 					'Accept': 'application/json'
@@ -550,7 +550,7 @@ export default {
 			formData.append('content', this.editorData);
 			formData.append('_method', 'put');
 
-			await this.$axios.post('/news/' + this.editableId, formData, {
+			await this.axios.post('/news/' + this.editableId, formData, {
 				headers: {
 					'Content-Type': 'application/json',
 					'Accept': 'application/json'
@@ -575,7 +575,7 @@ export default {
 		async getAccessDictionaries() {
 			let loader = this.$loading.show();
 
-			await this.$axios.get('/dictionaries')
+			await this.axios.get('/dictionaries')
 				.then(res => {
 					this.accessDictionaries = res.data.data;
 					loader.hide();

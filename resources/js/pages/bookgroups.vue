@@ -57,7 +57,7 @@ export default {
 	},
 	methods: {
 		addGroup() {
-			this.$axios.post('/bp_books/groups/add', {
+			this.axios.post('/bp_books/groups/add', {
 				name: this.new_position,
 			}).then(response => {
 				if (response.data.message) {
@@ -74,7 +74,7 @@ export default {
 		},
 		deleteGroup() {
 			if (confirm('Вы уверены что хотите удалить отдел?')) {
-				this.$axios.post('/bp_books/groups/delete', {
+				this.axios.post('/bp_books/groups/delete', {
 					id: this.group_id,
 				}).then(() => {
 					this.$toast.info('Список удален');
@@ -84,7 +84,7 @@ export default {
 			}
 		},
 		groupselect(value) {
-			this.$axios.post('/bp_books/groups', {
+			this.axios.post('/bp_books/groups', {
 				group_id: value,
 			})
 				.then(response => {
@@ -97,7 +97,7 @@ export default {
 			}, 3000)
 		},
 		getGroups() {
-			this.$axios.get('/bp_books/groups', {}).then(response => {
+			this.axios.get('/bp_books/groups', {}).then(response => {
 				this.groups = response.data.groups
 				this.options = response.data.books
 				this.selectGroups = []

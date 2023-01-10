@@ -246,7 +246,7 @@ export default {
 		},
 		selectPosition(value) {
 			this.addNew = false;
-			this.$axios.post('/timetracking/settings/positions/get-new', {
+			this.axios.post('/timetracking/settings/positions/get-new', {
 				name: value.id,
 			}).then(response => {
 				//this.$toast.info('Добавлена');
@@ -288,7 +288,7 @@ export default {
 		async savePosition() {
 			try{
 				if(!this.new_position.length) return this.$toast.error('Введите нзвание должности!');
-				const responseAdd = await this.$axios.post('/timetracking/settings/positions/add-new', {position: this.new_position});
+				const responseAdd = await this.axios.post('/timetracking/settings/positions/add-new', {position: this.new_position});
 				if(responseAdd.data.code === 201) return this.$toast.error('Должность с таким названием уже существует!');
 				const data = responseAdd.data.data;
 				const dataPush = {
@@ -301,7 +301,7 @@ export default {
 				this.activebtn = dataPush;
 				this.data.push(dataPush);
 
-				const responseSave = await this.$axios.post('/timetracking/settings/positions/save-new', {
+				const responseSave = await this.axios.post('/timetracking/settings/positions/save-new', {
 					id: this.activebtn.id,
 					new_name: this.new_position,
 					indexation: this.indexation,
@@ -317,7 +317,7 @@ export default {
 		},
 		deletePosition() {
 			if (confirm('Вы уверены что хотите удалить должность?')) {
-				this.$axios.post('/timetracking/settings/positions/delete', {
+				this.axios.post('/timetracking/settings/positions/delete', {
 					position: this.activebtn.id,
 				}).then(() => {
 					this.$toast.info('Удалена');

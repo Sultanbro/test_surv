@@ -237,7 +237,7 @@ export default {
 		fetchData(type = 'users') {
 			let loader = this.$loading.show();
 
-			this.$axios
+			this.axios
 				.post('/course-results/get', {
 					type: type,
 					month: this.monthInfo.month,
@@ -259,7 +259,7 @@ export default {
 		},
 
 		fetchCourseItems(userId, courseId) {
-			this.$axios.get('/course/progress', {
+			this.axios.get('/course/progress', {
 				params: { userId, courseId }
 			}).then(({ data }) => {
 				if(!this.courseItems[userId]) this.$set(this.courseItems, userId, {})
@@ -334,7 +334,7 @@ export default {
 		nullifyRequest({user_id, course_id}, callback) {
 			let loader = this.$loading.show();
 
-			this.$axios
+			this.axios
 				.post('/course/regress', {
 					type: 'course',
 					user_id,
@@ -353,7 +353,7 @@ export default {
 
 			const loader = this.$loading.show()
 
-			this.$axios.post('/course/regress', {
+			this.axios.post('/course/regress', {
 				type: 'item',
 				user_id,
 				course_item_id: courseItem.id

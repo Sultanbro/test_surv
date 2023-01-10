@@ -512,7 +512,7 @@ export default {
 				return '';
 			}
 
-			this.$axios.post('/autochecker/' + this.currentGroup, {})
+			this.axios.post('/autochecker/' + this.currentGroup, {})
 				.then(response => {
 					if(response.data.code == 200) {
 						this.$toast.success('Ссылка скопирована. Через 30 минут (в ' + response.data.time + ') не отмеченные стажеры перейдут в статус "Отсутствует"')
@@ -681,7 +681,7 @@ export default {
 			formData.append('file', this.firingItems.file);
 			formData.append('fire_type', this.firingItems.type);
 
-			this.$axios.post('/timetracking/set-day', formData, {
+			this.axios.post('/timetracking/set-day', formData, {
 				headers: {
 					'Content-Type': 'multipart/form-data'
 				}
@@ -715,7 +715,7 @@ export default {
 
 
 
-			this.$axios.post('/timetracking/set-day', {
+			this.axios.post('/timetracking/set-day', {
 				month: this.$moment(this.dateInfo.currentMonth, 'MMMM').format('M'),
 				day: day,
 				user_id: this.sidebarContent.user_id,
@@ -746,7 +746,7 @@ export default {
 
 		setDayType() {
 			if (this.commentDay.length > 0) {
-				this.$axios.post('/timetracking/set-day', {
+				this.axios.post('/timetracking/set-day', {
 					month: this.$moment(this.dateInfo.currentMonth, 'MMMM').format('M'),
 					day: this.sidebarContent.day,
 					user_id: this.sidebarContent.user_id,
@@ -782,7 +782,7 @@ export default {
 			if (this.commentFines.length > 0) {
 				this.openSidebar = false
 				let loader = this.$loading.show();
-				this.$axios.post('/timetracking/user-fine', {
+				this.axios.post('/timetracking/user-fine', {
 					date: this.dateInfo.shortDate + '-' + this.sidebarContent.day,
 					user_id: this.sidebarContent.user_id,
 					fines: this.sidebarContent.fines,
@@ -888,7 +888,7 @@ export default {
 
 			let loader = this.$loading.show();
 
-			this.$axios.post(url, {
+			this.axios.post(url, {
 				month: this.$moment(this.dateInfo.currentMonth, 'MMMM').format('M'),
 				year: this.dateInfo.currentYear,
 				group_id: this.currentGroup,
@@ -1083,7 +1083,7 @@ export default {
 			console.log(this.currentEditingCell.item)
 			if (this.comment.length > 0) {
 				let loader = this.$loading.show();
-				this.$axios.post('/timetracking/reports/update/day', {
+				this.axios.post('/timetracking/reports/update/day', {
 					year: this.dateInfo.year,
 					month: this.dateInfo.month,
 					day: this.currentEditingCell.field.key,
@@ -1129,7 +1129,7 @@ export default {
 				return '';
 			}
 
-			this.$axios.post('/timetracking/apply-person', {
+			this.axios.post('/timetracking/apply-person', {
 				user_id: this.sidebarContent.user_id,
 				schedule: this.applyItems.schedule,
 				group_id: this.currentGroup,
@@ -1150,7 +1150,7 @@ export default {
 
 			let day = this.sidebarContent.day;
 			let loader = this.$loading.show();
-			this.$axios.post('/timetracking/set-day', {
+			this.axios.post('/timetracking/set-day', {
 				month: this.$moment(this.dateInfo.currentMonth, 'MMMM').format('M'),
 				day: day,
 				user_id: this.sidebarContent.user_id,

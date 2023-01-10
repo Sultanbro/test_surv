@@ -830,8 +830,8 @@ export default {
 				...item
 			};
 			let req = item.id == 0
-				? this.$axios.post(this.uri + '/' + method, my_item)
-				: this.$axios.put(this.uri + '/' + method, fields);
+				? this.axios.post(this.uri + '/' + method, my_item)
+				: this.axios.put(this.uri + '/' + method, fields);
 			/**
              * request
              */
@@ -898,7 +898,7 @@ export default {
 		},
 		fetch(filter = null) {
 			let loader = this.$loading.show();
-			this.$axios.post( this.uri + '/get', {
+			this.axios.post( this.uri + '/get', {
 				filters: filter
 			}).then(response => {
 
@@ -1020,8 +1020,8 @@ export default {
 				...item
 			};
 			let req = item.id == 0
-				? this.$axios.post(this.uri + '/' + method, my_item)
-				: this.$axios.put(this.uri + '/' + method, fields);
+				? this.axios.post(this.uri + '/' + method, my_item)
+				: this.axios.put(this.uri + '/' + method, fields);
 			/**
              * request
              */
@@ -1062,7 +1062,7 @@ export default {
 		},
 		deletee(id, p, i) {
 			let loader = this.$loading.show();
-			this.$axios.delete(this.uri + '/delete/' + id).then(() => {
+			this.axios.delete(this.uri + '/delete/' + id).then(() => {
 				this.deleteEvery(id, p, i)
 				loader.hide()
 			}).catch(error => {

@@ -44,7 +44,7 @@ export default {
 
 			formData.append('file', file);
 
-			await this.$axios.post('/files', formData)
+			await this.axios.post('/files', formData)
 				.then(res => {
 					this.$set(this.files, this.files.length, {
 						id: res.data.data.id,

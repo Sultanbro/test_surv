@@ -152,7 +152,7 @@ export default {
          * Загрузка данных
          */
 		fetchData() {
-			this.$axios.post('/profile/courses').then(response => {
+			this.axios.post('/profile/courses').then(response => {
 				this.data = response.data
 				this.$nextTick(() => this.initSlider())
 
@@ -164,7 +164,7 @@ export default {
 				}, 1000);
 			}).catch((e) => console.log(e))
 
-			this.$axios.get('/my-courses/get', {}).then(response => {
+			this.axios.get('/my-courses/get', {}).then(response => {
 				this.courses = response.data.courses
 			}).catch((e) => console.log(e))
 		},
@@ -179,7 +179,7 @@ export default {
 		fetchCourse(id) {
 			this.loading = true
 
-			this.$axios.get('/my-courses/get/' + id).then(response => {
+			this.axios.get('/my-courses/get/' + id).then(response => {
 				this.items[id] = response.data.items
 				this.loading = false
 			}).catch((e) => console.log(e));

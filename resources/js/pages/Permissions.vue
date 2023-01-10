@@ -191,7 +191,7 @@ export default {
 		fetchData() {
 			let loader = this.$loading.show();
 
-			this.$axios
+			this.axios
 				.get('/permissions/get', {})
 				.then((response) => {
 
@@ -236,7 +236,7 @@ export default {
 			}
 
 			let loader = this.$loading.show();
-			this.$axios
+			this.axios
 				.post( '/permissions/delete-target', {
 					id: this.filtered_items[i].id
 				})
@@ -256,7 +256,7 @@ export default {
 
 		updateItem(i) {
 			let loader = this.$loading.show();
-			this.$axios
+			this.axios
 				.post( '/permissions/update-target', {
 					item: this.filtered_items[i],
 				})
@@ -313,7 +313,7 @@ export default {
 
 			console.log(this.permissions);
 
-			this.$axios
+			this.axios
 				.post('/permissions/update-role', {
 					role: this.role,
 					permissions: this.permissions
@@ -350,7 +350,7 @@ export default {
 			}
 
 			let loader = this.$loading.show();
-			this.$axios
+			this.axios
 				.post( '/permissions/delete-role', {
 					role: this.roles[i]
 				})

@@ -308,7 +308,7 @@ export default {
 
 			// pass
 			let loader = this.$loading.show();
-			this.$axios
+			this.axios
 				.post('/my-courses/pass', {
 					id: this.activeVideo.id,
 					type: 2,
@@ -341,7 +341,7 @@ export default {
 			if(!confirm('Вы уверены?')) return;
 			let video = this.playlist.videos[v_index];
 
-			this.$axios
+			this.axios
 				.post('/playlists/remove-video', {
 					id: video.id,
 				})
@@ -383,7 +383,7 @@ export default {
 		},
 
 		updateVideo() {
-			this.$axios
+			this.axios
 				.post('/playlists/video/update', {
 					id: this.playlist.id,
 					video: this.activeVideo,
@@ -397,7 +397,7 @@ export default {
 		},
 
 		saveActiveVideoFast() {
-			this.$axios
+			this.axios
 				.post('/playlists/save-video-fast', {
 					id: this.activeVideo.id,
 					title: this.activeVideo.title,
@@ -420,7 +420,7 @@ export default {
 
 		saveActiveVideo() {
 
-			this.$axios
+			this.axios
 				.post('/playlists/save-active-video', {
 					id: this.playlist.id,
 					title: this.modals.upload.file.title,
@@ -457,7 +457,7 @@ export default {
 			if(video == null) return;
 			let loader = this.$loading.show();
 
-			this.$axios
+			this.axios
 				.post('/playlists/video', {
 					id: video.id,
 					course_item_id: this.course_item_id
@@ -507,7 +507,7 @@ export default {
 		},
 
 		fetchData() {
-			this.$axios
+			this.axios
 				.post('/playlists/get/', {
 					id: this.id,
 					course_item_id: this.course_item_id
@@ -669,7 +669,7 @@ export default {
 			formData.append('file', this.file_img);
 			formData.append('playlist', JSON.stringify(this.playlist));
 
-			this.$axios.post( '/playlists/save', formData)
+			this.axios.post( '/playlists/save', formData)
 				.then((response) => {
 					this.$toast.success('Сохранено');
 					if(response.data !== '') this.playlist.img = response.data;
@@ -683,7 +683,7 @@ export default {
 
 		saveGroups() {
 
-			this.$axios
+			this.axios
 				.post('/playlists/groups/save', {
 					playlist: this.playlist,
 				})

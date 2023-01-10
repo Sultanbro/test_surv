@@ -101,7 +101,7 @@ export default {
 		fetch() {
 			let loader = this.$loading.show();
 
-			this.$axios.post('/profile/salary/get', {
+			this.axios.post('/profile/salary/get', {
 				month: this.$moment(this.month, 'MMMM').format('M')
 			}).then(response => {
 				this.user_earnings = response.data.user_earnings

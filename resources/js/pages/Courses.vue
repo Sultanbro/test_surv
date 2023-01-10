@@ -119,7 +119,7 @@ export default {
 	methods: {
 		saveOrder(event) {
 
-			this.$axios.post('/courses/save-order', {
+			this.axios.post('/courses/save-order', {
 				id: event.item.id,
 				order: event.newIndex, // oldIndex
 			})
@@ -144,7 +144,7 @@ export default {
 
 			let loader = this.$loading.show();
 
-			this.$axios
+			this.axios
 				.post('/admin/courses/create', {
 					name: this.modals.add_course.name,
 				})
@@ -175,7 +175,7 @@ export default {
 
 				let loader = this.$loading.show();
 
-				this.$axios
+				this.axios
 					.post('/admin/courses/delete', {
 						id: this.courses[i].id
 					})
@@ -194,7 +194,7 @@ export default {
 		fetchData() {
 			let loader = this.$loading.show();
 
-			this.$axios
+			this.axios
 				.get('/admin/courses/get', {})
 				.then((response) => {
 					this.courses = response.data.courses;

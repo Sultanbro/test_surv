@@ -117,7 +117,7 @@ export default {
 		fetchData() {
 			this.loading = true;
 
-			this.$axios
+			this.axios
 				.post('/notifications', {})
 				.then((response) => {
 					this.data = response.data;
@@ -136,7 +136,7 @@ export default {
 		setAllRead() {
 			this.loading = true;
 
-			this.$axios
+			this.axios
 				.post('/notifications/set-read-all/', {})
 				.then((response) => {
 					if (response.data == '1') {
@@ -212,7 +212,7 @@ export default {
 		req(i, payload) {
 			this.loading = true;
 
-			this.$axios
+			this.axios
 				.post('/notifications/set-read', payload)
 				.then((response) => {
 					if (response.data == 1) {

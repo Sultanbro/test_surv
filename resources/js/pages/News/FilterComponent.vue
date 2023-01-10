@@ -248,7 +248,7 @@ export default {
 		},
 
 		async getUsers() {
-			await this.$axios.get('/dictionaries')
+			await this.axios.get('/dictionaries')
 				.then(res => {
 					this.users = res.data.data.users;
 				})

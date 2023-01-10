@@ -97,7 +97,7 @@ export default {
 		fetchData() {
 			let loader = this.$loading.show();
 
-			this.$axios.post('/kpi/' + this.page, {
+			this.axios.post('/kpi/' + this.page, {
 				month: this.$moment(this.monthInfo.currentMonth, 'MMMM').format('M'),
 			}).then(() => {
 

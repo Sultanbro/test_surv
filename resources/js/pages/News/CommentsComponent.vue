@@ -103,7 +103,7 @@ export default {
 		async getComments(postId) {
 			this.postId = postId;
 
-			await this.$axios.get('/news/' + postId + '/comments')
+			await this.axios.get('/news/' + postId + '/comments')
 				.then(response => {
 					this.comments = response.data.data.comments;
 					this.comments_count = response.data.data.comments_count;
@@ -117,7 +117,7 @@ export default {
 		},
 
 		async likeComment(commentId) {
-			await this.$axios.post('news/' + this.postId + '/comments/' + commentId + '/like')
+			await this.axios.post('news/' + this.postId + '/comments/' + commentId + '/like')
 				.then(response => {
 					this.changeLikeComment(commentId, response.data.data)
 				})
@@ -133,7 +133,7 @@ export default {
 		},
 
 		async destroyComment(commentId) {
-			await this.$axios.delete('news/' + this.postId + '/comments/' + commentId)
+			await this.axios.delete('news/' + this.postId + '/comments/' + commentId)
 				.then(() => {
 					this.getComments(this.postId);
 				})

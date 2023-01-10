@@ -274,7 +274,7 @@ export default {
 			else return false;
 		},
 		getActivities(){
-			this.$axios.get('/statistics/activities').then(response => {
+			this.axios.get('/statistics/activities').then(response => {
 				this.activities = response.data;
 			});
 		},

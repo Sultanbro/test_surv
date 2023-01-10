@@ -604,7 +604,7 @@ export default {
 			this.archived_groups = this.archived_groupss;
 		},
 		saveBonus() {
-			this.$axios
+			this.axios
 				.post('/timetracking/users/bonus/save', {
 					bonuses: this.bonuses,
 				})
@@ -657,7 +657,7 @@ export default {
 		},
 		async selectGroup(value) {
 			let loader = this.$loading.show();
-			await this.$axios
+			await this.axios
 				.post('/timetracking/users-new', {
 					id: value.id,
 				})
@@ -718,7 +718,7 @@ export default {
 			// save group data
 			let loader = this.$loading.show();
 
-			this.$axios
+			this.axios
 				.post('/timetracking/users/group/save-new', {
 					group_id: this.activebtn,
 					users: this.value,
@@ -756,7 +756,7 @@ export default {
 		},
 		addStatus() {
 			if (this.new_status.length > 0) {
-				this.$axios
+				this.axios
 					.post('/timetracking/group/save-new', {
 						name: this.new_status,
 					})
@@ -779,7 +779,7 @@ export default {
 		},
 		deleted() {
 			if (confirm('Вы уверены что хотите удалить группу?')) {
-				this.$axios
+				this.axios
 					.post('/timetracking/group/delete-new', {
 						group: this.activebtn,
 					})
@@ -815,7 +815,7 @@ export default {
 		editTimeAddress() {
 			this.showEditTimeAddress = true;
 
-			this.$axios
+			this.axios
 				.post('/timetracking/settings/get_time_addresses', {
 					group_id: this.activebtn,
 				})
@@ -835,7 +835,7 @@ export default {
 			}
 
 			let loader = this.$loading.show();
-			this.$axios
+			this.axios
 				.post('/timetracking/groups/restore-new', {
 					id: this.restore_group,
 				})
@@ -854,7 +854,7 @@ export default {
 		},
 
 		saveTimeAddress() {
-			this.$axios
+			this.axios
 				.post('/timetracking/settings/save_time_addresses', {
 					group_id: this.activebtn,
 					time_address: this.time_address,
@@ -888,7 +888,7 @@ export default {
 				return;
 			}
 
-			this.$axios
+			this.axios
 				.post('/timetracking/settings/delete-group-bonus', {
 					id: this.bonuses[i].id,
 				})

@@ -50,7 +50,7 @@ export default {
 	},
 	methods: {
 		async getUsersBirthDay() {
-			await this.$axios.get('/birthdays')
+			await this.axios.get('/birthdays')
 				.then(res => {
 					this.usersBirthday = res.data.data.birthdays;
 					this.nextPage = res.data.data.pagination.next_page_url;
@@ -61,7 +61,7 @@ export default {
 		},
 
 		async getNextPage() {
-			await this.$axios.get(this.nextPage)
+			await this.axios.get(this.nextPage)
 				.then(res => {
 					console.log(res);
 					this.usersBirthday = this.usersBirthday.concat(res.data.data.birthdays);

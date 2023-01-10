@@ -5570,7 +5570,7 @@ export default {
 			let formData = new FormData();
 			formData.append('reaction', reactionCode);
 
-			await this.$axios.post('news/' + this.articleId + '/comments/' + this.commentId + '/reaction', formData)
+			await this.axios.post('news/' + this.articleId + '/comments/' + this.commentId + '/reaction', formData)
 				.then(res => {
 					this.commentReactions = JSON.parse(JSON.stringify(res.data.data.reactions));
 					this.updateReactionList();

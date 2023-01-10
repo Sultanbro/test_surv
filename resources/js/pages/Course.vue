@@ -177,7 +177,7 @@ export default {
 	methods: {
 		get() {
 			let loader = this.$loading.show()
-			this.$axios
+			this.axios
 				.post('/admin/courses/get-item', {
 					id: this.id,
 				})
@@ -203,7 +203,7 @@ export default {
 				(blob) => {
 					formData.append('file', blob);
 					formData.append('course_id', _this.course.id);
-					this.$axios
+					this.axios
 						.post('/admin/courses/upload-image', formData)
 						.then(function (res) {
 							_this.course.img = res.data.img;
@@ -240,7 +240,7 @@ export default {
 
 		saveCourse() {
 			let loader = this.$loading.show();
-			this.$axios
+			this.axios
 				.post('/admin/courses/save', {
 					course: this.course,
 				})

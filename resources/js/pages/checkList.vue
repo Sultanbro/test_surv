@@ -436,7 +436,7 @@ export default {
 		},
 
 		getUsers(){
-			this.$axios.post('/timetracking/settings/get/modal/', {
+			this.axios.post('/timetracking/settings/get/modal/', {
 				type:'3',
 			}).then(response => {
 				// console.log(response);
@@ -450,14 +450,14 @@ export default {
 
 		},
 		viewCheckList(){
-			this.$axios.get('/timetracking/settings/list/check', {
+			this.axios.get('/timetracking/settings/list/check', {
 			}).then(response => {
 				console.log(response.data);
 				this.arrCheckLists = response.data;
 			})
 		},
 		fetchResponsibility() {
-			this.$axios.post('/timetracking/settings/auth/check/user/responsibility', {
+			this.axios.post('/timetracking/settings/auth/check/user/responsibility', {
 				search:this.responsibility.inputText,
 			}).then(response => {
 				this.responsibility.results = response.data
@@ -465,7 +465,7 @@ export default {
 			})
 		},
 		searchSelected(type) {
-			this.$axios.post('/timetracking/settings/auth/check/search/selected', {
+			this.axios.post('/timetracking/settings/auth/check/search/selected', {
 				type:type,
 				query:this.selected_search,
 			}).then(response => {
@@ -505,7 +505,7 @@ export default {
 			if (this.values.length > 0){
 				let loader = this.$loading.show();
 				console.log(this.values);
-				this.$axios.post('/timetracking/settings/edit/check/save/', {
+				this.axios.post('/timetracking/settings/edit/check/save/', {
 					check_id:this.check_id,
 					allValueArray:this.values,
 					countView:this.countView,
@@ -569,7 +569,7 @@ export default {
 			this.errors.show = false
 
 
-			this.$axios.post('/timetracking/settings/edit/check', {
+			this.axios.post('/timetracking/settings/edit/check', {
 				check_id:check_id,
 				type:type,
 			}).then(response => {
@@ -633,7 +633,7 @@ export default {
 			let confirmDelte = confirm('Вы действительно хотите безвозвратно удалить ?');
 
 			if (confirmDelte){
-				this.$axios.post('/timetracking/settings/delete/check', {
+				this.axios.post('/timetracking/settings/delete/check', {
 					delete_id:id
 				}).then(() => {
 					this.viewCheckList()
@@ -652,7 +652,7 @@ export default {
 			console.log(this.arrCheckInput.tasks);
 			if (this.values.length > 0 || this.values.length > 1){
 				let loader = this.$loading.show();
-				this.$axios.post('/timetracking/settings/add/check', {
+				this.axios.post('/timetracking/settings/add/check', {
 					allValueArray:this.values,
 					countView:this.countView,
 					arr_check_input:this.arrCheckInput,
@@ -1081,7 +1081,7 @@ export default {
 		},
 
 		fetch() {
-			this.$axios
+			this.axios
 				.get('/superselect/get', {})
 				.then((response) => {
 

@@ -222,7 +222,7 @@ export default {
 		fetchData(filters = null) {
 			this.loading = true
 
-			this.$axios.post('/statistics/kpi', {
+			this.axios.post('/statistics/kpi', {
 				filters: filters
 			}).then(response => {
 

@@ -341,7 +341,7 @@ export default {
 		fetchData() {
 			let loader = this.$loading.show();
 
-			this.$axios.post('/timetracking/top', {
+			this.axios.post('/timetracking/top', {
 				month: this.$moment(this.monthInfo.currentMonth, 'MMMM').format('M'),
 				year: this.currentYear,
 			}).then(response => {
@@ -374,7 +374,7 @@ export default {
 
 		saveRentGauge(g_index) {
 			let loader = this.$loading.show();
-			this.$axios.post('/timetracking/top/save_rent_max', {
+			this.axios.post('/timetracking/top/save_rent_max', {
 				gauge: this.rentability[g_index]
 			})
 				.then(() => {
@@ -390,7 +390,7 @@ export default {
 
 		saveGroupPlan(index) {
 			let loader = this.$loading.show();
-			this.$axios.post('/timetracking/top/save_group_plan', {
+			this.axios.post('/timetracking/top/save_group_plan', {
 				group_id: this.prognoz_groups[index].id,
 				plan: this.prognoz_groups[index].plan,
 			}).then(() => {
@@ -407,7 +407,7 @@ export default {
 		updateProceed(record, field, type) {
 			let loader = this.$loading.show();
 
-			this.$axios.post('/timetracking/top/proceeds/update', {
+			this.axios.post('/timetracking/top/proceeds/update', {
 				group_id: record['group_id'],
 				value: record[field],
 				date: field == 'Отдел' ?  this.proceeds.fields[5] : field,

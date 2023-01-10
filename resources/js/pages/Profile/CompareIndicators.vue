@@ -138,7 +138,7 @@ export default {
 		fetchData() {
 			this.loading = true
 
-			this.$axios.post('/profile/activities').then(response => {
+			this.axios.post('/profile/activities').then(response => {
 
 				this.items = response.data.items
 

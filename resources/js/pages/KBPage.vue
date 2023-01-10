@@ -359,7 +359,7 @@ export default {
 			}
 		},
 		fetchData() {
-			this.$axios
+			this.axios
 				.get('/kb/get', {})
 				.then((response) => {
 					this.books = response.data.books;
@@ -371,7 +371,7 @@ export default {
 
 		get_settings() {
 
-			this.$axios
+			this.axios
 				.post('/settings/get', {
 					type: 'kb'
 				})
@@ -387,7 +387,7 @@ export default {
 		},
 
 		save_settings() {
-			this.$axios
+			this.axios
 				.post('/settings/save', {
 					type: 'kb',
 					send_notification_after_edit: this.send_notification_after_edit,
@@ -403,7 +403,7 @@ export default {
 		},
 
 		selectSection(book, page_id = 0) {
-			this.$axios
+			this.axios
 				.post('kb/tree', {
 					id: book.id,
 				})
@@ -432,7 +432,7 @@ export default {
 
 		deleteSection(i) {
 			if (confirm('Вы уверены что хотите архивировать раздел?')) {
-				this.$axios
+				this.axios
 					.post('/kb/page/delete-section', {
 						id: this.books[i].id
 					})
@@ -445,7 +445,7 @@ export default {
 
 		restoreSection(i) {
 			if (confirm('Вы уверены что хотите восстановить раздел?')) {
-				this.$axios
+				this.axios
 					.post('/kb/page/restore-section', {
 						id: this.archived_books[i].id
 					})
@@ -465,7 +465,7 @@ export default {
 		searchInput() {
 			if(this.search.input.length <= 2) return null;
 
-			this.$axios
+			this.axios
 				.post('kb/search', {
 					text: this.search.input,
 				})
@@ -493,7 +493,7 @@ export default {
 
 			this.update_book = book;
 			console.log(book)
-			this.$axios
+			this.axios
 				.post('/kb/page/get-access', {
 					id: book.id,
 				})
@@ -515,7 +515,7 @@ export default {
 
 			let loader = this.$loading.show();
 
-			this.$axios
+			this.axios
 				.post('/kb/page/add-section', {
 					name: this.section_name,
 				})
@@ -537,7 +537,7 @@ export default {
 		getArchivedBooks() {
 			let loader = this.$loading.show();
 
-			this.$axios
+			this.axios
 				.get('/kb/get-archived')
 				.then((response) => {
 
@@ -559,7 +559,7 @@ export default {
 
 			let loader = this.$loading.show();
 
-			this.$axios
+			this.axios
 				.post('/kb/page/update-section', {
 					title: this.update_book.title,
 					who_can_read: this.who_can_read,
@@ -589,7 +589,7 @@ export default {
 
 		saveOrder(event) {
 			console.log(event)
-			this.$axios.post('/kb/page/save-order', {
+			this.axios.post('/kb/page/save-order', {
 				id: event.item.id,
 				order: event.newIndex, // oldIndex
 				parent_id: null

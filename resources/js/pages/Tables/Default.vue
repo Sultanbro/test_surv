@@ -674,7 +674,7 @@ export default {
 
 
 
-			this.$axios
+			this.axios
 				.post('/timetracking/analytics/update-stat', {
 					month: this.month.month,
 					year: this.month.currentYear,
@@ -906,7 +906,7 @@ export default {
          */
 		saveActivity() {
 			let loader = this.$loading.show();
-			this.$axios.post('/timetracking/analytics/edit-activity', {
+			this.axios.post('/timetracking/analytics/edit-activity', {
 				month: this.month.month,
 				year: this.month.currentYear,
 				activity: this.local_activity,

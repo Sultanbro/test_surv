@@ -189,7 +189,7 @@ export default {
 
 			formData.append('amount', this.summ);
 			this.summ = '';
-			await this.$axios.post('birthdays/' + this.user.id + '/send-gift ', formData)
+			await this.axios.post('birthdays/' + this.user.id + '/send-gift ', formData)
 				.then(res => {
 					console.log(res);
 					this.createAvans(res.data.data)
@@ -200,7 +200,7 @@ export default {
 				})
 		},
 		async createAvans(data) {
-			await this.$axios.post('/timetracking/salaries/update', data.avansData)
+			await this.axios.post('/timetracking/salaries/update', data.avansData)
 				.then(res => {
 					console.log(res)
 					this.sendBonuses(data.bonusData)
@@ -210,7 +210,7 @@ export default {
 				})
 		},
 		async sendBonuses(data) {
-			await this.$axios.post('/timetracking/salaries/update', data)
+			await this.axios.post('/timetracking/salaries/update', data)
 				.then(res => {
 					console.log(res)
 					this.success = true;

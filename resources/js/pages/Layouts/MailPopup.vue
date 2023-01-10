@@ -21,7 +21,7 @@ export default {
 		fetchData() {
 			this.loading = true
 
-			this.$axios.post('/checklist', {})
+			this.axios.post('/checklist', {})
 				.then((response) => {
 					this.data = response.data
 					this.loading = false

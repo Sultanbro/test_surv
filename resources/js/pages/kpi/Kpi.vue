@@ -265,7 +265,7 @@ export default {
 		fetchKPI(filter = null) {
 			let loader = this.$loading.show();
 
-			this.$axios.post(this.uri + '/' + 'get', {
+			this.axios.post(this.uri + '/' + 'get', {
 				filters: filter
 			}).then(response => {
 
@@ -400,8 +400,8 @@ export default {
 			};
 
 			let req = this.items[i].id == 0
-				? this.$axios.post(this.uri + '/' + method, fields)
-				: this.$axios.put(this.uri + '/' + method, fields);
+				? this.axios.post(this.uri + '/' + method, fields)
+				: this.axios.put(this.uri + '/' + method, fields);
 
 			req.then(response => {
 
@@ -460,7 +460,7 @@ export default {
 			}
 
 			let loader = this.$loading.show();
-			this.$axios.delete(this.uri + '/delete/' + item.id).then(() => {
+			this.axios.delete(this.uri + '/delete/' + item.id).then(() => {
 
 
 				if(a != -1) this.all_items.splice(a, 1);

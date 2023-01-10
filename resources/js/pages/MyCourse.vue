@@ -333,7 +333,7 @@ export default {
 		fetchData() {
 			let loader = this.$loading.show();
 
-			this.$axios
+			this.axios
 				.get('/my-courses/get', {})
 				.then((response) => {
 					this.courses = response.data.courses;
@@ -407,7 +407,7 @@ export default {
 		getCourse(id) {
 			let loader = this.$loading.show();
 
-			this.$axios
+			this.axios
 				.get('/my-courses/get/' + id)
 				.then((response) => {
 					this.items = response.data.items;

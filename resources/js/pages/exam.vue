@@ -140,7 +140,7 @@ export default {
 			console.log(data.value)
 			console.log(data.item)
 			let loader = this.$loading.show()
-			this.$axios.post('/timetracking/exam/update', {
+			this.axios.post('/timetracking/exam/update', {
 				key: data.field.key,
 				value: data.item.success,
 				link: data.item.link,
@@ -206,7 +206,7 @@ export default {
 		//Загрузка данных для таблицы
 		fetchData() {
 			let loader = this.$loading.show();
-			this.$axios.post('/timetracking/exam', {
+			this.axios.post('/timetracking/exam', {
 				month: this.$moment(this.dateInfo.currentMonth, 'MMMM').format('M'),
 				year: this.$moment(this.dateInfo.date, 'YYYY').format('YYYY'),
 				group_id: this.currentGroup
