@@ -70,80 +70,80 @@
 </template>
 
 <script>
-    import EditAwardSidebar from "./EditAwardSidebar.vue";
-    // import RegenerateCertificates from "./types/RegenerateCertificates";
-    export default {
-        name: "Awards",
-        components: {
-            EditAwardSidebar,
-        },
-        data() {
-            return {
-                modalRegenerate: false,
-                modal: false,
-                itemRemove: null,
-                showEditAwardSidebar: false,
-                item: null,
-                tableItems: [],
-            };
-        },
-        filters: {
-            splitDate: function(val){
-                return val.split('T')[0];
-            }
-        },
-        mounted() {
-            this.getAwards();
-        },
-        methods: {
-            modalShow(item) {
-                this.itemRemove = item;
-                this.modal = !this.modal;
-            },
-            async getAwards() {
-                let loader = this.$loading.show();
-                this.tableItems = [];
-                await this.axios
-                    .get("/award-categories/get")
-                    .then(response => {
-                        this.tableItems = response.data.data;
-                        loader.hide();
-                    })
-                    .catch(function (error) {
-                        console.log(error);
-                        loader.hide();
-                    });
-            },
-            rowClickedHandler(data) {
-                this.showEditAwardSidebar = true;
-                this.item = data;
-            },
-            addAwardButtonClickHandler() {
-                this.showEditAwardSidebar = true;
-                this.item = {};
-            },
-            saveAward() {
-                this.getAwards();
-            },
-            updateTable() {
-                this.getAwards();
-            },
-            async remove(item) {
-                this.modal = !this.modal;
-                let loader = this.$loading.show();
-                await this.axios
-                    .delete("/award-categories/delete/" + item.id)
-                    .then(response => {
-                        this.getAwards();
-                        loader.hide();
-                    })
-                    .catch(function (error) {
-                        console.log(error);
-                        loader.hide();
-                    });
-            },
-        }
-    };
+import EditAwardSidebar from './EditAwardSidebar.vue';
+// import RegenerateCertificates from "./types/RegenerateCertificates";
+export default {
+	name: 'SidebarAwards',
+	components: {
+		EditAwardSidebar,
+	},
+	data() {
+		return {
+			modalRegenerate: false,
+			modal: false,
+			itemRemove: null,
+			showEditAwardSidebar: false,
+			item: null,
+			tableItems: [],
+		};
+	},
+	filters: {
+		splitDate: function(val){
+			return val.split('T')[0];
+		}
+	},
+	mounted() {
+		this.getAwards();
+	},
+	methods: {
+		modalShow(item) {
+			this.itemRemove = item;
+			this.modal = !this.modal;
+		},
+		async getAwards() {
+			let loader = this.$loading.show();
+			this.tableItems = [];
+			await this.axios
+				.get('/award-categories/get')
+				.then(response => {
+					this.tableItems = response.data.data;
+					loader.hide();
+				})
+				.catch(function (error) {
+					console.log(error);
+					loader.hide();
+				});
+		},
+		rowClickedHandler(data) {
+			this.showEditAwardSidebar = true;
+			this.item = data;
+		},
+		addAwardButtonClickHandler() {
+			this.showEditAwardSidebar = true;
+			this.item = {};
+		},
+		saveAward() {
+			this.getAwards();
+		},
+		updateTable() {
+			this.getAwards();
+		},
+		async remove(item) {
+			this.modal = !this.modal;
+			let loader = this.$loading.show();
+			await this.axios
+				.delete('/award-categories/delete/' + item.id)
+				.then(() => {
+					this.getAwards();
+					loader.hide();
+				})
+				.catch(function (error) {
+					console.log(error);
+					loader.hide();
+				});
+		},
+	}
+};
 </script>
 
 <style lang="scss">

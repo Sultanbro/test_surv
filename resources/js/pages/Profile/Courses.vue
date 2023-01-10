@@ -116,262 +116,263 @@
 
 <script>
 export default {
-    name: 'Courses',
-    props: {},
-    data: function () {
-        return {
-            data: [],
-            items: {},
-            courses: [],
-            activeCourse: null,
-            loading: false
-        };
-    },
-    computed: {
-        coursesMap(){
-            return this.courses.reduce((map, item) => {
-                map[item.id] = item
-                return map
-            }, {})
-        },
-        unfinished(){
-            return this.data.reduce((list, item) => {
-                const results = this.getResults(item.id)
-                if(results && results.progress === 100) return list
-                list.push(item)
-                return list
-            }, [])
-        }
-    },
-    created() {
-        this.fetchData()
-    },
+	name: 'ProfileCourses',
+	props: {},
+	data: function () {
+		return {
+			data: [],
+			items: {},
+			courses: [],
+			activeCourse: null,
+			loading: false
+		};
+	},
+	computed: {
+		coursesMap(){
+			return this.courses.reduce((map, item) => {
+				map[item.id] = item
+				return map
+			}, {})
+		},
+		unfinished(){
+			return this.data.reduce((list, item) => {
+				const results = this.getResults(item.id)
+				if(results && results.progress === 100) return list
+				list.push(item)
+				return list
+			}, [])
+		}
+	},
+	created() {
+		this.fetchData()
+	},
 
-    methods: {
-        /**
+	methods: {
+		/**
          * Загрузка данных
          */
-        fetchData() {
-            axios.post('/profile/courses').then(response => {
-                this.data = response.data
-                this.$nextTick(() => this.initSlider())
+		fetchData() {
+			this.axios.post('/profile/courses').then(response => {
+				this.data = response.data
+				this.$nextTick(() => this.initSlider())
 
-                setTimeout(() => {
-                    // preload course items
-                    this.data.forEach(course => {
-                        this.fetchCourse(course.id)
-                    })
-                }, 1000);
-            }).catch((e) => console.log(e))
+				setTimeout(() => {
+					// preload course items
+					this.data.forEach(course => {
+						this.fetchCourse(course.id)
+					})
+				}, 1000);
+			}).catch((e) => console.log(e))
 
-            axios.get('/my-courses/get', {}).then(response => {
-                this.courses = response.data.courses
-            }).catch((e) => console.log(e))
-        },
+			this.axios.get('/my-courses/get', {}).then(response => {
+				this.courses = response.data.courses
+			}).catch((e) => console.log(e))
+		},
 
-        /**
+		/**
          * select active course info
          */
-        selectCourse(index) {
-            this.activeCourse = this.data[index]
-        },
+		selectCourse(index) {
+			this.activeCourse = this.data[index]
+		},
 
-        fetchCourse(id) {
-            this.loading = true
+		fetchCourse(id) {
+			this.loading = true
 
-            axios.get('/my-courses/get/' + id).then(response => {
-                this.items[id] = response.data.items
-                this.loading = false
-            }).catch((e) => console.log(e));
-        },
+			this.axios.get('/my-courses/get/' + id).then(response => {
+				this.items[id] = response.data.items
+				this.loading = false
+			}).catch((e) => console.log(e));
+		},
 
-        /**
+		/**
          * back to all courses
          */
-        back() {
-            this.activeCourse = null;
-        },
+		back() {
+			this.activeCourse = null;
+		},
 
-        /**
+		/**
          * init slider
          */
-        initSlider() {
-            VJQuery('.courses__content__wrapper').slick({
-                variableWidth: false,
-                infinite: false,
-                slidesToShow: 6,
-                responsive: [
-                    {
-                        breakpoint: 2140,
-                        settings: {
-                            variableWidth: false,
-                            infinite: false,
-                            slidesToShow: 5,
-                        }
-                    },
-                    {
-                        breakpoint: 1800,
-                        settings: {
-                            variableWidth: false,
-                            infinite: false,
-                            slidesToShow: 4,
-                        }
-                    },
-                    {
-                        breakpoint: 1600,
-                        settings: {
-                            variableWidth: false,
-                            infinite: false,
-                            slidesToShow: 3,
-                        }
-                    },
-                    {
-                        breakpoint: 1360,
-                        settings: {
-                            variableWidth: false,
-                            infinite: false,
-                            slidesToShow: 4,
-                        }
-                    },
-                    {
-                        breakpoint: 1200,
-                        settings: {
-                            variableWidth: false,
-                            infinite: false,
-                            slidesToShow: 3,
-                        }
-                    },
-                    {
-                        breakpoint: 940,
-                        settings: {
-                            variableWidth: false,
-                            infinite: false,
-                            slidesToShow: 2,
-                        }
-                    },
-                    {
-                        breakpoint: 520,
-                        settings: {
-                            variableWidth: false,
-                            infinite: false,
-                            slidesToShow: 1,
-                        }
-                    }
-                ]
-            });
+		initSlider() {
+			/* global VJQuery */
+			VJQuery('.courses__content__wrapper').slick({
+				variableWidth: false,
+				infinite: false,
+				slidesToShow: 6,
+				responsive: [
+					{
+						breakpoint: 2140,
+						settings: {
+							variableWidth: false,
+							infinite: false,
+							slidesToShow: 5,
+						}
+					},
+					{
+						breakpoint: 1800,
+						settings: {
+							variableWidth: false,
+							infinite: false,
+							slidesToShow: 4,
+						}
+					},
+					{
+						breakpoint: 1600,
+						settings: {
+							variableWidth: false,
+							infinite: false,
+							slidesToShow: 3,
+						}
+					},
+					{
+						breakpoint: 1360,
+						settings: {
+							variableWidth: false,
+							infinite: false,
+							slidesToShow: 4,
+						}
+					},
+					{
+						breakpoint: 1200,
+						settings: {
+							variableWidth: false,
+							infinite: false,
+							slidesToShow: 3,
+						}
+					},
+					{
+						breakpoint: 940,
+						settings: {
+							variableWidth: false,
+							infinite: false,
+							slidesToShow: 2,
+						}
+					},
+					{
+						breakpoint: 520,
+						settings: {
+							variableWidth: false,
+							infinite: false,
+							slidesToShow: 1,
+						}
+					}
+				]
+			});
 
-            // https://github.com/kenwheeler/slick/issues/3694
-            // but it's better to replace slick with native for vue
-            const $slick_slider = VJQuery('.courses__content__wrapper')
-            $slick_slider.on('afterChange', function (e, slick) {
-                var lElRect = slick.$slides[slick.slideCount - 1].getBoundingClientRect()
-                var rOffset = lElRect.x + lElRect.width
-                var wraRect = $slick_slider.find('.slick-list').get(0).getBoundingClientRect()
-                if (rOffset < (wraRect.x + wraRect.width)) {
-                    $slick_slider.find('.slick-next').addClass('slick-disabled')
-                }
-            })
-            $slick_slider.on('breakpoint', (e, slick) => {
-                setTimeout(() => {
-                    $slick_slider.find('.slick-slide').forEach(el => {
-                        el.style.width = (parseFloat(el.style.width) - 4) + 'px'
-                    })
-                }, 1)
-            })
-        },
+			// https://github.com/kenwheeler/slick/issues/3694
+			// but it's better to replace slick with native for vue
+			const $slick_slider = VJQuery('.courses__content__wrapper')
+			$slick_slider.on('afterChange', function (e, slick) {
+				var lElRect = slick.$slides[slick.slideCount - 1].getBoundingClientRect()
+				var rOffset = lElRect.x + lElRect.width
+				var wraRect = $slick_slider.find('.slick-list').get(0).getBoundingClientRect()
+				if (rOffset < (wraRect.x + wraRect.width)) {
+					$slick_slider.find('.slick-next').addClass('slick-disabled')
+				}
+			})
+			$slick_slider.on('breakpoint', () => {
+				setTimeout(() => {
+					$slick_slider.find('.slick-slide').forEach(el => {
+						el.style.width = (parseFloat(el.style.width) - 4) + 'px'
+					})
+				}, 1)
+			})
+		},
 
-        /**
+		/**
          * init inner slider that opens when click concrete course
          */
-        initInnerSlider() {
-            VJQuery('.profit__info__wrapper').slick({
-                variableWidth: false,
-                infinite: false,
-                slidesToScroll: 2,
-                slidesToShow: 10,
-                responsive: [
-                    {
-                        breakpoint: 2140,
-                        settings: {
-                            variableWidth: false,
-                            infinite:false,
-                            swipeToSlide: false,
-                            slidesToScroll: 2,
-                            slidesToShow: 9,
-                        }
-                    },
-                    {
-                        breakpoint: 2000,
-                        settings: {
-                            variableWidth: false,
-                            infinite:false,
-                            swipeToSlide: false,
-                            slidesToScroll: 2,
-                            slidesToShow: 6,
-                        }
-                    },
-                    {
-                        breakpoint: 1800,
-                        settings: {
-                            variableWidth: false,
-                            infinite:false,
-                            swipeToSlide: false,
-                            slidesToScroll: 2,
-                            slidesToShow: 5,
-                        }
-                    },
-                    {
-                        breakpoint: 1600,
-                        settings: {
-                            infinite: true,
-                            variableWidth: true,
-                            swipeToSlide: true,
-                            slidesToShow: 1,
-                        }
-                    },
+		initInnerSlider() {
+			VJQuery('.profit__info__wrapper').slick({
+				variableWidth: false,
+				infinite: false,
+				slidesToScroll: 2,
+				slidesToShow: 10,
+				responsive: [
+					{
+						breakpoint: 2140,
+						settings: {
+							variableWidth: false,
+							infinite:false,
+							swipeToSlide: false,
+							slidesToScroll: 2,
+							slidesToShow: 9,
+						}
+					},
+					{
+						breakpoint: 2000,
+						settings: {
+							variableWidth: false,
+							infinite:false,
+							swipeToSlide: false,
+							slidesToScroll: 2,
+							slidesToShow: 6,
+						}
+					},
+					{
+						breakpoint: 1800,
+						settings: {
+							variableWidth: false,
+							infinite:false,
+							swipeToSlide: false,
+							slidesToScroll: 2,
+							slidesToShow: 5,
+						}
+					},
+					{
+						breakpoint: 1600,
+						settings: {
+							infinite: true,
+							variableWidth: true,
+							swipeToSlide: true,
+							slidesToShow: 1,
+						}
+					},
 
-                    {
-                        breakpoint: 780,
-                        settings: {
-                            variableWidth: false,
-                            infinite:false,
-                            slidesToShow: 2,
-                            slidesToScroll: 2,
-                            swipeToSlide: false,
-                        }
-                    },
-                    {
-                        breakpoint: 500,
-                        settings: {
-                            variableWidth: false,
-                            infinite:false,
-                            slidesToShow: 1,
-                            slidesToScroll: 1,
-                            swipeToSlide: false,
-                        }
-                    },
+					{
+						breakpoint: 780,
+						settings: {
+							variableWidth: false,
+							infinite:false,
+							slidesToShow: 2,
+							slidesToScroll: 2,
+							swipeToSlide: false,
+						}
+					},
+					{
+						breakpoint: 500,
+						settings: {
+							variableWidth: false,
+							infinite:false,
+							slidesToShow: 1,
+							slidesToScroll: 1,
+							swipeToSlide: false,
+						}
+					},
 
-                ]
+				]
 
-            });
-        },
+			});
+		},
 
-        /**
+		/**
          * private: helper for template
          * count progress of course item
          */
-        itemProgress(item) {
-            return item.all_stages > 0
-                ? Number((item.completed_stages / item.all_stages) * 100).toFixed(1)
-                : 0;
-        },
+		itemProgress(item) {
+			return item.all_stages > 0
+				? Number((item.completed_stages / item.all_stages) * 100).toFixed(1)
+				: 0;
+		},
 
-        getResults(courseId){
-            const course = this.coursesMap[courseId]
-            if(!course || !course.course_results || !course.course_results[0]) return null
-            return course.course_results[0]
-        }
-    }
+		getResults(courseId){
+			const course = this.coursesMap[courseId]
+			if(!course || !course.course_results || !course.course_results[0]) return null
+			return course.course_results[0]
+		}
+	}
 };
 </script>
 

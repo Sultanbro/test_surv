@@ -15,6 +15,7 @@
                     <div class="header__submenu">
                         <a
                             v-for="cabinet in cabinets"
+                            :key="cabinet.tenant_id"
                             :href="cabinet.tenant_id === project ? 'javascript:void(0)' : `/login/${cabinet.tenant_id}`"
                             class="header__submenu-item"
                             :class="{'header__submenu-item_active': cabinet.tenant_id === project}"
@@ -108,67 +109,68 @@
 </template>
 
 <script>
-    import LeftSidebarItem from './LeftSidebarItem'
-    import { bus } from '../../bus'
+/* global Laravel */
+import LeftSidebarItem from './LeftSidebarItem'
+import { bus } from '../../bus'
 
-    export default {
-        name: 'LeftSidebar',
-        components: {
-            LeftSidebarItem
-        },
-        props: {},
-        data: function () {
-            return {
-                height: 300,
-                fields: [],
-                avatar: Laravel.avatar,
-                token: Laravel.csrfToken,
-                isAdmin: this.$laravel.is_admin,
-                project: window.location.hostname.split('.')[0],
-                cabinets: Laravel.cabinets,
-                tenants: Laravel.tenants,
-                isCreatingProject: false,
-                resizeObserver: null,
-            };
-        },
-        methods: {
-            onResize(){
-                if(!this.$refs.nav) return
-                this.height = this.$refs.nav.offsetHeight
-            },
-            onNewProject(){
-                if(!confirm('Вы уверены? Создатся еще один кабинет под другим субдоменом. Вам это нужно ?')) return
-                this.isCreatingProject = true
-                const loader = this.$loading.show({
-                    zIndex: 99999
-                })
-                this.$toast.info('Ваш кабинет создается', {
-                    timeout: 20000,
-                    closeOnClick: false,
-                    pauseOnFocusLoss: true,
-                    pauseOnHover: true,
-                    draggable: false,
-                    showCloseButtonOnHover: false,
-                    hideProgressBar: true,
-                    closeButton: false,
-                    icon: true
-                })
-                axios.post('/projects/create', {}).then(response => {
-                    if(response.data) location.assign(response.data.link)
-                }).catch(error => {
-                    loader.hide()
-                    this.isCreatingProject = false
-                    this.$toast.error('Ошибка при создании кабинета')
-                    console.error(error)
-                })
-            },
-            updateAvatar(avatar){
-                this.avatar = avatar
-            }
-        },
-        computed: {
-            showSettings(){
-                return this.$can('settings_view')
+export default {
+	name: 'LeftSidebar',
+	components: {
+		LeftSidebarItem
+	},
+	props: {},
+	data: function () {
+		return {
+			height: 300,
+			fields: [],
+			avatar: Laravel.avatar,
+			token: Laravel.csrfToken,
+			isAdmin: this.$laravel.is_admin,
+			project: window.location.hostname.split('.')[0],
+			cabinets: Laravel.cabinets,
+			tenants: Laravel.tenants,
+			isCreatingProject: false,
+			resizeObserver: null,
+		};
+	},
+	methods: {
+		onResize(){
+			if(!this.$refs.nav) return
+			this.height = this.$refs.nav.offsetHeight
+		},
+		onNewProject(){
+			if(!confirm('Вы уверены? Создатся еще один кабинет под другим субдоменом. Вам это нужно ?')) return
+			this.isCreatingProject = true
+			const loader = this.$loading.show({
+				zIndex: 99999
+			})
+			this.$toast.info('Ваш кабинет создается', {
+				timeout: 20000,
+				closeOnClick: false,
+				pauseOnFocusLoss: true,
+				pauseOnHover: true,
+				draggable: false,
+				showCloseButtonOnHover: false,
+				hideProgressBar: true,
+				closeButton: false,
+				icon: true
+			})
+			this.axios.post('/projects/create', {}).then(response => {
+				if(response.data) location.assign(response.data.link)
+			}).catch(error => {
+				loader.hide()
+				this.isCreatingProject = false
+				this.$toast.error('Ошибка при создании кабинета')
+				console.error(error)
+			})
+		},
+		updateAvatar(avatar){
+			this.avatar = avatar
+		}
+	},
+	computed: {
+		showSettings(){
+			return this.$can('settings_view')
                 || this.$can('users_view')
                 || this.$can('positions_view')
                 || this.$can('groups_view')
@@ -176,197 +178,197 @@
                 || this.$can('notifications_view')
                 || this.$can('permissions_view')
                 || this.$can('checklists_view')
-            },
-            showReports(){
-                return this.$can('top_view')
+		},
+		showReports(){
+			return this.$can('top_view')
                     || this.$can('tabel_view')
                     || this.$can('entertime_view')
                     || (this.$can('hr_view') && window.location.host.split('.')[0] == 'bp')
                     || this.$can('analytics_view')
                     || this.$can('salaries_view')
                     || this.$can('quality_view')
-            },
-            showEducation(){
-                return this.$can('books_view')
+		},
+		showEducation(){
+			return this.$can('books_view')
                     || this.$can('videos_view')
                     || this.$can('courses_view')
-            },
-            items(){
-                return [
-                    {
-                        name: 'Профиль',
-                        to: '/',
-                        icon: 'icon-nd-profile',
-                        height: 0
-                    },
-                    {
-                      name: 'Новости',
-                      to: '/news',
-                      icon: 'icon-nd-news',
-                      height: 0,
-                      // hide: !this.$can('news_edit')
-                    },
-                    {
-                        name: 'Структура',
-                        // to: '/struct',
-                        icon: 'icon-nd-struct',
-                        popover: 'Структура - Этот функционал в разработке',
-                        height: 0
-                    },
-                    {
-                        name: 'База знаний',
-                        to: '/kb',
-                        icon: 'icon-nd-kdb',
-                        height: 0
-                    },
-                    {
-                        name: 'Обучение',
-                        icon: 'icon-nd-education',
-                        height: 0,
-                        menu: [
-                            {
-                                name: 'Читать книги',
-                                icon: 'icon-nd-books',
-                                to: '/admin/upbooks'
-                            },
-                            {
-                                name: 'Смотреть видео',
-                                icon: 'icon-nd-video',
-                                to: '/video_playlists'
-                            },
-                            {
-                                name: 'Курсы',
-                                icon: 'icon-nd-courses',
-                                to: '/courses'
-                            }
-                        ]
-                    },
-                    {
-                        hide: !this.showReports,
-                        name: 'Отчеты',
-                        to: '/timetracking/reports',
-                        icon: 'icon-nd-reports',
-                        height: 0,
-                        menu: [
-                            {
-                                name: 'ТОП',
-                                icon: 'icon-nd-dashboard',
-                                to: '/timetracking/top',
-                                hide: !this.$can('top_view')
-                            },
-                            {
-                                name: 'Табель',
-                                icon: 'icon-nd-tabel',
-                                to: '/timetracking/reports',
-                                hide: !this.$can('tabel_view')
-                            },
-                            {
-                                name: 'Время прихода',
-                                icon: 'icon-nd-enter-time',
-                                to: '/timetracking/reports/enter-report',
-                                hide: !this.$can('entertime_view')
-                            },
-                            {
-                                name: 'HR',
-                                icon: 'icon-nd-hr',
-                                to: '/timetracking/analytics',
-                                hide: !(this.$can('hr_view') && window.location.host.split('.')[0] === 'bp')
-                            },
-                            {
-                                name: 'Аналитика',
-                                icon: 'icon-nd-analytics',
-                                to: '/timetracking/an',
-                                hide: !this.$can('analytics_view')
-                            },
-                            {
-                                name: 'Начисления',
-                                icon: 'icon-nd-salary',
-                                to: '/timetracking/salaries',
-                                hide: !this.$can('salaries_view')
-                            },
-                            {
-                                name: 'Контроль качества',
-                                icon: 'icon-nd-quality',
-                                to: '/timetracking/quality-control',
-                                hide: !this.$can('quality_view')
-                            },
-                        ]
-                    },
-                    {
-                        name: 'Карта',
-                        to: '/maps',
-                        icon: 'icon-nd-map',
-                        height: 0
-                    },
-                    {
-                        name: 'KPI',
-                        to: '/kpi',
-                        icon: 'icon-nd-kpi',
-                        height: 0,
-                        hide: !this.$can('kpi_view')
-                    },
-                    {
-                        name: 'KK',
-                        to: '/',
-                        icon: 'icon-nd-kk',
-                        height: 0,
-                        hide: true
-                    },
-                    {
-                        name: 'Частые вопросы',
-                        to: '/timetracking/info',
-                        icon: 'icon-nd-questions',
-                        height: 0,
-                        hide: !this.$can('faq_view')
-                    },
-                    {
-                        name: 'Депре мирование',
-                        to: '/timetracking/fines',
-                        icon: 'icon-nd-deduction',
-                        height: 0,
-                        hide: !this.$can('penalties_view')
-                    },
-                    {
-                        name: 'U-calls',
-                        href: '/callibro/login',
-                        icon: 'icon-nd-u-calls',
-                        height: 0,
-                        hide: !(this.$can('ucalls_view') && window.location.host.split('.')[0] == 'bp')
-                    },
-                ]
-            },
-            filteredItems(){
-                return this.items.reduce((res, item) => {
-                    if(item.hide) return res;
-                    res.totalHeight += item.height + 4
-                    if(this.height - res.totalHeight > 0){
-                        res.visible.push(item)
-                    }
-                    else{
-                        res.more.push(item)
-                    }
-                    return res;
-                }, {
-                    visible: [],
-                    more: [],
-                    totalHeight: this.items[0].height
-                })
-            },
-            isOwner(){
-                return this.tenants && this.tenants.includes(this.project)
-            }
-        },
-        mounted(){
-            this.onResize()
-            this.resizeObserver = new ResizeObserver(this.onResize).observe(this.$refs.nav)
+		},
+		items(){
+			return [
+				{
+					name: 'Профиль',
+					to: '/',
+					icon: 'icon-nd-profile',
+					height: 0
+				},
+				{
+					name: 'Новости',
+					to: '/news',
+					icon: 'icon-nd-news',
+					height: 0,
+					// hide: !this.$can('news_edit')
+				},
+				{
+					name: 'Структура',
+					// to: '/struct',
+					icon: 'icon-nd-struct',
+					popover: 'Структура - Этот функционал в разработке',
+					height: 0
+				},
+				{
+					name: 'База знаний',
+					to: '/kb',
+					icon: 'icon-nd-kdb',
+					height: 0
+				},
+				{
+					name: 'Обучение',
+					icon: 'icon-nd-education',
+					height: 0,
+					menu: [
+						{
+							name: 'Читать книги',
+							icon: 'icon-nd-books',
+							to: '/admin/upbooks'
+						},
+						{
+							name: 'Смотреть видео',
+							icon: 'icon-nd-video',
+							to: '/video_playlists'
+						},
+						{
+							name: 'Курсы',
+							icon: 'icon-nd-courses',
+							to: '/courses'
+						}
+					]
+				},
+				{
+					hide: !this.showReports,
+					name: 'Отчеты',
+					to: '/timetracking/reports',
+					icon: 'icon-nd-reports',
+					height: 0,
+					menu: [
+						{
+							name: 'ТОП',
+							icon: 'icon-nd-dashboard',
+							to: '/timetracking/top',
+							hide: !this.$can('top_view')
+						},
+						{
+							name: 'Табель',
+							icon: 'icon-nd-tabel',
+							to: '/timetracking/reports',
+							hide: !this.$can('tabel_view')
+						},
+						{
+							name: 'Время прихода',
+							icon: 'icon-nd-enter-time',
+							to: '/timetracking/reports/enter-report',
+							hide: !this.$can('entertime_view')
+						},
+						{
+							name: 'HR',
+							icon: 'icon-nd-hr',
+							to: '/timetracking/analytics',
+							hide: !(this.$can('hr_view') && window.location.host.split('.')[0] === 'bp')
+						},
+						{
+							name: 'Аналитика',
+							icon: 'icon-nd-analytics',
+							to: '/timetracking/an',
+							hide: !this.$can('analytics_view')
+						},
+						{
+							name: 'Начисления',
+							icon: 'icon-nd-salary',
+							to: '/timetracking/salaries',
+							hide: !this.$can('salaries_view')
+						},
+						{
+							name: 'Контроль качества',
+							icon: 'icon-nd-quality',
+							to: '/timetracking/quality-control',
+							hide: !this.$can('quality_view')
+						},
+					]
+				},
+				{
+					name: 'Карта',
+					to: '/maps',
+					icon: 'icon-nd-map',
+					height: 0
+				},
+				{
+					name: 'KPI',
+					to: '/kpi',
+					icon: 'icon-nd-kpi',
+					height: 0,
+					hide: !this.$can('kpi_view')
+				},
+				{
+					name: 'KK',
+					to: '/',
+					icon: 'icon-nd-kk',
+					height: 0,
+					hide: true
+				},
+				{
+					name: 'Частые вопросы',
+					to: '/timetracking/info',
+					icon: 'icon-nd-questions',
+					height: 0,
+					hide: !this.$can('faq_view')
+				},
+				{
+					name: 'Депре мирование',
+					to: '/timetracking/fines',
+					icon: 'icon-nd-deduction',
+					height: 0,
+					hide: !this.$can('penalties_view')
+				},
+				{
+					name: 'U-calls',
+					href: '/callibro/login',
+					icon: 'icon-nd-u-calls',
+					height: 0,
+					hide: !(this.$can('ucalls_view') && window.location.host.split('.')[0] == 'bp')
+				},
+			]
+		},
+		filteredItems(){
+			return this.items.reduce((res, item) => {
+				if(item.hide) return res;
+				res.totalHeight += item.height + 4
+				if(this.height - res.totalHeight > 0){
+					res.visible.push(item)
+				}
+				else{
+					res.more.push(item)
+				}
+				return res;
+			}, {
+				visible: [],
+				more: [],
+				totalHeight: this.items[0].height
+			})
+		},
+		isOwner(){
+			return this.tenants && this.tenants.includes(this.project)
+		}
+	},
+	mounted(){
+		this.onResize()
+		this.resizeObserver = new ResizeObserver(this.onResize).observe(this.$refs.nav)
 
-            bus.$on('user-avatar-update', this.updateAvatar)
-        },
-        beforeUnmount(){
-            if(this.resizeObserver) this.resizeObserver.disconnect()
-            bus.$off('user-avatar-update', this.updateAvatar)
-        }
-    };
+		bus.$on('user-avatar-update', this.updateAvatar)
+	},
+	beforeUnmount(){
+		if(this.resizeObserver) this.resizeObserver.disconnect()
+		bus.$off('user-avatar-update', this.updateAvatar)
+	}
+};
 </script>
 
 <style lang="scss">

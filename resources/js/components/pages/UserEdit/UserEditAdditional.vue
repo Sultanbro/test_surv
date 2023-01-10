@@ -1,18 +1,18 @@
 <script>
 export default {
-    name: 'UserEditAdditional',
-    props: {
-        user: {
-            type: Object,
-            default: null
-        },
-        userCreated: String,
-        userApplied: String,
-        userAppliedDays: Number,
-        isTrainee: Boolean,
-        userDeleted: String,
-        userDeletedAt: String,
-    }
+	name: 'UserEditAdditional',
+	props: {
+		user: {
+			type: Object,
+			default: null
+		},
+		userCreated: String,
+		userApplied: String,
+		userAppliedDays: Number,
+		isTrainee: Boolean,
+		userDeleted: String,
+		userDeletedAt: String,
+	}
 }
 </script>
 <template>

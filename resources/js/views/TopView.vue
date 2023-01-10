@@ -5,27 +5,27 @@ const ReportsNav = () => import(/* webpackChunkName: "ReportsNav" */ '@/componen
 const TopPage = () => import(/* webpackChunkName: "TopPage" */ '@/pages/Top')
 
 export default {
-    name: 'TopView',
-    components: {
-        DefaultLayout,
-        ReportsNav,
-        TopPage,
-    },
-    data(){
-        return {
-            data: null,
-            activeuserid: 0,
-            activeTab: 'nav-top-tab'
-        }
-    },
-    mounted(){
-        useAsyncPageData('/timetracking/top').then(data => {
-            this.data = data.data || null
-            this.activeuserid = '' + data.activeuserid
-        }).catch(error => {
-            console.error('useAsyncPageData', error)
-        })
-    }
+	name: 'TopView',
+	components: {
+		DefaultLayout,
+		ReportsNav,
+		TopPage,
+	},
+	data(){
+		return {
+			data: null,
+			activeuserid: 0,
+			activeTab: 'nav-top-tab'
+		}
+	},
+	mounted(){
+		useAsyncPageData('/timetracking/top').then(data => {
+			this.data = data.data || null
+			this.activeuserid = '' + data.activeuserid
+		}).catch(error => {
+			console.error('useAsyncPageData', error)
+		})
+	}
 }
 </script>
 

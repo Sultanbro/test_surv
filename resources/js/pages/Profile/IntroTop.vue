@@ -40,22 +40,22 @@
 
 <script>
 export default {
-    name: "IntroTop",
-    props: {
-        courses: false,
-        profit: false,
-        estimation: false,
-        indicators: false,
-    },
-    data: function () {
-        return {
-            fields: [],
-        };
-    },
-    methods: {
-        scrollTo(el){
-            document.querySelector(el).scrollIntoView({behavior: 'smooth'})
-        }
-    }
+	name: 'IntroTop',
+	props: {
+		courses: Boolean,
+		profit: Boolean,
+		estimation: Boolean,
+		indicators: Boolean,
+	},
+	data: function () {
+		return {
+			fields: [],
+		};
+	},
+	methods: {
+		scrollTo(el){
+			document.querySelector(el).scrollIntoView({behavior: 'smooth'})
+		}
+	}
 };
 </script>

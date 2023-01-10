@@ -81,8 +81,8 @@
 
 
         <TableRentability
-          :year="currentYear"
-          :month="monthInfo.month"
+          :year="+currentYear"
+          :month="+monthInfo.month"
         />
 
       </b-tab>
@@ -211,7 +211,7 @@
                 <th class="text-center t-name table-title">Осталось принять</th>
                 </thead>
                 <tbody>
-                <tr v-for="(group, index) in prognoz_groups">
+                <tr v-for="(group, index) in prognoz_groups" :key="index">
                   <td class="text-left t-name table-title td-blue align-middle">{{ group.name }}</td>
                   <td class="text-center t-name table-title align-middle">
                     <input type="number" v-model="group.plan" @change="saveGroupPlan(index)">
@@ -251,192 +251,192 @@ import NPS from '@/components/tables/NPS' // Оценка руководител
 import { useYearOptions } from '../composables/yearOptions'
 
 export default {
-  name: "Top",
-  components: {
-    TopGauges,
-    VGauge,
-    TableRentability,
-    NPS,
-  },
-  props: ['data', 'activeuserid'],
-  data() {
-    return {
-      afterCreated: false,
-      rentability: [], // первая вкладка
-      utility: [], // вторая
-      proceeds: [], // третья
-      prognoz_groups: [], //
-      years: useYearOptions(),
-      currentYear: new Date().getFullYear(),
-      monthInfo: {
-        currentMonth: null,
-        monthEnd: 0,
-        workDays: 0,
-        weekDays: 0,
-        daysInMonth: 0,
-        month: new Date().getMonth() + 1
-      },
-      gaugeOptions: {
-        angle: 0,
-        staticLabels: {
-          font: "9px sans-serif", // Specifies font
-          labels: [0, 50, 80, 100, 120], // Print labels at these values
-          color: "#000000", // Optional: Label text color
-          fractionDigits: 0, // Optional: Numerical precision. 0=round off.
-        },
-        staticZones: [
-          {strokeStyle: "#F03E3E", min: 0, max: 49}, // Red
-          {strokeStyle: "#fd7e14", min: 50, max: 79}, // Orange
-          {strokeStyle: "#FFDD00", min: 80, max: 90}, // Yellow
-          {strokeStyle: "#30B32D", min: 91, max: 120}, // Green
-        ],
-        pointer: {
-          length: 0.5, // // Relative to gauge radius
-          strokeWidth: 0.025, // The thickness
-          color: "#000000", // Fill color
-        },
-        limitMax: true,
-        limitMin: true,
-        lineWidth: 0.2,
-        radiusScale: 0.8,
-        colorStart: "#6FADCF",
-        generateGradient: true,
-        highDpiSupport: true,
-      },
-      ukey: 1
-    }
-  },
-  watch: {
-    data(){
-      this.init()
-    }
-  },
-  created() {
-    if(this.data){
-      this.init()
-    }
-  },
-  methods: {
-    init(){
-      this.utility = this.data.utility;
-      this.proceeds = this.data.proceeds;
-      this.prognoz_groups = this.data.prognoz_groups
-      this.setMonth()
-      this.fetchData()
-    },
-    showIcons(){
-      this.rentability = this.data.rentability;
-    },
-    setMonth() {
-      this.monthInfo.currentMonth = this.monthInfo.currentMonth ? this.monthInfo.currentMonth : this.$moment().format('MMMM')
-      this.monthInfo.month = this.monthInfo.currentMonth ? this.$moment(this.monthInfo.currentMonth, 'MMMM').format('M') : this.$moment().format('M')
-      let currentMonth = this.$moment(this.monthInfo.currentMonth, 'MMMM')
-      //Расчет выходных дней
-      this.monthInfo.monthEnd = currentMonth.endOf('month'); //Конец месяца
-      this.monthInfo.weekDays = currentMonth.weekdayCalc(currentMonth.startOf('month').toString(), currentMonth.endOf('month').toString(), [6]) //Колличество выходных
-      this.monthInfo.daysInMonth = new Date(2021, this.$moment(this.monthInfo.currentMonth, 'MMMM').format('M'), 0).getDate() //Колличество дней в месяце
-      this.monthInfo.workDays = this.monthInfo.daysInMonth - this.monthInfo.weekDays //Колличество рабочих дней
-    },
+	name: 'PageTop',
+	components: {
+		TopGauges,
+		VGauge,
+		TableRentability,
+		NPS,
+	},
+	props: ['data', 'activeuserid'],
+	data() {
+		return {
+			afterCreated: false,
+			rentability: [], // первая вкладка
+			utility: [], // вторая
+			proceeds: [], // третья
+			prognoz_groups: [], //
+			years: useYearOptions(),
+			currentYear: new Date().getFullYear(),
+			monthInfo: {
+				currentMonth: null,
+				monthEnd: 0,
+				workDays: 0,
+				weekDays: 0,
+				daysInMonth: 0,
+				month: new Date().getMonth() + 1
+			},
+			gaugeOptions: {
+				angle: 0,
+				staticLabels: {
+					font: '9px sans-serif', // Specifies font
+					labels: [0, 50, 80, 100, 120], // Print labels at these values
+					color: '#000000', // Optional: Label text color
+					fractionDigits: 0, // Optional: Numerical precision. 0=round off.
+				},
+				staticZones: [
+					{strokeStyle: '#F03E3E', min: 0, max: 49}, // Red
+					{strokeStyle: '#fd7e14', min: 50, max: 79}, // Orange
+					{strokeStyle: '#FFDD00', min: 80, max: 90}, // Yellow
+					{strokeStyle: '#30B32D', min: 91, max: 120}, // Green
+				],
+				pointer: {
+					length: 0.5, // // Relative to gauge radius
+					strokeWidth: 0.025, // The thickness
+					color: '#000000', // Fill color
+				},
+				limitMax: true,
+				limitMin: true,
+				lineWidth: 0.2,
+				radiusScale: 0.8,
+				colorStart: '#6FADCF',
+				generateGradient: true,
+				highDpiSupport: true,
+			},
+			ukey: 1
+		}
+	},
+	watch: {
+		data(){
+			this.init()
+		}
+	},
+	created() {
+		if(this.data){
+			this.init()
+		}
+	},
+	methods: {
+		init(){
+			this.utility = this.data.utility;
+			this.proceeds = this.data.proceeds;
+			this.prognoz_groups = this.data.prognoz_groups
+			this.setMonth()
+			this.fetchData()
+		},
+		showIcons(){
+			this.rentability = this.data.rentability;
+		},
+		setMonth() {
+			this.monthInfo.currentMonth = this.monthInfo.currentMonth ? this.monthInfo.currentMonth : this.$moment().format('MMMM')
+			this.monthInfo.month = this.monthInfo.currentMonth ? this.$moment(this.monthInfo.currentMonth, 'MMMM').format('M') : this.$moment().format('M')
+			let currentMonth = this.$moment(this.monthInfo.currentMonth, 'MMMM')
+			//Расчет выходных дней
+			this.monthInfo.monthEnd = currentMonth.endOf('month'); //Конец месяца
+			this.monthInfo.weekDays = currentMonth.weekdayCalc(currentMonth.startOf('month').toString(), currentMonth.endOf('month').toString(), [6]) //Колличество выходных
+			this.monthInfo.daysInMonth = new Date(2021, this.$moment(this.monthInfo.currentMonth, 'MMMM').format('M'), 0).getDate() //Колличество дней в месяце
+			this.monthInfo.workDays = this.monthInfo.daysInMonth - this.monthInfo.weekDays //Колличество рабочих дней
+		},
 
-    fetchData() {
-      let loader = this.$loading.show();
+		fetchData() {
+			let loader = this.$loading.show();
 
-      axios.post('/timetracking/top', {
-        month: this.$moment(this.monthInfo.currentMonth, 'MMMM').format('M'),
-        year: this.currentYear,
-      }).then(response => {
+			this.axios.post('/timetracking/top', {
+				month: this.$moment(this.monthInfo.currentMonth, 'MMMM').format('M'),
+				year: this.currentYear,
+			}).then(response => {
 
-        this.setMonth()
-        if(this.afterCreated){
-          this.rentability = response.data.rentability;
-        }
-        this.afterCreated = true;
-        this.utility = response.data.utility;
-        this.proceeds = response.data.proceeds;
+				this.setMonth()
+				if(this.afterCreated){
+					this.rentability = response.data.rentability;
+				}
+				this.afterCreated = true;
+				this.utility = response.data.utility;
+				this.proceeds = response.data.proceeds;
 
-        this.ukey++;
-        console.log(response.data);
+				this.ukey++;
+				console.log(response.data);
 
-        loader.hide()
-      }).catch(error => {
-        loader.hide()
-        alert(error)
-      });
-    },
+				loader.hide()
+			}).catch(error => {
+				loader.hide()
+				alert(error)
+			});
+		},
 
-    isWeekend(field) {
-      var arr = field.split(".");
-      var month = Number(arr[1]) - 1;
-      var dayOfWeek = new Date(2022, month, arr[0]).getDay();
+		isWeekend(field) {
+			var arr = field.split('.');
+			var month = Number(arr[1]) - 1;
+			var dayOfWeek = new Date(2022, month, arr[0]).getDay();
 
-      return dayOfWeek == 6 || dayOfWeek == 0;
-    },
+			return dayOfWeek == 6 || dayOfWeek == 0;
+		},
 
-    saveRentGauge(g_index) {
-      let loader = this.$loading.show();
-      axios.post('/timetracking/top/save_rent_max', {
-        gauge: this.rentability[g_index]
-      })
-          .then(response => {
-            this.$toast.success('Успешно сохранено!')
-            this.rentability[g_index].editable = false
-            this.fetchData()
-            loader.hide()
-          }).catch(error => {
-        alert(error)
-        loader.hide()
-      });
-    },
+		saveRentGauge(g_index) {
+			let loader = this.$loading.show();
+			this.axios.post('/timetracking/top/save_rent_max', {
+				gauge: this.rentability[g_index]
+			})
+				.then(() => {
+					this.$toast.success('Успешно сохранено!')
+					this.rentability[g_index].editable = false
+					this.fetchData()
+					loader.hide()
+				}).catch(error => {
+					alert(error)
+					loader.hide()
+				});
+		},
 
-    saveGroupPlan(index) {
-      let loader = this.$loading.show();
-      axios.post('/timetracking/top/save_group_plan', {
-        group_id: this.prognoz_groups[index].id,
-        plan: this.prognoz_groups[index].plan,
-      }).then(response => {
+		saveGroupPlan(index) {
+			let loader = this.$loading.show();
+			this.axios.post('/timetracking/top/save_group_plan', {
+				group_id: this.prognoz_groups[index].id,
+				plan: this.prognoz_groups[index].plan,
+			}).then(() => {
 
-            this.$toast.success('Успешно сохранено!')
-            this.prognoz_groups[index].left_to_apply = Number(this.prognoz_groups[index].plan) - Number(this.prognoz_groups[index].fired);
-            loader.hide()
-          }).catch(error => {
-        alert(error)
-        loader.hide()
-      });
-    },
+				this.$toast.success('Успешно сохранено!')
+				this.prognoz_groups[index].left_to_apply = Number(this.prognoz_groups[index].plan) - Number(this.prognoz_groups[index].fired);
+				loader.hide()
+			}).catch(error => {
+				alert(error)
+				loader.hide()
+			});
+		},
 
-    updateProceed(record, field, type) {
-      let loader = this.$loading.show();
+		updateProceed(record, field, type) {
+			let loader = this.$loading.show();
 
-      axios.post('/timetracking/top/proceeds/update', {
-        group_id: record['group_id'],
-        value: record[field],
-        date: field == 'Отдел' ?  this.proceeds.fields[5] : field,
-        name: record['Отдел'],
-        type: type,
-        year: this.currentYear,
-      })
-          .then(response => {
-            this.$toast.success('Успешно сохранено!');
-            loader.hide()
-          }).catch(error => {
-        alert(error)
-        loader.hide()
-      });
-    },
+			this.axios.post('/timetracking/top/proceeds/update', {
+				group_id: record['group_id'],
+				value: record[field],
+				date: field == 'Отдел' ?  this.proceeds.fields[5] : field,
+				name: record['Отдел'],
+				type: type,
+				year: this.currentYear,
+			})
+				.then(() => {
+					this.$toast.success('Успешно сохранено!');
+					loader.hide()
+				}).catch(error => {
+					alert(error)
+					loader.hide()
+				});
+		},
 
-    addRow() {
-      let length = this.proceeds.records.length;
-    let obj = {};
-      this.proceeds.fields.forEach(field => {
-        obj[field] = null;
-      });
+		addRow() {
+			let length = this.proceeds.records.length;
+			let obj = {};
+			this.proceeds.fields.forEach(field => {
+				obj[field] = null;
+			});
 
-      obj['group_id'] = this.proceeds.lowest_id - 1;
+			obj['group_id'] = this.proceeds.lowest_id - 1;
 
-      this.proceeds.records.splice(length - 1, 0, obj);
-    }
+			this.proceeds.records.splice(length - 1, 0, obj);
+		}
 
-  }
+	}
 }
 </script>
 

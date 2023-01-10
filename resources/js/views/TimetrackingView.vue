@@ -5,35 +5,35 @@ const ReportsNav = () => import(/* webpackChunkName: "ReportsNav" */ '@/componen
 const TableReport = () => import(/* webpackChunkName: "TableReportPage" */ '@/pages/TableReport')
 
 export default {
-    name: 'QualityControlView',
-    components: {
-        DefaultLayout,
-        ReportsNav,
-        TableReport,
-    },
-    data(){
-        return {
-            groups: null,
-            fines: null,
-            years: null,
-            can_edit: false,
-            activeuserid: '',
-            activeuserpos: '',
-            activeTab: 'nav-home-tab',
-        }
-    },
-    mounted(){
-        useAsyncPageData('/timetracking/reports').then(data => {
-            this.groups = data.groups || null
-            this.fines = data.fines || null
-            this.years = data.years || null
-            this.can_edit = !!data.can_edit
-            this.activeuserid = '' + data.activeuserid
-            this.activeuserpos = '' + data.activeuserpos
-        }).catch(error => {
-            console.error('useAsyncPageData', error)
-        })
-    }
+	name: 'QualityControlView',
+	components: {
+		DefaultLayout,
+		ReportsNav,
+		TableReport,
+	},
+	data(){
+		return {
+			groups: null,
+			fines: null,
+			years: null,
+			can_edit: false,
+			activeuserid: '',
+			activeuserpos: '',
+			activeTab: 'nav-home-tab',
+		}
+	},
+	mounted(){
+		useAsyncPageData('/timetracking/reports').then(data => {
+			this.groups = data.groups || null
+			this.fines = data.fines || null
+			this.years = data.years || null
+			this.can_edit = !!data.can_edit
+			this.activeuserid = '' + data.activeuserid
+			this.activeuserpos = '' + data.activeuserpos
+		}).catch(error => {
+			console.error('useAsyncPageData', error)
+		})
+	}
 }
 </script>
 

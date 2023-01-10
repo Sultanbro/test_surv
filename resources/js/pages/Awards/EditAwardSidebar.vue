@@ -148,306 +148,306 @@
 </template>
 
 <script>
-    import Sidebar from '@/components/ui/Sidebar' // сайдбар table
-    import UploadFile from "./types/UploadFile.vue";
-    import ChoiceTop from "./types/ChoiceTop.vue";
-    import UploadSertificate from "./types/UploadSertificate.vue";
-    import VuePdfEmbed from "vue-pdf-embed/dist/vue2-pdf-embed";
+import Sidebar from '@/components/ui/Sidebar' // сайдбар table
+import UploadFile from './types/UploadFile.vue';
+import ChoiceTop from './types/ChoiceTop.vue';
+import UploadSertificate from './types/UploadSertificate.vue';
+// import VuePdfEmbed from 'vue-pdf-embed/dist/vue2-pdf-embed';
 
-    export default {
-        name: "EditAwardSidebar",
-        components: {
-            Sidebar,
-            UploadFile,
-            ChoiceTop,
-            UploadSertificate,
-            VuePdfEmbed,
-        },
-        props: {
-            open: Boolean,
-            item: {
-                type: Object,
-                default: {}
-            },
-        },
-        data() {
-            return {
-                constructorChange: false,
-                isShow: false,
-                readonly: false,
-                dropDownText: 'Выберите тип награды',
-                category_id: null,
-                selectedType: false,
-                uploadFiles: [],
-                fileCertificate: null,
-                targetable_id: null,
-                targetable_type: null,
-                name: '',
-                description: '',
-                hide: true,
-                type: null,
-                course_ids: [],
-                styles: '',
-                awards: [],
-                invalidName: true,
-                hasFileCertificate: false
-            };
-        },
-        methods: {
-            choicedTop(data){
-                this.targetable_id = data.id;
-                this.targetable_type = data.type;
-            },
-            hasChangeConstructor(arg){
-                this.constructorChange = arg;
-            },
-            addCourse(id) {
-                this.course_ids.push(id);
-            },
-            addCourseAll(arr){
-                for(let i = 0; i < arr.length; i++){
-                    this.course_ids.push(arr[i].id);
-                }
-            },
-            removeCourse(id) {
-                this.course_ids = this.course_ids.filter(n => n !== id);
-            },
-            removeCourseAll(){
-                this.course_ids = [];
-            },
-            async saveCategory() {
-                let hidePhp = null;
-                if (this.hide) {
-                    hidePhp = 0;
-                } else {
-                    hidePhp = 1;
-                }
+export default {
+	name: 'EditAwardSidebar',
+	components: {
+		Sidebar,
+		UploadFile,
+		ChoiceTop,
+		UploadSertificate,
+		// VuePdfEmbed,
+	},
+	props: {
+		open: Boolean,
+		item: {
+			type: Object,
+			default: () => {}
+		},
+	},
+	data() {
+		return {
+			constructorChange: false,
+			isShow: false,
+			readonly: false,
+			dropDownText: 'Выберите тип награды',
+			category_id: null,
+			selectedType: false,
+			uploadFiles: [],
+			fileCertificate: null,
+			targetable_id: null,
+			targetable_type: null,
+			name: '',
+			description: '',
+			hide: true,
+			type: null,
+			course_ids: [],
+			styles: '',
+			awards: [],
+			invalidName: true,
+			hasFileCertificate: false
+		};
+	},
+	methods: {
+		choicedTop(data){
+			this.targetable_id = data.id;
+			this.targetable_type = data.type;
+		},
+		hasChangeConstructor(arg){
+			this.constructorChange = arg;
+		},
+		addCourse(id) {
+			this.course_ids.push(id);
+		},
+		addCourseAll(arr){
+			for(let i = 0; i < arr.length; i++){
+				this.course_ids.push(arr[i].id);
+			}
+		},
+		removeCourse(id) {
+			this.course_ids = this.course_ids.filter(n => n !== id);
+		},
+		removeCourseAll(){
+			this.course_ids = [];
+		},
+		async saveCategory() {
+			let hidePhp = null;
+			if (this.hide) {
+				hidePhp = 0;
+			} else {
+				hidePhp = 1;
+			}
 
-                const formDataCategories = new FormData();
-                formDataCategories.append('name', this.name);
-                formDataCategories.append('description', this.description);
-                formDataCategories.append('hide', hidePhp);
-                if (Object.keys(this.item).length === 0) {
-                    formDataCategories.append('type', this.type);
-                    await this.axios
-                        .post('/award-categories/store', formDataCategories, {
-                            headers: {
-                                'Content-Type': 'multipart/form-data',
-                                'X-Requested-With': 'XMLHttpRequest',
-                                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
-                            },
-                        })
-                        .then(response => {
-                            this.category_id = response.data.data.id;
-                        })
-                        .catch(error => {
-                            console.log(error);
-                        })
-                } else {
-                    if (this.category_id || this.name !== this.item.name || this.description !== this.item.description || this.hide !== this.item.hide) {
-                        formDataCategories.append('_method', 'put');
-                        await this.axios
-                            .post('/award-categories/update/' + this.category_id, formDataCategories, {
-                                headers: {
-                                    'Content-Type': 'multipart/form-data',
-                                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
-                                },
-                            })
-                            .then(() => {
-                            })
-                            .catch(error => {
-                                console.log(error);
-                            })
-                    }
-                }
-            },
-            async saveAwards() {
-                const formData = new FormData();
-                formData.append('award_category_id', this.category_id);
-                if (this.type === 1 && this.uploadFiles.length > 0) {
-                    for (let i = 0; i < this.uploadFiles.length; i++) {
-                        formData.append('file[]', this.uploadFiles[i]);
-                    }
-                }
-                if (this.type === 2) {
-                    for (let j = 0; j < this.course_ids.length; j++) {
-                        formData.append('course_ids[]', this.course_ids[j]);
-                    }
-                    formData.append('styles', this.styles);
-                    if (this.fileCertificate) {
-                        formData.append('file', this.fileCertificate);
-                    }
-                }
-                if (this.type === 3) {
-                    formData.append('targetable_type', this.targetable_type);
-                    formData.append('targetable_id', this.targetable_id);
-                }
+			const formDataCategories = new FormData();
+			formDataCategories.append('name', this.name);
+			formDataCategories.append('description', this.description);
+			formDataCategories.append('hide', hidePhp);
+			if (Object.keys(this.item).length === 0) {
+				formDataCategories.append('type', this.type);
+				await this.axios
+					.post('/award-categories/store', formDataCategories, {
+						headers: {
+							'Content-Type': 'multipart/form-data',
+							'X-Requested-With': 'XMLHttpRequest',
+							'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+						},
+					})
+					.then(response => {
+						this.category_id = response.data.data.id;
+					})
+					.catch(error => {
+						console.log(error);
+					})
+			} else {
+				if (this.category_id || this.name !== this.item.name || this.description !== this.item.description || this.hide !== this.item.hide) {
+					formDataCategories.append('_method', 'put');
+					await this.axios
+						.post('/award-categories/update/' + this.category_id, formDataCategories, {
+							headers: {
+								'Content-Type': 'multipart/form-data',
+								'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+							},
+						})
+						.then(() => {
+						})
+						.catch(error => {
+							console.log(error);
+						})
+				}
+			}
+		},
+		async saveAwards() {
+			const formData = new FormData();
+			formData.append('award_category_id', this.category_id);
+			if (this.type === 1 && this.uploadFiles.length > 0) {
+				for (let i = 0; i < this.uploadFiles.length; i++) {
+					formData.append('file[]', this.uploadFiles[i]);
+				}
+			}
+			if (this.type === 2) {
+				for (let j = 0; j < this.course_ids.length; j++) {
+					formData.append('course_ids[]', this.course_ids[j]);
+				}
+				formData.append('styles', this.styles);
+				if (this.fileCertificate) {
+					formData.append('file', this.fileCertificate);
+				}
+			}
+			if (this.type === 3) {
+				formData.append('targetable_type', this.targetable_type);
+				formData.append('targetable_id', this.targetable_id);
+			}
 
-                if (Object.keys(this.item).length > 0 && this.type !== 1) {
-                    formData.append('_method', 'put');
-                    await this.axios
-                        .post("/awards/update/" + this.awards[0].id, formData, {
-                            headers: {
-                                'Content-Type': 'multipart/form-data'
-                            },
-                        })
-                        .then(response => {
-                            this.$emit('update:open', false);
-                            this.$emit('save-award', response.data.data);
-                            this.$refs.newSertificateForm.reset();
-                        })
-                        .catch(function (error) {
-                            console.log(error);
-                        });
-                } else if (Object.keys(this.item).length === 0 || this.type === 1) {
-                    await this.axios
-                        .post("/awards/store", formData, {
-                            headers: {
-                                'Content-Type': 'multipart/form-data'
-                            },
-                        })
-                        .then(response => {
-                            this.$emit('update:open', false);
-                            this.$emit('save-award', response.data.data);
-                            this.$refs.newSertificateForm.reset();
-                        })
-                        .catch(function (error) {
-                            console.log(error);
-                        });
-                }
-            },
-            async onSubmit() {
-                if (!this.selectedType && Object.keys(this.item).length === 0) {
-                    this.$toast.error('Выберите тип награды', {
-                        timeout: 5000
-                    });
-                } else {
-                    if (this.type) {
-                        if (this.name.length > 2) {
-                            let loader = this.$loading.show();
-                            this.invalidName = true;
+			if (Object.keys(this.item).length > 0 && this.type !== 1) {
+				formData.append('_method', 'put');
+				await this.axios
+					.post('/awards/update/' + this.awards[0].id, formData, {
+						headers: {
+							'Content-Type': 'multipart/form-data'
+						},
+					})
+					.then(response => {
+						this.$emit('update:open', false);
+						this.$emit('save-award', response.data.data);
+						this.$refs.newSertificateForm.reset();
+					})
+					.catch(function (error) {
+						console.log(error);
+					});
+			} else if (Object.keys(this.item).length === 0 || this.type === 1) {
+				await this.axios
+					.post('/awards/store', formData, {
+						headers: {
+							'Content-Type': 'multipart/form-data'
+						},
+					})
+					.then(response => {
+						this.$emit('update:open', false);
+						this.$emit('save-award', response.data.data);
+						this.$refs.newSertificateForm.reset();
+					})
+					.catch(function (error) {
+						console.log(error);
+					});
+			}
+		},
+		async onSubmit() {
+			if (!this.selectedType && Object.keys(this.item).length === 0) {
+				this.$toast.error('Выберите тип награды', {
+					timeout: 5000
+				});
+			} else {
+				if (this.type) {
+					if (this.name.length > 2) {
+						let loader = this.$loading.show();
+						this.invalidName = true;
 
-                            if (this.type === 1) {
-                                await this.saveCategory();
-                                await this.saveAwards();
-                            }
+						if (this.type === 1) {
+							await this.saveCategory();
+							await this.saveAwards();
+						}
 
-                            if (this.type === 2) {
-                                if(this.hasFileCertificate){
-                                    if (this.constructorChange) {
-                                        if(this.course_ids.length > 0){
-                                            await this.saveCategory();
-                                            await this.saveAwards();
-                                        } else {
-                                            this.$toast.error('Выберите один или несколько курсов', {
-                                                timeout: 5000
-                                            });
-                                        }
-                                    } else {
-                                        this.$toast.error('Сперва отредактируйте выбранный шаблон', {
-                                            timeout: 5000
-                                        });
-                                    }
-                                } else {
-                                    this.$toast.error('Загрузите шаблон', {
-                                        timeout: 5000
-                                    });
-                                }
-                            }
+						if (this.type === 2) {
+							if(this.hasFileCertificate){
+								if (this.constructorChange) {
+									if(this.course_ids.length > 0){
+										await this.saveCategory();
+										await this.saveAwards();
+									} else {
+										this.$toast.error('Выберите один или несколько курсов', {
+											timeout: 5000
+										});
+									}
+								} else {
+									this.$toast.error('Сперва отредактируйте выбранный шаблон', {
+										timeout: 5000
+									});
+								}
+							} else {
+								this.$toast.error('Загрузите шаблон', {
+									timeout: 5000
+								});
+							}
+						}
 
-                            if (this.type === 3) {
-                                if(this.targetable_type && this.targetable_id){
-                                    await this.saveCategory();
-                                    await this.saveAwards();
-                                } else{
-                                    this.$toast.error('Выберите должность или отдел', {
-                                        timeout: 5000
-                                    });
-                                }
-                            }
-
-
-                            loader.hide();
-                        } else {
-                            this.invalidName = false;
-                        }
-                    }
-                }
-
-        },
-            setFileType(type) {
-                this.type = type;
-                this.selectedType = true;
-                if (type === 1) {
-                    this.dropDownText = 'Загрузка картинки';
-                }
-                if (type === 2) {
-                    this.dropDownText = 'Конструктор сертификата';
-                }
-                if (type === 3) {
-                    this.dropDownText = 'Данные начислений';
-                }
-            },
-            formFile(files) {
-                this.uploadFiles = files;
-            },
-            formFileCertificate(file, bool) {
-                this.fileCertificate = file;
-                this.hasFileCertificate = bool;
-            },
-            styleChange(styles) {
-                this.styles = JSON.stringify(styles);
-            }
-        },
-        async mounted() {
-            setTimeout(() => {
-                this.isShow = true;
-            }, 20);
-            if (Object.keys(this.item).length > 0) {
-                let loader = this.$loading.show();
-                this.hasFileCertificate = true;
-                await this.axios
-                    .get('/award-categories/get/awards/' + this.item.id)
-                    .then(response => {
-                        this.awards = response.data.data;
-                    })
-                    .catch(error => {
-                        console.log(error);
-                    });
-                this.readonly = true;
-                this.category_id = this.item.id;
-                this.type = this.item.type;
-                this.name = this.item.name;
-                this.description = this.item.description;
-                if(this.item.hide === 1){
-                    this.hide = false;
-                }
-                if(this.item.hide === 0){
-                    this.hide = true;
-                }
-                if (this.type === 2){
-                    this.styles = this.awards[0].styles;
-                }
-
-                if (this.type === 3) {
-                    this.targetable_type = this.awards[0].targetable_type;
-                    this.targetable_id = this.awards[0].targetable_id;
-                }
+						if (this.type === 3) {
+							if(this.targetable_type && this.targetable_id){
+								await this.saveCategory();
+								await this.saveAwards();
+							} else{
+								this.$toast.error('Выберите должность или отдел', {
+									timeout: 5000
+								});
+							}
+						}
 
 
-                if (this.item.type === 1) {
-                    this.dropDownText = 'Загрузка картинки';
-                }
-                if (this.item.type === 2) {
-                    this.dropDownText = 'Конструктор сертификата';
-                }
-                if (this.item.type === 3) {
-                    this.dropDownText = 'Данные начислений';
-                }
-                loader.hide();
-            }
-        }
-    };
+						loader.hide();
+					} else {
+						this.invalidName = false;
+					}
+				}
+			}
+
+		},
+		setFileType(type) {
+			this.type = type;
+			this.selectedType = true;
+			if (type === 1) {
+				this.dropDownText = 'Загрузка картинки';
+			}
+			if (type === 2) {
+				this.dropDownText = 'Конструктор сертификата';
+			}
+			if (type === 3) {
+				this.dropDownText = 'Данные начислений';
+			}
+		},
+		formFile(files) {
+			this.uploadFiles = files;
+		},
+		formFileCertificate(file, bool) {
+			this.fileCertificate = file;
+			this.hasFileCertificate = bool;
+		},
+		styleChange(styles) {
+			this.styles = JSON.stringify(styles);
+		}
+	},
+	async mounted() {
+		setTimeout(() => {
+			this.isShow = true;
+		}, 20);
+		if (Object.keys(this.item).length > 0) {
+			let loader = this.$loading.show();
+			this.hasFileCertificate = true;
+			await this.axios
+				.get('/award-categories/get/awards/' + this.item.id)
+				.then(response => {
+					this.awards = response.data.data;
+				})
+				.catch(error => {
+					console.log(error);
+				});
+			this.readonly = true;
+			this.category_id = this.item.id;
+			this.type = this.item.type;
+			this.name = this.item.name;
+			this.description = this.item.description;
+			if(this.item.hide === 1){
+				this.hide = false;
+			}
+			if(this.item.hide === 0){
+				this.hide = true;
+			}
+			if (this.type === 2){
+				this.styles = this.awards[0].styles;
+			}
+
+			if (this.type === 3) {
+				this.targetable_type = this.awards[0].targetable_type;
+				this.targetable_id = this.awards[0].targetable_id;
+			}
+
+
+			if (this.item.type === 1) {
+				this.dropDownText = 'Загрузка картинки';
+			}
+			if (this.item.type === 2) {
+				this.dropDownText = 'Конструктор сертификата';
+			}
+			if (this.item.type === 3) {
+				this.dropDownText = 'Данные начислений';
+			}
+			loader.hide();
+		}
+	}
+};
 </script>
 
 <style lang="scss">

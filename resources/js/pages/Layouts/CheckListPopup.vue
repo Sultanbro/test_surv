@@ -19,18 +19,18 @@
 <script>
 import CheckListPopupItem from './CheckListPopupItem'
 export default {
-    name: 'CheckListPopup',
-    components: {
-        CheckListPopupItem
-    },
-    props: {
-        data: Object
-    },
-    data() {
-        return {}
-    },
-    created(){},
-    methods: {}
+	name: 'CheckListPopup',
+	components: {
+		CheckListPopupItem
+	},
+	props: {
+		data: Object
+	},
+	data() {
+		return {}
+	},
+	created(){},
+	methods: {}
 };
 </script>
 

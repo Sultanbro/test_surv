@@ -3,7 +3,7 @@
 
     <div class="selected-items flex-wrap noscrollbar" @click="toggleShow">
         <template v-if="!hide_selected">
-            <div 
+            <div
                 v-for="(value, i) in values"
                 :key="i"
                 class="selected-item"
@@ -13,19 +13,19 @@
             </div>
         </template>
     </div>
-    
+
     <div class="show" v-if="show">
         <div class="search">
-            <input 
+            <input
                 v-model="searchText"
                 type="text"
                 placeholder="Поиск..."
                 ref="search"
                 @keyup="onSearch()">
         </div>
-        
+
         <div class="options-window">
-            <div class="types"> 
+            <div class="types">
                 <div class="type" :class="{'active': type == 1}" @click="changeType(1)">
                     <div class="text">Книги</div>
                     <i class="fa fa-book"></i>
@@ -41,215 +41,213 @@
 
                 <div class="type mt-5 active all" v-if="select_all_btn && !single" @click="selectAll">
                     <div class="text">Все</div>
-                    <i class="fa fa-check"></i>  
+                    <i class="fa fa-check"></i>
                 </div>
             </div>
-            
-    
+
+
             <div class="options">
 
-                <div 
+                <div
                     class="option"
                     v-for="(option, index) in filtered_options"
                     :key="index"
                     @click="addValue(index, option.type)"
                     :class="{
-                        'selected': option.selected, 
+                        'selected': option.selected,
                         'category': option.disabled,
-                    }" 
+                    }"
                 >
-                    <i class="fa fa-book" v-if="option.type == 1"></i> 
-                    <i class="fa fa-play" v-if="option.type == 2"></i> 
-                    <i class="fa fa-database" v-if="option.type == 3"></i> 
+                    <i class="fa fa-book" v-if="option.type == 1"></i>
+                    <i class="fa fa-play" v-if="option.type == 2"></i>
+                    <i class="fa fa-database" v-if="option.type == 3"></i>
                     {{ option.name }}
-                    <i class="fa fa-times" v-if="option.selected" @click.stop="removeValueFromList(index)"></i> 
+                    <i class="fa fa-times" v-if="option.selected" @click.stop="removeValueFromList(index)"></i>
                 </div>
 
             </div>
         </div>
     </div>
-   
- 
+
+
 </div>
 </template>
 
 <script>
 export default {
-    name: 'SuperselectAlt',
-    props: {
-        values: {
-            type: Array,
-        },
-        single: {
-            type: Boolean,
-            default: false
-        },
-        select_all_btn: {
-            type: Boolean,
-            default: false
-        },
-        hide_selected: {
-            type: Boolean,
-            default: false
-        }
-    },
-    data() {
-        return {
-            options: [],
-            filtered_options: [],
-            type: 1,
-            show: false,
-            posClass: 'top',
-            searchText: '',
-            first_time: true,
-            selected_all: false
-        };
-    },
-    created() {
+	name: 'SuperselectAlt',
+	props: {
+		values: {
+			type: Array,
+		},
+		single: {
+			type: Boolean,
+			default: false
+		},
+		select_all_btn: {
+			type: Boolean,
+			default: false
+		},
+		hide_selected: {
+			type: Boolean,
+			default: false
+		}
+	},
+	data() {
+		return {
+			options: [],
+			filtered_options: [],
+			type: 1,
+			show: false,
+			posClass: 'top',
+			searchText: '',
+			first_time: true,
+			selected_all: false
+		};
+	},
+	created() {
 
-      console.log(this.values,'019995');
+		console.log(this.values,'019995');
 
-        this.checkSelectedAll();  
-    },
-    methods: {
-        checkSelectedAll() {
-            if(this.values.length == 1
-                && this.values[0]['id']== 0
-                && this.values[0]['type'] == 0) {
-                this.selected_all = true;
-                 console.log('okay');
-            } else {
-                console.log('wtf');
-            }
-        },
-        
-        filterType() {
-            this.filtered_options = this.options.filter((el, index) => {
-                return el.type == this.type
-            });
-        },
+		this.checkSelectedAll();
+	},
+	methods: {
+		checkSelectedAll() {
+			if(this.values.length == 1 && this.values[0]['id']== 0 && this.values[0]['type'] == 0) {
+				this.selected_all = true;
+				console.log('okay');
+			} else {
+				console.log('wtf');
+			}
+		},
 
-        addSelectedAttr() {
-            this.filtered_options.forEach(el => {
-                el.selected = this.values.findIndex(v => v.id == el.id && v.type == el.type) != -1
-            });
-        },
+		filterType() {
+			this.filtered_options = this.options.filter(el => {
+				return el.type == this.type
+			});
+		},
 
-        toggleShow() {
-            this.show = !this.show;
-            if(this.first_time) {
-                this.fetch();
-            }
-            
-            this.$nextTick(() => {
-                if(this.$refs.search !== undefined) this.$refs.search.focus();
-            });
-            this.setPosClass();
-        },
+		addSelectedAttr() {
+			this.filtered_options.forEach(el => {
+				el.selected = this.values.findIndex(v => v.id == el.id && v.type == el.type) != -1
+			});
+		},
 
-        setPosClass() {
-            let pos = this.$refs["select"].getBoundingClientRect();
-            let viewport_h = document.documentElement.clientHeight;
-            this.posClass = (viewport_h - pos.top > 450) ? 'bottom' : 'top';
-        },
+		toggleShow() {
+			this.show = !this.show;
+			if(this.first_time) {
+				this.fetch();
+			}
 
-        changeType(i) {
-            this.type = i;
-            this.searchText = '';
-            this.filterType();
-            this.addSelectedAttr();
-        },
+			this.$nextTick(() => {
+				if(this.$refs.search !== undefined) this.$refs.search.focus();
+			});
+			this.setPosClass();
+		},
 
-        addValue(index, type) {
-      
-            if(this.single) this.show = false;
-            if(this.single && this.values.length > 0) {
-                return;
-            };
-            if(this.selected_all) return;
+		setPosClass() {
+			let pos = this.$refs['select'].getBoundingClientRect();
+			let viewport_h = document.documentElement.clientHeight;
+			this.posClass = (viewport_h - pos.top > 450) ? 'bottom' : 'top';
+		},
 
-            let item = this.filtered_options[index];
-            
-            if(item.disabled) return;
+		changeType(i) {
+			this.type = i;
+			this.searchText = '';
+			this.filterType();
+			this.addSelectedAttr();
+		},
 
-            if(this.values.findIndex(v => v.id == item.id && v.type == item.type) == -1) {
+		addValue(index) {
 
-                this.values.push({
-                    name: item.name,
-                    id: item.id,
-                    type: item.type,
-                    disabled: false
-                });
+			if(this.single) this.show = false;
+			if(this.single && this.values.length > 0) {
+				return;
+			}
+			if(this.selected_all) return;
 
-                item.selected = true
-            }
-        },
+			let item = this.filtered_options[index];
 
-        removeValue(i) {
-            let v = this.values[i];
-            if(v.id == 0 && v.type == 0 && v.name == 'Все') this.selected_all = false;
+			if(item.disabled) return;
 
-            this.values.splice(i, 1);
+			if(this.values.findIndex(v => v.id == item.id && v.type == item.type) == -1) {
 
-            let index = this.filtered_options.findIndex(o => v.id == o.id && v.type == o.type);
-            if(index != -1) this.filtered_options.splice(index, 1);
-        },
+				this.values.push({
+					name: item.name,
+					id: item.id,
+					type: item.type,
+					disabled: false
+				});
 
-        removeValueFromList(i) {
-            let fo = this.filtered_options[i];
-            let index = this.values.findIndex(v => v.id == fo.id && v.type == fo.type);
-            if(index != -1) {
-                this.values.splice(index, 1);
-                fo.selected = false;
-            }
-        },
+				item.selected = true
+			}
+		},
 
-        onSearch() {
-              
-            if(this.searchText == '') {
-                this.filtered_options = this.options; 
-            } else {
-                this.filtered_options = this.options.filter((el, index) => {
-                    return el.name.toLowerCase().indexOf(this.searchText.toLowerCase()) > -1 && !el.disabled
-                }); 
-            }
+		removeValue(i) {
+			let v = this.values[i];
+			if(v.id == 0 && v.type == 0 && v.name == 'Все') this.selected_all = false;
 
-            this.addSelectedAttr();
-        }, 
+			this.values.splice(i, 1);
 
-        close() {
-            this.show = false;
-        },
+			let index = this.filtered_options.findIndex(o => v.id == o.id && v.type == o.type);
+			if(index != -1) this.filtered_options.splice(index, 1);
+		},
 
-        fetch() {
-            axios
-                .get("/superselect/get-alt", {})
-                .then((response) => {
+		removeValueFromList(i) {
+			let fo = this.filtered_options[i];
+			let index = this.values.findIndex(v => v.id == fo.id && v.type == fo.type);
+			if(index != -1) {
+				this.values.splice(index, 1);
+				fo.selected = false;
+			}
+		},
 
-                    this.options = response.data.options;
+		onSearch() {
 
-                    this.filterType();
-                    this.addSelectedAttr();
-                })
-            .catch((error) => {
-                alert(error,'111');
-            });
-        },
+			if(this.searchText == '') {
+				this.filtered_options = this.options;
+			} else {
+				this.filtered_options = this.options.filter(el => {
+					return el.name.toLowerCase().indexOf(this.searchText.toLowerCase()) > -1 && !el.disabled
+				});
+			}
 
-        selectAll() {
-            if(this.selected_all) return; 
-            this.values.splice(0, this.values.length);
-            this.values.push({
-                name: 'Все',
-                id: 0,
-                type: 0,
-                disabled: false
-            });
-            this.show = false;
-            this.selected_all = true;
+			this.addSelectedAttr();
+		},
 
-        }
-    },
+		close() {
+			this.show = false;
+		},
+
+		fetch() {
+			this.axios
+				.get('/superselect/get-alt', {})
+				.then((response) => {
+
+					this.options = response.data.options;
+
+					this.filterType();
+					this.addSelectedAttr();
+				})
+				.catch((error) => {
+					alert(error,'111');
+				});
+		},
+
+		selectAll() {
+			if(this.selected_all) return;
+			this.values.splice(0, this.values.length);
+			this.values.push({
+				name: 'Все',
+				id: 0,
+				type: 0,
+				disabled: false
+			});
+			this.show = false;
+			this.selected_all = true;
+
+		}
+	},
 
 }
 </script>

@@ -5,35 +5,35 @@ const ReportsNav = () => import(/* webpackChunkName: "ReportsNav" */ '@/componen
 const TableAccrual = () => import(/* webpackChunkName: "TableAccrualPage" */ '@/pages/TableAccrual')
 
 export default {
-    name: 'SalaryView',
-    components: {
-        DefaultLayout,
-        ReportsNav,
-        TableAccrual,
-    },
-    data(){
-        return {
-            groups: null,
-            years: null,
-            activeuserid: '',
-            activeuserpos: 0,
-            is_admin: false,
-            can_edit: false,
-            activeTab: 'nav-salary-tab',
-        }
-    },
-    mounted(){
-        useAsyncPageData('/timetracking/reports').then(data => {
-            this.groups = data.groups || null
-            this.years = data.years || null
-            this.activeuserid = '' + data.activeuserid
-            this.activeuserpos = +data.activeuserpos
-            this.is_admin = !!data.is_admin
-            this.can_edit = !!data.can_edit
-        }).catch(error => {
-            console.error('useAsyncPageData', error)
-        })
-    }
+	name: 'SalaryView',
+	components: {
+		DefaultLayout,
+		ReportsNav,
+		TableAccrual,
+	},
+	data(){
+		return {
+			groups: null,
+			years: null,
+			activeuserid: '',
+			activeuserpos: 0,
+			is_admin: false,
+			can_edit: false,
+			activeTab: 'nav-salary-tab',
+		}
+	},
+	mounted(){
+		useAsyncPageData('/timetracking/reports').then(data => {
+			this.groups = data.groups || null
+			this.years = data.years || null
+			this.activeuserid = '' + data.activeuserid
+			this.activeuserpos = +data.activeuserpos
+			this.is_admin = !!data.is_admin
+			this.can_edit = !!data.can_edit
+		}).catch(error => {
+			console.error('useAsyncPageData', error)
+		})
+	}
 }
 </script>
 

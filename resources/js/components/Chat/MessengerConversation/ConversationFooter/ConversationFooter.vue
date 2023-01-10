@@ -2,7 +2,7 @@
   <div class="messenger__chat-footer">
     <div class="messenger__box-footer messenger__box-footer-border">
       <template v-if="isRecordingAudio">
-        <SpectrumAnalyser class="messenger__chat-footer_spectrum" :fill-style="'#5ebee9'"></SpectrumAnalyser>
+        <SpectrumAnalyser class="messenger__chat-footer_spectrum" :fill-style="'#5ebee9'"/>
       </template>
       <template v-else>
         <div class="messenger__message-input messenger__message-text-input">
@@ -17,7 +17,7 @@
                     id="messengerMessageInput" class="messenger__textarea"
                     placeholder="Ввести сообщение"
           ></textarea>
-          <div v-for="file in files" class="messenger__input_file-attachment">
+          <div v-for="(file, index) in files" :key="index" class="messenger__input_file-attachment">
             <div>
               <div>{{ file.name }}</div>
               <div>{{ file.size | fileSizeFormat }}</div>
@@ -42,7 +42,7 @@
         >
           <template #default="{ isRecording, startRecording, stopRecording, deleteRecording }">
             <template v-if="!isRecording">
-              <EmojiPopup @append="appendEmoji"></EmojiPopup>
+              <EmojiPopup @append="appendEmoji"/>
 
               <div class="messenger__attachment-item" @click="$refs.messengerFile.click()">
                 <input type="file" ref="messengerFile" style="display:none" @change="prepareFiles" multiple="multiple">
@@ -95,117 +95,120 @@
 </template>
 
 <script>
-import {mapActions, mapGetters} from "vuex";
-import EmojiPopup from "./EmojiPopup/EmojiPopup.vue";
-import AudioDictaphone from "./AudioDictaphone/AudioDictaphone.vue";
-import SpectrumAnalyser from "./SpectrumAnalyser/SpectrumAnalyser.vue";
+import {mapActions, mapGetters} from 'vuex';
+import EmojiPopup from './EmojiPopup/EmojiPopup.vue';
+import AudioDictaphone from './AudioDictaphone/AudioDictaphone.vue';
+import SpectrumAnalyser from './SpectrumAnalyser/SpectrumAnalyser.vue';
 
 
 export default {
-  name: "ConversationFooter",
-  components: {EmojiPopup, AudioDictaphone, SpectrumAnalyser},
-  data() {
-    return {
-      body: "",
-      files: [],
-      isRecordingAudio: false,
-      recordingTime: 0,
-    };
-  },
-  computed: {
-    ...mapGetters(['chat', 'editMessage', 'citedMessage'])
-  },
-  watch: {
-    editMessage(message) {
-      if (message) {
-        this.body = message.body;
-      } else {
-        this.body = "";
-      }
-    },
-    recordingTime(duration) {
-      if (duration > 0) {
-        setTimeout(() => {
-          this.recordingTime = duration + 1;
-        }, 10);
-      }
-    },
-  },
-  methods: {
-    ...mapActions(["sendMessage", "editMessageAction", "uploadFiles", "citeMessage"]),
-    performMessage(e) {
-      let text = this.body.trim();
-      if ((text || this.files.length > 0) && this.chat) {
-        if (this.editMessage) {
-          this.editMessageAction(text);
-        } else {
-          e.preventDefault();
-          if (this.files.length > 0) {
-            this.uploadFiles({'files': this.files, 'caption': text});
-            this.files = [];
-          } else {
-            this.sendMessage(text)
-          }
-          this.body = "";
-          this.$nextTick(() => {
-            document.getElementById("messengerMessageInput").focus();
-          });
-        }
-      }
-    },
-    appendEmoji(emoji) {
-      this.body += emoji;
-    },
-    pasteMessage(e) {
-      const items = (e.clipboardData || e.originalEvent.clipboardData).items;
-      for (let index in items) {
-        let item = items[index];
-        if (item.kind === 'file') {
-          this.files.push(item.getAsFile());
-        }
-      }
-    },
-    removeFile(file, event) {
-      event.stopPropagation();
-      this.files = this.files.filter(f => f !== file);
-    },
-    prepareFiles() {
-      let files = this.$refs.messengerFile.files;
-      for (let file of files) {
-        this.files.push(file);
-      }
-    },
-    handleRecording({blob}) {
-      this.uploadFiles({'files': [blob], 'caption': ""});
-      this.isRecordingAudio = false;
-    },
-    setRecordingAudio(value) {
-      this.isRecordingAudio = value;
-      this.recordingTime += 1;
-    },
-    closeCitation(event) {
-      event.stopPropagation();
-      this.citeMessage(null);
-    },
-  },
-  filters: {
-    countdownFormat(value) {
-      let seconds = Math.floor(value / 100);
-      let minutes = Math.floor(seconds / 60);
-      let santiseconds = value % 100;
-      seconds = seconds % 60;
-      return `${minutes}:${seconds < 10 ? "0" + seconds : seconds},${santiseconds < 10 ? "0" + santiseconds : santiseconds}`;
-    },
-    fileSizeFormat(value) {
-      if (value < 1024) {
-        return `${value} B`;
-      } else if (value < 1024 * 1024) {
-        return `${Math.floor(value / 1024)} KB`;
-      } else {
-        return `${Math.floor(value / 1024 / 1024)} MB`;
-      }
-    }
-  }
+	name: 'ConversationFooter',
+	components: {EmojiPopup, AudioDictaphone, SpectrumAnalyser},
+	data() {
+		return {
+			body: '',
+			files: [],
+			isRecordingAudio: false,
+			recordingTime: 0,
+		};
+	},
+	computed: {
+		...mapGetters(['chat', 'editMessage', 'citedMessage'])
+	},
+	watch: {
+		editMessage(message) {
+			if (message) {
+				this.body = message.body;
+			} else {
+				this.body = '';
+			}
+		},
+		recordingTime(duration) {
+			if (duration > 0) {
+				setTimeout(() => {
+					this.recordingTime = duration + 1;
+				}, 10);
+			}
+		},
+	},
+	methods: {
+		...mapActions(['sendMessage', 'editMessageAction', 'uploadFiles', 'citeMessage']),
+		performMessage(e) {
+			let text = this.body.trim();
+			if ((text || this.files.length > 0) && this.chat) {
+				if (this.editMessage) {
+					this.editMessageAction(text);
+				} else {
+					e.preventDefault();
+					if (this.files.length > 0) {
+						this.uploadFiles({'files': this.files, 'caption': text});
+						this.files = [];
+					} else {
+						this.sendMessage(text)
+					}
+					this.body = '';
+					this.$nextTick(() => {
+						document.getElementById('messengerMessageInput').focus();
+					});
+				}
+			}
+		},
+		appendEmoji(emoji) {
+			this.body += emoji;
+		},
+		pasteMessage(e) {
+			const items = (e.clipboardData || e.originalEvent.clipboardData).items;
+			for (let index in items) {
+				let item = items[index];
+				if (item.kind === 'file') {
+					this.files.push(item.getAsFile());
+				}
+			}
+		},
+		removeFile(file, event) {
+			event.stopPropagation();
+			this.files = this.files.filter(f => f !== file);
+		},
+		prepareFiles() {
+			let files = this.$refs.messengerFile.files;
+			for (let file of files) {
+				this.files.push(file);
+			}
+		},
+		handleRecording({blob}) {
+			this.uploadFiles({'files': [blob], 'caption': ''});
+			this.isRecordingAudio = false;
+		},
+		setRecordingAudio(value) {
+			this.isRecordingAudio = value;
+			this.recordingTime += 1;
+		},
+		closeCitation(event) {
+			event.stopPropagation();
+			this.citeMessage(null);
+		},
+		handleError(error) {
+			console.error('ConversationFooter', error)
+		}
+	},
+	filters: {
+		countdownFormat(value) {
+			let seconds = Math.floor(value / 100);
+			let minutes = Math.floor(seconds / 60);
+			let santiseconds = value % 100;
+			seconds = seconds % 60;
+			return `${minutes}:${seconds < 10 ? '0' + seconds : seconds},${santiseconds < 10 ? '0' + santiseconds : santiseconds}`;
+		},
+		fileSizeFormat(value) {
+			if (value < 1024) {
+				return `${value} B`;
+			} else if (value < 1024 * 1024) {
+				return `${Math.floor(value / 1024)} KB`;
+			} else {
+				return `${Math.floor(value / 1024 / 1024)} MB`;
+			}
+		}
+	}
 }
 </script>
 

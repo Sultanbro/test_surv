@@ -26,25 +26,25 @@
 
 <script>
 export default {
-  name: "ProfileQuarterButton",
-  props: {
-    user_id: Number,
-    activeuserid: Number,
-  },
-  data() {
-    return {
-      showKpiSidebar: false,
-    };
-  },
-  created() {
+	name: 'ProfileQuarterButton',
+	props: {
+		user_id: Number,
+		activeuserid: Number,
+	},
+	data() {
+		return {
+			showKpiSidebar: false,
+		};
+	},
+	created() {
 
-  },
-  methods: {
-    toggle() {
-      this.showKpiSidebar = !this.showKpiSidebar
-      document.getElementById('list-example').classList.toggle("sticky");
-    },
-  },
+	},
+	methods: {
+		toggle() {
+			this.showKpiSidebar = !this.showKpiSidebar
+			document.getElementById('list-example').classList.toggle('sticky');
+		},
+	},
 };
 </script>
 

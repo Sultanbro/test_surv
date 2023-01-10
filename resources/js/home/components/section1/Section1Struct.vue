@@ -1,11 +1,11 @@
 <script>
 export default {
-    name: 'Section1Struct',
-    computed: {
-        lang () {
-            return this.$root.$data.lang
-        }
-    },
+	name: 'Section1Struct',
+	computed: {
+		lang () {
+			return this.$root.$data.lang
+		}
+	},
 }
 </script>
 <template>

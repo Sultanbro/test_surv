@@ -23,7 +23,7 @@
       </div>
       <div class="messenger__chat-info-members">
         <div class="messenger__chat-info-members-list">
-          <div class="messenger__chat-info-members-list-item" v-for="member in chat.users">
+          <div class="messenger__chat-info-members-list-item" v-for="member in chat.users" :key="member.id">
             <AlternativeAvatar :title="member.name" :image="member.img_url"/>
             <div class="messenger__chat-info-members-list-item-name">
               <span>{{ member.name }}</span>
@@ -44,29 +44,29 @@
 </template>
 
 <script>
-import {mapActions, mapGetters} from "vuex";
-import AlternativeAvatar from "../ChatsList/ContactItem/AlternativeAvatar/AlternativeAvatar";
+import {mapActions, mapGetters} from 'vuex';
+import AlternativeAvatar from '../ChatsList/ContactItem/AlternativeAvatar/AlternativeAvatar';
 
 export default {
-  name: "InfoPanel",
-  components: {
-    AlternativeAvatar
-  },
-  computed: {
-    ...mapGetters(['user', 'chat', 'isInfoPanel'])
-  },
-  data() {
-    return {
-      editMode: false,
-    };
-  },
-  methods: {
-    ...mapActions(['editChatTitle', 'removeMembers']),
-    changeTitle() {
-      this.editChatTitle();
-      this.editMode = false;
-    },
-  }
+	name: 'InfoPanel',
+	components: {
+		AlternativeAvatar
+	},
+	computed: {
+		...mapGetters(['user', 'chat', 'isInfoPanel'])
+	},
+	data() {
+		return {
+			editMode: false,
+		};
+	},
+	methods: {
+		...mapActions(['editChatTitle', 'removeMembers']),
+		changeTitle() {
+			this.editChatTitle();
+			this.editMode = false;
+		},
+	}
 }
 </script>
 

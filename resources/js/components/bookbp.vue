@@ -1,8 +1,8 @@
 <template>
     <div >
         <ul>
-            <li v-for="book in categoryes.book">
-                <a href="#">{{book.name}}</a>
+            <li v-for="(book, index) in categoryes.book" :key="index">
+                <a href="javascript:void(0)">{{book.name}}</a>
             </li>
         </ul>
 
@@ -16,87 +16,87 @@
 <script>
 
 
-    export default {
-        name: "bookbp",
-        props: ['grouid'],
-        data() {
-            return {
-                categoryes: {
-                    book: [
-                        {
-                            id: 1,
-                            name: 'Корневая книга 1',
-                            desk: 'описание 1',
-                        },
-                        {
-                            id: 2,
-                            name: 'Корневая книга 2',
-                            desk: 'описание 2',
-                        },
-                        {
-                            id: 3,
-                            name: 'Корневая книга 3',
-                            desk: 'описание 3',
-                        }
-                    ],
-                    categoryes: [
-                        { name: 'Категория 1', id:1,
-                            books:[
-                                {
-                                    id: 1,
-                                    name: 'Корневая книга 12',
-                                    desk: 'описание 12',
-                                },
-                                {
-                                    id: 2,
-                                    name: 'Корневая книга 13',
-                                    desk: 'описание 13',
-                                },
-                                {
-                                    id: 3,
-                                    name: 'Корневая книга 14',
-                                    desk: 'описание 14',
-                                }
-                            ]
-                        },
-                        { name: 'Категория 3', id:3,
-                            books:[
-                                {
-                                    id: 1,
-                                    name: ' книга 23',
-                                    desk: 'описание 23',
-                                },
-                                {
-                                    id: 2,
-                                    name: ' книга 22',
-                                    desk: 'описание 22',
-                                },
-                                {
-                                    id: 3,
-                                    name: ' книга 24',
-                                    desk: 'описание 24',
-                                }
-                            ]
-                        },
+export default {
+	name: 'BookBP',
+	props: ['grouid'],
+	data() {
+		return {
+			categoryes: {
+				book: [
+					{
+						id: 1,
+						name: 'Корневая книга 1',
+						desk: 'описание 1',
+					},
+					{
+						id: 2,
+						name: 'Корневая книга 2',
+						desk: 'описание 2',
+					},
+					{
+						id: 3,
+						name: 'Корневая книга 3',
+						desk: 'описание 3',
+					}
+				],
+				categoryes: [
+					{ name: 'Категория 1', id:1,
+						books:[
+							{
+								id: 1,
+								name: 'Корневая книга 12',
+								desk: 'описание 12',
+							},
+							{
+								id: 2,
+								name: 'Корневая книга 13',
+								desk: 'описание 13',
+							},
+							{
+								id: 3,
+								name: 'Корневая книга 14',
+								desk: 'описание 14',
+							}
+						]
+					},
+					{ name: 'Категория 3', id:3,
+						books:[
+							{
+								id: 1,
+								name: ' книга 23',
+								desk: 'описание 23',
+							},
+							{
+								id: 2,
+								name: ' книга 22',
+								desk: 'описание 22',
+							},
+							{
+								id: 3,
+								name: ' книга 24',
+								desk: 'описание 24',
+							}
+						]
+					},
 
-                    ]
-                }
-            }
-        },
-        mounted: function () {
-            this.glava = this.grouid;
+				]
+			}
+		}
+	},
+	mounted: function () {
+		this.glava = this.grouid;
 
-        },
-        methods: {
+	},
+	methods: {
 
-            activebooks(id, title, desk) {
-                this.activebook = id
-                this.editors = desk
-                this.titlebook = title
+		activebooks(id, title, desk) {
+			this.activebook = id
+			this.editors = desk
+			this.titlebook = title
 
-            }
-        }
-    }
+		}
+	}
+}
 </script>
 
 <style scoped>

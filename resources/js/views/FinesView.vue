@@ -3,33 +3,32 @@ import DefaultLayout from '@/layouts/DefaultLayout'
 import { useAsyncPageData } from '@/composables/asyncPageData'
 
 export default {
-    name: 'FinesView',
-    components: {
-        DefaultLayout,
-    },
-    data(){
-        return {
-            fines: [],
-        }
-    },
-    mounted(){
-        useAsyncPageData('/page').then(data => {
-            this.fines = data.fines || []
-        }).catch(error => {
-            console.error('useAsyncPageData', error)
-        })
-
-        (function(w,d,u){
-            var s=d.createElement('script');s.async=true;s.src=u+'?'+(Date.now()/60000|0);s.id='bitrix-loader';
-            var h=d.getElementsByTagName('script')[0];h.parentNode.insertBefore(s,h);
-        })(window,document,'https://cdn-ru.bitrix24.kz/b1734679/crm/site_button/loader_8_dzfbjh.js');
-    },
-    beforeUnmount(){
-        const scriptTag = document.getElementById('bitrix-loader')
-        if(!scriptTag) return
-        scriptTag.remove()
-        // remove bitrix site button
-    }
+	name: 'FinesView',
+	components: {
+		DefaultLayout,
+	},
+	data(){
+		return {
+			fines: [],
+		}
+	},
+	mounted(){
+		useAsyncPageData('/page').then(data => {
+			this.fines = data.fines || []
+		}).catch(error => {
+			console.error('useAsyncPageData', error)
+		});
+		(function(w,d,u){
+			var s=d.createElement('script');s.async=true;s.src=u+'?'+(Date.now()/60000|0);s.id='bitrix-loader';
+			var h=d.getElementsByTagName('script')[0];h.parentNode.insertBefore(s,h);
+		})(window,document,'https://cdn-ru.bitrix24.kz/b1734679/crm/site_button/loader_8_dzfbjh.js');
+	},
+	beforeUnmount(){
+		const scriptTag = document.getElementById('bitrix-loader')
+		if(!scriptTag) return
+		scriptTag.remove()
+		// remove bitrix site button
+	}
 }
 </script>
 

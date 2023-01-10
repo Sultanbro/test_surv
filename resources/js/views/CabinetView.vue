@@ -4,23 +4,23 @@ import { useAsyncPageData } from '@/composables/asyncPageData'
 const Cabinet = () => import(/* webpackChunkName: "CabinetPage" */ '@/pages/Cabinet')
 
 export default {
-    name: 'CabinetView',
-    components: {
-        DefaultLayout,
-        Cabinet,
-    },
-    data(){
-        return {
-            auth_role: null,
-        }
-    },
-    mounted(){
-        useAsyncPageData('/cabinet').then(data => {
-            this.auth_role = data.auth_role || null
-        }).catch(error => {
-            console.error('useAsyncPageData', error)
-        })
-    }
+	name: 'CabinetView',
+	components: {
+		DefaultLayout,
+		Cabinet,
+	},
+	data(){
+		return {
+			auth_role: null,
+		}
+	},
+	mounted(){
+		useAsyncPageData('/cabinet').then(data => {
+			this.auth_role = data.auth_role || null
+		}).catch(error => {
+			console.error('useAsyncPageData', error)
+		})
+	}
 }
 </script>
 

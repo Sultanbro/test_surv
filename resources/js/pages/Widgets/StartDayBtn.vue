@@ -43,20 +43,20 @@
 <script>
 export default {
 
-  name: 'StartDayBtn',
-  props: {
-    workdayStatus: String,
-    status: String
-  },
-  data() {
-    return {
-      data: {}
-    }
-  },
+	name: 'StartDayBtn',
+	props: {
+		workdayStatus: String,
+		status: String
+	},
+	data() {
+		return {
+			data: {}
+		}
+	},
 
-  created() {},
+	created() {},
 
-  methods: {}
+	methods: {}
 }
 </script>
 

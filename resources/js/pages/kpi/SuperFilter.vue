@@ -2,7 +2,7 @@
 <div class="super-filter"  v-click-outside="close">
 
     <div class="d-flex relative">
-        <input 
+        <input
             class="searcher form-control mr-2 pr-3"
             v-model="searchText"
             type="text"
@@ -24,7 +24,7 @@
                 </option>
             </select>
         </div>
-        
+
         <!-- item -->
         <div class="item">
             <div class="label">Что ищем</div>
@@ -48,7 +48,7 @@
             <select v-model="data_from.year" class="form-control"  @change="changeDate('data_from', 'year')">
                 <option v-for="year in years" :value="year" :key="year">{{ year }}</option>
             </select>
-            
+
         </div>
 
 
@@ -84,9 +84,9 @@
                 v-model="created_at.to"
                 class="form-control form-control-sm"
                 @change="changeDate('created_at', 'to')" />
-            
+
         </div>
-        
+
         <!-- search button -->
         <div class="mt-3">
             <button class="btn btn-primary" @click="applyFilter">
@@ -102,120 +102,120 @@
 
 <script>
 export default {
-    name: "SuperFilter", 
-    props: {
-        groups: {
-            default: []
-        }
-    },
-    data() {
-        return {
-            show: false,
-            searchText: '',
+	name: 'SuperFilter',
+	props: {
+		groups: {
+			default: []
+		}
+	},
+	data() {
+		return {
+			show: false,
+			searchText: '',
 
-            // options
-            years: [],
-            dates: {},
-            s_types: {},
-            
-            filters: {},
-            // filters
-            group_id: 0,
-            s_type: 1,
-            data_from: {
-                month: new Date().getMonth() + 1,
-                year: new Date().getFullYear(),
-                s_type: 1,
-            },
-            created_at: {
-                variant: 0,
-                month: new Date().getMonth() + 1,
-                year: new Date().getFullYear(),
-                from: null,
-                to: null
-            }
-        }
-    }, 
+			// options
+			years: [],
+			dates: {},
+			s_types: {},
 
-    created() {
-        this.prepare()
-    },
+			filters: {},
+			// filters
+			group_id: 0,
+			s_type: 1,
+			data_from: {
+				month: new Date().getMonth() + 1,
+				year: new Date().getFullYear(),
+				s_type: 1,
+			},
+			created_at: {
+				variant: 0,
+				month: new Date().getMonth() + 1,
+				year: new Date().getFullYear(),
+				from: null,
+				to: null
+			}
+		}
+	},
 
-    methods: {
+	created() {
+		this.prepare()
+	},
 
-        prepare() {
-            this.fillYears()
-            this.fillFiltersObj()
+	methods: {
 
-            this.changeDate('data_from', 'month')
-        },
+		prepare() {
+			this.fillYears()
+			this.fillFiltersObj()
 
-        clear() {
-            this.searchText = ''
-        },
+			this.changeDate('data_from', 'month')
+		},
 
-        fillFiltersObj() {
-            this.group_id = 0; 
-            
-           
+		clear() {
+			this.searchText = ''
+		},
 
-            this.dates = {
-                0: 'Любая дата',
-                1: 'Вчера',
-                2: 'Сегодня',
-                3: 'Завтра',
-                4: 'Текущий месяц',
-                5: 'Месяц',
-                6: 'Диапазон',
-            }
+		fillFiltersObj() {
+			this.group_id = 0;
 
-            this.s_types = {
-                1: 'KPI',
-                2: 'Бонусы',
-                3: 'Квартальная премия',
-            }
 
-            
 
-        },
+			this.dates = {
+				0: 'Любая дата',
+				1: 'Вчера',
+				2: 'Сегодня',
+				3: 'Завтра',
+				4: 'Текущий месяц',
+				5: 'Месяц',
+				6: 'Диапазон',
+			}
 
-        fillYears() {
-            let years = []
-            let currentYear = new Date().getFullYear();
-            for(let i = currentYear; i > 1999; i--) years.push(i)
-            this.years = years
-        },
+			this.s_types = {
+				1: 'KPI',
+				2: 'Бонусы',
+				3: 'Квартальная премия',
+			}
 
-        applyFilter() {
-            console.log(this.filters);
-            this.$emit('apply', this.filters)
-            this.show = false;
-        },
 
-        change(field) {
-            if(field == 'group_id') {
-                if(this.group_id == 0) {
-                    delete this.filters.group_id;
-                } else {
-                    this.filters.group_id = this.group_id
-                }
-            }
-            this.data_from.s_type = field;
-        },
 
-        changeDate(field, prop) {
-            if(field == 'created_at') this.filters.created_at = this.created_at
-            if(field == 'data_from')  this.filters.data_from  = this.data_from
-        },
+		},
 
-        close() {
-            this.show = false
-        }
-     
-    } 
+		fillYears() {
+			let years = []
+			let currentYear = new Date().getFullYear();
+			for(let i = currentYear; i > 1999; i--) years.push(i)
+			this.years = years
+		},
+
+		applyFilter() {
+			console.log(this.filters);
+			this.$emit('apply', this.filters)
+			this.show = false;
+		},
+
+		change(field) {
+			if(field == 'group_id') {
+				if(this.group_id == 0) {
+					delete this.filters.group_id;
+				} else {
+					this.filters.group_id = this.group_id
+				}
+			}
+			this.data_from.s_type = field;
+		},
+
+		changeDate(field/* , prop */) {
+			if(field == 'created_at') this.filters.created_at = this.created_at
+			if(field == 'data_from')  this.filters.data_from  = this.data_from
+		},
+
+		close() {
+			this.show = false
+		}
+
+	}
 }
 </script>
-  
+
 <style scoped>
 .search-btn {
     position: absolute;

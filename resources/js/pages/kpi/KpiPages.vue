@@ -43,70 +43,70 @@
 </template>
 
 <script>
-    import KPI from '@/pages/kpi/Kpi'
-    import Bonuses from '@/pages/kpi/Bonuses'
-    import QuartalPremium from '@/pages/kpi/QuartalPremium'
-    import Stats from '@/pages/kpi/Stats'
-    import Indicators from '@/pages/kpi/Indicators'
+import KPI from '@/pages/kpi/Kpi'
+import Bonuses from '@/pages/kpi/Bonuses'
+import QuartalPremium from '@/pages/kpi/QuartalPremium'
+import Stats from '@/pages/kpi/Stats'
+import Indicators from '@/pages/kpi/Indicators'
 
-    export default {
-        name: 'KPIPages',
-        components: {
-            KPI,
-            Bonuses,
-            QuartalPremium,
-            Stats,
-            Indicators,
-        },
-        props: {
-            page: {
-                type: String,
-                default: 'kpi'
-            },
-            access: {
-                default: 'view'
-            }
-        },
-        data() {
-            return {
-                active: 0,
-            }
-        },
-        watch:{
-            page(){
-                this.init()
-            }
-        },
-        created() {
-        },
-        mounted() {
-            let uri = window.location.search.substring(1);
-            let params = new URLSearchParams(uri);
-            if(params.get("target")){
-                // может быть проблемой для spa
-                window.history.pushState({}, document.title, "/" + "kpi");
-            }
-        },
-        methods: {
-            init(){
-                // this.fetchData()
-                let uri = window.location.search.substring(1);
-                let params = new URLSearchParams(uri);
-                this.active = params.get("target") ? 3 : 0;
-            },
-            fetchData() {
-                let loader = this.$loading.show();
+export default {
+	name: 'KPIPages',
+	components: {
+		KPI,
+		Bonuses,
+		QuartalPremium,
+		Stats,
+		Indicators,
+	},
+	props: {
+		page: {
+			type: String,
+			default: 'kpi'
+		},
+		access: {
+			default: 'view'
+		}
+	},
+	data() {
+		return {
+			active: 0,
+		}
+	},
+	watch:{
+		page(){
+			this.init()
+		}
+	},
+	created() {
+	},
+	mounted() {
+		let uri = window.location.search.substring(1);
+		let params = new URLSearchParams(uri);
+		if(params.get('target')){
+			// может быть проблемой для spa
+			window.history.pushState({}, document.title, '/' + 'kpi');
+		}
+	},
+	methods: {
+		init(){
+			// this.fetchData()
+			let uri = window.location.search.substring(1);
+			let params = new URLSearchParams(uri);
+			this.active = params.get('target') ? 3 : 0;
+		},
+		fetchData() {
+			let loader = this.$loading.show();
 
-                axios.post('/kpi/' + this.page, {
-                    month: this.$moment(this.monthInfo.currentMonth, 'MMMM').format('M'),
-                }).then(response => {
+			this.axios.post('/kpi/' + this.page, {
+				month: this.$moment(this.monthInfo.currentMonth, 'MMMM').format('M'),
+			}).then(() => {
 
-                    loader.hide()
-                }).catch(error => {
-                    loader.hide()
-                    alert(error)
-                });
-            },
-        }
-    }
+				loader.hide()
+			}).catch(error => {
+				loader.hide()
+				alert(error)
+			});
+		},
+	}
+}
 </script>

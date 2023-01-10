@@ -19,417 +19,417 @@ const DATE_YMD = 'YYYY-MM-DD'
 const DATE_DMY = 'DD.MM.YYYY'
 
 export default {
-    name: 'UserEditView',
-    components: {
-        DefaultLayout,
-        UserEditMain,
-        UserEditAdditional,
-        UserEditGroups,
-        UserEditDocuments,
-        UserEditAdaptation,
-        UserEditPhones,
-        UserEditSalary,
-        UserEditMisc,
-        UserEditBitrix,
-        UModal,
-        AwardUserSidebar,
-    },
-    data(){
-        return {
-            activeUserId: this.$route.query.id || '',
-            csrf: '',
-            user: null,
-            groups: [],
-            positions: [],
-            programs: [],
-            workingDays: [],
-            workingTimes: [],
-            errors: [],
-            fire_causes: [],
-            auth_identifier: '',
-            old_name: '',
-            old_last_name: '',
-            old_email: '',
-            old_birthday: '',
-            old_phone: '',
-            old_phone_1: '',
-            old_phone_2: '',
-            old_phone_3: '',
-            old_phone_4: '',
-            old_zarplata: '',
-            old_kaspi_cardholder: '',
-            old_kaspi: '',
-            old_card_kaspi: '',
-            old_jysan_cardholder: '',
-            old_jysan: '',
-            old_card_jysan: '',
-            in_groups: [],
-            head_in_groups: [],
-            profileContacts: [],
-            taxes: [],
-            showBlocks: {
-                main: true,
-                additional: true,
-                groups: true,
-                documents: false,
-                adaptation: false,
-                phones: false,
-                salary: false,
-                misc: false,
-                bitrix: false,
-            },
-            isUploadImageModal: false,
-            filename: 'empty',
-            fileurl: this.user?.img_url || 'noavatar.png',
-            frontErrors: [],
-            counter: 0,
-            profile_errors: 0,
-            phone_errors: 0,
-            zarplata_errors: 0,
-            isBeforeSubmit: false,
-            trainee: false,
-            increment_provided: false,
-            delay: 1,
-            deleteError: '',
-            fireCause: '',
-        }
-    },
-    computed: {
-        isTrainee(){
-            return this.user?.user_description?.is_trainee === 1
-        },
-        formAction(){
-            if(this.user) return '/timetracking/person/update'
-            return '/timetracking/person/store'
-        },
-        userName(){
-            if(this.user) return `${this.user.last_name} ${this.user.name}`
-            return 'Новый сотрудник'
-        },
-        userPosition(){
-            if(!this.user) return 'Новый пользователь'
-            if(!this.user.position_id) return 'Пользователь CP.U_MARKETING.ORG'
-            const position = this.positions.find(pos => pos.id === this.user.position_id)
-            if(position) return position.position
-            return ''
-        },
-        formUserName(){
-            if(this.user) return this.user.name
-            return this.old_name
-        },
-        formUserLastName(){
-            if(this.user) return this.user.last_name
-            return this.old_last_name
-        },
-        formUserEmail(){
-            if(this.user) return this.user.email
-            return this.old_email
-        },
-        formUserBirthday(){
-            if(this.user && this.user.birthday) return this.$moment(this.user.birthday).format(DATE_YMD)
-            return this.old_birthday
-        },
-        userCreated(){
-            if(this.user) return this.$moment(this.user.created_at).format(DATE_DMY)
-            return ''
-        },
-        userApplied(){
-            if(this.user?.user_description?.applied) return this.$moment(this.user.user_description.applied).format(DATE_DMY)
-            return ''
-        },
-        userAppliedDays(){
-            if(!this.userApplied) return 0
-            return this.$moment(Date.now()).diff(this.$moment(this.user.user_description.applied), 'days')
-        },
-        userDeleted(){
-            if(this.user?.delete_time) return this.$moment(this.user?.delete_time).format(DATE_DMY)
-            return ''
-        },
-        userDeletedAt(){
-            if(this.user?.deleted_at && this.user.deleted_at !== '0000-00-00 00:00:00')
-                return this.$moment(this.user.deleted_at).format(DATE_DMY)
-            return ''
-        }
-    },
-    watch: {
-        activeUserId(){
-            this.updatePageData()
-        }
-    },
-    mounted(){
-        this.updatePageData()
-    },
-    methods: {
-        setData(data){
-            this.csrf = data.csrf
-            this.user = data.user
-            this.groups = data.groups
-            this.positions = data.positions
-            this.programs = data.programs
-            this.workingDays = data.workingDays
-            this.workingTimes = data.workingTimes
-            this.errors = data.errors
-            this.fire_causes = data.fire_causes
-            this.auth_identifier = data.auth_identifier
-            this.old_name = data.old_name
-            this.old_last_name = data.old_last_name
-            this.old_email = data.old_email
-            this.old_birthday = data.old_birthday
-            this.old_phone = data.old_phone
-            this.old_phone_1 = data.old_phone_1
-            this.old_phone_2 = data.old_phone_2
-            this.old_phone_3 = data.old_phone_3
-            this.old_phone_4 = data.old_phone_4
-            this.old_zarplata = data.old_zarplata
-            this.old_kaspi_cardholder = data.old_kaspi_cardholder
-            this.old_kaspi = data.old_kaspi
-            this.old_card_kaspi = data.old_card_kaspi
-            this.old_jysan_cardholder = data.old_jysan_cardholder
-            this.old_jysan = data.old_jysan
-            this.old_card_jysan = data.old_card_jysan
-            this.in_groups = data.in_groups
-            this.head_in_groups = data.head_in_groups
-            this.profileContacts = data.profileContacts
-            this.taxes = data.taxes
-        },
-        updatePageData(){
-            useAsyncPageData(`/timetracking/edit-person?id=${this.activeUserId}`).then(this.setData).catch(error => {
-                console.error('useAsyncPageData', error)
-            })
-        },
-        onClickAward(){
-            if(!this.user) return
-            document.dispatchEvent(new CustomEvent('award-user-sidebar', {
-                detail: `${this.user.id}`
-            }))
-        },
-        hideBlocks(){
-            for(const type in this.showBlocks)
-                this.showBlocks[type] = false
-        },
-        showBlock(id){
-            this.hideBlocks()
+	name: 'UserEditView',
+	components: {
+		DefaultLayout,
+		UserEditMain,
+		UserEditAdditional,
+		UserEditGroups,
+		UserEditDocuments,
+		UserEditAdaptation,
+		UserEditPhones,
+		UserEditSalary,
+		UserEditMisc,
+		UserEditBitrix,
+		UModal,
+		AwardUserSidebar,
+	},
+	data(){
+		return {
+			activeUserId: this.$route.query.id || '',
+			csrf: '',
+			user: null,
+			groups: [],
+			positions: [],
+			programs: [],
+			workingDays: [],
+			workingTimes: [],
+			errors: [],
+			fire_causes: [],
+			auth_identifier: '',
+			old_name: '',
+			old_last_name: '',
+			old_email: '',
+			old_birthday: '',
+			old_phone: '',
+			old_phone_1: '',
+			old_phone_2: '',
+			old_phone_3: '',
+			old_phone_4: '',
+			old_zarplata: '',
+			old_kaspi_cardholder: '',
+			old_kaspi: '',
+			old_card_kaspi: '',
+			old_jysan_cardholder: '',
+			old_jysan: '',
+			old_card_jysan: '',
+			in_groups: [],
+			head_in_groups: [],
+			profileContacts: [],
+			taxes: [],
+			showBlocks: {
+				main: true,
+				additional: true,
+				groups: true,
+				documents: false,
+				adaptation: false,
+				phones: false,
+				salary: false,
+				misc: false,
+				bitrix: false,
+			},
+			isUploadImageModal: false,
+			filename: 'empty',
+			fileurl: this.user?.img_url || 'noavatar.png',
+			frontErrors: [],
+			counter: 0,
+			profile_errors: 0,
+			phone_errors: 0,
+			zarplata_errors: 0,
+			isBeforeSubmit: false,
+			trainee: false,
+			increment_provided: false,
+			delay: 1,
+			deleteError: '',
+			fireCause: '',
+		}
+	},
+	computed: {
+		isTrainee(){
+			return this.user?.user_description?.is_trainee === 1
+		},
+		formAction(){
+			if(this.user) return '/timetracking/person/update'
+			return '/timetracking/person/store'
+		},
+		userName(){
+			if(this.user) return `${this.user.last_name} ${this.user.name}`
+			return 'Новый сотрудник'
+		},
+		userPosition(){
+			if(!this.user) return 'Новый пользователь'
+			if(!this.user.position_id) return 'Пользователь CP.U_MARKETING.ORG'
+			const position = this.positions.find(pos => pos.id === this.user.position_id)
+			if(position) return position.position
+			return ''
+		},
+		formUserName(){
+			if(this.user) return this.user.name
+			return this.old_name
+		},
+		formUserLastName(){
+			if(this.user) return this.user.last_name
+			return this.old_last_name
+		},
+		formUserEmail(){
+			if(this.user) return this.user.email
+			return this.old_email
+		},
+		formUserBirthday(){
+			if(this.user && this.user.birthday) return this.$moment(this.user.birthday).format(DATE_YMD)
+			return this.old_birthday
+		},
+		userCreated(){
+			if(this.user) return this.$moment(this.user.created_at).format(DATE_DMY)
+			return ''
+		},
+		userApplied(){
+			if(this.user?.user_description?.applied) return this.$moment(this.user.user_description.applied).format(DATE_DMY)
+			return ''
+		},
+		userAppliedDays(){
+			if(!this.userApplied) return 0
+			return this.$moment(Date.now()).diff(this.$moment(this.user.user_description.applied), 'days')
+		},
+		userDeleted(){
+			if(this.user?.delete_time) return this.$moment(this.user?.delete_time).format(DATE_DMY)
+			return ''
+		},
+		userDeletedAt(){
+			if(this.user?.deleted_at && this.user.deleted_at !== '0000-00-00 00:00:00')
+				return this.$moment(this.user.deleted_at).format(DATE_DMY)
+			return ''
+		}
+	},
+	watch: {
+		activeUserId(){
+			this.updatePageData()
+		}
+	},
+	mounted(){
+		this.updatePageData()
+	},
+	methods: {
+		setData(data){
+			this.csrf = data.csrf
+			this.user = data.user
+			this.groups = data.groups
+			this.positions = data.positions
+			this.programs = data.programs
+			this.workingDays = data.workingDays
+			this.workingTimes = data.workingTimes
+			this.errors = data.errors
+			this.fire_causes = data.fire_causes
+			this.auth_identifier = data.auth_identifier
+			this.old_name = data.old_name
+			this.old_last_name = data.old_last_name
+			this.old_email = data.old_email
+			this.old_birthday = data.old_birthday
+			this.old_phone = data.old_phone
+			this.old_phone_1 = data.old_phone_1
+			this.old_phone_2 = data.old_phone_2
+			this.old_phone_3 = data.old_phone_3
+			this.old_phone_4 = data.old_phone_4
+			this.old_zarplata = data.old_zarplata
+			this.old_kaspi_cardholder = data.old_kaspi_cardholder
+			this.old_kaspi = data.old_kaspi
+			this.old_card_kaspi = data.old_card_kaspi
+			this.old_jysan_cardholder = data.old_jysan_cardholder
+			this.old_jysan = data.old_jysan
+			this.old_card_jysan = data.old_card_jysan
+			this.in_groups = data.in_groups
+			this.head_in_groups = data.head_in_groups
+			this.profileContacts = data.profileContacts
+			this.taxes = data.taxes
+		},
+		updatePageData(){
+			useAsyncPageData(`/timetracking/edit-person?id=${this.activeUserId}`).then(this.setData).catch(error => {
+				console.error('useAsyncPageData', error)
+			})
+		},
+		onClickAward(){
+			if(!this.user) return
+			document.dispatchEvent(new CustomEvent('award-user-sidebar', {
+				detail: `${this.user.id}`
+			}))
+		},
+		hideBlocks(){
+			for(const type in this.showBlocks)
+				this.showBlocks[type] = false
+		},
+		showBlock(id){
+			this.hideBlocks()
 
-            switch (id) {
-                case 1:
-                    this.showBlocks.main = true
-                    this.showBlocks.additional = true
-                    this.showBlocks.groups = true
-                    break;
-                case 7:
-                    this.showBlocks.adaptation = true
-                    break;
-                case 2:
-                    this.showBlocks.groups = true
-                    break;
-                case 5:
-                    this.showBlocks.salary = true
-                    break;
-                case 9:
-                    this.showBlocks.documents = true
-                    break;
-                case 4:
-                    this.showBlocks.phones = true
-                    break;
-                case 6:
-                    this.showBlocks.misc = true
-                    this.showBlocks.bitrix = true
-                    break;
-            }
-        },
-        validateEmail(email) {
-            const re = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
-            return re.test(String(email).toLowerCase());
-        },
-        crop_image(){
-            const options = {
-                type: 'canvas',
-                size: 'viewport'
-            }
-            this.$refs.croppieRef.result(options, image => {
-                axios.post('/profile/upload/edit/', {
-                    image,
-                    user_id: this.activeUserId,
-                    file_name: this.filename,
-                }).then(({data}) => {
-                    this.isUploadImageModal = false
-                    this.fileurl = data.filename
-                    this.filename = data.filename
-                }).catch(err => {
-                    console.error(err)
-                    this.$toast.error('Не удалось загрузить изображение')
-                })
-            })
-        },
-        uploadImage({target, dataTransfer}){
-            const files = target.files || dataTransfer.files
-            if(!files.length) return
+			switch (id) {
+			case 1:
+				this.showBlocks.main = true
+				this.showBlocks.additional = true
+				this.showBlocks.groups = true
+				break;
+			case 7:
+				this.showBlocks.adaptation = true
+				break;
+			case 2:
+				this.showBlocks.groups = true
+				break;
+			case 5:
+				this.showBlocks.salary = true
+				break;
+			case 9:
+				this.showBlocks.documents = true
+				break;
+			case 4:
+				this.showBlocks.phones = true
+				break;
+			case 6:
+				this.showBlocks.misc = true
+				this.showBlocks.bitrix = true
+				break;
+			}
+		},
+		validateEmail(email) {
+			const re = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+			return re.test(String(email).toLowerCase());
+		},
+		crop_image(){
+			const options = {
+				type: 'canvas',
+				size: 'viewport'
+			}
+			this.$refs.croppieRef.result(options, image => {
+				axios.post('/profile/upload/edit/', {
+					image,
+					user_id: this.activeUserId,
+					file_name: this.filename,
+				}).then(({data}) => {
+					this.isUploadImageModal = false
+					this.fileurl = data.filename
+					this.filename = data.filename
+				}).catch(err => {
+					console.error(err)
+					this.$toast.error('Не удалось загрузить изображение')
+				})
+			})
+		},
+		uploadImage({target, dataTransfer}){
+			const files = target.files || dataTransfer.files
+			if(!files.length) return
 
-            var reader = new FileReader()
-            reader.onload = ({target}) => {
-                this.$refs.croppieRef.bind({
-                    url: target.result
-                })
-            }
+			var reader = new FileReader()
+			reader.onload = ({target}) => {
+				this.$refs.croppieRef.bind({
+					url: target.result
+				})
+			}
 
-            reader.readAsDataURL(this.files[0])
-            this.isUploadImageModal = true
-        },
-        async submit(isTrainee, increment_provided){
-            this.trainee = isTrainee
-            this.increment_provided = increment_provided
+			reader.readAsDataURL(this.files[0])
+			this.isUploadImageModal = true
+		},
+		async submit(isTrainee, increment_provided){
+			this.trainee = isTrainee
+			this.increment_provided = increment_provided
 
-            // нужно подождать пока рендер заполнит форму
-            await this.$nextTick()
+			// нужно подождать пока рендер заполнит форму
+			await this.$nextTick()
 
-            const formData = new FormData(this.$refs.form)
+			const formData = new FormData(this.$refs.form)
 
-            this.counter = 0;
-            this.profile_errors = 0;
-            this.phone_errors = 0;
-            this.zarplata_errors = 0;
+			this.counter = 0;
+			this.profile_errors = 0;
+			this.phone_errors = 0;
+			this.zarplata_errors = 0;
 
-            const phone = formData.get('phone'),
-                name = formData.get('name'),
-                last_name = formData.get('last_name'),
-                birthday = formData.get('birthday'),
-                email = formData.get('email'),
-                zarplata = formData.get('zarplata'),
-                selectedCityInput = formData.get('selectedCityInput');
+			const phone = formData.get('phone'),
+				name = formData.get('name'),
+				last_name = formData.get('last_name'),
+				birthday = formData.get('birthday'),
+				email = formData.get('email'),
+				zarplata = formData.get('zarplata'),
+				selectedCityInput = formData.get('selectedCityInput');
 
-            this.frontErrors = []
+			this.frontErrors = []
 
-            formData.set('zarplata', zarplata.replace(/\D/g, ''))
+			formData.set('zarplata', zarplata.replace(/\D/g, ''))
 
-            if (selectedCityInput.length < 2) {
-                this.frontErrors.push('Поиск: <b>Стран</b> <b>Город</b>')
-                this.counter++
-                this.profile_errors++
-            }
+			if (selectedCityInput.length < 2) {
+				this.frontErrors.push('Поиск: <b>Стран</b> <b>Город</b>')
+				this.counter++
+				this.profile_errors++
+			}
 
-            if (name.length < 2) {
-                this.frontErrors.push('Профиль: <b>Имя</b>')
-                this.counter++;
-                this.profile_errors++
-            }
+			if (name.length < 2) {
+				this.frontErrors.push('Профиль: <b>Имя</b>')
+				this.counter++;
+				this.profile_errors++
+			}
 
-            if (last_name.length < 3) {
-                this.frontErrors.push('Профиль: <b>Фамилия</b>')
-                this.counter++;
-                this.profile_errors++
-            }
+			if (last_name.length < 3) {
+				this.frontErrors.push('Профиль: <b>Фамилия</b>')
+				this.counter++;
+				this.profile_errors++
+			}
 
-            if (!this.validateEmail(email)) {
-                this.frontErrors.push('Профиль: <b>Email </b> не корректный')
-                this.counter++;
-                this.profile_errors++
-            }
+			if (!this.validateEmail(email)) {
+				this.frontErrors.push('Профиль: <b>Email </b> не корректный')
+				this.counter++;
+				this.profile_errors++
+			}
 
-            if (birthday.length == 0) {
-                this.frontErrors.push('Профиль: <b>День рождения</b>')
-                this.counter++;
-                this.profile_errors++
-            }
+			if (birthday.length == 0) {
+				this.frontErrors.push('Профиль: <b>День рождения</b>')
+				this.counter++;
+				this.profile_errors++
+			}
 
-            if(!isTrainee){
-                if (phone.length < 11) {
-                    this.frontErrors.push('Контакты: <b>Мобильный</b>')
-                    this.counter++;
-                    this.phone_errors++
-                }
-            }
+			if(!isTrainee){
+				if (phone.length < 11) {
+					this.frontErrors.push('Контакты: <b>Мобильный</b>')
+					this.counter++;
+					this.phone_errors++
+				}
+			}
 
-            // if (phone_1.length < 6) {
-                // this.frontErrors.push('Контакты: <b>Домашний</b>')
-            //     this.counter++;
-            //     this.phone_errors++
-            // }
+			// if (phone_1.length < 6) {
+			// this.frontErrors.push('Контакты: <b>Домашний</b>')
+			//     this.counter++;
+			//     this.phone_errors++
+			// }
 
-            // if (phone_2.length < 11) {
-                // this.frontErrors.push('Контакты: <b>Супруга/Муж</b>')
-            //     this.counter++;
-            //     this.phone_errors++
-            // }
+			// if (phone_2.length < 11) {
+			// this.frontErrors.push('Контакты: <b>Супруга/Муж</b>')
+			//     this.counter++;
+			//     this.phone_errors++
+			// }
 
-            // if (phone_3.length < 11) {
-                // this.frontErrors.push('Контакты: <b>Друг/Брат/Сестра</b>')
-            //     this.counter++;
-            //     this.phone_errors++
-            // }
-
-
-            // if (workingCity == null) {
-                // this.frontErrors.push('Город: <b>Астана</b>')
-            //     this.counter++;
-            //     this.profile_errors++
-            // }
-
-            // if (validateCnum()) {
-                // this.frontErrors.push('Зарплата: <b>Номер карты</b>')
-            //     this.counter++;
-            //     this.zarplata_errors++;
-            // }
+			// if (phone_3.length < 11) {
+			// this.frontErrors.push('Контакты: <b>Друг/Брат/Сестра</b>')
+			//     this.counter++;
+			//     this.phone_errors++
+			// }
 
 
-            if (this.counter > 0) {
-                this.isBeforeSubmit = true
-            }
-            else {
-                this.sendForm(formData)
-            }
-        },
-        sendForm(formData){
-            axios({
-                method: 'post',
-                url: this.formAction,
-                data: formData,
-                headers: { 'Content-Type': 'multipart/form-data' },
-            }).then(({data}) => {
-                this.parseResponse(data)
-            }).catch(err => {
-                console.error(err)
-                this.$toast.error('Не удалось сохранить информацию о сотруднике')
-            })
-        },
-        deleteUser(){
-            if(this.$refs.file8.value && this.fireCause !== 'Дубликат, 2 учетки') {
-                this.deleteError = 'Прикрепите Заявление об увольнении!'
-                return
-            }
+			// if (workingCity == null) {
+			// this.frontErrors.push('Город: <b>Астана</b>')
+			//     this.counter++;
+			//     this.profile_errors++
+			// }
 
-            this.deleteError = ''
-            const formData = new FormData(this.$refs.deleteForm)
-            axios({
-                method: 'post',
-                url: '/timetracking/delete-person',
-                data: formData,
-                headers: { 'Content-Type': 'multipart/form-data' },
-            }).then(({data}) => {
-                this.parseResponse(data)
-            }).catch(err => {
-                console.error(err)
-                this.$toast.error('Не удалось уволить сотрудника')
-            })
-        },
-        recoverUser(){
-            const formData = new FormData(this.$refs.recoverForm)
-            axios({
-                method: 'post',
-                url: '/timetracking/recover-person',
-                data: formData,
-                headers: { 'Content-Type': 'multipart/form-data' },
-            }).then(({data}) => {
-                this.parseResponse(data)
-            }).catch(err => {
-                console.error(err)
-                this.$toast.error('Не удалось восстановить сотрудника')
-            })
-        },
-        parseResponse(html){
-            const data = useDataFromResponse(html)
-            this.setData(data)
-        }
-    }
+			// if (validateCnum()) {
+			// this.frontErrors.push('Зарплата: <b>Номер карты</b>')
+			//     this.counter++;
+			//     this.zarplata_errors++;
+			// }
+
+
+			if (this.counter > 0) {
+				this.isBeforeSubmit = true
+			}
+			else {
+				this.sendForm(formData)
+			}
+		},
+		sendForm(formData){
+			axios({
+				method: 'post',
+				url: this.formAction,
+				data: formData,
+				headers: { 'Content-Type': 'multipart/form-data' },
+			}).then(({data}) => {
+				this.parseResponse(data)
+			}).catch(err => {
+				console.error(err)
+				this.$toast.error('Не удалось сохранить информацию о сотруднике')
+			})
+		},
+		deleteUser(){
+			if(this.$refs.file8.value && this.fireCause !== 'Дубликат, 2 учетки') {
+				this.deleteError = 'Прикрепите Заявление об увольнении!'
+				return
+			}
+
+			this.deleteError = ''
+			const formData = new FormData(this.$refs.deleteForm)
+			axios({
+				method: 'post',
+				url: '/timetracking/delete-person',
+				data: formData,
+				headers: { 'Content-Type': 'multipart/form-data' },
+			}).then(({data}) => {
+				this.parseResponse(data)
+			}).catch(err => {
+				console.error(err)
+				this.$toast.error('Не удалось уволить сотрудника')
+			})
+		},
+		recoverUser(){
+			const formData = new FormData(this.$refs.recoverForm)
+			axios({
+				method: 'post',
+				url: '/timetracking/recover-person',
+				data: formData,
+				headers: { 'Content-Type': 'multipart/form-data' },
+			}).then(({data}) => {
+				this.parseResponse(data)
+			}).catch(err => {
+				console.error(err)
+				this.$toast.error('Не удалось восстановить сотрудника')
+			})
+		},
+		parseResponse(html){
+			const data = useDataFromResponse(html)
+			this.setData(data)
+		}
+	}
 }
 </script>
 

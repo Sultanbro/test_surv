@@ -10,7 +10,7 @@
       </div>
     </div>
     <div class="messenger__messages-search-results">
-      <div class="messenger__message-wrapper" v-for="message in chatSearchMessagesResults" @click="goto(message, $event)">
+      <div class="messenger__message-wrapper" v-for="(message, index) in chatSearchMessagesResults" :key="index" @click="goto(message, $event)">
         <ConversationMessage :message="message"/>
       </div>
     </div>
@@ -23,8 +23,8 @@
         </div>
       </div>
       <div class="messenger__messages-search-results">
-        <div class="messenger__message-wrapper" v-for="file in chatSearchFilesResults" @click="goto(file, $event)">
-          <ConversationMessage :message="file"></ConversationMessage>
+        <div class="messenger__message-wrapper" v-for="(file, index) in chatSearchFilesResults" :key="index" @click="goto(file, $event)">
+          <ConversationMessage :message="file"/>
         </div>
       </div>
     </div>
@@ -33,57 +33,57 @@
 </template>
 
 <script>
-import {mapActions, mapGetters} from "vuex";
-import ConversationMessage from "../ConversationFeed/ConversationMessage/ConversationMessage.vue";
+import {mapActions, mapGetters} from 'vuex';
+import ConversationMessage from '../ConversationFeed/ConversationMessage/ConversationMessage.vue';
 
 export default {
-  name: "ConversationSearch",
-  components: {ConversationMessage},
-  data() {
-    return {
-      searchMessagesQuery: '',
-      searchFilesQuery: '',
-      searchMessagesDate: '',
-    }
-  },
-  computed: {
-    ...mapGetters(['chat', 'chatSearchMessagesResults', 'chatSearchFilesResults']),
-  },
-  watch: {
-    searchMessagesDate() {
-      this.searchMessages();
-    },
-    searchMessagesQuery() {
-      this.searchMessages();
-    },
-    searchFilesQuery() {
-      this.searchFiles();
-    },
-  },
-  methods: {
-    ...mapActions(['findMessagesInChat', 'findFilesInChat', 'loadMessages', 'toggleChatSearchMode']),
-    goto(message, event) {
-      event.stopPropagation();
-      this.loadMessages({
-        reset: false,
-        goto: message.id
-      });
-      this.toggleChatSearchMode();
-    },
-    searchMessages() {
-      this.findMessagesInChat({
-        text: this.searchMessagesQuery,
-        chat_id: this.chat.id,
-        date: this.searchMessagesDate,
-      });
-    },
-    searchFiles() {
-      this.findFilesInChat({
-        text: this.searchFilesQuery,
-        chat_id: this.chat.id,
-      });
-    },
-  }
+	name: 'ConversationSearch',
+	components: {ConversationMessage},
+	data() {
+		return {
+			searchMessagesQuery: '',
+			searchFilesQuery: '',
+			searchMessagesDate: '',
+		}
+	},
+	computed: {
+		...mapGetters(['chat', 'chatSearchMessagesResults', 'chatSearchFilesResults']),
+	},
+	watch: {
+		searchMessagesDate() {
+			this.searchMessages();
+		},
+		searchMessagesQuery() {
+			this.searchMessages();
+		},
+		searchFilesQuery() {
+			this.searchFiles();
+		},
+	},
+	methods: {
+		...mapActions(['findMessagesInChat', 'findFilesInChat', 'loadMessages', 'toggleChatSearchMode']),
+		goto(message, event) {
+			event.stopPropagation();
+			this.loadMessages({
+				reset: false,
+				goto: message.id
+			});
+			this.toggleChatSearchMode();
+		},
+		searchMessages() {
+			this.findMessagesInChat({
+				text: this.searchMessagesQuery,
+				chat_id: this.chat.id,
+				date: this.searchMessagesDate,
+			});
+		},
+		searchFiles() {
+			this.findFilesInChat({
+				text: this.searchFilesQuery,
+				chat_id: this.chat.id,
+			});
+		},
+	}
 }
 </script>
 

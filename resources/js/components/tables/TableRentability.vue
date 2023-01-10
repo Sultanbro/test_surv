@@ -1,7 +1,7 @@
 <template>
 <div class="mb-3" :key="skey">
-   
-    
+
+
     <div class="table-container">
         <table class="table table-bordered table-responsive whitespace-no-wrap custom-table-rentability">
             <thead>
@@ -10,8 +10,8 @@
                 <th></th>
 
                 <template v-for="(m, key) in months">
-                    <th colspan="2" class="text-center">{{m}}</th>
-                    <th class="br1 text-center">{{ tops[key]  }}</th>
+                    <th colspan="2" class="text-center" :key="key">{{m}}</th>
+                    <th class="br1 text-center" :key="key + 'a'">{{ tops[key]  }}</th>
                 </template>
             </tr>
 
@@ -33,12 +33,12 @@
                             выручка <i class="fa fa-sort ml-1"></i>
                         </div>
                     </th>
-                    <th class="font-bold text-center bb1" @click="sort('c' + i)" :key="i">
+                    <th class="font-bold text-center bb1" @click="sort('c' + i)" :key="i + 'a'">
                         <div class="d-flex align-items-center">
                             ФОТ <i class="fa fa-sort ml-1"></i>
                         </div>
                     </th>
-                    <th class="font-bold text-center br1 bb1" @click="sort('r' + i)" :key="i">
+                    <th class="font-bold text-center br1 bb1" @click="sort('r' + i)" :key="i + 'b'">
                         <div class="d-flex align-items-center">
                             Маржа <i class="fa fa-sort ml-1"></i>
                         </div>
@@ -57,18 +57,18 @@
                 </td>
 
                 <template v-for="i in 12">
-                    <td class="text-center" :class="{'p-0': index != 0}">
+                    <td class="text-center" :class="{'p-0': index != 0}" :key="i">
                         <input v-if="index != 0" class="input"
                                :class="{'edited':item['ed' + i]}"
                                type="number" v-model="item['l' + i]" @change="update(i, index)">
                         <div v-else>{{ item['l' + i] }}</div>
                     </td>
-                    <td class="text-center">
+                    <td class="text-center" :key="i + 'a'">
 
                         {{  numberWithCommas( item['c' + i] ) }}
 
                     </td>
-                    <td class="text-center br1"
+                    <td class="text-center br1" :key="i + 'b'"
                         :class="{
                         'c-red text-white': item['rc' + i] < 20 && item['rc' + i] != '',
                         'c-orange': item['rc' + i] >= 20 && item['rc' + i] < 50,
@@ -87,130 +87,130 @@
 
 <script>
 export default {
-    name: "TableRentability",
-    props: {
-        year: Number,
-        month: Number
-    },
-    data() {
-        return {
-            items: [],
-            months: {
-                1: 'Январь',
-                2: 'Февраль',
-                3: 'Март',
-                4: 'Апрель',
-                5: 'Май',
-                6: 'Июнь',
-                7: 'Июль',
-                8: 'Август',
-                9: 'Сентябрь',
-                10: 'Октябрь',
-                11: 'Ноябрь',
-                12: 'Декабрь',
-            },
-            tops: {},
-            skey: 1,
-            sorts: {}
-        };
-    },
-    watch: { 
-        year: function(newVal, oldVal) { 
-            this.fetchData();
-        },
-        month: function(newVal, oldVal) { 
-            this.fetchData();
-        },
-    },
+	name: 'TableRentability',
+	props: {
+		year: Number,
+		month: Number
+	},
+	data() {
+		return {
+			items: [],
+			months: {
+				1: 'Январь',
+				2: 'Февраль',
+				3: 'Март',
+				4: 'Апрель',
+				5: 'Май',
+				6: 'Июнь',
+				7: 'Июль',
+				8: 'Август',
+				9: 'Сентябрь',
+				10: 'Октябрь',
+				11: 'Ноябрь',
+				12: 'Декабрь',
+			},
+			tops: {},
+			skey: 1,
+			sorts: {}
+		};
+	},
+	watch: {
+		year: function() {
+			this.fetchData();
+		},
+		month: function() {
+			this.fetchData();
+		},
+	},
 
-    created() {
-        this.fetchData(); 
-    },
+	created() {
+		this.fetchData();
+	},
 
-    methods: {
-          
-        countTop() {
-            Object.keys(this.months).forEach(key => {
-                let s = this.items[0]['c' + key];
-                let a = (this.items[0]['l' + key] - s) / s * 100;
-                this.tops[key] = isNaN(a) ? '' : Number(a).toFixed(1) + '%';
-            });
-        },
+	methods: {
 
-        countRents() {
-            this.items.forEach(item => {
-                for(let i = 1;i<=12;i++) {
-                    let l = item['l' + i];
-                    let c = item['c' + i];
-                    let a = (l- c) / l * 100;
-                    item['r' + i] = !isFinite(a)  ? '' : Number(a).toFixed(1) + '%';
-                    item['rc' + i] = !isFinite(a) ? 0 : Number(a);
-                }
-            });
-        },
+		countTop() {
+			Object.keys(this.months).forEach(key => {
+				let s = this.items[0]['c' + key];
+				let a = (this.items[0]['l' + key] - s) / s * 100;
+				this.tops[key] = isNaN(a) ? '' : Number(a).toFixed(1) + '%';
+			});
+		},
 
-        fetchData() {
-            axios 
-                .post("/timetracking/top/get-rentability", {
-                    year: this.year,
-                    month: this.month
-                })
-                .then((response) => {
-                    this.items = response.data
-                    this.countRents();
-                    this.countTop();
-                    this.skey++;
-                });
-        },
+		countRents() {
+			this.items.forEach(item => {
+				for(let i = 1;i<=12;i++) {
+					let l = item['l' + i];
+					let c = item['c' + i];
+					let a = (l- c) / l * 100;
+					item['r' + i] = !isFinite(a)  ? '' : Number(a).toFixed(1) + '%';
+					item['rc' + i] = !isFinite(a) ? 0 : Number(a);
+				}
+			});
+		},
 
-        update(month, index) {
+		fetchData() {
+			this.axios
+				.post('/timetracking/top/get-rentability', {
+					year: this.year,
+					month: this.month
+				})
+				.then((response) => {
+					this.items = response.data
+					this.countRents();
+					this.countTop();
+					this.skey++;
+				});
+		},
 
-            let item = this.items[index];
+		update(month, index) {
 
-            axios 
-                .post("/timetracking/top/top_edited_value/update", {
-                    year: this.year,
-                    month: month,
-                    value: item['l' + month],
-                    group_id: item.group_id,
-                })
-                .then((response) => {
-                    let i = month;
+			let item = this.items[index];
 
-                    item['r' + i] = Number(item['c' + i]) > 0 ? Number(Number(item['l' + i]) * 1000 / Number(item['c' + i]) ).toFixed(1) : 0;
-                    item['rc' + i] = item['r' + i] + '%';
-                    
-                    item['ed' + i] = true;
+			this.axios
+				.post('/timetracking/top/top_edited_value/update', {
+					year: this.year,
+					month: month,
+					value: item['l' + month],
+					group_id: item.group_id,
+				})
+				.then(() => {
+					let i = month;
 
-                    this.$toast.success('Сохранено');
-                });
-        },
+					item['r' + i] = Number(item['c' + i]) > 0 ? Number(Number(item['l' + i]) * 1000 / Number(item['c' + i]) ).toFixed(1) : 0;
+					item['rc' + i] = item['r' + i] + '%';
 
-        numberWithCommas(x) {
-            return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
-        },
+					item['ed' + i] = true;
 
-        sort(field) {
+					this.$toast.success('Сохранено');
+				});
+		},
 
-            if(this.sorts[field] === undefined) {
-                this.sorts[field] = 'asc';
-            } 
+		numberWithCommas(x) {
+			return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+		},
 
-            let item = this.items[0];
+		sort(field) {
 
-            this.items.shift();
-            if(this.sorts[field] === 'desc') {
-                this.items.sort((a, b) => (a[field] > b[field]) ? 1 : -1);
-                this.sorts[field] = 'asc';
-            } else {
-                this.items.sort((a, b) => (a[field] < b[field]) ? 1 : -1);
-                this.sorts[field] = 'desc';
-            }
-            
-            this.items.unshift(item);
-        },
+			if(this.sorts[field] === undefined) {
+				this.sorts[field] = 'asc';
+			}
 
-    },
+			let item = this.items[0];
+
+			this.items.shift();
+			if(this.sorts[field] === 'desc') {
+				this.items.sort((a, b) => (a[field] > b[field]) ? 1 : -1);
+				this.sorts[field] = 'asc';
+			} else {
+				this.items.sort((a, b) => (a[field] < b[field]) ? 1 : -1);
+				this.sorts[field] = 'desc';
+			}
+
+			this.items.unshift(item);
+		},
+
+	},
 };
 </script>
 <style lang="scss" scoped>

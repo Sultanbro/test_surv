@@ -3,9 +3,9 @@
     <div class="first-step">
         <div class="row">
             <div class="col-md-12">
-                <p class="heading">Шаг 1: Загрузите Excel файл 
+                <p class="heading">Шаг 1: Загрузите Excel файл
                     <b-button variant="default" size="sm" id="btn"  class="ml-2 rounded">
-                        <i class="fa fa-info"></i> 
+                        <i class="fa fa-info"></i>
                     </b-button></p>
 
                 <b-tooltip target="btn" placement="bottom">
@@ -30,21 +30,21 @@
                             drop-placeholder="Перетащите файл сюда..."
                              accept="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet, application/vnd.ms-excel"
                             class="mt-3"
-                            ></b-form-file> 
+                            ></b-form-file>
                     </div>
                     <b-button variant="primary" @click="uploadFile" class="mt-2 mb-2">
                         <i class="fa fa-file"></i> Загрузить
                     </b-button>
-                </form> 
+                </form>
             </div>
             <div class="col-md-12">
-                <p style="color:red" v-for="error in errors">{{ error }}</p>
+                <p style="color:red" v-for="error in errors" :key="error">{{ error }}</p>
             </div>
         </div>
     </div>
-    
 
-    
+
+
     <div v-if="showStepTwo">
         <div class="row">
             <div class="col-md-12">
@@ -54,13 +54,13 @@
         <div class="row">
             <div class="col-md-4">
                 <p>Сотрудник в Excel</p>
-            </div> 
+            </div>
             <div class="col-md-4">
                 <p>Сотрудник в табели</p>
             </div>
             <div class="col-md-4">
                 <p>Данные</p>
-            </div>    
+            </div>
         </div>
         <div class="row my-2 py-3 border-b"  v-for="item in items" :key="item.name">
             <div class="col-md-4">
@@ -69,7 +69,7 @@
 
             <div class="col-md-4">
                 <select class="form-control" v-model="item.id">
-                    <option :value="user.id" v-for="user in users">{{ user.last_name }} {{ user.name }} ID {{ user.id }}</option>
+                    <option :value="user.id" v-for="user in users" :key="user.id">{{ user.last_name }} {{ user.name }} ID {{ user.id }}</option>
                 </select>
             </div>
             <div class="col-md-4">
@@ -81,7 +81,7 @@
                     <div>
                         <b>Часы:</b> {{ item.hours }}
                     </div>
-                </div> 
+                </div>
 
                 <div class="" v-if="(group_id == 88 && activity_id == 166) || (group_id == 42 && activity_id == 13) || (group_id == 71)">
                     <div>
@@ -99,157 +99,157 @@
         <div class="row">
             <div class="col-sm-6 mt-2" v-if="group_id == 71 || group_id == 88">
                 <b-form-datepicker id="example-datepicker"
-                    v-model="date" 
+                    v-model="date"
                     v-bind="datepickerLabels"
-                    locale="ru"  
+                    locale="ru"
                     :start-weekday="1"></b-form-datepicker>
             </div>
             <div class="col-sm-6 mt-2" v-if="activity_id == 94">
                 <b-form-datepicker id="example-datepicker"
-                    v-model="date" 
+                    v-model="date"
                     v-bind="datepickerLabels"
-                    locale="ru"  
+                    locale="ru"
                     :start-weekday="1"></b-form-datepicker>
             </div>
             <div class="col-md-12 mt-2">
                 <b-button variant="primary" @click="saveConnects">
-                    <i class="fa fa-save"></i> Сохранить 
+                    <i class="fa fa-save"></i> Сохранить
                 </b-button>
             </div>
         </div>
     </div>
-    
+
 </div>
 </template>
 
 
 <script>
 export default {
-    name: "activity-excel-import",
-    props: {
-        group_id: {
-            type: Number, 
-        },
-        table: {
-            type: String, 
-            default: 'minutes', 
-        },
-        activity_id: {
-            type: Number,
-        }
-    },
-    data() {
-        return { 
-            fileIsCorrect: false,
-            message: null,
-            activebtn: null,
-            file: undefined,
-            items: [],
-            date: null,
-            filename: '',
-            showStepTwo: false,
-            errors: [],
-        }
-    },
-    created() {
-        this.datepickerLabels =  {
-            labelPrevDecade: 'Пред 10 лет',
-            labelPrevYear: 'Предыдущий год',
-            labelPrevMonth: 'Предыдущий месяц',
-            labelCurrentMonth: 'Текущий месяц',
-            labelNextMonth: 'Следующий месяц',
-            labelNextYear: 'Следующий год',
-            labelNextDecade: 'След 10 лет',
-            labelToday: 'Cегодня',
-            labelSelected: 'Выбранная дата',
-            labelNoDateSelected: 'Дата не выбрана',
-            labelCalendar: 'Календарь',
-            labelNav: 'Навигация',
-            labelHelp: 'Перемещайтесь по календарю с помощью клавиш со стрелками'
-        };
-    },
-    watch:{
-        file(before,after){
-            if(before.size && before.size > 1024000)
-            {
-                alert('Файл слишком большой!');
-                this.file = undefined;
-            }else{
-                this.fileIsCorrect = true;
-            }
+	name: 'activity-excel-import',
+	props: {
+		group_id: {
+			type: Number,
+		},
+		table: {
+			type: String,
+			default: 'minutes',
+		},
+		activity_id: {
+			type: Number,
+		}
+	},
+	data() {
+		return {
+			fileIsCorrect: false,
+			message: null,
+			activebtn: null,
+			file: undefined,
+			items: [],
+			date: null,
+			filename: '',
+			showStepTwo: false,
+			errors: [],
+		}
+	},
+	created() {
+		this.datepickerLabels =  {
+			labelPrevDecade: 'Пред 10 лет',
+			labelPrevYear: 'Предыдущий год',
+			labelPrevMonth: 'Предыдущий месяц',
+			labelCurrentMonth: 'Текущий месяц',
+			labelNextMonth: 'Следующий месяц',
+			labelNextYear: 'Следующий год',
+			labelNextDecade: 'След 10 лет',
+			labelToday: 'Cегодня',
+			labelSelected: 'Выбранная дата',
+			labelNoDateSelected: 'Дата не выбрана',
+			labelCalendar: 'Календарь',
+			labelNav: 'Навигация',
+			labelHelp: 'Перемещайтесь по календарю с помощью клавиш со стрелками'
+		};
+	},
+	watch:{
+		file(before){
+			if(before.size && before.size > 1024000)
+			{
+				alert('Файл слишком большой!');
+				this.file = undefined;
+			}else{
+				this.fileIsCorrect = true;
+			}
 
-            console.log(before.size);
-        }
-    },
-    methods: {
-        test(){
-            console.log('testing');
-        },
-        saveConnects() {
-            let loader = this.$loading.show();
-            axios.post('/timetracking/analytics/activity/importexcel/save', {
-                date: this.date,
-                items: this.items,
-                filename: this.filename,
-                activity_id: this.activity_id,
-                group_id: this.group_id,
-            }).then(response => {
-                this.$toast.info('Сохранено');
-                this.$emit('close');
-                this.file = undefined
-                this.showStepTwo = false
-                this.items = []
-                loader.hide() 
-            }).catch(function(e){
-                loader.hide() 
-                alert(e)
-            })
-        },
-        uploadFile(){
-            let loader = this.$loading.show();
-            
-            let formData = new FormData();
-            formData.append('file', this.file);
-            formData.append('group_id', this.group_id);
-            formData.append('activity_id', this.activity_id);
+			console.log(before.size);
+		}
+	},
+	methods: {
+		test(){
+			console.log('testing');
+		},
+		saveConnects() {
+			let loader = this.$loading.show();
+			this.axios.post('/timetracking/analytics/activity/importexcel/save', {
+				date: this.date,
+				items: this.items,
+				filename: this.filename,
+				activity_id: this.activity_id,
+				group_id: this.group_id,
+			}).then(() => {
+				this.$toast.info('Сохранено');
+				this.$emit('close');
+				this.file = undefined
+				this.showStepTwo = false
+				this.items = []
+				loader.hide()
+			}).catch(function(e){
+				loader.hide()
+				alert(e)
+			})
+		},
+		uploadFile(){
+			let loader = this.$loading.show();
 
-            var _this = this; 
+			let formData = new FormData();
+			formData.append('file', this.file);
+			formData.append('group_id', this.group_id);
+			formData.append('activity_id', this.activity_id);
 
-            axios.post( '/timetracking/analytics/activity/importexcel', formData, {
-                headers: {
-                    "Content-Type": "multipart/form-data"
-                }
-            }).then(function(response){
-                    if(response.data.errors.length > 0) {
-                        _this.errors = response.data.errors
-                        loader.hide() 
-                        return; 
-                    }
-                    _this.items = response.data.items;
+			var _this = this;
 
-                    _this.items.sort((a, b) => (a.name > b.name) ? 1 : -1);
+			this.axios.post( '/timetracking/analytics/activity/importexcel', formData, {
+				headers: {
+					'Content-Type': 'multipart/form-data'
+				}
+			}).then(function(response){
+				if(response.data.errors.length > 0) {
+					_this.errors = response.data.errors
+					loader.hide()
+					return;
+				}
+				_this.items = response.data.items;
 
-                    _this.errors = []
-                    if(response.data.items.length > 0) _this.showStepTwo = true;
-                    _this.users = response.data.users
-                    _this.users.push({
-                        id: 0,
-                        name: '',
-                        last_name: '',
-                    })
-                    _this.date = response.data.date
-                    _this.filename = response.data.filename
-                    loader.hide();  
-                }).catch(function(e){
-                    loader.hide() 
-                    alert(e)
-                })
-                
-      }, 
+				_this.items.sort((a, b) => (a.name > b.name) ? 1 : -1);
 
-        
+				_this.errors = []
+				if(response.data.items.length > 0) _this.showStepTwo = true;
+				_this.users = response.data.users
+				_this.users.push({
+					id: 0,
+					name: '',
+					last_name: '',
+				})
+				_this.date = response.data.date
+				_this.filename = response.data.filename
+				loader.hide();
+			}).catch(function(e){
+				loader.hide()
+				alert(e)
+			})
 
-    } 
+		},
+
+
+
+	}
 }
 </script>
 

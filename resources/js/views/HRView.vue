@@ -5,27 +5,27 @@ const ReportsNav = () => import(/* webpackChunkName: "ReportsNav" */ '@/componen
 const Analytics = () => import(/* webpackChunkName: "HRPage" */ '@/pages/Analytics.vue')
 
 export default {
-    name: 'HRView',
-    components: {
-        DefaultLayout,
-        ReportsNav,
-        Analytics,
-    },
-    data(){
-        return {
-            groups: null,
-            activeuserid: '0',
-            activeTab: 'nav-profilex-tab',
-        }
-    },
-    mounted(){
-        useAsyncPageData('/timetracking/analytics').then(data => {
-            this.groups = data.groups || null
-            this.activeuserid = '' + data.activeuserid
-        }).catch(error => {
-            console.error('useAsyncPageData', error)
-        })
-    }
+	name: 'HRView',
+	components: {
+		DefaultLayout,
+		ReportsNav,
+		Analytics,
+	},
+	data(){
+		return {
+			groups: null,
+			activeuserid: '0',
+			activeTab: 'nav-profilex-tab',
+		}
+	},
+	mounted(){
+		useAsyncPageData('/timetracking/analytics').then(data => {
+			this.groups = data.groups || null
+			this.activeuserid = '' + data.activeuserid
+		}).catch(error => {
+			console.error('useAsyncPageData', error)
+		})
+	}
 }
 </script>
 

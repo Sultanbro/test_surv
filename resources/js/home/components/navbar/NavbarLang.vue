@@ -28,19 +28,19 @@
 
 <script>
 export default {
-  props: {
-    lang: String
-  },
-  data() {
-    return {
-      active: false
-    }
-  },
-  methods: {
-    hidePopup() {
-      if (this.active) this.active = false
-    }
-  }
+	props: {
+		lang: String
+	},
+	data() {
+		return {
+			active: false
+		}
+	},
+	methods: {
+		hidePopup() {
+			if (this.active) this.active = false
+		}
+	}
 }
 </script>
 

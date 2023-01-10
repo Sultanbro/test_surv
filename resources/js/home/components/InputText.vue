@@ -11,20 +11,20 @@
 
 <script>
 export default {
-  props: {
-    placeholder: String,
-    value: String
-  },
-  data(){
-    return {
-      localValue: this.value
-    }
-  },
-  watch: {
-    localValue(val){
-      this.$emit('input', val)
-    }
-  }
+	props: {
+		placeholder: String,
+		value: String
+	},
+	data(){
+		return {
+			localValue: this.value
+		}
+	},
+	watch: {
+		localValue(val){
+			this.$emit('input', val)
+		}
+	}
 }
 </script>
 

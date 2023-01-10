@@ -97,143 +97,143 @@
 
 <script>
 export default {
-  name: "NotificationsPopup",
-  props: {},
-  data: function () {
-    return {
-      dateFormat: "DD.MM.YYYY",
-      data: {
-        unreadQuantity: 0,
-        unread: [],
-        read: [],
-      },
-      loading: false,
-    };
-  },
-  created() {
-    this.fetchData();
-  },
-  methods: {
-    fetchData() {
-      this.loading = true;
+	name: 'NotificationsPopup',
+	props: {},
+	data: function () {
+		return {
+			dateFormat: 'DD.MM.YYYY',
+			data: {
+				unreadQuantity: 0,
+				unread: [],
+				read: [],
+			},
+			loading: false,
+		};
+	},
+	created() {
+		this.fetchData();
+	},
+	methods: {
+		fetchData() {
+			this.loading = true;
 
-      axios
-        .post("/notifications", {})
-        .then((response) => {
-          this.data = response.data;
-          console.log(this.data);
-          this.loading = false;
-        })
-        .catch((e) => {
-          console.log(e);
-          this.loading = false;
-        });
-    },
+			this.axios
+				.post('/notifications', {})
+				.then((response) => {
+					this.data = response.data;
+					console.log(this.data);
+					this.loading = false;
+				})
+				.catch((e) => {
+					console.log(e);
+					this.loading = false;
+				});
+		},
 
-    /**
+		/**
      * Set all notifications as read
      */
-    setAllRead() {
-      this.loading = true;
+		setAllRead() {
+			this.loading = true;
 
-      axios
-        .post("/notifications/set-read-all/", {})
-        .then((response) => {
-          if (response.data == "1") {
-            this.data.unread.forEach((el) => {
-              this.data.read.push(el);
-            });
+			this.axios
+				.post('/notifications/set-read-all/', {})
+				.then((response) => {
+					if (response.data == '1') {
+						this.data.unread.forEach((el) => {
+							this.data.read.push(el);
+						});
 
-            this.data.unread = [];
-            this.data.unreadQuantity = 0;
+						this.data.unread = [];
+						this.data.unreadQuantity = 0;
 
-            this.$toast.success("Все уведомления отмечены прочитанными");
-          }
-          this.loading = false;
-        })
-        .catch((e) => {
-          console.log(e);
-          this.loading = false;
-        });
-    },
+						this.$toast.success('Все уведомления отмечены прочитанными');
+					}
+					this.loading = false;
+				})
+				.catch((e) => {
+					console.log(e);
+					this.loading = false;
+				});
+		},
 
-    /**
+		/**
      * set notification as read
      */
-    setRead(i) {
-      console.log(this.data.unread[i]);
+		setRead(i) {
+			console.log(this.data.unread[i]);
 
-      this.req(i, {
-        id: this.data.unread[i],
-      });
-    },
+			this.req(i, {
+				id: this.data.unread[i],
+			});
+		},
 
-    /**
+		/**
      * Сохранить отчет
      */
-    saveReport(i) {
-      // let payload = {
-      //     id: this.data.unread[i].id,
-      //     comment: 0,
-      //     type: 'report',
-      //     text: 'text of report'
-      // };
-      // this.req(i, payload)
-    },
+		saveReport(/* i */) {
+			// let payload = {
+			//     id: this.data.unread[i].id,
+			//     comment: 0,
+			//     type: 'report',
+			//     text: 'text of report'
+			// };
+			// this.req(i, payload)
+		},
 
-    /**
+		/**
      * Перенос обучения (дня стажировки на другой день)
      */
-    transferTraining(i) {
-      // let payload = {
-      //     user_id: user_id,
-      //     date: '2022-09-01',
-      //     time: '14:00',
-      //     id: this.data.unread[i].id,
-      //     type: 'transfer',
-      // };
-      // this.req(i, payload)
-    },
+		transferTraining(/* i */) {
+			// let payload = {
+			//     user_id: user_id,
+			//     date: '2022-09-01',
+			//     time: '14:00',
+			//     id: this.data.unread[i].id,
+			//     type: 'transfer',
+			// };
+			// this.req(i, payload)
+		},
 
-    /**
+		/**
      * Сохранить причину отсутствия и дать оценку руководителю
      */
-    estimateTrainer(i) {
-      // let payload = {
-      //     id: this.data.unread[i].id,
-      //     comment: 'Комментарий из select',
-      // }
-      // this.req(i, payload)
-    },
+		estimateTrainer(/* i */) {
+			// let payload = {
+			//     id: this.data.unread[i].id,
+			//     comment: 'Комментарий из select',
+			// }
+			// this.req(i, payload)
+		},
 
-    /**
+		/**
      * set Read request
      */
-    req(i, payload) {
-      this.loading = true;
+		req(i, payload) {
+			this.loading = true;
 
-      axios
-        .post("/notifications/set-read", payload)
-        .then((response) => {
-          if (response.data == 1) {
-            this.data.read.unshift(this.data.unread[i]);
-            this.data.unread.splice(i, 1);
+			this.axios
+				.post('/notifications/set-read', payload)
+				.then((response) => {
+					if (response.data == 1) {
+						this.data.read.unshift(this.data.unread[i]);
+						this.data.unread.splice(i, 1);
 
-            this.data.unreadQuantity--;
-            this.$toast.success("Уведомление прочитано");
+						this.data.unreadQuantity--;
+						this.$toast.success('Уведомление прочитано');
 
-            // $('#setReadCommentModal').fadeOut();
-            // $('#setReadReportModal').fadeOut();
-            // nullify(dateForTransfer);
-          }
+						// $('#setReadCommentModal').fadeOut();
+						// $('#setReadReportModal').fadeOut();
+						// nullify(dateForTransfer);
+					}
 
-          this.loading = false;
-        })
-        .catch((e) => {
-          console.log(e);
-          this.loading = false;
-        });
-    },
-  },
+					this.loading = false;
+				})
+				.catch((e) => {
+					console.log(e);
+					this.loading = false;
+				});
+		},
+	},
 };
 </script>

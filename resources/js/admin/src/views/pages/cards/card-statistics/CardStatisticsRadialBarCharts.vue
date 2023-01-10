@@ -11,40 +11,40 @@ const variableTheme = computed(() => vuetifyTheme.current.value.variables)
 const series = [78]
 
 const chartOptions = computed(() => {
-  return {
-    chart: {
-      sparkline: {
-        enabled: true,
-      },
-    },
-    colors: [currentTheme.value.info],
-    plotOptions: {
-      radialBar: {
-        startAngle: -90,
-        endAngle: 90,
-        hollow: {
-          size: '65%',
-        },
-        dataLabels: {
-          name: {
-            show: false,
-          },
-          value: {
-            fontSize: '1.25rem',
-            fontWeight: '600',
-            offsetY: 0,
-            color: `rgba(${hexToRgb(currentTheme.value['on-surface'])},${variableTheme.value['high-emphasis-opacity']})`,
-          },
-        },
-        track: {
-          background: currentTheme.value.background,
-        },
-      },
-    },
-    stroke: {
-      lineCap: 'round',
-    },
-  }
+	return {
+		chart: {
+			sparkline: {
+				enabled: true,
+			},
+		},
+		colors: [currentTheme.value.info],
+		plotOptions: {
+			radialBar: {
+				startAngle: -90,
+				endAngle: 90,
+				hollow: {
+					size: '65%',
+				},
+				dataLabels: {
+					name: {
+						show: false,
+					},
+					value: {
+						fontSize: '1.25rem',
+						fontWeight: '600',
+						offsetY: 0,
+						color: `rgba(${hexToRgb(currentTheme.value['on-surface'])},${variableTheme.value['high-emphasis-opacity']})`,
+					},
+				},
+				track: {
+					background: currentTheme.value.background,
+				},
+			},
+		},
+		stroke: {
+			lineCap: 'round',
+		},
+	}
 })
 </script>
 

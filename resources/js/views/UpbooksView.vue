@@ -4,25 +4,25 @@ import { useAsyncPageData } from '@/composables/asyncPageData'
 const Upbooks = () => import(/* webpackChunkName: "UpbooksPage" */ '@/pages/Upbooks')
 
 export default {
-    name: 'UpbooksView',
-    components: {
-        DefaultLayout,
-        Upbooks,
-    },
-    data(){
-        return {
-            token: '',
-            can_edit: false
-        }
-    },
-    mounted(){
-        useAsyncPageData('/admin/upbooks').then(data => {
-            this.token = data.token
-            this.can_edit = data.can_edit
-        }).catch(error => {
-            console.error('useAsyncPageData', error)
-        })
-    }
+	name: 'UpbooksView',
+	components: {
+		DefaultLayout,
+		Upbooks,
+	},
+	data(){
+		return {
+			token: '',
+			can_edit: false
+		}
+	},
+	mounted(){
+		useAsyncPageData('/admin/upbooks').then(data => {
+			this.token = data.token
+			this.can_edit = data.can_edit
+		}).catch(error => {
+			console.error('useAsyncPageData', error)
+		})
+	}
 }
 </script>
 

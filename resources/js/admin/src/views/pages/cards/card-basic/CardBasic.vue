@@ -11,10 +11,10 @@ import pages5 from '@/assets/images/pages/5.jpg'
 import pages6 from '@/assets/images/pages/6.jpg'
 
 const avatars = [
-  avatar1,
-  avatar2,
-  avatar3,
-  avatar4,
+	avatar1,
+	avatar2,
+	avatar3,
+	avatar4,
 ]
 
 const isCardDetailsVisible = ref(false)

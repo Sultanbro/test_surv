@@ -5,6 +5,7 @@
         <div v-if="user_type == 'office'">
           <template v-for="(btn, index) in btnlist_office">
             <button
+              :key="index"
               @click="btnclickk(btn.name)"
               class="btn btn-secondary"
               :disabled="activebtn == btn.name"
@@ -22,6 +23,7 @@
         <div v-else>
           <template v-for="(btn, index) in btnlist">
             <button
+              :key="index"
               @click="btnclickk(btn.name)"
               class="btn btn-secondary"
               :disabled="activebtn == btn.name"
@@ -39,9 +41,9 @@
       </div>
     </div>
 
-    
 
-   
+
+
 
     <transition name="fade">
       <sidebar
@@ -59,7 +61,7 @@
                 <th>Требуется</th>
                 <th>Наняты</th>
               </tr>
-              <tr v-for="order in orders">
+              <tr v-for="(order, index) in orders" :key="index">
                 <td class="text-left t-name bgz table-title">
                   {{ order.group }}
                 </td>
@@ -81,7 +83,7 @@
                 v-model="group_id"
                 class="form-control"
               >
-                <option :value="group.id" v-for="group in groups">{{
+                <option :value="group.id" v-for="group in groups" :key="group.id">{{
                   group.name
                 }}</option>
               </select>
@@ -126,260 +128,239 @@
                   <span class="text">Я прочитал</span>
                   <span class="timer"></span>
               </button>
-          </div>      
+          </div>
       </div>
     </b-modal>
-  
+
 
   </div>
 </template>
 
 <script>
-import moment from "moment";
+import moment from 'moment';
 
 export default {
-  name: "timetracking",
-  props: ["activeuserid", "usertype", "program", "user_type", "position_id"],
-  data() {
-    return {
-      openSidebar: false,
-      ordersShow: false,
-      showCorpBookPage: false,
-      corp_book_page: {
-        title: '',
-        text: '',
-      },
-      total_earned: '',
-      groups: [],
-      orders: [],
-      group_id: 0,
-      quantity: 0,
-      btnlist: [
-        {
-          name: "Начать день",
-          type: "success",
-        },
-        {
-          name: "Завершить день",
-          type: "warning",
-        },
-      ],
-      btnlist_office: [
-        {
-          name: "Завершить день",
-          type: "warning",
-        },
-      ],
-      activebtn: "Завершить день",
-      zarplata: 0,
-      kpi: 0,
-      kpiText: "KPI: 0 ",
-      loader: null,
-      bonus: 0,
-      monthInfo: {
-        currentMonth: null,
-        monthEnd: 0,
-        workDays: 0,
-        weekDays: 0,
-        daysInMonth: 0,
-      },
-    };
-  },
+	name: 'TimeTracking',
+	props: ['activeuserid', 'usertype', 'program', 'user_type', 'position_id'],
+	data() {
+		return {
+			openSidebar: false,
+			ordersShow: false,
+			showCorpBookPage: false,
+			corp_book_page: {
+				title: '',
+				text: '',
+			},
+			total_earned: '',
+			groups: [],
+			orders: [],
+			group_id: 0,
+			quantity: 0,
+			btnlist: [
+				{
+					name: 'Начать день',
+					type: 'success',
+				},
+				{
+					name: 'Завершить день',
+					type: 'warning',
+				},
+			],
+			btnlist_office: [
+				{
+					name: 'Завершить день',
+					type: 'warning',
+				},
+			],
+			activebtn: 'Завершить день',
+			zarplata: 0,
+			kpi: 0,
+			kpiText: 'KPI: 0 ',
+			loader: null,
+			bonus: 0,
+			monthInfo: {
+				currentMonth: null,
+				monthEnd: 0,
+				workDays: 0,
+				weekDays: 0,
+				daysInMonth: 0,
+			},
+		};
+	},
 
-  filters: {
-    splitNumber(value) {
-      return value.toString().replace(/\B(?=(\d{3})+(?!\d))/g, " ");
-    },
-  },
-  created() {
-    axios
-      .post("/timetracking/status", {})
-      .then((response) => {
-        this.activebtn = "Завершить день";
-        this.setButton(response.data.status);
+	filters: {
+		splitNumber(value) {
+			return value.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ' ');
+		},
+	},
+	created() {
+		this.axios
+			.post('/timetracking/status', {})
+			.then((response) => {
+				this.activebtn = 'Завершить день';
+				this.setButton(response.data.status);
 
-        if(response.data.status == 'started' && response.data.corp_book.has) {
-          
-          this.corp_book_page = response.data.corp_book.page
+				if(response.data.status == 'started' && response.data.corp_book.has) {
 
-    
-          this.showCorpBookPage = this.corp_book_page != null; 
-          this.bookCounter();
+					this.corp_book_page = response.data.corp_book.page
 
+					this.showCorpBookPage = this.corp_book_page != null;
+					this.bookCounter();
+				}
 
+				this.zarplata = response.data.zarplata;
 
+				this.groups = response.data.groupsall;
+				this.total_earned = response.data.total_earned;
+				this.orders = response.data.orders;
+				this.bonus = response.data.bonus;
+			})
+			.catch((error) => {
+				console.log(error);
+			});
 
+		this.setMonth();
+	},
 
+	mounted() {},
 
+	methods: {
 
-        } 
+		bookCounter() {
+			/* global $ */
+			let seconds = 60;
+			let interv = setInterval(() => {
+				seconds--;
+				$('#readCorpBook .timer').text(seconds);
+				if(seconds == 0) {
+					$('#readCorpBook .timer').text('');
+					clearInterval(interv);
+				}
+			}, 1000);
 
-        this.zarplata = response.data.zarplata;
- 
-        this.groups = response.data.groupsall;
-        this.total_earned = response.data.total_earned;
-        this.orders = response.data.orders;
-        this.bonus = response.data.bonus;
+			setTimeout(() => {
+				$('#readCorpBook').prop('disabled', false);
+			}, seconds * 1000);
+		},
+		hideBook() {
 
+			this.axios
+				.post('/corp_book/set-read/', {})
+				.then(() => {
+					this.showCorpBookPage = false;
+				})
+				.catch((error) => {
+					console.log(error);
+				});
+		},
 
-
-
-
-      })
-      .catch((error) => {
-        console.log(error);
-      });
-
-    this.setMonth();
-  },
-
-  mounted() {
-    
-  },
-
-  methods: {
-
-    bookCounter() {
-        let seconds = 60;
-        let interv = setInterval(() => {
-            seconds--;
-            $('#readCorpBook .timer').text(seconds);
-            if(seconds == 0) {
-                $('#readCorpBook .timer').text('');
-                clearInterval(interv);
-            }
-        }, 1000);
-
-        setTimeout(() => {
-            $('#readCorpBook').prop('disabled', false);
-        }, seconds * 1000);
-    },
-    hideBook() {
-    
-      axios
-        .post("/corp_book/set-read/", {})
-        .then((response) => {
-          this.showCorpBookPage = false;
-        })
-        .catch((error) => {
-          console.log(error);
-        });
-    },
-
-    setMonth() {
-      this.monthInfo.currentMonth = this.$moment().format("MMMM");
-      let currentMonth = this.$moment(this.monthInfo.currentMonth, "MMMM");
-      //Расчет выходных дней
-      this.monthInfo.monthEnd = currentMonth.endOf("month"); //Конец месяца
-      this.monthInfo.weekDays = currentMonth.weekdayCalc(
-        currentMonth.startOf("month").toString(),
-        currentMonth.endOf("month").toString(),
-        [6]
-      ); //Колличество выходных
-      this.monthInfo.daysInMonth = new Date(
-        2020,
-        this.$moment(this.monthInfo.currentMonth, "MMMM").format("M"),
-        0
-      ).getDate(); //Колличество дней в месяце
-      this.monthInfo.workDays =
+		setMonth() {
+			this.monthInfo.currentMonth = this.$moment().format('MMMM');
+			let currentMonth = this.$moment(this.monthInfo.currentMonth, 'MMMM');
+			//Расчет выходных дней
+			this.monthInfo.monthEnd = currentMonth.endOf('month'); //Конец месяца
+			this.monthInfo.weekDays = currentMonth.weekdayCalc(
+				currentMonth.startOf('month').toString(),
+				currentMonth.endOf('month').toString(),
+				[6]
+			); //Колличество выходных
+			this.monthInfo.daysInMonth = new Date(
+				2020,
+				this.$moment(this.monthInfo.currentMonth, 'MMMM').format('M'),
+				0
+			).getDate(); //Колличество дней в месяце
+			this.monthInfo.workDays =
         this.monthInfo.daysInMonth - this.monthInfo.weekDays; //Колличество рабочих дней
-    },
+		},
 
-    orderGroup() {
-      let loader = this.$loading.show();
-      axios
-        .post("/order-persons-to-group", {
-          group_id: this.group_id,
-          required: this.quantity,
-        })
-        .then((response) => {
-          console.log(response.data);
-          this.orders = response.data;
-          loader.hide();
-        })
-        .catch((error) => {
-          loader.hide();
-          console.log(error);
-        });
-    },
+		orderGroup() {
+			let loader = this.$loading.show();
+			this.axios
+				.post('/order-persons-to-group', {
+					group_id: this.group_id,
+					required: this.quantity,
+				})
+				.then((response) => {
+					console.log(response.data);
+					this.orders = response.data;
+					loader.hide();
+				})
+				.catch((error) => {
+					loader.hide();
+					console.log(error);
+				});
+		},
 
-    btnclickk(names) {
-      let now = moment();
+		btnclickk(names) {
+			let now = moment();
 
-      if (names == "Завершить день") {
-        if (
-          confirm(
-            "Уверены что хотите завершить день?\nПосле нажатия данной кнопки, оплата не будет начисляться"
-          )
-        ) {
-          this.fetchstop(now.format("HH:mm:ss"));
-        }
-      } else {
-        this.fetch(now.format("HH:mm:ss"));
-      }
-    },
-    fetch(times) {
-      axios
-        .post("/timetracking/starttracking", {
-          start: times,
-        })
-        .then((response) => {
-          if (response.data.error) {
-            this.showMessage(response.data.error.message);
-            return;
-          }
+			if (names == 'Завершить день') {
+				if (
+					confirm(
+						'Уверены что хотите завершить день?\nПосле нажатия данной кнопки, оплата не будет начисляться'
+					)
+				) {
+					this.fetchstop(now.format('HH:mm:ss'));
+				}
+			} else {
+				this.fetch(now.format('HH:mm:ss'));
+			}
+		},
+		fetch(times) {
+			this.axios
+				.post('/timetracking/starttracking', {
+					start: times,
+				})
+				.then((response) => {
+					if (response.data.error) {
+						this.showMessage(response.data.error.message);
+						return;
+					}
 
-          if(response.data.status == 'started' && response.data.corp_book.has) {
-            
-            this.corp_book_page = response.data.corp_book.page
-             this.showCorpBookPage = this.corp_book_page != null; 
-            this.bookCounter();
-          } 
-          this.setButton(response.data.status);
-        })
-        .catch((error) => {
-          console.log(error);
-        });
-    },
-    fetchstop(times) {
-      axios
-        .post("/timetracking/starttracking", {
-          stop: times,
-        })
-        .then((response) => {
-          if (response.data.error) {
-            this.showMessage(response.data.error.message);
-          }
+					if(response.data.status == 'started' && response.data.corp_book.has) {
 
-          this.setButton(response.data.status);
-        })
-        .catch((error) => {
-          console.log(error);
-        });
-    },
-    setButton(status) {
-      if (status == "started") {
-        this.activebtn = "Начать день";
-      } else if (status == "stopped") {
-        this.activebtn = "Завершить день";
-      }
-    },
-    setButton(status) {
-      if (status == "started") {
-        this.activebtn = "Начать день";
-      } else if (status == "stopped") {
-        this.activebtn = "Завершить день";
-      }
-    },
-    showMessage(message) {
-      this.$notify({
-        group: 'foo',
-        title: 'Сообщение',
-        text: message,
-        position: 'top left'
-      });
-    },
-  },
+						this.corp_book_page = response.data.corp_book.page
+						this.showCorpBookPage = this.corp_book_page != null;
+						this.bookCounter();
+					}
+					this.setButton(response.data.status);
+				})
+				.catch((error) => {
+					console.log(error);
+				});
+		},
+		fetchstop(times) {
+			this.axios
+				.post('/timetracking/starttracking', {
+					stop: times,
+				})
+				.then((response) => {
+					if (response.data.error) {
+						this.showMessage(response.data.error.message);
+					}
+
+					this.setButton(response.data.status);
+				})
+				.catch((error) => {
+					console.log(error);
+				});
+		},
+		setButton(status) {
+			if (status == 'started') {
+				this.activebtn = 'Начать день';
+			} else if (status == 'stopped') {
+				this.activebtn = 'Завершить день';
+			}
+		},
+		showMessage(message) {
+			this.$notify({
+				group: 'foo',
+				title: 'Сообщение',
+				text: message,
+				position: 'top left'
+			});
+		},
+	},
 };
 </script>
 
@@ -406,7 +387,7 @@ export default {
     margin-right: 10px;
     padding: 6px 30px;
 
-  
+
   }
 
   button:nth-child(1) {

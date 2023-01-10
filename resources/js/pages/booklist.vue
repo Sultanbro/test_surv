@@ -52,8 +52,8 @@
           <div class="bc">
             <a href="#" @click="$emit('back')">База знаний</a>
             <template v-for="(bc, bc_index) in breadcrumbs">
-              <i class="fa fa-chevron-right"></i>
-              <a href="#" @click="showPage(bc.id)">{{ bc.title }}</a>
+              <i class="fa fa-chevron-right" :key="bc_index"/>
+              <a href="#" @click="showPage(bc.id)" :key="'a' + bc_index">{{ bc.title }}</a>
             </template>
           </div>
 
@@ -457,617 +457,607 @@ import Questions from '@/pages/Questions'
 import ProgressBar from '@/components/ProgressBar'
 
 export default {
-  name: 'booklist',
-  components: {
-    NestedDraggable,
-    NestedCourse,
-    Editor,
-    Questions,
-    ProgressBar,
-  },
-  props: [
-    "trees",
-    'parent_id',
-    'auth_user_id',
-    'parent_name',
-    'show_page_id',
-    'can_edit',
-    'mode',
-    'course_page',
-    'enable_url_manipulation',
-    'course_item_id'
-  ],
-  props: {
-    trees: Array,
-    parent_id: Number,
-    auth_user_id: Number,
-    parent_name: String,
-    show_page_id: {
-      default: 0,
-    },
-    can_edit: {
-      default: false,
-    },
-    mode: {
-      default: 'read'
-    },
-    course_page: {
-      default: 0,
-    },
-    enable_url_manipulation: {
-      default: true,
-    },
-    course_item_id: {
-      default: 0
-    },
-    all_stages: {
-      default: 0
-    },
-    completed_stages: {
-      default: 0
-    },
-  },
-  data() {
-    return {
-      activesbook: null,
-      tree: [],
-      ids: [], // array of books ids
-
-      // misc
-      can_save: false, // сохранять без тестов
-      myprogress: 0,
-      id: 0,
-      loader: false,
-      parent_title: '',
-      search: {
-        input: '',
-        items: []
-      },
-      editorHeight: window.innerHeight - 128,
-      attachment: null,
-      breadcrumbs: [],
-
-      // modals
-      showImageModal: false,
-      showAudioModal: false,
-      showPermissionModal: false,
-      edit_actives_book: false,
-      showSearch: false,
-
-      // courses
-      passedTest: false,
-      questions_key: 1,
-      text_was: '',
-      title_was: '',
-      item_models: []
-    }
-  },
-
-  created() {
-    this.getTree();
-    this.parent_title = this.parent_name;
-    this.id = this.parent_id;
-  },
-
-  mounted() {
-    if(!this.course_page) {
-      window.addEventListener('beforeunload', e => this.beforeunloadFn(e))
-    }
-  },
-
-  methods: {
-
-    beforeunloadFn(e) {
-      if(this.text_was != this.activesbook.text || this.title_was != this.activesbook.title) {
-        e.returnValue = 'Are you sure you want to leave?';
-      }
-    },
-
-    nextElement() {
-
-
-      this.setSegmentPassed();
-
-
-
-      // find next element
-      let index2 = this.ids.findIndex(el => el.id == this.activesbook.id);
-
-      if(index2 != -1 && this.ids.length - 1 > index2) {
-        let el = this.findItem(this.ids[index2 + 1]);
-        this.showPage(el.id);
-      } else {
-        // move to next course item
-        this.$parent.after_click_next_element();
-      }
-
-      this.scrollToTop();
-    },
-
-    scrollToTop() {
-      document.getElementsByClassName('rp')[0].scrollTo(0,0);
-      if(this.course_item_id != 0) document.getElementsByClassName('rp')[1].scrollTo(0,0);
-    },
-
-    passed() {
-
-      this.passedTest = true;
-
-      // find element
-
-      let index = this.ids.findIndex(el => el.id == this.activesbook.id);
-
-      if(index != -1 && this.ids.length - 1 > index) {
-
-        let el = this.findItem(this.ids[index + 1]);
-
-        // pass if its not course.  cos there not nextElement button
-        if(el.item_model == null && this.course_item_id == 0) {
-          this.setSegmentPassed();
-        }
-      }
-
-
-      //test
-      let i = this.item_models.findIndex(im => im.item_id == this.activesbook.id);
-      if(i == -1) this.item_models.push({
-        item_id: this.activesbook.id,
-        status: 1
-      });
-
-      this.connectItemModels(this.tree)
-
-    },
-
-    setSegmentPassed() {
-
-      let el = null;
-      // find element
-      let index = this.ids.findIndex(el => el.id == this.activesbook.id);
-      if(index != -1) {
-        el = this.findItem(this.ids[index]);
-       // if(el.item_model != null) return;
-      }
-
-      // pass
-      axios
-        .post("/my-courses/pass", {
-          id: this.activesbook.id,
-          type: 3,
-          course_item_id: this.course_item_id,
-          questions: this.activesbook.questions,
-          all_stages: this.all_stages,
-          completed_stages: this.completed_stages + 1,
-        })
-        .then((response) => {
-            this.$emit('changeProgress');
-            this.$emit('forGenerateCertificate', response.data.item_model);
-            if(el != null) el.item_model = {status: 1};
-            this.activesbook.item_model = response.data.item_model;
-        })
-        .catch((error) => {
-          alert(error);
-        });
-    },
-
-    findItem(el) {
-      if(el.i.length == 1) return this.tree[el.i[0]];
-      if(el.i.length == 2) return this.tree[el.i[0]].children[el.i[1]];
-      if(el.i.length == 3) return this.tree[el.i[0]].children[el.i[1]].children[el.i[2]];
-      if(el.i.length == 4) return this.tree[el.i[0]].children[el.i[1]].children[el.i[2]].children[el.i[3]];
-      if(el.i.length == 5) return this.tree[el.i[0]].children[el.i[1]].children[el.i[2]].children[el.i[3]].children[el.i[4]];
-      if(el.i.length == 6) return this.tree[el.i[0]].children[el.i[1]].children[el.i[2]].children[el.i[3]].children[el.i[4]].children[el.i[5]];
-    },
-
-    getTree() {
-       axios
-        .post("/kb/tree", {
-          id: this.parent_id,
-          can_read: this.course_page,
-          course_item_id: this.course_item_id
-        })
-        .then((response) => {
-          this.tree = response.data.trees;
-          this.item_models = response.data.item_models;
-
-          this.can_save = response.data.can_save; // without test
-
-          // set active book
-          const urlParams = new URLSearchParams(window.location.search);
-          let book_id = urlParams.get('b');
-          this.breadcrumbs = [{id:this.id, title: this.parent_title}];
-
-          // create array of books ids
-          this.ids = [];
-          this.returnArray(this.tree);
-
-          if(this.course_page) {
-
-            book_id = this.show_page_id
-
-            if(this.show_page_id == 0 || this.show_page_id == null) {
-              this.showPage(this.tree[0].id);
-            } else {
-              // find element
-              let index = this.ids.findIndex(el => el.id == this.show_page_id);
-
-              if(index != -1) {
-                let el = this.findItem(this.ids[index]);
-                this.showPage(el.id);
-              }
-            }
-
-
-          } else { // not course page
-
-
-              let result = null
-              this.tree.every(obj => {
-                result = this.deepSearchId(obj, book_id)
-
-
-                if (result != null) {
-
-                  this.showPage(book_id, false, true);
-                  return false;
-                }
-                return true;
-              });
-
-          }
-
-          // passed steps
-          this.connectItemModels(this.tree)
-
-        })
-        .catch((error) => {
-          alert(error);
-        });
-    },
-
-    returnArray(items, indexes = []) {
-      items.forEach((item, i_index) => {
-          let arr = [...indexes, i_index];
-          this.ids.push({
-            id: item.id,
-            i: arr
-          })
-
-          if(item.children !== undefined) this.returnArray(item.children, arr);
-      });
-    },
-
-    connectItemModels(tree) {
-      tree.forEach((el, e) => {
-
-        let i = this.item_models.findIndex(im => im.item_id == el.id);
-        if(i != -1) {
-          el.item_model = this.item_models[i];
-        } else {
-          el.item_model = null;
-        }
-        if(el.children !== undefined) {
-          this.connectItemModels(el.children)
-        }
-      });
-    },
-
-    searchInput() {
-      if(this.search.input.length <= 2) return null;
-
-      axios
-        .post("/kb/search", {
-          text: this.search.input,
-        })
-        .then((response) => {
-
-          this.search.items = response.data.items;
-          this.emphasizeTexts();
-
-        })
-        .catch((error) => {
-          alert(error);
-        });
-    },
-
-    emphasizeTexts() {
-      this.search.items.forEach(item => {
-         item.text = item.text.replace(new RegExp(this.search.input,"gi"), "<b>" + this.search.input +  "</b>");
-      });
-    },
-
-    saveServer() {
-      if(this.activesbook.questions.length == 0 && !this.can_save) {
-        this.$toast.error('Нельзя вносить изменения без тестов');
-        return;
-      }
-
-      let loader = this.$loading.show();
-      axios
-        .post("/kb/page/update", {
-          text: this.activesbook.text,
-          title: this.activesbook.title,
-          pass_grade: this.activesbook.pass_grade,
-          id: this.activesbook.id,
-        })
-        .then((response) => {
-          this.text_was = this.activesbook.text;
-          this.title = this.activesbook.title;
-          this.edit_actives_book = false;
-          this.$toast.info("Сохранено");
-          this.renameNode(this.tree, this.activesbook.id, this.activesbook.title);
-          loader.hide()
-
-        })
-        .catch((error) => {loader.hide()})
-    },
-
-    addPage(book) {
-      axios.post("/kb/page/create", {
-        id: book.id
-      }).then((response) => {
-        this.activesbook = response.data;
-        this.edit_actives_book = true;
-        book.children.push(this.activesbook);
-        this.$toast.info('Добавлена страница');
-      });
-    },
-
-    addPageToTree() {
-      axios.post("/kb/page/create", {
-        id: this.id
-      }).then((response) => {
-        this.activesbook = response.data;
-        this.edit_actives_book = true;
-        this.tree.push(this.activesbook);
-        this.$toast.info('Добавлена страница');
-      });
-    },
-
-    deletePage() {
-      if(confirm('Вы уверены?')) {
-        axios
-        .post("/kb/page/delete", {
-          id: this.activesbook.id,
-        })
-        .then((response) => {
-          this.$toast.success('Удалено');
-          this.removeNode(this.tree, this.activesbook.id)
-          this.activesbook = null;
-        });
-      }
-    },
-
-    deepSearch(array, item) {
-      return array.some(function s(el) {
-        return el == item || ((el instanceof Array) && el.some(s));
-      })
-    },
-
-    deepSearchId(obj, targetId) {
-
-      if (obj.id == targetId) {
-        return obj
-      }
-
-      for (let item of obj.children) {
-        let check = this.deepSearchId(item, targetId)
-        if (check) {
-          return check
-        }
-      }
-
-      return null
-    },
-
-    removeNode(arr, id) {
-      arr.forEach((it, index) => {
-        if (it.id === id) {
-          arr.splice(index, 1)
-        }
-        this.removeNode(it.children, id)
-      })
-    },
-
-    renameNode(arr, id, title) {
-      arr.forEach((it, index) => {
-        if (it.id === id) {
-          it.title = title;
-        }
-        this.renameNode(it.children, id, title)
-      })
-    },
-
-    showPage(id, refreshTree = false, expand = false) {
-      this.questions_key++;
-      if(this.activesbook != null && (this.text_was != this.activesbook.text || this.title_was != this.activesbook.title)) {
-        if(!this.course_page) {
-           if(!confirm('У вас на странице остались несохранненные изменения. Точно хотите выйти?'))  {
-            return;
-          }
-        }
-      }
-
-      if(this.activesbook && this.activesbook.id == id) return '';
-
-      let loader = this.$loading.show();
-      axios.post("/kb/get", {
-        id: id,
-        course_item_id: this.course_item_id,
-        refresh: refreshTree
-      }).then((response) => {
-        loader.hide()
-
-        // @TODO
-        this.activesbook = response.data.book;
-
-
-
-        this.questions_key++
-        this.text_was = this.activesbook.text;
-        this.title_was = this.activesbook.title;
-        this.breadcrumbs = response.data.breadcrumbs;
-        this.edit_actives_book = false;
-
-        if(refreshTree) {
-          this.id = response.data.top_parent.id;
-          this.parent_title = response.data.top_parent.title
-          this.tree = response.data.tree
-          this.showSearch = false;
-          this.search.input = false;
-          this.search.items = [];
-        }
-
-        // for course
-        this.passedTest = false;
-        if(this.activesbook != null && this.activesbook.questions.length == 0) {
-          this.passedTest = true;
-        }
-
-        if(expand) this.expandTree();
-        this.setTargetBlank();
-
-        if(this.enable_url_manipulation) {
-          window.history.replaceState({ id: "100" }, "База знаний", "/kb?s=" + this.id + '&b=' + id);
-        }
-
-
-      })
-      .catch((e) => {loader.hide()})
-
-    },
-
-    expandTree() {
-      let item = null;
-
-      this.breadcrumbs.forEach(bc => {
-
-        let s_index = this.tree.findIndex(t => t.id == bc.id);
-
-          if(s_index != -1) {
-
-            if(item != null) {
-              item = item.children[s_index];
-            } else {
-              item = this.tree[s_index]
-            }
-             item.opened = true;
-
-        }
-
-      });
-    },
-
-    setTargetBlank() {
-      this.$nextTick(() => {
-        var links = document.querySelectorAll(".bp-text a");
-        links.forEach(l => l.setAttribute("target", "_blank"));
-      })
-
-    },
-
-    editorSave() {},
-
-    changePassGrade(grade) {
-      this.activesbook.pass_grade = grade;
-      let len = this.activesbook.questions.length;
-
-      if(grade > len) this.activesbook.pass_grade = len;
-      if(grade < 1) this.activesbook.pass_grade = 1;
-    },
-
-    addaudio(url) {
-      tinymce.activeEditor.insertContent(
-        '<audio controls src="' + url + '"></audio>'
-      );
-    },
-
-    addimage(url) {
-      tinymce.activeEditor.insertContent(
-        '<img alt="картинка" src="'+ url + '"/>'
-      );
-    },
-
-    submit_tinymce(blobInfo, success, failure) {
-
-      this.loader = true;
-      const config = { "content-type": "multipart/form-data" };
-      const formData = new FormData();
-      formData.append('attachment', blobInfo.blob());
-      formData.append("id", this.activesbook.id);
-      axios
-        .post("/upload/images/", formData)
-        .then((response) => {
-          success(response.data.location);
-          this.loader = false;
-        })
-        .catch((error) => console.log(error));
-    },
-
-    submit() {
-      this.loader = true;
-      const config = {
-        onUploadProgress: progressEvent => {
-          let { progress } = this.myprogress;
-          progress = (progressEvent.loaded / progressEvent.total) * 100;
-          this.myprogress = progress;
-        }
-      };
-      const formData = new FormData();
-      formData.append("attachment", this.attachment);
-      formData.append("id", this.activesbook.id);
-      axios
-        .post("/upload/images/", formData, config)
-        .then((response) => {
-
-          this.addimage(response.data.location);
-
-          if(this.myprogress >= 100){
-            this.showImageModal = false;
-            this.loader = false;
-            this.myprogress = 0;
-          }
-        })
-        .catch((error) => console.log(error));
-    },
-
-    copyLink(book) {
-      var Url = this.$refs["mylink" + book.id];
-      Url.value = window.location.origin + "/corp_book/" + book.hash;
-
-      Url.select();
-      document.execCommand("copy");
-
-      this.$toast.info("Ссылка на страницу скопирована!");
-    },
-
-    onAttachmentChange(e) {
-      this.attachment = e.target.files[0];
-      this.submit();
-    },
-
-    onAttachmentChangeaudio(e) {
-      this.attachment = e.target.files[0];
-      this.submitaudio();
-    },
-
-    submitaudio() {
-      this.loader = true;
-      const config = { "content-type": "multipart/form-data" };
-      const formData = new FormData();
-      formData.append("attachment", this.attachment);
-      formData.append("id", this.activesbook.id);
-      axios
-        .post("/upload/audio/", formData)
-        .then((response) => {
-          this.addaudio(response.data.location);
-          this.showAudioModal = false;
-          this.loader = false;
-        })
-        .catch((error) => console.log(error));
-    },
-
-  },
+	name: 'PageBooklist',
+	components: {
+		NestedDraggable,
+		NestedCourse,
+		Editor,
+		Questions,
+		ProgressBar,
+	},
+	props: {
+		trees: Array,
+		parent_id: Number,
+		auth_user_id: Number,
+		parent_name: String,
+		show_page_id: {
+			default: 0,
+		},
+		can_edit: {
+			default: false,
+		},
+		mode: {
+			default: 'read'
+		},
+		course_page: {
+			default: 0,
+		},
+		enable_url_manipulation: {
+			default: true,
+		},
+		course_item_id: {
+			default: 0
+		},
+		all_stages: {
+			default: 0
+		},
+		completed_stages: {
+			default: 0
+		},
+	},
+	data() {
+		return {
+			activesbook: null,
+			tree: [],
+			ids: [], // array of books ids
+
+			// misc
+			can_save: false, // сохранять без тестов
+			myprogress: 0,
+			id: 0,
+			loader: false,
+			parent_title: '',
+			search: {
+				input: '',
+				items: []
+			},
+			editorHeight: window.innerHeight - 128,
+			attachment: null,
+			breadcrumbs: [],
+
+			// modals
+			showImageModal: false,
+			showAudioModal: false,
+			showPermissionModal: false,
+			edit_actives_book: false,
+			showSearch: false,
+
+			// courses
+			passedTest: false,
+			questions_key: 1,
+			text_was: '',
+			title_was: '',
+			item_models: []
+		}
+	},
+
+	created() {
+		this.getTree();
+		this.parent_title = this.parent_name;
+		this.id = this.parent_id;
+	},
+
+	mounted() {
+		if(!this.course_page) {
+			window.addEventListener('beforeunload', e => this.beforeunloadFn(e))
+		}
+	},
+
+	methods: {
+
+		beforeunloadFn(e) {
+			if(this.text_was != this.activesbook.text || this.title_was != this.activesbook.title) {
+				e.returnValue = 'Are you sure you want to leave?';
+			}
+		},
+
+		nextElement() {
+
+
+			this.setSegmentPassed();
+
+
+
+			// find next element
+			let index2 = this.ids.findIndex(el => el.id == this.activesbook.id);
+
+			if(index2 != -1 && this.ids.length - 1 > index2) {
+				let el = this.findItem(this.ids[index2 + 1]);
+				this.showPage(el.id);
+			} else {
+				// move to next course item
+				this.$parent.after_click_next_element();
+			}
+
+			this.scrollToTop();
+		},
+
+		scrollToTop() {
+			document.getElementsByClassName('rp')[0].scrollTo(0,0);
+			if(this.course_item_id != 0) document.getElementsByClassName('rp')[1].scrollTo(0,0);
+		},
+
+		passed() {
+
+			this.passedTest = true;
+
+			// find element
+
+			let index = this.ids.findIndex(el => el.id == this.activesbook.id);
+
+			if(index != -1 && this.ids.length - 1 > index) {
+
+				let el = this.findItem(this.ids[index + 1]);
+
+				// pass if its not course.  cos there not nextElement button
+				if(el.item_model == null && this.course_item_id == 0) {
+					this.setSegmentPassed();
+				}
+			}
+
+
+			//test
+			let i = this.item_models.findIndex(im => im.item_id == this.activesbook.id);
+			if(i == -1) this.item_models.push({
+				item_id: this.activesbook.id,
+				status: 1
+			});
+
+			this.connectItemModels(this.tree)
+
+		},
+
+		setSegmentPassed() {
+
+			let el = null;
+			// find element
+			let index = this.ids.findIndex(el => el.id == this.activesbook.id);
+			if(index != -1) {
+				el = this.findItem(this.ids[index]);
+				// if(el.item_model != null) return;
+			}
+
+			// pass
+			this.axios
+				.post('/my-courses/pass', {
+					id: this.activesbook.id,
+					type: 3,
+					course_item_id: this.course_item_id,
+					questions: this.activesbook.questions,
+					all_stages: this.all_stages,
+					completed_stages: this.completed_stages + 1,
+				})
+				.then((response) => {
+					this.$emit('changeProgress');
+					this.$emit('forGenerateCertificate', response.data.item_model);
+					if(el != null) el.item_model = {status: 1};
+					this.activesbook.item_model = response.data.item_model;
+				})
+				.catch((error) => {
+					alert(error);
+				});
+		},
+
+		findItem(el) {
+			if(el.i.length == 1) return this.tree[el.i[0]];
+			if(el.i.length == 2) return this.tree[el.i[0]].children[el.i[1]];
+			if(el.i.length == 3) return this.tree[el.i[0]].children[el.i[1]].children[el.i[2]];
+			if(el.i.length == 4) return this.tree[el.i[0]].children[el.i[1]].children[el.i[2]].children[el.i[3]];
+			if(el.i.length == 5) return this.tree[el.i[0]].children[el.i[1]].children[el.i[2]].children[el.i[3]].children[el.i[4]];
+			if(el.i.length == 6) return this.tree[el.i[0]].children[el.i[1]].children[el.i[2]].children[el.i[3]].children[el.i[4]].children[el.i[5]];
+		},
+
+		getTree() {
+			this.axios
+				.post('/kb/tree', {
+					id: this.parent_id,
+					can_read: this.course_page,
+					course_item_id: this.course_item_id
+				})
+				.then((response) => {
+					this.tree = response.data.trees;
+					this.item_models = response.data.item_models;
+
+					this.can_save = response.data.can_save; // without test
+
+					// set active book
+					const urlParams = new URLSearchParams(window.location.search);
+					let book_id = urlParams.get('b');
+					this.breadcrumbs = [{id:this.id, title: this.parent_title}];
+
+					// create array of books ids
+					this.ids = [];
+					this.returnArray(this.tree);
+
+					if(this.course_page) {
+
+						book_id = this.show_page_id
+
+						if(this.show_page_id == 0 || this.show_page_id == null) {
+							this.showPage(this.tree[0].id);
+						} else {
+							// find element
+							let index = this.ids.findIndex(el => el.id == this.show_page_id);
+
+							if(index != -1) {
+								let el = this.findItem(this.ids[index]);
+								this.showPage(el.id);
+							}
+						}
+
+
+					} else { // not course page
+
+
+						let result = null
+						this.tree.every(obj => {
+							result = this.deepSearchId(obj, book_id)
+
+
+							if (result != null) {
+
+								this.showPage(book_id, false, true);
+								return false;
+							}
+							return true;
+						});
+
+					}
+
+					// passed steps
+					this.connectItemModels(this.tree)
+
+				})
+				.catch((error) => {
+					alert(error);
+				});
+		},
+
+		returnArray(items, indexes = []) {
+			items.forEach((item, i_index) => {
+				let arr = [...indexes, i_index];
+				this.ids.push({
+					id: item.id,
+					i: arr
+				})
+
+				if(item.children !== undefined) this.returnArray(item.children, arr);
+			});
+		},
+
+		connectItemModels(tree) {
+			tree.forEach(el => {
+
+				let i = this.item_models.findIndex(im => im.item_id == el.id);
+				if(i != -1) {
+					el.item_model = this.item_models[i];
+				} else {
+					el.item_model = null;
+				}
+				if(el.children !== undefined) {
+					this.connectItemModels(el.children)
+				}
+			});
+		},
+
+		searchInput() {
+			if(this.search.input.length <= 2) return null;
+
+			this.axios
+				.post('/kb/search', {
+					text: this.search.input,
+				})
+				.then((response) => {
+
+					this.search.items = response.data.items;
+					this.emphasizeTexts();
+
+				})
+				.catch((error) => {
+					alert(error);
+				});
+		},
+
+		emphasizeTexts() {
+			this.search.items.forEach(item => {
+				item.text = item.text.replace(new RegExp(this.search.input,'gi'), '<b>' + this.search.input +  '</b>');
+			});
+		},
+
+		saveServer() {
+			if(this.activesbook.questions.length == 0 && !this.can_save) {
+				this.$toast.error('Нельзя вносить изменения без тестов');
+				return;
+			}
+
+			let loader = this.$loading.show();
+			this.axios
+				.post('/kb/page/update', {
+					text: this.activesbook.text,
+					title: this.activesbook.title,
+					pass_grade: this.activesbook.pass_grade,
+					id: this.activesbook.id,
+				})
+				.then(() => {
+					this.text_was = this.activesbook.text;
+					this.title = this.activesbook.title;
+					this.edit_actives_book = false;
+					this.$toast.info('Сохранено');
+					this.renameNode(this.tree, this.activesbook.id, this.activesbook.title);
+					loader.hide()
+
+				})
+				.catch(() => {loader.hide()})
+		},
+
+		addPage(book) {
+			this.axios.post('/kb/page/create', {
+				id: book.id
+			}).then((response) => {
+				this.activesbook = response.data;
+				this.edit_actives_book = true;
+				book.children.push(this.activesbook);
+				this.$toast.info('Добавлена страница');
+			});
+		},
+
+		addPageToTree() {
+			this.axios.post('/kb/page/create', {
+				id: this.id
+			}).then((response) => {
+				this.activesbook = response.data;
+				this.edit_actives_book = true;
+				this.tree.push(this.activesbook);
+				this.$toast.info('Добавлена страница');
+			});
+		},
+
+		deletePage() {
+			if(confirm('Вы уверены?')) {
+				this.axios
+					.post('/kb/page/delete', {
+						id: this.activesbook.id,
+					})
+					.then(() => {
+						this.$toast.success('Удалено');
+						this.removeNode(this.tree, this.activesbook.id)
+						this.activesbook = null;
+					});
+			}
+		},
+
+		deepSearch(array, item) {
+			return array.some(function s(el) {
+				return el == item || ((el instanceof Array) && el.some(s));
+			})
+		},
+
+		deepSearchId(obj, targetId) {
+
+			if (obj.id == targetId) {
+				return obj
+			}
+
+			for (let item of obj.children) {
+				let check = this.deepSearchId(item, targetId)
+				if (check) {
+					return check
+				}
+			}
+
+			return null
+		},
+
+		removeNode(arr, id) {
+			arr.forEach((it, index) => {
+				if (it.id === id) {
+					arr.splice(index, 1)
+				}
+				this.removeNode(it.children, id)
+			})
+		},
+
+		renameNode(arr, id, title) {
+			arr.forEach(it => {
+				if (it.id === id) {
+					it.title = title;
+				}
+				this.renameNode(it.children, id, title)
+			})
+		},
+
+		showPage(id, refreshTree = false, expand = false) {
+			this.questions_key++;
+			if(this.activesbook != null && (this.text_was != this.activesbook.text || this.title_was != this.activesbook.title)) {
+				if(!this.course_page) {
+					if(!confirm('У вас на странице остались несохранненные изменения. Точно хотите выйти?'))  {
+						return;
+					}
+				}
+			}
+
+			if(this.activesbook && this.activesbook.id == id) return '';
+
+			let loader = this.$loading.show();
+			this.axios.post('/kb/get', {
+				id: id,
+				course_item_id: this.course_item_id,
+				refresh: refreshTree
+			}).then((response) => {
+				loader.hide()
+
+				// @TODO
+				this.activesbook = response.data.book;
+
+
+
+				this.questions_key++
+				this.text_was = this.activesbook.text;
+				this.title_was = this.activesbook.title;
+				this.breadcrumbs = response.data.breadcrumbs;
+				this.edit_actives_book = false;
+
+				if(refreshTree) {
+					this.id = response.data.top_parent.id;
+					this.parent_title = response.data.top_parent.title
+					this.tree = response.data.tree
+					this.showSearch = false;
+					this.search.input = false;
+					this.search.items = [];
+				}
+
+				// for course
+				this.passedTest = false;
+				if(this.activesbook != null && this.activesbook.questions.length == 0) {
+					this.passedTest = true;
+				}
+
+				if(expand) this.expandTree();
+				this.setTargetBlank();
+
+				if(this.enable_url_manipulation) {
+					window.history.replaceState({ id: '100' }, 'База знаний', '/kb?s=' + this.id + '&b=' + id);
+				}
+
+
+			})
+				.catch(() => {loader.hide()})
+
+		},
+
+		expandTree() {
+			let item = null;
+
+			this.breadcrumbs.forEach(bc => {
+
+				let s_index = this.tree.findIndex(t => t.id == bc.id);
+
+				if(s_index != -1) {
+
+					if(item != null) {
+						item = item.children[s_index];
+					} else {
+						item = this.tree[s_index]
+					}
+					item.opened = true;
+
+				}
+
+			});
+		},
+
+		setTargetBlank() {
+			this.$nextTick(() => {
+				var links = document.querySelectorAll('.bp-text a');
+				links.forEach(l => l.setAttribute('target', '_blank'));
+			})
+
+		},
+
+		editorSave() {},
+
+		changePassGrade(grade) {
+			this.activesbook.pass_grade = grade;
+			let len = this.activesbook.questions.length;
+
+			if(grade > len) this.activesbook.pass_grade = len;
+			if(grade < 1) this.activesbook.pass_grade = 1;
+		},
+
+		addaudio(url) {
+			// where tinymce???
+			// eslint-disable-next-line no-undef
+			tinymce.activeEditor.insertContent(
+				'<audio controls src="' + url + '"></audio>'
+			);
+		},
+
+		addimage(url) {
+			// where tinymce???
+			// eslint-disable-next-line no-undef
+			tinymce.activeEditor.insertContent(
+				'<img alt="картинка" src="'+ url + '"/>'
+			);
+		},
+
+		submit_tinymce(blobInfo, success) {
+
+			this.loader = true;
+			const formData = new FormData();
+			formData.append('attachment', blobInfo.blob());
+			formData.append('id', this.activesbook.id);
+			this.axios
+				.post('/upload/images/', formData)
+				.then((response) => {
+					success(response.data.location);
+					this.loader = false;
+				})
+				.catch((error) => console.log(error));
+		},
+
+		submit() {
+			this.loader = true;
+			const config = {
+				onUploadProgress: progressEvent => {
+					let { progress } = this.myprogress;
+					progress = (progressEvent.loaded / progressEvent.total) * 100;
+					this.myprogress = progress;
+				}
+			};
+			const formData = new FormData();
+			formData.append('attachment', this.attachment);
+			formData.append('id', this.activesbook.id);
+			this.axios
+				.post('/upload/images/', formData, config)
+				.then((response) => {
+
+					this.addimage(response.data.location);
+
+					if(this.myprogress >= 100){
+						this.showImageModal = false;
+						this.loader = false;
+						this.myprogress = 0;
+					}
+				})
+				.catch((error) => console.log(error));
+		},
+
+		copyLink(book) {
+			var Url = this.$refs['mylink' + book.id];
+			Url.value = window.location.origin + '/corp_book/' + book.hash;
+
+			Url.select();
+			document.execCommand('copy');
+
+			this.$toast.info('Ссылка на страницу скопирована!');
+		},
+
+		onAttachmentChange(e) {
+			this.attachment = e.target.files[0];
+			this.submit();
+		},
+
+		onAttachmentChangeaudio(e) {
+			this.attachment = e.target.files[0];
+			this.submitaudio();
+		},
+
+		submitaudio() {
+			this.loader = true;
+			const formData = new FormData();
+			formData.append('attachment', this.attachment);
+			formData.append('id', this.activesbook.id);
+			this.axios
+				.post('/upload/audio/', formData)
+				.then((response) => {
+					this.addaudio(response.data.location);
+					this.showAudioModal = false;
+					this.loader = false;
+				})
+				.catch((error) => console.log(error));
+		},
+
+	},
 };
 
 </script>

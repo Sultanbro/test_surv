@@ -12,8 +12,11 @@
         <template v-if="cat.categoryes">
             <ul>
                 <template v-for="(cats, index) in cat.categoryes">
-                    <selectgroup :cat="cats" @addbook="addbook" :indexcat="index" @deletebook="deletebook"
-                                 @addbookk="addbookk"></selectgroup>
+                    <selectgroup
+                        :key="index"
+                        :cat="cats" @addbook="addbook"
+                        :indexcat="index" @deletebook="deletebook"
+                        @addbookk="addbookk"/>
 
                     <!--  <ul v-if="cats.books"" class="bookendlist" v-for="book in cats.books">
                          <li> <i class="fa fa-book" aria-hidden="true"></i> {{book.title}}</li>
@@ -26,24 +29,24 @@
 </template>
 
 <script>
-    export default {
-        name: "selectgroup",
-        props: ['cat', 'indexcat'],
-        methods: {
-            addbook(cat) {
-                this.$emit('addbook', cat)
-            },
-            deletebook(cat, index) {
-                this.$emit('deletebook', cat, index)
-            },
+export default {
+	name: 'SelectGroupBook',
+	props: ['cat', 'indexcat'],
+	methods: {
+		addbook(cat) {
+			this.$emit('addbook', cat)
+		},
+		deletebook(cat, index) {
+			this.$emit('deletebook', cat, index)
+		},
 
-            addbookk(cat) {
+		addbookk(cat) {
 
-                this.$emit('addbookk', cat)
-            }
-        }
+			this.$emit('addbookk', cat)
+		}
+	}
 
-    }
+}
 </script>
 
 <style scoped>

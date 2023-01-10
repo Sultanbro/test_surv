@@ -42,20 +42,20 @@
 <script>
 
 export default {
-  methods: {
-    close(e) {
-      e.stopPropagation();
-      this.$emit('close');
-      // set leave-active class
-      this.$el.classList.add('leave-active');
-    },
-  },
-  props: {
-    closeButton: {
-      type: Boolean,
-      default: true,
-    },
-  },
+	methods: {
+		close(e) {
+			e.stopPropagation();
+			this.$emit('close');
+			// set leave-active class
+			this.$el.classList.add('leave-active');
+		},
+	},
+	props: {
+		closeButton: {
+			type: Boolean,
+			default: true,
+		},
+	},
 };
 </script>
 

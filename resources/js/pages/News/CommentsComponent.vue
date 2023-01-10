@@ -79,86 +79,86 @@
 <script>
 import ReactionComponent from '@/pages/News/ReactionComponent'
 export default {
-    name: 'CommentsComponent',
-    components: {
-        ReactionComponent,
-    },
-    props: {
-        me: {
-            required: true
-        }
-    },
-    data() {
-        return {
+	name: 'CommentsComponent',
+	components: {
+		ReactionComponent,
+	},
+	props: {
+		me: {
+			required: true
+		}
+	},
+	data() {
+		return {
 
-            comments: [],
-            comments_count: 0,
-            postId: null,
-        }
-    },
+			comments: [],
+			comments_count: 0,
+			postId: null,
+		}
+	},
 
-    methods: {
+	methods: {
 
 
-        async getComments(postId) {
-            this.postId = postId;
+		async getComments(postId) {
+			this.postId = postId;
 
-            await axios.get('/news/' + postId + '/comments')
-                .then(response => {
-                    this.comments = response.data.data.comments;
-                    this.comments_count = response.data.data.comments_count;
+			await this.axios.get('/news/' + postId + '/comments')
+				.then(response => {
+					this.comments = response.data.data.comments;
+					this.comments_count = response.data.data.comments_count;
 
-                    this.$emit('changeCommentsCount', {
-                        comments_count: this.comments_count,
-                    });
-                })
-                .catch(response => {
-                });
-        },
+					this.$emit('changeCommentsCount', {
+						comments_count: this.comments_count,
+					});
+				})
+				.catch(() => {
+				});
+		},
 
-        async likeComment(commentId) {
-            await axios.post('news/' + this.postId + '/comments/' + commentId + '/like')
-                .then(response => {
-                    this.changeLikeComment(commentId, response.data.data)
-                })
-                .catch(response => {
-                });
-        },
+		async likeComment(commentId) {
+			await this.axios.post('news/' + this.postId + '/comments/' + commentId + '/like')
+				.then(response => {
+					this.changeLikeComment(commentId, response.data.data)
+				})
+				.catch(() => {
+				});
+		},
 
-        sendData(parentId, name) {
-            this.$emit('send', {
-                parentId: parentId,
-                userName: name
-            })
-        },
+		sendData(parentId, name) {
+			this.$emit('send', {
+				parentId: parentId,
+				userName: name
+			})
+		},
 
-        async destroyComment(commentId) {
-            await axios.delete('news/' + this.postId + '/comments/' + commentId)
-                .then(res => {
-                    this.getComments(this.postId);
-                })
-                .catch(res => {
-                    console.log(res);
-                });
-        },
+		async destroyComment(commentId) {
+			await this.axios.delete('news/' + this.postId + '/comments/' + commentId)
+				.then(() => {
+					this.getComments(this.postId);
+				})
+				.catch(res => {
+					console.log(res);
+				});
+		},
 
-        changeLikeComment(searchId, data) {
-            let comment = this.comments.find(comment => comment.id === searchId);
+		changeLikeComment(searchId, data) {
+			let comment = this.comments.find(comment => comment.id === searchId);
 
-            if (comment != null) {
-                comment.likes_count = data.likes_count;
-                comment.is_liked = data.is_liked;
-            }
+			if (comment != null) {
+				comment.likes_count = data.likes_count;
+				comment.is_liked = data.is_liked;
+			}
 
-            this.comments.forEach(comment => {
-                comment.comments.forEach(childComment => {
-                    if (childComment.id == searchId) {
-                        childComment.likes_count = data.likes_count;
-                        childComment.is_liked = data.is_liked;
-                    }
-                })
-            });
-        }
-    }
+			this.comments.forEach(comment => {
+				comment.comments.forEach(childComment => {
+					if (childComment.id == searchId) {
+						childComment.likes_count = data.likes_count;
+						childComment.is_liked = data.is_liked;
+					}
+				})
+			});
+		}
+	}
 }
 </script>

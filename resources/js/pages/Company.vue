@@ -64,74 +64,74 @@
 </template>
 
 <script>
-    import Professions from '@/pages/professions.vue';
-    import Groups from '@/pages/groups.vue';
-    import Shifts from '@/pages/shifts.vue';
-    import {useAsyncPageData} from '@/composables/asyncPageData'
+import Professions from '@/pages/professions.vue';
+import Groups from '@/pages/groups.vue';
+import Shifts from '@/pages/shifts.vue';
+import {useAsyncPageData} from '@/composables/asyncPageData'
 
-    export default {
-        name: 'Company',
-        components: {
-            Professions,
-            Groups,
-            Shifts
-        },
-        data() {
-            return {
-                tabs: [
-                    {
-                        id: 2,
-                        htmlId: 'nav-home',
-                        path: '/timetracking/settings?tab=2#nav-home',
-                        title: 'Должности',
-                        access: ['positions_view', 'settings_view']
-                    },
-                    {
-                        id: 3,
-                        htmlId: 'nav-profile',
-                        path: '/timetracking/settings?tab=3#nav-profile',
-                        title: 'Отделы',
-                        access: ['groups_view', 'settings_view']
-                    },
-                    {
-                        id: 4,
-                        htmlId: 'nav-shift',
-                        path: '???',
-                        title: 'Смены',
-                        access: ['settings_view']
-                    },
-                ],
-                activeTab: 2,
-                pageData: {}
-            }
-        },
-        computed: {
-            activeTabItem() {
-                return this.tabs.find(item => item.id === this.activeTab)
-            }
-        },
-        watch: {
-            activeTab(value) {
-                this.updatePageData()
-            }
-        },
-        mounted() {
-            this.updatePageData()
-        },
-        methods: {
-            can(access) {
-                if (access === 'is_admin') return this.$laravel.is_admin
-                if (typeof access === 'string') return this.$can(access)
-                return access.some(item => this.$can(item))
-            },
-            updatePageData() {
-                this.pageData = {}
-                useAsyncPageData(`/timetracking/settings?tab=${this.activeTab}#${this.activeTabItem.htmlId}`).then(data => {
-                    this.pageData = data
-                }).catch(error => {
-                    console.error('useAsyncPageData', error)
-                })
-            }
-        },
-    }
+export default {
+	name: 'PageCompany',
+	components: {
+		Professions,
+		Groups,
+		Shifts
+	},
+	data() {
+		return {
+			tabs: [
+				{
+					id: 2,
+					htmlId: 'nav-home',
+					path: '/timetracking/settings?tab=2#nav-home',
+					title: 'Должности',
+					access: ['positions_view', 'settings_view']
+				},
+				{
+					id: 3,
+					htmlId: 'nav-profile',
+					path: '/timetracking/settings?tab=3#nav-profile',
+					title: 'Отделы',
+					access: ['groups_view', 'settings_view']
+				},
+				{
+					id: 4,
+					htmlId: 'nav-shift',
+					path: '???',
+					title: 'Смены',
+					access: ['settings_view']
+				},
+			],
+			activeTab: 2,
+			pageData: {}
+		}
+	},
+	computed: {
+		activeTabItem() {
+			return this.tabs.find(item => item.id === this.activeTab)
+		}
+	},
+	watch: {
+		activeTab() {
+			this.updatePageData()
+		}
+	},
+	mounted() {
+		this.updatePageData()
+	},
+	methods: {
+		can(access) {
+			if (access === 'is_admin') return this.$laravel.is_admin
+			if (typeof access === 'string') return this.$can(access)
+			return access.some(item => this.$can(item))
+		},
+		updatePageData() {
+			this.pageData = {}
+			useAsyncPageData(`/timetracking/settings?tab=${this.activeTab}#${this.activeTabItem.htmlId}`).then(data => {
+				this.pageData = data
+			}).catch(error => {
+				console.error('useAsyncPageData', error)
+			})
+		}
+	},
+}
 </script>

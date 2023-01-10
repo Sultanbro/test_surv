@@ -3,9 +3,9 @@
     <div class="first-step">
         <div class="row">
             <div class="col-md-12">
-                <p class="heading">Шаг 1: Загрузите Excel файл 
+                <p class="heading">Шаг 1: Загрузите Excel файл
                     <b-button variant="default" size="sm" id="btn"  class="ml-2">
-                        <i class="fa fa-info"></i> 
+                        <i class="fa fa-info"></i>
                     </b-button></p>
 
                 <b-tooltip target="btn" placement="bottom">
@@ -34,15 +34,15 @@
                             drop-placeholder="Перетащите файл сюда..."
                              accept="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet, application/vnd.ms-excel"
                             class="mt-3"
-                            ></b-form-file> 
+                            ></b-form-file>
                     </div>
                     <b-button variant="primary" @click="uploadFile" class="mt-2 mb-2">
                         <i class="fa fa-file"></i> Загрузить
                     </b-button>
-                </form>	
+                </form>
             </div>
             <div class="col-md-12">
-                <p style="color:red" v-for="error in errors">{{ error }}</p>
+                <p style="color:red" v-for="error in errors" :key="error">{{ error }}</p>
             </div>
         </div>
     </div>
@@ -51,12 +51,12 @@
     <div class="mt-4" v-if="!showStepTwo">
         <h5>Примечания</h5>
         <p>1. В табель можно импортировать только тех сотрудников, которые в должности "Оператор"</p>
-        <p>2. Если у оператора в табели уже есть какая-то цифра, то есть уже отмечено какое-то количество часов, 
+        <p>2. Если у оператора в табели уже есть какая-то цифра, то есть уже отмечено какое-то количество часов,
             а в файле импорта нет по нему данных, то в табели за импортируемую дату обнулятся часы: так как у него в файле импорта нет минут разговора</p>
-    </div> 
+    </div>
 
-    
-    <div v-if="showStepTwo"> 
+
+    <div v-if="showStepTwo">
         <div class="row">
             <div class="col-md-12">
                 <p class="heading mt-4">Шаг 2: Соедините поля</p>
@@ -65,23 +65,23 @@
         <div class="row">
             <div class="col-md-5">
                 <p>Сотрудник в Excel</p>
-            </div> 
+            </div>
             <div class="col-md-5">
                 <p>Сотрудник в табели</p>
             </div>
             <div class="col-md-2">
                 <p>Время</p>
-            </div>    
+            </div>
         </div>
         <div class="row"  v-for="item in items" :key="item.name">
-            
+
             <div class="col-md-5">
                 <input type="text" disabled :value="item.name" class="form-control">
             </div>
 
             <div class="col-md-5">
                 <select class="form-control" v-model="item.id">
-                    <option :value="user.id" v-for="user in users">{{ user.name }} {{ user.last_name }} ID {{ user.id }}</option>
+                    <option :value="user.id" v-for="user in users" :key="user.id">{{ user.name }} {{ user.last_name }} ID {{ user.id }}</option>
                 </select>
             </div>
             <div class="col-md-2">
@@ -95,101 +95,101 @@
                     <i class="fa fa-save"></i> Сохранить за {{ date }}
                 </b-button>
             </div>
-            
+
         </div>
     </div>
-    
+
 </div>
 </template>
 
 
 <script>
 export default {
-    name: "group-excel-import",
-    props: {
-        status: {
-            type: String,
-        },
-        group_id: {
-            type: Number, 
-        }
-    },
-    data() {
-        return { 
-            message: null,
-            activebtn: null,
-            file: undefined,
-            items: [],
-            date: null,
-            filename: '',
-            showStepTwo: false,
-            errors: [],
-        }
-    },
-    created() {
-        
-    },
+	name: 'group-excel-import',
+	props: {
+		status: {
+			type: String,
+		},
+		group_id: {
+			type: Number,
+		}
+	},
+	data() {
+		return {
+			message: null,
+			activebtn: null,
+			file: undefined,
+			items: [],
+			date: null,
+			filename: '',
+			showStepTwo: false,
+			errors: [],
+		}
+	},
+	created() {
 
-    methods: {
-        saveConnects() {
-            let loader = this.$loading.show();
-            axios.post('/timetracking/settings/groups/importexcel/save', {
-                date: this.date,
-                items: this.items,
-                filename: this.filename,
-                group: this.group_id,
-            }).then(response => {
-                this.$toast.info('Сохранено');
-                loader.hide() 
-            }).catch(function(e){
-                loader.hide() 
-                alert(e)
-            })
-        },
-        uploadFile(){
-            let loader = this.$loading.show();
-            
-            let formData = new FormData();
-            formData.append('file', this.file);
-            formData.append('group_id', this.group_id);
+	},
 
-            var _this = this; 
+	methods: {
+		saveConnects() {
+			let loader = this.$loading.show();
+			this.axios.post('/timetracking/settings/groups/importexcel/save', {
+				date: this.date,
+				items: this.items,
+				filename: this.filename,
+				group: this.group_id,
+			}).then(() => {
+				this.$toast.info('Сохранено');
+				loader.hide()
+			}).catch(function(e){
+				loader.hide()
+				alert(e)
+			})
+		},
+		uploadFile(){
+			let loader = this.$loading.show();
 
-            axios.post( '/timetracking/settings/groups/importexcel', formData, {
-                headers: {
-                    "Content-Type": "multipart/form-data"
-                }
-            }).then(function(response){
-                    if(response.data.errors.length > 0) {
-                        _this.errors = response.data.errors
-                        loader.hide() 
-                        return; 
-                    }
-                    _this.items = response.data.items;
+			let formData = new FormData();
+			formData.append('file', this.file);
+			formData.append('group_id', this.group_id);
 
-                    _this.items.sort((a, b) => (a.name > b.name) ? 1 : -1);
+			var _this = this;
 
-                    _this.errors = []
-                    if(response.data.items.length > 0) _this.showStepTwo = true;
-                    _this.users = response.data.users
-                    _this.users.push({
-                        id: 0,
-                        name: '',
-                        last_name: '',
-                    })
-                    _this.date = response.data.date
-                    _this.filename = response.data.filename
-                    loader.hide();  
-                }).catch(function(e){
-                    loader.hide() 
-                    alert(e)
-                })
-                
-      }, 
+			this.axios.post( '/timetracking/settings/groups/importexcel', formData, {
+				headers: {
+					'Content-Type': 'multipart/form-data'
+				}
+			}).then(function(response){
+				if(response.data.errors.length > 0) {
+					_this.errors = response.data.errors
+					loader.hide()
+					return;
+				}
+				_this.items = response.data.items;
 
-        
+				_this.items.sort((a, b) => (a.name > b.name) ? 1 : -1);
 
-    } 
+				_this.errors = []
+				if(response.data.items.length > 0) _this.showStepTwo = true;
+				_this.users = response.data.users
+				_this.users.push({
+					id: 0,
+					name: '',
+					last_name: '',
+				})
+				_this.date = response.data.date
+				_this.filename = response.data.filename
+				loader.hide();
+			}).catch(function(e){
+				loader.hide()
+				alert(e)
+			})
+
+		},
+
+
+
+	}
 }
 </script>
 

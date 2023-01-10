@@ -106,161 +106,231 @@
               </button>
           </div>
       </template>
-  </div>
 
+			<template v-if="activebtn != null">
+					<b-row class="align-items-center my-4">
+							<b-col cols="12" md="4">
+									<b-form-group label="Сумма индексации">
+											<b-form-input type="text" class="form-control group-select" v-model="sum"
+																		v-if="indexation"></b-form-input>
+											<b-form-input type="text" class="form-control group-select" v-model="sum" v-else
+																		disabled></b-form-input>
+									</b-form-group>
+							</b-col>
+							<b-col cols="12" md="4">
+									<b-form-group class="mt-5">
+											<b-form-checkbox
+															v-model="indexation"
+															:value="1"
+															:unchecked-value="0"
+															switch
+											>
+													Индексация зарплаты
+											</b-form-checkbox>
+									</b-form-group>
+							</b-col>
+					</b-row>
+					<b-row>
+							<b-col cols="12" class="my-4">
+									<b-form-checkbox
+													v-model="desc.show"
+													:value="1"
+													switch
+													:unchecked-value="0"
+									>
+											Показывать таблицу в профиле
+									</b-form-checkbox>
+							</b-col>
 
+							<b-col cols="12" class="my-4">
+									<div class="table-container">
+											<b-table-simple class="table table-bordered pos-desc pos-desc-1">
+												<b-thead>
+													<b-tr>
+															<b-th>Следующая ступень карьерного роста</b-th>
+															<b-th>Требования к кандидату</b-th>
+															<b-th>Что нужно делать</b-th>
+															<b-th>График работы</b-th>
+															<b-th>Заработная плата</b-th>
+															<b-th>Нужные знания для перехода на следующую должность</b-th>
+													</b-tr>
+												</b-thead>
+											<b-tbody>
+												<b-tr>
+													<b-td><b-textarea v-model="desc.next_step"></b-textarea></b-td>
+													<b-td><b-textarea v-model="desc.require"></b-textarea></b-td>
+													<b-td><b-textarea v-model="desc.actions"></b-textarea></b-td>
+													<b-td><b-textarea v-model="desc.time"></b-textarea></b-td>
+													<b-td><b-textarea v-model="desc.salary"></b-textarea></b-td>
+													<b-td><b-textarea v-model="desc.knowledge"></b-textarea></b-td>
+												</b-tr>
+											</b-tbody>
+										</b-table-simple>
+									</div>
+							</b-col>
+					</b-row>
+					<div class="mt-3">
+							<button @click='savePosition' class="btn btn-success mr-2">Сохранить</button>
+							<button
+								@click.stop="deletePosition(position_id, activebtn)"
+								class="btn btn-danger mr-2"
+							>
+								<i class="fa fa-trash mr-2"></i> Удалить
+							</button>
+					</div>
+			</template>
+	</div>
 </template>
 
 <script>
-    // если в БД таблица position пустая, то в props: ['positions'] прилетает пустой массив
-    // если есть, то прилетает объект, где ключи - id (число), а значение - position (название дложности)
+// если в БД таблица position пустая, то в props: ['positions'] прилетает пустой массив
+// если есть, то прилетает объект, где ключи - id (число), а значение - position (название дложности)
 export default {
-  name: "professions",
-  props: ['positions'],
-  data() {
-    return {
-      data: [],
-      new_position: '',
-        addNew: false,
-      position_id: 0,
-      indexation: 0,
-      sum: 0,
-      activebtn: null,
-      desc: {
-        require: '',
-        actions: '',
-        time: '',
-        salary:'',
-        knowledge:'',
-        next_step:'',
-        show: 0
-      }
-    }
-  },
-  watch:{
-      positions(value) {
-          //конвертирую прилетевший объект в массив для работы vue-multiselect
-          // если данных нет, то в this.data будет пустой массив
-          Object.keys(value).forEach(item => {
-              this.data.push({
-                  id: item,
-                  position: value[item]
-              })
-          })
-      }
-  },
-  methods: {
-      resetState(){
-          this.new_position = '';
-          this.position_id = 0;
-          this.indexation = 0;
-          this.sum = 0;
-          this.activebtn = null;
-          this.desc = {
-              require: '',
-              actions: '',
-              time: '',
-              salary: '',
-              knowledge: '',
-              next_step: '',
-              show: 0
-          }
-      },
-      addNewPosition() {
-          if(this.$refs.positionMultiselect){
-              this.$refs.positionMultiselect.toggle();
-          }
-          this.addNew = true;
-          this.resetState();
-      },
-    selectPosition(value) {
-        this.addNew = false;
-        axios.post('/timetracking/settings/positions/get-new', {
-          name: value.id,
-        }).then(response => {
-          //this.$toast.info('Добавлена');
-            console.log(response.data);
-            const data = response.data?.data
-          if(!data[0]) return console.error(response)
-          this.new_position = data[0].position;
-          this.position_id = data[0].id;
-          this.indexation = data[0].indexation;
-          this.sum = data[0].sum;
-          this.desc = {
-            require: data[0].require,
-            actions: data[0].actions,
-            time: data[0].time,
-            salary: data[0].salary,
-            knowledge: data[0].knowledge,
-            next_step: data[0].next_step,
-            show: data[0].show,
-          }
-        }).catch(error => {
-          console.log(error.response)
-        })
+	name: 'CompanyProfessions',
+	props: ['positions'],
+	data() {
+		return {
+			data: [],
+			new_position: '',
+			addNew: false,
+			position_id: 0,
+			indexation: 0,
+			sum: 0,
+			activebtn: null,
+			desc: {
+				require: '',
+				actions: '',
+				time: '',
+				salary:'',
+				knowledge:'',
+				next_step:'',
+				show: 0
+			}
+		}
+	},
+	watch:{
+		positions(value) {
+			//конвертирую прилетевший объект в массив для работы vue-multiselect
+			// если данных нет, то в this.data будет пустой массив
+			Object.keys(value).forEach(item => {
+				this.data.push({
+					id: item,
+					position: value[item]
+				})
+			})
+		}
+	},
+	methods: {
+		resetState(){
+			this.new_position = '';
+			this.position_id = 0;
+			this.indexation = 0;
+			this.sum = 0;
+			this.activebtn = null;
+			this.desc = {
+				require: '',
+				actions: '',
+				time: '',
+				salary: '',
+				knowledge: '',
+				next_step: '',
+				show: 0
+			}
+		},
+		addNewPosition() {
+			if(this.$refs.positionMultiselect){
+				this.$refs.positionMultiselect.toggle();
+			}
+			this.addNew = true;
+			this.resetState();
+		},
+		selectPosition(value) {
+			this.addNew = false;
+			this.axios.post('/timetracking/settings/positions/get-new', {
+				name: value.id,
+			}).then(response => {
+				//this.$toast.info('Добавлена');
+				console.log(response.data);
+				const data = response.data?.data
+				if(!data[0]) return console.error(response)
+				this.new_position = data[0].position;
+				this.position_id = data[0].id;
+				this.indexation = data[0].indexation;
+				this.sum = data[0].sum;
+				this.desc = {
+					require: data[0].require,
+					actions: data[0].actions,
+					time: data[0].time,
+					salary: data[0].salary,
+					knowledge: data[0].knowledge,
+					next_step: data[0].next_step,
+					show: data[0].show,
+				}
+			}).catch(error => {
+				console.log(error.response)
+			})
 
 
-  // if (response.data) {
-  //                   this.gname = this.activebtn
-  //                   this.value = response.data.users
-  //                   this.bgs = response.data.book_groups
-  //                   this.timeon = response.data.timeon
-  //                   this.timeoff = response.data.timeoff
-  //                   this.group_id = response.data.group_id
-  //                   this.zoom_link = response.data.zoom_link
-  //                   this.bp_link = response.data.bp_link
-  //               } else {
-  //                   this.value = []
-  //               }
-    },
+			// if (response.data) {
+			//                   this.gname = this.activebtn
+			//                   this.value = response.data.users
+			//                   this.bgs = response.data.book_groups
+			//                   this.timeon = response.data.timeon
+			//                   this.timeoff = response.data.timeoff
+			//                   this.group_id = response.data.group_id
+			//                   this.zoom_link = response.data.zoom_link
+			//                   this.bp_link = response.data.bp_link
+			//               } else {
+			//                   this.value = []
+			//               }
+		},
 
-    async savePosition() {
-        try{
-            if(!this.new_position.length) return this.$toast.error('Введите нзвание должности!');
-            const responseAdd = await axios.post('/timetracking/settings/positions/add-new', {position: this.new_position});
-            if(responseAdd.data.code === 201) return this.$toast.error('Должность с таким названием уже существует!');
-            const data = responseAdd.data.data;
-            const dataPush = {
-                id: data.id,
-                position: data.position
-            };
-            this.position_id = data.id;
-            this.new_position = data.position;
+		async savePosition() {
+			try{
+				if(!this.new_position.length) return this.$toast.error('Введите нзвание должности!');
+				const responseAdd = await this.axios.post('/timetracking/settings/positions/add-new', {position: this.new_position});
+				if(responseAdd.data.code === 201) return this.$toast.error('Должность с таким названием уже существует!');
+				const data = responseAdd.data.data;
+				const dataPush = {
+					id: data.id,
+					position: data.position
+				};
+				this.position_id = data.id;
+				this.new_position = data.position;
 
-            this.activebtn = dataPush;
-            this.data.push(dataPush);
+				this.activebtn = dataPush;
+				this.data.push(dataPush);
 
-            const responseSave = await axios.post('/timetracking/settings/positions/save-new', {
-                id: this.activebtn.id,
-                new_name: this.new_position,
-                indexation: this.indexation,
-                sum: this.sum,
-                desc: this.desc,
-            });
-            if(responseSave.data.status !== 200) return this.$toast.error('Упс! Что-то пошло не так');
-            this.$toast.success('Новая должность создана!');
-        }
-        catch(error){
-            console.error(error.message);
-        }
-    },
-    deletePosition() {
-         if (confirm('Вы уверены что хотите удалить должность?')) {
-            axios.post('/timetracking/settings/positions/delete', {
-                    position: this.activebtn.id,
-                })
-                .then(response => {
-                    this.$toast.info('Удалена');
-                })
+				const responseSave = await this.axios.post('/timetracking/settings/positions/save-new', {
+					id: this.activebtn.id,
+					new_name: this.new_position,
+					indexation: this.indexation,
+					sum: this.sum,
+					desc: this.desc,
+				});
+				if(responseSave.data.status !== 200) return this.$toast.error('Упс! Что-то пошло не так');
+				this.$toast.success('Новая должность создана!');
+			}
+			catch(error){
+				console.error(error.message);
+			}
+		},
+		deletePosition() {
+			if (confirm('Вы уверены что хотите удалить должность?')) {
+				this.axios.post('/timetracking/settings/positions/delete', {
+					position: this.activebtn.id,
+				}).then(() => {
+					this.$toast.info('Удалена');
+				})
 
-            let ind = this.data.findIndex(item => item.id === this.activebtn.id);
-            this.data.splice(ind, 1);
-            this.addNew = false;
-            this.resetState();
-        }
-    },
+				let ind = this.data.findIndex(item => item.id === this.activebtn.id);
+				this.data.splice(ind, 1);
+				this.addNew = false;
+				this.resetState();
+			}
+		},
 
-  }
+	}
 }
 </script>
 
@@ -283,124 +353,124 @@ export default {
         background-color: rgba(0,128,0,0.2)
     }
 .listprof {
-  display: flex;
-  margin-top: 20px;
+	display: flex;
+	margin-top: 20px;
 }
 
 .profitem {
-  margin-right: 10px;
+	margin-right: 10px;
 }
 
 .add-grade {
-  display: flex;
-  max-width: 500px;
+	display: flex;
+	max-width: 500px;
 }.ant-tabs {
-    overflow: visible;
+		overflow: visible;
 }
 .listprof {
-    display: flex;
-    flex-wrap: wrap;
-    margin-top: 20px;
+		display: flex;
+		flex-wrap: wrap;
+		margin-top: 20px;
 }
 
 .profitem {
-    margin-right: 10px;
-    margin-bottom: 5px;
+		margin-right: 10px;
+		margin-bottom: 5px;
 }
 
 .add-grade {
-    display: flex;
-    max-width: 500px;
+		display: flex;
+		max-width: 500px;
 }
 
 .dialerlist {
-    display: flex;
-    align-items: center;
-    margin: 0;
-    &.bg {
-        background: #f1f1f1;
-        padding-left: 15px;
-    }
-    .fl {
-        flex: 1;
-        display: flex;
-        align-items: center;
-    }
+		display: flex;
+		align-items: center;
+		margin: 0;
+		&.bg {
+				background: #f1f1f1;
+				padding-left: 15px;
+		}
+		.fl {
+				flex: 1;
+				display: flex;
+				align-items: center;
+		}
 }
 
 .group-select {
-    border-radius: 0;
-    max-width: 100%;
+		border-radius: 0;
+		max-width: 100%;
 }
 
 p.choose {
-    line-height: 31px;
-    margin-right: 15px;
+		line-height: 31px;
+		margin-right: 15px;
 }
 span.before {
-    padding: 0 10px;
+		padding: 0 10px;
 }
 .multiselect__tags {
-    border-radius: 0 !important;
+		border-radius: 0 !important;
 }
 .multiselect__tag {
-    display: block !important;
-    max-width: max-content !important;
+		display: block !important;
+		max-width: max-content !important;
 }
 .blu .multiselect__tag {
-    background: #017cff !important;
+		background: #017cff !important;
 }
 .pos-desc td {
-  padding: 0;
+	padding: 0;
 }
 .pos-desc td textarea {
-      font-size: 12px;
-    resize: none;
-    overflow: auto;
-    min-height: 350px;
+			font-size: 12px;
+		resize: none;
+		overflow: auto;
+		min-height: 350px;
 }
 
 @media(min-width: 1000px) {
-    .multiselect__tags-wrap {
-        flex-wrap: wrap;
-        display: flex !important;
-    }
-    .multiselect__tag {
-        flex: 0 0 49%;
-        /* margin-left: 1% !important; */
-        margin-right: 1% !important;
-        max-width: 49% !important;
-    }
+		.multiselect__tags-wrap {
+				flex-wrap: wrap;
+				display: flex !important;
+		}
+		.multiselect__tag {
+				flex: 0 0 49%;
+				/* margin-left: 1% !important; */
+				margin-right: 1% !important;
+				max-width: 49% !important;
+		}
 }
 
 @media(min-width: 1300px) {
-    .multiselect__tag {
-        flex: 0 0 32%;
-        /* margin-left: 1% !important; */
-        margin-right: 1% !important;
-        max-width: 32% !important;
-    }
+		.multiselect__tag {
+				flex: 0 0 32%;
+				/* margin-left: 1% !important; */
+				margin-right: 1% !important;
+				max-width: 32% !important;
+		}
 }
 @media(min-width: 1700px) {
-    .multiselect__tag {
-        flex: 0 0 24%;
-        /* margin-left: 1% !important; */
-        margin-right: 1% !important;
-        max-width: 24% !important;
-    }
+		.multiselect__tag {
+				flex: 0 0 24%;
+				/* margin-left: 1% !important; */
+				margin-right: 1% !important;
+				max-width: 24% !important;
+		}
 }
 .scscsc {
-    margin-left: 15px;
+		margin-left: 15px;
 }
 .sssz button {
-    margin-top: 1px;
+		margin-top: 1px;
 }
 .add-grade input {
-    border-radius: 0;
+		border-radius: 0;
 }
 .p {
-  font-size: 14px;
-  width: 200px;
-    color: #5a5a5a;
+	font-size: 14px;
+	width: 200px;
+		color: #5a5a5a;
 }
 </style>

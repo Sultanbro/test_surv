@@ -48,7 +48,7 @@
                     <button class="btn-success btn btn-sm rounded" @click="saveUser">Сохранить</button>
                 </div>
 
-                <div class="row mt-2" v-for="noti in activeuser_notifications">
+                <div class="row mt-2" v-for="(noti, key) in activeuser_notifications" :key="key">
                     <div class="col-lg-3">
                             <multiselect
                                 label="title"
@@ -58,7 +58,7 @@
                             />
                     </div>
                     <div class="col-lg-6">
-                        <div  v-if="noti[0] != null && need_group.hasOwnProperty(Number(noti[0].id)) && need_group[noti[0].id]">
+                        <div v-if="noti[0] != null && need_group.hasOwnProperty(Number(noti[0].id)) && need_group[noti[0].id]">
                             <multiselect
                                 v-model="noti[1]"
                                 label="name"
@@ -352,7 +352,7 @@
                                     </b-tr>
                                 </b-thead>
                                 <b-tbody>
-                                    <b-tr v-for="(item, status_index) in other_templates" :class="{ active: item.editable }" :key="item.id">
+                                    <b-tr v-for="item in other_templates" :class="{ active: item.editable }" :key="item.id">
                                         <b-td>
                                             {{item.title}}
                                         </b-td>
@@ -400,223 +400,223 @@
 
 <script>
 export default {
-    name: "notifications",
-    props: [
-       'groups_with_id',
-       'users',
-       'positions',
-    ],
-    watch: {
-        activeuser: {
-            handler (val, oldVal) {
-                this.selectUser()
-            }
-        },
-        positions(){
-            this.init()
-        }
-    },
-    data() {
-        return {
-            isLoading: false,
-            activeuser: null,
-            actions: [
-                {
-                    value: 'profile',
-                    title: 'Уведомление в ЛК',
-                },
-                {
-                    value: 'sms',
-                    title: 'СМС сообщение',
-                },
-                {
-                    value: 'autocall',
-                    title: 'Автозвонок',
-                },
-                {
-                    value: 'whatsapp',
-                    title: 'Ватсап сообщение',
-                }
-            ],
-            newUser: null,
-            types: {
-                0: 'Сотрудникам',
-                1: 'Отделам',
-            },
-            visible: {
-                user: true,
-            },
-            groups: [],
-            position_templates: [],
-            group_templates: [],
-            other_templates: [],
-            user_templates: [],
-            templates: [],
-            need_group: [],
-            user_with_notifications: [],
-            activeuser_notifications: [],
-            newNoti: {
-                user:null,
-                notifications:null,
-            }
-        }
-    },
-    created() {
-        if(this.positions){
-            this.init()
-        }
-    },
-    mounted() {},
-    methods: {
-        init(){
-            this.fetchData();
-            this.groups = this.groups_with_id;
-        },
-        clearAll () {
-            this.selectedGroups = []
-        },
-        addTag(newTag) {
-            const tag = {
-                email: newTag,
-                ID: newTag
-            }
-            //this.options.push(tag)
-            this.newNoti.notifications.push(tag)
-        },
-        updateNotification (status, status_index) {
+	name: 'PageNotifications',
+	props: [
+		'groups_with_id',
+		'users',
+		'positions',
+	],
+	watch: {
+		activeuser: {
+			handler () {
+				this.selectUser()
+			}
+		},
+		positions(){
+			this.init()
+		}
+	},
+	data() {
+		return {
+			isLoading: false,
+			activeuser: null,
+			actions: [
+				{
+					value: 'profile',
+					title: 'Уведомление в ЛК',
+				},
+				{
+					value: 'sms',
+					title: 'СМС сообщение',
+				},
+				{
+					value: 'autocall',
+					title: 'Автозвонок',
+				},
+				{
+					value: 'whatsapp',
+					title: 'Ватсап сообщение',
+				}
+			],
+			newUser: null,
+			types: {
+				0: 'Сотрудникам',
+				1: 'Отделам',
+			},
+			visible: {
+				user: true,
+			},
+			groups: [],
+			position_templates: [],
+			group_templates: [],
+			other_templates: [],
+			user_templates: [],
+			templates: [],
+			need_group: [],
+			user_with_notifications: [],
+			activeuser_notifications: [],
+			newNoti: {
+				user:null,
+				notifications:null,
+			}
+		}
+	},
+	created() {
+		if(this.positions){
+			this.init()
+		}
+	},
+	mounted() {},
+	methods: {
+		init(){
+			this.fetchData();
+			this.groups = this.groups_with_id;
+		},
+		clearAll () {
+			this.selectedGroups = []
+		},
+		addTag(newTag) {
+			const tag = {
+				email: newTag,
+				ID: newTag
+			}
+			//this.options.push(tag)
+			this.newNoti.notifications.push(tag)
+		},
+		updateNotification (status, status_index) {
 
-            axios.post('/timetracking/settings/notifications/update', {
-                id: status.id,
-                action: status.action,
-                message: status.message,
-                ids: status.selectedGroups
-            }).then(response => {
+			this.axios.post('/timetracking/settings/notifications/update', {
+				id: status.id,
+				action: status.action,
+				message: status.message,
+				ids: status.selectedGroups
+			}).then(() => {
 
-                if(status.type == 1) {
-                    this.group_templates[status_index].editable = false;
-                }
+				if(status.type == 1) {
+					this.group_templates[status_index].editable = false;
+				}
 
-                if(status.type == 0) {
-                    this.user_templates[status_index].editable = false;
-                }
-                this.$toast.success('Успешно изменено!');
+				if(status.type == 0) {
+					this.user_templates[status_index].editable = false;
+				}
+				this.$toast.success('Успешно изменено!');
 
-            }).catch(error => {
-                console.log(error.response)
-                this.$toast.error('Ошибка!');
-            });
-        },
-        addNotiToUser() {
-            this.activeuser_notifications.push([
-                {},
-                [],
-                1
-            ])
-        },
+			}).catch(error => {
+				console.log(error.response)
+				this.$toast.error('Ошибка!');
+			});
+		},
+		addNotiToUser() {
+			this.activeuser_notifications.push([
+				{},
+				[],
+				1
+			])
+		},
 
-        addUser() {
-            let item = this.user_with_notifications.find(x => x.id === this.newUser.id);
+		addUser() {
+			let item = this.user_with_notifications.find(x => x.id === this.newUser.id);
 
-            if(item !== undefined) {
-                this.$toast.info('Пользователь уже есть в списке');
-                return null;
-            }
+			if(item !== undefined) {
+				this.$toast.info('Пользователь уже есть в списке');
+				return null;
+			}
 
-            this.user_with_notifications.push(this.newUser);
-            this.activeuser = this.newUser
-            this.activeuser_notifications = [
-                {},
-                []
-            ];
-            this.newUser = null;
-            this.$toast.info('Добавьте сотруднику уведомления и сохраните');
+			this.user_with_notifications.push(this.newUser);
+			this.activeuser = this.newUser
+			this.activeuser_notifications = [
+				{},
+				[]
+			];
+			this.newUser = null;
+			this.$toast.info('Добавьте сотруднику уведомления и сохраните');
 
 
-            this.selectUser()
-        },
+			this.selectUser()
+		},
 
-        optionSelected(e) {
-            console.log(e)
-        },
+		optionSelected(e) {
+			console.log(e)
+		},
 
-        fetchData () {
-            axios.get('/timetracking/settings/notifications/get').then(response => {
-                this.user_templates = response.data[0];
-                this.group_templates = response.data[1];
-                this.position_templates = response.data[2];
-                this.other_templates = response.data[3];
-                this.user_with_notifications = response.data[4];
-                this.templates = response.data[5];
-                this.need_group = response.data[6];
-            });
-        },
+		fetchData () {
+			this.axios.get('/timetracking/settings/notifications/get').then(response => {
+				this.user_templates = response.data[0];
+				this.group_templates = response.data[1];
+				this.position_templates = response.data[2];
+				this.other_templates = response.data[3];
+				this.user_with_notifications = response.data[4];
+				this.templates = response.data[5];
+				this.need_group = response.data[6];
+			});
+		},
 
-        saveUser() {
-            axios.post('/timetracking/settings/notifications/user/save', {
-                    user_id: this.activeuser.id,
-                    noti: this.activeuser_notifications,
-                })
-                .then(response => {
-                    this.$toast.success('Сохранено');
-                })
-                .catch(error => {
-                    console.log(error.response)
-                    this.$toast.error('Ошибка!');
-                });
-        },
+		saveUser() {
+			this.axios.post('/timetracking/settings/notifications/user/save', {
+				user_id: this.activeuser.id,
+				noti: this.activeuser_notifications,
+			})
+				.then(() => {
+					this.$toast.success('Сохранено');
+				})
+				.catch(error => {
+					console.log(error.response)
+					this.$toast.error('Ошибка!');
+				});
+		},
 
-        deleteUser() {
-            axios.post('/timetracking/settings/notifications/user/save', {
-                    user_id: this.activeuser.id,
-                    noti: [],
-                })
-                .then(response => {
-                    this.$toast.success('Пользователь исключен из индивидуальных уведомлений');
-                    this.activeuser_notifications = [];
+		deleteUser() {
+			this.axios.post('/timetracking/settings/notifications/user/save', {
+				user_id: this.activeuser.id,
+				noti: [],
+			})
+				.then(() => {
+					this.$toast.success('Пользователь исключен из индивидуальных уведомлений');
+					this.activeuser_notifications = [];
 
-                    let id = this.activeuser.id;
+					let id = this.activeuser.id;
 
-                    let index = this.user_with_notifications.findIndex(x => x.id == id);
-                    this.user_with_notifications.splice(index, 1)
-                    this.activeuser = null
+					let index = this.user_with_notifications.findIndex(x => x.id == id);
+					this.user_with_notifications.splice(index, 1)
+					this.activeuser = null
 
-                })
-                .catch(error => {
-                    console.log(error)
-                    this.$toast.error('Ошибка!');
-                });
-        },
+				})
+				.catch(error => {
+					console.log(error)
+					this.$toast.error('Ошибка!');
+				});
+		},
 
-        selectUser() {
+		selectUser() {
 
-            axios.post('/timetracking/settings/notifications/user', {
-                    user_id: this.activeuser,
-                })
-                .then(response => {
-                    this.activeuser_notifications = [];
-                    if(response.data) {
-                        this.activeuser_notifications =  response.data.notifications;
-                        // let array = response.data.notifications;
+			this.axios.post('/timetracking/settings/notifications/user', {
+				user_id: this.activeuser,
+			})
+				.then(response => {
+					this.activeuser_notifications = [];
+					if(response.data) {
+						this.activeuser_notifications =  response.data.notifications;
+						// let array = response.data.notifications;
 
-                        // array.forEach((el, index) => {
-                        //     el[1].forEach(group => {
-                        //         let item = this.groups.find(x => x.id === group);
+						// array.forEach((el, index) => {
+						//     el[1].forEach(group => {
+						//         let item = this.groups.find(x => x.id === group);
 
-                        //         if(item === undefined) {
-                        //             array[index][1] = item
-                        //         }
-                        //     });
-                        // });
+						//         if(item === undefined) {
+						//             array[index][1] = item
+						//         }
+						//     });
+						// });
 
-                        // console.log(array)
-                        // this.activeuser_notifications = array
+						// console.log(array)
+						// this.activeuser_notifications = array
 
-                    }
+					}
 
-                })
-        },
+				})
+		},
 
-    },
+	},
 }
 </script>
 <style src="vue-multiselect/dist/vue-multiselect.min.css"></style>

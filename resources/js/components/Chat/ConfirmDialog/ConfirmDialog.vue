@@ -57,90 +57,90 @@
 import Vue from 'vue'
 
 Vue.directive('focus', {
-  inserted: function(el) {
-    el.focus()
-  }
+	inserted: function(el) {
+		el.focus()
+	}
 })
 
 const Component = {
-  data() {
-    return {
-      isShow: false,
-      password: null,
-      dialog: {
-        auth: false,
-        title: '',
-        message: '',
-        button: {}
-      },
-      params: {}
-    }
-  },
-  mounted() {
-    this.$root.$on('messengerConfirm', params => {
-      this.params = params
-      this.dialog = {
-        auth: params.auth || false,
-        title: params.title || '',
-        message: params.message || '',
-        callback: params.callback || null,
-        button: params.button || []
-      }
-      this.isShow = true
-      this.$nextTick(() => {
-        this.$refs.confirmDialog.focus()
-      })
-    })
-  },
-  methods: {
-    resetState() {
-      this.password = null
-      this.dialog = {
-        auth: false,
-        title: '',
-        message: '',
-        button: {},
-        callback: () => {}
-      }
-    },
-    handleClickButton({ target }, confirm) {
-      if (target.id === 'vueConfirm') return
-      if (confirm && this.dialog.auth && !this.password) return
-      this.isShow = false
-      // callback
-      if (this.params.callback) {
-        this.params.callback(confirm, this.password)
-      }
-    },
-    handleClickOverlay({ target }) {
-      if (target.id === 'vueConfirm') {
-        this.isShow = false
-        // callback
-        if (this.params.callback) {
-          this.params.callback(false, this.password)
-        }
-      }
-    },
-    handleKeyUp({ keyCode }) {
-      if (keyCode === 27) {
-        this.handleClickOverlay({ target: { id: 'vueConfirm' } })
-      }
-      if (keyCode === 13) {
-        this.handleClickButton({ target: { id: '' } }, true)
-      }
-    },
-    open(params) {
-      this.resetState()
-      this.params = params
-      this.isShow = true
-      // set params to dialog state
-      Object.entries(params).forEach(param => {
-        if (typeof param[1] === typeof this.dialog[param[0]]) {
-          this.dialog[param[0]] = param[1]
-        }
-      })
-    }
-  },
+	data() {
+		return {
+			isShow: false,
+			password: null,
+			dialog: {
+				auth: false,
+				title: '',
+				message: '',
+				button: {}
+			},
+			params: {}
+		}
+	},
+	mounted() {
+		this.$root.$on('messengerConfirm', params => {
+			this.params = params
+			this.dialog = {
+				auth: params.auth || false,
+				title: params.title || '',
+				message: params.message || '',
+				callback: params.callback || null,
+				button: params.button || []
+			}
+			this.isShow = true
+			this.$nextTick(() => {
+				this.$refs.confirmDialog.focus()
+			})
+		})
+	},
+	methods: {
+		resetState() {
+			this.password = null
+			this.dialog = {
+				auth: false,
+				title: '',
+				message: '',
+				button: {},
+				callback: () => {}
+			}
+		},
+		handleClickButton({ target }, confirm) {
+			if (target.id === 'vueConfirm') return
+			if (confirm && this.dialog.auth && !this.password) return
+			this.isShow = false
+			// callback
+			if (this.params.callback) {
+				this.params.callback(confirm, this.password)
+			}
+		},
+		handleClickOverlay({ target }) {
+			if (target.id === 'vueConfirm') {
+				this.isShow = false
+				// callback
+				if (this.params.callback) {
+					this.params.callback(false, this.password)
+				}
+			}
+		},
+		handleKeyUp({ keyCode }) {
+			if (keyCode === 27) {
+				this.handleClickOverlay({ target: { id: 'vueConfirm' } })
+			}
+			if (keyCode === 13) {
+				this.handleClickButton({ target: { id: '' } }, true)
+			}
+		},
+		open(params) {
+			this.resetState()
+			this.params = params
+			this.isShow = true
+			// set params to dialog state
+			Object.entries(params).forEach(param => {
+				if (typeof param[1] === typeof this.dialog[param[0]]) {
+					this.dialog[param[0]] = param[1]
+				}
+			})
+		}
+	},
 }
 
 export default Component

@@ -10,11 +10,11 @@ Vue.use(clickOutside)
 Vue.use(ViewportSize)
 
 new Vue({
-  data: {
-    lang: 'ru',
-    setLang (lang) {
-      this.lang = lang
-    }
-  },
-  render: h => h(App),
+	data: {
+		lang: 'ru',
+		setLang (lang) {
+			this.lang = lang
+		}
+	},
+	render: h => h(App),
 }).$mount('#app')

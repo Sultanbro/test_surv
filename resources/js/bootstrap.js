@@ -1,8 +1,11 @@
+/* global process */
 window._ = require('lodash');
 
 try {
-    require('bootstrap');
-} catch (e) {}
+	require('bootstrap');
+} catch (e) {
+	// error
+}
 
 /**
  * We'll load the axios HTTP library which allows us to easily issue requests
@@ -37,15 +40,15 @@ import Pusher from 'pusher-js';
 window.Pusher = Pusher;
 
 window.Echo = new Echo({
-    broadcaster: 'pusher',
-    authEndpoint: '/messenger/api/chat/auth',
-    key: process.env.VITE_PUSHER_APP_KEY ?? 12345,
-    wsHost: process.env.VITE_PUSHER_HOST ?? window.location.hostname,
-    wssHost: process.env.VITE_PUSHER_HOST ?? window.location.hostname,
-    wsPort: process.env.VITE_PUSHER_PORT ?? 6001,
-    wssPort: process.env.VITE_PUSHER_PORT ?? 6001,
-    forceTLS: process.env.VITE_PUSHER_SECURE ?? false,
-    wsPath: process.env.VITE_PUSHER_PATH ?? '/messenger',
-    wssPath: process.env.VITE_PUSHER_PATH ?? '/messenger',
-    enabledTransports: ['ws', 'wss'],
+	broadcaster: 'pusher',
+	authEndpoint: '/messenger/api/chat/auth',
+	key: process.env.VITE_PUSHER_APP_KEY ?? 12345,
+	wsHost: process.env.VITE_PUSHER_HOST ?? window.location.hostname,
+	wssHost: process.env.VITE_PUSHER_HOST ?? window.location.hostname,
+	wsPort: process.env.VITE_PUSHER_PORT ?? 6001,
+	wssPort: process.env.VITE_PUSHER_PORT ?? 6001,
+	forceTLS: process.env.VITE_PUSHER_SECURE ?? false,
+	wsPath: process.env.VITE_PUSHER_PATH ?? '/messenger',
+	wssPath: process.env.VITE_PUSHER_PATH ?? '/messenger',
+	enabledTransports: ['ws', 'wss'],
 });

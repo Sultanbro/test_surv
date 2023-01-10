@@ -45,19 +45,19 @@
 </template>
 
 <script>
-import {mapGetters} from "vuex";
+import {mapGetters} from 'vuex';
 
 export default {
-  name: "ConversationServiceMessage",
-  props: {
-    message: {
-      type: Object,
-      required: true
-    },
-  },
-  computed: {
-    ...mapGetters(['user'])
-  }
+	name: 'ConversationServiceMessage',
+	props: {
+		message: {
+			type: Object,
+			required: true
+		},
+	},
+	computed: {
+		...mapGetters(['user'])
+	}
 }
 </script>
 

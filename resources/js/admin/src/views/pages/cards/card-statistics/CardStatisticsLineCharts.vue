@@ -7,82 +7,82 @@ const vuetifyTheme = useTheme()
 const currentTheme = computed(() => vuetifyTheme.current.value.colors)
 
 const series = [
-  {
-    data: [28, 58, 40, 68],
-  },
+	{
+		data: [28, 58, 40, 68],
+	},
 ]
 
 const chartOptions = computed(() => {
-  return {
-    grid: {
-      show: false,
-      padding: {
-        left: -2,
-        top: -10,
-      },
-    },
-    chart: {
-      parentHeightOffset: 0,
-      type: 'line',
-      offsetX: -8,
-      dropShadow: {
-        enabled: true,
-        top: 10,
-        blur: 4,
+	return {
+		grid: {
+			show: false,
+			padding: {
+				left: -2,
+				top: -10,
+			},
+		},
+		chart: {
+			parentHeightOffset: 0,
+			type: 'line',
+			offsetX: -8,
+			dropShadow: {
+				enabled: true,
+				top: 10,
+				blur: 4,
 
-        color: currentTheme.value.primary,
-        opacity: 0.09,
-      },
-      toolbar: {
-        show: false,
-      },
-    },
-    markers: {
-      size: 6,
-      colors: 'transparent',
-      strokeColors: 'transparent',
-      strokeWidth: 4,
-      discrete: [
-        {
-          seriesIndex: 0,
+				color: currentTheme.value.primary,
+				opacity: 0.09,
+			},
+			toolbar: {
+				show: false,
+			},
+		},
+		markers: {
+			size: 6,
+			colors: 'transparent',
+			strokeColors: 'transparent',
+			strokeWidth: 4,
+			discrete: [
+				{
+					seriesIndex: 0,
 
-          dataPointIndex: series[0].data.length - 1,
-          fillColor: currentTheme.value.surface,
-          strokeColor: currentTheme.value.primary,
-          size: 6,
-        },
-      ],
-      hover: {
-        size: 7,
-      },
-    },
-    stroke: {
-      width: 5,
-      curve: 'smooth',
-      lineCap: 'round',
-    },
-    xaxis: {
-      axisBorder: {
-        show: false,
-      },
-      axisTicks: {
-        show: false,
-      },
-      labels: {
-        show: false,
-      },
-    },
-    yaxis: {
-      labels: {
-        show: false,
-      },
-    },
-    tooltip: {
-      enabled: false,
-    },
+					dataPointIndex: series[0].data.length - 1,
+					fillColor: currentTheme.value.surface,
+					strokeColor: currentTheme.value.primary,
+					size: 6,
+				},
+			],
+			hover: {
+				size: 7,
+			},
+		},
+		stroke: {
+			width: 5,
+			curve: 'smooth',
+			lineCap: 'round',
+		},
+		xaxis: {
+			axisBorder: {
+				show: false,
+			},
+			axisTicks: {
+				show: false,
+			},
+			labels: {
+				show: false,
+			},
+		},
+		yaxis: {
+			labels: {
+				show: false,
+			},
+		},
+		tooltip: {
+			enabled: false,
+		},
 
-    colors: [currentTheme.value.primary],
-  }
+		colors: [currentTheme.value.primary],
+	}
 })
 </script>
 

@@ -1,5 +1,4 @@
 <template>
-
   <div class="ui-sidebar" :class="[{'is-open':open}]" @click.self="$emit('close');">
     <div class="ui-sidebar__body" :style="`width:${width}`">
       <div class="ui-sidebar__header d-flexy">
@@ -7,34 +6,26 @@
         <span v-html="link" style="color:aliceblue"></span>
       </div>
       <div class="ui-sidebar__content">
-        <slot></slot>
+        <slot/>
       </div>
     </div>
   </div>
-
 </template>
 
 <script>
 export default {
-
-  name: 'sidebar',
-  props: {
-        title: {},
-        open: {},
-        width: {},
-        link: {
-          default: ''
-        },
-    },
-
-  data() {
-
-    return {
-
-    }
-
-  },
-
+	name: 'UISidebar',
+	props: {
+		title: {},
+		open: {},
+		width: {},
+		link: {
+			default: ''
+		},
+	},
+	data() {
+		return {}
+	},
 }
 </script>
 

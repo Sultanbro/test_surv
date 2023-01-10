@@ -4,25 +4,25 @@ import { useAsyncPageData } from '@/composables/asyncPageData'
 const KpiPages = () => import(/* webpackChunkName: "KpiPages" */ '@/pages/kpi/KpiPages')
 
 export default {
-    name: 'KPIView',
-    components: {
-        DefaultLayout,
-        KpiPages,
-    },
-    data(){
-        return {
-            page: '',
-            access: '',
-        }
-    },
-    mounted(){
-        useAsyncPageData('/kpi').then(data => {
-            this.page = data.page
-            this.access = data.access
-        }).catch(error => {
-            console.error('useAsyncPageData', error)
-        })
-    }
+	name: 'KPIView',
+	components: {
+		DefaultLayout,
+		KpiPages,
+	},
+	data(){
+		return {
+			page: '',
+			access: '',
+		}
+	},
+	mounted(){
+		useAsyncPageData('/kpi').then(data => {
+			this.page = data.page
+			this.access = data.access
+		}).catch(error => {
+			console.error('useAsyncPageData', error)
+		})
+	}
 }
 </script>
 
