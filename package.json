@@ -13,11 +13,19 @@
         "sub-build": "subpkg run build",
         "sub-dev": "subpkg run dev",
         "sub-lint": "subpkg run lint",
-        "lint": "eslint resources/js --ext .vue,.js,.jsx,.cjs,.mjs, --fix --ignore-path .gitignore"
+        "lint": "eslint resources/js --ext .vue,.js --fix --ignore-path .gitignore"
     },
     "subPackages": [
         "resources/js/admin"
     ],
+    "husky": {
+        "hooks": {
+            "pre-commit": "lint-staged --relative"
+        }
+    },
+    "lint-staged": {
+        "*.{vue,js}": "npm run lint"
+    },
     "devDependencies": {
         "@babel/core": "^7.20.2",
         "@babel/preset-env": "^7.20.2",
@@ -31,9 +39,11 @@
         "cross-env": "^5.2.1",
         "eslint": "^8.31.0",
         "eslint-plugin-vue": "^9.8.0",
+        "husky": "^8.0.3",
         "jquery": "^3.6.0",
         "laravel-echo": "^1.13.1",
         "laravel-mix": "^6.0.43",
+        "lint-staged": "^13.1.0",
         "lodash": "^4.17.4",
         "moment": "^2.29.4",
         "sass": "^1.52.1",
