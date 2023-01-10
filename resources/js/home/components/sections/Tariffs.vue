@@ -67,87 +67,88 @@
             {{ $lang(lang, 'prices-register') }}
           </a>
         </div>
-        <!--        <div-->
-        <!--            v-if="!isMedium"-->
-        <!--            class="jTariffs-image-wrap"-->
-        <!--        >-->
-        <!--          <a-->
-        <!--              :href="image"-->
-        <!--              class="jTariffs-image-link"-->
-        <!--              target="_blank"-->
-        <!--          >-->
-        <!--            <img-->
-        <!--                :src="image"-->
-        <!--                alt=""-->
-        <!--                class="jTariffs-image"-->
-        <!--            >-->
-        <!--          </a>-->
-        <!--          <a-->
-        <!--              class="jButton"-->
-        <!--              href="/register"-->
-        <!--          >-->
-        <!--            {{ $lang(lang, 'prices-register') }}-->
-        <!--          </a>-->
-        <!--        </div>-->
       </div>
     </div>
   </section>
 </template>
 
 <script>
-import axios from 'axios';
+import axios from "axios";
+import TariffsValute from '../tariffs/TariffsValute'
+
 export default {
-	name: 'SectionTariffs',
-	data() {
-		return {
-			activeCol: -1,
-			image: require('../../assets/img/tariffs.png').default,
-			usdRate: 0,
-			kztRate: 0
-		}
-	},
-	computed: {
-		lang() {
-			return this.$root.$data.lang
-		},
-		table() {
-			return this.$lang(this.lang, 'prices-table').map((item, index) => {
-				if (index >= 12 && index <= 13) {
-					return item.map((item, index) => {
-						if (index >= 2 && index <= 4) {
-							if (this.lang === 'en') {
-								return `${this.separateThousands(Math.round(Number(item) / this.usdRate))} $`
-							} if (this.lang === 'kz') {
-								return `${this.separateThousands(Math.round(Number(item) * (100 / this.kztRate)))} ₸`
-							}
-							return `${this.separateThousands(item)} ₽`
-						} else {
-							return item
-						}
-					})
-				} else {
-					return item
-				}
-			})
-		},
-		isMedium() {
-			return this.$viewportSize.width >= 1260
-		},
-	},
-	methods: {
-		async USD() {
-			const rates = await axios('https://www.cbr-xml-daily.ru/daily_json.js')
-			this.usdRate = rates.data.Valute.USD.Value
-			this.kztRate = rates.data.Valute.KZT.Value
-		},
-		separateThousands(number) {
-			const num = number.toString();
-			return num.replace(/(\d{1,3}(?=(?:\d\d\d)+(?!\d)))/g, '$1' + ' ');
-		}
-	},
-	async mounted() {
-		await this.USD()
-	}
+  components: {
+    TariffsValute
+  },
+  computed: {
+    lang() {
+      return this.$root.$data.lang
+    },
+    table() {
+      return this.$lang(this.lang, 'prices-table').map((row, rowIndex) => {
+        if (rowIndex >= 12 && rowIndex <= 13) {
+          return row.map((item, index) => {
+            if (index >= 2 && index <= 4) {
+              const tariffItem = item.split(" ").join("");
+              if (this.selectedValute === "$") {
+                return `${this.separateThousands(
+                    Math.round(
+                        Number(tariffItem.slice(0, tariffItem.length - 1)) / this.usdRate
+                    )
+                )} $`;
+              }
+              if (this.selectedValute === "₸") {
+                return `${this.separateThousands(
+                    Math.round(
+                        Number(tariffItem.slice(0, tariffItem.length - 1)) *
+                        (100 / this.kztRate)
+                    )
+                )} ₸`;
+              }
+              return item;
+            } else {
+              return item;
+            }
+          });
+        } else {
+          return row;
+        }
+      });
+    },
+    tableOutput() {
+      console.log(this.table, 'table')
+    },
+    isMedium() {
+      return this.$viewportSize.width >= 1260
+    }
+  },
+  methods: {
+    async USD() {
+      const rates = await axios('https://www.cbr-xml-daily.ru/daily_json.js')
+      this.usdRate = rates.data.Valute.USD.Value
+      this.kztRate = rates.data.Valute.KZT.Value
+    },
+    separateThousands(number) {
+      const num = number.toString();
+      return num.replace(/(\d{1,3}(?=(?:\d\d\d)+(?!\d)))/g, "$1" + ' ');
+    },
+    getSelectedValute(selectedValute) {
+      this.selectedValute = selectedValute
+    }
+  },
+  data() {
+    return {
+      activeCol: -1,
+      image: require('../../assets/img/tariffs.png').default,
+      usdRate: 0,
+      kztRate: 0,
+      selectedValute: ''
+
+    }
+  },
+  async mounted() {
+    await this.USD()
+  }
 }
 </script>
 
@@ -292,21 +293,6 @@ a.jButton-tariffs-four {
 }
 
 @media (max-width: 900px) {
-  //.jTariffs-header-wrapper {
-  //  margin-bottom: 0;
-  //}
-  //
-  //.jTariffs-content {
-  //  display: flex;
-  //  flex-direction: column;
-  //  align-items: center;
-  //}
-  //
-  //.jTariffs-table {
-  //  width: 100%;
-  //  transform: scale(0.9);
-  //}
-
   a.jButton-tariffs-four {
     display: none;
   }
@@ -314,7 +300,7 @@ a.jButton-tariffs-four {
   .jButton-tariffs-one {
     display: flex;
     justify-content: center;
-    margin-top: 1rem;
+    margin-top: 2rem;
   }
 }
 
@@ -322,30 +308,6 @@ a.jButton-tariffs-four {
   .jTariffs-cell {
     min-width: 5rem;
   }
-  //.jTariffs-header-wrapper {
-  //  margin-bottom: 0;
-  //}
-  //
-  //.jTariffs-content {
-  //  display: flex;
-  //  flex-direction: column;
-  //  align-items: center;
-  //}
-  //
-  //.jTariffs-table {
-  //  width: 100%;
-  //  transform: scale(0.8);
-  //}
-  //
-  //a.jButton-tariffs-four {
-  //  display: none;
-  //}
-  //
-  //.jButton-tariffs-one {
-  //  display: flex;
-  //  justify-content: center;
-  //  margin-top: 1rem;
-  //}
 }
 
 @media (max-width: 670px) {

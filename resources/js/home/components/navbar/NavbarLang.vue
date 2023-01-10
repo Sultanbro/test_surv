@@ -98,7 +98,10 @@ export default {
 @media screen and (min-width: $large) {
   .jNav-menu-lang-button {
     width: 108px;
-    //margin-right: 1rem;
+  }
+
+  .jNav-menu-lang-popup {
+    right: -80px;
   }
 }
 
