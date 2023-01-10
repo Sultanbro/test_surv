@@ -66,30 +66,30 @@
 <script>
 import UploadFiles from '@/components/UploadFiles' // загрузка файлов
 export default {
-    name: 'VideoUploader',
-    components: {
-        UploadFiles,
-    },
-    props: {
-        token: String,
-        playlist_id: Number,
-        group_id: Number
-    },
-    data(){
-        return {
-          step: 1,
-          file: null,
-          video: {
-            title: "",
-            links: "",
-            text: "",
-          },
-        }
-    },
+	name: 'VideoUploader',
+	components: {
+		UploadFiles,
+	},
+	props: {
+		token: String,
+		playlist_id: Number,
+		group_id: Number
+	},
+	data(){
+		return {
+			step: 1,
+			file: null,
+			video: {
+				title: '',
+				links: '',
+				text: '',
+			},
+		}
+	},
 
-    created() {
+	created() {
 
-    },
+	},
 
 	methods: {
 		onupload(item) {
@@ -105,11 +105,11 @@ export default {
 		},
 
 		deleteVideo() {
-			axios
+			this.axios
 				.post('/playlists/delete-video', {
 					id: this.file.model.id,
 				})
-				.then((response) => {
+				.then(() => {
 					this.$toast.success('Файл удален');
 					this.file = null;
 					this.step = 1;
@@ -119,29 +119,29 @@ export default {
 				});
 		},
 
-        saveVideo() {
-            let loader = this.$loading.show();
-            axios
-                .post("/playlists/save-video", {
-                    id: this.playlist_id,
-                    video: this.file.model,
-                    group_id: this.group_id
-                })
-                .then((response) => {
-                    loader.hide()
-                    this.step = 1;
-                    this.$emit('addVideoToPlaylist', response.data.video)
-                    this.$toast.success("Добавлен");
-                    this.file = null;
+		saveVideo() {
+			let loader = this.$loading.show();
+			this.axios
+				.post('/playlists/save-video', {
+					id: this.playlist_id,
+					video: this.file.model,
+					group_id: this.group_id
+				})
+				.then((response) => {
+					loader.hide()
+					this.step = 1;
+					this.$emit('addVideoToPlaylist', response.data.video)
+					this.$toast.success('Добавлен');
+					this.file = null;
 
-                    this.$emit('close');
-                })
-                .catch((error) => {
-                    loader.hide()
-                    alert(error);
-                });
-        },
+					this.$emit('close');
+				})
+				.catch((error) => {
+					loader.hide()
+					alert(error);
+				});
+		},
 
-    }
+	}
 }
 </script>

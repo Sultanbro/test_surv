@@ -46,7 +46,7 @@ export default {
 		isSearchFocus: state => state.searchFocus,
 	},
 	actions: {
-		async findContacts({commit, getters, dispatch}, username) {
+		async findContacts({commit}, username) {
 			if (username.length > 1) {
 				commit('setSearchMode', true);
 				await API.searchChats(username, contacts => {
@@ -62,7 +62,7 @@ export default {
 				commit('clearContacts');
 			}
 		},
-		async findMessages({commit, getters, dispatch}, text) {
+		async findMessages({commit, getters}, text) {
 			if (text.length > 1) {
 				commit('setSearchMode', true);
 				await API.searchMessages(text, null,  null,false, messages => {
@@ -85,7 +85,7 @@ export default {
 				commit('clearMessagesSearchResults');
 			}
 		},
-		async findMessagesInChat({commit, getters, dispatch}, {text, chat_id, date}) {
+		async findMessagesInChat({commit}, {text, chat_id, date}) {
 			if (text.length > 1) {
 				await API.searchMessages(text, chat_id, date, false, messages => {
 					commit('setChatMessagesResults', messages);
@@ -94,7 +94,7 @@ export default {
 				commit('setChatMessagesResults', []);
 			}
 		},
-		async findFilesInChat({commit, getters, dispatch}, {text, chat_id}) {
+		async findFilesInChat({commit}, {text, chat_id}) {
 			if (text.length > 1) {
 				await API.searchMessages(text, chat_id, null, true, files => {
 					commit('setChatFilesResults', files);
@@ -103,10 +103,10 @@ export default {
 				commit('setChatFilesResults', []);
 			}
 		},
-		async setCurrentChatContacts({commit, getters, dispatch}, contacts) {
+		async setCurrentChatContacts({commit}, contacts) {
 			commit('setNewChatContacts', contacts);
 		},
-		async setSearchFocus({commit, getters, dispatch}, focus) {
+		async setSearchFocus({commit}, focus) {
 			commit('setSearchFocus', focus);
 		}
 	}

@@ -102,7 +102,7 @@ export default {
 	props: {
 		awardsObj: {
 			type: Array,
-			default: []
+			default: () => []
 		}
 	},
 	data() {
@@ -119,6 +119,7 @@ export default {
 			if (this.images) {
 				return !!this.images;
 			}
+			return false
 		},
 	},
 	mounted() {

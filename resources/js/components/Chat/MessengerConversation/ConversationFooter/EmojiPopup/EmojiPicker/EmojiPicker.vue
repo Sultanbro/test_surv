@@ -3,7 +3,7 @@
     <slot
       name="emoji-invoker"
       :events="{ click: (e) => toggle(e) }"
-    ></slot>
+    />
     <div
       v-if="display.visible"
       v-click-outside="hide"
@@ -13,7 +13,7 @@
         :emojis="emojis"
         :insert="insert"
         :display="display"
-      ></slot>
+      />
     </div>
   </div>
 </template>
@@ -79,7 +79,7 @@ export default /*#__PURE__*/{
 		insert(emoji) {
 			this.$emit('emoji', emoji)
 		},
-		toggle(e) {
+		toggle(/* e */) {
 			this.display.visible = !this.display.visible
 
 			// const messengerWindowRect = document.getElementById('messengerInput').getBoundingClientRect()

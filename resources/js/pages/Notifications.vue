@@ -48,7 +48,7 @@
                     <button class="btn-success btn btn-sm rounded" @click="saveUser">Сохранить</button>
                 </div>
 
-                <div class="row mt-2" v-for="noti in activeuser_notifications">
+                <div class="row mt-2" v-for="(noti, key) in activeuser_notifications" :key="key">
                     <div class="col-lg-3">
                             <multiselect
                                 label="title"
@@ -58,7 +58,7 @@
                             />
                     </div>
                     <div class="col-lg-6">
-                        <div  v-if="noti[0] != null && need_group.hasOwnProperty(Number(noti[0].id)) && need_group[noti[0].id]">
+                        <div v-if="noti[0] != null && need_group.hasOwnProperty(Number(noti[0].id)) && need_group[noti[0].id]">
                             <multiselect
                                 v-model="noti[1]"
                                 label="name"
@@ -352,7 +352,7 @@
                                     </b-tr>
                                 </b-thead>
                                 <b-tbody>
-                                    <b-tr v-for="(item, status_index) in other_templates" :class="{ active: item.editable }" :key="item.id">
+                                    <b-tr v-for="item in other_templates" :class="{ active: item.editable }" :key="item.id">
                                         <b-td>
                                             {{item.title}}
                                         </b-td>
@@ -400,7 +400,7 @@
 
 <script>
 export default {
-	name: 'notifications',
+	name: 'PageNotifications',
 	props: [
 		'groups_with_id',
 		'users',
@@ -408,7 +408,7 @@ export default {
 	],
 	watch: {
 		activeuser: {
-			handler (val, oldVal) {
+			handler () {
 				this.selectUser()
 			}
 		},
@@ -485,12 +485,12 @@ export default {
 		},
 		updateNotification (status, status_index) {
 
-			axios.post('/timetracking/settings/notifications/update', {
+			this.$axios.post('/timetracking/settings/notifications/update', {
 				id: status.id,
 				action: status.action,
 				message: status.message,
 				ids: status.selectedGroups
-			}).then(response => {
+			}).then(() => {
 
 				if(status.type == 1) {
 					this.group_templates[status_index].editable = false;
@@ -540,7 +540,7 @@ export default {
 		},
 
 		fetchData () {
-			axios.get('/timetracking/settings/notifications/get').then(response => {
+			this.$axios.get('/timetracking/settings/notifications/get').then(response => {
 				this.user_templates = response.data[0];
 				this.group_templates = response.data[1];
 				this.position_templates = response.data[2];
@@ -552,11 +552,11 @@ export default {
 		},
 
 		saveUser() {
-			axios.post('/timetracking/settings/notifications/user/save', {
+			this.$axios.post('/timetracking/settings/notifications/user/save', {
 				user_id: this.activeuser.id,
 				noti: this.activeuser_notifications,
 			})
-				.then(response => {
+				.then(() => {
 					this.$toast.success('Сохранено');
 				})
 				.catch(error => {
@@ -566,11 +566,11 @@ export default {
 		},
 
 		deleteUser() {
-			axios.post('/timetracking/settings/notifications/user/save', {
+			this.$axios.post('/timetracking/settings/notifications/user/save', {
 				user_id: this.activeuser.id,
 				noti: [],
 			})
-				.then(response => {
+				.then(() => {
 					this.$toast.success('Пользователь исключен из индивидуальных уведомлений');
 					this.activeuser_notifications = [];
 
@@ -589,7 +589,7 @@ export default {
 
 		selectUser() {
 
-			axios.post('/timetracking/settings/notifications/user', {
+			this.$axios.post('/timetracking/settings/notifications/user', {
 				user_id: this.activeuser,
 			})
 				.then(response => {

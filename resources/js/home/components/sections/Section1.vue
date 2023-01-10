@@ -102,6 +102,7 @@ import Section1Struct from '../section1/Section1Struct'
 import Section1News from '../section1/Section1News'
 
 export default {
+	name: 'SectionSection1',
 	components: {
 		Section1Popup,
 		Section1Tab,

@@ -16,7 +16,7 @@
                       <div class="max-content">Сотрудник</div>
                   </th>
                   <template v-for="(field, key) in fields">
-                      <th :class="field.class">
+                      <th :key="key" :class="field.class">
                           <div>{{ field.name }}</div>
                       </th>
                   </template>
@@ -134,7 +134,7 @@ export default {
 				if(d.toString().length == 1) d = '0' + d;
 				if(m.length == 1) m = '0' + m;
 
-				let date = moment(this.monthInfo.currentYear + '-' + m + '-' + d);
+				let date = this.$moment(this.monthInfo.currentYear + '-' + m + '-' + d);
 				let dow = date.day();
 
 				fieldsArray.push({

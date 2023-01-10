@@ -78,7 +78,7 @@
         :open="showSalarySidebar"
         @close="showSalarySidebar = false"
         width="40%">
-        
+
         <div class="mt-2">
             <table class="table table-bordered table-sm ue-table">
                 <tr>
@@ -115,7 +115,7 @@
       width="80%"
     >
      <!-- table -->
-        <t-stats 
+        <t-stats
             :activities="activities"
             :groups="groups"
             :items="kpis"
@@ -136,7 +136,7 @@
       v-if="showBonusSidebar"
       width="80%"
     >
-        <t-stats-bonus 
+        <t-stats-bonus
             :groups="bonus_groups"
             :group_names="groups"
             :key="bonus_groups"
@@ -168,7 +168,7 @@
               <td v-html="item.comment"></td>
             </tr>
           </table>
-            
+
         </template>
 
         <div class="mt-2">
@@ -212,7 +212,7 @@
 
 </div>
 </template>
-    
+
 <script>
 /* import AwardSidebar from './AwardSidebar' */
 import AwardBSidebar from './AwardBSidebar'
@@ -266,14 +266,14 @@ export default {
 		fetchQP(filters) {
 			let loader = this.$loading.show();
 
-			axios.post('/statistics/quartal-premiums', {
-				filters: filters 
+			this.axios.post('/statistics/quartal-premiums', {
+				filters: filters
 			}).then(response => {
-                
+
 				// items
 				this.quartal_premiums = response.data[0].map(res=> ({...res, expanded: false}));
 				// this.quartal_premiums = this.quartal_premiums.map(res=> ({...res, my_sum: 0}))
-                
+
 				// this.activities = response.data.activities;
 				this.quartal_groups = response.data[1].map(res=> ({...res, expanded: false}));
 
@@ -295,10 +295,10 @@ export default {
 			this.showBonusSidebar = true
 		},
 
-		fetchBonus(filter){
+		fetchBonus(filters){
 			let loader = this.$loading.show();
-			axios.post('/statistics/bonus', {
-				filters: filters 
+			this.axios.post('/statistics/bonus', {
+				filters
 			}).then(response => {
 				// items
 				this.bonus_groups = response.data;
@@ -320,18 +320,18 @@ export default {
 			this.showKpiSidebar = true
 		},
 
-       
+
 		fetchKPI(filters) {
 			let loader = this.$loading.show();
 
-			axios.post('/statistics/kpi', {
-				filters: filters 
+			this.axios.post('/statistics/kpi', {
+				filters: filters
 			}).then(response => {
-                
+
 				// items
 				this.kpis = response.data.items;
 				this.kpis = this.kpis.map(res=> ({...res, my_sum: 0}))
-                
+
 				this.activities = response.data.activities;
 				this.groups = response.data.groups;
 
@@ -349,7 +349,7 @@ export default {
 <style lang="scss">
 .w-120 {
     width: 120px !important;
-    
+
 }
 .flexy {
     display: flex;
@@ -387,4 +387,3 @@ export default {
     text-align: left !important;
 }
 </style>
-    

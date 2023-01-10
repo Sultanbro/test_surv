@@ -44,9 +44,9 @@
                 <div
                     v-for="(key, index) in Object.keys(data)"
                     :key="index"
-                    class="trainee__content tab__content-item" 
+                    class="trainee__content tab__content-item"
                     :class="{'is-active': index == 0}"
-                    :data-content="index" 
+                    :data-content="index"
                 >
 
                     <!-- Items in one day -->
@@ -54,7 +54,7 @@
                         <!-- group name -->
                         <div class="trainee__table-name" :key="item_index">
                             {{ item.group }}
-                        </div> 
+                        </div>
 
                         <!-- table with answers -->
                         <table class="trainee__quiz" :key="item_index">
@@ -132,7 +132,7 @@
                                 </td>
 
                             </tr>
-                          
+
                             </tbody>
 
 
@@ -176,7 +176,7 @@
 
 <script>
 export default {
-	name: 'TraineeEstimation', 
+	name: 'TraineeEstimation',
 	props: {},
 	data: function () {
 		return {
@@ -191,7 +191,7 @@ export default {
 		fetchData() {
 			this.loading = true
 
-			axios.post('/profile/trainee-report', {})
+			this.$axios.post('/profile/trainee-report', {})
 				.then((response) => {
 					this.showBtn(response.data)
 
@@ -207,7 +207,7 @@ export default {
 		},
 
 		/**
-         * private: show btn in introTop 
+         * private: show btn in introTop
          */
 		showBtn(data) {
 			if(Object.keys(data).length > 0) {
@@ -219,7 +219,8 @@ export default {
          * fill progress
          */
 		fill() {
-			VJQuery('.colored').each(function(e,i){
+			/* global VJQuery */
+			VJQuery('.colored').each(function(){
 				VJQuery(this).css('background',`linear-gradient(to right, ${VJQuery(this).attr('data-color')} ${VJQuery(this).find('.value').text()}, #fff ${VJQuery(this).find('.value').text()})`)
 			});
 

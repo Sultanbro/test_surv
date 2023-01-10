@@ -23,7 +23,7 @@
                 </thead>
                <tbody>
                <template v-for="(item, i) in users.items">
-                   <tr class="pointer" :class="{
+                   <tr :key="i" class="pointer" :class="{
                         'expanded-title': item.expanded
                     }">
                        <td v-for="(field, f) in users.fields" :key="f" :class="field.class" @click="expandUser(item)">
@@ -36,7 +36,7 @@
                    </tr>
 
                    <template v-for="(course, c) in item.courses">
-                       <tr v-if="item.expanded" class="expanded">
+                       <tr :key="c" v-if="item.expanded" class="expanded">
                            <td v-for="(field, f) in users.fields" :key="f" :class="[field.class, {pointer: course.items && course.items.length > 1}]" @click="expandCourse(course, item)">
                                <div v-if="field.key == 'progress'" class="d-flex jcc aic">
                                    <p class="mb-0 mr-1">{{ course[field.key] }}</p>
@@ -100,7 +100,7 @@
                 </thead>
                <tbody>
                <template v-for="(item, i) in groups.items">
-                   <tr>
+                   <tr :key="i">
                        <td v-for="(field, f) in groups.fields" :key="f" :class="field.class" @click="expandUser(item)">
                            <div>{{ item[field.key] }}</div>
                        </td>
@@ -125,77 +125,76 @@ function formatProgress(num, precision = 2){
 }
 
 export default {
-    name: 'CourseResults',
-    watch: {
-        monthInfo(val) {
-            this.first = true;
-            if(this.type == this.BY_GROUP) {
-                this.fetchData('groups');
-                this.first = false;
-            } else {
-                this.fetchData('users');
-            }
-        },
-        currentGroup() {
-            this.first = true;
-            if(this.type == this.BY_GROUP) {
-                this.fetchData('groups');
-                this.first = false;
-            } else {
-                this.fetchData('users');
-            }
-        },
-        type(val) {
-            if(val == this.BY_GROUP && this.first) {
-                this.fetchData('groups');
-                this.first = false;
-            }
-        },
-    },
-    props: {
-        monthInfo: {
-            required: false
-        },
-        currentGroup: {
-            required: false
-        }
-    },
-    data() {
-        return {
-            data: [],
-            type: BY_USER,
-            first: true,
-            BY_USER: BY_USER,
-            BY_GROUP: BY_GROUP,
-            users: {
-                items: [],
-                fields: [],
-            },
-            groups: {
-                items: [],
-                fields: [],
-            },
-            course2item: {
-                name: 'title',
-                status: 'status',
-                points: 'points',
-                progress: 'progress',
-                progress_on_week: 'progress_on_week',
-                started_at: 'started_at',
-                ended_at: 'ended_at'
-            },
-            courses: {},
-            courseItems: {}
-        }
-    },
-    computed: {
-        courseItemsTable(){
-            const result = {}
-            for(let [userId, userResult] of Object.entries(this.courseItems)){
-                for(let [courseId, courseResult] of Object.entries(userResult)){
-                    const course = this.courses[courseId]
-                    if(!course) continue
-                    const points = course.points / course.stages
+	name: 'CourseResults',
+	watch: {
+		monthInfo() {
+			this.first = true;
+			if(this.type == this.BY_GROUP) {
+				this.fetchData('groups');
+				this.first = false;
+			} else {
+				this.fetchData('users');
+			}
+		},
+		currentGroup() {
+			this.first = true;
+			if(this.type == this.BY_GROUP) {
+				this.fetchData('groups');
+				this.first = false;
+			} else {
+				this.fetchData('users');
+			}
+		},
+		type(val) {
+			if(val == this.BY_GROUP && this.first) {
+				this.fetchData('groups');
+				this.first = false;
+			}
+		},
+	},
+	props: {
+		monthInfo: {
+			required: false
+		},
+		currentGroup: {
+			required: false
+		}
+	},
+	data() {
+		return {
+			data: [],
+			type: BY_USER,
+			first: true,
+			BY_USER: BY_USER,
+			BY_GROUP: BY_GROUP,
+			users: {
+				items: [],
+				fields: [],
+			},
+			groups: {
+				items: [],
+				fields: [],
+			},
+			course2item: {
+				name: 'title',
+				status: 'status',
+				points: 'points',
+				progress: 'progress',
+				progress_on_week: 'progress_on_week',
+				started_at: 'started_at',
+				ended_at: 'ended_at'
+			},
+			courses: {},
+			courseItems: {}
+		}
+	},
+	computed: {
+		courseItemsTable(){
+			const result = {}
+			for(let [userId, userResult] of Object.entries(this.courseItems)){
+				for(let [courseId, courseResult] of Object.entries(userResult)){
+					const course = this.courses[courseId]
+					if(!course) continue
 
 					if(!result[userId]) result[userId] = {}
 					courseResult.forEach(courseItem => {
@@ -238,7 +237,7 @@ export default {
 		fetchData(type = 'users') {
 			let loader = this.$loading.show();
 
-			axios
+			this.$axios
 				.post('/course-results/get', {
 					type: type,
 					month: this.monthInfo.month,
@@ -260,7 +259,7 @@ export default {
 		},
 
 		fetchCourseItems(userId, courseId) {
-			axios.get('/course/progress', {
+			this.$axios.get('/course/progress', {
 				params: { userId, courseId }
 			}).then(({ data }) => {
 				if(!this.courseItems[userId]) this.$set(this.courseItems, userId, {})
@@ -319,7 +318,7 @@ export default {
 			this.nullifyRequest({
 				user_id: course.user_id,
 				course_id: course.course_id,
-			}, (res) => {
+			}, () => {
 				this.$toast.success('Прогресс по курсу Обнулен');
 
 				course.progress = '0%';
@@ -335,7 +334,7 @@ export default {
 		nullifyRequest({user_id, course_id}, callback) {
 			let loader = this.$loading.show();
 
-			axios
+			this.$axios
 				.post('/course/regress', {
 					type: 'course',
 					user_id,
@@ -354,11 +353,11 @@ export default {
 
 			const loader = this.$loading.show()
 
-			axios.post('/course/regress', {
+			this.$axios.post('/course/regress', {
 				type: 'item',
 				user_id,
 				course_item_id: courseItem.id
-			}).then((response) => {
+			}).then(() => {
 				this.fetchCourseItems(user_id, course_id)
 				this.$toast.success('Прогресс по разделу курса обнулен')
 			}).catch(e => console.log(e))

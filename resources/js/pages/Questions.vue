@@ -213,7 +213,7 @@
 
 <script>
 export default {
-	name: 'Questions',
+	name: 'PageQuestions',
 	props: {
 		questions: Array,
 		type: {
@@ -264,7 +264,7 @@ export default {
 		}
 	},
 	watch: {
-		pass_grade_local(grade) {
+		pass_grade_local(/* grade */) {
 
 			// let len = this.questions.length;
 
@@ -280,7 +280,7 @@ export default {
 
 
 		mode: {
-			handler (val, oldVal) {
+			handler (val) {
 				if(val == 'edit') {
 					this.questions.forEach((q) => {
 						q.editable = false;
@@ -320,7 +320,6 @@ export default {
 
 			if(this.pass) {
 				this.points = this.total;
-				this.page = this.page;
 			}
 
 			if(this.$cookie.get('q_timer') != null) {
@@ -361,7 +360,7 @@ export default {
 			if(this.questions === undefined) this.questions = [];
 			this.questions.forEach((q) => {
 				if (q.type == 0) {
-					q.variants.forEach((v) => {
+					q.variants.forEach(() => {
 						q.before = q.text;
 					});
 				}
@@ -395,7 +394,6 @@ export default {
 
 			this.questions.forEach((q) => {
 				let answer = {}
-				let results = {};
 
 				if (q.type == 0) {
 					let right_answers = 0;
@@ -568,11 +566,11 @@ export default {
 				if(this.questions[q_index].id == 0){
 					this.questions.splice(q_index, 1);
 				}else{
-					axios
+					this.$axios
 						.post('/playlists/delete-question', {
 							id: this.questions[q_index].id
 						})
-						.then((response) => {
+						.then(() => {
 							this.questions.splice(q_index, 1);
 						})
 				}
@@ -587,9 +585,7 @@ export default {
 				this.questions[q].variants.splice(v, 1);
 				if (v > 0) this.$refs['variant' + q + '_' + (v - 1)][0].focus();
 			} else {
-				this.questions[q].variants[v].before = this.questions[q].variants[
-					v
-				].text;
+				this.questions[q].variants[v].before = this.questions[q].variants[v].text;
 			}
 
 			this.changed = true;
@@ -640,7 +636,7 @@ export default {
 			});
 
 			// save
-			axios
+			this.$axios
 				.post(url, {
 					id: this.id,
 					pass_grade: this.pass_grade,

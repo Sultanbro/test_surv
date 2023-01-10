@@ -400,9 +400,9 @@ export default {
          * Получить параметры для начатия и завершения дня
          */
 		getParams() {
-			let params = {start: moment().format('HH:mm:ss')};
-			if(this.workdayStatus === 'started') params = {stop: moment().format('HH:mm:ss')};
-			return params;
+			const now = this.$moment().format('HH:mm:ss')
+			if(this.workdayStatus === 'started') return {stop: now}
+			return {start: now}
 		},
 
 		/**
@@ -471,7 +471,7 @@ export default {
          */
 		hideBook() {
 			axios.post('/corp_book/set-read/', {})
-				.then(res => this.showCorpBookPage = false)
+				.then(() => this.showCorpBookPage = false)
 				.catch(error => console.log(error))
 		},
 

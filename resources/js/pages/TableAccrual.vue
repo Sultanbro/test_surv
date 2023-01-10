@@ -275,7 +275,7 @@
 
                 <p class="mt-3">
                     <b>Бонусы локальные</b></p>
-                    <div v-for="(item,index) in Object.keys(editedField.item.bonuses)" >
+                    <div v-for="(item,index) in Object.keys(editedField.item.bonuses)" :key="index">
                         <p
                             class="fz12"
                             v-if=" editedField.item.bonuses[item] != null"
@@ -289,14 +289,14 @@
                 <p class="mt-3">
                     <b>Бонусы за активности</b>
                 </p>
-                <div v-for="(item,index) in Object.keys(editedField.item.awards)" >
+                <div v-for="(item,index) in Object.keys(editedField.item.awards)" :key="index">
                     <p class="fz12" v-if=" editedField.item.awards[item] != null">
                         <b class="text-black">{{ item  }}:</b> {{   editedField.item.awards[item] }}
                     </p>
                 </div>
 
                 <p class="mt-3"><b>Бонусы за обучение</b></p>
-                <div v-for="(item,index) in Object.keys(editedField.item.test_bonus)">
+                <div v-for="(item,index) in Object.keys(editedField.item.test_bonus)" :key="index">
                     <p class="fz12" v-if=" editedField.item.test_bonus[item] != null">
                         <b class="text-black">{{ item  }}:</b> {{   editedField.item.test_bonus[item] }}
                     </p>
@@ -304,7 +304,7 @@
 
                     <hr>
                 <p class="mt-3"><b>Авансы </b></p>
-                <div v-for="(item,index) in Object.keys(editedField.item.avanses)" >
+                <div v-for="(item,index) in Object.keys(editedField.item.avanses)" :key="index">
                     <p
                         class="fz12"
                         v-if=" editedField.item.avanses[item] != null"
@@ -315,7 +315,7 @@
                 <hr>
 
                 <p class="mt-3"><b>История {{ bonus_history.length}}</b></p>
-                <div v-for="(item,index) in bonus_history"  class="mb-3">
+                <div v-for="(item,index) in bonus_history"  class="mb-3" :key="index">
                     <p class="fz12">
                         <b class="text-black">Дата:</b> {{ (new Date(item.created_at)).addHours(6).toLocaleString('ru-RU') }}
                     </p>
@@ -490,128 +490,128 @@ import Sidebar from '@/components/ui/Sidebar' // сайдбар table
 import { useYearOptions } from '../composables/yearOptions'
 
 export default {
-    name: 'TableAccrual',
-    components: {
-        Sidebar,
-    },
-    props: {
-        groupss: Array,
-        activeuserid: String,
-        activeuserpos: Number,
-        can_edit: Boolean,
-        is_admin: Boolean,
-    },
-    watch: {
-        scrollLeft(value) {
-            var container = document.querySelector(".table-responsive");
-            container.scrollLeft = value;
-        },
-        user_types(val) {
-            this.fetchData()
-        },
-        show_user(val) {
-            this.fetchData()
-        },
-        selectedGroup(val) {
-            this.fetchData()
-        },
-        groupss(){
-            this.init()
-        }
-    },
-    data() {
-        return {
-            data: {},
-            groups: [],
-            accruals: [],
-            bonus_history: [],
-            selectedGroup: null,
-            user_types: 0,
-            users_count: 0,
-            openSidebar: false,
-            show_user: 1,
-            sidebarTitle: '',
-            sidebarContent: {},
-            sidebarHistory: [],
-            numClicks: 0,
-            total_resources: 0,
-            allTotalFired: 0, // sum of pay for all fired users
-            group_fired: 0, // sum of payment for fired users in group
-            group_total: 0, // sum of payment for  users in group
-            items: [],
-            fields: [],
-            errors: [],
-            auth_token: '',
-            profile_link: '',
-            selectedCell: null,
-            special_fields: false,
-            editPremiumSidebar: false,
-            avans: {
-                sum: null,
-                comment: '',
-                require: '',
-                visible: false
-            },
-            bonus: {
-                sum: null,
-                comment: '',
-                require: '',
-                visible: false
-            },
-            dayInfoText: "",
-            hasPermission: false,
-            total: 0,
-            allTotal: 0,
-            dateInfo: {
-                currentMonth: null,
-                currentYear: new Date().getFullYear(),
-                month: 0,
-                year: 0,
-                monthEnd: 0,
-                workDays: 0,
-                weekDays:0,
-               daysInMonth: 0,
-            },
-            editedField: {
-                name: '',
-                type: 'kpi'
-            },
-            commentEdit: '',
-            amountEdit: 0,
-            editPremiunWindow: false,
-            showBeforeApprove: false,
-            dataLoaded: false,
-            currentGroup: null,
-            maxScrollWidth: 0,
-            scrollLeft: 0,
-            defaultScrollValue: 0,
-            dayPercentage: (new Date().getDate() / 31) * 100,
-            delay: 700,
-            clicks: 0,
-            timer: null,
-            years: useYearOptions(),
-        };
-    },
-    computed: {
-        showAccruals(){
-            return this.activeuserid && [5,18,84,157].includes(Number(this.activeuserid))
-        },
-        showTotals(){
-            return this.activeuserid && [5,18,84,157].includes(Number(this.activeuserid))
-        }
-    },
-    created() {
-        if(this.groupss){
-            this.init()
-        }
-    },
-    methods: {
-        init(){
+	name: 'TableAccrual',
+	components: {
+		Sidebar,
+	},
+	props: {
+		groupss: Array,
+		activeuserid: String,
+		activeuserpos: Number,
+		can_edit: Boolean,
+		is_admin: Boolean,
+	},
+	watch: {
+		scrollLeft(value) {
+			var container = document.querySelector('.table-responsive');
+			container.scrollLeft = value;
+		},
+		user_types() {
+			this.fetchData()
+		},
+		show_user() {
+			this.fetchData()
+		},
+		selectedGroup() {
+			this.fetchData()
+		},
+		groupss(){
+			this.init()
+		}
+	},
+	data() {
+		return {
+			data: {},
+			groups: [],
+			accruals: [],
+			bonus_history: [],
+			selectedGroup: null,
+			user_types: 0,
+			users_count: 0,
+			openSidebar: false,
+			show_user: 1,
+			sidebarTitle: '',
+			sidebarContent: {},
+			sidebarHistory: [],
+			numClicks: 0,
+			total_resources: 0,
+			allTotalFired: 0, // sum of pay for all fired users
+			group_fired: 0, // sum of payment for fired users in group
+			group_total: 0, // sum of payment for  users in group
+			items: [],
+			fields: [],
+			errors: [],
+			auth_token: '',
+			profile_link: '',
+			selectedCell: null,
+			special_fields: false,
+			editPremiumSidebar: false,
+			avans: {
+				sum: null,
+				comment: '',
+				require: '',
+				visible: false
+			},
+			bonus: {
+				sum: null,
+				comment: '',
+				require: '',
+				visible: false
+			},
+			dayInfoText: '',
+			hasPermission: false,
+			total: 0,
+			allTotal: 0,
+			dateInfo: {
+				currentMonth: null,
+				currentYear: new Date().getFullYear(),
+				month: 0,
+				year: 0,
+				monthEnd: 0,
+				workDays: 0,
+				weekDays:0,
+				daysInMonth: 0,
+			},
+			editedField: {
+				name: '',
+				type: 'kpi'
+			},
+			commentEdit: '',
+			amountEdit: 0,
+			editPremiunWindow: false,
+			showBeforeApprove: false,
+			dataLoaded: false,
+			currentGroup: null,
+			maxScrollWidth: 0,
+			scrollLeft: 0,
+			defaultScrollValue: 0,
+			dayPercentage: (new Date().getDate() / 31) * 100,
+			delay: 700,
+			clicks: 0,
+			timer: null,
+			years: useYearOptions(),
+		};
+	},
+	computed: {
+		showAccruals(){
+			return this.activeuserid && [5,18,84,157].includes(Number(this.activeuserid))
+		},
+		showTotals(){
+			return this.activeuserid && [5,18,84,157].includes(Number(this.activeuserid))
+		}
+	},
+	created() {
+		if(this.groupss){
+			this.init()
+		}
+	},
+	methods: {
+		init(){
 
-            this.dateInfo.currentMonth = this.dateInfo.currentMonth ?
-                this.dateInfo.currentMonth :
-                this.$moment().format("MMMM");
-            const currentMonth = this.$moment(`${this.dateInfo.currentYear}-${this.dateInfo.currentMonth}`, "YYYY-MMMM")
+			this.dateInfo.currentMonth = this.dateInfo.currentMonth ?
+				this.dateInfo.currentMonth :
+				this.$moment().format('MMMM');
+			const currentMonth = this.$moment(`${this.dateInfo.currentYear}-${this.dateInfo.currentMonth}`, 'YYYY-MMMM')
 
 			//Расчет выходных дней
 			this.dateInfo.monthEnd = currentMonth.endOf('month'); //Конец месяца
@@ -642,594 +642,592 @@ export default {
 
 			this.dateInfo.date = `${this.dateInfo.currentMonth} ${year}`;
 
-            const currentMonth = this.$moment(`${this.dateInfo.currentYear}-${this.dateInfo.currentMonth}`, "YYYY-MMMM")
-            //Расчет выходных дней
-            this.dateInfo.monthEnd = currentMonth.endOf("month"); //Конец месяца
-            this.dateInfo.weekDays = currentMonth.weekdayCalc(
-                this.dateInfo.monthEnd,
-                [6]
-            ); //Колличество выходных
-            this.dateInfo.daysInMonth = currentMonth.daysInMonth(); //Колличество дней в месяце
-            this.dateInfo.workDays =
+			const currentMonth = this.$moment(`${this.dateInfo.currentYear}-${this.dateInfo.currentMonth}`, 'YYYY-MMMM')
+			//Расчет выходных дней
+			this.dateInfo.monthEnd = currentMonth.endOf('month'); //Конец месяца
+			this.dateInfo.weekDays = currentMonth.weekdayCalc(
+				this.dateInfo.monthEnd,
+				[6]
+			); //Колличество выходных
+			this.dateInfo.daysInMonth = currentMonth.daysInMonth(); //Колличество дней в месяце
+			this.dateInfo.workDays =
                 this.dateInfo.daysInMonth - this.dateInfo.weekDays; //Колличество рабочих дней
-        },
-
-        //Установка заголовока таблицы
-        setFields() {
-            let fields = [];
-            fields = [{
-                    key: "name",
-                    stickyColumn: true,
-                    label: "Имя",
-                    variant: "primary",
-                    sortable: true,
-                    class: "text-left px-3 t-name",
-                    editable: false
-                },
-                {
-                    key: `kpi`,
-                    label: "KPI",
-                    sortable: true,
-                    editable: false,
-                    stickyColumn: true
-                },
-                {
-                    key: `bonus`,
-                    label: "Бонусы",
-                    sortable: true,
-                    editable: false,
-                    stickyColumn: true
-                },
-                {
-                    key: `total`,
-                    label: "Оклад",
-                    sortable: true,
-                    editable: false,
-                    stickyColumn: true
-                },
-                {
-                    key: `fines`,
-                    label: "Штрафы",
-                    sortable: true,
-                    editable: false,
-                    stickyColumn: true
-                },
-                {
-                    key: `avans`,
-                    label: "Авансы",
-                    sortable: true,
-                    editable: false,
-                    stickyColumn: true
-                },
-                {
-                    key: `final`,
-                    label: "К выдаче",
-                    sortable: true,
-                    editable: false,
-                    stickyColumn: true
-                },
-            ];
-
-            let days = this.dateInfo.daysInMonth;
-
-            for (let i = 1; i <= days; i++) {
-                let dayName = this.$moment(`${i} ${this.dateInfo.date}`, "D MMMM YYYY")
-                    .locale("en")
-                    .format("ddd");
-
-                let field = {
-                    key: `${i}`,
-                    label: `${i}`,
-                    sortable: true,
-                    class: `day ${dayName}`,
-                    editable: true
-                };
-
-                fields.push(field);
-            }
-            this.fields = fields;
-        },
-
-        //Загрузка данных для таблицы
-        fetchData() {
-            if(this.selectedGroup == null) return '';
-
-            let loader = this.$loading.show();
-            this.dateInfo.month = this.$moment(
-                this.dateInfo.currentMonth,
-                "MMMM"
-            ).format("M");
-
-            axios.post("/timetracking/salaries", {
-                    month: this.$moment(this.dateInfo.currentMonth, "MMMM").format("M"),
-                    year: this.dateInfo.currentYear,
-                    group_id: this.selectedGroup.id,
-                    user_types: this.user_types,
-                })
-                .then((response) => {
-                    let data = response.data;
-                    if (data.error && data.error == "access") {
-                        console.log(data.error);
-                        this.hasPermission = false;
-                        loader.hide();
-                        return;
-                    }
-
-                    this.hasPermission = true;
-
-                    this.data = data;
-                    this.group_fired = data.group_fired;
-                    this.allTotal = data.all_total;
-                    this.allTotalFired = data.all_total_fired;
-                    this.group_total = data.group_total;
-                    this.total_resources = data.total_resources;
-                    this.users_count = data.users.length;
-                    this.groups = data.groups;
-                    this.accruals = data.accruals;
-                    this.auth_token = data.auth_token
-
-                    if(data.currentGroup) {
-                        this.selectedGroup.salary_approved = data.currentGroup.salary_approved;
-                        this.selectedGroup.salary_approved_by = data.currentGroup.salary_approved_by;
-                        this.selectedGroup.salary_approved_date = data.currentGroup.salary_approved_date;
-                    }
-
-                    this.setYear();
-                    this.setMonth();
-                    this.setFields();
-                    this.loadItems();
-                    this.dataLoaded = true;
-
-                    // maybe scroll table to right
-                    setTimeout(() => {
-                        var container = document.querySelector(".table-responsive");
-                        this.maxScrollWidth = container.scrollWidth - container.offsetWidth;
-                        if (this.dayPercentage > 50) {
-                            // this.scrollLeft =
-                            //     (this.maxScrollWidth * this.dayPercentage) / 100;
-                            // this.defaultScrollValue = this.scrollLeft;
-                        }
-
-                    }, 1000);
-
-                    loader.hide();
-                }).catch(error => {
-                    this.$toast.error('Ошибка');
-                    console.log(error)
-                });
-        },
-
-        // get salaries total for all group
-        getTotals() {
-            const  loader = this.$loading.show();
-            const currentMonth = this.$moment(`${this.dateInfo.currentYear}-${this.dateInfo.currentMonth}`, "YYYY-MMMM")
-            axios.post("/timetracking/salaries/get-total", {
-                    month: currentMonth.format("M"),
-                    year: this.dateInfo.currentYear,
-                })
-                .then((response) => {
-                    loader.hide();
-                }).catch((e) => {
-                    console.log(e);
-                    loader.hide();
-                });
-        },
-
-        toggleTab(type) {
-            if(type == 'avans') {
-                this.bonus.visible = false
-                this.avans.visible = !this.avans.visible
-            } else {
-                this.avans.visible = false
-                this.bonus.visible = !this.bonus.visible
-            }
-        },
-
-        //Добавление загруженных данных в таблицу
-        loadItems() {
-            let hasMoney = 0;
-            let items = [];
-            let daySalariesSum = [];
-
-            items.push({
-                name: "Общая сумма",
-            });
-
-            let total_final = 0; // К выдаче сумма
-            let total_kpi = 0; // Кpi total
-            let total_bonus = 0; // Bonus total
-            let total_fines = 0; // fines total
-            let total_avanses = 0; // Avans total
-            let total_total = 0; // Начислено total
-
-            this.data.users.forEach((item, index) => {
-                var daySalaries = [];
-                var daySalariesOnly = [];
-                var personalTotal = 0;
-                var personalFinal = 0;
-                var personalAvanses = 0;
-                var personalFines = 0;
-                var personalBonuses = 0;
-
-
-                item.salaries.forEach((tt, key) => {
-
-                    let salary = 0;
-                    let total = 0;
-
-                    if(item.earnings[tt.day] !== null) {
-                        salary = Number(item.earnings[tt.day]);
-                        total = salary;
-                    }
-
-                    // salary earned to total
-                    if(Number(salary) != 0) personalTotal += parseInt(salary);
-
-                    if(tt.paid !== null) {
-                        personalAvanses += parseInt(tt.paid, 0);
-                    }
-
-                    if(item.bonuses[tt.day] !== null) {
-                        personalBonuses += Number(item.bonuses[tt.day]);
-                        total += Number(item.bonuses[tt.day]);
-                    }
-
-                    if(item.awards[tt.day] !== null) {
-                        personalBonuses += Number(item.awards[tt.day]);
-                        total += Number(item.awards[tt.day]);
-                    }
-
-                    if(item.test_bonus[tt.day] !== null) {
-                        personalBonuses += Number(item.test_bonus[tt.day]);
-                        total += Number(item.test_bonus[tt.day]);
-                    }
-
-                    if(item.fine[tt.day] !== null) {
-                        let fine_for_day = 0;
-                        item.fine[tt.day].forEach(el => {
-                            Object.values(el).forEach(fine_sum => fine_for_day += Number(fine_sum));
-                        })
-
-                        total -= Number(fine_for_day);
-                    }
-
-                    daySalaries[tt.day] = Number(total) != 0
-                        ? Number(total).toFixed(0)
-                        : '';
-
-                    daySalariesOnly[tt.day] = Number(salary) != 0
-                        ? Number(salary).toFixed(0)
-                        : '';
-                });
-
-                let personalKpi =  Number(item.kpi);
-                if(item.edited_kpi) {
-                    personalKpi = item.edited_kpi.amount
-                }
-
-                if(item.edited_bonus) {
-                    personalBonuses = item.edited_bonus.amount
-                }
-
-                personalFines = Number(item.fines_total);
-
-                personalFinal = personalTotal - personalAvanses + personalBonuses - personalFines + personalKpi;
-
-                if(item.edited_salary) {
-                    personalFinal = item.edited_salary.amount
-                }
-
-                let a = personalTotal + personalBonuses + personalKpi;
-
-                daySalaries["bonus"] = Number(personalBonuses).toFixed(0);
-                daySalaries["avans"] = Number(personalAvanses).toFixed(0);
-                daySalaries["fines"] = Number(personalFines).toFixed(0);
-                daySalaries["total"] = Number(personalTotal).toFixed(0);
-                daySalaries["final"] = Number(personalFinal).toFixed(0);
-
-                total_final += Number(personalFinal) >= 0 ? Number(personalFinal) : 0;
-                total_total += Number(personalFinal) >= 0 ? Number(personalTotal) : 0;
-                total_kpi += Number(personalFinal) >= 0 ? Number(item.kpi) : 0;
-                total_fines += Number(personalFinal) >= 0 ? Number(personalFines) : 0;
-                total_bonus += Number(personalFinal) >= 0 ? Number(personalBonuses) : 0;
-                total_avanses += Number(personalFinal) >= 0 ? Number(personalAvanses) : 0;
-
-                daySalaries.forEach((amount, day) => {
-                    if(isNaN(amount) || isNaN(Number(amount))) {
-                        amount = 0;
-                    }
-
-                    if (typeof daySalariesSum[day] === "undefined") {
-                        daySalariesSum[day] = 0;
-                    }
-
-                    daySalariesSum[day] = parseInt(daySalariesSum[day]) + Number(amount);
-
-                    if(daySalariesSum[day] > 0){
-                        hasMoney = 1;
-                    }
-                });
-
-                let obj = {
-                    kpi: item.kpi,
-                    fine: item.fine,
-                    user_id: item.id,
-                    hours: item.hours,
-                    awards: item.awards,
-                    name: `${item.name} ${item.last_name}`,
-                    avanses: item.avanses,
-                    bonuses: item.bonuses,
-                    user_type: item.user_type,
-                    trainings: item.trainings,
-                    history: item.track_history,
-                    edited_kpi: item.edited_kpi,
-                    test_bonus: item.test_bonus,
-                    hourly_pays: item.hourly_pays,
-                    edited_bonus: item.edited_bonus,
-                    edited_salary: item.edited_salary,
-                    salaries: daySalariesOnly,
-                    ...daySalaries,
-                };
-
-                if(this.show_user == 0) {
-                    items.push(obj);
-                } else if(hasMoney > 0) { // show if has salary records
-                    items.push(obj);
-                    hasMoney = 0
-                }
-
-            });
-
-
-            let total = 0;
-
-            if(this.user_types != '2') { // стажеры
-                daySalariesSum.forEach((sum, day) => {
-                    total = total + parseInt(sum);
-                });
-            }
-
-            total_bonus = Number(total_bonus).toFixed(0);
-
-            items[0] = {
-                name: "Общая сумма",
-                final: total_final,
-                kpi: total_kpi,
-                bonus: total_bonus,
-                avans: total_avanses,
-                fines: total_fines,
-                total: total_total,
-                ...daySalariesSum,
-            };
-
-            this.total = total_final;
-            this.items = items;
-        },
-
-        // окно редактирования kpi бонус  к выдаче на месяц
-        showEditPremiumWindow(type, data) {
-            if(data.index == 0) return false;
-            data.type = type;
-            this.editedField = data;
-
-            this.editedField.name = data.item.name
-
-            this.editPremiunWindow = true;
-        },
-
-        // сайдбар kpi бонус  к выдаче на месяц
-        showEditPremiumSidebar(type, data) {
-            if(data.index == 0) {
-                return false;
-            }
-            console.log(data)
-            data.type = type;
-
-            this.fetchBonusHistory(data.item.user_id);
-
-            this.editedField = data;
-            this.editPremiumSidebar = true;
-            this.sidebarTitle = data.item.name + ' : ' + type;
-
-        },
-
-        // история бонусов для showEditPremiumSidebar
-        fetchBonusHistory(user_id) {
-            const currentMonth = this.$moment(`${this.dateInfo.currentYear}-${this.dateInfo.currentMonth}`, "YYYY-MMMM")
-            axios.post('/timetracking/salaries/bonuses',{
-                user_id: user_id,
-                date: currentMonth.startOf("month").format("YYYY-MM-DD"),
-            }).then((response) => {
-                this.bonus_history = response.data;
-            });
-        },
-
-        editPremium() {
-            const currentMonth = this.$moment(`${this.dateInfo.currentYear}-${this.dateInfo.currentMonth}`, "YYYY-MMMM")
-
-            if(this.commentEdit < 3) {
-                this.errors = ['Комментарии обязательны!'];
-                return '';
-            }
-
-            axios.post("/timetracking/salaries/edit-premium", {
-                    date: currentMonth.startOf("month").format("YYYY-MM-DD"),
-                    user_id: this.editedField.item.user_id,
-                    amount: this.amountEdit,
-                    comment: this.commentEdit,
-                    type: this.editedField.type
-                })
-            .then((response) => {
-
-                if(this.editedField.type == 'kpi') {
-                    this.items[this.editedField.index].kpi = this.amountEdit
-                }
-
-                if(this.editedField.type == 'bonus') {
-                    this.items[this.editedField.index].bonus = this.amountEdit
-                }
-
-                this.commentEdit = '';
-                this.amountEdit = 0;
-                this.$toast.success('Сохранено');
-                this.editedField = {name:'', type:'kpi'}
-                this.editPremiunWindow = false
-
-            }).catch(error => {
-                this.$toast.error('Не сохранилось');
-                console.log(error)
-            });
-        },
-
-        // утверждено к выдаче
-        approveSalary() {
-            axios.post("/timetracking/salaries/approve-salary", {
-                group_id: this.selectedGroup.id,
-                month: this.$moment(this.dateInfo.currentMonth, "MMMM").format("M"),
-                year: this.dateInfo.currentYear,
-            })
-            .then((response) => {
-                this.$toast.success('Сохранено');
-                this.showBeforeApprove = false
-                this.selectedGroup.salary_approved = 1;
-            }).catch(error => {
-                this.$toast.error('Не получилось');
-                console.log(error)
-            });
-        },
-
-        updateSalary(type) {
-            if(this.selectedCell.index == 0) return '';
-
-            let comment,
-                amount;
-
-            if(type == 'avans') {
-                if(this.avans.comment.length < 3) {
-                    this.avans.require = 'Комментарии обязательны!'
-                    return '';
-                }
-
-                if(this.avans.sum == 0 || this.avans.sum == null) {
-                    this.avans.require = 'Напишите сумму аванса!'
-                    return '';
-                }
-
-                comment = this.avans.comment;
-                amount = this.avans.sum;
-            }
-
-            if(type == 'bonus') {
-                if(this.bonus.comment.length < 3) {
-                    this.bonus.require = 'Комментарии обязательны!'
-                    return '';
-                }
-
-                if(this.bonus.sum == 0 || this.bonus.sum == null) {
-                    this.bonus.require = 'Напишите сумму бонуса!'
-                    return '';
-                }
-
-                comment = this.bonus.comment;
-                amount = this.bonus.sum;
-            }
-
-            axios.post("/timetracking/salaries/update", {
-                    month: this.$moment(this.dateInfo.currentMonth, "MMMM").format("M"),
-                    year: this.dateInfo.currentYear,
-                    day: this.selectedCell.field.key,
-                    user_id: this.selectedCell.item.user_id,
-                    amount: amount,
-                    comment: comment,
-                    type: type
-                })
-            .then((response) => {
-
-                if(type == 'avans') {
-                    this.$toast.success('Аванс успешно сохранен');
-                    this.selectedCell.item.avanses[this.selectedCell.field.key] = this.avans.sum;
-
-                    this.avans.sum = 0;
-                    this.avans.comment = '';
-                    this.avans.require = '';
-                    this.avans.visible = false;
-                }
-
-                if(type == 'bonus')  {
-                    this.$toast.success('Бонус успешно сохранен');
-                    this.selectedCell.item.bonuses[this.selectedCell.field.key] = this.bonus.sum;
-
-                    this.bonus.sum = 0;
-                    this.bonus.comment = '';
-                    this.bonus.require = '';
-                    this.bonus.visible = false;
-                }
-
-                this.sidebarHistory.unshift(response.data);
-                this.items[this.selectedCell.index].history.unshift(response.data)
-
-            }).catch(error => {
-                this.$toast.error('Не сохранилось');
-                console.log(error)
-            });
-
-        },
-
-        // excel
-        exportData() {
-            var link = "/timetracking/salaries/export";
-            link += "?group_id=" + this.selectedGroup.id;
-            link += "&month=" + this.dateInfo.month;
-            link += "&year=" + this.dateInfo.year;
-            link += "&user_types=" + this.user_types;
-            window.location.href = link;
-        },
-
-        detectClick(data) {
-            this.selectedCell = data
-            this.openDay(data)
-        },
-
-        toggleVisible() {
-            this.special_fields = !this.special_fields;
-        },
-
-        defineClickNumber(type, data) {
-
-            //var self = this
-
-            this.clicks++;
-            if (this.clicks === 1) {
-                this.timer = setTimeout( () => {
-                    this.showEditPremiumSidebar(type, data)
-                    this.clicks = 0
-                }, 350);
-            } else {
-                clearTimeout(this.timer);
-                if(this.can_edit) {
-                    this.showEditPremiumWindow(type, data);
-                } else {
-                     this.showEditPremiumSidebar(type, data)
-                }
-                this.clicks = 0;
-            }
-        },
-
-        openDay(data) {
-            this.openSidebar = true
-            this.sidebarContent = data
-
-            if(this.hasPermission) {
-                this.profile_link = '<a href="https://test.jobtron.org/login-as-employee/' + data.item.user_id + '?auth=' + this.auth_token + '" target="_blank">';
-                this.profile_link += '<i class="fa fa-link pointer ml-2 mr-2"></i></a>';
-            } else {
-                this.profile_link = '';
-            }
-
-            this.sidebarTitle = `${data.item.name} - ${data.field.key} ${this.dateInfo.currentMonth} `
-            this.sidebarHistory = data.item.history.filter(x => parseInt(x.day) === parseInt(data.field.key))
-        },
-    },
+		},
+
+		//Установка заголовока таблицы
+		setFields() {
+			let fields = [];
+			fields = [{
+				key: 'name',
+				stickyColumn: true,
+				label: 'Имя',
+				variant: 'primary',
+				sortable: true,
+				class: 'text-left px-3 t-name',
+				editable: false
+			},
+			{
+				key: 'kpi',
+				label: 'KPI',
+				sortable: true,
+				editable: false,
+				stickyColumn: true
+			},
+			{
+				key: 'bonus',
+				label: 'Бонусы',
+				sortable: true,
+				editable: false,
+				stickyColumn: true
+			},
+			{
+				key: 'total',
+				label: 'Оклад',
+				sortable: true,
+				editable: false,
+				stickyColumn: true
+			},
+			{
+				key: 'fines',
+				label: 'Штрафы',
+				sortable: true,
+				editable: false,
+				stickyColumn: true
+			},
+			{
+				key: 'avans',
+				label: 'Авансы',
+				sortable: true,
+				editable: false,
+				stickyColumn: true
+			},
+			{
+				key: 'final',
+				label: 'К выдаче',
+				sortable: true,
+				editable: false,
+				stickyColumn: true
+			},
+			];
+
+			let days = this.dateInfo.daysInMonth;
+
+			for (let i = 1; i <= days; i++) {
+				let dayName = this.$moment(`${i} ${this.dateInfo.date}`, 'D MMMM YYYY')
+					.locale('en')
+					.format('ddd');
+
+				let field = {
+					key: `${i}`,
+					label: `${i}`,
+					sortable: true,
+					class: `day ${dayName}`,
+					editable: true
+				};
+
+				fields.push(field);
+			}
+			this.fields = fields;
+		},
+
+		//Загрузка данных для таблицы
+		fetchData() {
+			if(this.selectedGroup == null) return '';
+
+			let loader = this.$loading.show();
+			this.dateInfo.month = this.$moment(
+				this.dateInfo.currentMonth,
+				'MMMM'
+			).format('M');
+
+			this.$axios.post('/timetracking/salaries', {
+				month: this.$moment(this.dateInfo.currentMonth, 'MMMM').format('M'),
+				year: this.dateInfo.currentYear,
+				group_id: this.selectedGroup.id,
+				user_types: this.user_types,
+			})
+				.then((response) => {
+					let data = response.data;
+					if (data.error && data.error == 'access') {
+						console.log(data.error);
+						this.hasPermission = false;
+						loader.hide();
+						return;
+					}
+
+					this.hasPermission = true;
+
+					this.data = data;
+					this.group_fired = data.group_fired;
+					this.allTotal = data.all_total;
+					this.allTotalFired = data.all_total_fired;
+					this.group_total = data.group_total;
+					this.total_resources = data.total_resources;
+					this.users_count = data.users.length;
+					this.groups = data.groups;
+					this.accruals = data.accruals;
+					this.auth_token = data.auth_token
+
+					if(data.currentGroup) {
+						this.selectedGroup.salary_approved = data.currentGroup.salary_approved;
+						this.selectedGroup.salary_approved_by = data.currentGroup.salary_approved_by;
+						this.selectedGroup.salary_approved_date = data.currentGroup.salary_approved_date;
+					}
+
+					this.setYear();
+					this.setMonth();
+					this.setFields();
+					this.loadItems();
+					this.dataLoaded = true;
+
+					// maybe scroll table to right
+					setTimeout(() => {
+						var container = document.querySelector('.table-responsive');
+						this.maxScrollWidth = container.scrollWidth - container.offsetWidth;
+						if (this.dayPercentage > 50) {
+							// this.scrollLeft =
+							//     (this.maxScrollWidth * this.dayPercentage) / 100;
+							// this.defaultScrollValue = this.scrollLeft;
+						}
+
+					}, 1000);
+
+					loader.hide();
+				}).catch(error => {
+					this.$toast.error('Ошибка');
+					console.log(error)
+				});
+		},
+
+		// get salaries total for all group
+		getTotals() {
+			const  loader = this.$loading.show();
+			const currentMonth = this.$moment(`${this.dateInfo.currentYear}-${this.dateInfo.currentMonth}`, 'YYYY-MMMM')
+			this.$axios.post('/timetracking/salaries/get-total', {
+				month: currentMonth.format('M'),
+				year: this.dateInfo.currentYear,
+			})
+				.then(() => {
+					loader.hide();
+				}).catch((e) => {
+					console.log(e);
+					loader.hide();
+				});
+		},
+
+		toggleTab(type) {
+			if(type == 'avans') {
+				this.bonus.visible = false
+				this.avans.visible = !this.avans.visible
+			} else {
+				this.avans.visible = false
+				this.bonus.visible = !this.bonus.visible
+			}
+		},
+
+		//Добавление загруженных данных в таблицу
+		loadItems() {
+			let hasMoney = 0;
+			let items = [];
+			let daySalariesSum = [];
+
+			items.push({
+				name: 'Общая сумма',
+			});
+
+			let total_final = 0; // К выдаче сумма
+			let total_kpi = 0; // Кpi total
+			let total_bonus = 0; // Bonus total
+			let total_fines = 0; // fines total
+			let total_avanses = 0; // Avans total
+			let total_total = 0; // Начислено total
+
+			this.data.users.forEach(item => {
+				var daySalaries = [];
+				var daySalariesOnly = [];
+				var personalTotal = 0;
+				var personalFinal = 0;
+				var personalAvanses = 0;
+				var personalFines = 0;
+				var personalBonuses = 0;
+
+
+				item.salaries.forEach(tt => {
+
+					let salary = 0;
+					let total = 0;
+
+					if(item.earnings[tt.day] !== null) {
+						salary = Number(item.earnings[tt.day]);
+						total = salary;
+					}
+
+					// salary earned to total
+					if(Number(salary) != 0) personalTotal += parseInt(salary);
+
+					if(tt.paid !== null) {
+						personalAvanses += parseInt(tt.paid, 0);
+					}
+
+					if(item.bonuses[tt.day] !== null) {
+						personalBonuses += Number(item.bonuses[tt.day]);
+						total += Number(item.bonuses[tt.day]);
+					}
+
+					if(item.awards[tt.day] !== null) {
+						personalBonuses += Number(item.awards[tt.day]);
+						total += Number(item.awards[tt.day]);
+					}
+
+					if(item.test_bonus[tt.day] !== null) {
+						personalBonuses += Number(item.test_bonus[tt.day]);
+						total += Number(item.test_bonus[tt.day]);
+					}
+
+					if(item.fine[tt.day] !== null) {
+						let fine_for_day = 0;
+						item.fine[tt.day].forEach(el => {
+							Object.values(el).forEach(fine_sum => fine_for_day += Number(fine_sum));
+						})
+
+						total -= Number(fine_for_day);
+					}
+
+					daySalaries[tt.day] = Number(total) != 0
+						? Number(total).toFixed(0)
+						: '';
+
+					daySalariesOnly[tt.day] = Number(salary) != 0
+						? Number(salary).toFixed(0)
+						: '';
+				});
+
+				let personalKpi =  Number(item.kpi);
+				if(item.edited_kpi) {
+					personalKpi = item.edited_kpi.amount
+				}
+
+				if(item.edited_bonus) {
+					personalBonuses = item.edited_bonus.amount
+				}
+
+				personalFines = Number(item.fines_total);
+
+				personalFinal = personalTotal - personalAvanses + personalBonuses - personalFines + personalKpi;
+
+				if(item.edited_salary) {
+					personalFinal = item.edited_salary.amount
+				}
+
+				daySalaries['bonus'] = Number(personalBonuses).toFixed(0);
+				daySalaries['avans'] = Number(personalAvanses).toFixed(0);
+				daySalaries['fines'] = Number(personalFines).toFixed(0);
+				daySalaries['total'] = Number(personalTotal).toFixed(0);
+				daySalaries['final'] = Number(personalFinal).toFixed(0);
+
+				total_final += Number(personalFinal) >= 0 ? Number(personalFinal) : 0;
+				total_total += Number(personalFinal) >= 0 ? Number(personalTotal) : 0;
+				total_kpi += Number(personalFinal) >= 0 ? Number(item.kpi) : 0;
+				total_fines += Number(personalFinal) >= 0 ? Number(personalFines) : 0;
+				total_bonus += Number(personalFinal) >= 0 ? Number(personalBonuses) : 0;
+				total_avanses += Number(personalFinal) >= 0 ? Number(personalAvanses) : 0;
+
+				daySalaries.forEach((amount, day) => {
+					if(isNaN(amount) || isNaN(Number(amount))) {
+						amount = 0;
+					}
+
+					if (typeof daySalariesSum[day] === 'undefined') {
+						daySalariesSum[day] = 0;
+					}
+
+					daySalariesSum[day] = parseInt(daySalariesSum[day]) + Number(amount);
+
+					if(daySalariesSum[day] > 0){
+						hasMoney = 1;
+					}
+				});
+
+				let obj = {
+					kpi: item.kpi,
+					fine: item.fine,
+					user_id: item.id,
+					hours: item.hours,
+					awards: item.awards,
+					name: `${item.name} ${item.last_name}`,
+					avanses: item.avanses,
+					bonuses: item.bonuses,
+					user_type: item.user_type,
+					trainings: item.trainings,
+					history: item.track_history,
+					edited_kpi: item.edited_kpi,
+					test_bonus: item.test_bonus,
+					hourly_pays: item.hourly_pays,
+					edited_bonus: item.edited_bonus,
+					edited_salary: item.edited_salary,
+					salaries: daySalariesOnly,
+					...daySalaries,
+				};
+
+				if(this.show_user == 0) {
+					items.push(obj);
+				} else if(hasMoney > 0) { // show if has salary records
+					items.push(obj);
+					hasMoney = 0
+				}
+
+			});
+
+
+			let total = 0;
+
+			if(this.user_types != '2') { // стажеры
+				daySalariesSum.forEach(sum => {
+					total = total + parseInt(sum);
+				});
+			}
+
+			total_bonus = Number(total_bonus).toFixed(0);
+
+			items[0] = {
+				name: 'Общая сумма',
+				final: total_final,
+				kpi: total_kpi,
+				bonus: total_bonus,
+				avans: total_avanses,
+				fines: total_fines,
+				total: total_total,
+				...daySalariesSum,
+			};
+
+			this.total = total_final;
+			this.items = items;
+		},
+
+		// окно редактирования kpi бонус  к выдаче на месяц
+		showEditPremiumWindow(type, data) {
+			if(data.index == 0) return false;
+			data.type = type;
+			this.editedField = data;
+
+			this.editedField.name = data.item.name
+
+			this.editPremiunWindow = true;
+		},
+
+		// сайдбар kpi бонус  к выдаче на месяц
+		showEditPremiumSidebar(type, data) {
+			if(data.index == 0) {
+				return false;
+			}
+			console.log(data)
+			data.type = type;
+
+			this.fetchBonusHistory(data.item.user_id);
+
+			this.editedField = data;
+			this.editPremiumSidebar = true;
+			this.sidebarTitle = data.item.name + ' : ' + type;
+
+		},
+
+		// история бонусов для showEditPremiumSidebar
+		fetchBonusHistory(user_id) {
+			const currentMonth = this.$moment(`${this.dateInfo.currentYear}-${this.dateInfo.currentMonth}`, 'YYYY-MMMM')
+			this.$axios.post('/timetracking/salaries/bonuses',{
+				user_id: user_id,
+				date: currentMonth.startOf('month').format('YYYY-MM-DD'),
+			}).then((response) => {
+				this.bonus_history = response.data;
+			});
+		},
+
+		editPremium() {
+			const currentMonth = this.$moment(`${this.dateInfo.currentYear}-${this.dateInfo.currentMonth}`, 'YYYY-MMMM')
+
+			if(this.commentEdit < 3) {
+				this.errors = ['Комментарии обязательны!'];
+				return '';
+			}
+
+			this.$axios.post('/timetracking/salaries/edit-premium', {
+				date: currentMonth.startOf('month').format('YYYY-MM-DD'),
+				user_id: this.editedField.item.user_id,
+				amount: this.amountEdit,
+				comment: this.commentEdit,
+				type: this.editedField.type
+			})
+				.then(() => {
+
+					if(this.editedField.type == 'kpi') {
+						this.items[this.editedField.index].kpi = this.amountEdit
+					}
+
+					if(this.editedField.type == 'bonus') {
+						this.items[this.editedField.index].bonus = this.amountEdit
+					}
+
+					this.commentEdit = '';
+					this.amountEdit = 0;
+					this.$toast.success('Сохранено');
+					this.editedField = {name:'', type:'kpi'}
+					this.editPremiunWindow = false
+
+				}).catch(error => {
+					this.$toast.error('Не сохранилось');
+					console.log(error)
+				});
+		},
+
+		// утверждено к выдаче
+		approveSalary() {
+			this.$axios.post('/timetracking/salaries/approve-salary', {
+				group_id: this.selectedGroup.id,
+				month: this.$moment(this.dateInfo.currentMonth, 'MMMM').format('M'),
+				year: this.dateInfo.currentYear,
+			})
+				.then(() => {
+					this.$toast.success('Сохранено');
+					this.showBeforeApprove = false
+					this.selectedGroup.salary_approved = 1;
+				}).catch(error => {
+					this.$toast.error('Не получилось');
+					console.log(error)
+				});
+		},
+
+		updateSalary(type) {
+			if(this.selectedCell.index == 0) return '';
+
+			let comment,
+				amount;
+
+			if(type == 'avans') {
+				if(this.avans.comment.length < 3) {
+					this.avans.require = 'Комментарии обязательны!'
+					return '';
+				}
+
+				if(this.avans.sum == 0 || this.avans.sum == null) {
+					this.avans.require = 'Напишите сумму аванса!'
+					return '';
+				}
+
+				comment = this.avans.comment;
+				amount = this.avans.sum;
+			}
+
+			if(type == 'bonus') {
+				if(this.bonus.comment.length < 3) {
+					this.bonus.require = 'Комментарии обязательны!'
+					return '';
+				}
+
+				if(this.bonus.sum == 0 || this.bonus.sum == null) {
+					this.bonus.require = 'Напишите сумму бонуса!'
+					return '';
+				}
+
+				comment = this.bonus.comment;
+				amount = this.bonus.sum;
+			}
+
+			this.$axios.post('/timetracking/salaries/update', {
+				month: this.$moment(this.dateInfo.currentMonth, 'MMMM').format('M'),
+				year: this.dateInfo.currentYear,
+				day: this.selectedCell.field.key,
+				user_id: this.selectedCell.item.user_id,
+				amount: amount,
+				comment: comment,
+				type: type
+			})
+				.then((response) => {
+
+					if(type == 'avans') {
+						this.$toast.success('Аванс успешно сохранен');
+						this.selectedCell.item.avanses[this.selectedCell.field.key] = this.avans.sum;
+
+						this.avans.sum = 0;
+						this.avans.comment = '';
+						this.avans.require = '';
+						this.avans.visible = false;
+					}
+
+					if(type == 'bonus')  {
+						this.$toast.success('Бонус успешно сохранен');
+						this.selectedCell.item.bonuses[this.selectedCell.field.key] = this.bonus.sum;
+
+						this.bonus.sum = 0;
+						this.bonus.comment = '';
+						this.bonus.require = '';
+						this.bonus.visible = false;
+					}
+
+					this.sidebarHistory.unshift(response.data);
+					this.items[this.selectedCell.index].history.unshift(response.data)
+
+				}).catch(error => {
+					this.$toast.error('Не сохранилось');
+					console.log(error)
+				});
+
+		},
+
+		// excel
+		exportData() {
+			var link = '/timetracking/salaries/export';
+			link += '?group_id=' + this.selectedGroup.id;
+			link += '&month=' + this.dateInfo.month;
+			link += '&year=' + this.dateInfo.year;
+			link += '&user_types=' + this.user_types;
+			window.location.href = link;
+		},
+
+		detectClick(data) {
+			this.selectedCell = data
+			this.openDay(data)
+		},
+
+		toggleVisible() {
+			this.special_fields = !this.special_fields;
+		},
+
+		defineClickNumber(type, data) {
+
+			//var self = this
+
+			this.clicks++;
+			if (this.clicks === 1) {
+				this.timer = setTimeout( () => {
+					this.showEditPremiumSidebar(type, data)
+					this.clicks = 0
+				}, 350);
+			} else {
+				clearTimeout(this.timer);
+				if(this.can_edit) {
+					this.showEditPremiumWindow(type, data);
+				} else {
+					this.showEditPremiumSidebar(type, data)
+				}
+				this.clicks = 0;
+			}
+		},
+
+		openDay(data) {
+			this.openSidebar = true
+			this.sidebarContent = data
+
+			if(this.hasPermission) {
+				this.profile_link = '<a href="https://test.jobtron.org/login-as-employee/' + data.item.user_id + '?auth=' + this.auth_token + '" target="_blank">';
+				this.profile_link += '<i class="fa fa-link pointer ml-2 mr-2"></i></a>';
+			} else {
+				this.profile_link = '';
+			}
+
+			this.sidebarTitle = `${data.item.name} - ${data.field.key} ${this.dateInfo.currentMonth} `
+			this.sidebarHistory = data.item.history.filter(x => parseInt(x.day) === parseInt(data.field.key))
+		},
+	},
 };
 </script>
 

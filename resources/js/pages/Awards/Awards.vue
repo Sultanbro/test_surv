@@ -73,7 +73,7 @@
 import EditAwardSidebar from './EditAwardSidebar.vue';
 // import RegenerateCertificates from "./types/RegenerateCertificates";
 export default {
-	name: 'Awards',
+	name: 'SidebarAwards',
 	components: {
 		EditAwardSidebar,
 	},
@@ -131,9 +131,9 @@ export default {
 		async remove(item) {
 			this.modal = !this.modal;
 			let loader = this.$loading.show();
-			await this.axios
+			await this.$axios
 				.delete('/award-categories/delete/' + item.id)
-				.then(response => {
+				.then(() => {
 					this.getAwards();
 					loader.hide();
 				})

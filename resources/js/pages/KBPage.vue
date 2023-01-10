@@ -35,9 +35,9 @@
           >
             <template v-for="(book, b_index) in books">
                   <div
+                    :key="book.id"
                     class="section d-flex aic jcsb"
                     :id="book.id"
-                    :key="book.id"
                     @click.stop="selectSection(book)"
                   >
                     <div class="d-flex aic"  >
@@ -60,8 +60,8 @@
         <div class="sections-wrap noscrollbar" v-else>
           <template v-for="(book, b_index) in archived_books">
             <div
+              :key="b_index"
               class="section d-flex aic jcsb"
-
               v-if="can_edit"
               @click.stop="selectSection(book)"
             >
@@ -266,7 +266,7 @@
            <div class="sss" v-if="search.input.length >=3 && search.items.length == 0">
             <p>По запросу "{{ search.input }}" ничего не найдено.</p>
           </div>
-         <div class="item" v-for="item in search.items" @click="selectSection(item.book, item.id)" >
+         <div class="item" v-for="item in search.items" :key="item.id" @click="selectSection(item.book, item.id)" >
            <p v-if="item.book != null" class="book">{{ item.book.title }}</p>
            <p>{{ item.title }}</p>
            <div class="text" v-html="item.text"></div>
@@ -288,58 +288,58 @@ import Sidebar from '@/components/ui/Sidebar' // сайдбар table
 import SuperSelect from '@/components/SuperSelect' // with User ProfileGroup and Position
 
 export default {
-  name: 'KBPage',
-  components: {
-    Draggable,
-    Glossary,
-    Booklist,
-    Sidebar,
-    SuperSelect,
-  },
-  props: {
-    auth_user_id: {
-      type:Number
-    },
-   can_edit: {
-      type: Boolean,
-      default: false
-    }
-  },
-  data() {
-    return {
-      books: [],
-      mode: 'read',
-      archived_books: [],
-      trees: [],
-      settings: null,
-      section: 0,
-      activeBook: null,
-      showCreate: false,
-      show_glossary: false,
-      send_notification_after_edit: false,
-      show_page_from_kb_everyday: false,
-      allow_save_kb_without_test: false,
-      showBookSettings: false,
-      showArchive: false,
-      showSearch: false,
-      who_can_read: [],
-      who_can_edit: [],
-      showEdit: false,
-      show_page_id: 0,
-      superselectKey: 1,
-      section_name: '',
-      update_book: null,
-      search: {
-        input: '',
-        items: []
-      }
-    };
-  },
-  watch: {
-    auth_user_id(){
-      this.init()
-    }
-  },
+	name: 'KBPage',
+	components: {
+		Draggable,
+		Glossary,
+		Booklist,
+		Sidebar,
+		SuperSelect,
+	},
+	props: {
+		auth_user_id: {
+			type:Number
+		},
+		can_edit: {
+			type: Boolean,
+			default: false
+		}
+	},
+	data() {
+		return {
+			books: [],
+			mode: 'read',
+			archived_books: [],
+			trees: [],
+			settings: null,
+			section: 0,
+			activeBook: null,
+			showCreate: false,
+			show_glossary: false,
+			send_notification_after_edit: false,
+			show_page_from_kb_everyday: false,
+			allow_save_kb_without_test: false,
+			showBookSettings: false,
+			showArchive: false,
+			showSearch: false,
+			who_can_read: [],
+			who_can_edit: [],
+			showEdit: false,
+			show_page_id: 0,
+			superselectKey: 1,
+			section_name: '',
+			update_book: null,
+			search: {
+				input: '',
+				items: []
+			}
+		};
+	},
+	watch: {
+		auth_user_id(){
+			this.init()
+		}
+	},
 
 	created() {
 		if(this.auth_user_id){
@@ -351,27 +351,27 @@ export default {
 		init(){
 			this.fetchData();
 
-      // бывор группы
-      const urlParams = new URLSearchParams(window.location.search);
-      let section = urlParams.get('s');
-      if(section) {
-        this.selectSection({id: section})
-      }
-    },
-    fetchData() {
-      axios
-        .get("/kb/get", {})
-        .then((response) => {
-          this.books = response.data.books;
-        })
-        .catch((error) => {
-          alert(error);
-        });
-    },
+			// бывор группы
+			const urlParams = new URLSearchParams(window.location.search);
+			let section = urlParams.get('s');
+			if(section) {
+				this.selectSection({id: section})
+			}
+		},
+		fetchData() {
+			this.$axios
+				.get('/kb/get', {})
+				.then((response) => {
+					this.books = response.data.books;
+				})
+				.catch((error) => {
+					alert(error);
+				});
+		},
 
 		get_settings() {
 
-			axios
+			this.$axios
 				.post('/settings/get', {
 					type: 'kb'
 				})
@@ -387,14 +387,14 @@ export default {
 		},
 
 		save_settings() {
-			axios
+			this.$axios
 				.post('/settings/save', {
 					type: 'kb',
 					send_notification_after_edit: this.send_notification_after_edit,
 					show_page_from_kb_everyday: this.show_page_from_kb_everyday,
 					allow_save_kb_without_test: this.allow_save_kb_without_test,
 				})
-				.then((response) => {
+				.then(() => {
 					this.showBookSettings = false;
 				})
 				.catch((error) => {
@@ -403,7 +403,7 @@ export default {
 		},
 
 		selectSection(book, page_id = 0) {
-			axios
+			this.$axios
 				.post('kb/tree', {
 					id: book.id,
 				})
@@ -432,11 +432,11 @@ export default {
 
 		deleteSection(i) {
 			if (confirm('Вы уверены что хотите архивировать раздел?')) {
-				axios
+				this.$axios
 					.post('/kb/page/delete-section', {
 						id: this.books[i].id
 					})
-					.then((response) => {
+					.then(() => {
 						this.books.splice(i, 1);
 						this.$toast.success('Удалено');
 					});
@@ -445,11 +445,11 @@ export default {
 
 		restoreSection(i) {
 			if (confirm('Вы уверены что хотите восстановить раздел?')) {
-				axios
+				this.$axios
 					.post('/kb/page/restore-section', {
 						id: this.archived_books[i].id
 					})
-					.then((response) => {
+					.then(() => {
 						this.books.push(this.archived_books[i]);
 						this.archived_books.splice(i, 1);
 						this.$toast.success('Восстановлен');
@@ -465,7 +465,7 @@ export default {
 		searchInput() {
 			if(this.search.input.length <= 2) return null;
 
-			axios
+			this.$axios
 				.post('kb/search', {
 					text: this.search.input,
 				})
@@ -493,7 +493,7 @@ export default {
 
 			this.update_book = book;
 			console.log(book)
-			axios
+			this.$axios
 				.post('/kb/page/get-access', {
 					id: book.id,
 				})
@@ -515,7 +515,7 @@ export default {
 
 			let loader = this.$loading.show();
 
-			axios
+			this.$axios
 				.post('/kb/page/add-section', {
 					name: this.section_name,
 				})
@@ -537,7 +537,7 @@ export default {
 		getArchivedBooks() {
 			let loader = this.$loading.show();
 
-			axios
+			this.$axios
 				.get('/kb/get-archived')
 				.then((response) => {
 
@@ -559,14 +559,14 @@ export default {
 
 			let loader = this.$loading.show();
 
-			axios
+			this.$axios
 				.post('/kb/page/update-section', {
 					title: this.update_book.title,
 					who_can_read: this.who_can_read,
 					who_can_edit: this.who_can_edit,
 					id: this.update_book.id,
 				})
-				.then((response) => {
+				.then(() => {
 					this.showEdit = false;
 					let index = this.books.findIndex(b => b.id == this.update_book.id);
 
@@ -589,12 +589,12 @@ export default {
 
 		saveOrder(event) {
 			console.log(event)
-			axios.post('/kb/page/save-order', {
+			this.$axios.post('/kb/page/save-order', {
 				id: event.item.id,
 				order: event.newIndex, // oldIndex
 				parent_id: null
 			})
-				.then(response => {
+				.then(() => {
 					this.$toast.success('Очередь сохранена');
 				})
 		},

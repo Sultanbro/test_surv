@@ -100,27 +100,27 @@ import Default from '@/pages/Tables/Default.vue'
 import Quality from '@/pages/Tables/Quality.vue'
 
 export default {
-    name: 'CompareIndicators',
-    components: {
-        Collection,
-        Default,
-        Quality,
-    },
-    props: {},
-    data: function () {
-        return {
-            items: [],
-            currentYear: new Date().getFullYear(),
-            monthInfo: {
-                currentMonth: null,
-                monthEnd: 0,
-                workDays: 0,
-                weekDays: 0,
-                workDays5: 0,
-                weekDays5: 0,
-                daysInMonth: 0,
-                year: new Date().getFullYear()
-            },
+	name: 'CompareIndicators',
+	components: {
+		Collection,
+		Default,
+		Quality,
+	},
+	props: {},
+	data: function () {
+		return {
+			items: [],
+			currentYear: new Date().getFullYear(),
+			monthInfo: {
+				currentMonth: null,
+				monthEnd: 0,
+				workDays: 0,
+				weekDays: 0,
+				workDays5: 0,
+				weekDays5: 0,
+				daysInMonth: 0,
+				year: new Date().getFullYear()
+			},
 
 			loading: false
 		};
@@ -138,7 +138,7 @@ export default {
 		fetchData() {
 			this.loading = true
 
-			axios.post('/profile/activities').then(response => {
+			this.$axios.post('/profile/activities').then(response => {
 
 				this.items = response.data.items
 

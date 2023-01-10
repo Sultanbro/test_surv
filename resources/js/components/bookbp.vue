@@ -1,8 +1,8 @@
 <template>
     <div >
         <ul>
-            <li v-for="book in categoryes.book">
-                <a href="#">{{book.name}}</a>
+            <li v-for="(book, index) in categoryes.book" :key="index">
+                <a href="javascript:void(0)">{{book.name}}</a>
             </li>
         </ul>
 
@@ -17,7 +17,7 @@
 
 
 export default {
-	name: 'bookbp',
+	name: 'BookBP',
 	props: ['grouid'],
 	data() {
 		return {

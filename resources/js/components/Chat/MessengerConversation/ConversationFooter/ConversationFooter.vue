@@ -2,7 +2,7 @@
   <div class="messenger__chat-footer">
     <div class="messenger__box-footer messenger__box-footer-border">
       <template v-if="isRecordingAudio">
-        <SpectrumAnalyser class="messenger__chat-footer_spectrum" :fill-style="'#5ebee9'"></SpectrumAnalyser>
+        <SpectrumAnalyser class="messenger__chat-footer_spectrum" :fill-style="'#5ebee9'"/>
       </template>
       <template v-else>
         <div class="messenger__message-input messenger__message-text-input">
@@ -17,7 +17,7 @@
                     id="messengerMessageInput" class="messenger__textarea"
                     placeholder="Ввести сообщение"
           ></textarea>
-          <div v-for="file in files" class="messenger__input_file-attachment">
+          <div v-for="(file, index) in files" :key="index" class="messenger__input_file-attachment">
             <div>
               <div>{{ file.name }}</div>
               <div>{{ file.size | fileSizeFormat }}</div>
@@ -42,7 +42,7 @@
         >
           <template #default="{ isRecording, startRecording, stopRecording, deleteRecording }">
             <template v-if="!isRecording">
-              <EmojiPopup @append="appendEmoji"></EmojiPopup>
+              <EmojiPopup @append="appendEmoji"/>
 
               <div class="messenger__attachment-item" @click="$refs.messengerFile.click()">
                 <input type="file" ref="messengerFile" style="display:none" @change="prepareFiles" multiple="multiple">

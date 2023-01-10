@@ -87,6 +87,15 @@
 <script>
 import axios from 'axios';
 export default {
+	name: 'SectionTariffs',
+	data() {
+		return {
+			activeCol: -1,
+			image: require('../../assets/img/tariffs.png').default,
+			usdRate: 0,
+			kztRate: 0
+		}
+	},
 	computed: {
 		lang() {
 			return this.$root.$data.lang
@@ -124,15 +133,6 @@ export default {
 		separateThousands(number) {
 			const num = number.toString();
 			return num.replace(/(\d{1,3}(?=(?:\d\d\d)+(?!\d)))/g, '$1' + ' ');
-		}
-	},
-	data() {
-		return {
-			activeCol: -1,
-			image: require('../../assets/img/tariffs.png').default,
-			usdRate: 0,
-			kztRate: 0
-
 		}
 	},
 	async mounted() {

@@ -119,7 +119,6 @@
 
 <script>
 import AwardsCard from './AwardsCard';
-import axios from 'axios';
 
 export default {
 	name: 'AwardSidebar',
@@ -190,7 +189,7 @@ export default {
 		createAwardsLocal(awards) {
 			return awards.map((item) => ({ ...item, pressed: false }));
 		},
-		async fetchAwardsById(id) {
+		async fetchAwardsById() {
 			// ЗДЕСЬ БУДЕТ ЗАПРОС К API
 			return new Promise((resolve) => {
 				const out = {

@@ -22,7 +22,7 @@ export default {
 	watch: {
 		// whenever question changes, this function will run
 		percentage: {
-			handler (val, oldVal) {
+			handler (val) {
 				var trans = document.getElementById('mytrans');
 				trans.style.width = `${val}%`;
 				trans.style.transition = 'width 0.3s linear';

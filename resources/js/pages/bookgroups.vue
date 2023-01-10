@@ -21,24 +21,26 @@
                 </div>
             </div>
         </div>
-        
+
         <div class="mb-4">
             <div >
-                <books ref="books" :selectedGroup="group_id"></books>
+                <Books ref="books" :selectedGroup="group_id"/>
             </div>
         </div>
-        
+
     </div>
 
 </div>
 </template>
 
 <script>
-import books from '../components/books/books.vue'
+import Books from '../components/books/books.vue'
 
 export default {
-	name: 'bookgroups',
-	components: {books},
+	name: 'BookGroups',
+	components: {
+		Books,
+	},
 	data() {
 		return {
 			groups: [],
@@ -55,7 +57,7 @@ export default {
 	},
 	methods: {
 		addGroup() {
-			axios.post('/bp_books/groups/add', {
+			this.$axios.post('/bp_books/groups/add', {
 				name: this.new_position,
 			}).then(response => {
 				if (response.data.message) {
@@ -72,9 +74,9 @@ export default {
 		},
 		deleteGroup() {
 			if (confirm('Вы уверены что хотите удалить отдел?')) {
-				axios.post('/bp_books/groups/delete', {
+				this.$axios.post('/bp_books/groups/delete', {
 					id: this.group_id,
-				}).then(response => {
+				}).then(() => {
 					this.$toast.info('Список удален');
 					this.group_id = 0
 					this.getGroups()
@@ -82,8 +84,8 @@ export default {
 			}
 		},
 		groupselect(value) {
-			axios.post('/bp_books/groups', {
-				group_id: value, 
+			this.$axios.post('/bp_books/groups', {
+				group_id: value,
 			})
 				.then(response => {
 					if (response.data) this.group_id = response.data.group_id
@@ -95,7 +97,7 @@ export default {
 			}, 3000)
 		},
 		getGroups() {
-			axios.get('/bp_books/groups', {}).then(response => {
+			this.$axios.get('/bp_books/groups', {}).then(response => {
 				this.groups = response.data.groups
 				this.options = response.data.books
 				this.selectGroups = []
@@ -115,7 +117,7 @@ export default {
 		refreshBooksComponent() {
 			this.$refs.books.getBooks();
 		},
-	} 
+	}
 }
 </script>
 <style src="vue-multiselect/dist/vue-multiselect.min.css"></style>
@@ -216,6 +218,6 @@ h4.cp {
     border-radius: 0;
     max-width: 100%;
 }
- 
+
 
 </style>

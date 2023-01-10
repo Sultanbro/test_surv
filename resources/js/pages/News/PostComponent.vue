@@ -119,9 +119,10 @@
 
         <div v-show="showFiles" class="news-file-preview">
             <img
+				v-for="(file, index) in currentPost.files"
+				:key="index"
                 class="news-file-preview__item"
                 alt=""
-                v-for="file in currentPost.files"
                 @click="downloadFile(file)"
                 :src="getFilePreview(file)">
         </div>
@@ -142,21 +143,21 @@
 import CommentsComponent from '@/pages/News/CommentsComponent'
 
 export default {
-    name: 'PostComponent',
-    components: {
-        CommentsComponent,
-    },
-    props: {
-        post: {
-            required: true
-        },
-        me: {
-            required: true
-        }
-    },
-    data() {
-        return {
-            currentPost: this.post,
+	name: 'PostComponent',
+	components: {
+		CommentsComponent,
+	},
+	props: {
+		post: {
+			required: true
+		},
+		me: {
+			required: true
+		}
+	},
+	data() {
+		return {
+			currentPost: this.post,
 
 			showFiles: false,
 			showComments: false,
@@ -207,7 +208,7 @@ export default {
 		},
 
 		async downloadFile(file) {
-			await axios.get(file.url, {responseType: 'blob'})
+			await this.$axios.get(file.url, {responseType: 'blob'})
 				.then(response => {
 					const blob = new Blob([response.data], {type: this.getFileTypeByExtension(file.extension)});
 					const link = document.createElement('a');
@@ -291,8 +292,8 @@ export default {
 		},
 
 		async likePost(id) {
-			await axios.post('/news/' + id + '/like')
-				.then(response => {
+			await this.$axios.post('/news/' + id + '/like')
+				.then(() => {
 					if (this.currentPost.is_liked) {
 						this.currentPost.likes_count--;
 					} else {
@@ -301,12 +302,12 @@ export default {
 
 					this.currentPost.is_liked = !this.currentPost.is_liked;
 				})
-				.catch(response => {
+				.catch(() => {
 				});
 		},
 
-		async viewsChanged(isVisible, entry) {
-			await axios.post('news/' + this.currentPost.id + '/views')
+		async viewsChanged() {
+			await this.$axios.post('news/' + this.currentPost.id + '/views')
 				.then(res => {
 					this.currentPost.views_count = res.data.data.views_count;
 				})
@@ -316,7 +317,7 @@ export default {
 		},
 
 		async favouritePost(id) {
-			await axios.post('news/' + id + '/favourite')
+			await this.$axios.post('news/' + id + '/favourite')
 				.then(res => {
 					console.log(res);
 					this.toggleShowPopup();
@@ -326,7 +327,7 @@ export default {
 		},
 
 		async pinPost(id) {
-			await axios.post('/news/' + id + '/pin')
+			await this.$axios.post('/news/' + id + '/pin')
 				.then(response => {
 					this.post.is_pinned = response.data.data.is_pinned;
 					this.showFullContent = false;
@@ -347,8 +348,8 @@ export default {
 			formData.append('parent_id', this.parentId == null ? '' : this.parentId);
 			this.parentId = null;
 
-			await axios.post('/news/' + postId + '/comments', formData)
-				.then(response => {
+			await this.$axios.post('/news/' + postId + '/comments', formData)
+				.then(() => {
 					this.currentPost.comments_count = this.currentPost.comments_count + 1;
 					this.getPostComments(postId);
 				})
@@ -374,8 +375,8 @@ export default {
 		},
 
 		async deletePost(postId) {
-			await axios.delete('/news/' + postId)
-				.then(response => {
+			await this.$axios.delete('/news/' + postId)
+				.then(() => {
 					this.toggleShowPopup();
 					this.$emit('update-news-list');
 				})

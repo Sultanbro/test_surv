@@ -86,7 +86,7 @@ export default {
 		},
 		hr: {
 			type: Object,
-			default: {}
+			default: () => ({})
 		}
 	},
 	data: function () {
@@ -101,7 +101,7 @@ export default {
 		records: {
 			// the callback will be called immediately after the start of the observation
 			immediate: true,
-			handler (val, oldVal) {
+			handler () {
 				this.setFields()
 				for (let index = 0; index < 8; index++) {
 					this.calcTotal(index)
@@ -187,7 +187,7 @@ export default {
 
 			let loader = this.$loading.show();
 
-			axios.post('/timetracking/update-settings-individually', {
+			this.axios.post('/timetracking/update-settings-individually', {
 				date: this.$moment(
 					`${this.month.currentMonth} ${new Date().getFullYear()}`,
 					'MMMM YYYY'
@@ -198,7 +198,7 @@ export default {
 				employee_id: this.id,
 				settings: this.records, // data of employee for 1 month
 			})
-				.then((response) => {
+				.then(() => {
 					loader.hide();
 				});
 
@@ -231,7 +231,7 @@ export default {
 			}
 		},
 
-		calcConversion(index) {
+		calcConversion() {
 			this.calcConversionAuto()
 
 		},

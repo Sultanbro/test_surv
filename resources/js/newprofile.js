@@ -1,6 +1,6 @@
 // // Import vendor jQuery plugin example
 // import '~/app/libs/mmenu/dist/mmenu.js'
-
+/* global VJQuery */
 import 'slick-carousel';
 
 
@@ -54,16 +54,16 @@ document.addEventListener('DOMContentLoaded', () => {
 
 
 
-	const closePopup = VJQuery('.js-close-popup');
-	const modalOverlay = VJQuery('.overlay');
-	const popupAward = VJQuery('.popup.award');
-	const popupKPI = VJQuery('.popup.kpi');
-	const popupBalance = VJQuery('.popup.balance');
-	const popupKASPI = VJQuery('.popup.kaspi');
-	const popupNominations = VJQuery('.popup.nominations');
-	const popupNotifications = VJQuery('.popup.notifications');
-	const popupCheck = VJQuery('.popup.check');
-	let profileFlag;
+	// const closePopup = VJQuery('.js-close-popup');
+	// const modalOverlay = VJQuery('.overlay');
+	// const popupAward = VJQuery('.popup.award');
+	// const popupKPI = VJQuery('.popup.kpi');
+	// const popupBalance = VJQuery('.popup.balance');
+	// const popupKASPI = VJQuery('.popup.kaspi');
+	// const popupNominations = VJQuery('.popup.nominations');
+	// const popupNotifications = VJQuery('.popup.notifications');
+	// const popupCheck = VJQuery('.popup.check');
+	// let profileFlag;
 
 
 	//Hiding all Popups

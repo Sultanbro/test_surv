@@ -5,6 +5,7 @@
         <div v-if="user_type == 'office'">
           <template v-for="(btn, index) in btnlist_office">
             <button
+              :key="index"
               @click="btnclickk(btn.name)"
               class="btn btn-secondary"
               :disabled="activebtn == btn.name"
@@ -22,6 +23,7 @@
         <div v-else>
           <template v-for="(btn, index) in btnlist">
             <button
+              :key="index"
               @click="btnclickk(btn.name)"
               class="btn btn-secondary"
               :disabled="activebtn == btn.name"
@@ -39,9 +41,9 @@
       </div>
     </div>
 
-    
 
-   
+
+
 
     <transition name="fade">
       <sidebar
@@ -59,7 +61,7 @@
                 <th>Требуется</th>
                 <th>Наняты</th>
               </tr>
-              <tr v-for="order in orders">
+              <tr v-for="(order, index) in orders" :key="index">
                 <td class="text-left t-name bgz table-title">
                   {{ order.group }}
                 </td>
@@ -81,7 +83,7 @@
                 v-model="group_id"
                 class="form-control"
               >
-                <option :value="group.id" v-for="group in groups">{{
+                <option :value="group.id" v-for="group in groups" :key="group.id">{{
                   group.name
                 }}</option>
               </select>
@@ -126,10 +128,10 @@
                   <span class="text">Я прочитал</span>
                   <span class="timer"></span>
               </button>
-          </div>      
+          </div>
       </div>
     </b-modal>
-  
+
 
   </div>
 </template>
@@ -138,7 +140,7 @@
 import moment from 'moment';
 
 export default {
-	name: 'timetracking',
+	name: 'TimeTracking',
 	props: ['activeuserid', 'usertype', 'program', 'user_type', 'position_id'],
 	data() {
 		return {
@@ -192,39 +194,26 @@ export default {
 		},
 	},
 	created() {
-		axios
+		this.axios
 			.post('/timetracking/status', {})
 			.then((response) => {
 				this.activebtn = 'Завершить день';
 				this.setButton(response.data.status);
 
 				if(response.data.status == 'started' && response.data.corp_book.has) {
-          
+
 					this.corp_book_page = response.data.corp_book.page
 
-    
-					this.showCorpBookPage = this.corp_book_page != null; 
+					this.showCorpBookPage = this.corp_book_page != null;
 					this.bookCounter();
-
-
-
-
-
-
-
-				} 
+				}
 
 				this.zarplata = response.data.zarplata;
- 
+
 				this.groups = response.data.groupsall;
 				this.total_earned = response.data.total_earned;
 				this.orders = response.data.orders;
 				this.bonus = response.data.bonus;
-
-
-
-
-
 			})
 			.catch((error) => {
 				console.log(error);
@@ -233,13 +222,12 @@ export default {
 		this.setMonth();
 	},
 
-	mounted() {
-    
-	},
+	mounted() {},
 
 	methods: {
 
 		bookCounter() {
+			/* global $ */
 			let seconds = 60;
 			let interv = setInterval(() => {
 				seconds--;
@@ -255,10 +243,10 @@ export default {
 			}, seconds * 1000);
 		},
 		hideBook() {
-    
-			axios
+
+			this.axios
 				.post('/corp_book/set-read/', {})
-				.then((response) => {
+				.then(() => {
 					this.showCorpBookPage = false;
 				})
 				.catch((error) => {
@@ -287,7 +275,7 @@ export default {
 
 		orderGroup() {
 			let loader = this.$loading.show();
-			axios
+			this.axios
 				.post('/order-persons-to-group', {
 					group_id: this.group_id,
 					required: this.quantity,
@@ -319,7 +307,7 @@ export default {
 			}
 		},
 		fetch(times) {
-			axios
+			this.axios
 				.post('/timetracking/starttracking', {
 					start: times,
 				})
@@ -330,11 +318,11 @@ export default {
 					}
 
 					if(response.data.status == 'started' && response.data.corp_book.has) {
-            
+
 						this.corp_book_page = response.data.corp_book.page
-						this.showCorpBookPage = this.corp_book_page != null; 
+						this.showCorpBookPage = this.corp_book_page != null;
 						this.bookCounter();
-					} 
+					}
 					this.setButton(response.data.status);
 				})
 				.catch((error) => {
@@ -342,7 +330,7 @@ export default {
 				});
 		},
 		fetchstop(times) {
-			axios
+			this.axios
 				.post('/timetracking/starttracking', {
 					stop: times,
 				})
@@ -356,13 +344,6 @@ export default {
 				.catch((error) => {
 					console.log(error);
 				});
-		},
-		setButton(status) {
-			if (status == 'started') {
-				this.activebtn = 'Начать день';
-			} else if (status == 'stopped') {
-				this.activebtn = 'Завершить день';
-			}
 		},
 		setButton(status) {
 			if (status == 'started') {
@@ -406,7 +387,7 @@ export default {
     margin-right: 10px;
     padding: 6px 30px;
 
-  
+
   }
 
   button:nth-child(1) {

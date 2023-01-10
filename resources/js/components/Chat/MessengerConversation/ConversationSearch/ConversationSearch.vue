@@ -10,7 +10,7 @@
       </div>
     </div>
     <div class="messenger__messages-search-results">
-      <div class="messenger__message-wrapper" v-for="message in chatSearchMessagesResults" @click="goto(message, $event)">
+      <div class="messenger__message-wrapper" v-for="(message, index) in chatSearchMessagesResults" :key="index" @click="goto(message, $event)">
         <ConversationMessage :message="message"/>
       </div>
     </div>
@@ -23,8 +23,8 @@
         </div>
       </div>
       <div class="messenger__messages-search-results">
-        <div class="messenger__message-wrapper" v-for="file in chatSearchFilesResults" @click="goto(file, $event)">
-          <ConversationMessage :message="file"></ConversationMessage>
+        <div class="messenger__message-wrapper" v-for="(file, index) in chatSearchFilesResults" :key="index" @click="goto(file, $event)">
+          <ConversationMessage :message="file"/>
         </div>
       </div>
     </div>

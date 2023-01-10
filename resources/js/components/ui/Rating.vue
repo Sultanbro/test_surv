@@ -6,7 +6,7 @@
               }">
     <ul class="list">
       <li @click="rate(star)" v-for="star in maxStars" :class="{ 'active': star <= stars }" :key="star.stars" class="star">
-      <i :class="star <= stars ? 'fa fa-star' : 'fa fa-star-o'"></i> 
+      <i :class="star <= stars ? 'fa fa-star' : 'fa fa-star-o'"></i>
       </li>
     </ul>
     <div v-if="hasCounter" class="info counter">
@@ -18,7 +18,7 @@
 </template>
 <script>
 export default {
-	name: 'Rating',
+	name: 'UIRating',
 	props: ['grade', 'maxStars', 'hasCounter'],
 	data() {
 		return {

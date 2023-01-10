@@ -211,7 +211,7 @@
                 <th class="text-center t-name table-title">Осталось принять</th>
                 </thead>
                 <tbody>
-                <tr v-for="(group, index) in prognoz_groups">
+                <tr v-for="(group, index) in prognoz_groups" :key="index">
                   <td class="text-left t-name table-title td-blue align-middle">{{ group.name }}</td>
                   <td class="text-center t-name table-title align-middle">
                     <input type="number" v-model="group.plan" @change="saveGroupPlan(index)">
@@ -251,97 +251,97 @@ import NPS from '@/components/tables/NPS' // Оценка руководител
 import { useYearOptions } from '../composables/yearOptions'
 
 export default {
-  name: "Top",
-  components: {
-    TopGauges,
-    VGauge,
-    TableRentability,
-    NPS,
-  },
-  props: ['data', 'activeuserid'],
-  data() {
-    return {
-      afterCreated: false,
-      rentability: [], // первая вкладка
-      utility: [], // вторая
-      proceeds: [], // третья
-      prognoz_groups: [], //
-      years: useYearOptions(),
-      currentYear: new Date().getFullYear(),
-      monthInfo: {
-        currentMonth: null,
-        monthEnd: 0,
-        workDays: 0,
-        weekDays: 0,
-        daysInMonth: 0,
-        month: new Date().getMonth() + 1
-      },
-      gaugeOptions: {
-        angle: 0,
-        staticLabels: {
-          font: "9px sans-serif", // Specifies font
-          labels: [0, 50, 80, 100, 120], // Print labels at these values
-          color: "#000000", // Optional: Label text color
-          fractionDigits: 0, // Optional: Numerical precision. 0=round off.
-        },
-        staticZones: [
-          {strokeStyle: "#F03E3E", min: 0, max: 49}, // Red
-          {strokeStyle: "#fd7e14", min: 50, max: 79}, // Orange
-          {strokeStyle: "#FFDD00", min: 80, max: 90}, // Yellow
-          {strokeStyle: "#30B32D", min: 91, max: 120}, // Green
-        ],
-        pointer: {
-          length: 0.5, // // Relative to gauge radius
-          strokeWidth: 0.025, // The thickness
-          color: "#000000", // Fill color
-        },
-        limitMax: true,
-        limitMin: true,
-        lineWidth: 0.2,
-        radiusScale: 0.8,
-        colorStart: "#6FADCF",
-        generateGradient: true,
-        highDpiSupport: true,
-      },
-      ukey: 1
-    }
-  },
-  watch: {
-    data(){
-      this.init()
-    }
-  },
-  created() {
-    if(this.data){
-      this.init()
-    }
-  },
-  methods: {
-    init(){
-      this.utility = this.data.utility;
-      this.proceeds = this.data.proceeds;
-      this.prognoz_groups = this.data.prognoz_groups
-      this.setMonth()
-      this.fetchData()
-    },
-    showIcons(){
-      this.rentability = this.data.rentability;
-    },
-    setMonth() {
-      this.monthInfo.currentMonth = this.monthInfo.currentMonth ? this.monthInfo.currentMonth : this.$moment().format('MMMM')
-      this.monthInfo.month = this.monthInfo.currentMonth ? this.$moment(this.monthInfo.currentMonth, 'MMMM').format('M') : this.$moment().format('M')
-      let currentMonth = this.$moment(this.monthInfo.currentMonth, 'MMMM')
-      //Расчет выходных дней
-      this.monthInfo.monthEnd = currentMonth.endOf('month'); //Конец месяца
-      this.monthInfo.weekDays = currentMonth.weekdayCalc(currentMonth.startOf('month').toString(), currentMonth.endOf('month').toString(), [6]) //Колличество выходных
-      this.monthInfo.daysInMonth = new Date(2021, this.$moment(this.monthInfo.currentMonth, 'MMMM').format('M'), 0).getDate() //Колличество дней в месяце
-      this.monthInfo.workDays = this.monthInfo.daysInMonth - this.monthInfo.weekDays //Колличество рабочих дней
-    },
+	name: 'PageTop',
+	components: {
+		TopGauges,
+		VGauge,
+		TableRentability,
+		NPS,
+	},
+	props: ['data', 'activeuserid'],
+	data() {
+		return {
+			afterCreated: false,
+			rentability: [], // первая вкладка
+			utility: [], // вторая
+			proceeds: [], // третья
+			prognoz_groups: [], //
+			years: useYearOptions(),
+			currentYear: new Date().getFullYear(),
+			monthInfo: {
+				currentMonth: null,
+				monthEnd: 0,
+				workDays: 0,
+				weekDays: 0,
+				daysInMonth: 0,
+				month: new Date().getMonth() + 1
+			},
+			gaugeOptions: {
+				angle: 0,
+				staticLabels: {
+					font: '9px sans-serif', // Specifies font
+					labels: [0, 50, 80, 100, 120], // Print labels at these values
+					color: '#000000', // Optional: Label text color
+					fractionDigits: 0, // Optional: Numerical precision. 0=round off.
+				},
+				staticZones: [
+					{strokeStyle: '#F03E3E', min: 0, max: 49}, // Red
+					{strokeStyle: '#fd7e14', min: 50, max: 79}, // Orange
+					{strokeStyle: '#FFDD00', min: 80, max: 90}, // Yellow
+					{strokeStyle: '#30B32D', min: 91, max: 120}, // Green
+				],
+				pointer: {
+					length: 0.5, // // Relative to gauge radius
+					strokeWidth: 0.025, // The thickness
+					color: '#000000', // Fill color
+				},
+				limitMax: true,
+				limitMin: true,
+				lineWidth: 0.2,
+				radiusScale: 0.8,
+				colorStart: '#6FADCF',
+				generateGradient: true,
+				highDpiSupport: true,
+			},
+			ukey: 1
+		}
+	},
+	watch: {
+		data(){
+			this.init()
+		}
+	},
+	created() {
+		if(this.data){
+			this.init()
+		}
+	},
+	methods: {
+		init(){
+			this.utility = this.data.utility;
+			this.proceeds = this.data.proceeds;
+			this.prognoz_groups = this.data.prognoz_groups
+			this.setMonth()
+			this.fetchData()
+		},
+		showIcons(){
+			this.rentability = this.data.rentability;
+		},
+		setMonth() {
+			this.monthInfo.currentMonth = this.monthInfo.currentMonth ? this.monthInfo.currentMonth : this.$moment().format('MMMM')
+			this.monthInfo.month = this.monthInfo.currentMonth ? this.$moment(this.monthInfo.currentMonth, 'MMMM').format('M') : this.$moment().format('M')
+			let currentMonth = this.$moment(this.monthInfo.currentMonth, 'MMMM')
+			//Расчет выходных дней
+			this.monthInfo.monthEnd = currentMonth.endOf('month'); //Конец месяца
+			this.monthInfo.weekDays = currentMonth.weekdayCalc(currentMonth.startOf('month').toString(), currentMonth.endOf('month').toString(), [6]) //Колличество выходных
+			this.monthInfo.daysInMonth = new Date(2021, this.$moment(this.monthInfo.currentMonth, 'MMMM').format('M'), 0).getDate() //Колличество дней в месяце
+			this.monthInfo.workDays = this.monthInfo.daysInMonth - this.monthInfo.weekDays //Колличество рабочих дней
+		},
 
 		fetchData() {
 			let loader = this.$loading.show();
 
-			axios.post('/timetracking/top', {
+			this.$axios.post('/timetracking/top', {
 				month: this.$moment(this.monthInfo.currentMonth, 'MMMM').format('M'),
 				year: this.currentYear,
 			}).then(response => {
@@ -374,10 +374,10 @@ export default {
 
 		saveRentGauge(g_index) {
 			let loader = this.$loading.show();
-			axios.post('/timetracking/top/save_rent_max', {
+			this.$axios.post('/timetracking/top/save_rent_max', {
 				gauge: this.rentability[g_index]
 			})
-				.then(response => {
+				.then(() => {
 					this.$toast.success('Успешно сохранено!')
 					this.rentability[g_index].editable = false
 					this.fetchData()
@@ -390,10 +390,10 @@ export default {
 
 		saveGroupPlan(index) {
 			let loader = this.$loading.show();
-			axios.post('/timetracking/top/save_group_plan', {
+			this.$axios.post('/timetracking/top/save_group_plan', {
 				group_id: this.prognoz_groups[index].id,
 				plan: this.prognoz_groups[index].plan,
-			}).then(response => {
+			}).then(() => {
 
 				this.$toast.success('Успешно сохранено!')
 				this.prognoz_groups[index].left_to_apply = Number(this.prognoz_groups[index].plan) - Number(this.prognoz_groups[index].fired);
@@ -407,7 +407,7 @@ export default {
 		updateProceed(record, field, type) {
 			let loader = this.$loading.show();
 
-			axios.post('/timetracking/top/proceeds/update', {
+			this.$axios.post('/timetracking/top/proceeds/update', {
 				group_id: record['group_id'],
 				value: record[field],
 				date: field == 'Отдел' ?  this.proceeds.fields[5] : field,
@@ -415,7 +415,7 @@ export default {
 				type: type,
 				year: this.currentYear,
 			})
-				.then(response => {
+				.then(() => {
 					this.$toast.success('Успешно сохранено!');
 					loader.hide()
 				}).catch(error => {

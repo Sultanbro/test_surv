@@ -1,16 +1,16 @@
 <template>
     <div>
-        <multiselect 
-            v-model="value" 
-            :options="books" 
-            :multiple="true" 
-            :close-on-select="false" 
-            :clear-on-select="false" 
-            :preserve-search="true" 
-            placeholder="Выберите" 
-            label="name" 
-            track-by="name" 
-            :taggable="true" 
+        <multiselect
+            v-model="value"
+            :options="books"
+            :multiple="true"
+            :close-on-select="false"
+            :clear-on-select="false"
+            :preserve-search="true"
+            placeholder="Выберите"
+            label="name"
+            track-by="name"
+            :taggable="true"
             @tag="addTag"
             @remove="removeGroup"
             @select="selectGroup"></multiselect>
@@ -52,7 +52,7 @@ export default {
 			this.books.push(tag)
 			this.value.push(tag)
 
-            
+
 		},
 		messageoff() {
 			setTimeout(() => {
@@ -61,30 +61,30 @@ export default {
 		},
 		selectGroup(selectedOption) {
 
-			axios.post('/timetracking/edit-person/book', {
+			this.axios.post('/timetracking/edit-person/book', {
 				user_id: this.user_id,
 				book_id: selectedOption.id,
 				action: 'add',
 			})
-				.then(response => {
+				.then(() => {
 					this.$toast.info('Сотрудник получил книгу "' + selectedOption.name + '"');
 					this.messageoff()
-				}) 
+				})
 				.catch(error => {
 					console.log(error.response)
 					this.$toast.info(error.response);
 				});
 		},
 		removeGroup(selectedOption) {
-			axios.post('/timetracking/edit-person/book', {
+			this.axios.post('/timetracking/edit-person/book', {
 				user_id: this.user_id,
 				book_id: selectedOption.id,
 				action: 'delete'
 			})
-				.then(response => {
+				.then(() => {
 					this.$toast.info('Сотрудник лишился книги "' + selectedOption.name + '"');
 					this.messageoff()
-				}) 
+				})
 				.catch(error => {
 					console.log(error.response)
 					this.$toast.info(error.response);

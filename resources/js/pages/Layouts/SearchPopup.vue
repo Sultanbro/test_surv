@@ -6,7 +6,7 @@
 
 <script>
 export default {
-	name: 'SearchPopup', 
+	name: 'SearchPopup',
 	props: {},
 	data: function () {
 		return {
@@ -20,8 +20,8 @@ export default {
 	methods: {
 		fetchData() {
 			this.loading = true
-            
-			axios.post('/checklist', {})
+
+			this.$axios.post('/checklist', {})
 				.then((response) => {
 					this.data = response.data
 					this.loading = false

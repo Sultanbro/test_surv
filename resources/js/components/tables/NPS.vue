@@ -16,7 +16,7 @@
 
         </div>
         <div class="col-3">
-            
+
         </div>
     </div>
 
@@ -26,7 +26,7 @@
           <thead>
           <tr>
               <template v-for="(field, key) in fields">
-                  <th :class="field.klass">
+                  <th :class="field.klass" :key="key">
                       {{ field.name }}
                   </th>
               </template>
@@ -35,7 +35,7 @@
            <tbody>
            <tr v-for="(item, index) in users" :key="index">
                <template v-for="(field, key) in fields">
-                   <td :class="field.klass">
+                   <td :class="field.klass" :key="key">
                        <div class="inner" :class="{'inner-text-top': index > fields.length - 4}">
                            {{index}}
                            <div>{{ item[field.key] }}</div>
@@ -44,14 +44,14 @@
                                <div class="d-flex">
                                    <div class="w-50">
                                        <b>Плюсы ({{ item.texts[field.key] !== undefined ? item.texts[field.key].length : 0 }})</b>
-                                       <div v-for="(text, index) in item.texts[field.key]">
+                                       <div v-for="(text, index) in item.texts[field.key]" :key="index">
                                            <b>{{ index + 1}}:</b> {{ text }}
                                        </div>
                                    </div>
 
                                    <div class="w-50">
                                        <b>Минусы ({{ item.minuses[field.key] !== undefined ? item.minuses[field.key].length : 0 }})</b>
-                                       <div v-for="(text, index) in item.minuses[field.key]">
+                                       <div v-for="(text, index) in item.minuses[field.key]" :key="index">
                                            <b>{{ index + 1}}:</b> {{ text }}
                                        </div>
                                    </div>
@@ -65,7 +65,7 @@
            </tbody>
 
         </table>
-    </div> 
+    </div>
 
  <div class="empty-space"></div>
 
@@ -115,11 +115,11 @@ export default {
 		fetchData() {
 			let loader = this.$loading.show();
 
-			axios.post('/timetracking/nps', {
+			this.axios.post('/timetracking/nps', {
 				month: this.$moment(this.monthInfo.currentMonth, 'MMMM').format('M'),
 				year: this.currentYear,
 			}).then(response => {
-                
+
 				this.setMonth()
 				this.users = response.data.users;
 				this.ukey++;
@@ -134,28 +134,28 @@ export default {
 		setMonthsTableFields() {
 			let fieldsArray = []
 			let order = 1;
-            
+
 			fieldsArray.push({
 				key: 'group_id',
 				name: 'Отдел',
 				order: order++,
 				klass: ' text-left bg-blue w-200'
-			}) 
+			})
 
 			fieldsArray.push({
 				key: 'position',
 				name: 'Должность',
 				order: order++,
 				klass: ' text-left bg-blue'
-			})  
+			})
 
 			fieldsArray.push({
 				key: 'name',
 				name: 'ФИО',
 				order: order++,
 				klass: ' text-left bg-blue w-200'
-			}) 
-            
+			})
+
 
 			for(let i = 1; i <= 12; i++) {
 
@@ -163,14 +163,14 @@ export default {
 
 				fieldsArray.push({
 					key: i,
-					name: moment(this.currentYear + '-' + i + '-01').format('MMMM'),
+					name: this.$moment(this.currentYear + '-' + i + '-01').format('MMMM'),
 					order: order++,
 					klass: 'text-center px-1 month'
 				})
 
-			} 
-            
-			this.fields = fieldsArray    
+			}
+
+			this.fields = fieldsArray
 		},
 	}
 };

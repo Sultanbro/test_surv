@@ -5,14 +5,12 @@
         <table class="table table-bordered">
            <thead>
                <tr>
-                   <th class="b-table-sticky-column text-left t-name wd">
-                       <div>Сотрудник</div>
-                   </th>
-                   <template v-for="(field, key) in fields">
-                       <th :class="field.klass">
-                           <div>{{ field.name }}</div>
-                       </th>
-                   </template>
+                    <th class="b-table-sticky-column text-left t-name wd">
+                        <div>Сотрудник</div>
+                    </th>
+                    <th :class="field.klass" v-for="(field, key) in fields" :key="key">
+						<div>{{ field.name }}</div>
+					</th>
                </tr>
            </thead>
             <tbody>
@@ -60,10 +58,10 @@ export default {
 			total_count: 0,
 			loader: null,
 		};
-	}, 
+	},
 
 	created() {
-        
+
 		this.setWeeksTableFields()
 
 		this.users = this.items;
@@ -86,7 +84,7 @@ export default {
 				arr[0].show_cup = 1;
 				arr[1].show_cup = 2;
 				arr[2].show_cup = 3;
-			} 
+			}
 
 			let total_avg = 0;
 			let total_count = 0;
@@ -120,30 +118,30 @@ export default {
 		// },
 
 		setWeeksTableFields() {
-            
+
 			let fieldsArray = []
 			let weekNumber = 1;
 			let order = 1;
- 
+
 			fieldsArray.push({
 				key: 'total',
 				name: 'Итог',
 				order: order++,
 				klass: ' text-center px-1 t-total'
-			})  
-            
+			})
+
 
 			for(let i = 1; i <= this.monthInfo.daysInMonth; i++) {
- 
+
 				let m = this.monthInfo.month.toString()
 				let d = i
 				if(d.toString().length == 1) d = '0' + d;
 				if(m.length == 1) m = '0' + m;
 				//console.log(this.currentYear + '-' + m + '-' + d)
 
-				let date = moment(this.monthInfo.currentYear + '-' + m + '-' + d); 
+				let date = this.$moment(this.monthInfo.currentYear + '-' + m + '-' + d);
 				let dow = date.day();
-                
+
 				fieldsArray.push({
 					key: i,
 					name: i,
@@ -174,14 +172,14 @@ export default {
 						type: 'avg'
 					})
 				}
-			} 
+			}
 
 			this.fields = fieldsArray
 
 		},
 
 		// updateWeekValue(item, key) {
-            
+
 		//     let loader = this.$loading.show();
 
 		//     axios.post("/timetracking/quality-control/saveweekly", {
@@ -196,7 +194,7 @@ export default {
 		//             this.$toast.success('Сохранено');
 		//             loader.hide();
 		//         }).catch(function(e){
-		//             loader.hide() 
+		//             loader.hide()
 		//             alert(e)
 		//         })
 		// },

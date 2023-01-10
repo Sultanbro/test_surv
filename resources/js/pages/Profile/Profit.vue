@@ -75,7 +75,7 @@
 <script>
 // слайдер с условиями оплаты для отделов и должности
 export default {
-	name: 'Profit',
+	name: 'ProfileProfit',
 	props: {},
 	data: function () {
 		return {
@@ -102,7 +102,7 @@ export default {
 		fetchData() {
 			this.loading = true
 
-			axios.post('/profile/payment-terms').then(response => {
+			this.$axios.post('/profile/payment-terms').then(response => {
 
 				this.showBtn(response.data)
 
@@ -245,7 +245,7 @@ export default {
          * init slider for this block
          */
 		initSlider() {
-
+			/* global VJQuery */
 			VJQuery('.profit__carousel').slick({
 				infinite: true,
 				speed: 400,
@@ -277,7 +277,7 @@ export default {
 					}
 				}
 
-				const arr = [1,1,1,2,3,4];
+				// const arr = [1,1,1,2,3,4];
 				[...leftSlides].forEach(data => {data.style.minHeight = height + 'px'});
 				[...rightSlides].forEach(data => {data.style.minHeight = height + 'px'});
 			}

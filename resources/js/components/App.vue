@@ -57,7 +57,7 @@
                           @addNodes='addNode'
                           :height="600"/>
 
-        
+
         <transition v-if="showModal" >
 
             <h3 slot="header">custom header</h3>
@@ -277,7 +277,7 @@ export default {
 	methods: {
 		simvoli(){
 
-			axios.post('/autocalls/length',{
+			this.axios.post('/autocalls/length',{
 				message: this.smsforward,
 				latin: 1,
 			}).then(response => {
@@ -294,7 +294,7 @@ export default {
 		sintez(){
 			this.audiolisttwo = null
 
-			axios.post('/schema/syntez',{
+			this.axios.post('/schema/syntez',{
 				message:this.description,
 			}).then(response => {
 				console.log(response)
@@ -323,8 +323,8 @@ export default {
 			if (!this.dragObject.elem) return; // элемент не зажат
 
 			if (!this.dragObject.avatar) { // если перенос не начат...
-				var moveX = e.pageX - this.dragObject.downX;
-				var moveY = e.pageY - this.dragObject.downY;
+				// var moveX = e.pageX - this.dragObject.downX;
+				// var moveY = e.pageY - this.dragObject.downY;
 
 				// если мышь передвинулась в нажатом состоянии недостаточно далеко
 				// if (Math.abs(moveX) < 1 && Math.abs(moveY) < 1) {
@@ -388,7 +388,7 @@ export default {
 			}
 		},
 
-		createAvatar: function (e) {
+		createAvatar: function () {
 			// запомнить старые свойства, чтобы вернуться к ним при отмене переноса
 			var avatar = this.dragObject.elem;
 			var old = {
@@ -412,7 +412,7 @@ export default {
 			return avatar;
 		},
 
-		startDrag: function (e) {
+		startDrag: function () {
 			var avatar = this.dragObject.avatar;
 
 			// инициировать начало переноса
@@ -423,7 +423,7 @@ export default {
 			avatar.style.position = 'absolute';
 		},
 
-		findDroppable: function (e) {
+		findDroppable: function () {
 			// спрячем переносимый элемент
 			this.dragObject.avatar.hidden = true;
 
@@ -543,7 +543,9 @@ export default {
 			let action;
 			let audio;
 			let connection;
-
+			let maxID = Math.max(0, ...this.scene.nodes.map((link) => {
+				return link.id
+			}));
 
 
 			if(this.selectedNode.type === 'textsintez'){
@@ -603,7 +605,8 @@ export default {
 		},
 
 		schemaSave: function () {
-			var buttonSave = document.getElementById('saveButton');
+			/* global _ */
+			// var buttonSave = document.getElementById('saveButton');
 			// buttonSave.disabled = true;
 			let formData = new FormData();
 			// alert('Идет сохранение данных...');
@@ -641,9 +644,9 @@ export default {
 			formData.append('config', JSON.stringify(this.configuration));
 
 
-			axios.post('/schema/create',
+			this.axios.post('/schema/create',
 				formData,
-			).then(response => {
+			).then(() => {
 				alert('Сценарий успешно сохранен!');
 			}).catch(error => {
 				alert('Ошибка в графике или обратитесь в службу поддержки');

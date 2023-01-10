@@ -4,6 +4,9 @@
  * building robust, powerful web applications using Vue and Laravel.
  */
 
+/* global Laravel */
+/* eslint-disable vue/multi-word-component-names */
+
 require('./bootstrap').default;
 require('./newprofile').default; // new design for profile. There is jquery
 
@@ -223,7 +226,7 @@ Vue.directive('click-outside', {
  * permissions of auth user
  */
 
-Vue.prototype.$can = function (permission, authorId = false) {
+Vue.prototype.$can = function (permission/* , authorId = false */) {
 	if (Laravel.is_admin) {
 		return true;
 	}
@@ -234,6 +237,7 @@ Vue.prototype.$can = function (permission, authorId = false) {
 
 import App from '@/App.vue'
 
+// eslint-disable-next-line no-unused-vars
 const app = new Vue({
 	// el: '.right-panel-app'
 	router,

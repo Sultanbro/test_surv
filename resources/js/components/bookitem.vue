@@ -22,21 +22,19 @@
             <template v-if="books">
                 <draggable v-model="books"  @end="onEndSort(books,tre.id)" :options="{handle:'.fa-arrows-v'}">
 
-                    <template v-for="book in books" v-if="book.category_id == tre.id" >
+                    <template v-for="book in books">
 
-                        <li :key="book.id" class="chapter-item">
+                        <li v-if="book.category_id == tre.id" :key="book.id" class="chapter-item">
                             <i class="fa fa-arrows-v" aria-hidden="true" ></i>
                             <a href="#" @click.prevent="activebook(book)" >
                                 <i class="fa fa-file-text" aria-hidden="true"></i>
                                 {{book.title}}
                             </a>
                             <i class="fa fa-trash-o" @click="deletebook(book)" aria-hidden="true"></i>
-                           
+
                             <i class="fa fa-pencil"  @click.prevent="renames(book)"  aria-hidden="true"></i>
                             <input ref="bookrename" v-if="renamebook" v-on:keyup.enter="renamebooks(book)" v-model="book.title">
                         </li>
-
-
                     </template>
 
                 </draggable>
@@ -44,11 +42,25 @@
 
             <draggable v-model="tree"  @end="onEndSortcat(tree)"  :options="{handle:'.fa-arrows-v'}">
 
-                    <template v-for="trez in tree" v-if="trez.parent_cat_id == tre.id" >
-                        <bookitem @moveto="moveto" @rename="rename" @renamebooks="renamebooks" :key="trez.id"  @onEndSort="onEndSort" @onEndSortcat="onEndSortcat" @deletebook="deletebook" :tre="trez" :tree="tree"
-                                  :books="books" @active="active"
-                                  @deletecat="deletecat" @addcat="addcat" @addpage="addpage"
-                                  @activebook="activebook"></bookitem>
+                    <template v-for="trez in tree">
+                        <bookitem
+							v-if="trez.parent_cat_id == tre.id"
+							:key="trez.id"
+							@moveto="moveto"
+							@rename="rename"
+							@renamebooks="renamebooks"
+							@onEndSort="onEndSort"
+							@onEndSortcat="onEndSortcat"
+							@deletebook="deletebook"
+							:tre="trez"
+							:tree="tree"
+							:books="books"
+							@active="active"
+							@deletecat="deletecat"
+							@addcat="addcat"
+							@addpage="addpage"
+							@activebook="activebook"
+						/>
                     </template>
 
             </draggable>
@@ -71,7 +83,7 @@
 
 <script>
 export default {
-	name: 'bookitem',
+	name: 'BookItem',
 	props: ['tre', 'tree', 'books'],
 	data() {
 		return {
@@ -99,7 +111,7 @@ export default {
 				this.renamebook = false
 			} else { alert('Введите название')}
 		},
-		renames(book){
+		renames(){
 			this.renamebook = !this.renamebook
 			setTimeout(()=>{
 				this.$refs.bookrename[0].select();
@@ -111,7 +123,7 @@ export default {
 				this.renamefile = false
 			} else { alert('Введите название')}
 		},
-		namefile(tre){
+		namefile(){
 			this.renamefile = !this.renamefile
 			setTimeout(()=>{
 				this.$refs.renamefile.select();

@@ -19,7 +19,7 @@
                     </tr>
                 </thead>
 
-                <tr v-for="item in arr"  >
+                <tr v-for="(item, index) in arr" :key="index">
 
 
                     <th >
@@ -59,7 +59,7 @@
         <div class="col-12 p-0 row">
             <div class="col-6 p-0 ml-3">
                 <div v-if="errors.length">
-                        <p style="color: #c75f5f" v-for="error in errors">{{ error }}</p>
+                    <p style="color: #c75f5f" v-for="error in errors" :key="error">{{ error }}</p>
                 </div>
                 <a style="color: white;text-align: center;border-radius: unset"
                    id="selectedQuarter" @click="selectedQuarter"
@@ -112,7 +112,7 @@ export default {
 	},
 	methods:{
 		getQuartalBonuses(){
-			axios
+			this.axios
 				.post('/timetracking/quarter/get/quarter/', {
 					user_id:this.user_id
 				})
@@ -151,7 +151,7 @@ export default {
 
 			if (this.arr[1]['checked'] === false && this.arr[2]['checked'] === false && this.arr[3]['checked'] === false && this.arr[4]['checked'] === false){
 
-				axios.post('/timetracking/quarter/delete', {
+				this.axios.post('/timetracking/quarter/delete', {
 					arr:this.arr,
 					user_id:this.user_id,
 				}).then(response => {
@@ -163,7 +163,7 @@ export default {
 				})
 			}else{
 				if (this.errors.length === 0){
-					axios.post('/timetracking/quarter/store', {
+					this.axios.post('/timetracking/quarter/store', {
 						arr:this.arr,
 						user_id:this.user_id,
 					}).then(response => {

@@ -167,66 +167,66 @@ import VideoAccordion from '@/components/VideoAccordion'
 
 import 'videojs-hotkeys'
 export default {
-  name: 'PlaylistEdit',
-  components: {
-    Sidebar,
-    VideoPlayerItem,
-    Questions,
-    VideoAccordion,
-  },
-  props: {
-    token: String,
-    id: Number,
-    auth_user_id: Number,
-    myvideo: Number,
-    mode: String,
-    enable_url_manipulation: {
-      default: true
-    },
-    is_course: {
-      default: false
-    },
-    course_item_id: {
-      default: 0
-    },
-    all_stages: {
-      default: 0
-    },
-    completed_stages: {
-      default: 0
-    },
-  },
+	name: 'PlaylistEdit',
+	components: {
+		Sidebar,
+		VideoPlayerItem,
+		Questions,
+		VideoAccordion,
+	},
+	props: {
+		token: String,
+		id: Number,
+		auth_user_id: Number,
+		myvideo: Number,
+		mode: String,
+		enable_url_manipulation: {
+			default: true
+		},
+		is_course: {
+			default: false
+		},
+		course_item_id: {
+			default: 0
+		},
+		all_stages: {
+			default: 0
+		},
+		completed_stages: {
+			default: 0
+		},
+	},
 
-  data() {
-    return {
-      ids: [],
-      video_changed: 1,
-      activeVideo: null,
-      activeVideoLink: '',
-      refreshTest: 1, //key
-      file_img: null,
-      item_models: [],
-      noVideoInPlaylist: false,
-      playlist: {
-        id: 1,
-        category_id: 1,
-        title: "",
-        text: "",
-        videos: [],
-      },
-      activeGroup: {
-        id: 0, // group id
-        i: [] // indexes
-      },
-      show_tests: false, // sidebar
-      mylink: window.location.protocol + "//" + window.location.host + window.location.pathname.substring(0,16)
+	data() {
+		return {
+			ids: [],
+			video_changed: 1,
+			activeVideo: null,
+			activeVideoLink: '',
+			refreshTest: 1, //key
+			file_img: null,
+			item_models: [],
+			noVideoInPlaylist: false,
+			playlist: {
+				id: 1,
+				category_id: 1,
+				title: '',
+				text: '',
+				videos: [],
+			},
+			activeGroup: {
+				id: 0, // group id
+				i: [] // indexes
+			},
+			show_tests: false, // sidebar
+			mylink: window.location.protocol + '//' + window.location.host + window.location.pathname.substring(0,16)
 
-    };
-  },
+		};
+	},
 
-  watch: {
+	watch: {
 
-  },
+	},
 
 	created() {
 		this.fetchData();
@@ -234,22 +234,22 @@ export default {
 
 	mounted() {},
 
-  methods: {
+	methods: {
 
 		passedTest() {
 			// if(this.activeVideo.item_model == null) {
 			//   //this.setVideoPassed()
 			// }
 
-      let i = this.item_models.findIndex(im => im.item_id == this.activeVideo.id);
-      if(i == -1) this.item_models.push({
-        item_id: this.activeVideo.id,
-        status: 1
-      });
+			let i = this.item_models.findIndex(im => im.item_id == this.activeVideo.id);
+			if(i == -1) this.item_models.push({
+				item_id: this.activeVideo.id,
+				status: 1
+			});
 
-      this.connectItemModels(this.playlist.groups)
+			this.connectItemModels(this.playlist.groups)
 
-      ////
+			////
 
 			//this.nextElement()
 		},
@@ -263,26 +263,26 @@ export default {
 
 			this.scrollToTop();
 
-      if(this.activeVideo.item_model == null) {
-        this.setVideoPassed()
-      }
+			if(this.activeVideo.item_model == null) {
+				this.setVideoPassed()
+			}
 
-      ///
+			///
 
-      let i = this.item_models.findIndex(im => im.item_id == this.activeVideo.id);
-      if(i == -1) this.item_models.push({
-        item_id: this.activeVideo.id,
-        status: 1
-      });
+			let i = this.item_models.findIndex(im => im.item_id == this.activeVideo.id);
+			if(i == -1) this.item_models.push({
+				item_id: this.activeVideo.id,
+				status: 1
+			});
 
-      this.connectItemModels(this.playlist.groups)
+			this.connectItemModels(this.playlist.groups)
 
-      ////
+			////
 
-      let index = this.ids.findIndex(el => el.id == this.activeVideo.id);
+			let index = this.ids.findIndex(el => el.id == this.activeVideo.id);
 
-      // find next element
-      if(index != -1 && this.ids.length - 1 > index) {
+			// find next element
+			if(index != -1 && this.ids.length - 1 > index) {
 
 				this.showVideo({
 					id: this.ids[index + 1].id,
@@ -296,19 +296,19 @@ export default {
 
 		setVideoPassed() {
 
-      // find element
+			// find element
 
 			let el = null;
 
-      let index = this.ids.findIndex(el => el.id == this.activeVideo.id);
-      if(index != -1) {
-        el = this.findItem(this.ids[index]);
-       // if(el.item_model != null) return;
-      }
+			let index = this.ids.findIndex(el => el.id == this.activeVideo.id);
+			if(index != -1) {
+				el = this.findItem(this.ids[index]);
+				// if(el.item_model != null) return;
+			}
 
 			// pass
 			let loader = this.$loading.show();
-			axios
+			this.$axios
 				.post('/my-courses/pass', {
 					id: this.activeVideo.id,
 					type: 2,
@@ -337,15 +337,15 @@ export default {
 			this.activeVideo = this.playlist.videos[v_index];
 		},
 
-    removeVideo(v_index) {
-      if(!confirm('Вы уверены?')) return;
-      let video = this.playlist.videos[v_index];
+		removeVideo(v_index) {
+			if(!confirm('Вы уверены?')) return;
+			let video = this.playlist.videos[v_index];
 
-			axios
+			this.$axios
 				.post('/playlists/remove-video', {
 					id: video.id,
 				})
-				.then((response) => {
+				.then(() => {
 					this.playlist.videos.splice(v_index, 1);
 					this.$toast.success('Исключен из плейлиста. Файл не удален');
 				})
@@ -354,15 +354,15 @@ export default {
 				});
 		},
 
-    openControlsMenu(video) {
-      video.show_controls = true;
-    },
+		openControlsMenu(video) {
+			video.show_controls = true;
+		},
 
-    selectedGroup() {
-      return this.modals.upload.children_index == -1
-        ? this.playlist.groups[this.modals.upload.group_index]
-        : this.playlist.groups[this.modals.upload.group_index].children[this.modals.upload.children_index]
-    },
+		selectedGroup() {
+			return this.modals.upload.children_index == -1
+				? this.playlist.groups[this.modals.upload.group_index]
+				: this.playlist.groups[this.modals.upload.group_index].children[this.modals.upload.children_index]
+		},
 
 		findLocation(id) {
 			let o = {
@@ -378,29 +378,17 @@ export default {
 			this.$refs.accordion.uploadVideo(0);
 		},
 
-    addGroup() {
-      this.$refs.accordion.addGroup(-1)
-    },
-
-
-    deleteGroup(id) {
-
-			let loc = this.findLocation(id);
-
-			if(c == -1) {
-				this.groups.splice(g, 1);
-			} else {
-				this.groups[g].children.splice(c, 1);
-			}
+		addGroup() {
+			this.$refs.accordion.addGroup(-1)
 		},
 
 		updateVideo() {
-			axios
+			this.$axios
 				.post('/playlists/video/update', {
 					id: this.playlist.id,
 					video: this.activeVideo,
 				})
-				.then((response) => {
+				.then(() => {
 					this.$toast.success('Сохранено!');
 				})
 				.catch((error) => {
@@ -409,18 +397,18 @@ export default {
 		},
 
 		saveActiveVideoFast() {
-			axios
+			this.$axios
 				.post('/playlists/save-video-fast', {
 					id: this.activeVideo.id,
 					title: this.activeVideo.title,
 				})
-				.then((response) => {
+				.then(() => {
 
-          let i = this.ids.findIndex(el => el.id == this.activeVideo.id);
-          if(i != -1) {
-            let video = this.findItem(this.ids[i]);
-            video.title = this.activeVideo.title;
-          }
+					let i = this.ids.findIndex(el => el.id == this.activeVideo.id);
+					if(i != -1) {
+						let video = this.findItem(this.ids[i]);
+						video.title = this.activeVideo.title;
+					}
 
 
 					this.$toast.success('Сохранено');
@@ -432,7 +420,7 @@ export default {
 
 		saveActiveVideo() {
 
-			axios
+			this.$axios
 				.post('/playlists/save-active-video', {
 					id: this.playlist.id,
 					title: this.modals.upload.file.title,
@@ -469,7 +457,7 @@ export default {
 			if(video == null) return;
 			let loader = this.$loading.show();
 
-			axios
+			this.$axios
 				.post('/playlists/video', {
 					id: video.id,
 					course_item_id: this.course_item_id
@@ -477,10 +465,10 @@ export default {
 				.then((response) => {
 					loader.hide()
 
-           this.activeVideo = response.data.video;
-             this.activeVideoLink = this.activeVideo.links;
+					this.activeVideo = response.data.video;
+					this.activeVideoLink = this.activeVideo.links;
 
-            this.refreshTest++
+					this.refreshTest++
 
 					this.setActiveGroup();
 					if(autoplay) {
@@ -494,57 +482,57 @@ export default {
 					alert(error);
 				});
 
-      if(this.enable_url_manipulation)
-      {
-        if (history.pushState) {
-          var newUrl = this.mylink.concat('/'+this.$parent.data_category, '/'+this.$parent.data_playlist+'/'+(video.id));
-          history.pushState(null, null, newUrl);
-        } else {
-            console.warn('History API не поддерживает ваш браузер');
-        }
-      }
+			if(this.enable_url_manipulation)
+			{
+				if (history.pushState) {
+					var newUrl = this.mylink.concat('/'+this.$parent.data_category, '/'+this.$parent.data_playlist+'/'+(video.id));
+					history.pushState(null, null, newUrl);
+				} else {
+					console.warn('History API не поддерживает ваш браузер');
+				}
+			}
 
 
-    },
+		},
 
-    showTests(video, input_focus = false) {
-      const NO_AUTOPLAY = false;
-      this.showVideo(video, NO_AUTOPLAY);
-      this.show_tests = true;
-      this.$refs.activevideo_input.focus()
-    },
+		showTests(video) {
+			const NO_AUTOPLAY = false;
+			this.showVideo(video, NO_AUTOPLAY);
+			this.show_tests = true;
+			this.$refs.activevideo_input.focus()
+		},
 
-    moveTo(video) {
-      this.$toast.info('Переместить: ' + video.title);
-    },
+		moveTo(video) {
+			this.$toast.info('Переместить: ' + video.title);
+		},
 
-    fetchData() {
-      axios
-        .post("/playlists/get/", {
-          id: this.id,
-          course_item_id: this.course_item_id
-        })
-        .then((response) => {
-          this.playlist = response.data.playlist;
-          this.item_models = response.data.item_models;
+		fetchData() {
+			this.$axios
+				.post('/playlists/get/', {
+					id: this.id,
+					course_item_id: this.course_item_id
+				})
+				.then((response) => {
+					this.playlist = response.data.playlist;
+					this.item_models = response.data.item_models;
 
 
-          this.formMap();
+					this.formMap();
 
-          this.connectItemModels(this.playlist.groups);
+					this.connectItemModels(this.playlist.groups);
 
-          this.setActiveVideo();
+					this.setActiveVideo();
 
-        })
-        .catch((error) => {
-          alert(error);
-        });
-    },
+				})
+				.catch((error) => {
+					alert(error);
+				});
+		},
 
-    connectItemModels(groups) {
-      groups.forEach((el, e) => {
+		connectItemModels(groups) {
+			groups.forEach(el => {
 
-				el.videos.forEach((vid, v) => {
+				el.videos.forEach(vid => {
 					let i = this.item_models.findIndex(im => im.item_id == vid.id);
 					if(i != -1) {
 						vid.item_model = this.item_models[i];
@@ -555,15 +543,15 @@ export default {
 				});
 
 
-        if(el.children !== undefined) {
-          this.connectItemModels(el.children)
-        }
+				if(el.children !== undefined) {
+					this.connectItemModels(el.children)
+				}
 
-      });
+			});
 
 
 
-    },
+		},
 
 		changePassGrade(grade) {
 			this.activeVideo.pass_grade = grade;
@@ -573,8 +561,8 @@ export default {
 			if(grade < 1) this.activeVideo.pass_grade = 1;
 		},
 
-    returnArray(items, indexes = []) {
-      items.forEach((item, i_index) => {
+		returnArray(items, indexes = []) {
+			items.forEach((item, i_index) => {
 
 				let arr = [...indexes, i_index];
 
@@ -597,59 +585,59 @@ export default {
 		setActiveVideo() {
 			if(this.myvideo > 0) {
 
-        // find element
-        let index = this.ids.findIndex(el => el.id == this.myvideo);
-        if(index != -1) {
-          this.activeVideo = this.findItem(this.ids[index]);
-        }
+				// find element
+				let index = this.ids.findIndex(el => el.id == this.myvideo);
+				if(index != -1) {
+					this.activeVideo = this.findItem(this.ids[index]);
+				}
 
-      } else if(this.playlist.groups.length > 0 && this.playlist.groups[0].videos.length > 0) {
-          // set active video
-          this.activeVideo = this.playlist.groups[0].videos[0];
-          this.activeVideoLink = this.activeVideo.links;
+			} else if(this.playlist.groups.length > 0 && this.playlist.groups[0].videos.length > 0) {
+				// set active video
+				this.activeVideo = this.playlist.groups[0].videos[0];
+				this.activeVideoLink = this.activeVideo.links;
 
-      } else if(this.ids.length > 0) {
-        this.activeVideo = this.findItem(this.ids[0]);
-      } else {
-        this.noVideoInPlaylist = true;
-      }
+			} else if(this.ids.length > 0) {
+				this.activeVideo = this.findItem(this.ids[0]);
+			} else {
+				this.noVideoInPlaylist = true;
+			}
 
-      this.showVideo(this.activeVideo);
+			this.showVideo(this.activeVideo);
 
 
-    },
+		},
 
 		findItem(el) {
 
 			let x = this.playlist;
 			let found = false;
 
-      for (let i = 0; i < el.i.length; i++) {
-        if(i == 0) {
-          x = x.groups[el.i[i]]
-        } else if(el.i.length - 1 != i) {
-          x = x.children[el.i[i]]
-        } else {
-          found = true;
-          x = x.videos[el.i[i]]
-        }
-      }
+			for (let i = 0; i < el.i.length; i++) {
+				if(i == 0) {
+					x = x.groups[el.i[i]]
+				} else if(el.i.length - 1 != i) {
+					x = x.children[el.i[i]]
+				} else {
+					found = true;
+					x = x.videos[el.i[i]]
+				}
+			}
 
-      return found ? x : null;
-    },
+			return found ? x : null;
+		},
 
-    setActiveGroup() {
+		setActiveGroup() {
 
-      // close all
-      this.playlist.groups.forEach(g=>{
-        g.opened = false;
-        g.children.forEach(c=>{
-          c.opened = false;
-          c.children.forEach(d=>{
-            d.opened = false;
-          });
-        });
-      })
+			// close all
+			this.playlist.groups.forEach(g=>{
+				g.opened = false;
+				g.children.forEach(c=>{
+					c.opened = false;
+					c.children.forEach(d=>{
+						d.opened = false;
+					});
+				});
+			})
 
 			let index = this.ids.findIndex(el => el.id == this.activeVideo.id);
 
@@ -666,9 +654,9 @@ export default {
 
 					l.opened = true;
 
-        }
+				}
 
-      }
+			}
 
 
 		},
@@ -681,7 +669,7 @@ export default {
 			formData.append('file', this.file_img);
 			formData.append('playlist', JSON.stringify(this.playlist));
 
-			axios.post( '/playlists/save', formData)
+			this.$axios.post( '/playlists/save', formData)
 				.then((response) => {
 					this.$toast.success('Сохранено');
 					if(response.data !== '') this.playlist.img = response.data;
@@ -695,21 +683,21 @@ export default {
 
 		saveGroups() {
 
-			axios
+			this.$axios
 				.post('/playlists/groups/save', {
 					playlist: this.playlist,
 				})
 				.then((response) => {
 					this.$toast.success('Сохранено');
 
-          this.playlist.groups = response.data.groups;
-        })
-        .catch((error) => {
-          alert(error);
-        });
+					this.playlist.groups = response.data.groups;
+				})
+				.catch((error) => {
+					alert(error);
+				});
 
-    }
+		}
 
-  },
+	},
 };
 </script>

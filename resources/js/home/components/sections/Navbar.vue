@@ -156,7 +156,7 @@ import NavbarButton from '../navbar/NavbarButton.vue'
 import NavbarLang from '../navbar/NavbarLang.vue'
 
 export default {
-	name: 'Nav',
+	name: 'NavBar',
 	components: {
 		NavbarLink,
 		NavbarButton,

@@ -53,52 +53,52 @@
 import VuePdfEmbed from 'vue-pdf-embed/dist/vue2-pdf-embed';
 import VueHtml2pdf from './Html2pdf';
 
-    export default {
-        name: 'save-certificate',
-        components: {
-            VuePdfEmbed,
-            VueHtml2pdf,
-        },
-        props: {
-            course_id: {
-                type: Number,
-                default: null
-            },
-            title: {
-                type: String,
-                default: ''
-            },
-            user_id: {
-                type: Number,
-                default: null
-            }
-        },
-        data() {
-            return {
-                loading: true,
-                award: {},
-                transformFullName: {},
-                transformCourseName: {},
-                transformDateName: {},
-                styles: {},
-                canvasHeight: null,
-                canvasWidth: 1000,
-                pdfDownloaded: false,
-                options: {
-                    jsPDF: {
-                        unit: 'mm',
-                        format: [],
-                        orientation: 'portrait'
-                    }
-                }
-            }
-        },
-        methods: {
-            onProgress(progress) {
-                this.progress = progress;
-                console.log(`PDF generation progress: ${progress}%`)
-            },
-            beforeDownload(){
+export default {
+	name: 'save-certificate',
+	components: {
+		VuePdfEmbed,
+		VueHtml2pdf,
+	},
+	props: {
+		course_id: {
+			type: Number,
+			default: null
+		},
+		title: {
+			type: String,
+			default: ''
+		},
+		user_id: {
+			type: Number,
+			default: null
+		}
+	},
+	data() {
+		return {
+			loading: true,
+			award: {},
+			transformFullName: {},
+			transformCourseName: {},
+			transformDateName: {},
+			styles: {},
+			canvasHeight: null,
+			canvasWidth: 1000,
+			pdfDownloaded: false,
+			options: {
+				jsPDF: {
+					unit: 'mm',
+					format: [],
+					orientation: 'portrait'
+				}
+			}
+		}
+	},
+	methods: {
+		onProgress(progress) {
+			this.progress = progress;
+			console.log(`PDF generation progress: ${progress}%`)
+		},
+		beforeDownload(){
 
 		},
 		hasDownloaded(blobPdf) {
@@ -118,7 +118,7 @@ import VueHtml2pdf from './Html2pdf';
 						'Content-Type': 'multipart/form-data'
 					},
 				})
-				.then(response => {
+				.then(() => {
 					console.log('СЕРТИФИКАТ УСПЕШНО СГЕНЕРИРОВАН!');
 					this.$emit('generate-success');
 				})

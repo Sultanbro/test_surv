@@ -1,13 +1,13 @@
 <template>
     <div class="profile-buttons">
-    
+
 
     </div>
 </template>
 
 <script>
 export default {
-	name: 'Profile',
+	name: 'ProfileComponent',
 	props: ['user'],
 	data() {
 		return {
@@ -48,7 +48,7 @@ export default {
     text-align: center;
     margin-left: 5px;
     &:hover {
-        background: #ccd4eb;   
+        background: #ccd4eb;
     }
     img {
         width: 100%;

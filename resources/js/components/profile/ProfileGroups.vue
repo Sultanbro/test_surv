@@ -1,16 +1,16 @@
 <template>
     <div>
-        <multiselect 
-            v-model="value" 
-            :options="groups" 
-            :multiple="true" 
-            :close-on-select="false" 
-            :clear-on-select="false" 
-            :preserve-search="true" 
-            placeholder="Выберите" 
-            label="name" 
-            track-by="name" 
-            :taggable="true" 
+        <multiselect
+            v-model="value"
+            :options="groups"
+            :multiple="true"
+            :close-on-select="false"
+            :clear-on-select="false"
+            :preserve-search="true"
+            placeholder="Выберите"
+            label="name"
+            track-by="name"
+            :taggable="true"
             @tag="addTag"
             @remove="removeGroup"
             @select="selectGroup"></multiselect>
@@ -34,14 +34,14 @@ export default {
 			default: []
 		},
 		user_role: {
-			default: MEMBER 
+			default: MEMBER
 		},
 	},
 	data() {
 		return {
 			message: null,
 			value: [],
-			url: '/timetracking/edit-person/group', 
+			url: '/timetracking/edit-person/group',
 		}
 	},
 	created() {
@@ -62,7 +62,7 @@ export default {
 			this.groups.push(tag)
 			this.value.push(tag)
 
-            
+
 		},
 		messageoff() {
 			setTimeout(() => {
@@ -81,7 +81,7 @@ export default {
 			let msg = 'Сотрудник добавлен в отдел "' + selectedOption.name + '"';
 
 			this.request(data, msg);
-            
+
 		},
 
 		removeGroup(selectedOption) {
@@ -99,18 +99,18 @@ export default {
 		},
 
 		request(data, msg) {
-			axios.post(this.url, data)
-				.then(response => {
+			this.axios.post(this.url, data)
+				.then(() => {
 					this.$toast.info(msg);
 					this.messageoff()
-				}) 
+				})
 				.catch(error => {
 					console.log(error.response)
 					this.$toast.info(error.response);
 				});
 		},
 
-        
+
 	}
 }
 </script>

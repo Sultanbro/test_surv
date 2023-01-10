@@ -24,7 +24,7 @@
               <div class="messenger__chat-name_position">{{ chat.position }}</div>
             </template>
             <div v-else class="messenger__chat-name_overlay" ref="messengerChatNameUsers">
-              <span v-for="member in chat.users" class="messenger__chat-name_members" @click="changeAdmin(member)">
+              <span v-for="member in chat.users" :key="member.id" class="messenger__chat-name_members" @click="changeAdmin(member)">
                 <AlternativeAvatar :class="{
                   'messenger__chat-name_member-admin': chat.users.find(u => u.id === member.id).pivot.is_admin
                 }"
@@ -54,8 +54,8 @@
         </div>
       </div>
     </div>
-    <ConversationPinned></ConversationPinned>
-    <AddMemberModal v-if="showAddMemberModal" @close="showAddMemberModal = false"></AddMemberModal>
+    <ConversationPinned/>
+    <AddMemberModal v-if="showAddMemberModal" @close="showAddMemberModal = false"/>
   </div>
 </template>
 

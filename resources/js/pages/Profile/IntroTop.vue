@@ -42,10 +42,10 @@
 export default {
 	name: 'IntroTop',
 	props: {
-		courses: false,
-		profit: false,
-		estimation: false,
-		indicators: false,
+		courses: Boolean,
+		profit: Boolean,
+		estimation: Boolean,
+		indicators: Boolean,
 	},
 	data: function () {
 		return {

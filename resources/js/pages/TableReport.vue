@@ -302,7 +302,7 @@
 
         <select class="form-control" v-model="commentAbsent">
             <option value="" disabled selected>Выберите причину</option>
-            <option v-for="cause in fire_causes" :value="cause">{{ cause }}</option>
+            <option v-for="cause in fire_causes" :key="cause" :value="cause">{{ cause }}</option>
         </select>
 
     </b-modal>
@@ -315,7 +315,7 @@
 
         <select class="form-control" v-model="commentFiring2">
             <option value="" disabled selected>Выберите причину</option>
-            <option v-for="cause in fire_causes" :value="cause">{{ cause }}</option>
+            <option v-for="cause in fire_causes" :key="cause"  :value="cause">{{ cause }}</option>
         </select>
 
         <b-form-input v-if="firingItems.type == 0"
@@ -351,32 +351,32 @@ import GroupExcelImport from '@/components/imports/GroupExcelImport' // импо
 import { useYearOptions } from '../composables/yearOptions'
 
 export default {
-    name: 'TableReport',
-    components: {
-        Sidebar,
-        GroupExcelImport,
-    },
-    props: {
-        groups: Array,
-        fines: Array,
-        activeuserid: String,
-        activeuserpos: String,
-        can_edit: Boolean
-    },
-    watch: {
-        scrollLeft(value) {
-            var container = document.querySelector('.table-responsive')
-            container.scrollLeft = value
-        },
-        user_types(val) {
-            this.fetchData()
-        },
-        groups(){
-            this.init()
-        }
-    },
-    data() {
-        return {
+	name: 'TableReport',
+	components: {
+		Sidebar,
+		GroupExcelImport,
+	},
+	props: {
+		groups: Array,
+		fines: Array,
+		activeuserid: String,
+		activeuserpos: String,
+		can_edit: Boolean
+	},
+	watch: {
+		scrollLeft(value) {
+			var container = document.querySelector('.table-responsive')
+			container.scrollLeft = value
+		},
+		user_types() {
+			this.fetchData()
+		},
+		groups(){
+			this.init()
+		}
+	},
+	data() {
+		return {
 
 			data: {},
 			showExcelImport: false,
@@ -507,12 +507,12 @@ export default {
 			Url.select();
 			document.execCommand('copy');
 
-			if (confirm(`Если нажмете \"ОК\", то стажеры должны переходить по ссылке и отмечаться в течении 30 минут.
-            \nПосле 30 минут кто не отметился, перейдут в статус \"Отсутствует\". \nВы уверены?`) == false) {
+			if (confirm(`Если нажмете "ОК", то стажеры должны переходить по ссылке и отмечаться в течении 30 минут.
+            \nПосле 30 минут кто не отметился, перейдут в статус "Отсутствует". \nВы уверены?`) == false) {
 				return '';
 			}
 
-			axios.post('/autochecker/' + this.currentGroup, {})
+			this.$axios.post('/autochecker/' + this.currentGroup, {})
 				.then(response => {
 					if(response.data.code == 200) {
 						this.$toast.success('Ссылка скопирована. Через 30 минут (в ' + response.data.time + ') не отмеченные стажеры перейдут в статус "Отсутствует"')
@@ -681,9 +681,7 @@ export default {
 			formData.append('file', this.firingItems.file);
 			formData.append('fire_type', this.firingItems.type);
 
-			var _this = this;
-
-			axios.post('/timetracking/set-day', formData, {
+			this.$axios.post('/timetracking/set-day', formData, {
 				headers: {
 					'Content-Type': 'multipart/form-data'
 				}
@@ -717,7 +715,7 @@ export default {
 
 
 
-			axios.post('/timetracking/set-day', {
+			this.$axios.post('/timetracking/set-day', {
 				month: this.$moment(this.dateInfo.currentMonth, 'MMMM').format('M'),
 				day: day,
 				user_id: this.sidebarContent.user_id,
@@ -748,7 +746,7 @@ export default {
 
 		setDayType() {
 			if (this.commentDay.length > 0) {
-				axios.post('/timetracking/set-day', {
+				this.$axios.post('/timetracking/set-day', {
 					month: this.$moment(this.dateInfo.currentMonth, 'MMMM').format('M'),
 					day: this.sidebarContent.day,
 					user_id: this.sidebarContent.user_id,
@@ -784,12 +782,12 @@ export default {
 			if (this.commentFines.length > 0) {
 				this.openSidebar = false
 				let loader = this.$loading.show();
-				axios.post('/timetracking/user-fine', {
+				this.$axios.post('/timetracking/user-fine', {
 					date: this.dateInfo.shortDate + '-' + this.sidebarContent.day,
 					user_id: this.sidebarContent.user_id,
 					fines: this.sidebarContent.fines,
 					comment: this.commentFines
-				}).then(response => {
+				}).then(() => {
 					this.fetchData()
 					loader.hide()
 					this.commentFines = ''
@@ -890,7 +888,7 @@ export default {
 
 			let loader = this.$loading.show();
 
-			axios.post(url, {
+			this.$axios.post(url, {
 				month: this.$moment(this.dateInfo.currentMonth, 'MMMM').format('M'),
 				year: this.dateInfo.currentYear,
 				group_id: this.currentGroup,
@@ -940,14 +938,14 @@ export default {
 				daily_totals[i] = 0;
 			}
 
-			this.data.users.forEach((item, index) => {
+			this.data.users.forEach(item => {
 
 				let dayHours = []
 				let startEnd = []
 
 				let total = 0;
 
-				item.timetracking.forEach((tt, key) => {
+				item.timetracking.forEach(tt => {
 					if (typeof dayHours[tt.date] === 'undefined') {
 						dayHours[tt.date] = {
 							hour: 0,
@@ -965,9 +963,7 @@ export default {
 					startEnd[tt.date] += `<tr><td>${enter}</td><td>${exit}</td></td>`
 
 					if(dayHours[tt.date].updated === 1 || dayHours[tt.date].updated === 2 || dayHours[tt.date].updated === 3) {
-						if(tt.updated === 0) {
-
-						} else {
+						if(tt.updated !== 0) {
 							dayHours[tt.date].hour = Number(tt.minutes / 60)
 							tt_hours = Number(tt.minutes / 60);
 						}
@@ -1087,7 +1083,7 @@ export default {
 			console.log(this.currentEditingCell.item)
 			if (this.comment.length > 0) {
 				let loader = this.$loading.show();
-				axios.post('/timetracking/reports/update/day', {
+				this.$axios.post('/timetracking/reports/update/day', {
 					year: this.dateInfo.year,
 					month: this.dateInfo.month,
 					day: this.currentEditingCell.field.key,
@@ -1133,7 +1129,7 @@ export default {
 				return '';
 			}
 
-			axios.post('/timetracking/apply-person', {
+			this.$axios.post('/timetracking/apply-person', {
 				user_id: this.sidebarContent.user_id,
 				schedule: this.applyItems.schedule,
 				group_id: this.currentGroup,
@@ -1154,7 +1150,7 @@ export default {
 
 			let day = this.sidebarContent.day;
 			let loader = this.$loading.show();
-			axios.post('/timetracking/set-day', {
+			this.$axios.post('/timetracking/set-day', {
 				month: this.$moment(this.dateInfo.currentMonth, 'MMMM').format('M'),
 				day: day,
 				user_id: this.sidebarContent.user_id,

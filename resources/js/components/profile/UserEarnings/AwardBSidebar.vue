@@ -52,12 +52,14 @@
 </template>
 
 <script>
-import AwardsCard from './AwardsCard';
+// import AwardsCard from './AwardsCard';
 const baseUrl = 'https://dummyjson.com/users';
 
 export default {
 	name: 'AwardSidebar',
-	components: { AwardsCard },
+	components: {
+		// AwardsCard,
+	},
 	props: {
 		open: Boolean,
 		awards: Array,
@@ -89,7 +91,7 @@ export default {
 		// EVENT HANDLERS
 
 		async getSertificateById(id) {
-			axios
+			this.axios
 				.get(`${baseUrl}/` + id)
 				.then((response) => {
 					console.log(response);
@@ -137,7 +139,7 @@ export default {
 		createAwardsLocal(awards) {
 			return awards.map((item) => ({ ...item, pressed: false }));
 		},
-		async fetchAwardsById(id) {
+		async fetchAwardsById(/* id */) {
 			// ЗДЕСЬ БУДЕТ ЗАПРОС К API
 			return new Promise((resolve) => {
 				const out = {

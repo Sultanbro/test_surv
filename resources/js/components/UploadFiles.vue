@@ -24,35 +24,35 @@ import Resumable from 'resumablejs'
 import UploadingFile from './UploadingFile'
 
 export default {
-    components: {
-        UploadingFile
-    },
-    data(){
-        return {
-            files: [], // our local files array, we will pack in extra data to force reactivity
-            r: false
-        }
-    },
-    props: [
-        'token',
-        'type',
-        'file_types',
-        'id'
-    ],
-    methods: {
-        // finds the file in the local files array
-        findFile(file){
-            let x = this.files.find(item => item.file.uniqueIdentifier === file.uniqueIdentifier && item.status !== 'canceled');
-            return  x ? x : {}
-        },
-        // cancel an individual file
-        cancelFile(file){
-            this.findFile(file).status = 'canceled'
-            file.cancel()
-        }
-    },
-    mounted(){
-        // init resumablejs on mount
+	components: {
+		UploadingFile
+	},
+	data(){
+		return {
+			files: [], // our local files array, we will pack in extra data to force reactivity
+			r: false
+		}
+	},
+	props: [
+		'token',
+		'type',
+		'file_types',
+		'id'
+	],
+	methods: {
+		// finds the file in the local files array
+		findFile(file){
+			let x = this.files.find(item => item.file.uniqueIdentifier === file.uniqueIdentifier && item.status !== 'canceled');
+			return  x ? x : {}
+		},
+		// cancel an individual file
+		cancelFile(file){
+			this.findFile(file).status = 'canceled'
+			file.cancel()
+		}
+	},
+	mounted(){
+		// init resumablejs on mount
 		this.r = new Resumable({
 			target:'/file/upload',
 			query:{
@@ -73,7 +73,7 @@ export default {
 		this.r.assignDrop(this.$refs.filedropzone);
 
 		// set up event listeners to feed into vues reactivity
-		this.r.on('fileAdded', (file, event) => {
+		this.r.on('fileAdded', file => {
 			file.hasUploaded = false
 			// keep a list of files with some extra data that we can use as props
 			this.files.push({
@@ -92,10 +92,10 @@ export default {
 			file.model = res.model;
 			this.$emit('onupload', file);
 		})
-		this.r.on('fileError', (file, event) => {
+		this.r.on('fileError', file => {
 			this.findFile(file).status = 'error'
 		})
-		this.r.on('fileRetry', (file, event) => {
+		this.r.on('fileRetry', file => {
 			this.findFile(file).status = 'retrying'
 		})
 		this.r.on('fileProgress', (file) => {

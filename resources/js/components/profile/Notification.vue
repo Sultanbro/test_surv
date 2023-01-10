@@ -2,7 +2,7 @@
 <div class="kolokolchik">
     <div class="inf">
         <a href="#" title="Ваши уведомления" class="tooglenotifi " @click="showPanel = !showPanel">
-        	<i class="fa fa-bell" aria-hidden="true"></i>
+          <i class="fa fa-bell" aria-hidden="true"></i>
             <div :class="{ 'blink-notification' : unread }" style="border-color: #00bef6;position: absolute;top: 0;left: 0;bottom: 0;right: 0;border-radius: 50%;"></div>
             <span class="numb" style="font-weight:800">{{ unread }}</span>
         </a>
@@ -17,7 +17,7 @@
         <div class="panel_body">
             <div class="panel_out active" data-id="1">
                 <div class="notification_list">
-                    
+
                     <div class="notification_item" v-for="noti in unreads" :key="noti.id">
                         <div class="notifi_top">
                             <div class="label-wrapper" :class="{'hidden' : noti.type != 'important'}">
@@ -33,12 +33,12 @@
                             <div class="notification-change"><i class="fa fa-check"></i></div>
                         </a>
                     </div>
-                    
+
                 </div>
             </div>
             <div class="panel_out " data-id="2">
                 <div class="notification_list">
-              
+
 
                 </div>
             </div>
@@ -52,7 +52,7 @@
 
 <script>
 export default {
-	name: 'Notification',
+	name: 'ProfileNotification',
 	props: [
 		'unread',
 		'read_notifications',
@@ -70,7 +70,7 @@ export default {
 		// this.u = JSON.parse(this.user)
 	},
 	methods: {
-		markRead(id){
+		markRead(){
 
 		},
 
@@ -112,10 +112,10 @@ export default {
 		//             this.message = 'Пароль успешно изменен!';
 		//             this.messageColor = 'green';
 		//             setTimeout(function() {
-		//                 window.location.reload();      
+		//                 window.location.reload();
 		//             },1500)
-                      
-		//         }   
+
+		//         }
 		//         if(response.data.code == 500) {
 		//             this.message = 'Пароли не совпадают!';
 		//             this.messageColor = 'red';
@@ -285,17 +285,17 @@ export default {
 
 /* Track */
 .kolokolchik .panel .panel_body::-webkit-scrollbar-track {
-  background: #f1f1f1; 
+  background: #f1f1f1;
 }
- 
+
 /* Handle */
 .kolokolchik .panel .panel_body::-webkit-scrollbar-thumb {
-  background: rgba(33,169,229,.58); 
+  background: rgba(33,169,229,.58);
 }
 
 /* Handle on hover */
 .kolokolchik .panel .panel_body::-webkit-scrollbar-thumb:hover {
-  background: #21a9e5; 
+  background: #21a9e5;
 }
 
 .kolokolchik .panel .panel_body .panel_out {

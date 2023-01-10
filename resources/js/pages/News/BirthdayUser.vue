@@ -189,37 +189,37 @@ export default {
 
 			formData.append('amount', this.summ);
 			this.summ = '';
-			await axios.post('birthdays/' + this.user.id + '/send-gift ', formData)
+			await this.$axios.post('birthdays/' + this.user.id + '/send-gift ', formData)
 				.then(res => {
 					console.log(res);
 					this.createAvans(res.data.data)
 
-                })
-                .catch(res => {
-                    console.log(res);
-                })
-        },
-        async createAvans(data) {
-            await axios.post('/timetracking/salaries/update', data.avansData)
-                .then(res => {
-                  console.log(res)
-                  this.sendBonuses(data.bonusData)
-                })
-                .catch( res =>{
-                  console.log(res)
-                })
-        },
-        async sendBonuses(data) {
-            await axios.post('/timetracking/salaries/update', data)
-                .then(res => {
-                  console.log(res)
-                  this.success = true;
-                  setTimeout(() => {  this.success = false;}, 5000);
-                })
-                .catch( res =>{
-                  console.log(res)
-                })
-        },
+				})
+				.catch(res => {
+					console.log(res);
+				})
+		},
+		async createAvans(data) {
+			await this.$axios.post('/timetracking/salaries/update', data.avansData)
+				.then(res => {
+					console.log(res)
+					this.sendBonuses(data.bonusData)
+				})
+				.catch( res =>{
+					console.log(res)
+				})
+		},
+		async sendBonuses(data) {
+			await this.$axios.post('/timetracking/salaries/update', data)
+				.then(res => {
+					console.log(res)
+					this.success = true;
+					setTimeout(() => {  this.success = false;}, 5000);
+				})
+				.catch( res =>{
+					console.log(res)
+				})
+		},
 
 	}
 }

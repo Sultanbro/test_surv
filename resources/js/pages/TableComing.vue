@@ -70,67 +70,67 @@
 import { useYearOptions } from '../composables/yearOptions'
 
 export default {
-    name: 'TableComing',
-    props: {
-        groups: Array,
-        activeuserid: String,
-    },
-    watch: {
-        // эта функция запускается при любом изменении данных
-        data(newData, oldData) {
-            if (oldData) {
-                this.loadItems();
-            }
-        },
-        scrollLeft(value) {
-            var container = document.querySelector(".table-responsive");
-            container.scrollLeft = value;
-        },
-        groups(){
-            this.init()
-        }
-    },
-    data() {
-        return {
-            data: {},
-            openSidebar: false,
-            sidebarTitle: "",
-            sidebarContent: {},
-            items: [],
-            fields: [],
-            errors: [],
-            comment: "",
-            dayInfoText: "",
-            hasPremission: false,
-            dateInfo: {
-                currentMonth: null,
-                currentYear: new Date().getFullYear(),
-                monthEnd: 0,
-                workDays: 0,
-                weekDays: 0,
-                daysInMonth: 0,
-            },
-            dataLoaded: false,
-            currentGroup: null,
-            currentTime: null,
-            maxScrollWidth: 0,
-            currentEditingCell: null,
-            scrollLeft: 0,
-            modalVisible: false,
-            years: useYearOptions()
-        };
-    },
-    created() {
-        if(this.groups){
-            this.init()
-        }
-    },
-    methods: {
-        init(){
-            this.dateInfo.currentMonth = this.dateInfo.currentMonth ?
-                this.dateInfo.currentMonth :
-                this.$moment().format("MMMM");
-            let currentMonth = this.$moment(this.dateInfo.currentMonth, "MMMM");
+	name: 'TableComing',
+	props: {
+		groups: Array,
+		activeuserid: String,
+	},
+	watch: {
+		// эта функция запускается при любом изменении данных
+		data(newData, oldData) {
+			if (oldData) {
+				this.loadItems();
+			}
+		},
+		scrollLeft(value) {
+			var container = document.querySelector('.table-responsive');
+			container.scrollLeft = value;
+		},
+		groups(){
+			this.init()
+		}
+	},
+	data() {
+		return {
+			data: {},
+			openSidebar: false,
+			sidebarTitle: '',
+			sidebarContent: {},
+			items: [],
+			fields: [],
+			errors: [],
+			comment: '',
+			dayInfoText: '',
+			hasPremission: false,
+			dateInfo: {
+				currentMonth: null,
+				currentYear: new Date().getFullYear(),
+				monthEnd: 0,
+				workDays: 0,
+				weekDays: 0,
+				daysInMonth: 0,
+			},
+			dataLoaded: false,
+			currentGroup: null,
+			currentTime: null,
+			maxScrollWidth: 0,
+			currentEditingCell: null,
+			scrollLeft: 0,
+			modalVisible: false,
+			years: useYearOptions()
+		};
+	},
+	created() {
+		if(this.groups){
+			this.init()
+		}
+	},
+	methods: {
+		init(){
+			this.dateInfo.currentMonth = this.dateInfo.currentMonth ?
+				this.dateInfo.currentMonth :
+				this.$moment().format('MMMM');
+			let currentMonth = this.$moment(this.dateInfo.currentMonth, 'MMMM');
 
 			//Расчет выходных дней
 			this.dateInfo.monthEnd = currentMonth.endOf('month'); //Конец месяца
@@ -202,7 +202,7 @@ export default {
 		fetchData() {
 			let loader = this.$loading.show();
 
-			axios
+			this.$axios
 				.post('/timetracking/reports/enter-report', {
 					month: this.$moment(this.dateInfo.currentMonth, 'MMMM').format('M'),
 					year: this.dateInfo.currentYear,
@@ -244,7 +244,7 @@ export default {
 			let loader = this.$loading.show();
 
 			if (this.comment.length > 0) {
-				axios
+				this.$axios
 					.post('/timetracking/reports/enter-report/setmanual', {
 						month: this.$moment(this.dateInfo.currentMonth, 'MMMM').format('M'),
 						year: this.dateInfo.currentYear,
@@ -254,7 +254,7 @@ export default {
 						comment: this.comment,
 						user_id: this.currentEditingCell.item.user_id,
 					})
-					.then((response) => {
+					.then(() => {
 						this.currentEditingCell = null;
 						this.currentTime = null;
 						this.modalVisible = false;

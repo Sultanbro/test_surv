@@ -12,7 +12,7 @@
 
         <!-- left -->
         <div v-if="activeBook != null">
-          <img :src="activeBook.img == '' ? '/images/book_cover.jpg' : activeBook.img" 
+          <img :src="activeBook.img == '' ? '/images/book_cover.jpg' : activeBook.img"
             class="w-full pr-3" />
           <div v-if="isLoading">
             <p class="text-center mt-3">
@@ -29,7 +29,7 @@
             </p>
           </div>
 
-          <div class="d-flex justify-content-center"> 
+          <div class="d-flex justify-content-center">
             <button class="btn rounded mr-2" @click="prevPage">
               <i class="fa fa-chevron-left"></i>
             </button>
@@ -44,21 +44,21 @@
             </button>
             <button class="btn rounded mr-1 p-2" @click="zoom = 0">
               <i class="fa fa-bars"></i>
-            </button> 
-            <button class="btn rounded p-2" @click="zoomOut">
-              <i class="fa fa-search-minus"></i> 
             </button>
-          </div>  
+            <button class="btn rounded p-2" @click="zoomOut">
+              <i class="fa fa-search-minus"></i>
+            </button>
+          </div>
         </div>
-      </div>  
-     
+      </div>
+
       <!-- Page numbers -->
       <div class="chapters mt-3">
         <div class="item font-bold mb-2">
           <p class="mb-0">Вопросы на странице:</p>
         </div>
 
-        <div class="item d-flex" v-for="(segment, t) in segments" 
+        <div class="item d-flex" v-for="(segment, t) in segments"
           :key="t"
           :class="{
             'pass': segment.item_model !== null,
@@ -94,7 +94,7 @@
       }"
     >
 
-      <vue-pdf-embed 
+      <vue-pdf-embed
         v-if="activeBook !== null"
         :source="activeBook.link"
         ref="pdfRef"
@@ -115,7 +115,7 @@
         :id="0"
         :key="segment_key"
         type="book"
-        :mode="mode" 
+        :mode="mode"
         @continueRead="nextPage"
         @passed="nextElement"
          @nextElement="nextElement"
@@ -123,13 +123,13 @@
     </div>
 
     <!-- <template v-if="(activeSegment != null && course_page && activeSegment.item_model !== null) || (activeSegment == null && pageCount == page)">
-      <button class="next-btn btn btn-primary" 
+      <button class="next-btn btn btn-primary"
         @click="nextElement()">
         Продолжить курс
         <i class="fa fa-angle-double-right ml-2"></i>
       </button>
     </template> -->
-   
+
 
   </div>
 </template>
@@ -138,7 +138,7 @@
 import VuePdfEmbed from 'vue-pdf-embed/dist/vue2-pdf-embed'
 export default {
 	name: 'UpbooksRead',
-  
+
 	components: {
 		VuePdfEmbed
 	},
@@ -199,19 +199,19 @@ export default {
 		moveTo(page, pass) {
 			if(pass) {
 				this.page = page;
-        
+
 				let m = this.page_map.findIndex(el => el.page == page);
 				if(m != -1) {
 					this.map_index = m;
 				}
-       
+
 
 				let i = this.segments.findIndex(el => el.page == page);
 				if(i != -1) {
 					this.activeSegment = this.segments[i]
 					this.segment_key++;
 				} else {
-					this.activeSegment = null; 
+					this.activeSegment = null;
 				}
 
 			}
@@ -241,9 +241,9 @@ export default {
 
 		setSegmentPassed() {
 
-			if(this.activeSegment.item_model != null) return; 
+			if(this.activeSegment.item_model != null) return;
 
-			axios
+			this.$axios
 				.post('/my-courses/pass', {
 					id: this.activeSegment.id,
 					type: 1,
@@ -266,7 +266,7 @@ export default {
 		getSegments() {
 			let loader = this.$loading.show();
 
-			axios
+			this.$axios
 				.post('/admin/upbooks/segments/get', {
 					id: this.book_id,
 					course_item_id: this.course_item_id
@@ -274,8 +274,8 @@ export default {
 				.then((response) => {
 					this.segments = response.data.segments;
 					this.activeBook = response.data.activeBook;
-          
-    
+
+
 					loader.hide();
 				})
 				.catch((error) => {
@@ -297,39 +297,39 @@ export default {
 			let arr = [];
 			let page = 1;
 
-     
+
 			while (page <= this.pageCount) {
 
 				arr.push({
 					page: page,
-					has_test: false, 
+					has_test: false,
 				});
 
 				let i = this.segments.findIndex(el => el.page == page);
 				if(i != -1) {
 					arr.push({
 						page: page,
-						has_test: true, 
+						has_test: true,
 					});
 				}
 
 				page++;
 			}
-     
+
 			this.page_map = arr;
 		},
 
 		nextPage() {
 
-      
+
 			if (this.map_index == this.page_map.length - 1 || !this.pdf_loaded) return 0;
 
 			// check current test
 			if(this.activeSegment != null && this.activeSegment.item_model == null) {
 				this.$toast.info('Ответьте на вопросы, чтобы пройти дальше');
-				return 0;   
+				return 0;
 			}
-       
+
 			this.map_index++;
 
 			let next_page = this.page_map[this.map_index];
@@ -337,20 +337,20 @@ export default {
 			this.page = next_page.page;
 			// next page has test ?
 			if(next_page.has_test) {
-          
+
 				let i = this.segments.findIndex(el => el.page == next_page.page);
 				this.activeSegment = this.segments[i]
 				this.segment_key++;
- 
+
 			} else {
-     
+
 				this.activeSegment = null;
 			}
 
-      
-		}, 
 
-		prevPage() { 
+		},
+
+		prevPage() {
 			if(this.map_index == 0  || !this.pdf_loaded) return 0;
 
 			this.map_index--;
@@ -359,19 +359,19 @@ export default {
 
 			this.page = prev_page.page;
 
-    
+
 			// prev_page has test ?
 			if(prev_page.has_test) {
 
 				let i = this.segments.findIndex(el => el.page == prev_page.page);
 				this.activeSegment = this.segments[i]
 				this.segment_key++;
-       
+
 			} else {
 				this.activeSegment = null;
 			}
 
-      
+
 		},
 
 		zoomIn() {

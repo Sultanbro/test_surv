@@ -84,7 +84,7 @@
                                                 </i>
                                             </th>
                                         </thead>
-                                        <tbody v-for="ocenka in recruiting.ocenka_svod">
+                                        <tbody v-for="(ocenka, index) in recruiting.ocenka_svod" :key="index">
                                             <tr>
                                                 <td class="text-left t-name table-title align-middle" style="background:#90d3ff">{{ ocenka.name }}</td>
                                                 <td class="text-center t-name table-title align-middle">{{ ocenka.required }}</td>
@@ -256,7 +256,7 @@
 
 
                                     <template v-for="(quizz, key) in recruiting.quiz">
-                                        <div class="question-wrap">
+                                        <div class="question-wrap" :key="key">
                                             <p> {{ quizz['q']}}</p>
                                             <div v-if="quizz['type'] == 'answer'">
                                                 <div v-for="answer in quizz['answers']" :key="answer.id" class="d-flex">
@@ -335,124 +335,124 @@ import ProgressBar from '@/components/ProgressBar' // в ответах quiz
 import { useYearOptions } from '../composables/yearOptions'
 
 export default {
-    name: 'Analytics',
-    components: {
-        TableStaffTurnover,
-        Rating,
-        TableRecruiterStats,
-        Recruting,
-        TableSkype,
-        SvodTable,
-        TableFunnel,
-        ProgressBar,
-    },
-    props: ['groups', 'activeuserid'],
-    data() {
-        return {
-            trainee_date: new Date(Date.now()).toISOString().substring(0, 10),
-            totals: [],
-            fn: '',
-            data: [],
-            active: '1',
-            activities: [],
-            report_group_id: 42,
-            call_bases: [],
-            call_bases_key: 1,
-            archived_recruiters: [],
-            utility: [], // gauges
-            recruiting: {
-                recrutingTotals: [],
-                recruiterStats: [],
-                recruiterStatsRates: [],
-                recruiter_stats_leads: [],
-                funnels: [],
-                quiz: [], // 48 uvolennye
-                trainee_report: [], //
-                causes: [],
-                staff: [],
-                staff_by_group: [],
-                staff_longevity: [],
-                ocenka_svod: [],
-                //ratings: [],
-                //ratings_dates: [],
-                //ratings_heads: [],
-                absents_first: [],
-                absents_second: [],
-                indicators: null,
-                invite_groups: [], // 48
-                sgroups: [], // 48
-                skypes: [], // 48
-                hrs: [],
-                segments: [],
-            },
-            quality: [],
-            records: [],
-            hasPremission: false,
-            firstEnter: true,
-            years: useYearOptions(),
-            currentYear: new Date().getFullYear(),
-            monthInfo: {
-                currentMonth: null,
-                monthEnd: 0,
-                workDays: 0,
-                weekDays: 0,
-                workDays5: 0,
-                weekDays5: 0,
-                daysInMonth: 0,
-                year: new Date().getFullYear()
-            },
-            dataLoaded: false,
-            currentGroup: 48,
-            minutes: {},
-            loader: null,
-            date: null,
-            coef: 0,
-            months: {
-                1: {month:'Январь', date: null},
-                2: {month:'Февраль', date: null},
-                3: {month:'Март', date: null},
-                4: {month:'Апрель', date: null},
-                5: {month:'Май', date: null},
-                6: {month:'Июнь', date: null},
-                7: {month:'Июль', date: null},
-                8: {month:'Август', date: null},
-                9: {month:'Сентябрь', date: null},
-                10: {month:'Октябрь', date: null},
-                11: {month:'Ноябрь', date: null},
-                12: {month:'Декабрь', date: null},
-            },
-            componentKeys: {
-                5: 0,
-                6: 100000,
-                7: 200000,
-                8: 300000,
-                9: 400000,
-            },
-        }
-    },
-    watch: {
-        groups(){
-            this.init()
-        }
-    },
-    created() {
-        if(this.groups){
-            this.init()
-        }
-    },
-    methods: {
-        init(){
-            // бывор группы
-            const urlParams = new URLSearchParams(window.location.search);
-            let group = urlParams.get('group');
-            let active = urlParams.get('active');
-            if(group == null){
-                this.currentGroup = this.groups && this.groups[0] ? this.groups[0].id : ''
-            }
-            else{
-                this.currentGroup = parseFloat(group)
-            }
-            this.active = (active == null) ? '1' : active
+	name: 'PageAnalytics',
+	components: {
+		TableStaffTurnover,
+		Rating,
+		TableRecruiterStats,
+		Recruting,
+		TableSkype,
+		SvodTable,
+		TableFunnel,
+		ProgressBar,
+	},
+	props: ['groups', 'activeuserid'],
+	data() {
+		return {
+			trainee_date: new Date(Date.now()).toISOString().substring(0, 10),
+			totals: [],
+			fn: '',
+			data: [],
+			active: '1',
+			activities: [],
+			report_group_id: 42,
+			call_bases: [],
+			call_bases_key: 1,
+			archived_recruiters: [],
+			utility: [], // gauges
+			recruiting: {
+				recrutingTotals: [],
+				recruiterStats: [],
+				recruiterStatsRates: [],
+				recruiter_stats_leads: [],
+				funnels: [],
+				quiz: [], // 48 uvolennye
+				trainee_report: [], //
+				causes: [],
+				staff: [],
+				staff_by_group: [],
+				staff_longevity: [],
+				ocenka_svod: [],
+				//ratings: [],
+				//ratings_dates: [],
+				//ratings_heads: [],
+				absents_first: [],
+				absents_second: [],
+				indicators: null,
+				invite_groups: [], // 48
+				sgroups: [], // 48
+				skypes: [], // 48
+				hrs: [],
+				segments: [],
+			},
+			quality: [],
+			records: [],
+			hasPremission: false,
+			firstEnter: true,
+			years: useYearOptions(),
+			currentYear: new Date().getFullYear(),
+			monthInfo: {
+				currentMonth: null,
+				monthEnd: 0,
+				workDays: 0,
+				weekDays: 0,
+				workDays5: 0,
+				weekDays5: 0,
+				daysInMonth: 0,
+				year: new Date().getFullYear()
+			},
+			dataLoaded: false,
+			currentGroup: 48,
+			minutes: {},
+			loader: null,
+			date: null,
+			coef: 0,
+			months: {
+				1: {month:'Январь', date: null},
+				2: {month:'Февраль', date: null},
+				3: {month:'Март', date: null},
+				4: {month:'Апрель', date: null},
+				5: {month:'Май', date: null},
+				6: {month:'Июнь', date: null},
+				7: {month:'Июль', date: null},
+				8: {month:'Август', date: null},
+				9: {month:'Сентябрь', date: null},
+				10: {month:'Октябрь', date: null},
+				11: {month:'Ноябрь', date: null},
+				12: {month:'Декабрь', date: null},
+			},
+			componentKeys: {
+				5: 0,
+				6: 100000,
+				7: 200000,
+				8: 300000,
+				9: 400000,
+			},
+		}
+	},
+	watch: {
+		groups(){
+			this.init()
+		}
+	},
+	created() {
+		if(this.groups){
+			this.init()
+		}
+	},
+	methods: {
+		init(){
+			// бывор группы
+			const urlParams = new URLSearchParams(window.location.search);
+			let group = urlParams.get('group');
+			let active = urlParams.get('active');
+			if(group == null){
+				this.currentGroup = this.groups && this.groups[0] ? this.groups[0].id : ''
+			}
+			else{
+				this.currentGroup = parseFloat(group)
+			}
+			this.active = (active == null) ? '1' : active
 
 			this.setMonth()
 			this.setYear()
@@ -490,7 +490,7 @@ export default {
 		},
 
 		getTotals(data) {
-			axios.post('/timetracking/get-totals-of-reports', {
+			this.axios.post('/timetracking/get-totals-of-reports', {
 				month: this.$moment(this.monthInfo.currentMonth, 'MMMM').format('M'),
 				year: this.currentYear,
 				group_id: this.currentGroup
@@ -499,14 +499,14 @@ export default {
 					this.totals = response.data.sum
 					this.data = data
 				})
-				.catch(error => console.log('Error GetTotals'))
+				.catch(() => console.log('Error GetTotals'))
 		},
 
 		fetchData() {
 			let loader = this.$loading.show();
 
 
-			axios.post('/timetracking/getanalytics', {
+			this.axios.post('/timetracking/getanalytics', {
 				month: this.$moment(this.monthInfo.currentMonth, 'MMMM').format('M'),
 				year: this.currentYear,
 				group_id: this.currentGroup
@@ -570,7 +570,7 @@ export default {
 			});
 		},
 		getTraineesByDate(){
-			axios.post('/timetracking/getactivetrainees',{date: this.trainee_date}).then(response => {
+			this.axios.post('/timetracking/getactivetrainees',{date: this.trainee_date}).then(response => {
 				console.log(response.data.ocenka_svod);
 				this.recruiting.ocenka_svod = response.data.ocenka_svod;
 			});

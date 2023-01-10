@@ -18,22 +18,22 @@
 </template>
 
 <script>
-const S_CREATED = 0; // Создано новых лидов за день
-const S_CALLS_OUT = 1; // ИСХ успешные соединения
-const S_CALLS_OUT_10 = 2; // Успешные соединения от 10 сек
-const S_CALLS_IN = 3; // ВХ успешные соединения
-const S_CALLS_MISSED = 4; // Пропущенные звонки
-const S_FAILED = 5; // Забраковано Лидов
+// const S_CREATED = 0; // Создано новых лидов за день
+// const S_CALLS_OUT = 1; // ИСХ успешные соединения
+// const S_CALLS_OUT_10 = 2; // Успешные соединения от 10 сек
+// const S_CALLS_IN = 3; // ВХ успешные соединения
+// const S_CALLS_MISSED = 4; // Пропущенные звонки
+// const S_FAILED = 5; // Забраковано Лидов
 const S_PROCESSED = 6; // Обработанные лиды FAILED + CONVERTED
-const S_ONLINE = 7; // Количество рекрутеров на линии
-const S_CONVERTED_CONVERSION = 8; // Конверсия сконвертированных от обработанных
+// const S_ONLINE = 7; // Количество рекрутеров на линии
+// const S_CONVERTED_CONVERSION = 8; // Конверсия сконвертированных от обработанных
 const S_CONVERTED = 9; // Сконвертировано Лидов
-const S_EMPTY7 = 11;
+/* const S_EMPTY7 = 11;
 const S_EMPTY8 = 12;
 const S_TRAINING_TODAY = 13; // Стажируются сегодня
-const S_EMPTY11 = 14;
+const S_EMPTY11 = 14; */
 const S_APPLIED = 15; // Приняты на работу
-const S_FIRED = 16; // Уволены
+// const S_FIRED = 16; // Уволены
 
 export default {
 	name: 'TableSummaryRecruting',
@@ -54,7 +54,7 @@ export default {
 		records: {
 			// the callback will be called immediately after the start of the observation
 			immediate: true,
-			handler (val, oldVal) {
+			handler (val) {
 				this.setFields()
 				this.items = val
 				this.calcConversionAuto()
@@ -132,11 +132,11 @@ export default {
 
 			let loader = this.$loading.show();
 
-			axios.post('/timetracking/update-settings', {
+			this.axios.post('/timetracking/update-settings', {
 				date: this.$moment(`${this.month.currentMonth} ${new Date().getFullYear()}`, 'MMMM YYYY').format('YYYY-MM-DD'),
 				group_id: 48,
 				settings: this.records
-			}).then(response => {
+			}).then(() => {
 				loader.hide()
 			})
 

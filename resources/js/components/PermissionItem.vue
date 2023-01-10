@@ -57,7 +57,7 @@ export default {
 	watch: {
 		item: {
 			deep: true,
-			handler (val, oldVal) {
+			handler () {
 				this.$emit('updated');
 			}
 		},

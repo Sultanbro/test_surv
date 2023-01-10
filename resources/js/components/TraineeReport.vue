@@ -1,8 +1,8 @@
 <template>
 <div class="trainee_report">
-                                    
+
     <div>
-        <div class="ramka mt-2" v-for="(report_date, rdate) in trainee_report">
+        <div class="ramka mt-2" v-for="(report_date, rdate) in trainee_report" :key="rdate">
             <div class="date-select">
                 <p>{{ report_date.date }}</p>
             </div>
@@ -59,8 +59,8 @@
                 </tbody>
             </table>
 
-        
-            
+
+
 
             <table class="table b-table table-striped table-bordered table-sm">
                 <thead>
@@ -90,8 +90,8 @@
             </table>
         </div>
     </div>
-                                    
-                                    
+
+
 
 
 </div>
@@ -101,7 +101,7 @@
 import Rating from './ui/Rating.vue';
 export default {
 	components: { Rating },
-	name: 'TraineeReport', 
+	name: 'TraineeReport',
 	props: ['groups', 'trainee_report'],
 	data() {
 		return {
@@ -135,4 +135,4 @@ export default {
 .ramka .rating {
     padding: 0;
 }
-</style> 
+</style>

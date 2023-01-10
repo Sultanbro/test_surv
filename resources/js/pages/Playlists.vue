@@ -296,58 +296,58 @@
 import Sidebar from '@/components/ui/Sidebar' // сайдбар table
 const PlaylistEdit = () => import(/* webpackChunkName: "PlaylistEdit" */ '@/pages/PlaylistEdit') // редактирование плейлиста
 export default {
-  name: 'Playlists',
-  components: {
-    Sidebar,
-    PlaylistEdit,
-  },
-  props: {
-    token: String,
-    can_edit: {
-      type: Boolean,
-      default: false
-    },
-    category: Number,
-    playlist: Number,
-    video: Number
-  },
-  data: function() {
-    return {
-      categories: [],
-      showEditCat: false,
-      file_img: null,
-      editingPlaylist: {
-        title: '',
-        text: '',
-        category_id: ''
-      },
-      showEditPlaylist: false,
-      user_id: 0,
-      mode: 'read',
-      activeCat: null,
-      newcat: '',
-      newPlaylist: '',
-      activePlaylist: null,
-      showAddPlaylist: false,
-      showAddCategory: false,
-      showSettings: false,
-      allow_save_video_without_test: false,
-      mylink: window.location.protocol + "//" + window.location.host + window.location.pathname.substring(0,16),
-      data_category: this.category,
-      data_playlist: this.playlist,
-      myvideo: this.video,
-    };
-  },
-  watch:{
-    token(){
-      this.init()
-    }
-  },
-  created() {
-    if(this.token){
-      this.init()
-    }
-  },
+	name: 'PlayLists',
+	components: {
+		Sidebar,
+		PlaylistEdit,
+	},
+	props: {
+		token: String,
+		can_edit: {
+			type: Boolean,
+			default: false
+		},
+		category: Number,
+		playlist: Number,
+		video: Number
+	},
+	data: function() {
+		return {
+			categories: [],
+			showEditCat: false,
+			file_img: null,
+			editingPlaylist: {
+				title: '',
+				text: '',
+				category_id: ''
+			},
+			showEditPlaylist: false,
+			user_id: 0,
+			mode: 'read',
+			activeCat: null,
+			newcat: '',
+			newPlaylist: '',
+			activePlaylist: null,
+			showAddPlaylist: false,
+			showAddCategory: false,
+			showSettings: false,
+			allow_save_video_without_test: false,
+			mylink: window.location.protocol + '//' + window.location.host + window.location.pathname.substring(0,16),
+			data_category: this.category,
+			data_playlist: this.playlist,
+			myvideo: this.video,
+		};
+	},
+	watch:{
+		token(){
+			this.init()
+		}
+	},
+	created() {
+		if(this.token){
+			this.init()
+		}
+	},
 
 	methods: {
 		init(){
@@ -371,7 +371,7 @@ export default {
 		},
 
 		fetchData() {
-			axios
+			this.$axios
 				.get('/playlists/get')
 				.then((response) => {
 					this.categories = response.data.categories;
@@ -416,11 +416,11 @@ export default {
 
 		deletePl(i) {
 			if (confirm('Вы уверены что хотите удалить плейлист?')) {
-				axios
+				this.$axios
 					.post('/playlists/delete', {
 						id: this.activeCat.playlists[i].id
 					})
-					.then((response) => {
+					.then(() => {
 						this.activeCat.playlists.splice(i, 1);
 						this.$toast.success('Удалено');
 					});
@@ -446,13 +446,13 @@ export default {
 
 		deleteCat(i) {
 			if (confirm('Вы уверены что хотите удалить категорию?')) {
-
-				axios
+				this.$axios
 					.post('/playlists/delete-cat', {
 						id: this.categories[i].id
 					})
-					.then((response) => {
+					.then(() => {
 						this.categories.splice(i, 1);
+						this.activeCat = null;
 						this.$toast.success('Удалено');
 					});
 			}
@@ -465,7 +465,7 @@ export default {
 			formData.append('file', this.file_img);
 			formData.append('playlist', JSON.stringify(this.editingPlaylist));
 
-			axios.post( '/playlists/save-fast', formData)
+			this.$axios.post( '/playlists/save-fast', formData)
 				.then((response) => {
 					if(response.data !== '') this.editingPlaylist.img = response.data;
 
@@ -509,7 +509,7 @@ export default {
 
 			let loader = this.$loading.show();
 
-			axios
+			this.$axios
 				.post('/playlists/add-cat', {
 					title: this.newcat,
 				})
@@ -536,12 +536,12 @@ export default {
 
 			let loader = this.$loading.show();
 
-			axios
+			this.$axios
 				.post('/playlists/save-cat', {
 					title: this.newcat,
 					id: this.activeCat.id,
 				})
-				.then((response) => {
+				.then(() => {
 					this.showEditCat = false;
 					this.activeCat.title = this.newcat;
 					this.newcat = '';
@@ -554,20 +554,6 @@ export default {
 				});
 		},
 
-		deleteCat(i) {
-			if (confirm('Вы уверены что хотите удалить категорию?')) {
-				axios
-					.post('/playlists/delete-cat', {
-						id: this.categories[i].id
-					})
-					.then((response) => {
-						this.categories.splice(i, 1);
-						this.activeCat = null;
-						this.$toast.success('Удалено');
-					});
-			}
-		},
-
 		addPlaylist() {
 			if (this.newPlaylist.length <= 2) {
 				alert('Слишком короткое название!');
@@ -576,7 +562,7 @@ export default {
 
 			let loader = this.$loading.show();
 
-			axios
+			this.$axios
 				.post('/playlists/add', {
 					title: this.newPlaylist,
 					cat_id: this.activeCat.id,
@@ -601,7 +587,7 @@ export default {
 		},
 
 		get_settings() {
-			axios
+			this.$axios
 				.post('/settings/get', {
 					type: 'video'
 				})
@@ -615,12 +601,12 @@ export default {
 		},
 
 		save_settings() {
-			axios
+			this.$axios
 				.post('/settings/save', {
 					type: 'video',
 					allow_save_video_without_test: this.allow_save_video_without_test,
 				})
-				.then((response) => {
+				.then(() => {
 					this.showSettings = false;
 				})
 				.catch((error) => {

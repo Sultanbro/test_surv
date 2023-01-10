@@ -9,7 +9,7 @@
         <template #thead-top>
             <tr>
                 <th class="grey b-table-sticky-column" style="min-width: 55px;border-right:2px solid #ccc !important"></th>
-                <th v-for="name in columnNames" class="grey">
+                <th v-for="name in columnNames" :key="name" class="grey">
                     {{ name }}
                 </th>
             </tr>
@@ -43,12 +43,12 @@
 
 <script>
 
-function send(message) {
-	const TOKEN = '1286740490:AAGiR2ch8MqzfP3IVee3Q0Mw4gZu6-ZbnVE';
-	const KAIR = '577504834';
+// function send(message) {
+// 	const TOKEN = '1286740490:AAGiR2ch8MqzfP3IVee3Q0Mw4gZu6-ZbnVE';
+// 	const KAIR = '577504834';
 
-	axios.get('https://api.telegram.org/bot' + TOKEN + '/sendMessage?chat_id=' + KAIR + '&text=' + message);
-}
+// 	axios.get('https://api.telegram.org/bot' + TOKEN + '/sendMessage?chat_id=' + KAIR + '&text=' + message);
+// }
 
 const S0_TOTAL = 0 // первая пустая строка
 const S1_IMPL = 1 // impl
@@ -107,15 +107,15 @@ export default {
 		data: {
 			// the callback will be called immediately after the start of the observation
 			immediate: true,
-			handler (val, oldVal) {
+			handler () {
 				this.setFields()
 				this.loadItems()
 
-				let post_data = {
-					date: this.$moment(`${this.month.currentMonth} ${this.currentYear}`, 'MMMM YYYY').format('YYYY-MM-DD'),
-					group_id: this.currentGroup,
-					settings: this.items
-				};
+				// let post_data = {
+				// 	date: this.$moment(`${this.month.currentMonth} ${this.currentYear}`, 'MMMM YYYY').format('YYYY-MM-DD'),
+				// 	group_id: this.currentGroup,
+				// 	settings: this.items
+				// };
 
 				if(this.items != null && this.items != undefined) {
 					// this.saveTable(post_data)
@@ -247,7 +247,7 @@ export default {
 					'12': '=(P6 + P7)',
 					'13': '=(Q6 + Q7)',
 					'14': '=(R6 + R7)',
-					'19': '=(S6 + S7)',
+					'15': '=(S6 + S7)',
 					'16': '=(T6 + T7)',
 					'17': '=(U6 + U7)',
 					'18': '=(V6 + V7)',
@@ -257,7 +257,7 @@ export default {
 					'22': '=(Z6 + Z7',
 					'23': '=(AA6 + AA7)',
 					'24': '=(AB6 + AB7)',
-					'29': '=(AC6 + AC7)',
+					'25': '=(AC6 + AC7)',
 					'26': '=(AD6 + AD7)',
 					'27': '=(AE6 + AE7)',
 					'28': '=(AF6 + AF7)',
@@ -282,7 +282,7 @@ export default {
 					'12': '=(P10 * 1.5)',
 					'13': '=(Q10 * 1.5)',
 					'14': '=(R10 * 1.5)',
-					'19': '=(S10 * 1.5)',
+					'15': '=(S10 * 1.5)',
 					'16': '=(T10 * 1.5)',
 					'17': '=(U10 * 1.5)',
 					'18': '=(V10 * 1.5)',
@@ -292,7 +292,7 @@ export default {
 					'22': '=(Z10 * 1.5)',
 					'23': '=(AA10 * 1.5)',
 					'24': '=(AB10 * 1.5)',
-					'29': '=(AC10 * 1.5)',
+					'25': '=(AC10 * 1.5)',
 					'26': '=(AD10 * 1.5)',
 					'27': '=(AE10 * 1.5)',
 					'28': '=(AF10 * 1.5)',
@@ -321,7 +321,7 @@ export default {
 					'12': '=(P9 / 270)',
 					'13': '=(Q9 / 270)',
 					'14': '=(R9 / 270)',
-					'19': '=(S9 / 270)',
+					'15': '=(S9 / 270)',
 					'16': '=(T9 / 270)',
 					'17': '=(U9 / 270)',
 					'18': '=(V9 / 270)',
@@ -331,7 +331,7 @@ export default {
 					'22': '=(Z9 / 270)',
 					'23': '=(AA9 / 270)',
 					'24': '=(AB9 / 270)',
-					'29': '=(AC9 / 270)',
+					'25': '=(AC9 / 270)',
 					'26': '=(AD9 / 270)',
 					'27': '=(AE9 / 270)',
 					'28': '=(AF9 / 270)',
@@ -448,7 +448,7 @@ export default {
 					'12': [{index: 6, key: '12'}],
 					'13': [{index: 6, key: '13'}],
 					'14': [{index: 6, key: '14'}],
-					'19': [{index: 6, key: '15'}],
+					'15': [{index: 6, key: '15'}],
 					'16': [{index: 6, key: '16'}],
 					'17': [{index: 6, key: '17'}],
 					'18': [{index: 6, key: '18'}],
@@ -458,7 +458,7 @@ export default {
 					'22': [{index: 6, key: '22'}],
 					'23': [{index: 6, key: '23'}],
 					'24': [{index: 6, key: '24'}],
-					'29': [{index: 6, key: '25'}],
+					'25': [{index: 6, key: '25'}],
 					'26': [{index: 6, key: '26'}],
 					'27': [{index: 6, key: '27'}],
 					'28': [{index: 6, key: '28'}],
@@ -526,7 +526,7 @@ export default {
 					'12': [{index: 8, key: '12'}],
 					'13': [{index: 8, key: '13'}],
 					'14': [{index: 8, key: '14'}],
-					'19': [{index: 8, key: '15'}],
+					'15': [{index: 8, key: '15'}],
 					'16': [{index: 8, key: '16'}],
 					'17': [{index: 8, key: '17'}],
 					'18': [{index: 8, key: '18'}],
@@ -536,7 +536,7 @@ export default {
 					'22': [{index: 8, key: '22'}],
 					'23': [{index: 8, key: '23'}],
 					'24': [{index: 8, key: '24'}],
-					'29': [{index: 8, key: '25'}],
+					'25': [{index: 8, key: '25'}],
 					'26': [{index: 8, key: '26'}],
 					'27': [{index: 8, key: '27'}],
 					'28': [{index: 8, key: '28'}],
@@ -565,7 +565,7 @@ export default {
 					'12': [{index: 7, key: '12'}],
 					'13': [{index: 7, key: '13'}],
 					'14': [{index: 7, key: '14'}],
-					'19': [{index: 7, key: '15'}],
+					'15': [{index: 7, key: '15'}],
 					'16': [{index: 7, key: '16'}],
 					'17': [{index: 7, key: '17'}],
 					'18': [{index: 7, key: '18'}],
@@ -575,7 +575,7 @@ export default {
 					'22': [{index: 7, key: '22'}],
 					'23': [{index: 7, key: '23'}],
 					'24': [{index: 7, key: '24'}],
-					'29': [{index: 7, key: '25'}],
+					'25': [{index: 7, key: '25'}],
 					'26': [{index: 7, key: '26'}],
 					'27': [{index: 7, key: '27'}],
 					'28': [{index: 7, key: '28'}],
@@ -602,7 +602,7 @@ export default {
 					'12': [{index: 10, key: '12'},{index: 21, key: 'avg'},{index: 21, key: 'plan'},{index: 21, key: 'pr'}],
 					'13': [{index: 10, key: '13'},{index: 21, key: 'avg'},{index: 21, key: 'plan'},{index: 21, key: 'pr'}],
 					'14': [{index: 10, key: '14'},{index: 21, key: 'avg'},{index: 21, key: 'plan'},{index: 21, key: 'pr'}],
-					'19': [{index: 10, key: '15'},{index: 21, key: 'avg'},{index: 21, key: 'plan'},{index: 21, key: 'pr'}],
+					'15': [{index: 10, key: '15'},{index: 21, key: 'avg'},{index: 21, key: 'plan'},{index: 21, key: 'pr'}],
 					'16': [{index: 10, key: '16'},{index: 21, key: 'avg'},{index: 21, key: 'plan'},{index: 21, key: 'pr'}],
 					'17': [{index: 10, key: '17'},{index: 21, key: 'avg'},{index: 21, key: 'plan'},{index: 21, key: 'pr'}],
 					'18': [{index: 10, key: '18'},{index: 21, key: 'avg'},{index: 21, key: 'plan'},{index: 21, key: 'pr'}],
@@ -612,7 +612,7 @@ export default {
 					'22': [{index: 10, key: '22'},{index: 21, key: 'avg'},{index: 21, key: 'plan'},{index: 21, key: 'pr'}],
 					'23': [{index: 10, key: '23'},{index: 21, key: 'avg'},{index: 21, key: 'plan'},{index: 21, key: 'pr'}],
 					'24': [{index: 10, key: '24'},{index: 21, key: 'avg'},{index: 21, key: 'plan'},{index: 21, key: 'pr'}],
-					'29': [{index: 10, key: '25'},{index: 21, key: 'avg'},{index: 21, key: 'plan'},{index: 21, key: 'pr'}],
+					'25': [{index: 10, key: '25'},{index: 21, key: 'avg'},{index: 21, key: 'plan'},{index: 21, key: 'pr'}],
 					'26': [{index: 10, key: '26'},{index: 21, key: 'avg'},{index: 21, key: 'plan'},{index: 21, key: 'pr'}],
 					'27': [{index: 10, key: '27'},{index: 21, key: 'avg'},{index: 21, key: 'plan'},{index: 21, key: 'pr'}],
 					'28': [{index: 10, key: '28'},{index: 21, key: 'avg'},{index: 21, key: 'plan'},{index: 21, key: 'pr'}],
@@ -623,8 +623,7 @@ export default {
 			}
 
 			this.highlighted.forEach(el => { // если был выделен, убираем выделяющий класс
-				if(this.items[el.index] !== undefined && this.items[el.index]._cellVariants !== undefined
-                        && this.items[el.index]._cellVariants[el.key] !== undefined) {
+				if(this.items[el.index] !== undefined && this.items[el.index]._cellVariants !== undefined && this.items[el.index]._cellVariants[el.key] !== undefined) {
 					this.items[el.index]._cellVariants[el.key] = this.items[el.index]._cellVariants[el.key].replace('high', '')
 				}
 			});
@@ -850,13 +849,16 @@ export default {
 
 			items[S3_PRCSTLL]['plan'] = settings[S3_PRCSTLL]['plan'];
 
+			// eslint-disable-next-line no-unused-vars
 			let workDays;
 			if (settings && settings[S21_CONSTANTS] && typeof settings[S21_CONSTANTS]['plan'] !== 'undefined') {
 				items[S21_CONSTANTS]['plan'] = settings[S21_CONSTANTS]['plan']
+				// eslint-disable-next-line no-unused-vars
 				workDays = settings[S21_CONSTANTS]['plan'];
 				this.workDays = settings[S21_CONSTANTS]['plan'];
 			} else {
 				items[S21_CONSTANTS]['plan'] = this.month.workDays
+				// eslint-disable-next-line no-unused-vars
 				workDays = this.month.workDays
 				this.workDays = this.month.workDays
 			}
@@ -1104,6 +1106,7 @@ export default {
 
 
 
+			// eslint-disable-next-line no-unused-vars
 			let settings = []
 
 			this.setShortcut(data)
@@ -1142,7 +1145,7 @@ export default {
 
 		async saveTable(post_data) {
 			let loader = this.$loading.show()
-			axios.post('/timetracking/update-settings', post_data).then(response => {
+			this.axios.post('/timetracking/update-settings', post_data).then(() => {
 				loader.hide()
 			}).catch(error => {
 				alert(error)
@@ -1151,7 +1154,7 @@ export default {
 		},
 
 		async updateTable() {
-			let workDays = this.workDays;
+			// let workDays = this.workDays;
 
 			let settings = this.data.settings;
 
@@ -1245,15 +1248,15 @@ export default {
 			let s20ClaimsAvr = 0;
 
 			let s22_total = 0;
-			let s22_count = 0;
-			let s22_avg = 0;
+			// let s22_count = 0;
+			// let s22_avg = 0;
 
 			let s23_total = 0;
-			let s23_count = 0;
-			let s23_avg = 0;
+			// let s23_count = 0;
+			// let s23_avg = 0;
 
 			//  формируем массив для 10 строки, факт операторов
-			let sum = {};
+			// let sum = {};
 
 			for (let i = 1; i <= days; i++) {
 
@@ -1365,12 +1368,12 @@ export default {
 
 				if (this.items[S22_CONNECTION_LACK_REMOTE] && typeof this.items[S22_CONNECTION_LACK_REMOTE][i] !== 'undefined' && this.items[S22_CONNECTION_LACK_REMOTE][i]) {
 					s22_total += parseInt(settings[S22_CONNECTION_LACK_REMOTE][i])
-					s22_count++
+					// s22_count++
 				}
 
 				if (this.items[S23_CONNECTION_LACK_INHOUSE] && typeof this.items[S23_CONNECTION_LACK_INHOUSE][i] !== 'undefined' && this.items[S23_CONNECTION_LACK_INHOUSE][i]) {
 					s23_total += parseInt(settings[S23_CONNECTION_LACK_INHOUSE][i])
-					s23_count++
+					// s23_count++
 				}
 
 
@@ -1427,8 +1430,8 @@ export default {
 			s18NoticeAvr = this.toFloat(s18NoticeTotal / s18NoticeCount)
 			s19TwoGroupAvr = this.toFloat(s19TwoGroupTotal / s19TwoGroupCount)
 			s20ClaimsAvr = this.toFloat(s20ClaimsTotal / s20ClaimsCount)
-			s22_avg = this.toFloat(s22_total / s22_count)
-			s23_avg = this.toFloat(s23_total / s23_count)
+			// s22_avg = this.toFloat(s22_total / s22_count)
+			// s23_avg = this.toFloat(s23_total / s23_count)
 
 			this.items[S0_TOTAL]['pr'] = 'kair-0'
 			this.items[S0_TOTAL]['plan'] = 'kair-1'

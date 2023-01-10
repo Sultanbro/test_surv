@@ -18,27 +18,27 @@
             </div>
             <div class="col-md-2 mb-2">
                 <select class="form-control form-control-sm mt-2" v-model="filter.currentInviteGroup">
-                    <option v-for="(invite_group, index) in invite_groups" :value="index">{{ invite_group }}</option>
+                    <option v-for="(invite_group, index) in invite_groups" :key="index" :value="index">{{ invite_group }}</option>
                 </select>
             </div>
             <div class="col-md-2 mb-2">
                 <select class="form-control form-control-sm mt-2" v-model="filter.user_type">
-                    <option v-for="(user_type, index) in user_types" :value="index">{{ user_type }}</option>
+                    <option v-for="(user_type, index) in user_types" :key="index" :value="index">{{ user_type }}</option>
                 </select>
             </div>
             <div class="col-md-2 mb-2">
                 <select class="form-control form-control-sm mt-2" v-model="filter.lang">
-                    <option v-for="(lang, index) in langs" :value="index">{{ lang }}</option>
+                    <option v-for="(lang, index) in langs" :key="index" :value="index">{{ lang }}</option>
                 </select>
             </div>
             <div class="col-md-2 mb-2">
                 <select class="form-control form-control-sm mt-2" v-model="filter.wishtime">
-                    <option v-for="(wishtime, index) in wishtimes" :value="index">{{ wishtime }}</option>
+                    <option v-for="(wishtime, index) in wishtimes" :key="index" :value="index">{{ wishtime }}</option>
                 </select>
             </div>
             <!-- <div class="col-md-2">
                 <select class="form-control form-control-sm" v-model="filter.segment">
-                    <option v-for="(segment, index) in segments" :value="index">{{ segment }}</option>
+                    <option v-for="(segment, index) in segments" :key="index" :value="index">{{ segment }}</option>
                 </select>
             </div> -->
             <div class="col-md-4">
@@ -229,7 +229,7 @@
         <div class="row align-items-center">
             <div class="col-sm-3">
                 <select  required="required"  v-model="selected.group_id" class="form-control form-control-sm">
-                    <option :value="group.id" v-for="group in groups">{{ group.name }}</option>
+                    <option :value="group.id" v-for="group in groups" :key="group.id">{{ group.name }}</option>
                 </select>
             </div>
 
@@ -266,30 +266,26 @@
 
 
     <b-modal v-model="showModal" ok-text="Сохранить" cancel-text="Отмена" title="Новый лид" @ok="saveLead" size="lg" class="modalle">
-        <template v-for="error in errors">
-            <b-alert show variant="danger" :key="error">{{ error }}</b-alert>
-        </template>
+        <b-alert show variant="danger" v-for="error in errors" :key="error">{{ error }}</b-alert>
         <b-form-input v-model="lead.name" placeholder="ФИО" :required="true" class="form-control form-control-sm mb-2"></b-form-input>
         <b-form-input v-model="lead.phone" placeholder="Телефон" :required="true" class="form-control form-control-sm mb-2"></b-form-input>
         <div class="d-flex">
             <select  required="required"  v-model="lead.lang" class="form-control form-control-sm">
-                <option :value="index" v-for="(lang, index) in langs">{{ lang }}</option>
+                <option :value="index" v-for="(lang, index) in langs" :key="index">{{ lang }}</option>
             </select>
             <select  required="required"  v-model="lead.wishtime" class="form-control form-control-sm">
-                <option :value="index" v-for="(wishtime, index) in wishtimes">{{ wishtime }}</option>
+                <option :value="index" v-for="(wishtime, index) in wishtimes" :key="index">{{ wishtime }}</option>
             </select>
         </div>
 
     </b-modal>
 
     <b-modal v-model="showSkypeFieldsModal"  title="Настройка списка" @ok="showSkypeFieldsModal = !showSkypeFieldsModal" ok-text="Закрыть"  size="lg" class="modalle">
-      <template v-for="error in errors">
-          <b-alert show variant="danger" :key="error">{{ error }}</b-alert>
-      </template>
+      <b-alert show variant="danger" v-for="error in errors" :key="error">{{ error }}</b-alert>
 
       <div class="row">
 
-        <div class="col-md-4 mb-2" v-for="(field, key) in showSkypeFields">
+        <div class="col-md-4 mb-2" v-for="(field, key) in showSkypeFields" :key="key">
           <b-form-checkbox
               v-model="showSkypeFields[key]"
               :unchecked-value="false"
@@ -449,20 +445,20 @@ export default {
 		skypes: {
 			// the callback will be called immediately after the start of the observation
 			deep: true,
-			handler (val, oldVal) {
+			handler () {
 				this.filterTable()
 			}
 		},
 		month: {
 			// the callback will be called immediately after the start of the observation
 			deep: true,
-			handler (val, oldVal) {
+			handler () {
 				this.filterTable()
 			}
 		},
 		checker: {
 			deep: true,
-			handler (val, oldVal) {
+			handler (val) {
 				if(val) {
 					this.checkAll();
 				} else {
@@ -471,14 +467,14 @@ export default {
 			}
 		},
 		filter: {
-			handler (val, oldVal) {
+			handler () {
 				this.filterTable()
 				this.unCheckAll()
 			},
 			deep: true
 		},
 		currentDay: {
-			handler (val, oldVal) {
+			handler () {
 				this.filterTable()
 			},
 		},
@@ -556,13 +552,13 @@ export default {
 
 		saveLead() {
 
-			axios.post('/timetracking/analytics/recruting/create-lead', {
+			this.axios.post('/timetracking/analytics/recruting/create-lead', {
 				name: this.lead.name,
 				phone: this.lead.phone,
 				lang: this.lead.lang,
 				wishtime: this.lead.wishtime,
 			})
-				.then(response => {
+				.then(() => {
 
 
 					this.$toast.success('Новый лид сохранен')
@@ -587,7 +583,7 @@ export default {
 					this.showModal = false
 
 				})
-				.catch(error => alert('Ошибка'))
+				.catch(() => alert('Ошибка'))
 		},
 
 		setFields() {
@@ -719,7 +715,7 @@ export default {
 				return '';
 			}
 
-			axios.post('/timetracking/analytics/invite-users', {
+			this.axios.post('/timetracking/analytics/invite-users', {
 				users: this.checkedBoxes,
 				group_id: this.selected.group_id,
 				date: this.selected.date,
@@ -742,19 +738,17 @@ export default {
 					}
 
 				})
-				.catch(error => alert('Ошибка'))
+				.catch(() => alert('Ошибка'))
 		},
 
 		filterTable() {
 			this.workDays = this.month.workDays
 
-			let days = this.month.daysInMonth
-
 			this.records = []
 
 			var dates = this.getDates(this.filter.dates[0],this.filter.dates[1]);
 
-			this.filtered = this.skypes.filter((el, index) => {
+			this.filtered = this.skypes.filter(el => {
 
 				let a = true
 
@@ -791,7 +785,7 @@ export default {
 				let ld = false;
 				if(dates.length > 0) {
 					dates.forEach(day => {
-						ld = ld || day.getDate() ==  moment(el.skyped_old, 'YYYY-MM-DD HH:mm:ss').date()
+						ld = ld || day.getDate() == this.$moment(el.skyped_old, 'YYYY-MM-DD HH:mm:ss').date()
 					})
 				} else {
 					ld = true
@@ -863,7 +857,7 @@ export default {
 
 		},
 
-		detailsClassFn(item, rowType) {
+		detailsClassFn(item) {
 			// item: the row's item data
 			// rowType: a string describing the `<tr>` type
 

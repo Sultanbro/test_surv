@@ -55,7 +55,7 @@
 
 <script>
 export default {
-	name: 'Fines',
+	name: 'PageFines',
 	data() {
 		return {
 			fines: [],
@@ -73,7 +73,7 @@ export default {
 	},
 	methods:{
 		getFines() {
-			axios.get('/timetracking/fine', {}).then(response => {
+			this.$axios.get('/timetracking/fine', {}).then(response => {
 				this.savedfines = JSON.parse(JSON.stringify(response.data.fines))
 				this.fines = response.data.fines
 
@@ -99,7 +99,7 @@ export default {
 				let deletedfines = this.getDeletedFines()
 				let editedfines = this.getEditedFines()
 				this.preloaderShow = true;
-				axios.put('/timetracking/fine', {
+				this.$axios.put('/timetracking/fine', {
 					newfines,
 					editedfines,
 					deletedfines

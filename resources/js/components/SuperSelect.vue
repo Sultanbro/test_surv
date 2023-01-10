@@ -63,7 +63,7 @@
                     </div>
                     <div
                             class="option"
-                            :key="index"
+                            :key="index + 'a'"
                             @click="addValue(index)"
                             :class="{'selected': option.selected}"
                             v-else
@@ -86,7 +86,7 @@
 
 <script>
 export default {
-	name: 'Superselect',
+	name: 'SuperSelect',
 	props: {
 		pre_build: {
 			type: Boolean,
@@ -150,7 +150,7 @@ export default {
 	},
 	created() {
 		if(this.pre_build){
-			axios
+			this.axios
 				.get('/superselect/get', {})
 				.then(response => {
 					if(this.disable_type){
@@ -203,7 +203,7 @@ export default {
 		},
 
 		filterType() {
-			this.filtered_options = this.options.filter((el, index) => {
+			this.filtered_options = this.options.filter(el => {
 				return el.type == this.type
 			});
 		},
@@ -315,7 +315,7 @@ export default {
 			if(this.searchText == '') {
 				this.filtered_options = this.options;
 			} else {
-				this.filtered_options = this.options.filter((el, index) => {
+				this.filtered_options = this.options.filter(el => {
 					return el.name.toLowerCase().indexOf(this.searchText.toLowerCase()) > -1
 				});
 			}
@@ -328,7 +328,7 @@ export default {
 		},
 
 		fetch() {
-			axios
+			this.axios
 				.get('/superselect/get', {})
 				.then(response => {
 					if(this.disable_type){

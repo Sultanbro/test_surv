@@ -3,15 +3,14 @@
     <slot :isRecording="isRecording"
           :startRecording="startRecording"
           :stopRecording="stopRecording"
-          :deleteRecording="deleteRecording">
-    </slot>
+          :deleteRecording="deleteRecording"/>
   </div>
 </template>
 
 <script>
 
 export default {
-	name: 'dictaphone',
+	name: 'AudioDictaphone',
 	data() {
 		return {
 			audioBlob: null,

@@ -1,8 +1,6 @@
 <template>
 <div class="mt-3">
     <div class="mb-0" :key="myTable">
-
-
         <b-table v-if="dataLoaded"
             responsive
             striped
@@ -16,14 +14,14 @@
             show-empty
             emptyText="Нет данных"
             >
-          <template #head(avanses)="data">
+          <template #head(avanses)>
 
               <i class="fa fa-info-circle"
                  v-b-popover.hover.right.html="'Авансы отмечены зеленым'">
               </i>
 
           </template>
-          <template #head(fines)="data">
+          <template #head(fines)>
 
               <i class="fa fa-info-circle"
                  v-b-popover.hover.right.html="'Депримирование отмечено красным'">
@@ -66,78 +64,66 @@
         </div>
         <h6 class="mt-3">Депримирование</h6>
         <div  class="mb-5">
-            <template v-for="item in sidebarContent.fines">
-                <p :key="item">{{item.name}}</p>
-            </template>
+            <p v-for="item in sidebarContent.fines" :key="item">{{item.name}}</p>
             <p v-if="sidebarContent.fines.length == 0">
                 Нет штрафов
             </p>
         </div>
         <h6 class="mt-3">Бонусы</h6>
         <div class="mb-5">
-            <template v-for="item in sidebarContent.bonuses">
-                <div :key="item">
-                    <div>
-                        <b>
-                            {{ item.bonus }} KZT
-                        </b>
-                    </div>
-                    <div>
-                        {{ item.comment_bonus }}
-                    </div>
-                </div>
-            </template>
+            <div v-for="item in sidebarContent.bonuses" :key="item">
+				<div>
+					<b>
+						{{ item.bonus }} KZT
+					</b>
+				</div>
+				<div>
+					{{ item.comment_bonus }}
+				</div>
+			</div>
             <div v-if="sidebarContent.bonuses.length == 0 && sidebarContent.awards.length == 0 && sidebarContent.test_bonus.length == 0">
                 Нет бонусов
             </div>
         </div>
         <div v-if="sidebarContent.awards.length != 0"  class="mb-5">
-            <template v-for="item in sidebarContent.awards">
-                <div :key="item">
-                    <div>
-                        <b>
-                            {{ item.amount }} KZT
-                        </b>
-                    </div>
-                    <div>
-                        {{ item.comment }}
-                    </div>
-                </div>
-            </template>
+            <div v-for="item in sidebarContent.awards" :key="item">
+				<div>
+					<b>
+						{{ item.amount }} KZT
+					</b>
+				</div>
+				<div>
+					{{ item.comment }}
+				</div>
+			</div>
         </div>
          <div v-if="sidebarContent.test_bonus.length != 0"  class="mb-5">
             <div>
                 За пройденные тесты
             </div>
-            <template v-for="item in sidebarContent.test_bonus">
-                <div :key="item">
-                    <div>
-                        <b>
-                            {{ item.amount }} KZT
-                        </b>
-                    </div>
-                    <div>
-                        {{ item.comment }}
-                    </div>
-                </div>
-            </template>
+            <div v-for="item in sidebarContent.test_bonus" :key="item">
+				<div>
+					<b>
+						{{ item.amount }} KZT
+					</b>
+				</div>
+				<div>
+					{{ item.comment }}
+				</div>
+			</div>
         </div>
         <h6 class="mt-3">Авансы</h6>
         <div  class="mb-5">
-            <template v-for="item in sidebarContent.avanses">
-                <div :key="item">
-
-                    <div>
-                        <b>
-                            {{ item.paid }} KZT
-                        </b>
-                    </div>
-                    <div>
-                        {{ item.comment_paid }}
-                    </div>
-
-                </div>
-            </template>
+            <div v-for="item in sidebarContent.avanses" :key="item">
+				<div>
+					<b>
+						{{ item.paid }} KZT
+					</b>
+				</div>
+				<div>
+					{{ item.comment_paid }}
+				</div>
+			</div>
             <p v-if="sidebarContent.avanses.length == 0">
                 Нет авансов
             </p>
@@ -157,7 +143,6 @@ export default {
 		date: {},
 		month: {}
 	},
-
 
 	watch: {
 		month: {
@@ -253,7 +238,7 @@ export default {
 		fetchData() {
 			let loader = this.$loading.show();
 
-			axios.post('/timetracking/zarplata-table-new', {
+			this.axios.post('/timetracking/zarplata-table-new', {
 				month: this.$moment(this.month, 'MMMM').format('M'),
 			}).then(response => {
 
@@ -277,7 +262,7 @@ export default {
 		},
 
 		setMonth() {
-			let year = moment().format('YYYY')
+			let year = this.$moment().format('YYYY')
 			this.dateInfo.currentMonth = this.dateInfo.currentMonth ? this.dateInfo.currentMonth : this.$moment().format('MMMM')
 
 			this.dateInfo.date = `${this.dateInfo.currentMonth} ${year}`

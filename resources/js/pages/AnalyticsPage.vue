@@ -162,14 +162,14 @@
                                                         <table class="table table-bordered">
                                                             <thead>
                                                             <tr>
-                                                                <th v-for="(field, key) in yearActivityTableFields" :class="field.classes">
+                                                                <th v-for="(field, key) in yearActivityTableFields" :key="key" :class="field.classes">
                                                                     <div>{{ field.name }}</div>
                                                                 </th>
                                                             </tr>
                                                             </thead>
                                                             <tbody>
                                                             <tr v-for="( row, index ) in yearActivityTable" :key="index">
-                                                                <td v-for="(field, key) in yearActivityTableFields" :class="field.classes">
+                                                                <td v-for="(field, key) in yearActivityTableFields" :key="key" :class="field.classes">
                                                                     <div>{{ row[field.key] }}</div>
                                                                 </td>
                                                             </tr>
@@ -314,92 +314,90 @@
     </template>
 
 <script>
-    import Draggable from 'vuedraggable'
-    import AnalyticStat from '@/components/AnalyticStat'
-    import CallBase from '@/components/CallBase'
-    import TableDecomposition from '@/components/tables/TableDecomposition'
-    const TableActivityNew = () => import(/* webpackChunkName: "TableActivityNew" */ '@/components/tables/TableActivityNew')
-    import TableActivityCollection from '@/components/tables/TableActivityCollection'
-    import TableQualityWeekly from '@/components/tables/TableQualityWeekly'
-    const TopGauges = () => import(/* webpackChunkName: "TopGauges" */ '@/components/TopGauges')  // TOП спидометры, есть и в аналитике
-    import { useYearOptions } from '../composables/yearOptions'
+import Draggable from 'vuedraggable'
+import AnalyticStat from '@/components/AnalyticStat'
+import CallBase from '@/components/CallBase'
+import TableDecomposition from '@/components/tables/TableDecomposition'
+const TableActivityNew = () => import(/* webpackChunkName: "TableActivityNew" */ '@/components/tables/TableActivityNew')
+import TableActivityCollection from '@/components/tables/TableActivityCollection'
+import TableQualityWeekly from '@/components/tables/TableQualityWeekly'
+const TopGauges = () => import(/* webpackChunkName: "TopGauges" */ '@/components/TopGauges')  // TOП спидометры, есть и в аналитике
+import { useYearOptions } from '../composables/yearOptions'
 
-    export default {
-        name: 'AnalyticsPage',
-        components: {
-            Draggable,
-            AnalyticStat,
-            CallBase,
-            TableDecomposition,
-            TableActivityNew,
-            TableActivityCollection,
-            TableQualityWeekly,
-            TopGauges,
-        },
-        props: ['groups', 'activeuserid'],
-        data() {
-            return {
-                data: [],
-                ggroups: [],
-                active: '1',
-                hasPremission: false, // доступ
-                years: useYearOptions(),
-                yearActivityTableFields: [],
-                yearActivityTable: [],
-                activityStates: {},
-                currentYear: new Date().getFullYear(),
-                monthInfo: {},
-                currentGroup: null,
-                loader: null,
-                showOrder: false,
-                firstEnter: true,
-                showArchive: false,
-                askey: 1,
-                activity_select: [],
-                archived_groups: [],
-                call_bases: [], // euras call base unique table
-                restore_group: null,
-                noan: false, // нет аналитики
-                showActivityModal:false, // activity
-                dataLoaded: false,
-                noan: false, // нет аналитики
-                showActivityModal:false, // activity
-                active_sub_tab: 0,
-                activity: {// activity
-                    name: null,
-                    daily_plan: null,
-                    plan_unit: null,
-                    unit: null,
-                    editable: 1,
-                    weekdays: 6,
-                },
-                plan_units: {// activity
-                    minutes: 'Сумма показателей',
-                    percent: 'Среднее значение',
-                    less_sum: 'Не более, сумма',
-                    less_avg: 'Не более, сред. зн.',
-                },
-                list: [
-                    { name: "John", id: 0 },
-                    { name: "Joao", id: 1 },
-                    { name: "Jean", id: 2 }
-                ],
-                users: [], // year table of activity
-                statistics: [] // year table of activity
-            }
-        },
-        watch: {
-            groups(){
-                this.init()
-            }
-        },
-        created() {
-            if(this.groups){
-                this.init()
-            }
-        },
-        methods: {
-            init(){
+export default {
+	name: 'AnalyticsPage',
+	components: {
+		Draggable,
+		AnalyticStat,
+		CallBase,
+		TableDecomposition,
+		TableActivityNew,
+		TableActivityCollection,
+		TableQualityWeekly,
+		TopGauges,
+	},
+	props: ['groups', 'activeuserid'],
+	data() {
+		return {
+			data: [],
+			ggroups: [],
+			active: '1',
+			hasPremission: false, // доступ
+			years: useYearOptions(),
+			yearActivityTableFields: [],
+			yearActivityTable: [],
+			activityStates: {},
+			currentYear: new Date().getFullYear(),
+			monthInfo: {},
+			currentGroup: null,
+			loader: null,
+			showOrder: false,
+			firstEnter: true,
+			showArchive: false,
+			askey: 1,
+			activity_select: [],
+			archived_groups: [],
+			call_bases: [], // euras call base unique table
+			restore_group: null,
+			noan: false, // нет аналитики
+			showActivityModal:false, // activity
+			dataLoaded: false,
+			active_sub_tab: 0,
+			activity: {// activity
+				name: null,
+				daily_plan: null,
+				plan_unit: null,
+				unit: null,
+				editable: 1,
+				weekdays: 6,
+			},
+			plan_units: {// activity
+				minutes: 'Сумма показателей',
+				percent: 'Среднее значение',
+				less_sum: 'Не более, сумма',
+				less_avg: 'Не более, сред. зн.',
+			},
+			list: [
+				{ name: 'John', id: 0 },
+				{ name: 'Joao', id: 1 },
+				{ name: 'Jean', id: 2 }
+			],
+			users: [], // year table of activity
+			statistics: [] // year table of activity
+		}
+	},
+	watch: {
+		groups(){
+			this.init()
+		}
+	},
+	created() {
+		if(this.groups){
+			this.init()
+		}
+	},
+	methods: {
+		init(){
 
 			// выбор группы
 			// переделать на роуты
@@ -492,7 +490,7 @@
 			let loader = this.$loading.show();
 
 
-			axios.post('/timetracking/user-statistics-by-month', {
+			this.axios.post('/timetracking/user-statistics-by-month', {
 				group_id: this.currentGroup,
 				date: {
 					year: this.currentYear,
@@ -531,7 +529,7 @@
 
 				fieldsArray.push({
 					key: i,
-					name: moment(this.currentYear + '-' + i + '-01').format('MMMM'),
+					name: this.$moment(this.currentYear + '-' + i + '-01').format('MMMM'),
 					order: order++,
 					classes: 'text-center px-1 month',
 				});
@@ -575,7 +573,7 @@
 			let loader = this.$loading.show();
 
 
-			axios.post('/timetracking/analytics-page/getanalytics', {
+			this.axios.post('/timetracking/analytics-page/getanalytics', {
 				month: this.$moment(this.monthInfo.currentMonth, 'MMMM').format('M'),
 				year: this.currentYear,
 				group_id: this.currentGroup
@@ -668,7 +666,7 @@
 
 		create_activity() {
 			let loader = this.$loading.show();
-			axios.post('/timetracking/analytics/create-activity', {
+			this.axios.post('/timetracking/analytics/create-activity', {
 				month: this.$moment(this.monthInfo.currentMonth, 'MMMM').format('M'),
 				year: this.currentYear,
 				activity: this.activity,
@@ -698,11 +696,11 @@
 
 		add_analytics() {
 			let loader = this.$loading.show();
-			axios.post('/timetracking/analytics/new-group', {
+			this.axios.post('/timetracking/analytics/new-group', {
 				month: this.$moment(this.monthInfo.currentMonth, 'MMMM').format('M'),
 				year: this.currentYear,
 				group_id: this.currentGroup
-			}).then(response => {
+			}).then(() => {
 				this.$toast.success('Аналитика для группы добавлена!')
 				this.fetchData();
 				loader.hide()
@@ -719,9 +717,9 @@
 
 		save_order() {
 			let loader = this.$loading.show();
-			axios.post('/timetracking/analytics/change_order', {
+			this.axios.post('/timetracking/analytics/change_order', {
 				activities: this.activity_select
-			}).then(response => {
+			}).then(() => {
 				this.$toast.success('Порядок сохранен!');
 				this.showOrder = false;
 				this.fetchData();
@@ -740,9 +738,9 @@
 			}
 
 			let loader = this.$loading.show();
-			axios.post('/timetracking/analytics/delete_activity', {
+			this.axios.post('/timetracking/analytics/delete_activity', {
 				id: act.id
-			}).then(response => {
+			}).then(() => {
 				this.$toast.success('Удален!');
 				this.fetchData();
 				loader.hide()
@@ -760,7 +758,7 @@
 			}
 
 			let loader = this.$loading.show();
-			axios.post('/timetracking/analytics/restore_analytics', {
+			this.axios.post('/timetracking/analytics/restore_analytics', {
 				id: this.restore_group
 			}).then(response => {
 				this.$toast.success('Восстановлен!');
@@ -784,9 +782,9 @@
 			}
 
 			let loader = this.$loading.show();
-			axios.post('/timetracking/analytics/archive_analytics', {
+			this.axios.post('/timetracking/analytics/archive_analytics', {
 				id: this.currentGroup
-			}).then(response => {
+			}).then(() => {
 				this.$toast.success('Архивирован!');
 				this.currentGroup = this.ggroups[0].id
 				this.fetchData();
@@ -803,8 +801,8 @@
 		},
 
 
-        }
-    }
+	}
+}
 </script>
 
 <style>

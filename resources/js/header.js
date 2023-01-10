@@ -7,11 +7,11 @@
 require('./bootstrap');
 
 window.Vue = require('vue');
- 
+
 
 Vue.component('timetracking', require('./components/timetracking.vue'));
 Vue.component('profile', require('./components/profile/Profile.vue'));
 
 const app = new Vue({
 	el: '.header-vue'
-}); 
+});

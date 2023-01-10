@@ -1,0 +1,8 @@
+{
+    "compilerOptions": {
+        "target": "esnext",
+        "checkJs": false,
+    },
+    "exclude": ["node_modules"],
+    "javascript.validate.enable": false
+}

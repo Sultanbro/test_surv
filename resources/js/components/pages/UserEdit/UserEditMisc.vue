@@ -30,7 +30,8 @@ export default {
                         id="recruiter_comment"
                         class="form-control"
                         placeholder="Коментарии"
-                    >{{ user ? user.recruiter_comment : '' }}</textarea>
+                        :value="user ? user.recruiter_comment : ''"
+                    />
                 </div>
             </div>
         </div>

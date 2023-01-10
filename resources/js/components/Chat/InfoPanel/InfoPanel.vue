@@ -23,7 +23,7 @@
       </div>
       <div class="messenger__chat-info-members">
         <div class="messenger__chat-info-members-list">
-          <div class="messenger__chat-info-members-list-item" v-for="member in chat.users">
+          <div class="messenger__chat-info-members-list-item" v-for="member in chat.users" :key="member.id">
             <AlternativeAvatar :title="member.name" :image="member.img_url"/>
             <div class="messenger__chat-info-members-list-item-name">
               <span>{{ member.name }}</span>

@@ -50,7 +50,7 @@
     <!-- список курсов -->
     <div v-if="activeCourse == null">
          <div class="section d-flex aic jcsb my-2"
-          v-for="(course, c_index) in courses"
+          v-for="course in courses"
           :key="course.id"
           @click="getCourse(course.id)"
         >
@@ -201,46 +201,46 @@ const UpbooksRead = () => import(/* webpackChunkName: "UpbooksRead" */ '@/pages/
 const PlaylistEdit = () => import(/* webpackChunkName: "PlaylistEdit" */ '@/pages/PlaylistEdit') // редактирование плейлиста
 
 export default {
-  name: 'MyCourse',
-    components: {
-        SaveCertificate,
-        Booklist,
-        UpbooksRead,
-        PlaylistEdit,
-    },
-    props:{
-        user_id: {
-            type: Number,
-            default: 0
-        }
-    },
-  data() {
-    return {
-      test: "dsa",
-      items: [],
-      courses: [],
-      activeCourseItem: null,
-      activeCourse: null,
-      activeStep: null,
-      trees: [],
-      congrats: false,
-      all_stages: 0,
-      completed_stages: 0,
-      disable_course: false,
-      activeCourseKey: 1,
-        generateCertificate: false
-    };
-  },
-  watch:{
-    user_id(){
-      this.init()
-    }
-  },
-  created() {
-    if(this.user_id){
-      this.init()
-    }
-  },
+	name: 'MyCourse',
+	components: {
+		SaveCertificate,
+		Booklist,
+		UpbooksRead,
+		PlaylistEdit,
+	},
+	props:{
+		user_id: {
+			type: Number,
+			default: 0
+		}
+	},
+	data() {
+		return {
+			test: 'dsa',
+			items: [],
+			courses: [],
+			activeCourseItem: null,
+			activeCourse: null,
+			activeStep: null,
+			trees: [],
+			congrats: false,
+			all_stages: 0,
+			completed_stages: 0,
+			disable_course: false,
+			activeCourseKey: 1,
+			generateCertificate: false
+		};
+	},
+	watch:{
+		user_id(){
+			this.init()
+		}
+	},
+	created() {
+		if(this.user_id){
+			this.init()
+		}
+	},
 
 	computed: {
 		progress: function(){
@@ -333,7 +333,7 @@ export default {
 		fetchData() {
 			let loader = this.$loading.show();
 
-			axios
+			this.$axios
 				.get('/my-courses/get', {})
 				.then((response) => {
 					this.courses = response.data.courses;
@@ -359,7 +359,7 @@ export default {
 		canSelect(status) {
 			const COMPLETED = 1;
 			const STARTED = 2;
-			const INITIAL = 0;
+			// const INITIAL = 0;
 
 			return [STARTED, COMPLETED].includes(status);
 		},
@@ -407,7 +407,7 @@ export default {
 		getCourse(id) {
 			let loader = this.$loading.show();
 
-			axios
+			this.$axios
 				.get('/my-courses/get/' + id)
 				.then((response) => {
 					this.items = response.data.items;
@@ -423,8 +423,8 @@ export default {
 					this.all_stages = response.data.all_stages;
 
 					// change URL
-					const urlParams = new URLSearchParams(window.location.search);
-					let b = urlParams.get('id');
+					// const urlParams = new URLSearchParams(window.location.search);
+					// let b = urlParams.get('id');
 					let uri = '/my-courses?id=' + id;
 					window.history.replaceState({}, 'Мои курсы', uri);
 					this.setStart();

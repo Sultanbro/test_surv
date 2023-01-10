@@ -50,15 +50,16 @@
 
 <script>
 import S3Block from '../section3/S3Block'
-import {Hooper, Navigation as HooperNavigation, Slide} from 'hooper'
+import {Hooper, Slide} from 'hooper'
 import 'hooper/dist/hooper.css'
 
 export default {
+	name: 'SectionSection3',
 	components: {
 		S3Block,
 		Hooper,
 		Slide,
-		HooperNavigation
+		// HooperNavigation
 	},
 	data() {
 		return {

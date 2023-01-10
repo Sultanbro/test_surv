@@ -35,33 +35,33 @@
 import BirthdayUser from '@/pages/News/BirthdayUser'
 
 export default {
-    name: 'BirthdayFeed',
-    components: {
-        BirthdayUser,
-    },
-    data() {
-        return {
-            usersBirthday: [],
-            nextPage: null,
-        }
-    },
-    mounted() {
-        this.getUsersBirthDay()
-    },
-    methods: {
-        async getUsersBirthDay() {
-            await axios.get('/birthdays')
-                .then(res => {
-                    this.usersBirthday = res.data.data.birthdays;
-                    this.nextPage = res.data.data.pagination.next_page_url;
-                })
-                .catch(res => {
-                    console.log(res)
-                })
-        },
+	name: 'BirthdayFeed',
+	components: {
+		BirthdayUser,
+	},
+	data() {
+		return {
+			usersBirthday: [],
+			nextPage: null,
+		}
+	},
+	mounted() {
+		this.getUsersBirthDay()
+	},
+	methods: {
+		async getUsersBirthDay() {
+			await this.$axios.get('/birthdays')
+				.then(res => {
+					this.usersBirthday = res.data.data.birthdays;
+					this.nextPage = res.data.data.pagination.next_page_url;
+				})
+				.catch(res => {
+					console.log(res)
+				})
+		},
 
 		async getNextPage() {
-			await axios.get(this.nextPage)
+			await this.$axios.get(this.nextPage)
 				.then(res => {
 					console.log(res);
 					this.usersBirthday = this.usersBirthday.concat(res.data.data.birthdays);

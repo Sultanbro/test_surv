@@ -8,23 +8,23 @@
                     <p class="text ml-2">{{ info.applied }} приняты /  {{ info.applied_plan }} требуется </p>
                 </div>
                 <div class="progress">
-                    <div class="indicator" :style="'width: ' + widthRemain + '%'"></div> 
+                    <div class="indicator" :style="'width: ' + widthRemain + '%'"></div>
                     <div class="text">
                         Осталось {{ info.remain_days }} дней
                     </div>
                 </div>
                 <div class="relative">
                     <div class="line line1">
-                        
+
                     </div>
                     <div class="line line2" :style="'left: calc(' + widthRemain + '% - 1.95%);'" v-if="month == (new Date().getMonth() + 1)">
                         {{ today }} <br>{{ months[month] }}
                     </div>
-                    <div class="line line3"> 
+                    <div class="line line3">
                         {{ maxdays[month] }}  {{ months[month] }}
                     </div>
                 </div>
-                
+
             </div>
         </div>
     </div>
@@ -37,8 +37,8 @@
                 <div class="lbox green  shadow">
                     <p>
                         <span>Работают</span>
-                        <i class="fa fa-info-circle" 
-                            v-b-popover.hover.right.html="'Количество сотрудников на данный момент'" 
+                        <i class="fa fa-info-circle"
+                            v-b-popover.hover.right.html="'Количество сотрудников на данный момент'"
                             title="Работают">
                         </i>
                     </p>
@@ -48,8 +48,8 @@
                 <div class="lbox yellow  shadow">
                      <p>
                         <span>Осталось принять</span>
-                        <i class="fa fa-info-circle" 
-                            v-b-popover.hover.right.html="'Количество требуемых сотрудников на данный момент. <br> f: (Кол-во заказа - Кол-во принятых сотрудников)'" 
+                        <i class="fa fa-info-circle"
+                            v-b-popover.hover.right.html="'Количество требуемых сотрудников на данный момент. <br> f: (Кол-во заказа - Кол-во принятых сотрудников)'"
                             title="Осталось принять">
                         </i>
                     </p>
@@ -60,22 +60,22 @@
                 <div class="lbox blue   shadow">
                     <p>
                         <span>Стажеры</span>
-                        <i class="fa fa-info-circle" 
-                            v-b-popover.hover.right.html="'Количество стажеров присутствовавших на сегодняшнем обучении.<br> После отметки отсутствовавших руководителями, это число уменьшается и конкретизируется к концу рабочего дня'" 
+                        <i class="fa fa-info-circle"
+                            v-b-popover.hover.right.html="'Количество стажеров присутствовавших на сегодняшнем обучении.<br> После отметки отсутствовавших руководителями, это число уменьшается и конкретизируется к концу рабочего дня'"
                             title="Стажеры">
                         </i>
                     </p>
                     <p>{{ info.training }}</p>
                 </div>
 
-              
-                
-                
+
+
+
                 <div class="lbox green  shadow">
                     <p>
                         <span>Осталось рабочих дней</span>
-                        <i class="fa fa-info-circle" 
-                            v-b-popover.hover.right.html="'Все дни, кроме воскресенья'" 
+                        <i class="fa fa-info-circle"
+                            v-b-popover.hover.right.html="'Все дни, кроме воскресенья'"
                             title="Осталось рабочих дней">
                         </i>
                     </p>
@@ -85,8 +85,8 @@
                   <div class="lbox yellow  shadow">
                     <p>
                         <span>Уволены</span>
-                        <i class="fa fa-info-circle" 
-                            v-b-popover.hover.right.html="'Уволены в этом месяце <b>по учету ставок</b> сотрудников.<br> Part time считается как 0,5'" 
+                        <i class="fa fa-info-circle"
+                            v-b-popover.hover.right.html="'Уволены в этом месяце <b>по учету ставок</b> сотрудников.<br> Part time считается как 0,5'"
                             title="Уволены">
                         </i>
                     </p>
@@ -97,8 +97,8 @@
                 <div class="lbox blue  shadow" >
                     <p>
                         <span>Принято</span>
-                        <i class="fa fa-info-circle" 
-                            v-b-popover.hover.right.html="'Принято в этом месяце <b>по учету ставок</b> сотрудников. <br> Part time считается как 0,5 <br><br> Нажмите, чтобы увидеть заказы на этот месяц'" 
+                        <i class="fa fa-info-circle"
+                            v-b-popover.hover.right.html="'Принято в этом месяце <b>по учету ставок</b> сотрудников. <br> Part time считается как 0,5 <br><br> Нажмите, чтобы увидеть заказы на этот месяц'"
                             title="Принято">
                         </i>
                     </p>
@@ -115,15 +115,15 @@
             </div>
         </div>
     </div>
-    
 
- 
+
+
 
     <div v-if="orderVisible" class="border shadow p-3 mb-3">
         <h3>Заказы на группы</h3>
 
         <div class="group">
-            
+
         </div>
 
         <table class="table table-striped">
@@ -132,14 +132,14 @@
                 <th>Требуется</th>
                 <th>Факт</th>
             </tr>
-            <tr v-for="order in orders">
+            <tr v-for="(order, index) in orders" :key="index">
                 <td class="text-left t-name  bgz table-title">{{ order.group }}</td>
                 <td class="text-left table-title">{{ order.required }}</td>
                 <td class="text-left table-title">{{ order.fact }}</td>
             </tr>
         </table>
     </div>
-    
+
     <div class="border shadow p-3 rounded">
         <div class="d-flex justify-content-between">
             <h3 class="mb-0">Результаты остальных сотрудников</h3>
@@ -148,8 +148,8 @@
                 <span v-else>Раскрыть</span>
             </button>
         </div>
-        
-         
+
+
     <div v-show="showPlans" class="mt-5">
             <div class="plan" v-for="user in recruiters" :key="user.id">
                 <div class="mb-2 d-flex justify-content-between">
@@ -178,7 +178,7 @@
                         </div>
                 </div>
                 <div class="progress">
-                    <div class="indicator yellow" 
+                    <div class="indicator yellow"
                         v-b-popover.hover title="Сконвертировано"
                         :style="'width: ' + user.converted.percent + '%;'"
                         >{{  user.converted.percent }} %</div>
@@ -187,7 +187,7 @@
                         </div>
                 </div>
                 <div class="progress">
-                    <div class="indicator bluish" 
+                    <div class="indicator bluish"
                         v-b-popover.hover title="Принято на работу"
                         :style="'width: ' + user.applied.percent + '%;'"
                         >{{  user.applied.percent }} %</div>
@@ -195,13 +195,13 @@
                             {{ user.applied.value }} сотрудников из {{ user.applied.plan }} запланированных
                         </div>
                 </div>
-            </div>  
-        </div>  
-         
-    
+            </div>
+        </div>
+
+
     </div>
 
-    
+
 
 
 </div>
@@ -211,7 +211,7 @@
 import D3Funnel from 'd3-funnel';
 
 export default {
-	name: 'Recruting', 
+	name: 'AnalyticsRecruting',
 	props: {
 		records: Object,
 		isAnalyticsPage: Boolean,
@@ -227,7 +227,7 @@ export default {
 			let a = parseFloat(this.info.applied / this.info.applied_plan * 100).toFixed(1);
 			return a == 'Infinity' ? 0 : a;
 		}
-	}, 
+	},
 	data: function () {
 		return {
 			items: [],
@@ -252,15 +252,15 @@ export default {
 					},
 					tooltip: {
 						enabled : true,
-						format: function(label, value) {
+						format: function(label) {
 							if(label == 'Создано новых лидов за месяц') return 'Лиды с названиями: Удаленный, inhouse'
 							if(label == 'Обработано') return 'Сконвертировано + Забраковано лидов'
 							if(label == 'Сконвертировано') return 'Создано сделок на основе лидов'
 							if(label == 'Стажируются') return 'Количество стажеров присутствовавших на сегодняшнем обучении'
 							if(label == 'Приняты в BP') return 'Приняты сотрудниками'
-                            
+
 						}
-					}, 
+					},
 					label: {
 						fontFamily: 'Open Sans',
 						fontSize: '12px',
@@ -281,7 +281,7 @@ export default {
 					{  value: 5, backgroundColor: '#76b5ec', label: 'Стажируются',formatted: 'test hehe boy'},
 					{  value: 1, backgroundColor: '#6f8edf', label: 'Приняты в BP',formatted: 'test hehe boy'},
 				],
-			}, 
+			},
 			chart : null,
 			plan: {
 				hired: 35,
@@ -355,15 +355,15 @@ export default {
 		// эта функция запускается при любом изменении данных
 		records: {
 			// the callback will be called immediately after the start of the observation
-			immediate: true, 
-			handler (val, oldVal) {
+			immediate: true,
+			handler () {
 				this.recruiters = this.records.recruiters
 
 				this.chartOptions.data[0]['value'] = this.records.info.created
 				this.chartOptions.data[1]['value'] = this.records.info.processed
 				this.chartOptions.data[2]['value'] = this.records.info.converted
 				this.chartOptions.data[3]['value'] = this.records.info.trainees
-				this.chartOptions.data[4]['value'] = this.records.info.applied 
+				this.chartOptions.data[4]['value'] = this.records.info.applied
 
 				this.info = this.records.info;
 				this.orders = this.records.orders
@@ -375,18 +375,18 @@ export default {
 				// this.chart.draw(this.chartOptions.data, this.chartOptions.options);
 			}
 		},
-        
+
 	},
-    
+
 	created() {
-        
+
 		this.recruiters = this.records.recruiters
 
 		this.chartOptions.data[0]['value'] = this.records.info.created
 		this.chartOptions.data[1]['value'] = this.records.info.processed
 		this.chartOptions.data[2]['value'] = this.records.info.converted
 		this.chartOptions.data[3]['value'] = this.records.info.trainees
-		this.chartOptions.data[4]['value'] = this.records.info.applied 
+		this.chartOptions.data[4]['value'] = this.records.info.applied
 
 		this.info = this.records.info;
 		this.orders = this.records.orders
@@ -398,8 +398,8 @@ export default {
 		} else {
 			this.showPlans = false
 		}
-        
-        
+
+
 	},
 
 	mounted() {
@@ -415,8 +415,8 @@ export default {
 			this.chartOptions.data[0]['value'] = this.records.info.created
 			this.chartOptions.data[1]['value'] = this.records.info.converted
 			this.chartOptions.data[2]['value'] = this.records.info.trainees
-			this.chartOptions.data[3]['value'] = this.records.info.applied 
-    
+			this.chartOptions.data[3]['value'] = this.records.info.applied
+
 			this.info = this.records.info;
 			this.orders = this.records.orders
 			this.month = this.records.month
@@ -426,7 +426,7 @@ export default {
 				this.chart = new D3Funnel('#funnel')
 				this.chart.draw(this.chartOptions.data, this.chartOptions.options);
 			}
-            
+
 		},
 	}
 };
@@ -448,10 +448,10 @@ export default {
 .line {
     position: absolute;
     top: 8px;
-    
-    
+
+
     padding-top: 15px;
-    
+
     text-align: center;
 }
 .line:before {
@@ -491,7 +491,7 @@ export default {
 // .shadow {
 //     box-shadow: 0 3px 15px #d3d6da;
 //     &.hover:hover {
-//         box-shadow: 0 3px 15px #bbbdbe; 
+//         box-shadow: 0 3px 15px #bbbdbe;
 //         cursor: pointer
 //     }
 // }
@@ -550,8 +550,8 @@ export default {
             background: #055583;
         }
     }
-    
-    
+
+
 }
 .recruting-analytics h3 {
     font-size: 1.1rem;

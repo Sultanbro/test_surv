@@ -49,15 +49,15 @@
                     </div>
                 </th>
 
-                <th class="text-center" colspan="2" v-for="day in month.daysInMonth">
+                <th class="text-center" colspan="2" v-for="day in month.daysInMonth" :key="day">
                     <div>{{ day }}</div>
                 </th>
 
             </tr>
             <tr>
                 <template v-for="day in month.daysInMonth">
-                    <th class="stickyy-h2">сборы</th>
-                    <th class="stickyy-h2">тенге</th>
+                    <th class="stickyy-h2" :key="day">сборы</th>
+                    <th class="stickyy-h2" :key="day">тенге</th>
                 </template>
             </tr>
             <tr
@@ -88,7 +88,7 @@
                     :class="{'sticky-left': isDesktop}"
                 >{{ item.count }}</td>
                 <template v-for="day in month.daysInMonth">
-                    <td v-if="item.editable"
+                    <td v-if="item.editable" :key="day"
                         :class="'text-center ' + item._cellVariants[day]"
                         :title="day + ': сборы'"
                     >
@@ -100,6 +100,7 @@
                         </div>
                     </td>
                     <td v-else
+						:key="day"
                         :title="day + ': сборы'"
                         @click="editMode(item)"
                         :class="'text-center ' + item._cellVariants[day]"
@@ -108,12 +109,14 @@
                     </td>
 
                     <td v-if="!isNaN(Number(item[day]) * price)"
+						:key="day + 'a'"
                         :title="day + ': тенге'"
                         class=""
                     >
                         {{ Number(item[day]) * price }}
                     </td>
                     <td v-else
+						:key="day + 'a'"
                         :title="day + ': тенге'"
                         class=""
                     ></td>
@@ -172,7 +175,7 @@ export default {
 		},
 	},
 	watch: {
-		activity: function(newVal, oldVal) { // watch it
+		activity: function() { // watch it
 			this.fetchData();
 		},
 	},
@@ -241,8 +244,6 @@ export default {
 		setLeaders() {
 			let arr = this.itemsArray;
 
-			let first_item = this.itemsArray[0];
-
 			arr.sort((a, b) => Number(a.plan) < Number(b.plan)  ?
 				1 : Number(a.plan) > Number(b.plan) ? -1 : 0);
 
@@ -254,7 +255,7 @@ export default {
 
 		totalColumn() {
 			let row0_avg = 0;
-			this.itemsArray.forEach((account, index) => {
+			this.itemsArray.forEach(account => {
 				if(parseFloat(account['plan']) != 0 && account['plan'] != undefined) {
 					row0_avg += parseFloat(account['plan']);
 					console.log(account['plan'])
@@ -322,7 +323,7 @@ export default {
 
 		editMode(item) {
 			if(!this.is_admin) return null;
-			this.items.forEach((account, index) => {
+			this.items.forEach(account => {
 				account.editable = false
 			})
 			item.editable = true
@@ -347,17 +348,15 @@ export default {
 
 			this.items[index][key] = Number(this.items[index][key])
 
-			let settings = [];
 			let employee_id = data.id;
 
 			let items = this.items;
 
 			this.loading = true
-			let year = new Date().getFullYear();
 
 			this.updateTable(items);
 
-			axios
+			this.axios
 				.post('/timetracking/analytics/update-stat', {
 					month: this.month.month,
 					year: this.month.currentYear,
@@ -367,7 +366,7 @@ export default {
 					day: key,
 					value: value,
 				})
-				.then((response) => {
+				.then(() => {
 					this.loading = false
 				});
 
@@ -390,10 +389,13 @@ export default {
 			this.avgOfAverage = 0;
 			this.percentage = []
 
+			// eslint-disable-next-line no-unused-vars
 			let row0_avg = 0;
+			// eslint-disable-next-line no-unused-vars
 			let row0_avg_items = 0;
 
-			this.records.forEach((account, index) => {
+			this.records.forEach(account => {
+				// eslint-disable-next-line no-unused-vars
 				let countWorkedDays = 0;
 				let cellValues = [];
 
@@ -424,6 +426,7 @@ export default {
 
 							if (account[key] > 0) {
 								sumForOne += account[key]; // horizontal sum
+								// eslint-disable-next-line no-unused-vars
 								countWorkedDays++;
 								this.totalCountDays++;
 							}

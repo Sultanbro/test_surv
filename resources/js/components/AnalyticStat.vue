@@ -1,6 +1,6 @@
 <template>
     <div class="z-12 relative">
-     
+
         <div class="table-header">
             <input type="text" class="cell-coords" v-model="coords">
             <input type="text" class="cell-type" v-model="cell_type">
@@ -8,7 +8,7 @@
             <input type="text" class="cell-value" v-model="cell_value">
             <input type="text" class="cell-comment" v-model="cell_comment">
         </div>
-    
+
         <div class="d-flex">
             <div class="relative   w551" id="wow-table">
                 <!-- table -->
@@ -30,9 +30,9 @@
                             </div>
                         </td>
                     </tr>
-    
+
                     <tr v-for="(item, i_index) in items" :key="i_index">
-    
+
                             <td class="t-cell rownumber ruler-cells">
                                 <div class="in-cell inner-div text-center">
                                     <span v-if="editTableMode && i_index > 3" @click="deleteRow(i_index)">
@@ -44,10 +44,10 @@
                                     <span>{{ i_index + 1 }}</span>
                                 </div>
                             </td>
-    
+
                             <template v-for="(field,f_index) in fields.slice(0, 4)" >
                                 <td class="t-cell font-bold"  :key="f_index" @click="focus(i_index, f_index)" v-if="field.key != 'plan'" :class="item[field.key].class">
-                                    
+
                                     <template v-if="field.key == 'name' && [1,2,3].includes(i_index)">
                                         <div class="d-flex justify-content-between">
                                             <div class="inner-div halfy" @click="focusName(i_index, f_index, 1)"
@@ -57,33 +57,33 @@
                                                     'disabled': item[field.key].editable == 0
                                                 }"
                                                 @contextmenu.prevent.stop="openContextMenu(item[field.key], i_index, f_index)">
-                                                
-    
-                                                
+
+
+
                                                 <div class="disabled"></div>
-    
+
                                                 <div class="contextor" v-if="item[field.key].context">
-                                                      
-                                                     
+
+
                                                         <ul class="types">
                                                             <li  @click="add_formula_1_31(item[field.key])">
                                                                 Формула с 1 по 31
                                                             </li>
                                                         </ul>
                                                     </div>
-    
-                                                <input type="text" class="in-cell" v-if="focused_item === i_index && focused_field === f_index && focused_subfield == 1" 
+
+                                                <input type="text" class="in-cell" v-if="focused_item === i_index && focused_field === f_index && focused_subfield == 1"
                                                     v-model="item['name'].value" @change="change_stat(i_index, 'name')"/>
-    
+
                                                 <input v-else type="text" class="in-cell" :value="item['name'].show_value" />
-    
-                                        
+
+
                                                 <div class="bottom-angle" v-if="focused_item === i_index && focused_field === f_index && focused_subfield == 1"  >
                                                     <div class="angler"></div>
                                                 </div>
-    
+
                                                 <div class="top-angle"  :class="item[field.key].type">
-    
+
                                                 </div>
                                             </div>
                                             <div class="inner-div halfy" @click="focusName(i_index, f_index, 2)"
@@ -93,25 +93,25 @@
                                                     'disabled': item['plan'].editable == 0
                                                 }"
                                                 @contextmenu.prevent.stop="openContextMenu(item['plan'], i_index, f_index)">
-                                                
+
                                                 <div class="disabled"></div>
-                                        
-                                                <input type="text" class="in-cell" v-if="focused_item === i_index && focused_field === f_index && focused_subfield == 2" 
+
+                                                <input type="text" class="in-cell" v-if="focused_item === i_index && focused_field === f_index && focused_subfield == 2"
                                                     v-model="item['plan'].value" @change="change_stat(i_index, 'plan')"/>
                                                 <input v-else type="text" class="in-cell" :value="item['plan'].show_value + (i_index == 2 ? '%' : '')" />
-                                        
+
                                                 <div class="bottom-angle" v-if="focused_item === i_index && focused_field === f_index && focused_subfield == 2"  >
                                                     <div class="angler"></div>
                                                 </div>
-    
+
                                                 <div class="top-angle"  :class="item[field.key].type">
-    
+
                                                 </div>
                                             </div>
                                         </div>
-                                        
+
                                     </template>
-                                    
+
                                     <template v-else>
                                         <div class="inner-div"
                                             :class="{
@@ -120,7 +120,7 @@
                                                 'disabled': item[field.key].editable == 0
                                             }"
                                             @contextmenu.prevent.stop="openContextMenu(item[field.key], i_index, f_index)">
-                                            
+
                                             <div class="disabled"></div>
                                             <div class="contextor" v-if="item[field.key].context">
                                                 <div class="fonter d-flex justify-content-between" v-if="activeuserid == 5">
@@ -138,7 +138,7 @@
                                                     <div class="bg-violet"  @click="add_class(item[field.key], 'bg-violet')"></div>
                                                 </div>
                                                 <ul class="types">
-                                        
+
                                                         <li  @click="change_type('initial', i_index, field.key)" v-if="activeuserid == 5 || ['sum', 'avg'].includes(field.key)">
                                                             Обычный
                                                         </li>
@@ -183,41 +183,41 @@
                                                         </li>
                                                 </ul>
                                             </div>
-    
-    
-                                            <input type="text" class="in-cell" v-if="focused_item === i_index && focused_field === f_index" 
+
+
+                                            <input type="text" class="in-cell" v-if="focused_item === i_index && focused_field === f_index"
                                                     v-model="item[field.key].value" @change="change_stat(i_index, field.key)"/>
                                                 <input v-else type="text" class="in-cell" :value="item[field.key].show_value  ? item[field.key].show_value : '' + (i_index == 2 && field.key == 'sum' ? '%' : '')" />
-                                                
-                                        
-                                    
+
+
+
                                             <div class="bottom-angle" v-if="focused_item === i_index && focused_field === f_index"  >
                                                 <div class="angler"></div>
                                             </div>
-    
+
                                             <div class="top-angle"  :class="item[field.key].type">
-    
+
                                             </div>
                                         </div>
                                     </template>
-                                    
+
                                 </td>
                             </template>
                     </tr>
-    
-    
-                
+
+
+
                 </table>
-                
-    
-                
+
+
+
             </div>
-        
+
             <div class="table-responsive">
                 <!-- table 2 -->
                 <table class="as-table mr150">
                     <tr>
-                        
+
                         <td v-for="(letter, index) in letter_cells.slice(4, letter_cells.length)" :key="index"
                             class="ruler-cells t-cell text-center">
                             <div class="in-cell inner-div">
@@ -225,10 +225,10 @@
                             </div>
                         </td>
                     </tr>
-    
+
                     <tr v-for="(item, i_index) in items" :key="i_index">
-    
-    
+
+
                             <template v-for="(field,f_index) in fields">
                                 <td class="t-cell font-bold"  :key="f_index" @click="focus(i_index, f_index)" :class="item[field.key].class" v-if="f_index > 3">
                                     <div class="inner-div"
@@ -238,9 +238,9 @@
                                             'disabled': item[field.key].editable == 0 || ['stat', 'time'].includes(item[field.key].type),
                                             'less': item[field.key].depend_id !== null && items[depender[item[field.key].depend_id]] !== undefined && Number(items[depender[item[field.key].depend_id]][field.key].show_value) > Number(item[field.key].show_value),
                                             'more': item[field.key].depend_id !== null && items[depender[item[field.key].depend_id]] !== undefined && Number(items[depender[item[field.key].depend_id]][field.key].show_value) < Number(item[field.key].show_value),
-                                        }" 
+                                        }"
                                         @contextmenu.prevent.stop="openContextMenu(item[field.key], i_index, f_index)">
-                                        
+
                                         <div class="disabled"></div>
                                         <div class="contextor" v-if="item[field.key].context">
                                             <ul class="types">
@@ -261,39 +261,39 @@
                                                 </li>
                                             </ul>
                                         </div>
-    
-                                        <input type="text" class="in-cell" v-if="focused_item === i_index && focused_field === f_index" 
+
+                                        <input type="text" class="in-cell" v-if="focused_item === i_index && focused_field === f_index"
                                             v-model="item[field.key].value" @change="change_stat(i_index, field.key)"/>
-                
+
                                         <input v-else-if="i_index != 0" type="text" class="in-cell" :value="(Number(item[field.key].show_value) != 0 ? Number(item[field.key].show_value).toFixed(item[field.key].decimals) + item[field.key].sign : '')" />
                                         <input v-else type="text" class="in-cell" :value="item[field.key].show_value" />
-    
+
                                         <div class="bottom-angle" v-if="focused_item === i_index && focused_field === f_index">
                                             <div class="angler"></div>
                                         </div>
-    
+
                                         <div class="top-angle"  :class="item[field.key].type">
-    
+
                                         </div>
                                     </div>
                                 </td>
                             </template>
-                            
-                    
+
+
                     </tr>
-    
-    
-                
+
+
+
                 </table>
             </div>
         </div>
-    
-    
-        
-    
+
+
+
+
          <!-- Modal Create activity -->
         <b-modal v-model="showDependy"  title="Зависимость значений от ряда" size="md" class="modalle" @ok="save_depend()">
-        
+
              <div class="row">
                  <div class="col-12">
                      <b v-if="itemy !== undefined && itemy !== null"> {{ itemy.value }}</b>
@@ -307,12 +307,12 @@
                     </select>
                 </div>
             </div>
-    
+
         </b-modal>
-    
+
          <!-- Modal Create activity -->
         <b-modal v-model="showVariants"  title="Формула на 31 дней" size="lg" class="modalle" @ok="save_cell_activity()">
-        
+
              <div class="row">
                 <div class="col-5">
                     <p class="">Активность</p>
@@ -323,9 +323,9 @@
                     </select>
                 </div>
             </div>
-    
+
         </b-modal>
-    
+
         <!-- Modal showFormula1_31 -->
         <b-modal v-model="showFormula1_31"  title="Формула на 31 дней" size="lg" class="modalle" @ok="save_formula_1_31()">
             <div class="row">
@@ -344,12 +344,12 @@
                     <input type="text" class="form-control form-control-sm" v-model="formula_1_31_decimals">
                 </div>
             </div>
-    
+
         </b-modal>
-    
+
         <!-- comment for remote / inhouse add minutes -->
         <b-modal v-model="showCommentWindow"  title="Комментарии" size="lg" class="modalle" @ok="saveComment()">
-        
+
             <div class="row">
                 <div class="col-12">
                     <p>По какой причине добавляются минуты?</p>
@@ -358,20 +358,20 @@
                     <input type="text" class="form-control form-control-sm" v-model="comment">
                 </div>
             </div>
-    
+
         </b-modal>
-    
-        
-    
-        
+
+
+
+
     </div>
     </template>
-    
+
 <script>
 const Parser = require('expr-eval').Parser;
 export default {
 	components: {},
-	name: 'AnalyticStat', 
+	name: 'AnalyticStat',
 	props: ['monthInfo', 'activeuserid', 'table', 'group_id', 'fields', 'activities'],
 	data() {
 		return {
@@ -381,7 +381,7 @@ export default {
 			focused_subfield: null,
 			editTableMode: false,
 			showVariants: false, // activites
-			showDependy: false, // 
+			showDependy: false, //
 			coords: null,
 			activity_id: null,
 			depend_id: null,
@@ -423,29 +423,29 @@ export default {
 			letter_cells: [],
 		}
 	},
-    
+
 	created() {
 		this.items = this.table
 		this.form()
-            
+
 		this.calcGlobal()
 		this.setDependencies();
-           
-		//this.fields = this.columns 
-    
+
+		//this.fields = this.columns
+
 	},
-        
+
 	mounted () {
 		document.addEventListener('keyup', this.nextItem);
 		// this.listener()
 	},
-    
+
 	methods: {
 		setDependencies() {
 			let arr = [];
-    
+
 			this.items.forEach((item, index) => {
-    
+
 				if(![0,1,2,3].includes(index)) {
 					arr.push({
 						'row_id': item['name']['row_id'],
@@ -453,31 +453,31 @@ export default {
 						'index': item['name']['value'],
 					});
 				}
-    
-                    
+
+
 			});
 			this.dependencies  = arr
-    
-    
+
+
 			let depender = {};
 			this.items.forEach((item, index) => {
-                    
+
 				depender[item['name']['row_id']] = index;
-                    
+
 			});
-    
-                
+
+
 			this.depender = depender
-    
+
 		},
-    
+
 		editMode() {
 			this.editTableMode = !this.editTableMode
 		},
-    
+
 		listener() {
 			var ignoreClickOnMeElement = document.getElementById('wow-table');
-    
+
 			var self = this;
 			document.addEventListener('click', function(event) {
 				var isClickInsideElement = ignoreClickOnMeElement.contains(event.target);
@@ -486,10 +486,10 @@ export default {
 				}
 			});
 		},
-    
+
 		calc(combinations) {
 			let expression = this.getExpression(combinations);
-    
+
 			let result = 0;
 
 			if(expression !== null && expression.length > 0) {
@@ -498,98 +498,98 @@ export default {
 				} catch (e) {
 					console.log(e)
 					console.log(result, 'result')
-				} 
-			} 
-                
+				}
+			}
+
 			return result;
 		},
-    
+
 		add_class(item, clasxs) {
 			let c = item.class
-    
+
 			if(clasxs == 'text-center' && c !== null) {
 				item.class = item.class.replace('text-left', '');
 				item.class = item.class.replace('text-right', '');
 			}
-    
+
 			if(clasxs == 'text-left' && c !== null) {
 				item.class = item.class.replace('text-center', '');
 				item.class = item.class.replace('text-right', '');
 			}
-    
+
 			if(clasxs == 'text-right' && c !== null) {
 				item.class = item.class.replace('text-left', '');
 				item.class = item.class.replace('text-center', '');
 			}
-    
+
 			if(clasxs == 'bg-red' && c !== null) {
 				item.class = item.class.replace('bg-yellow', '');
 				item.class = item.class.replace('bg-green', '');
 				item.class = item.class.replace('bg-blue', '');
 				item.class = item.class.replace('bg-violet', '');
 			}
-    
+
 			if(clasxs == 'bg-yellow' && c !== null) {
 				item.class = item.class.replace('bg-red', '');
 				item.class = item.class.replace('bg-green', '');
 				item.class = item.class.replace('bg-blue', '');
 				item.class = item.class.replace('bg-violet', '');
 			}
-    
+
 			if(clasxs == 'bg-green' && c !== null) {
 				item.class = item.class.replace('bg-yellow', '');
 				item.class = item.class.replace('bg-red', '');
 				item.class = item.class.replace('bg-blue', '');
 				item.class = item.class.replace('bg-violet', '');
 			}
-    
+
 			if(clasxs == 'bg-blue' && c !== null) {
 				item.class = item.class.replace('bg-yellow', '');
 				item.class = item.class.replace('bg-green', '');
 				item.class = item.class.replace('bg-red', '');
 				item.class = item.class.replace('bg-violet', '');
 			}
-    
+
 			if(clasxs == 'bg-violet' && c !== null) {
 				item.class = item.class.replace('bg-yellow', '');
 				item.class = item.class.replace('bg-green', '');
 				item.class = item.class.replace('bg-blue', '');
 				item.class = item.class.replace('bg-red', '');
 			}
-    
+
 			if(c !== null && c.includes(clasxs)) {
 				item.class = item.class.replace(clasxs, '');
 			} else {
 				item.class = item.class + ' ' + clasxs;
 			}
-                
+
 			if(item.type == 'formula') {
 				item.show_value = item.value;
 				let combinations = this.combinator(item.value);
 				item.formula  = this.getExpression(combinations, 'db');
 				item.show_value = this.calc(combinations);
 			}
-    
+
 			this.editQueryItem(item);
-		}, 
-    
+		},
+
 		calcGlobal() {
 			let items = this.formula_searcher()
-    
+
 			items.forEach(it => {
 				let combinations = this.combinator(it.value);
 				it.formula  = this.getExpression(combinations, 'db');
 				it.show_value = Number(Number(this.calc(combinations).toFixed(it.decimals)));
 			});
 		},
-           
+
 		getExpression(combinations, type = 'local') {
 			let expression = '';
-    
+
 			if(type == 'local') { // для vue
 				combinations.forEach(item => {
-    
-                        
+
+
 					if(item.type == 'formula') {
 						let inner_combinations = this.combinator(item.value);
 						let inner_calc = 0;
@@ -605,7 +605,7 @@ export default {
 					}
 				});
 			}
-    
+
 			if(type == 'db') { // для хранения формулы в базе
 				combinations.forEach(item => {
 					if(item.type == 'value') expression += item.value
@@ -614,15 +614,15 @@ export default {
 					if(item.type == 'action') expression += item.text
 				});
 			}
-    
+
 			return expression;
 		},
-    
+
 		add_row(i_index) {
-    
-                
+
+
 			let loader = this.$loading.show();
-			axios.post('/timetracking/analytics/add-row', {
+			this.axios.post('/timetracking/analytics/add-row', {
 				group_id: this.group_id,
 				date: this.$moment(
 					`${this.monthInfo.currentMonth} ${this.monthInfo.currentYear}`,
@@ -632,8 +632,8 @@ export default {
 			})
 				.then((response) => {
 					this.$toast.success('Добавлено');
-    
-                 
+
+
 					this.items.splice(i_index + 1, 0, response.data);
 					//this.setDependencies();
 					loader.hide()
@@ -642,24 +642,24 @@ export default {
 					console.log(error)
 					loader.hide()
 				});
-     
+
 		},
-            
-    
+
+
 		deleteRow(index) {
 			let e = confirm('Вы уверены?');
 			let loader = this.$loading.show();
-                
+
 			if(e) {
-				axios.post('/timetracking/analytics/delete-row', {
+				this.axios.post('/timetracking/analytics/delete-row', {
 					group_id: this.group_id,
 					date: this.$moment(
 						`${this.monthInfo.currentMonth} ${this.monthInfo.currentYear}`,
-						'MMMM YYYY' 
+						'MMMM YYYY'
 					).format('YYYY-MM-DD'),
 					item: this.items[index]
 				})
-					.then((response) => {
+					.then(() => {
 						this.$toast.success('Удалено');
 						// Delete item from items
 						this.items.splice(index, 1);
@@ -672,16 +672,16 @@ export default {
 					});
 			}
 		},
-    
+
 		save_depend() {
-            
-			axios.post('/timetracking/analytics/add-depend', {
+
+			this.axios.post('/timetracking/analytics/add-depend', {
 				id: this.itemy['row_id'],
 				depend_id: this.depend_id
 			})
-				.then((response) => {
+				.then(() => {
 					this.$toast.success('Обновите, чтобы подтянуть данные!');
-                    
+
 					this.showDependy = false;
 					this.depend_id = null;
 					this.itemy = null
@@ -689,99 +689,99 @@ export default {
 					this.$toast.error('Не получилось');
 					console.log(error)
 				});
-               
+
 		},
-    
+
 		removeDependency(item) {
-			axios.post('/timetracking/analytics/dependency/remove', {
+			this.axios.post('/timetracking/analytics/dependency/remove', {
 				id: item.row_id,
 			})
-				.then((response) => {
+				.then(() => {
 					this.$toast.success('Обновите, чтобы подтянуть данные!');
 				}).catch(error => {
 					this.$toast.error('Не получилось');
 					console.log(error)
 				});
-               
+
 		},
-    
+
 		focus(i,f) {
-    
+
 			if([1,2,3].includes(i) && f == 0) return ''
-    
-      
-    
+
+
+
 			if(!(this.focused_item == i && this.focused_field == f)) {
 				this.hideContextMenu();
 			}
-    
+
 			// indexes
 			this.focused_item = i
 			this.focused_field = f
-    
+
 			// cell value
 			let item = this.items[i][this.fields[f].key];
-    
+
 			this.cell_value = item.value
 			this.cell_comment = item.comment
 			this.cell_type = this.cell_types[item.type]
 			this.cell_show_value = item.show_value
 			this.coords = item.cell
-    
+
 		},
-    
+
 		focusName(i,f, s) {
-    
+
 			this.hideContextMenu();
 			// indexes
 			this.focused_item = i
 			this.focused_field = f
-    
+
 			// cell value
 			this.focused_subfield = s;
-    
+
 			let field = s == 2 ? 'plan' : 'name';
-    
+
 			this.cell_value = this.items[i][field].value
 			this.cell_comment = this.items[i][field].comment
 
 			this.cell_type = this.cell_types[this.items[i][field].type]
-    
+
 			this.coords = this.items[i][field].cell
 		},
-    
+
 		hideContextMenu() {
-			this.items.forEach((item, index) => {
+			this.items.forEach(item => {
 				Object.values(item).forEach((value) => {
 					value.context = false
 				});
 			})
 		},
-    
+
 		openContextMenu(item, i_index, f_index) {
 			if(![5,18,157,84,14009].includes(Number(this.activeuserid))) {
 				return '';
 			}
 			this.focus(i_index, f_index);
 			this.hideContextMenu();
-    
+
 			//if(item.editable == 1) {
 			item.context = true;
 			//}
-                
+
 		},
-    
+
 		editQuery(i_index, f_index) {
 			let item = this.items[i_index][f_index];
-    
-			axios.post('/timetracking/analytics/edit-stat', {
+
+			this.axios.post('/timetracking/analytics/edit-stat', {
 				date: this.$moment(
 					`${this.monthInfo.currentMonth} ${this.monthInfo.currentYear}`,
 					'MMMM YYYY'
 				).format('YYYY-MM-DD'),
 				column_id: item.column_id,
 				row_id: item.row_id,
-				value: item.value, 
+				value: item.value,
 				show_value: item.show_value,
 				type: item.type,
 				group_id: this.group_id,
@@ -789,7 +789,7 @@ export default {
 				formula: item.formula,
 				comment: this.comment,
 			})
-				.then((response) => {
+				.then(() => {
 					this.showCommentWindow = false;
 					this.comment_i = '';
 					this.comment_f = '';
@@ -799,22 +799,22 @@ export default {
 					console.log(error)
 				});
 		},
-    
-            
-    
+
+
+
 		save_cell_time() {
 			let loader = this.$loading.show();
 			let item = this.item
-			axios.post('/timetracking/analytics/save-cell-time', {
+			this.axios.post('/timetracking/analytics/save-cell-time', {
 				month: this.$moment(this.monthInfo.currentMonth, 'MMMM').format('M'),
 				year: this.monthInfo.currentYear,
 				column_id: item.column_id,
 				row_id: item.row_id,
 				group_id: this.group_id,
 				class: item.class,
-			}).then(response => {
+			}).then(() => {
 				this.$toast.success('Обновите чтобы подтянуть данные!')
-                   
+
 				this.item = null;
 				loader.hide()
 			}).catch(error => {
@@ -823,12 +823,12 @@ export default {
 				alert(error)
 			});
 		},
-    
-            
+
+
 		save_cell_sum() {
 			let loader = this.$loading.show();
 			let item = this.item
-			axios.post('/timetracking/analytics/save-cell-sum', {
+			this.axios.post('/timetracking/analytics/save-cell-sum', {
 				month: this.$moment(this.monthInfo.currentMonth, 'MMMM').format('M'),
 				year: this.monthInfo.currentYear,
 				column_id: item.column_id,
@@ -837,8 +837,8 @@ export default {
 				class: item.class,
 			}).then(response => {
 				this.$toast.success('Сумма подтянута!')
-                   
-    
+
+
 				this.item.value = response.data
 				this.item.show_value = response.data
 				this.item = null;
@@ -849,11 +849,11 @@ export default {
 				alert(error)
 			});
 		},
-    
+
 		save_cell_avg() {
 			let loader = this.$loading.show();
 			let item = this.item
-			axios.post('/timetracking/analytics/save-cell-avg', {
+			this.axios.post('/timetracking/analytics/save-cell-avg', {
 				month: this.$moment(this.monthInfo.currentMonth, 'MMMM').format('M'),
 				year: this.monthInfo.currentYear,
 				column_id: item.column_id,
@@ -862,7 +862,7 @@ export default {
 				class: item.class,
 			}).then(response => {
 				this.$toast.success('Среднее за месяц подтянута!')
-                   
+
 				this.item.value = response.data
 				this.item.show_value = response.data
 				this.item = null;
@@ -873,29 +873,29 @@ export default {
 				alert(error)
 			});
 		},
-    
-    
-		save_cell_activity() { 
+
+
+		save_cell_activity() {
 			let loader = this.$loading.show();
 			let item = this.item
-			axios.post('/timetracking/analytics/save-cell-activity', {
+			this.axios.post('/timetracking/analytics/save-cell-activity', {
 				month: this.$moment(this.monthInfo.currentMonth, 'MMMM').format('M'),
 				year: this.monthInfo.currentYear,
 				column_id: item.column_id,
 				row_id: item.row_id,
-				value: item.value, 
+				value: item.value,
 				show_value: item.show_value,
 				group_id: this.group_id,
 				type: item.type,
 				class: item.class,
 				formula: item.formula,
 				activity_id: this.activity_id
-			}).then(response => {
+			}).then(() => {
 				this.$toast.success('Обновите чтобы подтянуть данные!')
-                   
-    
+
+
 				this.item = null;
-    
+
 				this.showVariants = false
 				loader.hide()
 			}).catch(error => {
@@ -904,10 +904,10 @@ export default {
 				alert(error)
 			});
 		},
-            
+
 		editQueryItem(item) {
-               
-			axios.post('/timetracking/analytics/edit-stat', {
+
+			this.axios.post('/timetracking/analytics/edit-stat', {
 				date: this.$moment(
 					`${this.monthInfo.currentMonth} ${this.monthInfo.currentYear}`,
 					'MMMM YYYY'
@@ -921,78 +921,78 @@ export default {
 				formula: item.formula,
 				group_id: this.group_id,
 			})
-				.then((response) => {
+				.then(() => {
 					this.$toast.success('Сохранено');
 				}).catch(error => {
 					this.$toast.error('Не сохранено');
 					console.log(error)
 				});
 		},
-    
+
 		change_type(type, i_index, f_index) {
 			let item = this.items[i_index][f_index];
 			item.type = type
-    
+
 			if(item.type == 'initial') {
 				item.show_value = item.value;
-    
+
 				this.calcGlobal()
 				this.editQuery(i_index, f_index);
-    
+
 			}
-    
+
 			if(item.type == 'formula') {
 				item.show_value = item.value;
-                    
+
 				let combinations = this.combinator(item.value);
-    
+
 				item.formula  = this.getExpression(combinations, 'db');
-    
+
 				item.show_value = this.calc(combinations);
-    
+
 				this.calcGlobal()
-    
+
 				this.editQuery(i_index, f_index);
 			}
-    
+
 			if(item.type == 'time'){
 				this.item = item;
 				this.save_cell_time();
 			}
-    
+
 			if(item.type == 'sum'){
 				this.item = item;
 				this.save_cell_sum();
 			}
-    
+
 			if(item.type == 'avg'){
 				this.item = item;
 				this.save_cell_avg();
 			}
-    
+
 			if(item.type == 'stat'){
 				this.item = item;
 				this.showVariants = true;
 			}
-    
-               
-    
-             
+
+
+
+
 		},
-    
+
 		selectDepend(item) {
 			this.itemy = item
 			this.showDependy = true;
 		},
-    
+
 		add_formula_1_31(item) {
 			this.itemy = item
 			this.showFormula1_31 = true;
 		},
-    
+
 		add_inhouse(item) {
 			this.itemy = item;
-			axios.post('/timetracking/analytics/add-remote-inhouse', {
+			this.axios.post('/timetracking/analytics/add-remote-inhouse', {
 				date: this.$moment(
 					`${this.monthInfo.currentMonth} ${this.monthInfo.currentYear}`,
 					'MMMM YYYY'
@@ -1000,7 +1000,7 @@ export default {
 				row_id: this.itemy.row_id,
 				type: 'inhouse'
 			})
-				.then((response) => {
+				.then(() => {
 					this.$toast.success('Обновите для сохранения');
 					this.itemy = null;
 				}).catch(error => {
@@ -1008,10 +1008,10 @@ export default {
 					console.log(error)
 				});
 		},
-    
+
 		add_remote(item) {
 			this.itemy = item;
-			axios.post('/timetracking/analytics/add-remote-inhouse', {
+			this.axios.post('/timetracking/analytics/add-remote-inhouse', {
 				date: this.$moment(
 					`${this.monthInfo.currentMonth} ${this.monthInfo.currentYear}`,
 					'MMMM YYYY'
@@ -1019,7 +1019,7 @@ export default {
 				row_id: this.itemy.row_id,
 				type: 'remote'
 			})
-				.then((response) => {
+				.then(() => {
 					this.$toast.success('Обновите для сохранения');
 					this.itemy = null;
 				}).catch(error => {
@@ -1027,17 +1027,17 @@ export default {
 					console.log(error)
 				});
 		},
-    
+
 		add_salary(item) {
 			this.itemy = item;
-			axios.post('/timetracking/analytics/add-salary', {
+			this.axios.post('/timetracking/analytics/add-salary', {
 				date: this.$moment(
 					`${this.monthInfo.currentMonth} ${this.monthInfo.currentYear}`,
 					'MMMM YYYY'
 				).format('YYYY-MM-DD'),
 				row_id: this.itemy.row_id
 			})
-				.then((response) => {
+				.then(() => {
 					this.$toast.success('Обновите для сохранения');
 					this.itemy = null;
 				}).catch(error => {
@@ -1045,10 +1045,10 @@ export default {
 					console.log(error)
 				});
 		},
-     
+
 		setDecimals(item) {
-    
-			axios.post('/timetracking/analytics/set-decimals', {
+
+			this.axios.post('/timetracking/analytics/set-decimals', {
 				date: this.$moment(
 					`${this.monthInfo.currentMonth} ${this.monthInfo.currentYear}`,
 					'MMMM YYYY'
@@ -1057,7 +1057,7 @@ export default {
 				column_id: item.column_id,
 				decimals: item.decimals
 			})
-				.then((response) => {
+				.then(() => {
 					this.$toast.success('Сохранено!');
 					this.hideContextMenu();
 				}).catch(error => {
@@ -1065,24 +1065,24 @@ export default {
 					console.log(error)
 				});
 		},
-    
+
 		save_formula_1_31() {
-			let rows = [];
-    
+			// let rows = [];
+
 			let text =  this.formula_1_31
-    
+
 			this.items.forEach((item, index) => {
 				index++;
 				text = text.replaceAll('{' + index + '}', '{' + item['name']['row_id'] + '}');
 			});
-    
+
 			var regExp = /[a-zA-Z]/g;
-                            
+
 			if(regExp.test(text)){
 				/* do something if letters are found in your string */
 				this.$toast.error('Вы не правильно ввели формулу');
 			} else {
-				axios.post('/timetracking/analytics/add-formula-1-31', {
+				this.axios.post('/timetracking/analytics/add-formula-1-31', {
 					date: this.$moment(
 						`${this.monthInfo.currentMonth} ${this.monthInfo.currentYear}`,
 						'MMMM YYYY'
@@ -1091,7 +1091,7 @@ export default {
 					row_id: this.itemy.row_id,
 					decimals: this.formula_1_31_decimals
 				})
-					.then((response) => {
+					.then(() => {
 						this.$toast.success('Обновите для сохранения');
 						this.showFormula1_31 = false
 						this.formula_1_31 = '';
@@ -1102,45 +1102,45 @@ export default {
 						console.log(error)
 					});
 			}
-    
-    
+
+
 		},
-    
+
 		change_stat(i_index, f_index) {
 			let item = this.items[i_index][f_index];
-    
+
 			if(item.type == 'initial') {
 				item.show_value = item.value;
-    
+
 				this.calcGlobal();
 			}
-    
+
 			if(item.type == 'formula') {
 				item.show_value = item.value;
-                    
+
 				let combinations = this.combinator(item.value);
-    
+
 				item.formula  = this.getExpression(combinations, 'db');
-    
+
 				item.show_value = this.calc(combinations);
-    
+
 				this.calcGlobal()
 			}
-    
+
 			if(item.type == 'remote' || item.type == 'inhouse') {
 				item.show_value = item.value;
-                    
+
 				this.showCommentWindow = true;
 				this.comment_i = i_index;
 				this.comment_f = f_index;
-    
+
 				return '';
 			}
-    
+
 			this.editQuery(i_index, f_index);
-                
+
 		},
-    
+
 		saveComment() { // for remote/inhouse add hours
 			if(this.comment.length > 5) {
 				this.editQuery(this.comment_i, this.comment_f);
@@ -1150,85 +1150,86 @@ export default {
 				this.$toast.info('Пожалуйста, напишите подробнее');
 			}
 		},
-    
+
 		form() {
 			this.set_letters(this.fields.length);
 		},
-    
+
 		nextItem () { // move by arrows
 			return '';
-			if (event.keyCode == 38) { // up
-				if(this.focused_item !== 0) {
-					this.focused_item--
-				}
-				console.log('up')
-			} else if (event.keyCode == 40) { // down
-				if(this.focused_item !== this.items.length - 1) {
-					this.focused_item++
-				}
-				console.log('down')
-			} else if (event.keyCode == 37) { // left
-				console.log('left')
-				if(this.focused_field !== 0) {
-					this.focused_field--
-				}
-			} else if (event.keyCode == 39) { // right
-				console.log('right')
-				if(this.focused_field !== this.fields.length - 1) {
-					this.focused_field++
-				}
-			}
-			this.focus(this.focused_item, this.focused_field);
+			// if (event.keyCode == 38) { // up
+			// 	if(this.focused_item !== 0) {
+			// 		this.focused_item--
+			// 	}
+			// 	console.log('up')
+			// } else if (event.keyCode == 40) { // down
+			// 	if(this.focused_item !== this.items.length - 1) {
+			// 		this.focused_item++
+			// 	}
+			// 	console.log('down')
+			// } else if (event.keyCode == 37) { // left
+			// 	console.log('left')
+			// 	if(this.focused_field !== 0) {
+			// 		this.focused_field--
+			// 	}
+			// } else if (event.keyCode == 39) { // right
+			// 	console.log('right')
+			// 	if(this.focused_field !== this.fields.length - 1) {
+			// 		this.focused_field++
+			// 	}
+			// }
+			// this.focus(this.focused_item, this.focused_field);
 		},
-    
+
 		letters() {
 			return ['A','B','C', 'D','E','F','G','H','I','J','K','L','M','N','O', 'P','Q','R','S','T','U','V','W','X','Y','Z'];
 		},
-    
+
 		set_letters(q) {
 			let letters = this.letters();
-    
+
 			this.letter_cells.push('A');
-    
+
 			let fl_pos = 0;
 			let sl_pos = -1;
 			for(let i = 0;i<q - 1;i++) {
 				fl_pos = (i + 1) % letters.length;
 				if(fl_pos == 0) sl_pos++;
-    
+
 				if(sl_pos >= 0) {
 					this.letter_cells.push(letters[sl_pos] + letters[fl_pos]);
 				} else {
 					this.letter_cells.push(letters[fl_pos]);
 				}
-    
-			} 
-                
+
+			}
+
 		},
-    
+
 		handleClick (event, item) { // for context menu
 			this.$refs.vueSimpleContextMenu.showMenu(event, item)
 		},
-    
+
 		optionClicked (event) { // for context menu
 			window.alert(JSON.stringify(event))
 		},
-    
+
 		// get array of expression combinations
 		combinator(text) {
 			if(text === null) return [];
 			//let text = "-12+B4+AA10*12.7*AE31/aR7";
 			var positions = [];
-    
+
 			text = text.toUpperCase();
 			let combinations =  text.match(/A?[A-Z][1-9]?[0-9]/gi);
-			let floats =  text.match(/(\*|\/|\+|\-|\s|\(|^){1}[0-9]+\.?[0-9]?/gi); // цифры 
-    
+			// eslint-disable-next-line no-useless-escape
+			let floats =  text.match(/(\*|\/|\+|\-|\s|\(|^){1}[0-9]+\.?[0-9]?/gi); // цифры
+
 			if(combinations === null) combinations = [];
 			if(floats === null) floats = [];
 			// find multipliers
 			var multiply = [];
-			for(var i=0; i<text.length;i++) {
+			for(let i=0; i<text.length;i++) {
 				if (text[i] === '*') {
 					multiply.push(i);
 					positions.push({
@@ -1238,10 +1239,10 @@ export default {
 					});
 				}
 			}
-    
+
 			// find additions
 			var addition = [];
-			for(var i=0; i<text.length;i++) {
+			for(let i=0; i<text.length;i++) {
 				if (text[i] === '+') {
 					addition.push(i);
 					positions.push({
@@ -1251,10 +1252,10 @@ export default {
 					});
 				}
 			}
-    
+
 			// find substract
 			var substract = [];
-			for(var i=0; i<text.length;i++) {
+			for(let i=0; i<text.length;i++) {
 				if (text[i] === '-' && i != 0) {
 					substract.push(i);
 					positions.push({
@@ -1264,10 +1265,10 @@ export default {
 					});
 				}
 			}
-    
+
 			// find dividers
 			var divider = [];
-			for(var i=0; i<text.length;i++) {
+			for(let i=0; i<text.length;i++) {
 				if (text[i] === '/') {
 					divider.push(i);
 					positions.push({
@@ -1277,10 +1278,10 @@ export default {
 					});
 				}
 			}
-    
+
 			// find parentheses
 			var parentheses = [];
-			for(var i=0; i<text.length;i++) {
+			for(let i=0; i<text.length;i++) {
 				if (text[i] === '(' || text[i] === ')') {
 					parentheses.push(i);
 					positions.push({
@@ -1290,24 +1291,24 @@ export default {
 					});
 				}
 			}
-                
+
 			// cells
 			let last_pos = -1;
 			for(let i = 0;i<combinations.length;i++) {
 				// TODO find value of field
 				last_pos++;
 				let s = this.searcher(combinations[i]);
-                 
+
 				last_pos = text.indexOf(combinations[i], last_pos),
 				positions.push({
 					text: combinations[i],
-					index: last_pos, 
+					index: last_pos,
 					type: s !== undefined && s.type == 'formula' ? 'formula' : 'cell',
 					value: s !== undefined ?  s.value : 0,
 					code: s !== undefined ?  '[' + s.column_id + ':'+ s.row_id + ']' : 0,
 				});
 			}
-    
+
 			// just numbers in expression
 			let last_pos_floats = -1;
 			for(let i = 0;i<floats.length;i++) {
@@ -1330,19 +1331,19 @@ export default {
 					value: Number(f_text)
 				});
 			}
-    
+
 			// sort array
 			positions.sort(function(a, b) {
 				if (a.index < b.index) return -1;
 				if (a.index > b.index) return 1;
 				return 0;
 			});
-               
+
 			return positions;
 		},
-    
+
 		searcher(cell){
-    
+
 			let res;
 			for (var i=0; i < this.items.length; i++) {
 				Object.values(this.items[i]).forEach(item => {
@@ -1353,9 +1354,9 @@ export default {
 			}
 			return res;
 		},
-    
+
 		formula_searcher(){
-    
+
 			let items = [];
 			for (var i=0; i < this.items.length; i++) {
 				Object.values(this.items[i]).forEach(item => {
@@ -1366,13 +1367,12 @@ export default {
 			}
 			return items;
 		}
-	} 
+	}
 }
 </script>
-    
+
     <style scoped>
     .z-12 {
         z-index: 12
     }
-    </style> 
-    
+    </style>

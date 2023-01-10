@@ -90,7 +90,7 @@
         @end="saveOrder"
       >
         <template v-for="(el, e_index) in course.elements">
-          <li class="chapter opened" :id="el.id" :class="{'deleted' : el.deleted != undefined && el.deleted}">
+          <li :key="e_index" class="chapter opened" :id="el.id" :class="{'deleted' : el.deleted != undefined && el.deleted}">
             <div class="d-flex aic mb-2">
               <div class="handles">
                 <i class="fa fa-bars mover"></i>
@@ -140,59 +140,59 @@ import SuperSelectAlt from '@/components/SuperSelectAlt'
 import SuperSelect from '@/components/SuperSelect'
 
 export default {
-  name: 'Course',
-  components: {
-    Draggable,
-    SuperSelectAlt,
-    SuperSelect,
-  },
-  props: ['id'],
-  data() {
-    return {
-      test: 'dsa',
-      hover: false,
-      file: null,
-      myCroppa: {},
-      newItem: null,
-      users: [],
-      course: {
-        id: 0,
-        elements: [],
-        img: ''
-      },
-      image: '/users_img/noavatar.png',
-      croppa_key: 1,
-      superselectKey: 1
-    };
-  },
-  created() {
-    this.get();
-  },
-  watch: {
-    id(val) {
-      this.get();
-    },
-  },
-  mounted() {},
-  methods: {
-    get() {
-      let loader = this.$loading.show()
-      axios
-        .post("/admin/courses/get-item", {
-          id: this.id,
-        })
-        .then((response) => {
-          loader.hide()
-          this.course = response.data.course;
-          this.image = this.course.img;
-          this.croppa_key++;
-          this.superselectKey++;
-        })
-        .catch((error) => {
-          loader.hide()
-          alert(error);
-        });
-    },
+	name: 'PageCourse',
+	components: {
+		Draggable,
+		SuperSelectAlt,
+		SuperSelect,
+	},
+	props: ['id'],
+	data() {
+		return {
+			test: 'dsa',
+			hover: false,
+			file: null,
+			myCroppa: {},
+			newItem: null,
+			users: [],
+			course: {
+				id: 0,
+				elements: [],
+				img: ''
+			},
+			image: '/users_img/noavatar.png',
+			croppa_key: 1,
+			superselectKey: 1
+		};
+	},
+	created() {
+		this.get();
+	},
+	watch: {
+		id() {
+			this.get();
+		},
+	},
+	mounted() {},
+	methods: {
+		get() {
+			let loader = this.$loading.show()
+			this.$axios
+				.post('/admin/courses/get-item', {
+					id: this.id,
+				})
+				.then((response) => {
+					loader.hide()
+					this.course = response.data.course;
+					this.image = this.course.img;
+					this.croppa_key++;
+					this.superselectKey++;
+				})
+				.catch((error) => {
+					loader.hide()
+					alert(error);
+				});
+		},
 
 		saveCropped() {
 			let loader = this.$loading.show();
@@ -203,10 +203,10 @@ export default {
 				(blob) => {
 					formData.append('file', blob);
 					formData.append('course_id', _this.course.id);
-					axios
+					this.$axios
 						.post('/admin/courses/upload-image', formData)
 						.then(function (res) {
-							_this.course.img = response.data.img;
+							_this.course.img = res.data.img;
 							_this.$toast.success('Сохранено');
 							loader.hide();
 						})
@@ -220,13 +220,13 @@ export default {
 			); // 80% compressed jpeg file
 		},
 
-		toggleOpen(el) {},
+		toggleOpen(/* el */) {},
 
-		saveOrder(e) {},
+		saveOrder(/* e */) {},
 
-    deleteItem(i) {
-      this.course.elements.splice(i, 1);
-    },
+		deleteItem(i) {
+			this.course.elements.splice(i, 1);
+		},
 
 
 
@@ -240,11 +240,11 @@ export default {
 
 		saveCourse() {
 			let loader = this.$loading.show();
-			axios
+			this.$axios
 				.post('/admin/courses/save', {
 					course: this.course,
 				})
-				.then((response) => {
+				.then(() => {
 					this.$toast.success('Успешно сохранено!');
 					loader.hide();
 				})

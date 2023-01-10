@@ -20,7 +20,7 @@
 
                     <input type="text" :ref="'mylink' + segment" class="hider">
                     <span>{{data.field.label}}</span>
-                 
+
 
                     <i class="fa fa-clone ffpointer" @click="copy()"></i>
                 </template>
@@ -51,7 +51,7 @@
 </template>
 
 <script>
-import D3Funnel from 'd3-funnel';
+// import D3Funnel from 'd3-funnel';
 
 export default {
 	name: 'TableFunnel',
@@ -95,7 +95,7 @@ export default {
 					},
 					tooltip: {
 						enabled : true,
-						format: function(label, value) {
+						format: function(label) {
 							if(label == 'Создано новых лидов за день') return 'Лиды с названиями: Удаленный, inhouse'
 							if(label == 'Сконвертировано') return 'Создано сделок на основе лидов'
 							if(label == 'Стажируются') return 'Количество стажеров присутствовавших на сегодняшнем обучении'
@@ -121,7 +121,7 @@ export default {
 		};
 	},
 	watch: {
-		date: function(newVal, oldVal) { // watch it
+		date: function(newVal) { // watch it
 			console.log('date is ' + newVal);
 			this.tableKey++;
 			this.setFields()
@@ -130,7 +130,7 @@ export default {
 			this.calc()
 		},
 		table: {
-			handler: function(newValue) {
+			handler: function() {
 				this.calc()
 			},
 			deep: true
@@ -145,7 +145,7 @@ export default {
 	methods: {
 
 		copy() {
-            
+
 		},
 
 		setFields() {
@@ -245,14 +245,14 @@ export default {
 			this.items[data.index][data.field.key] = data.value;
 			this.updateTable(data.field.key)
 
-			axios.post('/timetracking/update-settings-extra', {
+			this.axios.post('/timetracking/update-settings-extra', {
 				date: this.date,
 				group_id: 48,
 				settings: this.items,
 				type: this.segment
-			}).then(response => {
+			}).then(() => {
 				this.$toast.success('Сохранено!');
-			}).catch(error => {
+			}).catch(() => {
 				this.$toast.error('Ошибка');
 			})
 

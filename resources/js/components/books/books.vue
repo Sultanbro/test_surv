@@ -11,7 +11,7 @@
                     <b-input-group-append>
                         <b-button :disabled="!filter" @click="filter = ''">Очистить</b-button>
                     </b-input-group-append>
-                </b-input-group> 
+                </b-input-group>
             </b-form-group>
         </b-col>
 
@@ -21,9 +21,9 @@
             </b-form-group>
         </b-col>
 
-        
+
         <b-col lg="4" class="my-1 d-flex justify-content-end">
-            
+
             <b-pagination v-model="currentPage" :total-rows="totalRows" :per-page="perPage" align="fill" size="sm" class="my-0 mr-2"></b-pagination>
         </b-col> -->
 
@@ -46,7 +46,7 @@
     <!-- Main table element -->
     <b-table :items="items" :fields="fields" :current-page="currentPage" :per-page="perPage" :filter="filter" striped :filter-included-fields="filterOn" :sort-by.sync="sortBy" :sort-desc.sync="sortDesc" :sort-direction="sortDirection" stacked="md" show-empty small @filtered="onFiltered">
 
-       
+
         <template #cell(title)="row">
             <a :href="row.item.link" download="" target="_blank">{{ row.value }}</a>
         </template>
@@ -59,17 +59,17 @@
             <div class="d-flex s-flex">
                 <div size="sm" @click="clickRow(row)" class="edit_button mr-2">
                     <div v-if="row.detailsShowing">
-                        <i class="fa fa-times"></i> 
+                        <i class="fa fa-times"></i>
                     </div>
                     <div v-else>
-                        <i class="fa fa-pencil"></i> 
+                        <i class="fa fa-pencil"></i>
                     </div>
                 </div>
                 <div size="sm" @click="deleteBook(row.item.id)" class="delete_button">
-                    <i class="fa fa-trash"></i> 
+                    <i class="fa fa-trash"></i>
                 </div>
             </div>
-            
+
         </template>
 
         <template #row-details>
@@ -79,7 +79,7 @@
                 <b-form-input v-model="ebook.author" placeholder="Автор книги" class="mb-2"></b-form-input>
                 <b-form-input v-model="ebook.link" placeholder="Ссылка" class="mb-2"></b-form-input>
                 <button @click="editBook" class="btn btn-success btn-sm">Сохранить</button>
- 
+
             </b-card>
         </template>
 
@@ -90,7 +90,7 @@
 
 <script>
 export default {
-	name: 'books',
+	name: 'BooksComponent',
 	props: {
 		selectedGroup: Number,
 	},
@@ -149,9 +149,9 @@ export default {
 			filter: null,
 			filterOn: ['title']
 		}
-	}, 
+	},
 	watch: {
-		selectedGroup: function (newQuestion, oldQuestion) {
+		selectedGroup: function () {
 			this.getBooks()
 		},
 		// filter: {
@@ -179,7 +179,7 @@ export default {
 			this.filtered = this.items.filter((el) => {
 				console.log(el.groups.includes(this.selectedGroup))
 				return el.title.indexOf(this.filter.title) > -1 && el.groups.includes(this.selectedGroup);
-                
+
 			})
 
 			this.totalRows = this.filtered.length
@@ -223,13 +223,13 @@ export default {
 			}, 3000)
 		},
 		addBook() {
-			axios.post('/bp_books/book/add', {
+			this.axios.post('/bp_books/book/add', {
 				title: this.book.title,
 				author: this.book.author,
 				group_id: this.selectedGroup,
 				link: this.book.link,
 			})
-				.then(response => {
+				.then(() => {
 					this.book.title = ''
 					this.book.author = ''
 					this.book.link = ''
@@ -247,7 +247,7 @@ export default {
 				});
 		},
 		editBook() {
-			axios.post('/bp_books/book/edit', {
+			this.axios.post('/bp_books/book/edit', {
 				id: this.ebook.id,
 				title: this.ebook.title,
 				author: this.ebook.author,
@@ -275,10 +275,10 @@ export default {
 				});
 		},
 		deleteBook(id) {
-			axios.post('/bp_books/book/delete', {
+			this.axios.post('/bp_books/book/delete', {
 				id: id,
 			})
-				.then(response => {
+				.then(() => {
 					this.$toast.success('Книга удалена')
 					this.getBooks()
 					this.messageoff()
@@ -289,7 +289,7 @@ export default {
 				});
 		},
 		getBooks() {
-			axios.post('/bp_books/books', {
+			this.axios.post('/bp_books/books', {
 				group_id: this.selectedGroup
 			})
 				.then(response => {
@@ -303,18 +303,18 @@ export default {
 		groupFilter() {
 			if(this.selectedGroup != 0) {
 				this.items = this.items.filter((el) => {
-                    
+
 					let includes = false
 
 					el.groups.forEach((item) => {
 						console.log(item)
 						console.log(this.selectedGroup)
 						if(item == this.selectedGroup) includes = true})
-                    
+
 					return includes;
 				})
 			}
-            
+
 		}
 	}
 }

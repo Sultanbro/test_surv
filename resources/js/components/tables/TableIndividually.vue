@@ -14,7 +14,7 @@ export default {
 	},
 	watch: {
 		// эта функция запускается при любом изменении данных
-		data: function (newData, oldData) {
+		data: function () {
 			this.loadItems();
 		},
 	},
@@ -24,6 +24,7 @@ export default {
 	},
 	methods: {
 		loadItems() {
+			/* global collect */
 			let accounts = this.data.accounts;
 			let rows = [];
 			let plan = this.data.plan;
@@ -36,38 +37,31 @@ export default {
 				let min60 = [];
 				let sum = 0;
 				let sum60 = 0;
-				let variants = {};
+				// let variants = {};
 
 				for (let d = 1; d <= this.month.daysInMonth; d++) {
 					if (!Array.isArray(accounts[i].calls)) continue;
-					days[d] =
-                        collect(accounts[i].calls)
-                        	.where('day', d.toString())
-                        	.where('billsec', '>=', 10)
-                        	.count() || null;
-					minutes[d] =
-                        Number(
-                        	parseFloat(
-                        		collect(accounts[i].calls)
-                        			.where('day', d.toString())
-                        			.where('billsec', '>=', 10)
-                        			.sum('billsec') / 60
-                        	).toFixed()
-                        ) || null;
+					days[d] = collect(accounts[i].calls)
+						.where('day', d.toString())
+						.where('billsec', '>=', 10)
+						.count() || null;
+					minutes[d] = Number(parseFloat(collect(accounts[i].calls)
+						.where('day', d.toString())
+						.where('billsec', '>=', 10)
+						.sum('billsec') / 60
+					).toFixed()) || null;
 
-					min60[d] =
-                        collect(accounts[i].calls)
-                        	.where('day', d.toString())
-                        	.where('billsec', '>=', 60)
-                        	.count() || null;
+					min60[d] = collect(accounts[i].calls)
+						.where('day', d.toString())
+						.where('billsec', '>=', 60)
+						.count() || null;
 
-					consents[d] =
-                        collect(accounts[i].calls)
-                        	.where('day', d.toString())
-                        	.where('script_status_id', 2519)
-                        	.where('correct_or_not', '!=', 2)
-                        	.unique('call_contact_id')
-                        	.count() || null;
+					consents[d] = collect(accounts[i].calls)
+						.where('day', d.toString())
+						.where('script_status_id', 2519)
+						.where('correct_or_not', '!=', 2)
+						.unique('call_contact_id')
+						.count() || null;
 				}
 
 				sum = collect(consents.filter((item) => item != null)).sum();
@@ -93,8 +87,8 @@ export default {
 				},
 				];
 
-				let now = new Date();
-				let year = now.getFullYear();
+				// let now = new Date();
+				// let year = now.getFullYear();
 				for (let i = 1; i <= this.month.daysInMonth; i++) {
 					let dayName = this.$moment(`${i} ${this.month.date}`, 'D MMMM YYYY')
 						.locale('en')

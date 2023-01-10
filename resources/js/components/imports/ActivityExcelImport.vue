@@ -3,9 +3,9 @@
     <div class="first-step">
         <div class="row">
             <div class="col-md-12">
-                <p class="heading">Шаг 1: Загрузите Excel файл 
+                <p class="heading">Шаг 1: Загрузите Excel файл
                     <b-button variant="default" size="sm" id="btn"  class="ml-2 rounded">
-                        <i class="fa fa-info"></i> 
+                        <i class="fa fa-info"></i>
                     </b-button></p>
 
                 <b-tooltip target="btn" placement="bottom">
@@ -30,21 +30,21 @@
                             drop-placeholder="Перетащите файл сюда..."
                              accept="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet, application/vnd.ms-excel"
                             class="mt-3"
-                            ></b-form-file> 
+                            ></b-form-file>
                     </div>
                     <b-button variant="primary" @click="uploadFile" class="mt-2 mb-2">
                         <i class="fa fa-file"></i> Загрузить
                     </b-button>
-                </form> 
+                </form>
             </div>
             <div class="col-md-12">
-                <p style="color:red" v-for="error in errors">{{ error }}</p>
+                <p style="color:red" v-for="error in errors" :key="error">{{ error }}</p>
             </div>
         </div>
     </div>
-    
 
-    
+
+
     <div v-if="showStepTwo">
         <div class="row">
             <div class="col-md-12">
@@ -54,13 +54,13 @@
         <div class="row">
             <div class="col-md-4">
                 <p>Сотрудник в Excel</p>
-            </div> 
+            </div>
             <div class="col-md-4">
                 <p>Сотрудник в табели</p>
             </div>
             <div class="col-md-4">
                 <p>Данные</p>
-            </div>    
+            </div>
         </div>
         <div class="row my-2 py-3 border-b"  v-for="item in items" :key="item.name">
             <div class="col-md-4">
@@ -69,7 +69,7 @@
 
             <div class="col-md-4">
                 <select class="form-control" v-model="item.id">
-                    <option :value="user.id" v-for="user in users">{{ user.last_name }} {{ user.name }} ID {{ user.id }}</option>
+                    <option :value="user.id" v-for="user in users" :key="user.id">{{ user.last_name }} {{ user.name }} ID {{ user.id }}</option>
                 </select>
             </div>
             <div class="col-md-4">
@@ -81,7 +81,7 @@
                     <div>
                         <b>Часы:</b> {{ item.hours }}
                     </div>
-                </div> 
+                </div>
 
                 <div class="" v-if="(group_id == 88 && activity_id == 166) || (group_id == 42 && activity_id == 13) || (group_id == 71)">
                     <div>
@@ -99,26 +99,26 @@
         <div class="row">
             <div class="col-sm-6 mt-2" v-if="group_id == 71 || group_id == 88">
                 <b-form-datepicker id="example-datepicker"
-                    v-model="date" 
+                    v-model="date"
                     v-bind="datepickerLabels"
-                    locale="ru"  
+                    locale="ru"
                     :start-weekday="1"></b-form-datepicker>
             </div>
             <div class="col-sm-6 mt-2" v-if="activity_id == 94">
                 <b-form-datepicker id="example-datepicker"
-                    v-model="date" 
+                    v-model="date"
                     v-bind="datepickerLabels"
-                    locale="ru"  
+                    locale="ru"
                     :start-weekday="1"></b-form-datepicker>
             </div>
             <div class="col-md-12 mt-2">
                 <b-button variant="primary" @click="saveConnects">
-                    <i class="fa fa-save"></i> Сохранить 
+                    <i class="fa fa-save"></i> Сохранить
                 </b-button>
             </div>
         </div>
     </div>
-    
+
 </div>
 </template>
 
@@ -128,18 +128,18 @@ export default {
 	name: 'activity-excel-import',
 	props: {
 		group_id: {
-			type: Number, 
+			type: Number,
 		},
 		table: {
-			type: String, 
-			default: 'minutes', 
+			type: String,
+			default: 'minutes',
 		},
 		activity_id: {
 			type: Number,
 		}
 	},
 	data() {
-		return { 
+		return {
 			fileIsCorrect: false,
 			message: null,
 			activebtn: null,
@@ -169,7 +169,7 @@ export default {
 		};
 	},
 	watch:{
-		file(before,after){
+		file(before){
 			if(before.size && before.size > 1024000)
 			{
 				alert('Файл слишком большой!');
@@ -187,43 +187,43 @@ export default {
 		},
 		saveConnects() {
 			let loader = this.$loading.show();
-			axios.post('/timetracking/analytics/activity/importexcel/save', {
+			this.axios.post('/timetracking/analytics/activity/importexcel/save', {
 				date: this.date,
 				items: this.items,
 				filename: this.filename,
 				activity_id: this.activity_id,
 				group_id: this.group_id,
-			}).then(response => {
+			}).then(() => {
 				this.$toast.info('Сохранено');
 				this.$emit('close');
 				this.file = undefined
 				this.showStepTwo = false
 				this.items = []
-				loader.hide() 
+				loader.hide()
 			}).catch(function(e){
-				loader.hide() 
+				loader.hide()
 				alert(e)
 			})
 		},
 		uploadFile(){
 			let loader = this.$loading.show();
-            
+
 			let formData = new FormData();
 			formData.append('file', this.file);
 			formData.append('group_id', this.group_id);
 			formData.append('activity_id', this.activity_id);
 
-			var _this = this; 
+			var _this = this;
 
-			axios.post( '/timetracking/analytics/activity/importexcel', formData, {
+			this.axios.post( '/timetracking/analytics/activity/importexcel', formData, {
 				headers: {
 					'Content-Type': 'multipart/form-data'
 				}
 			}).then(function(response){
 				if(response.data.errors.length > 0) {
 					_this.errors = response.data.errors
-					loader.hide() 
-					return; 
+					loader.hide()
+					return;
 				}
 				_this.items = response.data.items;
 
@@ -239,17 +239,17 @@ export default {
 				})
 				_this.date = response.data.date
 				_this.filename = response.data.filename
-				loader.hide();  
+				loader.hide();
 			}).catch(function(e){
-				loader.hide() 
+				loader.hide()
 				alert(e)
 			})
-                
-		}, 
 
-        
+		},
 
-	} 
+
+
+	}
 }
 </script>
 

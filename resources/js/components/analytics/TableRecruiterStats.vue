@@ -50,7 +50,7 @@
 
 
     <b-modal v-model="showModal"  hide-footer title="Количество лидов">
-        <div class="leads" v-for="lead in leads[currentDay]">
+        <div class="leads" v-for="(lead, index) in leads[currentDay]" :key="index">
             <div class="d-flex justify-content-between">
                 <p><b> {{ lead.name }}</b></p>
                 <p class="ml-2">{{ lead.count }}</p>
@@ -69,7 +69,7 @@ export default {
 		data: Array,
 		rates: Array,
 		leads_data: {
-			default: [],
+			default: () => [],
 			type: Array,
 		},
 		daysInMonth: {
@@ -116,7 +116,7 @@ export default {
 	watch: {
 		data: {
 			immediate: true,
-			handler (val, oldVal) {
+			handler () {
 				this.fields[0].label = 'Сотрудники: ' + this.rates[this.currentDay];
 				this.items  = this.data;
 				this.leads  = this.leads_data;
@@ -168,15 +168,15 @@ export default {
 
 			if(!this.editable) return '';
 
-			axios.post('/timetracking/analytics/recruting/change-profile', {
+			this.axios.post('/timetracking/analytics/recruting/change-profile', {
 				user_id: this.items[this.currentDay][index]['user_id'],
 				profile: this.items[this.currentDay][index]['profile'],
 				day: this.currentDay,
 				month: this.month,
 				year: this.year,
-			}).then(response => {
+			}).then(() => {
 				this.$toast.success('Успешно!');
-			}).catch(error => {
+			}).catch(() => {
 				this.$toast.error('Ошибка!');
 				//alert(error)
 			});

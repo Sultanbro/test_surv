@@ -2,7 +2,7 @@
 <div class="mt-5 call-bases">
 
     <table class="table b-table table-bordered table-sm table-responsive">
-      
+
 
         <tr>
             <th></th>
@@ -16,11 +16,9 @@
                         v-model="items.total"
                         @change="save()"
                         class="form-control cell-input"></th>
-            <template v-for="day in 31">
-                <th :key="day" class="bg-bluegrey">{{ day }}</th>
-            </template>
+            <th v-for="day in 31" :key="day" class="bg-bluegrey">{{ day }}</th>
         </tr>
-        
+
         <tr>
             <td class="table-primary b-table-sticky-column text-left px-2 t-name border-blue">
                 <div class="wd d-flex align-items-center">
@@ -64,9 +62,7 @@
         <tr>
             <th class="table-primary b-table-sticky-column text-left px-2 t-name border-blue">Конверсия в выдачу</th>
             <th>{{ Number(items.conversion).toFixed(2) }}</th>
-            <template v-for="day in 31">
-                <th :key="day" class="bg-bluegrey">{{ day }}</th>
-            </template>
+            <th v-for="day in 31" :key="day" class="bg-bluegrey">{{ day }}</th>
         </tr>
 
         <tr>
@@ -110,7 +106,7 @@
 <script>
 export default {
 	components: {},
-	name: 'CallBase', 
+	name: 'CallBase',
 	props: ['data', 'monthInfo'],
 	data() {
 		return {
@@ -127,7 +123,7 @@ export default {
 		},
 
 		calc() {
-            
+
 
 			let sum = 0;
 
@@ -188,17 +184,17 @@ export default {
 			}
 
 		},
-        
+
 		save() {
 
 			this.calc();
-            
+
 			this.query()
 		},
-        
+
 		query() {
 			let loader = this.$loading.show();
-			axios 
+			this.axios
 				.post('/timetracking/analytics/save-call-base', {
 					date: this.$moment(
 						`${this.monthInfo.currentMonth} ${this.monthInfo.currentYear}`,
@@ -211,12 +207,12 @@ export default {
 					'current_given' : this.items.current_given,
 					'next_given': this.items.next_given,
 				})
-				.then((response) => {
+				.then(() => {
 					loader.hide();
 				})
-				.catch(error => console.log('Error'))
+				.catch(() => console.log('Error'))
 		}
-	} 
+	}
 }
 </script>
 
@@ -224,4 +220,4 @@ export default {
 .bg-bluegrey {
     background: #e9ecef;
 }
-</style> 
+</style>

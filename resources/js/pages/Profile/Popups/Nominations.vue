@@ -10,7 +10,7 @@
                 <span class="next" @click="tabIndex++"><i class="fa fa-chevron-right"></i></span>
             </div>
             <template v-if="nominations.length > 0">
-                <b-tab no-body  @click="activeteTab(award.description)" :title="award.name" v-for="(award, index) in nominations" :key="award.id">
+                <b-tab no-body  @click="activeteTab(award.description)" :title="award.name" v-for="award in nominations" :key="award.id">
                     <b-tabs class="inside-tabs">
                         <b-tab no-body title="Мои номинации" active>
                             <div class="certificates__title">
@@ -24,7 +24,7 @@
                             </div>
 
                             <BRow v-if="award.hasOwnProperty('my')">
-                                <BCol cols="12" md="4" lg="3" class="mb-5" v-for="(item, key) in award.my"
+                                <BCol cols="12" md="4" lg="3" class="mb-5" v-for="item in award.my"
                                       :key="item.id">
                                     <div class="certificates__item" @click="modalShow(item, award.name, true)">
                                         <img :src="item.tempPath" alt="certificate image" v-if="item.format !== 'pdf'">
@@ -46,7 +46,7 @@
                             </div>
 
                             <BRow v-if="award.hasOwnProperty('available')">
-                                <BCol cols="12" md="4" lg="3" class="mb-5" v-for="(item, key) in award.available"
+                                <BCol cols="12" md="4" lg="3" class="mb-5" v-for="item in award.available"
                                       :key="item.id">
                                     <div class="certificates__item" @click="modalShow(item, award.name, false)">
                                         <img :src="item.tempPath" alt="certificate image" v-if="item.format !== 'pdf'">
@@ -57,7 +57,7 @@
                         </b-tab>
                         <b-tab no-body title="Номинации других участников">
                             <BRow v-if="award.hasOwnProperty('other')">
-                                <BCol cols="12" md="4" lg="3" class="mb-5" v-for="(item, key) in award.other"
+                                <BCol cols="12" md="4" lg="3" class="mb-5" v-for="item in award.other"
                                       :key="item.id">
                                     <div class="certificates__item" @click="modalShow(item, award.name, false)">
                                         <img :src="item.tempPath" alt="certificate image" v-if="item.format !== 'pdf'">
@@ -74,7 +74,7 @@
             </template>
 
            <template v-if="certificates.length > 0">
-               <b-tab no-body :title="award.name" @click="activeteTab(award.description)" v-for="(award, index) in certificates" :key="award.id">
+               <b-tab no-body :title="award.name" @click="activeteTab(award.description)" v-for="award in certificates" :key="award.id">
                    <b-tabs class="inside-tabs">
                        <b-tab no-body title="Мои сертификаты" active>
                            <div class="certificates__title">
@@ -88,7 +88,7 @@
                            </div>
 
                            <BRow v-if="award.hasOwnProperty('my')">
-                               <BCol cols="12" md="4" lg="3" class="mb-5" v-for="(item, key) in award.my"
+                               <BCol cols="12" md="4" lg="3" class="mb-5" v-for="item in award.my"
                                      :key="item.id">
                                    <div class="certificates__item" @click="modalShow(item, award.name, true)">
                                        <img :src="item.tempPath" alt="certificate image" v-if="item.format !== 'pdf'">
@@ -111,7 +111,7 @@
 
 
                            <BRow v-if="award.hasOwnProperty('available')">
-                               <BCol cols="12" md="4" lg="3" class="mb-5" v-for="(item, key) in award.available"
+                               <BCol cols="12" md="4" lg="3" class="mb-5" v-for="item in award.available"
                                      :key="item.id">
                                    <div class="certificate-available" @click="modalShow(item, award.name, false)">
                                        <div class="certificates__item">
@@ -125,7 +125,7 @@
                        </b-tab>
                        <b-tab no-body title="Сертификаты за курсы других участников">
                            <BRow v-if="award.hasOwnProperty('other')">
-                               <BCol cols="12" md="4" lg="3" class="mb-5" v-for="(item, key) in award.other"
+                               <BCol cols="12" md="4" lg="3" class="mb-5" v-for="item in award.other"
                                      :key="item.id">
                                    <div class="certificates__item" @click="modalShow(item, award.name, false)">
                                        <img :src="item.tempPath" alt="certificate image" v-if="item.format !== 'pdf'">
@@ -201,50 +201,48 @@
 
 
 <script>
-    import {SpinnerPlugin} from 'bootstrap-vue';
-    import VuePdfEmbed from "vue-pdf-embed/dist/vue2-pdf-embed";
-    export default {
-        name: "PopupNominations",
-        components: {
-            SpinnerPlugin,
-            VuePdfEmbed,
-        },
-        props: {},
-        data: function () {
-            return {
-                tabIndex: 0,
-                loading: true,
-                modal: false,
-                itemModal: null,
-                fields: [],
-                awardTypes: null,
-                nominations: [],
-                certificates: [],
-                accrual: [],
-            };
-        },
-        filters: {
-            splitNumber: function (val) {
-                return val.toString().replace(/\B(?=(\d{3})+(?!\d))/g, " ");
-            }
-        },
-        watch: {
-            tabIndex(val) {
-                let buttons = this.$refs.tabis.$refs.buttons;
-                buttons[val].$refs.link.$el.scrollIntoView({inline: "end", behavior: "smooth"});
-            }
-        },
-        async mounted() {
-            await this.axios
-                .get('/awards/type?key=nomination')
-                .then(response => {
-                    if (response.data.data) {
-                        this.nominations = response.data.data;
-                    }
-                })
-                .catch(error => {
-                    console.log(error);
-                });
+import VuePdfEmbed from 'vue-pdf-embed/dist/vue2-pdf-embed';
+export default {
+	name: 'PopupNominations',
+	components: {
+		VuePdfEmbed,
+	},
+	props: {},
+	data: function () {
+		return {
+			tabIndex: 0,
+			loading: true,
+			modal: false,
+			itemModal: null,
+			fields: [],
+			awardTypes: null,
+			nominations: [],
+			certificates: [],
+			accrual: [],
+		};
+	},
+	filters: {
+		splitNumber: function (val) {
+			return val.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ' ');
+		}
+	},
+	watch: {
+		tabIndex(val) {
+			let buttons = this.$refs.tabis.$refs.buttons;
+			buttons[val].$refs.link.$el.scrollIntoView({inline: 'end', behavior: 'smooth'});
+		}
+	},
+	async mounted() {
+		await this.axios
+			.get('/awards/type?key=nomination')
+			.then(response => {
+				if (response.data.data) {
+					this.nominations = response.data.data;
+				}
+			})
+			.catch(error => {
+				console.log(error);
+			});
 
 		await this.axios
 			.get('/awards/type?key=certificate')
@@ -289,7 +287,7 @@
 
 			xhr.responseType = 'arraybuffer';
 
-			xhr.onload = function (e) {
+			xhr.onload = function () {
 				var arrayBufferView = new Uint8Array(this.response);
 				let options = {};
 				if (data.format === 'png') {

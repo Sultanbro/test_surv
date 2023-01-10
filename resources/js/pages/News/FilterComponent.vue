@@ -47,10 +47,10 @@
                         range-separator=" – "
                         placeholder="Диапазон"
                     >
-                        <template v-slot:icon-calendar>
+                        <template #icon-calendar>
                             <img alt="img" src="/icon/news/inputs/date-picker.svg">
                         </template>
-                        <template v-slot:content="slotProps">
+                        <template #content>
                             <CalendarPanel :value="innerValue" :get-classes="getClasses"
                                             @select="handleSelect"/>
                         </template>
@@ -65,8 +65,8 @@
                         format="DD.MM.YYYY"
                         placeholder="Точная дата"
                     >
-                        <template v-slot:icon-calendar><img alt="img" src="/icon/news/inputs/date-picker.svg"></template>
-                        <template v-slot:content="slotProps">
+                        <template #icon-calendar><img alt="img" src="/icon/news/inputs/date-picker.svg"></template>
+                        <template #content>
                             <CalendarPanel :value="datePickerValue" @select="selectSingleDate"/>
                         </template>
                     </DatePicker>
@@ -76,7 +76,7 @@
                     <div class="news-select__clear" @click="clearAuthor"/>
                     <select v-model="author">
                         <option value="" selected>Автор</option>
-                        <option :value="user.id" v-for="user in users" v-html="user.name"/>
+                        <option :value="user.id" v-for="user in users" :key="user.id" v-html="user.name"/>
                     </select>
                 </div>
 
@@ -123,15 +123,15 @@ function isValidDate(date) {
 const moment = require('moment');
 
 export default {
-    name: 'FilterComponent',
-    components: {
-        DatePicker,
-        CalendarPanel,
-    },
-    data() {
-        return {
-            //date
-            value: [],
+	name: 'FilterComponent',
+	components: {
+		DatePicker,
+		CalendarPanel,
+	},
+	data() {
+		return {
+			//date
+			value: [],
 
 			//date-picker
 			datePickerValue: new Date(NaN),
@@ -177,7 +177,7 @@ export default {
 	},
 	watch: {
 		// whenever question changes, this function will run
-		dateType(newQuestion, oldQuestion) {
+		dateType() {
 			this.value = [];
 			this.datePickerValue = new Date(NaN);
 			this.innerValue = [new Date(NaN), new Date(NaN)];
@@ -248,7 +248,7 @@ export default {
 		},
 
 		async getUsers() {
-			await axios.get('/dictionaries')
+			await this.$axios.get('/dictionaries')
 				.then(res => {
 					this.users = res.data.data.users;
 				})

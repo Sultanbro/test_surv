@@ -202,13 +202,13 @@ const base64Encode = (data) =>
 		reader.onerror = (error) => reject(error);
 	});
 // import AwardsCard from '../profile/UserEarnings/AwardsCard.vue'
-import UploadModal from '../modals/Upload'
+// import UploadModal from '../modals/Upload'
 import VuePdfEmbed from 'vue-pdf-embed/dist/vue2-pdf-embed';
 import Multiselect from 'vue-multiselect';
 export default {
 	name: 'AwardUserSidebar',
 	components: {
-		UploadModal,
+		// UploadModal,
 		VuePdfEmbed,
 		Multiselect
 	},
@@ -278,7 +278,7 @@ export default {
 			}
 			return this.modalSelect;
 		},
-		tabIndex(val) {
+		tabIndex() {
 			const buttons = this.$refs.tabAwardUser.$refs.buttons;
 			if(!buttons) return
 			buttons.$refs.link.$el.scrollIntoView({inline: 'end', behavior: 'smooth'});
@@ -296,7 +296,7 @@ export default {
 
 			xhr.responseType = 'arraybuffer';
 
-			xhr.onload = function (e) {
+			xhr.onload = function () {
 				var arrayBufferView = new Uint8Array(this.response);
 				let options = {};
 				if (data.format === 'png') {
@@ -357,6 +357,7 @@ export default {
 			this.modalRemoveRewardData = item;
 		},
 		async addAndSaveReward() {
+			/* global $ */
 			let loader = this.$loading.show();
 			this.btnLoading = true;
 			const formData = new FormData();

@@ -178,7 +178,7 @@ export default {
 	props: {},
 	watch: {
 		month: {
-			handler: function (val) {
+			handler: function () {
 				this.fetchData()
 			},
 		},
@@ -213,7 +213,7 @@ export default {
          * set month
          */
 		setMonth() {
-			let year = moment().format('YYYY')
+			let year = this.$moment().format('YYYY')
 			this.dateInfo.currentMonth = this.dateInfo.currentMonth ? this.dateInfo.currentMonth : this.$moment().format('MMMM')
 			this.currentMonth = this.dateInfo.currentMonth;
 			this.dateInfo.date = `${this.dateInfo.currentMonth} ${year}`
@@ -263,7 +263,7 @@ export default {
 		fetchData() {
 			this.loading = true
 
-			axios.post('/timetracking/zarplata-table-new', {
+			this.$axios.post('/timetracking/zarplata-table-new', {
 				month: this.$moment(this.currentMonth, 'MMMM').format('M'),
 			}).then(response => {
 

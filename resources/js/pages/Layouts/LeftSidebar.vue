@@ -15,6 +15,7 @@
                     <div class="header__submenu">
                         <a
                             v-for="cabinet in cabinets"
+                            :key="cabinet.tenant_id"
                             :href="cabinet.tenant_id === project ? 'javascript:void(0)' : `/login/${cabinet.tenant_id}`"
                             class="header__submenu-item"
                             :class="{'header__submenu-item_active': cabinet.tenant_id === project}"
@@ -108,6 +109,7 @@
 </template>
 
 <script>
+/* global Laravel */
 import LeftSidebarItem from './LeftSidebarItem'
 import { bus } from '../../bus'
 
@@ -153,7 +155,7 @@ export default {
 				closeButton: false,
 				icon: true
 			})
-			axios.post('/projects/create', {}).then(response => {
+			this.$axios.post('/projects/create', {}).then(response => {
 				if(response.data) location.assign(response.data.link)
 			}).catch(error => {
 				loader.hide()

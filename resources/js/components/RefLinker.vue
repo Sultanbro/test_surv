@@ -12,7 +12,7 @@
   <div v-if="loading">Загружаются...</div>
 
   <div v-else>
-     <div class="d-flex mb-2" v-for="(item, i) in items">
+     <div class="d-flex mb-2" v-for="(item, i) in items" :key="i">
       <div class="ws-100 mr-2">
         <input v-model="item.name"/>
       </div>
@@ -21,7 +21,7 @@
         <input v-model="item.info"/>
       </div>
 
-        
+
 
       <div class="d-flex">
         <i class="btn px-1 fa fa-copy" @click="copyLink(i)"></i>
@@ -35,7 +35,7 @@
 </div>
 </template>
 <script>
-export default { 
+export default {
 	name: 'RefLinker',
 	props: {},
 	data() {
@@ -50,16 +50,16 @@ export default {
 	methods: {
 		get() {
 			this.loading = true;
-			axios.get('/hr/ref-links')
+			this.axios.get('/hr/ref-links')
 				.then(response => {
 					this.items = response.data
 					this.loading = false;
 				})
-				.catch(error => console.log('Error'))
+				.catch(() => console.log('Error'))
 		},
 
 		save(i) {
-			axios.post('/hr/ref-links/save', {
+			this.axios.post('/hr/ref-links/save', {
 				id: this.items[i].id,
 				name: this.items[i].name,
 				info: this.items[i].info,
@@ -70,24 +70,24 @@ export default {
 					this.items[i].id = response.data;
 					this.$toast.success('Сохранено')
 				})
-				.catch(error => console.log('Error'))
+				.catch(() => console.log('Error'))
 		},
 
 		deletes(i) {
 			if(!confirm('Вы уверены?')) {
 				return ;
 			}
-			axios.post('/hr/ref-links/save', {
+			this.axios.post('/hr/ref-links/save', {
 				id: this.items[i].id,
 				name: this.items[i].name,
 				info: this.items[i].info,
 				method: 'delete'
 			})
-				.then(response => {
+				.then(() => {
 					this.items.splice(i,1)
 					this.$toast.success('Удалено')
 				})
-				.catch(error => console.log('Error'))
+				.catch(() => console.log('Error'))
 		},
 
 		add() {
@@ -117,5 +117,5 @@ export default {
 }
 .ws-150 {
   min-width:150px;
-}  
+}
 </style>

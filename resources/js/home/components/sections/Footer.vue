@@ -123,6 +123,7 @@
 import FooterLink from '../footer/FooterLink'
 
 export default {
+	name: 'SectionFooter',
 	components: {
 		FooterLink
 	},

@@ -62,11 +62,9 @@
                     <th class="b-table-sticky-column text-left t-name wd">
                       <div>Сотрудник</div>
                     </th>
-                    <template v-for="(field, key) in fields">
-                      <th :class="field.klass">
-                        <div>{{ field.name }}</div>
-                      </th>
-                    </template>
+                    <th v-for="(field, key) in fields" :key="key" :class="field.klass">
+						<div>{{ field.name }}</div>
+					</th>
                   </tr>
                   </thead>
                   <tbody>
@@ -84,8 +82,7 @@
                           }}</b-badge>
                       </div>
                     </td>
-                    <template v-for="(field, key) in fields">
-                      <td :class="field.klass" :key="key">
+                      <td :class="field.klass" v-for="(field, key) in fields" :key="key">
                         <input
                                 v-if="field.type == 'day' && can_add_records != true"
                                 type="number"
@@ -99,7 +96,6 @@
                           </div>
                         </div>
                       </td>
-                    </template>
                   </tr>
                   </tbody>
                 </table>
@@ -113,11 +109,9 @@
                    <th class="b-table-sticky-column text-left t-name wd">
                      <div>Сотрудник</div>
                    </th>
-                   <template v-for="(field, key) in monthFields">
-                     <th :class="field.klass">
+                    <th v-for="(field, key) in monthFields" :key="key" :class="field.klass">
                        <div>{{ field.name }}</div>
-                     </th>
-                   </template>
+                    </th>
                  </tr>
                  </thead>
                   <tbody>
@@ -136,11 +130,9 @@
                       </div>
                     </td>
 
-                    <template v-for="(field, key) in monthFields">
-                      <td :class="field.klass">
+                    <td v-for="(field, key) in monthFields" :key="key" :class="field.klass">
                         <div>{{ item.months[field.key] }}</div>
-                      </td>
-                    </template>
+                    </td>
                   </tr>
                   </tbody>
                 </table>
@@ -226,22 +218,21 @@
                     <th class="b-table-sticky-column text-left t-name wd">
                       <div>Сотрудник</div>
                     </th>
-                    <template v-for="(field, key) in recordFields">
-                      <th :class="field.klass">
+                    <th v-for="(field, key) in recordFields" :key="key" :class="field.klass">
                         <div>{{ field.name }}</div>
-                      </th>
-                    </template>
+                    </th>
                     <th class="actions"></th>
                     <th class="actions"></th>
                   </tr>
 
                   <!-- RECORDS -->
-                  <template v-for="(record, index) in records.data">
                     <tr
-                      :class="{
-                        selected: record.editable,
-                        changed: record.changed,
-                      }"
+						v-for="(record, index) in records.data"
+						:key="index"
+						:class="{
+							selected: record.editable,
+							changed: record.changed,
+						}"
                     >
                       <td class="b-table-sticky-column text-left t-name wd">
                         <div @click="editMode(record)">
@@ -263,6 +254,7 @@
                               <option
                                 :value="index"
                                 v-for="(segm, index) in segment"
+								:key="index"
                               >
                                 {{ segm }}
                               </option>
@@ -361,7 +353,7 @@
                       </td>
 
                       <template v-for="(param, pk) in params">
-                        <td class="text-center params" v-if="record.editable">
+                        <td :key="pk" class="text-center params" v-if="record.editable">
                           <div>
                             <input
                               type="number"
@@ -372,7 +364,7 @@
                             />
                           </div>
                         </td>
-                        <td
+                        <td :key="pk + 'a'"
                           class="text-center params"
                           v-else
                           @click="editMode(record)"
@@ -430,7 +422,6 @@
                         </div>
                       </td>
                     </tr>
-                  </template>
                 </table>
               </div>
               <div>
@@ -470,12 +461,9 @@
                                   Сотрудник
                                 </div>
                               </th>
-                              <template v-for="(field, key) in checklist_fields">
-                                <th>
-
+                              <th v-for="(field, key) in checklist_fields" :key="key">
                                   <div>{{ field.name }}</div>
                                 </th>
-                              </template>
                             </tr>
                             </thead>
                            <tbody>
@@ -485,8 +473,6 @@
                                  {{ check_r.last_name }} {{ check_r.name }}
                                </th>
                                <template v-for="(field, key) in fields">
-
-
                                  <td :class="field.klass" :key="key">
                                    <template v-if="currentGroup == check_r.gr_id">
 
@@ -497,7 +483,7 @@
 
                                      <template v-for="(checked_day,index) in check_r.day">
                                        <template v-if="index == field.name">
-                                         <div v-on:click="showSidebar(check_r.user_id, index)">{{checked_day}}</div>
+                                         <div :key="index" @click="showSidebar(check_r.user_id, index)">{{checked_day}}</div>
                                        </template>
                                      </template>
 
@@ -540,7 +526,7 @@
                                 <div>Сотрудник</div>
                               </th>
                               <template v-for="(field, key) in monthFields">
-                                <th :class="field.klass">
+                                <th :key="key" :class="field.klass">
                                   <div>{{ field.name }}</div>
                                 </th>
                               </template>
@@ -652,7 +638,7 @@
 
         <div class="col-12" v-if="can_add_records">
            <div class="row">
-              <div class="col-12 d-flex mb-1" v-for="crit in params">
+              <div class="col-12 d-flex mb-1" v-for="crit in params" :key="crit.name">
                 <b-form-checkbox
                   v-model="crit.active"
                   :value="1"
@@ -687,7 +673,7 @@
         @close="toggle()"
         width="70%"
     >
-        <div class="col-10 p-0 mt-2" v-for="(val,ind) in checklists">
+        <div class="col-10 p-0 mt-2" v-for="(val,ind) in checklists" :key="ind">
           <div class="mr-5">
             <b-form-checkbox v-model="val.checked" size="sm" >
               <span style="cursor: pointer">{{val.task.task}}</span>
@@ -717,227 +703,227 @@ import CourseResults from '@/pages/CourseResults' // результаты по �
 import { useYearOptions } from '../../composables/yearOptions'
 // import Template from "../../../../public/static/partner/templates/template.html";
 export default {
-  name: 'TableQuality',
-  components: {
-    Sidebar,
-    CourseResults,
-  },
-  props: {
-    groups: Array,
-    individual_type:{
-      default:null
-    },
-    individual_type_id:{
-      default:null
-    },
-    active_group: String,
-    check: String,
-    user: {
-      type: Object,
-      default: {}
-    }
-  },
-  data() {
-    return {
-      auth_user: this.user,
-      showChecklist: false,
-      checklists:{},
-      fields: [],
-      checklist_fields: [],
-      monthFields: [],
-      recordFields: [],
-      filters: {
-        currentEmployee: 0,
-        fromDate: moment().format("YYYY-MM-DD"),
-        toDate: moment().format("YYYY-MM-DD"),
-      },
-      can_add_records: false, // like kaspi
-      script_id: null,
-      dialer_id: null,
-      fieldsNumber: 15,
-      pageNumber: 1,
-      currentDay: new Date().getDate(),
-      avgDay: 0,
-      avgMonth: 0,
-      showCritWindow: false,
-      showSettings: false,
-      newRecord: {
-        id: 0,
-        employee_id: 0,
-        name: "",
-        segment: "1-5",
-        segment_id: 1,
-        interlocutor: "Клиент",
-        phone: "",
-        dayOfDelay: moment().format("YYYY-MM-DD"),
-        date: moment().format("YYYY-MM-DD"),
-        param1: 0,
-        param2: 0,
-        param3: 100,
-        param4: 0,
-        param5: 0,
-        comments: "",
-        changed: true,
-      },
-      records_unique: 0,
-      records: {
-        data: [],
-      },
-      deletingElementIndex: 0,
-      currentGroup: this.active_group,
-      groupName: "Контроль качества",
-      monthInfo: {},
-      user_ids: {},
-      years: useYearOptions(),
-      currentYear: new Date().getFullYear(),
-      hasPermission: false,
-      dataLoaded: true,
-      segment: {
-        1: "1-5",
-        2: "Нап",
-        3: "3160",
-        4: "6190",
-        5: "ОВД",
-        6: "1-5 RED",
-        7: "Нап RED",
-        10: "ОВД RED",
-        11: "6_30 RED",
-        12: "6_30",
-      },
-      loader: null,
-      fill:{ gradient: ["#1890ff", "#28a745"] },
-      items: [],
-      params: [],
-      pagination: {
-        current_page: 1,
-        first_page_url: "",
-        from: 1,
-        last_page: 1,
-        last_page_url: "",
-        next_page_url: "",
-        per_page: 100,
-        prev_page_url: null,
-        to: 100,
-        total: 4866,
-      },
-      individual_request:true,
+	name: 'TableQuality',
+	components: {
+		Sidebar,
+		CourseResults,
+	},
+	props: {
+		groups: Array,
+		individual_type:{
+			default:null
+		},
+		individual_type_id:{
+			default:null
+		},
+		active_group: String,
+		check: String,
+		user: {
+			type: Object,
+			default: () => ({})
+		}
+	},
+	data() {
+		return {
+			auth_user: this.user,
+			showChecklist: false,
+			checklists:{},
+			fields: [],
+			checklist_fields: [],
+			monthFields: [],
+			recordFields: [],
+			filters: {
+				currentEmployee: 0,
+				fromDate: this.$moment().format('YYYY-MM-DD'),
+				toDate: this.$moment().format('YYYY-MM-DD'),
+			},
+			can_add_records: false, // like kaspi
+			script_id: null,
+			dialer_id: null,
+			fieldsNumber: 15,
+			pageNumber: 1,
+			currentDay: new Date().getDate(),
+			avgDay: 0,
+			avgMonth: 0,
+			showCritWindow: false,
+			showSettings: false,
+			newRecord: {
+				id: 0,
+				employee_id: 0,
+				name: '',
+				segment: '1-5',
+				segment_id: 1,
+				interlocutor: 'Клиент',
+				phone: '',
+				dayOfDelay: this.$moment().format('YYYY-MM-DD'),
+				date: this.$moment().format('YYYY-MM-DD'),
+				param1: 0,
+				param2: 0,
+				param3: 100,
+				param4: 0,
+				param5: 0,
+				comments: '',
+				changed: true,
+			},
+			records_unique: 0,
+			records: {
+				data: [],
+			},
+			deletingElementIndex: 0,
+			currentGroup: this.active_group,
+			groupName: 'Контроль качества',
+			monthInfo: {},
+			user_ids: {},
+			years: useYearOptions(),
+			currentYear: new Date().getFullYear(),
+			hasPermission: false,
+			dataLoaded: true,
+			segment: {
+				1: '1-5',
+				2: 'Нап',
+				3: '3160',
+				4: '6190',
+				5: 'ОВД',
+				6: '1-5 RED',
+				7: 'Нап RED',
+				10: 'ОВД RED',
+				11: '6_30 RED',
+				12: '6_30',
+			},
+			loader: null,
+			fill:{ gradient: ['#1890ff', '#28a745'] },
+			items: [],
+			params: [],
+			pagination: {
+				current_page: 1,
+				first_page_url: '',
+				from: 1,
+				last_page: 1,
+				last_page_url: '',
+				next_page_url: '',
+				per_page: 100,
+				prev_page_url: null,
+				to: 100,
+				total: 4866,
+			},
+			individual_request:true,
 
-      viewStaticButton:{
-          weekCheck:true,
-          montheCheck:false
-      },
-      active:1,
-      selected_active:1,
-      flagGroup:'index',
-      checklist_tab: false,
-    };
-  },
-  computed: {
-    hasSettingsPermisstion(){
-      return this.auth_user && (Number(this.auth_user.id) == 18 || Number(this.auth_user.id) == 5)
-    }
-  },
-  watch: {
-    groups(){
-      this.init()
-    }
-  },
-  created() {
-    if(this.groups){
-      this.init()
-    }
-  },
-  methods: {
-    init(){
-      this.fetchData();
-    },
-    saveChecklist(){
-      axios.post("/checklist/save-checklist",{
-        checklists: this.checklists
-      }).then(response => {
-        this.toggle();
-        this.$toast.success('Сохранено');
-      });
-    },
-    showSidebar(user_id, day){
-      this.toggle();
-      var date = this.currentYear + '-' + this.monthInfo.month.padStart(2, "0") + '-' + day.padStart(2, "0");
+			viewStaticButton:{
+				weekCheck:true,
+				montheCheck:false
+			},
+			active:1,
+			selected_active:1,
+			flagGroup:'index',
+			checklist_tab: false,
+		};
+	},
+	computed: {
+		hasSettingsPermisstion(){
+			return this.auth_user && (Number(this.auth_user.id) == 18 || Number(this.auth_user.id) == 5)
+		}
+	},
+	watch: {
+		groups(){
+			this.init()
+		}
+	},
+	created() {
+		if(this.groups){
+			this.init()
+		}
+	},
+	methods: {
+		init(){
+			this.fetchData();
+		},
+		saveChecklist(){
+			this.axios.post('/checklist/save-checklist',{
+				checklists: this.checklists
+			}).then(() => {
+				this.toggle();
+				this.$toast.success('Сохранено');
+			});
+		},
+		showSidebar(user_id, day){
+			this.toggle();
+			var date = this.currentYear + '-' + this.monthInfo.month.padStart(2, '0') + '-' + day.padStart(2, '0');
 
-      axios.post("/checklist/get-checklist-by-user",{
-        user_id:user_id,
-        created_date: date
-      }).then(response => {
-        this.checklists = response.data;
-      });
-    },
-    toggle(){
-      this.showChecklist = !this.showChecklist;
-    },
-    viewStaticCheck(type){
-        if (type == 'w'){
-            this.viewStaticButton.weekCheck = true
-            this.viewStaticButton.montheCheck = false
+			this.axios.post('/checklist/get-checklist-by-user',{
+				user_id:user_id,
+				created_date: date
+			}).then(response => {
+				this.checklists = response.data;
+			});
+		},
+		toggle(){
+			this.showChecklist = !this.showChecklist;
+		},
+		viewStaticCheck(type){
+			if (type == 'w'){
+				this.viewStaticButton.weekCheck = true
+				this.viewStaticButton.montheCheck = false
 
-        }else if(type == 'm'){
-            this.viewStaticButton.weekCheck = false
-            this.viewStaticButton.montheCheck = true
-        }
-      }  ,
+			}else if(type == 'm'){
+				this.viewStaticButton.weekCheck = false
+				this.viewStaticButton.montheCheck = true
+			}
+		}  ,
 
-    watchChanges(values, oldValues) {
-      const index = values.findIndex(function (v, i) {
-        return v !== oldValues[i];
-      });
-      // console.log(this.records.data[index]);
-      this.records.data[index].changed = true;
-    },
+		watchChanges(values, oldValues) {
+			const index = values.findIndex(function (v, i) {
+				return v !== oldValues[i];
+			});
+			// console.log(this.records.data[index]);
+			this.records.data[index].changed = true;
+		},
 
-    getResults(page = 1) {
-      this.fetchItems("/timetracking/quality-control/records?page=" + page);
-    },
+		getResults(page = 1) {
+			this.fetchItems('/timetracking/quality-control/records?page=' + page);
+		},
 
-    fetchData(flag = null) {
-
-
-
-      if (flag == 'selected_group'){
-        this.flagGroup = 'selected_group'
-      }
-
-      let loader = this.$loading.show();
-      this.setDates();
-      this.fetchItems();
-      loader.hide();
-
-
-    },
-
-    normalizeItems() {
+		fetchData(flag = null) {
 
 
 
-      if (this.items.length > 0) {
-        this.newRecord.employee_id = this.items[0].id;
-        this.newRecord.name = this.items[0].name;
-      }
+			if (flag == 'selected_group'){
+				this.flagGroup = 'selected_group'
+			}
 
-      this.records.data.forEach((record, index) => {
-        record.segment = this.segment[record.segment_id];
-        record.changed = false;
+			let loader = this.$loading.show();
+			this.setDates();
+			this.fetchItems();
+			loader.hide();
 
-        this.params.forEach((param, key) => {
-          record["param" + key] = 0;
-        });
 
-        record.param_values.forEach((item, key) => {
-          this.params.forEach((param, key) => {
-            if (item.param_id == param.id) {
-              record["param" + key] = item.value;
-            }
-          });
-        });
-      });
-    },
+		},
+
+		normalizeItems() {
+
+
+
+			if (this.items.length > 0) {
+				this.newRecord.employee_id = this.items[0].id;
+				this.newRecord.name = this.items[0].name;
+			}
+
+			this.records.data.forEach(record => {
+				record.segment = this.segment[record.segment_id];
+				record.changed = false;
+
+				this.params.forEach((param, key) => {
+					record['param' + key] = 0;
+				});
+
+				record.param_values.forEach(item => {
+					this.params.forEach((param, key) => {
+						if (item.param_id == param.id) {
+							record['param' + key] = item.value;
+						}
+					});
+				});
+			});
+		},
 
 		addParam() {
 			this.params.push({
@@ -954,7 +940,7 @@ export default {
 			//
 			// }
 
-			axios
+			this.axios
 				.post('/timetracking/quality-control/crits/save', {
 					crits: this.params,
 					can_add_records: this.can_add_records,
@@ -964,7 +950,7 @@ export default {
 
 
 				})
-				.then((response) => {
+				.then(() => {
 
 					this.$toast.success('Сохранено!!');
 					this.showSettings = false;
@@ -998,7 +984,7 @@ export default {
 
 
 
-			axios
+			this.axios
 				.post($url, {
 					day: this.currentDay,
 					month: this.monthInfo.month,
@@ -1096,7 +1082,7 @@ export default {
 		},
 
 		createUserIdList() {
-			this.items.forEach((item, index) => {
+			this.items.forEach(item => {
 				this.user_ids[item.id] = item.name;
 			});
 		},
@@ -1133,7 +1119,7 @@ export default {
 				phone: '',
 				interlocutor: 'Клиент',
 				dayOfDelay: 0,
-				date: moment().format('YYYY-MM-DD'),
+				date: this.$moment().format('YYYY-MM-DD'),
 			};
 
 			let param_values = [];
@@ -1180,7 +1166,7 @@ export default {
 			obj['comments'] = record.comments;
 			obj['group_id'] = this.currentGroup;
 
-			axios
+			this.axios
 				.post('/timetracking/quality-control/save', obj)
 				.then((response) => {
 
@@ -1228,11 +1214,11 @@ export default {
 		deleteRecord() {
 			let loader = this.$loading.show();
 
-			axios
+			this.axios
 				.post('/timetracking/quality-control/delete', {
 					id: this.newRecord.id,
 				})
-				.then((response) => {
+				.then(() => {
 					this.$toast.info('Запись #' + this.newRecord.id + ' удалена');
 					this.$bvModal.hide('delete-modal');
 
@@ -1253,7 +1239,7 @@ export default {
 		},
 
 		editMode(item) {
-			this.records.data.forEach((record, index) => {
+			this.records.data.forEach(record => {
 				record.editable = false;
 			});
 			item.editable = true;
@@ -1359,7 +1345,7 @@ export default {
 
 				fieldsArray.push({
 					key: i,
-					name: moment(this.currentYear + '-' + i + '-01').format('MMMM'),
+					name: this.$moment(this.currentYear + '-' + i + '-01').format('MMMM'),
 					order: order++,
 					klass: 'text-center px-1 month',
 				});
@@ -1375,7 +1361,7 @@ export default {
 				let total = 0;
 				let count = 0;
 				let key = field.key;
-				this.items.forEach((item, index) => {
+				this.items.forEach(item => {
 					if (item.weeks[key] !== undefined && Number(item.weeks[key]) > 0) {
 						total += Number(item.weeks[key]);
 						count++;
@@ -1397,6 +1383,7 @@ export default {
 			let fieldsArray = [];
 			let weekNumber = 1;
 			let order = 1;
+			// eslint-disable-next-line no-unused-vars
 			let day = 1;
 
 			fieldsArray.push({
@@ -1413,7 +1400,7 @@ export default {
 				if (m.length == 1) m = '0' + m;
 				//console.log(this.currentYear + '-' + m + '-' + d)
 
-				let date = moment(this.currentYear + '-' + m + '-' + d);
+				let date = this.$moment(this.currentYear + '-' + m + '-' + d);
 				let dow = date.day();
 
 				fieldsArray.push({
@@ -1433,6 +1420,7 @@ export default {
 						type: 'avg',
 					});
 					weekNumber++;
+					// eslint-disable-next-line no-unused-vars
 					day = 0;
 				}
 
@@ -1445,6 +1433,7 @@ export default {
 						type: 'avg',
 					});
 				}
+				// eslint-disable-next-line no-unused-vars
 				day++;
 			}
 
@@ -1469,7 +1458,7 @@ export default {
 				if (m.length == 1) m = '0' + m;
 				//console.log(this.currentYear + '-' + m + '-' + d)
 
-				let date = moment(this.currentYear + '-' + m + '-' + d);
+				let date = this.$moment(this.currentYear + '-' + m + '-' + d);
 				let dow = date.day();
 
 				fieldsArray.push({
@@ -1510,7 +1499,7 @@ export default {
 
 			let loader = this.$loading.show();
 
-			axios
+			this.axios
 				.post('/timetracking/quality-control/saveweekly', {
 					day: key,
 					month: this.monthInfo.month,
@@ -1519,7 +1508,7 @@ export default {
 					user_id: item.id,
 					group_id: this.currentGroup,
 				})
-				.then((response) => {
+				.then(() => {
 
 					this.$toast.success('Сохранено');
 					loader.hide();
@@ -1613,12 +1602,12 @@ export default {
 
 			if (e) {
 				let loader = this.$loading.show();
-				axios
+				this.axios
 					.post('/timetracking/quality-control/change-type', {
 						type: this.can_add_records ? 'ucalls' : 'local',
 						group_id: this.currentGroup,
 					})
-					.then((response) => {
+					.then(() => {
 						this.$toast.success('Сохранено!');
 						this.fetchData();
 						loader.hide();

@@ -32,7 +32,7 @@
 
 <script>
 export default {
-	name: 'Glossary',
+	name: 'GlossaryComponent',
 	props: ['mode'],
 	data(){
 		return {
@@ -41,19 +41,19 @@ export default {
 		}
 	},
 
-    created(){
-        this.fetch()
-    },
+	created(){
+		this.fetch()
+	},
 
-    computed: {
-        filteredWords() {
-            return this.words.filter(el => el.word.toLowerCase().indexOf(this.search_text.toLowerCase()) > -1);
-        }
-    },
+	computed: {
+		filteredWords() {
+			return this.words.filter(el => el.word.toLowerCase().indexOf(this.search_text.toLowerCase()) > -1);
+		}
+	},
 
 	methods: {
 		fetch() {
-			axios.get('/glossary/get', {})
+			this.axios.get('/glossary/get', {})
 				.then(response => {
 					this.words = response.data;
 				}).catch(error => {
@@ -62,7 +62,7 @@ export default {
 		},
 
 		save(i) {
-			axios.post('/glossary/save', {word: this.words[i]})
+			this.axios.post('/glossary/save', {word: this.words[i]})
 				.then(response => {
 					this.words[i].id = response.data;
 					this.$toast.success('Определение сохранено');
@@ -83,8 +83,8 @@ export default {
 		deleteWord(i) {
 			if(this.words[i].id == 0) this.words.splice(i, 1);
 
-			axios.post('/glossary/delete', {id: this.words[i].id})
-				.then(response => {
+			this.axios.post('/glossary/delete', {id: this.words[i].id})
+				.then(() => {
 					this.words.splice(i, 1);
 					this.$toast.success('Определение удалено');
 				}).catch(error => {

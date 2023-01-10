@@ -60,7 +60,7 @@
             </div>
             <template v-if="list.length > 0">
                 <div class="logs" id="logs" ref="logs">
-                    <div class="log-item" v-for="(log, index) in logs">
+                    <div class="log-item" v-for="(log, index) in logs" :key="index">
                         <span class="index">{{index}}</span>
                         <div>
                             <span class="msg">Message: {{log.title}}</span>
@@ -137,7 +137,7 @@ export default {
 			this.loading = true;
 			this.axios
 				.get('/awards/courses?course_ids[]=' + this.course)
-				.then(response => {
+				.then(() => {
 					this.course = null;
 					this.list = null;
 					this.files = [];

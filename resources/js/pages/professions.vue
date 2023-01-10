@@ -106,7 +106,6 @@
               </button>
           </div>
       </template>
-  </div>
 
 			<template v-if="activebtn != null">
 					<b-row class="align-items-center my-4">
@@ -184,92 +183,92 @@
 </template>
 
 <script>
-    // если в БД таблица position пустая, то в props: ['positions'] прилетает пустой массив
-    // если есть, то прилетает объект, где ключи - id (число), а значение - position (название дложности)
+// если в БД таблица position пустая, то в props: ['positions'] прилетает пустой массив
+// если есть, то прилетает объект, где ключи - id (число), а значение - position (название дложности)
 export default {
-  name: "professions",
-  props: ['positions'],
-  data() {
-    return {
-      data: [],
-      new_position: '',
-        addNew: false,
-      position_id: 0,
-      indexation: 0,
-      sum: 0,
-      activebtn: null,
-      desc: {
-        require: '',
-        actions: '',
-        time: '',
-        salary:'',
-        knowledge:'',
-        next_step:'',
-        show: 0
-      }
-    }
-  },
-  watch:{
-      positions(value) {
-          //конвертирую прилетевший объект в массив для работы vue-multiselect
-          // если данных нет, то в this.data будет пустой массив
-          Object.keys(value).forEach(item => {
-              this.data.push({
-                  id: item,
-                  position: value[item]
-              })
-          })
-      }
-  },
-  methods: {
-      resetState(){
-          this.new_position = '';
-          this.position_id = 0;
-          this.indexation = 0;
-          this.sum = 0;
-          this.activebtn = null;
-          this.desc = {
-              require: '',
-              actions: '',
-              time: '',
-              salary: '',
-              knowledge: '',
-              next_step: '',
-              show: 0
-          }
-      },
-      addNewPosition() {
-          if(this.$refs.positionMultiselect){
-              this.$refs.positionMultiselect.toggle();
-          }
-          this.addNew = true;
-          this.resetState();
-      },
-    selectPosition(value) {
-        this.addNew = false;
-        axios.post('/timetracking/settings/positions/get-new', {
-          name: value.id,
-        }).then(response => {
-          //this.$toast.info('Добавлена');
-            console.log(response.data);
-            const data = response.data?.data
-          if(!data[0]) return console.error(response)
-          this.new_position = data[0].position;
-          this.position_id = data[0].id;
-          this.indexation = data[0].indexation;
-          this.sum = data[0].sum;
-          this.desc = {
-            require: data[0].require,
-            actions: data[0].actions,
-            time: data[0].time,
-            salary: data[0].salary,
-            knowledge: data[0].knowledge,
-            next_step: data[0].next_step,
-            show: data[0].show,
-          }
-        }).catch(error => {
-          console.log(error.response)
-        })
+	name: 'CompanyProfessions',
+	props: ['positions'],
+	data() {
+		return {
+			data: [],
+			new_position: '',
+			addNew: false,
+			position_id: 0,
+			indexation: 0,
+			sum: 0,
+			activebtn: null,
+			desc: {
+				require: '',
+				actions: '',
+				time: '',
+				salary:'',
+				knowledge:'',
+				next_step:'',
+				show: 0
+			}
+		}
+	},
+	watch:{
+		positions(value) {
+			//конвертирую прилетевший объект в массив для работы vue-multiselect
+			// если данных нет, то в this.data будет пустой массив
+			Object.keys(value).forEach(item => {
+				this.data.push({
+					id: item,
+					position: value[item]
+				})
+			})
+		}
+	},
+	methods: {
+		resetState(){
+			this.new_position = '';
+			this.position_id = 0;
+			this.indexation = 0;
+			this.sum = 0;
+			this.activebtn = null;
+			this.desc = {
+				require: '',
+				actions: '',
+				time: '',
+				salary: '',
+				knowledge: '',
+				next_step: '',
+				show: 0
+			}
+		},
+		addNewPosition() {
+			if(this.$refs.positionMultiselect){
+				this.$refs.positionMultiselect.toggle();
+			}
+			this.addNew = true;
+			this.resetState();
+		},
+		selectPosition(value) {
+			this.addNew = false;
+			this.$axios.post('/timetracking/settings/positions/get-new', {
+				name: value.id,
+			}).then(response => {
+				//this.$toast.info('Добавлена');
+				console.log(response.data);
+				const data = response.data?.data
+				if(!data[0]) return console.error(response)
+				this.new_position = data[0].position;
+				this.position_id = data[0].id;
+				this.indexation = data[0].indexation;
+				this.sum = data[0].sum;
+				this.desc = {
+					require: data[0].require,
+					actions: data[0].actions,
+					time: data[0].time,
+					salary: data[0].salary,
+					knowledge: data[0].knowledge,
+					next_step: data[0].next_step,
+					show: data[0].show,
+				}
+			}).catch(error => {
+				console.log(error.response)
+			})
 
 
 			// if (response.data) {
@@ -286,51 +285,50 @@ export default {
 			//               }
 		},
 
-    async savePosition() {
-        try{
-            if(!this.new_position.length) return this.$toast.error('Введите нзвание должности!');
-            const responseAdd = await axios.post('/timetracking/settings/positions/add-new', {position: this.new_position});
-            if(responseAdd.data.code === 201) return this.$toast.error('Должность с таким названием уже существует!');
-            const data = responseAdd.data.data;
-            const dataPush = {
-                id: data.id,
-                position: data.position
-            };
-            this.position_id = data.id;
-            this.new_position = data.position;
+		async savePosition() {
+			try{
+				if(!this.new_position.length) return this.$toast.error('Введите нзвание должности!');
+				const responseAdd = await this.$axios.post('/timetracking/settings/positions/add-new', {position: this.new_position});
+				if(responseAdd.data.code === 201) return this.$toast.error('Должность с таким названием уже существует!');
+				const data = responseAdd.data.data;
+				const dataPush = {
+					id: data.id,
+					position: data.position
+				};
+				this.position_id = data.id;
+				this.new_position = data.position;
 
-            this.activebtn = dataPush;
-            this.data.push(dataPush);
+				this.activebtn = dataPush;
+				this.data.push(dataPush);
 
-            const responseSave = await axios.post('/timetracking/settings/positions/save-new', {
-                id: this.activebtn.id,
-                new_name: this.new_position,
-                indexation: this.indexation,
-                sum: this.sum,
-                desc: this.desc,
-            });
-            if(responseSave.data.status !== 200) return this.$toast.error('Упс! Что-то пошло не так');
-            this.$toast.success('Новая должность создана!');
-        }
-        catch(error){
-            console.error(error.message);
-        }
-    },
-    deletePosition() {
-         if (confirm('Вы уверены что хотите удалить должность?')) {
-            axios.post('/timetracking/settings/positions/delete', {
-                    position: this.activebtn.id,
-                })
-                .then(response => {
-                    this.$toast.info('Удалена');
-                })
+				const responseSave = await this.$axios.post('/timetracking/settings/positions/save-new', {
+					id: this.activebtn.id,
+					new_name: this.new_position,
+					indexation: this.indexation,
+					sum: this.sum,
+					desc: this.desc,
+				});
+				if(responseSave.data.status !== 200) return this.$toast.error('Упс! Что-то пошло не так');
+				this.$toast.success('Новая должность создана!');
+			}
+			catch(error){
+				console.error(error.message);
+			}
+		},
+		deletePosition() {
+			if (confirm('Вы уверены что хотите удалить должность?')) {
+				this.$axios.post('/timetracking/settings/positions/delete', {
+					position: this.activebtn.id,
+				}).then(() => {
+					this.$toast.info('Удалена');
+				})
 
-            let ind = this.data.findIndex(item => item.id === this.activebtn.id);
-            this.data.splice(ind, 1);
-            this.addNew = false;
-            this.resetState();
-        }
-    },
+				let ind = this.data.findIndex(item => item.id === this.activebtn.id);
+				this.data.splice(ind, 1);
+				this.addNew = false;
+				this.resetState();
+			}
+		},
 
 	}
 }

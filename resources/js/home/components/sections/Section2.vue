@@ -63,6 +63,7 @@ import { Hooper, Slide } from 'hooper'
 import 'hooper/dist/hooper.css'
 
 export default {
+	name: 'SectionSection2',
 	components: {
 		Hooper,
 		Slide,
@@ -96,7 +97,7 @@ export default {
 				setTimeout(resolve, ms)
 			})
 		},
-		async animate(entries, observer){
+		async animate(entries){
 			if(!entries.some(entry => entry.isIntersecting)) return
 			this.isBlock1Highlight = true
 			await this.wait(350)

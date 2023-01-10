@@ -25,7 +25,7 @@
 
                         <div class="popupShowSelected">
                             <div v-if="selectedRole.role_1" >
-                                <p class="list-role"  v-for="item in  groups_arr">
+                                <p class="list-role" v-for="(item, index) in groups_arr" :key="index">
 
                                     <a @click="addDivBlock(item.name,item.code,'1')"  v-bind:class="{ active: item.checked }" class="btn btn-block" style="display: flex">
                                         <i class="fas fa-arrow-alt-circle-right  style-icons" ></i>
@@ -36,7 +36,7 @@
                                 </p>
                             </div>
                             <div v-if="selectedRole.role_2">
-                                <p class="list-role"  v-for="item in  positions_arr">
+                                <p class="list-role"  v-for="(item, index) in  positions_arr" :key="index">
                                     <a @click="addDivBlock(item.name,item.code,'2')" v-bind:class="{ active: item.checked }" class="btn btn-block" style="display: flex">
                                         <i class="fas fa-arrow-alt-circle-right style-icons" ></i>
                                         <span  style="margin-top: 5px; margin-left:15px;">{{ item.name}}</span>
@@ -45,7 +45,7 @@
                                 </p>
                             </div>
                             <div v-if="selectedRole.role_3">
-                                <p class="list-role"  v-for="item in   allusers_arr">
+                                <p class="list-role"  v-for="(item, index) in   allusers_arr" :key="index">
                                     <a @click="addDivBlock(item.name,item.code,'3')" v-bind:class="{ active: item.checked }" class="btn btn-block" style="display: flex">
                                         <i class="fas fa-arrow-alt-circle-right  style-icons" ></i>
                                         <span style="margin-top: 5px; margin-left:15px;">{{ item.last_name}} {{ item.name}}</span>
@@ -61,7 +61,7 @@
                     <div id="selected-block-array"  class="selected-block-array" >
                         <a v-if="placeholderSelect" style="color: #abb1b8;" >Добавить Отделы/Сотрудники</a>
 
-                      <div class="addElement"  v-for="(item,i) in allValueArray"  >
+                      <div class="addElement"  v-for="(item,i) in allValueArray" :key="i">
                           <a  class="elementHoverList">
                                <span> {{ item.text }} </span>
                               <div class="ui-tag-selector-tag-remove"  @click="deleteDesk(i,item.code,item.type)">
@@ -165,13 +165,15 @@ export default {
 					if (this.allValueArray[i]['type'] == type && this.allValueArray[i]['code'] == id){
 						this.$toast.error('Отдел ранее добавлен');
 						this.flag_type = false;
-					}else if (this.allValueArray[i]['type'] == type && this.allValueArray[i]['code'] == id){
-						this.$toast.error('Должность ранее добавлено');
-						this.flag_type = false;
-					}else if (this.allValueArray[i]['type'] == type && this.allValueArray[i]['code'] == id){
-						this.$toast.error('Пользователь ранее добавлено');
-						this.flag_type = false;
 					}
+					// else if (this.allValueArray[i]['type'] == type && this.allValueArray[i]['code'] == id){
+					// 	this.$toast.error('Должность ранее добавлено');
+					// 	this.flag_type = false;
+					// }
+					// else if (this.allValueArray[i]['type'] == type && this.allValueArray[i]['code'] == id){
+					// 	this.$toast.error('Пользователь ранее добавлено');
+					// 	this.flag_type = false;
+					// }
 				}
 			}
 
@@ -185,20 +187,20 @@ export default {
 				});
 
 				if (type == 1){
-					for (var i = 0; i < this.groups_arr.length;i++){
+					for (let i = 0; i < this.groups_arr.length;i++){
 						if (this.groups_arr[i]['code'] == id){
 							this.groups_arr[i]['checked'] = true
 						}
 					}
 				}else if(type == 2){
-					for (var i = 0; i < this.positions_arr.length;i++){
+					for (let i = 0; i < this.positions_arr.length;i++){
 						if (this.positions_arr[i]['code'] == id){
 							this.positions_arr[i]['checked'] = true
 						}
 					}
 
 				}else if(type == 3){
-					for (var i = 0; i < this.allusers_arr.length;i++){
+					for (let i = 0; i < this.allusers_arr.length;i++){
 						if (this.allusers_arr[i]['code'] == id){
 							this.allusers_arr[i]['checked'] = true
 						}
@@ -215,19 +217,19 @@ export default {
 			if (this.allValueArray.length == 0){
 				this.placeholderSelect = true;
 			}
-			for (var i = 0; i < this.groups_arr.length;i++){
+			for (let i = 0; i < this.groups_arr.length;i++){
 				if (this.groups_arr[i]['type'] == type && this.groups_arr[i]['code'] == code){
 					this.groups_arr[i]['checked'] = false
 				}
 			}
 
-			for (var i = 0; i < this.positions_arr.length;i++){
+			for (let i = 0; i < this.positions_arr.length;i++){
 				if (this.positions_arr[i]['type'] == type && this.positions_arr[i]['code'] == code){
 					this.positions_arr[i]['checked'] = false
 				}
 			}
 
-			for (var i = 0; i < this.allusers_arr.length;i++){
+			for (let i = 0; i < this.allusers_arr.length;i++){
 				if (this.allusers_arr[i]['type'] == type && this.allusers_arr[i]['code'] == code){
 					this.allusers_arr[i]['checked'] = false
 				}

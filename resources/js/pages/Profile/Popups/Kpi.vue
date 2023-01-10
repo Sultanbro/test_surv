@@ -91,7 +91,7 @@
                                                             <td class="px-2 py-1">{{ user.name }}</td>
 
                                                             <template v-if="user.items !== undefined">
-                                                                <td class="px-2" v-for="kpi_item in user.items">{{ kpi_item.name }} <b>{{ kpi_item.percent}}%</b></td>
+                                                                <td class="px-2" v-for="kpi_item in user.items" :key="kpi_item">{{ kpi_item.name }} <b>{{ kpi_item.percent}}%</b></td>
                                                             </template>
 
                                                         </tr>
@@ -149,53 +149,53 @@
 </template>
 
 <script>
-import {kpi_fields} from "../../kpi/kpis.js";
+import {kpi_fields} from '../../kpi/kpis.js';
 import KpiItems from '@/pages/kpi/KpiItems.vue'
 
 export default {
-    name: "PopupKpi",
-    components: {
-        KpiItems,
-    },
-    props: {},
-    data: function () {
-        return {
-            groups: [],
-            editable: false,
-            activities: [],
-            items: [],
-            currentMonth: null,
-            dateInfo: {
-                currentMonth: null,
-                monthEnd: 0,
-                workDays: 0,
-                weekDays: 0,
-                daysInMonth: 0
-            },
-            show_fields: [],
-            all_fields: kpi_fields,
-            fields: [],
-            non_editable_fields: [
-                'created_at',
-                'updated_at',
-                'created_by',
-                'updated_by',
-            ],
-            user_id: 1,
-            loading: false
-        };
-    },
-    created(){
-        this.setMonth()
-        this.prepareFields()
-        this.fetchBefore()
-    },
-    methods: {
-        /**
+	name: 'PopupKpi',
+	components: {
+		KpiItems,
+	},
+	props: {},
+	data: function () {
+		return {
+			groups: [],
+			editable: false,
+			activities: [],
+			items: [],
+			currentMonth: null,
+			dateInfo: {
+				currentMonth: null,
+				monthEnd: 0,
+				workDays: 0,
+				weekDays: 0,
+				daysInMonth: 0
+			},
+			show_fields: [],
+			all_fields: kpi_fields,
+			fields: [],
+			non_editable_fields: [
+				'created_at',
+				'updated_at',
+				'created_by',
+				'updated_by',
+			],
+			user_id: 1,
+			loading: false
+		};
+	},
+	created(){
+		this.setMonth()
+		this.prepareFields()
+		this.fetchBefore()
+	},
+	methods: {
+		/**
          * set month
          */
 		setMonth() {
-			let year = moment().format('YYYY')
+			let year = this.$moment().format('YYYY')
 			this.dateInfo.currentMonth = this.dateInfo.currentMonth ? this.dateInfo.currentMonth : this.$moment().format('MMMM')
 			this.currentMonth = this.dateInfo.currentMonth;
 			this.dateInfo.date = `${this.dateInfo.currentMonth} ${year}`
@@ -222,7 +222,7 @@ export default {
 		fetchData(filters = null) {
 			this.loading = true
 
-			axios.post('/statistics/kpi', {
+			this.$axios.post('/statistics/kpi', {
 				filters: filters
 			}).then(response => {
 
@@ -280,10 +280,9 @@ export default {
 		},
 
 		prepareFields() {
-			let visible_fields = [],
-				show_fields = this.show_fields;
+			let visible_fields = []
 
-			kpi_fields.forEach((field, i) => {
+			kpi_fields.forEach(field => {
 				if(this.show_fields[field.key] != undefined
                     && this.show_fields[field.key]
 				) {

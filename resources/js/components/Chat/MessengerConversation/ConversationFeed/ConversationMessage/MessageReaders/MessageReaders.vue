@@ -7,7 +7,7 @@
 
     <div class="readers-list" v-if="showReaders" :style="{top:listY + 'px',left:listX+'px'}" id="messenger_readers_list">
       <div class="readers-list-body">
-        <div class="readers-list-body-text" v-for="reader in message.readers">
+        <div class="readers-list-body-text" v-for="(reader, index) in message.readers" :key="index">
           <!--          avatar -->
           <div class="readers-list-body-text-avatar">
             <img :src="reader.img_url" alt="avatar">

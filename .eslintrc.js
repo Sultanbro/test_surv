@@ -14,14 +14,18 @@ module.exports = {
 		'vue/no-v-for-template-key': 'error',
 		'vue/no-v-for-template-key-on-child': 'off',
 		'vue/no-mutating-props': 'warn',
-		'vue/no-side-effects-in-computed-properties': 'warn'
+		'vue/no-side-effects-in-computed-properties': 'warn',
+		'vue/no-child-content': 'warn',
+		'no-prototype-builtins': 'warn',
 	},
 	ignorePatterns: [
-		'resouces/js/admin/*',
 		'resources/js/plugins/datepicker/*',
 		'resources/js/plugins/playerjs/*',
 		'resources/js/profile.js',
 		'resources/js/videos.js',
+		'resources/js/header.js',
+		'resources/js/helper.js',
+		'resources/js/admin',
 	],
 	globals: {
 		require: 'readonly',

@@ -84,14 +84,14 @@
 import Popup from '@/pages/Layouts/Popup.vue'
 
 export default {
-  name: 'Sidebars',
-  components: {
-    Popup,
-  },
-  props: {
-    isLeft: Boolean,
-    isRight: Boolean,
-  },
+	name: 'LayoutSidebars',
+	components: {
+		Popup,
+	},
+	props: {
+		isLeft: Boolean,
+		isRight: Boolean,
+	},
 
 	data() {
 		return {

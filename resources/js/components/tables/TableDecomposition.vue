@@ -19,7 +19,7 @@
                         'weekend' : is_weekday[day],
                     }"
                 colspan="2"
-                v-for="day in month.daysInMonth">
+                v-for="day in month.daysInMonth" :key="day">
                 <div>{{ day }}</div>
             </th>
         </tr>
@@ -28,8 +28,8 @@
             <th>план</th>
             <th>факт</th>
             <template v-for="day in month.daysInMonth">
-                <th>план</th>
-                <th class="border-r-2">факт</th>
+                <th :key="day">план</th>
+                <th :key="day" class="border-r-2">факт</th>
             </template>
         </tr>
         </thead>
@@ -48,7 +48,7 @@
             <td>{{ Number(item.total_plan).toFixed(0) }}</td>
             <td class="border-r-2">{{ Number(item.total_fact).toFixed(0) }}</td>
             <template v-for="day in month.daysInMonth">
-                <td v-if="item.editable"
+                <td v-if="item.editable" :key="day"
                     class="px-0 day-minute text-center"
                     :class="{
                         'weekend' : is_weekday[day],
@@ -60,7 +60,7 @@
                                @change="updateSettings($event, item, index, day)">
                     </div>
                 </td>
-                <td v-else
+                <td v-else :key="day + 'a'"
                     @click="editMode(item)"
                     class="px-0 day-minute text-center"
                     :class="{
@@ -69,7 +69,7 @@
                 >
                     <div>{{ item[day].plan }}</div>
                 </td>
-                <td v-if="item.editable"
+                <td v-if="item.editable" :key="day + 'b'"
                     class="px-0 day-minute text-center border-r-2"
                     :class="{
                         'table-danger': Number(item[day].fact) != 0 && Number(item[day].plan) > Number(item[day].fact),
@@ -82,7 +82,7 @@
                                @change="updateSettings($event, item, index, day)">
                     </div>
                 </td>
-                <td v-else
+                <td v-else :key="day + 'c'"
                     @click="editMode(item)"
                     class="px-0 day-minute text-center border-r-2"
                     :class="{
@@ -103,7 +103,7 @@
 
 
     <b-modal ref="change-plan-modal" hide-footer title="Проставить план">
-  
+
       <div class="row">
           <div class="col-6">
                <label for="">С:</label>
@@ -121,7 +121,7 @@
                 <b-button class="mt-3" variant="primary" block @click="changePlan">Проставить</b-button>
             </div>
        </div>
-      
+
     </b-modal>
 
 </div>
@@ -149,8 +149,8 @@ export default {
 			}
 		};
 	},
-	watch: { 
-		data: function(newVal, oldVal) {
+	watch: {
+		data: function() {
 			this.fetchData();
 		},
 	},
@@ -162,9 +162,9 @@ export default {
 	},
 
 	methods: {
-        
+
 		getWeekdays() {
-            
+
 			for (let i = 1; i <= this.month.daysInMonth; i++) {
 				let day = i > 9 ? i : '0' + i;
 				let month = Number(this.month.month) > 9 ? this.month.month : '0' + this.month.month;
@@ -179,15 +179,15 @@ export default {
 
 		fetchData() {
 			let loader = this.$loading.show();
-            
+
 			this.records = this.data.records;
 			this.accountsNumber = this.data.records.length
-          
+
 			this.calculateRecordsValues()
 			//this.calcTotals()
 
 			this.items = this.itemsArray;
-			loader.hide();    
+			loader.hide();
 		},
 
 		addRecord() {
@@ -201,7 +201,7 @@ export default {
 				cells[i] = {
 					'plan' : '',
 					'fact' : '',
-				}       
+				}
 			}
 
 			this.items.push(cells)
@@ -209,16 +209,16 @@ export default {
 			this.$toast.info('Пункт добавлен')
 		},
 
-		updateSettings(e, data, index, key) {
+		updateSettings(e, data, index) {
 			data.editable = false
-			this.updateTable(this.items); 
+			this.updateTable(this.items);
 
 			let post_data = {
 				group_id: this.data.group_id,
 				id: data.id,
 				name: data.name,
 				index: index,
-				values: this.items[index], 
+				values: this.items[index],
 			};
 
 			this.reqSave(post_data);
@@ -226,16 +226,16 @@ export default {
 
 		reqSave(post_data) {
 			let url = '/timetracking/analytics/decomposition/save';
-			let loader = this.$loading.show();  
+			let loader = this.$loading.show();
 			let self = this.items;
 			let year = new Date().getFullYear();
-            
+
 			post_data.date = this.$moment(
 				`${this.month.currentMonth} ${year}`,
 				'MMMM YYYY'
 			).format('YYYY-MM-DD');
 
-			axios.post(url, post_data)
+			this.axios.post(url, post_data)
 				.then((response) => {
 					if(post_data.id === undefined) {
 						self[post_data.index].id = response.data.id
@@ -244,7 +244,7 @@ export default {
 				.catch(error => {
 					alert(error)
 				});
-			loader.hide();   
+			loader.hide();
 		},
 
 		showModal(index) {
@@ -253,29 +253,29 @@ export default {
 		},
 
 		changePlan() {
-            
+
 			if (this.planner.value != null && this.planner.value != '') {
-                
+
 				// Set plans from to
 				let start = this.planner.from,
 					end = this.planner.to > this.month.daysInMonth ? this.month.daysInMonth : this.planner.to;
-                
+
 				for (let i = start; i <= end; i++) {
 					this.items[this.planner.index][i].plan = Number(this.planner.value);
 				}
-                
+
 				// POST
 				this.reqSave({
 					group_id: this.data.group_id,
 					id: this.items[this.planner.index].id,
 					name: this.items[this.planner.index].name,
-					values: this.items[this.planner.index], 
+					values: this.items[this.planner.index],
 					index: this.planner.index
 				});
 
 				// Count total plan
 				let total_plan = 0;
-       
+
 				for (let i = 1; i <= this.month.daysInMonth; i++) {
 					total_plan += Number(this.items[this.planner.index][i].plan);
 				}
@@ -289,13 +289,13 @@ export default {
 				}
 				this.$toast.info('План проставлен')
 			}
-            
-            
 
-            
+
+
+
 			// Hide modal
 			this.$refs['change-plan-modal'].hide();
-            
+
 		},
 
 		deleteRecord(id, index) {
@@ -307,13 +307,13 @@ export default {
 
 				let url = '/timetracking/analytics/decomposition/delete';
 
-				axios.delete(url, {
+				this.axios.delete(url, {
 					headers: {},
 					data: {
 						id: id
 					}
 				})
-					.then((response) => {
+					.then(() => {
 						this.$toast.info('Пункт удален')
 					})
 					.catch(error => {
@@ -328,18 +328,18 @@ export default {
 		calculateRecordsValues() {
 			this.sum = {};
 			this.itemsArray = [];
-          
-			this.records.forEach((item, index) => {
-                
+
+			this.records.forEach(item => {
+
 				let cellValues = [],
 					totalPlan = 0,
 					totalFact = 0;
-                
-                
+
+
 				for (let i = 1; i <= this.month.daysInMonth; i++) {
-                    
+
 					cellValues[i] = item[i];
-                    
+
 					if(item[i] === undefined) {
 						cellValues[i] = {
 							'plan': '',
@@ -349,14 +349,14 @@ export default {
 					}
 					if(item[i].plan !== undefined) {
 						totalPlan += Number(item[i].plan)
-					} 
+					}
 
 					if(item[i].fact !== undefined) {
 						totalFact += Number(item[i].fact)
-					} 
+					}
 
 				}
-                
+
 				this.itemsArray.push({
 					name: item.name,
 					id: item.id,
@@ -365,20 +365,20 @@ export default {
 					total_fact: totalFact,
 					group_id: this.data.group_id,
 					...cellValues,
-				});  
-                
+				});
+
 			});
 		},
 
 		updateTable(items) {
 			let loader = this.$loading.show();
-            
+
 			this.records = items;
 			this.calculateRecordsValues();
-     
+
 			this.totalColumn()
 			this.items = this.itemsArray;
-            
+
 			loader.hide();
 		},
 
@@ -395,13 +395,13 @@ export default {
 			//         row0_avg += parseFloat(account['plan']);
 			//         console.log(account['plan'])
 			//     }
-			// })    
+			// })
 
 			// this.itemsArray[0]['plan'] = row0_avg
 		},
-       
+
 		editMode(item) {
-			this.items.forEach((account, index) => {
+			this.items.forEach(account => {
 				account.editable = false
 			})
 			item.editable = true
@@ -424,7 +424,7 @@ export default {
         padding: 0 !important;
         text-align: center;
         vertical-align: middle;
-        
+
         div {
             font-size: 0.8rem;
         }
@@ -478,7 +478,7 @@ export default {
     padding: 0;
     color: #000;
     border-radius: 0;
- 
+
     &:focus {
         outline: none;
     }

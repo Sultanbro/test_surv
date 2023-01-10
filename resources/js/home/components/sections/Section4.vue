@@ -89,6 +89,7 @@ import 'hooper/dist/hooper.css'
 import InputText from '../../components/InputText'
 
 export default {
+	name: 'SectionSection4',
 	components: {
 		InputText,
 		Hooper,
@@ -134,6 +135,7 @@ export default {
 					return 'Қоңырау күтіңіз'
 				}
 			}
+			return ''
 		}
 	},
 	mounted() {
@@ -157,7 +159,7 @@ export default {
 				setTimeout(resolve, ms)
 			})
 		},
-		async animate(entries, observer) {
+		async animate(entries/* , observer */) {
 			if (!entries.some(entry => entry.isIntersecting)) return
 			this.isBlock1Highlight = true
 			await this.wait(350)

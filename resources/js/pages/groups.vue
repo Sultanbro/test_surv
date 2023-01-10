@@ -485,27 +485,27 @@
 <script>
 import Sidebar from '@/components/ui/Sidebar' // сайдбар table
 export default {
-  name: "groups",
-  components: {
-    Sidebar,
-  },
-  props: [
-    "statuseses",
-    "corpbooks",
-    "activeuserid",
-    "archived_groupss",
-  ],
-  data() {
-    return {
-      message: null,
-      activebtn: null,
-      statuses: [],
-      bonuses: [],
-      activities: [],
-      restore_group: null,
-      new_status: "",
-      value: [], // selected users
-      options: [], // users options
+	name: 'PageGroups',
+	components: {
+		Sidebar,
+	},
+	props: [
+		'statuseses',
+		'corpbooks',
+		'activeuserid',
+		'archived_groupss',
+	],
+	data() {
+		return {
+			message: null,
+			activebtn: null,
+			statuses: [],
+			bonuses: [],
+			activities: [],
+			restore_group: null,
+			new_status: '',
+			value: [], // selected users
+			options: [], // users options
 
 			corps: [], // selected corp_books
 
@@ -591,7 +591,7 @@ export default {
 	mounted() {},
 	methods: {
 		init(){
-			axios.post('/timetracking/users-new', {}).then((response) => {
+			this.$axios.post('/timetracking/users-new', {}).then((response) => {
 				this.options = response.data?.data.users;
 			});
 			this.statuses = this.statuseses;
@@ -599,7 +599,7 @@ export default {
 			this.corp_books = this.corpbooks;
 		},
 		saveBonus() {
-			axios
+			this.$axios
 				.post('/timetracking/users/bonus/save', {
 					bonuses: this.bonuses,
 				})
@@ -663,7 +663,7 @@ export default {
 
 			let loader = this.$loading.show();
 
-			axios
+			this.$axios
 				.post('/timetracking/users-new', {
 					id: this.activebtn,
 				})
@@ -712,7 +712,7 @@ export default {
 			// save group data
 			let loader = this.$loading.show();
 
-			axios
+			this.$axios
 				.post('/timetracking/users/group/save-new', {
 					group_id: this.activebtn,
 					users: this.value,
@@ -750,7 +750,7 @@ export default {
 		},
 		addStatus() {
 			if (this.new_status.length > 0) {
-				axios
+				this.$axios
 					.post('/timetracking/group/save-new', {
 						name: this.new_status,
 					})
@@ -773,16 +773,16 @@ export default {
 		},
 		deleted() {
 			if (confirm('Вы уверены что хотите удалить группу?')) {
-				axios
+				this.$axios
 					.post('/timetracking/group/delete-new', {
 						group: this.activebtn,
 					})
-					.then((response) => {
+					.then(() => {
 						this.$toast.info('Удалена');
 					});
 
 				let ind = this.statuses.indexOf(status);
-				if (index > -1) this.statuses.splice(ind, 1);
+				if (ind > -1) this.statuses.splice(ind, 1);
 				this.statuses.splice(ind, 1);
 				this.activebtn = null;
 			}
@@ -794,12 +794,12 @@ export default {
 		},
 
 		before_deleteBonus() {
-			this.bonuses.forEach((bonus, key) => {
+			this.bonuses.forEach(bonus => {
 				if (bonus.checked) this.$bvModal.show('bv-modal');
 			});
 		},
 		deleteBonus() {
-			this.bonuses.forEach((bonus, key) => {
+			this.bonuses.forEach(bonus => {
 				this.showAfterEdit = true;
 				if (bonus.checked) bonus.deleted = true;
 				this.$bvModal.hide('bv-modal');
@@ -809,7 +809,7 @@ export default {
 		editTimeAddress() {
 			this.showEditTimeAddress = true;
 
-			axios
+			this.$axios
 				.post('/timetracking/settings/get_time_addresses', {
 					group_id: this.activebtn,
 				})
@@ -829,11 +829,11 @@ export default {
 			}
 
 			let loader = this.$loading.show();
-			axios
+			this.$axios
 				.post('/timetracking/groups/restore-new', {
 					id: this.restore_group,
 				})
-				.then((response) => {
+				.then(() => {
 					this.$toast.success('Восстановлен!');
 					this.selectGroup(this.restore_group);
 					this.restore_group = null;
@@ -848,22 +848,22 @@ export default {
 		},
 
 		saveTimeAddress() {
-			axios
+			this.$axios
 				.post('/timetracking/settings/save_time_addresses', {
 					group_id: this.activebtn,
 					time_address: this.time_address,
 					time_exceptions: this.time_exceptions,
 				})
-				.then((response) => {
+				.then(() => {
 					if (this.time_address != -1 || this.time_address != 0)
 						this.time_address_text = 'Из аналитики';
 					if (this.time_address == -1) this.time_address_text = 'Из U-calls';
 					if (this.time_address == 0) this.time_address_text = 'Не выбран';
 
 					this.time_address_text =
-            this.time_variants !== undefined
-            	? this.time_variants[this.time_address]
-            	: 'Не выбран';
+						this.time_variants !== undefined
+							? this.time_variants[this.time_address]
+							: 'Не выбран';
 				})
 				.catch((error) => {
 					alert(error);
@@ -882,11 +882,11 @@ export default {
 				return;
 			}
 
-			axios
+			this.$axios
 				.post('/timetracking/settings/delete-group-bonus', {
 					id: this.bonuses[i].id,
 				})
-				.then((response) => {
+				.then(() => {
 					this.bonuses.splice(i, 1);
 					this.$toast.success('Бонус удален');
 				})

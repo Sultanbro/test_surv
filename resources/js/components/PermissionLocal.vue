@@ -31,7 +31,7 @@
 
                        <div class="popupShowSelected">
                            <div v-if="selectedRole.role_1" >
-                               <p class="list-role-1"  v-for="item in  options_role_1">
+                               <p class="list-role-1"  v-for="(item, index) in options_role_1" :key="index">
                                    <a class="btn btn-block" style="display: flex">
                                        <i class="bi bi-box-arrow-right style-icons" ></i>
                                        <span style="margin-top: 5px; margin-left:15px;">{{ item.name}}</span>
@@ -87,7 +87,7 @@
 
 
 export default {
-	name: 'test',
+	name: 'PermissionLocal',
 	data() {
 		return {
 			active: 'google',

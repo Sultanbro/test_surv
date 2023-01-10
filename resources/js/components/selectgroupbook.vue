@@ -12,8 +12,11 @@
         <template v-if="cat.categoryes">
             <ul>
                 <template v-for="(cats, index) in cat.categoryes">
-                    <selectgroup :cat="cats" @addbook="addbook" :indexcat="index" @deletebook="deletebook"
-                                 @addbookk="addbookk"></selectgroup>
+                    <selectgroup
+                        :key="index"
+                        :cat="cats" @addbook="addbook"
+                        :indexcat="index" @deletebook="deletebook"
+                        @addbookk="addbookk"/>
 
                     <!--  <ul v-if="cats.books"" class="bookendlist" v-for="book in cats.books">
                          <li> <i class="fa fa-book" aria-hidden="true"></i> {{book.title}}</li>
@@ -27,7 +30,7 @@
 
 <script>
 export default {
-	name: 'selectgroup',
+	name: 'SelectGroupBook',
 	props: ['cat', 'indexcat'],
 	methods: {
 		addbook(cat) {

@@ -55,7 +55,8 @@ export default {
                     class="form-control"
                     placeholder="Комментарии"
                     style="min-height: 40px; padding: 5px 20px 0 20px!important;"
-                >{{ talk.text }}</textarea>
+                    :value="talk.text || ''"
+                />
             </div>
         </div>
     </div>

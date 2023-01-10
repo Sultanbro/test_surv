@@ -3,7 +3,7 @@
 
     <div class="selected-items flex-wrap noscrollbar" @click="toggleShow">
         <template v-if="!hide_selected">
-            <div 
+            <div
                 v-for="(value, i) in values"
                 :key="i"
                 class="selected-item"
@@ -13,19 +13,19 @@
             </div>
         </template>
     </div>
-    
+
     <div class="show" v-if="show">
         <div class="search">
-            <input 
+            <input
                 v-model="searchText"
                 type="text"
                 placeholder="Поиск..."
                 ref="search"
                 @keyup="onSearch()">
         </div>
-        
+
         <div class="options-window">
-            <div class="types"> 
+            <div class="types">
                 <div class="type" :class="{'active': type == 1}" @click="changeType(1)">
                     <div class="text">Книги</div>
                     <i class="fa fa-book"></i>
@@ -41,35 +41,35 @@
 
                 <div class="type mt-5 active all" v-if="select_all_btn && !single" @click="selectAll">
                     <div class="text">Все</div>
-                    <i class="fa fa-check"></i>  
+                    <i class="fa fa-check"></i>
                 </div>
             </div>
-            
-    
+
+
             <div class="options">
 
-                <div 
+                <div
                     class="option"
                     v-for="(option, index) in filtered_options"
                     :key="index"
                     @click="addValue(index, option.type)"
                     :class="{
-                        'selected': option.selected, 
+                        'selected': option.selected,
                         'category': option.disabled,
-                    }" 
+                    }"
                 >
-                    <i class="fa fa-book" v-if="option.type == 1"></i> 
-                    <i class="fa fa-play" v-if="option.type == 2"></i> 
-                    <i class="fa fa-database" v-if="option.type == 3"></i> 
+                    <i class="fa fa-book" v-if="option.type == 1"></i>
+                    <i class="fa fa-play" v-if="option.type == 2"></i>
+                    <i class="fa fa-database" v-if="option.type == 3"></i>
                     {{ option.name }}
-                    <i class="fa fa-times" v-if="option.selected" @click.stop="removeValueFromList(index)"></i> 
+                    <i class="fa fa-times" v-if="option.selected" @click.stop="removeValueFromList(index)"></i>
                 </div>
 
             </div>
         </div>
     </div>
-   
- 
+
+
 </div>
 </template>
 
@@ -109,22 +109,20 @@ export default {
 
 		console.log(this.values,'019995');
 
-		this.checkSelectedAll();  
+		this.checkSelectedAll();
 	},
 	methods: {
 		checkSelectedAll() {
-			if(this.values.length == 1
-                && this.values[0]['id']== 0
-                && this.values[0]['type'] == 0) {
+			if(this.values.length == 1 && this.values[0]['id']== 0 && this.values[0]['type'] == 0) {
 				this.selected_all = true;
 				console.log('okay');
 			} else {
 				console.log('wtf');
 			}
 		},
-        
+
 		filterType() {
-			this.filtered_options = this.options.filter((el, index) => {
+			this.filtered_options = this.options.filter(el => {
 				return el.type == this.type
 			});
 		},
@@ -140,7 +138,7 @@ export default {
 			if(this.first_time) {
 				this.fetch();
 			}
-            
+
 			this.$nextTick(() => {
 				if(this.$refs.search !== undefined) this.$refs.search.focus();
 			});
@@ -160,8 +158,8 @@ export default {
 			this.addSelectedAttr();
 		},
 
-		addValue(index, type) {
-      
+		addValue(index) {
+
 			if(this.single) this.show = false;
 			if(this.single && this.values.length > 0) {
 				return;
@@ -169,7 +167,7 @@ export default {
 			if(this.selected_all) return;
 
 			let item = this.filtered_options[index];
-            
+
 			if(item.disabled) return;
 
 			if(this.values.findIndex(v => v.id == item.id && v.type == item.type) == -1) {
@@ -205,24 +203,24 @@ export default {
 		},
 
 		onSearch() {
-              
+
 			if(this.searchText == '') {
-				this.filtered_options = this.options; 
+				this.filtered_options = this.options;
 			} else {
-				this.filtered_options = this.options.filter((el, index) => {
+				this.filtered_options = this.options.filter(el => {
 					return el.name.toLowerCase().indexOf(this.searchText.toLowerCase()) > -1 && !el.disabled
-				}); 
+				});
 			}
 
 			this.addSelectedAttr();
-		}, 
+		},
 
 		close() {
 			this.show = false;
 		},
 
 		fetch() {
-			axios
+			this.axios
 				.get('/superselect/get-alt', {})
 				.then((response) => {
 
@@ -237,7 +235,7 @@ export default {
 		},
 
 		selectAll() {
-			if(this.selected_all) return; 
+			if(this.selected_all) return;
 			this.values.splice(0, this.values.length);
 			this.values.push({
 				name: 'Все',

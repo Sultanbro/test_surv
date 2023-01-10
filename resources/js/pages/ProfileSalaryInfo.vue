@@ -7,13 +7,13 @@
               :data="user_earnings"
               :activeuserid="user_id"
               :has_quartal_premiums="has_qp"
-              :month="month" 
+              :month="month"
           />
       </div>
     </div>
     <!-- Таблица начислений -->
     <div class="col-xl-12">
-        <div class="ublock pt-0 relative" style="border-top: 1px solid transparent;border-radius:0 0 5px 5px" id="pulse" > 
+        <div class="ublock pt-0 relative" style="border-top: 1px solid transparent;border-radius:0 0 5px 5px" id="pulse" >
 
 
           <div class="row mb-3 mt-3">
@@ -30,8 +30,8 @@
                       </option>
                   </select>
               </div>
-          </div> 
-          
+          </div>
+
             <t-usersalary
               :activeuserid="user_id"
               :date="date"
@@ -68,7 +68,7 @@ export default {
 				'editedKpi' : [],
 				'potential_bonuses' : [],
 				'salary_percent' : 0,
-				'kpi_percent' : 0, 
+				'kpi_percent' : 0,
 				'kpi' : 0,
 				'salary' : 0,
 				'salary_info' : {
@@ -97,11 +97,11 @@ export default {
 	},
 
 	methods: {
-    
+
 		fetch() {
 			let loader = this.$loading.show();
 
-			axios.post('/profile/salary/get', {
+			this.$axios.post('/profile/salary/get', {
 				month: this.$moment(this.month, 'MMMM').format('M')
 			}).then(response => {
 				this.user_earnings = response.data.user_earnings

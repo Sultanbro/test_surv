@@ -14,11 +14,11 @@
     <div class="popup__award">
 
         <template v-if="items.length">
-            <template v-for="item in items">
-                <div class="award__title popup__content-title">
+            <template v-for="(item, i) in items">
+                <div class="award__title popup__content-title" :key="i">
                     За период с {{ new Date(item.items.from).toLocaleDateString('RU') }} до {{ new Date(item.items.to).toLocaleDateString('RU') }}
                 </div>
-                <table class="award__table">
+                <table class="award__table" :key="i">
                     <tr>
                         <td class="blue">Сумма премии</td>
                         <td>{{ item.items.sum }}</td>
@@ -74,7 +74,7 @@ export default {
          * set month
          */
 		setMonth() {
-			let year = moment().format('YYYY')
+			let year = this.$moment().format('YYYY')
 			this.dateInfo.currentMonth = this.dateInfo.currentMonth ? this.dateInfo.currentMonth : this.$moment().format('MMMM')
 			this.currentMonth = this.dateInfo.currentMonth;
 			this.dateInfo.date = `${this.dateInfo.currentMonth} ${year}`
@@ -101,7 +101,7 @@ export default {
 		fetchData(filters = null) {
 			this.loading = true
 
-			axios.post('/statistics/quartal-premiums', {
+			this.$axios.post('/statistics/quartal-premiums', {
 				filters: filters
 			}).then(response => {
 
@@ -118,7 +118,7 @@ export default {
 			});
 		},
 
-		defineSourcesAndGroups(t) {
+		defineSourcesAndGroups() {
 			this.items.forEach(p => {
 				p.items.forEach(el => {
 					el.source = 0;

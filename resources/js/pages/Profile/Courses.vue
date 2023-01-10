@@ -116,7 +116,7 @@
 
 <script>
 export default {
-	name: 'Courses',
+	name: 'ProfileCourses',
 	props: {},
 	data: function () {
 		return {
@@ -152,7 +152,7 @@ export default {
          * Загрузка данных
          */
 		fetchData() {
-			axios.post('/profile/courses').then(response => {
+			this.$axios.post('/profile/courses').then(response => {
 				this.data = response.data
 				this.$nextTick(() => this.initSlider())
 
@@ -164,7 +164,7 @@ export default {
 				}, 1000);
 			}).catch((e) => console.log(e))
 
-			axios.get('/my-courses/get', {}).then(response => {
+			this.$axios.get('/my-courses/get', {}).then(response => {
 				this.courses = response.data.courses
 			}).catch((e) => console.log(e))
 		},
@@ -179,7 +179,7 @@ export default {
 		fetchCourse(id) {
 			this.loading = true
 
-			axios.get('/my-courses/get/' + id).then(response => {
+			this.$axios.get('/my-courses/get/' + id).then(response => {
 				this.items[id] = response.data.items
 				this.loading = false
 			}).catch((e) => console.log(e));
@@ -196,6 +196,7 @@ export default {
          * init slider
          */
 		initSlider() {
+			/* global VJQuery */
 			VJQuery('.courses__content__wrapper').slick({
 				variableWidth: false,
 				infinite: false,
@@ -271,7 +272,7 @@ export default {
 					$slick_slider.find('.slick-next').addClass('slick-disabled')
 				}
 			})
-			$slick_slider.on('breakpoint', (e, slick) => {
+			$slick_slider.on('breakpoint', () => {
 				setTimeout(() => {
 					$slick_slider.find('.slick-slide').forEach(el => {
 						el.style.width = (parseFloat(el.style.width) - 4) + 'px'

@@ -28,7 +28,7 @@ export default {
 	},
 	props: {
 		image: {
-			type: String | null,
+			type: [String, null],
 			required: true,
 		},
 		title: {

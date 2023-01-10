@@ -17,32 +17,33 @@
     <div class="messenger__chats-list">
       <template v-if="!isSearchMode || !fullscreen">
         <div
-          v-if="!isSearchMode || !fullscreen"
           v-for="item in sortedChats"
+          :key="item.id"
           :class="(chat && chat.id === item.id) ? 'messenger__chat-item messenger__chat-selected' : 'messenger__chat-item'"
           @click="openChat(item, $event)"
           @contextmenu.prevent="showChatContextMenu($event, item)"
         >
-          <ContactItem :item="item" :fullscreen="fullscreen"></ContactItem>
+          <ContactItem :item="item" :fullscreen="fullscreen"/>
         </div>
       </template>
       <template v-else-if="isSearchMode">
         <div
           v-for="item in contacts"
+          :key="item.id"
           :class="(chat && chat.id === item.id) ? 'messenger__chat-item messenger__chat-selected' : 'messenger__chat-item'"
           :data-test-id="item.id"
           @click="openChat(item, $event)"
           @contextmenu.prevent="showChatContextMenu($event, item)"
         >
-          <ContactItem :item="item" :fullscreen="fullscreen"></ContactItem>
+          <ContactItem :item="item" :fullscreen="fullscreen"/>
         </div>
         <div
           v-for="(item, index) in searchMessagesChatsResults"
-          v-bind:key="index"
+          :key="index"
           :class="'messenger__chat-item'"
           @click="openChat(item, $event)"
         >
-          <ContactItem :item="item" :fullscreen="fullscreen"></ContactItem>
+          <ContactItem :item="item" :fullscreen="fullscreen"/>
         </div>
       </template>
     </div>

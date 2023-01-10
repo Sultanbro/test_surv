@@ -26,12 +26,12 @@
             type="book"
             mode="edit"
           />
-        </div> 
+        </div>
       </div>
   </div>
 </template>
 <script>
-export default { 
+export default {
 	props: {
 		segment: {
 			required: true,
@@ -49,31 +49,31 @@ export default {
 
 	},
 	methods: {
-    
+
 		validate(status) {
 			this.validated = status
 		},
 
-		deleteSegment(i) {
+		deleteSegment() {
 			if(!confirm('Вы уверены? Их потом не восстановить')) {
 				return false;
 			}
 
-			axios
+			this.axios
 				.post('/admin/upbooks/segments/delete', {
 					id: this.segment.id,
 				})
-				.then((response) => {
+				.then(() => {
 					this.$toast.success('Удалено');
 					this.$emit('deleteSegment');
 				})
-				.catch((error) => { 
+				.catch((error) => {
 					alert(error);
 				});
 		},
 
-		saveSegment(i) {
-     
+		saveSegment() {
+
 			this.$refs.questions.validate();
 			if(!this.validated) {
 				return;
@@ -83,8 +83,8 @@ export default {
 				this.$toast.error('Добавьте минимум 1 вопрос');
 				return;
 			}
-      
-			axios
+
+			this.axios
 				.post('/admin/upbooks/segments/save', {
 					item: this.segment,
 					book_id: this.book_id

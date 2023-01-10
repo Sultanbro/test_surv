@@ -193,7 +193,7 @@
                       placeholder="поиск городов"
                   />
                   <ul v-if="country_results.length > 0" class="p-0 countries">
-                    <li v-for="(result, index) in country_results">
+                    <li v-for="(result, index) in country_results" :key="index">
                       <a @click="selectedCountry(index, result)">
                         Страна: {{ result.country }} Город: {{ result.city }}</a
                       >
@@ -258,73 +258,69 @@
           </div>
           <div class="col-12 mt-3">
             <!-- Cards -->
-            <div
-              class="col-12 p-0 row payment-profile"
-              v-if="payments_view"
-              v-for="(payment, index) in payments"
-            >
-              <div class="col-2">
-                <input
-                  v-model="payment.bank"
-                  class="form-control input-surv"
-                  placeholder="Банк"
-                />
+            <template v-if="payments_view">
+              <div
+                class="col-12 p-0 row payment-profile"
+                v-for="(payment, index) in payments"
+                :key="index"
+              >
+                <div class="col-2">
+                  <input
+                    v-model="payment.bank"
+                    class="form-control input-surv"
+                    placeholder="Банк"
+                  />
+                </div>
+                <div class="col-2">
+                  <input
+                    v-model="payment.country"
+                    class="form-control input-surv"
+                    placeholder="Страна"
+                  />
+                </div>
+                <div class="col-2">
+                  <input
+                    v-model="payment.cardholder"
+                    class="form-control input-surv"
+                    placeholder="Имя на карте"
+                  />
+                </div>
+                <div class="col-2">
+                  <input
+                    type="number"
+                    v-model="payment.phone"
+                    class="form-control input-surv"
+                    placeholder="Телефон"
+                  />
+                </div>
+                <div class="col-2">
+                  <input
+                    type="number"
+                    v-model="payment.number"
+                    class="form-control card-number input-surv"
+                    placeholder="Номер карты"
+                  />
+                </div>
+                <div class="col-2 position-relative">
+                  <button
+                    v-if="payment.id"
+                    style="position: absolute; left: 0px"
+                    class="btn btn-danger btn-sm card-delete rounded mt-1 btn-surv"
+                    @click="removePaymentCart(index, payment.id)"
+                  >
+                    <span class="fa fa-trash"></span>
+                  </button>
+                  <button
+                    v-else
+                    style="position: absolute; left: 0px"
+                    class="btn btn-primary btn-sm card-delete rounded mt-1 btn-surv"
+                    @click="removePaymentCart(index, 'dev')"
+                  >
+                    <span class="fa fa-trash"></span>
+                  </button>
+                </div>
               </div>
-
-              <div class="col-2">
-                <input
-                  v-model="payment.country"
-                  class="form-control input-surv"
-                  placeholder="Страна"
-                />
-              </div>
-
-              <div class="col-2">
-                <input
-                  v-model="payment.cardholder"
-                  class="form-control input-surv"
-                  placeholder="Имя на карте"
-                />
-              </div>
-
-              <div class="col-2">
-                <input
-                  type="number"
-                  v-model="payment.phone"
-                  class="form-control input-surv"
-                  placeholder="Телефон"
-                />
-              </div>
-
-              <div class="col-2">
-                <input
-                  type="number"
-                  v-model="payment.number"
-                  class="form-control card-number input-surv"
-                  placeholder="Номер карты"
-                />
-              </div>
-
-              <div class="col-2 position-relative">
-                <button
-                  v-if="payment.id"
-                  style="position: absolute; left: 0px"
-                  class="btn btn-danger btn-sm card-delete rounded mt-1 btn-surv"
-                  @click="removePaymentCart(index, payment.id)"
-                >
-                  <span class="fa fa-trash"></span>
-                </button>
-
-                <button
-                  v-else
-                  style="position: absolute; left: 0px"
-                  class="btn btn-primary btn-sm card-delete rounded mt-1 btn-surv"
-                  @click="removePaymentCart(index, 'dev')"
-                >
-                  <span class="fa fa-trash"></span>
-                </button>
-              </div>
-            </div>
+            </template>
 
             <div class="mt-2 p-0" v-if="cardValidatre.error">
               <div class="alert alert-danger">
@@ -373,96 +369,96 @@
   </div>
 </template>
 <script>
-import VueAvatar from '../components/vue-avatar-editor/src/components/VueAvatar.vue'
-import VueAvatarScale from '../components/vue-avatar-editor/src/components/VueAvatarScale'
+// import VueAvatar from '../components/vue-avatar-editor/src/components/VueAvatar.vue'
+// import VueAvatarScale from '../components/vue-avatar-editor/src/components/VueAvatarScale'
 import Multiselect from 'vue-multiselect'
-import { Cropper } from 'vue-advanced-cropper'
+// import { Cropper } from 'vue-advanced-cropper'
 import 'vue-advanced-cropper/dist/style.css'
 import { bus } from '../bus'
 
 export default {
-  name: 'Cabinet',
-  components:{
-    Cropper,
-    Multiselect,
-  },
-  props: {
-    auth_role: {},
-  },
-  data() {
-    return {
-      // my_crop_image: "",
-      crop_image: {
-        canvas: "",
-        image: "",
-        hide: false
-      },
-      imagePreview: "",
-      file: '',
-      // hasImage: true,
-      // canvas_image: new Image(),
-      showChooseProfileModal: false,
-      test: "dsa",
-      items: [],
-      myCroppa: {},
-      users: [],
-      user: [],
-      user_card: [],
-      admins: [],
-      activeCourse: null,
-      page: "profile",
-      img: "",
-      success: "",
-      password: "",
-      working_city: "",
-      birthday: "",
-      cardValidatre: {
-        error: false,
-        type: false,
-      },
-      payments: [
-        {
-          bank: "",
-          cardholder: "",
-          country: "",
-          number: "",
-          phone: "",
-        },
-      ],
-      keywords: null,
-      country_results: [],
-      image: "",
-      payments_view:false,
-      croppie: null
-    };
-  },
-  computed: {
-    uploadedImage() {
-      return Object.keys(this.myCroppa).length !== 0;
-    }
-  },
-  watch: {
-    keywords(after, before) {
-      this.fetch();
-    },
-    auth_role(){
-      this.init()
-    }
-  },
-  mounted() {
-          // this.drawProfile();
-          // this.hasImage = this.$root.$children[1].hasImage;
-  },
-  created() {
-    if(this.auth_role){
-      this.init()
-    }
-  },
-  methods: {
-    init(){
-      this.fetchData();
-      this.user = this.auth_role;
-      this.format_date(this.user.birthday);
+	name: 'PageCabinet',
+	components:{
+		// Cropper,
+		Multiselect,
+	},
+	props: {
+		auth_role: {},
+	},
+	data() {
+		return {
+			// my_crop_image: "",
+			crop_image: {
+				canvas: '',
+				image: '',
+				hide: false
+			},
+			imagePreview: '',
+			file: '',
+			// hasImage: true,
+			// canvas_image: new Image(),
+			showChooseProfileModal: false,
+			test: 'dsa',
+			items: [],
+			myCroppa: {},
+			users: [],
+			user: [],
+			user_card: [],
+			admins: [],
+			activeCourse: null,
+			page: 'profile',
+			img: '',
+			success: '',
+			password: '',
+			working_city: '',
+			birthday: '',
+			cardValidatre: {
+				error: false,
+				type: false,
+			},
+			payments: [
+				{
+					bank: '',
+					cardholder: '',
+					country: '',
+					number: '',
+					phone: '',
+				},
+			],
+			keywords: null,
+			country_results: [],
+			image: '',
+			payments_view:false,
+			croppie: null
+		};
+	},
+	computed: {
+		uploadedImage() {
+			return Object.keys(this.myCroppa).length !== 0;
+		}
+	},
+	watch: {
+		keywords() {
+			this.fetch();
+		},
+		auth_role(){
+			this.init()
+		}
+	},
+	mounted() {
+		// this.drawProfile();
+		// this.hasImage = this.$root.$children[1].hasImage;
+	},
+	created() {
+		if(this.auth_role){
+			this.init()
+		}
+	},
+	methods: {
+		init(){
+			this.fetchData();
+			this.user = this.auth_role;
+			this.format_date(this.user.birthday);
 
 			if (this.user.img_url != null) {
 				this.image = '/users_img/' + this.user.img_url;
@@ -498,7 +494,7 @@ export default {
 			}).then(blob => {
 				const formData = new FormData();
 				formData.append('file', blob);
-				axios.post('/profile/upload/image/profile/', formData).then((response) => {
+				this.$axios.post('/profile/upload/image/profile/', formData).then((response) => {
 					bus.$emit('user-avatar-update', '/users_img/' + response.data.filename)
 				});
 			})
@@ -525,7 +521,7 @@ export default {
 				let loader = _this.$loading.show();
 				const formData = new FormData();
 				formData.append('file', blob);
-				axios
+				this.$axios
 					.post('/profile/save-cropped-image', formData)
 					.then(function (res) {
 						loader.hide();
@@ -542,7 +538,7 @@ export default {
 			// ); // 80% compressed jpeg file
 		},
 		handleFileUpload(){
-
+			/* global Croppie */
 			this.file = this.$refs.file.files[0];
 
 			let reader  = new FileReader();
@@ -583,7 +579,7 @@ export default {
 
 		format_date(value) {
 			if (value) {
-				return (this.birthday = moment(String(value)).format('YYYY-MM-DD'));
+				return (this.birthday = this.$moment(String(value)).format('YYYY-MM-DD'));
 			}
 		},
 
@@ -613,11 +609,11 @@ export default {
 				this.$toast.success('Успешно Удалено');
 
 				if (type_id != 'dev') {
-					axios
+					this.$axios
 						.post('/profile/remove/card/', {
 							card_id: type_id,
 						})
-						.then((response) => {})
+						.then(() => {})
 						.catch((error) => {
 							alert(error);
 						});
@@ -668,7 +664,7 @@ export default {
 
 
 			if (this.cardValidatre.type) {
-				axios
+				this.$axios
 					.post('/profile/edit/user/cart/', {
 						cards: this.payments,
 						query: this.user,
@@ -696,7 +692,7 @@ export default {
 		},
 
 		fetchData() {
-			axios
+			this.$axios
 				.get('/cabinet/get')
 				.then((response) => {
 					this.admins = response.data.admins;
@@ -730,11 +726,11 @@ export default {
 		},
 
 		save() {
-			axios
+			this.$axios
 				.post('/cabinet/save', {
 					admins: this.admins,
 				})
-				.then((response) => {
+				.then(() => {
 					this.$toast.success('Сохранено');
 				})
 				.catch((error) => {
@@ -748,7 +744,7 @@ export default {
 					this.keywords = '';
 					this.country_results = [];
 				} else {
-					axios
+					this.$axios
 						.post('/profile/country/city/', {
 							keyword: this.keywords,
 						})

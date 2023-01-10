@@ -159,7 +159,7 @@
         @ok="modalAdjustVisibleFields = !modalAdjustVisibleFields"
     >
       <div class="row">
-         <div class="col-md-4 mb-4" v-for="(field, f) in all_fields">
+         <div class="col-md-4 mb-4" v-for="(field, f) in all_fields" :key="f">
             <b-form-checkbox
                 v-model="show_fields[field.key]"
                 :value="true"
@@ -179,32 +179,32 @@ import KpiItems from '@/pages/kpi/KpiItems'
 import SuperSelect from '@/components/SuperSelect'
 
 import {kpi_fields, newKpi} from './kpis.js'
-import {findModel, groupBy} from './helpers.js'
+import {findModel/* , groupBy */} from './helpers.js'
 
 
 export default {
-    name: 'KPI',
-    components: {
-        JwPagination,
-        SuperFilter,
-        SuperSelect,
-        KpiItems,
-    },
-    props: {},
-    watch: {
-        show_fields: {
-            handler: function (val) {
-                localStorage.kpi_show_fields = JSON.stringify(val);
-                this.prepareFields();
-            },
-            deep: true
-        },
-        pageSize: {
-            handler: function(val) {
-                if(val < 1) {
-                    val = 1;
-                    return;
-                }
+	name: 'KPI',
+	components: {
+		JwPagination,
+		SuperFilter,
+		SuperSelect,
+		KpiItems,
+	},
+	props: {},
+	watch: {
+		show_fields: {
+			handler: function (val) {
+				localStorage.kpi_show_fields = JSON.stringify(val);
+				this.prepareFields();
+			},
+			deep: true
+		},
+		pageSize: {
+			handler: function(val) {
+				if(val < 1) {
+					val = 1;
+					return;
+				}
 
 				if(val > 100) {
 					val = 100;
@@ -243,20 +243,20 @@ export default {
 	created() {
 		this.fetchKPI()
 
-        this.setDefaultShowFields()
-        this.prepareFields();
-        this.addStatusToItems();
-    },
-    mounted() {
-        this.$watch(
-          "$refs.child.searchText",
-          (new_value, old_value) => (this.searchText = new_value)
-        );
-    },
-    methods: {
-        expand(i) {
-            this.page_items[i].expanded = !this.page_items[i].expanded
-        },
+		this.setDefaultShowFields()
+		this.prepareFields();
+		this.addStatusToItems();
+	},
+	mounted() {
+		this.$watch(
+			'$refs.child.searchText', // WTF!?!?!?
+			new_value => (this.searchText = new_value)
+		);
+	},
+	methods: {
+		expand(i) {
+			this.page_items[i].expanded = !this.page_items[i].expanded
+		},
 
 		onChangePage(page_items) {
 			this.page_items = page_items;
@@ -530,10 +530,10 @@ export default {
 				value = 0;
 			}
 
-            if(['lower_limit', 'upper_limit'].includes(field) && value > 100) {
-                value = 100;
-            }
-        }
-    },
+			if(['lower_limit', 'upper_limit'].includes(field) && value > 100) {
+				value = 100;
+			}
+		}
+	},
 }
 </script>

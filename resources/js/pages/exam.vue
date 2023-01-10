@@ -122,7 +122,7 @@ export default {
 		//Установка выбранного месяца
 		setMonth() {
 			this.curMonth =  this.$moment().format('MMMM')
-			let year = moment().format('YYYY')
+			let year = this.$moment().format('YYYY')
 			this.dateInfo.currentMonth = this.dateInfo.currentMonth ? this.dateInfo.currentMonth : this.$moment().format('MMMM')
 			this.dateInfo.date = `${this.dateInfo.currentMonth} ${year}`
 		},
@@ -140,7 +140,7 @@ export default {
 			console.log(data.value)
 			console.log(data.item)
 			let loader = this.$loading.show()
-			axios.post('/timetracking/exam/update', {
+			this.$axios.post('/timetracking/exam/update', {
 				key: data.field.key,
 				value: data.item.success,
 				link: data.item.link,
@@ -206,7 +206,7 @@ export default {
 		//Загрузка данных для таблицы
 		fetchData() {
 			let loader = this.$loading.show();
-			axios.post('/timetracking/exam', {
+			this.$axios.post('/timetracking/exam', {
 				month: this.$moment(this.dateInfo.currentMonth, 'MMMM').format('M'),
 				year: this.$moment(this.dateInfo.date, 'YYYY').format('YYYY'),
 				group_id: this.currentGroup
@@ -233,7 +233,7 @@ export default {
 		//Добавление загруженных данных в таблицу
 		loadItems() {
 			let items = []
-			this.data.users.forEach((item, index) => {
+			this.data.users.forEach(item => {
 				items.push({
 					name: item.full_name,
 					book_name: item.book_name,

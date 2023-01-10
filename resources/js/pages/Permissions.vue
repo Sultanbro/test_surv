@@ -68,7 +68,6 @@
                             </div>
 
                             <template v-for="(page, i) in pages">
-
                                 <div class="item d-flex" :key="i">
                                     <div class="name mr-3" @click="page.opened = !page.opened">{{page.name}}
                                         <i class="fa fa-chevron-up" v-if="page.opened && page.children.length > 0"></i>
@@ -90,21 +89,23 @@
                                 </div>
 
                                 <template v-if="page.children.length > 0">
-                                    <div class="item d-flex child" v-for="children in page.children" v-if="page.opened">
-                                        <div class="name mr-3">{{children.name}}</div>
-                                        <div class="check d-flex">
-                                            <label class="mb-0 pointer">
-                                                <input class="pointer" v-model="role.perms[children.key + '_view']"
-                                                       type="checkbox" @change="checkChild(i, 'view')"/>
-                                            </label>
-                                        </div>
-                                        <div class="check d-flex">
-                                            <label class="mb-0 pointer">
-                                                <input class="pointer" v-model="role.perms[children.key + '_edit']"
-                                                       type="checkbox" @change="checkChild(i, 'edit')"/>
-                                            </label>
-                                        </div>
-                                    </div>
+                                    <template v-if="page.opened">
+										<div class="item d-flex child" v-for="children in page.children" :key="children.key">
+											<div class="name mr-3">{{children.name}}</div>
+											<div class="check d-flex">
+												<label class="mb-0 pointer">
+													<input class="pointer" v-model="role.perms[children.key + '_view']"
+														type="checkbox" @change="checkChild(i, 'view')"/>
+												</label>
+											</div>
+											<div class="check d-flex">
+												<label class="mb-0 pointer">
+													<input class="pointer" v-model="role.perms[children.key + '_edit']"
+														type="checkbox" @change="checkChild(i, 'edit')"/>
+												</label>
+											</div>
+										</div>
+									</template>
                                 </template>
                             </template>
 
@@ -142,7 +143,7 @@
 </template>
 <script>
 export default {
-	name: 'Permissions',
+	name: 'PagePermissions',
 	data() {
 		return {
 			role: null,
@@ -161,7 +162,7 @@ export default {
 		filtered_items(){
 			if(!this.searchText) return this.items
 			const lowerText = this.searchText.toLowerCase()
-			return this.items.filter((el, index) => {
+			return this.items.filter(el => {
 				if(el.targets){
 					const inTarget = el.targets.findIndex(target => target.name.toLowerCase().indexOf(lowerText) > -1)
 					if(inTarget > -1) return true
@@ -190,7 +191,7 @@ export default {
 		fetchData() {
 			let loader = this.$loading.show();
 
-			axios
+			this.$axios
 				.get('/permissions/get', {})
 				.then((response) => {
 
@@ -235,11 +236,11 @@ export default {
 			}
 
 			let loader = this.$loading.show();
-			axios
+			this.$axios
 				.post( '/permissions/delete-target', {
 					id: this.filtered_items[i].id
 				})
-				.then((response) => {
+				.then(() => {
 					let index = this.items.findIndex(it => it.id == this.filtered_items[i].id);
 					if(index != -1) this.items.splice(index, 1);
 
@@ -253,15 +254,9 @@ export default {
 
 		},
 
-		deleteItemsFromBoth(i) {
-
-		},
-
 		updateItem(i) {
-
-
 			let loader = this.$loading.show();
-			axios
+			this.$axios
 				.post( '/permissions/update-target', {
 					item: this.filtered_items[i],
 				})
@@ -312,13 +307,13 @@ export default {
 			this.permissions = [];
 			console.log(this.role.perms);
 
-			Object.keys(this.role.perms).forEach((key, index) => {
+			Object.keys(this.role.perms).forEach(key => {
 				if(this.role.perms[key]) this.permissions.push(key)
 			});
 
 			console.log(this.permissions);
 
-			axios
+			this.$axios
 				.post('/permissions/update-role', {
 					role: this.role,
 					permissions: this.permissions
@@ -355,11 +350,11 @@ export default {
 			}
 
 			let loader = this.$loading.show();
-			axios
+			this.$axios
 				.post( '/permissions/delete-role', {
 					role: this.roles[i]
 				})
-				.then((response) => {
+				.then(() => {
 					loader.hide();
 					this.roles.splice(i,1);
 					this.$toast.success('Роль удалена!');

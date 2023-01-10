@@ -24,14 +24,14 @@
           <slot></slot>
         </div>
       </div>
-    </div>   
+    </div>
   </div>
 </template>
 
 <script>
 export default {
 
-	name: 'Popup',
+	name: 'LayoutsPopup',
 	props: {
 		title: {},
 		desc: {},

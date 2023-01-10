@@ -1,9 +1,9 @@
 <template>
-  	<div id="foo"></div>
+	<div id="foo"></div>
 </template>
 <script>
 export default {
-	name: 'Gauge',
+	name: 'UIGauge',
 	props: ['value', 'max'],
 	data() {
 		return {
@@ -13,12 +13,12 @@ export default {
 			percent: 0,
 			radius: '400',
 			needle_degree: '',
-	  gauge: null
+			gauge: null
 		}
 	},
 	created() {
 		this.percent = Number(this.value / this.max * 100).toFixed(0);
-		let result = this.start * (1 - this.percent / 100)
+		// let result = this.start * (1 - this.percent / 100)
 
 		var opts = {
 			angle: -0.02, // The span of the gauge arc
@@ -38,6 +38,9 @@ export default {
 			highDpiSupport: true,     // High resolution support
 		};
 		var target = document.getElementById('foo'); // your canvas element
+
+		// WTF is Gauger?!?!
+		// eslint-disable-next-line no-undef
 		this.gauge = new Gauger(target).setOptions(opts); // create sexy gauge!
 		this.gauge.maxValue = 3000; // set max gauge value
 		this.gauge.setMinValue(0);  // Prefer setter over gauge.minValue = 0
@@ -47,7 +50,7 @@ export default {
 	},
 	methods: {
 		rate() {
-      
+
 		}
 	},
 }

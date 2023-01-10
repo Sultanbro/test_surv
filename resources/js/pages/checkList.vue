@@ -173,7 +173,7 @@
                     </div>
                 </div>
                 <div class="row mt-4 pl-3">
-                    <div class="col-md-12 pr-0 mt-2" v-for="(item, index) in arrCheckInput.tasks">
+                    <div class="col-md-12 pr-0 mt-2" v-for="(item, index) in arrCheckInput.tasks" :key="index">
                       <div class="row">
                           <div class="col-md-6 pr-0 mr-2">
 <!--                              <div class="position-absolute" style="margin-left: -15px;top: 2px">-->
@@ -239,54 +239,52 @@
 
 
 <script>
-    import Sidebar from '@/components/ui/Sidebar' // сайдбар table
-    import Multiselect from 'vue-multiselect'
-    export default {
-        name: "TableQuarter",
-        components: {
-            Multiselect,
-            Sidebar,
-        },
-        // props:['item','groups', 'users', 'roles'],
-        props:{
+import Sidebar from '@/components/ui/Sidebar' // сайдбар table
+export default {
+	name: 'TableQuarter',
+	components: {
+		Sidebar,
+	},
+	// props:['item','groups', 'users', 'roles'],
+	props:{
 
-              single: {
-                type: Boolean,
-                default: false
-              },
-              select_all_btn: {
-                type: Boolean,
-                default: false
-              },
-        },
-        data() {
-            return{
-                deleted_tasks:[],
-                editValuesChanged: false,
-                editMode: false,
-                valueFindGr:[],
-                arrCheckInput:{
-                    tasks:[],
-                },
-                arrCheckLists:[],
-                filter:'',
-                countView:'1',
-                errors: {
-                    message:'',
-                    msg:'',
-                    text:[],
-                    counterror:[],
-                    show:false,
-                    save:false,
-                    class:'btn btn-success',
-                },
-                showCheckSideBar:false,
-                addButton:false,
-                editButton:false,
-                placeholderSelect:true,
-                check_id:null,
-                flag_type:true,
-                allValueArray:[],
+		single: {
+			type: Boolean,
+			default: false
+		},
+		select_all_btn: {
+			type: Boolean,
+			default: false
+		},
+	},
+	data() {
+		return{
+			deleted_tasks:[],
+			editValuesChanged: false,
+			editMode: false,
+			valueFindGr:[],
+			arrCheckInput:{
+				tasks:[],
+			},
+			arrCheckLists:[],
+			filter:'',
+			countView:'1',
+			errors: {
+				message:'',
+				msg:'',
+				text:[],
+				counterror:[],
+				show:false,
+				save:false,
+				class:'btn btn-success',
+			},
+			showCheckSideBar:false,
+			addButton:false,
+			editButton:false,
+			placeholderSelect:true,
+			check_id:null,
+			flag_type:true,
+			allValueArray:[],
 
 
 
@@ -330,22 +328,22 @@
 
 			return this.arrCheckLists;
 
-            },
-        },
-        watch:{
-            arrCheckInput:{
-                handler(after, before){
-                    this.editValuesChanged = true;
-                },
-                deep: true,
-            },
-            countView(after,before){
-                    this.editValuesChanged = true;
-            },
-            'values.length'(after,before){
-                    this.editValuesChanged = true;
+		},
+	},
+	watch:{
+		arrCheckInput:{
+			handler(){
+				this.editValuesChanged = true;
+			},
+			deep: true,
+		},
+		countView(){
+			this.editValuesChanged = true;
+		},
+		'values.length'(){
+			this.editValuesChanged = true;
 
-            },
+		},
 
 	},
 	created(){
@@ -358,7 +356,6 @@
 
 	methods:{
 		closeSideBar(){
-			console.log(this.editValuesChanged);
 			this.deleted_tasks = [];
 			if(this.editValuesChanged && !this.editMode){
 				this.showCheckSideBar = false;
@@ -373,26 +370,26 @@
                         this.showCheckSideBar = false;
                         this.clearSideBar();
                     }*/
-                }else{
-                    //this.clearSideBar();
-                    this.editMode = false;
-                }
-                this.showCheckSideBar = false;
-                this.editValuesChanged = false;
+			}else{
+				//this.clearSideBar();
+				this.editMode = false;
+			}
+			this.showCheckSideBar = false;
+			this.editValuesChanged = false;
 
-            },
-            clearSideBar(){
-                this.values = [];
-                this.countView = 1;
-                this.arrCheckInput.tasks = [];
-                this.arrCheckInput.tasks.push({
-                    checked: false,
-                    task:"",
-                    text: "",
-                    https: '',
-                });
-            },
-            obrabotkaArray(groups,positions,allusers){
+		},
+		clearSideBar(){
+			this.values = [];
+			this.countView = 1;
+			this.arrCheckInput.tasks = [];
+			this.arrCheckInput.tasks.push({
+				checked: false,
+				task:'',
+				text: '',
+				https: '',
+			});
+		},
+		obrabotkaArray(groups,positions,allusers){
 
 
 
@@ -439,7 +436,7 @@
 		},
 
 		getUsers(){
-			axios.post('/timetracking/settings/get/modal/', {
+			this.$axios.post('/timetracking/settings/get/modal/', {
 				type:'3',
 			}).then(response => {
 				// console.log(response);
@@ -453,14 +450,14 @@
 
 		},
 		viewCheckList(){
-			axios.get('/timetracking/settings/list/check', {
+			this.$axios.get('/timetracking/settings/list/check', {
 			}).then(response => {
 				console.log(response.data);
 				this.arrCheckLists = response.data;
 			})
 		},
 		fetchResponsibility() {
-			axios.post('/timetracking/settings/auth/check/user/responsibility', {
+			this.$axios.post('/timetracking/settings/auth/check/user/responsibility', {
 				search:this.responsibility.inputText,
 			}).then(response => {
 				this.responsibility.results = response.data
@@ -468,7 +465,7 @@
 			})
 		},
 		searchSelected(type) {
-			axios.post('/timetracking/settings/auth/check/search/selected', {
+			this.$axios.post('/timetracking/settings/auth/check/search/selected', {
 				type:type,
 				query:this.selected_search,
 			}).then(response => {
@@ -506,56 +503,53 @@
 
 
 			if (this.values.length > 0){
+				let loader = this.$loading.show();
+				console.log(this.values);
+				this.$axios.post('/timetracking/settings/edit/check/save/', {
+					check_id:this.check_id,
+					allValueArray:this.values,
+					countView:this.countView,
+					arr_check_input:arrCheckInput,
+					valueFindGr:this.valueFindGr,
+					deleted_tasks: this.deleted_tasks
+				}).then(response => {
+					loader.hide();
 
-				if (true){
-					let loader = this.$loading.show();
-					console.log(this.values);
-					axios.post('/timetracking/settings/edit/check/save/', {
-						check_id:this.check_id,
-						allValueArray:this.values,
-						countView:this.countView,
-						arr_check_input:arrCheckInput,
-						valueFindGr:this.valueFindGr,
-						deleted_tasks: this.deleted_tasks
-					}).then(response => {
-						loader.hide();
-
-						if (response.data.success === false){
-							this.errors.msg = null;
-							this.errors.show = true;
-							if (response.data.exists[0]['item_type'] == 1){
-								this.errors.message = 'Данный Пользователь '+response.data.exists[0]['title']+  ' Ранне Добавлено';
-								this.errors.msg = 'Данный Пользователь ' +response.data.exists[0]['title']+  ' Ранне Добавлено';
-								this.$toast.error(this.errors.msg);
-							}else if(response.data.exists[0]['item_type'] == 2){
-								this.errors.message =  'Данный Отдел ' +response.data.exists[0]['title']+ ' Ранне Добавлено  ';
-								this.errors.msg = 'Данный Отдел ' +response.data.exists[0]['title']+  ' Ранне Добавлено  ';
-								this.$toast.error(this.errors.msg);
-							}else if(response.data.exists[0]['item_type'] == 3){
-								this.errors.message = 'Данный ' +response.data.exists[0]['title']+  ' Должность Ранне Добавлено ';
-								this.errors.msg = 'Данный ' +response.data.exists[0]['title']+ ' Должность Ранне Добавлено ';
-								this.$toast.error(this.errors.msg);
-							}
-						}else {
-
-
-							//
-							// this.viewCheck()
-
-							this.$toast.success('Успешно изменен');
-							this.errors.show = false;
-							this.showCheckSideBar = false;
-
-							this.viewCheckList()
-
-
-
-
+					if (response.data.success === false){
+						this.errors.msg = null;
+						this.errors.show = true;
+						if (response.data.exists[0]['item_type'] == 1){
+							this.errors.message = 'Данный Пользователь '+response.data.exists[0]['title']+  ' Ранне Добавлено';
+							this.errors.msg = 'Данный Пользователь ' +response.data.exists[0]['title']+  ' Ранне Добавлено';
+							this.$toast.error(this.errors.msg);
+						}else if(response.data.exists[0]['item_type'] == 2){
+							this.errors.message =  'Данный Отдел ' +response.data.exists[0]['title']+ ' Ранне Добавлено  ';
+							this.errors.msg = 'Данный Отдел ' +response.data.exists[0]['title']+  ' Ранне Добавлено  ';
+							this.$toast.error(this.errors.msg);
+						}else if(response.data.exists[0]['item_type'] == 3){
+							this.errors.message = 'Данный ' +response.data.exists[0]['title']+  ' Должность Ранне Добавлено ';
+							this.errors.msg = 'Данный ' +response.data.exists[0]['title']+ ' Должность Ранне Добавлено ';
+							this.$toast.error(this.errors.msg);
 						}
+					}else {
 
 
-					})
-				}
+						//
+						// this.viewCheck()
+
+						this.$toast.success('Успешно изменен');
+						this.errors.show = false;
+						this.showCheckSideBar = false;
+
+						this.viewCheckList()
+
+
+
+
+					}
+
+
+				})
 			}else{
 				this.errors.show = true
 				this.errors.message = 'Выберите кому вы ставите задачу!'
@@ -575,7 +569,7 @@
 			this.errors.show = false
 
 
-			axios.post('/timetracking/settings/edit/check', {
+			this.$axios.post('/timetracking/settings/edit/check', {
 				check_id:check_id,
 				type:type,
 			}).then(response => {
@@ -586,313 +580,313 @@
 
 				// this.addDivBlock(response.data['title'],response.data['item_id'],response.data['item_type'],'edit')
 
-                    this.editValueThis = response.data;
-                    this.valueFindGr = response.data.item_id;
-                    this.countView = response.data.show_count;
+				this.editValueThis = response.data;
+				this.valueFindGr = response.data.item_id;
+				this.countView = response.data.show_count;
 
-                    this.arrCheckInput = response.data;
-                    console.log(this.arrCheckInput)
-                    this.editValueThis.view = true
-                    this.editValueThis.arr = response.data
-
-
-                    this.showModalCheck = true
+				this.arrCheckInput = response.data;
+				console.log(this.arrCheckInput)
+				this.editValueThis.view = true
+				this.editValueThis.arr = response.data
 
 
-                    this.values.push({
-                      name: response.data.title,
-                      id: response.data.item_id,
-                      type: response.data.item_type,
-                      checked:false,
-                    });
+				this.showModalCheck = true
 
 
-                    // console.log(this.values,'xzxzx')
-                    // console.log(this.filtered_options,'077777')
-
-                    // this.selectedRoles(type)
-
-
-                    // if (response.data.item_type == 1){
-                    //     this.valueGroups = [{name:response.data.title,code:response.data.item_id}];
-                    //     this.click_show.gr = true;
-                    //     this.click_show.ps = false
-                    //     this.valuePositions = null;
-                    // }else if (response.data.item_type == 2){
-                    //     this.valuePositions = [{name:response.data.title,code:response.data.item_id}];
-                    //     this.click_show.ps = true;
-                    //     this.click_show.gr = false;
-                    //     this.valueGroups = null;
-                    // }else if (response.data.item_type == 3){
-                    //
-                    //
-                    //     this.click_show.us = true
-                    // };
-                    this.editValuesChanged = false;
-
-                })
-                this.editMode = true;
-
-            },
-            arrCheckDelete(id){
-
-                let confirmDelte = confirm("Вы действительно хотите безвозвратно удалить ?");
-
-                if (confirmDelte){
-                    axios.post('/timetracking/settings/delete/check', {
-                        delete_id:id
-                    }).then(response => {
-                        this.viewCheckList()
-                        this.$toast.success('Успешно Удалено');
-                    })
-                }
+				this.values.push({
+					name: response.data.title,
+					id: response.data.item_id,
+					type: response.data.item_type,
+					checked:false,
+				});
 
 
-            },
-            saveCheckList(){
+				// console.log(this.values,'xzxzx')
+				// console.log(this.filtered_options,'077777')
+
+				// this.selectedRoles(type)
 
 
-                this.saveButton = true
-                this.errors.save_checkbox = false
-                //this.validateInput(this.arrCheckInput.tasks,this.countView)
-                console.log(this.arrCheckInput.tasks);
-              if (this.values.length > 0 || this.values.length > 1){
-                if (true){
-                  let loader = this.$loading.show();
-                  axios.post('/timetracking/settings/add/check', {
-                    allValueArray:this.values,
-                    countView:this.countView,
-                    arr_check_input:this.arrCheckInput,
+				// if (response.data.item_type == 1){
+				//     this.valueGroups = [{name:response.data.title,code:response.data.item_id}];
+				//     this.click_show.gr = true;
+				//     this.click_show.ps = false
+				//     this.valuePositions = null;
+				// }else if (response.data.item_type == 2){
+				//     this.valuePositions = [{name:response.data.title,code:response.data.item_id}];
+				//     this.click_show.ps = true;
+				//     this.click_show.gr = false;
+				//     this.valueGroups = null;
+				// }else if (response.data.item_type == 3){
+				//
+				//
+				//     this.click_show.us = true
+				// };
+				this.editValuesChanged = false;
 
-                  }).then(response => {
-                    loader.hide();
+			})
+			this.editMode = true;
+
+		},
+		arrCheckDelete(id){
+
+			let confirmDelte = confirm('Вы действительно хотите безвозвратно удалить ?');
+
+			if (confirmDelte){
+				this.$axios.post('/timetracking/settings/delete/check', {
+					delete_id:id
+				}).then(() => {
+					this.viewCheckList()
+					this.$toast.success('Успешно Удалено');
+				})
+			}
 
 
-
-                    if (response.data.success == false){
-                      this.errors.show = false;
-                      this.errors.msg = null;
-                      // this.showCheckSideBar = false;
-                      for (let i = 0;i < this.values.length;i++){
-                        if (this.values[i]['type'] == response.data.exists[0]['item_type'] && this.values[i]['id'] == response.data.exists[0]['item_id']){
+		},
+		saveCheckList(){
 
 
-                          if (response.data.exists[0]['item_type'] == 1){
-                            this.errors.msg = 'Данный Пользователь ' +response.data.exists[0]['title']+ ' Ранне Добавлено';
-                            this.$toast.error(this.errors.msg);
-                            this.errors.show = true
-                            this.errors.message =  'Данный Пользователь ' +response.data.exists[0]['title']+ ' Ранне Добавлено  ';
-                          }else if(response.data.exists[0]['item_type'] == 2){
-                            this.errors.msg = 'Данный Отдел ' +response.data.exists[0]['title']+ ' Ранне Добавлено  ';
-                            this.$toast.error(this.errors.msg);
-                            this.errors.show = true
-                            this.errors.message =  'Данный Отдел ' +response.data.exists[0]['title']+ ' Ранне Добавлено  ';
-                          }else if (response.data.exists[0]['item_type'] == 3){
-                            this.errors.msg = 'Данный Должность' +response.data.exists[0]['title']+ ' Должность Ранне Добавлено ';
-                            this.$toast.error(this.errors.msg);
-                            this.errors.show = true
-                            this.errors.message =  'Данный Должность ' +response.data.exists[0]['title']+ ' Ранне Добавлено  ';
-                          }
-                        }
-                      }
-                    }else {
-                      this.$toast.success('Успешно Добавлено');
-                      this.errors.show = false;
-                      this.showCheckSideBar = false;
-                      this.viewCheckList()
-                    }
-                    this.clearSideBar();
-                  })
-                }
-              }else{
-                this.errors.show = true
-                this.errors.message = 'Выбрать Кому будем чик листы добавлять'
-              }
+			this.saveButton = true
+			this.errors.save_checkbox = false
+			//this.validateInput(this.arrCheckInput.tasks,this.countView)
+			console.log(this.arrCheckInput.tasks);
+			if (this.values.length > 0 || this.values.length > 1){
+				let loader = this.$loading.show();
+				this.$axios.post('/timetracking/settings/add/check', {
+					allValueArray:this.values,
+					countView:this.countView,
+					arr_check_input:this.arrCheckInput,
+
+				}).then(response => {
+					loader.hide();
 
 
 
-            },
-            addCheckList() {
-                // this.buttonClass = 'primary',
-                this.arrCheckInput.tasks.push(
-                        {
-                            checked: false,
-                            text: "",
-                            task: "",
-                            https: '',
-                        }
-                    );
-            },
-            deleteCheckList(index, item){
-
-                // console.log(this.valueGroups ,'07777')
-                console.log(item.id);
-                if (index != 0){
-
-                    this.arrCheckInput.tasks.splice(index, 1)
-                    this.deleted_tasks.push(item);
-                }else {
-                    alert('К сожалению последний позиция не удаляется');
-                }
-
-            },
-            validateInput(array_check_input,count_view){
-                this.countView = count_view,
-                    this.arrCheckInput = array_check_input,
-                    this.errors.save = false
-                for (let i = 0; i < this.arrCheckInput.length;i++){
-                    // if (this.arrCheckInput[i]['checked'] === true){
-                    if (this.arrCheckInput[i]['task'] != null){
-                        if (this.arrCheckInput[i]['task'].length < 1){
-                            this.errors.text.push('errorText');
-                        }
-                    }else {
-                        this.errors.text.push('errorText');
-                    }
-                }
+					if (response.data.success == false){
+						this.errors.show = false;
+						this.errors.msg = null;
+						// this.showCheckSideBar = false;
+						for (let i = 0;i < this.values.length;i++){
+							if (this.values[i]['type'] == response.data.exists[0]['item_type'] && this.values[i]['id'] == response.data.exists[0]['item_id']){
 
 
-                if (this.countView < 11 && this.countView != 0){
-                    this.errors.save = true
-                }else{
-                    this.errors.message = 'заполните текст'
-                    this.errors.show = true
-
-                    if (this.countView == 0){
-                        if (this.errors.text.length == 0){
-                            this.errors.message = 'Колво показов минимум 1 '
-                        }else {
-                            this.errors.message =  'заполните текст и Колво показов минимум 1'
-                        }
-                    }else if (this.countView > 11) {
-                        if (this.errors.text.length == 0) {
-                            this.errors.message = 'Колво показов максимум 10'
-                        }else {
-                            this.errors.message = 'заполните текст и Колво показов максимум 10'
-                        }
-                    }
-                    this.errors.text = []
-                    this.errors.counterror = []
-                }
-
-            },
-            closeAlert() {
-                this.errors.show = false;
-            },
-            // selectedRoles(type){
-            //
-            //   this.selected_search = null
-            //
-            //   if (type == 1){
-            //     this.selectedRole.role_1 = true
-            //     this.selectedRole.role_2 = false
-            //     this.selectedRole.role_3 = false
-            //
-            //   }else if (type == 2){
-            //     this.selectedRole.role_1 = false
-            //     this.selectedRole.role_2 = true
-            //     this.selectedRole.role_3 = false
-            //   }else if (type == 3){
-            //     this.selectedRole.role_1 = false
-            //     this.selectedRole.role_2 = false
-            //     this.selectedRole.role_3 = true
-            //   }
-            //
-            // },
-            addDivBlock(item,id,type,edit = null){
-              this.flag_type = true;
-              this.placeholderSelect = false;
-              this.responsibility.block = true;
-
-              if (edit == 'edit'){
-                this.allValueArray = [];
-                this.selectedRoles(type)
-                this.refreshArray()
-
-              }
-
-              if (this.allValueArray.length > 0){
-                for (let i = 0; i < this.allValueArray.length;i ++){
-                  if (this.allValueArray[i]['type'] == type && this.allValueArray[i]['code'] == id){
-                    this.$toast.error('Отдел ранее добавлено');
-                    this.flag_type = false;
-                  }else if (this.allValueArray[i]['type'] == type && this.allValueArray[i]['code'] == id){
-                    this.$toast.error('Должность ранее добавлено');
-                    this.flag_type = false;
-                  }else if (this.allValueArray[i]['type'] == type && this.allValueArray[i]['code'] == id){
-                    this.$toast.error('Пользователь ранее добавлено');
-                    this.flag_type = false;
-                  }
-                }
-              }
-
-              if (this.flag_type == true){
-                this.allValueArray.push({
-                  text: item,
-                  code:id,
-                  type:type,
-                });
+								if (response.data.exists[0]['item_type'] == 1){
+									this.errors.msg = 'Данный Пользователь ' +response.data.exists[0]['title']+ ' Ранне Добавлено';
+									this.$toast.error(this.errors.msg);
+									this.errors.show = true
+									this.errors.message =  'Данный Пользователь ' +response.data.exists[0]['title']+ ' Ранне Добавлено  ';
+								}else if(response.data.exists[0]['item_type'] == 2){
+									this.errors.msg = 'Данный Отдел ' +response.data.exists[0]['title']+ ' Ранне Добавлено  ';
+									this.$toast.error(this.errors.msg);
+									this.errors.show = true
+									this.errors.message =  'Данный Отдел ' +response.data.exists[0]['title']+ ' Ранне Добавлено  ';
+								}else if (response.data.exists[0]['item_type'] == 3){
+									this.errors.msg = 'Данный Должность' +response.data.exists[0]['title']+ ' Должность Ранне Добавлено ';
+									this.$toast.error(this.errors.msg);
+									this.errors.show = true
+									this.errors.message =  'Данный Должность ' +response.data.exists[0]['title']+ ' Ранне Добавлено  ';
+								}
+							}
+						}
+					}else {
+						this.$toast.success('Успешно Добавлено');
+						this.errors.show = false;
+						this.showCheckSideBar = false;
+						this.viewCheckList()
+					}
+					this.clearSideBar();
+				})
+			}else{
+				this.errors.show = true
+				this.errors.message = 'Выбрать Кому будем чик листы добавлять'
+			}
 
 
 
+		},
+		addCheckList() {
+			// this.buttonClass = 'primary',
+			this.arrCheckInput.tasks.push(
+				{
+					checked: false,
+					text: '',
+					task: '',
+					https: '',
+				}
+			);
+		},
+		deleteCheckList(index, item){
+
+			// console.log(this.valueGroups ,'07777')
+			console.log(item.id);
+			if (index != 0){
+
+				this.arrCheckInput.tasks.splice(index, 1)
+				this.deleted_tasks.push(item);
+			}else {
+				alert('К сожалению последний позиция не удаляется');
+			}
+
+		},
+		validateInput(array_check_input,count_view){
+			this.countView = count_view,
+			this.arrCheckInput = array_check_input,
+			this.errors.save = false
+			for (let i = 0; i < this.arrCheckInput.length;i++){
+				// if (this.arrCheckInput[i]['checked'] === true){
+				if (this.arrCheckInput[i]['task'] != null){
+					if (this.arrCheckInput[i]['task'].length < 1){
+						this.errors.text.push('errorText');
+					}
+				}else {
+					this.errors.text.push('errorText');
+				}
+			}
 
 
-                if (type == 1){
-                  this.groups_arr.forEach(el => {
-                      if (el['code'] == id){
+			if (this.countView < 11 && this.countView != 0){
+				this.errors.save = true
+			}else{
+				this.errors.message = 'заполните текст'
+				this.errors.show = true
 
-                        el['checked'] = true
-                      }
-                  });
-                }else if(type == 2){
-                  this.positions_arr.forEach(el => {
-                      if (el['code'] === id){
-                        el['checked'] = true
-                      }
-                  });
-                }else if(type == 3){
+				if (this.countView == 0){
+					if (this.errors.text.length == 0){
+						this.errors.message = 'Колво показов минимум 1 '
+					}else {
+						this.errors.message =  'заполните текст и Колво показов минимум 1'
+					}
+				}else if (this.countView > 11) {
+					if (this.errors.text.length == 0) {
+						this.errors.message = 'Колво показов максимум 10'
+					}else {
+						this.errors.message = 'заполните текст и Колво показов максимум 10'
+					}
+				}
+				this.errors.text = []
+				this.errors.counterror = []
+			}
 
-                  this.allusers_arr.forEach(el => {
-                    if (el['code'] !== undefined){
-                      if (el['code'] === id){
-                        el['checked'] = true
-                      }
-                    }
-                  });
+		},
+		closeAlert() {
+			this.errors.show = false;
+		},
+		// selectedRoles(type){
+		//
+		//   this.selected_search = null
+		//
+		//   if (type == 1){
+		//     this.selectedRole.role_1 = true
+		//     this.selectedRole.role_2 = false
+		//     this.selectedRole.role_3 = false
+		//
+		//   }else if (type == 2){
+		//     this.selectedRole.role_1 = false
+		//     this.selectedRole.role_2 = true
+		//     this.selectedRole.role_3 = false
+		//   }else if (type == 3){
+		//     this.selectedRole.role_1 = false
+		//     this.selectedRole.role_2 = false
+		//     this.selectedRole.role_3 = true
+		//   }
+		//
+		// },
+		addDivBlock(item,id,type,edit = null){
+			this.flag_type = true;
+			this.placeholderSelect = false;
+			this.responsibility.block = true;
+
+			if (edit == 'edit'){
+				this.allValueArray = [];
+				this.selectedRoles(type)
+				this.refreshArray()
+
+			}
+
+			if (this.allValueArray.length > 0){
+				for (let i = 0; i < this.allValueArray.length;i ++){
+					if (this.allValueArray[i]['type'] == type && this.allValueArray[i]['code'] == id){
+						this.$toast.error('Отдел ранее добавлено');
+						this.flag_type = false;
+					}
+					// else if (this.allValueArray[i]['type'] == type && this.allValueArray[i]['code'] == id){
+					// 	this.$toast.error('Должность ранее добавлено');
+					// 	this.flag_type = false;
+					// }
+					// else if (this.allValueArray[i]['type'] == type && this.allValueArray[i]['code'] == id){
+					// 	this.$toast.error('Пользователь ранее добавлено');
+					// 	this.flag_type = false;
+					// }
+				}
+			}
+
+			if (this.flag_type == true){
+				this.allValueArray.push({
+					text: item,
+					code:id,
+					type:type,
+				});
 
 
 
 
-                  // for (var i = 0; i < this.allusers_arr.length;i++){
-                  //   if ( this.allusers_arr[i]['code']  !== undefined){
-                  //     console.log(this.allusers_arr[i]['code'],'xzxzxzx',id)
-                  //     if (this.allusers_arr[i]['code'] == id){
-                  //       this.allusers_arr[i]['checked'] = true
-                  //     }
-                  //   }
-                  // }
+
+				if (type == 1){
+					this.groups_arr.forEach(el => {
+						if (el['code'] == id){
+
+							el['checked'] = true
+						}
+					});
+				}else if(type == 2){
+					this.positions_arr.forEach(el => {
+						if (el['code'] === id){
+							el['checked'] = true
+						}
+					});
+				}else if(type == 3){
+
+					this.allusers_arr.forEach(el => {
+						if (el['code'] !== undefined){
+							if (el['code'] === id){
+								el['checked'] = true
+							}
+						}
+					});
 
 
-                }
-              }
-            },
 
-            deleteDesk(id,code,type){
-              this.allValueArray.splice(id,1)
 
-              if (this.allValueArray.length == 0){
-                this.placeholderSelect = true;
-                this.responsibility.block = false;
-                this.responsibility.input = false;
-              }
+					// for (var i = 0; i < this.allusers_arr.length;i++){
+					//   if ( this.allusers_arr[i]['code']  !== undefined){
+					//     console.log(this.allusers_arr[i]['code'],'xzxzxzx',id)
+					//     if (this.allusers_arr[i]['code'] == id){
+					//       this.allusers_arr[i]['checked'] = true
+					//     }
+					//   }
+					// }
 
-              for (var i = 0; i < this.groups_arr.length;i++){
-                if (this.groups_arr[i]['type'] == type && this.groups_arr[i]['code'] == code){
-                  this.groups_arr[i]['checked'] = false
-                }
-              }
 
-			for (var i = 0; i < this.positions_arr.length;i++){
+				}
+			}
+		},
+
+		deleteDesk(id,code,type){
+			this.allValueArray.splice(id,1)
+
+			if (this.allValueArray.length == 0){
+				this.placeholderSelect = true;
+				this.responsibility.block = false;
+				this.responsibility.input = false;
+			}
+
+			for (let i = 0; i < this.groups_arr.length;i++){
+				if (this.groups_arr[i]['type'] == type && this.groups_arr[i]['code'] == code){
+					this.groups_arr[i]['checked'] = false
+				}
+			}
+
+			for (let i = 0; i < this.positions_arr.length;i++){
 				if (this.positions_arr[i]['type'] == type && this.positions_arr[i]['code'] == code){
 					this.positions_arr[i]['checked'] = false
 				}
@@ -955,7 +949,7 @@
 		},
 
 		filterType() {
-			this.filtered_options = this.options.filter((el, index) => {
+			this.filtered_options = this.options.filter(el => {
 				return el.type == this.type
 			});
 		},
@@ -1026,7 +1020,7 @@
 
 		},
 
-		removeValue(i,type) {
+		removeValue(i) {
 
 			let v = this.values[i];
 			if(v.id == 0 && v.type == 0 && v.name == 'Все') this.selected_all = false;
@@ -1074,7 +1068,7 @@
 			if(this.searchText == '') {
 				this.filtered_options = this.options;
 			} else {
-				this.filtered_options = this.options.filter((el, index) => {
+				this.filtered_options = this.options.filter(el => {
 					return el.name.toLowerCase().indexOf(this.searchText.toLowerCase()) > -1
 				});
 			}
@@ -1087,7 +1081,7 @@
 		},
 
 		fetch() {
-			axios
+			this.$axios
 				.get('/superselect/get', {})
 				.then((response) => {
 

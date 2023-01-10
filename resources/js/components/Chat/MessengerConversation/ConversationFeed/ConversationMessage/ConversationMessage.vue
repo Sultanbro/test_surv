@@ -3,7 +3,7 @@
     'messenger__message-box-right' :
     'messenger__message-box-left'">
     <AlternativeAvatar v-if="message.sender_id !== user.id" :title="message.sender.name"
-                       :image="message.sender.img_url"></AlternativeAvatar>
+                       :image="message.sender.img_url"/>
     <div class="messenger__message-container">
       <div :class="messageCardClass">
         <div class="messenger__format-message-wrapper">
@@ -32,7 +32,7 @@
             </div>
           </div>
           <div v-else class="messenger__message-files">
-            <div class="messenger__message-file" v-for="file in message.files">
+            <div class="messenger__message-file" v-for="(file, index) in message.files" :key="index">
               <template v-if="isImage(file)">
                 <div class="messenger__message-file-image" @click="openImage(file)">
                   <img v-on:load="$emit('loadImage')"
@@ -44,8 +44,7 @@
                   <VoiceMessage :audioSource="file.file_path"
                                 :isActive="active"
                                 @play="$emit('active')"
-                  >
-                  </VoiceMessage>
+                  />
                 </div>
               </template>
               <template v-else>
@@ -65,11 +64,11 @@
       </div>
       <div v-if="message.readers && message.readers.length > 0" class="messenger__message-reactions">
         <template v-if="last && message.readers && message.readers.length > 0 && message.sender_id === user.id">
-          <MessageReaders :message="message" :user="user"></MessageReaders>
+          <MessageReaders :message="message" :user="user"/>
         </template>
 
-        <template v-for="reaction in reactions" v-if="reactions">
-          <div class="messenger__message-reaction" @click="reactMessage({message: message, emoji_id: reaction.type})">
+        <template v-if="reactions">
+          <div v-for="(reaction, index) in reactions" :key="index" class="messenger__message-reaction" @click="reactMessage({message: message, emoji_id: reaction.type})">
             <div class="messenger__message-reaction-icon">
               <span v-if="reaction.type === 1">&#128077;</span>
               <span v-else-if="reaction.type === 2">&#128078;</span>

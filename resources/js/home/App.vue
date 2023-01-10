@@ -7,7 +7,7 @@
     <Tariffs/>
     <Section3/>
     <Section4/>
-    <Footer/>
+    <SectionFooter/>
   </div>
 </template>
 
@@ -19,7 +19,7 @@ import Section3 from './components/sections/Section3.vue'
 import Section4 from './components/sections/Section4.vue'
 import Reviews from './components/sections/Reviews.vue'
 import Tariffs from './components/sections/Tariffs.vue'
-import Footer from './components/sections/Footer.vue'
+import SectionFooter from './components/sections/Footer.vue'
 
 export default {
 	name: 'app',
@@ -31,7 +31,7 @@ export default {
 		Section4,
 		Reviews,
 		Tariffs,
-		Footer
+		SectionFooter
 	}
 }
 </script>

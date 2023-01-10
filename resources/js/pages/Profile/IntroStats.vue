@@ -92,7 +92,7 @@ export default {
 		fetch() {
 			this.loading = true
 
-			axios.post('/profile/salary/get', {
+			this.$axios.post('/profile/salary/get', {
 				month: new Date().getMonth() + 1,
 				year: new Date().getFullYear()
 			}).then(response => {
@@ -112,6 +112,7 @@ export default {
          * animate opacity in blocks
          */
 		OpacityStats() {
+			/* global VJQuery */
 			let MAXBALANCE = this.data.oklad,
 				MAXKPI = this.data.kpiMax,
 				MAXBONUSES = 1,

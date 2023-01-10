@@ -1,6 +1,6 @@
 <template>
     <div class="auth_check">
-        <div @click="toggle()"   class="btn-rm">
+        <div @click="toggle()" class="btn-rm">
             <a class="text-white rounded" >
                 <span class="far fa-address-card text-white "></span>
             </a>
@@ -21,9 +21,9 @@
                 <div class="row">
                    <div class="col-12 p-0">
 
-                     <div class="col-md-12 pr-0 mt-2" v-for="(item, index) in auth_check">
+                     <div class="col-md-12 pr-0 mt-2" v-for="(item, index) in auth_check" :key="index">
                        <span class="font-weight-bold">{{index}}</span>
-                       <div class="col-10 p-0 mt-2" v-for="(val,ind) in item">
+                       <div class="col-10 p-0 mt-2" v-for="(val,ind) in item" :key="ind">
                           <div class="mr-5">
                             <b-form-checkbox v-model="val.checkedtasks[0].checked" size="sm" >
                               <span style="cursor: pointer">{{val.task}}</span>
@@ -94,11 +94,11 @@ export default {
 		window.setInterval(() => {
 			this.currentTime = new Date()
 		}, 1000)
-	}, 
+	},
 	watch: {
-		async currentTime(newValue, oldValue) {
+		async currentTime(newValue) {
 			console.log(newValue.getHours()+':'+newValue.getMinutes()+' -- '+ this.notification_time.getHours()+':'+ this.notification_time.getMinutes());
-                 
+
 			if(this.notification_time != null){
 				if(newValue.getHours() == this.notification_time.getHours() && newValue.getMinutes() == this.notification_time.getMinutes()){
 					this.toggle();
@@ -109,7 +109,7 @@ export default {
 					}
 				}
 			}
- 
+
 
 		}
 	},
@@ -125,7 +125,7 @@ export default {
 			this.auth_check_list.forEach(val => {
 				ids.push(val.id);
 			})
-			axios.post('/checklist/tasks',{
+			this.axios.post('/checklist/tasks',{
 				checklist_id:ids
 			}).then(response => {
 				this.auth_check = response.data[0];
@@ -166,8 +166,8 @@ export default {
 		},
 
 		saveChecklist(){
-                
-			axios.post('/checklist/save', {
+
+			this.axios.post('/checklist/save', {
 				auth_check:this.auth_check
 			}).then(response => {
 				if(response.data == 1){
@@ -179,22 +179,22 @@ export default {
 					this.$toast.success('Укажите правильную ссылку!');
 				}
 
-			});   
-            
+			});
+
 		},
 		saveCheck(){
 			this.validate(this.auth_check)
 
 			if (this.sendChecklist){
 
-				axios.post('/timetracking/settings/auth/check/user/send', {
+				this.axios.post('/timetracking/settings/auth/check/user/send', {
 					auth_check:this.auth_check
-				}).then(response => {
+				}).then(() => {
 
 					this.showAuthUserCheck= false
 					this.$toast.success('Успешно выполнено');
 
-                      
+
 
 				})
 
@@ -203,7 +203,7 @@ export default {
 			}
 		},
 
-		validate(auth_check){
+		validate(){
 
 
 			this.auth_check.forEach(el => {

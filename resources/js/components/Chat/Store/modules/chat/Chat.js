@@ -1,4 +1,5 @@
 import API from '../../API.vue';
+import Vue from 'vue'
 
 export default {
 	state: {
@@ -87,14 +88,14 @@ export default {
 		chat: state => state.chat
 	},
 	actions: {
-		async loadChats({commit, getters, dispatch}) {
+		async loadChats({commit, dispatch}) {
 			return API.fetchChats(response => {
 				commit('setChats', response.chats);
 				commit('setContacts', response.chats);
 				dispatch('updateUser', response.user);
 			});
 		},
-		async loadChat({commit, getters, dispatch}, {chatId, callback: callback = () => {}}) {
+		async loadChat({commit, dispatch}, {chatId, callback: callback = () => {}}) {
 			await API.getChatInfo(chatId, chat => {
 				commit('setChat', chat);
 				commit('setPinnedMessage', chat.pinned_message);
@@ -102,12 +103,12 @@ export default {
 				dispatch('cancelEditMessage');
 			});
 		},
-		async escapeChat({commit, getters, dispatch}) {
+		async escapeChat({commit, dispatch}) {
 			commit('setChat', null);
 			commit('setMessages', []);
 			dispatch('cancelEditMessage');
 		},
-		async createChat({commit, getters, dispatch}, {title, description, members}) {
+		async createChat({dispatch}, {title, description, members}) {
 			await API.createChat(title, description, members).then(response => {
 				dispatch('loadChat', {chatId: response.data.id});
 			});
@@ -141,39 +142,39 @@ export default {
 				commit('setPinnedMessage', null);
 			});
 		},
-		async addMembers({commit, getters, dispatch}, members) {
+		async addMembers({commit, getters}, members) {
 			for (let member of members) {
 				await API.addUserToChat(getters.chat.id, member.id);
 			}
 			commit('addMembers', members);
 		},
-		async removeMembers({commit, getters, dispatch}, members) {
+		async removeMembers({commit, getters}, members) {
 			for (let member of members) {
 				await API.removeUserFromChat(getters.chat.id, member.id);
 			}
 			commit('removeMembers', members);
 		},
-		async editChatTitle({commit, getters, dispatch}) {
+		async editChatTitle({commit, getters}) {
 			await API.editChat(getters.chat.id, getters.chat.title, getters.chat.description);
 			commit('updateChat', getters.chat);
 		},
-		async uploadChatAvatar({commit, getters, dispatch}, file) {
+		async uploadChatAvatar({getters}, file) {
 			await API.uploadChatAvatar(getters.chat.id, file);
 		},
-		async pinChat({commit, getters, dispatch}, chat) {
+		async pinChat({commit}, chat) {
 			await API.pinChat(chat.id);
 			chat.pinned = true;
 			commit('updateChat', chat);
 		},
-		async unpinChat({commit, getters, dispatch}, chat) {
+		async unpinChat({commit}, chat) {
 			await API.unpinChat(chat.id);
 			chat.pinned = false;
 			commit('updateChat', chat);
 		},
-		async setChatAdmin({commit, getters, dispatch}, {chat, user}) {
+		async setChatAdmin(context, {chat, user}) {
 			API.setChatAdmin(chat.id, user.id);
 		},
-		async unsetChatAdmin({commit, getters, dispatch}, {chat, user}) {
+		async unsetChatAdmin(context, {chat, user}) {
 			API.unsetChatAdmin(chat.id, user.id);
 		}
 	}

@@ -8,7 +8,7 @@
     @hidden="$emit('update:open', false)"
     @ok="okHandler"
   >
-  
+
       <div id="upload-modal-body"
         @dragover.prevent.self
         @dragenter.prevent.self
@@ -36,7 +36,7 @@
           </form>
 
         <b-alert class="mb-0 mt-3"
-          v-model="!!error.text"
+          :value="!!error.text"
           variant="danger">
             {{ error.text }}
         </b-alert>
@@ -84,7 +84,7 @@ export default {
 	methods: {
 
 		// EVENT HANDLERS
-    
+
 		async okHandler (e) {
 			try {
 				if (!this.filename) {
@@ -134,8 +134,6 @@ export default {
 			} else {
 				if (!typeAllowed) {
 					this.error.text = 'Недопустимый формат файла'
-				} else if (!sizeValid) {
-					this.error.text = 'Недопустимый размер файла'
 				}
 			}
 		},

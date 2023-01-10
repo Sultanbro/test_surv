@@ -153,7 +153,7 @@ import interact from 'interactjs';
 import VuePdfEmbed from 'vue-pdf-embed/dist/vue2-pdf-embed';
 
 export default {
-	name: 'Draggable',
+	name: 'UploadSertificateModal',
 	props: {
 		img: {
 			type: String,

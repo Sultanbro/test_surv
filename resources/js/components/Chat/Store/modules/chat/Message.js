@@ -1,7 +1,7 @@
 import API from '../../API.vue';
 import Vue from 'vue';
 
-import {MESSAGES_MAX_COUNT, MESSAGES_LOAD_COUNT, MESSAGES_LOAD_COUNT_ON_RESET, REACTIONS} from './constants.js';
+import {MESSAGES_MAX_COUNT, MESSAGES_LOAD_COUNT, MESSAGES_LOAD_COUNT_ON_RESET} from './constants.js';
 
 export default {
 	state: {
@@ -143,7 +143,7 @@ export default {
 				});
 			}
 		},
-		async newServiceMessage({commit, getters, dispatch}, message) {
+		async newServiceMessage({commit, getters}, message) {
 			switch (message.event.type) {
 			case 'join':
 				if (getters.chat && getters.chat.id === message.chat_id) {
@@ -215,7 +215,7 @@ export default {
 				commit('addMessage', message);
 			}
 		},
-		async markMessagesAsRead({commit, getters, dispatch}, messages) {
+		async markMessagesAsRead({commit, getters}, messages) {
 			// exclude messages from user
 			messages = messages.filter(message => message.sender_id !== getters.user.id);
 			// exclude messages contains reader.id (current user)
@@ -226,7 +226,7 @@ export default {
 				});
 			}
 		},
-		async deleteMessage({commit, getters, dispatch}, message) {
+		async deleteMessage({commit}, message) {
 			return API.deleteMessage(message.id, () => {
 				commit('deleteMessage', message);
 			});
@@ -238,20 +238,20 @@ export default {
 		async cancelEditMessage({commit}) {
 			commit('setEditMessage', null);
 		},
-		async pinMessage({commit, getters, dispatch}, message) {
+		async pinMessage({commit}, message) {
 			return API.pinMessage(message.id, () => {
 				commit('setPinnedMessage', message);
 			});
 		},
-		async unpinMessage({commit, getters, dispatch}) {
+		async unpinMessage({commit, getters}) {
 			return API.unpinMessage(getters.pinnedMessage.id, () => {
 				commit('setPinnedMessage', null);
 			});
 		},
-		async citeMessage({commit, getters, dispatch}, message) {
+		async citeMessage({commit}, message) {
 			commit('setCitedMessage', message);
 		},
-		async uploadFiles({commit, getters, dispatch}, {files, caption = ''}) {
+		async uploadFiles({commit, getters}, {files, caption = ''}) {
 			const guid = Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
 			let newMessage = {
 				id: guid,
@@ -274,7 +274,7 @@ export default {
 				commit('updateMessage', newMessage);
 			});
 		},
-		async reactMessage({commit, getters, dispatch}, {message, emoji_id}) {
+		async reactMessage(context, {message, emoji_id}) {
 			return API.reactMessage(message.id, emoji_id);
 		},
 	},

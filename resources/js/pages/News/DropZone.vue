@@ -44,7 +44,7 @@ export default {
 
 			formData.append('file', file);
 
-			await axios.post('/files', formData)
+			await this.$axios.post('/files', formData)
 				.then(res => {
 					this.$set(this.files, this.files.length, {
 						id: res.data.data.id,
@@ -61,7 +61,7 @@ export default {
 				})
 		},
 
-		async removeFile(file, error, xhr) {
+		async removeFile(file) {
 			if (file.manuallyAdded) {
 				const el = this.files.filter(item => {
 					return item.name == file.name;
@@ -121,7 +121,7 @@ export default {
 					removeElement.classList.add('remove-icon');
 					removeElement.innerHTML = '<img src=\'/icon/news/create-post/remove.svg\'>';
 				}
-				return setTimeout(((function (_this) {
+				return setTimeout(((function () {
 					return function () {
 						return file.previewElement.classList.add('dz-image-preview');
 					};

@@ -4,8 +4,8 @@
     Выберите сотрудников, которым будет разрешено редактировать время
 
     <multiselect v-model="group_editors" :options="users" :multiple="true" :close-on-select="false" :clear-on-select="false" :preserve-search="true" placeholder="Выберите" label="email" track-by="email">
-      <template #selection="{ values, search, isOpen }">
-        <span class="multiselect__single" v-if="values.length &amp;&amp; !isOpen">{{ values.length }} выбрано</span>
+      <template #selection="{ values, isOpen }">
+        <span class="multiselect__single" v-if="values.length && !isOpen">{{ values.length }} выбрано</span>
       </template>
     </multiselect>
   </b-modal>
@@ -30,7 +30,7 @@ export default {
 		page: String
 	},
 	watch: {
-		currentGroup(val) {
+		currentGroup() {
 			this.loadEditors()
 		}
 	},
@@ -46,7 +46,7 @@ export default {
 	},
 	created() {
 		this.loadEditors()
-		axios.post('/timetracking/users', {})
+		this.axios.post('/timetracking/users', {})
 			.then(response => {
 				this.users = response.data.users
 			})
@@ -54,7 +54,7 @@ export default {
 	},
 	methods: {
 		loadEditors() {
-			axios.post('/timetracking/reports/get-editors', {
+			this.axios.post('/timetracking/reports/get-editors', {
 				group_id: this.currentGroup,
 				page: this.page
 			}).then(response => {
@@ -62,11 +62,11 @@ export default {
 			})
 		},
 		savePremission() {
-			axios.post('/timetracking/reports/add-editors', {
+			this.axios.post('/timetracking/reports/add-editors', {
 				users: this.group_editors,
 				group_id: this.currentGroup,
 				page: this.page
-			}).then(response => {}).catch(error => {
+			}).then(() => {}).catch(error => {
 				console.log(error)
 			});
 			this.openPremissionModal = false
@@ -85,4 +85,5 @@ export default {
 }
 </script>
 
-<style src="vue-multiselect/dist/vue-multiselect.min.css"></style><style lang="scss">
+<style src="vue-multiselect/dist/vue-multiselect.min.css"></style>
+<style lang="scss"/>

@@ -1,7 +1,7 @@
 <template>
 <div class="mb-3" :key="skey">
-   
-    
+
+
     <div class="table-container">
         <table class="table table-bordered table-responsive whitespace-no-wrap custom-table-rentability">
             <thead>
@@ -10,8 +10,8 @@
                 <th></th>
 
                 <template v-for="(m, key) in months">
-                    <th colspan="2" class="text-center">{{m}}</th>
-                    <th class="br1 text-center">{{ tops[key]  }}</th>
+                    <th colspan="2" class="text-center" :key="key">{{m}}</th>
+                    <th class="br1 text-center" :key="key + 'a'">{{ tops[key]  }}</th>
                 </template>
             </tr>
 
@@ -57,18 +57,18 @@
                 </td>
 
                 <template v-for="i in 12">
-                    <td class="text-center" :class="{'p-0': index != 0}">
+                    <td class="text-center" :class="{'p-0': index != 0}" :key="i">
                         <input v-if="index != 0" class="input"
                                :class="{'edited':item['ed' + i]}"
                                type="number" v-model="item['l' + i]" @change="update(i, index)">
                         <div v-else>{{ item['l' + i] }}</div>
                     </td>
-                    <td class="text-center">
+                    <td class="text-center" :key="i">
 
                         {{  numberWithCommas( item['c' + i] ) }}
 
                     </td>
-                    <td class="text-center br1"
+                    <td class="text-center br1" :key="i"
                         :class="{
                         'c-red text-white': item['rc' + i] < 20 && item['rc' + i] != '',
                         'c-orange': item['rc' + i] >= 20 && item['rc' + i] < 50,
@@ -114,21 +114,21 @@ export default {
 			sorts: {}
 		};
 	},
-	watch: { 
-		year: function(newVal, oldVal) { 
+	watch: {
+		year: function() {
 			this.fetchData();
 		},
-		month: function(newVal, oldVal) { 
+		month: function() {
 			this.fetchData();
 		},
 	},
 
 	created() {
-		this.fetchData(); 
+		this.fetchData();
 	},
 
 	methods: {
-          
+
 		countTop() {
 			Object.keys(this.months).forEach(key => {
 				let s = this.items[0]['c' + key];
@@ -150,7 +150,7 @@ export default {
 		},
 
 		fetchData() {
-			axios 
+			this.axios
 				.post('/timetracking/top/get-rentability', {
 					year: this.year,
 					month: this.month
@@ -167,19 +167,19 @@ export default {
 
 			let item = this.items[index];
 
-			axios 
+			this.axios
 				.post('/timetracking/top/top_edited_value/update', {
 					year: this.year,
 					month: month,
 					value: item['l' + month],
 					group_id: item.group_id,
 				})
-				.then((response) => {
+				.then(() => {
 					let i = month;
 
 					item['r' + i] = Number(item['c' + i]) > 0 ? Number(Number(item['l' + i]) * 1000 / Number(item['c' + i]) ).toFixed(1) : 0;
 					item['rc' + i] = item['r' + i] + '%';
-                    
+
 					item['ed' + i] = true;
 
 					this.$toast.success('Сохранено');
@@ -194,7 +194,7 @@ export default {
 
 			if(this.sorts[field] === undefined) {
 				this.sorts[field] = 'asc';
-			} 
+			}
 
 			let item = this.items[0];
 
@@ -206,7 +206,7 @@ export default {
 				this.items.sort((a, b) => (a[field] < b[field]) ? 1 : -1);
 				this.sorts[field] = 'desc';
 			}
-            
+
 			this.items.unshift(item);
 		},
 

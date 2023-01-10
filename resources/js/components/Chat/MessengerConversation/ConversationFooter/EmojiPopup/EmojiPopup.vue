@@ -13,7 +13,7 @@
         </svg>
       </div>
     </template>
-    <template #emoji-picker="{ emojis, insert, display }">
+    <template #emoji-picker="{ emojis, insert }">
       <div>
         <div class="emoji-picker" :style="{ bottom: 5 + '%', right: 10 + '%' }">
           <div>

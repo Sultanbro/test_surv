@@ -1,5 +1,5 @@
 <template>
-    <tr class="activitty" v-if="!kpi_indicator.deleted">  
+    <tr class="activitty" v-if="!kpi_indicator.deleted">
         <td v-if="is_admin">
             <input type="checkbox" v-model="kpi_indicator.checked">
         </td>
@@ -22,10 +22,10 @@
             </select>
             <div v-else>{{ kpi_indicator.groups.find(x => x.id == kpi_indicator.group_id) !== undefined ? kpi_indicator.groups.find(x => x.id == kpi_indicator.group_id).name : kpi_indicator.group_id }}</div>
         </td>
-    
+
         <td v-if="is_admin">
-            
-            
+
+
             <div class="d-flex">
                 <select v-if="type == 'common'" v-model="kpi_indicator.activity_id" class="form-control form-control-sm">
                     <option :value="0">Не связан</option>
@@ -43,14 +43,14 @@
                     placeholder="A1"
                     class="form-control kpi-cell">
             </div>
-            
+
         </td>
         <td v-if="is_admin">
             <select v-model="kpi_indicator.unit" class="form-control">
                 <option value="" selected></option>
                 <option value="%">%</option>
                 <option value="мин">мин</option>
-            </select>  
+            </select>
         </td>
         <td :title="planPlaceholder" >
             <div v-if="is_admin">
@@ -61,7 +61,7 @@
                 <div v-else>{{ plan }} <div style="display:inline-block" @click="showInput = !showInput"><i  class="fa fa-edit"></i></div></div>
             </div>
             <span v-else>{{ plan }}</span>
-            
+
         </td>
         <td v-if="!is_admin">{{ kpi_indicator.completed_value }}</td>
         <td>
@@ -75,7 +75,7 @@
         </td>
         <td>{{ kpi_indicator.result }}</td>
     </tr>
-    
+
 </template>
 
 <script>
@@ -83,7 +83,7 @@ export default {
 	name: 'TableKpiIndicator',
 	props:  {
 		kpi_indicator: {
-			default: null, 
+			default: null,
 		},
 		is_admin: {
 			default: false,
@@ -115,20 +115,20 @@ export default {
 	},
 	watch: {
 		kpi_indicator: {
-			handler: function(newValue) {this.recalc()},
+			handler: function() {this.recalc()},
 			deep: true
 		},
 		nijn_porok: {
-			handler: function(newValue) {this.recalc()},
+			handler: function() {this.recalc()},
 		},
 		verh_porok: {
-			handler: function(newValue) {this.recalc()},
+			handler: function() {this.recalc()},
 		},
 		kpi_80_99: {
-			handler: function(newValue) {this.recalc()},
+			handler: function() {this.recalc()},
 		},
 		kpi_100: {
-			handler: function(newValue) {this.recalc()},
+			handler: function() {this.recalc()},
 		}
 	},
 	data() {
@@ -140,30 +140,28 @@ export default {
 	computed: {
 		plan() {
 			if(this.kpi_indicator.plan_unit == 'minutes') {
-                
-
 				if(this.type == 'individual') {
 					return this.kpi_indicator.daily_plan; //* Number(this.kpi_indicator.workdays);
 				} else {
 					this.planPlaceholder = this.kpi_indicator.daily_plan.toString() + ' * ' + Number(this.kpi_indicator.workdays);
 					return this.kpi_indicator.daily_plan * Number(this.kpi_indicator.workdays);
 				}
-                
+
 			}
 
 			if(this.kpi_indicator.plan_unit == 'percent' || this.kpi_indicator.plan_unit == 'less_avg' || this.kpi_indicator.plan_unit == 'less_sum' || this.kpi_indicator.plan_unit == 'more_sum' ) {
 				return this.kpi_indicator.daily_plan.toString() + this.kpi_indicator.unit;
 			}
-            
+			return 0
 		}
 	},
 	created() {
 		this.recalc()
-	}, 
-	methods: { 
+	},
+	methods: {
 		toggleInput() {
-            
-		}, 
+
+		},
 		recalc() {
 			this.result();
 			this.sum_prem();
@@ -184,7 +182,7 @@ export default {
 			let kpi_100 = this.kpi_100
 
 			if(completed > nijn_porok) {
-                
+
 				if (completed < verh_porok) {
 					result = kpi_80_99 * ud_ves * (completed - nijn_porok) * verh_porok / (verh_porok - nijn_porok)
 				} else {
@@ -194,12 +192,12 @@ export default {
 				result = 0;
 			}
 
-            
+
 			if (result < 0) result = 0;
 			this.kpi_indicator.result = Number(result).toFixed(1);
 		},
 	}
-    
+
 };
 </script>
 

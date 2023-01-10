@@ -79,17 +79,17 @@
 <script>
 import ReactionComponent from '@/pages/News/ReactionComponent'
 export default {
-    name: 'CommentsComponent',
-    components: {
-        ReactionComponent,
-    },
-    props: {
-        me: {
-            required: true
-        }
-    },
-    data() {
-        return {
+	name: 'CommentsComponent',
+	components: {
+		ReactionComponent,
+	},
+	props: {
+		me: {
+			required: true
+		}
+	},
+	data() {
+		return {
 
 			comments: [],
 			comments_count: 0,
@@ -103,7 +103,7 @@ export default {
 		async getComments(postId) {
 			this.postId = postId;
 
-			await axios.get('/news/' + postId + '/comments')
+			await this.$axios.get('/news/' + postId + '/comments')
 				.then(response => {
 					this.comments = response.data.data.comments;
 					this.comments_count = response.data.data.comments_count;
@@ -112,16 +112,16 @@ export default {
 						comments_count: this.comments_count,
 					});
 				})
-				.catch(response => {
+				.catch(() => {
 				});
 		},
 
 		async likeComment(commentId) {
-			await axios.post('news/' + this.postId + '/comments/' + commentId + '/like')
+			await this.$axios.post('news/' + this.postId + '/comments/' + commentId + '/like')
 				.then(response => {
 					this.changeLikeComment(commentId, response.data.data)
 				})
-				.catch(response => {
+				.catch(() => {
 				});
 		},
 
@@ -133,8 +133,8 @@ export default {
 		},
 
 		async destroyComment(commentId) {
-			await axios.delete('news/' + this.postId + '/comments/' + commentId)
-				.then(res => {
+			await this.$axios.delete('news/' + this.postId + '/comments/' + commentId)
+				.then(() => {
 					this.getComments(this.postId);
 				})
 				.catch(res => {

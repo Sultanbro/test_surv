@@ -178,20 +178,20 @@
 
 
             <template v-for="day in month.daysInMonth">
-                <td v-if="item.editable && editable" :class="'text-center ' + item._cellVariants[day]">
+                <td v-if="item.editable && editable" :key="day" :class="'text-center ' + item._cellVariants[day]">
                     <div><input type="number" v-model="item[day]" @change="updateSettings($event, item, index, day)" class="form-control cell-input"></div>
                 </td>
-                <td v-else-if="holidays.includes(day) &&  item[day] > 0" @click="editMode(item)" :class="'text-center ' + item._cellVariants[day]">
+                <td v-else-if="holidays.includes(day) &&  item[day] > 0" :key="day" @click="editMode(item)" :class="'text-center ' + item._cellVariants[day]">
 
                     <div v-if="item[day]">{{ item[day] }}{{ activity.unit }}</div>
                     <div v-else></div>
                 </td>
-                <td v-else-if="holidays.includes(day)" @click="editMode(item)" :class="'text-center mywarning'">
+                <td v-else-if="holidays.includes(day)" :key="day" @click="editMode(item)" :class="'text-center mywarning'">
 
                     <div v-if="item[day]">{{ item[day] }}{{ activity.unit }}</div>
                     <div v-else></div>
                 </td>
-                <td v-else @click="editMode(item)" :class="[item[day] > 0 || holidays.includes(day) ? 'text-center ' + item._cellVariants[day] : 'text-center']">
+                <td v-else @click="editMode(item)" :key="day" :class="[item[day] > 0 || holidays.includes(day) ? 'text-center ' + item._cellVariants[day] : 'text-center']">
 
                     <div v-if="item[day]">{{ item[day] }}{{ activity.unit }}</div>
                     <div v-else></div>
@@ -331,16 +331,16 @@ export default {
 		},
 	},
 	watch: {
-		activity: function(newVal, oldVal) { // watch it
+		activity: function() { // watch it
 			this.fetchData();
 		},
 		filter: {
-			handler (val, oldVal) {
+			handler () {
 				this.filterTable()
 			},
 			deep: true
 		},
-		user_types(val) {
+		user_types() {
 			this.fetchData()
 		},
 	},
@@ -504,7 +504,7 @@ export default {
          * action
          */
 		filterTable() {
-			this.filtered = this.items.filter((el, index) => {
+			this.filtered = this.items.filter(el => {
 
 				let a = true
 				let b = false
@@ -548,7 +548,9 @@ export default {
 
 			// вот здесь я считаю итоговые суммы минут по всем сотрудникам, и мне их видимо придется сохранить в бд
 
-			let total = 0, quantity = 0;
+			let total = 0
+			// eslint-disable-next-line no-unused-vars
+			let quantity = 0
 
 			for (let key in this.sum) {
 				if (this.sum.hasOwnProperty(key)) {
@@ -558,12 +560,14 @@ export default {
 						this.itemsArray[0][key] = parseFloat(sum).toFixed(0);
 						if(sum != 0)  {
 							total += sum;
+							// eslint-disable-next-line no-unused-vars
 							quantity++;
 						}
 					} else {
 						this.itemsArray[0][key] = parseFloat(sum / percentage).toFixed(1);
 						if(percentage != 0 && sum != 0) {
 							total += parseFloat(sum / percentage);
+							// eslint-disable-next-line no-unused-vars
 							quantity++;
 						}
 					}
@@ -632,7 +636,7 @@ export default {
          * action
          */
 		editMode(item) {
-			this.filtered.forEach((account, index) => {
+			this.filtered.forEach(account => {
 				account.editable = false
 			})
 
@@ -645,7 +649,6 @@ export default {
 		updateSettings(e, data, index, key) {
 
 			data.editable = false
-			console.log(key);
 			var clearedValue = e.target.value.replace(',', '.');
 			var value = null;
 			if(this.activity.plan_unit == 'minutes') value = parseFloat(clearedValue);
@@ -666,13 +669,12 @@ export default {
 			let filtered = this.filtered;
 
 			let loader = this.$loading.show();
-			let year = new Date().getFullYear();
 
 			this.updateTable(filtered);
 
 
 
-			axios
+			this.$axios
 				.post('/timetracking/analytics/update-stat', {
 					month: this.month.month,
 					year: this.month.currentYear,
@@ -682,7 +684,7 @@ export default {
 					day: key,
 					value: value
 				})
-				.then((response) => {
+				.then(() => {
 					loader.hide();
 				});
 
@@ -726,13 +728,15 @@ export default {
 			this.avgOfAverage = 0;
 			this.percentage = []
 
+			// eslint-disable-next-line no-unused-vars
 			let row0_avg = 0;
+			// eslint-disable-next-line no-unused-vars
 			let row0_avg_items = 0;
 
 			let avg_of_column = 0;
 			let quan_of_column = 0;
 
-			this.records.forEach((account, index) => {
+			this.records.forEach(account => {
 				let countWorkedDays = 0;
 				let cellValues = [];
 
@@ -788,9 +792,9 @@ export default {
 						cellValues['month'] = account.applied_from != 0 ? Number(account.applied_from) * daily_plan : Number(wd) * daily_plan;
 
 						cellValues['percent'] =
-                            this.toFloat(
-                            	Number(sumForOne) / (Number(cellValues['month']) / 100)
-                            ) + '%';
+							this.toFloat(
+								Number(sumForOne) / (Number(cellValues['month']) / 100)
+							) + '%';
 
 						cellValues['_percent'] = Number(
 							Number(sumForOne) / (Number(cellValues['month']) / 100)
@@ -870,7 +874,7 @@ export default {
 				}
 			}
 
-			this.records.forEach((account, index) => {
+			this.records.forEach(account => {
 				if(parseFloat(account['plan']) != 0 && account['plan'] != undefined) {
 
 					row0_avg += parseFloat(account['plan']);
@@ -902,11 +906,11 @@ export default {
          */
 		saveActivity() {
 			let loader = this.$loading.show();
-			axios.post('/timetracking/analytics/edit-activity', {
+			this.$axios.post('/timetracking/analytics/edit-activity', {
 				month: this.month.month,
 				year: this.month.currentYear,
 				activity: this.local_activity,
-			}).then(response => {
+			}).then(() => {
 				this.$toast.success('Обновите, чтобы посмотреть новую таблицу!')
 				this.showEditModal = false
 				loader.hide()

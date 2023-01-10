@@ -26,8 +26,9 @@
                     <div class="news-emoji-keyboard__arrow"/>
                     <div class="news-emoji-keyboard__items">
                         <span
+							v-for="reaction in reactionsList"
+							:key="reaction.icon"
                             class="news-emoji-keyboard__item"
-                            v-for="reaction in reactionsList"
                             v-html="reaction.icon"
                             @click="sendReaction(reaction.icon)"
                         />
@@ -41,21 +42,21 @@
 <script>
 
 export default {
-    name: 'ReactionComponent',
-    props: {
-        articleId: {
-            required: true,
-        },
-        commentId: {
-            required: true
-        },
-        reactions: {
-            required: true
-        },
-    },
-    data() {
-        return {
-            showKeyboard: false,
+	name: 'ReactionComponent',
+	props: {
+		articleId: {
+			required: true,
+		},
+		commentId: {
+			required: true
+		},
+		reactions: {
+			required: true
+		},
+	},
+	data() {
+		return {
+			showKeyboard: false,
 
 			commentReactions: this.reactions,
 
@@ -5527,17 +5528,17 @@ export default {
 				},
 			],
 
-            zeroList: [],
-        }
-    },
-    mounted() {
+			zeroList: [],
+		}
+	},
+	mounted() {
 
-        this.zeroList = JSON.parse(JSON.stringify(this.reactionsList));
-        this.updateReactionList();
-    },
-    methods: {
-        async updateReactionList() {
-            this.reactionsList = JSON.parse(JSON.stringify(this.zeroList));
+		this.zeroList = JSON.parse(JSON.stringify(this.reactionsList));
+		this.updateReactionList();
+	},
+	methods: {
+		async updateReactionList() {
+			this.reactionsList = JSON.parse(JSON.stringify(this.zeroList));
 
 			this.commentReactions.forEach(el => {
 				const item = this.reactionsList.filter(item => {
@@ -5569,7 +5570,7 @@ export default {
 			let formData = new FormData();
 			formData.append('reaction', reactionCode);
 
-			await axios.post('news/' + this.articleId + '/comments/' + this.commentId + '/reaction', formData)
+			await this.$axios.post('news/' + this.articleId + '/comments/' + this.commentId + '/reaction', formData)
 				.then(res => {
 					this.commentReactions = JSON.parse(JSON.stringify(res.data.data.reactions));
 					this.updateReactionList();

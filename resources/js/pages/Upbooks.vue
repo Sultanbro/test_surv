@@ -374,77 +374,75 @@
 </template>
 
 <script>
-import Questions from "./Questions.vue";
 import Sidebar from '@/components/ui/Sidebar' // сайдбар table
 const UpbooksRead = () => import(/* webpackChunkName: "UpbooksRead" */ '@/pages/UpbooksRead') // книга чтение
 import UploadFiles from '@/components/UploadFiles' // загрузка файлов
 import BookSegment from '@/components/BookSegment' // загрузка файлов
 
 export default {
-  name: "Upbooks",
-  components: {
-    Questions,
-    Sidebar,
-    UpbooksRead,
-    UploadFiles,
-    BookSegment,
-  },
-  props: {
-    token: {
-      type: String
-    },
-    can_edit: {
-      type: Boolean,
-      default: false
-    },
-  },
-  data() {
-    return {
-      activeBook: null,
-      editcat_name: '',
-      editcat_id: '',
-      showEditCat: false,
-      activeCategory: null,
-      details: null,
-      showSettings: false,
-      allow_save_book_without_test: false,
-      categories: [],
-      mode: 'read',
-      file_img: null,
-      modals: {
-        add_category: {
-          show: false,
-          name: "",
-        },
-        upload_book: {
-          show: false,
-          file: null,
-        },
-        edit_book: {
-          show: false,
-          item: null,
-          segments: [],
-        },
-      },
-    };
-  },
-  watch: {
-    token(){
-      this.init()
-    }
-  },
-  created() {
-    if(this.token){
-      this.init()
-    }
-  },
-  methods: {
-    init(){
-      this.fetchData();
-    },
-    deleteSegment(i) {
-      this.modals.edit_book.segments.splice(i,1);
-    },
+	name: 'PageUpbooks',
+	components: {
+		Sidebar,
+		UpbooksRead,
+		UploadFiles,
+		BookSegment,
+	},
+	props: {
+		token: {
+			type: String
+		},
+		can_edit: {
+			type: Boolean,
+			default: false
+		},
+	},
+	data() {
+		return {
+			activeBook: null,
+			editcat_name: '',
+			editcat_id: '',
+			showEditCat: false,
+			activeCategory: null,
+			details: null,
+			showSettings: false,
+			allow_save_book_without_test: false,
+			categories: [],
+			mode: 'read',
+			file_img: null,
+			modals: {
+				add_category: {
+					show: false,
+					name: '',
+				},
+				upload_book: {
+					show: false,
+					file: null,
+				},
+				edit_book: {
+					show: false,
+					item: null,
+					segments: [],
+				},
+			},
+		};
+	},
+	watch: {
+		token(){
+			this.init()
+		}
+	},
+	created() {
+		if(this.token){
+			this.init()
+		}
+	},
+	methods: {
+		init(){
+			this.fetchData();
+		},
+		deleteSegment(i) {
+			this.modals.edit_book.segments.splice(i,1);
+		},
 
 		selectCategory(index) {
 			this.activeCategory = this.categories[index];
@@ -461,7 +459,7 @@ export default {
 		fetchData() {
 			let loader = this.$loading.show();
 
-			axios
+			this.$axios
 				.get('/admin/upbooks/get', {})
 				.then((response) => {
 					this.categories = response.data.categories;
@@ -495,11 +493,11 @@ export default {
 
 				let loader = this.$loading.show();
 
-				axios
+				this.$axios
 					.post('/admin/upbooks/category/delete', {
 						id: this.categories[i].id
 					})
-					.then((response) => {
+					.then(() => {
 						this.$toast.success('Категория успешно удалена!');
 						this.categories.splice(i,1)
 						loader.hide();
@@ -519,7 +517,7 @@ export default {
 
 			let loader = this.$loading.show();
 
-			axios
+			this.$axios
 				.post('/admin/upbooks/category/create', {
 					name: this.modals.add_category.name,
 				})
@@ -556,11 +554,11 @@ export default {
 
 				let loader = this.$loading.show();
 
-				axios
+				this.$axios
 					.post('/admin/upbooks/delete', {
 						id: this.activeCategory.books[i].id
 					})
-					.then((response) => {
+					.then(() => {
 						let c = this.categories.findIndex(i => i.id == this.activeCategory.id);
 						this.$toast.success('Книга успешно удалена!');
 
@@ -585,7 +583,7 @@ export default {
 			this.modals.edit_book.show = true;
 			this.modals.edit_book.item = book;
 
-			axios
+			this.$axios
 				.post('/admin/upbooks/segments/get', {
 					id: book.id,
 				})
@@ -611,7 +609,7 @@ export default {
 			formData.append('group_id',  data.group_id);
 			formData.append('file', this.file_img);
 
-			axios.post( '/admin/upbooks/save', formData)
+			this.$axios.post( '/admin/upbooks/save', formData)
 				.then((response) => {
 
 					this.modals.upload_book.show = false;
@@ -661,7 +659,7 @@ export default {
 			formData.append('segments', JSON.stringify(this.modals.edit_book.segments));
 			formData.append('cat_id', this.activeCategory.id);
 
-			axios.post( '/admin/upbooks/update', formData, {
+			this.$axios.post( '/admin/upbooks/update', formData, {
 				headers: {
 					'Content-Type': 'multipart/form-data'
 				}
@@ -696,7 +694,7 @@ export default {
 		},
 
 		get_settings() {
-			axios
+			this.$axios
 				.post('/settings/get', {
 					type: 'book'
 				})
@@ -710,12 +708,12 @@ export default {
 		},
 
 		save_settings() {
-			axios
+			this.$axios
 				.post('/settings/save', {
 					type: 'book',
 					allow_save_book_without_test: this.allow_save_book_without_test,
 				})
-				.then((response) => {
+				.then(() => {
 					this.showSettings = false;
 				})
 				.catch((error) => {
@@ -731,12 +729,12 @@ export default {
 
 			let loader = this.$loading.show();
 
-			axios
+			this.$axios
 				.post('/upbooks/save-cat', {
 					title: this.editcat_name,
 					id: this.editcat_id,
 				})
-				.then((response) => {
+				.then(() => {
 
 
 					let i = this.categories.findIndex(el => el.id == this.editcat_id)

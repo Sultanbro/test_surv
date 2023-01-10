@@ -100,8 +100,8 @@ export default {
 		},
 
 		request(data, msg) {
-			axios.post(this.url, data)
-				.then(response => {
+			this.axios.post(this.url, data)
+				.then(() => {
 					this.$toast.info(msg);
 					this.messageoff()
 				})

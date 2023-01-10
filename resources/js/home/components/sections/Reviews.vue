@@ -117,6 +117,7 @@ import {Hooper, Navigation as HooperNavigation, Slide} from 'hooper'
 import 'hooper/dist/hooper.css'
 
 export default {
+	name: 'SectionReveiws',
 	components: {
 		Hooper,
 		Slide,

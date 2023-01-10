@@ -40,8 +40,8 @@
       </a>
     </ContextMenu>
     <div class="messenger__messages-container" id="messenger__messages">
-      <template v-for="d in messagesMap">
-        <div class="messenger__messages-date">
+      <template v-for="(d, i) in messagesMap">
+        <div :key="i" class="messenger__messages-date">
           <span>{{ d[0].created_at | formatDate }}</span>
         </div>
         <div v-for="(message, index) in d" :key="message.id"

@@ -91,7 +91,6 @@
 </template>
 
 <script>
-import {fields} from '../../kpi/bonuses';
 
 export default {
 	name: 'PopupBonuses',
@@ -123,7 +122,7 @@ export default {
          * set month
          */
 		setMonth() {
-			let year = moment().format('YYYY')
+			let year = this.$moment().format('YYYY')
 			this.dateInfo.currentMonth = this.dateInfo.currentMonth ? this.dateInfo.currentMonth : this.$moment().format('MMMM')
 			this.currentMonth = this.dateInfo.currentMonth;
 			this.dateInfo.date = `${this.dateInfo.currentMonth} ${year}`
@@ -140,7 +139,7 @@ export default {
 		fetchData() {
 			this.loading = true
 
-			axios
+			this.$axios
 				.post('/bonuses', {
 					month: this.$moment(this.currentMonth, 'MMMM').format('M'),
 					year: new Date().getFullYear(),
@@ -155,7 +154,7 @@ export default {
 		fetchBonuses(){
 			this.loading = true
 			const _this = this;
-			axios
+			this.$axios
 				.post('/bonus/user')
 				.then((response) => {
 					console.log(response);
