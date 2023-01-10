@@ -12,7 +12,6 @@
       </div>
       <div class="jTariffs-content">
         <table
-            v-if="isMedium"
             :data-col="activeCol"
             class="jTariffs-table"
             @mouseout="activeCol = -1"
@@ -51,7 +50,7 @@
                 :key="td"
             >
               <a
-                  class="jButton jButton-tariffs"
+                  class="jButton jButton-tariffs-four"
                   href="/register"
               >
                 {{ $lang(lang, 'prices-register') }}
@@ -60,21 +59,7 @@
           </tr>
           </tbody>
         </table>
-        <div
-            v-if="!isMedium"
-            class="jTariffs-image-wrap"
-        >
-          <a
-              :href="image"
-              class="jTariffs-image-link"
-              target="_blank"
-          >
-            <img
-                :src="image"
-                alt=""
-                class="jTariffs-image"
-            >
-          </a>
+        <div class="jButton-tariffs-one">
           <a
               class="jButton"
               href="/register"
@@ -82,6 +67,28 @@
             {{ $lang(lang, 'prices-register') }}
           </a>
         </div>
+        <!--        <div-->
+        <!--            v-if="!isMedium"-->
+        <!--            class="jTariffs-image-wrap"-->
+        <!--        >-->
+        <!--          <a-->
+        <!--              :href="image"-->
+        <!--              class="jTariffs-image-link"-->
+        <!--              target="_blank"-->
+        <!--          >-->
+        <!--            <img-->
+        <!--                :src="image"-->
+        <!--                alt=""-->
+        <!--                class="jTariffs-image"-->
+        <!--            >-->
+        <!--          </a>-->
+        <!--          <a-->
+        <!--              class="jButton"-->
+        <!--              href="/register"-->
+        <!--          >-->
+        <!--            {{ $lang(lang, 'prices-register') }}-->
+        <!--          </a>-->
+        <!--        </div>-->
       </div>
     </div>
   </section>
@@ -195,7 +202,7 @@ export default {
   width: fit-content;
   margin-left: auto;
   margin-right: auto;
-  margin-bottom: 5rem;
+  margin-bottom: 3rem;
   position: relative;
 
   &:before {
@@ -298,8 +305,116 @@ export default {
   }
 }
 
-a.jButton-tariffs {
+a.jButton-tariffs-four {
   margin: 1rem auto;
   font-size: 0.8rem;
+}
+
+.jButton-tariffs-one {
+  display: none;
+}
+
+@media (max-width: 900px) {
+  //.jTariffs-header-wrapper {
+  //  margin-bottom: 0;
+  //}
+  //
+  //.jTariffs-content {
+  //  display: flex;
+  //  flex-direction: column;
+  //  align-items: center;
+  //}
+  //
+  //.jTariffs-table {
+  //  width: 100%;
+  //  transform: scale(0.9);
+  //}
+
+  a.jButton-tariffs-four {
+    display: none;
+  }
+
+  .jButton-tariffs-one {
+    display: flex;
+    justify-content: center;
+    margin-top: 1rem;
+  }
+}
+
+@media (max-width: 768px) {
+  .jTariffs-cell {
+    min-width: 5rem;
+  }
+  //.jTariffs-header-wrapper {
+  //  margin-bottom: 0;
+  //}
+  //
+  //.jTariffs-content {
+  //  display: flex;
+  //  flex-direction: column;
+  //  align-items: center;
+  //}
+  //
+  //.jTariffs-table {
+  //  width: 100%;
+  //  transform: scale(0.8);
+  //}
+  //
+  //a.jButton-tariffs-four {
+  //  display: none;
+  //}
+  //
+  //.jButton-tariffs-one {
+  //  display: flex;
+  //  justify-content: center;
+  //  margin-top: 1rem;
+  //}
+}
+
+@media (max-width: 670px) {
+  .jTariffs-cell {
+    min-width: 4rem;
+    font-size: 12px;
+  }
+}
+
+@media (max-width: 530px) {
+  .jTariffs-th {
+    padding: 0.5rem;
+  }
+  .jTariffs-cell {
+    min-width: 2rem;
+    font-size: 10px;
+  }
+}
+
+@media (max-width: 480px) {
+  .jTariffs-cell {
+    font-size: 9px;
+  }
+}
+
+@media (max-width: 430px) {
+  .jTariffs-cell {
+    font-size: 8px;
+  }
+}
+
+@media (max-width: 400px) {
+  .jTariffs-cell {
+    font-size: 7px;
+  }
+}
+
+@media (max-width: 366px) {
+  .jTariffs-cell {
+    font-size: 6px;
+  }
+}
+
+@media (max-width: 366px) {
+  .jTariffs-cell {
+    font-size: 6px;
+  }
 }
 </style>

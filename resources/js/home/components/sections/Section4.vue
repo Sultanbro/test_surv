@@ -348,4 +348,14 @@ export default {
     line-height: 1.39;
   }
 }
+
+@media (max-width: $small) {
+  .jSec4-subheader {
+    font-size: 16px;
+  }
+
+  .jSec4-footer {
+    text-align: center;
+  }
+}
 </style>
