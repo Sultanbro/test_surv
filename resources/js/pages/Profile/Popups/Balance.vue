@@ -10,10 +10,16 @@
                 v-for="month in $moment.months()"
                 :value="month"
                 :key="month"
-            >
-                {{ month }}
-            </option>
+            >{{ month }}</option>
         </select>
+        <select class="select-css ml-2" v-model="currentYear" @change="fetchData()">
+            <option
+                v-for="year in years"
+                :value="year"
+                :key="year"
+            >{{ year }}</option>
+        </select>
+
     </div>
     <div class="balance__content custom-scroll">
         <table class="balance__table">
@@ -169,6 +175,7 @@
 
 <script>
 import BalanceItem from './BalanceItem'
+import { useYearOptions } from '@/composables/yearOptions'
 
 export default {
 	name: 'PopupBalance',
@@ -184,6 +191,7 @@ export default {
 		},
 	},
 	data: function () {
+		const now = new Date()
 		return {
 			data: [],
 			items: [],
@@ -198,7 +206,9 @@ export default {
 				daysInMonth: 0
 			},
 			currentMonth: null,
-			currentDay: new Date().getDate(),
+			currentYear: now.getFullYear(),
+			currentDay: now.getDate(),
+			years: useYearOptions(),
 			history: null,
 			loading: false
 		};
@@ -265,6 +275,7 @@ export default {
 
 			this.axios.post('/timetracking/zarplata-table-new', {
 				month: this.$moment(this.currentMonth, 'MMMM').format('M'),
+				year: this.currentYear
 			}).then(response => {
 
 				this.data = response.data.data
