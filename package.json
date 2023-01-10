@@ -13,6 +13,7 @@
         "sub-build": "subpkg run build",
         "sub-dev": "subpkg run dev",
         "sub-lint": "subpkg run lint",
+        "prepare": "husky install",
         "lint": "eslint resources/js --ext .vue,.js --fix --ignore-path .gitignore"
     },
     "subPackages": [
