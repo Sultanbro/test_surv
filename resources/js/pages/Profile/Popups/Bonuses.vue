@@ -7,9 +7,14 @@
                     v-for="month in $moment.months()"
                     :value="month"
                     :key="month"
-                >
-                    {{ month }}
-                </option>
+                >{{ month }}</option>
+            </select>
+            <select class="select-css ml-2" v-model="currentYear" @change="fetchData()">
+                <option
+                    v-for="year in years"
+                    :value="year"
+                    :key="year"
+                >{{ year }}</option>
             </select>
         </div>
 
@@ -91,11 +96,13 @@
 </template>
 
 <script>
+import { useYearOptions } from '@/composables/yearOptions'
 
 export default {
 	name: 'PopupBonuses',
 	props: {},
 	data: function () {
+		const now = new Date()
 		return {
 			fields: [],
 			bonuses: [],
@@ -107,6 +114,8 @@ export default {
 				weekDays: 0,
 				daysInMonth: 0
 			},
+			currentYear: now.getFullYear(),
+			years: useYearOptions(),
 			potential_bonuses: '',
 			history: [],
 			loading: false
@@ -142,7 +151,7 @@ export default {
 			this.axios
 				.post('/bonuses', {
 					month: this.$moment(this.currentMonth, 'MMMM').format('M'),
-					year: new Date().getFullYear(),
+					year: this.currentYear,
 				})
 				.then((response) => {
 					// this.potential_bonuses = response.data.data.potential_bonuses
