@@ -140,87 +140,87 @@
 </template>
 
 <script>
-import moment from "moment/moment";
+import moment from 'moment/moment';
 
 export default {
-    name: "BirthdayUser",
-    props: {
-        user: {
-            required: true
-        }
-    },
-    data() {
-        return {
-            hover: false,
-            showModal: false,
-            showSecondModal: false,
-            summ: '',
-            success: false,
-        }
-    },
-    mounted() {
+	name: 'BirthdayUser',
+	props: {
+		user: {
+			required: true
+		}
+	},
+	data() {
+		return {
+			hover: false,
+			showModal: false,
+			showSecondModal: false,
+			summ: '',
+			success: false,
+		}
+	},
+	mounted() {
 
-    },
-    methods: {
-        togleShowModal(newValue) {
-            this.showSecondModal = false;
-            this.showModal = newValue;
-            this.$root.$emit('toggle-white-bg', newValue);
-        },
+	},
+	methods: {
+		togleShowModal(newValue) {
+			this.showSecondModal = false;
+			this.showModal = newValue;
+			this.$root.$emit('toggle-white-bg', newValue);
+		},
 
-        toggleSecondModal(value) {
-            this.summ = value;
-            this.showSecondModal = true;
-        },
+		toggleSecondModal(value) {
+			this.summ = value;
+			this.showSecondModal = true;
+		},
 
-        closeSecondModal() {
-            this.showSecondModal = false;
-        },
+		closeSecondModal() {
+			this.showSecondModal = false;
+		},
 
-        getCardColor(user) {
-            return moment(user.date).format('DD-MM') == moment().format('DD-MM') ? 'news-birthday-card__birthday--today' :
-                (moment(user.date).format('DD-MM') == moment().add(1, 'd').format('DD-MM') ? 'news-birthday-card__birthday--tomorrow' : '');
-        },
+		getCardColor(user) {
+			return moment(user.date).format('DD-MM') == moment().format('DD-MM') ? 'news-birthday-card__birthday--today' :
+				(moment(user.date).format('DD-MM') == moment().add(1, 'd').format('DD-MM') ? 'news-birthday-card__birthday--tomorrow' : '');
+		},
 
-        async sendMoney() {
-            let formData = new FormData;
-            this.togleShowModal(false);
-            this.showSecondModal = false;
+		async sendMoney() {
+			let formData = new FormData;
+			this.togleShowModal(false);
+			this.showSecondModal = false;
 
-            formData.append('amount', this.summ);
-            this.summ = '';
-            await axios.post('birthdays/' + this.user.id + '/send-gift ', formData)
-                .then(res => {
-                    console.log(res);
-                    this.createAvans(res.data.data)
+			formData.append('amount', this.summ);
+			this.summ = '';
+			await this.axios.post('birthdays/' + this.user.id + '/send-gift ', formData)
+				.then(res => {
+					console.log(res);
+					this.createAvans(res.data.data)
 
-                })
-                .catch(res => {
-                    console.log(res);
-                })
-        },
-        async createAvans(data) {
-            await axios.post('/timetracking/salaries/update', data.avansData)
-                .then(res => {
-                  console.log(res)
-                  this.sendBonuses(data.bonusData)
-                })
-                .catch( res =>{
-                  console.log(res)
-                })
-        },
-        async sendBonuses(data) {
-            await axios.post('/timetracking/salaries/update', data)
-                .then(res => {
-                  console.log(res)
-                  this.success = true;
-                  setTimeout(() => {  this.success = false;}, 5000);
-                })
-                .catch( res =>{
-                  console.log(res)
-                })
-        },
+				})
+				.catch(res => {
+					console.log(res);
+				})
+		},
+		async createAvans(data) {
+			await this.axios.post('/timetracking/salaries/update', data.avansData)
+				.then(res => {
+					console.log(res)
+					this.sendBonuses(data.bonusData)
+				})
+				.catch( res =>{
+					console.log(res)
+				})
+		},
+		async sendBonuses(data) {
+			await this.axios.post('/timetracking/salaries/update', data)
+				.then(res => {
+					console.log(res)
+					this.success = true;
+					setTimeout(() => {  this.success = false;}, 5000);
+				})
+				.catch( res =>{
+					console.log(res)
+				})
+		},
 
-    }
+	}
 }
 </script>

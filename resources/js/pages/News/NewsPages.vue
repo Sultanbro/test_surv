@@ -6,10 +6,10 @@
 import NewsFeed from '@/pages/News/NewsFeed'
 
 export default {
-  name: 'NewsPages',
-  components: {
-    NewsFeed,
-  }
+	name: 'NewsPages',
+	components: {
+		NewsFeed,
+	}
 }
 </script>
 

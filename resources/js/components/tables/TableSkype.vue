@@ -18,27 +18,27 @@
             </div>
             <div class="col-md-2 mb-2">
                 <select class="form-control form-control-sm mt-2" v-model="filter.currentInviteGroup">
-                    <option v-for="(invite_group, index) in invite_groups" :value="index">{{ invite_group }}</option>
+                    <option v-for="(invite_group, index) in invite_groups" :key="index" :value="index">{{ invite_group }}</option>
                 </select>
             </div>
             <div class="col-md-2 mb-2">
                 <select class="form-control form-control-sm mt-2" v-model="filter.user_type">
-                    <option v-for="(user_type, index) in user_types" :value="index">{{ user_type }}</option>
+                    <option v-for="(user_type, index) in user_types" :key="index" :value="index">{{ user_type }}</option>
                 </select>
             </div>
             <div class="col-md-2 mb-2">
                 <select class="form-control form-control-sm mt-2" v-model="filter.lang">
-                    <option v-for="(lang, index) in langs" :value="index">{{ lang }}</option>
+                    <option v-for="(lang, index) in langs" :key="index" :value="index">{{ lang }}</option>
                 </select>
             </div>
             <div class="col-md-2 mb-2">
                 <select class="form-control form-control-sm mt-2" v-model="filter.wishtime">
-                    <option v-for="(wishtime, index) in wishtimes" :value="index">{{ wishtime }}</option>
+                    <option v-for="(wishtime, index) in wishtimes" :key="index" :value="index">{{ wishtime }}</option>
                 </select>
             </div>
             <!-- <div class="col-md-2">
                 <select class="form-control form-control-sm" v-model="filter.segment">
-                    <option v-for="(segment, index) in segments" :value="index">{{ segment }}</option>
+                    <option v-for="(segment, index) in segments" :key="index" :value="index">{{ segment }}</option>
                 </select>
             </div> -->
             <div class="col-md-4">
@@ -229,7 +229,7 @@
         <div class="row align-items-center">
             <div class="col-sm-3">
                 <select  required="required"  v-model="selected.group_id" class="form-control form-control-sm">
-                    <option :value="group.id" v-for="group in groups">{{ group.name }}</option>
+                    <option :value="group.id" v-for="group in groups" :key="group.id">{{ group.name }}</option>
                 </select>
             </div>
 
@@ -266,30 +266,26 @@
 
 
     <b-modal v-model="showModal" ok-text="Сохранить" cancel-text="Отмена" title="Новый лид" @ok="saveLead" size="lg" class="modalle">
-        <template v-for="error in errors">
-            <b-alert show variant="danger" :key="error">{{ error }}</b-alert>
-        </template>
+        <b-alert show variant="danger" v-for="error in errors" :key="error">{{ error }}</b-alert>
         <b-form-input v-model="lead.name" placeholder="ФИО" :required="true" class="form-control form-control-sm mb-2"></b-form-input>
         <b-form-input v-model="lead.phone" placeholder="Телефон" :required="true" class="form-control form-control-sm mb-2"></b-form-input>
         <div class="d-flex">
             <select  required="required"  v-model="lead.lang" class="form-control form-control-sm">
-                <option :value="index" v-for="(lang, index) in langs">{{ lang }}</option>
+                <option :value="index" v-for="(lang, index) in langs" :key="index">{{ lang }}</option>
             </select>
             <select  required="required"  v-model="lead.wishtime" class="form-control form-control-sm">
-                <option :value="index" v-for="(wishtime, index) in wishtimes">{{ wishtime }}</option>
+                <option :value="index" v-for="(wishtime, index) in wishtimes" :key="index">{{ wishtime }}</option>
             </select>
         </div>
 
     </b-modal>
 
     <b-modal v-model="showSkypeFieldsModal"  title="Настройка списка" @ok="showSkypeFieldsModal = !showSkypeFieldsModal" ok-text="Закрыть"  size="lg" class="modalle">
-      <template v-for="error in errors">
-          <b-alert show variant="danger" :key="error">{{ error }}</b-alert>
-      </template>
+      <b-alert show variant="danger" v-for="error in errors" :key="error">{{ error }}</b-alert>
 
       <div class="row">
 
-        <div class="col-md-4 mb-2" v-for="(field, key) in showSkypeFields">
+        <div class="col-md-4 mb-2" v-for="(field, key) in showSkypeFields" :key="key">
           <b-form-checkbox
               v-model="showSkypeFields[key]"
               :unchecked-value="false"
@@ -308,582 +304,580 @@
 
 
 export default {
-    name: "TableSkype", // Раньше был нужен чтобы собирать скайпы, сейчас собираются стажеры для Zoom обучения
-    props: {
-        skypes: Array,
-        segments: Object,
-        groups: Array,
-        month: Object,
-        invite_groups: Object,
-    },
-    data: function () {
-        return {
-            lang:{
-                formatLocale:{
-                    firstDayOfWeek: 1,
-                        months: ['Январь', 'Февраль', 'Март', 'Апрель', 'Май', 'Йюнь', 'Йюль', 'Август', 'Сентябрь', 'Октябрь', 'Ноябрь', 'Декабрь'],
-                        // MMM
-                        monthsShort: ['Янв', 'Фев', 'Мар', 'Апр', 'Май', 'Йюн', 'Йюл', 'Авг', 'Сен', 'Окт', 'Ноя', 'Дек'],
-                        // dddd
-                        weekdays: ['Воскресенье', 'Понедельник', 'Вторник', 'Среда', 'Четверг', 'Пятница', 'Суббота'],
-                        // ddd
-                        weekdaysShort: ['Вос', 'Пон', 'Втр', 'Срд', 'Чтв', 'Пят', 'Суб'],
-                        // dd
-                        weekdaysMin: ['Вс', 'По', 'Вт', 'Ср', 'Чт', 'Пт', 'Сб'],
-                },
-                monthBeforeYear: false,
-            },
-            mydate: Date.now(),
-            showSkypeFields: {},
-            showSkypeFieldsDesc: {},
-            fields: [], // поля таблицы
-            selected: { // отдел для приглашения
-                group_id: 0,
-                date: null,
-                time: '09:30',
-            },
-            status: 1,
-            copied: false,
-            checkedBoxes: [],
-            checker: false,
-            showModal: false,
-            showSkypeFieldsModal: false,
-            lead: {
-                name: '',
-                phone: '',
-                lang: 1,
-                wishtime: 1,
-            },
-            errors: [],
-            records: [],
-            disp: ['Вс', 'Пн', 'Вт', 'Ср', 'Чт', 'Пт', 'Сб','', '', 'Сброс', 'Ок'],
-            currentDay: 0,
-            filter: { // фильтр чекбоксы
-                flat: 0,
-                kazakh: 0,
-                kazrus: 0,
-                russian: 0,
-                cable: 0,
-                lang: 0,
-                user_type: 'all',
-                wishtime: 0,
-                segment: 0,
-                dates: [], // выбор нексольких дней
-                currentInviteGroup: 0 // select приглашенная Отдел
-            },
-            user_types: {
-                'all' : 'Все типы',
-                'office' : 'Офисные',
-                'remote' : 'Удаленные',
-            },
-            projects: {
-                0: '',
-                1720: 'Каспи',
-                1722: 'Детский Мир',
-                1724: 'Tailor Suit',
-                1726: 'Евраз',
-                1728: 'Народный Банк',
-                1770: 'Ростелеком',
-                1794: 'Альфа/МТС',
-                1892: 'Сертификация',
-                2080: 'Тинькофф',
-                2478: 'OZON 1',
-                2480: 'OZON 2',
-                2492: 'Хоум Банк',
-            },
-            langs: {
-                0: 'Все языки',
-                1: 'Каз',
-                2: 'Рус',
-                3: 'Каз|Рус',
-            },
-            countries: {
-                'KZ': '🇰🇿',
-                'KG': '🇰🇬',
-                'UZ': '🇺🇿',
-                'RU': '🇷🇺',
-                'BY': '🇧🇾',
-                'UA': '🇺🇦',
-                'UN': '❓',
-            },
-            wishtimes: {
-                0: 'Все графики',
-                1: 'с 08:45 - 19:00',
-                2: 'с 13:00 - 23:00',
-                4: 'c 08:45 - 13:00',
-                5: 'c 14:00 - 19:00',
-            },
-            datepickerLabels: {
-                labelPrevDecade: 'Пред 10 лет',
-                labelPrevYear: 'Предыдущий год',
-                labelPrevMonth: 'Предыдущий месяц',
-                labelCurrentMonth: 'Текущий месяц',
-                labelNextMonth: 'Следующий месяц',
-                labelNextYear: 'Следующий год',
-                labelNextDecade: 'След 10 лет',
-                labelToday: 'Cегодня',
-                labelSelected: 'Выбранная дата',
-                labelNoDateSelected: 'Дата не выбрана',
-                labelCalendar: 'Календарь',
-                labelNav: 'Навигация',
-                labelHelp: 'Перемещайтесь по календарю с помощью клавиш со стрелками'
-            },
-            nets: {
-                1 : 'Кабельный интернет',
-                2 : 'Кабельный интернет',
-                3 : 'Мобильный интернет',
-                4 : 'Переносной модем',
-                5 : 'Нет интернета',
-            },
-            filtered: {},
-            workDays: 26,
-            hasPremission: false,
-            totalRows: 1,
-            currentPage: 1,
-            perPage: 100,
-            pageOptions: [5, 10, 15],
-        };
-    },
-    watch: {
-        // эта функция запускается при любом изменении данных
-        skypes: {
-            // the callback will be called immediately after the start of the observation
-            deep: true,
-            handler (val, oldVal) {
-                this.filterTable()
-            }
-        },
-        month: {
-            // the callback will be called immediately after the start of the observation
-            deep: true,
-            handler (val, oldVal) {
-                this.filterTable()
-            }
-        },
-        checker: {
-            deep: true,
-            handler (val, oldVal) {
-                if(val) {
-                    this.checkAll();
-                } else {
-                    this.unCheckAll();
-                }
-            }
-        },
-        filter: {
-            handler (val, oldVal) {
-                this.filterTable()
-                this.unCheckAll()
-            },
-            deep: true
-        },
-        currentDay: {
-            handler (val, oldVal) {
-                this.filterTable()
-            },
-        },
-        showSkypeFields: {
-            handler: function (val) {
-                localStorage.showSkypeFields = JSON.stringify(val);
-            },
-            deep: true
-        }
-    },
-
-    mounted() {
-        this.setDefaultShowFields()
-        this.setFields()
-        this.setSegments()
-        this.filterTable()
-    },
-
-    methods: {
-        getDates(s, e) {
-            for(var a=[],d=new Date(s);d<=new Date(e);d.setDate(d.getDate()+1)){
-                a.push(new Date(d));
-            }
-            return a;
-        },
-        setSegments() {
-            this.segments['0'] = '-'
-        },
-
-        setDefaultShowFields() {
-
-            localStorage.clear();
-
-            if(localStorage.showSkypeFields) {
-                this.showSkypeFields = JSON.parse(localStorage.getItem('showSkypeFields'));
-            } else {
-                this.showSkypeFields = { // Какие поля показывать
-                    checked: true,
-                    lead_id: true,
-                    skyped: true,
-                    project: true,
-                    name: true,
-                    lang: true,
-                    net: true,
-                    wishtime: true,
-                    invited_at: true,
-                    invite_group: true,
-                    country: true,
-                    segment: true,
-                    resp: true,
-                    phone: true,
-                    file: true,
-                };
-            }
-
-            this.showSkypeFieldsDesc = {
-                checked: 'Номер',
-                lead_id: 'Сделка',
-                skyped: 'Дата подписи',
-                project: 'Проект',
-                name: 'ФИО',
-                lang: 'Языки',
-                net: 'Интернет',
-                wishtime: 'График',
-                invited_at: 'Приглашен на',
-                invite_group: 'Отдел',
-                country: 'Cтрана',
-                segment: 'Сегмент',
-                resp: 'Ответственный',
-                phone: 'Телефон',
-                file: 'Файл',
-            }
-
-        },
-
-        saveLead() {
-
-            axios.post('/timetracking/analytics/recruting/create-lead', {
-                    name: this.lead.name,
-                    phone: this.lead.phone,
-                    lang: this.lead.lang,
-                    wishtime: this.lead.wishtime,
-                })
-                .then(response => {
-
-
-                    this.$toast.success('Новый лид сохранен')
-                    this.skypes.unshift({
-                        name: this.lead.name,
-                        phone: this.lead.phone,
-                        lang: this.lead.lang,
-                        wishtime: this.lead.wishtime,
-                        lead_id: 0,
-                        deal_id: 0,
-                        checked: false,
-                        skyped: new Date()
-                    });
-
-                    this.lead = {
-                        name: '',
-                        phone: '',
-                        lang: 1,
-                        wishtime: 1,
-                    };
-
-                    this.showModal = false
-
-                })
-                .catch(error => alert('Ошибка'))
-        },
-
-        setFields() {
-            let fields = [];
-
-            fields = [
-                {
-                    key: "checked",
-                    label: '',
-                    variant: "title",
-                    class: "text-left t-name"
-                },
-                {
-                    key: "lead_id",
-                    label: 'Сделка',
-                    variant: "title",
-                    class: "text-left t-name"
-                },
-                {
-                    key: "skyped",
-                    label: 'Дата подписи',
-                    variant: "title",
-                    class: "text-left t-name"
-                },
-                {
-                    key: "project",
-                    label: 'Проект',
-                    variant: "title",
-                    class: "text-left t-name"
-                },
-                {
-                    key: "name",
-                    label: 'ФИО',
-                    variant: "title",
-                    class: "text-left t-name"
-                },
-                {
-                    key: "lang",
-                    label: 'Языки',
-                    variant: "title",
-                    class: "text-left t-name"
-                },
-                {
-                    key: "net",
-                    label: 'Интернет',
-                    variant: "title",
-                    class: "text-left t-name"
-                },
-                {
-                    key: "wishtime",
-                    label: 'График',
-                    variant: "title",
-                    class: "text-left t-name"
-                },
-                {
-                    key: "invited_at",
-                    label: 'Приглашен на',
-                    variant: "title",
-                    class: "text-left t-name"
-                },
-                {
-                    key: "invite_group",
-                    label: 'Гр.',
-                    variant: "title",
-                    class: "text-left t-name"
-                },
-                {
-                    key: "country",
-                    label: 'Cт',
-                    variant: "title",
-                    class: "text-left t-name"
-                },
-                {
-                    key: "segment",
-                    label: 'Сегмент',
-                    variant: "title",
-                    class: "text-left t-name"
-                },
-                {
-                    key: "resp",
-                    label: 'Отв',
-                    variant: "title",
-                    class: "text-left t-name"
-                },
-                {
-                    key: "phone",
-                    label: 'Телефон',
-                    variant: "title",
-                    class: "text-left t-name"
-                },
-                {
-                    key: "file",
-                    label: 'Файл',
-                    variant: "title",
-                    class: "text-left t-name"
-                },
-            ];
-
-            this.fields = fields;
-        },
-
-        async loadItems() {
-
-            this.workDays = this.month.workDays
-
-            let days = this.month.daysInMonth
-
-            let obj = {};
-                obj['headers'] = 'Стажеры'
-                for (let i = 1; i <= days; i++) {
-
-                    let logins = '';
-
-                    this.skypes[i].forEach(el => {
-                        logins += el.skype + ' ';
-                    });
-
-                    obj[i] = logins
-                }
-            this.records.push(obj)
-
-
-        },
-
-        inviteUsers() {
-
-            if(this.selected.date ==  null) {
-                this.$toast.info('Выберите дату приглашения')
-                return '';
-            }
-
-            axios.post('/timetracking/analytics/invite-users', {
-                    users: this.checkedBoxes,
-                    group_id: this.selected.group_id,
-                    date: this.selected.date,
-                    time: this.selected.time,
-                })
-                .then(response => {
-
-                    console.log(response)
-                    if(response.data.code == 201) {
-                        this.$toast.error('Отдел не найден. Обратитесь к разработчику')
-                    }
-
-                    if(response.data.code == 202) {
-                        this.$toast.error('Не приглашены. В отделе не указана ссылка на Zoom конференцию.')
-                    }
-
-                    if(response.data.code == 200) {
-                        this.$toast.success('Успешно приглашены')
-                        this.checkedBoxes = []
-                    }
-
-                })
-                .catch(error => alert('Ошибка'))
-        },
-
-        filterTable() {
-            this.workDays = this.month.workDays
-
-            let days = this.month.daysInMonth
-
-            this.records = []
-
-            var dates = this.getDates(this.filter.dates[0],this.filter.dates[1]);
-
-            this.filtered = this.skypes.filter((el, index) => {
-
-                let a = true
-
-                let lang = false
-                if(this.filter.lang != 0) {
-                    lang = lang || el.lang == this.filter.lang
-                    a = a && lang
-                }
-
-                let wishtime = false
-                if(this.filter.wishtime != 0) {
-                    wishtime = wishtime || el.wishtime == this.filter.wishtime
-                    a = a && wishtime
-                }
-
-                let segment = false
-                if(this.filter.segment != 0) {
-                    segment = segment || el.segment == this.filter.segment
-                    a = a && segment
-                }
-
-                let group = false;
-                if(this.filter.currentInviteGroup != 0) {
-                    group = group || el.invite_group_id == Number(this.filter.currentInviteGroup)
-                    a = a && group
-                }
-
-                let user_type = false
-                if(this.filter.user_type != 'all') {
-                    user_type = user_type || el.user_type == this.filter.user_type
-                    a = a && user_type
-                }
-
-                let ld = false;
-                if(dates.length > 0) {
-                    dates.forEach(day => {
-                        ld = ld || day.getDate() ==  moment(el.skyped_old, "YYYY-MM-DD HH:mm:ss").date()
-                    })
-                } else {
-                    ld = true
-                }
-
-                return a && ld
-            })
-
-            this.totalRows =  this.filtered.length
-            this.records = this.filtered
-        },
-
-        clear() {
-            this.filter = {
-                flat: 0,
-                kazakh: 0,
-                kazrus: 0,
-                russian: 0,
-                cable: 0,
-                lang: 0,
-                user_type: 'all',
-                wishtime: 0,
-                segment: 0,
-                dates: [], // выбор нексольких дней
-                currentInviteGroup: 0 // select приглашенная Отдел
-            }
-            this.currentDay = 0
-        },
-
-        checkAll() {    // отметить все при выборе
-            this.checkedBoxes = []
-            this.records.forEach(el => {
-                el.checked = true
-                this.checkedBoxes.push(el.id);
-            })
-        },
-
-        unCheckAll() {
-            this.checkedBoxes = []
-            this.records.forEach(el => {
-                el.checked = false
-            })
-        },
-
-        copy() {
-
-            let testingCodeToCopy = document.querySelector('#copytext')
-            testingCodeToCopy.setAttribute('type', 'text')
-
-            let logins = '';
-
-            this.records.forEach(el => {
-                logins += el.skype + ' ';
-            });
-
-            testingCodeToCopy.value = logins
-
-
-            testingCodeToCopy.select()
-            document.execCommand('copy');
-
-            testingCodeToCopy.setAttribute('type', 'hidden')
-            window.getSelection().removeAllRanges()
-
-
-            // this.copied = true;
-            // setTimeout(() => this.copied = false,3000)
-            // this.$root.$emit('bv::enable::tooltip', '#text' + key)
-
-        },
-
-        detailsClassFn(item, rowType) {
-            // item: the row's item data
-            // rowType: a string describing the `<tr>` type
-
-
-            if (item.invited == 1) return "bg-green"
-            if (item.invited == 2) return "bg-green-2"
-            if (item.invited == 3) {
-                if(item.user_type == 'office') {
-                    return "bg-green-3 office"
-                } else {
-                    return "bg-green-3"
-                }
-            }
-            if (item.invited == 4) return "bg-green-4"
-        },
-
-        formatDate(date) {
-            return date.getDate();
-        }
-    }
+	name: 'TableSkype', // Раньше был нужен чтобы собирать скайпы, сейчас собираются стажеры для Zoom обучения
+	props: {
+		skypes: Array,
+		segments: Object,
+		groups: Array,
+		month: Object,
+		invite_groups: Object,
+	},
+	data: function () {
+		return {
+			lang:{
+				formatLocale:{
+					firstDayOfWeek: 1,
+					months: ['Январь', 'Февраль', 'Март', 'Апрель', 'Май', 'Йюнь', 'Йюль', 'Август', 'Сентябрь', 'Октябрь', 'Ноябрь', 'Декабрь'],
+					// MMM
+					monthsShort: ['Янв', 'Фев', 'Мар', 'Апр', 'Май', 'Йюн', 'Йюл', 'Авг', 'Сен', 'Окт', 'Ноя', 'Дек'],
+					// dddd
+					weekdays: ['Воскресенье', 'Понедельник', 'Вторник', 'Среда', 'Четверг', 'Пятница', 'Суббота'],
+					// ddd
+					weekdaysShort: ['Вос', 'Пон', 'Втр', 'Срд', 'Чтв', 'Пят', 'Суб'],
+					// dd
+					weekdaysMin: ['Вс', 'По', 'Вт', 'Ср', 'Чт', 'Пт', 'Сб'],
+				},
+				monthBeforeYear: false,
+			},
+			mydate: Date.now(),
+			showSkypeFields: {},
+			showSkypeFieldsDesc: {},
+			fields: [], // поля таблицы
+			selected: { // отдел для приглашения
+				group_id: 0,
+				date: null,
+				time: '09:30',
+			},
+			status: 1,
+			copied: false,
+			checkedBoxes: [],
+			checker: false,
+			showModal: false,
+			showSkypeFieldsModal: false,
+			lead: {
+				name: '',
+				phone: '',
+				lang: 1,
+				wishtime: 1,
+			},
+			errors: [],
+			records: [],
+			disp: ['Вс', 'Пн', 'Вт', 'Ср', 'Чт', 'Пт', 'Сб','', '', 'Сброс', 'Ок'],
+			currentDay: 0,
+			filter: { // фильтр чекбоксы
+				flat: 0,
+				kazakh: 0,
+				kazrus: 0,
+				russian: 0,
+				cable: 0,
+				lang: 0,
+				user_type: 'all',
+				wishtime: 0,
+				segment: 0,
+				dates: [], // выбор нексольких дней
+				currentInviteGroup: 0 // select приглашенная Отдел
+			},
+			user_types: {
+				'all' : 'Все типы',
+				'office' : 'Офисные',
+				'remote' : 'Удаленные',
+			},
+			projects: {
+				0: '',
+				1720: 'Каспи',
+				1722: 'Детский Мир',
+				1724: 'Tailor Suit',
+				1726: 'Евраз',
+				1728: 'Народный Банк',
+				1770: 'Ростелеком',
+				1794: 'Альфа/МТС',
+				1892: 'Сертификация',
+				2080: 'Тинькофф',
+				2478: 'OZON 1',
+				2480: 'OZON 2',
+				2492: 'Хоум Банк',
+			},
+			langs: {
+				0: 'Все языки',
+				1: 'Каз',
+				2: 'Рус',
+				3: 'Каз|Рус',
+			},
+			countries: {
+				'KZ': '🇰🇿',
+				'KG': '🇰🇬',
+				'UZ': '🇺🇿',
+				'RU': '🇷🇺',
+				'BY': '🇧🇾',
+				'UA': '🇺🇦',
+				'UN': '❓',
+			},
+			wishtimes: {
+				0: 'Все графики',
+				1: 'с 08:45 - 19:00',
+				2: 'с 13:00 - 23:00',
+				4: 'c 08:45 - 13:00',
+				5: 'c 14:00 - 19:00',
+			},
+			datepickerLabels: {
+				labelPrevDecade: 'Пред 10 лет',
+				labelPrevYear: 'Предыдущий год',
+				labelPrevMonth: 'Предыдущий месяц',
+				labelCurrentMonth: 'Текущий месяц',
+				labelNextMonth: 'Следующий месяц',
+				labelNextYear: 'Следующий год',
+				labelNextDecade: 'След 10 лет',
+				labelToday: 'Cегодня',
+				labelSelected: 'Выбранная дата',
+				labelNoDateSelected: 'Дата не выбрана',
+				labelCalendar: 'Календарь',
+				labelNav: 'Навигация',
+				labelHelp: 'Перемещайтесь по календарю с помощью клавиш со стрелками'
+			},
+			nets: {
+				1 : 'Кабельный интернет',
+				2 : 'Кабельный интернет',
+				3 : 'Мобильный интернет',
+				4 : 'Переносной модем',
+				5 : 'Нет интернета',
+			},
+			filtered: {},
+			workDays: 26,
+			hasPremission: false,
+			totalRows: 1,
+			currentPage: 1,
+			perPage: 100,
+			pageOptions: [5, 10, 15],
+		};
+	},
+	watch: {
+		// эта функция запускается при любом изменении данных
+		skypes: {
+			// the callback will be called immediately after the start of the observation
+			deep: true,
+			handler () {
+				this.filterTable()
+			}
+		},
+		month: {
+			// the callback will be called immediately after the start of the observation
+			deep: true,
+			handler () {
+				this.filterTable()
+			}
+		},
+		checker: {
+			deep: true,
+			handler (val) {
+				if(val) {
+					this.checkAll();
+				} else {
+					this.unCheckAll();
+				}
+			}
+		},
+		filter: {
+			handler () {
+				this.filterTable()
+				this.unCheckAll()
+			},
+			deep: true
+		},
+		currentDay: {
+			handler () {
+				this.filterTable()
+			},
+		},
+		showSkypeFields: {
+			handler: function (val) {
+				localStorage.showSkypeFields = JSON.stringify(val);
+			},
+			deep: true
+		}
+	},
+
+	mounted() {
+		this.setDefaultShowFields()
+		this.setFields()
+		this.setSegments()
+		this.filterTable()
+	},
+
+	methods: {
+		getDates(s, e) {
+			for(var a=[],d=new Date(s);d<=new Date(e);d.setDate(d.getDate()+1)){
+				a.push(new Date(d));
+			}
+			return a;
+		},
+		setSegments() {
+			this.segments['0'] = '-'
+		},
+
+		setDefaultShowFields() {
+
+			localStorage.clear();
+
+			if(localStorage.showSkypeFields) {
+				this.showSkypeFields = JSON.parse(localStorage.getItem('showSkypeFields'));
+			} else {
+				this.showSkypeFields = { // Какие поля показывать
+					checked: true,
+					lead_id: true,
+					skyped: true,
+					project: true,
+					name: true,
+					lang: true,
+					net: true,
+					wishtime: true,
+					invited_at: true,
+					invite_group: true,
+					country: true,
+					segment: true,
+					resp: true,
+					phone: true,
+					file: true,
+				};
+			}
+
+			this.showSkypeFieldsDesc = {
+				checked: 'Номер',
+				lead_id: 'Сделка',
+				skyped: 'Дата подписи',
+				project: 'Проект',
+				name: 'ФИО',
+				lang: 'Языки',
+				net: 'Интернет',
+				wishtime: 'График',
+				invited_at: 'Приглашен на',
+				invite_group: 'Отдел',
+				country: 'Cтрана',
+				segment: 'Сегмент',
+				resp: 'Ответственный',
+				phone: 'Телефон',
+				file: 'Файл',
+			}
+
+		},
+
+		saveLead() {
+
+			this.axios.post('/timetracking/analytics/recruting/create-lead', {
+				name: this.lead.name,
+				phone: this.lead.phone,
+				lang: this.lead.lang,
+				wishtime: this.lead.wishtime,
+			})
+				.then(() => {
+
+
+					this.$toast.success('Новый лид сохранен')
+					this.skypes.unshift({
+						name: this.lead.name,
+						phone: this.lead.phone,
+						lang: this.lead.lang,
+						wishtime: this.lead.wishtime,
+						lead_id: 0,
+						deal_id: 0,
+						checked: false,
+						skyped: new Date()
+					});
+
+					this.lead = {
+						name: '',
+						phone: '',
+						lang: 1,
+						wishtime: 1,
+					};
+
+					this.showModal = false
+
+				})
+				.catch(() => alert('Ошибка'))
+		},
+
+		setFields() {
+			let fields = [];
+
+			fields = [
+				{
+					key: 'checked',
+					label: '',
+					variant: 'title',
+					class: 'text-left t-name'
+				},
+				{
+					key: 'lead_id',
+					label: 'Сделка',
+					variant: 'title',
+					class: 'text-left t-name'
+				},
+				{
+					key: 'skyped',
+					label: 'Дата подписи',
+					variant: 'title',
+					class: 'text-left t-name'
+				},
+				{
+					key: 'project',
+					label: 'Проект',
+					variant: 'title',
+					class: 'text-left t-name'
+				},
+				{
+					key: 'name',
+					label: 'ФИО',
+					variant: 'title',
+					class: 'text-left t-name'
+				},
+				{
+					key: 'lang',
+					label: 'Языки',
+					variant: 'title',
+					class: 'text-left t-name'
+				},
+				{
+					key: 'net',
+					label: 'Интернет',
+					variant: 'title',
+					class: 'text-left t-name'
+				},
+				{
+					key: 'wishtime',
+					label: 'График',
+					variant: 'title',
+					class: 'text-left t-name'
+				},
+				{
+					key: 'invited_at',
+					label: 'Приглашен на',
+					variant: 'title',
+					class: 'text-left t-name'
+				},
+				{
+					key: 'invite_group',
+					label: 'Гр.',
+					variant: 'title',
+					class: 'text-left t-name'
+				},
+				{
+					key: 'country',
+					label: 'Cт',
+					variant: 'title',
+					class: 'text-left t-name'
+				},
+				{
+					key: 'segment',
+					label: 'Сегмент',
+					variant: 'title',
+					class: 'text-left t-name'
+				},
+				{
+					key: 'resp',
+					label: 'Отв',
+					variant: 'title',
+					class: 'text-left t-name'
+				},
+				{
+					key: 'phone',
+					label: 'Телефон',
+					variant: 'title',
+					class: 'text-left t-name'
+				},
+				{
+					key: 'file',
+					label: 'Файл',
+					variant: 'title',
+					class: 'text-left t-name'
+				},
+			];
+
+			this.fields = fields;
+		},
+
+		async loadItems() {
+
+			this.workDays = this.month.workDays
+
+			let days = this.month.daysInMonth
+
+			let obj = {};
+			obj['headers'] = 'Стажеры'
+			for (let i = 1; i <= days; i++) {
+
+				let logins = '';
+
+				this.skypes[i].forEach(el => {
+					logins += el.skype + ' ';
+				});
+
+				obj[i] = logins
+			}
+			this.records.push(obj)
+
+
+		},
+
+		inviteUsers() {
+
+			if(this.selected.date ==  null) {
+				this.$toast.info('Выберите дату приглашения')
+				return '';
+			}
+
+			this.axios.post('/timetracking/analytics/invite-users', {
+				users: this.checkedBoxes,
+				group_id: this.selected.group_id,
+				date: this.selected.date,
+				time: this.selected.time,
+			})
+				.then(response => {
+
+					console.log(response)
+					if(response.data.code == 201) {
+						this.$toast.error('Отдел не найден. Обратитесь к разработчику')
+					}
+
+					if(response.data.code == 202) {
+						this.$toast.error('Не приглашены. В отделе не указана ссылка на Zoom конференцию.')
+					}
+
+					if(response.data.code == 200) {
+						this.$toast.success('Успешно приглашены')
+						this.checkedBoxes = []
+					}
+
+				})
+				.catch(() => alert('Ошибка'))
+		},
+
+		filterTable() {
+			this.workDays = this.month.workDays
+
+			this.records = []
+
+			var dates = this.getDates(this.filter.dates[0],this.filter.dates[1]);
+
+			this.filtered = this.skypes.filter(el => {
+
+				let a = true
+
+				let lang = false
+				if(this.filter.lang != 0) {
+					lang = lang || el.lang == this.filter.lang
+					a = a && lang
+				}
+
+				let wishtime = false
+				if(this.filter.wishtime != 0) {
+					wishtime = wishtime || el.wishtime == this.filter.wishtime
+					a = a && wishtime
+				}
+
+				let segment = false
+				if(this.filter.segment != 0) {
+					segment = segment || el.segment == this.filter.segment
+					a = a && segment
+				}
+
+				let group = false;
+				if(this.filter.currentInviteGroup != 0) {
+					group = group || el.invite_group_id == Number(this.filter.currentInviteGroup)
+					a = a && group
+				}
+
+				let user_type = false
+				if(this.filter.user_type != 'all') {
+					user_type = user_type || el.user_type == this.filter.user_type
+					a = a && user_type
+				}
+
+				let ld = false;
+				if(dates.length > 0) {
+					dates.forEach(day => {
+						ld = ld || day.getDate() == this.$moment(el.skyped_old, 'YYYY-MM-DD HH:mm:ss').date()
+					})
+				} else {
+					ld = true
+				}
+
+				return a && ld
+			})
+
+			this.totalRows =  this.filtered.length
+			this.records = this.filtered
+		},
+
+		clear() {
+			this.filter = {
+				flat: 0,
+				kazakh: 0,
+				kazrus: 0,
+				russian: 0,
+				cable: 0,
+				lang: 0,
+				user_type: 'all',
+				wishtime: 0,
+				segment: 0,
+				dates: [], // выбор нексольких дней
+				currentInviteGroup: 0 // select приглашенная Отдел
+			}
+			this.currentDay = 0
+		},
+
+		checkAll() {    // отметить все при выборе
+			this.checkedBoxes = []
+			this.records.forEach(el => {
+				el.checked = true
+				this.checkedBoxes.push(el.id);
+			})
+		},
+
+		unCheckAll() {
+			this.checkedBoxes = []
+			this.records.forEach(el => {
+				el.checked = false
+			})
+		},
+
+		copy() {
+
+			let testingCodeToCopy = document.querySelector('#copytext')
+			testingCodeToCopy.setAttribute('type', 'text')
+
+			let logins = '';
+
+			this.records.forEach(el => {
+				logins += el.skype + ' ';
+			});
+
+			testingCodeToCopy.value = logins
+
+
+			testingCodeToCopy.select()
+			document.execCommand('copy');
+
+			testingCodeToCopy.setAttribute('type', 'hidden')
+			window.getSelection().removeAllRanges()
+
+
+			// this.copied = true;
+			// setTimeout(() => this.copied = false,3000)
+			// this.$root.$emit('bv::enable::tooltip', '#text' + key)
+
+		},
+
+		detailsClassFn(item) {
+			// item: the row's item data
+			// rowType: a string describing the `<tr>` type
+
+
+			if (item.invited == 1) return 'bg-green'
+			if (item.invited == 2) return 'bg-green-2'
+			if (item.invited == 3) {
+				if(item.user_type == 'office') {
+					return 'bg-green-3 office'
+				} else {
+					return 'bg-green-3'
+				}
+			}
+			if (item.invited == 4) return 'bg-green-4'
+		},
+
+		formatDate(date) {
+			return date.getDate();
+		}
+	}
 };
 </script>
 

@@ -8,16 +8,16 @@ import authV1Tree2 from '@/assets/images/pages/auth-v1-tree-2.png'
 import authV1Tree from '@/assets/images/pages/auth-v1-tree.png'
 
 const form = ref({
-  email: '',
-  password: '',
-  remember: false,
+	email: '',
+	password: '',
+	remember: false,
 })
 
 const vuetifyTheme = useTheme()
 const authThemeMask = computed(() => {
-  return vuetifyTheme.global.name.value === 'light'
-    ? authV1MaskLight
-    : authV1MaskDark
+	return vuetifyTheme.global.name.value === 'light'
+		? authV1MaskLight
+		: authV1MaskDark
 })
 
 const isPasswordVisible = ref(false)

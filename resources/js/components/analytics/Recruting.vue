@@ -8,23 +8,23 @@
                     <p class="text ml-2">{{ info.applied }} приняты /  {{ info.applied_plan }} требуется </p>
                 </div>
                 <div class="progress">
-                    <div class="indicator" :style="'width: ' + widthRemain + '%'"></div> 
+                    <div class="indicator" :style="'width: ' + widthRemain + '%'"></div>
                     <div class="text">
                         Осталось {{ info.remain_days }} дней
                     </div>
                 </div>
                 <div class="relative">
                     <div class="line line1">
-                        
+
                     </div>
                     <div class="line line2" :style="'left: calc(' + widthRemain + '% - 1.95%);'" v-if="month == (new Date().getMonth() + 1)">
                         {{ today }} <br>{{ months[month] }}
                     </div>
-                    <div class="line line3"> 
+                    <div class="line line3">
                         {{ maxdays[month] }}  {{ months[month] }}
                     </div>
                 </div>
-                
+
             </div>
         </div>
     </div>
@@ -37,8 +37,8 @@
                 <div class="lbox green  shadow">
                     <p>
                         <span>Работают</span>
-                        <i class="fa fa-info-circle" 
-                            v-b-popover.hover.right.html="'Количество сотрудников на данный момент'" 
+                        <i class="fa fa-info-circle"
+                            v-b-popover.hover.right.html="'Количество сотрудников на данный момент'"
                             title="Работают">
                         </i>
                     </p>
@@ -48,8 +48,8 @@
                 <div class="lbox yellow  shadow">
                      <p>
                         <span>Осталось принять</span>
-                        <i class="fa fa-info-circle" 
-                            v-b-popover.hover.right.html="'Количество требуемых сотрудников на данный момент. <br> f: (Кол-во заказа - Кол-во принятых сотрудников)'" 
+                        <i class="fa fa-info-circle"
+                            v-b-popover.hover.right.html="'Количество требуемых сотрудников на данный момент. <br> f: (Кол-во заказа - Кол-во принятых сотрудников)'"
                             title="Осталось принять">
                         </i>
                     </p>
@@ -60,22 +60,22 @@
                 <div class="lbox blue   shadow">
                     <p>
                         <span>Стажеры</span>
-                        <i class="fa fa-info-circle" 
-                            v-b-popover.hover.right.html="'Количество стажеров присутствовавших на сегодняшнем обучении.<br> После отметки отсутствовавших руководителями, это число уменьшается и конкретизируется к концу рабочего дня'" 
+                        <i class="fa fa-info-circle"
+                            v-b-popover.hover.right.html="'Количество стажеров присутствовавших на сегодняшнем обучении.<br> После отметки отсутствовавших руководителями, это число уменьшается и конкретизируется к концу рабочего дня'"
                             title="Стажеры">
                         </i>
                     </p>
                     <p>{{ info.training }}</p>
                 </div>
 
-              
-                
-                
+
+
+
                 <div class="lbox green  shadow">
                     <p>
                         <span>Осталось рабочих дней</span>
-                        <i class="fa fa-info-circle" 
-                            v-b-popover.hover.right.html="'Все дни, кроме воскресенья'" 
+                        <i class="fa fa-info-circle"
+                            v-b-popover.hover.right.html="'Все дни, кроме воскресенья'"
                             title="Осталось рабочих дней">
                         </i>
                     </p>
@@ -85,8 +85,8 @@
                   <div class="lbox yellow  shadow">
                     <p>
                         <span>Уволены</span>
-                        <i class="fa fa-info-circle" 
-                            v-b-popover.hover.right.html="'Уволены в этом месяце <b>по учету ставок</b> сотрудников.<br> Part time считается как 0,5'" 
+                        <i class="fa fa-info-circle"
+                            v-b-popover.hover.right.html="'Уволены в этом месяце <b>по учету ставок</b> сотрудников.<br> Part time считается как 0,5'"
                             title="Уволены">
                         </i>
                     </p>
@@ -97,8 +97,8 @@
                 <div class="lbox blue  shadow" >
                     <p>
                         <span>Принято</span>
-                        <i class="fa fa-info-circle" 
-                            v-b-popover.hover.right.html="'Принято в этом месяце <b>по учету ставок</b> сотрудников. <br> Part time считается как 0,5 <br><br> Нажмите, чтобы увидеть заказы на этот месяц'" 
+                        <i class="fa fa-info-circle"
+                            v-b-popover.hover.right.html="'Принято в этом месяце <b>по учету ставок</b> сотрудников. <br> Part time считается как 0,5 <br><br> Нажмите, чтобы увидеть заказы на этот месяц'"
                             title="Принято">
                         </i>
                     </p>
@@ -115,15 +115,15 @@
             </div>
         </div>
     </div>
-    
 
- 
+
+
 
     <div v-if="orderVisible" class="border shadow p-3 mb-3">
         <h3>Заказы на группы</h3>
 
         <div class="group">
-            
+
         </div>
 
         <table class="table table-striped">
@@ -132,14 +132,14 @@
                 <th>Требуется</th>
                 <th>Факт</th>
             </tr>
-            <tr v-for="order in orders">
+            <tr v-for="(order, index) in orders" :key="index">
                 <td class="text-left t-name  bgz table-title">{{ order.group }}</td>
                 <td class="text-left table-title">{{ order.required }}</td>
                 <td class="text-left table-title">{{ order.fact }}</td>
             </tr>
         </table>
     </div>
-    
+
     <div class="border shadow p-3 rounded">
         <div class="d-flex justify-content-between">
             <h3 class="mb-0">Результаты остальных сотрудников</h3>
@@ -148,8 +148,8 @@
                 <span v-else>Раскрыть</span>
             </button>
         </div>
-        
-         
+
+
     <div v-show="showPlans" class="mt-5">
             <div class="plan" v-for="user in recruiters" :key="user.id">
                 <div class="mb-2 d-flex justify-content-between">
@@ -178,7 +178,7 @@
                         </div>
                 </div>
                 <div class="progress">
-                    <div class="indicator yellow" 
+                    <div class="indicator yellow"
                         v-b-popover.hover title="Сконвертировано"
                         :style="'width: ' + user.converted.percent + '%;'"
                         >{{  user.converted.percent }} %</div>
@@ -187,7 +187,7 @@
                         </div>
                 </div>
                 <div class="progress">
-                    <div class="indicator bluish" 
+                    <div class="indicator bluish"
                         v-b-popover.hover title="Принято на работу"
                         :style="'width: ' + user.applied.percent + '%;'"
                         >{{  user.applied.percent }} %</div>
@@ -195,13 +195,13 @@
                             {{ user.applied.value }} сотрудников из {{ user.applied.plan }} запланированных
                         </div>
                 </div>
-            </div>  
-        </div>  
-         
-    
+            </div>
+        </div>
+
+
     </div>
 
-    
+
 
 
 </div>
@@ -211,224 +211,224 @@
 import D3Funnel from 'd3-funnel';
 
 export default {
-    name: "Recruting", 
-    props: {
-        records: Object,
-        isAnalyticsPage: Boolean,
-    },
-    computed: {
-        percentageHired: function () {
-            return parseFloat(this.info.applied / this.info.applied_plan * 100).toFixed(0)
-        },
-        widthRemain: function () {
-            return (parseFloat((Number(this.maxdays[this.month]) - Number(this.today)) / Number(this.maxdays[this.month]) * 100) - 100) * (-1);
-        },
-        applied_on: function () {
-            let a = parseFloat(this.info.applied / this.info.applied_plan * 100).toFixed(1);
-            return a == 'Infinity' ? 0 : a;
-        }
-    }, 
-    data: function () {
-        return {
-            items: [],
-            orderVisible: false,
-            showPlans: false,
-            chartOptions: {
-                options: {
-                    block: {
-                        dynamicHeight: true,
-                        minHeight: 60,
-                        fill: {
-                            type: 'gradient' // gradient
-                        },
-                        highlight: true
-                    },
-                    chart: {
-                        curve: {
-                            enabled: false
-                        },
-                        animate: 100,
-                        bottomPinch: 0
-                    },
-                    tooltip: {
-                        enabled : true,
-                        format: function(label, value) {
-                            if(label == 'Создано новых лидов за месяц') return 'Лиды с названиями: Удаленный, inhouse'
-                            if(label == 'Обработано') return 'Сконвертировано + Забраковано лидов'
-                            if(label == 'Сконвертировано') return 'Создано сделок на основе лидов'
-                            if(label == 'Стажируются') return 'Количество стажеров присутствовавших на сегодняшнем обучении'
-                            if(label == 'Приняты в BP') return 'Приняты сотрудниками'
-                            
-                        }
-                    }, 
-                    label: {
-                        fontFamily: 'Open Sans',
-                        fontSize: '12px',
-                        format: '{l}\n{f}'
-                    },
-                    events :{
-                        click: {
-                            block: function(data) {
-                                console.log(data.target)
-                            }
-                        }
-                }
-                },
-                data: [
-                    {  value: 10, backgroundColor: '#39dde0', label: 'Создано новых лидов за месяц', formatted: 'test hehe boy'},
-                    {  value: 10, backgroundColor: '#44d9e0', label: 'Обработано', formatted: 'test hehe boy'},
-                    {  value: 9, backgroundColor: '#5fd3ec', label: 'Сконвертировано',formatted: 'test hehe boy'},
-                    {  value: 5, backgroundColor: '#76b5ec', label: 'Стажируются',formatted: 'test hehe boy'},
-                    {  value: 1, backgroundColor: '#6f8edf', label: 'Приняты в BP',formatted: 'test hehe boy'},
-                ],
-            }, 
-            chart : null,
-            plan: {
-                hired: 35,
-                trainees: 150
-            },
-            fact: {
-                hired: 12,
-                trainees: 32
-            },
-            recruiters: [
-                {
-                    name: 'Кристина Еремеева',
-                    out: {
-                        value: 1452,
-                        percent: 56,
-                        plan: 56,
-                    },
-                    converted: {
-                        value: 120,
-                        percent: 9,
-                        plan: 56,
-                    }
-                }
-            ],
-            orders: [],
-            months: {
-                1: 'января',
-                2: 'февраля',
-                3: 'марта',
-                4: 'апреля',
-                5: 'мая',
-                6: 'июня',
-                7: 'июля',
-                8: 'августа',
-                9: 'сентября',
-                10: 'октября',
-                11: 'ноября',
-                12: 'декабря',
-            },
-            maxdays: {
-                1: 31,
-                2: 28,
-                3: 31,
-                4: 30,
-                5: 31,
-                6: 30,
-                7: 31,
-                8: 31,
-                9: 30,
-                10: 31,
-                11: 30,
-                12: 31,
-            },
-            info: {
-                created: 0,
-                converted: 0,
-                trainees: 0,
-                applied: 0,
-                remain_days: 0,
-                remain_apply: 0,
-                working: 0,
-                training: 0,
-                fired: 0,
-            },
-            month: 1,
-            today: 1,
-            workDays: 26,
-        };
-    },
-    watch: {
-        // эта функция запускается при любом изменении данных
-        records: {
-            // the callback will be called immediately after the start of the observation
-            immediate: true, 
-            handler (val, oldVal) {
-                this.recruiters = this.records.recruiters
+	name: 'AnalyticsRecruting',
+	props: {
+		records: Object,
+		isAnalyticsPage: Boolean,
+	},
+	computed: {
+		percentageHired: function () {
+			return parseFloat(this.info.applied / this.info.applied_plan * 100).toFixed(0)
+		},
+		widthRemain: function () {
+			return (parseFloat((Number(this.maxdays[this.month]) - Number(this.today)) / Number(this.maxdays[this.month]) * 100) - 100) * (-1);
+		},
+		applied_on: function () {
+			let a = parseFloat(this.info.applied / this.info.applied_plan * 100).toFixed(1);
+			return a == 'Infinity' ? 0 : a;
+		}
+	},
+	data: function () {
+		return {
+			items: [],
+			orderVisible: false,
+			showPlans: false,
+			chartOptions: {
+				options: {
+					block: {
+						dynamicHeight: true,
+						minHeight: 60,
+						fill: {
+							type: 'gradient' // gradient
+						},
+						highlight: true
+					},
+					chart: {
+						curve: {
+							enabled: false
+						},
+						animate: 100,
+						bottomPinch: 0
+					},
+					tooltip: {
+						enabled : true,
+						format: function(label) {
+							if(label == 'Создано новых лидов за месяц') return 'Лиды с названиями: Удаленный, inhouse'
+							if(label == 'Обработано') return 'Сконвертировано + Забраковано лидов'
+							if(label == 'Сконвертировано') return 'Создано сделок на основе лидов'
+							if(label == 'Стажируются') return 'Количество стажеров присутствовавших на сегодняшнем обучении'
+							if(label == 'Приняты в BP') return 'Приняты сотрудниками'
 
-                this.chartOptions.data[0]['value'] = this.records.info.created
-                this.chartOptions.data[1]['value'] = this.records.info.processed
-                this.chartOptions.data[2]['value'] = this.records.info.converted
-                this.chartOptions.data[3]['value'] = this.records.info.trainees
-                this.chartOptions.data[4]['value'] = this.records.info.applied 
+						}
+					},
+					label: {
+						fontFamily: 'Open Sans',
+						fontSize: '12px',
+						format: '{l}\n{f}'
+					},
+					events :{
+						click: {
+							block: function(data) {
+								console.log(data.target)
+							}
+						}
+					}
+				},
+				data: [
+					{  value: 10, backgroundColor: '#39dde0', label: 'Создано новых лидов за месяц', formatted: 'test hehe boy'},
+					{  value: 10, backgroundColor: '#44d9e0', label: 'Обработано', formatted: 'test hehe boy'},
+					{  value: 9, backgroundColor: '#5fd3ec', label: 'Сконвертировано',formatted: 'test hehe boy'},
+					{  value: 5, backgroundColor: '#76b5ec', label: 'Стажируются',formatted: 'test hehe boy'},
+					{  value: 1, backgroundColor: '#6f8edf', label: 'Приняты в BP',formatted: 'test hehe boy'},
+				],
+			},
+			chart : null,
+			plan: {
+				hired: 35,
+				trainees: 150
+			},
+			fact: {
+				hired: 12,
+				trainees: 32
+			},
+			recruiters: [
+				{
+					name: 'Кристина Еремеева',
+					out: {
+						value: 1452,
+						percent: 56,
+						plan: 56,
+					},
+					converted: {
+						value: 120,
+						percent: 9,
+						plan: 56,
+					}
+				}
+			],
+			orders: [],
+			months: {
+				1: 'января',
+				2: 'февраля',
+				3: 'марта',
+				4: 'апреля',
+				5: 'мая',
+				6: 'июня',
+				7: 'июля',
+				8: 'августа',
+				9: 'сентября',
+				10: 'октября',
+				11: 'ноября',
+				12: 'декабря',
+			},
+			maxdays: {
+				1: 31,
+				2: 28,
+				3: 31,
+				4: 30,
+				5: 31,
+				6: 30,
+				7: 31,
+				8: 31,
+				9: 30,
+				10: 31,
+				11: 30,
+				12: 31,
+			},
+			info: {
+				created: 0,
+				converted: 0,
+				trainees: 0,
+				applied: 0,
+				remain_days: 0,
+				remain_apply: 0,
+				working: 0,
+				training: 0,
+				fired: 0,
+			},
+			month: 1,
+			today: 1,
+			workDays: 26,
+		};
+	},
+	watch: {
+		// эта функция запускается при любом изменении данных
+		records: {
+			// the callback will be called immediately after the start of the observation
+			immediate: true,
+			handler () {
+				this.recruiters = this.records.recruiters
 
-                this.info = this.records.info;
-                this.orders = this.records.orders
-                this.month = this.records.month
-                this.today = this.records.today
+				this.chartOptions.data[0]['value'] = this.records.info.created
+				this.chartOptions.data[1]['value'] = this.records.info.processed
+				this.chartOptions.data[2]['value'] = this.records.info.converted
+				this.chartOptions.data[3]['value'] = this.records.info.trainees
+				this.chartOptions.data[4]['value'] = this.records.info.applied
 
-                // this.chart = null;
-                // this.chart = new D3Funnel('#funnel')
-                // this.chart.draw(this.chartOptions.data, this.chartOptions.options);
-            }
-        },
-        
-    },
-    
-    created() {
-        
-        this.recruiters = this.records.recruiters
+				this.info = this.records.info;
+				this.orders = this.records.orders
+				this.month = this.records.month
+				this.today = this.records.today
 
-        this.chartOptions.data[0]['value'] = this.records.info.created
-        this.chartOptions.data[1]['value'] = this.records.info.processed
-        this.chartOptions.data[2]['value'] = this.records.info.converted
-        this.chartOptions.data[3]['value'] = this.records.info.trainees
-        this.chartOptions.data[4]['value'] = this.records.info.applied 
+				// this.chart = null;
+				// this.chart = new D3Funnel('#funnel')
+				// this.chart.draw(this.chartOptions.data, this.chartOptions.options);
+			}
+		},
 
-        this.info = this.records.info;
-        this.orders = this.records.orders
-        this.month = this.records.month
-        this.today = this.records.today
+	},
 
-        if(this.isAnalyticsPage) {
-            this.showPlans = false
-        } else {
-            this.showPlans = false
-        }
-        
-        
-    },
+	created() {
 
-    mounted() {
-        if(this.isAnalyticsPage) {
-            this.chart = new D3Funnel('#funnel')
-            this.chart.draw(this.chartOptions.data, this.chartOptions.options);
-        }
-    },
-    methods: {
-        reload() {
-            this.recruiters = this.records.recruiters
+		this.recruiters = this.records.recruiters
 
-            this.chartOptions.data[0]['value'] = this.records.info.created
-            this.chartOptions.data[1]['value'] = this.records.info.converted
-            this.chartOptions.data[2]['value'] = this.records.info.trainees
-            this.chartOptions.data[3]['value'] = this.records.info.applied 
-    
-            this.info = this.records.info;
-            this.orders = this.records.orders
-            this.month = this.records.month
-            this.today = this.records.today
+		this.chartOptions.data[0]['value'] = this.records.info.created
+		this.chartOptions.data[1]['value'] = this.records.info.processed
+		this.chartOptions.data[2]['value'] = this.records.info.converted
+		this.chartOptions.data[3]['value'] = this.records.info.trainees
+		this.chartOptions.data[4]['value'] = this.records.info.applied
 
-            if(this.isAnalyticsPage) {
-                this.chart = new D3Funnel('#funnel')
-                this.chart.draw(this.chartOptions.data, this.chartOptions.options);
-            }
-            
-        },
-    }
+		this.info = this.records.info;
+		this.orders = this.records.orders
+		this.month = this.records.month
+		this.today = this.records.today
+
+		if(this.isAnalyticsPage) {
+			this.showPlans = false
+		} else {
+			this.showPlans = false
+		}
+
+
+	},
+
+	mounted() {
+		if(this.isAnalyticsPage) {
+			this.chart = new D3Funnel('#funnel')
+			this.chart.draw(this.chartOptions.data, this.chartOptions.options);
+		}
+	},
+	methods: {
+		reload() {
+			this.recruiters = this.records.recruiters
+
+			this.chartOptions.data[0]['value'] = this.records.info.created
+			this.chartOptions.data[1]['value'] = this.records.info.converted
+			this.chartOptions.data[2]['value'] = this.records.info.trainees
+			this.chartOptions.data[3]['value'] = this.records.info.applied
+
+			this.info = this.records.info;
+			this.orders = this.records.orders
+			this.month = this.records.month
+			this.today = this.records.today
+
+			if(this.isAnalyticsPage) {
+				this.chart = new D3Funnel('#funnel')
+				this.chart.draw(this.chartOptions.data, this.chartOptions.options);
+			}
+
+		},
+	}
 };
 </script>
 
@@ -448,10 +448,10 @@ export default {
 .line {
     position: absolute;
     top: 8px;
-    
-    
+
+
     padding-top: 15px;
-    
+
     text-align: center;
 }
 .line:before {
@@ -491,7 +491,7 @@ export default {
 // .shadow {
 //     box-shadow: 0 3px 15px #d3d6da;
 //     &.hover:hover {
-//         box-shadow: 0 3px 15px #bbbdbe; 
+//         box-shadow: 0 3px 15px #bbbdbe;
 //         cursor: pointer
 //     }
 // }
@@ -550,8 +550,8 @@ export default {
             background: #055583;
         }
     }
-    
-    
+
+
 }
 .recruting-analytics h3 {
     font-size: 1.1rem;

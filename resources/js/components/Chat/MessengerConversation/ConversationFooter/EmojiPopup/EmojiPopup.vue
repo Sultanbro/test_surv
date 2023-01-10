@@ -13,7 +13,7 @@
         </svg>
       </div>
     </template>
-    <template #emoji-picker="{ emojis, insert, display }">
+    <template #emoji-picker="{ emojis, insert }">
       <div>
         <div class="emoji-picker" :style="{ bottom: 5 + '%', right: 10 + '%' }">
           <div>
@@ -36,21 +36,21 @@
 </template>
 
 <script>
-import EmojiPicker from "./EmojiPicker/EmojiPicker.vue";
+import EmojiPicker from './EmojiPicker/EmojiPicker.vue';
 
 export default {
-  name: "EmojiPopup",
-  components: {EmojiPicker},
-  data() {
-    return {
-      search: "",
-    };
-  },
-  methods: {
-    append(emoji) {
-      this.$emit("append", emoji);
-    }
-  }
+	name: 'EmojiPopup',
+	components: {EmojiPicker},
+	data() {
+		return {
+			search: '',
+		};
+	},
+	methods: {
+		append(emoji) {
+			this.$emit('append', emoji);
+		}
+	}
 };
 </script>
 

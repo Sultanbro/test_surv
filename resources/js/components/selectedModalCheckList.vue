@@ -25,7 +25,7 @@
 
                         <div class="popupShowSelected">
                             <div v-if="selectedRole.role_1" >
-                                <p class="list-role"  v-for="item in  groups_arr">
+                                <p class="list-role" v-for="(item, index) in groups_arr" :key="index">
 
                                     <a @click="addDivBlock(item.name,item.code,'1')"  v-bind:class="{ active: item.checked }" class="btn btn-block" style="display: flex">
                                         <i class="fas fa-arrow-alt-circle-right  style-icons" ></i>
@@ -36,7 +36,7 @@
                                 </p>
                             </div>
                             <div v-if="selectedRole.role_2">
-                                <p class="list-role"  v-for="item in  positions_arr">
+                                <p class="list-role"  v-for="(item, index) in  positions_arr" :key="index">
                                     <a @click="addDivBlock(item.name,item.code,'2')" v-bind:class="{ active: item.checked }" class="btn btn-block" style="display: flex">
                                         <i class="fas fa-arrow-alt-circle-right style-icons" ></i>
                                         <span  style="margin-top: 5px; margin-left:15px;">{{ item.name}}</span>
@@ -45,7 +45,7 @@
                                 </p>
                             </div>
                             <div v-if="selectedRole.role_3">
-                                <p class="list-role"  v-for="item in   allusers_arr">
+                                <p class="list-role"  v-for="(item, index) in   allusers_arr" :key="index">
                                     <a @click="addDivBlock(item.name,item.code,'3')" v-bind:class="{ active: item.checked }" class="btn btn-block" style="display: flex">
                                         <i class="fas fa-arrow-alt-circle-right  style-icons" ></i>
                                         <span style="margin-top: 5px; margin-left:15px;">{{ item.last_name}} {{ item.name}}</span>
@@ -61,7 +61,7 @@
                     <div id="selected-block-array"  class="selected-block-array" >
                         <a v-if="placeholderSelect" style="color: #abb1b8;" >Добавить Отделы/Сотрудники</a>
 
-                      <div class="addElement"  v-for="(item,i) in allValueArray"  >
+                      <div class="addElement"  v-for="(item,i) in allValueArray" :key="i">
                           <a  class="elementHoverList">
                                <span> {{ item.text }} </span>
                               <div class="ui-tag-selector-tag-remove"  @click="deleteDesk(i,item.code,item.type)">
@@ -79,170 +79,172 @@
 
 <script>
 
-    export default {
-        name: "modalRole",
-        props: {
-            groups:{},
-            allusers:{},
-            positions:{},
-            editValueThis:{}
-        },
-        data() {
-            return {
-                flag_type:true,
-                placeholderSelect:false,
-                allValueArray:[],
-                groups_arr:[],
-                allusers_arr:[],
-                positions_arr:[],
-                selectedRole:{
-                    role_1:true,
-                    role_2:false,
-                    role_3:false,
-                },
+export default {
+	name: 'modalRole',
+	props: {
+		groups:{},
+		allusers:{},
+		positions:{},
+		editValueThis:{}
+	},
+	data() {
+		return {
+			flag_type:true,
+			placeholderSelect:false,
+			allValueArray:[],
+			groups_arr:[],
+			allusers_arr:[],
+			positions_arr:[],
+			selectedRole:{
+				role_1:true,
+				role_2:false,
+				role_3:false,
+			},
 
-            };
-        },
-        mounted() {
+		};
+	},
+	mounted() {
 
-            this.groups_arr = [
-                                  { name: 'groups_1', code: '1',type:'1',checked:false },
-                                  { name: 'groups_2', code: '2',type:'1',checked:false },
-                                  { name: 'groups_3', code: '3',type:'1',checked:false },
+		this.groups_arr = [
+			{ name: 'groups_1', code: '1',type:'1',checked:false },
+			{ name: 'groups_2', code: '2',type:'1',checked:false },
+			{ name: 'groups_3', code: '3',type:'1',checked:false },
 
-                              ];
-            this.positions_arr = [
-                                  { name: 'positions_1', code: '1',type:'2',checked:false },
-                                  { name: 'positions_2', code: '2',type:'2',checked:false },
-                                  { name: 'positions_3', code: '3',type:'2',checked:false },
+		];
+		this.positions_arr = [
+			{ name: 'positions_1', code: '1',type:'2',checked:false },
+			{ name: 'positions_2', code: '2',type:'2',checked:false },
+			{ name: 'positions_3', code: '3',type:'2',checked:false },
 
-                                ];
+		];
 
-          this.allusers_arr = [
-                                  { name: 'users_1', code: '1',type:'3',checked:false },
-                                  { name: 'users_2', code: '2',type:'3',checked:false },
-                                  { name: 'users_3', code: '3',type:'3',checked:false },
-                              ];
-
-
-        },
-        methods: {
-
-            // doSomething() {
-            //
-            //   event.default()
-            //   console.log(this.allValueArray,'07771995')
-            //
-            //
-            //     this.$toast.success('Успешно Сохранено')
-            //     this.$emit('updateParent', {
-            //          allValueArray: this.allValueArray
-            //     })
-            // },
-            selectedRoles(type){
-                if (type == 1){
-                    this.selectedRole.role_1 = true
-                    this.selectedRole.role_2 = false
-                    this.selectedRole.role_3 = false
-                }else if (type == 2){
-                    this.selectedRole.role_1 = false
-                    this.selectedRole.role_2 = true
-                    this.selectedRole.role_3 = false
-                }else if (type == 3){
-                    this.selectedRole.role_1 = false
-                    this.selectedRole.role_2 = false
-                    this.selectedRole.role_3 = true
-                }
-
-            },
-            addDivBlock(item,id,type){
-                this.placeholderSelect = false;
-                this.flag_type = true;
+		this.allusers_arr = [
+			{ name: 'users_1', code: '1',type:'3',checked:false },
+			{ name: 'users_2', code: '2',type:'3',checked:false },
+			{ name: 'users_3', code: '3',type:'3',checked:false },
+		];
 
 
-                if (this.allValueArray.length > 0){
-                  for (let i = 0; i < this.allValueArray.length;i ++){
-                      if (this.allValueArray[i]['type'] == type && this.allValueArray[i]['code'] == id){
-                           this.$toast.error('Отдел ранее добавлен');
-                           this.flag_type = false;
-                      }else if (this.allValueArray[i]['type'] == type && this.allValueArray[i]['code'] == id){
-                           this.$toast.error('Должность ранее добавлено');
-                           this.flag_type = false;
-                      }else if (this.allValueArray[i]['type'] == type && this.allValueArray[i]['code'] == id){
-                          this.$toast.error('Пользователь ранее добавлено');
-                          this.flag_type = false;
-                      }
-                    }
-                }
+	},
+	methods: {
+
+		// doSomething() {
+		//
+		//   event.default()
+		//   console.log(this.allValueArray,'07771995')
+		//
+		//
+		//     this.$toast.success('Успешно Сохранено')
+		//     this.$emit('updateParent', {
+		//          allValueArray: this.allValueArray
+		//     })
+		// },
+		selectedRoles(type){
+			if (type == 1){
+				this.selectedRole.role_1 = true
+				this.selectedRole.role_2 = false
+				this.selectedRole.role_3 = false
+			}else if (type == 2){
+				this.selectedRole.role_1 = false
+				this.selectedRole.role_2 = true
+				this.selectedRole.role_3 = false
+			}else if (type == 3){
+				this.selectedRole.role_1 = false
+				this.selectedRole.role_2 = false
+				this.selectedRole.role_3 = true
+			}
+
+		},
+		addDivBlock(item,id,type){
+			this.placeholderSelect = false;
+			this.flag_type = true;
 
 
-
-              if (this.flag_type == true){
-                          this.allValueArray.push({
-                              text: item,
-                              code:id,
-                              type:type
-                          });
-
-                          if (type == 1){
-                            for (var i = 0; i < this.groups_arr.length;i++){
-                              if (this.groups_arr[i]['code'] == id){
-                                this.groups_arr[i]['checked'] = true
-                              }
-                            }
-                          }else if(type == 2){
-                            for (var i = 0; i < this.positions_arr.length;i++){
-                              if (this.positions_arr[i]['code'] == id){
-                                  this.positions_arr[i]['checked'] = true
-                              }
-                            }
-
-                          }else if(type == 3){
-                            for (var i = 0; i < this.allusers_arr.length;i++){
-                              if (this.allusers_arr[i]['code'] == id){
-                                this.allusers_arr[i]['checked'] = true
-                              }
-                            }
-                          }
+			if (this.allValueArray.length > 0){
+				for (let i = 0; i < this.allValueArray.length;i ++){
+					if (this.allValueArray[i]['type'] == type && this.allValueArray[i]['code'] == id){
+						this.$toast.error('Отдел ранее добавлен');
+						this.flag_type = false;
+					}
+					// else if (this.allValueArray[i]['type'] == type && this.allValueArray[i]['code'] == id){
+					// 	this.$toast.error('Должность ранее добавлено');
+					// 	this.flag_type = false;
+					// }
+					// else if (this.allValueArray[i]['type'] == type && this.allValueArray[i]['code'] == id){
+					// 	this.$toast.error('Пользователь ранее добавлено');
+					// 	this.flag_type = false;
+					// }
+				}
+			}
 
 
 
+			if (this.flag_type == true){
+				this.allValueArray.push({
+					text: item,
+					code:id,
+					type:type
+				});
 
-                      }
-            },
-            deleteDesk(id,code,type){
-                this.allValueArray.splice(id,1)
-                if (this.allValueArray.length == 0){
-                  this.placeholderSelect = true;
-                }
-                for (var i = 0; i < this.groups_arr.length;i++){
-                    if (this.groups_arr[i]['type'] == type && this.groups_arr[i]['code'] == code){
-                      this.groups_arr[i]['checked'] = false
-                    }
-                  }
+				if (type == 1){
+					for (let i = 0; i < this.groups_arr.length;i++){
+						if (this.groups_arr[i]['code'] == id){
+							this.groups_arr[i]['checked'] = true
+						}
+					}
+				}else if(type == 2){
+					for (let i = 0; i < this.positions_arr.length;i++){
+						if (this.positions_arr[i]['code'] == id){
+							this.positions_arr[i]['checked'] = true
+						}
+					}
 
-                for (var i = 0; i < this.positions_arr.length;i++){
-                  if (this.positions_arr[i]['type'] == type && this.positions_arr[i]['code'] == code){
-                    this.positions_arr[i]['checked'] = false
-                  }
-                }
-
-                for (var i = 0; i < this.allusers_arr.length;i++){
-                  if (this.allusers_arr[i]['type'] == type && this.allusers_arr[i]['code'] == code){
-                    this.allusers_arr[i]['checked'] = false
-                  }
-                }
+				}else if(type == 3){
+					for (let i = 0; i < this.allusers_arr.length;i++){
+						if (this.allusers_arr[i]['code'] == id){
+							this.allusers_arr[i]['checked'] = true
+						}
+					}
+				}
 
 
 
-            },
-            // toggle() {
-            //   this.showModal = !this.showModal
-            // },
 
-        },
+			}
+		},
+		deleteDesk(id,code,type){
+			this.allValueArray.splice(id,1)
+			if (this.allValueArray.length == 0){
+				this.placeholderSelect = true;
+			}
+			for (let i = 0; i < this.groups_arr.length;i++){
+				if (this.groups_arr[i]['type'] == type && this.groups_arr[i]['code'] == code){
+					this.groups_arr[i]['checked'] = false
+				}
+			}
 
-    }
+			for (let i = 0; i < this.positions_arr.length;i++){
+				if (this.positions_arr[i]['type'] == type && this.positions_arr[i]['code'] == code){
+					this.positions_arr[i]['checked'] = false
+				}
+			}
+
+			for (let i = 0; i < this.allusers_arr.length;i++){
+				if (this.allusers_arr[i]['type'] == type && this.allusers_arr[i]['code'] == code){
+					this.allusers_arr[i]['checked'] = false
+				}
+			}
+
+
+
+		},
+		// toggle() {
+		//   this.showModal = !this.showModal
+		// },
+
+	},
+
+}
 
 
 

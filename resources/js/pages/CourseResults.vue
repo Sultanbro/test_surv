@@ -23,7 +23,7 @@
                 </thead>
                <tbody>
                <template v-for="(item, i) in users.items">
-                   <tr class="pointer" :class="{
+                   <tr :key="i" class="pointer" :class="{
                         'expanded-title': item.expanded
                     }">
                        <td v-for="(field, f) in users.fields" :key="f" :class="field.class" @click="expandUser(item)">
@@ -36,7 +36,7 @@
                    </tr>
 
                    <template v-for="(course, c) in item.courses">
-                       <tr v-if="item.expanded" class="expanded">
+                       <tr :key="c" v-if="item.expanded" class="expanded">
                            <td v-for="(field, f) in users.fields" :key="f" :class="[field.class, {pointer: course.items && course.items.length > 1}]" @click="expandCourse(course, item)">
                                <div v-if="field.key == 'progress'" class="d-flex jcc aic">
                                    <p class="mb-0 mr-1">{{ course[field.key] }}</p>
@@ -100,7 +100,7 @@
                 </thead>
                <tbody>
                <template v-for="(item, i) in groups.items">
-                   <tr>
+                   <tr :key="i">
                        <td v-for="(field, f) in groups.fields" :key="f" :class="field.class" @click="expandUser(item)">
                            <div>{{ item[field.key] }}</div>
                        </td>
@@ -121,251 +121,250 @@ const BY_USER = 1;
 const BY_GROUP = 2;
 
 function formatProgress(num, precision = 2){
-    return parseFloat(num.toFixed(precision))
+	return parseFloat(num.toFixed(precision))
 }
 
 export default {
-    name: 'CourseResults',
-    watch: {
-        monthInfo(val) {
-            this.first = true;
-            if(this.type == this.BY_GROUP) {
-                this.fetchData('groups');
-                this.first = false;
-            } else {
-                this.fetchData('users');
-            }
-        },
-        currentGroup() {
-            this.first = true;
-            if(this.type == this.BY_GROUP) {
-                this.fetchData('groups');
-                this.first = false;
-            } else {
-                this.fetchData('users');
-            }
-        },
-        type(val) {
-            if(val == this.BY_GROUP && this.first) {
-                this.fetchData('groups');
-                this.first = false;
-            }
-        },
-    },
-    props: {
-        monthInfo: {
-            required: false
-        },
-        currentGroup: {
-            required: false
-        }
-    },
-    data() {
-        return {
-            data: [],
-            type: BY_USER,
-            first: true,
-            BY_USER: BY_USER,
-            BY_GROUP: BY_GROUP,
-            users: {
-                items: [],
-                fields: [],
-            },
-            groups: {
-                items: [],
-                fields: [],
-            },
-            course2item: {
-                name: 'title',
-                status: 'status',
-                points: 'points',
-                progress: 'progress',
-                progress_on_week: 'progress_on_week',
-                started_at: 'started_at',
-                ended_at: 'ended_at'
-            },
-            courses: {},
-            courseItems: {}
-        }
-    },
-    computed: {
-        courseItemsTable(){
-            const result = {}
-            for(let [userId, userResult] of Object.entries(this.courseItems)){
-                for(let [courseId, courseResult] of Object.entries(userResult)){
-                    const course = this.courses[courseId]
-                    if(!course) continue
-                    const points = course.points / course.stages
+	name: 'CourseResults',
+	watch: {
+		monthInfo() {
+			this.first = true;
+			if(this.type == this.BY_GROUP) {
+				this.fetchData('groups');
+				this.first = false;
+			} else {
+				this.fetchData('users');
+			}
+		},
+		currentGroup() {
+			this.first = true;
+			if(this.type == this.BY_GROUP) {
+				this.fetchData('groups');
+				this.first = false;
+			} else {
+				this.fetchData('users');
+			}
+		},
+		type(val) {
+			if(val == this.BY_GROUP && this.first) {
+				this.fetchData('groups');
+				this.first = false;
+			}
+		},
+	},
+	props: {
+		monthInfo: {
+			required: false
+		},
+		currentGroup: {
+			required: false
+		}
+	},
+	data() {
+		return {
+			data: [],
+			type: BY_USER,
+			first: true,
+			BY_USER: BY_USER,
+			BY_GROUP: BY_GROUP,
+			users: {
+				items: [],
+				fields: [],
+			},
+			groups: {
+				items: [],
+				fields: [],
+			},
+			course2item: {
+				name: 'title',
+				status: 'status',
+				points: 'points',
+				progress: 'progress',
+				progress_on_week: 'progress_on_week',
+				started_at: 'started_at',
+				ended_at: 'ended_at'
+			},
+			courses: {},
+			courseItems: {}
+		}
+	},
+	computed: {
+		courseItemsTable(){
+			const result = {}
+			for(let [userId, userResult] of Object.entries(this.courseItems)){
+				for(let [courseId, courseResult] of Object.entries(userResult)){
+					const course = this.courses[courseId]
+					if(!course) continue
 
-                    if(!result[userId]) result[userId] = {}
-                    courseResult.forEach(courseItem => {
-                        const passedCount = courseItem.passed_stages ? courseItem.passed_stages.length : 0
-                        const status = (passedCount ? (courseItem.stages && courseItem.stages > passedCount ? 'Начат' : 'Завершен') : 'Запланирован')
-                        const progress = formatProgress(((passedCount / courseItem.stages) * 100) || 0)
-                        const points = courseItem.bonuses
+					if(!result[userId]) result[userId] = {}
+					courseResult.forEach(courseItem => {
+						const passedCount = courseItem.passed_stages ? courseItem.passed_stages.length : 0
+						const status = (passedCount ? (courseItem.stages && courseItem.stages > passedCount ? 'Начат' : 'Завершен') : 'Запланирован')
+						const progress = formatProgress(((passedCount / courseItem.stages) * 100) || 0)
+						const points = courseItem.bonuses
 
-                        result[userId][courseItem.item_id] = {
-                            status,
-                            points,
-                            progress,
-                            progress_on_week: 0,
-                            started_at: new Date(),
-                            ended_at: new Date(0)
-                        }
-                        const res = result[userId][courseItem.item_id]
+						result[userId][courseItem.item_id] = {
+							status,
+							points,
+							progress,
+							progress_on_week: 0,
+							started_at: new Date(),
+							ended_at: new Date(0)
+						}
+						const res = result[userId][courseItem.item_id]
 
-                        const weekAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000)
-                        courseItem.passed_stages.forEach(stage => {
-                            const updated = new Date(stage.updated_at)
-                            if(res.started_at > updated) res.started_at = updated
-                            if(res.ended_at < updated) res.ended_at = updated
-                            if(updated > weekAgo) res.progress_on_week += 1
-                        })
+						const weekAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000)
+						courseItem.passed_stages.forEach(stage => {
+							const updated = new Date(stage.updated_at)
+							if(res.started_at > updated) res.started_at = updated
+							if(res.ended_at < updated) res.ended_at = updated
+							if(updated > weekAgo) res.progress_on_week += 1
+						})
 
-                        res.started_at = passedCount ? this.$moment(res.started_at).format('DD.MM.YYYY') : ''
-                        res.ended_at = courseItem.stages && courseItem.stages > passedCount ? '' : this.$moment(res.ended_at).format('DD.MM.YYYY')
-                        res.progress_on_week = formatProgress(((res.progress_on_week / courseItem.stages) * 100) || 0)
-                    })
-                }
-            }
-            return result
-        }
-    },
-    created() {
-        this.fetchData();
-    },
-    methods: {
-        fetchData(type = 'users') {
-            let loader = this.$loading.show();
+						res.started_at = passedCount ? this.$moment(res.started_at).format('DD.MM.YYYY') : ''
+						res.ended_at = courseItem.stages && courseItem.stages > passedCount ? '' : this.$moment(res.ended_at).format('DD.MM.YYYY')
+						res.progress_on_week = formatProgress(((res.progress_on_week / courseItem.stages) * 100) || 0)
+					})
+				}
+			}
+			return result
+		}
+	},
+	created() {
+		this.fetchData();
+	},
+	methods: {
+		fetchData(type = 'users') {
+			let loader = this.$loading.show();
 
-            axios
-                .post("/course-results/get", {
-                    type: type,
-                    month: this.monthInfo.month,
-                    year: this.monthInfo.currentYear,
-                    group_id: this.currentGroup !== undefined ? this.currentGroup :  null,
-                })
-                .then((response) => {
+			this.axios
+				.post('/course-results/get', {
+					type: type,
+					month: this.monthInfo.month,
+					year: this.monthInfo.currentYear,
+					group_id: this.currentGroup !== undefined ? this.currentGroup :  null,
+				})
+				.then((response) => {
 
-                    if(type == 'users') {
-                        this.users = response.data.items;
-                    }
-                    if(type == 'groups') {
-                        this.groups = response.data.items;
-                    }
+					if(type == 'users') {
+						this.users = response.data.items;
+					}
+					if(type == 'groups') {
+						this.groups = response.data.items;
+					}
 
 
-                    loader.hide();
-                });
-        },
+					loader.hide();
+				});
+		},
 
-        fetchCourseItems(userId, courseId) {
-            axios.get('/course/progress', {
-                params: { userId, courseId }
-            }).then(({ data }) => {
-                if(!this.courseItems[userId]) this.$set(this.courseItems, userId, {})
-                this.$set(this.courseItems[userId], courseId, data.data.courseItems)
-                this.courses[data.data.course.id] = data.data.course
-            })
-        },
+		fetchCourseItems(userId, courseId) {
+			this.axios.get('/course/progress', {
+				params: { userId, courseId }
+			}).then(({ data }) => {
+				if(!this.courseItems[userId]) this.$set(this.courseItems, userId, {})
+				this.$set(this.courseItems[userId], courseId, data.data.courseItems)
+				this.courses[data.data.course.id] = data.data.course
+			})
+		},
 
-        expandUser(item) {
-            let ex = item.expanded;
-            this.users.items.forEach(i => {
-                i.expanded = false
-                if(i.courses) i.courses.forEach(c => this.$set(c, 'expanded', false))
-            });
-            item.expanded = !ex;
-        },
+		expandUser(item) {
+			let ex = item.expanded;
+			this.users.items.forEach(i => {
+				i.expanded = false
+				if(i.courses) i.courses.forEach(c => this.$set(c, 'expanded', false))
+			});
+			item.expanded = !ex;
+		},
 
-        expandCourse(course, item) {
-            if(course.items && course.items.length > 1){
-                if(!(this.courseItems[item.user_id] && this.courseItems[item.user_id][course.course_id])){
-                    this.fetchCourseItems(item.user_id, course.course_id)
-                }
-                this.users.items.every(el => {
-                    // console.log('el.user_id', el.user_id, item.user_id)
-                    if(el.user_id !== item.user_id) return true
-                    item.courses.forEach(c => {
-                        // console.log('c.course_id', c.course_id, course.course_id)
-                        if(c.course_id === course.course_id){
-                            this.$set(c, 'expanded', !c.expanded)
-                        }
-                        else{
-                            this.$set(c, 'expanded', false)
-                        }
-                    })
-                })
-            }
-        },
+		expandCourse(course, item) {
+			if(course.items && course.items.length > 1){
+				if(!(this.courseItems[item.user_id] && this.courseItems[item.user_id][course.course_id])){
+					this.fetchCourseItems(item.user_id, course.course_id)
+				}
+				this.users.items.every(el => {
+					// console.log('el.user_id', el.user_id, item.user_id)
+					if(el.user_id !== item.user_id) return true
+					item.courses.forEach(c => {
+						// console.log('c.course_id', c.course_id, course.course_id)
+						if(c.course_id === course.course_id){
+							this.$set(c, 'expanded', !c.expanded)
+						}
+						else{
+							this.$set(c, 'expanded', false)
+						}
+					})
+				})
+			}
+		},
 
-        nullify(i, c) {
+		nullify(i, c) {
 
-            if(!confirm('Вы уверены? Потом прогресс не восстановить')) {
-                return;
-            }
+			if(!confirm('Вы уверены? Потом прогресс не восстановить')) {
+				return;
+			}
 
-            let course = this.users.items[i].courses[c];
-            // course
-            // ended_at:""
-            // name:"Знакомство с нашей компанией"
-            // points:"185 / 762 / 24.3%"
-            // progress:"30%"
-            // progress_on_week:"0%"
-            // started_at:"28.07.2022"
-            // status:"Запланирован"
-            // user_id: 5
+			let course = this.users.items[i].courses[c];
+			// course
+			// ended_at:""
+			// name:"Знакомство с нашей компанией"
+			// points:"185 / 762 / 24.3%"
+			// progress:"30%"
+			// progress_on_week:"0%"
+			// started_at:"28.07.2022"
+			// status:"Запланирован"
+			// user_id: 5
 
-            this.nullifyRequest({
-                user_id: course.user_id,
-                course_id: course.course_id,
-            }, (res) => {
-                this.$toast.success('Прогресс по курсу Обнулен');
+			this.nullifyRequest({
+				user_id: course.user_id,
+				course_id: course.course_id,
+			}, () => {
+				this.$toast.success('Прогресс по курсу Обнулен');
 
-                course.progress = '0%';
-                course.started_at = '';
-                course.ended_at = '';
-                course.status = 'Запланирован';
-                course.points = '0 / 0 / 0%';
-                course.progress_on_week = '0%';
-            });
+				course.progress = '0%';
+				course.started_at = '';
+				course.ended_at = '';
+				course.status = 'Запланирован';
+				course.points = '0 / 0 / 0%';
+				course.progress_on_week = '0%';
+			});
 
-        },
+		},
 
-        nullifyRequest({user_id, course_id}, callback) {
-            let loader = this.$loading.show();
+		nullifyRequest({user_id, course_id}, callback) {
+			let loader = this.$loading.show();
 
-            axios
-                .post("/course/regress", {
-                    type: 'course',
-                    user_id,
-                    course_id
-                })
-                .then((response) => {
-                    callback(response);
-                })
-                .catch(e => console.log(e));
+			this.axios
+				.post('/course/regress', {
+					type: 'course',
+					user_id,
+					course_id
+				})
+				.then((response) => {
+					callback(response);
+				})
+				.catch(e => console.log(e));
 
-            loader.hide();
-        },
+			loader.hide();
+		},
 
-        regress(user_id, course_id, courseItem){
-            if(!confirm('Вы уверены? Потом прогресс не восстановить')) return
+		regress(user_id, course_id, courseItem){
+			if(!confirm('Вы уверены? Потом прогресс не восстановить')) return
 
-            const loader = this.$loading.show()
+			const loader = this.$loading.show()
 
-            axios.post('/course/regress', {
-                type: 'item',
-                user_id,
-                course_item_id: courseItem.id
-            }).then((response) => {
-                this.fetchCourseItems(user_id, course_id)
-                this.$toast.success('Прогресс по разделу курса обнулен')
-            }).catch(e => console.log(e))
+			this.axios.post('/course/regress', {
+				type: 'item',
+				user_id,
+				course_item_id: courseItem.id
+			}).then(() => {
+				this.fetchCourseItems(user_id, course_id)
+				this.$toast.success('Прогресс по разделу курса обнулен')
+			}).catch(e => console.log(e))
 
-            loader.hide()
-        },
-    }
+			loader.hide()
+		},
+	}
 }
 </script>
 

@@ -2,24 +2,24 @@
 import ProfileGroups from '@/components/profile/ProfileGroups' // настройки user
 
 export default {
-    name: 'UserEditGroups',
-    components: {
-        ProfileGroups,
-    },
-    props: {
-        user: {
-            type: Object,
-            default: null
-        },
-        groups:{
-            type: Array,
-            default: () => []
-        },
-        in_groups:{
-            type: Array,
-            default: () => []
-        },
-    }
+	name: 'UserEditGroups',
+	components: {
+		ProfileGroups,
+	},
+	props: {
+		user: {
+			type: Object,
+			default: null
+		},
+		groups:{
+			type: Array,
+			default: () => []
+		},
+		in_groups:{
+			type: Array,
+			default: () => []
+		},
+	}
 }
 </script>
 <template>

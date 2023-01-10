@@ -5,27 +5,27 @@ const ReportsNav = () => import(/* webpackChunkName: "ReportsNav" */ '@/componen
 const AnalyticsPage = () => import(/* webpackChunkName: "AnalyticsPage" */ '@/pages/AnalyticsPage')
 
 export default {
-    name: 'AnalyticsView',
-    components: {
-        DefaultLayout,
-        ReportsNav,
-        AnalyticsPage,
-    },
-    data(){
-        return {
-            groups: '',
-            activeuserid: 0,
-            activeTab: 'nav-profile-tab',
-        }
-    },
-    mounted(){
-        useAsyncPageData('/timetracking/an').then(data => {
-            this.groups = data.groups
-            this.activeuserid = data.activeuserid
-        }).catch(error => {
-            console.error('useAsyncPageData', error)
-        })
-    }
+	name: 'AnalyticsView',
+	components: {
+		DefaultLayout,
+		ReportsNav,
+		AnalyticsPage,
+	},
+	data(){
+		return {
+			groups: '',
+			activeuserid: 0,
+			activeTab: 'nav-profile-tab',
+		}
+	},
+	mounted(){
+		useAsyncPageData('/timetracking/an').then(data => {
+			this.groups = data.groups
+			this.activeuserid = data.activeuserid
+		}).catch(error => {
+			console.error('useAsyncPageData', error)
+		})
+	}
 }
 </script>
 

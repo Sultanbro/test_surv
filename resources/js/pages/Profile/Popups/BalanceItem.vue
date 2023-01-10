@@ -10,8 +10,8 @@
 
 <script>
 export default {
-    name: 'BalanceItem',
-    props: ['title']
+	name: 'BalanceItem',
+	props: ['title']
 }
 </script>
 

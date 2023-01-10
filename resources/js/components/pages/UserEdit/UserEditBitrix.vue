@@ -1,22 +1,22 @@
 <script>
 export default {
-    name: 'UserEditBitrix',
-    props: {
-        user: {
-            type: Object,
-            default: null
-        },
-    },
-    data(){
-        return {
-            isEditor: false
-        }
-    },
-    methods: {
-        openEditor(){
-            this.isEditor = true
-        }
-    }
+	name: 'UserEditBitrix',
+	props: {
+		user: {
+			type: Object,
+			default: null
+		},
+	},
+	data(){
+		return {
+			isEditor: false
+		}
+	},
+	methods: {
+		openEditor(){
+			this.isEditor = true
+		}
+	}
 }
 </script>
 <template>

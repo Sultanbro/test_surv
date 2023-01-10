@@ -14,19 +14,19 @@
 
 <script>
 export default {
-    name: "ProgressBar2",
-    props: {
-        percentage: Number,
-        label: String,
-    },
-    methods: {
-        beforeEnter (el) {
-            el.style.width = 0
-        },
-        enter (el) {
-            el.style.width = `${this.percentage}%`
-            el.style.transition = `width 1s linear`
-        }
-    }
+	name: 'ProgressBar2',
+	props: {
+		percentage: Number,
+		label: String,
+	},
+	methods: {
+		beforeEnter (el) {
+			el.style.width = 0
+		},
+		enter (el) {
+			el.style.width = `${this.percentage}%`
+			el.style.transition = 'width 1s linear'
+		}
+	}
 }
 </script>

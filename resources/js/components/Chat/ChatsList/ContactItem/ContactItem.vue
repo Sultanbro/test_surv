@@ -44,28 +44,28 @@
 </template>
 
 <script>
-import {mapActions} from "vuex";
+import {mapActions} from 'vuex';
 
 export default {
-  name: "ContactItem",
-  props: {
-    item: {
-      type: Object,
-      required: true
-    },
-    fullscreen: {
-      type: Boolean,
-      default: false
-    }
-  },
-  data() {
-    return {
-      imageError: false
-    }
-  },
-  methods: {
-    ...mapActions(['toggleInfoPanel']),
-  }
+	name: 'ContactItem',
+	props: {
+		item: {
+			type: Object,
+			required: true
+		},
+		fullscreen: {
+			type: Boolean,
+			default: false
+		}
+	},
+	data() {
+		return {
+			imageError: false
+		}
+	},
+	methods: {
+		...mapActions(['toggleInfoPanel']),
+	}
 }
 </script>
 

@@ -167,549 +167,537 @@ import VideoAccordion from '@/components/VideoAccordion'
 
 import 'videojs-hotkeys'
 export default {
-  name: 'PlaylistEdit',
-  components: {
-    Sidebar,
-    VideoPlayerItem,
-    Questions,
-    VideoAccordion,
-  },
-  props: {
-    token: String,
-    id: Number,
-    auth_user_id: Number,
-    myvideo: Number,
-    mode: String,
-    enable_url_manipulation: {
-      default: true
-    },
-    is_course: {
-      default: false
-    },
-    course_item_id: {
-      default: 0
-    },
-    all_stages: {
-      default: 0
-    },
-    completed_stages: {
-      default: 0
-    },
-  },
-
-  data() {
-    return {
-      ids: [],
-      video_changed: 1,
-      activeVideo: null,
-      activeVideoLink: '',
-      refreshTest: 1, //key
-      file_img: null,
-      item_models: [],
-      noVideoInPlaylist: false,
-      playlist: {
-        id: 1,
-        category_id: 1,
-        title: "",
-        text: "",
-        videos: [],
-      },
-      activeGroup: {
-        id: 0, // group id
-        i: [] // indexes
-      },
-      show_tests: false, // sidebar
-      mylink: window.location.protocol + "//" + window.location.host + window.location.pathname.substring(0,16)
-
-    };
-  },
-
-  watch: {
-
-  },
-
-  created() {
-   this.fetchData();
-  },
-
-  mounted() {},
-
-  methods: {
-
-    passedTest() {
-      // if(this.activeVideo.item_model == null) {
-      //   //this.setVideoPassed()
-      // }
-
-      let i = this.item_models.findIndex(im => im.item_id == this.activeVideo.id);
-      if(i == -1) this.item_models.push({
-        item_id: this.activeVideo.id,
-        status: 1
-      });
-
-      this.connectItemModels(this.playlist.groups)
-
-      ////
-
-        //this.nextElement()
-    },
-
-    scrollToTop() {
-      document.getElementsByClassName('content')[0].scrollTo(0,0);
-
-    },
-
-    nextElement() {
-
-      this.scrollToTop();
-
-      if(this.activeVideo.item_model == null) {
-        this.setVideoPassed()
-      }
-
-      ///
-
-      let i = this.item_models.findIndex(im => im.item_id == this.activeVideo.id);
-      if(i == -1) this.item_models.push({
-        item_id: this.activeVideo.id,
-        status: 1
-      });
-
-      this.connectItemModels(this.playlist.groups)
-
-      ////
-
-      let index = this.ids.findIndex(el => el.id == this.activeVideo.id);
-
-      // find next element
-      if(index != -1 && this.ids.length - 1 > index) {
-
-        this.showVideo({
-          id: this.ids[index + 1].id,
-        });
-
-      } else {
-        // move to next course item
-        this.$parent.after_click_next_element();
-      }
-    },
-
-    setVideoPassed() {
-
-      // find element
-
-      let el = null;
-
-      let index = this.ids.findIndex(el => el.id == this.activeVideo.id);
-      if(index != -1) {
-        el = this.findItem(this.ids[index]);
-       // if(el.item_model != null) return;
-      }
-
-      // pass
-      let loader = this.$loading.show();
-      axios
-        .post("/my-courses/pass", {
-          id: this.activeVideo.id,
-          type: 2,
-          course_item_id: this.course_item_id,
-          questions: this.activeVideo.questions,
-          all_stages: this.all_stages,
-          completed_stages: this.completed_stages + 1,
-        })
-        .then((response) => {
-          setTimeout(loader.hide(), 500);
-          if(el) el.item_model = response.data.item_model;
-          this.activeVideo.item_model = response.data.item_model;
-          this.$emit('changeProgress');
-          this.$emit('forGenerateCertificate', response.data.item_model);
-        })
-        .catch((error) => {
-           loader.hide();
-          alert(error);
-        });
-    },
-
-    showQuestions(v_index) {
-      let questions = this.playlist.videos[v_index].questions;
-      if (questions == undefined) this.playlist.videos[v_index].questions = [];
-      this.modals.questions.show = true;
-      this.activeVideo = this.playlist.videos[v_index];
-    },
-
-    removeVideo(v_index) {
-      if(!confirm('Вы уверены?')) return;
-      let video = this.playlist.videos[v_index];
-
-      axios
-        .post("/playlists/remove-video", {
-          id: video.id,
-        })
-        .then((response) => {
-          this.playlist.videos.splice(v_index, 1);
-          this.$toast.success("Исключен из плейлиста. Файл не удален");
-        })
-        .catch((error) => {
-          alert(error);
-        });
-    },
-
-    openControlsMenu(video) {
-      video.show_controls = true;
-    },
-
-    selectedGroup() {
-      return this.modals.upload.children_index == -1
-        ? this.playlist.groups[this.modals.upload.group_index]
-        : this.playlist.groups[this.modals.upload.group_index].children[this.modals.upload.children_index]
-    },
-
-    findLocation(id) {
-      let o = {
-        id: id,
-        i: []
-      };
-
-      this.activeGroup = o; // TODO
-      return o;
-    },
-
-    uploadVideo() {
-      this.$refs.accordion.uploadVideo(0);
-    },
-
-    addGroup() {
-      this.$refs.accordion.addGroup(-1)
-    },
-
-
-    deleteGroup(id) {
-
-      let loc = this.findLocation(id);
-
-        if(c == -1) {
-            this.groups.splice(g, 1);
-        } else {
-            this.groups[g].children.splice(c, 1);
-        }
-    },
-
-   updateVideo() {
-      axios
-        .post("/playlists/video/update", {
-          id: this.playlist.id,
-          video: this.activeVideo,
-        })
-        .then((response) => {
-          this.$toast.success("Сохранено!");
-        })
-        .catch((error) => {
-          alert(error);
-        });
-    },
-
-    saveActiveVideoFast() {
-      axios
-        .post("/playlists/save-video-fast", {
-          id: this.activeVideo.id,
-          title: this.activeVideo.title,
-        })
-        .then((response) => {
-
-          let i = this.ids.findIndex(el => el.id == this.activeVideo.id);
-          if(i != -1) {
-            let video = this.findItem(this.ids[i]);
-            video.title = this.activeVideo.title;
-          }
-
-
-          this.$toast.success("Сохранено");
-        })
-        .catch((error) => {
-          alert(error);
-        });
-    },
-
-    saveActiveVideo() {
-
-      axios
-        .post("/playlists/save-active-video", {
-          id: this.playlist.id,
-          title: this.modals.upload.file.title,
-          name: this.modals.upload.file.name,
-          size: this.modals.upload.file.size,
-        })
-        .then((response) => {
-          this.modals.upload.step = 1;
-          this.modals.upload.show = false;
-
-          if (response.data.error) {
-            this.$toast.success("Не добавлен");
-          } else {
-            this.playlist.videos.push(response.data.video);
-            this.$toast.success("Добавлен");
-            this.modals.upload.file = null;
-          }
-        })
-        .catch((error) => {
-          alert(error);
-        });
-    },
-
-    search(event) {
-      this.modals.addVideo.searchVideos = this.all_videos.filter((el) => {
-        return (
-          el.title.toLowerCase().indexOf(event.target.value.toLowerCase()) > -1
-        );
-      });
-    },
-
-    showVideo(video, autoplay = true) {
-
-      if(video == null) return;
-      let loader = this.$loading.show();
-
-       axios
-        .post("/playlists/video", {
-          id: video.id,
-          course_item_id: this.course_item_id
-        })
-        .then((response) => {
-           loader.hide()
-
-           this.activeVideo = response.data.video;
-             this.activeVideoLink = this.activeVideo.links;
-
-            this.refreshTest++
-
-            this.setActiveGroup();
-          if(autoplay) {
-               this.video_changed++;
-          }
-
-           this.noVideoInPlaylist = false;
-        })
-        .catch((error) => {
-          loader.hide()
-          alert(error);
-        });
-
-      if(this.enable_url_manipulation)
-      {
-        if (history.pushState) {
-          var newUrl = this.mylink.concat('/'+this.$parent.data_category, '/'+this.$parent.data_playlist+'/'+(video.id));
-          history.pushState(null, null, newUrl);
-        } else {
-            console.warn('History API не поддерживает ваш браузер');
-        }
-      }
-
-
-    },
-
-    showTests(video, input_focus = false) {
-      const NO_AUTOPLAY = false;
-      this.showVideo(video, NO_AUTOPLAY);
-      this.show_tests = true;
-      this.$refs.activevideo_input.focus()
-    },
-
-    moveTo(video) {
-      this.$toast.info('Переместить: ' + video.title);
-    },
-
-    fetchData() {
-      axios
-        .post("/playlists/get/", {
-          id: this.id,
-          course_item_id: this.course_item_id
-        })
-        .then((response) => {
-          this.playlist = response.data.playlist;
-          this.item_models = response.data.item_models;
-
-
-          this.formMap();
-
-          this.connectItemModels(this.playlist.groups);
-
-          this.setActiveVideo();
-
-        })
-        .catch((error) => {
-          alert(error);
-        });
-    },
-
-    connectItemModels(groups) {
-      groups.forEach((el, e) => {
-
-        el.videos.forEach((vid, v) => {
-          let i = this.item_models.findIndex(im => im.item_id == vid.id);
-          if(i != -1) {
-            vid.item_model = this.item_models[i];
-            //this.item_models.splice(i,1);
-          } else {
-            vid.item_model = null;
-          }
-        });
-
-
-        if(el.children !== undefined) {
-          this.connectItemModels(el.children)
-        }
-
-      });
-
-
-
-    },
-
-    changePassGrade(grade) {
-      this.activeVideo.pass_grade = grade;
-      let len = this.activeVideo.questions.length;
-
-      if(grade > len) this.activeVideo.pass_grade = len;
-      if(grade < 1) this.activeVideo.pass_grade = 1;
-    },
-
-    returnArray(items, indexes = []) {
-      items.forEach((item, i_index) => {
-
-        let arr = [...indexes, i_index];
-
-        item.videos.forEach((video, v) => {
-          this.ids.push({
-            id: video.id,
-            i: [...arr, v]
-          })
-        });
-
-        if(item.children !== undefined) this.returnArray(item.children, arr);
-      });
-    },
-
-    formMap() {
-      this.ids = [];
-      this.returnArray(this.playlist.groups);
-    },
-
-    setActiveVideo() {
-      if(this.myvideo > 0) {
-
-        // find element
-        let index = this.ids.findIndex(el => el.id == this.myvideo);
-        if(index != -1) {
-          this.activeVideo = this.findItem(this.ids[index]);
-        }
-
-      } else if(this.playlist.groups.length > 0 && this.playlist.groups[0].videos.length > 0) {
-          // set active video
-          this.activeVideo = this.playlist.groups[0].videos[0];
-          this.activeVideoLink = this.activeVideo.links;
-
-      } else if(this.ids.length > 0) {
-        this.activeVideo = this.findItem(this.ids[0]);
-      } else {
-        this.noVideoInPlaylist = true;
-      }
-
-      this.showVideo(this.activeVideo);
-
-
-    },
-
-    findItem(el) {
-
-      let x = this.playlist;
-      let found = false;
-
-      for (let i = 0; i < el.i.length; i++) {
-        if(i == 0) {
-          x = x.groups[el.i[i]]
-        } else if(el.i.length - 1 != i) {
-          x = x.children[el.i[i]]
-        } else {
-          found = true;
-          x = x.videos[el.i[i]]
-        }
-      }
-
-      return found ? x : null;
-    },
-
-    setActiveGroup() {
-
-      // close all
-      this.playlist.groups.forEach(g=>{
-        g.opened = false;
-        g.children.forEach(c=>{
-          c.opened = false;
-          c.children.forEach(d=>{
-            d.opened = false;
-          });
-        });
-      })
-
-      let index = this.ids.findIndex(el => el.id == this.activeVideo.id);
-
-      if(index != -1) {
-        let l = this.playlist;
-
-        for(let i=0;i<this.ids[index].i.length - 1;i++){
-
-          if(i==0){
-            l = l.groups[this.ids[index].i[i]];
-          } else {
-            l = l.children[this.ids[index].i[i]];
-          }
-
-          l.opened = true;
-
-        }
-
-      }
-
-
-    },
-
-    savePlaylist() {
-
-      let loader = this.$loading.show();
-
-      let formData = new FormData();
-          formData.append('file', this.file_img);
-          formData.append('playlist', JSON.stringify(this.playlist));
-
-      axios.post( '/playlists/save', formData)
-        .then((response) => {
-          this.$toast.success('Сохранено');
-          if(response.data !== '') this.playlist.img = response.data;
-          loader.hide();
-        })
-        .catch((error) => {
-          loader.hide();
-          alert(error);
-        });
-    },
-
-    saveGroups() {
-
-      axios
-        .post("/playlists/groups/save", {
-          playlist: this.playlist,
-        })
-        .then((response) => {
-          this.$toast.success('Сохранено');
-
-          this.playlist.groups = response.data.groups;
-        })
-        .catch((error) => {
-          alert(error);
-        });
-
-    }
-
-  },
+	name: 'PlaylistEdit',
+	components: {
+		Sidebar,
+		VideoPlayerItem,
+		Questions,
+		VideoAccordion,
+	},
+	props: {
+		token: String,
+		id: Number,
+		auth_user_id: Number,
+		myvideo: Number,
+		mode: String,
+		enable_url_manipulation: {
+			default: true
+		},
+		is_course: {
+			default: false
+		},
+		course_item_id: {
+			default: 0
+		},
+		all_stages: {
+			default: 0
+		},
+		completed_stages: {
+			default: 0
+		},
+	},
+
+	data() {
+		return {
+			ids: [],
+			video_changed: 1,
+			activeVideo: null,
+			activeVideoLink: '',
+			refreshTest: 1, //key
+			file_img: null,
+			item_models: [],
+			noVideoInPlaylist: false,
+			playlist: {
+				id: 1,
+				category_id: 1,
+				title: '',
+				text: '',
+				videos: [],
+			},
+			activeGroup: {
+				id: 0, // group id
+				i: [] // indexes
+			},
+			show_tests: false, // sidebar
+			mylink: window.location.protocol + '//' + window.location.host + window.location.pathname.substring(0,16)
+
+		};
+	},
+
+	watch: {
+
+	},
+
+	created() {
+		this.fetchData();
+	},
+
+	mounted() {},
+
+	methods: {
+
+		passedTest() {
+			// if(this.activeVideo.item_model == null) {
+			//   //this.setVideoPassed()
+			// }
+
+			let i = this.item_models.findIndex(im => im.item_id == this.activeVideo.id);
+			if(i == -1) this.item_models.push({
+				item_id: this.activeVideo.id,
+				status: 1
+			});
+
+			this.connectItemModels(this.playlist.groups)
+
+			////
+
+			//this.nextElement()
+		},
+
+		scrollToTop() {
+			document.getElementsByClassName('content')[0].scrollTo(0,0);
+
+		},
+
+		nextElement() {
+
+			this.scrollToTop();
+
+			if(this.activeVideo.item_model == null) {
+				this.setVideoPassed()
+			}
+
+			///
+
+			let i = this.item_models.findIndex(im => im.item_id == this.activeVideo.id);
+			if(i == -1) this.item_models.push({
+				item_id: this.activeVideo.id,
+				status: 1
+			});
+
+			this.connectItemModels(this.playlist.groups)
+
+			////
+
+			let index = this.ids.findIndex(el => el.id == this.activeVideo.id);
+
+			// find next element
+			if(index != -1 && this.ids.length - 1 > index) {
+
+				this.showVideo({
+					id: this.ids[index + 1].id,
+				});
+
+			} else {
+				// move to next course item
+				this.$parent.after_click_next_element();
+			}
+		},
+
+		setVideoPassed() {
+
+			// find element
+
+			let el = null;
+
+			let index = this.ids.findIndex(el => el.id == this.activeVideo.id);
+			if(index != -1) {
+				el = this.findItem(this.ids[index]);
+				// if(el.item_model != null) return;
+			}
+
+			// pass
+			let loader = this.$loading.show();
+			this.axios
+				.post('/my-courses/pass', {
+					id: this.activeVideo.id,
+					type: 2,
+					course_item_id: this.course_item_id,
+					questions: this.activeVideo.questions,
+					all_stages: this.all_stages,
+					completed_stages: this.completed_stages + 1,
+				})
+				.then((response) => {
+					setTimeout(loader.hide(), 500);
+					if(el) el.item_model = response.data.item_model;
+					this.activeVideo.item_model = response.data.item_model;
+					this.$emit('changeProgress');
+					this.$emit('forGenerateCertificate', response.data.item_model);
+				})
+				.catch((error) => {
+					loader.hide();
+					alert(error);
+				});
+		},
+
+		showQuestions(v_index) {
+			let questions = this.playlist.videos[v_index].questions;
+			if (questions == undefined) this.playlist.videos[v_index].questions = [];
+			this.modals.questions.show = true;
+			this.activeVideo = this.playlist.videos[v_index];
+		},
+
+		removeVideo(v_index) {
+			if(!confirm('Вы уверены?')) return;
+			let video = this.playlist.videos[v_index];
+
+			this.axios
+				.post('/playlists/remove-video', {
+					id: video.id,
+				})
+				.then(() => {
+					this.playlist.videos.splice(v_index, 1);
+					this.$toast.success('Исключен из плейлиста. Файл не удален');
+				})
+				.catch((error) => {
+					alert(error);
+				});
+		},
+
+		openControlsMenu(video) {
+			video.show_controls = true;
+		},
+
+		selectedGroup() {
+			return this.modals.upload.children_index == -1
+				? this.playlist.groups[this.modals.upload.group_index]
+				: this.playlist.groups[this.modals.upload.group_index].children[this.modals.upload.children_index]
+		},
+
+		findLocation(id) {
+			let o = {
+				id: id,
+				i: []
+			};
+
+			this.activeGroup = o; // TODO
+			return o;
+		},
+
+		uploadVideo() {
+			this.$refs.accordion.uploadVideo(0);
+		},
+
+		addGroup() {
+			this.$refs.accordion.addGroup(-1)
+		},
+
+		updateVideo() {
+			this.axios
+				.post('/playlists/video/update', {
+					id: this.playlist.id,
+					video: this.activeVideo,
+				})
+				.then(() => {
+					this.$toast.success('Сохранено!');
+				})
+				.catch((error) => {
+					alert(error);
+				});
+		},
+
+		saveActiveVideoFast() {
+			this.axios
+				.post('/playlists/save-video-fast', {
+					id: this.activeVideo.id,
+					title: this.activeVideo.title,
+				})
+				.then(() => {
+
+					let i = this.ids.findIndex(el => el.id == this.activeVideo.id);
+					if(i != -1) {
+						let video = this.findItem(this.ids[i]);
+						video.title = this.activeVideo.title;
+					}
+
+
+					this.$toast.success('Сохранено');
+				})
+				.catch((error) => {
+					alert(error);
+				});
+		},
+
+		saveActiveVideo() {
+
+			this.axios
+				.post('/playlists/save-active-video', {
+					id: this.playlist.id,
+					title: this.modals.upload.file.title,
+					name: this.modals.upload.file.name,
+					size: this.modals.upload.file.size,
+				})
+				.then((response) => {
+					this.modals.upload.step = 1;
+					this.modals.upload.show = false;
+
+					if (response.data.error) {
+						this.$toast.success('Не добавлен');
+					} else {
+						this.playlist.videos.push(response.data.video);
+						this.$toast.success('Добавлен');
+						this.modals.upload.file = null;
+					}
+				})
+				.catch((error) => {
+					alert(error);
+				});
+		},
+
+		search(event) {
+			this.modals.addVideo.searchVideos = this.all_videos.filter((el) => {
+				return (
+					el.title.toLowerCase().indexOf(event.target.value.toLowerCase()) > -1
+				);
+			});
+		},
+
+		showVideo(video, autoplay = true) {
+
+			if(video == null) return;
+			let loader = this.$loading.show();
+
+			this.axios
+				.post('/playlists/video', {
+					id: video.id,
+					course_item_id: this.course_item_id
+				})
+				.then((response) => {
+					loader.hide()
+
+					this.activeVideo = response.data.video;
+					this.activeVideoLink = this.activeVideo.links;
+
+					this.refreshTest++
+
+					this.setActiveGroup();
+					if(autoplay) {
+						this.video_changed++;
+					}
+
+					this.noVideoInPlaylist = false;
+				})
+				.catch((error) => {
+					loader.hide()
+					alert(error);
+				});
+
+			if(this.enable_url_manipulation)
+			{
+				if (history.pushState) {
+					var newUrl = this.mylink.concat('/'+this.$parent.data_category, '/'+this.$parent.data_playlist+'/'+(video.id));
+					history.pushState(null, null, newUrl);
+				} else {
+					console.warn('History API не поддерживает ваш браузер');
+				}
+			}
+
+
+		},
+
+		showTests(video) {
+			const NO_AUTOPLAY = false;
+			this.showVideo(video, NO_AUTOPLAY);
+			this.show_tests = true;
+			this.$refs.activevideo_input.focus()
+		},
+
+		moveTo(video) {
+			this.$toast.info('Переместить: ' + video.title);
+		},
+
+		fetchData() {
+			this.axios
+				.post('/playlists/get/', {
+					id: this.id,
+					course_item_id: this.course_item_id
+				})
+				.then((response) => {
+					this.playlist = response.data.playlist;
+					this.item_models = response.data.item_models;
+
+
+					this.formMap();
+
+					this.connectItemModels(this.playlist.groups);
+
+					this.setActiveVideo();
+
+				})
+				.catch((error) => {
+					alert(error);
+				});
+		},
+
+		connectItemModels(groups) {
+			groups.forEach(el => {
+
+				el.videos.forEach(vid => {
+					let i = this.item_models.findIndex(im => im.item_id == vid.id);
+					if(i != -1) {
+						vid.item_model = this.item_models[i];
+						//this.item_models.splice(i,1);
+					} else {
+						vid.item_model = null;
+					}
+				});
+
+
+				if(el.children !== undefined) {
+					this.connectItemModels(el.children)
+				}
+
+			});
+
+
+
+		},
+
+		changePassGrade(grade) {
+			this.activeVideo.pass_grade = grade;
+			let len = this.activeVideo.questions.length;
+
+			if(grade > len) this.activeVideo.pass_grade = len;
+			if(grade < 1) this.activeVideo.pass_grade = 1;
+		},
+
+		returnArray(items, indexes = []) {
+			items.forEach((item, i_index) => {
+
+				let arr = [...indexes, i_index];
+
+				item.videos.forEach((video, v) => {
+					this.ids.push({
+						id: video.id,
+						i: [...arr, v]
+					})
+				});
+
+				if(item.children !== undefined) this.returnArray(item.children, arr);
+			});
+		},
+
+		formMap() {
+			this.ids = [];
+			this.returnArray(this.playlist.groups);
+		},
+
+		setActiveVideo() {
+			if(this.myvideo > 0) {
+
+				// find element
+				let index = this.ids.findIndex(el => el.id == this.myvideo);
+				if(index != -1) {
+					this.activeVideo = this.findItem(this.ids[index]);
+				}
+
+			} else if(this.playlist.groups.length > 0 && this.playlist.groups[0].videos.length > 0) {
+				// set active video
+				this.activeVideo = this.playlist.groups[0].videos[0];
+				this.activeVideoLink = this.activeVideo.links;
+
+			} else if(this.ids.length > 0) {
+				this.activeVideo = this.findItem(this.ids[0]);
+			} else {
+				this.noVideoInPlaylist = true;
+			}
+
+			this.showVideo(this.activeVideo);
+
+
+		},
+
+		findItem(el) {
+
+			let x = this.playlist;
+			let found = false;
+
+			for (let i = 0; i < el.i.length; i++) {
+				if(i == 0) {
+					x = x.groups[el.i[i]]
+				} else if(el.i.length - 1 != i) {
+					x = x.children[el.i[i]]
+				} else {
+					found = true;
+					x = x.videos[el.i[i]]
+				}
+			}
+
+			return found ? x : null;
+		},
+
+		setActiveGroup() {
+
+			// close all
+			this.playlist.groups.forEach(g=>{
+				g.opened = false;
+				g.children.forEach(c=>{
+					c.opened = false;
+					c.children.forEach(d=>{
+						d.opened = false;
+					});
+				});
+			})
+
+			let index = this.ids.findIndex(el => el.id == this.activeVideo.id);
+
+			if(index != -1) {
+				let l = this.playlist;
+
+				for(let i=0;i<this.ids[index].i.length - 1;i++){
+
+					if(i==0){
+						l = l.groups[this.ids[index].i[i]];
+					} else {
+						l = l.children[this.ids[index].i[i]];
+					}
+
+					l.opened = true;
+
+				}
+
+			}
+
+
+		},
+
+		savePlaylist() {
+
+			let loader = this.$loading.show();
+
+			let formData = new FormData();
+			formData.append('file', this.file_img);
+			formData.append('playlist', JSON.stringify(this.playlist));
+
+			this.axios.post( '/playlists/save', formData)
+				.then((response) => {
+					this.$toast.success('Сохранено');
+					if(response.data !== '') this.playlist.img = response.data;
+					loader.hide();
+				})
+				.catch((error) => {
+					loader.hide();
+					alert(error);
+				});
+		},
+
+		saveGroups() {
+
+			this.axios
+				.post('/playlists/groups/save', {
+					playlist: this.playlist,
+				})
+				.then((response) => {
+					this.$toast.success('Сохранено');
+
+					this.playlist.groups = response.data.groups;
+				})
+				.catch((error) => {
+					alert(error);
+				});
+
+		}
+
+	},
 };
 </script>

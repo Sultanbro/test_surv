@@ -31,7 +31,7 @@
 
                        <div class="popupShowSelected">
                            <div v-if="selectedRole.role_1" >
-                               <p class="list-role-1"  v-for="item in  options_role_1">
+                               <p class="list-role-1"  v-for="(item, index) in options_role_1" :key="index">
                                    <a class="btn btn-block" style="display: flex">
                                        <i class="bi bi-box-arrow-right style-icons" ></i>
                                        <span style="margin-top: 5px; margin-left:15px;">{{ item.name}}</span>
@@ -82,110 +82,110 @@
 </template>
 
 <script>
-    // import Multiselect from 'vue-multiselect'
-    // Vue.component('multiselect', Multiselect)
+// import Multiselect from 'vue-multiselect'
+// Vue.component('multiselect', Multiselect)
 
 
-    export default {
-        name: "test",
-        data() {
-            return {
-                active: 'google',
-                showModal: true,
-                upHere : {
-                    role_1:false,
-                    role_2:false,
-                    role_3:false,
-                },
-                selectedRole:{
-                    role_1:true,
-                    role_2:false,
-                    role_3:false,
-                },
-                selectedRoleClass:{
-                    roleClass_1:''  ,
-                    roleClass_2:'' ,
-                    roleClass_3:'' ,
-                },
+export default {
+	name: 'PermissionLocal',
+	data() {
+		return {
+			active: 'google',
+			showModal: true,
+			upHere : {
+				role_1:false,
+				role_2:false,
+				role_3:false,
+			},
+			selectedRole:{
+				role_1:true,
+				role_2:false,
+				role_3:false,
+			},
+			selectedRoleClass:{
+				roleClass_1:''  ,
+				roleClass_2:'' ,
+				roleClass_3:'' ,
+			},
 
-                options_role_1: [
-                    { name: 'Ответственный', id: '1' },
-                    { name: 'Автор', id: '2' },
-                    { name: 'Администраторы', id: '3' },
-                    { name: 'Создатель лида', id: '4' },
-                ],
-                value: [
-                    { name: 'Javascript', code: 'js' }
-                ],
-                options: [
-                    { name: 'Vue.js', code: 'vu' },
-                    { name: 'Javascript', code: 'js' },
-                    { name: 'Open Source', code: 'os' }
-                ],
-
-
-            };
-        },
-        created() {
+			options_role_1: [
+				{ name: 'Ответственный', id: '1' },
+				{ name: 'Автор', id: '2' },
+				{ name: 'Администраторы', id: '3' },
+				{ name: 'Создатель лида', id: '4' },
+			],
+			value: [
+				{ name: 'Javascript', code: 'js' }
+			],
+			options: [
+				{ name: 'Vue.js', code: 'vu' },
+				{ name: 'Javascript', code: 'js' },
+				{ name: 'Open Source', code: 'os' }
+			],
 
 
-        },
-        methods: {
-
-            selectedRoles(type){
-
-                if (type == 1){
-                    this.selectedRole.role_1 = true
-                    this.selectedRole.role_2 = false
-                    this.selectedRole.role_3 = false
+		};
+	},
+	created() {
 
 
+	},
+	methods: {
 
-                    this.selectedRoleClass.roleClass_1 = 'active_role';
-                    this.selectedRoleClass.roleClass_2 = false
-                    this.selectedRoleClass.roleClass_3 = false;
+		selectedRoles(type){
+
+			if (type == 1){
+				this.selectedRole.role_1 = true
+				this.selectedRole.role_2 = false
+				this.selectedRole.role_3 = false
 
 
 
-                }else if (type == 2){
-                    this.selectedRole.role_1 = false
-                    this.selectedRole.role_2 = true
-                    this.selectedRole.role_3 = false
+				this.selectedRoleClass.roleClass_1 = 'active_role';
+				this.selectedRoleClass.roleClass_2 = false
+				this.selectedRoleClass.roleClass_3 = false;
 
 
-                    this.selectedRoleClass.roleClass_1 = false;
-                    this.selectedRoleClass.roleClass_2 = 'active_role';
-                    this.selectedRoleClass.roleClass_3 = false;
 
-                }else if (type == 3){
-                    this.selectedRole.role_1 = false
-                    this.selectedRole.role_2 = false
-                    this.selectedRole.role_3 = true
-
-                    this.selectedRoleClass.roleClass_1 = false;
-                    this.selectedRoleClass.roleClass_2 = false;
-                    this.selectedRoleClass.roleClass_3 = 'active_role';
-                }
+			}else if (type == 2){
+				this.selectedRole.role_1 = false
+				this.selectedRole.role_2 = true
+				this.selectedRole.role_3 = false
 
 
-                // this.selectedRole.type = !this.selectedRole.type
+				this.selectedRoleClass.roleClass_1 = false;
+				this.selectedRoleClass.roleClass_2 = 'active_role';
+				this.selectedRoleClass.roleClass_3 = false;
 
-            },
-            toggle() {
-                this.showModal = !this.showModal
-            },
+			}else if (type == 3){
+				this.selectedRole.role_1 = false
+				this.selectedRole.role_2 = false
+				this.selectedRole.role_3 = true
 
-            addTag (newTag) {
-                const tag = {
-                    name: newTag,
-                    code: newTag.substring(0, 2) + Math.floor((Math.random() * 10000000))
-                }
-                this.options.push(tag)
-                this.value.push(tag)
-            }
+				this.selectedRoleClass.roleClass_1 = false;
+				this.selectedRoleClass.roleClass_2 = false;
+				this.selectedRoleClass.roleClass_3 = 'active_role';
+			}
 
-        },
-    }
+
+			// this.selectedRole.type = !this.selectedRole.type
+
+		},
+		toggle() {
+			this.showModal = !this.showModal
+		},
+
+		addTag (newTag) {
+			const tag = {
+				name: newTag,
+				code: newTag.substring(0, 2) + Math.floor((Math.random() * 10000000))
+			}
+			this.options.push(tag)
+			this.value.push(tag)
+		}
+
+	},
+}
 
 </script>
 

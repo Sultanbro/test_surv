@@ -3,10 +3,10 @@ import Sidebars from '@/pages/Layouts/Sidebars'
 import ChatApp from '@/components/Chat/ChatApp'
 
 export default {
-    components: {
-        Sidebars,
-        ChatApp,
-    }
+	components: {
+		Sidebars,
+		ChatApp,
+	}
 }
 </script>
 

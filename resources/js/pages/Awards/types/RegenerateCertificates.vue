@@ -60,7 +60,7 @@
             </div>
             <template v-if="list.length > 0">
                 <div class="logs" id="logs" ref="logs">
-                    <div class="log-item" v-for="(log, index) in logs">
+                    <div class="log-item" v-for="(log, index) in logs" :key="index">
                         <span class="index">{{index}}</span>
                         <div>
                             <span class="msg">Message: {{log.title}}</span>
@@ -93,107 +93,107 @@
 </template>
 
 <script>
-    import saveCertificateReg from "./saveCertificateReg";
+import saveCertificateReg from './saveCertificateReg';
 
-    export default {
-        name: 'regenerate-certificates',
-        components: {
-            saveCertificateReg
-        },
-        data() {
-            return {
-                course: null,
-                courses: null,
-                list: null,
-                files: [],
-                start: false,
-                indexGen: 0,
-                logs: [],
-                loading: false,
-                showFilesGen: false,
-                endGenerate: false
-            }
-        },
-        mounted() {
-            this.axios
-                .get('/admin/courses/get')
-                .then(response => {
-                    this.courses = response.data.courses;
-                    console.log(this.courses);
-                }).catch(e => {
-                console.log(e)
-            });
-        },
-        computed: {
-            timeWait() {
-                return Math.ceil((this.list.length - this.indexGen) * 5 / 60);
-            },
-            secondWait() {
-                return (this.list.length - this.indexGen) * 5;
-            }
-        },
-        methods: {
-            requestFiles() {
-                this.loading = true;
-                this.axios
-                    .get('/awards/courses?course_ids[]=' + this.course)
-                    .then(response => {
-                        this.course = null;
-                        this.list = null;
-                        this.files = [];
-                        this.start = false;
-                        this.indexGen = 0;
-                        this.logs = [];
-                        this.loading = false;
-                        this.showFilesGen = false;
-                        this.endGenerate = false;
-                        this.$toast.success('Вы успешно очистили все данные, которые так долго генерировали  =) =) ;-). Потому что  я забыл, на какое апи нужно отправлять запрос', {
-                            timeout: 8000
-                        });
-                        this.loading = false;
-                    }).catch(e => {
-                    console.log(e);
-                    this.loading = false;
+export default {
+	name: 'regenerate-certificates',
+	components: {
+		saveCertificateReg
+	},
+	data() {
+		return {
+			course: null,
+			courses: null,
+			list: null,
+			files: [],
+			start: false,
+			indexGen: 0,
+			logs: [],
+			loading: false,
+			showFilesGen: false,
+			endGenerate: false
+		}
+	},
+	mounted() {
+		this.axios
+			.get('/admin/courses/get')
+			.then(response => {
+				this.courses = response.data.courses;
+				console.log(this.courses);
+			}).catch(e => {
+				console.log(e)
+			});
+	},
+	computed: {
+		timeWait() {
+			return Math.ceil((this.list.length - this.indexGen) * 5 / 60);
+		},
+		secondWait() {
+			return (this.list.length - this.indexGen) * 5;
+		}
+	},
+	methods: {
+		requestFiles() {
+			this.loading = true;
+			this.axios
+				.get('/awards/courses?course_ids[]=' + this.course)
+				.then(() => {
+					this.course = null;
+					this.list = null;
+					this.files = [];
+					this.start = false;
+					this.indexGen = 0;
+					this.logs = [];
+					this.loading = false;
+					this.showFilesGen = false;
+					this.endGenerate = false;
+					this.$toast.success('Вы успешно очистили все данные, которые так долго генерировали  =) =) ;-). Потому что  я забыл, на какое апи нужно отправлять запрос', {
+						timeout: 8000
+					});
+					this.loading = false;
+				}).catch(e => {
+					console.log(e);
+					this.loading = false;
 
-                });
-            },
-            startClick() {
-                this.start = true;
-                this.showFilesGen = true;
-            },
-            selectCourse() {
-                this.loading = true;
-                this.files = [];
-                this.indexGen = 0;
-                this.start = false;
-                this.showFilesGen = false;
-                this.endGenerate = false;
-                this.logs = [];
-                this.axios
-                    .get('/awards/courses?course_ids[]=' + this.course)
-                    .then(response => {
-                        this.list = response.data.data;
-                        this.loading = false;
-                    }).catch(e => {
-                    console.log(e);
-                    this.loading = false;
+				});
+		},
+		startClick() {
+			this.start = true;
+			this.showFilesGen = true;
+		},
+		selectCourse() {
+			this.loading = true;
+			this.files = [];
+			this.indexGen = 0;
+			this.start = false;
+			this.showFilesGen = false;
+			this.endGenerate = false;
+			this.logs = [];
+			this.axios
+				.get('/awards/courses?course_ids[]=' + this.course)
+				.then(response => {
+					this.list = response.data.data;
+					this.loading = false;
+				}).catch(e => {
+					console.log(e);
+					this.loading = false;
 
-                });
-            },
-            generated(file, log) {
-                if (file) {
-                    this.files.push(file);
-                }
-                this.logs.push(log);
-                this.indexGen = this.indexGen + 1;
-                if (this.list.length <= this.indexGen) {
-                    this.start = false;
-                    this.endGenerate = true;
-                }
-                this.$refs.logs.scrollTo(0, this.$refs.logs.scrollHeight);
-            }
-        }
-    }
+				});
+		},
+		generated(file, log) {
+			if (file) {
+				this.files.push(file);
+			}
+			this.logs.push(log);
+			this.indexGen = this.indexGen + 1;
+			if (this.list.length <= this.indexGen) {
+				this.start = false;
+				this.endGenerate = true;
+			}
+			this.$refs.logs.scrollTo(0, this.$refs.logs.scrollHeight);
+		}
+	}
+}
 </script>
 
 <style lang="scss">

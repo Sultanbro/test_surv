@@ -149,322 +149,322 @@
 </template>
 
 <script>
-    import interact from "interactjs";
-    import VuePdfEmbed from "vue-pdf-embed/dist/vue2-pdf-embed";
+import interact from 'interactjs';
+import VuePdfEmbed from 'vue-pdf-embed/dist/vue2-pdf-embed';
 
-    export default {
-        name: "Draggable",
-        props: {
-            img: {
-                type: String,
-                default: ''
-            },
-            styles: {
-                type: String,
-                default: ''
-            },
-            modalCertificate: Boolean
-        },
-        components: {
-            VuePdfEmbed
-        },
-        data() {
-            return {
-                selectedUppercase: [],
-                bgOp: false,
-                selectedEdit: 1,
-                textFullName: 'Иван Иванович Иванов',
-                textCourseName: 'Название курса',
-                textHours: 'В объеме 100 часа(ов) с домашними заданиями',
-                textDate: new Date().toLocaleDateString(),
-                transformFullName: {},
-                transformCourseName: {},
-                // transformHoursName: {},
-                transformDateName: {},
-                fullName: {
-                    screenX: 0,
-                    screenY: 0,
-                    size: 32,
-                    fontWeight: 700,
-                    uppercase: 'none',
-                    fullWidth: false,
-                    color: '#000000',
-                    fontStyle: 'normal',
-                    width: 500
-                },
-                courseName: {
-                    screenX: 0,
-                    screenY: 0,
-                    size: 24,
-                    fontWeight: 400,
-                    uppercase: 'none',
-                    fullWidth: false,
-                    color: '#000000',
-                     width: 230
-                },
-                date: {
-                    screenX: 0,
-                    screenY: 0,
-                    size: 24,
-                    fontWeight: 400,
-                    uppercase: 'none',
-                    fullWidth: false,
-                    color: '#000000',
-                     width: 170
-                },
-                fontWeightList: [200, 300, 400, 500, 600, 700, 800, 900]
-            };
-        },
-        mounted() {
-            this.$refs.pdfpdf.style.filter = "brightness(0.3)";
+export default {
+	name: 'UploadSertificateModal',
+	props: {
+		img: {
+			type: String,
+			default: ''
+		},
+		styles: {
+			type: String,
+			default: ''
+		},
+		modalCertificate: Boolean
+	},
+	components: {
+		VuePdfEmbed
+	},
+	data() {
+		return {
+			selectedUppercase: [],
+			bgOp: false,
+			selectedEdit: 1,
+			textFullName: 'Иван Иванович Иванов',
+			textCourseName: 'Название курса',
+			textHours: 'В объеме 100 часа(ов) с домашними заданиями',
+			textDate: new Date().toLocaleDateString(),
+			transformFullName: {},
+			transformCourseName: {},
+			// transformHoursName: {},
+			transformDateName: {},
+			fullName: {
+				screenX: 0,
+				screenY: 0,
+				size: 32,
+				fontWeight: 700,
+				uppercase: 'none',
+				fullWidth: false,
+				color: '#000000',
+				fontStyle: 'normal',
+				width: 500
+			},
+			courseName: {
+				screenX: 0,
+				screenY: 0,
+				size: 24,
+				fontWeight: 400,
+				uppercase: 'none',
+				fullWidth: false,
+				color: '#000000',
+				width: 230
+			},
+			date: {
+				screenX: 0,
+				screenY: 0,
+				size: 24,
+				fontWeight: 400,
+				uppercase: 'none',
+				fullWidth: false,
+				color: '#000000',
+				width: 170
+			},
+			fontWeightList: [200, 300, 400, 500, 600, 700, 800, 900]
+		};
+	},
+	mounted() {
+		this.$refs.pdfpdf.style.filter = 'brightness(0.3)';
 
-            this.$refs.fullName.style.transition = "0.5s all ease";
-            this.$refs.fullName.style.backgroundColor = "#fff";
-            this.$refs.fullName.style.color = "#333";
-            this.$refs.fullName.style.padding = "10px 20px";
-            this.$refs.fullName.style.marginLeft = "20px";
-            this.$refs.fullName.style.borderRadius = "10px";
+		this.$refs.fullName.style.transition = '0.5s all ease';
+		this.$refs.fullName.style.backgroundColor = '#fff';
+		this.$refs.fullName.style.color = '#333';
+		this.$refs.fullName.style.padding = '10px 20px';
+		this.$refs.fullName.style.marginLeft = '20px';
+		this.$refs.fullName.style.borderRadius = '10px';
 
-            this.$refs.courseName.style.transition = "0.5s all ease";
-            this.$refs.courseName.style.backgroundColor = "#fff";
-            this.$refs.courseName.style.color = "#333";
-            this.$refs.courseName.style.padding = "10px 20px";
-            this.$refs.courseName.style.marginLeft = "20px";
-            this.$refs.courseName.style.borderRadius = "10px";
+		this.$refs.courseName.style.transition = '0.5s all ease';
+		this.$refs.courseName.style.backgroundColor = '#fff';
+		this.$refs.courseName.style.color = '#333';
+		this.$refs.courseName.style.padding = '10px 20px';
+		this.$refs.courseName.style.marginLeft = '20px';
+		this.$refs.courseName.style.borderRadius = '10px';
 
-            this.$refs.date.style.transition = "0.5s all ease";
-            this.$refs.date.style.backgroundColor = "#fff";
-            this.$refs.date.style.color = "#333";
-            this.$refs.date.style.padding = "10px 20px";
-            this.$refs.date.style.marginLeft = "20px";
-            this.$refs.date.style.borderRadius = "10px";
+		this.$refs.date.style.transition = '0.5s all ease';
+		this.$refs.date.style.backgroundColor = '#fff';
+		this.$refs.date.style.color = '#333';
+		this.$refs.date.style.padding = '10px 20px';
+		this.$refs.date.style.marginLeft = '20px';
+		this.$refs.date.style.borderRadius = '10px';
 
-            setTimeout( () => {
-                this.$refs.pdfpdf.style.filter = "brightness(1)";
+		setTimeout( () => {
+			this.$refs.pdfpdf.style.filter = 'brightness(1)';
 
-                this.$refs.fullName.style.backgroundColor = "transparent";
-                this.$refs.fullName.style.color = "#000000";
-                this.$refs.fullName.style.padding = 0;
-                this.$refs.fullName.style.marginLeft = 0;
-                this.$refs.fullName.style.borderRadius = 0;
+			this.$refs.fullName.style.backgroundColor = 'transparent';
+			this.$refs.fullName.style.color = '#000000';
+			this.$refs.fullName.style.padding = 0;
+			this.$refs.fullName.style.marginLeft = 0;
+			this.$refs.fullName.style.borderRadius = 0;
 
-                this.$refs.courseName.style.backgroundColor = "transparent";
-                this.$refs.courseName.style.color = "#000000";
-                this.$refs.courseName.style.padding = 0;
-                this.$refs.courseName.style.marginLeft = 0;
-                this.$refs.courseName.style.borderRadius = 0;
+			this.$refs.courseName.style.backgroundColor = 'transparent';
+			this.$refs.courseName.style.color = '#000000';
+			this.$refs.courseName.style.padding = 0;
+			this.$refs.courseName.style.marginLeft = 0;
+			this.$refs.courseName.style.borderRadius = 0;
 
-                this.$refs.date.style.backgroundColor = "transparent";
-                this.$refs.date.style.color = "#000000";
-                this.$refs.date.style.padding = 0;
-                this.$refs.date.style.marginLeft = 0;
-                this.$refs.date.style.borderRadius = 0;
-            }, 1000);
+			this.$refs.date.style.backgroundColor = 'transparent';
+			this.$refs.date.style.color = '#000000';
+			this.$refs.date.style.padding = 0;
+			this.$refs.date.style.marginLeft = 0;
+			this.$refs.date.style.borderRadius = 0;
+		}, 1000);
 
-            setTimeout( () => {
-                this.$refs.fullName.style.transition = "none";
-                this.$refs.courseName.style.transition = "none";
-                this.$refs.date.style.transition = "none";
-            }, 1500);
+		setTimeout( () => {
+			this.$refs.fullName.style.transition = 'none';
+			this.$refs.courseName.style.transition = 'none';
+			this.$refs.date.style.transition = 'none';
+		}, 1500);
 
-            if (this.styles.length > 0) {
-                const getStyles = JSON.parse(this.styles);
-                this.fullName = getStyles.fullName;
-                this.courseName = getStyles.courseName;
-                this.date = getStyles.date;
-                this.transformFullName = {transform: `translate(${this.fullName.screenX}px, ${this.fullName.screenY}px)`};
-                this.transformCourseName = {transform: `translate(${this.courseName.screenX}px, ${this.courseName.screenY}px)`};
-                this.transformDateName = {transform: `translate(${this.date.screenX}px, ${this.date.screenY}px)`};
-            }
-            let fullNameEdit = this.$refs.fullName;
-            let courseNameEdit = this.$refs.courseName;
-            let dateEdit = this.$refs.date;
-            this.initInteract(fullNameEdit);
-            this.initInteract(courseNameEdit);
-            this.initInteract(dateEdit);
-            this.$emit('save-changes', this.fullName, this.courseName, this.date);
-        },
-        computed: {
-            styleFullName() {
-                if (this.fullName.fullWidth) {
-                    this.fullName.width = 1000;
-                } else {
-                    if(this.fullName.width === 1000){
-                        this.fullName.width = 500;
-                    }
-                }
-                return {
-                    fontWeight: this.fullName.fontWeight,
-                    fontSize: `${this.fullName.size}px`,
-                    textTransform: this.fullName.uppercase,
-                    width: this.fullName.width + 'px',
-                    color: this.fullName.color,
-                    fontStyle: this.fullName.fontStyle
-                };
-            },
-            styleCourseName() {
-                if (this.courseName.fullWidth) {
-                    this.courseName.width = 1000;
-                } else {
-                    if(this.courseName.width === 1000){
-                        this.courseName.width = 230;
-                    }
-                }
-                return {
-                    fontWeight: this.courseName.fontWeight,
-                    fontSize: `${this.courseName.size}px`,
-                    textTransform: this.courseName.uppercase,
-                    width: this.courseName.width + 'px',
-                    color: this.courseName.color,
-                    fontStyle: this.courseName.fontStyle
-                };
-            },
-            styleDate() {
-                if (this.date.fullWidth) {
-                    this.date.width = 1000;
-                } else {
-                    if(this.date.width === 1000){
-                        this.date.width = 170;
-                    }
-                }
-                return {
-                    fontWeight: this.date.fontWeight,
-                    fontSize: `${this.date.size}px`,
-                    width: this.date.width + 'px',
-                    color: this.date.color,
-                    fontStyle: this.date.fontStyle
-                };
-            }
-        },
-        watch: {
-            fullName: {
-                handler(val){
-                    if(val.fullWidth){
-                        this.fullName.screenX = 0;
-                        this.$refs.fullName.setAttribute('data-x', 0);
-                        this.$refs.fullName.style.transform = `translate(0px, ${this.fullName.screenY}px)`;
-                    }
-                    if(val.size > 200){
-                        this.fullName.size = 200
-                    }
-                    if(val.width > 999 && !val.fullWidth){
-                        this.fullName.width = 999
-                    }
-                },
-                deep: true
-            },
-            courseName: {
-                handler(val){
-                    if(val.fullWidth){
-                        this.courseName.screenX = 0;
-                        this.$refs.courseName.setAttribute('data-x', 0);
-                        this.$refs.courseName.style.transform = `translate(0px, ${this.courseName.screenY}px)`;
-                    }
-                    if(val.size > 200){
-                        this.courseName.size = 200
-                    }
-                    if(val.width > 999 && !val.fullWidth){
-                        this.courseName.width = 999
-                    }
-                },
-                deep: true
-            },
-            date: {
-                handler(val){
-                    if(val.fullWidth){
-                        this.date.screenX = 0;
-                        this.$refs.date.setAttribute('data-x', 0);
-                        this.$refs.date.style.transform = `translate(0px, ${this.date.screenY}px)`;
-                    }
-                    if(val.size > 200){
-                        this.date.size = 200
-                    }
-                    if(val.width > 999 && !val.fullWidth){
-                        this.date.width = 999
-                    }
-                },
-                deep: true
-            }
-        },
-        methods: {
-            saveChanges() {
-                this.$emit('save-changes', this.fullName, this.courseName, this.date);
-                this.$emit('update:modalCertificate', false);
+		if (this.styles.length > 0) {
+			const getStyles = JSON.parse(this.styles);
+			this.fullName = getStyles.fullName;
+			this.courseName = getStyles.courseName;
+			this.date = getStyles.date;
+			this.transformFullName = {transform: `translate(${this.fullName.screenX}px, ${this.fullName.screenY}px)`};
+			this.transformCourseName = {transform: `translate(${this.courseName.screenX}px, ${this.courseName.screenY}px)`};
+			this.transformDateName = {transform: `translate(${this.date.screenX}px, ${this.date.screenY}px)`};
+		}
+		let fullNameEdit = this.$refs.fullName;
+		let courseNameEdit = this.$refs.courseName;
+		let dateEdit = this.$refs.date;
+		this.initInteract(fullNameEdit);
+		this.initInteract(courseNameEdit);
+		this.initInteract(dateEdit);
+		this.$emit('save-changes', this.fullName, this.courseName, this.date);
+	},
+	computed: {
+		styleFullName() {
+			if (this.fullName.fullWidth) {
+				this.fullName.width = 1000;
+			} else {
+				if(this.fullName.width === 1000){
+					this.fullName.width = 500;
+				}
+			}
+			return {
+				fontWeight: this.fullName.fontWeight,
+				fontSize: `${this.fullName.size}px`,
+				textTransform: this.fullName.uppercase,
+				width: this.fullName.width + 'px',
+				color: this.fullName.color,
+				fontStyle: this.fullName.fontStyle
+			};
+		},
+		styleCourseName() {
+			if (this.courseName.fullWidth) {
+				this.courseName.width = 1000;
+			} else {
+				if(this.courseName.width === 1000){
+					this.courseName.width = 230;
+				}
+			}
+			return {
+				fontWeight: this.courseName.fontWeight,
+				fontSize: `${this.courseName.size}px`,
+				textTransform: this.courseName.uppercase,
+				width: this.courseName.width + 'px',
+				color: this.courseName.color,
+				fontStyle: this.courseName.fontStyle
+			};
+		},
+		styleDate() {
+			if (this.date.fullWidth) {
+				this.date.width = 1000;
+			} else {
+				if(this.date.width === 1000){
+					this.date.width = 170;
+				}
+			}
+			return {
+				fontWeight: this.date.fontWeight,
+				fontSize: `${this.date.size}px`,
+				width: this.date.width + 'px',
+				color: this.date.color,
+				fontStyle: this.date.fontStyle
+			};
+		}
+	},
+	watch: {
+		fullName: {
+			handler(val){
+				if(val.fullWidth){
+					this.fullName.screenX = 0;
+					this.$refs.fullName.setAttribute('data-x', 0);
+					this.$refs.fullName.style.transform = `translate(0px, ${this.fullName.screenY}px)`;
+				}
+				if(val.size > 200){
+					this.fullName.size = 200
+				}
+				if(val.width > 999 && !val.fullWidth){
+					this.fullName.width = 999
+				}
+			},
+			deep: true
+		},
+		courseName: {
+			handler(val){
+				if(val.fullWidth){
+					this.courseName.screenX = 0;
+					this.$refs.courseName.setAttribute('data-x', 0);
+					this.$refs.courseName.style.transform = `translate(0px, ${this.courseName.screenY}px)`;
+				}
+				if(val.size > 200){
+					this.courseName.size = 200
+				}
+				if(val.width > 999 && !val.fullWidth){
+					this.courseName.width = 999
+				}
+			},
+			deep: true
+		},
+		date: {
+			handler(val){
+				if(val.fullWidth){
+					this.date.screenX = 0;
+					this.$refs.date.setAttribute('data-x', 0);
+					this.$refs.date.style.transform = `translate(0px, ${this.date.screenY}px)`;
+				}
+				if(val.size > 200){
+					this.date.size = 200
+				}
+				if(val.width > 999 && !val.fullWidth){
+					this.date.width = 999
+				}
+			},
+			deep: true
+		}
+	},
+	methods: {
+		saveChanges() {
+			this.$emit('save-changes', this.fullName, this.courseName, this.date);
+			this.$emit('update:modalCertificate', false);
 
-            },
-            selectEdit(val) {
-                this.selectedEdit = val;
-            },
-            initInteract: function (selector) {
-                interact(selector).draggable({
-                    inertia: true,
-                    restrict: {
-                        restriction: "parent",
-                        endOnly: true,
-                        elementRect: {top: 0, left: 0, bottom: 1, right: 1}
-                    },
-                    autoScroll: true,
+		},
+		selectEdit(val) {
+			this.selectedEdit = val;
+		},
+		initInteract: function (selector) {
+			interact(selector).draggable({
+				inertia: true,
+				restrict: {
+					restriction: 'parent',
+					endOnly: true,
+					elementRect: {top: 0, left: 0, bottom: 1, right: 1}
+				},
+				autoScroll: true,
 
-                    onmove: this.dragMoveListener,
-                    onend: this.onDragEnd
-                });
-            },
-            dragMoveListener: function (event) {
-                let target = event.target;
-                let name = target.getAttribute("name");
-                let x = null;
-                let y = null;
-                if (name === 'fullName') {
-                    x = (parseFloat(target.getAttribute("data-x")) || this.fullName.screenX) + event.dx;
-                    if(this.fullName.fullWidth){
-                        x = 0;
-                    }
-                }
-                if (name === 'courseName') {
-                    x = (parseFloat(target.getAttribute("data-x")) || this.courseName.screenX) + event.dx;
-                    if(this.courseName.fullWidth){
-                        x = 0;
-                    }
-                }
-                if (name === 'date') {
-                    x = (parseFloat(target.getAttribute("data-x")) || this.date.screenX) + event.dx;
-                    if(this.date.fullWidth){
-                        x = 0;
-                    }
-                }
+				onmove: this.dragMoveListener,
+				onend: this.onDragEnd
+			});
+		},
+		dragMoveListener: function (event) {
+			let target = event.target;
+			let name = target.getAttribute('name');
+			let x = null;
+			let y = null;
+			if (name === 'fullName') {
+				x = (parseFloat(target.getAttribute('data-x')) || this.fullName.screenX) + event.dx;
+				if(this.fullName.fullWidth){
+					x = 0;
+				}
+			}
+			if (name === 'courseName') {
+				x = (parseFloat(target.getAttribute('data-x')) || this.courseName.screenX) + event.dx;
+				if(this.courseName.fullWidth){
+					x = 0;
+				}
+			}
+			if (name === 'date') {
+				x = (parseFloat(target.getAttribute('data-x')) || this.date.screenX) + event.dx;
+				if(this.date.fullWidth){
+					x = 0;
+				}
+			}
 
-                if (name === 'fullName') {
-                    y = (parseFloat(target.getAttribute("data-y")) || this.fullName.screenY) + event.dy;
-                }
-                if (name === 'courseName') {
-                    y = (parseFloat(target.getAttribute("data-y")) || this.courseName.screenY) + event.dy;
-                }
-                if (name === 'date') {
-                    y = (parseFloat(target.getAttribute("data-y")) || this.date.screenY) + event.dy;
-                }
-                target.style.webkitTransform = target.style.transform = "translate(" + x + "px, " + y + "px)";
+			if (name === 'fullName') {
+				y = (parseFloat(target.getAttribute('data-y')) || this.fullName.screenY) + event.dy;
+			}
+			if (name === 'courseName') {
+				y = (parseFloat(target.getAttribute('data-y')) || this.courseName.screenY) + event.dy;
+			}
+			if (name === 'date') {
+				y = (parseFloat(target.getAttribute('data-y')) || this.date.screenY) + event.dy;
+			}
+			target.style.webkitTransform = target.style.transform = 'translate(' + x + 'px, ' + y + 'px)';
 
-                target.setAttribute("data-x", x);
-                target.setAttribute("data-y", y);
-            },
-            onDragEnd: function (event) {
-                var target = event.target;
-                let name = target.getAttribute("name");
-                if (name === 'fullName') {
-                    this.fullName.screenX = (parseFloat(target.getAttribute("data-x")) || this.fullName.screenX);
-                    this.fullName.screenY = (parseFloat(target.getAttribute("data-y")) || this.fullName.screenY)
-                }
-                if (name === 'courseName') {
-                    this.courseName.screenX = (parseFloat(target.getAttribute("data-x")) || this.courseName.screenX);
-                    this.courseName.screenY = (parseFloat(target.getAttribute("data-y")) || this.courseName.screenY)
-                }
-                if (name === 'date') {
-                    this.date.screenX = (parseFloat(target.getAttribute("data-x")) || this.date.screenX);
-                    this.date.screenY = (parseFloat(target.getAttribute("data-y")) || this.date.screenY)
-                }
-            }
-        }
-    };
+			target.setAttribute('data-x', x);
+			target.setAttribute('data-y', y);
+		},
+		onDragEnd: function (event) {
+			var target = event.target;
+			let name = target.getAttribute('name');
+			if (name === 'fullName') {
+				this.fullName.screenX = (parseFloat(target.getAttribute('data-x')) || this.fullName.screenX);
+				this.fullName.screenY = (parseFloat(target.getAttribute('data-y')) || this.fullName.screenY)
+			}
+			if (name === 'courseName') {
+				this.courseName.screenX = (parseFloat(target.getAttribute('data-x')) || this.courseName.screenX);
+				this.courseName.screenY = (parseFloat(target.getAttribute('data-y')) || this.courseName.screenY)
+			}
+			if (name === 'date') {
+				this.date.screenX = (parseFloat(target.getAttribute('data-x')) || this.date.screenX);
+				this.date.screenY = (parseFloat(target.getAttribute('data-y')) || this.date.screenY)
+			}
+		}
+	}
+};
 </script>
 
 <style lang="scss">

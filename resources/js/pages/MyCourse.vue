@@ -50,7 +50,7 @@
     <!-- список курсов -->
     <div v-if="activeCourse == null">
          <div class="section d-flex aic jcsb my-2"
-          v-for="(course, c_index) in courses"
+          v-for="course in courses"
           :key="course.id"
           @click="getCourse(course.id)"
         >
@@ -201,245 +201,245 @@ const UpbooksRead = () => import(/* webpackChunkName: "UpbooksRead" */ '@/pages/
 const PlaylistEdit = () => import(/* webpackChunkName: "PlaylistEdit" */ '@/pages/PlaylistEdit') // редактирование плейлиста
 
 export default {
-  name: 'MyCourse',
-    components: {
-        SaveCertificate,
-        Booklist,
-        UpbooksRead,
-        PlaylistEdit,
-    },
-    props:{
-        user_id: {
-            type: Number,
-            default: 0
-        }
-    },
-  data() {
-    return {
-      test: "dsa",
-      items: [],
-      courses: [],
-      activeCourseItem: null,
-      activeCourse: null,
-      activeStep: null,
-      trees: [],
-      congrats: false,
-      all_stages: 0,
-      completed_stages: 0,
-      disable_course: false,
-      activeCourseKey: 1,
-        generateCertificate: false
-    };
-  },
-  watch:{
-    user_id(){
-      this.init()
-    }
-  },
-  created() {
-    if(this.user_id){
-      this.init()
-    }
-  },
+	name: 'MyCourse',
+	components: {
+		SaveCertificate,
+		Booklist,
+		UpbooksRead,
+		PlaylistEdit,
+	},
+	props:{
+		user_id: {
+			type: Number,
+			default: 0
+		}
+	},
+	data() {
+		return {
+			test: 'dsa',
+			items: [],
+			courses: [],
+			activeCourseItem: null,
+			activeCourse: null,
+			activeStep: null,
+			trees: [],
+			congrats: false,
+			all_stages: 0,
+			completed_stages: 0,
+			disable_course: false,
+			activeCourseKey: 1,
+			generateCertificate: false
+		};
+	},
+	watch:{
+		user_id(){
+			this.init()
+		}
+	},
+	created() {
+		if(this.user_id){
+			this.init()
+		}
+	},
 
-  computed: {
-    progress: function(){
-      return this.all_stages > 0 ? Number(Number((this.completed_stages / this.all_stages) * 100).toFixed(2)) : 0
-    },
-  },
+	computed: {
+		progress: function(){
+			return this.all_stages > 0 ? Number(Number((this.completed_stages / this.all_stages) * 100).toFixed(2)) : 0
+		},
+	},
 
-  mounted() {},
+	mounted() {},
 
-  methods: {
-      init(){
-        this.fetchData();
-          // бывор группы
-        const urlParams = new URLSearchParams(window.location.search);
-        let id = urlParams.get("id");
-        if (id) {
-          this.getCourse(id);
-        }
-      },
-      generateCertificateStart(model){
-          console.log(model);
-          if(model === 0){
-              this.generateCertificate = true;
-          }
-      },
-      generateSuccess(){
-          this.$toast.success('Ваш сертификат готов! Можете посмотреть и загрузить его в своем профиле во вкладке "Номинации"', {
-              timeout: 5000
-          });
-          this.activeCourseItem.status = 1;
-          this.activeCourseItem = null;
-          this.congrats = true;
-      },
-    after_click_next_element() {
-      let index = this.items.findIndex(el => el.id == this.activeCourseItem.id);
-
-
-      if(index != -1 && this.items.length - 1 != index) {
-        this.activeCourseItem.status = 1;
-        this.activeCourseItem = this.items[index + 1];
-        this.activeCourseItem.status = 2;
-          this.generateCertificate = false;
-      } else {
-        this.$toast.success('Поздравляем с завершением курса!');
-        this.$toast.warning('Подождите пару секунд, Ваш сертификат почти готов...', {
-            timeout: 5000
-        });
-      }
-
-    },
-
-    nextElement() {
-
-      if(this.activeCourseItem.item_model == 'App\\KnowBase') {
-        this.$refs.knowbase.nextElement();
-      }
-
-      if(this.activeCourseItem.item_model == 'App\\Models\\Books\\Book') {
-        this.$refs.upbook.nextElement();
-      }
-
-      if(this.activeCourseItem.item_model == 'App\\Models\\Videos\\Video') {
-        this.$refs.playlist.nextElement();
-      }
+	methods: {
+		init(){
+			this.fetchData();
+			// бывор группы
+			const urlParams = new URLSearchParams(window.location.search);
+			let id = urlParams.get('id');
+			if (id) {
+				this.getCourse(id);
+			}
+		},
+		generateCertificateStart(model){
+			console.log(model);
+			if(model === 0){
+				this.generateCertificate = true;
+			}
+		},
+		generateSuccess(){
+			this.$toast.success('Ваш сертификат готов! Можете посмотреть и загрузить его в своем профиле во вкладке "Номинации"', {
+				timeout: 5000
+			});
+			this.activeCourseItem.status = 1;
+			this.activeCourseItem = null;
+			this.congrats = true;
+		},
+		after_click_next_element() {
+			let index = this.items.findIndex(el => el.id == this.activeCourseItem.id);
 
 
-    },
+			if(index != -1 && this.items.length - 1 != index) {
+				this.activeCourseItem.status = 1;
+				this.activeCourseItem = this.items[index + 1];
+				this.activeCourseItem.status = 2;
+				this.generateCertificate = false;
+			} else {
+				this.$toast.success('Поздравляем с завершением курса!');
+				this.$toast.warning('Подождите пару секунд, Ваш сертификат почти готов...', {
+					timeout: 5000
+				});
+			}
+
+		},
+
+		nextElement() {
+
+			if(this.activeCourseItem.item_model == 'App\\KnowBase') {
+				this.$refs.knowbase.nextElement();
+			}
+
+			if(this.activeCourseItem.item_model == 'App\\Models\\Books\\Book') {
+				this.$refs.upbook.nextElement();
+			}
+
+			if(this.activeCourseItem.item_model == 'App\\Models\\Videos\\Video') {
+				this.$refs.playlist.nextElement();
+			}
 
 
-    setStart() {
-      if(this.items.length > 0) {
-
-        let index = this.items.findIndex(el => el.status == 2);
-
-        if(index != -1) {
-          this.activeCourseItem = this.items[index];
-          //this.activeStep = this.items[0].steps[0];
-        } else {
-          this.congrats = true;
-        }
-
-      }
-    },
-    selectCourse(i) {
-      this.items = [];
-      this.activeCourse = this.courses[i];
-
-    },
-
-    fetchData() {
-      let loader = this.$loading.show();
-
-      axios
-        .get("/my-courses/get", {})
-        .then((response) => {
-          this.courses = response.data.courses;
-          loader.hide();
-        })
-        .catch((error) => {
-          loader.hide();
-          alert(error);
-        });
-    },
-
-    selectCourseItem(i) {
-
-      if(this.canSelect(this.items[i].status)) {
-
-        this.congrats = false;
-        this.activeCourseItem = this.items[i];
-
-      }
-
-    },
-
-    canSelect(status) {
-      const COMPLETED = 1;
-      const STARTED = 2;
-      const INITIAL = 0;
-
-      return [STARTED, COMPLETED].includes(status);
-    },
-
-    setStepStatus() {
-      let index = this.activeCourseItem.steps.findIndex(s => s.id == this.activeStep.id);
-      this.activeCourseItem.steps[index].status = 1;
-    },
-
-    selectStep(step, item) {
-      this.activeCourseItem = item;
-      this.activeStep = step;
-    },
+		},
 
 
-    nextStep() {
-      let index = this.activeCourseItem.steps.findIndex(s => s.id == this.activeStep.id);
+		setStart() {
+			if(this.items.length > 0) {
 
-      this.$toast.info(index);
-      this.$toast.info(this.activeCourseItem.steps[index]);
-      if(this.activeCourseItem.steps[index].status != 1) {
-        this.$toast.info('Ответьте на вопросы правильно!');
-        return ;
-      }
+				let index = this.items.findIndex(el => el.status == 2);
+
+				if(index != -1) {
+					this.activeCourseItem = this.items[index];
+					//this.activeStep = this.items[0].steps[0];
+				} else {
+					this.congrats = true;
+				}
+
+			}
+		},
+		selectCourse(i) {
+			this.items = [];
+			this.activeCourse = this.courses[i];
+
+		},
+
+		fetchData() {
+			let loader = this.$loading.show();
+
+			this.axios
+				.get('/my-courses/get', {})
+				.then((response) => {
+					this.courses = response.data.courses;
+					loader.hide();
+				})
+				.catch((error) => {
+					loader.hide();
+					alert(error);
+				});
+		},
+
+		selectCourseItem(i) {
+
+			if(this.canSelect(this.items[i].status)) {
+
+				this.congrats = false;
+				this.activeCourseItem = this.items[i];
+
+			}
+
+		},
+
+		canSelect(status) {
+			const COMPLETED = 1;
+			const STARTED = 2;
+			// const INITIAL = 0;
+
+			return [STARTED, COMPLETED].includes(status);
+		},
+
+		setStepStatus() {
+			let index = this.activeCourseItem.steps.findIndex(s => s.id == this.activeStep.id);
+			this.activeCourseItem.steps[index].status = 1;
+		},
+
+		selectStep(step, item) {
+			this.activeCourseItem = item;
+			this.activeStep = step;
+		},
 
 
-      if(this.activeCourseItem.steps.length - 1  == index) {
+		nextStep() {
+			let index = this.activeCourseItem.steps.findIndex(s => s.id == this.activeStep.id);
 
-        let c_index = this.items.findIndex(s => s.id == this.activeCourseItem.id);
-        if(this.items.length - 1 == c_index) {
-          this.$toast.info('Конец курса!');
-          return;
-        } else {
-          this.activeCourseItem = this.items[c_index + 1 ];
-          this.activeStep = this.activeCourseItem.steps[0];
-        }
-
-      } else {
-        this.activeCourseItem.steps[index + 1];
-      }
+			this.$toast.info(index);
+			this.$toast.info(this.activeCourseItem.steps[index]);
+			if(this.activeCourseItem.steps[index].status != 1) {
+				this.$toast.info('Ответьте на вопросы правильно!');
+				return ;
+			}
 
 
-    },
+			if(this.activeCourseItem.steps.length - 1  == index) {
 
-    getCourse(id) {
-      let loader = this.$loading.show();
+				let c_index = this.items.findIndex(s => s.id == this.activeCourseItem.id);
+				if(this.items.length - 1 == c_index) {
+					this.$toast.info('Конец курса!');
+					return;
+				} else {
+					this.activeCourseItem = this.items[c_index + 1 ];
+					this.activeStep = this.activeCourseItem.steps[0];
+				}
 
-      axios
-        .get("/my-courses/get/" + id)
-        .then((response) => {
-          this.items = response.data.items;
-          this.activeCourse = response.data.course;
-          this.activeCourseKey++;
+			} else {
+				this.activeCourseItem.steps[index + 1];
+			}
 
-          this.disable_course = false;
-          if(this.activeCourse != null && !this.activeCourse.is_active) {
-            this.disable_course = true;
-          }
 
-          this.completed_stages = response.data.completed_stages;
-          this.all_stages = response.data.all_stages;
+		},
 
-          // change URL
-          const urlParams = new URLSearchParams(window.location.search);
-          let b = urlParams.get("id");
-          let uri = "/my-courses?id=" + id;
-          window.history.replaceState({}, "Мои курсы", uri);
-          this.setStart();
-          loader.hide();
-        })
-        .catch((error) => {
-          loader.hide();
-          alert(error);
-        });
-    },
+		getCourse(id) {
+			let loader = this.$loading.show();
 
-    back() {
-      this.activeCourse = null;
-      window.history.replaceState({ id: "100" }, "Мои курсы", "/my-courses");
-    },
-  },
+			this.axios
+				.get('/my-courses/get/' + id)
+				.then((response) => {
+					this.items = response.data.items;
+					this.activeCourse = response.data.course;
+					this.activeCourseKey++;
+
+					this.disable_course = false;
+					if(this.activeCourse != null && !this.activeCourse.is_active) {
+						this.disable_course = true;
+					}
+
+					this.completed_stages = response.data.completed_stages;
+					this.all_stages = response.data.all_stages;
+
+					// change URL
+					// const urlParams = new URLSearchParams(window.location.search);
+					// let b = urlParams.get('id');
+					let uri = '/my-courses?id=' + id;
+					window.history.replaceState({}, 'Мои курсы', uri);
+					this.setStart();
+					loader.hide();
+				})
+				.catch((error) => {
+					loader.hide();
+					alert(error);
+				});
+		},
+
+		back() {
+			this.activeCourse = null;
+			window.history.replaceState({ id: '100' }, 'Мои курсы', '/my-courses');
+		},
+	},
 };
 </script>

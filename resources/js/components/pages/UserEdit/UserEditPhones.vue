@@ -2,35 +2,35 @@
 import {mask} from 'vue-the-mask'
 
 export default {
-    name: 'UserEditPhones',
-    directives: {mask},
-    props: {
-        user: {
-            type: Object,
-            default: null,
-        },
-        profileContacts: {
-            type: Array,
-            default: () => []
-        },
-        old_phone: String,
-        old_phone_1: String,
-        old_phone_2: String,
-        old_phone_3: String,
-        old_phone_4: String,
-    },
-    methods:{
-        addPhone(){
-            this.profileContacts.push({
-                type: 'phone',
-                name: '',
-                value: ''
-            })
-        },
-        deletePhone(key){
-            this.profileContacts.splice(key, 1)
-        }
-    },
+	name: 'UserEditPhones',
+	directives: {mask},
+	props: {
+		user: {
+			type: Object,
+			default: null,
+		},
+		profileContacts: {
+			type: Array,
+			default: () => []
+		},
+		old_phone: String,
+		old_phone_1: String,
+		old_phone_2: String,
+		old_phone_3: String,
+		old_phone_4: String,
+	},
+	methods:{
+		addPhone(){
+			this.profileContacts.push({
+				type: 'phone',
+				name: '',
+				value: ''
+			})
+		},
+		deletePhone(key){
+			this.profileContacts.splice(key, 1)
+		}
+	},
 }
 </script>
 <template>

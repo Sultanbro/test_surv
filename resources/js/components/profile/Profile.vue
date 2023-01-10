@@ -1,25 +1,25 @@
 <template>
     <div class="profile-buttons">
-    
+
 
     </div>
 </template>
 
 <script>
 export default {
-    name: "Profile",
-    props: ['user'],
-    data() {
-        return {
-            u: {},
-        }
-    },
-    mounted() {
-        this.u = JSON.parse(this.user)
-    },
-    methods: {
+	name: 'ProfileComponent',
+	props: ['user'],
+	data() {
+		return {
+			u: {},
+		}
+	},
+	mounted() {
+		this.u = JSON.parse(this.user)
+	},
+	methods: {
 
-    }
+	}
 }
 </script>
 
@@ -48,7 +48,7 @@ export default {
     text-align: center;
     margin-left: 5px;
     &:hover {
-        background: #ccd4eb;   
+        background: #ccd4eb;
     }
     img {
         width: 100%;

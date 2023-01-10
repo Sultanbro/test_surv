@@ -155,75 +155,75 @@
 
 
 <script>
-    export default {
-        name: 'shifts',
-        data() {
-            return {
-                shiftsData: [],
-                shiftEditIndex: null,
-                sidebarName: 'Создание новой смены',
-                showSidebar: false,
-                form: {
-                    name: '',
-                    workStartTime: null,
-                    workEndTime: null,
-                    weekdaysString: null
-                },
-                weekdaysNames: ['Пн', 'Вт', 'Ср', 'Чт', 'Пт', 'Сб', 'Вс'],
-                weekdays: '0000000'.split(''),
-            }
-        },
-        methods: {
-            convertWeekdaysString(text) {
-                const daysArr = text.split('');
-                for (let i = 0; i < daysArr.length; i++) {
-                    daysArr[i] = this.weekdaysNames[i];
-                }
-                return daysArr;
-            },
-            createNewShift() {
-                this.showSidebar = !this.showSidebar;
-                this.sidebarName = 'Создание новой смены';
-            },
-            editShift(shift, index) {
-                this.shiftEditIndex = index;
-                this.showSidebar = !this.showSidebar;
-                this.form.name = shift.name;
-                this.form.workStartTime = shift.workStartTime;
-                this.form.workEndTime = shift.workEndTime;
-                this.form.weekdaysString = shift.weekdaysString;
-                this.weekdays = shift.weekdaysString.split('');
-                this.sidebarName = `Редактирование ${shift.name}`;
-            },
-            deleteShift(index){
-                if (window.confirm("Вы уверены, что хотите удалить смену?")) {
-                    this.shiftsData.splice(index, 1);
-                }
-            },
-            toggleWeekDay(id) {
-                this.$set(this.weekdays, id, this.weekdays[id] === '1' ? '0' : '1');
-            },
-            resetForm() {
-                this.shiftEditIndex = null;
-                this.form.name = '';
-                this.form.workStartTime = null;
-                this.form.workEndTime = null;
-                this.form.weekdaysString = null;
-                this.weekdays = '0000000'.split('');
-            },
-            onSubmit() {
-                this.form.weekdaysString = this.weekdays.join('');
-                const data = Object.assign({}, this.form);
-                if (this.shiftEditIndex !== null) {
-                    this.shiftsData[this.shiftEditIndex] = data;
-                } else {
-                    this.shiftsData.push(data);
-                }
-                this.showSidebar = false;
-                this.resetForm();
-            }
-        }
-    }
+export default {
+	name: 'CompanyShifts',
+	data() {
+		return {
+			shiftsData: [],
+			shiftEditIndex: null,
+			sidebarName: 'Создание новой смены',
+			showSidebar: false,
+			form: {
+				name: '',
+				workStartTime: null,
+				workEndTime: null,
+				weekdaysString: null
+			},
+			weekdaysNames: ['Пн', 'Вт', 'Ср', 'Чт', 'Пт', 'Сб', 'Вс'],
+			weekdays: '0000000'.split(''),
+		}
+	},
+	methods: {
+		convertWeekdaysString(text) {
+			const daysArr = text.split('');
+			for (let i = 0; i < daysArr.length; i++) {
+				daysArr[i] = this.weekdaysNames[i];
+			}
+			return daysArr;
+		},
+		createNewShift() {
+			this.showSidebar = !this.showSidebar;
+			this.sidebarName = 'Создание новой смены';
+		},
+		editShift(shift, index) {
+			this.shiftEditIndex = index;
+			this.showSidebar = !this.showSidebar;
+			this.form.name = shift.name;
+			this.form.workStartTime = shift.workStartTime;
+			this.form.workEndTime = shift.workEndTime;
+			this.form.weekdaysString = shift.weekdaysString;
+			this.weekdays = shift.weekdaysString.split('');
+			this.sidebarName = `Редактирование ${shift.name}`;
+		},
+		deleteShift(index){
+			if (window.confirm('Вы уверены, что хотите удалить смену?')) {
+				this.shiftsData.splice(index, 1);
+			}
+		},
+		toggleWeekDay(id) {
+			this.$set(this.weekdays, id, this.weekdays[id] === '1' ? '0' : '1');
+		},
+		resetForm() {
+			this.shiftEditIndex = null;
+			this.form.name = '';
+			this.form.workStartTime = null;
+			this.form.workEndTime = null;
+			this.form.weekdaysString = null;
+			this.weekdays = '0000000'.split('');
+		},
+		onSubmit() {
+			this.form.weekdaysString = this.weekdays.join('');
+			const data = Object.assign({}, this.form);
+			if (this.shiftEditIndex !== null) {
+				this.shiftsData[this.shiftEditIndex] = data;
+			} else {
+				this.shiftsData.push(data);
+			}
+			this.showSidebar = false;
+			this.resetForm();
+		}
+	}
+}
 </script>
 
 

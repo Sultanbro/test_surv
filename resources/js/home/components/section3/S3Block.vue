@@ -11,21 +11,21 @@
 
 <script>
 export default {
-  props: {
-    img: String,
-    alt: {
-      type: String,
-      default() {
-        return ''
-      }
-    },
-    right: Boolean
-  },
-  computed: {
-    lang() {
-      return this.$root.$data.lang
-    }
-  },
+	props: {
+		img: String,
+		alt: {
+			type: String,
+			default() {
+				return ''
+			}
+		},
+		right: Boolean
+	},
+	computed: {
+		lang() {
+			return this.$root.$data.lang
+		}
+	},
 }
 </script>
 

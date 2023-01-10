@@ -34,20 +34,20 @@ addPosition() {
 
 */
 export default {
-  data() {
-    return {
-      data: this.positions,
-      new_position: '',
-    }
-  },
-  mounted() {
-    // this.getPositions()
-  },
-  methods: {
-    addPosition() {
-        console.log('addPosition');
-    },
-  }
+	data() {
+		return {
+			data: this.positions,
+			new_position: '',
+		}
+	},
+	mounted() {
+		// this.getPositions()
+	},
+	methods: {
+		addPosition() {
+			console.log('addPosition');
+		},
+	}
 }
 </script>
 

@@ -21,7 +21,7 @@
         <tbody :key="refreshItemsKey">
 
             <template v-if="kpi_page">
-                <tr 
+                <tr
                     v-for="(item, i) in items" :key="i"
                     class="jt-row"
                     :class="{
@@ -33,7 +33,7 @@
                     <td>
                         <input type="text" v-model="item.name" />
                     </td>
-                    <td class="text-center"> 
+                    <td class="text-center">
                         <select v-model="item.method">
                             <option v-for="key in Object.keys(methods)" :key="key"
                                 :value="key">
@@ -53,7 +53,7 @@
                                 </option>
                             </select>
 
-                            <select 
+                            <select
                                 v-if="item.source == 1"
                                 v-model="item.group_id"
                                 :key="'c' + source_key"
@@ -63,16 +63,16 @@
                                 <option v-for="(group, id) in groups" :value="id" :key="id">{{ group }}</option>
                             </select>
 
-                            <select 
+                            <select
                                 :class="{'hidden' : item.source == 0}"
                                 v-model="item.activity_id"
                                 :key="'d' + source_key"
                             >
                                 <option value="0" selected>-</option>
-                                <option v-for="activity in grouped_activities(item.source, item.group_id)" :value="activity.id">{{ activity.name }}</option>
+                                <option v-for="activity in grouped_activities(item.source, item.group_id)" :key="activity.id" :value="activity.id">{{ activity.name }}</option>
                             </select>
 
-                            <select 
+                            <select
                                 v-if="item.source == 1 && !isCell(item.activity_id)"
                                 v-model="item.common"
                             >
@@ -80,7 +80,7 @@
                                 <option value="1">Всего отдела</option>
                             </select>
 
-                            <input  
+                            <input
                                 v-if="item.source == 1 && isCell(item.activity_id)"
                                 type="text"
                                 v-model="item.cell"
@@ -119,7 +119,7 @@
             </template>
 
             <template v-else>
-                <tr 
+                <tr
                     v-for="(item, i) in items" :key="i"
                     class="jt-row j-hidden"
                     :class="{
@@ -135,7 +135,7 @@
                         <input v-if="[1,3,5].includes(item.method)" type="number" v-model="item.fact" min="0" @change="updateStat(i)" />
                         <input v-else type="number" v-model="item.avg" min="0" @change="updateStat(i)" />
                     </td>
-                    <td class="text-center" v-else> 
+                    <td class="text-center" v-else>
                         <!-- sum or avg by method -->
                         <div v-if="[1,3,5].includes(item.method)">{{ item.fact }}</div>
                         <div v-else>{{ Number(item.avg).toFixed(2) }}</div>
@@ -148,10 +148,10 @@
                 </tr>
 
             </template>
-           
+
         </tbody>
     </table>
-    
+
     <sidebar
         title="Показатели"
         :open="show_description"
@@ -183,238 +183,238 @@
 </template>
 
 <script>
-import {newKpiItem, numberize, calcCompleted, calcSum} from "./kpis.js";
-import {sources, methods} from "./helpers.js";
+import {newKpiItem, /* numberize,  */calcCompleted, calcSum} from './kpis.js';
+import {sources, methods} from './helpers.js';
 
 export default {
-    name: "KpiItems", 
-    props: {
-        my_sum:{
-            default:0
-        },
-        kpi_id: {
-            default: 0
-        },
-        expanded: {
-            default: false,
-        },
-        items: {
-            default: []
-        },
-        activities: {
-            default: {}
-        },
-        groups: {
-            default: {}
-        },
-        completed_80: {
-            default: 0,
-        },
-        completed_100: {
-            default: 0,
-        },
-        lower_limit: {
-            default: 80,
-        },
-        upper_limit: {
-            default: 100,
-        },
-        editable: {
-            default: false
-        },
-        kpi_page: {
-            default: false
-        },
-        allow_overfulfillment: {
-            default: false
-        },
-        date: {
-            default: null
-        },
-    },
-    watch: {
-        items: {
-            handler: function(val) {
-                this.recalc();
-                this.getSum();
-            },
-            deep: true
-        },
-        lower_limit: {
-            handler: function(val) {
-                this.recalc();
-            },
-        },
-        upper_limit: {
-            handler: function(val) {
-                this.recalc();
-            },
-        },
-        completed_80: {
-            handler: function(val) {
-                this.recalc();
-            },
-        },
-        completed_100: {
-            handler: function(val) {
-                this.recalc();
-            },
-        }
-    },
-    data() {
-        return {
-            active: 1,
-            methods: methods,
-            sources: sources,
-            refreshItemsKey: 1,
-            source_key: 1,
-            show_description: false
-        }
-    }, 
+	name: 'KpiItems',
+	props: {
+		my_sum:{
+			default:0
+		},
+		kpi_id: {
+			default: 0
+		},
+		expanded: {
+			default: false,
+		},
+		items: {
+			default: []
+		},
+		activities: {
+			default: {}
+		},
+		groups: {
+			default: {}
+		},
+		completed_80: {
+			default: 0,
+		},
+		completed_100: {
+			default: 0,
+		},
+		lower_limit: {
+			default: 80,
+		},
+		upper_limit: {
+			default: 100,
+		},
+		editable: {
+			default: false
+		},
+		kpi_page: {
+			default: false
+		},
+		allow_overfulfillment: {
+			default: false
+		},
+		date: {
+			default: null
+		},
+	},
+	watch: {
+		items: {
+			handler: function() {
+				this.recalc();
+				this.getSum();
+			},
+			deep: true
+		},
+		lower_limit: {
+			handler: function() {
+				this.recalc();
+			},
+		},
+		upper_limit: {
+			handler: function() {
+				this.recalc();
+			},
+		},
+		completed_80: {
+			handler: function() {
+				this.recalc();
+			},
+		},
+		completed_100: {
+			handler: function() {
+				this.recalc();
+			},
+		}
+	},
+	data() {
+		return {
+			active: 1,
+			methods: methods,
+			sources: sources,
+			refreshItemsKey: 1,
+			source_key: 1,
+			show_description: false
+		}
+	},
 
-    created() {
-        this.fillSelectOptions()
+	created() {
+		this.fillSelectOptions()
 
-        this.defineSourcesAndGroups('with_sources_and_group_id');
-        
-        this.recalc();
-        this.getSum();
-        if(!this.editable) {
-            this.items.forEach(el => el.expanded = true);
-        }
+		this.defineSourcesAndGroups('with_sources_and_group_id');
 
-    },
-    mounted(){
-        
-    },
-    computed: {
-    },
+		this.recalc();
+		this.getSum();
+		if(!this.editable) {
+			this.items.forEach(el => el.expanded = true);
+		}
 
-    methods: {
-        toggle() {
-            this.show_description = false;
-        },
-        showDescription(){ 
-            this.show_description = !this.show_description;
-        }, 
-        recalc() {
-            this.items.forEach(el => {
-                
-                // if(
-                //     [1,3,5].includes(el.method) 
-                //     && !this.kpi_page
-                //     && el.common != 1
-                //     && el.source == 1
-                //     && el.activity != null
-                //     && el.activity.view != 7
-                // ) {
-                //     el.plan = el.daily_plan * numberize(el.workdays);
-                // }
-                el.percent = calcCompleted(el);
-                el.sum = calcSum(el,
-                    {
-                        lower_limit: this.lower_limit,
-                        upper_limit: this.upper_limit,
-                        completed_80: this.completed_80,
-                        completed_100: this.completed_100,
-                        allow_overfulfillment: this.allow_overfulfillment,
-                    },
-                    this.kpi_page ? 1 : el.percent / 100.0,
-                );
-            });
-        },
-        
-        deleteItem(i) {
-            this.items[i].deleted = true 
-            if(this.kpi_id == 0) this.items.splice(i, 1);
-            this.refreshItemsKey++;
-        },
+	},
+	mounted(){
 
-        restoreItem(i) {
-            this.items[i].deleted = false
-            this.refreshItemsKey++;
-        },
+	},
+	computed: {
+	},
 
-        addItem() {
-            this.items.push(newKpiItem());
-        },
+	methods: {
+		toggle() {
+			this.show_description = false;
+		},
+		showDescription(){
+			this.show_description = !this.show_description;
+		},
+		recalc() {
+			this.items.forEach(el => {
 
-        getActivity(id) {
-            return this.activities.find(el => el.id == id)
-        },
+				// if(
+				//     [1,3,5].includes(el.method)
+				//     && !this.kpi_page
+				//     && el.common != 1
+				//     && el.source == 1
+				//     && el.activity != null
+				//     && el.activity.view != 7
+				// ) {
+				//     el.plan = el.daily_plan * numberize(el.workdays);
+				// }
+				el.percent = calcCompleted(el);
+				el.sum = calcSum(el,
+					{
+						lower_limit: this.lower_limit,
+						upper_limit: this.upper_limit,
+						completed_80: this.completed_80,
+						completed_100: this.completed_100,
+						allow_overfulfillment: this.allow_overfulfillment,
+					},
+					this.kpi_page ? 1 : el.percent / 100.0,
+				);
+			});
+		},
 
-        fillSelectOptions() {
-        },
+		deleteItem(i) {
+			this.items[i].deleted = true
+			if(this.kpi_id == 0) this.items.splice(i, 1);
+			this.refreshItemsKey++;
+		},
 
-        groupBy(xs, key) {
-            return xs.reduce(function(rv, x) {
-                (rv[x[key]] = rv[x[key]] || []).push(x);
-                return rv;
-            }, {});
-        },
+		restoreItem(i) {
+			this.items[i].deleted = false
+			this.refreshItemsKey++;
+		},
 
-        defineSourcesAndGroups(t) {
-            this.items.forEach(el => {
-                el.source = 0;
-                el.group_id = 0;
+		addItem() {
+			this.items.push(newKpiItem());
+		},
 
-                if(el.activity_id != 0) {
-                    let i = this.activities.findIndex(a => a.id == el.activity_id);
-                    if(i != -1) {
-                        el.source = this.activities[i].source
-                        if(el.source == 1) el.group_id = this.activities[i].group_id
-                    }
-                }
-            });
-        },
+		getActivity(id) {
+			return this.activities.find(el => el.id == id)
+		},
 
-        grouped_activities(source, group_id) {
-            if(source == 1) {
-                return this.activities.filter(el => el.source == source && el.group_id == group_id);
-            } else {
-                group_id = 0
-                return this.activities.filter(el => el.source == source);
-            }
-        },
+		fillSelectOptions() {
+		},
 
-        isCell(activity_id) {
-            let i = this.activities.findIndex(el => el.id == activity_id);
-            return i != -1 && this.activities[i].view == 7;
-        },
+		groupBy(xs, key) {
+			return xs.reduce(function(rv, x) {
+				(rv[x[key]] = rv[x[key]] || []).push(x);
+				return rv;
+			}, {});
+		},
 
-        updateStat(i) {
-            let loader = this.$loading.show();
+		defineSourcesAndGroups() {
+			this.items.forEach(el => {
+				el.source = 0;
+				el.group_id = 0;
 
-            const item = this.items[i]
-            const date = this.date != null
-                ? this.date
-                : formatDate(new Date().toISOString().substr(0, 10))
-                
-            const value = [1,3,5].includes(item.method) ? item.fact : item.avg
+				if(el.activity_id != 0) {
+					let i = this.activities.findIndex(a => a.id == el.activity_id);
+					if(i != -1) {
+						el.source = this.activities[i].source
+						if(el.source == 1) el.group_id = this.activities[i].group_id
+					}
+				}
+			});
+		},
 
-            axios.post('/statistics/update-stat', {
-                user_id: this.kpi_id, 
-                kpi_item_id: item.id, 
-                activity_id: item.activity_id, 
-                value: value, 
-                date: date, 
-            }).then(response => {
-                this.$toast.success('Изменено');
-                loader.hide()
-            }).catch(error => {
-                loader.hide()
-                alert(error)
-            });
-        },
-        getSum(){
-                let sum = 0;
-                this.items.forEach(item => {
-                    sum += item.sum;
-                }); 
-                this.$emit("getSum", sum);
-            }
-        
- 
-    } 
+		grouped_activities(source, group_id) {
+			if(source == 1) {
+				return this.activities.filter(el => el.source == source && el.group_id == group_id);
+			} else {
+				group_id = 0
+				return this.activities.filter(el => el.source == source);
+			}
+		},
+
+		isCell(activity_id) {
+			let i = this.activities.findIndex(el => el.id == activity_id);
+			return i != -1 && this.activities[i].view == 7;
+		},
+
+		updateStat(i) {
+			let loader = this.$loading.show();
+
+			const item = this.items[i]
+			const date = this.date != null
+				? this.date
+				: this.$moment(Date.now()).format('YYYY-MM-DD')
+
+			const value = [1,3,5].includes(item.method) ? item.fact : item.avg
+
+			this.axios.post('/statistics/update-stat', {
+				user_id: this.kpi_id,
+				kpi_item_id: item.id,
+				activity_id: item.activity_id,
+				value: value,
+				date: date,
+			}).then(() => {
+				this.$toast.success('Изменено');
+				loader.hide()
+			}).catch(error => {
+				loader.hide()
+				alert(error)
+			});
+		},
+		getSum(){
+			let sum = 0;
+			this.items.forEach(item => {
+				sum += item.sum;
+			});
+			this.$emit('getSum', sum);
+		}
+
+
+	}
 }
 </script>

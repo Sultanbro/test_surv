@@ -115,105 +115,105 @@ import PopupQuartal from '@/pages/Profile/Popups/PopupQuartal.vue'
 import Nominations from '@/pages/Profile/Popups/Nominations.vue'
 
 export default {
-    name: 'ProfilePage',
-    components: {
-        IntroTop,
-        IntroStats,
-        // IntroSmartTable,
-        MobileProfileSidebar,
-        Courses,
-        Profit,
-        TraineeEstimation,
-        CompareIndicators,
-        Popup,
-        Balance,
-        Kpi,
-        Bonuses,
-        PopupQuartal,
-        Nominations,
-    },
-    props: {},
-    data: function () {
-        return {
-            desc: 'Подождите, идет загрузка...',
-            fields: [],
-            popBalance: false,
-            popKpi: false,
-            popBonuses: false,
-            popQuartalPremiums: false,
-            popNominations: false,
-            intro: {
-                courses: false,
-                profit: false,
-                estimation: false,
-                indicators: false,
-            },
-            anim: {
-                intro: false,
-                profileSidebar: false,
-                courses: false,
-                profit: false,
-                estimation: false,
-                indicators: false
-            },
-            intersectionObserver: null
-        };
-    },
-    computed: {
-        popupWidth(){
-            const w = this.$viewportSize.width
-            if(w < 651) return '100%'
-            if(w < 1360) return '75%'
-            return w - (19 * this.$viewportSize.rem) + 'px'
-        },
-        isProfileVisible(){
-           return this.$viewportSize.width < 1360
-        }
-    },
-    mounted(){
-        this.initAnimOnScroll()
-    },
-    methods: {
-        pop(window) {
-            if(window == 'balance') this.popBalance = true;
-            if(window == 'kpi') this.popKpi = true;
-            if(window == 'bonus') this.popBonuses = true;
-            if(window == 'qp') this.popQuartalPremiums = true;
-            if(window == 'nominations') this.popNominations = true;
-        },
-        getDesc(text){
-            this.desc = text;
-        },
-        initAnimOnScroll(){
-            const w = this.$viewportSize.width
-            if(w > 900){
-                this.intersectionObserver = new IntersectionObserver(this.animOnScroll, {
-                    threshold: 0.1
-                })
-                this.intersectionObserver.observe(this.$refs.intro.$el)
-                this.intersectionObserver.observe(this.$refs.profileSidebar.$el)
-                this.intersectionObserver.observe(this.$refs.courses.$el)
-                this.intersectionObserver.observe(this.$refs.profit.$el)
-                this.intersectionObserver.observe(this.$refs.estimation.$el)
-                this.intersectionObserver.observe(this.$refs.indicators.$el)
-                return
-            }
-            Object.keys(this.anim).forEach(key => {
-                this.anim[key] = true
-            })
-        },
-        animOnScroll(entries){
-            entries.forEach(entry => {
-                if(entry.isIntersecting){
-                    Object.keys(this.anim).forEach(key => {
-                        if(this.$refs[key].$el === entry.target){
-                            this.anim[key] = true
-                        }
-                    })
-                }
-            })
-        }
-    }
+	name: 'ProfilePage',
+	components: {
+		IntroTop,
+		IntroStats,
+		// IntroSmartTable,
+		MobileProfileSidebar,
+		Courses,
+		Profit,
+		TraineeEstimation,
+		CompareIndicators,
+		Popup,
+		Balance,
+		Kpi,
+		Bonuses,
+		PopupQuartal,
+		Nominations,
+	},
+	props: {},
+	data: function () {
+		return {
+			desc: 'Подождите, идет загрузка...',
+			fields: [],
+			popBalance: false,
+			popKpi: false,
+			popBonuses: false,
+			popQuartalPremiums: false,
+			popNominations: false,
+			intro: {
+				courses: false,
+				profit: false,
+				estimation: false,
+				indicators: false,
+			},
+			anim: {
+				intro: false,
+				profileSidebar: false,
+				courses: false,
+				profit: false,
+				estimation: false,
+				indicators: false
+			},
+			intersectionObserver: null
+		};
+	},
+	computed: {
+		popupWidth(){
+			const w = this.$viewportSize.width
+			if(w < 651) return '100%'
+			if(w < 1360) return '75%'
+			return w - (19 * this.$viewportSize.rem) + 'px'
+		},
+		isProfileVisible(){
+			return this.$viewportSize.width < 1360
+		}
+	},
+	mounted(){
+		this.initAnimOnScroll()
+	},
+	methods: {
+		pop(window) {
+			if(window == 'balance') this.popBalance = true;
+			if(window == 'kpi') this.popKpi = true;
+			if(window == 'bonus') this.popBonuses = true;
+			if(window == 'qp') this.popQuartalPremiums = true;
+			if(window == 'nominations') this.popNominations = true;
+		},
+		getDesc(text){
+			this.desc = text;
+		},
+		initAnimOnScroll(){
+			const w = this.$viewportSize.width
+			if(w > 900){
+				this.intersectionObserver = new IntersectionObserver(this.animOnScroll, {
+					threshold: 0.1
+				})
+				this.intersectionObserver.observe(this.$refs.intro.$el)
+				this.intersectionObserver.observe(this.$refs.profileSidebar.$el)
+				this.intersectionObserver.observe(this.$refs.courses.$el)
+				this.intersectionObserver.observe(this.$refs.profit.$el)
+				this.intersectionObserver.observe(this.$refs.estimation.$el)
+				this.intersectionObserver.observe(this.$refs.indicators.$el)
+				return
+			}
+			Object.keys(this.anim).forEach(key => {
+				this.anim[key] = true
+			})
+		},
+		animOnScroll(entries){
+			entries.forEach(entry => {
+				if(entry.isIntersecting){
+					Object.keys(this.anim).forEach(key => {
+						if(this.$refs[key].$el === entry.target){
+							this.anim[key] = true
+						}
+					})
+				}
+			})
+		}
+	}
 };
 </script>
 

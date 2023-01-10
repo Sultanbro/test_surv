@@ -23,65 +23,65 @@
 </template>
 
 <script>
-import {mapActions, mapGetters} from "vuex";
+import {mapActions, mapGetters} from 'vuex';
 
 export default {
-  name: "SearchBox",
-  computed: {
-    ...mapGetters(['isOpen', 'isInitialized', 'unreadCount', 'searchType', 'isSearchFocus', 'isSocketConnected']),
-  },
-  mounted() {
-    if (this.isSearchFocus) {
-      this.focus()
-    }
-    if (!this.isSocketConnected) {
-      this.socketError();
-    }
-  },
-  data() {
-    return {
-      searchString: '',
-      connectionError: false,
-    }
-  },
-  watch: {
-    searchString() {
-      this.search()
-    },
-    isSearchFocus() {
-      if (this.isSearchFocus) {
-        this.focus();
-      }
-    },
-    isSocketConnected() {
-      if (!this.isSocketConnected) {
-        this.socketError();
-      } else {
-        this.connectionError = false;
-      }
-    }
-  },
-  methods: {
-    ...mapActions(['findContacts', 'findMessages', 'setSearchFocus']),
-    focus() {
-      this.$nextTick(() => {
-        document.getElementById('messenger_search_input').focus();
-        this.setSearchFocus(false);
-      });
-    },
-    search() {
-      this.findMessages(this.searchString);
-      this.findContacts(this.searchString);
-    },
-    socketError() {
-      // wait 5 seconds before showing connection error
-      setTimeout(() => {
-        if (!this.isSocketConnected) {
-          this.connectionError = true;
-        }
-      }, 5000);
-    }
-  }
+	name: 'SearchBox',
+	computed: {
+		...mapGetters(['isOpen', 'isInitialized', 'unreadCount', 'searchType', 'isSearchFocus', 'isSocketConnected']),
+	},
+	mounted() {
+		if (this.isSearchFocus) {
+			this.focus()
+		}
+		if (!this.isSocketConnected) {
+			this.socketError();
+		}
+	},
+	data() {
+		return {
+			searchString: '',
+			connectionError: false,
+		}
+	},
+	watch: {
+		searchString() {
+			this.search()
+		},
+		isSearchFocus() {
+			if (this.isSearchFocus) {
+				this.focus();
+			}
+		},
+		isSocketConnected() {
+			if (!this.isSocketConnected) {
+				this.socketError();
+			} else {
+				this.connectionError = false;
+			}
+		}
+	},
+	methods: {
+		...mapActions(['findContacts', 'findMessages', 'setSearchFocus']),
+		focus() {
+			this.$nextTick(() => {
+				document.getElementById('messenger_search_input').focus();
+				this.setSearchFocus(false);
+			});
+		},
+		search() {
+			this.findMessages(this.searchString);
+			this.findContacts(this.searchString);
+		},
+		socketError() {
+			// wait 5 seconds before showing connection error
+			setTimeout(() => {
+				if (!this.isSocketConnected) {
+					this.connectionError = true;
+				}
+			}, 5000);
+		}
+	}
 }
 </script>
 

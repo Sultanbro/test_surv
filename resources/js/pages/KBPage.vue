@@ -35,9 +35,9 @@
           >
             <template v-for="(book, b_index) in books">
                   <div
+                    :key="book.id"
                     class="section d-flex aic jcsb"
                     :id="book.id"
-                    :key="book.id"
                     @click.stop="selectSection(book)"
                   >
                     <div class="d-flex aic"  >
@@ -60,8 +60,8 @@
         <div class="sections-wrap noscrollbar" v-else>
           <template v-for="(book, b_index) in archived_books">
             <div
+              :key="b_index"
               class="section d-flex aic jcsb"
-
               v-if="can_edit"
               @click.stop="selectSection(book)"
             >
@@ -266,7 +266,7 @@
            <div class="sss" v-if="search.input.length >=3 && search.items.length == 0">
             <p>По запросу "{{ search.input }}" ничего не найдено.</p>
           </div>
-         <div class="item" v-for="item in search.items" @click="selectSection(item.book, item.id)" >
+         <div class="item" v-for="item in search.items" :key="item.id" @click="selectSection(item.book, item.id)" >
            <p v-if="item.book != null" class="book">{{ item.book.title }}</p>
            <p>{{ item.title }}</p>
            <div class="text" v-html="item.text"></div>
@@ -288,331 +288,331 @@ import Sidebar from '@/components/ui/Sidebar' // сайдбар table
 import SuperSelect from '@/components/SuperSelect' // with User ProfileGroup and Position
 
 export default {
-  name: 'KBPage',
-  components: {
-    Draggable,
-    Glossary,
-    Booklist,
-    Sidebar,
-    SuperSelect,
-  },
-  props: {
-    auth_user_id: {
-      type:Number
-    },
-   can_edit: {
-      type: Boolean,
-      default: false
-    }
-  },
-  data() {
-    return {
-      books: [],
-      mode: 'read',
-      archived_books: [],
-      trees: [],
-      settings: null,
-      section: 0,
-      activeBook: null,
-      showCreate: false,
-      show_glossary: false,
-      send_notification_after_edit: false,
-      show_page_from_kb_everyday: false,
-      allow_save_kb_without_test: false,
-      showBookSettings: false,
-      showArchive: false,
-      showSearch: false,
-      who_can_read: [],
-      who_can_edit: [],
-      showEdit: false,
-      show_page_id: 0,
-      superselectKey: 1,
-      section_name: '',
-      update_book: null,
-      search: {
-        input: '',
-        items: []
-      }
-    };
-  },
-  watch: {
-    auth_user_id(){
-      this.init()
-    }
-  },
+	name: 'KBPage',
+	components: {
+		Draggable,
+		Glossary,
+		Booklist,
+		Sidebar,
+		SuperSelect,
+	},
+	props: {
+		auth_user_id: {
+			type:Number
+		},
+		can_edit: {
+			type: Boolean,
+			default: false
+		}
+	},
+	data() {
+		return {
+			books: [],
+			mode: 'read',
+			archived_books: [],
+			trees: [],
+			settings: null,
+			section: 0,
+			activeBook: null,
+			showCreate: false,
+			show_glossary: false,
+			send_notification_after_edit: false,
+			show_page_from_kb_everyday: false,
+			allow_save_kb_without_test: false,
+			showBookSettings: false,
+			showArchive: false,
+			showSearch: false,
+			who_can_read: [],
+			who_can_edit: [],
+			showEdit: false,
+			show_page_id: 0,
+			superselectKey: 1,
+			section_name: '',
+			update_book: null,
+			search: {
+				input: '',
+				items: []
+			}
+		};
+	},
+	watch: {
+		auth_user_id(){
+			this.init()
+		}
+	},
 
-  created() {
-    if(this.auth_user_id){
-      this.init()
-    }
-  },
+	created() {
+		if(this.auth_user_id){
+			this.init()
+		}
+	},
 
-  methods: {
-    init(){
-      this.fetchData();
+	methods: {
+		init(){
+			this.fetchData();
 
-      // бывор группы
-      const urlParams = new URLSearchParams(window.location.search);
-      let section = urlParams.get('s');
-      if(section) {
-        this.selectSection({id: section})
-      }
-    },
-    fetchData() {
-      axios
-        .get("/kb/get", {})
-        .then((response) => {
-          this.books = response.data.books;
-        })
-        .catch((error) => {
-          alert(error);
-        });
-    },
+			// бывор группы
+			const urlParams = new URLSearchParams(window.location.search);
+			let section = urlParams.get('s');
+			if(section) {
+				this.selectSection({id: section})
+			}
+		},
+		fetchData() {
+			this.axios
+				.get('/kb/get', {})
+				.then((response) => {
+					this.books = response.data.books;
+				})
+				.catch((error) => {
+					alert(error);
+				});
+		},
 
-    get_settings() {
+		get_settings() {
 
-      axios
-        .post("/settings/get", {
-          type: 'kb'
-        })
-        .then((response) => {
-          this.send_notification_after_edit = response.data.settings.send_notification_after_edit;
-          this.show_page_from_kb_everyday = response.data.settings.show_page_from_kb_everyday;
-          this.allow_save_kb_without_test = response.data.settings.allow_save_kb_without_test;
-          this.showBookSettings = true;
-        })
-        .catch((error) => {
-          alert(error);
-        });
-    },
+			this.axios
+				.post('/settings/get', {
+					type: 'kb'
+				})
+				.then((response) => {
+					this.send_notification_after_edit = response.data.settings.send_notification_after_edit;
+					this.show_page_from_kb_everyday = response.data.settings.show_page_from_kb_everyday;
+					this.allow_save_kb_without_test = response.data.settings.allow_save_kb_without_test;
+					this.showBookSettings = true;
+				})
+				.catch((error) => {
+					alert(error);
+				});
+		},
 
-    save_settings() {
-       axios
-        .post("/settings/save", {
-          type: 'kb',
-          send_notification_after_edit: this.send_notification_after_edit,
-          show_page_from_kb_everyday: this.show_page_from_kb_everyday,
-          allow_save_kb_without_test: this.allow_save_kb_without_test,
-        })
-        .then((response) => {
-          this.showBookSettings = false;
-        })
-        .catch((error) => {
-          alert(error);
-        });
-    },
+		save_settings() {
+			this.axios
+				.post('/settings/save', {
+					type: 'kb',
+					send_notification_after_edit: this.send_notification_after_edit,
+					show_page_from_kb_everyday: this.show_page_from_kb_everyday,
+					allow_save_kb_without_test: this.allow_save_kb_without_test,
+				})
+				.then(() => {
+					this.showBookSettings = false;
+				})
+				.catch((error) => {
+					alert(error);
+				});
+		},
 
-    selectSection(book, page_id = 0) {
-      axios
-        .post("kb/tree", {
-          id: book.id,
-        })
-        .then((response) => {
-          if(response.data.error) {
-            this.$toast.info('Раздел не найден');
-          }
-          this.trees = response.data.trees;
-          this.activeBook = response.data.book;
-          this.show_page_id = page_id;
-          this.showSearch = false;
-          this.search.input = '';
-          this.search.items = [];
-          // change URL
-          const urlParams = new URLSearchParams(window.location.search);
-          let b = urlParams.get('b');
-          let uri = "/kb?s=" + book.id;
-          if(b) uri+= '&b=' + b;
-          window.history.replaceState({}, "База знаний", uri);
+		selectSection(book, page_id = 0) {
+			this.axios
+				.post('kb/tree', {
+					id: book.id,
+				})
+				.then((response) => {
+					if(response.data.error) {
+						this.$toast.info('Раздел не найден');
+					}
+					this.trees = response.data.trees;
+					this.activeBook = response.data.book;
+					this.show_page_id = page_id;
+					this.showSearch = false;
+					this.search.input = '';
+					this.search.items = [];
+					// change URL
+					const urlParams = new URLSearchParams(window.location.search);
+					let b = urlParams.get('b');
+					let uri = '/kb?s=' + book.id;
+					if(b) uri+= '&b=' + b;
+					window.history.replaceState({}, 'База знаний', uri);
 
-        })
-        .catch((error) => {
-          alert(error);
-        });
-    },
+				})
+				.catch((error) => {
+					alert(error);
+				});
+		},
 
-    deleteSection(i) {
-      if (confirm("Вы уверены что хотите архивировать раздел?")) {
-        axios
-          .post("/kb/page/delete-section", {
-            id: this.books[i].id
-          })
-          .then((response) => {
-            this.books.splice(i, 1);
-            this.$toast.success("Удалено");
-          });
-      }
-    },
+		deleteSection(i) {
+			if (confirm('Вы уверены что хотите архивировать раздел?')) {
+				this.axios
+					.post('/kb/page/delete-section', {
+						id: this.books[i].id
+					})
+					.then(() => {
+						this.books.splice(i, 1);
+						this.$toast.success('Удалено');
+					});
+			}
+		},
 
-    restoreSection(i) {
-      if (confirm("Вы уверены что хотите восстановить раздел?")) {
-        axios
-          .post("/kb/page/restore-section", {
-            id: this.archived_books[i].id
-          })
-          .then((response) => {
-            this.books.push(this.archived_books[i]);
-            this.archived_books.splice(i, 1);
-            this.$toast.success("Восстановлен");
-          });
-      }
-    },
+		restoreSection(i) {
+			if (confirm('Вы уверены что хотите восстановить раздел?')) {
+				this.axios
+					.post('/kb/page/restore-section', {
+						id: this.archived_books[i].id
+					})
+					.then(() => {
+						this.books.push(this.archived_books[i]);
+						this.archived_books.splice(i, 1);
+						this.$toast.success('Восстановлен');
+					});
+			}
+		},
 
-    back() {
-      this.activeBook = null;
-      window.history.replaceState({ id: "100" }, "База знаний", "/kb");
-    },
+		back() {
+			this.activeBook = null;
+			window.history.replaceState({ id: '100' }, 'База знаний', '/kb');
+		},
 
-    searchInput() {
-      if(this.search.input.length <= 2) return null;
+		searchInput() {
+			if(this.search.input.length <= 2) return null;
 
-      axios
-        .post("kb/search", {
-          text: this.search.input,
-        })
-        .then((response) => {
+			this.axios
+				.post('kb/search', {
+					text: this.search.input,
+				})
+				.then((response) => {
 
-          this.search.items = response.data.items;
-          this.emphasizeTexts();
+					this.search.items = response.data.items;
+					this.emphasizeTexts();
 
-        })
-        .catch((error) => {
-          alert(error);
-        });
-    },
+				})
+				.catch((error) => {
+					alert(error);
+				});
+		},
 
-    emphasizeTexts() {
-      this.search.items.forEach(item => {
-         item.text = item.text.replace(new RegExp(this.search.input,"gi"), "<b>" + this.search.input +  "</b>");
-      });
-    },
+		emphasizeTexts() {
+			this.search.items.forEach(item => {
+				item.text = item.text.replace(new RegExp(this.search.input,'gi'), '<b>' + this.search.input +  '</b>');
+			});
+		},
 
-    editAccess(book) {
-
-
-      this.showEdit = true;
-
-      this.update_book = book;
-      console.log(book)
-      axios
-        .post("/kb/page/get-access", {
-          id: book.id,
-        })
-        .then((response) => {
-          this.who_can_edit = response.data.who_can_edit;
-          this.who_can_read = response.data.who_can_read;
-          this.superselectKey++;
-        })
-        .catch((error) => {
-          alert(error);
-        });
-    },
-
-    addSection() {
-      if (this.section_name.length <= 2) {
-        alert("Слишком короткое название!");
-        return "";
-      }
-
-      let loader = this.$loading.show();
-
-      axios
-        .post("/kb/page/add-section", {
-          name: this.section_name,
-        })
-        .then((response) => {
-          this.showCreate = false;
-          this.section_name = "";
-
-          this.books.push(response.data);
-
-          this.$toast.success("Раздел успешно создан!");
-          loader.hide();
-        })
-        .catch((error) => {
-          loader.hide();
-          alert(error);
-        });
-    },
-
-    getArchivedBooks() {
-      let loader = this.$loading.show();
-
-      axios
-        .get("/kb/get-archived")
-        .then((response) => {
-
-          this.archived_books = response.data.books
-          this.showArchive = true
-          loader.hide();
-        })
-        .catch((error) => {
-          loader.hide();
-          alert(error);
-        });
-    },
-
-    updateSection() {
-      if (this.update_book.title.length <= 2) {
-        alert("Слишком короткое название!");
-        return "";
-      }
-
-      let loader = this.$loading.show();
-
-      axios
-        .post("/kb/page/update-section", {
-          title: this.update_book.title,
-          who_can_read: this.who_can_read,
-          who_can_edit: this.who_can_edit,
-          id: this.update_book.id,
-        })
-        .then((response) => {
-          this.showEdit = false;
-          let index = this.books.findIndex(b => b.id == this.update_book.id);
-
-          if(index != -1) {
-            this.books[index].title = this.update_book.title;
-          }
-
-          this.update_book = null;
-          this.who_can_read = [];
-          this.who_can_edit = [];
-
-          this.$toast.success("Изменения сохранены!");
-          loader.hide();
-        })
-        .catch((error) => {
-          loader.hide();
-          alert(error);
-        });
-    },
-
-    saveOrder(event) {
-        console.log(event)
-        axios.post('/kb/page/save-order', {
-          id: event.item.id,
-          order: event.newIndex, // oldIndex
-          parent_id: null
-        })
-        .then(response => {
-           this.$toast.success('Очередь сохранена');
-        })
-    },
+		editAccess(book) {
 
 
-    toggleMode() {
-      this.mode = (this.mode == 'read') ? 'edit' : 'read';
-    },
+			this.showEdit = true;
 
-    startChangeOrder(event) {
-        console.log(event)
-    },
+			this.update_book = book;
+			console.log(book)
+			this.axios
+				.post('/kb/page/get-access', {
+					id: book.id,
+				})
+				.then((response) => {
+					this.who_can_edit = response.data.who_can_edit;
+					this.who_can_read = response.data.who_can_read;
+					this.superselectKey++;
+				})
+				.catch((error) => {
+					alert(error);
+				});
+		},
 
-    openGlossary() {
-      this.show_glossary = true;
-    }
+		addSection() {
+			if (this.section_name.length <= 2) {
+				alert('Слишком короткое название!');
+				return '';
+			}
 
-  },
+			let loader = this.$loading.show();
+
+			this.axios
+				.post('/kb/page/add-section', {
+					name: this.section_name,
+				})
+				.then((response) => {
+					this.showCreate = false;
+					this.section_name = '';
+
+					this.books.push(response.data);
+
+					this.$toast.success('Раздел успешно создан!');
+					loader.hide();
+				})
+				.catch((error) => {
+					loader.hide();
+					alert(error);
+				});
+		},
+
+		getArchivedBooks() {
+			let loader = this.$loading.show();
+
+			this.axios
+				.get('/kb/get-archived')
+				.then((response) => {
+
+					this.archived_books = response.data.books
+					this.showArchive = true
+					loader.hide();
+				})
+				.catch((error) => {
+					loader.hide();
+					alert(error);
+				});
+		},
+
+		updateSection() {
+			if (this.update_book.title.length <= 2) {
+				alert('Слишком короткое название!');
+				return '';
+			}
+
+			let loader = this.$loading.show();
+
+			this.axios
+				.post('/kb/page/update-section', {
+					title: this.update_book.title,
+					who_can_read: this.who_can_read,
+					who_can_edit: this.who_can_edit,
+					id: this.update_book.id,
+				})
+				.then(() => {
+					this.showEdit = false;
+					let index = this.books.findIndex(b => b.id == this.update_book.id);
+
+					if(index != -1) {
+						this.books[index].title = this.update_book.title;
+					}
+
+					this.update_book = null;
+					this.who_can_read = [];
+					this.who_can_edit = [];
+
+					this.$toast.success('Изменения сохранены!');
+					loader.hide();
+				})
+				.catch((error) => {
+					loader.hide();
+					alert(error);
+				});
+		},
+
+		saveOrder(event) {
+			console.log(event)
+			this.axios.post('/kb/page/save-order', {
+				id: event.item.id,
+				order: event.newIndex, // oldIndex
+				parent_id: null
+			})
+				.then(() => {
+					this.$toast.success('Очередь сохранена');
+				})
+		},
+
+
+		toggleMode() {
+			this.mode = (this.mode == 'read') ? 'edit' : 'read';
+		},
+
+		startChangeOrder(event) {
+			console.log(event)
+		},
+
+		openGlossary() {
+			this.show_glossary = true;
+		}
+
+	},
 };
 </script>
 

@@ -22,36 +22,36 @@
 </template>
 
 <script>
-    export default {
-        name: "tree-item",
-        props: {
-            item: Object
-        },
-        data() {
-            return {
-                isOpen: false
-            }
-        },
-        computed: {
-            isFolder: function () {
-                return this.item.categoryes &&
+export default {
+	name: 'tree-item',
+	props: {
+		item: Object
+	},
+	data() {
+		return {
+			isOpen: false
+		}
+	},
+	computed: {
+		isFolder: function () {
+			return this.item.categoryes &&
                     this.item.categoryes.length
-            }
-        },
-        methods: {
-            toggle: function () {
-                if (this.isFolder) {
-                    this.isOpen = !this.isOpen
-                }
-            },
-            makeFolder: function () {
-                if (!this.isFolder) {
-                    this.$emit('make-folder', this.item)
-                    this.isOpen = true
-                }
-            }
-        }
-    }
+		}
+	},
+	methods: {
+		toggle: function () {
+			if (this.isFolder) {
+				this.isOpen = !this.isOpen
+			}
+		},
+		makeFolder: function () {
+			if (!this.isFolder) {
+				this.$emit('make-folder', this.item)
+				this.isOpen = true
+			}
+		}
+	}
+}
 </script>
 
 <style scoped>

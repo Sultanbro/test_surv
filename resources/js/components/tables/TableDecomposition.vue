@@ -19,7 +19,7 @@
                         'weekend' : is_weekday[day],
                     }"
                 colspan="2"
-                v-for="day in month.daysInMonth">
+                v-for="day in month.daysInMonth" :key="day">
                 <div>{{ day }}</div>
             </th>
         </tr>
@@ -28,8 +28,8 @@
             <th>план</th>
             <th>факт</th>
             <template v-for="day in month.daysInMonth">
-                <th>план</th>
-                <th class="border-r-2">факт</th>
+                <th :key="day">план</th>
+                <th :key="day + 'a'" class="border-r-2">факт</th>
             </template>
         </tr>
         </thead>
@@ -48,7 +48,7 @@
             <td>{{ Number(item.total_plan).toFixed(0) }}</td>
             <td class="border-r-2">{{ Number(item.total_fact).toFixed(0) }}</td>
             <template v-for="day in month.daysInMonth">
-                <td v-if="item.editable"
+                <td v-if="item.editable" :key="day"
                     class="px-0 day-minute text-center"
                     :class="{
                         'weekend' : is_weekday[day],
@@ -60,7 +60,7 @@
                                @change="updateSettings($event, item, index, day)">
                     </div>
                 </td>
-                <td v-else
+                <td v-else :key="day + 'a'"
                     @click="editMode(item)"
                     class="px-0 day-minute text-center"
                     :class="{
@@ -69,7 +69,7 @@
                 >
                     <div>{{ item[day].plan }}</div>
                 </td>
-                <td v-if="item.editable"
+                <td v-if="item.editable" :key="day + 'b'"
                     class="px-0 day-minute text-center border-r-2"
                     :class="{
                         'table-danger': Number(item[day].fact) != 0 && Number(item[day].plan) > Number(item[day].fact),
@@ -82,7 +82,7 @@
                                @change="updateSettings($event, item, index, day)">
                     </div>
                 </td>
-                <td v-else
+                <td v-else :key="day + 'c'"
                     @click="editMode(item)"
                     class="px-0 day-minute text-center border-r-2"
                     :class="{
@@ -103,7 +103,7 @@
 
 
     <b-modal ref="change-plan-modal" hide-footer title="Проставить план">
-  
+
       <div class="row">
           <div class="col-6">
                <label for="">С:</label>
@@ -121,7 +121,7 @@
                 <b-button class="mt-3" variant="primary" block @click="changePlan">Проставить</b-button>
             </div>
        </div>
-      
+
     </b-modal>
 
 </div>
@@ -129,288 +129,288 @@
 
 <script>
 export default {
-    name: "TableDecomposition",
-    props: {
-        month: Object,
-        data: Object,
-    },
-    data() {
-        return {
-            items: [],
-            fields: [],
-            itemsArray: [],
-            records: [],
-            is_weekday: {},
-            planner: {
-                value: null,
-                from: 1,
-                to: null,
-                index: null,
-            }
-        };
-    },
-    watch: { 
-        data: function(newVal, oldVal) {
-            this.fetchData();
-        },
-    },
-    created() {
-        this.fetchData();
+	name: 'TableDecomposition',
+	props: {
+		month: Object,
+		data: Object,
+	},
+	data() {
+		return {
+			items: [],
+			fields: [],
+			itemsArray: [],
+			records: [],
+			is_weekday: {},
+			planner: {
+				value: null,
+				from: 1,
+				to: null,
+				index: null,
+			}
+		};
+	},
+	watch: {
+		data: function() {
+			this.fetchData();
+		},
+	},
+	created() {
+		this.fetchData();
 
-        this.getWeekdays()
-        this.planner.to = this.month.daysInMonth
-    },
+		this.getWeekdays()
+		this.planner.to = this.month.daysInMonth
+	},
 
-    methods: {
-        
-        getWeekdays() {
-            
-            for (let i = 1; i <= this.month.daysInMonth; i++) {
-                let day = i > 9 ? i : '0' + i;
-                let month = Number(this.month.month) > 9 ? this.month.month : '0' + this.month.month;
-                let date = new Date(this.month.currentYear + "-" + month  + "-" + day)
-                if(date.getDay() == 0 || date.getDay() == 6) {
-                    this.is_weekday[i] = true
-                } else {
-                    this.is_weekday[i] = false
-                }
-            }
-        },
+	methods: {
 
-        fetchData() {
-            let loader = this.$loading.show();
-            
-            this.records = this.data.records;
-            this.accountsNumber = this.data.records.length
-          
-            this.calculateRecordsValues()
-            //this.calcTotals()
+		getWeekdays() {
 
-            this.items = this.itemsArray;
-            loader.hide();    
-        },
+			for (let i = 1; i <= this.month.daysInMonth; i++) {
+				let day = i > 9 ? i : '0' + i;
+				let month = Number(this.month.month) > 9 ? this.month.month : '0' + this.month.month;
+				let date = new Date(this.month.currentYear + '-' + month  + '-' + day)
+				if(date.getDay() == 0 || date.getDay() == 6) {
+					this.is_weekday[i] = true
+				} else {
+					this.is_weekday[i] = false
+				}
+			}
+		},
 
-        addRecord() {
-            let cells = {
-                name:'test',
-                plan: 0,
-                editable: false,
-            };
+		fetchData() {
+			let loader = this.$loading.show();
 
-            for (let i = 1; i <= this.month.daysInMonth; i++) {
-                cells[i] = {
-                    'plan' : '',
-                    'fact' : '',
-                }       
-            }
+			this.records = this.data.records;
+			this.accountsNumber = this.data.records.length
 
-            this.items.push(cells)
+			this.calculateRecordsValues()
+			//this.calcTotals()
 
-            this.$toast.info('Пункт добавлен')
-        },
+			this.items = this.itemsArray;
+			loader.hide();
+		},
 
-        updateSettings(e, data, index, key) {
-            data.editable = false
-            this.updateTable(this.items); 
+		addRecord() {
+			let cells = {
+				name:'test',
+				plan: 0,
+				editable: false,
+			};
 
-            let post_data = {
-                    group_id: this.data.group_id,
-                    id: data.id,
-                    name: data.name,
-                    index: index,
-                    values: this.items[index], 
-                };
+			for (let i = 1; i <= this.month.daysInMonth; i++) {
+				cells[i] = {
+					'plan' : '',
+					'fact' : '',
+				}
+			}
 
-            this.reqSave(post_data);
-        },
+			this.items.push(cells)
 
-        reqSave(post_data) {
-            let url = "/timetracking/analytics/decomposition/save";
-            let loader = this.$loading.show();  
-            let self = this.items;
-            let year = new Date().getFullYear();
-            
-            post_data.date = this.$moment(
-                `${this.month.currentMonth} ${year}`,
-                "MMMM YYYY"
-            ).format("YYYY-MM-DD");
+			this.$toast.info('Пункт добавлен')
+		},
 
-            axios.post(url, post_data)
-                .then((response) => {
-                    if(post_data.id === undefined) {
-                        self[post_data.index].id = response.data.id
-                    }
-                })
-                .catch(error => {
-                    alert(error)
-                });
-            loader.hide();   
-        },
+		updateSettings(e, data, index) {
+			data.editable = false
+			this.updateTable(this.items);
 
-        showModal(index) {
-            this.planner.index = index;
-            this.$refs['change-plan-modal'].show();
-        },
+			let post_data = {
+				group_id: this.data.group_id,
+				id: data.id,
+				name: data.name,
+				index: index,
+				values: this.items[index],
+			};
 
-        changePlan() {
-            
-            if (this.planner.value != null && this.planner.value != '') {
-                
-                // Set plans from to
-                let start = this.planner.from,
-                    end = this.planner.to > this.month.daysInMonth ? this.month.daysInMonth : this.planner.to;
-                
-                for (let i = start; i <= end; i++) {
-                    this.items[this.planner.index][i].plan = Number(this.planner.value);
-                }
-                
-                // POST
-                this.reqSave({
-                    group_id: this.data.group_id,
-                    id: this.items[this.planner.index].id,
-                    name: this.items[this.planner.index].name,
-                    values: this.items[this.planner.index], 
-                    index: this.planner.index
-                });
+			this.reqSave(post_data);
+		},
 
-                // Count total plan
-                let total_plan = 0;
-       
-                for (let i = 1; i <= this.month.daysInMonth; i++) {
-                    total_plan += Number(this.items[this.planner.index][i].plan);
-                }
-                this.items[this.planner.index].total_plan = total_plan
-                // Reset planner
-                this.planner = {
-                    value: null,
-                    from: 1,
-                    to: this.month.daysInMonth,
-                    index: null,
-                }
-                this.$toast.info('План проставлен')
-            }
-            
-            
+		reqSave(post_data) {
+			let url = '/timetracking/analytics/decomposition/save';
+			let loader = this.$loading.show();
+			let self = this.items;
+			let year = new Date().getFullYear();
 
-            
-            // Hide modal
-            this.$refs['change-plan-modal'].hide();
-            
-        },
+			post_data.date = this.$moment(
+				`${this.month.currentMonth} ${year}`,
+				'MMMM YYYY'
+			).format('YYYY-MM-DD');
 
-        deleteRecord(id, index) {
-            if (!confirm("Вы уверены?")) {
-                return '';
-            }
+			this.axios.post(url, post_data)
+				.then((response) => {
+					if(post_data.id === undefined) {
+						self[post_data.index].id = response.data.id
+					}
+				})
+				.catch(error => {
+					alert(error)
+				});
+			loader.hide();
+		},
 
-            if(id != 0) {
+		showModal(index) {
+			this.planner.index = index;
+			this.$refs['change-plan-modal'].show();
+		},
 
-                let url = "/timetracking/analytics/decomposition/delete";
+		changePlan() {
 
-                axios.delete(url, {
-                    headers: {},
-                    data: {
-                        id: id
-                    }
-                })
-                .then((response) => {
-                    this.$toast.info('Пункт удален')
-                })
-                .catch(error => {
-                    alert(error)
-                });
-            }
+			if (this.planner.value != null && this.planner.value != '') {
 
-            this.items.splice(index, 1);
+				// Set plans from to
+				let start = this.planner.from,
+					end = this.planner.to > this.month.daysInMonth ? this.month.daysInMonth : this.planner.to;
 
-        },
+				for (let i = start; i <= end; i++) {
+					this.items[this.planner.index][i].plan = Number(this.planner.value);
+				}
 
-        calculateRecordsValues() {
-            this.sum = {};
-            this.itemsArray = [];
-          
-            this.records.forEach((item, index) => {
-                
-                let cellValues = [],
-                    totalPlan = 0,
-                    totalFact = 0;
-                
-                
-                for (let i = 1; i <= this.month.daysInMonth; i++) {
-                    
-                    cellValues[i] = item[i];
-                    
-                    if(item[i] === undefined) {
-                        cellValues[i] = {
-                            'plan': '',
-                            'fact': ''
-                        };
-                        continue;
-                    }
-                    if(item[i].plan !== undefined) {
-                        totalPlan += Number(item[i].plan)
-                    } 
+				// POST
+				this.reqSave({
+					group_id: this.data.group_id,
+					id: this.items[this.planner.index].id,
+					name: this.items[this.planner.index].name,
+					values: this.items[this.planner.index],
+					index: this.planner.index
+				});
 
-                    if(item[i].fact !== undefined) {
-                        totalFact += Number(item[i].fact)
-                    } 
+				// Count total plan
+				let total_plan = 0;
 
-                }
-                
-                this.itemsArray.push({
-                    name: item.name,
-                    id: item.id,
-                    editable: false,
-                    total_plan: totalPlan,
-                    total_fact: totalFact,
-                    group_id: this.data.group_id,
-                    ...cellValues,
-                });  
-                
-            });
-        },
+				for (let i = 1; i <= this.month.daysInMonth; i++) {
+					total_plan += Number(this.items[this.planner.index][i].plan);
+				}
+				this.items[this.planner.index].total_plan = total_plan
+				// Reset planner
+				this.planner = {
+					value: null,
+					from: 1,
+					to: this.month.daysInMonth,
+					index: null,
+				}
+				this.$toast.info('План проставлен')
+			}
 
-        updateTable(items) {
-            let loader = this.$loading.show();
-            
-            this.records = items;
-            this.calculateRecordsValues();
-     
-            this.totalColumn()
-            this.items = this.itemsArray;
-            
-            loader.hide();
-        },
 
-        addCellVariantsArrayToRecords(){
-            this.itemsArray.forEach((element, key) => {
-                this.itemsArray[key]["_cellVariants"] = [];
-            });
-        },
 
-        totalColumn() {
-            // let row0_avg = 0;
-            // this.itemsArray.forEach((account, index) => {
-            //     if(parseFloat(account['plan']) != 0 && account['plan'] != undefined) {
-            //         row0_avg += parseFloat(account['plan']);
-            //         console.log(account['plan'])
-            //     }
-            // })    
 
-            // this.itemsArray[0]['plan'] = row0_avg
-        },
-       
-        editMode(item) {
-            this.items.forEach((account, index) => {
-                account.editable = false
-            })
-            item.editable = true
-        },
+			// Hide modal
+			this.$refs['change-plan-modal'].hide();
 
-        toFloat(number) {
-            return Number(number).toFixed(2);
-        },
-    },
+		},
+
+		deleteRecord(id, index) {
+			if (!confirm('Вы уверены?')) {
+				return '';
+			}
+
+			if(id != 0) {
+
+				let url = '/timetracking/analytics/decomposition/delete';
+
+				this.axios.delete(url, {
+					headers: {},
+					data: {
+						id: id
+					}
+				})
+					.then(() => {
+						this.$toast.info('Пункт удален')
+					})
+					.catch(error => {
+						alert(error)
+					});
+			}
+
+			this.items.splice(index, 1);
+
+		},
+
+		calculateRecordsValues() {
+			this.sum = {};
+			this.itemsArray = [];
+
+			this.records.forEach(item => {
+
+				let cellValues = [],
+					totalPlan = 0,
+					totalFact = 0;
+
+
+				for (let i = 1; i <= this.month.daysInMonth; i++) {
+
+					cellValues[i] = item[i];
+
+					if(item[i] === undefined) {
+						cellValues[i] = {
+							'plan': '',
+							'fact': ''
+						};
+						continue;
+					}
+					if(item[i].plan !== undefined) {
+						totalPlan += Number(item[i].plan)
+					}
+
+					if(item[i].fact !== undefined) {
+						totalFact += Number(item[i].fact)
+					}
+
+				}
+
+				this.itemsArray.push({
+					name: item.name,
+					id: item.id,
+					editable: false,
+					total_plan: totalPlan,
+					total_fact: totalFact,
+					group_id: this.data.group_id,
+					...cellValues,
+				});
+
+			});
+		},
+
+		updateTable(items) {
+			let loader = this.$loading.show();
+
+			this.records = items;
+			this.calculateRecordsValues();
+
+			this.totalColumn()
+			this.items = this.itemsArray;
+
+			loader.hide();
+		},
+
+		addCellVariantsArrayToRecords(){
+			this.itemsArray.forEach((element, key) => {
+				this.itemsArray[key]['_cellVariants'] = [];
+			});
+		},
+
+		totalColumn() {
+			// let row0_avg = 0;
+			// this.itemsArray.forEach((account, index) => {
+			//     if(parseFloat(account['plan']) != 0 && account['plan'] != undefined) {
+			//         row0_avg += parseFloat(account['plan']);
+			//         console.log(account['plan'])
+			//     }
+			// })
+
+			// this.itemsArray[0]['plan'] = row0_avg
+		},
+
+		editMode(item) {
+			this.items.forEach(account => {
+				account.editable = false
+			})
+			item.editable = true
+		},
+
+		toFloat(number) {
+			return Number(number).toFixed(2);
+		},
+	},
 };
 </script>
 
@@ -424,7 +424,7 @@ export default {
         padding: 0 !important;
         text-align: center;
         vertical-align: middle;
-        
+
         div {
             font-size: 0.8rem;
         }
@@ -478,7 +478,7 @@ export default {
     padding: 0;
     color: #000;
     border-radius: 0;
- 
+
     &:focus {
         outline: none;
     }

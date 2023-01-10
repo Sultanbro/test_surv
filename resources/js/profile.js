@@ -45,11 +45,11 @@ Vue.use(Loading)
 import Vue from 'vue'
 
 Date.prototype.addHours = function(h) {
-    this.setTime(this.getTime() + (h*60*60*1000));
-    return this;
+	this.setTime(this.getTime() + (h*60*60*1000));
+	return this;
 }
  
- /**
+/**
   * Next, we will create a fresh Vue application instance and attach it to
   * the page. Then, you may begin adding components to this application
   * or customize the JavaScript scaffolding to fit your unique needs.
@@ -76,7 +76,7 @@ Vue.component('t-kpi', require('./components/tables/TableKPI.vue')); // b input 
 Vue.component('t-kpi-indicator', require('./components/tables/TableKpiIndicator.vue')); // b input
 
 Vue.component('progress-bar', {
-    template: `
+	template: `
     <div class="progress-bar mb-1">
       <div class="background-bar">
         <div class="info">
@@ -89,24 +89,24 @@ Vue.component('progress-bar', {
       </transition>
    </div>
   </div>`,
-    props: {
-      percentage: Number,
-      label: String,
-    },
-     methods: {
-      beforeEnter (el) {
-        el.style.width = 0
-      },
-      enter (el) {
-        el.style.width = `${this.percentage}%`
-        el.style.transition = `width 1s linear`
-      }
-    }
+	props: {
+		percentage: Number,
+		label: String,
+	},
+	methods: {
+		beforeEnter (el) {
+			el.style.width = 0
+		},
+		enter (el) {
+			el.style.width = `${this.percentage}%`
+			el.style.transition = 'width 1s linear'
+		}
+	}
 });
 
 import { store } from './store';
 
 const app = new Vue({
-    store,
-    el: '.right-panel-app'
+	store,
+	el: '.right-panel-app'
 }); 

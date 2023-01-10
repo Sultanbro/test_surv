@@ -12,7 +12,7 @@
   <div v-if="loading">Загружаются...</div>
 
   <div v-else>
-     <div class="d-flex mb-2" v-for="(item, i) in items">
+     <div class="d-flex mb-2" v-for="(item, i) in items" :key="i">
       <div class="ws-100 mr-2">
         <input v-model="item.name"/>
       </div>
@@ -21,7 +21,7 @@
         <input v-model="item.info"/>
       </div>
 
-        
+
 
       <div class="d-flex">
         <i class="btn px-1 fa fa-copy" @click="copyLink(i)"></i>
@@ -35,80 +35,80 @@
 </div>
 </template>
 <script>
-export default { 
-  name: "RefLinker",
-  props: {},
-  data() {
-    return {
-      items: [],
-      loading: true,
-    }
-  },
-  created() {
-    this.get()
-  },
-  methods: {
-    get() {
-      this.loading = true;
-      axios.get('/hr/ref-links')
-      .then(response => {
-          this.items = response.data
-          this.loading = false;
-      })
-      .catch(error => console.log('Error'))
-    },
+export default {
+	name: 'RefLinker',
+	props: {},
+	data() {
+		return {
+			items: [],
+			loading: true,
+		}
+	},
+	created() {
+		this.get()
+	},
+	methods: {
+		get() {
+			this.loading = true;
+			this.axios.get('/hr/ref-links')
+				.then(response => {
+					this.items = response.data
+					this.loading = false;
+				})
+				.catch(() => console.log('Error'))
+		},
 
-    save(i) {
-      axios.post('/hr/ref-links/save', {
-        id: this.items[i].id,
-        name: this.items[i].name,
-        info: this.items[i].info,
-        method: 'save'
-      })
-      .then(response => {
+		save(i) {
+			this.axios.post('/hr/ref-links/save', {
+				id: this.items[i].id,
+				name: this.items[i].name,
+				info: this.items[i].info,
+				method: 'save'
+			})
+				.then(response => {
 
-        this.items[i].id = response.data;
-        this.$toast.success('Сохранено')
-      })
-      .catch(error => console.log('Error'))
-    },
+					this.items[i].id = response.data;
+					this.$toast.success('Сохранено')
+				})
+				.catch(() => console.log('Error'))
+		},
 
-    deletes(i) {
-      if(!confirm('Вы уверены?')) {
-        return ;
-      }
-      axios.post('/hr/ref-links/save', {
-        id: this.items[i].id,
-        name: this.items[i].name,
-        info: this.items[i].info,
-        method: 'delete'
-      })
-      .then(response => {
-        this.items.splice(i,1)
-        this.$toast.success('Удалено')
-      })
-      .catch(error => console.log('Error'))
-    },
+		deletes(i) {
+			if(!confirm('Вы уверены?')) {
+				return ;
+			}
+			this.axios.post('/hr/ref-links/save', {
+				id: this.items[i].id,
+				name: this.items[i].name,
+				info: this.items[i].info,
+				method: 'delete'
+			})
+				.then(() => {
+					this.items.splice(i,1)
+					this.$toast.success('Удалено')
+				})
+				.catch(() => console.log('Error'))
+		},
 
-    add() {
-      this.items.push({
-        id: 0,
-        name: '',
-        info: ''
-      });
-    },
+		add() {
+			this.items.push({
+				id: 0,
+				name: '',
+				info: ''
+			});
+		},
 
-    copyLink(i) {
-      var Url = this.$refs.mylink;
-      Url.value = "http://job.bpartners.kz/" + this.items[i].name;
+		copyLink(i) {
+			var Url = this.$refs.mylink;
+			Url.value = 'http://job.bpartners.kz/' + this.items[i].name;
 
-      Url.select();
-      document.execCommand("copy");
+			Url.select();
+			document.execCommand('copy');
 
-      this.$toast.info("Ссылка на страницу скопирована!");
-    },
+			this.$toast.info('Ссылка на страницу скопирована!');
+		},
 
-  },
+	},
 };
 </script>
 <style>
@@ -117,5 +117,5 @@ export default {
 }
 .ws-150 {
   min-width:150px;
-}  
+}
 </style>

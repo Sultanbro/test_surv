@@ -15,31 +15,31 @@
 </template>
 
 <script>
-import {mapActions, mapGetters} from "vuex";
+import {mapActions, mapGetters} from 'vuex';
 
 export default {
-  computed: {
-    ...mapGetters(['chat', 'pinnedMessage'])
-  },
-  methods: {
-    ...mapActions(['unpinMessage', 'loadMessages', 'setLoading']),
-    goto(event) {
-      event.stopPropagation();
-      this.setLoading(true);
-      this.loadMessages({
-        reset: false, goto: this.pinnedMessage.id, callback: () => {
-          // after a second
-          setTimeout(() => {
-            this.setLoading(false);
-          }, 1000);
-        }
-      });
-    },
-    unpin(event) {
-      event.stopPropagation();
-      this.unpinMessage();
-    }
-  }
+	computed: {
+		...mapGetters(['chat', 'pinnedMessage'])
+	},
+	methods: {
+		...mapActions(['unpinMessage', 'loadMessages', 'setLoading']),
+		goto(event) {
+			event.stopPropagation();
+			this.setLoading(true);
+			this.loadMessages({
+				reset: false, goto: this.pinnedMessage.id, callback: () => {
+					// after a second
+					setTimeout(() => {
+						this.setLoading(false);
+					}, 1000);
+				}
+			});
+		},
+		unpin(event) {
+			event.stopPropagation();
+			this.unpinMessage();
+		}
+	}
 }
 </script>
 

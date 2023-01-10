@@ -83,171 +83,171 @@
 </template>
 
 <script>
-    export default {
-        name: "TableExam",
-        props: {
-            groups: Array,
-            fines: Array,
-            activeuserid: String
-        },
-        data() {
-            return {
-                data: {},
-                items: [],
-                fields: [],
-                group_editors: [],
-                users: [],
-                hasPremission: false,
-                curMonth: null,
-                dateInfo: {
-                    currentMonth: null,
-                    monthEnd: 0,
-                    workDays: 0,
-                    weekDays: 0,
-                    daysInMonth: 0,
-                    date: null
-                },
-                dataLoaded: false,
-                currentGroup: null,
-            }
-        },
+export default {
+	name: 'TableExam',
+	props: {
+		groups: Array,
+		fines: Array,
+		activeuserid: String
+	},
+	data() {
+		return {
+			data: {},
+			items: [],
+			fields: [],
+			group_editors: [],
+			users: [],
+			hasPremission: false,
+			curMonth: null,
+			dateInfo: {
+				currentMonth: null,
+				monthEnd: 0,
+				workDays: 0,
+				weekDays: 0,
+				daysInMonth: 0,
+				date: null
+			},
+			dataLoaded: false,
+			currentGroup: null,
+		}
+	},
 
-        created() {
-            //Текущая группа
-            this.currentGroup = this.currentGroup ? this.currentGroup : this.groups[0]['id']
-            this.setMonth()
-            this.fetchData()
-        },
-        methods: {
-            //Установка выбранного месяца
-            setMonth() {
-                this.curMonth =  this.$moment().format('MMMM')
-                let year = moment().format('YYYY')
-                this.dateInfo.currentMonth = this.dateInfo.currentMonth ? this.dateInfo.currentMonth : this.$moment().format('MMMM')
-                this.dateInfo.date = `${this.dateInfo.currentMonth} ${year}`
-            },
-            updateExam(from, data) {
+	created() {
+		//Текущая группа
+		this.currentGroup = this.currentGroup ? this.currentGroup : this.groups[0]['id']
+		this.setMonth()
+		this.fetchData()
+	},
+	methods: {
+		//Установка выбранного месяца
+		setMonth() {
+			this.curMonth =  this.$moment().format('MMMM')
+			let year = this.$moment().format('YYYY')
+			this.dateInfo.currentMonth = this.dateInfo.currentMonth ? this.dateInfo.currentMonth : this.$moment().format('MMMM')
+			this.dateInfo.date = `${this.dateInfo.currentMonth} ${year}`
+		},
+		updateExam(from, data) {
 
-                var index = data.index
+			var index = data.index
 
-                if(from == 'success') {
-                    data.item.success = data.value
-                }
-                if(from == 'link') {
-                    data.item.link = data.value
-                }
+			if(from == 'success') {
+				data.item.success = data.value
+			}
+			if(from == 'link') {
+				data.item.link = data.value
+			}
 
-                console.log(data.value)
-                console.log(data.item)
-                let loader = this.$loading.show()
-                axios.post('/timetracking/exam/update', {
-                    key: data.field.key,
-                    value: data.item.success,
-                    link: data.item.link,
-                    user_id: data.item.user_id,
-                    book_id: data.item.book_id,
-                    month: this.$moment(this.dateInfo.currentMonth, 'MMMM').format('M'),
-                    year: this.$moment(this.dateInfo.date, 'YYYY').format('YYYY'),
-                    group_id: this.currentGroup
-                }).then(response => {
-                    if (response.data.errors) {
-                        alert(response.data.errors)
-                        data.item.link = ''
-                        loader.hide();
-                        return;
-                    }
-                    if (data.field.key === 'link'){
-                        // console.log('im here');
-                        // this.fetchData()
-                        // this.setFields();
-                        // this.loadItems();
-                        data.item.link ? this.items[index]['exam_date'] = this.$moment().format('DD.MM.YYYY') : this.items[index]['exam_date'] = ''
-                        data.item.success = response.data.success
-                    }
-                    loader.hide()
-                }).catch(function (error) {
-                    alert(error)
-                    console.log(error)
-                    loader.hide();
-                });
+			console.log(data.value)
+			console.log(data.item)
+			let loader = this.$loading.show()
+			this.axios.post('/timetracking/exam/update', {
+				key: data.field.key,
+				value: data.item.success,
+				link: data.item.link,
+				user_id: data.item.user_id,
+				book_id: data.item.book_id,
+				month: this.$moment(this.dateInfo.currentMonth, 'MMMM').format('M'),
+				year: this.$moment(this.dateInfo.date, 'YYYY').format('YYYY'),
+				group_id: this.currentGroup
+			}).then(response => {
+				if (response.data.errors) {
+					alert(response.data.errors)
+					data.item.link = ''
+					loader.hide();
+					return;
+				}
+				if (data.field.key === 'link'){
+					// console.log('im here');
+					// this.fetchData()
+					// this.setFields();
+					// this.loadItems();
+					data.item.link ? this.items[index]['exam_date'] = this.$moment().format('DD.MM.YYYY') : this.items[index]['exam_date'] = ''
+					data.item.success = response.data.success
+				}
+				loader.hide()
+			}).catch(function (error) {
+				alert(error)
+				console.log(error)
+				loader.hide();
+			});
 
-            },
-            //Установка заголовока таблицы
-            setFields() {
-                let fields = []
-                fields = [{
-                    key: 'name',
-                    stickyColumn: true,
-                    label: 'Имя',
-                    variant: 'primary',
-                    sortable: true,
-                    class: 'text-left px-3 t-name',
-                    },
-                    {
-                        key: "book_name",
-                        label: "Книга",
-                        class: 'text-left',
-                    },
-                    {
-                        key: "success",
-                        label: "Сдано",
-                    },
-                    {
-                        key: "exam_date",
-                        label: "Дата сдачи",
-                    },
-                    {
-                        key: "link",
-                        label: "Ссылка на файл",
-                    },
-                 ]
-                this.fields = fields
-            },
-            //Загрузка данных для таблицы
-            fetchData() {
-                let loader = this.$loading.show();
-                axios.post('/timetracking/exam', {
-                    month: this.$moment(this.dateInfo.currentMonth, 'MMMM').format('M'),
-                    year: this.$moment(this.dateInfo.date, 'YYYY').format('YYYY'),
-                    group_id: this.currentGroup
-                }).then(response => {
-                    if (response.data.error && response.data.error == 'access') {
-                        console.log(response.data.error)
-                        this.hasPremission = false
-                        loader.hide();
-                        return;
-                    }
-                    this.hasPremission = true
+		},
+		//Установка заголовока таблицы
+		setFields() {
+			let fields = []
+			fields = [{
+				key: 'name',
+				stickyColumn: true,
+				label: 'Имя',
+				variant: 'primary',
+				sortable: true,
+				class: 'text-left px-3 t-name',
+			},
+			{
+				key: 'book_name',
+				label: 'Книга',
+				class: 'text-left',
+			},
+			{
+				key: 'success',
+				label: 'Сдано',
+			},
+			{
+				key: 'exam_date',
+				label: 'Дата сдачи',
+			},
+			{
+				key: 'link',
+				label: 'Ссылка на файл',
+			},
+			]
+			this.fields = fields
+		},
+		//Загрузка данных для таблицы
+		fetchData() {
+			let loader = this.$loading.show();
+			this.axios.post('/timetracking/exam', {
+				month: this.$moment(this.dateInfo.currentMonth, 'MMMM').format('M'),
+				year: this.$moment(this.dateInfo.date, 'YYYY').format('YYYY'),
+				group_id: this.currentGroup
+			}).then(response => {
+				if (response.data.error && response.data.error == 'access') {
+					console.log(response.data.error)
+					this.hasPremission = false
+					loader.hide();
+					return;
+				}
+				this.hasPremission = true
 
-                    this.data = response.data
+				this.data = response.data
 
-                    // console.log(this.dateInfo);
-                    this.setMonth()
-                    this.setFields()
-                    this.loadItems()
-                    this.dataLoaded = true
-                    loader.hide()
-                })
+				// console.log(this.dateInfo);
+				this.setMonth()
+				this.setFields()
+				this.loadItems()
+				this.dataLoaded = true
+				loader.hide()
+			})
 
-            },
-            //Добавление загруженных данных в таблицу
-            loadItems() {
-                let items = []
-                this.data.users.forEach((item, index) => {
-                    items.push({
-                        name: item.full_name,
-                        book_name: item.book_name,
-                        book_id: item.book_id,
-                        user_id: item.id,
-                        success: item.success,
-                        exam_date: item.exam_date,
-                        link: item.link,
-                    })
-                })
-                this.items = items
-            }
-        }
-    }
+		},
+		//Добавление загруженных данных в таблицу
+		loadItems() {
+			let items = []
+			this.data.users.forEach(item => {
+				items.push({
+					name: item.full_name,
+					book_name: item.book_name,
+					book_id: item.book_id,
+					user_id: item.id,
+					success: item.success,
+					exam_date: item.exam_date,
+					link: item.link,
+				})
+			})
+			this.items = items
+		}
+	}
+}
 </script>
 
 <style lang="scss">

@@ -11,16 +11,16 @@
 </template>
 
 <script>
-import {mapActions, mapGetters} from "vuex";
+import {mapActions, mapGetters} from 'vuex';
 
 export default {
-  name: "ChinBox",
-  computed: {
-    ...mapGetters(['isOpen'])
-  },
-  methods: {
-    ...mapActions(['toggleMessenger']),
-  }
+	name: 'ChinBox',
+	computed: {
+		...mapGetters(['isOpen'])
+	},
+	methods: {
+		...mapActions(['toggleMessenger']),
+	}
 }
 </script>
 

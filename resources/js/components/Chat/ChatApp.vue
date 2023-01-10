@@ -21,70 +21,70 @@
 </template>
 
 <script>
-import {mapActions, mapGetters} from "vuex";
-import SearchBox from "./SearchBox/SearchBox.vue";
-import ChatsList from "./ChatsList/ChatsList.vue";
-import MessengerConversation from "./MessengerConversation/MessengerConversation.vue";
-import ChinBox from "./ChinBox/ChinBox.vue";
-import InfoPanel from "./InfoPanel/InfoPanel";
-import clickOutside from "./directives/clickOutside.ts";
-import ImageGallery from "./ImageGallery/ImageGallery.vue";
-import ConfirmDialog from "./ConfirmDialog/ConfirmDialog.vue";
+import {mapActions, mapGetters} from 'vuex';
+import SearchBox from './SearchBox/SearchBox.vue';
+import ChatsList from './ChatsList/ChatsList.vue';
+import MessengerConversation from './MessengerConversation/MessengerConversation.vue';
+import ChinBox from './ChinBox/ChinBox.vue';
+import InfoPanel from './InfoPanel/InfoPanel';
+import clickOutside from './directives/clickOutside.ts';
+import ImageGallery from './ImageGallery/ImageGallery.vue';
+import ConfirmDialog from './ConfirmDialog/ConfirmDialog.vue';
 // noinspection JSUnusedGlobalSymbols
 export default {
-  name: "ChatApp",
-  components: {
-    SearchBox,
-    ChatsList,
-    MessengerConversation,
-    ChinBox,
-    InfoPanel,
-    ImageGallery,
-    ConfirmDialog
-  },
-  directives: {
-    clickOutside
-  },
-  watch: {
-    isOpen: function (val) {
-      if (val) {
-        // set div messenger__open class
-        document.body.classList.add('messenger__open');
-      } else {
-        // remove div messenger__open class
-        document.body.classList.remove('messenger__open');
-      }
-    }
-  },
-  data() {
-    return {
-      galleryOpened: false,
-    };
-  },
-  computed: {
-    ...mapGetters(['isInitialized', 'user', 'isOpen', 'galleryImages', 'galleryIndex']),
-  },
-  created() {
-    this.boot();
-  },
-  methods: {
-    ...mapActions(['boot', 'escapeChat', 'toggleMessenger', 'hideGallery']),
-    toggle() {
+	name: 'ChatApp',
+	components: {
+		SearchBox,
+		ChatsList,
+		MessengerConversation,
+		ChinBox,
+		InfoPanel,
+		ImageGallery,
+		ConfirmDialog
+	},
+	directives: {
+		clickOutside
+	},
+	watch: {
+		isOpen: function (val) {
+			if (val) {
+				// set div messenger__open class
+				document.body.classList.add('messenger__open');
+			} else {
+				// remove div messenger__open class
+				document.body.classList.remove('messenger__open');
+			}
+		}
+	},
+	data() {
+		return {
+			galleryOpened: false,
+		};
+	},
+	computed: {
+		...mapGetters(['isInitialized', 'user', 'isOpen', 'galleryImages', 'galleryIndex']),
+	},
+	created() {
+		this.boot();
+	},
+	methods: {
+		...mapActions(['boot', 'escapeChat', 'toggleMessenger', 'hideGallery']),
+		toggle() {
 
-      if (this.galleryOpened) {
-        this.galleryOpened = false;
-        return;
-      }
+			if (this.galleryOpened) {
+				this.galleryOpened = false;
+				return;
+			}
 
-      if (this.isOpen) {
-        this.toggleMessenger();
-      }
+			if (this.isOpen) {
+				this.toggleMessenger();
+			}
 
-    },
-    openGallery() {
-      this.galleryOpened = true;
-    },
-  }
+		},
+		openGallery() {
+			this.galleryOpened = true;
+		},
+	}
 }
 </script>
 

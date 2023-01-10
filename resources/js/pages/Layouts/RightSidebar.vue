@@ -53,15 +53,15 @@
 
 <script>
 export default {
-    name: "RightSidebar",
-    props: {},
-    data: function () {
-        return {
+	name: 'RightSidebar',
+	props: {},
+	data: function () {
+		return {
 
-        };
-    },
-    methods: {
+		};
+	},
+	methods: {
 
-    }
+	}
 };
 </script>

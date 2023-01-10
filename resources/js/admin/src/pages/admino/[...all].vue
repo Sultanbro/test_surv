@@ -7,9 +7,9 @@ import tree from '@/assets/images/pages/tree.png'
 
 const vuetifyTheme = useTheme()
 const authThemeMask = computed(() => {
-  return vuetifyTheme.global.name.value === 'light'
-    ? miscMaskLight
-    : miscMaskDark
+	return vuetifyTheme.global.name.value === 'light'
+		? miscMaskLight
+		: miscMaskDark
 })
 </script>
 

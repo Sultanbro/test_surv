@@ -24,90 +24,90 @@ import Resumable from 'resumablejs'
 import UploadingFile from './UploadingFile'
 
 export default {
-    components: {
-        UploadingFile
-    },
-    data(){
-        return {
-            files: [], // our local files array, we will pack in extra data to force reactivity
-            r: false
-        }
-    },
-    props: [
-        'token',
-        'type',
-        'file_types',
-        'id'
-    ],
-    methods: {
-        // finds the file in the local files array
-        findFile(file){
-            let x = this.files.find(item => item.file.uniqueIdentifier === file.uniqueIdentifier && item.status !== 'canceled');
-            return  x ? x : {}
-        },
-        // cancel an individual file
-        cancelFile(file){
-            this.findFile(file).status = 'canceled'
-            file.cancel()
-        }
-    },
-    mounted(){
-        // init resumablejs on mount
+	components: {
+		UploadingFile
+	},
+	data(){
+		return {
+			files: [], // our local files array, we will pack in extra data to force reactivity
+			r: false
+		}
+	},
+	props: [
+		'token',
+		'type',
+		'file_types',
+		'id'
+	],
+	methods: {
+		// finds the file in the local files array
+		findFile(file){
+			let x = this.files.find(item => item.file.uniqueIdentifier === file.uniqueIdentifier && item.status !== 'canceled');
+			return  x ? x : {}
+		},
+		// cancel an individual file
+		cancelFile(file){
+			this.findFile(file).status = 'canceled'
+			file.cancel()
+		}
+	},
+	mounted(){
+		// init resumablejs on mount
 		this.r = new Resumable({
 			target:'/file/upload',
 			query:{
-                _token:this.token,
-                id: this.id,
-                type: this.type
-            },
-            maxChunkRetries: 1,
-            maxFiles: 1,
-            fileType: this.file_types,
-            testChunks: false,
+				_token:this.token,
+				id: this.id,
+				type: this.type
+			},
+			maxChunkRetries: 1,
+			maxFiles: 1,
+			fileType: this.file_types,
+			testChunks: false,
 		});
 
 		// Resumable.js isn't supported, fall back on a different method
 		if(!this.r.support) return alert('Your browser doesn\'t support chunked uploads. Get a better browser.');
 
-        this.r.assignBrowse(this.$refs.filedropzone);
+		this.r.assignBrowse(this.$refs.filedropzone);
 		this.r.assignDrop(this.$refs.filedropzone);
 
-        // set up event listeners to feed into vues reactivity
-        this.r.on('fileAdded', (file, event) => {
-            file.hasUploaded = false
-            // keep a list of files with some extra data that we can use as props
-            this.files.push({
-                file,
-                status: 'uploading',
-                progress: 0
-            })
-            this.r.upload()
-        })
-        this.r.on('fileSuccess', (file, event) => {
-            this.findFile(file).status = 'success'
-            let res = JSON.parse(event);
-            file.name = res.filename;
-            file.title = res.filename;
-            file.path = res.path;
-            file.model = res.model;
-            this.$emit('onupload', file);
-        })
-        this.r.on('fileError', (file, event) => {
-            this.findFile(file).status = 'error'
-        })
-        this.r.on('fileRetry', (file, event) => {
-            this.findFile(file).status = 'retrying'
-        })
-        this.r.on('fileProgress', (file) => {
-            // console.log('fileProgress', progress)
-            var localFile = this.findFile(file)
-            // if we are doing multiple chunks we may get a lower progress number if one chunk response comes back early
-            var progress = file.progress()
-            if( progress > localFile.progress)
-                localFile.progress = progress
+		// set up event listeners to feed into vues reactivity
+		this.r.on('fileAdded', file => {
+			file.hasUploaded = false
+			// keep a list of files with some extra data that we can use as props
+			this.files.push({
+				file,
+				status: 'uploading',
+				progress: 0
+			})
+			this.r.upload()
+		})
+		this.r.on('fileSuccess', (file, event) => {
+			this.findFile(file).status = 'success'
+			let res = JSON.parse(event);
+			file.name = res.filename;
+			file.title = res.filename;
+			file.path = res.path;
+			file.model = res.model;
+			this.$emit('onupload', file);
+		})
+		this.r.on('fileError', file => {
+			this.findFile(file).status = 'error'
+		})
+		this.r.on('fileRetry', file => {
+			this.findFile(file).status = 'retrying'
+		})
+		this.r.on('fileProgress', (file) => {
+			// console.log('fileProgress', progress)
+			var localFile = this.findFile(file)
+			// if we are doing multiple chunks we may get a lower progress number if one chunk response comes back early
+			var progress = file.progress()
+			if( progress > localFile.progress)
+				localFile.progress = progress
 
-        })
-    }
+		})
+	}
 }
 </script>
 

@@ -6,9 +6,9 @@ import trophy from '@/assets/images/misc/trophy.png'
 
 const vuetifyTheme = useTheme()
 const triangleBg = computed(() => {
-  return vuetifyTheme.global.name.value === 'light'
-    ? triangleLight
-    : triangleDark
+	return vuetifyTheme.global.name.value === 'light'
+		? triangleLight
+		: triangleDark
 })
 </script>
 

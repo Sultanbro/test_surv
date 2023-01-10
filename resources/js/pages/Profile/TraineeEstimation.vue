@@ -44,9 +44,9 @@
                 <div
                     v-for="(key, index) in Object.keys(data)"
                     :key="index"
-                    class="trainee__content tab__content-item" 
+                    class="trainee__content tab__content-item"
                     :class="{'is-active': index == 0}"
-                    :data-content="index" 
+                    :data-content="index"
                 >
 
                     <!-- Items in one day -->
@@ -54,7 +54,7 @@
                         <!-- group name -->
                         <div class="trainee__table-name" :key="item_index">
                             {{ item.group }}
-                        </div> 
+                        </div>
 
                         <!-- table with answers -->
                         <table class="trainee__quiz" :key="item_index">
@@ -132,7 +132,7 @@
                                 </td>
 
                             </tr>
-                          
+
                             </tbody>
 
 
@@ -176,66 +176,67 @@
 
 <script>
 export default {
-    name: "TraineeEstimation", 
-    props: {},
-    data: function () {
-        return {
-            data: {},
-            loading: false
-        };
-    },
-    created(){
-        this.fetchData()
-    },
-    methods: {
-        fetchData() {
-            this.loading = true
+	name: 'TraineeEstimation',
+	props: {},
+	data: function () {
+		return {
+			data: {},
+			loading: false
+		};
+	},
+	created(){
+		this.fetchData()
+	},
+	methods: {
+		fetchData() {
+			this.loading = true
 
-            axios.post("/profile/trainee-report", {})
-                .then((response) => {
-                    this.showBtn(response.data)
+			this.axios.post('/profile/trainee-report', {})
+				.then((response) => {
+					this.showBtn(response.data)
 
-                    this.data = response.data
+					this.data = response.data
 
-                    this.$nextTick(() => this.fill())
+					this.$nextTick(() => this.fill())
 
-                    this.loading = false
-                }).catch(e => {
-                    console.log(e)
-                    this.loading = false
-                });
-        },
+					this.loading = false
+				}).catch(e => {
+					console.log(e)
+					this.loading = false
+				});
+		},
 
-        /**
-         * private: show btn in introTop 
+		/**
+         * private: show btn in introTop
          */
-        showBtn(data) {
-            if(Object.keys(data).length > 0) {
-                this.$emit('init')
-            }
-        },
+		showBtn(data) {
+			if(Object.keys(data).length > 0) {
+				this.$emit('init')
+			}
+		},
 
-        /**
+		/**
          * fill progress
          */
-        fill() {
-            VJQuery('.colored').each(function(e,i){
-                VJQuery(this).css('background',`linear-gradient(to right, ${VJQuery(this).attr('data-color')} ${VJQuery(this).find('.value').text()}, #fff ${VJQuery(this).find('.value').text()})`)
-            });
+		fill() {
+			/* global VJQuery */
+			VJQuery('.colored').each(function(){
+				VJQuery(this).css('background',`linear-gradient(to right, ${VJQuery(this).attr('data-color')} ${VJQuery(this).find('.value').text()}, #fff ${VJQuery(this).find('.value').text()})`)
+			});
 
-            // Star settings
+			// Star settings
 
-            VJQuery('.trainee__quiz').each(function(){
+			VJQuery('.trainee__quiz').each(function(){
 
-                let starLength = VJQuery(this).find('.trainee__star-value span').text();
+				let starLength = VJQuery(this).find('.trainee__star-value span').text();
 
-                if(starLength<=10 && starLength>=0){
-                    for(let i=0; i<starLength;i++){
-                        VJQuery(this).find('.trainee__star-wrapper .star__item')[i].classList.add('done');
-                    }
-                }
-            })
-        }
-    }
+				if(starLength<=10 && starLength>=0){
+					for(let i=0; i<starLength;i++){
+						VJQuery(this).find('.trainee__star-wrapper .star__item')[i].classList.add('done');
+					}
+				}
+			})
+		}
+	}
 };
 </script>

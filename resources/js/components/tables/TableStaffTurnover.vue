@@ -144,36 +144,36 @@
 
 
 export default {
-    name: "TableStaffTurnover", // Раньше был нужен чтобы собирать скайпы, сейчас собираются стажеры для Zoom обучения
-    props: {
-        staff: Array,
-        staff_by_group: Array,
-        staff_longevity: Array,
-        causes: Array,
-    },
-    data: function () {
-        return {
-            fields: [], // поля таблицы
-        };
-    },
-    watch: {
-        // month: {
-        //     // the callback will be called immediately after the start of the observation
-        //     deep: true,
-        //     handler (val, oldVal) {
-        //         this.filterTable()
-        //     }
-        // },
-    },
+	name: 'TableStaffTurnover', // Раньше был нужен чтобы собирать скайпы, сейчас собираются стажеры для Zoom обучения
+	props: {
+		staff: Array,
+		staff_by_group: Array,
+		staff_longevity: Array,
+		causes: Array,
+	},
+	data: function () {
+		return {
+			fields: [], // поля таблицы
+		};
+	},
+	watch: {
+		// month: {
+		//     // the callback will be called immediately after the start of the observation
+		//     deep: true,
+		//     handler (val, oldVal) {
+		//         this.filterTable()
+		//     }
+		// },
+	},
     
-    mounted() {
+	mounted() {
         
-    },
+	},
 
-    methods: {
+	methods: {
         
 
-    }
+	}
 };
 </script>
 

@@ -193,7 +193,7 @@
                       placeholder="поиск городов"
                   />
                   <ul v-if="country_results.length > 0" class="p-0 countries">
-                    <li v-for="(result, index) in country_results">
+                    <li v-for="(result, index) in country_results" :key="index">
                       <a @click="selectedCountry(index, result)">
                         Страна: {{ result.country }} Город: {{ result.city }}</a
                       >
@@ -258,73 +258,69 @@
           </div>
           <div class="col-12 mt-3">
             <!-- Cards -->
-            <div
-              class="col-12 p-0 row payment-profile"
-              v-if="payments_view"
-              v-for="(payment, index) in payments"
-            >
-              <div class="col-2">
-                <input
-                  v-model="payment.bank"
-                  class="form-control input-surv"
-                  placeholder="Банк"
-                />
+            <template v-if="payments_view">
+              <div
+                class="col-12 p-0 row payment-profile"
+                v-for="(payment, index) in payments"
+                :key="index"
+              >
+                <div class="col-2">
+                  <input
+                    v-model="payment.bank"
+                    class="form-control input-surv"
+                    placeholder="Банк"
+                  />
+                </div>
+                <div class="col-2">
+                  <input
+                    v-model="payment.country"
+                    class="form-control input-surv"
+                    placeholder="Страна"
+                  />
+                </div>
+                <div class="col-2">
+                  <input
+                    v-model="payment.cardholder"
+                    class="form-control input-surv"
+                    placeholder="Имя на карте"
+                  />
+                </div>
+                <div class="col-2">
+                  <input
+                    type="number"
+                    v-model="payment.phone"
+                    class="form-control input-surv"
+                    placeholder="Телефон"
+                  />
+                </div>
+                <div class="col-2">
+                  <input
+                    type="number"
+                    v-model="payment.number"
+                    class="form-control card-number input-surv"
+                    placeholder="Номер карты"
+                  />
+                </div>
+                <div class="col-2 position-relative">
+                  <button
+                    v-if="payment.id"
+                    style="position: absolute; left: 0px"
+                    class="btn btn-danger btn-sm card-delete rounded mt-1 btn-surv"
+                    @click="removePaymentCart(index, payment.id)"
+                  >
+                    <span class="fa fa-trash"></span>
+                  </button>
+                  <button
+                    v-else
+                    style="position: absolute; left: 0px"
+                    class="btn btn-primary btn-sm card-delete rounded mt-1 btn-surv"
+                    @click="removePaymentCart(index, 'dev')"
+                  >
+                    <span class="fa fa-trash"></span>
+                  </button>
+                </div>
               </div>
-
-              <div class="col-2">
-                <input
-                  v-model="payment.country"
-                  class="form-control input-surv"
-                  placeholder="Страна"
-                />
-              </div>
-
-              <div class="col-2">
-                <input
-                  v-model="payment.cardholder"
-                  class="form-control input-surv"
-                  placeholder="Имя на карте"
-                />
-              </div>
-
-              <div class="col-2">
-                <input
-                  type="number"
-                  v-model="payment.phone"
-                  class="form-control input-surv"
-                  placeholder="Телефон"
-                />
-              </div>
-
-              <div class="col-2">
-                <input
-                  type="number"
-                  v-model="payment.number"
-                  class="form-control card-number input-surv"
-                  placeholder="Номер карты"
-                />
-              </div>
-
-              <div class="col-2 position-relative">
-                <button
-                  v-if="payment.id"
-                  style="position: absolute; left: 0px"
-                  class="btn btn-danger btn-sm card-delete rounded mt-1 btn-surv"
-                  @click="removePaymentCart(index, payment.id)"
-                >
-                  <span class="fa fa-trash"></span>
-                </button>
-
-                <button
-                  v-else
-                  style="position: absolute; left: 0px"
-                  class="btn btn-primary btn-sm card-delete rounded mt-1 btn-surv"
-                  @click="removePaymentCart(index, 'dev')"
-                >
-                  <span class="fa fa-trash"></span>
-                </button>
-              </div>
-            </div>
+            </template>
 
             <div class="mt-2 p-0" v-if="cardValidatre.error">
               <div class="alert alert-danger">
@@ -373,396 +369,396 @@
   </div>
 </template>
 <script>
-import VueAvatar from '../components/vue-avatar-editor/src/components/VueAvatar.vue'
-import VueAvatarScale from '../components/vue-avatar-editor/src/components/VueAvatarScale'
+// import VueAvatar from '../components/vue-avatar-editor/src/components/VueAvatar.vue'
+// import VueAvatarScale from '../components/vue-avatar-editor/src/components/VueAvatarScale'
 import Multiselect from 'vue-multiselect'
-import { Cropper } from 'vue-advanced-cropper'
+// import { Cropper } from 'vue-advanced-cropper'
 import 'vue-advanced-cropper/dist/style.css'
 import { bus } from '../bus'
 
 export default {
-  name: 'Cabinet',
-  components:{
-    Cropper,
-    Multiselect,
-  },
-  props: {
-    auth_role: {},
-  },
-  data() {
-    return {
-      // my_crop_image: "",
-      crop_image: {
-        canvas: "",
-        image: "",
-        hide: false
-      },
-      imagePreview: "",
-      file: '',
-      // hasImage: true,
-      // canvas_image: new Image(),
-      showChooseProfileModal: false,
-      test: "dsa",
-      items: [],
-      myCroppa: {},
-      users: [],
-      user: [],
-      user_card: [],
-      admins: [],
-      activeCourse: null,
-      page: "profile",
-      img: "",
-      success: "",
-      password: "",
-      working_city: "",
-      birthday: "",
-      cardValidatre: {
-        error: false,
-        type: false,
-      },
-      payments: [
-        {
-          bank: "",
-          cardholder: "",
-          country: "",
-          number: "",
-          phone: "",
-        },
-      ],
-      keywords: null,
-      country_results: [],
-      image: "",
-      payments_view:false,
-      croppie: null
-    };
-  },
-  computed: {
-    uploadedImage() {
-      return Object.keys(this.myCroppa).length !== 0;
-    }
-  },
-  watch: {
-    keywords(after, before) {
-      this.fetch();
-    },
-    auth_role(){
-      this.init()
-    }
-  },
-  mounted() {
-          // this.drawProfile();
-          // this.hasImage = this.$root.$children[1].hasImage;
-  },
-  created() {
-    if(this.auth_role){
-      this.init()
-    }
-  },
-  methods: {
-    init(){
-      this.fetchData();
-      this.user = this.auth_role;
-      this.format_date(this.user.birthday);
+	name: 'PageCabinet',
+	components:{
+		// Cropper,
+		Multiselect,
+	},
+	props: {
+		auth_role: {},
+	},
+	data() {
+		return {
+			// my_crop_image: "",
+			crop_image: {
+				canvas: '',
+				image: '',
+				hide: false
+			},
+			imagePreview: '',
+			file: '',
+			// hasImage: true,
+			// canvas_image: new Image(),
+			showChooseProfileModal: false,
+			test: 'dsa',
+			items: [],
+			myCroppa: {},
+			users: [],
+			user: [],
+			user_card: [],
+			admins: [],
+			activeCourse: null,
+			page: 'profile',
+			img: '',
+			success: '',
+			password: '',
+			working_city: '',
+			birthday: '',
+			cardValidatre: {
+				error: false,
+				type: false,
+			},
+			payments: [
+				{
+					bank: '',
+					cardholder: '',
+					country: '',
+					number: '',
+					phone: '',
+				},
+			],
+			keywords: null,
+			country_results: [],
+			image: '',
+			payments_view:false,
+			croppie: null
+		};
+	},
+	computed: {
+		uploadedImage() {
+			return Object.keys(this.myCroppa).length !== 0;
+		}
+	},
+	watch: {
+		keywords() {
+			this.fetch();
+		},
+		auth_role(){
+			this.init()
+		}
+	},
+	mounted() {
+		// this.drawProfile();
+		// this.hasImage = this.$root.$children[1].hasImage;
+	},
+	created() {
+		if(this.auth_role){
+			this.init()
+		}
+	},
+	methods: {
+		init(){
+			this.fetchData();
+			this.user = this.auth_role;
+			this.format_date(this.user.birthday);
 
-      if (this.user.img_url != null) {
-        this.image = "/users_img/" + this.user.img_url;
-      }
+			if (this.user.img_url != null) {
+				this.image = '/users_img/' + this.user.img_url;
+			}
 
-      if(this.user.cropped_img_url != null && this.user.cropped_img_url !== ''){
-        this.crop_image.image = "/cropped_users_img/" + this.user.cropped_img_url;
-      }
-      else if(this.user.img_url != null && this.user.img_url !== ''){
-        this.crop_image.image = "/users_img/" + this.user.img_url;
-      }else{
-        this.crop_image.hide = true;
-      }
-    },
-    drawProfile(){
-      // this.canvas_image.src = this.image;
-      //this.myCanvas.drawImage(this.canvas_image, 0, 0, 250, 250);
-    },
-    change({ coordinates, canvas }) {
-      this.crop_image.canvas = canvas;
-      //this.canvas = canvas;
-      //this.myCanvas.clearRect(0, 0, canvas.width, canvas.height);
-      //var can = canvas;
-      //this.myCanvas.drawImage(this.canvas_image, coordinates.left,  coordinates.top, coordinates.width, coordinates.height, 0, 0, 250, 250);
-      console.log(coordinates, canvas)
-    },
-    save_picture(){
-      // this.crop_image.canvas.toBlob(function(blob) {
-      this.croppie.result({
-        type: 'blob',
-        format: 'jpeg',
-        quality: 0.8
-      }).then(blob => {
-        const formData = new FormData();
-        formData.append("file", blob);
-        axios.post("/profile/upload/image/profile/", formData).then((response) => {
-          bus.$emit('user-avatar-update', '/users_img/' + response.data.filename)
-        });
-      })
-      // });
+			if(this.user.cropped_img_url != null && this.user.cropped_img_url !== ''){
+				this.crop_image.image = '/cropped_users_img/' + this.user.cropped_img_url;
+			}
+			else if(this.user.img_url != null && this.user.img_url !== ''){
+				this.crop_image.image = '/users_img/' + this.user.img_url;
+			}else{
+				this.crop_image.hide = true;
+			}
+		},
+		drawProfile(){
+			// this.canvas_image.src = this.image;
+			//this.myCanvas.drawImage(this.canvas_image, 0, 0, 250, 250);
+		},
+		change({ coordinates, canvas }) {
+			this.crop_image.canvas = canvas;
+			//this.canvas = canvas;
+			//this.myCanvas.clearRect(0, 0, canvas.width, canvas.height);
+			//var can = canvas;
+			//this.myCanvas.drawImage(this.canvas_image, coordinates.left,  coordinates.top, coordinates.width, coordinates.height, 0, 0, 250, 250);
+			console.log(coordinates, canvas)
+		},
+		save_picture(){
+			// this.crop_image.canvas.toBlob(function(blob) {
+			this.croppie.result({
+				type: 'blob',
+				format: 'jpeg',
+				quality: 0.8
+			}).then(blob => {
+				const formData = new FormData();
+				formData.append('file', blob);
+				this.axios.post('/profile/upload/image/profile/', formData).then((response) => {
+					bus.$emit('user-avatar-update', '/users_img/' + response.data.filename)
+				});
+			})
+			// });
 
-      this.saveCropped();
-    },
-    chooseProfileImage(){
-      //console.log(this.myCroppa);
-      // this.my_crop_image = this.myCroppa.canvas.toDataURL();
-      /*axios.post("/getnewimage", {id : this.user.id}).then( (response) => {
+			this.saveCropped();
+		},
+		chooseProfileImage(){
+			//console.log(this.myCroppa);
+			// this.my_crop_image = this.myCroppa.canvas.toDataURL();
+			/*axios.post("/getnewimage", {id : this.user.id}).then( (response) => {
         this.image = "/users_img/" + response.data;
       });*/
-      this.showChooseProfileModal = true;
-    },
-    saveCropped() {
-      const _this = this;
-      // this.crop_image.canvas.toBlob(function(blob) {
-      this.croppie.result({
-        type: 'blob',
-        format: 'jpeg',
-        quality: 0.8
-      }).then(blob => {
-            let loader = _this.$loading.show();
-            const formData = new FormData();
-            formData.append("file", blob);
-            axios
-                .post("/profile/save-cropped-image", formData)
-                .then(function (res) {
-                  loader.hide();
-                  _this.crop_image.image = "/cropped_users_img/" + res.data.filename;
-                  _this.crop_image.hide=false;
-                })
-                .catch(function (err) {
-                  console.log(err, "error");
-                });
-      })
-      //   },
-      //   "image/jpeg",
-      //   0.8
-      // ); // 80% compressed jpeg file
-    },
-    handleFileUpload(){
+			this.showChooseProfileModal = true;
+		},
+		saveCropped() {
+			const _this = this;
+			// this.crop_image.canvas.toBlob(function(blob) {
+			this.croppie.result({
+				type: 'blob',
+				format: 'jpeg',
+				quality: 0.8
+			}).then(blob => {
+				let loader = _this.$loading.show();
+				const formData = new FormData();
+				formData.append('file', blob);
+				this.axios
+					.post('/profile/save-cropped-image', formData)
+					.then(function (res) {
+						loader.hide();
+						_this.crop_image.image = '/cropped_users_img/' + res.data.filename;
+						_this.crop_image.hide=false;
+					})
+					.catch(function (err) {
+						console.log(err, 'error');
+					});
+			})
+			//   },
+			//   "image/jpeg",
+			//   0.8
+			// ); // 80% compressed jpeg file
+		},
+		handleFileUpload(){
+			/* global Croppie */
+			this.file = this.$refs.file.files[0];
 
-      this.file = this.$refs.file.files[0];
+			let reader  = new FileReader();
+			reader.addEventListener('load', function () {
+				this.imagePreview = reader.result;
+				this.croppie = new Croppie(document.getElementById('cabinet-croppie'), {
+					enableExif: true,
+					viewport: {
+						width:200,
+						height:200,
+						type:'square' //circle
+					},
+					boundary:{
+						width:300,
+						height:300
+					}
+				})
+				this.croppie.bind({
+					url: reader.result
+				})
+			}.bind(this), false);
 
-      let reader  = new FileReader();
-      reader.addEventListener("load", function () {
-        this.imagePreview = reader.result;
-        this.croppie = new Croppie(document.getElementById('cabinet-croppie'), {
-          enableExif: true,
-          viewport: {
-            width:200,
-            height:200,
-            type:'square' //circle
-          },
-          boundary:{
-            width:300,
-            height:300
-          }
-        })
-        this.croppie.bind({
-          url: reader.result
-        })
-      }.bind(this), false);
+			if( this.file ){
+				if ( /\.(jpe?g|png|gif)$/i.test( this.file.name ) ) {
+					this.showChooseProfileModal = true
+					reader.readAsDataURL( this.file );
+				}
+				else{
+					this.$toast.error('Неподдерживаемый формат: ' + this.file.name.split('.').reverse()[0])
+				}
+			}
+		},
 
-      if( this.file ){
-        if ( /\.(jpe?g|png|gif)$/i.test( this.file.name ) ) {
-          this.showChooseProfileModal = true
-          reader.readAsDataURL( this.file );
-        }
-        else{
-          this.$toast.error('Неподдерживаемый формат: ' + this.file.name.split('.').reverse()[0])
-        }
-      }
-    },
+		selectedCountry(index, arr) {
+			this.keywords = 'Страна ' + arr.country + ' Город ' + arr.city;
+			this.working_city = arr.id;
+		},
 
-    selectedCountry(index, arr) {
-      this.keywords = "Страна " + arr.country + " Город " + arr.city;
-      this.working_city = arr.id;
-    },
+		format_date(value) {
+			if (value) {
+				return (this.birthday = this.$moment(String(value)).format('YYYY-MM-DD'));
+			}
+		},
 
-    format_date(value) {
-      if (value) {
-        return (this.birthday = moment(String(value)).format("YYYY-MM-DD"));
-      }
-    },
+		addPayment() {
 
-    addPayment() {
+			this.payments_view = true;
 
-      this.payments_view = true;
+			this.payments.push({
+				bank: '',
+				cardholder: '',
+				country: '',
+				number: '',
+				phone: '',
+			});
+		},
 
-      this.payments.push({
-        bank: "",
-        cardholder: "",
-        country: "",
-        number: "",
-        phone: "",
-      });
-    },
+		removePaymentCart(index, type_id) {
 
-    removePaymentCart(index, type_id) {
+			let confirmDelte = confirm(
+				'Вы действительно хотите безвозвратно удалить ?'
+			);
 
-      let confirmDelte = confirm(
-        "Вы действительно хотите безвозвратно удалить ?"
-      );
-
-      if (confirmDelte) {
-
-
-        this.payments.splice(index, 1);
-        this.$toast.success("Успешно Удалено");
-
-        if (type_id != "dev") {
-          axios
-            .post("/profile/remove/card/", {
-              card_id: type_id,
-            })
-            .then((response) => {})
-            .catch((error) => {
-              alert(error);
-            });
-        }
+			if (confirmDelte) {
 
 
-      }
-    },
+				this.payments.splice(index, 1);
+				this.$toast.success('Успешно Удалено');
 
-    editProfileUser() {
-      this.cardValidatre.type = false;
-      this.cardValidatre.error = false;
-
-
-      console.log(this.payments,'this.payments')
-
-
-      if (this.payments.length > 0){
-
-        this.payments.forEach((el) => {
-
-          console.log(el,'emasdasd')
-
-          this.cardValidatre.type = false;
-          this.cardValidatre.type = true;
-
-          if (
-              el["bank"] != null &&
-              el["cardholder"] != null &&
-              el["country"] != null &&
-              el["number"] != null &&
-              el["phone"] != null
-          ) {
-            if (
-                el["bank"].length > 2 &&
-                el["cardholder"].length > 2 &&
-                el["country"].length > 2 &&
-                el["number"].length > 2 &&
-                el["phone"].length > 2
-            ) {
-              this.cardValidatre.type = true;
-            }
-          }
-        });
-      }else {
-        this.cardValidatre.type = true;
-      }
+				if (type_id != 'dev') {
+					this.axios
+						.post('/profile/remove/card/', {
+							card_id: type_id,
+						})
+						.then(() => {})
+						.catch((error) => {
+							alert(error);
+						});
+				}
 
 
-      if (this.cardValidatre.type) {
-        axios
-          .post("/profile/edit/user/cart/", {
-            cards: this.payments,
-            query: this.user,
-            password: this.password,
-            birthday: this.birthday,
-            working_city: this.working_city,
-            working_country: this.keywords,
-          })
-          .then((response) => {
-            if (response.data.success) {
-              this.$toast.success("Успешно Сохранено");
-            }
-          });
-      } else {
-        this.cardValidatre.error = true;
-      }
-    },
+			}
+		},
 
-    addTag(newTag) {
-      const tag = {
-        email: newTag,
-        id: newTag,
-      };
-      this.users.push(tag);
-    },
+		editProfileUser() {
+			this.cardValidatre.type = false;
+			this.cardValidatre.error = false;
 
-    fetchData() {
-      axios
-        .get("/cabinet/get")
-        .then((response) => {
-          this.admins = response.data.admins;
-          this.users = response.data.users;
-          this.user = response.data.user;
-          this.keywords = response.data.user.working_country;
-          this.working_city = response.data.user.working_city;
 
-          if (response.data.user_payment != null && response.data.user_payment != undefined) {
+			console.log(this.payments,'this.payments')
 
-            if (response.data.user_payment.length > 0) {
-              this.payments = response.data.user_payment;
-              this.payments_view = true
-            } else {
-              this.payments = [];
-              this.payments_view = false
-            }
 
-          }
+			if (this.payments.length > 0){
 
-          if (this.user.img_url != null && this.user.img_url != undefined) {
-            this.img = "/users_img/" + response.data.user.img_url;
-          } else {
-            this.img = "/users_img/noavatar.png";
-          }
-          this.drawProfile();
-        })
-        .catch((error) => {
-          alert(error);
-        });
-    },
+				this.payments.forEach((el) => {
 
-    save() {
-      axios
-        .post("/cabinet/save", {
-          admins: this.admins,
-        })
-        .then((response) => {
-          this.$toast.success("Сохранено");
-        })
-        .catch((error) => {
-          alert(error, "6565");
-        });
-    },
+					console.log(el,'emasdasd')
 
-    fetch() {
-      if (this.keywords != null && this.keywords != undefined) {
-        if (this.keywords.length === 0) {
-          this.keywords = "";
-          this.country_results = [];
-        } else {
-          axios
-            .post("/profile/country/city/", {
-              keyword: this.keywords,
-            })
-            .then((response) => {
-              this.country_results = response.data;
-            });
-        }
-      }
+					this.cardValidatre.type = false;
+					this.cardValidatre.type = true;
 
-      // axios.get('/profile/country/city/', { params: { keywords: this.keywords } })
-      //     .then(response => this.results = response.data)
-      //     .catch(error => {});
-    },
-  },
+					if (
+						el['bank'] != null &&
+              el['cardholder'] != null &&
+              el['country'] != null &&
+              el['number'] != null &&
+              el['phone'] != null
+					) {
+						if (
+							el['bank'].length > 2 &&
+                el['cardholder'].length > 2 &&
+                el['country'].length > 2 &&
+                el['number'].length > 2 &&
+                el['phone'].length > 2
+						) {
+							this.cardValidatre.type = true;
+						}
+					}
+				});
+			}else {
+				this.cardValidatre.type = true;
+			}
+
+
+			if (this.cardValidatre.type) {
+				this.axios
+					.post('/profile/edit/user/cart/', {
+						cards: this.payments,
+						query: this.user,
+						password: this.password,
+						birthday: this.birthday,
+						working_city: this.working_city,
+						working_country: this.keywords,
+					})
+					.then((response) => {
+						if (response.data.success) {
+							this.$toast.success('Успешно Сохранено');
+						}
+					});
+			} else {
+				this.cardValidatre.error = true;
+			}
+		},
+
+		addTag(newTag) {
+			const tag = {
+				email: newTag,
+				id: newTag,
+			};
+			this.users.push(tag);
+		},
+
+		fetchData() {
+			this.axios
+				.get('/cabinet/get')
+				.then((response) => {
+					this.admins = response.data.admins;
+					this.users = response.data.users;
+					this.user = response.data.user;
+					this.keywords = response.data.user.working_country;
+					this.working_city = response.data.user.working_city;
+
+					if (response.data.user_payment != null && response.data.user_payment != undefined) {
+
+						if (response.data.user_payment.length > 0) {
+							this.payments = response.data.user_payment;
+							this.payments_view = true
+						} else {
+							this.payments = [];
+							this.payments_view = false
+						}
+
+					}
+
+					if (this.user.img_url != null && this.user.img_url != undefined) {
+						this.img = '/users_img/' + response.data.user.img_url;
+					} else {
+						this.img = '/users_img/noavatar.png';
+					}
+					this.drawProfile();
+				})
+				.catch((error) => {
+					alert(error);
+				});
+		},
+
+		save() {
+			this.axios
+				.post('/cabinet/save', {
+					admins: this.admins,
+				})
+				.then(() => {
+					this.$toast.success('Сохранено');
+				})
+				.catch((error) => {
+					alert(error, '6565');
+				});
+		},
+
+		fetch() {
+			if (this.keywords != null && this.keywords != undefined) {
+				if (this.keywords.length === 0) {
+					this.keywords = '';
+					this.country_results = [];
+				} else {
+					this.axios
+						.post('/profile/country/city/', {
+							keyword: this.keywords,
+						})
+						.then((response) => {
+							this.country_results = response.data;
+						});
+				}
+			}
+
+			// axios.get('/profile/country/city/', { params: { keywords: this.keywords } })
+			//     .then(response => this.results = response.data)
+			//     .catch(error => {});
+		},
+	},
 };
 </script>
 

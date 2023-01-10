@@ -57,98 +57,98 @@
 
 <script>
 export default {
-  name: 'VoiceMessage',
-  props: {
-    audioSource: {
-      type: String,
-      required: true,
-    },
-    isActive: {
-      type: Boolean,
-      default: true,
-    },
-  },
-  data() {
-    return {
-      progress: 0,
-      duration: '',
-      isPaused: true,
-    };
-  },
-  computed: {
-    isPlaying() {
-      return this.isActive && !this.isPaused;
-    },
-    activeBar() {
-      return Math.floor(this.bars.length * this.progress / 100);
-    },
-    bars() {
-      return Array.from({ length: 40 });
-    },
-  },
-  watch: {
-    isActive(val) {
-      console.log('isActive', val);
-      if (!val) {
-        this.stop();
-      }
-    },
-  },
-  methods: {
-    setPlaying() {
-      this.isPaused = false;
-      this.$emit('play');
-    },
-    setStopped() {
-      this.$refs.audio.currentTime = 0;
-      this.progress = 0;
-      this.isPaused = true;
-    },
-    play() {
-      this.$refs.audio.play();
-    },
-    pause() {
-      this.$refs.audio.pause();
-      this.isPaused = true;
-    },
-    stop() {
-      this.$refs.audio.pause();
-    },
-    resume(position) {
-      if (position > 0.05 && position < 0.95) {
-        this.$refs.audio.currentTime = this.$refs.audio.duration * position;
-        this.$refs.audio.play();
-      }
-    },
-    togglePlay() {
-      if (this.isPlaying) {
-        this.pause();
-      } else {
-        this.play();
-      }
-    },
-    updateProgress() {
-      this.progress = (this.$refs.audio.currentTime / this.$refs.audio.duration) * 100;
-    },
-    updateDuration() {
-      if (this.$refs.audio.duration === Infinity) {
-        this.$refs.audio.currentTime = Number.MAX_SAFE_INTEGER;
-        this.$refs.audio.ontimeupdate = () => {
-          this.$refs.audio.ontimeupdate = () => {};
-          this.$refs.audio.currentTime = 0;
-          this.duration = this.$refs.audio.duration;
-        };
-      }
-    },
-  },
-  filters: {
-    durationFormat(value) {
-      const minutes = Math.floor(value / 60);
-      const seconds = Math.floor(value - minutes * 60);
+	name: 'VoiceMessage',
+	props: {
+		audioSource: {
+			type: String,
+			required: true,
+		},
+		isActive: {
+			type: Boolean,
+			default: true,
+		},
+	},
+	data() {
+		return {
+			progress: 0,
+			duration: '',
+			isPaused: true,
+		};
+	},
+	computed: {
+		isPlaying() {
+			return this.isActive && !this.isPaused;
+		},
+		activeBar() {
+			return Math.floor(this.bars.length * this.progress / 100);
+		},
+		bars() {
+			return Array.from({ length: 40 });
+		},
+	},
+	watch: {
+		isActive(val) {
+			console.log('isActive', val);
+			if (!val) {
+				this.stop();
+			}
+		},
+	},
+	methods: {
+		setPlaying() {
+			this.isPaused = false;
+			this.$emit('play');
+		},
+		setStopped() {
+			this.$refs.audio.currentTime = 0;
+			this.progress = 0;
+			this.isPaused = true;
+		},
+		play() {
+			this.$refs.audio.play();
+		},
+		pause() {
+			this.$refs.audio.pause();
+			this.isPaused = true;
+		},
+		stop() {
+			this.$refs.audio.pause();
+		},
+		resume(position) {
+			if (position > 0.05 && position < 0.95) {
+				this.$refs.audio.currentTime = this.$refs.audio.duration * position;
+				this.$refs.audio.play();
+			}
+		},
+		togglePlay() {
+			if (this.isPlaying) {
+				this.pause();
+			} else {
+				this.play();
+			}
+		},
+		updateProgress() {
+			this.progress = (this.$refs.audio.currentTime / this.$refs.audio.duration) * 100;
+		},
+		updateDuration() {
+			if (this.$refs.audio.duration === Infinity) {
+				this.$refs.audio.currentTime = Number.MAX_SAFE_INTEGER;
+				this.$refs.audio.ontimeupdate = () => {
+					this.$refs.audio.ontimeupdate = () => {};
+					this.$refs.audio.currentTime = 0;
+					this.duration = this.$refs.audio.duration;
+				};
+			}
+		},
+	},
+	filters: {
+		durationFormat(value) {
+			const minutes = Math.floor(value / 60);
+			const seconds = Math.floor(value - minutes * 60);
 
-      return `${minutes}:${seconds < 10 ? `0${seconds}` : seconds}`;
-    },
-  },
+			return `${minutes}:${seconds < 10 ? `0${seconds}` : seconds}`;
+		},
+	},
 };
 </script>
 

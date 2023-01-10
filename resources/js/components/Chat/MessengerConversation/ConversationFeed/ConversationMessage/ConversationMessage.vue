@@ -3,7 +3,7 @@
     'messenger__message-box-right' :
     'messenger__message-box-left'">
     <AlternativeAvatar v-if="message.sender_id !== user.id" :title="message.sender.name"
-                       :image="message.sender.img_url"></AlternativeAvatar>
+                       :image="message.sender.img_url"/>
     <div class="messenger__message-container">
       <div :class="messageCardClass">
         <div class="messenger__format-message-wrapper">
@@ -32,7 +32,7 @@
             </div>
           </div>
           <div v-else class="messenger__message-files">
-            <div class="messenger__message-file" v-for="file in message.files">
+            <div class="messenger__message-file" v-for="(file, index) in message.files" :key="index">
               <template v-if="isImage(file)">
                 <div class="messenger__message-file-image" @click="openImage(file)">
                   <img v-on:load="$emit('loadImage')"
@@ -44,8 +44,7 @@
                   <VoiceMessage :audioSource="file.file_path"
                                 :isActive="active"
                                 @play="$emit('active')"
-                  >
-                  </VoiceMessage>
+                  />
                 </div>
               </template>
               <template v-else>
@@ -65,11 +64,11 @@
       </div>
       <div v-if="message.readers && message.readers.length > 0" class="messenger__message-reactions">
         <template v-if="last && message.readers && message.readers.length > 0 && message.sender_id === user.id">
-          <MessageReaders :message="message" :user="user"></MessageReaders>
+          <MessageReaders :message="message" :user="user"/>
         </template>
 
-        <template v-for="reaction in reactions" v-if="reactions">
-          <div class="messenger__message-reaction" @click="reactMessage({message: message, emoji_id: reaction.type})">
+        <template v-if="reactions">
+          <div v-for="(reaction, index) in reactions" :key="index" class="messenger__message-reaction" @click="reactMessage({message: message, emoji_id: reaction.type})">
             <div class="messenger__message-reaction-icon">
               <span v-if="reaction.type === 1">&#128077;</span>
               <span v-else-if="reaction.type === 2">&#128078;</span>
@@ -94,110 +93,110 @@
 </template>
 
 <script>
-import {mapActions, mapGetters} from "vuex";
-import moment from "moment";
-import MessageReaders from "./MessageReaders/MessageReaders.vue";
-import AlternativeAvatar from "../../../ChatsList/ContactItem/AlternativeAvatar/AlternativeAvatar.vue";
-import VoiceMessage from "./VoiceMessage/VoiceMessage.vue";
+import {mapActions, mapGetters} from 'vuex';
+import moment from 'moment';
+import MessageReaders from './MessageReaders/MessageReaders.vue';
+import AlternativeAvatar from '../../../ChatsList/ContactItem/AlternativeAvatar/AlternativeAvatar.vue';
+import VoiceMessage from './VoiceMessage/VoiceMessage.vue';
 
 export default {
-  name: "ConversationMessage",
-  components: {
-    MessageReaders, AlternativeAvatar, VoiceMessage
-  },
-  props: {
-    message: {
-      type: Object,
-      required: true
-    },
-    last: {
-      type: Boolean,
-      default: false
-    },
-    active: {
-      type: Boolean,
-      default: false
-    },
-  },
-  computed: {
-    ...mapGetters(['user', 'chat']),
-    messageCardClass() {
-      return {
-        'messenger__message-card': true,
-        'messenger__message__failed': this.message.failed,
-      }
-    },
-    reactions() {
-      // go through each reader and if include reaction type
-      // add to reactions array
-      let reactions = [];
-      this.message.readers.forEach(reader => {
-        if (reader.pivot && reader.pivot.reaction) {
-          // increment reaction count if already in array
-          let reaction = reactions.find(reaction => reaction.type === reader.pivot.reaction);
-          if (reaction) {
-            reaction.count++;
-          } else {
-            reactions.push({
-              type: reader.pivot.reaction,
-              count: 1,
-            });
-          }
-        }
-      });
-      return reactions;
-    },
-  },
-  methods: {
-    ...mapActions(['showGallery', 'reactMessage', 'loadMessages', 'loadMoreNewMessages', 'requestScroll',
-      'setLoading']),
-    isImage(file) {
-      const ext = file.name.split('.').pop();
-      return ['jpg', 'jpeg', 'png', 'gif'].includes(ext);//todo: другой способ определения. Хранить тип файла в БД.
-    },
-    isAudio(file) {
-      const ext = file.name.split('.').pop();
-      return ['mp3', 'wav', 'ogg', 'webm'].includes(ext);
-    },
-    isGallery() {
-      return this.message.files && this.message.files.length > 1 && this.message.files.every(file => this.isImage(file));
-    },
-    getImages() {
-      return this.message.files.filter(file => this.isImage(file)).map(file => file.file_path);
-    },
-    openImage(image) {
-      this.showGallery({
-        images: this.getImages(),
-        index: this.message.files.findIndex(f => f.id === image.id),
-      });
-    },
-    goto(message, event) {
-      event.stopPropagation();
-      this.setLoading(true);
-      this.loadMessages({
-        reset: false, goto: message.id, callback: () => {
-          // after a second
-          setTimeout(() => {
-            this.setLoading(false);
-          }, 1000);
-        }
-      });
-    }
-  },
-  filters: {
-    moment: function (date) {
-      // if today show only hour and minutes
-      if (moment(date).isSame(moment(), 'day')) {
-        return moment(date).format('HH:mm');
-      }
-      // if yesterday show only hour and minutes and yesterday
-      if (moment(date).isSame(moment().subtract(1, 'day'), 'day')) {
-        return 'Вчера, ' + moment(date).format('HH:mm');
-      }
-      // if older than yesterday show hour, minutes, day and month
-      return moment(date).format('DD.MM, HH:mm');
-    },
-  }
+	name: 'ConversationMessage',
+	components: {
+		MessageReaders, AlternativeAvatar, VoiceMessage
+	},
+	props: {
+		message: {
+			type: Object,
+			required: true
+		},
+		last: {
+			type: Boolean,
+			default: false
+		},
+		active: {
+			type: Boolean,
+			default: false
+		},
+	},
+	computed: {
+		...mapGetters(['user', 'chat']),
+		messageCardClass() {
+			return {
+				'messenger__message-card': true,
+				'messenger__message__failed': this.message.failed,
+			}
+		},
+		reactions() {
+			// go through each reader and if include reaction type
+			// add to reactions array
+			let reactions = [];
+			this.message.readers.forEach(reader => {
+				if (reader.pivot && reader.pivot.reaction) {
+					// increment reaction count if already in array
+					let reaction = reactions.find(reaction => reaction.type === reader.pivot.reaction);
+					if (reaction) {
+						reaction.count++;
+					} else {
+						reactions.push({
+							type: reader.pivot.reaction,
+							count: 1,
+						});
+					}
+				}
+			});
+			return reactions;
+		},
+	},
+	methods: {
+		...mapActions(['showGallery', 'reactMessage', 'loadMessages', 'loadMoreNewMessages', 'requestScroll',
+			'setLoading']),
+		isImage(file) {
+			const ext = file.name.split('.').pop();
+			return ['jpg', 'jpeg', 'png', 'gif'].includes(ext);//todo: другой способ определения. Хранить тип файла в БД.
+		},
+		isAudio(file) {
+			const ext = file.name.split('.').pop();
+			return ['mp3', 'wav', 'ogg', 'webm'].includes(ext);
+		},
+		isGallery() {
+			return this.message.files && this.message.files.length > 1 && this.message.files.every(file => this.isImage(file));
+		},
+		getImages() {
+			return this.message.files.filter(file => this.isImage(file)).map(file => file.file_path);
+		},
+		openImage(image) {
+			this.showGallery({
+				images: this.getImages(),
+				index: this.message.files.findIndex(f => f.id === image.id),
+			});
+		},
+		goto(message, event) {
+			event.stopPropagation();
+			this.setLoading(true);
+			this.loadMessages({
+				reset: false, goto: message.id, callback: () => {
+					// after a second
+					setTimeout(() => {
+						this.setLoading(false);
+					}, 1000);
+				}
+			});
+		}
+	},
+	filters: {
+		moment: function (date) {
+			// if today show only hour and minutes
+			if (moment(date).isSame(moment(), 'day')) {
+				return moment(date).format('HH:mm');
+			}
+			// if yesterday show only hour and minutes and yesterday
+			if (moment(date).isSame(moment().subtract(1, 'day'), 'day')) {
+				return 'Вчера, ' + moment(date).format('HH:mm');
+			}
+			// if older than yesterday show hour, minutes, day and month
+			return moment(date).format('DD.MM, HH:mm');
+		},
+	}
 }
 </script>
 

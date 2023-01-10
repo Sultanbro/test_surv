@@ -13,26 +13,26 @@
 <script>
 export default {
 
-  name: 'UModal',
-  props: {
-    items: {
-        default: null
-    },
-    title: {
-      default: 'Модальное окно'
-    }
-  },
-  created(){
-    this.items = JSON.parse(this.items)
-  },
-  data() {
-    return {
+	name: 'UModal',
+	props: {
+		items: {
+			default: null
+		},
+		title: {
+			default: 'Модальное окно'
+		}
+	},
+	created(){
+		this.items = JSON.parse(this.items)
+	},
+	data() {
+		return {
 
-    }
-  },
-  methods: {
+		}
+	},
+	methods: {
 
-  }
+	}
 
 }
 </script>

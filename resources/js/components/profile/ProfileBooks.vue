@@ -1,16 +1,16 @@
 <template>
     <div>
-        <multiselect 
-            v-model="value" 
-            :options="books" 
-            :multiple="true" 
-            :close-on-select="false" 
-            :clear-on-select="false" 
-            :preserve-search="true" 
-            placeholder="Выберите" 
-            label="name" 
-            track-by="name" 
-            :taggable="true" 
+        <multiselect
+            v-model="value"
+            :options="books"
+            :multiple="true"
+            :close-on-select="false"
+            :clear-on-select="false"
+            :preserve-search="true"
+            placeholder="Выберите"
+            label="name"
+            track-by="name"
+            :taggable="true"
             @tag="addTag"
             @remove="removeGroup"
             @select="selectGroup"></multiselect>
@@ -19,78 +19,78 @@
 
 <script>
 export default {
-    name: "ProfileBooks",
-    props: {
-        user_id: {
-            default: null
-        },
-        books: {
-            default: null
-        },
-        in_books: {
-            default: []
-        },
-    },
-    data() {
-        return {
-           message: null,
-           value: [],
-        }
-    },
-    created() {
-        this.value = this.in_books;
-    },
-    mounted() {
-        //this.getPositions();
-    },
-    methods: {
-        addTag(newTag) {
-            const tag = {
-                name: newTag,
-                id: newTag
-            }
-            this.books.push(tag)
-            this.value.push(tag)
+	name: 'ProfileBooks',
+	props: {
+		user_id: {
+			default: null
+		},
+		books: {
+			default: null
+		},
+		in_books: {
+			default: []
+		},
+	},
+	data() {
+		return {
+			message: null,
+			value: [],
+		}
+	},
+	created() {
+		this.value = this.in_books;
+	},
+	mounted() {
+		//this.getPositions();
+	},
+	methods: {
+		addTag(newTag) {
+			const tag = {
+				name: newTag,
+				id: newTag
+			}
+			this.books.push(tag)
+			this.value.push(tag)
 
-            
-        },
-        messageoff() {
-            setTimeout(() => {
-                this.message = null
-            }, 3000)
-        },
-        selectGroup(selectedOption) {
 
-            axios.post('/timetracking/edit-person/book', {
-                user_id: this.user_id,
-                book_id: selectedOption.id,
-                action: 'add',
-            })
-            .then(response => {
-                this.$toast.info('Сотрудник получил книгу "' + selectedOption.name + '"');
-                this.messageoff()
-            }) 
-            .catch(error => {
-                console.log(error.response)
-                this.$toast.info(error.response);
-            });
-        },
-        removeGroup(selectedOption) {
-            axios.post('/timetracking/edit-person/book', {
-                user_id: this.user_id,
-                book_id: selectedOption.id,
-                action: 'delete'
-            })
-            .then(response => {
-                this.$toast.info('Сотрудник лишился книги "' + selectedOption.name + '"');
-                this.messageoff()
-            }) 
-            .catch(error => {
-                console.log(error.response)
-                this.$toast.info(error.response);
-            });
-        }
-    }
+		},
+		messageoff() {
+			setTimeout(() => {
+				this.message = null
+			}, 3000)
+		},
+		selectGroup(selectedOption) {
+
+			this.axios.post('/timetracking/edit-person/book', {
+				user_id: this.user_id,
+				book_id: selectedOption.id,
+				action: 'add',
+			})
+				.then(() => {
+					this.$toast.info('Сотрудник получил книгу "' + selectedOption.name + '"');
+					this.messageoff()
+				})
+				.catch(error => {
+					console.log(error.response)
+					this.$toast.info(error.response);
+				});
+		},
+		removeGroup(selectedOption) {
+			this.axios.post('/timetracking/edit-person/book', {
+				user_id: this.user_id,
+				book_id: selectedOption.id,
+				action: 'delete'
+			})
+				.then(() => {
+					this.$toast.info('Сотрудник лишился книги "' + selectedOption.name + '"');
+					this.messageoff()
+				})
+				.catch(error => {
+					console.log(error.response)
+					this.$toast.info(error.response);
+				});
+		}
+	}
 }
 </script>
 

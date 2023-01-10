@@ -1,12 +1,12 @@
 <script>
 export default {
-    name: 'UserEditAdaptation',
-    props: {
-        user: {
-            type: Object,
-            default: null
-        },
-    }
+	name: 'UserEditAdaptation',
+	props: {
+		user: {
+			type: Object,
+			default: null
+		},
+	}
 }
 </script>
 <template>
@@ -55,7 +55,8 @@ export default {
                     class="form-control"
                     placeholder="Комментарии"
                     style="min-height: 40px; padding: 5px 20px 0 20px!important;"
-                >{{ talk.text }}</textarea>
+                    :value="talk.text || ''"
+                />
             </div>
         </div>
     </div>

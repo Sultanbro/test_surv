@@ -97,159 +97,159 @@
 </template>
 
 <script>
-import {mapActions, mapGetters} from "vuex";
+import {mapActions, mapGetters} from 'vuex';
 
 export default {
-  name: "AddMemberModal",
-  computed: {
-    ...mapGetters([
-      'contacts', 'newChatContacts',
-      'chat', 'user',
-      'users', 'profileGroups', 'positions',
-    ]),
-    accessDictionaries() {
-      return {
-        users: this.users,
-        profile_groups: this.profileGroups,
-        positions: this.positions,
-      }
-    },
-    accessCount() {
-      return this.accessList.filter(item => item.type === 1).length;
-    },
-  },
-  data() {
-    return {
-      title: 'Групповой чат',
-      members: [],
-      showAccessModal: {
-        type: Boolean,
-        default: false
-      },
-      accessSearch: '',
-      currentAccessTab: 1,
-      availableToEveryone: false,
-      accessList: []
-    };
-  },
-  mounted() {
-    if (!this.chat.private) {
-      this.title = this.chat.title;
-      this.accessList = this.chat.users.filter(user => user.id !== this.user.id).map(user => {
-        return {
-          id: user.id,
-          name: user.name,
-          avatar: user.avatar,
-          type: 1
-        }
-      });
-    }
-    this.loadCompany();
-  },
-  methods: {
-    ...mapActions(['createChat', 'addMembers', 'removeMembers', 'loadCompany']),
+	name: 'AddMemberModal',
+	computed: {
+		...mapGetters([
+			'contacts', 'newChatContacts',
+			'chat', 'user',
+			'users', 'profileGroups', 'positions',
+		]),
+		accessDictionaries() {
+			return {
+				users: this.users,
+				profile_groups: this.profileGroups,
+				positions: this.positions,
+			}
+		},
+		accessCount() {
+			return this.accessList.filter(item => item.type === 1).length;
+		},
+	},
+	data() {
+		return {
+			title: 'Групповой чат',
+			members: [],
+			showAccessModal: {
+				type: Boolean,
+				default: false
+			},
+			accessSearch: '',
+			currentAccessTab: 1,
+			availableToEveryone: false,
+			accessList: []
+		};
+	},
+	mounted() {
+		if (!this.chat.private) {
+			this.title = this.chat.title;
+			this.accessList = this.chat.users.filter(user => user.id !== this.user.id).map(user => {
+				return {
+					id: user.id,
+					name: user.name,
+					avatar: user.avatar,
+					type: 1
+				}
+			});
+		}
+		this.loadCompany();
+	},
+	methods: {
+		...mapActions(['createChat', 'addMembers', 'removeMembers', 'loadCompany']),
 
-    toggleAccessModal(value, event) {
-      event.stopPropagation();
-      this.showAccessModal = value;
-      this.$emit('close');
-    },
-    changeAccessTab(tab) {
-      this.currentAccessTab = tab
-    },
-    changeAccessList(event, id, name, type, avatar = null) {
-      event.stopPropagation();
+		toggleAccessModal(value, event) {
+			event.stopPropagation();
+			this.showAccessModal = value;
+			this.$emit('close');
+		},
+		changeAccessTab(tab) {
+			this.currentAccessTab = tab
+		},
+		changeAccessList(event, id, name, type, avatar = null) {
+			event.stopPropagation();
 
-      let users = [];
-      if (type === 2) {
-        users = this.accessDictionaries.users.filter(user => user.profile_group_id === id);
-      } else if (type === 3) {
-        users = this.accessDictionaries.users.filter(user => user.position_id === id);
-      }
+			let users = [];
+			if (type === 2) {
+				users = this.accessDictionaries.users.filter(user => user.profile_group_id === id);
+			} else if (type === 3) {
+				users = this.accessDictionaries.users.filter(user => user.position_id === id);
+			}
 
-      let index = this.accessList.findIndex(i => i.id === id)
-      if (index === -1) {
-        this.accessList.push({
-          id: id,
-          name: name,
-          avatar: avatar,
-          type: type
-        });
-        this.addUsers(users);
-      } else {
-        this.accessList.splice(index, 1);
-        this.removeUsers(users);
-      }
-    },
-    addUsers(users) {
-      for (let user of users) {
-        let index = this.accessList.findIndex(i => i.id === user.id && i.type === 1);
-        if (index === -1) {
-          this.accessList.push({
-            id: user.id,
-            name: user.name,
-            avatar: user.avatar,
-            type: 1
-          });
-        }
-      }
-    },
-    removeUsers(users) {
-      for (let user of users) {
-        let index = this.accessList.findIndex(i => i.id === user.id && i.type === 1);
-        if (index !== -1) {
-          this.accessList.splice(index, 1);
-        }
-      }
-    },
-    checked(item, type) {
-      return this.accessList && this.accessList.findIndex(accessItem => accessItem.id === item.id && accessItem.type === type) !== -1
-    },
-    enumerate(number, titles) {
-      const cases = [2, 0, 1, 1, 1, 2];
-      return titles[(number % 100 > 4 && number % 100 < 20) ? 2 : cases[(number % 10 < 5) ? number % 10 : 5]];
-    },
-    toggleAvailableToEveryone() {
-      this.availableToEveryone = !this.availableToEveryone;
-      let users = this.accessDictionaries.users;
+			let index = this.accessList.findIndex(i => i.id === id)
+			if (index === -1) {
+				this.accessList.push({
+					id: id,
+					name: name,
+					avatar: avatar,
+					type: type
+				});
+				this.addUsers(users);
+			} else {
+				this.accessList.splice(index, 1);
+				this.removeUsers(users);
+			}
+		},
+		addUsers(users) {
+			for (let user of users) {
+				let index = this.accessList.findIndex(i => i.id === user.id && i.type === 1);
+				if (index === -1) {
+					this.accessList.push({
+						id: user.id,
+						name: user.name,
+						avatar: user.avatar,
+						type: 1
+					});
+				}
+			}
+		},
+		removeUsers(users) {
+			for (let user of users) {
+				let index = this.accessList.findIndex(i => i.id === user.id && i.type === 1);
+				if (index !== -1) {
+					this.accessList.splice(index, 1);
+				}
+			}
+		},
+		checked(item, type) {
+			return this.accessList && this.accessList.findIndex(accessItem => accessItem.id === item.id && accessItem.type === type) !== -1
+		},
+		enumerate(number, titles) {
+			const cases = [2, 0, 1, 1, 1, 2];
+			return titles[(number % 100 > 4 && number % 100 < 20) ? 2 : cases[(number % 10 < 5) ? number % 10 : 5]];
+		},
+		toggleAvailableToEveryone() {
+			this.availableToEveryone = !this.availableToEveryone;
+			let users = this.accessDictionaries.users;
 
-      if (this.availableToEveryone) {
-        this.addUsers(users);
-      } else {
-        this.removeUsers(users);
-      }
-    },
-    submitForm(e) {
-      e.stopPropagation();
+			if (this.availableToEveryone) {
+				this.addUsers(users);
+			} else {
+				this.removeUsers(users);
+			}
+		},
+		submitForm(e) {
+			e.stopPropagation();
 
-      let members = this.accessList.filter(item => item.type === 1);
+			let members = this.accessList.filter(item => item.type === 1);
 
-      if (this.chat.private) {
-        // title is a concatenation of first 3 members names
-        let title = members.slice(0, 3).map(item => item.name).join(', ');
-        this.createChat({
-          title: title,
-          description: '',
-          members: members.map(member => member.id)
-        });
-      } else {
-        // find diff between members and chat.users
-        // add new members
-        // remove old members
-        this.accessList.push(this.user);
-        let add_members = members.filter(member => !this.chat.users.find(user => user.id === member.id));
-        let remove_members = members.filter(user => !this.accessList.find(member => member.id === user.id));
+			if (this.chat.private) {
+				// title is a concatenation of first 3 members names
+				let title = members.slice(0, 3).map(item => item.name).join(', ');
+				this.createChat({
+					title: title,
+					description: '',
+					members: members.map(member => member.id)
+				});
+			} else {
+				// find diff between members and chat.users
+				// add new members
+				// remove old members
+				this.accessList.push(this.user);
+				let add_members = members.filter(member => !this.chat.users.find(user => user.id === member.id));
+				let remove_members = members.filter(user => !this.accessList.find(member => member.id === user.id));
 
-        if (add_members.length > 0) {
-          this.addMembers(add_members);
-        }
-        if (remove_members.length > 0) {
-          this.removeMembers(remove_members);
-        }
-      }
-      this.$emit('close');
-    },
-  },
+				if (add_members.length > 0) {
+					this.addMembers(add_members);
+				}
+				if (remove_members.length > 0) {
+					this.removeMembers(remove_members);
+				}
+			}
+			this.$emit('close');
+		},
+	},
 }
 </script>
 

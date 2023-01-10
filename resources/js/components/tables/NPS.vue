@@ -16,7 +16,7 @@
 
         </div>
         <div class="col-3">
-            
+
         </div>
     </div>
 
@@ -26,7 +26,7 @@
           <thead>
           <tr>
               <template v-for="(field, key) in fields">
-                  <th :class="field.klass">
+                  <th :class="field.klass" :key="key">
                       {{ field.name }}
                   </th>
               </template>
@@ -35,7 +35,7 @@
            <tbody>
            <tr v-for="(item, index) in users" :key="index">
                <template v-for="(field, key) in fields">
-                   <td :class="field.klass">
+                   <td :class="field.klass" :key="key">
                        <div class="inner" :class="{'inner-text-top': index > fields.length - 4}">
                            {{index}}
                            <div>{{ item[field.key] }}</div>
@@ -44,14 +44,14 @@
                                <div class="d-flex">
                                    <div class="w-50">
                                        <b>Плюсы ({{ item.texts[field.key] !== undefined ? item.texts[field.key].length : 0 }})</b>
-                                       <div v-for="(text, index) in item.texts[field.key]">
+                                       <div v-for="(text, index) in item.texts[field.key]" :key="index">
                                            <b>{{ index + 1}}:</b> {{ text }}
                                        </div>
                                    </div>
 
                                    <div class="w-50">
                                        <b>Минусы ({{ item.minuses[field.key] !== undefined ? item.minuses[field.key].length : 0 }})</b>
-                                       <div v-for="(text, index) in item.minuses[field.key]">
+                                       <div v-for="(text, index) in item.minuses[field.key]" :key="index">
                                            <b>{{ index + 1}}:</b> {{ text }}
                                        </div>
                                    </div>
@@ -65,7 +65,7 @@
            </tbody>
 
         </table>
-    </div> 
+    </div>
 
  <div class="empty-space"></div>
 
@@ -74,105 +74,105 @@
 
 <script>
 export default {
-    name: "NPS",
-    props: {activeuserid: Number, show_header: {
-        default: true
-    }},
-    data() {
-        return {
-            users: [],
-            fields: [],
-            years: [2020, 2021, 2022],
-            currentYear: new Date().getFullYear(),
-            monthInfo: {
-                currentMonth: null,
-                monthEnd: 0,
-                workDays: 0,
-                weekDays: 0,
-                daysInMonth: 0
-            },
-            ukey: 1
-        }
-    },
-    created() {
-        this.setMonth();
-        this.setMonthsTableFields();
-        this.fetchData();
-    },
-    methods: {
+	name: 'NPS',
+	props: {activeuserid: Number, show_header: {
+		default: true
+	}},
+	data() {
+		return {
+			users: [],
+			fields: [],
+			years: [2020, 2021, 2022],
+			currentYear: new Date().getFullYear(),
+			monthInfo: {
+				currentMonth: null,
+				monthEnd: 0,
+				workDays: 0,
+				weekDays: 0,
+				daysInMonth: 0
+			},
+			ukey: 1
+		}
+	},
+	created() {
+		this.setMonth();
+		this.setMonthsTableFields();
+		this.fetchData();
+	},
+	methods: {
 
-        setMonth() {
-            this.monthInfo.currentMonth = this.monthInfo.currentMonth ? this.monthInfo.currentMonth : this.$moment().format('MMMM')
-            this.monthInfo.month = this.monthInfo.currentMonth ? this.$moment(this.monthInfo.currentMonth, 'MMMM').format('M') : this.$moment().format('M')
-            let currentMonth = this.$moment(this.monthInfo.currentMonth, 'MMMM')
-            //Расчет выходных дней
-            this.monthInfo.monthEnd = currentMonth.endOf('month'); //Конец месяца
-            this.monthInfo.weekDays = currentMonth.weekdayCalc(currentMonth.startOf('month').toString(), currentMonth.endOf('month').toString(), [6]) //Колличество выходных
-            this.monthInfo.daysInMonth = new Date(2021, this.$moment(this.monthInfo.currentMonth, 'MMMM').format('M'), 0).getDate() //Колличество дней в месяце
-            this.monthInfo.workDays = this.monthInfo.daysInMonth - this.monthInfo.weekDays //Колличество рабочих дней
-        },
+		setMonth() {
+			this.monthInfo.currentMonth = this.monthInfo.currentMonth ? this.monthInfo.currentMonth : this.$moment().format('MMMM')
+			this.monthInfo.month = this.monthInfo.currentMonth ? this.$moment(this.monthInfo.currentMonth, 'MMMM').format('M') : this.$moment().format('M')
+			let currentMonth = this.$moment(this.monthInfo.currentMonth, 'MMMM')
+			//Расчет выходных дней
+			this.monthInfo.monthEnd = currentMonth.endOf('month'); //Конец месяца
+			this.monthInfo.weekDays = currentMonth.weekdayCalc(currentMonth.startOf('month').toString(), currentMonth.endOf('month').toString(), [6]) //Колличество выходных
+			this.monthInfo.daysInMonth = new Date(2021, this.$moment(this.monthInfo.currentMonth, 'MMMM').format('M'), 0).getDate() //Колличество дней в месяце
+			this.monthInfo.workDays = this.monthInfo.daysInMonth - this.monthInfo.weekDays //Колличество рабочих дней
+		},
 
-        fetchData() {
-            let loader = this.$loading.show();
+		fetchData() {
+			let loader = this.$loading.show();
 
-            axios.post('/timetracking/nps', {
-                month: this.$moment(this.monthInfo.currentMonth, 'MMMM').format('M'),
-                year: this.currentYear,
-            }).then(response => {
-                
-                this.setMonth()
-                this.users = response.data.users;
-                this.ukey++;
+			this.axios.post('/timetracking/nps', {
+				month: this.$moment(this.monthInfo.currentMonth, 'MMMM').format('M'),
+				year: this.currentYear,
+			}).then(response => {
 
-                loader.hide()
-            }).catch(error => {
-                loader.hide()
-                alert(error)
-            });
-        },
+				this.setMonth()
+				this.users = response.data.users;
+				this.ukey++;
 
-        setMonthsTableFields() {
-            let fieldsArray = []
-            let order = 1;
-            
-            fieldsArray.push({
-                key: 'group_id',
-                name: 'Отдел',
-                order: order++,
-                klass: ' text-left bg-blue w-200'
-            }) 
+				loader.hide()
+			}).catch(error => {
+				loader.hide()
+				alert(error)
+			});
+		},
 
-            fieldsArray.push({
-                key: 'position',
-                name: 'Должность',
-                order: order++,
-                klass: ' text-left bg-blue'
-            })  
+		setMonthsTableFields() {
+			let fieldsArray = []
+			let order = 1;
 
-            fieldsArray.push({
-                key: 'name',
-                name: 'ФИО',
-                order: order++,
-                klass: ' text-left bg-blue w-200'
-            }) 
-            
+			fieldsArray.push({
+				key: 'group_id',
+				name: 'Отдел',
+				order: order++,
+				klass: ' text-left bg-blue w-200'
+			})
 
-            for(let i = 1; i <= 12; i++) {
+			fieldsArray.push({
+				key: 'position',
+				name: 'Должность',
+				order: order++,
+				klass: ' text-left bg-blue'
+			})
 
-                if(i.length == 1) i = '0' + i
+			fieldsArray.push({
+				key: 'name',
+				name: 'ФИО',
+				order: order++,
+				klass: ' text-left bg-blue w-200'
+			})
 
-                fieldsArray.push({
-                    key: i,
-                    name: moment(this.currentYear + '-' + i + '-01').format('MMMM'),
-                    order: order++,
-                    klass: 'text-center px-1 month'
-                })
 
-            } 
-            
-            this.fields = fieldsArray    
-        },
-    }
+			for(let i = 1; i <= 12; i++) {
+
+				if(i.length == 1) i = '0' + i
+
+				fieldsArray.push({
+					key: i,
+					name: this.$moment(this.currentYear + '-' + i + '-01').format('MMMM'),
+					order: order++,
+					klass: 'text-center px-1 month'
+				})
+
+			}
+
+			this.fields = fieldsArray
+		},
+	}
 };
 </script>
 

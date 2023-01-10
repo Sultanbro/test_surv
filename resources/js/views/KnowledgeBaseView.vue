@@ -4,25 +4,25 @@ import { useAsyncPageData } from '@/composables/asyncPageData'
 const KBPage = () => import(/* webpackChunkName: "KBPage" */ '@/pages/KBPage.vue')
 
 export default {
-    name: 'KnowledgeBaseView',
-    components: {
-        DefaultLayout,
-        KBPage,
-    },
-    data(){
-        return {
-            auth_user_id: 0,
-            can_edit: false,
-        }
-    },
-    mounted(){
-        useAsyncPageData('/kb').then(data => {
-            this.auth_user_id = +data.auth_user_id
-            this.can_edit = !!data.can_edit
-        }).catch(error => {
-            console.error('useAsyncPageData', error)
-        })
-    }
+	name: 'KnowledgeBaseView',
+	components: {
+		DefaultLayout,
+		KBPage,
+	},
+	data(){
+		return {
+			auth_user_id: 0,
+			can_edit: false,
+		}
+	},
+	mounted(){
+		useAsyncPageData('/kb').then(data => {
+			this.auth_user_id = +data.auth_user_id
+			this.can_edit = !!data.can_edit
+		}).catch(error => {
+			console.error('useAsyncPageData', error)
+		})
+	}
 }
 </script>
 
