@@ -20,7 +20,7 @@
         "resources/js/admin"
     ],
     "lint-staged": {
-        "*.{vue,js}": "npm run lint"
+        "*.{vue,js}": "eslint --ext .vue,.js --fix --ignore-path .gitignore"
     },
     "devDependencies": {
         "@babel/core": "^7.20.2",
