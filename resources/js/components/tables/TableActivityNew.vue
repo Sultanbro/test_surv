@@ -138,18 +138,15 @@
 
                <template v-for="day in month.daysInMonth">
                    <td v-if="item.editable && editable" :key="day" :class="'px-0 day-minute text-center Fri table-' + item._cellVariants[day]">
-                       <div><input type="number" v-model="item[day]" @change="updateSettings($event, item, index, day)" class="form-control cell-input"></div>
+                       <div><input type="number" v-model="item[day]" @change="updateSettings($event, item, index, day)" @focusout="viewMode(item)" class="form-control cell-input"></div>
                    </td>
-                   <td v-else-if="holidays.includes(day) &&  item[day] > 0" :key="day + 'a'" @click="editMode(item)" :class="'px-0 day-minute text-center Fri table-' + item._cellVariants[day]">
-
+                   <td v-else-if="holidays.includes(day) && item[day] > 0" :key="day + 'a'" @click="editMode(item)" :class="'px-0 day-minute text-center Fri table-' + item._cellVariants[day]">
                        <div v-if="item[day]">{{ item[day] }}{{ activity.unit }}</div>
                    </td>
                    <td v-else-if="holidays.includes(day)" @click="editMode(item)" :key="day + 'b'" :class="'px-0 day-minute text-center Fri mywarning'">
-
                        <div v-if="item[day]">{{ item[day] }}{{ activity.unit }}</div>
                    </td>
                    <td v-else :key="day + 'c'" @click="editMode(item)" :class="[item[day] > 0 || holidays.includes(day) ? 'px-0 day-minute text-center Fri table-' + item._cellVariants[day] : 'px-0 day-minute text-center Fri table-text-center']">
-
                        <div v-if="item[day]">{{ item[day] }}{{ activity.unit }}</div>
                    </td>
                </template>
@@ -464,9 +461,7 @@ export default {
 			this.setCellVariants();
 			loader.hide();
 		},
-		setAvgCell() {
-
-		},
+		setAvgCell() {},
 
 		filterTable() {
 			this.filtered = this.items.filter(el => {
@@ -595,9 +590,12 @@ export default {
 
 			item.editable = item.name == 'Итого' ? false : true;
 		},
+		viewMode(item){
+			console.log('viewMode', item)
+			item.editable = false
+		},
 
 		updateSettings(e, data, index, key) {
-
 			data.editable = false
 			console.log(key);
 			var clearedValue = e.target.value.replace(',', '.');
@@ -972,6 +970,11 @@ export default {
         -webkit-appearance: none;
         margin: 0;
     }
+}
+.analytics-page{
+	.cell-input{
+		padding: 0 !important;
+	}
 }
 .bg-white {
     background: white;
