@@ -4,7 +4,7 @@
 	<div class="row mb-2">
 		<div class="col-3 text-left">
 			<b-input-group size="sm">
-				<b-form-input v-model="filter.email" type="search" id="filterInput" placeholder="Поиск" ></b-form-input>
+				<b-form-input v-model="filter.email" type="search" id="filterInput" placeholder="Поиск" />
 				<b-input-group-append>
 					<!-- <b-button :disabled="!filter.email" @click="filter.email = ''">Очистить</b-button> -->
 				</b-input-group-append>
