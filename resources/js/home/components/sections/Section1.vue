@@ -339,9 +339,14 @@ export default {
   #jSec1 {
     min-height: 1530px;
   }
+
+  .jSec1-profile-banner-img {
+    position: absolute;
+    width: 1349px;
+  }
 }
 
-@media screen and (min-width: 1920px) {
+@media (max-width: $large) and (min-width: 1920px) {
   .jSec1-profile-banner-img {
     position: absolute;
     max-width: 920px;
