@@ -71,7 +71,7 @@ export default {
   display: none;
   width: auto;
   position: absolute;
-  top: 115%;
+  top: 100%;
   right: -40px;
   background: #fff;
   box-shadow: 0 0.125rem 0.1875rem rgba(0, 0, 0, 0.5);
@@ -98,10 +98,7 @@ export default {
 @media screen and (min-width: $large) {
   .jNav-menu-lang-button {
     width: 108px;
-  }
-
-  .jNav-menu-lang-popup {
-    right: -80px;
+    //margin-right: 1rem;
   }
 }
 
@@ -111,13 +108,6 @@ export default {
 }
 
 @media screen and (min-width: $large) {
-  .jNav-menu-lang {
-    &:after {
-      transform: scale(2);
-      width: 0.25rem;
-      height: 0.2125rem;
-    }
-  }
   .jNav-menu-lang-img {
     width: 48px;
     height: 48px;

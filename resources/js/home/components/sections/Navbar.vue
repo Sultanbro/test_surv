@@ -18,6 +18,10 @@
           :class="{'jNav-menu-active': menu}"
           class="jNav-menu"
       >
+        <!-- <button
+          class="jNav-menu-hamburger jButton"
+          @click="menu = !menu"
+        /> -->
         <ul class="jNav-menu-items">
           <a
               v-click-outside="hidePopup"
@@ -79,14 +83,18 @@
                   </div>
                 </div>
                 <div
-                    v-click-outside="hideUserMenu"
-                    :class="{'jNav-menu-user-active': isUserMenuActive, 'jNav-menu-user': !isUserMenuActive}"
-                    @click="activateMenu"
+                    :class="{'jNav-menu-user-active': isUserMenu}"
+                    class="jNav-menu-user"
+                    @click="isUserMenu = !isUserMenu"
                 >
                   <div
-                      v-if="isUserMenuActive"
+                      v-if="isUserMenu"
                       class="jNav-menu-user-menu"
                   >
+                    <!--                    <div class="jNav-menu-user-menu-item" v-for="cabinet in laravel.cabinets">-->
+                    <!--                      <a :href="'/login/' + cabinet.tenant_id">{{ cabinet.tenant_id }}.{{ hostname }}</a>-->
+                    <!--                    </div>-->
+
                     <form
                         ref="formLogout"
                         action="/logout"
@@ -98,10 +106,7 @@
                           name="_token"
                           type="hidden"
                       >
-                      <button
-                          class="jNav-menu-user-menu-exit jNav-menu-link"
-                          @click="$refs.formLogout.submit()"
-                      >
+                      <button class="jNav-menu-user-menu-exit jNav-menu-link" @click="$refs.formLogout.submit()">
                         {{ $lang(lang, 'logout') }}
                       </button>
                     </form>
@@ -114,11 +119,18 @@
                     href="/register"
                     text="register"
                 />
-                <NavbarButton
-                    :lang="lang"
+                <a
+                    class="jNav-menu-user"
                     href="/login"
-                    text="auth"
-                />
+                >
+                  <span class="classic">
+                    {{ $lang(lang, 'auth') }}
+                  </span>
+                </a>
+                <!--                <a-->
+                <!--                    class="jNav-menu-user-title jNav-menu-user-title-active"-->
+                <!--                    href="/login"-->
+                <!--                >{{ $lang(lang, 'auth') }}</a>-->
               </template>
             </span>
           </li>
@@ -172,7 +184,7 @@ export default {
 			csrf: '',
 			isScroll: false,
 			active: false,
-			isUserMenuActive: false,
+			isUserMenu: false
 		}
 	},
 
@@ -185,14 +197,6 @@ export default {
 		},
 		hidePopup() {
 			if (this.active) this.active = false
-		},
-		hideUserMenu() {
-			if (this.isUserMenuActive) this.isUserMenuActive = false
-		},
-		activateMenu() {
-			this.isUserMenuActive
-				? this.isUserMenuActive = false
-				: this.isUserMenuActive = true
 		}
 	},
 
@@ -270,10 +274,17 @@ export default {
   .jNav-menu-bg {
     display: block;
   }
+}
 
-  .jNav-menu-user-menu {
-    right: -68px;
-  }
+.jNav-menu-user-menu {
+  display: none;
+  width: auto;
+  position: absolute;
+  top: 100%;
+  right: 0;
+  background: #fff;
+  box-shadow: 0 0.125rem 0.1875rem rgba(0, 0, 0, 0.5);
+  border-radius: 0.8rem;
 }
 
 .jNav-menu-user-active {
@@ -350,6 +361,28 @@ export default {
   }
 }
 
+// .jNav-menu-hamburger {
+//   &.jButton {
+//     display: block;
+//     width: 2rem;
+//     height: 2rem;
+//     padding: 1.25rem;
+//     position: relative;
+
+//     &:before {
+//       content: '';
+//       width: 50%;
+//       height: 0.75rem;
+//       position: absolute;
+//       top: 50%;
+//       left: 50%;
+//       transform: translate(-50%, -45%);
+//       background: repeating-linear-gradient(#fff, #fff 0.125rem, transparent 0.125rem, transparent 0.25rem);
+//     }
+//   }
+// }
+
+
 .jNav-menu-bg {
   display: none;
   position: fixed;
@@ -384,8 +417,7 @@ export default {
   cursor: pointer;
 }
 
-.jNav-menu-user,
-.jNav-menu-user-active {
+.jNav-menu-user {
   display: inline-block;
   width: 2rem;
   height: 2rem;
@@ -394,9 +426,43 @@ export default {
   position: relative;
   vertical-align: middle;
   background: #6f4f28 url("../../assets/img/user.svg") center center no-repeat;
+}
+
+.jNav-menu-user {
+  //border-bottom: 1px dotted #000000;
   color: #000000;
   outline: none;
   text-decoration: none;
+  position: relative;
+}
+
+.jNav-menu-user span {
+  margin-left: -999em;
+  position: absolute;
+}
+
+.jNav-menu-user:hover span {
+  font-family: Calibri, Tahoma, Geneva, sans-serif;
+  position: absolute;
+  left: 1em;
+  top: 2em;
+  z-index: 99;
+  margin-left: 0;
+  width: 250px;
+}
+
+.jNav-menu-user:hover img {
+  border: 0;
+  margin: -10px 0 0 -55px;
+  float: left;
+  position: absolute;
+}
+
+.jNav-menu-user:hover em {
+  font-size: 1.2em;
+  font-weight: bold;
+  display: block;
+  padding: 0.2em 0 0.6em 0;
 }
 
 .classic {
@@ -415,22 +481,11 @@ export default {
   padding: 0.5rem;
   position: absolute;
   z-index: 5;
-  top: 115%;
-  right: -34px;
+  top: 100%;
+  right: 0;
   background-color: #fff;
   box-shadow: 0 0.125rem 0.1875rem rgba(0, 0, 0, 0.5);
-  border-radius: 0.8rem;
 }
-
-@media (min-width: $large) {
-  .jNav-menu-user-menu {
-    right: -68px;
-  }
-}
-
-//.jNav-menu-user-menu:hover {
-//  opacity: 1;
-//}
 
 .jNav-menu-user-menu-item {
   white-space: nowrap;
@@ -489,8 +544,7 @@ export default {
     gap: 1rem;
   }
 
-  .jNav-menu-user,
-  .jNav-menu-user-active {
+  .jNav-menu-user {
     width: 2.625rem;
     height: 2.625rem;
     //margin-left: 2.5rem;
