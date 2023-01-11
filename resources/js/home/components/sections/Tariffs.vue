@@ -8,7 +8,7 @@
     <div class="section-content">
       <div class="jTariffs-header-wrapper jTariffs-header">
         <h2 class="jTariffs-header jHeader">{{ $lang(lang, 'prices-header') }}</h2>
-        <TariffsValute @selected="getSelectedValute"/>
+        <TariffsValute class="jNav-menu-item jNav-menu-item-md" @selected="getSelectedValute"/>
       </div>
       <div class="jTariffs-content">
         <table

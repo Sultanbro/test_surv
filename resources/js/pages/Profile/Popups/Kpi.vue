@@ -10,6 +10,13 @@
                 {{ month }}
             </option>
         </select>
+        <select class="select-css ml-2" v-model="currentYear" @change="fetchBefore()">
+            <option
+                v-for="year in years"
+                :value="year"
+                :key="year"
+            >{{ year }}</option>
+        </select>
     </div>
 
     <div class="kpi__content">
@@ -151,6 +158,7 @@
 <script>
 import {kpi_fields} from '../../kpi/kpis.js';
 import KpiItems from '@/pages/kpi/KpiItems.vue'
+import { useYearOptions } from '@/composables/yearOptions'
 
 export default {
 	name: 'PopupKpi',
@@ -159,12 +167,15 @@ export default {
 	},
 	props: {},
 	data: function () {
+		const now = new Date()
 		return {
 			groups: [],
 			editable: false,
 			activities: [],
 			items: [],
 			currentMonth: null,
+			currentYear: now.getFullYear(),
+			years: useYearOptions(),
 			dateInfo: {
 				currentMonth: null,
 				monthEnd: 0,
@@ -212,7 +223,7 @@ export default {
 		fetchBefore() {
 			this.fetchData({
 				data_from: {
-					year: new Date().getFullYear(),
+					year: this.currentYear,
 					month: this.$moment(this.currentMonth, 'MMMM').format('M')
 				},
 				user_id: this.$laravel.userId
