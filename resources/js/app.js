@@ -30,6 +30,10 @@ import VueCircle from 'vue2-circle-progress'
 import axios from 'axios'
 import VueAxios from 'vue-axios'
 
+import { createPinia, PiniaVuePlugin } from 'pinia'
+Vue.use(PiniaVuePlugin)
+const pinia = createPinia()
+
 import VueRouter from 'vue-router'
 import router from '@/router'
 Vue.use(VueRouter)
@@ -241,5 +245,6 @@ import App from '@/App.vue'
 const app = new Vue({
 	// el: '.right-panel-app'
 	router,
+	pinia,
 	render: h => h(App)
 }).$mount('.right-panel-app')

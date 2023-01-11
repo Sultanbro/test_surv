@@ -14,7 +14,8 @@
         "sub-dev": "subpkg run dev",
         "sub-lint": "subpkg run lint",
         "prepare": "husky install",
-        "lint": "eslint resources/js --ext .vue,.js --fix --ignore-path .gitignore"
+        "lint": "eslint resources/js --ext .vue,.js --fix --ignore-path .gitignore",
+        "jsdoc": "jsdoc resources/js/stores/api.js -d jsdoc"
     },
     "subPackages": [
         "resources/js/admin"
@@ -37,6 +38,7 @@
         "eslint-plugin-vue": "^9.8.0",
         "husky": "^8.0.3",
         "jquery": "^3.6.0",
+        "jsdoc": "^4.0.0",
         "laravel-echo": "^1.13.1",
         "laravel-mix": "^6.0.43",
         "lint-staged": "^13.1.0",
@@ -55,6 +57,7 @@
     "dependencies": {
         "@ckeditor/ckeditor5-vue2": "^3.0.1",
         "@tinymce/tinymce-vue": "^3.0.1",
+        "@vue/composition-api": "^1.7.1",
         "blueimp-gallery": "^3.4.0",
         "bootstrap": "^4.6.0",
         "bootstrap-vue": "^2.21.2",
@@ -77,6 +80,7 @@
         "laravel-vue-pagination": "^2.3.1",
         "mathjs": "^10.4.0",
         "moment-weekday-calc": "^1.1.4",
+        "pinia": "^2.0.28",
         "playerjs": "0.0.0",
         "pusher-js": "^7.4.0",
         "react-avatar-editor": "^13.0.0",
