@@ -11,13 +11,6 @@
     width: 20%;
     min-width: 360px;
 }
-
-@media (max-width: 450px) {
-.login-page .inner {
-    width: 100%;
-}
-}
-
 #sub-wrapper .login .login-content {
     width: 100%;
 }
@@ -40,7 +33,7 @@
         <div id="sub-wrapper">
 
 
-            <div class="login login-height">
+            <div class="login">
                 <div class="login-content">
                     <div class="login-panel">
 
@@ -127,7 +120,7 @@ class="message">
 
                                     <div id="sub-footer">
                                         <div class="sub-footer">
-                                            <div class="col-lg-12 col-xs-12">
+                                            <div class="col-lg-12 col-md-2 col-sm-2 col-xs-12">
                                                 <p class="copy">© 2023 jobtron.org</p>
                                             </div>
 

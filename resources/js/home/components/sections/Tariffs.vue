@@ -6,12 +6,10 @@
         name="prices"
     />
     <div class="section-content">
-      <div class="jTariffs-header-wrapper jTariffs-header">
-        <h2 class="jTariffs-header jHeader">{{ $lang(lang, 'prices-header') }}</h2>
-        <TariffsValute class="jNav-menu-item jNav-menu-item-md" @selected="getSelectedValute"/>
-      </div>
+      <h2 class="jTariffs-header jHeader">{{ $lang(lang, 'prices-header') }}</h2>
       <div class="jTariffs-content">
         <table
+            v-if="isMedium"
             :data-col="activeCol"
             class="jTariffs-table"
             @mouseout="activeCol = -1"
@@ -50,7 +48,7 @@
                 :key="td"
             >
               <a
-                  class="jButton jButton-tariffs-four"
+                  class="jButton jButton-tariffs"
                   href="/register"
               >
                 {{ $lang(lang, 'prices-register') }}
@@ -59,7 +57,21 @@
           </tr>
           </tbody>
         </table>
-        <div class="jButton-tariffs-one">
+        <div
+            v-if="!isMedium"
+            class="jTariffs-image-wrap"
+        >
+          <a
+              :href="image"
+              class="jTariffs-image-link"
+              target="_blank"
+          >
+            <img
+                :src="image"
+                alt=""
+                class="jTariffs-image"
+            >
+          </a>
           <a
               class="jButton"
               href="/register"
@@ -74,51 +86,43 @@
 
 <script>
 import axios from 'axios';
-import TariffsValute from '../tariffs/TariffsValute'
-
 export default {
 	name: 'SectionTariffs',
-	components: {
-		TariffsValute
+	data() {
+		return {
+			activeCol: -1,
+			image: require('../../assets/img/tariffs.png').default,
+			usdRate: 0,
+			kztRate: 0
+		}
 	},
 	computed: {
 		lang() {
 			return this.$root.$data.lang
 		},
 		table() {
-			return this.$lang(this.lang, 'prices-table').map((row, rowIndex) => {
-				if (rowIndex >= 12 && rowIndex <= 13) {
-					return row.map((item, index) => {
+			return this.$lang(this.lang, 'prices-table').map((item, index) => {
+				if (index >= 12 && index <= 13) {
+					return item.map((item, index) => {
 						if (index >= 2 && index <= 4) {
-							const tariffItem = item.split(' ').join('');
-							if (this.selectedValute === '$') {
-								return `${this.separateThousands(
-									Math.round(
-										Number(tariffItem.slice(0, tariffItem.length - 1)) / this.usdRate
-									)
-								)} $`;
+							if (this.lang === 'en') {
+								return `${this.separateThousands(Math.round(Number(item) / this.usdRate))} $`
+							} if (this.lang === 'kz') {
+								return `${this.separateThousands(Math.round(Number(item) * (100 / this.kztRate)))} ₸`
 							}
-							if (this.selectedValute === '₸') {
-								return `${this.separateThousands(
-									Math.round(
-										Number(tariffItem.slice(0, tariffItem.length - 1)) *
-                        (100 / this.kztRate)
-									)
-								)} ₸`;
-							}
-							return item;
+							return `${this.separateThousands(item)} ₽`
 						} else {
-							return item;
+							return item
 						}
-					});
+					})
 				} else {
-					return row;
+					return item
 				}
-			});
+			})
 		},
 		isMedium() {
 			return this.$viewportSize.width >= 1260
-		}
+		},
 	},
 	methods: {
 		async USD() {
@@ -129,19 +133,6 @@ export default {
 		separateThousands(number) {
 			const num = number.toString();
 			return num.replace(/(\d{1,3}(?=(?:\d\d\d)+(?!\d)))/g, '$1' + ' ');
-		},
-		getSelectedValute(selectedValute) {
-			this.selectedValute = selectedValute
-		}
-	},
-	data() {
-		return {
-			activeCol: -1,
-			image: require('../../assets/img/tariffs.png').default,
-			usdRate: 0,
-			kztRate: 0,
-			selectedValute: ''
-
 		}
 	},
 	async mounted() {
@@ -165,20 +156,10 @@ export default {
 }
 
 .jTariffs-header {
-  margin-right: 1rem;
-}
-
-.jTariffs-content {
-  overflow-x: auto;
-}
-
-.jTariffs-header-wrapper {
-  display: flex;
-  align-items: center;
   width: fit-content;
   margin-left: auto;
   margin-right: auto;
-  margin-bottom: 3rem;
+  margin-bottom: 5rem;
   position: relative;
 
   &:before {
@@ -191,8 +172,11 @@ export default {
     top: -2.5rem;
     left: -5rem;
     background-image: url("../../assets/img/s2-bg.svg");
-    background-repeat: no-repeat;
   }
+}
+
+.jTariffs-content {
+  overflow-x: auto;
 }
 
 .jTariffs-image-wrap {
@@ -268,7 +252,7 @@ export default {
 
 @media screen and (min-width: $medium) {
   #jTariffs {
-    margin-top: 3rem;
+    margin-top: -5rem;
     padding-bottom: 5rem;
   }
   .jTariffs-cell {
@@ -281,77 +265,8 @@ export default {
   }
 }
 
-a.jButton-tariffs-four {
+a.jButton-tariffs {
   margin: 1rem auto;
   font-size: 0.8rem;
-}
-
-.jButton-tariffs-one {
-  display: none;
-}
-
-@media (max-width: 900px) {
-  a.jButton-tariffs-four {
-    display: none;
-  }
-
-  .jButton-tariffs-one {
-    display: flex;
-    justify-content: center;
-    margin-top: 2rem;
-  }
-}
-
-@media (max-width: 768px) {
-  .jTariffs-cell {
-    min-width: 5rem;
-  }
-}
-
-@media (max-width: 670px) {
-  .jTariffs-cell {
-    min-width: 4rem;
-    font-size: 12px;
-  }
-}
-
-@media (max-width: 530px) {
-  .jTariffs-th {
-    padding: 0.5rem;
-  }
-  .jTariffs-cell {
-    min-width: 2rem;
-    font-size: 10px;
-  }
-}
-
-@media (max-width: 480px) {
-  .jTariffs-cell {
-    font-size: 9px;
-  }
-}
-
-@media (max-width: 430px) {
-  .jTariffs-cell {
-    font-size: 8px;
-  }
-}
-
-@media (max-width: 400px) {
-  .jTariffs-cell {
-    font-size: 7px;
-  }
-}
-
-@media (max-width: 366px) {
-  .jTariffs-cell {
-    font-size: 6px;
-  }
-}
-
-@media (max-width: 366px) {
-  .jTariffs-cell {
-    font-size: 6px;
-  }
 }
 </style>

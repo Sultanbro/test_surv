@@ -128,7 +128,6 @@ export default {
   width: fit-content;
   margin-left: auto;
   margin-right: auto;
-  margin-top: 2rem;
   margin-bottom: 5rem;
   position: relative;
 
