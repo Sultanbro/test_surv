@@ -840,7 +840,7 @@ class SalaryController extends Controller
             if($salary == 0 && $bonus == 0 && $prepaid == 0 && $trainee_fees == 0 && $edited_salary_amount == 0) {
                 continue;
             }
-            dd($total_income);
+
             // if($user->id == 10242) {
             //     dd($salary);
             // }
@@ -905,7 +905,7 @@ class SalaryController extends Controller
                         21 => $taxes
                     ];
                 } else {
-                  
+                    dd($total_income . ' ' . $user->id);
                     $data['users'][] = [
                         0 => $user->full_name, // Действующие
                         1 => $cardholder, // Card Holder name
