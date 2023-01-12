@@ -798,7 +798,7 @@ class SalaryController extends Controller
               
             // ИТОГО доход
             $total_income = round($salary + $bonus + $kpi + $trainee_fees, 0);
-            dd($total_income);
+
             if(!$edited_salary) $allTotal[12] += $total_income;
 
             // Авансы
@@ -840,7 +840,7 @@ class SalaryController extends Controller
             if($salary == 0 && $bonus == 0 && $prepaid == 0 && $trainee_fees == 0 && $edited_salary_amount == 0) {
                 continue;
             }
-            
+            dd($total_income);
             // if($user->id == 10242) {
             //     dd($salary);
             // }
