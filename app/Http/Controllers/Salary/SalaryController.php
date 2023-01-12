@@ -410,43 +410,7 @@ class SalaryController extends Controller
         }
         
         $date = $request->year . '-' . $request->month . '-01';
-     
-        // $working_users = DB::table('users')
-        //     ->leftJoin('user_descriptions', 'user_descriptions.user_id', '=', 'users.id')
-        //     ->whereNull('users.deleted_at')
-        //     ->where('is_trainee', 0)
-        //     ->whereIn('users.id', $working_users);
 
-        /////////////
-
-        // $x_users = User::withTrashed()
-        //     ->whereDate('deleted_at', '>=', Carbon::createFromDate($request->year, $request->month, 1)->format('Y-m-d'))
-        //     ->get(['id','last_group']);
-
-        // $fired_users = [];
-        // foreach($x_users as $d_user) {
-        //     if($d_user->last_group) {
-        //         $lg = json_decode($d_user->last_group);
-        //         if(in_array($request['group_id'], $lg)) {
-        //             array_push($fired_users, $d_user->id);
-        //         }
-        //     } 
-        // }
-        // $salary_users = Salary::whereYear('date', $request->year)
-        //     ->whereMonth('date', $request->month)
-        //     ->whereIn('user_id', $fired_users)
-        //     ->get(['user_id'])
-        //     ->pluck('user_id')
-        //     ->toArray(); 
-       
-        // $fired_users_2 = array_unique($salary_users);
-
-        // $fired_users = array_merge($fired_users, $fired_users_2);
-
-        // $fired_users = array_unique(array_values($fired_users));
-
-        ///////////
-        //$working_users = $working_users->get(['users.id'])->pluck('id')->toArray();
         $headings = [
             'ФИО', // 0
             'На карте', // 1
@@ -475,12 +439,9 @@ class SalaryController extends Controller
         $data = [];
 
         $date = Carbon::createFromDate($request->year,$request->month,1);
-        
-        // $fired_users = (new UserService)->getFiredEmployees($request->group_id, $date->format('Y-m-d'));
-        // $fired_users = collect($fired_users)->pluck('id')->toArray();
+
 
         $working_users = $this->getSheet($working_users, $date, $request->group_id);
-        dd($working_users);
         $fired_users = $this->getSheet($fired_users, $date, $request->group_id);
     
         $_users = array_merge([['']],$working_users['users']);
@@ -940,7 +901,7 @@ class SalaryController extends Controller
         // сортировка по имени
         $name_asc = array_column($data['users'], 0);
         array_multisort($name_asc, SORT_ASC, $data['users']); 
-
+        dd($allTotal);
         // К выдаче сумма форматированная
         $allTotal[9] = $this->space(round($allTotal[9]), 3, true);
         $allTotal[19] = $this->space(round($allTotal[19]), 3, true);
