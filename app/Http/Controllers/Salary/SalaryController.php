@@ -493,7 +493,6 @@ class SalaryController extends Controller
                         ")
             ->groupBy('id', 'phone', 'full_name', 'workDay', 'working_time_id', 'workTime', 'salary', 
             'card_kaspi', 'card_jysan', 'jysan', 'kaspi','kaspi_cardholder','jysan_cardholder', 'card', 'program_id', 'birthday','currency', 'working_day_id')
-            ->where('users.id', 21884)
             ->get();
 
             //if($users->where('id', 14073)->first()) dd($users_ids);
