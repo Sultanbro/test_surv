@@ -39,7 +39,7 @@ trait LoginToSubDomain
 
         // find owner in central app
         $centralUser = $this->getCentralUser( $email );
-
+        dd($centralUser);
         // create links array
         $links = [];
         foreach($centralUser->cabinets as $cabinet) {
