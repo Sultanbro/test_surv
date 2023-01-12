@@ -480,6 +480,7 @@ class SalaryController extends Controller
         // $fired_users = collect($fired_users)->pluck('id')->toArray();
 
         $working_users = $this->getSheet($working_users, $date, $request->group_id);
+        dd($working_users);
         $fired_users = $this->getSheet($fired_users, $date, $request->group_id);
     
         $_users = array_merge([['']],$working_users['users']);
@@ -495,7 +496,7 @@ class SalaryController extends Controller
 
         if(ob_get_length() > 0) ob_clean(); //  ob_end_clean();
         $edate = $date->format('m.Y');
-        dd($data);
+
         $exp = new \App\Exports\UsersExport($data[0]['name'], $data[0]['headings'],$data[0]['sheet'], $group ,$data[0]['counter']);
         $exp_title = 'Начисления ' . $edate .' "'.$group->name . '".xlsx';
 
