@@ -15,7 +15,7 @@
         "sub-lint": "subpkg run lint",
         "prepare": "husky install",
         "lint": "eslint resources/js --ext .vue,.js --fix --ignore-path .gitignore",
-        "jsdoc": "jsdoc resources/js/stores/api.js -d jsdoc"
+        "jsdoc": "jsdoc resources/js/stores/api.js resources/js/stores/api/*.js -d jsdoc"
     },
     "subPackages": [
         "resources/js/admin"
@@ -51,7 +51,7 @@
         "vue-loader": "^15.9.8",
         "vue-multiselect": "^2.1.6",
         "vue-simple-context-menu": "3.4.2",
-        "vue-template-compiler": "2.6.12",
+        "vue-template-compiler": "^2.6.14",
         "vuex": "^3.6.2"
     },
     "dependencies": {

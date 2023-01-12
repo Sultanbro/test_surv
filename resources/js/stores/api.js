@@ -1,10 +1,33 @@
 /** @module stores/api */
 import axios from 'axios'
+// import * as courses from './api/courses.js'
+export * from './api/courses.js'
 
+/**
+ * Получение настроек
+ * @param {string} type - 'company' | 'book' | 'kb' | 'video'
+ * @return {ApiResponse.GetSettingsResponse}
+ */
+export async function fetchSettings(type){
+	// must be get
+	const { data } = await axios.post('/settings/get', { type })
+	return data
+}
+
+/**
+ * Сохраннение настроек
+ * @param {ApiRequest.UpdateSettingsRequest} body -
+ * @param {object} options - Axios Request Config
+ * @return {ApiResponse.UpdateSettingsResponse}
+ */
+export async function updateSettings(body, options){
+	const { data } = await axios.post('/settings/save', body, options)
+	return data
+}
 
 /**
  * Получение статуса работает/нет баланс и тд
- * @return {ProfileStatusResponse}
+ * @return {ApiResponse.ProfileStatusResponse}
  */
 export async function fetchProfileStatus(){
 	// must be get
@@ -12,6 +35,16 @@ export async function fetchProfileStatus(){
 	return data
 }
 
+/**
+ * Обновление статуса
+ * @param {ApiRequest.ProfileStatusRequest} body -
+ * @param {object} options - Axios Request Config
+ * @return {ApiResponse.ProfileStatusResponse}
+ */
+export async function updateProfileStatus(body, options){
+	const { data } = await axios.post('/timetracking/starttracking', body, options)
+	return data
+}
 
 /**
  * Получение информации о пользователе
@@ -38,17 +71,32 @@ export async function fetchProfileSalary(year, month){
 }
 
 /**
- * Получение доступных пользователю курсов
- * @param {boolean} progress - добавлить в ответ прогресс (дергаются разные api)
- * @return {string}
+ * Получени информации по продвижению по карьере
+ * @returns {ApiResponse.GetProfilePaymentTermsResponse}
  */
-export async function fetchProfileCourses(progress){
+export async function fetchProfilePaymentTerms(){
 	// must be get
-	if(progress){
-		const { data } = await axios.get('/my-courses/get')
-		return data.courses
-	}
-	const { data } = await axios.post('/profile/courses')
+	const { data } = await axios.post('/profile/payment-terms')
+	return data
+}
+
+/**
+ * Получени информации по стажировке
+ * @returns {undefined}
+ */
+export async function fetchProfileTraineeReport(){
+	// must be get
+	const { data } = await axios.post('/profile/trainee-report')
+	return data
+}
+
+/**
+ * Получение сравнения показателей
+ * @returns {ApiResponse.GetProfileActivitiesResponse}
+ */
+export async function fetchProfileActivities(){
+	// must be get
+	const { data } = await axios.post('/profile/activities')
 	return data
 }
 
@@ -58,8 +106,14 @@ export async function fetchProfileCourses(progress){
  */
 
 /**
+ * ApiRequest
+ * @namespace ApiRequest
+ */
+
+/**
  * @typedef ProfilePersonalInfoResponse
  * @type {object}
+ * @memberof ApiResponse
  * @property {ProfilePersonalInfoUser} user
  * @property {ProfilePersonalInfoPosition} position
  * @property {string} groups - html с названиями отделов
@@ -69,7 +123,6 @@ export async function fetchProfileCourses(progress){
  * @property {string} schedule - (пример: '09:00 - 19:00')
  * @property {string} currency - валюта upperCase (пример: KZT)
  * @property {object} currencies - currency: string (название валюты) - (пример: {KZT: 'Казахстанский тенге', RUB: 'Российский рубль'})
- * @memberof ApiResponse
  */
 
 /**
@@ -157,53 +210,14 @@ export async function fetchProfileCourses(progress){
  * @property {number} sum
  */
 
-/**
- * @typedef ProfileCoursesResponse
- * @type {ProfileCourse[]}
- * @memberof ApiResponse
- */
 
-/**
- * @typedef ProfileCourse
- * @type {object}
- * @property {number} id
- * @property {number} user_id
- * @property {string} name - название курса
- * @property {?string} created_at - (YYYY-MM-DDTHH:MM:SSZ)
- * @property {?string} updated_at - (YYYY-MM-DDTHH:MM:SSZ)
- * @property {?string} deleted_at - (YYYY-MM-DDTHH:MM:SSZ)
- * @property {string} img - изображение курса
- * @property {string} text - описание курса
- * @property {number} order
- * @property {number} stages
- * @property {number} points
- * @property {number} award_id
- * @property {ProfileCourseResult} [course_results]
- */
-
-/**
- * @typedef ProfileCourseResult
- * @type {object}
- * @property {number} id
- * @property {number} user_id
- * @property {number} course_id
- * @property {number} status
- * @property {number} progress - неправильный прогресс (96 при полном прохождении)
- * @property {number} points
- * @property {?string} created_at - (YYYY-MM-DDTHH:MM:SSZ)
- * @property {?string} updated_at - (YYYY-MM-DDTHH:MM:SSZ)
- * @property {?string} started_at - (YYYY-MM-DDTHH:MM:SSZ)
- * @property {?string} ended_at - (YYYY-MM-DDTHH:MM:SSZ)
- * @property {Object.<string, number>} weekly_progress - key: (YYYY-MM-DD)
- * @property {number} is_regressed
-*/
 
 /**
  * @typedef ProfileSalaryResponse
  * @type {object}
+ * @memberof ApiResponse
  * @property {ProfileSalaryEarnings} user_earnings
  * @property {boolean} has_qp
- * @memberof ApiResponse
  */
 
 /**
@@ -254,15 +268,23 @@ export async function fetchProfileCourses(progress){
 /**
  * @typedef ProfileStatusResponse
  * @type {object}
+ * @memberof ApiResponse
  * @property {string} status - 'stopped' | 'started'
- * @property {Array<undefined>} groupsall
- * @property {Array<undefined>} orders
- * @property {string} zarplata - форматированная сумма с валютой
- * @property {string} bonus - форматированная сумма с валютой
- * @property {string} total_earned - форматированная сумма с валютой
+ * @property {Array<undefined>} [groupsall]
+ * @property {Array<undefined>} [orders]
+ * @property {string} [zarplata] - форматированная сумма с валютой
+ * @property {string} [bonus] - форматированная сумма с валютой
+ * @property {string} [total_earned] - форматированная сумма с валютой
  * @property {ProfileStatusBalance} balance -
  * @property {?undefined} corp_book -
- * @memberof ApiResponse
+ */
+
+/**
+ * @typedef ProfileStatusRequest
+ * @type {object}
+ * @memberof ApiRequest
+ * @property {string} [start] - (HH:MM:SS)
+ * @property {string} [stop] - (HH:MM:SS)
  */
 
 /**
@@ -271,3 +293,155 @@ export async function fetchProfileCourses(progress){
  * @property {string} sum - форматированная сумма
  * @property {string} currency - валюта
  */
+
+/**
+ * @typedef GetSettingsResponse
+ * @type {object}
+ * @memberof ApiResponse
+ * @property {GetSettingsSettings} settings
+ */
+
+/**
+ * @typedef GetSettingsSettings
+ * @type {object}
+ * @property {string} [logo] - ссылка на логотип
+ */
+
+/**
+ * @typedef UpdateSettingsResponse
+ * @type {object}
+ * @memberof ApiResponse
+ * @property {string} [logo] - ссылка на логотип
+ */
+
+/**
+ * @typedef UpdateSettingsRequest
+ * @type {object}
+ * @memberof ApiRequest
+ * @property {string} type - 'company' | 'book' | 'kb' | 'video'
+ * @property {string} [file] - blob
+ */
+
+/**
+ * @typedef GetProfilePaymentTermsResponse
+ * @type {object}
+ * @memberof ApiResponse
+ * @property {GetProfilePaymentTermsGroup[]} groups - информания по отделам
+ * @property {?GetProfilePaymentTermsPosition} position - информация по должности
+ */
+
+/**
+ * @typedef GetProfilePaymentTermsGroup
+ * @type {object}
+ * @property {string} title - заголовок
+ * @property {string} text - текст с \n\n лайнбрейками
+ */
+
+/**
+ * @typedef GetProfilePaymentTermsPosition
+ * @type {object}
+ * @property {number} id -
+ * @property {number} position_id -
+ * @property {string} require - текст с \n\n лайнбрейками
+ * @property {string} actions - текст с \n\n лайнбрейками
+ * @property {string} time - текст с \n\n лайнбрейками
+ * @property {string} salary - текст с \n\n лайнбрейками
+ * @property {string} knowledge - текст с \n\n лайнбрейками
+ * @property {string} next_step - текст с \n\n лайнбрейками
+ * @property {number} show -
+ */
+
+/**
+ * @typedef GetProfileActivitiesResponse
+ * @type {object}
+ * @memberof ApiResponse
+ * @property {GetProfileActivitiesItem[]} items
+ */
+
+/**
+ * @typedef GetProfileActivitiesItem
+ * @type {object}
+ * @property {GetProfileActivitiesGroup} group
+ * @property {Array<GetProfileActivitiesActivity>} activities
+ */
+
+/**
+ * @typedef GetProfileActivitiesGroup
+ * @type {object}
+ * @property {number} id
+ * @property {string} name
+ */
+
+/**
+ * @typedef GetProfileActivitiesActivity
+ * @type {object}
+ * @property {number} id
+ * @property {string} name
+ * @property {number} editable
+ * @property {string} daily_plan - number
+ * @property {number} order
+ * @property {number} group_id
+ * @property {string} plan_unit
+ * @property {number} workdays
+ * @property {number} weekdays
+ * @property {string} type - 'default' | 'quality' | 'collection'
+ * @property {number} view
+ * @property {string} unit
+ * @property {number} table
+ * @property {number} price
+ * @property {Array<(GetProfileActivitiesRecord | GetProfileActivitiesRecordQuality | GetProfileActivitiesRecordCollection)>} records
+ */
+
+/**
+ * @typedef GetProfileActivitiesRecord
+ * @type {object}
+ * @property {string} name
+ * @property {string} lastname
+ * @property {string} fullname
+ * @property {string} email
+ * @property {number} full_time
+ * @property {number} id
+ * @property {number} fired
+ * @property {boolean} is_trainee
+ * @property {number} applied_from
+ * @property {string} group
+ * @property {number} plan
+ * @property {number} ['1-31']
+ */
+
+/**
+ * @typedef GetProfileActivitiesRecordQuality
+ * @type {object}
+ * @property {string} name
+ * @property {number} [total]
+ * @property {number} [avg]
+ * @property {number} [avg1]
+ * @property {number} [avg2]
+ * @property {number} [avg3]
+ * @property {number} [avg4]
+ * @property {number} [avg5]
+ * @property {number} [avg6]
+ * @property {number} ['1-31']
+ */
+
+/**
+ * @typedef GetProfileActivitiesRecordCollection
+ * @type {object}
+ * @property {string} name
+ * @property {string} lastname
+ * @property {string} fullname
+ * @property {string} email
+ * @property {number} full_time
+ * @property {number} id
+ * @property {number} fired
+ * @property {boolean} is_trainee
+ * @property {number} applied_from
+ * @property {string} group
+ * @property {number} plan
+ * @property {undefined} ['1-31']
+ */
+
+
+
+
+

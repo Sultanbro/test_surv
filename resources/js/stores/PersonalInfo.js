@@ -17,6 +17,7 @@ export const usePersonalInfoStore = defineStore('personalInfo', {
 	}),
 	actions: {
 		async fetchPersonalInfo() {
+			if(this.isLoading) return
 			this.isLoading = true
 			try{
 				const data = await fetchProfilePersonalInfo()

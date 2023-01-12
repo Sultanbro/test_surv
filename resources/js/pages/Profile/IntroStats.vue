@@ -11,7 +11,7 @@
             </div>
             <div class="stat__about">
                 <div class="stat__name">Баланс оклада</div>
-                <div class="stat__value"><span>{{ data.sumSalary }}</span> {{ data.currency }}</div>
+                <div class="stat__value"><span>{{ user_earnings.sumSalary }}</span> {{ user_earnings.currency }}</div>
             </div>
         </div>
         <div class="stat__item" @click="$emit('pop', 'kpi')">
@@ -25,7 +25,7 @@
             </div>
             <div class="stat__about">
                 <div class="stat__name">KPI</div>
-                <div class="stat__value"><span>{{ data.sumKpi }}</span> {{ data.currency }}</div>
+                <div class="stat__value"><span>{{ user_earnings.sumKpi }}</span> {{ user_earnings.currency }}</div>
             </div>
         </div>
         <div class="stat__item" @click="$emit('pop', 'bonus')">
@@ -39,7 +39,7 @@
             </div>
             <div class="stat__about">
                 <div class="stat__name">Бонусы</div>
-                <div class="stat__value"><span>{{ data.sumBonuses }}</span> {{ data.currency }}</div>
+                <div class="stat__value"><span>{{ user_earnings.sumBonuses }}</span> {{ user_earnings.currency }}</div>
             </div>
         </div>
         <div class="stat__item" @click="$emit('pop', 'qp')">
@@ -53,7 +53,7 @@
             </div>
             <div class="stat__about">
                 <div class="stat__name">Квартальный</div>
-                <div class="stat__value"><span>{{ data.sumQuartalPremiums }}</span> {{ data.currency }}</div>
+                <div class="stat__value"><span>{{ user_earnings.sumQuartalPremiums }}</span> {{ user_earnings.currency }}</div>
             </div>
         </div>
         <div class="stat__item" @click="$emit('pop', 'nominations')">
@@ -67,26 +67,29 @@
             </div>
             <div class="stat__about">
                 <div class="stat__name">Номинации</div>
-                <div class="stat__value"><span>{{ data.sumNominations }}</span></div>
+                <div class="stat__value"><span>{{ user_earnings.sumNominations }}</span></div>
             </div>
         </div>
     </div>
 </template>
 
 <script>
+import { mapState } from 'pinia'
+import { useProfileSalaryStore } from '@/stores/ProfileSalary'
+
 export default {
 	name: 'IntroStats',
 	props: {},
 	data: function () {
-		return {
-			data: {
-				oklad: 80000,
-				kpiMax: 20000
-			},
-			has_quartal_premiums: false,
-			loading: false,
-			isMounted: false
-		};
+		return {}
+	},
+	computed: {
+		...mapState(useProfileSalaryStore, ['user_earnings', 'has_qp'])
+	},
+	watch:{
+		user_earnings(){
+			this.$nextTick(() => this.OpacityStats())
+		}
 	},
 	methods: {
 		fetch() {
@@ -113,8 +116,8 @@ export default {
          */
 		OpacityStats() {
 			/* global VJQuery */
-			let MAXBALANCE = this.data.oklad,
-				MAXKPI = this.data.kpiMax,
+			let MAXBALANCE = this.user_earnings.oklad,
+				MAXKPI = this.user_earnings.kpiMax,
 				MAXBONUSES = 1,
 				MAXKVARTAL = 1,
 				MAXNOMINATIONS = 1,
@@ -162,11 +165,9 @@ export default {
 			})
 		}, // end of opacity
 	},
-	created() {
-		this.fetch()
-	},
+	created(){},
 	mounted(){
-		this.isMounted = true
+		if(this.user_earnings.oklad) this.$nextTick(() => this.OpacityStats())
 	}
 };
 </script>

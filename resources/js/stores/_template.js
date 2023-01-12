@@ -12,7 +12,7 @@ export const useTemplateStore = defineStore('template', { // replace useTemplate
 		async fetchApi(){
 			this.isLoading = true
 			try{
-				// const {data} = await fetchApi()
+				// const data = await fetchApi()
 				// update state here
 				this.isReady = true
 			}

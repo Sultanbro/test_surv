@@ -11,11 +11,13 @@ export const useProfileSalaryStore = defineStore('profileSalary', {
 	}),
 	actions: {
 		async fetchSalary(year, month){
+			if(this.isLoading) return
 			this.isLoading = true
 			try{
 				const data = await fetchProfileSalary(year, month)
 				this.user_earnings = data.user_earnings
 				this.has_qp = data.has_qp
+				this.isReady = true
 			}
 			catch(error){
 				console.error('fetchSalary', error)

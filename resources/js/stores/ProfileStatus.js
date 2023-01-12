@@ -1,11 +1,12 @@
 import { defineStore } from 'pinia'
-import { fetchProfileStatus } from '@/stores/api'
+import { fetchProfileStatus, updateProfileStatus } from '@/stores/api'
 
 
-export const useProfileStatusStore = defineStore('ttstatus', {
+export const useProfileStatusStore = defineStore('profileStatus', {
 	state: () => ({
 		isReady: false,
 		isLoading: false,
+		buttonStatus: 'init',
 		status: 'stopped',
 		groupsall: [],
 		orders: [],
@@ -19,6 +20,7 @@ export const useProfileStatusStore = defineStore('ttstatus', {
 	}),
 	actions: {
 		async fetchStatus(){
+			if(this.isLoading) return
 			this.isLoading = true
 			try{
 				const data = await fetchProfileStatus()
@@ -30,12 +32,23 @@ export const useProfileStatusStore = defineStore('ttstatus', {
 				this.total_earned = data.total_earned
 				this.balance = data.balance
 				this.corp_book = data.corp_book
-				this.isReady = true
 			}
 			catch(error){
 				console.error('fetchStatus', error)
 			}
 			this.isLoading = false
+			this.isReady = true
 		},
+		async updateStatus(body){
+			try{
+				const data = await updateProfileStatus(body)
+				this.status = data.status
+				this.corp_book = data.corp_book
+				// this.corp_book = data.corp_book.page
+			}
+			catch(error){
+				console.error('updateStatus', error)
+			}
+		}
 	}
 })
