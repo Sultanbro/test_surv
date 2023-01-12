@@ -120,7 +120,7 @@ class LoginController extends Controller
         // redirect to subdomain with auth
         if(request()->getHost() == config('app.domain')) {
             $links = $this->loginLinks( $request->email );
-
+            dd($links);
             return count($links) > 1
                 ? [
                     'links' => $links
