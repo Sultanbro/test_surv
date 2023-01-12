@@ -798,6 +798,7 @@ class SalaryController extends Controller
               
             // ИТОГО доход
             $total_income = round($salary + $bonus + $kpi + $trainee_fees, 0);
+            dd($total_income);
             if(!$edited_salary) $allTotal[12] += $total_income;
 
             // Авансы
