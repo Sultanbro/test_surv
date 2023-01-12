@@ -480,6 +480,7 @@ class SalaryController extends Controller
         // $fired_users = collect($fired_users)->pluck('id')->toArray();
 
         $working_users = $this->getSheet($working_users, $date, $request->group_id);
+        dd($working_users);
         $fired_users = $this->getSheet($fired_users, $date, $request->group_id);
     
         $_users = array_merge([['']],$working_users['users']);
@@ -878,7 +879,6 @@ class SalaryController extends Controller
             // Строка в экселе
             try {
                 if($edited_salary) {
-                    dd($total_income . ' ' . $user->id);
                     $allTotal[8] += (float)$edited_salary->amount;
                     $on_currency = number_format((float)$edited_salary->amount * (float)$currency_rate, 0, '.', '') . strtoupper($user->currency);
                     $data['users'][] = [
