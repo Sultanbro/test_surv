@@ -84,7 +84,7 @@ class LoginController extends Controller
      * 
      * @param Request $request
      * 
-     * @return \Illuminate\Http\RedirectResponse
+     * @return array
      */
     public function login(Request $request)
     {   
@@ -120,14 +120,19 @@ class LoginController extends Controller
         // redirect to subdomain with auth
         if(request()->getHost() == config('app.domain')) {
             $links = $this->loginLinks( $request->email );
-            dd($links);
-            return count($links) > 1
-                ? [
-                    'links' => $links
-                ]
-                : [
-                    'link' => $links[0]['link']
-                ];
+
+            if (isset($links))
+            {
+                return count($links) > 1
+                    ? [
+                        'links' => $links
+                    ]
+                    : [
+                        'link' => $links[0]['link']
+                    ];
+            }
+
+            return $links;
         } 
         
         // login from tenant app
