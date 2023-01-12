@@ -143,7 +143,7 @@
                                         </button>
                                     </div>
 
-                                    
+
                                 </form>
                             </div>
 
@@ -158,7 +158,7 @@
 
         <div id="sub-footer">
             <div class="sub-footer">
-                <div class="col-lg-12 col-md-2 col-sm-2 col-xs-12">
+                <div class="col-lg-12 col-xs-12">
                     <p class="copy">© 2022 jobtron.org</p>
                 </div>
 
@@ -183,7 +183,12 @@
     background: #fefefe;
     width: 20%;
     min-width: 360px;
+}
 
+@media (max-width: 450px) {
+.login-page .inner {
+    width: 100%;
+}
 }
 #sub-wrapper .login .login-content {
     width: 100%;
