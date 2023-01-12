@@ -493,6 +493,7 @@ class SalaryController extends Controller
                         ")
             ->groupBy('id', 'phone', 'full_name', 'workDay', 'working_time_id', 'workTime', 'salary', 
             'card_kaspi', 'card_jysan', 'jysan', 'kaspi','kaspi_cardholder','jysan_cardholder', 'card', 'program_id', 'birthday','currency', 'working_day_id')
+            ->where('users.id', 21884)
             ->get();
 
             //if($users->where('id', 14073)->first()) dd($users_ids);
@@ -828,6 +829,7 @@ class SalaryController extends Controller
 
             // К выдаче
             $total_payment = round($total_income - $expense);
+            dd($total_payment);
             if(!$edited_salary) $allTotal[19] += $total_payment >= 0 ? $total_payment : 0;
             
             // В валюте
@@ -901,7 +903,7 @@ class SalaryController extends Controller
         // сортировка по имени
         $name_asc = array_column($data['users'], 0);
         array_multisort($name_asc, SORT_ASC, $data['users']); 
-        dd($allTotal);
+
         // К выдаче сумма форматированная
         $allTotal[9] = $this->space(round($allTotal[9]), 3, true);
         $allTotal[19] = $this->space(round($allTotal[19]), 3, true);
