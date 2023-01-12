@@ -878,6 +878,7 @@ class SalaryController extends Controller
             // Строка в экселе
             try {
                 if($edited_salary) {
+                    dd($total_income . ' ' . $user->id);
                     $allTotal[8] += (float)$edited_salary->amount;
                     $on_currency = number_format((float)$edited_salary->amount * (float)$currency_rate, 0, '.', '') . strtoupper($user->currency);
                     $data['users'][] = [
@@ -905,7 +906,6 @@ class SalaryController extends Controller
                         21 => $taxes
                     ];
                 } else {
-                    dd($total_income . ' ' . $user->id);
                     $data['users'][] = [
                         0 => $user->full_name, // Действующие
                         1 => $cardholder, // Card Holder name
