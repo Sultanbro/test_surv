@@ -540,7 +540,7 @@ class Salary extends Model
             'users.working_day_id',
             'users.working_time_id',
         ]);
-
+        dd($users);
         $data['users'] = [];
         $data['total_resources'] = 0;
 
