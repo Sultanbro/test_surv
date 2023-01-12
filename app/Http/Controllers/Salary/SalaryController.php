@@ -829,7 +829,7 @@ class SalaryController extends Controller
 
             // К выдаче
             $total_payment = round($total_income - $expense);
-            dd($total_payment);
+
             if(!$edited_salary) $allTotal[19] += $total_payment >= 0 ? $total_payment : 0;
             
             // В валюте
