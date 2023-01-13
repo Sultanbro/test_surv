@@ -2,10 +2,7 @@
 <div
 	id="courses__anchor"
 	class="courses__wrapper block _anim _anim-no-hide mt-4"
-	:class="{
-		'hidden': courses.length === 0,
-		'_active': courses.length
-	}"
+	:class="{'hidden': courses.length === 0}"
 >
 	<div
 		class="courses__content"

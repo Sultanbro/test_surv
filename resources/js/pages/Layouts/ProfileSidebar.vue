@@ -1,5 +1,8 @@
 <template>
-	<div class="header__profile _anim _anim-no-hide custom-scroll-y" :class="{
+	<div
+		v-if="isVisible"
+		class="header__profile _anim _anim-no-hide custom-scroll-y"
+		:class="{
 		'v-loading': loading,
 		hidden: hide,
 		'_active': inViewport
@@ -92,8 +95,6 @@
 			</div>
 		</div>
 
-
-
 		<!-- Corp book page when day has started -->
 		<b-modal
 			v-model="showCorpBookPage"
@@ -155,8 +156,11 @@ import ProfileInfo from '@/pages/Widgets/ProfileInfo'
 import StartDayBtn from '@/pages/Widgets/StartDayBtn'
 import Questions from '@/pages/Questions'
 import { useSettingsStore } from '@/stores/Settings'
-import { usePersonalInfoStore } from '@/stores/PersonalInfo'
 import { useProfileStatusStore } from '@/stores/ProfileStatus'
+import { useProfileSalaryStore } from '@/stores/ProfileSalary'
+import { useProfileCoursesStore } from '@/stores/ProfileCourses'
+import { usePersonalInfoStore } from '@/stores/PersonalInfo'
+import { usePaymentTermsStore } from '@/stores/PaymentTerms'
 
 export default {
 	name: 'ProfileSidebar',
@@ -191,6 +195,12 @@ export default {
 		...mapState(useSettingsStore, ['logo']),
 		...mapState(usePersonalInfoStore, ['user', 'position', 'groups', 'salary', 'workingDay', 'schedule', 'workingTime', 'buttonStatus']),
 		...mapState(useProfileStatusStore, ['status', 'balance', 'corp_book']),
+		...mapState(useSettingsStore, {settingsReady: 'isReady'}),
+		...mapState(useProfileStatusStore, {statusReady: 'isReady'}),
+		...mapState(useProfileSalaryStore, {salaryReady: 'isReady'}),
+		...mapState(useProfileCoursesStore, {coursesReady: 'isReady'}),
+		...mapState(usePersonalInfoStore, {infoReady: 'isReady'}),
+		...mapState(usePaymentTermsStore, {termsReady: 'isReady'}),
 		userInfo(){
 			return {
 				user: this.user,
@@ -208,6 +218,17 @@ export default {
 		showButton(){
 			if(this.$can('ucalls_view') && !this.$laravel.is_admin) return false
 			return this.status === 'started' || (this.userInfo.user && this.userInfo.user.user_type === 'remote')
+		},
+		isReady(){
+			return this.settingsReady
+				&& this.statusReady
+				&& this.salaryReady
+				&& this.coursesReady
+				&& this.infoReady
+				&& this.termsReady
+		},
+		isVisible(){
+			return this.isReady || this.$viewportSize.width > 900
 		}
 	},
 	watch: {
