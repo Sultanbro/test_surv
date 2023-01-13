@@ -30,7 +30,7 @@ export default {
         </div>
         <div class="jSec1-profile-banner">
             <img
-                :src="require('../../assets/img/s1-profile-banner.png').default"
+                :src="require('../../assets/img/knowledge-base.jpg').default"
                 alt=""
                 class="jSec1-profile-banner-img"
             >

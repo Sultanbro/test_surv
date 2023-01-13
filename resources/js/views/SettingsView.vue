@@ -42,7 +42,7 @@ export default {
 					id: '4',
 					htmlId: 'nav-fines',
 					path: '/timetracking/settings?tab=4#nav-fines',
-					title: 'Штрафы',
+					title: 'Депремирования',
 					access: ['fines_view', 'settings_view']
 				},
 				{
