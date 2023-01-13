@@ -376,8 +376,8 @@ export default {
 		}
 	},
 	data() {
+		const now = new Date()
 		return {
-
 			data: {},
 			showExcelImport: false,
 			openSidebar: false,
@@ -400,13 +400,13 @@ export default {
 			pageOptions: [5, 10, 15],
 			total_resources: 0,
 			apllyPersonResponse: '',
-			dayPercentage: ((new Date()).getDate() / 31) * 100,
+			dayPercentage: (now.getDate() / 31) * 100,
 			group_editors: [],
 			users: [],
 			hasPermission: false,
 			dateInfo: {
 				currentMonth: null,
-				currentYear: new Date().getFullYear(),
+				currentYear: now.getFullYear(),
 				monthEnd: 0,
 				workDays: 0,
 				weekDays: 0,
@@ -676,6 +676,7 @@ export default {
 			formData.append('month', this.$moment(this.dateInfo.currentMonth, 'MMMM').format('M'));
 			formData.append('day', this.sidebarContent.day);
 			formData.append('user_id', this.sidebarContent.user_id);
+			formData.append('year', this.dateInfo.currentYear)
 			formData.append('type', this.currentDayType.type);
 			formData.append('comment', comment);
 			formData.append('file', this.firingItems.file);
@@ -712,9 +713,6 @@ export default {
 
 		setDayWithoutComment(type) {
 			let day = this.sidebarContent.day;
-
-
-
 			this.axios.post('/timetracking/set-day', {
 				month: this.$moment(this.dateInfo.currentMonth, 'MMMM').format('M'),
 				day: day,
@@ -722,7 +720,8 @@ export default {
 				enable_comment: this.sidebarContent.data.item.enable_comment,
 				type: type,
 				group_id: this.currentGroup,
-				comment: ' '
+				comment: ' ',
+				year: this.dateInfo.currentYear,
 			}).then(response => {
 
 				let v = this.items[this.sidebarContent.data.index]['_cellVariants'];
@@ -751,7 +750,8 @@ export default {
 					day: this.sidebarContent.day,
 					user_id: this.sidebarContent.user_id,
 					type: this.currentDayType.type,
-					comment: this.commentDay
+					comment: this.commentDay,
+					year: this.dateInfo.currentYear,
 				}).then(response => {
 
 					let v = this.items[this.sidebarContent.data.index]['_cellVariants'];
@@ -1084,7 +1084,7 @@ export default {
 			if (this.comment.length > 0) {
 				let loader = this.$loading.show();
 				this.axios.post('/timetracking/reports/update/day', {
-					year: this.dateInfo.year,
+					year: this.dateInfo.currentYear,
 					month: this.dateInfo.month,
 					day: this.currentEditingCell.field.key,
 					user_id: this.currentEditingCell.item.user_id,
@@ -1141,16 +1141,15 @@ export default {
 					this.apllyPersonResponse = ''
 				}, 2000);
 			}).catch(error => {
-
 				alert(error)
 			});
 		},
 
 		setUserAbsent() {
-
 			let day = this.sidebarContent.day;
 			let loader = this.$loading.show();
 			this.axios.post('/timetracking/set-day', {
+				year: this.dateInfo.currentYear,
 				month: this.$moment(this.dateInfo.currentMonth, 'MMMM').format('M'),
 				day: day,
 				user_id: this.sidebarContent.user_id,

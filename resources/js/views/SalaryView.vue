@@ -23,8 +23,8 @@ export default {
 		}
 	},
 	mounted(){
-		useAsyncPageData('/timetracking/reports').then(data => {
-			this.groups = data.groups || null
+		useAsyncPageData('/timetracking/salaries').then(data => {
+			this.groups = data.groupss || null
 			this.years = data.years || null
 			this.activeuserid = '' + data.activeuserid
 			this.activeuserpos = +data.activeuserpos

@@ -4,12 +4,14 @@ export default {
 	props: ['activeTab'],
 	data(){
 		return {
+			tenant: window.location.hostname.split('.')[0],
 			tabs: [
 				{
 					id: 'nav-top-tab',
 					path: '/timetracking/top',
 					title: 'TOП',
-					access: 'top_view'
+					access: 'top_view',
+					bp: true
 				},
 				{
 					id: 'nav-home-tab',
@@ -27,7 +29,8 @@ export default {
 					id: 'nav-profilex-tab',
 					path: '/timetracking/analytics',
 					title: 'HR',
-					access: 'hr_view'
+					access: 'hr_view',
+					bp: true
 				},
 				{
 					id: 'nav-profile-tab',
@@ -60,7 +63,7 @@ export default {
         >
             <template v-for="tab in tabs">
                 <li
-                    v-if="$can(tab.access)"
+                    v-if="!(!$can(tab.access) || (tab.bp && tenant !== 'bp'))"
                     :key="tab.id"
                     class="nav-item"
                 >
