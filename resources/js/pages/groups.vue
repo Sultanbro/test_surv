@@ -1,515 +1,303 @@
 <template>
-  <div
-    v-if="activeuserid"
-    class="groups"
-  >
-    <b-alert v-if="message!=null" variant="info">
-      {{ message}}
-    </b-alert>
-    <b-row class="align-items-center">
-      <b-col cols="12" lg="4" md="6">
-      <b-form-group label="Группа">
-        <b-form-select
-                v-model="activebtn"
-                :options="statuses"
-                size="md"
-                @change="selectGroup"
-                class="group-select col-lg-6 d-flex"
-        >
-          <template #first>
-            <b-form-select-option :value="null" disabled>Выберите группу из списка</b-form-select-option>
-          </template>
-        </b-form-select>
-      </b-form-group>
-      </b-col>
-      <b-col cols="12" lg="4" md="6" class="col-lg-3 col-md-6">
-        <b-form-group label="Добавить группу" class="add-grade">
-          <b-form-input type="text" class="form-control" v-model="new_status" />
-          <button @click="addStatus" class="btn btn-success ml-4">
-            <i class="fa fa-plus"></i>
-          </button>
-          <button
-                  class="btn btn-info rounded add-s ml-4"
-                  @click="showArchiveModal = true"
-                  title="Восстановить из архива"
-          >
-            <i class="fa fa-archive"></i>
-          </button>
-        </b-form-group>
-      </b-col>
-      <b-col cols="12" md="5" lg="4">
-       <b-form-group label="Название" class="add-grade">
-         <b-form-input type="text" v-model="gname"/>
-       </b-form-group>
-      </b-col>
-    </b-row>
+	<div
+			v-if="activeuserid"
+			class="groups"
+	>
+		<b-alert v-if="message!=null" variant="info">
+			{{ message}}
+		</b-alert>
+		<b-row class="align-items-center">
+			<b-col cols="12" lg="6" class="d-flex align-items-start">
+				<b-form-group class="w-100">
+					<multiselect
+							v-model="activebtn"
+							:options="statuses"
+							@select="selectGroup"
+							placeholder="Выберите группу из списка"
+							track-by="group"
+							label="group"
+							ref="groupsMultiselect"
+					>
+						<template slot="afterList">
+							<li class="multiselect-add-li"><span class="multiselect-add-btn" @click="addGroup">Добавить новый отдел</span>
+							</li>
+						</template>
+					</multiselect>
+				</b-form-group>
+				<button
+						class="btn btn-info rounded add-s ml-4"
+						@click="showArchiveModal = true"
+						title="Восстановить из архива"
+				>
+					<i class="fa fa-archive"></i>
+				</button>
+			</b-col>
+		</b-row>
 
-    <hr v-if="activebtn != null" class="my-4">
+		<hr v-if="activebtn != null || addNewGroup" class="my-4">
+		<h4 v-if="addNewGroup" class="groups-title-new mb-5">Создание новой группы</h4>
+		<div v-if="activebtn != null || addNewGroup" class="row">
+			<div class="col-lg-6 mb-3">
+				<b-form-group label="Название группы" label-cols="6" class="mb-4">
+					<b-form-input type="text" class="form-control" v-model="new_status"/>
+				</b-form-group>
+				<div class="dialerlist">
+					<div class="fl">Время работы с</div>
+					<div class="fl">
+						<input
+								type="time"
+								v-model="timeon"
+								class="form-control"
+								name="start_time"
+						/>
+						<span class="before">до</span>
+						<input
+								type="time"
+								v-model="timeoff"
+								value=""
+								class="form-control"
+								name="end_time"
+						/>
+					</div>
+				</div>
 
-    <div v-if="activebtn != null" class="row">
-      <div class="col-lg-6 mb-3">
-        <div class="dialerlist">
-          <div class="fl">Время работы с</div>
-          <div class="fl">
-            <input
-              type="time"
-              v-model="timeon"
-              class="form-control scscsc"
-              name="start_time"
-            />
-            <span class="before">до</span>
-            <input
-              type="time"
-              v-model="timeoff"
-              value=""
-              class="form-control"
-              name="end_time"
-            />
-          </div>
-        </div>
-
-        <div class="dialerlist">
-          <div class="fl">
-            Подтягивать время
-            <i class="fa fa-cogs ml-2" @click="editTimeAddress()"></i>
-          </div>
-          <div class="fl">
-            <input
-              type="text"
-              v-model="time_address_text"
-              class="form-control scscsc"
-              style="background: #fff"
-              disabled
-            />
-          </div>
-        </div>
+				<div class="dialerlist">
+					<div class="fl">
+						Подтягивать время
+						<i class="fa fa-cogs ml-2" @click="editTimeAddress()"></i>
+					</div>
+					<div class="fl">
+						<input
+								type="text"
+								v-model="time_address_text"
+								class="form-control"
+								style="background: #fff"
+								disabled
+						/>
+					</div>
+				</div>
 
 
+				<div class="dialerlist">
+					<div class="fl">Кол-во рабочих дней</div>
+					<div class="fl">
+						<input
+								type="number"
+								v-model="workdays"
+								class="form-control"
+								min="1"
+								max="7"
+						/>
+					</div>
+				</div>
 
+				<div class="dialerlist">
+					<b-form-checkbox
+							v-model="editable_time"
+							:value="1"
+							:unchecked-value="0"
+							switch
+					>
+						Табель редактируется
+					</b-form-checkbox>
+				</div>
 
+				<div class="dialerlist">
+					<b-form-checkbox
+							v-model="paid_internship"
+							:value="1"
+							:unchecked-value="0"
+							switch
+					>
+						Оплачиваемая стажировка
+					</b-form-checkbox>
+				</div>
+				<div class="card groups-card mt-4">
+					<div class="card-header">
+						<b-form-checkbox
+								class="mt-3"
+								v-model="show_payment_terms"
+								:value="1"
+								:unchecked-value="0"
+								switch
+						>
+							Показывать в профиле
+						</b-form-checkbox>
+					</div>
+					<div class="card-body">
+						<b-form-group label="Условия оплаты труда">
+							<b-textarea v-model="payment_terms" style="min-height: 150px;"></b-textarea>
+						</b-form-group>
+					</div>
+				</div>
+			</div>
 
-        <div class="dialerlist">
-          <div class="fl">Кол-во рабочих дней</div>
-          <div class="fl">
-            <input
-              type="number"
-              v-model="workdays"
-              class="form-control scscsc"
-              min="1"
-              max="7"
-            />
-          </div>
-        </div>
+			<div class="col-lg-6 mb-3 sssz">
+				<div class="card groups-card staff-list" v-if="value.length">
+					<div class="card-header">
+						<b-form-input placeholder="Поиск по сотрудникам" v-model="searchUsers"/>
+						<span>Сотрудников: {{value.length}}</span>
+					</div>
+					<div class="card-body">
+						<div class="employee" v-for="(employee, index) in filteredUsers" :key="employee.id">
+							<span>{{employee.email}}</span> <i class="fa fa-trash btn btn-icon btn-danger" @click="removeValue(index)"></i>
+						</div>
+					</div>
+					<div class="card-footer">
+						<b-button variant="danger" @click="showAlert">Удалить всех сотрудников</b-button>
+					</div>
+				</div>
+				<div v-else>Пока нет ни одного сотрудника в группе</div>
+			</div>
+			<div class="col-lg-12 mb-3">
+				<button @click="saveusers" class="btn btn-success mr-2 rounded">
+					Сохранить
+				</button>
+				<button
+						@click.stop="deleted"
+						class="btn btn-danger mr-2 rounded"
+						v-if="!addNewGroup"
+				>
+					<i class="fa fa-trash"></i> Удалить группу
+				</button>
+			</div>
+		</div>
 
-        <div class="dialerlist">
-          <b-form-checkbox
-            v-model="editable_time"
-            :value="1"
-            :unchecked-value="0"
-            switch
-          >
-            Табель редактируется
-          </b-form-checkbox>
-        </div>
+		<!-- Modal  -->
+		<b-modal
+				v-model="showEditTimeAddress"
+				title="Подтягивать часы"
+				@ok="saveTimeAddress()"
+				size="lg"
+				class="modalle"
+		>
+			<div class="row">
+				<div class="col-5 mt-1">
+					<p class="">
+						Источник часов
+						<i
+								class="fa fa-info-circle"
+								v-b-popover.hover.right.html="'При смене источника, новые данные в табеле будут только со дня смены источника'"
+						/>
+					</p>
+				</div>
+				<div class="col-7">
+					<select class="form-control form-control-sm" v-model="time_address">
+						<option
+								:value="key"
+								v-for="(time, key) in time_variants"
+								:key="key"
+						>
+							{{ time }}
+						</option>
+					</select>
+				</div>
+			</div>
 
-        <div class="dialerlist">
-          <b-form-checkbox
-            v-model="paid_internship"
-            :value="1"
-            :unchecked-value="0"
-            switch
-          >
-            Оплачиваемая стажировка
-          </b-form-checkbox>
-        </div>
+			<div class="row" v-if="time_address == -1">
+				<div class="col-5 mt-1">
+					<div class="fl">ID диалера
+						<i class="fa fa-info-circle ml-2" v-b-popover.hover.right.html="'Нужен, чтобы <b>подтягивать часы</b> или <b>оценки диалогов</b> для контроля качества.<br>С сервиса cp.callibro.org'" title="Диалер в U-Calls">
+						</i>
+					</div>
+				</div>
+				<div class="col-7 mt-1">
+					<div class="fl d-flex">
+						<input type="text" v-model="dialer_id" placeholder="ID" class="form-control scscsc"/>
+						<input type="number" v-model="script_id" placeholder="ID скрипта" class="form-control scscsc"/>
+					</div>
+				</div>
+			</div>
 
-        <!-- <button
-          @click="showKPI = !showKPI"
-          class="btn btn-primary rounded mr-2"
-        >
-          <i class="fa fa-star-half-o"></i> KPI группы
-        </button>
+			<div class="row" v-if="time_address == -1">
+				<div class="col-5 mt-1">
+					<div class="fl">Сколько минут считать, за полный рабочий день
+						<i class="fa fa-info-circle ml-2" v-b-popover.hover.right.html="'Запишите сколько минут разговора с сервиса cp.callibro.org считать, за полный рабочий день. <br>Пример: 250 минут считается как 8 часов'" title="Ставить полный рабочий день">
+						</i>
+					</div>
+				</div>
+				<div class="col-7 mt-1">
+					<div class="fl d-flex">
+						<input type="text" v-model="talk_minutes" placeholder="ID" class="form-control scscsc"/>
+						<input type="number" v-model="talk_hours" placeholder="ID скрипта" class="form-control scscsc"/>
+					</div>
+				</div>
+			</div>
 
-        <button
-          @click="showBonuses = !showBonuses"
-          class="btn btn-primary mr-2 rounded"
-        >
-          <i class="fa fa-star-half-o"></i> Бонусы
-        </button> -->
+			<div class="row mt-1">
+				<div class="col-12">
+					<p class="">Исключения
 
-      </div>
+						<i
+								class="fa fa-info-circle"
+								v-b-popover.hover.right.html="'Часы выбранных сотрудников, не будут копироваться из аналитики в табель'"
+						/>
+					</p>
+				</div>
+				<div class="col-12 mt-1">
+					<multiselect
+							v-model="time_exceptions"
+							:options="time_exceptions_options"
+							:multiple="true"
+							:close-on-select="false"
+							:clear-on-select="false"
+							:preserve-search="true"
+							placeholder="Выберите, кого не связывать"
+							label="email"
+							track-by="email"
+							:taggable="true"
+							@tag="addExceptionTag"
+					>
+					</multiselect>
+				</div>
+			</div>
+		</b-modal>
 
-      <div class="col-lg-6 mb-3 sssz">
-
-        <div class="dialerlist blu">
-          <multiselect
-            v-model="corps"
-            :options="corp_books"
-            :multiple="true"
-            :close-on-select="false"
-            :clear-on-select="false"
-            :preserve-search="true"
-            placeholder="Выберите корп книги"
-            label="title"
-            track-by="title"
-            :taggable="true"
-            @tag="addTag"
-          >
-          </multiselect>
-        </div>
-
-        <div class="blu">
-          <b-form-checkbox
-            class="mt-3"
-            v-model="show_payment_terms"
-            :value="1"
-            :unchecked-value="0"
-            switch
-          >
-            Показывать в профиле
-          </b-form-checkbox>
-
-         <b-form-group label="Условия оплаты труда">
-           <b-textarea v-model="payment_terms" style="min-height: 150px;"></b-textarea>
-         </b-form-group>
-        </div>
-      </div>
-
-      <div class="col-lg-12 mb-3 mt-3">
-        <h6 class="mb-2">Сотрудники</h6>
-        <div class="dialerlist">
-          <div class="fl" style="flex-direction: column">
-            <multiselect
-              v-model="value"
-              :options="options"
-              :multiple="true"
-              :close-on-select="false"
-              :clear-on-select="false"
-              :preserve-search="true"
-              placeholder="Выберите"
-              label="email"
-              track-by="email"
-              :taggable="true"
-              @tag="addTag"
-            >
-            </multiselect>
-            <a href="#" @click="showAlert()">Удалить всех пользователей</a>
-          </div>
-        </div>
-      </div>
-      <div class="col-lg-12 mb-3">
-        <button @click="saveusers" class="btn btn-success mr-2 rounded">
-          Сохранить
-        </button>
-        <button
-          @click.stop="deleted"
-          class="btn btn-danger mr-2 rounded"
-        >
-          <i class="fa fa-trash"></i> Удалить группу
-        </button>
-      </div>
-    </div>
-
-      <Sidebar
-        title="Бонусы"
-        :open="showBonuses"
-        @close="showBonuses = false"
-        v-if="showBonuses"
-        width="72%"
-      >
-        <table class="table table-bordered table-sm">
-          <tr>
-            <th class="left mark">Наименование</th>
-            <th class="mark">Активность</th>
-            <th class="mark">Ед.изм</th>
-            <th class="mark">Кол-во</th>
-            <th class="mark">ПД</th>
-            <th class="mark">Сумма , тг</th>
-            <th class="mark">Описание</th>
-            <th class="mark"></th>
-          </tr>
-
-          <tr v-for="(bonus, index) in bonuses" :key="index">
-            <td>
-              <input
-                type="text"
-                class="form-control form-control-sm"
-                v-model="bonus.title"
-              />
-            </td>
-            <td class="left">
-              <select
-                v-model="bonus.activity_id"
-                class="form-control form-control-sm"
-              >
-                <option :value="0">Нет активности</option>
-                <option
-                  :value="activity.id"
-                  v-for="activity in activities"
-                  :key="activity.id"
-                >
-                  {{ activity.name }}
-                </option>
-              </select>
-            </td>
-            <td class="left">
-              <select v-model="bonus.unit" class="form-control form-control-sm">
-                <option
-                  :value="unit.value"
-                  v-for="unit in units"
-                  :key="unit.value"
-                >
-                  {{ unit.title }}
-                </option>
-              </select>
-            </td>
-            <td class="left">
-              <input
-                type="text"
-                class="form-control form-control-sm"
-                v-model="bonus.quantity"
-              />
-            </td>
-            <td class="left">
-              <select
-                v-model="bonus.daypart"
-                class="form-control form-control-sm"
-              >
-                <option
-                  :value="daypart.value"
-                  v-for="daypart in dayparts"
-                  :key="daypart.value"
-                >
-                  {{ daypart.title }}
-                </option>
-              </select>
-            </td>
-            <td class="left">
-              <input
-                type="text"
-                class="form-control form-control-sm"
-                v-model="bonus.sum"
-              />
-            </td>
-            <td class="left">
-              <textarea
-                class="form-control form-control-sm"
-                v-model="bonus.text"
-              ></textarea>
-            </td>
-            <td class="left">
-              <i class="fa fa-trash" @click="deleteBonusItem(index)"></i>
-            </td>
-          </tr>
-        </table>
-
-        <p v-if="showAfterEdit">
-          Не забудьте нажать на кнопку "Сохранить", чтобы сохранить изменения и
-          удаления
-        </p>
-
-        <div class="d-flex">
-          <button
-            class="btn btn-success btn-sm rounded mr-2"
-            @click="saveBonus"
-          >
-            Сохранить
-          </button>
-          <button class="btn btn-primary btn-sm rounded" @click="addBonus">
-            Добавить
-          </button>
-          <button
-            class="btn btn-danger btn-sm rounded"
-            v-if="showDeleteButton"
-            @click="before_deleteBonus"
-          >
-            Удалить
-          </button>
-        </div>
-      </Sidebar>
-
-      <b-modal id="bv-modal" hide-footer>
-        <template #modal-title> Подтвердите удаление </template>
-        <div class="d-block">
-          <p>
-            Вы уверены, что хотите удалить выбранные бонусы? На прошедшие дни
-            это не повлияет.
-          </p>
-        </div>
-        <div class="d-flex">
-          <b-button
-            class="mt-3 mr-1"
-            variant="danger"
-            block
-            @click="deleteBonus"
-            >Удалить</b-button
-          >
-          <b-button
-            variant="primary"
-            class="mt-3 ml-1"
-            block
-            @click="$bvModal.hide('bv-modal')"
-            >Отмена</b-button
-          >
-        </div>
-      </b-modal>
-
-    <!-- Modal  -->
-    <b-modal
-      v-model="showEditTimeAddress"
-      title="Подтягивать часы"
-      @ok="saveTimeAddress()"
-      size="lg"
-      class="modalle"
-    >
-      <div class="row">
-        <div class="col-5 mt-1">
-          <p class="">
-            Источник часов
-
-            <i
-              class="fa fa-info-circle"
-              v-b-popover.hover.right.html="'При смене источника, новые данные в табеле будут только со дня смены источника'"
-            />
-
-
-          </p>
-        </div>
-        <div class="col-7">
-          <select class="form-control form-control-sm" v-model="time_address">
-            <option
-              :value="key"
-              v-for="(time, key) in time_variants"
-              :key="key"
-            >
-              {{ time }}
-            </option>
-          </select>
-        </div>
-
-
-
-      </div>
-
-      <div class="row" v-if="time_address == -1">
-        <div class="col-5 mt-1">
-          <div class="fl">ID диалера
-            <i class="fa fa-info-circle ml-2"
-                v-b-popover.hover.right.html="'Нужен, чтобы <b>подтягивать часы</b> или <b>оценки диалогов</b> для контроля качества.<br>С сервиса cp.callibro.org'"
-                title="Диалер в U-Calls">
-            </i>
-          </div>
-        </div>
-        <div class="col-7 mt-1">
-          <div class="fl d-flex">
-            <input type="text" v-model="dialer_id" placeholder="ID" class="form-control scscsc" />
-            <input type="number" v-model="script_id" placeholder="ID скрипта" class="form-control scscsc" />
-          </div>
-        </div>
-      </div>
-
-      <div class="row" v-if="time_address == -1">
-        <div class="col-5 mt-1">
-          <div class="fl">Сколько минут считать, за полный рабочий день
-            <i class="fa fa-info-circle ml-2"
-                v-b-popover.hover.right.html="'Запишите сколько минут разговора с сервиса cp.callibro.org считать, за полный рабочий день. <br>Пример: 250 минут считается как 8 часов'"
-                title="Ставить полный рабочий день">
-            </i>
-          </div>
-        </div>
-        <div class="col-7 mt-1">
-          <div class="fl d-flex">
-            <input type="text" v-model="talk_minutes" placeholder="ID" class="form-control scscsc" />
-            <input type="number" v-model="talk_hours" placeholder="ID скрипта" class="form-control scscsc" />
-          </div>
-        </div>
-      </div>
-
-      <div class="row mt-1">
-        <div class="col-12">
-          <p class="">Исключения
-
-            <i
-              class="fa fa-info-circle"
-              v-b-popover.hover.right.html="'Часы выбранных сотрудников, не будут копироваться из аналитики в табель'"
-            />
-          </p>
-        </div>
-        <div class="col-12 mt-1">
-          <multiselect
-            v-model="time_exceptions"
-            :options="time_exceptions_options"
-            :multiple="true"
-            :close-on-select="false"
-            :clear-on-select="false"
-            :preserve-search="true"
-            placeholder="Выберите, кого не связывать"
-            label="email"
-            track-by="email"
-            :taggable="true"
-            @tag="addExceptionTag"
-          >
-          </multiselect>
-        </div>
-      </div>
-    </b-modal>
-
-    <!-- Modal restore archived group -->
-    <b-modal
-      v-model="showArchiveModal"
-      size="md"
-      title="Восстановить из архива"
-      @ok="restoreGroup()"
-      class="modalle"
-    >
-      <div>
-        <div class="col-5">
-          <p class="">Группа</p>
-        </div>
-        <div class="col-7">
-          <select v-model="restore_group" class="form-control form-control-sm">
-            <option
-              :value="archived_group.id"
-              v-for="(archived_group, key) in archived_groups"
-              :key="key"
-            >
-              {{ archived_group.name }}
-            </option>
-          </select>
-        </div>
-      </div>
-    </b-modal>
-  </div>
+		<!-- Modal restore archived group -->
+		<b-modal
+				v-model="showArchiveModal"
+				size="md"
+				title="Восстановить из архива"
+				@ok="restoreGroup()"
+				class="modalle"
+		>
+			<div>
+				<b-form-group label="группа">
+					<select v-model="restore_group" class="form-control">
+						<option
+								:value="archived_group"
+								v-for="(archived_group, key) in archived_groups"
+								:key="key"
+						>
+							{{ archived_group.name }}
+						</option>
+					</select>
+				</b-form-group>
+			</div>
+		</b-modal>
+	</div>
 </template>
 
 <script>
-import Sidebar from '@/components/ui/Sidebar' // сайдбар table
 export default {
-	name: 'PageGroups',
-	components: {
-		Sidebar,
-	},
+	name: 'CompanyGroups',
 	props: [
 		'statuseses',
-		'corpbooks',
 		'activeuserid',
 		'archived_groupss',
 	],
 	data() {
 		return {
+			addNewGroup: false,
 			message: null,
 			activebtn: null,
 			statuses: [],
-			bonuses: [],
 			activities: [],
 			restore_group: null,
 			new_status: '',
 			value: [], // selected users
 			options: [], // users options
 
-			corps: [], // selected corp_books
-
-			corp_books: [], // corp_books options
 			archived_groups: [],
 			payment_terms: '', // Условия оплаты труда в группе
 			timeon: '09:00',
@@ -532,14 +320,13 @@ export default {
 			show_payment_terms: 1,
 			zarplata: '0',
 			showKPI: false,
-			showBonuses: false,
 			showDeleteButton: false,
 			showArchiveModal: false,
 			showAfterEdit: false,
 			group_id: 0,
-			gname: '', // Название группы
-			zoom_link: '', // Ссылка zoom для обучения стажеров
-			bp_link: '',
+			zoom_link: 'empty', // Ссылка zoom для обучения стажеров
+			bp_link: 'empty',
+			searchUsers: '',
 			units: [
 				{
 					title: 'За единицу',
@@ -578,53 +365,67 @@ export default {
 			],
 		};
 	},
-	watch:{
-		activeuserid(){
+	watch: {
+		activeuserid() {
 			this.init()
 		}
 	},
 	created() {
-		if(this.activeuserid){
+		if (this.activeuserid) {
 			this.init()
 		}
 	},
-	mounted() {},
+	computed: {
+		filteredUsers() {
+			return this.searchUsers ? this.value.filter(v => v.email.toLowerCase().includes(this.searchUsers.toLowerCase())) : this.value;
+		}
+	},
 	methods: {
-		init(){
-			this.axios.post('/timetracking/users-new', {}).then((response) => {
-				this.options = response.data?.data.users;
+		resetState() {
+			this.message = null;
+			this.activebtn = null;
+			this.activities = [];
+			this.restore_group = null;
+			this.new_status = '';
+			this.value = [];
+			this.options = [];
+			this.payment_terms = '';
+			this.timeon = '09:00';
+			this.timeoff = '18:00';
+			this.dialer_id = null;
+			this.script_id = null;
+			this.talk_minutes = null;
+			this.talk_hours = null;
+			this.time_address = 0;
+			this.editable_time = 0;
+			this.time_address_text = 'Не выбран';
+			this.time_variants = [];
+			this.workdays = 5;
+			this.quality = 'local';
+			this.time_exceptions = [];
+			this.time_exceptions_options = [];
+			this.showEditTimeAddress = false;
+			this.paid_internship = 0;
+			this.show_payment_terms = 1;
+			this.zarplata = '0';
+			this.showKPI = false;
+			this.showDeleteButton = false;
+			this.showArchiveModal = false;
+			this.showAfterEdit = false;
+			this.group_id = 0;
+		},
+		removeValue(index) {
+			this.value.splice(index, 1);
+			this.searchUsers = '';
+		},
+		init() {
+			Object.keys(this.statuseses).forEach(item => {
+				this.statuses.push({
+					id: item,
+					group: this.statuseses[item]
+				})
 			});
-			this.statuses = this.statuseses;
 			this.archived_groups = this.archived_groupss;
-			this.corp_books = this.corpbooks;
-		},
-		saveBonus() {
-			this.axios
-				.post('/timetracking/users/bonus/save', {
-					bonuses: this.bonuses,
-				})
-				.then((response) => {
-					this.$toast.info('Успешно сохранено');
-					this.bonuses = response.data.bonuses;
-					this.messageoff();
-				})
-				.catch((error) => {
-					console.log(error.response);
-					this.$toast.info(error.response);
-				});
-		},
-
-		addBonus() {
-			this.bonuses.push({
-				id: 0,
-				title: 'Нет названия',
-				sum: 0,
-				group_id: this.group_id,
-				activity_id: 0,
-				unit: 'one',
-				quantity: 0,
-				daypart: 0,
-			});
 		},
 
 		addTag(newTag) {
@@ -645,35 +446,23 @@ export default {
 			this.time_exceptions.push(tag);
 		},
 
-		addCorpBookTag(newTag) {
-			const tag = {
-				title: newTag,
-				id: newTag,
-			};
-			this.corps.push(tag);
-		},
-
 		messageoff() {
 			setTimeout(() => {
 				this.message = null;
 			}, 3000);
 		},
-		selectGroup() {
-
-
+		async selectGroup(value) {
 			let loader = this.$loading.show();
-
-			this.axios
+			await this.axios
 				.post('/timetracking/users-new', {
-					id: this.activebtn,
+					id: value.id,
 				})
 				.then((response) => {
 					if (response.data?.data) {
-						const data = response.data.data
-						console.warn(data)
-						this.gname = data.name;
+						const data = response.data.data;
+						this.new_status = data.name;
 						this.value = data.users;
-
+						this.options = data.users;
 						this.timeon = data.timeon;
 						this.timeoff = data.timeoff;
 						this.group_id = data.group_id;
@@ -684,16 +473,12 @@ export default {
 						this.talk_hours = data.talk_hours;
 						this.script_id = data.script_id;
 						this.quality = data.quality;
-						this.corps = data.corp_books;
-						this.bonuses = data.bonuses;
 						this.activities = data.activities;
 						this.payment_terms = data.payment_terms;
 						this.time_address = data.time_address;
 						this.workdays = data.workdays;
 						this.paid_internship = data.paid_internship;
 						this.show_payment_terms = data.show_payment_terms;
-						this.statuses = data.groups;
-						this.archived_groups = data.archived_groups;
 
 						this.editable_time = data.editable_time;
 						if (this.time_address != -1 || this.time_address != 0)
@@ -706,20 +491,51 @@ export default {
 						this.value = [];
 					}
 				});
-		},
 
-		saveusers() {
+			this.addNewGroup = false;
+		},
+		addGroup() {
+			if (this.$refs.groupsMultiselect) {
+				this.$refs.groupsMultiselect.toggle();
+			}
+			this.addNewGroup = true;
+			this.resetState();
+		},
+		async saveusers() {
+			if (!this.new_status.length) return this.$toast.error('Введите название группы');
 			// save group data
 			let loader = this.$loading.show();
+			if (this.addNewGroup) {
+				await this.axios.post('/timetracking/group/save-new', {
+					name: this.new_status,
+				})
+					.then((response) => {
+						if (response.data.status == 200) {
+							const dataPush = {
+								id: response.data.data.id,
+								group: response.data.data.name
+							};
+							this.statuses.push(dataPush);
+							this.activebtn = dataPush;
+						} else {
+							this.$toast.error(
+								'Название "' +
+									this.new_status +
+									'" не свободно, выберите другое имя для группы!'
+							);
+							loader.hide();
+						}
+					});
+			}
 
-			this.axios
+			await this.axios
 				.post('/timetracking/users/group/save-new', {
-					group_id: this.activebtn,
+					group_id: this.activebtn.id,
 					users: this.value,
 					group_info: {
 						work_start: this.timeon,
 						work_end: this.timeoff,
-						name: this.gname,
+						name: this.new_status,
 						zoom_link: this.zoom_link,
 						workdays: this.workdays,
 						payment_terms: this.payment_terms,
@@ -734,8 +550,8 @@ export default {
 					talk_hours: this.talk_hours,
 					talk_minutes: this.talk_minutes,
 				})
-				.then((response) => {
-					this.statuses = response.data.groups;
+				.then(() => {
+					// this.statuses = response.data.groups;
 					// this.activebtn = response.data.group;
 					this.$toast.info('Успешно сохранено');
 					this.messageoff();
@@ -748,41 +564,18 @@ export default {
 					loader.hide();
 				});
 		},
-		addStatus() {
-			if (this.new_status.length > 0) {
-				this.axios
-					.post('/timetracking/group/save-new', {
-						name: this.new_status,
-					})
-					.then((response) => {
-						if (response.data.status == 200) {
-							this.$toast.success('Добавлено');
-							this.statuses.push(this.new_status);
-						} else {
-							this.$toast.error(
-								'Название "' +
-                  this.new_status +
-                  '" не свободно, выберите другое имя для группы!'
-							);
-						}
 
-						this.selectGroup(this.new_status);
-						this.new_status = '';
-					});
-			}
-		},
 		deleted() {
 			if (confirm('Вы уверены что хотите удалить группу?')) {
 				this.axios
 					.post('/timetracking/group/delete-new', {
-						group: this.activebtn,
+						group: this.activebtn.id,
 					})
 					.then(() => {
 						this.$toast.info('Удалена');
 					});
 
-				let ind = this.statuses.indexOf(status);
-				if (ind > -1) this.statuses.splice(ind, 1);
+				const ind = this.statuses.findIndex(item => item.id === this.activebtn.id);
 				this.statuses.splice(ind, 1);
 				this.activebtn = null;
 			}
@@ -793,25 +586,12 @@ export default {
 			}
 		},
 
-		before_deleteBonus() {
-			this.bonuses.forEach(bonus => {
-				if (bonus.checked) this.$bvModal.show('bv-modal');
-			});
-		},
-		deleteBonus() {
-			this.bonuses.forEach(bonus => {
-				this.showAfterEdit = true;
-				if (bonus.checked) bonus.deleted = true;
-				this.$bvModal.hide('bv-modal');
-			});
-		},
-
 		editTimeAddress() {
 			this.showEditTimeAddress = true;
 
 			this.axios
 				.post('/timetracking/settings/get_time_addresses', {
-					group_id: this.activebtn,
+					group_id: this.activebtn.id,
 				})
 				.then((response) => {
 					this.time_variants = response.data.time_variants;
@@ -831,11 +611,16 @@ export default {
 			let loader = this.$loading.show();
 			this.axios
 				.post('/timetracking/groups/restore-new', {
-					id: this.restore_group,
+					id: this.restore_group.id,
 				})
 				.then(() => {
 					this.$toast.success('Восстановлен!');
-					this.selectGroup(this.restore_group);
+					const valueSelect = {
+						id: this.restore_group.id,
+						group: this.restore_group.name
+					};
+					this.selectGroup(valueSelect);
+					this.activebtn = valueSelect;
 					this.restore_group = null;
 					this.showArchiveModal = false;
 					loader.hide();
@@ -848,157 +633,200 @@ export default {
 		},
 
 		saveTimeAddress() {
-			this.axios
-				.post('/timetracking/settings/save_time_addresses', {
-					group_id: this.activebtn,
-					time_address: this.time_address,
-					time_exceptions: this.time_exceptions,
-				})
-				.then(() => {
-					if (this.time_address != -1 || this.time_address != 0)
-						this.time_address_text = 'Из аналитики';
-					if (this.time_address == -1) this.time_address_text = 'Из U-calls';
-					if (this.time_address == 0) this.time_address_text = 'Не выбран';
-
-					this.time_address_text =
-						this.time_variants !== undefined
-							? this.time_variants[this.time_address]
-							: 'Не выбран';
-				})
-				.catch((error) => {
-					alert(error);
-				});
-
+			this.axios.post('/timetracking/settings/save_time_addresses', {
+				group_id: this.activebtn,
+				time_address: this.time_address,
+				time_exceptions: this.time_exceptions,
+			}).then(() => {
+				if (this.time_address != -1 || this.time_address != 0) this.time_address_text = 'Из аналитики';
+				if (this.time_address == -1) this.time_address_text = 'Из U-calls';
+				if (this.time_address == 0) this.time_address_text = 'Не выбран';
+				this.time_address_text = this.time_variants !== undefined ? this.time_variants[this.time_address] : 'Не выбран';
+			}).catch(error => alert(error));
 			this.showEditTimeAddress = false;
-		},
-
-		deleteBonusItem(i) {
-			if(!confirm('Вы уверены?')) {
-				return;
-			}
-
-			if(this.bonuses[i].id == 0) {
-				this.bonuses.splice(i, 1);
-				return;
-			}
-
-			this.axios
-				.post('/timetracking/settings/delete-group-bonus', {
-					id: this.bonuses[i].id,
-				})
-				.then(() => {
-					this.bonuses.splice(i, 1);
-					this.$toast.success('Бонус удален');
-				})
-				.catch((error) => {
-					alert(error);
-				});
-
-
 		}
 	},
 };
 </script>
-
 <style src="vue-multiselect/dist/vue-multiselect.min.css"></style>
 <style lang="scss">
-.ant-tabs {
-  overflow: visible;
-}
+	.groups-title-new {
+		color: rgb(0 128 0);
+		display: inline-block;
+		padding: 5px 20px;
+		border-radius: 6px;
+		background-color: rgba(0, 128, 0, 0.2)
+	}
 
-.listprof {
-  display: flex;
-  flex-wrap: wrap;
-  margin-top: 20px;
-}
+	.groups-card {
+		border: 1px solid #ddd;
 
-.profitem {
-  margin-right: 10px;
-  margin-bottom: 5px;
-}
+		.card-header, .card-footer {
+			padding: 5px 20px;
+		}
 
-.add-grade {
-  display: flex;
-  max-width: 500px;
-}
+		.card-body {
+			padding: 10px 20px;
+		}
 
-.dialerlist {
-  display: flex;
-  align-items: center;
-  margin: 0 0 20px 0;
-  .fl {
-    flex: 1;
-    display: flex;
-    align-items: center;
-  }
-}
+		&.staff-list {
+			.card-header {
+				padding: 10px 20px;
+				background-color: #fff;
+				border-bottom: 1px solid #ddd;
+				display: flex;
+				align-items: center;
 
-.group-select {
-  border-radius: 0;
-  max-width: 100%;
-}
+				span {
+					white-space: nowrap;
+					margin-left: 20px;
+				}
+			}
 
-p.choose {
-  line-height: 31px;
-  margin-right: 15px;
-}
-span.before {
-  padding: 0 10px;
-}
-.multiselect__tags {
-  border-radius: 0 !important;
-}
-.multiselect__tag {
-  display: block !important;
-  max-width: max-content !important;
-}
-.blu .multiselect__tag {
-  background: #017cff !important;
-}
-@media (min-width: 1000px) {
-  .groups .multiselect__tags-wrap {
-    flex-wrap: wrap;
-    display: flex !important;
-  }
-  .groups .multiselect__tag {
-    flex: 0 0 49%;
-    /* margin-left: 1% !important; */
-    margin-right: 1% !important;
-    max-width: 49% !important;
-  }
-}
+			.card-body {
+				padding: 10px 0;
+				max-height: 500px;
+				overflow: auto;
 
-@media (min-width: 1300px) {
-  .groups .multiselect__tag {
-    flex: 0 0 32%;
-    /* margin-left: 1% !important; */
-    margin-right: 1% !important;
-    max-width: 32% !important;
-  }
-}
-@media (min-width: 1700px) {
-   .groups .multiselect__tag {
-    flex: 0 0 24%;
-    /* margin-left: 1% !important; */
-    margin-right: 1% !important;
-    max-width: 24% !important;
-  }
-}
-.custom-table-permissions{
-  .groups .multiselect__tag{
-    flex: 0 0 auto!important;
-    max-width: 100%!important;
-    margin-right: 5px !important
-  }
-}
+				.employee {
+					display: flex;
+					align-items: center;
+					justify-content: space-between;
+					padding: 3px 20px;
+					line-height: 1.2;
 
-.scscsc {
-  margin-left: 15px;
-}
-.sssz button {
-  margin-top: 1px;
-}
-.add-grade input {
-  border-radius: 0;
-}
+					&:hover {
+						background-color: #f2f2f2;
+					}
+
+					span {
+						font-size: 16px;
+						margin-right: 20px;
+					}
+
+					.btn-icon {
+						width: 25px;
+						height: 25px;
+						min-width: 25px;
+						font-size: 12px;
+					}
+				}
+			}
+		}
+
+		textarea.form-control {
+			padding: 5px 20px !important;
+			min-height: 165px !important;
+		}
+	}
+
+	.ant-tabs {
+		overflow: visible;
+	}
+
+	.listprof {
+		display: flex;
+		flex-wrap: wrap;
+		margin-top: 20px;
+	}
+
+	.profitem {
+		margin-right: 10px;
+		margin-bottom: 5px;
+	}
+
+	.add-grade {
+		display: flex;
+		max-width: 500px;
+	}
+
+	.dialerlist {
+		display: flex;
+		align-items: center;
+		margin: 0 0 20px 0;
+
+		.fl {
+			flex: 1;
+			display: flex;
+			align-items: center;
+		}
+	}
+
+	.group-select {
+		border-radius: 0;
+		max-width: 100%;
+	}
+
+	p.choose {
+		line-height: 31px;
+		margin-right: 15px;
+	}
+
+	span.before {
+		padding: 0 10px;
+	}
+
+	.multiselect__tags {
+		border-radius: 0 !important;
+	}
+
+	.multiselect__tag {
+		display: block !important;
+		max-width: max-content !important;
+	}
+
+	.blu .multiselect__tag {
+		background: #017cff !important;
+	}
+
+	@media (min-width: 1000px) {
+		.groups .multiselect__tags-wrap {
+			flex-wrap: wrap;
+			display: flex !important;
+		}
+		.groups .multiselect__tag {
+			flex: 0 0 49%;
+			/* margin-left: 1% !important; */
+			margin-right: 1% !important;
+			max-width: 49% !important;
+		}
+	}
+
+	@media (min-width: 1300px) {
+		.groups .multiselect__tag {
+			flex: 0 0 32%;
+			/* margin-left: 1% !important; */
+			margin-right: 1% !important;
+			max-width: 32% !important;
+		}
+	}
+
+	@media (min-width: 1700px) {
+		.groups .multiselect__tag {
+			flex: 0 0 24%;
+			/* margin-left: 1% !important; */
+			margin-right: 1% !important;
+			max-width: 24% !important;
+		}
+	}
+
+	.custom-table-permissions {
+		.groups .multiselect__tag {
+			flex: 0 0 auto !important;
+			max-width: 100% !important;
+			margin-right: 5px !important
+		}
+	}
+
+	.scscsc {
+		margin-left: 15px;
+	}
+
+	.sssz button {
+		margin-top: 1px;
+	}
+
+	.add-grade input {
+		border-radius: 0;
+	}
 </style>
