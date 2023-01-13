@@ -225,6 +225,7 @@ export default {
 @import '../../assets/scss/app.variables.scss';
 
 #jReviews {
+  display: none;
   width: 100%;
   background: url("../../assets/img/reviews-bg.svg") no-repeat;
   background-position-x: 85%;
@@ -273,7 +274,7 @@ export default {
   //background: #000;
 }
 
-jReviews-item-player-photos {
+.jReviews-item-player-photos {
   position: relative;
   background: #000;
 }

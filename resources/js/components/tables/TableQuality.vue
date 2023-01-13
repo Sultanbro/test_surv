@@ -868,7 +868,7 @@ export default {
 				this.viewStaticButton.weekCheck = false
 				this.viewStaticButton.montheCheck = true
 			}
-		}  ,
+		},
 
 		watchChanges(values, oldValues) {
 			const index = values.findIndex(function (v, i) {
@@ -883,9 +883,6 @@ export default {
 		},
 
 		fetchData(flag = null) {
-
-
-
 			if (flag == 'selected_group'){
 				this.flagGroup = 'selected_group'
 			}
@@ -894,14 +891,9 @@ export default {
 			this.setDates();
 			this.fetchItems();
 			loader.hide();
-
-
 		},
 
 		normalizeItems() {
-
-
-
 			if (this.items.length > 0) {
 				this.newRecord.employee_id = this.items[0].id;
 				this.newRecord.name = this.items[0].name;
@@ -947,8 +939,6 @@ export default {
 					script_id: this.script_id,
 					dialer_id: this.dialer_id,
 					group_id: this.currentGroup,
-
-
 				})
 				.then(() => {
 
@@ -981,9 +971,6 @@ export default {
 				}
 			}
 
-
-
-
 			this.axios
 				.post($url, {
 					day: this.currentDay,
@@ -996,8 +983,6 @@ export default {
 				})
 				.then((response) => {
 
-
-
 					console.log(response,'responseee')
 
 
@@ -1009,15 +994,8 @@ export default {
 						this.hasPermission = false;
 						loader.hide();
 
-
-
 						return;
 					}
-
-
-
-
-
 
 					this.check_result = response.data.check_users;
 
@@ -1033,8 +1011,6 @@ export default {
 					this.script_id = response.data.script_id;
 					this.dialer_id = response.data.dialer_id;
 
-
-
 					this.$toast.success('Записи загружены');
 					this.normalizeItems();
 					this.createUserIdList();
@@ -1044,11 +1020,6 @@ export default {
 
 					this.setRecordsTable();
 					this.calcTotalWeekField();
-
-
-
-
-
 					loader.hide();
 				});
 		},
@@ -1582,8 +1553,7 @@ export default {
 				this.$moment(this.monthInfo.currentMonth, 'MMMM').format('M'),
 				0
 			).getDate(); //Колличество дней в месяце
-			this.monthInfo.workDays =
-        this.monthInfo.daysInMonth - this.monthInfo.weekDays; //Колличество рабочих дней
+			this.monthInfo.workDays = this.monthInfo.daysInMonth - this.monthInfo.weekDays; //Колличество рабочих дней
 		},
 
 		toFloat(number) {
@@ -1644,14 +1614,27 @@ export default {
 </script>
 
 <style lang="scss">
-
 .check_list_mon{
-  color: #999999;
-  border: 1px solid #e8e8e8
+	color: #999999;
+	border: 1px solid #e8e8e8
 }
 .isActiveCheck{
-  background-color: white;
-  color: rgb(24 144 255);
-  border: 1px solid #e8e8e8
+	background-color: white;
+	color: rgb(24 144 255);
+	border: 1px solid #e8e8e8
+}
+.quality-page.quality-page .table-container .custom-table-quality th,
+.quality-page.quality-page .table-container .custom-table-quality td{
+	min-width: 3rem;
+	padding: 0 !important;
+	vertical-align: middle;
+	input::-webkit-outer-spin-button,
+	input::-webkit-inner-spin-button {
+		-webkit-appearance: none;
+		margin: 0;
+	}
+	input[type=number] {
+		-moz-appearance: textfield;
+	}
 }
 </style>

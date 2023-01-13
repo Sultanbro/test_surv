@@ -112,7 +112,7 @@
           >{{ $lang(lang, 'footer-conf') }}</a>
         </div>
         <div class="jFooter-copy">
-          <p>{{ '© ' + year + ' ' + $lang(lang, 'footer-copy') }}</p>
+          <p class="jFooter-copy-right">{{ '© ' + year + ' ' + $lang(lang, 'footer-copy') }}</p>
         </div>
       </div>
     </div>
@@ -181,6 +181,10 @@ export default {
     flex-direction: column;
     align-items: center;
     padding-top: 1rem;
+  }
+
+  .jFooter-copy-right {
+    text-align: center;
   }
 }
 
