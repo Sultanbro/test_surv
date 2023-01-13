@@ -87,6 +87,12 @@
                       v-if="isUserMenuActive"
                       class="jNav-menu-user-menu"
                   >
+                    <a
+                      v-for="cabinet in laravel.cabinets"
+                      :key="cabinet.tenant_id"
+                      :href="cabinet.tenant_id + '.' + hostname + '/'"
+                      class="jNav-menu-user-menu-item"
+                    >cabinet.tenant_id</a>
                     <form
                         ref="formLogout"
                         action="/logout"
