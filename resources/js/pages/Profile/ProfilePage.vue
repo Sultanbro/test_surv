@@ -13,7 +13,7 @@
             ref="intro"
             :class="{ _active: anim.intro }"
         />
-        <!-- <new-intro-smart-table></new-intro-smart-table> -->
+        <!-- <new-intro-smart-table/> -->
     </div>
     <MobileProfileSidebar
         v-show="isProfileVisible"

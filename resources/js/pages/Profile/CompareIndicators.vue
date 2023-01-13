@@ -1,7 +1,7 @@
 <template>
 <div
     id="index"
-    class="index block _anim _anim-no-hide content"
+    class="index block _anim _anim-no-hide"
     :class="{
         'hidden': items.length == 0,
         'v-loading': loading
