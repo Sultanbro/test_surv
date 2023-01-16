@@ -532,7 +532,7 @@ class AnalyticStat extends Model
 
         $total = 0;
 
-        $all_stats = self::where('row_id', $row_id)->where('date', $date)->get();
+        $all_stats = self::where('row_id', $row_id)->where('column_id', 8113)->where('date', $date)->get();
         dd($all_stats);
         foreach ($columns as $key => $column) {
             $stat = $all_stats->where('column_id', $column->id)->first();
