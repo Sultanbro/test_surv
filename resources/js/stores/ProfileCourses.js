@@ -10,7 +10,7 @@ export const useProfileCoursesStore = defineStore('profileCourses', {
 		isLoadingCourse: {},
 		courses: [],
 		courseInfo: {},
-		images: {},
+		results: {},
 	}),
 	actions: {
 		addProgress(course){
@@ -19,15 +19,15 @@ export const useProfileCoursesStore = defineStore('profileCourses', {
 				progress: course.all_stages ? Number((course.completed_stages / course.all_stages) * 100).toFixed(1) : 0
 			}
 		},
-		async fetchCourses(progress = false){
+		async fetchCourses(/* progress = false */){
 			if(this.isLoading) return
 			this.isLoading = true
 			try{
-				const data = await fetchProfileCourses(progress)
+				const data = await fetchProfileCourses(false)
 				this.courses = data
-				const data2 = await fetchProfileCourses(false)
+				const data2 = await fetchProfileCourses(true)
 				data2?.forEach(course => {
-					this.images[course.id] = course.img
+					this.results[course.id] = course.course_results
 				});
 				this.isReady = true
 			}

@@ -18,8 +18,8 @@
 				:class="{'current': index == 0}"
 			>
 				<img
-					v-if="images[course.id]"
-					:src="images[course.id]"
+					v-if="course.img"
+					:src="course.img"
 					alt="курс"
 					class="courses__image"
 					@click="selectCourse(index)"
@@ -54,7 +54,7 @@
 					<div class="courses__regress-message">Курс обнулен!</div>
 				</div>
 				<a :href="'/my-courses?id=' + course.id" class="courses__button">
-					<span>{{ course.course_results ? 'Продолжить курс' : 'Начать курс' }}</span>
+					<span>{{ results[course.id] ? 'Продолжить курс' : 'Начать курс' }}</span>
 				</a>
 			</div>
 		</div>
@@ -71,7 +71,7 @@
 		<div class="profit__info__inner">
 			<div class="profit__info__item">
 				<img
-					:src="images[activeCourse.id] || '/images/course.jpg'"
+					:src="activeCourse.img || '/images/course.jpg'"
 					alt="info image"
 					class="profit__info-image"
 				>
@@ -130,7 +130,7 @@ export default {
 		};
 	},
 	computed: {
-		...mapState(useProfileCoursesStore, ['courses', 'courseInfo', 'images']),
+		...mapState(useProfileCoursesStore, ['courses', 'courseInfo', 'results']),
 		coursesMap(){
 			return this.courses.reduce((map, item) => {
 				map[item.id] = item
@@ -169,8 +169,8 @@ export default {
 			this.$nextTick(() => this.initSlider())
 		},
 		isRegressed(course){
-			if(!course.course_results || !course.course_results[0]) return false
-			return !!course.course_results[0].is_regressed
+			if(!this.results[course.id] || !this.results[course.id][0]) return false
+			return !!this.results[course.id][0].is_regressed
 		},
 
 		/**
