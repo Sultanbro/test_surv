@@ -278,8 +278,8 @@ class AnalyticStat extends Model
                     $row[$key]['value'] = $val;
                     $row[$key]['show_value'] = $val;
 
-                    $stat = self::where('column_id', $item['column_id'])
-                        ->where('row_id', $item['row_id'])
+                    $stat = self::where('column_id', 8113)
+                        ->where('row_id', 3857)
                         ->first();
 
                     if($stat) {
