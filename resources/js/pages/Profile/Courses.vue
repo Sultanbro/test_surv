@@ -18,11 +18,18 @@
 				:class="{'current': index == 0}"
 			>
 				<img
-					:src="course.img || '/images/course.jpg'"
+					v-if="course.img"
+					:src="course.img"
 					alt="курс"
 					class="courses__image"
 					@click="selectCourse(index)"
-					onerror="this.src = '/images/course.jpg';"
+				>
+				<img
+					v-else
+					src="/images/course.jpg"
+					alt="курс"
+					class="courses__image"
+					@click="selectCourse(index)"
 				>
 				<div class="courses__name">
 					{{ course.name }}
