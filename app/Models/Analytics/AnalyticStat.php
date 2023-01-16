@@ -538,8 +538,8 @@ class AnalyticStat extends Model
             if($stat) {
                 $total += (float)$stat->show_value;
             }
+            dd($total);
         }
-        dd($total);
         return $total;
     }
 
