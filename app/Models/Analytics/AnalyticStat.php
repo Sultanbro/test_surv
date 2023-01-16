@@ -523,7 +523,6 @@ class AnalyticStat extends Model
     }
 
     public static function daysSum($date, $row_id, $group_id, $days = []) {
-        $row_id = 3857;
         if(count($days) == 0) {
             $days = [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31];
         }
@@ -533,9 +532,10 @@ class AnalyticStat extends Model
         $total = 0;
 
         $all_stats = self::where('row_id', $row_id)->where('date', $date)->get();
+        dd($all_stats);
         foreach ($columns as $key => $column) {
             $stat = $all_stats->where('column_id', $column->id)->first();
-            dd($stat);
+
             if($stat) {
                 $total += (float)$stat->show_value;
             }
