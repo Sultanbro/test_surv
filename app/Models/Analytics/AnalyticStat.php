@@ -536,11 +536,10 @@ class AnalyticStat extends Model
         foreach ($columns as $key => $column) {
             $stat = $all_stats->where('column_id', 8113)->first();
             if($stat) {
-                dd((float)$stat->show_value);
                 $total += (float)$stat->show_value;
             }
         }
-
+        dd($total);
         return $total;
     }
 
