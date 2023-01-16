@@ -170,7 +170,7 @@ class AnalyticStat extends Model
                     }
 
                     if($stat->type == 'sum'){
-                        $val =  self::daysSum($date, $row->id, $group_id);
+                        $val =  self::daysSum($date, 3857, $group_id);
                         $val = round($val, 1);
                         $stat->show_value = $val;
                         $stat->save();
@@ -532,13 +532,13 @@ class AnalyticStat extends Model
 
         $total = 0;
 
-        $all_stats = self::where('row_id', 3857)->where('date', $date)->get();
+        $all_stats = self::where('row_id', $row_id)->where('date', $date)->get();
         foreach ($columns as $key => $column) {
-            $stat = $all_stats->where('column_id', 8113)->first();
-            if($stat) {
+            $stat = $all_stats->where('column_id', $column->id)->first();
+
+            if($stat and is_numeric($stat->show_value)) {
                 $total += (float)$stat->show_value;
             }
-            dd($total);
         }
 
         return $total;
