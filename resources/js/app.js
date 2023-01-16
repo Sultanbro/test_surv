@@ -30,6 +30,10 @@ import VueCircle from 'vue2-circle-progress'
 import axios from 'axios'
 import VueAxios from 'vue-axios'
 
+import { createPinia, PiniaVuePlugin } from 'pinia'
+Vue.use(PiniaVuePlugin)
+const pinia = createPinia()
+
 import VueRouter from 'vue-router'
 import router from '@/router'
 Vue.use(VueRouter)
@@ -191,8 +195,6 @@ Vue.component('profile-salary-info', require('./pages/ProfileSalaryInfo.vue').de
 Vue.component('left-sidebar', require('./pages/Layouts/LeftSidebar.vue').default);
 Vue.component('right-sidebar', require('./pages/Layouts/RightSidebar.vue').default);
 Vue.component('profile-sidebar', require('./pages/Layouts/ProfileSidebar.vue').default);
-Vue.component('profile-info', require('./pages/Widgets/ProfileInfo.vue').default);
-Vue.component('start-day-btn', require('./pages/Widgets/StartDayBtn.vue').default);
 Vue.component('sidebars', require('./pages/Layouts/Sidebars.vue').default);
 
 Vue.component('popup-checklist', require('./pages/Layouts/CheckListPopup.vue').default);
@@ -240,6 +242,7 @@ import App from '@/App.vue'
 // eslint-disable-next-line no-unused-vars
 const app = new Vue({
 	// el: '.right-panel-app'
+	pinia,
 	router,
 	render: h => h(App)
 }).$mount('.right-panel-app')

@@ -1,133 +1,136 @@
 <template>
 <div
-    id="courses__anchor"
-    class="courses__wrapper block _anim _anim-no-hide mt-4"
-    :class="{
-        'hidden': data.length === 0,
-        '_active': data.length,
-        'v-loading': loading
-    }"
+	id="courses__anchor"
+	class="courses__wrapper block _anim _anim-no-hide mt-4"
+	:class="{'hidden': courses.length === 0}"
 >
-    <div class="courses__content" :class="{'hidden': activeCourse !== null}">
-        <div class="courses__title">
-            Ваши курсы
-        </div>
-        <div class="courses__content__wrapper">
-            <div class="courses__item"
-                v-for="(course, index) in unfinished"
-                :key="index"
-                :class="{'current': index == 0}"
-            >
-                <img
-                    v-if="course.img !== null && course.img !== ''"
-                    :src="course.img"
-                    alt="курс"
-                    class="courses__image"
-                    @click="selectCourse(index)"
-                    onerror="this.src = '/images/course.jpg';"
-                >
-                <img
-                    v-else src="/images/dist/courses-image.png"
-                    alt=""
-                    class="courses__image"
-                    @click="selectCourse(index)"
-                    onerror="this.src = '/images/course.jpg';"
-                >
+	<div
+		class="courses__content"
+		:class="{'hidden': activeCourse !== null}"
+	>
+		<div class="courses__title">
+			Ваши курсы
+		</div>
+		<div class="courses__content__wrapper">
+			<div class="courses__item"
+				v-for="(course, index) in unfinished"
+				:key="index"
+				:class="{'current': index == 0}"
+			>
+				<img
+					v-if="course.img"
+					:src="course.img"
+					alt="курс"
+					class="courses__image"
+					@click="selectCourse(index)"
+				>
+				<img
+					v-else
+					src="/images/course.jpg"
+					alt="курс"
+					class="courses__image"
+					@click="selectCourse(index)"
+				>
+				<div class="courses__name">
+					{{ course.name }}
+				</div>
+				<div class="courses__progress">
+					<div
+						v-if="courseInfo[course.id]"
+						class="courses__line"
+						:style="`width: ${courseInfo[course.id].progress}%`"
+					/>
+				</div>
+				<!-- Линия зависит от процентов в span-->
+				<div class="courses__percent">
+					<template v-if="courseInfo[course.id]">
+						Пройдено: <span>{{ courseInfo[course.id].progress }}%</span>
+					</template>
+					<template v-else>
+						&nbsp;
+					</template>
+				</div>
+				<div class="courses__regress" v-if="isRegressed(course)">
+					<div class="courses__regress-message">Курс обнулен!</div>
+				</div>
+				<a :href="'/my-courses?id=' + course.id" class="courses__button">
+					<span>{{ course.course_results ? 'Продолжить курс' : 'Начать курс' }}</span>
+				</a>
+			</div>
+		</div>
+	</div>
 
-                <div class="courses__name">
-                    {{ course.name }}
-                </div>
-                <div class="courses__progress">
-                    <div
-                        v-if="coursesMap[course.id]"
-                        class="courses__line"
-                        :style="`width: ${getResults(course.id).progress}%`"
-                    ></div>
-                </div>
-                <!-- Линия зависит от процентов в span-->
-                <div class="courses__percent">
-                    <template v-if="coursesMap[course.id]">
-                        Пройдено: <span>{{ getResults(course.id).progress }}%</span>
-                    </template>
-                    <template v-else>
-                        &nbsp;
-                    </template>
-                </div>
-                <div class="courses__regress" v-if="getResults(course.id).is_regressed">
-                    <div class="courses__regress-message">Курс обнулен!</div>
-                </div>
-                <a :href="'/my-courses?id=' + course.id" class="courses__button">
-                    <span>{{ coursesMap[course.id] ? 'Продолжить курс' : 'Начать курс' }}</span>
-                </a>
-            </div>
-        </div>
-    </div>
+	<div class="profit__info active" v-if="activeCourse !== null">
+		<div class="profit__info-title" >
+			Информация о курсе: {{ activeCourse.name }}
+		</div>
+		<div class="profit__info-back" @click="back">
+			Назад
+		</div>
+		<div class="profit__info-back-mobile"></div>
+		<div class="profit__info__inner">
+			<div class="profit__info__item">
+				<img
+					:src="activeCourse.img || '/images/course.jpg'"
+					alt="info image"
+					class="profit__info-image"
+				>
+				<div class="profit__info-about">
+					<div class="profit__info-text" v-html="activeCourse.text"/>
+					<div class="profit__info-text mobile" v-html="activeCourse.text"/>
+					<div class="profit__info__wrapper">
 
-    <div class="profit__info active" v-if="activeCourse !== null">
-        <div class="profit__info-title" >
-            Информация о курсе: {{ activeCourse.name }}
-        </div>
-        <div class="profit__info-back" @click="back">
-            Назад
-        </div>
-        <div class="profit__info-back-mobile"></div>
-        <div class="profit__info__inner">
-            <div class="profit__info__item">
-                <img v-if="activeCourse.img !== null && activeCourse.img !== ''" :src="activeCourse.img" alt="info image" class="profit__info-image">
-                <img v-else src="/images/dist/courses-image.png" alt="info image" class="profit__info-image">
-
-                <div class="profit__info-about">
-                    <div class="profit__info-text" v-html="activeCourse.text"></div>
-                    <div class="profit__info-text mobile" v-html="activeCourse.text"></div>
-                    <div class="profit__info__wrapper">
-
-                        <template v-if="items[activeCourse.id]">
-                            <div
-                                v-for="(item, index) in items[activeCourse.id]"
-                                :key="index"
-                                class="info__wrapper-item"
-                                :class="{'done': item.status == 1}"
-                            >
-                                <a :href="`/my-courses?id=${activeCourse.id}`" class="info__item-box">
-                                    <i
-                                        class="info__item-icon"
-                                        :class="{
-                                            'icon-ci-book': item.item_model == 'App\\Models\\Books\\Book',
-                                            'icon-ci-play': item.item_model == 'App\\Models\\Videos\\VideoPlaylist',
-                                            'icon-ci-database': item.item_model == 'App\\KnowBase',
-                                        }"
-                                    />
-                                    <p class="info__item-stages">{{ item.completed_stages }} / {{ item.all_stages }}</p>
-                                </a>
-                                <div class="info__item-value">{{ itemProgress(item) }}%</div>
-                                <div class="info__item-value" v-if="item.item_model == 'App\\Models\\Books\\Book'">Книга</div>
-                                <div class="info__item-value" v-if="item.item_model == 'App\\Models\\Videos\\VideoPlaylist'">Видеоплейлист</div>
-                                <div class="info__item-value" v-if="item.item_model == 'App\\KnowBase'">База знаний</div>
-                                <div class="info__item-value">{{ item.title }}</div>
-                            </div>
-                        </template>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
+						<template v-if="courseInfo[activeCourse.id] && courseInfo[activeCourse.id].items">
+							<div
+								v-for="(item, index) in courseInfo[activeCourse.id].items"
+								:key="index"
+								class="info__wrapper-item"
+								:class="{'done': item.status == 1}"
+							>
+								<a :href="`/my-courses?id=${activeCourse.id}`" class="info__item-box">
+									<i
+										class="info__item-icon"
+										:class="[modelIcon[item.item_model]]"
+									/>
+									<p class="info__item-stages">{{ item.completed_stages }} / {{ item.all_stages }}</p>
+								</a>
+								<div class="info__item-value">{{ itemProgress(item) }}%</div>
+								<div class="info__item-value">{{ modelName[item.item_model] }}</div>
+								<div class="info__item-value">{{ item.title }}</div>
+							</div>
+						</template>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
 </div>
 </template>
 
 <script>
+import { mapState, mapActions } from 'pinia'
+import { useProfileCoursesStore } from '@/stores/ProfileCourses'
 export default {
 	name: 'ProfileCourses',
 	props: {},
 	data: function () {
 		return {
-			data: [],
-			items: {},
-			courses: [],
 			activeCourse: null,
-			loading: false
+			loading: false,
+			modelName: {
+				'App\\Models\\Books\\Book': 'Книга',
+				'App\\Models\\Videos\\VideoPlaylist': 'Видеоплейлист',
+				'App\\KnowBase': 'База знаний'
+			},
+			modelIcon: {
+				'App\\Models\\Books\\Book': 'icon-ci-book',
+				'App\\Models\\Videos\\VideoPlaylist': 'icon-ci-play',
+				'App\\KnowBase': 'icon-ci-database'
+			}
 		};
 	},
 	computed: {
+		...mapState(useProfileCoursesStore, ['courses', 'courseInfo']),
 		coursesMap(){
 			return this.courses.reduce((map, item) => {
 				map[item.id] = item
@@ -135,68 +138,61 @@ export default {
 			}, {})
 		},
 		unfinished(){
-			return this.data.reduce((list, item) => {
-				const results = this.getResults(item.id)
-				if(results && results.progress === 100) return list
-				list.push(item)
+			return this.courses.reduce((list, course) => {
+				if(!this.courseInfo[course.id]){
+					// пока неизветсно прошел курс или нет считаем что не прошел
+					list.push(course)
+					return list
+				}
+				const info = this.courseInfo[course.id]
+				if(info.progress === 100) return list
+				list.push(course)
 				return list
 			}, [])
 		}
 	},
-	created() {
-		this.fetchData()
+	watch: {
+		courses(){
+			this.initCourses()
+		}
 	},
-
+	created(){},
+	mounted(){
+		if(this.courses.length) this.initCourses()
+	},
 	methods: {
-		/**
-         * Загрузка данных
-         */
-		fetchData() {
-			this.axios.post('/profile/courses').then(response => {
-				this.data = response.data
-				this.$nextTick(() => this.initSlider())
-
-				setTimeout(() => {
-					// preload course items
-					this.data.forEach(course => {
-						this.fetchCourse(course.id)
-					})
-				}, 1000);
-			}).catch((e) => console.log(e))
-
-			this.axios.get('/my-courses/get', {}).then(response => {
-				this.courses = response.data.courses
-			}).catch((e) => console.log(e))
+		...mapActions(useProfileCoursesStore, ['fetchCourseInfo']),
+		initCourses(){
+			this.courses.forEach(course => {
+				this.fetchCourseInfo(course.id)
+			})
+			this.$nextTick(() => this.initSlider())
+		},
+		isRegressed(course){
+			if(!course.course_results || !course.course_results[0]) return false
+			return !!course.course_results[0].is_regressed
 		},
 
 		/**
-         * select active course info
-         */
+		 * select active course info
+		 */
 		selectCourse(index) {
-			this.activeCourse = this.data[index]
-		},
-
-		fetchCourse(id) {
-			this.loading = true
-
-			this.axios.get('/my-courses/get/' + id).then(response => {
-				this.items[id] = response.data.items
-				this.loading = false
-			}).catch((e) => console.log(e));
+			this.activeCourse = this.courses[index]
 		},
 
 		/**
-         * back to all courses
-         */
+		 * back to all courses
+		 */
 		back() {
 			this.activeCourse = null;
 		},
 
 		/**
-         * init slider
-         */
+		 * init slider
+		 */
 		initSlider() {
 			/* global VJQuery */
+			console.log('initSlider')
 			VJQuery('.courses__content__wrapper').slick({
 				variableWidth: false,
 				infinite: false,
@@ -282,8 +278,8 @@ export default {
 		},
 
 		/**
-         * init inner slider that opens when click concrete course
-         */
+		 * init inner slider that opens when click concrete course
+		 */
 		initInnerSlider() {
 			VJQuery('.profit__info__wrapper').slick({
 				variableWidth: false,
@@ -358,19 +354,13 @@ export default {
 		},
 
 		/**
-         * private: helper for template
-         * count progress of course item
-         */
+		 * private: helper for template
+		 * count progress of course item
+		 */
 		itemProgress(item) {
 			return item.all_stages > 0
 				? Number((item.completed_stages / item.all_stages) * 100).toFixed(1)
 				: 0;
-		},
-
-		getResults(courseId){
-			const course = this.coursesMap[courseId]
-			if(!course || !course.course_results || !course.course_results[0]) return null
-			return course.course_results[0]
 		}
 	}
 };
@@ -379,51 +369,51 @@ export default {
 <style lang="scss">
 // https://github.com/kenwheeler/slick/issues/3694
 .slick-disabled {
-    cursor: no-drop;
-    opacity: 0.5;
-    pointer-events: none;
+	cursor: no-drop;
+	opacity: 0.5;
+	pointer-events: none;
 }
 
 
-.courses__content__wrapper{}
+// .courses__content__wrapper{}
 .courses__item{
-    position: relative;
-    text-align: center;
-    box-sizing: border-box;
-    &:hover{
-        box-shadow: inset 0 0 5px #8FAF00;
-        .courses__regress{
-            display: block;
-        }
-    }
+	position: relative;
+	text-align: center;
+	box-sizing: border-box;
+	&:hover{
+		box-shadow: inset 0 0 5px #8FAF00;
+		.courses__regress{
+			display: block;
+		}
+	}
 }
 .courses__regress{
-    display: none;
-    border-radius: 2rem;
+	display: none;
+	border-radius: 2rem;
 
-    position: absolute;
-    z-index: 10;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
+	position: absolute;
+	z-index: 10;
+	top: 0;
+	left: 0;
+	right: 0;
+	bottom: 0;
 
-    background-color: rgba(0,0,0,0.25);
+	background-color: rgba(0,0,0,0.25);
 
-    pointer-events: none;
+	pointer-events: none;
 
-    &-message{
-        position: absolute;
-        top: 50%;
-        left: 50%;
+	&-message{
+		position: absolute;
+		top: 50%;
+		left: 50%;
 
-        text-align: center;
-        color: red;
-        font-size: 1.4rem;
-        font-weight: 700;
-        text-shadow: 0 -2px 1px #fff, 0 2px 1px #fff, 2px 0 1px #fff, -2px 0 1px #fff;
+		text-align: center;
+		color: red;
+		font-size: 1.4rem;
+		font-weight: 700;
+		text-shadow: 0 -2px 1px #fff, 0 2px 1px #fff, 2px 0 1px #fff, -2px 0 1px #fff;
 
-        transform: translate(-50%, -50%);
-    }
+		transform: translate(-50%, -50%);
+	}
 }
 </style>
