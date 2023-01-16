@@ -535,10 +535,10 @@ class AnalyticStat extends Model
         $all_stats = self::where('row_id', 3857)->where('date', $date)->get();
         foreach ($columns as $key => $column) {
             $stat = $all_stats->where('column_id', 8113)->first();
-            dd($stat);
             if($stat) {
                 $total += (float)$stat->show_value;
             }
+            dd($total);
         }
 
         return $total;
