@@ -271,7 +271,7 @@ class AnalyticStat extends Model
 
             foreach($row as $key => $item) {
                 if($item['type'] == 'sum'){
-                    dd($item['row_id']);
+
                     $val =  self::daysSum($date,  $item['row_id'], $group_id);
                     $val = floor($val);
 
