@@ -9,7 +9,8 @@ export const useProfileCoursesStore = defineStore('profileCourses', {
 		isLoading: false,
 		isLoadingCourse: {},
 		courses: [],
-		courseInfo: {}
+		courseInfo: {},
+		images: {},
 	}),
 	actions: {
 		addProgress(course){
@@ -24,6 +25,10 @@ export const useProfileCoursesStore = defineStore('profileCourses', {
 			try{
 				const data = await fetchProfileCourses(progress)
 				this.courses = data
+				const data2 = await fetchProfileCourses(false)
+				data2?.forEach(course => {
+					this.images[course.id] = course.img
+				});
 				this.isReady = true
 			}
 			catch(error){
