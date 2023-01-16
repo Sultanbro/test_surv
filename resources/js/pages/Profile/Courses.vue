@@ -18,8 +18,8 @@
 				:class="{'current': index == 0}"
 			>
 				<img
-					v-if="course.img"
-					:src="course.img"
+					v-if="images[course.id]"
+					:src="images[course.id]"
 					alt="курс"
 					class="courses__image"
 					@click="selectCourse(index)"
@@ -71,7 +71,7 @@
 		<div class="profit__info__inner">
 			<div class="profit__info__item">
 				<img
-					:src="activeCourse.img || '/images/course.jpg'"
+					:src="images[activeCourse.id] || '/images/course.jpg'"
 					alt="info image"
 					class="profit__info-image"
 				>
@@ -130,7 +130,7 @@ export default {
 		};
 	},
 	computed: {
-		...mapState(useProfileCoursesStore, ['courses', 'courseInfo']),
+		...mapState(useProfileCoursesStore, ['courses', 'courseInfo', 'images']),
 		coursesMap(){
 			return this.courses.reduce((map, item) => {
 				map[item.id] = item
