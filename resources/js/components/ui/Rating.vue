@@ -1,20 +1,32 @@
 <template>
-  <div class="rating" :class="{
-                'red': Number(grade) < 7,
-                'yellow': Number(grade) < 8 && Number(grade) >= 7,
-                'green': Number(grade) >= 8,
-              }">
-    <ul class="list">
-      <li @click="rate(star)" v-for="star in maxStars" :class="{ 'active': star <= stars }" :key="star.stars" class="star">
-      <i :class="star <= stars ? 'fa fa-star' : 'fa fa-star-o'"></i>
-      </li>
-    </ul>
-    <div v-if="hasCounter" class="info counter">
-      <span class="score-rating">{{ stars }}</span>
-      <span class="divider">/</span>
-      <span class="score-max">{{ maxStars }}</span>
-    </div>
-  </div>
+	<div
+		class="rating"
+		:class="{
+			'red': Number(grade) < 7,
+			'yellow': Number(grade) < 8 && Number(grade) >= 7,
+			'green': Number(grade) >= 8,
+		}"
+	>
+		<ul class="list">
+			<li
+				@click="rate(star)"
+				v-for="star in maxStars"
+				:class="{ 'active': star <= stars }"
+				:key="star.stars"
+				class="star"
+			>
+				<i :class="star <= stars ? 'fa fa-star' : 'fa fa-star-o'" />
+			</li>
+		</ul>
+		<div
+			v-if="hasCounter"
+			class="info counter"
+		>
+			<span class="score-rating">{{ stars }}</span>
+			<span class="divider">/</span>
+			<span class="score-max">{{ maxStars }}</span>
+		</div>
+	</div>
 </template>
 <script>
 export default {

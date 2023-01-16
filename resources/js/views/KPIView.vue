@@ -27,15 +27,15 @@ export default {
 </script>
 
 <template>
-    <DefaultLayout>
-        <div class="old__content">
-            <KpiPages
-                v-if="access"
-                :page="page"
-                :access="access"
-            />
-        </div>
-    </DefaultLayout>
+	<DefaultLayout>
+		<div class="old__content">
+			<KpiPages
+				v-if="access"
+				:page="page"
+				:access="access"
+			/>
+		</div>
+	</DefaultLayout>
 </template>
 
 <style scoped>

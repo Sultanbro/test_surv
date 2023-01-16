@@ -1,34 +1,47 @@
 <template>
-  <ul class="dragArea">
-    <li
-        v-for="el in tasks"
-          class="chapter opened"
-          :class="{
-            'pass' : el.item_model !== null,
-            'active': active == el.id,
-            'disabled' : el.item_model === null && first_active != el.id
-          }"
-          :id="el.id"
-          :key="el.id">
-        <div class="d-flex titles">
-          <div class="handles d-flex aic" >
-            <div>
-              <i class="fa fa-check pointer" v-if="el.item_model != null"></i>
-              <i class="fa fa-arrow-right pointer" v-else-if="first_active == el.id"></i>
-              <i class="fa fa-lock pointer" v-else></i>
-            </div>
-          </div>
-          <p class="mb-0" @click="showPage(el.id)">
-            {{ el.title }}
-          </p>
-        </div>
-        <NestedCourse
-          :tasks="el.children"
-          @showPage="showPage"
-          :active="active"
-        />
-    </li>
-  </ul>
+	<ul class="dragArea">
+		<li
+			v-for="el in tasks"
+			class="chapter opened"
+			:class="{
+				'pass' : el.item_model !== null,
+				'active': active == el.id,
+				'disabled' : el.item_model === null && first_active != el.id
+			}"
+			:id="el.id"
+			:key="el.id"
+		>
+			<div class="d-flex titles">
+				<div class="handles d-flex aic">
+					<div>
+						<i
+							class="fa fa-check pointer"
+							v-if="el.item_model != null"
+						/>
+						<i
+							class="fa fa-arrow-right pointer"
+							v-else-if="first_active == el.id"
+						/>
+						<i
+							class="fa fa-lock pointer"
+							v-else
+						/>
+					</div>
+				</div>
+				<p
+					class="mb-0"
+					@click="showPage(el.id)"
+				>
+					{{ el.title }}
+				</p>
+			</div>
+			<NestedCourse
+				:tasks="el.children"
+				@showPage="showPage"
+				:active="active"
+			/>
+		</li>
+	</ul>
 </template>
 <script>
 const NestedCourse = {

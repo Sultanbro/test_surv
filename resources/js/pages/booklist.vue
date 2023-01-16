@@ -1,452 +1,530 @@
 <template>
-  <div class="d-flex">
-    <aside id="left-panel" class="lp">
-      <div class="btn btn-search mb-3" @click="showSearch = true" v-if="!course_page">
-        <i class="fa fa-search"></i>
-        <span>Искать в базе...</span>
-      </div>
-      <div class="btn btn-grey mb-3" @click="$emit('back')"  v-if="!course_page">
-        <i class="fa fa-arrow-left"></i>
-        <span>Вернуться к разделам</span>
-      </div>
+	<div class="d-flex">
+		<aside
+			id="left-panel"
+			class="lp"
+		>
+			<div
+				class="btn btn-search mb-3"
+				@click="showSearch = true"
+				v-if="!course_page"
+			>
+				<i class="fa fa-search" />
+				<span>Искать в базе...</span>
+			</div>
+			<div
+				class="btn btn-grey mb-3"
+				@click="$emit('back')"
+				v-if="!course_page"
+			>
+				<i class="fa fa-arrow-left" />
+				<span>Вернуться к разделам</span>
+			</div>
 
-      <div class="kb-wrap noscrollbar">
+			<div class="kb-wrap noscrollbar">
+				<div
+					class="chapter opened mb-3"
+					v-if="!course_page"
+				>
+					<div class="d-flex">
+						<span class="font-16 font-bold">{{ parent_title }}</span>
+						<div class="chapter-btns">
+							<i
+								class="fa fa-plus"
+								v-if="mode =='edit'"
+								@click="addPageToTree"
+							/>
+						</div>
+					</div>
+				</div>
 
-        <div class="chapter opened mb-3" v-if="!course_page">
-          <div class="d-flex">
-            <span class="font-16 font-bold">{{ parent_title }}</span>
-            <div class="chapter-btns">
-              <i class="fa fa-plus" v-if="mode =='edit'" @click="addPageToTree"></i>
-            </div>
-          </div>
-        </div>
+				<NestedCourse
+					v-if="course_page"
+					:tasks="tree"
+					:active="activesbook != null ? activesbook.id : 0"
+					@showPage="showPage"
+				/>
 
-        <NestedCourse
-          v-if="course_page"
-          :tasks="tree"
-          :active="activesbook != null ? activesbook.id : 0"
-          @showPage="showPage"
-        />
-
-        <NestedDraggable
-          v-else
-          :tasks="tree"
-          :mode="mode"
-          :auth_user_id="auth_user_id"
-          :opened="true"
-          @showPage="showPage"
-          @addPage="addPage"
-          :parent_id="id"
-        />
-      </div>
-
-    </aside>
-    <!-- /#left-panel -->
-
-
-    <!-- Right Panel -->
-
-    <div class="rp" style="flex: 1;padding-bottom: 0px;flex: 1 1 0%;height: 100vh;overflow-y: auto;">
-      <div class="hat"  >
-        <div class="d-flex jsutify-content-between hat-top" v-if="!course_page">
-          <div class="bc">
-            <a href="#" @click="$emit('back')">База знаний</a>
-            <template v-for="(bc, bc_index) in breadcrumbs">
-              <i class="fa fa-chevron-right" :key="bc_index"/>
-              <a href="#" @click="showPage(bc.id)" :key="'a' + bc_index">{{ bc.title }}</a>
-            </template>
-          </div>
-
-          <div class="mode_changer" v-if="can_edit">
-            <i class="fa fa-edit"
-              @click="$emit('toggleMode')"
-              :class="{'active': mode == 'edit'}" />
-          </div>
-
-          <div class="control-btns" v-if="can_edit">
+				<NestedDraggable
+					v-else
+					:tasks="tree"
+					:mode="mode"
+					:auth_user_id="auth_user_id"
+					:opened="true"
+					@showPage="showPage"
+					@addPage="addPage"
+					:parent_id="id"
+				/>
+			</div>
+		</aside>
+		<!-- /#left-panel -->
 
 
+		<!-- Right Panel -->
 
-            <div class="d-flex justify-content-end" :asd="auth_user_id" v-if="activesbook != null">
-              <input
-                type="text"
-                :ref="'mylink' + activesbook.id"
-                class="hider"
-              />
+		<div
+			class="rp"
+			style="flex: 1;padding-bottom: 0px;flex: 1 1 0%;height: 100vh;overflow-y: auto;"
+		>
+			<div class="hat">
+				<div
+					class="d-flex jsutify-content-between hat-top"
+					v-if="!course_page"
+				>
+					<div class="bc">
+						<a
+							href="#"
+							@click="$emit('back')"
+						>База знаний</a>
+						<template v-for="(bc, bc_index) in breadcrumbs">
+							<i
+								class="fa fa-chevron-right"
+								:key="bc_index"
+							/>
+							<a
+								href="#"
+								@click="showPage(bc.id)"
+								:key="'a' + bc_index"
+							>{{ bc.title }}</a>
+						</template>
+					</div>
 
-            <button
-                v-if="activesbook != null && activesbook.parent_id == null"
-                class="form-control btn-action btn-medium ml-2"
-                @click="showPermissionModal = true"
-              >
-                <i class="fa fa-cogs"></i>
-            </button>
+					<div
+						class="mode_changer"
+						v-if="can_edit"
+					>
+						<i
+							class="fa fa-edit"
+							@click="$emit('toggleMode')"
+							:class="{'active': mode == 'edit'}"
+						/>
+					</div>
 
-            <template v-if="edit_actives_book">
-              <button
-                class="form-control btn-action btn-medium ml-2"
-                @click="showImageModal = true"
-              >
-                <i class="far fa-image"></i>
-              </button>
+					<div
+						class="control-btns"
+						v-if="can_edit"
+					>
+						<div
+							class="d-flex justify-content-end"
+							:asd="auth_user_id"
+							v-if="activesbook != null"
+						>
+							<input
+								type="text"
+								:ref="'mylink' + activesbook.id"
+								class="hider"
+							>
 
-              <button
-                class="form-control btn-action btn-medium ml-2"
-                @click="showAudioModal = true"
-              >
-                <i class="fas fa-volume-up"></i>
-              </button>
+							<button
+								v-if="activesbook != null && activesbook.parent_id == null"
+								class="form-control btn-action btn-medium ml-2"
+								@click="showPermissionModal = true"
+							>
+								<i class="fa fa-cogs" />
+							</button>
 
-              <button
-                class="form-control btn-delete btn-medium ml-2"
-                @click="deletePage"
-              >
-                Удалить
-              </button>
+							<template v-if="edit_actives_book">
+								<button
+									class="form-control btn-action btn-medium ml-2"
+									@click="showImageModal = true"
+								>
+									<i class="far fa-image" />
+								</button>
 
-              <button
-                class="form-control btn-save btn-medium ml-2"
-                @click="saveServer"
-              >
-                Сохранить
-              </button>
-            </template>
+								<button
+									class="form-control btn-action btn-medium ml-2"
+									@click="showAudioModal = true"
+								>
+									<i class="fas fa-volume-up" />
+								</button>
 
-            <template v-else>
+								<button
+									class="form-control btn-delete btn-medium ml-2"
+									@click="deletePage"
+								>
+									Удалить
+								</button>
 
-              <button
-                class="form-control btn-action btn-medium ml-2"
-                title="Поделиться ссылкой"
-                @click="copyLink(activesbook)"
-              >
-                <i class="fa fa-clone"></i>
-              </button>
+								<button
+									class="form-control btn-save btn-medium ml-2"
+									@click="saveServer"
+								>
+									Сохранить
+								</button>
+							</template>
 
-              <button
-                v-if="mode == 'edit'"
-                class="form-control btn-danger btn-medium ml-2"
-                @click="deletePage"
-              >
-                  <i class="fa fa-trash"></i>
-              </button>
+							<template v-else>
+								<button
+									class="form-control btn-action btn-medium ml-2"
+									title="Поделиться ссылкой"
+									@click="copyLink(activesbook)"
+								>
+									<i class="fa fa-clone" />
+								</button>
 
-              <button
-                v-if="mode == 'edit'"
-                class="form-control btn-save btn-medium ml-2"
-                @click="edit_actives_book = true"
-              >
-                Редактировать
-              </button>
+								<button
+									v-if="mode == 'edit'"
+									class="form-control btn-danger btn-medium ml-2"
+									@click="deletePage"
+								>
+									<i class="fa fa-trash" />
+								</button>
 
+								<button
+									v-if="mode == 'edit'"
+									class="form-control btn-save btn-medium ml-2"
+									@click="edit_actives_book = true"
+								>
+									Редактировать
+								</button>
+							</template>
+						</div>
+					</div>
+				</div>
 
-            </template>
+				<div>
+					<template v-if="activesbook != null">
+						<input
+							type="text"
+							class="article_title px-4 py-3"
+							v-model="activesbook.title"
+						>
+					</template>
+				</div>
+			</div>
 
-            </div>
-          </div>
-        </div>
-
-        <div>
-          <template v-if="activesbook != null">
-            <input
-              type="text"
-              class="article_title px-4 py-3"
-              v-model="activesbook.title"
-            />
-          </template>
-        </div>
-      </div>
-
-      <div class="content mt-3">
-        <template v-if="activesbook != null && edit_actives_book">
-          <Editor
-            @onKeyUp="editorSave"
-            @onChange="editorSave"
-            v-model="activesbook.text"
-            api-key="mve9w0n1tjerlwenki27p4wjid4oqux1xp0yu0zmapbnaafd"
-            :init="{
-              images_upload_url: '/upload/images/',
-              automatic_uploads: true,
-              height: editorHeight,
-              setup: function (editor) {
-                editor.on('init change', function () {
-                    editor.uploadImages();
-                });
-              },
-              images_upload_handler: submit_tinymce,
-              //paste_data_images: false,
-              resize: true,
-              autosave_ask_before_unload: true,
-              powerpaste_allow_local_images: true,
-              browser_spellcheck: true,
-              contextmenu: true,
-              spellchecker_whitelist: ['Ephox', 'Moxiecode'],
-              language: 'ru',
-              convert_urls: false,
-              relative_urls: false,
-              language_url: '/static/langs/ru.js',
-              content_css: '/static/css/mycontent.css',
-              fontsize_formats:
-                '8pt 10pt 12pt 13pt 14pt 15pt 16pt 17pt 18pt 20pt 22pt 24pt 26pt 28pt 30pt 36pt',
-              lineheight_formats:
-                '8pt 9pt 10pt 11pt 12pt 14pt 16pt 18pt 20pt 22pt 24pt 26pt 36pt',
-              plugins: [
-                ' advlist anchor autolink codesample colorpicker fullscreen help image imagetools ',
-                ' lists link media noneditable  preview',
-                ' searchreplace table template textcolor  visualblocks wordcount ',
-              ],
-              menubar: false, //'file edit view insert format tools table help',
-              toolbar:
-                'styleselect  | bold italic underline strikethrough | table | fontselect fontsizeselect formatselect | alignleft aligncenter alignright alignjustify | outdent indent |  numlist bullist | forecolor backcolor removeformat | fullscreen  preview |  media  link | undo redo',
-              toolbar_sticky: true,
-              content_style:
-                '.lineheight20px { line-height: 20px; }' +
-                '.lineheight22px { line-height: 22px; }' +
-                '.lineheight24px { line-height: 24px; }' +
-                '.lineheight26px { line-height: 26px; }' +
-                '.lineheight28px { line-height: 28px; }' +
-                '.lineheight30px { line-height: 30px; }' +
-                '.lineheight32px { line-height: 32px; }' +
-                '.lineheight34px { line-height: 34px; }' +
-                '.lineheight36px { line-height: 36px; }' +
-                '.lineheight38px { line-height: 38px; }' +
-                '.lineheight40px { line-height: 40px; }' +
-                'body { padding: 20px;max-width: 960px;margin: 0 auto; }' +
-                '.tablerow1 { background-color: #D3D3D3; }',
-                formats: {
-                lineheight20px: {
-                  selector:
-                    'span,p,h1,h2,h3,h4,h5,h6,td,th,div,ul,ol,li,table,img',
-                  classes: 'lineheight20px',
-                },
-                lineheight22px: {
-                  selector:
-                    'span,p,h1,h2,h3,h4,h5,h6,td,th,div,ul,ol,li,table,img',
-                  classes: 'lineheight22px',
-                },
-                lineheight24px: {
-                  selector:
-                    'span,p,h1,h2,h3,h4,h5,h6,td,th,div,ul,ol,li,table,img',
-                  classes: 'lineheight24px',
-                },
-                lineheight26px: {
-                  selector:
-                    'span,p,h1,h2,h3,h4,h5,h6,td,th,div,ul,ol,li,table,img',
-                  classes: 'lineheight26px',
-                },
-                lineheight28px: {
-                  selector:
-                    'span,p,h1,h2,h3,h4,h5,h6,td,th,div,ul,ol,li,table,img',
-                  classes: 'lineheight20px',
-                },
-                lineheight30px: {
-                  selector:
-                    'span,p,h1,h2,h3,h4,h5,h6,td,th,div,ul,ol,li,table,img',
-                  classes: 'lineheight30px',
-                },
-                lineheight32px: {
-                  selector:
-                    'span,p,h1,h2,h3,h4,h5,h6,td,th,div,ul,ol,li,table,img',
-                  classes: 'lineheight32px',
-                },
-                lineheight34px: {
-                  selector:
-                    'span,p,h1,h2,h3,h4,h5,h6,td,th,div,ul,ol,li,table,img',
-                  classes: 'lineheight34px',
-                },
-                lineheight36px: {
-                  selector:
-                    'span,p,h1,h2,h3,h4,h5,h6,td,th,div,ul,ol,li,table,img',
-                  classes: 'lineheight36px',
-                },
-                lineheight38px: {
-                  selector:
-                    'span,p,h1,h2,h3,h4,h5,h6,td,th,div,ul,ol,li,table,img',
-                  classes: 'lineheight38px',
-                },
-                lineheight40px: {
-                  selector:
-                    'span,p,h1,h2,h3,h4,h5,h6,td,th,div,ul,ol,li,table,img',
-                  classes: 'lineheight40px',
-                },
-              },
-              style_formats: [
-                { title: 'lineheight20px', format: 'lineheight20px' },
-                { title: 'lineheight22px', format: 'lineheight22px' },
-                { title: 'lineheight24px', format: 'lineheight24px' },
-                { title: 'lineheight26px', format: 'lineheight26px' },
-                { title: 'lineheight28px', format: 'lineheight28px' },
-                { title: 'lineheight30px', format: 'lineheight30px' },
-                { title: 'lineheight32px', format: 'lineheight32px' },
-                { title: 'lineheight34px', format: 'lineheight34px' },
-                { title: 'lineheight36px', format: 'lineheight36px' },
-                { title: 'lineheight38px', format: 'lineheight38px' },
-                { title: 'lineheight40px', format: 'lineheight40px' },
-              ],
-              content_css: [
-                '//fonts.googleapis.com/css?family=Lato:300,300i,400,400i',
-              ],
-            }"
-          />
-
-
-            <Questions
-              :course_item_id="course_item_id"
-              :questions="activesbook.questions"
-              :id="activesbook.id"
-              type="kb"
-              :mode="mode"
-              :count_points="true"
-              @passed="passed"
-              :key="questions_key"
-              :pass_grade="activesbook.pass_grade"
-              @changePassGrade="changePassGrade"
-            />
-        </template>
-
-        <template  v-if="activesbook != null && !edit_actives_book">
-          <div class="book_page">
-            <div class="author d-flex aic mb-4 justify-end">
-              <img :src="activesbook.editor_avatar" alt="avatar icon">
-              <div class="text">
-                <p class="edited"><span>Cоздано:</span> {{ activesbook.created }} {{ activesbook.author }}</p>
-                <p class="edited"><span>Изменено:</span> {{ activesbook.edited_at }} {{ activesbook.editor }}</p>
-              </div>
-            </div>
-            <div class="bp-text" v-html="activesbook.text">
-
-            </div>
-
-            <Questions
-              :questions="activesbook.questions"
-              :id="activesbook.id"
-              type="kb"
-              :mode="mode"
-              :count_points="true"
-              @passed="passed"
-              :pass="activesbook.item_model !== null"
-              :key="questions_key"
-              :pass_grade="activesbook.pass_grade"
-              @changePassGrade="changePassGrade"
-              :course_item_id="course_item_id"
-              @nextElement="nextElement"
-            />
-            <div class="pb-5"></div>
-
-
-            <button class="next-btn btn btn-primary"
-              v-if="course_page && activesbook.questions.length == 0"
-              @click="nextElement()">
-              Продолжить курс
-              <i class="fa fa-angle-double-right ml-2"></i>
-            </button>
-
-          </div>
-        </template>
-      </div>
-
-    </div>
+			<div class="content mt-3">
+				<template v-if="activesbook != null && edit_actives_book">
+					<Editor
+						@onKeyUp="editorSave"
+						@onChange="editorSave"
+						v-model="activesbook.text"
+						api-key="mve9w0n1tjerlwenki27p4wjid4oqux1xp0yu0zmapbnaafd"
+						:init="{
+							images_upload_url: '/upload/images/',
+							automatic_uploads: true,
+							height: editorHeight,
+							setup: function (editor) {
+								editor.on('init change', function () {
+									editor.uploadImages();
+								});
+							},
+							images_upload_handler: submit_tinymce,
+							//paste_data_images: false,
+							resize: true,
+							autosave_ask_before_unload: true,
+							powerpaste_allow_local_images: true,
+							browser_spellcheck: true,
+							contextmenu: true,
+							spellchecker_whitelist: ['Ephox', 'Moxiecode'],
+							language: 'ru',
+							convert_urls: false,
+							relative_urls: false,
+							language_url: '/static/langs/ru.js',
+							content_css: '/static/css/mycontent.css',
+							fontsize_formats:
+								'8pt 10pt 12pt 13pt 14pt 15pt 16pt 17pt 18pt 20pt 22pt 24pt 26pt 28pt 30pt 36pt',
+							lineheight_formats:
+								'8pt 9pt 10pt 11pt 12pt 14pt 16pt 18pt 20pt 22pt 24pt 26pt 36pt',
+							plugins: [
+								' advlist anchor autolink codesample colorpicker fullscreen help image imagetools ',
+								' lists link media noneditable  preview',
+								' searchreplace table template textcolor  visualblocks wordcount ',
+							],
+							menubar: false, //'file edit view insert format tools table help',
+							toolbar:
+								'styleselect  | bold italic underline strikethrough | table | fontselect fontsizeselect formatselect | alignleft aligncenter alignright alignjustify | outdent indent |  numlist bullist | forecolor backcolor removeformat | fullscreen  preview |  media  link | undo redo',
+							toolbar_sticky: true,
+							content_style:
+								'.lineheight20px { line-height: 20px; }' +
+								'.lineheight22px { line-height: 22px; }' +
+								'.lineheight24px { line-height: 24px; }' +
+								'.lineheight26px { line-height: 26px; }' +
+								'.lineheight28px { line-height: 28px; }' +
+								'.lineheight30px { line-height: 30px; }' +
+								'.lineheight32px { line-height: 32px; }' +
+								'.lineheight34px { line-height: 34px; }' +
+								'.lineheight36px { line-height: 36px; }' +
+								'.lineheight38px { line-height: 38px; }' +
+								'.lineheight40px { line-height: 40px; }' +
+								'body { padding: 20px;max-width: 960px;margin: 0 auto; }' +
+								'.tablerow1 { background-color: #D3D3D3; }',
+							formats: {
+								lineheight20px: {
+									selector:
+										'span,p,h1,h2,h3,h4,h5,h6,td,th,div,ul,ol,li,table,img',
+									classes: 'lineheight20px',
+								},
+								lineheight22px: {
+									selector:
+										'span,p,h1,h2,h3,h4,h5,h6,td,th,div,ul,ol,li,table,img',
+									classes: 'lineheight22px',
+								},
+								lineheight24px: {
+									selector:
+										'span,p,h1,h2,h3,h4,h5,h6,td,th,div,ul,ol,li,table,img',
+									classes: 'lineheight24px',
+								},
+								lineheight26px: {
+									selector:
+										'span,p,h1,h2,h3,h4,h5,h6,td,th,div,ul,ol,li,table,img',
+									classes: 'lineheight26px',
+								},
+								lineheight28px: {
+									selector:
+										'span,p,h1,h2,h3,h4,h5,h6,td,th,div,ul,ol,li,table,img',
+									classes: 'lineheight20px',
+								},
+								lineheight30px: {
+									selector:
+										'span,p,h1,h2,h3,h4,h5,h6,td,th,div,ul,ol,li,table,img',
+									classes: 'lineheight30px',
+								},
+								lineheight32px: {
+									selector:
+										'span,p,h1,h2,h3,h4,h5,h6,td,th,div,ul,ol,li,table,img',
+									classes: 'lineheight32px',
+								},
+								lineheight34px: {
+									selector:
+										'span,p,h1,h2,h3,h4,h5,h6,td,th,div,ul,ol,li,table,img',
+									classes: 'lineheight34px',
+								},
+								lineheight36px: {
+									selector:
+										'span,p,h1,h2,h3,h4,h5,h6,td,th,div,ul,ol,li,table,img',
+									classes: 'lineheight36px',
+								},
+								lineheight38px: {
+									selector:
+										'span,p,h1,h2,h3,h4,h5,h6,td,th,div,ul,ol,li,table,img',
+									classes: 'lineheight38px',
+								},
+								lineheight40px: {
+									selector:
+										'span,p,h1,h2,h3,h4,h5,h6,td,th,div,ul,ol,li,table,img',
+									classes: 'lineheight40px',
+								},
+							},
+							style_formats: [
+								{ title: 'lineheight20px', format: 'lineheight20px' },
+								{ title: 'lineheight22px', format: 'lineheight22px' },
+								{ title: 'lineheight24px', format: 'lineheight24px' },
+								{ title: 'lineheight26px', format: 'lineheight26px' },
+								{ title: 'lineheight28px', format: 'lineheight28px' },
+								{ title: 'lineheight30px', format: 'lineheight30px' },
+								{ title: 'lineheight32px', format: 'lineheight32px' },
+								{ title: 'lineheight34px', format: 'lineheight34px' },
+								{ title: 'lineheight36px', format: 'lineheight36px' },
+								{ title: 'lineheight38px', format: 'lineheight38px' },
+								{ title: 'lineheight40px', format: 'lineheight40px' },
+							],
+							content_css: [
+								'//fonts.googleapis.com/css?family=Lato:300,300i,400,400i',
+							],
+						}"
+					/>
 
 
-    <!-- .content -->
+					<Questions
+						:course_item_id="course_item_id"
+						:questions="activesbook.questions"
+						:id="activesbook.id"
+						type="kb"
+						:mode="mode"
+						:count_points="true"
+						@passed="passed"
+						:key="questions_key"
+						:pass_grade="activesbook.pass_grade"
+						@changePassGrade="changePassGrade"
+					/>
+				</template>
 
-    <!-- Right Panel -->
+				<template v-if="activesbook != null && !edit_actives_book">
+					<div class="book_page">
+						<div class="author d-flex aic mb-4 justify-end">
+							<img
+								:src="activesbook.editor_avatar"
+								alt="avatar icon"
+							>
+							<div class="text">
+								<p class="edited">
+									<span>Cоздано:</span> {{ activesbook.created }} {{ activesbook.author }}
+								</p>
+								<p class="edited">
+									<span>Изменено:</span> {{ activesbook.edited_at }} {{ activesbook.editor }}
+								</p>
+							</div>
+						</div>
+						<div
+							class="bp-text"
+							v-html="activesbook.text"
+						/>
 
-    <b-modal v-model="showImageModal" title="Загрузить изображение">
-      <form
-        @submit.prevent="submit"
-        action="/upload/images/"
-        enctype="multipart/form-data"
-        method="post"
-        style=" max-width: 300px;margin: 0 auto;"
-      >
-        <div class="form-group">
-          <div class="custom-file">
-            <input
-              type="file"
-              class="custom-file-input"
-              id="customFile"
-              @change="onAttachmentChange"
-              accept="image/*"
-            />
-            <label class="custom-file-label" for="customFile">Выберите файл</label>
-          </div>
-        </div>
-      </form>
-      <ProgressBar
-        :percentage="myprogress"
-        label="Загрузка"
-      />
-    </b-modal>
-
-    <b-modal v-model="showAudioModal" title="Загрузить аудио">
-         <form
-                @submit.prevent="submit"
-                action="/upload/audio/"
-                enctype="multipart/form-data"
-                method="post"
-                style=" max-width: 300px;margin: 0 auto;"
-              >
-                <div class="form-group">
-                  <div class="custom-file">
-                    <input
-                      type="file"
-                      class="custom-file-input"
-                      id="customFile"
-                      @change="onAttachmentChangeaudio"
-                      accept="audio/mp3"
-                    />
-                    <label class="custom-file-label" for="customFile"
-                      >Выберите файл</label
-                    >
-                  </div>
-                </div>
-              </form>
-    </b-modal>
+						<Questions
+							:questions="activesbook.questions"
+							:id="activesbook.id"
+							type="kb"
+							:mode="mode"
+							:count_points="true"
+							@passed="passed"
+							:pass="activesbook.item_model !== null"
+							:key="questions_key"
+							:pass_grade="activesbook.pass_grade"
+							@changePassGrade="changePassGrade"
+							:course_item_id="course_item_id"
+							@nextElement="nextElement"
+						/>
+						<div class="pb-5" />
 
 
-    <b-modal v-model="showPermissionModal" :title="'Настройка доступа к разделу'">
-      <div v-if="activesbook != null">{{ activesbook.title}} </div>
-       Пока не сделано
-    </b-modal>
-
-    <b-modal
-      v-model="showSearch"
-      title="Поиск"
-      size="md"
-      dialog-class="modal-search"
-      hide-header
-      hide-footer
-    >
-
-      <div>
-        <div class="d-flex relative  mb-2">
-          <input
-            type="text"
-            v-model="search.input"
-            @keyup.enter="searchInput"
-            placeholder="Поиск по всей базе..."
-            class="form-control"
-          />
-          <button class="search-btn btn" v-if="search.input != ''" @click="searchInput">Искать</button>
-        </div>
+						<button
+							class="next-btn btn btn-primary"
+							v-if="course_page && activesbook.questions.length == 0"
+							@click="nextElement()"
+						>
+							Продолжить курс
+							<i class="fa fa-angle-double-right ml-2" />
+						</button>
+					</div>
+				</template>
+			</div>
+		</div>
 
 
-        <div class="s-content">
-          <div class="sss" v-if="search.input.length >=3 && search.items.length == 0">
-            <p>По запросу "{{ search.input }}" ничего не найдено.</p>
-          </div>
-         <div class="item" v-for="(item, x) in search.items" @click="showPage(item.id, true)" :key="x">
-           <p v-if="item.book != null" class="book">{{ item.book.title }}</p>
-           <p>{{ item.title }}</p>
-           <div class="text" v-html="item.text"></div>
-         </div>
-        </div>
+		<!-- .content -->
 
-      </div>
+		<!-- Right Panel -->
 
-    </b-modal>
+		<b-modal
+			v-model="showImageModal"
+			title="Загрузить изображение"
+		>
+			<form
+				@submit.prevent="submit"
+				action="/upload/images/"
+				enctype="multipart/form-data"
+				method="post"
+				style=" max-width: 300px;margin: 0 auto;"
+			>
+				<div class="form-group">
+					<div class="custom-file">
+						<input
+							type="file"
+							class="custom-file-input"
+							id="customFile"
+							@change="onAttachmentChange"
+							accept="image/*"
+						>
+						<label
+							class="custom-file-label"
+							for="customFile"
+						>Выберите файл</label>
+					</div>
+				</div>
+			</form>
+			<ProgressBar
+				:percentage="myprogress"
+				label="Загрузка"
+			/>
+		</b-modal>
 
-  </div>
+		<b-modal
+			v-model="showAudioModal"
+			title="Загрузить аудио"
+		>
+			<form
+				@submit.prevent="submit"
+				action="/upload/audio/"
+				enctype="multipart/form-data"
+				method="post"
+				style=" max-width: 300px;margin: 0 auto;"
+			>
+				<div class="form-group">
+					<div class="custom-file">
+						<input
+							type="file"
+							class="custom-file-input"
+							id="customFile"
+							@change="onAttachmentChangeaudio"
+							accept="audio/mp3"
+						>
+						<label
+							class="custom-file-label"
+							for="customFile"
+						>Выберите файл</label>
+					</div>
+				</div>
+			</form>
+		</b-modal>
+
+
+		<b-modal
+			v-model="showPermissionModal"
+			:title="'Настройка доступа к разделу'"
+		>
+			<div v-if="activesbook != null">
+				{{ activesbook.title }}
+			</div>
+			Пока не сделано
+		</b-modal>
+
+		<b-modal
+			v-model="showSearch"
+			title="Поиск"
+			size="md"
+			dialog-class="modal-search"
+			hide-header
+			hide-footer
+		>
+			<div>
+				<div class="d-flex relative  mb-2">
+					<input
+						type="text"
+						v-model="search.input"
+						@keyup.enter="searchInput"
+						placeholder="Поиск по всей базе..."
+						class="form-control"
+					>
+					<button
+						class="search-btn btn"
+						v-if="search.input != ''"
+						@click="searchInput"
+					>
+						Искать
+					</button>
+				</div>
+
+
+				<div class="s-content">
+					<div
+						class="sss"
+						v-if="search.input.length >=3 && search.items.length == 0"
+					>
+						<p>По запросу "{{ search.input }}" ничего не найдено.</p>
+					</div>
+					<div
+						class="item"
+						v-for="(item, x) in search.items"
+						@click="showPage(item.id, true)"
+						:key="x"
+					>
+						<p
+							v-if="item.book != null"
+							class="book"
+						>
+							{{ item.book.title }}
+						</p>
+						<p>{{ item.title }}</p>
+						<div
+							class="text"
+							v-html="item.text"
+						/>
+					</div>
+				</div>
+			</div>
+		</b-modal>
+	</div>
 </template>
 
 <script>

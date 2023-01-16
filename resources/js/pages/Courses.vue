@@ -1,91 +1,103 @@
 <template>
-<div class="d-flex courses">
-
-  <div class="lp">
-    <h1 class="page-title">Курсы</h1>
-
-
-    <Draggable
-      class="sss"
-      tag="div"
-      :handle="'.fa-bars'"
-      :list="courses"
-      :group="{ name: 'g1' }"
-      @end="saveOrder"
-      :id="0"
-    >
-      <div
-        class="section d-flex  my-2"
-        :class="{'active':activeCourse != null && activeCourse.id == course.id}"
-        v-for="(course, c_index) in courses"
-        :key="course.id"
-        :id="course.id"
-        @click="selectCourse(c_index)"
-      >
-        <i class="fa fa-bars mr-2 mt-1 pointer"></i>
-
-        <div class="d-flex aic jcsb w-full">
-           <p class="mb-0">{{ course.name }}</p>
-            <div class="d-flex">
-
-            <i
-              class="fa fa-trash ml-2"
-              v-if="course.id != 0"
-              @click.stop="deleteCourse(c_index)"
-            ></i>
-           </div>
-        </div>
-
-      </div>
-    </Draggable>
-
-    <button class="btn-add" @click="modals.add_course.show = true">
-      Добавить курс
-    </button>
-  </div>
+	<div class="d-flex courses">
+		<div class="lp">
+			<h1 class="page-title">
+				Курсы
+			</h1>
 
 
-  <div class="rp" style="flex: 1 1 0%; padding-bottom: 50px;">
-    <div class="hat">
-      <div class="d-flex jsutify-content-between hat-top">
-        <div class="bc">
-          <a href="#">Курсы</a>
-          <template v-if="activeCourse">
-            <i class="fa fa-chevron-right"></i>
-            <a href="#" >{{ activeCourse.name }}</a>
-          </template>
-          <!---->
-        </div>
-        <div class="control-btns"></div>
-      </div>
-      <div><!----></div>
-    </div>
-    <div class="content mt-3">
-      <div v-if="activeCourse" class="p-3">
-        <Course :id="activeCourse.id" />
-      </div>
-    </div>
-  </div>
+			<Draggable
+				class="sss"
+				tag="div"
+				:handle="'.fa-bars'"
+				:list="courses"
+				:group="{ name: 'g1' }"
+				@end="saveOrder"
+				:id="0"
+			>
+				<div
+					class="section d-flex  my-2"
+					:class="{'active':activeCourse != null && activeCourse.id == course.id}"
+					v-for="(course, c_index) in courses"
+					:key="course.id"
+					:id="course.id"
+					@click="selectCourse(c_index)"
+				>
+					<i class="fa fa-bars mr-2 mt-1 pointer" />
 
-    <b-modal
-      v-model="modals.add_course.show"
-      title="Новый курс"
-      size="md"
-      class="modalle"
-      hide-footer
-    >
-      <input
-        type="text"
-        v-model="modals.add_course.name"
-        placeholder="Название курса..."
-        class="form-control mb-2"
-      />
-      <button class="btn btn-primary rounded m-auto" @click="createCourse">
-        <span>Сохранить</span>
-      </button>
-    </b-modal>
+					<div class="d-flex aic jcsb w-full">
+						<p class="mb-0">
+							{{ course.name }}
+						</p>
+						<div class="d-flex">
+							<i
+								class="fa fa-trash ml-2"
+								v-if="course.id != 0"
+								@click.stop="deleteCourse(c_index)"
+							/>
+						</div>
+					</div>
+				</div>
+			</Draggable>
 
-</div>
+			<button
+				class="btn-add"
+				@click="modals.add_course.show = true"
+			>
+				Добавить курс
+			</button>
+		</div>
+
+
+		<div
+			class="rp"
+			style="flex: 1 1 0%; padding-bottom: 50px;"
+		>
+			<div class="hat">
+				<div class="d-flex jsutify-content-between hat-top">
+					<div class="bc">
+						<a href="#">Курсы</a>
+						<template v-if="activeCourse">
+							<i class="fa fa-chevron-right" />
+							<a href="#">{{ activeCourse.name }}</a>
+						</template>
+						<!---->
+					</div>
+					<div class="control-btns" />
+				</div>
+				<div><!----></div>
+			</div>
+			<div class="content mt-3">
+				<div
+					v-if="activeCourse"
+					class="p-3"
+				>
+					<Course :id="activeCourse.id" />
+				</div>
+			</div>
+		</div>
+
+		<b-modal
+			v-model="modals.add_course.show"
+			title="Новый курс"
+			size="md"
+			class="modalle"
+			hide-footer
+		>
+			<input
+				type="text"
+				v-model="modals.add_course.name"
+				placeholder="Название курса..."
+				class="form-control mb-2"
+			>
+			<button
+				class="btn btn-primary rounded m-auto"
+				@click="createCourse"
+			>
+				<span>Сохранить</span>
+			</button>
+		</b-modal>
+	</div>
 </template>
 
 <script>

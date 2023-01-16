@@ -1,348 +1,621 @@
 <template>
-<div
-    v-if="groups"
-    class="mt-4"
->
-    <div class="mb-0">
+	<div
+		v-if="groups"
+		class="mt-4"
+	>
+		<div class="mb-0">
+			<div class="row mb-3">
+				<div class="col-3">
+					<select
+						class="form-control"
+						v-model="currentGroup"
+						@change="fetchData()"
+					>
+						<option
+							v-for="group in groups"
+							:value="group.id"
+							:key="group.id"
+						>
+							{{ group.name }}
+						</option>
+					</select>
+				</div>
+				<div class="col-3">
+					<select
+						class="form-control"
+						v-model="dateInfo.currentMonth"
+						@change="fetchData()"
+					>
+						<option
+							v-for="month in $moment.months()"
+							:value="month"
+							:key="month"
+						>
+							{{ month }}
+						</option>
+					</select>
+				</div>
+				<div class="col-2">
+					<select
+						class="form-control"
+						v-model="dateInfo.currentYear"
+						@change="fetchData()"
+					>
+						<option
+							v-for="year in years"
+							:value="year"
+							:key="year"
+						>
+							{{ year }}
+						</option>
+					</select>
+				</div>
+				<div class="col-1">
+					<div
+						class="btn btn-primary"
+						@click="fetchData()"
+					>
+						<i class="fa fa-redo-alt" />
+					</div>
+				</div>
+				<div class="col-2" />
+			</div>
 
-        <div class="row mb-3">
-            <div class="col-3">
-                <select class="form-control" v-model="currentGroup" @change="fetchData()">
-                    <option v-for="group in groups" :value="group.id" :key="group.id">{{ group.name }}</option>
-                </select>
-            </div>
-            <div class="col-3">
-                <select class="form-control" v-model="dateInfo.currentMonth" @change="fetchData()">
-                    <option v-for="month in $moment.months()" :value="month" :key="month">{{ month }}</option>
-                </select>
-            </div>
-            <div class="col-2">
-                <select class="form-control" v-model="dateInfo.currentYear" @change="fetchData()">
-                    <option v-for="year in years" :value="year" :key="year">{{ year }}</option>
-                </select>
-            </div>
-            <div class="col-1">
-                <div class="btn btn-primary" @click="fetchData()">
-                    <i class="fa fa-redo-alt"></i>
-                </div>
-            </div>
-            <div class="col-2"></div>
-        </div>
+			<div v-if="hasPermission">
+				<div class="row mb-3">
+					<div class="col-2 p-0">
+						<div class="overflow-auto d-flex">
+							<b-pagination
+								v-model="currentPage"
+								:total-rows="totalRows"
+								:per-page="perPage"
+								align="fill"
+								size="sm"
+								class="my-0"
+							/>
+						</div>
+					</div>
+					<div class="col-6 d-flex align-items-center">
+						<b-form-group class="d-flex ddf mb-0 ml-5">
+							<b-form-radio
+								v-model="user_types"
+								name="some-radios"
+								value="0"
+							>
+								Действующие
+							</b-form-radio>
+							<b-form-radio
+								v-model="user_types"
+								name="some-radios"
+								value="2"
+							>
+								Стажеры
+							</b-form-radio>
+							<b-form-radio
+								v-model="user_types"
+								name="some-radios"
+								value="1"
+							>
+								Уволенные
+							</b-form-radio>
+						</b-form-group>
+						<button
+							class="btn btn-sm rounded btn-primary ml-2"
+							v-if="currentGroup != 23 && user_types == 2"
+							@click="copy()"
+							:style="{'padding': '2px 8px'}"
+						>
+							<i class="fa fa-clone ddpointer" />
+							Начать отметку
+						</button>
+					</div>
+					<div class="col-4 d-flex align-items-center justify-content-end">
+						<input
+							type="text"
+							:ref="'mylink' + currentGroup"
+							class="hider"
+						>
+						<button
+							v-if="(currentGroup == 42 && can_edit) || (currentGroup == 88 && can_edit)"
+							@click="showExcelImport = !showExcelImport"
+							class="btn btn-primary mr-2 btn-sm rounded"
+							:style="{'padding': '2px 8px'}"
+						>
+							<i class="fa fa-upload" />
+							Импорт EXCEL
+						</button>
+						<p class="text-right fz-09 text-black mb-0">
+							<span>Сотрудники:</span>
+							<b> {{ items.length - 1 }} | {{ total_resources }}</b>
+						</p>
+					</div>
+				</div>
 
-        <div v-if="hasPermission">
-
-            <div class="row mb-3">
-                <div class="col-2 p-0">
-                    <div class="overflow-auto d-flex">
-                        <b-pagination
-                            v-model="currentPage"
-                            :total-rows="totalRows"
-                            :per-page="perPage"
-                            align="fill"
-                            size="sm"
-                            class="my-0"
-                        />
-                    </div>
-                </div>
-                <div class="col-6 d-flex align-items-center">
-                    <b-form-group class="d-flex ddf mb-0 ml-5">
-                        <b-form-radio v-model="user_types"  name="some-radios" value="0">Действующие</b-form-radio>
-                        <b-form-radio v-model="user_types"  name="some-radios" value="2">Стажеры</b-form-radio>
-                        <b-form-radio v-model="user_types"  name="some-radios" value="1">Уволенные</b-form-radio>
-                    </b-form-group>
-                    <button
-                        class="btn btn-sm rounded btn-primary ml-2"
-                        v-if="currentGroup != 23 && user_types == 2"
-                        @click="copy()"
-                        :style="{'padding': '2px 8px'}"
-                        >
-                        <i class="fa fa-clone ddpointer"></i>
-                        Начать отметку
-                    </button>
-                </div>
-                <div class="col-4 d-flex align-items-center justify-content-end" >
-                    <input type="text" :ref="'mylink' + currentGroup" class="hider">
-                    <button
-                        v-if="(currentGroup == 42 && can_edit) || (currentGroup == 88 && can_edit)"
-                        @click='showExcelImport = !showExcelImport'
-                        class="btn btn-primary mr-2 btn-sm rounded"
-                        :style="{'padding': '2px 8px'}"
-                        >
-                            <i class="fa fa-upload"></i>
-                            Импорт EXCEL
-                    </button>
-                    <p class="text-right fz-09 text-black mb-0">
-                        <span>Сотрудники:</span>
-                        <b> {{ items.length - 1 }} | {{ total_resources }}</b>
-                    </p>
-                </div>
-            </div>
-
-            <div class="table-container">
-                <b-table
-                        responsive
-                        bordered
-                        :sticky-header="true"
-                        class="text-nowrap text-right table-custom-report"
-                        id="tabelTable"
-                        :small="true"
-                        :items="items"
-                        :fields="fields"
-                        show-empty
-                        emptyText="Нет данных"
-                        :current-page="currentPage"
-                        :per-page="perPage">
-
-                    <template #cell(name)="data">
-                        <div>
-                            <span v-if="activeuserpos == 46">
-                                <a :href="'/timetracking/edit-person?id=' + data.item.id" target="_blank" :title="data.item.id">{{ data.value }}</a>
-                            </span>
-                                <span v-else>
-                                {{ data.value }}
-                            </span>
-                                <b-badge v-if="data.field.key == 'name'" pill variant="success">
-                                    {{ data.item.user_type }}
-                                </b-badge>
-
-
-                                <span v-if="data.field.key == 'name' && data.item.is_trainee" class="badgy badge-warning badge-pill">
-                                Стажер
-                            </span>
-                        </div>
-                    </template>
-                    <template #cell(total)="data">
-                        <div>
-                            {{ data.value }}
-                        </div>
-                    </template>
-
-                    <template #cell()="data">
-
-                        <div
-                            @mouseover="dayInfo(data)"
-                            @click="detectClick(data)"
-                            class="td-div"
-                            :class="{
-                                'updated': data.value.updated,
-                                'pointer': data.item._cellVariants
-                            }"
-                        >
-
-                            <template v-if="data.value.hour">
-                                <input
-                                        class="cell-input"
-                                        type="number"
-                                        @mouseover="$event.preventDefault()"
-                                        :min="0"
-                                        :max="24"
-                                        :step="0.1"
-                                        :value="data.value.hour"
-                                        :readonly="true"
-                                        @dblclick="readOnlyFix"
-                                        @change="openModal"
-                                >
-                            </template>
-
-                            <template v-else>
-                                {{ data.value.hour ? data.value.hour : data.value }}
-                            </template>
-
-                            <div class="cell-border" :id="`cell-border-${data.item.id}-${data.field.key}`" v-if="data.value.tooltip"></div>
-                            <b-popover :target="`cell-border-${data.item.id}-${data.field.key}`" triggers="hover" placement="top" v-if="data.value.tooltip">
-                                <template #title>Время работы</template>
-                                <div v-html="data.value.tooltip"></div>
-                            </b-popover>
-
-                        </div>
-
-                    </template>
-
-                </b-table>
-            </div>
-
-            <p class="hovered-text">{{ dayInfoText }}</p>
-
-        </div>
-
-        <div v-else>
-            <p>У вас нет доступа к этой группе</p>
-        </div>
-
-    </div>
+				<div class="table-container">
+					<b-table
+						responsive
+						bordered
+						:sticky-header="true"
+						class="text-nowrap text-right table-custom-report"
+						id="tabelTable"
+						:small="true"
+						:items="items"
+						:fields="fields"
+						show-empty
+						empty-text="Нет данных"
+						:current-page="currentPage"
+						:per-page="perPage"
+					>
+						<template #cell(name)="data">
+							<div>
+								<span v-if="activeuserpos == 46">
+									<a
+										:href="'/timetracking/edit-person?id=' + data.item.id"
+										target="_blank"
+										:title="data.item.id"
+									>{{ data.value }}</a>
+								</span>
+								<span v-else>
+									{{ data.value }}
+								</span>
+								<b-badge
+									v-if="data.field.key == 'name'"
+									pill
+									variant="success"
+								>
+									{{ data.item.user_type }}
+								</b-badge>
 
 
+								<span
+									v-if="data.field.key == 'name' && data.item.is_trainee"
+									class="badgy badge-warning badge-pill"
+								>
+									Стажер
+								</span>
+							</div>
+						</template>
+						<template #cell(total)="data">
+							<div>
+								{{ data.value }}
+							</div>
+						</template>
 
-    <Sidebar
-        v-if="showExcelImport"
-        title="Импорт EXCEL"
-        :open="showExcelImport"
-        @close="showExcelImport=false"
-        width="75%"
-    >
-        <GroupExcelImport :group_id="currentGroup"/>
-    </Sidebar>
+						<template #cell()="data">
+							<div
+								@mouseover="dayInfo(data)"
+								@click="detectClick(data)"
+								class="td-div"
+								:class="{
+									'updated': data.value.updated,
+									'pointer': data.item._cellVariants
+								}"
+							>
+								<template v-if="data.value.hour">
+									<input
+										class="cell-input"
+										type="number"
+										@mouseover="$event.preventDefault()"
+										:min="0"
+										:max="24"
+										:step="0.1"
+										:value="data.value.hour"
+										:readonly="true"
+										@dblclick="readOnlyFix"
+										@change="openModal"
+									>
+								</template>
+
+								<template v-else>
+									{{ data.value.hour ? data.value.hour : data.value }}
+								</template>
+
+								<div
+									class="cell-border"
+									:id="`cell-border-${data.item.id}-${data.field.key}`"
+									v-if="data.value.tooltip"
+								/>
+								<b-popover
+									:target="`cell-border-${data.item.id}-${data.field.key}`"
+									triggers="hover"
+									placement="top"
+									v-if="data.value.tooltip"
+								>
+									<template #title>
+										Время работы
+									</template>
+									<div v-html="data.value.tooltip" />
+								</b-popover>
+							</div>
+						</template>
+					</b-table>
+				</div>
+
+				<p class="hovered-text">
+					{{ dayInfoText }}
+				</p>
+			</div>
+
+			<div v-else>
+				<p>У вас нет доступа к этой группе</p>
+			</div>
+		</div>
+
+
+
+		<Sidebar
+			v-if="showExcelImport"
+			title="Импорт EXCEL"
+			:open="showExcelImport"
+			@close="showExcelImport=false"
+			width="75%"
+		>
+			<GroupExcelImport :group_id="currentGroup" />
+		</Sidebar>
 
 
 
 
-    <Sidebar :title="sidebarTitle" :open="openSidebar" @close="openSidebar=false" v-if="openSidebar" width="350px">
-        <b-tabs content-class="mt-3" justified>
-            <b-tab title="🕒" active>
-                <template v-if="sidebarHistory && sidebarHistory.length > 0">
-                    <div class="history">
-                        <div v-for="(item,index) in sidebarHistory" :key="index" class="mb-3">
-                            <p class="fz12"><b class="text-black">Дата:</b> {{ (new Date(item.created_at)).addHours(-6).toLocaleString('ru-RU') }}</p>
-                            <p class="fz12"><b class="text-black">Автор:</b> {{ item.author }} <br></p>
-                            <p class="fz14 mb-0" v-html="item.description"> </p><br>
-                            <hr>
-                        </div>
-                    </div>
-                </template>
-                <template v-else>
-                    <p>История изменения отсутствует</p>
-                </template>
-            </b-tab>
+		<Sidebar
+			:title="sidebarTitle"
+			:open="openSidebar"
+			@close="openSidebar=false"
+			v-if="openSidebar"
+			width="350px"
+		>
+			<b-tabs
+				content-class="mt-3"
+				justified
+			>
+				<b-tab
+					title="🕒"
+					active
+				>
+					<template v-if="sidebarHistory && sidebarHistory.length > 0">
+						<div class="history">
+							<div
+								v-for="(item,index) in sidebarHistory"
+								:key="index"
+								class="mb-3"
+							>
+								<p class="fz12">
+									<b class="text-black">Дата:</b> {{ (new Date(item.created_at)).addHours(-6).toLocaleString('ru-RU') }}
+								</p>
+								<p class="fz12">
+									<b class="text-black">Автор:</b> {{ item.author }} <br>
+								</p>
+								<p
+									class="fz14 mb-0"
+									v-html="item.description"
+								/><br>
+								<hr>
+							</div>
+						</div>
+					</template>
+					<template v-else>
+						<p>История изменения отсутствует</p>
+					</template>
+				</b-tab>
 
-            <template v-if="can_edit">
-                <b-tab title="📆" >
-                    <!-- <div v-html="sidebarContent.history"></div>
+				<template v-if="can_edit">
+					<b-tab title="📆">
+						<!-- <div v-html="sidebarContent.history"></div>
             <div v-html="sidebarContent.historyTotal"></div> -->
-                <template v-if="!sidebarContent.data.item.is_trainee">
-                    <div class="temari">
-                        <div v-for="dateType in dateTypes" :key="dateType.label" :class="[dateType.type == 4 ? 'mt-auto' : 'mb-2']">
-                            <b-button block @click="openModalDay(dateType)" :class="'table-day-'+dateType.type">{{ dateType.label }}
-                            </b-button>
-                        </div>
-                        <div class="mt-auto">
-                            <b-button block @click="openFiringModal({
-                                                    label: 'Уволить без отработки',
-                                                    color: '#d35dd3',
-                                                    type: 4
-                                                }, 1)" :class="'table-day-4'">Уволить без отработки</b-button>
-                        </div>
-                        <div class="mt-2">
-                            <b-button block @click="openFiringModal({
-                                                    label: 'Уволить с отработкой',
-                                                    color: '#c8a2c8',
-                                                    type: 4
-                                                }, 2)" :class="'table-day-4'">Уволить с отработкой</b-button>
-                        </div>
+						<template v-if="!sidebarContent.data.item.is_trainee">
+							<div class="temari">
+								<div
+									v-for="dateType in dateTypes"
+									:key="dateType.label"
+									:class="[dateType.type == 4 ? 'mt-auto' : 'mb-2']"
+								>
+									<b-button
+										block
+										@click="openModalDay(dateType)"
+										:class="'table-day-'+dateType.type"
+									>
+										{{ dateType.label }}
+									</b-button>
+								</div>
+								<div class="mt-auto">
+									<b-button
+										block
+										@click="openFiringModal({
+											label: 'Уволить без отработки',
+											color: '#d35dd3',
+											type: 4
+										}, 1)"
+										:class="'table-day-4'"
+									>
+										Уволить без отработки
+									</b-button>
+								</div>
+								<div class="mt-2">
+									<b-button
+										block
+										@click="openFiringModal({
+											label: 'Уволить с отработкой',
+											color: '#c8a2c8',
+											type: 4
+										}, 2)"
+										:class="'table-day-4'"
+									>
+										Уволить с отработкой
+									</b-button>
+								</div>
+							</div>
+						</template>
+
+						<template v-else>
+							<div class="temari">
+								<button
+									class="btn btn-warning btn-block"
+									@click="openModalAbsence({type: 2, label: 'Отсутствовал на стажировке'})"
+								>
+									Отсутствовал на стажировке
+								</button>
+								<button
+									class="btn btn-primary btn-block"
+									@click="openModalApply({type: 8, label:'Принят на работу' })"
+									v-if="sidebarContent.data.item.requested == null"
+								>
+									Принять на работу
+								</button>
+								<button
+									class="btn btn-info btn-block"
+									@click="setDayWithoutComment(7)"
+								>
+									Подключился позже
+								</button>
+
+								<div
+									class="mt-3"
+									style="color:green;text-align:center"
+								>
+									{{ apllyPersonResponse }}
+								</div>
+
+								<div
+									class="mt-3"
+									style="color:green;text-align:center"
+									v-if="sidebarContent.data.item.requested !== null"
+								>
+									Заявка на принятие на работу была подана в {{ sidebarContent.data.item.requested }}
+								</div>
+
+								<button
+									class="btn btn-danger btn-block mt-auto"
+									@click="openFiringModal({
+										label: 'Уволить',
+										color: '#c8a2c8',
+										type: 4
+									}, 0)"
+								>
+									Уволить
+								</button>
+							</div>
+						</template>
+					</b-tab>
+					<b-tab
+						title="⚠️Штрафы"
+						v-if="!sidebarContent.data.item.is_trainee"
+					>
+						<b-form-group
+							label="Система депремирования"
+							class="fines-modal"
+						>
+							<b-form-checkbox-group
+								v-model="sidebarContent.fines"
+								:options="fines"
+								name="flavour-2a"
+								stacked
+							/>
+						</b-form-group>
+						<b-button
+							variant="primary"
+							@click="openModalFine"
+						>
+							Сохранить
+						</b-button>
+					</b-tab>
+				</template>
+			</b-tabs>
+		</Sidebar>
 
 
-                    </div>
+		<b-modal
+			v-model="modalVisibleFines"
+			ok-text="Да"
+			cancel-text="Нет"
+			title="Вы уверены?"
+			@ok="saveFines"
+			size="md"
+		>
+			<template v-for="error in errors">
+				<b-alert
+					show
+					variant="danger"
+					:key="error"
+				>
+					{{ error }}
+				</b-alert>
+			</template>
+			<b-form-input
+				v-model="commentFines"
+				placeholder="Комментарий"
+				:required="true"
+			/>
+		</b-modal>
 
-                </template>
+		<b-modal
+			v-model="modalVisibleDay"
+			ok-text="Да"
+			cancel-text="Нет"
+			:title="modalTitle"
+			@ok="setDayType"
+			size="md"
+		>
+			<template v-for="error in errors">
+				<b-alert
+					show
+					variant="danger"
+					:key="error"
+				>
+					{{ error }}
+				</b-alert>
+			</template>
+			<b-form-input
+				v-model="commentDay"
+				placeholder="Комментарий"
+				:required="true"
+			/>
+		</b-modal>
 
-                <template v-else>
-                    <div class="temari">
-                        <button class="btn btn-warning btn-block" @click="openModalAbsence({type: 2, label: 'Отсутствовал на стажировке'})">Отсутствовал на стажировке</button>
-                        <button class="btn btn-primary btn-block" @click="openModalApply({type: 8, label:'Принят на работу' })" v-if="sidebarContent.data.item.requested == null">Принять на работу</button>
-                        <button class="btn btn-info btn-block" @click="setDayWithoutComment(7)">Подключился позже</button>
-
-                        <div class="mt-3" style="color:green;text-align:center">
-                            {{ apllyPersonResponse }}
-                        </div>
-
-                        <div class="mt-3" style="color:green;text-align:center" v-if="sidebarContent.data.item.requested !== null">
-                            Заявка на принятие на работу была подана в {{ sidebarContent.data.item.requested }}
-                        </div>
-
-                        <button class="btn btn-danger btn-block mt-auto" @click="openFiringModal({
-                                                    label: 'Уволить',
-                                                    color: '#c8a2c8',
-                                                    type: 4
-                                                }, 0)">Уволить</button>
-
-
-
-                    </div>
-                </template>
-
-
-
-                </b-tab>
-                <b-tab title="⚠️Штрафы" v-if="!sidebarContent.data.item.is_trainee">
-                    <b-form-group label="Система депремирования" class="fines-modal">
-                        <b-form-checkbox-group v-model="sidebarContent.fines" :options="fines" name="flavour-2a" stacked></b-form-checkbox-group>
-                    </b-form-group>
-                    <b-button variant="primary" @click="openModalFine">Сохранить</b-button>
-                </b-tab>
-            </template>
-        </b-tabs>
-    </Sidebar>
-
-
-    <b-modal v-model="modalVisibleFines" ok-text="Да" cancel-text="Нет" title="Вы уверены?" @ok="saveFines" size="md">
-        <template v-for="error in errors">
-            <b-alert show variant="danger" :key="error">{{ error }}</b-alert>
-        </template>
-        <b-form-input v-model="commentFines" placeholder="Комментарий" :required="true"></b-form-input>
-    </b-modal>
-
-    <b-modal v-model="modalVisibleDay" ok-text="Да" cancel-text="Нет" :title="modalTitle" @ok="setDayType" size="md">
-        <template v-for="error in errors">
-            <b-alert show variant="danger" :key="error">{{ error }}</b-alert>
-        </template>
-        <b-form-input v-model="commentDay" placeholder="Комментарий" :required="true"></b-form-input>
-    </b-modal>
-
-    <b-modal v-model="modalVisibleApply" ok-text="Да" cancel-text="Нет" :title="'Принятие на работу'" @ok="applyPerson" size="md">
-        <template v-for="error in errors">
-            <b-alert show variant="danger" :key="error">{{ error }}</b-alert>
-        </template>
-        <b-form-input v-model="applyItems.schedule" placeholder="Напишите со скольки и до скольки рабочий день" :required="true"></b-form-input>
-    </b-modal>
-
-
-    <b-modal v-model="modalVisibleAbsence" ok-text="Да" cancel-text="Нет" title="Отсутствовал на стажировке" @ok="setUserAbsent" size="md">
-        <template v-for="error in errors">
-            <b-alert show variant="danger" :key="error">{{ error }}</b-alert>
-        </template>
-
-        <select class="form-control" v-model="commentAbsent">
-            <option value="" disabled selected>Выберите причину</option>
-            <option v-for="cause in fire_causes" :key="cause" :value="cause">{{ cause }}</option>
-        </select>
-
-    </b-modal>
-
-    <b-modal v-model="modalVisibleFiring" ok-text="Да" cancel-text="Нет" :title="modalTitle" @ok="setUserFired" size="md">
-        <template v-for="error in errors">
-            <b-alert show variant="danger" :key="error">{{ error }}</b-alert>
-        </template>
+		<b-modal
+			v-model="modalVisibleApply"
+			ok-text="Да"
+			cancel-text="Нет"
+			:title="'Принятие на работу'"
+			@ok="applyPerson"
+			size="md"
+		>
+			<template v-for="error in errors">
+				<b-alert
+					show
+					variant="danger"
+					:key="error"
+				>
+					{{ error }}
+				</b-alert>
+			</template>
+			<b-form-input
+				v-model="applyItems.schedule"
+				placeholder="Напишите со скольки и до скольки рабочий день"
+				:required="true"
+			/>
+		</b-modal>
 
 
-        <select class="form-control" v-model="commentFiring2">
-            <option value="" disabled selected>Выберите причину</option>
-            <option v-for="cause in fire_causes" :key="cause"  :value="cause">{{ cause }}</option>
-        </select>
+		<b-modal
+			v-model="modalVisibleAbsence"
+			ok-text="Да"
+			cancel-text="Нет"
+			title="Отсутствовал на стажировке"
+			@ok="setUserAbsent"
+			size="md"
+		>
+			<template v-for="error in errors">
+				<b-alert
+					show
+					variant="danger"
+					:key="error"
+				>
+					{{ error }}
+				</b-alert>
+			</template>
 
-        <b-form-input v-if="firingItems.type == 0"
-            class="mt-3"
-            v-model="commentFiring" placeholder="Свой вариант" :required="true"></b-form-input>
+			<select
+				class="form-control"
+				v-model="commentAbsent"
+			>
+				<option
+					value=""
+					disabled
+					selected
+				>
+					Выберите причину
+				</option>
+				<option
+					v-for="cause in fire_causes"
+					:key="cause"
+					:value="cause"
+				>
+					{{ cause }}
+				</option>
+			</select>
+		</b-modal>
 
-        <b-form-file
-            v-if="firingItems.type == 2"
-            v-model="firingItems.file"
-            :state="Boolean(firingItems.file)"
-            placeholder="Выберите или перетащите файл сюда..."
-            drop-placeholder="Перетащите файл сюда..."
-            class="mt-3"
-            ></b-form-file>
+		<b-modal
+			v-model="modalVisibleFiring"
+			ok-text="Да"
+			cancel-text="Нет"
+			:title="modalTitle"
+			@ok="setUserFired"
+			size="md"
+		>
+			<template v-for="error in errors">
+				<b-alert
+					show
+					variant="danger"
+					:key="error"
+				>
+					{{ error }}
+				</b-alert>
+			</template>
 
-    </b-modal>
+
+			<select
+				class="form-control"
+				v-model="commentFiring2"
+			>
+				<option
+					value=""
+					disabled
+					selected
+				>
+					Выберите причину
+				</option>
+				<option
+					v-for="cause in fire_causes"
+					:key="cause"
+					:value="cause"
+				>
+					{{ cause }}
+				</option>
+			</select>
+
+			<b-form-input
+				v-if="firingItems.type == 0"
+				class="mt-3"
+				v-model="commentFiring"
+				placeholder="Свой вариант"
+				:required="true"
+			/>
+
+			<b-form-file
+				v-if="firingItems.type == 2"
+				v-model="firingItems.file"
+				:state="Boolean(firingItems.file)"
+				placeholder="Выберите или перетащите файл сюда..."
+				drop-placeholder="Перетащите файл сюда..."
+				class="mt-3"
+			/>
+		</b-modal>
 
 
-    <b-modal v-model="modalVisible" ok-text="Да" cancel-text="Нет" title="Вы уверены?" @ok="updateHour" size="md">
-        <template v-for="error in errors">
-            <b-alert show variant="danger" :key="error">{{ error }}</b-alert>
-        </template>
-        <b-form-input v-model="comment" placeholder="Комментарий" :required="true"></b-form-input>
-    </b-modal>
-
-
-</div>
+		<b-modal
+			v-model="modalVisible"
+			ok-text="Да"
+			cancel-text="Нет"
+			title="Вы уверены?"
+			@ok="updateHour"
+			size="md"
+		>
+			<template v-for="error in errors">
+				<b-alert
+					show
+					variant="danger"
+					:key="error"
+				>
+					{{ error }}
+				</b-alert>
+			</template>
+			<b-form-input
+				v-model="comment"
+				placeholder="Комментарий"
+				:required="true"
+			/>
+		</b-modal>
+	</div>
 </template>
 
 <script>

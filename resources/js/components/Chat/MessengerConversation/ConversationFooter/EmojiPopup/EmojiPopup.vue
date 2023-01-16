@@ -1,38 +1,64 @@
 <template>
-  <emoji-picker @emoji="append" :search="search">
-    <template #emoji-invoker="{ events: { click: clickEvent } }">
-      <div class="messenger__attachment-item"
-           @click.stop="clickEvent">
-        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16">
-          <path fill="#5ebee9"
-                d="M8 1c3.9 0 7 3.1 7 7s-3.1 7-7 7-7-3.1-7-7 3.1-7 7-7zM8 0c-4.4 0-8 3.6-8 8s3.6 8 8 8 8-3.6 8-8-3.6-8-8-8v0z"/>
-          <path fill="#5ebee9"
-                d="M8 13.2c-2 0-3.8-1.2-4.6-3.1l0.9-0.4c0.6 1.5 2.1 2.4 3.7 2.4s3.1-1 3.7-2.4l0.9 0.4c-0.8 2-2.6 3.1-4.6 3.1z"/>
-          <path fill="#5ebee9" d="M7 6c0 0.552-0.448 1-1 1s-1-0.448-1-1c0-0.552 0.448-1 1-1s1 0.448 1 1z"/>
-          <path fill="#5ebee9" d="M11 6c0 0.552-0.448 1-1 1s-1-0.448-1-1c0-0.552 0.448-1 1-1s1 0.448 1 1z"/>
-        </svg>
-      </div>
-    </template>
-    <template #emoji-picker="{ emojis, insert }">
-      <div>
-        <div class="emoji-picker" :style="{ bottom: 5 + '%', right: 10 + '%' }">
-          <div>
-            <div v-for="(emojiGroup, category) in emojis" :key="category">
-              <h5>{{ category }}</h5>
-              <div class="emojis">
-                  <span
-                    v-for="(emoji, emojiName) in emojiGroup"
-                    :key="emojiName"
-                    @click="insert(emoji)"
-                    :title="emojiName"
-                  >{{ emoji }}</span>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </template>
-  </emoji-picker>
+	<emoji-picker
+		@emoji="append"
+		:search="search"
+	>
+		<template #emoji-invoker="{ events: { click: clickEvent } }">
+			<div
+				class="messenger__attachment-item"
+				@click.stop="clickEvent"
+			>
+				<svg
+					xmlns="http://www.w3.org/2000/svg"
+					width="16"
+					height="16"
+					viewBox="0 0 16 16"
+				>
+					<path
+						fill="#5ebee9"
+						d="M8 1c3.9 0 7 3.1 7 7s-3.1 7-7 7-7-3.1-7-7 3.1-7 7-7zM8 0c-4.4 0-8 3.6-8 8s3.6 8 8 8 8-3.6 8-8-3.6-8-8-8v0z"
+					/>
+					<path
+						fill="#5ebee9"
+						d="M8 13.2c-2 0-3.8-1.2-4.6-3.1l0.9-0.4c0.6 1.5 2.1 2.4 3.7 2.4s3.1-1 3.7-2.4l0.9 0.4c-0.8 2-2.6 3.1-4.6 3.1z"
+					/>
+					<path
+						fill="#5ebee9"
+						d="M7 6c0 0.552-0.448 1-1 1s-1-0.448-1-1c0-0.552 0.448-1 1-1s1 0.448 1 1z"
+					/>
+					<path
+						fill="#5ebee9"
+						d="M11 6c0 0.552-0.448 1-1 1s-1-0.448-1-1c0-0.552 0.448-1 1-1s1 0.448 1 1z"
+					/>
+				</svg>
+			</div>
+		</template>
+		<template #emoji-picker="{ emojis, insert }">
+			<div>
+				<div
+					class="emoji-picker"
+					:style="{ bottom: 5 + '%', right: 10 + '%' }"
+				>
+					<div>
+						<div
+							v-for="(emojiGroup, category) in emojis"
+							:key="category"
+						>
+							<h5>{{ category }}</h5>
+							<div class="emojis">
+								<span
+									v-for="(emoji, emojiName) in emojiGroup"
+									:key="emojiName"
+									@click="insert(emoji)"
+									:title="emojiName"
+								>{{ emoji }}</span>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</template>
+	</emoji-picker>
 </template>
 
 <script>

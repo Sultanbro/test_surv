@@ -1,10 +1,12 @@
 <template>
-  <div>
-    <slot :isRecording="isRecording"
-          :startRecording="startRecording"
-          :stopRecording="stopRecording"
-          :deleteRecording="deleteRecording"/>
-  </div>
+	<div>
+		<slot
+			:is-recording="isRecording"
+			:start-recording="startRecording"
+			:stop-recording="stopRecording"
+			:delete-recording="deleteRecording"
+		/>
+	</div>
 </template>
 
 <script>

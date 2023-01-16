@@ -1,18 +1,41 @@
 <template>
-    <div>
-
-        <select class="form-control" v-model="selecttrees" @change="log(), select(selecttrees)">
-            <option v-if="perenos == 1" value="koren">Перенести в корень</option>
-            <option :value="selecttree" selected v-if="selecttree != null">В текущий</option>
-            <template v-for="tre in tree">
-				<option :key="tre.id" :value="tre.id" v-if="tre.parent_cat_id == selecttree">- {{tre.name}}</option>
+	<div>
+		<select
+			class="form-control"
+			v-model="selecttrees"
+			@change="log(), select(selecttrees)"
+		>
+			<option
+				v-if="perenos == 1"
+				value="koren"
+			>
+				Перенести в корень
+			</option>
+			<option
+				:value="selecttree"
+				selected
+				v-if="selecttree != null"
+			>
+				В текущий
+			</option>
+			<template v-for="tre in tree">
+				<option
+					:key="tre.id"
+					:value="tre.id"
+					v-if="tre.parent_cat_id == selecttree"
+				>
+					- {{ tre.name }}
+				</option>
 			</template>
-        </select>
+		</select>
 
-        <selectgroup v-if="arr != null && selecttree != selecttrees" @select="select" :tree="tree" :selecttree="selecttrees"/>
-
-
-    </div>
+		<selectgroup
+			v-if="arr != null && selecttree != selecttrees"
+			@select="select"
+			:tree="tree"
+			:selecttree="selecttrees"
+		/>
+	</div>
 </template>
 
 <script>

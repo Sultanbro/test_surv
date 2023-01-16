@@ -1,51 +1,91 @@
 <template>
-  <section id="jSec3">
-    <a
-        name="features"
-        id="features"
-        class="ancor"
-    />
-    <div class="section-content">
-      <h2 class="jSec3-header jHeader">{{ $lang(lang, 's3-header') }}</h2>
-      <p class="jSec3-subheader">{{ $lang(lang, 's3-subheader') }}</p>
-      <div v-if="isDesktop" class="jSec3-blocks">
-        <S3Block class="jSec3-block-1">
-          <h3 class="jSec3-block-title">{{ $lang(lang, 's3-b1-title') }}</h3>
-          <p class="jSec3-block-text">{{ $lang(lang, 's3-b1-text') }}</p>
-        </S3Block>
-        <S3Block :right="true" class="jSec3-block-2">
-          <h3 class="jSec3-block-title">{{ $lang(lang, 's3-b2-title') }}</h3>
-          <p class="jSec3-block-text">{{ $lang(lang, 's3-b2-text') }}</p>
-        </S3Block>
-        <S3Block class="jSec3-block-3">
-          <h3 class="jSec3-block-title">{{ $lang(lang, 's3-b3-title') }}</h3>
-          <p class="jSec3-block-text">{{ $lang(lang, 's3-b3-text') }}</p>
-        </S3Block>
-      </div>
-      <div v-if="!isDesktop" class="jSec3-blocks">
-        <Hooper :settings="hooperSettings">
-          <Slide>
-            <S3Block class="jSec3-block-1">
-              <h3 class="jSec3-block-title">{{ $lang(lang, 's3-b1-title') }}</h3>
-              <p class="jSec3-block-text">{{ $lang(lang, 's3-b1-text') }}</p>
-            </S3Block>
-          </Slide>
-          <Slide>
-            <S3Block :right="true" class="jSec3-block-2">
-              <h3 class="jSec3-block-title">{{ $lang(lang, 's3-b2-title') }}</h3>
-              <p class="jSec3-block-text">{{ $lang(lang, 's3-b2-text') }}</p>
-            </S3Block>
-          </Slide>
-          <Slide>
-            <S3Block class="jSec3-block-3">
-              <h3 class="jSec3-block-title">{{ $lang(lang, 's3-b3-title') }}</h3>
-              <p class="jSec3-block-text">{{ $lang(lang, 's3-b3-text') }}</p>
-            </S3Block>
-          </Slide>
-        </Hooper>
-      </div>
-    </div>
-  </section>
+	<section id="jSec3">
+		<a
+			name="features"
+			id="features"
+			class="ancor"
+		/>
+		<div class="section-content">
+			<h2 class="jSec3-header jHeader">
+				{{ $lang(lang, 's3-header') }}
+			</h2>
+			<p class="jSec3-subheader">
+				{{ $lang(lang, 's3-subheader') }}
+			</p>
+			<div
+				v-if="isDesktop"
+				class="jSec3-blocks"
+			>
+				<S3Block class="jSec3-block-1">
+					<h3 class="jSec3-block-title">
+						{{ $lang(lang, 's3-b1-title') }}
+					</h3>
+					<p class="jSec3-block-text">
+						{{ $lang(lang, 's3-b1-text') }}
+					</p>
+				</S3Block>
+				<S3Block
+					:right="true"
+					class="jSec3-block-2"
+				>
+					<h3 class="jSec3-block-title">
+						{{ $lang(lang, 's3-b2-title') }}
+					</h3>
+					<p class="jSec3-block-text">
+						{{ $lang(lang, 's3-b2-text') }}
+					</p>
+				</S3Block>
+				<S3Block class="jSec3-block-3">
+					<h3 class="jSec3-block-title">
+						{{ $lang(lang, 's3-b3-title') }}
+					</h3>
+					<p class="jSec3-block-text">
+						{{ $lang(lang, 's3-b3-text') }}
+					</p>
+				</S3Block>
+			</div>
+			<div
+				v-if="!isDesktop"
+				class="jSec3-blocks"
+			>
+				<Hooper :settings="hooperSettings">
+					<Slide>
+						<S3Block class="jSec3-block-1">
+							<h3 class="jSec3-block-title">
+								{{ $lang(lang, 's3-b1-title') }}
+							</h3>
+							<p class="jSec3-block-text">
+								{{ $lang(lang, 's3-b1-text') }}
+							</p>
+						</S3Block>
+					</Slide>
+					<Slide>
+						<S3Block
+							:right="true"
+							class="jSec3-block-2"
+						>
+							<h3 class="jSec3-block-title">
+								{{ $lang(lang, 's3-b2-title') }}
+							</h3>
+							<p class="jSec3-block-text">
+								{{ $lang(lang, 's3-b2-text') }}
+							</p>
+						</S3Block>
+					</Slide>
+					<Slide>
+						<S3Block class="jSec3-block-3">
+							<h3 class="jSec3-block-title">
+								{{ $lang(lang, 's3-b3-title') }}
+							</h3>
+							<p class="jSec3-block-text">
+								{{ $lang(lang, 's3-b3-text') }}
+							</p>
+						</S3Block>
+					</Slide>
+				</Hooper>
+			</div>
+		</div>
+	</section>
 </template>
 
 <script>

@@ -1,488 +1,721 @@
 <template>
-<div
-    v-if="groupss"
-    class="mt-2 px-3"
->
-    <div class="mb-0">
+	<div
+		v-if="groupss"
+		class="mt-2 px-3"
+	>
+		<div class="mb-0">
+			<!-- filters -->
+			<div class="row mb-3">
+				<div class="col-3">
+					<v-select
+						:options="groups"
+						label="name"
+						v-model="selectedGroup"
+						class="group-select"
+					>
+						<template #option="{ name, salary_approved, id }">
+							<div class="selector">
+								<p style="margin: 0">
+									{{ name }} : <span v-if="showAccruals">{{ accruals[id] }}</span>
+								</p>
+								<img
+									src="/images/double-check.png"
+									alt=""
+									v-if="salary_approved"
+								>
+							</div>
+						</template>
+					</v-select>
+				</div>
+				<div class="col-2">
+					<select
+						class="form-control"
+						v-model="dateInfo.currentMonth"
+						@change="fetchData()"
+					>
+						<option
+							v-for="month in $moment.months()"
+							:value="month"
+							:key="month"
+						>
+							{{ month }}
+						</option>
+					</select>
+				</div>
+				<div class="col-2">
+					<select
+						class="form-control"
+						v-model="dateInfo.currentYear"
+						@change="fetchData()"
+					>
+						<option
+							v-for="year in years"
+							:value="year"
+							:key="year"
+						>
+							{{ year }}
+						</option>
+					</select>
+				</div>
+				<div class="col-2  align-items-start">
+					<a
+						class="btn btn-primary mr-1 rounded text-white"
+						@click="fetchData()"
+					>
+						<i class="fa fa-redo-alt" />
+					</a>
+					<a
+						@click="exportData()"
+						class="btn btn-success rounded text-white mr-1"
+						v-if="can_edit"
+					>
+						<i class="far fa-file-excel" />
+					</a>
+					<a
+						@click="toggleVisible()"
+						class="btn btn-info rounded text-white mr-1"
+					>
+						<i class="fa fa-eye" />
+					</a>
+				</div>
+				<div class="col-2" />
+			</div>
 
-        <!-- filters -->
-        <div class="row mb-3">
-            <div class="col-3">
-                <v-select :options="groups" label="name" v-model="selectedGroup" class="group-select">
-                    <template #option="{ name, salary_approved, id }">
-                        <div class="selector">
-                            <p style="margin: 0">{{ name }} : <span v-if="showAccruals">{{ accruals[id] }}</span></p>
-                            <img src="/images/double-check.png" alt="" v-if="salary_approved">
-                        </div>
-                    </template>
-                </v-select>
-            </div>
-            <div class="col-2">
-                <select class="form-control" v-model="dateInfo.currentMonth" @change="fetchData()">
-                    <option v-for="month in $moment.months()" :value="month" :key="month">
-                        {{ month }}
-                    </option>
-                </select>
-            </div>
-            <div class="col-2">
-                <select class="form-control" v-model="dateInfo.currentYear" @change="fetchData()">
-                    <option v-for="year in years" :value="year" :key="year">
-                        {{ year }}
-                    </option>
-                </select>
-            </div>
-            <div class="col-2  align-items-start">
-                <a class="btn btn-primary mr-1 rounded text-white" @click="fetchData()">
-                    <i class="fa fa-redo-alt"></i>
-                </a>
-                <a  @click="exportData()" class="btn btn-success rounded text-white mr-1" v-if="can_edit">
-                    <i class="far fa-file-excel"></i>
-                </a>
-                <a @click="toggleVisible()" class="btn btn-info rounded text-white mr-1">
-                    <i class="fa fa-eye"></i>
-                </a>
-            </div>
-           <div class="col-2"></div>
-        </div>
+			<!-- filters -->
+			<div
+				class="row mb-2"
+				v-if="hasPermission"
+			>
+				<div class="col-4">
+					<div>
+						<p class="mb-0 fz-08 text-black">
+							<b>Итого действующие ФОТ
 
-        <!-- filters -->
-        <div class="row mb-2" v-if="hasPermission">
-            <div class="col-4">
-                <div>
-                    <p class="mb-0 fz-08 text-black"><b>Итого действующие ФОТ
+								<i
+									class="fa fa-info-circle"
+									v-b-popover.hover.right.html="'<b>ФОТ</b>- Фонд оплаты труда<br>Сумма без вычета расходов (Штрафы и авансы)<br>ФОТ = Начисления (Отработанные + Стажировочные) + Бонусы + KPI'"
+									title="ФОТ"
+								/>
+								:</b>
+							{{ group_total }} тг.
+						</p>
+						<p class="mb-0 fz-08 text-black">
+							<b>Итого уволенные ФОТ:</b>
+							{{ group_fired }} тг.
+						</p>
+						<p
+							class="fz-08 text-black mr-1 mb-0"
+							v-if="showTotals"
+						>
+							<b>Итого все ФОТ (Действующие):</b>
+							{{ allTotal }}тг.
+						</p>
+						<p
+							class="fz-08 text-black mr-1 mb-0"
+							v-if="showTotals"
+						>
+							<b>Итого все ФОТ (Уволенные):</b>
+							{{ allTotalFired }}тг.
+						</p>
+					</div>
+				</div>
+				<div class="col-6">
+					<b-form-group class="d-flex ddf">
+						<b-form-radio
+							v-model="user_types"
+							name="some-radios"
+							value="0"
+						>
+							Действующие
+						</b-form-radio>
+						<b-form-radio
+							v-model="user_types"
+							name="some-radios"
+							value="2"
+						>
+							Стажеры
+						</b-form-radio>
+						<b-form-radio
+							v-model="user_types"
+							name="some-radios"
+							value="1"
+						>
+							Уволенные
+						</b-form-radio>
+					</b-form-group>
+					<b-form-group class="d-flex ddf">
+						<b-form-radio
+							v-model="show_user"
+							name="some-radios2"
+							value="0"
+						>
+							Все
+						</b-form-radio>
+						<b-form-radio
+							v-model="show_user"
+							name="some-radios2"
+							value="1"
+							class="mr-0"
+						>
+							Есть начисления
+						</b-form-radio>
+					</b-form-group>
+				</div>
+				<div class="col-2">
+					<p class="text-right fz-09 text-black">
+						<span>Сотрудники:</span>
+						<b> {{ users_count }} | {{ total_resources }}</b>
+					</p>
+					<b-button
+						v-if="selectedGroup.salary_approved == 0 && can_edit"
+						style="float:right"
+						@click="showBeforeApprove = true"
+						class="rounded btn-sm mb-3 mt-1"
+						variant="info"
+					>
+						Проверено и готово к выдаче
+					</b-button>
 
-                        <i class="fa fa-info-circle"
-                            v-b-popover.hover.right.html="'<b>ФОТ</b>- Фонд оплаты труда<br>Сумма без вычета расходов (Штрафы и авансы)<br>ФОТ = Начисления (Отработанные + Стажировочные) + Бонусы + KPI'"
-                            title="ФОТ">
-                        </i>
-                        :</b>
-                        {{ group_total }} тг.
-                    </p>
-                    <p class="mb-0 fz-08 text-black">
-                        <b>Итого уволенные ФОТ:</b>
-                        {{ group_fired }} тг.
-                    </p>
-                    <p class="fz-08 text-black mr-1 mb-0" v-if="showTotals">
-                        <b>Итого все ФОТ (Действующие):</b>
-                        {{ allTotal }}тг.
-                    </p>
-                    <p class="fz-08 text-black mr-1 mb-0" v-if="showTotals">
-                        <b>Итого все ФОТ (Уволенные):</b>
-                        {{ allTotalFired }}тг.
-                    </p>
-                </div>
-            </div>
-            <div class="col-6">
-                <b-form-group class="d-flex ddf">
-                    <b-form-radio v-model="user_types"  name="some-radios" value="0">Действующие</b-form-radio>
-                    <b-form-radio v-model="user_types"  name="some-radios" value="2">Стажеры</b-form-radio>
-                    <b-form-radio v-model="user_types"  name="some-radios" value="1">Уволенные</b-form-radio>
-                </b-form-group>
-                <b-form-group class="d-flex ddf">
-                    <b-form-radio v-model="show_user"  name="some-radios2" value="0">Все</b-form-radio>
-                    <b-form-radio v-model="show_user"  name="some-radios2" value="1" class="mr-0">Есть начисления</b-form-radio>
-                </b-form-group>
-            </div>
-            <div class="col-2">
-                <p class="text-right fz-09 text-black">
-                    <span>Сотрудники:</span>
-                    <b> {{ users_count }} | {{ total_resources }}</b>
-                </p>
-                <b-button v-if="selectedGroup.salary_approved == 0 && can_edit"
-                        style="float:right"
-                        @click="showBeforeApprove = true"
-                        class="rounded btn-sm mb-3 mt-1"
-                        variant="info">Проверено и готово к выдаче</b-button>
+					<p
+						class="approved-text"
+						v-if="selectedGroup.salary_approved == 1"
+					>
+						<span><img
+							src="/images/double-check.png"
+							alt=""
+							style="width: 20px"
+						> Начисления утверждены</span>
+						<span>{{ selectedGroup.salary_approved_by }}</span>
+						<span>{{ selectedGroup.salary_approved_date }}</span>
+					</p>
+				</div>
+			</div>
 
-                <p class="approved-text" v-if="selectedGroup.salary_approved == 1">
-                    <span><img src="/images/double-check.png" alt="" style="width: 20px"> Начисления утверждены</span>
-                    <span>{{ selectedGroup.salary_approved_by }}</span>
-                    <span>{{ selectedGroup.salary_approved_date }}</span>
-                </p>
-            </div>
-        </div>
+			<!-- table -->
+			<div
+				class="table-container"
+				v-if="hasPermission"
+			>
+				<b-table
+					responsive
+					:sticky-header="true"
+					class="text-nowrap text-right salar accrual-table"
+					:class="{'hide-special': special_fields}"
+					:small="true"
+					:bordered="true"
+					:items="items"
+					:fields="fields"
+					show-empty
+					empty-text="Нет данных"
+				>
+					<template #cell(name)="data">
+						<div>
+							<b-badge
+								pill
+								variant="success"
+								class="mr-2"
+							>
+								{{ data.item.user_type }}
+							</b-badge>
+							{{ data.value }}
+							<i
+								v-if="data.index == 0"
+								class="fa fa-info-circle"
+								v-b-popover.hover.right.html="'В суммах этого ряда не учитываются Сотрудники, у которых <b>К выдаче</b> меньше 0'"
+								title="Заметка"
+							/>
+						</div>
+					</template>
 
-        <!-- table -->
-        <div class="table-container" v-if="hasPermission">
-            <b-table
-                responsive
-                :sticky-header="true"
-                class="text-nowrap text-right salar accrual-table"
-                :class="{'hide-special': special_fields}"
-                :small="true"
-                :bordered="true"
-                :items="items"
-                :fields="fields"
-                show-empty
-                emptyText="Нет данных">
+					<template #cell(bonus)="data">
+						<div
+							@click="defineClickNumber('bonus', data)"
+							class="pointer"
+						>
+							{{ data.value }} <div
+								class="cell-border"
+								v-if="data.item.edited_bonus !== null && data.index != 0"
+							/>
+						</div>
+					</template>
 
-                <template #cell(name)="data">
-                    <div>
-                        <b-badge pill variant="success" class="mr-2">{{data.item.user_type}}</b-badge>
-                        {{ data.value }}
-                        <i
-                            v-if="data.index == 0"
-                            class="fa fa-info-circle"
-                            v-b-popover.hover.right.html="'В суммах этого ряда не учитываются Сотрудники, у которых <b>К выдаче</b> меньше 0'"
-                            title="Заметка">
-                        </i>
-                    </div>
-                </template>
+					<template #cell(kpi)="data">
+						<div
+							@click="defineClickNumber('kpi', data)"
+							class="pointer"
+						>
+							{{ data.value }} <div
+								class="cell-border"
+								v-if="data.item.edited_kpi !== null && data.index != 0"
+							/>
+						</div>
+					</template>
 
-                <template #cell(bonus)="data">
-                    <div @click="defineClickNumber('bonus', data)" class="pointer">
-                        {{ data.value }} <div class="cell-border" v-if="data.item.edited_bonus !== null && data.index != 0"></div>
-                    </div>
-                </template>
+					<template #cell(total)="data">
+						<div>{{ data.value }}</div>
+					</template>
 
-                <template #cell(kpi)="data">
-                    <div @click="defineClickNumber('kpi', data)" class="pointer">
-                        {{ data.value }} <div class="cell-border" v-if="data.item.edited_kpi !== null && data.index != 0"></div>
-                    </div>
-                </template>
+					<template #cell(fines)="data">
+						<div>{{ data.value }}</div>
+					</template>
 
-                <template #cell(total)="data">
-                    <div>{{ data.value }}</div>
-                </template>
+					<template #cell(avans)="data">
+						<div>{{ data.value }}</div>
+					</template>
 
-                <template #cell(fines)="data">
-                    <div>{{ data.value }}</div>
-                </template>
+					<template #cell(final)="data">
+						<div
+							@click="defineClickNumber('final', data)"
+							class="pointer"
+							v-if="user_types == '1'"
+						>
+							{{ data.value }} <div
+								class="cell-border"
+								v-if="data.item.edited_salary !== null && data.index != 0"
+							/>
+						</div>
+						<div v-else>
+							{{ data.value }}
+						</div>
+					</template>
 
-                <template #cell(avans)="data">
-                    <div>{{ data.value }}</div>
-                </template>
-
-                <template #cell(final)="data">
-                    <div @click="defineClickNumber('final', data)" class="pointer" v-if="user_types == '1'">
-                        {{ data.value }} <div class="cell-border" v-if="data.item.edited_salary !== null && data.index != 0"></div>
-                    </div>
-                    <div v-else>{{ data.value }}</div>
-                </template>
-
-                <template #cell()="data">
-                    <div @click="detectClick(data)"
-                        :class="{
-                            'fine': data.item.fine !== undefined && data.item.fine[data.field.key.toString()].length > 0,
-                            'avans': data.item.avanses !== undefined && data.item.avanses[data.field.key.toString()] !== null,
-                            'bonus': (data.item.bonuses !== undefined && data.item.bonuses[data.field.key.toString()] !== null) || data.item.awards !== undefined && data.item.awards[data.field.key.toString()] !== null,
-                            'training': data.item.trainings !== undefined && data.item.trainings[data.field.key.toString()] !== null,
-                        }"
-                    >
-                        {{ data.value }}
-                    </div>
-                </template>
-
-
-            </b-table>
-
-        </div>
-        <div v-else>
-            <p>У вас нет доступа к этой группе</p>
-        </div>
-    </div>
-
-
-    <!-- Premium -->
-    <Sidebar
-        v-if="editPremiumSidebar"
-        :title="sidebarTitle"
-        width="400px"
-        :open="editPremiumSidebar"
-        @close="editPremiumSidebar=false"
-    >
-        <div class="px-2">
-            <div>
-                <div v-if="editedField.item.edited_kpi !== null">
-                     <p class="mt-3"><b>Kpi  </b>
-                        <i class="fa fa-info-circle"
-                            v-b-popover.hover.right.html="'Сумма KPI утвержденная к выдаче'"
-                            title="Kpi на этот месяц">
-                        </i>
-
-                    </p>
-                    <div>
-                        <b>Автор:</b>
-                        <span>{{ editedField.item.edited_kpi.user }}</span>
-                    </div>
-                    <div>
-                        <b>Изменено на:</b>
-                        <span>{{ editedField.item.edited_kpi.amount }}</span>
-                    </div>
-                    <div>
-                        <b>Комментарии:</b>
-                        <span>{{ editedField.item.edited_kpi.comment }}</span>
-                    </div>
-                    <hr>
-                </div>
-            </div>
-
-            <div>
-                <div v-if="editedField.item.edited_bonus !== null">
-                    <p class="mt-3">
-                        <b>Бонусы</b>
-                        <i
-                            class="fa fa-info-circle"
-                            v-b-popover.hover.right.html="'Сумма Бонусов, утвержденная к выдаче'"
-                            title="Бонусы на этот месяц">
-                        ></i>
-                    </p>
-                    <div>
-                        <b>Автор:</b>
-                        <span>{{ editedField.item.edited_bonus.user }}</span>
-                    </div>
-                    <div>
-                        <b>Изменено на:</b>
-                        <span>{{ editedField.item.edited_bonus.amount }}</span>
-                    </div>
-                    <div>
-                        <b>Комментарии:</b>
-                        <span>{{ editedField.item.edited_bonus.comment }}</span>
-                    </div>
-                    <hr>
-                </div>
-            </div>
-
-            <div>
-                <div v-if="editedField.item.edited_salary !== null">
-
-                     <p class="mt-3">
-                        <b>К выдаче</b>
-                        <i class="fa fa-info-circle"
-                            v-b-popover.hover.right.html="'Окончательная суммма утвержденная к выдаче'"
-                            title="К выдаче на этот месяц">
-                        </i>
-                    </p>
-                    <div>
-                        <b>Автор:</b>
-                        <span>{{ editedField.item.edited_salary.user }}</span>
-                    </div>
-                    <div>
-                        <b>Изменено на:</b>
-                        <span>{{ editedField.item.edited_salary.amount }}</span>
-                    </div>
-                    <div>
-                        <b>Комментарии:</b>
-                        <span>{{ editedField.item.edited_salary.comment }}</span>
-                    </div>
-                    <hr>
-                </div>
-            </div>
-
-
-
-            <div class="mt-3">
-
-                <p class="mt-3">
-                    <b>Бонусы локальные</b></p>
-                    <div v-for="(item,index) in Object.keys(editedField.item.bonuses)" :key="index">
-                        <p
-                            class="fz12"
-                            v-if=" editedField.item.bonuses[item] != null"
-                        >
-                            <b class="text-black">{{ item  }}:</b>
-                            {{   editedField.item.bonuses[item] }}
-                        </p>
-                    </div>
-                <hr>
-
-                <p class="mt-3">
-                    <b>Бонусы за активности</b>
-                </p>
-                <div v-for="(item,index) in Object.keys(editedField.item.awards)" :key="index">
-                    <p class="fz12" v-if=" editedField.item.awards[item] != null">
-                        <b class="text-black">{{ item  }}:</b> {{   editedField.item.awards[item] }}
-                    </p>
-                </div>
-
-                <p class="mt-3"><b>Бонусы за обучение</b></p>
-                <div v-for="(item,index) in Object.keys(editedField.item.test_bonus)" :key="index">
-                    <p class="fz12" v-if=" editedField.item.test_bonus[item] != null">
-                        <b class="text-black">{{ item  }}:</b> {{   editedField.item.test_bonus[item] }}
-                    </p>
-                </div>
-
-                    <hr>
-                <p class="mt-3"><b>Авансы </b></p>
-                <div v-for="(item,index) in Object.keys(editedField.item.avanses)" :key="index">
-                    <p
-                        class="fz12"
-                        v-if=" editedField.item.avanses[item] != null"
-                    >
-                        <b class="text-black">{{ item  }}:</b> {{   editedField.item.avanses[item] }}
-                    </p>
-                </div>
-                <hr>
-
-                <p class="mt-3"><b>История {{ bonus_history.length}}</b></p>
-                <div v-for="(item,index) in bonus_history"  class="mb-3" :key="index">
-                    <p class="fz12">
-                        <b class="text-black">Дата:</b> {{ (new Date(item.created_at)).addHours(6).toLocaleString('ru-RU') }}
-                    </p>
-                    <p class="fz12">
-                        <b class="text-black">Автор:</b> {{ item.author }} <br>
-                    </p>
-                    <p class="fz14 mb-0" v-html="item.description"></p>
-                    <br>
-                    <hr>
-                </div>
-
-            </div>
-        </div>
-    </Sidebar>
-
-    <!-- info -->
-    <Sidebar
-        v-if="openSidebar"
-        width="400px"
-        :title="sidebarTitle"
-        :open="openSidebar"
-        :link="profile_link"
-        @close="openSidebar=false"
-    >
-
-        <div class="px-2">
-            <div class="mb-2" v-if="sidebarContent.item !== undefined">
-                <p class="text-black"
-                    v-if="sidebarContent.item.hours !== undefined">
-                    <b>Отработано:</b>  {{ sidebarContent.item.hours[sidebarContent.field.key] }}
-                </p>
-                <p class="text-black"
-                    v-if="sidebarContent.item.hourly_pays !== undefined">
-                    <b>Оплата за час:</b>  {{ sidebarContent.item.hourly_pays[sidebarContent.field.key] }}
-                </p>
-                <p class="text-black mb-0">
-                    <b>Начис:</b>  {{ sidebarContent.item.salaries[sidebarContent.field.key] }}
-                </p>
-
-                <template v-if="selectedCell.field.editable">
-                    <p class="text-black mb-0"
-                        v-if="sidebarContent.item.avanses !== undefined">
-                        <b>Аванс:</b>
-                        {{ sidebarContent.item.avanses[sidebarContent.field.key] }}
-                    </p>
-                    <p class="text-black"
-                        v-if="sidebarContent.item.bonuses !== undefined">
-                        <b>Бонус:</b>
-                        {{ sidebarContent.item.bonuses[sidebarContent.field.key] }}
-                    </p>
-                    <p class="text-black"
-                        v-if="sidebarContent.item.awards !== undefined">
-                        <b>Бонус (авто):</b>
-                        {{ sidebarContent.item.awards[sidebarContent.field.key] }}
-                    </p>
-                    <p class="text-black"
-                        v-if="sidebarContent.item.test_bonus !== undefined">
-                        <b>Бонус (тесты):</b>
-                        {{ sidebarContent.item.test_bonus[sidebarContent.field.key] }}
-                    </p>
-                </template>
+					<template #cell()="data">
+						<div
+							@click="detectClick(data)"
+							:class="{
+								'fine': data.item.fine !== undefined && data.item.fine[data.field.key.toString()].length > 0,
+								'avans': data.item.avanses !== undefined && data.item.avanses[data.field.key.toString()] !== null,
+								'bonus': (data.item.bonuses !== undefined && data.item.bonuses[data.field.key.toString()] !== null) || data.item.awards !== undefined && data.item.awards[data.field.key.toString()] !== null,
+								'training': data.item.trainings !== undefined && data.item.trainings[data.field.key.toString()] !== null,
+							}"
+						>
+							{{ data.value }}
+						</div>
+					</template>
+				</b-table>
+			</div>
+			<div v-else>
+				<p>У вас нет доступа к этой группе</p>
+			</div>
+		</div>
 
 
-            </div>
-            <div class="mb-2" v-if="(user_types == '0' || user_types == '1') && can_edit">
-                <div class="d-flex row">
-                    <div class="col-6">
-                        <b-button @click="toggleTab('avans')" class="btn-sm rounded btn-primary w-full d-block" :class="{'activex': avans.visible}">Выдать аванс</b-button>
-                    </div>
-                    <div class="col-6">
-                        <b-button @click="toggleTab('bonus')" class="btn-sm rounded btn-primary w-full d-block" :class="{'activex': bonus.visible}">Выдать бонус</b-button>
-                    </div>
-                </div>
-            </div>
+		<!-- Premium -->
+		<Sidebar
+			v-if="editPremiumSidebar"
+			:title="sidebarTitle"
+			width="400px"
+			:open="editPremiumSidebar"
+			@close="editPremiumSidebar=false"
+		>
+			<div class="px-2">
+				<div>
+					<div v-if="editedField.item.edited_kpi !== null">
+						<p class="mt-3">
+							<b>Kpi  </b>
+							<i
+								class="fa fa-info-circle"
+								v-b-popover.hover.right.html="'Сумма KPI утвержденная к выдаче'"
+								title="Kpi на этот месяц"
+							/>
+						</p>
+						<div>
+							<b>Автор:</b>
+							<span>{{ editedField.item.edited_kpi.user }}</span>
+						</div>
+						<div>
+							<b>Изменено на:</b>
+							<span>{{ editedField.item.edited_kpi.amount }}</span>
+						</div>
+						<div>
+							<b>Комментарии:</b>
+							<span>{{ editedField.item.edited_kpi.comment }}</span>
+						</div>
+						<hr>
+					</div>
+				</div>
 
-            <div class="mb-4 bg-bluish p-3" v-if="avans.visible">
-                <label>Сумма аванса</label>
-                <input v-model="avans.sum" placeholder="Cумма аванса" :required="true" class="form-control form-control-sm mr-2 mb-2" type="number">
-                <label>Комментарии <span class="color-red">*</span></label>
-                <input v-model="avans.comment" placeholder="Причина выдачи..." :required="true" class="form-control form-control-sm mr-2 mb-2" type="text">
-                <p><span class="color-red">{{ avans.require }}</span></p>
-                <b-button @click="updateSalary('avans')" class="btn-sm rounded btn-primary" variant="primary" >Выдать аванс</b-button>
-            </div>
+				<div>
+					<div v-if="editedField.item.edited_bonus !== null">
+						<p class="mt-3">
+							<b>Бонусы</b>
+							<i
+								class="fa fa-info-circle"
+								v-b-popover.hover.right.html="'Сумма Бонусов, утвержденная к выдаче'"
+								title="Бонусы на этот месяц"
+							>
+								></i>
+						</p>
+						<div>
+							<b>Автор:</b>
+							<span>{{ editedField.item.edited_bonus.user }}</span>
+						</div>
+						<div>
+							<b>Изменено на:</b>
+							<span>{{ editedField.item.edited_bonus.amount }}</span>
+						</div>
+						<div>
+							<b>Комментарии:</b>
+							<span>{{ editedField.item.edited_bonus.comment }}</span>
+						</div>
+						<hr>
+					</div>
+				</div>
 
-            <div class="mb-4 bg-bluish p-3" v-if="bonus.visible">
-                <label>Сумма бонуса</label>
-                <input v-model="bonus.sum" placeholder="Cумма бонуса" :required="true" class="form-control form-control-sm mr-2 mb-2" type="number">
-                <label>Комментарии <span class="color-red">*</span></label>
-                <input v-model="bonus.comment" placeholder="Причина выдачи..." :required="true" class="form-control form-control-sm mr-2 mb-2" type="text">
-                <p><span class="color-red">{{ avans.require }}</span></p>
-                <b-button @click="updateSalary('bonus')" class="btn-sm rounded btn-primary" variant="primary" >Выдать бонус</b-button>
-            </div>
+				<div>
+					<div v-if="editedField.item.edited_salary !== null">
+						<p class="mt-3">
+							<b>К выдаче</b>
+							<i
+								class="fa fa-info-circle"
+								v-b-popover.hover.right.html="'Окончательная суммма утвержденная к выдаче'"
+								title="К выдаче на этот месяц"
+							/>
+						</p>
+						<div>
+							<b>Автор:</b>
+							<span>{{ editedField.item.edited_salary.user }}</span>
+						</div>
+						<div>
+							<b>Изменено на:</b>
+							<span>{{ editedField.item.edited_salary.amount }}</span>
+						</div>
+						<div>
+							<b>Комментарии:</b>
+							<span>{{ editedField.item.edited_salary.comment }}</span>
+						</div>
+						<hr>
+					</div>
+				</div>
 
-            <div class="mb-4" v-if="selectedCell.item.fine[sidebarContent.field.key].length > 0">
-                <p><b> Штрафы</b></p>
-                <p  class="mb-0 mt-0" >{{ selectedCell.item.fine[sidebarContent.field.key] }}</p>
-            </div>
-            <div>
-                <p class="text-black">
-                    <b>История</b>
-                </p>
-                <template v-if="sidebarHistory && sidebarHistory.length > 0">
-                    <div class="history">
-                        <div v-for="(item,index) in sidebarHistory" :key="index" class="mb-3">
-                            <p class="fz12"><b class="text-black">Дата:</b> {{ (new Date(item.created_at)).addHours(6).toLocaleString('ru-RU') }}</p>
-                            <p class="fz12"><b class="text-black">Автор:</b> {{ item.author }} <br></p>
-                            <p class="fz14 mb-0" v-html="item.description"> </p><br>
-                            <hr>
-                        </div>
-                    </div>
-                </template>
-                <template v-else>
-                    <p>История изменения отсутствует</p>
-                </template>
-            </div>
-        </div>
 
-    </Sidebar>
 
-    <!-- premium -->
-    <b-modal
-        v-model="editPremiunWindow"
-        ok-text="Да"
-        cancel-text="Нет"
-        :title="editedField.name + ': ' + editedField.type"
-        @ok="editPremium"
-        size="md"
-    >
-        <b-form-input
-            type="number"
-            v-model="amountEdit"
-            placeholder="Сумма"
-            :required="true"
-            class="mb-2"
-        ></b-form-input>
+				<div class="mt-3">
+					<p class="mt-3">
+						<b>Бонусы локальные</b>
+					</p>
+					<div
+						v-for="(item,index) in Object.keys(editedField.item.bonuses)"
+						:key="index"
+					>
+						<p
+							class="fz12"
+							v-if=" editedField.item.bonuses[item] != null"
+						>
+							<b class="text-black">{{ item }}:</b>
+							{{ editedField.item.bonuses[item] }}
+						</p>
+					</div>
+					<hr>
 
-        <b-form-input
-            type="text"
-            v-model="commentEdit"
-            placeholder="Комментарий"
-            :required="true"
-            class="mb-2"
-        ></b-form-input>
+					<p class="mt-3">
+						<b>Бонусы за активности</b>
+					</p>
+					<div
+						v-for="(item,index) in Object.keys(editedField.item.awards)"
+						:key="index"
+					>
+						<p
+							class="fz12"
+							v-if=" editedField.item.awards[item] != null"
+						>
+							<b class="text-black">{{ item }}:</b> {{ editedField.item.awards[item] }}
+						</p>
+					</div>
 
-        <template v-for="error in errors">
-            <b-alert show
-                variant="danger"
-                :key="error"
-            >
-                {{ error }}
-            </b-alert>
-        </template>
-    </b-modal>
+					<p class="mt-3">
+						<b>Бонусы за обучение</b>
+					</p>
+					<div
+						v-for="(item,index) in Object.keys(editedField.item.test_bonus)"
+						:key="index"
+					>
+						<p
+							class="fz12"
+							v-if=" editedField.item.test_bonus[item] != null"
+						>
+							<b class="text-black">{{ item }}:</b> {{ editedField.item.test_bonus[item] }}
+						</p>
+					</div>
 
-    <!-- approve salary -->
-    <b-modal
-        v-model="showBeforeApprove"
-        ok-text="Да"
-        cancel-text="Нет"
-        title="Утверждение зарплаты"
-        @ok="approveSalary"
-        size="md"
-    >
-        <p>Вы подтверждаете, что вы проверили начисления и уверены, в том что они верные?</p>
-    </b-modal>
+					<hr>
+					<p class="mt-3">
+						<b>Авансы </b>
+					</p>
+					<div
+						v-for="(item,index) in Object.keys(editedField.item.avanses)"
+						:key="index"
+					>
+						<p
+							class="fz12"
+							v-if=" editedField.item.avanses[item] != null"
+						>
+							<b class="text-black">{{ item }}:</b> {{ editedField.item.avanses[item] }}
+						</p>
+					</div>
+					<hr>
 
-</div>
+					<p class="mt-3">
+						<b>История {{ bonus_history.length }}</b>
+					</p>
+					<div
+						v-for="(item,index) in bonus_history"
+						class="mb-3"
+						:key="index"
+					>
+						<p class="fz12">
+							<b class="text-black">Дата:</b> {{ (new Date(item.created_at)).addHours(6).toLocaleString('ru-RU') }}
+						</p>
+						<p class="fz12">
+							<b class="text-black">Автор:</b> {{ item.author }} <br>
+						</p>
+						<p
+							class="fz14 mb-0"
+							v-html="item.description"
+						/>
+						<br>
+						<hr>
+					</div>
+				</div>
+			</div>
+		</Sidebar>
+
+		<!-- info -->
+		<Sidebar
+			v-if="openSidebar"
+			width="400px"
+			:title="sidebarTitle"
+			:open="openSidebar"
+			:link="profile_link"
+			@close="openSidebar=false"
+		>
+			<div class="px-2">
+				<div
+					class="mb-2"
+					v-if="sidebarContent.item !== undefined"
+				>
+					<p
+						class="text-black"
+						v-if="sidebarContent.item.hours !== undefined"
+					>
+						<b>Отработано:</b>  {{ sidebarContent.item.hours[sidebarContent.field.key] }}
+					</p>
+					<p
+						class="text-black"
+						v-if="sidebarContent.item.hourly_pays !== undefined"
+					>
+						<b>Оплата за час:</b>  {{ sidebarContent.item.hourly_pays[sidebarContent.field.key] }}
+					</p>
+					<p class="text-black mb-0">
+						<b>Начис:</b>  {{ sidebarContent.item.salaries[sidebarContent.field.key] }}
+					</p>
+
+					<template v-if="selectedCell.field.editable">
+						<p
+							class="text-black mb-0"
+							v-if="sidebarContent.item.avanses !== undefined"
+						>
+							<b>Аванс:</b>
+							{{ sidebarContent.item.avanses[sidebarContent.field.key] }}
+						</p>
+						<p
+							class="text-black"
+							v-if="sidebarContent.item.bonuses !== undefined"
+						>
+							<b>Бонус:</b>
+							{{ sidebarContent.item.bonuses[sidebarContent.field.key] }}
+						</p>
+						<p
+							class="text-black"
+							v-if="sidebarContent.item.awards !== undefined"
+						>
+							<b>Бонус (авто):</b>
+							{{ sidebarContent.item.awards[sidebarContent.field.key] }}
+						</p>
+						<p
+							class="text-black"
+							v-if="sidebarContent.item.test_bonus !== undefined"
+						>
+							<b>Бонус (тесты):</b>
+							{{ sidebarContent.item.test_bonus[sidebarContent.field.key] }}
+						</p>
+					</template>
+				</div>
+				<div
+					class="mb-2"
+					v-if="(user_types == '0' || user_types == '1') && can_edit"
+				>
+					<div class="d-flex row">
+						<div class="col-6">
+							<b-button
+								@click="toggleTab('avans')"
+								class="btn-sm rounded btn-primary w-full d-block"
+								:class="{'activex': avans.visible}"
+							>
+								Выдать аванс
+							</b-button>
+						</div>
+						<div class="col-6">
+							<b-button
+								@click="toggleTab('bonus')"
+								class="btn-sm rounded btn-primary w-full d-block"
+								:class="{'activex': bonus.visible}"
+							>
+								Выдать бонус
+							</b-button>
+						</div>
+					</div>
+				</div>
+
+				<div
+					class="mb-4 bg-bluish p-3"
+					v-if="avans.visible"
+				>
+					<label>Сумма аванса</label>
+					<input
+						v-model="avans.sum"
+						placeholder="Cумма аванса"
+						:required="true"
+						class="form-control form-control-sm mr-2 mb-2"
+						type="number"
+					>
+					<label>Комментарии <span class="color-red">*</span></label>
+					<input
+						v-model="avans.comment"
+						placeholder="Причина выдачи..."
+						:required="true"
+						class="form-control form-control-sm mr-2 mb-2"
+						type="text"
+					>
+					<p><span class="color-red">{{ avans.require }}</span></p>
+					<b-button
+						@click="updateSalary('avans')"
+						class="btn-sm rounded btn-primary"
+						variant="primary"
+					>
+						Выдать аванс
+					</b-button>
+				</div>
+
+				<div
+					class="mb-4 bg-bluish p-3"
+					v-if="bonus.visible"
+				>
+					<label>Сумма бонуса</label>
+					<input
+						v-model="bonus.sum"
+						placeholder="Cумма бонуса"
+						:required="true"
+						class="form-control form-control-sm mr-2 mb-2"
+						type="number"
+					>
+					<label>Комментарии <span class="color-red">*</span></label>
+					<input
+						v-model="bonus.comment"
+						placeholder="Причина выдачи..."
+						:required="true"
+						class="form-control form-control-sm mr-2 mb-2"
+						type="text"
+					>
+					<p><span class="color-red">{{ avans.require }}</span></p>
+					<b-button
+						@click="updateSalary('bonus')"
+						class="btn-sm rounded btn-primary"
+						variant="primary"
+					>
+						Выдать бонус
+					</b-button>
+				</div>
+
+				<div
+					class="mb-4"
+					v-if="selectedCell.item.fine[sidebarContent.field.key].length > 0"
+				>
+					<p><b> Штрафы</b></p>
+					<p class="mb-0 mt-0">
+						{{ selectedCell.item.fine[sidebarContent.field.key] }}
+					</p>
+				</div>
+				<div>
+					<p class="text-black">
+						<b>История</b>
+					</p>
+					<template v-if="sidebarHistory && sidebarHistory.length > 0">
+						<div class="history">
+							<div
+								v-for="(item,index) in sidebarHistory"
+								:key="index"
+								class="mb-3"
+							>
+								<p class="fz12">
+									<b class="text-black">Дата:</b> {{ (new Date(item.created_at)).addHours(6).toLocaleString('ru-RU') }}
+								</p>
+								<p class="fz12">
+									<b class="text-black">Автор:</b> {{ item.author }} <br>
+								</p>
+								<p
+									class="fz14 mb-0"
+									v-html="item.description"
+								/><br>
+								<hr>
+							</div>
+						</div>
+					</template>
+					<template v-else>
+						<p>История изменения отсутствует</p>
+					</template>
+				</div>
+			</div>
+		</Sidebar>
+
+		<!-- premium -->
+		<b-modal
+			v-model="editPremiunWindow"
+			ok-text="Да"
+			cancel-text="Нет"
+			:title="editedField.name + ': ' + editedField.type"
+			@ok="editPremium"
+			size="md"
+		>
+			<b-form-input
+				type="number"
+				v-model="amountEdit"
+				placeholder="Сумма"
+				:required="true"
+				class="mb-2"
+			/>
+
+			<b-form-input
+				type="text"
+				v-model="commentEdit"
+				placeholder="Комментарий"
+				:required="true"
+				class="mb-2"
+			/>
+
+			<template v-for="error in errors">
+				<b-alert
+					show
+					variant="danger"
+					:key="error"
+				>
+					{{ error }}
+				</b-alert>
+			</template>
+		</b-modal>
+
+		<!-- approve salary -->
+		<b-modal
+			v-model="showBeforeApprove"
+			ok-text="Да"
+			cancel-text="Нет"
+			title="Утверждение зарплаты"
+			@ok="approveSalary"
+			size="md"
+		>
+			<p>Вы подтверждаете, что вы проверили начисления и уверены, в том что они верные?</p>
+		</b-modal>
+	</div>
 </template>
 
 <script>

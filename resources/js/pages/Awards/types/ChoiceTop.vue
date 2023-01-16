@@ -1,28 +1,32 @@
 <template>
-    <b-row>
-        <b-col cols="12" md="9" offset-md="3">
-            <SuperSelect
-                v-if="done"
-                style="width: 80%;"
-                :key="1"
-                :onlytype="2"
-                @choose="superselectChoice"
-                :single="true"
-                :placeholder="'Выберите должность или отдел'"
-                :disable_type="1"
-                :value_id="targetable_id"
-                :available_courses="courses"
-                :pre_build="true"
-                :select_all_btn="false"
-            />
-        </b-col>
-    </b-row>
+	<b-row>
+		<b-col
+			cols="12"
+			md="9"
+			offset-md="3"
+		>
+			<SuperSelect
+				v-if="done"
+				style="width: 80%;"
+				:key="1"
+				:onlytype="2"
+				@choose="superselectChoice"
+				:single="true"
+				:placeholder="'Выберите должность или отдел'"
+				:disable_type="1"
+				:value_id="targetable_id"
+				:available_courses="courses"
+				:pre_build="true"
+				:select_all_btn="false"
+			/>
+		</b-col>
+	</b-row>
 </template>
 
 <script>
 import SuperSelect from '@/components/SuperSelect'
 export default {
-	name: 'choice-top',
+	name: 'ChoiceTop',
 	components: {
 		SuperSelect,
 	},

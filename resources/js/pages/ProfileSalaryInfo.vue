@@ -1,46 +1,58 @@
 <template>
-  <div class="profile-salary-info">
-    <div class="col-xl-12">
-      <div class="ublock" style="border-radius:5px 5px 0 0;">
-          <h2 class="big-title">Ваш баланс</h2>
-          <user-earnings
-              :data="user_earnings"
-              :activeuserid="user_id"
-              :has_quartal_premiums="has_qp"
-              :month="month"
-          />
-      </div>
-    </div>
-    <!-- Таблица начислений -->
-    <div class="col-xl-12">
-        <div class="ublock pt-0 relative" style="border-top: 1px solid transparent;border-radius:0 0 5px 5px" id="pulse" >
+	<div class="profile-salary-info">
+		<div class="col-xl-12">
+			<div
+				class="ublock"
+				style="border-radius:5px 5px 0 0;"
+			>
+				<h2 class="big-title">
+					Ваш баланс
+				</h2>
+				<user-earnings
+					:data="user_earnings"
+					:activeuserid="user_id"
+					:has_quartal_premiums="has_qp"
+					:month="month"
+				/>
+			</div>
+		</div>
+		<!-- Таблица начислений -->
+		<div class="col-xl-12">
+			<div
+				class="ublock pt-0 relative"
+				style="border-top: 1px solid transparent;border-radius:0 0 5px 5px"
+				id="pulse"
+			>
+				<div class="row mb-3 mt-3">
+					<div class="col-9">
+						<h5>Начисления</h5>
+					</div>
+					<div class="col-3">
+						<select
+							class="form-control"
+							v-model="month"
+							@change="fetch()"
+						>
+							<option
+								v-for="month in $moment.months()"
+								:value="month"
+								:key="month"
+							>
+								{{ month }}
+								>
+							</option>
+						</select>
+					</div>
+				</div>
 
-
-          <div class="row mb-3 mt-3">
-              <div class="col-9">
-                  <h5>Начисления</h5>
-              </div>
-              <div class="col-3">
-                <select class="form-control" v-model="month" @change="fetch()">
-                      <option
-                        v-for="month in $moment.months()"
-                        :value="month"
-                        :key="month">{{month}}
-                      >
-                      </option>
-                  </select>
-              </div>
-          </div>
-
-            <t-usersalary
-              :activeuserid="user_id"
-              :date="date"
-              :month="month"
-            />
-        </div>
-    </div>
-
-  </div>
+				<t-usersalary
+					:activeuserid="user_id"
+					:date="date"
+					:month="month"
+				/>
+			</div>
+		</div>
+	</div>
 </template>
 
 <script>

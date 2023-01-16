@@ -1,139 +1,174 @@
 <template>
-  <div class="time-start-panel">
-    <div class="listbtn">
-      <div class="lstbtn" v-if="program == 2">
-        <div v-if="user_type == 'office'">
-          <template v-for="(btn, index) in btnlist_office">
-            <button
-              :key="index"
-              @click="btnclickk(btn.name)"
-              class="btn btn-secondary"
-              :disabled="activebtn == btn.name"
-              :class="{ activiti: activebtn == btn.name }"
-            >
-              <i
-                v-if="activebtn == btn.name"
-                class="fa fa-check-square-o"
-                aria-hidden="true"
-              ></i>
-              {{ btn.name }}
-            </button>
-          </template>
-        </div>
-        <div v-else>
-          <template v-for="(btn, index) in btnlist">
-            <button
-              :key="index"
-              @click="btnclickk(btn.name)"
-              class="btn btn-secondary"
-              :disabled="activebtn == btn.name"
-              :class="{ activiti: activebtn == btn.name }"
-            >
-              <i
-                v-if="activebtn == btn.name"
-                class="fa fa-check-square-o"
-                aria-hidden="true"
-              ></i>
-              {{ btn.name }}
-            </button>
-          </template>
-        </div>
-      </div>
-    </div>
+	<div class="time-start-panel">
+		<div class="listbtn">
+			<div
+				class="lstbtn"
+				v-if="program == 2"
+			>
+				<div v-if="user_type == 'office'">
+					<template v-for="(btn, index) in btnlist_office">
+						<button
+							:key="index"
+							@click="btnclickk(btn.name)"
+							class="btn btn-secondary"
+							:disabled="activebtn == btn.name"
+							:class="{ activiti: activebtn == btn.name }"
+						>
+							<i
+								v-if="activebtn == btn.name"
+								class="fa fa-check-square-o"
+								aria-hidden="true"
+							/>
+							{{ btn.name }}
+						</button>
+					</template>
+				</div>
+				<div v-else>
+					<template v-for="(btn, index) in btnlist">
+						<button
+							:key="index"
+							@click="btnclickk(btn.name)"
+							class="btn btn-secondary"
+							:disabled="activebtn == btn.name"
+							:class="{ activiti: activebtn == btn.name }"
+						>
+							<i
+								v-if="activebtn == btn.name"
+								class="fa fa-check-square-o"
+								aria-hidden="true"
+							/>
+							{{ btn.name }}
+						</button>
+					</template>
+				</div>
+			</div>
+		</div>
 
 
 
 
 
-    <transition name="fade">
-      <sidebar
-        title="Заказы руководителей"
-        :open="ordersShow"
-        @close="ordersShow = false"
-        v-show="ordersShow"
-        width="40%"
-      >
-        <div class="mt-2 p-2">
-          <div class="form-group my-table">
-            <table class="table table-striped table-tt border">
-              <tr>
-                <th>Название группы</th>
-                <th>Требуется</th>
-                <th>Наняты</th>
-              </tr>
-              <tr v-for="(order, index) in orders" :key="index">
-                <td class="text-left t-name bgz table-title">
-                  {{ order.group }}
-                </td>
-                <td class="text-left table-title">{{ order.required }}</td>
-                <td class="text-left table-title">{{ order.fact }}</td>
-              </tr>
-            </table>
-          </div>
-          <div class=" mt-2 form-group row" v-if="position_id == 45">
-            <label
-              for="firstName"
-              class="col-sm-4 col-form-label font-weight-bold"
-              >Выберите отдел</label
-            >
-            <div class="col-sm-12 relative mb-2">
-              <select
-                type="number"
-                required="required"
-                v-model="group_id"
-                class="form-control"
-              >
-                <option :value="group.id" v-for="group in groups" :key="group.id">{{
-                  group.name
-                }}</option>
-              </select>
-            </div>
-            <label
-              for="firstName"
-              class="col-sm-4 col-form-label font-weight-bold"
-              >Количество</label
-            >
-            <div class="col-sm-12 relative mb-2">
-              <input
-                type="number"
-                required="required"
-                v-model="quantity"
-                class="form-control"
-              />
-            </div>
-            <div class="col-sm-12">
-              <p style="font-size: 12px;font-weight: 600">
-                Пожалуйста, пишите сколько сотрудников нужно с учетом
-                предоставленных, так как факт не меняется от введенного
-                значения.
-              </p>
-              <button class="btn btn-primary" @click="orderGroup">
-                Сохранить
-              </button>
-            </div>
-          </div>
-        </div>
-      </sidebar>
-    </transition>
+		<transition name="fade">
+			<sidebar
+				title="Заказы руководителей"
+				:open="ordersShow"
+				@close="ordersShow = false"
+				v-show="ordersShow"
+				width="40%"
+			>
+				<div class="mt-2 p-2">
+					<div class="form-group my-table">
+						<table class="table table-striped table-tt border">
+							<tr>
+								<th>Название группы</th>
+								<th>Требуется</th>
+								<th>Наняты</th>
+							</tr>
+							<tr
+								v-for="(order, index) in orders"
+								:key="index"
+							>
+								<td class="text-left t-name bgz table-title">
+									{{ order.group }}
+								</td>
+								<td class="text-left table-title">
+									{{ order.required }}
+								</td>
+								<td class="text-left table-title">
+									{{ order.fact }}
+								</td>
+							</tr>
+						</table>
+					</div>
+					<div
+						class=" mt-2 form-group row"
+						v-if="position_id == 45"
+					>
+						<label
+							for="firstName"
+							class="col-sm-4 col-form-label font-weight-bold"
+						>Выберите отдел</label>
+						<div class="col-sm-12 relative mb-2">
+							<select
+								type="number"
+								required="required"
+								v-model="group_id"
+								class="form-control"
+							>
+								<option
+									:value="group.id"
+									v-for="group in groups"
+									:key="group.id"
+								>
+									{{
+										group.name
+									}}
+								</option>
+							</select>
+						</div>
+						<label
+							for="firstName"
+							class="col-sm-4 col-form-label font-weight-bold"
+						>Количество</label>
+						<div class="col-sm-12 relative mb-2">
+							<input
+								type="number"
+								required="required"
+								v-model="quantity"
+								class="form-control"
+							>
+						</div>
+						<div class="col-sm-12">
+							<p style="font-size: 12px;font-weight: 600">
+								Пожалуйста, пишите сколько сотрудников нужно с учетом
+								предоставленных, так как факт не меняется от введенного
+								значения.
+							</p>
+							<button
+								class="btn btn-primary"
+								@click="orderGroup"
+							>
+								Сохранить
+							</button>
+						</div>
+					</div>
+				</div>
+			</sidebar>
+		</transition>
 
-    <b-modal v-model="showCorpBookPage"  title="Н" size="xl" class="modalle" hide-footer hide-header no-close-on-backdrop>
-        <div class="corpbook" >
-          <div class="inner">
-              <h5 class="text-center aet mb-3">Ознакомьтесь с одной из страниц Вашей корпоративной книги</h5>
-              <h3 class="text-center">{{ corp_book_page.title }}</h3>
+		<b-modal
+			v-model="showCorpBookPage"
+			title="Н"
+			size="xl"
+			class="modalle"
+			hide-footer
+			hide-header
+			no-close-on-backdrop
+		>
+			<div class="corpbook">
+				<div class="inner">
+					<h5 class="text-center aet mb-3">
+						Ознакомьтесь с одной из страниц Вашей корпоративной книги
+					</h5>
+					<h3 class="text-center">
+						{{ corp_book_page.title }}
+					</h3>
 
-              <div v-html="corp_book_page.text"></div>
+					<div v-html="corp_book_page.text" />
 
-              <button class="btn btn-primary rounded m-auto" id="readCorpBook" @click="hideBook" disabled>
-                  <span class="text">Я прочитал</span>
-                  <span class="timer"></span>
-              </button>
-          </div>
-      </div>
-    </b-modal>
-
-
-  </div>
+					<button
+						class="btn btn-primary rounded m-auto"
+						id="readCorpBook"
+						@click="hideBook"
+						disabled
+					>
+						<span class="text">Я прочитал</span>
+						<span class="timer" />
+					</button>
+				</div>
+			</div>
+		</b-modal>
+	</div>
 </template>
 
 <script>

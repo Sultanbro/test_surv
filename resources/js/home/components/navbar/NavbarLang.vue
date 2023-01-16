@@ -1,29 +1,50 @@
 <template>
-  <a
-      v-click-outside="hidePopup"
-      :class="{'jNav-menu-lang-active': active}"
-      class="jNav-menu-lang"
-      href="javascript:void(0)"
-      @click="active = !active"
-  >
-    {{ lang.toUpperCase() }}
-    <div
-        class="jNav-menu-lang-popup"
-    >
-      <div class="jNav-menu-lang-wrapper" @click="$emit('change', 'ru')">
-        <div class="jNav-menu-lang-button">Русский</div>
-        <img :src="require('../../assets/img/rus.png').default" alt="ru" class="jNav-menu-lang-img">
-      </div>
-      <div class="jNav-menu-lang-wrapper" @click="$emit('change', 'kz')">
-        <div class="jNav-menu-lang-button">Казак</div>
-        <img :src="require('../../assets/img/kz.png').default" alt="kz" class="jNav-menu-lang-img">
-      </div>
-      <div class="jNav-menu-lang-wrapper" @click="$emit('change', 'en')">
-        <div class="jNav-menu-lang-button">English</div>
-        <img :src="require('../../assets/img/eng.png').default" alt="en" class="jNav-menu-lang-img">
-      </div>
-    </div>
-  </a>
+	<a
+		v-click-outside="hidePopup"
+		:class="{'jNav-menu-lang-active': active}"
+		class="jNav-menu-lang"
+		href="javascript:void(0)"
+		@click="active = !active"
+	>
+		{{ lang.toUpperCase() }}
+		<div
+			class="jNav-menu-lang-popup"
+		>
+			<div
+				class="jNav-menu-lang-wrapper"
+				@click="$emit('change', 'ru')"
+			>
+				<div class="jNav-menu-lang-button">Русский</div>
+				<img
+					:src="require('../../assets/img/rus.png').default"
+					alt="ru"
+					class="jNav-menu-lang-img"
+				>
+			</div>
+			<div
+				class="jNav-menu-lang-wrapper"
+				@click="$emit('change', 'kz')"
+			>
+				<div class="jNav-menu-lang-button">Казак</div>
+				<img
+					:src="require('../../assets/img/kz.png').default"
+					alt="kz"
+					class="jNav-menu-lang-img"
+				>
+			</div>
+			<div
+				class="jNav-menu-lang-wrapper"
+				@click="$emit('change', 'en')"
+			>
+				<div class="jNav-menu-lang-button">English</div>
+				<img
+					:src="require('../../assets/img/eng.png').default"
+					alt="en"
+					class="jNav-menu-lang-img"
+				>
+			</div>
+		</div>
+	</a>
 </template>
 
 <script>

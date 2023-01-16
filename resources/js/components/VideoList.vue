@@ -1,99 +1,144 @@
 <template>
-<div class="v-list">
-    <Draggable
-        class="dfsdf"
-        tag="div"
-        handle=".fa-bars"
-        :list="videos"
-        :group="{ name: 'g1' }"
-        @end="saveOrder"
-    >
-        <div class="video-block" v-for="(video, v_index) in videos"
-                :key="video.id"
-                :id="video.id"
-                :class="{
-                    'active': (active == video.id),
-                    'disabled': active != video.id && mode == 'read' && video.item_model == null
-                }"
-                @click="showVideo(video, v_index)"
-            >
-            <div class="mover" v-if="mode == 'edit' && !group_edit">
-                <i class="fa fa-bars"></i>
-            </div>
-            <div class="img">
-                <img src="/images/author.jpg" alt="text" />
-            </div>
-            <div class="desc">
-                <h4>
-                    <i class="fa fa-lock mr-1"></i>
-                    {{ video.title }}
-                </h4>
-                <div class="text" v-html="video.desc"></div>
-            </div>
-            <div class="controls d-flex"
-                v-if="mode == 'edit' && !group_edit"
-            >
-                <div class="more">
-                    <i class="fas fa-ellipsis-h mr-2"></i>
-                    <div class="show" @click.stop="$emit('showTests', video, true)">
-                         <div class="el" >
-                            <i class="fa fa-edit  mr-2" title="Текст" ></i>
-                            <span>Переименовать</span>
-                        </div>
-                        <div class="el"  @click.stop="moveTo(video, v_index)">
-                            <i class="fas fa-angle-double-right  mr-2" title="Текст"></i>
-                            <span>Переместить</span>
-                        </div>
-                        <div class="el"  @click.stop="$emit('showTests', video, false)">
-                            <i class="far fa-question-circle mr-2" title="Вопросы к видео"></i>
-                            <span>Вопросы к видео</span>
-                        </div>
-                    </div>
-                </div>
+	<div class="v-list">
+		<Draggable
+			class="dfsdf"
+			tag="div"
+			handle=".fa-bars"
+			:list="videos"
+			:group="{ name: 'g1' }"
+			@end="saveOrder"
+		>
+			<div
+				class="video-block"
+				v-for="(video, v_index) in videos"
+				:key="video.id"
+				:id="video.id"
+				:class="{
+					'active': (active == video.id),
+					'disabled': active != video.id && mode == 'read' && video.item_model == null
+				}"
+				@click="showVideo(video, v_index)"
+			>
+				<div
+					class="mover"
+					v-if="mode == 'edit' && !group_edit"
+				>
+					<i class="fa fa-bars" />
+				</div>
+				<div class="img">
+					<img
+						src="/images/author.jpg"
+						alt="text"
+					>
+				</div>
+				<div class="desc">
+					<h4>
+						<i class="fa fa-lock mr-1" />
+						{{ video.title }}
+					</h4>
+					<div
+						class="text"
+						v-html="video.desc"
+					/>
+				</div>
+				<div
+					class="controls d-flex"
+					v-if="mode == 'edit' && !group_edit"
+				>
+					<div class="more">
+						<i class="fas fa-ellipsis-h mr-2" />
+						<div
+							class="show"
+							@click.stop="$emit('showTests', video, true)"
+						>
+							<div class="el">
+								<i
+									class="fa fa-edit  mr-2"
+									title="Текст"
+								/>
+								<span>Переименовать</span>
+							</div>
+							<div
+								class="el"
+								@click.stop="moveTo(video, v_index)"
+							>
+								<i
+									class="fas fa-angle-double-right  mr-2"
+									title="Текст"
+								/>
+								<span>Переместить</span>
+							</div>
+							<div
+								class="el"
+								@click.stop="$emit('showTests', video, false)"
+							>
+								<i
+									class="far fa-question-circle mr-2"
+									title="Вопросы к видео"
+								/>
+								<span>Вопросы к видео</span>
+							</div>
+						</div>
+					</div>
 
-                <i  class="far fa-trash-alt"
-                    title="Убрать из плейлиста"
-                    @click.stop="$emit('deleteVideo', {
-                        video: video,
-                        v_index: v_index,
-                        g_index: g_index,
-                        c_index: c_index
-                    })"
-                ></i>
-            </div>
-        </div>
-    </Draggable>
+					<i
+						class="far fa-trash-alt"
+						title="Убрать из плейлиста"
+						@click.stop="$emit('deleteVideo', {
+							video: video,
+							v_index: v_index,
+							g_index: g_index,
+							c_index: c_index
+						})"
+					/>
+				</div>
+			</div>
+		</Draggable>
 
 
-    <!-- Переместить -->
-    <Sidebar
-        v-model="modal"
-        title="Переместить видео"
-        :open="modal"
-        @close="modal = false"
-        width="50%"
-    >
+		<!-- Переместить -->
+		<Sidebar
+			v-model="modal"
+			title="Переместить видео"
+			:open="modal"
+			@close="modal = false"
+			width="50%"
+		>
+			<div class="d-flex mb-2 p-3 aic">
+				<p class="mb-0 mr-2">
+					Плейлист
+				</p>
+				<v-select
+					:options="playlists"
+					label="title"
+					v-model="playlist"
+					class="group-select w-full"
+				/>
+			</div>
 
-        <div class="d-flex mb-2 p-3 aic">
-            <p class="mb-0 mr-2">Плейлист</p>
-            <v-select :options="playlists" label="title" v-model="playlist" class="group-select w-full"></v-select>
-        </div>
+			<div class="d-flex mb-2 p-3 aic">
+				<p class="mb-0 mr-2">
+					Отдел
+				</p>
+				<v-select
+					:options="groups"
+					label="title"
+					v-model="group"
+					class="group-select w-full"
+				/>
+			</div>
 
-        <div class="d-flex mb-2 p-3 aic">
-            <p class="mb-0 mr-2">Отдел</p>
-            <v-select :options="groups" label="title" v-model="group" class="group-select w-full"></v-select>
-        </div>
 
-
-        <div class="mb-3">
-            <button class="btn btn-primary rounded m-auto " @click="move">
-                <span>Сохранить</span>
-            </button>
-        </div>
-
-    </Sidebar>
-
-</div>
+			<div class="mb-3">
+				<button
+					class="btn btn-primary rounded m-auto "
+					@click="move"
+				>
+					<span>Сохранить</span>
+				</button>
+			</div>
+		</Sidebar>
+	</div>
 </template>
 
 <script>

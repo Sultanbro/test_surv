@@ -1,16 +1,16 @@
 <template>
-    <div class="video-player">
-        <videoPlayer
-            class="vjs-custom-skin"
-            ref="videoPlayer"
-            :options="playerOptions"
-            :playsinline="true"
-            @play="onPlayerPlay"
-            @pause="onPlayerPause"
-            @ready="playerReadied"
-            @statechanged="playerStateChanged"
-        />
-    </div>
+	<div class="video-player">
+		<videoPlayer
+			class="vjs-custom-skin"
+			ref="videoPlayer"
+			:options="playerOptions"
+			:playsinline="true"
+			@play="onPlayerPlay"
+			@pause="onPlayerPause"
+			@ready="playerReadied"
+			@statechanged="playerStateChanged"
+		/>
+	</div>
 </template>
 
 <script>

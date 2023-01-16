@@ -1,103 +1,132 @@
 <template>
-<div
-	id="courses__anchor"
-	class="courses__wrapper block _anim _anim-no-hide mt-4"
-	:class="{'hidden': courses.length === 0}"
->
 	<div
-		class="courses__content"
-		:class="{'hidden': activeCourse !== null}"
+		id="courses__anchor"
+		class="courses__wrapper block _anim _anim-no-hide mt-4"
+		:class="{'hidden': courses.length === 0}"
 	>
-		<div class="courses__title">
-			Ваши курсы
-		</div>
-		<div class="courses__content__wrapper">
-			<div class="courses__item"
-				v-for="(course, index) in unfinished"
-				:key="index"
-				:class="{'current': index == 0}"
-			>
-				<img
-					:src="course.img || '/images/course.jpg'"
-					alt="курс"
-					class="courses__image"
-					@click="selectCourse(index)"
-					onerror="this.src = '/images/course.jpg';"
+		<div
+			class="courses__content"
+			:class="{'hidden': activeCourse !== null}"
+		>
+			<div class="courses__title">
+				Ваши курсы
+			</div>
+			<div class="courses__content__wrapper">
+				<div
+					class="courses__item"
+					v-for="(course, index) in unfinished"
+					:key="index"
+					:class="{'current': index == 0}"
 				>
-				<div class="courses__name">
-					{{ course.name }}
-				</div>
-				<div class="courses__progress">
-					<div
-						v-if="courseInfo[course.id]"
-						class="courses__line"
-						:style="`width: ${courseInfo[course.id].progress}%`"
-					/>
-				</div>
-				<!-- Линия зависит от процентов в span-->
-				<div class="courses__percent">
-					<template v-if="courseInfo[course.id]">
-						Пройдено: <span>{{ courseInfo[course.id].progress }}%</span>
-					</template>
-					<template v-else>
+					<img
+						:src="course.img || '/images/course.jpg'"
+						alt="курс"
+						class="courses__image"
+						@click="selectCourse(index)"
+						onerror="this.src = '/images/course.jpg';"
+					>
+					<div class="courses__name">
+						{{ course.name }}
+					</div>
+					<div class="courses__progress">
+						<div
+							v-if="courseInfo[course.id]"
+							class="courses__line"
+							:style="`width: ${courseInfo[course.id].progress}%`"
+						/>
+					</div>
+					<!-- Линия зависит от процентов в span-->
+					<div class="courses__percent">
+						<template v-if="courseInfo[course.id]">
+							Пройдено: <span>{{ courseInfo[course.id].progress }}%</span>
+						</template>
+						<template v-else>
 						&nbsp;
-					</template>
+						</template>
+					</div>
+					<div
+						class="courses__regress"
+						v-if="isRegressed(course)"
+					>
+						<div class="courses__regress-message">
+							Курс обнулен!
+						</div>
+					</div>
+					<a
+						:href="'/my-courses?id=' + course.id"
+						class="courses__button"
+					>
+						<span>{{ course.course_results ? 'Продолжить курс' : 'Начать курс' }}</span>
+					</a>
 				</div>
-				<div class="courses__regress" v-if="isRegressed(course)">
-					<div class="courses__regress-message">Курс обнулен!</div>
-				</div>
-				<a :href="'/my-courses?id=' + course.id" class="courses__button">
-					<span>{{ course.course_results ? 'Продолжить курс' : 'Начать курс' }}</span>
-				</a>
 			</div>
 		</div>
-	</div>
 
-	<div class="profit__info active" v-if="activeCourse !== null">
-		<div class="profit__info-title" >
-			Информация о курсе: {{ activeCourse.name }}
-		</div>
-		<div class="profit__info-back" @click="back">
-			Назад
-		</div>
-		<div class="profit__info-back-mobile"></div>
-		<div class="profit__info__inner">
-			<div class="profit__info__item">
-				<img
-					:src="activeCourse.img || '/images/course.jpg'"
-					alt="info image"
-					class="profit__info-image"
-				>
-				<div class="profit__info-about">
-					<div class="profit__info-text" v-html="activeCourse.text"/>
-					<div class="profit__info-text mobile" v-html="activeCourse.text"/>
-					<div class="profit__info__wrapper">
-
-						<template v-if="courseInfo[activeCourse.id] && courseInfo[activeCourse.id].items">
-							<div
-								v-for="(item, index) in courseInfo[activeCourse.id].items"
-								:key="index"
-								class="info__wrapper-item"
-								:class="{'done': item.status == 1}"
-							>
-								<a :href="`/my-courses?id=${activeCourse.id}`" class="info__item-box">
-									<i
-										class="info__item-icon"
-										:class="[modelIcon[item.item_model]]"
-									/>
-									<p class="info__item-stages">{{ item.completed_stages }} / {{ item.all_stages }}</p>
-								</a>
-								<div class="info__item-value">{{ itemProgress(item) }}%</div>
-								<div class="info__item-value">{{ modelName[item.item_model] }}</div>
-								<div class="info__item-value">{{ item.title }}</div>
-							</div>
-						</template>
+		<div
+			class="profit__info active"
+			v-if="activeCourse !== null"
+		>
+			<div class="profit__info-title">
+				Информация о курсе: {{ activeCourse.name }}
+			</div>
+			<div
+				class="profit__info-back"
+				@click="back"
+			>
+				Назад
+			</div>
+			<div class="profit__info-back-mobile" />
+			<div class="profit__info__inner">
+				<div class="profit__info__item">
+					<img
+						:src="activeCourse.img || '/images/course.jpg'"
+						alt="info image"
+						class="profit__info-image"
+					>
+					<div class="profit__info-about">
+						<div
+							class="profit__info-text"
+							v-html="activeCourse.text"
+						/>
+						<div
+							class="profit__info-text mobile"
+							v-html="activeCourse.text"
+						/>
+						<div class="profit__info__wrapper">
+							<template v-if="courseInfo[activeCourse.id] && courseInfo[activeCourse.id].items">
+								<div
+									v-for="(item, index) in courseInfo[activeCourse.id].items"
+									:key="index"
+									class="info__wrapper-item"
+									:class="{'done': item.status == 1}"
+								>
+									<a
+										:href="`/my-courses?id=${activeCourse.id}`"
+										class="info__item-box"
+									>
+										<i
+											class="info__item-icon"
+											:class="[modelIcon[item.item_model]]"
+										/>
+										<p class="info__item-stages">{{ item.completed_stages }} / {{ item.all_stages }}</p>
+									</a>
+									<div class="info__item-value">
+										{{ itemProgress(item) }}%
+									</div>
+									<div class="info__item-value">
+										{{ modelName[item.item_model] }}
+									</div>
+									<div class="info__item-value">
+										{{ item.title }}
+									</div>
+								</div>
+							</template>
+						</div>
 					</div>
 				</div>
 			</div>
 		</div>
 	</div>
-</div>
 </template>
 
 <script>

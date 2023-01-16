@@ -1,42 +1,43 @@
 <template>
-<div class="mt-5">
-    <b-tabs content-class="mt-3">
-        
-        <template v-for="activity in activitiess"> 
-            <b-tab card
-                v-if="![19,21].includes(activity.id)"
-                :title="activity.name"
-                :key="activity.id" >
-                
+	<div class="mt-5">
+		<b-tabs content-class="mt-3">
+			<template v-for="activity in activitiess"> 
+				<b-tab
+					card
+					v-if="![19,21].includes(activity.id)"
+					:title="activity.name"
+					:key="activity.id"
+				>
+					<t-activity-collection
+						v-if="activity.type == 'collection'"
+						:month="monthInfo"
+						:activity="activity"
+						:is_admin="false"
+						:key="activity.id"
+						:price="activity.price"
+					/>
 
-                <t-activity-collection   v-if="activity.type == 'collection'"
-                    :month="monthInfo"
-                    :activity="activity"
-                    :is_admin="false"
-                    :key="activity.id"
-                    :price="activity.price"
-                ></t-activity-collection>
-
-                <t-activity-new  v-else-if="activity.type == 'default'"
-                    :month="monthInfo"
-                    :activity="activity"
-                    :key="activity.id"
-                    :group_id="activity.group_id"
-                    :work_days="activity.workdays"
-                    :editable="false"
-                     :show_headers="false"
-                ></t-activity-new>
-            </b-tab>
-        </template>
+					<t-activity-new
+						v-else-if="activity.type == 'default'"
+						:month="monthInfo"
+						:activity="activity"
+						:key="activity.id"
+						:group_id="activity.group_id"
+						:work_days="activity.workdays"
+						:editable="false"
+						:show_headers="false"
+					/>
+				</b-tab>
+			</template>
         
-        <b-tab title="Контроль Качества">
-            <t-quality-weekly 
-                :monthInfo="monthInfo"
-                :items="quality"
-            ></t-quality-weekly>
-        </b-tab>
-    </b-tabs>
-</div>
+			<b-tab title="Контроль Качества">
+				<t-quality-weekly 
+					:month-info="monthInfo"
+					:items="quality"
+				/>
+			</b-tab>
+		</b-tabs>
+	</div>
 </template>
 
 <script>

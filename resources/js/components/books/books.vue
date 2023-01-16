@@ -1,9 +1,8 @@
 <template>
-<div>
-    <!-- User Interface controls -->
-    <b-row>
-
-        <!-- <b-col lg="4" class="my-1">
+	<div>
+		<!-- User Interface controls -->
+		<b-row>
+			<!-- <b-col lg="4" class="my-1">
             <b-form-group class="mb-0">
                 <b-input-group size="sm">
                     <b-form-input id="filter-input" v-model="filter" type="search" placeholder=""></b-form-input>
@@ -27,65 +26,142 @@
             <b-pagination v-model="currentPage" :total-rows="totalRows" :per-page="perPage" align="fill" size="sm" class="my-0 mr-2"></b-pagination>
         </b-col> -->
 
-        <b-col lg="2" class="my-1">
-            <div class="d-flex">
-                <div><button @click="toggleAbbBookWindow" class="btn btn-success btn-sm mr-2">Добавить книгу</button></div>
-            </div>
-        </b-col>
-        <b-col md="12" class="my-2">
-            <div v-if="addBookWindow" class="mb-3">
-                <p><strong>Новая книга</strong></p>
-                <b-form-input v-model="book.title" placeholder="Название книги" class="mb-2"></b-form-input>
-                <b-form-input v-model="book.author" placeholder="Автор книги" class="mb-2"></b-form-input>
-                <b-form-input v-model="book.link" placeholder="Ссылка" class="mb-2"></b-form-input>
-                <button @click="addBook" class="btn btn-success btn-sm">Сохранить</button>
-            </div>
-        </b-col>
-    </b-row>
+			<b-col
+				lg="2"
+				class="my-1"
+			>
+				<div class="d-flex">
+					<div>
+						<button
+							@click="toggleAbbBookWindow"
+							class="btn btn-success btn-sm mr-2"
+						>
+							Добавить книгу
+						</button>
+					</div>
+				</div>
+			</b-col>
+			<b-col
+				md="12"
+				class="my-2"
+			>
+				<div
+					v-if="addBookWindow"
+					class="mb-3"
+				>
+					<p><strong>Новая книга</strong></p>
+					<b-form-input
+						v-model="book.title"
+						placeholder="Название книги"
+						class="mb-2"
+					/>
+					<b-form-input
+						v-model="book.author"
+						placeholder="Автор книги"
+						class="mb-2"
+					/>
+					<b-form-input
+						v-model="book.link"
+						placeholder="Ссылка"
+						class="mb-2"
+					/>
+					<button
+						@click="addBook"
+						class="btn btn-success btn-sm"
+					>
+						Сохранить
+					</button>
+				</div>
+			</b-col>
+		</b-row>
 
-    <!-- Main table element -->
-    <b-table :items="items" :fields="fields" :current-page="currentPage" :per-page="perPage" :filter="filter" striped :filter-included-fields="filterOn" :sort-by.sync="sortBy" :sort-desc.sync="sortDesc" :sort-direction="sortDirection" stacked="md" show-empty small @filtered="onFiltered">
+		<!-- Main table element -->
+		<b-table
+			:items="items"
+			:fields="fields"
+			:current-page="currentPage"
+			:per-page="perPage"
+			:filter="filter"
+			striped
+			:filter-included-fields="filterOn"
+			:sort-by.sync="sortBy"
+			:sort-desc.sync="sortDesc"
+			:sort-direction="sortDirection"
+			stacked="md"
+			show-empty
+			small
+			@filtered="onFiltered"
+		>
+			<template #cell(title)="row">
+				<a
+					:href="row.item.link"
+					download=""
+					target="_blank"
+				>{{ row.value }}</a>
+			</template>
 
+			<template #cell(groups)="row">
+				<b-badge
+					variant="primary"
+					class="mr-1"
+					v-for="group_id in row.value"
+					:key="group_id"
+				>
+					{{ groups[group_id] }}
+				</b-badge>
+			</template>
 
-        <template #cell(title)="row">
-            <a :href="row.item.link" download="" target="_blank">{{ row.value }}</a>
-        </template>
+			<template #cell(actions)="row">
+				<div class="d-flex s-flex">
+					<div
+						size="sm"
+						@click="clickRow(row)"
+						class="edit_button mr-2"
+					>
+						<div v-if="row.detailsShowing">
+							<i class="fa fa-times" />
+						</div>
+						<div v-else>
+							<i class="fa fa-pencil" />
+						</div>
+					</div>
+					<div
+						size="sm"
+						@click="deleteBook(row.item.id)"
+						class="delete_button"
+					>
+						<i class="fa fa-trash" />
+					</div>
+				</div>
+			</template>
 
-        <template #cell(groups)="row">
-            <b-badge variant="primary" class="mr-1" v-for="group_id in row.value" :key="group_id">{{ groups[group_id] }}</b-badge>
-        </template>
-
-        <template #cell(actions)="row">
-            <div class="d-flex s-flex">
-                <div size="sm" @click="clickRow(row)" class="edit_button mr-2">
-                    <div v-if="row.detailsShowing">
-                        <i class="fa fa-times"></i>
-                    </div>
-                    <div v-else>
-                        <i class="fa fa-pencil"></i>
-                    </div>
-                </div>
-                <div size="sm" @click="deleteBook(row.item.id)" class="delete_button">
-                    <i class="fa fa-trash"></i>
-                </div>
-            </div>
-
-        </template>
-
-        <template #row-details>
-            <b-card>
-
-                <b-form-input v-model="ebook.title" placeholder="Название книги" class="mb-2"></b-form-input>
-                <b-form-input v-model="ebook.author" placeholder="Автор книги" class="mb-2"></b-form-input>
-                <b-form-input v-model="ebook.link" placeholder="Ссылка" class="mb-2"></b-form-input>
-                <button @click="editBook" class="btn btn-success btn-sm">Сохранить</button>
-
-            </b-card>
-        </template>
-
-    </b-table>
-</div>
-
+			<template #row-details>
+				<b-card>
+					<b-form-input
+						v-model="ebook.title"
+						placeholder="Название книги"
+						class="mb-2"
+					/>
+					<b-form-input
+						v-model="ebook.author"
+						placeholder="Автор книги"
+						class="mb-2"
+					/>
+					<b-form-input
+						v-model="ebook.link"
+						placeholder="Ссылка"
+						class="mb-2"
+					/>
+					<button
+						@click="editBook"
+						class="btn btn-success btn-sm"
+					>
+						Сохранить
+					</button>
+				</b-card>
+			</template>
+		</b-table>
+	</div>
 </template>
 
 <script>

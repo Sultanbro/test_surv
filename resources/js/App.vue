@@ -17,7 +17,7 @@ export default {
 </script>
 <template>
 	<div class="right-panel-app">
-		<router-view/>
+		<router-view />
 	</div>
 </template>
 

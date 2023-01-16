@@ -1,24 +1,33 @@
 <template>
-  <div
-    :id="id"
-    class="blueimp-gallery blueimp-gallery-controls"
-    :class="{'blueimp-gallery-carousel': carousel}">
-
-    <div class="slides"></div>
-    <h3 class="title"></h3>
-    <p class="description"></p>
-    <a class="prev">
-      <slot name="prev">‹</slot>
-    </a>
-    <a class="next">
-      <slot name="next">›</slot>
-    </a>
-    <a v-if="!carousel" class="close">
-      <slot name="close">×</slot>
-    </a>
-    <ol v-if="!carousel" class="indicator"></ol>
-    <a v-if="carousel" class="play-pause"></a>
-  </div>
+	<div
+		:id="id"
+		class="blueimp-gallery blueimp-gallery-controls"
+		:class="{'blueimp-gallery-carousel': carousel}"
+	>
+		<div class="slides" />
+		<h3 class="title" />
+		<p class="description" />
+		<a class="prev">
+			<slot name="prev">‹</slot>
+		</a>
+		<a class="next">
+			<slot name="next">›</slot>
+		</a>
+		<a
+			v-if="!carousel"
+			class="close"
+		>
+			<slot name="close">×</slot>
+		</a>
+		<ol
+			v-if="!carousel"
+			class="indicator"
+		/>
+		<a
+			v-if="carousel"
+			class="play-pause"
+		/>
+	</div>
 </template>
 
 <script>

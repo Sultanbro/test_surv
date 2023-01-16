@@ -1,66 +1,83 @@
 <template>
-<div>
+	<div>
+		<!-- Шаги -->
+		<div class="steps">
+			<p
+				class="mr-2"
+				:class="{ active: step == 1 }"
+				@click="moveToStep(1)"
+			>
+				<b>1. Загрузить видео ></b>
+			</p>
+			<p
+				:class="{ active: step == 2 }"
+				@click="moveToStep(2)"
+			>
+				<b>2. Редактировать видео</b>
+			</p>
+		</div>
 
-    <!-- Шаги -->
-    <div class="steps">
-        <p
-            class="mr-2"
-            :class="{ active: step == 1 }"
-            @click="moveToStep(1)"
-        >
-            <b>1. Загрузить видео ></b>
-        </p>
-        <p :class="{ active: step == 2 }" @click="moveToStep(2)">
-            <b>2. Редактировать видео</b>
-        </p>
-    </div>
+		<!-- first step -->
+		<div v-if="step == 1">
+			<UploadFiles
+				:token="token"
+				type="video"
+				:id="playlist_id"
+				:file_types="['mp4', 'flv']"
+				@onupload="onupload"
+			/>
 
-    <!-- first step -->
-    <div v-if="step == 1">
-        <UploadFiles
-            :token="token"
-            type="video"
-            :id="playlist_id"
-            :file_types="['mp4', 'flv']"
-            @onupload="onupload"
-        />
+			<div
+				class="uploaded_files"
+				v-if="file !== null"
+			>
+				<p>
+					<b>Загружено {{ Number(file.size / 1024 / 1024).toFixed(3) }}mb</b>
+				</p>
+				<p>{{ file.name }}</p>
+			</div>
+		</div>
 
-        <div class="uploaded_files" v-if="file !== null">
-            <p>
-                <b>Загружено {{ Number(file.size / 1024 / 1024).toFixed(3) }}mb</b>
-            </p>
-            <p>{{ file.name }}</p>
-        </div>
-    </div>
+		<!-- second step -->
+		<div v-if="step == 2">
+			<div
+				class="row mb-2"
+				v-if="file !== null"
+			>
+				<div class="col-md-4">
+					Название
+				</div>
+				<div class="col-md-8">
+					<input
+						type="text"
+						class="form-control"
+						v-model="file.model.title"
+					>
+				</div>
 
-    <!-- second step -->
-    <div v-if="step == 2">
-        <div class="row mb-2" v-if="file !== null">
-            <div class="col-md-4">
-                Название
-            </div>
-            <div class="col-md-8">
-                <input
-                    type="text"
-                    class="form-control"
-                    v-model="file.model.title"
-                />
-            </div>
-
-            <div class="col-md-12">
-                <p>
-                    <b>Загружено {{ Number(file.size / 1024 / 1024).toFixed(3) }}mb</b>
-                </p>
-                <p>{{ file.name }}</p>
-            </div>
-        </div>
-        <div class="d-flex mt-3">
-            <button class="btn mr-1" @click="saveVideo">Сохранить</button>
-            <button class="btn" @click="deleteVideo">Удалить</button>
-        </div>
-    </div>
-
-</div>
+				<div class="col-md-12">
+					<p>
+						<b>Загружено {{ Number(file.size / 1024 / 1024).toFixed(3) }}mb</b>
+					</p>
+					<p>{{ file.name }}</p>
+				</div>
+			</div>
+			<div class="d-flex mt-3">
+				<button
+					class="btn mr-1"
+					@click="saveVideo"
+				>
+					Сохранить
+				</button>
+				<button
+					class="btn"
+					@click="deleteVideo"
+				>
+					Удалить
+				</button>
+			</div>
+		</div>
+	</div>
 </template>
 
 <script>

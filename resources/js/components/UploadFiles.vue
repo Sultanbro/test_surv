@@ -1,21 +1,24 @@
 <template>
 	<div class="upload-files">
-        <div class="file-dropzone" ref="filedropzone">
-            <div class="dropzone-display">
-                <div class="p-5">
-                    <h4>Нажмите или перекиньте файл чтобы его загрузить</h4>
-                </div>
-            </div>
-        </div>
+		<div
+			class="file-dropzone"
+			ref="filedropzone"
+		>
+			<div class="dropzone-display">
+				<div class="p-5">
+					<h4>Нажмите или перекиньте файл чтобы его загрузить</h4>
+				</div>
+			</div>
+		</div>
 
-        <UploadingFile
-            v-for="(file, index) in files"
-            v-bind:key="file.file.uniqueIdentifier + index"
-            :file="file.file"
-            :status="file.status"
-            :progress="file.progress"
-            @cancel="cancelFile"
-        />
+		<UploadingFile
+			v-for="(file, index) in files"
+			:key="file.file.uniqueIdentifier + index"
+			:file="file.file"
+			:status="file.status"
+			:progress="file.progress"
+			@cancel="cancelFile"
+		/>
 	</div>
 </template>
 

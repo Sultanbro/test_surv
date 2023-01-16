@@ -38,26 +38,26 @@ export default {
 </script>
 
 <template>
-    <DefaultLayout>
-        <div class="old__content">
-            <div class="row">
-                <div class="col-md-12 mt-4 mb-3">
-                    <ReportsNav :active-tab="activeTab"/>
-                </div>
-                <div class="col-md-12">
-                    <TableAccrual
-                        v-show="activeuserid"
-                        :groupss="groups"
-                        :years="years"
-                        :activeuserid="activeuserid"
-                        :activeuserpos="activeuserpos"
-                        :is_admin="is_admin"
-                        :can_edit="can_edit"
-                    />
-                </div>
-            </div>
-        </div>
-    </DefaultLayout>
+	<DefaultLayout>
+		<div class="old__content">
+			<div class="row">
+				<div class="col-md-12 mt-4 mb-3">
+					<ReportsNav :active-tab="activeTab" />
+				</div>
+				<div class="col-md-12">
+					<TableAccrual
+						v-show="activeuserid"
+						:groupss="groups"
+						:years="years"
+						:activeuserid="activeuserid"
+						:activeuserpos="activeuserpos"
+						:is_admin="is_admin"
+						:can_edit="can_edit"
+					/>
+				</div>
+			</div>
+		</div>
+	</DefaultLayout>
 </template>
 
 <style scoped>

@@ -1,65 +1,114 @@
 <template>
-<div>
-    <div class="d-flex">
-        <b-table responsive striped class="text-nowrap text-right my-table  my-table-ma mb-3 recruiter_stats" id="recruiter_stats" :small="true" :bordered="true" :items="items[currentDay]" :fields="fields" primary-key="a" :key="componentKey">
+	<div>
+		<div class="d-flex">
+			<b-table
+				responsive
+				striped
+				class="text-nowrap text-right my-table  my-table-ma mb-3 recruiter_stats"
+				id="recruiter_stats"
+				:small="true"
+				:bordered="true"
+				:items="items[currentDay]"
+				:fields="fields"
+				primary-key="a"
+				:key="componentKey"
+			>
+				<template #cell()="data">
+					<div>{{ data.value }}</div>
+				</template>
 
-            <template #cell()="data">
-                <div>{{ data.value }}</div>
-            </template>
+				<template #cell(name)="data">
+					<div class="d-flex justify-between bg-white">
+						<div>{{ data.value }}</div>
+						<select
+							class="form-control form-control-sm special-select"
+							v-model="data.item.profile"
+							v-if="data.value != 'ИТОГО' && ![9974,9975,5263,7372].includes(data.item.user_id)"
+							@change="changeProfile(data.index)"
+						>
+							<option value="0">
+								кз
+							</option>
+							<option value="1">
+								все удаленные
+							</option>
+							<option value="2">
+								вацап
+							</option>
+							<option value="3">
+								уведомления
+							</option>
+							<option value="4">
+								inhouse
+							</option>
+							<option value="5">
+								иностранные
+							</option>
+							<option value="6">
+								hh
+							</option>
+							<option value="7">
+								чаты
+							</option>
+						</select>
+					</div>
+				</template>
 
-            <template #cell(name)="data">
-                <div class="d-flex justify-between bg-white">
-                    <div>{{ data.value }}</div>
-                    <select class="form-control form-control-sm special-select"
-                        v-model="data.item.profile" v-if="data.value != 'ИТОГО' && ![9974,9975,5263,7372].includes(data.item.user_id)"
-                        @change="changeProfile(data.index)">
-                        <option value="0">кз</option>
-                        <option value="1">все удаленные</option>
-                        <option value="2">вацап</option>
-                        <option value="3">уведомления</option>
-                        <option value="4">inhouse</option>
-                        <option value="5">иностранные</option>
-                        <option value="6">hh</option>
-                        <option value="7">чаты</option>
-                    </select>
-                </div>
-            </template>
+				<template #cell(agrees)="data">
+					<div v-html="data.value" />
+				</template>
+			</b-table>
 
-            <template #cell(agrees)="data">
-                <div v-html="data.value"></div>
-            </template>
-
-        </b-table>
-
-        <div class="ml-3 f-200">
-            <button class="mt- mb-2 text-black fz-14 btn btn-primary btn-sm rounded" @click="showModal = !showModal" v-if="editable">
-                <b>Кол-во лидов</b>
-            </button>
-            <select class="form-control form-control-sm" v-model="currentDay">
-                <option v-for="day in days" :value="day" :key="day">{{day}}</option>
-            </select>
-            <p class="mt-2 mb-2 text-black fz-14">
-                <b> Стандарт звонков:</b><br>
-                <span class="aaa fz-12 text-red mb-2">20 звонков от 10 секунд (чтобы их сделать, нужно просто делать больше наборов в час)</span>
-                <span class="aaa fz-12 text-red">30 минут диалога</span>
-                <span class="aaa fz-12 text-red">2 согласия</span>
-            </p>
-        </div>
-    </div>
+			<div class="ml-3 f-200">
+				<button
+					class="mt- mb-2 text-black fz-14 btn btn-primary btn-sm rounded"
+					@click="showModal = !showModal"
+					v-if="editable"
+				>
+					<b>Кол-во лидов</b>
+				</button>
+				<select
+					class="form-control form-control-sm"
+					v-model="currentDay"
+				>
+					<option
+						v-for="day in days"
+						:value="day"
+						:key="day"
+					>
+						{{ day }}
+					</option>
+				</select>
+				<p class="mt-2 mb-2 text-black fz-14">
+					<b> Стандарт звонков:</b><br>
+					<span class="aaa fz-12 text-red mb-2">20 звонков от 10 секунд (чтобы их сделать, нужно просто делать больше наборов в час)</span>
+					<span class="aaa fz-12 text-red">30 минут диалога</span>
+					<span class="aaa fz-12 text-red">2 согласия</span>
+				</p>
+			</div>
+		</div>
 
 
 
-    <b-modal v-model="showModal"  hide-footer title="Количество лидов">
-        <div class="leads" v-for="(lead, index) in leads[currentDay]" :key="index">
-            <div class="d-flex justify-content-between">
-                <p><b> {{ lead.name }}</b></p>
-                <p class="ml-2">{{ lead.count }}</p>
-            </div>
-        </div>
-    </b-modal>
-
-
-</div>
+		<b-modal
+			v-model="showModal"
+			hide-footer
+			title="Количество лидов"
+		>
+			<div
+				class="leads"
+				v-for="(lead, index) in leads[currentDay]"
+				:key="index"
+			>
+				<div class="d-flex justify-content-between">
+					<p><b> {{ lead.name }}</b></p>
+					<p class="ml-2">
+						{{ lead.count }}
+					</p>
+				</div>
+			</div>
+		</b-modal>
+	</div>
 </template>
 
 <script>

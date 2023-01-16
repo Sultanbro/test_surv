@@ -44,6 +44,6 @@ export default {
 
 <template>
 	<DefaultLayout class="profile-page">
-		<ProfilePage/>
+		<ProfilePage />
 	</DefaultLayout>
 </template>

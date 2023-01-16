@@ -1,23 +1,31 @@
 <template>
-  <div class="messenger__wrapper" v-click-outside="toggle" v-show="isOpen">
-    <div @keydown.esc="escapeChat" class="messenger__card-window" id="messengerWindow">
-      <SearchBox></SearchBox>
-      <div class="messenger__chat-container">
-        <ChatsList :fullscreen="true"></ChatsList>
-        <MessengerConversation></MessengerConversation>
-        <InfoPanel></InfoPanel>
-      </div>
-      <ChinBox></ChinBox>
-    </div>
-    <ImageGallery
-      :images="galleryImages"
-      id="messenger_gallery"
-      :index="galleryIndex"
-      @onopen="openGallery"
-      @close="hideGallery"
-    />
-    <ConfirmDialog></ConfirmDialog>
-  </div>
+	<div
+		class="messenger__wrapper"
+		v-click-outside="toggle"
+		v-show="isOpen"
+	>
+		<div
+			@keydown.esc="escapeChat"
+			class="messenger__card-window"
+			id="messengerWindow"
+		>
+			<SearchBox />
+			<div class="messenger__chat-container">
+				<ChatsList :fullscreen="true" />
+				<MessengerConversation />
+				<InfoPanel />
+			</div>
+			<ChinBox />
+		</div>
+		<ImageGallery
+			:images="galleryImages"
+			id="messenger_gallery"
+			:index="galleryIndex"
+			@onopen="openGallery"
+			@close="hideGallery"
+		/>
+		<ConfirmDialog />
+	</div>
 </template>
 
 <script>

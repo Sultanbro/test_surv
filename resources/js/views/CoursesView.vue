@@ -12,11 +12,11 @@ export default {
 </script>
 
 <template>
-    <DefaultLayout class="no-padding">
-        <div class="old__content">
-            <Courses/>
-        </div>
-    </DefaultLayout>
+	<DefaultLayout class="no-padding">
+		<div class="old__content">
+			<Courses />
+		</div>
+	</DefaultLayout>
 </template>
 
 <style scoped>

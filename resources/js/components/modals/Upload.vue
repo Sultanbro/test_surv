@@ -1,50 +1,57 @@
 <template>
-<div>
-  <b-modal
-    id="upload-files-modal"
-    class="modalle"
-    title="Загрузить файл"
-    :visible="open"
-    @hidden="$emit('update:open', false)"
-    @ok="okHandler"
-  >
+	<div>
+		<b-modal
+			id="upload-files-modal"
+			class="modalle"
+			title="Загрузить файл"
+			:visible="open"
+			@hidden="$emit('update:open', false)"
+			@ok="okHandler"
+		>
+			<div
+				id="upload-modal-body"
+				@dragover.prevent.self
+				@dragenter.prevent.self
+				@drop.prevent="dropHandler"
+				@change="changeHandler"
+			>
+				<div class="small mb-1 d-flex justify-content-between">
+					<div>
+						<b>Формат файлов:</b>
+						<span>{{ allowedFileTypes.join(', ') }}</span>
+					</div>
+					<div>
+						<b>Файл:</b>
+						<span>{{ filename || 'не выбран' }}</span>
+					</div>
+				</div>
 
-      <div id="upload-modal-body"
-        @dragover.prevent.self
-        @dragenter.prevent.self
-        @drop.prevent="dropHandler"
-        @change="changeHandler">
+				<form id="upload-modal-form">
+					<input
+						type="file"
+						id="upload-modal-input"
+						ref="input"
+					>
+					<label
+						id="upload-modal-label"
+						for="upload-modal-input"
+					>
+						<div><b>Переместите</b></div>
+						<div>или</div>
+						<div><b>выберите</b> файл</div>
+					</label>
+				</form>
 
-          <div class="small mb-1 d-flex justify-content-between">
-            <div>
-              <b>Формат файлов:</b>
-              <span>{{allowedFileTypes.join(', ')}}</span>
-            </div>
-            <div>
-              <b>Файл:</b>
-              <span>{{ filename || 'не выбран' }}</span>
-            </div>
-          </div>
-
-          <form id="upload-modal-form">
-            <input type="file" id="upload-modal-input" ref="input" />
-            <label id="upload-modal-label" for="upload-modal-input">
-              <div><b>Переместите</b></div>
-              <div>или</div>
-              <div><b>выберите</b> файл</div>
-            </label>
-          </form>
-
-        <b-alert class="mb-0 mt-3"
-          :value="!!error.text"
-          variant="danger">
-            {{ error.text }}
-        </b-alert>
-
-      </div>
-
-  </b-modal>
-</div>
+				<b-alert
+					class="mb-0 mt-3"
+					:value="!!error.text"
+					variant="danger"
+				>
+					{{ error.text }}
+				</b-alert>
+			</div>
+		</b-modal>
+	</div>
 </template>
 
 <script>

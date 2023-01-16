@@ -1,141 +1,141 @@
 <template>
-  <nav id="jNav">
-    <div
-        :class="{'jNav-scroll': isScroll}"
-        class="jNav-content"
-    >
-      <a
-          class="jNav-logo"
-          href=""
-      >
-        <img
-            :src="require('../../assets/img/logo.svg').default"
-            alt="logo-img"
-            class="jNav-logo-img"
-        >
-      </a>
-      <div
-          :class="{'jNav-menu-active': menu}"
-          class="jNav-menu"
-      >
-        <ul class="jNav-menu-items">
-          <a
-              v-click-outside="hidePopup"
-              :class="{'jNav-menu-lang-active': active}"
-              class="jNav-menu-hamburger jButton"
-              href="javascript:void(0)"
-              @click="active = !active"
-          >
-            <div class="jNav-menu-lang-popup">
-              <li class="jNav-menu-item jNav-menu-item-md">
-                <NavbarLink
-                    :lang="lang"
-                    href="#prices"
-                    text="prices"
-                />
-              </li>
-              <li class="jNav-menu-item jNav-menu-item-md">
-                <NavbarLink
-                    :lang="lang"
-                    href="#reviews"
-                    text="reviews"
-                />
-              </li>
-              <li class="jNav-menu-item jNav-menu-item-md">
-                <NavbarLink
-                    :lang="lang"
-                    href="#features"
-                    text="features"
-                />
-              </li>
-            </div>
-          </a>
-          <li class="jNav-menu-item">
-            <span class="jNav-menu-auth">
-              <form
-                  v-if="csrf"
-                  action="/logout"
-                  method="POST"
-              >
-                <input
-                    :value="csrf"
-                    name="csrf"
-                    type="hidden"
-                >
-              </form>
-              <template
-                  v-if="authorized"
-              >
-                <div class="jNav-menu-user-info">
-                  <div class="jNav-menu-user-data">
-                    <div
-                        :title="laravel.fullname"
-                        class="jNav-menu-user-name"
-                    >{{ laravel.fullname }}</div>
-                    <div
-                        :title="laravel.email"
-                        class="jNav-menu-user-email"
-                    >{{ laravel.email }}</div>
-                  </div>
-                </div>
-                <div
-                    v-click-outside="hideUserMenu"
-                    :class="{'jNav-menu-user-active': isUserMenuActive, 'jNav-menu-user': !isUserMenuActive}"
-                    @click="activateMenu"
-                >
-                  <div
-                      v-if="isUserMenuActive"
-                      class="jNav-menu-user-menu"
-                  >
-                    <form
-                        ref="formLogout"
-                        action="/logout"
-                        class="jNav-menu-user-menu-item"
-                        method="POST"
-                    >
-                      <input
-                          :value="laravel.csrfToken"
-                          name="_token"
-                          type="hidden"
-                      >
-                      <button
-                          class="jNav-menu-user-menu-exit jNav-menu-link"
-                          @click="$refs.formLogout.submit()"
-                      >
-                        {{ $lang(lang, 'logout') }}
-                      </button>
-                    </form>
-                  </div>
-                </div>
-              </template>
-              <template v-else>
-                <NavbarButton
-                    :lang="lang"
-                    href="/register"
-                    text="register"
-                />
-                <NavbarButton
-                    :lang="lang"
-                    href="/login"
-                    text="auth"
-                />
-              </template>
-            </span>
-          </li>
-          <li class="jNav-menu-item jNav-menu-item-md">
-            <NavbarLang
-                :lang="lang"
-                @change="$root.$data.setLang($event)"
-            />
-          </li>
-        </ul>
-        <div
-            class="jNav-menu-bg"
-            @click="menu = false"
-        />
-      </div>
-    </div>
-  </nav>
+	<nav id="jNav">
+		<div
+			:class="{'jNav-scroll': isScroll}"
+			class="jNav-content"
+		>
+			<a
+				class="jNav-logo"
+				href=""
+			>
+				<img
+					:src="require('../../assets/img/logo.svg').default"
+					alt="logo-img"
+					class="jNav-logo-img"
+				>
+			</a>
+			<div
+				:class="{'jNav-menu-active': menu}"
+				class="jNav-menu"
+			>
+				<ul class="jNav-menu-items">
+					<a
+						v-click-outside="hidePopup"
+						:class="{'jNav-menu-lang-active': active}"
+						class="jNav-menu-hamburger jButton"
+						href="javascript:void(0)"
+						@click="active = !active"
+					>
+						<div class="jNav-menu-lang-popup">
+							<li class="jNav-menu-item jNav-menu-item-md">
+								<NavbarLink
+									:lang="lang"
+									href="#prices"
+									text="prices"
+								/>
+							</li>
+							<li class="jNav-menu-item jNav-menu-item-md">
+								<NavbarLink
+									:lang="lang"
+									href="#reviews"
+									text="reviews"
+								/>
+							</li>
+							<li class="jNav-menu-item jNav-menu-item-md">
+								<NavbarLink
+									:lang="lang"
+									href="#features"
+									text="features"
+								/>
+							</li>
+						</div>
+					</a>
+					<li class="jNav-menu-item">
+						<span class="jNav-menu-auth">
+							<form
+								v-if="csrf"
+								action="/logout"
+								method="POST"
+							>
+								<input
+									:value="csrf"
+									name="csrf"
+									type="hidden"
+								>
+							</form>
+							<template
+								v-if="authorized"
+							>
+								<div class="jNav-menu-user-info">
+									<div class="jNav-menu-user-data">
+										<div
+											:title="laravel.fullname"
+											class="jNav-menu-user-name"
+										>{{ laravel.fullname }}</div>
+										<div
+											:title="laravel.email"
+											class="jNav-menu-user-email"
+										>{{ laravel.email }}</div>
+									</div>
+								</div>
+								<div
+									v-click-outside="hideUserMenu"
+									:class="{'jNav-menu-user-active': isUserMenuActive, 'jNav-menu-user': !isUserMenuActive}"
+									@click="activateMenu"
+								>
+									<div
+										v-if="isUserMenuActive"
+										class="jNav-menu-user-menu"
+									>
+										<form
+											ref="formLogout"
+											action="/logout"
+											class="jNav-menu-user-menu-item"
+											method="POST"
+										>
+											<input
+												:value="laravel.csrfToken"
+												name="_token"
+												type="hidden"
+											>
+											<button
+												class="jNav-menu-user-menu-exit jNav-menu-link"
+												@click="$refs.formLogout.submit()"
+											>
+												{{ $lang(lang, 'logout') }}
+											</button>
+										</form>
+									</div>
+								</div>
+							</template>
+							<template v-else>
+								<NavbarButton
+									:lang="lang"
+									href="/register"
+									text="register"
+								/>
+								<NavbarButton
+									:lang="lang"
+									href="/login"
+									text="auth"
+								/>
+							</template>
+						</span>
+					</li>
+					<li class="jNav-menu-item jNav-menu-item-md">
+						<NavbarLang
+							:lang="lang"
+							@change="$root.$data.setLang($event)"
+						/>
+					</li>
+				</ul>
+				<div
+					class="jNav-menu-bg"
+					@click="menu = false"
+				/>
+			</div>
+		</div>
+	</nav>
 </template>
 
 <script>

@@ -1,37 +1,40 @@
 <template>
-<div>
-
-
-</div>
+	<div />
 </template>
 
 <script>
-
-
 export default {
-	name: 'KBPage', 
+	name: 'KBPage',
+	components: {},
 	props: {
-		staff: Array,
-		staff_by_group: Array,
-		staff_longevity: Array,
-		causes: Array,
+		staff: {
+			type: Array,
+			default: () => []
+		},
+		staffByGroup: {
+			type: Object,
+			default: () => ({})
+		},
+		staffLongevity: {
+			type: Object,
+			default: null
+		},
+		causes: {
+			type: String,
+			default: ''
+		},
 	},
-	data: function () {
+	data() {
 		return {
-			fields: [], 
+			fields: [],
 		};
 	},
-	watch: {
-	},
-    
-	mounted() {
-        
-	},
-
-	methods: {
-        
-
-	}
+	computed: {},
+	watch: {},
+	created() {},
+	mounted() {},
+	beforeUnmount() {},
+	methods: {}
 };
 </script>
 

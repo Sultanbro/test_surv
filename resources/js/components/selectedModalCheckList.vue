@@ -1,86 +1,142 @@
 <template>
-    <div class="col-12 p-0">
+	<div class="col-12 p-0">
+		<div class="row">
+			<div class="col-md-3">
+				<p>Для группы чек лист</p>
+			</div>
+			<div class="col-md-4 p-0">
+				<div style="position: relative;border: 1px solid #dcdcdc">
+					<div
+						class="gen-role-class"
+						style="position: absolute"
+					>
+						<a
+							class="role_1"
+							@click="selectedRoles('1')"
+						>
 
-        <div class="row">
-            <div class="col-md-3">
-                <p>Для группы чек лист</p>
-            </div>
-            <div class="col-md-4 p-0">
+							<i class="fas fa-chalkboard-teacher role_icon_false" />
+						</a>
+						<a
+							class="role_2"
+							@click="selectedRoles('2')"
+						>
 
-                    <div style="position: relative;border: 1px solid #dcdcdc">
-                        <div class="gen-role-class" style="position: absolute" >
-                            <a class="role_1" @click="selectedRoles('1')" >
+							<i class="fas fa-chalkboard-teacher role_icon_false" />
+						</a>
+						<a
+							class="role_3"
+							@click="selectedRoles('3')"
+						>
 
-                                <i class="fas fa-chalkboard-teacher role_icon_false">  </i>
-                            </a>
-                            <a class="role_2" @click="selectedRoles('2')">
+							<i class="fas fa-chalkboard-teacher role_icon_false" />
+						</a>
+					</div>
 
-                                <i class="fas fa-chalkboard-teacher role_icon_false"></i>
-                            </a>
-                            <a class="role_3" @click="selectedRoles('3')" >
+					<div class="popupShowSelected">
+						<div v-if="selectedRole.role_1">
+							<p
+								class="list-role"
+								v-for="(item, index) in groups_arr"
+								:key="index"
+							>
+								<a
+									@click="addDivBlock(item.name,item.code,'1')"
+									:class="{ active: item.checked }"
+									class="btn btn-block"
+									style="display: flex"
+								>
+									<i class="fas fa-arrow-alt-circle-right  style-icons" />
+									<span style="margin-top: 5px; margin-left:15px;">{{ item.name }}</span>
+									<i
+										v-if="item.checked"
+										class="icon-checked fas fa-solid fa-angle-down"
+									/>
+								</a>
+							</p>
+						</div>
+						<div v-if="selectedRole.role_2">
+							<p
+								class="list-role"
+								v-for="(item, index) in positions_arr"
+								:key="index"
+							>
+								<a
+									@click="addDivBlock(item.name,item.code,'2')"
+									:class="{ active: item.checked }"
+									class="btn btn-block"
+									style="display: flex"
+								>
+									<i class="fas fa-arrow-alt-circle-right style-icons" />
+									<span style="margin-top: 5px; margin-left:15px;">{{ item.name }}</span>
+									<i
+										v-if="item.checked"
+										class="icon-checked fas fa-solid fa-angle-down"
+									/>
+								</a>
+							</p>
+						</div>
+						<div v-if="selectedRole.role_3">
+							<p
+								class="list-role"
+								v-for="(item, index) in allusers_arr"
+								:key="index"
+							>
+								<a
+									@click="addDivBlock(item.name,item.code,'3')"
+									:class="{ active: item.checked }"
+									class="btn btn-block"
+									style="display: flex"
+								>
+									<i class="fas fa-arrow-alt-circle-right  style-icons" />
+									<span style="margin-top: 5px; margin-left:15px;">{{ item.last_name }} {{ item.name }}</span>
+									<i
+										v-if="item.checked"
+										class="icon-checked fas fa-solid fa-angle-down"
+									/>
+								</a>
+							</p>
+						</div>
+					</div>
+				</div>
 
-                                <i class="fas fa-chalkboard-teacher role_icon_false" ></i>
-                            </a>
-                        </div>
-
-                        <div class="popupShowSelected">
-                            <div v-if="selectedRole.role_1" >
-                                <p class="list-role" v-for="(item, index) in groups_arr" :key="index">
-
-                                    <a @click="addDivBlock(item.name,item.code,'1')"  v-bind:class="{ active: item.checked }" class="btn btn-block" style="display: flex">
-                                        <i class="fas fa-arrow-alt-circle-right  style-icons" ></i>
-                                        <span  style="margin-top: 5px; margin-left:15px;">{{ item.name}}</span>
-                                        <i v-if="item.checked" class="icon-checked fas fa-solid fa-angle-down"></i>
-                                    </a>
-
-                                </p>
-                            </div>
-                            <div v-if="selectedRole.role_2">
-                                <p class="list-role"  v-for="(item, index) in  positions_arr" :key="index">
-                                    <a @click="addDivBlock(item.name,item.code,'2')" v-bind:class="{ active: item.checked }" class="btn btn-block" style="display: flex">
-                                        <i class="fas fa-arrow-alt-circle-right style-icons" ></i>
-                                        <span  style="margin-top: 5px; margin-left:15px;">{{ item.name}}</span>
-                                        <i v-if="item.checked" class="icon-checked fas fa-solid fa-angle-down"></i>
-                                    </a>
-                                </p>
-                            </div>
-                            <div v-if="selectedRole.role_3">
-                                <p class="list-role"  v-for="(item, index) in   allusers_arr" :key="index">
-                                    <a @click="addDivBlock(item.name,item.code,'3')" v-bind:class="{ active: item.checked }" class="btn btn-block" style="display: flex">
-                                        <i class="fas fa-arrow-alt-circle-right  style-icons" ></i>
-                                        <span style="margin-top: 5px; margin-left:15px;">{{ item.last_name}} {{ item.name}}</span>
-                                        <i v-if="item.checked" class="icon-checked fas fa-solid fa-angle-down"></i>
-                                    </a>
-                                </p>
-                            </div>
-                        </div>
-                    </div>
 
 
+				<div
+					id="selected-block-array"
+					class="selected-block-array"
+				>
+					<a
+						v-if="placeholderSelect"
+						style="color: #abb1b8;"
+					>Добавить Отделы/Сотрудники</a>
 
-                    <div id="selected-block-array"  class="selected-block-array" >
-                        <a v-if="placeholderSelect" style="color: #abb1b8;" >Добавить Отделы/Сотрудники</a>
-
-                      <div class="addElement"  v-for="(item,i) in allValueArray" :key="i">
-                          <a  class="elementHoverList">
-                               <span> {{ item.text }} </span>
-                              <div class="ui-tag-selector-tag-remove"  @click="deleteDesk(i,item.code,item.type)">
-                                <span class="ui-tag-selector-remove-icon  ">x</span>
-                              </div>
-                          </a>
-                      </div>
-
-                    </div>
-<!--                     <button class="btn btn-success btn btn-block" style="margin-bottom: 20px; margin-left: 0px;color: white;" type="button" @click="doSomething">Добавить</button>-->
-            </div>
-        </div>
-    </div>
+					<div
+						class="addElement"
+						v-for="(item,i) in allValueArray"
+						:key="i"
+					>
+						<a class="elementHoverList">
+							<span> {{ item.text }} </span>
+							<div
+								class="ui-tag-selector-tag-remove"
+								@click="deleteDesk(i,item.code,item.type)"
+							>
+								<span class="ui-tag-selector-remove-icon  ">x</span>
+							</div>
+						</a>
+					</div>
+				</div>
+				<!--                     <button class="btn btn-success btn btn-block" style="margin-bottom: 20px; margin-left: 0px;color: white;" type="button" @click="doSomething">Добавить</button>-->
+			</div>
+		</div>
+	</div>
 </template>
 
 <script>
 
 export default {
-	name: 'modalRole',
+	name: 'ModalRole',
 	props: {
 		groups:{},
 		allusers:{},

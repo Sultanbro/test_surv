@@ -14,19 +14,19 @@ export default {
 </script>
 
 <template>
-    <li class="jSec1-tabs-button">
-        <a
-            href="javascript:void(0)"
-            class="jSec1-tabs-link"
-            :class="{'jSec1-tabs-link--active': activeTab === tabId}"
-            @click="$emit('content')"
-        >{{ $lang(lang, 's1-' + tabId) }}</a>
-        <a
-            href="javascript:void(0)"
-            class="jSec1-tabs-qm"
-            @click="$emit('popup') && $emit('content')"
-        />
-    </li>
+	<li class="jSec1-tabs-button">
+		<a
+			href="javascript:void(0)"
+			class="jSec1-tabs-link"
+			:class="{'jSec1-tabs-link--active': activeTab === tabId}"
+			@click="$emit('content')"
+		>{{ $lang(lang, 's1-' + tabId) }}</a>
+		<a
+			href="javascript:void(0)"
+			class="jSec1-tabs-qm"
+			@click="$emit('popup') && $emit('content')"
+		/>
+	</li>
 </template>
 
 <style lang="scss"></style>

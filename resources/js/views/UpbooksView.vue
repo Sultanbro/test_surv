@@ -27,15 +27,15 @@ export default {
 </script>
 
 <template>
-    <DefaultLayout class="no-padding">
-        <div class="old__content">
-            <Upbooks
-                v-show="token"
-                :token="token"
-                :can_edit="can_edit"
-            />
-        </div>
-    </DefaultLayout>
+	<DefaultLayout class="no-padding">
+		<div class="old__content">
+			<Upbooks
+				v-show="token"
+				:token="token"
+				:can_edit="can_edit"
+			/>
+		</div>
+	</DefaultLayout>
 </template>
 
 <style scoped>

@@ -1,104 +1,104 @@
 <template>
-<div
-	v-if="isVisible"
-	id="page-profile"
->
-    <div class="intro content">
-        <IntroTop
-            :courses="intro['courses']"
-            :profit="intro['profit']"
-            :estimation="intro['estimation']"
-            :indicators="intro['indicators']"
-            :class="{ _active: anim.intro }"
-        />
-        <IntroStats
-            @pop="pop"
-            ref="intro"
-            :class="{ _active: anim.intro }"
-        />
-        <!-- <new-intro-smart-table/> -->
-    </div>
-    <MobileProfileSidebar
-        v-show="isProfileVisible"
-        ref="profileSidebar"
-        :class="{ _active: anim.profileSidebar }"
-    />
-    <Courses
-        @init="intro['courses'] = true"
-        ref="courses"
-        :class="{ _active: anim.courses }"
-    />
-    <Profit
-        @init="intro['profit'] = true"
-        ref="profit"
-        :class="{ _active: anim.profit }"
-    />
-    <TraineeEstimation
-        @init="intro['estimation'] = true"
-        ref="estimation"
-        :class="{ _active: anim.estimation }"
-    />
-    <CompareIndicators
-        @init="intro['indicators'] = true"
-        ref="indicators"
-        :class="{ _active: anim.indicators }"
-    />
+	<div
+		v-if="isVisible"
+		id="page-profile"
+	>
+		<div class="intro content">
+			<IntroTop
+				:courses="intro['courses']"
+				:profit="intro['profit']"
+				:estimation="intro['estimation']"
+				:indicators="intro['indicators']"
+				:class="{ _active: anim.intro }"
+			/>
+			<IntroStats
+				@pop="pop"
+				ref="intro"
+				:class="{ _active: anim.intro }"
+			/>
+			<!-- <new-intro-smart-table/> -->
+		</div>
+		<MobileProfileSidebar
+			v-show="isProfileVisible"
+			ref="profileSidebar"
+			:class="{ _active: anim.profileSidebar }"
+		/>
+		<Courses
+			@init="intro['courses'] = true"
+			ref="courses"
+			:class="{ _active: anim.courses }"
+		/>
+		<Profit
+			@init="intro['profit'] = true"
+			ref="profit"
+			:class="{ _active: anim.profit }"
+		/>
+		<TraineeEstimation
+			@init="intro['estimation'] = true"
+			ref="estimation"
+			:class="{ _active: anim.estimation }"
+		/>
+		<CompareIndicators
+			@init="intro['indicators'] = true"
+			ref="indicators"
+			:class="{ _active: anim.indicators }"
+		/>
 
-    <Popup
-        v-if="popBalance"
-        title="Баланс оклада"
-        desc="Заработанная сумма именно от окладной части"
-        :open="popBalance"
-        @close="popBalance=false"
-        :width="popupWidth"
-    >
-        <Balance/>
-    </Popup>
+		<Popup
+			v-if="popBalance"
+			title="Баланс оклада"
+			desc="Заработанная сумма именно от окладной части"
+			:open="popBalance"
+			@close="popBalance=false"
+			:width="popupWidth"
+		>
+			<Balance />
+		</Popup>
 
-    <Popup
-        v-if="popKpi"
-        title="Kpi"
-        desc="Выполняя дополнительные активности, заработайте больше денег"
-        :open="popKpi"
-        @close="popKpi=false"
-        :width="popupWidth"
-    >
-        <Kpi/>
-    </Popup>
+		<Popup
+			v-if="popKpi"
+			title="Kpi"
+			desc="Выполняя дополнительные активности, заработайте больше денег"
+			:open="popKpi"
+			@close="popKpi=false"
+			:width="popupWidth"
+		>
+			<Kpi />
+		</Popup>
 
-    <Popup
-        v-if="popBonuses"
-        title="Бонусы"
-        desc="Зарабатывайте бонусы, выполняя дополнительные активности"
-        :open="popBonuses"
-        @close="popBonuses=false"
-        :width="popupWidth"
-    >
-        <Bonuses/>
-    </Popup>
+		<Popup
+			v-if="popBonuses"
+			title="Бонусы"
+			desc="Зарабатывайте бонусы, выполняя дополнительные активности"
+			:open="popBonuses"
+			@close="popBonuses=false"
+			:width="popupWidth"
+		>
+			<Bonuses />
+		</Popup>
 
-    <Popup
-        v-if="popQuartalPremiums"
-        title="Квартальные премии"
-        desc=""
-        :open="popQuartalPremiums"
-        @close="popQuartalPremiums=false"
-        :width="popupWidth"
-    >
-        <PopupQuartal/>
-    </Popup>
+		<Popup
+			v-if="popQuartalPremiums"
+			title="Квартальные премии"
+			desc=""
+			:open="popQuartalPremiums"
+			@close="popQuartalPremiums=false"
+			:width="popupWidth"
+		>
+			<PopupQuartal />
+		</Popup>
 
-    <Popup
-        v-if="popNominations"
-        title="Номинации"
-        :desc="desc"
-        :open="popNominations"
-        @close="popNominations=false"
-        :width="popupWidth"
-    >
-        <Nominations @get-desc="getDesc"/>
-    </Popup>
-</div>
+		<Popup
+			v-if="popNominations"
+			title="Номинации"
+			:desc="desc"
+			:open="popNominations"
+			@close="popNominations=false"
+			:width="popupWidth"
+		>
+			<Nominations @get-desc="getDesc" />
+		</Popup>
+	</div>
 </template>
 
 <script>

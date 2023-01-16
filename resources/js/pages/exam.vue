@@ -1,85 +1,124 @@
 <template>
-    <div class="mt-5">
+	<div class="mt-5">
+		<div class="mb-0">
+			<div class="row mb-3 ">
+				<div class="col-3">
+					<select
+						class="form-control"
+						v-model="currentGroup"
+						@change="fetchData()"
+					>
+						<option
+							v-for="group in groups"
+							:value="group.id"
+							:key="group.id"
+						>
+							{{ group.name }}
+						</option>
+					</select>
+				</div>
+				<div class="col-3">
+					<select
+						class="form-control"
+						v-model="dateInfo.currentMonth"
+						@change="fetchData()"
+					>
+						<option
+							v-for="month in $moment.months()"
+							:value="month"
+							:key="month"
+						>
+							{{ month }}
+						</option>
+					</select>
+				</div>
+				<div class="col-2" />
+			</div>
 
-        <div class="mb-0">
-            <div class="row mb-3 ">
-                <div class="col-3">
-                    <select class="form-control" v-model="currentGroup" @change="fetchData()">
-                        <option v-for="group in groups" :value="group.id" :key="group.id">{{group.name}}</option>
-                    </select>
-                </div>
-                <div class="col-3">
-                    <select class="form-control" v-model="dateInfo.currentMonth" @change="fetchData()">
-                        <option v-for="month in $moment.months()" :value="month" :key="month">{{month}}</option>
-                    </select>
-                </div>
-                <div class="col-2"></div>
-            </div>
+			<div v-if="hasPremission">
+				<b-tabs
+					type="card"
+					default-active-key="1"
+				>
+					<b-tab
+						title="Экзамены по книгам"
+						key="1"
+					>
+						<b-table
+							responsive
+							striped
+							:sticky-header="true"
+							class="text-nowrap text-center my-table"
+							id="tabelTable"
+							:small="true"
+							:bordered="true"
+							:items="items"
+							:fields="fields"
+							show-empty
+							empty-text="Нет данных"
+						>
+							<template #cell(success)="data">
+								<input
+									type="checkbox"
+									@change="updateExam('success',data)"
+									v-model="data.value"
+									:disabled="!data.item.link"
+								>
+							</template>
+							<template #cell(exam_date)="data">
+								{{ data.value }}
+							</template>
+							<template #cell(link)="data">
+								<input
+									class="form-control cell-input"
+									@change="updateExam('link',data)"
+									v-model="data.value"
+									:disabled="dateInfo.currentMonth !== curMonth"
+								>
+							</template>
+						</b-table>
+					</b-tab>
 
-            <div v-if="hasPremission">
+					<b-tab
+						title="Навыки (Skills)"
+						key="2"
+					>
+						<table class="table b-table table-striped table-bordered table-sm skills-table">
+							<tr>
+								<th>Сотрудник</th>
+								<th>Дата</th>
+								<th>Тэги</th>
+								<th>Ответы</th>
+							</tr>
+							<tr
+								v-for="skill in data.skills"
+								:key="skill.id"
+							>
+								<td style="background:aliceblue">
+									{{ skill.name }}
+								</td>
+								<td v-html="skill.last_time" />
+								<td>
+									<b-badge
+										v-if="skill.head"
+										pill
+										variant="success"
+									>
+										#Руководил
+									</b-badge>
+								</td>
+								<td v-html="skill.text" />
+							</tr>
+						</table>
+					</b-tab>
+				</b-tabs>
+			</div>
 
-
-                <b-tabs type="card" defaultActiveKey='1'>
-
-
-                    <b-tab title="Экзамены по книгам" key="1">
-                        <b-table responsive striped :sticky-header="true" class="text-nowrap text-center my-table" id="tabelTable" :small="true" :bordered="true" :items="items" :fields="fields" show-empty emptyText="Нет данных">
-                            <template #cell(success)="data">
-                                <input type="checkbox" @change="updateExam('success',data)" v-model="data.value"  :disabled="!data.item.link">
-                            </template>
-                            <template #cell(exam_date)="data">
-                                {{ data.value }}
-                            </template>
-                            <template #cell(link)="data">
-                                <input class="form-control cell-input" @change="updateExam('link',data)" v-model="data.value" :disabled="dateInfo.currentMonth !== curMonth">
-                            </template>
-                        </b-table>
-                    </b-tab>
-
-                    <b-tab title="Навыки (Skills)" key="2">
-                        <table class="table b-table table-striped table-bordered table-sm skills-table">
-                            <tr>
-                                <th>Сотрудник</th>
-                                <th>Дата</th>
-                                <th>Тэги</th>
-                                <th>Ответы</th>
-                            </tr>
-                            <tr v-for="skill in data.skills" :key="skill.id">
-                                <td style="background:aliceblue">
-                                    {{ skill.name }}
-
-                                </td>
-                                <td v-html="skill.last_time"></td>
-                                <td>
-                                    <b-badge v-if="skill.head" pill variant="success">
-                                        #Руководил
-                                    </b-badge>
-                                </td>
-                                <td v-html="skill.text"></td>
-                            </tr>
-                        </table>
-                    </b-tab>
-
-                </b-tabs>
-
-
-
-
-
-
-
-
-
-
-            </div>
-
-            <div v-else>
-                <p>У вас нет доступа к этой группе</p>
-            </div>
-
-        </div>
-
-    </div>
+			<div v-else>
+				<p>У вас нет доступа к этой группе</p>
+			</div>
+		</div>
+	</div>
 </template>
 
 <script>

@@ -25,12 +25,12 @@ export default {
 </script>
 
 <template>
-    <DefaultLayout>
-        <div class="old__content">
-            <Page
-                v-show="page"
-                :page="page"
-            />
-        </div>
-    </DefaultLayout>
+	<DefaultLayout>
+		<div class="old__content">
+			<Page
+				v-show="page"
+				:page="page"
+			/>
+		</div>
+	</DefaultLayout>
 </template>

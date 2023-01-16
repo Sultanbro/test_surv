@@ -1,34 +1,41 @@
 <template>
-  <div class="test mb-3">
-      <div class="row">
-        <div class="col-3">
-          <p class="mb-0">Страница
-            <i class="fa fa-save ml-1 pointer" @click="saveSegment"></i>
-            <i class="fa fa-trash ml-1 pointer" @click="deleteSegment"></i>
-          </p>
-          <input
-            type="number"
-            min="1"
-            max="9999"
-            v-model="segment.page_start"
-            placeholder="Страница"
-            class="form-control mb-2"
-          />
-        </div>
-        <div class="col-9">
-          <questions
-            ref="questions"
-            :questions="segment.questions"
-            :id="segment.id"
-            :pass_grade="segment.pass_grade"
-            @changePassGrade="changePassGrade"
-            @validate="validate"
-            type="book"
-            mode="edit"
-          />
-        </div>
-      </div>
-  </div>
+	<div class="test mb-3">
+		<div class="row">
+			<div class="col-3">
+				<p class="mb-0">
+					Страница
+					<i
+						class="fa fa-save ml-1 pointer"
+						@click="saveSegment"
+					/>
+					<i
+						class="fa fa-trash ml-1 pointer"
+						@click="deleteSegment"
+					/>
+				</p>
+				<input
+					type="number"
+					min="1"
+					max="9999"
+					v-model="segment.page_start"
+					placeholder="Страница"
+					class="form-control mb-2"
+				>
+			</div>
+			<div class="col-9">
+				<questions
+					ref="questions"
+					:questions="segment.questions"
+					:id="segment.id"
+					:pass_grade="segment.pass_grade"
+					@changePassGrade="changePassGrade"
+					@validate="validate"
+					type="book"
+					mode="edit"
+				/>
+			</div>
+		</div>
+	</div>
 </template>
 <script>
 export default {

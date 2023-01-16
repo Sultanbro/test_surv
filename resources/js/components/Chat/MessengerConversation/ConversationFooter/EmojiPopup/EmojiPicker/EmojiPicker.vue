@@ -1,21 +1,21 @@
 <template>
-  <div>
-    <slot
-      name="emoji-invoker"
-      :events="{ click: (e) => toggle(e) }"
-    />
-    <div
-      v-if="display.visible"
-      v-click-outside="hide"
-    >
-      <slot
-        name="emoji-picker"
-        :emojis="emojis"
-        :insert="insert"
-        :display="display"
-      />
-    </div>
-  </div>
+	<div>
+		<slot
+			name="emoji-invoker"
+			:events="{ click: (e) => toggle(e) }"
+		/>
+		<div
+			v-if="display.visible"
+			v-click-outside="hide"
+		>
+			<slot
+				name="emoji-picker"
+				:emojis="emojis"
+				:insert="insert"
+				:display="display"
+			/>
+		</div>
+	</div>
 </template>
 
 <script lang="ts">

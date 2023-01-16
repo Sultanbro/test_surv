@@ -1,54 +1,59 @@
 <template>
-  <sidebar
-    id="award-sidebar"
-    title="Награды"
-    :open="open"
-    @close="$emit('update:open', false)"
-    width="60%"
-  >
-    <div id="body">
-      <BTabs content-class="mt-3" fill>
-        <BTab
-          v-for="(awardCard, index) in awardCards"
-          :key="index"
-          :title="awardCard.header"
-          active
-        >
-          <BCard
-            bg-variant="primary"
-            text-variant="white"
-            header="Primary"
-            class="text-center"
-          >
-          </BCard
-        ></BTab>
-      </BTabs>
-      <BTabs content-class="mt-3" fill>
-        <BTab
-          v-for="(fakeAward, index) in fakeAwardsLocal"
-          :key="index"
-          :title="fakeAward.name"
-          active
-        >
-          <BCard
-            bg-variant="primary"
-            text-variant="white"
-            header="Primary"
-            class="text-center"
-          >
-            <BCardImg
-              src="https://placekitten.com/480/210"
-              alt="Image"
-              bottom
-            ></BCardImg>
-            <BCardText>
-              {{ fakeAward.content }}
-            </BCardText>
-          </BCard></BTab
-        >
-      </BTabs>
-    </div>
-  </sidebar>
+	<sidebar
+		id="award-sidebar"
+		title="Награды"
+		:open="open"
+		@close="$emit('update:open', false)"
+		width="60%"
+	>
+		<div id="body">
+			<BTabs
+				content-class="mt-3"
+				fill
+			>
+				<BTab
+					v-for="(awardCard, index) in awardCards"
+					:key="index"
+					:title="awardCard.header"
+					active
+				>
+					<BCard
+						bg-variant="primary"
+						text-variant="white"
+						header="Primary"
+						class="text-center"
+					/>
+				</BTab>
+			</BTabs>
+			<BTabs
+				content-class="mt-3"
+				fill
+			>
+				<BTab
+					v-for="(fakeAward, index) in fakeAwardsLocal"
+					:key="index"
+					:title="fakeAward.name"
+					active
+				>
+					<BCard
+						bg-variant="primary"
+						text-variant="white"
+						header="Primary"
+						class="text-center"
+					>
+						<BCardImg
+							src="https://placekitten.com/480/210"
+							alt="Image"
+							bottom
+						/>
+						<BCardText>
+							{{ fakeAward.content }}
+						</BCardText>
+					</BCard>
+				</BTab>
+			</BTabs>
+		</div>
+	</sidebar>
 </template>
 
 <script>

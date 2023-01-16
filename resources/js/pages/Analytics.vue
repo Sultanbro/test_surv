@@ -1,326 +1,488 @@
 <template>
-<div
-    v-if="groups"
-    class="mt-2 px-3 analytics-page"
->
-    <div class="row mb-3 ">
-        <div class="col-3">
-            <select class="form-control" v-model="monthInfo.currentMonth" @change="fetchData">
-                <option v-for="month in $moment.months()" :value="month" :key="month">{{month}}</option>
-            </select>
-        </div>
-        <div class="col-2">
-            <select class="form-control" v-model="currentYear" @change="fetchData">
-                <option v-for="year in years" :value="year" :key="year">{{ year }}</option>
-            </select>
-        </div>
-        <div class="col-1">
-            <div class="btn btn-primary rounded" @click="fetchData()">
-                <i class="fa fa-redo-alt"></i>
-            </div>
-        </div>
-        <div class="col-3">
+	<div
+		v-if="groups"
+		class="mt-2 px-3 analytics-page"
+	>
+		<div class="row mb-3 ">
+			<div class="col-3">
+				<select
+					class="form-control"
+					v-model="monthInfo.currentMonth"
+					@change="fetchData"
+				>
+					<option
+						v-for="month in $moment.months()"
+						:value="month"
+						:key="month"
+					>
+						{{ month }}
+					</option>
+				</select>
+			</div>
+			<div class="col-2">
+				<select
+					class="form-control"
+					v-model="currentYear"
+					@change="fetchData"
+				>
+					<option
+						v-for="year in years"
+						:value="year"
+						:key="year"
+					>
+						{{ year }}
+					</option>
+				</select>
+			</div>
+			<div class="col-1">
+				<div
+					class="btn btn-primary rounded"
+					@click="fetchData()"
+				>
+					<i class="fa fa-redo-alt" />
+				</div>
+			</div>
+			<div class="col-3" />
+		</div>
+		<div>
+			<div v-if="!firstEnter">
+				<div v-if="this.hasPremission">
+					<b-tabs
+						type="card"
+						v-if="dataLoaded"
+						:default-active-key="active"
+					>
+						<template v-if="currentGroup == 48">
+							<b-tab
+								title="Сводная"
+								key="1"
+								card
+							>
+								<TableRecruiterStats
+									:data="recruiting.recruiterStats"
+									:days-in-month="new Date().getDate()"
+									:rates="recruiting.recruiterStatsRates"
+									:year="currentYear"
+									:month="monthInfo.month"
+									:leads_data="recruiting.recruiter_stats_leads"
+									:editable="true"
+								/>
+								<div class="mb-5" />
+								<Recruting
+									v-if="recruiting.indicators"
+									:is-analytics-page="true"
+									:records="recruiting.indicators"
+								/>
+								<div class="mb-5" />
+							</b-tab>
+							<b-tab
+								title="Стажеры"
+								key="3"
+								card
+							>
+								<TableSkype
+									:month="monthInfo"
+									:skypes="recruiting.skypes"
+									:groups="recruiting.sgroups"
+									:invite_groups="recruiting.invite_groups"
+									:segments="recruiting.segments"
+								/>
+							</b-tab>
+							<b-tab
+								key="4"
+								card
+							>
+								<template #title>
+									<b-spinner
+										type="grow"
+										small
+									/> <b class="roman">II</b> Этап стажировки
+								</template>
 
-        </div>
-    </div>
-    <div>
 
-        <div v-if="!firstEnter">
-            <div v-if="this.hasPremission">
+								<b-tabs type="card">
+									<b-tab
+										title="Сводная"
+										key="1"
+										card
+									>
+										<table
+											class="table b-table table-striped table-bordered table-sm"
+											style="width:900px"
+										>
+											<thead>
+												<th
+													class="text-left t-name table-title"
+													style="background:#90d3ff;width:250px;"
+												>
+													Отдел
+												</th>
+												<th class="text-center t-name table-title">
+													Требуется нанять
+												</th>
+												<th class="text-center t-name table-title">
+													Кол-во <br>переданных <br> стажеров
+												</th>
+												<th class="text-center t-name table-title">
+													Кол-во <br>приступивших <br>к работе
+												</th>
+												<th class="text-center t-name table-title">
+													Процент <br>прохождения<br> стажировки
+												</th>
+												<th class="text-center t-name table-title">
+													Кол-во<br> стажирующихся активных
+													<i
+														class="fa fa-info-circle"
+														v-b-popover.hover.right.html="'Стажеры, которые присутстовали на сегодня. В табели у них есть оранжевая отметка.'"
+														title="Активные стажеры"
+													/>
+												</th>
+											</thead>
+											<tbody
+												v-for="(ocenka, index) in recruiting.ocenka_svod"
+												:key="index"
+											>
+												<tr>
+													<td
+														class="text-left t-name table-title align-middle"
+														style="background:#90d3ff"
+													>
+														{{ ocenka.name }}
+													</td>
+													<td class="text-center t-name table-title align-middle">
+														{{ ocenka.required }}
+													</td>
+													<td class="text-center t-name table-title align-middle">
+														{{ ocenka.sent }}
+													</td>
+													<td class="text-center t-name table-title align-middle">
+														{{ ocenka.working }}
+													</td>
+													<td class="text-center t-name table-title align-middle">
+														{{ ocenka.percent }}
+													</td>
+													<td class="text-center t-name table-title align-middle">
+														{{ ocenka.active }}
+													</td>
+												</tr>
+											</tbody>
+										</table>
+									</b-tab>
 
-                <b-tabs type="card" v-if="dataLoaded" :defaultActiveKey='active'>
-
-
-                    <template v-if="currentGroup == 48">
-                        <b-tab title="Сводная" key="1" card>
-                            <TableRecruiterStats
-                                :data="recruiting.recruiterStats"
-                                :daysInMonth="new Date().getDate()"
-                                :rates="recruiting.recruiterStatsRates"
-                                :year="currentYear"
-                                :month="monthInfo.month"
-                                :leads_data="recruiting.recruiter_stats_leads"
-                                :editable="true"
-                            />
-                            <div class="mb-5"></div>
-                            <Recruting
-                                v-if="recruiting.indicators"
-                                :isAnalyticsPage="true"
-                                :records="recruiting.indicators"
-                            />
-                            <div class="mb-5"></div>
-                        </b-tab>
-                        <b-tab title="Стажеры" key="3" card>
-                            <TableSkype
-                                :month="monthInfo"
-                                :skypes="recruiting.skypes"
-                                :groups="recruiting.sgroups"
-                                :invite_groups="recruiting.invite_groups"
-                                :segments="recruiting.segments"
-                            />
-                        </b-tab>
-                        <b-tab key="4" card>
-
-                            <template #title>
-                                <b-spinner type="grow" small></b-spinner> <b class="roman">II</b> Этап стажировки
-                            </template>
-
-
-                            <b-tabs type="card">
-
-                                <b-tab title="Сводная" key="1" card>
-                                    <table class="table b-table table-striped table-bordered table-sm"  style="width:900px">
-                                        <thead>
-                                            <th class="text-left t-name table-title" style="background:#90d3ff;width:250px;">Отдел</th>
-                                            <th class="text-center t-name table-title">Требуется нанять</th>
-                                            <th class="text-center t-name table-title">Кол-во <br>переданных <br> стажеров</th>
-                                            <th class="text-center t-name table-title">Кол-во <br>приступивших <br>к работе</th>
-                                            <th class="text-center t-name table-title">Процент <br>прохождения<br> стажировки</th>
-                                            <th class="text-center t-name table-title">
-                                                Кол-во<br> стажирующихся активных
-                                                <i class="fa fa-info-circle"
-                                                    v-b-popover.hover.right.html="'Стажеры, которые присутстовали на сегодня. В табели у них есть оранжевая отметка.'"
-                                                    title="Активные стажеры">
-                                                </i>
-                                            </th>
-                                        </thead>
-                                        <tbody v-for="(ocenka, index) in recruiting.ocenka_svod" :key="index">
-                                            <tr>
-                                                <td class="text-left t-name table-title align-middle" style="background:#90d3ff">{{ ocenka.name }}</td>
-                                                <td class="text-center t-name table-title align-middle">{{ ocenka.required }}</td>
-                                                <td class="text-center t-name table-title align-middle">{{ ocenka.sent }}</td>
-                                                <td class="text-center t-name table-title align-middle">{{ ocenka.working }}</td>
-                                                <td class="text-center t-name table-title align-middle">{{ ocenka.percent }}</td>
-                                                <td class="text-center t-name table-title align-middle">{{ ocenka.active }}</td>
-                                            </tr>
-                                        </tbody>
-                                    </table>
-                                </b-tab>
-
-                                <!--<b-tab title="Оценка тренера" key="2">
+									<!--<b-tab title="Оценка тренера" key="2">
 
 
                                     <trainee-report :trainee_report="recruiting.trainee_report" :groups="groups"></trainee-report>
 
 
                                 </b-tab>-->
-                                <b-tab title="Оценка тренера" key="2" card>
+									<b-tab
+										title="Оценка тренера"
+										key="2"
+										card
+									>
+										<SvodTable
+											:trainee_report="recruiting.trainee_report"
+											:groups="groups"
+										/>
+									</b-tab>
+									<b-tab
+										title="Отсутствие стажеров"
+										key="4"
+										card
+									>
+										<div class="row">
+											<div class="col-md-4">
+												<table class="table b-table table-striped table-bordered table-sm">
+													<thead>
+														<th
+															class="text-left t-name table-title"
+															colspan="2"
+														>
+															Первый день
+														</th>
+													</thead>
+													<tbody>
+														<tr
+															v-for="absent in recruiting.absents_first"
+															:key="absent.id"
+														>
+															<td class="text-left t-name table-title">
+																{{ absent.cause }}
+															</td>
+															<td class="text-center t-name table-title mw30">
+																{{ absent.count }}
+															</td>
+														</tr>
+													</tbody>
+												</table>
+											</div>
+											<div class="col-md-4">
+												<table class="table b-table table-striped table-bordered table-sm">
+													<thead>
+														<th
+															class="text-left t-name table-title"
+															colspan="2"
+														>
+															Второй день
+														</th>
+													</thead>
+													<tbody>
+														<tr
+															v-for="absent in recruiting.absents_second"
+															:key="absent.id"
+														>
+															<td class="text-left t-name table-title">
+																{{ absent.cause }}
+															</td>
+															<td class="text-center t-name table-title">
+																{{ absent.count }}
+															</td>
+														</tr>
+													</tbody>
+												</table>
+											</div>
+											<div class="col-md-4">
+												<table class="table b-table table-striped table-bordered table-sm">
+													<thead>
+														<th
+															class="text-left t-name table-title"
+															colspan="2"
+														>
+															После третьего дня
+														</th>
+													</thead>
+													<tbody>
+														<tr
+															v-for="absent in recruiting.absents_third"
+															:key="absent.id"
+														>
+															<td class="text-left t-name table-title">
+																{{ absent.cause }}
+															</td>
+															<td class="text-center t-name table-title">
+																{{ absent.count }}
+															</td>
+														</tr>
+													</tbody>
+												</table>
+											</div>
+										</div>
+									</b-tab>
+								</b-tabs>
+							</b-tab>
 
-                                    <SvodTable
-                                        :trainee_report="recruiting.trainee_report"
-                                        :groups="groups"
-                                    />
+							<b-tab
+								title="Воронка"
+								key="7"
+								card
+							>
+								<b-tabs
+									type="card"
+									v-if="dataLoaded"
+									default-active-key="0"
+								>
+									<b-tab
+										title="Сводная"
+										key="0"
+										card
+									>
+										<div class="row">
+											<div class="col-8">
+												<TableFunnel
+													class="mb-5"
+													:id="0"
+													:table="recruiting.funnels['all']['all']"
+													title="Сводная таблица"
+													segment="segments"
+													type="month"
+													:date="date"
+												/>
+												<TableFunnel
+													class="mb-5"
+													:id="1"
+													:table="recruiting.funnels['all']['hh']"
+													title="hh.ru"
+													segment="hh"
+													type="month"
+													:date="date"
+												/>
+												<TableFunnel
+													class="mb-5"
+													:id="2"
+													:table="recruiting.funnels['all']['insta']"
+													title="Job.bpartners.kz"
+													segment="insta"
+													type="month"
+													:date="date"
+												/>
+											</div>
 
+											<!-- partner link creator -->
+											<div class="col-4">
+												<ref-linker />
+											</div>
+										</div>
+									</b-tab>
+									<template v-for="(month, i) in months">
+										<b-tab
+											:title="month.month"
+											:key="i"
+											card
+										>
+											<TableFunnel
+												class="mb-5"
+												:table="recruiting.funnels['month'][i]['hh']"
+												title="hh.ru"
+												segment="hh"
+												type="week"
+												:date="month.date"
+												:key="5 * 1000 * (Number(i) + 10 * Number(i))"
+											/>
+											<TableFunnel
+												class="mb-5"
+												:table="recruiting.funnels['month'][i]['insta']"
+												title="Job.bpartners.kz"
+												segment="insta"
+												type="week"
+												:date="month.date"
+												:key="6 * 1000 * (Number(i) + 10 * Number(i))"
+											/>
+										</b-tab>
+									</template>
+								</b-tabs>
+							</b-tab>
 
-                                </b-tab>
-                                <b-tab title="Отсутствие стажеров" key="4" card>
-                                    <div class="row">
-                                        <div class="col-md-4">
-                                            <table class="table b-table table-striped table-bordered table-sm">
-                                                <thead>
-                                                    <th class="text-left t-name table-title" colspan="2">Первый день</th>
-                                                </thead>
-                                                <tbody>
-                                                    <tr v-for="absent in recruiting.absents_first" :key="absent.id">
-                                                        <td class="text-left t-name table-title">{{ absent.cause }}</td>
-                                                        <td class="text-center t-name table-title mw30">{{ absent.count }}</td>
-                                                    </tr>
-                                                </tbody>
-                                            </table>
-                                        </div>
-                                        <div class="col-md-4">
-                                            <table class="table b-table table-striped table-bordered table-sm">
-                                                <thead>
-                                                    <th class="text-left t-name table-title" colspan="2">Второй день</th>
-                                                </thead>
-                                                <tbody>
-                                                    <tr v-for="absent in recruiting.absents_second" :key="absent.id">
-                                                        <td class="text-left t-name table-title">{{ absent.cause }}</td>
-                                                        <td class="text-center t-name table-title">{{ absent.count }}</td>
-                                                    </tr>
-                                                </tbody>
-                                            </table>
-                                        </div>
-                                        <div class="col-md-4">
-                                            <table class="table b-table table-striped table-bordered table-sm">
-                                                <thead>
-                                                    <th class="text-left t-name table-title" colspan="2">После третьего дня</th>
-                                                </thead>
-                                                <tbody>
-                                                    <tr v-for="absent in recruiting.absents_third" :key="absent.id">
-                                                        <td class="text-left t-name table-title">{{ absent.cause }}</td>
-                                                        <td class="text-center t-name table-title">{{ absent.count }}</td>
-                                                    </tr>
-                                                </tbody>
-                                            </table>
-                                        </div>
-                                    </div>
-                                </b-tab>
-                            </b-tabs>
-
-
-
-
-
-                        </b-tab>
-
-                        <b-tab title="Воронка" key="7" card>
-                            <b-tabs type="card" v-if="dataLoaded" defaultActiveKey="0">
-                                <b-tab title="Сводная" key="0" card>
-                                    <div class="row">
-
-                                        <div class="col-8">
-                                            <TableFunnel
-                                                class="mb-5"
-                                                :id="0"
-                                                :table="recruiting.funnels['all']['all']"
-                                                title="Сводная таблица"
-                                                segment="segments"
-                                                type="month"
-                                                :date="date"
-                                            />
-                                            <TableFunnel
-                                                class="mb-5"
-                                                :id="1"
-                                                :table="recruiting.funnels['all']['hh']"
-                                                title="hh.ru"
-                                                segment="hh"
-                                                type="month"
-                                                :date="date"
-                                            />
-                                            <TableFunnel
-                                                class="mb-5"
-                                                :id="2"
-                                                :table="recruiting.funnels['all']['insta']"
-                                                title="Job.bpartners.kz"
-                                                segment="insta"
-                                                type="month"
-                                                :date="date"
-                                            />
-                                        </div>
-
-                                        <!-- partner link creator -->
-                                        <div class="col-4">
-                                            <ref-linker />
-                                        </div>
-                                    </div>
-
-                                </b-tab>
-                                <template v-for="(month, i) in months">
-                                    <b-tab :title="month.month" :key="i" card>
-                                        <TableFunnel
-                                            class="mb-5"
-                                            :table="recruiting.funnels['month'][i]['hh']"
-                                            title="hh.ru"
-                                            segment="hh"
-                                            type="week"
-                                            :date="month.date"
-                                            :key="5 * 1000 * (Number(i) +  10 * Number(i))"
-                                        />
-                                        <TableFunnel
-                                            class="mb-5"
-                                            :table="recruiting.funnels['month'][i]['insta']"
-                                            title="Job.bpartners.kz"
-                                            segment="insta"
-                                            type="week"
-                                            :date="month.date"
-                                            :key="6 * 1000 * (Number(i) +  10 * Number(i))"
-                                        />
-                                    </b-tab>
-                                </template>
-
-                            </b-tabs>
-                        </b-tab>
-
-                        <b-tab  key="8" card>
-
-                            <template #title>
-                                <b-spinner type="grow" small></b-spinner> <b class="roman">IV</b> Увольнение
-                            </template>
-
-
-                            <b-tabs>
-                                <b-tab title="Причины и процент текучки" key="1" card>
-                                    <TableStaffTurnover
-                                        :staff="recruiting.staff"
-                                        :causes="recruiting.causes"
-                                        :staff_longevity="recruiting.staff_longevity"
-                                        :staff_by_group="recruiting.staff_by_group"
-                                    />
-                                </b-tab>
-
-
-                                <b-tab title="Причины: Бот" key="2" card>
-
-                                    <div class="d-flex flex-wrap">
-
-
-                                    <template v-for="(quizz, key) in recruiting.quiz">
-                                        <div class="question-wrap" :key="key">
-                                            <p> {{ quizz['q']}}</p>
-                                            <div v-if="quizz['type'] == 'answer'">
-                                                <div v-for="answer in quizz['answers']" :key="answer.id" class="d-flex">
-                                                    <p class="fz12">{{ answer.text }}</p>
-                                                </div>
-                                            </div>
-                                            <div v-if="quizz['type'] == 'variant'">
-                                                <div v-for="answer in quizz['answers']" :key="answer.id" class="d-flex">
-                                                    <ProgressBar
-                                                        :percentage="Number(answer.percent)"
-                                                        :label="answer.text + ' (' + answer.count + ')'"
-                                                        :class="'active'"
-                                                    />
-                                                </div>
-                                            </div>
-
-                                            <div v-if="quizz['type'] == 'star'">
-                                                <div v-for="answer in quizz['answers']" :key="answer.id" class="d-flex">
-                                                    <Rating
-                                                        :grade="Number(answer.text).toFixed(0)"
-                                                        :maxStars="10"
-                                                        :hasCounter="false"
-                                                    />
-                                                    <p class="mb-0">{{ answer.text + ' (' + answer.count + ')' }}</p>
-                                                </div>
-                                            </div>
-
-                                        </div>
-
-                                    </template>
-                                    </div>
-                                </b-tab>
-                                <b-tab title="Причины увольнения" key="3" card>
-                                    <div class="col-md-12 col-lg-6 d-flex align-items-center">
-                                        <table class="table b-table table-striped table-bordered table-sm">
-                                            <thead>
-                                                <th class="text-left t-name table-title" colspan="2">Причины увольнения</th>
-                                            </thead>
-                                            <tbody>
-                                                <tr v-for="cause in recruiting.causes" :key="cause.id">
-                                                    <td class="text-left t-name table-title">{{ cause.cause }}</td>
-                                                    <td class="text-center t-name table-title">{{ cause.count }}</td>
-                                                </tr>
-                                            </tbody>
-                                        </table>
-                                    </div>
-                                </b-tab>
-                            </b-tabs>
-                        </b-tab>
-                    </template>
-
-                </b-tabs>
-            </div>
+							<b-tab
+								key="8"
+								card
+							>
+								<template #title>
+									<b-spinner
+										type="grow"
+										small
+									/> <b class="roman">IV</b> Увольнение
+								</template>
 
 
-            <div v-else>
-                <p>У вас нет доступа к этой группе</p>
-            </div>
+								<b-tabs>
+									<b-tab
+										title="Причины и процент текучки"
+										key="1"
+										card
+									>
+										<TableStaffTurnover
+											:staff="recruiting.staff"
+											:causes="recruiting.causes"
+											:staff_longevity="recruiting.staff_longevity"
+											:staff_by_group="recruiting.staff_by_group"
+										/>
+									</b-tab>
 
-            <div class="empty-space"></div>
-        </div>
-    </div>
 
-</div>
+									<b-tab
+										title="Причины: Бот"
+										key="2"
+										card
+									>
+										<div class="d-flex flex-wrap">
+											<template v-for="(quizz, key) in recruiting.quiz">
+												<div
+													class="question-wrap"
+													:key="key"
+												>
+													<p> {{ quizz['q'] }}</p>
+													<div v-if="quizz['type'] == 'answer'">
+														<div
+															v-for="answer in quizz['answers']"
+															:key="answer.id"
+															class="d-flex"
+														>
+															<p class="fz12">
+																{{ answer.text }}
+															</p>
+														</div>
+													</div>
+													<div v-if="quizz['type'] == 'variant'">
+														<div
+															v-for="answer in quizz['answers']"
+															:key="answer.id"
+															class="d-flex"
+														>
+															<ProgressBar
+																:percentage="Number(answer.percent)"
+																:label="answer.text + ' (' + answer.count + ')'"
+																:class="'active'"
+															/>
+														</div>
+													</div>
+
+													<div v-if="quizz['type'] == 'star'">
+														<div
+															v-for="answer in quizz['answers']"
+															:key="answer.id"
+															class="d-flex"
+														>
+															<Rating
+																:grade="Number(answer.text).toFixed(0)"
+																:max-stars="10"
+																:has-counter="false"
+															/>
+															<p class="mb-0">
+																{{ answer.text + ' (' + answer.count + ')' }}
+															</p>
+														</div>
+													</div>
+												</div>
+											</template>
+										</div>
+									</b-tab>
+									<b-tab
+										title="Причины увольнения"
+										key="3"
+										card
+									>
+										<div class="col-md-12 col-lg-6 d-flex align-items-center">
+											<table class="table b-table table-striped table-bordered table-sm">
+												<thead>
+													<th
+														class="text-left t-name table-title"
+														colspan="2"
+													>
+														Причины увольнения
+													</th>
+												</thead>
+												<tbody>
+													<tr
+														v-for="cause in recruiting.causes"
+														:key="cause.id"
+													>
+														<td class="text-left t-name table-title">
+															{{ cause.cause }}
+														</td>
+														<td class="text-center t-name table-title">
+															{{ cause.count }}
+														</td>
+													</tr>
+												</tbody>
+											</table>
+										</div>
+									</b-tab>
+								</b-tabs>
+							</b-tab>
+						</template>
+					</b-tabs>
+				</div>
+
+
+				<div v-else>
+					<p>У вас нет доступа к этой группе</p>
+				</div>
+
+				<div class="empty-space" />
+			</div>
+		</div>
+	</div>
 </template>
 
 <script>

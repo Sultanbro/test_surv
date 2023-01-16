@@ -1,124 +1,239 @@
 <template>
-<div class="mb-3">
-    <div class="d-flex align-items-center mb-2" v-if="show_headers">
+	<div class="mb-3">
+		<div
+			class="d-flex align-items-center mb-2"
+			v-if="show_headers"
+		>
+			<h4 class="mr-2">
+				{{ activity.name }}
+			</h4>
 
-        <h4 class="mr-2">{{ activity.name }} </h4>
-
-        <div class="my-2 d-flex ml-auto mr-3">
-            <div class="d-flex">
-                <div class="mr-2">
-                    <b-form-radio v-model="user_types"  name="some-radios" value="0">Действующие</b-form-radio>
-                </div>
-                <div class="mr-2">
-                    <b-form-radio v-model="user_types"  name="some-radios" value="1">Уволенные</b-form-radio>
-                </div>
-            </div>
-
-
-            <b-form-checkbox
-                v-model="filter.fulltime"
-                :value="1"
-                :unchecked-value="0"
-                class="mr-2"
-                >
-                Full-Time
-            </b-form-checkbox>
-            <b-form-checkbox
-                v-model="filter.parttime"
-                :value="1"
-                :unchecked-value="0"
-                class="mr-2"
-                >
-                Part-Time
-            </b-form-checkbox>
-
-        </div>
+			<div class="my-2 d-flex ml-auto mr-3">
+				<div class="d-flex">
+					<div class="mr-2">
+						<b-form-radio
+							v-model="user_types"
+							name="some-radios"
+							value="0"
+						>
+							Действующие
+						</b-form-radio>
+					</div>
+					<div class="mr-2">
+						<b-form-radio
+							v-model="user_types"
+							name="some-radios"
+							value="1"
+						>
+							Уволенные
+						</b-form-radio>
+					</div>
+				</div>
 
 
-        <div v-if="group_id == 58 || group_id == 59 || group_id == 42">
-            <!-- Ozon -->
-            <a @click='showExcelImport = !showExcelImport'
-                class="btn btn-success btn-sm rounded mr-2 text-white">
-                <i class="fa fa-upload"></i>
-                Импорт</a>
-        </div>
+				<b-form-checkbox
+					v-model="filter.fulltime"
+					:value="1"
+					:unchecked-value="0"
+					class="mr-2"
+				>
+					Full-Time
+				</b-form-checkbox>
+				<b-form-checkbox
+					v-model="filter.parttime"
+					:value="1"
+					:unchecked-value="0"
+					class="mr-2"
+				>
+					Part-Time
+				</b-form-checkbox>
+			</div>
 
 
-        <div>
-            <a href="#" @click="exportData()" class="btn btn-success btn-sm rounded">
-                <i class="far fa-file-excel"></i>
-                Экспорт</a>
-        </div>
-
-    </div>
-
-    <table class="table b-table table-bordered table-sm table-responsive" :class="{'inverted' : color_invert}">
-        <tr>
-            <th class="b-table-sticky-column text-left px-1 t-name bg-white"><div class="wd">Имя сотрудника</div></th>
-
-            <template v-if="activity.plan_unit == 'minutes'">
-                <th class="text-center px-1 day-minute"> <div>Ср.</div> </th>
-                <th class="text-center px-1 day-minute"><div>План</div></th>
-                <th class="text-center px-1 day-minute plan" ><div>Вып.</div></th>
-                <th class="text-center px-1 day-minute"><div>%</div></th>
-            </template>
-
-            <template v-else>
-                <th class="text-center px-1 day-minute"><div>План</div></th>
-                <th class="text-center px-1 day-minute"><div>Вып.</div></th>
-            </template>
-
-            <th v-for="day in month.daysInMonth" :key="day" class="text-center px-1"><div>{{ day }}</div></th>
-        </tr>
-
-        <tr v-for="(item, index) in filtered" :key="index">
-            <td class="table-primary b-table-sticky-column text-left px-2 t-name" :title="item.id + ' ' + item.email">
-                <div class="wd d-flex">
-                    {{ item.lastname }} {{ item.name }}
-                    <b-badge variant="success" v-if="item.group == 'Просрочники'">{{ item.group }}</b-badge>
-                    <b-badge variant="primary" v-else>{{ item.group }}</b-badge>
-
-                    <div v-if="item.show_cup == 1">
-                        <img src="/images/goldencup.png" class="goldencup ml-2" alt="">
-                    </div>
-                    <div v-if="item.show_cup == 2">
-                        <img src="/images/silvercup.png" class="goldencup ml-2" alt="">
-                    </div>
-                    <div v-if="item.show_cup == 3">
-                        <img src="/images/bronzecup.png" class="goldencup ml-2" alt="">
-                    </div>
-                </div>
-            </td>
-
-            <template v-if="activity.plan_unit == 'minutes'">
-                <td class="px-2 stat da"><div>{{ item.avg }}</div></td>
-                <td class="px-2 stat da"><div :title="activity.daily_plan + ' * ' + item.applied_from">{{ item.month }}</div></td>
-                <td class="px-2 stat da plan"><div>{{ item.plan }}</div></td>
-                <td class="px-2 stat da"><div>{{ item.percent }}</div></td>
-            </template>
-
-            <template v-else>
-                <td class="px-2 stat day-minute "><div>{{ item.month }}</div></td>
-                <td class="px-2 stat day-minute"><div>{{ item.plan }}</div></td>
-            </template>
+			<div v-if="group_id == 58 || group_id == 59 || group_id == 42">
+				<!-- Ozon -->
+				<a
+					@click="showExcelImport = !showExcelImport"
+					class="btn btn-success btn-sm rounded mr-2 text-white"
+				>
+					<i class="fa fa-upload" />
+					Импорт</a>
+			</div>
 
 
-            <template v-for="day in month.daysInMonth">
-                <td v-if="item.editable && editable" :key="day" :class="'px-0 day-minute text-center Fri table-' + item._cellVariants[day]">
-                    <div><input type="number" v-model="item[day]" @change="updateSettings($event, item, index, day)" class="form-control cell-input"></div>
-                </td>
-                <td v-else @click="editMode(item)" :key="day + 'a'" :class="'px-0 day-minute text-center Fri table-' + item._cellVariants[day]">
-                    <div v-if="item[day]">{{ item[day] }}{{ activity.unit }}</div>
-                </td>
-            </template>
-        </tr>
-    </table>
+			<div>
+				<a
+					href="#"
+					@click="exportData()"
+					class="btn btn-success btn-sm rounded"
+				>
+					<i class="far fa-file-excel" />
+					Экспорт</a>
+			</div>
+		</div>
 
-    <sidebar title="Импорт EXCEL" :open="showExcelImport" @close="showExcelImport=false" v-if="showExcelImport" width="75%">
-        <activity-excel-import :group_id="group_id" table="minutes" @close="showExcelImport=false" :activity_id="activity.id"></activity-excel-import>
-    </sidebar>
+		<table
+			class="table b-table table-bordered table-sm table-responsive"
+			:class="{'inverted' : color_invert}"
+		>
+			<tr>
+				<th class="b-table-sticky-column text-left px-1 t-name bg-white">
+					<div class="wd">
+						Имя сотрудника
+					</div>
+				</th>
 
-</div>
+				<template v-if="activity.plan_unit == 'minutes'">
+					<th class="text-center px-1 day-minute">
+						<div>Ср.</div>
+					</th>
+					<th class="text-center px-1 day-minute">
+						<div>План</div>
+					</th>
+					<th class="text-center px-1 day-minute plan">
+						<div>Вып.</div>
+					</th>
+					<th class="text-center px-1 day-minute">
+						<div>%</div>
+					</th>
+				</template>
+
+				<template v-else>
+					<th class="text-center px-1 day-minute">
+						<div>План</div>
+					</th>
+					<th class="text-center px-1 day-minute">
+						<div>Вып.</div>
+					</th>
+				</template>
+
+				<th
+					v-for="day in month.daysInMonth"
+					:key="day"
+					class="text-center px-1"
+				>
+					<div>{{ day }}</div>
+				</th>
+			</tr>
+
+			<tr
+				v-for="(item, index) in filtered"
+				:key="index"
+			>
+				<td
+					class="table-primary b-table-sticky-column text-left px-2 t-name"
+					:title="item.id + ' ' + item.email"
+				>
+					<div class="wd d-flex">
+						{{ item.lastname }} {{ item.name }}
+						<b-badge
+							variant="success"
+							v-if="item.group == 'Просрочники'"
+						>
+							{{ item.group }}
+						</b-badge>
+						<b-badge
+							variant="primary"
+							v-else
+						>
+							{{ item.group }}
+						</b-badge>
+
+						<div v-if="item.show_cup == 1">
+							<img
+								src="/images/goldencup.png"
+								class="goldencup ml-2"
+								alt=""
+							>
+						</div>
+						<div v-if="item.show_cup == 2">
+							<img
+								src="/images/silvercup.png"
+								class="goldencup ml-2"
+								alt=""
+							>
+						</div>
+						<div v-if="item.show_cup == 3">
+							<img
+								src="/images/bronzecup.png"
+								class="goldencup ml-2"
+								alt=""
+							>
+						</div>
+					</div>
+				</td>
+
+				<template v-if="activity.plan_unit == 'minutes'">
+					<td class="px-2 stat da">
+						<div>{{ item.avg }}</div>
+					</td>
+					<td class="px-2 stat da">
+						<div :title="activity.daily_plan + ' * ' + item.applied_from">
+							{{ item.month }}
+						</div>
+					</td>
+					<td class="px-2 stat da plan">
+						<div>{{ item.plan }}</div>
+					</td>
+					<td class="px-2 stat da">
+						<div>{{ item.percent }}</div>
+					</td>
+				</template>
+
+				<template v-else>
+					<td class="px-2 stat day-minute ">
+						<div>{{ item.month }}</div>
+					</td>
+					<td class="px-2 stat day-minute">
+						<div>{{ item.plan }}</div>
+					</td>
+				</template>
+
+
+				<template v-for="day in month.daysInMonth">
+					<td
+						v-if="item.editable && editable"
+						:key="day"
+						:class="'px-0 day-minute text-center Fri table-' + item._cellVariants[day]"
+					>
+						<div>
+							<input
+								type="number"
+								v-model="item[day]"
+								@change="updateSettings($event, item, index, day)"
+								class="form-control cell-input"
+							>
+						</div>
+					</td>
+					<td
+						v-else
+						@click="editMode(item)"
+						:key="day + 'a'"
+						:class="'px-0 day-minute text-center Fri table-' + item._cellVariants[day]"
+					>
+						<div v-if="item[day]">
+							{{ item[day] }}{{ activity.unit }}
+						</div>
+					</td>
+				</template>
+			</tr>
+		</table>
+
+		<sidebar
+			title="Импорт EXCEL"
+			:open="showExcelImport"
+			@close="showExcelImport=false"
+			v-if="showExcelImport"
+			width="75%"
+		>
+			<activity-excel-import
+				:group_id="group_id"
+				table="minutes"
+				@close="showExcelImport=false"
+				:activity_id="activity.id"
+			/>
+		</sidebar>
+	</div>
 </template>
 
 <script>

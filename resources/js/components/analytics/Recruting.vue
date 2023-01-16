@@ -1,210 +1,258 @@
 <template>
-<div class="recruting-analytics mb-4">
-    <div class="border shadow p-3 aliceblue mb-5 rounded">
-        <div>
-            <div class="plan mb-4">
-                <div class="d-flex justify-content-between abv">
-                    <p>Принятые сотрудники в этом месяце</p>
-                    <p class="text ml-2">{{ info.applied }} приняты /  {{ info.applied_plan }} требуется </p>
-                </div>
-                <div class="progress">
-                    <div class="indicator" :style="'width: ' + widthRemain + '%'"></div>
-                    <div class="text">
-                        Осталось {{ info.remain_days }} дней
-                    </div>
-                </div>
-                <div class="relative">
-                    <div class="line line1">
-
-                    </div>
-                    <div class="line line2" :style="'left: calc(' + widthRemain + '% - 1.95%);'" v-if="month == (new Date().getMonth() + 1)">
-                        {{ today }} <br>{{ months[month] }}
-                    </div>
-                    <div class="line line3">
-                        {{ maxdays[month] }}  {{ months[month] }}
-                    </div>
-                </div>
-
-            </div>
-        </div>
-    </div>
-
-
-    <div class="row align-items-center my-3" v-if="isAnalyticsPage">
-        <div class="col-md-8">
-            <h3 class="mb-3 text-center">Основные показатели</h3>
-            <div class="lboxes">
-                <div class="lbox green  shadow">
-                    <p>
-                        <span>Работают</span>
-                        <i class="fa fa-info-circle"
-                            v-b-popover.hover.right.html="'Количество сотрудников на данный момент'"
-                            title="Работают">
-                        </i>
-                    </p>
-                    <p>{{ info.working }}</p>
-                </div>
-
-                <div class="lbox yellow  shadow">
-                     <p>
-                        <span>Осталось принять</span>
-                        <i class="fa fa-info-circle"
-                            v-b-popover.hover.right.html="'Количество требуемых сотрудников на данный момент. <br> f: (Кол-во заказа - Кол-во принятых сотрудников)'"
-                            title="Осталось принять">
-                        </i>
-                    </p>
-                    <p>{{ info.remain_apply }}</p>
-                </div>
+	<div class="recruting-analytics mb-4">
+		<div class="border shadow p-3 aliceblue mb-5 rounded">
+			<div>
+				<div class="plan mb-4">
+					<div class="d-flex justify-content-between abv">
+						<p>Принятые сотрудники в этом месяце</p>
+						<p class="text ml-2">
+							{{ info.applied }} приняты /  {{ info.applied_plan }} требуется
+						</p>
+					</div>
+					<div class="progress">
+						<div
+							class="indicator"
+							:style="'width: ' + widthRemain + '%'"
+						/>
+						<div class="text">
+							Осталось {{ info.remain_days }} дней
+						</div>
+					</div>
+					<div class="relative">
+						<div class="line line1" />
+						<div
+							class="line line2"
+							:style="'left: calc(' + widthRemain + '% - 1.95%);'"
+							v-if="month == (new Date().getMonth() + 1)"
+						>
+							{{ today }} <br>{{ months[month] }}
+						</div>
+						<div class="line line3">
+							{{ maxdays[month] }}  {{ months[month] }}
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
 
 
-                <div class="lbox blue   shadow">
-                    <p>
-                        <span>Стажеры</span>
-                        <i class="fa fa-info-circle"
-                            v-b-popover.hover.right.html="'Количество стажеров присутствовавших на сегодняшнем обучении.<br> После отметки отсутствовавших руководителями, это число уменьшается и конкретизируется к концу рабочего дня'"
-                            title="Стажеры">
-                        </i>
-                    </p>
-                    <p>{{ info.training }}</p>
-                </div>
+		<div
+			class="row align-items-center my-3"
+			v-if="isAnalyticsPage"
+		>
+			<div class="col-md-8">
+				<h3 class="mb-3 text-center">
+					Основные показатели
+				</h3>
+				<div class="lboxes">
+					<div class="lbox green  shadow">
+						<p>
+							<span>Работают</span>
+							<i
+								class="fa fa-info-circle"
+								v-b-popover.hover.right.html="'Количество сотрудников на данный момент'"
+								title="Работают"
+							/>
+						</p>
+						<p>{{ info.working }}</p>
+					</div>
+
+					<div class="lbox yellow  shadow">
+						<p>
+							<span>Осталось принять</span>
+							<i
+								class="fa fa-info-circle"
+								v-b-popover.hover.right.html="'Количество требуемых сотрудников на данный момент. <br> f: (Кол-во заказа - Кол-во принятых сотрудников)'"
+								title="Осталось принять"
+							/>
+						</p>
+						<p>{{ info.remain_apply }}</p>
+					</div>
 
 
-
-
-                <div class="lbox green  shadow">
-                    <p>
-                        <span>Осталось рабочих дней</span>
-                        <i class="fa fa-info-circle"
-                            v-b-popover.hover.right.html="'Все дни, кроме воскресенья'"
-                            title="Осталось рабочих дней">
-                        </i>
-                    </p>
-                    <p>{{ info.remain_days }}</p>
-                </div>
-
-                  <div class="lbox yellow  shadow">
-                    <p>
-                        <span>Уволены</span>
-                        <i class="fa fa-info-circle"
-                            v-b-popover.hover.right.html="'Уволены в этом месяце <b>по учету ставок</b> сотрудников.<br> Part time считается как 0,5'"
-                            title="Уволены">
-                        </i>
-                    </p>
-                    <p>{{ info.fired }}</p>
-                </div>
-
-
-                <div class="lbox blue  shadow" >
-                    <p>
-                        <span>Принято</span>
-                        <i class="fa fa-info-circle"
-                            v-b-popover.hover.right.html="'Принято в этом месяце <b>по учету ставок</b> сотрудников. <br> Part time считается как 0,5 <br><br> Нажмите, чтобы увидеть заказы на этот месяц'"
-                            title="Принято">
-                        </i>
-                    </p>
-                    <p>{{ info.applied }}</p>
-                </div>
-
-
-            </div>
-        </div>
-        <div class="col-md-4">
-            <div>
-                <h3 class="mb-3 text-center">Воронка соискателей</h3>
-                <div id="funnel"></div>
-            </div>
-        </div>
-    </div>
+					<div class="lbox blue   shadow">
+						<p>
+							<span>Стажеры</span>
+							<i
+								class="fa fa-info-circle"
+								v-b-popover.hover.right.html="'Количество стажеров присутствовавших на сегодняшнем обучении.<br> После отметки отсутствовавших руководителями, это число уменьшается и конкретизируется к концу рабочего дня'"
+								title="Стажеры"
+							/>
+						</p>
+						<p>{{ info.training }}</p>
+					</div>
 
 
 
 
-    <div v-if="orderVisible" class="border shadow p-3 mb-3">
-        <h3>Заказы на группы</h3>
+					<div class="lbox green  shadow">
+						<p>
+							<span>Осталось рабочих дней</span>
+							<i
+								class="fa fa-info-circle"
+								v-b-popover.hover.right.html="'Все дни, кроме воскресенья'"
+								title="Осталось рабочих дней"
+							/>
+						</p>
+						<p>{{ info.remain_days }}</p>
+					</div>
 
-        <div class="group">
-
-        </div>
-
-        <table class="table table-striped">
-            <tr>
-                <th>Название группы</th>
-                <th>Требуется</th>
-                <th>Факт</th>
-            </tr>
-            <tr v-for="(order, index) in orders" :key="index">
-                <td class="text-left t-name  bgz table-title">{{ order.group }}</td>
-                <td class="text-left table-title">{{ order.required }}</td>
-                <td class="text-left table-title">{{ order.fact }}</td>
-            </tr>
-        </table>
-    </div>
-
-    <div class="border shadow p-3 rounded">
-        <div class="d-flex justify-content-between">
-            <h3 class="mb-0">Результаты остальных сотрудников</h3>
-            <button class="btn btn-primary btn-sm rounded" @click="showPlans = !showPlans">
-                <span v-if="showPlans">Скрыть</span>
-                <span v-else>Раскрыть</span>
-            </button>
-        </div>
+					<div class="lbox yellow  shadow">
+						<p>
+							<span>Уволены</span>
+							<i
+								class="fa fa-info-circle"
+								v-b-popover.hover.right.html="'Уволены в этом месяце <b>по учету ставок</b> сотрудников.<br> Part time считается как 0,5'"
+								title="Уволены"
+							/>
+						</p>
+						<p>{{ info.fired }}</p>
+					</div>
 
 
-    <div v-show="showPlans" class="mt-5">
-            <div class="plan" v-for="user in recruiters" :key="user.id">
-                <div class="mb-2 d-flex justify-content-between">
-                    <p class="name">{{ user.name }}</p>
-                    <div class="d-flex">
-                        <div class="ind">
-                            <div class="circle blue"></div>
-                            <p>Исходящие</p>
-                        </div>
-                        <div class="ind">
-                            <div class="circle yellow"></div>
-                            <p>Сконвертировано</p>
-                        </div>
-                        <div class="ind">
-                            <div class="circle bluish"></div>
-                            <p>Принято на работу</p>
-                        </div>
-                    </div>
-                </div>
-                <div class="progress">
-                    <div class="indicator main" :style="'width: ' + user.out.percent + '%'"
-                        v-b-popover.hover title="Исходящие"
-                        >{{  user.out.percent }} %</div>
-                        <div class="text">
-                            {{ user.out.value }} звонков из {{ user.out.plan }} запланированных
-                        </div>
-                </div>
-                <div class="progress">
-                    <div class="indicator yellow"
-                        v-b-popover.hover title="Сконвертировано"
-                        :style="'width: ' + user.converted.percent + '%;'"
-                        >{{  user.converted.percent }} %</div>
-                        <div class="text">
-                            {{ user.converted.value }} сделок из {{ user.converted.plan }} запланированных
-                        </div>
-                </div>
-                <div class="progress">
-                    <div class="indicator bluish"
-                        v-b-popover.hover title="Принято на работу"
-                        :style="'width: ' + user.applied.percent + '%;'"
-                        >{{  user.applied.percent }} %</div>
-                        <div class="text">
-                            {{ user.applied.value }} сотрудников из {{ user.applied.plan }} запланированных
-                        </div>
-                </div>
-            </div>
-        </div>
-
-
-    </div>
+					<div class="lbox blue  shadow">
+						<p>
+							<span>Принято</span>
+							<i
+								class="fa fa-info-circle"
+								v-b-popover.hover.right.html="'Принято в этом месяце <b>по учету ставок</b> сотрудников. <br> Part time считается как 0,5 <br><br> Нажмите, чтобы увидеть заказы на этот месяц'"
+								title="Принято"
+							/>
+						</p>
+						<p>{{ info.applied }}</p>
+					</div>
+				</div>
+			</div>
+			<div class="col-md-4">
+				<div>
+					<h3 class="mb-3 text-center">
+						Воронка соискателей
+					</h3>
+					<div id="funnel" />
+				</div>
+			</div>
+		</div>
 
 
 
 
-</div>
+		<div
+			v-if="orderVisible"
+			class="border shadow p-3 mb-3"
+		>
+			<h3>Заказы на группы</h3>
+
+			<div class="group" />
+
+			<table class="table table-striped">
+				<tr>
+					<th>Название группы</th>
+					<th>Требуется</th>
+					<th>Факт</th>
+				</tr>
+				<tr
+					v-for="(order, index) in orders"
+					:key="index"
+				>
+					<td class="text-left t-name  bgz table-title">
+						{{ order.group }}
+					</td>
+					<td class="text-left table-title">
+						{{ order.required }}
+					</td>
+					<td class="text-left table-title">
+						{{ order.fact }}
+					</td>
+				</tr>
+			</table>
+		</div>
+
+		<div class="border shadow p-3 rounded">
+			<div class="d-flex justify-content-between">
+				<h3 class="mb-0">
+					Результаты остальных сотрудников
+				</h3>
+				<button
+					class="btn btn-primary btn-sm rounded"
+					@click="showPlans = !showPlans"
+				>
+					<span v-if="showPlans">Скрыть</span>
+					<span v-else>Раскрыть</span>
+				</button>
+			</div>
+
+
+			<div
+				v-show="showPlans"
+				class="mt-5"
+			>
+				<div
+					class="plan"
+					v-for="user in recruiters"
+					:key="user.id"
+				>
+					<div class="mb-2 d-flex justify-content-between">
+						<p class="name">
+							{{ user.name }}
+						</p>
+						<div class="d-flex">
+							<div class="ind">
+								<div class="circle blue" />
+								<p>Исходящие</p>
+							</div>
+							<div class="ind">
+								<div class="circle yellow" />
+								<p>Сконвертировано</p>
+							</div>
+							<div class="ind">
+								<div class="circle bluish" />
+								<p>Принято на работу</p>
+							</div>
+						</div>
+					</div>
+					<div class="progress">
+						<div
+							class="indicator main"
+							:style="'width: ' + user.out.percent + '%'"
+							v-b-popover.hover
+							title="Исходящие"
+						>
+							{{ user.out.percent }} %
+						</div>
+						<div class="text">
+							{{ user.out.value }} звонков из {{ user.out.plan }} запланированных
+						</div>
+					</div>
+					<div class="progress">
+						<div
+							class="indicator yellow"
+							v-b-popover.hover
+							title="Сконвертировано"
+							:style="'width: ' + user.converted.percent + '%;'"
+						>
+							{{ user.converted.percent }} %
+						</div>
+						<div class="text">
+							{{ user.converted.value }} сделок из {{ user.converted.plan }} запланированных
+						</div>
+					</div>
+					<div class="progress">
+						<div
+							class="indicator bluish"
+							v-b-popover.hover
+							title="Принято на работу"
+							:style="'width: ' + user.applied.percent + '%;'"
+						>
+							{{ user.applied.percent }} %
+						</div>
+						<div class="text">
+							{{ user.applied.value }} сотрудников из {{ user.applied.plan }} запланированных
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
 </template>
 
 <script>

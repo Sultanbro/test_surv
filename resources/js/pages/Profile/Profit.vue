@@ -1,83 +1,107 @@
 <template>
-<div
-	id="profit"
-	class="profit block _anim _anim-no-hide"
-	:class="{
-		'hidden': slides.length == 0,
-		'v-loading': loading
-	}"
->
-	<div class="profit__title title mt-5">
-		Как можно зарабатывать больше
-	</div>
-	<div class="profit__subtitle subtitle">
-		Информация, которая может быть полезна для Вашего карьерного роста
-	</div>
-	<div class="row profit__inner mr-1 ml-1">
-		<div
-			v-if="hasGroups"
-			class="col profit__carousel profit__carousel_left"
-			:class="{'col-md-6': hasPositions}"
-		>
-			<div
-				v-for="(slide, i) in groups"
-				:key="i"
-				class="profit__inner-item left-slide"
-			>
-				<div class="profit__inner__left" :class="{'profit__inner__one': !hasPositions}">
-					<div class="profit__left-wrapper">
-						<div class="profit__inner-title">
-							{{ slide.title }}
-						</div>
-						<a href="javascript:void(0)">
-							<img
-								src="/images/dist/profit-info.svg"
-								alt="info icon"
-								v-b-popover.hover.right.html="'Тут описано именно то, за что в Вашем отделе оплачивается работа'"
-							>
-						</a>
-					</div>
-					<div class="profit__inner-text" v-html="slide.text"/>
-				</div>
-				<div class="profit__arrows">
-					<a href="javascript:void(0)" class="profit__prev"/>
-					<a href="javascript:void(0)" class="profit__next"/>
-				</div>
-			</div>
+	<div
+		id="profit"
+		class="profit block _anim _anim-no-hide"
+		:class="{
+			'hidden': slides.length == 0,
+			'v-loading': loading
+		}"
+	>
+		<div class="profit__title title mt-5">
+			Как можно зарабатывать больше
 		</div>
-		<div
-			v-if="hasPositions"
-			class="col profit__carousel profit__carousel_right"
-			:class="{'col-md-6': hasGroups}"
-		>
+		<div class="profit__subtitle subtitle">
+			Информация, которая может быть полезна для Вашего карьерного роста
+		</div>
+		<div class="row profit__inner mr-1 ml-1">
 			<div
-				v-for="(slide, i) in positions"
-				:key="i"
-				class="profit__inner-item right-slide"
+				v-if="hasGroups"
+				class="col profit__carousel profit__carousel_left"
+				:class="{'col-md-6': hasPositions}"
 			>
-				<div class="profit__inner-right" :class="{'profit__inner__one': !hasGroups}">
-					<div class="profit__left-wrapper">
-						<div class="profit__inner-title">
-							{{ slide.title }}
+				<div
+					v-for="(slide, i) in groups"
+					:key="i"
+					class="profit__inner-item left-slide"
+				>
+					<div
+						class="profit__inner__left"
+						:class="{'profit__inner__one': !hasPositions}"
+					>
+						<div class="profit__left-wrapper">
+							<div class="profit__inner-title">
+								{{ slide.title }}
+							</div>
 							<a href="javascript:void(0)">
 								<img
 									src="/images/dist/profit-info.svg"
 									alt="info icon"
-									v-b-popover.hover.right.html="'У Вас обязательно будет карьерный рост в компании, и здесь описаны требования, необходимые знания и навыки для перехода на следующую ступень карьерной лестницы. Обязательно ознакомьтесь с разделом и задайте возникшие вопросы по карьерному росту Вашему руководителю.'"
+									v-b-popover.hover.right.html="'Тут описано именно то, за что в Вашем отделе оплачивается работа'"
 								>
 							</a>
 						</div>
+						<div
+							class="profit__inner-text"
+							v-html="slide.text"
+						/>
 					</div>
-					<div class="profit__inner-text profit-right" v-html="slide.text"/>
+					<div class="profit__arrows">
+						<a
+							href="javascript:void(0)"
+							class="profit__prev"
+						/>
+						<a
+							href="javascript:void(0)"
+							class="profit__next"
+						/>
+					</div>
 				</div>
-				<div class="profit__arrows">
-					<a href="javascript:void(0)" class="profit__prev"/>
-					<a href="javascript:void(0)" class="profit__next"/>
+			</div>
+			<div
+				v-if="hasPositions"
+				class="col profit__carousel profit__carousel_right"
+				:class="{'col-md-6': hasGroups}"
+			>
+				<div
+					v-for="(slide, i) in positions"
+					:key="i"
+					class="profit__inner-item right-slide"
+				>
+					<div
+						class="profit__inner-right"
+						:class="{'profit__inner__one': !hasGroups}"
+					>
+						<div class="profit__left-wrapper">
+							<div class="profit__inner-title">
+								{{ slide.title }}
+								<a href="javascript:void(0)">
+									<img
+										src="/images/dist/profit-info.svg"
+										alt="info icon"
+										v-b-popover.hover.right.html="'У Вас обязательно будет карьерный рост в компании, и здесь описаны требования, необходимые знания и навыки для перехода на следующую ступень карьерной лестницы. Обязательно ознакомьтесь с разделом и задайте возникшие вопросы по карьерному росту Вашему руководителю.'"
+									>
+								</a>
+							</div>
+						</div>
+						<div
+							class="profit__inner-text profit-right"
+							v-html="slide.text"
+						/>
+					</div>
+					<div class="profit__arrows">
+						<a
+							href="javascript:void(0)"
+							class="profit__prev"
+						/>
+						<a
+							href="javascript:void(0)"
+							class="profit__next"
+						/>
+					</div>
 				</div>
 			</div>
 		</div>
 	</div>
-</div>
 </template>
 
 <script>

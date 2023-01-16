@@ -1,36 +1,62 @@
 <template>
-<div>
+	<div>
+		<div class="book_settings">
+			<div class="row mb-2">
+				<div class="col-lg-3">
+					<b-form-select
+						:options="selectGroups"
+						size="md"
+						@change="groupselect"
+						class="group-select col-lg-6 d-flex"
+					>
+						<template #first>
+							<b-form-select-option
+								:value="null"
+								disabled
+							>
+								Выберите отдел из списка
+							</b-form-select-option>
+						</template>
+					</b-form-select>
+				</div>
+				<div class="col-lg-9 d-flex align-items-start">
+					<div class="add-grade">
+						<input
+							type="text"
+							class="form-control"
+							v-model="new_position"
+						>
+						<button
+							@click="addGroup"
+							class="btn btn-success"
+						>
+							Добавить список книг
+						</button>
+					</div>
+					<div
+						class="listgroup"
+						v-if="group_id"
+					>
+						<button
+							@click="deleteGroup"
+							class="btn btn-danger"
+						>
+							Удалить список
+						</button>
+					</div>
+				</div>
+			</div>
 
-    <div class="book_settings">
-
-        <div class="row mb-2">
-            <div class="col-lg-3">
-                <b-form-select :options="selectGroups" size="md" @change="groupselect" class="group-select col-lg-6 d-flex">
-                    <template #first>
-                        <b-form-select-option :value="null" disabled>Выберите отдел из списка</b-form-select-option>
-                    </template>
-                </b-form-select>
-            </div>
-            <div class="col-lg-9 d-flex align-items-start">
-                <div class="add-grade">
-                    <input type="text" class="form-control" v-model="new_position">
-                    <button @click='addGroup' class="btn btn-success">Добавить список книг</button>
-                </div>
-                <div class="listgroup" v-if="group_id">
-                   <button @click="deleteGroup" class="btn btn-danger">Удалить список</button>
-                </div>
-            </div>
-        </div>
-
-        <div class="mb-4">
-            <div >
-                <Books ref="books" :selectedGroup="group_id"/>
-            </div>
-        </div>
-
-    </div>
-
-</div>
+			<div class="mb-4">
+				<div>
+					<Books
+						ref="books"
+						:selected-group="group_id"
+					/>
+				</div>
+			</div>
+		</div>
+	</div>
 </template>
 
 <script>

@@ -1,115 +1,138 @@
 <template>
-  <section id="jReviews">
-    <a id="reviews" class="ancor" name="reviews"/>
-    <div class="section-content">
-      <h2 class="jReviews-header jHeader">{{ $lang(lang, 'review-header') }}</h2>
-      <div class="jReviews-wrapper">
-        <div class="jReviews-types">
-          <button
-              class="jReviews-video jButton"
-              @click="setMode('videos')"
-          >{{ $lang(lang, 'review-video') }}
-          </button>
-          <button
-              class="jReviews-photo jButton"
-              @click="setMode('photos')"
-          >{{ $lang(lang, 'review-photo') }}
-          </button>
-        </div>
-        <div v-if="isDesktop" class="jReviews-items-wrapper">
-          <div class="jReviews-items">
-            <div class="jReviews-item-watch">
-              <div
-                  v-if="mode === 'videos'"
-                  class="jReviews-item-player"
-              >
-                <iframe
-                    :src="prefix + videos[activeVideo].video"
-                    allow="accelerometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                    allowfullscreen
-                    class="jReviews-item-iflame"
-                    frameborder="0"
-                    title="YouTube video player"
-                />
-              </div>
-              <div
-                  v-if="mode === 'photos'"
-                  class="jReviews-item-full"
-              >
-                <img
-                    :src="photos[activePhoto].full"
-                    class="jReviews-item-image"
-                >
-              </div>
-            </div>
-            <div
-                ref="carouselWrap"
-                class="jReviews-item-thumbnails"
-            >
-              <Hooper
-                  ref="carousel"
-                  :settings="hooperSettings"
-              >
-                <Slide
-                    v-for="(item, key) in content"
-                    :key="'jTmb' + key"
-                >
-                  <div
-                      :style="`background-image: url(${item.thumbnail}); background-position: 0 -1rem;`"
-                      class="jReviews-item-thumbnail"
-                  />
-                </Slide>
-                <hooper-navigation slot="hooper-addons"/>
-              </Hooper>
-            </div>
-          </div>
-        </div>
-        <div v-if="!isDesktop" class="jReviews-items-wrapper">
-          <div class="jReviews-items">
-            <div class="jReviews-item-watch">
-              <Hooper
-                  ref="carousel"
-                  :settings="hooperSettings"
-              >
-                <Slide
-                    v-for="(item, key) in content"
-                    :key="'jTmb' + key"
-                >
-                  <div v-if="mode === 'videos'" class="jReviews-item-player">
-                    <iframe
-                        :src="prefix + content[key].video"
-                        allow="accelerometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                        allowfullscreen
-                        class="jReviews-item-iflame"
-                        frameborder="0"
-                        title="YouTube video player"
-                    />
-                  </div>
-                  <div v-if="mode === 'photos'" class="jReviews-item-player-photos">
-                  <img
-                      v-if="mode === 'photos'"
-                      :src="item.thumbnail"
-                      class="jReviews-item-image"
-                      alt="photos">
-                  </div>
-                </Slide>
-                <hooper-navigation slot="hooper-addons"/>
-              </Hooper>
-            </div>
-          </div>
-        </div>
-        <div class="jReviews-footer">
-          <p class="jReviews-title">{{ $lang(lang, 'review-title') }}</p>
-          <a
-              class="jReviews-free jButton"
-              href="/register"
-          >
-            {{ $lang(lang, 'review-free') }}
-          </a>
-        </div>
-      </div>
-    </div>
-  </section>
+	<section id="jReviews">
+		<a
+			id="reviews"
+			class="ancor"
+			name="reviews"
+		/>
+		<div class="section-content">
+			<h2 class="jReviews-header jHeader">
+				{{ $lang(lang, 'review-header') }}
+			</h2>
+			<div class="jReviews-wrapper">
+				<div class="jReviews-types">
+					<button
+						class="jReviews-video jButton"
+						@click="setMode('videos')"
+					>
+						{{ $lang(lang, 'review-video') }}
+					</button>
+					<button
+						class="jReviews-photo jButton"
+						@click="setMode('photos')"
+					>
+						{{ $lang(lang, 'review-photo') }}
+					</button>
+				</div>
+				<div
+					v-if="isDesktop"
+					class="jReviews-items-wrapper"
+				>
+					<div class="jReviews-items">
+						<div class="jReviews-item-watch">
+							<div
+								v-if="mode === 'videos'"
+								class="jReviews-item-player"
+							>
+								<iframe
+									:src="prefix + videos[activeVideo].video"
+									allow="accelerometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+									allowfullscreen
+									class="jReviews-item-iflame"
+									frameborder="0"
+									title="YouTube video player"
+								/>
+							</div>
+							<div
+								v-if="mode === 'photos'"
+								class="jReviews-item-full"
+							>
+								<img
+									:src="photos[activePhoto].full"
+									class="jReviews-item-image"
+								>
+							</div>
+						</div>
+						<div
+							ref="carouselWrap"
+							class="jReviews-item-thumbnails"
+						>
+							<Hooper
+								ref="carousel"
+								:settings="hooperSettings"
+							>
+								<Slide
+									v-for="(item, key) in content"
+									:key="'jTmb' + key"
+								>
+									<div
+										:style="`background-image: url(${item.thumbnail}); background-position: 0 -1rem;`"
+										class="jReviews-item-thumbnail"
+									/>
+								</Slide>
+								<hooper-navigation slot="hooper-addons" />
+							</Hooper>
+						</div>
+					</div>
+				</div>
+				<div
+					v-if="!isDesktop"
+					class="jReviews-items-wrapper"
+				>
+					<div class="jReviews-items">
+						<div class="jReviews-item-watch">
+							<Hooper
+								ref="carousel"
+								:settings="hooperSettings"
+							>
+								<Slide
+									v-for="(item, key) in content"
+									:key="'jTmb' + key"
+								>
+									<div
+										v-if="mode === 'videos'"
+										class="jReviews-item-player"
+									>
+										<iframe
+											:src="prefix + content[key].video"
+											allow="accelerometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+											allowfullscreen
+											class="jReviews-item-iflame"
+											frameborder="0"
+											title="YouTube video player"
+										/>
+									</div>
+									<div
+										v-if="mode === 'photos'"
+										class="jReviews-item-player-photos"
+									>
+										<img
+											v-if="mode === 'photos'"
+											:src="item.thumbnail"
+											class="jReviews-item-image"
+											alt="photos"
+										>
+									</div>
+								</Slide>
+								<hooper-navigation slot="hooper-addons" />
+							</Hooper>
+						</div>
+					</div>
+				</div>
+				<div class="jReviews-footer">
+					<p class="jReviews-title">
+						{{ $lang(lang, 'review-title') }}
+					</p>
+					<a
+						class="jReviews-free jButton"
+						href="/register"
+					>
+						{{ $lang(lang, 'review-free') }}
+					</a>
+				</div>
+			</div>
+		</div>
+	</section>
 </template>
 
 <script>
