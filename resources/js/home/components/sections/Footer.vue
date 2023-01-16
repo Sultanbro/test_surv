@@ -108,8 +108,23 @@
         <div class="jFooter-rules">
           <a
               class="jFooter-rules-link jFooter-link"
-              href="javascript:void(0)"
-          >{{ $lang(lang, 'footer-conf') }}</a>
+              :href="require('../../assets/docs/Договор оферты.pdf').default"
+              target="_blank"
+          >{{ $lang(lang, 'contract-offer') }}</a>
+          <a
+              class="jFooter-rules-link jFooter-link"
+              :href="require('../../assets/docs/Соглашение о пользовании сайтом.pdf').default"
+              target="_blank"
+          >{{ $lang(lang, 'site-agreement') }}</a>
+          <a
+              class="jFooter-rules-link jFooter-link"
+              :href="require('../../assets/docs/Политика обработки персональных данных.pdf').default"
+          >{{ $lang(lang, 'personal-data') }}</a>
+          <a
+              class="jFooter-rules-link jFooter-link"
+              :href="require('../../assets/docs/Условия конфиденциальности.pdf').default"
+          >{{ $lang(lang, 'privacy-policy') }}</a>
+
         </div>
         <div class="jFooter-copy">
           <p class="jFooter-copy-right">{{ '© ' + year + ' ' + $lang(lang, 'footer-copy') }}</p>
