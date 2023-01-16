@@ -172,7 +172,6 @@ class AnalyticStat extends Model
                     if($stat->type == 'sum'){
                         $val =  self::daysSum($date, $row->id, $group_id);
                         $val = round($val, 1);
-                        dd($val);
                         $stat->show_value = $val;
                         $stat->save();
                         $arr['value'] = $val;
@@ -283,11 +282,11 @@ class AnalyticStat extends Model
                         ->where('row_id', $item['row_id'])
                         ->first();
 
-                    if($stat) {
-                        $stat->show_value = $val;
-                        $stat->value = $val;
-                        $stat->save();
-                    }
+//                    if($stat) {
+//                        $stat->show_value = $val;
+//                        $stat->value = $val;
+//                        $stat->save();
+//                    }
                     //memp($val);
                     // TODO sum days save to stat
                 }
