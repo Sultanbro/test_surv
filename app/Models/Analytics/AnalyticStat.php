@@ -535,7 +535,7 @@ class AnalyticStat extends Model
         $all_stats = self::where('row_id', $row_id)->where('date', $date)->get();
         foreach ($columns as $key => $column) {
             $stat = $all_stats->where('column_id', $column->id)->first();
-
+            dd($stat);
             if($stat) {
                 $total += (float)$stat->show_value;
             }
