@@ -278,8 +278,8 @@ class AnalyticStat extends Model
                     $row[$key]['value'] = $val;
                     $row[$key]['show_value'] = $val;
 
-                    $stat = self::where('column_id', 8113)
-                        ->where('row_id', 3857)
+                    $stat = self::where('column_id', $item['column_id'])
+                        ->where('row_id', $item['row_id'])
                         ->first();
 
                     if($stat) {
@@ -532,10 +532,10 @@ class AnalyticStat extends Model
 
         $total = 0;
 
-        $all_stats = self::where('row_id', $row_id)->where('date', $date)->get();
+        $all_stats = self::where('row_id', 3857)->where('date', $date)->get();
         foreach ($columns as $key => $column) {
-            $stat = $all_stats->where('column_id', $column->id)->first();
-
+            $stat = $all_stats->where('column_id', 8113)->first();
+            dd($stat);
             if($stat) {
                 $total += (float)$stat->show_value;
             }
