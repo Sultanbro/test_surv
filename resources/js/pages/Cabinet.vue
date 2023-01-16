@@ -75,7 +75,27 @@
               class="multiselect-surv"
             />
           </div>
-
+<!-- <div>
+  <label for="url">Выбор приветственного видео-ролика:</label>
+    <input type="url" name="url" id="url" style="border: 1px solid #e8e8e8" 
+       placeholder="https://www.youtube.com/watch?v=CK8exq_fqGc&list=RDCK8exq_fqGc&start_radio=1"
+       pattern="https://.*" size="30"
+       required>
+    <button class="btn btn-success">Загрузить приветственное видео для новых пользователей</button>
+      <i class="fa fa-info-circle" 
+      v-b-popover.hover.right.html="'Каждому новому зарегистрированному пользователю <br> будет показываться вступительное видео, которое вы загрузите'"
+                         ></i>
+        <iframe
+          v-if="videoId"
+          width="560"
+          height="315"
+          title="YouTube video player"
+          frameborder="0"
+          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+          allowfullscreen
+          :src="`https://www.youtube.com/embed/${youtubeVideoId}`"
+/>
+</div> -->
           <div class="mt-3">
             <button class="btn btn-success btn-surv" @click="save">Сохранить</button>
           </div>
@@ -387,6 +407,7 @@ export default {
 	},
 	data() {
 		return {
+      videoUrl: '',
 			// my_crop_image: "",
 			crop_image: {
 				canvas: '',
@@ -435,7 +456,11 @@ export default {
 	computed: {
 		uploadedImage() {
 			return Object.keys(this.myCroppa).length !== 0;
-		}
+		},
+    // videoId(){
+    //   if(!this.videoUrl) return ''
+    //   return this.getYoutubeVideoId(this.videoUrl)
+    // }
 	},
 	watch: {
 		keywords() {
@@ -455,6 +480,11 @@ export default {
 		}
 	},
 	methods: {
+    // getYoutubeVideoId(url){
+    //   const urlObj = new URL(url)
+    //   if(urlObj.pathname.indexOf('embed') > -1) return urlObj.pathname.split('/')[2]
+    //   return urlObj.searchParams.get('v')
+    // },
 		init(){
 			this.fetchData();
 			this.user = this.auth_role;
@@ -757,7 +787,7 @@ export default {
 			// axios.get('/profile/country/city/', { params: { keywords: this.keywords } })
 			//     .then(response => this.results = response.data)
 			//     .catch(error => {});
-		},
+		}
 	},
 };
 </script>

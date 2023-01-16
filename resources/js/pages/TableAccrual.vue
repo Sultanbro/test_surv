@@ -117,9 +117,11 @@
                 emptyText="Нет данных">
 
                 <template #cell(name)="data">
-                    <div>
-                        <b-badge pill variant="success" class="mr-2">{{data.item.user_type}}</b-badge>
+                    <div class="badg">
+                        <!-- <b-badge pill variant="success" class="mr-2">{{data.item.user_type}}</b-badge> -->
+						
                         {{ data.value }}
+						<b-badge pill variant="success" class="mr-2">{{data.item.user_type}}</b-badge>
                         <i
                             v-if="data.index == 0"
                             class="fa fa-info-circle"
@@ -1462,5 +1464,14 @@ hr {
 }
 .fz-08 {
     font-size: 0.8rem;
+}
+.mr-2 {
+	display: none;
+}
+.badg {
+	justify-content: space-between;
+}
+.badg:hover .mr-2 {
+	display: block
 }
 </style>
