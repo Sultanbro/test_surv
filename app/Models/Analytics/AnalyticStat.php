@@ -537,7 +537,7 @@ class AnalyticStat extends Model
         foreach ($columns as $key => $column) {
             $stat = $all_stats->where('column_id', $column->id)->first();
 
-            if($stat) {
+            if($stat and  is_numeric($stat->show_value)) {
                 $total += (float)$stat->show_value;
             }
         }
