@@ -156,6 +156,9 @@ export default {
 	'footer-pay': 'Төлеу жолдары:',
 	'footer-sellcenter': 'Сату бөлімі:',
 	'footer-copy': 'Джобтон, Барлық құқықтар қорғалған',
-	'footer-rules': 'Сайт ережелері',
-	'footer-conf': 'Құжаттар'
+	'contract-offer': 'Келісімшарт бойынша ұсыныс',
+	'site-agreement': 'Сайт туралы келісім',
+	'personal-data': 'Жеке деректерді өңдеу саясаты',
+	'privacy-policy': 'Құпиялылық саясаты'
+
 }

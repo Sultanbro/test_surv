@@ -156,6 +156,8 @@ export default {
 	'footer-pay': 'Payment Methods:',
 	'footer-sellcenter': 'Sales department:',
 	'footer-copy': '"Jobton", All rights reserved',
-	'footer-rules': 'Site rules',
-	'footer-conf': 'Documents'
+	'contract-offer': 'Contract offer',
+	'site-agreement': 'Site agreement',
+	'personal-data': 'Personal data processing policy',
+	'privacy-policy': 'Privacy Policy'
 }
