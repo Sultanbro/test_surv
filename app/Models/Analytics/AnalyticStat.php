@@ -172,7 +172,6 @@ class AnalyticStat extends Model
                     if($stat->type == 'sum'){
                         $val =  self::daysSum($date, 3857, $group_id);
                         $val = round($val, 1);
-                        dd($val);
                         $stat->show_value = $val;
                         $stat->save();
                         $arr['value'] = $val;
@@ -537,7 +536,7 @@ class AnalyticStat extends Model
         foreach ($columns as $key => $column) {
             $stat = $all_stats->where('column_id', $column->id)->first();
 
-            if($stat and  is_numeric($stat->show_value)) {
+            if($stat and is_numeric($stat->show_value)) {
                 $total += (float)$stat->show_value;
             }
         }
