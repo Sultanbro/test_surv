@@ -3,7 +3,7 @@
         "target": "esnext",
         "checkJs": false,
         "paths": {
-            "@": ["./resources/js"]
+            "@": ["./resources/js/"]
         }
     },
     "exclude": ["node_modules"],

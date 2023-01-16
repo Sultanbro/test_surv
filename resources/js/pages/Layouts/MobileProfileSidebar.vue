@@ -1,35 +1,46 @@
 <template>
-    <div class="header__profile _anim _anim-no-hide custom-scroll-y" :class="{
-        'v-loading': loading,
-        hidden: hide,
-        '_active': inViewport
-    }">
-        <div class="profile__content">
-            <div class="profile__col">
-                <start-day-btn
-                    v-if="showButton"
-                    :status="buttonStatus"
-                    :workdayStatus="workdayStatus"
-                    @clickStart="startDay"
-                />
-                <div class="profile__balance">
-                    Текущий баланс
-                    <p>{{ balance }} <span>{{ currency }}</span></p>
-                </div>
-            </div>
+	<div class="header__profile _anim _anim-no-hide custom-scroll-y" :class="{
+		'v-loading': loading,
+		hidden: hide,
+		'_active': inViewport
+	}">
+		<div class="profile__content">
+			<div class="profile__col">
+				<StartDayBtn
+					v-if="showButton"
+					:status="buttonStatus"
+					:workdayStatus="status"
+					@clickStart="startDay"
+				/>
+				<div class="profile__balance">
+					Текущий баланс
+					<p
+						v-if="!balance.loading"
+						class="profile__balance-value"
+					>{{ balance.sum }} <span class="profile__balance-currecy">{{ balance.currency }}</span></p>
+				</div>
+			</div>
 
-            <div class="profile__col">
-                <profile-info :data="userInfo"/>
-            </div>
-        </div>
-    </div>
+			<div class="profile__col">
+				<ProfileInfo :data="userInfo"/>
+			</div>
+		</div>
+	</div>
 </template>
 
 <script>
-import { bus } from '../../bus'
+import ProfileInfo from '@/pages/Widgets/ProfileInfo'
+import StartDayBtn from '@/pages/Widgets/StartDayBtn'
+import { usePersonalInfoStore } from '@/stores/PersonalInfo'
+import { useProfileStatusStore } from '@/stores/ProfileStatus'
+import { mapState, mapActions } from 'pinia'
 
 export default {
 	name: 'MobileProfileSidebar',
+	components: {
+		ProfileInfo,
+		StartDayBtn,
+	},
 	props: {},
 	data: function () {
 		return {
@@ -39,25 +50,23 @@ export default {
 		};
 	},
 	computed: {
-		balance(){
-			return bus.$data.profileSidebar.balance
-		},
-		currency(){
-			return bus.$data.profileSidebar.currency
-		},
+		...mapState(usePersonalInfoStore, ['user', 'position', 'groups', 'salary', 'workingDay', 'schedule', 'workingTime', 'buttonStatus']),
+		...mapState(useProfileStatusStore, ['status', 'balance']),
 		userInfo(){
-			return bus.$data.profileSidebar.userInfo
-		},
-		workdayStatus(){
-			return bus.$data.profileSidebar.workdayStatus
-		},
-		buttonStatus(){
-			return bus.$data.profileSidebar.buttonStatus
+			return {
+				user: this.user,
+				position: this.position,
+				groups: this.groups,
+				salary: this.salary,
+				workingDay: this.workingDay,
+				schedule: this.schedule,
+				workingTime: this.workingTime,
+			}
 		},
 		showButton(){
 			if(this.$viewportSize.width < 768) return false
 			if(this.$can('ucalls_view') && !this.$laravel.is_admin) return false
-			return this.workdayStatus === 'started' || (this.userInfo.user && this.userInfo.user.user_type === 'remote')
+			return this.status === 'started' || (this.user && this.user.user_type === 'remote')
 		}
 	},
 	mounted(){
@@ -68,9 +77,30 @@ export default {
 	},
 	created(){},
 	methods: {
-		startDay(){
-			bus.$emit('MobileProfileSidebarStartDay')
-		}
+		...mapActions(useProfileStatusStore, ['updateStatus']),
+		getParams() {
+			const now = this.$moment().format('HH:mm:ss')
+			if(this.status === 'started') return {stop: now}
+			return {start: now}
+		},
+		/**
+		 * Начать или завершить день
+		 */
+		async startDay() {
+			if(this.buttonStatus === 'loading') return
+			const profileStatusStore = useProfileStatusStore()
+			profileStatusStore.buttonStatus = 'loading'
+			try{
+				await this.updateStatus(this.getParams())
+				if(this.status === 'started') this.$toast.info('День начат')
+				if(this.status === 'stopped' || this.status === '') this.$toast.info('День завершен')
+				profileStatusStore.buttonStatus = 'init'
+			}
+			catch(error){
+				profileStatusStore.buttonStatus = 'error'
+				console.error('startDay', error)
+			}
+		},
 	}
 };
 </script>

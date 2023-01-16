@@ -42,7 +42,6 @@
 
 <script>
 export default {
-
 	name: 'StartDayBtn',
 	props: {
 		workdayStatus: String,
@@ -53,9 +52,7 @@ export default {
 			data: {}
 		}
 	},
-
 	created() {},
-
 	methods: {}
 }
 </script>
