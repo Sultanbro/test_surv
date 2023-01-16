@@ -34,13 +34,13 @@
 										text="prices"
 								/>
 							</li>
-							<li class="jNav-menu-item jNav-menu-item-md">
-								<NavbarLink
-										:lang="lang"
-										href="#reviews"
-										text="reviews"
-								/>
-							</li>
+<!--							<li class="jNav-menu-item jNav-menu-item-md">-->
+<!--								<NavbarLink-->
+<!--										:lang="lang"-->
+<!--										href="#reviews"-->
+<!--										text="reviews"-->
+<!--								/>-->
+<!--							</li>-->
 							<li class="jNav-menu-item jNav-menu-item-md">
 								<NavbarLink
 										:lang="lang"
@@ -225,7 +225,7 @@ export default {
 	display: flex;
 	align-items: center;
 	position: sticky;
-	width: 100vw;
+	width: 100%;
 	height: 4.875rem;
 	z-index: 9000;
 	top: -1.125rem;
