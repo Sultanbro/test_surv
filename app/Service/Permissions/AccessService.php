@@ -5,9 +5,12 @@ namespace App\Service\Permissions;
 use App\DTO\Permissions\SwitchAccessDTO;
 use App\Enums\ErrorCode;
 use App\Repositories\Permissions\PermissionRepository;
+use App\Repositories\UserRepository;
 use App\Support\Core\CustomException;
+use App\User;
 use Exception;
 use Illuminate\Support\Collection;
+use Symfony\Component\HttpFoundation\Response;
 
 /**
 * Класс для работы с Service.
@@ -15,53 +18,33 @@ use Illuminate\Support\Collection;
 class AccessService
 {
     public function __construct(
-        private PermissionRepository $permissionRepository
+        private UserRepository $userRepository
     )
     {}
 
-    public function handle(SwitchAccessDTO $dto): void
-    {
-//        try {
-            $names = $this->getNames($dto->accesses);
-            $ids = $this->getIds($dto->accesses);
-
-            $permissions = $this->permissionRepository->multiFindByNameOrId(
-                names: $names, ids: $ids
-            );
-
-            dd($permissions);
-//        } catch (Exception $exception) {
-//            new CustomException('При переключений произошла ошибка', ErrorCode::BAD_REQUEST, []);
-//        }
-    }
-
     /**
-     * @param array $permissions
-     * @return array
+     * @param SwitchAccessDTO $dto
+     * @return int
      */
-    private function getNames(
-        array $permissions
-    ): array
+    public function handle(SwitchAccessDTO $dto): int
     {
-        return collect($permissions)->map(
-            function ($permission) {
-                return $permission['name'];
-            }
-        )->toArray();
-    }
+        try {
+            $user = auth()->user() ?? User::query()->find(5);
 
-    /**
-     * @param array $permissions
-     * @return array
-     */
-    private function getIds(
-        array $permissions
-    ): array
-    {
-        return collect($permissions)->map(
-            function ($permission) {
-                return $permission['id'];
+            if (!$user)
+            {
+                new CustomException('Доступ закрыт', ErrorCode::BAD_REQUEST, []);
             }
-        )->toArray();
+
+            if (!$this->userRepository->switchPermission($dto->userId, $dto->accesses))
+            {
+                new CustomException('Issue when try attach or update data to permission_user', ErrorCode::BAD_REQUEST, []);
+            }
+
+            return Response::HTTP_CREATED;
+
+        } catch (Exception $exception) {
+            new CustomException('При переключений произошла ошибка', ErrorCode::BAD_REQUEST, []);
+        }
     }
 }

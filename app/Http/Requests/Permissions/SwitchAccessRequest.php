@@ -28,8 +28,9 @@ class SwitchAccessRequest extends FormRequest
         return [
             'accesses'      => ['required', 'array'],
             'user_id'       => ['required', 'exists:users,id'],
-            'accesses.*.id'   => ['exists:permissions,id'],
-            'accesses.*.name' => ['string']
+            'accesses.*.id'     => ['numeric', 'exists:permissions,id'],
+            'accesses.*.name'   => ['string', 'exists:permissions,name'],
+            'accesses.*.is_access' => ['bool'],
         ];
     }
 
@@ -44,8 +45,8 @@ class SwitchAccessRequest extends FormRequest
         $userId = Arr::get($validated, 'user_id');
 
         return new SwitchAccessDTO(
-            userId: $userId,
-            accesses: $accesses
+            accesses: $accesses,
+            userId: $userId
         );
     }
 }

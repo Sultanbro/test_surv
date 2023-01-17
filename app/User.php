@@ -12,6 +12,7 @@ use App\Models\AwardUser;
 use App\Models\CentralUser;
 use App\Models\CourseResult;
 use App\Models\GroupUser;
+use App\Models\Permission;
 use App\Models\Tax;
 use App\Models\Traits\HasTenants;
 use App\Models\User\Card;
@@ -100,6 +101,14 @@ class User extends Authenticatable implements Authorizable
      * Валюты для профиля.
      */
     const CURRENCY = ['KZT', 'RUB', 'UZS', 'KGS','BYN', 'UAH'];
+
+    public function permissions(): BelongsToMany
+    {
+        return $this->belongsToMany(Permission::class, 'permission_user')
+            ->withPivot('is_access')
+            ->withTimestamps()
+            ;
+    }
 
     /**
      * @return HasMany

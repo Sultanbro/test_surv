@@ -7,6 +7,7 @@ class SwitchAccessDTO
     /**
      * @param array $accesses
      * @param int $userId
+     * @param bool $IsAccess
      */
     public function __construct(
         public array $accesses,
