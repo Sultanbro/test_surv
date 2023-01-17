@@ -1398,10 +1398,7 @@ hr {
 			outline-color: #228f3b !important;
 			color: #fff;
 		}
-
 	}
-
-
 }
 .group-select {
 	.vs__dropdown-toggle {
@@ -1449,11 +1446,5 @@ hr {
 }
 .fz-08 {
 	font-size: 0.8rem;
-}
-.mr-2 {
-	display: none;
-}
-.badge_table:hover .mr-2 {
-	display: block
 }
 </style>
