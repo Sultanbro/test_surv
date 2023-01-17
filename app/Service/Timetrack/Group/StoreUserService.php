@@ -32,9 +32,12 @@ class StoreUserService
     ): array
     {
         try {
+            dd($dto);
             $group = $this->profileGroupRepository->profileGroupWithRelation($dto->groupId, ['dialer']);
-            $this->profileGroupRepository->updateGroupData($group, $dto->groupInfo);
-
+            if ($group)
+            {
+                $this->profileGroupRepository->updateGroupData($group, $dto->groupInfo);
+            }
 
             if (isset($dto->dialerId))
             {
