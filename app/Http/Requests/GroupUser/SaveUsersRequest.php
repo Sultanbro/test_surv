@@ -27,8 +27,6 @@ class SaveUsersRequest extends FormRequest
     {
         return [
             'group_id'  => ['required', 'numeric', 'exists:profile_groups,id'],
-            'users'     => ['required', 'array'],
-            'users.*.id'  => ['numeric', 'exists:users,id'],
             'group_info'    => ['required', 'array'],
             'group_info.*'  => ['required_with:group_info'],
             'group_info.*.work_start'   => ['string'],
@@ -37,15 +35,15 @@ class SaveUsersRequest extends FormRequest
             'group_info.*.zoom_link'    => ['string', 'url'],
             'group_info.*.bp_link'      => ['string', 'url'],
             'group_info.*.workdays'     => ['numeric'],
-            'group_info.*.payment_terms'    => ['string', 'min:3', 'max:255'],
+            'group_info.*.payment_terms'    => ['nullable', 'min:3', 'max:255'],
             'group_info.*.editable_time'    => ['boolean'],
             'group_info.*.paid_internship'  => ['boolean'],
             'group_info.*.quality'          => ['string', 'in:local,ucalls'],
             'group_info.*.show_payment_terms'  => ['boolean'],
-            'dialer_id'     => ['numeric'],
-            'script_id'     => ['numeric'],
-            'talk_hours'    => ['numeric'],
-            'talk_minutes'  => ['numeric']
+            'dialer_id'     => ['nullable'],
+            'script_id'     => ['nullable'],
+            'talk_hours'    => ['nullable'],
+            'talk_minutes'  => ['nullable']
         ];
     }
 
@@ -57,7 +55,6 @@ class SaveUsersRequest extends FormRequest
         $validated = $this->validated();
 
         $groupId = Arr::get($validated, 'group_id');
-        $users = Arr::get($validated, 'users');
         $groupInfo = Arr::get($validated, 'group_info');
         $dialerId = Arr::get($validated, 'dialer_id');
         $scriptId = Arr::get($validated, 'script_id');
@@ -66,7 +63,6 @@ class SaveUsersRequest extends FormRequest
 
         return new SaveUsersDTO(
             $groupId,
-            $users,
             $groupInfo,
             $dialerId,
             $scriptId,

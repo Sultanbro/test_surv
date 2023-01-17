@@ -33,14 +33,12 @@ class StoreUserService
     {
         try {
             $group = $this->profileGroupRepository->profileGroupWithRelation($dto->groupId, ['dialer']);
-            $usersId = collect($dto->users)->pluck('id')->toArray();
 
-            DB::transaction(function () use ($group, $dto, $usersId) {
-                $this->profileGroupRepository->storeMultipleUsers($group, $usersId);
-                $this->profileGroupRepository->updateGroupData($group, $dto->groupInfo);
-            });
 
-            if ($dto->dialerId)
+            $this->profileGroupRepository->updateGroupData($group, $dto->groupInfo);
+
+
+            if (isset($dto->dialerId))
             {
                 $this->profileGroupRepository->updateOrCreateDialer($group->id, $dto->dialerId, $dto->scriptId, $dto->talkHours, $dto->talkMinutes);
             }
