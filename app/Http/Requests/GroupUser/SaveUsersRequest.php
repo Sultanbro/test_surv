@@ -28,7 +28,6 @@ class SaveUsersRequest extends FormRequest
         return [
             'group_id'  => ['required', 'numeric', 'exists:profile_groups,id'],
             'group_info'    => ['required', 'array'],
-            'group_info.*'  => ['required_with:group_info'],
             'group_info.*.work_start'   => ['string'],
             'group_info.*.work_end'     => ['string'],
             'group_info.*.name'         => ['string'],
