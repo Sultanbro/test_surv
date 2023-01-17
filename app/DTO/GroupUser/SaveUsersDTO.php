@@ -8,18 +8,18 @@ final class SaveUsersDTO
     /**
      * @param int $groupId
      * @param array $groupInfo
-     * @param int $dialerId
-     * @param int $scriptId
-     * @param int $talkHours
-     * @param int $talkMinutes
+     * @param int|null $dialerId
+     * @param int|null $scriptId
+     * @param int|null $talkHours
+     * @param int|null $talkMinutes
      */
     public function __construct(
         public int $groupId,
         public array $groupInfo,
-        public int $dialerId,
-        public int $scriptId,
-        public int $talkHours,
-        public int $talkMinutes
+        public ?int $dialerId,
+        public ?int $scriptId,
+        public ?int $talkHours,
+        public ?int $talkMinutes
     )
     {}
 
