@@ -1,48 +1,85 @@
 <template>
-  <div
-    v-if="activeuserid"
-    class="groups"
-  >
-    <b-alert v-if="message!=null" variant="info">
-      {{ message}}
-    </b-alert>
-    <b-row class="align-items-center">
-      <b-col cols="12" lg="4" md="6">
-      <b-form-group label="Группа">
-        <b-form-select
-                v-model="activebtn"
-                :options="statuses"
-                size="md"
-                @change="selectGroup"
-                class="group-select col-lg-6 d-flex"
-        >
-          <template #first>
-            <b-form-select-option :value="null" disabled>Выберите группу из списка</b-form-select-option>
-          </template>
-        </b-form-select>
-      </b-form-group>
-      </b-col>
-      <b-col cols="12" lg="4" md="6" class="col-lg-3 col-md-6">
-        <b-form-group label="Добавить группу" class="add-grade">
-          <b-form-input type="text" class="form-control" v-model="new_status" />
-          <button @click="addStatus" class="btn btn-success ml-4">
-            <i class="fa fa-plus"></i>
-          </button>
-          <button
-                  class="btn btn-info rounded add-s ml-4"
-                  @click="showArchiveModal = true"
-                  title="Восстановить из архива"
-          >
-            <i class="fa fa-archive"></i>
-          </button>
-        </b-form-group>
-      </b-col>
-      <b-col cols="12" md="5" lg="4">
-       <b-form-group label="Название" class="add-grade">
-         <b-form-input type="text" v-model="gname"/>
-       </b-form-group>
-      </b-col>
-    </b-row>
+	<div
+		v-if="activeuserid"
+		class="groups"
+	>
+		<b-alert
+			v-if="message!=null"
+			variant="info"
+		>
+			{{ message }}
+		</b-alert>
+		<b-row class="align-items-center">
+			<b-col
+				cols="12"
+				lg="4"
+				md="6"
+			>
+				<b-form-group label="Группа">
+					<b-form-select
+						v-model="activebtn"
+						:options="statuses"
+						size="md"
+						@change="selectGroup"
+						class="group-select col-lg-6 d-flex"
+					>
+						<template #first>
+							<b-form-select-option
+								:value="null"
+								disabled
+							>
+								Выберите группу из списка
+							</b-form-select-option>
+						</template>
+					</b-form-select>
+				</b-form-group>
+			</b-col>
+			<b-col
+				cols="12"
+				lg="4"
+				md="6"
+				class="col-lg-3 col-md-6"
+			>
+				<b-form-group
+					label="Добавить группу"
+					class="add-grade"
+				>
+					<b-form-input
+						type="text"
+						class="form-control"
+						v-model="new_status"
+					/>
+					<button
+						@click="addStatus"
+						class="btn btn-success ml-4"
+					>
+						<i class="fa fa-plus" />
+					</button>
+					<button
+						class="btn btn-info rounded add-s ml-4"
+						@click="showArchiveModal = true"
+						title="Восстановить из архива"
+					>
+						<i class="fa fa-archive" />
+					</button>
+				</b-form-group>
+			</b-col>
+			<b-col
+				cols="12"
+				md="5"
+				lg="4"
+			>
+				<b-form-group
+					label="Название"
+					class="add-grade"
+				>
+					<b-form-input
+						type="text"
+						v-model="gname"
+					/>
+				</b-form-group>
+			</b-col>
+		</b-row>
 
 		<hr
 			v-if="activebtn != null"
@@ -137,21 +174,37 @@
 				</div>
 
 				<!-- <button
-          @click="showKPI = !showKPI"
-          class="btn btn-primary rounded mr-2"
-        >
-          <i class="fa fa-star-half-o"></i> KPI группы
-        </button>
+					@click="showKPI = !showKPI"
+					class="btn btn-primary rounded mr-2"
+				>
+					<i class="fa fa-star-half-o"></i> KPI группы
+				</button>
 
-        <button
-          @click="showBonuses = !showBonuses"
-          class="btn btn-primary mr-2 rounded"
-        >
-          <i class="fa fa-star-half-o"></i> Бонусы
-        </button> -->
+				<button
+					@click="showBonuses = !showBonuses"
+					class="btn btn-primary mr-2 rounded"
+				>
+					<i class="fa fa-star-half-o"></i> Бонусы
+				</button> -->
 			</div>
 
 			<div class="col-lg-6 mb-3 sssz">
+				<div class="dialerlist blu">
+					<multiselect
+						v-model="corps"
+						:options="corp_books"
+						:multiple="true"
+						:close-on-select="false"
+						:clear-on-select="false"
+						:preserve-search="true"
+						placeholder="Выберите корп книги"
+						label="title"
+						track-by="title"
+						:taggable="true"
+						@tag="addTag"
+					/>
+				</div>
+
 				<div class="blu">
 					<b-form-checkbox
 						class="mt-3"
@@ -172,35 +225,52 @@
 				</div>
 			</div>
 
-        <div class="dialerlist blu">
-          <multiselect
-            v-model="corps"
-            :options="corp_books"
-            :multiple="true"
-            :close-on-select="false"
-            :clear-on-select="false"
-            :preserve-search="true"
-            placeholder="Выберите корп книги"
-            label="title"
-            track-by="title"
-            :taggable="true"
-            @tag="addTag"
-          >
-          </multiselect>
-        </div>
+			<div class="col-lg-12 mb-3 mt-3">
+				<h6 class="mb-2">
+					Сотрудники
+				</h6>
+				<div class="dialerlist">
+					<div
+						class="fl"
+						style="flex-direction: column"
+					>
+						<multiselect
+							v-model="value"
+							:options="options"
+							:multiple="true"
+							:close-on-select="false"
+							:clear-on-select="false"
+							:preserve-search="true"
+							placeholder="Выберите"
+							label="email"
+							track-by="email"
+							:taggable="true"
+							@tag="addTag"
+						/>
+						<a
+							href="#"
+							@click="showAlert()"
+						>Удалить всех пользователей</a>
+					</div>
+				</div>
+			</div>
+			<div class="col-lg-12 mb-3">
+				<button
+					@click="saveusers"
+					class="btn btn-success mr-2 rounded"
+				>
+					Сохранить
+				</button>
+				<button
+					@click.stop="deleted"
+					class="btn btn-danger mr-2 rounded"
+				>
+					<i class="fa fa-trash" /> Удалить группу
+				</button>
+			</div>
+		</div>
 
-        <div class="blu">
-          <b-form-checkbox
-            class="mt-3"
-            v-model="show_payment_terms"
-            :value="1"
-            :unchecked-value="0"
-            switch
-          >
-            Показывать в профиле
-          </b-form-checkbox>
-
-		<sidebar
+		<Sidebar
 			title="Бонусы"
 			:open="showBonuses"
 			@close="showBonuses = false"
@@ -233,59 +303,95 @@
 					<th class="mark" />
 				</tr>
 
-      <div class="col-lg-12 mb-3 mt-3">
-        <h6 class="mb-2">Сотрудники</h6>
-        <div class="dialerlist">
-          <div class="fl" style="flex-direction: column">
-            <multiselect
-              v-model="value"
-              :options="options"
-              :multiple="true"
-              :close-on-select="false"
-              :clear-on-select="false"
-              :preserve-search="true"
-              placeholder="Выберите"
-              label="email"
-              track-by="email"
-              :taggable="true"
-              @tag="addTag"
-            >
-            </multiselect>
-            <a href="#" @click="showAlert()">Удалить всех пользователей</a>
-          </div>
-        </div>
-      </div>
-      <div class="col-lg-12 mb-3">
-        <button @click="saveusers" class="btn btn-success mr-2 rounded">
-          Сохранить
-        </button>
-        <button
-          @click.stop="deleted"
-          class="btn btn-danger mr-2 rounded"
-        >
-          <i class="fa fa-trash"></i> Удалить группу
-        </button>
-      </div>
-    </div>
+				<tr
+					v-for="(bonus, index) in bonuses"
+					:key="index"
+				>
+					<td>
+						<input
+							type="text"
+							class="form-control form-control-sm"
+							v-model="bonus.title"
+						>
+					</td>
+					<td class="left">
+						<select
+							v-model="bonus.activity_id"
+							class="form-control form-control-sm"
+						>
+							<option :value="0">
+								Нет активности
+							</option>
+							<option
+								:value="activity.id"
+								v-for="activity in activities"
+								:key="activity.id"
+							>
+								{{ activity.name }}
+							</option>
+						</select>
+					</td>
+					<td class="left">
+						<select
+							v-model="bonus.unit"
+							class="form-control form-control-sm"
+						>
+							<option
+								:value="unit.value"
+								v-for="unit in units"
+								:key="unit.value"
+							>
+								{{ unit.title }}
+							</option>
+						</select>
+					</td>
+					<td class="left">
+						<input
+							type="text"
+							class="form-control form-control-sm"
+							v-model="bonus.quantity"
+						>
+					</td>
+					<td class="left">
+						<select
+							v-model="bonus.daypart"
+							class="form-control form-control-sm"
+						>
+							<option
+								:value="daypart.value"
+								v-for="daypart in dayparts"
+								:key="daypart.value"
+							>
+								{{ daypart.title }}
+							</option>
+						</select>
+					</td>
+					<td class="left">
+						<input
+							type="text"
+							class="form-control form-control-sm"
+							v-model="bonus.sum"
+						>
+					</td>
+					<td class="left">
+						<textarea
+							class="form-control form-control-sm"
+							v-model="bonus.text"
+						/>
+					</td>
+					<td class="left">
+						<i
+							class="fa fa-trash"
+							@click="deleteBonusItem(index)"
+						/>
+					</td>
+				</tr>
+			</table>
 
-      <Sidebar
-        title="Бонусы"
-        :open="showBonuses"
-        @close="showBonuses = false"
-        v-if="showBonuses"
-        width="72%"
-      >
-        <table class="table table-bordered table-sm">
-          <tr>
-            <th class="left mark">Наименование</th>
-            <th class="mark">Активность</th>
-            <th class="mark">Ед.изм</th>
-            <th class="mark">Кол-во</th>
-            <th class="mark">ПД</th>
-            <th class="mark">Сумма , тг</th>
-            <th class="mark">Описание</th>
-            <th class="mark"></th>
-          </tr>
+			<p v-if="showAfterEdit">
+				Не забудьте нажать на кнопку "Сохранить", чтобы сохранить изменения и
+				удаления
+			</p>
 
 			<div class="d-flex">
 				<button
@@ -308,7 +414,7 @@
 					Удалить
 				</button>
 			</div>
-		</sidebar>
+		</Sidebar>
 
 		<b-modal
 			id="bv-modal"
@@ -343,25 +449,18 @@
 			</div>
 		</b-modal>
 
-        <div class="d-flex">
-          <button
-            class="btn btn-success btn-sm rounded mr-2"
-            @click="saveBonus"
-          >
-            Сохранить
-          </button>
-          <button class="btn btn-primary btn-sm rounded" @click="addBonus">
-            Добавить
-          </button>
-          <button
-            class="btn btn-danger btn-sm rounded"
-            v-if="showDeleteButton"
-            @click="before_deleteBonus"
-          >
-            Удалить
-          </button>
-        </div>
-      </Sidebar>
+		<!-- Modal	-->
+		<b-modal
+			v-model="showEditTimeAddress"
+			title="Подтягивать часы"
+			@ok="saveTimeAddress()"
+			size="lg"
+			class="modalle"
+		>
+			<div class="row">
+				<div class="col-5 mt-1">
+					<p class="">
+						Источник часов
 
 						<i
 							class="fa fa-info-circle"
@@ -790,8 +889,8 @@ export default {
 						} else {
 							this.$toast.error(
 								'Название "' +
-                  this.new_status +
-                  '" не свободно, выберите другое имя для группы!'
+					this.new_status +
+					'" не свободно, выберите другое имя для группы!'
 							);
 						}
 
@@ -932,102 +1031,102 @@ export default {
 <style src="vue-multiselect/dist/vue-multiselect.min.css"></style>
 <style lang="scss">
 .ant-tabs {
-  overflow: visible;
+	overflow: visible;
 }
 
 .listprof {
-  display: flex;
-  flex-wrap: wrap;
-  margin-top: 20px;
+	display: flex;
+	flex-wrap: wrap;
+	margin-top: 20px;
 }
 
 .profitem {
-  margin-right: 10px;
-  margin-bottom: 5px;
+	margin-right: 10px;
+	margin-bottom: 5px;
 }
 
 .add-grade {
-  display: flex;
-  max-width: 500px;
+	display: flex;
+	max-width: 500px;
 }
 
 .dialerlist {
-  display: flex;
-  align-items: center;
-  margin: 0 0 20px 0;
-  .fl {
-    flex: 1;
-    display: flex;
-    align-items: center;
-  }
+	display: flex;
+	align-items: center;
+	margin: 0 0 20px 0;
+	.fl {
+		flex: 1;
+		display: flex;
+		align-items: center;
+	}
 }
 
 .group-select {
-  border-radius: 0;
-  max-width: 100%;
+	border-radius: 0;
+	max-width: 100%;
 }
 
 p.choose {
-  line-height: 31px;
-  margin-right: 15px;
+	line-height: 31px;
+	margin-right: 15px;
 }
 span.before {
-  padding: 0 10px;
+	padding: 0 10px;
 }
 .multiselect__tags {
-  border-radius: 0 !important;
+	border-radius: 0 !important;
 }
 .multiselect__tag {
-  display: block !important;
-  max-width: max-content !important;
+	display: block !important;
+	max-width: max-content !important;
 }
 .blu .multiselect__tag {
-  background: #017cff !important;
+	background: #017cff !important;
 }
 @media (min-width: 1000px) {
-  .groups .multiselect__tags-wrap {
-    flex-wrap: wrap;
-    display: flex !important;
-  }
-  .groups .multiselect__tag {
-    flex: 0 0 49%;
-    /* margin-left: 1% !important; */
-    margin-right: 1% !important;
-    max-width: 49% !important;
-  }
+	.groups .multiselect__tags-wrap {
+		flex-wrap: wrap;
+		display: flex !important;
+	}
+	.groups .multiselect__tag {
+		flex: 0 0 49%;
+		/* margin-left: 1% !important; */
+		margin-right: 1% !important;
+		max-width: 49% !important;
+	}
 }
 
 @media (min-width: 1300px) {
-  .groups .multiselect__tag {
-    flex: 0 0 32%;
-    /* margin-left: 1% !important; */
-    margin-right: 1% !important;
-    max-width: 32% !important;
-  }
+	.groups .multiselect__tag {
+		flex: 0 0 32%;
+		/* margin-left: 1% !important; */
+		margin-right: 1% !important;
+		max-width: 32% !important;
+	}
 }
 @media (min-width: 1700px) {
-   .groups .multiselect__tag {
-    flex: 0 0 24%;
-    /* margin-left: 1% !important; */
-    margin-right: 1% !important;
-    max-width: 24% !important;
-  }
+	.groups .multiselect__tag {
+		flex: 0 0 24%;
+		/* margin-left: 1% !important; */
+		margin-right: 1% !important;
+		max-width: 24% !important;
+	}
 }
 .custom-table-permissions{
-  .groups .multiselect__tag{
-    flex: 0 0 auto!important;
-    max-width: 100%!important;
-    margin-right: 5px !important
-  }
+	.groups .multiselect__tag{
+		flex: 0 0 auto!important;
+		max-width: 100%!important;
+		margin-right: 5px !important
+	}
 }
 
 .scscsc {
-  margin-left: 15px;
+	margin-left: 15px;
 }
 .sssz button {
-  margin-top: 1px;
+	margin-top: 1px;
 }
 .add-grade input {
-  border-radius: 0;
+	border-radius: 0;
 }
 </style>

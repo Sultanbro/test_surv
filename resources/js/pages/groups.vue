@@ -1,102 +1,139 @@
 <template>
 	<div
-			v-if="activeuserid"
-			class="groups"
+		v-if="activeuserid"
+		class="groups"
 	>
-		<b-alert v-if="message!=null" variant="info">
-			{{ message}}
+		<b-alert
+			v-if="message!=null"
+			variant="info"
+		>
+			{{ message }}
 		</b-alert>
 		<b-row class="align-items-center">
-			<b-col cols="12" lg="6" class="d-flex align-items-start">
+			<b-col
+				cols="12"
+				lg="6"
+				class="d-flex align-items-start"
+			>
 				<b-form-group class="w-100">
 					<multiselect
-							v-model="activebtn"
-							:options="statuses"
-							@select="selectGroup"
-							placeholder="Выберите группу из списка"
-							track-by="group"
-							label="group"
-							ref="groupsMultiselect"
+						v-model="activebtn"
+						:options="statuses"
+						@select="selectGroup"
+						placeholder="Выберите группу из списка"
+						track-by="group"
+						label="group"
+						ref="groupsMultiselect"
 					>
 						<template slot="afterList">
-							<li class="multiselect-add-li"><span class="multiselect-add-btn" @click="addGroup">Добавить новый отдел</span>
+							<li class="multiselect-add-li">
+								<span
+									class="multiselect-add-btn"
+									@click="addGroup"
+								>Добавить новый отдел</span>
 							</li>
 						</template>
 					</multiselect>
 				</b-form-group>
 				<button
-						class="btn btn-info rounded add-s ml-4"
-						@click="showArchiveModal = true"
-						title="Восстановить из архива"
+					class="btn btn-info rounded add-s ml-4"
+					@click="showArchiveModal = true"
+					title="Восстановить из архива"
 				>
-					<i class="fa fa-archive"></i>
+					<i class="fa fa-archive" />
 				</button>
 			</b-col>
 		</b-row>
 
-		<hr v-if="activebtn != null || addNewGroup" class="my-4">
-		<h4 v-if="addNewGroup" class="groups-title-new mb-5">Создание новой группы</h4>
-		<div v-if="activebtn != null || addNewGroup" class="row">
+		<hr
+			v-if="activebtn != null || addNewGroup"
+			class="my-4"
+		>
+		<h4
+			v-if="addNewGroup"
+			class="groups-title-new mb-5"
+		>
+			Создание новой группы
+		</h4>
+		<div
+			v-if="activebtn != null || addNewGroup"
+			class="row"
+		>
 			<div class="col-lg-6 mb-3">
-				<b-form-group label="Название группы" label-cols="6" class="mb-4">
-					<b-form-input type="text" class="form-control" v-model="new_status"/>
+				<b-form-group
+					label="Название группы"
+					label-cols="6"
+					class="mb-4"
+				>
+					<b-form-input
+						type="text"
+						class="form-control"
+						v-model="new_status"
+					/>
 				</b-form-group>
 				<div class="dialerlist">
-					<div class="fl">Время работы с</div>
+					<div class="fl">
+						Время работы с
+					</div>
 					<div class="fl">
 						<input
-								type="time"
-								v-model="timeon"
-								class="form-control"
-								name="start_time"
-						/>
+							type="time"
+							v-model="timeon"
+							class="form-control"
+							name="start_time"
+						>
 						<span class="before">до</span>
 						<input
-								type="time"
-								v-model="timeoff"
-								value=""
-								class="form-control"
-								name="end_time"
-						/>
+							type="time"
+							v-model="timeoff"
+							value=""
+							class="form-control"
+							name="end_time"
+						>
 					</div>
 				</div>
 
 				<div class="dialerlist">
 					<div class="fl">
 						Подтягивать время
-						<i class="fa fa-cogs ml-2" @click="editTimeAddress()"></i>
+						<i
+							class="fa fa-cogs ml-2"
+							@click="editTimeAddress()"
+						/>
 					</div>
 					<div class="fl">
 						<input
-								type="text"
-								v-model="time_address_text"
-								class="form-control"
-								style="background: #fff"
-								disabled
-						/>
+							type="text"
+							v-model="time_address_text"
+							class="form-control"
+							style="background: #fff"
+							disabled
+						>
 					</div>
 				</div>
 
 
 				<div class="dialerlist">
-					<div class="fl">Кол-во рабочих дней</div>
+					<div class="fl">
+						Кол-во рабочих дней
+					</div>
 					<div class="fl">
 						<input
-								type="number"
-								v-model="workdays"
-								class="form-control"
-								min="1"
-								max="7"
-						/>
+							type="number"
+							v-model="workdays"
+							class="form-control"
+							min="1"
+							max="7"
+						>
 					</div>
 				</div>
 
 				<div class="dialerlist">
 					<b-form-checkbox
-							v-model="editable_time"
-							:value="1"
-							:unchecked-value="0"
-							switch
+						v-model="editable_time"
+						:value="1"
+						:unchecked-value="0"
+						switch
 					>
 						Табель редактируется
 					</b-form-checkbox>
@@ -104,10 +141,10 @@
 
 				<div class="dialerlist">
 					<b-form-checkbox
-							v-model="paid_internship"
-							:value="1"
-							:unchecked-value="0"
-							switch
+						v-model="paid_internship"
+						:value="1"
+						:unchecked-value="0"
+						switch
 					>
 						Оплачиваемая стажировка
 					</b-form-checkbox>
@@ -115,78 +152,107 @@
 				<div class="card groups-card mt-4">
 					<div class="card-header">
 						<b-form-checkbox
-								class="mt-3"
-								v-model="show_payment_terms"
-								:value="1"
-								:unchecked-value="0"
-								switch
+							class="mt-3"
+							v-model="show_payment_terms"
+							:value="1"
+							:unchecked-value="0"
+							switch
 						>
 							Показывать в профиле
 						</b-form-checkbox>
 					</div>
 					<div class="card-body">
 						<b-form-group label="Условия оплаты труда">
-							<b-textarea v-model="payment_terms" style="min-height: 150px;"></b-textarea>
+							<b-textarea
+								v-model="payment_terms"
+								style="min-height: 150px;"
+							/>
 						</b-form-group>
 					</div>
 				</div>
 			</div>
 
 			<div class="col-lg-6 mb-3 sssz">
-				<div class="card groups-card staff-list" v-if="value.length">
+				<div
+					class="card groups-card staff-list"
+					v-if="value.length"
+				>
 					<div class="card-header">
-						<b-form-input placeholder="Поиск по сотрудникам" v-model="searchUsers"/>
-						<span>Сотрудников: {{value.length}}</span>
+						<b-form-input
+							placeholder="Поиск по сотрудникам"
+							v-model="searchUsers"
+						/>
+						<span>Сотрудников: {{ value.length }}</span>
 					</div>
 					<div class="card-body">
-						<div class="employee" v-for="(employee, index) in filteredUsers" :key="employee.id">
-							<span>{{employee.email}}</span> <i class="fa fa-trash btn btn-icon btn-danger" @click="removeValue(index)"></i>
+						<div
+							class="employee"
+							v-for="(employee, index) in filteredUsers"
+							:key="employee.id"
+						>
+							<span>{{ employee.email }}</span> <i
+								class="fa fa-trash btn btn-icon btn-danger"
+								@click="removeValue(index)"
+							/>
 						</div>
 					</div>
 					<div class="card-footer">
-						<b-button variant="danger" @click="showAlert">Удалить всех сотрудников</b-button>
+						<b-button
+							variant="danger"
+							@click="showAlert"
+						>
+							Удалить всех сотрудников
+						</b-button>
 					</div>
 				</div>
-				<div v-else>Пока нет ни одного сотрудника в группе</div>
+				<div v-else>
+					Пока нет ни одного сотрудника в группе
+				</div>
 			</div>
 			<div class="col-lg-12 mb-3">
-				<button @click="saveusers" class="btn btn-success mr-2 rounded">
+				<button
+					@click="saveusers"
+					class="btn btn-success mr-2 rounded"
+				>
 					Сохранить
 				</button>
 				<button
-						@click.stop="deleted"
-						class="btn btn-danger mr-2 rounded"
-						v-if="!addNewGroup"
+					@click.stop="deleted"
+					class="btn btn-danger mr-2 rounded"
+					v-if="!addNewGroup"
 				>
-					<i class="fa fa-trash"></i> Удалить группу
+					<i class="fa fa-trash" /> Удалить группу
 				</button>
 			</div>
 		</div>
 
 		<!-- Modal  -->
 		<b-modal
-				v-model="showEditTimeAddress"
-				title="Подтягивать часы"
-				@ok="saveTimeAddress()"
-				size="lg"
-				class="modalle"
+			v-model="showEditTimeAddress"
+			title="Подтягивать часы"
+			@ok="saveTimeAddress()"
+			size="lg"
+			class="modalle"
 		>
 			<div class="row">
 				<div class="col-5 mt-1">
 					<p class="">
 						Источник часов
 						<i
-								class="fa fa-info-circle"
-								v-b-popover.hover.right.html="'При смене источника, новые данные в табеле будут только со дня смены источника'"
+							class="fa fa-info-circle"
+							v-b-popover.hover.right.html="'При смене источника, новые данные в табеле будут только со дня смены источника'"
 						/>
 					</p>
 				</div>
 				<div class="col-7">
-					<select class="form-control form-control-sm" v-model="time_address">
+					<select
+						class="form-control form-control-sm"
+						v-model="time_address"
+					>
 						<option
-								:value="key"
-								v-for="(time, key) in time_variants"
-								:key="key"
+							:value="key"
+							v-for="(time, key) in time_variants"
+							:key="key"
 						>
 							{{ time }}
 						</option>
@@ -194,80 +260,117 @@
 				</div>
 			</div>
 
-			<div class="row" v-if="time_address == -1">
+			<div
+				class="row"
+				v-if="time_address == -1"
+			>
 				<div class="col-5 mt-1">
-					<div class="fl">ID диалера
-						<i class="fa fa-info-circle ml-2" v-b-popover.hover.right.html="'Нужен, чтобы <b>подтягивать часы</b> или <b>оценки диалогов</b> для контроля качества.<br>С сервиса cp.callibro.org'" title="Диалер в U-Calls">
-						</i>
+					<div class="fl">
+						ID диалера
+						<i
+							class="fa fa-info-circle ml-2"
+							v-b-popover.hover.right.html="'Нужен, чтобы <b>подтягивать часы</b> или <b>оценки диалогов</b> для контроля качества.<br>С сервиса cp.callibro.org'"
+							title="Диалер в U-Calls"
+						/>
 					</div>
 				</div>
 				<div class="col-7 mt-1">
 					<div class="fl d-flex">
-						<input type="text" v-model="dialer_id" placeholder="ID" class="form-control scscsc"/>
-						<input type="number" v-model="script_id" placeholder="ID скрипта" class="form-control scscsc"/>
+						<input
+							type="text"
+							v-model="dialer_id"
+							placeholder="ID"
+							class="form-control scscsc"
+						>
+						<input
+							type="number"
+							v-model="script_id"
+							placeholder="ID скрипта"
+							class="form-control scscsc"
+						>
 					</div>
 				</div>
 			</div>
 
-			<div class="row" v-if="time_address == -1">
+			<div
+				class="row"
+				v-if="time_address == -1"
+			>
 				<div class="col-5 mt-1">
-					<div class="fl">Сколько минут считать, за полный рабочий день
-						<i class="fa fa-info-circle ml-2" v-b-popover.hover.right.html="'Запишите сколько минут разговора с сервиса cp.callibro.org считать, за полный рабочий день. <br>Пример: 250 минут считается как 8 часов'" title="Ставить полный рабочий день">
-						</i>
+					<div class="fl">
+						Сколько минут считать, за полный рабочий день
+						<i
+							class="fa fa-info-circle ml-2"
+							v-b-popover.hover.right.html="'Запишите сколько минут разговора с сервиса cp.callibro.org считать, за полный рабочий день. <br>Пример: 250 минут считается как 8 часов'"
+							title="Ставить полный рабочий день"
+						/>
 					</div>
 				</div>
 				<div class="col-7 mt-1">
 					<div class="fl d-flex">
-						<input type="text" v-model="talk_minutes" placeholder="ID" class="form-control scscsc"/>
-						<input type="number" v-model="talk_hours" placeholder="ID скрипта" class="form-control scscsc"/>
+						<input
+							type="text"
+							v-model="talk_minutes"
+							placeholder="ID"
+							class="form-control scscsc"
+						>
+						<input
+							type="number"
+							v-model="talk_hours"
+							placeholder="ID скрипта"
+							class="form-control scscsc"
+						>
 					</div>
 				</div>
 			</div>
 
 			<div class="row mt-1">
 				<div class="col-12">
-					<p class="">Исключения
+					<p class="">
+						Исключения
 
 						<i
-								class="fa fa-info-circle"
-								v-b-popover.hover.right.html="'Часы выбранных сотрудников, не будут копироваться из аналитики в табель'"
+							class="fa fa-info-circle"
+							v-b-popover.hover.right.html="'Часы выбранных сотрудников, не будут копироваться из аналитики в табель'"
 						/>
 					</p>
 				</div>
 				<div class="col-12 mt-1">
 					<multiselect
-							v-model="time_exceptions"
-							:options="time_exceptions_options"
-							:multiple="true"
-							:close-on-select="false"
-							:clear-on-select="false"
-							:preserve-search="true"
-							placeholder="Выберите, кого не связывать"
-							label="email"
-							track-by="email"
-							:taggable="true"
-							@tag="addExceptionTag"
-					>
-					</multiselect>
+						v-model="time_exceptions"
+						:options="time_exceptions_options"
+						:multiple="true"
+						:close-on-select="false"
+						:clear-on-select="false"
+						:preserve-search="true"
+						placeholder="Выберите, кого не связывать"
+						label="email"
+						track-by="email"
+						:taggable="true"
+						@tag="addExceptionTag"
+					/>
 				</div>
 			</div>
 		</b-modal>
 
 		<!-- Modal restore archived group -->
 		<b-modal
-				v-model="showArchiveModal"
-				size="md"
-				title="Восстановить из архива"
-				@ok="restoreGroup()"
-				class="modalle"
+			v-model="showArchiveModal"
+			size="md"
+			title="Восстановить из архива"
+			@ok="restoreGroup()"
+			class="modalle"
 		>
 			<div>
 				<b-form-group label="группа">
-					<select v-model="restore_group" class="form-control">
+					<select
+						v-model="restore_group"
+						class="form-control"
+					>
 						<option
-								:value="archived_group"
-								v-for="(archived_group, key) in archived_groups"
-								:key="key"
+							:value="archived_group"
+							v-for="(archived_group, key) in archived_groups"
+							:key="key"
 						>
 							{{ archived_group.name }}
 						</option>

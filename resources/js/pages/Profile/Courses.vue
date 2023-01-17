@@ -4,35 +4,33 @@
 		class="courses__wrapper block _anim _anim-no-hide mt-4"
 		:class="{'hidden': courses.length === 0}"
 	>
-		<div class="courses__title">
-			Ваши курсы
-		</div>
-		<div class="courses__content__wrapper">
-			<div class="courses__item"
-				v-for="(course, index) in unfinished"
-				:key="index"
-				:class="{'current': index == 0}"
-			>
-				<img
-					v-if="course.img"
-					:src="course.img"
-					alt="курс"
-					class="courses__image"
-					@click="selectCourse(index)"
-				>
-				<img
-					v-else
-					src="/images/course.jpg"
-					alt="курс"
-					class="courses__image"
-					@click="selectCourse(index)"
+		<div
+			class="courses__content"
+			:class="{'hidden': activeCourse !== null}"
+		>
+			<div class="courses__title">
+				Ваши курсы
+			</div>
+			<div class="courses__content__wrapper">
+				<div
+					class="courses__item"
+					v-for="(course, index) in unfinished"
+					:key="index"
+					:class="{'current': index == 0}"
 				>
 					<img
-						:src="course.img || '/images/course.jpg'"
+						v-if="course.img"
+						:src="course.img"
 						alt="курс"
 						class="courses__image"
 						@click="selectCourse(index)"
-						onerror="this.src = '/images/course.jpg';"
+					>
+					<img
+						v-else
+						src="/images/course.jpg"
+						alt="курс"
+						class="courses__image"
+						@click="selectCourse(index)"
 					>
 					<div class="courses__name">
 						{{ course.name }}
@@ -50,7 +48,7 @@
 							Пройдено: <span>{{ courseInfo[course.id].progress }}%</span>
 						</template>
 						<template v-else>
-						&nbsp;
+							&nbsp;
 						</template>
 					</div>
 					<div
@@ -65,15 +63,9 @@
 						:href="'/my-courses?id=' + course.id"
 						class="courses__button"
 					>
-						<span>{{ course.course_results ? 'Продолжить курс' : 'Начать курс' }}</span>
+						<span>{{ results[course.id] ? 'Продолжить курс' : 'Начать курс' }}</span>
 					</a>
 				</div>
-				<div class="courses__regress" v-if="isRegressed(course)">
-					<div class="courses__regress-message">Курс обнулен!</div>
-				</div>
-				<a :href="'/my-courses?id=' + course.id" class="courses__button">
-					<span>{{ results[course.id] ? 'Продолжить курс' : 'Начать курс' }}</span>
-				</a>
 			</div>
 		</div>
 
@@ -378,53 +370,53 @@ export default {
 </script>
 
 <style lang="scss">
-// https://github.com/kenwheeler/slick/issues/3694
-.slick-disabled {
-	cursor: no-drop;
-	opacity: 0.5;
-	pointer-events: none;
-}
+	// https://github.com/kenwheeler/slick/issues/3694
+	.slick-disabled {
+		cursor: no-drop;
+		opacity: 0.5;
+		pointer-events: none;
+	}
 
 
-// .courses__content__wrapper{}
-.courses__item{
-	position: relative;
-	text-align: center;
-	box-sizing: border-box;
-	&:hover{
-		box-shadow: inset 0 0 5px #8FAF00;
-		.courses__regress{
-			display: block;
+	// .courses__content__wrapper{}
+	.courses__item{
+		position: relative;
+		text-align: center;
+		box-sizing: border-box;
+		&:hover{
+			box-shadow: inset 0 0 5px #8FAF00;
+			.courses__regress{
+				display: block;
+			}
 		}
 	}
-}
-.courses__regress{
-	display: none;
-	border-radius: 2rem;
+	.courses__regress{
+		display: none;
+		border-radius: 2rem;
 
-	position: absolute;
-	z-index: 10;
-	top: 0;
-	left: 0;
-	right: 0;
-	bottom: 0;
-
-	background-color: rgba(0,0,0,0.25);
-
-	pointer-events: none;
-
-	&-message{
 		position: absolute;
-		top: 50%;
-		left: 50%;
+		z-index: 10;
+		top: 0;
+		left: 0;
+		right: 0;
+		bottom: 0;
 
-		text-align: center;
-		color: red;
-		font-size: 1.4rem;
-		font-weight: 700;
-		text-shadow: 0 -2px 1px #fff, 0 2px 1px #fff, 2px 0 1px #fff, -2px 0 1px #fff;
+		background-color: rgba(0,0,0,0.25);
 
-		transform: translate(-50%, -50%);
+		pointer-events: none;
+
+		&-message{
+			position: absolute;
+			top: 50%;
+			left: 50%;
+
+			text-align: center;
+			color: red;
+			font-size: 1.4rem;
+			font-weight: 700;
+			text-shadow: 0 -2px 1px #fff, 0 2px 1px #fff, 2px 0 1px #fff, -2px 0 1px #fff;
+
+			transform: translate(-50%, -50%);
+		}
 	}
-}
 </style>

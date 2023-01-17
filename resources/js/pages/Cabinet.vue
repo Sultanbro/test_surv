@@ -77,28 +77,33 @@
 					<div class="form-group">
 						Администраторы
 
-            <Multiselect
-              v-model="admins"
-              :options="users"
-              :multiple="true"
-              :close-on-select="false"
-              :clear-on-select="true"
-              :preserve-search="true"
-              placeholder="Выберите"
-              label="email"
-              track-by="email"
-              :taggable="true"
-              @tag="addTag"
-              class="multiselect-surv"
-            />
-          </div>
+						<Multiselect
+							v-model="admins"
+							:options="users"
+							:multiple="true"
+							:close-on-select="false"
+							:clear-on-select="true"
+							:preserve-search="true"
+							placeholder="Выберите"
+							label="email"
+							track-by="email"
+							:taggable="true"
+							@tag="addTag"
+							class="multiselect-surv"
+						/>
+					</div>
 
-          <div class="mt-3">
-            <button class="btn btn-success btn-surv" @click="save">Сохранить</button>
-          </div>
-        </div>
-      </div>
-    </div>
+					<div class="mt-3">
+						<button
+							class="btn btn-success btn-surv"
+							@click="save"
+						>
+							Сохранить
+						</button>
+					</div>
+				</div>
+			</div>
+		</div>
 
 		<!-- Profile page -->
 		<div
