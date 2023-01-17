@@ -126,7 +126,7 @@ export default {
 				'App\\Models\\Books\\Book': 'icon-ci-book',
 				'App\\Models\\Videos\\VideoPlaylist': 'icon-ci-play',
 				'App\\KnowBase': 'icon-ci-database'
-			}
+			},
 		};
 	},
 	computed: {
@@ -149,11 +149,17 @@ export default {
 				list.push(course)
 				return list
 			}, [])
+		},
+		viewportWidth(){
+			return this.$viewportSize.width
 		}
 	},
 	watch: {
 		courses(){
 			this.initCourses()
+		},
+		viewportWidth(){
+			this.resizeCarousel()
 		}
 	},
 	created(){},
@@ -167,6 +173,32 @@ export default {
 				this.fetchCourseInfo(course.id)
 			})
 			this.$nextTick(() => this.initSlider())
+			window.addEventListener('resize', this.resizeCarousel)
+		},
+		resizeCarousel(){
+			let slidesToShow = 1
+			if(this.viewportWidth > 520){
+				slidesToShow = 2
+			}
+			if(this.viewportWidth > 940){
+				slidesToShow = 3
+			}
+			if(this.viewportWidth > 1200){
+				slidesToShow = 4
+			}
+			if(this.viewportWidth > 1360){
+				slidesToShow = 3
+			}
+			if(this.viewportWidth > 1600){
+				slidesToShow = 4
+			}
+			if(this.viewportWidth > 1800){
+				slidesToShow = 5
+			}
+			if(this.viewportWidth > 2140){
+				slidesToShow = 6
+			}
+			VJQuery('.courses__content__wrapper').slick('slickSetOption', 'slidesToShow', slidesToShow, true)
 		},
 		isRegressed(course){
 			if(!this.results[course.id] || !this.results[course.id][0]) return false
@@ -192,69 +224,10 @@ export default {
 		 */
 		initSlider() {
 			/* global VJQuery */
-			console.log('initSlider')
 			VJQuery('.courses__content__wrapper').slick({
 				variableWidth: false,
 				infinite: false,
-				slidesToShow: 6,
-				responsive: [
-					{
-						breakpoint: 2140,
-						settings: {
-							variableWidth: false,
-							infinite: false,
-							slidesToShow: 5,
-						}
-					},
-					{
-						breakpoint: 1800,
-						settings: {
-							variableWidth: false,
-							infinite: false,
-							slidesToShow: 4,
-						}
-					},
-					{
-						breakpoint: 1600,
-						settings: {
-							variableWidth: false,
-							infinite: false,
-							slidesToShow: 3,
-						}
-					},
-					{
-						breakpoint: 1360,
-						settings: {
-							variableWidth: false,
-							infinite: false,
-							slidesToShow: 4,
-						}
-					},
-					{
-						breakpoint: 1200,
-						settings: {
-							variableWidth: false,
-							infinite: false,
-							slidesToShow: 3,
-						}
-					},
-					{
-						breakpoint: 940,
-						settings: {
-							variableWidth: false,
-							infinite: false,
-							slidesToShow: 2,
-						}
-					},
-					{
-						breakpoint: 520,
-						settings: {
-							variableWidth: false,
-							infinite: false,
-							slidesToShow: 1,
-						}
-					}
-				]
+				slidesToShow: 6
 			});
 
 			// https://github.com/kenwheeler/slick/issues/3694
@@ -275,6 +248,7 @@ export default {
 					})
 				}, 1)
 			})
+			this.resizeCarousel()
 		},
 
 		/**
