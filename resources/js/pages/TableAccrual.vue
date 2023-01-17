@@ -118,9 +118,9 @@
 				emptyText="Нет данных"
 			>
 				<template #cell(name)="data">
-					<div>
-						<b-badge pill variant="success" class="mr-2">{{data.item.user_type}}</b-badge>
+					<div class="badge_table">
 						{{ data.value }}
+						<b-badge pill variant="success" class="mr-2">{{data.item.user_type}}</b-badge>
 						<i
 							v-if="data.index == 0"
 							class="fa fa-info-circle"
@@ -142,9 +142,9 @@
 					</div>
 				</template>
 
-				<template #cell(total)="data">
-					<div>{{ data.value }}</div>
-				</template>
+                <template #cell(total)="data">
+                    <div>{{ data.value }}</div>
+                </template>
 
 				<template #cell(fines)="data">
 					<div>{{ data.value }}</div>
@@ -1334,7 +1334,7 @@ hr {
 		}
 		&:first-child{
 			& > div{
-				justify-content: start;
+				justify-content: space-between;
 			}
 		}
 	}
@@ -1449,5 +1449,11 @@ hr {
 }
 .fz-08 {
 	font-size: 0.8rem;
+}
+.mr-2 {
+	display: none;
+}
+.badge_table:hover .mr-2 {
+	display: block
 }
 </style>
