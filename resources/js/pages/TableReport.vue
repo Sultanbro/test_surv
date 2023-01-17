@@ -112,7 +112,7 @@
                         </div>
                     </template>
                     <template #cell(total)="data">
-                        <div>
+                        <div class="td-div">
                             {{ data.value }}
                         </div>
                     </template>
@@ -1212,15 +1212,18 @@ export default {
 </script>
 
 <style lang="scss">
+
     .hovered-text{
         margin-top: 15px;
         color: #62788B;
     }
     .table-custom-report{
         th,td{
+            vertical-align: middle;
             .td-div{
                 height: 40px;
                 min-width: 50px;
+                padding: 0 10px;
                 position: relative;
                 display: inline-flex;
                 align-items: center;
@@ -1229,7 +1232,9 @@ export default {
         }
         thead{
             th,td{
-                padding: 5px !important;
+                text-align: center;
+                padding: 10px !important;
+                vertical-align: middle;
                 &:first-child{
                     padding: 0 15px !important;
                 }

@@ -1351,22 +1351,22 @@ hr {
 			}
 		}
 		&:nth-child(2) {
-			left:289px !important;
+			left:290px !important;
 		}
 		&:nth-child(3) {
-			left:360px!important;
+			left:361px!important;
 		}
 		&:nth-child(4) {
-			left:431px!important;
+			left:433px!important;
 		}
 		&:nth-child(5) {
-			left:502px!important;
+			left:505px!important;
 		}
 		&:nth-child(6) {
-			left:573px!important;
+			left:577px!important;
 		}
 		&:nth-child(7) {
-			left:644px!important;
+			left:649px!important;
 		}
 		&:nth-child(2),
 		&:nth-child(3),
@@ -1386,7 +1386,7 @@ hr {
 		&:nth-child(5),
 		&:nth-child(6) {
 			background: #DDE9FF !important;
-			outline-color: #c1cee5 !important;
+			border-color: #b4bed2 !important;
 			div {
 				font-size: 13px;
 				text-align: center;
@@ -1395,7 +1395,7 @@ hr {
 
 		&:nth-child(7) {
 			background: #28a745 !important;
-			outline-color: #228f3b !important;
+			border-color: #208738 !important;
 			color: #fff;
 		}
 
