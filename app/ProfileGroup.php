@@ -27,7 +27,8 @@ class ProfileGroup extends Model
 
     protected $casts = [
         'checktime_users' => 'array',
-        'time_exceptions' => 'array'
+        'time_exceptions' => 'array',
+        'editors_id'      => 'array'
     ];
 
     protected $fillable = [
