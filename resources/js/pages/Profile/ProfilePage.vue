@@ -211,7 +211,7 @@ export default {
 	},
 	methods: {
 		pop(window) {
-			if(window == 'balanc e') this.popBalance = true;
+			if(window == 'balance') this.popBalance = true;
 			if(window == 'kpi') this.popKpi = true;
 			if(window == 'bonus') this.popBonuses = true;
 			if(window == 'qp') this.popQuartalPremiums = true;

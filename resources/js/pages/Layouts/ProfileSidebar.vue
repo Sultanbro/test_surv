@@ -310,9 +310,9 @@ export default {
 		}
 	},
 	watch: {
-		corp_book(){
-			this.initCorpBook()
-		}
+		// corp_book(){
+		// 	this.initCorpBook()
+		// }
 	},
 	mounted(){
 		if(!this.isRoot && !this.isProfile){
@@ -322,7 +322,7 @@ export default {
 			this.inViewport = true
 		})
 		scrollObserver.observe(this.$el)
-		this.initCorpBook()
+		// this.initCorpBook()
 	},
 	created(){
 		this.isRoot = window.location.pathname === '/'

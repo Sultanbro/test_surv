@@ -1,130 +1,138 @@
 <template>
-	<footer id="jFooter">
-		<div class="section-content">
-			<div class="jFooter-cols">
-				<div class="jFooter-col">
-					<a
-						class="jNav-logo"
-						href="javascript:void(0)"
-					>
-						<img
-							:src="require('../../assets/img/footer-logo.svg').default"
-							alt=""
-							class="jNav-logo-img"
-						>
-					</a>
-				</div>
-				<div class="jFooter-col">
-					<ul class="jFooter-menu-items">
-						<li class="jFooter-menu-item">
-							<FooterLink
-								:lang="lang"
-								href="#prices"
-								text="prices"
-							/>
-						</li>
-						<li class="jFooter-menu-item">
-							<FooterLink
-								:lang="lang"
-								href="#reviews"
-								text="reviews"
-							/>
-						</li>
-						<li class="jFooter-menu-item">
-							<FooterLink
-								:lang="lang"
-								href="#features"
-								text="features"
-							/>
-						</li>
-					</ul>
-					<p class="jFooter-sub-social">
-						{{ $lang(lang, 'footer-subscribe') }}
-					</p>
-					<div class="jFooter-social">
-						<a
-							class="jFooter-social-link jFooter-social-yt"
-							href="https://www.youtube.com/@adilkarimov8362"
-							target="_blank"
-						/>
-						<a
-							class="jFooter-social-link jFooter-social-ig"
-							href="javascript:void(0)"
-						/>
-						<a
-							class="jFooter-social-link jFooter-social-tg"
-							href="javascript:void(0)"
-						/>
-					</div>
-				</div>
-				<div class="jFooter-col">
-					<p>{{ $lang(lang, 'footer-sellcenter') }}</p>
-					<p class="jFooter-contact">
-						<a
-							class="jFooter-link"
-							href="tel:87777880800"
-						>8 777 788 08 00</a>
-					</p>
-					<p class="jFooter-contact">
-						<a
-							class="jFooter-link"
-							href="tel:84951364282"
-						>8 495 136 42 82</a>
-					</p>
-					<p class="jFooter-contact">
-						<a
-							class="jFooter-link"
-							href="mailto:sales@jobtron.com"
-						>sales@jobtron.com</a>
-					</p>
-					<p class="jFooter-support">
-						{{ $lang(lang, 'footer-support') }}
-					</p>
-					<p class="jFooter-contact">
-						<a
-							class="jFooter-link"
-							href="mailto:support@jobtron.com"
-						>support@jobtron.com</a>
-					</p>
-				</div>
-				<div class="jFooter-col">
-					<p class="jFooter-sub-pay">
-						{{ $lang(lang, 'footer-pay') }}
-					</p>
-					<div class="jFooter-pay">
-						<a
-							class="jFooter-pay-link jFooter-pay-mir"
-							href="javascript:void(0)"
-						/>
-						<a
-							class="jFooter-pay-link jFooter-pay-visa"
-							href="javascript:void(0)"
-						/>
-						<a
-							class="jFooter-pay-link jFooter-pay-ym"
-							href="javascript:void(0)"
-						/>
-					</div>
-				</div>
-			</div>
-		</div>
-		<div class="jFooter-separator" />
-		<div class="section-content">
-			<div class="jFooter-bottom">
-				<div class="jFooter-rules">
-					<a
-						class="jFooter-rules-link jFooter-link"
-						href="javascript:void(0)"
-					>{{ $lang(lang, 'footer-conf') }}</a>
-				</div>
-				<div class="jFooter-copy">
-					<p class="jFooter-copy-right">
-						{{ '© ' + year + ' ' + $lang(lang, 'footer-copy') }}
-					</p>
-				</div>
-			</div>
-		</div>
-	</footer>
+  <footer id="jFooter">
+    <div class="section-content">
+      <div class="jFooter-cols">
+        <div class="jFooter-col">
+          <a
+              class="jFooter-logo"
+              href="javascript:void(0)"
+          >
+            <img
+                :src="require('../../assets/img/footer-logo.svg').default"
+                alt=""
+                class="jNav-logo-img"
+            >
+          </a>
+        </div>
+        <div class="jFooter-col">
+          <ul class="jFooter-menu-items">
+            <li class="jFooter-menu-item">
+              <FooterLink
+                  :lang="lang"
+                  href="#prices"
+                  text="prices"
+              />
+            </li>
+<!--            <li class="jFooter-menu-item">-->
+<!--              <FooterLink-->
+<!--                  :lang="lang"-->
+<!--                  href="#reviews"-->
+<!--                  text="reviews"-->
+<!--              />-->
+<!--            </li>-->
+            <li class="jFooter-menu-item">
+              <FooterLink
+                  :lang="lang"
+                  href="#features"
+                  text="features"
+              />
+            </li>
+          </ul>
+          <p class="jFooter-sub-social">{{ $lang(lang, 'footer-subscribe') }}</p>
+          <div class="jFooter-social">
+            <a
+                class="jFooter-social-link jFooter-social-yt"
+                href="https://www.youtube.com/@adilkarimov8362"
+                target="_blank"
+            />
+            <a
+                class="jFooter-social-link jFooter-social-ig"
+                href="javascript:void(0)"
+            />
+            <a
+                class="jFooter-social-link jFooter-social-tg"
+                href="javascript:void(0)"
+            />
+          </div>
+        </div>
+        <div class="jFooter-col">
+          <p>{{ $lang(lang, 'footer-sellcenter') }}</p>
+          <p class="jFooter-contact">
+            <a
+                class="jFooter-link"
+                href="tel:87777880800"
+            >8 777 788 08 00</a>
+          </p>
+          <p class="jFooter-contact">
+            <a
+                class="jFooter-link"
+                href="tel:84951364282"
+            >8 495 136 42 82</a>
+          </p>
+          <p class="jFooter-contact">
+            <a
+                class="jFooter-link"
+                href="mailto:sales@jobtron.com"
+            >sales@jobtron.com</a>
+          </p>
+          <p class="jFooter-support">{{ $lang(lang, 'footer-support') }}</p>
+          <p class="jFooter-contact">
+            <a
+                class="jFooter-link"
+                href="mailto:support@jobtron.com"
+            >support@jobtron.com</a>
+          </p>
+        </div>
+        <div class="jFooter-col">
+          <p class="jFooter-sub-pay">{{ $lang(lang, 'footer-pay') }}</p>
+          <div class="jFooter-pay">
+            <a
+                class="jFooter-pay-link jFooter-pay-mir"
+                href="javascript:void(0)"
+            />
+            <a
+                class="jFooter-pay-link jFooter-pay-visa"
+                href="javascript:void(0)"
+            />
+            <a
+                class="jFooter-pay-link jFooter-pay-ym"
+                href="javascript:void(0)"
+            />
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="jFooter-separator"></div>
+    <div class="section-content">
+      <div class="jFooter-bottom">
+        <div class="jFooter-rules">
+          <a
+              class="jFooter-rules-link jFooter-link"
+              href="/docs/contract-offer.pdf"
+              target="_blank"
+          >{{ $lang(lang, 'contract-offer') }}</a>
+          <a
+              class="jFooter-rules-link jFooter-link"
+              href="/docs/site-agreement.pdf"
+              target="_blank"
+          >{{ $lang(lang, 'site-agreement') }}</a>
+          <a
+              class="jFooter-rules-link jFooter-link"
+              href="/docs/personal-data.pdf"
+              target="_blank"
+          >{{ $lang(lang, 'personal-data') }}</a>
+          <a
+              class="jFooter-rules-link jFooter-link"
+              href="/docs/privacy-policy.pdf"
+              target="_blank"
+          >{{ $lang(lang, 'privacy-policy') }}</a>
+        </div>
+        <div class="jFooter-copy">
+          <p class="jFooter-copy-right">{{ '© ' + year + ' ' + $lang(lang, 'footer-copy') }}</p>
+        </div>
+      </div>
+    </div>
+  </footer>
 </template>
 
 <script>
@@ -171,7 +179,7 @@ export default {
   border-top: 0.0625rem solid white;
 }
 
-@media (max-width: $small) {
+@media (max-width: 850px) {
   .jFooter-cols {
     display: flex;
     padding-bottom: 2rem;
@@ -184,6 +192,10 @@ export default {
     display: none;
   }
 
+  .jFooter-sub-social {
+    margin: 2rem 0 0.5rem;
+  }
+
   .jFooter-bottom {
     display: flex;
     flex-direction: column;
@@ -193,6 +205,26 @@ export default {
 
   .jFooter-copy-right {
     text-align: center;
+  }
+
+  .jFooter-rules {
+    font-size: 0.875rem;
+    display: flex;
+    flex-direction: column;
+    text-align: center;
+  }
+
+  .jFooter-rules-link {
+    margin-bottom: 0.7rem;
+  }
+}
+
+@media screen and (min-width: 850px) {
+  .jFooter-rules {
+    display: flex;
+    order: 2;
+    gap: 1rem;
+    padding-left: 1rem;
   }
 }
 
@@ -210,10 +242,6 @@ export default {
 
 .jFooter-menu-item {
   list-style: none;
-}
-
-.jFooter-sub-social {
-  margin: 2rem 0 0.5rem;
 }
 
 .jFooter-sub-pay {
@@ -310,16 +338,13 @@ export default {
     justify-content: space-around;
     padding-bottom: 2rem
   }
-  //.jFooter-col {
-  //  flex: 0 0 50%;
-  //}
 
   .jFooter-bottom {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    white-space: nowrap;
-    //flex-flow: column;
+    white-space: pre-wrap;
+    text-align: center;
   }
 
 
@@ -328,17 +353,18 @@ export default {
     align-self: center;
   }
 
-  .jFooter-rules {
-    display: flex;
-    order: 2;
-    gap: 1rem;
-  }
-
   .jFooter-copy {
     order: 1;
   }
-}
 
+  .jFooter-logo {
+    padding-right: 1rem;
+  }
+
+  .jFooter-sub-social {
+    margin: 4rem 0 0.5rem;
+  }
+}
 
 @media screen and (min-width: $medium) {
   .jFooter-cols {

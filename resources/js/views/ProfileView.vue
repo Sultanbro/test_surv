@@ -27,7 +27,7 @@ export default {
 		this.fetchSettings('company')
 		this.fetchStatus()
 		this.fetchPersonalInfo()
-		this.fetchCourses(true)
+		this.fetchCourses(false)
 		this.fetchSalary()
 		this.fetchPaymentTerms()
 	},

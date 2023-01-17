@@ -1,5 +1,5 @@
 <template>
-	<div class="header__left closed">
+	<div class="header__left">
 		<!-- avatar  -->
 		<div class="header__avatar">
 			<img

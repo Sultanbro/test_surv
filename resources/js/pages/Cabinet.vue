@@ -77,33 +77,28 @@
 					<div class="form-group">
 						Администраторы
 
-						<Multiselect
-							v-model="admins"
-							:options="users"
-							:multiple="true"
-							:close-on-select="false"
-							:clear-on-select="true"
-							:preserve-search="true"
-							placeholder="Выберите"
-							label="email"
-							track-by="email"
-							:taggable="true"
-							@tag="addTag"
-							class="multiselect-surv"
-						/>
-					</div>
+            <Multiselect
+              v-model="admins"
+              :options="users"
+              :multiple="true"
+              :close-on-select="false"
+              :clear-on-select="true"
+              :preserve-search="true"
+              placeholder="Выберите"
+              label="email"
+              track-by="email"
+              :taggable="true"
+              @tag="addTag"
+              class="multiselect-surv"
+            />
+          </div>
 
-					<div class="mt-3">
-						<button
-							class="btn btn-success btn-surv"
-							@click="save"
-						>
-							Сохранить
-						</button>
-					</div>
-				</div>
-			</div>
-		</div>
+          <div class="mt-3">
+            <button class="btn btn-success btn-surv" @click="save">Сохранить</button>
+          </div>
+        </div>
+      </div>
+    </div>
 
 		<!-- Profile page -->
 		<div
@@ -439,6 +434,7 @@ export default {
 	},
 	data() {
 		return {
+			videoUrl: '',
 			// my_crop_image: "",
 			crop_image: {
 				canvas: '',
@@ -487,7 +483,11 @@ export default {
 	computed: {
 		uploadedImage() {
 			return Object.keys(this.myCroppa).length !== 0;
-		}
+		},
+		// videoId(){
+		//   if(!this.videoUrl) return ''
+		//   return this.getYoutubeVideoId(this.videoUrl)
+		// }
 	},
 	watch: {
 		keywords() {
@@ -507,6 +507,11 @@ export default {
 		}
 	},
 	methods: {
+		// getYoutubeVideoId(url){
+		//   const urlObj = new URL(url)
+		//   if(urlObj.pathname.indexOf('embed') > -1) return urlObj.pathname.split('/')[2]
+		//   return urlObj.searchParams.get('v')
+		// },
 		init(){
 			this.fetchData();
 			this.user = this.auth_role;
@@ -809,7 +814,7 @@ export default {
 			// axios.get('/profile/country/city/', { params: { keywords: this.keywords } })
 			//     .then(response => this.results = response.data)
 			//     .catch(error => {});
-		},
+		}
 	},
 };
 </script>

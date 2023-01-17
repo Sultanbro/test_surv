@@ -35,248 +35,91 @@
 			</b-col>
 		</b-row>
 
-		<template v-if="activebtn != null || addNew">
-			<hr class="my-4">
-			<h4
-				v-if="addNew"
-				class="position-title-new"
-			>
-				Создание новой должности
-			</h4>
-			<b-row class="align-items-center mt-4">
-				<b-col
-					cols="12"
-					md="4"
-				>
-					<b-form-group
-						label="Название должности"
-						class="add-grade"
-					>
-						<b-form-input
-							type="text"
-							v-model="new_position"
-						/>
-					</b-form-group>
-				</b-col>
-			</b-row>
-			<b-row class="align-items-center">
-				<b-col
-					cols="12"
-					md="4"
-				>
-					<b-form-group label="Сумма индексации">
-						<b-form-input
-							type="text"
-							class="form-control group-select"
-							v-model="sum"
-							v-if="indexation"
-						/>
-						<b-form-input
-							type="text"
-							class="form-control group-select"
-							v-model="sum"
-							v-else
-							disabled
-						/>
-					</b-form-group>
-				</b-col>
-				<b-col
-					cols="12"
-					md="4"
-				>
-					<b-form-group class="mt-5">
-						<b-form-checkbox
-							v-model="indexation"
-							:value="1"
-							:unchecked-value="0"
-							switch
-						>
-							Индексация зарплаты
-						</b-form-checkbox>
-					</b-form-group>
-				</b-col>
-			</b-row>
-			<div class="card position-card mt-4">
-				<div class="card-header">
-					<b-form-checkbox
-						v-model="desc.show"
-						:value="1"
-						switch
-						:unchecked-value="0"
-					>
-						Показывать в профиле
-					</b-form-checkbox>
-				</div>
-				<div class="card-body">
-					<b-row>
-						<b-col
-							cols="12"
-							lg="6"
-						>
-							<b-form-group label="Следующая ступень карьерного роста">
-								<b-textarea v-model="desc.next_step" />
-							</b-form-group>
-						</b-col>
-						<b-col
-							cols="12"
-							lg="6"
-						>
-							<b-form-group label="Требования к кандидату">
-								<b-textarea v-model="desc.require" />
-							</b-form-group>
-						</b-col>
-						<b-col
-							cols="12"
-							lg="6"
-						>
-							<b-form-group label="Что нужно делать">
-								<b-textarea v-model="desc.actions" />
-							</b-form-group>
-						</b-col>
-						<b-col
-							cols="12"
-							lg="6"
-						>
-							<b-form-group label="График работы">
-								<b-textarea v-model="desc.time" />
-							</b-form-group>
-						</b-col>
-						<b-col
-							cols="12"
-							lg="6"
-						>
-							<b-form-group label="Заработная плата">
-								<b-textarea v-model="desc.salary" />
-							</b-form-group>
-						</b-col>
-						<b-col
-							cols="12"
-							lg="6"
-						>
-							<b-form-group label="Нужные знания для перехода на следующую должность">
-								<b-textarea v-model="desc.knowledge" />
-							</b-form-group>
-						</b-col>
-					</b-row>
-				</div>
-			</div>
-			<div class="text-right mt-3">
-				<button
-					@click="savePosition"
-					class="btn btn-success mr-2"
-				>
-					Сохранить
-				</button>
-				<button
-					v-if="!addNew"
-					@click.stop="deletePosition"
-					class="btn btn-danger mr-2"
-				>
-					<i
-						class="fa fa-trash mr-2"
-					/> Удалить
-				</button>
-			</div>
-		</template>
-
-		<template v-if="activebtn != null">
-			<b-row class="align-items-center my-4">
-				<b-col
-					cols="12"
-					md="4"
-				>
-					<b-form-group label="Сумма индексации">
-						<b-form-input
-							type="text"
-							class="form-control group-select"
-							v-model="sum"
-							v-if="indexation"
-						/>
-						<b-form-input
-							type="text"
-							class="form-control group-select"
-							v-model="sum"
-							v-else
-							disabled
-						/>
-					</b-form-group>
-				</b-col>
-				<b-col
-					cols="12"
-					md="4"
-				>
-					<b-form-group class="mt-5">
-						<b-form-checkbox
-							v-model="indexation"
-							:value="1"
-							:unchecked-value="0"
-							switch
-						>
-							Индексация зарплаты
-						</b-form-checkbox>
-					</b-form-group>
-				</b-col>
-			</b-row>
-			<b-row>
-				<b-col
-					cols="12"
-					class="my-4"
-				>
-					<b-form-checkbox
-						v-model="desc.show"
-						:value="1"
-						switch
-						:unchecked-value="0"
-					>
-						Показывать таблицу в профиле
-					</b-form-checkbox>
-				</b-col>
-
-				<b-col
-					cols="12"
-					class="my-4"
-				>
-					<div class="table-container">
-						<b-table-simple class="table table-bordered pos-desc pos-desc-1">
-							<b-thead>
-								<b-tr>
-									<b-th>Следующая ступень карьерного роста</b-th>
-									<b-th>Требования к кандидату</b-th>
-									<b-th>Что нужно делать</b-th>
-									<b-th>График работы</b-th>
-									<b-th>Заработная плата</b-th>
-									<b-th>Нужные знания для перехода на следующую должность</b-th>
-								</b-tr>
-							</b-thead>
-							<b-tbody>
-								<b-tr>
-									<b-td><b-textarea v-model="desc.next_step" /></b-td>
-									<b-td><b-textarea v-model="desc.require" /></b-td>
-									<b-td><b-textarea v-model="desc.actions" /></b-td>
-									<b-td><b-textarea v-model="desc.time" /></b-td>
-									<b-td><b-textarea v-model="desc.salary" /></b-td>
-									<b-td><b-textarea v-model="desc.knowledge" /></b-td>
-								</b-tr>
-							</b-tbody>
-						</b-table-simple>
-					</div>
-				</b-col>
-			</b-row>
-			<div class="mt-3">
-				<button
-					@click="savePosition"
-					class="btn btn-success mr-2"
-				>
-					Сохранить
-				</button>
-				<button
-					@click.stop="deletePosition(position_id, activebtn)"
-					class="btn btn-danger mr-2"
-				>
-					<i class="fa fa-trash mr-2" /> Удалить
-				</button>
-			</div>
-		</template>
+      <template v-if="activebtn != null || addNew">
+          <hr class="my-4">
+          <h4 v-if="addNew" class="position-title-new">Создание новой должности</h4>
+          <b-row class="align-items-center mt-4">
+              <b-col cols="12" md="4">
+                  <b-form-group label="Название должности" class="add-grade">
+                      <b-form-input type="text" v-model="new_position"></b-form-input>
+                  </b-form-group>
+              </b-col>
+          </b-row>
+          <b-row class="align-items-center">
+              <b-col cols="12" md="4">
+                  <b-form-group label="Сумма индексации">
+                      <b-form-input type="text" class="form-control group-select" v-model="sum"
+                                    v-if="indexation"></b-form-input>
+                      <b-form-input type="text" class="form-control group-select" v-model="sum" v-else
+                                    disabled></b-form-input>
+                  </b-form-group>
+              </b-col>
+              <b-col cols="12" md="4">
+                  <b-form-group class="mt-5">
+                      <b-form-checkbox
+                              v-model="indexation"
+                              :value="1"
+                              :unchecked-value="0"
+                              switch
+                      >
+                          Индексация зарплаты
+                      </b-form-checkbox>
+                  </b-form-group>
+              </b-col>
+          </b-row>
+          <div class="card position-card mt-4">
+              <div class="card-header">
+                  <b-form-checkbox
+                          v-model="desc.show"
+                          :value="1"
+                          switch
+                          :unchecked-value="0"
+                  >
+                      Показывать в профиле
+                  </b-form-checkbox>
+              </div>
+              <div class="card-body">
+                  <b-row>
+                      <b-col cols="12" lg="6">
+                          <b-form-group label="Следующая ступень карьерного роста">
+                              <b-textarea v-model="desc.next_step"></b-textarea>
+                          </b-form-group>
+                      </b-col>
+                      <b-col cols="12" lg="6">
+                          <b-form-group label="Требования к кандидату">
+                              <b-textarea v-model="desc.require"></b-textarea>
+                          </b-form-group>
+                      </b-col>
+                      <b-col cols="12" lg="6">
+                          <b-form-group label="Что нужно делать">
+                              <b-textarea v-model="desc.actions"></b-textarea>
+                          </b-form-group>
+                      </b-col>
+                      <b-col cols="12" lg="6">
+                          <b-form-group label="График работы">
+                              <b-textarea v-model="desc.time"></b-textarea>
+                          </b-form-group>
+                      </b-col>
+                      <b-col cols="12" lg="6">
+                          <b-form-group label="Заработная плата">
+                              <b-textarea v-model="desc.salary"></b-textarea>
+                          </b-form-group>
+                      </b-col>
+                      <b-col cols="12" lg="6">
+                          <b-form-group label="Нужные знания для перехода на следующую должность">
+                              <b-textarea v-model="desc.knowledge"></b-textarea>
+                          </b-form-group>
+                      </b-col>
+                  </b-row>
+              </div>
+          </div>
+          <div class="text-right mt-3">
+              <button @click='savePosition' class="btn btn-success mr-2">Сохранить</button>
+              <button v-if="!addNew" @click.stop="deletePosition" class="btn btn-danger mr-2"><i
+                      class="fa fa-trash mr-2"></i> Удалить
+              </button>
+          </div>
+      </template>
 	</div>
 </template>
 

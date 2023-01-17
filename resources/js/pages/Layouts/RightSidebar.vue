@@ -1,28 +1,12 @@
 <template>
-	<div class="header__right closed">
-		<div class="header__right-nav">
-			<a
-				href="javascript:void(0)"
-				class="header__right-icon"
-				v-b-popover.hover.left.html="'Вопросы и ответы - Этот функционал в разработке'"
-			>
-				<img
-					src="/images/dist/header-right-1.svg"
-					alt="nav icon"
-					class="header__icon-img"
-				>
-			</a>
-			<a
-				href="javascript:void(0)"
-				class="header__right-icon bell red"
-				@click="$emit('pop', 'notifications')"
-			>
-				<img
-					src="/images/dist/header-right-2.svg"
-					alt="nav icon"
-					class="header__icon-img"
-				>
-			</a>
+<div class="header__right">
+    <div class="header__right-nav">
+        <a href="javascript:void(0)" class="header__right-icon" v-b-popover.hover.left.html="'Вопросы и ответы - Этот функционал в разработке'">
+            <img src="/images/dist/header-right-1.svg" alt="nav icon" class="header__icon-img">
+        </a>
+        <a href="javascript:void(0)" class="header__right-icon bell red" @click="$emit('pop', 'notifications')">
+            <img src="/images/dist/header-right-2.svg" alt="nav icon" class="header__icon-img">
+        </a>
 
 			<!-- <a href="javascript:void(0)" class="header__right-icon loop" v-b-popover.hover.left.html="'Поиск по чату - Этот функционал в разработке'">
             <img src="/images/dist/header-right-3.svg" alt="nav icon" class="header__icon-img">

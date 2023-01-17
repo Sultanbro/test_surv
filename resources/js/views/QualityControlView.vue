@@ -21,7 +21,7 @@ export default {
 		}
 	},
 	mounted(){
-		useAsyncPageData('/timetracking/reports').then(data => {
+		useAsyncPageData('/timetracking/quality-control').then(data => {
 			this.groups = data.groups || null
 			this.active_group = '' + data.active_group
 			this.check = '' + data.check

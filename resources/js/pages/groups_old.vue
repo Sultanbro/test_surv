@@ -1,95 +1,48 @@
 <template>
-	<div
-		v-if="activeuserid"
-		class="groups"
-	>
-		<b-alert
-			v-if="message!=null"
-			variant="info"
-		>
-			{{ message }}
-		</b-alert>
-		<b-row class="align-items-center">
-			<b-col
-				cols="12"
-				lg="4"
-				md="6"
-			>
-				<b-form-group label="Группа">
-					<!--        <b-form-select-->
-					<!--                v-model="activebtn"-->
-					<!--                :options="statuses"-->
-					<!--                size="md"-->
-					<!--                @change="selectGroup"-->
-					<!--                class="group-select col-lg-6 d-flex"-->
-					<!--        >-->
-					<!--          <template #first>-->
-					<!--            <b-form-select-option :value="null" disabled>Выберите группу из списка</b-form-select-option>-->
-					<!--          </template>-->
-					<!--        </b-form-select>-->
-					<multiselect
-						v-model="activebtn"
-						:options="statuses"
-						@select="selectGroup"
-						placeholder="Выберите группу из списка"
-						track-by="group"
-						label="group"
-						ref="groupMultiselect"
-					>
-						<template slot="afterList">
-							<li class="multiselect-add-li">
-								<span class="multiselect-add-btn">Добавить новую группу</span>
-							</li>
-						</template>
-					</multiselect>
-				</b-form-group>
-			</b-col>
-			<b-col
-				cols="12"
-				lg="4"
-				md="6"
-				class="col-lg-3 col-md-6"
-			>
-				<b-form-group
-					label="Добавить группу"
-					class="add-grade"
-				>
-					<b-form-input
-						type="text"
-						class="form-control"
-						v-model="new_status"
-					/>
-					<button
-						@click="addStatus"
-						class="btn btn-success ml-4"
-					>
-						<i class="fa fa-plus" />
-					</button>
-					<button
-						class="btn btn-info rounded add-s ml-4"
-						@click="showArchiveModal = true"
-						title="Восстановить из архива"
-					>
-						<i class="fa fa-archive" />
-					</button>
-				</b-form-group>
-			</b-col>
-			<b-col
-				cols="12"
-				md="5"
-				lg="4"
-			>
-				<b-form-group
-					label="Название"
-					class="add-grade"
-				>
-					<b-form-input
-						type="text"
-						v-model="gname"
-					/>
-				</b-form-group>
-			</b-col>
-		</b-row>
+  <div
+    v-if="activeuserid"
+    class="groups"
+  >
+    <b-alert v-if="message!=null" variant="info">
+      {{ message}}
+    </b-alert>
+    <b-row class="align-items-center">
+      <b-col cols="12" lg="4" md="6">
+      <b-form-group label="Группа">
+        <b-form-select
+                v-model="activebtn"
+                :options="statuses"
+                size="md"
+                @change="selectGroup"
+                class="group-select col-lg-6 d-flex"
+        >
+          <template #first>
+            <b-form-select-option :value="null" disabled>Выберите группу из списка</b-form-select-option>
+          </template>
+        </b-form-select>
+      </b-form-group>
+      </b-col>
+      <b-col cols="12" lg="4" md="6" class="col-lg-3 col-md-6">
+        <b-form-group label="Добавить группу" class="add-grade">
+          <b-form-input type="text" class="form-control" v-model="new_status" />
+          <button @click="addStatus" class="btn btn-success ml-4">
+            <i class="fa fa-plus"></i>
+          </button>
+          <button
+                  class="btn btn-info rounded add-s ml-4"
+                  @click="showArchiveModal = true"
+                  title="Восстановить из архива"
+          >
+            <i class="fa fa-archive"></i>
+          </button>
+        </b-form-group>
+      </b-col>
+      <b-col cols="12" md="5" lg="4">
+       <b-form-group label="Название" class="add-grade">
+         <b-form-input type="text" v-model="gname"/>
+       </b-form-group>
+      </b-col>
+    </b-row>
 
 		<hr
 			v-if="activebtn != null"
@@ -219,72 +172,33 @@
 				</div>
 			</div>
 
-			<div class="col-lg-12 mb-3 mt-3">
-				<h6 class="mb-2">
-					Сотрудники
-				</h6>
-				<div class="dialerlist">
-					<div
-						class="fl"
-						style="flex-direction: column"
-					>
-						<!--            <multiselect-->
-						<!--              v-model="value"-->
-						<!--              :options="options"-->
-						<!--              :multiple="true"-->
-						<!--              :close-on-select="false"-->
-						<!--              :clear-on-select="false"-->
-						<!--              :preserve-search="true"-->
-						<!--              placeholder="Выберите"-->
-						<!--              label="email"-->
-						<!--              track-by="email"-->
-						<!--              :taggable="true"-->
-						<!--              @tag="addTag"-->
-						<!--            >-->
-						<!--            </multiselect>-->
-						<superselect
-							style="width: 60%"
-							:disable_type="2"
-							:disable_type_position="true"
-							:values="value"
-							:single="false"
-							:pre_build="true"
-							:visible_values="false"
-							:visible_values_text="'Выбрано сотрудников'"
-						/>
-						<a
-							href="#"
-							@click="showAlert()"
-						>Удалить всех пользователей</a>
-						<div
-							v-for="(val, index) in value"
-							:key="val.id"
-						>
-							<p
-								style="background-color: #333; padding: 5px 10px; border-radius: 5px; color: #fff;"
-								@click="removeValue(index)"
-							>
-								{{ val }}
-							</p>
-						</div>
-					</div>
-				</div>
-			</div>
-			<div class="col-lg-12 mb-3">
-				<button
-					@click="saveusers"
-					class="btn btn-success mr-2 rounded"
-				>
-					Сохранить
-				</button>
-				<button
-					@click.stop="deleted"
-					class="btn btn-danger mr-2 rounded"
-				>
-					<i class="fa fa-trash" /> Удалить группу
-				</button>
-			</div>
-		</div>
+        <div class="dialerlist blu">
+          <multiselect
+            v-model="corps"
+            :options="corp_books"
+            :multiple="true"
+            :close-on-select="false"
+            :clear-on-select="false"
+            :preserve-search="true"
+            placeholder="Выберите корп книги"
+            label="title"
+            track-by="title"
+            :taggable="true"
+            @tag="addTag"
+          >
+          </multiselect>
+        </div>
+
+        <div class="blu">
+          <b-form-checkbox
+            class="mt-3"
+            v-model="show_payment_terms"
+            :value="1"
+            :unchecked-value="0"
+            switch
+          >
+            Показывать в профиле
+          </b-form-checkbox>
 
 		<sidebar
 			title="Бонусы"
@@ -319,95 +233,59 @@
 					<th class="mark" />
 				</tr>
 
-				<tr
-					v-for="(bonus, index) in bonuses"
-					:key="index"
-				>
-					<td>
-						<input
-							type="text"
-							class="form-control form-control-sm"
-							v-model="bonus.title"
-						>
-					</td>
-					<td class="left">
-						<select
-							v-model="bonus.activity_id"
-							class="form-control form-control-sm"
-						>
-							<option :value="0">
-								Нет активности
-							</option>
-							<option
-								:value="activity.id"
-								v-for="activity in activities"
-								:key="activity.id"
-							>
-								{{ activity.name }}
-							</option>
-						</select>
-					</td>
-					<td class="left">
-						<select
-							v-model="bonus.unit"
-							class="form-control form-control-sm"
-						>
-							<option
-								:value="unit.value"
-								v-for="unit in units"
-								:key="unit.value"
-							>
-								{{ unit.title }}
-							</option>
-						</select>
-					</td>
-					<td class="left">
-						<input
-							type="text"
-							class="form-control form-control-sm"
-							v-model="bonus.quantity"
-						>
-					</td>
-					<td class="left">
-						<select
-							v-model="bonus.daypart"
-							class="form-control form-control-sm"
-						>
-							<option
-								:value="daypart.value"
-								v-for="daypart in dayparts"
-								:key="daypart.value"
-							>
-								{{ daypart.title }}
-							</option>
-						</select>
-					</td>
-					<td class="left">
-						<input
-							type="text"
-							class="form-control form-control-sm"
-							v-model="bonus.sum"
-						>
-					</td>
-					<td class="left">
-						<textarea
-							class="form-control form-control-sm"
-							v-model="bonus.text"
-						/>
-					</td>
-					<td class="left">
-						<i
-							class="fa fa-trash"
-							@click="deleteBonusItem(index)"
-						/>
-					</td>
-				</tr>
-			</table>
+      <div class="col-lg-12 mb-3 mt-3">
+        <h6 class="mb-2">Сотрудники</h6>
+        <div class="dialerlist">
+          <div class="fl" style="flex-direction: column">
+            <multiselect
+              v-model="value"
+              :options="options"
+              :multiple="true"
+              :close-on-select="false"
+              :clear-on-select="false"
+              :preserve-search="true"
+              placeholder="Выберите"
+              label="email"
+              track-by="email"
+              :taggable="true"
+              @tag="addTag"
+            >
+            </multiselect>
+            <a href="#" @click="showAlert()">Удалить всех пользователей</a>
+          </div>
+        </div>
+      </div>
+      <div class="col-lg-12 mb-3">
+        <button @click="saveusers" class="btn btn-success mr-2 rounded">
+          Сохранить
+        </button>
+        <button
+          @click.stop="deleted"
+          class="btn btn-danger mr-2 rounded"
+        >
+          <i class="fa fa-trash"></i> Удалить группу
+        </button>
+      </div>
+    </div>
 
-			<p v-if="showAfterEdit">
-				Не забудьте нажать на кнопку "Сохранить", чтобы сохранить изменения и
-				удаления
-			</p>
+      <Sidebar
+        title="Бонусы"
+        :open="showBonuses"
+        @close="showBonuses = false"
+        v-if="showBonuses"
+        width="72%"
+      >
+        <table class="table table-bordered table-sm">
+          <tr>
+            <th class="left mark">Наименование</th>
+            <th class="mark">Активность</th>
+            <th class="mark">Ед.изм</th>
+            <th class="mark">Кол-во</th>
+            <th class="mark">ПД</th>
+            <th class="mark">Сумма , тг</th>
+            <th class="mark">Описание</th>
+            <th class="mark"></th>
+          </tr>
 
 			<div class="d-flex">
 				<button
@@ -465,18 +343,25 @@
 			</div>
 		</b-modal>
 
-		<!-- Modal  -->
-		<b-modal
-			v-model="showEditTimeAddress"
-			title="Подтягивать часы"
-			@ok="saveTimeAddress()"
-			size="lg"
-			class="modalle"
-		>
-			<div class="row">
-				<div class="col-5 mt-1">
-					<p class="">
-						Источник часов
+        <div class="d-flex">
+          <button
+            class="btn btn-success btn-sm rounded mr-2"
+            @click="saveBonus"
+          >
+            Сохранить
+          </button>
+          <button class="btn btn-primary btn-sm rounded" @click="addBonus">
+            Добавить
+          </button>
+          <button
+            class="btn btn-danger btn-sm rounded"
+            v-if="showDeleteButton"
+            @click="before_deleteBonus"
+          >
+            Удалить
+          </button>
+        </div>
+      </Sidebar>
 
 						<i
 							class="fa fa-info-circle"
@@ -627,10 +512,15 @@
 </template>
 
 <script>
+import Sidebar from '@/components/ui/Sidebar' // сайдбар table
 export default {
-	name: 'CompanyGroups',
+	name: 'PageGroups',
+	components: {
+		Sidebar,
+	},
 	props: [
 		'statuseses',
+		'corpbooks',
 		'activeuserid',
 		'archived_groupss',
 	],
@@ -646,6 +536,9 @@ export default {
 			value: [], // selected users
 			options: [], // users options
 
+			corps: [], // selected corp_books
+
+			corp_books: [], // corp_books options
 			archived_groups: [],
 			payment_terms: '', // Условия оплаты труда в группе
 			timeon: '09:00',
@@ -726,17 +619,13 @@ export default {
 	},
 	mounted() {},
 	methods: {
-		removeValue(index){
-			this.value.splice(index, 1);
-		},
 		init(){
-			Object.keys(this.statuseses).forEach(item => {
-				this.statuses.push({
-					id: item,
-					group: this.statuseses[item]
-				})
+			this.axios.post('/timetracking/users-new', {}).then((response) => {
+				this.options = response.data?.data.users;
 			});
+			this.statuses = this.statuseses;
 			this.archived_groups = this.archived_groupss;
+			this.corp_books = this.corpbooks;
 		},
 		saveBonus() {
 			this.axios
@@ -785,37 +674,34 @@ export default {
 			this.time_exceptions.push(tag);
 		},
 
+		addCorpBookTag(newTag) {
+			const tag = {
+				title: newTag,
+				id: newTag,
+			};
+			this.corps.push(tag);
+		},
+
 		messageoff() {
 			setTimeout(() => {
 				this.message = null;
 			}, 3000);
 		},
-		async selectGroup(value) {
+		selectGroup() {
+
+
 			let loader = this.$loading.show();
-			await this.axios
+
+			this.axios
 				.post('/timetracking/users-new', {
-					id: value.id,
+					id: this.activebtn,
 				})
 				.then((response) => {
 					if (response.data?.data) {
-						const data = response.data.data;
+						const data = response.data.data
+						console.warn(data)
 						this.gname = data.name;
-						data.users.forEach(item => {
-							const itemData = {
-								id: item.id,
-								type: 1,
-								selected: true
-							};
-
-							if(item.last_name === null){
-								itemData.name = item.name;
-							} else {
-								itemData.name = `${item.name} ${item.last_name}`;
-							}
-
-							this.value.push(itemData);
-						});
-						this.options = data.users;
+						this.value = data.users;
 
 						this.timeon = data.timeon;
 						this.timeoff = data.timeoff;
@@ -827,6 +713,7 @@ export default {
 						this.talk_hours = data.talk_hours;
 						this.script_id = data.script_id;
 						this.quality = data.quality;
+						this.corps = data.corp_books;
 						this.bonuses = data.bonuses;
 						this.activities = data.activities;
 						this.payment_terms = data.payment_terms;
@@ -834,6 +721,7 @@ export default {
 						this.workdays = data.workdays;
 						this.paid_internship = data.paid_internship;
 						this.show_payment_terms = data.show_payment_terms;
+						this.statuses = data.groups;
 						this.archived_groups = data.archived_groups;
 
 						this.editable_time = data.editable_time;
