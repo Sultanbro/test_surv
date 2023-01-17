@@ -1,5 +1,8 @@
 <template>
-<div id="page-profile">
+<div
+	v-if="isVisible"
+	id="page-profile"
+>
     <div class="intro content">
         <IntroTop
             :courses="intro['courses']"
@@ -13,7 +16,7 @@
             ref="intro"
             :class="{ _active: anim.intro }"
         />
-        <!-- <new-intro-smart-table></new-intro-smart-table> -->
+        <!-- <new-intro-smart-table/> -->
     </div>
     <MobileProfileSidebar
         v-show="isProfileVisible"
@@ -113,6 +116,13 @@ import Kpi from '@/pages/Profile/Popups/Kpi.vue'
 import Bonuses from '@/pages/Profile/Popups/Bonuses.vue'
 import PopupQuartal from '@/pages/Profile/Popups/PopupQuartal.vue'
 import Nominations from '@/pages/Profile/Popups/Nominations.vue'
+import { mapState } from 'pinia'
+import { useSettingsStore } from '@/stores/Settings'
+import { useProfileStatusStore } from '@/stores/ProfileStatus'
+import { useProfileSalaryStore } from '@/stores/ProfileSalary'
+import { useProfileCoursesStore } from '@/stores/ProfileCourses'
+import { usePersonalInfoStore } from '@/stores/PersonalInfo'
+import { usePaymentTermsStore } from '@/stores/PaymentTerms'
 
 export default {
 	name: 'ProfilePage',
@@ -160,6 +170,12 @@ export default {
 		};
 	},
 	computed: {
+		...mapState(useSettingsStore, {settingsReady: 'isReady'}),
+		...mapState(useProfileStatusStore, {statusReady: 'isReady'}),
+		...mapState(useProfileSalaryStore, {salaryReady: 'isReady'}),
+		...mapState(useProfileCoursesStore, {coursesReady: 'isReady'}),
+		...mapState(usePersonalInfoStore, {infoReady: 'isReady'}),
+		...mapState(usePaymentTermsStore, {termsReady: 'isReady'}),
 		popupWidth(){
 			const w = this.$viewportSize.width
 			if(w < 651) return '100%'
@@ -168,10 +184,30 @@ export default {
 		},
 		isProfileVisible(){
 			return this.$viewportSize.width < 1360
+		},
+		isReady(){
+			return this.settingsReady
+				&& this.statusReady
+				&& this.salaryReady
+				&& this.coursesReady
+				&& this.infoReady
+				&& this.termsReady
+		},
+		isVisible(){
+			return this.isReady || this.$viewportSize.width > 900
+		}
+	},
+	watch: {
+		isReady(value){
+			if(value) this.initAnimOnScroll()
 		}
 	},
 	mounted(){
-		this.initAnimOnScroll()
+		if(this.isReady) this.initAnimOnScroll()
+	},
+	beforeUnmount(){
+		this.intersectionObserver.disconnect()
+		this.intersectionObserver = null
 	},
 	methods: {
 		pop(window) {
@@ -185,21 +221,24 @@ export default {
 			this.desc = text;
 		},
 		initAnimOnScroll(){
-			const w = this.$viewportSize.width
-			if(w > 900){
-				this.intersectionObserver = new IntersectionObserver(this.animOnScroll, {
-					threshold: 0.1
+			if(this.intersectionObserver) return
+			this.$nextTick(() => {
+				const w = this.$viewportSize.width
+				if(w > 900){
+					this.intersectionObserver = new IntersectionObserver(this.animOnScroll, {
+						threshold: 0.1
+					})
+					this.intersectionObserver.observe(this.$refs.intro.$el)
+					this.intersectionObserver.observe(this.$refs.profileSidebar.$el)
+					this.intersectionObserver.observe(this.$refs.courses.$el)
+					this.intersectionObserver.observe(this.$refs.profit.$el)
+					this.intersectionObserver.observe(this.$refs.estimation.$el)
+					this.intersectionObserver.observe(this.$refs.indicators.$el)
+					return
+				}
+				Object.keys(this.anim).forEach(key => {
+					this.anim[key] = true
 				})
-				this.intersectionObserver.observe(this.$refs.intro.$el)
-				this.intersectionObserver.observe(this.$refs.profileSidebar.$el)
-				this.intersectionObserver.observe(this.$refs.courses.$el)
-				this.intersectionObserver.observe(this.$refs.profit.$el)
-				this.intersectionObserver.observe(this.$refs.estimation.$el)
-				this.intersectionObserver.observe(this.$refs.indicators.$el)
-				return
-			}
-			Object.keys(this.anim).forEach(key => {
-				this.anim[key] = true
 			})
 		},
 		animOnScroll(entries){

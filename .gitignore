@@ -1,4 +1,5 @@
 /node_modules
+/jsdoc
 /public
 /public/js/admino
 /public/hot

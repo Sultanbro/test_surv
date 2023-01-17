@@ -31,9 +31,11 @@ export default {
             >{{ $lang(lang, 's1-for-free') }}</a>
         </div>
         <div class="jSec1-profile-banner">
-            <video class="jSec1-profile-banner-img" autoplay loop>
-                <source :src="require('-!file-loader!../../assets/img/profile2.mp4').default">
-            </video>
+          <img
+              :src="require('../../assets/img/profile.jpg').default"
+              alt=""
+              class="jSec1-profile-banner-img"
+          >
         </div>
     </div>
 </template>

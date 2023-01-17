@@ -1,64 +1,64 @@
 <template>
-  <div
-    v-if="auth_role"
-    class="d-flex"
-  >
-    <!-- left sidebar -->
-    <div class="lp">
-      <h1 class="page-title">Настройка кабинета</h1>
-      <div class="settingCabinet">
-        <ul class="p-0">
-          <li v-if="user.is_admin === 1" class="lp-item">
-            <a
-              class="lp-link"
-              @click="page = 'admin'"
-              :class="{ active: page == 'admin' }"
-              tabindex="0"
-            >
-              <i class="fa fa-key"/>
-              Административные настройки
-            </a>
-          </li>
+	<div
+		v-if="auth_role"
+		class="d-flex"
+	>
+		<!-- left sidebar -->
+		<div class="lp">
+			<h1 class="page-title">Настройка кабинета</h1>
+			<div class="settingCabinet">
+				<ul class="p-0">
+					<li v-if="user.is_admin === 1" class="lp-item">
+						<a
+							class="lp-link"
+							@click="page = 'admin'"
+							:class="{ active: page == 'admin' }"
+							tabindex="0"
+						>
+							<i class="fa fa-key"/>
+							Административные настройки
+						</a>
+					</li>
 
-          <li class="position-relative lp-item">
-            <a
-              class="lp-link"
-              @click="page = 'profile'"
-              :class="{ active: page == 'profile' }"
-              tabindex="0"
-            >
-              <i class="fa fa-user"/>
-              Настройка собственного профиля
-            </a>
-          </li>
-        </ul>
-      </div>
-    </div>
+					<li class="position-relative lp-item">
+						<a
+							class="lp-link"
+							@click="page = 'profile'"
+							:class="{ active: page == 'profile' }"
+							tabindex="0"
+						>
+							<i class="fa fa-user"/>
+							Настройка собственного профиля
+						</a>
+					</li>
+				</ul>
+			</div>
+		</div>
 
-    <!-- Cabinet page -->
-    <div v-if="page == 'admin'" class="rp cabinet-page-admin" style="flex: 1 1 0%">
-      <div class="hat">
-        <div class="d-flex jsutify-content-between hat-top">
-          <div class="bc">
-            <a href="#">Настройка кабинета</a>
-          </div>
-        </div>
-      </div>
+		<!-- Cabinet page -->
+		<div v-if="page == 'admin'" class="rp cabinet-page-admin" style="flex: 1 1 0%">
+			<div class="hat">
+				<div class="d-flex jsutify-content-between hat-top">
+					<div class="bc">
+						<a href="#">Настройка кабинета</a>
+					</div>
+				</div>
+			</div>
 
-      <div class="content mt-3 py-3">
-        <div class="p-3">
-          <div class="form-group">
-            Субдомен
-            <input class="form-control mt-1 input-surv" id="view_own_orders" type="text" />
-          </div>
+			<div class="content mt-3 py-3">
+				<div class="p-3">
+					<div class="form-group">
+						Субдомен
+						<input class="form-control mt-1 input-surv" id="view_own_orders" type="text" />
+					</div>
 
-          <div class="form-group">
-            Часовой пояс
-            <input class="form-control mt-1 input-surv" id="view_own_orders" type="text" />
-          </div>
+					<div class="form-group">
+						Часовой пояс
+						<input class="form-control mt-1 input-surv" id="view_own_orders" type="text" />
+					</div>
 
-          <div class="form-group">
-            Администраторы
+					<div class="form-group">
+						Администраторы
 
             <Multiselect
               v-model="admins"
@@ -75,27 +75,7 @@
               class="multiselect-surv"
             />
           </div>
-<!-- <div>
-  <label for="url">Выбор приветственного видео-ролика:</label>
-    <input type="url" name="url" id="url" style="border: 1px solid #e8e8e8" 
-       placeholder="https://www.youtube.com/watch?v=CK8exq_fqGc&list=RDCK8exq_fqGc&start_radio=1"
-       pattern="https://.*" size="30"
-       required>
-    <button class="btn btn-success">Загрузить приветственное видео для новых пользователей</button>
-      <i class="fa fa-info-circle" 
-      v-b-popover.hover.right.html="'Каждому новому зарегистрированному пользователю <br> будет показываться вступительное видео, которое вы загрузите'"
-                         ></i>
-        <iframe
-          v-if="videoId"
-          width="560"
-          height="315"
-          title="YouTube video player"
-          frameborder="0"
-          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-          allowfullscreen
-          :src="`https://www.youtube.com/embed/${youtubeVideoId}`"
-/>
-</div> -->
+
           <div class="mt-3">
             <button class="btn btn-success btn-surv" @click="save">Сохранить</button>
           </div>
@@ -103,152 +83,158 @@
       </div>
     </div>
 
-    <!-- Profile page -->
-    <div v-if="page == 'profile'" class="rp">
-      <div class="hat">
-        <div class="d-flex jsutify-content-between hat-top">
-          <div class="bc">
-            <a href="#">Настройка профиля</a>
-          </div>
-        </div>
-      </div>
+		<!-- Profile page -->
+		<div v-if="page == 'profile'" class="rp">
+			<div class="hat">
+				<div class="d-flex jsutify-content-between hat-top">
+					<div class="bc">
+						<a href="#">Настройка профиля</a>
+					</div>
+				</div>
+			</div>
 
-      <div class="content">
-        <div class="row m-0 mt-2">
-          <!-- profile data -->
-          <div class="col-8">
-            <div class="form-group row mt-3">
-              <label class="col-sm-4 col-form-label font-weight-bold label-surv">
-                Имя <span class="red">*</span>
-              </label>
+			<div class="content">
+				<div class="row m-0 mt-2">
+					<!-- profile data -->
+					<div class="col-8">
+						<div class="form-group row mt-3">
+							<label class="col-sm-4 col-form-label font-weight-bold label-surv">
+								Имя <span class="red">*</span>
+							</label>
 
-              <div class="col-sm-8 p-0">
-                <input
-                  class="form-control input-surv"
-                  type="text"
-                  name="name"
-                  id="firstName"
-                  required
-                  placeholder="Имя сотрудника"
-                  v-model="user.name"
-                />
-              </div>
-            </div>
-            <div class="form-group row">
-              <label
-                class="col-sm-4 col-form-label font-weight-bold label-surv"
-              >Фамилия <span class="red">*</span></label>
-              <div class="col-sm-8 p-0">
-                <input
-                  class="form-control input-surv"
-                  type="text"
-                  name="last_name"
-                  id="lastName"
-                  required
-                  placeholder="Фамилия сотрудника"
-                  v-model="user.last_name"
-                />
-              </div>
-            </div>
-            <div class="form-group row">
-              <label
-                class="col-sm-4 col-form-label font-weight-bold label-surv"
-              >Email <span class="red">*</span></label>
-              <div class="col-sm-8 p-0">
-                <input
-                  class="form-control input-surv"
-                  type="text"
-                  name="email"
-                  id="email"
-                  required
-                  placeholder="email"
-                  v-model="user.email"
-                />
-              </div>
-            </div>
-            <div class="form-group row">
-              <label
-                class="col-sm-4 col-form-label font-weight-bold label-surv"
-              >Новый пароль</label>
-              <div class="col-sm-8 p-0">
-                <input
-                  v-model="password"
-                  minlength="5"
-                  class="form-control input-surv"
-                  type="password"
-                  name="new_pwd"
-                  id="new_pwd"
-                  placeholder="********"
-                />
-              </div>
-            </div>
-            <div class="form-group row">
-              <label
-                class="col-sm-4 col-form-label font-weight-bold label-surv"
-              >День рождения <span class="red">*</span></label>
-              <div class="col-sm-8 p-0">
-                <input
-                  v-model="birthday"
-                  class="form-control input-surv"
-                  type="date"
-                  name="birthday"
-                  id="birthday"
-                  required
-                />
-              </div>
-            </div>
-            <div class="form-group row">
-              <label
-                class="col-sm-4 col-form-label font-weight-bold label-surv"
-              >Город<span class="red">*</span></label>
-              <div class="col-sm-8 p-0">
+							<div class="col-sm-8 p-0">
+								<input
+									class="form-control input-surv"
+									type="text"
+									name="name"
+									id="firstName"
+									required
+									placeholder="Имя сотрудника"
+									v-model="user.name"
+								/>
+							</div>
+						</div>
+						<div class="form-group row">
+							<label
+								class="col-sm-4 col-form-label font-weight-bold label-surv"
+							>Фамилия <span class="red">*</span></label>
+							<div class="col-sm-8 p-0">
+								<input
+									class="form-control input-surv"
+									type="text"
+									name="last_name"
+									id="lastName"
+									required
+									placeholder="Фамилия сотрудника"
+									v-model="user.last_name"
+								/>
+							</div>
+						</div>
+						<div class="form-group row">
+							<label
+								class="col-sm-4 col-form-label font-weight-bold label-surv"
+							>Email <span class="red">*</span></label>
+							<div class="col-sm-8 p-0">
+								<input
+									class="form-control input-surv"
+									type="text"
+									name="email"
+									id="email"
+									required
+									placeholder="email"
+									v-model="user.email"
+								/>
+							</div>
+						</div>
+						<div class="form-group row">
+							<label
+								class="col-sm-4 col-form-label font-weight-bold label-surv"
+							>Новый пароль</label>
+							<div class="col-sm-8 p-0">
+								<input
+									v-model="password"
+									minlength="5"
+									class="form-control input-surv"
+									type="password"
+									name="new_pwd"
+									id="new_pwd"
+									placeholder="********"
+								/>
+							</div>
+						</div>
+						<div class="form-group row">
+							<label
+								class="col-sm-4 col-form-label font-weight-bold label-surv"
+							>День рождения <span class="red">*</span></label>
+							<div class="col-sm-8 p-0">
+								<input
+									v-model="birthday"
+									class="form-control input-surv"
+									type="date"
+									name="birthday"
+									id="birthday"
+									required
+								/>
+							</div>
+						</div>
+						<div class="form-group row">
+							<label
+								class="col-sm-4 col-form-label font-weight-bold label-surv"
+							>Город<span class="red">*</span></label>
+							<div class="col-sm-8 p-0">
 
-                  <input
-                      v-model="keywords"
-                      class="form-control input-surv"
-                      type="text"
-                      name="country"
-                      id="country"
-                      required
-                      placeholder="поиск городов"
-                  />
-                  <ul v-if="country_results.length > 0" class="p-0 countries">
-                    <li v-for="(result, index) in country_results" :key="index">
-                      <a @click="selectedCountry(index, result)">
-                        Страна: {{ result.country }} Город: {{ result.city }}</a
-                      >
-                    </li>
-                  </ul>
-
-
-
-              </div>
-            </div>
-          </div>
-
-          <!-- profile image -->
-          <div class="col-3">
-            <div class="form-group mb-0 text-center">
-             <!-- <canvas id="myCanvas" width="250" height="250" @click="chooseProfileImage()">
-              </canvas>-->
-              <div class="profile-img-wrap hidden-file-wrapper">
-               <img alt="Profile image" :src="!crop_image.hide ? crop_image.image: '/svg/500.svg'"  class="profile-img">
-                <input
-                  type="file"
-                  class="hidden-file-input"
-                  id="CabinetProfileImage"
-                  aria-describedby="CabinetProfileImage"
-                  ref="file"
-                  accept="image/*"
-                  v-on:change="handleFileUpload()"
-                >
-                <label class="hidden-file-label" for="CabinetProfileImage"/>
-              </div>
+									<input
+											v-model="keywords"
+											class="form-control input-surv"
+											type="text"
+											name="country"
+											id="country"
+											required
+											placeholder="поиск городов"
+									/>
+									<ul v-if="country_results.length > 0" class="p-0 countries">
+										<li v-for="(result, index) in country_results" :key="index">
+											<a @click="selectedCountry(index, result)">
+												Страна: {{ result.country }} Город: {{ result.city }}</a
+											>
+										</li>
+									</ul>
 
 
 
+							</div>
+						</div>
+					</div>
 
-              <!--              <croppa-->
+					<!-- profile image -->
+					<div class="col-3">
+						<div class="form-group mb-0 text-center">
+							<!-- <canvas id="myCanvas" width="250" height="250" @click="chooseProfileImage()">
+							</canvas>-->
+							<div class="profile-img-wrap hidden-file-wrapper">
+								<img
+									v-if="!crop_image.hide"
+									alt="Profile image"
+									:src="crop_image.image"
+									class="profile-img"
+								>
+								<div class="my-4 text-left" v-else>Загрузите свою фотографию</div>
+								<input
+									type="file"
+									class="hidden-file-input"
+									id="CabinetProfileImage"
+									aria-describedby="CabinetProfileImage"
+									ref="file"
+									accept="image/*"
+									v-on:change="handleFileUpload()"
+								>
+								<label class="hidden-file-label" for="CabinetProfileImage"/>
+							</div>
+
+
+
+
+							<!--              <croppa-->
 <!--                v-model="myCroppa"-->
 <!--                :width="250"-->
 <!--                :height="250"-->
@@ -268,125 +254,125 @@
 <!--                v-on="hasImage ? { click:chooseProfileImage } : {}"-->
 
 <!--              ></croppa>-->
-              <div class="hidden-file-wrapper">
-                <button class="btn btn-success w-100 mt-2 btn-surv">
-                  Выбрать фото
-                </button>
-                <label class="hidden-file-label" for="CabinetProfileImage"/>
-              </div>
-            </div>
-          </div>
-          <div class="col-12 mt-3">
-            <!-- Cards -->
-            <template v-if="payments_view">
-              <div
-                class="col-12 p-0 row payment-profile"
-                v-for="(payment, index) in payments"
-                :key="index"
-              >
-                <div class="col-2">
-                  <input
-                    v-model="payment.bank"
-                    class="form-control input-surv"
-                    placeholder="Банк"
-                  />
-                </div>
-                <div class="col-2">
-                  <input
-                    v-model="payment.country"
-                    class="form-control input-surv"
-                    placeholder="Страна"
-                  />
-                </div>
-                <div class="col-2">
-                  <input
-                    v-model="payment.cardholder"
-                    class="form-control input-surv"
-                    placeholder="Имя на карте"
-                  />
-                </div>
-                <div class="col-2">
-                  <input
-                    type="number"
-                    v-model="payment.phone"
-                    class="form-control input-surv"
-                    placeholder="Телефон"
-                  />
-                </div>
-                <div class="col-2">
-                  <input
-                    type="number"
-                    v-model="payment.number"
-                    class="form-control card-number input-surv"
-                    placeholder="Номер карты"
-                  />
-                </div>
-                <div class="col-2 position-relative">
-                  <button
-                    v-if="payment.id"
-                    style="position: absolute; left: 0px"
-                    class="btn btn-danger btn-sm card-delete rounded mt-1 btn-surv"
-                    @click="removePaymentCart(index, payment.id)"
-                  >
-                    <span class="fa fa-trash"></span>
-                  </button>
-                  <button
-                    v-else
-                    style="position: absolute; left: 0px"
-                    class="btn btn-primary btn-sm card-delete rounded mt-1 btn-surv"
-                    @click="removePaymentCart(index, 'dev')"
-                  >
-                    <span class="fa fa-trash"></span>
-                  </button>
-                </div>
-              </div>
-            </template>
+							<div class="hidden-file-wrapper">
+								<button class="btn btn-success w-100 mt-2 btn-surv">
+									Выбрать фото
+								</button>
+								<label class="hidden-file-label" for="CabinetProfileImage"/>
+							</div>
+						</div>
+					</div>
+					<div class="col-12 mt-3">
+						<!-- Cards -->
+						<template v-if="payments_view">
+							<div
+								class="col-12 p-0 row payment-profile"
+								v-for="(payment, index) in payments"
+								:key="index"
+							>
+								<div class="col-2">
+									<input
+										v-model="payment.bank"
+										class="form-control input-surv"
+										placeholder="Банк"
+									/>
+								</div>
+								<div class="col-2">
+									<input
+										v-model="payment.country"
+										class="form-control input-surv"
+										placeholder="Страна"
+									/>
+								</div>
+								<div class="col-2">
+									<input
+										v-model="payment.cardholder"
+										class="form-control input-surv"
+										placeholder="Имя на карте"
+									/>
+								</div>
+								<div class="col-2">
+									<input
+										type="number"
+										v-model="payment.phone"
+										class="form-control input-surv"
+										placeholder="Телефон"
+									/>
+								</div>
+								<div class="col-2">
+									<input
+										type="number"
+										v-model="payment.number"
+										class="form-control card-number input-surv"
+										placeholder="Номер карты"
+									/>
+								</div>
+								<div class="col-2 position-relative">
+									<button
+										v-if="payment.id"
+										style="position: absolute; left: 0px"
+										class="btn btn-danger btn-sm card-delete rounded mt-1 btn-surv"
+										@click="removePaymentCart(index, payment.id)"
+									>
+										<span class="fa fa-trash"></span>
+									</button>
+									<button
+										v-else
+										style="position: absolute; left: 0px"
+										class="btn btn-primary btn-sm card-delete rounded mt-1 btn-surv"
+										@click="removePaymentCart(index, 'dev')"
+									>
+										<span class="fa fa-trash"></span>
+									</button>
+								</div>
+							</div>
+						</template>
 
-            <div class="mt-2 p-0" v-if="cardValidatre.error">
-              <div class="alert alert-danger">
-                <span>Заполните все поля</span>
-              </div>
-            </div>
+						<div class="mt-2 p-0" v-if="cardValidatre.error">
+							<div class="alert alert-danger">
+								<span>Заполните все поля</span>
+							</div>
+						</div>
 
-            <div class="p-0 row mt-5">
-              <div class="col-3">
-                <button
-                  @click="addPayment()"
-                  style="color: white"
-                  class="btn btn-phone btn-primary btn-surv"
-                >
-                  Добавить карту
-                </button>
-              </div>
+						<div class="p-0 row mt-5">
+							<div class="col-3">
+								<button
+									@click="addPayment()"
+									style="color: white"
+									class="btn btn-phone btn-primary btn-surv"
+								>
+									Добавить карту
+								</button>
+							</div>
 
-              <div class="col-3">
-                <button
-                  @click.prevent="editProfileUser()"
-                  style="color: white"
-                  class="btn btn-success btn-surv"
-                  type="button"
-                >
-                  Сохранить
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-    <b-modal v-model="showChooseProfileModal"  title="Изображение профиля" size="lg" class="modalle" @ok="save_picture()">
-      <div id="cabinet-croppie"/>
-      <!-- <cropper
-        ref="mycrop"
-        class="cropper"
-        :src="imagePreview"
-        :stencil-props="{
-          aspectRatio: 12/12
-        }"
-        @change="change"
-      /> -->
-    </b-modal>
-  </div>
+							<div class="col-3">
+								<button
+									@click.prevent="editProfileUser()"
+									style="color: white"
+									class="btn btn-success btn-surv"
+									type="button"
+								>
+									Сохранить
+								</button>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+		<b-modal v-model="showChooseProfileModal"  title="Изображение профиля" size="lg" class="modalle" @ok="save_picture()">
+			<div id="cabinet-croppie"/>
+			<!-- <cropper
+				ref="mycrop"
+				class="cropper"
+				:src="imagePreview"
+				:stencil-props="{
+					aspectRatio: 12/12
+				}"
+				@change="change"
+			/> -->
+		</b-modal>
+	</div>
 </template>
 <script>
 // import VueAvatar from '../components/vue-avatar-editor/src/components/VueAvatar.vue'
@@ -407,7 +393,7 @@ export default {
 	},
 	data() {
 		return {
-      videoUrl: '',
+			videoUrl: '',
 			// my_crop_image: "",
 			crop_image: {
 				canvas: '',
@@ -457,10 +443,10 @@ export default {
 		uploadedImage() {
 			return Object.keys(this.myCroppa).length !== 0;
 		},
-    // videoId(){
-    //   if(!this.videoUrl) return ''
-    //   return this.getYoutubeVideoId(this.videoUrl)
-    // }
+		// videoId(){
+		//   if(!this.videoUrl) return ''
+		//   return this.getYoutubeVideoId(this.videoUrl)
+		// }
 	},
 	watch: {
 		keywords() {
@@ -480,11 +466,11 @@ export default {
 		}
 	},
 	methods: {
-    // getYoutubeVideoId(url){
-    //   const urlObj = new URL(url)
-    //   if(urlObj.pathname.indexOf('embed') > -1) return urlObj.pathname.split('/')[2]
-    //   return urlObj.searchParams.get('v')
-    // },
+		// getYoutubeVideoId(url){
+		//   const urlObj = new URL(url)
+		//   if(urlObj.pathname.indexOf('embed') > -1) return urlObj.pathname.split('/')[2]
+		//   return urlObj.searchParams.get('v')
+		// },
 		init(){
 			this.fetchData();
 			this.user = this.auth_role;
@@ -536,8 +522,8 @@ export default {
 			//console.log(this.myCroppa);
 			// this.my_crop_image = this.myCroppa.canvas.toDataURL();
 			/*axios.post("/getnewimage", {id : this.user.id}).then( (response) => {
-        this.image = "/users_img/" + response.data;
-      });*/
+				this.image = "/users_img/" + response.data;
+			});*/
 			this.showChooseProfileModal = true;
 		},
 		saveCropped() {
@@ -672,17 +658,17 @@ export default {
 
 					if (
 						el['bank'] != null &&
-              el['cardholder'] != null &&
-              el['country'] != null &&
-              el['number'] != null &&
-              el['phone'] != null
+							el['cardholder'] != null &&
+							el['country'] != null &&
+							el['number'] != null &&
+							el['phone'] != null
 					) {
 						if (
 							el['bank'].length > 2 &&
-                el['cardholder'].length > 2 &&
-                el['country'].length > 2 &&
-                el['number'].length > 2 &&
-                el['phone'].length > 2
+								el['cardholder'].length > 2 &&
+								el['country'].length > 2 &&
+								el['number'].length > 2 &&
+								el['phone'].length > 2
 						) {
 							this.cardValidatre.type = true;
 						}
@@ -794,190 +780,190 @@ export default {
 
 <style lang="scss">
 .container-left-padding{
-  padding-top: 0;
+	padding-top: 0;
 }
 .cabinet-page-admin{
-  .multiselect__tag{
-    display: inline-block !important;
-    max-width: 100% !important;
-    margin-bottom: 0.5rem !important;
-  }
+	.multiselect__tag{
+		display: inline-block !important;
+		max-width: 100% !important;
+		margin-bottom: 0.5rem !important;
+	}
 }
 .upload-to-server-example {
-  .upload-example-cropper {
-    border: solid 1px #eee;
-    min-height: 300px;
-    max-height: 500px;
-    width: 100%;
-  }
-  .cropper-wrapper {
-    position: relative;
-  }
-  .reset-button {
-    position: absolute;
-    right: 20px;
-    bottom: 20px;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    height: 42px;
-    width: 42px;
-    background: rgba(#3fb37f, 0.7);
-    transition: background 0.5s;
-    &:hover {
-      background: #3fb37f;
-    }
-  }
-  .button-wrapper {
-    display: flex;
-    justify-content: center;
-    margin-top: 17px;
-  }
-  .button {
-    color: white;
-    font-size: 16px;
-    padding: 10px 20px;
-    background: #3fb37f;
-    cursor: pointer;
-    transition: background 0.5s;
-    width: 100%;
-    text-align: center;
-  }
-  .button:hover {
-    background: #38d890;
-  }
-  .button input {
-    display: none;
-  }
+	.upload-example-cropper {
+		border: solid 1px #eee;
+		min-height: 300px;
+		max-height: 500px;
+		width: 100%;
+	}
+	.cropper-wrapper {
+		position: relative;
+	}
+	.reset-button {
+		position: absolute;
+		right: 20px;
+		bottom: 20px;
+		cursor: pointer;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		height: 42px;
+		width: 42px;
+		background: rgba(#3fb37f, 0.7);
+		transition: background 0.5s;
+		&:hover {
+			background: #3fb37f;
+		}
+	}
+	.button-wrapper {
+		display: flex;
+		justify-content: center;
+		margin-top: 17px;
+	}
+	.button {
+		color: white;
+		font-size: 16px;
+		padding: 10px 20px;
+		background: #3fb37f;
+		cursor: pointer;
+		transition: background 0.5s;
+		width: 100%;
+		text-align: center;
+	}
+	.button:hover {
+		background: #38d890;
+	}
+	.button input {
+		display: none;
+	}
 }
 
 ///////////////sss
 .upload-example {
-  margin-top: 20px;
-  margin-bottom: 20px;
-  user-select: none;
-  &__cropper {
-    border: solid 1px #eee;
-    min-height: 300px;
-    max-height: 500px;
-    width: 100%;
-  }
-  &__cropper-wrapper {
-    position: relative;
-  }
-  &__reset-button {
-    position: absolute;
-    right: 20px;
-    bottom: 20px;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    height: 42px;
-    width: 42px;
-    background: rgba(#3fb37f, 0.7);
-    transition: background 0.5s;
-    &:hover {
-      background: #3fb37f;
-    }
-  }
-  &__buttons-wrapper {
-    display: flex;
-    justify-content: center;
-    margin-top: 17px;
-  }
-  &__button {
-    border: none;
-    outline: solid transparent;
-    color: white;
-    font-size: 16px;
-    padding: 10px 20px;
-    background: #3fb37f;
-    cursor: pointer;
-    transition: background 0.5s;
-    margin: 0 16px;
-    &:hover,
-    &:focus {
-      background: #38d890;
-    }
-    input {
-      display: none;
-    }
-  }
-  &__file-type {
-    position: absolute;
-    top: 20px;
-    left: 20px;
-    background: #0d0d0d;
-    border-radius: 5px;
-    padding: 0px 10px;
-    padding-bottom: 2px;
-    font-size: 12px;
-    color: white;
-  }
+	margin-top: 20px;
+	margin-bottom: 20px;
+	user-select: none;
+	&__cropper {
+		border: solid 1px #eee;
+		min-height: 300px;
+		max-height: 500px;
+		width: 100%;
+	}
+	&__cropper-wrapper {
+		position: relative;
+	}
+	&__reset-button {
+		position: absolute;
+		right: 20px;
+		bottom: 20px;
+		cursor: pointer;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		height: 42px;
+		width: 42px;
+		background: rgba(#3fb37f, 0.7);
+		transition: background 0.5s;
+		&:hover {
+			background: #3fb37f;
+		}
+	}
+	&__buttons-wrapper {
+		display: flex;
+		justify-content: center;
+		margin-top: 17px;
+	}
+	&__button {
+		border: none;
+		outline: solid transparent;
+		color: white;
+		font-size: 16px;
+		padding: 10px 20px;
+		background: #3fb37f;
+		cursor: pointer;
+		transition: background 0.5s;
+		margin: 0 16px;
+		&:hover,
+		&:focus {
+			background: #38d890;
+		}
+		input {
+			display: none;
+		}
+	}
+	&__file-type {
+		position: absolute;
+		top: 20px;
+		left: 20px;
+		background: #0d0d0d;
+		border-radius: 5px;
+		padding: 0px 10px;
+		padding-bottom: 2px;
+		font-size: 12px;
+		color: white;
+	}
 }
 
 .contacts-info {
-  margin-top: 30px;
+	margin-top: 30px;
 }
 .lp-item{
-  .fa{
-    margin-right: 0.25em;
-  }
+	.fa{
+		margin-right: 0.25em;
+	}
 }
 a.lp-link {
-  display: block;
-  margin: 5px 0;
-  padding: 5px 0;
-  font-weight: bold;
-  font-size: 1.4rem;
-  cursor: pointer;
-  color: darken(#2459a4, 5%);
+	display: block;
+	margin: 5px 0;
+	padding: 5px 0;
+	font-weight: bold;
+	font-size: 1.4rem;
+	cursor: pointer;
+	color: darken(#2459a4, 5%);
 
-  &.active {
-    cursor: default;
-    text-decoration: none;
-    color: #333;
-    &:hover{
-      color: #333;
-      text-decoration: none;
-    }
-  }
+	&.active {
+		cursor: default;
+		text-decoration: none;
+		color: #333;
+		&:hover{
+			color: #333;
+			text-decoration: none;
+		}
+	}
 
-  &:hover{
-    color: #2459a4;
-    text-decoration: underline dotted;
-  }
+	&:hover{
+		color: #2459a4;
+		text-decoration: underline dotted;
+	}
 }
 
 .payment-profile {
-  margin-top: 30px;
-  margin-bottom: 10px;
+	margin-top: 30px;
+	margin-bottom: 10px;
 }
 
 .addPayment {
-  padding: 15px;
-  margin-top: -15px;
+	padding: 15px;
+	margin-top: -15px;
 }
 
 .countries {
-  li {
-    cursor: pointer;
-    background-color: #f5f5f5;
-    padding: 10px;
-    border-bottom: 1px solid white;
-  }
+	li {
+		cursor: pointer;
+		background-color: #f5f5f5;
+		padding: 10px;
+		border-bottom: 1px solid white;
+	}
 }
 .profile-img{
-  object-fit: cover;
-  display: block;
-  width: 100%;
-  height: auto;
-  border-radius: 1rem;
+	object-fit: cover;
+	display: block;
+	width: 100%;
+	height: auto;
+	border-radius: 1rem;
 }
 .profile-img-wrap{
-  width: 100%;
-  max-width: 30rem;
+	width: 100%;
+	max-width: 30rem;
 }
 </style>

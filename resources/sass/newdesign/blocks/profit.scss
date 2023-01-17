@@ -1,5 +1,8 @@
 .profit{
-
+  .slick-list,
+  .slick-slide{
+    transition: height 0.1s;
+  }
 }
 
 .profit__inner{
@@ -58,7 +61,12 @@
   display: flex;
   padding-right: 6rem;
 }
-
+.profit__left-wrapper img {
+  width: 16.8px;   //70%
+  position: absolute;
+  top: 5px;
+  right: 20px;
+}
 .profit__inner-title{
   display: flex;
   margin-bottom: 2.5rem;
@@ -128,6 +136,19 @@
 
 .profit__inner__one{
   border-radius:1.5rem 1.5rem 0 0;
+}
+
+.profit__carousel_left{
+  .slick-slide{
+    background-color: #EDF1F9;
+    border-radius: 1.5rem 0 0 0;
+  }
+}
+.profit__carousel_right{
+  .slick-slide{
+    background-color: #F8F9FD;
+    border-radius:0 1.5rem 0 0;
+  }
 }
 
 // Courses
