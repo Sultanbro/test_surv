@@ -18,8 +18,8 @@
 				:class="{'current': index == 0}"
 			>
 				<img
-					v-if="images[course.id]"
-					:src="images[course.id]"
+					v-if="course.img"
+					:src="course.img"
 					alt="курс"
 					class="courses__image"
 					@click="selectCourse(index)"
@@ -54,7 +54,7 @@
 					<div class="courses__regress-message">Курс обнулен!</div>
 				</div>
 				<a :href="'/my-courses?id=' + course.id" class="courses__button">
-					<span>{{ course.course_results ? 'Продолжить курс' : 'Начать курс' }}</span>
+					<span>{{ results[course.id] ? 'Продолжить курс' : 'Начать курс' }}</span>
 				</a>
 			</div>
 		</div>
@@ -71,7 +71,7 @@
 		<div class="profit__info__inner">
 			<div class="profit__info__item">
 				<img
-					:src="images[activeCourse.id] || '/images/course.jpg'"
+					:src="activeCourse.img || '/images/course.jpg'"
 					alt="info image"
 					class="profit__info-image"
 				>
@@ -126,11 +126,11 @@ export default {
 				'App\\Models\\Books\\Book': 'icon-ci-book',
 				'App\\Models\\Videos\\VideoPlaylist': 'icon-ci-play',
 				'App\\KnowBase': 'icon-ci-database'
-			}
+			},
 		};
 	},
 	computed: {
-		...mapState(useProfileCoursesStore, ['courses', 'courseInfo', 'images']),
+		...mapState(useProfileCoursesStore, ['courses', 'courseInfo', 'results']),
 		coursesMap(){
 			return this.courses.reduce((map, item) => {
 				map[item.id] = item
@@ -149,11 +149,17 @@ export default {
 				list.push(course)
 				return list
 			}, [])
+		},
+		viewportWidth(){
+			return this.$viewportSize.width
 		}
 	},
 	watch: {
 		courses(){
 			this.initCourses()
+		},
+		viewportWidth(){
+			this.resizeCarousel()
 		}
 	},
 	created(){},
@@ -167,10 +173,36 @@ export default {
 				this.fetchCourseInfo(course.id)
 			})
 			this.$nextTick(() => this.initSlider())
+			window.addEventListener('resize', this.resizeCarousel)
+		},
+		resizeCarousel(){
+			let slidesToShow = 1
+			if(this.viewportWidth > 520){
+				slidesToShow = 2
+			}
+			if(this.viewportWidth > 940){
+				slidesToShow = 3
+			}
+			if(this.viewportWidth > 1200){
+				slidesToShow = 4
+			}
+			if(this.viewportWidth > 1360){
+				slidesToShow = 3
+			}
+			if(this.viewportWidth > 1600){
+				slidesToShow = 4
+			}
+			if(this.viewportWidth > 1800){
+				slidesToShow = 5
+			}
+			if(this.viewportWidth > 2140){
+				slidesToShow = 6
+			}
+			VJQuery('.courses__content__wrapper').slick('slickSetOption', 'slidesToShow', slidesToShow, true)
 		},
 		isRegressed(course){
-			if(!course.course_results || !course.course_results[0]) return false
-			return !!course.course_results[0].is_regressed
+			if(!this.results[course.id] || !this.results[course.id][0]) return false
+			return !!this.results[course.id][0].is_regressed
 		},
 
 		/**
@@ -192,69 +224,10 @@ export default {
 		 */
 		initSlider() {
 			/* global VJQuery */
-			console.log('initSlider')
 			VJQuery('.courses__content__wrapper').slick({
 				variableWidth: false,
 				infinite: false,
-				slidesToShow: 6,
-				responsive: [
-					{
-						breakpoint: 2140,
-						settings: {
-							variableWidth: false,
-							infinite: false,
-							slidesToShow: 5,
-						}
-					},
-					{
-						breakpoint: 1800,
-						settings: {
-							variableWidth: false,
-							infinite: false,
-							slidesToShow: 4,
-						}
-					},
-					{
-						breakpoint: 1600,
-						settings: {
-							variableWidth: false,
-							infinite: false,
-							slidesToShow: 3,
-						}
-					},
-					{
-						breakpoint: 1360,
-						settings: {
-							variableWidth: false,
-							infinite: false,
-							slidesToShow: 4,
-						}
-					},
-					{
-						breakpoint: 1200,
-						settings: {
-							variableWidth: false,
-							infinite: false,
-							slidesToShow: 3,
-						}
-					},
-					{
-						breakpoint: 940,
-						settings: {
-							variableWidth: false,
-							infinite: false,
-							slidesToShow: 2,
-						}
-					},
-					{
-						breakpoint: 520,
-						settings: {
-							variableWidth: false,
-							infinite: false,
-							slidesToShow: 1,
-						}
-					}
-				]
+				slidesToShow: 6
 			});
 
 			// https://github.com/kenwheeler/slick/issues/3694
@@ -275,6 +248,7 @@ export default {
 					})
 				}, 1)
 			})
+			this.resizeCarousel()
 		},
 
 		/**

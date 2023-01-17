@@ -149,13 +149,12 @@ export default {
 	'footer-reviews': 'Отзывы',
 	'footer-platform': 'Особенности платформы',
 	'footer-subscribe': 'Подпишитесь на новости:',
-	// 'footer-docs': 'Документы',
-	// 'footer-info': 'Информация об оплате',
-	// 'footer-lic': 'Лицензионное соглашение',
 	'footer-pay': 'Способы оплаты:',
 	'footer-sellcenter': 'Отдел продаж:',
 	'footer-support': 'Отдел поддержки:',
 	'footer-copy': '«Jobton», Все права защищены',
-	'footer-rules': 'Правила сайта',
-	'footer-conf': 'Документы'
+	'contract-offer': 'Договор оферты',
+	'site-agreement': 'Соглашение о пользовании сайтом',
+	'personal-data': 'Политика обработки персональных данных',
+	'privacy-policy': 'Условия конфиденциальности'
 }

@@ -61,7 +61,12 @@
   display: flex;
   padding-right: 6rem;
 }
-
+.profit__left-wrapper img {
+  width: 16.8px;   //70%
+  position: absolute;
+  top: 5px;
+  right: 20px;
+}
 .profit__inner-title{
   display: flex;
   margin-bottom: 2.5rem;

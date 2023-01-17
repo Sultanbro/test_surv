@@ -4,7 +4,7 @@
       <div class="jFooter-cols">
         <div class="jFooter-col">
           <a
-              class="jNav-logo"
+              class="jFooter-logo"
               href="javascript:void(0)"
           >
             <img
@@ -23,13 +23,13 @@
                   text="prices"
               />
             </li>
-            <li class="jFooter-menu-item">
-              <FooterLink
-                  :lang="lang"
-                  href="#reviews"
-                  text="reviews"
-              />
-            </li>
+<!--            <li class="jFooter-menu-item">-->
+<!--              <FooterLink-->
+<!--                  :lang="lang"-->
+<!--                  href="#reviews"-->
+<!--                  text="reviews"-->
+<!--              />-->
+<!--            </li>-->
             <li class="jFooter-menu-item">
               <FooterLink
                   :lang="lang"
@@ -108,8 +108,24 @@
         <div class="jFooter-rules">
           <a
               class="jFooter-rules-link jFooter-link"
-              href="javascript:void(0)"
-          >{{ $lang(lang, 'footer-conf') }}</a>
+              href="/docs/contract-offer.pdf"
+              target="_blank"
+          >{{ $lang(lang, 'contract-offer') }}</a>
+          <a
+              class="jFooter-rules-link jFooter-link"
+              href="/docs/site-agreement.pdf"
+              target="_blank"
+          >{{ $lang(lang, 'site-agreement') }}</a>
+          <a
+              class="jFooter-rules-link jFooter-link"
+              href="/docs/personal-data.pdf"
+              target="_blank"
+          >{{ $lang(lang, 'personal-data') }}</a>
+          <a
+              class="jFooter-rules-link jFooter-link"
+              href="/docs/privacy-policy.pdf"
+              target="_blank"
+          >{{ $lang(lang, 'privacy-policy') }}</a>
         </div>
         <div class="jFooter-copy">
           <p class="jFooter-copy-right">{{ '© ' + year + ' ' + $lang(lang, 'footer-copy') }}</p>
@@ -163,7 +179,7 @@ export default {
   border-top: 0.0625rem solid white;
 }
 
-@media (max-width: $small) {
+@media (max-width: 850px) {
   .jFooter-cols {
     display: flex;
     padding-bottom: 2rem;
@@ -176,6 +192,10 @@ export default {
     display: none;
   }
 
+  .jFooter-sub-social {
+    margin: 2rem 0 0.5rem;
+  }
+
   .jFooter-bottom {
     display: flex;
     flex-direction: column;
@@ -185,6 +205,26 @@ export default {
 
   .jFooter-copy-right {
     text-align: center;
+  }
+
+  .jFooter-rules {
+    font-size: 0.875rem;
+    display: flex;
+    flex-direction: column;
+    text-align: center;
+  }
+
+  .jFooter-rules-link {
+    margin-bottom: 0.7rem;
+  }
+}
+
+@media screen and (min-width: 850px) {
+  .jFooter-rules {
+    display: flex;
+    order: 2;
+    gap: 1rem;
+    padding-left: 1rem;
   }
 }
 
@@ -202,10 +242,6 @@ export default {
 
 .jFooter-menu-item {
   list-style: none;
-}
-
-.jFooter-sub-social {
-  margin: 2rem 0 0.5rem;
 }
 
 .jFooter-sub-pay {
@@ -302,16 +338,13 @@ export default {
     justify-content: space-around;
     padding-bottom: 2rem
   }
-  //.jFooter-col {
-  //  flex: 0 0 50%;
-  //}
 
   .jFooter-bottom {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    white-space: nowrap;
-    //flex-flow: column;
+    white-space: pre-wrap;
+    text-align: center;
   }
 
 
@@ -320,17 +353,18 @@ export default {
     align-self: center;
   }
 
-  .jFooter-rules {
-    display: flex;
-    order: 2;
-    gap: 1rem;
-  }
-
   .jFooter-copy {
     order: 1;
   }
-}
 
+  .jFooter-logo {
+    padding-right: 1rem;
+  }
+
+  .jFooter-sub-social {
+    margin: 4rem 0 0.5rem;
+  }
+}
 
 @media screen and (min-width: $medium) {
   .jFooter-cols {
