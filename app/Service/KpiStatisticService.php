@@ -678,7 +678,7 @@ class KpiStatisticService
         }
 
         $kpis = $kpis
-            ->whereDate('created_at', '<=', Carbon::parse($date->format('Y-m-d'))
+            ->whereDate('created_at', '<', Carbon::parse($date->format('Y-m-d'))
                                                     ->endOfMonth()
                                                     ->format('Y-m-d')
             )
