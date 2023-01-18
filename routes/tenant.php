@@ -56,6 +56,7 @@ Route::middleware(['web','tenant','not_admin_subdomain'])->group(function () {
     Route::any('/profile/edit/user/cart/', [User\CabinetController::class, 'editUserProfile']); ///profile save name,last_name,date ///profile save name,last_name,date
     Route::post('/profile/remove/card/', [User\CabinetController::class, 'removeCardProfile']); ///удаление карты индивидуально
     Route::post('/profile/save-cropped-image', [User\CabinetController::class, 'uploadCroppedImageProfile']); /// загрузка аватарки vue внутри profile
+    Route::post('/profile/access', [Admin\AccessController::class, 'switchAccess']);
 
     ///Настройка профайл
     Route::post('/profile/upload/image/profile/', [User\EmployeeController::class, 'uploadImageProfile']); /// загрузка обрезаной аватарки vue внутри profile

@@ -640,8 +640,7 @@ class KpiStatisticService
          */ 
         $last_date = Carbon::parse($date)->endOfMonth()->format('Y-m-d');
 
-        $kpis = Kpi::query()
-            //->withTrashed()
+        $kpis = Kpi::withTrashed()
             ->with([
                 'histories' => function($query) use ($last_date) {
                     $query->whereDate('created_at', '<=', $last_date);
@@ -682,6 +681,10 @@ class KpiStatisticService
             ->whereDate('created_at', '<=', Carbon::parse($date->format('Y-m-d'))
                                                     ->endOfMonth()
                                                     ->format('Y-m-d')
+            )->where(fn ($query) => $query->whereNull('deleted_at')->orWhere(
+                fn ($query) => $query->whereDate('deleted_at', '>', Carbon::parse($date->format('Y-m-d'))
+                    ->endOfMonth()
+                    ->format('Y-m-d')))
             )
             ->get();
 
