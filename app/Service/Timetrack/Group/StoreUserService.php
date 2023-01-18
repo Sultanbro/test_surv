@@ -33,6 +33,7 @@ class StoreUserService
     {
         try {
             $group = $this->profileGroupRepository->profileGroupWithRelation($dto->groupId, ['dialer']);
+
             $this->profileGroupRepository->updateGroupData($group, $dto->groupInfo);
 
 
