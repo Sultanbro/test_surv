@@ -31,8 +31,8 @@
         "old_card_jysan": "{{old('card_jysan')}}",
         "head_in_groups": {{ isset($user) ? json_encode($user->head_in_groups) : '[]' }},
         "in_groups": {{ isset($user) ? json_encode($user->in_groups) : '[]' }},
-        "profileContacts": {{ isset($user) ? json_encode($user->profileContacts) : null }},
-        "taxes": {{ isset($user) ? json_encode($user->taxes) : null }}
+        "profile_contacts": {{ isset($user) ? json_encode($user->profileContacts) : 'null' }},
+        "taxes": {{ isset($user) ? json_encode($user->taxes) : 'null' }}
     }
 </script>
 @endsection

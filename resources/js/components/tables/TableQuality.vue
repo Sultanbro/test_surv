@@ -1598,9 +1598,13 @@ export default {
 }
 .quality-page.quality-page .table-container .custom-table-quality th,
 .quality-page.quality-page .table-container .custom-table-quality td{
-	min-width: 3rem;
-	padding: 0 !important;
+	min-width: 35px;
+	padding: 0 10px !important;
 	vertical-align: middle;
+	input{
+		min-width: 35px;
+		padding: 0 10px !important;
+	}
 	input::-webkit-outer-spin-button,
 	input::-webkit-inner-spin-button {
 		-webkit-appearance: none;
