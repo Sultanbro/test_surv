@@ -194,7 +194,7 @@ export default {
 				&& this.termsReady
 		},
 		isVisible(){
-			return this.isReady || this.$viewportSize.width > 900
+			return this.isReady || this.$viewportSize.width <= 900
 		}
 	},
 	watch: {
