@@ -78,16 +78,14 @@ export default {
     </DefaultLayout>
 </template>
 
-<style scoped>
-.leaflet-marker-icon{
-    margin-left: -15px;
-    margin-top: -15px;
-    padding-left: 10px;
-    padding-top: 5px;
-    width: 30px;
-    height: 30px;
-    transform: translate3d(679px, 264px, 0px);
-    z-index: 264;
-    border-radius: 50%;
-}
+<style lang="scss">
+    #map{
+        .leaflet-marker-icon{
+            display: inline-flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 264!important;
+            border-radius: 50%;
+        }
+    }
 </style>

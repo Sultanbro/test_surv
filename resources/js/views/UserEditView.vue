@@ -65,7 +65,7 @@ export default {
 			old_card_jysan: '',
 			in_groups: [],
 			head_in_groups: [],
-			profileContacts: [],
+			profile_contacts: [],
 			taxes: [],
 			showBlocks: {
 				main: true,
@@ -189,7 +189,7 @@ export default {
 			this.old_card_jysan = data.old_card_jysan
 			this.in_groups = data.in_groups
 			this.head_in_groups = data.head_in_groups
-			this.profileContacts = data.profileContacts
+			this.profile_contacts = data.profile_contacts
 			this.taxes = data.taxes
 		},
 		updatePageData(){
@@ -406,6 +406,7 @@ export default {
 				headers: { 'Content-Type': 'multipart/form-data' },
 			}).then(({data}) => {
 				this.parseResponse(data)
+				this.$toast.success('Сотрудник уволен')
 			}).catch(err => {
 				console.error(err)
 				this.$toast.error('Не удалось уволить сотрудника')
@@ -420,6 +421,7 @@ export default {
 				headers: { 'Content-Type': 'multipart/form-data' },
 			}).then(({data}) => {
 				this.parseResponse(data)
+				this.$toast.success('Сотрудник восстановлен')
 			}).catch(err => {
 				console.error(err)
 				this.$toast.error('Не удалось восстановить сотрудника')
@@ -793,7 +795,7 @@ export default {
                                                 <UserEditPhones
                                                     v-show="showBlocks.phones"
                                                     :user="user"
-                                                    :profile-contacts="profileContacts"
+                                                    :profile-contacts="profile_contacts"
                                                     :old_phone="old_phone"
                                                     :old_phone_1="old_phone_1"
                                                     :old_phone_2="old_phone_2"
