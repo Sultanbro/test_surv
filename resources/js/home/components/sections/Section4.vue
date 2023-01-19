@@ -56,8 +56,9 @@
         </Slide>
       </Hooper>
       <form
-          action=""
+          action="create_lead.php"
           class="jSec4-form"
+          method="post"
           @submit="onSubmit"
       >
         <p class="jSec4-footer">{{ $lang(lang, 's4-footer') }}</p>
