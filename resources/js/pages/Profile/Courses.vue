@@ -127,6 +127,15 @@ export default {
 				'App\\Models\\Videos\\VideoPlaylist': 'icon-ci-play',
 				'App\\KnowBase': 'icon-ci-database'
 			},
+			slickCount: {
+				520: 2,
+				940: 3,
+				1200: 4,
+				1360: 3,
+				1600: 4,
+				1800: 5,
+				2140: 6,
+			}
 		};
 	},
 	computed: {
@@ -152,13 +161,20 @@ export default {
 		},
 		viewportWidth(){
 			return this.$viewportSize.width
+		},
+		slidesToShow(){
+			let slidesToShow = 1
+			Object.keys(this.slickCount).forEach(key => {
+				if(this.viewportWidth > key) slidesToShow = this.slickCount[key]
+			})
+			return slidesToShow
 		}
 	},
 	watch: {
 		courses(){
 			this.initCourses()
 		},
-		viewportWidth(){
+		slidesToShow(){
 			this.resizeCarousel()
 		}
 	},
@@ -176,29 +192,7 @@ export default {
 			window.addEventListener('resize', this.resizeCarousel)
 		},
 		resizeCarousel(){
-			let slidesToShow = 1
-			if(this.viewportWidth > 520){
-				slidesToShow = 2
-			}
-			if(this.viewportWidth > 940){
-				slidesToShow = 3
-			}
-			if(this.viewportWidth > 1200){
-				slidesToShow = 4
-			}
-			if(this.viewportWidth > 1360){
-				slidesToShow = 3
-			}
-			if(this.viewportWidth > 1600){
-				slidesToShow = 4
-			}
-			if(this.viewportWidth > 1800){
-				slidesToShow = 5
-			}
-			if(this.viewportWidth > 2140){
-				slidesToShow = 6
-			}
-			VJQuery('.courses__content__wrapper').slick('slickSetOption', 'slidesToShow', slidesToShow, true)
+			VJQuery('.courses__content__wrapper').slick('slickSetOption', 'slidesToShow', this.slidesToShow, true)
 		},
 		isRegressed(course){
 			if(!this.results[course.id] || !this.results[course.id][0]) return false
@@ -347,7 +341,11 @@ export default {
 	opacity: 0.5;
 	pointer-events: none;
 }
-
+.courses__content{
+	.slick-list{
+		width: 100%;
+	}
+}
 
 // .courses__content__wrapper{}
 .courses__item{
