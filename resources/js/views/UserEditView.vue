@@ -386,6 +386,8 @@ export default {
 				headers: { 'Content-Type': 'multipart/form-data' },
 			}).then(({data}) => {
 				this.parseResponse(data)
+				if(this.errors && this.errors.length) return this.$toast.error('Не удалось сохранить информацию о сотруднике')
+				this.$toast.success('Информация о сотруднике сохранена')
 			}).catch(err => {
 				console.error(err)
 				this.$toast.error('Не удалось сохранить информацию о сотруднике')
