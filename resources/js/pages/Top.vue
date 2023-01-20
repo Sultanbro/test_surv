@@ -260,6 +260,7 @@ export default {
 	},
 	props: ['data', 'activeuserid'],
 	data() {
+		const now = new Date()
 		return {
 			afterCreated: false,
 			rentability: [], // первая вкладка
@@ -267,14 +268,14 @@ export default {
 			proceeds: [], // третья
 			prognoz_groups: [], //
 			years: useYearOptions(),
-			currentYear: new Date().getFullYear(),
+			currentYear: now.getFullYear(),
 			monthInfo: {
 				currentMonth: null,
 				monthEnd: 0,
 				workDays: 0,
 				weekDays: 0,
 				daysInMonth: 0,
-				month: new Date().getMonth() + 1
+				month: now.getMonth() + 1
 			},
 			gaugeOptions: {
 				angle: 0,
@@ -334,7 +335,7 @@ export default {
 			//Расчет выходных дней
 			this.monthInfo.monthEnd = currentMonth.endOf('month'); //Конец месяца
 			this.monthInfo.weekDays = currentMonth.weekdayCalc(currentMonth.startOf('month').toString(), currentMonth.endOf('month').toString(), [6]) //Колличество выходных
-			this.monthInfo.daysInMonth = new Date(2021, this.$moment(this.monthInfo.currentMonth, 'MMMM').format('M'), 0).getDate() //Колличество дней в месяце
+			this.monthInfo.daysInMonth = new Date(this.currentYear, this.$moment(this.monthInfo.currentMonth, 'MMMM').format('M'), 0).getDate() //Колличество дней в месяце
 			this.monthInfo.workDays = this.monthInfo.daysInMonth - this.monthInfo.weekDays //Колличество рабочих дней
 		},
 
@@ -367,7 +368,7 @@ export default {
 		isWeekend(field) {
 			var arr = field.split('.');
 			var month = Number(arr[1]) - 1;
-			var dayOfWeek = new Date(2022, month, arr[0]).getDay();
+			var dayOfWeek = new Date(this.currentYear, month, arr[0]).getDay();
 
 			return dayOfWeek == 6 || dayOfWeek == 0;
 		},
