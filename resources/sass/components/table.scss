@@ -4,23 +4,20 @@
     border-spacing: 0;
     color: #62788B;
     border-radius: 1.2rem 1.2rem 0 0;
-
+    border-collapse: separate;
     &.table-bordered {
       th, td {
-        border: 1px solid #E7EAEA;
+        border-left: 1px solid #E7EAEA;
+        border-top: 1px solid #E7EAEA;
       }
 
       thead {
         td, th {
           &:first-child {
-            border: none;
-            outline: 1px solid #E7EAEA;
             position: relative;
           }
 
           &:last-child {
-            border: none;
-            outline: 1px solid #E7EAEA;
             position: relative;
           }
         }
@@ -36,7 +33,7 @@
     .b-table-sticky-column {
       position: sticky !important;
       background-color: #fff;
-      outline: 1px solid #E7EAEA;
+      left: 0;
     }
 
     thead {
@@ -62,6 +59,7 @@
         line-height: 1.2;
         font-size: 14px;
         background-color: #F8F9FD;
+        border-bottom: none;
       }
 
       .b-table-sticky-column {

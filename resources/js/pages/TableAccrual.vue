@@ -1459,42 +1459,193 @@ export default {
 };
 </script>
 
-	<style lang="scss">
-	$fine: red;
-	$avans: #28a761;
-	$bonus: #007bff;
-	$training: orange;
+<style lang="scss">
+$fine: red;
+$avans: #28a761;
+$bonus: #007bff;
+$training: orange;
 
-	.fz-09 {
-		font-size: 0.9rem;
+.fz-09 {
+	font-size: 0.9rem;
+}
+
+.fine,.avans,.bonus {
+	color:#fff;
+}
+.fine {
+	background: $fine;
+}
+.bonus {
+	background: $bonus;
+	&.fine {background: linear-gradient(110deg, $bonus 50%, $fine 50%);}
+	&.training {background: linear-gradient(110deg, $bonus 50%, $training 50%);}
+	&.fine.training {background: linear-gradient(110deg, $bonus 33%, transparent 33%), linear-gradient(110deg, $fine 66%, $training 66%);}
+}
+
+.avans {
+	background:$avans;
+	&.fine {background: linear-gradient(110deg, $avans 50%, $fine 50%);}
+	&.bonus {background: linear-gradient(110deg, $avans 50%, $bonus 50%);}
+	&.training {background: linear-gradient(110deg, $avans 50%, $training 50%);}
+	&.bonus.fine {background: linear-gradient(110deg, $avans 33%, transparent 33%), linear-gradient(110deg, $bonus 66%, $fine 66%);}
+	&.bonus.fine.training {background: linear-gradient(110deg, $avans 25%, transparent 25%), linear-gradient(110deg, $bonus 50%, $fine 50%), linear-gradient(110deg, $fine 75%, $training 75%);}
+}
+
+.training {
+	background: $training;
+	color: #fff;
+	&.fine {background: linear-gradient(110deg, $training 50%, $fine 50%);}
+}
+
+.ddf div {
+	display: flex;
+}
+.ddf .custom-control {
+	margin-right: 15px;
+}
+.form-control.normal:disabled, .form-control.normal {
+	padding: 0 2px;
+	font-size: 11px;
+	opacity: 1;
+	background: transparent;
+	text-align: center;
+	height: 100%;
+	font-weight: 500;
+	border: none;
+	border-radius: 0;
+	width: 100%;
+	font-family: 'Open Sans';
+}
+input[type="number"]::-webkit-outer-spin-button,
+input[type="number"]::-webkit-inner-spin-button {
+	-webkit-appearance: none;
+	margin: 0;
+}
+.fz12 {
+	line-height: 1.4em;
+	font-size: 12px;
+	margin-bottom: 0;
+}
+.fz14 {
+	font-size: 14px;
+	line-height: 1.4em;
+	padding: 10px 0;
+}
+.ssssssssss .ui-sidebar__body * {
+	color: #333;
+}
+hr {
+	margin: 2px !important;
+}
+.color-red {
+	color:red;
+}
+.bg-bluish {
+	background: #a1bdd6;
+}
+.btn.activex {
+	background: red;
+}
+.progresso {
+	height: 20px;
+	margin-top: 10px;
+	margin-bottom: 10px;
+	padding-left: 10px;
+	color: white !important;
+	line-height: 20px;
+	background: #007bff;
+	transition: width linear 0.5s;
+}
+.my-table.salar .cell-border {
+	position: absolute;
+	right: -47px;
+	bottom: -23px;
+	z-index: 2;
+}
+.accrual-table {
+	th,td{
+		padding: 0 !important;
+		& > div{
+			padding: 0 15px;
+			height: 40px;
+			min-width: 50px;
+			display: flex;
+			align-items: center;
+			justify-content: center;
+		}
+		&:first-child{
+			& > div{
+				justify-content: space-between;
+			}
+		}
+	}
+	.cell-border {
+		border-left-color: red !important;
+	}
+	th,
+	td {
+		&:nth-child(1) {
+			left:0 !important;
+			div {
+				width: 288px;
+				white-space: normal;
+			}
+		}
+		&:nth-child(2) {
+			left:290px !important;
+		}
+		&:nth-child(3) {
+			left:361px!important;
+		}
+		&:nth-child(4) {
+			left:433px!important;
+		}
+		&:nth-child(5) {
+			left:505px!important;
+		}
+		&:nth-child(6) {
+			left:577px!important;
+		}
+		&:nth-child(7) {
+			left:649px!important;
+		}
+		&:nth-child(2),
+		&:nth-child(3),
+		&:nth-child(4),
+		&:nth-child(5),
+		&:nth-child(6){
+			div{
+				width: 70px;
+			}
+		}
 	}
 
-	.fine,.avans,.bonus {
-		color:#fff;
-	}
-	.fine {
-		background: $fine;
-	}
-	.bonus {
-		background: $bonus;
-		&.fine {background: linear-gradient(110deg, $bonus 50%, $fine 50%);}
-		&.training {background: linear-gradient(110deg, $bonus 50%, $training 50%);}
-		&.fine.training {background: linear-gradient(110deg, $bonus 33%, transparent 33%), linear-gradient(110deg, $fine 66%, $training 66%);}
-	}
+	td {
+		&:nth-child(2),
+		&:nth-child(3),
+		&:nth-child(4),
+		&:nth-child(5),
+		&:nth-child(6) {
+			background: #DDE9FF !important;
+			border-color: #b4bed2 !important;
+			div {
+				font-size: 13px;
+				text-align: center;
+			}
+		}
 
-	.avans {
-		background:$avans;
-		&.fine {background: linear-gradient(110deg, $avans 50%, $fine 50%);}
-		&.bonus {background: linear-gradient(110deg, $avans 50%, $bonus 50%);}
-		&.training {background: linear-gradient(110deg, $avans 50%, $training 50%);}
-		&.bonus.fine {background: linear-gradient(110deg, $avans 33%, transparent 33%), linear-gradient(110deg, $bonus 66%, $fine 66%);}
-		&.bonus.fine.training {background: linear-gradient(110deg, $avans 25%, transparent 25%), linear-gradient(110deg, $bonus 50%, $fine 50%), linear-gradient(110deg, $fine 75%, $training 75%);}
+		&:nth-child(7) {
+			background: #28a745 !important;
+			border-color: #208738 !important;
+			color: #fff;
+		}
 	}
-
-	.training {
-		background: $training;
-		color: #fff;
-		&.fine {background: linear-gradient(110deg, $training 50%, $fine 50%);}
+}
+.group-select {
+	.vs__dropdown-toggle {
+		padding: 5px 3px 6px;
+		margin: 0;
+		border: 1px solid #d3d7db;
 	}
 
 	.ddf div {
@@ -1688,13 +1839,8 @@ export default {
 			}
 		}
 	}
-	.fz-08 {
-		font-size: 0.8rem;
-	}
-	.mr-2 {
-		display: none;
-	}
-	.badge_table:hover .mr-2 {
-		display: block
-	}
-	</style>
+}
+.fz-08 {
+	font-size: 0.8rem;
+}
+</style>

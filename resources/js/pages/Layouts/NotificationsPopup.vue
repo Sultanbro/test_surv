@@ -60,9 +60,9 @@
 						>
 							<h4>Нет новых уведомлений</h4>
 							<img
-								src="/images/dist/notification.jpg"
+								class="notifications_img"
+								:src="require('.//../../../assets/notification/notification.jpg').default"
 								alt=""
-								style="width: 100%"
 							>
 						</div>
 					</div>

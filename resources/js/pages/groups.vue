@@ -641,7 +641,7 @@ export default {
 						name: this.new_status,
 						zoom_link: this.zoom_link,
 						workdays: this.workdays,
-						payment_terms: this.payment_terms,
+						payment_terms: this.payment_terms || null,
 						editable_time: this.editable_time,
 						paid_internship: this.paid_internship,
 						quality: this.quality,

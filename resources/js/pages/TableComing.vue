@@ -354,6 +354,14 @@ export default {
         th,td{
             padding: 0 15px !important;
             height: 40px;
+            vertical-align: middle !important;
+        }
+        thead{
+            th, td{
+                &:not(.b-table-sticky-column){
+                    text-align: center;
+                }
+            }
         }
     }
 
