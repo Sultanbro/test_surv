@@ -193,6 +193,9 @@ export default {
 		}
 	},
 	computed: {
+		isMainProject(){
+			return this.project === 'bp' || this.project === 'test'
+		},
 		showSettings(){
 			return this.$can('settings_view')
 				|| this.$can('users_view')
@@ -204,10 +207,10 @@ export default {
 				|| this.$can('checklists_view')
 		},
 		showReports(){
-			return (this.$can('top_view') && this.project === 'bp')
+			return (this.$can('top_view') && this.isMainProject)
 				|| this.$can('tabel_view')
 				|| this.$can('entertime_view')
-				|| (this.$can('hr_view') && this.project === 'bp')
+				|| (this.$can('hr_view') && this.isMainProject)
 				|| this.$can('analytics_view')
 				|| this.$can('salaries_view')
 				|| this.$can('quality_view')
@@ -278,7 +281,7 @@ export default {
 							name: 'ТОП',
 							icon: 'icon-nd-dashboard',
 							to: '/timetracking/top',
-							hide: !(this.$can('top_view') && this.project === 'bp')
+							hide: !(this.$can('top_view') && this.isMainProject)
 						},
 						{
 							name: 'Табель',
@@ -296,7 +299,7 @@ export default {
 							name: 'HR',
 							icon: 'icon-nd-hr',
 							to: '/timetracking/analytics',
-							hide: !(this.$can('hr_view') && this.project === 'bp')
+							hide: !(this.$can('hr_view') && this.isMainProject)
 						},
 						{
 							name: 'Аналитика',
@@ -357,7 +360,7 @@ export default {
 					href: '/callibro/login',
 					icon: 'icon-nd-u-calls',
 					height: 0,
-					hide: !(this.$can('ucalls_view') && this.project === 'bp')
+					hide: !(this.$can('ucalls_view') && this.isMainProject)
 				},
 			]
 		},
