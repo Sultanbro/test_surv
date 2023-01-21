@@ -1,135 +1,179 @@
 <template>
-<div class="mt-3">
-    <div class="mb-0" :key="myTable">
-        <b-table v-if="dataLoaded"
-            responsive
-            striped
-            :sticky-header="true"
-            class="text-nowrap text-right my-table mb-0"
-            id="tabelTable"
-            :small="true"
-            :bordered="true"
-            :items="items"
-            :fields="fields"
-            show-empty
-            emptyText="Нет данных"
-            >
-          <template #head(avanses)>
-
-              <i class="fa fa-info-circle"
-                 v-b-popover.hover.right.html="'Авансы отмечены зеленым'">
-              </i>
-
-          </template>
-          <template #head(fines)>
-
-              <i class="fa fa-info-circle"
-                 v-b-popover.hover.right.html="'Депримирование отмечено красным'">
-              </i>
-
-          </template>
-          <template #cell(avanses)="data">
-              <div v-if="data.index == 1">
-                {{data.value.value}}
-              </div>
-          </template>
-          <template #cell(fines)="data">
-            <div v-if="data.index == 1">
-              {{data.value.value}}
-            </div>
-          </template>
-          <template #cell()="data">
-                <div :class="{
-                    'day-fine':data.value.hasFine,
-                    'day-training':data.value.training,
-                    'day-avans': data.value.hasAvans,
-                    'day-bonus':data.value.hasBonus,
-                }" @click="openDay(data.value)">
-                    {{data.value.value}}
-                </div>
-            </template>
-        </b-table>
-
-    </div>
-    <sidebar :title="sidebarTitle" :open="openSidebar" @close="openSidebar=false" v-if="openSidebar" width="350px">
-
-        <h6 class="mt-3">Начислено</h6>
-        <div  class="mb-5">
-            <div v-if="Number(sidebarContent.value) > 0">{{ sidebarContent.calculated }}</div>
-            <div v-else>0</div>
-        </div>
-        <div v-if="sidebarContent.training">
-            <h6>Стажировка</h6>
-            <p>Может быть пол суммы</p>
-        </div>
-        <h6 class="mt-3">Депримирование</h6>
-        <div  class="mb-5">
-            <p v-for="item in sidebarContent.fines" :key="item">{{item.name}}</p>
-            <p v-if="sidebarContent.fines.length == 0">
-                Нет штрафов
-            </p>
-        </div>
-        <h6 class="mt-3">Бонусы</h6>
-        <div class="mb-5">
-            <div v-for="item in sidebarContent.bonuses" :key="item">
-				<div>
-					<b>
-						{{ item.bonus }} KZT
-					</b>
+	<div class="mt-3">
+		<div
+			class="mb-0"
+			:key="myTable"
+		>
+			<b-table
+				v-if="dataLoaded"
+				responsive
+				striped
+				:sticky-header="true"
+				class="text-nowrap text-right my-table mb-0"
+				id="tabelTable"
+				:small="true"
+				:bordered="true"
+				:items="items"
+				:fields="fields"
+				show-empty
+				empty-text="Нет данных"
+			>
+				<template #head(avanses)>
+					<i
+						class="fa fa-info-circle"
+						v-b-popover.hover.right.html="'Авансы отмечены зеленым'"
+					/>
+				</template>
+				<template #head(fines)>
+					<i
+						class="fa fa-info-circle"
+						v-b-popover.hover.right.html="'Депримирование отмечено красным'"
+					/>
+				</template>
+				<template #cell(avanses)="data">
+					<div v-if="data.index == 1">
+						{{ data.value.value }}
+					</div>
+				</template>
+				<template #cell(fines)="data">
+					<div v-if="data.index == 1">
+						{{ data.value.value }}
+					</div>
+				</template>
+				<template #cell()="data">
+					<div
+						:class="{
+							'day-fine':data.value.hasFine,
+							'day-training':data.value.training,
+							'day-avans': data.value.hasAvans,
+							'day-bonus':data.value.hasBonus,
+						}"
+						@click="openDay(data.value)"
+					>
+						{{ data.value.value }}
+					</div>
+				</template>
+			</b-table>
+		</div>
+		<sidebar
+			:title="sidebarTitle"
+			:open="openSidebar"
+			@close="openSidebar=false"
+			v-if="openSidebar"
+			width="350px"
+		>
+			<h6 class="mt-3">
+				Начислено
+			</h6>
+			<div class="mb-5">
+				<div v-if="Number(sidebarContent.value) > 0">
+					{{ sidebarContent.calculated }}
 				</div>
-				<div>
-					{{ item.comment_bonus }}
+				<div v-else>
+					0
 				</div>
 			</div>
-            <div v-if="sidebarContent.bonuses.length == 0 && sidebarContent.awards.length == 0 && sidebarContent.test_bonus.length == 0">
-                Нет бонусов
-            </div>
-        </div>
-        <div v-if="sidebarContent.awards.length != 0"  class="mb-5">
-            <div v-for="item in sidebarContent.awards" :key="item">
-				<div>
-					<b>
-						{{ item.amount }} KZT
-					</b>
+			<div v-if="sidebarContent.training">
+				<h6>Стажировка</h6>
+				<p>Может быть пол суммы</p>
+			</div>
+			<h6 class="mt-3">
+				Депримирование
+			</h6>
+			<div class="mb-5">
+				<p
+					v-for="item in sidebarContent.fines"
+					:key="item"
+				>
+					{{ item.name }}
+				</p>
+				<p v-if="sidebarContent.fines.length == 0">
+					Нет штрафов
+				</p>
+			</div>
+			<h6 class="mt-3">
+				Бонусы
+			</h6>
+			<div class="mb-5">
+				<div
+					v-for="item in sidebarContent.bonuses"
+					:key="item"
+				>
+					<div>
+						<b>
+							{{ item.bonus }} KZT
+						</b>
+					</div>
+					<div>
+						{{ item.comment_bonus }}
+					</div>
 				</div>
-				<div>
-					{{ item.comment }}
+				<div v-if="sidebarContent.bonuses.length == 0 && sidebarContent.awards.length == 0 && sidebarContent.test_bonus.length == 0">
+					Нет бонусов
 				</div>
 			</div>
-        </div>
-         <div v-if="sidebarContent.test_bonus.length != 0"  class="mb-5">
-            <div>
-                За пройденные тесты
-            </div>
-            <div v-for="item in sidebarContent.test_bonus" :key="item">
-				<div>
-					<b>
-						{{ item.amount }} KZT
-					</b>
-				</div>
-				<div>
-					{{ item.comment }}
-				</div>
-			</div>
-        </div>
-        <h6 class="mt-3">Авансы</h6>
-        <div  class="mb-5">
-            <div v-for="item in sidebarContent.avanses" :key="item">
-				<div>
-					<b>
-						{{ item.paid }} KZT
-					</b>
-				</div>
-				<div>
-					{{ item.comment_paid }}
+			<div
+				v-if="sidebarContent.awards.length != 0"
+				class="mb-5"
+			>
+				<div
+					v-for="item in sidebarContent.awards"
+					:key="item"
+				>
+					<div>
+						<b>
+							{{ item.amount }} KZT
+						</b>
+					</div>
+					<div>
+						{{ item.comment }}
+					</div>
 				</div>
 			</div>
-            <p v-if="sidebarContent.avanses.length == 0">
-                Нет авансов
-            </p>
-        </div>
-    </sidebar>
-</div>
+			<div
+				v-if="sidebarContent.test_bonus.length != 0"
+				class="mb-5"
+			>
+				<div>
+					За пройденные тесты
+				</div>
+				<div
+					v-for="item in sidebarContent.test_bonus"
+					:key="item"
+				>
+					<div>
+						<b>
+							{{ item.amount }} KZT
+						</b>
+					</div>
+					<div>
+						{{ item.comment }}
+					</div>
+				</div>
+			</div>
+			<h6 class="mt-3">
+				Авансы
+			</h6>
+			<div class="mb-5">
+				<div
+					v-for="item in sidebarContent.avanses"
+					:key="item"
+				>
+					<div>
+						<b>
+							{{ item.paid }} KZT
+						</b>
+					</div>
+					<div>
+						{{ item.comment_paid }}
+					</div>
+				</div>
+				<p v-if="sidebarContent.avanses.length == 0">
+					Нет авансов
+				</p>
+			</div>
+		</sidebar>
+	</div>
 </template>
 
 <script>

@@ -1,72 +1,123 @@
 <template>
-    <div id="awards-page">
-        <BButton variant="success" class="mb-2" @click="addAwardButtonClickHandler">Создать награду</BButton>
+	<div id="awards-page">
+		<BButton
+			variant="success"
+			class="mb-2"
+			@click="addAwardButtonClickHandler"
+		>
+			Создать награду
+		</BButton>
 
-<!--        <BButton variant="danger" class="mb-2" @click="modalRegenerate = !modalRegenerate">Регенерация</BButton>-->
-<!--        <b-modal hide-footer no-close-on-backdrop no-close-on-esc no-enforce-focus v-model="modalRegenerate" size="lg" centered title="Принудительно обновление всех сертификатов по курсу">-->
-<!--            <RegenerateCertificates/>-->
-<!--        </b-modal>-->
+		<!--        <BButton variant="danger" class="mb-2" @click="modalRegenerate = !modalRegenerate">Регенерация</BButton>-->
+		<!--        <b-modal hide-footer no-close-on-backdrop no-close-on-esc no-enforce-focus v-model="modalRegenerate" size="lg" centered title="Принудительно обновление всех сертификатов по курсу">-->
+		<!--            <RegenerateCertificates/>-->
+		<!--        </b-modal>-->
 
-        <div class="table-container" v-if="tableItems && tableItems.length > 0">
-            <BTableSimple
-                    id="awards-table"
-                    striped
-                    :hover="false"
-                    @row-clicked="rowClickedHandler"
-            >
-                <BThead>
-                    <BTr>
-                        <BTh>№</BTh>
-                        <BTh>Название</BTh>
-                        <BTh class="text-left">Описание</BTh>
-                        <BTh>Тип</BTh>
-                        <BTh>Дата создания</BTh>
-                        <BTh>Постановщик</BTh>
-                        <BTh></BTh>
-                    </BTr>
-                </BThead>
-                <BTbody>
-                    <BTr v-for="(item, key) in tableItems" :key="item.name + key">
-                        <BTd>{{ key + 1 }}</BTd>
-                        <BTd><div class="clickable" @click="rowClickedHandler(item)">{{ item.name }}</div></BTd>
-                        <BTd class="td-desc">
-                            <div class="desc">{{ item.description }}</div>
-                            <div class="full-text">
-                                {{item.description}}
-                            </div>
-                        </BTd>
-                        <BTd v-if="item.type === 1">Картинка</BTd>
-                        <BTd v-if="item.type === 2">Конструктор</BTd>
-                        <BTd v-if="item.type === 3">Данные начислений</BTd>
-                        <BTd>{{ item.created_at | splitDate(item.created_at) }}</BTd>
-                        <BTd>{{ item.creator.name }} {{ item.creator.last_name }}</BTd>
-                        <BTd @click.stop>
-                            <b-button class="btn btn-danger btn-icon"  @click="modalShow(item)"> <i class="fa fa-trash"></i></b-button>
-                        </BTd>
-                    </BTr>
-                </BTbody>
-            </BTableSimple>
-        </div>
-        <div v-else>
-            <hr class="my-4">
-            <h4 class="no-awards-title">Пока нет ни одного сертификата</h4>
-        </div>
+		<div
+			class="table-container"
+			v-if="tableItems && tableItems.length > 0"
+		>
+			<BTableSimple
+				id="awards-table"
+				striped
+				:hover="false"
+				@row-clicked="rowClickedHandler"
+			>
+				<BThead>
+					<BTr>
+						<BTh>№</BTh>
+						<BTh>Название</BTh>
+						<BTh class="text-left">
+							Описание
+						</BTh>
+						<BTh>Тип</BTh>
+						<BTh>Дата создания</BTh>
+						<BTh>Постановщик</BTh>
+						<BTh />
+					</BTr>
+				</BThead>
+				<BTbody>
+					<BTr
+						v-for="(item, key) in tableItems"
+						:key="item.name + key"
+					>
+						<BTd>{{ key + 1 }}</BTd>
+						<BTd>
+							<div
+								class="clickable"
+								@click="rowClickedHandler(item)"
+							>
+								{{ item.name }}
+							</div>
+						</BTd>
+						<BTd class="td-desc">
+							<div class="desc">
+								{{ item.description }}
+							</div>
+							<div class="full-text">
+								{{ item.description }}
+							</div>
+						</BTd>
+						<BTd v-if="item.type === 1">
+							Картинка
+						</BTd>
+						<BTd v-if="item.type === 2">
+							Конструктор
+						</BTd>
+						<BTd v-if="item.type === 3">
+							Данные начислений
+						</BTd>
+						<BTd>{{ item.created_at | splitDate(item.created_at) }}</BTd>
+						<BTd>{{ item.creator.name }} {{ item.creator.last_name }}</BTd>
+						<BTd @click.stop>
+							<b-button
+								class="btn btn-danger btn-icon"
+								@click="modalShow(item)"
+							>
+								<i class="fa fa-trash" />
+							</b-button>
+						</BTd>
+					</BTr>
+				</BTbody>
+			</BTableSimple>
+		</div>
+		<div v-else>
+			<hr class="my-4">
+			<h4 class="no-awards-title">
+				Пока нет ни одного сертификата
+			</h4>
+		</div>
 
-        <EditAwardSidebar
-                v-if="showEditAwardSidebar"
-                :open.sync="showEditAwardSidebar"
-                :item="item"
-                @save-award="saveAward"
-                @update-award="updateTable"
-        />
-        <b-modal v-if="itemRemove" centered v-model="modal" :title="itemRemove.name">
-            Вы уверены, что хотите удалить награду?
-            <template #modal-footer>
-                <BButton variant="danger" @click="remove(itemRemove)">Удалить</BButton>
-                <BButton variant="light" @click="modal = !modal">Отмена</BButton>
-            </template>
-        </b-modal>
-    </div>
+		<EditAwardSidebar
+			v-if="showEditAwardSidebar"
+			:open.sync="showEditAwardSidebar"
+			:item="item"
+			@save-award="saveAward"
+			@update-award="updateTable"
+		/>
+		<b-modal
+			v-if="itemRemove"
+			centered
+			v-model="modal"
+			:title="itemRemove.name"
+		>
+			Вы уверены, что хотите удалить награду?
+			<template #modal-footer>
+				<BButton
+					variant="danger"
+					@click="remove(itemRemove)"
+				>
+					Удалить
+				</BButton>
+				<BButton
+					variant="light"
+					@click="modal = !modal"
+				>
+					Отмена
+				</BButton>
+			</template>
+		</b-modal>
+	</div>
 </template>
 
 <script>

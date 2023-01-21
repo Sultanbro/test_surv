@@ -1,29 +1,33 @@
 <template>
-    <li>
-        <div :class="{bold: isFolder}"
-                @click="toggle"
-                @dblclick="makeFolder">
-            {{ item.name }}
+	<li>
+		<div
+			:class="{bold: isFolder}"
+			@click="toggle"
+			@dblclick="makeFolder"
+		>
+			{{ item.name }}
 
-            <span v-if="isFolder">[{{ isOpen ? '-' : '+' }}]</span>
-        </div>
-        <ul v-show="isOpen" v-if="isFolder">
-            <tree-item
-                    class="item"
-                    v-for="(child, index) in item.categoryes"
-                    :key="index"
-                    :item="child"
-                    @make-folder="$emit('make-folder', $event)"
-                    @add-item="$emit('add-item', $event)"
-            ></tree-item>
-
-        </ul>
-    </li>
+			<span v-if="isFolder">[{{ isOpen ? '-' : '+' }}]</span>
+		</div>
+		<ul
+			v-show="isOpen"
+			v-if="isFolder"
+		>
+			<tree-item
+				class="item"
+				v-for="(child, index) in item.categoryes"
+				:key="index"
+				:item="child"
+				@make-folder="$emit('make-folder', $event)"
+				@add-item="$emit('add-item', $event)"
+			/>
+		</ul>
+	</li>
 </template>
 
 <script>
 export default {
-	name: 'tree-item',
+	name: 'TreeItem',
 	props: {
 		item: Object
 	},

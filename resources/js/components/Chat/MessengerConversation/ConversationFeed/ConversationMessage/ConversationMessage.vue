@@ -1,95 +1,155 @@
 <template>
-  <div :class="message.sender_id === user.id ?
-    'messenger__message-box-right' :
-    'messenger__message-box-left'">
-    <AlternativeAvatar v-if="message.sender_id !== user.id" :title="message.sender.name"
-                       :image="message.sender.img_url"/>
-    <div class="messenger__message-container">
-      <div :class="messageCardClass">
-        <div class="messenger__format-message-wrapper">
-          <div class="messenger__format-container_parent" v-if="message.parent" @click="goto(message.parent, $event)">
-            <div class="messenger__format-container_parent-author">{{ message.parent.sender.name }}</div>
-            <div class="messenger__format-container_parent-message">{{ message.parent.body }}</div>
-          </div>
-          <div class="messenger__format-container">
-            <span v-text="message.body"></span>
-          </div>
-          <div v-if="isGallery()" class="messenger__message-files messenger__message-files_group">
-            <div v-for="(file, key) in message.files.slice(0, 3)" :key="key"
-                 :class="{
-                    'messenger__message-file_group': true,
-                    'messenger__last-row': key === 2 && message.files.length > 2,
-                    'messenger__last-column': (key === 1 && message.files.length > 2) || (key === 2 && message.files.length > 1)
-                  }"
-            >
-              <div @click="openImage(file)" class="messenger__message-file-image">
-                <img v-on:load="$emit('loadImage')"
-                     :src="file.thumbnail_path ? file.thumbnail_path : file.file_path" alt="file.name">
-                <div v-if="message.files.length > 3 && key === 2" class="messenger__message-files_group-count">
-                  <span>+{{ message.files.length - 3 }}</span>
-                </div>
-              </div>
-            </div>
-          </div>
-          <div v-else class="messenger__message-files">
-            <div class="messenger__message-file" v-for="(file, index) in message.files" :key="index">
-              <template v-if="isImage(file)">
-                <div class="messenger__message-file-image" @click="openImage(file)">
-                  <img v-on:load="$emit('loadImage')"
-                       :src="file.thumbnail_path ? file.thumbnail_path : file.file_path" alt="file.name">
-                </div>
-              </template>
-              <template v-else-if="isAudio(file)">
-                <div class="messenger__message-file-audio">
-                  <VoiceMessage :audioSource="file.file_path"
-                                :isActive="active"
-                                @play="$emit('active')"
-                  />
-                </div>
-              </template>
-              <template v-else>
-                <div class="messenger__message-file-icon">
-                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 384 512" width="25" height="25">
-                    <path
-                      d="M0 64C0 28.65 28.65 0 64 0H229.5C246.5 0 262.7 6.743 274.7 18.75L365.3 109.3C377.3 121.3 384 137.5 384 154.5V448C384 483.3 355.3 512 320 512H64C28.65 512 0 483.3 0 448V64zM336 448V160H256C238.3 160 224 145.7 224 128V48H64C55.16 48 48 55.16 48 64V448C48 456.8 55.16 464 64 464H320C328.8 464 336 456.8 336 448z"/>
-                  </svg>
-                </div>
-                <div class="messenger__message-file-name">
-                  <a :href="file.file_path" download>{{ file.name }}</a>
-                </div>
-              </template>
-            </div>
-          </div>
-        </div>
-      </div>
-      <div v-if="message.readers && message.readers.length > 0" class="messenger__message-reactions">
-        <template v-if="last && message.readers && message.readers.length > 0 && message.sender_id === user.id">
-          <MessageReaders :message="message" :user="user"/>
-        </template>
+	<div
+		:class="message.sender_id === user.id ?
+			'messenger__message-box-right' :
+			'messenger__message-box-left'"
+	>
+		<AlternativeAvatar
+			v-if="message.sender_id !== user.id"
+			:title="message.sender.name"
+			:image="message.sender.img_url"
+		/>
+		<div class="messenger__message-container">
+			<div :class="messageCardClass">
+				<div class="messenger__format-message-wrapper">
+					<div
+						class="messenger__format-container_parent"
+						v-if="message.parent"
+						@click="goto(message.parent, $event)"
+					>
+						<div class="messenger__format-container_parent-author">
+							{{ message.parent.sender.name }}
+						</div>
+						<div class="messenger__format-container_parent-message">
+							{{ message.parent.body }}
+						</div>
+					</div>
+					<div class="messenger__format-container">
+						<span v-text="message.body" />
+					</div>
+					<div
+						v-if="isGallery()"
+						class="messenger__message-files messenger__message-files_group"
+					>
+						<div
+							v-for="(file, key) in message.files.slice(0, 3)"
+							:key="key"
+							:class="{
+								'messenger__message-file_group': true,
+								'messenger__last-row': key === 2 && message.files.length > 2,
+								'messenger__last-column': (key === 1 && message.files.length > 2) || (key === 2 && message.files.length > 1)
+							}"
+						>
+							<div
+								@click="openImage(file)"
+								class="messenger__message-file-image"
+							>
+								<img
+									@load="$emit('loadImage')"
+									:src="file.thumbnail_path ? file.thumbnail_path : file.file_path"
+									alt="file.name"
+								>
+								<div
+									v-if="message.files.length > 3 && key === 2"
+									class="messenger__message-files_group-count"
+								>
+									<span>+{{ message.files.length - 3 }}</span>
+								</div>
+							</div>
+						</div>
+					</div>
+					<div
+						v-else
+						class="messenger__message-files"
+					>
+						<div
+							class="messenger__message-file"
+							v-for="(file, index) in message.files"
+							:key="index"
+						>
+							<template v-if="isImage(file)">
+								<div
+									class="messenger__message-file-image"
+									@click="openImage(file)"
+								>
+									<img
+										@load="$emit('loadImage')"
+										:src="file.thumbnail_path ? file.thumbnail_path : file.file_path"
+										alt="file.name"
+									>
+								</div>
+							</template>
+							<template v-else-if="isAudio(file)">
+								<div class="messenger__message-file-audio">
+									<VoiceMessage
+										:audio-source="file.file_path"
+										:is-active="active"
+										@play="$emit('active')"
+									/>
+								</div>
+							</template>
+							<template v-else>
+								<div class="messenger__message-file-icon">
+									<svg
+										xmlns="http://www.w3.org/2000/svg"
+										viewBox="0 0 384 512"
+										width="25"
+										height="25"
+									>
+										<path
+											d="M0 64C0 28.65 28.65 0 64 0H229.5C246.5 0 262.7 6.743 274.7 18.75L365.3 109.3C377.3 121.3 384 137.5 384 154.5V448C384 483.3 355.3 512 320 512H64C28.65 512 0 483.3 0 448V64zM336 448V160H256C238.3 160 224 145.7 224 128V48H64C55.16 48 48 55.16 48 64V448C48 456.8 55.16 464 64 464H320C328.8 464 336 456.8 336 448z"
+										/>
+									</svg>
+								</div>
+								<div class="messenger__message-file-name">
+									<a
+										:href="file.file_path"
+										download
+									>{{ file.name }}</a>
+								</div>
+							</template>
+						</div>
+					</div>
+				</div>
+			</div>
+			<div
+				v-if="message.readers && message.readers.length > 0"
+				class="messenger__message-reactions"
+			>
+				<template v-if="last && message.readers && message.readers.length > 0 && message.sender_id === user.id">
+					<MessageReaders
+						:message="message"
+						:user="user"
+					/>
+				</template>
 
-        <template v-if="reactions">
-          <div v-for="(reaction, index) in reactions" :key="index" class="messenger__message-reaction" @click="reactMessage({message: message, emoji_id: reaction.type})">
-            <div class="messenger__message-reaction-icon">
-              <span v-if="reaction.type === 1">&#128077;</span>
-              <span v-else-if="reaction.type === 2">&#128078;</span>
-              <span v-else-if="reaction.type === 3">&#10004;</span>
-              <span v-else-if="reaction.type === 4">&#10006;</span>
-              <span v-else-if="reaction.type === 5">&#10067;</span>
-            </div>
-            <div class="messenger__message-reaction-count">
-              <span>{{ reaction.count }}</span>
-            </div>
-          </div>
-        </template>
-      </div>
+				<template v-if="reactions">
+					<div
+						v-for="(reaction, index) in reactions"
+						:key="index"
+						class="messenger__message-reaction"
+						@click="reactMessage({message: message, emoji_id: reaction.type})"
+					>
+						<div class="messenger__message-reaction-icon">
+							<span v-if="reaction.type === 1">&#128077;</span>
+							<span v-else-if="reaction.type === 2">&#128078;</span>
+							<span v-else-if="reaction.type === 3">&#10004;</span>
+							<span v-else-if="reaction.type === 4">&#10006;</span>
+							<span v-else-if="reaction.type === 5">&#10067;</span>
+						</div>
+						<div class="messenger__message-reaction-count">
+							<span>{{ reaction.count }}</span>
+						</div>
+					</div>
+				</template>
+			</div>
 
 
-      <div class="messenger__text-timestamp">
-        <span>{{ message.created_at | moment }}</span>
-      </div>
-
-    </div>
-  </div>
+			<div class="messenger__text-timestamp">
+				<span>{{ message.created_at | moment }}</span>
+			</div>
+		</div>
+	</div>
 </template>
 
 <script>

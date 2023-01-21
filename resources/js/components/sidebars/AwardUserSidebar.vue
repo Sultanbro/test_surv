@@ -1,196 +1,405 @@
 <template>
-    <sidebar
-            id="award-user-sidebar"
-            title="Наградить пользователя"
-            :open="open"
-            :class="isShow ? 'show' : ''"
-            @close="open = false"
-            width="70%"
-            v-scroll-lock="open"
-    >
-        <b-button variant="primary" class="mx-auto d-block my-3" @click="openModalAdd">
-            Загрузить файл награды
-        </b-button>
-        <p class="or">или</p>
-        <p class="or2">Выберите один из шаблонов</p>
-        <hr>
-        <b-tabs ref="tabAwardUser" v-model="tabIndex">
-            <template v-if="awards.length > 0">
-                <div class="prev-next">
-                    <span class="prev" @click="tabIndex--"><i class="fa fa-chevron-left"></i></span>
-                    <span class="next" @click="tabIndex++"><i class="fa fa-chevron-right"></i></span>
-                </div>
-                <b-tab :title="award.name" v-for="award in awards" :key="award.name">
-                    <b-card
-                            title="Доступные награды"
-                            border-variant="secondary"
-                            header-border-variant="secondary"
-                    >
-                        <b-row>
-                            <b-col cols="12" md="2" class="mt-4 remove-award-modal"
-                                   v-for="item in award.available"
-                                   :key="item.id + item.format">
-                                <div class="award-image">
-                                    <div @click="previewImage(item)">
-                                        <img :src="item.tempPath" alt="" v-if="item.format !== 'pdf'">
-                                        <vue-pdf-embed v-else ref="vuePdfEmbeds" :source="item.tempPath"/>
-                                    </div>
-                                    <i class="fa fa-download button download"
-                                       @click="downloadImage(item, award.name)"></i>
-                                    <i class="fa fa-award button award" @click="openModalSelect(item, award.name)"></i>
-                                </div>
-                            </b-col>
-                        </b-row>
-                    </b-card>
-                    <template v-if="award.hasOwnProperty('my')">
-                        <hr class="mt-4">
-                        <div class="my-container">
-                            <b-card title="Выданные награды"
-                                    border-variant="secondary"
-                                    header-border-variant="secondary"
-                            >
-                                <b-row>
-                                    <b-col cols="12" md="2" class="mt-4" v-for="item in award.my"
-                                           :key="item.id + item.format">
-                                        <div class="award-image" @click="removeReward(item)">
-                                            <img :src="item.tempPath" alt="" v-if="item.format !== 'pdf'">
-                                            <vue-pdf-embed :source="item.tempPath" v-else/>
-                                            <i class="fa fa-trash"></i>
-                                        </div>
-                                    </b-col>
-                                </b-row>
-                            </b-card>
-                        </div>
-                    </template>
-                </b-tab>
-            </template>
-        </b-tabs>
+	<sidebar
+		id="award-user-sidebar"
+		title="Наградить пользователя"
+		:open="open"
+		:class="isShow ? 'show' : ''"
+		@close="open = false"
+		width="70%"
+		v-scroll-lock="open"
+	>
+		<b-button
+			variant="primary"
+			class="mx-auto d-block my-3"
+			@click="openModalAdd"
+		>
+			Загрузить файл награды
+		</b-button>
+		<p class="or">
+			или
+		</p>
+		<p class="or2">
+			Выберите один из шаблонов
+		</p>
+		<hr>
+		<b-tabs
+			ref="tabAwardUser"
+			v-model="tabIndex"
+		>
+			<template v-if="awards.length > 0">
+				<div class="prev-next">
+					<span
+						class="prev"
+						@click="tabIndex--"
+					><i class="fa fa-chevron-left" /></span>
+					<span
+						class="next"
+						@click="tabIndex++"
+					><i class="fa fa-chevron-right" /></span>
+				</div>
+				<b-tab
+					:title="award.name"
+					v-for="award in awards"
+					:key="award.name"
+				>
+					<b-card
+						title="Доступные награды"
+						border-variant="secondary"
+						header-border-variant="secondary"
+					>
+						<b-row>
+							<b-col
+								cols="12"
+								md="2"
+								class="mt-4 remove-award-modal"
+								v-for="item in award.available"
+								:key="item.id + item.format"
+							>
+								<div class="award-image">
+									<div @click="previewImage(item)">
+										<img
+											:src="item.tempPath"
+											alt=""
+											v-if="item.format !== 'pdf'"
+										>
+										<vue-pdf-embed
+											v-else
+											ref="vuePdfEmbeds"
+											:source="item.tempPath"
+										/>
+									</div>
+									<i
+										class="fa fa-download button download"
+										@click="downloadImage(item, award.name)"
+									/>
+									<i
+										class="fa fa-award button award"
+										@click="openModalSelect(item, award.name)"
+									/>
+								</div>
+							</b-col>
+						</b-row>
+					</b-card>
+					<template v-if="award.hasOwnProperty('my')">
+						<hr class="mt-4">
+						<div class="my-container">
+							<b-card
+								title="Выданные награды"
+								border-variant="secondary"
+								header-border-variant="secondary"
+							>
+								<b-row>
+									<b-col
+										cols="12"
+										md="2"
+										class="mt-4"
+										v-for="item in award.my"
+										:key="item.id + item.format"
+									>
+										<div
+											class="award-image"
+											@click="removeReward(item)"
+										>
+											<img
+												:src="item.tempPath"
+												alt=""
+												v-if="item.format !== 'pdf'"
+											>
+											<vue-pdf-embed
+												:source="item.tempPath"
+												v-else
+											/>
+											<i class="fa fa-trash" />
+										</div>
+									</b-col>
+								</b-row>
+							</b-card>
+						</div>
+					</template>
+				</b-tab>
+			</template>
+		</b-tabs>
 
-        <BModal v-model="modalPreview" modal-class="preview-modal" title="Предосмотр награды"
-                size="lg" centered>
-            <img :src="modalPreviewData.tempPath" alt="" v-if="modalPreviewData.format !== 'pdf'">
-            <vue-pdf-embed :source="modalPreviewData.tempPath" v-else/>
-            <template #modal-footer>
-                <b-button variant="secondary" @click="modalPreview = !modalPreview">Закрыть</b-button>
-            </template>
-        </BModal>
+		<BModal
+			v-model="modalPreview"
+			modal-class="preview-modal"
+			title="Предосмотр награды"
+			size="lg"
+			centered
+		>
+			<img
+				:src="modalPreviewData.tempPath"
+				alt=""
+				v-if="modalPreviewData.format !== 'pdf'"
+			>
+			<vue-pdf-embed
+				:source="modalPreviewData.tempPath"
+				v-else
+			/>
+			<template #modal-footer>
+				<b-button
+					variant="secondary"
+					@click="modalPreview = !modalPreview"
+				>
+					Закрыть
+				</b-button>
+			</template>
+		</BModal>
 
-        <BModal v-model="modalRemoveReward" modal-class="remove-award-modal" title="Отмена награды"
-                size="lg" centered>
-            <h4 class="title-remove">Вы действительно хотите отозвать награду?</h4>
-            <hr class="my-4">
-            <div class="award-image-remove" v-if="modalRemoveRewardData">
-                <img :src="modalRemoveRewardData.tempPath" alt="" v-if="modalRemoveRewardData.format !== 'pdf'">
-                <vue-pdf-embed :source="modalRemoveRewardData.tempPath" v-else/>
-            </div>
-            <template #modal-footer>
-                <b-button variant="secondary" @click="modalRemoveReward = !modalRemoveReward" :disabled="btnLoading">Отмена</b-button>
-                <b-button variant="danger" @click="removeRewardUser(modalRemoveRewardData)" :disabled="btnLoading">
-                    <span class="btn-spinner" v-if="btnLoading"></span>
-                    Отозвать награду
-                </b-button>
-            </template>
-        </BModal>
+		<BModal
+			v-model="modalRemoveReward"
+			modal-class="remove-award-modal"
+			title="Отмена награды"
+			size="lg"
+			centered
+		>
+			<h4 class="title-remove">
+				Вы действительно хотите отозвать награду?
+			</h4>
+			<hr class="my-4">
+			<div
+				class="award-image-remove"
+				v-if="modalRemoveRewardData"
+			>
+				<img
+					:src="modalRemoveRewardData.tempPath"
+					alt=""
+					v-if="modalRemoveRewardData.format !== 'pdf'"
+				>
+				<vue-pdf-embed
+					:source="modalRemoveRewardData.tempPath"
+					v-else
+				/>
+			</div>
+			<template #modal-footer>
+				<b-button
+					variant="secondary"
+					@click="modalRemoveReward = !modalRemoveReward"
+					:disabled="btnLoading"
+				>
+					Отмена
+				</b-button>
+				<b-button
+					variant="danger"
+					@click="removeRewardUser(modalRemoveRewardData)"
+					:disabled="btnLoading"
+				>
+					<span
+						class="btn-spinner"
+						v-if="btnLoading"
+					/>
+					Отозвать награду
+				</b-button>
+			</template>
+		</BModal>
 
-        <BModal v-model="modalAdd" modal-class="selected-modal" title="Добавление новой награды"
-                size="lg" centered>
-            <b-row class="mb-4">
-                <b-col cols="12" md="6" class="border-right-custom">
-                    <b-form-group
-                            label="Выберите вид награды"
-                            class="m-0"
-                    >
-                        <Multiselect
-                                v-model="value"
-                                :options="awardCategories"
-                                :multiple="false"
-                                :close-on-select="true"
-                                :clear-on-select="false"
-                                :preserve-search="true"
-                                placeholder="Выберите вид награды"
-                                label="name"
-                                track-by="name"
-                                :preselect-first="false"
-                                :class="value ? '' : 'error'"
+		<BModal
+			v-model="modalAdd"
+			modal-class="selected-modal"
+			title="Добавление новой награды"
+			size="lg"
+			centered
+		>
+			<b-row class="mb-4">
+				<b-col
+					cols="12"
+					md="6"
+					class="border-right-custom"
+				>
+					<b-form-group
+						label="Выберите вид награды"
+						class="m-0"
+					>
+						<Multiselect
+							v-model="value"
+							:options="awardCategories"
+							:multiple="false"
+							:close-on-select="true"
+							:clear-on-select="false"
+							:preserve-search="true"
+							placeholder="Выберите вид награды"
+							label="name"
+							track-by="name"
+							:preselect-first="false"
+							:class="value ? '' : 'error'"
+						/>
+					</b-form-group>
+				</b-col>
+				<b-col
+					cols="12"
+					md="6"
+				>
+					<label
+						for="file-add"
+						class="custom-file-upload"
+						:class="modalAddFile ? '' : 'error'"
+						ref="inputFileAdd"
+					/>
+					<input
+						type="file"
+						accept="application/pdf, image/jpeg, image/png"
+						id="file-add"
+						@change="modalAddEvent"
+						style="display: none;"
+					>
+				</b-col>
+			</b-row>
 
-                        />
-                    </b-form-group>
-                </b-col>
-                <b-col cols="12" md="6">
-                    <label for="file-add" class="custom-file-upload" :class="modalAddFile ? '' : 'error'"
-                           ref="inputFileAdd"></label>
-                    <input type="file" accept="application/pdf, image/jpeg, image/png" id="file-add"
-                           @change="modalAddEvent" style="display: none;">
-                </b-col>
-            </b-row>
+			<template v-if="modalAddFile">
+				<hr class="my-4">
+				<div class="result-container">
+					<img
+						:src="modalAddBase64"
+						alt=""
+						v-if="modalAddFile.type !== 'application/pdf'"
+					>
+					<vue-pdf-embed
+						v-else
+						:source="modalAddBase64"
+					/>
+				</div>
+			</template>
+			<template #modal-footer>
+				<b-button
+					variant="secondary"
+					@click="modalAdd = !modalAdd"
+					:disabled="btnLoading"
+				>
+					Отмена
+				</b-button>
+				<b-button
+					variant="success"
+					v-if="modalAddBase64 && value"
+					@click="addAndSaveReward"
+					:disabled="btnLoading"
+				>
+					<span
+						class="btn-spinner"
+						v-if="btnLoading"
+					/>
+					Наградить
+				</b-button>
+			</template>
+		</BModal>
 
-            <template v-if="modalAddFile">
-                <hr class="my-4">
-                <div class="result-container">
-                    <img :src="modalAddBase64" alt="" v-if="modalAddFile.type !== 'application/pdf'">
-                    <vue-pdf-embed v-else :source="modalAddBase64"/>
-                </div>
-            </template>
-            <template #modal-footer>
-                <b-button variant="secondary" @click="modalAdd = !modalAdd" :disabled="btnLoading">Отмена</b-button>
-                <b-button variant="success" v-if="modalAddBase64 && value" @click="addAndSaveReward" :disabled="btnLoading">
-                    <span class="btn-spinner" v-if="btnLoading"></span>
-                    Наградить
-                </b-button>
-            </template>
-        </BModal>
-
-        <BModal v-model="modalSelect" modal-class="selected-modal" title="Награждение"
-                :size="modalSize" centered>
-            <b-row v-if="newFileCheck">
-                <b-col cols="12" md="6" class="border-right-custom">
-                    <div class="selected-modal-title with-image">
-                        {{modalSelectData.type}}
-                        <span class="image-mini">
-                    <img :src="modalSelectData.tempPath" alt="" v-if="modalSelectData.format !== 'pdf'">
-                    <vue-pdf-embed v-else :source="modalSelectData.tempPath"/>
-                </span>
-                        <span class="text">Награждение сотрудника по выбранному шаблону</span>
-                    </div>
-                </b-col>
-                <b-col cols="12" md="6">
-                    <label for="file" class="custom-file-upload" :class="modalSelectFile ? '' : 'error'"
-                           ref="inputFile"></label>
-                    <input type="file" accept="application/pdf, image/jpeg, image/png" id="file"
-                           @change="modalSelectDataUploadEvent" style="display: none;">
-                </b-col>
-            </b-row>
-            <div v-else>
-                <div class="simple-reward-title text-center">Наградить сотрудника выбранной наградой?</div>
-            </div>
-            <template v-if="modalSelectFile && newFileCheck">
-                <hr class="my-4">
-                <div class="result-container">
-                    <img :src="modalSelectBase64" alt="" v-if="modalSelectFile.type !== 'application/pdf'">
-                    <vue-pdf-embed v-else :source="modalSelectBase64"/>
-                </div>
-            </template>
-            <template #modal-footer>
-                <div class="d-flex align-items-center justify-content-between w-100">
-                    <BFormGroup class="custom-switch custom-switch-sm m-0" id="input-group-4">
-                        <b-form-checkbox v-model="newFileCheck" switch :disabled="btnLoading">Загрузить другой шаблон
-                        </b-form-checkbox>
-                    </BFormGroup>
-                    <div>
-                        <b-button variant="secondary" @click="modalSelect = !modalSelect" :disabled="btnLoading">Отмена</b-button>
-                        <b-button variant="success" v-if="!newFileCheck" @click="reward" :disabled="btnLoading">
-                            <span class="btn-spinner" v-if="btnLoading"></span>
-                            Наградить
-                        </b-button>
-                        <b-button variant="success" v-if="newFileCheck && modalSelectBase64" @click="rewardNew" :disabled="btnLoading">
-                            <span class="btn-spinner" v-if="btnLoading"></span>
-                            Наградить
-                        </b-button>
-                    </div>
-                </div>
-            </template>
-        </BModal>
-    </sidebar>
+		<BModal
+			v-model="modalSelect"
+			modal-class="selected-modal"
+			title="Награждение"
+			:size="modalSize"
+			centered
+		>
+			<b-row v-if="newFileCheck">
+				<b-col
+					cols="12"
+					md="6"
+					class="border-right-custom"
+				>
+					<div class="selected-modal-title with-image">
+						{{ modalSelectData.type }}
+						<span class="image-mini">
+							<img
+								:src="modalSelectData.tempPath"
+								alt=""
+								v-if="modalSelectData.format !== 'pdf'"
+							>
+							<vue-pdf-embed
+								v-else
+								:source="modalSelectData.tempPath"
+							/>
+						</span>
+						<span class="text">Награждение сотрудника по выбранному шаблону</span>
+					</div>
+				</b-col>
+				<b-col
+					cols="12"
+					md="6"
+				>
+					<label
+						for="file"
+						class="custom-file-upload"
+						:class="modalSelectFile ? '' : 'error'"
+						ref="inputFile"
+					/>
+					<input
+						type="file"
+						accept="application/pdf, image/jpeg, image/png"
+						id="file"
+						@change="modalSelectDataUploadEvent"
+						style="display: none;"
+					>
+				</b-col>
+			</b-row>
+			<div v-else>
+				<div class="simple-reward-title text-center">
+					Наградить сотрудника выбранной наградой?
+				</div>
+			</div>
+			<template v-if="modalSelectFile && newFileCheck">
+				<hr class="my-4">
+				<div class="result-container">
+					<img
+						:src="modalSelectBase64"
+						alt=""
+						v-if="modalSelectFile.type !== 'application/pdf'"
+					>
+					<vue-pdf-embed
+						v-else
+						:source="modalSelectBase64"
+					/>
+				</div>
+			</template>
+			<template #modal-footer>
+				<div class="d-flex align-items-center justify-content-between w-100">
+					<BFormGroup
+						class="custom-switch custom-switch-sm m-0"
+						id="input-group-4"
+					>
+						<b-form-checkbox
+							v-model="newFileCheck"
+							switch
+							:disabled="btnLoading"
+						>
+							Загрузить другой шаблон
+						</b-form-checkbox>
+					</BFormGroup>
+					<div>
+						<b-button
+							variant="secondary"
+							@click="modalSelect = !modalSelect"
+							:disabled="btnLoading"
+						>
+							Отмена
+						</b-button>
+						<b-button
+							variant="success"
+							v-if="!newFileCheck"
+							@click="reward"
+							:disabled="btnLoading"
+						>
+							<span
+								class="btn-spinner"
+								v-if="btnLoading"
+							/>
+							Наградить
+						</b-button>
+						<b-button
+							variant="success"
+							v-if="newFileCheck && modalSelectBase64"
+							@click="rewardNew"
+							:disabled="btnLoading"
+						>
+							<span
+								class="btn-spinner"
+								v-if="btnLoading"
+							/>
+							Наградить
+						</b-button>
+					</div>
+				</div>
+			</template>
+		</BModal>
+	</sidebar>
 </template>
 
 <script>

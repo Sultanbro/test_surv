@@ -1,102 +1,178 @@
 <template>
-    <div class="regenerate">
-        <div class="spinner-container" v-if="loading">
-            <div class="throbber-loader"></div>
-        </div>
-        <b-row class="align-items-end">
-            <b-col cols="12" md="6">
-                <b-form-group label="выберите курс" class="m-0">
-                    <b-form-select
-                            v-model="course"
-                            :options="courses"
-                            value-field="id"
-                            text-field="name"
-                            @change="selectCourse"
-                            :disabled="start"
-                    >
-
-                    </b-form-select>
-                </b-form-group>
-            </b-col>
-            <b-col cols="12" md="6">
-                <b-button variant="danger" style="height: 40px; width: 100%;" v-if="list && list.length > 0"
-                          @click="startClick"
-                          :disabled="start">Сгенерировать все сертификаты
-                </b-button>
-            </b-col>
-        </b-row>
-        <template v-if="start">
-            <hr class="my-4">
-            <div class="info-block">
-                Внимание! Начался процесс генерации. Не закрывайте данное окно, не перезагружайте и не закрывайте эту страницу браузера.
-            </div>
-        </template>
-        <template v-if="list">
-            <div class="total-result">
-                <div>
-                    <p class="mb-2">Результатов: {{list.length}}</p>
-                    <p v-if="list.length > 0">Выполнено: {{indexGen}} из {{list.length}}</p>
-                </div>
-                <div v-if="showFilesGen" class="text-right">
-                    <p class="mb-2 text-files-count" :class="[endGenerate && files.length > 0 ? 'finished' : '', endGenerate && files.length === 0 ? 'abort' : '']">Файлов сгенерировано: {{files.length}}</p>
-                    <p class="time-wait" v-if="secondWait > 0">
-                        Примерное время генерации: менее
-                       <template v-if="secondWait > 45">
-                           {{timeWait}}
-                           <template v-if="timeWait === 1">минуты</template>
-                           <template v-else>минут</template>
-                       </template>
-                        <template v-else-if="secondWait > 30">
-                           <span class="green-span-text">45 секунд</span>
-                        </template>
-                        <template v-else-if="secondWait > 15">
-                            <span class="green-span-text">30 секунд</span>
-                        </template>
-                        <template v-else-if="secondWait > 5">
-                            <span class="green-span-text">15 секунд</span>
-                        </template>
-                    </p>
-                </div>
-            </div>
-            <template v-if="list.length > 0">
-                <div class="logs" id="logs" ref="logs">
-                    <div class="log-item" v-for="(log, index) in logs" :key="index">
-                        <span class="index">{{index}}</span>
-                        <div>
-                            <span class="msg">Message: {{log.title}}</span>
-                            <span class="file-name" v-if="log.fileName">File: {{log.fileName}}</span>
-                            <span class="file-name danger" v-else>Файл не сгенерирован. Нет шаблона</span>
-                        </div>
-                    </div>
-                    <div class="loading-dots" v-if="start">
-                        <div class="loading-dots--dot"></div>
-                        <div class="loading-dots--dot"></div>
-                        <div class="loading-dots--dot"></div>
-                    </div>
-                    <div class="finished" v-if="endGenerate">
-                        <div class="finish-text" v-if="files.length > 0">Генерация завершена!</div>
-                        <div class="finish-text danger" v-else>Ничего не сгенерировано</div>
-                    </div>
-                    <div style="height: 100px;"></div>
-                </div>
-                <template v-for="(item, index) in list">
-                    <saveCertificateReg :key="item.id" v-if="index === indexGen && start" :course_id="course"
-                                        :item="item"
-                                        @generated="generated"/>
-                </template>
-            </template>
-        </template>
-        <div class="custom-modal-footer" v-if="endGenerate && files.length > 0">
-            <b-button variant="success" @click="requestFiles">Отправить файлы на замену</b-button>
-        </div>
-    </div>
+	<div class="regenerate">
+		<div
+			class="spinner-container"
+			v-if="loading"
+		>
+			<div class="throbber-loader" />
+		</div>
+		<b-row class="align-items-end">
+			<b-col
+				cols="12"
+				md="6"
+			>
+				<b-form-group
+					label="выберите курс"
+					class="m-0"
+				>
+					<b-form-select
+						v-model="course"
+						:options="courses"
+						value-field="id"
+						text-field="name"
+						@change="selectCourse"
+						:disabled="start"
+					/>
+				</b-form-group>
+			</b-col>
+			<b-col
+				cols="12"
+				md="6"
+			>
+				<b-button
+					variant="danger"
+					style="height: 40px; width: 100%;"
+					v-if="list && list.length > 0"
+					@click="startClick"
+					:disabled="start"
+				>
+					Сгенерировать все сертификаты
+				</b-button>
+			</b-col>
+		</b-row>
+		<template v-if="start">
+			<hr class="my-4">
+			<div class="info-block">
+				Внимание! Начался процесс генерации. Не закрывайте данное окно, не перезагружайте и не закрывайте эту страницу браузера.
+			</div>
+		</template>
+		<template v-if="list">
+			<div class="total-result">
+				<div>
+					<p class="mb-2">
+						Результатов: {{ list.length }}
+					</p>
+					<p v-if="list.length > 0">
+						Выполнено: {{ indexGen }} из {{ list.length }}
+					</p>
+				</div>
+				<div
+					v-if="showFilesGen"
+					class="text-right"
+				>
+					<p
+						class="mb-2 text-files-count"
+						:class="[endGenerate && files.length > 0 ? 'finished' : '', endGenerate && files.length === 0 ? 'abort' : '']"
+					>
+						Файлов сгенерировано: {{ files.length }}
+					</p>
+					<p
+						class="time-wait"
+						v-if="secondWait > 0"
+					>
+						Примерное время генерации: менее
+						<template v-if="secondWait > 45">
+							{{ timeWait }}
+							<template v-if="timeWait === 1">
+								минуты
+							</template>
+							<template v-else>
+								минут
+							</template>
+						</template>
+						<template v-else-if="secondWait > 30">
+							<span class="green-span-text">45 секунд</span>
+						</template>
+						<template v-else-if="secondWait > 15">
+							<span class="green-span-text">30 секунд</span>
+						</template>
+						<template v-else-if="secondWait > 5">
+							<span class="green-span-text">15 секунд</span>
+						</template>
+					</p>
+				</div>
+			</div>
+			<template v-if="list.length > 0">
+				<div
+					class="logs"
+					id="logs"
+					ref="logs"
+				>
+					<div
+						class="log-item"
+						v-for="(log, index) in logs"
+						:key="index"
+					>
+						<span class="index">{{ index }}</span>
+						<div>
+							<span class="msg">Message: {{ log.title }}</span>
+							<span
+								class="file-name"
+								v-if="log.fileName"
+							>File: {{ log.fileName }}</span>
+							<span
+								class="file-name danger"
+								v-else
+							>Файл не сгенерирован. Нет шаблона</span>
+						</div>
+					</div>
+					<div
+						class="loading-dots"
+						v-if="start"
+					>
+						<div class="loading-dots--dot" />
+						<div class="loading-dots--dot" />
+						<div class="loading-dots--dot" />
+					</div>
+					<div
+						class="finished"
+						v-if="endGenerate"
+					>
+						<div
+							class="finish-text"
+							v-if="files.length > 0"
+						>
+							Генерация завершена!
+						</div>
+						<div
+							class="finish-text danger"
+							v-else
+						>
+							Ничего не сгенерировано
+						</div>
+					</div>
+					<div style="height: 100px;" />
+				</div>
+				<template v-for="(item, index) in list">
+					<saveCertificateReg
+						:key="item.id"
+						v-if="index === indexGen && start"
+						:course_id="course"
+						:item="item"
+						@generated="generated"
+					/>
+				</template>
+			</template>
+		</template>
+		<div
+			class="custom-modal-footer"
+			v-if="endGenerate && files.length > 0"
+		>
+			<b-button
+				variant="success"
+				@click="requestFiles"
+			>
+				Отправить файлы на замену
+			</b-button>
+		</div>
+	</div>
 </template>
 
 <script>
 import saveCertificateReg from './saveCertificateReg';
 
 export default {
-	name: 'regenerate-certificates',
+	name: 'RegenerateCertificates',
 	components: {
 		saveCertificateReg
 	},

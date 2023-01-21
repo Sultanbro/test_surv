@@ -1,135 +1,158 @@
 <template>
-<div class="indicators px-3 py-1">
+	<div class="indicators px-3 py-1">
+		<!-- top line -->
+		<div class="d-flex mb-2 mt-2 jcsb aifs">
+			<div class="d-flex aic mr-2">
+				<div class="d-flex aic mr-2">
+					<span>Показывать:</span>
+					<input
+						type="number"
+						min="1"
+						max="100"
+						v-model="pageSize"
+						class="form-control ml-2 input-sm"
+					>
+				</div>
+				<input
+					class="searcher mr-2 form-control"
+					v-model="searchText"
+					type="text"
+					placeholder="Поиск по совпадениям..."
+					@keyup="onSearch"
+				>
+				<span class="ml-2 whitespace-no-wrap">
+					Найдено: {{ items.length }}
+				</span>
+			</div>
+		</div>
 
-    <!-- top line -->
-    <div class="d-flex mb-2 mt-2 jcsb aifs">
+		<!-- table NEW -->
+		<table class="table table-responsive j-table thead-word-break-normal">
+			<thead>
+				<tr>
+					<th class="b-table-sticky-column text-center">
+						<i
+							class="fa fa-cogs"
+							@click="adjustFields"
+						/>
+					</th>
+					<th
+						v-for="(field, i) in fields"
+						:key="i"
+						:class="[
+							field.class,
+							{'b-table-sticky-column l-60' : field.key == 'name'
+							}]"
+					>
+						{{ field.name }}
+					</th>
+				</tr>
+			</thead>
+			<tbody>
+				<template v-for="(item, i) in page_items">
+					<tr :key="i">
+						<td class="b-table-sticky-column text-center">
+							{{ i + 1 }}
+						</td>
+						<td
+							v-for="(field, f) in fields"
+							:key="f"
+							:class="[
+								field.class,
+								{'b-table-sticky-column l-60' : field.key == 'name'
+								}]"
+						>
+							<template v-if="field.key == 'created_by' && item.creator != null">
+								{{ item.creator.last_name + ' ' + item.creator.name }}
+							</template>
 
-        <div class="d-flex aic mr-2">
-            <div class="d-flex aic mr-2">
-                <span>Показывать:</span>
-                <input type="number" min="1" max="100" v-model="pageSize" class="form-control ml-2 input-sm" />
-            </div>
-            <input
-                class="searcher mr-2 form-control"
-                v-model="searchText"
-                type="text"
-                placeholder="Поиск по совпадениям..."
-                @keyup="onSearch"
-            >
-            <span class="ml-2 whitespace-no-wrap">
-                Найдено: {{ items.length }}
-            </span>
-        </div>
-    </div>
+							<template v-else-if="field.key == 'updated_by' && item.updater != null">
+								{{ item.updater.last_name + ' ' + item.updater.name }}
+							</template>
 
-    <!-- table NEW -->
-    <table class="table table-responsive j-table thead-word-break-normal">
-        <thead>
-        <tr>
-            <th class="b-table-sticky-column text-center">
-                <i class="fa fa-cogs" @click="adjustFields"></i>
-            </th>
-            <th
-                    v-for="(field, i) in fields"
-					:key="i"
-                    :class="[
-                     field.class,
-                    {'b-table-sticky-column l-60' : field.key == 'name'
-                }]"
-            >
-                {{ field.name }}
-            </th>
-        </tr>
-        </thead>
-        <tbody>
-        <template v-for="(item, i) in page_items">
-            <tr :key="i">
-                <td class="b-table-sticky-column text-center">
-                    {{ i + 1 }}
-                </td>
-                <td v-for="(field, f) in fields" :key="f" :class="[
-                     field.class,
-                    {'b-table-sticky-column l-60' : field.key == 'name'
-                }]">
+							<template v-else-if="non_editable_fields.includes(field.key)">
+								{{ item[field.key] }}
+							</template>
 
-                    <template v-if="field.key == 'created_by' && item.creator != null">
-                        {{ item.creator.last_name + ' ' + item.creator.name }}
-                    </template>
+							<template v-else-if="field.key == 'source' && item.source != undefined">
+								<div class="d-flex text-left">
+									<div
+										class="mr-4"
+										v-if="sources[item.source] !== undefined"
+									>
+										{{ sources[item.source] }}
+									</div>
+									<div v-if="Number(item.source) == 1 && groups[item.group_id] !== undefined">
+										{{ groups[item.group_id] }}
+									</div>
+								</div>
+							</template>
 
-                    <template v-else-if="field.key == 'updated_by' && item.updater != null">
-                        {{ item.updater.last_name + ' ' + item.updater.name }}
-                    </template>
+							<template v-else-if="field.key == 'method'">
+								<div v-if="methods[item.method] !== undefined">
+									{{ methods[item.method] }}
+								</div>
+							</template>
 
-                    <template v-else-if="non_editable_fields.includes(field.key)">
-                        {{ item[field.key] }}
-                    </template>
+							<template v-else-if="field.key == 'view'">
+								<div v-if="views[item.view] !== undefined">
+									{{ views[item.method] }}
+								</div>
+							</template>
 
-                    <template v-else-if="field.key == 'source' && item.source != undefined">
-                        <div class="d-flex text-left">
-                            <div class="mr-4" v-if="sources[item.source] !== undefined">{{ sources[item.source] }}</div>
-                            <div v-if="Number(item.source) == 1 && groups[item.group_id] !== undefined">{{ groups[item.group_id] }}</div>
-                        </div>
-                    </template>
+							<template v-else>
+								<input
+									:type="field.type"
+									v-model="item[field.key]"
+								>
+							</template>
+						</td>
+					</tr>
+				</template>
+			</tbody>
+		</table>
 
-                    <template v-else-if="field.key == 'method'">
-                        <div v-if="methods[item.method] !== undefined">{{ methods[item.method] }}</div>
-                    </template>
-
-                    <template v-else-if="field.key == 'view'">
-                        <div v-if="views[item.view] !== undefined">{{ views[item.method] }}</div>
-                    </template>
-
-                    <template v-else>
-                        <input
-                                :type="field.type"
-                                v-model="item[field.key]"
-                        />
-                    </template>
-                </td>
-            </tr>
-        </template>
-        </tbody>
-    </table>
-
-    <!-- pagination -->
-    <JwPagination
-        class=""
-        :key="paginationKey"
-        :items="items"
-        :labels="{
-            first: '<<',
-            last: '>>',
-            previous: '<',
-            next: '>'
-        }"
-        @changePage="onChangePage"
-        :pageSize="+pageSize"
-    />
+		<!-- pagination -->
+		<JwPagination
+			class=""
+			:key="paginationKey"
+			:items="items"
+			:labels="{
+				first: '<<',
+				last: '>>',
+				previous: '<',
+				next: '>'
+			}"
+			@changePage="onChangePage"
+			:page-size="+pageSize"
+		/>
 
 
-    <!-- modal Adjust Visible fields -->
-    <b-modal
-        v-model="modalAdjustVisibleFields"
-        title="Настройка списка"
-        @ok="modalAdjustVisibleFields = !modalAdjustVisibleFields"
-        ok-text="Закрыть"
-        size="lg">
-
-        <div class="row">
-
-            <div class="col-md-4 mb-2" v-for="(field, f) in all_fields" :key="f">
-                <b-form-checkbox
-                    v-model="show_fields[field.key]"
-                    :value="true"
-                    :unchecked-value="false"
-                >
-                    {{ field.name }}
-                </b-form-checkbox>
-            </div>
-
-        </div>
-    </b-modal>
-</div>
+		<!-- modal Adjust Visible fields -->
+		<b-modal
+			v-model="modalAdjustVisibleFields"
+			title="Настройка списка"
+			@ok="modalAdjustVisibleFields = !modalAdjustVisibleFields"
+			ok-text="Закрыть"
+			size="lg"
+		>
+			<div class="row">
+				<div
+					class="col-md-4 mb-2"
+					v-for="(field, f) in all_fields"
+					:key="f"
+				>
+					<b-form-checkbox
+						v-model="show_fields[field.key]"
+						:value="true"
+						:unchecked-value="false"
+					>
+						{{ field.name }}
+					</b-form-checkbox>
+				</div>
+			</div>
+		</b-modal>
+	</div>
 </template>
 
 <script>

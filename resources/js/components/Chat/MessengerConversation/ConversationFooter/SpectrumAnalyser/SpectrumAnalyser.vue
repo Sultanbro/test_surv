@@ -1,6 +1,10 @@
 <template>
-  <canvas :width="width" :height="height"
-          v-if="points" v-render="points"></canvas>
+	<canvas
+		:width="width"
+		:height="height"
+		v-if="points"
+		v-render="points"
+	/>
 </template>
 
 <script>

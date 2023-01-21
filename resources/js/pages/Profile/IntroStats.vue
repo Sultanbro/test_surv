@@ -1,76 +1,151 @@
 <template>
-    <div class="intro__stats _anim _anim-no-hide block">
-        <div class="stat__item" @click="$emit('pop', 'balance')">
-            <div class="stat__image">
-                <div class="back">
-                    <img src="/images/dist/image-1.svg" alt="stat image" class="stat__front">
-                </div>
-                <div class="front">
-                    <img src="/images/dist/image-1.svg" alt="stat image" class="stat__front">
-                </div>
-            </div>
-            <div class="stat__about">
-                <div class="stat__name">Баланс оклада</div>
-                <div class="stat__value"><span>{{ user_earnings.sumSalary }}</span> {{ user_earnings.currency }}</div>
-            </div>
-        </div>
-        <div class="stat__item" @click="$emit('pop', 'kpi')">
-            <div class="stat__image">
-                <div class="back">
-                    <img src="/images/dist/image-2.svg" alt="stat image" class="stat__back">
-                </div>
-                <div class="front">
-                    <img src="/images/dist/image-2.svg" alt="stat image" class="stat__front">
-                </div>
-            </div>
-            <div class="stat__about">
-                <div class="stat__name">KPI</div>
-                <div class="stat__value"><span>{{ user_earnings.sumKpi }}</span> {{ user_earnings.currency }}</div>
-            </div>
-        </div>
-        <div class="stat__item" @click="$emit('pop', 'bonus')">
-            <div class="stat__image">
-                <div class="back">
-                    <img src="/images/dist/image-3.svg" alt="stat image" class="stat__back">
-                </div>
-                <div class="front">
-                    <img src="/images/dist/image-3.svg" alt="stat image" class="stat__front">
-                </div>
-            </div>
-            <div class="stat__about">
-                <div class="stat__name">Бонусы</div>
-                <div class="stat__value"><span>{{ user_earnings.sumBonuses }}</span> {{ user_earnings.currency }}</div>
-            </div>
-        </div>
-        <div class="stat__item" @click="$emit('pop', 'qp')">
-            <div class="stat__image">
-                <div class="back">
-                    <img src="/images/dist/image-4.svg" alt="stat image" class="stat__back">
-                </div>
-                <div class="front">
-                    <img src="/images/dist/image-4.svg" alt="stat image" class="stat__front">
-                </div>
-            </div>
-            <div class="stat__about">
-                <div class="stat__name">Квартальный</div>
-                <div class="stat__value"><span>{{ user_earnings.sumQuartalPremiums }}</span> {{ user_earnings.currency }}</div>
-            </div>
-        </div>
-        <div class="stat__item" @click="$emit('pop', 'nominations')">
-            <div class="stat__image">
-                <div class="back">
-                    <img src="/images/dist/image-5.svg" alt="stat image" class="stat__back">
-                </div>
-                <div class="front">
-                    <img src="/images/dist/image-5.svg" alt="stat image" class="stat__front">
-                </div>
-            </div>
-            <div class="stat__about">
-                <div class="stat__name">Номинации</div>
-                <div class="stat__value"><span>{{ user_earnings.sumNominations }}</span></div>
-            </div>
-        </div>
-    </div>
+	<div class="intro__stats _anim _anim-no-hide block">
+		<div
+			class="stat__item"
+			@click="$emit('pop', 'balance')"
+		>
+			<div class="stat__image">
+				<div class="back">
+					<img
+						src="/images/dist/image-1.svg"
+						alt="stat image"
+						class="stat__front"
+					>
+				</div>
+				<div class="front">
+					<img
+						src="/images/dist/image-1.svg"
+						alt="stat image"
+						class="stat__front"
+					>
+				</div>
+			</div>
+			<div class="stat__about">
+				<div class="stat__name">
+					Баланс оклада
+				</div>
+				<div class="stat__value">
+					<span>{{ user_earnings.sumSalary }}</span> {{ user_earnings.currency }}
+				</div>
+			</div>
+		</div>
+		<div
+			class="stat__item"
+			@click="$emit('pop', 'kpi')"
+		>
+			<div class="stat__image">
+				<div class="back">
+					<img
+						src="/images/dist/image-2.svg"
+						alt="stat image"
+						class="stat__back"
+					>
+				</div>
+				<div class="front">
+					<img
+						src="/images/dist/image-2.svg"
+						alt="stat image"
+						class="stat__front"
+					>
+				</div>
+			</div>
+			<div class="stat__about">
+				<div class="stat__name">
+					KPI
+				</div>
+				<div class="stat__value">
+					<span>{{ user_earnings.sumKpi }}</span> {{ user_earnings.currency }}
+				</div>
+			</div>
+		</div>
+		<div
+			class="stat__item"
+			@click="$emit('pop', 'bonus')"
+		>
+			<div class="stat__image">
+				<div class="back">
+					<img
+						src="/images/dist/image-3.svg"
+						alt="stat image"
+						class="stat__back"
+					>
+				</div>
+				<div class="front">
+					<img
+						src="/images/dist/image-3.svg"
+						alt="stat image"
+						class="stat__front"
+					>
+				</div>
+			</div>
+			<div class="stat__about">
+				<div class="stat__name">
+					Бонусы
+				</div>
+				<div class="stat__value">
+					<span>{{ user_earnings.sumBonuses }}</span> {{ user_earnings.currency }}
+				</div>
+			</div>
+		</div>
+		<div
+			class="stat__item"
+			@click="$emit('pop', 'qp')"
+		>
+			<div class="stat__image">
+				<div class="back">
+					<img
+						src="/images/dist/image-4.svg"
+						alt="stat image"
+						class="stat__back"
+					>
+				</div>
+				<div class="front">
+					<img
+						src="/images/dist/image-4.svg"
+						alt="stat image"
+						class="stat__front"
+					>
+				</div>
+			</div>
+			<div class="stat__about">
+				<div class="stat__name">
+					Квартальный
+				</div>
+				<div class="stat__value">
+					<span>{{ user_earnings.sumQuartalPremiums }}</span> {{ user_earnings.currency }}
+				</div>
+			</div>
+		</div>
+		<div
+			class="stat__item"
+			@click="$emit('pop', 'nominations')"
+		>
+			<div class="stat__image">
+				<div class="back">
+					<img
+						src="/images/dist/image-5.svg"
+						alt="stat image"
+						class="stat__back"
+					>
+				</div>
+				<div class="front">
+					<img
+						src="/images/dist/image-5.svg"
+						alt="stat image"
+						class="stat__front"
+					>
+				</div>
+			</div>
+			<div class="stat__about">
+				<div class="stat__name">
+					Номинации
+				</div>
+				<div class="stat__value">
+					<span>{{ user_earnings.sumNominations }}</span>
+				</div>
+			</div>
+		</div>
+	</div>
 </template>
 
 <script>

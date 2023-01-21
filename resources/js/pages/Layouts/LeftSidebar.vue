@@ -2,7 +2,10 @@
 	<div class="header__left">
 		<!-- avatar  -->
 		<div class="header__avatar">
-			<img :src="avatar" alt="avatar image" >
+			<img
+				:src="avatar"
+				alt="avatar image"
+			>
 
 			<!-- hover menu -->
 			<div class="header__menu">
@@ -10,7 +13,10 @@
 					class="header__menu-project"
 					v-scroll-lock="isCreatingProject"
 				>
-					<img src="/images/dist/icon-settings.svg" alt="settings icon">
+					<img
+						src="/images/dist/icon-settings.svg"
+						alt="settings icon"
+					>
 					Проект: {{ project }}
 					<div class="header__submenu">
 						<a
@@ -20,9 +26,13 @@
 							class="header__submenu-item"
 							:class="{'header__submenu-item_active': cabinet.tenant_id === project}"
 						>
-							{{ cabinet.tenant_id }} <i v-if="cabinet.owner === 1" aria-hidden="true" class="fa fa-star"></i>
+							{{ cabinet.tenant_id }} <i
+								v-if="cabinet.owner === 1"
+								aria-hidden="true"
+								class="fa fa-star"
+							/>
 						</a>
-						<div class="header__submenu-divider"/>
+						<div class="header__submenu-divider" />
 						<div
 							v-if="isOwner"
 							@click="onNewProject"
@@ -37,22 +47,36 @@
 						class="header__menu-userid"
 						href="javascript:void(0)"
 					>#{{ $laravel.userId }}</a>
-					<p class="header__menu-email">{{ $laravel.email }}</p>
+					<p class="header__menu-email">
+						{{ $laravel.email }}
+					</p>
 				</div>
-				<router-link to="/cabinet" class="menu__item">
-					<img src="/images/dist/icon-settings.svg" alt="settings icon">
+				<router-link
+					to="/cabinet"
+					class="menu__item"
+				>
+					<img
+						src="/images/dist/icon-settings.svg"
+						alt="settings icon"
+					>
 					<span class="menu__item-title">Настройки</span>
 				</router-link>
-				<form action="/logout" method="POST">
+				<form
+					action="/logout"
+					method="POST"
+				>
 					<button class="menu__item w-full">
-						<img src="/images/dist/icon-exit.svg" alt="settings icon">
+						<img
+							src="/images/dist/icon-exit.svg"
+							alt="settings icon"
+						>
 						<span class="menu__item-title">Выход</span>
 					</button>
 					<input
 						type="hidden"
 						:value="$laravel.csrfToken"
 						name="_token"
-					/>
+					>
 				</form>
 			</div>
 		</div>

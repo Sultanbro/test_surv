@@ -1,42 +1,42 @@
 <template>
-  <transition name="fade">
-    <div class="messenger__modal-backdrop enter-active">
-      <div class="messenger__modal">
-        <header class="messenger__modal-header">
-          <slot name="header">
-            This is the default title!
-          </slot>
-          <button
-            type="button"
-            class="btn-close"
-            @click="close"
-          >
-            x
-          </button>
-        </header>
+	<transition name="fade">
+		<div class="messenger__modal-backdrop enter-active">
+			<div class="messenger__modal">
+				<header class="messenger__modal-header">
+					<slot name="header">
+						This is the default title!
+					</slot>
+					<button
+						type="button"
+						class="btn-close"
+						@click="close"
+					>
+						x
+					</button>
+				</header>
 
-        <section class="messenger__modal-body">
-          <slot name="body">
-            This is the default body!
-          </slot>
-        </section>
+				<section class="messenger__modal-body">
+					<slot name="body">
+						This is the default body!
+					</slot>
+				</section>
 
-        <footer class="messenger__modal-footer">
-          <slot name="footer">
-            This is the default footer!
-          </slot>
-          <button
-            v-if="closeButton"
-            type="button"
-            class="btn-green"
-            @click="close"
-          >
-            Закрыть
-          </button>
-        </footer>
-      </div>
-    </div>
-  </transition>
+				<footer class="messenger__modal-footer">
+					<slot name="footer">
+						This is the default footer!
+					</slot>
+					<button
+						v-if="closeButton"
+						type="button"
+						class="btn-green"
+						@click="close"
+					>
+						Закрыть
+					</button>
+				</footer>
+			</div>
+		</div>
+	</transition>
 </template>
 
 <script>

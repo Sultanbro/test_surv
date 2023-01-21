@@ -1,142 +1,143 @@
 <template>
-    <div class="news-birthday-card">
-        <img
-            class="news-birthday-card__image"
-            :src="user.avatar"
-            alt="img"
-        >
-        <div class="news-birthday-card__body">
-            <span
-                class="news-birthday-card__name"
-                v-html="user.name"
-            />
-            <span
-                :class="'news-birthday-card__birthday ' + getCardColor(user)"
-                v-html="user.date_human"
-            />
-        </div>
-        <div
-            :class="'news-birthday-card__gift ' +(success ? 'news-birthday-card__gift--success' : (hover ? 'news-birthday-card__gift--hover' : ''))"
-            @click="togleShowModal(true)"
-            @mouseleave="hover=false"
-            @mouseenter="hover=true"
-        >
-            <img
-                v-show="!success"
-                :src="hover ? '/icon/news/birthday/money-hover.svg' : '/icon/news/birthday/money.svg'"
-                alt=""
-            >
-            <img
-                v-show="success"
-                src="/icon/news/birthday/arrow.svg"
-                alt=""
-            >
-        </div>
+	<div class="news-birthday-card">
+		<img
+			class="news-birthday-card__image"
+			:src="user.avatar"
+			alt="img"
+		>
+		<div class="news-birthday-card__body">
+			<span
+				class="news-birthday-card__name"
+				v-html="user.name"
+			/>
+			<span
+				:class="'news-birthday-card__birthday ' + getCardColor(user)"
+				v-html="user.date_human"
+			/>
+		</div>
+		<div
+			:class="'news-birthday-card__gift ' +(success ? 'news-birthday-card__gift--success' : (hover ? 'news-birthday-card__gift--hover' : ''))"
+			@click="togleShowModal(true)"
+			@mouseleave="hover=false"
+			@mouseenter="hover=true"
+		>
+			<img
+				v-show="!success"
+				:src="hover ? '/icon/news/birthday/money-hover.svg' : '/icon/news/birthday/money.svg'"
+				alt=""
+			>
+			<img
+				v-show="success"
+				src="/icon/news/birthday/arrow.svg"
+				alt=""
+			>
+		</div>
 
-        <div v-show="hover" class="news-money-title">
-            <img
-                src="/icon/news/birthday/money-title.svg"
-                alt=""
-                class="news-money-title__img"
-            >
-            <span class="news-money-title__text">Подарить деньги</span>
-        </div>
+		<div
+			v-show="hover"
+			class="news-money-title"
+		>
+			<img
+				src="/icon/news/birthday/money-title.svg"
+				alt=""
+				class="news-money-title__img"
+			>
+			<span class="news-money-title__text">Подарить деньги</span>
+		</div>
 
-        <div
-            v-show="showModal && !showSecondModal"
-            v-scroll-lock="showModal"
-            class="news-gift-popup"
-        >
-            <div class="news-gift-popup__container">
+		<div
+			v-show="showModal && !showSecondModal"
+			v-scroll-lock="showModal"
+			class="news-gift-popup"
+		>
+			<div class="news-gift-popup__container">
+				<img
+					src="/icon/news/birthday/close.svg"
+					alt=""
+					class="news-gift-popup__close"
+					@click="togleShowModal(false)"
+				>
 
-                <img
-                    src="/icon/news/birthday/close.svg"
-                    alt=""
-                    class="news-gift-popup__close"
-                    @click="togleShowModal(false)"
-                >
+				<div class="news-gift-popup__header">
+					<img
+						src="/icon/news/birthday/money-title.svg"
+						alt=""
+						class="news-gift-popup__img"
+					>
+					<span class="news-gift-popup__text">Подарить деньги</span>
+				</div>
 
-                <div class="news-gift-popup__header">
-                    <img
-                        src="/icon/news/birthday/money-title.svg"
-                        alt=""
-                        class="news-gift-popup__img"
-                    >
-                    <span class="news-gift-popup__text">Подарить деньги</span>
-                </div>
+				<div class="news-gift-popup__body">
+					<input
+						class="news-gift-popup__input"
+						type="number"
+						placeholder="Укажите сумму"
+						v-model="summ"
+					>
+					<a class="news-gift-popup__submit">
+						<span @click="toggleSecondModal(summ)">Отправить</span>
+					</a>
+				</div>
 
-                <div class="news-gift-popup__body">
-                    <input
-                        class="news-gift-popup__input"
-                        type="number"
-                        placeholder="Укажите сумму"
-                        v-model="summ"
-                    >
-                    <a class="news-gift-popup__submit">
-                        <span @click="toggleSecondModal(summ)">Отправить</span>
-                    </a>
-                </div>
+				<div class="news-gift-popup__footer">
+					<span
+						class="news-gift-popup__button"
+						@click="toggleSecondModal(250)"
+					>250 KZT</span>
+					<span
+						class="news-gift-popup__button"
+						@click="toggleSecondModal(500)"
+					>500 KZT</span>
+					<span
+						class="news-gift-popup__button"
+						@click="toggleSecondModal(1000)"
+					>1000 KZT</span>
+				</div>
+			</div>
+		</div>
 
-                <div class="news-gift-popup__footer">
-                    <span
-                        class="news-gift-popup__button"
-                        @click="toggleSecondModal(250)"
-                    >250 KZT</span>
-                    <span
-                        class="news-gift-popup__button"
-                        @click="toggleSecondModal(500)"
-                    >500 KZT</span>
-                    <span
-                        class="news-gift-popup__button"
-                        @click="toggleSecondModal(1000)"
-                    >1000 KZT</span>
-                </div>
-            </div>
-        </div>
+		<div
+			v-show="showSecondModal"
+			class="news-gift-second"
+		>
+			<div class="news-gift-second__container">
+				<img
+					src="/icon/news/birthday/close.svg"
+					alt=""
+					class="news-gift-second__close"
+					@click="closeSecondModal()"
+				>
 
-        <div
-            v-show="showSecondModal"
-            class="news-gift-second"
-        >
-            <div class="news-gift-second__container">
+				<div class="news-gift-second__header">
+					<img src="/icon/news/birthday/hand.svg">
+					<div class="news-gift-second__text">
+						Вы дарите <span>{{ summ + ' KZT' }}</span> пользователю:
+					</div>
+				</div>
 
-                <img
-                    src="/icon/news/birthday/close.svg"
-                    alt=""
-                    class="news-gift-second__close"
-                    @click="closeSecondModal()"
-                >
-
-                <div class="news-gift-second__header">
-                    <img src="/icon/news/birthday/hand.svg">
-                    <div class="news-gift-second__text">
-                        Вы дарите <span>{{summ + ' KZT'}}</span> пользователю:
-                    </div>
-                </div>
-
-                <div class="news-gift-second__body">
-                    <img
-                        :src="user.avatar"
-                        alt="img"
-                        class="news-birthday-card__image"
-                    >
-                    <div class="news-birthday-card__body">
-                        <span
-                            class="news-birthday-card__name"
-                            v-html="user.name"
-                        />
-                        <span
-                            :class="'news-birthday-card__birthday ' + getCardColor(user)"
-                            v-html="user.date_human"
-                        />
-                    </div>
-                    <a class="news-gift-second__send">
-                        <span @click="sendMoney">Подарить!</span>
-                    </a>
-                </div>
-            </div>
-        </div>
-    </div>
+				<div class="news-gift-second__body">
+					<img
+						:src="user.avatar"
+						alt="img"
+						class="news-birthday-card__image"
+					>
+					<div class="news-birthday-card__body">
+						<span
+							class="news-birthday-card__name"
+							v-html="user.name"
+						/>
+						<span
+							:class="'news-birthday-card__birthday ' + getCardColor(user)"
+							v-html="user.date_human"
+						/>
+					</div>
+					<a class="news-gift-second__send">
+						<span @click="sendMoney">Подарить!</span>
+					</a>
+				</div>
+			</div>
+		</div>
+	</div>
 </template>
 
 <script>

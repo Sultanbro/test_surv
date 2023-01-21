@@ -1,185 +1,292 @@
 <template>
-<div class="kpi-item">
+	<div class="kpi-item">
+		<table class="table table-inner">
+			<thead>
+				<tr>
+					<th />
+					<th>Наименование активности</th>
+					<th>Вид плана</th>
+					<th v-if="kpi_page">
+						Показатели <i
+							class="fa fa-info-circle"
+							@click="showDescription()"
+						/>
+					</th>
+					<th v-if="kpi_page">
+						Ед. изм.
+					</th>
+					<th>Целевое значение на месяц</th>
+					<th>Удельный вес, %</th>
+					<th v-if="!kpi_page">
+						Факт
+					</th>
+					<th v-if="!kpi_page">
+						% выполнения
+					</th>
+					<th>Сумма премии при выполнении плана, KZT</th>
+					<th>Заработано</th>
+					<th v-if="kpi_page" />
+				</tr>
+			</thead>
+			<tbody :key="refreshItemsKey">
+				<template v-if="kpi_page">
+					<tr
+						v-for="(item, i) in items"
+						:key="i"
+						class="jt-row"
+						:class="{
+							'j-hidden': !expanded,
+							'j-deleted': item.deleted != undefined && item.deleted,
+						}"
+					>
+						<td class="first-column text-center">
+							{{ i + 1 }}
+						</td>
+						<td>
+							<input
+								type="text"
+								v-model="item.name"
+							>
+						</td>
+						<td class="text-center">
+							<select v-model="item.method">
+								<option
+									v-for="key in Object.keys(methods)"
+									:key="key"
+									:value="key"
+								>
+									{{ methods[key] }}
+								</option>
+							</select>
+						</td>
+						<td class="text-center no-hover">
+							<div class="d-flex">
+								<select
+									v-model="item.source"
+									@change="++source_key"
+								>
+									<option
+										v-for="key in Object.keys(sources)"
+										:key="key"
+										:value="key"
+									>
+										{{ sources[key] }}
+									</option>
+								</select>
 
-    <table class="table table-inner">
-        <thead>
-            <tr>
-                <th></th>
-                <th>Наименование активности</th>
-                <th>Вид плана</th>
-                <th v-if="kpi_page">Показатели <i class="fa fa-info-circle" @click="showDescription()"></i></th>
-                <th v-if="kpi_page">Ед. изм.</th>
-                <th>Целевое значение на месяц</th>
-                <th>Удельный вес, %</th>
-                <th v-if="!kpi_page">Факт</th>
-                <th v-if="!kpi_page">% выполнения</th>
-                <th>Сумма премии при выполнении плана, KZT</th>
-                <th>Заработано</th>
-                <th v-if="kpi_page"></th>
-            </tr>
-        </thead>
-        <tbody :key="refreshItemsKey">
+								<select
+									v-if="item.source == 1"
+									v-model="item.group_id"
+									:key="'c' + source_key"
+									@change="++source_key"
+								>
+									<option
+										value="0"
+										selected
+									>
+										-
+									</option>
+									<option
+										v-for="(group, id) in groups"
+										:value="id"
+										:key="id"
+									>
+										{{ group }}
+									</option>
+								</select>
 
-            <template v-if="kpi_page">
-                <tr
-                    v-for="(item, i) in items" :key="i"
-                    class="jt-row"
-                    :class="{
-                        'j-hidden': !expanded,
-                        'j-deleted': item.deleted != undefined && item.deleted,
-                    }"
-                >
-                    <td class="first-column text-center">{{ i + 1 }}</td>
-                    <td>
-                        <input type="text" v-model="item.name" />
-                    </td>
-                    <td class="text-center">
-                        <select v-model="item.method">
-                            <option v-for="key in Object.keys(methods)" :key="key"
-                                :value="key">
-                                {{ methods[key] }}
-                            </option>
-                        </select>
-                    </td>
-                    <td class="text-center no-hover">
-                        <div class="d-flex">
-                            <select
-                                v-model="item.source"
-                                @change="++source_key"
-                            >
-                                <option v-for="key in Object.keys(sources)" :key="key"
-                                    :value="key">
-                                    {{ sources[key] }}
-                                </option>
-                            </select>
+								<select
+									:class="{'hidden' : item.source == 0}"
+									v-model="item.activity_id"
+									:key="'d' + source_key"
+								>
+									<option
+										value="0"
+										selected
+									>
+										-
+									</option>
+									<option
+										v-for="activity in grouped_activities(item.source, item.group_id)"
+										:key="activity.id"
+										:value="activity.id"
+									>
+										{{ activity.name }}
+									</option>
+								</select>
 
-                            <select
-                                v-if="item.source == 1"
-                                v-model="item.group_id"
-                                :key="'c' + source_key"
-                                @change="++source_key"
-                            >
-                                <option value="0" selected>-</option>
-                                <option v-for="(group, id) in groups" :value="id" :key="id">{{ group }}</option>
-                            </select>
+								<select
+									v-if="item.source == 1 && !isCell(item.activity_id)"
+									v-model="item.common"
+								>
+									<option
+										value="0"
+										selected
+									>
+										Свой
+									</option>
+									<option value="1">
+										Всего отдела
+									</option>
+								</select>
 
-                            <select
-                                :class="{'hidden' : item.source == 0}"
-                                v-model="item.activity_id"
-                                :key="'d' + source_key"
-                            >
-                                <option value="0" selected>-</option>
-                                <option v-for="activity in grouped_activities(item.source, item.group_id)" :key="activity.id" :value="activity.id">{{ activity.name }}</option>
-                            </select>
+								<input
+									v-if="item.source == 1 && isCell(item.activity_id)"
+									type="text"
+									v-model="item.cell"
+									placeholder="Ячейка: C7"
+								>
+							</div>
+						</td>
+						<td class="text-center w-sm">
+							<input
+								type="text"
+								v-model="item.unit"
+							>
+						</td>
+						<td class="text-center">
+							<input
+								type="number"
+								v-model="item.plan"
+							>
+						</td>
+						<td class="text-center">
+							<input
+								type="number"
+								v-model="item.share"
+								min="0"
+								max="100"
+							>
+						</td>
+						<td class="text-center">
+							{{ item.sum }}
+						</td>
+						<td class="text-center">
+							0
+						</td>
+						<td class="no-hover">
+							<i
+								class="fa fa-arrow-up mx-3 btn btn-danger btn-icon"
+								@click="restoreItem(i)"
+								v-if="item.deleted != undefined && item.deleted"
+							/>
+							<i
+								class="fa fa-trash mx-3 btn btn-danger btn-icon"
+								@click="deleteItem(i)"
+								v-else
+							/>
+						</td>
+					</tr>
 
-                            <select
-                                v-if="item.source == 1 && !isCell(item.activity_id)"
-                                v-model="item.common"
-                            >
-                                <option value="0" selected>Свой</option>
-                                <option value="1">Всего отдела</option>
-                            </select>
+					<tr>
+						<td
+							colspan="10"
+							class="plus-item"
+							@click="addItem"
+						>
+							<div class="p-4">
+								<i class="fa fa-plus mr-2" /> <b>Добавить активность</b>
+							</div>
+						</td>
+					</tr>
+				</template>
 
-                            <input
-                                v-if="item.source == 1 && isCell(item.activity_id)"
-                                type="text"
-                                v-model="item.cell"
-                                placeholder="Ячейка: C7"
-                            />
-                        </div>
-                    </td>
-                    <td class="text-center w-sm">
-                        <input type="text" v-model="item.unit" />
-                    </td>
-                    <td class="text-center">
-                        <input type="number" v-model="item.plan"  />
-                    </td>
-                    <td class="text-center">
-                        <input type="number" v-model="item.share" min="0"  max="100"/>
-                    </td>
-                    <td class="text-center">
-                        {{ item.sum }}
-                    </td>
-                    <td class="text-center">
-                        0
-                    </td>
-                    <td class="no-hover">
-                        <i class="fa fa-arrow-up mx-3 btn btn-danger btn-icon" @click="restoreItem(i)" v-if="item.deleted != undefined && item.deleted"></i>
-                        <i class="fa fa-trash mx-3 btn btn-danger btn-icon" @click="deleteItem(i)" v-else></i>
-                    </td>
-                </tr>
+				<template v-else>
+					<tr
+						v-for="(item, i) in items"
+						:key="i"
+						class="jt-row j-hidden"
+						:class="{
+							'j-hidden': !expanded,
+						}"
+					>
+						<td class="text-center">
+							{{ i + 1 }}
+						</td>
+						<td class="px-2">
+							{{ item.name }}
+						</td>
+						<td class="text-center">
+							{{ methods[item.method] }}
+						</td>
+						<td class="text-center">
+							<b>{{ item.plan }} {{ item.unit }}</b>
+						</td>
+						<td class="text-center">
+							{{ item.share }}
+						</td>
+						<td
+							class="text-center"
+							v-if="editable"
+						>
+							<input
+								v-if="[1,3,5].includes(item.method)"
+								type="number"
+								v-model="item.fact"
+								min="0"
+								@change="updateStat(i)"
+							>
+							<input
+								v-else
+								type="number"
+								v-model="item.avg"
+								min="0"
+								@change="updateStat(i)"
+							>
+						</td>
+						<td
+							class="text-center"
+							v-else
+						>
+							<!-- sum or avg by method -->
+							<div v-if="[1,3,5].includes(item.method)">
+								{{ item.fact }}
+							</div>
+							<div v-else>
+								{{ Number(item.avg).toFixed(2) }}
+							</div>
+						</td>
+						<td class="text-center">
+							{{ item.percent }}
+						</td>
+						<td class="text-center">
+							{{ my_sum * (parseInt(item.share)/100) }}
+						</td>
+						<td class="text-center">
+							{{ item.sum }}
+						</td>
+					</tr>
+				</template>
+			</tbody>
+		</table>
 
-                <tr>
-                    <td colspan="10" class="plus-item" @click="addItem">
-                        <div class="p-4">
-                            <i class="fa fa-plus mr-2"></i> <b>Добавить активность</b>
-                        </div>
-                    </td>
-                </tr>
-            </template>
-
-            <template v-else>
-                <tr
-                    v-for="(item, i) in items" :key="i"
-                    class="jt-row j-hidden"
-                    :class="{
-                        'j-hidden': !expanded,
-                    }"
-                >
-                    <td class="text-center">{{ i + 1 }}</td>
-                    <td class="px-2">{{ item.name }}</td>
-                    <td class="text-center">{{ methods[item.method] }}</td>
-                    <td class="text-center"><b>{{ item.plan }} {{ item.unit }}</b></td>
-                    <td class="text-center">{{ item.share }}</td>
-                    <td class="text-center" v-if="editable">
-                        <input v-if="[1,3,5].includes(item.method)" type="number" v-model="item.fact" min="0" @change="updateStat(i)" />
-                        <input v-else type="number" v-model="item.avg" min="0" @change="updateStat(i)" />
-                    </td>
-                    <td class="text-center" v-else>
-                        <!-- sum or avg by method -->
-                        <div v-if="[1,3,5].includes(item.method)">{{ item.fact }}</div>
-                        <div v-else>{{ Number(item.avg).toFixed(2) }}</div>
-                    </td>
-                    <td class="text-center">{{ item.percent }}</td>
-                    <td class="text-center">{{my_sum * (parseInt(item.share)/100)}}</td>
-                    <td class="text-center">
-                        {{ item.sum }}
-                    </td>
-                </tr>
-
-            </template>
-
-        </tbody>
-    </table>
-
-    <sidebar
-        title="Показатели"
-        :open="show_description"
-        @close="toggle()"
-        width="70%"
-    >
-        <p>Тут указывается какой показатель сотрудника нужно смотреть для выявления процента выполнения.</p>
-        <p>Первый select источник:</p>
-        <p><strong>- без источникa:</strong></p>
-        <p>руководитель сам будет ставить нужный коэффициент</p>
-        <p><strong>- из показателей отдела:&nbsp;</strong></p>
-        <p>берем данные из подробных таблиц в Аналитике отдела.</p>
-        <p>Появляются три selectа:</p>
-        <ul>
-        <li>выбираем отдел</li>
-        <li>выбираем показатель</li>
-        <li>выбор <em>Свой</em> или <em>Всего отдела</em>. Свой выберет только показатель пользователя, а Всего отдела - какой показатель сделал отдел.</li>
-        </ul>
-        <p>Если выбрать <em>ячейка из сводной</em> нужно будет указать название ячейки как в Excel.</p>
-        <p><strong>- из битрикса:</strong></p>
-        <p>Если в интеграции настроен <strong>Битрикс24</strong>, будем брать оттуда показатели, при условии, что&nbsp; ID пользователей из битрикса были связаны с Jobtron.</p>
-        <p><strong>- из amocrm:</strong></p>
-        <p>Если в интеграции настроен <strong>Amocrm</strong>, будем брать оттуда показатели, при условии, что&nbsp; ID пользователей из amocrm были связаны с Jobtron.</p>
-        <p><strong>- другие :</strong></p>
-        <p>разные показатели в Jobtron</p>
-    </sidebar>
-
-</div>
+		<sidebar
+			title="Показатели"
+			:open="show_description"
+			@close="toggle()"
+			width="70%"
+		>
+			<p>Тут указывается какой показатель сотрудника нужно смотреть для выявления процента выполнения.</p>
+			<p>Первый select источник:</p>
+			<p><strong>- без источникa:</strong></p>
+			<p>руководитель сам будет ставить нужный коэффициент</p>
+			<p><strong>- из показателей отдела:&nbsp;</strong></p>
+			<p>берем данные из подробных таблиц в Аналитике отдела.</p>
+			<p>Появляются три selectа:</p>
+			<ul>
+				<li>выбираем отдел</li>
+				<li>выбираем показатель</li>
+				<li>выбор <em>Свой</em> или <em>Всего отдела</em>. Свой выберет только показатель пользователя, а Всего отдела - какой показатель сделал отдел.</li>
+			</ul>
+			<p>Если выбрать <em>ячейка из сводной</em> нужно будет указать название ячейки как в Excel.</p>
+			<p><strong>- из битрикса:</strong></p>
+			<p>Если в интеграции настроен <strong>Битрикс24</strong>, будем брать оттуда показатели, при условии, что&nbsp; ID пользователей из битрикса были связаны с Jobtron.</p>
+			<p><strong>- из amocrm:</strong></p>
+			<p>Если в интеграции настроен <strong>Amocrm</strong>, будем брать оттуда показатели, при условии, что&nbsp; ID пользователей из amocrm были связаны с Jobtron.</p>
+			<p><strong>- другие :</strong></p>
+			<p>разные показатели в Jobtron</p>
+		</sidebar>
+	</div>
 </template>
 
 <script>

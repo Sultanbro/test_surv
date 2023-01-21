@@ -1,12 +1,12 @@
 <template>
-  <label class="input-text">
-    <input
-      type="text"
-      class="input-text-input"
-      :placeholder="placeholder"
-      v-model="localValue"
-    >
-  </label>
+	<label class="input-text">
+		<input
+			type="text"
+			class="input-text-input"
+			:placeholder="placeholder"
+			v-model="localValue"
+		>
+	</label>
 </template>
 
 <script>

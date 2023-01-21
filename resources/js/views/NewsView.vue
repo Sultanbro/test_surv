@@ -29,15 +29,18 @@ export default {
 </script>
 
 <template>
-    <DefaultLayout>
-        <link rel="stylesheet" href="/css/news.css"/>
-        <div class="news-page">
-            <NewsPages
-                v-show="access"
-                :page="page"
-                :access="access"
-            />
-            <BirthdayFeed v-show="access"/>
-        </div>
-    </DefaultLayout>
+	<DefaultLayout>
+		<link
+			rel="stylesheet"
+			href="/css/news.css"
+		>
+		<div class="news-page">
+			<NewsPages
+				v-show="access"
+				:page="page"
+				:access="access"
+			/>
+			<BirthdayFeed v-show="access" />
+		</div>
+	</DefaultLayout>
 </template>

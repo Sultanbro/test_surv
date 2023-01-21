@@ -1,15 +1,17 @@
 <template>
-    <div class="n-table">
-        <div class="n-row">
-            <div><p style="color: rgb(54, 192, 184);">Название</p></div>
-            <div><p>Действие</p></div>
-            <div><p>Текст уведомления</p></div>
-            <div><p>Группы</p></div>
-        </div>
-        <div class="n-row">
-            
-        </div>
-    </div>
+	<div class="n-table">
+		<div class="n-row">
+			<div>
+				<p style="color: rgb(54, 192, 184);">
+					Название
+				</p>
+			</div>
+			<div><p>Действие</p></div>
+			<div><p>Текст уведомления</p></div>
+			<div><p>Группы</p></div>
+		</div>
+		<div class="n-row" />
+	</div>
 </template>
 
 <script>

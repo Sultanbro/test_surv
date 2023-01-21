@@ -1,8 +1,5 @@
 <template>
-    <div class="profile-buttons">
-
-
-    </div>
+	<div class="profile-buttons" />
 </template>
 
 <script>

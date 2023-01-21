@@ -1,154 +1,191 @@
 <template>
-<div v-if="positions">
-
-	<div class="row mb-2">
-		<div class="col-3 text-left">
-			<b-input-group size="sm">
-				<b-form-input v-model="filter.email" type="search" id="filterInput" placeholder="Поиск" />
-				<b-input-group-append>
+	<div v-if="positions">
+		<div class="row mb-2">
+			<div class="col-3 text-left">
+				<b-input-group size="sm">
+					<b-form-input
+						v-model="filter.email"
+						type="search"
+						id="filterInput"
+						placeholder="Поиск"
+					/>
+					<b-input-group-append>
 					<!-- <b-button :disabled="!filter.email" @click="filter.email = ''">Очистить</b-button> -->
-				</b-input-group-append>
-			</b-input-group>
+					</b-input-group-append>
+				</b-input-group>
+			</div>
+			<div class="col-2">
+				<b-form-select
+					v-model="filter.group"
+					:options="groups"
+					size="sm"
+				/>
+			</div>
+			<div class="col-2  d-flex align-items-center">
+				<b-form-select
+					v-model="tableFilter"
+					:options="tableFilters"
+					size="sm"
+					@change="getUsers()"
+				/>
+			</div>
+			<div class="col-2  d-flex align-items-center">
+				<b-form-select
+					v-model="position"
+					:options="jobFilters"
+					size="sm"
+					@change="getUsers()"
+				/>
+			</div>
+			<div class="col-3 justify-content-end d-flex align-items-start">
+				<a
+					href="/timetracking/create-person"
+					class="btn btn-success rounded"
+				>Пригласить</a>
+				<b-button
+					@click="showModal = !showModal"
+					class="btn-primary rounded ml-1"
+					title="Показывать поля"
+				>
+					<i
+						class="fa fa-eye"
+						aria-hidden="true"
+					/>
+				</b-button>
+				<b-button
+					@click="showFilterModal = !showFilterModal"
+					class="btn-primary rounded ml-1"
+					title="Дополнительные фильтры таблицы"
+				>
+					<i
+						class="fa fa-filter"
+						aria-hidden="true"
+					/>
+				</b-button>
+			</div>
+			<div class="col-12">
+				<p class="mt-2 mr-2 fz14 mb-0">
+					<b> Все:</b> {{ filtered.length }}  <b>Рес:</b> {{ staff_res }}
+				</p>
+			</div>
 		</div>
-		<div class="col-2">
-			<b-form-select v-model="filter.group" :options="groups" size="sm"></b-form-select>
-		</div>
-		<div class="col-2  d-flex align-items-center">
-			<b-form-select v-model="tableFilter" :options="tableFilters" size="sm" @change="getUsers()"></b-form-select>
-		</div>
-		<div class="col-2  d-flex align-items-center">
-			<b-form-select v-model="position" :options="jobFilters" size="sm" @change="getUsers()"></b-form-select>
-		</div>
-		<div class="col-3 justify-content-end d-flex align-items-start">
 
-			<a href="/timetracking/create-person" class="btn btn-success rounded">Пригласить</a>
-			<b-button @click="showModal = !showModal" class="btn-primary rounded ml-1" title="Показывать поля">
-				<i class="fa fa-eye" aria-hidden="true"></i>
-			</b-button>
-			<b-button @click="showFilterModal = !showFilterModal" class="btn-primary rounded ml-1" title="Дополнительные фильтры таблицы">
-				<i class="fa fa-filter" aria-hidden="true"></i>
-			</b-button>
-		</div>
-		<div class="col-12">
-			<p class="mt-2 mr-2 fz14 mb-0"> <b> Все:</b> {{ filtered.length }}  <b>Рес:</b> {{ staff_res }}</p>
-		</div>
-	</div>
-
-	<div style="clear: both;"></div>
+		<div style="clear: both;" />
 
 		<div class="table-responsive ul table-container">
-		<b-table
-			ref="table"
-			bordered
-			show-empty
-			emptyText="Ничего нет"
-			stacked="md"
-			:items="itemProvider"
-			:fields="fields"
-			:current-page="currentPage"
-			:per-page="perPage"
-			:filter="filter"
-			:filterIncludedFields="filterOn"
-			:sort-by.sync="sortBy"
-			:sort-desc.sync="sortDesc"
-			:sort-direction="sortDirection"
-			empty-filtered-text="Еще не найдено ни одной записи"
-			empty-text="Не найдено ни одной записи"
-			@filtered="onFiltered"
-			id="table"
-			:class="{
-				'hide-1': !showFields.number,
-				'hide-2': !showFields.id,
-				'hide-3': !showFields.email,
-				'hide-4': !showFields.name,
-				'hide-5': !showFields.last_name,
-				'hide-6': !showFields.groups,
-				'hide-7': !showFields.register_date,
-				'hide-8': !showFields.fire_date,
-				'hide-9': !showFields.fire_cause,
-				'hide-10': !showFields.user_type,
-				'hide-11': !showFields.segment,
-				'hide-12': !showFields.applied,
-				'hide-13': !showFields.full_time,
-			}"
-		>
-			<template #cell(index)="row">
-				{{ row.index + 1 }}
-			</template>
-			<template #cell(id)="data">
-				<a
-					v-if="is_admin && subdomain == 'bp'"
-					:href="'https://test.jobtron.org/login-as-employee/' + data.item.id + '?auth=' + auth_token"
-					target="_blank"
-				>
-					{{ data.value}}
-				</a>
-				<a
-					v-else
-					:href="'/timetracking/edit-person?id='+data.item.id"
-					target="_blank"
-				>
-					{{ data.value}}
-				</a>
-			</template>
-			<template #cell(email)="data">
-				<a
-					:href="'/timetracking/edit-person?id='+data.item.id"
-					target="_blank"
-				>{{ data.value }}</a>
-			</template>
-
-			<template #cell(segment)="data">
-					<div>
-							<div v-if="segments.hasOwnProperty(data.value)">
-									{{ segments[data.value] }}
-							</div>
-							<div v-else>
-									{{ data.value }}
-							</div>
-					</div>
-			</template>
-
-			<template #cell(groups)="data">
-				<b-badge
-					v-for="group_id in data.value"
-					:key="group_id"
-					variant="primary"
-					class="mr-1"
-				>{{ groups[group_id] }}</b-badge>
-			</template>
-			<template #cell(created_at)="row">
-				{{ $moment(row.value).format('DD.MM.YYYY') }}
-			</template>
-			<template #cell(full_time)="data">
-				<div v-if="data.value == 1">
-						Full
-				</div>
-				<div v-else>
-						Part
-				</div>
-			</template>
-			<template #cell(fire_cause)="data">
-				<div v-if="tableFilter != 'active'">
-					{{data.value}}
-				</div>
-			</template>
-		</b-table>
-	</div>
-
-	<div class="my-2 d-flex align-items-center justify-content-end">
-		<div>
-			<b-pagination
-				v-model="currentPage"
-				:total-rows="totalRows"
+			<b-table
+				ref="table"
+				bordered
+				show-empty
+				stacked="md"
+				:items="itemProvider"
+				:fields="fields"
+				:current-page="currentPage"
 				:per-page="perPage"
-				align="fill"
-				size="sm"
-				class="my-0 p-0"
-			/>
-<!--       <a href="#" @click="exportData()" class="btn btn-success btn-sm ml-2 rounded d-block" v-if="[5,18].includes(currentUser)"><i class="far fa-file-excel"></i>Экспорт</a>-->
+				:filter="filter"
+				:filter-included-fields="filterOn"
+				:sort-by.sync="sortBy"
+				:sort-desc.sync="sortDesc"
+				:sort-direction="sortDirection"
+				empty-filtered-text="Еще не найдено ни одной записи"
+				empty-text="Не найдено ни одной записи"
+				@filtered="onFiltered"
+				id="table"
+				:class="{
+					'hide-1': !showFields.number,
+					'hide-2': !showFields.id,
+					'hide-3': !showFields.email,
+					'hide-4': !showFields.name,
+					'hide-5': !showFields.last_name,
+					'hide-6': !showFields.groups,
+					'hide-7': !showFields.register_date,
+					'hide-8': !showFields.fire_date,
+					'hide-9': !showFields.fire_cause,
+					'hide-10': !showFields.user_type,
+					'hide-11': !showFields.segment,
+					'hide-12': !showFields.applied,
+					'hide-13': !showFields.full_time,
+				}"
+			>
+				<template #cell(index)="row">
+					{{ row.index + 1 }}
+				</template>
+				<template #cell(id)="data">
+					<a
+						v-if="is_admin && subdomain == 'bp'"
+						:href="'https://test.jobtron.org/login-as-employee/' + data.item.id + '?auth=' + auth_token"
+						target="_blank"
+					>
+						{{ data.value }}
+					</a>
+					<a
+						v-else
+						:href="'/timetracking/edit-person?id='+data.item.id"
+						target="_blank"
+					>
+						{{ data.value }}
+					</a>
+				</template>
+				<template #cell(email)="data">
+					<a
+						:href="'/timetracking/edit-person?id='+data.item.id"
+						target="_blank"
+					>{{ data.value }}</a>
+				</template>
+
+				<template #cell(segment)="data">
+					<div>
+						<div v-if="segments.hasOwnProperty(data.value)">
+							{{ segments[data.value] }}
+						</div>
+						<div v-else>
+							{{ data.value }}
+						</div>
+					</div>
+				</template>
+
+				<template #cell(groups)="data">
+					<b-badge
+						v-for="group_id in data.value"
+						:key="group_id"
+						variant="primary"
+						class="mr-1"
+					>
+						{{ groups[group_id] }}
+					</b-badge>
+				</template>
+				<template #cell(created_at)="row">
+					{{ $moment(row.value).format('DD.MM.YYYY') }}
+				</template>
+				<template #cell(full_time)="data">
+					<div v-if="data.value == 1">
+						Full
+					</div>
+					<div v-else>
+						Part
+					</div>
+				</template>
+				<template #cell(fire_cause)="data">
+					<div v-if="tableFilter != 'active'">
+						{{ data.value }}
+					</div>
+				</template>
+			</b-table>
 		</div>
-	</div>
+
+		<div class="my-2 d-flex align-items-center justify-content-end">
+			<div>
+				<b-pagination
+					v-model="currentPage"
+					:total-rows="totalRows"
+					:per-page="perPage"
+					align="fill"
+					size="sm"
+					class="my-0 p-0"
+				/>
+				<!--       <a href="#" @click="exportData()" class="btn btn-success btn-sm ml-2 rounded d-block" v-if="[5,18].includes(currentUser)"><i class="far fa-file-excel"></i>Экспорт</a>-->
+			</div>
+		</div>
 
 
 
@@ -157,222 +194,312 @@
 
 
 
-	<b-modal
+		<b-modal
 			v-model="showModal"
 			title="Настройка списка «Сотрудники»"
 			@ok="showModal = !showModal"
 			ok-text="Закрыть"
 			size="lg"
-	>
-		<template v-for="error in errors">
-			<b-alert show variant="danger" :key="error">{{ error }}</b-alert>
-		</template>
+		>
+			<template v-for="error in errors">
+				<b-alert
+					show
+					variant="danger"
+					:key="error"
+				>
+					{{ error }}
+				</b-alert>
+			</template>
 
-		<div class="row">
-
-			<div class="col-md-4 mb-2">
-				<b-form-checkbox
+			<div class="row">
+				<div class="col-md-4 mb-2">
+					<b-form-checkbox
 						v-model="showFields.number"
 						:value="true"
 						:unchecked-value="false"
-						>
+					>
 						Номер
-				</b-form-checkbox>
-				<b-form-checkbox
+					</b-form-checkbox>
+					<b-form-checkbox
 						v-model="showFields.id"
 						:value="true"
 						:unchecked-value="false"
-						>
+					>
 						id
-				</b-form-checkbox>
-				<b-form-checkbox
+					</b-form-checkbox>
+					<b-form-checkbox
 						v-model="showFields.email"
 						:value="true"
 						:unchecked-value="false"
-						>
+					>
 						Email
-				</b-form-checkbox>
-				<b-form-checkbox
+					</b-form-checkbox>
+					<b-form-checkbox
 						v-model="showFields.name"
 						:value="true"
 						:unchecked-value="false"
-						>
+					>
 						Имя
-				</b-form-checkbox>
-				<b-form-checkbox
+					</b-form-checkbox>
+					<b-form-checkbox
 						v-model="showFields.full_time"
 						:value="true"
 						:unchecked-value="false"
-						>
+					>
 						Full / Part-time
-				</b-form-checkbox>
-			</div>
-			<div class="col-md-4 mb-2">
-				<b-form-checkbox
+					</b-form-checkbox>
+				</div>
+				<div class="col-md-4 mb-2">
+					<b-form-checkbox
 						v-model="showFields.last_name"
 						:value="true"
 						:unchecked-value="false"
-						>
+					>
 						Фамилия
-				</b-form-checkbox>
-				<b-form-checkbox
+					</b-form-checkbox>
+					<b-form-checkbox
 						v-model="showFields.groups"
 						:value="true"
 						:unchecked-value="false"
-						>
+					>
 						Отделы
-				</b-form-checkbox>
-				<b-form-checkbox
+					</b-form-checkbox>
+					<b-form-checkbox
 						v-model="showFields.register_date"
 						:value="true"
 						:unchecked-value="false"
-						>
+					>
 						Дата регистрации
-				</b-form-checkbox>
-				<b-form-checkbox
+					</b-form-checkbox>
+					<b-form-checkbox
 						v-model="showFields.fire_date"
 						:value="true"
 						:unchecked-value="false"
-						>
+					>
 						Дата увольнения
-				</b-form-checkbox>
-				<b-form-checkbox
+					</b-form-checkbox>
+					<b-form-checkbox
 						v-model="showFields.fire_cause"
 						:value="true"
 						:unchecked-value="false"
-						>
+					>
 						Причина увольнения
-				</b-form-checkbox>
+					</b-form-checkbox>
+				</div>
 
-
-			</div>
-
-			<div class="col-md-4 mb-2">
-				<b-form-checkbox
+				<div class="col-md-4 mb-2">
+					<b-form-checkbox
 						v-model="showFields.user_type"
 						:value="true"
 						:unchecked-value="false"
-						>
+					>
 						Remote/Office
-				</b-form-checkbox>
-				<b-form-checkbox
+					</b-form-checkbox>
+					<b-form-checkbox
 						v-model="showFields.segment"
 						:value="true"
 						:unchecked-value="false"
-						>
+					>
 						Сегмент
-				</b-form-checkbox>
-				<b-form-checkbox
+					</b-form-checkbox>
+					<b-form-checkbox
 						v-model="showFields.applied"
 						:value="true"
 						:unchecked-value="false"
-						>
+					>
 						Дата принятия
-				</b-form-checkbox>
+					</b-form-checkbox>
+				</div>
 			</div>
-		</div>
-	</b-modal>
+		</b-modal>
 
 
-	<b-modal
-		v-model="showFilterModal"
-		title="Фильтр «Сотрудники»"
-		@ok="applyFilter"
-		ok-text="Применить"
-		size="md"
-	>
-
-				<div class="row">
-
-					<div class="col-md-6 mb-2">
-						<div class="d-flex align-items-center">
-								<input type="checkbox" v-model="active.date" class="mr-3">
-								<p class="mb-0 pointer" @click="toggleActive('date')">Дата регистрации</p>
-						</div>
-					</div>
-
-					<div class="col-6">
-						<div class="relative ooooo" :class="{'active': active.date}">
-							<div class="d-flex align-items-center">
-								<label for="" class=" mr-2 mb-0">От</label> <input class="form-control mb-1 form-control-sm" type="date" v-model="filter.start_date">
-							</div>
-							<div class="d-flex align-items-center">
-								<label for="" class=" mr-2 mb-0">До</label> <input class="form-control form-control-sm" type="date" v-model="filter.end_date">
-							</div>
-						</div>
-					</div>
-
-				</div>
-
-
-				<div class="row mt-2">
-
-					<div class="col-md-6 mb-2">
-						<div class="d-flex align-items-center">
-								<input type="checkbox" v-model="active.date_deactivate" class="mr-3">
-								<p class="mb-0 pointer" @click="toggleActive('date_deactivate')">Дата увольнения</p>
-						</div>
-					</div>
-
-					<div class="col-6">
-
-						<div class="relative ooooo" :class="{'active': active.date_deactivate}">
-							<div class="d-flex align-items-center">
-								<label for="" class=" mr-2 mb-0">От</label> <input class="form-control mb-1 form-control-sm" type="date" v-model="filter.start_date_deactivate">
-							</div>
-							<div class="d-flex align-items-center">
-								<label for="" class=" mr-2 mb-0">До</label> <input class="form-control form-control-sm" type="date" v-model="filter.end_date_deactivate">
-							</div>
-						</div>
-
+		<b-modal
+			v-model="showFilterModal"
+			title="Фильтр «Сотрудники»"
+			@ok="applyFilter"
+			ok-text="Применить"
+			size="md"
+		>
+			<div class="row">
+				<div class="col-md-6 mb-2">
+					<div class="d-flex align-items-center">
+						<input
+							type="checkbox"
+							v-model="active.date"
+							class="mr-3"
+						>
+						<p
+							class="mb-0 pointer"
+							@click="toggleActive('date')"
+						>
+							Дата регистрации
+						</p>
 					</div>
 				</div>
 
-				<div class="row mt-2" v-if="tableFilter != 'trainees'">
-					<div class="col-md-6 mb-2">
+				<div class="col-6">
+					<div
+						class="relative ooooo"
+						:class="{'active': active.date}"
+					>
 						<div class="d-flex align-items-center">
-								<input type="checkbox" v-model="active.date_applied" class="mr-3">
-								<p class="mb-0 pointer" @click="toggleActive('date_applied')">Дата принятия</p>
+							<label
+								for=""
+								class=" mr-2 mb-0"
+							>От</label> <input
+								class="form-control mb-1 form-control-sm"
+								type="date"
+								v-model="filter.start_date"
+							>
 						</div>
-					</div>
-
-					<div class="col-6">
-						<div class="relative ooooo" :class="{'active': active.date_applied}">
-							<div class="d-flex align-items-center">
-								<label for="" class=" mr-2 mb-0">От</label> <input class="form-control mb-1 form-control-sm" type="date" v-model="filter.start_date_applied">
-							</div>
-							<div class="d-flex align-items-center">
-								<label for="" class=" mr-2 mb-0">До</label> <input class="form-control form-control-sm" type="date" v-model="filter.end_date_applied">
-							</div>
+						<div class="d-flex align-items-center">
+							<label
+								for=""
+								class=" mr-2 mb-0"
+							>До</label> <input
+								class="form-control form-control-sm"
+								type="date"
+								v-model="filter.end_date"
+							>
 						</div>
 					</div>
 				</div>
+			</div>
 
-				<div class="row mt-2">
-					<div class="col-md-6 mb-2">
-						<p>Сегмент</p>
-					</div>
-
-					<div class="col-6">
-						<div class="d-flex align-items-center">
-							<select  class="form-control mb-1 form-control-sm" v-model="filter.segment">
-								<option value="0">Все сегменты</option>
-								<option value="1">Кандидаты на вакансию (таргет)</option>
-								<option value="2">Кандидаты на вакансию (hh, nur, job)</option>
-								<option value="3">Кандидаты на вакансию (promo акции)</option>
-								<option value="4">Кандидаты на вакансию (месенджеры)</option>
-								<option value="5">Кандидаты на вакансию (Гарантия трудоустройства)</option>
-								<option value="6">Кандидаты на вакансию (Участники семинаров, форумов, встреч)</option>
-							</select>
-						</div>
-
+			<div class="row mt-2">
+				<div class="col-md-6 mb-2">
+					<div class="d-flex align-items-center">
+						<input
+							type="checkbox"
+							v-model="active.date_deactivate"
+							class="mr-3"
+						>
+						<p
+							class="mb-0 pointer"
+							@click="toggleActive('date_deactivate')"
+						>
+							Дата увольнения
+						</p>
 					</div>
 				</div>
 
-	</b-modal>
+				<div class="col-6">
+					<div
+						class="relative ooooo"
+						:class="{'active': active.date_deactivate}"
+					>
+						<div class="d-flex align-items-center">
+							<label
+								for=""
+								class=" mr-2 mb-0"
+							>От</label> <input
+								class="form-control mb-1 form-control-sm"
+								type="date"
+								v-model="filter.start_date_deactivate"
+							>
+						</div>
+						<div class="d-flex align-items-center">
+							<label
+								for=""
+								class=" mr-2 mb-0"
+							>До</label> <input
+								class="form-control form-control-sm"
+								type="date"
+								v-model="filter.end_date_deactivate"
+							>
+						</div>
+					</div>
+				</div>
+			</div>
 
+			<div
+				v-if="tableFilter != 'trainees'"
+				class="row mt-2"
+			>
+				<div class="col-md-6 mb-2">
+					<div class="d-flex align-items-center">
+						<input
+							type="checkbox"
+							v-model="active.date_applied"
+							class="mr-3"
+						>
+						<p
+							class="mb-0 pointer"
+							@click="toggleActive('date_applied')"
+						>
+							Дата принятия
+						</p>
+					</div>
+				</div>
 
-</div>
+				<div class="col-6">
+					<div
+						class="relative ooooo"
+						:class="{'active': active.date_applied}"
+					>
+						<div class="d-flex align-items-center">
+							<label
+								for=""
+								class=" mr-2 mb-0"
+							>От</label> <input
+								class="form-control mb-1 form-control-sm"
+								type="date"
+								v-model="filter.start_date_applied"
+							>
+						</div>
+						<div class="d-flex align-items-center">
+							<label
+								for=""
+								class=" mr-2 mb-0"
+							>До</label> <input
+								class="form-control form-control-sm"
+								type="date"
+								v-model="filter.end_date_applied"
+							>
+						</div>
+					</div>
+				</div>
+			</div>
+
+			<div class="row mt-2">
+				<div class="col-md-6 mb-2">
+					<p>Сегмент</p>
+				</div>
+
+				<div class="col-6">
+					<div class="d-flex align-items-center">
+						<select
+							class="form-control mb-1 form-control-sm"
+							v-model="filter.segment"
+						>
+							<option value="0">
+								Все сегменты
+							</option>
+							<option value="1">
+								Кандидаты на вакансию (таргет)
+							</option>
+							<option value="2">
+								Кандидаты на вакансию (hh, nur, job)
+							</option>
+							<option value="3">
+								Кандидаты на вакансию (promo акции)
+							</option>
+							<option value="4">
+								Кандидаты на вакансию (месенджеры)
+							</option>
+							<option value="5">
+								Кандидаты на вакансию (Гарантия трудоустройства)
+							</option>
+							<option value="6">
+								Кандидаты на вакансию (Участники семинаров, форумов, встреч)
+							</option>
+						</select>
+					</div>
+				</div>
+			</div>
+		</b-modal>
+	</div>
 </template>
 
 <script>

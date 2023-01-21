@@ -1,26 +1,35 @@
 <template>
-  <a
-      v-click-outside="hidePopup"
-      :class="{'jTariffs-valute-active': active}"
-      class="jTariffs-valute"
-      href="javascript:void(0)"
-      @click="active = !active"
-  >
-    {{ valute || '₽' }}
-    <div
-        class="jTariffs-valute-popup"
-    >
-      <div class="jTariffs-valute-wrapper" @click="onSelectValute('₽')">
-        <div class="jTariffs-valute-button">₽</div>
-      </div>
-      <div class="jTariffs-valute-wrapper" @click="onSelectValute('₸')">
-        <div class="jTariffs-valute-button">₸</div>
-      </div>
-      <div class="jTariffs-valute-wrapper" @click="onSelectValute('$')">
-        <div class="jTariffs-valute-button">$</div>
-      </div>
-    </div>
-  </a>
+	<a
+		v-click-outside="hidePopup"
+		:class="{'jTariffs-valute-active': active}"
+		class="jTariffs-valute"
+		href="javascript:void(0)"
+		@click="active = !active"
+	>
+		{{ valute || '₽' }}
+		<div
+			class="jTariffs-valute-popup"
+		>
+			<div
+				class="jTariffs-valute-wrapper"
+				@click="onSelectValute('₽')"
+			>
+				<div class="jTariffs-valute-button">₽</div>
+			</div>
+			<div
+				class="jTariffs-valute-wrapper"
+				@click="onSelectValute('₸')"
+			>
+				<div class="jTariffs-valute-button">₸</div>
+			</div>
+			<div
+				class="jTariffs-valute-wrapper"
+				@click="onSelectValute('$')"
+			>
+				<div class="jTariffs-valute-button">$</div>
+			</div>
+		</div>
+	</a>
 </template>
 
 <script>

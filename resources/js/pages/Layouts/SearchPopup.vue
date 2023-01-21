@@ -1,7 +1,10 @@
 <template>
-<div class="popup__con" :class="{'v-loading': loading}">
-    ????????
-</div>
+	<div
+		class="popup__con"
+		:class="{'v-loading': loading}"
+	>
+		????????
+	</div>
 </template>
 
 <script>

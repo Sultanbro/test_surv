@@ -1,137 +1,156 @@
 <template>
-  <div class="p-3 course">
-    <div class="d-flex relative align-items-start">
-      <div class="w-full namer">
-        <input
-          type="text"
-          v-model="course.name"
-          class="mb-3 name"
-          placeholder="Название курса"
-        />
-        <i class="fa fa-edit"></i>
-      </div>
-      <button class="btn btn-success ml-3" @click="saveCourse">
-        Сохранить
-      </button>
-    </div>
+	<div class="p-3 course">
+		<div class="d-flex relative align-items-start">
+			<div class="w-full namer">
+				<input
+					type="text"
+					v-model="course.name"
+					class="mb-3 name"
+					placeholder="Название курса"
+				>
+				<i class="fa fa-edit" />
+			</div>
+			<button
+				class="btn btn-success ml-3"
+				@click="saveCourse"
+			>
+				Сохранить
+			</button>
+		</div>
 
-    <div class="info mb-3">
-      <div class="d-flex">
-        <b>Автор:</b>
-        <p>{{ course.author }}</p>
-      </div>
-      <div class="d-flex">
-        <b>Создано:</b>
-        <p>{{ course.created }}</p>
-      </div>
-    </div>
-    <div class="d-flex mb-3">
-      <div class="w-full">
-        <textarea
-          v-model="course.text"
-          :style="'height:285px'"
-          class="form-control"
-          placeholder="Описание курса"
-        />
-      </div>
+		<div class="info mb-3">
+			<div class="d-flex">
+				<b>Автор:</b>
+				<p>{{ course.author }}</p>
+			</div>
+			<div class="d-flex">
+				<b>Создано:</b>
+				<p>{{ course.created }}</p>
+			</div>
+		</div>
+		<div class="d-flex mb-3">
+			<div class="w-full">
+				<textarea
+					v-model="course.text"
+					:style="'height:285px'"
+					class="form-control"
+					placeholder="Описание курса"
+				/>
+			</div>
 
-      <!-- profile image -->
-      <div class="ml-3">
+			<!-- profile image -->
+			<div class="ml-3">
+				<croppa
+					v-model="myCroppa"
+					:width="250"
+					:height="250"
+					:canvas-color="'default'"
+					:placeholder="'Выберите изображение'"
+					:placeholder-font-size="0"
+					:placeholder-color="'default'"
+					:accept="'image/*'"
+					:file-size-limit="0"
+					:quality="2"
+					:zoom-speed="20"
+					:initial-image="image"
+					:key="croppa_key"
+				/>
 
-          <croppa
-            v-model="myCroppa"
-            :width="250"
-            :height="250"
-            :canvas-color="'default'"
-            :placeholder="'Выберите изображение'"
-            :placeholder-font-size="0"
-            :placeholder-color="'default'"
-            :accept="'image/*'"
-            :file-size-limit="0"
-            :quality="2"
-            :zoom-speed="20"
-            :initial-image="image"
-            :key="croppa_key"
-          />
+				<button
+					style="width: 250px; display: block"
+					class="btn btn-success"
+					@click="saveCropped"
+				>
+					Обрезать и сохранить
+				</button>
+			</div>
+		</div>
 
-          <button
-            style="width: 250px; display: block"
-            class="btn btn-success"
-            @click="saveCropped"
-          >
-            Обрезать и сохранить
-          </button>
+		<div class="items">
+			<div class="d-flex ">
+				<p class="title mr-3">
+					Курс состоит из ({{ course.elements.length }}):
+				</p>
+				<div class="btns w-50 pr-5">
+					<div class="d-flex mb-2">
+						<SuperSelectAlt
+							:key="1"
+							:values="course.elements"
+							class="w-full mb-4"
+							:hide_selected="true"
+						/>
+					</div>
+				</div>
+			</div>
 
-      </div>
+			<Draggable
+				class="dragArea ml-0 mr-5"
+				tag="ul"
+				handle=".fa-bars"
+				:list="course.elements"
+				:group="{ name: 'g1' }"
+				@end="saveOrder"
+			>
+				<template v-for="(el, e_index) in course.elements">
+					<li
+						:key="e_index"
+						class="chapter opened"
+						:id="el.id"
+						:class="{'deleted' : el.deleted != undefined && el.deleted}"
+					>
+						<div class="d-flex aic mb-2">
+							<div class="handles">
+								<i class="fa fa-bars mover" />
+								<i class="fa fa-caret-right pointer shower" />
+							</div>
+							<div>
+								<i
+									class="fa fa-book pointer mr-2"
+									v-if="el.type == 1"
+								/>
+								<i
+									class="fa fa-play pointer mr-2"
+									v-if="el.type == 2"
+								/>
+								<i
+									class="fa fa-database pointer mr-2"
+									v-if="el.type == 3"
+								/>
+							</div>
+							<p
+								@click="toggleOpen(el)"
+								class="mb-0"
+							>
+								{{ el.name }}
+								<i
+									class="fa fa-info-circle pointer ml-2"
+									v-if="el.deleted != undefined && el.deleted"
+									v-b-popover.hover.right.html="'Элемент был удален'"
+									title="Не найдено"
+								/>
+							</p>
+							<i
+								class="fa fa-trash pointer ml-2"
+								@click.stop="deleteItem(e_index)"
+							/>
+						</div>
+					</li>
+				</template>
+			</Draggable>
 
-    </div>
 
-    <div class="items">
-      <div class="d-flex ">
-        <p class="title mr-3">Курс состоит из ({{ course.elements.length }}):</p>
-        <div class="btns w-50 pr-5">
-          <div class="d-flex mb-2">
-            <SuperSelectAlt
-              :key="1"
-              :values="course.elements"
-              class="w-full mb-4"
-              :hide_selected="true"
-            />
-          </div>
-        </div>
-      </div>
+			<div class="mt-3 pr-5">
+				Курс проходят:
 
-      <Draggable
-        class="dragArea ml-0 mr-5"
-        tag="ul"
-        handle=".fa-bars"
-        :list="course.elements"
-        :group="{ name: 'g1' }"
-        @end="saveOrder"
-      >
-        <template v-for="(el, e_index) in course.elements">
-          <li :key="e_index" class="chapter opened" :id="el.id" :class="{'deleted' : el.deleted != undefined && el.deleted}">
-            <div class="d-flex aic mb-2">
-              <div class="handles">
-                <i class="fa fa-bars mover"></i>
-                <i class="fa fa-caret-right pointer shower"></i>
-              </div>
-              <div>
-                <i class="fa fa-book pointer mr-2" v-if="el.type == 1"></i>
-                <i class="fa fa-play pointer mr-2" v-if="el.type == 2"></i>
-                <i class="fa fa-database pointer mr-2" v-if="el.type == 3"></i>
-              </div>
-              <p @click="toggleOpen(el)" class="mb-0">
-                {{ el.name }}
-                <i class="fa fa-info-circle pointer ml-2"
-                  v-if="el.deleted != undefined  && el.deleted"
-                  v-b-popover.hover.right.html="'Элемент был удален'"
-                  title="Не найдено">
-                </i>
-              </p>
-              <i
-                class="fa fa-trash pointer ml-2"
-                @click.stop="deleteItem(e_index)"
-              ></i>
-            </div>
-          </li>
-        </template>
-      </Draggable>
-
-
-      <div class="mt-3 pr-5">
-        Курс проходят:
-
-        <SuperSelect
-          :key="superselectKey"
-          :values="course.targets"
-          class="w-50 mb-4"
-          :select_all_btn="true"
-        />
-
-      </div>
-    </div>
-  </div>
+				<SuperSelect
+					:key="superselectKey"
+					:values="course.targets"
+					class="w-50 mb-4"
+					:select_all_btn="true"
+				/>
+			</div>
+		</div>
+	</div>
 </template>
 
 <script>

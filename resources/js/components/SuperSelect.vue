@@ -1,87 +1,154 @@
 <template>
-<div class="super-select" ref="select" :class="posClass" v-click-outside="close">
-    <div class="selected-items flex-wrap noscrollbar" @click="toggleShow">
-        <div
-            v-for="(value, i) in valueList"
-            :key="i"
-            class="selected-item"
-            :class="'value' + value.type">
-            {{ value.name }}
-            <i class="fa fa-times" @click.stop="removeValue(i, value.id)" v-if="!one_choice_made"></i>
-        </div>
-        <div
-            id="placeholder"
-            class="selected-item placeholder">
-            {{ placeholder }}
-        </div>
-    </div>
-    <div class="show" v-if="show">
-        <div class="search">
-            <input
-                v-model="searchText"
-                type="text"
-                placeholder="Поиск..."
-                ref="search"
-                @keyup="onSearch()">
-        </div>
+	<div
+		class="super-select"
+		ref="select"
+		:class="posClass"
+		v-click-outside="close"
+	>
+		<div
+			class="selected-items flex-wrap noscrollbar"
+			@click="toggleShow"
+		>
+			<div
+				v-for="(value, i) in valueList"
+				:key="i"
+				class="selected-item"
+				:class="'value' + value.type"
+			>
+				{{ value.name }}
+				<i
+					class="fa fa-times"
+					@click.stop="removeValue(i, value.id)"
+					v-if="!one_choice_made"
+				/>
+			</div>
+			<div
+				id="placeholder"
+				class="selected-item placeholder"
+			>
+				{{ placeholder }}
+			</div>
+		</div>
+		<div
+			class="show"
+			v-if="show"
+		>
+			<div class="search">
+				<input
+					v-model="searchText"
+					type="text"
+					placeholder="Поиск..."
+					ref="search"
+					@keyup="onSearch()"
+				>
+			</div>
 
-        <div class="options-window">
-            <div class="types">
-                <div class="type" v-if="disable_type !== 1" :class="{'active': type == 1}" @click="changeType(1)" >
-                    <div class="text">Сотрудники</div>
-                    <i class="fa fa-user"></i>
-                </div>
-                <div class="type" v-if="disable_type !== 2" :class="{'active': type == 2}" @click="changeType(2)">
-                    <div class="text" >Отделы</div>
-                    <i class="fa fa-users"></i>
-                </div>
-                <div class="type" v-if="disable_type !== 3" :class="{'active': type == 3}" @click="changeType(3)" >
-                    <div class="text">Должности</div>
-                    <i class="fa fa-briefcase"></i>
-                </div>
+			<div class="options-window">
+				<div class="types">
+					<div
+						class="type"
+						v-if="disable_type !== 1"
+						:class="{'active': type == 1}"
+						@click="changeType(1)"
+					>
+						<div class="text">
+							Сотрудники
+						</div>
+						<i class="fa fa-user" />
+					</div>
+					<div
+						class="type"
+						v-if="disable_type !== 2"
+						:class="{'active': type == 2}"
+						@click="changeType(2)"
+					>
+						<div class="text">
+							Отделы
+						</div>
+						<i class="fa fa-users" />
+					</div>
+					<div
+						class="type"
+						v-if="disable_type !== 3"
+						:class="{'active': type == 3}"
+						@click="changeType(3)"
+					>
+						<div class="text">
+							Должности
+						</div>
+						<i class="fa fa-briefcase" />
+					</div>
 
-                <div class="type mt-5 active all" v-if="select_all_btn && !single" @click="selectAll">
-                    <div class="text">Все</div>
-                    <i class="fa fa-check"></i>
-                </div>
-            </div>
-
-
-            <div class="options">
-
-                <template v-for="(option, index) in filtered_options">
-                    <div
-                            class="option shown-profile"
-                            :key="index"
-                            v-if="option.shownProfile"
-                    >
-                        <i class="fa fa-user" v-if="option.type == 1"></i>
-                        <i class="fa fa-users" v-if="option.type == 2"></i>
-                        <i class="fa fa-briefcase" v-if="option.type == 3"></i>
-                        {{ option.name }}
-                        <i class="fa fa-times" v-if="option.selected" @click.stop="removeValueFromList(index)"></i>
-                    </div>
-                    <div
-                            class="option"
-                            :key="index + 'a'"
-                            @click="addValue(index)"
-                            :class="{'selected': option.selected}"
-                            v-else
-                    >
-                        <i class="fa fa-user" v-if="option.type == 1"></i>
-                        <i class="fa fa-users" v-if="option.type == 2"></i>
-                        <i class="fa fa-briefcase" v-if="option.type == 3"></i>
-                        {{ option.name }}
-                        <i class="fa fa-times" v-if="option.selected" @click.stop="removeValueFromList(index)"></i>
-                    </div>
-                </template>
-
-            </div>
-        </div>
-    </div>
+					<div
+						class="type mt-5 active all"
+						v-if="select_all_btn && !single"
+						@click="selectAll"
+					>
+						<div class="text">
+							Все
+						</div>
+						<i class="fa fa-check" />
+					</div>
+				</div>
 
 
-</div>
+				<div class="options">
+					<template v-for="(option, index) in filtered_options">
+						<div
+							class="option shown-profile"
+							:key="index"
+							v-if="option.shownProfile"
+						>
+							<i
+								class="fa fa-user"
+								v-if="option.type == 1"
+							/>
+							<i
+								class="fa fa-users"
+								v-if="option.type == 2"
+							/>
+							<i
+								class="fa fa-briefcase"
+								v-if="option.type == 3"
+							/>
+							{{ option.name }}
+							<i
+								class="fa fa-times"
+								v-if="option.selected"
+								@click.stop="removeValueFromList(index)"
+							/>
+						</div>
+						<div
+							class="option"
+							:key="index + 'a'"
+							@click="addValue(index)"
+							:class="{'selected': option.selected}"
+							v-else
+						>
+							<i
+								class="fa fa-user"
+								v-if="option.type == 1"
+							/>
+							<i
+								class="fa fa-users"
+								v-if="option.type == 2"
+							/>
+							<i
+								class="fa fa-briefcase"
+								v-if="option.type == 3"
+							/>
+							{{ option.name }}
+							<i
+								class="fa fa-times"
+								v-if="option.selected"
+								@click.stop="removeValueFromList(index)"
+							/>
+						</div>
+					</template>
+				</div>
+			</div>
+		</div>
+	</div>
 </template>
 
 <script>

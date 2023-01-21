@@ -1,53 +1,80 @@
 <template>
-  <div ref="messengerChats"
-       :class="!fullscreen ? 'messenger__chats-container messenger__collapsed' : 'messenger__chats-container messenger__fullscreen'">
-    <ContextMenu
-      :show="contextMenuVisible"
-      :x="contextMenuX"
-      :y="contextMenuY"
-      :parent-element="$refs.messengerChats"
-    >
-      <template v-if="contextMenuChat">
-        <a v-if="contextMenuChat.pinned" href="javascript:" @click="contextMenuVisible = false; unpinChat(contextMenuChat)">Открепить чат</a>
-        <a v-else href="javascript:" @click="contextMenuVisible = false; pinChat(contextMenuChat)">Закрепить чат</a>
-        <a v-if="contextMenuChat.owner_id === user.id" href="javascript:" @click="contextMenuVisible = false; remove(contextMenuChat)">Удалить чат</a>
-        <a v-else href="javascript:" @click="contextMenuVisible = false; leftChat(contextMenuChat)">Покинуть чат</a>
-      </template>
-    </ContextMenu>
-    <div class="messenger__chats-list">
-      <template v-if="!isSearchMode || !fullscreen">
-        <div
-          v-for="item in sortedChats"
-          :key="item.id"
-          :class="(chat && chat.id === item.id) ? 'messenger__chat-item messenger__chat-selected' : 'messenger__chat-item'"
-          @click="openChat(item, $event)"
-          @contextmenu.prevent="showChatContextMenu($event, item)"
-        >
-          <ContactItem :item="item" :fullscreen="fullscreen"/>
-        </div>
-      </template>
-      <template v-else-if="isSearchMode">
-        <div
-          v-for="item in contacts"
-          :key="item.id"
-          :class="(chat && chat.id === item.id) ? 'messenger__chat-item messenger__chat-selected' : 'messenger__chat-item'"
-          :data-test-id="item.id"
-          @click="openChat(item, $event)"
-          @contextmenu.prevent="showChatContextMenu($event, item)"
-        >
-          <ContactItem :item="item" :fullscreen="fullscreen"/>
-        </div>
-        <div
-          v-for="(item, index) in searchMessagesChatsResults"
-          :key="index"
-          :class="'messenger__chat-item'"
-          @click="openChat(item, $event)"
-        >
-          <ContactItem :item="item" :fullscreen="fullscreen"/>
-        </div>
-      </template>
-    </div>
-  </div>
+	<div
+		ref="messengerChats"
+		:class="!fullscreen ? 'messenger__chats-container messenger__collapsed' : 'messenger__chats-container messenger__fullscreen'"
+	>
+		<ContextMenu
+			:show="contextMenuVisible"
+			:x="contextMenuX"
+			:y="contextMenuY"
+			:parent-element="$refs.messengerChats"
+		>
+			<template v-if="contextMenuChat">
+				<a
+					v-if="contextMenuChat.pinned"
+					href="javascript:"
+					@click="contextMenuVisible = false; unpinChat(contextMenuChat)"
+				>Открепить чат</a>
+				<a
+					v-else
+					href="javascript:"
+					@click="contextMenuVisible = false; pinChat(contextMenuChat)"
+				>Закрепить чат</a>
+				<a
+					v-if="contextMenuChat.owner_id === user.id"
+					href="javascript:"
+					@click="contextMenuVisible = false; remove(contextMenuChat)"
+				>Удалить чат</a>
+				<a
+					v-else
+					href="javascript:"
+					@click="contextMenuVisible = false; leftChat(contextMenuChat)"
+				>Покинуть чат</a>
+			</template>
+		</ContextMenu>
+		<div class="messenger__chats-list">
+			<template v-if="!isSearchMode || !fullscreen">
+				<div
+					v-for="item in sortedChats"
+					:key="item.id"
+					:class="(chat && chat.id === item.id) ? 'messenger__chat-item messenger__chat-selected' : 'messenger__chat-item'"
+					@click="openChat(item, $event)"
+					@contextmenu.prevent="showChatContextMenu($event, item)"
+				>
+					<ContactItem
+						:item="item"
+						:fullscreen="fullscreen"
+					/>
+				</div>
+			</template>
+			<template v-else-if="isSearchMode">
+				<div
+					v-for="item in contacts"
+					:key="item.id"
+					:class="(chat && chat.id === item.id) ? 'messenger__chat-item messenger__chat-selected' : 'messenger__chat-item'"
+					:data-test-id="item.id"
+					@click="openChat(item, $event)"
+					@contextmenu.prevent="showChatContextMenu($event, item)"
+				>
+					<ContactItem
+						:item="item"
+						:fullscreen="fullscreen"
+					/>
+				</div>
+				<div
+					v-for="(item, index) in searchMessagesChatsResults"
+					:key="index"
+					:class="'messenger__chat-item'"
+					@click="openChat(item, $event)"
+				>
+					<ContactItem
+						:item="item"
+						:fullscreen="fullscreen"
+					/>
+				</div>
+			</template>
+		</div>
+	</div>
 </template>
 
 <script>

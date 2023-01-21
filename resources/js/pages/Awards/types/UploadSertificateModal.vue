@@ -1,151 +1,299 @@
 <template>
-    <div>
-        <BRow class="m-0 cestificates-constructor">
-            <BCol cols="3">
-                <div class="settings">
-                    <BFormGroup class="custom-switch custom-switch-sm">
-                        <b-form-checkbox switch v-model="bgOp">Затемнить фон</b-form-checkbox>
-                    </BFormGroup>
-                    <div v-if="selectedEdit === 1">
-                        <BFormGroup
-                                label="Имя и Фамилия (Впишите любое)"
-                                description="Это поле будет брать имя и фамилию того сотрудника, который пройдет курс"
-                        >
-                            <BFormInput v-model="textFullName"></BFormInput>
-                        </BFormGroup>
-                        <BFormGroup label="Жирность текста">
-                            <BFormSelect v-model="fullName.fontWeight" :options="fontWeightList"></BFormSelect>
-                        </BFormGroup>
-                        <BFormGroup label="Размер текста">
-                            <BFormInput v-model="fullName.size"></BFormInput>
-                        </BFormGroup>
-                        <BFormGroup class="custom-switch" label="Ширина блока">
-                            <b-form-checkbox switch v-model="fullName.fullWidth">На всю ширину</b-form-checkbox>
-                            <b-form-input v-model="fullName.width" :disabled="fullName.fullWidth"></b-form-input>
-                        </BFormGroup>
-                        <BFormGroup label="Цвет текста"><input type="color" class="color-picker"
-                                                               v-model="fullName.color">
-                        </BFormGroup>
-                        <b-form-group label="Формат текста">
-                            <b-form-radio v-model="fullName.uppercase" name="some-radios" value="none" :checked="true">По умолчанию
-                            </b-form-radio>
-                            <b-form-radio v-model="fullName.uppercase" name="some-radios" value="uppercase">Все
-                                заглавные
-                            </b-form-radio>
-                        </b-form-group>
-                        <b-form-group label="Курсив">
-                            <b-form-radio v-model="fullName.fontStyle" name="font-style-fullname" value="italic">
-                                Да
-                            </b-form-radio>
-                            <b-form-radio v-model="fullName.fontStyle" name="font-style-fullname" value="normal" :checked="true">
-                                Нет
-                            </b-form-radio>
-                        </b-form-group>
-                    </div>
-                    <div v-if="selectedEdit === 2">
-                        <BFormGroup
-                                label="Название курса"
-                                description="Это поле будет брать название курса, который пройдет сотрудник"
-                        >
-                            <BFormInput v-model="textCourseName"></BFormInput>
-                        </BFormGroup>
-                        <BFormGroup label="Жирность текста">
-                            <BFormSelect v-model="courseName.fontWeight" :options="fontWeightList"></BFormSelect>
-                        </BFormGroup>
-                        <BFormGroup label="Размер текста">
-                            <BFormInput v-model="courseName.size"></BFormInput>
-                        </BFormGroup>
-                        <BFormGroup class="custom-switch" label="Ширина блока">
-                            <b-form-checkbox switch v-model="courseName.fullWidth">На всю ширину</b-form-checkbox>
-                            <b-form-input v-model="courseName.width" :disabled="courseName.fullWidth"></b-form-input>
-                        </BFormGroup>
-                        <BFormGroup label="Цвет текста"><input type="color" class="color-picker"
-                                                               v-model="courseName.color">
-                        </BFormGroup>
-                        <b-form-group label="Формат текста">
-                            <b-form-radio v-model="courseName.uppercase" name="some-radios" value="none">По умолчанию
-                            </b-form-radio>
-                            <b-form-radio v-model="courseName.uppercase" name="some-radios" value="uppercase">Все
-                                заглавные
-                            </b-form-radio>
-                        </b-form-group>
-                        <b-form-group label="Курсив">
-                            <b-form-radio v-model="courseName.fontStyle" name="font-style-course" value="italic">
-                                Да
-                            </b-form-radio>
-                            <b-form-radio v-model="courseName.fontStyle" name="font-style-course" value="normal" :checked="true">
-                                Нет
-                            </b-form-radio>
-                        </b-form-group>
-                    </div>
-                    <div v-if="selectedEdit === 4">
-                        <BFormGroup
-                                label="Дата"
-                                description="Здесь будет дата окончания курса"
-                        >
-                            <BFormInput v-model="textDate"></BFormInput>
-                        </BFormGroup>
-                        <BFormGroup label="Жирность текста">
-                            <BFormSelect v-model="date.fontWeight" :options="fontWeightList"></BFormSelect>
-                        </BFormGroup>
-                        <BFormGroup label="Размер текста">
-                            <BFormInput type="number" v-model="date.size"></BFormInput>
-                        </BFormGroup>
-                        <BFormGroup class="custom-switch" label="Ширина блока">
-                            <b-form-checkbox switch v-model="date.fullWidth">На всю ширину</b-form-checkbox>
-                            <b-form-input type="number" v-model="date.width" :disabled="date.fullWidth"></b-form-input>
-                        </BFormGroup>
-                        <BFormGroup label="Цвет текста"><input type="color" class="color-picker" v-model="date.color">
-                        </BFormGroup>
-<!--                        <b-form-group label="Формат текста">-->
-<!--                            <b-form-radio v-model="date.uppercase" name="some-radios" value="none">По умолчанию-->
-<!--                            </b-form-radio>-->
-<!--                            <b-form-radio v-model="date.uppercase" name="some-radios" value="uppercase">Все заглавные-->
-<!--                            </b-form-radio>-->
-<!--                        </b-form-group>-->
-                        <b-form-group label="Курсив">
-                            <b-form-radio v-model="date.fontStyle" name="font-style-date" value="italic">
-                                Да
-                            </b-form-radio>
-                            <b-form-radio v-model="date.fontStyle" name="font-style-date" value="normal" :checked="true">
-                                Нет
-                            </b-form-radio>
-                        </b-form-group>
-                    </div>
-                </div>
-            </BCol>
-            <BCol cols="9">
-                <div class="draggable-container">
-                    <div class="draggable-edit">
-                        <div ref="fullName" name="fullName" class="draggable no-border" :data-x="fullName.screenX"
-                             :data-y="fullName.screenY" follow-text="Имя и фамилия"
-                             :style="[styleFullName, transformFullName]" style="margin-top: 40px;"
-                             :class="{'darkened': bgOp, 'active': selectedEdit === 1}" @click="selectEdit(1)">
-                            {{textFullName}}
-                        </div>
-                        <div ref="courseName" name="courseName" class="draggable no-border" :data-x="courseName.screenX"
-                             :data-y="courseName.screenY" follow-text="Название курса"
-                             :style="[styleCourseName, transformCourseName]" style="margin-top: 120px;"
-                             :class="{'darkened': bgOp, 'active': selectedEdit === 2}" @click="selectEdit(2)">
-                            {{textCourseName}}
-                        </div>
-                        <div ref="date" name="date" class="draggable no-border" :data-x="date.screenX" :data-y="date.screenY"
-                             follow-text="Дата завершения курса"
-                             :style="[styleDate, transformDateName]" style="margin-top: 280px;"
-                             :class="{'darkened': bgOp, 'active': selectedEdit === 4}" @click="selectEdit(4)">
-                            {{textDate}}
-                        </div>
-                        <div ref="pdfpdf" class="vue-pdf-container" :class="bgOp ? 'darkened' : ''">
-                            <vue-pdf-embed v-if="img" :source="img"/>
-                        </div>
-                    </div>
-                </div>
-            </BCol>
-        </BRow>
-        <div class="modal-footer">
-            <BButton variant="success" @click="saveChanges">Сохранить</BButton>
-        </div>
-    </div>
+	<div>
+		<BRow class="m-0 cestificates-constructor">
+			<BCol cols="3">
+				<div class="settings">
+					<BFormGroup class="custom-switch custom-switch-sm">
+						<b-form-checkbox
+							switch
+							v-model="bgOp"
+						>
+							Затемнить фон
+						</b-form-checkbox>
+					</BFormGroup>
+					<div v-if="selectedEdit === 1">
+						<BFormGroup
+							label="Имя и Фамилия (Впишите любое)"
+							description="Это поле будет брать имя и фамилию того сотрудника, который пройдет курс"
+						>
+							<BFormInput v-model="textFullName" />
+						</BFormGroup>
+						<BFormGroup label="Жирность текста">
+							<BFormSelect
+								v-model="fullName.fontWeight"
+								:options="fontWeightList"
+							/>
+						</BFormGroup>
+						<BFormGroup label="Размер текста">
+							<BFormInput v-model="fullName.size" />
+						</BFormGroup>
+						<BFormGroup
+							class="custom-switch"
+							label="Ширина блока"
+						>
+							<b-form-checkbox
+								switch
+								v-model="fullName.fullWidth"
+							>
+								На всю ширину
+							</b-form-checkbox>
+							<b-form-input
+								v-model="fullName.width"
+								:disabled="fullName.fullWidth"
+							/>
+						</BFormGroup>
+						<BFormGroup label="Цвет текста">
+							<input
+								type="color"
+								class="color-picker"
+								v-model="fullName.color"
+							>
+						</BFormGroup>
+						<b-form-group label="Формат текста">
+							<b-form-radio
+								v-model="fullName.uppercase"
+								name="some-radios"
+								value="none"
+								:checked="true"
+							>
+								По умолчанию
+							</b-form-radio>
+							<b-form-radio
+								v-model="fullName.uppercase"
+								name="some-radios"
+								value="uppercase"
+							>
+								Все
+								заглавные
+							</b-form-radio>
+						</b-form-group>
+						<b-form-group label="Курсив">
+							<b-form-radio
+								v-model="fullName.fontStyle"
+								name="font-style-fullname"
+								value="italic"
+							>
+								Да
+							</b-form-radio>
+							<b-form-radio
+								v-model="fullName.fontStyle"
+								name="font-style-fullname"
+								value="normal"
+								:checked="true"
+							>
+								Нет
+							</b-form-radio>
+						</b-form-group>
+					</div>
+					<div v-if="selectedEdit === 2">
+						<BFormGroup
+							label="Название курса"
+							description="Это поле будет брать название курса, который пройдет сотрудник"
+						>
+							<BFormInput v-model="textCourseName" />
+						</BFormGroup>
+						<BFormGroup label="Жирность текста">
+							<BFormSelect
+								v-model="courseName.fontWeight"
+								:options="fontWeightList"
+							/>
+						</BFormGroup>
+						<BFormGroup label="Размер текста">
+							<BFormInput v-model="courseName.size" />
+						</BFormGroup>
+						<BFormGroup
+							class="custom-switch"
+							label="Ширина блока"
+						>
+							<b-form-checkbox
+								switch
+								v-model="courseName.fullWidth"
+							>
+								На всю ширину
+							</b-form-checkbox>
+							<b-form-input
+								v-model="courseName.width"
+								:disabled="courseName.fullWidth"
+							/>
+						</BFormGroup>
+						<BFormGroup label="Цвет текста">
+							<input
+								type="color"
+								class="color-picker"
+								v-model="courseName.color"
+							>
+						</BFormGroup>
+						<b-form-group label="Формат текста">
+							<b-form-radio
+								v-model="courseName.uppercase"
+								name="some-radios"
+								value="none"
+							>
+								По умолчанию
+							</b-form-radio>
+							<b-form-radio
+								v-model="courseName.uppercase"
+								name="some-radios"
+								value="uppercase"
+							>
+								Все
+								заглавные
+							</b-form-radio>
+						</b-form-group>
+						<b-form-group label="Курсив">
+							<b-form-radio
+								v-model="courseName.fontStyle"
+								name="font-style-course"
+								value="italic"
+							>
+								Да
+							</b-form-radio>
+							<b-form-radio
+								v-model="courseName.fontStyle"
+								name="font-style-course"
+								value="normal"
+								:checked="true"
+							>
+								Нет
+							</b-form-radio>
+						</b-form-group>
+					</div>
+					<div v-if="selectedEdit === 4">
+						<BFormGroup
+							label="Дата"
+							description="Здесь будет дата окончания курса"
+						>
+							<BFormInput v-model="textDate" />
+						</BFormGroup>
+						<BFormGroup label="Жирность текста">
+							<BFormSelect
+								v-model="date.fontWeight"
+								:options="fontWeightList"
+							/>
+						</BFormGroup>
+						<BFormGroup label="Размер текста">
+							<BFormInput
+								type="number"
+								v-model="date.size"
+							/>
+						</BFormGroup>
+						<BFormGroup
+							class="custom-switch"
+							label="Ширина блока"
+						>
+							<b-form-checkbox
+								switch
+								v-model="date.fullWidth"
+							>
+								На всю ширину
+							</b-form-checkbox>
+							<b-form-input
+								type="number"
+								v-model="date.width"
+								:disabled="date.fullWidth"
+							/>
+						</BFormGroup>
+						<BFormGroup label="Цвет текста">
+							<input
+								type="color"
+								class="color-picker"
+								v-model="date.color"
+							>
+						</BFormGroup>
+						<!--                        <b-form-group label="Формат текста">-->
+						<!--                            <b-form-radio v-model="date.uppercase" name="some-radios" value="none">По умолчанию-->
+						<!--                            </b-form-radio>-->
+						<!--                            <b-form-radio v-model="date.uppercase" name="some-radios" value="uppercase">Все заглавные-->
+						<!--                            </b-form-radio>-->
+						<!--                        </b-form-group>-->
+						<b-form-group label="Курсив">
+							<b-form-radio
+								v-model="date.fontStyle"
+								name="font-style-date"
+								value="italic"
+							>
+								Да
+							</b-form-radio>
+							<b-form-radio
+								v-model="date.fontStyle"
+								name="font-style-date"
+								value="normal"
+								:checked="true"
+							>
+								Нет
+							</b-form-radio>
+						</b-form-group>
+					</div>
+				</div>
+			</BCol>
+			<BCol cols="9">
+				<div class="draggable-container">
+					<div class="draggable-edit">
+						<div
+							ref="fullName"
+							name="fullName"
+							class="draggable no-border"
+							:data-x="fullName.screenX"
+							:data-y="fullName.screenY"
+							follow-text="Имя и фамилия"
+							:style="[styleFullName, transformFullName]"
+							style="margin-top: 40px;"
+							:class="{'darkened': bgOp, 'active': selectedEdit === 1}"
+							@click="selectEdit(1)"
+						>
+							{{ textFullName }}
+						</div>
+						<div
+							ref="courseName"
+							name="courseName"
+							class="draggable no-border"
+							:data-x="courseName.screenX"
+							:data-y="courseName.screenY"
+							follow-text="Название курса"
+							:style="[styleCourseName, transformCourseName]"
+							style="margin-top: 120px;"
+							:class="{'darkened': bgOp, 'active': selectedEdit === 2}"
+							@click="selectEdit(2)"
+						>
+							{{ textCourseName }}
+						</div>
+						<div
+							ref="date"
+							name="date"
+							class="draggable no-border"
+							:data-x="date.screenX"
+							:data-y="date.screenY"
+							follow-text="Дата завершения курса"
+							:style="[styleDate, transformDateName]"
+							style="margin-top: 280px;"
+							:class="{'darkened': bgOp, 'active': selectedEdit === 4}"
+							@click="selectEdit(4)"
+						>
+							{{ textDate }}
+						</div>
+						<div
+							ref="pdfpdf"
+							class="vue-pdf-container"
+							:class="bgOp ? 'darkened' : ''"
+						>
+							<vue-pdf-embed
+								v-if="img"
+								:source="img"
+							/>
+						</div>
+					</div>
+				</div>
+			</BCol>
+		</BRow>
+		<div class="modal-footer">
+			<BButton
+				variant="success"
+				@click="saveChanges"
+			>
+				Сохранить
+			</BButton>
+		</div>
+	</div>
 </template>
 
 <script>

@@ -1,10 +1,10 @@
 <template>
-  <div class="messenger__col-messages">
-    <ConversationHeader></ConversationHeader>
-    <ConversationFeed v-show="!isChatSearchMode"></ConversationFeed>
-    <ConversationFooter v-show="!isChatSearchMode"></ConversationFooter>
-    <ConversationSearch v-show="isChatSearchMode"></ConversationSearch>
-  </div>
+	<div class="messenger__col-messages">
+		<ConversationHeader />
+		<ConversationFeed v-show="!isChatSearchMode" />
+		<ConversationFooter v-show="!isChatSearchMode" />
+		<ConversationSearch v-show="isChatSearchMode" />
+	</div>
 </template>
 
 <script>

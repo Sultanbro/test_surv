@@ -1,75 +1,104 @@
 <template>
-<div class="mb-0">
+	<div class="mb-0">
+		<div
+			class="row mb-3 mt-3"
+			v-if="show_header"
+		>
+			<div class="col-2">
+				<select
+					class="form-control"
+					v-model="currentYear"
+					@change="fetchData"
+				>
+					<option
+						v-for="year in years"
+						:value="year"
+						:key="year"
+					>
+						{{ year }}
+					</option>
+				</select>
+			</div>
+			<div class="col-1">
+				<div
+					class="btn btn-primary rounded"
+					@click="fetchData()"
+				>
+					<i class="fa fa-redo-alt" />
+				</div>
+			</div>
+			<div class="col-6" />
+			<div class="col-3" />
+		</div>
 
-    <div class="row mb-3 mt-3" v-if="show_header">
-        <div class="col-2">
-            <select class="form-control" v-model="currentYear" @change="fetchData">
-                <option v-for="year in years" :value="year" :key="year">{{ year }}</option>
-            </select>
-        </div>
-        <div class="col-1">
-            <div class="btn btn-primary rounded" @click="fetchData()">
-                <i class="fa fa-redo-alt"></i>
-            </div>
-        </div>
-        <div class="col-6">
 
-        </div>
-        <div class="col-3">
+		<div class="table-responsive table-container mt-4">
+			<table
+				class="table custom-table-nps table-bordered"
+				:key="ukey"
+			>
+				<thead>
+					<tr>
+						<template v-for="(field, key) in fields">
+							<th
+								:class="field.klass"
+								:key="key"
+							>
+								{{ field.name }}
+							</th>
+						</template>
+					</tr>
+				</thead>
+				<tbody>
+					<tr
+						v-for="(item, index) in users"
+						:key="index"
+					>
+						<template v-for="(field, key) in fields">
+							<td
+								:class="field.klass"
+								:key="key"
+							>
+								<div
+									class="inner"
+									:class="{'inner-text-top': index > fields.length - 4}"
+								>
+									{{ index }}
+									<div>{{ item[field.key] }}</div>
+									<div class="inner-text">
+										<b v-if="item.texts[field.key] !== undefined">Оценки ({{ item.grades[field.key] }})</b>
+										<div class="d-flex">
+											<div class="w-50">
+												<b>Плюсы ({{ item.texts[field.key] !== undefined ? item.texts[field.key].length : 0 }})</b>
+												<div
+													v-for="(text, index) in item.texts[field.key]"
+													:key="index"
+												>
+													<b>{{ index + 1 }}:</b> {{ text }}
+												</div>
+											</div>
 
-        </div>
-    </div>
+											<div class="w-50">
+												<b>Минусы ({{ item.minuses[field.key] !== undefined ? item.minuses[field.key].length : 0 }})</b>
+												<div
+													v-for="(text, index) in item.minuses[field.key]"
+													:key="index"
+												>
+													<b>{{ index + 1 }}:</b> {{ text }}
+												</div>
+											</div>
+										</div>
+									</div>
+								</div>
+							</td>
+						</template>
+					</tr>
+				</tbody>
+			</table>
+		</div>
 
-
-    <div class="table-responsive table-container mt-4">
-        <table class="table custom-table-nps table-bordered" :key="ukey">
-          <thead>
-          <tr>
-              <template v-for="(field, key) in fields">
-                  <th :class="field.klass" :key="key">
-                      {{ field.name }}
-                  </th>
-              </template>
-          </tr>
-          </thead>
-           <tbody>
-           <tr v-for="(item, index) in users" :key="index">
-               <template v-for="(field, key) in fields">
-                   <td :class="field.klass" :key="key">
-                       <div class="inner" :class="{'inner-text-top': index > fields.length - 4}">
-                           {{index}}
-                           <div>{{ item[field.key] }}</div>
-                           <div class="inner-text">
-                               <b v-if="item.texts[field.key] !== undefined">Оценки ({{ item.grades[field.key] }})</b>
-                               <div class="d-flex">
-                                   <div class="w-50">
-                                       <b>Плюсы ({{ item.texts[field.key] !== undefined ? item.texts[field.key].length : 0 }})</b>
-                                       <div v-for="(text, index) in item.texts[field.key]" :key="index">
-                                           <b>{{ index + 1}}:</b> {{ text }}
-                                       </div>
-                                   </div>
-
-                                   <div class="w-50">
-                                       <b>Минусы ({{ item.minuses[field.key] !== undefined ? item.minuses[field.key].length : 0 }})</b>
-                                       <div v-for="(text, index) in item.minuses[field.key]" :key="index">
-                                           <b>{{ index + 1}}:</b> {{ text }}
-                                       </div>
-                                   </div>
-                               </div>
-
-                           </div>
-                       </div>
-                   </td>
-               </template>
-           </tr>
-           </tbody>
-
-        </table>
-    </div>
-
- <div class="empty-space"></div>
-
-</div>
+		<div class="empty-space" />
+	</div>
 </template>
 
 <script>

@@ -1,45 +1,71 @@
 <template>
-<div class="mt-5 quality">
-    <div class="mb-3">Кол-во показателей: <b>{{total_count}}</b> , Среднее значение: <b>{{ total_avg }}</b></div>
-    <div class="table-responsive table-container">
-        <table class="table table-bordered">
-           <thead>
-               <tr>
-                    <th class="b-table-sticky-column text-left t-name wd">
-                        <div>Сотрудник</div>
-                    </th>
-                    <th :class="field.klass" v-for="(field, key) in fields" :key="key">
-						<div>{{ field.name }}</div>
-					</th>
-               </tr>
-           </thead>
-            <tbody>
-            <tr v-for="(item, index) in users" :key="index">
-                <td class="b-table-sticky-column text-left t-name wd bg-white">
-                    <div class="d-flex">{{ item.name }}
+	<div class="mt-5 quality">
+		<div class="mb-3">
+			Кол-во показателей: <b>{{ total_count }}</b> , Среднее значение: <b>{{ total_avg }}</b>
+		</div>
+		<div class="table-responsive table-container">
+			<table class="table table-bordered">
+				<thead>
+					<tr>
+						<th class="b-table-sticky-column text-left t-name wd">
+							<div>Сотрудник</div>
+						</th>
+						<th
+							:class="field.klass"
+							v-for="(field, key) in fields"
+							:key="key"
+						>
+							<div>{{ field.name }}</div>
+						</th>
+					</tr>
+				</thead>
+				<tbody>
+					<tr
+						v-for="(item, index) in users"
+						:key="index"
+					>
+						<td class="b-table-sticky-column text-left t-name wd bg-white">
+							<div class="d-flex">
+								{{ item.name }}
 
-                        <div v-if="item.show_cup == 1">
-                            <img src="/images/goldencup.png" class="goldencup ml-2" alt="">
-                        </div>
-                        <div v-if="item.show_cup == 2">
-                            <img src="/images/silvercup.png" class="goldencup ml-2" alt="">
-                        </div>
-                        <div v-if="item.show_cup == 3">
-                            <img src="/images/bronzecup.png" class="goldencup ml-2" alt="">
-                        </div>
-
-                    </div>
-                </td>
-                <template v-for="(field, key) in fields">
-                    <td :class="field.klass" :key="key">
-                        <div v-if="item[field.key] != 0">{{ item[field.key] }}</div>
-                    </td>
-                </template>
-            </tr>
-            </tbody>
-        </table>
-    </div>
-</div>
+								<div v-if="item.show_cup == 1">
+									<img
+										src="/images/goldencup.png"
+										class="goldencup ml-2"
+										alt=""
+									>
+								</div>
+								<div v-if="item.show_cup == 2">
+									<img
+										src="/images/silvercup.png"
+										class="goldencup ml-2"
+										alt=""
+									>
+								</div>
+								<div v-if="item.show_cup == 3">
+									<img
+										src="/images/bronzecup.png"
+										class="goldencup ml-2"
+										alt=""
+									>
+								</div>
+							</div>
+						</td>
+						<template v-for="(field, key) in fields">
+							<td
+								:class="field.klass"
+								:key="key"
+							>
+								<div v-if="item[field.key] != 0">
+									{{ item[field.key] }}
+								</div>
+							</td>
+						</template>
+					</tr>
+				</tbody>
+			</table>
+		</div>
+	</div>
 </template>
 
 <script>

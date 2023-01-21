@@ -1,7 +1,7 @@
 <template>
-  <div class="header__right-messages">
-    <ChatsList></ChatsList>
-  </div>
+	<div class="header__right-messages">
+		<ChatsList />
+	</div>
 </template>
 
 <script>

@@ -4,9 +4,20 @@
 		class="mt-2 px-3 quality quality-page"
 	>
 		<div class="row">
-			<div class="col-3" v-if="individual_request">
-				<select class="form-control" v-model="currentGroup" @change="fetchData('selected_group')">
-					<option v-for="group in groups" :value="group.id" :key="group.id" >
+			<div
+				class="col-3"
+				v-if="individual_request"
+			>
+				<select
+					class="form-control"
+					v-model="currentGroup"
+					@change="fetchData('selected_group')"
+				>
+					<option
+						v-for="group in groups"
+						:value="group.id"
+						:key="group.id"
+					>
 						{{ group.name }}
 					</option>
 				</select>
@@ -17,29 +28,47 @@
 					v-model="monthInfo.currentMonth"
 					@change="fetchData"
 				>
-					<option v-for="month in $moment.months()" :value="month" :key="month">
+					<option
+						v-for="month in $moment.months()"
+						:value="month"
+						:key="month"
+					>
 						{{ month }}
 					</option>
 				</select>
 			</div>
 			<div class="col-2">
-				<select class="form-control" v-model="currentYear" @change="fetchData">
-					<option v-for="year in years" :value="year" :key="year">
+				<select
+					class="form-control"
+					v-model="currentYear"
+					@change="fetchData"
+				>
+					<option
+						v-for="year in years"
+						:value="year"
+						:key="year"
+					>
 						{{ year }}
 					</option>
 				</select>
 			</div>
 			<div class="col-3 d-flex align-items-start">
-				<div class="btn btn-primary rounded mr-2" @click="fetchData()">
-					<i class="fa fa-redo-alt"></i>
+				<div
+					class="btn btn-primary rounded mr-2"
+					@click="fetchData()"
+				>
+					<i class="fa fa-redo-alt" />
 				</div>
 			</div>
 			<div
 				v-if="hasSettingsPermisstion"
 				class="col-2"
 			>
-				<button class="btn btn-primary d-block ml-auto" @click="showSettings = true">
-					<i class="fa fa-cogs mr-2"/>
+				<button
+					class="btn btn-primary d-block ml-auto"
+					@click="showSettings = true"
+				>
+					<i class="fa fa-cogs mr-2" />
 					Настройки
 				</button>
 			</div>
@@ -47,14 +76,30 @@
 
 
 
-<!--    <h4 class="d-flex align-items-center">-->
-<!--      <div class="mr-2 mt-2">{{ groupName }}</div>-->
-<!--    </h4>-->
+		<!--    <h4 class="d-flex align-items-center">-->
+		<!--      <div class="mr-2 mt-2">{{ groupName }}</div>-->
+		<!--    </h4>-->
 		<div v-if="this.hasPermission">
-			<b-tabs type="card" class="mt-5" :defaultActiveKey="3">
-				<b-tab title="Оценка диалогов" :key="1" card>
-					<b-tabs type="card" v-if="dataLoaded" class="mt-5">
-						<b-tab title="Неделя" :key="1" card>
+			<b-tabs
+				type="card"
+				class="mt-5"
+				:default-active-key="3"
+			>
+				<b-tab
+					title="Оценка диалогов"
+					:key="1"
+					card
+				>
+					<b-tabs
+						type="card"
+						v-if="dataLoaded"
+						class="mt-5"
+					>
+						<b-tab
+							title="Неделя"
+							:key="1"
+							card
+						>
 							<div class="table-responsive table-container mt-4">
 								<table class="table table-bordered custom-table-quality">
 									<thead>
@@ -62,13 +107,20 @@
 											<th class="b-table-sticky-column text-left t-name wd">
 												<div>Сотрудник</div>
 											</th>
-											<th v-for="(field, key) in fields" :key="key" :class="field.klass">
+											<th
+												v-for="(field, key) in fields"
+												:key="key"
+												:class="field.klass"
+											>
 												<div>{{ field.name }}</div>
 											</th>
 										</tr>
 									</thead>
 									<tbody>
-										<tr v-for="(item, index) in items" :key="index">
+										<tr
+											v-for="(item, index) in items"
+											:key="index"
+										>
 											<td class="b-table-sticky-column text-left t-name wd">
 												<div>
 													{{ item.name }}
@@ -76,21 +128,30 @@
 														<b-badge
 															v-if="item.groupName == 'Просрочники'"
 															variant="success"
-														>{{ item.groupName }}</b-badge>
-														<b-badge variant="primary" v-else>
+														>
+															{{ item.groupName }}
+														</b-badge>
+														<b-badge
+															variant="primary"
+															v-else
+														>
 															{{ item.groupName }}
 														</b-badge>
 													</template>
-											</div>
-										</td>
-										<td :class="field.klass" v-for="(field, key) in fields" :key="key">
-											<input
-												v-if="field.type == 'day' && can_add_records != true"
-												type="number"
-												:title="field.key + ' :' + item.name"
-												@change="updateWeekValue(item, field.key)"
-												v-model="item.weeks[field.key]"
-											/>
+												</div>
+											</td>
+											<td
+												:class="field.klass"
+												v-for="(field, key) in fields"
+												:key="key"
+											>
+												<input
+													v-if="field.type == 'day' && can_add_records != true"
+													type="number"
+													:title="field.key + ' :' + item.name"
+													@change="updateWeekValue(item, field.key)"
+													v-model="item.weeks[field.key]"
+												>
 												<div v-else>
 													<div v-if="item.weeks[field.key] != 0">
 														{{ item.weeks[field.key] }}
@@ -102,7 +163,11 @@
 								</table>
 							</div>
 						</b-tab>
-						<b-tab title="Месяц" :key="2" card>
+						<b-tab
+							title="Месяц"
+							:key="2"
+							card
+						>
 							<div class="table-responsive table-container mt-4">
 								<table class="table table-bordered custom-table-quality">
 									<thead>
@@ -110,13 +175,20 @@
 											<th class="b-table-sticky-column text-left t-name wd">
 												<div>Сотрудник</div>
 											</th>
-											<th v-for="(field, key) in monthFields" :key="key" :class="field.klass">
+											<th
+												v-for="(field, key) in monthFields"
+												:key="key"
+												:class="field.klass"
+											>
 												<div>{{ field.name }}</div>
 											</th>
 										</tr>
 									</thead>
 									<tbody>
-										<tr v-for="(item, index) in items" :key="index">
+										<tr
+											v-for="(item, index) in items"
+											:key="index"
+										>
 											<td class="b-table-sticky-column text-left t-name wd">
 												<div>
 													{{ item.name }}
@@ -124,16 +196,24 @@
 														<b-badge
 															variant="success"
 															v-if="item.groupName == 'Просрочники'"
-														>{{ item.groupName }}</b-badge>
+														>
+															{{ item.groupName }}
+														</b-badge>
 														<b-badge
 															variant="primary"
 															v-else
-														>{{ item.groupName }}</b-badge>
+														>
+															{{ item.groupName }}
+														</b-badge>
 													</template>
 												</div>
 											</td>
 
-											<td v-for="(field, key) in monthFields" :key="key" :class="field.klass">
+											<td
+												v-for="(field, key) in monthFields"
+												:key="key"
+												:class="field.klass"
+											>
 												<div>{{ item.months[field.key] }}</div>
 											</td>
 										</tr>
@@ -154,7 +234,9 @@
 										v-model="filters.currentEmployee"
 										@change="filterRecords"
 									>
-										<option :value="0">Выберите сотрудника</option>
+										<option :value="0">
+											Выберите сотрудника
+										</option>
 										<option
 											v-for="item in items"
 											:value="item.id"
@@ -170,7 +252,9 @@
 										v-model="currentDay"
 										@change="fetchData"
 									>
-										<option value="0">Все дни</option>
+										<option value="0">
+											Все дни
+										</option>
 										<option
 											v-for="day in this.monthInfo.daysInMonth"
 											:value="day"
@@ -181,32 +265,48 @@
 									</select>
 								</div>
 								<div class="col-4 col-md-8 d-flex align-items-center">
-									<b-button variant="primary" @click="addRecord" class="mr-1">
-										<i class="fa fa-plus"/> Добавить запись
+									<b-button
+										variant="primary"
+										@click="addRecord"
+										class="mr-1"
+									>
+										<i class="fa fa-plus" /> Добавить запись
 									</b-button>
 									<b-button
 										variant="success"
 										@click="exportData()"
 										class="mr-1"
 									>
-										<i class="far fa-file-excel"/> 20
+										<i class="far fa-file-excel" /> 20
 									</b-button>
-									<b-button variant="success" @click="exportAll()">
-										<i class="far fa-file-excel"/> Экспорт
+									<b-button
+										variant="success"
+										@click="exportAll()"
+									>
+										<i class="far fa-file-excel" /> Экспорт
 									</b-button>
 								</div>
 								<div class="col-12 col-md-12 d-flex mt-2 mb-2">
 									<p class="mb-0">
 										Найдено записей: <b class="bluish">{{ records.total }}</b>
 									</p>
-									<p class="ml-3 mb-0" v-if="records_unique != 0">
+									<p
+										class="ml-3 mb-0"
+										v-if="records_unique != 0"
+									>
 										Кол-во сотрудников:
 										<b class="bluish">{{ records_unique }}</b>
 									</p>
-									<p class="ml-3 mb-0" v-if="avgMonth != 0">
+									<p
+										class="ml-3 mb-0"
+										v-if="avgMonth != 0"
+									>
 										Среднее за месяц: <b class="bluish">{{ avgMonth }}</b>
 									</p>
-									<p class="ml-3 mb-0" v-if="avgDay != 0">
+									<p
+										class="ml-3 mb-0"
+										v-if="avgDay != 0"
+									>
 										Среднее за день: <b class="bluish">{{ avgDay }}</b>
 									</p>
 								</div>
@@ -218,11 +318,15 @@
 										<th class="b-table-sticky-column text-left t-name wd">
 											<div>Сотрудник</div>
 										</th>
-										<th v-for="(field, key) in recordFields" :key="key" :class="field.klass">
+										<th
+											v-for="(field, key) in recordFields"
+											:key="key"
+											:class="field.klass"
+										>
 											<div>{{ field.name }}</div>
 										</th>
-										<th class="actions"></th>
-										<th class="actions"></th>
+										<th class="actions" />
+										<th class="actions" />
 									</tr>
 
 									<!-- RECORDS -->
@@ -272,7 +376,10 @@
 											</td>
 										</template>
 
-										<td v-if="record.editable" class="text-center phoner">
+										<td
+											v-if="record.editable"
+											class="text-center phoner"
+										>
 											<div>
 												<input
 													type="text"
@@ -280,7 +387,7 @@
 													class="form-control text-center"
 													@focus="$event.target.select()"
 													@change="statusChanged(record)"
-												/>
+												>
 											</div>
 										</td>
 										<td
@@ -294,7 +401,10 @@
 										</td>
 
 										<template v-if="currentGroup == 42">
-											<td class="text-center" v-if="record.editable">
+											<td
+												class="text-center"
+												v-if="record.editable"
+											>
 												<div>
 													<input
 														type="text"
@@ -302,7 +412,7 @@
 														class="form-control text-center"
 														@focus="$event.target.select()"
 														@change="statusChanged(record)"
-													/>
+													>
 												</div>
 											</td>
 											<td
@@ -314,7 +424,10 @@
 											</td>
 										</template>
 
-										<td class="text-center" v-if="record.editable">
+										<td
+											class="text-center"
+											v-if="record.editable"
+										>
 											<div>
 												<input
 													type="text"
@@ -322,16 +435,23 @@
 													class="form-control text-center"
 													@focus="$event.target.select()"
 													@change="statusChanged(record)"
-												/>
+												>
 											</div>
 										</td>
-										<td class="text-center" v-else @click="editMode(record)">
+										<td
+											class="text-center"
+											v-else
+											@click="editMode(record)"
+										>
 											<div>
 												{{ record.interlocutor }}
 											</div>
 										</td>
 
-										<td class="text-center" v-if="record.editable">
+										<td
+											class="text-center"
+											v-if="record.editable"
+										>
 											<div>
 												<input
 													type="date"
@@ -341,15 +461,23 @@
 													min="1997-01-01"
 													max="2030-12-31"
 													@change="statusChanged(record)"
-												/>
+												>
 											</div>
 										</td>
-										<td class="text-center" v-else @click="editMode(record)">
+										<td
+											class="text-center"
+											v-else
+											@click="editMode(record)"
+										>
 											<div>{{ record.date }}</div>
 										</td>
 
 										<template v-for="(param, pk) in params">
-											<td :key="pk" class="text-center params" v-if="record.editable">
+											<td
+												:key="pk"
+												class="text-center params"
+												v-if="record.editable"
+											>
 												<div>
 													<input
 														type="number"
@@ -357,10 +485,11 @@
 														class="form-control text-center"
 														@change="changeStat(record)"
 														@focus="$event.target.select()"
-													/>
+													>
 												</div>
 											</td>
-											<td :key="pk + 'a'"
+											<td
+												:key="pk + 'a'"
 												class="text-center params"
 												v-else
 												@click="editMode(record)"
@@ -373,7 +502,10 @@
 											<div>{{ record.total }}</div>
 										</td>
 
-										<td class="text-left" v-if="record.editable">
+										<td
+											class="text-left"
+											v-if="record.editable"
+										>
 											<div>
 												<input
 													type="text"
@@ -381,14 +513,23 @@
 													class="form-control"
 													@focus="$event.target.select()"
 													@change="statusChanged(record)"
-												/>
+												>
 											</div>
 										</td>
-										<td class="text-left" v-else @click="editMode(record)">
-											<div class="pl2">{{ record.comments }}</div>
+										<td
+											class="text-left"
+											v-else
+											@click="editMode(record)"
+										>
+											<div class="pl2">
+												{{ record.comments }}
+											</div>
 										</td>
 
-										<td class="actions" @click="editMode(record)">
+										<td
+											class="actions"
+											@click="editMode(record)"
+										>
 											<div>
 												<b-button
 													v-if="record.editable"
@@ -396,18 +537,21 @@
 													size="sm"
 													@click="saveRecord(record)"
 												>
-													<i class="fa fa-save"/>
+													<i class="fa fa-save" />
 												</b-button>
 											</div>
 										</td>
-										<td class="actions" @click="editMode(record)">
+										<td
+											class="actions"
+											@click="editMode(record)"
+										>
 											<div>
 												<b-button
 													variant="danger"
 													size="sm"
 													@click="deleteRecordModal(record, index)"
 												>
-													<i class="fa fa-trash"/>
+													<i class="fa fa-trash" />
 												</b-button>
 											</div>
 										</td>
@@ -430,16 +574,32 @@
 						</b-tab>
 					</b-tabs>
 				</b-tab>
-				<b-tab title="Прогресс по курсам" :key="2" card>
+				<b-tab
+					title="Прогресс по курсам"
+					:key="2"
+					card
+				>
 					<CourseResults
-						:monthInfo="monthInfo"
-						:currentGroup="currentGroup"
+						:month-info="monthInfo"
+						:current-group="currentGroup"
 					/>
 				</b-tab>
 
-				<b-tab title="Чек Лист" :key="3" type="card" card :active="check == 3">
-					<b-tabs type="card" class="mt-5">
-						<b-tab title="Неделя" :key="1">
+				<b-tab
+					title="Чек Лист"
+					:key="3"
+					type="card"
+					card
+					:active="check == 3"
+				>
+					<b-tabs
+						type="card"
+						class="mt-5"
+					>
+						<b-tab
+							title="Неделя"
+							:key="1"
+						>
 							<div class="table-container table-responsive">
 								<table class="table table-bordered whitespace-no-wrap mt-4">
 									<thead>
@@ -447,7 +607,10 @@
 											<th class="b-table-sticky-column text-left t-name wd">
 												<div>Сотрудник</div>
 											</th>
-											<th v-for="(field, key) in checklist_fields" :key="key">
+											<th
+												v-for="(field, key) in checklist_fields"
+												:key="key"
+											>
 												<div>{{ field.name }}</div>
 											</th>
 										</tr>
@@ -459,37 +622,44 @@
 													{{ check_r.last_name }} {{ check_r.name }}
 												</th>
 												<template v-for="(field, key) in fields">
-													<td :class="field.klass" :key="key">
+													<td
+														:class="field.klass"
+														:key="key"
+													>
 														<template v-if="currentGroup == check_r.gr_id">
-
 															<div v-if="field.name == 'Итог' ">
-																{{check_r.total_day}}
+																{{ check_r.total_day }}
 															</div>
 
 															<template v-for="(checked_day,index) in check_r.day">
 																<template v-if="index == field.name">
-																	<div :key="index" @click="showSidebar(check_r.user_id, index)">{{checked_day}}</div>
+																	<div
+																		:key="index"
+																		@click="showSidebar(check_r.user_id, index)"
+																	>
+																		{{ checked_day }}
+																	</div>
 																</template>
 															</template>
 
 															<template v-if="field.name === 'Ср. 1'">
-																{{check_r.average[1]}}
+																{{ check_r.average[1] }}
 															</template>
 
 															<template v-if="field.name === 'Ср. 2'">
-																{{check_r.average[2]}}
+																{{ check_r.average[2] }}
 															</template>
 
 															<template v-if="field.name === 'Ср. 3'">
-																{{check_r.average[3]}}
+																{{ check_r.average[3] }}
 															</template>
 
 															<template v-if="field.name === 'Ср. 4'">
-																{{check_r.average[4]}}
+																{{ check_r.average[4] }}
 															</template>
 
 															<template v-if="field.name === 'Ср. 5'">
-																{{check_r.average[5]}}
+																{{ check_r.average[5] }}
 															</template>
 														</template>
 													</td>
@@ -500,7 +670,10 @@
 								</table>
 							</div>
 						</b-tab>
-						<b-tab title="Месяц" :key="2">
+						<b-tab
+							title="Месяц"
+							:key="2"
+						>
 							<div class="table-container table-responsive">
 								<table class="table table-bordered whitespace-no-wrap mt-4">
 									<thead>
@@ -509,7 +682,10 @@
 												<div>Сотрудник</div>
 											</th>
 											<template v-for="(field, key) in monthFields">
-												<th :key="key" :class="field.klass">
+												<th
+													:key="key"
+													:class="field.klass"
+												>
 													<div>{{ field.name }}</div>
 												</th>
 											</template>
@@ -522,18 +698,18 @@
 													{{ check_r.name }}
 												</th>
 												<template v-for="(field, key) in monthFields">
-													<td :class="field.klass" :key="key">
-
+													<td
+														:class="field.klass"
+														:key="key"
+													>
 														<template v-if="currentGroup == check_r.gr_id">
-
 															<div v-if="field.name == 'Итог' ">
-																{{check_r.total_month}}
+																{{ check_r.total_month }}
 															</div>
 															<template v-for="(checked_m,index) in check_r.month">
 																<template v-if="index == field.key">
-																	{{checked_m}}
+																	{{ checked_m }}
 																</template>
-
 															</template>
 														</template>
 													</td>
@@ -552,8 +728,13 @@
 			<p>У вас нет доступа к этой группе</p>
 		</div>
 
-		<b-modal id="delete-modal" hide-footer>
-			<template #modal-title> Подтвердите удаление </template>
+		<b-modal
+			id="delete-modal"
+			hide-footer
+		>
+			<template #modal-title>
+				Подтвердите удаление
+			</template>
 			<div class="">
 				<div class="row">
 					<div class="col-md-12">
@@ -567,13 +748,17 @@
 						variant="danger"
 						block
 						@click="deleteRecord"
-					>Удалить</b-button>
+					>
+						Удалить
+					</b-button>
 					<b-button
 						variant="primary"
 						class="mt-3 ml-1"
 						block
 						@click="$bvModal.hide('delete-modal')"
-					>Отмена</b-button>
+					>
+						Отмена
+					</b-button>
 				</div>
 			</div>
 		</b-modal>
@@ -588,8 +773,8 @@
 		>
 			<div class="row">
 				<div class="col-12 d-flex mb-3">
-
-					<div class="fl">Источник оценок
+					<div class="fl">
+						Источник оценок
 						<i
 							class="fa fa-info-circle ml-2"
 							v-b-popover.hover.right.html="'Заполнять оценки диалогов и критерии на странице <b>Контроль качества</b>, либо подтягивать их по крону с cp.callibro.org'"
@@ -597,15 +782,31 @@
 						/>
 					</div>
 					<div class="fl d-flex ml-3">
-						<b-form-radio v-model="can_add_records"  name="some-radios" :value="false" class="mr-3">C U-calls</b-form-radio>
-						<b-form-radio v-model="can_add_records"  name="some-radios" :value="true">Ручная оценка</b-form-radio>
+						<b-form-radio
+							v-model="can_add_records"
+							name="some-radios"
+							:value="false"
+							class="mr-3"
+						>
+							C U-calls
+						</b-form-radio>
+						<b-form-radio
+							v-model="can_add_records"
+							name="some-radios"
+							:value="true"
+						>
+							Ручная оценка
+						</b-form-radio>
 					</div>
-
 				</div>
 
-				<div class="col-12" v-if="!can_add_records">
+				<div
+					class="col-12"
+					v-if="!can_add_records"
+				>
 					<div class="bg mb-2">
-						<div class="fl">ID диалера
+						<div class="fl">
+							ID диалера
 							<i
 								class="fa fa-info-circle ml-2"
 								v-b-popover.hover.right.html="'Нужен, чтобы <b>подтягивать часы</b> или <b>оценки диалогов</b> для контроля качества.<br>С сервиса cp.callibro.org'"
@@ -613,15 +814,32 @@
 							/>
 						</div>
 						<div class="fl d-flex mt-1">
-							<input type="text" v-model="dialer_id" placeholder="ID" class="form-control form-control-sm"/>
-							<input type="number" v-model="script_id" placeholder="ID скрипта" class="form-control form-control-sm"/>
+							<input
+								type="text"
+								v-model="dialer_id"
+								placeholder="ID"
+								class="form-control form-control-sm"
+							>
+							<input
+								type="number"
+								v-model="script_id"
+								placeholder="ID скрипта"
+								class="form-control form-control-sm"
+							>
 						</div>
 					</div>
 				</div>
 
-				<div class="col-12" v-if="can_add_records">
+				<div
+					class="col-12"
+					v-if="can_add_records"
+				>
 					<div class="row">
-						<div class="col-12 d-flex mb-1" v-for="crit in params" :key="crit.name">
+						<div
+							class="col-12 d-flex mb-1"
+							v-for="crit in params"
+							:key="crit.name"
+						>
 							<b-form-checkbox
 								v-model="crit.active"
 								:value="1"
@@ -631,11 +849,15 @@
 								type="text"
 								v-model="crit.name"
 								class="form-control form-control-sm"
-							/>
+							>
 						</div>
 
 						<div class="col-12">
-							<button class="btn btn-sm btn-default rounded" style="font-size:12px;" @click="addParam()">
+							<button
+								class="btn btn-sm btn-default rounded"
+								style="font-size:12px;"
+								@click="addParam()"
+							>
 								Добавить критерий
 							</button>
 						</div>
@@ -643,7 +865,10 @@
 				</div>
 
 				<div class="col-12 mt-3">
-					<button class="btn btn-sm btn-primary rounded" @click="saveSettings">
+					<button
+						class="btn btn-sm btn-primary rounded"
+						@click="saveSettings"
+					>
 						Сохранить
 					</button>
 				</div>
@@ -655,22 +880,39 @@
 			@close="toggle()"
 			width="70%"
 		>
-			<div class="col-10 p-0 mt-2" v-for="(val,ind) in checklists" :key="ind">
+			<div
+				class="col-10 p-0 mt-2"
+				v-for="(val,ind) in checklists"
+				:key="ind"
+			>
 				<div class="mr-5">
-					<b-form-checkbox v-model="val.checked" size="sm">
-						<span style="cursor: pointer">{{val.task.task}}</span>
+					<b-form-checkbox
+						v-model="val.checked"
+						size="sm"
+					>
+						<span style="cursor: pointer">{{ val.task.task }}</span>
 					</b-form-checkbox>
 				</div>
 
 				<div style="position: absolute;right: 0px;top: 0px">
-					<a v-if="val.url" :href="val.url" target="_blank">{{val.url}}</a>
-					<p v-else>нет ссылки</p>
+					<a
+						v-if="val.url"
+						:href="val.url"
+						target="_blank"
+					>{{ val.url }}</a>
+					<p v-else>
+						нет ссылки
+					</p>
 				</div>
 			</div>
 
 			<div class="col-md-12 mt-3">
 				<div class="col-md-6 p-0">
-					<button @click.prevent="saveChecklist" title="Сохранить" class="btn btn-primary">
+					<button
+						@click.prevent="saveChecklist"
+						title="Сохранить"
+						class="btn btn-primary"
+					>
 						Сохранить
 					</button>
 				</div>

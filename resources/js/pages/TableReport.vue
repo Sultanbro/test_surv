@@ -208,141 +208,321 @@
                 <b-tab title="📆" >
                     <!-- <div v-html="sidebarContent.history"></div>
             <div v-html="sidebarContent.historyTotal"></div> -->
-                <template v-if="!sidebarContent.data.item.is_trainee">
-                    <div class="temari">
-                        <div v-for="dateType in dateTypes" :key="dateType.label" :class="[dateType.type == 4 ? 'mt-auto' : 'mb-2']">
-                            <b-button block @click="openModalDay(dateType)" :class="'table-day-'+dateType.type">{{ dateType.label }}
-                            </b-button>
-                        </div>
-                        <div class="mt-auto">
-                            <b-button block @click="openFiringModal({
-                                                    label: 'Уволить без отработки',
-                                                    color: '#d35dd3',
-                                                    type: 4
-                                                }, 1)" :class="'table-day-4'">Уволить без отработки</b-button>
-                        </div>
-                        <div class="mt-2">
-                            <b-button block @click="openFiringModal({
-                                                    label: 'Уволить с отработкой',
-                                                    color: '#c8a2c8',
-                                                    type: 4
-                                                }, 2)" :class="'table-day-4'">Уволить с отработкой</b-button>
-                        </div>
+						<template v-if="!sidebarContent.data.item.is_trainee">
+							<div class="temari">
+								<div
+									v-for="dateType in dateTypes"
+									:key="dateType.label"
+									:class="[dateType.type == 4 ? 'mt-auto' : 'mb-2']"
+								>
+									<b-button
+										block
+										@click="openModalDay(dateType)"
+										:class="'table-day-'+dateType.type"
+									>
+										{{ dateType.label }}
+									</b-button>
+								</div>
+								<div class="mt-auto">
+									<b-button
+										block
+										@click="openFiringModal({
+											label: 'Уволить без отработки',
+											color: '#d35dd3',
+											type: 4
+										}, 1)"
+										:class="'table-day-4'"
+									>
+										Уволить без отработки
+									</b-button>
+								</div>
+								<div class="mt-2">
+									<b-button
+										block
+										@click="openFiringModal({
+											label: 'Уволить с отработкой',
+											color: '#c8a2c8',
+											type: 4
+										}, 2)"
+										:class="'table-day-4'"
+									>
+										Уволить с отработкой
+									</b-button>
+								</div>
+							</div>
+						</template>
+
+						<template v-else>
+							<div class="temari">
+								<button
+									class="btn btn-warning btn-block"
+									@click="openModalAbsence({type: 2, label: 'Отсутствовал на стажировке'})"
+								>
+									Отсутствовал на стажировке
+								</button>
+								<button
+									class="btn btn-primary btn-block"
+									@click="openModalApply({type: 8, label:'Принят на работу' })"
+									v-if="sidebarContent.data.item.requested == null"
+								>
+									Принять на работу
+								</button>
+								<button
+									class="btn btn-info btn-block"
+									@click="setDayWithoutComment(7)"
+								>
+									Подключился позже
+								</button>
+
+								<div
+									class="mt-3"
+									style="color:green;text-align:center"
+								>
+									{{ apllyPersonResponse }}
+								</div>
+
+								<div
+									class="mt-3"
+									style="color:green;text-align:center"
+									v-if="sidebarContent.data.item.requested !== null"
+								>
+									Заявка на принятие на работу была подана в {{ sidebarContent.data.item.requested }}
+								</div>
+
+								<button
+									class="btn btn-danger btn-block mt-auto"
+									@click="openFiringModal({
+										label: 'Уволить',
+										color: '#c8a2c8',
+										type: 4
+									}, 0)"
+								>
+									Уволить
+								</button>
+							</div>
+						</template>
+					</b-tab>
+					<b-tab
+						title="⚠️Штрафы"
+						v-if="!sidebarContent.data.item.is_trainee"
+					>
+						<b-form-group
+							label="Система депремирования"
+							class="fines-modal"
+						>
+							<b-form-checkbox-group
+								v-model="sidebarContent.fines"
+								:options="fines"
+								name="flavour-2a"
+								stacked
+							/>
+						</b-form-group>
+						<b-button
+							variant="primary"
+							@click="openModalFine"
+						>
+							Сохранить
+						</b-button>
+					</b-tab>
+				</template>
+			</b-tabs>
+		</Sidebar>
 
 
-                    </div>
+		<b-modal
+			v-model="modalVisibleFines"
+			ok-text="Да"
+			cancel-text="Нет"
+			title="Вы уверены?"
+			@ok="saveFines"
+			size="md"
+		>
+			<template v-for="error in errors">
+				<b-alert
+					show
+					variant="danger"
+					:key="error"
+				>
+					{{ error }}
+				</b-alert>
+			</template>
+			<b-form-input
+				v-model="commentFines"
+				placeholder="Комментарий"
+				:required="true"
+			/>
+		</b-modal>
 
-                </template>
+		<b-modal
+			v-model="modalVisibleDay"
+			ok-text="Да"
+			cancel-text="Нет"
+			:title="modalTitle"
+			@ok="setDayType"
+			size="md"
+		>
+			<template v-for="error in errors">
+				<b-alert
+					show
+					variant="danger"
+					:key="error"
+				>
+					{{ error }}
+				</b-alert>
+			</template>
+			<b-form-input
+				v-model="commentDay"
+				placeholder="Комментарий"
+				:required="true"
+			/>
+		</b-modal>
 
-                <template v-else>
-                    <div class="temari">
-                        <button class="btn btn-warning btn-block" @click="openModalAbsence({type: 2, label: 'Отсутствовал на стажировке'})">Отсутствовал на стажировке</button>
-                        <button class="btn btn-primary btn-block" @click="openModalApply({type: 8, label:'Принят на работу' })" v-if="sidebarContent.data.item.requested == null">Принять на работу</button>
-                        <button class="btn btn-info btn-block" @click="setDayWithoutComment(7)">Подключился позже</button>
-
-                        <div class="mt-3" style="color:green;text-align:center">
-                            {{ apllyPersonResponse }}
-                        </div>
-
-                        <div class="mt-3" style="color:green;text-align:center" v-if="sidebarContent.data.item.requested !== null">
-                            Заявка на принятие на работу была подана в {{ sidebarContent.data.item.requested }}
-                        </div>
-
-                        <button class="btn btn-danger btn-block mt-auto" @click="openFiringModal({
-                                                    label: 'Уволить',
-                                                    color: '#c8a2c8',
-                                                    type: 4
-                                                }, 0)">Уволить</button>
-
-
-
-                    </div>
-                </template>
-
-
-
-                </b-tab>
-                <b-tab title="⚠️Штрафы" v-if="!sidebarContent.data.item.is_trainee">
-                    <b-form-group label="Система депремирования" class="fines-modal">
-                        <b-form-checkbox-group v-model="sidebarContent.fines" :options="fines" name="flavour-2a" stacked></b-form-checkbox-group>
-                    </b-form-group>
-                    <b-button variant="primary" @click="openModalFine">Сохранить</b-button>
-                </b-tab>
-            </template>
-        </b-tabs>
-    </Sidebar>
-
-
-    <b-modal v-model="modalVisibleFines" ok-text="Да" cancel-text="Нет" title="Вы уверены?" @ok="saveFines" size="md">
-        <template v-for="error in errors">
-            <b-alert show variant="danger" :key="error">{{ error }}</b-alert>
-        </template>
-        <b-form-input v-model="commentFines" placeholder="Комментарий" :required="true"></b-form-input>
-    </b-modal>
-
-    <b-modal v-model="modalVisibleDay" ok-text="Да" cancel-text="Нет" :title="modalTitle" @ok="setDayType" size="md">
-        <template v-for="error in errors">
-            <b-alert show variant="danger" :key="error">{{ error }}</b-alert>
-        </template>
-        <b-form-input v-model="commentDay" placeholder="Комментарий" :required="true"></b-form-input>
-    </b-modal>
-
-    <b-modal v-model="modalVisibleApply" ok-text="Да" cancel-text="Нет" :title="'Принятие на работу'" @ok="applyPerson" size="md">
-        <template v-for="error in errors">
-            <b-alert show variant="danger" :key="error">{{ error }}</b-alert>
-        </template>
-        <b-form-input v-model="applyItems.schedule" placeholder="Напишите со скольки и до скольки рабочий день" :required="true"></b-form-input>
-    </b-modal>
-
-
-    <b-modal v-model="modalVisibleAbsence" ok-text="Да" cancel-text="Нет" title="Отсутствовал на стажировке" @ok="setUserAbsent" size="md">
-        <template v-for="error in errors">
-            <b-alert show variant="danger" :key="error">{{ error }}</b-alert>
-        </template>
-
-        <select class="form-control" v-model="commentAbsent">
-            <option value="" disabled selected>Выберите причину</option>
-            <option v-for="cause in fire_causes" :key="cause" :value="cause">{{ cause }}</option>
-        </select>
-
-    </b-modal>
-
-    <b-modal v-model="modalVisibleFiring" ok-text="Да" cancel-text="Нет" :title="modalTitle" @ok="setUserFired" size="md">
-        <template v-for="error in errors">
-            <b-alert show variant="danger" :key="error">{{ error }}</b-alert>
-        </template>
+		<b-modal
+			v-model="modalVisibleApply"
+			ok-text="Да"
+			cancel-text="Нет"
+			:title="'Принятие на работу'"
+			@ok="applyPerson"
+			size="md"
+		>
+			<template v-for="error in errors">
+				<b-alert
+					show
+					variant="danger"
+					:key="error"
+				>
+					{{ error }}
+				</b-alert>
+			</template>
+			<b-form-input
+				v-model="applyItems.schedule"
+				placeholder="Напишите со скольки и до скольки рабочий день"
+				:required="true"
+			/>
+		</b-modal>
 
 
-        <select class="form-control" v-model="commentFiring2">
-            <option value="" disabled selected>Выберите причину</option>
-            <option v-for="cause in fire_causes" :key="cause"  :value="cause">{{ cause }}</option>
-        </select>
+		<b-modal
+			v-model="modalVisibleAbsence"
+			ok-text="Да"
+			cancel-text="Нет"
+			title="Отсутствовал на стажировке"
+			@ok="setUserAbsent"
+			size="md"
+		>
+			<template v-for="error in errors">
+				<b-alert
+					show
+					variant="danger"
+					:key="error"
+				>
+					{{ error }}
+				</b-alert>
+			</template>
 
-        <b-form-input v-if="firingItems.type == 0"
-            class="mt-3"
-            v-model="commentFiring" placeholder="Свой вариант" :required="true"></b-form-input>
+			<select
+				class="form-control"
+				v-model="commentAbsent"
+			>
+				<option
+					value=""
+					disabled
+					selected
+				>
+					Выберите причину
+				</option>
+				<option
+					v-for="cause in fire_causes"
+					:key="cause"
+					:value="cause"
+				>
+					{{ cause }}
+				</option>
+			</select>
+		</b-modal>
 
-        <b-form-file
-            v-if="firingItems.type == 2"
-            v-model="firingItems.file"
-            :state="Boolean(firingItems.file)"
-            placeholder="Выберите или перетащите файл сюда..."
-            drop-placeholder="Перетащите файл сюда..."
-            class="mt-3"
-            ></b-form-file>
+		<b-modal
+			v-model="modalVisibleFiring"
+			ok-text="Да"
+			cancel-text="Нет"
+			:title="modalTitle"
+			@ok="setUserFired"
+			size="md"
+		>
+			<template v-for="error in errors">
+				<b-alert
+					show
+					variant="danger"
+					:key="error"
+				>
+					{{ error }}
+				</b-alert>
+			</template>
 
-    </b-modal>
+
+			<select
+				class="form-control"
+				v-model="commentFiring2"
+			>
+				<option
+					value=""
+					disabled
+					selected
+				>
+					Выберите причину
+				</option>
+				<option
+					v-for="cause in fire_causes"
+					:key="cause"
+					:value="cause"
+				>
+					{{ cause }}
+				</option>
+			</select>
+
+			<b-form-input
+				v-if="firingItems.type == 0"
+				class="mt-3"
+				v-model="commentFiring"
+				placeholder="Свой вариант"
+				:required="true"
+			/>
+
+			<b-form-file
+				v-if="firingItems.type == 2"
+				v-model="firingItems.file"
+				:state="Boolean(firingItems.file)"
+				placeholder="Выберите или перетащите файл сюда..."
+				drop-placeholder="Перетащите файл сюда..."
+				class="mt-3"
+			/>
+		</b-modal>
 
 
-    <b-modal v-model="modalVisible" ok-text="Да" cancel-text="Нет" title="Вы уверены?" @ok="updateHour" size="md">
-        <template v-for="error in errors">
-            <b-alert show variant="danger" :key="error">{{ error }}</b-alert>
-        </template>
-        <b-form-input v-model="comment" placeholder="Комментарий" :required="true"></b-form-input>
-    </b-modal>
-
-
-</div>
+		<b-modal
+			v-model="modalVisible"
+			ok-text="Да"
+			cancel-text="Нет"
+			title="Вы уверены?"
+			@ok="updateHour"
+			size="md"
+		>
+			<template v-for="error in errors">
+				<b-alert
+					show
+					variant="danger"
+					:key="error"
+				>
+					{{ error }}
+				</b-alert>
+			</template>
+			<b-form-input
+				v-model="comment"
+				placeholder="Комментарий"
+				:required="true"
+			/>
+		</b-modal>
+	</div>
 </template>
 
 <script>

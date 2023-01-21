@@ -1,176 +1,205 @@
 <template>
-<div class="popup__content  mt-3" :class="{'v-loading': loading}">
-    <div class="popup__filter">
-        <div class="popup__filter-title">
-            Ваши начисления за период работы
-        </div>
+	<div
+		class="popup__content  mt-3"
+		:class="{'v-loading': loading}"
+	>
+		<div class="popup__filter">
+			<div class="popup__filter-title">
+				Ваши начисления за период работы
+			</div>
 
-        <select class="select-css" v-model="currentMonth" @change="fetchData()">
-            <option
-                v-for="month in $moment.months()"
-                :value="month"
-                :key="month"
-            >{{ month }}</option>
-        </select>
-        <select class="select-css ml-2" v-model="currentYear" @change="fetchData()">
-            <option
-                v-for="year in years"
-                :value="year"
-                :key="year"
-            >{{ year }}</option>
-        </select>
+			<select
+				class="select-css"
+				v-model="currentMonth"
+				@change="fetchData()"
+			>
+				<option
+					v-for="month in $moment.months()"
+					:value="month"
+					:key="month"
+				>
+					{{ month }}
+				</option>
+			</select>
+			<select
+				class="select-css ml-2"
+				v-model="currentYear"
+				@change="fetchData()"
+			>
+				<option
+					v-for="year in years"
+					:value="year"
+					:key="year"
+				>
+					{{ year }}
+				</option>
+			</select>
+		</div>
+		<div class="balance__content custom-scroll">
+			<table class="balance__table">
+				<thead>
+					<tr>
+						<th
+							v-for="field in fields"
+							:class="{
+								'text-center': field.key != '0',
+							}"
+							:key="field.key"
+						>
+							{{ field.label }}
+							<i
+								v-if="field.key == 'avanses'"
+								class="fa fa-info-circle"
+								v-b-popover.hover.right.html="'Авансы отмечены зеленым'"
+							/>
+							<i
+								v-if="field.key == 'fines'"
+								class="fa fa-info-circle"
+								v-b-popover.hover.right.html="'Депримирование отмечено красным'"
+							/>
+						</th>
+					</tr>
+				</thead>
+				<tbody>
+					<tr
+						v-for="(item, index) in items"
+						:key="index"
+					>
+						<td
+							v-for="field in fields"
+							:key="field.key"
+							@click="showHistory(field.key)"
+							:class="{
+								'day-fine': item[field.key] !== undefined && item[field.key].hasFine,
+								'day-avans': item[field.key] !== undefined && item[field.key].hasAvans,
+								'day-bonus': item[field.key] !== undefined && item[field.key].hasBonus,
+								'text-center': field.key != '0',
+								'day-training': item[field.key] !== undefined && item[field.key].training,
+								'balance__table-day': parseInt(field.key) > 0
+							}"
+						>
+							<template v-if="item[field.key] !== undefined">
+								{{ item[field.key].value }}
+							</template>
+						</td>
+					</tr>
+				</tbody>
+			</table>
+		</div>
 
-    </div>
-    <div class="balance__content custom-scroll">
-        <table class="balance__table">
-            <thead>
-                <tr>
-                    <th
-                        v-for="field in fields" :class="{
-                            'text-center': field.key != '0',
-                        }"
-                        :key="field.key"
-                    >
-                        {{ field.label }}
-                        <i
-                            v-if="field.key == 'avanses'"
-                            class="fa fa-info-circle"
-                            v-b-popover.hover.right.html="'Авансы отмечены зеленым'"
-                        />
-                        <i
-                            v-if="field.key == 'fines'"
-                            class="fa fa-info-circle"
-                            v-b-popover.hover.right.html="'Депримирование отмечено красным'"
-                        />
-                    </th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr
-                    v-for="(item, index) in items"
-                    :key="index"
-                >
-                    <td
-                        v-for="field in fields"
-                        :key="field.key"
-                        @click="showHistory(field.key)"
-                        :class="{
-                            'day-fine': item[field.key] !== undefined && item[field.key].hasFine,
-                            'day-avans': item[field.key] !== undefined && item[field.key].hasAvans,
-                            'day-bonus': item[field.key] !== undefined && item[field.key].hasBonus,
-                            'text-center': field.key != '0',
-                            'day-training': item[field.key] !== undefined && item[field.key].training,
-                            'balance__table-day': parseInt(field.key) > 0
-                        }"
-                    >
-                        <template v-if="item[field.key] !== undefined">
-                            {{ item[field.key].value }}
-                        </template>
-                    </td>
-                </tr>
-            </tbody>
-        </table>
-    </div>
+		<!--  history  -->
+		<div
+			v-if="history"
+			ref="historyElement"
+		>
+			<div class="balance__inner">
+				<div class="balance__title">
+					История за {{ this.currentDay }} {{ this.dateInfo.currentMonth }}
+				</div>
 
-    <!--  history  -->
-    <div v-if="history" ref="historyElement">
-        <div class="balance__inner">
+				<BalanceItem title="Начислено">
+					<div v-if="Number(history.value) > 0">
+						{{ history.value }}
+					</div>
+					<div v-else>
+						0
+					</div>
+					<template #footer>
+						<div v-if="history.training">
+							<h6>Стажировка</h6>
+							<p>Может быть пол суммы</p>
+						</div>
+					</template>
+				</BalanceItem>
 
-            <div class="balance__title">
-                История за {{ this.currentDay }} {{ this.dateInfo.currentMonth }}
-            </div>
+				<BalanceItem title="Депремирование">
+					<template v-for="(item, index) in history.fines">
+						<p :key="index">
+							{{ item.name }}
+						</p>
+					</template>
+					<p v-if="history.fines.length == 0">
+						Нет депремирований
+					</p>
+				</BalanceItem>
 
-            <BalanceItem title="Начислено">
-                <div v-if="Number(history.value) > 0">{{ history.value }}</div>
-                <div v-else>0</div>
-                <template v-slot:footer>
-                    <div v-if="history.training">
-                        <h6>Стажировка</h6>
-                        <p>Может быть пол суммы</p>
-                    </div>
-                </template>
-            </BalanceItem>
+				<BalanceItem title="Бонусы">
+					<div class="mb-9">
+						<template v-for="(item, index) in history.bonuses">
+							<div :key="index">
+								<div>
+									<b>
+										{{ item.bonus }} KZT
+									</b>
+								</div>
+								<div>
+									{{ item.comment_bonus }}
+								</div>
+							</div>
+						</template>
+						<div v-if="history.bonuses.length == 0 && history.awards.length == 0 && history.test_bonus.length == 0">
+							Нет бонусов
+						</div>
+					</div>
+					<div
+						v-if="history.awards.length != 0"
+						class="mb-5"
+					>
+						<template v-for="(item, index) in history.awards">
+							<div :key="index">
+								<div>
+									<b>
+										{{ item.amount }} KZT
+									</b>
+								</div>
+								<div>
+									{{ item.comment }}
+								</div>
+							</div>
+						</template>
+					</div>
+					<div
+						v-if="history.test_bonus.length != 0"
+						class="mb-5"
+					>
+						<div>
+							За пройденные тесты
+						</div>
+						<template v-for="(item, index) in history.test_bonus">
+							<div :key="index">
+								<div>
+									<b>
+										{{ item.amount }} KZT
+									</b>
+								</div>
+								<div>
+									{{ item.comment }}
+								</div>
+							</div>
+						</template>
+					</div>
+				</BalanceItem>
 
-            <BalanceItem title="Депремирование">
-                <template v-for="(item, index) in history.fines">
-                    <p :key="index">{{item.name}}</p>
-                </template>
-                <p v-if="history.fines.length == 0">
-                    Нет депремирований
-                </p>
-            </BalanceItem>
-
-            <BalanceItem title="Бонусы">
-                <div class="mb-9">
-                    <template v-for="(item, index) in history.bonuses">
-                        <div :key="index">
-                            <div>
-                                <b>
-                                    {{ item.bonus }} KZT
-                                </b>
-                            </div>
-                            <div>
-                                {{ item.comment_bonus }}
-                            </div>
-                        </div>
-                    </template>
-                    <div v-if="history.bonuses.length == 0 && history.awards.length == 0 && history.test_bonus.length == 0">
-                        Нет бонусов
-                    </div>
-                </div>
-                <div v-if="history.awards.length != 0"  class="mb-5">
-                    <template v-for="(item, index) in history.awards">
-                        <div :key="index">
-                            <div>
-                                <b>
-                                    {{ item.amount }} KZT
-                                </b>
-                            </div>
-                            <div>
-                                {{ item.comment }}
-                            </div>
-                        </div>
-                    </template>
-                </div>
-                <div v-if="history.test_bonus.length != 0"  class="mb-5">
-                    <div>
-                        За пройденные тесты
-                    </div>
-                    <template v-for="(item, index) in history.test_bonus">
-                        <div :key="index">
-                            <div>
-                                <b>
-                                    {{ item.amount }} KZT
-                                </b>
-                            </div>
-                            <div>
-                                {{ item.comment }}
-                            </div>
-                        </div>
-                    </template>
-                </div>
-            </BalanceItem>
-
-            <BalanceItem title="Авансы">
-                <template v-for="(item, index) in history.avanses">
-                    <div :key="index">
-                        <div>
-                            <b>
-                                {{ item.paid }} KZT
-                            </b>
-                        </div>
-                        <div>
-                            {{ item.comment_paid }}
-                        </div>
-                    </div>
-                </template>
-                <p v-if="history.avanses.length == 0">
-                    Нет авансов
-                </p>
-            </BalanceItem>
-        </div>
-   </div>
-</div>
+				<BalanceItem title="Авансы">
+					<template v-for="(item, index) in history.avanses">
+						<div :key="index">
+							<div>
+								<b>
+									{{ item.paid }} KZT
+								</b>
+							</div>
+							<div>
+								{{ item.comment_paid }}
+							</div>
+						</div>
+					</template>
+					<p v-if="history.avanses.length == 0">
+						Нет авансов
+					</p>
+				</BalanceItem>
+			</div>
+		</div>
+	</div>
 </template>
 
 <script>

@@ -1,44 +1,82 @@
 <template>
-<div>
-    <div class="d-flex">
-        <input type="text" class=" form-control form-control-sm mb-2 mr-2 rounded-none text-center" style="width: 57px;" v-model="cell" disabled>
-        <input type="text" class="w-full form-control form-control-sm mb-2 rounded-none" v-model="shortcut" disabled>
-    </div>
+	<div>
+		<div class="d-flex">
+			<input
+				type="text"
+				class=" form-control form-control-sm mb-2 mr-2 rounded-none text-center"
+				style="width: 57px;"
+				v-model="cell"
+				disabled
+			>
+			<input
+				type="text"
+				class="w-full form-control form-control-sm mb-2 rounded-none"
+				v-model="shortcut"
+				disabled
+			>
+		</div>
 
-    <b-table responsive striped class="text-nowrap text-right my-table summary-kaspi  mb-3 table-excel" id="kaspisum" :small="true" :bordered="true" :items="items" :fields="fields" primary-key="a" :key="'table-kaspi'">
-        <template #thead-top>
-            <tr>
-                <th class="grey b-table-sticky-column" style="min-width: 55px;border-right:2px solid #ccc !important"></th>
-                <th v-for="name in columnNames" :key="name" class="grey">
-                    {{ name }}
-                </th>
-            </tr>
+		<b-table
+			responsive
+			striped
+			class="text-nowrap text-right my-table summary-kaspi  mb-3 table-excel"
+			id="kaspisum"
+			:small="true"
+			:bordered="true"
+			:items="items"
+			:fields="fields"
+			primary-key="a"
+			:key="'table-kaspi'"
+		>
+			<template #thead-top>
+				<tr>
+					<th
+						class="grey b-table-sticky-column"
+						style="min-width: 55px;border-right:2px solid #ccc !important"
+					/>
+					<th
+						v-for="name in columnNames"
+						:key="name"
+						class="grey"
+					>
+						{{ name }}
+					</th>
+				</tr>
+			</template>
 
-        </template>
+			<template #cell()="data">
+				<input
+					type="number"
+					v-if="data.index == 4 && data.field.is_date
+						|| data.index == 5 && data.field.is_date
+						|| data.index == 8 && data.field.is_date
+						|| data.index == 13 && data.field.is_date
+						|| data.index == 14 && data.field.is_date
+						|| data.index == 15 && data.field.is_date
+						|| data.index == 16 && data.field.is_date
+						|| data.index == 17 && data.field.is_date
+						|| data.index == 18 && data.field.is_date
+						|| data.index == 20 && data.field.is_date
+						|| data.index == 22 && data.field.is_date
+						|| data.index == 23 && data.field.is_date
+					"
+					class="form-control cell-input "
+					:class="data.item._cellVariants[data.field.key]"
+					@change="updateSettings($event,data)"
+					:value="data.value"
+					@click="test(data)"
+				>
 
-        <template #cell()="data">
-
-            <input type="number" v-if="data.index == 4 && data.field.is_date
-                || data.index == 5 && data.field.is_date
-                || data.index == 8 && data.field.is_date
-                || data.index == 13 && data.field.is_date
-                || data.index == 14 && data.field.is_date
-                || data.index == 15 && data.field.is_date
-                || data.index == 16 && data.field.is_date
-                || data.index == 17 && data.field.is_date
-                || data.index == 18 && data.field.is_date
-                || data.index == 20 && data.field.is_date
-                || data.index == 22 && data.field.is_date
-                || data.index == 23 && data.field.is_date
-                " class="form-control cell-input " :class="data.item._cellVariants[data.field.key]"
-                @change="updateSettings($event,data)" :value="data.value" @click="test(data)">
-
-            <div v-else :class="data.item._cellVariants[data.field.key]" @click="test(data)">{{ data.value }}</div>
-        </template>
-
-    </b-table>
-
-</div>
+				<div
+					v-else
+					:class="data.item._cellVariants[data.field.key]"
+					@click="test(data)"
+				>
+					{{ data.value }}
+				</div>
+			</template>
+		</b-table>
+	</div>
 </template>
 
 <script>

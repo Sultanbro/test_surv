@@ -33,18 +33,18 @@ export default {
 </script>
 
 <template>
-    <DefaultLayout class="no-padding">
-        <div class="old__content">
-            <Playlists
-                v-show="token"
-                :token="token"
-                :can_edit="can_edit"
-                :category="category"
-                :playlist="playlist"
-                :video="video"
-            />
-        </div>
-    </DefaultLayout>
+	<DefaultLayout class="no-padding">
+		<div class="old__content">
+			<Playlists
+				v-show="token"
+				:token="token"
+				:can_edit="can_edit"
+				:category="category"
+				:playlist="playlist"
+				:video="video"
+			/>
+		</div>
+	</DefaultLayout>
 </template>
 
 <style scoped>

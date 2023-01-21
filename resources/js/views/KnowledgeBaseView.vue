@@ -27,14 +27,17 @@ export default {
 </script>
 
 <template>
-    <DefaultLayout class="no-padding">
-        <div class="old__content" v-show="auth_user_id">
-            <KBPage
-                :auth_user_id="auth_user_id"
-                :can_edit="can_edit"
-            />
-        </div>
-    </DefaultLayout>
+	<DefaultLayout class="no-padding">
+		<div
+			class="old__content"
+			v-show="auth_user_id"
+		>
+			<KBPage
+				:auth_user_id="auth_user_id"
+				:can_edit="can_edit"
+			/>
+		</div>
+	</DefaultLayout>
 </template>
 
 <style scoped>

@@ -1,48 +1,59 @@
 <template>
-<b-tr>
-    <b-td class="person">
-        <superselect :values="item.targets" class="w-full single" />
-    </b-td>
+	<b-tr>
+		<b-td class="person">
+			<superselect
+				:values="item.targets"
+				class="w-full single"
+			/>
+		</b-td>
 
-    <b-td class="role">
-        <multiselect
-            ref="role_select"
-            v-model="item.roles"
-            :options="local_roles"
-            :multiple="true"
-            :preserve-search="true"
-            :hide-selected="true"
-            placeholder="Выберите"
-            label="name"
-            track-by="name" />
-    </b-td>
-    <b-td class="groups">
-        <multiselect
-            ref="group_select"
-            v-model="item.groups"
-            :options="local_groups"
-            :multiple="true"
-            :close-on-select="false"
-            :clear-on-select="false"
-            :preserve-search="true"
-            :hide-selected="true"
-            placeholder="Выберите"
-            @select="onSelect"
-            @remove="onRemove"
-            label="name"
-            track-by="name" />
-    </b-td>
-    <b-td class="actions">
-        <div class="d-flex align-items-center">
-            <button class="btn btn-success btn-icon" @click="$emit('updateItem')">
-                <i class="fa fa-save" />
-            </button>
-            <button class="btn btn-danger btn-icon" @click="$emit('deleteItem')">
-                <i class="fa fa-times" />
-            </button>
-        </div>
-    </b-td>
-</b-tr>
+		<b-td class="role">
+			<multiselect
+				ref="role_select"
+				v-model="item.roles"
+				:options="local_roles"
+				:multiple="true"
+				:preserve-search="true"
+				:hide-selected="true"
+				placeholder="Выберите"
+				label="name"
+				track-by="name"
+			/>
+		</b-td>
+		<b-td class="groups">
+			<multiselect
+				ref="group_select"
+				v-model="item.groups"
+				:options="local_groups"
+				:multiple="true"
+				:close-on-select="false"
+				:clear-on-select="false"
+				:preserve-search="true"
+				:hide-selected="true"
+				placeholder="Выберите"
+				@select="onSelect"
+				@remove="onRemove"
+				label="name"
+				track-by="name"
+			/>
+		</b-td>
+		<b-td class="actions">
+			<div class="d-flex align-items-center">
+				<button
+					class="btn btn-success btn-icon"
+					@click="$emit('updateItem')"
+				>
+					<i class="fa fa-save" />
+				</button>
+				<button
+					class="btn btn-danger btn-icon"
+					@click="$emit('deleteItem')"
+				>
+					<i class="fa fa-times" />
+				</button>
+			</div>
+		</b-td>
+	</b-tr>
 </template>
 
 <script>

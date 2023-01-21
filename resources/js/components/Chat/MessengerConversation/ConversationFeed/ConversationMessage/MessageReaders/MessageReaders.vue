@@ -1,24 +1,40 @@
 <template>
-  <div class="readers-badge">
-    ✔ Cообщение прочитано: {{ message.readers[0].name }}
-    <a href="#" class="readers-link" @mouseover="showReadersList" @mouseleave="hideReadersList" v-if="message.readers.length > 1">
-      и еще {{ message.readers.length - 1 }} человек
-    </a>
+	<div class="readers-badge">
+		✔ Cообщение прочитано: {{ message.readers[0].name }}
+		<a
+			href="#"
+			class="readers-link"
+			@mouseover="showReadersList"
+			@mouseleave="hideReadersList"
+			v-if="message.readers.length > 1"
+		>
+			и еще {{ message.readers.length - 1 }} человек
+		</a>
 
-    <div class="readers-list" v-if="showReaders" :style="{top:listY + 'px',left:listX+'px'}" id="messenger_readers_list">
-      <div class="readers-list-body">
-        <div class="readers-list-body-text" v-for="(reader, index) in message.readers" :key="index">
-          <!--          avatar -->
-          <div class="readers-list-body-text-avatar">
-            <img :src="reader.img_url" alt="avatar">
-          </div>
-          <span>{{ reader.name }} {{ reader.last_name }}</span>
-        </div>
-      </div>
-
-    </div>
-
-  </div>
+		<div
+			class="readers-list"
+			v-if="showReaders"
+			:style="{top:listY + 'px',left:listX+'px'}"
+			id="messenger_readers_list"
+		>
+			<div class="readers-list-body">
+				<div
+					class="readers-list-body-text"
+					v-for="(reader, index) in message.readers"
+					:key="index"
+				>
+					<!--          avatar -->
+					<div class="readers-list-body-text-avatar">
+						<img
+							:src="reader.img_url"
+							alt="avatar"
+						>
+					</div>
+					<span>{{ reader.name }} {{ reader.last_name }}</span>
+				</div>
+			</div>
+		</div>
+	</div>
 </template>
 
 <script>

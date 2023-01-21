@@ -1,66 +1,79 @@
 <template>
-    <div class="auth_check">
-        <div @click="toggle()" class="btn-rm">
-            <a class="text-white rounded" >
-                <span class="far fa-address-card text-white "></span>
-            </a>
-        </div>
+	<div class="auth_check">
+		<div
+			@click="toggle()"
+			class="btn-rm"
+		>
+			<a class="text-white rounded">
+				<span class="far fa-address-card text-white " />
+			</a>
+		</div>
 
 
-        <sidebar
-                title="Индивидуальный чек лист"
-                :open="showAuthUserCheck"
-                @close="toggle()"
-                width="70%"
-        >
+		<sidebar
+			title="Индивидуальный чек лист"
+			:open="showAuthUserCheck"
+			@close="toggle()"
+			width="70%"
+		>
+			<div class="col-md-12 p-0">
+				<div class="row">
+					<div class="col-12 p-0">
+						<div
+							class="col-md-12 pr-0 mt-2"
+							v-for="(item, index) in auth_check"
+							:key="index"
+						>
+							<span class="font-weight-bold">{{ index }}</span>
+							<div
+								class="col-10 p-0 mt-2"
+								v-for="(val,ind) in item"
+								:key="ind"
+							>
+								<div class="mr-5">
+									<b-form-checkbox
+										v-model="val.checkedtasks[0].checked"
+										size="sm"
+									>
+										<span style="cursor: pointer">{{ val.task }}</span>
+									</b-form-checkbox>
+								</div>
 
-        <div class="col-md-12 p-0">
+								<div style="position: absolute;right: 0px;top: 0px">
+									<input
+										type="url"
+										style="width: 150%"
+										v-model="val.checkedtasks[0].url"
+										@input="event => val.checkedtasks[0].url >= 0 ? linkIsSet = true : linkIsSet = false"
+										class="form-control form-control-sm"
+										placeholder="url"
+									>
+								</div>
+							</div>
+						</div>
+					</div>
 
-
-
-                <div class="row">
-                   <div class="col-12 p-0">
-
-                     <div class="col-md-12 pr-0 mt-2" v-for="(item, index) in auth_check" :key="index">
-                       <span class="font-weight-bold">{{index}}</span>
-                       <div class="col-10 p-0 mt-2" v-for="(val,ind) in item" :key="ind">
-                          <div class="mr-5">
-                            <b-form-checkbox v-model="val.checkedtasks[0].checked" size="sm" >
-                              <span style="cursor: pointer">{{val.task}}</span>
-                            </b-form-checkbox>
-                          </div>
-
-                          <div style="position: absolute;right: 0px;top: 0px">
-                           <input type="url" style="width: 150%" v-model="val.checkedtasks[0].url" @input="event => val.checkedtasks[0].url >= 0 ? linkIsSet = true : linkIsSet = false" class="form-control form-control-sm" placeholder="url">
-                         </div>
-                       </div>
-
-                     </div>
-                   </div>
-
-                    <div class="col-md-12 mt-3">
-                        <div class="col-md-6 p-0">
-                            <button @click.prevent="saveChecklist"   title="Сохранить" :disabled="linkIsSet" v-bind:class = " linkIsSet ?'btn btn-danger':'btn btn-primary'">
-                                Выполнить
-                            </button>
-                        </div>
-                    </div>
-                </div>
-
-
-            </div>
-
-
-
-
-        </sidebar>
-
-    </div>
+					<div class="col-md-12 mt-3">
+						<div class="col-md-6 p-0">
+							<button
+								@click.prevent="saveChecklist"
+								title="Сохранить"
+								:disabled="linkIsSet"
+								:class=" linkIsSet ?'btn btn-danger':'btn btn-primary'"
+							>
+								Выполнить
+							</button>
+						</div>
+					</div>
+				</div>
+			</div>
+		</sidebar>
+	</div>
 </template>
 
 <script>
 export default {
-	name: 'auth-check-list',
+	name: 'AuthCheckList',
 	props: {
 		// user_id:'',
 

@@ -1,61 +1,121 @@
 <template>
-  <div class="flowchart-node"  :style="nodeStyle"
-    @mousedown="handleMousedown"
-    @mouseover="handleMouseOver"
-    @mouseleave="handleMouseLeave"
-    v-bind:class="{selected: options.selected === id}" >
-    <template v-if="type!='start'">
-    <div class="node-port node-input"
-       @mousedown="inputMouseDown"
-       @mouseup="inputMouseUp">
-    </div>
-    </template>
-    <div class="node-main">
+	<div
+		class="flowchart-node"
+		:style="nodeStyle"
+		@mousedown="handleMousedown"
+		@mouseover="handleMouseOver"
+		@mouseleave="handleMouseLeave"
+		:class="{selected: options.selected === id}"
+	>
+		<template v-if="type!='start'">
+			<div
+				class="node-port node-input"
+				@mousedown="inputMouseDown"
+				@mouseup="inputMouseUp"
+			/>
+		</template>
+		<div class="node-main">
+			<div
+				v-if="type==='yesorno'"
+				class="node-type"
+			>
+				Ответ
+			</div>
+			<div
+				v-else-if="type==='start'"
+				class="node-type"
+			>
+				Начало
+			</div>
+			<div
+				v-else-if="type==='textsintez'"
+				class="node-type"
+			>
+				Вопрос
+			</div>
+			<div
+				v-else-if="type==='end'"
+				class="node-type"
+			>
+				Конец
+			</div>
+			<div
+				v-else-if="type==='forwarding'"
+				class="node-type"
+			>
+				Переадресация
+			</div>
+			<div
+				v-else-if="type==='smsforward'"
+				class="node-type"
+			>
+				Отправить смс
+			</div>
 
-      <div v-if="type==='yesorno'" class="node-type">Ответ</div>
-      <div v-else-if="type==='start'" class="node-type">Начало</div>
-      <div v-else-if="type==='textsintez'" class="node-type">Вопрос</div>
-      <div v-else-if="type==='end'" class="node-type">Конец</div>
-      <div v-else-if="type==='forwarding'" class="node-type">Переадресация</div>
-      <div v-else-if="type==='smsforward'" class="node-type">Отправить смс</div>
+			<div
+				v-else
+				v-text="type"
+				class="node-type"
+			/>
 
-      <div v-else v-text="type" class="node-type"></div>
+			<div
+				v-text="label"
+				class="node-label"
+			/>
+			<div
+				v-if="type==='Музыка'"
+				v-text="audio_file"
+				class="audio_file"
+			/>
+			<div
+				v-if="type==='Кнопка'"
+				v-text="key_button"
+				class="node-key"
+			/>
+			<div
+				v-if="type==='Кнопка'"
+				v-text="action_button"
+				class="node-action"
+			/>
+			<div
+				v-if="action_button==='Позвонить оператору' || action_button==='Связать с номером' ||
+					action_button==='Перенести в отдел'"
+				v-text="connect_with"
+				class="node-connection"
+			/>
+		</div>
 
-      <div v-text="label" class="node-label"></div>
-      <div v-if="type==='Музыка'" v-text="audio_file" class="audio_file"></div>
-      <div v-if="type==='Кнопка'" v-text="key_button" class="node-key"></div>
-      <div v-if="type==='Кнопка'" v-text="action_button" class="node-action"></div>
-      <div v-if="action_button==='Позвонить оператору' || action_button==='Связать с номером' ||
-      action_button==='Перенести в отдел'" v-text="connect_with" class="node-connection"></div>
+		<template v-if="type=='yesorno'">
+			<div
+				class="node-port node-output portyes"
+				@mousedown="outputMouseDownyes"
+			/>
 
-    </div>
+			<div
+				class="node-port node-output portno"
+				@mousedown="outputMouseDownno"
+			/>
+		</template>
 
-    <template v-if="type=='yesorno'">
+		<template v-if="type!='yesorno' && type!='end'">
+			<div
+				class="node-port node-output"
+				@mousedown="outputMouseDown"
+			/>
+		</template>
+		<template v-if="type!='start'">
+			<div
+				v-show="show.delete"
+				class="node-delete"
+			>
+				&times;
+			</div>
+		</template>
 
-    <div class="node-port node-output portyes"
-      @mousedown="outputMouseDownyes">
-    </div>
-
-      <div class="node-port node-output portno"
-           @mousedown="outputMouseDownno">
-      </div>
-
-    </template>
-
-    <template v-if="type!='yesorno' && type!='end'">
-    <div class="node-port node-output"
-         @mousedown="outputMouseDown">
-    </div>
-
-</template>
-    <template v-if="type!='start'">
-    <div v-show="show.delete" class="node-delete">&times;</div>
-</template>
-
-    <button  @click='login'>Изменить</button>
-
-  </div>
-
+		<button @click="login">
+			Изменить
+		</button>
+	</div>
 </template>
 
 

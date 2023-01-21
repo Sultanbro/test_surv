@@ -1,68 +1,141 @@
 <template>
-<div
-    v-if="groups"
-    class="mt-2 px-3"
->
-    <div class="mb-0">
-        <div class="row mb-3">
-            <div class="col-3">
-                <select class="form-control" v-model="currentGroup" @change="fetchData()">
-                    <option v-for="group in groups" :value="group.id" :key="group.id">
-                        {{ group.name }}
-                    </option>
-                </select>
-            </div>
-            <div class="col-3">
-                <select class="form-control" v-model="dateInfo.currentMonth" @change="fetchData()">
-                    <option v-for="month in $moment.months()" :value="month" :key="month">
-                        {{ month }}
-                    </option>
-                </select>
-            </div>
-            <div class="col-2">
-                <select class="form-control" v-model="dateInfo.currentYear" @change="fetchData()">
-                    <option v-for="year in years" :value="year" :key="year">
-                        {{ year }}
-                    </option>
-                </select>
-            </div>
-            <div class="col-1">
-                <div class="btn btn-primary" @click="fetchData()">
-                    <i class="fa fa-redo-alt"></i>
-                </div>
-            </div>
-            <div class="col-2"></div>
-        </div>
+	<div
+		v-if="groups"
+		class="mt-2 px-3"
+	>
+		<div class="mb-0">
+			<div class="row mb-3">
+				<div class="col-3">
+					<select
+						class="form-control"
+						v-model="currentGroup"
+						@change="fetchData()"
+					>
+						<option
+							v-for="group in groups"
+							:value="group.id"
+							:key="group.id"
+						>
+							{{ group.name }}
+						</option>
+					</select>
+				</div>
+				<div class="col-3">
+					<select
+						class="form-control"
+						v-model="dateInfo.currentMonth"
+						@change="fetchData()"
+					>
+						<option
+							v-for="month in $moment.months()"
+							:value="month"
+							:key="month"
+						>
+							{{ month }}
+						</option>
+					</select>
+				</div>
+				<div class="col-2">
+					<select
+						class="form-control"
+						v-model="dateInfo.currentYear"
+						@change="fetchData()"
+					>
+						<option
+							v-for="year in years"
+							:value="year"
+							:key="year"
+						>
+							{{ year }}
+						</option>
+					</select>
+				</div>
+				<div class="col-1">
+					<div
+						class="btn btn-primary"
+						@click="fetchData()"
+					>
+						<i class="fa fa-redo-alt" />
+					</div>
+				</div>
+				<div class="col-2" />
+			</div>
 
-        <div v-if="hasPremission">
-            <b-modal v-model="modalVisible" ok-text="Да" cancel-text="Нет" title="Вы уверены?" @ok="setTimeManually" size="md">
-                <template v-for="error in errors">
-                    <b-alert show variant="danger" :key="error">{{ error }}</b-alert>
-                </template>
-                <b-form-input v-model="comment" placeholder="Комментарий" :required="true"></b-form-input>
-            </b-modal>
-            <div class="table-container">
-                <b-table responsive :sticky-header="true" class="text-nowrap text-right table-custom-table-coming" id="comingTable" :small="true" :bordered="true" :items="items" :fields="fields" show-empty emptyText="Нет данных">
-                    <template #cell(name)="data">
-                        <div>
-                            {{ data.value }}
-                            <b-badge v-if="data.field.key == 'name'" pill variant="success">{{data.item.user_type}}</b-badge>
-                        </div>
-                    </template>
+			<div v-if="hasPremission">
+				<b-modal
+					v-model="modalVisible"
+					ok-text="Да"
+					cancel-text="Нет"
+					title="Вы уверены?"
+					@ok="setTimeManually"
+					size="md"
+				>
+					<template v-for="error in errors">
+						<b-alert
+							show
+							variant="danger"
+							:key="error"
+						>
+							{{ error }}
+						</b-alert>
+					</template>
+					<b-form-input
+						v-model="comment"
+						placeholder="Комментарий"
+						:required="true"
+					/>
+				</b-modal>
+				<div class="table-container">
+					<b-table
+						responsive
+						:sticky-header="true"
+						class="text-nowrap text-right table-custom-table-coming"
+						id="comingTable"
+						:small="true"
+						:bordered="true"
+						:items="items"
+						:fields="fields"
+						show-empty
+						empty-text="Нет данных"
+					>
+						<template #cell(name)="data">
+							<div>
+								{{ data.value }}
+								<b-badge
+									v-if="data.field.key == 'name'"
+									pill
+									variant="success"
+								>
+									{{ data.item.user_type }}
+								</b-badge>
+							</div>
+						</template>
 
-                    <template #cell()="data">
-                        <div @click="setCurrentEditingCell(data)" :class="{ fine: data.item.fines[data.field.key.toString()].length > 0}">
-                            <input @mouseover="$event.preventDefault()" class="cell-input" type="time" :value="data.value" :readonly="true" ondblclick="this.readOnly='';" @change="changeTimeInCell" v-on:keyup.enter="openModal">
-                        </div>
-                    </template>
-                </b-table>
-            </div>
-        </div>
-        <div v-else>
-            <p>У вас нет доступа к этой группе</p>
-        </div>
-    </div>
-</div>
+						<template #cell()="data">
+							<div
+								@click="setCurrentEditingCell(data)"
+								:class="{ fine: data.item.fines[data.field.key.toString()].length > 0}"
+							>
+								<input
+									@mouseover="$event.preventDefault()"
+									class="cell-input"
+									type="time"
+									:value="data.value"
+									:readonly="true"
+									ondblclick="this.readOnly='';"
+									@change="changeTimeInCell"
+									@keyup.enter="openModal"
+								>
+							</div>
+						</template>
+					</b-table>
+				</div>
+			</div>
+			<div v-else>
+				<p>У вас нет доступа к этой группе</p>
+			</div>
+		</div>
+	</div>
 </template>
 
 <script>

@@ -1,295 +1,372 @@
 <template>
-  <div
-    v-if="token"
-    class="video-playlists"
-  >
-      <div class="d-flex">
-
-        <div class="lp">
-          <h1 class="page-title">Темы</h1>
-
-
-          <div
-            class="section d-flex aic jcsb my-2"
-            v-for="(cat, index) in categories"
-            :key="cat.id"
-            :class="{'active': activeCat != null && activeCat.id == cat.id}"
-            @click="selectCat(index)"
-          >
-            <p class="mb-0">{{ cat.title }}</p>
-
-              <div class="d-flex">
-                  <i
-                  class="fa fa-edit ml-2"
-                  v-if="cat.id != 0 && mode == 'edit'"
-                  @click.stop="editCat(index)"
-                ></i>
-                <i
-                  class="fa fa-trash ml-2"
-                  v-if="cat.id != 0 && mode == 'edit'"
-                  @click.stop="deleteCat(index)"
-                ></i>
-              </div>
-          </div>
+	<div
+		v-if="token"
+		class="video-playlists"
+	>
+		<div class="d-flex">
+			<div class="lp">
+				<h1 class="page-title">
+					Темы
+				</h1>
 
 
-          <button class="btn-add" @click="showAddCategory = true" v-if="mode == 'edit'">
-            Добавить категорию
-          </button>
+				<div
+					class="section d-flex aic jcsb my-2"
+					v-for="(cat, index) in categories"
+					:key="cat.id"
+					:class="{'active': activeCat != null && activeCat.id == cat.id}"
+					@click="selectCat(index)"
+				>
+					<p class="mb-0">
+						{{ cat.title }}
+					</p>
 
-        </div>
-
-
-        <div class="rp" style="flex: 1 1 0%;overflow:auto;">
-
-          <div class="hat">
-            <div class="d-flex jsutify-content-between hat-top">
-              <div class="bc">
-                <a href="#" @click="back">Темы</a>
-                <template v-if="activeCat">
-                  <i class="fa fa-chevron-right"></i>
-                  <a href="#"  @click="back">{{ activeCat.title + ' (' + activeCat.playlists.length + ')' }}</a>
-                </template>
-                <template v-if="activePlaylist">
-                  <i class="fa fa-chevron-right"></i>
-                  <a href="#" >{{ activePlaylist.title }}</a>
-                </template>
-                <!---->
-              </div>
-              <div class="control-btns d-flex" >
-                <div class="mode_changer" v-if="can_edit">
-                  <i class="fa fa-edit"  @click="toggleMode" :class="{'active': mode == 'edit'}" />
-                </div>
-
-                 <div class="mode_changer ml-2" v-if="activePlaylist == null &&  mode == 'edit'">
-                  <i class="fa fa-cogs" @click="get_settings()" />
-                </div>
-
-                <i class="btn btn-success fa fa-plus ml-2 d-flex px-2 aic"  @click="showAddPlaylist = true" v-if="mode == 'edit' && activePlaylist == null" />
+					<div class="d-flex">
+						<i
+							class="fa fa-edit ml-2"
+							v-if="cat.id != 0 && mode == 'edit'"
+							@click.stop="editCat(index)"
+						/>
+						<i
+							class="fa fa-trash ml-2"
+							v-if="cat.id != 0 && mode == 'edit'"
+							@click.stop="deleteCat(index)"
+						/>
+					</div>
+				</div>
 
 
+				<button
+					class="btn-add"
+					@click="showAddCategory = true"
+					v-if="mode == 'edit'"
+				>
+					Добавить категорию
+				</button>
+			</div>
 
 
-                <!-- buttons for playlist like Save Group -->
-                <template v-if="activePlaylist && mode == 'edit'">
-                  <i class="btn btn-info fa-upload fa ml-2 d-flex px-2 aic" @click="uploadVideo" title="Добавить видео"/>
-                  <i class="btn btn-info fa fa-folder-plus ml-2 d-flex px-2 aic" @click="addGroup" title="Добавить отдел"/>
-                  <i class="btn btn-success fa fa-save ml-2 d-flex px-2 aic"  @click="savePlaylistEdit" title="Сохранить плейлист" />
-                </template>
+			<div
+				class="rp"
+				style="flex: 1 1 0%;overflow:auto;"
+			>
+				<div class="hat">
+					<div class="d-flex jsutify-content-between hat-top">
+						<div class="bc">
+							<a
+								href="#"
+								@click="back"
+							>Темы</a>
+							<template v-if="activeCat">
+								<i class="fa fa-chevron-right" />
+								<a
+									href="#"
+									@click="back"
+								>{{ activeCat.title + ' (' + activeCat.playlists.length + ')' }}</a>
+							</template>
+							<template v-if="activePlaylist">
+								<i class="fa fa-chevron-right" />
+								<a href="#">{{ activePlaylist.title }}</a>
+							</template>
+							<!---->
+						</div>
+						<div class="control-btns d-flex">
+							<div
+								class="mode_changer"
+								v-if="can_edit"
+							>
+								<i
+									class="fa fa-edit"
+									@click="toggleMode"
+									:class="{'active': mode == 'edit'}"
+								/>
+							</div>
+
+							<div
+								class="mode_changer ml-2"
+								v-if="activePlaylist == null && mode == 'edit'"
+							>
+								<i
+									class="fa fa-cogs"
+									@click="get_settings()"
+								/>
+							</div>
+
+							<i
+								class="btn btn-success fa fa-plus ml-2 d-flex px-2 aic"
+								@click="showAddPlaylist = true"
+								v-if="mode == 'edit' && activePlaylist == null"
+							/>
 
 
-              </div>
-            </div>
-            <div><!----></div>
-          </div>
 
 
-          <div class="content mt-3">
-
-            <div v-if="activeCat != null" class="p-3 ">
-
-
-              <div v-if="activePlaylist != null" class="">
-                <PlaylistEdit
-                  ref="playlist"
-                  @back="back"
-                  :token="token"
-                  :id="activePlaylist.id"
-                  :is_course="false"
-                  :auth_user_id="user_id"
-                  :mode="mode"
-                  :myvideo="myvideo" />
-
-              </div>
-
-              <div v-else>
-
-                  <!-- playlists -->
-                  <div class="els">
-
-                      <div class="playlist mb-3" v-for="(playlist, p_index) in activeCat.playlists" :key="playlist.id" @click="selectPl(p_index)">
-
-                        <div class="left" :style="'background-image: url(' + (playlist.img == '' || playlist.img == null ? '/images/author.jpg' : playlist.img ) + ')'">
-                        </div>
-
-                        <div class="right">
-                            <div class="title">  {{ playlist.title }}</div>
-                             <div class="d-flex btns mb-2"  v-if="mode == 'edit'">
-                                <i
-                                  class="fa fa-edit"
-                                  v-if="playlist.id != 0"
-                                  title="Переместить"
-                                  @click.stop="movePl(p_index)"
-                                ></i>
-                                <i
-                                  class="fa fa-trash ml-2"
-                                  v-if="playlist.id != 0"
-                                  @click.stop="deletePl(p_index)"
-                                ></i>
-                            </div>
-                            <div class="text">  {{ playlist.text }}</div>
-
-                        </div>
-
-                      </div>
-
-                  </div>
-              </div>
-
-            </div>
-
-          </div>
-        </div>
-      </div>
+							<!-- buttons for playlist like Save Group -->
+							<template v-if="activePlaylist && mode == 'edit'">
+								<i
+									class="btn btn-info fa-upload fa ml-2 d-flex px-2 aic"
+									@click="uploadVideo"
+									title="Добавить видео"
+								/>
+								<i
+									class="btn btn-info fa fa-folder-plus ml-2 d-flex px-2 aic"
+									@click="addGroup"
+									title="Добавить отдел"
+								/>
+								<i
+									class="btn btn-success fa fa-save ml-2 d-flex px-2 aic"
+									@click="savePlaylistEdit"
+									title="Сохранить плейлист"
+								/>
+							</template>
+						</div>
+					</div>
+					<div><!----></div>
+				</div>
 
 
-    <!-- Новый плейлист -->
-    <b-modal
-      v-model="showAddPlaylist"
-      title="Новый плейлист"
-      size="md"
-      class="modalle"
-      hide-footer
-    >
-      <input
-        type="text"
-        v-model="newPlaylist"
-        placeholder="Название..."
-        class="form-control mb-2"
-      />
-      <button class="btn btn-primary rounded m-auto" @click="addPlaylist">
-        <span>Сохранить</span>
-      </button>
-    </b-modal>
+				<div class="content mt-3">
+					<div
+						v-if="activeCat != null"
+						class="p-3 "
+					>
+						<div
+							v-if="activePlaylist != null"
+							class=""
+						>
+							<PlaylistEdit
+								ref="playlist"
+								@back="back"
+								:token="token"
+								:id="activePlaylist.id"
+								:is_course="false"
+								:auth_user_id="user_id"
+								:mode="mode"
+								:myvideo="myvideo"
+							/>
+						</div>
 
-    <!-- Новый категория -->
-    <b-modal
-      v-model="showAddCategory"
-      title="Новая категория"
-      size="md"
-      class="modalle"
-      hide-footer
-    >
-      <input
-        type="text"
-        v-model="newcat"
-        placeholder="Название категории..."
-        class="form-control mb-2"
-      />
-      <button class="btn btn-primary rounded m-auto" @click="addCat">
-        <span>Сохранить</span>
-      </button>
-    </b-modal>
+						<div v-else>
+							<!-- playlists -->
+							<div class="els">
+								<div
+									class="playlist mb-3"
+									v-for="(playlist, p_index) in activeCat.playlists"
+									:key="playlist.id"
+									@click="selectPl(p_index)"
+								>
+									<div
+										class="left"
+										:style="'background-image: url(' + (playlist.img == '' || playlist.img == null ? '/images/author.jpg' : playlist.img ) + ')'"
+									/>
 
-    <!-- Переименовать категорию -->
-    <b-modal
-      v-model="showEditCat"
-      title="Переименовать категорию"
-      size="md"
-      class="modalle"
-      hide-footer
-    >
-      <input
-        type="text"
-        v-model="newcat"
-        placeholder="Название категории..."
-        class="form-control mb-2"
-      />
-      <button class="btn btn-primary rounded m-auto" @click="saveCat">
-        <span>Сохранить</span>
-      </button>
-    </b-modal>
-
-     <!-- Редактировать плейлист -->
-     <Sidebar
-        title="Редактировать плейлист"
-        :open="showEditPlaylist"
-        @close="showEditPlaylist = false"
-        width="50%"
-      >
-
-       <div v-if="editingPlaylist != null" class="p-3">
-
-        <div class="d-flex">
-          <div class="left f-70">
-            <div class="d-flex mb-2">
-              <p class="mb-2 font-bold">Название</p>
-              <input
-                type="text"
-                v-model="editingPlaylist.title"
-                placeholder="Название плейлиста..."
-                class="form-control mb-2"
-              />
-            </div>
-
-            <div class="d-flex mb-2">
-              <p class="mb-0 mr-2">Описание</p>
-              <textarea
-                v-model="editingPlaylist.text"
-                placeholder="Описание плейлиста..."
-                class="form-control"
-              />
-            </div>
-
-            <div class="d-flex mb-2">
-              <p class="mb-0 mr-2">Категория</p>
-              <select
-                class="form-control"
-                v-model="editingPlaylist.category_id">
-                <option v-for="cat in categories" :value="cat.id" :key="cat.id">{{ cat.title }}</option>
-              </select>
-            </div>
-          </div>
-
-          <div class="right f-30 pl-4">
-            <img class="book-img mb-5"
-              v-if="editingPlaylist.img != ''"
-              :src="editingPlaylist.img"
-              />
-            <b-form-file
-              ref="edit_img"
-              v-model="file_img"
-              :state="Boolean(file_img)"
-              placeholder="Выберите или перетащите файл сюда..."
-              drop-placeholder="Перетащите файл сюда..."
-              class="mt-3"
-              ></b-form-file>
-          </div>
-        </div>
-
-        <div class="d-flex">
-          <button class="btn btn-success mr-2 rounded" @click="savePlaylist">
-            <span>Сохранить</span>
-          </button>
-        </div>
-      </div>
-    </Sidebar>
+									<div class="right">
+										<div class="title">
+											{{ playlist.title }}
+										</div>
+										<div
+											class="d-flex btns mb-2"
+											v-if="mode == 'edit'"
+										>
+											<i
+												class="fa fa-edit"
+												v-if="playlist.id != 0"
+												title="Переместить"
+												@click.stop="movePl(p_index)"
+											/>
+											<i
+												class="fa fa-trash ml-2"
+												v-if="playlist.id != 0"
+												@click.stop="deletePl(p_index)"
+											/>
+										</div>
+										<div class="text">
+											{{ playlist.text }}
+										</div>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
 
 
-    <!-- Настройки раздела -->
-    <Sidebar
-      title="Настройки видеокурсов"
-      :open="showSettings"
-      @close="showSettings = false"
-      width="30%"
-    >
-      <label class="d-flex">
-        <input
-          type="checkbox"
-          v-model="allow_save_video_without_test"
-          class="form- mb-2 mr-2"
-        />
-        <p>Разрешить сохранять видео без тестовых вопросов</p>
-      </label>
+		<!-- Новый плейлист -->
+		<b-modal
+			v-model="showAddPlaylist"
+			title="Новый плейлист"
+			size="md"
+			class="modalle"
+			hide-footer
+		>
+			<input
+				type="text"
+				v-model="newPlaylist"
+				placeholder="Название..."
+				class="form-control mb-2"
+			>
+			<button
+				class="btn btn-primary rounded m-auto"
+				@click="addPlaylist"
+			>
+				<span>Сохранить</span>
+			</button>
+		</b-modal>
 
-      <button class="btn btn-primary rounded m-auto" @click="save_settings()">
-        <span>Сохранить</span>
-      </button>
+		<!-- Новый категория -->
+		<b-modal
+			v-model="showAddCategory"
+			title="Новая категория"
+			size="md"
+			class="modalle"
+			hide-footer
+		>
+			<input
+				type="text"
+				v-model="newcat"
+				placeholder="Название категории..."
+				class="form-control mb-2"
+			>
+			<button
+				class="btn btn-primary rounded m-auto"
+				@click="addCat"
+			>
+				<span>Сохранить</span>
+			</button>
+		</b-modal>
 
-    </Sidebar>
+		<!-- Переименовать категорию -->
+		<b-modal
+			v-model="showEditCat"
+			title="Переименовать категорию"
+			size="md"
+			class="modalle"
+			hide-footer
+		>
+			<input
+				type="text"
+				v-model="newcat"
+				placeholder="Название категории..."
+				class="form-control mb-2"
+			>
+			<button
+				class="btn btn-primary rounded m-auto"
+				@click="saveCat"
+			>
+				<span>Сохранить</span>
+			</button>
+		</b-modal>
+
+		<!-- Редактировать плейлист -->
+		<Sidebar
+			title="Редактировать плейлист"
+			:open="showEditPlaylist"
+			@close="showEditPlaylist = false"
+			width="50%"
+		>
+			<div
+				v-if="editingPlaylist != null"
+				class="p-3"
+			>
+				<div class="d-flex">
+					<div class="left f-70">
+						<div class="d-flex mb-2">
+							<p class="mb-2 font-bold">
+								Название
+							</p>
+							<input
+								type="text"
+								v-model="editingPlaylist.title"
+								placeholder="Название плейлиста..."
+								class="form-control mb-2"
+							>
+						</div>
+
+						<div class="d-flex mb-2">
+							<p class="mb-0 mr-2">
+								Описание
+							</p>
+							<textarea
+								v-model="editingPlaylist.text"
+								placeholder="Описание плейлиста..."
+								class="form-control"
+							/>
+						</div>
+
+						<div class="d-flex mb-2">
+							<p class="mb-0 mr-2">
+								Категория
+							</p>
+							<select
+								class="form-control"
+								v-model="editingPlaylist.category_id"
+							>
+								<option
+									v-for="cat in categories"
+									:value="cat.id"
+									:key="cat.id"
+								>
+									{{ cat.title }}
+								</option>
+							</select>
+						</div>
+					</div>
+
+					<div class="right f-30 pl-4">
+						<img
+							class="book-img mb-5"
+							v-if="editingPlaylist.img != ''"
+							:src="editingPlaylist.img"
+						>
+						<b-form-file
+							ref="edit_img"
+							v-model="file_img"
+							:state="Boolean(file_img)"
+							placeholder="Выберите или перетащите файл сюда..."
+							drop-placeholder="Перетащите файл сюда..."
+							class="mt-3"
+						/>
+					</div>
+				</div>
+
+				<div class="d-flex">
+					<button
+						class="btn btn-success mr-2 rounded"
+						@click="savePlaylist"
+					>
+						<span>Сохранить</span>
+					</button>
+				</div>
+			</div>
+		</Sidebar>
 
 
-  </div>
+		<!-- Настройки раздела -->
+		<Sidebar
+			title="Настройки видеокурсов"
+			:open="showSettings"
+			@close="showSettings = false"
+			width="30%"
+		>
+			<label class="d-flex">
+				<input
+					type="checkbox"
+					v-model="allow_save_video_without_test"
+					class="form- mb-2 mr-2"
+				>
+				<p>Разрешить сохранять видео без тестовых вопросов</p>
+			</label>
+
+			<button
+				class="btn btn-primary rounded m-auto"
+				@click="save_settings()"
+			>
+				<span>Сохранить</span>
+			</button>
+		</Sidebar>
+	</div>
 </template>
 
 <script>

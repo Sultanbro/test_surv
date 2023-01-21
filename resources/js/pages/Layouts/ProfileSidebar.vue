@@ -3,10 +3,11 @@
 		v-if="isVisible"
 		class="header__profile _anim _anim-no-hide custom-scroll-y"
 		:class="{
-		'v-loading': loading,
-		hidden: hide,
-		'_active': inViewport
-	}">
+			'v-loading': loading,
+			hidden: hide,
+			'_active': inViewport
+		}"
+	>
 		<div class="profile__content">
 			<div class="profile__col">
 				<div
@@ -14,10 +15,17 @@
 					v-if="logo || canChangeLogo"
 				>
 					<template v-if="canChangeLogo && !logo">
-						<img src="/images/dist/logo-download.svg" alt="logo download">
+						<img
+							src="/images/dist/logo-download.svg"
+							alt="logo download"
+						>
 						Загрузить логотип
 					</template>
-					<img v-if="logo" :src="logo" class="logo-img">
+					<img
+						v-if="logo"
+						:src="logo"
+						class="logo-img"
+					>
 					<template v-if="canChangeLogo">
 						<input
 							type="file"
@@ -26,15 +34,18 @@
 							aria-describedby="inputGroupFileAddon04"
 							ref="file"
 							accept="image/*"
-							v-on:change="handleFileUpload()"
+							@change="handleFileUpload()"
 						>
-						<label class="hidden-file-label" for="inputGroupFile04"/>
+						<label
+							class="hidden-file-label"
+							for="inputGroupFile04"
+						/>
 					</template>
 				</div>
 				<StartDayBtn
 					v-if="showButton"
 					:status="buttonStatus"
-					:workdayStatus="status"
+					:workday-status="status"
 					@clickStart="startDay"
 				/>
 				<div class="profile__balance">
@@ -42,9 +53,17 @@
 					<p
 						v-if="!balance.loading"
 						class="profile__balance-value"
-					>{{ balance.sum }} <span class="profile__balance-currecy">{{ balance.currency }}</span></p>
+					>
+						{{ balance.sum }} <span class="profile__balance-currecy">{{ balance.currency }}</span>
+					</p>
 				</div>
-				<b-modal :headerClass="{'border-radius':'1rem'}" id="modal-sm" title="Загрузить логотип" size="lg" hide-footer>
+				<b-modal
+					:header-class="{'border-radius':'1rem'}"
+					id="modal-sm"
+					title="Загрузить логотип"
+					size="lg"
+					hide-footer
+				>
 					<form class="logo-upload-modal">
 						<Cropper
 							ref="mycrop"
@@ -54,9 +73,10 @@
 							@change="change"
 						/>
 						<div class="clearfix mt-3">
-							<a href="#"
+							<a
+								href="#"
 								class="add-btn float-right"
-								v-on:click.prevent="uploadLogo()"
+								@click.prevent="uploadLogo()"
 							>
 								<p>Добавить</p>
 							</a>
@@ -66,31 +86,76 @@
 			</div>
 
 			<div class="profile__col">
-				<ProfileInfo :data="userInfo"/>
+				<ProfileInfo :data="userInfo" />
 			</div>
 
 			<div class="profile__col">
 				<div class="profile__active profile-box">
-					<div class="profile__title _slicked">График активности</div>
-					<div class="tabs__include profile-slick" style="display: none;">
+					<div class="profile__title _slicked">
+						График активности
+					</div>
+					<div
+						class="tabs__include profile-slick"
+						style="display: none;"
+					>
 						<div class="tab__content-include">
-							<div class="tab__content-item-include is-active" data-content="1">
-								<img src="/images/dist/schedule.png" alt="schedule image">
+							<div
+								class="tab__content-item-include is-active"
+								data-content="1"
+							>
+								<img
+									src="/images/dist/schedule.png"
+									alt="schedule image"
+								>
 							</div>
-							<div class="tab__content-item-include" data-content="2">
-								<img src="/images/dist/profile-active.png" alt="schedule image">
+							<div
+								class="tab__content-item-include"
+								data-content="2"
+							>
+								<img
+									src="/images/dist/profile-active.png"
+									alt="schedule image"
+								>
 							</div>
-							<div class="tab__content-item-include" data-content="3">
-								<img src="/images/dist/schedule.png" alt="schedule image">
+							<div
+								class="tab__content-item-include"
+								data-content="3"
+							>
+								<img
+									src="/images/dist/schedule.png"
+									alt="schedule image"
+								>
 							</div>
 						</div>
 						<div class="tabs__wrapper">
-							<div class="tab__item-include is-active" onclick="switchTabsInclude(this)" data-index="1">День</div>
-							<div class="tab__item-include" onclick="switchTabsInclude(this)" data-index="2">месяц</div>
-							<div class="tab__item-include" onclick="switchTabsInclude(this)" data-index="3">год</div>
+							<div
+								class="tab__item-include is-active"
+								onclick="switchTabsInclude(this)"
+								data-index="1"
+							>
+								День
+							</div>
+							<div
+								class="tab__item-include"
+								onclick="switchTabsInclude(this)"
+								data-index="2"
+							>
+								месяц
+							</div>
+							<div
+								class="tab__item-include"
+								onclick="switchTabsInclude(this)"
+								data-index="3"
+							>
+								год
+							</div>
 						</div>
 					</div>
-					<img src="/images/dist/close.svg" alt="close icon" class="point-close">
+					<img
+						src="/images/dist/close.svg"
+						alt="close icon"
+						class="point-close"
+					>
 				</div>
 			</div>
 		</div>
@@ -105,12 +170,19 @@
 			hide-header
 			no-close-on-backdrop
 		>
-			<div class="corpbook" v-if="corp_book_page !== undefined && corp_book_page !== null">
+			<div
+				class="corpbook"
+				v-if="corp_book_page !== undefined && corp_book_page !== null"
+			>
 				<div class="inner">
-					<h5 class="text-center aet mb-3">Ознакомьтесь с одной из страниц Вашей базы знаний</h5>
-					<h3 class="text-center">{{ corp_book_page.title }}</h3>
+					<h5 class="text-center aet mb-3">
+						Ознакомьтесь с одной из страниц Вашей базы знаний
+					</h5>
+					<h3 class="text-center">
+						{{ corp_book_page.title }}
+					</h3>
 
-					<div v-html="corp_book_page.text"/>
+					<div v-html="corp_book_page.text" />
 
 					<button
 						@click="testBook"
@@ -118,8 +190,14 @@
 						id="readCorpBook"
 						class="button-blue m-auto mt-5"
 					>
-						<span v-if="bookTimer" class="timer">{{ bookTimer }}</span>
-						<span v-else class="text">Я прочитал</span>
+						<span
+							v-if="bookTimer"
+							class="timer"
+						>{{ bookTimer }}</span>
+						<span
+							v-else
+							class="text"
+						>Я прочитал</span>
 					</button>
 				</div>
 			</div>

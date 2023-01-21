@@ -1,110 +1,208 @@
 <template>
-<div class="course-results mt-4">
-	<div class="d-flex mb-2">
-		<button class="btn mr-2 rounded" :class="[type == BY_USER ? 'btn-primary' : 'btn-default']" @click="type = BY_USER">
-			<span>По сотрудникам</span>
-		</button>
-		<button class="btn mr-2 rounded" :class="[type == BY_GROUP ? 'btn-primary' : 'btn-default']" @click="type = BY_GROUP">
-			<span>По отделам</span>
-		</button>
-	</div>
+	<div class="course-results mt-4">
+		<div class="d-flex mb-2">
+			<button
+				class="btn mr-2 rounded"
+				:class="[type == BY_USER ? 'btn-primary' : 'btn-default']"
+				@click="type = BY_USER"
+			>
+				<span>По сотрудникам</span>
+			</button>
+			<button
+				class="btn mr-2 rounded"
+				:class="[type == BY_GROUP ? 'btn-primary' : 'btn-default']"
+				@click="type = BY_GROUP"
+			>
+				<span>По отделам</span>
+			</button>
+		</div>
 
-	<div v-if="type == BY_USER" class="by_user">
-		<div class="table-responsive table-container" v-if="users.items.length > 0">
-			<table class="table table-bordered">
-				<thead>
-					<tr>
-						<th v-for="(field, index) in users.fields" :key="index" :class="field.class">
-							<div>{{ field.name }}</div>
-						</th>
-					</tr>
-				</thead>
-				<tbody>
-					<template v-for="(item, i) in users.items">
-						<tr :key="i" class="pointer" :class="{
-							'expanded-title': item.expanded
-						}">
-							<td v-for="(field, f) in users.fields" :key="f" :class="field.class" @click="expandUser(item)">
-								<div v-if="field.key == 'progress'" class="d-flex jcc aic">
-									<p class="mb-0 mr-1">{{ item[field.key] }}</p>
-									<progress :value="item[field.key].slice(0, -1)" max="100"></progress>
-								</div>
-								<div v-else>{{ item[field.key] }}</div>
-							</td>
+		<div
+			v-if="type == BY_USER"
+			class="by_user"
+		>
+			<div
+				class="table-responsive table-container"
+				v-if="users.items.length > 0"
+			>
+				<table class="table table-bordered">
+					<thead>
+						<tr>
+							<th
+								v-for="(field, index) in users.fields"
+								:key="index"
+								:class="field.class"
+							>
+								<div>{{ field.name }}</div>
+							</th>
 						</tr>
-
-						<template v-for="(course, c) in item.courses">
-							<tr :key="'c' + c" v-if="item.expanded" class="expanded">
-								<td v-for="(field, f) in users.fields" :key="f" :class="[field.class, {pointer: course.items && course.items.length > 1}]" @click="expandCourse(course, item)">
-									<div v-if="field.key == 'progress'" class="d-flex jcc aic">
-										<p class="mb-0 mr-1">{{ course[field.key] }}</p>
-										<progress :value="course[field.key].slice(0, -1)" max="100"></progress>
+					</thead>
+					<tbody>
+						<template v-for="(item, i) in users.items">
+							<tr
+								:key="i"
+								class="pointer"
+								:class="{
+									'expanded-title': item.expanded
+								}"
+							>
+								<td
+									v-for="(field, f) in users.fields"
+									:key="f"
+									:class="field.class"
+									@click="expandUser(item)"
+								>
+									<div
+										v-if="field.key == 'progress'"
+										class="d-flex jcc aic"
+									>
+										<p class="mb-0 mr-1">
+											{{ item[field.key] }}
+										</p>
+										<progress
+											:value="item[field.key].slice(0, -1)"
+											max="100"
+										/>
 									</div>
-									<div v-else-if="field.key == 'name'" class="nullify-wrap relative">
-										{{ course[field.key] }}
-										<i class="absolute nullify fa fa-broom" title="Обнулить прогресс" @click="nullify(i, c)"></i>
+									<div v-else>
+										{{ item[field.key] }}
 									</div>
-									<div v-else>{{ course[field.key] }}</div>
 								</td>
 							</tr>
 
-							<template v-if="course.items && course.items.length > 1 && course.expanded">
-								<tr v-for="(courseItem, ci) in course.items" :key="'ci' + ci" class="expanded-course-item">
-									<td v-for="(field, f) in users.fields" :key="f" :class="field.class">
-										<template v-if="courseItemsTable[item.user_id] && courseItemsTable[item.user_id][courseItem.item_id]">
-											<div v-if="field.key === 'name'" class="nullify-wrap relative">
-												{{ courseItem[course2item[field.key]] || field.key }}
-												<i
-													class="absolute nullify fa fa-broom"
-													title="Обнулить прогресс"
-													@click="regress(item.user_id, course.course_id, courseItem)"
-												/>
-											</div>
-											<div v-else-if="field.key === 'progress'" class="d-flex jcc aic">
-												<p class="mb-0 mr-1">{{ courseItemsTable[item.user_id][courseItem.item_id][course2item[field.key]] }}%</p>
-												<progress :value="courseItemsTable[item.user_id][courseItem.item_id][course2item[field.key]]" max="100"/>
-											</div>
-											<div v-else-if="field.key === 'progress_on_week'">
-												<p class="mb-0 mr-1">{{ courseItemsTable[item.user_id][courseItem.item_id][course2item[field.key]] }}%</p>
-											</div>
-											<template v-else>
-												{{ courseItemsTable[item.user_id][courseItem.item_id][course2item[field.key]] }}
-											</template>
-										</template>
+							<template v-for="(course, c) in item.courses">
+								<tr
+									:key="'c' + c"
+									v-if="item.expanded"
+									class="expanded"
+								>
+									<td
+										v-for="(field, f) in users.fields"
+										:key="f"
+										:class="[field.class, {pointer: course.items && course.items.length > 1}]"
+										@click="expandCourse(course, item)"
+									>
+										<div
+											v-if="field.key == 'progress'"
+											class="d-flex jcc aic"
+										>
+											<p class="mb-0 mr-1">
+												{{ course[field.key] }}
+											</p>
+											<progress
+												:value="course[field.key].slice(0, -1)"
+												max="100"
+											/>
+										</div>
+										<div
+											v-else-if="field.key == 'name'"
+											class="nullify-wrap relative"
+										>
+											{{ course[field.key] }}
+											<i
+												class="absolute nullify fa fa-broom"
+												title="Обнулить прогресс"
+												@click="nullify(i, c)"
+											/>
+										</div>
+										<div v-else>
+											{{ course[field.key] }}
+										</div>
 									</td>
 								</tr>
+
+								<template v-if="course.items && course.items.length > 1 && course.expanded">
+									<tr
+										v-for="(courseItem, ci) in course.items"
+										:key="'ci' + ci"
+										class="expanded-course-item"
+									>
+										<td
+											v-for="(field, f) in users.fields"
+											:key="f"
+											:class="field.class"
+										>
+											<template v-if="courseItemsTable[item.user_id] && courseItemsTable[item.user_id][courseItem.item_id]">
+												<div
+													v-if="field.key === 'name'"
+													class="nullify-wrap relative"
+												>
+													{{ courseItem[course2item[field.key]] || field.key }}
+													<i
+														class="absolute nullify fa fa-broom"
+														title="Обнулить прогресс"
+														@click="regress(item.user_id, course.course_id, courseItem)"
+													/>
+												</div>
+												<div
+													v-else-if="field.key === 'progress'"
+													class="d-flex jcc aic"
+												>
+													<p class="mb-0 mr-1">
+														{{ courseItemsTable[item.user_id][courseItem.item_id][course2item[field.key]] }}%
+													</p>
+													<progress
+														:value="courseItemsTable[item.user_id][courseItem.item_id][course2item[field.key]]"
+														max="100"
+													/>
+												</div>
+												<div v-else-if="field.key === 'progress_on_week'">
+													<p class="mb-0 mr-1">
+														{{ courseItemsTable[item.user_id][courseItem.item_id][course2item[field.key]] }}%
+													</p>
+												</div>
+												<template v-else>
+													{{ courseItemsTable[item.user_id][courseItem.item_id][course2item[field.key]] }}
+												</template>
+											</template>
+										</td>
+									</tr>
+								</template>
 							</template>
 						</template>
-					</template>
-				</tbody>
-			</table>
-
+					</tbody>
+				</table>
+			</div>
 		</div>
-	</div>
 
-	<div v-else class="by_group">
-		<div class="table-responsive table-container" v-if="groups.items.length > 0">
-			<table class="table table-bordered">
-				<thead>
-					<tr>
-						<th v-for="(field, index) in groups.fields" :key="index" :class="field.class">
-							<div>{{ field.name }}</div>
-						</th>
-					</tr>
-				</thead>
-				<tbody>
-					<template v-for="(item, i) in groups.items">
-						<tr :key="i">
-							<td v-for="(field, f) in groups.fields" :key="f" :class="field.class" @click="expandUser(item)">
-								<div>{{ item[field.key] }}</div>
-							</td>
+		<div
+			v-else
+			class="by_group"
+		>
+			<div
+				class="table-responsive table-container"
+				v-if="groups.items.length > 0"
+			>
+				<table class="table table-bordered">
+					<thead>
+						<tr>
+							<th
+								v-for="(field, index) in groups.fields"
+								:key="index"
+								:class="field.class"
+							>
+								<div>{{ field.name }}</div>
+							</th>
 						</tr>
-					</template>
-				</tbody>
-			</table>
+					</thead>
+					<tbody>
+						<template v-for="(item, i) in groups.items">
+							<tr :key="i">
+								<td
+									v-for="(field, f) in groups.fields"
+									:key="f"
+									:class="field.class"
+									@click="expandUser(item)"
+								>
+									<div>{{ item[field.key] }}</div>
+								</td>
+							</tr>
+						</template>
+					</tbody>
+				</table>
+			</div>
 		</div>
 	</div>
-</div>
 </template>
 
 <script>

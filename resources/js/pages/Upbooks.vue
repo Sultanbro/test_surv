@@ -1,376 +1,457 @@
 <template>
-  <div v-if="token">
-    <div class="upbooks-page" v-if="activeBook === null">
-      <div class="lp">
-        <h1 class="page-title">Темы</h1>
+	<div v-if="token">
+		<div
+			class="upbooks-page"
+			v-if="activeBook === null"
+		>
+			<div class="lp">
+				<h1 class="page-title">
+					Темы
+				</h1>
 
-        <div
-          class="section d-flex aic jcsb"
-          :style="'position:relative;'"
-          v-for="(cat, c_index) in categories"
-          :key="cat.id"
-          @click="selectCategory(c_index)"
-        >
-          <p>{{ cat.name }}</p>
-          <div class="d-flex aic ml-2"
-             :style="'position:absolute; right: 0; z-index: 2'"
-             >
-                 <i
-            class="fa fa-edit"
-            v-if="cat.id != 0 && mode == 'edit'"
-            @click.stop="editCat(c_index)"
-          ></i>
+				<div
+					class="section d-flex aic jcsb"
+					:style="'position:relative;'"
+					v-for="(cat, c_index) in categories"
+					:key="cat.id"
+					@click="selectCategory(c_index)"
+				>
+					<p>{{ cat.name }}</p>
+					<div
+						class="d-flex aic ml-2"
+						:style="'position:absolute; right: 0; z-index: 2'"
+					>
+						<i
+							class="fa fa-edit"
+							v-if="cat.id != 0 && mode == 'edit'"
+							@click.stop="editCat(c_index)"
+						/>
 
-          <i
-            class="fa fa-trash"
-            v-if="cat.id != 0 && mode == 'edit'"
-            @click.stop="deleteCat(c_index)"
-          ></i>
-          </div>
+						<i
+							class="fa fa-trash"
+							v-if="cat.id != 0 && mode == 'edit'"
+							@click.stop="deleteCat(c_index)"
+						/>
+					</div>
+				</div>
 
+				<button
+					class="btn-add"
+					@click="modals.add_category.show = true"
+					v-if="mode == 'edit'"
+				>
+					Добавить категорию
+				</button>
+			</div>
 
-
-        </div>
-
-        <button class="btn-add" @click="modals.add_category.show = true" v-if="mode == 'edit'">
-          Добавить категорию
-        </button>
-      </div>
-
-      <div class="cont">
-        <div class="hat">
-          <div class="d-flex jsutify-content-between hat-top">
-            <div class="bc">
-              <p v-if="activeCategory" class="mb-0">
-                <b>{{ activeCategory.name }}</b>
-              </p>
-              <!---->
-            </div>
-            <div class="control-btns d-flex">
-              <button
-                v-if="mode == 'edit' && activeCategory != null"
-                class="btn btn-success"
-                @click="modals.upload_book.show = true"
-              >
-                Добавить книгу
-              </button>
-
-
-              <div class="mode_changer ml-2" v-if="can_edit">
-                  <i class="fa fa-edit"
-                    @click="toggleMode"
-                    :class="{'active': mode == 'edit'}" />
-              </div>
-
-              <div class="mode_changer ml-2" v-if="can_edit">
-                <i class="fa fa-cogs" @click="get_settings()" />
-              </div>
-
-            </div>
-          </div>
-          <div><!----></div>
-        </div>
-
-        <div class="d-flex flex-wrap p-3" v-if="activeCategory != null">
-          <div
-            class="box"
-            v-for="(book, b_index) in activeCategory.books"
-            :key="book.id"
-            @click="go(book)"
-          >
-            <div class="left" :style="'background-image: url(' + (book.img != '' ? book.img  : '/images/book_cover.jpg' ) +')'">
-            </div>
-
-            <div class="right">
-              <p class="title">{{ book.title }}</p>
-              <p class="author">{{ book.author }}</p>
-              <div class="buttons" >
-                <i
-                  v-if="mode == 'edit'"
-                  class="fa fa-trash mr-1"
-                  @click.stop="deleteBook(b_index)"
-                ></i>
-                <i class="fa fa-edit mr-1" @click.stop="editBook(book)" v-if="mode == 'edit'"></i>
-                <i class="fa fa-info" @click.stop="showDetails(book)"></i>
-              </div>
-              <div class="text">
-                {{ book.description }}
-              </div>
-            </div>
-
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <UpbooksRead
-      v-else
-      :book_id="activeBook.id"
-      mode="read"
-      @back="back"
-      :showBackBtn="true"
-    />
-
-    <b-modal
-      v-model="modals.add_category.show"
-      title="Новая категория книг"
-      size="md"
-      class="modalle"
-      hide-footer
-      hide-header
-    >
-      <input
-        type="text"
-        v-model="modals.add_category.name"
-        placeholder="Название категории..."
-        class="form-control mb-2"
-      />
-
-      <button class="btn btn-primary rounded m-auto" @click="createCategory">
-        <span>Сохранить</span>
-      </button>
-    </b-modal>
-
-    <!-- Загрузить книгу -->
-    <Sidebar
-      title="Загрузить книгу"
-      :open="modals.upload_book.show"
-      @close="modals.upload_book.show = false"
-      width="70%"
-    >
-      <UploadFiles
-        :token="token"
-        type="book"
-        :id="0"
-        :file_types="['pdf']"
-        @onupload="onupload"
-      />
-
-      <!-- after upload -->
-      <div v-if="modals.upload_book.file">
-        <div class="d-flex">
-          <div class="left f-70">
-             <p class="mb-2 font-bold">Название книги</p>
-             <input
-              type="text"
-              v-model="modals.upload_book.file.model.title"
-              placeholder="Название книги..."
-              class="form-control mt-2 mb-2"
-            />
-             <p class="mb-2 font-bold">Название автора</p>
-            <input
-              type="text"
-              v-model="modals.upload_book.file.model.author"
-              placeholder="Название автора..."
-              class="form-control mt-2 mb-2"
-            />
-            <p class="mb-2 font-bold">Категория</p>
-              <select
-              class="form-control mb-2"
-              v-model="modals.upload_book.file.model.group_id"
-            >
-              <option v-for="cat in categories" :value="cat.id" :key="cat.id">
-                {{ cat.name }}
-              </option>
-            </select>
-
-            <p class="mb-2 font-bold">Описание книги</p>
-             <textarea
-              class="form-control mt-2 mb-2"
-              placeholder="Описание..."
-              v-model="modals.upload_book.file.model.description"
-            />
-          </div>
-
-          <div class="right pl-3">
-            <img class="book-img"
-              v-if="modals.upload_book.file.model.img != ''"
-              :src="modals.upload_book.file.model.img"/>
-            <b-form-file
-              v-else
-              v-model="file_img"
-              :state="Boolean(file_img)"
-              placeholder="Выберите или перетащите файл сюда..."
-              drop-placeholder="Перетащите файл сюда..."
-              class="mt-3"
-              ></b-form-file>
-          </div>
-        </div>
+			<div class="cont">
+				<div class="hat">
+					<div class="d-flex jsutify-content-between hat-top">
+						<div class="bc">
+							<p
+								v-if="activeCategory"
+								class="mb-0"
+							>
+								<b>{{ activeCategory.name }}</b>
+							</p>
+							<!---->
+						</div>
+						<div class="control-btns d-flex">
+							<button
+								v-if="mode == 'edit' && activeCategory != null"
+								class="btn btn-success"
+								@click="modals.upload_book.show = true"
+							>
+								Добавить книгу
+							</button>
 
 
-        <button class="btn btn-primary rounded m-auto" @click="saveBook">
-          <span>Сохранить</span>
-        </button>
-      </div>
-    </Sidebar>
+							<div
+								class="mode_changer ml-2"
+								v-if="can_edit"
+							>
+								<i
+									class="fa fa-edit"
+									@click="toggleMode"
+									:class="{'active': mode == 'edit'}"
+								/>
+							</div>
 
-     <!-- Details -->
-     <Sidebar
-        title="О книге"
-        :open="details != null"
-        @close="details = null"
-        width="40%"
-      >
+							<div
+								class="mode_changer ml-2"
+								v-if="can_edit"
+							>
+								<i
+									class="fa fa-cogs"
+									@click="get_settings()"
+								/>
+							</div>
+						</div>
+					</div>
+					<div><!----></div>
+				</div>
 
-      <div class="d-flex" v-if="details != null">
-        <div class="left f-70">
-          <p class="mb-2 font-bold">{{ details.title }}</p>
-          <div class="text">
-            {{ details.description }}
-          </div>
-        </div>
-        <div class="right f-30 pl-4">
-            <img class="book-img mb-5"
-              v-if="details.img != ''"
-              :src="details.img"
-              />
-        </div>
-      </div>
+				<div
+					class="d-flex flex-wrap p-3"
+					v-if="activeCategory != null"
+				>
+					<div
+						class="box"
+						v-for="(book, b_index) in activeCategory.books"
+						:key="book.id"
+						@click="go(book)"
+					>
+						<div
+							class="left"
+							:style="'background-image: url(' + (book.img != '' ? book.img : '/images/book_cover.jpg' ) +')'"
+						/>
 
-    </Sidebar>
+						<div class="right">
+							<p class="title">
+								{{ book.title }}
+							</p>
+							<p class="author">
+								{{ book.author }}
+							</p>
+							<div class="buttons">
+								<i
+									v-if="mode == 'edit'"
+									class="fa fa-trash mr-1"
+									@click.stop="deleteBook(b_index)"
+								/>
+								<i
+									class="fa fa-edit mr-1"
+									@click.stop="editBook(book)"
+									v-if="mode == 'edit'"
+								/>
+								<i
+									class="fa fa-info"
+									@click.stop="showDetails(book)"
+								/>
+							</div>
+							<div class="text">
+								{{ book.description }}
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<UpbooksRead
+			v-else
+			:book_id="activeBook.id"
+			mode="read"
+			@back="back"
+			:show-back-btn="true"
+		/>
+
+		<b-modal
+			v-model="modals.add_category.show"
+			title="Новая категория книг"
+			size="md"
+			class="modalle"
+			hide-footer
+			hide-header
+		>
+			<input
+				type="text"
+				v-model="modals.add_category.name"
+				placeholder="Название категории..."
+				class="form-control mb-2"
+			>
+
+			<button
+				class="btn btn-primary rounded m-auto"
+				@click="createCategory"
+			>
+				<span>Сохранить</span>
+			</button>
+		</b-modal>
+
+		<!-- Загрузить книгу -->
+		<Sidebar
+			title="Загрузить книгу"
+			:open="modals.upload_book.show"
+			@close="modals.upload_book.show = false"
+			width="70%"
+		>
+			<UploadFiles
+				:token="token"
+				type="book"
+				:id="0"
+				:file_types="['pdf']"
+				@onupload="onupload"
+			/>
+
+			<!-- after upload -->
+			<div v-if="modals.upload_book.file">
+				<div class="d-flex">
+					<div class="left f-70">
+						<p class="mb-2 font-bold">
+							Название книги
+						</p>
+						<input
+							type="text"
+							v-model="modals.upload_book.file.model.title"
+							placeholder="Название книги..."
+							class="form-control mt-2 mb-2"
+						>
+						<p class="mb-2 font-bold">
+							Название автора
+						</p>
+						<input
+							type="text"
+							v-model="modals.upload_book.file.model.author"
+							placeholder="Название автора..."
+							class="form-control mt-2 mb-2"
+						>
+						<p class="mb-2 font-bold">
+							Категория
+						</p>
+						<select
+							class="form-control mb-2"
+							v-model="modals.upload_book.file.model.group_id"
+						>
+							<option
+								v-for="cat in categories"
+								:value="cat.id"
+								:key="cat.id"
+							>
+								{{ cat.name }}
+							</option>
+						</select>
+
+						<p class="mb-2 font-bold">
+							Описание книги
+						</p>
+						<textarea
+							class="form-control mt-2 mb-2"
+							placeholder="Описание..."
+							v-model="modals.upload_book.file.model.description"
+						/>
+					</div>
+
+					<div class="right pl-3">
+						<img
+							class="book-img"
+							v-if="modals.upload_book.file.model.img != ''"
+							:src="modals.upload_book.file.model.img"
+						>
+						<b-form-file
+							v-else
+							v-model="file_img"
+							:state="Boolean(file_img)"
+							placeholder="Выберите или перетащите файл сюда..."
+							drop-placeholder="Перетащите файл сюда..."
+							class="mt-3"
+						/>
+					</div>
+				</div>
 
 
-    <!-- Edit book -->
-     <Sidebar
-        title="Редактировать книгу"
-        :open="modals.edit_book.show"
-        @close="modals.edit_book.show = false"
-        width="70%"
-      >
+				<button
+					class="btn btn-primary rounded m-auto"
+					@click="saveBook"
+				>
+					<span>Сохранить</span>
+				</button>
+			</div>
+		</Sidebar>
 
-       <div v-if="modals.edit_book.item != null" class="p-3">
-
-
-        <div class="d-flex">
-          <div class="left f-70">
-            <p class="mb-2 font-bold">Название книги</p>
-             <input
-              type="text"
-              v-model="modals.edit_book.item.title"
-              placeholder="Название книги..."
-              class="form-control mt-2 mb-2"
-            />
-            <p class="mb-2 font-bold">Название автора</p>
-            <input
-              type="text"
-              v-model="modals.edit_book.item.author"
-              placeholder="Название автора..."
-              class="form-control mt-2 mb-2"
-            />
-            <p class="mb-2 font-bold">Описание книги</p>
-             <textarea
-              class="form-control mt-2 mb-2"
-              placeholder="Описание..."
-              v-model="modals.edit_book.item.description"
-            />
-            <p class="mb-2 font-bold">Категория</p>
-              <select
-              class="form-control mb-2"
-              v-model="modals.edit_book.item.group_id"
-            >
-              <option v-for="cat in categories" :value="cat.id" :key="cat.id">
-                {{ cat.name }}
-              </option>
-            </select>
-
-            <button class="btn btn-success mr-2 rounded" @click="saveSegments">
-              <span>Сохранить книгу</span>
-            </button>
-          </div>
-
-          <div class="right f-30 pl-4">
-            <img class="book-img mb-5"
-              v-if="modals.edit_book.item.img != ''"
-              :src="modals.edit_book.item.img"
-              />
-            <b-form-file
-              ref="edit_img"
-              v-model="file_img"
-              :state="Boolean(file_img)"
-              placeholder="Выберите или перетащите файл сюда..."
-              drop-placeholder="Перетащите файл сюда..."
-              class="mt-3"
-              ></b-form-file>
-          </div>
-        </div>
+		<!-- Details -->
+		<Sidebar
+			title="О книге"
+			:open="details != null"
+			@close="details = null"
+			width="40%"
+		>
+			<div
+				class="d-flex"
+				v-if="details != null"
+			>
+				<div class="left f-70">
+					<p class="mb-2 font-bold">
+						{{ details.title }}
+					</p>
+					<div class="text">
+						{{ details.description }}
+					</div>
+				</div>
+				<div class="right f-30 pl-4">
+					<img
+						class="book-img mb-5"
+						v-if="details.img != ''"
+						:src="details.img"
+					>
+				</div>
+			</div>
+		</Sidebar>
 
 
-        <div class="segments mb-2" v-if="modals.edit_book.segments.length > 0">
-          <div class="row mb-3">
-            <div class="col-3">
-              <b>Страница книги</b>
-            </div>
-            <div class="col-9">
-              <b>Вопросы</b>
-            </div>
-          </div>
+		<!-- Edit book -->
+		<Sidebar
+			title="Редактировать книгу"
+			:open="modals.edit_book.show"
+			@close="modals.edit_book.show = false"
+			width="70%"
+		>
+			<div
+				v-if="modals.edit_book.item != null"
+				class="p-3"
+			>
+				<div class="d-flex">
+					<div class="left f-70">
+						<p class="mb-2 font-bold">
+							Название книги
+						</p>
+						<input
+							type="text"
+							v-model="modals.edit_book.item.title"
+							placeholder="Название книги..."
+							class="form-control mt-2 mb-2"
+						>
+						<p class="mb-2 font-bold">
+							Название автора
+						</p>
+						<input
+							type="text"
+							v-model="modals.edit_book.item.author"
+							placeholder="Название автора..."
+							class="form-control mt-2 mb-2"
+						>
+						<p class="mb-2 font-bold">
+							Описание книги
+						</p>
+						<textarea
+							class="form-control mt-2 mb-2"
+							placeholder="Описание..."
+							v-model="modals.edit_book.item.description"
+						/>
+						<p class="mb-2 font-bold">
+							Категория
+						</p>
+						<select
+							class="form-control mb-2"
+							v-model="modals.edit_book.item.group_id"
+						>
+							<option
+								v-for="cat in categories"
+								:value="cat.id"
+								:key="cat.id"
+							>
+								{{ cat.name }}
+							</option>
+						</select>
 
-          <BookSegment
-            class="mb-3"
-            :segment="segment"
-            :book_id="modals.edit_book.item.id"
-            @deleteSegment="deleteSegment(s)"
-            v-for="(segment, s) in modals.edit_book.segments"
-            :key="s"
-          />
+						<button
+							class="btn btn-success mr-2 rounded"
+							@click="saveSegments"
+						>
+							<span>Сохранить книгу</span>
+						</button>
+					</div>
 
-        </div>
-
-        <div class="d-flex">
-
-          <button class="btn rounded" @click="addSegment">
-            <span>Добавить тест</span>
-          </button>
-        </div>
-      </div>
-
-
-      </Sidebar>
-
-     <!-- Настройки раздела -->
-    <Sidebar
-      title="Настройки книг"
-      :open="showSettings"
-      @close="showSettings = false"
-      width="30%"
-    >
-      <label class="d-flex">
-        <input
-          type="checkbox"
-          v-model="allow_save_book_without_test"
-          class="form- mb-2 mr-2"
-        />
-        <p>Разрешить сохранять книги без тестовых вопросов</p>
-      </label>
-
-      <button class="btn btn-primary rounded m-auto" @click="save_settings()">
-        <span>Сохранить</span>
-      </button>
-
-    </Sidebar>
+					<div class="right f-30 pl-4">
+						<img
+							class="book-img mb-5"
+							v-if="modals.edit_book.item.img != ''"
+							:src="modals.edit_book.item.img"
+						>
+						<b-form-file
+							ref="edit_img"
+							v-model="file_img"
+							:state="Boolean(file_img)"
+							placeholder="Выберите или перетащите файл сюда..."
+							drop-placeholder="Перетащите файл сюда..."
+							class="mt-3"
+						/>
+					</div>
+				</div>
 
 
+				<div
+					class="segments mb-2"
+					v-if="modals.edit_book.segments.length > 0"
+				>
+					<div class="row mb-3">
+						<div class="col-3">
+							<b>Страница книги</b>
+						</div>
+						<div class="col-9">
+							<b>Вопросы</b>
+						</div>
+					</div>
 
-    <!-- Переименовать категорию -->
-    <b-modal
-      v-model="showEditCat"
-      title="Переименовать категорию"
-      size="md"
-      class="modalle"
-      hide-footer
-    >
-      <input
-        type="text"
-        v-model="editcat_name"
-        placeholder="Название категории..."
-        class="form-control mb-2"
-      />
-      <button class="btn btn-primary rounded m-auto" @click="saveCat">
-        <span>Сохранить</span>
-      </button>
-    </b-modal>
+					<BookSegment
+						class="mb-3"
+						:segment="segment"
+						:book_id="modals.edit_book.item.id"
+						@deleteSegment="deleteSegment(s)"
+						v-for="(segment, s) in modals.edit_book.segments"
+						:key="s"
+					/>
+				</div>
 
-  </div>
+				<div class="d-flex">
+					<button
+						class="btn rounded"
+						@click="addSegment"
+					>
+						<span>Добавить тест</span>
+					</button>
+				</div>
+			</div>
+		</Sidebar>
+
+		<!-- Настройки раздела -->
+		<Sidebar
+			title="Настройки книг"
+			:open="showSettings"
+			@close="showSettings = false"
+			width="30%"
+		>
+			<label class="d-flex">
+				<input
+					type="checkbox"
+					v-model="allow_save_book_without_test"
+					class="form- mb-2 mr-2"
+				>
+				<p>Разрешить сохранять книги без тестовых вопросов</p>
+			</label>
+
+			<button
+				class="btn btn-primary rounded m-auto"
+				@click="save_settings()"
+			>
+				<span>Сохранить</span>
+			</button>
+		</Sidebar>
+
+
+
+		<!-- Переименовать категорию -->
+		<b-modal
+			v-model="showEditCat"
+			title="Переименовать категорию"
+			size="md"
+			class="modalle"
+			hide-footer
+		>
+			<input
+				type="text"
+				v-model="editcat_name"
+				placeholder="Название категории..."
+				class="form-control mb-2"
+			>
+			<button
+				class="btn btn-primary rounded m-auto"
+				@click="saveCat"
+			>
+				<span>Сохранить</span>
+			</button>
+		</b-modal>
+	</div>
 </template>
 
 <script>

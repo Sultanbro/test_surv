@@ -1,88 +1,138 @@
 <template>
-    <div class="award-type-1">
-        <div class="d-flex file">
-            <BFormFile
-                    v-model="images"
-                    class="form-file"
-                    placeholder="Выберите Файл(ы)"
-                    drop-placeholder="Перетащите файл сюда..."
-                    accept=".jpg, .png, .pdf"
-                    multiple
-                    type="file"
-                    id="file"
-                    ref="file"
-                    :state="true"
-                    :file-name-formatter="formatNames"
-            >
-            </BFormFile>
-            <BButton
-                    v-if="hasImage"
-                    variant="danger"
-                    class="ml-3 clear-btn"
-                    size="sm"
-                    @click="clearImage"
-            >
-                Очистить
-            </BButton>
-        </div>
-        <small>Загрузите одну или несколько картинок в формате PNG, JPG или PDF</small>
+	<div class="award-type-1">
+		<div class="d-flex file">
+			<BFormFile
+				v-model="images"
+				class="form-file"
+				placeholder="Выберите Файл(ы)"
+				drop-placeholder="Перетащите файл сюда..."
+				accept=".jpg, .png, .pdf"
+				multiple
+				type="file"
+				id="file"
+				ref="file"
+				:state="true"
+				:file-name-formatter="formatNames"
+			/>
+			<BButton
+				v-if="hasImage"
+				variant="danger"
+				class="ml-3 clear-btn"
+				size="sm"
+				@click="clearImage"
+			>
+				Очистить
+			</BButton>
+		</div>
+		<small>Загрузите одну или несколько картинок в формате PNG, JPG или PDF</small>
 
-        <b-row v-if="hasImage">
-            <b-col cols="12" md="4" lg="3" xl="2" class="mt-4" v-for="(image, index) in imageSrc" :key="index">
-                <div class="image-preview">
-                    <BImg
-                            v-b-modal="'myModal'"
-                            :src="image.path"
-                            class="mb-3 img"
-                            fluid
-                            block
-                            rounded
-                            v-if="image.format !== 'pdf'"
-                            @click="modalOpen(image)"
-                    ></BImg>
-                    <div @click="modalOpen(image)" v-else>
-                        <vue-pdf-embed :source="image.path"/>
-                    </div>
-                </div>
-            </b-col>
-        </b-row>
+		<b-row v-if="hasImage">
+			<b-col
+				cols="12"
+				md="4"
+				lg="3"
+				xl="2"
+				class="mt-4"
+				v-for="(image, index) in imageSrc"
+				:key="index"
+			>
+				<div class="image-preview">
+					<BImg
+						v-b-modal="'myModal'"
+						:src="image.path"
+						class="mb-3 img"
+						fluid
+						block
+						rounded
+						v-if="image.format !== 'pdf'"
+						@click="modalOpen(image)"
+					/>
+					<div
+						@click="modalOpen(image)"
+						v-else
+					>
+						<vue-pdf-embed :source="image.path" />
+					</div>
+				</div>
+			</b-col>
+		</b-row>
 
-        <template v-if="awards.length > 0">
-            <hr class="my-5">
-            <h4 class="uploaded-title">Загруженные шаблоны</h4>
-            <b-row>
-                <b-col cols="12" md="4" xl="2" lg="3" class="mt-4" v-for="award in awards" :key="award.id">
-                    <div class="image-preview active">
-                        <div class="image-preview-container" v-if="award.format !== 'pdf'">
-                            <BImg
-                                    v-b-modal="'myModal'"
-                                    :src="award.tempPath"
-                                    class="mb-3 img"
-                                    fluid
-                                    block
-                                    rounded
-                                    @click="modalOpen(award)"
-                            ></BImg>
-                           <i class="fa fa-times" @click="removeImage(award.id)"></i>
-                        </div>
-                        <div class="image-preview-container" v-else>
-                            <div @click="modalOpen(award)">
-                                <vue-pdf-embed :source="award.tempPath"/>
-                            </div>
-                            <i class="fa fa-times" @click="removeImage(award.id)"></i>
-                        </div>
-                    </div>
-                </b-col>
-            </b-row>
-        </template>
-        <BModal v-model="modal" v-if="selectedModal" size="lg" centered>
-            <BImg :src="selectedModal.tempPath" fluid block v-if="selectedModal.format !== 'pdf'"></BImg>
-            <vue-pdf-embed :source="selectedModal.tempPath" v-else/>
-            <template #modal-footer>
-                <b-button variant="secondary" @click="modal = !modal">Закрыть</b-button>
-            </template>
-        </BModal>
-    </div>
+		<template v-if="awards.length > 0">
+			<hr class="my-5">
+			<h4 class="uploaded-title">
+				Загруженные шаблоны
+			</h4>
+			<b-row>
+				<b-col
+					cols="12"
+					md="4"
+					xl="2"
+					lg="3"
+					class="mt-4"
+					v-for="award in awards"
+					:key="award.id"
+				>
+					<div class="image-preview active">
+						<div
+							class="image-preview-container"
+							v-if="award.format !== 'pdf'"
+						>
+							<BImg
+								v-b-modal="'myModal'"
+								:src="award.tempPath"
+								class="mb-3 img"
+								fluid
+								block
+								rounded
+								@click="modalOpen(award)"
+							/>
+							<i
+								class="fa fa-times"
+								@click="removeImage(award.id)"
+							/>
+						</div>
+						<div
+							class="image-preview-container"
+							v-else
+						>
+							<div @click="modalOpen(award)">
+								<vue-pdf-embed :source="award.tempPath" />
+							</div>
+							<i
+								class="fa fa-times"
+								@click="removeImage(award.id)"
+							/>
+						</div>
+					</div>
+				</b-col>
+			</b-row>
+		</template>
+		<BModal
+			v-model="modal"
+			v-if="selectedModal"
+			size="lg"
+			centered
+		>
+			<BImg
+				:src="selectedModal.tempPath"
+				fluid
+				block
+				v-if="selectedModal.format !== 'pdf'"
+			/>
+			<vue-pdf-embed
+				:source="selectedModal.tempPath"
+				v-else
+			/>
+			<template #modal-footer>
+				<b-button
+					variant="secondary"
+					@click="modal = !modal"
+				>
+					Закрыть
+				</b-button>
+			</template>
+		</BModal>
+	</div>
 </template>
 
 <script>
