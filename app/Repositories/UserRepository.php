@@ -4,8 +4,10 @@ declare(strict_types=1);
 namespace App\Repositories;
 
 use App\Classes\Helpers\Phone;
+use App\Enums\ErrorCode;
 use App\Enums\UserFilterEnum;
 use App\Events\EmailNotificationEvent;
+use App\Support\Core\CustomException;
 use App\User as Model;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
@@ -261,5 +263,33 @@ final class UserRepository extends CoreRepository
         return $this->model()->withTrashed()
             ->when(isset($relations), fn ($user) => $user->with($relations))
             ->findOrFail($userId);
+    }
+
+    /**
+     * @param int $userId
+     * @param array $permissions
+     * @return bool
+     */
+    public function switchPermission(
+        int $userId,
+        array $permissions,
+    ): bool
+    {
+        foreach ($permissions as $permission)
+        {
+            $user = $this->model()->find($userId);
+
+            if ($user->permissions->contains($permission['id'])) {
+                $user->permissions()->where('permission_id', $permission['id'])->update([
+                    'is_access' => $permission['is_access']
+                ]);
+            } else {
+                $user->permissions()->attach($permission['id'], [
+                    'is_access' => $permission['is_access']
+                ]);
+            }
+        }
+
+        return true;
     }
 }

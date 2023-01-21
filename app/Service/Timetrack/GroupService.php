@@ -54,7 +54,10 @@ final class GroupService
     )
     {
         try {
-            return ProfileGroup::query()->create(['name' => $name]);
+            return ProfileGroup::query()->create([
+                'name' => $name,
+                'editors_id' => '[]'
+            ]);
         } catch (\Throwable $exception) {
             throw new \Exception($exception->getMessage());
         }

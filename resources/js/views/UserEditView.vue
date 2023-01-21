@@ -1121,7 +1121,6 @@ export default {
 				</div>
 			</div>
 		</div>
-
 		<AwardUserSidebar />
 
 		<div
