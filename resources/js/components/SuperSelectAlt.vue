@@ -1,76 +1,124 @@
 <template>
-<div class="super-select" ref="select-alt" :class="posClass" v-click-outside="close">
+	<div
+		class="super-select"
+		ref="select-alt"
+		:class="posClass"
+		v-click-outside="close"
+	>
+		<div
+			class="selected-items flex-wrap noscrollbar"
+			@click="toggleShow"
+		>
+			<template v-if="!hide_selected">
+				<div
+					v-for="(value, i) in values"
+					:key="i"
+					class="selected-item"
+					:class="'value' + value.type"
+				>
+					{{ value.name }}
+					<i
+						class="fa fa-times"
+						@click.stop="removeValue(i)"
+					/>
+				</div>
+			</template>
+		</div>
 
-    <div class="selected-items flex-wrap noscrollbar" @click="toggleShow">
-        <template v-if="!hide_selected">
-            <div
-                v-for="(value, i) in values"
-                :key="i"
-                class="selected-item"
-                :class="'value' + value.type">
-                {{ value.name }}
-                <i class="fa fa-times" @click.stop="removeValue(i)"></i>
-            </div>
-        </template>
-    </div>
+		<div
+			class="show"
+			v-if="show"
+		>
+			<div class="search">
+				<input
+					v-model="searchText"
+					type="text"
+					placeholder="Поиск..."
+					ref="search"
+					@keyup="onSearch()"
+				>
+			</div>
 
-    <div class="show" v-if="show">
-        <div class="search">
-            <input
-                v-model="searchText"
-                type="text"
-                placeholder="Поиск..."
-                ref="search"
-                @keyup="onSearch()">
-        </div>
+			<div class="options-window">
+				<div class="types">
+					<div
+						class="type"
+						:class="{'active': type == 1}"
+						@click="changeType(1)"
+					>
+						<div class="text">
+							Книги
+						</div>
+						<i class="fa fa-book" />
+					</div>
+					<div
+						class="type"
+						:class="{'active': type == 2}"
+						@click="changeType(2)"
+					>
+						<div class="text">
+							Видеокурсы
+						</div>
+						<i class="fa fa-play" />
+					</div>
+					<div
+						class="type"
+						:class="{'active': type == 3}"
+						@click="changeType(3)"
+					>
+						<div class="text">
+							Базы знаний
+						</div>
+						<i class="fa fa-database" />
+					</div>
 
-        <div class="options-window">
-            <div class="types">
-                <div class="type" :class="{'active': type == 1}" @click="changeType(1)">
-                    <div class="text">Книги</div>
-                    <i class="fa fa-book"></i>
-                </div>
-                <div class="type" :class="{'active': type == 2}" @click="changeType(2)">
-                    <div class="text" >Видеокурсы</div>
-                    <i class="fa fa-play"></i>
-                </div>
-                <div class="type" :class="{'active': type == 3}" @click="changeType(3)">
-                    <div class="text">Базы знаний</div>
-                    <i class="fa fa-database"></i>
-                </div>
-
-                <div class="type mt-5 active all" v-if="select_all_btn && !single" @click="selectAll">
-                    <div class="text">Все</div>
-                    <i class="fa fa-check"></i>
-                </div>
-            </div>
-
-
-            <div class="options">
-
-                <div
-                    class="option"
-                    v-for="(option, index) in filtered_options"
-                    :key="index"
-                    @click="addValue(index, option.type)"
-                    :class="{
-                        'selected': option.selected,
-                        'category': option.disabled,
-                    }"
-                >
-                    <i class="fa fa-book" v-if="option.type == 1"></i>
-                    <i class="fa fa-play" v-if="option.type == 2"></i>
-                    <i class="fa fa-database" v-if="option.type == 3"></i>
-                    {{ option.name }}
-                    <i class="fa fa-times" v-if="option.selected" @click.stop="removeValueFromList(index)"></i>
-                </div>
-
-            </div>
-        </div>
-    </div>
+					<div
+						class="type mt-5 active all"
+						v-if="select_all_btn && !single"
+						@click="selectAll"
+					>
+						<div class="text">
+							Все
+						</div>
+						<i class="fa fa-check" />
+					</div>
+				</div>
 
 
-</div>
+				<div class="options">
+					<div
+						class="option"
+						v-for="(option, index) in filtered_options"
+						:key="index"
+						@click="addValue(index, option.type)"
+						:class="{
+							'selected': option.selected,
+							'category': option.disabled,
+						}"
+					>
+						<i
+							class="fa fa-book"
+							v-if="option.type == 1"
+						/>
+						<i
+							class="fa fa-play"
+							v-if="option.type == 2"
+						/>
+						<i
+							class="fa fa-database"
+							v-if="option.type == 3"
+						/>
+						{{ option.name }}
+						<i
+							class="fa fa-times"
+							v-if="option.selected"
+							@click.stop="removeValueFromList(index)"
+						/>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
 </template>
 
 <script>

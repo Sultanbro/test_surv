@@ -1,137 +1,170 @@
 <template>
-  <div class="upbook-read-page">
+	<div class="upbook-read-page">
+		<!-- left side bar -->
+		<div class="controls">
+			<div
+				@click="$emit('back')"
+				class="btn w-full btn-success"
+				v-if="showBackBtn"
+			>
+				<i class="fa fa-arrow-left" />
+				Назад
+			</div>
 
-    <!-- left side bar -->
-    <div class="controls">
-      <div @click="$emit('back')" class="btn w-full btn-success" v-if="showBackBtn">
-        <i class="fa fa-arrow-left"></i>
-        Назад
-      </div>
+			<div class="d-flex first-block">
+				<!-- left -->
+				<div v-if="activeBook != null">
+					<img
+						:src="activeBook.img == '' ? '/images/book_cover.jpg' : activeBook.img"
+						class="w-full pr-3"
+					>
+					<div v-if="isLoading">
+						<p class="text-center mt-3">
+							<b>Загружается...</b>
+						</p>
+					</div>
+				</div>
 
-      <div class="d-flex first-block">
+				<!-- right -->
+				<div>
+					<div>
+						<p class="text-center">
+							<b>{{ page }} / {{ pageCount }}</b>
+						</p>
+					</div>
 
-        <!-- left -->
-        <div v-if="activeBook != null">
-          <img :src="activeBook.img == '' ? '/images/book_cover.jpg' : activeBook.img"
-            class="w-full pr-3" />
-          <div v-if="isLoading">
-            <p class="text-center mt-3">
-              <b>Загружается...</b>
-            </p>
-          </div>
-        </div>
+					<div class="d-flex justify-content-center">
+						<button
+							class="btn rounded mr-2"
+							@click="prevPage"
+						>
+							<i class="fa fa-chevron-left" />
+						</button>
+						<button
+							class="btn rounded"
+							@click="nextPage"
+						>
+							<i class="fa fa-chevron-right" />
+						</button>
+					</div>
 
-        <!-- right -->
-        <div>
-           <div>
-            <p class="text-center">
-              <b>{{ page }} / {{ pageCount }}</b>
-            </p>
-          </div>
+					<div class="d-flex justify-content-center mt-2">
+						<button
+							class="btn rounded mr-1 p-2"
+							@click="zoomIn"
+						>
+							<i class="fa fa-search-plus" />
+						</button>
+						<button
+							class="btn rounded mr-1 p-2"
+							@click="zoom = 0"
+						>
+							<i class="fa fa-bars" />
+						</button>
+						<button
+							class="btn rounded p-2"
+							@click="zoomOut"
+						>
+							<i class="fa fa-search-minus" />
+						</button>
+					</div>
+				</div>
+			</div>
 
-          <div class="d-flex justify-content-center">
-            <button class="btn rounded mr-2" @click="prevPage">
-              <i class="fa fa-chevron-left"></i>
-            </button>
-            <button class="btn rounded" @click="nextPage">
-              <i class="fa fa-chevron-right"></i>
-            </button>
-          </div>
+			<!-- Page numbers -->
+			<div class="chapters mt-3">
+				<div class="item font-bold mb-2">
+					<p class="mb-0">
+						Вопросы на странице:
+					</p>
+				</div>
 
-          <div class="d-flex justify-content-center mt-2">
-            <button class="btn rounded mr-1 p-2" @click="zoomIn">
-              <i class="fa fa-search-plus"></i>
-            </button>
-            <button class="btn rounded mr-1 p-2" @click="zoom = 0">
-              <i class="fa fa-bars"></i>
-            </button>
-            <button class="btn rounded p-2" @click="zoomOut">
-              <i class="fa fa-search-minus"></i>
-            </button>
-          </div>
-        </div>
-      </div>
+				<div
+					class="item d-flex"
+					v-for="(segment, t) in segments"
+					:key="t"
+					:class="{
+						'pass': segment.item_model !== null,
+						'active': page == segment.page
+					}"
+				>
+					<div class="mr-2">
+						<i
+							class="fa fa-check pointer"
+							v-if="segment.item_model !== null"
+						/>
+						<i
+							class="fa fa-lock pointer"
+							v-else
+						/>
+					</div>
+					<p
+						class="mb-0"
+						@click="moveTo(segment.page, segment.item_model)"
+					>
+						Стр. {{ segment.page }} : {{ segment.questions.length }} вопрос (-ов)
+					</p>
+				</div>
+			</div>
+		</div>
 
-      <!-- Page numbers -->
-      <div class="chapters mt-3">
-        <div class="item font-bold mb-2">
-          <p class="mb-0">Вопросы на странице:</p>
-        </div>
+		<!-- PDF viewer -->
+		<div
+			class="pdf show"
+			:class="{
+				w600: zoom == 600,
+				w700: zoom == 700,
+				w800: zoom == 800,
+				w900: zoom == 900,
+				w1000: zoom == 1000,
+				w1100: zoom == 1100,
+				w1200: zoom == 1200,
+				w1300: zoom == 1300,
+				w1400: zoom == 1400,
+				w1500: zoom == 1500,
+				w1600: zoom == 1600,
+				full: zoom == 0,
+			}"
+		>
+			<vue-pdf-embed
+				v-if="activeBook !== null"
+				:source="activeBook.link"
+				ref="pdfRef"
+				:page="page"
+				class="plugin"
+				loading-failed="sad"
+				@rendered="loaded"
+			/>
+		</div>
 
-        <div class="item d-flex" v-for="(segment, t) in segments"
-          :key="t"
-          :class="{
-            'pass': segment.item_model !== null,
-            'active': page == segment.page
-          }">
-          <div class="mr-2">
-            <i class="fa fa-check pointer" v-if="segment.item_model !== null"></i>
-            <i class="fa fa-lock pointer" v-else></i>
-          </div>
-          <p class="mb-0" @click="moveTo(segment.page, segment.item_model)">
-            Стр. {{ segment.page }} : {{ segment.questions.length }} вопрос (-ов)
-          </p>
-        </div>
-      </div>
+		<!-- Test viewer -->
+		<div
+			class="test"
+			v-if="activeSegment !== null"
+		>
+			<questions
+				:course_item_id="course_item_id"
+				:questions="activeSegment.questions"
+				:pass="activeSegment.item_model !== null"
+				:pass_grade="activeSegment.pass_grade"
+				:id="0"
+				:key="segment_key"
+				type="book"
+				:mode="mode"
+				@continueRead="nextPage"
+				@passed="nextElement"
+				@nextElement="nextElement"
+			/>
+		</div>
 
-    </div>
-
-    <!-- PDF viewer -->
-    <div class="pdf show"
-      :class="{
-        w600: zoom == 600,
-        w700: zoom == 700,
-        w800: zoom == 800,
-        w900: zoom == 900,
-        w1000: zoom == 1000,
-        w1100: zoom == 1100,
-        w1200: zoom == 1200,
-        w1300: zoom == 1300,
-        w1400: zoom == 1400,
-        w1500: zoom == 1500,
-        w1600: zoom == 1600,
-        full: zoom == 0,
-      }"
-    >
-
-      <vue-pdf-embed
-        v-if="activeBook !== null"
-        :source="activeBook.link"
-        ref="pdfRef"
-        :page="page"
-        class="plugin"
-        loading-failed="sad"
-        @rendered="loaded"
-      />
-    </div>
-
-    <!-- Test viewer -->
-    <div class="test" v-if="activeSegment !== null">
-      <questions
-        :course_item_id="course_item_id"
-        :questions="activeSegment.questions"
-        :pass="activeSegment.item_model !== null"
-        :pass_grade="activeSegment.pass_grade"
-        :id="0"
-        :key="segment_key"
-        type="book"
-        :mode="mode"
-        @continueRead="nextPage"
-        @passed="nextElement"
-         @nextElement="nextElement"
-      />
-    </div>
-
-    <!-- <template v-if="(activeSegment != null && course_page && activeSegment.item_model !== null) || (activeSegment == null && pageCount == page)">
+		<!-- <template v-if="(activeSegment != null && course_page && activeSegment.item_model !== null) || (activeSegment == null && pageCount == page)">
       <button class="next-btn btn btn-primary"
         @click="nextElement()">
         Продолжить курс
         <i class="fa fa-angle-double-right ml-2"></i>
       </button>
     </template> -->
-
-
-  </div>
+	</div>
 </template>
 
 <script>

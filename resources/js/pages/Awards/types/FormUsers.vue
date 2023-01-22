@@ -1,33 +1,42 @@
 <template>
-  <BContainer class="mt-3" fluid>
-    <BFormGroup>
-      <div class="dropdown" v-if="options">
-        <!-- Dropdown Input -->
-        <input
-          class="dropdown-input"
-          :name="name"
-          @focus="showOptions()"
-          @blur="exit()"
-          @keyup="keyMonitor"
-          v-model="searchFilter"
-          :disabled="disabled"
-          :placeholder="placeholder"
-        />
+	<BContainer
+		class="mt-3"
+		fluid
+	>
+		<BFormGroup>
+			<div
+				class="dropdown"
+				v-if="options"
+			>
+				<!-- Dropdown Input -->
+				<input
+					class="dropdown-input"
+					:name="name"
+					@focus="showOptions()"
+					@blur="exit()"
+					@keyup="keyMonitor"
+					v-model="searchFilter"
+					:disabled="disabled"
+					:placeholder="placeholder"
+				>
 
-        <!-- Dropdown Menu -->
-        <div class="dropdown-content" v-show="optionsShown">
-          <div
-            class="dropdown-item"
-            @mousedown="selectOption(option)"
-            v-for="(option, index) in filteredOptions"
-            :key="index"
-          >
-            {{ option.name || option.id || "-" }}
-          </div>
-        </div>
-      </div>
-    </BFormGroup>
-  </BContainer>
+				<!-- Dropdown Menu -->
+				<div
+					class="dropdown-content"
+					v-show="optionsShown"
+				>
+					<div
+						class="dropdown-item"
+						@mousedown="selectOption(option)"
+						v-for="(option, index) in filteredOptions"
+						:key="index"
+					>
+						{{ option.name || option.id || "-" }}
+					</div>
+				</div>
+			</div>
+		</BFormGroup>
+	</BContainer>
 </template>
 
 <script>

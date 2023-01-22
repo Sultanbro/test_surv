@@ -1,144 +1,197 @@
 <template>
-<div class="mb-3 index__content" :class="{'v-loading': loading}">
-    <h4 class="d-flex align-items-center justify-content-between">
-        <div class="mr-2">{{ activity.name }} </div>
-        <div>
-            <div v-if="is_admin">
-                <a @click='showExcelImport = !showExcelImport'
-                    class="btn btn-success btn-sm rounded mr-2 text-white">
-                    <i class="fa fa-upload"></i>
-                    Импорт</a>
-            </div>
-        </div>
-    </h4>
+	<div
+		class="mb-3 index__content"
+		:class="{'v-loading': loading}"
+	>
+		<h4 class="d-flex align-items-center justify-content-between">
+			<div class="mr-2">
+				{{ activity.name }}
+			</div>
+			<div>
+				<div v-if="is_admin">
+					<a
+						@click="showExcelImport = !showExcelImport"
+						class="btn btn-success btn-sm rounded mr-2 text-white"
+					>
+						<i class="fa fa-upload" />
+						Импорт</a>
+				</div>
+			</div>
+		</h4>
 
-    <div class="custom-scroll">
-        <table class="indicators-table-fixed" :id="'sticky-'+ activity.id">
-            <tr>
-                <th
-                    rowspan="2"
-                    class="indicators-table-fixed-name"
-                    :class="{'sticky-left': isDesktop}"
-                >
-                    <div class="text-left pl-4">
-                        ФИО
-                        <i v-if="is_admin" class="fa fa-sort ml-2" @click="sort('fullname')"></i>
-                    </div>
-                </th>
+		<div class="custom-scroll">
+			<table
+				class="indicators-table-fixed"
+				:id="'sticky-'+ activity.id"
+			>
+				<tr>
+					<th
+						rowspan="2"
+						class="indicators-table-fixed-name"
+						:class="{'sticky-left': isDesktop}"
+					>
+						<div class="text-left pl-4">
+							ФИО
+							<i
+								v-if="is_admin"
+								class="fa fa-sort ml-2"
+								@click="sort('fullname')"
+							/>
+						</div>
+					</th>
 
-                <th
-                    rowspan="2"
-                    class="indicators-table-fixed-hmonth"
-                    :class="{'sticky-left': isDesktop}"
-                >
-                    <div class="text-left pl-4" v-if="is_admin">
-                        Итог к выдаче
-                        <i v-if="is_admin" class="fa fa-sort ml-2" @click="sort('plan')"></i>
-                    </div>
-                    <div class="" v-else></div>
-                </th>
-                <th
-                    v-if="is_admin"
-                    rowspan="2"
-                    class="indicators-table-fixed-hplan"
-                    :class="{'sticky-left': isDesktop}"
-                >
-                    <div class="text-left pl-4">
-                        Сборы
-                        <i class="fa fa-sort ml-2" @click="sort('count')"></i>
-                    </div>
-                </th>
+					<th
+						rowspan="2"
+						class="indicators-table-fixed-hmonth"
+						:class="{'sticky-left': isDesktop}"
+					>
+						<div
+							class="text-left pl-4"
+							v-if="is_admin"
+						>
+							Итог к выдаче
+							<i
+								v-if="is_admin"
+								class="fa fa-sort ml-2"
+								@click="sort('plan')"
+							/>
+						</div>
+						<div
+							class=""
+							v-else
+						/>
+					</th>
+					<th
+						v-if="is_admin"
+						rowspan="2"
+						class="indicators-table-fixed-hplan"
+						:class="{'sticky-left': isDesktop}"
+					>
+						<div class="text-left pl-4">
+							Сборы
+							<i
+								class="fa fa-sort ml-2"
+								@click="sort('count')"
+							/>
+						</div>
+					</th>
 
-                <th class="text-center" colspan="2" v-for="day in month.daysInMonth" :key="day">
-                    <div>{{ day }}</div>
-                </th>
-
-            </tr>
-            <tr>
-                <template v-for="day in month.daysInMonth">
-                    <th class="stickyy-h2" :key="day">сборы</th>
-                    <th class="stickyy-h2" :key="day + 'a'">тенге</th>
-                </template>
-            </tr>
-            <tr
-                v-for="(item, index) in items"
-                :key="index"
-                :class="{
-                    'prize first-place': item.show_cup == 1,
-                    'prize second-place':item.show_cup == 2,
-                    'prize third-place': item.show_cup == 3,
-                }"
-            >
-                <td
-                    :title="item.id + ' ' + item.email"
-                    class="indicators-table-fixed-name text-left"
-                    :class="{'sticky-left': isDesktop}"
-                >
-                    <div class="d-flex align-items-center max-content">
-                        {{ item.lastname }} {{ item.name }}
-                    </div>
-                </td>
-                <td
-                    class="indicators-table-fixed-hmonth px-2"
-                    :class="{'sticky-left': isDesktop}"
-                >{{ item.plan }}</td>
-                <td
-                    v-if="is_admin"
-                    class="indicators-table-fixed-hplan px-2"
-                    :class="{'sticky-left': isDesktop}"
-                >{{ item.count }}</td>
-                <template v-for="day in month.daysInMonth">
-                    <td v-if="item.editable" :key="day"
-                        :class="'text-center ' + item._cellVariants[day]"
-                        :title="day + ': сборы'"
-                    >
-                        <div>
-                            <input type="number"
-                                v-model="item[day]"
-                                @change="updateSettings($event, item, index, day)"
-                                class="form-control cell-input">
-                        </div>
-                    </td>
-                    <td v-else
+					<th
+						class="text-center"
+						colspan="2"
+						v-for="day in month.daysInMonth"
 						:key="day"
-                        :title="day + ': сборы'"
-                        @click="editMode(item)"
-                        :class="'text-center ' + item._cellVariants[day]"
-                    >
-                        <div>{{ item[day] }}</div>
-                    </td>
+					>
+						<div>{{ day }}</div>
+					</th>
+				</tr>
+				<tr>
+					<template v-for="day in month.daysInMonth">
+						<th
+							class="stickyy-h2"
+							:key="day"
+						>
+							сборы
+						</th>
+						<th
+							class="stickyy-h2"
+							:key="day + 'a'"
+						>
+							тенге
+						</th>
+					</template>
+				</tr>
+				<tr
+					v-for="(item, index) in items"
+					:key="index"
+					:class="{
+						'prize first-place': item.show_cup == 1,
+						'prize second-place':item.show_cup == 2,
+						'prize third-place': item.show_cup == 3,
+					}"
+				>
+					<td
+						:title="item.id + ' ' + item.email"
+						class="indicators-table-fixed-name text-left"
+						:class="{'sticky-left': isDesktop}"
+					>
+						<div class="d-flex align-items-center max-content">
+							{{ item.lastname }} {{ item.name }}
+						</div>
+					</td>
+					<td
+						class="indicators-table-fixed-hmonth px-2"
+						:class="{'sticky-left': isDesktop}"
+					>
+						{{ item.plan }}
+					</td>
+					<td
+						v-if="is_admin"
+						class="indicators-table-fixed-hplan px-2"
+						:class="{'sticky-left': isDesktop}"
+					>
+						{{ item.count }}
+					</td>
+					<template v-for="day in month.daysInMonth">
+						<td
+							v-if="item.editable"
+							:key="day"
+							:class="'text-center ' + item._cellVariants[day]"
+							:title="day + ': сборы'"
+						>
+							<div>
+								<input
+									type="number"
+									v-model="item[day]"
+									@change="updateSettings($event, item, index, day)"
+									class="form-control cell-input"
+								>
+							</div>
+						</td>
+						<td
+							v-else
+							:key="day"
+							:title="day + ': сборы'"
+							@click="editMode(item)"
+							:class="'text-center ' + item._cellVariants[day]"
+						>
+							<div>{{ item[day] }}</div>
+						</td>
 
-                    <td v-if="!isNaN(Number(item[day]) * price)"
-						:key="day + 'a'"
-                        :title="day + ': тенге'"
-                        class=""
-                    >
-                        {{ Number(item[day]) * price }}
-                    </td>
-                    <td v-else
-						:key="day + 'b'"
-                        :title="day + ': тенге'"
-                        class=""
-                    ></td>
-                </template>
-            </tr>
-        </table>
-    </div>
+						<td
+							v-if="!isNaN(Number(item[day]) * price)"
+							:key="day + 'a'"
+							:title="day + ': тенге'"
+							class=""
+						>
+							{{ Number(item[day]) * price }}
+						</td>
+						<td
+							v-else
+							:key="day + 'b'"
+							:title="day + ': тенге'"
+							class=""
+						/>
+					</template>
+				</tr>
+			</table>
+		</div>
 
-    <sidebar title="Импорт EXCEL"
-        :open="showExcelImport"
-        @close="showExcelImport=false"
-        v-if="showExcelImport"
-        width="75%"
-    >
-        <activity-excel-import
-            :group_id="42"
-            table="minutes"
-            @close="showExcelImport=false"
-            :activity_id="activity.id"
-        ></activity-excel-import>
-    </sidebar>
-</div>
+		<sidebar
+			title="Импорт EXCEL"
+			:open="showExcelImport"
+			@close="showExcelImport=false"
+			v-if="showExcelImport"
+			width="75%"
+		>
+			<activity-excel-import
+				:group_id="42"
+				table="minutes"
+				@close="showExcelImport=false"
+				:activity_id="activity.id"
+			/>
+		</sidebar>
+	</div>
 </template>
 
 <script>

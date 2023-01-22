@@ -1,12 +1,13 @@
 <template>
-<div
-  v-if="user_id"
-  class="d-flex mycourse"
->
-
-  <div class="disable_course" v-if="disable_course">
-
-        <!-- <div v-if="activeCourse != null" class="d-left">
+	<div
+		v-if="user_id"
+		class="d-flex mycourse"
+	>
+		<div
+			class="disable_course"
+			v-if="disable_course"
+		>
+			<!-- <div v-if="activeCourse != null" class="d-left">
            <div class="gggggg">
             <h1 class="page-title">{{ activeCourse.name }}</h1>
 
@@ -35,163 +36,191 @@
           </div>
         </div> -->
 
-        <div class="d-right aic jcc">
-          <div class="d-flex aic flex-column">
-            <p>Чтобы Вам был доступен этот курс, Вам необходимо пройти все курсы <b>по порядку</b></p>
-            <button class="btn btn-primary" @click="getCourse(0)">Вернуться к текущему курсу</button>
-          </div>
-        </div>
+			<div class="d-right aic jcc">
+				<div class="d-flex aic flex-column">
+					<p>Чтобы Вам был доступен этот курс, Вам необходимо пройти все курсы <b>по порядку</b></p>
+					<button
+						class="btn btn-primary"
+						@click="getCourse(0)"
+					>
+						Вернуться к текущему курсу
+					</button>
+				</div>
+			</div>
+		</div>
 
-  </div>
+		<!-- левый сайдбар -->
+		<div class="lp">
+			<!-- список курсов -->
+			<div v-if="activeCourse == null">
+				<div
+					class="section d-flex aic jcsb my-2"
+					v-for="course in courses"
+					:key="course.id"
+					@click="getCourse(course.id)"
+				>
+					<p class="mb-0">
+						{{ course.name }}
+					</p>
+				</div>
+			</div>
 
-  <!-- левый сайдбар -->
-  <div class="lp">
+			<!-- выбранный курс -->
+			<div v-else>
+				<div class="gggggg">
+					<h1 class="page-title">
+						{{ activeCourse.name }}
+					</h1>
 
-    <!-- список курсов -->
-    <div v-if="activeCourse == null">
-         <div class="section d-flex aic jcsb my-2"
-          v-for="course in courses"
-          :key="course.id"
-          @click="getCourse(course.id)"
-        >
-          <p class="mb-0">{{ course.name }}</p>
-        </div>
-    </div>
+					<div>
+						<img
+							class="course-img w-full"
+							:src="activeCourse.img"
+							onerror="this.src = '/images/course.jpg';"
+						>
+					</div>
 
-    <!-- выбранный курс -->
-    <div v-else>
-      <div class="gggggg">
-        <h1 class="page-title">{{ activeCourse.name }}</h1>
+					<div class="mb-4 mt-3">
+						Пройдено: {{ progress }}%
+						<progress
+							:value="progress"
+							max="100"
+						/>
+					</div>
 
-          <div>
-            <img class="course-img w-full"
-            :src="activeCourse.img"
-            onerror="this.src = '/images/course.jpg';"
-            />
+					<!-- <div class="mt-3 description" v-html="activeCourse.text"></div> -->
 
-          </div>
+					<p><b>Блоки курса</b></p>
+					<div
+						class="course-item"
+						v-for="(item, c_index) in items"
+						:key="item.id"
+						:class="{
+							'active': activeCourseItem != null && item.id == activeCourseItem.id,
+							'pass': item.status == 1
+						}"
+						@click="selectCourseItem(c_index)"
+					>
+						<div class="title d-flex">
+							<i
+								class="fa fa-arrow-right icon"
+								v-if="item.status == 2"
+							/>
+							<i
+								class="fa fa-check icon"
+								v-else-if="item.status == 1"
+							/>
+							<i
+								class="fa fa-lock icon"
+								v-else
+							/>
+							<span class="ml-2">{{ item.title }}</span>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
 
-          <div class="mb-4 mt-3">
-            Пройдено: {{ progress }}%
-            <progress :value="progress" max="100"/>
-          </div>
+		<!-- правая часть -->
+		<div
+			class="rp"
+			style="flex: 1 1 0%; padding-bottom: 0px;"
+		>
+			<div
+				class="content mt-3"
+				:class="{'knowbase': activeCourseItem && activeCourseItem.item_model == 'App\\KnowBase'}"
+			>
+				<div
+					v-if="activeCourse"
+					class=""
+				>
+					<!-- поле курса -->
 
-          <!-- <div class="mt-3 description" v-html="activeCourse.text"></div> -->
+					<div class="mmmm-block">
+						<div v-if="activeCourseItem">
+							<div v-if="activeCourseItem.item_model == 'App\\Models\\Books\\Book'">
+								<UpbooksRead
+									ref="upbook"
+									:book_id="activeCourseItem.item_id"
+									:mode="'read'"
+									:course_page="true"
+									:course_item_id="activeCourseItem.id"
+									:enable_url_manipulation="false"
+									:active_page="activeCourseItem.last_item"
+									:all_stages="all_stages"
+									:completed_stages="completed_stages"
+									:key="activeCourseKey"
+									@nextElement="nextElement"
+									@changeProgress="completed_stages++"
+									@forGenerateCertificate="generateCertificateStart"
+								/>
+							</div>
 
-          <p><b>Блоки курса</b></p>
-          <div class="course-item" v-for="(item, c_index) in items"
-            :key="item.id"
-            :class="{
-              'active': activeCourseItem != null && item.id == activeCourseItem.id,
-              'pass': item.status == 1
-            }"
-            @click="selectCourseItem(c_index)"
-          >
-            <div class="title d-flex">
-              <i class="fa fa-arrow-right icon" v-if="item.status == 2"></i>
-              <i class="fa fa-check icon" v-else-if="item.status == 1"></i>
-              <i class="fa fa-lock icon" v-else ></i>
-              <span class="ml-2">{{ item.title }}</span>
-            </div>
-          </div>
-      </div>
-    </div>
+							<div
+								class="px-3 pt-3"
+								v-if="activeCourseItem.item_model == 'App\\Models\\Videos\\VideoPlaylist' || activeCourseItem.item_model == 'App\\Models\\Videos\\Video'"
+							>
+								<PlaylistEdit
+									ref="playlist"
+									:id="activeCourseItem.item_id"
+									:course_item_id="activeCourseItem.id"
+									:is_course="true"
+									:myvideo="activeCourseItem.last_item"
+									:enable_url_manipulation="false"
+									:mode="'read'"
+									:all_stages="all_stages"
+									:completed_stages="completed_stages"
+									:key="activeCourseKey"
+									@nextElement="nextElement"
+									@changeProgress="completed_stages++"
+									@forGenerateCertificate="generateCertificateStart"
+								/>
+							</div>
 
-  </div>
+							<div
+								v-if="activeCourseItem.item_model == 'App\\KnowBase'"
+								class="opopoppop"
+							>
+								<Booklist
+									ref="knowbase"
+									:trees="trees"
+									:parent_name="activeCourseItem.title"
+									:course_item_id="activeCourseItem.id"
+									:parent_id="activeCourseItem.item_id"
+									:show_page_id="activeCourseItem.last_item"
+									:mode="'read'"
+									:course_page="true"
+									:enable_url_manipulation="false"
+									:auth_user_id="0"
+									:all_stages="all_stages"
+									:completed_stages="completed_stages"
+									:key="activeCourseKey"
+									@changeProgress="completed_stages++"
+									@forGenerateCertificate="generateCertificateStart"
+									@nextElement="nextElement"
+								/>
+							</div>
+						</div>
 
-  <!-- правая часть -->
-  <div class="rp" style="flex: 1 1 0%; padding-bottom: 0px;">
-    <div class="content mt-3" :class="{'knowbase': activeCourseItem && activeCourseItem.item_model == 'App\\KnowBase'}">
-      <div v-if="activeCourse" class="">
-
-
-        <!-- поле курса -->
-
-            <div class="mmmm-block">
-              <div v-if="activeCourseItem">
-
-
-                  <div v-if="activeCourseItem.item_model == 'App\\Models\\Books\\Book'">
-                    <UpbooksRead
-                      ref="upbook"
-                      :book_id="activeCourseItem.item_id"
-                      :mode="'read'"
-                      :course_page="true"
-                      :course_item_id="activeCourseItem.id"
-                      :enable_url_manipulation="false"
-                      :active_page="activeCourseItem.last_item"
-                      :all_stages="all_stages"
-                      :completed_stages="completed_stages"
-                      :key="activeCourseKey"
-                      @nextElement="nextElement"
-                      @changeProgress="completed_stages++"
-                      @forGenerateCertificate="generateCertificateStart"
-                    />
-                  </div>
-
-                  <div class="px-3 pt-3" v-if="activeCourseItem.item_model == 'App\\Models\\Videos\\VideoPlaylist' || activeCourseItem.item_model == 'App\\Models\\Videos\\Video'">
-                      <PlaylistEdit
-                          ref="playlist"
-                          :id="activeCourseItem.item_id"
-                          :course_item_id="activeCourseItem.id"
-                          :is_course="true"
-                          :myvideo="activeCourseItem.last_item"
-                          :enable_url_manipulation="false"
-                          :mode="'read'"
-                          :all_stages="all_stages"
-                          :completed_stages="completed_stages"
-                          :key="activeCourseKey"
-                          @nextElement="nextElement"
-                          @changeProgress="completed_stages++"
-                          @forGenerateCertificate="generateCertificateStart"
-                      />
-                  </div>
-
-                  <div v-if="activeCourseItem.item_model == 'App\\KnowBase'" class="opopoppop">
-
-                      <Booklist
-                        ref="knowbase"
-                        :trees="trees"
-                        :parent_name="activeCourseItem.title"
-                        :course_item_id="activeCourseItem.id"
-                        :parent_id="activeCourseItem.item_id"
-                        :show_page_id="activeCourseItem.last_item"
-                        :mode="'read'"
-                        :course_page="true"
-                        :enable_url_manipulation="false"
-                        :auth_user_id="0"
-                        :all_stages="all_stages"
-                        :completed_stages="completed_stages"
-                        :key="activeCourseKey"
-                        @changeProgress="completed_stages++"
-                        @forGenerateCertificate="generateCertificateStart"
-                        @nextElement="nextElement"
-                      />
-
-                  </div>
-
-              </div>
-
-              <div class="p-4"  v-if="congrats">
-                  <h1>Поздравляем с завершением курса! 😁 😁 😆 </h1>
-                  <p>Спасибо, что прошли курс несмотря ни на что!</p>
-              </div>
-                <SaveCertificate
-                  v-if="generateCertificate"
-                  @generate-success="generateSuccess"
-                  :course_id="activeCourseItem.course_id"
-                  :user_id="user_id"
-                  :title="activeCourseItem.title"
-                />
-            </div>
-
-      </div>
-    </div>
-  </div>
-
-
-
-</div>
+						<div
+							class="p-4"
+							v-if="congrats"
+						>
+							<h1>Поздравляем с завершением курса! 😁 😁 😆 </h1>
+							<p>Спасибо, что прошли курс несмотря ни на что!</p>
+						</div>
+						<SaveCertificate
+							v-if="generateCertificate"
+							@generate-success="generateSuccess"
+							:course_id="activeCourseItem.course_id"
+							:user_id="user_id"
+							:title="activeCourseItem.title"
+						/>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
 </template>
 
 <script>

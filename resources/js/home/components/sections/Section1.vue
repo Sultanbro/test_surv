@@ -1,92 +1,94 @@
 <template>
-  <section id="jSec1">
-    <div class="section-content">
-      <h1 class="jSec1-header jHeader">{{ $lang(lang, 's1-header') }}</h1>
-      <div
-          v-if="isMedium"
-          :class="{'jSec1-tabs-popup-active': isPopupVisible}"
-          class="jSec1-tabs"
-      >
-        <ul class="jSec1-tabs-buttons">
-          <Section1Tab
-              :active-tab="activeTab"
-              tab-id="profile"
-              @content="setTab('profile')"
-              @popup="setPopup('profile')"
-          />
-          <Section1Tab
-              :active-tab="activeTab"
-              tab-id="db"
-              @content="setTab('db')"
-              @popup="setPopup('db')"
-          />
-          <Section1Tab
-              :active-tab="activeTab"
-              tab-id="kpi"
-              @content="setTab('kpi')"
-              @popup="setPopup('kpi')"
-          />
-          <Section1Tab
-              :active-tab="activeTab"
-              tab-id="courses"
-              @content="setTab('courses')"
-              @popup="setPopup('courses')"
-          />
-          <Section1Tab
-              :active-tab="activeTab"
-              tab-id="struct"
-              @content="setTab('struct')"
-              @popup="setPopup('struct')"
-          />
-          <Section1Tab
-              :active-tab="activeTab"
-              tab-id="news"
-              @content="setTab('news')"
-              @popup="setPopup('news')"
-          />
-        </ul>
-        <Section1Popup
-            v-click-outside="hidePopup"
-            :lang="lang"
-            :type="activePopup"
-        />
-        <div class="jSec1-tabs-content">
-          <Section1Profile v-show="activeTab === 'profile'"/>
-          <Section1DB v-show="activeTab === 'db'"/>
-          <Section1KPI v-show="activeTab === 'kpi'"/>
-          <Section1Courses v-show="activeTab === 'courses'"/>
-          <Section1Struct v-show="activeTab === 'struct'"/>
-          <Section1News v-show="activeTab === 'news'"/>
-        </div>
-      </div>
-      <Hooper
-          v-if="!isMedium"
-          ref="carousel"
-          :autoPlay="true"
-          :infiniteScroll="true"
-          :playSpeed="3000"
-      >
-        <Slide>
-          <Section1Profile/>
-        </Slide>
-        <Slide>
-          <Section1DB/>
-        </Slide>
-        <Slide>
-          <Section1KPI/>
-        </Slide>
-        <Slide>
-          <Section1Courses/>
-        </Slide>
-        <Slide>
-          <Section1Struct/>
-        </Slide>
-        <Slide>
-          <Section1News/>
-        </Slide>
-      </Hooper>
-    </div>
-  </section>
+	<section id="jSec1">
+		<div class="section-content">
+			<h1 class="jSec1-header jHeader">
+				{{ $lang(lang, 's1-header') }}
+			</h1>
+			<div
+				v-if="isMedium"
+				:class="{'jSec1-tabs-popup-active': isPopupVisible}"
+				class="jSec1-tabs"
+			>
+				<ul class="jSec1-tabs-buttons">
+					<Section1Tab
+						:active-tab="activeTab"
+						tab-id="profile"
+						@content="setTab('profile')"
+						@popup="setPopup('profile')"
+					/>
+					<Section1Tab
+						:active-tab="activeTab"
+						tab-id="db"
+						@content="setTab('db')"
+						@popup="setPopup('db')"
+					/>
+					<Section1Tab
+						:active-tab="activeTab"
+						tab-id="kpi"
+						@content="setTab('kpi')"
+						@popup="setPopup('kpi')"
+					/>
+					<Section1Tab
+						:active-tab="activeTab"
+						tab-id="courses"
+						@content="setTab('courses')"
+						@popup="setPopup('courses')"
+					/>
+					<Section1Tab
+						:active-tab="activeTab"
+						tab-id="struct"
+						@content="setTab('struct')"
+						@popup="setPopup('struct')"
+					/>
+					<Section1Tab
+						:active-tab="activeTab"
+						tab-id="news"
+						@content="setTab('news')"
+						@popup="setPopup('news')"
+					/>
+				</ul>
+				<Section1Popup
+					v-click-outside="hidePopup"
+					:lang="lang"
+					:type="activePopup"
+				/>
+				<div class="jSec1-tabs-content">
+					<Section1Profile v-show="activeTab === 'profile'" />
+					<Section1DB v-show="activeTab === 'db'" />
+					<Section1KPI v-show="activeTab === 'kpi'" />
+					<Section1Courses v-show="activeTab === 'courses'" />
+					<Section1Struct v-show="activeTab === 'struct'" />
+					<Section1News v-show="activeTab === 'news'" />
+				</div>
+			</div>
+			<Hooper
+				v-if="!isMedium"
+				ref="carousel"
+				:auto-play="true"
+				:infinite-scroll="true"
+				:play-speed="3000"
+			>
+				<Slide>
+					<Section1Profile />
+				</Slide>
+				<Slide>
+					<Section1DB />
+				</Slide>
+				<Slide>
+					<Section1KPI />
+				</Slide>
+				<Slide>
+					<Section1Courses />
+				</Slide>
+				<Slide>
+					<Section1Struct />
+				</Slide>
+				<Slide>
+					<Section1News />
+				</Slide>
+			</Hooper>
+		</div>
+	</section>
 </template>
 
 <script>

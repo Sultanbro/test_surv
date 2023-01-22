@@ -1,70 +1,125 @@
 <template>
-  <div class="messenger__container-scroll" ref="messengerContainer" id="messenger_container"
-       @click="contextMenuVisible = false"
-       @scroll="onScroll">
-    <ContextMenu
-      :show="contextMenuVisible"
-      :x="contextMenuX"
-      :y="contextMenuY"
-      :parent-element="$refs.messengerContainer"
-    >
-      <a href="javascript:" class="messenger__context-menu_reaction" @click="react(1)">
-        &#128077;
-      </a>
-      <a href="javascript:" class="messenger__context-menu_reaction" @click="react(2)">
-        &#128078;
-      </a>
-      <a href="javascript:" class="messenger__context-menu_reaction" @click="react(3)">
-        &#10004;
-      </a>
-      <a href="javascript:" class="messenger__context-menu_reaction" @click="react(4)">
-        &#10006;
-      </a>
-      <a href="javascript:" class="messenger__context-menu_reaction" @click="react(5)">
-        &#10067;
-      </a>
+	<div
+		class="messenger__container-scroll"
+		ref="messengerContainer"
+		id="messenger_container"
+		@click="contextMenuVisible = false"
+		@scroll="onScroll"
+	>
+		<ContextMenu
+			:show="contextMenuVisible"
+			:x="contextMenuX"
+			:y="contextMenuY"
+			:parent-element="$refs.messengerContainer"
+		>
+			<a
+				href="javascript:"
+				class="messenger__context-menu_reaction"
+				@click="react(1)"
+			>
+				&#128077;
+			</a>
+			<a
+				href="javascript:"
+				class="messenger__context-menu_reaction"
+				@click="react(2)"
+			>
+				&#128078;
+			</a>
+			<a
+				href="javascript:"
+				class="messenger__context-menu_reaction"
+				@click="react(3)"
+			>
+				&#10004;
+			</a>
+			<a
+				href="javascript:"
+				class="messenger__context-menu_reaction"
+				@click="react(4)"
+			>
+				&#10006;
+			</a>
+			<a
+				href="javascript:"
+				class="messenger__context-menu_reaction"
+				@click="react(5)"
+			>
+				&#10067;
+			</a>
 
-      <a href="javascript:" @click="startEditMessage(contextMenuMessage)"
-         v-if="contextMenuMessage && user && contextMenuMessage.sender_id === user.id">
-        Отредактировать
-      </a>
-      <a href="javascript:" @click="citeMessage(contextMenuMessage)">
-        Цитировать
-      </a>
-      <a href="javascript:" @click="pinMessage(contextMenuMessage)">
-        Закрепить
-      </a>
-      <a href="javascript:" @click="remove(contextMenuMessage)"
-         v-if="contextMenuMessage && user && contextMenuMessage.sender_id === user.id">
-        Удалить
-      </a>
-    </ContextMenu>
-    <div class="messenger__messages-container" id="messenger__messages">
-      <template v-for="(d, i) in messagesMap">
-        <div :key="i" class="messenger__messages-date">
-          <span>{{ d[0].created_at | formatDate }}</span>
-        </div>
-        <div v-for="(message, index) in d" :key="message.id"
-             class="messenger__message-wrapper" :id="'messenger_message_' + message.id"
-             @contextmenu.prevent="!message.event && showChatContextMenu(message, ...arguments)">
-          <ConversationServiceMessage v-if="message.event" :message="message"/>
-          <ConversationMessage v-else :message="message"
-                               @active="activeMessageId = message.id"
-                               :active="activeMessageId === message.id"
-                               :last="index === d.length - 1"
-                               @loadImage="index === d.length - 1 && scrollBottom"/>
-        </div>
-      </template>
-    </div>
-    <div class="messenger__loader" v-show="this.isLoading">
-      <div class="messenger__loader-spinner">
-        <div class="messenger__loader-spinner-item"></div>
-        <div class="messenger__loader-spinner-item"></div>
-        <div class="messenger__loader-spinner-item"></div>
-        <div class="messenger__loader-spinner-item"></div>
-      </div>
-    </div>
-  </div>
+			<a
+				href="javascript:"
+				@click="startEditMessage(contextMenuMessage)"
+				v-if="contextMenuMessage && user && contextMenuMessage.sender_id === user.id"
+			>
+				Отредактировать
+			</a>
+			<a
+				href="javascript:"
+				@click="citeMessage(contextMenuMessage)"
+			>
+				Цитировать
+			</a>
+			<a
+				href="javascript:"
+				@click="pinMessage(contextMenuMessage)"
+			>
+				Закрепить
+			</a>
+			<a
+				href="javascript:"
+				@click="remove(contextMenuMessage)"
+				v-if="contextMenuMessage && user && contextMenuMessage.sender_id === user.id"
+			>
+				Удалить
+			</a>
+		</ContextMenu>
+		<div
+			class="messenger__messages-container"
+			id="messenger__messages"
+		>
+			<template v-for="(d, i) in messagesMap">
+				<div
+					:key="i"
+					class="messenger__messages-date"
+				>
+					<span>{{ d[0].created_at | formatDate }}</span>
+				</div>
+				<div
+					v-for="(message, index) in d"
+					:key="message.id"
+					class="messenger__message-wrapper"
+					:id="'messenger_message_' + message.id"
+					@contextmenu.prevent="!message.event && showChatContextMenu(message, ...arguments)"
+				>
+					<ConversationServiceMessage
+						v-if="message.event"
+						:message="message"
+					/>
+					<ConversationMessage
+						v-else
+						:message="message"
+						@active="activeMessageId = message.id"
+						:active="activeMessageId === message.id"
+						:last="index === d.length - 1"
+						@loadImage="index === d.length - 1 && scrollBottom"
+					/>
+				</div>
+			</template>
+		</div>
+		<div
+			class="messenger__loader"
+			v-show="this.isLoading"
+		>
+			<div class="messenger__loader-spinner">
+				<div class="messenger__loader-spinner-item" />
+				<div class="messenger__loader-spinner-item" />
+				<div class="messenger__loader-spinner-item" />
+				<div class="messenger__loader-spinner-item" />
+			</div>
+		</div>
+	</div>
 </template>
 
 <script>

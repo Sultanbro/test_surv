@@ -1,27 +1,28 @@
 <template>
-  <div>
-    <a id="clickQuarter" class="btn-block btn btn-primary text-white rounded" @click="toggle()">
-      Квартальная премия
-    </a>
+	<div>
+		<a
+			id="clickQuarter"
+			class="btn-block btn btn-primary text-white rounded"
+			@click="toggle()"
+		>
+			Квартальная премия
+		</a>
 
-    <sidebar
-        title="Квартальная премия"
-        :open="showKpiSidebar"
-        @close="toggle()"
-        width="70%"
-    >
-
-      <t-quarter
-              :activeuserid="activeuserid"
-              group="Ежегодный  квартальный календарь"
-              :user_id="user_id"
-              :is_admin="true"
-              type="individual"
-      />
-
-    </sidebar>
-
-  </div>
+		<sidebar
+			title="Квартальная премия"
+			:open="showKpiSidebar"
+			@close="toggle()"
+			width="70%"
+		>
+			<t-quarter
+				:activeuserid="activeuserid"
+				group="Ежегодный  квартальный календарь"
+				:user_id="user_id"
+				:is_admin="true"
+				type="individual"
+			/>
+		</sidebar>
+	</div>
 </template>
 
 <script>

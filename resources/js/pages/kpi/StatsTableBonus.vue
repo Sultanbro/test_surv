@@ -1,94 +1,112 @@
 <template>
-<div class="bonuses 1">
-    <table class="table j-table table-bordered table-sm mb-3 collapse-table">
-        <tr>
-            <th class="b-table-sticky-column text-center px-1">
-                <i class="fa fa-cogs" @click="adjustFields"></i>
-            </th>
-            <th class="text-left">
-               Кому
-            </th>
-        </tr>
-        <tr>
-
-        </tr>
-        <template v-for="(page_item, p) in items">
-            <tr :key="p">
-                <td
-                    @click="page_item.expanded = !page_item.expanded"
-                    class="pointer b-table-sticky-column"
-                >
-                        <div class="d-flex px-2">
-                            <i class="fa fa-minus mt-1" v-if="page_item.expanded"></i>
-                            <i class="fa fa-plus mt-1" v-else></i>
-                            <span class="ml-2">{{ p + 1 }}</span>
-                        </div>
-                    </td>
-                <td class="text-left">
-                    <div class="d-flex aic p-1">
-                        <span class="ml-2">{{ page_item.name }}</span>
-                    </div>
-                </td>
-            </tr>
-            <template v-if="page_item.expanded">
-                <tr
-                    :key="'tr' + p"
-                    class="collapsable"
-                    :class="{'active': page_item.expanded }"
-                >
-                    <td :colspan="fields.length + 2">
-                        <div class="table__wrapper">
-                            <table
-                                class="table b-table table-bordered table-sm table-responsive mb-0 table-inner"
-                                v-for="(user, i) in page_item.users"
-                                :key="i"
-                            >
-                                <tr>
-                                    <th class="b-table-sticky-column text-center px-1 pointer" @click="user.expanded = !user.expanded">
-                                        <div class="d-flex px-2 ">
-                                            <i class="fa fa-minus mt-1" v-if="user.expanded"></i>
-                                            <i class="fa fa-plus mt-1" v-else></i>
-                                            <span class="ml-2 bg-transparent ">{{ user.id }}</span>
-                                        </div>
-                                    </th>
-                                    <th
-                                        class="text-left"
-                                        >
-                                        {{ user.name }}
-                                    </th>
-                                    <template v-for="bonus in bonuses">
-                                        <th
-                                            :key="bonus.id"
-                                            v-if="bonus.targetable_id == page_item.id"
-                                        >
-                                            {{bonus.title}} <b v-if="user.bonus_totals.filter(total => { return total.bonus_id === bonus.id })[0]">{{ user.bonus_totals.filter(total => { return total.bonus_id === bonus.id })[0].sum }} тг</b><b v-else> 0 тг</b>
-                                        </th>
-                                    </template>
-                                </tr>
-                                <template v-if="user.expanded">
-                                    <table class="table b-table table-bordered table-sm table-responsive mb-0 table-inner">
-                                        <tr>
-                                            <th></th>
-                                            <th>Наименование активности</th>
-                                            <th>За</th>
-                                            <th>Кол-во</th>
-                                            <th>Вознаграждение</th>
-                                            <th>Период</th>
-                                            <th>Заработано</th>
-                                        </tr>
-                                        <tr
-                                            v-for="(bonus, p) in filteredBonuses"
-                                            :key="p"
-                                        >
-                                            <td class="text-white text-center">{{ p + 1}}</td>
-                                            <!--<td>{{ activities[page_item.activity_id].name }}</td>-->
-                                            <td>{{ bonus.comment }}</td>
-                                            <td>{{ bonus.comment.substring( bonus.comment.indexOf(":") + 1, bonus.comment.lastIndexOf(";") ) }}</td>
-                                            <td>{{ bonus.amount }}</td>
-                                            <td>{{ bonus.date }}</td>
-                                            <td>{{ bonus.amount * parseInt(bonus.comment.substring( bonus.comment.indexOf(":") + 1, bonus.comment.lastIndexOf(";") )) }}</td>
-                                        </tr>
-                                        <!--<tr v-for="(bonus, p) in obtained_bonuses.filter(b => {return b.user_id === user.id && isCurrentMonth(b.date) })" v-if="bonus.comment.substring( bonus.comment.indexOf(':') + 1, bonus.comment.lastIndexOf(';') ) > 0" >
+	<div class="bonuses 1">
+		<table class="table j-table table-bordered table-sm mb-3 collapse-table">
+			<tr>
+				<th class="b-table-sticky-column text-center px-1">
+					<i
+						class="fa fa-cogs"
+						@click="adjustFields"
+					/>
+				</th>
+				<th class="text-left">
+					Кому
+				</th>
+			</tr>
+			<tr />
+			<template v-for="(page_item, p) in items">
+				<tr :key="p">
+					<td
+						@click="page_item.expanded = !page_item.expanded"
+						class="pointer b-table-sticky-column"
+					>
+						<div class="d-flex px-2">
+							<i
+								class="fa fa-minus mt-1"
+								v-if="page_item.expanded"
+							/>
+							<i
+								class="fa fa-plus mt-1"
+								v-else
+							/>
+							<span class="ml-2">{{ p + 1 }}</span>
+						</div>
+					</td>
+					<td class="text-left">
+						<div class="d-flex aic p-1">
+							<span class="ml-2">{{ page_item.name }}</span>
+						</div>
+					</td>
+				</tr>
+				<template v-if="page_item.expanded">
+					<tr
+						:key="'tr' + p"
+						class="collapsable"
+						:class="{'active': page_item.expanded }"
+					>
+						<td :colspan="fields.length + 2">
+							<div class="table__wrapper">
+								<table
+									class="table b-table table-bordered table-sm table-responsive mb-0 table-inner"
+									v-for="(user, i) in page_item.users"
+									:key="i"
+								>
+									<tr>
+										<th
+											class="b-table-sticky-column text-center px-1 pointer"
+											@click="user.expanded = !user.expanded"
+										>
+											<div class="d-flex px-2 ">
+												<i
+													class="fa fa-minus mt-1"
+													v-if="user.expanded"
+												/>
+												<i
+													class="fa fa-plus mt-1"
+													v-else
+												/>
+												<span class="ml-2 bg-transparent ">{{ user.id }}</span>
+											</div>
+										</th>
+										<th
+											class="text-left"
+										>
+											{{ user.name }}
+										</th>
+										<template v-for="bonus in bonuses">
+											<th
+												:key="bonus.id"
+												v-if="bonus.targetable_id == page_item.id"
+											>
+												{{ bonus.title }} <b v-if="user.bonus_totals.filter(total => { return total.bonus_id === bonus.id })[0]">{{ user.bonus_totals.filter(total => { return total.bonus_id === bonus.id })[0].sum }} тг</b><b v-else> 0 тг</b>
+											</th>
+										</template>
+									</tr>
+									<template v-if="user.expanded">
+										<table class="table b-table table-bordered table-sm table-responsive mb-0 table-inner">
+											<tr>
+												<th />
+												<th>Наименование активности</th>
+												<th>За</th>
+												<th>Кол-во</th>
+												<th>Вознаграждение</th>
+												<th>Период</th>
+												<th>Заработано</th>
+											</tr>
+											<tr
+												v-for="(bonus, p) in filteredBonuses"
+												:key="p"
+											>
+												<td class="text-white text-center">
+													{{ p + 1 }}
+												</td>
+												<!--<td>{{ activities[page_item.activity_id].name }}</td>-->
+												<td>{{ bonus.comment }}</td>
+												<td>{{ bonus.comment.substring( bonus.comment.indexOf(":") + 1, bonus.comment.lastIndexOf(";") ) }}</td>
+												<td>{{ bonus.amount }}</td>
+												<td>{{ bonus.date }}</td>
+												<td>{{ bonus.amount * parseInt(bonus.comment.substring( bonus.comment.indexOf(":") + 1, bonus.comment.lastIndexOf(";") )) }}</td>
+											</tr>
+											<!--<tr v-for="(bonus, p) in obtained_bonuses.filter(b => {return b.user_id === user.id && isCurrentMonth(b.date) })" v-if="bonus.comment.substring( bonus.comment.indexOf(':') + 1, bonus.comment.lastIndexOf(';') ) > 0" >
                                             <td class="text-white text-center">{{ p + 1}}</td>
                                             <td>{{ activities[page_item.activity_id].name }}</td>
                                             <td>{{ bonus.comment }}</td>
@@ -97,13 +115,13 @@
                                             <td>{{ bonus.date }}</td>
                                             <td>{{ bonus.amount * parseInt(bonus.comment.substring( bonus.comment.indexOf(":") + 1, bonus.comment.lastIndexOf(";") )) }}</td>
                                         </tr>-->
-                                    </table>
-                                </template>
-                            </table>
-                        </div>
-                    </td>
-                </tr>
-                <!--<tr class="collapsable"
+										</table>
+									</template>
+								</table>
+							</div>
+						</td>
+					</tr>
+					<!--<tr class="collapsable"
                     :class="{'active': page_item.expanded }">
                     <td :colspan="fields.length + 2">
                         <div class="table__wrapper">
@@ -150,8 +168,8 @@
                         </div>
                     </td>
                 </tr>-->
-            </template>
-            <!--<template v-if="page_item[0]">
+				</template>
+				<!--<template v-if="page_item[0]">
                 <tr
                     class="collapsable"
                     :class="{'active': page_item.expanded }"
@@ -213,12 +231,10 @@
                     </td>
                 </tr>
             </template>-->
-        </template>
-        <tr>
-
-        </tr>
-    </table>
-</div>
+			</template>
+			<tr />
+		</table>
+	</div>
 </template>
 
 <script>

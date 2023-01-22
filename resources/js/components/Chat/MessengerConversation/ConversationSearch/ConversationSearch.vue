@@ -1,35 +1,59 @@
 <template>
-<div class="messenger__container-scroll">
-  <div class="messenger__messages-container" style="flex-grow: 3">
-    <div class="messenger__messages-search">
-      <div class="messenger__messages-search-input">
-        <input type="text" placeholder="Введите текст для поиска" v-model="searchMessagesQuery">
-      </div>
-      <div class="messenger__messages-search-date">
-        <input type="date" v-model="searchMessagesDate">
-      </div>
-    </div>
-    <div class="messenger__messages-search-results">
-      <div class="messenger__message-wrapper" v-for="(message, index) in chatSearchMessagesResults" :key="index" @click="goto(message, $event)">
-        <ConversationMessage :message="message"/>
-      </div>
-    </div>
-  </div>
-  <div class="messenger__messages-container">
-    <div class="messenger__messages-container">
-      <div class="messenger__messages-search">
-        <div class="messenger__messages-search-input">
-          <input type="text" placeholder="Введите имя файла" v-model="searchFilesQuery">
-        </div>
-      </div>
-      <div class="messenger__messages-search-results">
-        <div class="messenger__message-wrapper" v-for="(file, index) in chatSearchFilesResults" :key="index" @click="goto(file, $event)">
-          <ConversationMessage :message="file"/>
-        </div>
-      </div>
-    </div>
-  </div>
-</div>
+	<div class="messenger__container-scroll">
+		<div
+			class="messenger__messages-container"
+			style="flex-grow: 3"
+		>
+			<div class="messenger__messages-search">
+				<div class="messenger__messages-search-input">
+					<input
+						type="text"
+						placeholder="Введите текст для поиска"
+						v-model="searchMessagesQuery"
+					>
+				</div>
+				<div class="messenger__messages-search-date">
+					<input
+						type="date"
+						v-model="searchMessagesDate"
+					>
+				</div>
+			</div>
+			<div class="messenger__messages-search-results">
+				<div
+					class="messenger__message-wrapper"
+					v-for="(message, index) in chatSearchMessagesResults"
+					:key="index"
+					@click="goto(message, $event)"
+				>
+					<ConversationMessage :message="message" />
+				</div>
+			</div>
+		</div>
+		<div class="messenger__messages-container">
+			<div class="messenger__messages-container">
+				<div class="messenger__messages-search">
+					<div class="messenger__messages-search-input">
+						<input
+							type="text"
+							placeholder="Введите имя файла"
+							v-model="searchFilesQuery"
+						>
+					</div>
+				</div>
+				<div class="messenger__messages-search-results">
+					<div
+						class="messenger__message-wrapper"
+						v-for="(file, index) in chatSearchFilesResults"
+						:key="index"
+						@click="goto(file, $event)"
+					>
+						<ConversationMessage :message="file" />
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
 </template>
 
 <script>

@@ -26,19 +26,29 @@ export default {
 </script>
 
 <template>
-    <div class="Section1Popup">
-        <div class="Section1Popup-maintext">{{ maintext }}</div>
-        <div class="Section1Popup-subitems">
-            <div class="Section1Popup-subitem Section1Popup-employee">
-                <h4 class="Section1Popup-subtitle">{{ $lang(lang, 's1-for-worker') }}</h4>
-                <p class="Section1Popup-subtext">{{ employeetext }}</p>
-            </div>
-            <div class="Section1Popup-subitem Section1Popup-employer">
-                <h4 class="Section1Popup-subtitle">{{ $lang(lang, 's1-for-super') }}</h4>
-                <p class="Section1Popup-subtext">{{ employertext }}</p>
-            </div>
-        </div>
-    </div>
+	<div class="Section1Popup">
+		<div class="Section1Popup-maintext">
+			{{ maintext }}
+		</div>
+		<div class="Section1Popup-subitems">
+			<div class="Section1Popup-subitem Section1Popup-employee">
+				<h4 class="Section1Popup-subtitle">
+					{{ $lang(lang, 's1-for-worker') }}
+				</h4>
+				<p class="Section1Popup-subtext">
+					{{ employeetext }}
+				</p>
+			</div>
+			<div class="Section1Popup-subitem Section1Popup-employer">
+				<h4 class="Section1Popup-subtitle">
+					{{ $lang(lang, 's1-for-super') }}
+				</h4>
+				<p class="Section1Popup-subtext">
+					{{ employertext }}
+				</p>
+			</div>
+		</div>
+	</div>
 </template>
 
 <style lang="scss">

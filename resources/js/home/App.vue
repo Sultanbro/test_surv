@@ -1,14 +1,14 @@
 <template>
-  <div id="app">
-    <Navbar/>
-    <Section1/>
-    <Section2/>
-    <Reviews/>
-    <Tariffs/>
-    <Section3/>
-    <Section4/>
-    <SectionFooter/>
-  </div>
+	<div id="app">
+		<Navbar />
+		<Section1 />
+		<Section2 />
+		<Reviews />
+		<Tariffs />
+		<Section3 />
+		<Section4 />
+		<SectionFooter />
+	</div>
 </template>
 
 <script>
@@ -22,7 +22,7 @@ import Tariffs from './components/sections/Tariffs.vue'
 import SectionFooter from './components/sections/Footer.vue'
 
 export default {
-	name: 'app',
+	name: 'App',
 	components: {
 		Navbar,
 		Section1,

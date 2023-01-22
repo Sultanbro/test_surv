@@ -1,7 +1,10 @@
 <template>
-  <a :href="href" class="jNav-menu-link">
-    {{ $lang(lang, text) }}
-  </a>
+	<a
+		:href="href"
+		class="jNav-menu-link"
+	>
+		{{ $lang(lang, text) }}
+	</a>
 </template>
 
 <script>

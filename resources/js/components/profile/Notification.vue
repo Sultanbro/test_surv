@@ -1,53 +1,99 @@
 <template>
-<div class="kolokolchik">
-    <div class="inf">
-        <a href="#" title="Ваши уведомления" class="tooglenotifi " @click="showPanel = !showPanel">
-          <i class="fa fa-bell" aria-hidden="true"></i>
-            <div :class="{ 'blink-notification' : unread }" style="border-color: #00bef6;position: absolute;top: 0;left: 0;bottom: 0;right: 0;border-radius: 50%;"></div>
-            <span class="numb" style="font-weight:800">{{ unread }}</span>
-        </a>
-    </div>
-    <div class="bgpanel"></div>
-    <div class="panel" v-if="showPanel">
-        <div class="tail"></div>
-        <div class="panel_head">
-            <div class="panel_in active" data-tab="1">Уведомления</div>
-            <div class="panel_in " data-tab="2">Уведомления прочитанные</div>
-        </div>
-        <div class="panel_body">
-            <div class="panel_out active" data-id="1">
-                <div class="notification_list">
-
-                    <div class="notification_item" v-for="noti in unreads" :key="noti.id">
-                        <div class="notifi_top">
-                            <div class="label-wrapper" :class="{'hidden' : noti.type != 'important'}">
-                                <span class="label-wrapper_text" v-if="noti.type == 'important'">ВАЖНОЕ</span>
-                                <span class="label-wrapper_text" v-else></span>
-                            </div>
-                            <span class="notification-date">{{ noti.created_at }}</span>
-                            <span class="notification-projectId">Jobtron.org</span>
-                        </div>
-                        <div class="notification-title">{{ noti.title }}</div>
-                        <div class="notification-text" v-html="noti.message"></div>
-                        <a @click="markRead(noti.id)">
-                            <div class="notification-change"><i class="fa fa-check"></i></div>
-                        </a>
-                    </div>
-
-                </div>
-            </div>
-            <div class="panel_out " data-id="2">
-                <div class="notification_list">
-
-
-                </div>
-            </div>
-        </div>
-        <div class="panel_foot">
-            <button><i class="fa fa-check"></i>Отметить все, как прочитанные</button>
-        </div>
-    </div>
-</div>
+	<div class="kolokolchik">
+		<div class="inf">
+			<a
+				href="#"
+				title="Ваши уведомления"
+				class="tooglenotifi "
+				@click="showPanel = !showPanel"
+			>
+				<i
+					class="fa fa-bell"
+					aria-hidden="true"
+				/>
+				<div
+					:class="{ 'blink-notification' : unread }"
+					style="border-color: #00bef6;position: absolute;top: 0;left: 0;bottom: 0;right: 0;border-radius: 50%;"
+				/>
+				<span
+					class="numb"
+					style="font-weight:800"
+				>{{ unread }}</span>
+			</a>
+		</div>
+		<div class="bgpanel" />
+		<div
+			class="panel"
+			v-if="showPanel"
+		>
+			<div class="tail" />
+			<div class="panel_head">
+				<div
+					class="panel_in active"
+					data-tab="1"
+				>
+					Уведомления
+				</div>
+				<div
+					class="panel_in "
+					data-tab="2"
+				>
+					Уведомления прочитанные
+				</div>
+			</div>
+			<div class="panel_body">
+				<div
+					class="panel_out active"
+					data-id="1"
+				>
+					<div class="notification_list">
+						<div
+							class="notification_item"
+							v-for="noti in unreads"
+							:key="noti.id"
+						>
+							<div class="notifi_top">
+								<div
+									class="label-wrapper"
+									:class="{'hidden' : noti.type != 'important'}"
+								>
+									<span
+										class="label-wrapper_text"
+										v-if="noti.type == 'important'"
+									>ВАЖНОЕ</span>
+									<span
+										class="label-wrapper_text"
+										v-else
+									/>
+								</div>
+								<span class="notification-date">{{ noti.created_at }}</span>
+								<span class="notification-projectId">Jobtron.org</span>
+							</div>
+							<div class="notification-title">
+								{{ noti.title }}
+							</div>
+							<div
+								class="notification-text"
+								v-html="noti.message"
+							/>
+							<a @click="markRead(noti.id)">
+								<div class="notification-change"><i class="fa fa-check" /></div>
+							</a>
+						</div>
+					</div>
+				</div>
+				<div
+					class="panel_out "
+					data-id="2"
+				>
+					<div class="notification_list" />
+				</div>
+			</div>
+			<div class="panel_foot">
+				<button><i class="fa fa-check" />Отметить все, как прочитанные</button>
+			</div>
+		</div>
+	</div>
 </template>
 
 <script>

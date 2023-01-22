@@ -70,12 +70,15 @@ export default {
 </script>
 
 <template>
-    <DefaultLayout class="no-padding">
-        <!-- <script src="https://maps.api.2gis.ru/2.0/loader.js?pkg=full"></script> -->
-        <div class="old__content">
-            <div id="map" style="width:100%;height:1500px;"/>
-        </div>
-    </DefaultLayout>
+	<DefaultLayout class="no-padding">
+		<!-- <script src="https://maps.api.2gis.ru/2.0/loader.js?pkg=full"></script> -->
+		<div class="old__content">
+			<div
+				id="map"
+				style="width:100%;height:1500px;"
+			/>
+		</div>
+	</DefaultLayout>
 </template>
 
 <style lang="scss">

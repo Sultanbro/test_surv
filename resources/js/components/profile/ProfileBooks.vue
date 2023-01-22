@@ -1,20 +1,21 @@
 <template>
-    <div>
-        <multiselect
-            v-model="value"
-            :options="books"
-            :multiple="true"
-            :close-on-select="false"
-            :clear-on-select="false"
-            :preserve-search="true"
-            placeholder="Выберите"
-            label="name"
-            track-by="name"
-            :taggable="true"
-            @tag="addTag"
-            @remove="removeGroup"
-            @select="selectGroup"></multiselect>
-    </div>
+	<div>
+		<multiselect
+			v-model="value"
+			:options="books"
+			:multiple="true"
+			:close-on-select="false"
+			:clear-on-select="false"
+			:preserve-search="true"
+			placeholder="Выберите"
+			label="name"
+			track-by="name"
+			:taggable="true"
+			@tag="addTag"
+			@remove="removeGroup"
+			@select="selectGroup"
+		/>
+	</div>
 </template>
 
 <script>

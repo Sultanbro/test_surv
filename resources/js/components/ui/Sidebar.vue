@@ -1,15 +1,25 @@
 <template>
-  <div class="ui-sidebar" :class="[{'is-open':open}]" @click.self="$emit('close');">
-    <div class="ui-sidebar__body" :style="`width:${width}`">
-      <div class="ui-sidebar__header d-flexy">
-        <span style="color:aliceblue;background: transparent; font-size: 14px">{{title}}</span>
-        <span v-html="link" style="color:aliceblue"></span>
-      </div>
-      <div class="ui-sidebar__content">
-        <slot/>
-      </div>
-    </div>
-  </div>
+	<div
+		class="ui-sidebar"
+		:class="[{'is-open':open}]"
+		@click.self="$emit('close');"
+	>
+		<div
+			class="ui-sidebar__body"
+			:style="`width:${width}`"
+		>
+			<div class="ui-sidebar__header d-flexy">
+				<span style="color:aliceblue;background: transparent; font-size: 14px">{{ title }}</span>
+				<span
+					v-html="link"
+					style="color:aliceblue"
+				/>
+			</div>
+			<div class="ui-sidebar__content">
+				<slot />
+			</div>
+		</div>
+	</div>
 </template>
 
 <script>

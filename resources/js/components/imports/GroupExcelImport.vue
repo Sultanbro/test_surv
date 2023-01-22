@@ -1,111 +1,159 @@
 <template>
-<div class="con">
-    <div class="first-step">
-        <div class="row">
-            <div class="col-md-12">
-                <p class="heading">Шаг 1: Загрузите Excel файл
-                    <b-button variant="default" size="sm" id="btn"  class="ml-2">
-                        <i class="fa fa-info"></i>
-                    </b-button></p>
+	<div class="con">
+		<div class="first-step">
+			<div class="row">
+				<div class="col-md-12">
+					<p class="heading">
+						Шаг 1: Загрузите Excel файл
+						<b-button
+							variant="default"
+							size="sm"
+							id="btn"
+							class="ml-2"
+						>
+							<i class="fa fa-info" />
+						</b-button>
+					</p>
 
-                <b-tooltip target="btn" placement="bottom">
-                    <div>
-                        <div>Excel файл для импорта должен содержать в первом ряду поля:</div>
-                        <div>Имя сотрудника</div>
-                        <div>Фамилия сотрудника</div>
-                        <div>Длительность разговора</div>
-                        <div>Дата и время создания</div>
-                    </div>
-                </b-tooltip>
+					<b-tooltip
+						target="btn"
+						placement="bottom"
+					>
+						<div>
+							<div>Excel файл для импорта должен содержать в первом ряду поля:</div>
+							<div>Имя сотрудника</div>
+							<div>Фамилия сотрудника</div>
+							<div>Длительность разговора</div>
+							<div>Дата и время создания</div>
+						</div>
+					</b-tooltip>
+				</div>
+			</div>
+			<div class="row">
+				<div class="col-md-12">
+					<form
+						id="import-contact"
+						method="post"
+						enctype="multipart/form-data"
+					>
+						<div class="message" />
+						<div class="files">
+							<span>Файл</span>
+							<b-form-file
+								v-model="file"
+								:state="Boolean(file)"
+								placeholder="Выберите или перетащите файл сюда..."
+								drop-placeholder="Перетащите файл сюда..."
+								accept="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet, application/vnd.ms-excel"
+								class="mt-3"
+							/>
+						</div>
+						<b-button
+							variant="primary"
+							@click="uploadFile"
+							class="mt-2 mb-2"
+						>
+							<i class="fa fa-file" /> Загрузить
+						</b-button>
+					</form>
+				</div>
+				<div class="col-md-12">
+					<p
+						style="color:red"
+						v-for="error in errors"
+						:key="error"
+					>
+						{{ error }}
+					</p>
+				</div>
+			</div>
+		</div>
 
 
-            </div>
-        </div>
-        <div class="row">
-            <div class="col-md-12">
-                <form id="import-contact" method="post" enctype="multipart/form-data">
-                    <div class="message"></div>
-                    <div class="files">
-                        <span>Файл</span>
-                        <b-form-file
-                            v-model="file"
-                            :state="Boolean(file)"
-                            placeholder="Выберите или перетащите файл сюда..."
-                            drop-placeholder="Перетащите файл сюда..."
-                             accept="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet, application/vnd.ms-excel"
-                            class="mt-3"
-                            ></b-form-file>
-                    </div>
-                    <b-button variant="primary" @click="uploadFile" class="mt-2 mb-2">
-                        <i class="fa fa-file"></i> Загрузить
-                    </b-button>
-                </form>
-            </div>
-            <div class="col-md-12">
-                <p style="color:red" v-for="error in errors" :key="error">{{ error }}</p>
-            </div>
-        </div>
-    </div>
+		<div
+			class="mt-4"
+			v-if="!showStepTwo"
+		>
+			<h5>Примечания</h5>
+			<p>1. В табель можно импортировать только тех сотрудников, которые в должности "Оператор"</p>
+			<p>
+				2. Если у оператора в табели уже есть какая-то цифра, то есть уже отмечено какое-то количество часов,
+				а в файле импорта нет по нему данных, то в табели за импортируемую дату обнулятся часы: так как у него в файле импорта нет минут разговора
+			</p>
+		</div>
 
 
-    <div class="mt-4" v-if="!showStepTwo">
-        <h5>Примечания</h5>
-        <p>1. В табель можно импортировать только тех сотрудников, которые в должности "Оператор"</p>
-        <p>2. Если у оператора в табели уже есть какая-то цифра, то есть уже отмечено какое-то количество часов,
-            а в файле импорта нет по нему данных, то в табели за импортируемую дату обнулятся часы: так как у него в файле импорта нет минут разговора</p>
-    </div>
+		<div v-if="showStepTwo">
+			<div class="row">
+				<div class="col-md-12">
+					<p class="heading mt-4">
+						Шаг 2: Соедините поля
+					</p>
+				</div>
+			</div>
+			<div class="row">
+				<div class="col-md-5">
+					<p>Сотрудник в Excel</p>
+				</div>
+				<div class="col-md-5">
+					<p>Сотрудник в табели</p>
+				</div>
+				<div class="col-md-2">
+					<p>Время</p>
+				</div>
+			</div>
+			<div
+				class="row"
+				v-for="item in items"
+				:key="item.name"
+			>
+				<div class="col-md-5">
+					<input
+						type="text"
+						disabled
+						:value="item.name"
+						class="form-control"
+					>
+				</div>
 
-
-    <div v-if="showStepTwo">
-        <div class="row">
-            <div class="col-md-12">
-                <p class="heading mt-4">Шаг 2: Соедините поля</p>
-            </div>
-        </div>
-        <div class="row">
-            <div class="col-md-5">
-                <p>Сотрудник в Excel</p>
-            </div>
-            <div class="col-md-5">
-                <p>Сотрудник в табели</p>
-            </div>
-            <div class="col-md-2">
-                <p>Время</p>
-            </div>
-        </div>
-        <div class="row"  v-for="item in items" :key="item.name">
-
-            <div class="col-md-5">
-                <input type="text" disabled :value="item.name" class="form-control">
-            </div>
-
-            <div class="col-md-5">
-                <select class="form-control" v-model="item.id">
-                    <option :value="user.id" v-for="user in users" :key="user.id">{{ user.name }} {{ user.last_name }} ID {{ user.id }}</option>
-                </select>
-            </div>
-            <div class="col-md-2">
-                <p class="p">{{ Number(item.hours) }} часов </p>
-            </div>
-
-        </div>
-        <div class="row">
-            <div class="col-md-12 mt-2">
-                <b-button variant="primary" @click="saveConnects">
-                    <i class="fa fa-save"></i> Сохранить за {{ date }}
-                </b-button>
-            </div>
-
-        </div>
-    </div>
-
-</div>
+				<div class="col-md-5">
+					<select
+						class="form-control"
+						v-model="item.id"
+					>
+						<option
+							:value="user.id"
+							v-for="user in users"
+							:key="user.id"
+						>
+							{{ user.name }} {{ user.last_name }} ID {{ user.id }}
+						</option>
+					</select>
+				</div>
+				<div class="col-md-2">
+					<p class="p">
+						{{ Number(item.hours) }} часов
+					</p>
+				</div>
+			</div>
+			<div class="row">
+				<div class="col-md-12 mt-2">
+					<b-button
+						variant="primary"
+						@click="saveConnects"
+					>
+						<i class="fa fa-save" /> Сохранить за {{ date }}
+					</b-button>
+				</div>
+			</div>
+		</div>
+	</div>
 </template>
 
 
 <script>
 export default {
-	name: 'group-excel-import',
+	name: 'GroupExcelImport',
 	props: {
 		status: {
 			type: String,

@@ -1,214 +1,269 @@
 <template>
-  <div class="questions" :class="{'hide': mode == 'read' && (questions === undefined || questions.length == 0)}" @click="hideAll($event)">
-    <div class="title" v-if="mode == 'read' && type == 'book' || ['kb', 'video'].includes(type)">Проверочные вопросы</div>
-    <div class="question mb-3" v-for="(q, q_index) in questions" :key="q_index" :class="{'show': q.editable}">
-      <div
-        class="title d-flex jcsb"
-        @click.stop="editQuestion(q_index)"
-        v-if="mode == 'edit'"
-      >
-        <textarea
-          v-model="q.text"
-          placeholder="Текст вопроса..."
-          @keyup="changed = true"
-          v-if="q.editable"
-        />
-        <input
-          v-else
-          type="text"
-          v-model="q.text"
-          disabled
-          placeholder="Текст вопроса..."
-        />
-        <div class="btns aic">
-          <i
-            v-if="q.type == 0"
-            class="fas fa-tasks"
-          ></i>
-          <i
-            v-else
-            class="fas fa-question"
-          ></i>
-          <span class="mx-1">{{q.points}}</span>
-          <i
-            class="far fa-trash-alt pointer"
-            @click.stop="deleteQuestion(q_index)"
-          ></i>
-        </div>
-      </div>
+	<div
+		class="questions"
+		:class="{'hide': mode == 'read' && (questions === undefined || questions.length == 0)}"
+		@click="hideAll($event)"
+	>
+		<div
+			class="title"
+			v-if="mode == 'read' && type == 'book' || ['kb', 'video'].includes(type)"
+		>
+			Проверочные вопросы
+		</div>
+		<div
+			class="question mb-3"
+			v-for="(q, q_index) in questions"
+			:key="q_index"
+			:class="{'show': q.editable}"
+		>
+			<div
+				class="title d-flex jcsb"
+				@click.stop="editQuestion(q_index)"
+				v-if="mode == 'edit'"
+			>
+				<textarea
+					v-model="q.text"
+					placeholder="Текст вопроса..."
+					@keyup="changed = true"
+					v-if="q.editable"
+				/>
+				<input
+					v-else
+					type="text"
+					v-model="q.text"
+					disabled
+					placeholder="Текст вопроса..."
+				>
+				<div class="btns aic">
+					<i
+						v-if="q.type == 0"
+						class="fas fa-tasks"
+					/>
+					<i
+						v-else
+						class="fas fa-question"
+					/>
+					<span class="mx-1">{{ q.points }}</span>
+					<i
+						class="far fa-trash-alt pointer"
+						@click.stop="deleteQuestion(q_index)"
+					/>
+				</div>
+			</div>
 
-      <div class="title d-flex jcsb aic" v-if="mode == 'read'">
-        <p class="mb-0">{{ q.text }}</p>
-        <i
-          class="fa fa-times-circle wrong"
-          v-if="scores && q.success == false"
-        ></i>
-        <i
-          class="fa fa-check-circle right"
-          v-if="scores && q.success == true"
-        ></i>
+			<div
+				class="title d-flex jcsb aic"
+				v-if="mode == 'read'"
+			>
+				<p class="mb-0">
+					{{ q.text }}
+				</p>
+				<i
+					class="fa fa-times-circle wrong"
+					v-if="scores && q.success == false"
+				/>
+				<i
+					class="fa fa-check-circle right"
+					v-if="scores && q.success == true"
+				/>
+			</div>
 
-      </div>
-
-      <div v-if="q.editable || mode == 'read'">
-        <select v-model="q.type" class="type mt-2" v-if="mode == 'edit'">
-          <option value="0">Тест</option>
-          <option value="1">Открытый вопрос</option>
-        </select>
-
-
-        <div class="variants" v-if="q.type == 0">
-          <div
-            class="variant d-flex aic"
-            v-for="(v, v_index) in q.variants"
-            :key="v_index"
-          >
-
-            <label class="d-flex  w-full" v-if="mode == 'edit'">
-              <input
-                type="checkbox"
-                v-model="v.right"
-                class="mr-2"
-                @change="changed = true"
-                title="Отметьте галочкой, если думаете, что ответ правильный. Правильных вариантов может быть несколько"
-              />
-
-              <input
-                type="text"
-                v-model="v.text"
-                placeholder="Введите вариант ответа..."
-                @keyup.enter="addVariant(q_index, v_index)"
-                @keyup.delete="deleteVariant(q_index, v_index)"
-                :ref="`variant${q_index}_${v_index}`"
-              />
-            </label>
-
-            <label class="d-flex w-full" v-if="mode == 'read'" :class="{'right':scores && v.right == true}">
-              <input
-                  type="checkbox"
-                  v-model="v.checked"
-                  class="mr-2"
-                  @change="changed = true"
-                  title="Отметьте галочкой, если думаете, что ответ правильный. Правильных вариантов может быть несколько"
-              />
-              <p class="mb-0">{{ v.text }}</p>
-
-              <i
-                class="fa fa-check-circle right ml-2 mt-1"
-                v-if="scores && v.right == true"
-              ></i>
-
-            </label>
+			<div v-if="q.editable || mode == 'read'">
+				<select
+					v-model="q.type"
+					class="type mt-2"
+					v-if="mode == 'edit'"
+				>
+					<option value="0">
+						Тест
+					</option>
+					<option value="1">
+						Открытый вопрос
+					</option>
+				</select>
 
 
-          </div>
+				<div
+					class="variants"
+					v-if="q.type == 0"
+				>
+					<div
+						class="variant d-flex aic"
+						v-for="(v, v_index) in q.variants"
+						:key="v_index"
+					>
+						<label
+							class="d-flex  w-full"
+							v-if="mode == 'edit'"
+						>
+							<input
+								type="checkbox"
+								v-model="v.right"
+								class="mr-2"
+								@change="changed = true"
+								title="Отметьте галочкой, если думаете, что ответ правильный. Правильных вариантов может быть несколько"
+							>
 
-          <button class="btn btn-default btn-sm mt-2 mb-2" @click.stop="addVariant(q_index, -1)" v-if="mode == 'edit'">
-            + вариант
-          </button>
+							<input
+								type="text"
+								v-model="v.text"
+								placeholder="Введите вариант ответа..."
+								@keyup.enter="addVariant(q_index, v_index)"
+								@keyup.delete="deleteVariant(q_index, v_index)"
+								:ref="`variant${q_index}_${v_index}`"
+							>
+						</label>
 
-        </div>
-        <div v-else>
-          <input type="text" v-model="q.success" />
-        </div>
+						<label
+							class="d-flex w-full"
+							v-if="mode == 'read'"
+							:class="{'right':scores && v.right == true}"
+						>
+							<input
+								type="checkbox"
+								v-model="v.checked"
+								class="mr-2"
+								@change="changed = true"
+								title="Отметьте галочкой, если думаете, что ответ правильный. Правильных вариантов может быть несколько"
+							>
+							<p class="mb-0">{{ v.text }}</p>
 
+							<i
+								class="fa fa-check-circle right ml-2 mt-1"
+								v-if="scores && v.right == true"
+							/>
 
+						</label>
+					</div>
 
-        <div class="d-flex jcsb">
-          <div class="points mr-3" v-if="mode == 'edit'">
-            <p>Бонусы
-              <i class="fa fa-info-circle ml-2 mr-2"
-                  v-b-popover.hover.right.html="'Количество бонусов на счет сотрудника при правильном ответе'"
-                  title="Бонусы">
-              </i>
-
-            </p>
-            <input type="number" v-model="q.points" min="0" max="999" />
-          </div>
-        </div>
-
-
-
-
-      </div>
-    </div>
-
-    <template v-if="mode == 'read'">
-      <div class="d-flex">
-        <button class="btn btn-success mr-2"
-        @click.stop="checkAnswers"
-        v-if="points == -1 || !scores"
-        :disabled="timer_turned_on"
-        >
-          Проверить <span v-if="timer_turned_on">({{ timer }})</span>
-        </button>
-        <button
-          class="btn btn-primary"
-          @click.stop="$emit('continueRead')"
-          v-if="points != -1 && scores && type == 'book'"
-        >
-          Читать дальше
-        </button>
-      </div>
-
-      <div class="d-flex jcsb aic">
-        <p v-if="points != -1 && mode == 'read'" class="mt-3 scores mr-3">
-          <span v-if="scores">Вы заработали: <b>{{ points }}</b> бонусов из <b>{{ total }}</b></span>
-          <span v-else>Вы не набрали проходной балл...</span>
-        </p>
-        <button class="net-btn btn btn-primary"
-          v-if="mode == 'read' && passed"
-          @click="$emit('nextElement')" >
-          Продолжить
-          <i class="fa fa-angle-double-right ml-2"></i>
-        </button>
-      </div>
-
-    </template>
-
-    <template v-if="mode == 'edit'">
-
-
-    <div class="d-flex jcsb aifs">
-      <div>
-        <button
-          v-if="['kb','video'].includes(type)"
-          class="btn btn-success mr-2"
-          @click.stop="saveTest"
-          >
-            Сохранить
-        </button>
-
-        <button class="btn" @click.stop="addQuestion" >Добавить вопрос</button>
-      </div>
+					<button
+						class="btn btn-default btn-sm mt-2 mb-2"
+						@click.stop="addVariant(q_index, -1)"
+						v-if="mode == 'edit'"
+					>
+						+ вариант
+					</button>
+				</div>
+				<div v-else>
+					<input
+						type="text"
+						v-model="q.success"
+					>
+				</div>
 
 
-          <div class="d-flex aic pass__ball">
-            <p class="mr-3" style="width:200px">Проходной балл:
-              <i class="fa fa-info-circle"
-                    v-b-popover.hover.right.html="'Правильных ответов для прохода'"
-                    title="Проходной балл">
-                </i>
-            </p>
 
-            <div class="d-flex aic mb-3">
-                <input class="form-control  mr-1"
-                  v-model="pass_grade_local"
-                  type="number"
-                  :min="0"
-                  :max="100"
-                  @change="$emit('changePassGrade', pass_grade_local)"
-                  @focus="$event.target.select()"
-                />
-                <span> <b>из {{ questions.length }}</b></span>
-            </div>
+				<div class="d-flex jcsb">
+					<div
+						class="points mr-3"
+						v-if="mode == 'edit'"
+					>
+						<p>
+							Бонусы
+							<i
+								class="fa fa-info-circle ml-2 mr-2"
+								v-b-popover.hover.right.html="'Количество бонусов на счет сотрудника при правильном ответе'"
+								title="Бонусы"
+							/>
+						</p>
+						<input
+							type="number"
+							v-model="q.points"
+							min="0"
+							max="999"
+						>
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<template v-if="mode == 'read'">
+			<div class="d-flex">
+				<button
+					class="btn btn-success mr-2"
+					@click.stop="checkAnswers"
+					v-if="points == -1 || !scores"
+					:disabled="timer_turned_on"
+				>
+					Проверить <span v-if="timer_turned_on">({{ timer }})</span>
+				</button>
+				<button
+					class="btn btn-primary"
+					@click.stop="$emit('continueRead')"
+					v-if="points != -1 && scores && type == 'book'"
+				>
+					Читать дальше
+				</button>
+			</div>
+
+			<div class="d-flex jcsb aic">
+				<p
+					v-if="points != -1 && mode == 'read'"
+					class="mt-3 scores mr-3"
+				>
+					<span v-if="scores">Вы заработали: <b>{{ points }}</b> бонусов из <b>{{ total }}</b></span>
+					<span v-else>Вы не набрали проходной балл...</span>
+				</p>
+				<button
+					class="net-btn btn btn-primary"
+					v-if="mode == 'read' && passed"
+					@click="$emit('nextElement')"
+				>
+					Продолжить
+					<i class="fa fa-angle-double-right ml-2" />
+				</button>
+			</div>
+		</template>
+
+		<template v-if="mode == 'edit'">
+			<div class="d-flex jcsb aifs">
+				<div>
+					<button
+						v-if="['kb','video'].includes(type)"
+						class="btn btn-success mr-2"
+						@click.stop="saveTest"
+					>
+						Сохранить
+					</button>
+
+					<button
+						class="btn"
+						@click.stop="addQuestion"
+					>
+						Добавить вопрос
+					</button>
+				</div>
 
 
-          </div>
+				<div class="d-flex aic pass__ball">
+					<p
+						class="mr-3"
+						style="width:200px"
+					>
+						Проходной балл:
+						<i
+							class="fa fa-info-circle"
+							v-b-popover.hover.right.html="'Правильных ответов для прохода'"
+							title="Проходной балл"
+						/>
+					</p>
 
-      </div>
-    </template>
-  </div>
+					<div class="d-flex aic mb-3">
+						<input
+							class="form-control  mr-1"
+							v-model="pass_grade_local"
+							type="number"
+							:min="0"
+							:max="100"
+							@change="$emit('changePassGrade', pass_grade_local)"
+							@focus="$event.target.select()"
+						>
+						<span> <b>из {{ questions.length }}</b></span>
+					</div>
+				</div>
+			</div>
+		</template>
+	</div>
 </template>
 
 <script>

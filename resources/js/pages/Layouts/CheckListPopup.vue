@@ -1,19 +1,30 @@
 <template>
-<div class="popup__con">
-    <div class="check__title popup__content-title">{{ data.title }}</div>
-    <div class="check__items">
-        <div v-if="!data.items" class="check__items-empty">У вас нет чеклиста</div>
-        <CheckListPopupItem
-            v-for="(item, index) in data.items"
-            :key="index"
-            :item="item"
-            :index="index + 1"
-        />
-    </div>
-    <a v-if="data.items" href="javascript:void(0)" class="check__button">
-        Выполнить
-    </a>
-</div>
+	<div class="popup__con">
+		<div class="check__title popup__content-title">
+			{{ data.title }}
+		</div>
+		<div class="check__items">
+			<div
+				v-if="!data.items"
+				class="check__items-empty"
+			>
+				У вас нет чеклиста
+			</div>
+			<CheckListPopupItem
+				v-for="(item, index) in data.items"
+				:key="index"
+				:item="item"
+				:index="index + 1"
+			/>
+		</div>
+		<a
+			v-if="data.items"
+			href="javascript:void(0)"
+			class="check__button"
+		>
+			Выполнить
+		</a>
+	</div>
 </template>
 
 <script>

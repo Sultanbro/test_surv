@@ -1,150 +1,258 @@
 <template>
-    <Sidebar
-            id="edit-award-sidebar"
-            :title="name ? name : 'Сертификат'"
-            :open="open"
-            :class="isShow ? 'show' : ''"
-            @close="$emit('update:open', false)"
-            width="70%"
-    >
-        <BForm ref="newSertificateForm" @submit.prevent="onSubmit">
-            <BFormGroup
-                    id="input-group-1"
-                    label-cols-sm="3"
-                    label-align-sm="left"
-                    description="Например, сертификаты, грамоты и т.п."
-            >
-                <template #label>
-                    <label class="with-info">Название награды <img src="/images/dist/profit-info.svg" class="img-info" alt="info icon" id="info1"></label>
-                    <b-popover target="info1" triggers="hover" placement="right">
-                        <p style="font-size: 15px">Название вида награды, которое будет отображаться в профиле
-                            сотрудника</p>
-                    </b-popover>
-                </template>
-                <BFormInput
-                        id="input-1"
-                        v-model="name"
-                        type="text"
-                        placeholder="Название"
-                        :state="invalidName"
-                        aria-describedby="input-live-feedback"
-                        required
-                ></BFormInput>
-                <b-form-invalid-feedback id="input-live-feedback">
-                    Введите не менее 3 символов
-                </b-form-invalid-feedback>
+	<Sidebar
+		id="edit-award-sidebar"
+		:title="name ? name : 'Сертификат'"
+		:open="open"
+		:class="isShow ? 'show' : ''"
+		@close="$emit('update:open', false)"
+		width="70%"
+	>
+		<BForm
+			ref="newSertificateForm"
+			@submit.prevent="onSubmit"
+		>
+			<BFormGroup
+				id="input-group-1"
+				label-cols-sm="3"
+				label-align-sm="left"
+				description="Например, сертификаты, грамоты и т.п."
+			>
+				<template #label>
+					<label class="with-info">Название награды <img
+						src="/images/dist/profit-info.svg"
+						class="img-info"
+						alt="info icon"
+						id="info1"
+					></label>
+					<b-popover
+						target="info1"
+						triggers="hover"
+						placement="right"
+					>
+						<p style="font-size: 15px">
+							Название вида награды, которое будет отображаться в профиле
+							сотрудника
+						</p>
+					</b-popover>
+				</template>
+				<BFormInput
+					id="input-1"
+					v-model="name"
+					type="text"
+					placeholder="Название"
+					:state="invalidName"
+					aria-describedby="input-live-feedback"
+					required
+				/>
+				<b-form-invalid-feedback id="input-live-feedback">
+					Введите не менее 3 символов
+				</b-form-invalid-feedback>
+			</BFormGroup>
+			<BFormGroup
+				id="input-group-2"
+				label-cols-sm="3"
+				label-align-sm="left"
+			>
+				<template #label>
+					<label class="with-info">Описание награды <img
+						src="/images/dist/profit-info.svg"
+						class="img-info"
+						alt="info icon"
+						id="info2"
+					></label>
+					<b-popover
+						target="info2"
+						triggers="hover"
+						placement="right"
+					>
+						<p style="font-size: 15px">
+							Краткое или детальное описание награды.
+						</p>
+					</b-popover>
+				</template>
+				<BFormTextarea
+					id="input-2"
+					v-model="description"
+					type="text"
+					placeholder="Сертификаты выдаются каждому сотруднику, который прошел курс в профиле сотрудника и набрал проходной балл"
+					rows="3"
+					max-rows="6"
+					required
+				/>
+			</BFormGroup>
 
-            </BFormGroup>
-            <BFormGroup
-                    id="input-group-2"
-                    label-cols-sm="3"
-                    label-align-sm="left"
-            >
-                <template #label>
-                    <label class="with-info">Описание награды <img src="/images/dist/profit-info.svg" class="img-info" alt="info icon" id="info2"></label>
-                    <b-popover target="info2" triggers="hover" placement="right">
-                        <p style="font-size: 15px">Краткое или детальное описание награды.</p>
-                    </b-popover>
-                </template>
-                <BFormTextarea
-                        id="input-2"
-                        v-model="description"
-                        type="text"
-                        placeholder="Сертификаты выдаются каждому сотруднику, который прошел курс в профиле сотрудника и набрал проходной балл"
-                        rows="3"
-                        max-rows="6"
-                        required
-                ></BFormTextarea>
-            </BFormGroup>
+			<BFormGroup
+				id="input-group-3"
+				label-cols-sm="3"
+				label-align-sm="left"
+			>
+				<template #label>
+					<label class="with-info">Тип награды <img
+						src="/images/dist/profit-info.svg"
+						class="img-info"
+						alt="info icon"
+						id="info3"
+					></label>
+					<b-popover
+						target="info3"
+						triggers="hover"
+						placement="right"
+					>
+						<p style="font-size: 15px">
+							Доступно 3 типа награды, где каждый отвечает за тот или иной успех
+							сотрудников
+						</p>
+					</b-popover>
+				</template>
+				<BDropdown
+					id="input-3"
+					:text="dropDownText"
+					v-if="!readonly"
+					required
+					class="dropdown-select-type"
+				>
+					<BDropdownItem
+						href="#"
+						@click="setFileType(1)"
+					>
+						Загрузка картинки
+						<img
+							src="/images/dist/profit-info.svg"
+							class="img-info"
+							alt="info icon"
+							id="info4"
+						>
+						<b-popover
+							target="info4"
+							triggers="hover"
+							placement="top"
+						>
+							<p style="font-size: 15px">
+								Загрузка шаблонов (картинок) для дальнейшего использования.
+								Служит для хранения Ваших шаблонов и быстрой их загрузки при награждении сотрудника
+							</p>
+						</b-popover>
+					</BDropdownItem>
+					<BDropdownItem
+						href="#"
+						@click="setFileType(2)"
+					>
+						Конструктор сертификата
+						<img
+							src="/images/dist/profit-info.svg"
+							class="img-info"
+							alt="info icon"
+							id="info5"
+						>
+						<b-popover
+							target="info5"
+							triggers="hover"
+							placement="top"
+						>
+							<p style="font-size: 15px">
+								Служит для создания уникального шаблона для одного или нескольких
+								курсов. По окончаю того или иного курса, сотрудник будет награжден созданным
+								сертификатом
+							</p>
+						</b-popover>
+					</BDropdownItem>
+					<BDropdownItem
+						href="#"
+						@click="setFileType(3)"
+					>
+						Данные начислений
+						<img
+							src="/images/dist/profit-info.svg"
+							class="img-info"
+							alt="info icon"
+							id="info6"
+						>
+						<b-popover
+							target="info6"
+							triggers="hover"
+							placement="top"
+						>
+							<p style="font-size: 15px">
+								Служит для вывода трёх лучших сотрудников по отделу или
+								должности. Если Вы создали этот тип, то сотрудник сможет увидеть топ 3 лучших
+								сотрудников по своему отделу и (или) своей должности в своем профиле
+							</p>
+						</b-popover>
+					</BDropdownItem>
+				</BDropdown>
+				<div v-else>
+					<span class="disable-select">
+						<b-button
+							disabled
+							variant="secondary"
+						>{{ dropDownText }}</b-button>
+						<img
+							src="/images/dist/profit-info.svg"
+							class="img-info"
+							alt="info icon"
+							id="info7"
+						>
+						<b-popover
+							target="info7"
+							triggers="hover"
+							placement="top"
+						>
+							<p style="font-size: 15px">Вы уже не можете сменить тип награды. Создайте новую награду с нужным Вам типом.</p>
+						</b-popover>
+					</span>
+				</div>
+			</BFormGroup>
 
-            <BFormGroup
-                    id="input-group-3"
-                    label-cols-sm="3"
-                    label-align-sm="left"
-            >
-                <template #label>
-                    <label class="with-info">Тип награды <img src="/images/dist/profit-info.svg" class="img-info" alt="info icon" id="info3"></label>
-                    <b-popover target="info3" triggers="hover" placement="right">
-                        <p style="font-size: 15px">Доступно 3 типа награды, где каждый отвечает за тот или иной успех
-                            сотрудников</p>
-                    </b-popover>
-                </template>
-                <BDropdown id="input-3" :text="dropDownText" v-if="!readonly" required class="dropdown-select-type">
-                    <BDropdownItem href="#" @click="setFileType(1)">
-                        Загрузка картинки
-                        <img src="/images/dist/profit-info.svg" class="img-info" alt="info icon" id="info4">
-                        <b-popover target="info4" triggers="hover" placement="top">
-                            <p style="font-size: 15px">Загрузка шаблонов (картинок) для дальнейшего использования.
-                                Служит для хранения Ваших шаблонов и быстрой их загрузки при награждении сотрудника</p>
-                        </b-popover>
-                    </BDropdownItem>
-                    <BDropdownItem href="#" @click="setFileType(2)">
-                        Конструктор сертификата
-                        <img src="/images/dist/profit-info.svg" class="img-info" alt="info icon" id="info5">
-                        <b-popover target="info5" triggers="hover" placement="top">
-                            <p style="font-size: 15px">Служит для создания уникального шаблона для одного или нескольких
-                                курсов. По окончаю того или иного курса, сотрудник будет награжден созданным
-                                сертификатом</p>
-                        </b-popover>
-                    </BDropdownItem>
-                    <BDropdownItem href="#" @click="setFileType(3)">
-                        Данные начислений
-                        <img src="/images/dist/profit-info.svg" class="img-info" alt="info icon" id="info6">
-                        <b-popover target="info6" triggers="hover" placement="top">
-                            <p style="font-size: 15px">Служит для вывода трёх лучших сотрудников по отделу или
-                                должности. Если Вы создали этот тип, то сотрудник сможет увидеть топ 3 лучших
-                                сотрудников по своему отделу и (или) своей должности в своем профиле</p>
-                        </b-popover>
-                    </BDropdownItem>
-                </BDropdown>
-                <div v-else>
-                    <span class="disable-select">
-                        <b-button disabled variant="secondary">{{dropDownText}}</b-button>
-                      <img src="/images/dist/profit-info.svg" class="img-info" alt="info icon" id="info7">
-                    <b-popover target="info7" triggers="hover" placement="top">
-                        <p style="font-size: 15px">Вы уже не можете сменить тип награды. Создайте новую награду с нужным Вам типом.</p>
-                    </b-popover>
-                    </span>
-                </div>
-            </BFormGroup>
+			<BFormGroup class="file-type">
+				<UploadFile
+					@image-download="formFile"
+					v-if="type === 1"
+					:awards-obj="awards"
+					required
+				/>
 
-            <BFormGroup class="file-type">
-                <UploadFile
-                        @image-download="formFile"
-                        v-if="type === 1"
-                        :awardsObj="awards"
-                        required
-                />
+				<UploadSertificate
+					@image-download="formFileCertificate"
+					@styles-change="styleChange"
+					@add-course="addCourse"
+					@remove-course="removeCourse"
+					@add-course-all="addCourseAll"
+					@remove-course-all="removeCourseAll"
+					@has-change-constructor="hasChangeConstructor"
+					v-if="type === 2"
+					:awards="awards"
+					:id="category_id"
+					required
+				/>
 
-                <UploadSertificate
-                        @image-download="formFileCertificate"
-                        @styles-change="styleChange"
-                        @add-course="addCourse"
-                        @remove-course="removeCourse"
-                        @add-course-all="addCourseAll"
-                        @remove-course-all="removeCourseAll"
-                        @has-change-constructor="hasChangeConstructor"
-                        v-if="type === 2"
-                        :awards="awards"
-                        :id="category_id"
-                        required
-                />
+				<ChoiceTop
+					v-if="type === 3"
+					:targetable_id="targetable_id"
+					@choiced-top="choicedTop"
+				/>
+			</BFormGroup>
 
-                <ChoiceTop
-                        v-if="type === 3"
-                        :targetable_id="targetable_id"
-                        @choiced-top="choicedTop"
-                />
-            </BFormGroup>
-
-            <BFormGroup class="custom-switch custom-switch-sm" id="input-group-4" v-if="type === 1 || type === 2 ">
-                <b-form-checkbox v-model="hide" switch>Отображать пользователям награды других участников
-                </b-form-checkbox>
-            </BFormGroup>
-            <hr class="mb-4">
-            <BButton type="submit" variant="primary">Сохранить</BButton>
-        </BForm>
-    </Sidebar>
+			<BFormGroup
+				class="custom-switch custom-switch-sm"
+				id="input-group-4"
+				v-if="type === 1 || type === 2 "
+			>
+				<b-form-checkbox
+					v-model="hide"
+					switch
+				>
+					Отображать пользователям награды других участников
+				</b-form-checkbox>
+			</BFormGroup>
+			<hr class="mb-4">
+			<BButton
+				type="submit"
+				variant="primary"
+			>
+				Сохранить
+			</BButton>
+		</BForm>
+	</Sidebar>
 </template>
 
 <script>

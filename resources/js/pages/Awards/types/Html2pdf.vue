@@ -1,35 +1,38 @@
 <template>
-    <div class="vue-html2pdf">
-        <section
-                class="layout-container"
-                :class="{
+	<div class="vue-html2pdf">
+		<section
+			class="layout-container"
+			:class="{
 				'show-layout' : showLayout,
 				'unset-all' : !floatLayout
 			}"
-        >
-            <section
-                    class="content-wrapper"
-                    :style="`width: ${pdfContentWidth};`"
-                    ref="pdfContent"
-            >
-                <slot name="pdf-content"/>
-            </section>
-        </section>
+		>
+			<section
+				class="content-wrapper"
+				:style="`width: ${pdfContentWidth};`"
+				ref="pdfContent"
+			>
+				<slot name="pdf-content" />
+			</section>
+		</section>
 
-        <transition name="transition-anim">
-            <section class="pdf-preview" v-if="pdfFile">
-                <button @click.self="closePreview()">
-                    &times;
-                </button>
+		<transition name="transition-anim">
+			<section
+				class="pdf-preview"
+				v-if="pdfFile"
+			>
+				<button @click.self="closePreview()">
+					&times;
+				</button>
 
-                <iframe
-                        :src="pdfFile"
-                        width="100%"
-                        height="100%"
-                />
-            </section>
-        </transition>
-    </div>
+				<iframe
+					:src="pdfFile"
+					width="100%"
+					height="100%"
+				/>
+			</section>
+		</transition>
+	</div>
 </template>
 <script>
 import html2pdf from 'html2pdf.js'

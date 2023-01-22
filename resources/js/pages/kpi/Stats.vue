@@ -1,72 +1,81 @@
 <template>
-<div class="stats px-3 py-1">
-    <!-- top line -->
-    <div class="d-flex my-4 jcsb aifs">
+	<div class="stats px-3 py-1">
+		<!-- top line -->
+		<div class="d-flex my-4 jcsb aifs">
+			<div class="d-flex aic mr-2">
+				<div class="d-flex aic mr-2">
+					<span>Показывать:</span>
+					<input
+						type="number"
+						min="1"
+						max="100"
+						v-model="pageSize"
+						class="form-control ml-2 input-sm"
+					>
+				</div>
+				<SuperFilter
+					ref="child"
+					:groups="groups"
+					@apply="fetchData"
+				/>
+				<span
+					class="ml-2"
+					v-if="items"
+				>
+					Найдено: {{ items.length }}
+				</span>
+				<span
+					class="ml-2"
+					v-else
+				>
+					Найдено: 0
+				</span>
+			</div>
+		</div>
 
-         <div class="d-flex aic mr-2">
-            <div class="d-flex aic mr-2">
-                <span>Показывать:</span>
-                <input type="number" min="1" max="100" v-model="pageSize" class="form-control ml-2 input-sm" />
-            </div>
-            <SuperFilter
-                ref="child"
-                :groups="groups"
-                @apply="fetchData"
-            />
-            <span class="ml-2" v-if="items">
-                Найдено: {{ items.length }}
-            </span>
-            <span class="ml-2" v-else>
-                Найдено: 0
-            </span>
-        </div>
+		<!-- table -->
+		<StatsTable
+			v-if="s_type_main == 1"
+			:activities="activities"
+			:groups="groups"
+			:items="page_items"
+			:editable="true"
+			:search-text="searchText"
+			:date="date"
+		/>
 
-    </div>
+		<StatsTableBonus
+			v-if="s_type_main == 2"
+			:groups="bonus_groups"
+			:group_names="groups"
+			:month="month"
+			:key="bonus_groups"
+		/>
 
-    <!-- table -->
-    <StatsTable
-        v-if="s_type_main == 1"
-        :activities="activities"
-        :groups="groups"
-        :items="page_items"
-        :editable="true"
-        :searchText="searchText"
-        :date="date"
-    />
+		<StatsTableQuartal
+			v-if="s_type_main == 3"
+			:users="quartal_users"
+			:groups="quartal_groups"
+			:key="quartal_users"
+			:search-text="searchText"
+		/>
 
-    <StatsTableBonus
-        v-if="s_type_main == 2"
-        :groups="bonus_groups"
-        :group_names="groups"
-        :month="month"
-        :key="bonus_groups"
-    />
-
-    <StatsTableQuartal
-        v-if="s_type_main == 3"
-        :users="quartal_users"
-        :groups="quartal_groups"
-        :key="quartal_users"
-        :searchText="searchText"
-    />
-
-    <!-- pagination -->
-    <JwPagination
-        v-if="s_type_main == 1"
-        class="mt-3"
-        :key="paginationKey"
-        :items="items"
-        :labels="{
-            first: '<<',
-            last: '>>',
-            previous: '<',
-            next: '>'
-        }"
-        @changePage="onChangePage"
-        :pageSize="+pageSize"
-    />
-
-</div>
+		<!-- pagination -->
+		<JwPagination
+			v-if="s_type_main == 1"
+			class="mt-3"
+			:key="paginationKey"
+			:items="items"
+			:labels="{
+				first: '<<',
+				last: '>>',
+				previous: '<',
+				next: '>'
+			}"
+			@changePage="onChangePage"
+			:page-size="+pageSize"
+		/>
+	</div>
 </template>
 
 <script>

@@ -1,401 +1,496 @@
 <template>
-<div v-if="positions">
+	<div v-if="positions">
+		<b-tabs
+			type="card"
+			:default-active-key="&quot;1&quot;"
+			class="specialtab pt-4"
+		>
+			<!-- user notis -->
+			<b-tab
+				title="Индивидуальные"
+				key="1"
+			>
+				<div class="row align-items-center py-4">
+					<div class="col-lg-3 col-md-6">
+						<multiselect
+							label="name"
+							:options="user_with_notifications"
+							v-model="activeuser"
+							placeholder="Выберите сотрудника из списка"
+						/>
+					</div>
+					<div class="col-lg-3 col-md-6">
+						<button
+							v-if="activeuser"
+							@click="deleteUser"
+							class="btn-primary btn"
+						>
+							Исключить сотрудника
+						</button>
+					</div>
+					<div class="col-lg-3 col-md-6">
+						<multiselect
+							label="name"
+							:options="users"
+							v-model="newUser"
+							placeholder="Выберите из списка"
+						/>
+					</div>
+					<div class="col-lg-3 col-md-6">
+						<button
+							@click="addUser"
+							class="btn-primary btn"
+						>
+							Добавить сотрудника
+						</button>
+					</div>
+				</div>
 
-     <b-tabs type="card" :defaultActiveKey='"1"' class="specialtab pt-4">
+				<div
+					class="mt-4"
+					v-if="activeuser"
+				>
+					<div class="">
+						<h5 class="mr-2">
+							Уведомления
+						</h5>
+						<button
+							class="btn-primary btn btn-sm rounded"
+							@click="addNotiToUser"
+						>
+							Добавить уведомление
+						</button>
+						<button
+							class="btn-success btn btn-sm rounded"
+							@click="saveUser"
+						>
+							Сохранить
+						</button>
+					</div>
 
-        <!-- user notis -->
-        <b-tab title="Индивидуальные" key="1">
-            <div class="row align-items-center py-4">
-                <div class="col-lg-3 col-md-6">
-
-                    <multiselect
-                            label="name"
-                            :options="user_with_notifications"
-                            v-model="activeuser"
-                            placeholder="Выберите сотрудника из списка"
-                    ></multiselect>
-
-                </div>
-                <div class="col-lg-3 col-md-6">
-
-                    <button v-if="activeuser"
-                        @click="deleteUser"
-                        class="btn-primary btn">
-                        Исключить сотрудника
-                    </button>
-
-                </div>
-                <div class="col-lg-3 col-md-6">
-                    <multiselect
-                            label="name"
-                            :options="users"
-                            v-model="newUser"
-                            placeholder="Выберите из списка">
-                    </multiselect>
-                </div>
-                <div class="col-lg-3 col-md-6">
-                    <button @click="addUser"
-                        class="btn-primary btn">
-                        Добавить сотрудника</button>
-                </div>
-
-            </div>
-
-            <div class="mt-4" v-if="activeuser">
-                <div class="">
-                    <h5 class="mr-2"> Уведомления</h5>
-                    <button class="btn-primary btn btn-sm rounded" @click="addNotiToUser">Добавить уведомление</button>
-                    <button class="btn-success btn btn-sm rounded" @click="saveUser">Сохранить</button>
-                </div>
-
-                <div class="row mt-2" v-for="(noti, key) in activeuser_notifications" :key="key">
-                    <div class="col-lg-3">
-                            <multiselect
-                                label="title"
-                                :options="templates"
-                                v-model="noti[0]"
-                                placeholder="Выберите из списка"
-                            />
-                    </div>
-                    <div class="col-lg-6">
-                        <div v-if="noti[0] != null && need_group.hasOwnProperty(Number(noti[0].id)) && need_group[noti[0].id]">
-                            <multiselect
-                                v-model="noti[1]"
-                                label="name"
-                                track-by="id"
-                                placeholder="Выберите группы"
-                                open-direction="bottom"
-                                :options="groups"
-                                :multiple="true"
-                                :searchable="true"
-                                :loading="isLoading"
-                                :internal-search="false"
-                                :clear-on-select="false"
-                                :close-on-select="false"
-                                :options-limit="300"
-                                :limit="100"
-                                :max-height="600"
-                                :show-no-results="false"
-                                :hide-selected="true"
-                            >
-                            </multiselect>
-                        </div>
-
-                    </div>
-                 </div>
-                 <div class="row">
-                     <div class="col-lg-12">
-
-
-                     </div>
-                 </div>
-            </div>
-        </b-tab>
-        <!-- end of user notis -->
-
-
-        <b-tab title="Шаблоны" key="2">
-            <b-tabs type="card" defaultActiveKey='1' class="specialtab mt-5">
-                <b-tab title="Индивидуальные" key="1" card>
-                    <!-- individual notis -->
-                    <div id="noti-individual" class="py-4">
-                        <div class="table-container">
-                            <b-table-simple class="table-custom-notice">
-                                <b-thead>
-                                    <b-tr>
-                                        <b-th>Название</b-th>
-                                        <b-th>Текст</b-th>
-                                        <b-th>Сотрудники</b-th>
-                                        <b-th></b-th>
-                                    </b-tr>
-                                </b-thead>
-                                <b-tbody>
-                                    <b-tr v-for="(item, status_index) in user_templates" :class="{ active: item.editable }" :key="item.id">
-                                        <b-td>
-                                            <b-form-checkbox switch v-model="item.editable">
-                                                {{item.title}}
-                                            </b-form-checkbox>
-                                        </b-td>
-                                        <b-td>
-                                            <div class="p-2"
-                                                 v-html="item.message">
-                                            </div>
-                                            <div class="description" v-html="item.note">
-                                            </div>
-                                        </b-td>
-                                        <b-td>
-                                            <multiselect v-model="item.selectedGroups"
-                                                         id="ajax"
-                                                         label="name"
-                                                         track-by="id"
-                                                         placeholder="Выберите сотрудников"
-                                                         open-direction="bottom"
-                                                         :options="users"
-                                                         :multiple="true"
-                                                         :disabled="!item.editable"
-                                                         :searchable="true"
-                                                         :loading="isLoading"
-                                                         :internal-search="false"
-                                                         :clear-on-select="false"
-                                                         :close-on-select="false"
-                                                         :options-limit="300"
-                                                         :limit="100"
-                                                         :max-height="600"
-                                                         :show-no-results="false"
-                                                         :hide-selected="true"
-                                                         >
-                                                <template #clear="props">
-                                                    <div
-                                                        v-if="item.selectedGroups.length"
-                                                        class="multiselect__clear"
-                                                        @mousedown.prevent.stop="clearAll(props.search)"
-                                                    >
-                                                    </div>
-                                                </template>
-                                                <template #noResult><span>Упс! Не найдено ни одного сотрудника :(</span></template>
-                                            </multiselect>
-                                        </b-td>
-                                        <b-td>
-                                            <button
-                                                class="btn btn-primary btn-sm rounded"
-                                                @click="updateNotification(item, status_index)"
-                                                :disabled="!item.editable"
-                                            >
-                                                Сохранить
-                                            </button>
-                                        </b-td>
-                                    </b-tr>
-                                </b-tbody>
-                            </b-table-simple>
-                        </div>
-                    </div>
-                    <!-- end of individual notis -->
-                </b-tab>
-                <b-tab title="Должностные" key="2">
-                    <!-- position notis -->
-                    <div id="noti-positions" class="py-4">
-                        <div class="table-container">
-                            <b-table-simple class="table-custom-notice">
-                                <b-thead>
-                                    <b-tr>
-                                        <b-th>Название</b-th>
-                                        <b-th>Текст</b-th>
-                                        <b-th>Должности</b-th>
-                                        <b-th></b-th>
-                                    </b-tr>
-                                </b-thead>
-                                <b-tbody>
-                                    <b-tr v-for="(item, status_index) in position_templates" :class="{ active: item.editable }" :key="item.id">
-                                        <b-td>
-                                            <b-form-checkbox switch v-model="item.editable">
-                                                {{item.title}}
-                                            </b-form-checkbox>
-                                        </b-td>
-                                        <b-td>
-                                            <div class="p-2"
-                                                 v-html="item.message">
-                                            </div>
-                                            <div class="description" v-html="item.note">
-
-                                            </div>
-                                        </b-td>
-                                        <b-td>
-                                            <multiselect v-model="item.selectedGroups"
-                                                         id="ajax"
-                                                         label="name"
-                                                         track-by="id"
-                                                         placeholder="Выберите позиции"
-                                                         open-direction="bottom"
-                                                         :options="positions"
-                                                         :multiple="true"
-                                                         :disabled="!item.editable"
-                                                         :searchable="true"
-                                                         :loading="isLoading"
-                                                         :internal-search="false"
-                                                         :clear-on-select="false"
-                                                         :close-on-select="false"
-                                                         :options-limit="300"
-                                                         :limit="100"
-                                                         :max-height="600"
-                                                         :show-no-results="false"
-                                                         :hide-selected="true"
-                                                         >
-                                                <template #clear="props">
-                                                    <div
-                                                        v-if="item.selectedGroups.length"
-                                                        class="multiselect__clear"
-                                                        @mousedown.prevent.stop="clearAll(props.search)"
-                                                    >
-                                                    </div>
-                                                </template>
-                                                <template #noResult><span>Упс! Не найдено ни одной позиции :(</span></template>
-                                            </multiselect>
-                                        </b-td>
-                                        <b-td>
-                                            <button
-                                                class="btn btn-primary btn-sm rounded"
-                                                @click="updateNotification(item, status_index)"
-                                                :disabled="!item.editable"
-                                            >
-                                                Сохранить
-                                            </button>
-                                        </b-td>
-                                    </b-tr>
-                                </b-tbody>
-                            </b-table-simple>
-                        </div>
-                    </div>
-                    <!-- end of position notis -->
-                </b-tab>
-
-                <b-tab title="Групповые" key="3" card>
-                    <!-- group notis -->
-                    <div id="noti-groups" class="py-4">
-                        <div class="table-container">
-                            <b-table-simple class="table-custom-notice">
-                                <b-thead>
-                                    <b-tr>
-                                        <b-th>Название</b-th>
-                                        <b-th>Роботы</b-th>
-                                        <b-th>Текст</b-th>
-                                        <b-th>Группы</b-th>
-                                        <b-th></b-th>
-                                    </b-tr>
-                                </b-thead>
-                                <b-tbody>
-                                    <b-tr v-for="(item, status_index) in group_templates" :class="{ active: item.editable }" :key="item.id">
-                                        <b-td>
-                                            <b-form-checkbox switch v-model="item.editable">
-                                                {{item.title}}
-                                            </b-form-checkbox>
-                                        </b-td>
-                                        <b-td>
-                                            <b-form-select
-                                                    v-model="item.action"
-                                                    :disabled="!item.editable"
-                                                    style="min-width: 200px;">
-                                                <b-form-select-option :value="action.value"
-                                                        v-for="(action, index) in actions"
-                                                        :key="index">
-                                                    {{ action.title }}
-                                                </b-form-select-option>
-                                            </b-form-select>
-                                        </b-td>
-                                        <b-td>
-                                            <div class="p-2"
-                                                 v-html="item.message">
-                                            </div>
-                                            <div class="description" v-html="item.note">
-
-                                            </div>
-                                        </b-td>
-                                        <b-td>
-                                            <multiselect v-model="item.selectedGroups"
-                                                         id="ajax"
-                                                         label="name"
-                                                         track-by="id"
-                                                         placeholder="Выберите группы"
-                                                         open-direction="bottom"
-                                                         :options="groups"
-                                                         :multiple="true"
-                                                         :disabled="!item.editable"
-                                                         :searchable="true"
-                                                         :loading="isLoading"
-                                                         :internal-search="false"
-                                                         :clear-on-select="false"
-                                                         :close-on-select="false"
-                                                         :options-limit="300"
-                                                         :limit="100"
-                                                         :max-height="600"
-                                                         :show-no-results="false"
-                                                         :hide-selected="true"
-                                                         >
-                                                <template #clear="props">
-                                                    <div
-                                                        v-if="item.selectedGroups.length"
-                                                        class="multiselect__clear"
-                                                        @mousedown.prevent.stop="clearAll(props.search)"
-                                                    >
-                                                    </div>
-                                                </template>
-                                                <template #noResult><span>Упс! Не найдено ни одной группы :(</span></template>
-                                            </multiselect>
-                                        </b-td>
-                                        <b-td>
-                                            <button
-                                                class="btn btn-primary btn-sm rounded"
-                                                @click="updateNotification(item, status_index)"
-                                                :disabled="!item.editable"
-                                            >
-                                                Сохранить
-                                            </button>
-                                        </b-td>
-                                    </b-tr>
-                                </b-tbody>
-                            </b-table-simple>
-                        </div>
-                    </div>
-                    <!-- end of group notis -->
-                </b-tab>
-
-                <b-tab title="Другие" key="4" card>
-                    <!-- group notis -->
-                    <div id="noti-groups" class="py-4">
-                        <div class="table-container">
-                            <b-table-simple class="table-custom-notice">
-                                <b-thead>
-                                    <b-tr>
-                                        <b-th>Название</b-th>
-                                        <b-th>Роботы</b-th>
-                                        <b-th>Текст</b-th>
-                                        <b-th>Заметка</b-th>
-                                    </b-tr>
-                                </b-thead>
-                                <b-tbody>
-                                    <b-tr v-for="item in other_templates" :class="{ active: item.editable }" :key="item.id">
-                                        <b-td>
-                                            {{item.title}}
-                                        </b-td>
-                                        <b-td>
-                                            <b-form-select
-                                                    v-model="item.action"
-                                                    :disabled="true"
-                                            style="min-width: 200px;"
-                                            >
-                                                <b-form-select-option :value="action.value"
-                                                                      v-for="(action, index) in actions"
-                                                                      :key="index">
-                                                    {{ action.title }}
-                                                </b-form-select-option>
-                                            </b-form-select>
-                                        </b-td>
-                                        <b-td>
-                                            <div class="p-2"
-                                                 v-html="item.message">
-                                            </div>
-                                        </b-td>
-                                        <b-td>
-                                            <div class="description" v-html="item.note"></div>
-                                        </b-td>
-                                    </b-tr>
-                                </b-tbody>
-                            </b-table-simple>
-                        </div>
-                    </div>
-                    <!-- end of group notis -->
-                </b-tab>
-            </b-tabs>
+					<div
+						class="row mt-2"
+						v-for="(noti, key) in activeuser_notifications"
+						:key="key"
+					>
+						<div class="col-lg-3">
+							<multiselect
+								label="title"
+								:options="templates"
+								v-model="noti[0]"
+								placeholder="Выберите из списка"
+							/>
+						</div>
+						<div class="col-lg-6">
+							<div v-if="noti[0] != null && need_group.hasOwnProperty(Number(noti[0].id)) && need_group[noti[0].id]">
+								<multiselect
+									v-model="noti[1]"
+									label="name"
+									track-by="id"
+									placeholder="Выберите группы"
+									open-direction="bottom"
+									:options="groups"
+									:multiple="true"
+									:searchable="true"
+									:loading="isLoading"
+									:internal-search="false"
+									:clear-on-select="false"
+									:close-on-select="false"
+									:options-limit="300"
+									:limit="100"
+									:max-height="600"
+									:show-no-results="false"
+									:hide-selected="true"
+								/>
+							</div>
+						</div>
+					</div>
+					<div class="row">
+						<div class="col-lg-12" />
+					</div>
+				</div>
+			</b-tab>
+			<!-- end of user notis -->
 
 
-        </b-tab>
-        <!-- end of group notis -->
+			<b-tab
+				title="Шаблоны"
+				key="2"
+			>
+				<b-tabs
+					type="card"
+					default-active-key="1"
+					class="specialtab mt-5"
+				>
+					<b-tab
+						title="Индивидуальные"
+						key="1"
+						card
+					>
+						<!-- individual notis -->
+						<div
+							id="noti-individual"
+							class="py-4"
+						>
+							<div class="table-container">
+								<b-table-simple class="table-custom-notice">
+									<b-thead>
+										<b-tr>
+											<b-th>Название</b-th>
+											<b-th>Текст</b-th>
+											<b-th>Сотрудники</b-th>
+											<b-th />
+										</b-tr>
+									</b-thead>
+									<b-tbody>
+										<b-tr
+											v-for="(item, status_index) in user_templates"
+											:class="{ active: item.editable }"
+											:key="item.id"
+										>
+											<b-td>
+												<b-form-checkbox
+													switch
+													v-model="item.editable"
+												>
+													{{ item.title }}
+												</b-form-checkbox>
+											</b-td>
+											<b-td>
+												<div
+													class="p-2"
+													v-html="item.message"
+												/>
+												<div
+													class="description"
+													v-html="item.note"
+												/>
+											</b-td>
+											<b-td>
+												<multiselect
+													v-model="item.selectedGroups"
+													id="ajax"
+													label="name"
+													track-by="id"
+													placeholder="Выберите сотрудников"
+													open-direction="bottom"
+													:options="users"
+													:multiple="true"
+													:disabled="!item.editable"
+													:searchable="true"
+													:loading="isLoading"
+													:internal-search="false"
+													:clear-on-select="false"
+													:close-on-select="false"
+													:options-limit="300"
+													:limit="100"
+													:max-height="600"
+													:show-no-results="false"
+													:hide-selected="true"
+												>
+													<template #clear="props">
+														<div
+															v-if="item.selectedGroups.length"
+															class="multiselect__clear"
+															@mousedown.prevent.stop="clearAll(props.search)"
+														/>
+													</template>
+													<template #noResult>
+														<span>Упс! Не найдено ни одного сотрудника :(</span>
+													</template>
+												</multiselect>
+											</b-td>
+											<b-td>
+												<button
+													class="btn btn-primary btn-sm rounded"
+													@click="updateNotification(item, status_index)"
+													:disabled="!item.editable"
+												>
+													Сохранить
+												</button>
+											</b-td>
+										</b-tr>
+									</b-tbody>
+								</b-table-simple>
+							</div>
+						</div>
+						<!-- end of individual notis -->
+					</b-tab>
+					<b-tab
+						title="Должностные"
+						key="2"
+					>
+						<!-- position notis -->
+						<div
+							id="noti-positions"
+							class="py-4"
+						>
+							<div class="table-container">
+								<b-table-simple class="table-custom-notice">
+									<b-thead>
+										<b-tr>
+											<b-th>Название</b-th>
+											<b-th>Текст</b-th>
+											<b-th>Должности</b-th>
+											<b-th />
+										</b-tr>
+									</b-thead>
+									<b-tbody>
+										<b-tr
+											v-for="(item, status_index) in position_templates"
+											:class="{ active: item.editable }"
+											:key="item.id"
+										>
+											<b-td>
+												<b-form-checkbox
+													switch
+													v-model="item.editable"
+												>
+													{{ item.title }}
+												</b-form-checkbox>
+											</b-td>
+											<b-td>
+												<div
+													class="p-2"
+													v-html="item.message"
+												/>
+												<div
+													class="description"
+													v-html="item.note"
+												/>
+											</b-td>
+											<b-td>
+												<multiselect
+													v-model="item.selectedGroups"
+													id="ajax"
+													label="name"
+													track-by="id"
+													placeholder="Выберите позиции"
+													open-direction="bottom"
+													:options="positions"
+													:multiple="true"
+													:disabled="!item.editable"
+													:searchable="true"
+													:loading="isLoading"
+													:internal-search="false"
+													:clear-on-select="false"
+													:close-on-select="false"
+													:options-limit="300"
+													:limit="100"
+													:max-height="600"
+													:show-no-results="false"
+													:hide-selected="true"
+												>
+													<template #clear="props">
+														<div
+															v-if="item.selectedGroups.length"
+															class="multiselect__clear"
+															@mousedown.prevent.stop="clearAll(props.search)"
+														/>
+													</template>
+													<template #noResult>
+														<span>Упс! Не найдено ни одной позиции :(</span>
+													</template>
+												</multiselect>
+											</b-td>
+											<b-td>
+												<button
+													class="btn btn-primary btn-sm rounded"
+													@click="updateNotification(item, status_index)"
+													:disabled="!item.editable"
+												>
+													Сохранить
+												</button>
+											</b-td>
+										</b-tr>
+									</b-tbody>
+								</b-table-simple>
+							</div>
+						</div>
+						<!-- end of position notis -->
+					</b-tab>
 
+					<b-tab
+						title="Групповые"
+						key="3"
+						card
+					>
+						<!-- group notis -->
+						<div
+							id="noti-groups"
+							class="py-4"
+						>
+							<div class="table-container">
+								<b-table-simple class="table-custom-notice">
+									<b-thead>
+										<b-tr>
+											<b-th>Название</b-th>
+											<b-th>Роботы</b-th>
+											<b-th>Текст</b-th>
+											<b-th>Группы</b-th>
+											<b-th />
+										</b-tr>
+									</b-thead>
+									<b-tbody>
+										<b-tr
+											v-for="(item, status_index) in group_templates"
+											:class="{ active: item.editable }"
+											:key="item.id"
+										>
+											<b-td>
+												<b-form-checkbox
+													switch
+													v-model="item.editable"
+												>
+													{{ item.title }}
+												</b-form-checkbox>
+											</b-td>
+											<b-td>
+												<b-form-select
+													v-model="item.action"
+													:disabled="!item.editable"
+													style="min-width: 200px;"
+												>
+													<b-form-select-option
+														:value="action.value"
+														v-for="(action, index) in actions"
+														:key="index"
+													>
+														{{ action.title }}
+													</b-form-select-option>
+												</b-form-select>
+											</b-td>
+											<b-td>
+												<div
+													class="p-2"
+													v-html="item.message"
+												/>
+												<div
+													class="description"
+													v-html="item.note"
+												/>
+											</b-td>
+											<b-td>
+												<multiselect
+													v-model="item.selectedGroups"
+													id="ajax"
+													label="name"
+													track-by="id"
+													placeholder="Выберите группы"
+													open-direction="bottom"
+													:options="groups"
+													:multiple="true"
+													:disabled="!item.editable"
+													:searchable="true"
+													:loading="isLoading"
+													:internal-search="false"
+													:clear-on-select="false"
+													:close-on-select="false"
+													:options-limit="300"
+													:limit="100"
+													:max-height="600"
+													:show-no-results="false"
+													:hide-selected="true"
+												>
+													<template #clear="props">
+														<div
+															v-if="item.selectedGroups.length"
+															class="multiselect__clear"
+															@mousedown.prevent.stop="clearAll(props.search)"
+														/>
+													</template>
+													<template #noResult>
+														<span>Упс! Не найдено ни одной группы :(</span>
+													</template>
+												</multiselect>
+											</b-td>
+											<b-td>
+												<button
+													class="btn btn-primary btn-sm rounded"
+													@click="updateNotification(item, status_index)"
+													:disabled="!item.editable"
+												>
+													Сохранить
+												</button>
+											</b-td>
+										</b-tr>
+									</b-tbody>
+								</b-table-simple>
+							</div>
+						</div>
+						<!-- end of group notis -->
+					</b-tab>
 
+					<b-tab
+						title="Другие"
+						key="4"
+						card
+					>
+						<!-- group notis -->
+						<div
+							id="noti-groups"
+							class="py-4"
+						>
+							<div class="table-container">
+								<b-table-simple class="table-custom-notice">
+									<b-thead>
+										<b-tr>
+											<b-th>Название</b-th>
+											<b-th>Роботы</b-th>
+											<b-th>Текст</b-th>
+											<b-th>Заметка</b-th>
+										</b-tr>
+									</b-thead>
+									<b-tbody>
+										<b-tr
+											v-for="item in other_templates"
+											:class="{ active: item.editable }"
+											:key="item.id"
+										>
+											<b-td>
+												{{ item.title }}
+											</b-td>
+											<b-td>
+												<b-form-select
+													v-model="item.action"
+													:disabled="true"
+													style="min-width: 200px;"
+												>
+													<b-form-select-option
+														:value="action.value"
+														v-for="(action, index) in actions"
+														:key="index"
+													>
+														{{ action.title }}
+													</b-form-select-option>
+												</b-form-select>
+											</b-td>
+											<b-td>
+												<div
+													class="p-2"
+													v-html="item.message"
+												/>
+											</b-td>
+											<b-td>
+												<div
+													class="description"
+													v-html="item.note"
+												/>
+											</b-td>
+										</b-tr>
+									</b-tbody>
+								</b-table-simple>
+							</div>
+						</div>
+						<!-- end of group notis -->
+					</b-tab>
+				</b-tabs>
+			</b-tab>
+			<!-- end of group notis -->
+		</b-tabs>
 
-     </b-tabs>
-
-    <div class="mmm"></div>
-</div>
+		<div class="mmm" />
+	</div>
 </template>
 
 <script>

@@ -1,17 +1,30 @@
 <template>
-  <div v-if="image && !imageError" :class="{
-    'messenger__avatar': true,
-    'messenger__avatar--small': inline,
-  }">
-    <img :src="image" :alt="title" @error="imageError = true">
-    <span class="messenger_tooltip">{{ title }}</span>
-  </div>
-  <div v-else :class="{
-    'messenger__avatar_container': !inline,
-    'messenger__avatar_container--small': inline,
-  }">
-    <div class="messenger__avatar_name" v-text="title[0]"></div>
-  </div>
+	<div
+		v-if="image && !imageError"
+		:class="{
+			'messenger__avatar': true,
+			'messenger__avatar--small': inline,
+		}"
+	>
+		<img
+			:src="image"
+			:alt="title"
+			@error="imageError = true"
+		>
+		<span class="messenger_tooltip">{{ title }}</span>
+	</div>
+	<div
+		v-else
+		:class="{
+			'messenger__avatar_container': !inline,
+			'messenger__avatar_container--small': inline,
+		}"
+	>
+		<div
+			class="messenger__avatar_name"
+			v-text="title[0]"
+		/>
+	</div>
 </template>
 
 <script>

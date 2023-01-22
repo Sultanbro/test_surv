@@ -1,106 +1,150 @@
 <template>
-<div class="mt-5 call-bases">
+	<div class="mt-5 call-bases">
+		<table class="table b-table table-bordered table-sm table-responsive">
+			<tr>
+				<th />
+				<th>Сумма</th>
+				<th colspan="31">
+					{{ items.current_month }}
+				</th>
+			</tr>
 
-    <table class="table b-table table-bordered table-sm table-responsive">
+			<tr>
+				<th class="table-primary b-table-sticky-column text-left px-2 t-name border-blue">
+					Кол-во базы
+				</th>
+				<th>
+					<input
+						type="number"
+						v-model="items.total"
+						@change="save()"
+						class="form-control cell-input"
+					>
+				</th>
+				<th
+					v-for="day in 31"
+					:key="day"
+					class="bg-bluegrey"
+				>
+					{{ day }}
+				</th>
+			</tr>
 
+			<tr>
+				<td class="table-primary b-table-sticky-column text-left px-2 t-name border-blue">
+					<div class="wd d-flex align-items-center">
+						Кол-во кредитов
+					</div>
+				</td>
+				<td>{{ Number(items.current_credits.sum).toFixed(0) }}</td>
+				<td
+					class="px-0 day-minute text-center"
+					:key="day"
+					v-for="day in 31"
+				>
+					<div>
+						<input
+							type="number"
+							v-model="items.current_credits[day]"
+							@change="save()"
+							class="form-control cell-input"
+						>
+					</div>
+				</td>
+			</tr>
 
-        <tr>
-            <th></th>
-            <th>Сумма</th>
-            <th colspan="31">{{ items.current_month }}</th>
-        </tr>
+			<tr>
+				<td class="table-primary b-table-sticky-column text-left px-2 t-name border-blue">
+					<div class="wd d-flex align-items-center">
+						Сумма выданных кредитов
+					</div>
+				</td>
+				<td>{{ Number(items.current_given.sum).toFixed(0) }}</td>
+				<td
+					class="px-0 day-minute text-center"
+					:key="day"
+					v-for="day in 31"
+				>
+					<div>
+						<input
+							type="number"
+							v-model="items.current_given[day]"
+							@change="save()"
+							class="form-control cell-input"
+						>
+					</div>
+				</td>
+			</tr>
 
-        <tr>
-            <th class="table-primary b-table-sticky-column text-left px-2 t-name border-blue">Кол-во базы</th>
-            <th><input type="number"
-                        v-model="items.total"
-                        @change="save()"
-                        class="form-control cell-input"></th>
-            <th v-for="day in 31" :key="day" class="bg-bluegrey">{{ day }}</th>
-        </tr>
+			<tr>
+				<th />
+				<th />
+				<th colspan="31">
+					{{ items.next_month }}
+				</th>
+			</tr>
 
-        <tr>
-            <td class="table-primary b-table-sticky-column text-left px-2 t-name border-blue">
-                <div class="wd d-flex align-items-center">
-                    Кол-во кредитов
-                </div>
-            </td>
-            <td>{{ Number(items.current_credits.sum).toFixed(0) }}</td>
-            <td class="px-0 day-minute text-center" :key="day" v-for="day in 31">
-                <div>
-                    <input type="number"
-                        v-model="items.current_credits[day]"
-                        @change="save()"
-                        class="form-control cell-input">
-                </div>
-            </td>
-        </tr>
+			<tr>
+				<th class="table-primary b-table-sticky-column text-left px-2 t-name border-blue">
+					Конверсия в выдачу
+				</th>
+				<th>{{ Number(items.conversion).toFixed(2) }}</th>
+				<th
+					v-for="day in 31"
+					:key="day"
+					class="bg-bluegrey"
+				>
+					{{ day }}
+				</th>
+			</tr>
 
-        <tr>
-            <td class="table-primary b-table-sticky-column text-left px-2 t-name border-blue">
-                <div class="wd d-flex align-items-center">
-                    Сумма выданных кредитов
-                </div>
-            </td>
-            <td>{{ Number(items.current_given.sum).toFixed(0) }}</td>
-            <td class="px-0 day-minute text-center" :key="day" v-for="day in 31">
-                <div>
-                    <input type="number"
-                        v-model="items.current_given[day]"
-                        @change="save()"
-                        class="form-control cell-input">
-                </div>
-            </td>
-        </tr>
+			<tr>
+				<td class="table-primary b-table-sticky-column text-left px-2 t-name border-blue">
+					<div class="wd d-flex align-items-center">
+						Кол-во кредитов
+					</div>
+				</td>
+				<td>{{ Number(items.next_credits.sum).toFixed(0) }}</td>
+				<td
+					class="px-0 day-minute text-center"
+					:key="day"
+					v-for="day in 31"
+				>
+					<div>
+						<input
+							type="number"
+							v-model="items.next_credits[day]"
+							@change="save()"
+							class="form-control cell-input"
+						>
+					</div>
+				</td>
+			</tr>
 
-        <tr>
-            <th></th>
-            <th></th>
-            <th colspan="31">{{ items.next_month }}</th>
-        </tr>
-
-        <tr>
-            <th class="table-primary b-table-sticky-column text-left px-2 t-name border-blue">Конверсия в выдачу</th>
-            <th>{{ Number(items.conversion).toFixed(2) }}</th>
-            <th v-for="day in 31" :key="day" class="bg-bluegrey">{{ day }}</th>
-        </tr>
-
-        <tr>
-            <td class="table-primary b-table-sticky-column text-left px-2 t-name border-blue">
-                <div class="wd d-flex align-items-center">
-                    Кол-во кредитов
-                </div>
-            </td>
-            <td>{{ Number(items.next_credits.sum).toFixed(0) }}</td>
-            <td class="px-0 day-minute text-center" :key="day" v-for="day in 31">
-                <div>
-                    <input type="number"
-                        v-model="items.next_credits[day]"
-                        @change="save()"
-                        class="form-control cell-input">
-                </div>
-            </td>
-        </tr>
-
-        <tr>
-            <td class="table-primary b-table-sticky-column text-left px-2 t-name border-blue">
-                <div class="wd d-flex align-items-center">
-                    Сумма выданных кредитов
-                </div>
-            </td>
-            <td>{{ Number(items.next_given.sum).toFixed(0) }}</td>
-            <td class="px-0 day-minute text-center" :key="day" v-for="day in 31">
-                <div>
-                    <input type="number"
-                        v-model="items.next_given[day]"
-                        @change="save()"
-                        class="form-control cell-input">
-                </div>
-            </td>
-        </tr>
-
-    </table>
-</div>
+			<tr>
+				<td class="table-primary b-table-sticky-column text-left px-2 t-name border-blue">
+					<div class="wd d-flex align-items-center">
+						Сумма выданных кредитов
+					</div>
+				</td>
+				<td>{{ Number(items.next_given.sum).toFixed(0) }}</td>
+				<td
+					class="px-0 day-minute text-center"
+					:key="day"
+					v-for="day in 31"
+				>
+					<div>
+						<input
+							type="number"
+							v-model="items.next_given[day]"
+							@change="save()"
+							class="form-control cell-input"
+						>
+					</div>
+				</td>
+			</tr>
+		</table>
+	</div>
 </template>
 
 <script>

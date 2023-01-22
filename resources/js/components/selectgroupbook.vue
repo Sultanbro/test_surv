@@ -1,31 +1,41 @@
 <template>
-    <li>
-        <span :value="cat.id"><i class="fa fa-folder" aria-hidden="true"></i>
-{{cat.name}}
-            <i @click="addbookk(cat)" class="fa fa-plus-circle" title="новая книга" aria-hidden="true">Добавить</i>
+	<li>
+		<span :value="cat.id"><i
+				class="fa fa-folder"
+				aria-hidden="true"
+			/>
+			{{ cat.name }}
+			<i
+				@click="addbookk(cat)"
+				class="fa fa-plus-circle"
+				title="новая книга"
+				aria-hidden="true"
+			>Добавить</i>
 
-            <!-- <i @click="deletebook(cat,indexcat)" class="fa fa-trash-o" aria-hidden="true" ></i>
+			<!-- <i @click="deletebook(cat,indexcat)" class="fa fa-trash-o" aria-hidden="true" ></i>
 <i @click="addbook(cat)" title="Добавить подкатегорию" class="fa fa-plus-circle" aria-hidden="true">Добавить</i>
 <i @click="addbookk(cat)" class="fa fa-plus-circle" title="новая книга" aria-hidden="true">Книга</i> -->
 
-        </span>
-        <template v-if="cat.categoryes">
-            <ul>
-                <template v-for="(cats, index) in cat.categoryes">
-                    <selectgroup
-                        :key="index"
-                        :cat="cats" @addbook="addbook"
-                        :indexcat="index" @deletebook="deletebook"
-                        @addbookk="addbookk"/>
+		</span>
+		<template v-if="cat.categoryes">
+			<ul>
+				<template v-for="(cats, index) in cat.categoryes">
+					<selectgroup
+						:key="index"
+						:cat="cats"
+						@addbook="addbook"
+						:indexcat="index"
+						@deletebook="deletebook"
+						@addbookk="addbookk"
+					/>
 
-                    <!--  <ul v-if="cats.books"" class="bookendlist" v-for="book in cats.books">
+					<!--  <ul v-if="cats.books"" class="bookendlist" v-for="book in cats.books">
                          <li> <i class="fa fa-book" aria-hidden="true"></i> {{book.title}}</li>
                       </ul> -->
-                </template>
-
-            </ul>
-        </template>
-    </li>
+				</template>
+			</ul>
+		</template>
+	</li>
 </template>
 
 <script>

@@ -52,29 +52,36 @@ export default {
 				},
 			],
 		}
+	},
+	computed: {
+		isMainProject(){
+			return this.tenant === 'bp' || this.tenant === 'test'
+		}
 	}
 }
 </script>
 <template>
-    <nav>
-        <ul
-            id="nav-tab"
-            class="nav nav-tabs"
-        >
-            <template v-for="tab in tabs">
-                <li
-                    v-if="!(!$can(tab.access) || (tab.bp && tenant !== 'bp'))"
-                    :key="tab.id"
-                    class="nav-item"
-                >
-                    <router-link
-                        :to="tab.path"
-                        :id="tab.id"
-                        class="nav-link"
-                        :class="{active: tab.id === activeTab}"
-                    >{{ tab.title }}</router-link>
-                </li>
-            </template>
-        </ul>
-    </nav>
+	<nav>
+		<ul
+			id="nav-tab"
+			class="nav nav-tabs"
+		>
+			<template v-for="tab in tabs">
+				<li
+					v-if="!(!$can(tab.access) || (tab.bp && !isMainProject))"
+					:key="tab.id"
+					class="nav-item"
+				>
+					<router-link
+						:to="tab.path"
+						:id="tab.id"
+						class="nav-link"
+						:class="{active: tab.id === activeTab}"
+					>
+						{{ tab.title }}
+					</router-link>
+				</li>
+			</template>
+		</ul>
+	</nav>
 </template>

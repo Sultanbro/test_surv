@@ -1,55 +1,93 @@
 <template>
-<div>
-
-    <div class="skypo">
-
-        <div class="row mb-2 align-items-center">
-
-            <div class="col-4 col-md-4 d-flex align-items-right">
-                <!-- <select class="form-control" v-model="currentDay">
+	<div>
+		<div class="skypo">
+			<div class="row mb-2 align-items-center">
+				<div class="col-4 col-md-4 d-flex align-items-right">
+					<!-- <select class="form-control" v-model="currentDay">
                     0">Все дни</option>
                     <option v-for="day in this.month.daysInMonth" :value="day" :key="day">{{ day }}</option>
                 </select>    -->
-                <div class="p-o pl-3">
-                    <!-- как это вобще работает?????? -->
-                    <date-picker value="test"  placeholder="Дата подписи" v-model="filter.dates" :lang="lang" range multiple ></date-picker>
-                    <!-- <m-date-picker v-model="filter.dates" lang="ru" :multi="true" :always-display="false" :format="formatDate"></m-date-picker> -->
-                </div>
-            </div>
-            <div class="col-md-2 mb-2">
-                <select class="form-control form-control-sm mt-2" v-model="filter.currentInviteGroup">
-                    <option v-for="(invite_group, index) in invite_groups" :key="index" :value="index">{{ invite_group }}</option>
-                </select>
-            </div>
-            <div class="col-md-2 mb-2">
-                <select class="form-control form-control-sm mt-2" v-model="filter.user_type">
-                    <option v-for="(user_type, index) in user_types" :key="index" :value="index">{{ user_type }}</option>
-                </select>
-            </div>
-            <div class="col-md-2 mb-2">
-                <select class="form-control form-control-sm mt-2" v-model="filter.lang">
-                    <option v-for="(lang, index) in langs" :key="index" :value="index">{{ lang }}</option>
-                </select>
-            </div>
-            <div class="col-md-2 mb-2">
-                <select class="form-control form-control-sm mt-2" v-model="filter.wishtime">
-                    <option v-for="(wishtime, index) in wishtimes" :key="index" :value="index">{{ wishtime }}</option>
-                </select>
-            </div>
-            <!-- <div class="col-md-2">
+					<div class="p-o pl-3">
+						<!-- как это вобще работает?????? -->
+						<date-picker
+							value="test"
+							placeholder="Дата подписи"
+							v-model="filter.dates"
+							:lang="lang"
+							range
+							multiple
+						/>
+						<!-- <m-date-picker v-model="filter.dates" lang="ru" :multi="true" :always-display="false" :format="formatDate"></m-date-picker> -->
+					</div>
+				</div>
+				<div class="col-md-2 mb-2">
+					<select
+						class="form-control form-control-sm mt-2"
+						v-model="filter.currentInviteGroup"
+					>
+						<option
+							v-for="(invite_group, index) in invite_groups"
+							:key="index"
+							:value="index"
+						>
+							{{ invite_group }}
+						</option>
+					</select>
+				</div>
+				<div class="col-md-2 mb-2">
+					<select
+						class="form-control form-control-sm mt-2"
+						v-model="filter.user_type"
+					>
+						<option
+							v-for="(user_type, index) in user_types"
+							:key="index"
+							:value="index"
+						>
+							{{ user_type }}
+						</option>
+					</select>
+				</div>
+				<div class="col-md-2 mb-2">
+					<select
+						class="form-control form-control-sm mt-2"
+						v-model="filter.lang"
+					>
+						<option
+							v-for="(lang, index) in langs"
+							:key="index"
+							:value="index"
+						>
+							{{ lang }}
+						</option>
+					</select>
+				</div>
+				<div class="col-md-2 mb-2">
+					<select
+						class="form-control form-control-sm mt-2"
+						v-model="filter.wishtime"
+					>
+						<option
+							v-for="(wishtime, index) in wishtimes"
+							:key="index"
+							:value="index"
+						>
+							{{ wishtime }}
+						</option>
+					</select>
+				</div>
+				<!-- <div class="col-md-2">
                 <select class="form-control form-control-sm" v-model="filter.segment">
                     <option v-for="(segment, index) in segments" :key="index" :value="index">{{ segment }}</option>
                 </select>
             </div> -->
-            <div class="col-md-4">
-                <b>Кол-во:</b> {{records.length }}
-            </div>
-            <div class="col-md-4">
-
-            </div>
-            <div class="col-md-4">
-                <div class="d-flex justify-content-end">
-                    <!-- <div class="d-flex mr-3 align-items-center">
+				<div class="col-md-4">
+					<b>Кол-во:</b> {{ records.length }}
+				</div>
+				<div class="col-md-4" />
+				<div class="col-md-4">
+					<div class="d-flex justify-content-end">
+						<!-- <div class="d-flex mr-3 align-items-center">
                         <div class="circle bg-green"></div>
                         <div>Приглашенные</div>
                     </div>
@@ -65,239 +103,362 @@
                         <div class="circle bg-green-4"></div>
                         <div>Не найдена сделка</div>
                     </div> -->
-                    <b-button @click="showModal = !showModal" class="btn btn-primary btn-sm rounded py-1">+ Добавить</b-button>
-                    <b-button @click="showSkypeFieldsModal = !showSkypeFieldsModal" class="btn-primary btn-sm rounded ml-1" title="Показывать поля"><i class="fa fa-cogs" aria-hidden="true"></i></b-button>
-                </div>
+						<b-button
+							@click="showModal = !showModal"
+							class="btn btn-primary btn-sm rounded py-1"
+						>
+							+ Добавить
+						</b-button>
+						<b-button
+							@click="showSkypeFieldsModal = !showSkypeFieldsModal"
+							class="btn-primary btn-sm rounded ml-1"
+							title="Показывать поля"
+						>
+							<i
+								class="fa fa-cogs"
+								aria-hidden="true"
+							/>
+						</b-button>
+					</div>
+				</div>
+			</div>
+		</div>
 
-            </div>
-        </div>
-
-
-
-
-
-
-
-
-
-
-
-
-    </div>
-
-    <div class="mb-5">
-        <b-table responsive striped
-            class="text-nowrap text-right my-table my-table-max mb-3 skypes-table"
-            :small="true"
-            :bordered="true"
-            :items="records"
-            :fields="fields"
-            primary-key="a"
-            :current-page="currentPage"
-            :per-page="perPage"
-            :tbody-tr-class="detailsClassFn"
-            :class="{
-                'hide-2': !showSkypeFields.lead_id,
-                'hide-3': !showSkypeFields.skyped,
-                'hide-4': !showSkypeFields.project,
-                'hide-5': !showSkypeFields.name,
-                'hide-6': !showSkypeFields.lang,
-                'hide-7': !showSkypeFields.net,
-                'hide-8': !showSkypeFields.wishtime,
-                'hide-9': !showSkypeFields.invited_at,
-                'hide-10': !showSkypeFields.invite_group,
-                'hide-11': !showSkypeFields.country,
-                'hide-12': !showSkypeFields.segment,
-                'hide-13': !showSkypeFields.resp,
-                'hide-14': !showSkypeFields.phone,
-                'hide-15': !showSkypeFields.file,
-              }">
-            <!-- <template #head(checked)>
+		<div class="mb-5">
+			<b-table
+				responsive
+				striped
+				class="text-nowrap text-right my-table my-table-max mb-3 skypes-table"
+				:small="true"
+				:bordered="true"
+				:items="records"
+				:fields="fields"
+				primary-key="a"
+				:current-page="currentPage"
+				:per-page="perPage"
+				:tbody-tr-class="detailsClassFn"
+				:class="{
+					'hide-2': !showSkypeFields.lead_id,
+					'hide-3': !showSkypeFields.skyped,
+					'hide-4': !showSkypeFields.project,
+					'hide-5': !showSkypeFields.name,
+					'hide-6': !showSkypeFields.lang,
+					'hide-7': !showSkypeFields.net,
+					'hide-8': !showSkypeFields.wishtime,
+					'hide-9': !showSkypeFields.invited_at,
+					'hide-10': !showSkypeFields.invite_group,
+					'hide-11': !showSkypeFields.country,
+					'hide-12': !showSkypeFields.segment,
+					'hide-13': !showSkypeFields.resp,
+					'hide-14': !showSkypeFields.phone,
+					'hide-15': !showSkypeFields.file,
+				}"
+			>
+				<!-- <template #head(checked)>
                 <input type="checkbox" v-model="checker" :value="false">
             </template> -->
 
-            <template #cell()="data">
-                <div>{{ data.value }}</div>
-            </template>
+				<template #cell()="data">
+					<div>{{ data.value }}</div>
+				</template>
 
-            <template #cell(checked)="data">
-                <input type="checkbox" v-model="checkedBoxes" :value="data.item.id">
-            </template>
+				<template #cell(checked)="data">
+					<input
+						type="checkbox"
+						v-model="checkedBoxes"
+						:value="data.item.id"
+					>
+				</template>
 
-            <template #cell(lead_id)="data">
-                <div><a :href="'/timetracking/analytics/skypes/' + data.value" target="_blank">Сделка</a></div>
-            </template>
+				<template #cell(lead_id)="data">
+					<div>
+						<a
+							:href="'/timetracking/analytics/skypes/' + data.value"
+							target="_blank"
+						>Сделка</a>
+					</div>
+				</template>
 
-            <template #cell(name)="data">
-                <div>
-                <span class="badge badge-success badge-pill" v-if="data.item.user_type == 'office'" pill variant="success">
-                    office
-                </span>
-                 {{ data.value }}</div>
-            </template>
+				<template #cell(name)="data">
+					<div>
+						<span
+							class="badge badge-success badge-pill"
+							v-if="data.item.user_type == 'office'"
+							pill
+							variant="success"
+						>
+							office
+						</span>
+						{{ data.value }}
+					</div>
+				</template>
 
-            <template #cell(invite_group)="data">
-                <div>
-                    <div>
-                        {{ data.value }}
-                    </div>
-                </div>
-            </template>
+				<template #cell(invite_group)="data">
+					<div>
+						<div>
+							{{ data.value }}
+						</div>
+					</div>
+				</template>
 
-            <template #cell(resp)="data">
-                <div>
-                    <div class="resp_user" v-html="data.value"></div>
-                </div>
-            </template>
+				<template #cell(resp)="data">
+					<div>
+						<div
+							class="resp_user"
+							v-html="data.value"
+						/>
+					</div>
+				</template>
 
-            <template #cell(country)="data">
-                <div>
-                    <div v-if="countries.hasOwnProperty(data.value)" class="country" :title="data.value">
-                        {{ countries[data.value] }}
-                    </div>
-                    <div v-else>
-                        {{ data.value }}
-                    </div>
-                </div>
-            </template>
+				<template #cell(country)="data">
+					<div>
+						<div
+							v-if="countries.hasOwnProperty(data.value)"
+							class="country"
+							:title="data.value"
+						>
+							{{ countries[data.value] }}
+						</div>
+						<div v-else>
+							{{ data.value }}
+						</div>
+					</div>
+				</template>
 
-            <template #cell(lang)="data">
-                <div>
-                    <div v-if="data.value  != '1' && data.value  != '2' && data.value  != '3'">
-                        {{ data.value }}
-                    </div>
-                    <div v-else>
-                        {{ langs[data.value] }}
-                    </div>
-                </div>
-            </template>
+				<template #cell(lang)="data">
+					<div>
+						<div v-if="data.value != '1' && data.value != '2' && data.value != '3'">
+							{{ data.value }}
+						</div>
+						<div v-else>
+							{{ langs[data.value] }}
+						</div>
+					</div>
+				</template>
 
-            <template #cell(net)="data">
-                <div>
-                    <div v-if="data.value  != '1' && data.value  != '2' && data.value  != '3' && data.value  != '4' && data.value  != '5'">
-                        {{ data.value }}
-                    </div>
-                    <div v-else>
-                        {{ nets[data.value] }}
-                    </div>
-                </div>
-            </template>
+				<template #cell(net)="data">
+					<div>
+						<div v-if="data.value != '1' && data.value != '2' && data.value != '3' && data.value != '4' && data.value != '5'">
+							{{ data.value }}
+						</div>
+						<div v-else>
+							{{ nets[data.value] }}
+						</div>
+					</div>
+				</template>
 
-            <template #cell(segment)="data">
-                <div>
-                    <div v-if="segments.hasOwnProperty(data.value)">
-                        {{ segments[data.value] }}
-                    </div>
-                    <div v-else>
-                        {{ data.value }}
-                    </div>
-                </div>
-            </template>
-
-
-
-            <template #cell(wishtime)="data">
-                <div>
-                    <div v-if="data.value  != '1' && data.value  != '2' && data.value  != '3' && data.value  != '4' && data.value  != '5'  && data.value  != '6'">
-                        {{ data.value }}
-                    </div>
-                    <div v-else>
-                        {{ wishtimes[data.value] }}
-                    </div>
-                </div>
-            </template>
-
-            <template #cell(file)="data">
-                <div style="position:relative;" :title="data.item.name">
-                    <a :href="data.value" target="_blank" class="imagy imagy1">
-                        <i class="fa fa-image" aria-hidden="true"></i>
-                    </a>
-                </div>
-            </template>
-
-
-
-        </b-table>
-    </div>
-
-    <div class="mb-2">
-         <b-pagination v-model="currentPage" :total-rows="totalRows" :per-page="perPage" align="fill" size="sm" class="my-0"></b-pagination>
-    </div>
+				<template #cell(segment)="data">
+					<div>
+						<div v-if="segments.hasOwnProperty(data.value)">
+							{{ segments[data.value] }}
+						</div>
+						<div v-else>
+							{{ data.value }}
+						</div>
+					</div>
+				</template>
 
 
-    <div v-if="checkedBoxes.length > 0" class="bottomvars">
-        <div class="row align-items-center">
-            <div class="col-sm-3">
-                <select  required="required"  v-model="selected.group_id" class="form-control form-control-sm">
-                    <option :value="group.id" v-for="group in groups" :key="group.id">{{ group.name }}</option>
-                </select>
-            </div>
 
-            <div class="col-sm-3">
-                <b-form-datepicker id="example-datepicker"
-                    v-model="selected.date"
-                    v-bind="datepickerLabels"
-                    class="form-control form-control-sm"
-                    locale="ru"
-                    :min="new Date()"
-                    :start-weekday="1"></b-form-datepicker>
-            </div>
-            <div class="col-sm-1">
-                <input type="time"
-                    class="form-control form-control-sm timer"
-                    v-model="selected.time">
-            </div>
-            <div class="col-sm-2">
-                <button class="btn btn-primary btn-sm rounded py-1" @click="inviteUsers()">Пригласить на стажировку</button>
-            </div>
-            <div class="col-sm-3 d-flex justify-content-end">
-                <div class="blues">
-                     <div v-if="checkedBoxes.length == records.length" @click="unCheckAll">Снять все</div>
-                </div>
-                <div class="ml-2">
-                    Выбрано: <b>{{ checkedBoxes.length }}</b> из <b>{{ records.length }}</b>
-                </div>
+				<template #cell(wishtime)="data">
+					<div>
+						<div v-if="data.value != '1' && data.value != '2' && data.value != '3' && data.value != '4' && data.value != '5' && data.value != '6'">
+							{{ data.value }}
+						</div>
+						<div v-else>
+							{{ wishtimes[data.value] }}
+						</div>
+					</div>
+				</template>
 
-            </div>
-        </div>
+				<template #cell(file)="data">
+					<div
+						style="position:relative;"
+						:title="data.item.name"
+					>
+						<a
+							:href="data.value"
+							target="_blank"
+							class="imagy imagy1"
+						>
+							<i
+								class="fa fa-image"
+								aria-hidden="true"
+							/>
+						</a>
+					</div>
+				</template>
+			</b-table>
+		</div>
+
+		<div class="mb-2">
+			<b-pagination
+				v-model="currentPage"
+				:total-rows="totalRows"
+				:per-page="perPage"
+				align="fill"
+				size="sm"
+				class="my-0"
+			/>
+		</div>
 
 
-    </div>
+		<div
+			v-if="checkedBoxes.length > 0"
+			class="bottomvars"
+		>
+			<div class="row align-items-center">
+				<div class="col-sm-3">
+					<select
+						required="required"
+						v-model="selected.group_id"
+						class="form-control form-control-sm"
+					>
+						<option
+							:value="group.id"
+							v-for="group in groups"
+							:key="group.id"
+						>
+							{{ group.name }}
+						</option>
+					</select>
+				</div>
+
+				<div class="col-sm-3">
+					<b-form-datepicker
+						id="example-datepicker"
+						v-model="selected.date"
+						v-bind="datepickerLabels"
+						class="form-control form-control-sm"
+						locale="ru"
+						:min="new Date()"
+						:start-weekday="1"
+					/>
+				</div>
+				<div class="col-sm-1">
+					<input
+						type="time"
+						class="form-control form-control-sm timer"
+						v-model="selected.time"
+					>
+				</div>
+				<div class="col-sm-2">
+					<button
+						class="btn btn-primary btn-sm rounded py-1"
+						@click="inviteUsers()"
+					>
+						Пригласить на стажировку
+					</button>
+				</div>
+				<div class="col-sm-3 d-flex justify-content-end">
+					<div class="blues">
+						<div
+							v-if="checkedBoxes.length == records.length"
+							@click="unCheckAll"
+						>
+							Снять все
+						</div>
+					</div>
+					<div class="ml-2">
+						Выбрано: <b>{{ checkedBoxes.length }}</b> из <b>{{ records.length }}</b>
+					</div>
+				</div>
+			</div>
+		</div>
 
 
-    <b-modal v-model="showModal" ok-text="Сохранить" cancel-text="Отмена" title="Новый лид" @ok="saveLead" size="lg" class="modalle">
-        <b-alert show variant="danger" v-for="error in errors" :key="error">{{ error }}</b-alert>
-        <b-form-input v-model="lead.name" placeholder="ФИО" :required="true" class="form-control form-control-sm mb-2"></b-form-input>
-        <b-form-input v-model="lead.phone" placeholder="Телефон" :required="true" class="form-control form-control-sm mb-2"></b-form-input>
-        <div class="d-flex">
-            <select  required="required"  v-model="lead.lang" class="form-control form-control-sm">
-                <option :value="index" v-for="(lang, index) in langs" :key="index">{{ lang }}</option>
-            </select>
-            <select  required="required"  v-model="lead.wishtime" class="form-control form-control-sm">
-                <option :value="index" v-for="(wishtime, index) in wishtimes" :key="index">{{ wishtime }}</option>
-            </select>
-        </div>
+		<b-modal
+			v-model="showModal"
+			ok-text="Сохранить"
+			cancel-text="Отмена"
+			title="Новый лид"
+			@ok="saveLead"
+			size="lg"
+			class="modalle"
+		>
+			<b-alert
+				show
+				variant="danger"
+				v-for="error in errors"
+				:key="error"
+			>
+				{{ error }}
+			</b-alert>
+			<b-form-input
+				v-model="lead.name"
+				placeholder="ФИО"
+				:required="true"
+				class="form-control form-control-sm mb-2"
+			/>
+			<b-form-input
+				v-model="lead.phone"
+				placeholder="Телефон"
+				:required="true"
+				class="form-control form-control-sm mb-2"
+			/>
+			<div class="d-flex">
+				<select
+					required="required"
+					v-model="lead.lang"
+					class="form-control form-control-sm"
+				>
+					<option
+						:value="index"
+						v-for="(lang, index) in langs"
+						:key="index"
+					>
+						{{ lang }}
+					</option>
+				</select>
+				<select
+					required="required"
+					v-model="lead.wishtime"
+					class="form-control form-control-sm"
+				>
+					<option
+						:value="index"
+						v-for="(wishtime, index) in wishtimes"
+						:key="index"
+					>
+						{{ wishtime }}
+					</option>
+				</select>
+			</div>
+		</b-modal>
 
-    </b-modal>
+		<b-modal
+			v-model="showSkypeFieldsModal"
+			title="Настройка списка"
+			@ok="showSkypeFieldsModal = !showSkypeFieldsModal"
+			ok-text="Закрыть"
+			size="lg"
+			class="modalle"
+		>
+			<b-alert
+				show
+				variant="danger"
+				v-for="error in errors"
+				:key="error"
+			>
+				{{ error }}
+			</b-alert>
 
-    <b-modal v-model="showSkypeFieldsModal"  title="Настройка списка" @ok="showSkypeFieldsModal = !showSkypeFieldsModal" ok-text="Закрыть"  size="lg" class="modalle">
-      <b-alert show variant="danger" v-for="error in errors" :key="error">{{ error }}</b-alert>
-
-      <div class="row">
-
-        <div class="col-md-4 mb-2" v-for="(field, key) in showSkypeFields" :key="key">
-          <b-form-checkbox
-              v-model="showSkypeFields[key]"
-              :unchecked-value="false"
-              >
-              {{showSkypeFieldsDesc[key]}}
-          </b-form-checkbox>
-        </div>
-
-      </div>
-    </b-modal>
-
-</div>
+			<div class="row">
+				<div
+					class="col-md-4 mb-2"
+					v-for="(field, key) in showSkypeFields"
+					:key="key"
+				>
+					<b-form-checkbox
+						v-model="showSkypeFields[key]"
+						:unchecked-value="false"
+					>
+						{{ showSkypeFieldsDesc[key] }}
+					</b-form-checkbox>
+				</div>
+			</div>
+		</b-modal>
+	</div>
 </template>
 
 <script>
@@ -930,7 +1091,7 @@ export default {
 }
 
 </style>
-<style lang="scss" scoped >
+<style lang="scss" scoped>
 
 .skypo .btn {
     padding: 0.375rem .75rem;

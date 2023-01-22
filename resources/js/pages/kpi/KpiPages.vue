@@ -1,45 +1,77 @@
 <template>
-    <div
-        v-if="page"
-        class="kpi-pages"
-    >
-        <div v-if="access == 'edit'">
-            <b-tabs
-                type="card"
-                class="mt-4"
-                :value="active"
-                @activate-tab="(n,p,e) => active = n"
-            >
-                <b-tab title="KPI" :key="0" card>
-                    <KPI v-if="active == 0"/>
-                </b-tab>
-                <b-tab title="Бонусы" :key="1" card>
-                    <Bonuses v-if="active == 1"/>
-                </b-tab>
-                <b-tab title="Квартальная премия" :key="2" card>
-                    <QuartalPremium v-if="active == 2"/>
-                </b-tab>
-                <b-tab title="Статистика" :key="3" card>
-                    <Stats v-if="active == 3"/>
-                </b-tab>
-                <b-tab title="Показатели" :key="4" card>
-                    <Indicators v-if="active == 4"/>
-                </b-tab>
-            </b-tabs>
-        </div>
+	<div
+		v-if="page"
+		class="kpi-pages"
+	>
+		<div v-if="access == 'edit'">
+			<b-tabs
+				type="card"
+				class="mt-4"
+				:value="active"
+				@activate-tab="(n,p,e) => active = n"
+			>
+				<b-tab
+					title="KPI"
+					:key="0"
+					card
+				>
+					<KPI v-if="active == 0" />
+				</b-tab>
+				<b-tab
+					title="Бонусы"
+					:key="1"
+					card
+				>
+					<Bonuses v-if="active == 1" />
+				</b-tab>
+				<b-tab
+					title="Квартальная премия"
+					:key="2"
+					card
+				>
+					<QuartalPremium v-if="active == 2" />
+				</b-tab>
+				<b-tab
+					title="Статистика"
+					:key="3"
+					card
+				>
+					<Stats v-if="active == 3" />
+				</b-tab>
+				<b-tab
+					title="Показатели"
+					:key="4"
+					card
+				>
+					<Indicators v-if="active == 4" />
+				</b-tab>
+			</b-tabs>
+		</div>
 
-        <div v-else>
-            <b-tabs type="card" class="mt-4" :value="active" @activate-tab="(n,p,e) => active = n">
-                <b-tab title="Статистика" :key="0" card>
-                    <Stats v-if="active == 0"/>
-                </b-tab>
-                <b-tab title="Показатели" :key="1" card>
-                    <Indicators v-if="active == 1"/>
-                </b-tab>
-            </b-tabs>
-        </div>
-
-    </div>
+		<div v-else>
+			<b-tabs
+				type="card"
+				class="mt-4"
+				:value="active"
+				@activate-tab="(n,p,e) => active = n"
+			>
+				<b-tab
+					title="Статистика"
+					:key="0"
+					card
+				>
+					<Stats v-if="active == 0" />
+				</b-tab>
+				<b-tab
+					title="Показатели"
+					:key="1"
+					card
+				>
+					<Indicators v-if="active == 1" />
+				</b-tab>
+			</b-tabs>
+		</div>
+	</div>
 </template>
 
 <script>

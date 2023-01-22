@@ -1,75 +1,112 @@
 <template>
-    <div class="upload-certificate">
-        <div class="d-flex file">
-            <BFormFile
-                    v-model="image"
-                    class="form-file"
-                    placeholder="Выберите Сертификат"
-                    drop-placeholder="Перетащите файл сюда..."
-                    accept=".pdf"
-                    type="file"
-                    id="file"
-                    ref="file"
-            >
-            </BFormFile>
-            <BButton
-                    v-if="imageSrc"
-                    variant="danger"
-                    class="ml-3 clear-btn"
-                    @click="clearImage"
-            >
-                Очистить
-            </BButton>
-        </div>
-        <small class="mb-4 d-block mt-1">Загрузите подготовленный шаблон в формате PDF</small>
-        <br>
-        <div v-if="imageSrc" class="sertificate-prewiev">
-            <div class="sertificate-modal">
-                       <div class="preview-canvas" @click="openModalCertificate">
-                           <vue-pdf-embed v-if="imageSrc" ref="vuePdfUploadCertificate" :source="imageSrc"/>
-                       </div>
-                     <div class="info-type2">
-                         <i class="fa fa-info"></i>
-                        <span> Внимание! Нажмите на картинку, чтобы отредактировать загруженный шаблон.
-                         Обязательно расположите текст в нужные Вам места. В противном случае сертификат будет
-                         сгенерирован неправильно!</span>
-                     </div>
-                <BModal v-model="modalCertificate" modal-class="upload-certificate-modal"
-                        title="Контсруктор сертификата"
-                        size="xl" hide-footer centered>
-                    <UploadSertificateModal :styles="styles" :img="imageSrc" :modalCertificate.sync="modalCertificate"
-                                            @save-changes="saveStyles"/>
-                </BModal>
-            </div>
-        </div>
-        <b-row>
-            <b-col cols="12" md="7">
-                <Multiselect
-                        v-model="value"
-                        :options="options"
-                        :multiple="true"
-                        :close-on-select="false"
-                        :clear-on-select="false"
-                        :preserve-search="true"
-                        placeholder="Выберите курсы"
-                        label="name"
-                        track-by="name"
-                        @select="onSelect"
-                        @remove="onRemove"
-                        :preselect-first="false"
-
-                />
-            </b-col>
-            <b-col cols="12" md="5">
-                <div class="d-flex">
-                    <b-button variant="outline-success" class="ml-2 btn-multiselect" @click="selectAll">Выбрать все <i
-                            class="fa fa-check ml-2"></i></b-button>
-                    <b-button variant="outline-danger" class="ml-2 btn-multiselect" @click="clearAll">Убрать все <i
-                            class="fa fa-trash ml-2"></i></b-button>
-                </div>
-            </b-col>
-        </b-row>
-    </div>
+	<div class="upload-certificate">
+		<div class="d-flex file">
+			<BFormFile
+				v-model="image"
+				class="form-file"
+				placeholder="Выберите Сертификат"
+				drop-placeholder="Перетащите файл сюда..."
+				accept=".pdf"
+				type="file"
+				id="file"
+				ref="file"
+			/>
+			<BButton
+				v-if="imageSrc"
+				variant="danger"
+				class="ml-3 clear-btn"
+				@click="clearImage"
+			>
+				Очистить
+			</BButton>
+		</div>
+		<small class="mb-4 d-block mt-1">Загрузите подготовленный шаблон в формате PDF</small>
+		<br>
+		<div
+			v-if="imageSrc"
+			class="sertificate-prewiev"
+		>
+			<div class="sertificate-modal">
+				<div
+					class="preview-canvas"
+					@click="openModalCertificate"
+				>
+					<vue-pdf-embed
+						v-if="imageSrc"
+						ref="vuePdfUploadCertificate"
+						:source="imageSrc"
+					/>
+				</div>
+				<div class="info-type2">
+					<i class="fa fa-info" />
+					<span> Внимание! Нажмите на картинку, чтобы отредактировать загруженный шаблон.
+						Обязательно расположите текст в нужные Вам места. В противном случае сертификат будет
+						сгенерирован неправильно!</span>
+				</div>
+				<BModal
+					v-model="modalCertificate"
+					modal-class="upload-certificate-modal"
+					title="Контсруктор сертификата"
+					size="xl"
+					hide-footer
+					centered
+				>
+					<UploadSertificateModal
+						:styles="styles"
+						:img="imageSrc"
+						:modal-certificate.sync="modalCertificate"
+						@save-changes="saveStyles"
+					/>
+				</BModal>
+			</div>
+		</div>
+		<b-row>
+			<b-col
+				cols="12"
+				md="7"
+			>
+				<Multiselect
+					v-model="value"
+					:options="options"
+					:multiple="true"
+					:close-on-select="false"
+					:clear-on-select="false"
+					:preserve-search="true"
+					placeholder="Выберите курсы"
+					label="name"
+					track-by="name"
+					@select="onSelect"
+					@remove="onRemove"
+					:preselect-first="false"
+				/>
+			</b-col>
+			<b-col
+				cols="12"
+				md="5"
+			>
+				<div class="d-flex">
+					<b-button
+						variant="outline-success"
+						class="ml-2 btn-multiselect"
+						@click="selectAll"
+					>
+						Выбрать все <i
+							class="fa fa-check ml-2"
+						/>
+					</b-button>
+					<b-button
+						variant="outline-danger"
+						class="ml-2 btn-multiselect"
+						@click="clearAll"
+					>
+						Убрать все <i
+							class="fa fa-trash ml-2"
+						/>
+					</b-button>
+				</div>
+			</b-col>
+		</b-row>
+	</div>
 </template>
 
 <script>

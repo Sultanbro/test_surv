@@ -1,11 +1,13 @@
 <template>
-<div class="balance__item">
-    <div class="balance__item-title">{{title}}</div>
-    <div class="balance__item-value">
-        <slot/>
-    </div>
-    <slot name="footer"></slot>
-</div>
+	<div class="balance__item">
+		<div class="balance__item-title">
+			{{ title }}
+		</div>
+		<div class="balance__item-value">
+			<slot />
+		</div>
+		<slot name="footer" />
+	</div>
 </template>
 
 <script>

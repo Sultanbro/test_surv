@@ -1,53 +1,59 @@
 <template>
-<div>
-    <div class="row align-items-center">
-
-        <!-- <div class="col-3">
+	<div>
+		<div class="row align-items-center">
+			<!-- <div class="col-3">
             <div :id="'funnel-' + id" class="funnel"></div>
         </div> -->
-        <div class="col-12">
-
-            <b-table responsive striped
-                class="text-nowrap text-right my-table my-table-ma mb-3 table-funnel"
-                :small="true"
-                :bordered="true"
-                :items="items"
-                :fields="fields"
-                :key="tableKey"
-                primary-key="a">
-
-                <template #head(name)="data">
-
-                    <input type="text" :ref="'mylink' + segment" class="hider">
-                    <span>{{data.field.label}}</span>
-
-
-                    <i class="fa fa-clone ffpointer" @click="copy()"></i>
-                </template>
-
-                <template #cell(name)="data">
-                    <div>
-                        {{data.value}}
-                    </div>
-                </template>
-
-                <template #cell()="data">
-                    <div v-if="data.item.show == 1 && type == 'week'">
-                        <input type="number" v-model="data.value" @change="updateSettings($event,data)"
-                            class="form-control form-control-sm">
-                    </div>
-                    <div v-else>
-                        {{data.value}}
-                    </div>
-                </template>
-
-            </b-table>
-
-        </div>
-    </div>
+			<div class="col-12">
+				<b-table
+					responsive
+					striped
+					class="text-nowrap text-right my-table my-table-ma mb-3 table-funnel"
+					:small="true"
+					:bordered="true"
+					:items="items"
+					:fields="fields"
+					:key="tableKey"
+					primary-key="a"
+				>
+					<template #head(name)="data">
+						<input
+							type="text"
+							:ref="'mylink' + segment"
+							class="hider"
+						>
+						<span>{{ data.field.label }}</span>
 
 
-</div>
+						<i
+							class="fa fa-clone ffpointer"
+							@click="copy()"
+						/>
+					</template>
+
+					<template #cell(name)="data">
+						<div>
+							{{ data.value }}
+						</div>
+					</template>
+
+					<template #cell()="data">
+						<div v-if="data.item.show == 1 && type == 'week'">
+							<input
+								type="number"
+								v-model="data.value"
+								@change="updateSettings($event,data)"
+								class="form-control form-control-sm"
+							>
+						</div>
+						<div v-else>
+							{{ data.value }}
+						</div>
+					</template>
+				</b-table>
+			</div>
+		</div>
+	</div>
 </template>
 
 <script>

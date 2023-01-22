@@ -1,20 +1,32 @@
 <template>
-<div>
-
-    <b-table responsive striped class="text-nowrap text-right my-table my-table-max mb-3 summary-recruiting" :small="true" :bordered="true" :items="items" :fields="fields" primary-key="a">
-        <template #cell()="data">
-
-            <div v-if="data.index == S_EMPTY7 || data.index == S_EMPTY8 || data.index == S_EMPTY11"></div>
-            <div v-else>
-                <input type="number" v-if="data.field.key == 'plan' && (data.index != S_APPLIED || data.index != S_FIRED)" class="form-control cell-input" @change="updateSettings($event,data)" :value="data.value">
-                <div v-else>{{ data.value }}</div>
-            </div>
-
-
-        </template>
-    </b-table>
-
-</div>
+	<div>
+		<b-table
+			responsive
+			striped
+			class="text-nowrap text-right my-table my-table-max mb-3 summary-recruiting"
+			:small="true"
+			:bordered="true"
+			:items="items"
+			:fields="fields"
+			primary-key="a"
+		>
+			<template #cell()="data">
+				<div v-if="data.index == S_EMPTY7 || data.index == S_EMPTY8 || data.index == S_EMPTY11" />
+				<div v-else>
+					<input
+						type="number"
+						v-if="data.field.key == 'plan' && (data.index != S_APPLIED || data.index != S_FIRED)"
+						class="form-control cell-input"
+						@change="updateSettings($event,data)"
+						:value="data.value"
+					>
+					<div v-else>
+						{{ data.value }}
+					</div>
+				</div>
+			</template>
+		</b-table>
+	</div>
 </template>
 
 <script>
@@ -207,7 +219,7 @@ export default {
 };
 </script>
 
-<style lang="scss" >
+<style lang="scss">
 .my-table-max {
     max-height: inherit !important;
 

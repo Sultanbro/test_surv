@@ -5,17 +5,22 @@
 	>
 		<!-- left sidebar -->
 		<div class="lp">
-			<h1 class="page-title">Настройка кабинета</h1>
+			<h1 class="page-title">
+				Настройка кабинета
+			</h1>
 			<div class="settingCabinet">
 				<ul class="p-0">
-					<li v-if="user.is_admin === 1" class="lp-item">
+					<li
+						v-if="user.is_admin === 1"
+						class="lp-item"
+					>
 						<a
 							class="lp-link"
 							@click="page = 'admin'"
 							:class="{ active: page == 'admin' }"
 							tabindex="0"
 						>
-							<i class="fa fa-key"/>
+							<i class="fa fa-key" />
 							Административные настройки
 						</a>
 					</li>
@@ -27,7 +32,7 @@
 							:class="{ active: page == 'profile' }"
 							tabindex="0"
 						>
-							<i class="fa fa-user"/>
+							<i class="fa fa-user" />
 							Настройка собственного профиля
 						</a>
 					</li>
@@ -36,7 +41,11 @@
 		</div>
 
 		<!-- Cabinet page -->
-		<div v-if="page == 'admin'" class="rp cabinet-page-admin" style="flex: 1 1 0%">
+		<div
+			v-if="page == 'admin'"
+			class="rp cabinet-page-admin"
+			style="flex: 1 1 0%"
+		>
 			<div class="hat">
 				<div class="d-flex jsutify-content-between hat-top">
 					<div class="bc">
@@ -49,42 +58,58 @@
 				<div class="p-3">
 					<div class="form-group">
 						Субдомен
-						<input class="form-control mt-1 input-surv" id="view_own_orders" type="text" />
+						<input
+							class="form-control mt-1 input-surv"
+							id="view_own_orders"
+							type="text"
+						>
 					</div>
 
 					<div class="form-group">
 						Часовой пояс
-						<input class="form-control mt-1 input-surv" id="view_own_orders" type="text" />
+						<input
+							class="form-control mt-1 input-surv"
+							id="view_own_orders"
+							type="text"
+						>
 					</div>
 
 					<div class="form-group">
 						Администраторы
 
-            <Multiselect
-              v-model="admins"
-              :options="users"
-              :multiple="true"
-              :close-on-select="false"
-              :clear-on-select="true"
-              :preserve-search="true"
-              placeholder="Выберите"
-              label="email"
-              track-by="email"
-              :taggable="true"
-              @tag="addTag"
-              class="multiselect-surv"
-            />
-          </div>
+						<Multiselect
+							v-model="admins"
+							:options="users"
+							:multiple="true"
+							:close-on-select="false"
+							:clear-on-select="true"
+							:preserve-search="true"
+							placeholder="Выберите"
+							label="email"
+							track-by="email"
+							:taggable="true"
+							@tag="addTag"
+							class="multiselect-surv"
+						/>
+					</div>
 
-          <div class="mt-3">
-            <button class="btn btn-success btn-surv" @click="save">Сохранить</button>
-          </div>
-        </div>
-      </div>
-    </div>
+					<div class="mt-3">
+						<button
+							class="btn btn-success btn-surv"
+							@click="save"
+						>
+							Сохранить
+						</button>
+					</div>
+				</div>
+			</div>
+		</div>
 
 		<!-- Profile page -->
-		<div v-if="page == 'profile'" class="rp">
+		<div
+			v-if="page == 'profile'"
+			class="rp"
+		>
 			<div class="hat">
 				<div class="d-flex jsutify-content-between hat-top">
 					<div class="bc">
@@ -111,7 +136,7 @@
 									required
 									placeholder="Имя сотрудника"
 									v-model="user.name"
-								/>
+								>
 							</div>
 						</div>
 						<div class="form-group row">
@@ -127,7 +152,7 @@
 									required
 									placeholder="Фамилия сотрудника"
 									v-model="user.last_name"
-								/>
+								>
 							</div>
 						</div>
 						<div class="form-group row">
@@ -143,7 +168,7 @@
 									required
 									placeholder="email"
 									v-model="user.email"
-								/>
+								>
 							</div>
 						</div>
 						<div class="form-group row">
@@ -159,7 +184,7 @@
 									name="new_pwd"
 									id="new_pwd"
 									placeholder="********"
-								/>
+								>
 							</div>
 						</div>
 						<div class="form-group row">
@@ -174,7 +199,7 @@
 									name="birthday"
 									id="birthday"
 									required
-								/>
+								>
 							</div>
 						</div>
 						<div class="form-group row">
@@ -182,26 +207,27 @@
 								class="col-sm-4 col-form-label font-weight-bold label-surv"
 							>Город<span class="red">*</span></label>
 							<div class="col-sm-8 p-0">
-
-									<input
-											v-model="keywords"
-											class="form-control input-surv"
-											type="text"
-											name="country"
-											id="country"
-											required
-											placeholder="поиск городов"
-									/>
-									<ul v-if="country_results.length > 0" class="p-0 countries">
-										<li v-for="(result, index) in country_results" :key="index">
-											<a @click="selectedCountry(index, result)">
-												Страна: {{ result.country }} Город: {{ result.city }}</a
-											>
-										</li>
-									</ul>
-
-
-
+								<input
+									v-model="keywords"
+									class="form-control input-surv"
+									type="text"
+									name="country"
+									id="country"
+									required
+									placeholder="поиск городов"
+								>
+								<ul
+									v-if="country_results.length > 0"
+									class="p-0 countries"
+								>
+									<li
+										v-for="(result, index) in country_results"
+										:key="index"
+									>
+										<a @click="selectedCountry(index, result)">
+											Страна: {{ result.country }} Город: {{ result.city }}</a>
+									</li>
+								</ul>
 							</div>
 						</div>
 					</div>
@@ -218,7 +244,12 @@
 									:src="crop_image.image"
 									class="profile-img"
 								>
-								<div class="my-4 text-left" v-else>Загрузите свою фотографию</div>
+								<div
+									class="my-4 text-left"
+									v-else
+								>
+									Загрузите свою фотографию
+								</div>
 								<input
 									type="file"
 									class="hidden-file-input"
@@ -226,39 +257,45 @@
 									aria-describedby="CabinetProfileImage"
 									ref="file"
 									accept="image/*"
-									v-on:change="handleFileUpload()"
+									@change="handleFileUpload()"
 								>
-								<label class="hidden-file-label" for="CabinetProfileImage"/>
+								<label
+									class="hidden-file-label"
+									for="CabinetProfileImage"
+								/>
 							</div>
 
 
 
 
 							<!--              <croppa-->
-<!--                v-model="myCroppa"-->
-<!--                :width="250"-->
-<!--                :height="250"-->
-<!--                :canvas-color="'default'"-->
-<!--                :placeholder="'Выберите изображение'"-->
-<!--                :placeholder-font-size="0"-->
-<!--                :placeholder-color="'default'"-->
-<!--                :accept="'image/*'"-->
-<!--                :file-size-limit="0"-->
-<!--                :quality="2"-->
-<!--                :zoom-speed="20"-->
-<!--                :initial-image="crop_image"-->
-<!--                :disable-drag-to-move="true"-->
-<!--                :disable-scroll-to-zoom="true"-->
-<!--                @new-image-drawn="hasImage = true"-->
-<!--                @image-remove="hasImage = false"-->
-<!--                v-on="hasImage ? { click:chooseProfileImage } : {}"-->
+							<!--                v-model="myCroppa"-->
+							<!--                :width="250"-->
+							<!--                :height="250"-->
+							<!--                :canvas-color="'default'"-->
+							<!--                :placeholder="'Выберите изображение'"-->
+							<!--                :placeholder-font-size="0"-->
+							<!--                :placeholder-color="'default'"-->
+							<!--                :accept="'image/*'"-->
+							<!--                :file-size-limit="0"-->
+							<!--                :quality="2"-->
+							<!--                :zoom-speed="20"-->
+							<!--                :initial-image="crop_image"-->
+							<!--                :disable-drag-to-move="true"-->
+							<!--                :disable-scroll-to-zoom="true"-->
+							<!--                @new-image-drawn="hasImage = true"-->
+							<!--                @image-remove="hasImage = false"-->
+							<!--                v-on="hasImage ? { click:chooseProfileImage } : {}"-->
 
-<!--              ></croppa>-->
+							<!--              ></croppa>-->
 							<div class="hidden-file-wrapper">
 								<button class="btn btn-success w-100 mt-2 btn-surv">
 									Выбрать фото
 								</button>
-								<label class="hidden-file-label" for="CabinetProfileImage"/>
+								<label
+									class="hidden-file-label"
+									for="CabinetProfileImage"
+								/>
 							</div>
 						</div>
 					</div>
@@ -275,21 +312,21 @@
 										v-model="payment.bank"
 										class="form-control input-surv"
 										placeholder="Банк"
-									/>
+									>
 								</div>
 								<div class="col-2">
 									<input
 										v-model="payment.country"
 										class="form-control input-surv"
 										placeholder="Страна"
-									/>
+									>
 								</div>
 								<div class="col-2">
 									<input
 										v-model="payment.cardholder"
 										class="form-control input-surv"
 										placeholder="Имя на карте"
-									/>
+									>
 								</div>
 								<div class="col-2">
 									<input
@@ -297,7 +334,7 @@
 										v-model="payment.phone"
 										class="form-control input-surv"
 										placeholder="Телефон"
-									/>
+									>
 								</div>
 								<div class="col-2">
 									<input
@@ -305,7 +342,7 @@
 										v-model="payment.number"
 										class="form-control card-number input-surv"
 										placeholder="Номер карты"
-									/>
+									>
 								</div>
 								<div class="col-2 position-relative">
 									<button
@@ -314,7 +351,7 @@
 										class="btn btn-danger btn-sm card-delete rounded mt-1 btn-surv"
 										@click="removePaymentCart(index, payment.id)"
 									>
-										<span class="fa fa-trash"></span>
+										<span class="fa fa-trash" />
 									</button>
 									<button
 										v-else
@@ -322,13 +359,16 @@
 										class="btn btn-primary btn-sm card-delete rounded mt-1 btn-surv"
 										@click="removePaymentCart(index, 'dev')"
 									>
-										<span class="fa fa-trash"></span>
+										<span class="fa fa-trash" />
 									</button>
 								</div>
 							</div>
 						</template>
 
-						<div class="mt-2 p-0" v-if="cardValidatre.error">
+						<div
+							class="mt-2 p-0"
+							v-if="cardValidatre.error"
+						>
 							<div class="alert alert-danger">
 								<span>Заполните все поля</span>
 							</div>
@@ -360,8 +400,14 @@
 				</div>
 			</div>
 		</div>
-		<b-modal v-model="showChooseProfileModal"  title="Изображение профиля" size="lg" class="modalle" @ok="save_picture()">
-			<div id="cabinet-croppie"/>
+		<b-modal
+			v-model="showChooseProfileModal"
+			title="Изображение профиля"
+			size="lg"
+			class="modalle"
+			@ok="save_picture()"
+		>
+			<div id="cabinet-croppie" />
 			<!-- <cropper
 				ref="mycrop"
 				class="cropper"

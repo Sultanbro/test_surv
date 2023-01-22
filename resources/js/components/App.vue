@@ -1,173 +1,289 @@
 <template>
-    <div id="editor" @mousemove="onMouseMove">
-        <div   class="listdrag">
+	<div
+		id="editor"
+		@mousemove="onMouseMove"
+	>
+		<div class="listdrag">
+			<input
+				v-model="namesshema"
+				type="text"
+				class="form-control"
+				id="namesshema"
+				placeholder="Название схемы"
+			>
 
-            <input v-model="namesshema" type="text" class="form-control" id="namesshema"  placeholder="Название схемы">
+			<div class="pdn">
+				<div
+					class="draggable"
+					@mousedown="onMouseDown"
+					@mousemove="onMouseMove"
+					@mouseup="onMouseUp(this,'textsintez')"
+				>
+					<div class="image">
+						<i
+							class="fa fa-question"
+							aria-hidden="true"
+						/>
+					</div>
+					<div class="text">
+						Вопрос
+					</div>
+					<div class="info" />
+				</div>
 
-            <div class="pdn">
+				<div
+					class="draggable"
+					@mousedown="onMouseDown"
+					@mousemove="onMouseMove"
+					@mouseup="onMouseUp(this,'yesorno')"
+				>
+					<div class="image">
+						<i
+							class="fa fa-sitemap"
+							aria-hidden="true"
+						/>
+					</div>
+					<div class="text">
+						Ответ
+					</div>
+					<div class="info" />
+				</div>
 
+				<div
+					class="draggable"
+					@mousedown="onMouseDown"
+					@mousemove="onMouseMove"
+					@mouseup="onMouseUp(this,'forwarding')"
+				>
+					<div class="image">
+						<i
+							class="fa fa-phone"
+							aria-hidden="true"
+						/>
+					</div>
+					<div class="text">
+						Переадресация
+					</div>
+					<div class="info" />
+				</div>
 
-                <div class="draggable"  @mousedown="onMouseDown" @mousemove="onMouseMove"  @mouseup="onMouseUp(this,'textsintez')">
-                    <div class="image"><i class="fa fa-question" aria-hidden="true"></i>
-                    </div>
-                    <div class="text">Вопрос</div>
-                    <div class="info"></div>
-                </div>
+				<div
+					class="draggable"
+					@mousedown="onMouseDown"
+					@mousemove="onMouseMove"
+					@mouseup="onMouseUp(this,'smsforward')"
+				>
+					<div class="image">
+						<i
+							class="fa fa-commenting-o"
+							aria-hidden="true"
+						/>
+					</div>
+					<div class="text">
+						Отправка смс
+					</div>
+					<div class="info" />
+				</div>
 
-                <div class="draggable"  @mousedown="onMouseDown" @mousemove="onMouseMove"  @mouseup="onMouseUp(this,'yesorno')">
-                    <div class="image"><i class="fa fa-sitemap" aria-hidden="true"></i></div>
-                    <div class="text">Ответ</div>
-                    <div class="info"></div>
-                </div>
-
-                <div class="draggable"  @mousedown="onMouseDown" @mousemove="onMouseMove"  @mouseup="onMouseUp(this,'forwarding')">
-                    <div class="image"><i class="fa fa-phone" aria-hidden="true"></i>
-                    </div>
-                    <div class="text">Переадресация</div>
-                    <div class="info"></div>
-                </div>
-
-                <div class="draggable"  @mousedown="onMouseDown" @mousemove="onMouseMove"  @mouseup="onMouseUp(this,'smsforward')">
-                    <div class="image"><i class="fa fa-commenting-o" aria-hidden="true"></i>
-                    </div>
-                    <div class="text">Отправка смс</div>
-                    <div class="info"></div>
-                </div>
-
-                <div class="draggable"  @mousedown="onMouseDown" @mousemove="onMouseMove"  @mouseup="onMouseUp(this,'end')">
-                    <div class="image"><i class="fa fa-flag" aria-hidden="true"></i></div>
-                    <div class="text">Конец</div>
-                    <div class="info"></div>
-                </div>
-
-            </div>
-            <button id="saveButton" @click="schemaSave">Сохранить сценарий</button>
-
-
-
-
-        </div>
-        <simple-flowchart :scene.sync="scene"
-                          @nodeClick="nodeClick"
-                          @nodeDelete="nodeDelete"
-                          @linkBreak="linkBreak"
-                          @linkAdded="linkAdded"
-                          @canvasClick="canvasClick"
-                          @onLogin='oneLogin'
-                          @addNodes='addNode'
-                          :height="600"/>
-
-
-        <transition v-if="showModal" >
-
-            <h3 slot="header">custom header</h3>
-
-
-            <div class="modal-mask" @click="showModal=false">
-
-                <div class="modal-wrapper">
-                    <div class="modal-container" v-on:click.stop="" >
-
-                        <div class="modal-header">
-                            <slot name="header">
-                                <template v-if="selectedNode.type==='start'">Начало</template>
-                                <template v-if="selectedNode.type==='yesorno'">Ответ</template>
-                                <template v-if="selectedNode.type==='textsintez'">Вопрос</template>
-                                <template v-if="selectedNode.type==='end'">Конец</template>
-                                <template v-if="selectedNode.type==='forwarding'">Переадресация</template>
-                                <template v-if="selectedNode.type==='smsforward'">Отправить смс</template>
-                            </slot>
-                        </div>
-
-                        <div class="modal-body">
-                            <slot name="body">
-                                <div class="tool-wrapper">
-                                    <label>Описание</label>
-                                    <input  type="text" v-model="newNodeLabel">
-
-                                    <template v-if="selectedNode.type==='smsforward'">
-
-                                        <label>Код интеграции</label>
-                                        <input class="form-control" type="text" v-model="integrationsms">
-
-                                        <label>Текст для смс</label>
-                                        <div class="blocksms">
-                                            <textarea @keyup="simvoli" class="form-control " v-model="smsforward"></textarea>
-                                           <div class="foot"><em><span>{{length}}</span>/<span>{{length_sms}}</span> осталось символов <span class="count_sms">({{count_sms}} смс)</span></em></div>
-                                        </div>
-                                    </template>
-
-                                    <template v-if="selectedNode.type==='forwarding'">
-                                        <label>Номер для переадресации</label>
-                                        <input class="form-control" type="text" v-model="forwardphone">
-                                    </template>
-
-                                    <template v-if="selectedNode.type==='textsintez'">
-
-                                        <select v-model="selectaudio">
-                                            <option value="text">Текст</option>
-                                            <option value="file">Аудио файл</option>
-                                        </select>
-
-                                        <template v-if="selectaudio=='text'">
-                                            <label>Текст для синтеза речи</label>
-                                            <textarea class="form-control" v-model="description"></textarea>
-                                            <template v-if="audiolisttwo!=null">
-                                                <audio controls="controls" autobuffer="autobuffer">
-                                                    <source :src="audiolisttwo"/>
-                                                </audio>
-                                            </template>
-
-                                            <button class="modal-default-button" @click="sintez">
-                                                Синтезировать
-                                            </button>
-
-                                        </template>
-
-                                        <template v-if="selectaudio=='file'">
-                                            <label>Прикрепить файл (*.mp3)</label>
-                                            <input class="form-control" type="file" v-on:change="uploadFile()"
-                                                   ref="file" accept=".mp3">
-
-                                            <audio v-if="audiolist" controls="controls" autobuffer="autobuffer">
-                                                <source :src="audiolist"/>
-                                            </audio>
-
-                                        </template>
-                                    </template>
-                                    <template v-if="selectedNode.type==='yesorno'">
-
-                                        <label>Для положительного ответа (через запятую)</label>
-                                        <input v-model="otvetyes" placeholder="Введите слова для положительного ответа"/>
-
-                                        <label>Для отрицательного ответа (через запятую)</label>
-                                        <input v-model="otvetno" placeholder="Введите слова для отрицательного ответа"/>
+				<div
+					class="draggable"
+					@mousedown="onMouseDown"
+					@mousemove="onMouseMove"
+					@mouseup="onMouseUp(this,'end')"
+				>
+					<div class="image">
+						<i
+							class="fa fa-flag"
+							aria-hidden="true"
+						/>
+					</div>
+					<div class="text">
+						Конец
+					</div>
+					<div class="info" />
+				</div>
+			</div>
+			<button
+				id="saveButton"
+				@click="schemaSave"
+			>
+				Сохранить сценарий
+			</button>
+		</div>
+		<simple-flowchart
+			:scene.sync="scene"
+			@nodeClick="nodeClick"
+			@nodeDelete="nodeDelete"
+			@linkBreak="linkBreak"
+			@linkAdded="linkAdded"
+			@canvasClick="canvasClick"
+			@onLogin="oneLogin"
+			@addNodes="addNode"
+			:height="600"
+		/>
 
 
-                                    </template>
+		<transition v-if="showModal">
+			<h3 slot="header">
+				custom header
+			</h3>
 
 
-                                </div>
-                            </slot>
-                        </div>
+			<div
+				class="modal-mask"
+				@click="showModal=false"
+			>
+				<div class="modal-wrapper">
+					<div
+						class="modal-container"
+						@click.stop=""
+					>
+						<div class="modal-header">
+							<slot name="header">
+								<template v-if="selectedNode.type==='start'">
+									Начало
+								</template>
+								<template v-if="selectedNode.type==='yesorno'">
+									Ответ
+								</template>
+								<template v-if="selectedNode.type==='textsintez'">
+									Вопрос
+								</template>
+								<template v-if="selectedNode.type==='end'">
+									Конец
+								</template>
+								<template v-if="selectedNode.type==='forwarding'">
+									Переадресация
+								</template>
+								<template v-if="selectedNode.type==='smsforward'">
+									Отправить смс
+								</template>
+							</slot>
+						</div>
 
-                        <div class="modal-footer">
-                            <slot name="footer">
-                                <button class="modal-default-button" @click="editNode">
-                                    Сохранить
-                                </button>
-                            </slot>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </transition>
+						<div class="modal-body">
+							<slot name="body">
+								<div class="tool-wrapper">
+									<label>Описание</label>
+									<input
+										type="text"
+										v-model="newNodeLabel"
+									>
 
+									<template v-if="selectedNode.type==='smsforward'">
+										<label>Код интеграции</label>
+										<input
+											class="form-control"
+											type="text"
+											v-model="integrationsms"
+										>
 
+										<label>Текст для смс</label>
+										<div class="blocksms">
+											<textarea
+												@keyup="simvoli"
+												class="form-control "
+												v-model="smsforward"
+											/>
+											<div class="foot">
+												<em><span>{{ length }}</span>/<span>{{ length_sms }}</span> осталось символов <span class="count_sms">({{ count_sms }} смс)</span></em>
+											</div>
+										</div>
+									</template>
 
+									<template v-if="selectedNode.type==='forwarding'">
+										<label>Номер для переадресации</label>
+										<input
+											class="form-control"
+											type="text"
+											v-model="forwardphone"
+										>
+									</template>
 
+									<template v-if="selectedNode.type==='textsintez'">
+										<select v-model="selectaudio">
+											<option value="text">
+												Текст
+											</option>
+											<option value="file">
+												Аудио файл
+											</option>
+										</select>
 
-    </div>
+										<template v-if="selectaudio=='text'">
+											<label>Текст для синтеза речи</label>
+											<textarea
+												class="form-control"
+												v-model="description"
+											/>
+											<template v-if="audiolisttwo!=null">
+												<audio
+													controls="controls"
+													autobuffer="autobuffer"
+												>
+													<source :src="audiolisttwo">
+												</audio>
+											</template>
+
+											<button
+												class="modal-default-button"
+												@click="sintez"
+											>
+												Синтезировать
+											</button>
+										</template>
+
+										<template v-if="selectaudio=='file'">
+											<label>Прикрепить файл (*.mp3)</label>
+											<input
+												class="form-control"
+												type="file"
+												@change="uploadFile()"
+												ref="file"
+												accept=".mp3"
+											>
+
+											<audio
+												v-if="audiolist"
+												controls="controls"
+												autobuffer="autobuffer"
+											>
+												<source :src="audiolist">
+											</audio>
+										</template>
+									</template>
+									<template v-if="selectedNode.type==='yesorno'">
+										<label>Для положительного ответа (через запятую)</label>
+										<input
+											v-model="otvetyes"
+											placeholder="Введите слова для положительного ответа"
+										>
+
+										<label>Для отрицательного ответа (через запятую)</label>
+										<input
+											v-model="otvetno"
+											placeholder="Введите слова для отрицательного ответа"
+										>
+									</template>
+								</div>
+							</slot>
+						</div>
+
+						<div class="modal-footer">
+							<slot name="footer">
+								<button
+									class="modal-default-button"
+									@click="editNode"
+								>
+									Сохранить
+								</button>
+							</slot>
+						</div>
+					</div>
+				</div>
+			</div>
+		</transition>
+	</div>
 </template>
 
 
@@ -179,7 +295,7 @@ import SimpleFlowchart from './SimpleFlowchart.vue'
 
 export default {
 
-	name: 'app',
+	name: 'App',
 	components: {
 		SimpleFlowchart
 	},

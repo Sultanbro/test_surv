@@ -1,15 +1,18 @@
 <template>
-	<div class="header__profile _anim _anim-no-hide custom-scroll-y" :class="{
-		'v-loading': loading,
-		hidden: hide,
-		'_active': inViewport
-	}">
+	<div
+		class="header__profile _anim _anim-no-hide custom-scroll-y"
+		:class="{
+			'v-loading': loading,
+			hidden: hide,
+			'_active': inViewport
+		}"
+	>
 		<div class="profile__content">
 			<div class="profile__col">
 				<StartDayBtn
 					v-if="showButton"
 					:status="buttonStatus"
-					:workdayStatus="status"
+					:workday-status="status"
 					@clickStart="startDay"
 				/>
 				<div class="profile__balance">
@@ -17,12 +20,14 @@
 					<p
 						v-if="!balance.loading"
 						class="profile__balance-value"
-					>{{ balance.sum }} <span class="profile__balance-currecy">{{ balance.currency }}</span></p>
+					>
+						{{ balance.sum }} <span class="profile__balance-currecy">{{ balance.currency }}</span>
+					</p>
 				</div>
 			</div>
 
 			<div class="profile__col">
-				<ProfileInfo :data="userInfo"/>
+				<ProfileInfo :data="userInfo" />
 			</div>
 		</div>
 	</div>

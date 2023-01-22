@@ -1,269 +1,443 @@
 <template>
-<div class="mb-3 index__content custom-scroll" :class="{'v-loading': loading}">
-    <div class="d-flex align-items-center mb-2" v-if="show_headers">
+	<div
+		class="mb-3 index__content custom-scroll"
+		:class="{'v-loading': loading}"
+	>
+		<div
+			class="d-flex align-items-center mb-2"
+			v-if="show_headers"
+		>
+			<h4 class="mr-2">
+				{{ activity.name }} <i
+					class="fa fa-cogs show"
+					@click="editActivity()"
+				/>
+			</h4>
 
-        <h4 class="mr-2">{{ activity.name }} <i class="fa fa-cogs show" @click="editActivity()"></i> </h4>
+			<div class="my-2 d-flex ml-auto mr-3">
+				<div class="d-flex">
+					<div class="mr-2">
+						<b-form-radio
+							v-model="user_types"
+							name="some-radios"
+							value="0"
+						>
+							Действующие
+						</b-form-radio>
+					</div>
+					<div class="mr-2">
+						<b-form-radio
+							v-model="user_types"
+							name="some-radios"
+							value="1"
+						>
+							Уволенные
+						</b-form-radio>
+					</div>
+					<div class="mr-2">
+						<b-form-radio
+							v-model="user_types"
+							name="some-radios"
+							value="2"
+						>
+							Стажеры
+						</b-form-radio>
+					</div>
+				</div>
 
-        <div class="my-2 d-flex ml-auto mr-3">
-            <div class="d-flex">
-                <div class="mr-2">
-                    <b-form-radio v-model="user_types"  name="some-radios" value="0">Действующие</b-form-radio>
-                </div>
-                <div class="mr-2">
-                    <b-form-radio v-model="user_types"  name="some-radios" value="1">Уволенные</b-form-radio>
-                </div>
-                <div class="mr-2">
-                    <b-form-radio v-model="user_types"  name="some-radios" value="2">Стажеры</b-form-radio>
-                </div>
-            </div>
-
-            <b-form-checkbox
-                v-model="filter.fulltime"
-                :value="1"
-                :unchecked-value="0"
-                class="mr-2"
-                >
-                Full-Time
-            </b-form-checkbox>
-            <b-form-checkbox
-                v-model="filter.parttime"
-                :value="1"
-                :unchecked-value="0"
-                class="mr-2"
-                >
-                Part-Time
-            </b-form-checkbox>
-
-        </div>
-
-
-        <div>
-            <a @click='showExcelImport = !showExcelImport'  v-if="group_id == 42 || group_id == 88 || (group_id == 71 && activity.id == 149) || (group_id == 71 && activity.id == 151)"
-                class="btn btn-success btn-sm rounded mr-2 text-white">
-                <i class="fa fa-upload"></i>
-                Импорт</a>
-        </div>
-
-
-        <div>
-            <a href="#" @click="exportData()" class="btn btn-success btn-sm rounded">
-                <i class="far fa-file-excel"></i>
-                Экспорт</a>
-        </div>
-
-    </div>
-
-    <table class="indicators-table-fixed" :class="{'inverted' : color_invert}">
-        <tr>
-            <th
-                class="indicators-table-fixed-name text-left max-content pl-4"
-                :class="{'sticky-left': isDesktop}"
-            >
-                <div class="max-content">Сотрудник</div>
-                 <i v-if="show_headers" class="fa fa-sort ml-2" @click="sort('fullname')"></i>
-            </th>
-
-            <template v-if="activity.plan_unit == 'minutes'">
-                <th
-                    class="indicators-table-fixed-avg text-center"
-                    :class="{'sticky-left': isDesktop}"
-                >
-                    <div>Ср.</div>
-                    <i v-if="show_headers" class="fa fa-sort ml-2" @click="sort('avg')"></i>
-                </th>
-                <th
-                    class="indicators-table-fixed-month text-center"
-                    :class="{'sticky-left': isDesktop}"
-                >
-                    <div>План</div>
-                    <i v-if="show_headers" class="fa fa-sort ml-2" @click="sort('month')"></i>
-                </th>
-                <th
-                    class="indicators-table-fixed-plan text-center plan"
-                    :class="{'sticky-left': isDesktop}"
-                >
-                    <div>Вып.</div>
-                    <i v-if="show_headers" class="fa fa-sort ml-2" @click="sort('plan')"></i>
-                </th>
-                <th
-                    class="indicators-table-fixed-percent text-center"
-                    :class="{'sticky-left': isDesktop}"
-                >
-                    <div>%</div>
-                    <i v-if="show_headers" class="fa fa-sort ml-2" @click="sort('_percent')"></i>
-                </th>
-            </template>
-
-            <template v-else>
-                <th
-                    class="indicators-table-fixed-hmonth text-center"
-                    :class="{'sticky-left': isDesktop}"
-                >
-                    <div>План</div>
-                    <i v-if="show_headers" class="fa fa-sort ml-2" @click="sort('month')"></i>
-                </th>
-                <th
-                    class="indicators-table-fixed-hplan text-center"
-                    :class="{'sticky-left': isDesktop}"
-                >
-                    <div>Вып.</div>
-                    <i v-if="show_headers" class="fa fa-sort ml-2" @click="sort('plan')"></i>
-                </th>
-            </template>
-
-            <template v-for="day in month.daysInMonth">
-                <th class="text-center px-1" :key="day">
-                    <div>{{ day }}</div>
-                </th>
-            </template>
-        </tr>
-
-        <tr
-            v-for="(item, index) in filtered"
-            :key="index"
-            :class="{
-                'prize first-place': item.show_cup == 1,
-                'prize second-place': item.show_cup == 2,
-                'prize third-place': item.show_cup == 3,
-            }"
-        >
-            <td
-                v-if="item.name == 'SPECIAL_BTN'"
-                class="indicators-table-fixed-name"
-                :class="{'sticky-left': isDesktop}"
-            >
-                <button class="btn btn-light rounded btn-sm" @click="switchAction">Сумма\Среднее</button>
-            </td>
-
-            <td
-                v-else
-                class="indicators-table-fixed-name text-left max-content"
-                :class="{'sticky-left': isDesktop}"
-                :title="item.id + ' ' + item.email"
-            >
-                <div class="d-flex max-content">
-                    {{ item.lastname }} {{ item.name }}
-                </div>
-            </td>
-
-            <template v-if="activity.plan_unit == 'minutes'">
-                <td
-                    class="indicators-table-fixed-avg class blue"
-                    :class="{'sticky-left': isDesktop}"
-                ><div>{{ item.avg }}</div></td>
-                <td
-                    class="indicators-table-fixed-month class blue"
-                    :class="{'sticky-left': isDesktop}"
-                ><div :title="activity.daily_plan + ' * ' + item.applied_from">{{ item.month }}</div></td>
-                <td
-                    class="indicators-table-fixed-plan class blue plan"
-                    :class="{'sticky-left': isDesktop}"
-                ><div>{{ item.plan }}</div></td>
-                <td
-                    class="indicators-table-fixed-percent class blue"
-                    :class="{'sticky-left': isDesktop}"
-                ><div>{{ item.percent }}</div></td>
-            </template>
-
-            <template v-else>
-                <td
-                    class="indicators-table-fixed-hmonth class blue"
-                    :class="{'sticky-left': isDesktop}"
-                ><div>{{ item.month }}</div></td>
-                <td
-                    class="indicators-table-fixed-hplan class blue"
-                    :class="{'sticky-left': isDesktop}"
-                ><div>{{ item.plan }}</div></td>
-            </template>
+				<b-form-checkbox
+					v-model="filter.fulltime"
+					:value="1"
+					:unchecked-value="0"
+					class="mr-2"
+				>
+					Full-Time
+				</b-form-checkbox>
+				<b-form-checkbox
+					v-model="filter.parttime"
+					:value="1"
+					:unchecked-value="0"
+					class="mr-2"
+				>
+					Part-Time
+				</b-form-checkbox>
+			</div>
 
 
-            <template v-for="day in month.daysInMonth">
-                <td v-if="item.editable && editable" :key="day" :class="'text-center ' + item._cellVariants[day]">
-                    <div><input type="number" v-model="item[day]" @change="updateSettings($event, item, index, day)" class="form-control cell-input"></div>
-                </td>
-                <td v-else-if="holidays.includes(day) &&  item[day] > 0" :key="day + 'a'" @click="editMode(item)" :class="'text-center ' + item._cellVariants[day]">
+			<div>
+				<a
+					@click="showExcelImport = !showExcelImport"
+					v-if="group_id == 42 || group_id == 88 || (group_id == 71 && activity.id == 149) || (group_id == 71 && activity.id == 151)"
+					class="btn btn-success btn-sm rounded mr-2 text-white"
+				>
+					<i class="fa fa-upload" />
+					Импорт</a>
+			</div>
 
-                    <div v-if="item[day]">{{ item[day] }}{{ activity.unit }}</div>
-                    <div v-else></div>
-                </td>
-                <td v-else-if="holidays.includes(day)" :key="day + 'b'" @click="editMode(item)" :class="'text-center mywarning'">
 
-                    <div v-if="item[day]">{{ item[day] }}{{ activity.unit }}</div>
-                    <div v-else></div>
-                </td>
-                <td v-else @click="editMode(item)" :key="day + 'c'" :class="[item[day] > 0 || holidays.includes(day) ? 'text-center ' + item._cellVariants[day] : 'text-center']">
+			<div>
+				<a
+					href="#"
+					@click="exportData()"
+					class="btn btn-success btn-sm rounded"
+				>
+					<i class="far fa-file-excel" />
+					Экспорт</a>
+			</div>
+		</div>
 
-                    <div v-if="item[day]">{{ item[day] }}{{ activity.unit }}</div>
-                    <div v-else></div>
-                </td>
-            </template>
-        </tr>
-    </table>
+		<table
+			class="indicators-table-fixed"
+			:class="{'inverted' : color_invert}"
+		>
+			<tr>
+				<th
+					class="indicators-table-fixed-name text-left max-content pl-4"
+					:class="{'sticky-left': isDesktop}"
+				>
+					<div class="max-content">
+						Сотрудник
+					</div>
+					<i
+						v-if="show_headers"
+						class="fa fa-sort ml-2"
+						@click="sort('fullname')"
+					/>
+				</th>
 
-    <sidebar title="Импорт EXCEL" :open="showExcelImport" @close="showExcelImport=false" v-if="showExcelImport" width="75%">
-        <activity-excel-import :group_id="group_id" table="minutes" @close="showExcelImport=false" :activity_id="activity.id"></activity-excel-import>
-    </sidebar>
+				<template v-if="activity.plan_unit == 'minutes'">
+					<th
+						class="indicators-table-fixed-avg text-center"
+						:class="{'sticky-left': isDesktop}"
+					>
+						<div>Ср.</div>
+						<i
+							v-if="show_headers"
+							class="fa fa-sort ml-2"
+							@click="sort('avg')"
+						/>
+					</th>
+					<th
+						class="indicators-table-fixed-month text-center"
+						:class="{'sticky-left': isDesktop}"
+					>
+						<div>План</div>
+						<i
+							v-if="show_headers"
+							class="fa fa-sort ml-2"
+							@click="sort('month')"
+						/>
+					</th>
+					<th
+						class="indicators-table-fixed-plan text-center plan"
+						:class="{'sticky-left': isDesktop}"
+					>
+						<div>Вып.</div>
+						<i
+							v-if="show_headers"
+							class="fa fa-sort ml-2"
+							@click="sort('plan')"
+						/>
+					</th>
+					<th
+						class="indicators-table-fixed-percent text-center"
+						:class="{'sticky-left': isDesktop}"
+					>
+						<div>%</div>
+						<i
+							v-if="show_headers"
+							class="fa fa-sort ml-2"
+							@click="sort('_percent')"
+						/>
+					</th>
+				</template>
 
-    <!-- Modal edit -->
-    <b-modal v-model="showEditModal"  title="Настройки активности" @ok="saveActivity()" size="lg" class="modalle">
+				<template v-else>
+					<th
+						class="indicators-table-fixed-hmonth text-center"
+						:class="{'sticky-left': isDesktop}"
+					>
+						<div>План</div>
+						<i
+							v-if="show_headers"
+							class="fa fa-sort ml-2"
+							@click="sort('month')"
+						/>
+					</th>
+					<th
+						class="indicators-table-fixed-hplan text-center"
+						:class="{'sticky-left': isDesktop}"
+					>
+						<div>Вып.</div>
+						<i
+							v-if="show_headers"
+							class="fa fa-sort ml-2"
+							@click="sort('plan')"
+						/>
+					</th>
+				</template>
 
-        <div class="row">
-            <div class="col-5">
-                <p class="">Название активности</p>
-            </div>
-            <div class="col-7">
-                <input type="text" class="form-control form-control-sm" v-model="local_activity.name">
-            </div>
-        </div>
+				<template v-for="day in month.daysInMonth">
+					<th
+						class="text-center px-1"
+						:key="day"
+					>
+						<div>{{ day }}</div>
+					</th>
+				</template>
+			</tr>
 
-        <div class="row">
-            <div class="col-5">
-                <p class="">Метод</p>
-            </div>
-            <div class="col-7">
-                <select v-model="local_activity.plan_unit" class="form-control form-control-sm">
-                    <option :value="key"  v-for="(value, key) in plan_units" :key="key">{{ value }}</option>
-                </select>
-            </div>
-        </div>
+			<tr
+				v-for="(item, index) in filtered"
+				:key="index"
+				:class="{
+					'prize first-place': item.show_cup == 1,
+					'prize second-place': item.show_cup == 2,
+					'prize third-place': item.show_cup == 3,
+				}"
+			>
+				<td
+					v-if="item.name == 'SPECIAL_BTN'"
+					class="indicators-table-fixed-name"
+					:class="{'sticky-left': isDesktop}"
+				>
+					<button
+						class="btn btn-light rounded btn-sm"
+						@click="switchAction"
+					>
+						Сумма\Среднее
+					</button>
+				</td>
 
-        <div class="row">
-            <div class="col-5">
-                <p class="">План (Если сумма, на день)</p>
-            </div>
-            <div class="col-7">
-                <input type="number" class="form-control form-control-sm" v-model="local_activity.daily_plan">
-            </div>
-        </div>
+				<td
+					v-else
+					class="indicators-table-fixed-name text-left max-content"
+					:class="{'sticky-left': isDesktop}"
+					:title="item.id + ' ' + item.email"
+				>
+					<div class="d-flex max-content">
+						{{ item.lastname }} {{ item.name }}
+					</div>
+				</td>
 
-        <div class="row">
-            <div class="col-5">
-                <p class="">Кол-во рабочих дней в неделе</p>
-            </div>
-            <div class="col-7">
-                <input type="number" class="form-control form-control-sm" v-model="local_activity.weekdays" min="1" max="7">
-            </div>
-        </div>
+				<template v-if="activity.plan_unit == 'minutes'">
+					<td
+						class="indicators-table-fixed-avg class blue"
+						:class="{'sticky-left': isDesktop}"
+					>
+						<div>{{ item.avg }}</div>
+					</td>
+					<td
+						class="indicators-table-fixed-month class blue"
+						:class="{'sticky-left': isDesktop}"
+					>
+						<div :title="activity.daily_plan + ' * ' + item.applied_from">
+							{{ item.month }}
+						</div>
+					</td>
+					<td
+						class="indicators-table-fixed-plan class blue plan"
+						:class="{'sticky-left': isDesktop}"
+					>
+						<div>{{ item.plan }}</div>
+					</td>
+					<td
+						class="indicators-table-fixed-percent class blue"
+						:class="{'sticky-left': isDesktop}"
+					>
+						<div>{{ item.percent }}</div>
+					</td>
+				</template>
 
-        <div class="row">
-            <div class="col-5">
-                <p class="">Ед. измерения (Символ в конце показателя)</p>
-            </div>
-            <div class="col-7">
-                <input type="text" class="form-control form-control-sm" v-model="local_activity.unit">
-            </div>
-        </div>
+				<template v-else>
+					<td
+						class="indicators-table-fixed-hmonth class blue"
+						:class="{'sticky-left': isDesktop}"
+					>
+						<div>{{ item.month }}</div>
+					</td>
+					<td
+						class="indicators-table-fixed-hplan class blue"
+						:class="{'sticky-left': isDesktop}"
+					>
+						<div>{{ item.plan }}</div>
+					</td>
+				</template>
 
-        <div class="row">
-            <div class="col-5 d-flex align-items-center">
-                <p class="mb-0">Редактируемый</p>
-                <input type="checkbox" class="form-control form-control-sm" v-model="local_activity.editable">
-            </div>
-        </div>
 
-    </b-modal>
+				<template v-for="day in month.daysInMonth">
+					<td
+						v-if="item.editable && editable"
+						:key="day"
+						:class="'text-center ' + item._cellVariants[day]"
+					>
+						<div>
+							<input
+								type="number"
+								v-model="item[day]"
+								@change="updateSettings($event, item, index, day)"
+								class="form-control cell-input"
+							>
+						</div>
+					</td>
+					<td
+						v-else-if="holidays.includes(day) && item[day] > 0"
+						:key="day + 'a'"
+						@click="editMode(item)"
+						:class="'text-center ' + item._cellVariants[day]"
+					>
+						<div v-if="item[day]">
+							{{ item[day] }}{{ activity.unit }}
+						</div>
+						<div v-else />
+					</td>
+					<td
+						v-else-if="holidays.includes(day)"
+						:key="day + 'b'"
+						@click="editMode(item)"
+						:class="'text-center mywarning'"
+					>
+						<div v-if="item[day]">
+							{{ item[day] }}{{ activity.unit }}
+						</div>
+						<div v-else />
+					</td>
+					<td
+						v-else
+						@click="editMode(item)"
+						:key="day + 'c'"
+						:class="[item[day] > 0 || holidays.includes(day) ? 'text-center ' + item._cellVariants[day] : 'text-center']"
+					>
+						<div v-if="item[day]">
+							{{ item[day] }}{{ activity.unit }}
+						</div>
+						<div v-else />
+					</td>
+				</template>
+			</tr>
+		</table>
 
-</div>
+		<sidebar
+			title="Импорт EXCEL"
+			:open="showExcelImport"
+			@close="showExcelImport=false"
+			v-if="showExcelImport"
+			width="75%"
+		>
+			<activity-excel-import
+				:group_id="group_id"
+				table="minutes"
+				@close="showExcelImport=false"
+				:activity_id="activity.id"
+			/>
+		</sidebar>
+
+		<!-- Modal edit -->
+		<b-modal
+			v-model="showEditModal"
+			title="Настройки активности"
+			@ok="saveActivity()"
+			size="lg"
+			class="modalle"
+		>
+			<div class="row">
+				<div class="col-5">
+					<p class="">
+						Название активности
+					</p>
+				</div>
+				<div class="col-7">
+					<input
+						type="text"
+						class="form-control form-control-sm"
+						v-model="local_activity.name"
+					>
+				</div>
+			</div>
+
+			<div class="row">
+				<div class="col-5">
+					<p class="">
+						Метод
+					</p>
+				</div>
+				<div class="col-7">
+					<select
+						v-model="local_activity.plan_unit"
+						class="form-control form-control-sm"
+					>
+						<option
+							:value="key"
+							v-for="(value, key) in plan_units"
+							:key="key"
+						>
+							{{ value }}
+						</option>
+					</select>
+				</div>
+			</div>
+
+			<div class="row">
+				<div class="col-5">
+					<p class="">
+						План (Если сумма, на день)
+					</p>
+				</div>
+				<div class="col-7">
+					<input
+						type="number"
+						class="form-control form-control-sm"
+						v-model="local_activity.daily_plan"
+					>
+				</div>
+			</div>
+
+			<div class="row">
+				<div class="col-5">
+					<p class="">
+						Кол-во рабочих дней в неделе
+					</p>
+				</div>
+				<div class="col-7">
+					<input
+						type="number"
+						class="form-control form-control-sm"
+						v-model="local_activity.weekdays"
+						min="1"
+						max="7"
+					>
+				</div>
+			</div>
+
+			<div class="row">
+				<div class="col-5">
+					<p class="">
+						Ед. измерения (Символ в конце показателя)
+					</p>
+				</div>
+				<div class="col-7">
+					<input
+						type="text"
+						class="form-control form-control-sm"
+						v-model="local_activity.unit"
+					>
+				</div>
+			</div>
+
+			<div class="row">
+				<div class="col-5 d-flex align-items-center">
+					<p class="mb-0">
+						Редактируемый
+					</p>
+					<input
+						type="checkbox"
+						class="form-control form-control-sm"
+						v-model="local_activity.editable"
+					>
+				</div>
+			</div>
+		</b-modal>
+	</div>
 </template>
 
 <script>

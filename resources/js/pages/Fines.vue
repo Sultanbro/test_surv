@@ -1,56 +1,106 @@
 <template>
-    <div>
-       <b-row>
-           <b-col cols="12" lg="8">
-               <div class="table-container">
-                   <b-table-simple class="table-striped table-hover">
-                       <b-thead>
-                           <b-tr>
-                               <b-th class="text-left">Система депремирования</b-th>
-                               <b-th class="text-left">Сумма тенге</b-th>
-                               <b-th></b-th>
-                           </b-tr>
-                       </b-thead>
-                       <b-tbody>
-                           <b-tr v-for="(fine, index) in fines" :key="index">
-                               <b-td>
-                                   <b-textarea class="in-table-textarea" v-model.trim="fine.name"></b-textarea>
-                               </b-td>
-                               <b-td>
-                                   <b-form-input type="number" v-model.trim="fine.penalty_amount"/>
-                               </b-td>
-                               <b-td>
-                                   <button type="button" :data-id="fine.id" title="Удалить штраф" @click="deleteFine(index)" class="btn btn-danger">
-                                       <i class="fa fa-trash" aria-hidden="true"></i>
-                                   </button>
-                               </b-td>
-                           </b-tr>
-                       </b-tbody>
-                   </b-table-simple>
-               </div>
-           </b-col>
-       </b-row>
-        <div class="row">
-            <div class="col mt-2 mb-4">
-                <button type="button" @click="addFine()" title="Добавить новый штраф" class="btn btn-primary">
-                    Добавить
-                </button>
-                <button type="button" @click="saveFines()" title="Сохранить изменения в штрафах" class="btn btn-success">
-                    Сохранить <img  v-if="preloaderShow" src="/images/preloader.gif" width="20" height="20">
-                </button>
-            </div>
-        </div>
-        <div class="row" v-if="alert.show">
-            <div class="col-8">
-                <div class="alert mt-2 mb-3" v-bind:class="alert.class">
-                    {{ alert.message }}
-                    <button type="button" class="close mb-3" @click="closeAlert()">
-                        <span aria-hidden="true">&times;</span>
-                    </button>
-                </div>
-            </div>
-        </div>
-    </div>
+	<div>
+		<b-row>
+			<b-col
+				cols="12"
+				lg="8"
+			>
+				<div class="table-container">
+					<b-table-simple class="table-striped table-hover">
+						<b-thead>
+							<b-tr>
+								<b-th class="text-left">
+									Система депремирования
+								</b-th>
+								<b-th class="text-left">
+									Сумма тенге
+								</b-th>
+								<b-th />
+							</b-tr>
+						</b-thead>
+						<b-tbody>
+							<b-tr
+								v-for="(fine, index) in fines"
+								:key="index"
+							>
+								<b-td>
+									<b-textarea
+										class="in-table-textarea"
+										v-model.trim="fine.name"
+									/>
+								</b-td>
+								<b-td>
+									<b-form-input
+										type="number"
+										v-model.trim="fine.penalty_amount"
+									/>
+								</b-td>
+								<b-td>
+									<button
+										type="button"
+										:data-id="fine.id"
+										title="Удалить штраф"
+										@click="deleteFine(index)"
+										class="btn btn-danger"
+									>
+										<i
+											class="fa fa-trash"
+											aria-hidden="true"
+										/>
+									</button>
+								</b-td>
+							</b-tr>
+						</b-tbody>
+					</b-table-simple>
+				</div>
+			</b-col>
+		</b-row>
+		<div class="row">
+			<div class="col mt-2 mb-4">
+				<button
+					type="button"
+					@click="addFine()"
+					title="Добавить новый штраф"
+					class="btn btn-primary"
+				>
+					Добавить
+				</button>
+				<button
+					type="button"
+					@click="saveFines()"
+					title="Сохранить изменения в штрафах"
+					class="btn btn-success"
+				>
+					Сохранить <img
+						v-if="preloaderShow"
+						src="/images/preloader.gif"
+						width="20"
+						height="20"
+					>
+				</button>
+			</div>
+		</div>
+		<div
+			class="row"
+			v-if="alert.show"
+		>
+			<div class="col-8">
+				<div
+					class="alert mt-2 mb-3"
+					:class="alert.class"
+				>
+					{{ alert.message }}
+					<button
+						type="button"
+						class="close mb-3"
+						@click="closeAlert()"
+					>
+						<span aria-hidden="true">&times;</span>
+					</button>
+				</div>
+			</div>
+		</div>
+	</div>
 </template>
 
 <script>

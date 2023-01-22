@@ -1,16 +1,19 @@
 <template>
-    <div class="check__item">
-        <label class="check__item-label">
-            <input class="check__item-checkbox" type="checkbox">
-            <p class="check__item-doit">Сделать {{ index }}</p>
-        </label>
-        <input
-            :value="item.value"
-            type="text"
-            class="check__item-url"
-            placeholder="URL"
-        >
-    </div>
+	<div class="check__item">
+		<label class="check__item-label">
+			<input
+				class="check__item-checkbox"
+				type="checkbox"
+			>
+			<p class="check__item-doit">Сделать {{ index }}</p>
+		</label>
+		<input
+			:value="item.value"
+			type="text"
+			class="check__item-url"
+			placeholder="URL"
+		>
+	</div>
 </template>
 
 <script>
