@@ -156,7 +156,7 @@ final class UserRepository extends CoreRepository
     {
         try {
             $password = str_random(8);
-            dd($password);
+
             $user =  $this->model()->updateOrCreate(
                 [
                     'email'             => strtolower($userData['email'])
@@ -186,7 +186,7 @@ final class UserRepository extends CoreRepository
                     'img_url'           => $userData['file_name']
                 ]
             );
-
+            dd($user);
             EmailNotificationEvent::dispatch($userData['name'], $userData['email'], $password);
 
             return $user;
