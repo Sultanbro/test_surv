@@ -106,6 +106,7 @@ class UserService
             }
             if ($user == null)
             {
+                dd('here');
                 $user = $this->userRepository->updateOrCreateNewEmployee($dto->toArray());
             }
 
