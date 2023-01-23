@@ -1,10 +1,11 @@
 <template>
 	<label class="input-text">
 		<input
-			type="text"
-			class="input-text-input"
-			:placeholder="placeholder"
 			v-model="localValue"
+			:name="name"
+			:placeholder="placeholder"
+			class="input-text-input"
+			type="text"
 		>
 	</label>
 </template>
@@ -12,16 +13,26 @@
 <script>
 export default {
 	props: {
-		placeholder: String,
-		value: String
+		name: {
+			type: String,
+			default: '',
+		},
+		placeholder: {
+			type: String,
+			default: '',
+		},
+		value: {
+			type: String,
+			default: '',
+		}
 	},
-	data(){
+	data() {
 		return {
 			localValue: this.value
 		}
 	},
 	watch: {
-		localValue(val){
+		localValue(val) {
 			this.$emit('input', val)
 		}
 	}
@@ -37,6 +48,7 @@ export default {
   border-radius: 1rem;
   position: relative;
 }
+
 .input-text-input {
   display: block;
   width: 100%;
@@ -51,6 +63,7 @@ export default {
 
   &:focus {
     outline: none;
+
     & ~ .input-text-bar {
       &:before {
         width: 100%;
@@ -58,6 +71,7 @@ export default {
     }
   }
 }
+
 .input-text-input:not(:placeholder-shown) ~ .input-text-label,
 .input-text-input:focus ~ .input-text-label {
   top: -0.357rem;
@@ -66,6 +80,7 @@ export default {
   color: #000;
   transform: translate(-50%, 0);
 }
+
 .input-text-label {
   position: absolute;
   z-index: 1;
