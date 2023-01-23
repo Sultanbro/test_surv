@@ -351,7 +351,7 @@ export default {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    white-space: pre-wrap;
+    //white-space: pre-wrap;
     text-align: center;
   }
 

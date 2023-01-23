@@ -77,7 +77,9 @@ export default {
 						:id="tab.id"
 						class="nav-link"
 						:class="{active: tab.id === activeTab}"
-					>{{ tab.title }}</router-link>
+					>
+						{{ tab.title }}
+					</router-link>
 				</li>
 			</template>
 		</ul>
