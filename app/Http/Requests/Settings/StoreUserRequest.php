@@ -44,7 +44,7 @@ class StoreUserRequest extends FormRequest
             'phone_children'    => ['string', 'numeric', 'min:10'],
             'full_time'         => ['required', 'numeric'],
             'work_start_time'   => ['required', 'string'],
-            'work_end_time'     => ['required', 'string'],
+            'work_start_end'     => ['required', 'string'],
             'currency'          => ['string'],
             'weekdays'          => ['required', 'string'],
             'selectedCityInput' => ['required', 'string'],
@@ -120,7 +120,7 @@ class StoreUserRequest extends FormRequest
         $phoneChildren = Arr::get($validated, 'phone_children');
         $fullTime = Arr::get($validated, 'full_time');
         $workStartTime = Arr::get($validated, 'work_start_time');
-        $workEndTime = Arr::get($validated, 'work_end_time');
+        $workEndTime = Arr::get($validated, 'work_start_end');
         $currency = Arr::get($validated, 'currency');
         $weekdays = Arr::get($validated, 'weekdays');
         $workingCountry = Arr::get($validated, 'selectedCityInput');
