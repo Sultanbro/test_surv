@@ -10,10 +10,6 @@
 				<h2 class="jTariffs-header jHeader">
 					{{ $lang(lang, 'prices-header') }}
 				</h2>
-				<TariffsValute
-					class="jNav-menu-item jNav-menu-item-md"
-					@selected="getSelectedValute"
-				/>
 			</div>
 			<div class="jTariffs-content">
 				<table
@@ -80,65 +76,17 @@
 </template>
 
 <script>
-import axios from 'axios';
-import TariffsValute from '../tariffs/TariffsValute'
-
 export default {
 	name: 'SectionTariffs',
-	components: {
-		TariffsValute
-	},
 	computed: {
 		lang() {
 			return this.$root.$data.lang
 		},
 		table() {
-			return this.$lang(this.lang, 'prices-table').map((row, rowIndex) => {
-				if (rowIndex >= 12 && rowIndex <= 13) {
-					return row.map((item, index) => {
-						if (index >= 2 && index <= 4) {
-							const tariffItem = item.split(' ').join('');
-							if (this.selectedValute === '$') {
-								return `${this.separateThousands(
-									Math.round(
-										Number(tariffItem.slice(0, tariffItem.length - 1)) / this.usdRate
-									)
-								)} $`;
-							}
-							if (this.selectedValute === '₸') {
-								return `${this.separateThousands(
-									Math.round(
-										Number(tariffItem.slice(0, tariffItem.length - 1)) *
-                        (100 / this.kztRate)
-									)
-								)} ₸`;
-							}
-							return item;
-						} else {
-							return item;
-						}
-					});
-				} else {
-					return row;
-				}
-			});
+			return this.$lang(this.lang, 'prices-table')
 		},
 		isMedium() {
 			return this.$viewportSize.width >= 1260
-		}
-	},
-	methods: {
-		async USD() {
-			const rates = await axios('https://www.cbr-xml-daily.ru/daily_json.js')
-			this.usdRate = rates.data.Valute.USD.Value
-			this.kztRate = rates.data.Valute.KZT.Value
-		},
-		separateThousands(number) {
-			const num = number.toString();
-			return num.replace(/(\d{1,3}(?=(?:\d\d\d)+(?!\d)))/g, '$1' + ' ');
-		},
-		getSelectedValute(selectedValute) {
-			this.selectedValute = selectedValute
 		}
 	},
 	data() {
@@ -151,9 +99,6 @@ export default {
 
 		}
 	},
-	async mounted() {
-		await this.USD()
-	}
 }
 </script>
 
