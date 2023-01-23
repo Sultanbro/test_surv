@@ -1,15 +1,15 @@
 <template>
- 	<a
-		href="javascript:void(0)"
+	<a
+		href="#"
 		class="header__right-icon loop"
 		@click="click"
-		v-b-popover.hover.left.html="'Поиск по чату'"
+		v-b-popover.hover.left.html="'Поиск по чату - Этот функционал в разработке'"
 	>
 		<img
 			src="/images/dist/header-right-3.svg"
 			alt="nav icon"
 			class="header__icon-img"
-		/>
+		>
 	</a>
 </template>
 

@@ -8,6 +8,7 @@ use App\Enums\ErrorCode;
 use App\Enums\UserFilterEnum;
 use App\Events\EmailNotificationEvent;
 use App\Support\Core\CustomException;
+use App\User;
 use App\User as Model;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
@@ -32,7 +33,7 @@ final class UserRepository extends CoreRepository
         string $email
     )
     {
-        return $this->model()->where('email', $email)->first() ?? null;
+        return $this->model()->where('email', strtolower($email))->first();
     }
 
     /**
@@ -150,46 +151,50 @@ final class UserRepository extends CoreRepository
             ->when($endDateDeactivate, fn($q) => $q->whereDate('users.deleted_at', '<=', $endDateDeactivate));
     }
 
-    /**
-     * @param array $userData
-     * @return void
-     */
     public function updateOrCreateNewEmployee(
         array $userData
-    ): void
+    )
     {
-        $password = str_random(8);
-        $this->model()->updateOrCreate(
-            [
-                'email' => $userData['email']
-            ],
-            [
-                'email'             => strtolower($userData['email']),
-                'name'              => $userData['name'],
-                'last_name'         => $userData['last_name'],
-                'description'       => $userData['description'],
-                'password'          => Hash::make($password),
-                'position_id'       => $userData['position_id'],
-                'user_type'         => $userData['user_type'],
-                'timezone'          => 6,
-                'birthday'          => $userData['birthday'],
-                'program_id'        => $userData['program_type'],
-                'working_day_id'    => $userData['working_days'],
-                'working_time_id'   => $userData['working_times'],
-                'phone'             => Phone::normalize($userData['phone']),
-                'full_time'         => $userData['full_time'],
-                'work_start'        => $userData['work_start_time'],
-                'work_end'          => $userData['work_end_time'],
-                'currency'          => $userData['currency'] ?? 'kzt',
-                'weekdays'          => $userData['weekdays'],
-                'working_country'   => $userData['working_country'],
-                'working_city'      => $userData['working_city'],
-                'role_id'           => $userData['role_id'] ?? 1,
-                'is_admin'          => $userData['is_admin'] ?? 0,
-                'img_url'           => $userData['file_name']
-            ]
-        );
-        EmailNotificationEvent::dispatch($userData['name'], $userData['email'], $password);
+        try {
+            $password = str_random(8);
+
+            $user =  User::query()->updateOrCreate(
+                [
+                    'email'             => strtolower($userData['email'])
+                ],
+                [
+                    'name'              => $userData['name'],
+                    'last_name'         => $userData['last_name'],
+                    'description'       => $userData['description'],
+                    'password'          => Hash::make($password),
+                    'position_id'       => $userData['position_id'],
+                    'user_type'         => $userData['user_type'],
+                    'timezone'          => 6,
+                    'birthday'          => $userData['birthday'],
+                    'program_id'        => $userData['program_type'],
+                    'working_day_id'    => $userData['working_days'],
+                    'working_time_id'   => $userData['working_times'],
+                    'phone'             => Phone::normalize($userData['phone']),
+                    'full_time'         => $userData['full_time'],
+                    'work_start'        => $userData['work_start_time'],
+                    'work_end'          => $userData['work_end_time'],
+                    'currency'          => $userData['currency'] ?? 'kzt',
+                    'weekdays'          => $userData['weekdays'],
+                    'working_country'   => $userData['working_country'],
+                    'working_city'      => $userData['working_city'],
+                    'role_id'           => $userData['role_id'] ?? 1,
+                    'is_admin'          => $userData['is_admin'] ?? 0,
+                    'img_url'           => $userData['file_name']
+                ]
+            );
+            dd($user);
+            EmailNotificationEvent::dispatch($userData['name'], $userData['email'], $password);
+
+            return $user;
+        } catch (\Exception $exception)
+        {
+            new CustomException('Что то пошло не так при сохранений пользователя.', ErrorCode::BAD_REQUEST, []);
+        }
     }
 
     /**

@@ -4,6 +4,7 @@ namespace App\Listeners;
 
 use App\Events\EmailNotificationEvent;
 use App\Mail\SendInvitation;
+use Exception;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Support\Facades\Mail;
@@ -26,6 +27,7 @@ class EmailNotificationListener
      *
      * @param EmailNotificationEvent $event
      * @return void
+     * @throws Exception
      */
     public function handle(EmailNotificationEvent $event)
     {
@@ -37,7 +39,7 @@ class EmailNotificationListener
                 'subdomain' => tenant('id')
             ]));
         } catch (Throwable $e) {
-            return redirect()->to('/timetracking/create-person')->withInput()->withErrors('Возможно вы ввели не верный email или его не существует! <br><br> ' . $e->getMessage());
+            throw new Exception('Ошибка при отправке сообщений на email');
         }
     }
 }
