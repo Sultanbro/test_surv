@@ -30,7 +30,7 @@ class StoreUserRequest extends FormRequest
             'name'              => ['required', 'string', 'min:3', 'max:60'],
             'last_name'         => ['required', 'string', 'min:3', 'max:60'],
             'email'             => ['required', 'string', 'email'],
-            'description'       => ['string', 'min:3', 'max:255'],
+            'description'       => ['nullable'],
             'position'          => ['required', 'numeric', 'exists:position,id'],
             'user_type'         => ['required', 'string', 'in:office,remote'],
             'birthday'          => ['required', 'string'],
