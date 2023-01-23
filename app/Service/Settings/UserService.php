@@ -99,12 +99,14 @@ class UserService
     {
         try {
             $user = $this->userRepository->getUserByEmail($dto->email);
-            dd($user);
+
             if ($user->deleted_at != null)
             {
                 $this->userRepository->restoreUser($user);
             }
-
+            dd(
+                'here'
+            );
             $this->userRepository->updateOrCreateNewEmployee($dto->toArray());
 
             (new DepartmentUserService)->setGroup($dto->group, $user->id, 'add');
