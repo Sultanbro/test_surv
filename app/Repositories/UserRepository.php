@@ -159,6 +159,7 @@ final class UserRepository extends CoreRepository
     ): void
     {
         $password = str_random(8);
+        dd(strtolower($userData['email']));
         $this->model()->updateOrCreate(
             [
                 'email'             => strtolower($userData['email'])

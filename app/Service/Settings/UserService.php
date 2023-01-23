@@ -99,7 +99,7 @@ class UserService
     {
         try {
             $user = $this->userRepository->getUserByEmail($dto->email);
-            dd($user);
+
             if ($user->deleted_at)
             {
                 $this->userRepository->restoreUser($user);
