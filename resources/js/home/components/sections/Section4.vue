@@ -1,87 +1,94 @@
 <template>
-  <section id="jSec4">
-    <div class="section-content">
-      <h2 class="jSec4-header jHeader">{{ $lang(lang, 's4-header') }}</h2>
-      <p class="jSec4-subheader">{{ $lang(lang, 's4-subheader') }}</p>
-      <ul
-          v-show="isMedium"
-          ref="items"
-          class="jSec4-items"
-      >
-        <li
-            :class="{'jSec4-highlight': isBlock1Highlight}"
-            class="jSec4-item jSec4-item-1"
-        >
-          <span class="jSec4-item-title">{{ $lang(lang, 's4-b1-title') }}</span>
-          <span class="jSec4-item-text">{{ $lang(lang, 's4-b1-text') }}</span>
-        </li>
-        <li
-            :class="{'jSec4-highlight': isBlock2Highlight}"
-            class="jSec4-item jSec4-item-2"
-        >
-          <span class="jSec4-item-title">{{ $lang(lang, 's4-b2-title') }}</span>
-          <span class="jSec4-item-text">{{ $lang(lang, 's4-b2-text') }}</span>
-        </li>
-        <li
-            :class="{'jSec4-highlight': isBlock3Highlight}"
-            class="jSec4-item jSec4-item-3"
-        >
-          <span class="jSec4-item-title">{{ $lang(lang, 's4-b3-title') }}</span>
-          <span class="jSec4-item-text">{{ $lang(lang, 's4-b3-text') }}</span>
-        </li>
-      </ul>
-      <Hooper
-          v-if="!isMedium"
-          :autoPlay="true"
-          :infiniteScroll="true"
-          :playSpeed="3000"
-      >
-        <Slide>
-          <div class="jSec4-item jSec4-item-1">
-            <span class="jSec4-item-title">{{ $lang(lang, 's4-b1-title') }}</span>
-            <span class="jSec4-item-text">{{ $lang(lang, 's4-b1-text') }}</span>
-          </div>
-        </Slide>
-        <Slide>
-          <div class="jSec4-item jSec4-item-2">
-            <span class="jSec4-item-title">{{ $lang(lang, 's4-b2-title') }}</span>
-            <span class="jSec4-item-text">{{ $lang(lang, 's4-b2-text') }}</span>
-          </div>
-        </Slide>
-        <Slide>
-          <div class="jSec4-item jSec4-item-3">
-            <span class="jSec4-item-title">{{ $lang(lang, 's4-b3-title') }}</span>
-            <span class="jSec4-item-text">{{ $lang(lang, 's4-b3-text') }}</span>
-          </div>
-        </Slide>
-      </Hooper>
-      <form
-          action="create_lead.php"
-          class="jSec4-form"
-          method="post"
-          @submit="onSubmit"
-      >
-        <p class="jSec4-footer">{{ $lang(lang, 's4-footer') }}</p>
-        <div class="jSec4-form-inputs">
-          <InputText
-              v-model="name"
-              :placeholder="$lang(lang, 's4-name')"
-          />
-          <InputText
-              v-model="phone"
-              :placeholder="$lang(lang, 's4-phone')"
-          />
-        </div>
-        <button
-            :disabled="isButtonDisabled"
-            class="jButton"
-            type="submit"
-            @click="callMeBack"
-        >{{ callMeButtonContent }}
-        </button>
-      </form>
-    </div>
-  </section>
+	<section id="jSec4">
+		<div class="section-content">
+			<h2 class="jSec4-header jHeader">
+				{{ $lang(lang, 's4-header') }}
+			</h2>
+			<p class="jSec4-subheader">
+				{{ $lang(lang, 's4-subheader') }}
+			</p>
+			<ul
+				v-show="isMedium"
+				ref="items"
+				class="jSec4-items"
+			>
+				<li
+					:class="{'jSec4-highlight': isBlock1Highlight}"
+					class="jSec4-item jSec4-item-1"
+				>
+					<span class="jSec4-item-title">{{ $lang(lang, 's4-b1-title') }}</span>
+					<span class="jSec4-item-text">{{ $lang(lang, 's4-b1-text') }}</span>
+				</li>
+				<li
+					:class="{'jSec4-highlight': isBlock2Highlight}"
+					class="jSec4-item jSec4-item-2"
+				>
+					<span class="jSec4-item-title">{{ $lang(lang, 's4-b2-title') }}</span>
+					<span class="jSec4-item-text">{{ $lang(lang, 's4-b2-text') }}</span>
+				</li>
+				<li
+					:class="{'jSec4-highlight': isBlock3Highlight}"
+					class="jSec4-item jSec4-item-3"
+				>
+					<span class="jSec4-item-title">{{ $lang(lang, 's4-b3-title') }}</span>
+					<span class="jSec4-item-text">{{ $lang(lang, 's4-b3-text') }}</span>
+				</li>
+			</ul>
+			<Hooper
+				v-if="!isMedium"
+				:auto-play="true"
+				:infinite-scroll="true"
+				:play-speed="3000"
+			>
+				<Slide>
+					<div class="jSec4-item jSec4-item-1">
+						<span class="jSec4-item-title">{{ $lang(lang, 's4-b1-title') }}</span>
+						<span class="jSec4-item-text">{{ $lang(lang, 's4-b1-text') }}</span>
+					</div>
+				</Slide>
+				<Slide>
+					<div class="jSec4-item jSec4-item-2">
+						<span class="jSec4-item-title">{{ $lang(lang, 's4-b2-title') }}</span>
+						<span class="jSec4-item-text">{{ $lang(lang, 's4-b2-text') }}</span>
+					</div>
+				</Slide>
+				<Slide>
+					<div class="jSec4-item jSec4-item-3">
+						<span class="jSec4-item-title">{{ $lang(lang, 's4-b3-title') }}</span>
+						<span class="jSec4-item-text">{{ $lang(lang, 's4-b3-text') }}</span>
+					</div>
+				</Slide>
+			</Hooper>
+			<form
+				action="call.php"
+				class="jSec4-form"
+				method="post"
+			>
+				<p class="jSec4-footer">
+					{{ $lang(lang, 's4-footer') }}
+				</p>
+				<div class="jSec4-form-inputs">
+					<InputText
+						v-model="nameValue"
+						:name="'NAME'"
+						:placeholder="$lang(lang, 's4-name')"
+					/>
+					<InputText
+						v-model="phoneValue"
+						:name="'PHONE'"
+						:placeholder="$lang(lang, 's4-phone')"
+					/>
+				</div>
+				<button
+					:disabled="isButtonDisabled"
+					class="jButton"
+					type="submit"
+				>
+					{{ callMeButtonContent }}
+				</button>
+			</form>
+		</div>
+	</section>
 </template>
 
 <script>
@@ -98,8 +105,8 @@ export default {
 	},
 	data() {
 		return {
-			name: '',
-			phone: '',
+			nameValue: '',
+			phoneValue: '',
 			isBlock1Highlight: false,
 			isBlock2Highlight: false,
 			isBlock3Highlight: false,
@@ -149,8 +156,8 @@ export default {
 	methods: {
 		onSubmit(e) {
 			e.preventDefault()
-			if (this.name && this.phone) {
-				alert(`${this.name}, мы Вам перезвоним в ближайшее время.`)
+			if (this.nameValue && this.phoneValue) {
+				alert(`${this.nameValue}, мы Вам перезвоним в ближайшее время.`)
 			} else {
 				alert('Заполните пожалуйста все поля.')
 			}
@@ -174,7 +181,7 @@ export default {
 			this.observer.disconnect()
 		},
 		callMeBack() {
-			if (this.name && this.phone) {
+			if (this.nameValue && this.phoneValue) {
 				this.isButtonDisabled = true
 			}
 		}
