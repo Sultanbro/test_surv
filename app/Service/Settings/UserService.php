@@ -108,8 +108,8 @@ class UserService
             {
                 $user = $this->userRepository->updateOrCreateNewEmployee($dto->toArray());
             }
-            dd($user);
-             (new DepartmentUserService)->setGroup($dto->group, $user->id, 'add');
+
+            (new DepartmentUserService)->setGroup($dto->group, $user->id, 'add');
 
             if ($dto->headGroup != 0 && $dto->positionId == Position::GROUP_HEAD)
             {
