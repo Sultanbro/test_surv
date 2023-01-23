@@ -102,12 +102,10 @@ class UserService
 
             if ($user != null && $user->deleted_at != null)
             {
-                dd('not null');
                 $this->userRepository->restoreUser($user);
             }
             if ($user == null)
             {
-                dd('null');
                 $this->userRepository->updateOrCreateNewEmployee($dto->toArray());
             }
 
