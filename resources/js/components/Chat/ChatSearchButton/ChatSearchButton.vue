@@ -1,5 +1,5 @@
 <template>
-	<a
+ 	<a
 		href="javascript:void(0)"
 		class="header__right-icon loop"
 		@click="click"
@@ -9,7 +9,7 @@
 			src="/images/dist/header-right-3.svg"
 			alt="nav icon"
 			class="header__icon-img"
-		>
+		/>
 	</a>
 </template>
 
