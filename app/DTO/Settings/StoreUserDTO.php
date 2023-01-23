@@ -29,7 +29,7 @@ class StoreUserDTO
      * @param string|null $currency
      * @param string|null $weekdays
      * @param string $workingCountry
-     * @param string $workingCity
+     * @param string|null $workingCity
      * @param UploadedFile|null $fileName
      * @param int|null $headGroup
      * @param bool|null $isTrainee
@@ -80,7 +80,7 @@ class StoreUserDTO
         public ?string $currency,
         public ?string $weekdays,
         public string $workingCountry,
-        public string $workingCity,
+        public ?string $workingCity,
         public ?UploadedFile $fileName,
         public ?int $headGroup,
         public ?bool $isTrainee,
