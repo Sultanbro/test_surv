@@ -37,7 +37,7 @@ class StoreUserRequest extends FormRequest
             'program_type'      => ['required', 'numeric'],
             'working_days'      => ['required', 'numeric'],
             'working_times'     => ['required', 'numeric'],
-            'phone'             => ['required', 'string', 'numeric', 'min:10'],
+            'phone'             => ['required', 'string', 'min:10'],
             'phone_home'        => ['string', 'numeric', 'min:10'],
             'phone_husband'     => ['string', 'numeric', 'min:10'],
             'phone_relatives'   => ['string', 'numeric', 'min:10'],
