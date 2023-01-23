@@ -106,7 +106,7 @@ class UserService
             }
             if ($user == null)
             {
-                $this->userRepository->updateOrCreateNewEmployee($dto->toArray());
+                $user = $this->userRepository->updateOrCreateNewEmployee($dto->toArray());
             }
 
             (new DepartmentUserService)->setGroup($dto->group, $user->id, 'add');

@@ -152,15 +152,14 @@ final class UserRepository extends CoreRepository
 
     /**
      * @param array $userData
-     * @return void
      */
     public function updateOrCreateNewEmployee(
         array $userData
-    ): void
+    )
     {
         $password = str_random(8);
 
-        $this->model()->updateOrCreate(
+        return $this->model()->updateOrCreate(
             [
                 'email'             => strtolower($userData['email'])
             ],
