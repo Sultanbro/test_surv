@@ -52,11 +52,6 @@ export default {
 				},
 			],
 		}
-	},
-	computed: {
-		isMainProject(){
-			return this.tenant === 'bp' || this.tenant === 'test'
-		}
 	}
 }
 </script>
@@ -68,7 +63,7 @@ export default {
 		>
 			<template v-for="tab in tabs">
 				<li
-					v-if="!(!$can(tab.access) || (tab.bp && !isMainProject))"
+					v-if="!(!$can(tab.access) || (tab.bp && tenant !== 'bp'))"
 					:key="tab.id"
 					class="nav-item"
 				>

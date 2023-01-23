@@ -1,88 +1,144 @@
 <template>
-  <section id="jTariffs">
-    <a
-        id="prices"
-        class="ancor"
-        name="prices"
-    />
-    <div class="section-content">
-      <div class="jTariffs-header-wrapper jTariffs-header">
-        <h2 class="jTariffs-header jHeader">{{ $lang(lang, 'prices-header') }}</h2>
-      </div>
-      <div class="jTariffs-content">
-        <table
-            :data-col="activeCol"
-            class="jTariffs-table"
-            @mouseout="activeCol = -1"
-        >
-          <tbody class="jTariffs-tbody">
-          <tr
-              v-for="(tr, rkey) in table"
-              :key="'r' + rkey"
-              class="jTariffs-tr"
-          >
-            <template v-if="rkey === 0 || rkey >= table.length - 3">
-              <th
-                  v-for="(td, dkey) in tr"
-                  :key="'r' + rkey + 'd' + dkey"
-                  :data-col="dkey"
-                  class="jTariffs-th jTariffs-cell"
-                  @mouseover="activeCol = dkey"
-              >{{ td }}
-              </th>
-            </template>
-            <template v-else>
-              <td
-                  v-for="(td, dkey) in tr"
-                  :key="'r' + rkey + 'd' + dkey"
-                  :data-col="dkey"
-                  class="jTariffs-td jTariffs-cell"
-                  @mouseover="activeCol = dkey"
-              >{{ td }}
-              </td>
-            </template>
-          </tr>
-          <tr>
-            <th></th>
-            <td
-                v-for="td in 4"
-                :key="td"
-            >
-              <a
-                  class="jButton jButton-tariffs-four"
-                  href="/register"
-              >
-                {{ $lang(lang, 'prices-register') }}
-              </a>
-            </td>
-          </tr>
-          </tbody>
-        </table>
-        <div class="jButton-tariffs-one">
-          <a
-              class="jButton"
-              href="/register"
-          >
-            {{ $lang(lang, 'prices-register') }}
-          </a>
-        </div>
-      </div>
-    </div>
-  </section>
+	<section id="jTariffs">
+		<a
+			id="prices"
+			class="ancor"
+			name="prices"
+		/>
+		<div class="section-content">
+			<div class="jTariffs-header-wrapper jTariffs-header">
+				<h2 class="jTariffs-header jHeader">
+					{{ $lang(lang, 'prices-header') }}
+				</h2>
+				<TariffsValute
+					class="jNav-menu-item jNav-menu-item-md"
+					@selected="getSelectedValute"
+				/>
+			</div>
+			<div class="jTariffs-content">
+				<table
+					:data-col="activeCol"
+					class="jTariffs-table"
+					@mouseout="activeCol = -1"
+				>
+					<tbody class="jTariffs-tbody">
+						<tr
+							v-for="(tr, rkey) in table"
+							:key="'r' + rkey"
+							class="jTariffs-tr"
+						>
+							<template v-if="rkey === 0 || rkey >= table.length - 3">
+								<th
+									v-for="(td, dkey) in tr"
+									:key="'r' + rkey + 'd' + dkey"
+									:data-col="dkey"
+									class="jTariffs-th jTariffs-cell"
+									@mouseover="activeCol = dkey"
+								>
+									{{ td }}
+								</th>
+							</template>
+							<template v-else>
+								<td
+									v-for="(td, dkey) in tr"
+									:key="'r' + rkey + 'd' + dkey"
+									:data-col="dkey"
+									class="jTariffs-td jTariffs-cell"
+									@mouseover="activeCol = dkey"
+								>
+									{{ td }}
+								</td>
+							</template>
+						</tr>
+						<tr>
+							<th />
+							<td
+								v-for="td in 4"
+								:key="td"
+							>
+								<a
+									class="jButton jButton-tariffs-four"
+									href="/register"
+								>
+									{{ $lang(lang, 'prices-register') }}
+								</a>
+							</td>
+						</tr>
+					</tbody>
+				</table>
+				<div class="jButton-tariffs-one">
+					<a
+						class="jButton"
+						href="/register"
+					>
+						{{ $lang(lang, 'prices-register') }}
+					</a>
+				</div>
+			</div>
+		</div>
+	</section>
 </template>
 
 <script>
+import axios from 'axios';
+import TariffsValute from '../tariffs/TariffsValute'
+
 export default {
 	name: 'SectionTariffs',
+	components: {
+		TariffsValute
+	},
 	computed: {
 		lang() {
 			return this.$root.$data.lang
 		},
 		table() {
-			return this.$lang(this.lang, 'prices-table')
+			return this.$lang(this.lang, 'prices-table').map((row, rowIndex) => {
+				if (rowIndex >= 12 && rowIndex <= 13) {
+					return row.map((item, index) => {
+						if (index >= 2 && index <= 4) {
+							const tariffItem = item.split(' ').join('');
+							if (this.selectedValute === '$') {
+								return `${this.separateThousands(
+									Math.round(
+										Number(tariffItem.slice(0, tariffItem.length - 1)) / this.usdRate
+									)
+								)} $`;
+							}
+							if (this.selectedValute === '₸') {
+								return `${this.separateThousands(
+									Math.round(
+										Number(tariffItem.slice(0, tariffItem.length - 1)) *
+                        (100 / this.kztRate)
+									)
+								)} ₸`;
+							}
+							return item;
+						} else {
+							return item;
+						}
+					});
+				} else {
+					return row;
+				}
+			});
 		},
 		isMedium() {
 			return this.$viewportSize.width >= 1260
+		}
+	},
+	methods: {
+		async USD() {
+			const rates = await axios('https://www.cbr-xml-daily.ru/daily_json.js')
+			this.usdRate = rates.data.Valute.USD.Value
+			this.kztRate = rates.data.Valute.KZT.Value
+		},
+		separateThousands(number) {
+			const num = number.toString();
+			return num.replace(/(\d{1,3}(?=(?:\d\d\d)+(?!\d)))/g, '$1' + ' ');
+		},
+		getSelectedValute(selectedValute) {
+			this.selectedValute = selectedValute
 		}
 	},
 	data() {
@@ -95,6 +151,9 @@ export default {
 
 		}
 	},
+	async mounted() {
+		await this.USD()
+	}
 }
 </script>
 
