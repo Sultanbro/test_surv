@@ -51,7 +51,7 @@ class StoreUserRequest extends FormRequest
             'working_city'      => ['nullable'],
             'file_name'         => ['file', 'mimes:jpg,png'],
             'head_group'        => ['numeric', 'exists:profile_groups,id'],
-            'is_trainee'        => ['boolean'],
+            'is_trainee'        => ['in:true,false'],
             'contacts'          => ['array'],
             'adaptation_talks'  => ['array'],
             'adaptation_talks.*.date'   => ['string'],
