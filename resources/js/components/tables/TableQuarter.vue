@@ -1,72 +1,111 @@
 <template>
+	<div class="quarter-page">
+		<p class="call-norm p-0">
+			{{ group }}
+		</p>
+		<span class="mb-2">При <span style="background-color:rgb(193 255 208)">активации</span> в профиле у сотрудника появятся условия получения квартальной Премии</span>
 
+		<div class="d-flex mt-2">
+			<table class="table table-bordered table-sm mark">
+				<thead style="background: aliceblue;color: #0077e0;">
+					<tr>
+						<th style="width: 25%">
+							Период
+						</th>
+						<th style="width: 25%">
+							Сумма
+						</th>
+						<th>Комментарии</th>
+					</tr>
+				</thead>
 
-    <div class="quarter-page">
-        <p class="call-norm p-0">{{ group }} </p>
-        <span class="mb-2">При <span style="background-color:rgb(193 255 208)">активации</span> в профиле у сотрудника появятся условия получения квартальной Премии</span>
-
-        <div class="d-flex mt-2">
-
-            <table class="table table-bordered table-sm mark">
-
-
-
-                <thead style="background: aliceblue;color: #0077e0;">
-                    <tr>
-                        <th style="width: 25%">Период</th>
-                        <th style="width: 25%">Сумма</th>
-                        <th>Комментарии</th>
-                    </tr>
-                </thead>
-
-                <tr v-for="(item, index) in arr" :key="index">
-
-
-                    <th >
-                        <!--<span style="cursor: pointer" v-b-popover.hover.right.html="'Количество сотрудников на данный момент'" >-->
-                            <!--<label v-for="item.quarter">-->
-                            <span  v-if="item.quarter == 1"> Первый </span>
-                            <span  v-if="item.quarter == 2"> Второй </span>
-                            <span  v-if="item.quarter == 3"> Третий </span>
-                            <span  v-if="item.quarter == 4"> Четвертый </span>
-                            Квартал
-                        <!--</span>-->
-                            <!--</label>-->
-                            <input v-model="item.checked" style="position: absolute;margin-top:-6px;margin-left: 10px;cursor: pointer" type="checkbox" />
-                            <p style="font-size: 14px" v-if="item.quarter == 1">Период с 01.01.{{item.year}} до 31.03.{{item.year}}</p>
-                            <p style="font-size: 14px" v-if="item.quarter == 2">Период с 01.04.{{item.year}} до 30.06.{{item.year}}</p>
-                            <p style="font-size: 14px" v-if="item.quarter == 3">Период с 01.07.{{item.year}} до 30.09.{{item.year}}</p>
-                            <p style="font-size: 14px" v-if="item.quarter == 4">Период с 01.10.{{item.year}} до 31.12.{{item.year}}</p>
-
-                    </th>
-                    <th>
-                        <div v-if="item.checked" >
-                            <input  v-model="item.sum" type="number" class="form-control mb-1" value="0"/>
-                        </div>
-                    </th>
-                    <th>
-                        <div v-if="item.checked">
-                            <textarea  v-model="item.text" class="form-control" placeholder="Комментарии"></textarea>
-                        </div>
-                    </th>
-                </tr>
-            </table>
-
-
-
-        </div>
-        <!--selectedQuarter-->
-        <div class="col-12 p-0 row">
-            <div class="col-6 p-0 ml-3">
-                <div v-if="errors.length">
-                    <p style="color: #c75f5f" v-for="error in errors" :key="error">{{ error }}</p>
-                </div>
-                <a style="color: white;text-align: center;border-radius: unset"
-                   id="selectedQuarter" @click="selectedQuarter"
-                   class=" btn-block btn btn-success p-0 mt-3"  >Сохранить</a>
-            </div>
-        </div>
-    </div>
+				<tr
+					v-for="(item, index) in arr"
+					:key="index"
+				>
+					<th>
+						<!--<span style="cursor: pointer" v-b-popover.hover.right.html="'Количество сотрудников на данный момент'" >-->
+						<!--<label v-for="item.quarter">-->
+						<span v-if="item.quarter == 1"> Первый </span>
+						<span v-if="item.quarter == 2"> Второй </span>
+						<span v-if="item.quarter == 3"> Третий </span>
+						<span v-if="item.quarter == 4"> Четвертый </span>
+						Квартал
+						<!--</span>-->
+						<!--</label>-->
+						<input
+							v-model="item.checked"
+							style="position: absolute;margin-top:-6px;margin-left: 10px;cursor: pointer"
+							type="checkbox"
+						>
+						<p
+							style="font-size: 14px"
+							v-if="item.quarter == 1"
+						>
+							Период с 01.01.{{ item.year }} до 31.03.{{ item.year }}
+						</p>
+						<p
+							style="font-size: 14px"
+							v-if="item.quarter == 2"
+						>
+							Период с 01.04.{{ item.year }} до 30.06.{{ item.year }}
+						</p>
+						<p
+							style="font-size: 14px"
+							v-if="item.quarter == 3"
+						>
+							Период с 01.07.{{ item.year }} до 30.09.{{ item.year }}
+						</p>
+						<p
+							style="font-size: 14px"
+							v-if="item.quarter == 4"
+						>
+							Период с 01.10.{{ item.year }} до 31.12.{{ item.year }}
+						</p>
+					</th>
+					<th>
+						<div v-if="item.checked">
+							<input
+								v-model="item.sum"
+								type="number"
+								class="form-control mb-1"
+								value="0"
+							>
+						</div>
+					</th>
+					<th>
+						<div v-if="item.checked">
+							<textarea
+								v-model="item.text"
+								class="form-control"
+								placeholder="Комментарии"
+							/>
+						</div>
+					</th>
+				</tr>
+			</table>
+		</div>
+		<!--selectedQuarter-->
+		<div class="col-12 p-0 row">
+			<div class="col-6 p-0 ml-3">
+				<div v-if="errors.length">
+					<p
+						style="color: #c75f5f"
+						v-for="error in errors"
+						:key="error"
+					>
+						{{ error }}
+					</p>
+				</div>
+				<a
+					style="color: white;text-align: center;border-radius: unset"
+					id="selectedQuarter"
+					@click="selectedQuarter"
+					class=" btn-block btn btn-success p-0 mt-3"
+				>Сохранить</a>
+			</div>
+		</div>
+	</div>
 </template>
 
 <script>

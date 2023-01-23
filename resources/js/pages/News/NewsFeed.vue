@@ -1,54 +1,54 @@
 <template>
-    <div class="col-12 col-xl-9 col-lg-8 col-posts">
-        <NewsCreate
-            v-if="isRedactor"
-            ref="newsCreate"
-            @update-news-list="getPosts"
-            :me="me"
-        />
+	<div class="col-12 col-xl-9 col-lg-8 col-posts">
+		<NewsCreate
+			v-if="isRedactor"
+			ref="newsCreate"
+			@update-news-list="getPosts"
+			:me="me"
+		/>
 
-        <div class="news-container">
-            <div class="news-container__header">
-                <span class="news-header__title">Новости</span>
-                <FilterComponent
-                    @searchNews="getPosts"
-                    ref="filterComponent"
-                    @toggleWhiteBg="showWhiteBg"
-                />
-            </div>
-            <PostComponent
-                v-for="post in pinnedPosts"
-                :key="post.id + post.content + post.is_pinned + post.is_favourite + (post.available_for == null ? '' : post.available_for.length)"
-                @editPost="updatePost"
-                @update-news-list="getPosts"
-                :post="post"
-                :me="me"
-            />
+		<div class="news-container">
+			<div class="news-container__header">
+				<span class="news-header__title">Новости</span>
+				<FilterComponent
+					@searchNews="getPosts"
+					ref="filterComponent"
+					@toggleWhiteBg="showWhiteBg"
+				/>
+			</div>
+			<PostComponent
+				v-for="post in pinnedPosts"
+				:key="post.id + post.content + post.is_pinned + post.is_favourite + (post.available_for == null ? '' : post.available_for.length)"
+				@editPost="updatePost"
+				@update-news-list="getPosts"
+				:post="post"
+				:me="me"
+			/>
 
-            <PostComponent
-                v-for="post in posts"
-                :key="post.id + post.content + post.is_pinned + post.is_favourite + (post.available_for == null ? '' : post.available_for.length)"
-                @editPost="updatePost"
-                @update-news-list="getPosts"
-                :post="post"
-                :me="me"
-            />
-            <div
-                class="news-paginate"
-                @click="getNextPage()"
-                :style="(nextPageURL != null && showPaginator == true) ? '' : 'opacity: 0;'"
-            >
-                <img src="/icon/news/some-icons/next-page.svg">
-                <span>Загрузить ещё</span>
-            </div>
-        </div>
+			<PostComponent
+				v-for="post in posts"
+				:key="post.id + post.content + post.is_pinned + post.is_favourite + (post.available_for == null ? '' : post.available_for.length)"
+				@editPost="updatePost"
+				@update-news-list="getPosts"
+				:post="post"
+				:me="me"
+			/>
+			<div
+				class="news-paginate"
+				@click="getNextPage()"
+				:style="(nextPageURL != null && showPaginator == true) ? '' : 'opacity: 0;'"
+			>
+				<img src="/icon/news/some-icons/next-page.svg">
+				<span>Загрузить ещё</span>
+			</div>
+		</div>
 
-        <div
-            v-show="showBg"
-            class="news-bg"
-            @click.self="hideWhiteBg"
-        />
-    </div>
+		<div
+			v-show="showBg"
+			class="news-bg"
+			@click.self="hideWhiteBg"
+		/>
+	</div>
 </template>
 
 <script>

@@ -1,47 +1,52 @@
 <template>
-  <div class="header__nav-link">
-    <router-link
-      v-if="to"
-      :to="to || ''"
-      class="header__nav-link-a"
-    >
-      <span
-        v-if="icon"
-        :class="icon"
-        class="header__nav-icon"
-      />
-      <img
-        v-if="img"
-        :style="img.style"
-        :src="img.src"
-        :class="img.className"
-      >
-      <span class="header__nav-name">{{ name }}</span>
-    </router-link>
-    <a
-      v-else
-      :href="href || 'javascript:void(0)'"
-      class="header__nav-link-a"
-    >
-      <span
-        v-if="icon"
-        :class="icon"
-        class="header__nav-icon"
-      />
-      <img
-        v-if="img"
-        :style="img.style"
-        :src="img.src"
-        :class="img.className"
-      >
-      <span class="header__nav-name">{{ name }}</span>
-    </a>
-    <div v-if="popover" class="header__nav-popover">{{ popover }}</div>
-    <LeftSidebarMenu
-      v-if="menu"
-      :items="menu"
-    />
-  </div>
+	<div class="header__nav-link">
+		<router-link
+			v-if="to"
+			:to="to || ''"
+			class="header__nav-link-a"
+		>
+			<span
+				v-if="icon"
+				:class="icon"
+				class="header__nav-icon"
+			/>
+			<img
+				v-if="img"
+				:style="img.style"
+				:src="img.src"
+				:class="img.className"
+			>
+			<span class="header__nav-name">{{ name }}</span>
+		</router-link>
+		<a
+			v-else
+			:href="href || 'javascript:void(0)'"
+			class="header__nav-link-a"
+		>
+			<span
+				v-if="icon"
+				:class="icon"
+				class="header__nav-icon"
+			/>
+			<img
+				v-if="img"
+				:style="img.style"
+				:src="img.src"
+				:class="img.className"
+			>
+			<span class="header__nav-name">{{ name }}</span>
+		</a>
+		<div
+			v-if="popover"
+			class="header__nav-popover"
+		>
+			{{ popover }}
+		</div>
+		<LeftSidebarMenu
+			v-if="menu"
+			:items="menu"
+		/>
+	</div>
 </template>
 
 <script>

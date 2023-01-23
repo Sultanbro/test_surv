@@ -1,43 +1,69 @@
 <template>
-<div>
-    <div class="b-flex">
-        <div class="b-50">
-            <div class="chhose">Выберите должность для ее настройки</div>
+	<div>
+		<div class="b-flex">
+			<div class="b-50">
+				<div class="chhose">
+					Выберите должность для ее настройки
+				</div>
 
-             <b-alert v-if="message!=null" variant="info">
-                {{ message}}
-             </b-alert>
+				<b-alert
+					v-if="message!=null"
+					variant="info"
+				>
+					{{ message }}
+				</b-alert>
 
-            <div class="listprof">
-                <div class="profitem btn btn-primary" v-for="(position,index) in positions" v-bind:key="position.id" :class="{ 'activiti' : activebtn.position == position.position }" @click="positionselect(position, index)">
-                    {{position.position}}
-                </div>
-            </div>
+				<div class="listprof">
+					<div
+						class="profitem btn btn-primary"
+						v-for="(position,index) in positions"
+						:key="position.id"
+						:class="{ 'activiti' : activebtn.position == position.position }"
+						@click="positionselect(position, index)"
+					>
+						{{ position.position }}
+					</div>
+				</div>
+			</div>
+			<div class="b-50">
+				<div v-if="activebtn.id != null">
+					<div class="dialerlist">
+						<div
+							class="fl"
+							style="flex-direction: column;"
+						>
+							<label class="typo__label">Выберите группы книг для должности <b>{{ activebtn.position }}</b></label>
+							<multiselect
+								v-model="value"
+								:options="options"
+								:multiple="true"
+								:close-on-select="false"
+								:clear-on-select="false"
+								:preserve-search="true"
+								placeholder="Выберите"
+								label="name"
+								track-by="name"
+								:taggable="true"
+								@tag="addTag"
+							/>
+						</div>
+					</div>
 
-        </div>
-        <div class="b-50">
-            <div v-if="activebtn.id != null">
-                <div class="dialerlist">
-                    <div class="fl" style="flex-direction: column;">
-                        <label class="typo__label">Выберите группы книг для должности <b>{{activebtn.position}}</b></label>
-                        <multiselect v-model="value" :options="options" :multiple="true" :close-on-select="false" :clear-on-select="false" :preserve-search="true" placeholder="Выберите" label="name" track-by="name" :taggable="true" @tag="addTag">
-                        </multiselect>
-                    </div>
-                </div>
-
-                <button @click='saveGroups' class="btn btn-success">Сохранить</button>
-            </div>
-        </div>
-    </div>
-
-
-
-</div>
+					<button
+						@click="saveGroups"
+						class="btn btn-success"
+					>
+						Сохранить
+					</button>
+				</div>
+			</div>
+		</div>
+	</div>
 </template>
 
 <script>
 export default {
-	name: 'groupsToPositions',
+	name: 'GroupsToPositions',
 	data() {
 		return {
 			message: null,

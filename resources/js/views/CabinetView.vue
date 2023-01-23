@@ -25,14 +25,14 @@ export default {
 </script>
 
 <template>
-    <DefaultLayout>
-        <div class="old__content">
-            <Cabinet
-                v-show="auth_role"
-                :auth_role="auth_role"
-            />
-        </div>
-    </DefaultLayout>
+	<DefaultLayout>
+		<div class="old__content">
+			<Cabinet
+				v-show="auth_role"
+				:auth_role="auth_role"
+			/>
+		</div>
+	</DefaultLayout>
 </template>
 
 <style scoped>

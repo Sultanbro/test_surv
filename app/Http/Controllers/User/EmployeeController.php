@@ -611,7 +611,7 @@ class EmployeeController extends Controller
                 'email' => strtolower($request['email']),
                 'name' => $request['name'],
                 'last_name' => $request['last_name'],
-                'description' => $request['description'],
+                'description' => $request['description'] ?? '',
                 'password' => $user_password,
                 'position_id' => $request['position'] ?? 0,
                 'user_type' => $request->user_type,

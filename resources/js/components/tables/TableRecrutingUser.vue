@@ -1,67 +1,104 @@
 <template>
-<div :class="{'basic': id != 0}" v-if="!deleted">
-    <div class="d-flex justify-content-between">
-        <div class="mb-2 r-name"><b>{{ name }}</b></div>
-        <div>
-            <button class="btn btn-primary btn-sm rounded mb-2" @click="deleteTable" v-if="editable && id != 0">
-                <span>Удалить</span>
-            </button>
-            <button class="btn btn-primary btn-sm rounded mb-2" @click="toggleVisible" v-if="editable">
-                <span v-if="visible">Скрыть</span>
-                <span v-else>Показать</span>
-            </button>
-        </div>
-    </div>
+	<div
+		:class="{'basic': id != 0}"
+		v-if="!deleted"
+	>
+		<div class="d-flex justify-content-between">
+			<div class="mb-2 r-name">
+				<b>{{ name }}</b>
+			</div>
+			<div>
+				<button
+					class="btn btn-primary btn-sm rounded mb-2"
+					@click="deleteTable"
+					v-if="editable && id != 0"
+				>
+					<span>Удалить</span>
+				</button>
+				<button
+					class="btn btn-primary btn-sm rounded mb-2"
+					@click="toggleVisible"
+					v-if="editable"
+				>
+					<span v-if="visible">Скрыть</span>
+					<span v-else>Показать</span>
+				</button>
+			</div>
+		</div>
 
-    <div v-if="visible">
-        <b-table responsive striped class="text-nowrap text-right my-table my-tabl-max mb-3 recruting-user" :small="true" :bordered="true" :items="records" :fields="fields" primary-key="a"  >
-            <template #cell()="data">
-                    <div v-if="data.index == 7 && editable"
-                        :class="{
-                            'plus' : Number(data.value) >= Number(data.item.plan) && Number(data.value ) != 0,
-                            'minus' : Number(data.value) < Number(data.item.plan) && Number(data.value ) != 0,
-                        }">
-                        <input type="number" min="0"
-                        class="form-control cell-input" @change="updateSettings($event,data)" v-model="data.value">
-                    </div>
+		<div v-if="visible">
+			<b-table
+				responsive
+				striped
+				class="text-nowrap text-right my-table my-tabl-max mb-3 recruting-user"
+				:small="true"
+				:bordered="true"
+				:items="records"
+				:fields="fields"
+				primary-key="a"
+			>
+				<template #cell()="data">
+					<div
+						v-if="data.index == 7 && editable"
+						:class="{
+							'plus' : Number(data.value) >= Number(data.item.plan) && Number(data.value ) != 0,
+							'minus' : Number(data.value) < Number(data.item.plan) && Number(data.value ) != 0,
+						}"
+					>
+						<input
+							type="number"
+							min="0"
+							class="form-control cell-input"
+							@change="updateSettings($event,data)"
+							v-model="data.value"
+						>
+					</div>
 
-                    <div v-else :class="{
-                            'plus' : (data.index == 0 || data.index == 1 || data.index == 7) && Number(data.value ) != 0 && Number(data.value) >= Number(data.item.plan),
-                            'minus' : (data.index == 0 || data.index == 1 || data.index == 7) && Number(data.value ) != 0 && Number(data.value) < Number(data.item.plan),
-                        }">
+					<div
+						v-else
+						:class="{
+							'plus' : (data.index == 0 || data.index == 1 || data.index == 7) && Number(data.value ) != 0 && Number(data.value) >= Number(data.item.plan),
+							'minus' : (data.index == 0 || data.index == 1 || data.index == 7) && Number(data.value ) != 0 && Number(data.value) < Number(data.item.plan),
+						}"
+					>
+						{{ data.value }}
+					</div>
+				</template>
 
-                         {{ data.value }}
+				<template #cell(plan)="data">
+					<input
+						type="number"
+						min="0"
+						v-if="(data.index == 0 || data.index == 1 || data.index == 6 || data.index == 7 || data.index == 8) && editable"
+						class="form-control cell-input"
+						@change="updateSettings($event,data)"
+						v-model="data.value"
+					>
+					<div v-else>
+						{{ data.value }}
+					</div>
+				</template>
 
-                    </div>
+				<template #cell(month_plan)="data">
+					<div v-if="[0,1,6,7].includes(data.index)">
+						{{ data.item.plan * workdays }}
+					</div>
+				</template>
 
+				<template #cell(headers)="data">
+					<div>{{ data.value }}</div>
+				</template>
 
-            </template>
+				<template #cell(fact)="data">
+					<div>{{ data.value }}</div>
+				</template>
 
-            <template #cell(plan)="data">
-                <input type="number" min="0" v-if="(data.index == 0 || data.index == 1 || data.index == 6 || data.index == 7 ||  data.index == 8) && editable"
-                        class="form-control cell-input" @change="updateSettings($event,data)" v-model="data.value">
-                <div v-else >{{ data.value }}</div>
-            </template>
-
-            <template #cell(month_plan)="data">
-                <div v-if="[0,1,6,7].includes(data.index)">{{ data.item.plan * workdays }}</div>
-            </template>
-
-            <template #cell(headers)="data">
-                <div>{{ data.value }}</div>
-            </template>
-
-            <template #cell(fact)="data">
-                <div>{{ data.value }}</div>
-            </template>
-
-            <template #cell(conversion)="data">
-                <div>{{ data.value }}</div>
-            </template>
-        </b-table>
-    </div>
-
-</div>
+				<template #cell(conversion)="data">
+					<div>{{ data.value }}</div>
+				</template>
+			</b-table>
+		</div>
+	</div>
 </template>
 
 <script>

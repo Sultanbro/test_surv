@@ -1,175 +1,246 @@
 <template>
-<div class="kpi">
-
-    <!-- top line -->
-    <div class="d-flex my-4 jcsb aifs">
-
-         <div class="d-flex aic mr-2">
-            <div class="d-flex aic mr-2">
-                <span>Показывать:</span>
-                <input type="number" min="1" max="100" v-model="pageSize" class="form-control ml-2 input-sm" />
-            </div>
-            <SuperFilter
-                ref="child"
-                :groups="groups"
-            />
-            <!--<input
+	<div class="kpi">
+		<!-- top line -->
+		<div class="d-flex my-4 jcsb aifs">
+			<div class="d-flex aic mr-2">
+				<div class="d-flex aic mr-2">
+					<span>Показывать:</span>
+					<input
+						type="number"
+						min="1"
+						max="100"
+						v-model="pageSize"
+						class="form-control ml-2 input-sm"
+					>
+				</div>
+				<SuperFilter
+					ref="child"
+					:groups="groups"
+				/>
+				<!--<input
                 class="searcher mr-2 input-sm"
                 v-model="searchText"
                 type="text"
                 placeholder="Поиск по совпадениям..."
                 @keyup="onSearch"
             >-->
-            <span class="ml-2">
-                Найдено: {{ items.length }}
-            </span>
-        </div>
+				<span class="ml-2">
+					Найдено: {{ items.length }}
+				</span>
+			</div>
 
-        <button class="btn rounded btn-success" @click="addKpi">
-            <i class="fa fa-plus mr-2"></i>
-            <span>Добавить</span>
-        </button>
-    </div>
+			<button
+				class="btn rounded btn-success"
+				@click="addKpi"
+			>
+				<i class="fa fa-plus mr-2" />
+				<span>Добавить</span>
+			</button>
+		</div>
 
-    <!-- table -->
-    <table class="j-table">
-        <thead>
-            <tr class="table-heading">
-                <th class="first-column text-center pointer" @click="adjustFields">
-                    <i class="fa fa-cogs"></i>
-                </th>
-                <th v-for="(field, i) in fields" :key="i" :class="field.class">
-                    {{ field.name }}
-                </th>
-                <th>Действия</th>
-            </tr>
-        </thead>
+		<!-- table -->
+		<table class="j-table">
+			<thead>
+				<tr class="table-heading">
+					<th
+						class="first-column text-center pointer"
+						@click="adjustFields"
+					>
+						<i class="fa fa-cogs" />
+					</th>
+					<th
+						v-for="(field, i) in fields"
+						:key="i"
+						:class="field.class"
+					>
+						{{ field.name }}
+					</th>
+					<th>Действия</th>
+				</tr>
+			</thead>
 
-        <tbody>
-            <template v-for="(item, i) in page_items">
-                <!-- <tr v-if="item.target.name.includes(searchText) || searchText.length == 0 || (item.creator && (item.creator.last_name + ' ' + item.creator.name).includes(searchText)) || (item.updater && (item.updater.last_name + ' ' + item.updater.name).includes(searchText)) || (item.items.filter( i => { return i.name.includes(searchText)  } ).length > 0)"></tr> -->
-                <tr
-                    v-if="(item.target && item.target.name.includes(searchText)) || searchText.length == 0"
-                    :key="i"
-                >
-                    <td @click="expand(i)" class="pointer">
-                        <div class="d-flex align-items-center px-2">
-                            <span class="mr-2">{{ i + 1 }}</span>
-                            <i class="fa fa-minus mt-1" v-if="item.expanded"></i>
-                            <i class="fa fa-plus mt-1" v-else></i>
-                        </div>
-                    </td>
-                    <td  v-for="(field, f) in fields" :key="f" :class="field.class">
+			<tbody>
+				<template v-for="(item, i) in page_items">
+					<!-- <tr v-if="item.target.name.includes(searchText) || searchText.length == 0 || (item.creator && (item.creator.last_name + ' ' + item.creator.name).includes(searchText)) || (item.updater && (item.updater.last_name + ' ' + item.updater.name).includes(searchText)) || (item.items.filter( i => { return i.name.includes(searchText)  } ).length > 0)"></tr> -->
+					<tr
+						v-if="(item.target && item.target.name.includes(searchText)) || searchText.length == 0"
+						:key="i"
+					>
+						<td
+							@click="expand(i)"
+							class="pointer"
+						>
+							<div class="d-flex align-items-center px-2">
+								<span class="mr-2">{{ i + 1 }}</span>
+								<i
+									class="fa fa-minus mt-1"
+									v-if="item.expanded"
+								/>
+								<i
+									class="fa fa-plus mt-1"
+									v-else
+								/>
+							</div>
+						</td>
+						<td
+							v-for="(field, f) in fields"
+							:key="f"
+							:class="field.class"
+						>
+							<div v-if="field.key == 'target'">
+								<SuperSelect
+									v-if="item.target == null || item.id == 0"
+									:key="i"
+									class="w-full"
+									:values="item.target == null ? [] : [item.target]"
+									:single="true"
+									@choose="(target) => item.target = target"
+									@remove="() => item.target = null"
+								/>
+								<div
+									v-else
+									class="d-flex aic"
+								>
+									<i
+										class="fa fa-user ml-2"
+										v-if="item.target.type == 1"
+									/>
+									<i
+										class="fa fa-users ml-2"
+										v-if="item.target.type == 2"
+									/>
+									<i
+										class="fa fa-briefcase ml-2"
+										v-if="item.target.type == 3"
+									/>
+									<span class="ml-2">{{ item.target.name }}</span>
+								</div>
+							</div>
 
-                        <div v-if="field.key == 'target'" >
-                            <SuperSelect
-                                v-if="item.target == null || item.id == 0"
-                                :key="i"
-                                class="w-full"
-                                :values="item.target == null ? [] : [item.target]"
-                                :single="true"
-                                @choose="(target) => item.target = target"
-                                @remove="() => item.target = null"
-                            />
-                            <div v-else class="d-flex aic">
-                                <i class="fa fa-user ml-2" v-if="item.target.type == 1"></i>
-                                <i class="fa fa-users ml-2" v-if="item.target.type == 2"></i>
-                                <i class="fa fa-briefcase ml-2" v-if="item.target.type == 3"></i>
-                                <span class="ml-2">{{ item.target.name }}</span>
-                            </div>
-                        </div>
+							<div
+								v-else-if="field.key == 'stats'"
+								:class="field.class"
+							>
+								<a
+									:href="'/kpi?target='+ (item.target ? item.target.name : '')"
+									target="_blank"
+									class="btn btn-primary btn-icon"
+								>
+									<i class="fa fa-chart-bar" />
+								</a>
+							</div>
 
-                        <div v-else-if="field.key == 'stats'" :class="field.class">
-                            <a v-bind:href="'/kpi?target='+ (item.target ? item.target.name : '')" target="_blank" class="btn btn-primary btn-icon">
-                                <i class="fa fa-chart-bar"></i>
-                            </a>
-                        </div>
+							<div v-else-if="field.key == 'created_by' && item.creator != null">
+								{{ item.creator.last_name + ' ' + item.creator.name }}
+							</div>
 
-                        <div v-else-if="field.key == 'created_by' && item.creator != null">
-                            {{ item.creator.last_name + ' ' + item.creator.name }}
-                        </div>
+							<div v-else-if="field.key == 'updated_by' && item.updater != null">
+								{{ item.updater.last_name + ' ' + item.updater.name }}
+							</div>
 
-                        <div v-else-if="field.key == 'updated_by' && item.updater != null">
-                            {{ item.updater.last_name + ' ' + item.updater.name }}
-                        </div>
+							<div
+								v-else-if="non_editable_fields.includes(field.key)"
+								:class="field.class"
+							>
+								{{ item[field.key] }}
+							</div>
 
-                        <div v-else-if="non_editable_fields.includes(field.key)" :class="field.class">
-                           {{ item[field.key] }}
-                        </div>
+							<div
+								v-else
+								:class="field.class"
+							>
+								<input
+									type="text"
+									class="form-control"
+									v-model="item[field.key]"
+									@change="validate(item[field.key], field.key)"
+								>
+							</div>
+						</td>
+						<td>
+							<div class="d-flex">
+								<i
+									class="fa fa-save ml-2 mr-1 btn btn-success btn-icon"
+									@click="saveKpi(i)"
+								/>
+								<i
+									class="fa fa-trash btn btn-danger btn-icon"
+									@click="deleteKpi(i)"
+								/>
+							</div>
+						</td>
+					</tr>
 
-                        <div v-else :class="field.class">
-                            <input type="text" class="form-control" v-model="item[field.key]" @change="validate(item[field.key], field.key)" />
-                        </div>
-                    </td>
-                    <td >
-                        <div class="d-flex">
-                            <i class="fa fa-save ml-2 mr-1 btn btn-success btn-icon" @click="saveKpi(i)"></i>
-                            <i class="fa fa-trash btn btn-danger btn-icon" @click="deleteKpi(i)"></i>
-                        </div>
-                    </td>
-                </tr>
+					<template v-if="item.items !== undefined">
+						<tr
+							class="collapsable"
+							:class="{'active': item.expanded}"
+							:key="i + 'a'"
+						>
+							<td :colspan="fields.length + 2">
+								<div class="table__wrapper w-100">
+									<KpiItems
+										:kpi_id="item.id"
+										:items="item.items"
+										:expanded="item.expanded"
+										:activities="activities"
+										:groups="groups"
+										:completed_80="item.completed_80"
+										:completed_100="item.completed_100"
+										:lower_limit="item.lower_limit"
+										:upper_limit="item.upper_limit"
+										:editable="true"
+										:kpi_page="true"
+									/>
+								</div>
+							</td>
+						</tr>
+					</template>
+				</template>
+			</tbody>
+		</table>
 
-                <template v-if="item.items !== undefined">
-                    <tr class="collapsable" :class="{'active': item.expanded}" :key="i + 'a'">
-                        <td :colspan="fields.length + 2">
-                            <div class="table__wrapper w-100">
-                                <KpiItems
-                                    :kpi_id="item.id"
-                                    :items="item.items"
-                                    :expanded="item.expanded"
-                                    :activities="activities"
-                                    :groups="groups"
-                                    :completed_80="item.completed_80"
-                                    :completed_100="item.completed_100"
-                                    :lower_limit="item.lower_limit"
-                                    :upper_limit="item.upper_limit"
-                                    :editable="true"
-                                    :kpi_page="true"
-                                />
-                            </div>
-                        </td>
-                    </tr>
-                </template>
-            </template>
-        </tbody>
-     </table>
-
-    <!-- pagination -->
-    <JwPagination
-        class="mt-3"
-        :key="paginationKey"
-        :items="items"
-        :labels="{
-            first: '<<',
-            last: '>>',
-            previous: '<',
-            next: '>'
-        }"
-        @changePage="onChangePage"
-        :pageSize="+pageSize"
-    />
+		<!-- pagination -->
+		<JwPagination
+			class="mt-3"
+			:key="paginationKey"
+			:items="items"
+			:labels="{
+				first: '<<',
+				last: '>>',
+				previous: '<',
+				next: '>'
+			}"
+			@changePage="onChangePage"
+			:page-size="+pageSize"
+		/>
 
 
-    <!-- modal Adjust Visible fields -->
-    <b-modal
-        v-model="modalAdjustVisibleFields"
-        title="Настройка списка «KPI»"
-        ok-text="Закрыть"
-        size="lg"
-        @ok="modalAdjustVisibleFields = !modalAdjustVisibleFields"
-    >
-      <div class="row">
-         <div class="col-md-4 mb-4" v-for="(field, f) in all_fields" :key="f">
-            <b-form-checkbox
-                v-model="show_fields[field.key]"
-                :value="true"
-                :unchecked-value="false"
-            >{{ field.name }}</b-form-checkbox>
-        </div>
-      </div>
-    </b-modal>
-
-</div>
+		<!-- modal Adjust Visible fields -->
+		<b-modal
+			v-model="modalAdjustVisibleFields"
+			title="Настройка списка «KPI»"
+			ok-text="Закрыть"
+			size="lg"
+			@ok="modalAdjustVisibleFields = !modalAdjustVisibleFields"
+		>
+			<div class="row">
+				<div
+					class="col-md-4 mb-4"
+					v-for="(field, f) in all_fields"
+					:key="f"
+				>
+					<b-form-checkbox
+						v-model="show_fields[field.key]"
+						:value="true"
+						:unchecked-value="false"
+					>
+						{{ field.name }}
+					</b-form-checkbox>
+				</div>
+			</div>
+		</b-modal>
+	</div>
 </template>
 
 <script>

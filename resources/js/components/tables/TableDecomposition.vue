@@ -1,130 +1,207 @@
 <template>
-<div class="mb-3">
-    <h4 class="d-flex align-items-center justify-content-between">
-        <div class="mr-2">Декомпозиция на месяц</div>
-    </h4>
+	<div class="mb-3">
+		<h4 class="d-flex align-items-center justify-content-between">
+			<div class="mr-2">
+				Декомпозиция на месяц
+			</div>
+		</h4>
 
-<div class="table-container">
-    <table class="table table-bordered table-responsive strt">
-        <thead>
-        <tr>
-            <th class="b-table-sticky-column text-left">
-                <div class="wd"></div>
-            </th>
-            <th class="text-center px-1 border-r-2" colspan="2">
-                <b>Итого</b>
-            </th>
-            <th class="text-center px-1 border-r-2"
-                :class="{
-                        'weekend' : is_weekday[day],
-                    }"
-                colspan="2"
-                v-for="day in month.daysInMonth" :key="day">
-                <div>{{ day }}</div>
-            </th>
-        </tr>
-        <tr>
-            <th class="b-table-sticky-column text-left"></th>
-            <th>план</th>
-            <th>факт</th>
-            <template v-for="day in month.daysInMonth">
-                <th :key="day">план</th>
-                <th :key="day + 'a'" class="border-r-2">факт</th>
-            </template>
-        </tr>
-        </thead>
-        <tbody>
-        <tr v-for="(item, index) in items" :key="index">
-            <td class="b-table-sticky-column text-left px-2 t-name" :title="item.id">
-                <div class="wd d-flex align-items-center">
-                    <input type="text"
-                           v-model="item.name"
-                           class=" w-250 text-left"
-                           @change="updateSettings($event, item, index, 'name')">
-                    <i class="fa fa-pencil pointer mr-2" @click="showModal(index)" title="Поставить план"></i>
-                    <i class="fa fa-trash pointer" @click="deleteRecord(item.id, index)" title="Удалить строку"></i>
-                </div>
-            </td>
-            <td>{{ Number(item.total_plan).toFixed(0) }}</td>
-            <td class="border-r-2">{{ Number(item.total_fact).toFixed(0) }}</td>
-            <template v-for="day in month.daysInMonth">
-                <td v-if="item.editable" :key="day"
-                    class="px-0 day-minute text-center"
-                    :class="{
-                        'weekend' : is_weekday[day],
-                    }"
-                >
-                    <div>
-                        <input type="number"
-                               v-model="item[day].plan"
-                               @change="updateSettings($event, item, index, day)">
-                    </div>
-                </td>
-                <td v-else :key="day + 'a'"
-                    @click="editMode(item)"
-                    class="px-0 day-minute text-center"
-                    :class="{
-                        'weekend' : is_weekday[day],
-                    }"
-                >
-                    <div>{{ item[day].plan }}</div>
-                </td>
-                <td v-if="item.editable" :key="day + 'b'"
-                    class="px-0 day-minute text-center border-r-2"
-                    :class="{
-                        'table-danger': Number(item[day].fact) != 0 && Number(item[day].plan) > Number(item[day].fact),
-                        'table-success': Number(item[day].fact) != 0 && Number(item[day].plan) <= Number(item[day].fact),
-                        'weekend' : is_weekday[day],
-                    }">
-                    <div>
-                        <input type="number"
-                               v-model="item[day].fact"
-                               @change="updateSettings($event, item, index, day)">
-                    </div>
-                </td>
-                <td v-else :key="day + 'c'"
-                    @click="editMode(item)"
-                    class="px-0 day-minute text-center border-r-2"
-                    :class="{
-                        'table-danger': Number(item[day].fact) != 0 && Number(item[day].plan) > Number(item[day].fact),
-                        'table-success': Number(item[day].fact) != 0 && Number(item[day].plan) <= Number(item[day].fact),
-                        'weekend' : is_weekday[day],
-                    }">
-                    <div>{{ item[day].fact }}</div>
-                </td>
-            </template>
-        </tr>
-        </tbody>
-    </table>
-</div>
-    <button class="btn btn-success"
-        @click="addRecord">+ Добавить</button>
+		<div class="table-container">
+			<table class="table table-bordered table-responsive strt">
+				<thead>
+					<tr>
+						<th class="b-table-sticky-column text-left">
+							<div class="wd" />
+						</th>
+						<th
+							class="text-center px-1 border-r-2"
+							colspan="2"
+						>
+							<b>Итого</b>
+						</th>
+						<th
+							class="text-center px-1 border-r-2"
+							:class="{
+								'weekend' : is_weekday[day],
+							}"
+							colspan="2"
+							v-for="day in month.daysInMonth"
+							:key="day"
+						>
+							<div>{{ day }}</div>
+						</th>
+					</tr>
+					<tr>
+						<th class="b-table-sticky-column text-left" />
+						<th>план</th>
+						<th>факт</th>
+						<template v-for="day in month.daysInMonth">
+							<th :key="day">
+								план
+							</th>
+							<th
+								:key="day + 'a'"
+								class="border-r-2"
+							>
+								факт
+							</th>
+						</template>
+					</tr>
+				</thead>
+				<tbody>
+					<tr
+						v-for="(item, index) in items"
+						:key="index"
+					>
+						<td
+							class="b-table-sticky-column text-left px-2 t-name"
+							:title="item.id"
+						>
+							<div class="wd d-flex align-items-center">
+								<input
+									type="text"
+									v-model="item.name"
+									class=" w-250 text-left"
+									@change="updateSettings($event, item, index, 'name')"
+								>
+								<i
+									class="fa fa-pencil pointer mr-2"
+									@click="showModal(index)"
+									title="Поставить план"
+								/>
+								<i
+									class="fa fa-trash pointer"
+									@click="deleteRecord(item.id, index)"
+									title="Удалить строку"
+								/>
+							</div>
+						</td>
+						<td>{{ Number(item.total_plan).toFixed(0) }}</td>
+						<td class="border-r-2">
+							{{ Number(item.total_fact).toFixed(0) }}
+						</td>
+						<template v-for="day in month.daysInMonth">
+							<td
+								v-if="item.editable"
+								:key="day"
+								class="px-0 day-minute text-center"
+								:class="{
+									'weekend' : is_weekday[day],
+								}"
+							>
+								<div>
+									<input
+										type="number"
+										v-model="item[day].plan"
+										@change="updateSettings($event, item, index, day)"
+									>
+								</div>
+							</td>
+							<td
+								v-else
+								:key="day + 'a'"
+								@click="editMode(item)"
+								class="px-0 day-minute text-center"
+								:class="{
+									'weekend' : is_weekday[day],
+								}"
+							>
+								<div>{{ item[day].plan }}</div>
+							</td>
+							<td
+								v-if="item.editable"
+								:key="day + 'b'"
+								class="px-0 day-minute text-center border-r-2"
+								:class="{
+									'table-danger': Number(item[day].fact) != 0 && Number(item[day].plan) > Number(item[day].fact),
+									'table-success': Number(item[day].fact) != 0 && Number(item[day].plan) <= Number(item[day].fact),
+									'weekend' : is_weekday[day],
+								}"
+							>
+								<div>
+									<input
+										type="number"
+										v-model="item[day].fact"
+										@change="updateSettings($event, item, index, day)"
+									>
+								</div>
+							</td>
+							<td
+								v-else
+								:key="day + 'c'"
+								@click="editMode(item)"
+								class="px-0 day-minute text-center border-r-2"
+								:class="{
+									'table-danger': Number(item[day].fact) != 0 && Number(item[day].plan) > Number(item[day].fact),
+									'table-success': Number(item[day].fact) != 0 && Number(item[day].plan) <= Number(item[day].fact),
+									'weekend' : is_weekday[day],
+								}"
+							>
+								<div>{{ item[day].fact }}</div>
+							</td>
+						</template>
+					</tr>
+				</tbody>
+			</table>
+		</div>
+		<button
+			class="btn btn-success"
+			@click="addRecord"
+		>
+			+ Добавить
+		</button>
 
 
 
-    <b-modal ref="change-plan-modal" hide-footer title="Проставить план">
-
-      <div class="row">
-          <div class="col-6">
-               <label for="">С:</label>
-               <input type="number" v-model.number="planner.from" class="form-control form-control-sm mb-2" min="1" max="31">
-          </div>
-          <div class="col-6">
-              <label for="">По:</label>
-              <input type="number" v-model.number="planner.to" class="form-control form-control-sm mb-2" min="1" max="31">
-          </div>
-          <div class="col-6">
-              <label for="">План:</label>
-              <input type="number" v-model.number="planner.value" class="form-control form-control-sm mb-2" placeholder="План" min="1">
-          </div>
-          <div class="col-12 mt-3">
-                <b-button class="mt-3" variant="primary" block @click="changePlan">Проставить</b-button>
-            </div>
-       </div>
-
-    </b-modal>
-
-</div>
+		<b-modal
+			ref="change-plan-modal"
+			hide-footer
+			title="Проставить план"
+		>
+			<div class="row">
+				<div class="col-6">
+					<label for="">С:</label>
+					<input
+						type="number"
+						v-model.number="planner.from"
+						class="form-control form-control-sm mb-2"
+						min="1"
+						max="31"
+					>
+				</div>
+				<div class="col-6">
+					<label for="">По:</label>
+					<input
+						type="number"
+						v-model.number="planner.to"
+						class="form-control form-control-sm mb-2"
+						min="1"
+						max="31"
+					>
+				</div>
+				<div class="col-6">
+					<label for="">План:</label>
+					<input
+						type="number"
+						v-model.number="planner.value"
+						class="form-control form-control-sm mb-2"
+						placeholder="План"
+						min="1"
+					>
+				</div>
+				<div class="col-12 mt-3">
+					<b-button
+						class="mt-3"
+						variant="primary"
+						block
+						@click="changePlan"
+					>
+						Проставить
+					</b-button>
+				</div>
+			</div>
+		</b-modal>
+	</div>
 </template>
 
 <script>

@@ -1,16 +1,18 @@
 <template>
-    <div >
-        <ul>
-            <li v-for="(book, index) in categoryes.book" :key="index">
-                <a href="javascript:void(0)">{{book.name}}</a>
-            </li>
-        </ul>
+	<div>
+		<ul>
+			<li
+				v-for="(book, index) in categoryes.book"
+				:key="index"
+			>
+				<a href="javascript:void(0)">{{ book.name }}</a>
+			</li>
+		</ul>
 
-        <ul>
-            <tree-item :item="categoryes"></tree-item>
-        </ul>
-
-    </div>
+		<ul>
+			<tree-item :item="categoryes" />
+		</ul>
+	</div>
 </template>
 
 <script>

@@ -1,142 +1,241 @@
 <template>
-    <div>
-        <div
-            :class="'news-item ' + ((showComments == true || showFiles == true) ? 'news-item--with-comments' : '')"
-            v-observe-visibility="{
-                callback: viewsChanged,
-                once: true,
-            }"
-        >
-            <div class="news-item__header">
-                <div class="news-item__info">
-                    <img class="news-item__avatar" :src="currentPost.author ? currentPost.author.avatar : null">
-                    <div class="news-item__name-time">
-                        <div class="news-item__name-access">
-                            <div class="news-item__info-block">
-                                <span class="news-item__name">{{ currentPost.author ? currentPost.author.name : null }}</span>
-                                <span class="news-item__time" v-html="currentPost.created_at"/>
-                            </div>
-                            <img src="/icon/news/some-icons/arrow-right.svg">
-                            <div
-                                :class="'news-item__access ' + (currentPost.available_for == null ? '' : 'news-item__access--have-users')"
-                                :title="currentPost.available_for == null ? 'Всем пользователям'
-                                 : currentPost.available_for.map(entry => entry.name).join(', ')">
+	<div>
+		<div
+			:class="'news-item ' + ((showComments == true || showFiles == true) ? 'news-item--with-comments' : '')"
+			v-observe-visibility="{
+				callback: viewsChanged,
+				once: true,
+			}"
+		>
+			<div class="news-item__header">
+				<div class="news-item__info">
+					<img
+						class="news-item__avatar"
+						:src="currentPost.author ? currentPost.author.avatar : null"
+					>
+					<div class="news-item__name-time">
+						<div class="news-item__name-access">
+							<div class="news-item__info-block">
+								<span class="news-item__name">{{ currentPost.author ? currentPost.author.name : null }}</span>
+								<span
+									class="news-item__time"
+									v-html="currentPost.created_at"
+								/>
+							</div>
+							<img src="/icon/news/some-icons/arrow-right.svg">
+							<div
+								:class="'news-item__access ' + (currentPost.available_for == null ? '' : 'news-item__access--have-users')"
+								:title="currentPost.available_for == null ? 'Всем пользователям'
+									: currentPost.available_for.map(entry => entry.name).join(', ')"
+							>
+								<span
+									:class="'news-item__access-text ' + (userAccessListShow ? 'news-item__access-text--active' : '')"
+									@click="toggleUsersAccessList"
+									v-html="currentPost.available_for == null ? 'Всем пользователям' : currentPost.available_for.map(entry => entry.name).join(', ')"
+								/>
+							</div>
+						</div>
+					</div>
+				</div>
 
-                                <span
-                                    :class="'news-item__access-text ' + (userAccessListShow ? 'news-item__access-text--active' : '')"
-                                    @click="toggleUsersAccessList"
-                                    v-html="currentPost.available_for == null ? 'Всем пользователям' : currentPost.available_for.map(entry => entry.name).join(', ')"/>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+				<div class="news-item__header-actions">
+					<div class="news-menu">
+						<img
+							class="news-item__header-action hover-pointer news-icon"
+							@click="toggleShowPopup()"
+							src="/icon/news/post-actions/menu.svg"
+							alt="img"
+						>
+						<div
+							v-show="showPopup"
+							:class="'news-menu-popup ' + (currentPost.is_favourite ? 'news-menu-popup--favorite' : '')"
+						>
+							<div class="news-menu-popup__container">
+								<div class="news-menu-popup__arrow" />
+								<div
+									class="news-menu-popup__item"
+									@click="favouritePost(currentPost.id)"
+								>
+									<img
+										class="news-menu-popup__img"
+										alt="img"
+										src="/icon/news/news-popup/favorite.svg"
+									>
+									<span
+										class="news-menu-popup__text"
+										v-html="currentPost.is_favourite ? 'Удалить из избранного' :'Добавить в избранное'"
+									/>
+								</div>
+								<div
+									class="news-menu-popup__item"
+									@click="copyPostLink"
+								>
+									<img
+										class="news-menu-popup__img"
+										alt="img"
+										src="/icon/news/news-popup/copy-link.svg"
+									>
+									<span
+										class="news-menu-popup__text"
+										v-html="'Скопировать ссылку'"
+									/>
+								</div>
+								<div
+									v-show="currentPost.author ? ((this.$can('news_edit') || currentPost.author.id === me.id) ? currentPost.author.id: null ) : null"
+									class="news-menu-popup__item"
+									@click="editPost"
+								>
+									<img
+										class="news-menu-popup__img"
+										alt="img"
+										src="/icon/news/news-popup/edit.svg"
+									>
+									<span
+										class="news-menu-popup__text"
+										v-html="'Редактировать'"
+									/>
+								</div>
+								<div
+									v-show="currentPost.author ? ((this.$can('news_edit') || currentPost.author.id === me.id) ? currentPost.author.id: null ) : null"
+									class="news-menu-popup__item"
+									@click="deletePost(currentPost.id)"
+								>
+									<img
+										class="news-menu-popup__img"
+										alt="img"
+										src="/icon/news/news-popup/delete.svg"
+									>
+									<span
+										class="news-menu-popup__text"
+										v-html="'Удалить'"
+									/>
+								</div>
+							</div>
+						</div>
+					</div>
+					<img
+						@click="pinPost(currentPost.id)"
+						:class="'news-item__header-action hover-pointer ' + (currentPost.is_pinned == false ? 'news-icon' : '')"
+						:src="currentPost.is_pinned == true ? '/icon/news/post-actions/pinned.svg' : '/icon/news/post-actions/pin.svg'"
+					>
+				</div>
+			</div>
+			<div class="news-item__title">
+				{{ currentPost.title }}
+			</div>
+			<div
+				v-show="showFullContent"
+				class="news-item__content"
+				v-html="currentPost.content"
+			/>
+			<span
+				v-show="currentPost.is_pinned"
+				class="news-item__show-full"
+				@click="toggleShowFullContent"
+				v-html="showFullContent ? 'Скрыть подробности' :'Показать полностью'"
+			/>
+			<div class="news-item__footer">
+				<div class="news-item__footer-actions">
+					<div class="news-item__footer-action">
+						<img
+							class="hover-pointer"
+							v-if="currentPost.is_liked == true"
+							@click="likePost(currentPost.id)"
+							src="/icon/news/post-actions/like-active.svg"
+						>
+						<img
+							v-else
+							class="news-icon hover-pointer"
+							@click="likePost(currentPost.id)"
+							src="/icon/news/post-actions/like.svg"
+						>
+						<span class="news-item__footer-count">{{ currentPost.likes_count }}</span>
+					</div>
+					<div class="news-item__footer-action">
+						<img
+							class="news-icon hover-pointer"
+							src="/icon/news/post-actions/comments.svg"
+							@click="toggleShowComments"
+						>
+						<span class="news-item__footer-count">{{ currentPost.comments_count }}</span>
+					</div>
 
-                <div class="news-item__header-actions">
-                    <div class="news-menu">
-                        <img class="news-item__header-action hover-pointer news-icon"
-                             @click="toggleShowPopup()"
-                             src="/icon/news/post-actions/menu.svg"
-                             alt="img">
-                        <div v-show="showPopup"
-                             :class="'news-menu-popup ' + (currentPost.is_favourite ? 'news-menu-popup--favorite' : '')">
-                            <div class="news-menu-popup__container">
-                                <div class="news-menu-popup__arrow"/>
-                                <div class="news-menu-popup__item" @click="favouritePost(currentPost.id)">
-                                    <img class="news-menu-popup__img" alt="img"
-                                         src="/icon/news/news-popup/favorite.svg">
-                                    <span class="news-menu-popup__text"
-                                          v-html="currentPost.is_favourite ? 'Удалить из избранного' :'Добавить в избранное'"/>
-                                </div>
-                                <div class="news-menu-popup__item" @click="copyPostLink">
-                                    <img class="news-menu-popup__img" alt="img"
-                                         src="/icon/news/news-popup/copy-link.svg">
-                                    <span class="news-menu-popup__text" v-html="'Скопировать ссылку'"/>
-                                </div>
-                              <div v-show="currentPost.author ? ((this.$can('news_edit') ||  currentPost.author.id === me.id) ? currentPost.author.id: null ) : null" class="news-menu-popup__item"
-                                   @click="editPost">
-                                <img class="news-menu-popup__img" alt="img" src="/icon/news/news-popup/edit.svg">
-                                <span class="news-menu-popup__text" v-html="'Редактировать'"/>
-                              </div>
-                              <div v-show="currentPost.author ? ((this.$can('news_edit') ||  currentPost.author.id === me.id) ? currentPost.author.id: null ) : null" class="news-menu-popup__item"
-                                   @click="deletePost(currentPost.id)">
-                                <img class="news-menu-popup__img" alt="img" src="/icon/news/news-popup/delete.svg">
-                                <span class="news-menu-popup__text" v-html="'Удалить'"/>
-                              </div>
-                            </div>
-                        </div>
-                    </div>
-                    <img @click="pinPost(currentPost.id)"
-                         :class="'news-item__header-action hover-pointer ' + (currentPost.is_pinned == false ? 'news-icon' : '')"
-                         :src="currentPost.is_pinned == true ? '/icon/news/post-actions/pinned.svg' : '/icon/news/post-actions/pin.svg'">
-                </div>
-            </div>
-            <div class="news-item__title">
-                {{ currentPost.title }}
-            </div>
-            <div v-show="showFullContent" class="news-item__content" v-html="currentPost.content">
-            </div>
-            <span v-show="currentPost.is_pinned" class="news-item__show-full" @click="toggleShowFullContent"
-                  v-html="showFullContent ? 'Скрыть подробности' :'Показать полностью'"/>
-            <div class="news-item__footer">
-                <div class="news-item__footer-actions">
-                    <div class="news-item__footer-action">
-                        <img class="hover-pointer" v-if="currentPost.is_liked == true" @click="likePost(currentPost.id)"
-                             src="/icon/news/post-actions/like-active.svg">
-                        <img v-else class="news-icon hover-pointer" @click="likePost(currentPost.id)"
-                             src="/icon/news/post-actions/like.svg">
-                        <span class="news-item__footer-count">{{ currentPost.likes_count }}</span>
-                    </div>
-                    <div class="news-item__footer-action">
-                        <img class="news-icon hover-pointer" src="/icon/news/post-actions/comments.svg"
-                             @click="toggleShowComments">
-                        <span class="news-item__footer-count">{{ currentPost.comments_count }}</span>
-                    </div>
+					<div
+						v-show="this.currentPost.files.length != 0"
+						class="news-item__footer-action"
+						@click="toggleShowFiles"
+					>
+						<img
+							class="news-icon hover-pointer"
+							src="/icon/news/some-icons/file.svg"
+						>
+						<span
+							class="news-item__footer-count"
+							v-html="currentPost.files.length"
+						/>
+					</div>
+					<!--                    <div class="news-item__footer-action">-->
+					<!--                        <img class="news-icon hover-pointer" src="/icon/news/post-actions/menu.svg">-->
+					<!--                    </div>-->
+				</div>
+				<div class="news-item__views">
+					<img src="/icon/news/some-icons/view.svg">
+					<span class="news-item__footer-count">{{ currentPost.views_count }}</span>
+				</div>
+			</div>
+			<CommentsComponent
+				v-show="showComments"
+				@changeCommentsCount="changeCommentsCount"
+				:me="me"
+				@send="getData"
+				ref="comments"
+			/>
+		</div>
 
-                    <div
-                        v-show="this.currentPost.files.length != 0"
-                        class="news-item__footer-action"
-                        @click="toggleShowFiles">
-                        <img class="news-icon hover-pointer" src="/icon/news/some-icons/file.svg">
-                        <span class="news-item__footer-count" v-html="currentPost.files.length"/>
-                    </div>
-                    <!--                    <div class="news-item__footer-action">-->
-                    <!--                        <img class="news-icon hover-pointer" src="/icon/news/post-actions/menu.svg">-->
-                    <!--                    </div>-->
-                </div>
-                <div class="news-item__views">
-                    <img src="/icon/news/some-icons/view.svg">
-                    <span class="news-item__footer-count">{{ currentPost.views_count }}</span>
-                </div>
-            </div>
-            <CommentsComponent
-                v-show="showComments"
-                @changeCommentsCount="changeCommentsCount"
-                :me="me"
-                @send="getData"
-                ref="comments"
-            />
-        </div>
-
-        <div v-show="showFiles" class="news-file-preview">
-            <img
+		<div
+			v-show="showFiles"
+			class="news-file-preview"
+		>
+			<img
 				v-for="(file, index) in currentPost.files"
 				:key="index"
-                class="news-file-preview__item"
-                alt=""
-                @click="downloadFile(file)"
-                :src="getFilePreview(file)">
-        </div>
+				class="news-file-preview__item"
+				alt=""
+				@click="downloadFile(file)"
+				:src="getFilePreview(file)"
+			>
+		</div>
 
-        <div ref="NewsCommentInput" v-show="showComments" class="news-comment-store">
-            <img :src="me ? me.avatar : null" class="news-comment-store__avatar">
-            <div class="news-comment-store__form">
-                <input type="text" v-model="commentText" placeholder="Добавить комментарий" v-on:keyup.enter="sendComment(currentPost.id)">
-                <img class="hover-pointer" @click="sendComment(currentPost.id)" src="/icon/news/comments/send.svg">
-            </div>
-        </div>
+		<div
+			ref="NewsCommentInput"
+			v-show="showComments"
+			class="news-comment-store"
+		>
+			<img
+				:src="me ? me.avatar : null"
+				class="news-comment-store__avatar"
+			>
+			<div class="news-comment-store__form">
+				<input
+					type="text"
+					v-model="commentText"
+					placeholder="Добавить комментарий"
+					@keyup.enter="sendComment(currentPost.id)"
+				>
+				<img
+					class="hover-pointer"
+					@click="sendComment(currentPost.id)"
+					src="/icon/news/comments/send.svg"
+				>
+			</div>
+		</div>
 
-        <div class="news-bg" v-show="showPopup" @click.self="toggleShowPopup"/>
-    </div>
+		<div
+			class="news-bg"
+			v-show="showPopup"
+			@click.self="toggleShowPopup"
+		/>
+	</div>
 </template>
 
 <script>

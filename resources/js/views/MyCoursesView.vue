@@ -25,15 +25,15 @@ export default {
 </script>
 
 <template>
-    <DefaultLayout>
-        <!-- <script src="/video_learning/playerjs.js" ></script> -->
-        <div class="old__content">
-            <MyCourse
-                v-show="user_id"
-                :user_id="user_id"
-            />
-        </div>
-    </DefaultLayout>
+	<DefaultLayout>
+		<!-- <script src="/video_learning/playerjs.js" ></script> -->
+		<div class="old__content">
+			<MyCourse
+				v-show="user_id"
+				:user_id="user_id"
+			/>
+		</div>
+	</DefaultLayout>
 </template>
 
 <style scoped>

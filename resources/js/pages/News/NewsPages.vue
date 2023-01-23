@@ -1,5 +1,5 @@
 <template>
-  <NewsFeed/>
+	<NewsFeed />
 </template>
 
 <script>

@@ -2,7 +2,10 @@
 	<div class="header__left">
 		<!-- avatar  -->
 		<div class="header__avatar">
-			<img :src="avatar" alt="avatar image" >
+			<img
+				:src="avatar"
+				alt="avatar image"
+			>
 
 			<!-- hover menu -->
 			<div class="header__menu">
@@ -10,7 +13,10 @@
 					class="header__menu-project"
 					v-scroll-lock="isCreatingProject"
 				>
-					<img src="/images/dist/icon-settings.svg" alt="settings icon">
+					<img
+						src="/images/dist/icon-settings.svg"
+						alt="settings icon"
+					>
 					Проект: {{ project }}
 					<div class="header__submenu">
 						<a
@@ -20,9 +26,13 @@
 							class="header__submenu-item"
 							:class="{'header__submenu-item_active': cabinet.tenant_id === project}"
 						>
-							{{ cabinet.tenant_id }} <i v-if="cabinet.owner === 1" aria-hidden="true" class="fa fa-star"></i>
+							{{ cabinet.tenant_id }} <i
+								v-if="cabinet.owner === 1"
+								aria-hidden="true"
+								class="fa fa-star"
+							/>
 						</a>
-						<div class="header__submenu-divider"/>
+						<div class="header__submenu-divider" />
 						<div
 							v-if="isOwner"
 							@click="onNewProject"
@@ -37,22 +47,36 @@
 						class="header__menu-userid"
 						href="javascript:void(0)"
 					>#{{ $laravel.userId }}</a>
-					<p class="header__menu-email">{{ $laravel.email }}</p>
+					<p class="header__menu-email">
+						{{ $laravel.email }}
+					</p>
 				</div>
-				<router-link to="/cabinet" class="menu__item">
-					<img src="/images/dist/icon-settings.svg" alt="settings icon">
+				<router-link
+					to="/cabinet"
+					class="menu__item"
+				>
+					<img
+						src="/images/dist/icon-settings.svg"
+						alt="settings icon"
+					>
 					<span class="menu__item-title">Настройки</span>
 				</router-link>
-				<form action="/logout" method="POST">
+				<form
+					action="/logout"
+					method="POST"
+				>
 					<button class="menu__item w-full">
-						<img src="/images/dist/icon-exit.svg" alt="settings icon">
+						<img
+							src="/images/dist/icon-exit.svg"
+							alt="settings icon"
+						>
 						<span class="menu__item-title">Выход</span>
 					</button>
 					<input
 						type="hidden"
 						:value="$laravel.csrfToken"
 						name="_token"
-					/>
+					>
 				</form>
 			</div>
 		</div>
@@ -169,6 +193,9 @@ export default {
 		}
 	},
 	computed: {
+		isMainProject(){
+			return this.project === 'bp' || this.project === 'test'
+		},
 		showSettings(){
 			return this.$can('settings_view')
 				|| this.$can('users_view')
@@ -180,10 +207,10 @@ export default {
 				|| this.$can('checklists_view')
 		},
 		showReports(){
-			return (this.$can('top_view') && this.project === 'bp')
+			return (this.$can('top_view') && this.isMainProject)
 				|| this.$can('tabel_view')
 				|| this.$can('entertime_view')
-				|| (this.$can('hr_view') && this.project === 'bp')
+				|| (this.$can('hr_view') && this.isMainProject)
 				|| this.$can('analytics_view')
 				|| this.$can('salaries_view')
 				|| this.$can('quality_view')
@@ -254,7 +281,7 @@ export default {
 							name: 'ТОП',
 							icon: 'icon-nd-dashboard',
 							to: '/timetracking/top',
-							hide: !(this.$can('top_view') && this.project === 'bp')
+							hide: !(this.$can('top_view') && this.isMainProject)
 						},
 						{
 							name: 'Табель',
@@ -272,7 +299,7 @@ export default {
 							name: 'HR',
 							icon: 'icon-nd-hr',
 							to: '/timetracking/analytics',
-							hide: !(this.$can('hr_view') && this.project === 'bp')
+							hide: !(this.$can('hr_view') && this.isMainProject)
 						},
 						{
 							name: 'Аналитика',
@@ -333,7 +360,7 @@ export default {
 					href: '/callibro/login',
 					icon: 'icon-nd-u-calls',
 					height: 0,
-					hide: !(this.$can('ucalls_view') && this.project === 'bp')
+					hide: !(this.$can('ucalls_view') && this.isMainProject)
 				},
 			]
 		},

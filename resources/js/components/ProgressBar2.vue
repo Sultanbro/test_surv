@@ -1,15 +1,19 @@
 <template>
-<div class="progress-bar mb-1">
-    <div class="background-bar">
-        <div class="info">
-            <label>{{label}}</label>
-            <label class="percentage">{{percentage}}%   </label>
-        </div>
-    </div>
-    <transition appear @before-appear="beforeEnter" @after-appear="enter">
-        <div class="tracker-bar"></div>
-    </transition>
-</div>
+	<div class="progress-bar mb-1">
+		<div class="background-bar">
+			<div class="info">
+				<label>{{ label }}</label>
+				<label class="percentage">{{ percentage }}%   </label>
+			</div>
+		</div>
+		<transition
+			appear
+			@before-appear="beforeEnter"
+			@after-appear="enter"
+		>
+			<div class="tracker-bar" />
+		</transition>
+	</div>
 </template>
 
 <script>

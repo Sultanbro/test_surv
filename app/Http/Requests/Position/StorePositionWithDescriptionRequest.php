@@ -31,12 +31,12 @@ class StorePositionWithDescriptionRequest extends FormRequest
             'indexation'    => ['numeric'],
             'sum'           => ['numeric'],
             'desc'          => ['array'],
-            'desc.require'  => ['string', 'min:0', 'max:255'],
-            'desc.actions'  => ['string', 'min:0', 'max:255'],
-            'desc.time'     => ['string', 'min:0', 'max:255'],
-            'desc.salary'   => ['string', 'min:0', 'max:255'],
-            'desc.knowledge' => ['string', 'min:0', 'max:255'],
-            'desc.next_step' => ['string', 'min:0', 'max:255'],
+            'desc.require'  => ['nullable', 'min:3'],
+            'desc.actions'  => ['nullable', 'min:3'],
+            'desc.time'     => ['nullable', 'min:3'],
+            'desc.salary'   => ['nullable', 'min:3'],
+            'desc.knowledge' => ['nullable', 'min:3'],
+            'desc.next_step' => ['nullable', 'min:3'],
             'desc.show'      => ['boolean'],
         ];
     }

@@ -1,156 +1,209 @@
 <template>
-    <div class="settings-company-shifts">
-        <b-button variant="success" class="mb-2" @click="createNewShift">Создать новую смену</b-button>
-        <div class="table-container" v-if="shiftsData.length">
-            <b-table-simple
-                    id="awards-table"
-                    bordered
-                    :hover="false"
-                    class="table-shifts"
-            >
-                <b-thead>
-                    <b-tr>
-                        <b-th>№</b-th>
-                        <b-th>Название</b-th>
-                        <b-th>Рабочий график</b-th>
-                        <b-th>Выходные</b-th>
-                        <b-th class="w-100px"></b-th>
-                    </b-tr>
-                </b-thead>
-                <b-tbody>
-                    <b-tr v-for="(shift, index) in shiftsData" :key="index">
-                        <b-td>{{index + 1}}</b-td>
-                        <b-td>{{shift.name}}</b-td>
-                        <b-td>с {{shift.workStartTime}} по {{shift.workEndTime}}</b-td>
-                        <b-td>
-                            <div class="weekdays">
-                                <template v-for="(day, index) in convertWeekdaysString(shift.weekdaysString)">
-                                    <div class="weekday" v-if="shift.weekdaysString[index] === '1'" :key="day">{{day}}
-                                    </div>
-                                </template>
-                            </div>
-                            <div v-if="shift.weekdaysString === '0000000'">
-                                Без выходных
-                            </div>
-                        </b-td>
-                        <b-td>
-                            <div class="d-flex mx-2">
-                                <b-button class="btn btn-primary btn-icon" @click="editShift(shift, index)"><i
-                                        class="fa fa-edit"></i></b-button>
-                                <b-button class="btn btn-danger btn-icon" @click="deleteShift(index)"><i class="fa fa-trash"></i></b-button>
-                            </div>
-                        </b-td>
-                    </b-tr>
-                </b-tbody>
-            </b-table-simple>
-        </div>
-        <div class="mt-4" v-else>
-            <h4>Нет ни одной смены</h4>
-        </div>
+	<div class="settings-company-shifts">
+		<b-button
+			variant="success"
+			class="mb-2"
+			@click="createNewShift"
+		>
+			Создать новую смену
+		</b-button>
+		<div
+			v-if="shiftsData.length"
+			class="table-container"
+		>
+			<b-table-simple
+				id="awards-table"
+				bordered
+				:hover="false"
+				class="table-shifts"
+			>
+				<b-thead>
+					<b-tr>
+						<b-th>№</b-th>
+						<b-th>Название</b-th>
+						<b-th>Рабочий график</b-th>
+						<b-th>Выходные</b-th>
+						<b-th class="w-100px" />
+					</b-tr>
+				</b-thead>
+				<b-tbody>
+					<b-tr
+						v-for="(shift, index) in shiftsData"
+						:key="index"
+					>
+						<b-td>{{ index + 1 }}</b-td>
+						<b-td>{{ shift.name }}</b-td>
+						<b-td>с {{ shift.workStartTime }} по {{ shift.workEndTime }}</b-td>
+						<b-td>
+							<div class="weekdays">
+								<template v-for="(day, idx) in convertWeekdaysString(shift.weekdaysString)">
+									<div
+										v-if="shift.weekdaysString[idx] === '1'"
+										:key="day"
+										class="weekday"
+									>
+										{{ day }}
+									</div>
+								</template>
+							</div>
+							<div v-if="shift.weekdaysString === '0000000'">
+								Без выходных
+							</div>
+						</b-td>
+						<b-td>
+							<div class="d-flex mx-2">
+								<b-button
+									class="btn btn-primary btn-icon"
+									@click="editShift(shift, index)"
+								>
+									<i class="fa fa-edit" />
+								</b-button>
+								<b-button
+									class="btn btn-danger btn-icon"
+									@click="deleteShift(index)"
+								>
+									<i class="fa fa-trash" />
+								</b-button>
+							</div>
+						</b-td>
+					</b-tr>
+				</b-tbody>
+			</b-table-simple>
+		</div>
+		<div
+			v-else
+			class="mt-4"
+		>
+			<h4>Нет ни одной смены</h4>
+		</div>
 
-        <sidebar
-                id="edit-shift-sidebar"
-                :title="sidebarName ? sidebarName : 'Сертификат'"
-                :open="showSidebar"
-                @close="showSidebar = false"
-                width="600px"
-        >
-            <b-form @submit.prevent="onSubmit">
-                <b-form-group label="Название графика" label-cols="4">
-                    <b-form-input v-model="form.name"/>
-                </b-form-group>
-                <div
-                        id="workShedule"
-                        class="form-group work-schedule row"
-                >
-                    <label
-                            for="workStartTime"
-                            class="col-sm-4 col-form-label"
-                    >Рабочий график</label>
-                    <div class="col-sm-8 form-inline">
-                        <input
-                                name="work_start_time"
-                                v-model="form.workStartTime"
-                                type="time"
-                                id="workStartTime"
-                                class="form-control mr-2 work-start-time"
-                        >
-                        <label for="workEndTime" class="col-form-label mx-3">До </label>
-                        <input
-                                name="work_start_end"
-                                v-model="form.workEndTime"
-                                type="time"
-                                id="workEndTime"
-                                class="form-control mx-2 work-end-time"
-                        >
-                    </div>
-                </div>
-                <div id="weekdays" class="form-group row">
-                    <label for="weekdays-input" class="col-sm-4 col-form-label">Выходные</label>
-                    <div class="col-sm-8 form-inline weekdays-container">
-                        <input
-                                name="weekdays"
-                                type="hidden"
-                                v-model="form.weekdaysString"
-                                id="weekdays-input"
-                        >
+		<sidebar
+			id="edit-shift-sidebar"
+			:title="sidebarName ? sidebarName : 'Сертификат'"
+			:open="showSidebar"
+			@close="showSidebar = false"
+			width="600px"
+		>
+			<b-form @submit.prevent="onSubmit">
+				<b-form-group
+					label="Название графика"
+					label-cols="4"
+				>
+					<b-form-input v-model="form.name" />
+				</b-form-group>
+				<div
+					id="workShedule"
+					class="form-group work-schedule row"
+				>
+					<label
+						for="workStartTime"
+						class="col-sm-4 col-form-label"
+					>Рабочий график</label>
+					<div class="col-sm-8 form-inline">
+						<input
+							name="work_start_time"
+							v-model="form.workStartTime"
+							type="time"
+							id="workStartTime"
+							class="form-control mr-2 work-start-time"
+						>
+						<label
+							for="workEndTime"
+							class="col-form-label mx-3"
+						>До </label>
+						<input
+							name="work_start_end"
+							v-model="form.workEndTime"
+							type="time"
+							id="workEndTime"
+							class="form-control mx-2 work-end-time"
+						>
+					</div>
+				</div>
+				<div
+					id="weekdays"
+					class="form-group row"
+				>
+					<label
+						for="weekdays-input"
+						class="col-sm-4 col-form-label"
+					>Выходные</label>
+					<div class="col-sm-8 form-inline weekdays-container">
+						<input
+							name="weekdays"
+							type="hidden"
+							v-model="form.weekdaysString"
+							id="weekdays-input"
+						>
 
-                        <div
-                                class="weekday"
-                                :class="{'active': weekdays[0] === '1'}"
-                                data-id="1"
-                                @click="toggleWeekDay(0)"
-                        >Пн
-                        </div>
-                        <div
-                                class="weekday"
-                                :class="{'active': weekdays[1] === '1'}"
-                                data-id="2"
-                                @click="toggleWeekDay(1)"
-                        >Вт
-                        </div>
-                        <div
-                                class="weekday"
-                                :class="{'active': weekdays[2] === '1'}"
-                                data-id="3"
-                                @click="toggleWeekDay(2)"
-                        >Ср
-                        </div>
-                        <div
-                                class="weekday"
-                                :class="{'active': weekdays[3] === '1'}"
-                                data-id="4"
-                                @click="toggleWeekDay(3)"
-                        >Чт
-                        </div>
-                        <div
-                                class="weekday"
-                                :class="{'active': weekdays[4] === '1'}"
-                                data-id="5"
-                                @click="toggleWeekDay(4)"
-                        >Пт
-                        </div>
-                        <div
-                                class="weekday"
-                                :class="{'active': weekdays[5] === '1'}"
-                                data-id="6"
-                                @click="toggleWeekDay(5)"
-                        >Сб
-                        </div>
-                        <div
-                                class="weekday"
-                                :class="{'active': weekdays[6] === '1'}"
-                                data-id="0"
-                                @click="toggleWeekDay(6)"
-                        >Вс
-                        </div>
-                    </div>
-                </div>
-                <hr class="my-4">
-                <b-button type="submit" variant="success">Сохранить</b-button>
-            </b-form>
-        </sidebar>
-    </div>
+						<div
+							class="weekday"
+							:class="{'active': weekdays[0] === '1'}"
+							data-id="1"
+							@click="toggleWeekDay(0)"
+						>
+							Пн
+						</div>
+						<div
+							class="weekday"
+							:class="{'active': weekdays[1] === '1'}"
+							data-id="2"
+							@click="toggleWeekDay(1)"
+						>
+							Вт
+						</div>
+						<div
+							class="weekday"
+							:class="{'active': weekdays[2] === '1'}"
+							data-id="3"
+							@click="toggleWeekDay(2)"
+						>
+							Ср
+						</div>
+						<div
+							class="weekday"
+							:class="{'active': weekdays[3] === '1'}"
+							data-id="4"
+							@click="toggleWeekDay(3)"
+						>
+							Чт
+						</div>
+						<div
+							class="weekday"
+							:class="{'active': weekdays[4] === '1'}"
+							data-id="5"
+							@click="toggleWeekDay(4)"
+						>
+							Пт
+						</div>
+						<div
+							class="weekday"
+							:class="{'active': weekdays[5] === '1'}"
+							data-id="6"
+							@click="toggleWeekDay(5)"
+						>
+							Сб
+						</div>
+						<div
+							class="weekday"
+							:class="{'active': weekdays[6] === '1'}"
+							data-id="0"
+							@click="toggleWeekDay(6)"
+						>
+							Вс
+						</div>
+					</div>
+				</div>
+				<hr class="my-4">
+				<b-button
+					type="submit"
+					variant="success"
+				>
+					Сохранить
+				</b-button>
+			</b-form>
+		</sidebar>
+	</div>
 </template>
 
 

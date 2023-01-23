@@ -1,63 +1,93 @@
 <template>
-<div class="video-accordion">
+	<div class="video-accordion">
+		<div
+			v-for="(group, g_index) in groups"
+			:key="g_index"
+			class="group"
+			:class="{'opened': group.opened || group.title == 'Без группы' }"
+		>
+			<div
+				class="g-title"
+				v-if="group.title != 'Без группы'"
+				@click="toggleGroup(g_index)"
+			>
+				<input
+					type="text"
+					class="group-input"
+					v-model="group.title"
+					:disabled="mode == 'read'"
+					@change="saveGroup(g_index)"
+				>
+				<div class="btns">
+					<i
+						class="fa fa-folder-plus"
+						@click.stop="addGroup(g_index)"
+						title="Добавить отдел"
+						v-if="mode == 'edit'"
+					/>
+					<i
+						class="fa fa-upload"
+						@click.stop="uploadVideo(g_index)"
+						title="Загрузить видео"
+						v-if="mode == 'edit'"
+					/>
+					<i
+						class="fa fa-trash"
+						@click.stop="deleteGroup(g_index)"
+						title="Удалить отдел"
+						v-if="mode == 'edit'"
+					/>
+					<i
+						class="fa fa-chevron-down chevron"
+						v-if="group.children.length > 0 || group.videos.length > 0"
+					/>
+				</div>
+			</div>
 
-    <div v-for="(group, g_index) in groups" :key="g_index" class="group" :class="{'opened': group.opened || group.title == 'Без группы' }">
+			<VideoAccordion
+				:token="token"
+				:playlist_id="playlist_id"
+				:groups="group.children"
+				:mode="mode"
+				:active="active"
+				:is_course="is_course"
+				@showVideo="showVideo"
+				@deleteVideo="deleteVideo"
+				@showTests="showTests"
+				@order-changed="$emit('order-changed')"
+				@moveTo="moveTo"
+			/>
 
-        <div class="g-title"  v-if="group.title != 'Без группы'" @click="toggleGroup(g_index)" >
-            <input type="text" class="group-input" v-model="group.title" :disabled="mode == 'read'" @change="saveGroup(g_index)" />
-            <div class="btns" >
-                <i class="fa fa-folder-plus" @click.stop="addGroup(g_index)" title="Добавить отдел" v-if="mode == 'edit'"></i>
-                <i class="fa fa-upload" @click.stop="uploadVideo(g_index)"  title="Загрузить видео" v-if="mode == 'edit'"></i>
-                <i class="fa fa-trash"  @click.stop="deleteGroup(g_index)"  title="Удалить отдел" v-if="mode == 'edit'"></i>
-                <i class="fa fa-chevron-down chevron" v-if="group.children.length > 0 || group.videos.length > 0"></i>
-            </div>
-        </div>
+			<VideoList
+				:videos="group.videos"
+				:mode="mode"
+				:active="active"
+				:g_index="g_index"
+				:c_index="-1"
+				@showVideo="showVideo"
+				@showTests="showTests"
+				@moveTo="moveTo"
+				@deleteVideo="deleteVideo"
+				@order-changed="$emit('order-changed')"
+				:is_course="is_course"
+			/>
+		</div>
 
-        <VideoAccordion
-            :token="token"
-            :playlist_id="playlist_id"
-            :groups="group.children"
-            :mode="mode"
-            :active="active"
-            :is_course="is_course"
-            @showVideo="showVideo"
-            @deleteVideo="deleteVideo"
-            @showTests="showTests"
-            @order-changed="$emit('order-changed')"
-            @moveTo="moveTo"
-        />
-
-        <VideoList
-            :videos="group.videos"
-            :mode="mode"
-            :active="active"
-            :g_index="g_index"
-            :c_index="-1"
-            @showVideo="showVideo"
-            @showTests="showTests"
-            @moveTo="moveTo"
-            @deleteVideo="deleteVideo"
-            @order-changed="$emit('order-changed')"
-            :is_course="is_course"
-        />
-
-    </div>
-
-    <b-modal
-      v-model="uploader"
-      hide-footer
-      title="Загрузить видео"
-      size="lg"
-    >
-        <VideoUploader
-            :token="token"
-            :playlist_id="playlist_id"
-            :group_id="group_id"
-            @close="uploader = false"
-            @addVideoToPlaylist="addVideoToPlaylist"
-        />
-    </b-modal>
-</div>
+		<b-modal
+			v-model="uploader"
+			hide-footer
+			title="Загрузить видео"
+			size="lg"
+		>
+			<VideoUploader
+				:token="token"
+				:playlist_id="playlist_id"
+				:group_id="group_id"
+				@close="uploader = false"
+				@addVideoToPlaylist="addVideoToPlaylist"
+			/>
+		</b-modal>
+	</div>
 </template>
 
 <script>

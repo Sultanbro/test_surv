@@ -1,162 +1,212 @@
 <template>
-  <div class="video-playlist">
+	<div class="video-playlist">
+		<!-- Header -->
 
-    <!-- Header -->
+		<div
+			class="d-flex mb-3"
+			v-if="!is_course"
+		>
+			<div class="d-flex jcsb mb-1 left f-70">
+				<div class="s w-full">
+					<div class="d-flex flex-column">
+						<input
+							v-if="mode == 'edit'"
+							type="text"
+							class="form-control form-control-sm w-full p-itle mb-0 mr-2"
+							v-model="playlist.title"
+							name="title"
+						>
+						<p
+							v-else
+							class="p-title mb-0"
+						>
+							{{ playlist.title }}
+						</p>
+						<p
+							v-if="noVideoInPlaylist && mode == 'read'"
+							class="mt-2"
+						>
+							В этом плейлисте нет видео
+						</p>
+					</div>
 
-    <div class="d-flex mb-3"  v-if="!is_course">
-      <div class="d-flex jcsb mb-1 left f-70">
-        <div class="s w-full">
-          <div class="d-flex flex-column">
-            <input
-              v-if="mode == 'edit'"
-              type="text"
-              class="form-control form-control-sm w-full p-itle mb-0 mr-2"
-              v-model="playlist.title"
-              name="title"
-            />
-            <p v-else class="p-title mb-0"> {{ playlist.title }} </p>
-            <p v-if="noVideoInPlaylist && mode == 'read'" class="mt-2">В этом плейлисте нет видео</p>
-          </div>
+					<!-- playlist description -->
+					<div class="form-group mt-2">
+						<textarea
+							v-if="mode == 'edit'"
+							name="text"
+							class="form-control textarea h-70"
+							required
+							title="Описание плейлиста"
+							placeholder="Описание плейлиста"
+							v-model="playlist.text"
+						/>
+						<p
+							v-else
+							class="p-desc"
+						>
+							{{ playlist.text }}
+						</p>
+					</div>
+				</div>
+			</div>
+			<div class="right f-30 pl-4">
+				<img
+					class="book-img mb-2"
+					v-if="playlist.img != ''"
+					:src="playlist.img"
+				>
+				<b-form-file
+					v-if="mode == 'edit'"
+					ref="edit_img"
+					v-model="file_img"
+					:state="Boolean(file_img)"
+					placeholder="Выберите или перетащите файл сюда..."
+					drop-placeholder="Перетащите файл сюда..."
+					class="mt-3"
+				/>
+			</div>
+		</div>
 
-          <!-- playlist description -->
-          <div class="form-group mt-2">
-            <textarea
-              v-if="mode == 'edit'"
-              name="text"
-              class="form-control textarea h-70"
-              required
-              title="Описание плейлиста"
-              placeholder="Описание плейлиста"
-              v-model="playlist.text"
-            ></textarea>
-            <p v-else class="p-desc">{{ playlist.text }}</p>
-          </div>
+		<div class="row">
+			<!-- Player and test questions -->
+			<div class="col-lg-6 pr-0">
+				<div
+					class="block  br"
+					v-if="activeVideo != null"
+				>
+					<VideoPlayerItem
+						:src="activeVideoLink"
+						:key="video_changed"
+						:autoplay="course_item_id != 0"
+					/>
 
-        </div>
-      </div>
-      <div class="right f-30 pl-4">
-            <img class="book-img mb-2"
-              v-if="playlist.img != ''"
-              :src="playlist.img"
-              />
-            <b-form-file
-              v-if="mode == 'edit'"
-              ref="edit_img"
-              v-model="file_img"
-              :state="Boolean(file_img)"
-              placeholder="Выберите или перетащите файл сюда..."
-              drop-placeholder="Перетащите файл сюда..."
-              class="mt-3"
-              ></b-form-file>
-        </div>
-    </div>
+					<div class="row mb-2 mt-3">
+						<div class="col-md-12">
+							<input
+								type="text"
+								v-if="mode == 'edit'"
+								class="form-control"
+								v-model="activeVideo.title"
+								:disabled="mode == 'read'"
+							>
+							<p
+								v-else
+								class="v-title mb-0"
+							>
+								{{ activeVideo.title }}
+							</p>
+						</div>
+					</div>
 
-    <div class="row">
-
-      <!-- Player and test questions -->
-      <div class="col-lg-6 pr-0">
-        <div class="block  br" v-if="activeVideo != null">
-            <VideoPlayerItem
-              :src="activeVideoLink"
-              :key="video_changed"
-              :autoplay="course_item_id != 0"
-            />
-
-            <div class="row mb-2 mt-3">
-              <div class="col-md-12">
-                <input
-                  type="text"
-                  v-if="mode == 'edit'"
-                  class="form-control"
-                  v-model="activeVideo.title"
-                  :disabled="mode == 'read'"
-                />
-                <p v-else class="v-title mb-0"> {{ activeVideo.title }} </p>
-              </div>
-            </div>
-
-            <div class="row mb-2" v-if="mode == 'edit'">
-              <div class="col-md-12">
-                <button class="btn btn-primary" @click="saveActiveVideoFast">Сохранить</button>
-              </div>
-            </div>
-
-
-            <div class="vid mt-3">
-                <Questions
-                    v-if="activeVideo.questions.length > 0 && mode != 'edit'"
-                    :questions="activeVideo.questions"
-                    :course_item_id="course_item_id"
-                    :id="activeVideo.id"
-                    :key="refreshTest"
-                    type="video"
-                    :pass_grade="activeVideo.pass_grade"
-                     :pass="activeVideo.item_model !== null"
-                    @passed="passedTest()"
-                    :mode="mode"
-                    @nextElement="nextElement"
-                />
-                <!-- v-if="(activeVideo.questions.length == 0 || activeVideo.item_model != null) && mode == 'read'" -->
-                <button class="next-btn btn btn-primary" v-if="activeVideo.questions.length == 0 && mode == 'read'"
-                  @click="nextElement()">
-                  Следующее видео
-                  <i class="fa fa-angle-double-right ml-2"></i>
-                </button>
-
-            </div>
-        </div>
-      </div>
-
-      <!-- nav accordion -->
-      <div class="col-lg-6">
-        <VideoAccordion
-          ref="accordion"
-          :groups="playlist.groups"
-          :playlist_id="playlist.id"
-          :mode="mode"
-          :token="token"
-          :active="activeVideo ? activeVideo.id : -1"
-          :is_course="is_course"
-          @showVideo="showVideo"
-          @showTests="showTests"
-          @order-changed="formMap"
-          />
-
-      </div>
-    </div>
-
-    <!-- edit tests -->
-    <Sidebar
-      title="Редактировать вопросы к видео"
-      :open="show_tests && activeVideo != null"
-      @close="show_tests = false"
-      width="70%"
-    >
-      <div class="p-3" v-if="activeVideo != null">
-        <div class=" mb-3">
-          <p class="mt-2 font-bold">Название видео</p>
-          <input type="text" class="form-control" v-model="activeVideo.title" ref="activevideo_input" />
-        </div>
-         <div class="row mb-2" v-if="mode == 'edit'">
-          <div class="col-md-12">
-            <button class="btn btn-primary" @click="saveActiveVideoFast">Сохранить</button>
-          </div>
-        </div>
+					<div
+						class="row mb-2"
+						v-if="mode == 'edit'"
+					>
+						<div class="col-md-12">
+							<button
+								class="btn btn-primary"
+								@click="saveActiveVideoFast"
+							>
+								Сохранить
+							</button>
+						</div>
+					</div>
 
 
-        <Questions
-          :questions="activeVideo.questions"
-          :id="activeVideo.id"
-          :pass_grade="activeVideo.pass_grade"
-          type="video"
-          :key="refreshTest"
-          @changePassGrade="changePassGrade"
-          :mode="'edit'"
-        />
-      </div>
-    </Sidebar>
+					<div class="vid mt-3">
+						<Questions
+							v-if="activeVideo.questions.length > 0 && mode != 'edit'"
+							:questions="activeVideo.questions"
+							:course_item_id="course_item_id"
+							:id="activeVideo.id"
+							:key="refreshTest"
+							type="video"
+							:pass_grade="activeVideo.pass_grade"
+							:pass="activeVideo.item_model !== null"
+							@passed="passedTest()"
+							:mode="mode"
+							@nextElement="nextElement"
+						/>
+						<!-- v-if="(activeVideo.questions.length == 0 || activeVideo.item_model != null) && mode == 'read'" -->
+						<button
+							class="next-btn btn btn-primary"
+							v-if="activeVideo.questions.length == 0 && mode == 'read'"
+							@click="nextElement()"
+						>
+							Следующее видео
+							<i class="fa fa-angle-double-right ml-2" />
+						</button>
+					</div>
+				</div>
+			</div>
 
-  </div>
+			<!-- nav accordion -->
+			<div class="col-lg-6">
+				<VideoAccordion
+					ref="accordion"
+					:groups="playlist.groups"
+					:playlist_id="playlist.id"
+					:mode="mode"
+					:token="token"
+					:active="activeVideo ? activeVideo.id : -1"
+					:is_course="is_course"
+					@showVideo="showVideo"
+					@showTests="showTests"
+					@order-changed="formMap"
+				/>
+			</div>
+		</div>
+
+		<!-- edit tests -->
+		<Sidebar
+			title="Редактировать вопросы к видео"
+			:open="show_tests && activeVideo != null"
+			@close="show_tests = false"
+			width="70%"
+		>
+			<div
+				class="p-3"
+				v-if="activeVideo != null"
+			>
+				<div class=" mb-3">
+					<p class="mt-2 font-bold">
+						Название видео
+					</p>
+					<input
+						type="text"
+						class="form-control"
+						v-model="activeVideo.title"
+						ref="activevideo_input"
+					>
+				</div>
+				<div
+					class="row mb-2"
+					v-if="mode == 'edit'"
+				>
+					<div class="col-md-12">
+						<button
+							class="btn btn-primary"
+							@click="saveActiveVideoFast"
+						>
+							Сохранить
+						</button>
+					</div>
+				</div>
+
+
+				<Questions
+					:questions="activeVideo.questions"
+					:id="activeVideo.id"
+					:pass_grade="activeVideo.pass_grade"
+					type="video"
+					:key="refreshTest"
+					@changePassGrade="changePassGrade"
+					:mode="'edit'"
+				/>
+			</div>
+		</Sidebar>
+	</div>
 </template>
 
 <script>

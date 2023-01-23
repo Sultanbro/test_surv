@@ -1,135 +1,233 @@
 <template>
-<div class="row jcsb px-5">
-    <div class="flexy" v-bind:class="[activeClass]">
-        <div class="filler" @click="showSalarySidebar = true" id="hoverPulse">
-            <img src="/images/money1.png"
-                alt="icon"
-                class="img-fluid w-120 back">
-            <div class="front" :style="'height:'+ data.salary_percent +'%'">
-                <img src="/images/money1.png"
-                    alt="icon"
-                    class="img-fluid w-120">
-            </div>
-        </div>
-        <p class="mb-0 font-bold">Баланс оклада<span></span></p>
-        <p class="text-center">{{ data.salary }}</p>
-    </div>
-    <div class="flexy" v-bind:class="[activeClass]">
-        <div class="filler" @click="openKpi">
-            <img src="/images/money2.png"
-                alt="icon"
-                class="img-fluid w-120 back">
-            <div class="front" :style="'height:'+ data.kpi_percent +'%'">
-                <img src="/images/money2.png"
-                    alt="icon"
-                    class="img-fluid w-120">
-            </div>
-        </div>
-        <p class="mb-0  font-bold text-center">KPI <span></span></p>
-        <p class="text-center">{{ data.kpi }}</p>
-    </div>
-    <div class="flexy" v-bind:class="[activeClass]">
-        <div class="filler" @click="showBonusSidebar = true">
-            <img src="/images/money3.png"
-                alt="icon"
-                class="img-fluid w-120 back">
-            <div class="front" style="height:100%">
-                <img src="/images/money3.png"
-                    alt="icon"
-                    class="img-fluid w-120">
-            </div>
-        </div>
-        <p class="mb-0  font-bold">Бонусы <span></span></p>
-        <p class="text-center">{{ data.bonus }}</p>
-    </div>
+	<div class="row jcsb px-5">
+		<div
+			class="flexy"
+			:class="[activeClass]"
+		>
+			<div
+				class="filler"
+				@click="showSalarySidebar = true"
+				id="hoverPulse"
+			>
+				<img
+					src="/images/money1.png"
+					alt="icon"
+					class="img-fluid w-120 back"
+				>
+				<div
+					class="front"
+					:style="'height:'+ data.salary_percent +'%'"
+				>
+					<img
+						src="/images/money1.png"
+						alt="icon"
+						class="img-fluid w-120"
+					>
+				</div>
+			</div>
+			<p class="mb-0 font-bold">
+				Баланс оклада<span />
+			</p>
+			<p class="text-center">
+				{{ data.salary }}
+			</p>
+		</div>
+		<div
+			class="flexy"
+			:class="[activeClass]"
+		>
+			<div
+				class="filler"
+				@click="openKpi"
+			>
+				<img
+					src="/images/money2.png"
+					alt="icon"
+					class="img-fluid w-120 back"
+				>
+				<div
+					class="front"
+					:style="'height:'+ data.kpi_percent +'%'"
+				>
+					<img
+						src="/images/money2.png"
+						alt="icon"
+						class="img-fluid w-120"
+					>
+				</div>
+			</div>
+			<p class="mb-0  font-bold text-center">
+				KPI <span />
+			</p>
+			<p class="text-center">
+				{{ data.kpi }}
+			</p>
+		</div>
+		<div
+			class="flexy"
+			:class="[activeClass]"
+		>
+			<div
+				class="filler"
+				@click="showBonusSidebar = true"
+			>
+				<img
+					src="/images/money3.png"
+					alt="icon"
+					class="img-fluid w-120 back"
+				>
+				<div
+					class="front"
+					style="height:100%"
+				>
+					<img
+						src="/images/money3.png"
+						alt="icon"
+						class="img-fluid w-120"
+					>
+				</div>
+			</div>
+			<p class="mb-0  font-bold">
+				Бонусы <span />
+			</p>
+			<p class="text-center">
+				{{ data.bonus }}
+			</p>
+		</div>
 
-    <div class="flexy"  v-bind:class="[activeClass]" v-if="has_quartal_premiums">
-        <div class="filler" @click="openQuartalPrems">
-            <img src="/images/bonus_type_2.png"
-                alt="icon"
-                class="img-fluid w-120 back">
-            <div class="front" style="height:100%">
-                <img src="/images/bonus_type_2.png"
-                    alt="icon"
-                    class="img-fluid w-120">
-            </div>
-        </div>
-        <p class="mb-0 font-bold">Квартальная премия <span></span></p>
-        <p class="text-center">{{ data.quarter_bonus }}</p>
-    </div>
+		<div
+			class="flexy"
+			:class="[activeClass]"
+			v-if="has_quartal_premiums"
+		>
+			<div
+				class="filler"
+				@click="openQuartalPrems"
+			>
+				<img
+					src="/images/bonus_type_2.png"
+					alt="icon"
+					class="img-fluid w-120 back"
+				>
+				<div
+					class="front"
+					style="height:100%"
+				>
+					<img
+						src="/images/bonus_type_2.png"
+						alt="icon"
+						class="img-fluid w-120"
+					>
+				</div>
+			</div>
+			<p class="mb-0 font-bold">
+				Квартальная премия <span />
+			</p>
+			<p class="text-center">
+				{{ data.quarter_bonus }}
+			</p>
+		</div>
 
-    <div class="flexy"  v-bind:class="[activeClass]">
-        <div class="filler" @click="showAwardSidebar = true">
-            <img src="/images/user-earnings-5.svg"
-                alt="icon"
-                class="img-fluid w-120 back">
-            <div class="front" style="height:100%">
-                <img src="/images/user-earnings-5.svg"
-                    alt="icon"
-                    class="img-fluid w-120">
-            </div>
-        </div>
-        <p class="mb-0  font-bold">Награды <span></span></p>
-        <p class="text-center">&nbsp;</p>
-    </div>
+		<div
+			class="flexy"
+			:class="[activeClass]"
+		>
+			<div
+				class="filler"
+				@click="showAwardSidebar = true"
+			>
+				<img
+					src="/images/user-earnings-5.svg"
+					alt="icon"
+					class="img-fluid w-120 back"
+				>
+				<div
+					class="front"
+					style="height:100%"
+				>
+					<img
+						src="/images/user-earnings-5.svg"
+						alt="icon"
+						class="img-fluid w-120"
+					>
+				</div>
+			</div>
+			<p class="mb-0  font-bold">
+				Награды <span />
+			</p>
+			<p class="text-center">
+&nbsp;
+			</p>
+		</div>
 
-    <sidebar
-        title="Баланс оклада"
-        :open="showSalarySidebar"
-        @close="showSalarySidebar = false"
-        width="40%">
-
-        <div class="mt-2">
-            <table class="table table-bordered table-sm ue-table">
-                <tr>
-                    <td class="text-left">На данный момент ваш оклад</td>
-                    <td>{{ data.oklad }}</td>
-                </tr>
-                <tr>
-                    <td class="text-left">Уже заработали в этом месяце</td>
-                    <td>{{ data.salary }}</td>
-                </tr>
-                <tr>
-                    <td class="text-left">Вы работаете у нас</td>
-                    <td>{{ data.salary_info.worked_days }} дней</td>
-                </tr>
-                <tr v-if="data.salary_info.indexation_sum > 0" class="text-left">
-                    <td>До повышения оклада на {{ data.salary_info.indexation_sum  }} KZT</td>
-                    <td>{{ data.salary_info.days_before_indexation }} дней</td>
-                </tr>
-                <tr v-if="data.salary_info.indexation_sum > 0" class="text-left">
-                    <td>В течение года после принятия на работу ваш оклад вырастет на</td>
-                    <td>{{ data.salary_info.indexation_sum * 4 }} KZT</td>
-                </tr>
-            </table>
-        </div>
-        <p></p>
-    </sidebar>
-
-
-    <sidebar
-      title="KPI"
-      :open="showKpiSidebar"
-      @close="showKpiSidebar = false"
-      v-if="showKpiSidebar"
-      width="80%"
-    >
-     <!-- table -->
-        <t-stats
-            :activities="activities"
-            :groups="groups"
-            :items="kpis"
-            :editable="false"
-        />
-
-    <p class="text-red mt-2">
-        * сумма премии за выполнение показателей начнет меняться после достижения 80% от целевого значения на месяц
-    </p>
-
-    </sidebar>
+		<sidebar
+			title="Баланс оклада"
+			:open="showSalarySidebar"
+			@close="showSalarySidebar = false"
+			width="40%"
+		>
+			<div class="mt-2">
+				<table class="table table-bordered table-sm ue-table">
+					<tr>
+						<td class="text-left">
+							На данный момент ваш оклад
+						</td>
+						<td>{{ data.oklad }}</td>
+					</tr>
+					<tr>
+						<td class="text-left">
+							Уже заработали в этом месяце
+						</td>
+						<td>{{ data.salary }}</td>
+					</tr>
+					<tr>
+						<td class="text-left">
+							Вы работаете у нас
+						</td>
+						<td>{{ data.salary_info.worked_days }} дней</td>
+					</tr>
+					<tr
+						v-if="data.salary_info.indexation_sum > 0"
+						class="text-left"
+					>
+						<td>До повышения оклада на {{ data.salary_info.indexation_sum }} KZT</td>
+						<td>{{ data.salary_info.days_before_indexation }} дней</td>
+					</tr>
+					<tr
+						v-if="data.salary_info.indexation_sum > 0"
+						class="text-left"
+					>
+						<td>В течение года после принятия на работу ваш оклад вырастет на</td>
+						<td>{{ data.salary_info.indexation_sum * 4 }} KZT</td>
+					</tr>
+				</table>
+			</div>
+			<p />
+		</sidebar>
 
 
-    <!--<sidebar
+		<sidebar
+			title="KPI"
+			:open="showKpiSidebar"
+			@close="showKpiSidebar = false"
+			v-if="showKpiSidebar"
+			width="80%"
+		>
+			<!-- table -->
+			<t-stats
+				:activities="activities"
+				:groups="groups"
+				:items="kpis"
+				:editable="false"
+			/>
+
+			<p class="text-red mt-2">
+				* сумма премии за выполнение показателей начнет меняться после достижения 80% от целевого значения на месяц
+			</p>
+		</sidebar>
+
+
+		<!--<sidebar
       title="Bonus"
       :open="showBonusSidebar"
       @close="showBonusSidebar = false"
@@ -147,70 +245,81 @@
     </p>
 
     </sidebar>-->
-    <sidebar
-      title="Бонусы"
-      :open="showBonusSidebar"
-      @close="showBonusSidebar = false"
-      width="40%"
-    >
-      <div class="mt-2 p-2">
-        <template v-if="data.bonusHistory.length > 0">
+		<sidebar
+			title="Бонусы"
+			:open="showBonusSidebar"
+			@close="showBonusSidebar = false"
+			width="40%"
+		>
+			<div class="mt-2 p-2">
+				<template v-if="data.bonusHistory.length > 0">
+					<table class="table table-bordered table-sm">
+						<tr>
+							<th class="left mark">
+								Дата
+							</th>
+							<th class=" mark">
+								Бонус
+							</th>
+							<th class=" mark">
+								Комментарии
+							</th>
+						</tr>
+						<tr
+							v-for="(item, index) in data.bonusHistory"
+							:key="index"
+						>
+							<td>{{ item.date }}</td>
+							<td>{{ item.sum }}</td>
+							<td v-html="item.comment" />
+						</tr>
+					</table>
+				</template>
 
-          <table class="table table-bordered table-sm">
-            <tr>
-              <th class="left mark">Дата</th>
-              <th class=" mark">Бонус</th>
-              <th class=" mark">Комментарии</th>
-            </tr>
-            <tr v-for="(item, index) in data.bonusHistory" :key="index">
-              <td>{{item.date}}</td>
-              <td>{{ item.sum }}</td>
-              <td v-html="item.comment"></td>
-            </tr>
-          </table>
+				<div class="mt-2">
+					<h6 style="color:#13547e;">
+						Зарабатывайте бонусы выполняя дополнительные активности:
+					</h6>
+					<div v-html="data.potential_bonuses" />
+				</div>
 
-        </template>
-
-        <div class="mt-2">
-            <h6 style="color:#13547e;">Зарабатывайте бонусы выполняя дополнительные активности:</h6>
-            <div v-html="data.potential_bonuses"></div>
-        </div>
-
-        <div v-if="data.editedBonus !== null" class="mt-5">
-            <p style="color:red">Бонус изменен на {{ data.editedBonus.amount }} KZT <br>Комментарии: {{ data.editedBonus.comment }}</p>
-        </div>
-      </div>
-    </sidebar>
+				<div
+					v-if="data.editedBonus !== null"
+					class="mt-5"
+				>
+					<p style="color:red">
+						Бонус изменен на {{ data.editedBonus.amount }} KZT <br>Комментарии: {{ data.editedBonus.comment }}
+					</p>
+				</div>
+			</div>
+		</sidebar>
 
 
-    <sidebar
-      title="Квартальная премия"
-      :open="showQuartalPremiumSidebar"
-      @close="showQuartalPremiumSidebar = false"
-      width="60%"
-    >
+		<sidebar
+			title="Квартальная премия"
+			:open="showQuartalPremiumSidebar"
+			@close="showQuartalPremiumSidebar = false"
+			width="60%"
+		>
+			<t-stats-quartal
+				:users="quartal_premiums"
+				:groups="quartal_groups"
+				search-text=""
+			/>
+		</sidebar>
 
-        <t-stats-quartal
-            :users="quartal_premiums"
-            :groups="quartal_groups"
-            searchText=""
-        />
-
-    </sidebar>
-
-<!--     <award-sidebar
+		<!--     <award-sidebar
         v-if="showAwardSidebar"
         :open.sync="showAwardSidebar"
         :awards="data.awards"
     /> -->
 
-    <AwardBSidebar
-        v-if="showAwardSidebar"
-        :open.sync="showAwardSidebar"
-        :awards="data.awards"
-    />
-
-</div>
+		<AwardBSidebar
+			v-if="showAwardSidebar"
+			:open.sync="showAwardSidebar"
+			:awards="data.awards"
+		/>
+	</div>
 </template>
 
 <script>

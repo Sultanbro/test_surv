@@ -1,246 +1,355 @@
 <template>
-  <div v-if="data">
-    <div class="row mr-4">
-      <div class="col-3">
-        <select class="form-control" v-model="monthInfo.currentMonth" @change="fetchData">
-          <option v-for="month in $moment.months()" :value="month" :key="month">{{ month }}</option>
-        </select>
-      </div>
-      <div class="col-2">
-        <select class="form-control" v-model="currentYear" @change="fetchData">
-          <option v-for="year in years" :value="year" :key="year">{{ year }}</option>
-        </select>
-      </div>
-      <div class="col-1">
-        <div class="btn btn-primary rounded" @click="fetchData()">
-          <i class="fa fa-redo-alt"></i>
-        </div>
-      </div>
-      <div class="col-6"></div>
-    </div>
+	<div v-if="data">
+		<div class="row mr-4">
+			<div class="col-3">
+				<select
+					class="form-control"
+					v-model="monthInfo.currentMonth"
+					@change="fetchData"
+				>
+					<option
+						v-for="month in $moment.months()"
+						:value="month"
+						:key="month"
+					>
+						{{ month }}
+					</option>
+				</select>
+			</div>
+			<div class="col-2">
+				<select
+					class="form-control"
+					v-model="currentYear"
+					@change="fetchData"
+				>
+					<option
+						v-for="year in years"
+						:value="year"
+						:key="year"
+					>
+						{{ year }}
+					</option>
+				</select>
+			</div>
+			<div class="col-1">
+				<div
+					class="btn btn-primary rounded"
+					@click="fetchData()"
+				>
+					<i class="fa fa-redo-alt" />
+				</div>
+			</div>
+			<div class="col-6" />
+		</div>
 
-    <!-- <a href="/timetracking/nps" class="btn link-btn" target="_blank">NPS</a> -->
-    <b-tabs type="card" class="mt-4" defaultActiveKey='1'>
+		<!-- <a href="/timetracking/nps" class="btn link-btn" target="_blank">NPS</a> -->
+		<b-tabs
+			type="card"
+			class="mt-4"
+			default-active-key="1"
+		>
+			<b-tab
+				title="Полезность"
+				key="1"
+				card
+			>
+				<div
+					class="d-flex"
+					style="margin-bottom: 350px"
+				>
+					<TopGauges
+						:utility_items="utility"
+						:editable="true"
+						wrapper_class="  br-1"
+						:key="ukey"
+						page="top"
+					/>
+				</div>
+			</b-tab>
 
+			<b-tab
+				title="Рентабельность операторов"
+				key="2"
+				@click="showIcons()"
+				card
+			>
+				<div
+					class="d-flex flex-wrap mb-5"
+					:key="ukey"
+				>
+					<div
+						v-for="(gauge, g_index) in rentability"
+						:key="gauge.name"
+					>
+						<div @click="gauge.editable = !gauge.editable">
+							<VGauge
+								:value="gauge.value"
+								unit="%"
+								:options="gauge.options"
+								:max-value="Number(gauge.max_value)"
+								:top="true"
+								height="75px"
+								width="125px"
+								gauge-value-class="gauge-span"
+							/>
+						</div>
 
-      <b-tab title="Полезность" key="1" card>
-        <div class="d-flex" style="margin-bottom: 350px">
-          <TopGauges
-            :utility_items="utility"
-            :editable="true"
-            wrapper_class="  br-1"
-            :key="ukey"
-            page="top"
-          />
-        </div>
-      </b-tab>
-
-      <b-tab title="Рентабельность операторов" key="2" @click="showIcons()" card>
-
-        <div class="d-flex flex-wrap mb-5" :key="ukey">
-          <div v-for="(gauge, g_index) in rentability" :key="gauge.name">
-            <div @click="gauge.editable = !gauge.editable">
-              <VGauge :value="gauge.value"
-                       unit="%"
-                       :options="gauge.options"
-                       :maxValue="Number(gauge.max_value)"
-                       :top="true"
-                       height="75px"
-                       width="125px"
-                       gaugeValueClass="gauge-span"/>
-
-            </div>
-
-            <p class="text-center font-bold" style="font-size: 14px;margin-bottom: 0;">
-              <a v-if="[42].includes(gauge.group_id)"
-                 :href="'/timetracking/analytics?group='+ gauge.group_id + '&active=1&load=1'"
-                 target="_blank">{{ gauge.name }}</a>
-              <a v-else :href="'/timetracking/an?group='+ gauge.group_id + '&active=1&load=1'"
-                 target="_blank">{{ gauge.name }}</a>
-            </p>
-            <p class="text-center font-bold text-14">{{ gauge.value }}%</p>
-
-
-            <div v-if="gauge.editable" class="mb-5 edt-window" style="width: 125px;">
-              <div>
-                <div class="d-flex justify-content-between align-items-center">
-                  <span class="pr-2 l-label">Max</span>
-                  <input type="text" class="form-control form-control-sm w-250 wiwi" v-model="gauge.max_value">
-                </div>
-              </div>
-              <div class="d-flex">
-                <button @click="saveRentGauge(g_index)"
-                        class="btn btn-primary btn-sm rounded mt-1 mr-2">Сохранить
-                </button>
-              </div>
-            </div>
-
-          </div>
-
-        </div>
-
-
-        <TableRentability
-          :year="+currentYear"
-          :month="+monthInfo.month"
-        />
-
-      </b-tab>
-
-
-      <b-tab title="Выручка" key="3" card>
-        <div class="table-responsive table-container mt-4">
-          <table class="table table-bordered whitespace-no-wrap custom-table-revenue">
-            <thead>
-            <tr>
-              <th v-for="(field, findex) in proceeds.fields" :key="findex"
-                  class="t-name table-title"
-                  :class="{
-                      'w-295 b-table-sticky-column': findex == 0,
-                      'w-125': findex == 1,
-                      'w-80': findex == 2,
-                      'w-60': findex == 3,
-                      'text-center': findex != 0,
-                      'text-left': findex == 0,
-                  }">
-
-
-                <template v-if="['+/-'].includes(field)">
-                  <i class="fa fa-info-circle"
-                     v-b-popover.hover.right.html="'100% - ( План * Кол-во календарных дней )/ (Итого * Кол-во отработанных дней)'"
-                     title="Опережение плана">
-                  </i>
-                </template>
-                <template v-if="['%'].includes(field)">
-                  <i class="fa fa-info-circle"
-                     v-b-popover.hover.right.html="'( Итого / План ) * 100'"
-                     title="Выполнение плана">
-                  </i>
-                </template>
-                {{ field }}  <i class="fa fa-plus-square" v-if="field == 'Отдел'" @click="addRow()"></i>
-              </th>
-            </tr>
-            </thead>
-            <tbody>
-            <tr v-for="(record, rindex) in proceeds.records" :key="rindex">
-              <td v-for="(field, findex) in proceeds.fields" :key="findex"
-                  class="t-name table-title" :class="{
-                    'bg-grey': ['w1', 'w2', 'w3', 'w4', 'w5', 'w6'].includes(field),
-                    'weekend': isWeekend(field),
-                    'text-left b-table-sticky-column': ['Отдел'].includes(field)
-                  }">
-
-                <template v-if="!['%', 'План', 'Итого', '+/-', 'Отдел'].includes(field)">
-                  <div v-if="record['group_id'] < 0">
-                    <input type="number"
-                           class="input"
-                           v-model="record[field]"
-                           @change="updateProceed(record, field, 'day')">
-                  </div>
-                  <div v-else>
-                    <span v-if="record[field] != 0">{{ record[field] }}</span>
-                    <span v-else></span>
-                  </div>
-                </template>
-
-                <template v-else>
-
-                  <template v-if="field == 'Отдел'">
-                    <a :href="'/timetracking/an?group='+ record['group_id'] + '&active=1&load=1'"
-                       target="_blank" v-if="record['group_id'] >= 0">
-                       {{ record[field] }}
-                    </a>
-                    <div v-else>
-                        <input type="text"
-                              class="input-2"
-                              v-model="record[field]"
-                              @change="updateProceed(record, field, 'name')">
-                    </div>
-                  </template>
-
-                  <template v-else>
-                    <div>
-                        {{ record[field] }}
-                    </div>
-                  </template>
-                </template>
-
-              </td>
-
-            </tr>
-            </tbody>
-          </table>
-        </div>
-
-      </b-tab>
-<!--      <b-tab title="" key="6" card>-->
-<!--      </b-tab>-->
-<!--      <b-tab title="" key="7" card>-->
-<!--      </b-tab>-->
-<!--      <b-tab title="" key="8" card>-->
-<!--      </b-tab>-->
-
-      <b-tab title="Прогноз" key="4" card>
-        <b-row class="m-0">
-          <b-col cols="12" md="8" class="p-0 mt-4">
-            <div class="forecast table-container">
-              <table class="table table-bordered table-custom-forecast">
-                <thead>
-                <th class="text-left t-name table-title td-blue">Отдел
-
-                  <i class="fa fa-info-circle"
-                     v-b-popover.hover.right.html="'Прогноз по принятию сотрудников на месяц'"
-                     title="Отдел">
-                  </i>
-
-                </th>
-                <th class="text-center t-name table-title">План
-
-                  <i class="fa fa-info-circle"
-                     v-b-popover.hover.right.html="'Общий план операторов на проект от Заказчика'"
-                     title="План">
-                  </i>
-                </th>
-                <th class="text-center t-name table-title">Факт
-
-                  <i class="fa fa-info-circle"
-                     v-b-popover.hover.right.html="'Фактически работают в группе на должности оператора'"
-                     title="Факт">
-                  </i>
-                </th>
-                <th class="text-center t-name table-title">Осталось принять</th>
-                </thead>
-                <tbody>
-                <tr v-for="(group, index) in prognoz_groups" :key="index">
-                  <td class="text-left t-name table-title td-blue align-middle">{{ group.name }}</td>
-                  <td class="text-center t-name table-title align-middle">
-                    <input type="number" v-model="group.plan" @change="saveGroupPlan(index)">
-                  </td>
-                  <td class="text-center t-name table-title align-middle">{{ group.applied }}</td>
-                  <td class="text-center t-name table-title align-middle">
-                    {{ isNaN(group.left_to_apply) ? 0 : Number(group.left_to_apply) }}
-                  </td>
-                </tr>
-                </tbody>
-              </table>
-            </div>
-          </b-col>
-        </b-row>
-      </b-tab>
-
-      <b-tab title="NPS" key="5" card>
-        <NPS
-          :activeuserid="+activeuserid"
-          :show_header="false"
-        />
-      </b-tab>
+						<p
+							class="text-center font-bold"
+							style="font-size: 14px;margin-bottom: 0;"
+						>
+							<a
+								v-if="[42].includes(gauge.group_id)"
+								:href="'/timetracking/analytics?group='+ gauge.group_id + '&active=1&load=1'"
+								target="_blank"
+							>{{ gauge.name }}</a>
+							<a
+								v-else
+								:href="'/timetracking/an?group='+ gauge.group_id + '&active=1&load=1'"
+								target="_blank"
+							>{{ gauge.name }}</a>
+						</p>
+						<p class="text-center font-bold text-14">
+							{{ gauge.value }}%
+						</p>
 
 
-    </b-tabs>
+						<div
+							v-if="gauge.editable"
+							class="mb-5 edt-window"
+							style="width: 125px;"
+						>
+							<div>
+								<div class="d-flex justify-content-between align-items-center">
+									<span class="pr-2 l-label">Max</span>
+									<input
+										type="text"
+										class="form-control form-control-sm w-250 wiwi"
+										v-model="gauge.max_value"
+									>
+								</div>
+							</div>
+							<div class="d-flex">
+								<button
+									@click="saveRentGauge(g_index)"
+									class="btn btn-primary btn-sm rounded mt-1 mr-2"
+								>
+									Сохранить
+								</button>
+							</div>
+						</div>
+					</div>
+				</div>
 
 
-    <div class="empty-space"></div>
-  </div>
+				<TableRentability
+					:year="+currentYear"
+					:month="+monthInfo.month"
+				/>
+			</b-tab>
+
+
+			<b-tab
+				title="Выручка"
+				key="3"
+				card
+			>
+				<div class="table-responsive table-container mt-4">
+					<table class="table table-bordered whitespace-no-wrap custom-table-revenue">
+						<thead>
+							<tr>
+								<th
+									v-for="(field, findex) in proceeds.fields"
+									:key="findex"
+									class="t-name table-title"
+									:class="{
+										'w-295 b-table-sticky-column': findex == 0,
+										'w-125': findex == 1,
+										'w-80': findex == 2,
+										'w-60': findex == 3,
+										'text-center': findex != 0,
+										'text-left': findex == 0,
+									}"
+								>
+									<template v-if="['+/-'].includes(field)">
+										<i
+											class="fa fa-info-circle"
+											v-b-popover.hover.right.html="'100% - ( План * Кол-во календарных дней )/ (Итого * Кол-во отработанных дней)'"
+											title="Опережение плана"
+										/>
+									</template>
+									<template v-if="['%'].includes(field)">
+										<i
+											class="fa fa-info-circle"
+											v-b-popover.hover.right.html="'( Итого / План ) * 100'"
+											title="Выполнение плана"
+										/>
+									</template>
+									{{ field }}  <i
+										class="fa fa-plus-square"
+										v-if="field == 'Отдел'"
+										@click="addRow()"
+									/>
+								</th>
+							</tr>
+						</thead>
+						<tbody>
+							<tr
+								v-for="(record, rindex) in proceeds.records"
+								:key="rindex"
+							>
+								<td
+									v-for="(field, findex) in proceeds.fields"
+									:key="findex"
+									class="t-name table-title"
+									:class="{
+										'bg-grey': ['w1', 'w2', 'w3', 'w4', 'w5', 'w6'].includes(field),
+										'weekend': isWeekend(field),
+										'text-left b-table-sticky-column': ['Отдел'].includes(field)
+									}"
+								>
+									<template v-if="!['%', 'План', 'Итого', '+/-', 'Отдел'].includes(field)">
+										<div v-if="record['group_id'] < 0">
+											<input
+												type="number"
+												class="input"
+												v-model="record[field]"
+												@change="updateProceed(record, field, 'day')"
+											>
+										</div>
+										<div v-else>
+											<span v-if="record[field] != 0">{{ record[field] }}</span>
+											<span v-else />
+										</div>
+									</template>
+
+									<template v-else>
+										<template v-if="field == 'Отдел'">
+											<a
+												:href="'/timetracking/an?group='+ record['group_id'] + '&active=1&load=1'"
+												target="_blank"
+												v-if="record['group_id'] >= 0"
+											>
+												{{ record[field] }}
+											</a>
+											<div v-else>
+												<input
+													type="text"
+													class="input-2"
+													v-model="record[field]"
+													@change="updateProceed(record, field, 'name')"
+												>
+											</div>
+										</template>
+
+										<template v-else>
+											<div>
+												{{ record[field] }}
+											</div>
+										</template>
+									</template>
+								</td>
+							</tr>
+						</tbody>
+					</table>
+				</div>
+			</b-tab>
+			<!--      <b-tab title="" key="6" card>-->
+			<!--      </b-tab>-->
+			<!--      <b-tab title="" key="7" card>-->
+			<!--      </b-tab>-->
+			<!--      <b-tab title="" key="8" card>-->
+			<!--      </b-tab>-->
+
+			<b-tab
+				title="Прогноз"
+				key="4"
+				card
+			>
+				<b-row class="m-0">
+					<b-col
+						cols="12"
+						md="8"
+						class="p-0 mt-4"
+					>
+						<div class="forecast table-container">
+							<table class="table table-bordered table-custom-forecast">
+								<thead>
+									<th class="text-left t-name table-title td-blue">
+										Отдел
+
+										<i
+											class="fa fa-info-circle"
+											v-b-popover.hover.right.html="'Прогноз по принятию сотрудников на месяц'"
+											title="Отдел"
+										/>
+									</th>
+									<th class="text-center t-name table-title">
+										План
+
+										<i
+											class="fa fa-info-circle"
+											v-b-popover.hover.right.html="'Общий план операторов на проект от Заказчика'"
+											title="План"
+										/>
+									</th>
+									<th class="text-center t-name table-title">
+										Факт
+
+										<i
+											class="fa fa-info-circle"
+											v-b-popover.hover.right.html="'Фактически работают в группе на должности оператора'"
+											title="Факт"
+										/>
+									</th>
+									<th class="text-center t-name table-title">
+										Осталось принять
+									</th>
+								</thead>
+								<tbody>
+									<tr
+										v-for="(group, index) in prognoz_groups"
+										:key="index"
+									>
+										<td class="text-left t-name table-title td-blue align-middle">
+											{{ group.name }}
+										</td>
+										<td class="text-center t-name table-title align-middle">
+											<input
+												type="number"
+												v-model="group.plan"
+												@change="saveGroupPlan(index)"
+											>
+										</td>
+										<td class="text-center t-name table-title align-middle">
+											{{ group.applied }}
+										</td>
+										<td class="text-center t-name table-title align-middle">
+											{{ isNaN(group.left_to_apply) ? 0 : Number(group.left_to_apply) }}
+										</td>
+									</tr>
+								</tbody>
+							</table>
+						</div>
+					</b-col>
+				</b-row>
+			</b-tab>
+
+			<b-tab
+				title="NPS"
+				key="5"
+				card
+			>
+				<NPS
+					:activeuserid="+activeuserid"
+					:show_header="false"
+				/>
+			</b-tab>
+		</b-tabs>
+
+
+		<div class="empty-space" />
+	</div>
 </template>
 
 <script>
@@ -260,6 +369,7 @@ export default {
 	},
 	props: ['data', 'activeuserid'],
 	data() {
+		const now = new Date()
 		return {
 			afterCreated: false,
 			rentability: [], // первая вкладка
@@ -267,14 +377,14 @@ export default {
 			proceeds: [], // третья
 			prognoz_groups: [], //
 			years: useYearOptions(),
-			currentYear: new Date().getFullYear(),
+			currentYear: now.getFullYear(),
 			monthInfo: {
 				currentMonth: null,
 				monthEnd: 0,
 				workDays: 0,
 				weekDays: 0,
 				daysInMonth: 0,
-				month: new Date().getMonth() + 1
+				month: now.getMonth() + 1
 			},
 			gaugeOptions: {
 				angle: 0,
@@ -334,7 +444,7 @@ export default {
 			//Расчет выходных дней
 			this.monthInfo.monthEnd = currentMonth.endOf('month'); //Конец месяца
 			this.monthInfo.weekDays = currentMonth.weekdayCalc(currentMonth.startOf('month').toString(), currentMonth.endOf('month').toString(), [6]) //Колличество выходных
-			this.monthInfo.daysInMonth = new Date(2021, this.$moment(this.monthInfo.currentMonth, 'MMMM').format('M'), 0).getDate() //Колличество дней в месяце
+			this.monthInfo.daysInMonth = new Date(this.currentYear, this.$moment(this.monthInfo.currentMonth, 'MMMM').format('M'), 0).getDate() //Колличество дней в месяце
 			this.monthInfo.workDays = this.monthInfo.daysInMonth - this.monthInfo.weekDays //Колличество рабочих дней
 		},
 
@@ -367,7 +477,7 @@ export default {
 		isWeekend(field) {
 			var arr = field.split('.');
 			var month = Number(arr[1]) - 1;
-			var dayOfWeek = new Date(2022, month, arr[0]).getDay();
+			var dayOfWeek = new Date(this.currentYear, month, arr[0]).getDay();
 
 			return dayOfWeek == 6 || dayOfWeek == 0;
 		},

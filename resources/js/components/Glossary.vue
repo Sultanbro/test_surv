@@ -1,33 +1,61 @@
 <template>
-<div class="glossary">
+	<div class="glossary">
+		<!-- buttons -->
+		<div class="buttons d-flex mb-3">
+			<input
+				type="text"
+				class="search form-control form-control-sm"
+				v-model="search_text"
+			>
+			<button
+				class="btn"
+				v-if="mode == 'edit'"
+				@click="add"
+			>
+				Добавить
+			</button>
+		</div>
 
-    <!-- buttons -->
-    <div class="buttons d-flex mb-3">
-        <input type="text" class="search form-control form-control-sm" v-model="search_text">
-        <button class="btn" v-if="mode == 'edit'" @click="add">
-            Добавить
-        </button>
-    </div>
-
-    <!-- words -->
-    <div class="block" v-for="(word, i) in filteredWords" :key="i">
-        <div class="word">
-            <input type="text" v-model="word.word" :disabled="mode == 'read'" class="form-control">
-        </div>
-        <div class="definition">
-            <textarea v-model="word.definition" :disabled="mode == 'read'" class="form-control"/>
-        </div>
-        <div class="action d-flex" v-if="mode == 'edit'">
-            <button class="btn btn-sm" @click="save(i)">
-                <i class="fa fa-save"></i>
-            </button>
-            <button class="btn btn-sm ml-2" @click="deleteWord(i)">
-                <i class="fa fa-trash"></i>
-            </button>
-        </div>
-    </div>
-
-</div>
+		<!-- words -->
+		<div
+			class="block"
+			v-for="(word, i) in filteredWords"
+			:key="i"
+		>
+			<div class="word">
+				<input
+					type="text"
+					v-model="word.word"
+					:disabled="mode == 'read'"
+					class="form-control"
+				>
+			</div>
+			<div class="definition">
+				<textarea
+					v-model="word.definition"
+					:disabled="mode == 'read'"
+					class="form-control"
+				/>
+			</div>
+			<div
+				class="action d-flex"
+				v-if="mode == 'edit'"
+			>
+				<button
+					class="btn btn-sm"
+					@click="save(i)"
+				>
+					<i class="fa fa-save" />
+				</button>
+				<button
+					class="btn btn-sm ml-2"
+					@click="deleteWord(i)"
+				>
+					<i class="fa fa-trash" />
+				</button>
+			</div>
+		</div>
+	</div>
 </template>
 
 <script>

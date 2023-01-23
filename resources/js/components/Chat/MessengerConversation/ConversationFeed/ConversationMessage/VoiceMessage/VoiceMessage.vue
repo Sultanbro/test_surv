@@ -1,58 +1,64 @@
 <template>
-  <div class="voice-message">
-    <div class="voice-message__button" @click="togglePlay">
-      <div class="voice-message__button__icon">
-        <svg
-          v-if="!isPlaying"
-          width="24"
-          height="24"
-          viewBox="0 0 24 24"
-          fill="none"
-          xmlns="http://www.w3.org/2000/svg"
-        >
-          <path
-            d="M8 5V19L19 12L8 5Z"
-            fill="#5ebee9"
-          />
-        </svg>
-        <svg
-          v-else
-          width="24"
-          height="24"
-          viewBox="0 0 24 24"
-          fill="none"
-          xmlns="http://www.w3.org/2000/svg"
-        >
-          <path
-            d="M6 19H8V5H6V19ZM16 19H18V5H16V19Z"
-            fill="#5ebee9"
-          />
-        </svg>
-      </div>
-    </div>
-    <div class="voice-message__bars" @click="resume($event.offsetX / $event.target.offsetWidth)">
-      <div
-        v-for="(bar, index) in bars"
-        :key="index"
-        :class="{
-          'voice-message__bars__bar': true,
-          'voice-message__bars__bar--active': index < activeBar
-        }"
-      />
-    </div>
-    <div class="voice-message__duration">
-      {{ duration | durationFormat }}
-    </div>
-    <audio
-      ref="audio"
-      :src="audioSource"
-      @timeupdate="updateProgress"
-      @ended="setStopped"
-      @pause="setStopped"
-      @play="setPlaying"
-      @loadedmetadata="updateDuration"
-    />
-  </div>
+	<div class="voice-message">
+		<div
+			class="voice-message__button"
+			@click="togglePlay"
+		>
+			<div class="voice-message__button__icon">
+				<svg
+					v-if="!isPlaying"
+					width="24"
+					height="24"
+					viewBox="0 0 24 24"
+					fill="none"
+					xmlns="http://www.w3.org/2000/svg"
+				>
+					<path
+						d="M8 5V19L19 12L8 5Z"
+						fill="#5ebee9"
+					/>
+				</svg>
+				<svg
+					v-else
+					width="24"
+					height="24"
+					viewBox="0 0 24 24"
+					fill="none"
+					xmlns="http://www.w3.org/2000/svg"
+				>
+					<path
+						d="M6 19H8V5H6V19ZM16 19H18V5H16V19Z"
+						fill="#5ebee9"
+					/>
+				</svg>
+			</div>
+		</div>
+		<div
+			class="voice-message__bars"
+			@click="resume($event.offsetX / $event.target.offsetWidth)"
+		>
+			<div
+				v-for="(bar, index) in bars"
+				:key="index"
+				:class="{
+					'voice-message__bars__bar': true,
+					'voice-message__bars__bar--active': index < activeBar
+				}"
+			/>
+		</div>
+		<div class="voice-message__duration">
+			{{ duration | durationFormat }}
+		</div>
+		<audio
+			ref="audio"
+			:src="audioSource"
+			@timeupdate="updateProgress"
+			@ended="setStopped"
+			@pause="setStopped"
+			@play="setPlaying"
+			@loadedmetadata="updateDuration"
+		/>
+	</div>
 </template>
 
 <script>

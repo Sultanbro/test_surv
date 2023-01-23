@@ -1,317 +1,488 @@
 <template>
-    <div
-        v-if="groups"
-        class="mt-2 analytics-page px-3"
-    >
-        <div class="row mb-3 ">
-            <div class="col-3">
-                <select class="form-control" v-model="currentGroup" @change="fetchData">
-                    <option v-for="group in ggroups" :value="group.id" :key="group.id">{{group.name}}</option>
-                </select>
-            </div>
-            <div class="col-2">
-                <select class="form-control" v-model="monthInfo.currentMonth" @change="fetchData">
-                    <option v-for="month in $moment.months()" :value="month" :key="month">{{month}}</option>
-                </select>
-            </div>
-            <div class="col-2">
-                <select class="form-control" v-model="currentYear" @change="fetchData">
-                    <option v-for="year in years" :value="year" :key="year">{{ year }}</option>
-                </select>
-            </div>
-            <div class="col-1">
-                <div class="btn btn-primary rounded" @click="fetchData()">
-                    <i class="fa fa-redo-alt"></i>
-                </div>
-            </div>
-            <div class="col-2" v-if="$laravel.is_admin">
-                <button v-if="!firstEnter && !dataLoaded" class="btn btn-info rounded add-s" @click="add_analytics()" title="Создать аналитику"><i class="fa fa-plus-square"></i></button>
+	<div
+		v-if="groups"
+		class="mt-2 analytics-page px-3"
+	>
+		<div class="row mb-3 ">
+			<div class="col-3">
+				<select
+					class="form-control"
+					v-model="currentGroup"
+					@change="fetchData"
+				>
+					<option
+						v-for="group in ggroups"
+						:value="group.id"
+						:key="group.id"
+					>
+						{{ group.name }}
+					</option>
+				</select>
+			</div>
+			<div class="col-2">
+				<select
+					class="form-control"
+					v-model="monthInfo.currentMonth"
+					@change="fetchData"
+				>
+					<option
+						v-for="month in $moment.months()"
+						:value="month"
+						:key="month"
+					>
+						{{ month }}
+					</option>
+				</select>
+			</div>
+			<div class="col-2">
+				<select
+					class="form-control"
+					v-model="currentYear"
+					@change="fetchData"
+				>
+					<option
+						v-for="year in years"
+						:value="year"
+						:key="year"
+					>
+						{{ year }}
+					</option>
+				</select>
+			</div>
+			<div class="col-1">
+				<div
+					class="btn btn-primary rounded"
+					@click="fetchData()"
+				>
+					<i class="fa fa-redo-alt" />
+				</div>
+			</div>
+			<div
+				class="col-2"
+				v-if="$laravel.is_admin"
+			>
+				<button
+					v-if="!firstEnter && !dataLoaded"
+					class="btn btn-info rounded add-s"
+					@click="add_analytics()"
+					title="Создать аналитику"
+				>
+					<i class="fa fa-plus-square" />
+				</button>
 
-                <button v-if="!noan" class="btn btn-info rounded add-s" @click="archive()" title="Архивировать"><i class="fa fa-trash"></i></button>
+				<button
+					v-if="!noan"
+					class="btn btn-info rounded add-s"
+					@click="archive()"
+					title="Архивировать"
+				>
+					<i class="fa fa-trash" />
+				</button>
 
-                <button class="btn btn-info rounded add-s ml-2" @click="showArchive = true" title="Восстановить из архива"><i class="fa fa-archive"></i></button>
-            </div>
-            <div class="col-1" v-else>
+				<button
+					class="btn btn-info rounded add-s ml-2"
+					@click="showArchive = true"
+					title="Восстановить из архива"
+				>
+					<i class="fa fa-archive" />
+				</button>
+			</div>
+			<div
+				class="col-1"
+				v-else
+			/>
+			<div class="col-2">
+				<button
+					class="btn btn-success rounded btn-sm"
+					@click="add_activity()"
+				>
+					<i
+						class="fa fa-plus-square"
+						style="font-size:14px"
+					/>
+				</button>
+				<button
+					class="btn btn-primary rounded btn-sm"
+					@click="showOrder = true"
+				>
+					<i class="fas fa-sort-amount-down" />
+				</button>
+			</div>
+		</div>
+		<div>
+			<div v-if="!firstEnter">
+				<div
+					v-if="this.hasPremission"
+					:key="askey"
+				>
+					<div v-if="dataLoaded">
+						<div class="wrap">
+							<div class="d-flex justify-content-between">
+								<div>
+									<TopGauges
+										:utility_items="data.utility"
+										:editable="false"
+										wrapper_class="d-flex"
+										:key="123"
+										page="analytics"
+									/>
+								</div>
+								<div class="p-4">
+									<p class="ap-text">
+										Процент текучки кадров за прошлый месяц: <span>{{ data.fired_percent_prev }}%</span>
+									</p>
+									<p class="ap-text">
+										Процент текучки кадров за текущий месяц: <span>{{ data.fired_percent }}%</span>
+									</p>
+									<p class="ap-text">
+										В прошлом месяце было уволено: <span>{{ data.fired_number_prev }}</span>
+									</p>
+									<p class="ap-text">
+										В текущем месяце было уволено: <span>{{ data.fired_number }}</span>
+									</p>
+								</div>
+							</div>
+						</div>
 
-            </div>
-            <div class="col-2">
-                <button
-                    class="btn btn-success rounded btn-sm"
-                    @click="add_activity()"
-                >
-                    <i class="fa fa-plus-square" style="font-size:14px"/>
-                </button>
-                <button
-                    class="btn btn-primary rounded btn-sm"
-                    @click="showOrder = true"
-                >
-                    <i class="fas fa-sort-amount-down"/>
-                </button>
-            </div>
-        </div>
-        <div>
+						<b-tabs
+							type="card"
+							:default-active-key="active"
+							@change="onTabChange"
+						>
+							<b-tab
+								title="Сводная"
+								key="1"
+								card
+							>
+								<div class="mb-5">
+									<AnalyticStat
+										:table="data.table"
+										:fields="data.columns"
+										:activeuserid="activeuserid"
+										:month-info="monthInfo"
+										:group_id="currentGroup"
+										:activities="activity_select"
+									/>
+								</div>
 
-            <div v-if="!firstEnter">
-                <div v-if="this.hasPremission" :key="askey">
-                    <div v-if="dataLoaded">
-                        <div class="wrap">
-                            <div class="d-flex justify-content-between">
-                                <div>
-                                    <TopGauges
-                                        :utility_items="data.utility"
-                                        :editable="false"
-                                        wrapper_class="d-flex"
-                                        :key="123"
-                                        page="analytics"
-                                    />
-                                </div>
-                                <div class="p-4">
-                                    <p class="ap-text">Процент текучки кадров за прошлый месяц: <span>{{ data.fired_percent_prev }}%</span> </p>
-                                    <p class="ap-text">Процент текучки кадров за текущий месяц: <span>{{ data.fired_percent }}%</span></p>
-                                    <p class="ap-text">В прошлом месяце было уволено: <span>{{ data.fired_number_prev }}</span></p>
-                                    <p class="ap-text">В текущем месяце было уволено: <span>{{ data.fired_number }}</span></p>
-                                </div>
-                            </div>
-                        </div>
+								<CallBase
+									v-if="currentGroup == 53"
+									:data="call_bases"
+									:month-info="monthInfo"
+								/>
 
-                        <b-tabs
-                            type="card"
-                            :defaultActiveKey="active"
-                            @change="onTabChange"
-                        >
-                            <b-tab title="Сводная" key="1" card>
-                                <div class="mb-5">
-                                    <AnalyticStat
-                                        :table="data.table"
-                                        :fields="data.columns"
-                                        :activeuserid="activeuserid"
-                                        :monthInfo="monthInfo"
-                                        :group_id="currentGroup"
-                                        :activities="activity_select"
-                                    />
-                                </div>
+								<TableDecomposition
+									:month="monthInfo"
+									:data="data.decomposition"
+								/>
+							</b-tab>
 
-                                <CallBase
-                                    v-if="currentGroup == 53"
-                                    :data="call_bases"
-                                    :monthInfo="monthInfo"
-                                />
+							<b-tab
+								title="Подробная"
+								key="2"
+								card
+							>
+								<b-tabs
+									type="card"
+									class="mt-4"
+									@change="showSubTab"
+									:default-active-key="active_sub_tab"
+								>
+									<template v-for="(activity, index) in data.activities">
+										<b-tab
+											:title="activity.name"
+											:key="index"
+											@change="showcubTab(index)"
+										>
+											<!-- Switch month and year of Activity in detailed -->
+											<button
+												class="btn btn-default rounded mt-2"
+												@click="switchToMonthInActivity(index)"
+											>
+												Месяц
+											</button>
+											<button
+												class="btn btn-default rounded mt-2"
+												@click="switchToYearInActivity(index)"
+											>
+												Год
+											</button>
 
-                                <TableDecomposition
-                                    :month="monthInfo"
-                                    :data="data.decomposition"
-                                />
-                            </b-tab>
+											<!-- tabs -->
+											<div
+												v-if="activityStates[index] !== undefined"
+												class="mt-2"
+											>
+												<!-- Month tab of activity in detailed -->
+												<div
+													:class="{
+														'hidden' : activityStates[index] == 'year'
+													}"
+												>
+													<TableActivityNew
+														v-if="activity.type == 'default'"
+														:key="activity.id"
+														:month="monthInfo"
+														:activity="activity"
+														:group_id="currentGroup"
+														:work_days="monthInfo.workDays"
+														:editable="activity.editable == 1 ? true : false"
+													/>
 
-                            <b-tab title="Подробная" key="2" card>
+													<TableActivityCollection
+														v-if="activity.type == 'collection'"
+														:key="activity.id"
+														:month="monthInfo"
+														:activity="activity"
+														:is_admin="true"
+														:price="activity.price"
+													/>
 
-                                <b-tabs type="card" class="mt-4" @change="showSubTab" :defaultActiveKey='active_sub_tab'>
+													<TableQualityWeekly
+														v-if="activity.type == 'quality'"
+														:key="activity.id"
+														:month-info="monthInfo"
+														:items="activity.records"
+														:editable="activity.editable == 1 ? true : false"
+													/>
+												</div>
 
-                                    <template v-for="(activity, index) in data.activities">
-                                        <b-tab
-                                            :title="activity.name"
-                                            :key="index"
-                                            @change="showcubTab(index)"
-                                        >
-                                            <!-- Switch month and year of Activity in detailed -->
-                                            <button class="btn btn-default rounded mt-2" @click="switchToMonthInActivity(index)">Месяц</button>
-                                            <button class="btn btn-default rounded mt-2" @click="switchToYearInActivity(index)">Год</button>
+												<!-- Year tab of activity in detailed -->
+												<div
+													:class="{
+														'hidden' : activityStates[index] == 'month'
+													}"
+												>
+													<h4 class="mb-2">
+														{{ activity.name }}
+													</h4>
 
-                                            <!-- tabs -->
-                                            <div v-if="activityStates[index] !== undefined" class="mt-2">
-                                                <!-- Month tab of activity in detailed -->
-                                                <div :class="{
-                                                    'hidden' : activityStates[index] == 'year'
-                                                }">
-                                                    <TableActivityNew
-                                                        v-if="activity.type == 'default'"
-                                                        :key="activity.id"
-                                                        :month="monthInfo"
-                                                        :activity="activity"
-                                                        :group_id="currentGroup"
-                                                        :work_days="monthInfo.workDays"
-                                                        :editable="activity.editable == 1 ? true : false"
-                                                    />
+													<!-- Year table -->
+													<div class="table-container table-responsive">
+														<table class="table table-bordered">
+															<thead>
+																<tr>
+																	<th
+																		v-for="(field, key) in yearActivityTableFields"
+																		:key="key"
+																		:class="field.classes"
+																	>
+																		<div>{{ field.name }}</div>
+																	</th>
+																</tr>
+															</thead>
+															<tbody>
+																<tr
+																	v-for="( row, index ) in yearActivityTable"
+																	:key="index"
+																>
+																	<td
+																		v-for="(field, key) in yearActivityTableFields"
+																		:key="key"
+																		:class="field.classes"
+																	>
+																		<div>{{ row[field.key] }}</div>
+																	</td>
+																</tr>
+															</tbody>
+														</table>
+													</div>
+												</div>
+											</div>
+										</b-tab>
+									</template>
+								</b-tabs>
+							</b-tab>
+						</b-tabs>
+					</div>
 
-                                                    <TableActivityCollection
-                                                        v-if="activity.type == 'collection'"
-                                                        :key="activity.id"
-                                                        :month="monthInfo"
-                                                        :activity="activity"
-                                                        :is_admin="true"
-                                                        :price="activity.price"
-                                                    />
+					<div v-else>
+						<p class="no-info">
+							Аналитика для группы еще не создана
+						</p>
+					</div>
+				</div>
 
-                                                    <TableQualityWeekly
-                                                        v-if="activity.type == 'quality'"
-                                                        :key="activity.id"
-                                                        :monthInfo="monthInfo"
-                                                        :items="activity.records"
-                                                        :editable="activity.editable == 1 ? true : false"
-                                                    />
-                                                </div>
-
-                                                <!-- Year tab of activity in detailed -->
-                                                <div :class="{
-                                                    'hidden' : activityStates[index] == 'month'
-                                                }">
-                                                    <h4 class="mb-2">{{ activity.name }}</h4>
-
-                                                    <!-- Year table -->
-                                                    <div class="table-container table-responsive">
-                                                        <table class="table table-bordered">
-                                                            <thead>
-                                                            <tr>
-                                                                <th v-for="(field, key) in yearActivityTableFields" :key="key" :class="field.classes">
-                                                                    <div>{{ field.name }}</div>
-                                                                </th>
-                                                            </tr>
-                                                            </thead>
-                                                            <tbody>
-                                                            <tr v-for="( row, index ) in yearActivityTable" :key="index">
-                                                                <td v-for="(field, key) in yearActivityTableFields" :key="key" :class="field.classes">
-                                                                    <div>{{ row[field.key] }}</div>
-                                                                </td>
-                                                            </tr>
-                                                            </tbody>
-                                                        </table>
-                                                    </div>
-                                                </div>
-
-                                            </div>
-
-
-                                        </b-tab>
-                                    </template>
-
-
-                                </b-tabs>
-                            </b-tab>
-
-                        </b-tabs>
-                    </div>
-
-                    <div v-else>
-                        <p class="no-info">Аналитика для группы еще не создана</p>
-                    </div>
-                </div>
-
-                <div v-else>
-                    <p class="no-info">У вас нет доступа к этой группе</p>
-                </div>
-            </div>
+				<div v-else>
+					<p class="no-info">
+						У вас нет доступа к этой группе
+					</p>
+				</div>
+			</div>
 
 
-            <div class="empty-space"></div>
-
-        </div>
+			<div class="empty-space" />
+		</div>
 
 
 
 
-        <!-- Modal restore archived group -->
-        <b-modal v-model="showArchive"  title="Восстановить из архива" @ok="restore_analytics()" size="lg" class="modalle" >
+		<!-- Modal restore archived group -->
+		<b-modal
+			v-model="showArchive"
+			title="Восстановить из архива"
+			@ok="restore_analytics()"
+			size="lg"
+			class="modalle"
+		>
+			<div class="row">
+				<div class="col-5">
+					<p class="">
+						Отдел
+					</p>
+				</div>
+				<div class="col-7">
+					<select
+						v-model="restore_group"
+						class="form-control form-control-sm"
+					>
+						<option
+							:value="archived_group.id"
+							v-for="(archived_group, key) in archived_groups"
+							:key="key"
+						>
+							{{ archived_group.name }}
+						</option>
+					</select>
+				</div>
+			</div>
+		</b-modal>
 
-            <div class="row">
-                <div class="col-5">
-                    <p class="">Отдел</p>
-                </div>
-                <div class="col-7">
-                    <select v-model="restore_group" class="form-control form-control-sm">
-                        <option :value="archived_group.id" v-for="(archived_group, key) in archived_groups" :key="key">{{ archived_group.name }}</option>
-                    </select>
-                </div>
-            </div>
-
-        </b-modal>
-
-        <!-- Modal Create activity -->
-        <b-modal
-            v-model="showOrder"
-            title="Порядок активностей"
-            @ok="save_order()"
-            size="md"
-        >
-            <div :key="askey">
-                <Draggable
-                    :list="activity_select"
-                    @end="onEndSortcat('test')"
-                >
-                    <div
-                        v-for="act in activity_select"
-                        :key="act.id"
-                        class="drag_item"
-                    >
-                        <span>{{act.name}}</span>
-                        <i
-                            @click="delete_activity(act)"
-                            class="fa fa-trash pointer"
-                        />
-                    </div>
-                </Draggable>
-            </div>
-        </b-modal>
+		<!-- Modal Create activity -->
+		<b-modal
+			v-model="showOrder"
+			title="Порядок активностей"
+			@ok="save_order()"
+			size="md"
+		>
+			<div :key="askey">
+				<Draggable
+					:list="activity_select"
+					@end="onEndSortcat('test')"
+				>
+					<div
+						v-for="act in activity_select"
+						:key="act.id"
+						class="drag_item"
+					>
+						<span>{{ act.name }}</span>
+						<i
+							@click="delete_activity(act)"
+							class="fa fa-trash pointer"
+						/>
+					</div>
+				</Draggable>
+			</div>
+		</b-modal>
 
 
-        <!-- Modal Create activity -->
-        <b-modal v-model="showActivityModal" title="Добавить активность" @ok="create_activity()" size="lg" class="modalle">
+		<!-- Modal Create activity -->
+		<b-modal
+			v-model="showActivityModal"
+			title="Добавить активность"
+			@ok="create_activity()"
+			size="lg"
+			class="modalle"
+		>
+			<div class="row">
+				<div class="col-5">
+					<p class="">
+						Название активности
+					</p>
+				</div>
+				<div class="col-7">
+					<input
+						type="text"
+						class="form-control form-control-sm"
+						v-model="activity.name"
+					>
+				</div>
+			</div>
 
-            <div class="row">
-                <div class="col-5">
-                    <p class="">Название активности</p>
-                </div>
-                <div class="col-7">
-                    <input type="text" class="form-control form-control-sm" v-model="activity.name">
-                </div>
-            </div>
+			<div class="row">
+				<div class="col-5">
+					<p class="">
+						Метод
+					</p>
+				</div>
+				<div class="col-7">
+					<select
+						v-model="activity.plan_unit"
+						class="form-control form-control-sm"
+					>
+						<option
+							:value="key"
+							v-for="(value, key) in plan_units"
+							:key="key"
+						>
+							{{ value }}
+						</option>
+					</select>
+				</div>
+			</div>
 
-            <div class="row">
-                <div class="col-5">
-                    <p class="">Метод</p>
-                </div>
-                <div class="col-7">
-                    <select v-model="activity.plan_unit" class="form-control form-control-sm">
-                        <option :value="key"  v-for="(value, key) in plan_units" :key="key">{{ value }}</option>
-                    </select>
-                </div>
-            </div>
+			<div class="row">
+				<div class="col-5">
+					<p class="">
+						План (Если сумма, на день)
+					</p>
+				</div>
+				<div class="col-7">
+					<input
+						type="number"
+						class="form-control form-control-sm"
+						v-model="activity.daily_plan"
+					>
+				</div>
+			</div>
 
-            <div class="row">
-                <div class="col-5">
-                    <p class="">План (Если сумма, на день)</p>
-                </div>
-                <div class="col-7">
-                    <input type="number" class="form-control form-control-sm" v-model="activity.daily_plan">
-                </div>
-            </div>
+			<div class="row">
+				<div class="col-5">
+					<p class="">
+						Кол-во рабочих дней в неделе
+					</p>
+				</div>
+				<div class="col-7">
+					<input
+						type="number"
+						class="form-control form-control-sm"
+						v-model="activity.weekdays"
+						min="1"
+						max="7"
+					>
+				</div>
+			</div>
 
-            <div class="row">
-                <div class="col-5">
-                    <p class="">Кол-во рабочих дней в неделе</p>
-                </div>
-                <div class="col-7">
-                    <input type="number" class="form-control form-control-sm" v-model="activity.weekdays" min="1" max="7">
-                </div>
-            </div>
+			<div class="row">
+				<div class="col-5">
+					<p class="">
+						Ед. измерения (Символ в конце показателя)
+					</p>
+				</div>
+				<div class="col-7">
+					<input
+						type="text"
+						class="form-control form-control-sm"
+						v-model="activity.unit"
+					>
+				</div>
+			</div>
 
-            <div class="row">
-                <div class="col-5">
-                    <p class="">Ед. измерения (Символ в конце показателя)</p>
-                </div>
-                <div class="col-7">
-                    <input type="text" class="form-control form-control-sm" v-model="activity.unit">
-                </div>
-            </div>
-
-            <div class="row">
-                <div class="col-5 d-flex align-items-center">
-                    <p class="mb-0">Редактируемый</p>
-                    <input type="checkbox" class="form-control form-control-sm" v-model="activity.editable">
-                </div>
-            </div>
-        </b-modal>
-    </div>
-    </template>
+			<div class="row">
+				<div class="col-5 d-flex align-items-center">
+					<p class="mb-0">
+						Редактируемый
+					</p>
+					<input
+						type="checkbox"
+						class="form-control form-control-sm"
+						v-model="activity.editable"
+					>
+				</div>
+			</div>
+		</b-modal>
+	</div>
+</template>
 
 <script>
 import Draggable from 'vuedraggable'

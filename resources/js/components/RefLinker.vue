@@ -1,38 +1,62 @@
 <template>
-<div>
-   <p><b>Генерация реферальных ссылок <i class="fa fa-redo-alt" @click="get"></i></b></p>
+	<div>
+		<p>
+			<b>Генерация реферальных ссылок <i
+				class="fa fa-redo-alt"
+				@click="get"
+			/></b>
+		</p>
 
 
-   <input
-      type="text"
-      :ref="'mylink'"
-      class="hider"
-    />
+		<input
+			type="text"
+			:ref="'mylink'"
+			class="hider"
+		>
 
-  <div v-if="loading">Загружаются...</div>
+		<div v-if="loading">
+			Загружаются...
+		</div>
 
-  <div v-else>
-     <div class="d-flex mb-2" v-for="(item, i) in items" :key="i">
-      <div class="ws-100 mr-2">
-        <input v-model="item.name"/>
-      </div>
+		<div v-else>
+			<div
+				class="d-flex mb-2"
+				v-for="(item, i) in items"
+				:key="i"
+			>
+				<div class="ws-100 mr-2">
+					<input v-model="item.name">
+				</div>
 
-      <div class="ws-050 mr-2">
-        <input v-model="item.info"/>
-      </div>
+				<div class="ws-050 mr-2">
+					<input v-model="item.info">
+				</div>
 
 
 
-      <div class="d-flex">
-        <i class="btn px-1 fa fa-copy" @click="copyLink(i)"></i>
-        <i class="btn px-1 fa fa-save" @click="save(i)"></i>
-        <i class="btn px-1 fa fa-trash" @click="deletes(i)"></i>
-      </div>
-     </div>
-      <button class="btn btn-primary rounded"  @click="add">Добавить</button>
-  </div>
-
-</div>
+				<div class="d-flex">
+					<i
+						class="btn px-1 fa fa-copy"
+						@click="copyLink(i)"
+					/>
+					<i
+						class="btn px-1 fa fa-save"
+						@click="save(i)"
+					/>
+					<i
+						class="btn px-1 fa fa-trash"
+						@click="deletes(i)"
+					/>
+				</div>
+			</div>
+			<button
+				class="btn btn-primary rounded"
+				@click="add"
+			>
+				Добавить
+			</button>
+		</div>
+	</div>
 </template>
 <script>
 export default {

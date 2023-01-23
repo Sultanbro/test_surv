@@ -1,50 +1,74 @@
 <template>
-  <Draggable
-    class="dragArea"
-    tag="ul"
-    :handle="'.fa-bars'"
-    :list="tasks"
-    :group="{ name: 'g1' }"
-    :id="parent_id"
-    @end="saveOrder"
-  >
-    <template v-for="el in tasks" >
-      <li
-        :key="el.id"
-        :id="el.id"
-        class="chapter"
-        :class="{'opened':opened}"
-      >
-        <div class="d-flex">
-          <div class="handles d-flex aic" >
-            <i class="fa fa-bars mover" v-if="mode == 'edit'"></i>
-            <i class="fa fa-circle mover" v-else></i>
-            <div class="shower">
-              <i class="fa fa-chevron-down pointer" v-if="el.children.length > 0 && el.opened"></i>
-              <i class="fa fa-chevron-right pointer" v-else-if="el.children.length > 0"></i>
-              <i class="fa fa-circle pointer" v-else></i>
-            </div>
-
-          </div>
-          <p @click.stop="toggleOpen(el)" class="mb-0">{{ el.title }}
-            <span class="long">{{ el.title }}</span>
-          </p>
-           <div class="chapter-btns" v-if="mode == 'edit'">
-              <i class="fa fa-plus mr-1" @click.stop="addPage(el)"></i>
-            </div>
-        </div>
-        <NestedDraggable
-          :tasks="el.children"
-          @showPage="showPage"
-          @addPage="addPage"
-          :parent_id="el.id"
-          :auth_user_id="auth_user_id"
-          :opened="el.opened"
-          :mode="mode"
-        />
-      </li>
-    </template>
-  </Draggable>
+	<Draggable
+		class="dragArea"
+		tag="ul"
+		:handle="'.fa-bars'"
+		:list="tasks"
+		:group="{ name: 'g1' }"
+		:id="parent_id"
+		@end="saveOrder"
+	>
+		<template v-for="el in tasks">
+			<li
+				:key="el.id"
+				:id="el.id"
+				class="chapter"
+				:class="{'opened':opened}"
+			>
+				<div class="d-flex">
+					<div class="handles d-flex aic">
+						<i
+							class="fa fa-bars mover"
+							v-if="mode == 'edit'"
+						/>
+						<i
+							class="fa fa-circle mover"
+							v-else
+						/>
+						<div class="shower">
+							<i
+								class="fa fa-chevron-down pointer"
+								v-if="el.children.length > 0 && el.opened"
+							/>
+							<i
+								class="fa fa-chevron-right pointer"
+								v-else-if="el.children.length > 0"
+							/>
+							<i
+								class="fa fa-circle pointer"
+								v-else
+							/>
+						</div>
+					</div>
+					<p
+						@click.stop="toggleOpen(el)"
+						class="mb-0"
+					>
+						{{ el.title }}
+						<span class="long">{{ el.title }}</span>
+					</p>
+					<div
+						class="chapter-btns"
+						v-if="mode == 'edit'"
+					>
+						<i
+							class="fa fa-plus mr-1"
+							@click.stop="addPage(el)"
+						/>
+					</div>
+				</div>
+				<NestedDraggable
+					:tasks="el.children"
+					@showPage="showPage"
+					@addPage="addPage"
+					:parent_id="el.id"
+					:auth_user_id="auth_user_id"
+					:opened="el.opened"
+					:mode="mode"
+				/>
+			</li>
+		</template>
+	</Draggable>
 </template>
 <script>
 import Draggable from 'vuedraggable'

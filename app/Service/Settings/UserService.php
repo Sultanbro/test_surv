@@ -100,12 +100,14 @@ class UserService
         try {
             $user = $this->userRepository->getUserByEmail($dto->email);
 
-            if ($user->deleted_at)
+            if ($user != null && $user->deleted_at != null)
             {
                 $this->userRepository->restoreUser($user);
             }
-
-            $this->userRepository->updateOrCreateNewEmployee($dto->toArray());
+            if ($user == null)
+            {
+                $user = $this->userRepository->updateOrCreateNewEmployee($dto->toArray());
+            }
 
             (new DepartmentUserService)->setGroup($dto->group, $user->id, 'add');
 

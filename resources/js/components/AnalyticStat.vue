@@ -1,371 +1,604 @@
 <template>
-    <div class="z-12 relative">
-
-        <div class="table-header">
-            <input type="text" class="cell-coords" v-model="coords">
-            <input type="text" class="cell-type" v-model="cell_type">
-            <input type="text" class="cell-show-value" v-model="cell_show_value">
-            <input type="text" class="cell-value" v-model="cell_value">
-            <input type="text" class="cell-comment" v-model="cell_comment">
-        </div>
-
-        <div class="d-flex">
-            <div class="relative   w551" id="wow-table">
-                <!-- table -->
-                <table class="as-table left-side" >
-                    <tr>
-                        <td class="ruler-cells t-cell text-center">
-                            <div class="in-cell inner-div " @click="editMode()">
-                                <i class="fa fa-cogs"></i>
-                            </div>
-                        </td>
-                        <td v-for="(letter, index) in letter_cells.slice(1, 4)" :key="index"
-                            class="ruler-cells t-cell text-center">
-                            <div class="in-cell inner-div d-flex" v-if="index == 0">
-                                <span class="two-letter">A</span>
-                                <span class="two-letter">B</span>
-                            </div>
-                            <div class="in-cell inner-div" v-else>
-                                {{ letter }}
-                            </div>
-                        </td>
-                    </tr>
-
-                    <tr v-for="(item, i_index) in items" :key="i_index">
-
-                            <td class="t-cell rownumber ruler-cells">
-                                <div class="in-cell inner-div text-center">
-                                    <span v-if="editTableMode && i_index > 3" @click="deleteRow(i_index)">
-                                        <i class="fa fa-trash pointer"></i>
-                                    </span>
-                                    <span v-if="editTableMode && i_index > 2" @click="add_row(i_index)">
-                                        <i class="fa fa-plus-square pointer"></i>
-                                    </span>
-                                    <span>{{ i_index + 1 }}</span>
-                                </div>
-                            </td>
-
-                            <template v-for="(field,f_index) in fields.slice(0, 4)" >
-                                <td class="t-cell font-bold"  :key="f_index" @click="focus(i_index, f_index)" v-if="field.key != 'plan'" :class="item[field.key].class">
-
-                                    <template v-if="field.key == 'name' && [1,2,3].includes(i_index)">
-                                        <div class="d-flex justify-content-between">
-                                            <div class="inner-div halfy" @click="focusName(i_index, f_index, 1)"
-                                                :class="{
-                                                    'focused': focused_item === i_index && focused_field === f_index && focused_subfield == 1,
-                                                    'context': item[field.key].context,
-                                                    'disabled': item[field.key].editable == 0
-                                                }"
-                                                @contextmenu.prevent.stop="openContextMenu(item[field.key], i_index, f_index)">
-
-
-
-                                                <div class="disabled"></div>
-
-                                                <div class="contextor" v-if="item[field.key].context">
-
-
-                                                        <ul class="types">
-                                                            <li  @click="add_formula_1_31(item[field.key])">
-                                                                Формула с 1 по 31
-                                                            </li>
-                                                        </ul>
-                                                    </div>
-
-                                                <input type="text" class="in-cell" v-if="focused_item === i_index && focused_field === f_index && focused_subfield == 1"
-                                                    v-model="item['name'].value" @change="change_stat(i_index, 'name')"/>
-
-                                                <input v-else type="text" class="in-cell" :value="item['name'].show_value" />
-
-
-                                                <div class="bottom-angle" v-if="focused_item === i_index && focused_field === f_index && focused_subfield == 1"  >
-                                                    <div class="angler"></div>
-                                                </div>
-
-                                                <div class="top-angle"  :class="item[field.key].type">
-
-                                                </div>
-                                            </div>
-                                            <div class="inner-div halfy" @click="focusName(i_index, f_index, 2)"
-                                                :class="{
-                                                    'focused': focused_item === i_index && focused_field === f_index && focused_subfield == 2,
-                                                    'context': item['plan'].context,
-                                                    'disabled': item['plan'].editable == 0
-                                                }"
-                                                @contextmenu.prevent.stop="openContextMenu(item['plan'], i_index, f_index)">
-
-                                                <div class="disabled"></div>
-
-                                                <input type="text" class="in-cell" v-if="focused_item === i_index && focused_field === f_index && focused_subfield == 2"
-                                                    v-model="item['plan'].value" @change="change_stat(i_index, 'plan')"/>
-                                                <input v-else type="text" class="in-cell" :value="item['plan'].show_value + (i_index == 2 ? '%' : '')" />
-
-                                                <div class="bottom-angle" v-if="focused_item === i_index && focused_field === f_index && focused_subfield == 2"  >
-                                                    <div class="angler"></div>
-                                                </div>
-
-                                                <div class="top-angle"  :class="item[field.key].type">
-
-                                                </div>
-                                            </div>
-                                        </div>
-
-                                    </template>
-
-                                    <template v-else>
-                                        <div class="inner-div"
-                                            :class="{
-                                                'focused': focused_item === i_index && focused_field === f_index,
-                                                'context': item[field.key].context,
-                                                'disabled': item[field.key].editable == 0
-                                            }"
-                                            @contextmenu.prevent.stop="openContextMenu(item[field.key], i_index, f_index)">
-
-                                            <div class="disabled"></div>
-                                            <div class="contextor" v-if="item[field.key].context">
-                                                <div class="fonter d-flex justify-content-between" v-if="activeuserid == 5">
-                                                    <div @click="add_class(item[field.key], 'font-bold')">Ж</div>
-                                                    <div @click="add_class(item[field.key], 'font-italic')">К</div>
-                                                    <div @click="add_class(item[field.key], 'text-left')">Л</div>
-                                                    <div @click="add_class(item[field.key], 'text-center')">Ц</div>
-                                                    <div @click="add_class(item[field.key], 'text-right')">П</div>
-                                                </div>
-                                                <div class="color-choser d-flex justify-content-between">
-                                                    <div class="bg-red"  @click="add_class(item[field.key], 'bg-red')"></div>
-                                                    <div class="bg-yellow"  @click="add_class(item[field.key], 'bg-yellow')"></div>
-                                                    <div class="bg-green"  @click="add_class(item[field.key], 'bg-green')"></div>
-                                                    <div class="bg-blue"  @click="add_class(item[field.key], 'bg-blue')"></div>
-                                                    <div class="bg-violet"  @click="add_class(item[field.key], 'bg-violet')"></div>
-                                                </div>
-                                                <ul class="types">
-
-                                                        <li  @click="change_type('initial', i_index, field.key)" v-if="activeuserid == 5 || ['sum', 'avg'].includes(field.key)">
-                                                            Обычный
-                                                        </li>
-                                                        <li  @click="change_type('formula', i_index, field.key)" v-if="activeuserid == 5">
-                                                            Формула
-                                                        </li>
-                                                        <li  @click="change_type('time', i_index, field.key)" v-if="['name'].includes(field.key)">
-                                                            Часы из табеля
-                                                        </li>
-                                                        <li  @click="change_type('stat', i_index, field.key)" v-if="['name'].includes(field.key)">
-                                                            Показатели
-                                                        </li>
-                                                        <li  @click="change_type('avg', i_index, field.key)" v-if="['avg'].includes(field.key)">
-                                                            Среднее за месяц
-                                                        </li>
-                                                        <li  @click="change_type('sum', i_index, field.key)" v-if="['sum'].includes(field.key)">
-                                                            Сумма за месяц
-                                                        </li>
-                                                        <li  @click="selectDepend(item[field.key])" v-if="['name'].includes(field.key) && item[field.key].depend_id === null">
-                                                            Зависимость от ряда
-                                                        </li>
-                                                        <li  @click="removeDependency(item[field.key])" v-else-if="['name'].includes(field.key)">
-                                                            Убрать зависимость
-                                                        </li>
-                                                        <li  @click="add_formula_1_31(item[field.key])" v-if="['name'].includes(field.key)">
-                                                            Формула с 1 по 31
-                                                        </li>
-                                                        <li  @click="add_inhouse(item[field.key])" v-if="['name'].includes(field.key)">
-                                                            Отсутствие минут inhouse
-                                                        </li>
-                                                        <li  @click="add_remote(item[field.key])" v-if="['name'].includes(field.key)">
-                                                            Отсутствие минут remote
-                                                        </li>
-                                                        <li  @click="add_salary(item[field.key])" v-if="['name'].includes(field.key)">
-                                                            Начисления отдела
-                                                        </li>
-                                                        <li>
-                                                          <div class="d-flex decimals">
-                                                            <p>Дробные</p>
-                                                            <input v-model="item[field.key].decimals"  type="number" @change="setDecimals(item[field.key])"/>
-                                                          </div>
-                                                        </li>
-                                                </ul>
-                                            </div>
-
-
-                                            <input type="text" class="in-cell" v-if="focused_item === i_index && focused_field === f_index"
-                                                    v-model="item[field.key].value" @change="change_stat(i_index, field.key)"/>
-                                                <input v-else type="text" class="in-cell" :value="item[field.key].show_value  ? item[field.key].show_value : '' + (i_index == 2 && field.key == 'sum' ? '%' : '')" />
-
-
-
-                                            <div class="bottom-angle" v-if="focused_item === i_index && focused_field === f_index"  >
-                                                <div class="angler"></div>
-                                            </div>
-
-                                            <div class="top-angle"  :class="item[field.key].type">
-
-                                            </div>
-                                        </div>
-                                    </template>
-
-                                </td>
-                            </template>
-                    </tr>
-
-
-
-                </table>
-
-
-
-            </div>
-
-            <div class="table-responsive">
-                <!-- table 2 -->
-                <table class="as-table mr150">
-                    <tr>
-
-                        <td v-for="(letter, index) in letter_cells.slice(4, letter_cells.length)" :key="index"
-                            class="ruler-cells t-cell text-center">
-                            <div class="in-cell inner-div">
-                                {{ letter }}
-                            </div>
-                        </td>
-                    </tr>
-
-                    <tr v-for="(item, i_index) in items" :key="i_index">
-
-
-                            <template v-for="(field,f_index) in fields">
-                                <td class="t-cell font-bold"  :key="f_index" @click="focus(i_index, f_index)" :class="item[field.key].class" v-if="f_index > 3">
-                                    <div class="inner-div"
-                                        :class="{
-                                            'focused': focused_item === i_index && focused_field === f_index,
-                                            'context': item[field.key].context,
-                                            'disabled': item[field.key].editable == 0 || ['stat', 'time'].includes(item[field.key].type),
-                                            'less': item[field.key].depend_id !== null && items[depender[item[field.key].depend_id]] !== undefined && Number(items[depender[item[field.key].depend_id]][field.key].show_value) > Number(item[field.key].show_value),
-                                            'more': item[field.key].depend_id !== null && items[depender[item[field.key].depend_id]] !== undefined && Number(items[depender[item[field.key].depend_id]][field.key].show_value) < Number(item[field.key].show_value),
-                                        }"
-                                        @contextmenu.prevent.stop="openContextMenu(item[field.key], i_index, f_index)">
-
-                                        <div class="disabled"></div>
-                                        <div class="contextor" v-if="item[field.key].context">
-                                            <ul class="types">
-                                                <li>
-                                                    <div class="d-flex decimals">
-                                                        <p>Дробные</p>
-                                                        <input v-model="item[field.key].decimals"  type="number" @change="setDecimals(item[field.key])"/>
-                                                    </div>
-                                                </li>
-                                                <li  @click="change_type('initial', i_index, field.key)">
-                                                    Обычный
-                                                </li>
-                                                <li  @click="change_type('formula', i_index, field.key)">
-                                                    Формула
-                                                </li>
-                                                <li  @click="add_formula_1_31(item[field.key])">
-                                                    Формула с 1 по 31
-                                                </li>
-                                            </ul>
-                                        </div>
-
-                                        <input type="text" class="in-cell" v-if="focused_item === i_index && focused_field === f_index"
-                                            v-model="item[field.key].value" @change="change_stat(i_index, field.key)"/>
-
-                                        <input v-else-if="i_index != 0" type="text" class="in-cell" :value="(Number(item[field.key].show_value) != 0 ? Number(item[field.key].show_value).toFixed(item[field.key].decimals) + item[field.key].sign : '')" />
-                                        <input v-else type="text" class="in-cell" :value="item[field.key].show_value" />
-
-                                        <div class="bottom-angle" v-if="focused_item === i_index && focused_field === f_index">
-                                            <div class="angler"></div>
-                                        </div>
-
-                                        <div class="top-angle"  :class="item[field.key].type">
-
-                                        </div>
-                                    </div>
-                                </td>
-                            </template>
-
-
-                    </tr>
-
-
-
-                </table>
-            </div>
-        </div>
-
-
-
-
-         <!-- Modal Create activity -->
-        <b-modal v-model="showDependy"  title="Зависимость значений от ряда" size="md" class="modalle" @ok="save_depend()">
-
-             <div class="row">
-                 <div class="col-12">
-                     <b v-if="itemy !== undefined && itemy !== null"> {{ itemy.value }}</b>
-                 </div>
-                <div class="col-5 mt-1">
-                    <p class="">Ряд</p>
-                </div>
-                <div class="col-7">
-                    <select v-model="depend_id" class="form-control form-control-sm">
-                        <option :value="dep.row_id"  v-for="(dep, key) in dependencies" :key="key">{{ dep.index }} {{ dep.name }}</option>
-                    </select>
-                </div>
-            </div>
-
-        </b-modal>
-
-         <!-- Modal Create activity -->
-        <b-modal v-model="showVariants"  title="Формула на 31 дней" size="lg" class="modalle" @ok="save_cell_activity()">
-
-             <div class="row">
-                <div class="col-5">
-                    <p class="">Активность</p>
-                </div>
-                <div class="col-7">
-                    <select v-model="activity_id" class="form-control form-control-sm">
-                        <option :value="activity.id"  v-for="(activity, key) in activities" :key="key">{{ activity.name }}</option>
-                    </select>
-                </div>
-            </div>
-
-        </b-modal>
-
-        <!-- Modal showFormula1_31 -->
-        <b-modal v-model="showFormula1_31"  title="Формула на 31 дней" size="lg" class="modalle" @ok="save_formula_1_31()">
-            <div class="row">
-                <div class="col-12">
-                    <p>Пишите ряд для выбора в фигурных скобках, 5 ряд это - {5}</p>
-                    <p>Пример формулы: {5} * 12 / 1000</p>
-                    <p>Станет        : E5  * 12 / 1000</p>
-                </div>
-                <div class="col-12 mb-3">
-                    <input type="text" class="form-control form-control-sm" v-model="formula_1_31">
-                </div>
-                <div class="col-4">
-                    Количество цифр после запятой
-                </div>
-                <div class="col-8">
-                    <input type="text" class="form-control form-control-sm" v-model="formula_1_31_decimals">
-                </div>
-            </div>
-
-        </b-modal>
-
-        <!-- comment for remote / inhouse add minutes -->
-        <b-modal v-model="showCommentWindow"  title="Комментарии" size="lg" class="modalle" @ok="saveComment()">
-
-            <div class="row">
-                <div class="col-12">
-                    <p>По какой причине добавляются минуты?</p>
-                </div>
-                <div class="col-12">
-                    <input type="text" class="form-control form-control-sm" v-model="comment">
-                </div>
-            </div>
-
-        </b-modal>
-
-
-
-
-    </div>
-    </template>
+	<div class="z-12 relative">
+		<div class="table-header">
+			<input
+				type="text"
+				class="cell-coords"
+				v-model="coords"
+			>
+			<input
+				type="text"
+				class="cell-type"
+				v-model="cell_type"
+			>
+			<input
+				type="text"
+				class="cell-show-value"
+				v-model="cell_show_value"
+			>
+			<input
+				type="text"
+				class="cell-value"
+				v-model="cell_value"
+			>
+			<input
+				type="text"
+				class="cell-comment"
+				v-model="cell_comment"
+			>
+		</div>
+
+		<div class="d-flex">
+			<div
+				class="relative   w551"
+				id="wow-table"
+			>
+				<!-- table -->
+				<table class="as-table left-side">
+					<tr>
+						<td class="ruler-cells t-cell text-center">
+							<div
+								class="in-cell inner-div "
+								@click="editMode()"
+							>
+								<i class="fa fa-cogs" />
+							</div>
+						</td>
+						<td
+							v-for="(letter, index) in letter_cells.slice(1, 4)"
+							:key="index"
+							class="ruler-cells t-cell text-center"
+						>
+							<div
+								class="in-cell inner-div d-flex"
+								v-if="index == 0"
+							>
+								<span class="two-letter">A</span>
+								<span class="two-letter">B</span>
+							</div>
+							<div
+								class="in-cell inner-div"
+								v-else
+							>
+								{{ letter }}
+							</div>
+						</td>
+					</tr>
+
+					<tr
+						v-for="(item, i_index) in items"
+						:key="i_index"
+					>
+						<td class="t-cell rownumber ruler-cells">
+							<div class="in-cell inner-div text-center">
+								<span
+									v-if="editTableMode && i_index > 3"
+									@click="deleteRow(i_index)"
+								>
+									<i class="fa fa-trash pointer" />
+								</span>
+								<span
+									v-if="editTableMode && i_index > 2"
+									@click="add_row(i_index)"
+								>
+									<i class="fa fa-plus-square pointer" />
+								</span>
+								<span>{{ i_index + 1 }}</span>
+							</div>
+						</td>
+
+						<template v-for="(field,f_index) in fields.slice(0, 4)">
+							<td
+								class="t-cell font-bold"
+								:key="f_index"
+								@click="focus(i_index, f_index)"
+								v-if="field.key != 'plan'"
+								:class="item[field.key].class"
+							>
+								<template v-if="field.key == 'name' && [1,2,3].includes(i_index)">
+									<div class="d-flex justify-content-between">
+										<div
+											class="inner-div halfy"
+											@click="focusName(i_index, f_index, 1)"
+											:class="{
+												'focused': focused_item === i_index && focused_field === f_index && focused_subfield == 1,
+												'context': item[field.key].context,
+												'disabled': item[field.key].editable == 0
+											}"
+											@contextmenu.prevent.stop="openContextMenu(item[field.key], i_index, f_index)"
+										>
+											<div class="disabled" />
+
+											<div
+												class="contextor"
+												v-if="item[field.key].context"
+											>
+												<ul class="types">
+													<li @click="add_formula_1_31(item[field.key])">
+														Формула с 1 по 31
+													</li>
+												</ul>
+											</div>
+
+											<input
+												type="text"
+												class="in-cell"
+												v-if="focused_item === i_index && focused_field === f_index && focused_subfield == 1"
+												v-model="item['name'].value"
+												@change="change_stat(i_index, 'name')"
+											>
+
+											<input
+												v-else
+												type="text"
+												class="in-cell"
+												:value="item['name'].show_value"
+											>
+
+
+											<div
+												class="bottom-angle"
+												v-if="focused_item === i_index && focused_field === f_index && focused_subfield == 1"
+											>
+												<div class="angler" />
+											</div>
+
+											<div
+												class="top-angle"
+												:class="item[field.key].type"
+											/>
+										</div>
+										<div
+											class="inner-div halfy"
+											@click="focusName(i_index, f_index, 2)"
+											:class="{
+												'focused': focused_item === i_index && focused_field === f_index && focused_subfield == 2,
+												'context': item['plan'].context,
+												'disabled': item['plan'].editable == 0
+											}"
+											@contextmenu.prevent.stop="openContextMenu(item['plan'], i_index, f_index)"
+										>
+											<div class="disabled" />
+
+											<input
+												type="text"
+												class="in-cell"
+												v-if="focused_item === i_index && focused_field === f_index && focused_subfield == 2"
+												v-model="item['plan'].value"
+												@change="change_stat(i_index, 'plan')"
+											>
+											<input
+												v-else
+												type="text"
+												class="in-cell"
+												:value="item['plan'].show_value + (i_index == 2 ? '%' : '')"
+											>
+
+											<div
+												class="bottom-angle"
+												v-if="focused_item === i_index && focused_field === f_index && focused_subfield == 2"
+											>
+												<div class="angler" />
+											</div>
+
+											<div
+												class="top-angle"
+												:class="item[field.key].type"
+											/>
+										</div>
+									</div>
+								</template>
+
+								<template v-else>
+									<div
+										class="inner-div"
+										:class="{
+											'focused': focused_item === i_index && focused_field === f_index,
+											'context': item[field.key].context,
+											'disabled': item[field.key].editable == 0
+										}"
+										@contextmenu.prevent.stop="openContextMenu(item[field.key], i_index, f_index)"
+									>
+										<div class="disabled" />
+										<div
+											class="contextor"
+											v-if="item[field.key].context"
+										>
+											<div
+												class="fonter d-flex justify-content-between"
+												v-if="activeuserid == 5"
+											>
+												<div @click="add_class(item[field.key], 'font-bold')">
+													Ж
+												</div>
+												<div @click="add_class(item[field.key], 'font-italic')">
+													К
+												</div>
+												<div @click="add_class(item[field.key], 'text-left')">
+													Л
+												</div>
+												<div @click="add_class(item[field.key], 'text-center')">
+													Ц
+												</div>
+												<div @click="add_class(item[field.key], 'text-right')">
+													П
+												</div>
+											</div>
+											<div class="color-choser d-flex justify-content-between">
+												<div
+													class="bg-red"
+													@click="add_class(item[field.key], 'bg-red')"
+												/>
+												<div
+													class="bg-yellow"
+													@click="add_class(item[field.key], 'bg-yellow')"
+												/>
+												<div
+													class="bg-green"
+													@click="add_class(item[field.key], 'bg-green')"
+												/>
+												<div
+													class="bg-blue"
+													@click="add_class(item[field.key], 'bg-blue')"
+												/>
+												<div
+													class="bg-violet"
+													@click="add_class(item[field.key], 'bg-violet')"
+												/>
+											</div>
+											<ul class="types">
+												<li
+													@click="change_type('initial', i_index, field.key)"
+													v-if="activeuserid == 5 || ['sum', 'avg'].includes(field.key)"
+												>
+													Обычный
+												</li>
+												<li
+													@click="change_type('formula', i_index, field.key)"
+													v-if="activeuserid == 5"
+												>
+													Формула
+												</li>
+												<li
+													@click="change_type('time', i_index, field.key)"
+													v-if="['name'].includes(field.key)"
+												>
+													Часы из табеля
+												</li>
+												<li
+													@click="change_type('stat', i_index, field.key)"
+													v-if="['name'].includes(field.key)"
+												>
+													Показатели
+												</li>
+												<li
+													@click="change_type('avg', i_index, field.key)"
+													v-if="['avg'].includes(field.key)"
+												>
+													Среднее за месяц
+												</li>
+												<li
+													@click="change_type('sum', i_index, field.key)"
+													v-if="['sum'].includes(field.key)"
+												>
+													Сумма за месяц
+												</li>
+												<li
+													@click="selectDepend(item[field.key])"
+													v-if="['name'].includes(field.key) && item[field.key].depend_id === null"
+												>
+													Зависимость от ряда
+												</li>
+												<li
+													@click="removeDependency(item[field.key])"
+													v-else-if="['name'].includes(field.key)"
+												>
+													Убрать зависимость
+												</li>
+												<li
+													@click="add_formula_1_31(item[field.key])"
+													v-if="['name'].includes(field.key)"
+												>
+													Формула с 1 по 31
+												</li>
+												<li
+													@click="add_inhouse(item[field.key])"
+													v-if="['name'].includes(field.key)"
+												>
+													Отсутствие минут inhouse
+												</li>
+												<li
+													@click="add_remote(item[field.key])"
+													v-if="['name'].includes(field.key)"
+												>
+													Отсутствие минут remote
+												</li>
+												<li
+													@click="add_salary(item[field.key])"
+													v-if="['name'].includes(field.key)"
+												>
+													Начисления отдела
+												</li>
+												<li>
+													<div class="d-flex decimals">
+														<p>Дробные</p>
+														<input
+															v-model="item[field.key].decimals"
+															type="number"
+															@change="setDecimals(item[field.key])"
+														>
+													</div>
+												</li>
+											</ul>
+										</div>
+
+
+										<input
+											type="text"
+											class="in-cell"
+											v-if="focused_item === i_index && focused_field === f_index"
+											v-model="item[field.key].value"
+											@change="change_stat(i_index, field.key)"
+										>
+										<input
+											v-else
+											type="text"
+											class="in-cell"
+											:value="item[field.key].show_value ? item[field.key].show_value : '' + (i_index == 2 && field.key == 'sum' ? '%' : '')"
+										>
+
+
+
+										<div
+											class="bottom-angle"
+											v-if="focused_item === i_index && focused_field === f_index"
+										>
+											<div class="angler" />
+										</div>
+
+										<div
+											class="top-angle"
+											:class="item[field.key].type"
+										/>
+									</div>
+								</template>
+							</td>
+						</template>
+					</tr>
+				</table>
+			</div>
+
+			<div class="table-responsive">
+				<!-- table 2 -->
+				<table class="as-table mr150">
+					<tr>
+						<td
+							v-for="(letter, index) in letter_cells.slice(4, letter_cells.length)"
+							:key="index"
+							class="ruler-cells t-cell text-center"
+						>
+							<div class="in-cell inner-div">
+								{{ letter }}
+							</div>
+						</td>
+					</tr>
+
+					<tr
+						v-for="(item, i_index) in items"
+						:key="i_index"
+					>
+						<template v-for="(field,f_index) in fields">
+							<td
+								class="t-cell font-bold"
+								:key="f_index"
+								@click="focus(i_index, f_index)"
+								:class="item[field.key].class"
+								v-if="f_index > 3"
+							>
+								<div
+									class="inner-div"
+									:class="{
+										'focused': focused_item === i_index && focused_field === f_index,
+										'context': item[field.key].context,
+										'disabled': item[field.key].editable == 0 || ['stat', 'time'].includes(item[field.key].type),
+										'less': item[field.key].depend_id !== null && items[depender[item[field.key].depend_id]] !== undefined && Number(items[depender[item[field.key].depend_id]][field.key].show_value) > Number(item[field.key].show_value),
+										'more': item[field.key].depend_id !== null && items[depender[item[field.key].depend_id]] !== undefined && Number(items[depender[item[field.key].depend_id]][field.key].show_value) < Number(item[field.key].show_value),
+									}"
+									@contextmenu.prevent.stop="openContextMenu(item[field.key], i_index, f_index)"
+								>
+									<div class="disabled" />
+									<div
+										class="contextor"
+										v-if="item[field.key].context"
+									>
+										<ul class="types">
+											<li>
+												<div class="d-flex decimals">
+													<p>Дробные</p>
+													<input
+														v-model="item[field.key].decimals"
+														type="number"
+														@change="setDecimals(item[field.key])"
+													>
+												</div>
+											</li>
+											<li @click="change_type('initial', i_index, field.key)">
+												Обычный
+											</li>
+											<li @click="change_type('formula', i_index, field.key)">
+												Формула
+											</li>
+											<li @click="add_formula_1_31(item[field.key])">
+												Формула с 1 по 31
+											</li>
+										</ul>
+									</div>
+
+									<input
+										type="text"
+										class="in-cell"
+										v-if="focused_item === i_index && focused_field === f_index"
+										v-model="item[field.key].value"
+										@change="change_stat(i_index, field.key)"
+									>
+
+									<input
+										v-else-if="i_index != 0"
+										type="text"
+										class="in-cell"
+										:value="(Number(item[field.key].show_value) != 0 ? Number(item[field.key].show_value).toFixed(item[field.key].decimals) + item[field.key].sign : '')"
+									>
+									<input
+										v-else
+										type="text"
+										class="in-cell"
+										:value="item[field.key].show_value"
+									>
+
+									<div
+										class="bottom-angle"
+										v-if="focused_item === i_index && focused_field === f_index"
+									>
+										<div class="angler" />
+									</div>
+
+									<div
+										class="top-angle"
+										:class="item[field.key].type"
+									/>
+								</div>
+							</td>
+						</template>
+					</tr>
+				</table>
+			</div>
+		</div>
+
+
+
+
+		<!-- Modal Create activity -->
+		<b-modal
+			v-model="showDependy"
+			title="Зависимость значений от ряда"
+			size="md"
+			class="modalle"
+			@ok="save_depend()"
+		>
+			<div class="row">
+				<div class="col-12">
+					<b v-if="itemy !== undefined && itemy !== null"> {{ itemy.value }}</b>
+				</div>
+				<div class="col-5 mt-1">
+					<p class="">
+						Ряд
+					</p>
+				</div>
+				<div class="col-7">
+					<select
+						v-model="depend_id"
+						class="form-control form-control-sm"
+					>
+						<option
+							:value="dep.row_id"
+							v-for="(dep, key) in dependencies"
+							:key="key"
+						>
+							{{ dep.index }} {{ dep.name }}
+						</option>
+					</select>
+				</div>
+			</div>
+		</b-modal>
+
+		<!-- Modal Create activity -->
+		<b-modal
+			v-model="showVariants"
+			title="Формула на 31 дней"
+			size="lg"
+			class="modalle"
+			@ok="save_cell_activity()"
+		>
+			<div class="row">
+				<div class="col-5">
+					<p class="">
+						Активность
+					</p>
+				</div>
+				<div class="col-7">
+					<select
+						v-model="activity_id"
+						class="form-control form-control-sm"
+					>
+						<option
+							:value="activity.id"
+							v-for="(activity, key) in activities"
+							:key="key"
+						>
+							{{ activity.name }}
+						</option>
+					</select>
+				</div>
+			</div>
+		</b-modal>
+
+		<!-- Modal showFormula1_31 -->
+		<b-modal
+			v-model="showFormula1_31"
+			title="Формула на 31 дней"
+			size="lg"
+			class="modalle"
+			@ok="save_formula_1_31()"
+		>
+			<div class="row">
+				<div class="col-12">
+					<p>Пишите ряд для выбора в фигурных скобках, 5 ряд это - {5}</p>
+					<p>Пример формулы: {5} * 12 / 1000</p>
+					<p>Станет        : E5  * 12 / 1000</p>
+				</div>
+				<div class="col-12 mb-3">
+					<input
+						type="text"
+						class="form-control form-control-sm"
+						v-model="formula_1_31"
+					>
+				</div>
+				<div class="col-4">
+					Количество цифр после запятой
+				</div>
+				<div class="col-8">
+					<input
+						type="text"
+						class="form-control form-control-sm"
+						v-model="formula_1_31_decimals"
+					>
+				</div>
+			</div>
+		</b-modal>
+
+		<!-- comment for remote / inhouse add minutes -->
+		<b-modal
+			v-model="showCommentWindow"
+			title="Комментарии"
+			size="lg"
+			class="modalle"
+			@ok="saveComment()"
+		>
+			<div class="row">
+				<div class="col-12">
+					<p>По какой причине добавляются минуты?</p>
+				</div>
+				<div class="col-12">
+					<input
+						type="text"
+						class="form-control form-control-sm"
+						v-model="comment"
+					>
+				</div>
+			</div>
+		</b-modal>
+	</div>
+</template>
 
 <script>
 const Parser = require('expr-eval').Parser;

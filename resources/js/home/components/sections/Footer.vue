@@ -1,138 +1,146 @@
 <template>
-  <footer id="jFooter">
-    <div class="section-content">
-      <div class="jFooter-cols">
-        <div class="jFooter-col">
-          <a
-              class="jFooter-logo"
-              href="javascript:void(0)"
-          >
-            <img
-                :src="require('../../assets/img/footer-logo.svg').default"
-                alt=""
-                class="jNav-logo-img"
-            >
-          </a>
-        </div>
-        <div class="jFooter-col">
-          <ul class="jFooter-menu-items">
-            <li class="jFooter-menu-item">
-              <FooterLink
-                  :lang="lang"
-                  href="#prices"
-                  text="prices"
-              />
-            </li>
-<!--            <li class="jFooter-menu-item">-->
-<!--              <FooterLink-->
-<!--                  :lang="lang"-->
-<!--                  href="#reviews"-->
-<!--                  text="reviews"-->
-<!--              />-->
-<!--            </li>-->
-            <li class="jFooter-menu-item">
-              <FooterLink
-                  :lang="lang"
-                  href="#features"
-                  text="features"
-              />
-            </li>
-          </ul>
-          <p class="jFooter-sub-social">{{ $lang(lang, 'footer-subscribe') }}</p>
-          <div class="jFooter-social">
-            <a
-                class="jFooter-social-link jFooter-social-yt"
-                href="https://www.youtube.com/@adilkarimov8362"
-                target="_blank"
-            />
-            <a
-                class="jFooter-social-link jFooter-social-ig"
-                href="javascript:void(0)"
-            />
-            <a
-                class="jFooter-social-link jFooter-social-tg"
-                href="javascript:void(0)"
-            />
-          </div>
-        </div>
-        <div class="jFooter-col">
-          <p>{{ $lang(lang, 'footer-sellcenter') }}</p>
-          <p class="jFooter-contact">
-            <a
-                class="jFooter-link"
-                href="tel:87777880800"
-            >8 777 788 08 00</a>
-          </p>
-          <p class="jFooter-contact">
-            <a
-                class="jFooter-link"
-                href="tel:84951364282"
-            >8 495 136 42 82</a>
-          </p>
-          <p class="jFooter-contact">
-            <a
-                class="jFooter-link"
-                href="mailto:sales@jobtron.com"
-            >sales@jobtron.com</a>
-          </p>
-          <p class="jFooter-support">{{ $lang(lang, 'footer-support') }}</p>
-          <p class="jFooter-contact">
-            <a
-                class="jFooter-link"
-                href="mailto:support@jobtron.com"
-            >support@jobtron.com</a>
-          </p>
-        </div>
-        <div class="jFooter-col">
-          <p class="jFooter-sub-pay">{{ $lang(lang, 'footer-pay') }}</p>
-          <div class="jFooter-pay">
-            <a
-                class="jFooter-pay-link jFooter-pay-mir"
-                href="javascript:void(0)"
-            />
-            <a
-                class="jFooter-pay-link jFooter-pay-visa"
-                href="javascript:void(0)"
-            />
-            <a
-                class="jFooter-pay-link jFooter-pay-ym"
-                href="javascript:void(0)"
-            />
-          </div>
-        </div>
-      </div>
-    </div>
-    <div class="jFooter-separator"></div>
-    <div class="section-content">
-      <div class="jFooter-bottom">
-        <div class="jFooter-rules">
-          <a
-              class="jFooter-rules-link jFooter-link"
-              href="/docs/contract-offer.pdf"
-              target="_blank"
-          >{{ $lang(lang, 'contract-offer') }}</a>
-          <a
-              class="jFooter-rules-link jFooter-link"
-              href="/docs/site-agreement.pdf"
-              target="_blank"
-          >{{ $lang(lang, 'site-agreement') }}</a>
-          <a
-              class="jFooter-rules-link jFooter-link"
-              href="/docs/personal-data.pdf"
-              target="_blank"
-          >{{ $lang(lang, 'personal-data') }}</a>
-          <a
-              class="jFooter-rules-link jFooter-link"
-              href="/docs/privacy-policy.pdf"
-              target="_blank"
-          >{{ $lang(lang, 'privacy-policy') }}</a>
-        </div>
-        <div class="jFooter-copy">
-          <p class="jFooter-copy-right">{{ '© ' + year + ' ' + $lang(lang, 'footer-copy') }}</p>
-        </div>
-      </div>
-    </div>
-  </footer>
+	<footer id="jFooter">
+		<div class="section-content">
+			<div class="jFooter-cols">
+				<div class="jFooter-col">
+					<a
+						class="jFooter-logo"
+						href="javascript:void(0)"
+					>
+						<img
+							:src="require('../../assets/img/footer-logo.svg').default"
+							alt=""
+							class="jNav-logo-img"
+						>
+					</a>
+				</div>
+				<div class="jFooter-col">
+					<ul class="jFooter-menu-items">
+						<li class="jFooter-menu-item">
+							<FooterLink
+								:lang="lang"
+								href="#prices"
+								text="prices"
+							/>
+						</li>
+						<!--            <li class="jFooter-menu-item">-->
+						<!--              <FooterLink-->
+						<!--                  :lang="lang"-->
+						<!--                  href="#reviews"-->
+						<!--                  text="reviews"-->
+						<!--              />-->
+						<!--            </li>-->
+						<li class="jFooter-menu-item">
+							<FooterLink
+								:lang="lang"
+								href="#features"
+								text="features"
+							/>
+						</li>
+					</ul>
+					<p class="jFooter-sub-social">
+						{{ $lang(lang, 'footer-subscribe') }}
+					</p>
+					<div class="jFooter-social">
+						<a
+							class="jFooter-social-link jFooter-social-yt"
+							href="https://www.youtube.com/@adilkarimov8362"
+							target="_blank"
+						/>
+						<a
+							class="jFooter-social-link jFooter-social-ig"
+							href="javascript:void(0)"
+						/>
+						<a
+							class="jFooter-social-link jFooter-social-tg"
+							href="javascript:void(0)"
+						/>
+					</div>
+				</div>
+				<div class="jFooter-col">
+					<p>{{ $lang(lang, 'footer-sellcenter') }}</p>
+					<p class="jFooter-contact">
+						<a
+							class="jFooter-link"
+							href="tel:87777880800"
+						>8 777 788 08 00</a>
+					</p>
+					<p class="jFooter-contact">
+						<a
+							class="jFooter-link"
+							href="tel:84951364282"
+						>8 495 136 42 82</a>
+					</p>
+					<p class="jFooter-contact">
+						<a
+							class="jFooter-link"
+							href="mailto:sales@jobtron.com"
+						>sales@jobtron.com</a>
+					</p>
+					<p class="jFooter-support">
+						{{ $lang(lang, 'footer-support') }}
+					</p>
+					<p class="jFooter-contact">
+						<a
+							class="jFooter-link"
+							href="mailto:support@jobtron.com"
+						>support@jobtron.com</a>
+					</p>
+				</div>
+				<div class="jFooter-col">
+					<p class="jFooter-sub-pay">
+						{{ $lang(lang, 'footer-pay') }}
+					</p>
+					<div class="jFooter-pay">
+						<a
+							class="jFooter-pay-link jFooter-pay-mir"
+							href="javascript:void(0)"
+						/>
+						<a
+							class="jFooter-pay-link jFooter-pay-visa"
+							href="javascript:void(0)"
+						/>
+						<a
+							class="jFooter-pay-link jFooter-pay-ym"
+							href="javascript:void(0)"
+						/>
+					</div>
+				</div>
+			</div>
+		</div>
+		<div class="jFooter-separator" />
+		<div class="section-content">
+			<div class="jFooter-bottom">
+				<div class="jFooter-rules">
+					<a
+						class="jFooter-rules-link jFooter-link"
+						href="/docs/contract-offer.pdf"
+						target="_blank"
+					>{{ $lang(lang, 'contract-offer') }}</a>
+					<a
+						class="jFooter-rules-link jFooter-link"
+						href="/docs/site-agreement.pdf"
+						target="_blank"
+					>{{ $lang(lang, 'site-agreement') }}</a>
+					<a
+						class="jFooter-rules-link jFooter-link"
+						href="/docs/personal-data.pdf"
+						target="_blank"
+					>{{ $lang(lang, 'personal-data') }}</a>
+					<a
+						class="jFooter-rules-link jFooter-link"
+						href="/docs/privacy-policy.pdf"
+						target="_blank"
+					>{{ $lang(lang, 'privacy-policy') }}</a>
+				</div>
+				<div class="jFooter-copy">
+					<p class="jFooter-copy-right">
+						{{ '© ' + year + ' ' + $lang(lang, 'footer-copy') }}
+					</p>
+				</div>
+			</div>
+		</div>
+	</footer>
 </template>
 
 <script>
@@ -343,7 +351,7 @@ export default {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    white-space: pre-wrap;
+    //white-space: pre-wrap;
     text-align: center;
   }
 

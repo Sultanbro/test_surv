@@ -1,84 +1,126 @@
 <template>
-    <div class="col-12">
-
-       <div class="row">
-           <div class="col-6 mt-5">
-               <div style="width: 80%" >
-                   <div v-if="showModal"  style="position: relative;border: 1px solid #dcdcdc">
-
-                       <div class="gen-role-class" style="position: absolute" >
-
-                           <a class="role_1" v-bind:class="selectedRoleClass.roleClass_1"   @click="selectedRoles('1')"  @mouseover="upHere.role_1 = true" @mouseleave="upHere.role_1 = false">
-                               <span  v-if="upHere.role_1"  class="spanAction">Роли_1</span>
-                               <i class="bi bi-card-text role_icon_false">  </i>
-                           </a>
-
-
-                           <a class="role_2"  v-bind:class="selectedRoleClass.roleClass_2"  @click="selectedRoles('2')"  @mouseover="upHere.role_2 = true" @mouseleave="upHere.role_2 = false">
-                               <span  v-if="upHere.role_2"   class="spanAction">Роли_2</span>
-                               <i class="bi bi-people role_icon_false"></i>
-                           </a>
-
-
-                           <a class="role_3" v-bind:class="selectedRoleClass.roleClass_3"   @click="selectedRoles('3')" @mouseover="upHere.role_3 = true" @mouseleave="upHere.role_3 = false">
-                               <span v-if="upHere.role_3"  class="spanAction">Роли_3</span>
-                               <i class="bi bi-box-arrow-right role_icon_false" ></i>
-                           </a>
-
-
-                       </div>
+	<div class="col-12">
+		<div class="row">
+			<div class="col-6 mt-5">
+				<div style="width: 80%">
+					<div
+						v-if="showModal"
+						style="position: relative;border: 1px solid #dcdcdc"
+					>
+						<div
+							class="gen-role-class"
+							style="position: absolute"
+						>
+							<a
+								class="role_1"
+								:class="selectedRoleClass.roleClass_1"
+								@click="selectedRoles('1')"
+								@mouseover="upHere.role_1 = true"
+								@mouseleave="upHere.role_1 = false"
+							>
+								<span
+									v-if="upHere.role_1"
+									class="spanAction"
+								>Роли_1</span>
+								<i class="bi bi-card-text role_icon_false" />
+							</a>
 
 
-                       <div class="popupShowSelected">
-                           <div v-if="selectedRole.role_1" >
-                               <p class="list-role-1"  v-for="(item, index) in options_role_1" :key="index">
-                                   <a class="btn btn-block" style="display: flex">
-                                       <i class="bi bi-box-arrow-right style-icons" ></i>
-                                       <span style="margin-top: 5px; margin-left:15px;">{{ item.name}}</span>
-                                   </a>
-                               </p>
-                           </div>
-
-                           <div v-if="selectedRole.role_2">
-                               <h1>Asdasd_role_2</h1>
-                               <h1>Asdasd_role_2</h1>
-                               <h1>Asdasd_role_2</h1>
-                               <h1>Asdasd_role_2</h1>
-                               <h1>Asdasd_role_2</h1>
-                           </div>
+							<a
+								class="role_2"
+								:class="selectedRoleClass.roleClass_2"
+								@click="selectedRoles('2')"
+								@mouseover="upHere.role_2 = true"
+								@mouseleave="upHere.role_2 = false"
+							>
+								<span
+									v-if="upHere.role_2"
+									class="spanAction"
+								>Роли_2</span>
+								<i class="bi bi-people role_icon_false" />
+							</a>
 
 
-                           <div v-if="selectedRole.role_3">
-                               <h1>Asdasd_role_3</h1>
-                               <h1>Asdasd_role_3</h1>
-                               <h1>Asdasd_role_3</h1>
-                               <h1>Asdasd_role_3</h1>
-                               <h1>Asdasd_role_3</h1>
-                           </div>
+							<a
+								class="role_3"
+								:class="selectedRoleClass.roleClass_3"
+								@click="selectedRoles('3')"
+								@mouseover="upHere.role_3 = true"
+								@mouseleave="upHere.role_3 = false"
+							>
+								<span
+									v-if="upHere.role_3"
+									class="spanAction"
+								>Роли_3</span>
+								<i class="bi bi-box-arrow-right role_icon_false" />
+							</a>
+						</div>
 
-                       </div>
+
+						<div class="popupShowSelected">
+							<div v-if="selectedRole.role_1">
+								<p
+									class="list-role-1"
+									v-for="(item, index) in options_role_1"
+									:key="index"
+								>
+									<a
+										class="btn btn-block"
+										style="display: flex"
+									>
+										<i class="bi bi-box-arrow-right style-icons" />
+										<span style="margin-top: 5px; margin-left:15px;">{{ item.name }}</span>
+									</a>
+								</p>
+							</div>
+
+							<div v-if="selectedRole.role_2">
+								<h1>Asdasd_role_2</h1>
+								<h1>Asdasd_role_2</h1>
+								<h1>Asdasd_role_2</h1>
+								<h1>Asdasd_role_2</h1>
+								<h1>Asdasd_role_2</h1>
+							</div>
 
 
+							<div v-if="selectedRole.role_3">
+								<h1>Asdasd_role_3</h1>
+								<h1>Asdasd_role_3</h1>
+								<h1>Asdasd_role_3</h1>
+								<h1>Asdasd_role_3</h1>
+								<h1>Asdasd_role_3</h1>
+							</div>
+						</div>
+					</div>
+					<input
+						value="asdasd dddd ssss"
+						class="form-control"
+						@click="toggle()"
+					>
+				</div>
+			</div>
 
-                   </div>
-                   <input value="asdasd dddd ssss" class="form-control" @click="toggle()" />
-               </div>
-           </div>
-
-           <div class="col-6">
-               <div>
-                   <div>
-                       <h1>gggg</h1>
-                       <label class="typo__label">Tagging</label>
-                       <multiselect v-model="value" tag-placeholder="Add this as new tag" placeholder="Search or add a tag"
-                                    label="name" track-by="code" :options="options" :multiple="true" :taggable="true" @tag="addTag">
-                       </multiselect>
-                   </div>
-               </div>
-           </div>
-       </div>
-    </div>
-
+			<div class="col-6">
+				<div>
+					<div>
+						<h1>gggg</h1>
+						<label class="typo__label">Tagging</label>
+						<multiselect
+							v-model="value"
+							tag-placeholder="Add this as new tag"
+							placeholder="Search or add a tag"
+							label="name"
+							track-by="code"
+							:options="options"
+							:multiple="true"
+							:taggable="true"
+							@tag="addTag"
+						/>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
 </template>
 
 <script>

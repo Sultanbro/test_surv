@@ -1,18 +1,24 @@
 <template>
-    <div class="news-create__dropzone">
-        <vue-dropzone ref="myVueDropzone" id="dropzone"
-                      :options="dropzoneOptions" :useCustomSlot="true"
-                      :include-styling="false"
-                      @vdropzone-sending="sendingEvent"
-                      @vdropzone-thumbnail="thumbnail"
-                      @vdropzone-success="thumbnail"
-                      @vdropzone-queue-complete="changeRemoveIcon"
-                      @vdropzone-removed-file="removeFile">
-            <div class="dropzone-custom-content">
-                <div class="dropzone-custom-title">Перетащите файлы сюда</div>
-            </div>
-        </vue-dropzone>
-    </div>
+	<div class="news-create__dropzone">
+		<vue-dropzone
+			ref="myVueDropzone"
+			id="dropzone"
+			:options="dropzoneOptions"
+			:use-custom-slot="true"
+			:include-styling="false"
+			@vdropzone-sending="sendingEvent"
+			@vdropzone-thumbnail="thumbnail"
+			@vdropzone-success="thumbnail"
+			@vdropzone-queue-complete="changeRemoveIcon"
+			@vdropzone-removed-file="removeFile"
+		>
+			<div class="dropzone-custom-content">
+				<div class="dropzone-custom-title">
+					Перетащите файлы сюда
+				</div>
+			</div>
+		</vue-dropzone>
+	</div>
 </template>
 
 <script>

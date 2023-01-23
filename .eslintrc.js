@@ -2,7 +2,7 @@
 module.exports = {
 	root: true,
 	extends: [
-		'plugin:vue/essential',
+		'plugin:vue/strongly-recommended',
 		'eslint:recommended'
 	],
 	parserOptions: {
@@ -17,6 +17,13 @@ module.exports = {
 		'vue/no-side-effects-in-computed-properties': 'warn',
 		'vue/no-child-content': 'warn',
 		'no-prototype-builtins': 'warn',
+		'vue/html-indent': ['error', 'tab', {
+			'attribute': 1,
+			'baseIndent': 1,
+			'closeBracket': 0,
+			// 'alignAttributesVertically': true,
+			'ignores': []
+		}]
 	},
 	ignorePatterns: [
 		'resources/js/plugins/datepicker/*',

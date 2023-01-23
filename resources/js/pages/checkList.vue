@@ -1,240 +1,381 @@
 <template>
+	<div class="check-page mt-2">
+		<div class="row">
+			<div class="col-md-2">
+				<a
+					id="showCheckSideBar"
+					@click="addNewCheckModalShow()"
+					class="btn btn-success"
+					style="color: white"
+				>Создать чек лист</a>
+			</div>
 
-    <div class="check-page mt-2">
-        <div class="row">
-            <div class="col-md-2">
-                <a id="showCheckSideBar" @click="addNewCheckModalShow()"  class="btn btn-success" style="color: white">Создать чек лист</a>
-            </div>
+			<div class="col-md-3">
+				<input
+					v-model="filter"
+					type="text"
+					class="form-control"
+					placeholder="Поиск"
+				>
+			</div>
+		</div>
 
-            <div class="col-md-3">
-                <input v-model="filter"  type="text"  class="form-control" placeholder="Поиск"/>
-            </div>
-        </div>
-
-      <div class="mt-4">
-          <i class="bi bi-reception-4"></i>
-          <div class="table-container">
-              <b-table-simple class="table table-bordered">
-                  <b-thead>
-                      <b-tr>
-                          <b-th scope="col">Сотрудники/отдел</b-th>
-                          <b-th scope="col">Кол-показов
-                              <i class="fa fa-info-circle" style="cursor: pointer"
-                                 v-b-popover.hover.right.html="'Сколько раз будет уведомление Чек лист автоматически будет всплывать в кабинете сотрудника'"
-                                 title="Работают">
-                              </i>
-                          </b-th>
-                          <b-th scope="col">Постановщик</b-th>
-                          <b-th scope="col">Статитика</b-th>
-                          <b-th></b-th>
-                      </b-tr>
-                  </b-thead>
-                  <b-tbody>
-                      <b-tr class="p-0" v-for="(arrCheckList, index) in filteredRows" :key="`employee-${index}`">
-                          <b-td>
-                              <a v-html="highlightMatches(arrCheckList.title)"  @click="editCheck(arrCheckList.id,arrCheckList.item_type)" >
-                                  {{arrCheckList.title}}
-                              </a>
-                          </b-td>
-                          <b-td>
-                              {{arrCheckList.show_count}}
-                          </b-td>
-                          <b-td>
-                              {{arrCheckList.creator.name}}  {{arrCheckList.creator.last_name}}
-                          </b-td>
-                          <b-td class="position-relative">
-                              <a  v-bind:href="'/timetracking/quality-control'" target="_blank" class="btn btn-primary btn-icon">
-                                  <i class="fa fa-signal" aria-hidden="true"></i>
-                              </a>
-                          </b-td>
-                          <b-td>
-                              <a @click="arrCheckDelete(arrCheckList.id)" class="btn btn-danger btn-icon">
-                                  <i class="fa fa-trash" aria-hidden="true"></i>
-                              </a>
-                          </b-td>
-                      </b-tr>
-                  </b-tbody>
-              </b-table-simple>
-
-
-          </div>
-      </div>
-
-
-        <Sidebar
-                title="Создать чек лист"
-                :open="showCheckSideBar"
-                @close="closeSideBar()"
-                width="65%">
-            <div class="col-md-12 p-0">
-                <div class="col-12 p-0 mt-5">
-                  <div class="row pb-3 ml-3">
-
-                    <div class="col-md-3 p-0">
-                      <p>Для группы чек лист</p>
-                    </div>
-
-                    <div class="col-md-4 p-0">
-                      <div class="person">
-                        <div class="super-select" style="width: unset" ref="select" :class="posClass" v-click-outside="close">
-
-                          <div class="selected-items flex-wrap noscrollbar" @click="toggleShow">
-
-                            <a v-if="!(values.length > 0)">Отделы/Сотрудники</a>
-
-
-                            <div
-                                v-for="(value, i) in values"
-                                :key="i"
-                                class="selected-item"
-                                :class="'value' + value.type">
-                              {{ value.name }}
-                              <i  v-if="value.checked" class="fa fa-times" @click.stop="removeValue(i,'1')"></i>
-
-                              <i  v-else class="fa fa-times" @click.stop="removeValue(i,'2')"></i>
-                            </div>
-                          </div>
-
-                          <div class="show" v-if="show">
-                            <div class="search">
-                              <input
-                                  v-model="searchText"
-                                  type="text"
-                                  placeholder="Поиск..."
-                                  ref="search"
-                                  @keyup="onSearch()">
-                            </div>
-
-                            <div class="options-window">
-                              <div class="types">
-                                <div class="type" :class="{'active': type == 1}" @click="changeType(1)">
-                                  <div class="text">Сотрудники</div>
-                                  <i class="fa fa-user"></i>
-                                </div>
-                                <div class="type" :class="{'active': type == 2}" @click="changeType(2)">
-                                  <div class="text" >Отделы</div>
-                                  <i class="fa fa-users"></i>
-                                </div>
-                                <div class="type" :class="{'active': type == 3}" @click="changeType(3)">
-                                  <div class="text">Должности</div>
-                                  <i class="fa fa-briefcase"></i>
-                                </div>
-
-                                <div class="type mt-5 active all" v-if="select_all_btn && !single" @click="selectAll">
-                                  <div class="text">Все</div>
-                                  <i class="fa fa-check"></i>
-                                </div>
-                              </div>
+		<div class="mt-4">
+			<i class="bi bi-reception-4" />
+			<div class="table-container">
+				<b-table-simple class="table table-bordered">
+					<b-thead>
+						<b-tr>
+							<b-th scope="col">
+								Сотрудники/отдел
+							</b-th>
+							<b-th scope="col">
+								Кол-показов
+								<i
+									class="fa fa-info-circle"
+									style="cursor: pointer"
+									v-b-popover.hover.right.html="'Сколько раз будет уведомление Чек лист автоматически будет всплывать в кабинете сотрудника'"
+									title="Работают"
+								/>
+							</b-th>
+							<b-th scope="col">
+								Постановщик
+							</b-th>
+							<b-th scope="col">
+								Статитика
+							</b-th>
+							<b-th />
+						</b-tr>
+					</b-thead>
+					<b-tbody>
+						<b-tr
+							class="p-0"
+							v-for="(arrCheckList, index) in filteredRows"
+							:key="`employee-${index}`"
+						>
+							<b-td>
+								<a
+									v-html="highlightMatches(arrCheckList.title)"
+									@click="editCheck(arrCheckList.id,arrCheckList.item_type)"
+								>
+									{{ arrCheckList.title }}
+								</a>
+							</b-td>
+							<b-td>
+								{{ arrCheckList.show_count }}
+							</b-td>
+							<b-td>
+								{{ arrCheckList.creator.name }}  {{ arrCheckList.creator.last_name }}
+							</b-td>
+							<b-td class="position-relative">
+								<a
+									:href="'/timetracking/quality-control'"
+									target="_blank"
+									class="btn btn-primary btn-icon"
+								>
+									<i
+										class="fa fa-signal"
+										aria-hidden="true"
+									/>
+								</a>
+							</b-td>
+							<b-td>
+								<a
+									@click="arrCheckDelete(arrCheckList.id)"
+									class="btn btn-danger btn-icon"
+								>
+									<i
+										class="fa fa-trash"
+										aria-hidden="true"
+									/>
+								</a>
+							</b-td>
+						</b-tr>
+					</b-tbody>
+				</b-table-simple>
+			</div>
+		</div>
 
 
-                              <div class="options">
+		<Sidebar
+			title="Создать чек лист"
+			:open="showCheckSideBar"
+			@close="closeSideBar()"
+			width="65%"
+		>
+			<div class="col-md-12 p-0">
+				<div class="col-12 p-0 mt-5">
+					<div class="row pb-3 ml-3">
+						<div class="col-md-3 p-0">
+							<p>Для группы чек лист</p>
+						</div>
 
-                                <div
-                                    class="option"
-                                    v-for="(option, index) in filtered_options"
-                                    :key="index"
-                                    @click="addValue(index)"
-                                    :class="{'selected': option.selected}"
-                                >
-                                  <i class="fa fa-user" v-if="option.type == 1"></i>
-                                  <i class="fa fa-users" v-if="option.type == 2"></i>
-                                  <i class="fa fa-briefcase" v-if="option.type == 3"></i>
-                                     {{ option.name }}
-                                   <i  class="fa fa-times" v-if="option.selected"
-                                      @click.stop="removeValueFromList(index)">
-                                   </i>
-
-
-                                </div>
-
-                              </div>
-                            </div>
-                          </div>
-
-
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
+						<div class="col-md-4 p-0">
+							<div class="person">
+								<div
+									class="super-select"
+									style="width: unset"
+									ref="select"
+									:class="posClass"
+									v-click-outside="close"
+								>
+									<div
+										class="selected-items flex-wrap noscrollbar"
+										@click="toggleShow"
+									>
+										<a v-if="!(values.length > 0)">Отделы/Сотрудники</a>
 
 
+										<div
+											v-for="(value, i) in values"
+											:key="i"
+											class="selected-item"
+											:class="'value' + value.type"
+										>
+											{{ value.name }}
+											<i
+												v-if="value.checked"
+												class="fa fa-times"
+												@click.stop="removeValue(i,'1')"
+											/>
+
+											<i
+												v-else
+												class="fa fa-times"
+												@click.stop="removeValue(i,'2')"
+											/>
+										</div>
+									</div>
+
+									<div
+										class="show"
+										v-if="show"
+									>
+										<div class="search">
+											<input
+												v-model="searchText"
+												type="text"
+												placeholder="Поиск..."
+												ref="search"
+												@keyup="onSearch()"
+											>
+										</div>
+
+										<div class="options-window">
+											<div class="types">
+												<div
+													class="type"
+													:class="{'active': type == 1}"
+													@click="changeType(1)"
+												>
+													<div class="text">
+														Сотрудники
+													</div>
+													<i class="fa fa-user" />
+												</div>
+												<div
+													class="type"
+													:class="{'active': type == 2}"
+													@click="changeType(2)"
+												>
+													<div class="text">
+														Отделы
+													</div>
+													<i class="fa fa-users" />
+												</div>
+												<div
+													class="type"
+													:class="{'active': type == 3}"
+													@click="changeType(3)"
+												>
+													<div class="text">
+														Должности
+													</div>
+													<i class="fa fa-briefcase" />
+												</div>
+
+												<div
+													class="type mt-5 active all"
+													v-if="select_all_btn && !single"
+													@click="selectAll"
+												>
+													<div class="text">
+														Все
+													</div>
+													<i class="fa fa-check" />
+												</div>
+											</div>
+
+
+											<div class="options">
+												<div
+													class="option"
+													v-for="(option, index) in filtered_options"
+													:key="index"
+													@click="addValue(index)"
+													:class="{'selected': option.selected}"
+												>
+													<i
+														class="fa fa-user"
+														v-if="option.type == 1"
+													/>
+													<i
+														class="fa fa-users"
+														v-if="option.type == 2"
+													/>
+													<i
+														class="fa fa-briefcase"
+														v-if="option.type == 3"
+													/>
+													{{ option.name }}
+													<i
+														class="fa fa-times"
+														v-if="option.selected"
+														@click.stop="removeValueFromList(index)"
+													/>
+												</div>
+											</div>
+										</div>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
 
 
 
-                <div class="row mt-5 pb-3 ml-3" style="border-bottom: 1px solid #dee2e6">
 
-                    <div class="col-md-3 p-0">
-                        <p>Колво показов</p>
-                    </div>
 
-                    <div class="col-md-4 p-0" >
-                        <input v-model="countView"   placeholder="Максимум 10 " type="number" class="form-control btn-block">
-                    </div>
-                </div>
-                <div class="row mt-4 pl-3">
-                    <div class="col-md-12 pr-0 mt-2" v-for="(item, index) in arrCheckInput.tasks" :key="index">
-                      <div class="row">
-                          <div class="col-md-6 pr-0 mr-2">
-<!--                              <div class="position-absolute" style="margin-left: -15px;top: 2px">-->
-<!--                                  <b-form-checkbox v-model="item.checked"  ></b-form-checkbox>-->
-<!--                              </div>-->
-                              <input style="width: 110%"  v-model="item.task"  type="text" placeholder="Впишите активность чек листа" class="form-control btn-block ">
-                          </div>
-<!--                          <div class="col-md-3 p-0 mr-3 ml-1">-->
-<!--                              <input v-model="item.https"  type="text" placeholder="https:" class="form-control btn-block ">-->
-<!--                          </div>-->
+				<div
+					class="row mt-5 pb-3 ml-3"
+					style="border-bottom: 1px solid #dee2e6"
+				>
+					<div class="col-md-3 p-0">
+						<p>Колво показов</p>
+					</div>
 
-                        <div class="col-1" style="position: relative">
+					<div class="col-md-4 p-0">
+						<input
+							v-model="countView"
+							placeholder="Максимум 10 "
+							type="number"
+							class="form-control btn-block"
+						>
+					</div>
+				</div>
+				<div class="row mt-4 pl-3">
+					<div
+						class="col-md-12 pr-0 mt-2"
+						v-for="(item, index) in arrCheckInput.tasks"
+						:key="index"
+					>
+						<div class="row">
+							<div class="col-md-6 pr-0 mr-2">
+								<!--                              <div class="position-absolute" style="margin-left: -15px;top: 2px">-->
+								<!--                                  <b-form-checkbox v-model="item.checked"  ></b-form-checkbox>-->
+								<!--                              </div>-->
+								<input
+									style="width: 110%"
+									v-model="item.task"
+									type="text"
+									placeholder="Впишите активность чек листа"
+									class="form-control btn-block "
+								>
+							</div>
+							<!--                          <div class="col-md-3 p-0 mr-3 ml-1">-->
+							<!--                              <input v-model="item.https"  type="text" placeholder="https:" class="form-control btn-block ">-->
+							<!--                          </div>-->
 
-                          <button style="position: absolute;right: 11px" v-if="index == '0'"  @click="deleteCheckList(index, item.id)"
-                                  type="button"  title="Удалить чек-лист"
-                                  class="btn btn-secondary btn-sm">
-                            <i class="fa fa-trash" aria-hidden="true"></i>
-                          </button>
+							<div
+								class="col-1"
+								style="position: relative"
+							>
+								<button
+									style="position: absolute;right: 11px"
+									v-if="index == '0'"
+									@click="deleteCheckList(index, item.id)"
+									type="button"
+									title="Удалить чек-лист"
+									class="btn btn-secondary btn-sm"
+								>
+									<i
+										class="fa fa-trash"
+										aria-hidden="true"
+									/>
+								</button>
 
-                          <button style="position: absolute;right: 11px" v-else  @click="deleteCheckList(index, item.id)"
-                                  type="button"  title="Удалить чек-лист"
-                                  class="btn btn-primary btn-sm">
-                            <i class="fa fa-trash" aria-hidden="true"></i>
-                          </button>
+								<button
+									style="position: absolute;right: 11px"
+									v-else
+									@click="deleteCheckList(index, item.id)"
+									type="button"
+									title="Удалить чек-лист"
+									class="btn btn-primary btn-sm"
+								>
+									<i
+										class="fa fa-trash"
+										aria-hidden="true"
+									/>
+								</button>
+							</div>
+						</div>
+					</div>
+					<div class="col-md-12 mt-3">
+						<div
+							v-if="errors.show"
+							class="alert mb-3 alert-danger p-2"
+						>
+							<span v-if="this.errors.message">
+								{{ this.errors.message }}
+							</span>
+							<span v-if="this.errors.countViewError">
+								{{ this.errors.countViewError }}
+							</span>
 
-                        </div>
+							<button
+								type="button"
+								class="close mb-3"
+								@click="closeAlert()"
+							>
+								<span aria-hidden="true">&times;</span>
+							</button>
+						</div>
+						<div class="col-md-6 p-0">
+							<button
+								type="button"
+								@click="addCheckList()"
+								title="Добавить новый пункт чек листа"
+								class="btn btn-success"
+							>
+								Добавить пункт чек листа
+							</button>
 
-                      </div>
-                    </div>
-                    <div class="col-md-12 mt-3">
-                        <div v-if="errors.show" class="alert mb-3 alert-danger p-2" >
-                          <span v-if="this.errors.message">
-                              {{ this.errors.message}}
-                          </span>
-                            <span v-if="this.errors.countViewError">
-                              {{ this.errors.countViewError}}
-                          </span>
+							<button
+								v-if="addButton"
+								type="button"
+								@click.prevent="saveCheckList()"
+								title="Сохранить"
+								class="btn btn-primary"
+							>
+								Cохранить
+							</button>
 
-                            <button type="button" class="close mb-3" @click="closeAlert()">
-                                <span aria-hidden="true">&times;</span>
-                            </button>
-                        </div>
-                        <div class="col-md-6 p-0">
-
-                            <button type="button" @click="addCheckList()" title="Добавить новый пункт чек листа" class="btn btn-success">
-                                Добавить пункт чек листа
-                            </button>
-
-                            <button v-if="addButton" type="button" @click.prevent="saveCheckList()" title="Сохранить" class="btn btn-primary">
-                                Cохранить
-                            </button>
-
-                            <button v-if="editButton" type="button" @click.prevent="saveEditCheckList(arrCheckInput.tasks)" title="Сохранить" class="btn btn-primary">
-                                Изменить Сохранение
-                            </button>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </Sidebar>
-    </div>
+							<button
+								v-if="editButton"
+								type="button"
+								@click.prevent="saveEditCheckList(arrCheckInput.tasks)"
+								title="Сохранить"
+								class="btn btn-primary"
+							>
+								Изменить Сохранение
+							</button>
+						</div>
+					</div>
+				</div>
+			</div>
+		</Sidebar>
+	</div>
 </template>
 
 

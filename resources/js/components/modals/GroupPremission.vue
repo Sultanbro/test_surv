@@ -1,22 +1,43 @@
 <template>
-<div>
-  <b-modal title="Настройка доступа" v-model="openPremissionModal" @ok="savePremission" size="lg" class="modalle">
-    Выберите сотрудников, которым будет разрешено редактировать время
+	<div>
+		<b-modal
+			title="Настройка доступа"
+			v-model="openPremissionModal"
+			@ok="savePremission"
+			size="lg"
+			class="modalle"
+		>
+			Выберите сотрудников, которым будет разрешено редактировать время
 
-    <multiselect v-model="group_editors" :options="users" :multiple="true" :close-on-select="false" :clear-on-select="false" :preserve-search="true" placeholder="Выберите" label="email" track-by="email">
-      <template #selection="{ values, isOpen }">
-        <span class="multiselect__single" v-if="values.length && !isOpen">{{ values.length }} выбрано</span>
-      </template>
-    </multiselect>
-  </b-modal>
+			<multiselect
+				v-model="group_editors"
+				:options="users"
+				:multiple="true"
+				:close-on-select="false"
+				:clear-on-select="false"
+				:preserve-search="true"
+				placeholder="Выберите"
+				label="email"
+				track-by="email"
+			>
+				<template #selection="{ values, isOpen }">
+					<span
+						class="multiselect__single"
+						v-if="values.length && !isOpen"
+					>{{ values.length }} выбрано</span>
+				</template>
+			</multiselect>
+		</b-modal>
 
-  <div class="text-right mb-3">
-
-    <a href="#" class="btn btn-primary rounded" @click.prevent="openPremissionModal = true">
-      <i class="fa fa-cogs"></i> Доступ</a>
-
-  </div>
-</div>
+		<div class="text-right mb-3">
+			<a
+				href="#"
+				class="btn btn-primary rounded"
+				@click.prevent="openPremissionModal = true"
+			>
+				<i class="fa fa-cogs" /> Доступ</a>
+		</div>
+	</div>
 </template>
 
 <script>
@@ -86,4 +107,4 @@ export default {
 </script>
 
 <style src="vue-multiselect/dist/vue-multiselect.min.css"></style>
-<style lang="scss"/>
+<style lang="scss" />

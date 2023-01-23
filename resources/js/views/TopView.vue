@@ -30,23 +30,23 @@ export default {
 </script>
 
 <template>
-    <DefaultLayout>
-        <div class="old__content">
-            <div class="row">
-                <div class="col-md-12 mt-4 mb-3">
-                    <ReportsNav :active-tab="activeTab"/>
-                </div>
+	<DefaultLayout>
+		<div class="old__content">
+			<div class="row">
+				<div class="col-md-12 mt-4 mb-3">
+					<ReportsNav :active-tab="activeTab" />
+				</div>
 
-                <div class="col-md-12">
-                    <TopPage
-                        v-show="activeuserid"
-                        :data="data"
-                        :activeuserid="activeuserid"
-                    />
-                </div>
-            </div>
-        </div>
-    </DefaultLayout>
+				<div class="col-md-12">
+					<TopPage
+						v-show="activeuserid"
+						:data="data"
+						:activeuserid="activeuserid"
+					/>
+				</div>
+			</div>
+		</div>
+	</DefaultLayout>
 </template>
 
 <style scoped>

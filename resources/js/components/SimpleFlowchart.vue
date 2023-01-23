@@ -1,31 +1,34 @@
 <template>
-  <div class="flowchart-container"
-    @mousemove="handleMove"
-    @mouseup="handleUp"
-    @mousedown="handleDown">
-
-
-    <svg width="100%" :height="`${height}px`">
-      <!-- eslint-disable-next-line vue/valid-v-bind-sync -->
-      <flowchart-link v-bind.sync="link"
-        v-for="(link, index) in lines"
-        :key="`link${index}`"
-        @deleteLink="linkDelete(link.id)">
-      </flowchart-link>
-    </svg>
-	<!-- eslint-disable-next-line vue/valid-v-bind-sync -->
-    <flowchart-node v-bind.sync="node"
-      v-for="(node, index) in scene.nodes"
-      :key="`node${index}`"
-      :options="nodeOptions"
-                    @linkingStart="linkingStart(node.id)"
-                    @linkingStartyes="linkingStartyes(node.id)"
-                    @linkingStartno="linkingStartno(node.id)"
-					@login="onLogin"
-      @linkingStop="linkingStop(node.id)"
-      @nodeSelected="nodeSelected(node, $event)">
-    </flowchart-node>
-  </div>
+	<div
+		class="flowchart-container"
+		@mousemove="handleMove"
+		@mouseup="handleUp"
+		@mousedown="handleDown"
+	>
+		<svg
+			width="100%"
+			:height="`${height}px`"
+		>
+			<!-- eslint-disable-next-line vue/valid-v-bind-sync -->
+			<flowchart-link
+				v-for="(link, index) in lines"
+				:key="`link${index}`"
+				@deleteLink="linkDelete(link.id)"
+			/>
+		</svg>
+		<!-- eslint-disable-next-line vue/valid-v-bind-sync -->
+		<flowchart-node
+			v-for="(node, index) in scene.nodes"
+			:key="`node${index}`"
+			:options="nodeOptions"
+			@linkingStart="linkingStart(node.id)"
+			@linkingStartyes="linkingStartyes(node.id)"
+			@linkingStartno="linkingStartno(node.id)"
+			@login="onLogin"
+			@linkingStop="linkingStop(node.id)"
+			@nodeSelected="nodeSelected(node, $event)"
+		/>
+	</div>
 </template>
 
 <script>

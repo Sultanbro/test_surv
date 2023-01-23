@@ -34,24 +34,24 @@ export default {
 </script>
 
 <template>
-    <DefaultLayout>
-        <div class="old__content">
-            <div class="row">
-                <div class="col-md-12 mt-4 mb-3">
-                    <ReportsNav :active-tab="activeTab"/>
-                </div>
-                <div class="col-md-12">
-                    <TableQuality
-                        v-show="groups"
-                        :groups="groups"
-                        :active_group="active_group"
-                        :check="check"
-                        :user="user"
-                    />
-                </div>
-            </div>
-        </div>
-    </DefaultLayout>
+	<DefaultLayout>
+		<div class="old__content">
+			<div class="row">
+				<div class="col-md-12 mt-4 mb-3">
+					<ReportsNav :active-tab="activeTab" />
+				</div>
+				<div class="col-md-12">
+					<TableQuality
+						v-show="groups"
+						:groups="groups"
+						:active_group="active_group"
+						:check="check"
+						:user="user"
+					/>
+				</div>
+			</div>
+		</div>
+	</DefaultLayout>
 </template>
 
 <style scoped>

@@ -1,66 +1,66 @@
 <template>
-    <div class="default-tab">
-        <nav class="normal mt-4">
-            <ul
-                    id="nav-tab"
-                    class="nav nav-tabs set-tabs"
-                    role="tablist"
-            >
-                <template v-for="tab in tabs">
-                    <li
-                            :key="tab.htmlId"
-                            :id="`${tab.htmlId}-tab`"
-                            class="nav-item"
-                    >
-                        <span
-                                class="nav-link"
-                                :class="{active: tab.id === activeTab}"
-                                @click="activeTab = tab.id"
-                        >{{ tab.title }}
-                        </span>
-                    </li>
-                </template>
-            </ul>
-        </nav>
-        <div
-                id="nav-tabContent"
-                class="tab-content"
-        >
-            <div
-                    v-if="activeTab === 2 && can(['positions_view', 'settings_view'])"
-                    class="tab-pane fade show active py-3"
-                    id="nav-home"
-                    role="tabpanel"
-                    aria-labelledby="nav-home-tab"
-            >
-                <Professions :positions="pageData.positions"/>
-            </div>
-            <div
-                    v-if="activeTab === 3 && can(['groups_view', 'settings_view'])"
-                    id="nav-profile"
-                    class="tab-pane fade show active py-3"
-                    role="tabpanel"
-                    aria-labelledby="nav-profile-tab"
-            >
-                <Groups
-                        :statuseses="pageData.statuseses"
-                        :archived_groupss="pageData.archived_groupss"
-                        :activeuserid="pageData.activeuserid"
-                        :book_groups="pageData.book_groups"
-                        :corpbooks="pageData.corpbooks"
-                />
-            </div>
-            <div
-                    v-if="activeTab === 4 && can(['settings_view'])"
-                    id="nav-shift"
-                    class="tab-pane fade show active py-3"
-                    role="tabpanel"
-                    aria-labelledby="nav-profile-tab"
-            >
-                <Shifts/>
-            </div>
-        </div>
-    </div>
+	<div class="default-tab">
+		<nav class="normal mt-4">
+			<ul
+				id="nav-tab"
+				class="nav nav-tabs set-tabs"
+				role="tablist"
+			>
+				<template v-for="tab in tabs">
+					<li
+						:key="tab.htmlId"
+						:id="`${tab.htmlId}-tab`"
+						class="nav-item"
+					>
+						<span
+							class="nav-link"
+							:class="{active: tab.id === activeTab}"
+							@click="activeTab = tab.id"
+						>{{ tab.title }}
+						</span>
+					</li>
+				</template>
+			</ul>
+		</nav>
+		<div
+			id="nav-tabContent"
+			class="tab-content"
+		>
+			<div
+				v-if="activeTab === 2 && can(['positions_view', 'settings_view'])"
+				class="tab-pane fade show active py-3"
+				id="nav-home"
+				role="tabpanel"
+				aria-labelledby="nav-home-tab"
+			>
+				<Professions :positions="pageData.positions" />
+			</div>
+			<div
+				v-if="activeTab === 3 && can(['groups_view', 'settings_view'])"
+				id="nav-profile"
+				class="tab-pane fade show active py-3"
+				role="tabpanel"
+				aria-labelledby="nav-profile-tab"
+			>
+				<Groups
+					:statuseses="pageData.statuseses"
+					:archived_groupss="pageData.archived_groupss"
+					:activeuserid="pageData.activeuserid"
+					:book_groups="pageData.book_groups"
+					:corpbooks="pageData.corpbooks"
+				/>
+			</div>
+			<div
+				v-if="activeTab === 4 && can(['settings_view'])"
+				id="nav-shift"
+				class="tab-pane fade show active py-3"
+				role="tabpanel"
+				aria-labelledby="nav-profile-tab"
+			>
+				<Shifts />
+			</div>
+		</div>
+	</div>
 </template>
 
 <script>

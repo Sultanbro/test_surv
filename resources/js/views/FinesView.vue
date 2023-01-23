@@ -23,33 +23,39 @@ export default {
 </script>
 
 <template>
-    <DefaultLayout>
-        <div class="old__content">
-            <div class="container p-4">
-                <div class="card p-3 content">
-                    <h5 class="mb-3"><strong>Система депремирования&nbsp;</strong></h5>
-                    <table
-                        cellspacing="0"
-                        cellpadding="0"
-                        class="table table-striped"
-                    >
-                        <tbody>
-                            <tr
-                                v-for="fine in fines"
-                                :key="fine.name"
-                            >
-                                <td class="pr-5 text-left"><span><strong>{{ fine.name }}</strong></span></td>
-                                <td
-                                    class="p-3 text-right primary"
-                                    style="background: #dc354573;font-weight: 700;"
-                                >- {{ fine.penalty_amount }} тенге</td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-        </div>
-    </DefaultLayout>
+	<DefaultLayout>
+		<div class="old__content">
+			<div class="container p-4">
+				<div class="card p-3 content">
+					<h5 class="mb-3">
+						<strong>Система депремирования&nbsp;</strong>
+					</h5>
+					<table
+						cellspacing="0"
+						cellpadding="0"
+						class="table table-striped"
+					>
+						<tbody>
+							<tr
+								v-for="fine in fines"
+								:key="fine.name"
+							>
+								<td class="pr-5 text-left">
+									<span><strong>{{ fine.name }}</strong></span>
+								</td>
+								<td
+									class="p-3 text-right primary"
+									style="background: #dc354573;font-weight: 700;"
+								>
+									- {{ fine.penalty_amount }} тенге
+								</td>
+							</tr>
+						</tbody>
+					</table>
+				</div>
+			</div>
+		</div>
+	</DefaultLayout>
 </template>
 
 <style scoped>

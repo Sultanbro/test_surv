@@ -1,170 +1,280 @@
 <template>
-  <div class="d-flex flex-column">
-    <div :class="'news-create ' + (editorOpen ? 'news-create--column' : '')" @click="toggleInput(true, null)">
-      <div v-show="!editorOpen" class="news-create__img-placeholder">
-        <img class="news-create__avatar" alt="img" :src="me ? me.avatar : null">
-        <span class="news-create__placeholder">Что у вас нового?</span>
-      </div>
+	<div class="d-flex flex-column">
+		<div
+			:class="'news-create ' + (editorOpen ? 'news-create--column' : '')"
+			@click="toggleInput(true, null)"
+		>
+			<div
+				v-show="!editorOpen"
+				class="news-create__img-placeholder"
+			>
+				<img
+					class="news-create__avatar"
+					alt="img"
+					:src="me ? me.avatar : null"
+				>
+				<span class="news-create__placeholder">Что у вас нового?</span>
+			</div>
 
-      <img v-show="!editorOpen"
-           class="news-create__link news-icon"
-           alt="img"
-           @click="toggleInput(true, true, true)"
-           src="/icon/news/create-post/link.svg"/>
+			<img
+				v-show="!editorOpen"
+				class="news-create__link news-icon"
+				alt="img"
+				@click="toggleInput(true, true, true)"
+				src="/icon/news/create-post/link.svg"
+			>
 
-      <input type="text" id="newsCreateInput" ref="newsCreateInput" placeholder="Заголовок новости"
-             v-model="postTitle" v-show="editorOpen"
-             class="news-create__title">
+			<input
+				type="text"
+				id="newsCreateInput"
+				ref="newsCreateInput"
+				placeholder="Заголовок новости"
+				v-model="postTitle"
+				v-show="editorOpen"
+				class="news-create__title"
+			>
 
-      <span class="news-create__title-error" v-show="titleError" v-html="'Необходимо заполнить заголовок.'"/>
-    </div>
+			<span
+				class="news-create__title-error"
+				v-show="titleError"
+				v-html="'Необходимо заполнить заголовок.'"
+			/>
+		</div>
 
-    <div v-show="editorOpen" class="news-create__form">
-      <ckeditor :editor="editor" v-model="editorData" :config="editorConfig"/>
+		<div
+			v-show="editorOpen"
+			class="news-create__form"
+		>
+			<ckeditor
+				:editor="editor"
+				v-model="editorData"
+				:config="editorConfig"
+			/>
 
-      <span class="news-create__content-error" v-show="contentError"
-            v-html="'Необходимо заполнить контент новости.'"/>
+			<span
+				class="news-create__content-error"
+				v-show="contentError"
+				v-html="'Необходимо заполнить контент новости.'"
+			/>
 
-      <div class="news-create__access-container">
-        <div
-            v-show="availableToEveryone"
-            @click="toggleAvailableToEveryone(!availableToEveryone)"
-            :class="'access-item ' + 'access-item--active'">
-          <span v-html="'Всем пользователям'"></span>
-          <img src="/icon/news/create-post/remove.svg">
-        </div>
+			<div class="news-create__access-container">
+				<div
+					v-show="availableToEveryone"
+					@click="toggleAvailableToEveryone(!availableToEveryone)"
+					:class="'access-item ' + 'access-item--active'"
+				>
+					<span v-html="'Всем пользователям'" />
+					<img src="/icon/news/create-post/remove.svg">
+				</div>
 
-        <div v-for="item in accessList" :key="item.id"
-             :class="'access-item access-item--active ' + (item.image == null ? '' : 'access-item--with-img')">
-          <img v-show="item.image != null" class="access-item__img" :src="item.image">
-          <span v-html="item.name"/>
-          <img src="/icon/news/create-post/remove.svg"
-               @click="changeAccessList(item.id, item.name, item.type)">
-        </div>
+				<div
+					v-for="item in accessList"
+					:key="item.id"
+					:class="'access-item access-item--active ' + (item.image == null ? '' : 'access-item--with-img')"
+				>
+					<img
+						v-show="item.image != null"
+						class="access-item__img"
+						:src="item.image"
+					>
+					<span v-html="item.name" />
+					<img
+						src="/icon/news/create-post/remove.svg"
+						@click="changeAccessList(item.id, item.name, item.type)"
+					>
+				</div>
 
-        <div class="access-item__add" @click="toggleAccessModal(true)">
-          <img src="/icon/news/create-post/add-new.svg">
-          <span>Добавить ещё</span>
+				<div
+					class="access-item__add"
+					@click="toggleAccessModal(true)"
+				>
+					<img src="/icon/news/create-post/add-new.svg">
+					<span>Добавить ещё</span>
+				</div>
+			</div>
 
-        </div>
-      </div>
+			<span
+				class="news-create__content-error"
+				v-show="availableError"
+				v-html="'Необходимо указать для кого предназначена новость.'"
+			/>
+		</div>
 
-      <span
-          class="news-create__content-error"
-          v-show="availableError"
-          v-html="'Необходимо указать для кого предназначена новость.'"/>
-    </div>
+		<div
+			v-show="editorOpen"
+			:class="'news-create__bottom-menu ' + (fileInputOpen == true ? 'without-border-radius' : '')"
+		>
+			<img
+				class="news-icon"
+				src="/icon/news/create-post/link.svg"
+				@click="toggleInput(true, !fileInputOpen)"
+			>
+			<a
+				class="news-create__submit"
+				@click="isEdit == false ? createPost() : updatePost()"
+			>
+				<span v-html="isEdit ? 'Сохранить' : 'Отправить'" />
+			</a>
+		</div>
 
-    <div v-show="editorOpen"
-         :class="'news-create__bottom-menu ' + (fileInputOpen == true ? 'without-border-radius' : '')">
-      <img class="news-icon" src="/icon/news/create-post/link.svg" @click="toggleInput(true, !fileInputOpen)">
-      <a class="news-create__submit" @click="isEdit == false ? createPost() : updatePost()">
-        <span v-html="isEdit ? 'Сохранить' : 'Отправить'"/>
-      </a>
-    </div>
+		<div
+			v-show="editorOpen && fileInputOpen"
+			class="news-create__files"
+		>
+			<DropZone
+				ref="dropZone"
+				@sendFiles="updateFileList"
+			/>
+		</div>
 
-    <div v-show="editorOpen && fileInputOpen" class="news-create__files">
-      <DropZone
-        ref="dropZone"
-        @sendFiles="updateFileList"
-      />
-    </div>
+		<div
+			v-show="showAccessModal"
+			class="access-modal-bg"
+			@click.self="toggleAccessModal(false)"
+			v-scroll-lock="showAccessModal"
+		>
+			<div class="access-modal">
+				<div class="access-modal__tabs">
+					<div
+						:class="'access-modal__tab ' + (currentAccessTab == 1 ?'access-modal__tab--active' : '')"
+						@click="changeAccessTab(1)"
+					>
+						Сотрудники
+					</div>
+					<div
+						:class="'access-modal__tab ' + (currentAccessTab == 2 ?'access-modal__tab--active' : '')"
+						@click="changeAccessTab(2)"
+					>
+						Отделы
+					</div>
+					<div
+						:class="'access-modal__tab ' + (currentAccessTab == 3 ?'access-modal__tab--active' : '')"
+						@click="changeAccessTab(3)"
+					>
+						Должности
+					</div>
+					<div
+						:class="'access-modal__tab'"
+						@click="toggleAvailableToEveryone(true)"
+					>
+						Все
+					</div>
+				</div>
 
-    <div v-show="showAccessModal" class="access-modal-bg" @click.self="toggleAccessModal(false)" v-scroll-lock="showAccessModal">
-      <div class="access-modal">
+				<div class="access-modal__search">
+					<img
+						class="news-icon"
+						src="/icon/news/filter/search.svg"
+					>
+					<input
+						type="text"
+						v-model="accessSearch"
+						class="access-modal__search-input"
+						placeholder="Быстрый поиск"
+					>
+				</div>
 
-        <div class="access-modal__tabs">
-          <div :class="'access-modal__tab ' + (currentAccessTab == 1 ?'access-modal__tab--active' : '')"
-               @click="changeAccessTab(1)">Сотрудники
-          </div>
-          <div :class="'access-modal__tab ' + (currentAccessTab == 2 ?'access-modal__tab--active' : '')"
-               @click="changeAccessTab(2)">Отделы
-          </div>
-          <div :class="'access-modal__tab ' + (currentAccessTab == 3 ?'access-modal__tab--active' : '')"
-               @click="changeAccessTab(3)">Должности
-          </div>
-          <div :class="'access-modal__tab'" @click="toggleAvailableToEveryone(true)">Все
-          </div>
-        </div>
+				<div class="user-list">
+					<div
+						v-show="currentAccessTab == 1"
+						class="user-list__container"
+					>
+						<div
+							v-for="item in accessDictionaries.users"
+							:key="item.id"
+							v-show="item.name ? item.name.toLowerCase().includes(accessSearch.toLowerCase()) : null"
+							class="user-item"
+							@click="changeAccessList(item.id, item.name, 1, item ? item.avatar : null)"
+						>
+							<img
+								:src="item ? item.avatar : null"
+								class="user-item__avatar"
+							>
+							<div class="user-item__info">
+								<div class="user-item__sub">
+									{{ item.position }}
+								</div>
+								<div class="user-item__name">
+									{{ item.name }}
+								</div>
+							</div>
+							<label class="news-checkbox">
+								<input
+									type="checkbox"
+									@click="changeAccessList(item.id, item.name, 1, item ? item.avatar : null)"
+									:checked="checked(item, 1) ? 'checked' : ''"
+								>
+								<span class="news-checkmark" />
+							</label>
+						</div>
+					</div>
+					<div
+						v-show="currentAccessTab == 2"
+						class="user-list__container"
+					>
+						<div
+							v-for="item in accessDictionaries.profile_groups"
+							:key="item.id"
+							v-show="item.name? item.name.toLowerCase().includes(accessSearch.toLowerCase()) : null"
+							class="user-item"
+							@click="changeAccessList(item.id, item.name, 2)"
+						>
+							<div class="user-item__info">
+								<div class="user-item__name">
+									{{ item.name }}
+								</div>
+							</div>
+							<label class="news-checkbox">
+								<input
+									type="checkbox"
+									@click="changeAccessList(item.id, item.name, 2)"
+									:checked="checked(item, 2) ? 'checked' : ''"
+								>
+								<span class="news-checkmark" />
+							</label>
+						</div>
+					</div>
+					<div
+						v-show="currentAccessTab == 3"
+						class="user-list__container"
+					>
+						<div
+							v-for="item in accessDictionaries.positions"
+							:key="item.id"
+							v-show="item.name ? item.name.toLowerCase().includes(accessSearch.toLowerCase()) : null"
+							class="user-item"
+							@click="changeAccessList(item.id, item.name, 3)"
+						>
+							<div class="user-item__info">
+								<div class="user-item__name">
+									{{ item.name }}
+								</div>
+							</div>
+							<label class="news-checkbox">
+								<input
+									type="checkbox"
+									@click="changeAccessList(item.id, item.name, 3)"
+									:checked="checked(item, 3) ? 'checked' : ''"
+								>
+								<span class="news-checkmark" />
+							</label>
+						</div>
+					</div>
+				</div>
 
-        <div class="access-modal__search">
-          <img class="news-icon" src="/icon/news/filter/search.svg">
-          <input type="text"
-                 v-model="accessSearch"
-                 class="access-modal__search-input"
-                 placeholder="Быстрый поиск">
-        </div>
-
-        <div class="user-list">
-          <div v-show="currentAccessTab == 1" class="user-list__container">
-            <div
-                v-for="item in accessDictionaries.users"
-                :key="item.id"
-                v-show="item.name ? item.name.toLowerCase().includes(accessSearch.toLowerCase()) : null"
-                class="user-item"
-                @click="changeAccessList(item.id, item.name, 1, item ? item.avatar : null)">
-              <img :src="item ? item.avatar : null" class="user-item__avatar">
-              <div class="user-item__info">
-                <div class="user-item__sub">{{ item.position }}</div>
-                <div class="user-item__name">{{ item.name }}</div>
-              </div>
-              <label class="news-checkbox">
-                <input type="checkbox"
-                       @click="changeAccessList(item.id, item.name, 1, item ? item.avatar : null)"
-                       :checked="checked(item, 1) ? 'checked' : ''">
-                <span class="news-checkmark"></span>
-              </label>
-            </div>
-          </div>
-          <div v-show="currentAccessTab == 2" class="user-list__container">
-            <div
-                v-for="item in accessDictionaries.profile_groups"
-                :key="item.id"
-                v-show="item.name? item.name.toLowerCase().includes(accessSearch.toLowerCase()) : null"
-                class="user-item"
-                @click="changeAccessList(item.id, item.name, 2)">
-              <div class="user-item__info">
-                <div class="user-item__name">{{ item.name }}</div>
-              </div>
-              <label class="news-checkbox">
-                <input type="checkbox"
-                       @click="changeAccessList(item.id, item.name, 2)"
-                       :checked="checked(item, 2) ? 'checked' : ''">
-                <span class="news-checkmark"></span>
-              </label>
-            </div>
-          </div>
-          <div v-show="currentAccessTab == 3" class="user-list__container">
-            <div
-                v-for="item in accessDictionaries.positions"
-                :key="item.id"
-                v-show="item.name ? item.name.toLowerCase().includes(accessSearch.toLowerCase()) : null"
-                class="user-item"
-                @click="changeAccessList(item.id, item.name, 3)">
-              <div class="user-item__info">
-                <div class="user-item__name">{{ item.name }}</div>
-              </div>
-              <label class="news-checkbox">
-                <input type="checkbox"
-                       @click="changeAccessList(item.id, item.name, 3)"
-                       :checked="checked(item, 3) ? 'checked' : ''">
-                <span class="news-checkmark"></span>
-              </label>
-            </div>
-          </div>
-        </div>
-
-        <div class="access-modal__footer">
-                    <span class="access-modal__selected-count"
-                          v-html="enumerate(accessList.length, ['Добавлен', 'Добавлено', 'Добавлено']) + ' ' + accessList.length + ' ' + enumerate(accessList.length, ['элемент', 'элемента', 'элементов'])"/>
-          <a class="access-modal__add-employee hover-pointer">
-            <img src="/icon/news/access-modal/plus-accent.svg">
-            <span v-html="'Пригласить сотрудника'"/>
-          </a>
-        </div>
-      </div>
-    </div>
-  </div>
+				<div class="access-modal__footer">
+					<span
+						class="access-modal__selected-count"
+						v-html="enumerate(accessList.length, ['Добавлен', 'Добавлено', 'Добавлено']) + ' ' + accessList.length + ' ' + enumerate(accessList.length, ['элемент', 'элемента', 'элементов'])"
+					/>
+					<a class="access-modal__add-employee hover-pointer">
+						<img src="/icon/news/access-modal/plus-accent.svg">
+						<span v-html="'Пригласить сотрудника'" />
+					</a>
+				</div>
+			</div>
+		</div>
+	</div>
 </template>
 
 <script>

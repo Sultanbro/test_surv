@@ -1,183 +1,355 @@
 <template>
-<div class="trainee_report">
+	<div class="trainee_report">
+		<div>
+			<div
+				class="ramka mt-2"
+				v-for="(g, rdate) in all_groups"
+				:key="rdate"
+			>
+				<b-tabs type="card">
+					<b-tab
+						title="Сводная"
+						key="1"
+						card
+					>
+						<p class="mt-2">
+							<b>{{ g.group }}</b>
+						</p>
+						<table class="table b-table table-striped table-bordered table-sm">
+							<thead>
+								<th
+									class="text-left t-name table-title"
+									style="background:#90d3ff;min-width: 170px;"
+								>
+									Суть работы
+								</th>
+								<th
+									class="text-left t-name table-title"
+									style="background:#90d3ff;min-width: 170px;"
+								>
+									График работы
+								</th>
+								<th
+									class="text-left t-name table-title"
+									style="background:#90d3ff;min-width: 200px;"
+								>
+									Какая ЗП?
+								</th>
 
-    <div>
-        <div class="ramka mt-2" v-for="(g, rdate) in all_groups" :key="rdate">
-            <b-tabs type="card">
+								<th
+									class="text-left t-name table-title"
+									style="background:#90d3ff;min-width: 230px;"
+								>
+									Общая ценка тренера
+								</th>
+							</thead>
 
-                <b-tab title="Сводная" key="1" card>
-                    <p class="mt-2"><b>{{ g.group }}</b></p>
-                <table class="table b-table table-striped table-bordered table-sm">
-                    <thead>
-                        <th class="text-left t-name table-title" style="background:#90d3ff;min-width: 170px;">Суть работы</th>
-                        <th class="text-left t-name table-title" style="background:#90d3ff;min-width: 170px;">График работы</th>
-                        <th class="text-left t-name table-title" style="background:#90d3ff;min-width: 200px;">Какая ЗП?</th>
+							<tbody>
+								<tr>
+									<td class="text-left t-name table-title align-middle">
+										<div
+											v-for="answer in g['quiz'][1]"
+											:key="answer.id"
+											class="d-flex"
+										>
+											<ProgressBar
+												:percentage="Number(Math.ceil(answer.percent))"
+												:label="answer.text + ' (' + answer.count + ')'"
+												:class="'active'"
+											/>
+										</div>
+									</td>
+									<td class="text-left t-name table-title align-middle">
+										<div
+											v-for="answer in g['quiz'][2]"
+											:key="answer.id"
+											class="d-flex"
+										>
+											<ProgressBar
+												:percentage="Number(Math.ceil(answer.percent))"
+												:label="answer.text + ' (' + answer.count + ')'"
+												:class="'active'"
+											/>
+										</div>
+									</td>
+									<td class="text-left t-name table-title align-middle">
+										<div
+											v-for="answer in g['quiz'][3]"
+											:key="answer.id"
+											class="d-flex"
+										>
+											<ProgressBar
+												:percentage="Number(Math.ceil(answer.percent))"
+												:label="answer.text + ' (' + answer.count + ')'"
+												:class="'active'"
+											/>
+										</div>
+									</td>
+									<td class="text-left t-name table-title align-middle">
+										<div
+											class="d-flex"
+											style="flex-direction:column"
+										>
+											<Rating
+												:grade="Number(g['quiz'][4]['avg']).toFixed(0)"
+												:max-stars="10"
+												:has-counter="false"
+											/>
+											<p class="mb-0">
+												{{ g['quiz'][4]['avg'].toFixed(2) + ' (' + g['quiz'][4]['count'] + ')' }}
+											</p>
+										</div>
+									</td>
+								</tr>
+							</tbody>
+						</table>
 
-                        <th class="text-left t-name table-title" style="background:#90d3ff;min-width: 230px;">Общая ценка тренера</th>
-                    </thead>
+						<table class="table b-table table-striped table-bordered table-sm">
+							<thead>
+								<th
+									class="text-left t-name table-title"
+									style="background:#90d3ff"
+								>
+									Приглашенные
+								</th>
+								<th class="text-center t-name table-title">
+									1 день
+								</th>
+								<th class="text-center t-name table-title">
+									2 день
+								</th>
+								<th class="text-center t-name table-title">
+									3 день
+								</th>
+								<th class="text-center t-name table-title">
+									4 день
+								</th>
+								<th class="text-center t-name table-title">
+									5 день
+								</th>
+								<th class="text-center t-name table-title">
+									6 день
+								</th>
+								<th class="text-center t-name table-title">
+									7 день
+								</th>
+							</thead>
+							<tbody>
+								<tr>
+									<td
+										class="text-left t-name table-title align-middle"
+										style="background:#90d3ff"
+									>
+										{{ g['presence'][0] }}
+									</td>
+									<td class="text-center t-name table-title align-middle">
+										{{ g['presence'][1] }}
+									</td>
+									<td class="text-center t-name table-title align-middle">
+										{{ g['presence'][2] }}
+									</td>
+									<td class="text-center t-name table-title align-middle">
+										{{ g['presence'][3] }}
+									</td>
+									<td class="text-center t-name table-title align-middle">
+										{{ g['presence'][4] }}
+									</td>
+									<td class="text-center t-name table-title align-middle">
+										{{ g['presence'][5] }}
+									</td>
+									<td class="text-center t-name table-title align-middle">
+										{{ g['presence'][6] }}
+									</td>
+									<td class="text-center t-name table-title align-middle">
+										{{ g['presence'][7] }}
+									</td>
+								</tr>
+							</tbody>
+						</table>
+					</b-tab>
 
-            <tbody>
-                <tr>
-                    <td class="text-left t-name table-title align-middle">
-                        <div v-for="answer in g['quiz'][1]" :key="answer.id" class="d-flex">
-                            <ProgressBar
-                                :percentage="Number(Math.ceil(answer.percent))"
-                                :label="answer.text + ' (' + answer.count + ')'"
-                                :class="'active'"
-                            />
-                        </div>
-                    </td>
-                    <td class="text-left t-name table-title align-middle">
-                        <div v-for="answer in g['quiz'][2]" :key="answer.id" class="d-flex">
-                            <ProgressBar
-                                :percentage="Number(Math.ceil(answer.percent))"
-                                :label="answer.text + ' (' + answer.count + ')'"
-                                :class="'active'"
-                            />
-                        </div>
-                    </td>
-                    <td class="text-left t-name table-title align-middle">
-                        <div v-for="answer in g['quiz'][3]" :key="answer.id" class="d-flex">
-                            <ProgressBar
-                                :percentage="Number(Math.ceil(answer.percent))"
-                                :label="answer.text + ' (' + answer.count + ')'"
-                                :class="'active'"
-                            />
-                        </div>
-                    </td>
-                    <td class="text-left t-name table-title align-middle" >
-                        <div class="d-flex" style="flex-direction:column">
-                            <Rating
-                                :grade="Number(g['quiz'][4]['avg']).toFixed(0)"
-                                :maxStars="10"
-                                :hasCounter="false"
-                            />
-                            <p class="mb-0">{{ g['quiz'][4]['avg'].toFixed(2) + ' (' + g['quiz'][4]['count'] + ')' }}</p>
-                        </div>
-                    </td>
-                </tr>
-            </tbody>
-            </table>
+					<template v-for="(item, index) in trainee_report">
+						<b-tab
+							v-if="item.group_id == g.group_id"
+							:title="item.date"
+							:key="index"
+							card
+						>
+							<p class="mt-2">
+								<b>{{ item.group }}</b>
+							</p>
+							<table class="table b-table table-striped table-bordered table-sm">
+								<thead>
+									<th
+										class="text-left t-name table-title"
+										style="background:#90d3ff;min-width: 170px;"
+									>
+										Суть работы
+									</th>
+									<th
+										class="text-left t-name table-title"
+										style="background:#90d3ff;min-width: 170px;"
+									>
+										График работы
+									</th>
+									<th
+										class="text-left t-name table-title"
+										style="background:#90d3ff;min-width: 200px;"
+									>
+										Какая ЗП?
+									</th>
+									<th
+										class="text-left t-name table-title"
+										style="background:#90d3ff;min-width: 230px;"
+									>
+										Общая ценка тренера
+									</th>
+									<th
+										class="text-left t-name table-title"
+										style="background:#90d3ff"
+									>
+										Рекомендации
+									</th>
+								</thead>
 
-            <table class="table b-table table-striped table-bordered table-sm">
-                    <thead>
-                        <th class="text-left t-name table-title" style="background:#90d3ff">Приглашенные</th>
-                        <th class="text-center t-name table-title">1 день</th>
-                        <th class="text-center t-name table-title">2 день</th>
-                        <th class="text-center t-name table-title">3 день</th>
-                        <th class="text-center t-name table-title">4 день</th>
-                        <th class="text-center t-name table-title">5 день</th>
-                        <th class="text-center t-name table-title">6 день</th>
-                        <th class="text-center t-name table-title">7 день</th>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td class="text-left t-name table-title align-middle" style="background:#90d3ff">
-                                {{ g['presence'][0] }}
-                            </td>
-                            <td class="text-center t-name table-title align-middle">{{ g['presence'][1] }}</td>
-                            <td class="text-center t-name table-title align-middle">{{ g['presence'][2] }}</td>
-                            <td class="text-center t-name table-title align-middle">{{ g['presence'][3] }}</td>
-                            <td class="text-center t-name table-title align-middle">{{ g['presence'][4] }}</td>
-                            <td class="text-center t-name table-title align-middle">{{ g['presence'][5] }}</td>
-                            <td class="text-center t-name table-title align-middle">{{ g['presence'][6] }}</td>
-                            <td class="text-center t-name table-title align-middle">{{ g['presence'][7] }}</td>
-                        </tr>
-                    </tbody>
-                </table>
-                </b-tab>
+								<tbody>
+									<tr>
+										<td class="text-left t-name table-title align-middle">
+											<div
+												v-for="answer in item['quiz'][1]"
+												:key="answer.id"
+												class="d-flex"
+											>
+												<ProgressBar
+													:percentage="Number(Math.ceil(answer.percent))"
+													:label="answer.text + ' (' + answer.count + ')'"
+													:class="'active'"
+												/>
+											</div>
+										</td>
+										<td class="text-left t-name table-title align-middle">
+											<div
+												v-for="answer in item['quiz'][2]"
+												:key="answer.id"
+												class="d-flex"
+											>
+												<ProgressBar
+													:percentage="Number(Math.ceil(answer.percent))"
+													:label="answer.text + ' (' + answer.count + ')'"
+													:class="'active'"
+												/>
+											</div>
+										</td>
+										<td class="text-left t-name table-title align-middle">
+											<div
+												v-for="answer in item['quiz'][3]"
+												:key="answer.id"
+												class="d-flex"
+											>
+												<ProgressBar
+													:percentage="Number(Math.ceil(answer.percent))"
+													:label="answer.text + ' (' + answer.count + ')'"
+													:class="'active'"
+												/>
+											</div>
+										</td>
+										<td class="text-left t-name table-title align-middle">
+											<div
+												class="d-flex"
+												style="flex-direction:column"
+											>
+												<Rating
+													:grade="Number(item['quiz'][4]['avg']).toFixed(0)"
+													:max-stars="10"
+													:has-counter="false"
+												/>
+												<p class="mb-0">
+													{{ item['quiz'][4]['avg'].toFixed(2) + ' (' + item['quiz'][4]['count'] + ')' }}
+												</p>
+											</div>
+										</td>
+										<td class="text-left t-name table-title align-middle">
+											<div
+												v-for="(answer, ind) in item['quiz'][5]"
+												:key="ind"
+												class="d-flex"
+											>
+												<p class="fz12">
+													{{ answer }}
+												</p>
+											</div>
+										</td>
+									</tr>
+								</tbody>
+							</table>
 
-                <template v-for="(item, index) in trainee_report">
-                    <b-tab v-if="item.group_id == g.group_id" :title="item.date" :key="index" card>
-                        <p class="mt-2"><b>{{ item.group }}</b></p>
-                        <table class="table b-table table-striped table-bordered table-sm">
-                        <thead>
-                            <th class="text-left t-name table-title" style="background:#90d3ff;min-width: 170px;">Суть работы</th>
-                            <th class="text-left t-name table-title" style="background:#90d3ff;min-width: 170px;">График работы</th>
-                            <th class="text-left t-name table-title" style="background:#90d3ff;min-width: 200px;">Какая ЗП?</th>
-                            <th class="text-left t-name table-title" style="background:#90d3ff;min-width: 230px;">Общая ценка тренера</th>
-                            <th class="text-left t-name table-title" style="background:#90d3ff">Рекомендации</th>
-                        </thead>
+							<table class="table b-table table-striped table-bordered table-sm">
+								<thead>
+									<th
+										class="text-left t-name table-title"
+										style="background:#90d3ff"
+									>
+										Приглашенные
+									</th>
+									<th class="text-center t-name table-title">
+										1 день
+									</th>
+									<th class="text-center t-name table-title">
+										2 день
+									</th>
+									<th class="text-center t-name table-title">
+										3 день
+									</th>
+									<th class="text-center t-name table-title">
+										4 день
+									</th>
+									<th class="text-center t-name table-title">
+										5 день
+									</th>
+									<th class="text-center t-name table-title">
+										6 день
+									</th>
+									<th class="text-center t-name table-title">
+										7 день
+									</th>
+								</thead>
+								<tbody>
+									<tr>
+										<td
+											class="text-left t-name table-title align-middle"
+											style="background:#90d3ff"
+										>
+											{{ item['presence'][0] }}
+										</td>
+										<td class="text-center t-name table-title align-middle">
+											{{ item['presence'][1] }}
+										</td>
+										<td class="text-center t-name table-title align-middle">
+											{{ item['presence'][2] }}
+										</td>
+										<td class="text-center t-name table-title align-middle">
+											{{ item['presence'][3] }}
+										</td>
+										<td class="text-center t-name table-title align-middle">
+											{{ item['presence'][4] }}
+										</td>
+										<td class="text-center t-name table-title align-middle">
+											{{ item['presence'][5] }}
+										</td>
+										<td class="text-center t-name table-title align-middle">
+											{{ item['presence'][6] }}
+										</td>
+										<td class="text-center t-name table-title align-middle">
+											{{ item['presence'][7] }}
+										</td>
+									</tr>
+								</tbody>
+							</table>
+						</b-tab>
+					</template>
+				</b-tabs>
 
-                                <tbody>
-                    <tr>
-                        <td class="text-left t-name table-title align-middle">
-                            <div v-for="answer in item['quiz'][1]" :key="answer.id" class="d-flex">
-                                <ProgressBar
-                                    :percentage="Number(Math.ceil(answer.percent))"
-                                    :label="answer.text + ' (' + answer.count + ')'"
-                                    :class="'active'"
-                                />
-                            </div>
-                        </td>
-                        <td class="text-left t-name table-title align-middle">
-                            <div v-for="answer in item['quiz'][2]" :key="answer.id" class="d-flex">
-                                <ProgressBar
-                                    :percentage="Number(Math.ceil(answer.percent))"
-                                    :label="answer.text + ' (' + answer.count + ')'"
-                                    :class="'active'"
-                                />
-                            </div>
-                        </td>
-                        <td class="text-left t-name table-title align-middle">
-                            <div v-for="answer in item['quiz'][3]" :key="answer.id" class="d-flex">
-                                <ProgressBar
-                                    :percentage="Number(Math.ceil(answer.percent))"
-                                    :label="answer.text + ' (' + answer.count + ')'"
-                                    :class="'active'"
-                                />
-                            </div>
-                        </td>
-                        <td class="text-left t-name table-title align-middle" >
-                            <div class="d-flex" style="flex-direction:column">
-                                <Rating
-                                    :grade="Number(item['quiz'][4]['avg']).toFixed(0)"
-                                    :maxStars="10"
-                                    :hasCounter="false"
-                                />
-                                <p class="mb-0">{{ item['quiz'][4]['avg'].toFixed(2) + ' (' + item['quiz'][4]['count'] + ')' }}</p>
-                            </div>
-                        </td>
-                        <td class="text-left t-name table-title align-middle">
-                            <div v-for="(answer, ind) in item['quiz'][5]"  :key="ind" class="d-flex">
-                                <p class="fz12">{{ answer }}</p>
-                            </div>
-                        </td>
-                    </tr>
-                                </tbody>
-                                </table>
-
-                                <table class="table b-table table-striped table-bordered table-sm">
-                        <thead>
-                            <th class="text-left t-name table-title" style="background:#90d3ff">Приглашенные</th>
-                            <th class="text-center t-name table-title">1 день</th>
-                            <th class="text-center t-name table-title">2 день</th>
-                            <th class="text-center t-name table-title">3 день</th>
-                            <th class="text-center t-name table-title">4 день</th>
-                            <th class="text-center t-name table-title">5 день</th>
-                            <th class="text-center t-name table-title">6 день</th>
-                            <th class="text-center t-name table-title">7 день</th>
-                        </thead>
-                        <tbody>
-                            <tr>
-                                <td class="text-left t-name table-title align-middle" style="background:#90d3ff">
-                                    {{ item['presence'][0] }}
-                                </td>
-                                <td class="text-center t-name table-title align-middle">{{ item['presence'][1] }}</td>
-                                <td class="text-center t-name table-title align-middle">{{ item['presence'][2] }}</td>
-                                <td class="text-center t-name table-title align-middle">{{ item['presence'][3] }}</td>
-                                <td class="text-center t-name table-title align-middle">{{ item['presence'][4] }}</td>
-                                <td class="text-center t-name table-title align-middle">{{ item['presence'][5] }}</td>
-                                <td class="text-center t-name table-title align-middle">{{ item['presence'][6] }}</td>
-                                <td class="text-center t-name table-title align-middle">{{ item['presence'][7] }}</td>
-                            </tr>
-                        </tbody>
-                    </table>
-                    </b-tab>
-                </template>
-            </b-tabs>
-
-                <!--<tbody>
+				<!--<tbody>
                     <tr>
                         <td class="text-left t-name table-title align-middle">
                             <div v-for="answer in report_date['quiz'][1]" :key="answer.id" class="d-flex">
@@ -250,13 +422,9 @@
                     </tr>
                 </tbody>
             </table>-->
-        </div>
-    </div>
-
-
-
-
-</div>
+			</div>
+		</div>
+	</div>
 </template>
 
 <script>

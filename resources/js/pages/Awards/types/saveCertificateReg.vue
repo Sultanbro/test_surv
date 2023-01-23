@@ -1,52 +1,64 @@
 <template>
-    <div class="certificate-creator">
-        <VueHtml2pdf
-                :show-layout="false"
-                :float-layout="true"
-                :pdf-quality="2"
-                :preview-modal="false"
-                :enable-download="pdfDownloaded"
-                pdf-content-width="1000px"
-                :manual-pagination="true"
-                ref="html2Pdf"
-                :html-to-pdf-options="options"
-                @progress="onProgress($event)"
-                @beforeDownload="beforeDownload($event)"
-                @hasDownloaded="hasDownloaded($event)"
-                v-if="!loading"
-        >
-            <!-- 1 = 24.4мм -->
-            <template #pdf-content>
-                <section>
-                    <div class="html2pdf__page-break">
-                        <div class="draggable-container" v-if="Object.keys(styles).length > 0">
-                            <div class="draggable-block" id="draggable-block">
-                                <div class="draggable"
-                                     style="margin-top: 40px; position: absolute; top: 0; left: 0; z-index: 12; text-align: center; display: inline-block;"
-                                     :style="{fontStyle: styles.fullName.fontStyle, color: styles.fullName.color, fontSize: styles.fullName.size + 'px', fontWeight: styles.fullName.fontWeight, textTransform: styles.fullName.uppercase, width: styles.fullName.fullWidth + 'px', transform: transformFullName}"
-                                >
-                                    {{item.user.name}} {{item.user.last_name}}
-                                </div>
-                                <div class="draggable"
-                                     style="margin-top: 120px; position: absolute; top: 0; left: 0; z-index: 12; text-align: center; display: inline-block;"
-                                     :style="{fontStyle: styles.courseName.fontStyle, color: styles.courseName.color, fontSize: styles.courseName.size + 'px', fontWeight: styles.courseName.fontWeight, textTransform: styles.courseName.uppercase, width: styles.courseName.fullWidth + 'px', transform: transformCourseName}"
-                                >
-                                    {{item.course.name}}
-                                </div>
-                                <div class="draggable"
-                                     style="margin-top: 280px; position: absolute; top: 0; left: 0; z-index: 12; text-align: center; display: inline-block;"
-                                     :style="{fontStyle: styles.date.fontStyle, color: styles.date.color, fontSize: styles.date.size + 'px', fontWeight: styles.date.fontWeight, textTransform: styles.date.uppercase, width: styles.date.fullWidth + 'px', transform: transformDateName}"
-                                >
-                                    {{ $moment(item.ended_at).format('DD.MM.YYYY') }}
-                                </div>
-                            </div>
-                            <vue-pdf-embed :source="award.award.tempPath" @rendered="renderedEmbed"/>
-                        </div>
-                    </div>
-                </section>
-            </template>
-        </VueHtml2pdf>
-    </div>
+	<div class="certificate-creator">
+		<VueHtml2pdf
+			:show-layout="false"
+			:float-layout="true"
+			:pdf-quality="2"
+			:preview-modal="false"
+			:enable-download="pdfDownloaded"
+			pdf-content-width="1000px"
+			:manual-pagination="true"
+			ref="html2Pdf"
+			:html-to-pdf-options="options"
+			@progress="onProgress($event)"
+			@beforeDownload="beforeDownload($event)"
+			@hasDownloaded="hasDownloaded($event)"
+			v-if="!loading"
+		>
+			<!-- 1 = 24.4мм -->
+			<template #pdf-content>
+				<section>
+					<div class="html2pdf__page-break">
+						<div
+							class="draggable-container"
+							v-if="Object.keys(styles).length > 0"
+						>
+							<div
+								class="draggable-block"
+								id="draggable-block"
+							>
+								<div
+									class="draggable"
+									style="margin-top: 40px; position: absolute; top: 0; left: 0; z-index: 12; text-align: center; display: inline-block;"
+									:style="{fontStyle: styles.fullName.fontStyle, color: styles.fullName.color, fontSize: styles.fullName.size + 'px', fontWeight: styles.fullName.fontWeight, textTransform: styles.fullName.uppercase, width: styles.fullName.fullWidth + 'px', transform: transformFullName}"
+								>
+									{{ item.user.name }} {{ item.user.last_name }}
+								</div>
+								<div
+									class="draggable"
+									style="margin-top: 120px; position: absolute; top: 0; left: 0; z-index: 12; text-align: center; display: inline-block;"
+									:style="{fontStyle: styles.courseName.fontStyle, color: styles.courseName.color, fontSize: styles.courseName.size + 'px', fontWeight: styles.courseName.fontWeight, textTransform: styles.courseName.uppercase, width: styles.courseName.fullWidth + 'px', transform: transformCourseName}"
+								>
+									{{ item.course.name }}
+								</div>
+								<div
+									class="draggable"
+									style="margin-top: 280px; position: absolute; top: 0; left: 0; z-index: 12; text-align: center; display: inline-block;"
+									:style="{fontStyle: styles.date.fontStyle, color: styles.date.color, fontSize: styles.date.size + 'px', fontWeight: styles.date.fontWeight, textTransform: styles.date.uppercase, width: styles.date.fullWidth + 'px', transform: transformDateName}"
+								>
+									{{ $moment(item.ended_at).format('DD.MM.YYYY') }}
+								</div>
+							</div>
+							<vue-pdf-embed
+								:source="award.award.tempPath"
+								@rendered="renderedEmbed"
+							/>
+						</div>
+					</div>
+				</section>
+			</template>
+		</VueHtml2pdf>
+	</div>
 </template>
 
 <script>
@@ -54,7 +66,7 @@ import VuePdfEmbed from 'vue-pdf-embed/dist/vue2-pdf-embed';
 import VueHtml2pdf from './Html2pdf';
 
 export default {
-	name: 'save-certificate',
+	name: 'SaveCertificate',
 	components: {
 		VuePdfEmbed,
 		VueHtml2pdf,

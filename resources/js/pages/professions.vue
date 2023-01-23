@@ -1,111 +1,183 @@
 <template>
-  <div v-if="positions">
-      <b-row class="align-items-center">
-          <b-col cols="12" lg="4">
-             <b-form-group v-if="data.length">
-                 <multiselect
-                         v-model="activebtn"
-                         :options="data"
-                         @select="selectPosition"
-                         placeholder="Выберите должность"
-                         track-by="position"
-                         label="position"
-                         ref="positionMultiselect"
-                 >
-                     <template slot="afterList">
-                         <li class="multiselect-add-li"><span class="multiselect-add-btn" @click="addNewPosition">Добавить новую должность</span></li>
-                     </template>
-                 </multiselect>
-             </b-form-group>
-              <button class="btn btn-success" v-else @click="addNewPosition">Добавить новую должность</button>
-          </b-col>
-      </b-row>
+	<div v-if="positions">
+		<b-row class="align-items-center">
+			<b-col
+				cols="12"
+				lg="4"
+			>
+				<b-form-group v-if="data.length">
+					<multiselect
+						v-model="activebtn"
+						:options="data"
+						@select="selectPosition"
+						placeholder="Выберите должность"
+						track-by="position"
+						label="position"
+						ref="positionMultiselect"
+					>
+						<template slot="afterList">
+							<li class="multiselect-add-li">
+								<span
+									class="multiselect-add-btn"
+									@click="addNewPosition"
+								>Добавить новую должность</span>
+							</li>
+						</template>
+					</multiselect>
+				</b-form-group>
+				<button
+					class="btn btn-success"
+					v-else
+					@click="addNewPosition"
+				>
+					Добавить новую должность
+				</button>
+			</b-col>
+		</b-row>
 
-      <template v-if="activebtn != null || addNew">
-          <hr class="my-4">
-          <h4 v-if="addNew" class="position-title-new">Создание новой должности</h4>
-          <b-row class="align-items-center mt-4">
-              <b-col cols="12" md="4">
-                  <b-form-group label="Название должности" class="add-grade">
-                      <b-form-input type="text" v-model="new_position"></b-form-input>
-                  </b-form-group>
-              </b-col>
-          </b-row>
-          <b-row class="align-items-center">
-              <b-col cols="12" md="4">
-                  <b-form-group label="Сумма индексации">
-                      <b-form-input type="text" class="form-control group-select" v-model="sum"
-                                    v-if="indexation"></b-form-input>
-                      <b-form-input type="text" class="form-control group-select" v-model="sum" v-else
-                                    disabled></b-form-input>
-                  </b-form-group>
-              </b-col>
-              <b-col cols="12" md="4">
-                  <b-form-group class="mt-5">
-                      <b-form-checkbox
-                              v-model="indexation"
-                              :value="1"
-                              :unchecked-value="0"
-                              switch
-                      >
-                          Индексация зарплаты
-                      </b-form-checkbox>
-                  </b-form-group>
-              </b-col>
-          </b-row>
-          <div class="card position-card mt-4">
-              <div class="card-header">
-                  <b-form-checkbox
-                          v-model="desc.show"
-                          :value="1"
-                          switch
-                          :unchecked-value="0"
-                  >
-                      Показывать в профиле
-                  </b-form-checkbox>
-              </div>
-              <div class="card-body">
-                  <b-row>
-                      <b-col cols="12" lg="6">
-                          <b-form-group label="Следующая ступень карьерного роста">
-                              <b-textarea v-model="desc.next_step"></b-textarea>
-                          </b-form-group>
-                      </b-col>
-                      <b-col cols="12" lg="6">
-                          <b-form-group label="Требования к кандидату">
-                              <b-textarea v-model="desc.require"></b-textarea>
-                          </b-form-group>
-                      </b-col>
-                      <b-col cols="12" lg="6">
-                          <b-form-group label="Что нужно делать">
-                              <b-textarea v-model="desc.actions"></b-textarea>
-                          </b-form-group>
-                      </b-col>
-                      <b-col cols="12" lg="6">
-                          <b-form-group label="График работы">
-                              <b-textarea v-model="desc.time"></b-textarea>
-                          </b-form-group>
-                      </b-col>
-                      <b-col cols="12" lg="6">
-                          <b-form-group label="Заработная плата">
-                              <b-textarea v-model="desc.salary"></b-textarea>
-                          </b-form-group>
-                      </b-col>
-                      <b-col cols="12" lg="6">
-                          <b-form-group label="Нужные знания для перехода на следующую должность">
-                              <b-textarea v-model="desc.knowledge"></b-textarea>
-                          </b-form-group>
-                      </b-col>
-                  </b-row>
-              </div>
-          </div>
-          <div class="text-right mt-3">
-              <button @click='savePosition' class="btn btn-success mr-2">Сохранить</button>
-              <button v-if="!addNew" @click.stop="deletePosition" class="btn btn-danger mr-2"><i
-                      class="fa fa-trash mr-2"></i> Удалить
-              </button>
-          </div>
-      </template>
+		<template v-if="activebtn != null || addNew">
+			<hr class="my-4">
+			<h4
+				v-if="addNew"
+				class="position-title-new"
+			>
+				Создание новой должности
+			</h4>
+			<b-row class="align-items-center mt-4">
+				<b-col
+					cols="12"
+					md="4"
+				>
+					<b-form-group
+						label="Название должности"
+						class="add-grade"
+					>
+						<b-form-input
+							type="text"
+							v-model="new_position"
+						/>
+					</b-form-group>
+				</b-col>
+			</b-row>
+			<b-row class="align-items-center">
+				<b-col
+					cols="12"
+					md="4"
+				>
+					<b-form-group label="Сумма индексации">
+						<b-form-input
+							type="text"
+							class="form-control group-select"
+							v-model="sum"
+							v-if="indexation"
+						/>
+						<b-form-input
+							type="text"
+							class="form-control group-select"
+							v-model="sum"
+							v-else
+							disabled
+						/>
+					</b-form-group>
+				</b-col>
+				<b-col
+					cols="12"
+					md="4"
+				>
+					<b-form-group class="mt-5">
+						<b-form-checkbox
+							v-model="indexation"
+							:value="1"
+							:unchecked-value="0"
+							switch
+						>
+							Индексация зарплаты
+						</b-form-checkbox>
+					</b-form-group>
+				</b-col>
+			</b-row>
+			<div class="card position-card mt-4">
+				<div class="card-header">
+					<b-form-checkbox
+						v-model="desc.show"
+						:value="1"
+						switch
+						:unchecked-value="0"
+					>
+						Показывать в профиле
+					</b-form-checkbox>
+				</div>
+				<div class="card-body">
+					<b-row>
+						<b-col
+							cols="12"
+							lg="6"
+						>
+							<b-form-group label="Следующая ступень карьерного роста">
+								<b-textarea v-model="desc.next_step" />
+							</b-form-group>
+						</b-col>
+						<b-col
+							cols="12"
+							lg="6"
+						>
+							<b-form-group label="Требования к кандидату">
+								<b-textarea v-model="desc.require" />
+							</b-form-group>
+						</b-col>
+						<b-col
+							cols="12"
+							lg="6"
+						>
+							<b-form-group label="Что нужно делать">
+								<b-textarea v-model="desc.actions" />
+							</b-form-group>
+						</b-col>
+						<b-col
+							cols="12"
+							lg="6"
+						>
+							<b-form-group label="График работы">
+								<b-textarea v-model="desc.time" />
+							</b-form-group>
+						</b-col>
+						<b-col
+							cols="12"
+							lg="6"
+						>
+							<b-form-group label="Заработная плата">
+								<b-textarea v-model="desc.salary" />
+							</b-form-group>
+						</b-col>
+						<b-col
+							cols="12"
+							lg="6"
+						>
+							<b-form-group label="Нужные знания для перехода на следующую должность">
+								<b-textarea v-model="desc.knowledge" />
+							</b-form-group>
+						</b-col>
+					</b-row>
+				</div>
+			</div>
+			<div class="text-right mt-3">
+				<button
+					@click="savePosition"
+					class="btn btn-success mr-2"
+				>
+					Сохранить
+				</button>
+				<button
+					v-if="!addNew"
+					@click.stop="deletePosition"
+					class="btn btn-danger mr-2"
+				>
+					<i
+						class="fa fa-trash mr-2"
+					/> Удалить
+				</button>
+			</div>
+		</template>
 	</div>
 </template>
 
@@ -172,7 +244,7 @@ export default {
 			this.resetState();
 		},
 		selectPosition(value) {
-			this.addNew = false;
+			this.addNew = false
 			this.axios.post('/timetracking/settings/positions/get-new', {
 				name: value.id,
 			}).then(response => {
@@ -211,22 +283,24 @@ export default {
 			//                   this.value = []
 			//               }
 		},
+		async addPosition() {
+			const responseAdd = await this.axios.post('/timetracking/settings/positions/add-new', {position: this.new_position})
+			if(responseAdd.data.code === 201) return this.$toast.error('Должность с таким названием уже существует!');
+			const data = responseAdd.data.data;
+			const dataPush = {
+				id: data.id,
+				position: data.position
+			};
+			this.position_id = data.id;
+			this.new_position = data.position;
 
+			this.activebtn = dataPush;
+			this.data.push(dataPush);
+		},
 		async savePosition() {
 			try{
 				if(!this.new_position.length) return this.$toast.error('Введите нзвание должности!');
-				const responseAdd = await this.axios.post('/timetracking/settings/positions/add-new', {position: this.new_position});
-				if(responseAdd.data.code === 201) return this.$toast.error('Должность с таким названием уже существует!');
-				const data = responseAdd.data.data;
-				const dataPush = {
-					id: data.id,
-					position: data.position
-				};
-				this.position_id = data.id;
-				this.new_position = data.position;
-
-				this.activebtn = dataPush;
-				this.data.push(dataPush);
+				if(this.addNew) await this.addPosition()
 
 				const responseSave = await this.axios.post('/timetracking/settings/positions/save-new', {
 					id: this.activebtn.id,
@@ -234,25 +308,25 @@ export default {
 					indexation: this.indexation,
 					sum: this.sum,
 					desc: this.desc,
-				});
+				})
 				if(responseSave.data.status !== 200) return this.$toast.error('Упс! Что-то пошло не так');
-				this.$toast.success('Новая должность создана!');
+				this.$toast.success(this.addNew ? 'Новая должность создана!' : 'Изменения сохранены');
+				this.addNew = false
 			}
 			catch(error){
 				console.error(error.message);
 			}
 		},
-		deletePosition() {
+		async deletePosition() {
 			if (confirm('Вы уверены что хотите удалить должность?')) {
-				this.axios.post('/timetracking/settings/positions/delete', {
+				await this.axios.post('/timetracking/settings/positions/delete', {
 					position: this.activebtn.id,
-				}).then(() => {
-					this.$toast.info('Удалена');
 				})
+				this.$toast.info('Удалена');
 
-				let ind = this.data.findIndex(item => item.id === this.activebtn.id);
+				const ind = this.data.findIndex(item => item.id === this.activebtn.id);
 				this.data.splice(ind, 1);
-				this.addNew = false;
+				this.addNew = false
 				this.resetState();
 			}
 		},

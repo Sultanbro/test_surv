@@ -1,11 +1,13 @@
 <template>
-  <div :style="style" v-show="show"
-       class="messenger__context-menu"
-       @mousedown.stop
-       @contextmenu.prevent
-  >
-    <slot></slot>
-  </div>
+	<div
+		:style="style"
+		v-show="show"
+		class="messenger__context-menu"
+		@mousedown.stop
+		@contextmenu.prevent
+	>
+		<slot />
+	</div>
 </template>
 
 <script>

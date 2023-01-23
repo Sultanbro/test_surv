@@ -1,52 +1,61 @@
 <template>
-  <div class="mt-5 index__content custom-scroll">
+	<div class="mt-5 index__content custom-scroll">
+		<div class="mb-3 sticky-left">
+			Кол-во показателей: <b>{{ total_count }}</b> ,
+			Среднее значение: <b>{{ total_avg }}</b>
+		</div>
 
-      <div class="mb-3 sticky-left">
-        Кол-во показателей: <b>{{total_count}}</b> ,
-        Среднее значение: <b>{{ total_avg }}</b>
-      </div>
-
-      <div class="">
-          <table class="class indicators-table-fixed">
-              <tr>
-                  <th
-                      class="indicators-table-fixed-name text-left pl-4"
-                      :class="{'sticky-left': isDesktop}"
-                  >
-                      <div class="max-content">Сотрудник</div>
-                  </th>
-                  <template v-for="(field, key) in fields">
-                      <th :key="key" :class="field.class">
-                          <div>{{ field.name }}</div>
-                      </th>
-                  </template>
-              </tr>
-              <tr
-                v-for="(item, index) in users"
-                :key="index"
-                :class="{
-                  'prize first-place': item.show_cup == 1,
-                  'prize second-place':item.show_cup == 2,
-                  'prize third-place': item.show_cup == 3,
-                }"
-              >
-                  <td
-                      class="indicators-table-fixed-name text-left"
-                      :class="{'sticky-left': isDesktop}"
-                  >
-                      <div class="d-flex max-content">
-                          {{ item.name }}
-                      </div>
-                  </td>
-                  <template v-for="(field, key) in fields">
-                      <td :class="field.class" :key="key">
-                          <div v-if="item[field.key] != 0">{{ item[field.key] }}</div>
-                      </td>
-                  </template>
-              </tr>
-          </table>
-      </div>
-  </div>
+		<div class="">
+			<table class="class indicators-table-fixed">
+				<tr>
+					<th
+						class="indicators-table-fixed-name text-left pl-4"
+						:class="{'sticky-left': isDesktop}"
+					>
+						<div class="max-content">
+							Сотрудник
+						</div>
+					</th>
+					<template v-for="(field, key) in fields">
+						<th
+							:key="key"
+							:class="field.class"
+						>
+							<div>{{ field.name }}</div>
+						</th>
+					</template>
+				</tr>
+				<tr
+					v-for="(item, index) in users"
+					:key="index"
+					:class="{
+						'prize first-place': item.show_cup == 1,
+						'prize second-place':item.show_cup == 2,
+						'prize third-place': item.show_cup == 3,
+					}"
+				>
+					<td
+						class="indicators-table-fixed-name text-left"
+						:class="{'sticky-left': isDesktop}"
+					>
+						<div class="d-flex max-content">
+							{{ item.name }}
+						</div>
+					</td>
+					<template v-for="(field, key) in fields">
+						<td
+							:class="field.class"
+							:key="key"
+						>
+							<div v-if="item[field.key] != 0">
+								{{ item[field.key] }}
+							</div>
+						</td>
+					</template>
+				</tr>
+			</table>
+		</div>
+	</div>
 </template>
 
 <script>

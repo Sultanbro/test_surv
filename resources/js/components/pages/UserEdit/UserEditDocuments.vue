@@ -10,216 +10,218 @@ export default {
 }
 </script>
 <template>
-    <div
-        id="iphones4"
-        class="xtab-pane xfade none-block"
-    >
-        <h5 class="mb-5">Документы (RAR, ZIP)</h5>
-        <div class="row file-uploads-container">
-            <div class="col-12 col-md-4 mb-4">
-                <div class="file-item">
-                    <input
-                        name="file5"
-                        type="file"
-                        id="file-5"
-                        class="inputfile inputfile-1 d-none"
-                        data-multiple-caption="{count} files selected"
-                    >
-                    <template v-if="user && user.downloads && user.downloads.ud_lich">
-                        <label
-                            class="active"
-                            for="file-5"
-                        >
-                            <i class="fa fa-check"/>
-                            <span>Удостоверение личности</span>
-                        </label>
-                        <a
-                            download
-                            class="btn btn-success btn-sm btn-block"
-                            :href="`/static/profiles/${user.id}/ud_lich/${user.downloads.ud_lich}`"
-                        >Скачать</a>
-                    </template>
-                    <label
-                        v-else
-                        for="file-5"
-                    >
-                        <i class="fa fa-upload"/>
-                        <span>Удостоверение личности</span>
-                    </label>
-                </div>
-            </div>
-            <div class="col-12 col-md-4 mb-4">
-                <div class="file-item">
-                    <input
-                        name="file1"
-                        type="file"
-                        id="file-1"
-                        class="inputfile inputfile-1 d-none"
-                        data-multiple-caption="{count} files selected"
-                    >
-                    <template v-if="user && user.downloads && user.downloads.dog_okaz_usl">
-                        <label
-                            for="file-1"
-                            class="active"
-                        >
-                            <i class="fa fa-check"/>
-                            <span>Договор оказания услуг</span>
-                        </label>
-                        <a
-                            download
-                            class="btn btn-success btn-sm btn-block"
-                            :href="`/static/profiles/${user.id}/dog_okaz_usl/${user.downloads.dog_okaz_usl}`"
-                        >Скачать</a>
-                    </template>
-                    <label
-                        v-else
-                        for="file-1"
-                    >
-                        <i class="fa fa-upload"/>
-                        <span>Договор оказания услуг</span>
-                    </label>
-                </div>
-            </div>
-            <div class="col-12 col-md-4 mb-4">
-                <div class="file-item">
-                    <input
-                        name="file2"
-                        type="file"
-                        id="file-2"
-                        class="inputfile inputfile-1 d-none"
-                        data-multiple-caption="{count} files selected"
-                    >
-                    <template v-if="user && user.downloads && user.downloads.sohr_kom_tainy">
-                        <label
-                            for="file-2"
-                            class="active"
-                        >
-                            <i class="fa fa-check"/>
-                            <span>Сохранение комм. тайны</span>
-                        </label>
-                        <a
-                            download
-                            class="btn btn-success btn-sm btn-block"
-                            :href="`/static/profiles/${user.id}}/sohr_kom_tainy/${user.downloads.sohr_kom_tainy}`"
-                        >Скачать</a>
-                    </template>
-                    <label
-                        v-else
-                        for="file-2"
-                    >
-                        <i class="fa fa-upload"/>
-                        <span>Сохранение комм. тайны</span>
-                    </label>
-                </div>
-            </div>
-            <div class="col-12 col-md-4 mb-4">
-                <div class="file-item">
-                    <input
-                        name="file3"
-                        type="file"
-                        id="file-3"
-                        class="inputfile inputfile-1 d-none"
-                        data-multiple-caption="{count} files selected"
-                    >
-                    <template v-if="user && user.downloads && user.downloads.dog_o_nekonk">
-                        <label
-                            for="file-3"
-                            class="active"
-                        >
-                            <i class="fa fa-check"/>
-                            <span>Договор о неконкуренции</span>
-                        </label>
-                        <a
-                            download
-                            class="btn btn-success btn-sm btn-block"
-                            :href="`/static/profiles/${user.id}/dog_o_nekonk/${user.downloads.dog_o_nekonk}`"
-                        >Скачать</a>
-                    </template>
-                    <label
-                        v-else
-                        for="file-3"
-                    >
-                        <i class="fa fa-upload"/>
-                        <span>Договор о неконкуренции</span>
-                    </label>
-                </div>
-            </div>
-            <div class="col-12 col-md-4 mb-4">
-                <div class="file-item">
-                    <input
-                        name="file4"
-                        type="file"
-                        id="file-4"
-                        class="inputfile inputfile-1 d-none"
-                        data-multiple-caption="{count} files selected"
-                    >
-                    <template v-if="user && user.downloads && user.downloads.trud_dog">
-                        <label
-                            for="file-4"
-                            class="active"
-                        >
-                            <i class="fa fa-check"/>
-                            <span>Трудовой <br> договор</span>
-                        </label>
-                        <a
-                            download
-                            class="btn btn-success btn-sm btn-block"
-                            :href="`/static/profiles/${user.id}/trud_dog/${user.downloads.trud_dog}`"
-                        >Скачать</a>
-                    </template>
-                    <label
-                        v-else
-                        for="file-4"
-                    >
-                        <i class="fa fa-upload"/>
-                        <span>Трудовой <br> договор</span>
-                    </label>
-                </div>
-            </div>
+	<div
+		id="iphones4"
+		class="xtab-pane xfade none-block"
+	>
+		<h5 class="mb-5">
+			Документы (RAR, ZIP)
+		</h5>
+		<div class="row file-uploads-container">
+			<div class="col-12 col-md-4 mb-4">
+				<div class="file-item">
+					<input
+						name="file5"
+						type="file"
+						id="file-5"
+						class="inputfile inputfile-1 d-none"
+						data-multiple-caption="{count} files selected"
+					>
+					<template v-if="user && user.downloads && user.downloads.ud_lich">
+						<label
+							class="active"
+							for="file-5"
+						>
+							<i class="fa fa-check" />
+							<span>Удостоверение личности</span>
+						</label>
+						<a
+							download
+							class="btn btn-success btn-sm btn-block"
+							:href="`/static/profiles/${user.id}/ud_lich/${user.downloads.ud_lich}`"
+						>Скачать</a>
+					</template>
+					<label
+						v-else
+						for="file-5"
+					>
+						<i class="fa fa-upload" />
+						<span>Удостоверение личности</span>
+					</label>
+				</div>
+			</div>
+			<div class="col-12 col-md-4 mb-4">
+				<div class="file-item">
+					<input
+						name="file1"
+						type="file"
+						id="file-1"
+						class="inputfile inputfile-1 d-none"
+						data-multiple-caption="{count} files selected"
+					>
+					<template v-if="user && user.downloads && user.downloads.dog_okaz_usl">
+						<label
+							for="file-1"
+							class="active"
+						>
+							<i class="fa fa-check" />
+							<span>Договор оказания услуг</span>
+						</label>
+						<a
+							download
+							class="btn btn-success btn-sm btn-block"
+							:href="`/static/profiles/${user.id}/dog_okaz_usl/${user.downloads.dog_okaz_usl}`"
+						>Скачать</a>
+					</template>
+					<label
+						v-else
+						for="file-1"
+					>
+						<i class="fa fa-upload" />
+						<span>Договор оказания услуг</span>
+					</label>
+				</div>
+			</div>
+			<div class="col-12 col-md-4 mb-4">
+				<div class="file-item">
+					<input
+						name="file2"
+						type="file"
+						id="file-2"
+						class="inputfile inputfile-1 d-none"
+						data-multiple-caption="{count} files selected"
+					>
+					<template v-if="user && user.downloads && user.downloads.sohr_kom_tainy">
+						<label
+							for="file-2"
+							class="active"
+						>
+							<i class="fa fa-check" />
+							<span>Сохранение комм. тайны</span>
+						</label>
+						<a
+							download
+							class="btn btn-success btn-sm btn-block"
+							:href="`/static/profiles/${user.id}}/sohr_kom_tainy/${user.downloads.sohr_kom_tainy}`"
+						>Скачать</a>
+					</template>
+					<label
+						v-else
+						for="file-2"
+					>
+						<i class="fa fa-upload" />
+						<span>Сохранение комм. тайны</span>
+					</label>
+				</div>
+			</div>
+			<div class="col-12 col-md-4 mb-4">
+				<div class="file-item">
+					<input
+						name="file3"
+						type="file"
+						id="file-3"
+						class="inputfile inputfile-1 d-none"
+						data-multiple-caption="{count} files selected"
+					>
+					<template v-if="user && user.downloads && user.downloads.dog_o_nekonk">
+						<label
+							for="file-3"
+							class="active"
+						>
+							<i class="fa fa-check" />
+							<span>Договор о неконкуренции</span>
+						</label>
+						<a
+							download
+							class="btn btn-success btn-sm btn-block"
+							:href="`/static/profiles/${user.id}/dog_o_nekonk/${user.downloads.dog_o_nekonk}`"
+						>Скачать</a>
+					</template>
+					<label
+						v-else
+						for="file-3"
+					>
+						<i class="fa fa-upload" />
+						<span>Договор о неконкуренции</span>
+					</label>
+				</div>
+			</div>
+			<div class="col-12 col-md-4 mb-4">
+				<div class="file-item">
+					<input
+						name="file4"
+						type="file"
+						id="file-4"
+						class="inputfile inputfile-1 d-none"
+						data-multiple-caption="{count} files selected"
+					>
+					<template v-if="user && user.downloads && user.downloads.trud_dog">
+						<label
+							for="file-4"
+							class="active"
+						>
+							<i class="fa fa-check" />
+							<span>Трудовой <br> договор</span>
+						</label>
+						<a
+							download
+							class="btn btn-success btn-sm btn-block"
+							:href="`/static/profiles/${user.id}/trud_dog/${user.downloads.trud_dog}`"
+						>Скачать</a>
+					</template>
+					<label
+						v-else
+						for="file-4"
+					>
+						<i class="fa fa-upload" />
+						<span>Трудовой <br> договор</span>
+					</label>
+				</div>
+			</div>
 
-            <div class="col-12 col-md-4 mb-4">
-                <div class="file-item">
-                    <input
-                        name="file7"
-                        type="file"
-                        id="file-7"
-                        class="inputfile inputfile-1 d-none"
-                        data-multiple-caption="{count} files selected"
-                    >
-                    <template v-if="user && user.downloads && user.downloads.archive">
-                        <label
-                            for="file-7"
-                            class="active"
-                        >
-                            <i class="fa fa-check"/>
-                            <span>Архив <br>документов</span>
-                        </label>
-                        <a
-                            download
-                            class="btn btn-success btn-sm btn-block"
-                            :href="`/static/profiles/${user.id}/archive/${user.downloads.archive}`"
-                        >Скачать</a>
-                    </template>
-                    <label
-                        v-else
-                        for="file-7"
-                    >
-                        <i class="fa fa-upload"/>
-                        <span>Архив <br> документов</span>
-                    </label>
-                </div>
-            </div>
-            <!-- может лишний -->
-            <input
-                name="logo"
-                type="file"
-                accept="image/*,.pdf"
-                id="file-6"
-                class="inputfile inputfile-1"
-                data-multiple-caption="{count} files selected"
-                style="display: none;"
-            >
-            <!-- -------- -->
-        </div>
-    </div>
+			<div class="col-12 col-md-4 mb-4">
+				<div class="file-item">
+					<input
+						name="file7"
+						type="file"
+						id="file-7"
+						class="inputfile inputfile-1 d-none"
+						data-multiple-caption="{count} files selected"
+					>
+					<template v-if="user && user.downloads && user.downloads.archive">
+						<label
+							for="file-7"
+							class="active"
+						>
+							<i class="fa fa-check" />
+							<span>Архив <br>документов</span>
+						</label>
+						<a
+							download
+							class="btn btn-success btn-sm btn-block"
+							:href="`/static/profiles/${user.id}/archive/${user.downloads.archive}`"
+						>Скачать</a>
+					</template>
+					<label
+						v-else
+						for="file-7"
+					>
+						<i class="fa fa-upload" />
+						<span>Архив <br> документов</span>
+					</label>
+				</div>
+			</div>
+			<!-- может лишний -->
+			<input
+				name="logo"
+				type="file"
+				accept="image/*,.pdf"
+				id="file-6"
+				class="inputfile inputfile-1"
+				data-multiple-caption="{count} files selected"
+				style="display: none;"
+			>
+			<!-- -------- -->
+		</div>
+	</div>
 </template>

@@ -1,8 +1,19 @@
 <template>
-<div class="mb-0">
-    <b-table responsive :sticky-header="true" class="text-nowrap text-right my-table" :small="true" :bordered="true" v-for="(item, index) in items" :items="item.items" :fields="item.fields" :key="index" show-empty emptyText="Нет данных">
-    </b-table>
-</div>
+	<div class="mb-0">
+		<b-table
+			responsive
+			:sticky-header="true"
+			class="text-nowrap text-right my-table"
+			:small="true"
+			:bordered="true"
+			v-for="(item, index) in items"
+			:items="item.items"
+			:fields="item.fields"
+			:key="index"
+			show-empty
+			empty-text="Нет данных"
+		/>
+	</div>
 </template>
 
 <script>

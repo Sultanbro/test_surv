@@ -1,55 +1,81 @@
 <template>
-<div class="popup__content mt-3" :class="{'v-loading': loading}">
-    <div class="popup__filter">
-        <select class="select-css" v-model="currentMonth" @change="fetchBefore()">
-            <option
-                v-for="month in $moment.months()"
-                :value="month"
-                :key="month"
-            >
-                {{ month }}
-            </option>
-        </select>
-        <select class="select-css ml-2" v-model="currentYear" @change="fetchBefore()">
-            <option
-                v-for="year in years"
-                :value="year"
-                :key="year"
-            >{{ year }}</option>
-        </select>
-    </div>
-    <div class="popup__award">
+	<div
+		class="popup__content mt-3"
+		:class="{'v-loading': loading}"
+	>
+		<div class="popup__filter">
+			<select
+				class="select-css"
+				v-model="currentMonth"
+				@change="fetchBefore()"
+			>
+				<option
+					v-for="month in $moment.months()"
+					:value="month"
+					:key="month"
+				>
+					{{ month }}
+				</option>
+			</select>
+			<select
+				class="select-css ml-2"
+				v-model="currentYear"
+				@change="fetchBefore()"
+			>
+				<option
+					v-for="year in years"
+					:value="year"
+					:key="year"
+				>
+					{{ year }}
+				</option>
+			</select>
+		</div>
+		<div class="popup__award">
+			<template v-if="items.length">
+				<template v-for="(item, i) in items">
+					<div
+						class="award__title popup__content-title"
+						:key="i"
+					>
+						За период с {{ new Date(item.items.from).toLocaleDateString('RU') }} до {{ new Date(item.items.to).toLocaleDateString('RU') }}
+					</div>
+					<table
+						class="award__table"
+						:key="i"
+					>
+						<tr>
+							<td class="blue">
+								Сумма премии
+							</td>
+							<td>{{ item.items.sum }}</td>
+						</tr>
+						<tr v-if="item.items.activity">
+							<td class="blue">
+								План
+							</td>
+							<td>
+								<div>
+									<b>Активность: {{ item.items.activity.name }}</b>
+								</div>
+								<div>{{ item.items.plan }}</div>
+							</td>
+						</tr>
+						<tr>
+							<td class="blue">
+								Условия
+							</td>
+							<td>{{ item.items.text }}</td>
+						</tr>
+					</table>
+				</template>
+			</template>
 
-        <template v-if="items.length">
-            <template v-for="(item, i) in items">
-                <div class="award__title popup__content-title" :key="i">
-                    За период с {{ new Date(item.items.from).toLocaleDateString('RU') }} до {{ new Date(item.items.to).toLocaleDateString('RU') }}
-                </div>
-                <table class="award__table" :key="i">
-                    <tr>
-                        <td class="blue">Сумма премии</td>
-                        <td>{{ item.items.sum }}</td>
-                    </tr>
-                    <tr v-if="item.items.activity">
-                        <td class="blue">План</td>
-                        <td>
-                            <div>
-                                <b>Активность: {{ item.items.activity.name }}</b>
-                            </div>
-                            <div>{{ item.items.plan }}</div>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td class="blue">Условия</td>
-                        <td>{{ item.items.text }}</td>
-                    </tr>
-                </table>
-            </template>
-        </template>
-
-        <p v-else>Обратитесь к своему руководителю, если хотите чтобы вам была назначена квартальная премия</p>
-    </div>
-</div>
+			<p v-else>
+				Обратитесь к своему руководителю, если хотите чтобы вам была назначена квартальная премия
+			</p>
+		</div>
+	</div>
 </template>
 
 <script>

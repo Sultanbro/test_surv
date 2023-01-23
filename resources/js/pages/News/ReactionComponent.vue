@@ -1,42 +1,45 @@
 <template>
-    <div class="news-comment-reactions">
-        <div
-            v-for="(reaction, index) in reactionsList"
-            :key="index"
-            v-show="reaction.value != 0"
-            :class="'news-comment-reactions__item '
-            + (reaction.is_reacted ? 'news-comment-reactions__item--reacted' : '')"
-            @click="sendReaction(reaction.icon)"
-        >
-            <span v-html="reaction.value"/>
-            <span v-html="reaction.icon"/>
-        </div>
+	<div class="news-comment-reactions">
+		<div
+			v-for="(reaction, index) in reactionsList"
+			:key="index"
+			v-show="reaction.value != 0"
+			:class="'news-comment-reactions__item '
+				+ (reaction.is_reacted ? 'news-comment-reactions__item--reacted' : '')"
+			@click="sendReaction(reaction.icon)"
+		>
+			<span v-html="reaction.value" />
+			<span v-html="reaction.icon" />
+		</div>
 
-        <div
-            v-show="hasReactionWithZero()"
-            class="news-comment-reactions__keyboard-container"
-        >
-            <span
-                class="news-comment-reactions__show-keyboard"
-                @click="toggleEmojiKeyboard(true)"
-                v-html="'+'"
-            />
-            <div class="news-emoji-keyboard" v-show="showKeyboard">
-                <div class="news-emoji-keyboard__container">
-                    <div class="news-emoji-keyboard__arrow"/>
-                    <div class="news-emoji-keyboard__items">
-                        <span
+		<div
+			v-show="hasReactionWithZero()"
+			class="news-comment-reactions__keyboard-container"
+		>
+			<span
+				class="news-comment-reactions__show-keyboard"
+				@click="toggleEmojiKeyboard(true)"
+				v-html="'+'"
+			/>
+			<div
+				class="news-emoji-keyboard"
+				v-show="showKeyboard"
+			>
+				<div class="news-emoji-keyboard__container">
+					<div class="news-emoji-keyboard__arrow" />
+					<div class="news-emoji-keyboard__items">
+						<span
 							v-for="reaction in reactionsList"
 							:key="reaction.icon"
-                            class="news-emoji-keyboard__item"
-                            v-html="reaction.icon"
-                            @click="sendReaction(reaction.icon)"
-                        />
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
+							class="news-emoji-keyboard__item"
+							v-html="reaction.icon"
+							@click="sendReaction(reaction.icon)"
+						/>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
 </template>
 
 <script>

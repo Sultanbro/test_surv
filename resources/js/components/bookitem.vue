@@ -1,84 +1,160 @@
 <template>
-    <div>
+	<div>
+		<a
+			href="#"
+			@click.prevent="opener(), active(tre)"
+			class="chapter"
+		>
+			<i
+				v-if="open == true"
+				class="fa fa-folder-open"
+				aria-hidden="true"
+			/>
+			<i
+				v-if="open == false"
+				class="fa fa-folder"
+				aria-hidden="true"
+			/>
+			{{ tre.name }}
+		</a>
 
-        <a  href="#" @click.prevent="opener(), active(tre)" class="chapter">
-            <i v-if="open == true" class="fa fa-folder-open" aria-hidden="true"></i>
-            <i v-if="open == false" class="fa fa-folder" aria-hidden="true"></i>
-            {{tre.name}}
-        </a>
+		<i
+			class="fa fa-file"
+			@click.prevent="bookshow"
+			aria-hidden="true"
+		/>
+		<i
+			class="fa fa-plus"
+			@click.prevent="bookshowbook"
+			aria-hidden="true"
+		/>
+		<i
+			title="удалить"
+			class="fa fa-trash-o"
+			@click="deletecat(tre)"
+			aria-hidden="true"
+		/>
+		<i
+			title="переименовать"
+			class="fa fa-pencil"
+			@click.prevent="namefile(tre)"
+			aria-hidden="true"
+		/>
+		<i
+			title="переместить"
+			@click.prevent="moveto(tre)"
+			class="fa fa-long-arrow-right"
+			aria-hidden="true"
+		/>
 
-        <i class="fa fa-file" @click.prevent="bookshow" aria-hidden="true"></i>
-        <i class="fa fa-plus" @click.prevent="bookshowbook" aria-hidden="true"></i>
-        <i title="удалить" class="fa fa-trash-o" @click="deletecat(tre)" aria-hidden="true"></i>
-        <i title="переименовать" class="fa fa-pencil"  @click.prevent="namefile(tre)"  aria-hidden="true"></i>
-        <i title="переместить" @click.prevent="moveto(tre)" class="fa fa-long-arrow-right" aria-hidden="true"></i>
 
-
-        <i aria-hidden="true"  class="fa fa-arrows-v"></i>
-
-
-
-        <ul v-if="open == true">
-            <template v-if="books">
-                <draggable v-model="books"  @end="onEndSort(books,tre.id)" :options="{handle:'.fa-arrows-v'}">
-
-                    <template v-for="book in books">
-
-                        <li v-if="book.category_id == tre.id" :key="book.id" class="chapter-item">
-                            <i class="fa fa-arrows-v" aria-hidden="true" ></i>
-                            <a href="#" @click.prevent="activebook(book)" >
-                                <i class="fa fa-file-text" aria-hidden="true"></i>
-                                {{book.title}}
-                            </a>
-                            <i class="fa fa-trash-o" @click="deletebook(book)" aria-hidden="true"></i>
-
-                            <i class="fa fa-pencil"  @click.prevent="renames(book)"  aria-hidden="true"></i>
-                            <input ref="bookrename" v-if="renamebook" v-on:keyup.enter="renamebooks(book)" v-model="book.title">
-                        </li>
-                    </template>
-
-                </draggable>
-            </template>
-
-            <draggable v-model="tree"  @end="onEndSortcat(tree)"  :options="{handle:'.fa-arrows-v'}">
-
-                    <template v-for="trez in tree">
-                        <bookitem
-							v-if="trez.parent_cat_id == tre.id"
-							:key="trez.id"
-							@moveto="moveto"
-							@rename="rename"
-							@renamebooks="renamebooks"
-							@onEndSort="onEndSort"
-							@onEndSortcat="onEndSortcat"
-							@deletebook="deletebook"
-							:tre="trez"
-							:tree="tree"
-							:books="books"
-							@active="active"
-							@deletecat="deletecat"
-							@addcat="addcat"
-							@addpage="addpage"
-							@activebook="activebook"
-						/>
-                    </template>
-
-            </draggable>
+		<i
+			aria-hidden="true"
+			class="fa fa-arrows-v"
+		/>
 
 
 
+		<ul v-if="open == true">
+			<template v-if="books">
+				<draggable
+					v-model="books"
+					@end="onEndSort(books,tre.id)"
+					:options="{handle:'.fa-arrows-v'}"
+				>
+					<template v-for="book in books">
+						<li
+							v-if="book.category_id == tre.id"
+							:key="book.id"
+							class="chapter-item"
+						>
+							<i
+								class="fa fa-arrows-v"
+								aria-hidden="true"
+							/>
+							<a
+								href="#"
+								@click.prevent="activebook(book)"
+							>
+								<i
+									class="fa fa-file-text"
+									aria-hidden="true"
+								/>
+								{{ book.title }}
+							</a>
+							<i
+								class="fa fa-trash-o"
+								@click="deletebook(book)"
+								aria-hidden="true"
+							/>
 
-        </ul>
+							<i
+								class="fa fa-pencil"
+								@click.prevent="renames(book)"
+								aria-hidden="true"
+							/>
+							<input
+								ref="bookrename"
+								v-if="renamebook"
+								@keyup.enter="renamebooks(book)"
+								v-model="book.title"
+							>
+						</li>
+					</template>
+				</draggable>
+			</template>
 
-        <input ref="renamefile" v-if="renamefile" v-on:keyup.enter="rename(tre)" v-model="tre.name">
+			<draggable
+				v-model="tree"
+				@end="onEndSortcat(tree)"
+				:options="{handle:'.fa-arrows-v'}"
+			>
+				<template v-for="trez in tree">
+					<bookitem
+						v-if="trez.parent_cat_id == tre.id"
+						:key="trez.id"
+						@moveto="moveto"
+						@rename="rename"
+						@renamebooks="renamebooks"
+						@onEndSort="onEndSort"
+						@onEndSortcat="onEndSortcat"
+						@deletebook="deletebook"
+						:tre="trez"
+						:tree="tree"
+						:books="books"
+						@active="active"
+						@deletecat="deletecat"
+						@addcat="addcat"
+						@addpage="addpage"
+						@activebook="activebook"
+					/>
+				</template>
+			</draggable>
+		</ul>
+
+		<input
+			ref="renamefile"
+			v-if="renamefile"
+			@keyup.enter="rename(tre)"
+			v-model="tre.name"
+		>
 
 
 
-        <input ref="adddglabook" v-if="showaddbook" v-on:keyup.enter="addcat(tre.id,newbook)" v-model="newbook">
+		<input
+			ref="adddglabook"
+			v-if="showaddbook"
+			@keyup.enter="addcat(tre.id,newbook)"
+			v-model="newbook"
+		>
 
-        <input ref="showbk" v-if="showbk" v-on:keyup.enter="addpage(tre.id,newpage)" v-model="newpage">
-
-    </div>
+		<input
+			ref="showbk"
+			v-if="showbk"
+			@keyup.enter="addpage(tre.id,newpage)"
+			v-model="newpage"
+		>
+	</div>
 </template>
 
 <script>

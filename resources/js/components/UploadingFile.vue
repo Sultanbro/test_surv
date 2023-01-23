@@ -1,20 +1,27 @@
 <template>
-    <div class="uploading-video mt-2">
-        <span :class="{
-            'status-canceled': status == 'canceled'
-        }"> {{ file.fileName }} </span>
-        <small v-if="status == 'success'">Загружено!</small>
-        <small v-else-if="status == 'retrying'">Ошибка, повторная попытка...</small>
-        <small v-else-if="status == 'error'">Ошибка! Не получилось загрузить</small>
-        <small v-else-if="status == 'canceled'">Отменено</small>
-        <small v-else>Загружается {{ uploadedAmount }}%</small>
+	<div class="uploading-video mt-2">
+		<span
+			:class="{
+				'status-canceled': status == 'canceled'
+			}"
+		> {{ file.fileName }} </span>
+		<small v-if="status == 'success'">Загружено!</small>
+		<small v-else-if="status == 'retrying'">Ошибка, повторная попытка...</small>
+		<small v-else-if="status == 'error'">Ошибка! Не получилось загрузить</small>
+		<small v-else-if="status == 'canceled'">Отменено</small>
+		<small v-else>Загружается {{ uploadedAmount }}%</small>
 
-        <span v-if="isUploading">
-            <button @click="isPaused ? resume() : pause()" class="btn mr-1">{{ isPaused ? "продолжить" : "пауза" }}</button>
-            <button @click="cancel()" class="btn">отмена</button>
-        </span>
-
-    </div>
+		<span v-if="isUploading">
+			<button
+				@click="isPaused ? resume() : pause()"
+				class="btn mr-1"
+			>{{ isPaused ? "продолжить" : "пауза" }}</button>
+			<button
+				@click="cancel()"
+				class="btn"
+			>отмена</button>
+		</span>
+	</div>
 </template>
 
 <script>

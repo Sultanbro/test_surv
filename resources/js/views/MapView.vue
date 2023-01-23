@@ -70,24 +70,25 @@ export default {
 </script>
 
 <template>
-    <DefaultLayout class="no-padding">
-        <!-- <script src="https://maps.api.2gis.ru/2.0/loader.js?pkg=full"></script> -->
-        <div class="old__content">
-            <div id="map" style="width:100%;height:1500px;"/>
-        </div>
-    </DefaultLayout>
+	<DefaultLayout class="no-padding">
+		<!-- <script src="https://maps.api.2gis.ru/2.0/loader.js?pkg=full"></script> -->
+		<div class="old__content">
+			<div
+				id="map"
+				style="width:100%;height:1500px;"
+			/>
+		</div>
+	</DefaultLayout>
 </template>
 
-<style scoped>
-.leaflet-marker-icon{
-    margin-left: -15px;
-    margin-top: -15px;
-    padding-left: 10px;
-    padding-top: 5px;
-    width: 30px;
-    height: 30px;
-    transform: translate3d(679px, 264px, 0px);
-    z-index: 264;
-    border-radius: 50%;
-}
+<style lang="scss">
+    #map{
+        .leaflet-marker-icon{
+            display: inline-flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 264!important;
+            border-radius: 50%;
+        }
+    }
 </style>

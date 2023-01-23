@@ -7,21 +7,19 @@ final class SaveUsersDTO
 {
     /**
      * @param int $groupId
-     * @param array $users
      * @param array $groupInfo
-     * @param int $dialerId
-     * @param int $scriptId
-     * @param int $talkHours
-     * @param int $talkMinutes
+     * @param int|null $dialerId
+     * @param int|null $scriptId
+     * @param int|null $talkHours
+     * @param int|null $talkMinutes
      */
     public function __construct(
         public int $groupId,
-        public array $users,
         public array $groupInfo,
-        public int $dialerId,
-        public int $scriptId,
-        public int $talkHours,
-        public int $talkMinutes
+        public ?int $dialerId,
+        public ?int $scriptId,
+        public ?int $talkHours,
+        public ?int $talkMinutes
     )
     {}
 
@@ -32,7 +30,6 @@ final class SaveUsersDTO
     {
         return [
             'group_id' => $this->groupId,
-            'users' => $this->users,
             'group_info' => $this->groupInfo,
             'dialer_id' => $this->dialerId,
             'script_id' => $this->scriptId,

@@ -48,7 +48,7 @@
 
             <div v-if="data.unread.length == 0" class="mt-5">
               <h4>Нет новых уведомлений</h4>
-              <img src="/images/dist/notification.jpg" alt="" style="width: 100%">
+              <img class="notifications_img" :src="require('.//../../../assets/notification/notification.jpg').default" alt="">
             </div>
           </div>
 
