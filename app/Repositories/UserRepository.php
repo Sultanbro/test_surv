@@ -32,7 +32,7 @@ final class UserRepository extends CoreRepository
         string $email
     )
     {
-        return $this->model()->where('email', $email)->first() ?? null;
+        return $this->model()->where('email', strtolower($email))->first();
     }
 
     /**
