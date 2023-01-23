@@ -150,16 +150,13 @@ final class UserRepository extends CoreRepository
             ->when($endDateDeactivate, fn($q) => $q->whereDate('users.deleted_at', '<=', $endDateDeactivate));
     }
 
-    /**
-     * @param array $userData
-     */
     public function updateOrCreateNewEmployee(
         array $userData
     )
     {
         $password = str_random(8);
 
-        return $this->model()->updateOrCreate(
+        $user =  $this->model()->updateOrCreate(
             [
                 'email'             => strtolower($userData['email'])
             ],
@@ -188,7 +185,10 @@ final class UserRepository extends CoreRepository
                 'img_url'           => $userData['file_name']
             ]
         );
+
         EmailNotificationEvent::dispatch($userData['name'], $userData['email'], $password);
+
+        return $user;
     }
 
     /**
