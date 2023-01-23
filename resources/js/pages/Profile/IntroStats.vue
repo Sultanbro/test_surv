@@ -138,7 +138,7 @@
 			</div>
 			<div class="stat__about">
 				<div class="stat__name">
-					Номинации
+					Награды
 				</div>
 				<div class="stat__value">
 					<span>{{ user_earnings.sumNominations }}</span>

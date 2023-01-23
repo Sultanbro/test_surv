@@ -8,22 +8,9 @@
 		width="70%"
 		v-scroll-lock="open"
 	>
-		<b-button
-			variant="primary"
-			class="mx-auto d-block my-3"
-			@click="openModalAdd"
-		>
-			Загрузить файл награды
-		</b-button>
-		<p class="or">
-			или
-		</p>
-		<p class="or2">
-			Выберите один из шаблонов
-		</p>
-		<hr>
 		<b-tabs
 			ref="tabAwardUser"
+			class="overflow-hidden"
 			v-model="tabIndex"
 		>
 			<template v-if="awards.length > 0">
@@ -38,22 +25,47 @@
 					><i class="fa fa-chevron-right" /></span>
 				</div>
 				<b-tab
-					:title="award.name"
 					v-for="award in awards"
-					:key="award.name"
+					:key="award.id"
 				>
-					<b-card
-						title="Доступные награды"
-						border-variant="secondary"
-						header-border-variant="secondary"
-					>
-						<b-row>
+					<template #title>
+						<span @click="changeTab(award)">{{ award.name }}</span>
+					</template>
+					<div class="d-flex justify-content-between align-items-center mt-4">
+						<div>
+							<button
+								class="award-user-btn-tab"
+								:class="{'active': switchTab === 1}"
+								@click="switchTab = 1"
+							>
+								Доступные награды ({{ award.available.length }})
+							</button>
+							<button
+								class="award-user-btn-tab"
+								:class="{'active': switchTab === 2}"
+								@click="switchTab = 2"
+								:disabled="!award.hasOwnProperty('my')"
+							>
+								Выданные награды ({{ award.my ? award.my.length : 0 }})
+							</button>
+						</div>
+						<button
+							class="award-user-btn-tab upload"
+							@click="modalAdd = !modalAdd"
+						>
+							<i class="fa fa-upload" />
+							Загрузить файл награды
+						</button>
+					</div>
+
+					<div v-if="switchTab === 1">
+						<b-row class="avail mt-3">
 							<b-col
 								cols="12"
 								md="2"
 								class="mt-4 remove-award-modal"
 								v-for="item in award.available"
-								:key="item.id + item.format"
+								:key="item.id"
 							>
 								<div class="award-image">
 									<div @click="previewImage(item)">
@@ -79,43 +91,34 @@
 								</div>
 							</b-col>
 						</b-row>
-					</b-card>
-					<template v-if="award.hasOwnProperty('my')">
-						<hr class="mt-4">
-						<div class="my-container">
-							<b-card
-								title="Выданные награды"
-								border-variant="secondary"
-								header-border-variant="secondary"
+					</div>
+					<div v-if="switchTab === 2 && award.hasOwnProperty('my')">
+						<b-row class="mt-3">
+							<b-col
+								cols="12"
+								md="2"
+								class="mt-4"
+								v-for="item in award.my"
+								:key="item.id"
 							>
-								<b-row>
-									<b-col
-										cols="12"
-										md="2"
-										class="mt-4"
-										v-for="item in award.my"
-										:key="item.id + item.format"
+								<div
+									class="award-image my-award"
+									@click="removeReward(item)"
+								>
+									<img
+										:src="item.tempPath"
+										alt=""
+										v-if="item.format !== 'pdf'"
 									>
-										<div
-											class="award-image"
-											@click="removeReward(item)"
-										>
-											<img
-												:src="item.tempPath"
-												alt=""
-												v-if="item.format !== 'pdf'"
-											>
-											<vue-pdf-embed
-												:source="item.tempPath"
-												v-else
-											/>
-											<i class="fa fa-trash" />
-										</div>
-									</b-col>
-								</b-row>
-							</b-card>
-						</div>
-					</template>
+									<vue-pdf-embed
+										:source="item.tempPath"
+										v-else
+									/>
+									<i class="fa fa-trash" />
+								</div>
+							</b-col>
+						</b-row>
+					</div>
 				</b-tab>
 			</template>
 		</b-tabs>
@@ -196,38 +199,16 @@
 		<BModal
 			v-model="modalAdd"
 			modal-class="selected-modal"
-			title="Добавление новой награды"
+			:title="'Добавление новой награды - ' + currentAward.name"
 			size="lg"
 			centered
+			v-if="currentAward"
 		>
 			<b-row class="mb-4">
 				<b-col
 					cols="12"
 					md="6"
-					class="border-right-custom"
-				>
-					<b-form-group
-						label="Выберите вид награды"
-						class="m-0"
-					>
-						<Multiselect
-							v-model="value"
-							:options="awardCategories"
-							:multiple="false"
-							:close-on-select="true"
-							:clear-on-select="false"
-							:preserve-search="true"
-							placeholder="Выберите вид награды"
-							label="name"
-							track-by="name"
-							:preselect-first="false"
-							:class="value ? '' : 'error'"
-						/>
-					</b-form-group>
-				</b-col>
-				<b-col
-					cols="12"
-					md="6"
+					offset-md="3"
 				>
 					<label
 						for="file-add"
@@ -269,7 +250,7 @@
 				</b-button>
 				<b-button
 					variant="success"
-					v-if="modalAddBase64 && value"
+					v-if="modalAddBase64"
 					@click="addAndSaveReward"
 					:disabled="btnLoading"
 				>
@@ -410,19 +391,19 @@ const base64Encode = (data) =>
 		reader.onload = () => resolve(reader.result);
 		reader.onerror = (error) => reject(error);
 	});
-// import AwardsCard from '../profile/UserEarnings/AwardsCard.vue'
-// import UploadModal from '../modals/Upload'
+	// import AwardsCard from '../profile/UserEarnings/AwardsCard.vue'
+	// import UploadModal from '../modals/Upload'
 import VuePdfEmbed from 'vue-pdf-embed/dist/vue2-pdf-embed';
-import Multiselect from 'vue-multiselect';
+
 export default {
 	name: 'AwardUserSidebar',
 	components: {
 		// UploadModal,
-		VuePdfEmbed,
-		Multiselect
+		VuePdfEmbed
 	},
 	data() {
 		return {
+			switchTab: 1,
 			btnLoading: false,
 			newFileCheck: false,
 			isShow: false,
@@ -444,13 +425,14 @@ export default {
 			modalAddBase64: null,
 			awardCategories: [],
 			value: null,
-			responseAward: []
+			responseAward: [],
+			currentAward: null,
 
 		}
 	},
-	computed:{
-		modalSize(){
-			if(this.newFileCheck){
+	computed: {
+		modalSize() {
+			if (this.newFileCheck) {
 				return 'lg';
 			} else {
 				return 'md';
@@ -489,11 +471,15 @@ export default {
 		},
 		tabIndex() {
 			const buttons = this.$refs.tabAwardUser.$refs.buttons;
-			if(!buttons) return
+			if (!buttons) return
 			buttons.$refs.link.$el.scrollIntoView({inline: 'end', behavior: 'smooth'});
 		}
 	},
 	methods: {
+		changeTab(id) {
+			this.currentAward = id;
+			this.switchTab = 1;
+		},
 		previewImage(data) {
 			this.modalPreview = !this.modalPreview;
 			this.modalPreviewData = data;
@@ -537,6 +523,7 @@ export default {
 				.then(response => {
 					this.awards = [];
 					this.awards = response.data.data;
+					this.currentAward = this.awards[0];
 					loader.hide();
 				})
 				.catch(error => {
@@ -566,11 +553,10 @@ export default {
 			this.modalRemoveRewardData = item;
 		},
 		async addAndSaveReward() {
-			/* global $ */
 			let loader = this.$loading.show();
 			this.btnLoading = true;
 			const formData = new FormData();
-			formData.append('award_category_id', this.value.id);
+			formData.append('award_category_id', this.currentAward.id);
 			formData.append('file[]', this.modalAddFile);
 			await this.axios
 				.post('/awards/store', formData, {
@@ -580,8 +566,6 @@ export default {
 				})
 				.then(response => {
 					this.responseAward = response.data.data;
-					loader.hide();
-					this.$toast.success('Добавлено');
 				})
 				.catch(function (error) {
 					console.log(error);
@@ -596,42 +580,26 @@ export default {
 				.post('/awards/reward', formDataReward, {
 					headers: {
 						'Content-Type': 'multipart/form-data',
-						'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+						'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
 					},
 				})
 				.then(response => {
 					console.log(response);
 					this.modalAdd = false;
 					this.$toast.success('Награжден');
-					setTimeout( () => {
+					setTimeout(() => {
 						this.modalAddFile = null;
 						this.modalAddBase64 = null;
 					}, 300);
 					this.btnLoading = false;
 					this.getAll();
+					loader.hide();
 				})
 				.catch(function (error) {
 					console.log('error');
 					console.log(error);
+					loader.hide();
 				});
-		},
-		openModalAdd() {
-			this.modalAdd = !this.modalAdd;
-			if (this.awardCategories.length === 0) {
-				let loader = this.$loading.show();
-				this.axios
-					.get('/award-categories/get')
-					.then(response => {
-						const data = response.data.data;
-						this.awardCategories = data.filter(n => n.type === 1);
-						console.log(this.awardCategories);
-						loader.hide();
-					})
-					.catch(function (error) {
-						console.log(error);
-						loader.hide();
-					});
-			}
 		},
 		modalAddEvent(e) {
 			let files = e.target.files || e.dataTransfer.files;
@@ -678,7 +646,7 @@ export default {
 			this.modalSelectFile = null;
 			this.modalSelectBase64 = null;
 		},
-		reward(){
+		reward() {
 			let loader = this.$loading.show();
 			this.btnLoading = true;
 			const formData = new FormData();
@@ -688,13 +656,13 @@ export default {
 				.post('/awards/reward', formData, {
 					headers: {
 						'Content-Type': 'multipart/form-data',
-						'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+						'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
 					},
 				})
 				.then(response => {
 					console.log(response);
 					this.$toast.success('Добавлено');
-					setTimeout( () => {
+					setTimeout(() => {
 						this.modalSelectData = {};
 						this.modalSelectFile = null;
 						this.modalSelectBase64 = null;
@@ -721,13 +689,13 @@ export default {
 				.post('/awards/reward', formData, {
 					headers: {
 						'Content-Type': 'multipart/form-data',
-						'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+						'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
 					},
 				})
 				.then(response => {
 					console.log(response);
 					this.$toast.success('Добавлено');
-					setTimeout( () => {
+					setTimeout(() => {
 						this.modalSelectData = {};
 						this.modalSelectFile = null;
 						this.modalSelectBase64 = null;
@@ -748,582 +716,592 @@ export default {
 </script>
 
 <style lang="scss">
-    .remove-award-modal {
-        .title-remove {
-            font-size: 20px;
-            color: red;
-            text-align: center;
-        }
-
-        img, canvas {
-            width: 100% !important;
-            height: auto !important;
-        }
-        .btn-spinner{
-            display: inline-block;
-            width: 15px;
-            height: 15px;
-            border: 3px solid rgba(255,255,255,.3);
-            border-radius: 50%;
-            margin-bottom: -2px;
-            border-top-color: #fff;
-            animation: spin 1s ease-in-out infinite;
-            -webkit-animation: spin 1s ease-in-out infinite;
-        }
-        @keyframes spin {
-            to { -webkit-transform: rotate(360deg); }
-        }
-        @-webkit-keyframes spin {
-            to { -webkit-transform: rotate(360deg); }
-        }
-    }
-
-    .preview-modal {
-        img, canvas {
-            width: 100% !important;
-            height: auto !important;
-        }
-    }
-
-    .selected-modal {
-        .simple-reward-title{
-            font-size: 16px;
-            font-weight: 600;
-            color: #666;
-        }
-        .btn-spinner{
-            display: inline-block;
-            width: 15px;
-            height: 15px;
-            border: 3px solid rgba(255,255,255,.3);
-            border-radius: 50%;
-            margin-bottom: -2px;
-            border-top-color: #fff;
-            animation: spin 1s ease-in-out infinite;
-            -webkit-animation: spin 1s ease-in-out infinite;
-        }
-        @keyframes spin {
-            to { -webkit-transform: rotate(360deg); }
-        }
-        @-webkit-keyframes spin {
-            to { -webkit-transform: rotate(360deg); }
-        }
-        .custom-switch {
-            padding-left: 0;
-            .custom-control-label{
-                font-size: 14px;
-            }
-            input[type="checkbox"] {
-                position: absolute;
-                margin: 8px 0 0 16px;
-            }
-
-            input[type="checkbox"] + label {
-                position: relative;
-                padding: 5px 0 0 50px;
-                line-height: 1;
-                margin: 10px 0;
-            }
-
-            input[type="checkbox"]:disabled + label {
-                opacity: 0.5;
-            }
-
-            input[type="checkbox"] + label:before {
-                content: "";
-                position: absolute;
-                display: block;
-                left: 0;
-                top: 0;
-                width: 40px; /* x*5 */
-                height: 24px; /* x*3 */
-                border-radius: 16px; /* x*2 */
-                background: #fff;
-                border: 1px solid #d9d9d9;
-                -webkit-transition: all 0.3s;
-                transition: all 0.3s;
-            }
-
-            input[type="checkbox"] + label:after {
-                content: "";
-                position: absolute;
-                display: block;
-                left: 0px;
-                top: 0px;
-                width: 24px; /* x*3 */
-                height: 24px; /* x*3 */
-                border-radius: 16px; /* x*2 */
-                background: #fff;
-                border: 1px solid #d9d9d9;
-                -webkit-transition: all 0.3s;
-                transition: all 0.3s;
-            }
-
-            input[type="checkbox"] + label:hover:after {
-                box-shadow: 0 0 5px rgba(0, 0, 0, 0.3);
-            }
-
-            input[type="checkbox"]:checked + label:after {
-                margin-left: 16px;
-            }
-
-            input[type="checkbox"]:checked + label:before {
-                background: #55D069;
-            }
-
-            &.custom-switch-small {
-                input[type="checkbox"] {
-                    margin: 5px 0 0 10px;
-                }
-
-                input[type="checkbox"] + label {
-                    position: relative;
-                    padding: 0 0 0 32px;
-                    line-height: 1.3em;
-                }
-
-                input[type="checkbox"] + label:before {
-                    width: 25px; /* x*5 */
-                    height: 15px; /* x*3 */
-                    border-radius: 10px; /* x*2 */
-                }
-
-                input[type="checkbox"] + label:after {
-                    width: 15px; /* x*3 */
-                    height: 15px; /* x*3 */
-                    border-radius: 10px; /* x*2 */
-                }
-
-                input[type="checkbox"] + label:hover:after {
-                    box-shadow: 0 0 3px rgba(0, 0, 0, 0.3);
-                }
-
-                input[type="checkbox"]:checked + label:after {
-                    margin-left: 10px; /* x*2 */
-                }
-            }
-        }
-        .multiselect {
-            .multiselect__tags {
-                border: 1px solid #28a745;
-            }
-
-            &.error {
-                .multiselect__tags {
-                    border: 1px solid red;
-                }
-            }
-        }
-
-        .border-right-custom {
-            border-right: 1px solid #ddd;
-        }
-
-        .selected-modal-title {
-            display: flex;
-            align-items: center;
-
-            .text {
-                font-size: 16px;
-                line-height: 1.5;
-                color: #888;
-                margin-left: 20px;
-            }
-
-            .image-mini {
-                min-width: 75px;
-                min-height: 75px;
-                max-height: 75px;
-                border-radius: 8px;
-                overflow: hidden;
-
-                img, .vue-pdf-embed {
-                    width: 100%;
-                    height: 100px;
-                    object-fit: cover;
-                }
-            }
-        }
-
-        .result-container {
-            overflow: hidden;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            position: relative;
-            border-radius: 10px;
-
-            img {
-                width: 100%;
-                height: auto;
-            }
-
-            canvas {
-                width: 100% !important;
-                height: auto !important;
-            }
-        }
-
-        .download-image-container {
-            overflow: hidden;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            position: relative;
-            border-radius: 10px;
-
-            img {
-                width: 100%;
-                height: auto;
-                transition: 0.2s all ease;
-            }
-
-            canvas {
-                width: 100% !important;
-                height: auto !important;
-            }
-
-            &:before {
-                content: 'Скачать';
-                position: absolute;
-                top: 0;
-                left: 0;
-                width: 100%;
-                height: 100%;
-                z-index: 1;
-                opacity: 0;
-                background-color: #333;
-                transition: 0.2s all ease;
-            }
-
-            &:after {
-                content: 'Скачать';
-                position: absolute;
-                top: 0;
-                left: 0;
-                width: 100%;
-                height: 100%;
-                text-transform: uppercase;
-                font-size: 24px;
-                display: flex;
-                align-items: center;
-                justify-content: center;
-                z-index: 2;
-                color: #fff;
-                opacity: 0;
-                transition: 0.2s all ease;
-            }
-
-            &:hover {
-                img {
-                    transform: scale(1.1);
-                }
-
-                &:before {
-                    opacity: 0.5;
-                }
-
-                &:after {
-                    opacity: 1;
-                }
-            }
-        }
-
-        .custom-file-upload {
-            width: 100%;
-            margin: 0 auto;
-            height: 75px;
-            border-radius: 10px;
-            border: 1px dashed #28a745;
-            position: relative;
-            cursor: pointer;
-            transition: 0.2s all ease;
-
-            &:before {
-                content: 'Нажмите, чтобы загрузить другой файл';
-                position: absolute;
-                top: 0;
-                left: 0;
-                width: 100%;
-                height: 100%;
-                display: flex;
-                align-items: center;
-                justify-content: center;
-                font-size: 14px;
-                color: #999;
-                text-transform: uppercase;
-                transition: 0.2s all ease;
-            }
-
-            &.error {
-                border: 1px dashed red;
-
-                &:before {
-                    content: 'Нажмите, чтобы загрузить файл';
-                }
-            }
-
-
-            &:hover {
-                background-color: #f2f2f2;
-
-                &:before {
-                    color: #333;
-                    transform: scale(1.1);
-                }
-            }
-        }
-    }
-
-    #award-user-sidebar {
-        &.show{
-            .ui-sidebar__body{
-                transform: translateX(0);
-            }
-        }
-        .ui-sidebar__body{
-            border-radius: 20px 0 0 20px;
-            transform: translateX(100%);
-            overflow: hidden !important;
-        }
-        .ui-sidebar__header{
-            padding: 20px 25px !important;
-            background: #ffffff !important;
-            border-bottom: 1px solid #ddd;
-            span{
-                font-size: 24px;
-                color: #333 !important;
-                font-weight: 700;
-            }
-        }
-        .ui-sidebar__content{
-            padding: 20px 25px!important;
-        }
-        @media screen and (min-width: 768px) {
-            .col-md-20 {
-                flex: 0 0 20%;
-                max-width: 20%;
-            }
-        }
-
-        .prev-next {
-            position: absolute;
-            top: -1px;
-            right: 0;
-            height: 63px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            border-bottom: 1px solid #dee2e6;
-            background-color: #fff;
-            width: 120px;
-
-            span {
-                width: 40px;
-                height: 40px;
-                border-radius: 50px;
-                display: inline-flex;
-                align-items: center;
-                justify-content: center;
-                border: 1px solid #ED2353;
-                cursor: pointer;
-
-                i {
-                    font-size: 18px;
-                    color: #ED2353;
-                }
-
-                &:hover {
-                    background-color: #ED2353;
-
-                    i {
-                        color: #fff;
-                    }
-                }
-            }
-
-            .next {
-                margin-left: 10px;
-            }
-        }
-
-        .tabs {
-            position: relative;
-
-            .accrual-tab {
-                margin-top: 30px;
-                overflow-x: hidden;
-                padding-bottom: 30px;
-            }
-
-            .nav-tabs {
-                flex-wrap: nowrap;
-                white-space: nowrap;
-                overflow: hidden;
-                margin-right: 120px;
-
-                .nav-item {
-                    .nav-link {
-                        font-size: 2.1rem;
-                        border-bottom: none;
-                        margin-top: 0.1rem;
-                        line-height: 2em;
-                        color: #8D8D8D;
-                        font-family: "Open Sans", sans-serif;
-                        font-weight: 600;
-                        transition: color 0.3s;
-                        padding: 1.5rem 0 0 0;
-                        cursor: pointer;
-                        margin-right: 40px;
-                        background-color: transparent;
-                        border-top: 4px solid transparent;
-
-                        &:hover {
-                            border-color: transparent;
-                            color: #ED2353;
-                        }
-
-                        &.active {
-                            border-top: 4px solid #ED2353;
-                            color: #ED2353;
-                        }
-                    }
-                }
-            }
-        }
-
-        .my-container {
-            .award-image {
-                border: 2px solid green;
-                position: relative;
-
-                canvas {
-                    width: 100% !important;
-                    height: auto !important;
-                }
-
-                img, .vue-pdf-embed {
-                    transition: 0.15s all ease;
-                }
-
-                i {
-                    position: absolute;
-                    top: 50%;
-                    left: 50%;
-                    font-size: 16px;
-                    transform: translate(-50%, -50%) scale(0.9);
-                    opacity: 0;
-                    transition: 0.2s all ease;
-                    color: red;
-                }
-
-                &:hover {
-                    border: 2px solid red;
-
-                    img, .vue-pdf-embed {
-                        filter: grayscale(1);
-                    }
-
-                    i {
-                        transform: translate(-50%, -50%) scale(1.1);
-                        opacity: 1;
-                    }
-                }
-            }
-        }
-
-        .available-container {
-            max-height: calc(100vh - 400px);
-            overflow: auto;
-        }
-
-        .or {
-            font-size: 18px;
-            color: #999;
-            text-align: center;
-            margin: 15px 0 10px 0;
-        }
-
-        .title-not-rewards {
-            font-size: 16px;
-            color: #aaa;
-        }
-
-        .or2 {
-            line-height: 1;
-            margin-bottom: 20px;
-            font-size: 22px;
-            color: #999;
-            text-align: center;
-        }
-
-        .card-title {
-            font-size: 18px;
-            color: #999;
-        }
-
-        .award-image {
-            position: relative;
-            height: 100px;
-            width: 100%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            overflow: hidden;
-            border-radius: 8px;
-            border: 1px solid #ddd;
-            cursor: pointer;
-            transition: 0.15s all ease;
-
-            .button {
-                position: absolute;
-                bottom: 0;
-                padding: 10px 12px;
-                font-size: 20px;
-                z-index: 22;
-                background-color: #fff;
-                box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;
-
-                &.download {
-                    left: 0;
-                    color: #045e92;
-                    border-radius: 0 0 0 4px;
-                }
-
-                &.award {
-                    right: 0;
-                    color: #28a745;
-                    border-radius: 0 0 4px 0;
-                }
-            }
-
-            &:hover {
-
-            }
-
-            img {
-                width: 100%;
-                height: 100px;
-                object-fit: cover;
-                transition: 0.15s all ease;
-
-                &:hover {
-                    transform: scale(1.1);
-                }
-            }
-
-            .vue-pdf-embed {
-                width: 100%;
-                object-fit: cover;
-                transition: 0.15s all ease;
-
-                &:hover {
-                    transform: scale(1.1);
-                }
-            }
-        }
-    }
+	.remove-award-modal {
+		.title-remove {
+			font-size: 20px;
+			color: red;
+			text-align: center;
+		}
+
+		img, canvas {
+			width: 100% !important;
+			height: auto !important;
+		}
+
+		.btn-spinner {
+			display: inline-block;
+			width: 15px;
+			height: 15px;
+			border: 3px solid rgba(255, 255, 255, .3);
+			border-radius: 50%;
+			margin-bottom: -2px;
+			border-top-color: #fff;
+			animation: spin 1s ease-in-out infinite;
+			-webkit-animation: spin 1s ease-in-out infinite;
+		}
+
+		@keyframes spin {
+			to {
+				-webkit-transform: rotate(360deg);
+			}
+		}
+		@-webkit-keyframes spin {
+			to {
+				-webkit-transform: rotate(360deg);
+			}
+		}
+	}
+
+	.preview-modal {
+		img, canvas {
+			width: 100% !important;
+			height: auto !important;
+		}
+	}
+
+	.selected-modal {
+		.simple-reward-title {
+			font-size: 16px;
+			font-weight: 600;
+			color: #666;
+		}
+
+		.btn-spinner {
+			display: inline-block;
+			width: 15px;
+			height: 15px;
+			border: 3px solid rgba(255, 255, 255, .3);
+			border-radius: 50%;
+			margin-bottom: -2px;
+			border-top-color: #fff;
+			animation: spin 1s ease-in-out infinite;
+			-webkit-animation: spin 1s ease-in-out infinite;
+		}
+
+		@keyframes spin {
+			to {
+				-webkit-transform: rotate(360deg);
+			}
+		}
+		@-webkit-keyframes spin {
+			to {
+				-webkit-transform: rotate(360deg);
+			}
+		}
+
+		.custom-switch {
+			padding-left: 0;
+
+			.custom-control-label {
+				font-size: 14px;
+			}
+
+			input[type="checkbox"] {
+				position: absolute;
+				margin: 8px 0 0 16px;
+			}
+
+			input[type="checkbox"] + label {
+				position: relative;
+				padding: 5px 0 0 50px;
+				line-height: 1;
+				margin: 10px 0;
+			}
+
+			input[type="checkbox"]:disabled + label {
+				opacity: 0.5;
+			}
+
+			input[type="checkbox"] + label:before {
+				content: "";
+				position: absolute;
+				display: block;
+				left: 0;
+				top: 0;
+				width: 40px; /* x*5 */
+				height: 24px; /* x*3 */
+				border-radius: 16px; /* x*2 */
+				background: #fff;
+				border: 1px solid #d9d9d9;
+				-webkit-transition: all 0.3s;
+				transition: all 0.3s;
+			}
+
+			input[type="checkbox"] + label:after {
+				content: "";
+				position: absolute;
+				display: block;
+				left: 0px;
+				top: 0px;
+				width: 24px; /* x*3 */
+				height: 24px; /* x*3 */
+				border-radius: 16px; /* x*2 */
+				background: #fff;
+				border: 1px solid #d9d9d9;
+				-webkit-transition: all 0.3s;
+				transition: all 0.3s;
+			}
+
+			input[type="checkbox"] + label:hover:after {
+				box-shadow: 0 0 5px rgba(0, 0, 0, 0.3);
+			}
+
+			input[type="checkbox"]:checked + label:after {
+				margin-left: 16px;
+			}
+
+			input[type="checkbox"]:checked + label:before {
+				background: #55D069;
+			}
+
+			&.custom-switch-small {
+				input[type="checkbox"] {
+					margin: 5px 0 0 10px;
+				}
+
+				input[type="checkbox"] + label {
+					position: relative;
+					padding: 0 0 0 32px;
+					line-height: 1.3em;
+				}
+
+				input[type="checkbox"] + label:before {
+					width: 25px; /* x*5 */
+					height: 15px; /* x*3 */
+					border-radius: 10px; /* x*2 */
+				}
+
+				input[type="checkbox"] + label:after {
+					width: 15px; /* x*3 */
+					height: 15px; /* x*3 */
+					border-radius: 10px; /* x*2 */
+				}
+
+				input[type="checkbox"] + label:hover:after {
+					box-shadow: 0 0 3px rgba(0, 0, 0, 0.3);
+				}
+
+				input[type="checkbox"]:checked + label:after {
+					margin-left: 10px; /* x*2 */
+				}
+			}
+		}
+
+		.multiselect {
+			.multiselect__tags {
+				border: 1px solid #28a745;
+			}
+
+			&.error {
+				.multiselect__tags {
+					border: 1px solid red;
+				}
+			}
+		}
+
+		.border-right-custom {
+			border-right: 1px solid #ddd;
+		}
+
+		.selected-modal-title {
+			display: flex;
+			align-items: center;
+
+			.text {
+				font-size: 16px;
+				line-height: 1.5;
+				color: #888;
+				margin-left: 20px;
+			}
+
+			.image-mini {
+				min-width: 75px;
+				min-height: 75px;
+				max-height: 75px;
+				border-radius: 8px;
+				overflow: hidden;
+
+				img, .vue-pdf-embed {
+					width: 100%;
+					height: 100px;
+					object-fit: cover;
+				}
+			}
+		}
+
+		.result-container {
+			overflow: hidden;
+			cursor: pointer;
+			display: flex;
+			align-items: center;
+			justify-content: center;
+			position: relative;
+			border-radius: 10px;
+
+			img {
+				width: 100%;
+				height: auto;
+			}
+
+			canvas {
+				width: 100% !important;
+				height: auto !important;
+			}
+		}
+
+		.download-image-container {
+			overflow: hidden;
+			cursor: pointer;
+			display: flex;
+			align-items: center;
+			justify-content: center;
+			position: relative;
+			border-radius: 10px;
+
+			img {
+				width: 100%;
+				height: auto;
+				transition: 0.2s all ease;
+			}
+
+			canvas {
+				width: 100% !important;
+				height: auto !important;
+			}
+
+			&:before {
+				content: 'Скачать';
+				position: absolute;
+				top: 0;
+				left: 0;
+				width: 100%;
+				height: 100%;
+				z-index: 1;
+				opacity: 0;
+				background-color: #333;
+				transition: 0.2s all ease;
+			}
+
+			&:after {
+				content: 'Скачать';
+				position: absolute;
+				top: 0;
+				left: 0;
+				width: 100%;
+				height: 100%;
+				text-transform: uppercase;
+				font-size: 24px;
+				display: flex;
+				align-items: center;
+				justify-content: center;
+				z-index: 2;
+				color: #fff;
+				opacity: 0;
+				transition: 0.2s all ease;
+			}
+
+			&:hover {
+				img {
+					transform: scale(1.1);
+				}
+
+				&:before {
+					opacity: 0.5;
+				}
+
+				&:after {
+					opacity: 1;
+				}
+			}
+		}
+
+		.custom-file-upload {
+			width: 100%;
+			margin: 0 auto;
+			height: 75px;
+			border-radius: 10px;
+			border: 1px dashed #28a745;
+			position: relative;
+			cursor: pointer;
+			transition: 0.2s all ease;
+
+			&:before {
+				content: 'Нажмите, чтобы загрузить другой файл';
+				position: absolute;
+				top: 0;
+				left: 0;
+				width: 100%;
+				height: 100%;
+				display: flex;
+				align-items: center;
+				justify-content: center;
+				font-size: 14px;
+				color: #999;
+				text-transform: uppercase;
+				transition: 0.2s all ease;
+			}
+
+			&.error {
+				border: 1px dashed red;
+
+				&:before {
+					content: 'Нажмите, чтобы загрузить файл';
+				}
+			}
+
+
+			&:hover {
+				background-color: #f2f2f2;
+
+				&:before {
+					color: #333;
+					transform: scale(1.1);
+				}
+			}
+		}
+	}
+
+	#award-user-sidebar {
+		&.show {
+			.ui-sidebar__body {
+				transform: translateX(0);
+			}
+		}
+
+		.ui-sidebar__body {
+			border-radius: 20px 0 0 20px;
+			transform: translateX(100%);
+			overflow: hidden !important;
+		}
+
+		.ui-sidebar__header {
+			padding: 20px 25px !important;
+			background: #ffffff !important;
+			border-bottom: 1px solid #ddd;
+
+			span {
+				font-size: 24px;
+				color: #333 !important;
+				font-weight: 700;
+			}
+		}
+
+		.ui-sidebar__content {
+			padding: 20px 25px !important;
+		}
+
+		@media screen and (min-width: 768px) {
+			.col-md-20 {
+				flex: 0 0 20%;
+				max-width: 20%;
+			}
+		}
+
+		.prev-next {
+			position: absolute;
+			top: -1px;
+			right: 0;
+			height: 63px;
+			display: flex;
+			align-items: center;
+			justify-content: center;
+			border-bottom: 1px solid #dee2e6;
+			background-color: #fff;
+			width: 120px;
+
+			span {
+				width: 40px;
+				height: 40px;
+				border-radius: 50px;
+				display: inline-flex;
+				align-items: center;
+				justify-content: center;
+				border: 1px solid #ED2353;
+				cursor: pointer;
+
+				i {
+					font-size: 18px;
+					color: #ED2353;
+				}
+
+				&:hover {
+					background-color: #ED2353;
+
+					i {
+						color: #fff;
+					}
+				}
+			}
+
+			.next {
+				margin-left: 10px;
+			}
+		}
+
+		.tabs {
+			position: relative;
+
+			.accrual-tab {
+				margin-top: 30px;
+				overflow-x: hidden;
+				padding-bottom: 30px;
+			}
+
+			.nav-tabs {
+				flex-wrap: nowrap;
+				white-space: nowrap;
+				overflow: hidden;
+				margin-right: 120px;
+
+				.nav-item {
+					.nav-link {
+						font-size: 2.1rem;
+						border-bottom: none;
+						margin-top: 0.1rem;
+						line-height: 2em;
+						color: #8D8D8D;
+						font-family: "Open Sans", sans-serif;
+						font-weight: 600;
+						transition: color 0.3s;
+						padding: 1.5rem 0 0 0;
+						cursor: pointer;
+						margin-right: 40px;
+						background-color: transparent;
+						border-top: 4px solid transparent;
+
+						&:hover {
+							border-color: transparent;
+							color: #ED2353;
+						}
+
+						&.active {
+							border-top: 4px solid #ED2353;
+							color: #ED2353;
+						}
+					}
+				}
+			}
+		}
+
+		.award-image.my-award {
+			border: 2px solid green;
+			position: relative;
+
+			canvas {
+				width: 100% !important;
+				height: auto !important;
+			}
+
+			img, .vue-pdf-embed {
+				transition: 0.15s all ease;
+			}
+
+			i {
+				position: absolute;
+				top: 50%;
+				left: 50%;
+				font-size: 16px;
+				transform: translate(-50%, -50%) scale(0.9);
+				opacity: 0;
+				transition: 0.2s all ease;
+				color: red;
+			}
+
+			&:hover {
+				border: 2px solid red;
+
+				img, .vue-pdf-embed {
+					filter: grayscale(1);
+				}
+
+				i {
+					transform: translate(-50%, -50%) scale(1.1);
+					opacity: 1;
+				}
+			}
+		}
+
+		.or {
+			font-size: 18px;
+			color: #999;
+			text-align: center;
+			margin: 15px 0 10px 0;
+		}
+
+		.title-not-rewards {
+			font-size: 16px;
+			color: #aaa;
+		}
+
+		.or2 {
+			line-height: 1;
+			margin-bottom: 20px;
+			font-size: 22px;
+			color: #999;
+			text-align: center;
+		}
+
+		.card-title {
+			font-size: 18px;
+			color: #999;
+		}
+
+		.award-image {
+			position: relative;
+			height: 100px;
+			width: 100%;
+			display: flex;
+			align-items: center;
+			justify-content: center;
+			overflow: hidden;
+			border-radius: 8px;
+			border: 1px solid #ddd;
+			cursor: pointer;
+			transition: 0.15s all ease;
+
+			.button {
+				position: absolute;
+				bottom: 0;
+				padding: 10px 12px;
+				font-size: 20px;
+				z-index: 22;
+				background-color: #fff;
+				box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;
+
+				&.download {
+					left: 0;
+					color: #045e92;
+					border-radius: 0 0 0 4px;
+				}
+
+				&.award {
+					right: 0;
+					color: #28a745;
+					border-radius: 0 0 4px 0;
+				}
+			}
+
+			img {
+				width: 100%;
+				height: 100px;
+				object-fit: cover;
+				transition: 0.15s all ease;
+
+				&:hover {
+					transform: scale(1.1);
+				}
+			}
+
+			.vue-pdf-embed {
+				width: 100%;
+				object-fit: cover;
+				transition: 0.15s all ease;
+
+				&:hover {
+					transform: scale(1.1);
+				}
+			}
+		}
+	}
 
 </style>

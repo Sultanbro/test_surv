@@ -351,19 +351,19 @@
 						<BCol
 							cols="12"
 							md="4"
-							v-for="(item, index) in award.top"
-							:key="item.id + index"
+							v-for="(item, inx) in award.top"
+							:key="item.id"
 						>
 							<div
 								class="nominations__item"
-								:class="{green: index === 1}"
+								:class="{green: inx === 1}"
 							>
 								<div class="nominations__item-title">
 									{{ item.group }}
 								</div>
 								<div
 									class="nominations__item-avatar"
-									:class="'gift-' + (index + 1)"
+									:class="'gift-' + (inx + 1)"
 								>
 									<img
 										:src="item.path"
@@ -414,7 +414,7 @@
 			v-if="itemModal"
 			modal-class="awards-profile-modal-preview"
 			centered
-			size="xl"
+			size="lg"
 			v-model="modal"
 			:title="itemModal.awardName"
 		>
