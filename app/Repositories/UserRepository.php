@@ -8,6 +8,7 @@ use App\Enums\ErrorCode;
 use App\Enums\UserFilterEnum;
 use App\Events\EmailNotificationEvent;
 use App\Support\Core\CustomException;
+use App\User;
 use App\User as Model;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
@@ -157,7 +158,7 @@ final class UserRepository extends CoreRepository
         try {
             $password = str_random(8);
 
-            $user =  $this->model()->updateOrCreate(
+            $user =  User::query()->updateOrCreate(
                 [
                     'email'             => strtolower($userData['email'])
                 ],
