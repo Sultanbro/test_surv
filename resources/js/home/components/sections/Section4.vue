@@ -60,22 +60,20 @@
 				</Slide>
 			</Hooper>
 			<form
-				action="call.php"
+				action=""
 				class="jSec4-form"
-				method="post"
+				@submit="onSubmit"
 			>
 				<p class="jSec4-footer">
 					{{ $lang(lang, 's4-footer') }}
 				</p>
 				<div class="jSec4-form-inputs">
 					<InputText
-						v-model="nameValue"
-						:name="'NAME'"
+						v-model="name"
 						:placeholder="$lang(lang, 's4-name')"
 					/>
 					<InputText
-						v-model="phoneValue"
-						:name="'PHONE'"
+						v-model="phone"
 						:placeholder="$lang(lang, 's4-phone')"
 					/>
 				</div>
@@ -83,6 +81,7 @@
 					:disabled="isButtonDisabled"
 					class="jButton"
 					type="submit"
+					@click="callMeBack"
 				>
 					{{ callMeButtonContent }}
 				</button>
@@ -105,8 +104,8 @@ export default {
 	},
 	data() {
 		return {
-			nameValue: '',
-			phoneValue: '',
+			name: '',
+			phone: '',
 			isBlock1Highlight: false,
 			isBlock2Highlight: false,
 			isBlock3Highlight: false,
@@ -156,8 +155,8 @@ export default {
 	methods: {
 		onSubmit(e) {
 			e.preventDefault()
-			if (this.nameValue && this.phoneValue) {
-				alert(`${this.nameValue}, мы Вам перезвоним в ближайшее время.`)
+			if (this.name && this.phone) {
+				alert(`${this.name}, мы Вам перезвоним в ближайшее время.`)
 			} else {
 				alert('Заполните пожалуйста все поля.')
 			}
@@ -181,7 +180,7 @@ export default {
 			this.observer.disconnect()
 		},
 		callMeBack() {
-			if (this.nameValue && this.phoneValue) {
+			if (this.name && this.phone) {
 				this.isButtonDisabled = true
 			}
 		}
