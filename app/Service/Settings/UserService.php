@@ -104,7 +104,7 @@ class UserService
             {
                 $this->userRepository->restoreUser($user);
             }
-
+            dd('gere');
             $this->userRepository->updateOrCreateNewEmployee($dto->toArray());
 
             (new DepartmentUserService)->setGroup($dto->group, $user->id, 'add');
