@@ -31,7 +31,6 @@ class EmailNotificationListener
      */
     public function handle(EmailNotificationEvent $event)
     {
-        dd(tenant('id'));
         try {
             Mail::to($event->email)->send(new SendInvitation([
                 'name'      => $event->name,
