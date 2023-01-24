@@ -156,46 +156,42 @@ final class UserRepository extends CoreRepository
         StoreUserDTO $dto
     )
     {
-        try {
-            $password = str_random(8);
+        $password = str_random(8);
 
-            $user =  User::query()->updateOrCreate(
-                [
-                    'email'             => strtolower($dto->email)
-                ],
-                [
-                    'name'              => $dto->name,
-                    'last_name'         => $dto->lastName,
-                    'description'       => $dto->description,
-                    'password'          => Hash::make($password),
-                    'position_id'       => $dto->positionId,
-                    'user_type'         => $dto->userType,
-                    'timezone'          => 6,
-                    'birthday'          => $dto->birthday,
-                    'program_id'        => $dto->programType,
-                    'working_day_id'    => $dto->workingDays,
-                    'working_time_id'   => $dto->workTimes,
-                    'phone'             => Phone::normalize($dto->phone),
-                    'full_time'         => $dto->fullTime,
-                    'work_start'        => $dto->workStartTime,
-                    'work_end'          => $dto->workEndTime,
-                    'currency'          => $dto->currency ?? 'kzt',
-                    'weekdays'          => $dto->weekdays,
-                    'working_country'   => $dto->workingCountry,
-                    'working_city'      => $dto->workingCity,
-                    'role_id'           => $dto->role_id ?? 1,
-                    'is_admin'          => $dto->is_admin ?? 0,
-                    'img_url'           => $dto->fileName
-                ]
-            );
+        $user =  User::query()->updateOrCreate(
+            [
+                'email'             => strtolower($dto->email)
+            ],
+            [
+                'name'              => $dto->name,
+                'last_name'         => $dto->lastName,
+                'description'       => $dto->description,
+                'password'          => Hash::make($password),
+                'position_id'       => $dto->positionId,
+                'user_type'         => $dto->userType,
+                'timezone'          => 6,
+                'birthday'          => $dto->birthday,
+                'program_id'        => $dto->programType,
+                'working_day_id'    => $dto->workingDays,
+                'working_time_id'   => $dto->workTimes,
+                'phone'             => Phone::normalize($dto->phone),
+                'full_time'         => $dto->fullTime,
+                'work_start'        => $dto->workStartTime,
+                'work_end'          => $dto->workEndTime,
+                'currency'          => $dto->currency ?? 'kzt',
+                'weekdays'          => $dto->weekdays,
+                'working_country'   => $dto->workingCountry,
+                'working_city'      => $dto->workingCity,
+                'role_id'           => $dto->role_id ?? 1,
+                'is_admin'          => $dto->is_admin ?? 0,
+                'img_url'           => $dto->fileName
+            ]
+        );
 
-            EmailNotificationEvent::dispatch($dto->name, $dto->email, $password);
+        EmailNotificationEvent::dispatch($dto->name, $dto->email, $password);
 
-            return $user;
-        } catch (\Exception $exception)
-        {
-            new CustomException('Что то пошло не так при сохранений пользователя.', ErrorCode::BAD_REQUEST, []);
-        }
+        return $user;
+
     }
 
     /**
