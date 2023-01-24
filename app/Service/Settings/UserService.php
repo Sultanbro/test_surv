@@ -104,10 +104,8 @@ class UserService
             {
                 $this->userRepository->restoreUser($user);
             }
-            if ($user == null)
-            {
-                $user = $this->userRepository->updateOrCreateNewEmployee($dto->toArray());
-            }
+
+            $user = $this->userRepository->updateOrCreateNewEmployee($dto);
 
             (new DepartmentUserService)->setGroup($dto->group, $user->id, 'add');
 
