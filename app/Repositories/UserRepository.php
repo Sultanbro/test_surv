@@ -4,6 +4,7 @@ declare(strict_types=1);
 namespace App\Repositories;
 
 use App\Classes\Helpers\Phone;
+use App\DTO\Settings\StoreUserDTO;
 use App\Enums\ErrorCode;
 use App\Enums\UserFilterEnum;
 use App\Events\EmailNotificationEvent;
@@ -152,49 +153,45 @@ final class UserRepository extends CoreRepository
     }
 
     public function updateOrCreateNewEmployee(
-        array $userData
+        StoreUserDTO $dto
     )
     {
-        try {
-            $password = str_random(8);
+        $password = str_random(8);
 
-            $user =  User::query()->updateOrCreate(
-                [
-                    'email'             => strtolower($userData['email'])
-                ],
-                [
-                    'name'              => $userData['name'],
-                    'last_name'         => $userData['last_name'],
-                    'description'       => $userData['description'],
-                    'password'          => Hash::make($password),
-                    'position_id'       => $userData['position_id'],
-                    'user_type'         => $userData['user_type'],
-                    'timezone'          => 6,
-                    'birthday'          => $userData['birthday'],
-                    'program_id'        => $userData['program_type'],
-                    'working_day_id'    => $userData['working_days'],
-                    'working_time_id'   => $userData['working_times'],
-                    'phone'             => Phone::normalize($userData['phone']),
-                    'full_time'         => $userData['full_time'],
-                    'work_start'        => $userData['work_start_time'],
-                    'work_end'          => $userData['work_end_time'],
-                    'currency'          => $userData['currency'] ?? 'kzt',
-                    'weekdays'          => $userData['weekdays'],
-                    'working_country'   => $userData['working_country'],
-                    'working_city'      => $userData['working_city'],
-                    'role_id'           => $userData['role_id'] ?? 1,
-                    'is_admin'          => $userData['is_admin'] ?? 0,
-                    'img_url'           => $userData['file_name']
-                ]
-            );
-            dd($user);
-            EmailNotificationEvent::dispatch($userData['name'], $userData['email'], $password);
+        $user =  User::query()->updateOrCreate(
+            [
+                'email'             => strtolower($dto->email)
+            ],
+            [
+                'name'              => $dto->name,
+                'last_name'         => $dto->lastName,
+                'description'       => $dto->description,
+                'password'          => Hash::make($password),
+                'position_id'       => $dto->positionId,
+                'user_type'         => $dto->userType,
+                'timezone'          => 6,
+                'birthday'          => $dto->birthday,
+                'program_id'        => $dto->programType,
+                'working_day_id'    => $dto->workingDays,
+                'working_time_id'   => $dto->workTimes,
+                'phone'             => Phone::normalize($dto->phone),
+                'full_time'         => $dto->fullTime,
+                'work_start'        => $dto->workStartTime,
+                'work_end'          => $dto->workEndTime,
+                'currency'          => $dto->currency ?? 'kzt',
+                'weekdays'          => $dto->weekdays,
+                'working_country'   => $dto->workingCountry,
+                'working_city'      => $dto->workingCity,
+                'role_id'           => $dto->role_id ?? 1,
+                'is_admin'          => $dto->is_admin ?? 0,
+                'img_url'           => $dto->fileName
+            ]
+        );
 
-            return $user;
-        } catch (\Exception $exception)
-        {
-            new CustomException('Что то пошло не так при сохранений пользователя.', ErrorCode::BAD_REQUEST, []);
-        }
+        EmailNotificationEvent::dispatch($dto->name, $dto->email, $password);
+
+        return $user;
+
     }
 
     /**

@@ -97,73 +97,67 @@ class UserService
         StoreUserDTO $dto
     ): int|RedirectResponse
     {
-        try {
-            $user = $this->userRepository->getUserByEmail($dto->email);
 
-            if ($user != null && $user->deleted_at != null)
-            {
-                $this->userRepository->restoreUser($user);
-            }
-            if ($user == null)
-            {
-                $user = $this->userRepository->updateOrCreateNewEmployee($dto->toArray());
-            }
+        $user = $this->userRepository->getUserByEmail($dto->email);
 
-            (new DepartmentUserService)->setGroup($dto->group, $user->id, 'add');
-
-            if ($dto->headGroup != 0 && $dto->positionId == Position::GROUP_HEAD)
-            {
-                $this->setProfileGroupHead($user->id, $dto->headGroup);
-            }
-
-            $this->setUserDescription($user->id, $dto->isTrainee);
-
-            if ($dto->contacts)
-            {
-                UserHelper::saveContacts($user->id, $dto->contacts['phone']);
-            }
-
-            if ($dto->cards)
-            {
-                UserHelper::saveCards($user->id, $dto->cards);
-            }
-
-            if (
-                $dto->file1 || $dto->file2 ||
-                $dto->file3 || $dto->file4 ||
-                $dto->file5 || $dto->file6 ||
-                $dto->file7
-            )
-            {
-                FileHelper::storeDocumentsFile([
-                    'dog_okaz_usl' => $dto->file1,
-                    'sohr_kom_tainy' => $dto->file2,
-                    'dog_o_nekonk'  => $dto->file3,
-                    'trud_dog'      => $dto->file4,
-                    'ud_lich'       => $dto->file5,
-                    'photo'         => $dto->file6,
-                    'archive'       => $dto->file7
-                ], $user->id);
-            }
-
-            $this->userRepository->updateOrCreateSalary(
-                $user->id,
-                $dto->salary,
-                $dto->cardNumber,
-                $dto->kaspi,
-                $dto->jysan,
-                $dto->cardKaspi,
-                $dto->cardJysan,
-                $dto->kaspiCardholder,
-                $dto->jysanCardholder
-            );
-
-            return Response::HTTP_CREATED;
-        } catch (Throwable $exception) {
-            return back()->withErrors(
-                'При сохранений произошла ошибка повторите попытку еще раз, если не получится сообщите Админам. С любовью ваши любимые разработчики <3'
-            );
+        if ($user != null && $user->deleted_at != null)
+        {
+            $this->userRepository->restoreUser($user);
         }
+
+        $user = $this->userRepository->updateOrCreateNewEmployee($dto);
+
+        (new DepartmentUserService)->setGroup($dto->group, $user->id, 'add');
+
+        if ($dto->headGroup != 0 && $dto->positionId == Position::GROUP_HEAD)
+        {
+            $this->setProfileGroupHead($user->id, $dto->headGroup);
+        }
+
+        $this->setUserDescription($user->id, $dto->isTrainee);
+
+        if ($dto->contacts)
+        {
+            UserHelper::saveContacts($user->id, $dto->contacts['phone']);
+        }
+
+        if ($dto->cards)
+        {
+            UserHelper::saveCards($user->id, $dto->cards);
+        }
+
+        if (
+            $dto->file1 || $dto->file2 ||
+            $dto->file3 || $dto->file4 ||
+            $dto->file5 || $dto->file6 ||
+            $dto->file7
+        )
+        {
+            FileHelper::storeDocumentsFile([
+                'dog_okaz_usl' => $dto->file1,
+                'sohr_kom_tainy' => $dto->file2,
+                'dog_o_nekonk'  => $dto->file3,
+                'trud_dog'      => $dto->file4,
+                'ud_lich'       => $dto->file5,
+                'photo'         => $dto->file6,
+                'archive'       => $dto->file7
+            ], $user->id);
+        }
+
+        $this->userRepository->updateOrCreateSalary(
+            $user->id,
+            $dto->salary,
+            $dto->cardNumber,
+            $dto->kaspi,
+            $dto->jysan,
+            $dto->cardKaspi,
+            $dto->cardJysan,
+            $dto->kaspiCardholder,
+            $dto->jysanCardholder
+        );
+
+        return Response::HTTP_CREATED;
+
     }
 
     /**
@@ -235,18 +229,14 @@ class UserService
         ?bool $isTrainee = false
     ): void
     {
-        try {
-            if($isTrainee) {
-                $this->descriptionRepository->setEmployee($userId);
-                (new DayTypeRepository)->createNew($userId);
-            }
-
-            $this->descriptionRepository->createDescription($userId);
-            CreateTimeTrackHistoryEvent::dispatch($userId);
-
-        } catch (Exception) {
-            throw new Exception("Couldn't create a description for user");
+        if($isTrainee) {
+            $this->descriptionRepository->setEmployee($userId);
+            (new DayTypeRepository)->createNew($userId);
         }
+
+        $this->descriptionRepository->createDescription($userId);
+        CreateTimeTrackHistoryEvent::dispatch($userId);
+
     }
     
     /**
