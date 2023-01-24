@@ -232,10 +232,11 @@ class UserService
         if($isTrainee) {
             $this->descriptionRepository->setEmployee($userId);
             (new DayTypeRepository)->createNew($userId);
-        } else {
-            $this->descriptionRepository->createDescription($userId);
-            CreateTimeTrackHistoryEvent::dispatch($userId);
         }
+
+        $this->descriptionRepository->createDescription($userId);
+        CreateTimeTrackHistoryEvent::dispatch($userId);
+
     }
     
     /**
