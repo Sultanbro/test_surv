@@ -34,7 +34,6 @@ final class UserUpdateService
         UpdateUserDTO $userDTO
     ): User
     {
-        dd($userDTO->isTrainee);
         try {
             $user = $this->userRepository->userWithRelations($userDTO->userId, [
                 'zarplata',
@@ -105,12 +104,17 @@ final class UserUpdateService
         }
     }
 
+    /**
+     * @param User $user
+     * @param $isTrainee
+     * @return void
+     */
     private function changeTraineeToEmployee(
         User $user,
         $isTrainee
     ): void
     {
-        if (!$isTrainee)
+        if ($isTrainee == "false")
         {
             $user->description()->update([
                 'is_trainee' => 0
