@@ -220,6 +220,8 @@ final class UserUpdateService
 
         $this->setCountryAndCity($user, $userDTO->workingCountry);
 
+        $user->save();
+
         return $user;
     }
 
