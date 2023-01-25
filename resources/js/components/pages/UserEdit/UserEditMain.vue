@@ -258,7 +258,7 @@ export default {
 					</option>
 					<option
 						value="remote"
-						:selected="user && user.user_type === 'remote'"
+						:selected="user && user.user_type === 'remote' || user === null"
 					>
 						Удаленный работник
 					</option>
