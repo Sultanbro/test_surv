@@ -853,7 +853,7 @@ class EmployeeController extends Controller
         /********** Подготовка  */
         /********** Есть момент, что можно посмотреть любого пользователя (не сотрудника ), не знаю баг или нет  */
         /*==============================================================*/
-
+        dd($request['is_trainee']);
         $id = $request['id'];
         $user = User::with('zarplata')->where('id', $id)->withTrashed()->first();
         $photo = Photo::where('user_id', $id)->first();
