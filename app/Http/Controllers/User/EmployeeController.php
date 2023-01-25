@@ -913,6 +913,13 @@ class EmployeeController extends Controller
             $request['selectedCityInput'] = null;
         }
 
+        if ($request['is_trainee'] == "false")
+        {
+            $user->description()->update([
+                'is_trainee' => 0
+            ]);
+        }
+
         $user->email = strtolower($request['email']);
         $user->name = $request['name'];
         $user->last_name = $request['last_name'];
