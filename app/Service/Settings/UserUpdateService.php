@@ -34,6 +34,7 @@ final class UserUpdateService
         UpdateUserDTO $userDTO
     ): User
     {
+        dd($userDTO->isTrainee);
         try {
             $user = $this->userRepository->userWithRelations($userDTO->userId, [
                 'zarplata',
@@ -219,6 +220,8 @@ final class UserUpdateService
         $user->weekdays     = $userDTO->weekdays;
 
         $this->setCountryAndCity($user, $userDTO->workingCountry);
+
+        $user->save();
 
         return $user;
     }
