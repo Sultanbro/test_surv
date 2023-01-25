@@ -48,7 +48,7 @@ export default {
 						:groups="groups"
 						:fines="fines"
 						:years="years"
-						:can_edit="can_edit"
+						:can-edit="can_edit"
 						:activeuserid="activeuserid"
 						:activeuserpos="activeuserpos"
 					/>
