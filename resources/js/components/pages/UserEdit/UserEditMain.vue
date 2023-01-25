@@ -8,10 +8,22 @@ export default {
 		ProfileGroups,
 	},
 	props: {
-		formUserName: String,
-		formUserLastName: String,
-		formUserEmail: String,
-		formUserBirthday: String,
+		formUserName: {
+			type: String,
+			default: ''
+		},
+		formUserLastName: {
+			type: String,
+			default: ''
+		},
+		formUserEmail: {
+			type: String,
+			default: ''
+		},
+		formUserBirthday: {
+			type: String,
+			default: ''
+		},
 		positions:{
 			type: Array,
 			default: () => []
@@ -20,7 +32,7 @@ export default {
 			type: Array,
 			default: () => []
 		},
-		in_groups:{
+		inProgress:{
 			type: Array,
 			default: () => []
 		},
@@ -113,7 +125,7 @@ export default {
 			<div class="col-sm-8">
 				<input
 					name="name"
-					:value="formUserName"
+					v-model="formUserName"
 					type="text"
 					required
 					id="firstName"
@@ -130,7 +142,7 @@ export default {
 			<div class="col-sm-8">
 				<input
 					name="last_name"
-					:value="formUserLastName"
+					v-model="formUserLastName"
 					type="text"
 					required
 					id="lastName"
@@ -148,7 +160,7 @@ export default {
 			<div class="col-sm-8">
 				<input
 					name="email"
-					:value="formUserEmail"
+					v-model="formUserEmail"
 					type="email"
 					required
 					id="email"
@@ -220,7 +232,7 @@ export default {
 					id="position_group"
 					:groups="groups"
 					:user_id="user ? user.id : '0'"
-					:in_groups="in_groups"
+					:in-progress="inProgress"
 					:user_role="2"
 				/>
 			</div>
@@ -316,7 +328,7 @@ export default {
 						<div class="col-sm-12">
 							<input
 								name="selectedCityInput"
-								:value="country"
+								v-model="country"
 								required
 								id="selectedCityInput"
 								class="form-control"

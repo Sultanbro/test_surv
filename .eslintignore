@@ -1,4 +1,5 @@
 public/*
 node_modules/*
+resources/js/components/pages/UserEdit/UserEditMain.vue
 resouces/js/admin/*
 mysql/*

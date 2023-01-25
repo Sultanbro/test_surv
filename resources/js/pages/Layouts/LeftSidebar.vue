@@ -346,7 +346,7 @@ export default {
 					to: '/timetracking/info',
 					icon: 'icon-nd-questions',
 					height: 0,
-					hide: !this.$can('faq_view')
+					hide: !(this.$can('faq_view') && this.isMainProject)
 				},
 				{
 					name: 'Депре мирование',

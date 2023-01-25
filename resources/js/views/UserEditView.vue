@@ -277,7 +277,7 @@ export default {
 			reader.readAsDataURL(this.files[0])
 			this.isUploadImageModal = true
 		},
-		async submit(isTrainee, increment_provided){
+		async submit(isTrainee, increment_provided, isNew){
 			this.trainee = isTrainee
 			this.increment_provided = increment_provided
 
@@ -377,18 +377,21 @@ export default {
 				this.isBeforeSubmit = true
 			}
 			else {
-				this.sendForm(formData)
+				this.sendForm(formData, isNew)
 			}
 		},
-		sendForm(formData){
+		sendForm(formData, isNew){
 			axios({
 				method: 'post',
 				url: this.formAction,
 				data: formData,
 				headers: { 'Content-Type': 'multipart/form-data' },
 			}).then(({data}) => {
-				this.parseResponse(data)
-				if(this.errors && this.errors.length) return this.$toast.error('Не удалось сохранить информацию о сотруднике')
+				if(!isNew){
+					this.parseResponse(data);
+					if(this.errors && this.errors.length) return this.$toast.error('Не удалось сохранить информацию о сотруднике');
+				}
+				window.location = '/timetracking/settings?tab=1';
 				this.$toast.success('Информация о сотруднике сохранена')
 			}).catch(err => {
 				console.error(err)
@@ -497,14 +500,14 @@ export default {
 								<button
 									id="submitx2"
 									class="btn btn-primary mr-2 rounded"
-									@click.prevent="submit(false, true)"
+									@click.prevent="submit(false, true, true)"
 								>
 									Пригласить без стажировки
 								</button>
 								<button
 									id="submit_trainee"
 									class="btn btn-warning mr-2 rounded"
-									@click.prevent="submit(true, false)"
+									@click.prevent="submit(true, false, true)"
 								>
 									Пригласить со стажировкой
 								</button>
@@ -776,7 +779,7 @@ export default {
 													:form-user-birthday="formUserBirthday"
 													:positions="positions"
 													:groups="groups"
-													:in_groups="head_in_groups"
+													:in-progress="head_in_groups"
 													:programs="programs"
 													:working-days="workingDays"
 													:working-times="workingTimes"
