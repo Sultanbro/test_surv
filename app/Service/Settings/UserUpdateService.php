@@ -34,74 +34,70 @@ final class UserUpdateService
         UpdateUserDTO $userDTO
     ): User
     {
-        try {
-            $user = $this->userRepository->userWithRelations($userDTO->userId, [
-                'zarplata',
-                'photo',
-                'downloads',
-                'user_description'
-            ]);
-            $this->emailCheck($user, $userDTO->email);
-            $user = $this->updateUserData($user, $userDTO);
 
-            if ($userDTO->adaptationTalks)
-            {
-                $this->setAdaptationTalks($user->id, $userDTO->adaptationTalks);
-            }
+        $user = $this->userRepository->userWithRelations($userDTO->userId, [
+            'zarplata',
+            'photo',
+            'downloads',
+            'user_description'
+        ]);
+        $this->emailCheck($user, $userDTO->email);
+        $user = $this->updateUserData($user, $userDTO);
 
-            $this->changeTraineeToEmployee($user, $userDTO->isTrainee);
-
-            $this->setTaxes([
-                'tax' => $userDTO->tax,
-                'taxes' => $userDTO->taxes,
-                'id' => $userDTO->userId
-            ]);
-
-            $this->setBitrix($user, $userDTO->bitrixId);
-
-            if ($userDTO->cards) {
-                UserHelper::saveCards($user->id, $userDTO->cards);
-            }
-
-            if ($userDTO->contacts) {
-                UserHelper::saveContacts($user->id, $userDTO->contacts['phone']);
-            }
-
-            if (
-                $userDTO->file1 || $userDTO->file2 ||
-                $userDTO->file3 || $userDTO->file4 ||
-                $userDTO->file5 || $userDTO->file6 ||
-                $userDTO->file7
-            )
-            {
-                FileHelper::storeDocumentsFile([
-                    'dog_okaz_usl' => $userDTO->file1,
-                    'sohr_kom_tainy' => $userDTO->file2,
-                    'dog_o_nekonk'  => $userDTO->file3,
-                    'trud_dog'      => $userDTO->file4,
-                    'ud_lich'       => $userDTO->file5,
-                    'photo'         => $userDTO->file6,
-                    'archive'       => $userDTO->file7
-                ], $user->id);
-            }
-
-            $this->userRepository->updateOrCreateSalary(
-                $user->id,
-                $userDTO->salary,
-                $userDTO->cardNumber,
-                $userDTO->kaspi,
-                $userDTO->jysan,
-                $userDTO->cardKaspi,
-                $userDTO->cardJysan,
-                $userDTO->kaspiCardholder,
-                $userDTO->jysanCardholder
-            );
-
-            return $user;
-        } catch (Throwable $exception)
+        if ($userDTO->adaptationTalks)
         {
-            throw new Exception('При обновлений или сохранений данных произошла ошибка путь: ' . get_class($this). ' ' . $exception->getMessage());
+            $this->setAdaptationTalks($user->id, $userDTO->adaptationTalks);
         }
+
+        $this->changeTraineeToEmployee($user, $userDTO->isTrainee);
+
+        $this->setTaxes([
+            'tax' => $userDTO->tax,
+            'taxes' => $userDTO->taxes,
+            'id' => $userDTO->userId
+        ]);
+
+        $this->setBitrix($user, $userDTO->bitrixId);
+
+        if ($userDTO->cards) {
+            UserHelper::saveCards($user->id, $userDTO->cards);
+        }
+
+        if ($userDTO->contacts) {
+            UserHelper::saveContacts($user->id, $userDTO->contacts['phone']);
+        }
+
+        if (
+            $userDTO->file1 || $userDTO->file2 ||
+            $userDTO->file3 || $userDTO->file4 ||
+            $userDTO->file5 || $userDTO->file6 ||
+            $userDTO->file7
+        )
+        {
+            FileHelper::storeDocumentsFile([
+                'dog_okaz_usl' => $userDTO->file1,
+                'sohr_kom_tainy' => $userDTO->file2,
+                'dog_o_nekonk'  => $userDTO->file3,
+                'trud_dog'      => $userDTO->file4,
+                'ud_lich'       => $userDTO->file5,
+                'photo'         => $userDTO->file6,
+                'archive'       => $userDTO->file7
+            ], $user->id);
+        }
+
+        $this->userRepository->updateOrCreateSalary(
+            $user->id,
+            $userDTO->salary,
+            $userDTO->cardNumber,
+            $userDTO->kaspi,
+            $userDTO->jysan,
+            $userDTO->cardKaspi,
+            $userDTO->cardJysan,
+            $userDTO->kaspiCardholder,
+            $userDTO->jysanCardholder
+        );
+
+        return $user;
     }
 
     /**
