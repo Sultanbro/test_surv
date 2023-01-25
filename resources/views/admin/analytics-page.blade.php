@@ -4,7 +4,8 @@
 <script type="application/json" id="async-page-data">
     {
         "groups": {{json_encode($groups)}},
-        "activeuserid": {{json_encode(auth()->user()->id)}}
+        "activeuserid": {{json_encode(auth()->user()->id)}},
+        "isadmin": {{json_encode(auth()->user()->is_admin)}}
     }
 </script>
 @endsection

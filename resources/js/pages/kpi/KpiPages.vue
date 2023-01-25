@@ -6,7 +6,7 @@
 		<div v-if="access == 'edit'">
 			<b-tabs
 				type="card"
-				class="mt-4"
+				class="mt-4 kpi-tabs"
 				:value="active"
 				@activate-tab="(n,p,e) => active = n"
 			>
@@ -142,3 +142,9 @@ export default {
 	}
 }
 </script>
+
+<style lang="scss">
+	.kpi-tabs{
+		overflow: visible !important;
+	}
+</style>

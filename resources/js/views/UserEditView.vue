@@ -38,6 +38,7 @@ export default {
 		return {
 			activeUserId: this.$route.query.id || '',
 			csrf: '',
+			tenant: window.location.hostname.split('.')[0],
 			user: null,
 			groups: [],
 			positions: [],
@@ -381,22 +382,24 @@ export default {
 			}
 		},
 		sendForm(formData, isNew){
+			if(this.errors && this.errors.length) return this.$toast.error('Не удалось сохранить информацию о сотруднике');
 			axios({
 				method: 'post',
 				url: this.formAction,
 				data: formData,
 				headers: { 'Content-Type': 'multipart/form-data' },
-			}).then(({data}) => {
-				if(!isNew){
-					this.parseResponse(data);
-					if(this.errors && this.errors.length) return this.$toast.error('Не удалось сохранить информацию о сотруднике');
+			}).then(() => {
+				if(isNew){
+					this.$toast.success('Информация о сотруднике сохранена');
+					window.location = '/timetracking/settings?tab=1';
+					// this.parseResponse(data);
+				} else {
+					this.$toast.success('Информация о сотруднике обновлена');
 				}
-				window.location = '/timetracking/settings?tab=1';
-				this.$toast.success('Информация о сотруднике сохранена')
 			}).catch(err => {
-				console.error(err)
-				this.$toast.error('Не удалось сохранить информацию о сотруднике')
-			})
+				console.error(err);
+				this.$toast.error('Не удалось сохранить информацию о сотруднике');
+			});
 		},
 		async deleteUser(){
 			if(this.$refs.file8.value && this.fireCause !== 'Дубликат, 2 учетки') {
@@ -738,7 +741,7 @@ export default {
 														/>
 													</li>
 													<li
-														v-if="user"
+														v-if="user && tenant === 'bp'"
 														id="bg-this-7"
 														class="bg-this"
 														:class="{'bg-this-active': showBlocks.adaptation}"
