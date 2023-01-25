@@ -439,6 +439,7 @@ Route::middleware(['web','tenant','not_admin_subdomain'])->group(function () {
     Route::post('/timetracking/analytics/edit-activity', [Analytics\AnalyticsController::class, 'editActivity']);
     Route::post('/timetracking/analytics/update-stat', [Analytics\AnalyticsController::class, 'updateUserStat']);
     Route::post('/timetracking/analytics/save-cell-activity', [Analytics\AnalyticsController::class, 'saveCellActivity']);
+    Route::post('/timetracking/analytics/save-cell-activity-new', [Analytics\CellController::class, 'saveCellActivity']);
     Route::post('/timetracking/analytics/save-cell-time', [Analytics\AnalyticsController::class, 'saveCellTime']);
     Route::post('/timetracking/analytics/save-cell-sum', [Analytics\AnalyticsController::class, 'saveCellSum']);
     Route::post('/timetracking/analytics/save-cell-avg', [Analytics\AnalyticsController::class, 'saveCellAvg']);
