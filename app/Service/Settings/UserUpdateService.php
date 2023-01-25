@@ -48,6 +48,8 @@ final class UserUpdateService
                 $this->setAdaptationTalks($user->id, $userDTO->adaptationTalks);
             }
 
+            $this->changeTraineeToEmployee($user, $userDTO->isTrainee);
+
             $this->setTaxes([
                 'tax' => $userDTO->tax,
                 'taxes' => $userDTO->taxes,
@@ -101,7 +103,18 @@ final class UserUpdateService
         }
     }
 
-
+    private function changeTraineeToEmployee(
+        User $user,
+        $isTrainee
+    ): void
+    {
+        if (!$isTrainee)
+        {
+            $user->description()->update([
+                'is_trainee' => 0
+            ]);
+        }
+    }
     /**
      * @param User $user
      * @param int|null $bitrixId
