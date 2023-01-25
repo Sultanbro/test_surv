@@ -236,10 +236,8 @@ final class UserUpdateService
         ?string $country
     )
     {
-        $coordinates = isset($country) ? explode(' ', $country) : null;
-
         $user->working_country  = $country;
-        $user->working_city     = Coordinate::query()->where('city', $coordinates[5])->first()->id;
+        $user->working_city     = Coordinate::query()->where('country', 'LIKE', "%$country%")->first()->id ?? null;
 
         return $user;
     }
