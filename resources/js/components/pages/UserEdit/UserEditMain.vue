@@ -55,6 +55,12 @@ export default {
 	},
 	data(){
 		return {
+			userName: '',
+			userLastName: '',
+			userEmail: '',
+			userBirthday: '',
+			userWork_start: '',
+			userWork_end: '',
 			country: this.user?.working_country || '',
 			working_city: this.user?.working_city || '',
 			cities: [],
@@ -69,12 +75,21 @@ export default {
 		weekdayClass(){
 			return this.weekdays.map(day => +day ? 'active' : '')
 		},
+		weekdaysModel(){
+			return this.weekdays.join('');
+		}
 	},
 	watch: {
 		user(user){
-			this.country = user?.working_country || ''
-			this.working_city = user?.working_city || ''
-			this.weekdays = (user?.weekdays || '0000000').split('')
+			this.country = user?.working_country || '';
+			this.working_city = user?.working_city || '';
+			this.weekdays = (user?.weekdays || '0000000').split('');
+			this.userName = this.formUserName;
+			this.userLastName = this.formUserLastName;
+			this.userEmail = this.formUserEmail;
+			this.userBirthday = this.formUserBirthday;
+			this.userWork_start = user ? user.work_start : '';
+			this.userWork_end = user ? user.work_end : '';
 		}
 	},
 	methods: {
@@ -125,7 +140,7 @@ export default {
 			<div class="col-sm-8">
 				<input
 					name="name"
-					v-model="formUserName"
+					v-model="userName"
 					type="text"
 					required
 					id="firstName"
@@ -142,7 +157,7 @@ export default {
 			<div class="col-sm-8">
 				<input
 					name="last_name"
-					v-model="formUserLastName"
+					v-model="userLastName"
 					type="text"
 					required
 					id="lastName"
@@ -160,7 +175,7 @@ export default {
 			<div class="col-sm-8">
 				<input
 					name="email"
-					v-model="formUserEmail"
+					v-model="userEmail"
 					type="email"
 					required
 					id="email"
@@ -197,7 +212,7 @@ export default {
 			<div class="col-sm-8">
 				<input
 					name="birthday"
-					:value="formUserBirthday"
+					v-model="userBirthday"
 					type="date"
 					required
 					id="birthday"
@@ -446,7 +461,7 @@ export default {
 			<div class="col-sm-8 form-inline">
 				<input
 					name="work_start_time"
-					:value="user ? user.work_start : ''"
+					v-model="userWork_start"
 					type="time"
 					id="workStartTime"
 					class="form-control mr-2 work-start-time"
@@ -454,7 +469,7 @@ export default {
 				<label for="workEndTime">До </label>
 				<input
 					name="work_start_end"
-					:value="user ? user.work_end : ''"
+					v-model="userWork_end"
 					type="time"
 					id="workEndTime"
 					class="form-control mx-2 work-end-time"
@@ -473,7 +488,7 @@ export default {
 			<div class="col-sm-8 form-inline">
 				<input
 					name="weekdays"
-					:value="weekdays.join('')"
+					v-model="weekdaysModel"
 					type="hidden"
 					id="weekdays-input"
 				>
