@@ -915,9 +915,6 @@ class EmployeeController extends Controller
 
         if ($request['is_trainee'] == "false")
         {
-            dd(
-                'here'
-            );
             $user->description()->update([
                 'is_trainee' => 0
             ]);
