@@ -71,7 +71,7 @@ Route::middleware(['web','tenant','not_admin_subdomain'])->group(function () {
     Route::get('/timetracking/create-person', [User\EmployeeController::class, 'createPerson'])->name('users.create');
     Route::post('/timetracking/person/store', [Settings\UserController::class, 'store'])->name('users.store');
     Route::get('/timetracking/edit-person', [User\EmployeeController::class, 'editperson'])->name('users.edit');
-    Route::post('/timetracking/person/update', [Settings\UserController::class, 'update'])->name('users.update');
+    Route::post('/timetracking/person/update', [User\EmployeeController::class, 'updatePerson'])->name('users.update');
     Route::post('/timetracking/edit-person/group', [User\EmployeeController::class, 'editPersonGroup']); // Удалять добавлять пользователя в группы
     Route::post('/timetracking/edit-person/head_in_groups', [User\EmployeeController::class, 'setUserHeadInGroups']); // Удалять добавлять пользователя руководителем групп
     Route::any('/timetracking/delete-person', [User\EmployeeController::class, 'deleteUser'])->name('removeUser');
