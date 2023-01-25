@@ -32,7 +32,7 @@ class UpdateUserDTO
      * @param string|null $workingCity
      * @param UploadedFile|null $fileName
      * @param int|null $headGroup
-     * @param bool|null $isTrainee
+     * @param string|null $isTrainee
      * @param array|null $contacts
      * @param array|null $adaptationTalks
      * @param array|null $cards
@@ -83,7 +83,7 @@ class UpdateUserDTO
         public ?string $workingCity,
         public ?UploadedFile $fileName,
         public ?int $headGroup,
-        public ?bool $isTrainee,
+        public ?string $isTrainee,
         public ?array $contacts,
         public ?array $adaptationTalks,
         public ?array $cards,
