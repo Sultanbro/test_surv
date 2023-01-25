@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\Settings\SettingUserRequest;
 use App\Http\Requests\Settings\GetUserRequest;
 use App\Http\Requests\Settings\StoreUserRequest;
+use App\Http\Requests\Settings\UpdateUserRequest;
 use App\Service\Settings\UserService;
 use App\Service\Settings\UserUpdateService;
 use App\User;
@@ -114,11 +115,11 @@ class UserController extends Controller
      *          description="Success"
      *      ),
      * )
-     * @param StoreUserRequest $request
+     * @param UpdateUserRequest $request
      * @return JsonResponse
      * @throws Exception
      */
-    public function update(StoreUserRequest $request): JsonResponse
+    public function update(UpdateUserRequest $request): JsonResponse
     {
         $user = auth()->user() ?? User::query()->find(5);
         abort_if(!$user, Response::HTTP_FORBIDDEN, 'Access denied');

@@ -6,6 +6,7 @@ namespace App\Service\Settings;
 
 use App\AdaptationTalk;
 use App\DTO\Settings\StoreUserDTO;
+use App\DTO\Settings\UpdateUserDTO;
 use App\Enums\ErrorCode;
 use App\Helpers\FileHelper;
 use App\Helpers\UserHelper;
@@ -30,7 +31,7 @@ final class UserUpdateService
      * @throws Exception
      */
     public function updateUser(
-        StoreUserDTO $userDTO
+        UpdateUserDTO $userDTO
     ): User
     {
         try {
@@ -187,7 +188,7 @@ final class UserUpdateService
      */
     private function updateUserData(
         User $user,
-        StoreUserDTO $userDTO
+        UpdateUserDTO $userDTO
     ): User
     {
         if ($userDTO->newPassword)
