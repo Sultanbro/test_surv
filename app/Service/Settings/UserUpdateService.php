@@ -34,6 +34,7 @@ final class UserUpdateService
         UpdateUserDTO $userDTO
     ): User
     {
+        dd($userDTO->isTrainee);
         try {
             $user = $this->userRepository->userWithRelations($userDTO->userId, [
                 'zarplata',
