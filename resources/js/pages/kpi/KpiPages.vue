@@ -39,11 +39,12 @@
 					<Stats v-if="active == 3" />
 				</b-tab>
 				<b-tab
+					v-if="tenant === 'bp'"
 					title="Показатели"
 					:key="4"
 					card
 				>
-					<Indicators v-if="active == 4" />
+					<Indicators v-if="active == 4 && tenant === 'bp'" />
 				</b-tab>
 			</b-tabs>
 		</div>
@@ -63,11 +64,12 @@
 					<Stats v-if="active == 0" />
 				</b-tab>
 				<b-tab
+					v-if="tenant === 'bp'"
 					title="Показатели"
 					:key="1"
 					card
 				>
-					<Indicators v-if="active == 1" />
+					<Indicators v-if="active == 1 && tenant === 'bp'" />
 				</b-tab>
 			</b-tabs>
 		</div>
@@ -76,7 +78,7 @@
 
 <script>
 import KPI from '@/pages/kpi/Kpi'
-import Bonuses from '@/pages/kpi/Bonuses'
+import Bonuses from '@/pages/kpi/Bonuses.vue'
 import QuartalPremium from '@/pages/kpi/QuartalPremium'
 import Stats from '@/pages/kpi/Stats'
 import Indicators from '@/pages/kpi/Indicators'
@@ -102,6 +104,7 @@ export default {
 	data() {
 		return {
 			active: 0,
+			tenant: window.location.hostname.split('.')[0],
 		}
 	},
 	watch:{
