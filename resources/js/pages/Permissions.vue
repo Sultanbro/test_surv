@@ -98,10 +98,10 @@
 								</div>
 							</div>
 
-							<template v-for="(page, i) in pages">
+							<template v-for="(page, index) in filteredPages">
 								<div
 									class="item d-flex"
-									:key="i"
+									:key="index"
 								>
 									<div
 										class="name mr-3"
@@ -123,7 +123,7 @@
 												class="pointer"
 												v-model="role.perms[page.key + '_view']"
 												type="checkbox"
-												@change="checkParent(i, 'view')"
+												@change="checkParent(index, 'view')"
 											>
 										</label>
 									</div>
@@ -133,7 +133,7 @@
 												class="pointer"
 												v-model="role.perms[page.key + '_edit']"
 												type="checkbox"
-												@change="checkParent(i, 'edit')"
+												@change="checkParent(index, 'edit')"
 											>
 										</label>
 									</div>
@@ -143,7 +143,7 @@
 									<template v-if="page.opened">
 										<div
 											class="item d-flex child"
-											v-for="children in page.children"
+											v-for="children in filteredPageChildren(index)"
 											:key="children.key"
 										>
 											<div class="name mr-3">
@@ -155,7 +155,7 @@
 														class="pointer"
 														v-model="role.perms[children.key + '_view']"
 														type="checkbox"
-														@change="checkChild(i, 'view')"
+														@change="checkChild(index, 'view')"
 													>
 												</label>
 											</div>
@@ -165,7 +165,7 @@
 														class="pointer"
 														v-model="role.perms[children.key + '_edit']"
 														type="checkbox"
-														@change="checkChild(i, 'edit')"
+														@change="checkChild(index, 'edit')"
 													>
 												</label>
 											</div>
@@ -249,9 +249,13 @@ export default {
 			pages: [],
 			permissions: [],
 			showRoles: false,
+			isBp: window.location.hostname.split('.')[0] === 'bp',
 		};
 	},
 	computed: {
+		filteredPages(){
+			return this.isBp ? this.pages : this.pages.filter(p => p.key !== 'faq');
+		},
 		filtered_items(){
 			if(!this.searchText) return this.items
 			const lowerText = this.searchText.toLowerCase()
@@ -280,7 +284,9 @@ export default {
 	},
 	mounted() {},
 	methods: {
-
+		filteredPageChildren(index){
+			return this.isBp ? this.pages[index].children : this.pages[index].children.filter(c => c.key !== 'top' && c.key !== 'hr');
+		},
 		fetchData() {
 			let loader = this.$loading.show();
 
