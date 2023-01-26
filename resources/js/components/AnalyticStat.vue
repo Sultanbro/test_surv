@@ -605,7 +605,7 @@ const Parser = require('expr-eval').Parser;
 export default {
 	components: {},
 	name: 'AnalyticStat',
-	props: ['monthInfo', 'activeuserid', 'table', 'group_id', 'fields', 'activities'],
+	props: ['monthInfo', 'activeuserid', 'isAdmin', 'table', 'group_id', 'fields', 'activities'],
 	data() {
 		return {
 			active: '1',
@@ -992,7 +992,7 @@ export default {
 		},
 
 		openContextMenu(item, i_index, f_index) {
-			if(![5,18,157,84,14009].includes(Number(this.activeuserid))) {
+			if(!this.isAdmin) {
 				return '';
 			}
 			this.focus(i_index, f_index);

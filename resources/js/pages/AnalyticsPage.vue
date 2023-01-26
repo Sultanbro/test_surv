@@ -159,6 +159,7 @@
 										:table="data.table"
 										:fields="data.columns"
 										:activeuserid="activeuserid"
+										:is-admin="isAdmin"
 										:month-info="monthInfo"
 										:group_id="currentGroup"
 										:activities="activity_select"
@@ -507,7 +508,7 @@ export default {
 		TableQualityWeekly,
 		TopGauges,
 	},
-	props: ['groups', 'activeuserid'],
+	props: ['groups', 'activeuserid', 'isAdmin'],
 	data() {
 		return {
 			data: [],

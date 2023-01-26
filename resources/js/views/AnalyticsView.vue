@@ -15,13 +15,15 @@ export default {
 		return {
 			groups: '',
 			activeuserid: 0,
+			isAdmin: 0,
 			activeTab: 'nav-profile-tab',
 		}
 	},
 	mounted(){
 		useAsyncPageData('/timetracking/an').then(data => {
-			this.groups = data.groups
-			this.activeuserid = data.activeuserid
+			this.groups = data.groups;
+			this.activeuserid = data.activeuserid;
+			this.isAdmin = !!data.isadmin;
 		}).catch(error => {
 			console.error('useAsyncPageData', error)
 		})
@@ -40,6 +42,7 @@ export default {
 							v-show="activeuserid"
 							:groups="groups"
 							:activeuserid="activeuserid"
+							:is-admin="isAdmin"
 						/>
 					</div>
 				</div>
