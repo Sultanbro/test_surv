@@ -148,9 +148,9 @@ Route::middleware(['web','tenant','not_admin_subdomain'])->group(function () {
     Route::post('/playlists/groups/create', [Learning\Video\VideoGroupController::class, 'create']);
     Route::post('/playlists/groups/save', [Learning\Video\VideoGroupController::class, 'save']);
     Route::post('/playlists/groups/delete', [Learning\Video\VideoGroupController::class, 'delete']);
-    Route::post('/playlists/delete-cat', [Learning\Video\LearningController::class, 'delete']);
-    Route::post('/playlists/add-cat', [Learning\Video\LearningController::class, 'add']);
-    Route::post('/playlists/save-cat', [Learning\Video\LearningController::class, 'save']);
+    Route::post('/playlists/delete-cat', [Learning\Video\VideoCategoryController::class, 'delete']);
+    Route::post('/playlists/add-cat', [Learning\Video\VideoCategoryController::class, 'add']);
+    Route::post('/playlists/save-cat', [Learning\Video\VideoCategoryController::class, 'save']);
     Route::post('/playlists/video/update', [Learning\Video\VideoController::class, 'updateVideo']);
     Route::post('/videos/upload', [Learning\Video\VideoController::class, 'upload'])->name('videos.upload');
     Route::post('/videos/save-order', [Learning\Video\VideoPlaylistController::class, 'saveOrder']);
