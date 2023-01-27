@@ -6,7 +6,7 @@
 		<div class="d-flex">
 			<div class="lp">
 				<h1 class="page-title">
-					Темы
+					Темы видео
 				</h1>
 
 

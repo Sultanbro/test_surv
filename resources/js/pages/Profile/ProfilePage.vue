@@ -90,11 +90,14 @@
 
 		<Popup
 			v-if="popNominations"
-			title="Номинации"
-			:desc="desc"
+			title="Награды"
+			:desc="descNominations"
 			:open="popNominations"
 			@close="popNominations=false"
 			:width="popupWidth"
+			:add-button="true"
+			:add-button-route="'/timetracking/settings?tab=9#nav-awards'"
+			:add-button-popover-text="'Добавить новую награду'"
 		>
 			<Nominations @get-desc="getDesc" />
 		</Popup>
@@ -145,7 +148,7 @@ export default {
 	props: {},
 	data: function () {
 		return {
-			desc: 'Подождите, идет загрузка...',
+			descNominations: 'Подождите, идет загрузка...',
 			fields: [],
 			popBalance: false,
 			popKpi: false,
@@ -218,7 +221,7 @@ export default {
 			if(window == 'nominations') this.popNominations = true;
 		},
 		getDesc(text){
-			this.desc = text;
+			this.descNominations = text;
 		},
 		initAnimOnScroll(){
 			if(this.intersectionObserver) return

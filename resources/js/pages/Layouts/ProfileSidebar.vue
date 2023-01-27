@@ -89,7 +89,11 @@
 				<ProfileInfo :data="userInfo" />
 			</div>
 
-			<div class="profile__col">
+			<!-- Статус: скрыто. Компонент: ProfileSidebar. Дата скрытия: 27.01.2023 14:13 -->
+			<div
+				class="profile__col"
+				v-if="false"
+			>
 				<div class="profile__active profile-box">
 					<div class="profile__title _slicked">
 						График активности

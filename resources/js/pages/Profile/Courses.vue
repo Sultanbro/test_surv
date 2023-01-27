@@ -2,7 +2,6 @@
 	<div
 		id="courses__anchor"
 		class="courses__wrapper block _anim _anim-no-hide mt-4"
-		:class="{'hidden': courses.length === 0}"
 	>
 		<div
 			class="courses__content"
@@ -12,60 +11,70 @@
 				Ваши курсы
 			</div>
 			<div class="courses__content__wrapper">
-				<div
-					class="courses__item"
-					v-for="(course, index) in unfinished"
-					:key="index"
-					:class="{'current': index == 0}"
-				>
-					<img
-						v-if="course.img"
-						:src="course.img"
-						alt="курс"
-						class="courses__image"
-						@click="selectCourse(index)"
-					>
-					<img
-						v-else
-						src="/images/course.jpg"
-						alt="курс"
-						class="courses__image"
-						@click="selectCourse(index)"
-					>
-					<div class="courses__name">
-						{{ course.name }}
-					</div>
-					<div class="courses__progress">
-						<div
-							v-if="courseInfo[course.id]"
-							class="courses__line"
-							:style="`width: ${courseInfo[course.id].progress}%`"
-						/>
-					</div>
-					<!-- Линия зависит от процентов в span-->
-					<div class="courses__percent">
-						<template v-if="courseInfo[course.id]">
-							Пройдено: <span>{{ courseInfo[course.id].progress }}%</span>
-						</template>
-						<template v-else>
-							&nbsp;
-						</template>
-					</div>
+				<template v-if="courses.length">
 					<div
-						class="courses__regress"
-						v-if="isRegressed(course)"
+						class="courses__item"
+						v-for="(course, index) in unfinished"
+						:key="index"
+						:class="{'current': index == 0}"
 					>
-						<div class="courses__regress-message">
-							Курс обнулен!
+						<img
+							v-if="course.img"
+							:src="course.img"
+							alt="курс"
+							class="courses__image"
+							@click="selectCourse(index)"
+						>
+						<img
+							v-else
+							src="/images/course.jpg"
+							alt="курс"
+							class="courses__image"
+							@click="selectCourse(index)"
+						>
+						<div class="courses__name">
+							{{ course.name }}
 						</div>
+						<div class="courses__progress">
+							<div
+								v-if="courseInfo[course.id]"
+								class="courses__line"
+								:style="`width: ${courseInfo[course.id].progress}%`"
+							/>
+						</div>
+						<!-- Линия зависит от процентов в span-->
+						<div class="courses__percent">
+							<template v-if="courseInfo[course.id]">
+								Пройдено: <span>{{ courseInfo[course.id].progress }}%</span>
+							</template>
+							<template v-else>
+								&nbsp;
+							</template>
+						</div>
+						<div
+							class="courses__regress"
+							v-if="isRegressed(course)"
+						>
+							<div class="courses__regress-message">
+								Курс обнулен!
+							</div>
+						</div>
+						<a
+							:href="'/my-courses?id=' + course.id"
+							class="courses__button"
+						>
+							<span>{{ results[course.id] ? 'Продолжить курс' : 'Начать курс' }}</span>
+						</a>
 					</div>
-					<a
-						:href="'/my-courses?id=' + course.id"
-						class="courses__button"
+				</template>
+				<template v-else>
+					<router-link
+						to="/courses"
+						class="courses-add"
 					>
-						<span>{{ results[course.id] ? 'Продолжить курс' : 'Начать курс' }}</span>
-					</a>
-				</div>
+						Добавить курсы
+					</router-link>
+				</template>
 			</div>
 		</div>
 

@@ -24,6 +24,21 @@
 					<div class="popup__header-content">
 						<div class="popup__title">
 							{{ title }}
+							<router-link
+								v-if="addButton && isAdmin"
+								:to="addButtonRoute"
+								class="popup-add-button"
+								id="popover-popup-add"
+							>
+								<i class="fa fa-plus" />
+							</router-link>
+							<b-popover
+								target="popover-popup-add"
+								triggers="hover"
+								placement="right"
+							>
+								{{ addButtonPopoverText }}
+							</b-popover>
 						</div>
 						<div class="popup__subtitle">
 							{{ desc }}
@@ -47,11 +62,13 @@ export default {
 		desc: {},
 		open: {},
 		width: {},
+		addButton: {},
+		addButtonRoute: {},
+		addButtonPopoverText: {}
 	},
-
-	data() {
-		return {
-
+	computed: {
+		isAdmin(){
+			return this.$store.state.user.user.is_admin === 1;
 		}
 	}
 }

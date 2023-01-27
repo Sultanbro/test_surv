@@ -51,10 +51,10 @@
     .selected-items {
         display: flex;
         padding: 7px;
-        overflow: overlay; 
+        overflow: overlay;
         width: 100%;
         min-height: 35px;
-        
+
         .selected-item {
             display: flex;
             padding: 1px 0 1px 7px;
@@ -70,12 +70,12 @@
             &.value2 {background: #e5e49b;}
             &.value3 {background: #80d593;}
 
-            i { 
+            i {
                 margin-left: 5px;
                 font-size: 12px;
                 padding: 8px;
                 cursor: pointer;
-                
+
                 &:hover {
                     background: rgb(32, 119, 172);
                 }
@@ -98,7 +98,7 @@
         }
     }
 
-    
+
 }
 
 .options-window {
@@ -107,7 +107,7 @@
     .types {
         position: absolute;
         left: 100%;
-        
+
         .type {
             padding: 5px 10px;
             margin: 5px 0;
@@ -183,7 +183,7 @@
                 display: none;
                 margin-left: auto;
             }
-            
+
             &.selected {
                 background: rgb(214, 228, 234);
 
@@ -195,6 +195,19 @@
 
             &:hover {
                 background: rgb(179 208 220);
+            }
+
+            &.add-option {
+                color: green;
+
+                i {
+                    color: green!important;
+                    background: none !important;
+                }
+
+                &:hover {
+                    background: rgba(0, 128, 0, 0.2);
+                }
             }
         }
     }

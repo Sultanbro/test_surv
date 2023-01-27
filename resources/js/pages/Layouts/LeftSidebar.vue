@@ -349,11 +349,11 @@ export default {
 					hide: !(this.$can('faq_view') && this.isMainProject)
 				},
 				{
-					name: 'Депре мирование',
+					name: 'Депремирование',
 					to: '/timetracking/fines',
 					icon: 'icon-nd-deduction',
 					height: 0,
-					hide: !this.$can('penalties_view')
+					hide: !(this.$can('penalties_view') && this.isMainProject)
 				},
 				{
 					name: 'U-calls',

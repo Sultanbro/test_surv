@@ -6,7 +6,7 @@
 		>
 			<div class="lp">
 				<h1 class="page-title">
-					Темы
+					Темы книг
 				</h1>
 
 				<div

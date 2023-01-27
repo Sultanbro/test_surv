@@ -93,7 +93,10 @@
 					</div>
 				</div>
 
-				<div class="dialerlist">
+				<div
+					class="dialerlist"
+					v-if="isBp"
+				>
 					<div class="fl">
 						Подтягивать время
 						<i
@@ -116,6 +119,21 @@
 				<div class="dialerlist">
 					<div class="fl">
 						Кол-во рабочих дней
+						<img
+							src="/images/dist/profit-info.svg"
+							class="img-info"
+							alt="info icon"
+							id="info1"
+						>
+						<b-popover
+							target="info1"
+							triggers="hover"
+							placement="right"
+						>
+							<p style="font-size: 15px">
+								Тут указывается количество рабочих дней в неделю конкретно для этого отдела.
+							</p>
+						</b-popover>
 					</div>
 					<div class="fl">
 						<input
@@ -391,6 +409,7 @@ export default {
 	],
 	data() {
 		return {
+			isBp: window.location.hostname.split('.')[0] === 'bp',
 			addNewGroup: false,
 			message: null,
 			activebtn: null,
@@ -420,7 +439,7 @@ export default {
 			time_exceptions_options: [],
 			showEditTimeAddress: false,
 			paid_internship: 0,
-			show_payment_terms: 1,
+			show_payment_terms: 0,
 			zarplata: '0',
 			showKPI: false,
 			showDeleteButton: false,
@@ -509,7 +528,7 @@ export default {
 			this.time_exceptions_options = [];
 			this.showEditTimeAddress = false;
 			this.paid_internship = 0;
-			this.show_payment_terms = 1;
+			this.show_payment_terms = 0;
 			this.zarplata = '0';
 			this.showKPI = false;
 			this.showDeleteButton = false;
