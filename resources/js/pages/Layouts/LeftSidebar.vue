@@ -349,7 +349,7 @@ export default {
 					hide: !(this.$can('faq_view') && this.isMainProject)
 				},
 				{
-					name: 'Депремирование',
+					name: 'Депреми рование',
 					to: '/timetracking/fines',
 					icon: 'icon-nd-deduction',
 					height: 0,
