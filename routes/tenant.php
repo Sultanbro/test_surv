@@ -438,11 +438,19 @@ Route::middleware(['web','tenant','not_admin_subdomain'])->group(function () {
     Route::post('/timetracking/analytics/create-activity', [Analytics\AnalyticsController::class, 'createActivity']);
     Route::post('/timetracking/analytics/edit-activity', [Analytics\AnalyticsController::class, 'editActivity']);
     Route::post('/timetracking/analytics/update-stat', [Analytics\AnalyticsController::class, 'updateUserStat']);
+
     Route::post('/timetracking/analytics/save-cell-activity', [Analytics\AnalyticsController::class, 'saveCellActivity']);
     Route::post('/timetracking/analytics/save-cell-activity-new', [Analytics\CellController::class, 'saveCellActivity']);
+
     Route::post('/timetracking/analytics/save-cell-time', [Analytics\AnalyticsController::class, 'saveCellTime']);
+    Route::post('/timetracking/analytics/save-cell-time-new', [Analytics\CellController::class, 'saveCellTime']);
+
     Route::post('/timetracking/analytics/save-cell-sum', [Analytics\AnalyticsController::class, 'saveCellSum']);
+    Route::post('/timetracking/analytics/save-cell-sum-new', [Analytics\CellController::class, 'saveCellSum']);
+
     Route::post('/timetracking/analytics/save-cell-avg', [Analytics\AnalyticsController::class, 'saveCellAvg']);
+    Route::post('/timetracking/analytics/save-cell-avg-new', [Analytics\CellController::class, 'saveCellAvg']);
+
     Route::post('/timetracking/analytics/change_order', [Analytics\AnalyticsController::class, 'change_order']);
     Route::post('/timetracking/analytics/delete_activity', [Analytics\AnalyticsController::class, 'delete_activity']);
     Route::post('/timetracking/analytics/add-depend', [Analytics\AnalyticsController::class, 'add_depend']);

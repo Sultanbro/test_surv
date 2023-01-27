@@ -29,16 +29,16 @@ class AnalyticStatRepository extends CoreRepository
      * @param string $firstDayOfMonth
      * @param int $rowId
      * @param int $columnId
-     * @return object
+     * @return object|null
      */
-    public function getStatisticOrFail(
+    public function getStatisticOrNull(
         string $firstDayOfMonth,
         int $rowId,
         int $columnId
-    ): object
+    ): object|null
     {
         return $this->model()->where('date', $firstDayOfMonth)
             ->where('row_id', $rowId)
-            ->where('column_id', $columnId);
+            ->where('column_id', $columnId)->first();
     }
 }

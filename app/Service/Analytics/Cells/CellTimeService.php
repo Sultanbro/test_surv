@@ -2,25 +2,22 @@
 
 namespace App\Service\Analytics\Cells;
 
-use App\DTO\Analytics\Cells\SaveCellActivityDTO;
-use App\Enums\ErrorCode;
-use App\Models\Analytics\UserStat;
+use App\DTO\Analytics\Cells\SaveCellTimeDTO;
 use App\Repositories\Analytics\AnalyticColumnRepository;
 use App\Repositories\Analytics\AnalyticStatRepository;
-use App\Support\Core\CustomException;
-use Carbon\Carbon;
+use App\Timetracking;
 
 /**
 * Класс для работы с Service.
 */
-class CellActivityService extends CellService
+class CellTimeService extends CellService
 {
     /**
-     * @param SaveCellActivityDTO $dto
+     * @param SaveCellTimeDTO $dto
      * @return bool
      */
     public function handle(
-        SaveCellActivityDTO $dto
+        SaveCellTimeDTO $dto
     ): bool
     {
         $date = $this->getDate($dto->year, $dto->month);
@@ -30,15 +27,14 @@ class CellActivityService extends CellService
         {
             $columnDate = $this->getDate($dto->year, $dto->month, $column->name);
             $stat = $this->statRepository->getStatisticOrNull($columnDate, $dto->rowId, $column->id);
-            $totalForDay = UserStat::total_for_day($dto->activityId, $date);
-            $totalForDay = floor($totalForDay * 10) / 10;
+            $totalForDay = Timetracking::totalHours($date, $dto->groupId);
+            $totalForDay = floor($totalForDay / 9 * 10) / 10;
 
             $stat?->update([
                 'value' => $totalForDay,
                 'show_value' => $totalForDay,
-                'type' => 'stat',
+                'type' => 'time',
                 'class' => $dto->class,
-                'activity_id' => $dto->activityId
             ]);
         }
 
