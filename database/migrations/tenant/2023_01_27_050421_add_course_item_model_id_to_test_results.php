@@ -13,10 +13,10 @@ return new class extends Migration
      */
     public function up()
     {
-        if (!Schema::hasColumn('kb', 'pass_grade'))
+        if (!Schema::hasColumn('test_results', 'course_item_model_id'))
         {
-            Schema::table('kb', function (Blueprint $table) {
-                $table->tinyInteger('pass_grade');
+            Schema::table('test_results', function (Blueprint $table) {
+                $table->integer('course_item_model_id');
             });
         }
     }
@@ -28,10 +28,9 @@ return new class extends Migration
      */
     public function down()
     {
-        if (Schema::hasColumn('kb', 'pass_grade'))
-        {
-            Schema::table('kb', function (Blueprint $table) {
-                $table->dropColumn('pass_grade');
+        if (Schema::hasColumn('test_results', 'course_item_model_id')) {
+            Schema::table('test_results', function (Blueprint $table) {
+                $table->dropColumn('course_item_model_id');
             });
         }
     }
