@@ -101,7 +101,7 @@
 						</b-form-group>
 						<button
 							class="btn btn-sm rounded btn-primary ml-2"
-							v-if="currentGroup != 23 && user_types == 2"
+							v-if="currentGroup != 23 && user_types == 2 && isBp"
 							@click="copy()"
 							:style="{'padding': '2px 8px'}"
 						>
@@ -664,6 +664,7 @@ export default {
 	data() {
 		const now = new Date()
 		return {
+			isBp: window.location.hostname.split('.')[0] === 'bp',
 			data: {},
 			showExcelImport: false,
 			openSidebar: false,
@@ -764,7 +765,6 @@ export default {
 			years: useYearOptions(),
 		}
 	},
-
 	created() {
 		if (this.groups) {
 			this.init()

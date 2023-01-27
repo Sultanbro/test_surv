@@ -512,15 +512,14 @@ export default {
 		if (this.nominations.length > 0) {
 			let text = this.nominations[0].description;
 			this.$emit('get-desc', text);
-			return true;
 		} else if (this.certificates.length > 0) {
 			let text = this.certificates[0].description;
 			this.$emit('get-desc', text);
-			return true;
 		} else if (this.accrual.length > 0) {
 			let text = this.accrual[0].description;
 			this.$emit('get-desc', text);
-			return true;
+		} else{
+			this.$emit('get-desc', 'Нет наград');
 		}
 	},
 	methods: {

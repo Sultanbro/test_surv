@@ -62,6 +62,8 @@
 							class="form-control mt-1 input-surv"
 							id="view_own_orders"
 							type="text"
+							v-model="domain"
+							:disabled="true"
 						>
 					</div>
 
@@ -95,7 +97,7 @@
 
 					<div class="mt-3">
 						<button
-							class="btn btn-success btn-surv"
+							class="btn btn-success"
 							@click="save"
 						>
 							Сохранить
@@ -289,7 +291,7 @@
 
 							<!--              ></croppa>-->
 							<div class="hidden-file-wrapper">
-								<button class="btn btn-success w-100 mt-2 btn-surv">
+								<button class="btn btn-success w-100 mt-2">
 									Выбрать фото
 								</button>
 								<label
@@ -348,7 +350,7 @@
 									<button
 										v-if="payment.id"
 										style="position: absolute; left: 0px"
-										class="btn btn-danger btn-sm card-delete rounded mt-1 btn-surv"
+										class="btn btn-danger btn-sm card-delete rounded mt-1"
 										@click="removePaymentCart(index, payment.id)"
 									>
 										<span class="fa fa-trash" />
@@ -356,7 +358,7 @@
 									<button
 										v-else
 										style="position: absolute; left: 0px"
-										class="btn btn-primary btn-sm card-delete rounded mt-1 btn-surv"
+										class="btn btn-primary btn-sm card-delete rounded mt-1"
 										@click="removePaymentCart(index, 'dev')"
 									>
 										<span class="fa fa-trash" />
@@ -379,7 +381,7 @@
 								<button
 									@click="addPayment()"
 									style="color: white"
-									class="btn btn-phone btn-primary btn-surv"
+									class="btn btn-phone btn-primary"
 								>
 									Добавить карту
 								</button>
@@ -389,7 +391,7 @@
 								<button
 									@click.prevent="editProfileUser()"
 									style="color: white"
-									class="btn btn-success btn-surv"
+									class="btn btn-success"
 									type="button"
 								>
 									Сохранить
@@ -439,6 +441,7 @@ export default {
 	},
 	data() {
 		return {
+			domain: window.location.hostname.split('.')[0],
 			videoUrl: '',
 			// my_crop_image: "",
 			crop_image: {

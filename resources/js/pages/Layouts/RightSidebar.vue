@@ -40,10 +40,12 @@
 				>
 			</a>
 
+			<!-- Статус: скрыто. Компонент: RightSidebar. Дата скрытия: 27.01.2023 14:15 -->
 			<a
 				href="#"
 				class="header__right-icon check"
 				@click="$emit('pop', 'checklist')"
+				v-if="false"
 			>
 				<img
 					src="/images/dist/header-right-6.svg"

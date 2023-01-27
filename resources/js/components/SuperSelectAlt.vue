@@ -86,6 +86,27 @@
 
 
 				<div class="options">
+					<router-link
+						to="/admin/upbooks"
+						class="option add-option"
+						v-if="type == 1"
+					>
+						<i class="fa fa-plus" /> Добавить новую книгу в библиотеку
+					</router-link>
+					<router-link
+						to="/video_playlists"
+						class="option add-option"
+						v-if="type == 2"
+					>
+						<i class="fa fa-plus" /> Добавить новое видео в библиотеку
+					</router-link>
+					<router-link
+						to="/kb"
+						class="option add-option"
+						v-if="type == 3"
+					>
+						<i class="fa fa-plus" /> Добавить базу знания
+					</router-link>
 					<div
 						class="option"
 						v-for="(option, index) in filtered_options"
@@ -271,14 +292,12 @@ export default {
 			this.axios
 				.get('/superselect/get-alt', {})
 				.then((response) => {
-
 					this.options = response.data.options;
-
 					this.filterType();
 					this.addSelectedAttr();
 				})
 				.catch((error) => {
-					alert(error,'111');
+					console.log(error);
 				});
 		},
 

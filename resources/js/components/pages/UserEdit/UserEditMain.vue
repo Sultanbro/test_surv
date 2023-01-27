@@ -257,7 +257,8 @@ export default {
 			<label
 				for="userType"
 				class="col-sm-4 col-form-label font-weight-bold"
-			>Тип <span class="red">*</span></label>
+			>Тип <span class="red">*</span>
+			</label>
 			<div class="col-sm-8">
 				<select
 					name="user_type"
@@ -285,7 +286,24 @@ export default {
 			<label
 				for="programType"
 				class="col-sm-4 col-form-label font-weight-bold"
-			>ПО <span class="red">*</span></label>
+			>Начать день <span class="red">*</span>
+				<img
+					src="/images/dist/profit-info.svg"
+					class="img-info"
+					alt="info icon"
+					id="info2"
+				>
+				<b-popover
+					target="info2"
+					triggers="hover"
+					placement="right"
+				>
+					<p style="font-size: 15px">
+						Тут нужно выбрать способ, через который будет производиться учет рабочего времени. По умолчанию
+						выбран способ нажатия на кнопку "начать рабочий день" в профиле сотрудника программного обеспечения Jobtron.
+					</p>
+				</b-popover>
+			</label>
 			<div class="col-sm-8">
 				<select
 					name="program_type"
@@ -299,7 +317,12 @@ export default {
 						:value="program.id"
 						:selected="user && user.program_id === program.id"
 					>
-						{{ program.name }}
+						<template v-if="program.name === 'Jobtron'">
+							Через кнопку в профиле {{ program.name }}
+						</template>
+						<template v-else>
+							{{ program.name }}
+						</template>
 					</option>
 				</select>
 			</div>
@@ -392,38 +415,41 @@ export default {
 
 		<div class="form-group row">
 			<label
-				for="full_time"
 				class="col-sm-4 col-form-label font-weight-bold"
 			>Ставка</label>
 			<div class="col-sm-8 d-flex">
-				<label
-					for="ftr1"
-					class="radio mb-0mr-4"
-				>
+				<div class="custom-control custom-radio">
 					<input
+						type="radio"
 						name="full_time"
+						class="custom-control-input"
 						value="1"
-						type="radio"
-						:checked="user && user.full_time === 1"
 						id="ftr1"
-						class="form-control"
+						:checked="user && user.full_time === 1"
 					>
-					<span>Full-Time</span>
-				</label>
-				<label
-					for="ftr0"
-					class="radio mb-0"
-				>
+					<label
+						class="custom-control-label"
+						for="ftr1"
+					>
+						Full-Time
+					</label>
+				</div>
+				<div class="custom-control custom-radio ml-4">
 					<input
-						class="form-control"
-						id="ftr0"
 						type="radio"
 						name="full_time"
+						class="custom-control-input"
 						value="0"
+						id="ftr0"
 						:checked="user && user.full_time === 0"
 					>
-					<span>Part-Time</span>
-				</label>
+					<label
+						class="custom-control-label"
+						for="ftr0"
+					>
+						Part-Time
+					</label>
+				</div>
 			</div>
 		</div>
 

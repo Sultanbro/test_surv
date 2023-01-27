@@ -180,7 +180,7 @@ tspan:last-child {
 }
 
 
-/// animations vue trnstiotions 
+/// animations vue trnstiotions
 
 .fade-enter-active,
 .fade-leave-active {
@@ -210,11 +210,11 @@ tspan:last-child {
     display: block;
 }
 
-/** 
+/**
   Booklist.vue
 */
 
-.book_page { 
+.book_page {
     padding: 20px;
     max-width: 1000px;
     margin: 0 auto;
@@ -222,7 +222,7 @@ tspan:last-child {
     height: calc(100vh - 128px);
 
     .author {
-        
+
         img {
             width: 48px;
             height: 48px;
@@ -314,7 +314,7 @@ tspan:last-child {
     font-weight: 700;
 }
 
-// 
+//
 
 nav {
     margin: 0 -15px;
@@ -468,13 +468,13 @@ $text-grey: #62788B;
         }
     }
 
-    
+
 }
 
 .v-select  {
     font-size: 13px;
 
-    .vs__dropdown-toggle { 
+    .vs__dropdown-toggle {
         padding: 3px 4px;
     }
 }
@@ -567,6 +567,48 @@ $text-grey: #62788B;
                }
            }
        }
+    }
+}
+
+.courses-add {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 300px;
+    margin: 0 auto;
+    height: 200px;
+    text-decoration: none;
+    color: #333;
+    font-size: 24px;
+    text-align: center;
+    text-transform: uppercase;
+    border: 2px dashed #ddd;
+    border-radius: 10px;
+    transition: 0.3s all ease;
+
+    &:hover {
+        border-color: green;
+        color: green;
+    }
+}
+
+span.red{
+    color: red;
+}
+
+.popup-add-button{
+    width: 30px;
+    height: 30px;
+    display: inline-flex;
+    align-items: center;
+    margin-left: 10px;
+    justify-content: center;
+    border-radius: 6px;
+    border: 1px solid green;
+    color: green;
+    font-size: 16px;
+    &:hover{
+        color: green;
     }
 }
 
