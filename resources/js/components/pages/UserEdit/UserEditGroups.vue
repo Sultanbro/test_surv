@@ -28,7 +28,7 @@ export default {
 		class="mb-3 xfade none-block"
 	>
 		<h5 class="mt-4">
-			Группы <span class="red">*</span>
+			Отделы <span class="red">*</span>
 		</h5>
 		<ProfileGroups
 			v-if="user"
