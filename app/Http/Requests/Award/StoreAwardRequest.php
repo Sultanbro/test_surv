@@ -27,12 +27,13 @@ class StoreAwardRequest extends FormRequest
     public function rules()
     {
         return [
-            'award_category_id'  => 'required|integer|exists:award_categories,id',
-            'course_ids'      => 'array',
-            'styles'      => 'string',
-            'targetable_type'      => 'string',
-            'targetable_id'      => 'integer',
-            'file.*'          => 'file|mimes:jpg,png,pdf|max:7168',
+            'award_category_id' => 'required|integer|exists:award_categories,id',
+            'course_ids'        => 'array',
+            'styles'            => 'string',
+            'targetable_type'   => 'string',
+            'targetable_id'     => 'integer',
+            'file.*'            => 'file|mimes:jpg,png,pdf|max:7168',
+            'type'              => 'string'
         ];
     }
     protected function failedValidation(Validator $validator)
