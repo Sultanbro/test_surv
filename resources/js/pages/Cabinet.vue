@@ -627,7 +627,8 @@ export default {
 			}.bind(this), false);
 
 			if( this.file ){
-				if ( /\.(jpe?g|png|gif)$/i.test( this.file.name ) ) {
+				// jfif может быть проблемой, но игнорить совсем нельзя в в11 хром так сохраняет изображения
+				if ( /\.(jpe?g|png|gif|jfif)$/i.test( this.file.name ) ) {
 					this.showChooseProfileModal = true
 					reader.readAsDataURL( this.file );
 				}
