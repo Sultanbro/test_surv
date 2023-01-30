@@ -567,7 +567,7 @@ export default {
 .logo-img{
 	display: block;
 	width: 100%;
-	border-radius: 1rem;
+	border-radius: 12%/18%;
 	position: absolute;
 	top: 0;
 	left: 0;
