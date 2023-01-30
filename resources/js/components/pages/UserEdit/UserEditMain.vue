@@ -66,6 +66,7 @@ export default {
 			cities: [],
 			isSearchResult: false,
 			weekdays: (this.user?.weekdays || '0000000').split(''),
+			position: this.user?.position_id || '',
 		}
 	},
 	computed:{
@@ -90,6 +91,13 @@ export default {
 			this.userBirthday = this.formUserBirthday;
 			this.userWork_start = user ? user.work_start : '';
 			this.userWork_end = user ? user.work_end : '';
+			this.position = user ? user.position_id : '';
+		},
+		position(value){
+			if(value === -1) {
+				window.open('/timetracking/settings?tab=2#nav-home', '_blank')
+				this.position = ''
+			}
 		}
 	},
 	methods: {
@@ -231,14 +239,19 @@ export default {
 					name="position"
 					id="position"
 					class="form-control mb-2"
+					v-model="position"
 				>
 					<option
-						v-for="position in positions"
-						:key="position.id"
-						:value="position.id"
-						:selected="user && user.position_id === position.id"
+						v-for="pos in positions"
+						:key="pos.id"
 					>
-						{{ position.position }}
+						{{ pos.position }}
+					</option>
+					<option
+						:value="-1"
+						class="UserEdit-new-position"
+					>
+						Добавить новую должность
 					</option>
 				</select>
 
@@ -645,5 +658,9 @@ export default {
         top: 1px;
         margin-right: 7px;
     }
+}
+
+.UserEdit-new-position{
+	color: green;
 }
 </style>
