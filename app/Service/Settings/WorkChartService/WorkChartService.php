@@ -3,7 +3,9 @@
 namespace App\Service\Settings\WorkChartService;
 
 use App\DTO\Settings\WorkChartDTO\StoreWorkChartDTO;
+use App\DTO\Settings\WorkChartDTO\UpdateWorkChartDTO;
 use App\Repositories\WorkChartRepository;
+use function App\DTO\Settings\toArray;
 
 /**
 * Класс для работы с Service.
@@ -31,9 +33,9 @@ class WorkChartService
         return $this->workChartRepository->show($id);
     }
 
-    public function update($attribute,$id):object
+    public function update(UpdateWorkChartDTO $chartDTO,$id):object
     {
-        return $this->workChartRepository->update($attribute,$id);
+        return $this->workChartRepository->update($chartDTO->toArray(),$id);
     }
 
     public function delete($id):bool

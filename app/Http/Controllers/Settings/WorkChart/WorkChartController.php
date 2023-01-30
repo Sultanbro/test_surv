@@ -4,9 +4,10 @@ namespace App\Http\Controllers\Settings\WorkChart;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Settings\WorkChartRequest\StoreWorkChartRequest;
+use App\Http\Requests\Settings\WorkChartRequest\UpdateWorkChartRequest;
 use App\Service\Settings\WorkChartService\WorkChartService;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Http\Request;
+
 
 class WorkChartController extends Controller
 {
@@ -43,9 +44,9 @@ class WorkChartController extends Controller
         );
     }
 
-    public function update(Request $request, $id):JsonResponse
+    public function update(UpdateWorkChartRequest $request, $id):JsonResponse
     {
-        $response = $this->chartService->update($request->all(),$id);
+        $response = $this->chartService->update($request->toDto(),$id);
         return $this->response(
             'Success',
             $response

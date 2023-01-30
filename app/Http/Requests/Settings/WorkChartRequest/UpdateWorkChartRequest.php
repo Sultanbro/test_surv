@@ -2,7 +2,9 @@
 
 namespace App\Http\Requests\Settings\WorkChartRequest;
 
+use App\DTO\Settings\WorkChartDTO\UpdateWorkChartDTO;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Support\Arr;
 
 class UpdateWorkChartRequest extends FormRequest
 {
@@ -13,7 +15,7 @@ class UpdateWorkChartRequest extends FormRequest
      */
     public function authorize()
     {
-        return false;
+        return true;
     }
 
     /**
@@ -24,7 +26,30 @@ class UpdateWorkChartRequest extends FormRequest
     public function rules()
     {
         return [
-            //
+            'name'    => ['required', 'string'],
+            'timeBeg' => ['required', 'string'],
+            'timeEnd' => ['required', 'string'],
+            'dayOff'  => ['required','array'],
         ];
+    }
+
+    /**
+     * @return UpdateWorkChartDTO
+     */
+    public function toDto(): UpdateWorkChartDTO
+    {
+        $validated = $this->validated();
+
+        $name       = Arr::get($validated, 'name');
+        $timeBeg    = Arr::get($validated, 'timeBeg');
+        $timeEnd    = Arr::get($validated, 'timeEnd');
+        $dayOff     = Arr::get($validated, 'dayOff');
+
+        return new UpdateWorkChartDTO(
+            $name,
+            $timeBeg,
+            $timeEnd,
+            $dayOff,
+        );
     }
 }

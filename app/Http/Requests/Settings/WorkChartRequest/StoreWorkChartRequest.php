@@ -41,9 +41,9 @@ class StoreWorkChartRequest extends FormRequest
         $validated = $this->validated();
 
         $name       = Arr::get($validated, 'name');
-        $timeBeg = Arr::get($validated, 'timeBeg');
+        $timeBeg    = Arr::get($validated, 'timeBeg');
         $timeEnd    = Arr::get($validated, 'timeEnd');
-        $dayOff  = Arr::get($validated, 'dayOff');
+        $dayOff     = Arr::get($validated, 'dayOff');
 
         return new StoreWorkChartDTO(
             $name,
