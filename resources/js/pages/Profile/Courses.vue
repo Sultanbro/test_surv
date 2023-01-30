@@ -67,7 +67,7 @@
 						</a>
 					</div>
 				</template>
-				<template v-else>
+				<template v-else-if="canAddCourses">
 					<router-link
 						to="/courses"
 						class="courses-add"
@@ -206,7 +206,10 @@ export default {
 				if(this.viewportWidth > key) slidesToShow = this.slickCount[key]
 			})
 			return slidesToShow
-		}
+		},
+		canAddCourses(){
+			return this.$laravel.is_admin
+		},
 	},
 	watch: {
 		courses(){
@@ -255,6 +258,7 @@ export default {
 		 * init slider
 		 */
 		initSlider() {
+			if(!this.courses.length) return
 			/* global VJQuery */
 			VJQuery('.courses__content__wrapper').slick({
 				variableWidth: false,
