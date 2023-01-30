@@ -89,6 +89,7 @@ class NominationAwardService implements AwardInterface
                     'award_category_id' => $request->input('award_category_id'),
                     'path' => $file['relative'],
                     'format' => $file['format'],
+                    'type' => $request->input('type') ?? Award::TYPE_PUBLIC
                 ]);
 
             }

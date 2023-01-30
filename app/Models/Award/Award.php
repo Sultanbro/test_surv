@@ -24,6 +24,7 @@ class Award extends Model
         'award_category_id',
         'targetable_type',
         'targetable_id',
+        'type'
     ];
     protected $appends = ['tempPath'];
 
@@ -35,6 +36,11 @@ class Award extends Model
     protected $dispatchesEvents = [
         'deleted' => AwardObserver::class
     ];
+
+    const TYPE_PUBLIC = 'public';
+
+    const TYPE_PERSONAL = 'personal';
+
     /**
      * @return BelongsTo
      */
