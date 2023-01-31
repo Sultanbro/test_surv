@@ -6,6 +6,7 @@ use App\DTO\RewardDTO;
 use App\Exceptions\News\BusinessLogicException;
 use App\Helpers\FileHelper;
 use App\Http\Requests\RewardRequest;
+use App\Models\Award\Award;
 use App\Repositories\AwardRepository;
 use Exception;
 use Symfony\Component\HttpFoundation\Response;
@@ -81,6 +82,12 @@ trait RewardTrait
             $awardId = $dto->awardId;
             $userId  = $dto->userId;
             $added   = $awardRepository->detachUser($awardId, $userId);
+            $award = $awardRepository->getById($awardId);
+
+            if ($award->type == Award::TYPE_PERSONAL)
+            {
+                $award->delete();
+            }
 
             return response()->success($added);
         }catch (Throwable $exception) {
