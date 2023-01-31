@@ -846,7 +846,6 @@ class EmployeeController extends Controller
      */
     public function updatePerson(Request $request)
     {
-        dd($request->all());
         if(!auth()->user()->can('users_view')) {
             return redirect('/');
         }
