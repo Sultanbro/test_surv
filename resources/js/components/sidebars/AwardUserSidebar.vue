@@ -558,6 +558,7 @@ export default {
 			const formData = new FormData();
 			formData.append('award_category_id', this.currentAward.id);
 			formData.append('file[]', this.modalAddFile);
+			formData.append('type', 'personal');
 			await this.axios
 				.post('/awards/store', formData, {
 					headers: {
