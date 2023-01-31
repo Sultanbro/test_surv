@@ -157,7 +157,12 @@ export default {
 	watch: {
 		activeUserId(){
 			this.updatePageData()
-		}
+		},
+		user(user){
+			if(user){
+				this.fileurl = user.img_url || 'noavatar.png'
+			}
+		},
 	},
 	mounted(){
 		this.updatePageData()

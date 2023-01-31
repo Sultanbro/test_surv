@@ -159,7 +159,7 @@
 									{{ name.value }}
 								</span>
 								<b-badge
-									v-if="name.field.key == 'name'"
+									v-if="name.field.key == 'name' && name.value"
 									pill
 									variant="success"
 								>
