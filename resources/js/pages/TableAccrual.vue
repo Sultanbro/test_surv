@@ -211,6 +211,7 @@
 						<div class="badge_table">
 							{{ data.value }}
 							<b-badge
+								v-if="data.index !== 0 && data.value"
 								pill
 								variant="success"
 								class="mr-2"

@@ -102,7 +102,7 @@
 							<div>
 								{{ data.value }}
 								<b-badge
-									v-if="data.field.key == 'name'"
+									v-if="data.field.key == 'name' && data.value"
 									pill
 									variant="success"
 								>
