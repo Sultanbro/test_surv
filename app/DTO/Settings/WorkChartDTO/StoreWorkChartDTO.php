@@ -23,8 +23,7 @@ final class StoreWorkChartDTO
     /**
      * @return array
      */
-    public
-    function toArray(): array
+    public function toArray(): array
     {
         return [
             'name' => $this->name,

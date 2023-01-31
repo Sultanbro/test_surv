@@ -27,9 +27,9 @@ class StoreWorkChartRequest extends FormRequest
     {
         return [
             'name'    => ['required', 'string'],
-            'timeBeg' => ['required', 'string'],
-            'timeEnd' => ['required', 'string'],
-            'dayOff'  => ['array'],
+            'time_beg' => ['required', 'string'],
+            'time_end' => ['required', 'string'],
+            'day_off'  => ['array'],
         ];
     }
 
@@ -41,9 +41,9 @@ class StoreWorkChartRequest extends FormRequest
         $validated = $this->validated();
 
         $name       = Arr::get($validated, 'name');
-        $timeBeg    = Arr::get($validated, 'timeBeg');
-        $timeEnd    = Arr::get($validated, 'timeEnd');
-        $dayOff     = Arr::get($validated, 'dayOff');
+        $timeBeg    = Arr::get($validated, 'time_beg');
+        $timeEnd    = Arr::get($validated, 'time_end');
+        $dayOff     = Arr::get($validated, 'day_off');
 
         return new StoreWorkChartDTO(
             $name,

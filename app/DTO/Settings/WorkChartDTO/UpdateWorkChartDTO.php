@@ -20,17 +20,16 @@ final class UpdateWorkChartDTO
     )
     {}
 
-/**
- * @return array
- */
-public
-function toArray(): array
-{
-    return [
-        'name' => $this->name,
-        'time_beg' => $this->timeBeg,
-        'time_end' => $this->timeEnd,
-        'day_off' => $this->dayOff
-    ];
-}
+    /**
+     * @return array
+     */
+    public function toArray(): array
+    {
+        return [
+            'name' => $this->name,
+            'time_beg' => $this->timeBeg,
+            'time_end' => $this->timeEnd,
+            'day_off' => $this->dayOff
+        ];
+    }
 }

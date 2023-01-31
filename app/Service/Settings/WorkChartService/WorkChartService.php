@@ -4,6 +4,7 @@ namespace App\Service\Settings\WorkChartService;
 
 use App\DTO\Settings\WorkChartDTO\StoreWorkChartDTO;
 use App\DTO\Settings\WorkChartDTO\UpdateWorkChartDTO;
+use App\Models\WorkChartModel;
 use App\Repositories\WorkChartRepository;
 use function App\DTO\Settings\toArray;
 
@@ -20,26 +21,26 @@ class WorkChartService
 
     public function all():object
     {
-        return $this->workChartRepository->all();
+        return  WorkChartModel::indexModel();
     }
 
     public function create(StoreWorkChartDTO $chartDTO):object
     {
-        return $this->workChartRepository->create($chartDTO->toArray());
+        return WorkChartModel::createModel($chartDTO->toArray());
     }
 
     public function show($id):object
     {
-        return $this->workChartRepository->show($id);
+        return WorkChartModel::showModel($id);
     }
 
     public function update(UpdateWorkChartDTO $chartDTO,$id):object
     {
-        return $this->workChartRepository->update($chartDTO->toArray(),$id);
+        return WorkChartModel::updateModel($chartDTO->toArray(),$id);
     }
 
     public function delete($id):bool
     {
-        return $this->workChartRepository->delete($id);
+        return WorkChartModel::deleteModel($id);
     }
 }
