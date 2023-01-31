@@ -49,9 +49,6 @@ class WorkChartModel extends Model
 
     public static function deleteModel($id)
     {
-        if (WorkChartModel::findOrFail($id)) {
-            return WorkChartModel::destroy($id);
-        }
-        return false;
+        return WorkChartModel::findOrFail($id)->destroy($id);
     }
 }
