@@ -100,7 +100,7 @@ class LoginController extends Controller
         // failed to login
         if ( !\Auth::attempt($credentials) ) {
             return response()->json([
-                'message' => 'Введенный email или пароль не совпадает2'
+                'message' => 'Введенный email или пароль не совпадает'
             ], 401);
         } 
 
