@@ -27,7 +27,7 @@ body{
 	.b24-widget-button-wrapper{
 		display: none;
 	}
-	.profile-page{
+	&.profile-page{
 		.b24-widget-button-shadow{
 			display: block;
 		}
