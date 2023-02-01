@@ -232,7 +232,7 @@ class CreatePivotAnalytics extends Command
         /**
          * Добавляем 4 потому что есть колонки name, plan, avg, sum и дни в месяце.
          */
-        $nameColumn = ['name', 'fact', 'sum', 'avg'];
+        $nameColumn = ['name', 'plan', 'sum', 'avg'];
         $daysInMonth = Carbon::parse($date)->daysInMonth;
 
         for ($column = 1; $column <= $daysInMonth; $column++)
