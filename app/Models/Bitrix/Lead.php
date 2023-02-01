@@ -222,7 +222,7 @@ class Lead extends Model
             $lead->os = Carbon::parse($signedAt)->timestamp;
             $lead->country = Phone::getCountry($lead->phone);
             $lead->checked = false;
-            $lead->resp = $respUser ? $respUser->last_name . '<br>' . $respUser->name : '';
+            $lead->resp = $respUser ? $respUser->FullName : '';
         }
 
         return $leads;

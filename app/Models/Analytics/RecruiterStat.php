@@ -60,17 +60,16 @@ class RecruiterStat extends Model
     }
 
     public static function tablesPerDay($date = null) {
-        if(is_null($date)) $date = date('Y-m-d');
-
+        $date = $date ?? date('Y-m-d');
         $date = Carbon::parse($date);
 
-        $records = self::whereYear('date', $date->year)
-            ->whereMonth('date', $date->month)
-            ->whereDay('date', $date->day)
-            ->selectRaw("*,DATE_FORMAT(date, '%e') as day")
-            ->get();
-
-        return self::table($records);;
+        return self::table(
+            self::whereYear('date', $date->year)
+                ->whereMonth('date', $date->month)
+                ->whereDay('date', $date->day)
+                ->selectRaw("*,DATE_FORMAT(date, '%e') as day")
+                ->get()
+        );
     }
 
     private static function table($records) {
