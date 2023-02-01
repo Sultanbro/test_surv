@@ -417,8 +417,9 @@ class CheckReports extends Model
 
     public static function getChecklistByGroup($group, $request){
         $check_users = [];
-        $users = User::whereIn('id',json_decode($group->users))->get();
-        foreach($users as $key => $user){
+        if(!is_null($group->users)){
+            $users = User::whereIn('id',json_decode($group->users))->get();
+            foreach($users as $key => $user){
                 $check_users[] = [
                     "user_id" => $user->id,
                     "name" => $user->name,
@@ -430,6 +431,7 @@ class CheckReports extends Model
                     "total_month" => self::getTotalCompletedChecklistByYear($user->id, $request->year) . '/' . self::getTotalChecklistByYear($user->id, $request->year),
                     "average" => self::get_average_value($request->month,$request->year,$user->id,$request->individual_type,$request->individual_type_id),
                 ];
+            }
         }
         return ['check_users'=>$check_users, 'individual_current'=>$group->id];
     }
