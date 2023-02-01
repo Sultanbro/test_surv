@@ -140,7 +140,7 @@ class Lead extends Model
     }
     
     /**
-     * get leads
+     * get leads (OLD)
      */
     public static function fetch(array $date) {
 
@@ -182,6 +182,50 @@ class Lead extends Model
         }
 
         return array_values( $leads->sortByDesc('os')->toArray() );
+    }
+
+    /**
+     * get leads (OLD)
+     */
+    public static function fetchWithPagination(array $date) {
+
+        $leads = self::query()
+            ->where(function($query) use ($date) {
+                $query->whereNotNull('skyped')
+                    ->whereMonth('skyped', $date['month'])
+                    ->whereYear('skyped', $date['year']);
+            })
+            ->orWhere(function($query) use ($date) {
+                $query->whereNotNull('inhouse')
+                    ->whereMonth('inhouse', $date['month'])
+                    ->whereYear('inhouse', $date['year']);
+            })
+            ->orderBy('inhouse','DESC')
+            ->orderBy('skyped','DESC')
+            ->paginate($date['limit']);
+
+        $groups = ProfileGroup::get();
+        $respUsers = User::withTrashed()->whereIn('email', $leads->pluck('resp_id')->toArray())->first();
+
+        foreach ($leads as $lead) {
+
+            $fileLink = 'https://' .tenant('id') . '.' . config('app.domain') . '/static/uploads/job/';
+            $signedAt = $lead->skyped ?? $lead->inhouse;
+            $respUser = $respUsers->where('email', $lead->resp_id)->first();
+
+            $lead->user_type = $lead->skyped ? 'remote' : 'office';
+            $lead->file = count( json_decode($lead->files) ) > 0 ?  $fileLink . json_decode($lead->files)[0] : '';
+            $lead->invite_group = $groups->where('id', $lead->invite_group_id)->first()?->name;
+            $lead->invited_at = $lead->invite_at ? Carbon::parse($lead->invite_at)->format('d.m.Y H:i') : '';
+            $lead->skyped_old = date('Y-m-d H:i:s', Carbon::parse($signedAt)->timestamp);
+            $lead->skyped = date('d.m.Y H:i', Carbon::parse($signedAt)->timestamp);
+            $lead->os = Carbon::parse($signedAt)->timestamp;
+            $lead->country = Phone::getCountry($lead->phone);
+            $lead->checked = false;
+            $lead->resp = $respUser ? $respUser->last_name . '<br>' . $respUser->name : '';
+        }
+
+        return $leads;
     }
 
     /**

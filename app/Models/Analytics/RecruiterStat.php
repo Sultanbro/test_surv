@@ -56,10 +56,21 @@ class RecruiterStat extends Model
             $tables[$i] = self::table($a);
         }
 
-        // if(auth()->user()->id == 5) {
-        //     dd($tables);
-        // }
         return $tables;
+    }
+
+    public static function tablesPerDay($date = null) {
+        if(is_null($date)) $date = date('Y-m-d');
+
+        $date = Carbon::parse($date);
+
+        $records = self::whereYear('date', $date->year)
+            ->whereMonth('date', $date->month)
+            ->whereDay('date', $date->day)
+            ->selectRaw("*,DATE_FORMAT(date, '%e') as day")
+            ->get();
+
+        return self::table($records);;
     }
 
     private static function table($records) {
@@ -217,6 +228,14 @@ class RecruiterStat extends Model
         }
 
         return $arr;
+    }
+
+    public static function leadsPerDay($date = null) {
+        if(is_null($date)) $date = date('Y-m-d');
+
+        $date = Carbon::parse($date);
+
+        return self::lead_info($date);
     }
 
     public static function lead_info(Carbon $date) {
