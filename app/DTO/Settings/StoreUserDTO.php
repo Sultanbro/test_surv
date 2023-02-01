@@ -65,7 +65,7 @@ class StoreUserDTO
         public ?string $description,
         public int $positionId,
         public string $userType,
-        public string $birthday,
+        public ?string $birthday,
         public int $programType,
         public int $workingDays,
         public ?int $workTimes,

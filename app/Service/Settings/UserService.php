@@ -4,6 +4,7 @@ namespace App\Service\Settings;
 
 use App\AdaptationTalk;
 use App\DTO\Settings\StoreUserDTO;
+use App\Enums\ErrorCode;
 use App\Events\TimeTrack\CreateTimeTrackHistoryEvent;
 use App\Exports\UserExport;
 use App\Filters\Users\UserFilter;
@@ -21,6 +22,7 @@ use App\Repositories\UserContactRepository;
 use App\Repositories\UserDescriptionRepository;
 use App\Repositories\UserRepository;
 use App\Setting;
+use App\Support\Core\CustomException;
 use App\User;
 use App\WorkingDay;
 use App\WorkingTime;
@@ -100,6 +102,11 @@ class UserService
 
         $user = $this->userRepository->getUserByEmail($dto->email);
 
+        if ($user)
+        {
+            new CustomException('Already exist user', ErrorCode::BAD_REQUEST, []);
+        }
+
         if ($user != null && $user->deleted_at != null)
         {
             $this->userRepository->restoreUser($user);
@@ -146,14 +153,14 @@ class UserService
 
         $this->userRepository->updateOrCreateSalary(
             $user->id,
-            $dto->salary,
             $dto->cardNumber,
             $dto->kaspi,
             $dto->jysan,
             $dto->cardKaspi,
             $dto->cardJysan,
             $dto->kaspiCardholder,
-            $dto->jysanCardholder
+            $dto->jysanCardholder,
+            $dto->salary,
         );
 
         return Response::HTTP_CREATED;
@@ -235,6 +242,7 @@ class UserService
         }
 
         $this->descriptionRepository->createDescription($userId);
+
         CreateTimeTrackHistoryEvent::dispatch($userId);
 
     }

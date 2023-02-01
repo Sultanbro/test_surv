@@ -34,7 +34,6 @@ final class UserUpdateService
         UpdateUserDTO $userDTO
     ): User
     {
-
         $user = $this->userRepository->userWithRelations($userDTO->userId, [
             'zarplata',
             'photo',
@@ -87,14 +86,14 @@ final class UserUpdateService
 
         $this->userRepository->updateOrCreateSalary(
             $user->id,
-            $userDTO->salary,
             $userDTO->cardNumber,
             $userDTO->kaspi,
             $userDTO->jysan,
             $userDTO->cardKaspi,
             $userDTO->cardJysan,
             $userDTO->kaspiCardholder,
-            $userDTO->jysanCardholder
+            $userDTO->jysanCardholder,
+            $userDTO->salary,
         );
 
         return $user;

@@ -26,14 +26,13 @@ class StoreUserRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'id'                => ['numeric', 'exists:users,id'],
             'name'              => ['required', 'string', 'min:3', 'max:60'],
             'last_name'         => ['required', 'string', 'min:3', 'max:60'],
             'email'             => ['required', 'string', 'email'],
             'description'       => ['nullable'],
             'position'          => ['required', 'numeric', 'exists:position,id'],
             'user_type'         => ['required', 'string', 'in:office,remote'],
-            'birthday'          => ['nullable'],
+            'birthday'          => ['string'],
             'program_type'      => ['required', 'numeric'],
             'working_days'      => ['required', 'numeric'],
             'working_times'     => ['required', 'numeric'],
@@ -43,8 +42,8 @@ class StoreUserRequest extends FormRequest
             'phone_relatives'   => ['string', 'numeric', 'min:10'],
             'phone_children'    => ['string', 'numeric', 'min:10'],
             'full_time'         => ['required', 'numeric'],
-            'work_start_time'   => ['nullable'],
-            'work_start_end'    => ['nullable'],
+            'work_start_time'   => ['string'],
+            'work_start_end'    => ['string'],
             'currency'          => ['string'],
             'weekdays'          => ['required', 'string'],
             'selectedCityInput' => ['required', 'string'],

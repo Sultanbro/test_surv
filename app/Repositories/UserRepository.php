@@ -188,7 +188,7 @@ final class UserRepository extends CoreRepository
             ]
         );
 
-        EmailNotificationEvent::dispatch($dto->name, $dto->email, $password);
+//        EmailNotificationEvent::dispatch($dto->name, $dto->email, $password);
 
         return $user;
 
@@ -209,14 +209,14 @@ final class UserRepository extends CoreRepository
 
     public function updateOrCreateSalary(
         int $userId,
-        ?string $salary = '70000',
         ?string $cardNumber,
         ?string $kaspi,
         ?string $jysan,
         ?string $cardKaspi,
         ?string $cardJysan,
         ?string $kaspiCardholder,
-        ?string $jysanCardholder
+        ?string $jysanCardholder,
+        ?string $salary,
     )
     {
         $this->model()->find($userId)->zarplata()->updateOrCreate(
@@ -224,7 +224,7 @@ final class UserRepository extends CoreRepository
                 'user_id' => $userId
             ],
             [
-                'zarplata' => $salary,
+                'zarplata' => $salary ?? 70000,
                 'card_number' => $cardNumber,
                 'kaspi' => $kaspi,
                 'jysan' => $jysan,
