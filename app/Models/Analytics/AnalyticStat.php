@@ -170,7 +170,7 @@ class AnalyticStat extends Model
                     }
 
                     if($stat->type == 'sum'){
-                        $val =  self::daysSum($date, 3857, $group_id);
+                        $val =  self::daysSum($date, $row->id, $group_id);
                         $val = round($val, 1);
                         $stat->show_value = $val;
                         $stat->save();
