@@ -5,6 +5,7 @@ namespace App\Helpers;
 use App\Repositories\CardRepository;
 use App\Repositories\UserContactRepository;
 use App\User;
+use App\UserContact;
 use Carbon\Carbon;
 
 class UserHelper
@@ -150,12 +151,21 @@ class UserHelper
         $contactsData = [];
         foreach ($phones as $phone)
         {
-            $contactsData[] = [
-                'user_id' => $userId,
-                'value' => $phone['value'],
-                'name' => $phone['name'],
-                'type'  => 'phone'
-            ];
+            $exist = UserContact::query()->where([
+                ['type', '=', 'phone'],
+                ['value', '=', $phone['value']],
+                ['name', '=', $phone['name']]
+            ])->exists();
+
+            if (!$exist)
+            {
+                $contactsData[] = [
+                    'user_id' => $userId,
+                    'value' => $phone['value'],
+                    'name' => $phone['name'],
+                    'type'  => 'phone'
+                ];
+            }
         }
         (new UserContactRepository)->createMultipleContact($contactsData);
     }

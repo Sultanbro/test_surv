@@ -42,7 +42,7 @@ class TaxService
         try{
             $taxes  = $taxArray['taxes'] ?? null;
             $id     = $taxArray['id'] ?? null;
-
+            dd($taxArray);
             if($taxArray['tax']) {
                 $this->repository->insertMultipleTaxes($taxArray['tax']);
             }else if($taxes) {
