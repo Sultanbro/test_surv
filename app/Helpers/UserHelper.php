@@ -147,17 +147,13 @@ class UserHelper
         array $phones
     ): void
     {
-
+        $contactRepo = new UserContactRepository();
         $contactsData = [];
         foreach ($phones as $phone)
         {
-            $exist = UserContact::query()->where([
-                ['type', '=', 'phone'],
-                ['value', '=', $phone['value']],
-                ['name', '=', $phone['name']]
-            ])->exists();
+            $contactRepo->getContracts($phone['value'], $phone['name'], $userId, '!=')->delete();
 
-            if (!$exist)
+            if (!$contactRepo->getContracts($phone['value'], $phone['name'], $userId)->exists())
             {
                 $contactsData[] = [
                     'user_id' => $userId,
