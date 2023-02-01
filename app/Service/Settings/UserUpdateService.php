@@ -50,12 +50,6 @@ final class UserUpdateService
 
         $this->changeTraineeToEmployee($user, $userDTO->isTrainee);
 
-        $this->setTaxes([
-            'tax' => $userDTO->tax,
-            'taxes' => $userDTO->taxes,
-            'id' => $userDTO->userId
-        ]);
-
         $this->setBitrix($user, $userDTO->bitrixId);
 
         if ($userDTO->cards) {
