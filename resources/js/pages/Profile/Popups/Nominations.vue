@@ -42,19 +42,6 @@
 									v-if="award.hasOwnProperty('my')"
 								>{{ award.my.length }}</span>
 								<span v-else>0</span>
-								из
-								<span
-									class="all"
-									v-if="award.hasOwnProperty('my')"
-								>{{ award.available.length + award.my.length }}</span>
-								<span
-									class="all"
-									v-else-if="award.hasOwnProperty('available')"
-								>{{ award.available.length }}</span>
-								<span
-									class="all"
-									v-else
-								>0</span>
 							</div>
 
 							<BRow v-if="award.hasOwnProperty('my')">
@@ -93,21 +80,8 @@
 								<span
 									class="current"
 									v-if="award.hasOwnProperty('available')"
-								>{{ award.available.length }}</span>
+								>{{ nominationPublic(award.available).length }}</span>
 								<span v-else>0</span>
-								из
-								<span
-									class="all"
-									v-if="award.hasOwnProperty('my')"
-								>{{ award.available.length + award.my.length }}</span>
-								<span
-									class="all"
-									v-else-if="award.hasOwnProperty('available')"
-								>{{ award.available.length }}</span>
-								<span
-									class="all"
-									v-else
-								>0</span>
 							</div>
 
 							<BRow v-if="award.hasOwnProperty('available')">
@@ -116,7 +90,7 @@
 									md="4"
 									lg="3"
 									class="mb-5"
-									v-for="item in award.available"
+									v-for="item in nominationPublic(award.available)"
 									:key="item.id"
 								>
 									<div
@@ -523,6 +497,9 @@ export default {
 		}
 	},
 	methods: {
+		nominationPublic(array){
+			return array.filter(a => a.type === 'public');
+		},
 		activeteTab(text){
 			this.$emit('get-desc', text)
 		},

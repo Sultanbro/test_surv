@@ -289,7 +289,6 @@ export default {
 
 			// нужно подождать пока рендер заполнит форму
 			await this.$nextTick()
-
 			const formData = new FormData(this.$refs.form)
 
 			this.counter = 0;
