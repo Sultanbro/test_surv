@@ -18,7 +18,7 @@ class PositionSeeder extends Seeder
         DB::table('position')->insert([[
             'id' => 1,
             'book_groups' => null,
-            'position' => 'Администратор',
+            'position' => 'Владелец',
             'indexation' => 0,  
             'sum' => 0
         ]]);

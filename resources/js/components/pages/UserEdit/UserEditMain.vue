@@ -66,7 +66,7 @@ export default {
 			cities: [],
 			isSearchResult: false,
 			weekdays: (this.user?.weekdays || '0000000').split(''),
-			position: this.user?.position_id || '',
+			position: this.user ? this.user.position_id : '',
 		}
 	},
 	computed:{
@@ -244,6 +244,7 @@ export default {
 					<option
 						v-for="pos in positions"
 						:key="pos.id"
+						:value="pos.id"
 					>
 						{{ pos.position }}
 					</option>

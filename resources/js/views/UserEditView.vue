@@ -157,7 +157,12 @@ export default {
 	watch: {
 		activeUserId(){
 			this.updatePageData()
-		}
+		},
+		user(user){
+			if(user){
+				this.fileurl = user.img_url || 'noavatar.png'
+			}
+		},
 	},
 	mounted(){
 		this.updatePageData()
@@ -284,7 +289,6 @@ export default {
 
 			// нужно подождать пока рендер заполнит форму
 			await this.$nextTick()
-
 			const formData = new FormData(this.$refs.form)
 
 			this.counter = 0;
