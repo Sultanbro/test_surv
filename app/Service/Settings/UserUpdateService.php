@@ -34,6 +34,7 @@ final class UserUpdateService
         UpdateUserDTO $userDTO
     ): User
     {
+        dd($userDTO);
         $user = $this->userRepository->userWithRelations($userDTO->userId, [
             'zarplata',
             'photo',

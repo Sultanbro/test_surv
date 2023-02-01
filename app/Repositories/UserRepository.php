@@ -188,7 +188,7 @@ final class UserRepository extends CoreRepository
             ]
         );
 
-//        EmailNotificationEvent::dispatch($dto->name, $dto->email, $password);
+        EmailNotificationEvent::dispatch($dto->name, $dto->email, $password);
 
         return $user;
 

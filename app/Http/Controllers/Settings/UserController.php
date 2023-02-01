@@ -65,7 +65,7 @@ class UserController extends Controller
     public function store(StoreUserRequest $request): JsonResponse
     {
         $user = auth()->user() ?? User::query()->findOrFail(5);
-//        abort_if(!$user->can('users_view'), Response::HTTP_FORBIDDEN, 'У вас нет доступа!');
+        abort_if(!$user->can('users_view'), Response::HTTP_FORBIDDEN, 'У вас нет доступа!');
 
         $response = $this->userService->userStore($request->toDto());
 
