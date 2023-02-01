@@ -33,34 +33,35 @@
 					>
 						<b-td>{{ index + 1 }}</b-td>
 						<b-td>{{ shift.name }}</b-td>
-						<b-td>с {{ shift.workStartTime }} по {{ shift.workEndTime }}</b-td>
+						<b-td>с {{ shift.time_beg }} по {{ shift.time_end }}</b-td>
 						<b-td>
-							<div class="weekdays">
-								<template v-for="(day, idx) in convertWeekdaysString(shift.weekdaysString)">
-									<div
-										v-if="shift.weekdaysString[idx] === '1'"
-										:key="day"
-										class="weekday"
-									>
-										{{ day }}
-									</div>
-								</template>
+							<div
+								class="weekdays"
+								v-if="shift.day_off.length"
+							>
+								<div
+									class="weekday"
+									v-for="(day, idx) in shift.day_off"
+									:key="idx"
+								>
+									{{ day }}
+								</div>
 							</div>
-							<div v-if="shift.weekdaysString === '0000000'">
+							<div v-else>
 								Без выходных
 							</div>
 						</b-td>
-						<b-td>
+						<b-td class="td-actions">
 							<div class="d-flex mx-2">
 								<b-button
 									class="btn btn-primary btn-icon"
-									@click="editShift(shift, index)"
+									@click="editShift(shift)"
 								>
 									<i class="fa fa-edit" />
 								</b-button>
 								<b-button
 									class="btn btn-danger btn-icon"
-									@click="deleteShift(index)"
+									@click="openModal(shift.id)"
 								>
 									<i class="fa fa-trash" />
 								</b-button>
@@ -81,7 +82,7 @@
 			id="edit-shift-sidebar"
 			:title="sidebarName ? sidebarName : 'Сертификат'"
 			:open="showSidebar"
-			@close="showSidebar = false"
+			@close="closeSidebar"
 			width="600px"
 		>
 			<b-form @submit.prevent="onSubmit">
@@ -138,57 +139,57 @@
 
 						<div
 							class="weekday"
-							:class="{'active': weekdays[0] === '1'}"
+							:class="{'active': weekdays[0].active === 1}"
 							data-id="1"
-							@click="toggleWeekDay(0)"
+							@click="toggleWeekDay(0, 'Пн')"
 						>
 							Пн
 						</div>
 						<div
 							class="weekday"
-							:class="{'active': weekdays[1] === '1'}"
+							:class="{'active': weekdays[1].active === 1}"
 							data-id="2"
-							@click="toggleWeekDay(1)"
+							@click="toggleWeekDay(1, 'Вт')"
 						>
 							Вт
 						</div>
 						<div
 							class="weekday"
-							:class="{'active': weekdays[2] === '1'}"
+							:class="{'active': weekdays[2].active === 1}"
 							data-id="3"
-							@click="toggleWeekDay(2)"
+							@click="toggleWeekDay(2, 'Ср')"
 						>
 							Ср
 						</div>
 						<div
 							class="weekday"
-							:class="{'active': weekdays[3] === '1'}"
+							:class="{'active': weekdays[3].active === 1}"
 							data-id="4"
-							@click="toggleWeekDay(3)"
+							@click="toggleWeekDay(3, 'Чт')"
 						>
 							Чт
 						</div>
 						<div
 							class="weekday"
-							:class="{'active': weekdays[4] === '1'}"
+							:class="{'active': weekdays[4].active === 1}"
 							data-id="5"
-							@click="toggleWeekDay(4)"
+							@click="toggleWeekDay(4, 'Пт')"
 						>
 							Пт
 						</div>
 						<div
 							class="weekday"
-							:class="{'active': weekdays[5] === '1'}"
+							:class="{'active': weekdays[5].active === 1}"
 							data-id="6"
-							@click="toggleWeekDay(5)"
+							@click="toggleWeekDay(5, 'Сб')"
 						>
 							Сб
 						</div>
 						<div
 							class="weekday"
-							:class="{'active': weekdays[6] === '1'}"
+							:class="{'active': weekdays[6].active === 1}"
 							data-id="0"
-							@click="toggleWeekDay(6)"
+							@click="toggleWeekDay(6, 'Вс')"
 						>
 							Вс
 						</div>
@@ -203,6 +204,30 @@
 				</b-button>
 			</b-form>
 		</sidebar>
+
+		<b-modal
+			v-model="modal"
+			centered
+			title="Удалить смену"
+		>
+			<p class="my-4">
+				Вы уверены, что хотите удалить смену?
+			</p>
+			<template #modal-footer>
+				<b-button
+					variant="danger"
+					@click="deleteShift"
+				>
+					Удалить
+				</b-button>
+				<b-button
+					variant="secondary"
+					@click="modal = false"
+				>
+					Отмена
+				</b-button>
+			</template>
+		</b-modal>
 	</div>
 </template>
 
@@ -212,66 +237,117 @@ export default {
 	name: 'CompanyShifts',
 	data() {
 		return {
+			modal: false,
 			shiftsData: [],
-			shiftEditIndex: null,
 			sidebarName: 'Создание новой смены',
 			showSidebar: false,
+			editShiftId: null,
 			form: {
 				name: '',
 				workStartTime: null,
 				workEndTime: null,
 				weekdaysString: null
 			},
-			weekdaysNames: ['Пн', 'Вт', 'Ср', 'Чт', 'Пт', 'Сб', 'Вс'],
-			weekdays: '0000000'.split(''),
+			weekdays: [
+				{day: 'Пн', active: 0},
+				{day: 'Вт', active: 0},
+				{day: 'Ср', active: 0},
+				{day: 'Чт', active: 0},
+				{day: 'Пт', active: 0},
+				{day: 'Сб', active: 0},
+				{day: 'Вс', active: 0}
+			]
 		}
 	},
+	mounted() {
+		this.fetchData();
+	},
 	methods: {
-		convertWeekdaysString(text) {
-			const daysArr = text.split('');
-			for (let i = 0; i < daysArr.length; i++) {
-				daysArr[i] = this.weekdaysNames[i];
+		async fetchData() {
+			this.shiftsData = [];
+			let loader = this.$loading.show();
+			const response = await this.axios.get('/timetracking/work-chart');
+			if (response.data) {
+				this.shiftsData = response.data.data;
+				loader.hide();
 			}
-			return daysArr;
 		},
 		createNewShift() {
-			this.showSidebar = !this.showSidebar;
+			this.showSidebar = true;
 			this.sidebarName = 'Создание новой смены';
 		},
-		editShift(shift, index) {
-			this.shiftEditIndex = index;
-			this.showSidebar = !this.showSidebar;
+		openModal(id) {
+			this.editShiftId = id;
+			this.modal = true;
+		},
+		editShift(shift) {
+			this.showSidebar = true;
+			this.editShiftId = shift.id;
 			this.form.name = shift.name;
-			this.form.workStartTime = shift.workStartTime;
-			this.form.workEndTime = shift.workEndTime;
-			this.form.weekdaysString = shift.weekdaysString;
-			this.weekdays = shift.weekdaysString.split('');
+			this.form.workStartTime = shift.time_beg;
+			this.form.workEndTime = shift.time_end;
+			shift.day_off.forEach(day => {
+				const index = this.weekdays.findIndex(d => d.day === day);
+				this.weekdays[index].active = 1;
+			});
 			this.sidebarName = `Редактирование ${shift.name}`;
 		},
-		deleteShift(index){
-			if (window.confirm('Вы уверены, что хотите удалить смену?')) {
-				this.shiftsData.splice(index, 1);
-			}
+		async deleteShift() {
+			let loader = this.$loading.show();
+			const response = await this.axios.delete('/timetracking/work-chart/' + this.editShiftId);
+			console.log(response.data);
+			this.modal = false;
+			loader.hide();
+			this.resetForm();
+			this.fetchData();
+			this.$toast.success('Смена удалена');
 		},
-		toggleWeekDay(id) {
-			this.$set(this.weekdays, id, this.weekdays[id] === '1' ? '0' : '1');
+		toggleWeekDay(idx, day) {
+			this.$set(this.weekdays, idx, {day: day, active: this.weekdays[idx].active === 1 ? 0 : 1});
 		},
 		resetForm() {
-			this.shiftEditIndex = null;
+			this.editShiftId = null;
 			this.form.name = '';
 			this.form.workStartTime = null;
 			this.form.workEndTime = null;
-			this.form.weekdaysString = null;
-			this.weekdays = '0000000'.split('');
+			this.weekdays = [
+				{day: 'Пн', active: 0},
+				{day: 'Вт', active: 0},
+				{day: 'Ср', active: 0},
+				{day: 'Чт', active: 0},
+				{day: 'Пт', active: 0},
+				{day: 'Сб', active: 0},
+				{day: 'Вс', active: 0}
+			]
 		},
-		onSubmit() {
-			this.form.weekdaysString = this.weekdays.join('');
-			const data = Object.assign({}, this.form);
-			if (this.shiftEditIndex !== null) {
-				this.shiftsData[this.shiftEditIndex] = data;
+		async onSubmit() {
+			let loader = this.$loading.show();
+			const formData = new FormData();
+			formData.append('name', this.form.name);
+			formData.append('time_beg', this.form.workStartTime);
+			formData.append('time_end', this.form.workEndTime);
+			const activeWeekdays = this.weekdays.filter(d => d.active === 1);
+			activeWeekdays.forEach((day, idx) => {
+				formData.append(`day_off[${idx}]`, day.day);
+			});
+			if (this.editShiftId) {
+				formData.append('_method', 'put');
+				const response = await this.axios.post('/timetracking/work-chart/' + this.editShiftId, formData);
+				if (response.data) {
+					this.fetchData();
+					this.$toast.success('Смена обновлена');
+				}
 			} else {
-				this.shiftsData.push(data);
+				const response = await this.axios.post('/timetracking/work-chart', formData);
+				if (response.data) {
+					this.shiftsData.push(response.data.data);
+					this.$toast.success('Смена добавлена');
+				}
 			}
+			loader.hide();
+			this.closeSidebar();
+		},
+		closeSidebar() {
 			this.showSidebar = false;
 			this.resetForm();
 		}
@@ -281,75 +357,80 @@ export default {
 
 
 <style lang="scss" scoped>
-    .table-shifts {
-        tbody {
-            th, td {
-                padding: 3px 15px !important;
-            }
-        }
+	.table-shifts {
+		tbody {
+			td, th {
+				padding: 5px 10px !important;
+				vertical-align: middle;
+			}
 
-        .weekdays {
-            display: flex;
-            align-items: center;
-            justify-content: center;
+			.td-actions {
+				padding: 3px 10px !important;
+			}
+		}
 
-            .weekday {
-                width: 25px;
-                height: 25px;
-                font-size: 14px;
-                border-radius: 6px;
-                display: inline-flex;
-                align-items: center;
-                justify-content: center;
-                margin-right: 5px;
-                background-color: green;
-                color: #fff;
+		.weekdays {
+			display: flex;
+			align-items: center;
+			justify-content: flex-start;
 
-                &:last-child {
-                    margin-right: 0;
-                }
-            }
-        }
-    }
+			.weekday {
+				width: 25px;
+				height: 25px;
+				font-size: 14px;
+				border-radius: 6px;
+				display: inline-flex;
+				align-items: center;
+				justify-content: center;
+				margin-right: 5px;
+				background-color: green;
+				color: #fff;
 
-    #edit-shift-sidebar {
-        form {
-            padding-right: 10px;
-        }
+				&:last-child {
+					margin-right: 0;
+				}
+			}
+		}
+	}
 
-        .work-schedule {
-            .form-inline {
-                margin-left: -7px;
-            }
-        }
+	#edit-shift-sidebar {
+		form {
+			padding-right: 10px;
+		}
 
-        .col-form-label {
-            color: #8DA0C1 !important;
-            font-size: 16px;
-        }
+		.work-schedule {
+			.form-inline {
+				margin-left: -7px;
+			}
+		}
 
-        .weekdays-container {
-            display: flex;
-            align-items: center;
+		.col-form-label {
+			color: #8DA0C1 !important;
+			font-size: 16px;
+		}
 
-            .weekday {
-                width: 35px;
-                height: 35px;
-                border-radius: 6px;
-                display: inline-flex;
-                align-items: center;
-                justify-content: center;
-                margin-right: 5px;
-                cursor: pointer;
-                color: #333;
-                border: 1px solid #ddd;
+		.weekdays-container {
+			display: flex;
+			align-items: center;
 
-                &.active {
-                    background-color: green;
-                    color: #fff;
-                    border: 1px solid green;
-                }
-            }
-        }
-    }
+			.weekday {
+				width: 35px;
+				height: 35px;
+				border-radius: 6px;
+				display: inline-flex;
+				align-items: center;
+				justify-content: center;
+				margin-right: 5px;
+				cursor: pointer;
+				color: #333;
+				border: 1px solid #ddd;
+
+				&.active {
+					background-color: green;
+					color: #fff;
+					border: 1px solid green;
+				}
+			}
+		}
+	}
 </style>
