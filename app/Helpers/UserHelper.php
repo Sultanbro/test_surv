@@ -151,7 +151,7 @@ class UserHelper
         $contactsData = [];
         foreach ($phones as $phone)
         {
-            $contactRepo->getContracts($phone['value'], $phone['name'], $userId, '!=')->delete();
+            User::query()->find($userId)->profileContacts()->delete();
 
             if (!$contactRepo->getContracts($phone['value'], $phone['name'], $userId)->exists())
             {
