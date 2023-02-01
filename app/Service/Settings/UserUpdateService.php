@@ -34,7 +34,6 @@ final class UserUpdateService
         UpdateUserDTO $userDTO
     ): User
     {
-        dd($userDTO);
         $user = $this->userRepository->userWithRelations($userDTO->userId, [
             'zarplata',
             'photo',
@@ -50,12 +49,6 @@ final class UserUpdateService
         }
 
         $this->changeTraineeToEmployee($user, $userDTO->isTrainee);
-
-        $this->setTaxes([
-            'tax' => $userDTO->tax,
-            'taxes' => $userDTO->taxes,
-            'id' => $userDTO->userId
-        ]);
 
         $this->setBitrix($user, $userDTO->bitrixId);
 
