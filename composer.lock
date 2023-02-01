@@ -114,7 +114,7 @@
         },
         {
             "name": "aws/aws-sdk-php",
-<<<<<<< HEAD
+            <<<<<<< HEAD
             "version": "3.255.6",
             "source": {
                 "type": "git",
@@ -125,105 +125,105 @@
                 "type": "zip",
                 "url": "https://api.github.com/repos/aws/aws-sdk-php/zipball/3e5f81c576fffa9ce3f03d871189211761721bbc",
                 "reference": "3e5f81c576fffa9ce3f03d871189211761721bbc",
-=======
-            "version": "3.255.7",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/aws/aws-sdk-php.git",
-                "reference": "50585058d65fd676ba689783c437d341b1198554"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/aws/aws-sdk-php/zipball/50585058d65fd676ba689783c437d341b1198554",
-                "reference": "50585058d65fd676ba689783c437d341b1198554",
->>>>>>> main
-                "shasum": ""
-            },
-            "require": {
-                "aws/aws-crt-php": "^1.0.2",
-                "ext-json": "*",
-                "ext-pcre": "*",
-                "ext-simplexml": "*",
-                "guzzlehttp/guzzle": "^6.5.8 || ^7.4.5",
-                "guzzlehttp/promises": "^1.4.0",
-                "guzzlehttp/psr7": "^1.8.5 || ^2.3",
-                "mtdowling/jmespath.php": "^2.6",
-                "php": ">=5.5"
-            },
-            "require-dev": {
-                "andrewsville/php-token-reflection": "^1.4",
-                "aws/aws-php-sns-message-validator": "~1.0",
-                "behat/behat": "~3.0",
-                "composer/composer": "^1.10.22",
-                "dms/phpunit-arraysubset-asserts": "^0.4.0",
-                "doctrine/cache": "~1.4",
-                "ext-dom": "*",
-                "ext-openssl": "*",
-                "ext-pcntl": "*",
-                "ext-sockets": "*",
-                "nette/neon": "^2.3",
-                "paragonie/random_compat": ">= 2",
-                "phpunit/phpunit": "^4.8.35 || ^5.6.3 || ^9.5",
-                "psr/cache": "^1.0",
-                "psr/simple-cache": "^1.0",
-                "sebastian/comparator": "^1.2.3 || ^4.0",
-                "yoast/phpunit-polyfills": "^1.0"
-            },
-            "suggest": {
-                "aws/aws-php-sns-message-validator": "To validate incoming SNS notifications",
-                "doctrine/cache": "To use the DoctrineCacheAdapter",
-                "ext-curl": "To send requests using cURL",
-                "ext-openssl": "Allows working with CloudFront private distributions and verifying received SNS messages",
-                "ext-sockets": "To use client-side monitoring"
-            },
-            "type": "library",
-            "extra": {
-                "branch-alias": {
-                    "dev-master": "3.0-dev"
-                }
-            },
-            "autoload": {
-                "files": [
-                    "src/functions.php"
+                =======
+                "version": "3.255.7",
+                "source": {
+                    "type": "git",
+                    "url": "https://github.com/aws/aws-sdk-php.git",
+                    "reference": "50585058d65fd676ba689783c437d341b1198554"
+                },
+                "dist": {
+                    "type": "zip",
+                    "url": "https://api.github.com/repos/aws/aws-sdk-php/zipball/50585058d65fd676ba689783c437d341b1198554",
+                    "reference": "50585058d65fd676ba689783c437d341b1198554",
+                    >>>>>>> main
+                    "shasum": ""
+                },
+                "require": {
+                    "aws/aws-crt-php": "^1.0.2",
+                    "ext-json": "*",
+                    "ext-pcre": "*",
+                    "ext-simplexml": "*",
+                    "guzzlehttp/guzzle": "^6.5.8 || ^7.4.5",
+                    "guzzlehttp/promises": "^1.4.0",
+                    "guzzlehttp/psr7": "^1.8.5 || ^2.3",
+                    "mtdowling/jmespath.php": "^2.6",
+                    "php": ">=5.5"
+                },
+                "require-dev": {
+                    "andrewsville/php-token-reflection": "^1.4",
+                    "aws/aws-php-sns-message-validator": "~1.0",
+                    "behat/behat": "~3.0",
+                    "composer/composer": "^1.10.22",
+                    "dms/phpunit-arraysubset-asserts": "^0.4.0",
+                    "doctrine/cache": "~1.4",
+                    "ext-dom": "*",
+                    "ext-openssl": "*",
+                    "ext-pcntl": "*",
+                    "ext-sockets": "*",
+                    "nette/neon": "^2.3",
+                    "paragonie/random_compat": ">= 2",
+                    "phpunit/phpunit": "^4.8.35 || ^5.6.3 || ^9.5",
+                    "psr/cache": "^1.0",
+                    "psr/simple-cache": "^1.0",
+                    "sebastian/comparator": "^1.2.3 || ^4.0",
+                    "yoast/phpunit-polyfills": "^1.0"
+                },
+                "suggest": {
+                    "aws/aws-php-sns-message-validator": "To validate incoming SNS notifications",
+                    "doctrine/cache": "To use the DoctrineCacheAdapter",
+                    "ext-curl": "To send requests using cURL",
+                    "ext-openssl": "Allows working with CloudFront private distributions and verifying received SNS messages",
+                    "ext-sockets": "To use client-side monitoring"
+                },
+                "type": "library",
+                "extra": {
+                    "branch-alias": {
+                        "dev-master": "3.0-dev"
+                    }
+                },
+                "autoload": {
+                    "files": [
+                        "src/functions.php"
+                    ],
+                    "psr-4": {
+                        "Aws\\": "src/"
+                    }
+                },
+                "notification-url": "https://packagist.org/downloads/",
+                "license": [
+                    "Apache-2.0"
                 ],
-                "psr-4": {
-                    "Aws\\": "src/"
-                }
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "Apache-2.0"
-            ],
-            "authors": [
-                {
-                    "name": "Amazon Web Services",
-                    "homepage": "http://aws.amazon.com"
-                }
-            ],
-            "description": "AWS SDK for PHP - Use Amazon Web Services in your PHP project",
-            "homepage": "http://aws.amazon.com/sdkforphp",
-            "keywords": [
-                "amazon",
-                "aws",
-                "cloud",
-                "dynamodb",
-                "ec2",
-                "glacier",
-                "s3",
-                "sdk"
-            ],
-            "support": {
-                "forum": "https://forums.aws.amazon.com/forum.jspa?forumID=80",
-                "issues": "https://github.com/aws/aws-sdk-php/issues",
-<<<<<<< HEAD
-                "source": "https://github.com/aws/aws-sdk-php/tree/3.255.6"
-            },
-            "time": "2022-12-29T19:20:12+00:00"
-=======
+                "authors": [
+                    {
+                        "name": "Amazon Web Services",
+                        "homepage": "http://aws.amazon.com"
+                    }
+                ],
+                "description": "AWS SDK for PHP - Use Amazon Web Services in your PHP project",
+                "homepage": "http://aws.amazon.com/sdkforphp",
+                "keywords": [
+                    "amazon",
+                    "aws",
+                    "cloud",
+                    "dynamodb",
+                    "ec2",
+                    "glacier",
+                    "s3",
+                    "sdk"
+                ],
+                "support": {
+                    "forum": "https://forums.aws.amazon.com/forum.jspa?forumID=80",
+                    "issues": "https://github.com/aws/aws-sdk-php/issues",
+                    <<<<<<< HEAD
+                    "source": "https://github.com/aws/aws-sdk-php/tree/3.255.6"
+                },
+                "time": "2022-12-29T19:20:12+00:00"
+                =======
                 "source": "https://github.com/aws/aws-sdk-php/tree/3.255.7"
             },
             "time": "2022-12-30T19:22:02+00:00"
->>>>>>> main
+            >>>>>>> main
         },
         {
             "name": "beyondcode/laravel-websockets",
@@ -1392,7 +1392,7 @@
         },
         {
             "name": "egulias/email-validator",
-<<<<<<< HEAD
+            <<<<<<< HEAD
             "version": "3.2.2",
             "source": {
                 "type": "git",
@@ -1403,81 +1403,81 @@
                 "type": "zip",
                 "url": "https://api.github.com/repos/egulias/EmailValidator/zipball/1ac0be80b32ea829009257934ecfd5ab20f24ba5",
                 "reference": "1ac0be80b32ea829009257934ecfd5ab20f24ba5",
-=======
-            "version": "3.2.5",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/egulias/EmailValidator.git",
-                "reference": "b531a2311709443320c786feb4519cfaf94af796"
+                =======
+                "version": "3.2.5",
+                "source": {
+                    "type": "git",
+                    "url": "https://github.com/egulias/EmailValidator.git",
+                    "reference": "b531a2311709443320c786feb4519cfaf94af796"
+                },
+                "dist": {
+                    "type": "zip",
+                    "url": "https://api.github.com/repos/egulias/EmailValidator/zipball/b531a2311709443320c786feb4519cfaf94af796",
+                    "reference": "b531a2311709443320c786feb4519cfaf94af796",
+                    >>>>>>> main
+                    "shasum": ""
+                },
+                "require": {
+                    "doctrine/lexer": "^1.2|^2",
+                    "php": ">=7.2",
+                    "symfony/polyfill-intl-idn": "^1.15"
+                },
+                "require-dev": {
+                    "phpunit/phpunit": "^8.5.8|^9.3.3",
+                    "vimeo/psalm": "^4"
+                },
+                "suggest": {
+                    "ext-intl": "PHP Internationalization Libraries are required to use the SpoofChecking validation"
+                },
+                "type": "library",
+                "extra": {
+                    "branch-alias": {
+                        "dev-master": "3.0.x-dev"
+                    }
+                },
+                "autoload": {
+                    "psr-4": {
+                        "Egulias\\EmailValidator\\": "src"
+                    }
+                },
+                "notification-url": "https://packagist.org/downloads/",
+                "license": [
+                    "MIT"
+                ],
+                "authors": [
+                    {
+                        "name": "Eduardo Gulias Davis"
+                    }
+                ],
+                "description": "A library for validating emails against several RFCs",
+                "homepage": "https://github.com/egulias/EmailValidator",
+                "keywords": [
+                    "email",
+                    "emailvalidation",
+                    "emailvalidator",
+                    "validation",
+                    "validator"
+                ],
+                "support": {
+                    "issues": "https://github.com/egulias/EmailValidator/issues",
+                    <<<<<<< HEAD
+                    "source": "https://github.com/egulias/EmailValidator/tree/3.2.2"
+                    =======
+                    "source": "https://github.com/egulias/EmailValidator/tree/3.2.5"
+                    >>>>>>> main
+                },
+                "funding": [
+                    {
+                        "url": "https://github.com/egulias",
+                        "type": "github"
+                    }
+                ],
+                <<<<<<< HEAD
+                "time": "2022-12-29T21:07:24+00:00"
+                =======
+                "time": "2023-01-02T17:26:14+00:00"
+                >>>>>>> main
             },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/egulias/EmailValidator/zipball/b531a2311709443320c786feb4519cfaf94af796",
-                "reference": "b531a2311709443320c786feb4519cfaf94af796",
->>>>>>> main
-                "shasum": ""
-            },
-            "require": {
-                "doctrine/lexer": "^1.2|^2",
-                "php": ">=7.2",
-                "symfony/polyfill-intl-idn": "^1.15"
-            },
-            "require-dev": {
-                "phpunit/phpunit": "^8.5.8|^9.3.3",
-                "vimeo/psalm": "^4"
-            },
-            "suggest": {
-                "ext-intl": "PHP Internationalization Libraries are required to use the SpoofChecking validation"
-            },
-            "type": "library",
-            "extra": {
-                "branch-alias": {
-                    "dev-master": "3.0.x-dev"
-                }
-            },
-            "autoload": {
-                "psr-4": {
-                    "Egulias\\EmailValidator\\": "src"
-                }
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "MIT"
-            ],
-            "authors": [
-                {
-                    "name": "Eduardo Gulias Davis"
-                }
-            ],
-            "description": "A library for validating emails against several RFCs",
-            "homepage": "https://github.com/egulias/EmailValidator",
-            "keywords": [
-                "email",
-                "emailvalidation",
-                "emailvalidator",
-                "validation",
-                "validator"
-            ],
-            "support": {
-                "issues": "https://github.com/egulias/EmailValidator/issues",
-<<<<<<< HEAD
-                "source": "https://github.com/egulias/EmailValidator/tree/3.2.2"
-=======
-                "source": "https://github.com/egulias/EmailValidator/tree/3.2.5"
->>>>>>> main
-            },
-            "funding": [
-                {
-                    "url": "https://github.com/egulias",
-                    "type": "github"
-                }
-            ],
-<<<<<<< HEAD
-            "time": "2022-12-29T21:07:24+00:00"
-=======
-            "time": "2023-01-02T17:26:14+00:00"
->>>>>>> main
-        },
         {
             "name": "erusev/parsedown",
             "version": "1.7.4",
@@ -2475,7 +2475,7 @@
         },
         {
             "name": "kitloong/laravel-migrations-generator",
-<<<<<<< HEAD
+            <<<<<<< HEAD
             "version": "v6.7.0",
             "source": {
                 "type": "git",
@@ -2486,89 +2486,89 @@
                 "type": "zip",
                 "url": "https://api.github.com/repos/kitloong/laravel-migrations-generator/zipball/ea33a9450c5d0265a4b832946b90511da006ede6",
                 "reference": "ea33a9450c5d0265a4b832946b90511da006ede6",
-=======
-            "version": "v6.7.1",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/kitloong/laravel-migrations-generator.git",
-                "reference": "9e790b776d5caf01174bd7ee10158cb0d4c44a0f"
+                =======
+                "version": "v6.7.1",
+                "source": {
+                    "type": "git",
+                    "url": "https://github.com/kitloong/laravel-migrations-generator.git",
+                    "reference": "9e790b776d5caf01174bd7ee10158cb0d4c44a0f"
+                },
+                "dist": {
+                    "type": "zip",
+                    "url": "https://api.github.com/repos/kitloong/laravel-migrations-generator/zipball/9e790b776d5caf01174bd7ee10158cb0d4c44a0f",
+                    "reference": "9e790b776d5caf01174bd7ee10158cb0d4c44a0f",
+                    >>>>>>> main
+                    "shasum": ""
+                },
+                "require": {
+                    "doctrine/dbal": "^2.4|^3.0",
+                    "ext-pdo": "*",
+                    "illuminate/support": "^5.6|^6.0|^7.0|^8.0|^9.0",
+                    "myclabs/php-enum": "^1.6|^1.7|^1.8",
+                    "php": ">=7.1.3"
+                },
+                "require-dev": {
+                    "barryvdh/laravel-ide-helper": "^2.7",
+                    "friendsofphp/php-cs-fixer": "^2.19.0|^3.1",
+                    "mockery/mockery": "^1.0",
+                    "nunomaduro/larastan": "^0.4|^0.5|^0.6|^0.7|^1.0|^2.0",
+                    "orchestra/testbench": "^3.6|^4.0|^5.0|^6.0|^7.0",
+                    "phpmd/phpmd": "^2.10",
+                    "slevomat/coding-standard": "^6.0|^7.0|^8.5",
+                    "squizlabs/php_codesniffer": "^3.5"
+                },
+                "type": "library",
+                "extra": {
+                    "laravel": {
+                        "providers": [
+                            "KitLoong\\MigrationsGenerator\\MigrationsGeneratorServiceProvider"
+                        ]
+                    }
+                },
+                "autoload": {
+                    "psr-4": {
+                        "KitLoong\\MigrationsGenerator\\": "src"
+                    }
+                },
+                "notification-url": "https://packagist.org/downloads/",
+                "license": [
+                    "MIT"
+                ],
+                "authors": [
+                    {
+                        "name": "Kit Loong",
+                        "email": "kitloong1008@gmail.com"
+                    }
+                ],
+                "description": "Generates Laravel Migrations from an existing database",
+                "keywords": [
+                    "artisan",
+                    "generator",
+                    "laravel",
+                    "lumen",
+                    "migration",
+                    "migrations"
+                ],
+                "support": {
+                    "issues": "https://github.com/kitloong/laravel-migrations-generator/issues",
+                    <<<<<<< HEAD
+                    "source": "https://github.com/kitloong/laravel-migrations-generator/tree/v6.7.0"
+                    =======
+                    "source": "https://github.com/kitloong/laravel-migrations-generator/tree/v6.7.1"
+                    >>>>>>> main
+                },
+                "funding": [
+                    {
+                        "url": "https://www.buymeacoffee.com/kitloong",
+                        "type": "custom"
+                    }
+                ],
+                <<<<<<< HEAD
+                "time": "2022-12-26T12:23:27+00:00"
+                =======
+                "time": "2022-12-30T11:29:21+00:00"
+                >>>>>>> main
             },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/kitloong/laravel-migrations-generator/zipball/9e790b776d5caf01174bd7ee10158cb0d4c44a0f",
-                "reference": "9e790b776d5caf01174bd7ee10158cb0d4c44a0f",
->>>>>>> main
-                "shasum": ""
-            },
-            "require": {
-                "doctrine/dbal": "^2.4|^3.0",
-                "ext-pdo": "*",
-                "illuminate/support": "^5.6|^6.0|^7.0|^8.0|^9.0",
-                "myclabs/php-enum": "^1.6|^1.7|^1.8",
-                "php": ">=7.1.3"
-            },
-            "require-dev": {
-                "barryvdh/laravel-ide-helper": "^2.7",
-                "friendsofphp/php-cs-fixer": "^2.19.0|^3.1",
-                "mockery/mockery": "^1.0",
-                "nunomaduro/larastan": "^0.4|^0.5|^0.6|^0.7|^1.0|^2.0",
-                "orchestra/testbench": "^3.6|^4.0|^5.0|^6.0|^7.0",
-                "phpmd/phpmd": "^2.10",
-                "slevomat/coding-standard": "^6.0|^7.0|^8.5",
-                "squizlabs/php_codesniffer": "^3.5"
-            },
-            "type": "library",
-            "extra": {
-                "laravel": {
-                    "providers": [
-                        "KitLoong\\MigrationsGenerator\\MigrationsGeneratorServiceProvider"
-                    ]
-                }
-            },
-            "autoload": {
-                "psr-4": {
-                    "KitLoong\\MigrationsGenerator\\": "src"
-                }
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "MIT"
-            ],
-            "authors": [
-                {
-                    "name": "Kit Loong",
-                    "email": "kitloong1008@gmail.com"
-                }
-            ],
-            "description": "Generates Laravel Migrations from an existing database",
-            "keywords": [
-                "artisan",
-                "generator",
-                "laravel",
-                "lumen",
-                "migration",
-                "migrations"
-            ],
-            "support": {
-                "issues": "https://github.com/kitloong/laravel-migrations-generator/issues",
-<<<<<<< HEAD
-                "source": "https://github.com/kitloong/laravel-migrations-generator/tree/v6.7.0"
-=======
-                "source": "https://github.com/kitloong/laravel-migrations-generator/tree/v6.7.1"
->>>>>>> main
-            },
-            "funding": [
-                {
-                    "url": "https://www.buymeacoffee.com/kitloong",
-                    "type": "custom"
-                }
-            ],
-<<<<<<< HEAD
-            "time": "2022-12-26T12:23:27+00:00"
-=======
-            "time": "2022-12-30T11:29:21+00:00"
->>>>>>> main
-        },
         {
             "name": "laravel/framework",
             "version": "v9.45.1",
@@ -5620,7 +5620,7 @@
         },
         {
             "name": "ramsey/collection",
-<<<<<<< HEAD
+            <<<<<<< HEAD
             "version": "1.3.0",
             "source": {
                 "type": "git",
@@ -5636,100 +5636,100 @@
             "require": {
                 "php": "^7.4 || ^8.0",
                 "symfony/polyfill-php81": "^1.23"
-=======
-            "version": "2.0.0",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/ramsey/collection.git",
-                "reference": "a4b48764bfbb8f3a6a4d1aeb1a35bb5e9ecac4a5"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/ramsey/collection/zipball/a4b48764bfbb8f3a6a4d1aeb1a35bb5e9ecac4a5",
-                "reference": "a4b48764bfbb8f3a6a4d1aeb1a35bb5e9ecac4a5",
-                "shasum": ""
-            },
-            "require": {
-                "php": "^8.1"
->>>>>>> main
-            },
-            "require-dev": {
-                "captainhook/plugin-composer": "^5.3",
-                "ergebnis/composer-normalize": "^2.28.3",
-                "fakerphp/faker": "^1.21",
-                "hamcrest/hamcrest-php": "^2.0",
-                "jangregor/phpstan-prophecy": "^1.0",
-                "mockery/mockery": "^1.5",
-                "php-parallel-lint/php-console-highlighter": "^1.0",
-                "php-parallel-lint/php-parallel-lint": "^1.3",
-                "phpcsstandards/phpcsutils": "^1.0.0-rc1",
-                "phpspec/prophecy-phpunit": "^2.0",
-                "phpstan/extension-installer": "^1.2",
-                "phpstan/phpstan": "^1.9",
-                "phpstan/phpstan-mockery": "^1.1",
-                "phpstan/phpstan-phpunit": "^1.3",
-                "phpunit/phpunit": "^9.5",
-                "psalm/plugin-mockery": "^1.1",
-                "psalm/plugin-phpunit": "^0.18.4",
-                "ramsey/coding-standard": "^2.0.3",
-                "ramsey/conventional-commits": "^1.3",
-                "vimeo/psalm": "^5.4"
-            },
-            "type": "library",
-            "extra": {
-                "captainhook": {
-                    "force-install": true
+                =======
+                "version": "2.0.0",
+                "source": {
+                    "type": "git",
+                    "url": "https://github.com/ramsey/collection.git",
+                    "reference": "a4b48764bfbb8f3a6a4d1aeb1a35bb5e9ecac4a5"
                 },
-                "ramsey/conventional-commits": {
-                    "configFile": "conventional-commits.json"
-                }
-            },
-            "autoload": {
-                "psr-4": {
-                    "Ramsey\\Collection\\": "src/"
-                }
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "MIT"
-            ],
-            "authors": [
-                {
-                    "name": "Ben Ramsey",
-                    "email": "ben@benramsey.com",
-                    "homepage": "https://benramsey.com"
-                }
-            ],
-            "description": "A PHP library for representing and manipulating collections.",
-            "keywords": [
-                "array",
-                "collection",
-                "hash",
-                "map",
-                "queue",
-                "set"
-            ],
-            "support": {
-                "issues": "https://github.com/ramsey/collection/issues",
-<<<<<<< HEAD
-                "source": "https://github.com/ramsey/collection/tree/1.3.0"
-=======
-                "source": "https://github.com/ramsey/collection/tree/2.0.0"
->>>>>>> main
-            },
-            "funding": [
-                {
-                    "url": "https://github.com/ramsey",
-                    "type": "github"
+                "dist": {
+                    "type": "zip",
+                    "url": "https://api.github.com/repos/ramsey/collection/zipball/a4b48764bfbb8f3a6a4d1aeb1a35bb5e9ecac4a5",
+                    "reference": "a4b48764bfbb8f3a6a4d1aeb1a35bb5e9ecac4a5",
+                    "shasum": ""
                 },
-                {
-                    "url": "https://tidelift.com/funding/github/packagist/ramsey/collection",
-                    "type": "tidelift"
-                }
-            ],
-<<<<<<< HEAD
-            "time": "2022-12-27T19:12:24+00:00"
-        },
+                "require": {
+                    "php": "^8.1"
+                    >>>>>>> main
+                },
+                "require-dev": {
+                    "captainhook/plugin-composer": "^5.3",
+                    "ergebnis/composer-normalize": "^2.28.3",
+                    "fakerphp/faker": "^1.21",
+                    "hamcrest/hamcrest-php": "^2.0",
+                    "jangregor/phpstan-prophecy": "^1.0",
+                    "mockery/mockery": "^1.5",
+                    "php-parallel-lint/php-console-highlighter": "^1.0",
+                    "php-parallel-lint/php-parallel-lint": "^1.3",
+                    "phpcsstandards/phpcsutils": "^1.0.0-rc1",
+                    "phpspec/prophecy-phpunit": "^2.0",
+                    "phpstan/extension-installer": "^1.2",
+                    "phpstan/phpstan": "^1.9",
+                    "phpstan/phpstan-mockery": "^1.1",
+                    "phpstan/phpstan-phpunit": "^1.3",
+                    "phpunit/phpunit": "^9.5",
+                    "psalm/plugin-mockery": "^1.1",
+                    "psalm/plugin-phpunit": "^0.18.4",
+                    "ramsey/coding-standard": "^2.0.3",
+                    "ramsey/conventional-commits": "^1.3",
+                    "vimeo/psalm": "^5.4"
+                },
+                "type": "library",
+                "extra": {
+                    "captainhook": {
+                        "force-install": true
+                    },
+                    "ramsey/conventional-commits": {
+                        "configFile": "conventional-commits.json"
+                    }
+                },
+                "autoload": {
+                    "psr-4": {
+                        "Ramsey\\Collection\\": "src/"
+                    }
+                },
+                "notification-url": "https://packagist.org/downloads/",
+                "license": [
+                    "MIT"
+                ],
+                "authors": [
+                    {
+                        "name": "Ben Ramsey",
+                        "email": "ben@benramsey.com",
+                        "homepage": "https://benramsey.com"
+                    }
+                ],
+                "description": "A PHP library for representing and manipulating collections.",
+                "keywords": [
+                    "array",
+                    "collection",
+                    "hash",
+                    "map",
+                    "queue",
+                    "set"
+                ],
+                "support": {
+                    "issues": "https://github.com/ramsey/collection/issues",
+                    <<<<<<< HEAD
+                    "source": "https://github.com/ramsey/collection/tree/1.3.0"
+                    =======
+                    "source": "https://github.com/ramsey/collection/tree/2.0.0"
+                    >>>>>>> main
+                },
+                "funding": [
+                    {
+                        "url": "https://github.com/ramsey",
+                        "type": "github"
+                    },
+                    {
+                        "url": "https://tidelift.com/funding/github/packagist/ramsey/collection",
+                        "type": "tidelift"
+                    }
+                ],
+                <<<<<<< HEAD
+                "time": "2022-12-27T19:12:24+00:00"
+            },
         {
             "name": "ramsey/uuid",
             "version": "4.7.0",
@@ -5742,9 +5742,9 @@
                 "type": "zip",
                 "url": "https://api.github.com/repos/ramsey/uuid/zipball/5ed9ad582647bbc3864ef78db34bdc1afdcf9b49",
                 "reference": "5ed9ad582647bbc3864ef78db34bdc1afdcf9b49",
-=======
-            "time": "2022-12-31T21:50:55+00:00"
-        },
+                =======
+                "time": "2022-12-31T21:50:55+00:00"
+            },
         {
             "name": "ramsey/uuid",
             "version": "4.7.1",
@@ -5757,18 +5757,18 @@
                 "type": "zip",
                 "url": "https://api.github.com/repos/ramsey/uuid/zipball/a1acf96007170234a8399586a6e2ab8feba109d1",
                 "reference": "a1acf96007170234a8399586a6e2ab8feba109d1",
->>>>>>> main
+                >>>>>>> main
                 "shasum": ""
             },
             "require": {
                 "brick/math": "^0.8.8 || ^0.9 || ^0.10",
                 "ext-json": "*",
                 "php": "^8.0",
-<<<<<<< HEAD
+                <<<<<<< HEAD
                 "ramsey/collection": "^1.2"
-=======
+                =======
                 "ramsey/collection": "^1.2 || ^2.0"
->>>>>>> main
+                >>>>>>> main
             },
             "replace": {
                 "rhumsaa/uuid": "self.version"
@@ -5828,11 +5828,11 @@
             ],
             "support": {
                 "issues": "https://github.com/ramsey/uuid/issues",
-<<<<<<< HEAD
+                <<<<<<< HEAD
                 "source": "https://github.com/ramsey/uuid/tree/4.7.0"
-=======
+                =======
                 "source": "https://github.com/ramsey/uuid/tree/4.7.1"
->>>>>>> main
+                >>>>>>> main
             },
             "funding": [
                 {
@@ -5844,11 +5844,11 @@
                     "type": "tidelift"
                 }
             ],
-<<<<<<< HEAD
+            <<<<<<< HEAD
             "time": "2022-12-19T22:30:49+00:00"
-=======
+            =======
             "time": "2022-12-31T22:20:34+00:00"
->>>>>>> main
+            >>>>>>> main
         },
         {
             "name": "ratchet/rfc6455",

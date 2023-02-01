@@ -413,7 +413,21 @@ Route::middleware(['web','tenant','not_admin_subdomain'])->group(function () {
     Route::any('/timetracking/analytics/save-call-base', [Analytics\HrController::class, 'saveCallBase']);
     Route::any('/timetracking/analytics', [Analytics\HrController::class, 'index']);
     Route::any('/timetracking/analytics/skypes/{id}', [Analytics\HrController::class, 'redirectToBitrixDeal']);
-    Route::any('/timetracking/getanalytics', [Analytics\HrController::class, 'getanalytics']);
+
+    //TODO - разбить на несколько запросов
+    Route::group(['prefix' => '/timetracking/getanalytics'], function () {
+        Route::any('', [Analytics\HrController::class, 'recrutmentAnalytics']);
+        Route::any('/recruitment-statictics', [Analytics\HrController::class, 'getRecruitmentStatictics']);
+        Route::any('/synoptics', [Analytics\HrController::class, 'getSynoptics']);
+        Route::any('/trainees', [Analytics\HrController::class, 'getTrainees']);
+        Route::any('/internship-stages/synoptics', [Analytics\HrController::class, 'getInternshipStagesSynoptics']);
+        Route::any('/internship-stages/absents', [Analytics\HrController::class, 'getInternshipStagesAbsents']);
+        Route::any('/funnel', [Analytics\HrController::class, 'getFunnel']);
+        Route::any('/dismiss/statistics', [Analytics\HrController::class, 'getDismissStatistics']);
+        Route::any('/dismiss/bot', [Analytics\HrController::class, 'getDismissBot']);
+        Route::any('/dismiss/reasons', [Analytics\HrController::class, 'getDismissReasons']);
+    });
+
     Route::any('/timetracking/analytics/invite-users', [Analytics\HrController::class, 'inviteUsers']); // Приглашение стажеров
     Route::post('/timetracking/analytics/recruting/create-lead', [Analytics\HrController::class, 'createRecrutingLead']); // Создание лидов вручную
     Route::post('/timetracking/analytics/recruting/change-profile', [Analytics\HrController::class, 'changeRecruiterProfile']); // Сменить профиль рекрутера

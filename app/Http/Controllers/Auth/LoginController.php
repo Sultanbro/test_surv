@@ -97,7 +97,6 @@ class LoginController extends Controller
             $field => $request[$field],
             'password' => $request->password,
         ];
-        
         // failed to login
         if ( !\Auth::attempt($credentials) ) {
             return response()->json([
@@ -108,7 +107,6 @@ class LoginController extends Controller
         // login was success
         $request->session()->regenerate();
 
-        
         // redirect to - admin.jobtron.org
         if(request()->getHost() == 'admin.' .config('app.domain')) {
             return [

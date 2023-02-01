@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Analytics;
 
+use Closure;
 use DB;
 use View;
 use Carbon\Carbon;
@@ -41,6 +42,16 @@ class HrController extends Controller
     {
         View::share('title', 'Аналитика групп');
         $this->middleware('auth');
+        $this->middleware(function (Request $request, Closure $next) {
+            if(!auth()->user()->can('hr_view')) {
+                return $this->response('Access denied.', [], '403');
+            }
+            return $next($request);
+        })->only(
+            'recrutingAnalytics', 'getRecruitmentStatictics', 'getSynoptics', 'getTrainees',
+            'getInternshipStagesSynoptics', 'getInternshipStagesAbsents', 'getFunnel', 'getDismissStatistics',
+            'getDismissBot', 'getDismissReasons'
+        );
     }
 
     /**
@@ -74,19 +85,6 @@ class HrController extends Controller
         View::share('menu', 'timetracking_hr');
         return view('admin.analytics', compact('groups'));
     }
-
-    /**
-     * Пол©ить аналитику выбранной группы
-     * AJAX на странице аналитика группы
-     */
-    public function getanalytics(Request $request)
-    {
-        if(!auth()->user()->can('hr_view')) return [
-            'error' => 'access',
-        ];
-
-        return $this->recrutingAnalytics($request);
-    }
     
     /**
      * 
@@ -105,48 +103,37 @@ class HrController extends Controller
 
     /**
      * Аналитика РЕКРУТИНГА
-     * $request
+     * @param Request $request
+     * @return array
      */
-    private function recrutingAnalytics(Request $request)
+    public function recrutmentAnalytics(Request $request)
     {
-
-        $START = microtime(true);
-
         $month = Carbon::createFromFormat('m-Y', $request->month . '-' . $request->year)->startOfMonth();
         $date = [
             'month' => $request->month,
             'year' => $request->year,
         ];
 
-
-
-        
         $settings = RM::getSummaryTable($month);
-    
         $data = $settings ? $settings->data : RM::defaultSummaryTable();
-        
         $absence_causes = RM::getAbsenceCauses($date); // Причины отсутствия на 1 и 2 день стажировки
 
-      
-        $trainees = DayType::whereYear('date', $request->year) // Стажеры 
-            ->whereMonth('date', $request->month)
+        $trainees = DayType::whereYear('date', $request->year) // Стажеры
+        ->whereMonth('date', $request->month)
             ->whereDay('date', RM::getLastDay($month))
             ->whereIn('type', [5,7])
-            ->select(['user_id'])
-            ->get()
-            ->pluck('user_id')
-            ->toArray();
-
-        $trainees = count(array_unique($trainees));
+            ->select('user_id')
+            ->distinct('user_id')
+            ->count('user_id');
 
         $recruiter_stats_rates = [];
         for ($i = 1; $i <= $month->daysInMonth; $i++) {
             $recruiter_stats_rates[$i] = $settings && array_key_exists($i, $data[RM::S_ONLINE]) ? $data[RM::S_ONLINE][$i] : 0;
-        } 
+        }
 
         $remain_apply = $data[RM::S_APPLIED]['plan'] - $data[RM::S_APPLIED]['fact'];
 
-        $indicators = []; 
+        $indicators = [];
         $indicators['info']['trainees'] = $data[RM::S_CONVERTED]['fact'] > 0 ? $trainees . ' - ' . round($trainees / $data[RM::S_CONVERTED]['fact'] * 100). '%' : 0; // Cтажировались в этом месяце
         $indicators['info']['training'] = $trainees; // Cтажируются сегодня
         $indicators['info']['applied'] = $data[RM::S_CONVERTED]['fact'] > 0 ? $data[RM::S_APPLIED]['fact']. ' - ' . round($data[RM::S_APPLIED]['fact'] / $data[RM::S_CONVERTED]['fact'] * 100). '%' : 0; // Принято сотрудников
@@ -159,7 +146,7 @@ class HrController extends Controller
         $indicators['info']['remain_days'] = RM::daysRemain($date); // Осталось рабочих дней до конца месяца
         $indicators['info']['working'] = $settings && $settings->extra && array_key_exists('working', $settings->extra) ? $settings->extra['working'] : RM::getWorkerQuantity(); // Кол-во работающих (Ставка)
         $indicators['recruiters'] = []; // Для графической аналитики
-        $indicators['orders'] = RM::getOrders(); // Заказы стажеров от руководителей 
+        $indicators['orders'] = RM::getOrders(); // Заказы стажеров от руководителей
         $indicators['today'] = date('d');
         $indicators['month'] = $request->month;
 
@@ -167,40 +154,275 @@ class HrController extends Controller
 
         $inviteGroups = $groups->pluck('name', 'id')->toArray();
         $inviteGroups[0] = 'Все группы';
-        
-        // dd( microtime(true) - $START );
 
         return [
-            'date' => $month->startOfMonth()->format('Y-m-d'),
-            'records' => $data, // Сводная таблица
-            'hrs' => [], // Подробные таблицы рекрутеров
-            'skypes' => Lead::fetch($date), // Cконвертированные сделки. Раньше собирали скайпы (Нужно переименовать)
-            'segments' => Segment::pluck('name', 'id'), // Cегменты
-            'indicators' => $indicators, // Разные показатели на главной
-            'sgroups' => $groups, // Группы для приглашения
-            'invite_groups' => $inviteGroups, // Фильтр для таблицы "стажеры"
-            'causes' => RM::fireCauses($date), // причины увольнения
-            'absents_first' => $absence_causes['first_day'], 
-            'absents_second' => $absence_causes['second_day'],
-            'absents_third' => $absence_causes['third_day'],
-            'ratings' => RM::ratingsGroups($date), // Оценки операторов по Отделам
-            'staff' => RM::staff($request->year), // Таблица кадров во вкладке причина увольнения
-            'staff_by_group' => RM::staff_by_group($request->year), // Таблица кадров во вкладке причина увольнения // 5.2 sec
-            'staff_longevity' =>  RM::staff_longevity($request->year), // Таблица кадров во вкладке причина увольнения
-            'quiz' => RM::getQuizTable($month->startOfMonth()), // Анкета уволенных
-            'ocenka_svod' => RM::ocenka_svod($month->startOfMonth()), // Анкета уволенных // 4.1 sec
-            'ratings_dates' => RM::ratingsDates($date), // Оценки операторов по датам
-            'ratings_heads' => [], // UserDescription::getHeadsRatings($month->startOfMonth()), // Оценки операторов по руководителям // 12.2 sec
+            //Method - getRecruitmentStatictics. Стасистика рекрутеров по 31 дням
             'recruiter_stats' => RecruiterStat::tables($month->startOfMonth()->format('Y-m-d')), // Почасовая таблица на главной
             'recruiter_stats_rates' => $recruiter_stats_rates, // Кол-во рекрутеров (Ставка)
             'recruiter_stats_leads' => RecruiterStat::leads($month->startOfMonth()->format('Y-m-d')), // Кол-во лидов битрикс в статусе "В работе"
+
+            //Method - getSynoptics. Сводная
+            'date' => $month->startOfMonth()->format('Y-m-d'),
+            'records' => $data, // Сводная таблица
+            'hrs' => [], // Подробные таблицы рекрутеров
+            'indicators' => $indicators, // Разные показатели на главной
+
+            //Method - getTrainees. Стажеры
+            'skypes' => Lead::fetch($date), // Cконвертированные сделки. Раньше собирали скайпы (Нужно переименовать)
+            'invite_groups' => $inviteGroups, // Фильтр для таблицы "стажеры"
+            'segments' => Segment::pluck('name', 'id'), // Cегменты
+            'sgroups' => $groups, // Группы для приглашения
+
+            //Method - getInternshipStagesSynoptics. этап стажировки - 1. Сводная
+            'ocenka_svod' => RM::ocenka_svod($month->startOfMonth()), // Анкета уволенных // 4.1 sec
+
+            //Method - getInternshipStagesAbsents. этап стажировки - 3 .Отсутствие стажеров
+            'absents_first' => $absence_causes['first_day'],
+            'absents_second' => $absence_causes['second_day'],
+            'absents_third' => $absence_causes['third_day'],
+
+            //Method - getFunnel. Воронка
             'funnels' => FunnelTable::getTables($month->startOfMonth()->format('Y-m-d')), // Воронки
+
+            //Method - getDismissStatistics. IV Увольнение - 1. Причины и процент текучки
+            'staff' => RM::staff($request->year), // Таблица кадров во вкладке причина увольнения
+            'staff_by_group' => RM::staff_by_group($request->year), // Таблица кадров во вкладке причина увольнения // 5.2 sec
+            'staff_longevity' =>  RM::staff_longevity($request->year), // Таблица кадров во вкладке причина увольнения
+
+            //Method - getDismissBot. IV Увольнение - 2. Причины: Бот
+            'quiz' => RM::getQuizTable($month->startOfMonth()), // Анкета уволенных
+
+            //Method - getDismissReasons. IV Увольнение - 3. Причины увольнения
+            'causes' => RM::fireCauses($date), // причины увольнения
+
+            'ratings' => RM::ratingsGroups($date), // Оценки операторов по Отделам
+            'ratings_dates' => RM::ratingsDates($date), // Оценки операторов по датам
+            'ratings_heads' => [], // UserDescription::getHeadsRatings($month->startOfMonth()), // Оценки операторов по руководителям // 12.2 sec
             'decomposition' => DecompositionValue::table($request->group_id, $month->format('Y-m-d')),
             'trainee_report' => TraineeReport::getBlocks($month->format('Y-m-d')), // оценки первого дня и присутствие стажеров
             'workdays' => ProfileGroup::find(48)->workdays,
             'trainee_participation' => 'testing'
         ];
     }
+
+    /**
+     * Статистика по рекрутерам
+     * @param Request $request
+     * @return array
+     */
+    public function getRecruitmentStatictics(Request $request)
+    {
+        $date = Carbon::createFromFormat('d-m-Y', $request->day.'-'.$request->month.'-'.$request->year);
+
+        $settings = RM::getSummaryTable($date);
+
+        $data = $settings ? $settings->data : RM::defaultSummaryTable();
+
+        $recruiter_stats_rates = [];
+        for ($i = 1; $i <= $date->daysInMonth; $i++) {
+            $recruiter_stats_rates[$i] = $settings && array_key_exists($i, $data[RM::S_ONLINE]) ? $data[RM::S_ONLINE][$i] : 0;
+        }
+
+        $date = $date->format('Y-m-d');
+
+        return [
+            'date' => $date,
+            'recruiter_stats' => RecruiterStat::tablesPerDay($date), // Почасовая таблица на главной
+            'recruiter_stats_rates' => $recruiter_stats_rates, // Кол-во рекрутеров (Ставка)
+            'recruiter_stats_leads' => RecruiterStat::leadsPerDay($date), // Кол-во лидов битрикс в статусе "В работе"
+        ];
+    }
+
+    /**
+     * Возвращает сводные данные
+     * @param Request $request
+     * @return array
+     */
+    public function getSynoptics(Request $request)
+    {
+        $month = Carbon::createFromFormat('m-Y', $request->month . '-' . $request->year)->startOfMonth();
+        $date = [
+            'month' => $request->month,
+            'year' => $request->year,
+        ];
+
+        $settings = RM::getSummaryTable($month);
+        $data = $settings ? $settings->data : RM::defaultSummaryTable();
+
+        $trainees = DayType::whereYear('date', $request->year) // Стажеры
+        ->whereMonth('date', $request->month)
+            ->whereDay('date', RM::getLastDay($month))
+            ->whereIn('type', [5,7])
+            ->select('user_id')
+            ->distinct('user_id')
+            ->count('user_id');
+
+        $recruiter_stats_rates = [];
+        for ($i = 1; $i <= $month->daysInMonth; $i++) {
+            $recruiter_stats_rates[$i] = $settings && array_key_exists($i, $data[RM::S_ONLINE]) ? $data[RM::S_ONLINE][$i] : 0;
+        }
+
+        $remain_apply = $data[RM::S_APPLIED]['plan'] - $data[RM::S_APPLIED]['fact'];
+
+        $indicators = [];
+        $indicators['info']['trainees'] = $data[RM::S_CONVERTED]['fact'] > 0 ? $trainees . ' - ' . round($trainees / $data[RM::S_CONVERTED]['fact'] * 100). '%' : 0; // Cтажировались в этом месяце
+        $indicators['info']['training'] = $trainees; // Cтажируются сегодня
+        $indicators['info']['applied'] = $data[RM::S_CONVERTED]['fact'] > 0 ? $data[RM::S_APPLIED]['fact']. ' - ' . round($data[RM::S_APPLIED]['fact'] / $data[RM::S_CONVERTED]['fact'] * 100). '%' : 0; // Принято сотрудников
+        $indicators['info']['remain_apply'] = $remain_apply > 0 ? $remain_apply : 0; // Осталось аринять
+        $indicators['info']['created'] = $data[RM::S_CREATED]['fact']; // Создано лидов
+        $indicators['info']['processed'] = $data[RM::S_CREATED]['fact'] > 0 ? $data[RM::S_PROCESSED]['fact'] . ' - ' . round($data[RM::S_PROCESSED]['fact'] / $data[RM::S_CREATED]['fact'] * 100). '%' : 0; // Обработано лидов
+        $indicators['info']['converted'] = $data[RM::S_CREATED]['fact'] > 0 ? $data[RM::S_CONVERTED]['fact']. ' - ' . round($data[RM::S_CONVERTED]['fact'] / $data[RM::S_CREATED]['fact'] * 100). '%'  : 0; // Сконвертировано лидов
+        $indicators['info']['fired'] = $data[RM::S_FIRED]['fact'] ;  // Увоолено в этом месяце
+        $indicators['info']['applied_plan'] = $data[RM::S_APPLIED]['plan'];// План по принятию на штат на месяц
+        $indicators['info']['remain_days'] = RM::daysRemain($date); // Осталось рабочих дней до конца месяца
+        $indicators['info']['working'] = $settings && $settings->extra && array_key_exists('working', $settings->extra) ? $settings->extra['working'] : RM::getWorkerQuantity(); // Кол-во работающих (Ставка)
+        $indicators['recruiters'] = []; // Для графической аналитики
+        $indicators['orders'] = RM::getOrders(); // Заказы стажеров от руководителей
+        $indicators['today'] = date('d');
+        $indicators['month'] = $request->month;
+
+        $groups = ProfileGroup::where('active', 1)->get();
+
+        $inviteGroups = $groups->pluck('name', 'id')->toArray();
+        $inviteGroups[0] = 'Все группы';
+
+        return [
+            'date' => $month->startOfMonth()->format('Y-m-d'),
+            'records' => $data, // Сводная таблица
+            'hrs' => [], // Подробные таблицы рекрутеров
+            'indicators' => $indicators, // Разные показатели на главной
+        ];
+    }
+
+    /**
+     * Возвращает список стажеров
+     * @param Request $request
+     * @return array
+     */
+    public function getTrainees(Request $request)
+    {
+        $month = Carbon::createFromFormat('m-Y', $request->month . '-' . $request->year)->startOfMonth();
+        $date = [
+            'month' => $request->month,
+            'year' => $request->year,
+            'limit' => $request->limit ? $request->limit : 40,
+        ];
+
+        $settings = RM::getSummaryTable($month);
+        $data = $settings ? $settings->data : RM::defaultSummaryTable();
+
+        $recruiter_stats_rates = [];
+        for ($i = 1; $i <= $month->daysInMonth; $i++) {
+            $recruiter_stats_rates[$i] = $settings && array_key_exists($i, $data[RM::S_ONLINE]) ? $data[RM::S_ONLINE][$i] : 0;
+        }
+
+        $groups = ProfileGroup::where('active', 1)->get();
+
+        $inviteGroups = $groups->pluck('name', 'id')->toArray();
+        $inviteGroups[0] = 'Все группы';
+
+        return [
+            'skypes' => Lead::fetchWithPagination($date), // Cконвертированные сделки. Раньше собирали скайпы (Нужно переименовать)
+            'invite_groups' => $inviteGroups, // Фильтр для таблицы "стажеры"
+            'segments' => Segment::pluck('name', 'id'), // Cегменты
+            'sgroups' => $groups, // Группы для приглашения
+        ];
+    }
+
+    /**
+     * Возвращает сводную этапов стажировки
+     * @param Request $request
+     * @return array
+     */
+    public function getInternshipStagesSynoptics(Request $request)
+    {
+        $month = Carbon::createFromFormat('m-Y', $request->month . '-' . $request->year)->startOfMonth();
+
+        return [
+            'ocenka_svod' => RM::ocenka_svod($month->startOfMonth()), // Анкета уволенных // 4.1 sec
+        ];
+    }
+
+    /**
+     * Возвращает отсутствие стажеров на этапе стажировки
+     * @param Request $request
+     * @return array
+     */
+    public function getInternshipStagesAbsents(Request $request)
+    {
+        $date = [
+            'month' => $request->month,
+            'year' => $request->year,
+        ];
+        $absence_causes = RM::getAbsenceCauses($date); // Причины отсутствия на 1 и 2 день стажировки
+
+        return [
+            'absents_first' => $absence_causes['first_day'],
+            'absents_second' => $absence_causes['second_day'],
+            'absents_third' => $absence_causes['third_day'],
+        ];
+    }
+
+    /**
+     * Возвращает воронку
+     * @param Request $request
+     * @return array
+     */
+    public function getFunnel(Request $request)
+    {
+        $month = Carbon::createFromFormat('m-Y', $request->month . '-' . $request->year)->startOfMonth();
+
+        return [
+            //Воронка
+            'funnels' => FunnelTable::getTables($month->startOfMonth()->format('Y-m-d')), // Воронки
+        ];
+    }
+
+    /**
+     * Возвращает статистику увольнений
+     * @param Request $request
+     * @return array
+     */
+    public function getDismissStatistics(Request $request)
+    {
+        return [
+            'staff' => RM::staff($request->year), // Таблица кадров во вкладке причина увольнения
+            'staff_by_group' => RM::staff_by_group($request->year), // Таблица кадров во вкладке причина увольнения // 5.2 sec
+            'staff_longevity' =>  RM::staff_longevity($request->year), // Таблица кадров во вкладке причина увольнения
+        ];
+    }
+
+    /**
+     * Возвращает бот увольнения
+     * @param Request $request
+     * @return array
+     */
+    public function getDismissBot(Request $request)
+    {
+        $month = Carbon::createFromFormat('m-Y', $request->month . '-' . $request->year)->startOfMonth();
+
+        return [
+            'quiz' => RM::getQuizTable($month->startOfMonth()),
+        ];
+    }
+
+    /**
+     * Возвращает статистику по причинам увольнений
+     * @param Request $request
+     * @return array
+     */
+    public function getDismissReasons(Request $request)
+    {
+        $date = [
+            'month' => $request->month,
+            'year' => $request->year,
+        ];
+
+        return [
+            'causes' => RM::fireCauses($date), // причины увольнения
+        ];
+    }
+
 
     /**
      * Перенаправление на битрикс сделку по lead_id
