@@ -143,7 +143,7 @@ class CreatePivotAnalytics extends Command
         $cols = AnalyticColumn::query()->where([
             ['date', '=', $prevDate],
             ['group_id', '=', $group_id]
-        ])->whereIn('name', $this->getNameColumn($prevDate))->orderBy('order','asc')->get();
+        ])->whereIn('name', $this->getNameColumn($newDate))->orderBy('order','asc')->get();
 
 
         $lastOrder = 0;
@@ -156,7 +156,7 @@ class CreatePivotAnalytics extends Command
                 'date'     => $newDate,
                 'order'    => $col->order,
             ]);
-            
+
             /**
              * Получаем последний элемент в массиве.
              */
@@ -184,6 +184,8 @@ class CreatePivotAnalytics extends Command
                     'name'     => (string) $diffDay,
                     'date'     => $newDate,
                     'order'    => ++$lastOrder,
+                    'created_at' => now(),
+                    'updated_at' => now()
                 ];
             }
 
