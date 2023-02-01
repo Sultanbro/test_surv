@@ -151,17 +151,14 @@ class UserHelper
         $contactsData = [];
         foreach ($phones as $phone)
         {
-            User::query()->find($userId)->profileContacts()->delete();
+            $contactRepo->getAllUserContacts($userId)->delete();
 
-            if (!$contactRepo->getContracts($phone['value'], $phone['name'], $userId)->exists())
-            {
-                $contactsData[] = [
-                    'user_id' => $userId,
-                    'value' => $phone['value'],
-                    'name' => $phone['name'],
-                    'type'  => 'phone'
-                ];
-            }
+            $contactsData[] = [
+                'user_id' => $userId,
+                'value' => $phone['value'],
+                'name' => $phone['name'],
+                'type'  => 'phone'
+            ];
         }
         (new UserContactRepository)->createMultipleContact($contactsData);
     }
