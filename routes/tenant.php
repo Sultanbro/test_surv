@@ -419,13 +419,10 @@ Route::middleware(['web','tenant','not_admin_subdomain'])->group(function () {
         Route::any('', [Analytics\HrController::class, 'recrutmentAnalytics']);
         Route::any('/recruitment-statictics', [Analytics\HrController::class, 'getRecruitmentStatictics']);
         Route::any('/synoptics', [Analytics\HrController::class, 'getSynoptics']);
+        Route::any('/internship-second-stage', [Analytics\HrController::class, 'getInternshipSecondStage']);
         Route::any('/trainees', [Analytics\HrController::class, 'getTrainees']);
-        Route::any('/internship-stages/synoptics', [Analytics\HrController::class, 'getInternshipStagesSynoptics']);
-        Route::any('/internship-stages/absents', [Analytics\HrController::class, 'getInternshipStagesAbsents']);
         Route::any('/funnel', [Analytics\HrController::class, 'getFunnel']);
-        Route::any('/dismiss/statistics', [Analytics\HrController::class, 'getDismissStatistics']);
-        Route::any('/dismiss/bot', [Analytics\HrController::class, 'getDismissBot']);
-        Route::any('/dismiss/reasons', [Analytics\HrController::class, 'getDismissReasons']);
+        Route::any('/dismiss', [Analytics\HrController::class, 'getDismissStatistics']);
     });
 
     Route::any('/timetracking/analytics/invite-users', [Analytics\HrController::class, 'inviteUsers']); // Приглашение стажеров
