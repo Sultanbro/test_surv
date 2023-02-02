@@ -86,14 +86,12 @@ jQuery(function ($) {
 		$(`#register-form input#${el}`).parent().removeClass('error');
 		$(`#register-form .help-block.${el}`).removeClass('show');
 		validation[el] = true;
-		console.log(validation);
 	}
 
 	function addHelper(el) {
 		$(`#register-form input#${el}`).parent().addClass('error');
 		$(`#register-form .help-block.${el}`).addClass('show');
 		validation[el] = false;
-		console.log(validation);
 	}
 
 
