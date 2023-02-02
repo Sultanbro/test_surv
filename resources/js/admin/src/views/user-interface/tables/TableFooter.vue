@@ -37,7 +37,7 @@ const emit = defineEmits<{
             <VSelect
               :modelValue="perPage"
               :items="perPageItems"
-              @update:modelValue="emit('update:page', $event)"
+              @update:modelValue="emit('update:perPage', $event)"
               type="number"
             />
           </VCol>

@@ -143,7 +143,7 @@ class CreatePivotAnalytics extends Command
         $cols = AnalyticColumn::query()->where([
             ['date', '=', $prevDate],
             ['group_id', '=', $group_id]
-        ])->whereIn('name', $this->getNameColumn($prevDate))->orderBy('order','asc')->get();
+        ])->whereIn('name', $this->getNameColumn($newDate))->orderBy('order','asc')->get();
 
 
         $lastOrder = 0;
@@ -156,7 +156,7 @@ class CreatePivotAnalytics extends Command
                 'date'     => $newDate,
                 'order'    => $col->order,
             ]);
-            
+
             /**
              * Получаем последний элемент в массиве.
              */
@@ -184,6 +184,8 @@ class CreatePivotAnalytics extends Command
                     'name'     => (string) $diffDay,
                     'date'     => $newDate,
                     'order'    => ++$lastOrder,
+                    'created_at' => now(),
+                    'updated_at' => now()
                 ];
             }
 
@@ -230,7 +232,7 @@ class CreatePivotAnalytics extends Command
         /**
          * Добавляем 4 потому что есть колонки name, plan, avg, sum и дни в месяце.
          */
-        $nameColumn = ['name', 'fact', 'sum', 'avg'];
+        $nameColumn = ['name', 'plan', 'sum', 'avg'];
         $daysInMonth = Carbon::parse($date)->daysInMonth;
 
         for ($column = 1; $column <= $daysInMonth; $column++)
