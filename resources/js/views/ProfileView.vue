@@ -30,10 +30,6 @@ export default {
 		this.fetchCourses(false)
 		this.fetchSalary()
 		this.fetchPaymentTerms()
-		document.body.classList.add('profile-page')
-	},
-	beforeUnmount(){
-		document.body.classList.remove('profile-page')
 	},
 	methods:{
 		...mapActions(usePersonalInfoStore, ['fetchPersonalInfo']),
@@ -42,7 +38,7 @@ export default {
 		...mapActions(useProfileStatusStore, ['fetchStatus']),
 		...mapActions(useSettingsStore, ['fetchSettings']),
 		...mapActions(usePaymentTermsStore, ['fetchPaymentTerms']),
-	}
+	},
 }
 </script>
 

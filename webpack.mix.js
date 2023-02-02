@@ -1,7 +1,8 @@
 /* global __dirname */
 
 const path = require('path')
-const mix = require('laravel-mix');
+const fs = require('fs')
+const mix = require('laravel-mix')
 /*
  |--------------------------------------------------------------------------
  | Mix Asset Management
@@ -13,15 +14,25 @@ const mix = require('laravel-mix');
  |
  */
 
-
 mix.js('resources/js/app.js', 'public/js').vue()
 	.sass('resources/sass/admin.scss', 'public/css/admin/app.css')
-	.version()
 	.options({
 		terser: {
 			extractComments: false,
 		}
 	})
+	.then(() => {
+		// незнаю как в mix добавить хэш к css без использования тормозного mix.version() поэтому такой вот костыль
+		const now = Date.now()
+		const mainfest = require('./public/mix-manifest.json')
+		Object.keys(mainfest).forEach(key => {
+			if(key.indexOf('.css') !== -1){
+				mainfest[key] = key + '?id=' + now
+			}
+		})
+		fs.writeFileSync('./public/mix-manifest.json', JSON.stringify(mainfest, null, 4))
+	})
+
 mix.webpackConfig({
 	resolve: {
 		fallback: { timers: require.resolve('timers-browserify') },
@@ -30,8 +41,8 @@ mix.webpackConfig({
 		},
 	},
 	output: {
-		filename: '[name].js',
-		chunkFilename: '[name].js?t=[hash]'
+		filename: '[name].js?id=[hash]',
+		chunkFilename: '[name].js?id=[hash]'
 	}
 });
 
