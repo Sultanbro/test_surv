@@ -94,7 +94,7 @@
 		>
 			<div class="balance__inner">
 				<div class="balance__title">
-					История за {{ this.currentDay }} {{ this.dateInfo.currentMonth }}
+					История за {{ this.currentDay }} {{ this.currentMonth }}
 				</div>
 
 				<BalanceItem title="Начислено">
@@ -212,13 +212,6 @@ export default {
 		BalanceItem
 	},
 	props: {},
-	watch: {
-		month: {
-			handler: function () {
-				this.fetchData()
-			},
-		},
-	},
 	data: function () {
 		const now = new Date()
 		return {
@@ -226,15 +219,7 @@ export default {
 			items: [],
 			totalFines: null,
 			total_avanses: null,
-			fields: [],
-			dateInfo: {
-				currentMonth: null,
-				monthEnd: 0,
-				workDays: 0,
-				weekDays: 0,
-				daysInMonth: 0
-			},
-			currentMonth: null,
+			currentMonth: this.$moment().format('MMMM'),
 			currentYear: now.getFullYear(),
 			currentDay: now.getDate(),
 			years: useYearOptions(),
@@ -242,168 +227,9 @@ export default {
 			loading: false
 		};
 	},
-	created() {
-		this.setMonth()
-		this.setFields()
-		this.fetchData()
-	},
-	methods: {
-		/**
-         * set month
-         */
-		setMonth() {
-			let year = this.$moment().format('YYYY')
-			this.dateInfo.currentMonth = this.dateInfo.currentMonth ? this.dateInfo.currentMonth : this.$moment().format('MMMM')
-			this.currentMonth = this.dateInfo.currentMonth;
-			this.dateInfo.date = `${this.dateInfo.currentMonth} ${year}`
-
-			let currentMonth = this.$moment(this.dateInfo.currentMonth, 'MMMM')
-
-			//Расчет выходных дней
-			this.dateInfo.monthEnd = currentMonth.endOf('month'); //Конец месяца
-			this.dateInfo.weekDays = currentMonth.weekdayCalc(this.dateInfo.monthEnd, [6]) //Колличество выходных
-			this.dateInfo.daysInMonth = currentMonth.daysInMonth() //Колличество дней в месяце
-			this.dateInfo.workDays = this.dateInfo.daysInMonth - this.dateInfo.weekDays //Колличество рабочих дней
-		},
-
-		showHistory(day = 0) {
-			if([
-				'0',
-				'total',
-				'avanses',
-				'fines'
-			].includes(day)) return;
-
-			if(day != 0) this.currentDay = day;
-
-			let data = this.data.salaries[this.currentDay]
-
-			this.history = {
-				fines: data.fines,
-				avanses: data.avanses,
-				bonuses: data.bonuses,
-				test_bonus: data.test_bonus,
-				awards: data.awards,
-				training: data.training,
-				value: data.value,
-				calculated: data.calculated
-			}
-
-			if(day){
-				setTimeout(() => {
-					this.$refs.historyElement.scrollIntoView({ behavior: 'smooth' })
-				}, 1)
-			}
-		},
-
-		/**
-         * Загрузка данных для таблицы
-         */
-		fetchData() {
-			this.loading = true
-
-			this.axios.post('/timetracking/zarplata-table-new', {
-				month: this.$moment(this.currentMonth, 'MMMM').format('M'),
-				year: this.currentYear
-			}).then(response => {
-
-				this.data = response.data.data
-				this.totalFines = response.data.totalFines
-				this.total_avanses = response.data.total_avanses
-
-				this.loadItems()
-
-				this.showHistory()
-				this.loading = false
-			}).catch((e) => console.log(e))
-		},
-
-		loadItems() {
-			let items = [];
-			let temp = [];
-			let total = {
-				'salaries':0,
-				'hours':0,
-			};
-
-			for (let key in this.data) {
-				temp[key] = []
-				for (let keyt in this.data[key]) {
-					temp[key][keyt] = ({
-						'value': this.data[key][keyt]['value'],
-						'fines': this.data[key][keyt]['fines'],
-						'avanses': this.data[key][keyt]['avanses'],
-						'bonuses': this.data[key][keyt]['bonuses'],
-						'test_bonus': this.data[key][keyt]['test_bonus'],
-						'awards': this.data[key][keyt]['awards'],
-						'hasFine': this.data[key][keyt]['fines'] !== undefined && this.data[key][keyt]['fines'].length,
-						'hasBonus': (this.data[key][keyt]['bonuses'] !== undefined && this.data[key][keyt]['bonuses'].length) || (this.data[key][keyt]['awards'] !== undefined && this.data[key][keyt]['awards'].length)
-                            || (this.data[key][keyt]['test_bonus'] !== undefined && this.data[key][keyt]['test_bonus'].length),
-						'hasAvans': this.data[key][keyt]['avanses'] !== undefined && this.data[key][keyt]['avanses'].length,
-						'training': this.data[key][keyt]['training'],
-					})
-
-					if(key === 'times' && temp[key][keyt].value){
-						temp[key][keyt].value = this.$moment.utc(temp[key][keyt].value, 'hh:mm').local().format('hh:mm')
-					}
-
-					if(key == 'salaries' || key == 'hours') {
-						let val = Number(this.data[key][keyt]['value']);
-						total[key] += isNaN(val) ? 0 : val;
-					}
-				}
-			}
-
-			temp['salaries'][0] = {
-				'value': 'Начисления',
-			};
-
-			let total_salary = 0;
-			total_salary = Number(total['salaries']) - Number(this.totalFines) - Number(this.total_avanses);
-
-			temp['salaries']['total'] = {
-				'value': Number(total_salary).toFixed(0),
-			};
-			temp['salaries']['avanses'] = {
-				'value': Number(this.total_avanses).toFixed(0)
-			};
-			temp['salaries']['fines'] = {
-				'value': Number(this.totalFines).toFixed(0)
-			};
-
-
-			temp['times'][0] = {
-				'value': 'Время прихода',
-			};
-			temp['hours'][0] = {
-				'value': 'Отработанные часы',
-			};
-			temp['hours']['total'] = {
-				'value': Number(total['hours']).toFixed(1),
-			};
-			temp['times']['avanses'] = {
-				'value': 0
-			};
-			temp['times']['fines']= {
-				'value': 0
-			};
-			temp['hours']['avanses'] = {
-				'value': 0
-			};
-			temp['hours']['fines'] = {
-				'value': 0
-			};
-			items.push(temp['times'])
-			items.push(temp['salaries'])
-			items.push(temp['hours'])
-			this.items = items
-		},
-
-		// Установка заголовка таблицы
-		setFields() {
-			let fields = []
-
-			fields = [
+	computed: {
+		fields(){
+			const fields = [
 				{
 					key: '0',
 					label: 'Дни',
@@ -428,12 +254,12 @@ export default {
 					variant: 'title',
 					class: 'text-center t-name'
 				}
-			];
+			]
 
-			let days = this.dateInfo.daysInMonth
 
-			for (let i = 1; i <= days; i++) {
-				let dayName = this.$moment(`${i} ${this.dateInfo.date}`, 'D MMMM YYYY').locale('en').format('ddd')
+
+			for (let i = 1; i <= this.daysInMonth; ++i) {
+				const dayName = this.$moment(`${i} ${this.currentMonth} ${this.currentYear}`, 'D MMMM YYYY').locale('en').format('ddd')
 				fields.push({
 					key: `${i}`,
 					label: `${i}`,
@@ -441,7 +267,152 @@ export default {
 					class: `day ${dayName}`,
 				})
 			}
-			this.fields = fields
+			return fields
+		},
+		daysInMonth(){
+			return this.$moment(`${this.currentMonth} ${this.currentYear}`, 'MMMM YYYY').daysInMonth()
+		}
+	},
+	created() {
+		this.fetchData()
+	},
+	methods: {
+		showHistory(day = 0) {
+			if([
+				'0',
+				'total',
+				'avanses',
+				'fines'
+			].includes(day)) return;
+
+			if(day != 0) this.currentDay = day
+
+			const data = this.data.salaries[this.currentDay]
+
+			this.history = {
+				fines: data.fines,
+				avanses: data.avanses,
+				bonuses: data.bonuses,
+				test_bonus: data.test_bonus,
+				awards: data.awards,
+				training: data.training,
+				value: data.value,
+				calculated: data.calculated
+			}
+
+			if(day){
+				setTimeout(() => {
+					this.$refs.historyElement.scrollIntoView({ behavior: 'smooth' })
+				}, 1)
+			}
+		},
+		hideHistory(){
+			this.history = null
+		},
+
+		/**
+         * Загрузка данных для таблицы
+         */
+		fetchData() {
+			this.loading = true
+
+			this.axios.post('/timetracking/zarplata-table-new', {
+				month: this.$moment(this.currentMonth, 'MMMM').format('M'),
+				year: this.currentYear
+			}).then(response => {
+				this.data = response.data.data
+				this.totalFines = response.data.totalFines
+				this.total_avanses = response.data.total_avanses
+
+				this.loadItems()
+
+				this.showHistory()
+				this.loading = false
+			}).catch(e => console.log(e))
+		},
+
+		loadItems() {
+			const items = [];
+			const temp = [];
+			const total = {
+				salaries: 0,
+				hours: 0,
+			};
+
+			for (let key in this.data) {
+				temp[key] = []
+				for (let keyt in this.data[key]) {
+					const hasBonus = this.data[key][keyt]['bonuses'] !== undefined && this.data[key][keyt]['bonuses'].length
+					const hasAwards = this.data[key][keyt]['awards'] !== undefined && this.data[key][keyt]['awards'].length
+					const hasTestBonus = this.data[key][keyt]['test_bonus'] !== undefined && this.data[key][keyt]['test_bonus'].length
+					const hasFine = this.data[key][keyt]['fines'] !== undefined && this.data[key][keyt]['fines'].length
+					const hasAvans = this.data[key][keyt]['avanses'] !== undefined && this.data[key][keyt]['avanses'].length
+					temp[key][keyt] = ({
+						value: this.data[key][keyt]['value'],
+						fines: this.data[key][keyt]['fines'],
+						avanses: this.data[key][keyt]['avanses'],
+						bonuses: this.data[key][keyt]['bonuses'],
+						test_bonus: this.data[key][keyt]['test_bonus'],
+						awards: this.data[key][keyt]['awards'],
+						hasFine,
+						hasBonus: hasBonus || hasAwards || hasTestBonus,
+						hasAvans,
+						training: this.data[key][keyt]['training'],
+					})
+
+					if(key === 'times' && temp[key][keyt].value){
+						temp[key][keyt].value = this.$moment.utc(temp[key][keyt].value, 'hh:mm').local().format('hh:mm')
+					}
+
+					if(key == 'salaries' || key == 'hours') {
+						let val = Number(this.data[key][keyt].value);
+						total[key] += isNaN(val) ? 0 : val;
+					}
+				}
+			}
+
+			temp['salaries'][0] = {
+				value: 'Начисления',
+			};
+
+			const total_salary = Number(total['salaries']) - Number(this.totalFines) - Number(this.total_avanses)
+
+			temp['salaries']['total'] = {
+				value: Number(total_salary).toFixed(0),
+			};
+			temp['salaries']['avanses'] = {
+				value: Number(this.total_avanses).toFixed(0)
+			};
+			temp['salaries']['fines'] = {
+				value: Number(this.totalFines).toFixed(0)
+			};
+
+
+			temp['times'][0] = {
+				value: 'Время прихода',
+			};
+			temp['hours'][0] = {
+				value: 'Отработанные часы',
+			};
+			temp['hours']['total'] = {
+				value: Number(total['hours']).toFixed(1),
+			};
+			temp['times']['avanses'] = {
+				value: 0
+			};
+			temp['times']['fines']= {
+				value: 0
+			};
+			temp['hours']['avanses'] = {
+				value: 0
+			};
+			temp['hours']['fines'] = {
+				value: 0
+			};
+			items.push(temp['times'])
+			items.push(temp['salaries'])
+			items.push(temp['hours'])
+			this.items = items
 		},
 	}
 };
