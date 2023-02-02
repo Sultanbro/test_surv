@@ -70,9 +70,9 @@ Route::middleware(['web','tenant','not_admin_subdomain'])->group(function () {
     Route::any('/timetracking/get-persons', [User\EmployeeController::class, 'getpersons']);
     Route::resource('timetracking/work-chart',Settings\WorkChart\WorkChartController::class);
     Route::get('/timetracking/create-person', [User\EmployeeController::class, 'createPerson'])->name('users.create');
-    Route::post('/timetracking/person/store', [User\EmployeeController::class, 'storePerson'])->name('users.store');
+    Route::post('/timetracking/person/store', [Settings\UserController::class, 'store'])->name('users.store');
     Route::get('/timetracking/edit-person', [User\EmployeeController::class, 'editperson'])->name('users.edit');
-    Route::post('/timetracking/person/update', [User\EmployeeController::class, 'updatePerson'])->name('users.update');
+    Route::post('/timetracking/person/update', [Settings\UserController::class, 'update'])->name('users.update');
     Route::post('/timetracking/person/update-new', [Settings\UserController::class, 'update']);
     Route::post('/timetracking/edit-person/group', [User\EmployeeController::class, 'editPersonGroup']); // Удалять добавлять пользователя в группы
     Route::post('/timetracking/edit-person/head_in_groups', [User\EmployeeController::class, 'setUserHeadInGroups']); // Удалять добавлять пользователя руководителем групп
@@ -419,13 +419,10 @@ Route::middleware(['web','tenant','not_admin_subdomain'])->group(function () {
         Route::any('', [Analytics\HrController::class, 'recrutmentAnalytics']);
         Route::any('/recruitment-statictics', [Analytics\HrController::class, 'getRecruitmentStatictics']);
         Route::any('/synoptics', [Analytics\HrController::class, 'getSynoptics']);
+        Route::any('/internship-second-stage', [Analytics\HrController::class, 'getInternshipSecondStage']);
         Route::any('/trainees', [Analytics\HrController::class, 'getTrainees']);
-        Route::any('/internship-stages/synoptics', [Analytics\HrController::class, 'getInternshipStagesSynoptics']);
-        Route::any('/internship-stages/absents', [Analytics\HrController::class, 'getInternshipStagesAbsents']);
         Route::any('/funnel', [Analytics\HrController::class, 'getFunnel']);
-        Route::any('/dismiss/statistics', [Analytics\HrController::class, 'getDismissStatistics']);
-        Route::any('/dismiss/bot', [Analytics\HrController::class, 'getDismissBot']);
-        Route::any('/dismiss/reasons', [Analytics\HrController::class, 'getDismissReasons']);
+        Route::any('/dismiss', [Analytics\HrController::class, 'getDismissStatistics']);
     });
 
     Route::any('/timetracking/analytics/invite-users', [Analytics\HrController::class, 'inviteUsers']); // Приглашение стажеров

@@ -330,36 +330,26 @@ class HrController extends Controller
     }
 
     /**
-     * Возвращает сводную этапов стажировки
+     * Возвращает данные 2 этапа стажировки
      * @param Request $request
      * @return array
      */
-    public function getInternshipStagesSynoptics(Request $request)
-    {
-        $month = Carbon::createFromFormat('m-Y', $request->month . '-' . $request->year)->startOfMonth();
-
-        return [
-            'ocenka_svod' => RM::ocenka_svod($month->startOfMonth()), // Анкета уволенных // 4.1 sec
-        ];
-    }
-
-    /**
-     * Возвращает отсутствие стажеров на этапе стажировки
-     * @param Request $request
-     * @return array
-     */
-    public function getInternshipStagesAbsents(Request $request)
+    public function getInternshipSecondStage(Request $request)
     {
         $date = [
             'month' => $request->month,
             'year' => $request->year,
         ];
+
         $absence_causes = RM::getAbsenceCauses($date); // Причины отсутствия на 1 и 2 день стажировки
+        $month = Carbon::createFromFormat('m-Y', $request->month . '-' . $request->year)->startOfMonth();
 
         return [
+            'ocenka_svod' => RM::ocenka_svod($month->startOfMonth()), // Анкета уволенных // 4.1 sec
             'absents_first' => $absence_causes['first_day'],
             'absents_second' => $absence_causes['second_day'],
             'absents_third' => $absence_causes['third_day'],
+            'trainee_report' => TraineeReport::getBlocks($month->format('Y-m-d')), // оценки первого дня и присутствие стажеров
         ];
     }
 
@@ -370,10 +360,9 @@ class HrController extends Controller
      */
     public function getFunnel(Request $request)
     {
-        $month = Carbon::createFromFormat('m-Y', $request->month . '-' . $request->year)->startOfMonth();
+        $month = Carbon::createFromFormat('m-Y', $request->month . '-' . $request->year);
 
         return [
-            //Воронка
             'funnels' => FunnelTable::getTables($month->startOfMonth()->format('Y-m-d')), // Воронки
         ];
     }
@@ -385,44 +374,19 @@ class HrController extends Controller
      */
     public function getDismissStatistics(Request $request)
     {
-        return [
-            'staff' => RM::staff($request->year), // Таблица кадров во вкладке причина увольнения
-            'staff_by_group' => RM::staff_by_group($request->year), // Таблица кадров во вкладке причина увольнения // 5.2 sec
-            'staff_longevity' =>  RM::staff_longevity($request->year), // Таблица кадров во вкладке причина увольнения
-        ];
-    }
-
-    /**
-     * Возвращает бот увольнения
-     * @param Request $request
-     * @return array
-     */
-    public function getDismissBot(Request $request)
-    {
-        $month = Carbon::createFromFormat('m-Y', $request->month . '-' . $request->year)->startOfMonth();
-
-        return [
-            'quiz' => RM::getQuizTable($month->startOfMonth()),
-        ];
-    }
-
-    /**
-     * Возвращает статистику по причинам увольнений
-     * @param Request $request
-     * @return array
-     */
-    public function getDismissReasons(Request $request)
-    {
         $date = [
             'month' => $request->month,
             'year' => $request->year,
         ];
-
+        $month = Carbon::createFromFormat('m-Y', $request->month . '-' . $request->year)->startOfMonth();
         return [
+            'staff' => RM::staff($request->year), // Таблица кадров во вкладке причина увольнения
+            'staff_by_group' => RM::staff_by_group($request->year), // Таблица кадров во вкладке причина увольнения // 5.2 sec
+            'staff_longevity' =>  RM::staff_longevity($request->year), // Таблица кадров во вкладке причина увольнения
+            'quiz' => RM::getQuizTable($month->startOfMonth()),
             'causes' => RM::fireCauses($date), // причины увольнения
         ];
     }
-
 
     /**
      * Перенаправление на битрикс сделку по lead_id

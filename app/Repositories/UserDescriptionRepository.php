@@ -45,10 +45,15 @@ class UserDescriptionRepository extends CoreRepository
         int $userId
     )
     {
-        $this->model()->create([
-            'user_id' => $userId,
-            'is_trainee' => 0,
-            'applied' => now()
-        ]);
+        $this->model()->updateOrCreate(
+            [
+                'user_id' => $userId,
+            ]
+            ,
+            [
+                'is_trainee' => 0,
+                'applied' => now()
+            ]
+        );
     }
 }

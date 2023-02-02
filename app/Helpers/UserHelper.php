@@ -5,6 +5,7 @@ namespace App\Helpers;
 use App\Repositories\CardRepository;
 use App\Repositories\UserContactRepository;
 use App\User;
+use App\UserContact;
 use Carbon\Carbon;
 
 class UserHelper
@@ -146,10 +147,12 @@ class UserHelper
         array $phones
     ): void
     {
-
+        $contactRepo = new UserContactRepository();
         $contactsData = [];
         foreach ($phones as $phone)
         {
+            $contactRepo->getAllUserContacts($userId)->delete();
+
             $contactsData[] = [
                 'user_id' => $userId,
                 'value' => $phone['value'],

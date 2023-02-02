@@ -9,6 +9,7 @@ use App\ProfileGroup;
 use App\User;
 use Illuminate\Console\Command;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\DB;
 
 class CreatePivotAnalytics extends Command
 {
@@ -46,10 +47,10 @@ class CreatePivotAnalytics extends Command
         $this->line('start creating pivot tables:');
         
         if(Carbon::now()->day != 1) return false;
-        
+
         $newDate  = Carbon::now()->day(1)->format('Y-m-d');
         $prevDate = Carbon::now()->subMonth()->day(1)->format('Y-m-d');
-        
+
         $groups   = ProfileGroup::query()
                     ->where('active', 1)
                     ->where('has_analytics', 1)
@@ -128,63 +129,118 @@ class CreatePivotAnalytics extends Command
      */
     private function createCols(int $group_id, String $prevDate, String $newDate) : array
     {
-        $newCols = [];
+        $newColumns = [];
 
         /**
-         * get days in month to prevent creating spare columns
+         * Дни в этом и в прошлом месяце.
          */
         $daysInMonth     = Carbon::parse($newDate)->daysInMonth; 
-        $daysInPrevMonth = Carbon::parse($prevDate)->daysInMonth; 
+        $daysInPrevMonth = Carbon::parse($prevDate)->daysInMonth;
 
-        
         /**
-         * get cols from prev month
+         * Получаем данные за прошлый месяц.
          */
-        $cols = AnalyticColumn::where('date', $prevDate)
-                    ->where('group_id', $group_id);
-                    
-        if($daysInMonth == 28) $cols->whereNotIn('name', [29, 30, 31]);
-        if($daysInMonth == 29) $cols->whereNotIn('name', [30, 31]);
-        if($daysInMonth == 30) $cols->whereNotIn('name', [31]);
-        
-        $cols = $cols->orderBy('order','asc')->get();
+        $cols = AnalyticColumn::query()->where([
+            ['date', '=', $prevDate],
+            ['group_id', '=', $group_id]
+        ])->whereIn('name', $this->getNameColumn($newDate))->orderBy('order','asc')->get();
+
 
         $lastOrder = 0;
-        
+        $analyticColumns = [];
+
         foreach($cols as $col) {
-            $newCol = AnalyticColumn::create([
+            $analyticColumn = AnalyticColumn::query()->create([
                 'group_id' => $col->group_id,
                 'name'     => $col->name,
                 'date'     => $newDate,
                 'order'    => $col->order,
             ]);
-            
+
             /**
-             * order we will use for missing columns 
+             * Получаем последний элемент в массиве.
              */
             $lastOrder = $col->order;
 
             /**
-             * to know what columns was before
+             * Сохраняем ID новой колонки в массиве.
              */
-            $newCols[$col->id] = $newCol->id;
+            $newColumns[$col->id] = $analyticColumn->id;
         }
 
         /**
-         * create missing day columns
+         * Скрипт запускается если дни текущего месяца больше чем прошлый.
          */
-        $columnsMissingFromPreviousMonth = $this->columnsMissingFromPreviousMonth($daysInMonth, $daysInPrevMonth);
 
-        foreach($columnsMissingFromPreviousMonth as $day) {
-            $newCol = AnalyticColumn::create([
-                'group_id' => $group_id,
-                'name'     => $day,
-                'date'     => $newDate,
-                'order'    => ++$lastOrder,
-            ]);
+        if ($daysInMonth > $daysInPrevMonth)
+        {
+            $dayDiff = $daysInMonth - $daysInPrevMonth;
+            $diffDays = array_diff($this->getCurrentMonthDayToArray($daysInMonth), $this->getPrevMonthDayToArray($daysInPrevMonth));
+
+            foreach ($diffDays as $diffDay)
+            {
+                $analyticColumns[] = [
+                    'group_id' => $group_id,
+                    'name'     => (string) $diffDay,
+                    'date'     => $newDate,
+                    'order'    => ++$lastOrder,
+                    'created_at' => now(),
+                    'updated_at' => now()
+                ];
+            }
+
+            DB::table('analytic_columns')->insert($analyticColumns);
         }
 
-        return $newCols;
+        return $newColumns;
+    }
+
+    /**
+     * @param $prevMonthDays
+     * @return array
+     */
+    private function getPrevMonthDayToArray($prevMonthDays): array
+    {
+        $days = [];
+
+        for ($day = 1; $day <= $prevMonthDays; $day++)
+        {
+            $days[] = $day;
+        }
+
+        return $days;
+    }
+
+    /**
+     * @param $currentMonthDays
+     * @return array
+     */
+    private function getCurrentMonthDayToArray($currentMonthDays): array
+    {
+        $days = [];
+
+        for ($day = 1; $day <= $currentMonthDays; $day++)
+        {
+            $days[] = $day;
+        }
+
+        return $days;
+    }
+
+    private function getNameColumn(string $date): array
+    {
+        /**
+         * Добавляем 4 потому что есть колонки name, plan, avg, sum и дни в месяце.
+         */
+        $nameColumn = ['name', 'plan', 'sum', 'avg'];
+        $daysInMonth = Carbon::parse($date)->daysInMonth;
+
+        for ($column = 1; $column <= $daysInMonth; $column++)
+        {
+            $nameColumn[] = $column;
+        }
+
+        return $nameColumn;
     }
 
     /**
@@ -195,7 +251,7 @@ class CreatePivotAnalytics extends Command
      * 
      * @return array
      */
-    private function columnsMissingFromPreviousMonth(
+    private function  columnsMissingFromPreviousMonth(
         int $daysInMonth,
         int $daysInPrevMonth
     ) : array
