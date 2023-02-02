@@ -417,8 +417,8 @@ class CheckReports extends Model
 
     public static function getChecklistByGroup($group, $request){
         $check_users = [];
-        if(!is_null($group->users)){
-            $users = User::whereIn('id',json_decode($group->users))->get();
+        if(!is_null($group->user)){
+            $users = User::whereIn('id',json_decode($group->user))->get();
             foreach($users as $key => $user){
                 $check_users[] = [
                     "user_id" => $user->id,
