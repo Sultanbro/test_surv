@@ -12,11 +12,18 @@
 			</div>
 			<div class="profile__job profile-border">
 				{{ data.position != null ? data.position.position : 'Без должности' }}
+				<router-link to="/timetracking/settings?tab=2#nav-home">
+					<i class="fa fa-pen pulse-anim" />
+				</router-link>
 			</div>
 			<div
 				class="profile__job profile-border py-2"
-				v-html="data.groups"
-			/>
+			>
+				<span v-html="data.groups" />
+				<router-link to="/timetracking/settings?tab=2#nav-home">
+					<i class="fa fa-pen pulse-anim" />
+				</router-link>
+			</div>
 			<div class="profile__salary profile-border">
 				ОКЛАД: {{ data.salary }}
 			</div>
@@ -51,7 +58,8 @@ export default {
 			loading: false
 		}
 	},
-	created() {},
+	created() {
+	},
 	methods: {}
 }
 </script>

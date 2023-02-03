@@ -128,7 +128,23 @@
 					<label
 						for="weekdays-input"
 						class="col-sm-4 col-form-label"
-					>Выходные</label>
+					>Рабочие дни
+						<img
+							src="/images/dist/profit-info.svg"
+							class="img-info"
+							alt="info icon"
+							id="info1"
+						>
+					</label>
+					<b-popover
+						target="info1"
+						triggers="hover"
+						placement="bottom"
+					>
+						<p style="font-size: 15px">
+							По умолчанию все дни - рабочие. Выбранные будут считаться выходными.
+						</p>
+					</b-popover>
 					<div class="col-sm-8 form-inline weekdays-container">
 						<input
 							name="weekdays"

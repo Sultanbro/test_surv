@@ -164,7 +164,8 @@
 .profile-border{
   display: flex;
   align-items: center;
-  padding-left: 1.5rem;
+  justify-content: space-between;
+  padding: 0 1.5rem;
   font-size:1.2rem;
   width: 100%;
   min-height: 4rem;
@@ -172,7 +173,35 @@
   margin-bottom: 1rem;
   border: 1px solid #E7EAEA;
   border-radius:1rem;
+  i{
+    font-size: 12px;
+    transition: 0.15s all ease;
+    cursor: pointer;
+    width: 30px;
+	height: 30px;
+    border-radius: 50%;
+    text-align: center;
+    color: rgb(72,145,243);
+    line-height: 30px;
+    &:hover{
+      background-color: rgba(72,145,243, 0.2);
+    }
+  }
 }
+
+.pulse-anim {
+  animation: pulse-animation 2s infinite;
+}
+
+@keyframes pulse-animation {
+  0% {
+    box-shadow: 0 0 0 0px rgba(0, 0, 0, 0.2);
+  }
+  100% {
+    box-shadow: 0 0 0 20px rgba(0, 0, 0, 0);
+  }
+}
+
 .profile__wrapper{
   display: flex;
   justify-content: space-between;

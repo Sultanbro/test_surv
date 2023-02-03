@@ -18,6 +18,10 @@
 							@click="activeTab = tab.id"
 						>{{ tab.title }}
 						</span>
+						<span
+							class="beta"
+							v-if="tab.id === 4"
+						>beta</span>
 					</li>
 				</template>
 			</ul>
@@ -135,3 +139,20 @@ export default {
 	},
 }
 </script>
+
+<style lang="scss" scoped>
+	.nav-item{
+		position: relative;
+	}
+	.beta{
+		position: absolute;
+		top: -13px;
+		right: -15px;
+		padding: 2px 5px;
+		border-radius: 2px;
+		background-color: #45b44d;
+		color: #fff;
+		font-weight: 700;
+		font-size: 12px;
+	}
+</style>

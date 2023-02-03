@@ -82,7 +82,7 @@
     padding: 5px 12px;
 
     &:after {
-      line-height: 16px;
+     content: none!important;
     }
   }
 }
