@@ -23,18 +23,6 @@ export async function updateSettings(body, options){
 	return data
 }
 
-
-
-/**
- * ApiResponse
- * @namespace ApiResponse
- */
-
-/**
- * ApiRequest
- * @namespace ApiRequest
- */
-
 /**
  * @typedef GetSettingsResponse
  * @type {object}

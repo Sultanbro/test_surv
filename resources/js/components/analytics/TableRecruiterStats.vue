@@ -8,7 +8,7 @@
 				id="recruiter_stats"
 				:small="true"
 				:bordered="true"
-				:items="items[currentDay]"
+				:items="items"
 				:fields="fields"
 				primary-key="a"
 				:key="componentKey"
@@ -97,7 +97,7 @@
 		>
 			<div
 				class="leads"
-				v-for="(lead, index) in leads[currentDay]"
+				v-for="(lead, index) in leads"
 				:key="index"
 			>
 				<div class="d-flex justify-content-between">
@@ -115,8 +115,14 @@
 export default {
 	name: 'TableRecruiterStats',
 	props: {
-		data: Array,
-		rates: Array,
+		data: {
+			type: Array,
+			default: () => []
+		},
+		rates: {
+			type: Object,
+			default: () => ({})
+		},
 		leads_data: {
 			default: () => [],
 			type: Array,
@@ -174,6 +180,7 @@ export default {
 		},
 		currentDay: {
 			handler (val) {
+				this.$emit('changeDay', val)
 				this.fields[0].label = 'Сотрудники: ' + this.rates[val];
 				this.items  = this.data;
 				this.leads  = this.leads_data;
@@ -186,10 +193,7 @@ export default {
 		this.currentDay = this.daysInMonth
 	},
 	methods: {
-
-
 		setFields() {
-
 			let times = {
 				9: '09-10',
 				10: '10-11',
@@ -210,13 +214,10 @@ export default {
 					class: 'day'
 				});
 			})
-
 		},
 
 		changeProfile(index) {
-
 			if(!this.editable) return '';
-
 			this.axios.post('/timetracking/analytics/recruting/change-profile', {
 				user_id: this.items[this.currentDay][index]['user_id'],
 				profile: this.items[this.currentDay][index]['profile'],

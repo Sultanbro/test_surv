@@ -357,7 +357,7 @@ const VGauge = () => import(/* webpackChunkName: "TopGauges" */ 'vgauge')
 const TopGauges = () => import(/* webpackChunkName: "TopGauges" */ '@/components/TopGauges')  // TOП спидометры, есть и в аналитике
 import TableRentability from '@/components/tables/TableRentability' // ТОП рентабельность
 import NPS from '@/components/tables/NPS' // Оценка руководителей
-import { useYearOptions } from '../composables/yearOptions'
+import { useYearOptions } from '@/composables/yearOptions'
 
 export default {
 	name: 'PageTop',
