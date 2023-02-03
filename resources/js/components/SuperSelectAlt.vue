@@ -86,27 +86,30 @@
 
 
 				<div class="options">
-					<router-link
-						to="/admin/upbooks"
-						class="option add-option"
+					<a
 						v-if="type == 1"
+						href="/admin/upbooks"
+						target="_blank"
+						class="option add-option"
 					>
 						<i class="fa fa-plus" /> Добавить новую книгу в библиотеку
-					</router-link>
-					<router-link
-						to="/video_playlists"
-						class="option add-option"
+					</a>
+					<a
 						v-if="type == 2"
+						href="/video_playlists"
+						target="_blank"
+						class="option add-option"
 					>
 						<i class="fa fa-plus" /> Добавить новое видео в библиотеку
-					</router-link>
-					<router-link
-						to="/kb"
-						class="option add-option"
+					</a>
+					<a
 						v-if="type == 3"
+						href="/kb"
+						target="_blank"
+						class="option add-option"
 					>
 						<i class="fa fa-plus" /> Добавить базу знания
-					</router-link>
+					</a>
 					<div
 						class="option"
 						v-for="(option, index) in filtered_options"
