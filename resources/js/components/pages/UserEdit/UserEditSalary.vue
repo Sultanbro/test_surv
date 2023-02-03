@@ -158,12 +158,7 @@ export default {
 				</select>
 			</div>
 
-			<div class="col-sm-3 pl-0">
-				<profile-quarter-button
-					v-if="user"
-					:user_id="user.id"
-				/>
-			</div>
+			<div class="col-sm-3 pl-0" />
 		</div>
 		<template v-if="user">
 			<template v-if="user.zarplata && user.zarplata.kaspi_cardholder">
