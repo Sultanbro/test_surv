@@ -27,29 +27,34 @@ export default {
 		id="iphones3"
 		class="mb-3 xfade none-block"
 	>
-		<h5 class="mt-4">
-			Отделы <span class="red">*</span>
-		</h5>
-		<ProfileGroups
-			v-if="user"
-			:groups="groups"
-			:user_id="user.id"
-			:in_groups="in_groups"
-		/>
-		<select
-			v-else
-			name="group"
-			id="group"
-			class="form-control"
-		>
-			<option>Выберите отдел</option>
-			<option
-				v-for="group in groups"
-				:key="group.id"
-				:value="group.id"
-			>
-				{{ group.name }}
-			</option>
-		</select>
+		<div class="form-group row">
+			<label
+				for="position"
+				class="col-sm-4 col-form-label font-weight-bold"
+			>Отделы <span class="red">*</span></label>
+			<div class="col-sm-8">
+				<ProfileGroups
+					v-if="user"
+					:groups="groups"
+					:user_id="user.id"
+					:in_groups="in_groups"
+				/>
+				<select
+					v-else
+					name="group"
+					id="group"
+					class="form-control"
+				>
+					<option>Выберите отдел</option>
+					<option
+						v-for="group in groups"
+						:key="group.id"
+						:value="group.id"
+					>
+						{{ group.name }}
+					</option>
+				</select>
+			</div>
+		</div>
 	</div>
 </template>

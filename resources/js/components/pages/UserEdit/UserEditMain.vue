@@ -1,11 +1,13 @@
 <script>
 import axios from 'axios'
 import ProfileGroups from '@/components/profile/ProfileGroups' // настройки user
+import UserEditGroups from '@/components/pages/UserEdit/UserEditGroups'
 
 export default {
 	name: 'UserEditMain',
 	components: {
 		ProfileGroups,
+		UserEditGroups,
 	},
 	props: {
 		formUserName: {
@@ -51,6 +53,10 @@ export default {
 		user: {
 			type: Object,
 			default: null
+		},
+		in_groups:{
+			type: Array,
+			default: () => []
 		},
 	},
 	data(){
@@ -266,6 +272,14 @@ export default {
 				/>
 			</div>
 		</div>
+
+		<!-- groups tab -->
+		<UserEditGroups
+			:user="user"
+			:groups="groups"
+			:in_groups="in_groups"
+		/>
+		<!-- end of groups and books tab -->
 
 		<div class="form-group row">
 			<label
