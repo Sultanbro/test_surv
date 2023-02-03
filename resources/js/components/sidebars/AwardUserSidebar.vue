@@ -1,5 +1,5 @@
 <template>
-	<sidebar
+	<Sidebar
 		id="award-user-sidebar"
 		title="Наградить пользователя"
 		:open="open"
@@ -9,119 +9,127 @@
 		v-scroll-lock="open"
 	>
 		<b-tabs
+			v-if="awards.length > 0"
 			ref="tabAwardUser"
 			class="overflow-hidden"
 			v-model="tabIndex"
 		>
-			<template v-if="awards.length > 0">
-				<div class="prev-next">
-					<span
-						class="prev"
-						@click="tabIndex--"
-					><i class="fa fa-chevron-left" /></span>
-					<span
-						class="next"
-						@click="tabIndex++"
-					><i class="fa fa-chevron-right" /></span>
-				</div>
-				<b-tab
-					v-for="award in awards"
-					:key="award.id"
-				>
-					<template #title>
-						<span @click="changeTab(award)">{{ award.name }}</span>
-					</template>
-					<div class="d-flex justify-content-between align-items-center mt-4">
-						<div>
-							<button
-								class="award-user-btn-tab"
-								:class="{'active': switchTab === 1}"
-								@click="switchTab = 1"
-							>
-								Доступные награды ({{ award.available.length }})
-							</button>
-							<button
-								class="award-user-btn-tab"
-								:class="{'active': switchTab === 2}"
-								@click="switchTab = 2"
-								:disabled="!award.hasOwnProperty('my')"
-							>
-								Выданные награды ({{ award.my ? award.my.length : 0 }})
-							</button>
-						</div>
+			<div class="prev-next">
+				<span
+					class="prev"
+					@click="tabIndex--"
+				><i class="fa fa-chevron-left" /></span>
+				<span
+					class="next"
+					@click="tabIndex++"
+				><i class="fa fa-chevron-right" /></span>
+			</div>
+			<b-tab
+				v-for="award in awards"
+				:key="award.id"
+			>
+				<template #title>
+					<span @click="changeTab(award)">{{ award.name }}</span>
+				</template>
+				<div class="d-flex justify-content-between align-items-center mt-4">
+					<div>
 						<button
-							class="award-user-btn-tab upload"
-							@click="modalAdd = !modalAdd"
+							class="award-user-btn-tab"
+							:class="{'active': switchTab === 1}"
+							@click="switchTab = 1"
 						>
-							<i class="fa fa-upload" />
-							Загрузить файл награды
+							Доступные награды ({{ award.available.length }})
+						</button>
+						<button
+							class="award-user-btn-tab"
+							:class="{'active': switchTab === 2}"
+							@click="switchTab = 2"
+							:disabled="!award.hasOwnProperty('my')"
+						>
+							Выданные награды ({{ award.my ? award.my.length : 0 }})
 						</button>
 					</div>
+					<button
+						class="award-user-btn-tab upload"
+						@click="modalAdd = !modalAdd"
+					>
+						<i class="fa fa-upload" />
+						Загрузить файл награды
+					</button>
+				</div>
 
-					<div v-if="switchTab === 1">
-						<b-row class="avail mt-3">
-							<b-col
-								cols="12"
-								md="2"
-								class="mt-4 remove-award-modal"
-								v-for="item in award.available"
-								:key="item.id"
-							>
-								<div class="award-image">
-									<div @click="previewImage(item)">
-										<img
-											:src="item.tempPath"
-											alt=""
-											v-if="item.format !== 'pdf'"
-										>
-										<vue-pdf-embed
-											v-else
-											ref="vuePdfEmbeds"
-											:source="item.tempPath"
-										/>
-									</div>
-									<i
-										class="fa fa-download button download"
-										@click="downloadImage(item, award.name)"
-									/>
-									<i
-										class="fa fa-award button award"
-										@click="openModalSelect(item, award.name)"
-									/>
-								</div>
-							</b-col>
-						</b-row>
-					</div>
-					<div v-if="switchTab === 2 && award.hasOwnProperty('my')">
-						<b-row class="mt-3">
-							<b-col
-								cols="12"
-								md="2"
-								class="mt-4"
-								v-for="item in award.my"
-								:key="item.id"
-							>
-								<div
-									class="award-image my-award"
-									@click="removeReward(item)"
-								>
+				<div v-if="switchTab === 1">
+					<b-row class="avail mt-3">
+						<b-col
+							cols="12"
+							md="2"
+							class="mt-4 remove-award-modal"
+							v-for="item in award.available"
+							:key="item.id"
+						>
+							<div class="award-image">
+								<div @click="previewImage(item)">
 									<img
 										:src="item.tempPath"
 										alt=""
 										v-if="item.format !== 'pdf'"
 									>
 									<vue-pdf-embed
-										:source="item.tempPath"
 										v-else
+										ref="vuePdfEmbeds"
+										:source="item.tempPath"
 									/>
-									<i class="fa fa-trash" />
 								</div>
-							</b-col>
-						</b-row>
-					</div>
-				</b-tab>
-			</template>
+								<i
+									class="fa fa-download button download"
+									@click="downloadImage(item, award.name)"
+								/>
+								<i
+									class="fa fa-award button award"
+									@click="openModalSelect(item, award.name)"
+								/>
+							</div>
+						</b-col>
+					</b-row>
+				</div>
+				<div v-if="switchTab === 2 && award.hasOwnProperty('my')">
+					<b-row class="mt-3">
+						<b-col
+							cols="12"
+							md="2"
+							class="mt-4"
+							v-for="item in award.my"
+							:key="item.id"
+						>
+							<div
+								class="award-image my-award"
+								@click="removeReward(item)"
+							>
+								<img
+									:src="item.tempPath"
+									alt=""
+									v-if="item.format !== 'pdf'"
+								>
+								<vue-pdf-embed
+									:source="item.tempPath"
+									v-else
+								/>
+								<i class="fa fa-trash" />
+							</div>
+						</b-col>
+					</b-row>
+				</div>
+			</b-tab>
 		</b-tabs>
+
+		<a
+			v-else
+			href="/timetracking/settings?tab=9#nav-awards"
+			target="_blank"
+			class="courses-add"
+		>
+			Добавить награды
+		</a>
 
 		<BModal
 			v-model="modalPreview"
@@ -380,10 +388,12 @@
 				</div>
 			</template>
 		</BModal>
-	</sidebar>
+	</Sidebar>
 </template>
 
 <script>
+import Sidebar from '@/components/ui/Sidebar' // сайдбар table
+import VuePdfEmbed from 'vue-pdf-embed/dist/vue2-pdf-embed'
 const base64Encode = (data) =>
 	new Promise((resolve, reject) => {
 		const reader = new FileReader();
@@ -393,13 +403,13 @@ const base64Encode = (data) =>
 	});
 	// import AwardsCard from '../profile/UserEarnings/AwardsCard.vue'
 	// import UploadModal from '../modals/Upload'
-import VuePdfEmbed from 'vue-pdf-embed/dist/vue2-pdf-embed';
 
 export default {
 	name: 'AwardUserSidebar',
 	components: {
 		// UploadModal,
-		VuePdfEmbed
+		Sidebar,
+		VuePdfEmbed,
 	},
 	data() {
 		return {

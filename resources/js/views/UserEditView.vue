@@ -2,7 +2,6 @@
 import DefaultLayout from '@/layouts/DefaultLayout'
 import UserEditMain from '@/components/pages/UserEdit/UserEditMain'
 import UserEditAdditional from '@/components/pages/UserEdit/UserEditAdditional'
-import UserEditGroups from '@/components/pages/UserEdit/UserEditGroups'
 import UserEditDocuments from '@/components/pages/UserEdit/UserEditDocuments'
 import UserEditAdaptation from '@/components/pages/UserEdit/UserEditAdaptation'
 import UserEditPhones from '@/components/pages/UserEdit/UserEditPhones'
@@ -24,7 +23,6 @@ export default {
 		DefaultLayout,
 		UserEditMain,
 		UserEditAdditional,
-		UserEditGroups,
 		UserEditDocuments,
 		UserEditAdaptation,
 		UserEditPhones,
@@ -791,6 +789,7 @@ export default {
 													:working-days="workingDays"
 													:working-times="workingTimes"
 													:user="user"
+													:in_groups="in_groups"
 												/>
 
 												<div class="col-md-6 add_info">
@@ -804,15 +803,6 @@ export default {
 														:user-deleted="userDeleted"
 														:user-deleted-at="userDeletedAt"
 													/>
-
-													<!-- groups tab -->
-													<UserEditGroups
-														v-show="showBlocks.groups"
-														:user="user"
-														:groups="groups"
-														:in_groups="in_groups"
-													/>
-													<!-- end of groups and books tab -->
 												</div>
 												<div class="col-9 add_info">
 													<!-- documents tab -->

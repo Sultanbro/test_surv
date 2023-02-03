@@ -266,7 +266,8 @@ export default {
 						{
 							name: 'Курсы',
 							icon: 'icon-nd-courses',
-							to: '/courses'
+							to: '/courses',
+							hide: !this.$can('courses_view')
 						}
 					]
 				},
