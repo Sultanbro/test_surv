@@ -143,7 +143,7 @@ export default {
 					>
 						UZS Узбекский сум
 					</option>
-					<option
+					<!-- <option
 						value="uah"
 						:selected="user && user.currency === 'uah'"
 					>
@@ -154,7 +154,7 @@ export default {
 						:selected="user && user.currency === 'byn'"
 					>
 						BYN Белорусский рубль
-					</option>
+					</option> -->
 				</select>
 			</div>
 
