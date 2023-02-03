@@ -63,7 +63,6 @@
 									class="inner"
 									:class="{'inner-text-top': index > fields.length - 4}"
 								>
-									{{ index }}
 									<div>{{ item[field.key] }}</div>
 									<div class="inner-text">
 										<b v-if="item.texts[field.key] !== undefined">Оценки ({{ item.grades[field.key] }})</b>
@@ -102,16 +101,25 @@
 </template>
 
 <script>
+import { useYearOptions } from '@/composables/yearOptions'
+
 export default {
 	name: 'NPS',
-	props: {activeuserid: Number, show_header: {
-		default: true
-	}},
+	props: {
+		activeuserid: {
+			type: Number,
+			default: 0,
+		},
+		show_header: {
+			type: Boolean,
+			default: true,
+		},
+	},
 	data() {
 		return {
 			users: [],
 			fields: [],
-			years: [2020, 2021, 2022],
+			years: useYearOptions(),
 			currentYear: new Date().getFullYear(),
 			monthInfo: {
 				currentMonth: null,
