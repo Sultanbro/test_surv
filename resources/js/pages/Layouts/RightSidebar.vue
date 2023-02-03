@@ -42,7 +42,7 @@
 
 			<!-- Статус: скрыто. Компонент: RightSidebar. Дата скрытия: 27.01.2023 14:15 -->
 			<a
-				href="#"
+				href="javascript:void(0)"
 				class="header__right-icon check"
 				@click="$emit('pop', 'checklist')"
 				v-if="false"
