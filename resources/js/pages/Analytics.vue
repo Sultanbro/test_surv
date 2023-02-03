@@ -7,12 +7,11 @@
 			<div class="col-3">
 				<select
 					class="form-control"
-					v-model="monthInfo.currentMonth"
-					@change="fetchData"
+					v-model="currentMonth"
 				>
 					<option
-						v-for="month in $moment.months()"
-						:value="month"
+						v-for="(month, index) in $moment.months()"
+						:value="index"
 						:key="month"
 					>
 						{{ month }}
@@ -23,7 +22,6 @@
 				<select
 					class="form-control"
 					v-model="currentYear"
-					@change="fetchData"
 				>
 					<option
 						v-for="year in years"
@@ -37,7 +35,7 @@
 			<div class="col-1">
 				<div
 					class="btn btn-primary rounded"
-					@click="fetchData()"
+					@click="onChangeTab(activeTab)"
 				>
 					<i class="fa fa-redo-alt" />
 				</div>
@@ -45,11 +43,11 @@
 			<div class="col-3" />
 		</div>
 		<div>
-			<div v-if="!firstEnter">
-				<div v-if="this.hasPremission">
+			<div v-if="isReady">
+				<div v-if="hasPremission">
 					<b-tabs
+						v-model="activeTab"
 						type="card"
-						v-if="dataLoaded"
 						:default-active-key="active"
 					>
 						<template v-if="currentGroup == 48">
@@ -59,19 +57,20 @@
 								card
 							>
 								<TableRecruiterStats
-									:data="recruiting.recruiterStats"
+									:data="recruiterStats"
 									:days-in-month="new Date().getDate()"
-									:rates="recruiting.recruiterStatsRates"
+									:rates="recruiterStatsRates"
 									:year="currentYear"
-									:month="monthInfo.month"
-									:leads_data="recruiting.recruiter_stats_leads"
+									:month="currentMonth + 1"
+									:leads_data="recruiterStatsLeads"
 									:editable="true"
+									@changeDay="setDay"
 								/>
 								<div class="mb-5" />
 								<Recruting
-									v-if="recruiting.indicators"
+									v-if="indicators"
 									:is-analytics-page="true"
-									:records="recruiting.indicators"
+									:records="indicators"
 								/>
 								<div class="mb-5" />
 							</b-tab>
@@ -81,11 +80,12 @@
 								card
 							>
 								<TableSkype
+									v-if="skypes.data"
 									:month="monthInfo"
-									:skypes="recruiting.skypes"
-									:groups="recruiting.sgroups"
-									:invite_groups="recruiting.invite_groups"
-									:segments="recruiting.segments"
+									:skypes="skypes.data"
+									:groups="sgroups"
+									:invite_groups="inviteGroups"
+									:segments="segments"
 								/>
 							</b-tab>
 							<b-tab
@@ -139,7 +139,7 @@
 												</th>
 											</thead>
 											<tbody
-												v-for="(ocenka, index) in recruiting.ocenka_svod"
+												v-for="(ocenka, index) in ocenkaSvod"
 												:key="index"
 											>
 												<tr>
@@ -182,7 +182,7 @@
 										card
 									>
 										<SvodTable
-											:trainee_report="recruiting.trainee_report"
+											:trainee_report="traineeReport"
 											:groups="groups"
 										/>
 									</b-tab>
@@ -204,7 +204,7 @@
 													</thead>
 													<tbody>
 														<tr
-															v-for="absent in recruiting.absents_first"
+															v-for="absent in absentsFirst"
 															:key="absent.id"
 														>
 															<td class="text-left t-name table-title">
@@ -229,7 +229,7 @@
 													</thead>
 													<tbody>
 														<tr
-															v-for="absent in recruiting.absents_second"
+															v-for="absent in absentsSecond"
 															:key="absent.id"
 														>
 															<td class="text-left t-name table-title">
@@ -254,7 +254,7 @@
 													</thead>
 													<tbody>
 														<tr
-															v-for="absent in recruiting.absents_third"
+															v-for="absent in absentsThird"
 															:key="absent.id"
 														>
 															<td class="text-left t-name table-title">
@@ -279,7 +279,7 @@
 							>
 								<b-tabs
 									type="card"
-									v-if="dataLoaded"
+									v-if="funnels.all"
 									default-active-key="0"
 								>
 									<b-tab
@@ -292,7 +292,7 @@
 												<TableFunnel
 													class="mb-5"
 													:id="0"
-													:table="recruiting.funnels['all']['all']"
+													:table="funnels['all']['all']"
 													title="Сводная таблица"
 													segment="segments"
 													type="month"
@@ -301,7 +301,7 @@
 												<TableFunnel
 													class="mb-5"
 													:id="1"
-													:table="recruiting.funnels['all']['hh']"
+													:table="funnels['all']['hh']"
 													title="hh.ru"
 													segment="hh"
 													type="month"
@@ -310,7 +310,7 @@
 												<TableFunnel
 													class="mb-5"
 													:id="2"
-													:table="recruiting.funnels['all']['insta']"
+													:table="funnels['all']['insta']"
 													title="Job.bpartners.kz"
 													segment="insta"
 													type="month"
@@ -324,32 +324,31 @@
 											</div>
 										</div>
 									</b-tab>
-									<template v-for="(month, i) in months">
-										<b-tab
-											:title="month.month"
-											:key="i"
-											card
-										>
-											<TableFunnel
-												class="mb-5"
-												:table="recruiting.funnels['month'][i]['hh']"
-												title="hh.ru"
-												segment="hh"
-												type="week"
-												:date="month.date"
-												:key="5 * 1000 * (Number(i) + 10 * Number(i))"
-											/>
-											<TableFunnel
-												class="mb-5"
-												:table="recruiting.funnels['month'][i]['insta']"
-												title="Job.bpartners.kz"
-												segment="insta"
-												type="week"
-												:date="month.date"
-												:key="6 * 1000 * (Number(i) + 10 * Number(i))"
-											/>
-										</b-tab>
-									</template>
+									<b-tab
+										v-for="(month, i) in months"
+										:key="i"
+										:title="month.month"
+										card
+									>
+										<TableFunnel
+											class="mb-5"
+											:table="funnels['month'][i]['hh']"
+											title="hh.ru"
+											segment="hh"
+											type="week"
+											:date="month.date"
+											:key="5 * 1000 * (Number(i) + 10 * Number(i))"
+										/>
+										<TableFunnel
+											class="mb-5"
+											:table="funnels['month'][i]['insta']"
+											title="Job.bpartners.kz"
+											segment="insta"
+											type="week"
+											:date="month.date"
+											:key="6 * 1000 * (Number(i) + 10 * Number(i))"
+										/>
+									</b-tab>
 								</b-tabs>
 							</b-tab>
 
@@ -372,10 +371,10 @@
 										card
 									>
 										<TableStaffTurnover
-											:staff="recruiting.staff"
-											:causes="recruiting.causes"
-											:staff_longevity="recruiting.staff_longevity"
-											:staff_by_group="recruiting.staff_by_group"
+											:staff="staff"
+											:causes="causes"
+											:staff_longevity="staffLongevity"
+											:staff_by_group="staffByGroup"
 										/>
 									</b-tab>
 
@@ -386,55 +385,54 @@
 										card
 									>
 										<div class="d-flex flex-wrap">
-											<template v-for="(quizz, key) in recruiting.quiz">
-												<div
-													class="question-wrap"
-													:key="key"
-												>
-													<p> {{ quizz['q'] }}</p>
-													<div v-if="quizz['type'] == 'answer'">
-														<div
-															v-for="answer in quizz['answers']"
-															:key="answer.id"
-															class="d-flex"
-														>
-															<p class="fz12">
-																{{ answer.text }}
-															</p>
-														</div>
-													</div>
-													<div v-if="quizz['type'] == 'variant'">
-														<div
-															v-for="answer in quizz['answers']"
-															:key="answer.id"
-															class="d-flex"
-														>
-															<ProgressBar
-																:percentage="Number(answer.percent)"
-																:label="answer.text + ' (' + answer.count + ')'"
-																:class="'active'"
-															/>
-														</div>
-													</div>
-
-													<div v-if="quizz['type'] == 'star'">
-														<div
-															v-for="answer in quizz['answers']"
-															:key="answer.id"
-															class="d-flex"
-														>
-															<Rating
-																:grade="Number(answer.text).toFixed(0)"
-																:max-stars="10"
-																:has-counter="false"
-															/>
-															<p class="mb-0">
-																{{ answer.text + ' (' + answer.count + ')' }}
-															</p>
-														</div>
+											<div
+												v-for="(quizz, key) in quiz"
+												:key="key"
+												class="question-wrap"
+											>
+												<p> {{ quizz['q'] }}</p>
+												<div v-if="quizz['type'] == 'answer'">
+													<div
+														v-for="answer in quizz['answers']"
+														:key="answer.id"
+														class="d-flex"
+													>
+														<p class="fz12">
+															{{ answer.text }}
+														</p>
 													</div>
 												</div>
-											</template>
+												<div v-if="quizz['type'] == 'variant'">
+													<div
+														v-for="answer in quizz['answers']"
+														:key="answer.id"
+														class="d-flex"
+													>
+														<ProgressBar
+															:percentage="Number(answer.percent)"
+															:label="answer.text + ' (' + answer.count + ')'"
+															:class="'active'"
+														/>
+													</div>
+												</div>
+
+												<div v-if="quizz['type'] == 'star'">
+													<div
+														v-for="answer in quizz['answers']"
+														:key="answer.id"
+														class="d-flex"
+													>
+														<Rating
+															:grade="Number(answer.text).toFixed(0)"
+															:max-stars="10"
+															:has-counter="false"
+														/>
+														<p class="mb-0">
+															{{ answer.text + ' (' + answer.count + ')' }}
+														</p>
+													</div>
+												</div>
+											</div>
 										</div>
 									</b-tab>
 									<b-tab
@@ -454,7 +452,7 @@
 												</thead>
 												<tbody>
 													<tr
-														v-for="cause in recruiting.causes"
+														v-for="cause in causes"
 														:key="cause.id"
 													>
 														<td class="text-left t-name table-title">
@@ -482,23 +480,32 @@
 				<div class="empty-space" />
 			</div>
 		</div>
+		<Loading
+			:active="isLoading"
+			:can-cancel="false"
+			:is-full-page="true"
+		/>
 	</div>
 </template>
 
 <script>
-import TableStaffTurnover from '../components/tables/TableStaffTurnover.vue'
-import Rating from '../components/ui/Rating.vue'
+import Loading from 'vue-loading-overlay'
+import TableStaffTurnover from '@/components/tables/TableStaffTurnover.vue'
+import Rating from '@/components/ui/Rating.vue'
 import TableRecruiterStats from '@/components/analytics/TableRecruiterStats' // Почасовая таблица рекрутинга
 import Recruting from '@/components/analytics/Recruting' // сводная информация рекрутинг
 import TableSkype from '@/components/tables/TableSkype' // Стажеры
 import SvodTable from '@/components/SvodTable' //сводная таблица для аналитики
 import TableFunnel from '@/components/tables/TableFunnel' // Воронка
 import ProgressBar from '@/components/ProgressBar' // в ответах quiz
-import { useYearOptions } from '../composables/yearOptions'
+import { useYearOptions } from '@/composables/yearOptions'
+import { useHRStore } from '@/stores/ReportsHR.js'
+import { mapActions, mapState } from 'pinia'
 
 export default {
 	name: 'PageAnalytics',
 	components: {
+		Loading,
 		TableStaffTurnover,
 		Rating,
 		TableRecruiterStats,
@@ -508,68 +515,85 @@ export default {
 		TableFunnel,
 		ProgressBar,
 	},
-	props: ['groups', 'activeuserid'],
+	props: {
+		groups: {
+			type: Array,
+			default: () => []
+		},
+		activeuserid: {
+			type: Number,
+			default: 0
+		},
+	},
 	data() {
+		const now = new Date(Date.now())
 		return {
-			trainee_date: new Date(Date.now()).toISOString().substring(0, 10),
-			totals: [],
-			fn: '',
+			activeTab: 0,
+			// trainee_date: now.toISOString().substring(0, 10),
+			// totals: [],
 			data: [],
 			active: '1',
-			activities: [],
-			report_group_id: 42,
-			call_bases: [],
-			call_bases_key: 1,
-			archived_recruiters: [],
-			utility: [], // gauges
-			recruiting: {
-				recrutingTotals: [],
-				recruiterStats: [],
-				recruiterStatsRates: [],
-				recruiter_stats_leads: [],
-				funnels: [],
-				quiz: [], // 48 uvolennye
-				trainee_report: [], //
-				causes: [],
-				staff: [],
-				staff_by_group: [],
-				staff_longevity: [],
-				ocenka_svod: [],
-				//ratings: [],
-				//ratings_dates: [],
-				//ratings_heads: [],
-				absents_first: [],
-				absents_second: [],
-				indicators: null,
-				invite_groups: [], // 48
-				sgroups: [], // 48
-				skypes: [], // 48
-				hrs: [],
-				segments: [],
-			},
-			quality: [],
-			records: [],
-			hasPremission: false,
-			firstEnter: true,
 			years: useYearOptions(),
-			currentYear: new Date().getFullYear(),
-			monthInfo: {
-				currentMonth: null,
-				monthEnd: 0,
-				workDays: 0,
-				weekDays: 0,
-				workDays5: 0,
-				weekDays5: 0,
-				daysInMonth: 0,
-				year: new Date().getFullYear()
-			},
-			dataLoaded: false,
+			currentYear: now.getFullYear(),
+			currentMonth: now.getMonth(),
+			currentDay: now.getDate(),
 			currentGroup: 48,
-			minutes: {},
 			loader: null,
-			date: null,
-			coef: 0,
-			months: {
+		}
+	},
+	watch: {
+		groups(){
+			this.init()
+		},
+		activeTab(value){
+			this.onChangeTab(value)
+		},
+		currentYear(){
+			this.onChangeTab(this.activeTab)
+		},
+		currentMonth(){
+			this.onChangeTab(this.activeTab)
+		},
+		currentDay(){
+			this.onChangeTab(this.activeTab)
+		},
+	},
+	computed: {
+		...mapState(useHRStore, [
+			'isLoading',
+			'isReady',
+			'error',
+			// recruiter
+			'recruiterStats',
+			'recruiterStatsLeads',
+			'recruiterStatsRates',
+			// indicators
+			'indicatorsDate',
+			'indicators',
+			'records',
+			'hrs', // ????
+			// Trainees
+			'inviteGroups',
+			'segments',
+			'sgroups',
+			'skypes',
+			// Internship
+			'absentsFirst',
+			'absentsSecond',
+			'absentsThird',
+			'ocenkaSvod',
+			'traineeReport',
+			// funnels
+			'funnels',
+			// Dismiss
+			'causes',
+			'quiz',
+			'staff',
+			'staffByGroup',
+			'staffLongevity',
+		]),
+		months(){
+			const months = {
 				1: {month:'Январь', date: null},
 				2: {month:'Февраль', date: null},
 				3: {month:'Март', date: null},
@@ -582,20 +606,24 @@ export default {
 				10: {month:'Октябрь', date: null},
 				11: {month:'Ноябрь', date: null},
 				12: {month:'Декабрь', date: null},
-			},
-			componentKeys: {
-				5: 0,
-				6: 100000,
-				7: 200000,
-				8: 300000,
-				9: 400000,
-			},
-		}
-	},
-	watch: {
-		groups(){
-			this.init()
-		}
+			}
+			Object.keys(months).forEach(key => {
+				months[key].date = `${this.currentYear}-${key > 9 ? key : '0' + key}-01`
+			})
+			return months
+		},
+		monthInfo(){
+			const now = new Date()
+			return {
+				currentMonth: this.currentMonth || this.$moment(now).format('MMMM')
+			}
+		},
+		hasPremission(){
+			return !this.error
+		},
+		date(){
+			return `${this.currentYear}-${(this.currentMonth > 8 ? '' : '0') + (this.currentMonth + 1)}-${this.currentDay > 9 ? this.currentDay : '0' + this.currentDay}`
+		},
 	},
 	created() {
 		if(this.groups){
@@ -603,11 +631,19 @@ export default {
 		}
 	},
 	methods: {
+		...mapActions(useHRStore, [
+			'fetchRecruitment',
+			'fetchIndicators',
+			'fetchTrainees',
+			'fetchInternship',
+			'fetchFunnels',
+			'fetchDismiss',
+		]),
 		init(){
 			// бывор группы
-			const urlParams = new URLSearchParams(window.location.search);
-			let group = urlParams.get('group');
-			let active = urlParams.get('active');
+			const urlParams = new URLSearchParams(window.location.search)
+			const group = urlParams.get('group')
+			const active = urlParams.get('active')
 			if(group == null){
 				this.currentGroup = this.groups && this.groups[0] ? this.groups[0].id : ''
 			}
@@ -616,148 +652,77 @@ export default {
 			}
 			this.active = (active == null) ? '1' : active
 
-			this.setMonth()
-			this.setYear()
-			this.setMonthsObject()
-
-
-			this.fetchData()
-		},
-		setMonthsObject() {
-
-			for(let i = 1; i<=12;i++) {
-				let month = i;
-				if(i < 10) {month = '0' + i;}
-
-				this.months[i].date = this.currentYear + '-' + month + '-' + '01';
-			}
-		},
-		setMonth() {
-			this.monthInfo.currentMonth = this.monthInfo.currentMonth ? this.monthInfo.currentMonth : this.$moment().format('MMMM')
-			this.monthInfo.month = this.monthInfo.currentMonth ? this.$moment(this.monthInfo.currentMonth, 'MMMM').format('M') : this.$moment().format('M')
-			let currentMonth = this.$moment(this.monthInfo.currentMonth, 'MMMM')
-			//Расчет выходных дней
-			this.monthInfo.monthEnd = currentMonth.endOf('month'); //Конец месяца
-			this.monthInfo.weekDays = currentMonth.weekdayCalc(currentMonth.startOf('month').toString(), currentMonth.endOf('month').toString(), [6]) //Колличество выходных
-			this.monthInfo.weekDays5 = currentMonth.weekdayCalc(currentMonth.startOf('month').toString(), currentMonth.endOf('month').toString(), [6,0]) //Колличество выходных
-			this.monthInfo.daysInMonth = new Date(this.$moment().format('YYYY'), this.$moment(this.monthInfo.currentMonth, 'MMMM').format('M'), 0).getDate() //Колличество дней в месяце
-			this.monthInfo.workDays = this.monthInfo.daysInMonth - this.monthInfo.weekDays //Колличество рабочих дней
-			this.monthInfo.workDays5 = this.monthInfo.daysInMonth - this.monthInfo.weekDays5 //Колличество рабочих дней
-
-		},
-		//Установка выбранного года
-		setYear() {
-			this.currentYear = this.currentYear ? this.currentYear : this.$moment().format('YYYY')
-			this.monthInfo.currentYear = this.currentYear;
-		},
-
-		getTotals(data) {
-			this.axios.post('/timetracking/get-totals-of-reports', {
-				month: this.$moment(this.monthInfo.currentMonth, 'MMMM').format('M'),
+			this.fetchRecruitment({
+				day: this.currentDay,
+				month: this.currentMonth + 1,
 				year: this.currentYear,
-				group_id: this.currentGroup
 			})
-				.then(response => {
-					this.totals = response.data.sum
-					this.data = data
-				})
-				.catch(() => console.log('Error GetTotals'))
-		},
-
-		fetchData() {
-			let loader = this.$loading.show();
-
-
-			this.axios.post('/timetracking/getanalytics', {
-				month: this.$moment(this.monthInfo.currentMonth, 'MMMM').format('M'),
+			this.fetchIndicators({
+				month: this.currentMonth + 1,
 				year: this.currentYear,
-				group_id: this.currentGroup
-			}).then(response => {
-				if (response.data.error && response.data.error == 'access') {
-					this.hasPremission = false
-					loader.hide();
-					return;
-				}
-				this.hasPremission = true
-
-				this.setMonth()
-				this.setYear()
-
-				this.dataLoaded = true
-				this.firstEnter = false
-
-				this.componentKeys[5]++
-
-				if(this.currentGroup == 48) { // recruiting
-					this.recruiting.hrs = response.data.hrs
-					this.recruiting.skypes = response.data.skypes
-					this.recruiting.sgroups = response.data.sgroups
-					this.recruiting.invite_groups = response.data.invite_groups
-					this.recruiting.indicators = response.data.indicators
-					this.recruiting.absents_first = response.data.absents_first
-					this.recruiting.absents_second = response.data.absents_second
-					this.recruiting.absents_third = response.data.absents_third
-
-					this.recruiting.staff = response.data.staff
-					this.recruiting.staff_by_group = response.data.staff_by_group
-					this.recruiting.staff_longevity = response.data.staff_longevity
-					this.recruiting.causes = response.data.causes
-					this.recruiting.quiz = response.data.quiz
-					this.recruiting.recrutingTotals = response.data.records
-					this.recruiting.recruiterStats = response.data.recruiter_stats
-					this.recruiting.recruiterStatsRates = response.data.recruiter_stats_rates
-					this.recruiting.ocenka_svod = response.data.ocenka_svod
-
-					this.recruiting.trainee_report = response.data.trainee_report
-					this.recruiting.recruiter_stats_leads = response.data.recruiter_stats_leads
-					this.recruiting.funnels = response.data.funnels
-					this.recruiting.segments = response.data.segments
-					this.decomposition = response.data.decomposition
-
-					this.archived_recruiters = localStorage;
-
-					this.date = response.data.date
-					this.setMonthsObject();
-					this.componentKeys[6]++
-					this.componentKeys[7]++
-					this.componentKeys[8]++
-					this.componentKeys[9]++
-				}
-				window.history.replaceState({ id: '100' }, 'Аналитика групп', '/timetracking/analytics?group=' + this.currentGroup + '&active=' + this.active);
-				this.monthInfo.workDays = this.work_days = this.getBusinessDateCount(this.monthInfo.month,this.monthInfo.currentYear, response.data.workdays)
-				loader.hide()
-			}).catch(error => {
-				loader.hide()
-				alert(error)
-			});
+			})
 		},
-		getTraineesByDate(){
-			this.axios.post('/timetracking/getactivetrainees',{date: this.trainee_date}).then(response => {
-				console.log(response.data.ocenka_svod);
-				this.recruiting.ocenka_svod = response.data.ocenka_svod;
-			});
-		},
-		getBusinessDateCount(month, year, workdays) {
-
-			month = month - 1;
-			let next_month = (month + 1) == 12 ? 0 : month + 1;
-			let next_year = (month + 1) == 12 ? year + 1 : year;
-
-			var start = new Date(year, month, 1);
-			var end = new Date(next_year, next_month, 1);
-
-			let days = (end - start) / 86400000;
-
-			let business_days = 0,
-				weekends = workdays == 5 ? [0,6] : [0];
-
-			for(let i = 1; i <= days; i++) {
-				let d = new Date(year, month, i).getDay();
-				if(!weekends.includes(d)) business_days++;
+		onChangeTab(tab){
+			switch(tab){
+			case 0:
+				this.fetchRecruitment({
+					day: this.currentDay,
+					month: this.currentMonth + 1,
+					year: this.currentYear,
+				})
+				this.fetchIndicators({
+					month: this.currentMonth + 1,
+					year: this.currentYear,
+				})
+				break
+			case 1:
+				this.fetchTrainees({
+					month: this.currentMonth + 1,
+					year: this.currentYear,
+					limit: 200, // временно т.к. переделывать пагинацию это отдельная история, нужно реализовать фильтры на беке
+				})
+				break
+			case 2:
+				this.fetchInternship({
+					month: this.currentMonth + 1,
+					year: this.currentYear,
+				})
+				break
+			case 3:
+				this.fetchFunnels({
+					month: this.currentMonth + 1,
+					year: this.currentYear,
+				})
+				break
+			case 4:
+				this.fetchDismiss({
+					month: this.currentMonth + 1,
+					year: this.currentYear,
+				})
+				break
 			}
-
-			return business_days;
 		},
+		setDay(value){
+			this.currentDay = value
+		},
+		// getTotals(data) {
+		// 	this.axios.post('/timetracking/get-totals-of-reports', {
+		// 		month: this.currentMonth + 1,
+		// 		year: this.currentYear,
+		// 		group_id: this.currentGroup
+		// 	})
+		// 		.then(response => {
+		// 			this.totals = response.data.sum
+		// 			this.data = data
+		// 		})
+		// 		.catch(() => console.log('Error GetTotals'))
+		// },
+		// getTraineesByDate(){
+		// 	this.axios.post('/timetracking/getactivetrainees',{date: this.trainee_date}).then(response => {
+		// 		console.log(response.data.ocenka_svod);
+		// 		this.recruiting.ocenka_svod = response.data.ocenka_svod;
+		// 	});
+		// },
 
 	}
 }

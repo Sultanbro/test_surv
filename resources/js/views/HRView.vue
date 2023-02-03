@@ -39,7 +39,7 @@ export default {
 						<Analytics
 							v-show="activeuserid"
 							:groups="groups"
-							:activeuserid="activeuserid"
+							:activeuserid="+activeuserid"
 						/>
 					</div>
 				</div>
