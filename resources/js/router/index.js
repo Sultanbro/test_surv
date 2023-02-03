@@ -35,7 +35,8 @@ const router = new VueRouter({
 			component: ProfileView,
 			meta: {
 				title: 'Мой профиль',
-				viewport: true
+				viewport: true,
+				bodyClass: 'profile-page',
 			},
 		},
 		// cabinet.blade.php
@@ -54,7 +55,7 @@ const router = new VueRouter({
 			component: NewsView,
 			meta: {
 				title: 'Новости',
-				viewport: true
+				viewport: true,
 			},
 		},
 		// ???.blade.php
@@ -254,6 +255,7 @@ router.afterEach(to => {
 	// see: https://github.com/vuejs/vue-router/issues/914#issuecomment-384477609
 	Vue.nextTick(() => {
 		document.title = to.meta.title || DEFAULT_TITLE
+		document.body.className = to.meta.bodyClass || ''
 	})
 });
 
