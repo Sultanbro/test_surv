@@ -186,6 +186,7 @@
 															</select>
 
 															<select
+																v-if="Number(item.source) == 1"
 																v-model="item.activity_id"
 																:key="'b' + source_key"
 															>
@@ -417,6 +418,7 @@
 																	</option>
 																</select>
 																<select
+																	v-if="Number(item.source) == 1"
 																	v-model="item.activity_id"
 																	:key="'d' + source_key"
 																>
