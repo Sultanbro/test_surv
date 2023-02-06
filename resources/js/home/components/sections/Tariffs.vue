@@ -147,7 +147,7 @@ export default {
 			image: require('../../assets/img/tariffs.png').default,
 			usdRate: 0,
 			kztRate: 0,
-			selectedValute: ''
+			selectedValute: '₸'
 
 		}
 	},
