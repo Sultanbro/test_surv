@@ -106,12 +106,20 @@ export default {
 			}
 		}
 	},
+	mounted() {
+		document.body.addEventListener('click', ({target}) => {
+			const citiesBox = document.getElementById('listSearchResult');
+			const citiesInput = document.getElementById('selectedCityInput');
+			if (citiesBox && !citiesBox.contains(target) && !citiesInput.contains(target)) {
+				this.isSearchResult = false;
+			}
+		});
+	},
 	methods: {
 		fetchCity(){
 			const _token = document.querySelector('meta[name="csrf-token"]').getAttribute('content')
-			if(!this.country){
+			if(!this.country.length){
 				this.cities = []
-				this.isSearchResult = false
 				return
 			}
 
@@ -130,7 +138,7 @@ export default {
 		pasteSearchInput(city){
 			this.working_city = city.id
 			this.country = `Страна: ${ city.country } Город: ${ city.city }`
-			this.isSearchResult = false
+			this.isSearchResult = false;
 		},
 		toggleWeekDay(id){
 			this.$set(this.weekdays, id, this.weekdays[id] === '1' ? '0' : '1')
@@ -392,7 +400,7 @@ export default {
 						id="selectedCityRU"
 						class="form-group row"
 					>
-						<div class="col-sm-12">
+						<div class="col-sm-12 position-relative">
 							<input
 								name="selectedCityInput"
 								v-model="country"
@@ -401,6 +409,7 @@ export default {
 								class="form-control"
 								placeholder="Поиск городов"
 								@input="fetchCity"
+								@click="isSearchResult = true"
 							>
 							<input
 								name="working_city"
@@ -433,6 +442,9 @@ export default {
 										class="searchResultCountry-empty"
 									>
 										Нет найденных городов
+									</li>
+									<li v-if="country.length < 1">
+										<span class="help-text">Введите хотябы 1 символ для поиска города</span>
 									</li>
 								</ul>
 							</div>
@@ -648,35 +660,60 @@ export default {
 .weekday:hover {
     background: green;
 }
-.searchResultCountry{
-    padding: 10px;
-    border-bottom: 1px solid white;
-    cursor: pointer;
-    background-color: #f5f5f5;
-    &:hover{
-        background-color: rgb(236 244 249);
-    }
-}
-.searchResultCountry-empty{
-    padding: 10px;
-    cursor: pointer;
-    background-color: #f5f5f5;
-}
-.radio {
-    display: flex;
-    font-size: 13px;
-    align-items: center;
-    cursor: pointer;
-    text-align: center;
-    margin-right: 25px;
-    input {
-        position: relative;
-        top: 1px;
-        margin-right: 7px;
-    }
+
+.listSearchResult{
+	position: absolute;
+	bottom: 0;
+	right: -290px;
+	width: 300px;
+	max-height: 300px;
+	z-index: 22;
+	background-color: #fff;
+	border-radius: 6px;
+	overflow: auto;
+	box-shadow: rgba(0, 0, 0, 0.05) 0px 6px 24px 0px, rgba(0, 0, 0, 0.08) 0px 0px 0px 1px;
+	font-size: 14px;
+	.help-text{
+		font-size: 14px;
+		color: #777;
+		padding: 10px 15px;
+		line-height: 1.4;
+		display: block;
+	}
 }
 
-.UserEdit-new-position{
+.searchResultCountry {
+	padding: 10px;
+	border-bottom: 1px solid #f5f5f5;
+	cursor: pointer;
+
+	&:hover {
+		background-color: #f5f5f5;
+	}
+}
+
+.searchResultCountry-empty {
+	padding: 10px;
+	cursor: pointer;
+	background-color: #f5f5f5;
+}
+
+.radio {
+	display: flex;
+	font-size: 13px;
+	align-items: center;
+	cursor: pointer;
+	text-align: center;
+	margin-right: 25px;
+
+	input {
+		position: relative;
+		top: 1px;
+		margin-right: 7px;
+	}
+}
+
+.UserEdit-new-position {
 	color: green;
 }
 </style>

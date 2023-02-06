@@ -3,7 +3,8 @@
 		<b-row class="align-items-center">
 			<b-col
 				cols="12"
-				lg="4"
+				lg="3"
+				md="4"
 			>
 				<b-form-group v-if="data.length">
 					<multiselect

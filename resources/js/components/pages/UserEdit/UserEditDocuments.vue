@@ -6,6 +6,16 @@ export default {
 			type: Object,
 			default: null
 		},
+	},
+	data(){
+		return{
+			files: [0,0,0,0,0,0]
+		}
+	},
+	methods: {
+		hasFile(idx) {
+			this.$set(this.files, idx, 1)
+		}
 	}
 }
 </script>
@@ -26,8 +36,9 @@ export default {
 						id="file-5"
 						class="inputfile inputfile-1 d-none"
 						data-multiple-caption="{count} files selected"
+						@change="hasFile(0)"
 					>
-					<template v-if="user && user.downloads && user.downloads.ud_lich">
+					<template v-if="(user && user.downloads && user.downloads.ud_lich) || files[0] === 1">
 						<label
 							class="active"
 							for="file-5"
@@ -37,6 +48,7 @@ export default {
 						</label>
 						<a
 							download
+							v-if="user && user.downloads && user.downloads.ud_lich"
 							class="btn btn-success btn-sm btn-block"
 							:href="`/static/profiles/${user.id}/ud_lich/${user.downloads.ud_lich}`"
 						>Скачать</a>
@@ -58,8 +70,9 @@ export default {
 						id="file-1"
 						class="inputfile inputfile-1 d-none"
 						data-multiple-caption="{count} files selected"
+						@change="hasFile(1)"
 					>
-					<template v-if="user && user.downloads && user.downloads.dog_okaz_usl">
+					<template v-if="(user && user.downloads && user.downloads.dog_okaz_usl) || files[1] === 1">
 						<label
 							for="file-1"
 							class="active"
@@ -69,6 +82,7 @@ export default {
 						</label>
 						<a
 							download
+							v-if="user && user.downloads && user.downloads.dog_okaz_usl"
 							class="btn btn-success btn-sm btn-block"
 							:href="`/static/profiles/${user.id}/dog_okaz_usl/${user.downloads.dog_okaz_usl}`"
 						>Скачать</a>
@@ -90,8 +104,9 @@ export default {
 						id="file-2"
 						class="inputfile inputfile-1 d-none"
 						data-multiple-caption="{count} files selected"
+						@change="hasFile(2)"
 					>
-					<template v-if="user && user.downloads && user.downloads.sohr_kom_tainy">
+					<template v-if="(user && user.downloads && user.downloads.sohr_kom_tainy) || files[2] === 1">
 						<label
 							for="file-2"
 							class="active"
@@ -101,6 +116,7 @@ export default {
 						</label>
 						<a
 							download
+							v-if="user && user.downloads && user.downloads.sohr_kom_tainy"
 							class="btn btn-success btn-sm btn-block"
 							:href="`/static/profiles/${user.id}}/sohr_kom_tainy/${user.downloads.sohr_kom_tainy}`"
 						>Скачать</a>
@@ -122,8 +138,9 @@ export default {
 						id="file-3"
 						class="inputfile inputfile-1 d-none"
 						data-multiple-caption="{count} files selected"
+						@change="hasFile(3)"
 					>
-					<template v-if="user && user.downloads && user.downloads.dog_o_nekonk">
+					<template v-if="(user && user.downloads && user.downloads.dog_o_nekonk) || files[3] === 1">
 						<label
 							for="file-3"
 							class="active"
@@ -134,6 +151,7 @@ export default {
 						<a
 							download
 							class="btn btn-success btn-sm btn-block"
+							v-if="user && user.downloads && user.downloads.dog_o_nekonk"
 							:href="`/static/profiles/${user.id}/dog_o_nekonk/${user.downloads.dog_o_nekonk}`"
 						>Скачать</a>
 					</template>
@@ -154,8 +172,9 @@ export default {
 						id="file-4"
 						class="inputfile inputfile-1 d-none"
 						data-multiple-caption="{count} files selected"
+						@change="hasFile(4)"
 					>
-					<template v-if="user && user.downloads && user.downloads.trud_dog">
+					<template v-if="(user && user.downloads && user.downloads.trud_dog) || files[4] === 1">
 						<label
 							for="file-4"
 							class="active"
@@ -165,6 +184,7 @@ export default {
 						</label>
 						<a
 							download
+							v-if="user && user.downloads && user.downloads.trud_dog"
 							class="btn btn-success btn-sm btn-block"
 							:href="`/static/profiles/${user.id}/trud_dog/${user.downloads.trud_dog}`"
 						>Скачать</a>
@@ -187,8 +207,9 @@ export default {
 						id="file-7"
 						class="inputfile inputfile-1 d-none"
 						data-multiple-caption="{count} files selected"
+						@change="hasFile(5)"
 					>
-					<template v-if="user && user.downloads && user.downloads.archive">
+					<template v-if="(user && user.downloads && user.downloads.archive) || files[5] === 1">
 						<label
 							for="file-7"
 							class="active"
@@ -198,6 +219,7 @@ export default {
 						</label>
 						<a
 							download
+							v-if="user && user.downloads && user.downloads.archive"
 							class="btn btn-success btn-sm btn-block"
 							:href="`/static/profiles/${user.id}/archive/${user.downloads.archive}`"
 						>Скачать</a>

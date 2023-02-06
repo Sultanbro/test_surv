@@ -200,10 +200,11 @@ export default {
 
 			let values = VJQuery('.stat__value span');
 			for(let i=0;i<values.length;i++){
-
 				let value = values[i].textContent.replace(/,/g,'')
 				if(value !== '0'){
 					VJQuery(values[i]).closest('.stat__value').addClass('active')
+				} else {
+					VJQuery(values[i]).closest('.stat__item').find('.front').css('height', 0)
 				}
 
 				VJQuery({numberValue: 0}).animate({numberValue: value/maxArray[i] * 100}, {
@@ -242,7 +243,7 @@ export default {
 	},
 	created(){},
 	mounted(){
-		if(this.user_earnings.oklad) this.$nextTick(() => this.OpacityStats())
+		if(this.user_earnings) this.$nextTick(() => this.OpacityStats())
 	}
 };
 </script>

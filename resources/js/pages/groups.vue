@@ -12,7 +12,8 @@
 		<b-row class="align-items-center">
 			<b-col
 				cols="12"
-				lg="6"
+				lg="4"
+				md="5"
 				class="d-flex align-items-start"
 			>
 				<b-form-group class="w-100">
@@ -115,8 +116,11 @@
 					</div>
 				</div>
 
-
-				<div class="dialerlist">
+				<!-- Статус: скрыто. Компонент: groups. Дата скрытия: 03.02.2023 12:13 -->
+				<div
+					class="dialerlist"
+					v-if="false"
+				>
 					<div class="fl">
 						Кол-во рабочих дней
 						<img
