@@ -12,7 +12,10 @@
 			</div>
 			<div class="profile__job profile-border">
 				{{ data.position != null ? data.position.position : 'Без должности' }}
-				<router-link to="/timetracking/settings?tab=2#nav-home">
+				<router-link
+					v-if="isAdmin"
+					to="/timetracking/settings?tab=2#nav-home"
+				>
 					<i class="fa fa-pen pulse-anim" />
 				</router-link>
 			</div>
@@ -20,7 +23,10 @@
 				class="profile__job profile-border py-2"
 			>
 				<span v-html="data.groups" />
-				<router-link to="/timetracking/settings?tab=2#nav-home">
+				<router-link
+					v-if="isAdmin"
+					to="/timetracking/settings?tab=2#nav-home"
+				>
 					<i class="fa fa-pen pulse-anim" />
 				</router-link>
 			</div>
@@ -59,6 +65,11 @@ export default {
 		}
 	},
 	created() {
+	},
+	computed: {
+		isAdmin(){
+			return this.$store.state.user.user.is_admin === 1;
+		}
 	},
 	methods: {}
 }
