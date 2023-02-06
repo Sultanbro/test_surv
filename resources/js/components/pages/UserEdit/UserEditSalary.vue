@@ -143,7 +143,7 @@ export default {
 					>
 						UZS Узбекский сум
 					</option>
-					<option
+					<!-- <option
 						value="uah"
 						:selected="user && user.currency === 'uah'"
 					>
@@ -154,16 +154,11 @@ export default {
 						:selected="user && user.currency === 'byn'"
 					>
 						BYN Белорусский рубль
-					</option>
+					</option> -->
 				</select>
 			</div>
 
-			<div class="col-sm-3 pl-0">
-				<profile-quarter-button
-					v-if="user"
-					:user_id="user.id"
-				/>
-			</div>
+			<div class="col-sm-3 pl-0" />
 		</div>
 		<template v-if="user">
 			<template v-if="user.zarplata && user.zarplata.kaspi_cardholder">
