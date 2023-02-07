@@ -187,7 +187,7 @@ final class UserUpdateService
     {
         if ($userDTO->newPassword)
         {
-            $user->password = $userDTO->newPassword;
+            $user->password = \Hash::make($userDTO->newPassword);
         }
 
         $user->new_email    = $userDTO->email;

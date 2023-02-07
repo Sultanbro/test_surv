@@ -504,6 +504,25 @@ class User extends Authenticatable implements Authorizable
     }
 
     /**
+     * Бывшие (в которых раньше состоял) группы пользователя.
+     *
+     * @param Carbon|null $filter
+     * @return array
+     */
+    public function droppedGroups(Carbon $date = null): array
+    {
+        $groupUser = GroupUser::where('status', 'drop')
+            ->where('user_id', $this->id);
+
+        if ($date) $groupUser->whereYear('updated_at', $date->year)
+            ->whereMonth('updated_at', $date->month);
+
+        return $groupUser->get()
+            ->pluck('group_id')
+            ->toArray();
+    }
+
+    /**
      * В каких группах находится user c условиями оплаты 
      * @return array
      */

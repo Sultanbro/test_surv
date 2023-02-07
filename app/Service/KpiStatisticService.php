@@ -654,27 +654,31 @@ class KpiStatisticService
                 'items.activity'
             ]);
 
+        $groups = array();
+        $droppedGroups = array();
         if($user_id != 0) {
             $user = User::withTrashed()->with('groups')->find($user_id);
             $position_id = $user->position_id;
-            
+
             $groups = ($user->inGroups())->pluck('id')->toArray();
+            $droppedGroups = $user->droppedGroups($date);
+
+            $groups = array_merge($groups, $droppedGroups);
 
             $kpis->where(function($query) use ($user_id, $groups, $position_id) {
-                    $query->where(function($q) use ($user_id) {
-                            $q->where('targetable_id', $user_id)
-                              ->where('targetable_type', 'App\User');
-                        })
-                        ->orWhere(function($q) use ($groups) {
-                            $q->whereIn('targetable_id', $groups)
-                              ->where('targetable_type', 'App\ProfileGroup');
-                        })
-                        ->orWhere(function($q) use ($position_id) {
-                            $q->where('targetable_id', $position_id)
-                              ->where('targetable_type', 'App\Position');
-                        });
-                });
-              
+                $query->where(function($q) use ($user_id) {
+                        $q->where('targetable_id', $user_id)
+                            ->where('targetable_type', 'App\User');
+                    })
+                    ->orWhere(function($q) use ($groups) {
+                        $q->whereIn('targetable_id', $groups)
+                            ->where('targetable_type', 'App\ProfileGroup');
+                    })
+                    ->orWhere(function($q) use ($position_id) {
+                        $q->where('targetable_id', $position_id)
+                            ->where('targetable_type', 'App\Position');
+                    });
+            });
         }
 
         $kpis = $kpis
@@ -688,11 +692,8 @@ class KpiStatisticService
             )
             ->get();
 
-        foreach ($kpis as $key => $kpi) {
-
+        foreach ($kpis as $kpi) {
             $kpi->kpi_items = [];
-
-            
 
             // remove items if it's not in history
             if($kpi->histories->first()) {
@@ -707,8 +708,9 @@ class KpiStatisticService
             $kpi->avg = 0; // avg percent from kpi_items' percent
     
             $kpi->users = $this->getUsersForKpi($kpi, $date, $user_id);
-        }
 
+            $kpi['dropped'] = in_array($kpi->targetable_id, $droppedGroups) ?? true;
+        }
 
         return [
             'items'      => $kpis,

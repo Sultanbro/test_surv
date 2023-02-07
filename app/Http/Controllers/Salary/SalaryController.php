@@ -114,7 +114,7 @@ class SalaryController extends Controller
      * Страница начисления
      */
     public function salaries(Request $request)
-    {       
+    {
         if(!auth()->user()->can('salaries_view')) {
             return [
                 'error' => 'access'
@@ -174,7 +174,7 @@ class SalaryController extends Controller
         $date = Carbon::createFromDate($request->year, $request->month, 1);
 
         $arr = Salary::salariesTable($request->user_types, $date->format('Y-m-d'), $users_ids, $request->group_id);
-     
+
         $data['users'] = $arr['users'];
         $data['total_resources'] = $arr['total_resources'];
         $data['auth_token'] = Auth::user()->remember_token;

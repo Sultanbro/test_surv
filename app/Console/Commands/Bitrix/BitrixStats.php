@@ -51,13 +51,6 @@ class BitrixStats extends Command
         $this->recruiting_activity = new RecruitingActivityService();
     }
 
-    /**
-     * Execute the console command.
-     *
-     * @return mixed
-     */
-
-
     public $date; 
     public $year;
     public $month;
@@ -65,6 +58,11 @@ class BitrixStats extends Command
     public $hour;
     public $bitrix; // Битрикс разрешает 2 запроса в секунду
 
+    /**
+     * Execute the console command.
+     *
+     * @return mixed
+     */
     public function handle()
     {
         if($this->argument('date')) $this->date = $this->argument('date');
@@ -78,14 +76,54 @@ class BitrixStats extends Command
         $this->bitrix = new Bitrix();
  
         $this->getChatbotData();
-        $this->getRecruiterStats(); 
+        $this->getRecruiterStats();
         $this->inviteTrainees();
+    }
+
+    private function getChatbotData() {
+        $helper = new Recruiting();
+
+        $created_leads =  $this->bitrix->getLeads(0, '', 'ALL', 'ASC', $this->date, $this->date, 'DATE_CREATE', 0,'segment');
+        usleep(1000000); // 1 sec
+        $this->line($created_leads['total']);
+        $failed_leads =  $this->bitrix->getLeads(0, '', 'F', 'ASC', $this->date, $this->date, 'DATE_MODIFY',0, 'segment');
+        usleep(1000000); // 1 sec
+        $bot_failed_leads =  $this->bitrix->getLeads(0, '37', 'ALL', 'ASC', $this->date, $this->date, 'DATE_MODIFY', 0,'segment');
+        usleep(1000000); // 1 sec
+
+        $converted_leads =  $this->bitrix->getDeals(0, '', 'ASC', $this->date, $this->date, 'DATE_CREATE'); //
+        usleep(1000000); //
+
+        $bot_id = '23900'; // Валерия Сидоренко
+        $bot_converted_leads =  $this->bitrix->getDeals($bot_id, '', 'ASC', $this->date, $this->date, 'DATE_CREATE'); //
+        usleep(1000000); // 1 sec
+
+        $created = array_key_exists('total', $created_leads) ? $created_leads['total'] : 0;
+        $failed = array_key_exists('total', $failed_leads) ? $failed_leads['total'] : 0;
+        $converted = array_key_exists('total', $converted_leads) ? $converted_leads['total'] : 0;
+        $bot_converted = array_key_exists('total', $bot_converted_leads) ? $bot_converted_leads['total'] : 0;
+        $bot_failed = array_key_exists('total', $bot_failed_leads) ? $bot_failed_leads['total'] : 0;
+
+        $asi = null;
+
+        if($asi) {
+            $data = json_decode($asi->data, true);
+
+            $data[Recruiting::B_CREATED][(int)$this->day] = $created != 0 ? $created : ""; // Созданные лиды
+            $data[Recruiting::B_FAILED][(int)$this->day] = $bot_failed != 0 ? $bot_failed : ""; // Забракованы лиды
+            $data[Recruiting::B_CONVERTED][(int)$this->day] = $bot_converted != 0 ? $bot_converted : ""; // Сконвертированы лиды
+
+            $asi->data = json_encode($data);
+            $asi->save();
+        }
+
+        $this->line('------ Chatbot fetched');
     }
 
     private function getRecruiterStats() {
         
         $group = ProfileGroup::find(Recruiting::GROUP_ID);
-       // $users = json_decode($group->users);
+        // $users = json_decode($group->users);
 
         $users = (new UserService)->getEmployees(Recruiting::GROUP_ID, Carbon::parse($this->date)->startOfMonth()->format('Y-m-d')); 
         $users = collect($users)->pluck('id')->toArray();
@@ -131,16 +169,10 @@ class BitrixStats extends Command
                 }
             }
 
-            
-
-            
-
             $time_f = '00:00';
             $time_l = '00:00';
 
-            
-            /// Requests to Infinitys.Bitrix.com 
-
+            /// Requests to Infinitys.Bitrix.com
             $calls_all_f = $this->bitrix->getCalls($this->bitrix_user, 0, 'ASC', 'all', 0, $this->date, $this->date); // Первый звонок
             usleep(1000000); // 1 sec
             $calls_all_l = $this->bitrix->getCalls($this->bitrix_user, 0 ,'DESC', 'all', 0, $this->date, $this->date); // Последний звонок
@@ -158,7 +190,6 @@ class BitrixStats extends Command
             $applied_leads =  $this->bitrix->getDeals($this->bitrix_user, 'C4:WON', 'ASC', $this->date, $this->date, 'DATE_MODIFY');
             usleep(1000000); // 1 sec
 
-            
             $this->line('Битрикс 10 запросов сделано');
            
             //////////////////////////////////////////
@@ -182,11 +213,7 @@ class BitrixStats extends Command
             $converted = array_key_exists('total', $converted_leads) ? $converted_leads['total'] : 0;
             $applied = array_key_exists('total', $applied_leads) ? $applied_leads['total'] : 0;
 
-
-
             //***//// */
-
-
 
             $asi  = $asis->where('employee_id', $user_id)->first(); // ????????????????
             $user = User::withTrashed()->find($user_id);
@@ -196,8 +223,7 @@ class BitrixStats extends Command
             if($asi) {
                 
                 $data = json_decode($asi->data, true);
-                
-                
+
                 $data[Recruiting::I_CALL_PLAN][(int)$this->day] = $total_out != 0 ? $total_out : ""; // Все звонки исходящие
                 $data[Recruiting::I_CALLS_OUT][(int)$this->day] = $total_out_success != 0 ? $total_out_success : ""; // Успешные исходящие от 10 сек
                 $data[Recruiting::I_FIRST_CALL][(int)$this->day] = $time_f != '00:00' ? $time_f : ""; // Первый исх
@@ -223,7 +249,6 @@ class BitrixStats extends Command
                 $data[Recruiting::I_CALLS_MISSED][(int)$this->day] = $total_passed != 0 ? $total_passed : ""; // Пропущенные
                 $data[Recruiting::I_CONVERTED][(int)$this->day] = $converted != 0 ? $converted : ""; // Сконвертированные лиды
                 $data[Recruiting::I_APPLIED][(int)$this->day] = $applied != 0 ? $applied : ""; // Приняты на работу
-                
 
                 if (!(
                     (int)$total_out == 0 &&
@@ -237,8 +262,6 @@ class BitrixStats extends Command
                 )) {
                     // save to userstat
                 }
-
-                
             }
 
             /** 
@@ -253,58 +276,10 @@ class BitrixStats extends Command
             $this->recruiting_activity->save(Recruiting::I_CONVERTED,    $converted != 0         ? $converted : '');
             $this->recruiting_activity->save(Recruiting::I_APPLIED,      $applied != 0           ? $applied : '');
 
-
             $this->line('------' . $user->last_name . ' ' . $user->name . ' ' . $user->email);
-
-
         }
 
     }
-
-    private function getChatbotData() {
-        $helper = new Recruiting();
-
-        $created_leads =  $this->bitrix->getLeads(0, '', 'ALL', 'ASC', $this->date, $this->date, 'DATE_CREATE', 0,'segment');
-        usleep(1000000); // 1 sec
-        $this->line($created_leads['total']);
-        $failed_leads =  $this->bitrix->getLeads(0, '', 'F', 'ASC', $this->date, $this->date, 'DATE_MODIFY',0, 'segment');
-        usleep(1000000); // 1 sec
-        $bot_failed_leads =  $this->bitrix->getLeads(0, '37', 'ALL', 'ASC', $this->date, $this->date, 'DATE_MODIFY', 0,'segment');
-        usleep(1000000); // 1 sec
-        
-        $converted_leads =  $this->bitrix->getDeals(0, '', 'ASC', $this->date, $this->date, 'DATE_CREATE'); // 
-        usleep(1000000); //
-
-        $bot_id = '23900'; // Валерия Сидоренко
-        $bot_converted_leads =  $this->bitrix->getDeals($bot_id, '', 'ASC', $this->date, $this->date, 'DATE_CREATE'); // 
-        usleep(1000000); // 1 sec
-
-        $created = array_key_exists('total', $created_leads) ? $created_leads['total'] : 0;
-        $failed = array_key_exists('total', $failed_leads) ? $failed_leads['total'] : 0;
-        $converted = array_key_exists('total', $converted_leads) ? $converted_leads['total'] : 0;
-        $bot_converted = array_key_exists('total', $bot_converted_leads) ? $bot_converted_leads['total'] : 0;
-        $bot_failed = array_key_exists('total', $bot_failed_leads) ? $bot_failed_leads['total'] : 0;
-
-        $asi = null;
-        
-        if($asi) {
-            $data = json_decode($asi->data, true);
-              
-            $data[Recruiting::B_CREATED][(int)$this->day] = $created != 0 ? $created : ""; // Созданные лиды
-            $data[Recruiting::B_FAILED][(int)$this->day] = $bot_failed != 0 ? $bot_failed : ""; // Забракованы лиды
-            $data[Recruiting::B_CONVERTED][(int)$this->day] = $bot_converted != 0 ? $bot_converted : ""; // Сконвертированы лиды
-
-            
-            $asi->data = json_encode($data);
-            $asi->save();    
-            
-           
-        }
-
-        $this->line('------ Chatbot fetched'); 
-
-
-    }   
 
     private function inviteTrainees() {
         $leads = Lead::whereNotNull('invite_at')
@@ -327,15 +302,9 @@ class BitrixStats extends Command
             if(!$group) {
                 continue;
             } 
-            
 
             // Invite Zoom link
-
             $deal_id = $this->bitrix->findDeal($lead->lead_id, false);
-            
-            
-
-            
 
             if($deal_id == 0) {
                 $lead->invited = 4; // Ошибка с битрикс не найдена сделка
@@ -347,8 +316,7 @@ class BitrixStats extends Command
                 $invite_at = Carbon::parse($lead->invite_at)->subHours(3); // 6:30 по МСК UTC+3
 
                 $project = $this->getBitrixProjectField($group->id);
-                
-              
+
                 if($lead->inhouse) { 
                     $this->bitrix->changeDeal($deal_id, [
                         'UF_CRM_617AE1B71F27E' => Phone::getCountryBitrix($lead->phone), // Страна,
@@ -366,8 +334,7 @@ class BitrixStats extends Command
                         //'STAGE_ID' => 'C4:18', // Стадия сделки: Обучается
                     ]);
                 }
-                
-                
+
                 usleep(1000000); // 1 sec
 
                 /////////////
