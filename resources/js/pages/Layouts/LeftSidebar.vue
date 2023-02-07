@@ -52,6 +52,17 @@
 					</p>
 				</div>
 				<router-link
+					v-if="isOwner"
+					to="/pricing"
+					class="menu__item"
+				>
+					<img
+						src="/images/dist/icon-settings.svg"
+						alt="settings icon"
+					>
+					<span class="menu__item-title">pricing</span>
+				</router-link>
+				<router-link
 					to="/cabinet"
 					class="menu__item"
 				>

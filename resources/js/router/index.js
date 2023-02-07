@@ -232,10 +232,18 @@ const router = new VueRouter({
 		// admin/users/create.blade.php
 		{
 			path: '/timetracking/create-person',
-			name: 'UserEditViewCreate',
+			name: 'UserCreateView',
 			component: () => import(/* webpackChunkName: "UserEditView" */ '@/views/UserEditView'),
 			meta: {
 				title: 'Создание профиля сотрудника',
+			},
+		},
+		{
+			path: '/pricing',
+			name: 'PricingView',
+			component: () => import(/* webpackChunkName: "PricingView" */ '@/views/PricingView'),
+			meta: {
+				title: 'PricingView',
 			},
 		},
 	],
