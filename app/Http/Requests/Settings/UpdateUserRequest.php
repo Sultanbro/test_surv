@@ -63,11 +63,25 @@ class UpdateUserRequest extends FormRequest
             'contacts.phone.*.name'  => ['string'],
             'contacts.phone.*.value' => ['string'],
             'cards'             => ['array'],
-            'cards.bank'        => ['required_with,cards', 'string'],
-            'cards.country'     => ['required_with,cards', 'string'],
-            'cards.cardholder'  => ['required_with,cards', 'string'],
-            'cards.phone'       => ['required_with,cards', 'string'],
-            'cards.number'      => ['required_with,cards', 'string'],
+            'cards.*.bank'        => [
+                'required_with:cards.*.country,cards.*.cardholder,cards.*.phone,cards.*.number',
+                'string', 'nullable'],
+            'cards.*.country'     => [
+                'required_with:cards.*.bank,cards.*.cardholder,cards.*.phone,cards.*.number',
+                'string', 'nullable'
+            ],
+            'cards.*.cardholder'  => [
+                'required_with:cards.*.bank,cards.*.country,cards.*.phone,cards.*.number',
+                'string', 'nullable'
+            ],
+            'cards.*.phone'       => [
+                'required_with:cards.*.bank,cards.*.country,cards.*.cardholder,cards.*.number',
+                'string', 'nullable'
+            ],
+            'cards.*.number'      => [
+                'required_with:cards.*.bank,cards.*.country,cards.*.cardholder,cards.*.phone',
+                'string', 'nullable'
+            ],
             'file1'             => ['file'],
             'file2'             => ['file'],
             'file3'             => ['file'],
@@ -84,7 +98,7 @@ class UpdateUserRequest extends FormRequest
             'card_jysan'        => ['string'],
             'kaspi_cardholder'  => ['string'],
             'jysan_cardholder'  => ['string'],
-            'new_pwd'      => ['string', 'min:8', 'regex:/[a-z]/', 'regex:/[A-Z]/', 'regex:/[0-9]/'],
+            'new_pwd'      => ['string', 'min:8', 'regex:/[a-z]/', 'regex:/[A-Z]/', 'regex:/[0-9]/', 'nullable'],
             'tax'               => ['array'],
             'tax.*.amount'      => ['numeric'],
             'tax.*.percent'     => ['numeric'],
