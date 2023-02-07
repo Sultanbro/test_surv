@@ -20,6 +20,7 @@ use App\Http\Controllers\Services as Services;
 
 Route::middleware(['web','tenant'])->group(function () {
     Route::any('/', [User\ProfileController::class, 'newprofile']);
+    Route::any('/pricing', [User\ProfileController::class, 'newprofile']);
     Route::get('login', [Auth\LoginController::class, 'showLoginForm'])->name('login');
     Route::post('login', [Auth\LoginController::class, 'login']);
     Route::post('logout', [Auth\LoginController::class, 'logout'])->name('logout');
@@ -30,14 +31,14 @@ Route::middleware(['web','tenant'])->group(function () {
 });
 
 Route::middleware(['web','tenant','not_admin_subdomain'])->group(function () {
-            
+
     Route::get('/login/{subdomain}', [User\ProjectController::class, 'login']);
     Route::post('/projects/create', [User\ProjectController::class, 'create']);
     Route::get('/newprofile', [User\ProfileController::class, 'newprofile']);
     Route::get('/impersonate/{token}', function ($token) {
         return \Stancl\Tenancy\Features\UserImpersonation::makeResponse($token);
     });
-    
+
     Route::group(['prefix' => 'profile', 'as' => 'profile.'], function () {
         Route::get('/', [User\ProfileController::class, 'newprofile']);
         Route::any('/personal-info', [User\ProfileController::class, 'personalInfo']);
@@ -63,7 +64,7 @@ Route::middleware(['web','tenant','not_admin_subdomain'])->group(function () {
     Route::any('/profile/upload/edit/', [User\EmployeeController::class, 'uploadPhoto'])->name('uploadPhoto'); /// загрузка аватарки со стороны Blade javascript
     Route::post('/profile/country/city/', [User\EmployeeController::class, 'searchCountry']); /// поиск городов через Профиль
     Route::post('/timetracking/user-fine', [User\FineController::class, 'update']);
-     
+
     Route::any('/bonuses', [User\ProfileController::class, 'getBonuses']);
     Route::post('/corp_book/set-read/', [User\EmployeeController::class, 'corp_book_read']); // Прочитать страницу из корп книги @TODO при назначении книги
     Route::any('/timetracking/user/{id}', [User\EmployeeController::class, 'profile']);
@@ -79,7 +80,7 @@ Route::middleware(['web','tenant','not_admin_subdomain'])->group(function () {
     Route::any('/timetracking/delete-person', [User\EmployeeController::class, 'deleteUser'])->name('removeUser');
     Route::any('/timetracking/recover-person', [User\EmployeeController::class, 'recoverUser'])->name('recoverUser');
 
-    // Самостоятельная отметка стажеров 
+    // Самостоятельная отметка стажеров
     Route::get('/autocheck/{id}', [User\TraineeController::class, 'autocheck']); // cтраница со ссылками для отметки стажерами
     Route::post('/autocheck/{id}', [User\TraineeController::class, 'save']); //
     Route::get('/autochecker', [User\TraineeController::class, 'autochecker']);  // включить возможность отметки
@@ -174,7 +175,7 @@ Route::middleware(['web','tenant','not_admin_subdomain'])->group(function () {
     Route::post('/admin/upbooks/delete', [Learning\UpbookController::class, 'delete']);
     Route::post('/admin/upbooks/segments/save', [Learning\UpbookController::class, 'saveSegment']);
     Route::post('/admin/upbooks/segments/delete', [Learning\UpbookController::class, 'deleteSegment']);
-    
+
     // База знаний
     Route::get('/kb', [Learning\KnowBaseController::class, 'index']);
     Route::get('/kb/get', [Learning\KnowBaseController::class, 'get']);
@@ -202,13 +203,13 @@ Route::middleware(['web','tenant','not_admin_subdomain'])->group(function () {
 
     // Permissions
     Route::get('/permissions', [Settings\PermissionController::class, 'index']);
-    Route::get('/permissions/get', [Settings\PermissionController::class, 'get']); 
+    Route::get('/permissions/get', [Settings\PermissionController::class, 'get']);
     Route::post('/permissions/create-role', [Settings\PermissionController::class, 'createRole']);
     Route::post('/permissions/update-role', [Settings\PermissionController::class, 'updateRole']);
     Route::post('/permissions/update-target', [Settings\PermissionController::class, 'updateTarget']);
     Route::post('/permissions/delete-target', [Settings\PermissionController::class, 'deleteTarget']);
     Route::post('/permissions/delete-role', [Settings\PermissionController::class, 'deleteRole']);
-    
+
     // positions
     Route::post('/timetracking/settings/positions/delete', [Settings\PositionController::class, 'destroy']);
 
@@ -257,13 +258,13 @@ Route::middleware(['web','tenant','not_admin_subdomain'])->group(function () {
     Route::post('/timetracking/settings/auth/check/user/send', [Settings\CheckListController::class, 'sendAuthCheck']); /// со стораны пользователя Выполнить сохр в отчет
     Route::post('/timetracking/settings/auth/check/user/responsibility', [Settings\CheckListController::class, 'responsibility']); ///   Добавить ответственного лица
     Route::post('/timetracking/settings/get/modal/', [Settings\CheckListController::class, 'getModal']); ///   Получить пользователей
-    Route::post('/timetracking/settings/auth/check/search/selected', [Settings\CheckListController::class, 'searchSelected']); 
+    Route::post('/timetracking/settings/auth/check/search/selected', [Settings\CheckListController::class, 'searchSelected']);
 
     Route::post('/timetracking/settings/edit/check/save/', [Settings\CheckListController::class, 'editSaveCheck']); /// Редактировать Сохранить Чек листа по ИД
 
     Route::get('/superselect/get', [Settings\PermissionController::class, 'superselect']);
     Route::get('/superselect/get-alt', [Settings\PermissionController::class, 'superselectAlt']);
-   
+
     // tt
     Route::any('/timetracking', [Timetrack\TimetrackingController::class, 'index']);
     Route::any('/timetracking/fines', [Timetrack\TimetrackingController::class, 'fines']);
@@ -273,7 +274,7 @@ Route::middleware(['web','tenant','not_admin_subdomain'])->group(function () {
 
     Route::post('timetracking/settings/get_time_addresses', [Timetrack\TimetrackingController::class, 'getTimeAddresses']);
     Route::post('timetracking/settings/save_time_addresses', [Timetrack\TimetrackingController::class, 'saveTimeAddresses']);
- 
+
     Route::any('/timetracking/user/save', [Timetrack\TimetrackingController::class, 'saveprofile']);
     Route::post('/timetracking/settings/notifications/update', [Timetrack\TimetrackingController::class, 'updateNotificationTemplate']);
     Route::get('/timetracking/settings/notifications/get', [Timetrack\TimetrackingController::class, 'getNotificationTemplates']);
@@ -284,7 +285,7 @@ Route::middleware(['web','tenant','not_admin_subdomain'])->group(function () {
     Route::post('/timetracking/reports/update/day', [Timetrack\TimetrackingController::class, 'updateTimetrackingDay']);
     Route::any('/timetracking/starttracking', [Timetrack\TimetrackingController::class, 'timetracking']);
     Route::any('/timetracking/status', [Timetrack\TimetrackingController::class, 'trackerstatus']);
-    
+
     Route::any('/timetracking/zarplata-table', [Timetrack\TimetrackingController::class, 'zarplatatable']);
     Route::any('/timetracking/zarplata-table-new', [Timetrack\TimetrackingController::class, 'zarplatatableNew']);
     Route::post('/order-persons-to-group', [Timetrack\TimetrackingController::class, 'orderPersonsToGroup']); // Заказ сотрудников в группы для Руководителей
@@ -305,7 +306,7 @@ Route::middleware(['web','tenant','not_admin_subdomain'])->group(function () {
     // REPLACES @TODO
 //    Route::post('/timetracking/reports/enter-report/setmanual', [Timetrack\TimetrackingController::class, 'enterreportManually']);
     Route::post('/timetracking/reports/enter-report/setmanual', [Timetrack\EnterReportController::class, 'manually']);
-    
+
     Route::any('/timetracking/reports/enter-report', [Timetrack\TimetrackingController::class, 'enterreport']);
     Route::any('/timetracking/reports/enter-report-post', [Timetrack\EnterReportController::class, 'enter']);
 
@@ -335,7 +336,7 @@ Route::middleware(['web','tenant','not_admin_subdomain'])->group(function () {
 
     Route::any('/timetracking/settings/positions/save', [Timetrack\TimetrackingController::class, 'savePositions']);
     Route::any('/timetracking/settings/positions/save-new', [Settings\PositionController::class, 'savePositionWithDescription']);
-    
+
     Route::post('/timetracking/settings/positions/add', [Timetrack\TimetrackingController::class, 'addPosition']);
     Route::post('/timetracking/settings/positions/add-new', [Settings\PositionController::class, 'store']);
 
@@ -437,7 +438,7 @@ Route::middleware(['web','tenant','not_admin_subdomain'])->group(function () {
     Route::post('/hr/ref-links/save', [Analytics\HrController::class, 'saveRefLinks']);
     Route::post('/timetracking/getactivetrainees',[Analytics\HrController::class,'getActiveTrainees']);
 
-    // analytics 
+    // analytics
     Route::any('/timetracking/an', [Analytics\AnalyticsController::class, 'index']);
     Route::any('/timetracking/analytics-page/getanalytics', [Analytics\AnalyticsController::class, 'get']);
     Route::get('/timetracking/analytics/activity/exportxx', [Analytics\AnalyticsController::class, 'exportActivityExcel']);
@@ -472,7 +473,7 @@ Route::middleware(['web','tenant','not_admin_subdomain'])->group(function () {
     Route::post('/timetracking/analytics/add-remote-inhouse', [Analytics\AnalyticsController::class, 'addRemoteInhouse']);
     Route::post('/timetracking/analytics/add-salary', [Analytics\AnalyticsController::class, 'addSalary']);
     Route::any('/timetracking/user-statistics-by-month', [Analytics\AnalyticsController::class, 'getUserStatisticsByMonth']);
-    
+
     // Редактирование бонусов
     Route::group(['prefix' => 'bonus', 'as' => 'bonus.'], function() {
         Route::post('get',[Kpi\BonusController::class,'get'])->name('get');
@@ -519,7 +520,7 @@ Route::middleware(['web','tenant','not_admin_subdomain'])->group(function () {
         Route::delete('/delete/{id}', [Kpi\KpiController::class, 'delete'])->name('delete');
     });
 
-    // Intellect Recruiting 
+    // Intellect Recruiting
     Route::get('/bpr/{hash}', [Services\IntellectController::class, 'contract']);
     Route::post('/bpr/{hash}', [Services\IntellectController::class, 'contract']);
     Route::get('/bpcontract', [Services\IntellectController::class, 'contract']);
@@ -536,7 +537,7 @@ Route::middleware(['web','tenant','not_admin_subdomain'])->group(function () {
         Route::any('/set-read/', [Services\NotificationControlller::class, 'setRead']);
         Route::any('/set-read-all/', [Services\NotificationControlller::class, 'setAllRead']);
     });
-   
+
     Route::prefix('news')->name('articles.')->middleware(['auth'])->group(function () {
         Route::get('/', [Article\NewsController::class, 'index'])->name('index');
         Route::post('/', [Article\ArticleController::class, 'store'])->name('store');
@@ -601,26 +602,26 @@ Route::middleware(['api','tenant','not_admin_subdomain'])->group(function () {
 
         Route::any('/intellect/start',                 [Services\IntellectController::class, 'start']); // Bitrix -> Admin -> Intellect
         Route::any('/intellect/save',                  [Services\IntellectController::class, 'save']);   // Intellect -> Admin -> Bitrix
-        Route::any('/intellect/get_name',              [Services\IntellectController::class, 'get_name']);   // Intellect -> Admin 
-        Route::any('/intellect/get_link',              [Services\IntellectController::class, 'get_link']);   // Intellect -> Admin 
-        Route::any('/intellect/get_time',              [Services\IntellectController::class, 'get_time']);   // Intellect -> Admin 
-        Route::any('/intellect/change_status',         [Services\IntellectController::class, 'change_status']);   // Intellect -> Admin 
-        Route::any('/intellect/send_message',          [Services\IntellectController::class, 'send_message']);   // Admin -> Intellect 
-        Route::any('/intellect/create_lead',           [Services\IntellectController::class, 'create_lead']);   // Admin -> Intellect 
-        Route::any('/intellect/test',                  [Services\IntellectController::class, 'test']);   // Admin -> Intellect 
-        Route::any('/intellect/save_quiz_after_fire',  [Services\IntellectController::class, 'quiz_after_fire']);   // Intellect -> Admin 
-        Route::any('/intellect/save_estimate_trainer', [Services\IntellectController::class, 'save_estimate_trainer']);  
+        Route::any('/intellect/get_name',              [Services\IntellectController::class, 'get_name']);   // Intellect -> Admin
+        Route::any('/intellect/get_link',              [Services\IntellectController::class, 'get_link']);   // Intellect -> Admin
+        Route::any('/intellect/get_time',              [Services\IntellectController::class, 'get_time']);   // Intellect -> Admin
+        Route::any('/intellect/change_status',         [Services\IntellectController::class, 'change_status']);   // Intellect -> Admin
+        Route::any('/intellect/send_message',          [Services\IntellectController::class, 'send_message']);   // Admin -> Intellect
+        Route::any('/intellect/create_lead',           [Services\IntellectController::class, 'create_lead']);   // Admin -> Intellect
+        Route::any('/intellect/test',                  [Services\IntellectController::class, 'test']);   // Admin -> Intellect
+        Route::any('/intellect/save_quiz_after_fire',  [Services\IntellectController::class, 'quiz_after_fire']);   // Intellect -> Admin
+        Route::any('/intellect/save_estimate_trainer', [Services\IntellectController::class, 'save_estimate_trainer']);
 
-        // Bitrix -> Admin 
-        Route::any('/bitrix/new-lead',     [Services\IntellectController::class, 'newLead']);   
-        Route::any('/bitrix/edit-lead',    [Services\IntellectController::class, 'editLead']); 
-        Route::any('/bitrix/edit-deal',    [Services\IntellectController::class, 'editDeal']);  
-        Route::any('/bitrix/lose-deal',    [Services\IntellectController::class, 'loseDeal']);   
-        Route::any('/bitrix/create-link',  [Services\IntellectController::class, 'bitrixCreateLead']);  
-        Route::any('/bitrix/change-resp',  [Services\IntellectController::class, 'changeResp']);   
-        Route::any('/bitrix/inhouse',      [Services\IntellectController::class, 'inhouse']); 
-        
-        
+        // Bitrix -> Admin
+        Route::any('/bitrix/new-lead',     [Services\IntellectController::class, 'newLead']);
+        Route::any('/bitrix/edit-lead',    [Services\IntellectController::class, 'editLead']);
+        Route::any('/bitrix/edit-deal',    [Services\IntellectController::class, 'editDeal']);
+        Route::any('/bitrix/lose-deal',    [Services\IntellectController::class, 'loseDeal']);
+        Route::any('/bitrix/create-link',  [Services\IntellectController::class, 'bitrixCreateLead']);
+        Route::any('/bitrix/change-resp',  [Services\IntellectController::class, 'changeResp']);
+        Route::any('/bitrix/inhouse',      [Services\IntellectController::class, 'inhouse']);
+
+
         Route::group(['prefix' => 'statistics'], function (){
             Route::any('/workdays', [Kpi\KpiStatController::class, 'workdays']);
         });
@@ -647,8 +648,8 @@ Route::middleware(['web','tenant','admin_subdomain'])->group(function () {
     });
 
     Route::group(['prefix' => 'admins','as' => 'admins.'], function () {
-        Route::get('/', [Admin\AdminController::class, 'admins']);   
-        Route::post('/add', [Admin\AdminController::class, 'addAdmin']);   
+        Route::get('/', [Admin\AdminController::class, 'admins']);
+        Route::post('/add', [Admin\AdminController::class, 'addAdmin']);
         Route::delete('/delete/{user}', [Admin\AdminController::class, 'deleteAdmin']);
     });
 });

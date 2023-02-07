@@ -114,6 +114,8 @@ Vue.use(VScrollLock)
 import ViewportSize from './plugins/ViewportSize'
 Vue.use(ViewportSize)
 
+import SeparateThousands from './plugins/SeparateThousands'
+Vue.use(SeparateThousands)
 
 // Vue.component('timetracking', require('./components/timetracking.vue').default); // шапка начать день
 Vue.component('Draggable', draggable); // драг
