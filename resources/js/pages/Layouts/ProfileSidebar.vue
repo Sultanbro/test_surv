@@ -176,17 +176,17 @@
 		>
 			<div
 				class="corpbook"
-				v-if="corp_book_page !== undefined && corp_book_page !== null"
+				v-if="corp_book !== undefined && corp_book !== null"
 			>
 				<div class="inner">
 					<h5 class="text-center aet mb-3">
 						Ознакомьтесь с одной из страниц Вашей базы знаний
 					</h5>
 					<h3 class="text-center">
-						{{ corp_book_page.title }}
+						{{ corp_book.title }}
 					</h3>
 
-					<div v-html="corp_book_page.text" />
+					<div v-html="corp_book.text" />
 
 					<button
 						@click="testBook"
@@ -216,10 +216,10 @@
 			no-close-on-backdrop
 		>
 			<Questions
-				v-if="corp_book_page"
+				v-if="corp_book"
 				:course_item_id="0"
-				:questions="corp_book_page.questions"
-				:pass_grade="corp_book_page.questions.length"
+				:questions="corp_book.questions"
+				:pass_grade="corp_book.questions.length"
 				type="kb"
 				:dont-repat="true"
 				@passed="hideBook"
@@ -263,7 +263,6 @@ export default {
 			hide: false,
 			inViewport: false,
 			// corp book
-			corp_book_page: null,
 			showCorpBookPage: false,
 			bookTimer: 0,
 			bookTimerInterval: 0,
@@ -479,7 +478,7 @@ export default {
 
 		testBook(){
 			if(this.bookTimer) return
-			if(!(this.corp_book_page.questions && this.corp_book_page.questions.length)){
+			if(!(this.corp_book.questions && this.corp_book.questions.length)){
 				this.showCorpBookPage = false
 				return
 			}
