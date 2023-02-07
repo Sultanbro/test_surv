@@ -29,25 +29,15 @@ class UpdateUserRequest extends FormRequest
         return [
             'id'                => ['required', 'numeric', 'exists:users,id'],
             'name'              => ['string', 'min:3', 'max:60'],
-            'name'              => ['string', 'min:3', 'max:60'],
             'last_name'         => ['string', 'min:3', 'max:60'],
-            'last_name'         => ['string', 'min:3', 'max:60'],
-            'email'             => ['string', 'email'],
             'email'             => ['string', 'email'],
             'description'       => ['nullable'],
             'position'          => ['numeric', 'exists:position,id'],
-            'position'          => ['numeric', 'exists:position,id'],
-            'user_type'         => ['string', 'in:office,remote'],
             'user_type'         => ['string', 'in:office,remote'],
             'birthday'          => ['string'],
-            'birthday'          => ['string'],
-            'program_type'      => ['numeric'],
             'program_type'      => ['numeric'],
             'working_days'      => ['numeric'],
-            'working_days'      => ['numeric'],
             'working_times'     => ['numeric'],
-            'working_times'     => ['numeric'],
-            'phone'             => ['string', 'min:10'],
             'phone'             => ['string', 'min:10'],
             'phone_home'        => ['string', 'numeric', 'min:10'],
             'phone_husband'     => ['string', 'numeric', 'min:10'],
@@ -94,7 +84,7 @@ class UpdateUserRequest extends FormRequest
             'card_jysan'        => ['string'],
             'kaspi_cardholder'  => ['string'],
             'jysan_cardholder'  => ['string'],
-            'new_password'      => ['string', 'min:8', 'regex:/[a-z]/', 'regex:/[A-Z]/', 'regex:/[0-9]/'],
+            'new_pwd'      => ['string', 'min:8', 'regex:/[a-z]/', 'regex:/[A-Z]/', 'regex:/[0-9]/'],
             'tax'               => ['array'],
             'tax.*.amount'      => ['numeric'],
             'tax.*.percent'     => ['numeric'],
@@ -158,7 +148,7 @@ class UpdateUserRequest extends FormRequest
         $cardJysan = Arr::get($validated, 'card_jysan');
         $kaspiCardholder = Arr::get($validated, 'kaspi_cardholder');
         $jysanCardholder = Arr::get($validated, 'jysan_cardholder');
-        $newPassword = Arr::get($validated, 'new_password');
+        $newPassword = Arr::get($validated, 'new_pwd');
         $tax = Arr::get($validated, 'tax');
         $taxes = Arr::get($validated, 'taxes');
         $bitrixId = Arr::get($validated, 'bitrix_id');
