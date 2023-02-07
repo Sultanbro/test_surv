@@ -827,7 +827,6 @@ class Salary extends Model
                 $user->kpi = Kpi::userKpi($user->id, $date);
             }
 
-
             /**
              * If user has edited Bonus for month take it
              */
