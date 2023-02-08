@@ -14,7 +14,7 @@ return new class extends Migration
     public function up()
     {
         Schema::create('tariff_payment', function (Blueprint $table) {
-            $table->increments('id');
+            $table->bigIncrements('id');
             $table->unsignedBigInteger('owner_id')
                 ->unsigned()
                 ->comment('User with is_admin=true');
