@@ -5,6 +5,7 @@ namespace App\Models\Admin;
 use App\Enums\ErrorCode;
 use App\Support\Core\CustomException;
 use App\User;
+use Exception;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -25,13 +26,15 @@ class ManagerHasOwner extends Model
      * @param $query
      * @param int $ownerId
      * @return object|null
+     * @throws Exception
      */
     public function scopeGetManagerByOwnerIdOrFail($query, int $ownerId): ?object
     {
         $owner = $query->where('owner_id', $ownerId)->first();
+
         if($owner == null)
         {
-            new CustomException('Клиент еще не имеет своего менеджера', ErrorCode::BAD_REQUEST, []);
+            throw new Exception('Клиент еще не имеет своего менеджера');
         }
 
         return $owner->managers;
@@ -57,6 +60,13 @@ class ManagerHasOwner extends Model
         int $managerId
     ): Builder|Model
     {
+        $exist = self::query()->where('owner_id', $ownerId)->exists();
+
+        if ($exist)
+        {
+            new CustomException("Клиент с ID $ownerId уже имеет привязанного менеджера", ErrorCode::BAD_REQUEST, []);
+        }
+
         return self::query()->create([
             'owner_id' => $ownerId,
             'manager_id' => $managerId

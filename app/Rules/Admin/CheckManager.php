@@ -3,9 +3,10 @@
 namespace App\Rules\Admin;
 
 use App\Models\CentralUser;
+use App\Models\Role;
 use App\User;
 use Illuminate\Contracts\Validation\Rule;
-use Spatie\Permission\Models\Role;
+
 
 class CheckManager implements Rule
 {
@@ -26,7 +27,7 @@ class CheckManager implements Rule
      * @param  mixed  $value
      * @return bool
      */
-    public function passes($attribute, $value)
+    public function passes($attribute, $value): bool
     {
         $role = Role::query()->withWhereHas('users',
             fn($user) => $user->where('id', $value))

@@ -24,7 +24,7 @@ class CheckOwner implements Rule
      * @param  mixed  $value
      * @return bool
      */
-    public function passes($attribute, $value)
+    public function passes($attribute, $value): bool
     {
         return (bool)CentralUser::query()->find($value);
     }

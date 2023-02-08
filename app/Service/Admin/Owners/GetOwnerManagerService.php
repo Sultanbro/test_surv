@@ -16,7 +16,7 @@ class GetOwnerManagerService
     public function handle(
     )
     {
-        $ownerId = auth()->id() ?? 1;
+        $ownerId = auth()->id();
         CentralUser::checkDomainExistOrFail($ownerId);
 
         return ManagerHasOwner::getManagerByOwnerIdOrFail($ownerId);
