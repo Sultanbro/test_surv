@@ -33,7 +33,7 @@ class ManagerOwnerController extends Controller
     {
         return $this->response(
             message: 'success',
-            data: $service->handle($request->toDto())
+            data: $service->handle($request->toDto()->managerId)
         );
     }
 }

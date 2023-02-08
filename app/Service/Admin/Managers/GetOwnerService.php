@@ -14,10 +14,10 @@ use App\Support\Core\CustomException;
 class GetOwnerService
 {
     public function handle(
-        GetOwnerDTO $dto
+        int $managerId
     )
     {
-        $ownerIds = ManagerHasOwner::getOwnerByManagerIdToArray($dto->managerId);
+        $ownerIds = ManagerHasOwner::getOwnerByManagerIdToArray($managerId);
         if (count($ownerIds) <= 0)
         {
             new CustomException('У менеджера нет клиента который он(-a) привязан(-a)', ErrorCode::BAD_REQUEST, []);

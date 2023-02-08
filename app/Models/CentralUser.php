@@ -50,10 +50,10 @@ class CentralUser extends Model
 
     /**
      * @param $query
-     * @param $id
+     * @param int $id
      * @return ?object
      */
-    public function scopeGetById($query, $id): ?object
+    public function scopeGetById($query, int $id): ?object
     {
         return $query->where('id', $id);
     }

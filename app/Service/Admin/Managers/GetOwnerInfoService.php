@@ -13,18 +13,18 @@ use App\Support\Core\CustomException;
 class GetOwnerInfoService
 {
     /**
-     * @param GetOwnerInfoDTO $dto
+     * @param int $ownerId
      * @return object
      */
     public function handle(
-        GetOwnerInfoDTO $dto
+        int $ownerId
     ): object
     {
-        $owner = CentralUser::getById($dto->ownerId)->first();
+        $owner = CentralUser::getById($ownerId)->first();
 
         if ($owner == null)
         {
-            new CustomException("User with $dto->ownerId is not exist", ErrorCode::BAD_REQUEST, []);
+            new CustomException("User with $ownerId is not exist", ErrorCode::BAD_REQUEST, []);
         }
 
         return $owner;

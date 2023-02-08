@@ -28,7 +28,7 @@ class ManagerPermissionController extends Controller
 
         return $this->response(
             message: 'Success',
-            data: $service->handle($request->toDto())
+            data: $service->handle($request->toDto()->ownerId)
         );
     }
 }
