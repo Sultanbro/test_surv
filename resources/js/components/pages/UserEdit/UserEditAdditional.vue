@@ -24,7 +24,7 @@ export default {
 			Дополнительная информация
 		</h5>
 		<div class="table-responsive">
-			<table class="my-table table user-list">
+			<table class="my-table table user-list table-profile-edit">
 				<tbody>
 					<tr>
 						<td>

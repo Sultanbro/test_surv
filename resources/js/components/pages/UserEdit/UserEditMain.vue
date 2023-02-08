@@ -151,9 +151,6 @@ export default {
 		id="profile_d"
 		class="contacts-info col-md-6 none-block mt-0"
 	>
-		<h5 class="mb-4">
-			Профиль сотрудника
-		</h5>
 		<div class="form-group row">
 			<label
 				for="firstName"
@@ -230,7 +227,7 @@ export default {
 			<label
 				for="lastName"
 				class="col-sm-4 col-form-label font-weight-bold"
-			>День рождения <span class="red">*</span></label>
+			>День рождения</label>
 			<div class="col-sm-8">
 				<input
 					name="birthday"
@@ -294,6 +291,21 @@ export default {
 				for="userType"
 				class="col-sm-4 col-form-label font-weight-bold"
 			>Тип <span class="red">*</span>
+				<img
+					src="/images/dist/profit-info.svg"
+					class="img-info"
+					alt="info icon"
+					id="info1"
+				>
+				<b-popover
+					target="info1"
+					triggers="hover"
+					placement="right"
+				>
+					<p style="font-size: 15px">
+						Если выбран "Удаленный работник", то в профиле сотрудника будет кнопка "начать рабочий день", через которую будет происходить контроль рабочего дня.
+					</p>
+				</b-popover>
 			</label>
 			<div class="col-sm-8">
 				<select
@@ -393,7 +405,7 @@ export default {
 			<label
 				for="workingDays"
 				class="col-sm-4 col-form-label font-weight-bold"
-			>Найти город <span class="red">*</span></label>
+			>Найти город</label>
 			<div class="col-sm-8">
 				<div class="mb-3 xfade">
 					<div

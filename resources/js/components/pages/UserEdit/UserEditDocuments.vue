@@ -24,9 +24,6 @@ export default {
 		id="iphones4"
 		class="xtab-pane xfade none-block"
 	>
-		<h5 class="mb-5">
-			Документы (RAR, ZIP)
-		</h5>
 		<div class="row file-uploads-container">
 			<div class="col-12 col-md-4 mb-4">
 				<div class="file-item">

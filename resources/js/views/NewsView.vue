@@ -29,7 +29,7 @@ export default {
 </script>
 
 <template>
-	<DefaultLayout>
+	<DefaultLayout :has-bg="true">
 		<link
 			rel="stylesheet"
 			href="/css/news.css"

@@ -386,7 +386,7 @@
 			class="modalle"
 		>
 			<div>
-				<b-form-group label="группа">
+				<b-form-group>
 					<select
 						v-model="restore_group"
 						class="form-control"

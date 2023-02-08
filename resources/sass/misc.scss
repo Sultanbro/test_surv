@@ -612,6 +612,14 @@ span.red{
     }
 }
 
+.DefaultLayout{
+    &.has-bg{
+        background-color: #ffffff;
+        background-image: url("https://www.transparenttextures.com/patterns/inspiration-geometry.png");
+        background-repeat: repeat;
+    }
+}
+
 
 /**
     end of new design integration
