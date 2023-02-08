@@ -42,16 +42,17 @@ class UserDescriptionRepository extends CoreRepository
     }
 
     public function createDescription(
-        int $userId
+        int $userId,
+        int $isTrainee
     )
     {
-        $this->model()->updateOrCreate(
+       $this->model()->updateOrCreate(
             [
                 'user_id' => $userId,
             ]
             ,
             [
-                'is_trainee' => 0,
+                'is_trainee' => $isTrainee,
                 'applied' => now()
             ]
         );
