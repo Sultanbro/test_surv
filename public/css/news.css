@@ -392,7 +392,7 @@
     gap: 40px;
     background: #FFFFFF;
     border: 0.5px solid #EBEBF9;
-    box-shadow: 0 8px 16px 4px rgba(131, 178, 233, 0.04);
+    box-shadow: 0 8px 16px 4px rgba(131, 178, 233, 0.18);
     border-radius: 8px;
 }
 .news-filter:hover {
@@ -400,7 +400,7 @@
 }
 .news-filter--active {
     justify-content: space-between;
-    box-shadow: 0 0 1px rgba(21, 106, 232, 0.2), 0 8px 16px 4px rgba(131, 178, 233, 0.14);
+    box-shadow: 0 0 1px rgba(21, 106, 232, 0.2), 0 8px 16px 4px rgba(131, 178, 233, 0.18);
     z-index: 11;
 }
 .news-filter__left {
@@ -473,7 +473,7 @@
     padding: 30px 20px 20px 20px;
     background-color: #FFFFFF;
     border: 0.5px solid #EBEBF9;
-    box-shadow: 0 8px 16px 4px rgba(137, 143, 150, 0.04);
+    box-shadow: 0 8px 16px 4px rgba(137, 143, 150, 0.18);
     border-radius: 12px;
 }
 .news-item--with-comments {
@@ -674,7 +674,7 @@
     padding: 15px 27px 15px 20px;
     background-color: #FFFFFF;
     border: 0.5px solid #EBEBF9;
-    box-shadow: 0 8px 16px 4px rgba(137, 143, 150, 0.04);
+    box-shadow: 0 8px 16px 4px rgba(137, 143, 150, 0.18);
     border-radius: 12px;
 }
 .news-create:hover {
@@ -775,7 +775,7 @@
     padding: 20px 25px;
     background-color: #FFFFFF;
     border: 0.5px solid #EBEBF9;
-    box-shadow: 0 8px 16px 4px rgba(137, 143, 150, 0.04);
+    box-shadow: 0 8px 16px 4px rgba(137, 143, 150, 0.18);
     border-radius: 0 0 12px 12px;
 }
 .news-create__submit {
@@ -1435,7 +1435,7 @@
 .user-item:hover {
     cursor: pointer;
     background: rgba(21, 106, 232, 0.031372549);
-    box-shadow: 0px 0px 1px 2px rgba(21, 106, 232, 0.031372549);
+    box-shadow: 0px 0px 1px 2px rgba(21, 106, 232, 0.1);
 }
 .user-item__avatar {
     width: 40px;
@@ -1811,7 +1811,7 @@
     background: #FFFFFF;
     border: 0.5px solid #EBEBF9;
     border-radius: 12px;
-    box-shadow: 0 8px 16px 4px rgba(137, 143, 150, 0.04);
+    box-shadow: 0 8px 16px 4px rgba(137, 143, 150, 0.18);
 }
 
 .news-birthday-header {
@@ -1890,7 +1890,7 @@
     border-radius: 2px;
     color: #6A7F9B;
     background: rgba(233, 235, 240, 0.5);
-    box-shadow: 0 8px 8px rgba(220, 224, 232, 0.06);
+    box-shadow: 0 8px 8px rgba(220, 224, 232, 0.15);
 }
 .news-birthday-card__birthday--today {
     color: #FFFFFF;

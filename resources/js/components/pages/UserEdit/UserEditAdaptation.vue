@@ -15,9 +15,6 @@ export default {
 		id="adaptation_conversations"
 		class="none-block"
 	>
-		<h5 class="adaptation-title mb-5">
-			Адаптационные беседы
-		</h5>
 		<div
 			v-for="(talk, key) in user.adaptation_talks"
 			:key="key"

@@ -3,6 +3,9 @@ import Sidebars from '@/pages/Layouts/Sidebars'
 import ChatApp from '@/components/Chat/ChatApp'
 
 export default {
+	props: {
+		hasBg: Boolean
+	},
 	components: {
 		Sidebars,
 		ChatApp,
@@ -17,7 +20,10 @@ export default {
 </script>
 
 <template>
-	<div class="DefaultLayout">
+	<div
+		class="DefaultLayout"
+		:class="{'has-bg': hasBg}"
+	>
 		<Sidebars
 			:is-left="isLeft"
 			:is-right="isRight"

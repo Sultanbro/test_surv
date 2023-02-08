@@ -16,7 +16,17 @@
 					v-if="isAdmin"
 					to="/timetracking/settings?tab=2#nav-home"
 				>
-					<i class="fa fa-pen pulse-anim" />
+					<span>
+						<i
+							class="fa fa-pen pulse-anim"
+							id="info-position"
+						/>
+						<b-popover
+							target="info-position"
+							triggers="hover"
+							placement="top"
+						><p style="font-size: 15px">Добавить\создать новые должности</p></b-popover>
+					</span>
 				</router-link>
 			</div>
 			<div
@@ -27,7 +37,17 @@
 					v-if="isAdmin"
 					to="/timetracking/settings?tab=2#nav-home"
 				>
-					<i class="fa fa-pen pulse-anim" />
+					<span>
+						<i
+							class="fa fa-pen pulse-anim"
+							id="info-groups"
+						/>
+						<b-popover
+							target="info-groups"
+							triggers="hover"
+							placement="top"
+						><p style="font-size: 15px">Добавить\создать новые отделы</p></b-popover>
+					</span>
 				</router-link>
 			</div>
 			<div class="profile__salary profile-border">

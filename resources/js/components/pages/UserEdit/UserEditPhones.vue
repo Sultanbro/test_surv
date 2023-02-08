@@ -38,9 +38,6 @@ export default {
 		id="profile_contacts"
 		class="phones col-md-6 none-block"
 	>
-		<h5 class="mb-4">
-			Контакты
-		</h5>
 		<div class="d-flex phone-row form-group mb-2">
 			<label
 				for="phone"

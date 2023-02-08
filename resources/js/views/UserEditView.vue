@@ -461,7 +461,10 @@ export default {
 </script>
 
 <template>
-	<DefaultLayout>
+	<DefaultLayout
+		:has-bg="true"
+		class="profile-edit"
+	>
 		<div class="old__content">
 			<div class="user-page">
 				<div class="mt-3">
@@ -687,73 +690,68 @@ export default {
 											</div>
 
 											<hr style="margin: 10px -10px !important;">
-											<div class="list-item">
+											<div class="list-item profile-edit-list-item">
 												<ul class="p-0">
 													<li
 														id="bg-this-1"
-														class="bg-this"
-														:class="{'bg-this-active': showBlocks.main && showBlocks.additional && showBlocks.groups}"
+														:class="{'active': showBlocks.main && showBlocks.additional && showBlocks.groups}"
 														@click="showBlock(1)"
 													>
 														<span>Основные данные</span>
 														<span
 															v-if="showBlocks.main && showBlocks.additional && showBlocks.groups"
 															id="check-1"
-															class="ml-2 fa fa-check none-check"
+															class="fa fa-check none-check"
 														/>
 													</li>
 
 													<li
 														id="bg-this-9"
-														class="bg-this"
-														:class="{'bg-this-active': showBlocks.documents}"
+														:class="{'active': showBlocks.documents}"
 														@click="showBlock(9)"
 													>
 														<span>Документы</span>
 														<span
 															v-if="showBlocks.documents"
 															id="check-9"
-															class="ml-2 fa fa-check none-check"
+															class="fa fa-check none-check"
 														/>
 													</li>
 													<li
 														id="bg-this-4"
-														class="bg-this"
-														:class="{'bg-this-active': showBlocks.phones}"
+														:class="{'active': showBlocks.phones}"
 														@click="showBlock(4)"
 													>
 														<span>Контакты</span>
 														<span
 															v-if="showBlocks.phones"
 															id="check-4"
-															class="ml-2 fa fa-check none-check"
+															class="fa fa-check none-check"
 														/>
 													</li>
 													<li
 														id="bg-this-5"
-														class="bg-this"
-														:class="{'bg-this-active': showBlocks.salary}"
+														:class="{'active': showBlocks.salary}"
 														@click="showBlock(5)"
 													>
 														<span>Оплата</span>
 														<span
 															v-if="showBlocks.salary"
 															id="check-5"
-															class="ml-2 fa fa-check none-check"
+															class="fa fa-check none-check"
 														/>
 													</li>
 													<li
 														v-if="user && tenant === 'bp'"
 														id="bg-this-7"
-														class="bg-this"
-														:class="{'bg-this-active': showBlocks.adaptation}"
+														:class="{'active': showBlocks.adaptation}"
 														@click="showBlock(7)"
 													>
 														<span>Адаптационные данные</span>
 														<span
 															v-if="showBlocks.adaptation"
 															id="check-7"
-															class="ml-2 fa fa-check none-check"
+															class="fa fa-check none-check"
 														/>
 													</li>
 												</ul>
@@ -2259,14 +2257,6 @@ background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/s
 #other_data{
 	width: 100%;
 }
-
-.bg-this{
-	cursor: pointer;
-	background-color: #e2e2e2
-}
-.bg-this-active{
-	background-color: rgb(227 229 232);
-}
 .none-check{
 	color: #28a745;
 }
@@ -2297,18 +2287,6 @@ background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/s
 	top: 0;
 	width: 290px;
 	flex-direction: column;
-}
-
-.list-item li{
-	padding: 10px 15px;
-	border-radius: 6px;
-
-}
-
-// .list-item ul li a {}
-
-.list-item ul li  {
-	margin-top: 2px;
 }
 
 .listSearchResult{
