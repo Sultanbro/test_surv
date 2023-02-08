@@ -121,18 +121,14 @@ class UserHelper
      * @param array $cards
      * @return void
      */
-    public static function saveCards(
-        int $userId,
-        array $cards
-    ): void
+    public static function saveCards(int $userId, array $cards): void
     {
-        $cardsData = [];
-        foreach ($cards as $card)
+        foreach ($cards as $key => $card)
         {
-            $cardsData[] = $card;
+            $cards[$key]['user_id'] = $userId;
         }
 
-        (new CardRepository)->createMultipleCard($cardsData);
+        (new CardRepository)->createMultipleCard($cards);
     }
 
     /**
