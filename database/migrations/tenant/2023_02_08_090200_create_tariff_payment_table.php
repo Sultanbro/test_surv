@@ -24,7 +24,8 @@ return new class extends Migration
                 ->nullable();
             $table->date('expire_date')->comment('Срок истечения тарифа');
             $table->boolean('auto_payment')->default(0)->comment('1 - Автоплатеж включен');
-            $table->timestamps();
+            $table->timestamp('created_at')->useCurrent();
+            $table->timestamp('updated_at')->default(DB::raw('CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP'));
 
             $table->foreign('owner_id')
                 ->references('id')

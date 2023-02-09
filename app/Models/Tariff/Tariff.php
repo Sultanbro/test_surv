@@ -9,6 +9,8 @@ class Tariff extends Model
 {
     protected $table = 'tariff';
 
+    public static $defaultUserLimit = 5;
+
     public $timestamps = true;
 
     protected $casts = [
@@ -17,11 +19,10 @@ class Tariff extends Model
     ];
 
     protected $fillable = [
-        'name',
+        'kind',
+        'validity',
         'users_limit',
         'price',
-        'kind',
-        'validity'
     ];
 
     /**
@@ -30,16 +31,6 @@ class Tariff extends Model
     public function tariffPayments(): HasMany
     {
         return $this->hasMany(TariffPayment::class);
-    }
-
-    /**
-     * Return all tariff records for specific user from DB.
-     *
-     * @param int $ownerId
-     * @return \Illuminate\Database\Eloquent\Builder[]|\Illuminate\Database\Eloquent\Collection
-     */
-    public function getTarriffsByOwnerId(int $ownerId){
-        return $this->where('owner_id', $ownerId)->all();
     }
 
     /**

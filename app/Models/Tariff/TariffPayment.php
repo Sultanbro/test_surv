@@ -5,6 +5,7 @@ namespace App\Models\Tariff;
 use App\User;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasOne;
+use Carbon\Carbon;
 
 class TariffPayment extends Model
 {
@@ -39,7 +40,7 @@ class TariffPayment extends Model
      */
     public function owner(): HasOne
     {
-        return $this->hasOne(User::class);
+        return $this->hasOne(User::class, 'id', 'owner_id');
     }
 
     /**
@@ -50,18 +51,38 @@ class TariffPayment extends Model
      */
     public function getTarriffPaymentsByOwnerId(int $ownerId)
     {
-        return $this->with('tariff')
+        return $this->with('owner')
+            ->with('tariff')
             ->where('owner_id', $ownerId)
             ->get();
     }
 
     /**
-     * Return all the tariff payments from DB.
+     * Returns valid tarif for current subdomain.
      *
-     * @return \Illuminate\Database\Eloquent\Builder[]|\Illuminate\Database\Eloquent\Collection
+     * @return \Illuminate\Database\Eloquent\Builder|Model|object
      */
-    public function getTarriffPayments()
+    public function getValidTarriffPayments()
     {
-        return $this->all();
+        $today = Carbon::today();
+
+        return $this->select(
+            'tariff_payment.id',
+            'tariff_payment.owner_id',
+            'tariff_payment.tariff_id',
+            'tariff_payment.extra_user_limit',
+            'tariff_payment.expire_date',
+            'tariff_payment.expire_date',
+            'tariff_payment.created_at',
+            'tariff.kind',
+            'tariff.validity',
+            'tariff.users_limit',
+            \DB::raw('(`tariff`.`users_limit` + `tariff_payment`.`extra_user_limit`) as total_user_limit')
+        )
+            ->leftJoin('tariff', 'tariff.id', 'tariff_payment.tariff_id')
+            ->where('tariff_payment.expire_date', '>', $today)
+            ->orderBy('tariff_payment.expire_date', 'desc')
+            ->groupBy('tariff_payment.id')
+            ->first();
     }
 }

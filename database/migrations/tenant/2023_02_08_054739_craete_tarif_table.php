@@ -1,10 +1,10 @@
 <?php
 
+use App\Enums\Tariff\TariffKindEnum;
+use App\Enums\Tariff\TariffValidityEnum;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
-use App\Classes\Enums\TariffValidityEnum;
-use App\Classes\Enums\TariffKindEnum;
 
 return new class extends Migration
 {
@@ -17,13 +17,13 @@ return new class extends Migration
     {
         Schema::create('tariff', function (Blueprint $table) {
             $table->bigIncrements('id');
-            $table->string('name')->comment('Name of tariff');
-            $table->integer('users_limit')->comment('How many people can be assigned');
-            $table->decimal('price')->comment('Price in KZT');
             $table->enum('kind', TariffKindEnum::getAllValues())->comment('Вид тарифа');
             $table->enum('validity', TariffValidityEnum::getAllValues())
                 ->comment('Период действия monthly-ежемесячно, annual-ежегодно');
-            $table->timestamps();
+            $table->integer('users_limit')->comment('How many people can be assigned');
+            $table->decimal('price')->comment('Price in KZT');
+            $table->timestamp('created_at')->useCurrent();
+            $table->timestamp('updated_at')->default(DB::raw('CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP'));
         });
     }
 

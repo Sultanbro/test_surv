@@ -4,9 +4,9 @@ namespace App\Http\Middleware;
 
 use App\Models\Tariff\Tariff;
 use App\Models\Tariff\TariffPayment;
+use App\User;
 use Closure;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
 
 class CheckTariff
 {
@@ -23,13 +23,21 @@ class CheckTariff
      */
     public function handle(Request $request, Closure $next)
     {
-        $tariffPlans = $this->tariffPayment
-            ->getTarriffPaymentsByOwnerId(\Auth::user()->id);
-
         $response = $next($request);
-        if (!$tariffPlans->isEmpty()){
-            $response->header('IsHaveTariff', true);
+
+        $tariffPlan = $this->tariffPayment
+            ->getValidTarriffPayments();
+
+        $userLimit = Tariff::$defaultUserLimit;
+
+        if($tariffPlan){
+            $userLimit = $tariffPlan->total_user_limit;
+            $response->header('IsHaveTariff', 1);
         }
+
+        $users = User::select('id')->skip($userLimit)->first();
+
+        if(\Auth::user()->id > $users->id) throw new \Exception('Tariff limit out of range', 401);
 
         return $response;
     }
