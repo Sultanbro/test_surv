@@ -1,13 +1,13 @@
 <template>
 	<div
 		class="messenger__wrapper"
-		v-click-outside="toggle"
 		v-show="isOpen"
 	>
 		<div
 			@keydown.esc="escapeChat"
 			class="messenger__card-window"
 			id="messengerWindow"
+			v-click-outside="toggle"
 		>
 			<SearchBox />
 			<div class="messenger__chat-container">
