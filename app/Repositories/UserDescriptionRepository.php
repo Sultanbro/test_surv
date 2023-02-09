@@ -44,7 +44,7 @@ class UserDescriptionRepository extends CoreRepository
     public function createDescription(
         int $userId,
         int $isTrainee
-    )
+    ):void
     {
        $this->model()->updateOrCreate(
             [
