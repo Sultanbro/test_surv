@@ -1,11 +1,11 @@
 <template>
 	<div
-		:class="message.sender_id === user.id ?
+		:class="ownMessage ?
 			'messenger__message-box-right' :
 			'messenger__message-box-left'"
 	>
 		<AlternativeAvatar
-			v-if="message.sender_id !== user.id"
+			v-if="!ownMessage"
 			:title="message.sender.name"
 			:image="message.sender.img_url"
 		/>
@@ -13,8 +13,8 @@
 			<div :class="messageCardClass">
 				<div class="messenger__format-message-wrapper">
 					<div
-						class="messenger__format-container_parent"
 						v-if="message.parent"
+						class="messenger__format-container_parent"
 						@click="goto(message.parent, $event)"
 					>
 						<div class="messenger__format-container_parent-author">
@@ -111,17 +111,22 @@
 						</div>
 					</div>
 				</div>
+				<ConversationMessageMeta
+					:readers="message.readers || []"
+					:time="time"
+					:own="ownMessage"
+				/>
 			</div>
 			<div
-				v-if="message.readers && message.readers.length > 0"
+				v-if="countReaders > 0"
 				class="messenger__message-reactions"
 			>
-				<template v-if="last && message.readers && message.readers.length > 0 && message.sender_id === user.id">
+				<!-- <template v-if="last && message.readers && message.readers.length > 0 && ownMessage">
 					<MessageReaders
 						:message="message"
 						:user="user"
 					/>
-				</template>
+				</template> -->
 
 				<template v-if="reactions">
 					<div
@@ -144,10 +149,9 @@
 				</template>
 			</div>
 
-
-			<div class="messenger__text-timestamp">
+			<!-- <div class="messenger__text-timestamp">
 				<span>{{ message.created_at | moment }}</span>
-			</div>
+			</div> -->
 		</div>
 	</div>
 </template>
@@ -155,14 +159,18 @@
 <script>
 import {mapActions, mapGetters} from 'vuex';
 import moment from 'moment';
-import MessageReaders from './MessageReaders/MessageReaders.vue';
+// import MessageReaders from './MessageReaders/MessageReaders.vue';
 import AlternativeAvatar from '../../../ChatsList/ContactItem/AlternativeAvatar/AlternativeAvatar.vue';
 import VoiceMessage from './VoiceMessage/VoiceMessage.vue';
+import ConversationMessageMeta from '@/components/Chat/MessengerConversation/ConversationFeed/ConversationMessage/ConversationMessageMeta.vue'
 
 export default {
 	name: 'ConversationMessage',
 	components: {
-		MessageReaders, AlternativeAvatar, VoiceMessage
+		// MessageReaders,
+		AlternativeAvatar,
+		VoiceMessage,
+		ConversationMessageMeta,
 	},
 	props: {
 		message: {
@@ -205,6 +213,16 @@ export default {
 				}
 			});
 			return reactions;
+		},
+		ownMessage(){
+			return this.message.sender_id === this.user.id
+		},
+		countReaders(){
+			if(!this.message.readers) return 0
+			return this.message.readers.length
+		},
+		time(){
+			return this.$moment(this.message.created_at).format('HH:mm')
 		},
 	},
 	methods: {
@@ -260,224 +278,239 @@ export default {
 }
 </script>
 
-<style>
+<style lang="scss">
 /*noinspection CssUnusedSymbol*/
-.messenger__message-box-right, .messenger__message-box-left {
-  display: flex;
-  flex: 0 0 50%;
-  line-height: 1.4;
-  margin-left: 20px;
+.messenger__message-box-right,
+.messenger__message-box-left {
+	display: flex;
+	flex: 0 0 50%;
+	line-height: 1.4;
+	margin-left: 20px;
 }
 
 /*noinspection CssUnusedSymbol*/
 .messenger__message-box-left {
-  justify-content: flex-start;
+	justify-content: flex-start;
 }
 
 /*noinspection CssUnusedSymbol*/
 .messenger__message-box-right {
-  justify-content: flex-end;
+	justify-content: flex-end;
+	.messenger__message-card{
+		background: #e1ebff;
+	}
 }
 
 .messenger__message-container {
-  position: relative;
-  padding: 2px 10px;
-  min-width: 75px;
-  box-sizing: content-box;
-  display: flex;
-  flex-wrap: wrap;
-  flex-direction: column;
-  align-content: stretch;
-  align-items: stretch;
-  margin-top: 4px;
+	position: relative;
+	padding: 2px 10px;
+	min-width: 75px;
+	box-sizing: content-box;
+	display: flex;
+	flex-wrap: wrap;
+	flex-direction: column;
+	align-content: stretch;
+	align-items: stretch;
+	margin-top: 4px;
 }
 
 /*noinspection CssUnusedSymbol*/
 .messenger__message-card {
-  font-size: 12px;
-  padding: 10px;
-  white-space: pre-line;
-  max-width: 360px;
-  -webkit-transition-property: box-shadow, opacity;
-  transition-property: box-shadow, opacity;
-  transition: box-shadow .28s cubic-bezier(.4, 0, .2, 1);
-  will-change: box-shadow;
-  box-shadow: 0 1px 1px -1px #0000001a, 0 1px 1px -1px #0000001c, 0 1px 2px -1px #0000001c;
-  background: #f4f6fa;
-  color: #5f5d5d;
+	position: relative;
+	font-size: 12px;
+	padding: 10px;
+	white-space: pre-line;
+	max-width: 360px;
+	-webkit-transition-property: box-shadow, opacity;
+	transition-property: box-shadow, opacity;
+	transition: box-shadow .28s cubic-bezier(.4, 0, .2, 1);
+	will-change: box-shadow;
+	box-shadow: 0 1px 1px -1px #0000001a, 0 1px 1px -1px #0000001c, 0 1px 2px -1px #0000001c;
+	background: #f4f6fa;
+	color: #5f5d5d;
+}
+
+.messenger__format-message-wrapper{
+	display: inline;
+}
+.messenger__format-container{
+	display: inline;
 }
 
 /*noinspection CssUnusedSymbol*/
 .messenger__message__failed {
-  background-color: #ffcdd2 !important;
+	background-color: #ffcdd2 !important;
 }
 
 /*noinspection CssUnusedSymbol*/
 .messenger__message-box-right .messenger__message-card {
-  float: right;
+	float: right;
 }
 
 /*noinspection CssUnusedSymbol*/
 .messenger__message-box-left .messenger__message-card {
-  float: left;
+	float: left;
 }
 
 .messenger__text-timestamp {
-  font-size: 10px;
-  line-height: 10px;
-  margin-top: 10px;
-  color: #828c94;
-  text-align: right;
+	font-size: 10px;
+	line-height: 10px;
+	margin-top: 10px;
+	color: #828c94;
+	text-align: right;
 }
 
 .messenger__message-box-right .messenger__text-timestamp {
-  text-align: left;
+	text-align: left;
 }
 
 .messenger__message-files {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
+	display: flex;
+	flex-direction: column;
+	align-items: flex-start;
+	&:empty{
+		display: none;
+	}
 }
 
 .messenger__message-file {
-  display: flex;
-  align-items: center;
-  margin: 5px;
-  max-width: 100%;
+	display: flex;
+	align-items: center;
+	margin: 5px;
+	max-width: 100%;
 }
 
 .messenger__message-file-icon {
-  font-size: 20px;
-  margin-right: 5px;
+	font-size: 20px;
+	margin-right: 5px;
 }
 
 .messenger__message-file-name {
-  font-size: 14px;
-  max-width: 100%;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
+	font-size: 14px;
+	max-width: 100%;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
 }
 
 .messenger__message-file-name a {
-  color: #001da1;
+	color: #001da1;
 }
 
 .messenger__message-file-name a:hover {
-  text-decoration: underline;
+	text-decoration: underline;
 }
 
 .messenger__message-file-name a:visited {
-  color: rgba(0, 9, 72, 0.94);
+	color: rgba(0, 9, 72, 0.94);
 }
 
 .messenger__message-file-image {
-  cursor: pointer;
+	cursor: pointer;
 }
 
 .messenger__message-file-image img {
-  max-width: 100%;
+	max-width: 100%;
 }
 
 audio {
-  max-width: 230px;
+	max-width: 230px;
 }
 
 .messenger__message-files_group {
-  flex-wrap: wrap;
-  width: 210px;
-  height: 160px;
-  align-content: space-around;
+	flex-wrap: wrap;
+	width: 210px;
+	height: 160px;
+	align-content: space-around;
 }
 
 .messenger__message-files_group-count {
-  position: relative;
-  top: -75px;
-  height: 100%;
-  width: 100%;
-  color: white;
-  background: rgba(0, 0, 0, 0.5);
+	position: relative;
+	top: -75px;
+	height: 100%;
+	width: 100%;
+	color: white;
+	background: rgba(0, 0, 0, 0.5);
 }
 
 .messenger__message-files_group-count span {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  -ms-transform: translate(-50%, -50%);
+	position: absolute;
+	top: 50%;
+	left: 50%;
+	transform: translate(-50%, -50%);
+	-ms-transform: translate(-50%, -50%);
 }
 
 .messenger__message-file_group {
-  width: 100px;
-  height: 155px;
-  margin-bottom: 5px;
+	width: 100px;
+	height: 155px;
+	margin-bottom: 5px;
 }
 
 .messenger__message-file_group .messenger__message-file-image {
-  height: 100%;
+	height: 100%;
 }
 
 .messenger__message-file_group .messenger__message-file-image img {
-  height: 100%;
+	height: 100%;
 }
 
 .messenger__last-row {
-  width: 100px;
-  height: 75px;
+	width: 100px;
+	height: 75px;
 }
 
 .messenger__last-column {
-  width: 100px;
-  height: 75px;
+	width: 100px;
+	height: 75px;
 }
 
 .messenger__message-reactions {
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-  justify-content: flex-end;
-  margin-top: 5px;
+	display: flex;
+	flex-direction: row;
+	align-items: center;
+	justify-content: flex-end;
+	margin-top: 5px;
 }
 
 .messenger__message-reactions .messenger__message-reaction {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border-radius: 40%;
-  margin-left: 5px;
-  font-size: 12px;
-  cursor: pointer;
-  padding: 5px 10px;
-  background-color: #f5f5f5;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	border-radius: 40%;
+	margin-left: 5px;
+	font-size: 12px;
+	cursor: pointer;
+	padding: 5px 10px;
+	background-color: #f5f5f5;
 }
 
 .messenger__message-reactions .messenger__message-reaction:hover {
-  background-color: #e0e0e0;
+	background-color: #e0e0e0;
 }
 
 .messenger__message-reactions .messenger__message-reaction .messenger__message-reaction-count {
-  margin-left: 5px;
+	margin-left: 5px;
 }
 
 .messenger__message-reactions .messenger__message-reaction .messenger__message-reaction-count:hover {
-  background-color: transparent;
+	background-color: transparent;
 }
 
 .messenger__format-container_parent {
-  border-left: 2px solid #5ebee9;
-  cursor: pointer;
-  padding: 2px 10px;
+	border-left: 2px solid #5ebee9;
+	cursor: pointer;
+	padding: 2px 10px;
 }
 
 .messenger__format-container_parent-author {
-  font-weight: bold;
+	font-weight: bold;
 }
 
 .messenger__format-container_parent-message {
-  overflow: hidden;
-  white-space: nowrap;
-  text-overflow: ellipsis;
+	overflow: hidden;
+	white-space: nowrap;
+	text-overflow: ellipsis;
 }
 
 </style>
