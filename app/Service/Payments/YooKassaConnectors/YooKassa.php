@@ -33,6 +33,9 @@ class YooKassa extends Payment
         return  new YooKassaConnector($this->merchantId, $this->secretKey);
     }
 
+    /**
+     * @return PaymentStatus
+     */
     public function getStatus(): PaymentStatus
     {
         return new YooKassaPaymentStatus($this->merchantId, $this->secretKey);

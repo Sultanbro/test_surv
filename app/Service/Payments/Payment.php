@@ -25,8 +25,9 @@ abstract class Payment
 
     /**
      * @param StatusPaymentDTO $dto
+     * @return bool
      */
-    public function status(StatusPaymentDTO $dto)
+    public function status(StatusPaymentDTO $dto): bool
     {
         return $this->getStatus()->status($dto);
     }
