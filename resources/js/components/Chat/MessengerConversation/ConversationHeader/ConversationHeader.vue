@@ -276,7 +276,7 @@ export default {
 }
 </script>
 
-<style>
+<style lang="scss">
 
 .messenger__chat-header {
   display: flex;
@@ -288,6 +288,10 @@ export default {
   background: #fff;
   border-top-right-radius: 4px;
   border-bottom: 1px solid #c6c6c6;
+  .access-modal__search{
+	margin-top: 0;
+	margin-bottom: 2.5rem;
+  }
 }
 
 .messenger__chat-wrapper {

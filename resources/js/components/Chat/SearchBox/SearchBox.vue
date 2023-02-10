@@ -139,7 +139,9 @@ export default {
   border: none;
 }
 
-.messenger__card-window textarea, .messenger__card-window input[type=text], .messenger__card-window input[type=search] {
+.messenger__card-window textarea,
+.messenger__card-window input[type=text],
+.messenger__card-window input[type=search] {
   -webkit-appearance: none;
 }
 

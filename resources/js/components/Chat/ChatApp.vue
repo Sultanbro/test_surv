@@ -14,7 +14,6 @@
 				<MessengerConversation />
 				<InfoPanel />
 			</div>
-			<ChinBox />
 		</div>
 		<ImageGallery
 			:images="galleryImages"
@@ -31,7 +30,6 @@
 import {mapActions, mapGetters} from 'vuex';
 import ChatsList from './ChatsList/ChatsList.vue';
 import MessengerConversation from './MessengerConversation/MessengerConversation.vue';
-import ChinBox from './ChinBox/ChinBox.vue';
 import InfoPanel from './InfoPanel/InfoPanel';
 import clickOutside from './directives/clickOutside.ts';
 import ImageGallery from './ImageGallery/ImageGallery.vue';
@@ -42,7 +40,6 @@ export default {
 	components: {
 		ChatsList,
 		MessengerConversation,
-		ChinBox,
 		InfoPanel,
 		ImageGallery,
 		ConfirmDialog
@@ -97,58 +94,61 @@ export default {
 
 /*noinspection CssUnusedSymbol*/
 body.messenger__open {
-  overflow: hidden;
-  position: fixed;
+	overflow: hidden;
+	position: fixed;
 }
 
 .messenger__wrapper {
-  /* width: 90vw;
-  height: 100vh; */
-  position: fixed;
-  right: 0;
-  bottom: 0;
-    width: 100%;
-    height: 100%;
-    background: rgba(0, 0, 0, 0.7);
-    top: 0;
-    left: 0;
-    z-index: 10000;
-    overflow-x: hidden;
-    overflow-y: auto;
-    display: flex;
-    opacity: 1;
-    visibility: visible;
-    transition: 0.2s;
+	display: flex;
+	/* width: 90vw;
+	height: 100vh; */
+	width: 100%;
+	height: 100%;
+
+	position: fixed;
+	z-index: 10000;
+	top: 0;
+	left: 0;
+	right: 0;
+	bottom: 0;
+
+	background: rgba(0, 0, 0, 0.7);
+	overflow-x: hidden;
+	overflow-y: auto;
+	opacity: 1;
+	visibility: visible;
+	transition: 0.2s;
 }
 
 .messenger__card-window {
-  position: fixed;
-  padding-right: 6rem;
-  right: 0;
-  bottom: 0;
-  width: 90vw;
-  height: 100vh;
-  display: flex;
-  flex-direction: column;
-  background: #ffffff;
-  color: #0a0a0a;
-  font-size: 14px;
-  overflow-wrap: break-word;
-  white-space: normal;
-  -webkit-tap-highlight-color: transparent;
-  z-index: 1000;
+	display: flex;
+	width: 90vw;
+	height: 100vh;
+
+	position: fixed;
+	z-index: 1000;
+	right: 0;
+	bottom: 0;
+
+	flex-direction: column;
+	background: #ffffff;
+	color: #0a0a0a;
+	font-size: 14px;
+	overflow-wrap: break-word;
+	white-space: normal;
+	-webkit-tap-highlight-color: transparent;
 }
 
 @media only screen and (max-width: 670px) {
-  .messenger__card-window {
-    width: 100vw;
-  }
+	.messenger__card-window {
+		width: 100vw;
+	}
 }
 
 .messenger__chat-container {
-  display: flex;
-  flex: 1;
-  overflow-y: hidden;
+	display: flex;
+	flex: 1;
+	overflow-y: hidden;
 }
 
 </style>
