@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Classes\Enums;
+namespace App\Enums\Tariff;
 
 trait BaseEnum
 {
