@@ -3,9 +3,11 @@
 namespace App\Service\Payments\YooKassaConnectors;
 
 use App\DTO\Api\StatusPaymentDTO;
+use App\Enums\ErrorCode;
 use App\Enums\Payments\PaymentEnum;
 use App\Events\PaymentIsSuccessEvent;
 use App\Service\Payments\PaymentStatus;
+use App\Support\Core\CustomException;
 use PHPUnit\Util\Exception;
 use YooKassa\Client;
 use YooKassa\Common\Exceptions\ApiException;
@@ -64,10 +66,12 @@ class YooKassaPaymentStatus implements PaymentStatus
             $this->client->setAuth($this->merchantId, $this->secretKey);
             $paymentStatus = $this->client->getPaymentInfo($dto->paymentId);
 
-            if ($paymentStatus->status == PaymentEnum::STATUS_SUCCESS)
+            if ($paymentStatus->status != PaymentEnum::STATUS_SUCCESS)
             {
-                PaymentIsSuccessEvent::dispatch($dto->tariffId, $dto->extraUsersLimit, $dto->autoPayment);
+                new CustomException("Оплата по платежу $dto->paymentId еще не сделана", ErrorCode::BAD_REQUEST, []);
             }
+
+            PaymentIsSuccessEvent::dispatch($dto->tariffId, $dto->extraUsersLimit, $dto->autoPayment);
 
             return true;
         } catch (Exception $exception) {
