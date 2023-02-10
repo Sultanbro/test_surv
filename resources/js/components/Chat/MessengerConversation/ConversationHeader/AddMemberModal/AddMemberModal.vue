@@ -53,7 +53,7 @@
 					<div
 						v-for="item in accessDictionaries.users"
 						:key="item.id"
-						v-show="item.name.toLowerCase().includes(accessSearch.toLowerCase())"
+						v-show="item.name ? item.name.toLowerCase().includes(accessSearch.toLowerCase()) : false"
 						class="user-item"
 						@click="changeAccessList($event, item.id, item.name, 1, item.avatar)"
 					>
@@ -87,7 +87,7 @@
 					<div
 						v-for="item in accessDictionaries.profile_groups"
 						:key="item.id"
-						v-show="item.name.toLowerCase().includes(accessSearch.toLowerCase())"
+						v-show="item.name ? item.name.toLowerCase().includes(accessSearch.toLowerCase()) : false"
 						class="user-item"
 						@click="changeAccessList($event, item.id, item.name, 2, item.avatar)"
 					>
@@ -118,7 +118,7 @@
 					<div
 						v-for="item in accessDictionaries.positions"
 						:key="item.id"
-						v-show="item.position.toLowerCase().includes(accessSearch.toLowerCase())"
+						v-show="item.position ? item.position.toLowerCase().includes(accessSearch.toLowerCase()) : false"
 						class="user-item"
 						@click="changeAccessList($event, item.id, item.position, 3)"
 					>
