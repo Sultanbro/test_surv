@@ -4,10 +4,12 @@ declare(strict_types=1);
 namespace App\Service\Payments\YooKassaConnectors;
 
 use App\DTO\Api\DoPaymentDTO;
+use App\Models\Tariff\Tariff;
 use App\Service\Payments\PaymentTypeConnector;
 use App\User;
 use Exception;
 use Illuminate\Database\Eloquent\Model;
+use naffiq\tenge\CurrencyRates;
 use YooKassa\Client;
 
 class YooKassaConnector implements PaymentTypeConnector
@@ -42,6 +44,8 @@ class YooKassaConnector implements PaymentTypeConnector
     }
 
     /**
+     * Делает оплату.
+     *
      * @throws Exception
      */
     public function doPayment(DoPaymentDTO $dto): string
@@ -64,23 +68,26 @@ class YooKassaConnector implements PaymentTypeConnector
     /**
      * @param DoPaymentDTO $dto
      * @return array
+     * @throws Exception
      */
     private function getPaymentRequest(DoPaymentDTO $dto): array
     {
+        $tariff = Tariff::getTariffById($dto->tariffId);
+        $this->converterToRub((int)$tariff->price);
         return array(
             'amount' => array(
-                'value' => 15000,
-                'currency' => 'RUB',
+                'value'     => $this->converterToRub((int)$tariff->price),
+                'currency'  => 'RUB',
             ),
             'confirmation' => array(
                 'type'          => 'redirect',
                 'locale'        => 'ru_RU',
                 'return_url'    => 'https://jobtron.org/',
             ),
-            'capture'       => true,
-            'description'   => 'Заказ №' . time(),
-            'metadata'      => array(
-                'orderNumber' => time()
+            'capture'           => true,
+            'description'       => 'Заказ №' . time(),
+            'metadata' => array(
+                'orderNumber'   => time()
             ),
             'receipt' => array(
                 'customer' => array(
@@ -90,13 +97,13 @@ class YooKassaConnector implements PaymentTypeConnector
                 ),
                 'items' => array(
                     array(
-                        'description' => 'Описание услуги',
-                        'quantity' => $dto->extraUsersLimit,
+                        'description'   =>  "Покупка тарифа $tariff->kind",
+                        'quantity'      => $dto->extraUsersLimit,
                         'amount' => array(
-                            'value' => 1000,
-                            'currency' => 'RUB'
+                            'value'     => $this->converterToRub((int)$tariff->price),
+                            'currency'  => 'RUB'
                         ),
-                        'vat_code' => '2',
+                        'vat_code' => '1',
                         'payment_mode' => 'full_payment',
                         'payment_subject' => 'service',
                         'supplier' => array(
@@ -107,6 +114,17 @@ class YooKassaConnector implements PaymentTypeConnector
                 )
             )
         );
+    }
+
+    /**
+     * @throws Exception
+     */
+    private function converterToRub(
+        int $price
+    ): float
+    {
+        $rates = new CurrencyRates(CurrencyRates::URL_RATES_ALL);
+        return $rates->convertFromTenge('RUB', $price);
     }
 
     /**

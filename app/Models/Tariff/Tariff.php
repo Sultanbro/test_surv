@@ -2,6 +2,8 @@
 
 namespace App\Models\Tariff;
 
+use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
@@ -41,5 +43,16 @@ class Tariff extends Model
      */
     public function getTarriff(int $tarriffId){
         return $this->where('id', $tarriffId)->get();
+    }
+
+    /**
+     * @param int $tariffId
+     * @return ?object
+     */
+    public static function getTariffById(
+        int $tariffId
+    ): ?object
+    {
+        return self::query()->find($tariffId);
     }
 }

@@ -642,6 +642,7 @@ Route::group([
     'as' => 'payment.'
 ], function () {
     Route::post('/', [Api\PaymentController::class, 'payment']);
+    Route::post('/status', [Api\PaymentController::class, 'status']);
 });
 
 /**

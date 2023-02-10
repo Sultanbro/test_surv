@@ -4,6 +4,7 @@ declare(strict_types=1);
 namespace App\Http\Requests\Api;
 
 use App\DTO\Api\DoPaymentDTO;
+use App\Rules\CheckTariffLimit;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Support\Arr;
 
@@ -28,8 +29,9 @@ class DoPaymentRequest extends FormRequest
     {
         return [
             'currency'          => 'required|in:kzt,rub,dollar',
-            'tariff_id'         => 'required|integer',
-            'extra_users_limit' => 'required|integer|min:5',
+            'tariff_id'         => 'required|integer|exists:tariff,id',
+            'extra_users_limit' => ['required', 'integer', new CheckTariffLimit($this->tariff_id)],
+            'auto_payment'      => 'bool'
         ];
     }
 
@@ -43,11 +45,13 @@ class DoPaymentRequest extends FormRequest
         $currency = Arr::get($validated, 'currency');
         $tariffId = Arr::get($validated, 'tariff_id');
         $extraUsersLimit = Arr::get($validated, 'extra_users_limit');
+        $autoPayment = Arr::get($validated, 'auto_payment');
 
         return new DoPaymentDTO(
             $currency,
             $tariffId,
-            $extraUsersLimit
+            $extraUsersLimit,
+            $autoPayment
         );
     }
 }

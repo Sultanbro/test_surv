@@ -3,12 +3,14 @@
 namespace App\Providers;
 
 use App\Events\EmailNotificationEvent;
+use App\Events\PaymentIsSuccessEvent;
 use App\Events\TimeTrack\CreateTimeTrackHistoryEvent;
 use App\Events\TrackCourseItemFinishedEvent;
 use App\Events\TrackGroupChangingEvent;
 use App\Events\TrackUserFiredEvent;
 use App\Events\TransferUserInGroupEvent;
 use App\Listeners\EmailNotificationListener;
+use App\Listeners\PaymentIsSuccessListener;
 use App\Listeners\TimeTrack\CreateTimeTrackHistoryListener;
 use App\Listeners\TrackCourseItemFinishedListener;
 use App\Listeners\TrackGroupChangingListener;
@@ -60,6 +62,9 @@ class EventServiceProvider extends ServiceProvider
         ],
         EmailNotificationEvent::class => [
             EmailNotificationListener::class
+        ],
+        PaymentIsSuccessEvent::class => [
+            PaymentIsSuccessListener::class
         ]
     ];
 

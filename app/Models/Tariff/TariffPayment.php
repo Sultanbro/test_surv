@@ -3,6 +3,7 @@
 namespace App\Models\Tariff;
 
 use App\User;
+use Exception;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Carbon\Carbon;
@@ -84,5 +85,33 @@ class TariffPayment extends Model
             ->orderBy('tariff_payment.expire_date', 'desc')
             ->groupBy('tariff_payment.id')
             ->first();
+    }
+
+    /**
+     * @param int $tariffId
+     * @param int $extraUsersLimit
+     * @param string $expireDate
+     * @param bool $autoPayment
+     * @return object
+     * @throws Exception
+     */
+    public static function createPaymentOrFail(
+        int $tariffId,
+        int $extraUsersLimit,
+        string $expireDate,
+        bool $autoPayment = false
+    ): object
+    {
+        try {
+            return self::query()->create([
+                'owner_id'          => auth()->id() ?? 5,
+                'tariff_id'         => $tariffId,
+                'extra_user_limit'  => $extraUsersLimit,
+                'expire_date'       => $expireDate,
+                'auto_payment'      => false
+            ]);
+        } catch (Exception $exception) {
+            throw new Exception('При сохранений данных произошла ошибка');
+        }
     }
 }

@@ -21,4 +21,20 @@ final class PaymentFactory
 
         return $factory;
     }
+
+    /**
+     * @param string $type
+     * @return Payment
+     */
+    public function getStatus(string $type): Payment
+    {
+        switch ($type)
+        {
+            case 'yookassa':
+                $paymentType = new YooKassa();
+                break;
+        }
+
+        return $paymentType;
+    }
 }
