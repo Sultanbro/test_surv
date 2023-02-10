@@ -4,6 +4,20 @@
 		@click.self="toggleAccessModal(false, $event)"
 	>
 		<div class="access-modal">
+			<div class="access-modal__search">
+				<img
+					class="news-icon"
+					src="/icon/news/filter/search.svg"
+					alt=""
+				>
+				<input
+					type="text"
+					v-model="accessSearch"
+					class="access-modal__search-input"
+					placeholder="Быстрый поиск"
+				>
+			</div>
+
 			<div class="access-modal__tabs">
 				<div
 					:class="'access-modal__tab ' + (currentAccessTab === 1 ?'access-modal__tab--active' : '')"
@@ -23,26 +37,6 @@
 				>
 					Должности
 				</div>
-				<div
-					:class="'access-modal__tab'"
-					@click="toggleAvailableToEveryone"
-				>
-					Все
-				</div>
-			</div>
-
-			<div class="access-modal__search">
-				<img
-					class="news-icon"
-					src="/icon/news/filter/search.svg"
-					alt=""
-				>
-				<input
-					type="text"
-					v-model="accessSearch"
-					class="access-modal__search-input"
-					placeholder="Быстрый поиск"
-				>
 			</div>
 
 			<div class="user-list">
@@ -140,19 +134,18 @@
 			</div>
 
 			<div class="access-modal__footer">
-				<span
-					class="access-modal__selected-count"
-					v-html="enumerate(accessCount, ['Добавлен', 'Добавлено', 'Добавлено']) + ' ' + accessCount + ' ' + enumerate(accessCount, ['элемент', 'элемента', 'элементов'])"
-				/>
+				<span class="access-modal__selected-count">
+					{{ enumerate(accessCount, ['Добавлен', 'Добавлено', 'Добавлено']) + ' ' + accessCount + ' ' + enumerate(accessCount, ['элемент', 'элемента', 'элементов']) }}
+				</span>
 				<a
 					class="access-modal__add-employee hover-pointer"
 					@click="submitForm"
 				>
-					<img
+					<!-- <img
 						src="/icon/news/access-modal/plus-accent.svg"
 						alt=""
-					>
-					<span v-html="'Пригласить'" />
+					> -->
+					Пригласить
 				</a>
 			</div>
 		</div>
@@ -271,16 +264,6 @@ export default {
 		enumerate(number, titles) {
 			const cases = [2, 0, 1, 1, 1, 2];
 			return titles[(number % 100 > 4 && number % 100 < 20) ? 2 : cases[(number % 10 < 5) ? number % 10 : 5]];
-		},
-		toggleAvailableToEveryone() {
-			this.availableToEveryone = !this.availableToEveryone;
-			let users = this.accessDictionaries.users;
-
-			if (this.availableToEveryone) {
-				this.addUsers(users);
-			} else {
-				this.removeUsers(users);
-			}
 		},
 		submitForm(e) {
 			e.stopPropagation();
