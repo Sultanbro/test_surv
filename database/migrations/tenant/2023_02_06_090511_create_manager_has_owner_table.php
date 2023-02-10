@@ -16,7 +16,7 @@ return new class extends Migration
         Schema::create('manager_has_owner', function (Blueprint $table) {
             $table->id();
             $table->unsignedBigInteger('manager_id');
-            $table->unsignedBigInteger('owner_id');
+            $table->unsignedBigInteger('owner_id')->unique();
             $table->timestamps();
         });
     }
