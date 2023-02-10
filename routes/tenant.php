@@ -288,6 +288,7 @@ Route::middleware(['web','tenant','not_admin_subdomain'])->group(function () {
 
     Route::any('/timetracking/zarplata-table', [Timetrack\TimetrackingController::class, 'zarplatatable']);
     Route::any('/timetracking/zarplata-table-new', [Timetrack\TimetrackingController::class, 'zarplatatableNew']);
+    Route::post('/timetracking/salary-balance',[Timetrack\SalaryWorkChartController::class,'salaryBalance']);
     Route::post('/order-persons-to-group', [Timetrack\TimetrackingController::class, 'orderPersonsToGroup']); // Заказ сотрудников в группы для Руководителей
     Route::post('/timetracking/apply-person', [Timetrack\TimetrackingController::class, 'applyPerson']); // Принятие на штат стажера
     Route::post('/timetracking/get-totals-of-reports', [Timetrack\TimetrackingController::class, 'getTotalsOfReports']);
