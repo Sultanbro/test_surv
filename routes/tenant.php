@@ -637,6 +637,13 @@ Route::middleware(['api','tenant','not_admin_subdomain'])->group(function () {
     });
 });
 
+Route::group([
+    'prefix' => 'payment',
+    'as' => 'payment.'
+], function () {
+    Route::post('/', [Api\PaymentController::class, 'payment']);
+});
+
 /**
  * Owners list
  * Admin.jobtron.org routes
