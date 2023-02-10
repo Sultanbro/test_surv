@@ -1,8 +1,8 @@
 <template>
 	<div class="messenger__box-search">
 		<div
-			class="messenger__box-search__input"
 			v-if="isOpen"
+			class="messenger__box-search__input"
 		>
 			<div class="messenger__icon">
 				<svg
@@ -40,22 +40,21 @@ import {mapActions, mapGetters} from 'vuex';
 
 export default {
 	name: 'SearchBox',
-	computed: {
-		...mapGetters(['isOpen', 'isInitialized', 'unreadCount', 'searchType', 'isSearchFocus', 'isSocketConnected']),
-	},
-	mounted() {
-		if (this.isSearchFocus) {
-			this.focus()
-		}
-		if (!this.isSocketConnected) {
-			this.socketError();
-		}
-	},
 	data() {
 		return {
 			searchString: '',
 			connectionError: false,
 		}
+	},
+	computed: {
+		...mapGetters([
+			'isOpen',
+			'isInitialized',
+			'unreadCount',
+			'searchType',
+			'isSearchFocus',
+			'isSocketConnected'
+		]),
 	},
 	watch: {
 		searchString() {
@@ -74,8 +73,20 @@ export default {
 			}
 		}
 	},
+	mounted() {
+		if (this.isSearchFocus) {
+			this.focus()
+		}
+		if (!this.isSocketConnected) {
+			this.socketError();
+		}
+	},
 	methods: {
-		...mapActions(['findContacts', 'findMessages', 'setSearchFocus']),
+		...mapActions([
+			'findContacts',
+			'findMessages',
+			'setSearchFocus'
+		]),
 		focus() {
 			this.$nextTick(() => {
 				document.getElementById('messenger_search_input').focus();
@@ -159,6 +170,7 @@ export default {
 .messenger__connection-indicator {
   margin-right: 10px;
   color: #ff0000;
+  font-size: 1.2rem;
 }
 
 </style>

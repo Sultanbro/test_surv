@@ -22,8 +22,9 @@
 	>
 		<div
 			class="messenger__avatar_name"
-			v-text="title[0]"
-		/>
+		>
+			{{ title[0] }}
+		</div>
 	</div>
 </template>
 
@@ -41,8 +42,9 @@ export default {
 	},
 	props: {
 		image: {
-			type: [String, null],
-			required: true,
+			type: String,
+			required: false,
+			default: null
 		},
 		title: {
 			type: String,

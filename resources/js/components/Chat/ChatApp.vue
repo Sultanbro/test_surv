@@ -9,7 +9,6 @@
 			id="messengerWindow"
 			v-click-outside="toggle"
 		>
-			<SearchBox />
 			<div class="messenger__chat-container">
 				<ChatsList :fullscreen="true" />
 				<MessengerConversation />
@@ -30,7 +29,6 @@
 
 <script>
 import {mapActions, mapGetters} from 'vuex';
-import SearchBox from './SearchBox/SearchBox.vue';
 import ChatsList from './ChatsList/ChatsList.vue';
 import MessengerConversation from './MessengerConversation/MessengerConversation.vue';
 import ChinBox from './ChinBox/ChinBox.vue';
@@ -42,7 +40,6 @@ import ConfirmDialog from './ConfirmDialog/ConfirmDialog.vue';
 export default {
 	name: 'ChatApp',
 	components: {
-		SearchBox,
 		ChatsList,
 		MessengerConversation,
 		ChinBox,
