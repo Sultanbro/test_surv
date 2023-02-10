@@ -2,8 +2,8 @@
 	<div class="messenger__chat-header">
 		<div class="messenger__chat-wrapper">
 			<div
-				class="messenger__info-wrapper"
 				v-if="chat"
+				class="messenger__info-wrapper"
 			>
 				<div
 					class="messenger__info-wrapper_avatar"
@@ -17,10 +17,11 @@
 				<div class="messenger__info-wrapper_head messenger__text-ellipsis messenger__clickable">
 					<div class="messenger__chat-name">
 						<span
-							v-text="chat.title"
-							@click="changeTitle"
 							v-if="!editTitle"
-						/>
+							@click="changeTitle"
+						>
+							{{ chat.title }}
+						</span>
 						<div
 							v-if="editTitle"
 							@keyup.enter="saveTitle"
@@ -177,9 +178,12 @@ export default {
 	methods: {
 		...mapActions([
 			'setCurrentChatContacts',
-			'toggleInfoPanel', 'toggleChatSearchMode',
+			'toggleInfoPanel',
+			'toggleChatSearchMode',
 			'uploadChatAvatar',
-			'setChatAdmin', 'unsetChatAdmin', 'editChatTitle'
+			'setChatAdmin',
+			'unsetChatAdmin',
+			'editChatTitle'
 		]),
 		openAddMemberModal(e) {
 			e.stopPropagation();
@@ -272,7 +276,7 @@ export default {
 }
 </script>
 
-<style>
+<style lang="scss">
 
 .messenger__chat-header {
   display: flex;
@@ -284,6 +288,10 @@ export default {
   background: #fff;
   border-top-right-radius: 4px;
   border-bottom: 1px solid #c6c6c6;
+  .access-modal__search{
+	margin-top: 0;
+	margin-bottom: 2.5rem;
+  }
 }
 
 .messenger__chat-wrapper {

@@ -1,7 +1,7 @@
 <template>
 	<div
-		:style="style"
 		v-show="show"
+		:style="style"
 		class="messenger__context-menu"
 		@mousedown.stop
 		@contextmenu.prevent
@@ -14,72 +14,65 @@
 export default {
 	props: {
 		show: Boolean,
-		x: null,
-		y: null,
-		parentElement: null
-	},
-	watch: {
-		x() {
-			this.updateStyle();
+		x: {
+			type: Number,
+			default: 0,
 		},
-		y() {
-			this.updateStyle();
+		y: {
+			type: Number,
+			default: 0,
+		},
+		parentElement: {
+			type: HTMLElement,
+			default: null
 		}
 	},
-	data() {
-		return {
-			style: {
-				top: 0,
-				left: 0
-			}
-		}
-	},
-	methods: {
-		updateStyle() {
-			if (this.parentElement) {
-				const messengerWindowRect = this.parentElement.getBoundingClientRect();
-				const x = this.x - messengerWindowRect.left;
-				const y = this.y - messengerWindowRect.top;
+	computed: {
+		style(){
+			if(!this.parentElement) return {top: 0, left: 0}
+			const messengerWindowRect = this.parentElement.getBoundingClientRect()
+			const x = this.x - messengerWindowRect.left
+			const y = this.y - messengerWindowRect.top
+			const offsetHeight = this.$el.offsetHeight
+			const offsetWidth = this.$el.offsetWidth
 
-				if (x + this.$el.offsetWidth + 50 > messengerWindowRect.width) {
-					this.style.left = messengerWindowRect.width - this.$el.offsetWidth + 'px';
-				} else {
-					this.style.left = x + 'px';
-				}
-
-				if (y + this.$el.offsetHeight > messengerWindowRect.height) {
-					this.style.top = messengerWindowRect.height - this.$el.offsetHeight + 'px';
-				} else {
-					this.style.top = y + 'px';
-				}
+			return {
+				top: (y + offsetHeight > messengerWindowRect.height
+					? messengerWindowRect.height - offsetHeight
+					: y) + 'px',
+				left: (x + offsetWidth + 50 > messengerWindowRect.width
+					? messengerWindowRect.width - offsetWidth
+					: x) + 'px'
 			}
 		}
 	}
 }
 </script>
 
-<style>
+<style lang="scss">
+.messenger__context{
+	&-menu{
+		display: block;
+		min-width: 100px;
+		border: 1px solid #e5e5e5;
+		border-radius: 4px;
 
-.messenger__context-menu {
-  position: absolute;
-  background-color: #fff;
-  border: 1px solid #e5e5e5;
-  border-radius: 4px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, .15);
-  z-index: 1000;
-  display: block;
-  min-width: 100px;
-}
+		position: absolute;
+		z-index: 1000;
 
-.messenger__context-menu a {
-  display: block;
-  padding: 10px 10px;
-  text-decoration: none;
-  color: #0a0a0a;
-}
-
-.messenger__context-menu a:hover {
-  background-color: #f5f5f5;
+		background-color: #fff;
+		box-shadow: 0 2px 8px rgba(#000, .15);
+	}
+	a,
+	&-item{
+		display: block;
+		padding: 10px 10px;
+		text-decoration: none;
+		color: #0a0a0a;
+		&:hover{
+			background-color: #f5f5f5;
+		}
+	}
 }
 
 </style>
