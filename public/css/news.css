@@ -1701,12 +1701,13 @@
     background-color: #3781EF;
 }
 .news-checkbox input:checked ~ .news-checkmark:after {
-    transition: all 0.3s ease;
+    content: url("/icon/news/access-modal/checked.svg");
     display: block;
     position: absolute;
-    left: 30%;
-    top: 4%;
-    content: url("/icon/news/access-modal/checked.svg");
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    transition: all 0.3s ease;
 }
 
 .news-checkmark {

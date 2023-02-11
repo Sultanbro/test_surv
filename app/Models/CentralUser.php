@@ -2,6 +2,8 @@
 
 namespace App\Models;
 
+use App\Enums\ErrorCode;
+use App\Support\Core\CustomException;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use App\Models\Tenant;
@@ -30,6 +32,42 @@ class CentralUser extends Model
         'city',
         'balance',
     ];
+
+
+    /**
+     * @param int $userId
+     * @return void
+     */
+    public static function checkDomainExistOrFail(int $userId): void
+    {
+        $domains = self::query()->find($userId)->tenants->pluck('id')->toArray();
+
+        if (count($domains) == 0)
+        {
+            new CustomException('Пользователей не создавал свой домен', ErrorCode::BAD_REQUEST, []);
+        }
+    }
+
+    /**
+     * @param $query
+     * @param int $id
+     * @return ?object
+     */
+    public function scopeGetById($query, int $id): ?object
+    {
+        return $query->where('id', $id);
+    }
+
+    /**
+     * @param array $ids
+     * @return object|null
+     */
+    public static function getUsersById(
+        array $ids
+    ): ?object
+    {
+        return self::query()->whereIn('id', $ids)->get();
+    }
 
     /**
      * Кабинеты user-a где он owner

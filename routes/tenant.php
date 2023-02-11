@@ -638,6 +638,13 @@ Route::middleware(['api','tenant','not_admin_subdomain'])->group(function () {
     });
 });
 
+Route::group([
+    'prefix' => 'owner',
+    'as'     => 'owner.'
+], function () {
+    Route::get('/manager', [Admin\OwnerController::class, 'getManager']);
+});
+
 /**
  * Owners list
  * Admin.jobtron.org routes
@@ -646,6 +653,16 @@ Route::middleware(['web','tenant','admin_subdomain'])->group(function () {
 
     Route::group(['prefix' => 'admin','as' => 'admin.'], function () {
         Route::get('/owners', [Admin\AdminController::class, 'owners']);
+    });
+
+    Route::group([
+        'prefix' => 'managers',
+        'as' => 'managers.'
+    ], function () {
+        Route::post('/put-owner', [Admin\ManagerOwnerController::class, 'putManagerToOwner']);
+        Route::get('/owner', [Admin\ManagerOwnerController::class, 'getOwner']);
+        Route::get('/owner-info', [Admin\ManagerPermissionController::class, 'getOwnerInfo']);
+        Route::get('/get/{managerId?}', [Admin\ManagerController::class, 'get']);
     });
 
     Route::group(['prefix' => 'admins','as' => 'admins.'], function () {
