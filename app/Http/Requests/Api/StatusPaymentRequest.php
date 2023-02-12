@@ -4,6 +4,7 @@ declare(strict_types=1);
 namespace App\Http\Requests\Api;
 
 use App\DTO\Api\StatusPaymentDTO;
+use App\Rules\CheckTariffLimit;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Support\Arr;
 
@@ -30,7 +31,7 @@ class StatusPaymentRequest extends FormRequest
             'payment_id'    => 'required|string',
             'payment_type'  => 'required|in:yookassa',
             'tariff_id'     => 'required|exists:tariff,id',
-            'extra_users_limit' => 'integer',
+            'extra_users_limit' => ['required', 'integer', new CheckTariffLimit($this->tariff_id)],
             'auto_payment'  => 'required|bool'
         ];
     }

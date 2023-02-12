@@ -25,7 +25,9 @@ class TariffPayment extends Model
         'tariff_id',
         'extra_user_limit',
         'expire_date',
-        'auto_payment'
+        'auto_payment',
+        'payment_id',
+        'service_for_payment'
     ];
 
     /**
@@ -91,6 +93,8 @@ class TariffPayment extends Model
      * @param int $tariffId
      * @param int $extraUsersLimit
      * @param string $expireDate
+     * @param string $paymentId
+     * @param string $serviceForPayment
      * @param bool $autoPayment
      * @return object
      * @throws Exception
@@ -99,6 +103,8 @@ class TariffPayment extends Model
         int $tariffId,
         int $extraUsersLimit,
         string $expireDate,
+        string $paymentId,
+        string $serviceForPayment,
         bool $autoPayment = false
     ): object
     {
@@ -108,7 +114,9 @@ class TariffPayment extends Model
                 'tariff_id'         => $tariffId,
                 'extra_user_limit'  => $extraUsersLimit,
                 'expire_date'       => $expireDate,
-                'auto_payment'      => false
+                'auto_payment'      => $autoPayment,
+                'payment_id'        => $paymentId,
+                'service_for_payment' => $serviceForPayment
             ]);
         } catch (Exception $exception) {
             throw new Exception('При сохранений данных произошла ошибка');

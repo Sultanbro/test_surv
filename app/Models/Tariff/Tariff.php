@@ -2,6 +2,7 @@
 
 namespace App\Models\Tariff;
 
+use App\Enums\Tariff\TariffValidityEnum;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
@@ -54,5 +55,24 @@ class Tariff extends Model
     ): ?object
     {
         return self::query()->find($tariffId);
+    }
+
+    /**
+     * @param int $tariffId
+     * @return string
+     */
+    public static function calculateExpireDate(
+        int $tariffId
+    ): string
+    {
+        $tariff = self::getTariffById($tariffId);
+        $date = now()->addMonth();
+
+        if ($tariff->validity == TariffValidityEnum::Annual)
+        {
+            $date = now()->addYear();
+        }
+
+        return $date;
     }
 }

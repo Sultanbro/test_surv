@@ -42,7 +42,7 @@ class PaymentController extends Controller
      * @param StatusPaymentRequest $request
      * @return JsonResponse
      */
-    public function status(StatusPaymentRequest $request): JsonResponse
+    public function saveToTariffPayments(StatusPaymentRequest $request): JsonResponse
     {
         $dto = $request->toDto();
         $response = $this->factory->getStatus($dto->paymentType)->status($dto);

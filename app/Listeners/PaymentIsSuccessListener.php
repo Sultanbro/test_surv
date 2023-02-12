@@ -23,25 +23,10 @@ class PaymentIsSuccessListener
         TariffPayment::createPaymentOrFail(
             $event->tariffId,
             $event->extraUsersLimit,
-            $this->calculateExpireDate($event->tariffId),
+            Tariff::calculateExpireDate($event->tariffId),
+            $event->paymentId,
+            $event->paymentType,
             $event->autoPayment
         );
-    }
-
-    /**
-     * @param int $tariffId
-     * @return string
-     */
-    private function calculateExpireDate(int $tariffId): string
-    {
-        $tariff = Tariff::getTariffById($tariffId);
-        $date = now()->addMonth();
-
-        if ($tariff->validity == TariffValidityEnum::Annual)
-        {
-            $date = now()->addYear();
-        }
-
-        return $date;
     }
 }

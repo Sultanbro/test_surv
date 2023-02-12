@@ -2,6 +2,7 @@
 
 namespace App\Events;
 
+use App\DTO\Api\StatusPaymentDTO;
 use Illuminate\Broadcasting\Channel;
 use Illuminate\Broadcasting\InteractsWithSockets;
 use Illuminate\Broadcasting\PresenceChannel;
@@ -15,25 +16,27 @@ class PaymentIsSuccessEvent
     use Dispatchable, InteractsWithSockets, SerializesModels;
 
     /**
-     * Create a new event instance.
-     *
-     * @return void
+     * @param int $tariffId
+     * @param int $extraUsersLimit
+     * @param string $paymentId
+     * @param string $paymentType
+     * @param bool $autoPayment
      */
     public function __construct(
         public int $tariffId,
         public int $extraUsersLimit,
-        public bool $autoPayment
+        public string $paymentId,
+        public string $paymentType,
+        public bool $autoPayment = false
     )
-    {
-        //
-    }
+    {}
 
     /**
      * Get the channels the event should broadcast on.
      *
-     * @return \Illuminate\Broadcasting\Channel|array
+     * @return Channel
      */
-    public function broadcastOn()
+    public function broadcastOn(): Channel
     {
         return new PrivateChannel('channel-name');
     }
