@@ -34,7 +34,7 @@ class CheckTariffLimit implements Rule
      */
     public function passes($attribute, $value): bool
     {
-        $tariff = Tariff::query()->find($this->tariffId);
+        $tariff = Tariff::getTariffById( $this->tariffId);
 
         if ($tariff->users_limit < $value)
         {
