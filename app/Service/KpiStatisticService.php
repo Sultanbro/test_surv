@@ -603,7 +603,6 @@ class KpiStatisticService
      */
     public function fetchKpis(Request $request) : array
     {
-       
         $filters = $request->filters;
         
         /**
@@ -624,10 +623,8 @@ class KpiStatisticService
         } else {
             $date = Carbon::now()->setTimezone('Asia/Almaty')->startOfMonth();
         }
-
         
         $user_id = isset($filters['user_id']) ? $filters['user_id'] : 0;
-        
         
         $this->workdays = collect($this->userWorkdays($request));
         $this->updatedValues = UpdatedUserStat::query()
@@ -705,9 +702,14 @@ class KpiStatisticService
             }
 
             //  
-            $kpi->avg = 0; // avg percent from kpi_items' percent
+            $kpi->avg = 12; // avg percent from kpi_items' percent
     
             $kpi->users = $this->getUsersForKpi($kpi, $date, $user_id);
+            $kpi_sum = 0;
+            foreach ($kpi->users as $user){
+                $kpi_sum = $kpi_sum + $user['avg_percent'];
+            }
+            $kpi->avg = round($kpi_sum/count($kpi->users));
 
             $kpi['dropped'] = in_array($kpi->targetable_id, $droppedGroups) ?? true;
         }
@@ -793,11 +795,12 @@ class KpiStatisticService
         /**
          * connect user activity facts and avg values with kpi_items
          */
-        foreach ($_users as $key => $user) {
+        foreach ($_users as $user) {
        
             $kpi_items = [];
+            $sumKpiPercent = 0;
            
-            foreach ($kpi->items as $key => $_item) {
+            foreach ($kpi->items as $_item) {
                 
                 // to array because object changes every loop
                 $item = $_item->toArray();
@@ -826,6 +829,7 @@ class KpiStatisticService
                 $exists = collect($user['items'])
                         ->where('activity_id', $item['activity_id'])
                         ->first();
+
                 // assign keys
                 if($exists) {
                     $item['fact']          = $exists->fact;
@@ -887,8 +891,6 @@ class KpiStatisticService
                         
                     }
 
-
-
                 } else {
                     $item['fact']          = 0;
                     $item['avg']           = 0;
@@ -902,7 +904,7 @@ class KpiStatisticService
                  * take another activity values
                  */
                 $item['fact'] = $item['fact'] ?? 0;
-               
+
                 $this->takeCommonValue( $_item, $date, $item);
                 $this->takeCellValue(   $_item, $date, $item);
                 $this->takeRentability( $_item, $date, $item);
@@ -913,6 +915,8 @@ class KpiStatisticService
                     $item,
                     $user['id']
                 );
+                $item['percent'] = round(($item['fact'] * 100)/$item['plan']);
+                $sumKpiPercent = $sumKpiPercent + $item['percent'];
                 
                 // plan
                 $item['full_time'] = $user['full_time'];
@@ -935,7 +939,6 @@ class KpiStatisticService
                     if(array_key_exists('activity_id', $has_edited_plan)) $item['activity_id'] = $has_edited_plan['activity_id'];
                      
                 }
-                
 
                 $item['plan'] = $item['daily_plan'];
 
@@ -977,11 +980,12 @@ class KpiStatisticService
                
                 $kpi_items[] = $item;
             }
-            
+
             /**
              * add user to final array
              */
             $user['items'] = $kpi_items;
+            $user['avg_percent'] = round($sumKpiPercent/count($kpi_items));
             $users[] = $user;
         }
 
@@ -1352,7 +1356,6 @@ class KpiStatisticService
 					}),
 				];
 			});
-
                 
 		return $users->values(); //array_values($users->toArray());
     }

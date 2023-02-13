@@ -73,7 +73,7 @@ class KpiStatController extends Controller
      * Вытащить kpi по фильтрам
      */
     public function fetchKpis(Request $request): JsonResponse
-    {   
+    {
         $response = $this->service->fetchKpis($request);
 
         return response()->json($response);
