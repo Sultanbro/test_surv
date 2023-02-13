@@ -701,15 +701,12 @@ class KpiStatisticService
                 }
             }
 
-            //  
-            $kpi->avg = 12; // avg percent from kpi_items' percent
-    
             $kpi->users = $this->getUsersForKpi($kpi, $date, $user_id);
             $kpi_sum = 0;
             foreach ($kpi->users as $user){
                 $kpi_sum = $kpi_sum + $user['avg_percent'];
             }
-            $kpi->avg = round($kpi_sum/count($kpi->users));
+            $kpi->avg = round($kpi_sum/count($kpi->users)); //AVG percent of all KPI of all USERS in GROUP
 
             $kpi['dropped'] = in_array($kpi->targetable_id, $droppedGroups) ?? true;
         }
