@@ -25,22 +25,19 @@ use YooKassa\Common\Exceptions\UnauthorizedException;
 
 trait YooKassaTrait
 {
-    /**
-     * @var Client
-     */
-    public Client $client;
+
 
     /**
      * @param int $merchantId
      * @param string $secretKey
-     * @return void
+     * @param Client $client
      */
     public function __construct(
         public int $merchantId,
-        public string $secretKey
+        public string $secretKey,
+        public Client $client
     )
     {
-        $this->client = new Client();
         $this->client->setAuth($this->merchantId, $this->secretKey);
     }
 
