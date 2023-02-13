@@ -30,11 +30,10 @@ class SalaryWorkChartService
     )
     {}
 
-    public function salaryBalance(SalaryWorkChartDTO $dto,$carbonDate)
+    public function salaryBalance(SalaryWorkChartDTO $dto)
     {
-
-        $user = auth()->user() ?? User::find(22709);
-        $date  = Carbon::createFromDate($dto->year, $dto->month, 1)->format('d.m.Y');
+        $user = auth()->user() ?? User::find(23368);
+        $carbonDate = Carbon::createFromDate($dto->year, $dto->month, 1);
         $daysInMonth = Carbon::createFromDate($dto->year, $dto->month, 1)->daysInMonth;
         $userWorkChart = WorkChartModel::find($user->working_day_id);
         $dayWork = substr($userWorkChart->name,0,1);
@@ -43,24 +42,17 @@ class SalaryWorkChartService
         $hollidays = json_decode($dto->hollidays, true);
 
         if ($startDay < $daysInMonth && $startDay != 0 && $dayOff != 0 && $dayWork) {
-            $workChart = $this->createWorkingChart($date,$startDay,$daysInMonth,$hollidays,$dayOff,$dayWork,$dto,$carbonDate,$user);
+            if(!is_null($hollidays)){
+                $charts = $this->restHoliday($carbonDate,$startDay,$daysInMonth,$hollidays,$dayOff,$dayWork);
+            }else{
+                $charts = $this->otherCharts($carbonDate,$startDay,$daysInMonth,$dayOff,$dayWork);
+            }
         }else{
-            $workChart = 'Вы указали не существующий день в выбранном месяце';
+            $charts = 'Вы указали не существующий день в выбранном месяце';
         }
-        return $workChart;
-    }
-
-    public function createWorkingChart($date,$startDay,$daysInMonth,$hollidays,$dayOff,$dayWork,$dto,$carbonDate,$user)
-    {
-        if(!is_null($hollidays)){
-            $charts = $this->restHoliday($date,$startDay,$daysInMonth,$hollidays,$dayOff,$dayWork);
-        }else{
-            $charts = $this->otherCharts($date,$startDay,$daysInMonth,$dayOff,$dayWork);
-        }
-
         $countDayWork = $this->countDayWork($charts);
         $countDayOff = $this->countDayOff($charts);
-        $result = $this->calculateSalary($charts,$countDayWork,$dto,$carbonDate,$user,$startDay);
+        $result = $this->calculateSalary($charts,$carbonDate,$countDayWork,$dto,$user,$startDay);
         $arResult = [
             'График' => $result,
             'Смена' => $dayWork.'/'.$dayOff,
@@ -71,23 +63,26 @@ class SalaryWorkChartService
         return $arResult;
     }
 
-    public function calculateSalary($arMonthDay,$countDayWork,$dto,$carbonDate,$user)
-    {;
+    public function calculateSalary($charts,$carbonDate,$countDayWork,$dto,$user)
+    {
+        $userSalary = Salary::where('user_id',$user->id)->first();
+        $salaryAmount = $userSalary->amount ? $userSalary->amount : 70000;
+
+        $userWorkChart = WorkChartModel::find($user->working_day_id);
+        $workingHours = (int)$userWorkChart->time_end - (int)$userWorkChart->time_beg;
+        $realWorkTime = ((int)$user->work_end - (int)$user->work_start);
+        $hourlyPay = round($salaryAmount / $countDayWork / $workingHours, 2);
+
         $currency_rate = (float)(Currency::rates()[$user->currency] ??  0.00001);
         $userTotalFines = $this->fineService->getUserFines($dto->month, $user, $currency_rate);
         $salaryBonuses = $this->salaryService->getUserBonuses($carbonDate, $user);
         $obtainedBonuses = $this->obtainedBonusesService->getUserBonuses($carbonDate,$user);
         $testBonuses =  $this->testBonusService->getUserBonuses($carbonDate,$user);
         $advances = $this->salaryService->getUserAdvances($carbonDate, $user);
-        $userSalary = Salary::where('user_id',22709)->first();
-        $userWorkChart = WorkChartModel::find($user->working_day_id);
-        $salaryAmount = $userSalary->amount ? $userSalary->amount : 70000;
-        $workingHours = (int)$userWorkChart->time_end - (int)$userWorkChart->time_beg;
-        $realWorkTime = ((int)$user->work_end - (int)$user->work_start);
-        $toDay = Carbon::parse(now())->day;
-        $hourlyPay = round($salaryAmount / $countDayWork / $workingHours, 2);
 
-        foreach ($arMonthDay as $elem){
+        $toDay = Carbon::parse(now())->day;
+
+        foreach ($charts as $elem){
             if($elem['day_off'] != true && $elem['day'] <= $toDay){
                 $salary[] = array_merge($elem,['salary' => number_format(round($realWorkTime * $hourlyPay * $currency_rate),0,'.','')],
                     ['bonuses' => number_format(round(collect($salaryBonuses)->sum('paid')),0,'.','')],
@@ -103,9 +98,9 @@ class SalaryWorkChartService
         return $salary;
     }
 
-    public function countDayWork($arMonthDay)
+    public function countDayWork($charts)
     {
-        foreach ($arMonthDay as $elem){
+        foreach ($charts as $elem){
             if($elem['day_off'] != true){
                 $countDayWork[] = $elem['day_off'];
             }
@@ -113,9 +108,9 @@ class SalaryWorkChartService
         return count($countDayWork);
     }
 
-    public function countDayOff($arMonthDay)
+    public function countDayOff($charts)
     {
-        foreach ($arMonthDay as $elem){
+        foreach ($charts as $elem){
             if($elem['day_off'] == true){
                 $countDayOff[] = $elem['day_off'];
             }
@@ -143,7 +138,7 @@ class SalaryWorkChartService
 
         for ($i = $startDay; $i <= $daysInMonth; $i++) {
                 if (!empty($hollidays)) {
-                    $dayItem = getDate(strtotime($i . strstr($date, '.')))['wday'];
+                    $dayItem = getDate(strtotime($i . strstr($date->format('d.m.Y'), '.')))['wday'];
                     if (isset($hollidays[$dayItem])) {
                         $arMonthDay[$i] = [
                             'day_name' => $hollidays[$dayItem] ?? '',
@@ -162,7 +157,7 @@ class SalaryWorkChartService
         return $arMonthDay;
     }
 
-    public function otherCharts($date,$startDay,$daysInMonth,$dayOff,$dayWork)
+    public function otherCharts($carbonDate,$startDay,$daysInMonth,$dayOff,$dayWork)
     {
         $week = $this->getWeek();
         $dayCount = 1;
@@ -171,7 +166,7 @@ class SalaryWorkChartService
         for ($i = $startDay; $i <= $daysInMonth; $i++) {
                 if ($dayCount > $dayWork) {
                     $arMonthDay[$i] = [
-                        'day_name' => $week[getDate(strtotime($i . strstr($date, '.')))['wday']] ?? '',
+                        'day_name' => $week[getDate(strtotime($i . strstr($carbonDate->format('d.m.Y'), '.')))['wday']] ?? '',
                         'day' => $i,
                         'day_off' => true,
                     ];
@@ -179,7 +174,7 @@ class SalaryWorkChartService
                         for ($k = 1; $k < $dayOff; $k++) {
                             if ($i + $k <= $daysInMonth)
                                 $arMonthDay[$i + $k] = [
-                                    'day_name' => $week[getDate(strtotime($i + $k . strstr($date, '.')))['wday']] ?? '',
+                                    'day_name' => $week[getDate(strtotime($i + $k . strstr($carbonDate->format('d.m.Y'), '.')))['wday']] ?? '',
                                     'day' => $i + $k,
                                     'day_off' => true,
                                 ];
@@ -191,7 +186,7 @@ class SalaryWorkChartService
                 }
                     if (!isset($arMonthDay[$i])) {
                         $arMonthDay[$i] = [
-                            'day_name' => $week[getDate(strtotime($i . strstr($date, '.')))['wday']] ?? '',
+                            'day_name' => $week[getDate(strtotime($i . strstr($carbonDate->format('d.m.Y'), '.')))['wday']] ?? '',
                             'day' => $i,
                             'day_off' => false,
                         ];

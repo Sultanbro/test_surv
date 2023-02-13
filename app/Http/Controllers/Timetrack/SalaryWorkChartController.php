@@ -14,13 +14,12 @@ class SalaryWorkChartController extends Controller
         public SalaryWorkChartService $salaryWorkChartService,
     )
     {
-//        $this->middleware('auth');
+        $this->middleware('auth');
     }
 
     public function salaryBalance(SalaryWorkChartRequest $request):JsonResponse
     {
-        $carbonDate = \Carbon\Carbon::createFromDate($request->input('year', date('Y')), $request->input('month'), 1);
-        $response = $this->salaryWorkChartService->salaryBalance($request->toDto(),$carbonDate);
+        $response = $this->salaryWorkChartService->salaryBalance($request->toDto());
         return $this->response(
             'Success',
             $response
