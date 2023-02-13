@@ -12,7 +12,10 @@ use App\Service\Fine\FineService;
 use App\Service\Salary\SalaryService;
 use App\Service\Settings\WorkChartService\WorkChartService;
 use App\Service\Timetrack\TimetrackService;
+use App\Timetracking;
 use App\User;
+use DB;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Carbon;
 
 /**
@@ -40,7 +43,10 @@ class SalaryWorkChartService
         $dayOff = substr($userWorkChart->name,2);
         $startDay = (int)$dto->start_day;
         $hollidays = json_decode($dto->hollidays, true);
-
+        $userAppliedAt = $user->applied_at();
+        $timeTracking = $this->getUserTimetracking($user, $dto->year, $dto->month, $userAppliedAt, '>=');
+        $toDay = Carbon::parse(now())->day;
+        $hour = $timeTracking->where('date', $toDay)->count() > 0 ? $timeTracking->where('date', $toDay)->first()->total_hours / 60 : '';
         if ($startDay < $daysInMonth && $startDay != 0 && $dayOff != 0 && $dayWork) {
             if(!is_null($hollidays)){
                 $charts = $this->restHoliday($carbonDate,$startDay,$daysInMonth,$hollidays,$dayOff,$dayWork);
@@ -52,27 +58,27 @@ class SalaryWorkChartService
         }
         $countDayWork = $this->countDayWork($charts);
         $countDayOff = $this->countDayOff($charts);
-        $result = $this->calculateSalary($charts,$carbonDate,$countDayWork,$dto,$user,$startDay);
+        $result = $this->calculateSalary($hour,$toDay,$charts,$carbonDate,$countDayWork,$dto,$user,$startDay,);
         $arResult = [
-            'График' => $result,
-            'Смена' => $dayWork.'/'.$dayOff,
-            'Кол-во рабочих дней' => $countDayWork,
-            'Кол-во выходных дней' => $countDayOff,
-            'Выходные' => ($hollidays != null) ?: 'по графику',
+            'work_chart' => $result,
+            'chart_shift' => $dayWork.'/'.$dayOff,
+            'count_day_work' => $countDayWork,
+            'count_day_off' => $countDayOff,
+            'holidays' => ($hollidays != null) ? $hollidays : 'по графику',
+            'total_salary' => $this->totalSalaryToDay($result),
+            'total_hours' => $timeTracking[0]->total_hours/60,
         ];
         return $arResult;
     }
 
-    public function calculateSalary($charts,$carbonDate,$countDayWork,$dto,$user)
+    public function calculateSalary($hour,$toDay,$charts,$carbonDate,$countDayWork,$dto,$user)
     {
+
         $userSalary = Salary::where('user_id',$user->id)->first();
         $salaryAmount = $userSalary->amount ? $userSalary->amount : 70000;
-
         $userWorkChart = WorkChartModel::find($user->working_day_id);
         $workingHours = (int)$userWorkChart->time_end - (int)$userWorkChart->time_beg;
-        $realWorkTime = ((int)$user->work_end - (int)$user->work_start);
         $hourlyPay = round($salaryAmount / $countDayWork / $workingHours, 2);
-
         $currency_rate = (float)(Currency::rates()[$user->currency] ??  0.00001);
         $userTotalFines = $this->fineService->getUserFines($dto->month, $user, $currency_rate);
         $salaryBonuses = $this->salaryService->getUserBonuses($carbonDate, $user);
@@ -80,11 +86,9 @@ class SalaryWorkChartService
         $testBonuses =  $this->testBonusService->getUserBonuses($carbonDate,$user);
         $advances = $this->salaryService->getUserAdvances($carbonDate, $user);
 
-        $toDay = Carbon::parse(now())->day;
-
         foreach ($charts as $elem){
             if($elem['day_off'] != true && $elem['day'] <= $toDay){
-                $salary[] = array_merge($elem,['salary' => number_format(round($realWorkTime * $hourlyPay * $currency_rate),0,'.','')],
+                $salaries[] = array_merge($elem,['salary' => number_format(round($hour * $hourlyPay * $currency_rate),0,'.','')],
                     ['bonuses' => number_format(round(collect($salaryBonuses)->sum('paid')),0,'.','')],
                     ['fines' => number_format(round($userTotalFines['total']),0,'.','')],
                     ['awards' => number_format(round(collect($obtainedBonuses)->sum('paid')),0,'.','')],
@@ -92,10 +96,31 @@ class SalaryWorkChartService
                     ['avanses' => number_format(round(collect($advances)->sum('paid')),0,'.','')],
                     ['time_start' => substr($user->work_start,0,5)]);
             }else{
-                $salary[] = $elem;
+                $salaries[] = $elem;
             }
         }
-        return $salary;
+
+        return $salaries;
+    }
+
+    public function totalSalaryToDay($salaries)
+    {
+        foreach ($salaries as $elem){
+            if(isset($elem['salary'])){
+                $sumSalary[] = $elem['salary'];
+            }
+        }
+        return array_sum($sumSalary);
+    }
+
+    public function total_hours($salaries)
+    {
+        foreach ($salaries as $elem){
+            if(isset($elem['salary'])){
+                $sumSalary[] = $elem['salary'];
+            }
+        }
+        return array_sum($sumSalary);
     }
 
     public function countDayWork($charts)
@@ -194,5 +219,27 @@ class SalaryWorkChartService
                     }
         }
         return $arMonthDay;
+    }
+
+    /**
+     * @param User $user
+     * @param int $year
+     * @param int $month
+     * @param string $user_applied_at
+     * @param string $operator
+     * @return Collection
+     */
+    private function getUserTimetracking(User $user, int $year, int $month, string $user_applied_at, string $operator ): Collection{
+        return Timetracking::select([
+            DB::raw('DAY(enter) as date'),
+            DB::raw('sum(total_hours) as total_hours'),
+            DB::raw('MIN(enter) as enter')
+        ])
+            ->whereMonth('enter', $month)
+            ->whereYear('enter', $year)
+            ->whereDate('enter', $operator, \Carbon\Carbon::parse($user_applied_at)->format('Y-m-d'))
+            ->where('user_id', $user->id)
+            ->groupBy('date')
+            ->get();
     }
 }
