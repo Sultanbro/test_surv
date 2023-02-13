@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 
 namespace App\Rules;
 
@@ -50,6 +51,6 @@ class CheckTariffLimit implements Rule
      */
     public function message(): string
     {
-        return 'Количество пользователей больше для этого тарифного плана, выберите другой тариф!';
+        return 'Количество пользователей превышается для этого тарифного плана, выберите другой тариф!';
     }
 }

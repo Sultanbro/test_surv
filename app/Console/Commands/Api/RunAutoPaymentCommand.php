@@ -86,7 +86,7 @@ class RunAutoPaymentCommand extends Command
      */
     private function yookassaAutoPayment(
         TariffPayment $payment
-    )
+    ): void
     {
         $this->client->createPayment(
             array(
