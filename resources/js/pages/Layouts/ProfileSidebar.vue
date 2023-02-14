@@ -170,6 +170,7 @@
 			title="Н"
 			size="xl"
 			class="modalle"
+			modal-class="header__profile-corpbook"
 			hide-footer
 			hide-header
 			no-close-on-backdrop
@@ -214,6 +215,7 @@
 			hide-footer
 			hide-header
 			no-close-on-backdrop
+			no-close-on-esc
 		>
 			<Questions
 				v-if="corp_book"
@@ -449,14 +451,17 @@ export default {
 
 		pauseBookTimer(){
 			clearInterval(this.bookTimerInterval)
+			this.bookTimerInterval = null
 		},
 
 		unpauseBookTimer(){
 			if(this.bookTimer === 0) return
+			if(this.bookTimerInterval) return
 			this.bookTimerInterval = setInterval(() => {
 				--this.bookTimer
 				if(this.bookTimer === 0) {
 					clearInterval(this.bookTimerInterval)
+					this.bookTimerInterval = null
 				}
 			}, 1000)
 		},
@@ -465,15 +470,17 @@ export default {
 		 * Set read corp book page
 		 */
 		hideBook() {
-			axios.post('/corp_book/set-read/', {})
-				.then(() => this.showCorpBookPage = false)
-				.catch(error => console.log(error))
+			axios.post('/corp_book/set-read/', {}).then(() => {
+				this.showCorpBookPage = false
+				this.isBookTest = false
+			}).catch(error => console.log(error))
 		},
 
 		repeatBook(){
 			this.showCorpBookPage = true
 			this.isBookTest = false
 			this.bookCounter()
+			this.$toast.error('Неправильный ответ')
 		},
 
 		testBook(){
@@ -513,6 +520,11 @@ export default {
 		gap:1rem;
 		border:none;
 		justify-content: center;
+	}
+	&-corpbook{
+		table{
+			max-width: 100%;
+		}
 	}
 }
 .profile__logo {
@@ -691,6 +703,14 @@ export default {
 		-ms-transform: translateX(0);
 		transform: translateX(0);
 		visibility: visible;
+		&-corpbook{
+			.modal-dialog{
+				max-width: 75%;
+			}
+			table{
+				max-width: 100%;
+			}
+		}
 	}
 	.header__profile._active{
 		.profile__logo{
