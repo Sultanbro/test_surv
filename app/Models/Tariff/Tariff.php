@@ -77,20 +77,17 @@ class Tariff extends Model
     }
 
     /**
-     * @param int $tariffId
      * @param int $extraUsers
      * @return float
      */
-    public static function calculateTotalPrice(
-        int $tariffId,
+    public function calculateTotalPrice(
         int $extraUsers
     ): float
     {
-        $tariff = self::getTariffById($tariffId);
         $priceForOnePerson = (float)env('PAYMENT_FOR_ONE_PERSON');
-        $price = (float)$tariff->price;
+        $price = $this->price;
 
-        if ($tariff->users_limit > $extraUsers)
+        if ($this->users_limit > $extraUsers)
         {
             $price = $priceForOnePerson * $extraUsers;
         }

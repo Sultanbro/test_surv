@@ -86,10 +86,11 @@ class YooKassa extends BasePaymentService
         TariffPayment $payment
     )
     {
+        $tariff = Tariff::getTariffById($payment->tariff_id);
         $this->client->createPayment(
             array(
                 'amount' => array(
-                    'value' => Tariff::calculateTotalPrice($payment->tariff_id, $payment->extra_user_limit),
+                    'value' => $tariff->calculateTotalPrice($payment->extra_user_limit),
                     'currency' => 'RUB',
                 ),
                 'capture' => true,

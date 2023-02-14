@@ -67,7 +67,7 @@ class YooKassaConnector implements PaymentTypeConnector
         $priceForOnePerson = env('PAYMENT_FOR_ONE_PERSON');
         return array(
             'amount' => array(
-                'value'     => Tariff::calculateTotalPrice($tariff->id, $extraUsersLimit),
+                'value'     => $tariff->calculateTotalPrice($tariff->id, $extraUsersLimit),
                 'currency'  => 'RUB',
             ),
             'confirmation' => array(
@@ -92,7 +92,7 @@ class YooKassaConnector implements PaymentTypeConnector
                         'description'   =>  "Покупка тарифа $tariff->kind",
                         'quantity'      => 1,
                         'amount' => array(
-                            'value'     => Tariff::calculateTotalPrice($tariff->id, $extraUsersLimit),
+                            'value'     => $tariff->calculateTotalPrice($tariff->id, $extraUsersLimit),
                             'currency'  => 'RUB'
                         ),
                         'vat_code' => '1',
@@ -107,7 +107,7 @@ class YooKassaConnector implements PaymentTypeConnector
                         'description'   =>  "Кол-во пользователей: $extraUsersLimit, цена за одного пользователя $priceForOnePerson." ,
                         'quantity'      => $extraUsersLimit,
                         'amount' => array(
-                            'value'     => Tariff::calculateTotalPrice($tariff->id, $extraUsersLimit),
+                            'value'     => $tariff->calculateTotalPrice($tariff->id, $extraUsersLimit),
                             'currency'  => 'RUB'
                         ),
                         'vat_code' => '1',
