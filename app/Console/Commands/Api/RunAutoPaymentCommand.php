@@ -71,18 +71,4 @@ class RunAutoPaymentCommand extends Command
             $this->factory->getPaymentsProviderByType($payment->service_for_payment)->doAutoPayment($payment);
         }
     }
-
-    /**
-     * @param int $tariffId
-     * @return float
-     * @throws Exception
-     */
-    private function tariffPrice(
-        int $tariffId
-    ): float
-    {
-        $tariff = Tariff::getTariffById($tariffId);
-        $rates = new CurrencyRates(CurrencyRates::URL_RATES_ALL);
-        return $rates->convertFromTenge('RUB', $tariff->price);
-    }
 }
