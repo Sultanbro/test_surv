@@ -18,6 +18,8 @@ final class PaymentFactory
             case 'rub':
                 $factory = new YooKassa();
                 break;
+            default:
+                throw new \InvalidArgumentException("Не известная валюта $currency");
         }
 
         return $factory;
@@ -34,6 +36,8 @@ final class PaymentFactory
             case 'yookassa':
                 $paymentType = new YooKassa();
                 break;
+            default:
+                throw new \InvalidArgumentException("Не известный тип провайдера $type");
         }
 
         return $paymentType;
