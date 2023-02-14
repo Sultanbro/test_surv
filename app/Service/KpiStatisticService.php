@@ -706,7 +706,7 @@ class KpiStatisticService
             foreach ($kpi->users as $user){
                 $kpi_sum = $kpi_sum + $user['avg_percent'];
             }
-            $kpi->avg = round($kpi_sum/count($kpi->users)); //AVG percent of all KPI of all USERS in GROUP
+            $kpi->avg = count($kpi->users) > 0 ? round($kpi_sum/count($kpi->users)) : 0; //AVG percent of all KPI of all USERS in GROUP
 
             $kpi['dropped'] = in_array($kpi->targetable_id, $droppedGroups) ?? true;
         }
@@ -717,6 +717,221 @@ class KpiStatisticService
             'groups'     => ProfileGroup::get()->pluck('name', 'id')->toArray(),
             'user_id'    => auth()->user() ? auth()->id() : 1 
         ];
+    }
+
+    /**
+     * Вытащить список Групп и Пользователей с KPI
+     *
+     * getUsersForKpi($kpi)
+     * getUserStats($kpi, $_user_ids, $date)
+     * connectKpiWithUserStats(Kpi $kpi, $_users)
+     */
+    public function fetchKpiGroupsAndUsers(Request $request) : array
+    {
+        $filters = $request->filters;
+
+        if(
+            isset($filters['data_from']['year'])
+            && isset($filters['data_from']['month'])
+        ) {
+            $date = Carbon::createFromDate(
+                $filters['data_from']['year'],
+                $filters['data_from']['month'],
+                1
+            );
+        } else {
+            $date = Carbon::now()->setTimezone('Asia/Almaty')->startOfMonth();
+        }
+
+        $user_id = isset($filters['user_id']) ? $filters['user_id'] : 0;
+
+        $this->workdays = collect($this->userWorkdays($request));
+        $this->updatedValues = UpdatedUserStat::query()
+            ->whereMonth('date', $date->month)
+            ->whereYear('date', $date->year)
+            ->orderBy('date', 'desc')
+            ->get();
+        /**
+         * get kpis
+         */
+        $last_date = Carbon::parse($date)->endOfMonth()->format('Y-m-d');
+
+        $kpis = Kpi::withTrashed();
+
+        $droppedGroups = array();
+        if($user_id != 0) {
+            $user = User::withTrashed()->with('groups')->find($user_id);
+            $position_id = $user->position_id;
+
+            $groups = ($user->inGroups())->pluck('id')->toArray();
+            $droppedGroups = $user->droppedGroups($date);
+
+            $groups = array_merge($groups, $droppedGroups);
+
+            $kpis->where(function($query) use ($user_id, $groups, $position_id) {
+                $query->where(function($q) use ($user_id) {
+                    $q->where('targetable_id', $user_id)
+                        ->where('targetable_type', 'App\User');
+                })
+                    ->orWhere(function($q) use ($groups) {
+                        $q->whereIn('targetable_id', $groups)
+                            ->where('targetable_type', 'App\ProfileGroup');
+                    })
+                    ->orWhere(function($q) use ($position_id) {
+                        $q->where('targetable_id', $position_id)
+                            ->where('targetable_type', 'App\Position');
+                    });
+            });
+        }
+
+        $kpis = $kpis
+            ->whereDate('created_at', '<=', Carbon::parse($date->format('Y-m-d'))
+                ->endOfMonth()
+                ->format('Y-m-d')
+            )->where(fn ($query) => $query->whereNull('deleted_at')->orWhere(
+                fn ($query) => $query->whereDate('deleted_at', '>', Carbon::parse($date->format('Y-m-d'))
+                    ->endOfMonth()
+                    ->format('Y-m-d')))
+            )
+            ->get();
+
+        return [
+            'items'      => $kpis,
+            'groups'     => ProfileGroup::get()->pluck('name', 'id')->toArray(),
+            'user_id'    => auth()->user() ? auth()->id() : 1
+        ];
+    }
+
+    /**
+     * Вытащить список kpi со статистикой
+     *
+     * getUsersForKpi($kpi)
+     * getUserStats($kpi, $_user_ids, $date)
+     * connectKpiWithUserStats(Kpi $kpi, $_users)
+     */
+    public function fetchKpiGroup(Request $request, int $targetableId) : array
+    {
+        $filters = $request->filters;
+
+        if(
+            isset($filters['data_from']['year'])
+            && isset($filters['data_from']['month'])
+        ) {
+            $date = Carbon::createFromDate(
+                $filters['data_from']['year'],
+                $filters['data_from']['month'],
+                1
+            );
+        } else {
+            $date = Carbon::now()->setTimezone('Asia/Almaty')->startOfMonth();
+        }
+
+        $user_id = isset($filters['user_id']) ? $filters['user_id'] : 0;
+
+        $this->workdays = collect($this->userWorkdays($request));
+        $this->updatedValues = UpdatedUserStat::query()
+            ->whereMonth('date', $date->month)
+            ->whereYear('date', $date->year)
+            ->orderBy('date', 'desc')
+            ->get();
+        /**
+         * get kpis
+         */
+        $last_date = Carbon::parse($date)->endOfMonth()->format('Y-m-d');
+
+        $kpi = Kpi::withTrashed()
+            ->with([
+                'histories' => function($query) use ($last_date) {
+                    $query->whereDate('created_at', '<=', $last_date);
+                },
+                'items.histories' => function($query) use ($last_date) {
+                    $query->whereDate('created_at', '<=', $last_date);
+                },
+                'items' => function($query) use ($last_date) {
+                    $query->withTrashed()->whereDate('created_at', '<=', $last_date);
+                },
+                'items.activity'
+            ]);
+
+        $kpi = $kpi
+            ->whereDate('created_at', '<=', Carbon::parse($date->format('Y-m-d'))
+                ->endOfMonth()
+                ->format('Y-m-d')
+            )->where(fn ($query) => $query->whereNull('deleted_at')->orWhere(
+                fn ($query) => $query->whereDate('deleted_at', '>', Carbon::parse($date->format('Y-m-d'))
+                    ->endOfMonth()
+                    ->format('Y-m-d')))
+            )
+            ->where('targetable_id', $targetableId)
+            ->firstOrFail();
+
+        $kpi->kpi_items = [];
+
+            // remove items if it's not in history
+        if($kpi->histories->first()) {
+            $payload = json_decode($kpi->histories->first()->payload, true);
+
+            if(isset($payload['children'])) {
+                $kpi->items = $kpi->items->whereIn('id', $payload['children']);
+            }
+        }
+
+        $kpi->users = $this->getUsersForKpi($kpi, $date, $user_id);
+        $kpi_sum = 0;
+        foreach ($kpi->users as $user){
+            $kpi_sum = $kpi_sum + $user['avg_percent'];
+        }
+        $kpi->avg = count($kpi->users) > 0 ? round($kpi_sum/count($kpi->users)) : 0; //AVG percent of all KPI of all USERS in GROUP
+
+        return [
+            'kpi'      => $kpi,
+            'user_id'    => auth()->user() ? auth()->id() : 1
+        ];
+    }
+
+    private function getUsersForKpi2(
+        Kpi $kpi,
+        Carbon $date,
+        int $user_id = 0
+    ) : array
+    {
+        // check target exists
+        if(!$kpi->target) return [];
+
+        $type = $kpi->target['type'];
+
+
+        // User::class
+        if($type == 1) {
+            $_user_ids = [$kpi->targetable_id];
+        }
+
+        // ProfileGroup::class
+        if($type == 2) {
+            $profileGroup = ProfileGroup::query()->findOrFail($kpi->targetable_id);
+            $_user_ids = collect((new UserService)->getEmployees($profileGroup->id, $date->toDateString()))->pluck('id')->toArray();
+            if($user_id != 0)  $_user_ids = [$user_id];
+        }
+
+        // Position::class
+        if($type == 3) $_user_ids = [];
+
+        return User::withTrashed()
+            ->select([
+                'users.id',
+                'users.last_name',
+                'users.name',
+                'users.full_time',
+                'ud.applied',
+                \DB::raw('datediff(CURDATE(), ud.applied) as days'),
+                \DB::raw('datediff(CURDATE(), users.created_at) as registered_days')
+            ])
+            ->leftJoin('user_descriptions as ud', 'ud.user_id', '=', 'users.id')
+            ->where('ud.is_trainee', 0)
+            ->whereIn('users.id', $_user_ids)
+            ->orderBy('last_name')
+            ->get()
+            ->toArray();
     }
 
     /**
@@ -764,7 +979,6 @@ class KpiStatisticService
         return $users;
     }
 
-   
 
     /**
      * Create final users array
@@ -912,7 +1126,7 @@ class KpiStatisticService
                     $item,
                     $user['id']
                 );
-                $item['percent'] = round(($item['fact'] * 100)/$item['plan']);
+                $item['percent'] = round(($item['avg'] * 100)/$item['plan']);
                 $sumKpiPercent = $sumKpiPercent + $item['percent'];
                 
                 // plan
