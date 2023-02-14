@@ -7,102 +7,109 @@
 			@update="updateRate"
 		/>
 
-		<template v-if="selectedRate">
-			<div class="PricingPage-users mt-4">
-				<div class="PricingPage-users-title">
-					Количество пользователей:
+		<div class="PricingPage-users mt-4">
+			<div class="PricingPage-users-title">
+				Количество пользователей:
+			</div>
+			<div class="PricingPage-users-form">
+				<button
+					class="PricingPage-users-less"
+					:disabled="users <= (selectedRate ? selectedRate.users : 0)"
+					@click="decreseUsers"
+				>
+					-
+				</button>
+				<input
+					v-model="users"
+					type="number"
+					class="PricingPage-users-input"
+				>
+				<button
+					class="PricingPage-users-more"
+					@click="increseUsers"
+				>
+					+
+				</button>
+			</div>
+			<img
+				v-b-popover.hover.right="'Далеко-далеко за словесными горами в стране.'"
+				src="/images/dist/profit-info.svg"
+				alt=""
+			>
+		</div>
+		<div class="PricingPage-currency mt-4">
+			Валюта:
+			<button
+				class="btn"
+				:class="{'btn-success': currency === '₽'}"
+				@click="currency = '₽'"
+			>
+				₽
+			</button>
+			<button
+				class="btn"
+				:class="{'btn-success': currency === '₸'}"
+				@click="currency = '₸'"
+			>
+				₸
+			</button>
+			<button
+				class="btn"
+				:class="{'btn-success': currency === '$'}"
+				@click="currency = '$'"
+			>
+				$
+			</button>
+		</div>
+		<div class="PricingPage-auto mt-4">
+			<b-form-checkbox
+				v-model="autoPayment"
+				switch
+			>
+				Автооплата
+			</b-form-checkbox>
+		</div>
+		<div class="PricingPage-total mt-4">
+			Итого к оплате: <span class="PricingPage-total-value">{{ $separateThousands(Math.round(total / rates[currency])) }} {{ currency }}</span> <button
+				class="btn btn-success"
+				@click="submitPayment"
+				:disabled="!selectedRate"
+			>
+				Оплатить
+			</button>
+		</div>
+		<hr>
+		<div class="PricingPage-promo mt-4">
+			<div
+				v-if="promoData.code"
+				class="PricingPage-promo-active"
+			>
+				Активирован промокод {{ $separateThousands(Math.round(promoData.value / rates[currency])) }} {{ currency }}
+			</div>
+			<template v-else>
+				<div class="PricingPage-promo-title">
+					Есть бонусный код?
 				</div>
-				<div class="PricingPage-users-form">
-					<button
-						class="PricingPage-users-less"
-						:disabled="users <= selectedRate.users"
-						@click="decreseUsers"
-					>
-						-
-					</button>
+				<div class="PricingPage-promo-text">
+					Активируйте его чтобы получить бонус на первую оплату
+				</div>
+				<div class="PricingPage-promo-form mt-2">
 					<input
-						v-model="users"
-						type="number"
-						class="PricingPage-users-input"
+						v-model="promo"
+						type="text"
+						class="PricingPage-promo-input form-control"
+						placeholder="Код купона"
 					>
 					<button
-						class="PricingPage-users-more"
-						@click="increseUsers"
+						class="btn btn-success"
+						:disabled="!promo || isPromoLoading"
+						@click="activatePromo"
 					>
-						+
+						{{ isPromoLoading ? 'Активирую' : 'Активировать' }}
 					</button>
 				</div>
-				<img
-					v-b-popover.hover.right="'Далеко-далеко за словесными горами в стране.'"
-					src="/images/dist/profit-info.svg"
-					alt=""
-				>
-			</div>
-			<div class="PricingPage-currency mt-4">
-				Валюта:
-				<button
-					class="btn"
-					:class="{'btn-success': currency === '₽'}"
-					@click="currency = '₽'"
-				>
-					₽
-				</button>
-				<button
-					class="btn"
-					:class="{'btn-success': currency === '₸'}"
-					@click="currency = '₸'"
-				>
-					₸
-				</button>
-				<button
-					class="btn"
-					:class="{'btn-success': currency === '$'}"
-					@click="currency = '$'"
-				>
-					$
-				</button>
-			</div>
-			<div class="PricingPage-total mt-4">
-				Итого к оплате: <span class="PricingPage-total-value">{{ $separateThousands(Math.round(total / rates[currency])) }} {{ currency }}</span> <button
-					class="btn btn-success"
-					@click="submitPayment"
-				>
-					Оплатить
-				</button>
-			</div>
-			<hr>
-			<div class="PricingPage-promo mt-4">
-				<div
-					v-if="promoData.code"
-					class="PricingPage-promo-active"
-				>
-					Активирован промокод {{ $separateThousands(Math.round(promoData.value / rates[currency])) }} {{ currency }}
-				</div>
-				<template v-else>
-					<div class="PricingPage-promo-title">
-						Есть бонусный код?
-					</div>
-					<div class="PricingPage-promo-text">
-						Активируйте его чтобы получить бонус на первую оплату
-					</div>
-					<div class="PricingPage-promo-form mt-2">
-						<input
-							v-model="promo"
-							type="text"
-							class="PricingPage-promo-input form-control"
-							placeholder="Код купона"
-						>
-						<button
-							class="btn btn-success"
-							:disabled="!promo || isPromoLoading"
-							@click="activatePromo"
-						>
-							{{ isPromoLoading ? 'Активирую' : 'Активировать' }}
-						</button>
-					</div>
-				</template>
-			</div>
-		</template>
+			</template>
+		</div>
 	</div>
 </template>
 
@@ -124,9 +131,15 @@ export default {
 		return {
 			selectedRate: null,
 			users: 0,
-			period: '',
 			userPrice: 200,
+			period: '',
+			autoPayment: true,
 			currency: '₽',
+			currencyTranslate: {
+				'₽': 'rub',
+				'₸': 'kzt',
+				'$': 'dollar',
+			},
 			promo: '',
 			promoData: {},
 			isPromoLoading: false,
@@ -146,7 +159,7 @@ export default {
 	},
 	methods: {
 		...mapActions(usePricingStore, [
-			'updatePricing',
+			'postPaymentData',
 			'fetchPromo',
 			'fetchRates',
 		]),
@@ -156,19 +169,27 @@ export default {
 			this.users = value.rate.users
 		},
 		decreseUsers(){
-			if(this.users > this.selectedRate.users) --this.users
+			if(this.users > (this.selectedRate ? this.selectedRate.users : 0)) --this.users
 		},
 		increseUsers(){
+			if(!this.selectedRate) return
 			++this.users
 		},
-		submitPayment(){
-			this.updatePricing({
-				id: this.selectedRate.id,
-				period: this.period,
-				additionalUsers: this.additionalUsers,
-				currency: this.currency,
-				promo: this.promoData.code
-			})
+		async submitPayment(){
+			if(!this.selectedRate) return
+			try{
+				const url = await this.postPaymentData({
+					currency: this.currencyTranslate[this.currency],
+					tariff_id: this.selectedRate.id,
+					extra_users_limit: this.additionalUsers,
+					auto_payment: this.autoPayment
+				})
+				window.location.assign(url)
+			}
+			catch(error){
+				console.error('submitPayment', error)
+				this.$toast.error('Ошибка при попытке оплаты')
+			}
 		},
 		async activatePromo(){
 			this.isPromoLoading = true

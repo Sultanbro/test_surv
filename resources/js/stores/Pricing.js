@@ -5,7 +5,7 @@ import {
 	fetchPricingCurrent,
 	fetchPricing,
 	fetchPricingPromo,
-	updatePricingCurrent,
+	postPaymentData,
 } from '@/stores/api'
 
 function renameProps(obj, renames){
@@ -80,17 +80,8 @@ export const usePricingStore = defineStore('pricing', {
 				return {}
 			}
 		},
-		async updatePricing(params){
-			this.isLoading = true
-			try{
-				alert('Переход на страницу оплаты')
-				const data = await updatePricingCurrent(params)
-				this.current = data
-			}
-			catch(error){
-				console.error('updatePricingCurrent', error)
-			}
-			this.isLoading = false
+		async postPaymentData(params){
+			return postPaymentData(params)
 		},
 	}
 })

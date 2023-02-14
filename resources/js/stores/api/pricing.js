@@ -1,6 +1,5 @@
 /** @module stores/api/pricing */
-// import axios from 'axios'
-/* global moment */
+import axios from 'axios'
 
 /**
  * Получене менеджера по текущему кабинету
@@ -132,18 +131,12 @@ export async function fetchPricingPromo(code){
 }
 
 /**
- * Активация промокода
- * @param {ApiRequest.PricingUpdateRequest} params
- * @return {PricingCurrent}
+ * Создание ссылки на оплату
+ * @param {ApiRequest.PricingPaymentRequest} params
+ * @return {string} - ссылка на оплату
  */
-export async function updatePricingCurrent(params){
-	// const { data } = await axios.post('/pricing/current/update', params)
-	const data = {
-		id: params.id,
-		name: ['', 'Бесплатный', 'База', 'Стандарт', 'PRO'][params.id],
-		paid_up_to: moment(Date.now()).add(1, params.period === 'monthly' ? 'month' : 'year').format('DD.MM.YYYY'),
-		users: [0, 5, 20, 50, 100][params.id] + params.additionalUsers
-	}
+export async function postPaymentData(params){
+	const { data } = await axios.post('/payment', params)
 	return data
 }
 
@@ -178,6 +171,7 @@ export async function updatePricingCurrent(params){
 /**
  * @typedef PricingItem
  * @type {object}
+ * @property {number} id - id тарифа
  * @property {string} name - название тарифа
  * @property {number} users - кол-во пользователей
  * @property {string} space - объем под файлы
@@ -200,4 +194,14 @@ export async function updatePricingCurrent(params){
  * @type {object}
  * @property {string} code - секретный код для формы оплаты
  * @property {number} value - скидка в рублях
+ */
+
+/**
+ * @typedef PricingPaymentRequest
+ * @memberof ApiRequest
+ * @type {object}
+ * @property {string} currency - валюта kzt|rub|dollar
+ * @property {number} tariff_id -
+ * @property {number} extra_users_limit -
+ * @property {boolean} [auto_payment] - автооплата
  */

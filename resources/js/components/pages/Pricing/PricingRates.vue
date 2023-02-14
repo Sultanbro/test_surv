@@ -62,7 +62,7 @@
 					@click="showFeatures = !showFeatures"
 					:colspan="items.length + 1"
 				>
-					...
+					Все возможности
 				</td>
 			</tr>
 			<tr class="PricingRates-row">

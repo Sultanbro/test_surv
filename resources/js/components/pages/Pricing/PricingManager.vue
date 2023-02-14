@@ -3,7 +3,10 @@
 		align-v="center"
 		class="PricingManager"
 	>
-		<b-col cols="4">
+		<b-col
+			cols="6"
+			xl="4"
+		>
 			<div class="PricingManager-card">
 				<template v-if="manager">
 					<div class="PricingManager-photo">
@@ -43,7 +46,10 @@
 				</template>
 			</div>
 		</b-col>
-		<b-col cols="8">
+		<b-col
+			cols="6"
+			xl="8"
+		>
 			<template v-if="manager">
 				<div class="PricingManager-title mb-4">
 					{{ manager.title }}
