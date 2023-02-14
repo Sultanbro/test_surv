@@ -2,6 +2,7 @@
 
 namespace App\Models\Tariff;
 
+use App\Enums\Payments\PaymentStatusEnum;
 use App\User;
 use Exception;
 use Illuminate\Database\Eloquent\Model;
@@ -27,7 +28,8 @@ class TariffPayment extends Model
         'expire_date',
         'auto_payment',
         'payment_id',
-        'service_for_payment'
+        'service_for_payment',
+        'status'
     ];
 
     /**
@@ -116,6 +118,7 @@ class TariffPayment extends Model
                 'expire_date'       => $expireDate,
                 'auto_payment'      => $autoPayment,
                 'payment_id'        => $paymentId,
+                'status'            => PaymentStatusEnum::STATUS_PENDING,
                 'service_for_payment' => $serviceForPayment
             ]);
         } catch (Exception $exception) {

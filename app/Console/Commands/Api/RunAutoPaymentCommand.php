@@ -5,6 +5,7 @@ namespace App\Console\Commands\Api;
 use App\Models\Tariff\Tariff;
 use App\Models\Tariff\TariffPayment;
 use App\Service\Payments\PaymentFactory;
+use App\Service\Payments\YooKassaConnectors\YooKassa;
 use App\Traits\YooKassaTrait;
 use Exception;
 use Illuminate\Console\Command;
@@ -37,15 +38,20 @@ class RunAutoPaymentCommand extends Command
     protected $description = 'Запускается для пользователей у кого включен авто-оплата';
 
     /**
-     * @var Client
+     * @var YooKassa
      */
-    private Client $client;
+    private YooKassa $yooKassa;
+
+    /**
+     * @var PaymentFactory
+     */
+    private PaymentFactory $factory;
 
     public function __construct()
     {
         parent::__construct();
-        $this->client = new Client();
-        $this->client->setAuth(config('yookassa')['test_merchant_id'], config('yookassa')['test_secret_key']);
+        $this->yooKassa = new YooKassa();
+        $this->factory = new PaymentFactory();
     }
 
     /**
@@ -62,46 +68,9 @@ class RunAutoPaymentCommand extends Command
 
         foreach ($payments as $payment)
         {
-            $method = $payment->service_for_payment . 'AutoPayment';
-            if (!method_exists($this, $method))
-            {
-                throw new Exception("Method $method not defined, please create");
-            }
-
-            return $this->{$method}($payment);
+            $this->factory->getPaymentsProviderByType($payment->service_for_payment)->autoPayment($payment);
+            $this->createTariffPayment($payment);
         }
-    }
-
-    /**
-     * @throws NotFoundException
-     * @throws ResponseProcessingException
-     * @throws ApiException
-     * @throws BadApiRequestException
-     * @throws ExtensionNotFoundException
-     * @throws InternalServerError
-     * @throws ForbiddenException
-     * @throws TooManyRequestsException
-     * @throws UnauthorizedException
-     * @throws Exception
-     */
-    private function yookassaAutoPayment(
-        TariffPayment $payment
-    ): void
-    {
-        $this->client->createPayment(
-            array(
-                'amount' => array(
-                    'value' => $this->tariffPrice($payment->tariff_id),
-                    'currency' => 'RUB',
-                ),
-                'capture' => true,
-                'payment_method_id' => $payment->payment_id,
-                'description' => 'Заказ №' . time(),
-            ),
-            uniqid('', true)
-        );
-
-        $this->createTariffPayment($payment);
     }
 
     /**

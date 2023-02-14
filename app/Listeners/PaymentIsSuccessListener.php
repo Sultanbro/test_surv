@@ -6,6 +6,7 @@ use App\Enums\Tariff\TariffValidityEnum;
 use App\Events\PaymentIsSuccessEvent;
 use App\Models\Tariff\Tariff;
 use App\Models\Tariff\TariffPayment;
+use Exception;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Queue\InteractsWithQueue;
 
@@ -16,7 +17,7 @@ class PaymentIsSuccessListener
      *
      * @param PaymentIsSuccessEvent $event
      * @return void
-     * @throws \Exception
+     * @throws Exception
      */
     public function handle(PaymentIsSuccessEvent $event): void
     {

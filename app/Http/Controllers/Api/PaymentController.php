@@ -3,12 +3,11 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
-use App\Http\Requests\Api\DoPaymentRequest;
-use App\Http\Requests\Api\StatusPaymentRequest;
+use App\Http\Requests\Api\Payment\DoPaymentRequest;
+use App\Http\Requests\Api\Payment\StatusPaymentRequest;
 use App\Service\Payments\PaymentFactory;
+use Exception;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Http\Request;
-use YooKassa\Client;
 
 class PaymentController extends Controller
 {
@@ -28,7 +27,7 @@ class PaymentController extends Controller
     public function payment(DoPaymentRequest $request): JsonResponse
     {
         $dto = $request->toDto();
-        $response = $this->factory->getPayment($dto->currency)->pay($request->toDto());
+        $response = $this->factory->getPaymentsProviderByCurrency($dto->currency)->pay($request->toDto());
 
         return $this->response(
             message: 'Success',
@@ -41,11 +40,12 @@ class PaymentController extends Controller
      *
      * @param StatusPaymentRequest $request
      * @return JsonResponse
+     * @throws Exception
      */
-    public function saveToTariffPayments(StatusPaymentRequest $request): JsonResponse
+    public function updateToTariffPayments(StatusPaymentRequest $request): JsonResponse
     {
         $dto = $request->toDto();
-        $response = $this->factory->getStatus($dto->paymentType)->status($dto);
+        $response = $this->factory->getPaymentsProviderByType($dto->paymentType)->updateStatus($dto);
 
         return $this->response(
             message: 'Success',

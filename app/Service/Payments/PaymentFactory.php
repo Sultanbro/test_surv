@@ -9,9 +9,9 @@ final class PaymentFactory
 {
     /**
      * @param string $currency
-     * @return Payment
+     * @return BasePaymentService
      */
-    public function getPayment(string $currency): Payment
+    public function getPaymentsProviderByCurrency(string $currency): BasePaymentService
     {
         switch ($currency) {
             case 'rub':
@@ -24,9 +24,9 @@ final class PaymentFactory
 
     /**
      * @param string $type
-     * @return Payment
+     * @return BasePaymentService
      */
-    public function getStatus(string $type): Payment
+    public function getPaymentsProviderByType(string $type): BasePaymentService
     {
         switch ($type)
         {

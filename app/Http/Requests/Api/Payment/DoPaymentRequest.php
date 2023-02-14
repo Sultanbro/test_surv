@@ -1,14 +1,14 @@
 <?php
 declare(strict_types=1);
 
-namespace App\Http\Requests\Api;
+namespace App\Http\Requests\Api\Payment;
 
-use App\DTO\Api\StatusPaymentDTO;
+use App\DTO\Api\DoPaymentDTO;
 use App\Rules\CheckTariffLimit;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Support\Arr;
 
-class StatusPaymentRequest extends FormRequest
+class DoPaymentRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -28,32 +28,29 @@ class StatusPaymentRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'payment_id'    => 'required|string',
-            'payment_type'  => 'required|in:yookassa',
-            'tariff_id'     => 'required|exists:tariff,id',
+            'currency'          => 'required|in:kzt,rub,dollar',
+            'tariff_id'         => 'required|integer|exists:tariff,id',
             'extra_users_limit' => ['required', 'integer', new CheckTariffLimit($this->tariff_id)],
-            'auto_payment'  => 'required|bool'
+            'auto_payment'      => 'bool'
         ];
     }
 
     /**
-     * @return StatusPaymentDTO
+     * @return DoPaymentDTO
      */
-    public function toDto(): StatusPaymentDTO
+    public function toDto(): DoPaymentDTO
     {
         $validated = $this->validated();
 
-        $paymentId   = Arr::get($validated, 'payment_id');
-        $paymentType = Arr::get($validated, 'payment_type');
-        $tariffId    = Arr::get($validated, 'tariff_id');
-        $extraUserLimits = Arr::get($validated, 'extra_users_limit');
+        $currency = Arr::get($validated, 'currency');
+        $tariffId = Arr::get($validated, 'tariff_id');
+        $extraUsersLimit = Arr::get($validated, 'extra_users_limit');
         $autoPayment = Arr::get($validated, 'auto_payment');
 
-        return new StatusPaymentDTO(
-            $paymentId,
-            $paymentType,
+        return new DoPaymentDTO(
+            $currency,
             $tariffId,
-            $extraUserLimits,
+            $extraUsersLimit,
             $autoPayment
         );
     }

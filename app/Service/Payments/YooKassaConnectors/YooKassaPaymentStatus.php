@@ -20,26 +20,41 @@ use YooKassa\Common\Exceptions\NotFoundException;
 use YooKassa\Common\Exceptions\ResponseProcessingException;
 use YooKassa\Common\Exceptions\TooManyRequestsException;
 use YooKassa\Common\Exceptions\UnauthorizedException;
+use YooKassa\Model\Payment;
 
+/**
+ * @property YooKassa $yookassa
+ */
 class YooKassaPaymentStatus implements PaymentStatus
 {
-    use YooKassaTrait;
+    /**
+     * @var Client
+     */
+    private Client $client;
+
+    public function __construct(
+        public int $merchantId,
+        public string $secretKey,
+        public string $paymentId
+    )
+    {
+        $this->client = new Client();
+        $this->client->setAuth($this->merchantId, $this->secretKey);
+    }
 
     /**
-     * @param StatusPaymentDTO $dto
-     * @return bool
-     * @throws ApiException
-     * @throws BadApiRequestException
-     * @throws ExtensionNotFoundException
-     * @throws ForbiddenException
-     * @throws InternalServerError
      * @throws NotFoundException
      * @throws ResponseProcessingException
+     * @throws ApiException
+     * @throws ExtensionNotFoundException
+     * @throws BadApiRequestException
+     * @throws InternalServerError
+     * @throws ForbiddenException
      * @throws TooManyRequestsException
      * @throws UnauthorizedException
      */
-    public function status(StatusPaymentDTO $dto): bool
+    public function getPaymentInfo(): Payment
     {
-        return $this->paymentInfoSave($dto);
+        return $this->client->getPaymentInfo($this->paymentId);
     }
 }
