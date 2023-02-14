@@ -58,17 +58,13 @@ class Tariff extends Model
     }
 
     /**
-     * @param int $tariffId
      * @return string
      */
-    public static function calculateExpireDate(
-        int $tariffId
-    ): string
+    public function calculateExpireDate(): string
     {
-        $tariff = self::getTariffById($tariffId);
         $date = now()->addMonth();
 
-        if ($tariff->validity == TariffValidityEnum::Annual)
+        if ($this->validity == TariffValidityEnum::Annual)
         {
             $date = now()->addYear();
         }

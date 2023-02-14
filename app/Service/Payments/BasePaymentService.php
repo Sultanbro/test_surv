@@ -39,8 +39,9 @@ abstract class BasePaymentService
      */
     public function pay(DoPaymentDTO $dto): string
     {
-        $response = $this->getPaymentProvider()->doPayment($dto);
-        $paymentId = $response->getId();
+        $response   = $this->getPaymentProvider()->doPayment($dto);
+        $paymentId  = $response->getId();
+        $tariff     = Tariff::getTariffById($dto->tariffId);
 
         if ($response->getStatus() != PaymentStatusEnum::STATUS_PENDING)
         {
@@ -50,7 +51,7 @@ abstract class BasePaymentService
         TariffPayment::createPaymentOrFail(
             $dto->tariffId,
             $dto->extraUsersLimit,
-            Tariff::calculateExpireDate($dto->tariffId),
+            $tariff->calculateExpireDate(),
             $response->getId(),
             PaymentEnum::YOOKASSA,
             $dto->autoPayment
