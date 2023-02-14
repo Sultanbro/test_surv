@@ -61,10 +61,12 @@ class RunAutoPaymentCommand extends Command
      */
     public function handle()
     {
-        $payments = TariffPayment::query()->where([
+        $payments = TariffPayment::query()
+            ->orderBy('expire_date', 'desc')
+            ->where([
             ['auto_payment', '=', true],
-            ['expire_date', '<', now()->format('Y-m-d')]
-        ])->get();
+            ['expire_date', '<=', now()->format('Y-m-d')]
+        ])->get()->unique('owner_id');
 
         foreach ($payments as $payment)
         {
