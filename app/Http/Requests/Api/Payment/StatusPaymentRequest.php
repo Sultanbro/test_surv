@@ -28,8 +28,7 @@ class StatusPaymentRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'payment_id'    => 'required|string',
-            'payment_type'  => 'required|in:yookassa'
+            'payment_id'    => 'required|string|exists:tariff_payment,payment_id'
         ];
     }
 
@@ -41,12 +40,9 @@ class StatusPaymentRequest extends FormRequest
         $validated = $this->validated();
 
         $paymentId   = Arr::get($validated, 'payment_id');
-        $paymentType = Arr::get($validated, 'payment_type');
-
 
         return new StatusPaymentDTO(
-            $paymentId,
-            $paymentType
+            $paymentId
         );
     }
 }

@@ -63,32 +63,15 @@ class RunAutoPaymentCommand extends Command
     {
         $payments = TariffPayment::query()->where([
             ['auto_payment', '=', true],
-            ['expire_date', '=', now()->format('Y-m-d')]
-        ])->get();
+            ['expire_date', '<', now()->format('Y-m-d')]
+        ])->orderBy('expire_date')->get();
 
         foreach ($payments as $payment)
         {
-            $this->factory->getPaymentsProviderByType($payment->service_for_payment)->autoPayment($payment);
-            $this->createTariffPayment($payment);
+            $this->factory->getPaymentsProviderByType($payment->service_for_payment)->doAutoPayment($payment);
         }
     }
 
-    /**
-     * @throws Exception
-     */
-    private function createTariffPayment(
-        TariffPayment $payment
-    ): void
-    {
-        TariffPayment::createPaymentOrFail(
-            $payment->tariff_id,
-            $payment->extra_user_limit,
-            Tariff::calculateExpireDate($payment->tariff_id),
-            $payment->payment_id,
-            $payment->service_for_payment,
-            $payment->auto_payment
-        );
-    }
     /**
      * @param int $tariffId
      * @return float

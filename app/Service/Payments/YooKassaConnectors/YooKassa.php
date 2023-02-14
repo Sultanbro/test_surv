@@ -9,6 +9,7 @@ use App\Enums\Payments\PaymentStatusEnum;
 use App\Events\PaymentIsSuccessEvent;
 use App\Models\Tariff\Tariff;
 use App\Models\Tariff\TariffPayment;
+use App\Service\Payments\AutoPayment;
 use App\Service\Payments\BasePaymentService;
 use App\Service\Payments\Payment;
 use App\Service\Payments\PaymentStatus;
@@ -47,8 +48,8 @@ class YooKassa extends BasePaymentService
 
     public function __construct()
     {
-        $this->merchantId   = (int) env('YOOKASSA_TEST_MERCHANT_ID');
-        $this->secretKey    = (string) env('YOOKASSA_TEST_SECRET_KEY');
+        $this->merchantId   = (int) env('YOOKASSA_MERCHANT_ID');
+        $this->secretKey    = (string) env('YOOKASSA_SECRET_KEY');
         $this->client       = new Client();
 
         $this->client->setAuth($this->merchantId, $this->secretKey);
@@ -59,7 +60,7 @@ class YooKassa extends BasePaymentService
      */
     public function getPaymentProvider(): PaymentTypeConnector
     {
-        return  new YooKassaConnector($this->merchantId, $this->secretKey);
+        return new YooKassaConnector($this->merchantId, $this->secretKey, $this->client);
     }
 
     /**
@@ -68,36 +69,14 @@ class YooKassa extends BasePaymentService
      */
     public function getPaymentInfo(string $paymentId): PaymentStatus
     {
-        return new YooKassaPaymentStatus($this->merchantId, $this->secretKey, $paymentId);
+        return new YooKassaPaymentStatus($this->merchantId, $this->secretKey, $this->client, $paymentId);
     }
 
     /**
-     * @throws NotFoundException
-     * @throws ResponseProcessingException
-     * @throws ApiException
-     * @throws ExtensionNotFoundException
-     * @throws BadApiRequestException
-     * @throws InternalServerError
-     * @throws ForbiddenException
-     * @throws TooManyRequestsException
-     * @throws UnauthorizedException
+     * @return AutoPayment
      */
-    public function autoPayment(
-        TariffPayment $payment
-    )
+    public function autoPayment(): AutoPayment
     {
-        $tariff = Tariff::getTariffById($payment->tariff_id);
-        $this->client->createPayment(
-            array(
-                'amount' => array(
-                    'value' => $tariff->calculateTotalPrice($payment->extra_user_limit),
-                    'currency' => 'RUB',
-                ),
-                'capture' => true,
-                'payment_method_id' => $payment->payment_id,
-                'description' => 'Заказ №' . time(),
-            ),
-            uniqid('', true)
-        );
+        return new YooKassaAutoPayment($this->merchantId, $this->secretKey, $this->client);
     }
 }

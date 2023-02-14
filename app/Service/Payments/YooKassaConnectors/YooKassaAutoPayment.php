@@ -2,11 +2,9 @@
 
 namespace App\Service\Payments\YooKassaConnectors;
 
-use App\DTO\Api\StatusPaymentDTO;
-use App\Enums\ErrorCode;
-use App\Enums\Payments\PaymentStatusEnum;
-use App\Service\Payments\PaymentStatus;
-use App\Support\Core\CustomException;
+use App\Models\Tariff\Tariff;
+use App\Models\Tariff\TariffPayment;
+use App\Service\Payments\AutoPayment;
 use YooKassa\Client;
 use YooKassa\Common\Exceptions\ApiException;
 use YooKassa\Common\Exceptions\BadApiRequestException;
@@ -17,24 +15,18 @@ use YooKassa\Common\Exceptions\NotFoundException;
 use YooKassa\Common\Exceptions\ResponseProcessingException;
 use YooKassa\Common\Exceptions\TooManyRequestsException;
 use YooKassa\Common\Exceptions\UnauthorizedException;
-use YooKassa\Model\Payment;
 
-/**
- * @property YooKassa $yookassa
- */
-class YooKassaPaymentStatus implements PaymentStatus
+class YooKassaAutoPayment implements AutoPayment
 {
     /**
      * @param int $merchantId
      * @param string $secretKey
      * @param Client $client
-     * @param string $paymentId
      */
     public function __construct(
         public int $merchantId,
         public string $secretKey,
-        public Client $client,
-        public string $paymentId
+        public Client $client
     )
     {
         $this->client->setAuth($this->merchantId, $this->secretKey);
@@ -51,8 +43,21 @@ class YooKassaPaymentStatus implements PaymentStatus
      * @throws TooManyRequestsException
      * @throws UnauthorizedException
      */
-    public function getPaymentInfo(): Payment
+    public function makeAutoPayment(TariffPayment $tariffPayment): void
     {
-        return $this->client->getPaymentInfo($this->paymentId);
+        $tariff = Tariff::getTariffById($tariffPayment->tariff_id);
+
+        $this->client->createPayment(
+            array(
+                'amount' => array(
+                    'value' => $tariff->calculateTotalPrice($tariffPayment->extra_user_limit),
+                    'currency' => 'RUB',
+                ),
+                'capture' => true,
+                'payment_method_id' => $tariffPayment->payment_id,
+                'description' => 'Заказ №' . time(),
+            ),
+            uniqid('', true)
+        );
     }
 }

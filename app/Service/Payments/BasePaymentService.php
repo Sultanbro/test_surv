@@ -28,6 +28,11 @@ abstract class BasePaymentService
     abstract public function getPaymentInfo(string $paymentId): PaymentStatus;
 
     /**
+     * @return AutoPayment
+     */
+    abstract public function autoPayment(): AutoPayment;
+
+    /**
      * @param DoPaymentDTO $dto
      * @return string
      * @throws Exception
@@ -69,12 +74,32 @@ abstract class BasePaymentService
             }
 
             TariffPayment::query()->update([
-                'status' => 'success'
+                'status' => PaymentStatusEnum::STATUS_SUCCESS
             ]);
 
             return true;
         } catch (Exception $exception) {
             throw new Exception($exception->getMessage());
         }
+    }
+
+    /**
+     * @param TariffPayment $payment
+     * @return void
+     * @throws Exception
+     */
+    public function doAutoPayment(TariffPayment $payment): void
+    {
+        $this->autoPayment($payment)->makeAutoPayment($payment);
+
+
+        TariffPayment::createPaymentOrFail(
+            $payment->tariff_id,
+            $payment->extra_user_limit,
+            Tariff::calculateExpireDate($payment->tariff_id),
+            $payment->payment_id,
+            $payment->service_for_payment,
+            (bool)$payment->auto_payment
+        );
     }
 }

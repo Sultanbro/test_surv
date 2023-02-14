@@ -45,7 +45,7 @@ class PaymentController extends Controller
     public function updateToTariffPayments(StatusPaymentRequest $request): JsonResponse
     {
         $dto = $request->toDto();
-        $response = $this->factory->getPaymentsProviderByType($dto->paymentType)->updateStatus($dto);
+        $response = $this->factory->getPaymentProviderByPaymentId($dto->paymentId)->updateStatus($dto);
 
         return $this->response(
             message: 'Success',

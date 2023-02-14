@@ -7,11 +7,9 @@ final class StatusPaymentDTO
 {
     /**
      * @param string $paymentId
-     * @param string $paymentType
      */
     public function __construct(
-        public string $paymentId,
-        public string $paymentType
+        public string $paymentId
     )
     {
     }
@@ -22,8 +20,7 @@ final class StatusPaymentDTO
     public function toArray(): array
     {
         return [
-            'payment_id'    => $this->paymentId,
-            'payment_type'  => $this->paymentType
+            'payment_id'    => $this->paymentId
         ];
     }
 }

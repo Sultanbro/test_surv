@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 namespace App\Service\Payments;
 
+use App\Models\Tariff\TariffPayment;
 use App\Service\Payments\YooKassaConnectors\YooKassa;
 
 final class PaymentFactory
@@ -36,5 +37,18 @@ final class PaymentFactory
         }
 
         return $paymentType;
+    }
+
+    /**
+     * @param string $paymentId
+     * @return BasePaymentService
+     */
+    public function getPaymentProviderByPaymentId(
+        string $paymentId
+    ): BasePaymentService
+    {
+        $tariffPayment = TariffPayment::query()->where('payment_id', $paymentId)->firstOrFail();
+
+        return $this->getPaymentsProviderByType($tariffPayment->service_for_payment);
     }
 }

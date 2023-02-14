@@ -6,7 +6,6 @@ namespace App\Service\Payments\YooKassaConnectors;
 use App\DTO\Api\DoPaymentDTO;
 use App\Models\Tariff\Tariff;
 use App\Service\Payments\PaymentTypeConnector;
-use App\Traits\YooKassaTrait;
 use App\User;
 use Exception;
 use Illuminate\Database\Eloquent\Model;
@@ -17,16 +16,16 @@ use YooKassa\Request\Payments\CreatePaymentResponse;
 class YooKassaConnector implements PaymentTypeConnector
 {
     /**
-     * @var Client
+     * @param int $merchantId
+     * @param string $secretKey
+     * @param Client $client
      */
-    private Client $client;
-
     public function __construct(
         public int $merchantId,
-        public string $secretKey
+        public string $secretKey,
+        public Client $client
     )
     {
-        $this->client = new Client();
         $this->client->setAuth($this->merchantId, $this->secretKey);
     }
 
@@ -65,15 +64,17 @@ class YooKassaConnector implements PaymentTypeConnector
     {
         $tariff = Tariff::getTariffById($tariffId);
         $priceForOnePerson = env('PAYMENT_FOR_ONE_PERSON');
+        $user = User::getAuthUser();
+        $price = $tariff->calculateTotalPrice($tariff->id, $extraUsersLimit);
         return array(
             'amount' => array(
-                'value'     => $tariff->calculateTotalPrice($tariff->id, $extraUsersLimit),
+                'value'     => $price,
                 'currency'  => 'RUB',
             ),
             'confirmation' => array(
                 'type'          => 'redirect',
                 'locale'        => 'ru_RU',
-                'return_url'    => 'https://jobtron.org/',
+                'return_url'    => 'https://jobtron.org/payment/',
             ),
             'capture'           => true,
             'description'       => 'Заказ №' . time(),
@@ -83,16 +84,16 @@ class YooKassaConnector implements PaymentTypeConnector
             ),
             'receipt' => array(
                 'customer' => array(
-                    'full_name' => $this->getUser()->full_name,
-                    'email'     => $this->getUser()->email,
-                    'phone'     => $this->getUser()->phone
+                    'full_name' => $user->full_name,
+                    'email'     => $user->email,
+                    'phone'     => $user->phone
                 ),
                 'items' => array(
                     array(
                         'description'   =>  "Покупка тарифа $tariff->kind",
                         'quantity'      => 1,
                         'amount' => array(
-                            'value'     => $tariff->calculateTotalPrice($tariff->id, $extraUsersLimit),
+                            'value'     => $price,
                             'currency'  => 'RUB'
                         ),
                         'vat_code' => '1',
@@ -107,7 +108,7 @@ class YooKassaConnector implements PaymentTypeConnector
                         'description'   =>  "Кол-во пользователей: $extraUsersLimit, цена за одного пользователя $priceForOnePerson." ,
                         'quantity'      => $extraUsersLimit,
                         'amount' => array(
-                            'value'     => $tariff->calculateTotalPrice($tariff->id, $extraUsersLimit),
+                            'value'     => $price,
                             'currency'  => 'RUB'
                         ),
                         'vat_code' => '1',
@@ -132,14 +133,5 @@ class YooKassaConnector implements PaymentTypeConnector
     {
         $rates = new CurrencyRates(CurrencyRates::URL_RATES_ALL);
         return $rates->convertFromTenge('RUB', $price);
-    }
-
-    /**
-     * @return ?object
-     */
-    private function getUser(): ?object
-    {
-        $id = auth()->id() ?? 5;
-        return User::query()->find($id);
     }
 }
