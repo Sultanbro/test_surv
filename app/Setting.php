@@ -7,19 +7,19 @@ use Illuminate\Database\Eloquent\Model;
 class Setting extends Model
 {
     const TIMEZONES = [
-        +0 => '(GMT+0:00) Europe/London (Greenwich Mean Time)',
-        +1 => '(GMT+1:00) Europe/Belgrade (Central European Time)',
-        +2 => '(GMT+2:00) Europe/Minsk (Eastern European Time)',
-        +3 => '(GMT+3:00) Europe/Moscow (Moscow Standard Time)',
-        +4 => '(GMT+4:00) Europe/Samara (Samara Time)',
-        +5 => '(GMT+5:00) Asia/Aqtobe (Aqtobe Time)',
-        +6 => '(GMT+6:00) Asia/Almaty (Alma-Ata Time)',
-        +7 => '(GMT+7:00) Asia/Krasnoyarsk (Krasnoyarsk Time)',
-        +8 => '(GMT+8:00) Asia/Irkutsk (Irkutsk Time)',
-        +9 => '(GMT+9:00) Asia/Yakutsk (Yakutsk Time)',
-        +10 => '(GMT+10:00) Asia/Vladivostok (Vladivostok Time)',
-        +11 => '(GMT+11:00) Asia/Magadan (Magadan Time)',
-        +12 => '(GMT+12:00) Asia/Kamchatka (Petropavlovsk-Kamchatski Time)'
+        +0 => 'Europe/London',
+        +1 => 'Europe/Belgrade',
+        +2 => 'Europe/Minsk',
+        +3 => 'Europe/Moscow',
+        +4 => 'Europe/Samara',
+        +5 => 'Asia/Aqtobe',
+        +6 => 'Asia/Almaty',
+        +7 => 'Asia/Krasnoyarsk',
+        +8 => 'Asia/Irkutsk',
+        +9 => 'Asia/Yakutsk',
+        +10 => 'Asia/Vladivostok',
+        +11 => 'Asia/Magadan',
+        +12 => 'Asia/Kamchatka'
     ];
     protected $fillable = ['name', 'description', 'value'];
 
