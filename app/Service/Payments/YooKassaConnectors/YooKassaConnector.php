@@ -4,6 +4,7 @@ declare(strict_types=1);
 namespace App\Service\Payments\YooKassaConnectors;
 
 use App\DTO\Api\DoPaymentDTO;
+use App\Enums\Payments\PaymentStatusEnum;
 use App\Models\Tariff\Tariff;
 use App\Service\Payments\PaymentTypeConnector;
 use App\User;
@@ -39,11 +40,17 @@ class YooKassaConnector implements PaymentTypeConnector
         try {
             $idempotenceKey = uniqid('', true);
 
-            return $this->client->createPayment(
+            $response =  $this->client->createPayment(
                 $this->getPaymentRequest($dto->tariffId, $dto->extraUsersLimit, $dto->autoPayment),
                 $idempotenceKey
             );
 
+            // Check the status of the payment
+            if ($response->getStatus() === PaymentStatusEnum::STATUS_CANCELED || $response->getStatus() === PaymentStatusEnum::STATUS_FAILED) {
+                throw new \Exception('Payment failed');
+            }
+
+            return $response;
         } catch (Exception $e) {
             throw new Exception($e->getMessage());
         }

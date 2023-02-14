@@ -9,4 +9,6 @@ enum PaymentStatusEnum: string
     const STATUS_FAIL    = 'failed';
     const STATUS_WAITING_CAPTURE = 'waiting_for_capture';
     const STATUS_PENDING = 'pending';
+    const STATUS_CANCELED = 'canceled';
+    const STATUS_FAILED = 'failed';
 }
