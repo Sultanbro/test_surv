@@ -47,10 +47,11 @@ abstract class BasePaymentService
             throw new Exception("При генераций платежа $paymentId произошла ошибка");
         }
 
-        PaymentIsSuccessEvent::dispatch(
+        TariffPayment::createPaymentOrFail(
             $dto->tariffId,
             $dto->extraUsersLimit,
-            $paymentId,
+            Tariff::calculateExpireDate($dto->tariffId),
+            $response->getId(),
             PaymentEnum::YOOKASSA,
             $dto->autoPayment
         );

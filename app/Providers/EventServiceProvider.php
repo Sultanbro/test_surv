@@ -62,9 +62,6 @@ class EventServiceProvider extends ServiceProvider
         ],
         EmailNotificationEvent::class => [
             EmailNotificationListener::class
-        ],
-        PaymentIsSuccessEvent::class => [
-            PaymentIsSuccessListener::class
         ]
     ];
 

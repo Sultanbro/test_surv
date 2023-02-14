@@ -64,7 +64,7 @@ class RunAutoPaymentCommand extends Command
         $payments = TariffPayment::query()->where([
             ['auto_payment', '=', true],
             ['expire_date', '<', now()->format('Y-m-d')]
-        ])->orderBy('expire_date')->get();
+        ])->get();
 
         foreach ($payments as $payment)
         {
