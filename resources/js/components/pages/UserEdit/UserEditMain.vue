@@ -58,6 +58,10 @@ export default {
 			type: Array,
 			default: () => []
 		},
+		front_valid:{
+			type: Object,
+			default: () => null
+		}
 	},
 	data(){
 		return {
@@ -104,7 +108,7 @@ export default {
 				window.open('/timetracking/settings?tab=2#nav-home', '_blank')
 				this.position = ''
 			}
-		}
+		},
 	},
 	mounted() {
 		document.body.addEventListener('click', ({target}) => {
@@ -116,6 +120,24 @@ export default {
 		});
 	},
 	methods: {
+		checkValid(event, err){
+			if(this.front_valid.formSubmitted){
+				const val = event.target.value;
+				if(err === 'email'){
+					!this.validateEmail(val) ? this.front_valid.email = false : this.front_valid.email = true;
+				}
+				if(err === 'position'){
+					!val.length ? this.front_valid.position = false : this.front_valid.position = true;
+				}
+				if(err !== 'email' && err !== 'position'){
+					val.length < 3 ? this.front_valid[err] = false : this.front_valid[err] = true;
+				}
+			}
+		},
+		validateEmail(email) {
+			const re = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+			return re.test(String(email).toLowerCase());
+		},
 		fetchCity(){
 			const _token = document.querySelector('meta[name="csrf-token"]').getAttribute('content')
 			if(!this.country.length){
@@ -149,501 +171,527 @@ export default {
 <template>
 	<div
 		id="profile_d"
-		class="contacts-info col-md-6 none-block mt-0"
+		class="row"
 	>
-		<div class="form-group row">
-			<label
-				for="firstName"
-				class="col-sm-4 col-form-label font-weight-bold"
-			>Имя <span class="red">*</span></label>
-			<div class="col-sm-8">
-				<input
-					name="name"
-					v-model="userName"
-					type="text"
-					required
-					id="firstName"
-					class="form-control"
-					placeholder="Имя сотрудника"
-				>
-			</div>
-		</div>
-		<div class="form-group row">
-			<label
-				for="lastName"
-				class="col-sm-4 col-form-label font-weight-bold"
-			>Фамилия <span class="red">*</span></label>
-			<div class="col-sm-8">
-				<input
-					name="last_name"
-					v-model="userLastName"
-					type="text"
-					required
-					id="lastName"
-					class="form-control"
-					placeholder="Фамилия сотрудника"
-				>
-			</div>
-		</div>
-
-		<div class="form-group row">
-			<label
-				for="email"
-				class="col-sm-4 col-form-label font-weight-bold"
-			>Email <span class="red">*</span></label>
-			<div class="col-sm-8">
-				<input
-					name="email"
-					v-model="userEmail"
-					type="email"
-					required
-					id="email"
-					class="form-control"
-					placeholder="Email"
-				>
-			</div>
-		</div>
-		<div
-			v-if="user"
-			class="form-group row"
-		>
-			<label
-				for="email"
-				class="col-sm-4 col-form-label font-weight-bold"
-			>Новый пароль</label>
-			<div class="col-sm-8">
-				<input
-					name="new_pwd"
-					value=""
-					type="text"
-					id="new_pwd"
-					class="form-control"
-					placeholder=""
-				>
-			</div>
-		</div>
-
-		<div class="form-group row">
-			<label
-				for="lastName"
-				class="col-sm-4 col-form-label font-weight-bold"
-			>День рождения</label>
-			<div class="col-sm-8">
-				<input
-					name="birthday"
-					v-model="userBirthday"
-					type="date"
-					required
-					id="birthday"
-					class="form-control"
-				>
-			</div>
-		</div>
-
-		<div class="form-group row">
-			<label
-				for="position"
-				class="col-sm-4 col-form-label font-weight-bold"
-			>Должность</label>
-			<div class="col-sm-8">
-				<select
-					name="position"
-					id="position"
-					class="form-control mb-2"
-					v-model="position"
-				>
-					<option
-						v-for="pos in positions"
-						:key="pos.id"
-						:value="pos.id"
+		<div class="col-12 col-xl-6">
+			<div
+				class="form-group row"
+				:class="{'form-group-error': front_valid.formSubmitted && !front_valid.name}"
+			>
+				<label
+					for="firstName"
+					class="col-sm-4 col-form-label font-weight-bold"
+				>Имя <span class="red">*</span></label>
+				<div class="col-sm-8">
+					<input
+						name="name"
+						v-model="userName"
+						type="text"
+						required
+						id="firstName"
+						class="form-control"
+						placeholder="Имя сотрудника"
+						@input="checkValid($event, 'name')"
 					>
-						{{ pos.position }}
-					</option>
-					<option
-						:value="-1"
-						class="UserEdit-new-position"
+				</div>
+			</div>
+			<div
+				class="form-group row"
+				:class="{'form-group-error': front_valid.formSubmitted && !front_valid.lastName}"
+			>
+				<label
+					for="lastName"
+					class="col-sm-4 col-form-label font-weight-bold"
+				>Фамилия <span class="red">*</span></label>
+				<div class="col-sm-8">
+					<input
+						name="last_name"
+						v-model="userLastName"
+						type="text"
+						required
+						id="lastName"
+						class="form-control"
+						placeholder="Фамилия сотрудника"
+						@input="checkValid($event, 'lastName')"
 					>
-						Добавить новую должность
-					</option>
-				</select>
+				</div>
+			</div>
 
-				<ProfileGroups
-					v-if="showPositionGroup"
-					id="position_group"
-					:groups="groups"
-					:user_id="user ? user.id : '0'"
-					:in-progress="inProgress"
-					:user_role="2"
-				/>
+			<div
+				class="form-group row"
+				:class="{'form-group-error': front_valid.formSubmitted && !front_valid.email}"
+			>
+				<label
+					for="email"
+					class="col-sm-4 col-form-label font-weight-bold"
+				>Email <span class="red">*</span></label>
+				<div class="col-sm-8">
+					<input
+						name="email"
+						v-model="userEmail"
+						type="email"
+						required
+						id="email"
+						class="form-control"
+						placeholder="Email"
+						@input="checkValid($event, 'email')"
+					>
+				</div>
+			</div>
+			<div
+				v-if="user"
+				class="form-group row"
+			>
+				<label
+					for="email"
+					class="col-sm-4 col-form-label font-weight-bold"
+				>Новый пароль</label>
+				<div class="col-sm-8">
+					<input
+						name="new_pwd"
+						value=""
+						type="text"
+						id="new_pwd"
+						class="form-control"
+						placeholder=""
+					>
+				</div>
+			</div>
+
+			<div
+				class="form-group row"
+				:class="{'form-group-error': front_valid.formSubmitted && !front_valid.birthday}"
+			>
+				<label
+					for="lastName"
+					class="col-sm-4 col-form-label font-weight-bold"
+				>День рождения <span class="red">*</span></label>
+				<div class="col-sm-8">
+					<input
+						name="birthday"
+						v-model="userBirthday"
+						type="date"
+						required
+						id="birthday"
+						class="form-control"
+						@input="checkValid($event, 'birthday')"
+					>
+				</div>
+			</div>
+
+			<div
+				class="form-group row"
+				:class="{'form-group-error': front_valid.formSubmitted && !front_valid.position}"
+			>
+				<label
+					for="position"
+					class="col-sm-4 col-form-label font-weight-bold"
+				>Должность <span class="red">*</span></label>
+				<div class="col-sm-8">
+					<select
+						name="position"
+						id="position"
+						class="form-control mb-2"
+						v-model="position"
+						@change="checkValid($event, 'position')"
+					>
+						<option
+							v-for="pos in positions"
+							:key="pos.id"
+							:value="pos.id"
+						>
+							{{ pos.position }}
+						</option>
+						<option
+							:value="-1"
+							class="UserEdit-new-position"
+						>
+							Добавить новую должность
+						</option>
+					</select>
+
+					<ProfileGroups
+						v-if="showPositionGroup"
+						id="position_group"
+						:groups="groups"
+						:user_id="user ? user.id : '0'"
+						:in-progress="inProgress"
+						:user_role="2"
+					/>
+				</div>
+			</div>
+
+			<!-- groups tab -->
+			<UserEditGroups
+				:user="user"
+				:groups="groups"
+				:in_groups="in_groups"
+				:front_valid="front_valid"
+			/>
+			<!-- end of groups and books tab -->
+
+			<div class="form-group row">
+				<label
+					for="userType"
+					class="col-sm-4 col-form-label font-weight-bold"
+				>Тип <span class="red">*</span>
+					<img
+						src="/images/dist/profit-info.svg"
+						class="img-info"
+						alt="info icon"
+						id="info1"
+					>
+					<b-popover
+						target="info1"
+						triggers="hover"
+						placement="right"
+					>
+						<p style="font-size: 15px">
+							Если выбран "Удаленный работник", то в профиле сотрудника будет кнопка "начать рабочий день", через которую будет происходить контроль рабочего дня.
+						</p>
+					</b-popover>
+				</label>
+				<div class="col-sm-8">
+					<select
+						name="user_type"
+						required
+						id="userType"
+						class="form-control"
+					>
+						<option
+							value="office"
+							:selected="user && user.user_type === 'office'"
+						>
+							Офисный работник
+						</option>
+						<option
+							value="remote"
+							:selected="user && user.user_type === 'remote' || user === null"
+						>
+							Удаленный работник
+						</option>
+					</select>
+				</div>
+			</div>
+			<div class="form-group row">
+				<label
+					for="programType"
+					class="col-sm-4 col-form-label font-weight-bold"
+				>Начать день <span class="red">*</span>
+					<img
+						src="/images/dist/profit-info.svg"
+						class="img-info"
+						alt="info icon"
+						id="info2"
+					>
+					<b-popover
+						target="info2"
+						triggers="hover"
+						placement="right"
+					>
+						<p style="font-size: 15px">
+							Актуально только для удаленных работников!<br>
+							Тут нужно выбрать способ, через который будет производиться учет рабочего времени. По умолчанию
+							выбран способ нажатия на кнопку "начать рабочий день" в профиле сотрудника программного обеспечения Jobtron.
+						</p>
+					</b-popover>
+				</label>
+				<div class="col-sm-8">
+					<select
+						name="program_type"
+						required
+						id="programType"
+						class="form-control"
+					>
+						<option
+							v-for="program in programs"
+							:key="program.id"
+							:value="program.id"
+							:selected="user && user.program_id === program.id"
+						>
+							<template v-if="program.name === 'Jobtron'">
+								Через кнопку в профиле {{ program.name }}
+							</template>
+							<template v-else>
+								{{ program.name }}
+							</template>
+						</option>
+					</select>
+				</div>
 			</div>
 		</div>
-
-		<!-- groups tab -->
-		<UserEditGroups
-			:user="user"
-			:groups="groups"
-			:in_groups="in_groups"
-		/>
-		<!-- end of groups and books tab -->
-
-		<div class="form-group row">
-			<label
-				for="userType"
-				class="col-sm-4 col-form-label font-weight-bold"
-			>Тип <span class="red">*</span>
-				<img
-					src="/images/dist/profit-info.svg"
-					class="img-info"
-					alt="info icon"
-					id="info1"
-				>
-				<b-popover
-					target="info1"
-					triggers="hover"
-					placement="right"
-				>
-					<p style="font-size: 15px">
-						Если выбран "Удаленный работник", то в профиле сотрудника будет кнопка "начать рабочий день", через которую будет происходить контроль рабочего дня.
-					</p>
-				</b-popover>
-			</label>
-			<div class="col-sm-8">
-				<select
-					name="user_type"
-					required
-					id="userType"
-					class="form-control"
-				>
-					<option
-						value="office"
-						:selected="user && user.user_type === 'office'"
+		<div class="col-12 col-xl-6">
+			<div class="form-group row">
+				<label
+					for="workingDays"
+					class="col-sm-4 col-form-label font-weight-bold"
+				>Рабочие дни <span class="red">*</span></label>
+				<div class="col-sm-8">
+					<select
+						name="working_days"
+						required
+						id="workingDays"
+						class="form-control"
 					>
-						Офисный работник
-					</option>
-					<option
-						value="remote"
-						:selected="user && user.user_type === 'remote' || user === null"
-					>
-						Удаленный работник
-					</option>
-				</select>
+						<option
+							v-for="item in workingDays"
+							:key="item.id"
+							:value="item.id"
+							:selected="user && user.working_day_id == item.id"
+						>
+							{{ item.name }}
+						</option>
+					</select>
+				</div>
 			</div>
-		</div>
 
-		<div class="form-group row">
-			<label
-				for="programType"
-				class="col-sm-4 col-form-label font-weight-bold"
-			>Начать день <span class="red">*</span>
-				<img
-					src="/images/dist/profit-info.svg"
-					class="img-info"
-					alt="info icon"
-					id="info2"
-				>
-				<b-popover
-					target="info2"
-					triggers="hover"
-					placement="right"
-				>
-					<p style="font-size: 15px">
-						Актуально только для удаленных работников!<br>
-						Тут нужно выбрать способ, через который будет производиться учет рабочего времени. По умолчанию
-						выбран способ нажатия на кнопку "начать рабочий день" в профиле сотрудника программного обеспечения Jobtron.
-					</p>
-				</b-popover>
-			</label>
-			<div class="col-sm-8">
-				<select
-					name="program_type"
-					required
-					id="programType"
-					class="form-control"
-				>
-					<option
-						v-for="program in programs"
-						:key="program.id"
-						:value="program.id"
-						:selected="user && user.program_id === program.id"
-					>
-						<template v-if="program.name === 'Jobtron'">
-							Через кнопку в профиле {{ program.name }}
-						</template>
-						<template v-else>
-							{{ program.name }}
-						</template>
-					</option>
-				</select>
-			</div>
-		</div>
-
-		<div class="form-group row">
-			<label
-				for="workingDays"
-				class="col-sm-4 col-form-label font-weight-bold"
-			>Рабочие дни <span class="red">*</span></label>
-			<div class="col-sm-8">
-				<select
-					name="working_days"
-					required
-					id="workingDays"
-					class="form-control"
-				>
-					<option
-						v-for="item in workingDays"
-						:key="item.id"
-						:value="item.id"
-						:selected="user && user.working_day_id == item.id"
-					>
-						{{ item.name }}
-					</option>
-				</select>
-			</div>
-		</div>
-
-		<div class="form-group row">
-			<label
-				for="workingDays"
-				class="col-sm-4 col-form-label font-weight-bold"
-			>Найти город</label>
-			<div class="col-sm-8">
-				<div class="mb-3 xfade">
-					<div
-						id="selectedCityRU"
-						class="form-group row"
-					>
-						<div class="col-sm-12 position-relative">
-							<input
-								name="selectedCityInput"
-								v-model="country"
-								required
-								id="selectedCityInput"
-								class="form-control"
-								placeholder="Поиск городов"
-								@input="fetchCity"
-								@click="isSearchResult = true"
-							>
-							<input
-								name="working_city"
-								:value="user && user.working_city ? user.working_city : ''"
-								hidden
-								id="working_city"
-							>
-							<div
-								v-if="isSearchResult"
-								id="listSearchResult"
-								class="listSearchResult"
-							>
-								<ul
-									id="searchResultCountry"
-									class="p-0 mb-0"
+			<div class="form-group row">
+				<label
+					for="workingDays"
+					class="col-sm-4 col-form-label font-weight-bold"
+				>Найти город <span class="red">*</span></label>
+				<div class="col-sm-8">
+					<div class="mb-3 xfade">
+						<div
+							id="selectedCityRU"
+							class="form-group row"
+							:class="{'form-group-error': front_valid.formSubmitted && !front_valid.selectedCityInput}"
+						>
+							<div class="col-sm-12 position-relative">
+								<input
+									name="selectedCityInput"
+									v-model="country"
+									required
+									id="selectedCityInput"
+									class="form-control"
+									placeholder="Поиск городов"
+									@input="fetchCity"
+									@click="isSearchResult = true"
+									@change="checkValid($event, 'selectedCityInput')"
+									autocomplete="off"
 								>
-									<template v-if="cities && cities.length">
-										<li
-											v-for="city in cities"
-											:key="city.id"
-											:id="`li-hover-jquery-${city.id}`"
-											class="searchResultCountry"
-											@click="pasteSearchInput(city)"
-										>
-											<strong>Страна: </strong> {{ city.country }} <strong>Город: </strong> {{ city.city }}
-										</li>
-									</template>
-									<li
-										v-if="country && cities && !cities.length"
-										class="searchResultCountry-empty"
+								<input
+									name="working_city"
+									:value="user && user.working_city ? user.working_city : ''"
+									hidden
+									id="working_city"
+								>
+								<div
+									v-if="isSearchResult"
+									id="listSearchResult"
+									class="listSearchResult"
+								>
+									<ul
+										id="searchResultCountry"
+										class="p-0 mb-0"
 									>
-										Нет найденных городов
-									</li>
-									<li v-if="country.length < 1">
-										<span class="help-text">Введите хотябы 1 символ для поиска города</span>
-									</li>
-								</ul>
+										<template v-if="cities && cities.length">
+											<li
+												v-for="city in cities"
+												:key="city.id"
+												:id="`li-hover-jquery-${city.id}`"
+												class="searchResultCountry"
+												@click="pasteSearchInput(city)"
+											>
+												<strong>Страна: </strong> {{ city.country }} <strong>Город: </strong> {{ city.city }}
+											</li>
+										</template>
+										<li
+											v-if="country && cities && !cities.length"
+											class="searchResultCountry-empty"
+										>
+											Нет найденных городов
+										</li>
+										<li v-if="country.length < 1">
+											<span class="help-text">Введите хотябы 1 символ для поиска города</span>
+										</li>
+									</ul>
+								</div>
 							</div>
 						</div>
 					</div>
 				</div>
 			</div>
-		</div>
 
-		<div class="form-group row">
-			<label
-				class="col-sm-4 col-form-label font-weight-bold"
-			>Ставка</label>
-			<div class="col-sm-8 d-flex">
-				<div class="custom-control custom-radio">
+			<div class="form-group row">
+				<label
+					class="col-sm-4 col-form-label font-weight-bold"
+				>Ставка</label>
+				<div class="col-sm-8 d-flex">
+					<div class="custom-control custom-radio">
+						<input
+							type="radio"
+							name="full_time"
+							class="custom-control-input"
+							value="1"
+							id="ftr1"
+							:checked="user ? user.full_time === 1 : true"
+						>
+						<label
+							class="custom-control-label"
+							for="ftr1"
+						>
+							Full-Time
+						</label>
+					</div>
+					<div class="custom-control custom-radio ml-4">
+						<input
+							type="radio"
+							name="full_time"
+							class="custom-control-input"
+							value="0"
+							id="ftr0"
+							:checked="user && user.full_time === 0"
+						>
+						<label
+							class="custom-control-label"
+							for="ftr0"
+						>
+							Part-Time
+						</label>
+					</div>
+				</div>
+			</div>
+
+			<div class="form-group row">
+				<label
+					for="workingTimes"
+					class="col-sm-4 col-form-label font-weight-bold"
+				>Рабочие часы</label>
+				<div class="col-sm-8">
+					<select
+						name="working_times"
+						id="workingTimes"
+						class="form-control"
+					>
+						<option
+							v-for="item in workingTimes"
+							:key="item.id"
+							:value="item.id"
+							:selected="user && user.working_time_id === item.id"
+						>
+							{{ item.name }}
+						</option>
+					</select>
+				</div>
+			</div>
+
+			<div
+				id="workShedule"
+				class="form-group row"
+			>
+				<label
+					for="workingTimes"
+					class="col-sm-4 col-form-label font-weight-bold"
+				>Рабочий график</label>
+				<div class="col-sm-8 form-inline">
 					<input
-						type="radio"
-						name="full_time"
-						class="custom-control-input"
-						value="1"
-						id="ftr1"
-						:checked="user && user.full_time === 1"
+						name="work_start_time"
+						v-model="userWork_start"
+						type="time"
+						id="workStartTime"
+						class="form-control mr-2 work-start-time"
 					>
-					<label
-						class="custom-control-label"
-						for="ftr1"
-					>
-						Full-Time
-					</label>
-				</div>
-				<div class="custom-control custom-radio ml-4">
+					<label for="workEndTime">До </label>
 					<input
-						type="radio"
-						name="full_time"
-						class="custom-control-input"
-						value="0"
-						id="ftr0"
-						:checked="user && user.full_time === 0"
+						name="work_start_end"
+						v-model="userWork_end"
+						type="time"
+						id="workEndTime"
+						class="form-control mx-2 work-end-time"
 					>
-					<label
-						class="custom-control-label"
-						for="ftr0"
+				</div>
+			</div>
+
+			<div
+				class="form-group row"
+				id="weekdays"
+			>
+				<label
+					for="workingTimes"
+					class="col-sm-4 col-form-label font-weight-bold"
+				>Выходные</label>
+				<div class="col-sm-8 form-inline">
+					<input
+						name="weekdays"
+						v-model="weekdaysModel"
+						type="hidden"
+						id="weekdays-input"
 					>
-						Part-Time
-					</label>
-				</div>
-			</div>
-		</div>
 
-		<div class="form-group row">
-			<label
-				for="workingTimes"
-				class="col-sm-4 col-form-label font-weight-bold"
-			>Рабочие часы</label>
-			<div class="col-sm-8">
-				<select
-					name="working_times"
-					id="workingTimes"
-					class="form-control"
-				>
-					<option
-						v-for="item in workingTimes"
-						:key="item.id"
-						:value="item.id"
-						:selected="user && user.working_time_id === item.id"
+					<div
+						class="weekday"
+						:class="{active: weekdays[1] === '1'}"
+						data-id="1"
+						@click="toggleWeekDay(1)"
 					>
-						{{ item.name }}
-					</option>
-				</select>
-			</div>
-		</div>
-
-		<div
-			id="workShedule"
-			class="form-group row"
-		>
-			<label
-				for="workingTimes"
-				class="col-sm-4 col-form-label font-weight-bold"
-			>Рабочий график</label>
-			<div class="col-sm-8 form-inline">
-				<input
-					name="work_start_time"
-					v-model="userWork_start"
-					type="time"
-					id="workStartTime"
-					class="form-control mr-2 work-start-time"
-				>
-				<label for="workEndTime">До </label>
-				<input
-					name="work_start_end"
-					v-model="userWork_end"
-					type="time"
-					id="workEndTime"
-					class="form-control mx-2 work-end-time"
-				>
-			</div>
-		</div>
-
-		<div
-			class="form-group row"
-			id="weekdays"
-		>
-			<label
-				for="workingTimes"
-				class="col-sm-4 col-form-label font-weight-bold"
-			>Выходные</label>
-			<div class="col-sm-8 form-inline">
-				<input
-					name="weekdays"
-					v-model="weekdaysModel"
-					type="hidden"
-					id="weekdays-input"
-				>
-
-				<div
-					class="weekday"
-					:class="{active: weekdays[1] === '1'}"
-					data-id="1"
-					@click="toggleWeekDay(1)"
-				>
-					Пн
-				</div>
-				<div
-					class="weekday"
-					:class="{active: weekdays[2] === '1'}"
-					data-id="2"
-					@click="toggleWeekDay(2)"
-				>
-					Вт
-				</div>
-				<div
-					class="weekday"
-					:class="{active: weekdays[3] === '1'}"
-					data-id="3"
-					@click="toggleWeekDay(3)"
-				>
-					Ср
-				</div>
-				<div
-					class="weekday"
-					:class="{active: weekdays[4] === '1'}"
-					data-id="4"
-					@click="toggleWeekDay(4)"
-				>
-					Чт
-				</div>
-				<div
-					class="weekday"
-					:class="{active: weekdays[5] === '1'}"
-					data-id="5"
-					@click="toggleWeekDay(5)"
-				>
-					Пт
-				</div>
-				<div
-					class="weekday"
-					:class="{active: weekdays[6] === '1'}"
-					data-id="6"
-					@click="toggleWeekDay(6)"
-				>
-					Сб
-				</div>
-				<div
-					class="weekday"
-					:class="{active: weekdays[0] === '1'}"
-					data-id="0"
-					@click="toggleWeekDay(0)"
-				>
-					Вс
+						Пн
+					</div>
+					<div
+						class="weekday"
+						:class="{active: weekdays[2] === '1'}"
+						data-id="2"
+						@click="toggleWeekDay(2)"
+					>
+						Вт
+					</div>
+					<div
+						class="weekday"
+						:class="{active: weekdays[3] === '1'}"
+						data-id="3"
+						@click="toggleWeekDay(3)"
+					>
+						Ср
+					</div>
+					<div
+						class="weekday"
+						:class="{active: weekdays[4] === '1'}"
+						data-id="4"
+						@click="toggleWeekDay(4)"
+					>
+						Чт
+					</div>
+					<div
+						class="weekday"
+						:class="{active: weekdays[5] === '1'}"
+						data-id="5"
+						@click="toggleWeekDay(5)"
+					>
+						Пт
+					</div>
+					<div
+						class="weekday"
+						:class="{active: weekdays[6] === '1'}"
+						data-id="6"
+						@click="toggleWeekDay(6)"
+					>
+						Сб
+					</div>
+					<div
+						class="weekday"
+						:class="{active: weekdays[0] === '1'}"
+						data-id="0"
+						@click="toggleWeekDay(0)"
+					>
+						Вс
+					</div>
 				</div>
 			</div>
-		</div>
 
-		<div class="form-group row">
-			<label
-				for="description"
-				class="col-sm-4 col-form-label font-weight-bold"
-			>Дополнительно</label>
-			<div class="col-sm-8">
-				<textarea
-					name="description"
-					rows="3"
-					id="description"
-					class="form-control"
-					:value="user ? user.description : ''"
-				/>
+			<div class="form-group row">
+				<label
+					for="description"
+					class="col-sm-4 col-form-label font-weight-bold"
+				>Дополнительно</label>
+				<div class="col-sm-8">
+					<textarea
+						name="description"
+						rows="3"
+						id="description"
+						class="form-control"
+						:value="user ? user.description : ''"
+					/>
+				</div>
 			</div>
 		</div>
 	</div>
@@ -675,10 +723,10 @@ export default {
 
 .listSearchResult{
 	position: absolute;
-	bottom: 0;
-	right: -290px;
-	width: 300px;
-	max-height: 300px;
+	top: 40px;
+	left: 15px;
+	width: calc(100% - 30px);
+	max-height: 350px;
 	z-index: 22;
 	background-color: #fff;
 	border-radius: 6px;

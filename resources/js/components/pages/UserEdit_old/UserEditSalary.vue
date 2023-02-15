@@ -69,7 +69,7 @@ export default {
 				for="zarplata"
 				class="col-sm-3 col-form-label font-weight-bold"
 				:class="{'mr-3': !user}"
-			>Оклад</label>
+			>Оклад <span class="red">*</span></label>
 
 			<div
 				:class="{
