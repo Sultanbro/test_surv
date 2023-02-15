@@ -21,6 +21,7 @@ class DatabaseSeeder extends Seeder
             WorkingDaySeeder::class,
             WorkingTimeSeeder::class,
             SettingSeeder::class,
+            TariffSeeder::class,
 
             // KpiSeeder::class,
             //KpiItemSeeder::class,
