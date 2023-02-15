@@ -32,6 +32,7 @@
 				>Покинуть чат</a>
 			</template>
 		</ContextMenu>
+		<SearchBox />
 		<div class="messenger__chats-list">
 			<template v-if="!isSearchMode || !fullscreen">
 				<div
@@ -79,12 +80,14 @@
 
 <script>
 import {mapActions, mapGetters} from 'vuex';
+import SearchBox from '@/components/Chat/SearchBox/SearchBox.vue';
 import ContextMenu from '../ContextMenu/ContextMenu.vue';
 import ContactItem from './ContactItem/ContactItem.vue';
 
 export default {
 	name: 'ChatsList',
 	components: {
+		SearchBox,
 		ContextMenu,
 		ContactItem,
 	},

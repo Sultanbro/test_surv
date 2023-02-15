@@ -64,7 +64,8 @@ export default {
 					htmlId: 'nav-checkList',
 					path: '/timetracking/settings?tab=7#nav-checkList',
 					title: 'Чек-листы',
-					access: ['checklists_view', 'settings_view']
+					access: ['checklists_view', 'settings_view'],
+					domain: 'bp'
 				},
 				{
 					id: '8',
@@ -81,7 +82,8 @@ export default {
 					access: 'is_admin'
 				},
 			],
-			pageData: {}
+			pageData: {},
+			domain: window.location.hostname.split('.')[0]
 		}
 	},
 	computed: {
@@ -105,6 +107,10 @@ export default {
 			if(access === 'is_admin') return this.$laravel.is_admin
 			if(typeof access === 'string') return this.$can(access)
 			return access.some(item => this.$can(item))
+		},
+		ckeckDomain(domain){
+			if(!domain) return true
+			return domain === this.domain
 		},
 		updatePageData(){
 			this.pageData = {}
@@ -134,7 +140,7 @@ export default {
 									>
 										<template v-for="tab in tabs">
 											<li
-												v-if="can(tab.access)"
+												v-if="can(tab.access) && ckeckDomain(tab.domain)"
 												:key="tab.htmlId"
 												:id="`${tab.htmlId}-tab`"
 												class="nav-item"

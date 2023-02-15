@@ -11,6 +11,7 @@ import UserEditBitrix from '@/components/pages/UserEdit/UserEditBitrix'
 import { useAsyncPageData, useDataFromResponse } from '@/composables/asyncPageData'
 import UModal from '@/components/ui/UModal' // модалка НАДО УБРАТЬ
 import AwardUserSidebar from '@/components/sidebars/AwardUserSidebar' // сайдбар для награждения пользователя
+import 'vue-croppie'
 
 import axios from 'axios'
 
@@ -278,7 +279,7 @@ export default {
 				})
 			}
 
-			reader.readAsDataURL(this.files[0])
+			reader.readAsDataURL(files[0])
 			this.isUploadImageModal = true
 		},
 		async submit(isTrainee, increment_provided, isNew){
@@ -1769,7 +1770,6 @@ export default {
 			id="uploadimageModal"
 			class="modal modal-active"
 			role="dialog"
-			@click="isUploadImageModal = false"
 		>
 			<div class="modal-dialog">
 				<div class="modal-content">

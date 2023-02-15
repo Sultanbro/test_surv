@@ -84,7 +84,7 @@
 					:key="i"
 					class="messenger__messages-date"
 				>
-					<span>{{ d[0].created_at | formatDate }}</span>
+					<span class="messenger__messages-date-block">{{ d[0].created_at | formatDate }}</span>
 				</div>
 				<div
 					v-for="(message, index) in d"
@@ -242,111 +242,123 @@ export default {
 }
 </script>
 
-<style scoped>
-
+<style lang="scss" scoped>
+#messenger_container{
+	background: #fff url("https://www.transparenttextures.com/patterns/inspiration-geometry.png") repeat;
+}
 .messenger__container-scroll {
-  background: #ffffff;
-  display: flex;
-  flex: 1;
-  overflow-y: auto;
-  margin-right: 1px;
-  -webkit-overflow-scrolling: touch;
+	display: flex;
+	flex: 1;
+	overflow-y: auto;
+	margin-right: 1px;
+	-webkit-overflow-scrolling: touch;
 }
 
 .messenger__messages-container {
-  padding: 0 5px 5px;
-  flex: 1;
+	padding: 0 5px 5px;
+	flex: 1;
 }
 
 /* total width */
 .messenger__container-scroll::-webkit-scrollbar {
-  background-color: #fff;
-  width: 8px;
+	background-color: #fff;
+	width: 8px;
 }
 
 /* background of the scrollbar except button or resizer */
 .messenger__container-scroll::-webkit-scrollbar-track {
-  background-color: #bcbcbd;
-  border-radius: 24px;
+	background-color: #bcbcbd;
+	border-radius: 24px;
 }
 
 /* scrollbar itself */
 .messenger__container-scroll::-webkit-scrollbar-thumb {
-  background-color: #7e7e81;
-  border-radius: 24px;
+	background-color: #7e7e81;
+	border-radius: 24px;
 }
 
 /* set button(top and bottom of the scrollbar) */
 .messenger__container-scroll::-webkit-scrollbar-button {
-  display: none;
+	display: none;
 }
 
 .messenger__context-menu_reaction {
-  display: inline-block;
+	display: inline-block;
 }
 
 .messenger__messages-date {
-  display: block;
-  text-align: center;
-  overflow: hidden;
-  white-space: nowrap;
+	display: block;
+	text-align: center;
+	overflow: hidden;
+	white-space: nowrap;
+}
+.messenger__messages-date-block{
+	display: inline-block;
+	padding: 0.25rem 1rem;
+	margin: 0.25rem;
+	border-radius: 0.25rem;
+	position: relative;
+	color: #a0a0a4;
+	background-color: #fff;
+	box-shadow: 0 1px 0.25rem rgba(#000, 0.25);
+	font-size: 1.1rem;
 }
 
-.messenger__messages-date > span {
-  position: relative;
-  display: inline-block;
-  color: #a0a0a4;
-}
-
+// .messenger__messages-date > span {
+// 	position: relative;
+// 	display: inline-block;
+// 	color: #a0a0a4;
+// }
+/*
 .messenger__messages-date > span:before,
 .messenger__messages-date > span:after {
-  content: "";
-  position: absolute;
-  top: 50%;
-  width: 100vw;
-  height: 1px;
-  background: #e7e7ea;
+	content: "";
+	position: absolute;
+	top: 50%;
+	width: 100vw;
+	height: 1px;
+	background: #e7e7ea;
 }
 
 .messenger__messages-date > span:before {
-  right: 100%;
-  margin-right: 15px;
+	right: 100%;
+	margin-right: 15px;
 }
 
 .messenger__messages-date > span:after {
-  left: 100%;
-  margin-left: 15px;
-}
+	left: 100%;
+	margin-left: 15px;
+} */
 
 .messenger__loader {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  position: absolute;
-  height: 100%;
-  width: 100%;
-  background: #f4f6fa;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	position: absolute;
+	height: 100%;
+	width: 100%;
+	background: #f4f6fa;
 }
 
 .messenger__loader > div {
-  width: 20px;
-  height: 20px;
-  border-radius: 50%;
-  background-color: #7e7e81;
-  animation: messenger__loader 1s infinite ease-in-out;
+	width: 20px;
+	height: 20px;
+	border-radius: 50%;
+	background-color: #7e7e81;
+	animation: messenger__loader 1s infinite ease-in-out;
 }
 
 .messenger__loader > div:nth-child(2) {
-  animation-delay: -0.5s;
+	animation-delay: -0.5s;
 }
 
 @keyframes messenger__loader {
-  0%, 100% {
-    transform: scale(0);
-  }
-  50% {
-    transform: scale(1);
-  }
+	0%, 100% {
+		transform: scale(0);
+	}
+	50% {
+		transform: scale(1);
+	}
 }
 
 </style>

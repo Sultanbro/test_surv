@@ -17,6 +17,7 @@ class VerifyCsrfToken extends Middleware
         '/bp/choose_time', 
         '/statistics/kpi', 
         '/course-results/nullify',
-        '/profile/upload/edit'
+        '/profile/upload/edit',
+        '/course-results/get'
     ];
 }

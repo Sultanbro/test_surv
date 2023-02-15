@@ -288,6 +288,7 @@ Route::middleware(['web','tenant','not_admin_subdomain'])->group(function () {
 
     Route::any('/timetracking/zarplata-table', [Timetrack\TimetrackingController::class, 'zarplatatable']);
     Route::any('/timetracking/zarplata-table-new', [Timetrack\TimetrackingController::class, 'zarplatatableNew']);
+    Route::post('/timetracking/salary-balance',[Timetrack\SalaryWorkChartController::class,'salaryBalance']);
     Route::post('/order-persons-to-group', [Timetrack\TimetrackingController::class, 'orderPersonsToGroup']); // Заказ сотрудников в группы для Руководителей
     Route::post('/timetracking/apply-person', [Timetrack\TimetrackingController::class, 'applyPerson']); // Принятие на штат стажера
     Route::post('/timetracking/get-totals-of-reports', [Timetrack\TimetrackingController::class, 'getTotalsOfReports']);
@@ -637,12 +638,13 @@ Route::middleware(['api','tenant','not_admin_subdomain'])->group(function () {
     });
 });
 
+Route::get('/tariffs/get', [Root\Tariffs\TariffController::class, 'get']);
+
 Route::group([
-    'prefix' => 'payment',
-    'as' => 'payment.'
+    'prefix' => 'owner',
+    'as'     => 'owner.'
 ], function () {
-    Route::post('/', [Api\PaymentController::class, 'payment']);
-    Route::post('/status', [Api\PaymentController::class, 'updateToTariffPayments']);
+    Route::get('/manager', [Admin\Owners\OwnerController::class, 'getManager']);
 });
 
 /**
@@ -653,6 +655,16 @@ Route::middleware(['web','tenant','admin_subdomain'])->group(function () {
 
     Route::group(['prefix' => 'admin','as' => 'admin.'], function () {
         Route::get('/owners', [Admin\AdminController::class, 'owners']);
+    });
+
+    Route::group([
+        'prefix' => 'managers',
+        'as' => 'managers.'
+    ], function () {
+        Route::post('/put-owner', [Admin\Managers\ManagerOwnerController::class, 'putManagerToOwner']);
+        Route::get('/owner', [Admin\Managers\ManagerOwnerController::class, 'getOwner']);
+        Route::get('/owner-info', [Admin\Managers\ManagerPermissionController::class, 'getOwnerInfo']);
+        Route::get('/get/{managerId?}', [Admin\Managers\ManagerController::class, 'get']);
     });
 
     Route::group(['prefix' => 'admins','as' => 'admins.'], function () {
