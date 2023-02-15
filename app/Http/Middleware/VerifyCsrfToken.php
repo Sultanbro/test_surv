@@ -18,11 +18,6 @@ class VerifyCsrfToken extends Middleware
         '/statistics/kpi', 
         '/course-results/nullify',
         '/profile/upload/edit',
-        '/course-results/get',
-        '/timetracking/*',
-        'profile/*',
-        'awards/*',
-        'faq/*',
-        'managers/*'
+        '/course-results/get'
     ];
 }
