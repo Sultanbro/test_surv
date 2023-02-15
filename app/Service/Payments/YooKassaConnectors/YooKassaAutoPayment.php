@@ -55,7 +55,7 @@ class YooKassaAutoPayment implements AutoPayment
         $this->client->createPayment(
             array(
                 'amount' => array(
-                    'value' => $tariff->calculateTotalPrice($tariffPayment->extra_user_limit),
+                    'value' => $priceToRub,
                     'currency' => 'RUB',
                 ),
                 'capture' => true,
