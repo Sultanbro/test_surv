@@ -146,7 +146,7 @@
 												:key="key"
 											>
 												<input
-													v-if="field.type == 'day' && can_add_records != true"
+													v-if="field.type == 'day' && can_add_records"
 													type="number"
 													:title="field.key + ' :' + item.name"
 													@change="updateWeekValue(item, field.key)"

@@ -638,6 +638,7 @@ Route::middleware(['api','tenant','not_admin_subdomain'])->group(function () {
     });
 });
 
+
 Route::get('/tariffs/get', [Root\Tariffs\TariffController::class, 'get']);
 
 Route::group([

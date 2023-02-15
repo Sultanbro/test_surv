@@ -13,6 +13,7 @@ use App\Support\Core\CustomException;
 */
 class GetOwnerInfoService
 {
+
     public function __construct(
         public TariffPaymentRepository $paymentRepository
     )
