@@ -7,6 +7,7 @@ use App\DTO\Api\DoPaymentDTO;
 use App\Enums\Payments\PaymentStatusEnum;
 use App\Models\Tariff\Tariff;
 use App\Service\Payments\PaymentTypeConnector;
+use App\Traits\CurrencyTrait;
 use App\User;
 use Exception;
 use Illuminate\Database\Eloquent\Model;
@@ -16,6 +17,8 @@ use YooKassa\Request\Payments\CreatePaymentResponse;
 
 class YooKassaConnector implements PaymentTypeConnector
 {
+    use CurrencyTrait;
+
     /**
      * @param Client $client
      */
@@ -125,16 +128,5 @@ class YooKassaConnector implements PaymentTypeConnector
                 )
             )
         );
-    }
-
-    /**
-     * @throws Exception
-     */
-    private function converterToRub(
-        float $price
-    ): float
-    {
-        $rates = new CurrencyRates(CurrencyRates::URL_RATES_ALL);
-        return $rates->convertFromTenge('RUB', $price);
     }
 }

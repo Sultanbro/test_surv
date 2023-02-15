@@ -5,7 +5,9 @@ namespace App\Service\Payments\YooKassaConnectors;
 use App\Models\Tariff\Tariff;
 use App\Models\Tariff\TariffPayment;
 use App\Service\Payments\AutoPayment;
+use App\Traits\CurrencyTrait;
 use App\User;
+use Exception;
 use YooKassa\Client;
 use YooKassa\Common\Exceptions\ApiException;
 use YooKassa\Common\Exceptions\BadApiRequestException;
@@ -19,6 +21,8 @@ use YooKassa\Common\Exceptions\UnauthorizedException;
 
 class YooKassaAutoPayment implements AutoPayment
 {
+    use CurrencyTrait;
+
     /**
      * @param Client $client
      */
@@ -37,12 +41,15 @@ class YooKassaAutoPayment implements AutoPayment
      * @throws ForbiddenException
      * @throws TooManyRequestsException
      * @throws UnauthorizedException
+     * @throws Exception
      */
     public function makeAutoPayment(TariffPayment $tariffPayment): void
     {
         $tariff = Tariff::getTariffById($tariffPayment->tariff_id);
         $user   = User::getAuthUser();
         $price  = $tariff->calculateTotalPrice($tariff->id, $tariffPayment->extra_user_limit);
+        $priceToRub = $this->converterToRub($price);
+
         $priceForOnePerson = env('PAYMENT_FOR_ONE_PERSON');
 
         $this->client->createPayment(
@@ -65,7 +72,7 @@ class YooKassaAutoPayment implements AutoPayment
                             'description'   =>  "Покупка тарифа $tariff->kind",
                             'quantity'      => 1,
                             'amount' => array(
-                                'value'     => $price,
+                                'value'     => $priceToRub,
                                 'currency'  => 'RUB'
                             ),
                             'vat_code' => '1',
@@ -80,7 +87,7 @@ class YooKassaAutoPayment implements AutoPayment
                             'description'   =>  "Кол-во пользователей: $tariffPayment->extra_user_limit, цена за одного пользователя $priceForOnePerson." ,
                             'quantity'      => $tariffPayment->extra_user_limit,
                             'amount' => array(
-                                'value'     => $price,
+                                'value'     => $priceToRub,
                                 'currency'  => 'RUB'
                             ),
                             'vat_code' => '1',

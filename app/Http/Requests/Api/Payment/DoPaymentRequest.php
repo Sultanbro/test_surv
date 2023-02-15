@@ -31,7 +31,7 @@ class DoPaymentRequest extends FormRequest
         return [
             'currency'          => 'required|in:kzt,rub,dollar',
             'tariff_id'         => ['required', 'integer', 'exists:tariff,id', new TariffExist],
-            'extra_users_limit' => ['required', 'integer', new CheckTariffLimit($this->tariff_id)],
+            'extra_users_limit' => ['required', 'integer', 'min:0'],
             'auto_payment'      => 'bool'
         ];
     }
