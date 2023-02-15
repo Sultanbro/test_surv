@@ -2,6 +2,7 @@
 
 namespace App\Console;
 
+use App\Console\Commands\Api\RunAutoPaymentCommand;
 use Illuminate\Console\Scheduling\Schedule;
 use Illuminate\Foundation\Console\Kernel as ConsoleKernel;
 
@@ -14,7 +15,8 @@ class Kernel extends ConsoleKernel
      */
     protected $commands = [
         Commands\Make\RepositoryMakeCommand::class,
-        Commands\SaveUserKpi::class
+        Commands\SaveUserKpi::class,
+        RunAutoPaymentCommand::class
     ];
 
     /**
@@ -91,6 +93,8 @@ class Kernel extends ConsoleKernel
         $schedule->command('tenants:run analytics:parts')->monthly(); // создать декомпозицию и спидометры в аналитике
         //$schedule->command('tenants:run checklist:update')->dailyAt('00:00'); //Ставить чек листы каждый день для сотрудников
         //$schedule->command('tenants:run trainee:count_days')->dailyAt('00:00'); //Запись дней в аналитику по стажерам 1й день 2й+ день
+
+        $schedule->command('auto-payment:run')->daily(); // Команда для авто-оплаты запускается каждый день.
     }
 
     /**

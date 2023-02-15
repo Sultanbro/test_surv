@@ -5,6 +5,7 @@ namespace App\Service\Admin\Managers;
 use App\DTO\Manager\GetOwnerInfoDTO;
 use App\Enums\ErrorCode;
 use App\Models\CentralUser;
+use App\Repositories\Tariffs\TariffPaymentRepository;
 use App\Support\Core\CustomException;
 
 /**
@@ -12,13 +13,20 @@ use App\Support\Core\CustomException;
 */
 class GetOwnerInfoService
 {
+
+    public function __construct(
+        public TariffPaymentRepository $paymentRepository
+    )
+    {
+    }
+
     /**
      * @param int $ownerId
-     * @return object
+     * @return array
      */
     public function handle(
         int $ownerId
-    ): object
+    ): array
     {
         $owner = CentralUser::getById($ownerId)->first();
 
@@ -27,6 +35,9 @@ class GetOwnerInfoService
             new CustomException("User with $ownerId is not exist", ErrorCode::BAD_REQUEST, []);
         }
 
-        return $owner;
+        return [
+            'owner' => $owner,
+            'tariff' => $this->paymentRepository->getTariffByPayment($ownerId)
+        ];
     }
 }

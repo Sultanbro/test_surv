@@ -638,11 +638,22 @@ Route::middleware(['api','tenant','not_admin_subdomain'])->group(function () {
     });
 });
 
+
+Route::get('/tariffs/get', [Root\Tariffs\TariffController::class, 'get']);
+
 Route::group([
     'prefix' => 'owner',
     'as'     => 'owner.'
 ], function () {
-    Route::get('/manager', [Admin\OwnerController::class, 'getManager']);
+    Route::get('/manager', [Admin\Owners\OwnerController::class, 'getManager']);
+});
+
+Route::group([
+    'prefix' => 'payment',
+    'as' => 'payment.'
+], function () {
+    Route::post('/', [Api\PaymentController::class, 'payment']);
+    Route::post('/status', [Api\PaymentController::class, 'updateToTariffPayments']);
 });
 
 /**
@@ -659,10 +670,10 @@ Route::middleware(['web','tenant','admin_subdomain'])->group(function () {
         'prefix' => 'managers',
         'as' => 'managers.'
     ], function () {
-        Route::post('/put-owner', [Admin\ManagerOwnerController::class, 'putManagerToOwner']);
-        Route::get('/owner', [Admin\ManagerOwnerController::class, 'getOwner']);
-        Route::get('/owner-info', [Admin\ManagerPermissionController::class, 'getOwnerInfo']);
-        Route::get('/get/{managerId?}', [Admin\ManagerController::class, 'get']);
+        Route::post('/put-owner', [Admin\Managers\ManagerOwnerController::class, 'putManagerToOwner']);
+        Route::get('/owner', [Admin\Managers\ManagerOwnerController::class, 'getOwner']);
+        Route::get('/owner-info', [Admin\Managers\ManagerPermissionController::class, 'getOwnerInfo']);
+        Route::get('/get/{managerId?}', [Admin\Managers\ManagerController::class, 'get']);
     });
 
     Route::group(['prefix' => 'admins','as' => 'admins.'], function () {
