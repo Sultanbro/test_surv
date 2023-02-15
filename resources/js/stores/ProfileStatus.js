@@ -49,6 +49,17 @@ export const useProfileStatusStore = defineStore('profileStatus', {
 			catch(error){
 				console.error('updateStatus', error)
 			}
+		},
+		// Приходится делать тут т.к. компонент Questions меняет пропсы
+		resetCorpBookAnswers(){
+			if(!this.corp_book) return
+			if(!(this.corp_book.questions && this.corp_book.questions.length)) return
+			this.corp_book.questions.forEach(question => {
+				question.result = null
+				question.variants.forEach(variant => {
+					delete variant.checked
+				})
+			})
 		}
 	}
 })
