@@ -1,9 +1,8 @@
 <?php
 
-namespace App\Http\Controllers\Admin;
+namespace App\Http\Controllers\Admin\Managers;
 
 use App\Http\Controllers\Controller;
-use App\Models\Role;
 use App\Service\Admin\Managers\GetManagerService;
 use Illuminate\Http\JsonResponse;
 
