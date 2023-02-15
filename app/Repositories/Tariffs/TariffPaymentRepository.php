@@ -28,7 +28,9 @@ class TariffPaymentRepository extends CoreRepository
         int $ownerId
     ): ?object
     {
-        return $this->model()->with('tariff')->where([
+        return $this->model()->with('tariff')
+            ->orderBy('expire_date', 'desc')
+            ->where([
             ['status', '=', 'succeeded'],
             ['expire_date', '<', now()],
             ['owner_id', '=', $ownerId]
