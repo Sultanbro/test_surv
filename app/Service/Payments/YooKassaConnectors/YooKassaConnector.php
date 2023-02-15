@@ -17,18 +17,12 @@ use YooKassa\Request\Payments\CreatePaymentResponse;
 class YooKassaConnector implements PaymentTypeConnector
 {
     /**
-     * @param int $merchantId
-     * @param string $secretKey
      * @param Client $client
      */
     public function __construct(
-        public int $merchantId,
-        public string $secretKey,
         public Client $client
     )
-    {
-        $this->client->setAuth($this->merchantId, $this->secretKey);
-    }
+    {}
 
     /**
      * Делает оплату.

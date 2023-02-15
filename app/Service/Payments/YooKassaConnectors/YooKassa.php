@@ -6,7 +6,6 @@ namespace App\Service\Payments\YooKassaConnectors;
 use App\DTO\Api\StatusPaymentDTO;
 use App\Enums\ErrorCode;
 use App\Enums\Payments\PaymentStatusEnum;
-use App\Events\PaymentIsSuccessEvent;
 use App\Models\Tariff\Tariff;
 use App\Models\Tariff\TariffPayment;
 use App\Service\Payments\AutoPayment;
@@ -60,7 +59,7 @@ class YooKassa extends BasePaymentService
      */
     public function getPaymentProvider(): PaymentTypeConnector
     {
-        return new YooKassaConnector($this->merchantId, $this->secretKey, $this->client);
+        return new YooKassaConnector($this->client);
     }
 
     /**
@@ -69,7 +68,7 @@ class YooKassa extends BasePaymentService
      */
     public function getPaymentInfo(string $paymentId): PaymentStatus
     {
-        return new YooKassaPaymentStatus($this->merchantId, $this->secretKey, $this->client, $paymentId);
+        return new YooKassaPaymentStatus($this->client, $paymentId);
     }
 
     /**
@@ -77,6 +76,6 @@ class YooKassa extends BasePaymentService
      */
     public function autoPayment(): AutoPayment
     {
-        return new YooKassaAutoPayment($this->merchantId, $this->secretKey, $this->client);
+        return new YooKassaAutoPayment($this->client);
     }
 }

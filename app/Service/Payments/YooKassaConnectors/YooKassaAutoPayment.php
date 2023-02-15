@@ -19,18 +19,12 @@ use YooKassa\Common\Exceptions\UnauthorizedException;
 class YooKassaAutoPayment implements AutoPayment
 {
     /**
-     * @param int $merchantId
-     * @param string $secretKey
      * @param Client $client
      */
     public function __construct(
-        public int $merchantId,
-        public string $secretKey,
         public Client $client
     )
-    {
-        $this->client->setAuth($this->merchantId, $this->secretKey);
-    }
+    {}
 
     /**
      * @throws NotFoundException

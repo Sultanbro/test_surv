@@ -25,20 +25,14 @@ use YooKassa\Model\Payment;
 class YooKassaPaymentStatus implements PaymentStatus
 {
     /**
-     * @param int $merchantId
-     * @param string $secretKey
      * @param Client $client
      * @param string $paymentId
      */
     public function __construct(
-        public int $merchantId,
-        public string $secretKey,
         public Client $client,
         public string $paymentId
     )
-    {
-        $this->client->setAuth($this->merchantId, $this->secretKey);
-    }
+    {}
 
     /**
      * @throws NotFoundException
