@@ -15,7 +15,6 @@ class CheckTariff
         private $tariffPayment = new TariffPayment()
     ){}
 
-    //TODO Обработать статус
     /**
      * Handle an incoming request.
      *

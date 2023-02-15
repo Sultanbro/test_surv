@@ -67,10 +67,11 @@ class YooKassaConnector implements PaymentTypeConnector
         $priceForOnePerson = env('PAYMENT_FOR_ONE_PERSON');
         $user   = User::getAuthUser();
         $price  = $tariff->calculateTotalPrice($tariff->id, $extraUsersLimit);
+        $priceToRub = $this->converterToRub($price);
 
         return array(
             'amount' => array(
-                'value'     => $price,
+                'value'     => $priceToRub,
                 'currency'  => 'RUB',
             ),
             'confirmation' => array(
@@ -95,7 +96,7 @@ class YooKassaConnector implements PaymentTypeConnector
                         'description'   =>  "Покупка тарифа $tariff->kind",
                         'quantity'      => 1,
                         'amount' => array(
-                            'value'     => $price,
+                            'value'     => $priceToRub,
                             'currency'  => 'RUB'
                         ),
                         'vat_code' => '1',
@@ -110,7 +111,7 @@ class YooKassaConnector implements PaymentTypeConnector
                         'description'   =>  "Кол-во пользователей: $extraUsersLimit, цена за одного пользователя $priceForOnePerson." ,
                         'quantity'      => $extraUsersLimit,
                         'amount' => array(
-                            'value'     => $price,
+                            'value'     => $priceToRub,
                             'currency'  => 'RUB'
                         ),
                         'vat_code' => '1',
@@ -130,7 +131,7 @@ class YooKassaConnector implements PaymentTypeConnector
      * @throws Exception
      */
     private function converterToRub(
-        int $price
+        float $price
     ): float
     {
         $rates = new CurrencyRates(CurrencyRates::URL_RATES_ALL);

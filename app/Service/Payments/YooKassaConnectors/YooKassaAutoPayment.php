@@ -5,6 +5,7 @@ namespace App\Service\Payments\YooKassaConnectors;
 use App\Models\Tariff\Tariff;
 use App\Models\Tariff\TariffPayment;
 use App\Service\Payments\AutoPayment;
+use App\User;
 use YooKassa\Client;
 use YooKassa\Common\Exceptions\ApiException;
 use YooKassa\Common\Exceptions\BadApiRequestException;
@@ -40,6 +41,9 @@ class YooKassaAutoPayment implements AutoPayment
     public function makeAutoPayment(TariffPayment $tariffPayment): void
     {
         $tariff = Tariff::getTariffById($tariffPayment->tariff_id);
+        $user   = User::getAuthUser();
+        $price  = $tariff->calculateTotalPrice($tariff->id, $tariffPayment->extra_user_limit);
+        $priceForOnePerson = env('PAYMENT_FOR_ONE_PERSON');
 
         $this->client->createPayment(
             array(
@@ -50,6 +54,45 @@ class YooKassaAutoPayment implements AutoPayment
                 'capture' => true,
                 'payment_method_id' => $tariffPayment->payment_id,
                 'description' => 'Заказ №' . time(),
+                'receipt' => array(
+                    'customer' => array(
+                        'full_name' => $user->full_name,
+                        'email'     => $user->email,
+                        'phone'     => $user->phone
+                    ),
+                    'items' => array(
+                        array(
+                            'description'   =>  "Покупка тарифа $tariff->kind",
+                            'quantity'      => 1,
+                            'amount' => array(
+                                'value'     => $price,
+                                'currency'  => 'RUB'
+                            ),
+                            'vat_code' => '1',
+                            'payment_mode' => 'full_payment',
+                            'payment_subject' => 'service',
+                            'supplier' => array(
+                                'name' => 'string',
+                                'phone' => 'string'
+                            )
+                        ),
+                        array(
+                            'description'   =>  "Кол-во пользователей: $tariffPayment->extra_user_limit, цена за одного пользователя $priceForOnePerson." ,
+                            'quantity'      => $tariffPayment->extra_user_limit,
+                            'amount' => array(
+                                'value'     => $price,
+                                'currency'  => 'RUB'
+                            ),
+                            'vat_code' => '1',
+                            'payment_mode' => 'full_payment',
+                            'payment_subject' => 'service',
+                            'supplier' => array(
+                                'name' => 'string',
+                                'phone' => 'string'
+                            )
+                        ),
+                    )
+                )
             ),
             uniqid('', true)
         );

@@ -75,9 +75,9 @@ abstract class BasePaymentService
                 new CustomException("Оплата по платежу $dto->paymentId еще не сделана", ErrorCode::BAD_REQUEST, []);
             }
 
-            TariffPayment::query()->update([
-                'status' => PaymentStatusEnum::STATUS_SUCCESS
-            ]);
+            TariffPayment::query()
+                ->where('payment_id', $paymentStatus->getId())
+                ->update(['status' => PaymentStatusEnum::STATUS_SUCCESS]);
 
             return true;
         } catch (Exception $exception) {
@@ -93,12 +93,12 @@ abstract class BasePaymentService
     public function doAutoPayment(TariffPayment $payment): void
     {
         $this->autoPayment($payment)->makeAutoPayment($payment);
-
+        $tariff = Tariff::query()->findOrFail($payment->tariff_id);
 
         TariffPayment::createPaymentOrFail(
             $payment->tariff_id,
             $payment->extra_user_limit,
-            Tariff::calculateExpireDate($payment->tariff_id),
+            $tariff->calculateExpireDate(),
             $payment->payment_id,
             $payment->service_for_payment,
             (bool)$payment->auto_payment

@@ -83,9 +83,9 @@ class Tariff extends Model
         $priceForOnePerson = (float)env('PAYMENT_FOR_ONE_PERSON');
         $price = $this->price;
 
-        if ($this->users_limit > $extraUsers)
+        if ($extraUsers > 0)
         {
-            $price = $priceForOnePerson * $extraUsers;
+            $price += $priceForOnePerson * $extraUsers;
         }
 
         return $price;
