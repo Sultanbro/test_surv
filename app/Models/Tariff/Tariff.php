@@ -2,6 +2,9 @@
 
 namespace App\Models\Tariff;
 
+use App\Enums\Tariff\TariffValidityEnum;
+use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
@@ -41,5 +44,50 @@ class Tariff extends Model
      */
     public function getTarriff(int $tarriffId){
         return $this->where('id', $tarriffId)->get();
+    }
+
+    /**
+     * @param int $tariffId
+     * @return ?object
+     */
+    public static function getTariffById(
+        int $tariffId
+    ): ?object
+    {
+        return self::query()->find($tariffId);
+    }
+
+    /**
+     * @return string
+     */
+    public function calculateExpireDate(): string
+    {
+        $date = now()->addMonth();
+
+        if ($this->validity == TariffValidityEnum::Annual)
+        {
+            $date = now()->addYear();
+        }
+
+        return $date;
+    }
+
+    /**
+     * @param int $extraUsers
+     * @return float
+     */
+    public function calculateTotalPrice(
+        int $extraUsers
+    ): float
+    {
+        $priceForOnePerson = (float)env('PAYMENT_FOR_ONE_PERSON');
+        $price = $this->price;
+
+        if ($extraUsers > 0)
+        {
+            $price += $priceForOnePerson * $extraUsers;
+        }
+
+        return $price;
     }
 }

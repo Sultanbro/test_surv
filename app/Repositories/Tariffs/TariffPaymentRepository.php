@@ -15,11 +15,23 @@ class TariffPaymentRepository extends CoreRepository
      *
      * @return string
      */
-    protected function getModelClass()
+    protected function getModelClass(): string
     {
         return Model::class;
     }
 
+    /**
+     * @return bool
+     */
+    public function tariffForOwnerAlreadyExist(): bool
+    {
+        $currentUser = auth()->id();
+
+        return $this->model()->where('owner_id', $currentUser)
+            ->where('expire_date', '<', now()->format('Y-m-d'))
+            ->where('status', 'succeeded')
+            ->exists();
+    }
     /**
      * @param int $ownerId
      * @return object|null

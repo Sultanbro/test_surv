@@ -2,6 +2,7 @@
 
 namespace App\Http\Middleware;
 
+use App\Enums\Payments\PaymentStatusEnum;
 use App\Models\Tariff\Tariff;
 use App\Models\Tariff\TariffPayment;
 use App\User;
@@ -13,6 +14,7 @@ class CheckTariff
     public function __construct(
         private $tariffPayment = new TariffPayment()
     ){}
+
     /**
      * Handle an incoming request.
      *
@@ -26,6 +28,7 @@ class CheckTariff
         $response = $next($request);
 
         $tariffPlan = $this->tariffPayment
+            ->where('status', PaymentStatusEnum::STATUS_SUCCESS)
             ->getValidTarriffPayments();
 
         $userLimit = Tariff::$defaultUserLimit;

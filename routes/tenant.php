@@ -647,11 +647,19 @@ Route::group([
     Route::get('/manager', [Admin\Owners\OwnerController::class, 'getManager']);
 });
 
+Route::group([
+    'prefix' => 'payment',
+    'as' => 'payment.'
+], function () {
+    Route::post('/', [Api\PaymentController::class, 'payment']);
+    Route::post('/status', [Api\PaymentController::class, 'updateToTariffPayments']);
+});
+
 /**
  * Owners list
  * Admin.jobtron.org routes
  */
-Route::middleware(['web'])->group(function () {
+Route::middleware(['web','tenant','admin_subdomain'])->group(function () {
 
     Route::group(['prefix' => 'admin','as' => 'admin.'], function () {
         Route::get('/owners', [Admin\AdminController::class, 'owners']);

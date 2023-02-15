@@ -2,7 +2,9 @@
 
 namespace App\Models\Tariff;
 
+use App\Enums\Payments\PaymentStatusEnum;
 use App\User;
+use Exception;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Carbon\Carbon;
@@ -24,7 +26,10 @@ class TariffPayment extends Model
         'tariff_id',
         'extra_user_limit',
         'expire_date',
-        'auto_payment'
+        'auto_payment',
+        'payment_id',
+        'service_for_payment',
+        'status'
     ];
 
     /**
@@ -84,5 +89,40 @@ class TariffPayment extends Model
             ->orderBy('tariff_payment.expire_date', 'desc')
             ->groupBy('tariff_payment.id')
             ->first();
+    }
+
+    /**
+     * @param int $tariffId
+     * @param int $extraUsersLimit
+     * @param string $expireDate
+     * @param string $paymentId
+     * @param string $serviceForPayment
+     * @param bool $autoPayment
+     * @return object
+     * @throws Exception
+     */
+    public static function createPaymentOrFail(
+        int $tariffId,
+        int $extraUsersLimit,
+        string $expireDate,
+        string $paymentId,
+        string $serviceForPayment,
+        bool $autoPayment = false
+    ): object
+    {
+        try {
+            return self::query()->create([
+                'owner_id'          => auth()->id() ?? 5,
+                'tariff_id'         => $tariffId,
+                'extra_user_limit'  => $extraUsersLimit,
+                'expire_date'       => $expireDate,
+                'auto_payment'      => $autoPayment,
+                'payment_id'        => $paymentId,
+                'status'            => PaymentStatusEnum::STATUS_PENDING,
+                'service_for_payment' => $serviceForPayment
+            ]);
+        } catch (Exception $exception) {
+            throw new Exception('При сохранений данных произошла ошибка');
+        }
     }
 }

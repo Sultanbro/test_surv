@@ -22,6 +22,7 @@ use Carbon\Carbon;
 use Illuminate\Contracts\Auth\Access\Authorizable;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
@@ -101,6 +102,15 @@ class User extends Authenticatable implements Authorizable
      * Валюты для профиля.
      */
     const CURRENCY = ['KZT', 'RUB', 'UZS', 'KGS','BYN', 'UAH'];
+
+    /**
+     * @return Model|\Illuminate\Database\Eloquent\Collection|Builder|array|null
+     */
+    public static function getAuthUser(): \Illuminate\Database\Eloquent\Model|\Illuminate\Database\Eloquent\Collection|Builder|array|null
+    {
+        $id = auth()->id();
+        return self::query()->findOrFail($id);
+    }
 
     public function permissions(): BelongsToMany
     {
