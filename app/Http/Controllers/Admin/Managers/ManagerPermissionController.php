@@ -1,15 +1,11 @@
 <?php
 
-namespace App\Http\Controllers\Admin;
+namespace App\Http\Controllers\Admin\Managers;
 
 use App\Enums\ErrorCode;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Admin\Managers\GetOwnerInfoRequest;
-use App\Http\Requests\Admin\Managers\GetOwnerRequest;
-use App\Http\Requests\Admin\Managers\PutManagerToOwnerRequest;
 use App\Service\Admin\Managers\GetOwnerInfoService;
-use App\Service\Admin\Managers\GetOwnerService;
-use App\Service\Admin\Managers\PutManagerToOwnerService;
 use App\User;
 use Illuminate\Http\JsonResponse;
 

@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\Admin;
+namespace App\Http\Controllers\Admin\Owners;
 
 use App\Http\Controllers\Controller;
 use App\Service\Admin\Owners\GetOwnerManagerService;
