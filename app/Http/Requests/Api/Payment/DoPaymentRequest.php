@@ -5,6 +5,7 @@ namespace App\Http\Requests\Api\Payment;
 
 use App\DTO\Api\DoPaymentDTO;
 use App\Rules\CheckTariffLimit;
+use App\Rules\TariffExist;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Support\Arr;
 
@@ -29,7 +30,7 @@ class DoPaymentRequest extends FormRequest
     {
         return [
             'currency'          => 'required|in:kzt,rub,dollar',
-            'tariff_id'         => 'required|integer|exists:tariff,id',
+            'tariff_id'         => ['required', 'integer', 'exists:tariff,id', new TariffExist],
             'extra_users_limit' => ['required', 'integer', new CheckTariffLimit($this->tariff_id)],
             'auto_payment'      => 'bool'
         ];
