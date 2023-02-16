@@ -71,6 +71,7 @@ class YooKassaConnector implements PaymentTypeConnector
         $user   = User::getAuthUser();
         $price  = $tariff->calculateTotalPrice($tariff->id, $extraUsersLimit);
         $priceToRub = $this->converterToRub($price);
+        $origin = request()->headers->get('origin');
 
         return array(
             'amount' => array(
@@ -80,7 +81,7 @@ class YooKassaConnector implements PaymentTypeConnector
             'confirmation' => array(
                 'type'          => 'redirect',
                 'locale'        => 'ru_RU',
-                'return_url'    => 'https://jobtron.org/payment/',
+                'return_url'    => $origin . '/pricing?status=1',
             ),
             'capture'           => true,
             'description'       => 'Заказ №' . time(),

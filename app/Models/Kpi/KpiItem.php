@@ -48,6 +48,12 @@ class KpiItem extends Model
             ->orderBy('created_at', 'desc');
     }
 
+    public function histories_latest()
+    {
+        return $this->morphOne(History::class, 'historable', 'reference_table', 'reference_id')
+            ->orderBy('created_at', 'desc')->latest();
+    }
+
     public function kpi(): BelongsTo
     {
         return $this->belongsTo(Kpi::class, 'kpi_id');

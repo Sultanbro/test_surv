@@ -132,6 +132,20 @@ class UserHelper
     }
 
     /**
+     * @param int $userId
+     * @param array $cards
+     * @return void
+     */
+    public static function saveOrUpdateCards(int $userId, array $cards): void
+    {
+        foreach ($cards as $card)
+        {
+            $card['user_id'] = $userId;
+            (new CardRepository)->createOrUpdateMultipleCard($card);
+        }
+    }
+
+    /**
      * Сохранение доп телефонов для пользователя
      *
      * @param int $userId
