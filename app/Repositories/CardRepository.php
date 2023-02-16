@@ -29,4 +29,23 @@ class CardRepository extends CoreRepository
     {
         $this->model()->insert($data);
     }
+
+    /**
+     * @param array $data
+     * @return void
+     */
+    public function createOrUpdateMultipleCard(array $data): void
+    {
+        if($data['user_id'] && $data['number'] && $data['cardholder']){
+            $this->model()->updateOrCreate([
+                'user_id' => $data['user_id'],
+                'number' => $data['number'],
+                'cardholder' => $data['cardholder'],
+            ],[
+                'bank' => $data['bank'],
+                'phone' => $data['phone'],
+                'country' => $data['country'],
+            ]);
+        }
+    }
 }

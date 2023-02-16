@@ -53,7 +53,7 @@ final class UserUpdateService
         $this->setBitrix($user, $userDTO->bitrixId);
 
         if ($userDTO->cards) {
-            UserHelper::saveCards($user->id, $userDTO->cards);
+            UserHelper::saveOrUpdateCards($user->id, $userDTO->cards);
         }
 
         if ($userDTO->contacts) {
