@@ -14,7 +14,7 @@
 			<div class="PricingPage-users-form">
 				<button
 					class="PricingPage-users-less"
-					:disabled="users <= (selectedRate ? selectedRate.users : 0)"
+					:disabled="users <= (selectedRate ? selectedRate.users_limit : 0)"
 					@click="decreseUsers"
 				>
 					-
@@ -114,6 +114,7 @@
 </template>
 
 <script>
+/* global Laravel */
 import { mapActions, mapState } from 'pinia'
 import { usePricingStore } from '@/stores/Pricing'
 import PricingManager from '@/components/pages/Pricing/PricingManager'
@@ -153,7 +154,7 @@ export default {
 		},
 		total(){
 			if(!this.selectedRate) return 0
-			const total = this.period === 'monthly' ? this.selectedRate.monthly + (this.additionalUsers * this.userPrice) : this.selectedRate.annual + (this.additionalUsers * this.userPrice * 12)
+			const total = this.period === 'monthly' ? this.selectedRate.price + (this.additionalUsers * this.userPrice) : this.selectedRate.price + (this.additionalUsers * this.userPrice * 12)
 			return this.promoData?.value ? total - this.promoData.value : total
 		},
 	},
@@ -162,14 +163,15 @@ export default {
 			'postPaymentData',
 			'fetchPromo',
 			'fetchRates',
+			'fetchCurrent',
 		]),
 		updateRate(value){
 			this.selectedRate = value.rate
-			this.period = value.period
-			this.users = value.rate.users
+			this.period = value.rate.validity
+			this.users = value.rate.users_limit
 		},
 		decreseUsers(){
-			if(this.users > (this.selectedRate ? this.selectedRate.users : 0)) --this.users
+			if(this.users > (this.selectedRate ? this.selectedRate.users_limit : 0)) --this.users
 		},
 		increseUsers(){
 			if(!this.selectedRate) return
@@ -199,6 +201,7 @@ export default {
 	},
 	created(){
 		this.fetchRates()
+		this.fetchCurrent(Laravel.userId)
 	}
 };
 </script>

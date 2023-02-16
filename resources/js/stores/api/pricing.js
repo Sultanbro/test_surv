@@ -21,99 +21,22 @@ export async function fetchPricingManager(){
 
 /**
  * Получене текущего тарифа
- * @return {PricingCurrent}
+ * @return {ApiResponse.OwnerInfoResponse}
  */
-export async function fetchPricingCurrent(){
-	// const { data } = await axios.get('/pricing/current')
-	const data = {
-		id: 1,
-		name: 'Бесплатный',
-		paid_up_to: '03.02.2024',
-		users: 5
-	}
+export async function fetchOwnerInfo(id){
+	// Да почему post то, по любой нормальной логике это get должен быть
+	const { data } = await axios.post('/managers/owner-info', {
+		owner_id: id
+	})
 	return data
 }
 
 /**
  * Получене возможных тарифов
- * @return {PricingItem[]}
+ * @return {ApiResponse.PricingResponse}
  */
 export async function fetchPricing(){
-	// const { data } = await axios.get('/pricing')
-	const data = [
-		{
-			id: 1,
-			name: 'Бесплатный',
-			users: 5,
-			space: '5 Гб',
-			kb: true,
-			news: true,
-			education: true,
-			analytics: true,
-			quality_control: true,
-			chat: true,
-			structure: true,
-			support: true,
-			domain: false,
-			monthly: 0,
-			annual: 0,
-			discount: 0
-		},
-		{
-			id: 2,
-			name: 'База',
-			users: 20,
-			space: '20 Гб',
-			kb: true,
-			news: true,
-			education: true,
-			analytics: true,
-			quality_control: true,
-			chat: true,
-			structure: true,
-			support: true,
-			domain: true,
-			monthly: 1200,
-			annual: 15500,
-			discount: 0
-		},
-		{
-			id: 3,
-			name: 'Стандарт',
-			users: 50,
-			space: '50 Гб',
-			kb: true,
-			news: true,
-			education: true,
-			analytics: true,
-			quality_control: true,
-			chat: true,
-			structure: true,
-			support: true,
-			domain: true,
-			monthly: 3850,
-			annual: 37000,
-			discount: 20
-		},
-		{
-			id: 4,
-			name: 'PRO',
-			users: 100,
-			space: '1 Тб',
-			kb: true,
-			news: true,
-			education: true,
-			analytics: true,
-			quality_control: true,
-			chat: true,
-			structure: true,
-			support: true,
-			domain: true,
-			monthly: 14250,
-			annual: 137000,
-			discount: 20
-		}
-	]
+	const { data } = await axios.get('/tariffs/get')
 	return data
 }
 
@@ -160,33 +83,49 @@ export async function postPaymentData(params){
  */
 
 /**
+ * @typedef PricingResponse
+ * @memberof ApiResponse
+ * @type {object}
+ * @property {string} message
+ * @property {PricingItem[]} data
+ */
+
+/**
+ * @typedef OwnerInfoResponse
+ * @memberof ApiResponse
+ * @type {object}
+ * @property {string} message
+ * @property {object} data
+ * @property {} data.owner
+ * @property {PricingCurrent} data.tariff
+ */
+
+/**
  * @typedef PricingCurrent
  * @type {object}
- * @property {number} id - id тарифа
- * @property {string} name - название тарифа
- * @property {string} paid_up_to - оплачен до (DD.MM.YYYY)
- * @property {number} users - кол-во оплаченных пользователей (может быть больше чем в тарифе т.к. можно докупать)
- */
+ * @property {number} id - id данной связки?
+ * @property {number} owner_id - id владельца
+ * @property {number} tariff_id - id тарифа
+ * @property {number} extra_user_limit - дополнительные пользователи
+ * @property {string} expire_date - оплачен до (DD.MM.YYYY)
+ * @property {number} auto_payment - автооплата (1 - есть)
+ * @property {string} service_for_payment - система оплаты
+ * @property {string} payment_id - id оплаты в стистеме оплаты
+ * @property {string} created_at - дата создания (DD.MM.YYYY hh:mm)
+ * @property {string} updated_at - дата обновления (DD.MM.YYYY hh:mm)
+ * @property {PricingItem} tariff - объект тарифа
+*/
 
 /**
  * @typedef PricingItem
  * @type {object}
  * @property {number} id - id тарифа
- * @property {string} name - название тарифа
- * @property {number} users - кол-во пользователей
- * @property {string} space - объем под файлы
- * @property {boolean} kb -
- * @property {boolean} news -
- * @property {boolean} education -
- * @property {boolean} analytics -
- * @property {boolean} quality_control -
- * @property {boolean} chat -
- * @property {boolean} structure -
- * @property {boolean} support -
- * @property {boolean} domain -
- * @property {number} monthly - цена за месяц в рублях
- * @property {number} annual - цена за год в рублях
- * @property {number} discount - скидка в % прри оплате за год
+ * @property {string} kind - название тарифа
+ * @property {string} validity - monthly|annual
+ * @property {number} users_limit - кол-во пользователей в тарифе
+ * @property {string} price - цена в рублях
+ * @property {string} created_at - дата создания (DD.MM.YYYY hh:mm)
+ * @property {string} updated_at - дата обновления (DD.MM.YYYY hh:mm)
 */
 
 /**

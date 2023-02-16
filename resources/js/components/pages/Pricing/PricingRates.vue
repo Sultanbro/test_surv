@@ -7,7 +7,7 @@
 			<tr class="PricingRates-headers">
 				<th class="PricingRates-header" />
 				<th
-					v-for="item in items"
+					v-for="item in tarifs"
 					:key="item.name"
 					class="PricingRates-header text-center"
 				>
@@ -19,11 +19,11 @@
 					Количество пользователей
 				</td>
 				<td
-					v-for="item in items"
+					v-for="item in tarifs"
 					:key="item.name"
 					class="PricingRates-col text-center"
 				>
-					{{ item.users }}
+					{{ item.monthly.users_limit }}
 				</td>
 			</tr>
 			<tr class="PricingRates-row">
@@ -31,7 +31,7 @@
 					Место
 				</td>
 				<td
-					v-for="item in items"
+					v-for="item in tarifs"
 					:key="item.name"
 					class="PricingRates-col text-center"
 				>
@@ -52,7 +52,7 @@
 						:key="feature.field + item.name"
 						class="PricingRates-col text-center"
 					>
-						{{ item[feature.field] ? '+' : '-' }}
+						{{ item[feature.field] }}
 					</td>
 				</tr>
 			</template>
@@ -73,9 +73,9 @@
 					v-for="item in items"
 					:key="'monthly' + item.name"
 					class="PricingRates-col PricingRates-action text-center"
-					@click="$emit('update', {rate: item, period: 'monthly'})"
+					@click="$emit('update', {rate: item.monthly, period: 'monthly'})"
 				>
-					{{ $separateThousands(Math.round(item.monthly / rates[currency])) }} {{ currency }}
+					{{ $separateThousands(Math.round(item.monthly.price / rates[currency])) }} {{ currency }}
 				</td>
 			</tr>
 			<tr class="PricingRates-row">
@@ -86,9 +86,9 @@
 					v-for="item in items"
 					:key="'annual' + item.name"
 					class="PricingRates-col PricingRates-action text-center"
-					@click="$emit('update', {rate: item, period: 'annual'})"
+					@click="$emit('update', {rate: item.annual, period: 'annual'})"
 				>
-					{{ $separateThousands(Math.round(item.annual / rates[currency])) }} {{ currency }}
+					{{ $separateThousands(Math.round(item.annual.price / rates[currency])) }} {{ currency }}
 				</td>
 			</tr>
 			<tr class="PricingRates-row">
@@ -135,11 +135,44 @@ export default {
 				{field: 'structure', title: 'Структура компании'},
 				{field: 'support', title: 'Поддержка'},
 				{field: 'domain', title: 'Индивидуальный домен'},
-			]
+			],
+			names: {
+				free: 'Бесплатный',
+				base: 'База',
+				standard: 'Стандарт',
+				pro: 'PRO',
+			},
+			space: {
+				free: '5 Гб',
+				base: '20 Гб',
+				standard: '50 Гб',
+				pro: '1 Тб',
+			},
+			discount: {
+				free: '0%',
+				base: '0%',
+				standard: '20%',
+				pro: '20%',
+			}
 		}
 	},
 	computed: {
-		...mapState(usePricingStore, ['items', 'rates'])
+		...mapState(usePricingStore, ['items', 'rates']),
+		tarifs(){
+			return this.items.reduce((tarifs, item) => {
+				if(!tarifs[item.kind]){
+					tarifs[item.kind] = {}
+					this.features.forEach(el => {
+						tarifs[item.kind][el.field] = el.field === 'domain' && item.kind === 'free' ? '-' : '+'
+						tarifs[item.kind].name = this.name[item.kind]
+						tarifs[item.kind].space = this.space[item.kind]
+						tarifs[item.kind].discount = this.discount[item.kind]
+					})
+					tarifs[item.kind][item.validity] = item
+				}
+				return tarifs
+			}, [])
+		}
 	},
 	created(){
 		// this.fetchPricing()

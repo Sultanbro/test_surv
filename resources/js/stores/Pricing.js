@@ -2,7 +2,7 @@
 import { defineStore } from 'pinia'
 import {
 	fetchPricingManager,
-	fetchPricingCurrent,
+	fetchOwnerInfo,
 	fetchPricing,
 	fetchPricingPromo,
 	postPaymentData,
@@ -49,21 +49,21 @@ export const usePricingStore = defineStore('pricing', {
 			}
 			this.isLoading = false
 		},
-		async fetchCurrent(){
+		async fetchCurrent(id){
 			this.isLoading = true
 			try{
-				const data = await fetchPricingCurrent()
+				const { data } = await fetchOwnerInfo(id)
 				this.current = data
 			}
 			catch(error){
-				console.error('fetchPricingCurrent', error)
+				console.error('fetchOwnerInfo', error)
 			}
 			this.isLoading = false
 		},
 		async fetchPricing(){
 			this.isLoading = true
 			try{
-				const data = await fetchPricing()
+				const { data } = await fetchPricing()
 				this.items = data
 			}
 			catch(error){
