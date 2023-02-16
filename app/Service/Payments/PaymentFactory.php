@@ -53,6 +53,17 @@ final class PaymentFactory
     {
         $tariffPayment = TariffPayment::query()->where('payment_id', $paymentId)->firstOrFail();
 
+        return $this->getPaymentProviderByPayment($tariffPayment);
+    }
+
+    /**
+     * @param TariffPayment $tariffPayment
+     * @return BasePaymentService
+     */
+    public function getPaymentProviderByPayment(
+        TariffPayment $tariffPayment
+    ): BasePaymentService
+    {
         return $this->getPaymentsProviderByType($tariffPayment->service_for_payment);
     }
 }
