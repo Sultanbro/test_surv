@@ -112,6 +112,9 @@ class CabinetController extends Controller
     {
         Card::find($request['card_id'])->delete();
 
+        return $this->response(
+            message: 'Card successfully removed.',
+        );
     }
 
     /**
