@@ -5,20 +5,20 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Api\Payment\DoPaymentRequest;
 use App\Service\Payments\PaymentFactory;
-use App\Service\Payments\PaymentService;
+use App\Service\Payments\PaymentUpdateStatusService;
 use Exception;
 use Illuminate\Http\JsonResponse;
 
 class PaymentController extends Controller
 {
-    public PaymentService $service;
+    public PaymentUpdateStatusService $updateStatusService;
 
     /**
      * @param PaymentFactory $factory
      */
     public function __construct(public PaymentFactory $factory)
     {
-        $this->service = new PaymentService($factory);
+        $this->updateStatusService = new PaymentUpdateStatusService($factory);
     }
 
     /**
@@ -47,7 +47,7 @@ class PaymentController extends Controller
     public function updateToTariffPayments(): JsonResponse
     {
         $ownerId = auth()->id(); // validated by middleware guard
-        $response = $this->service->updateStatus($ownerId);
+        $response = $this->updateStatusService->handle($ownerId);
 
         return $this->response(
             message: 'Success',

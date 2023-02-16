@@ -5,10 +5,8 @@ namespace App\Service\Payments;
 
 use App\Models\Tariff\TariffPayment;
 use Exception;
-
-final class PaymentService
+final class PaymentUpdateStatusService
 {
-
     /**
      * @param PaymentFactory $factory
      */
@@ -21,7 +19,7 @@ final class PaymentService
      * @return bool
      * @throws Exception
      */
-    public function updateStatus(int $ownerId): bool
+    public function handle(int $ownerId): bool
     {
         $lastPayment = TariffPayment::getLastPendingTariffPayment($ownerId);
 
@@ -29,5 +27,4 @@ final class PaymentService
 
         return $paymentProvider->updateStatusByPayment($lastPayment);
     }
-
 }
