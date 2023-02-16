@@ -6,6 +6,7 @@ import {
 	fetchPricing,
 	fetchPricingPromo,
 	postPaymentData,
+	fetchPaymentStatus,
 } from '@/stores/api'
 
 function renameProps(obj, renames){
@@ -77,6 +78,16 @@ export const usePricingStore = defineStore('pricing', {
 			}
 			catch(error){
 				console.error('fetchPricingPromo', error)
+				return {}
+			}
+		},
+		async fetchStatus(code){
+			try{
+				const { data } = await fetchPaymentStatus(code)
+				return data
+			}
+			catch(error){
+				console.error('fetchPaymentStatus', error)
 				return {}
 			}
 		},

@@ -164,6 +164,7 @@ export default {
 			'fetchPromo',
 			'fetchRates',
 			'fetchCurrent',
+			'fetchStatus',
 		]),
 		updateRate(value){
 			this.selectedRate = value.rate
@@ -202,6 +203,12 @@ export default {
 	created(){
 		this.fetchRates()
 		this.fetchCurrent(Laravel.userId)
+		if(this.$route.query.status){
+			this.fetchStatus().then(status => {
+				if(status) return this.$toast.success('Платеж прошел успешно')
+				this.$toast.error('Платеж прошел неуспешно')
+			})
+		}
 	}
 };
 </script>
