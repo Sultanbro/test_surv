@@ -6,6 +6,7 @@ use App\Enums\Payments\PaymentStatusEnum;
 use App\User;
 use Exception;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Builder as QueryBuilder;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Carbon\Carbon;
 
@@ -99,6 +100,32 @@ class TariffPayment extends Model
      */
     public static function getPendingTariffPayments(?int $ownerId): array
     {
+        return self::getBasePendingTariffsQuery($ownerId)
+            ->get()
+            ->toArray();
+    }
+
+    /**
+     * Return the last tariff payment with status pending
+     *
+     * @param int $ownerId
+     * @return TariffPayment
+     */
+    public static function getLastPendingTariffPayment(int $ownerId): TariffPayment
+    {
+        return self::getBasePendingTariffsQuery($ownerId)
+            ->orderBy('created_at', 'desc')
+            ->first();
+    }
+
+    /**
+     * Return the base qb for tariff payments with status pending
+     *
+     * @param int|null $ownerId
+     * @return QueryBuilder
+     */
+    public static function getBasePendingTariffsQuery(?int $ownerId): QueryBuilder
+    {
         $query = self::query();
 
         if (isset($ownerId))
@@ -107,9 +134,7 @@ class TariffPayment extends Model
         }
 
         return $query
-            ->where('status', PaymentStatusEnum::STATUS_PENDING)
-            ->get()
-            ->toArray();
+            ->where('status', PaymentStatusEnum::STATUS_PENDING);
     }
 
     /**
