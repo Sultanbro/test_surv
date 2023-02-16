@@ -15,8 +15,9 @@ import 'vue-croppie'
 
 import axios from 'axios'
 
-const DATE_YMD = 'YYYY-MM-DD'
-const DATE_DMY = 'DD.MM.YYYY'
+const DATE_YMD = 'YYYY-MM-DD';
+const DATE_DMY = 'DD.MM.YYYY';
+const re = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
 
 export default {
 	name: 'UserEditView',
@@ -206,7 +207,7 @@ export default {
 			this.old_card_jysan = data.old_card_jysan
 			this.in_groups = data.in_groups
 			this.head_in_groups = data.head_in_groups
-			this.profile_contacts = data.profile_contacts
+			this.profile_contacts = data.profile_contacts ? data.profile_contacts : []
 			this.taxes = data.taxes
 		},
 		updatePageData(){
@@ -254,8 +255,13 @@ export default {
 				break;
 			}
 		},
+		addContacts(val){
+			this.profile_contacts.push(val);
+		},
+		changeContact(obj){
+			this.profile_contacts[obj.key][obj.input] = obj.value;
+		},
 		validateEmail(email) {
-			const re = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
 			return re.test(String(email).toLowerCase());
 		},
 		crop_image(){
@@ -780,6 +786,8 @@ export default {
 								:old_phone_4="old_phone_4"
 								:front_valid="frontValid"
 								@valid_change="validChange"
+								@add_contacts="addContacts"
+								@change_contact="changeContact"
 							/>
 							<!-- end of phones -->
 

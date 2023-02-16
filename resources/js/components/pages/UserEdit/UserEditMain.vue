@@ -2,6 +2,7 @@
 import axios from 'axios'
 import ProfileGroups from '@/components/profile/ProfileGroups' // настройки user
 import UserEditGroups from '@/components/pages/UserEdit/UserEditGroups'
+const re = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
 
 export default {
 	name: 'UserEditMain',
@@ -140,7 +141,6 @@ export default {
 			}
 		},
 		validateEmail(email) {
-			const re = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
 			return re.test(String(email).toLowerCase());
 		},
 		fetchCity(){

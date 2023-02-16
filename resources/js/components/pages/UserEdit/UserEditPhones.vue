@@ -37,14 +37,26 @@ export default {
 	},
 	methods:{
 		addPhone(){
-			this.profileContacts.push({
+			this.$emit('add_contacts', {
 				type: 'phone',
 				name: '',
 				value: ''
-			})
+			});
 		},
-		deletePhone(key){
-			this.profileContacts.splice(key, 1)
+		editContact(event, input, key){
+			this.$emit('change_contact', {
+				input: input,
+				key: key,
+				value: event.target.value
+			});
+		},
+		async deletePhone(key, contact){
+			this.profileContacts.splice(key, 1);
+			if(contact.hasOwnProperty('id')){
+				const response = await this.axios.post('/profile/remove/card/', {'card_id': contact.id});
+				// сделаю потом проверку, как починят
+				console.log(response);
+			}
 		}
 	}
 }
@@ -159,6 +171,7 @@ export default {
 								type="text"
 								class="form-control mr-1"
 								placeholder="Название"
+								@change="editContact($event, 'name', key)"
 							>
 							<input
 								:name="`contacts[phone][${key}][value]`"
@@ -166,11 +179,12 @@ export default {
 								type="text"
 								class="form-control mr-1"
 								placeholder="Телефон"
+								@change="editContact($event, 'value', key)"
 							>
 							<button
 								type="button"
 								class="btn btn-danger btn-sm contact-delete rounded"
-								@click="deletePhone(key)"
+								@click="deletePhone(key, contact)"
 							>
 								<i class="fa fa-trash" />
 							</button>
