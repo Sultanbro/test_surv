@@ -92,6 +92,27 @@ class TariffPayment extends Model
     }
 
     /**
+     * Return the tariff payments with status pending
+     *
+     * @param int|null $ownerId
+     * @return array<TariffPayment>
+     */
+    public static function getPendingTariffPayments(?int $ownerId): array
+    {
+        $query = self::query();
+
+        if (isset($ownerId))
+        {
+            $query = $query->where('owner_id', $ownerId);
+        }
+
+        return $query
+            ->where('status', PaymentStatusEnum::STATUS_PENDING)
+            ->get()
+            ->toArray();
+    }
+
+    /**
      * @param int $tariffId
      * @param int $extraUsersLimit
      * @param string $expireDate
