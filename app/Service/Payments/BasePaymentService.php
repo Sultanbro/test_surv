@@ -61,23 +61,24 @@ abstract class BasePaymentService
     }
 
     /**
-     * @param StatusPaymentDTO $dto
+     * @param TariffPayment $payment
      * @return bool
      * @throws Exception
      */
-    public function updateStatus(StatusPaymentDTO $dto): bool
+    public function updateStatusByPayment(TariffPayment $payment): bool
     {
         try {
-            $paymentStatus = $this->getPaymentInfo($dto->paymentId)->getPaymentInfo();
+            $paymentStatus = $this->getPaymentInfo($payment->payment_id)->getPaymentInfo();
 
             if ($paymentStatus->status != PaymentStatusEnum::STATUS_SUCCESS)
             {
-                new CustomException("Оплата по платежу $dto->paymentId еще не сделана", ErrorCode::BAD_REQUEST, []);
+                //TODO save another statuses
+
+                new CustomException("Оплата по платежу $payment->payment_id еще не сделана", ErrorCode::BAD_REQUEST, []);
             }
 
-            TariffPayment::query()
-                ->where('payment_id', $paymentStatus->getId())
-                ->update(['status' => PaymentStatusEnum::STATUS_SUCCESS]);
+            $payment->status = PaymentStatusEnum::STATUS_SUCCESS;
+            $payment->save();
 
             return true;
         } catch (Exception $exception) {
