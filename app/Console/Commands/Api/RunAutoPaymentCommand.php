@@ -50,8 +50,8 @@ class RunAutoPaymentCommand extends Command
     public function __construct()
     {
         parent::__construct();
-//        $this->yooKassa = new YooKassa();
-//        $this->factory = new PaymentFactory();
+        $this->yooKassa = new YooKassa();
+        $this->factory = new PaymentFactory();
     }
 
     /**
