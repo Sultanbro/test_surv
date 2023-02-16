@@ -2,10 +2,10 @@
 import { defineStore } from 'pinia'
 import {
 	fetchPricingManager,
-	fetchPricingCurrent,
+	fetchOwnerInfo,
 	fetchPricing,
 	fetchPricingPromo,
-	updatePricingCurrent,
+	postPaymentData,
 } from '@/stores/api'
 
 function renameProps(obj, renames){
@@ -49,21 +49,21 @@ export const usePricingStore = defineStore('pricing', {
 			}
 			this.isLoading = false
 		},
-		async fetchCurrent(){
+		async fetchCurrent(id){
 			this.isLoading = true
 			try{
-				const data = await fetchPricingCurrent()
+				const { data } = await fetchOwnerInfo(id)
 				this.current = data
 			}
 			catch(error){
-				console.error('fetchPricingCurrent', error)
+				console.error('fetchOwnerInfo', error)
 			}
 			this.isLoading = false
 		},
 		async fetchPricing(){
 			this.isLoading = true
 			try{
-				const data = await fetchPricing()
+				const { data } = await fetchPricing()
 				this.items = data
 			}
 			catch(error){
@@ -80,17 +80,8 @@ export const usePricingStore = defineStore('pricing', {
 				return {}
 			}
 		},
-		async updatePricing(params){
-			this.isLoading = true
-			try{
-				alert('Переход на страницу оплаты')
-				const data = await updatePricingCurrent(params)
-				this.current = data
-			}
-			catch(error){
-				console.error('updatePricingCurrent', error)
-			}
-			this.isLoading = false
+		async postPaymentData(params){
+			return postPaymentData(params)
 		},
 	}
 })
