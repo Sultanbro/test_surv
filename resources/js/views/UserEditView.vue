@@ -292,6 +292,9 @@ export default {
 			reader.readAsDataURL(files[0])
 			this.isUploadImageModal = true
 		},
+		validChange(obj){
+			this.frontValid[obj.name] = obj.bool;
+		},
 		async submit(isTrainee, increment_provided, isNew){
 			this.frontValid.formSubmitted = true;
 			this.trainee = isTrainee
@@ -740,6 +743,7 @@ export default {
 									:user="user"
 									:in_groups="in_groups"
 									:front_valid="frontValid"
+									@valid_change="validChange"
 								/>
 
 								<div class="col-9 add_info">
@@ -775,6 +779,7 @@ export default {
 								:old_phone_3="old_phone_3"
 								:old_phone_4="old_phone_4"
 								:front_valid="frontValid"
+								@valid_change="validChange"
 							/>
 							<!-- end of phones -->
 

@@ -30,13 +30,13 @@ export default {
 		}
 	},
 	methods: {
-		checkValid(event, err){
-			if(this.front_valid.formSubmitted){
+		checkValid(event){
+			if(this.front_valid && this.front_valid.formSubmitted){
 				const val = event.target.value;
-				!val.length ? this.front_valid[err] = false : this.front_valid[err] = true;
+				!val.length ? this.$emit('valid_change', false) : this.$emit('valid_change', true);
 			}
 		},
-	}
+	},
 }
 </script>
 <template>
@@ -64,7 +64,7 @@ export default {
 					id="group"
 					class="form-control"
 					v-model="group"
-					@change="checkValid($event, 'group')"
+					@change="checkValid($event)"
 				>
 					<option :value="null">
 						Выберите отдел

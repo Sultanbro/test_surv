@@ -30,8 +30,8 @@ export default {
 	},
 	watch: {
 		mainPhone(val){
-			if(this.front_valid){
-				val.length < 11 ? this.front_valid.phone = false : this.front_valid.phone = true;
+			if(this.front_valid && this.front_valid.formSubmitted){
+				val.length < 17 ? this.$emit('valid_change', {name: 'phone', bool: false}) : this.$emit('valid_change', {name: 'phone', bool: true});
 			}
 		}
 	},
@@ -58,7 +58,7 @@ export default {
 			<div class="col-12 col-md-6">
 				<div
 					class="d-flex phone-row form-group"
-					:class="{'form-group-error': front_valid && front_valid.phone === false}"
+					:class="{'form-group-error': front_valid.formSubmitted && front_valid.phone === false}"
 				>
 					<label
 						for="phone"

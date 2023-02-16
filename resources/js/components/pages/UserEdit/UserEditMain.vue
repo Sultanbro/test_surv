@@ -124,14 +124,19 @@ export default {
 			if(this.front_valid.formSubmitted){
 				const val = event.target.value;
 				if(err === 'email'){
-					!this.validateEmail(val) ? this.front_valid.email = false : this.front_valid.email = true;
+					!this.validateEmail(val) ? this.$emit('valid_change', {name: 'email', bool: false}) : this.$emit('valid_change', {name: 'email', bool: true});
 				}
 				if(err === 'position'){
-					!val.length ? this.front_valid.position = false : this.front_valid.position = true;
+					!val.length ? this.$emit('valid_change', {name: 'position', bool: false}) : this.$emit('valid_change', {name: 'position', bool: true});
 				}
 				if(err !== 'email' && err !== 'position'){
-					val.length < 3 ? this.front_valid[err] = false : this.front_valid[err] = true;
+					val.length < 3 ? this.$emit('valid_change', {name: err, bool: false}) : this.$emit('valid_change', {name: err, bool: true});
 				}
+			}
+		},
+		validChangeGroup(bool){
+			if(this.front_valid.formSubmitted) {
+				this.$emit('valid_change', {name: 'group', bool: bool})
 			}
 		},
 		validateEmail(email) {
@@ -327,6 +332,7 @@ export default {
 				:groups="groups"
 				:in_groups="in_groups"
 				:front_valid="front_valid"
+				@valid_change="validChangeGroup"
 			/>
 			<!-- end of groups and books tab -->
 
