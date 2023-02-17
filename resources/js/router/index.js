@@ -37,6 +37,7 @@ const router = new VueRouter({
 				title: 'Мой профиль',
 				viewport: true,
 				bodyClass: 'profile-page',
+				menuItem: 'profile',
 			},
 		},
 		// cabinet.blade.php
@@ -56,6 +57,7 @@ const router = new VueRouter({
 			meta: {
 				title: 'Новости',
 				viewport: true,
+				menuItem: 'news',
 			},
 		},
 		// ???.blade.php
@@ -74,6 +76,7 @@ const router = new VueRouter({
 			component: KnowledgeBaseView,
 			meta: {
 				title: 'База знаний',
+				menuItem: 'kb',
 			},
 		},
 		// upbooks.blade.php
@@ -83,6 +86,7 @@ const router = new VueRouter({
 			component: UpbooksView,
 			meta: {
 				title: 'Редактор книг',
+				menuItem: 'courses',
 			},
 		},
 		// admin/playlists/index.blade.php
@@ -92,6 +96,7 @@ const router = new VueRouter({
 			component: PlaylistsView,
 			meta: {
 				title: 'Плейлисты - Видео обучение',
+				menuItem: 'courses',
 			},
 		},
 		// surv/courses.blade.php
@@ -101,6 +106,7 @@ const router = new VueRouter({
 			component: CoursesView,
 			meta: {
 				title: 'Курсы',
+				menuItem: 'courses',
 			},
 		},
 		// admin/mycourse.blade.php
@@ -110,6 +116,7 @@ const router = new VueRouter({
 			component: MyCoursesView,
 			meta: {
 				title: 'Мои курсы',
+				menuItem: 'courses',
 			},
 		},
 		// admin/reports.blade.php
@@ -119,6 +126,7 @@ const router = new VueRouter({
 			component: TimetrackingView,
 			meta: {
 				title: 'Табель - Учет времени',
+				menuItem: 'reports',
 			},
 		},
 		// admin/top.blade.php
@@ -128,6 +136,7 @@ const router = new VueRouter({
 			component: TopView,
 			meta: {
 				title: 'ТОП',
+				menuItem: 'reports',
 			},
 		},
 		// admin/enter-report.blade.php
@@ -137,6 +146,7 @@ const router = new VueRouter({
 			component: EntertimeView,
 			meta: {
 				title: 'Время прихода - Учет времени',
+				menuItem: 'reports',
 			},
 		},
 		// admin/analytics.blade.php
@@ -146,6 +156,7 @@ const router = new VueRouter({
 			component: HRView,
 			meta: {
 				title: 'HR - аналитика рекрутинга',
+				menuItem: 'reports',
 			},
 		},
 		// admin/analytics-page.blade.php
@@ -155,6 +166,7 @@ const router = new VueRouter({
 			component: AnalyticsView,
 			meta: {
 				title: 'Аналитика отделов',
+				menuItem: 'reports',
 			},
 		},
 		// admin/salary.blade.php
@@ -164,6 +176,7 @@ const router = new VueRouter({
 			component: SalaryView,
 			meta: {
 				title: 'Начисления',
+				menuItem: 'reports',
 			},
 		},
 		// admin/quality_control.blade.php
@@ -173,6 +186,7 @@ const router = new VueRouter({
 			component: QualityControlView,
 			meta: {
 				title: 'Контроль качества',
+				menuItem: 'reports',
 			},
 		},
 		// surv/maps.blade.php
@@ -182,6 +196,7 @@ const router = new VueRouter({
 			component: MapView,
 			meta: {
 				title: 'Карта сотрудников',
+				menuItem: 'maps',
 			},
 		},
 		// kpi.blade.php
@@ -191,6 +206,7 @@ const router = new VueRouter({
 			component: KPIView,
 			meta: {
 				title: 'KPI - показателей',
+				menuItem: 'kpi',
 			},
 		},
 		// admin/info.blade.php
@@ -200,6 +216,7 @@ const router = new VueRouter({
 			component: () => import(/* webpackChunkName: "FAQView" */ '@/views/FAQView'),
 			meta: {
 				title: 'ЧАВО - FAQ',
+				menuItem: 'faq',
 			},
 		},
 		// admin/fines.blade.php
@@ -209,6 +226,7 @@ const router = new VueRouter({
 			component: () => import(/* webpackChunkName: "FinesView" */ '@/views/FinesView'),
 			meta: {
 				title: 'Депремирование',
+				menuItem: 'fines',
 			},
 		},
 		// admin/settingtimetracking.blade.php
@@ -218,6 +236,7 @@ const router = new VueRouter({
 			component: SettingsView,
 			meta: {
 				title: 'Настройки',
+				menuItem: 'settings',
 			},
 		},
 		// admin/users/create.blade.php
@@ -227,6 +246,7 @@ const router = new VueRouter({
 			component: () => import(/* webpackChunkName: "UserEditView" */ '@/views/UserEditView'),
 			meta: {
 				title: 'Редактирование профиля сотрудника',
+				menuItem: 'settings',
 			},
 		},
 		// admin/users/create.blade.php
@@ -236,6 +256,7 @@ const router = new VueRouter({
 			component: () => import(/* webpackChunkName: "UserEditView" */ '@/views/UserEditView'),
 			meta: {
 				title: 'Создание профиля сотрудника',
+				menuItem: 'settings',
 			},
 		},
 		{
