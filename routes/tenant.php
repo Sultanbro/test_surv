@@ -652,7 +652,8 @@ Route::group([
 
 Route::group([
     'prefix' => 'payment',
-    'as' => 'payment.'
+    'as' => 'payment.',
+    'middleware' => 'auth'
 ], function () {
     Route::post('/', [Api\PaymentController::class, 'payment']);
     Route::post('/status', [Api\PaymentController::class, 'updateToTariffPayments']);
