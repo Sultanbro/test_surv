@@ -834,10 +834,8 @@ export default {
 		},
 
 		imageCrutch(url){
-			return url.substing(0, 4) === 'http' ? url : `https://storage.oblako.kz${url}`
+			return url.substring(0, 4) === 'http' ? url : `https://storage.oblako.kz${url}`
 		}
-
-
 	},
 };
 </script>
