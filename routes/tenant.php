@@ -28,6 +28,8 @@ Route::middleware(['web','tenant'])->group(function () {
     Route::post('password/email', [Auth\ForgotPasswordController::class, 'sendResetLinkEmail'])->name('password.email');
     Route::get('password/reset/{token}', [Auth\ResetPasswordController::class, 'showResetForm'])->name('password.reset');
     Route::post('password/reset', [Auth\ResetPasswordController::class, 'reset']);
+
+    Route::get('/tariffs/get', [Root\Tariffs\TariffController::class, 'get']);
 });
 
 Route::middleware(['web','tenant','not_admin_subdomain'])->group(function () {
@@ -640,9 +642,6 @@ Route::middleware(['api','tenant','not_admin_subdomain'])->group(function () {
         });
     });
 });
-
-
-Route::get('/tariffs/get', [Root\Tariffs\TariffController::class, 'get']);
 
 Route::group([
     'prefix' => 'owner',
