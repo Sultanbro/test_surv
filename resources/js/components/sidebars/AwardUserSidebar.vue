@@ -60,36 +60,38 @@
 
 				<div v-if="switchTab === 1">
 					<b-row class="avail mt-3">
-						<b-col
-							cols="12"
-							md="2"
-							class="mt-4 remove-award-modal"
-							v-for="item in award.available"
-							:key="item.id"
-						>
-							<div class="award-image">
-								<div @click="previewImage(item)">
-									<img
-										:src="item.tempPath"
-										alt=""
-										v-if="item.format !== 'pdf'"
-									>
-									<vue-pdf-embed
-										v-else
-										ref="vuePdfEmbeds"
-										:source="item.tempPath"
+						<template v-for="item in award.available">
+							<b-col
+								cols="12"
+								md="2"
+								class="mt-4 remove-award-modal"
+								:key="item.id"
+								v-if="item.type === 'public'"
+							>
+								<div class="award-image">
+									<div @click="previewImage(item)">
+										<img
+											:src="item.tempPath"
+											alt=""
+											v-if="item.format !== 'pdf'"
+										>
+										<vue-pdf-embed
+											v-else
+											ref="vuePdfEmbeds"
+											:source="item.tempPath"
+										/>
+									</div>
+									<i
+										class="fa fa-download button download"
+										@click="downloadImage(item, award.name)"
+									/>
+									<i
+										class="fa fa-award button award"
+										@click="openModalSelect(item, award.name)"
 									/>
 								</div>
-								<i
-									class="fa fa-download button download"
-									@click="downloadImage(item, award.name)"
-								/>
-								<i
-									class="fa fa-award button award"
-									@click="openModalSelect(item, award.name)"
-								/>
-							</div>
-						</b-col>
+							</b-col>
+						</template>
 					</b-row>
 				</div>
 				<div v-if="switchTab === 2 && award.hasOwnProperty('my')">

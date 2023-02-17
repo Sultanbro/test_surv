@@ -67,4 +67,10 @@ class Kpi extends Model
         return $this->morphMany(History::class, 'historable', 'reference_table', 'reference_id')
             ->orderBy('created_at', 'desc');
     }
+
+    public function histories_latest()
+    {
+        return $this->morphOne(History::class, 'historable', 'reference_table', 'reference_id')
+            ->orderBy('created_at', 'desc')->latest();
+    }
 }

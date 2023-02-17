@@ -28,6 +28,8 @@ Route::middleware(['web','tenant'])->group(function () {
     Route::post('password/email', [Auth\ForgotPasswordController::class, 'sendResetLinkEmail'])->name('password.email');
     Route::get('password/reset/{token}', [Auth\ResetPasswordController::class, 'showResetForm'])->name('password.reset');
     Route::post('password/reset', [Auth\ResetPasswordController::class, 'reset']);
+
+    Route::get('/tariffs/get', [Root\Tariffs\TariffController::class, 'get']);
 });
 
 Route::middleware(['web','tenant','not_admin_subdomain'])->group(function () {
@@ -497,6 +499,9 @@ Route::middleware(['web','tenant','not_admin_subdomain'])->group(function () {
         Route::get('kpi/user/{id}', [Kpi\KpiStatController::class, 'show'])->name('index');
         Route::get('kpi/users/', [Kpi\KpiStatController::class, 'fetchGroups'])->name('fetch');
         Route::any('kpi', [Kpi\KpiStatController::class, 'fetchKpis'])->name('fetchKpis');
+        Route::any('kpi/groups-and-users', [Kpi\KpiStatController::class, 'fetchKpiGroupsAndUsers'])->name('fetchKpiGroupsAndUsers');
+        Route::any('kpi/groups-and-users/{targetable_id}', [Kpi\KpiStatController::class, 'showKpiGroupAndUsers'])
+            ->where('targetable_id', '[0-9]+');
         Route::any('bonuses', [Kpi\KpiStatController::class, 'fetchBonuses'])->name('fetchBonuses');
         Route::any('quartal-premiums', [Kpi\KpiStatController::class, 'fetchQuartalPremiums'])->name('fetchQuartalPremiums');
         Route::any('workdays', [Kpi\KpiStatController::class, 'workdays']);
@@ -637,9 +642,6 @@ Route::middleware(['api','tenant','not_admin_subdomain'])->group(function () {
         });
     });
 });
-
-
-Route::get('/tariffs/get', [Root\Tariffs\TariffController::class, 'get']);
 
 Route::group([
     'prefix' => 'owner',
