@@ -50,6 +50,7 @@ abstract class BasePaymentService
         }
 
         TariffPayment::createPaymentOrFail(
+            $authUserId,
             $dto->tariffId,
             $dto->extraUsersLimit,
             $tariff->calculateExpireDate(),
@@ -98,6 +99,7 @@ abstract class BasePaymentService
         $tariff = Tariff::query()->findOrFail($payment->tariff_id);
 
         TariffPayment::createPaymentOrFail(
+            $payment->owner_id,
             $payment->tariff_id,
             $payment->extra_user_limit,
             $tariff->calculateExpireDate(),
