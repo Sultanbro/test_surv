@@ -1,9 +1,9 @@
 <template>
-	<div class="messenger__box-search">
-		<div
-			v-if="isOpen"
-			class="messenger__box-search__input"
-		>
+	<div
+		v-if="isOpen"
+		class="messenger__box-search"
+	>
+		<div class="messenger__box-search__input">
 			<div class="messenger__icon">
 				<svg
 					xmlns="http://www.w3.org/2000/svg"
