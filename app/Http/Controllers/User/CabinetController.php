@@ -110,10 +110,12 @@ class CabinetController extends Controller
      */
     public function removeCardProfile(Request$request)
     {
-        Card::find($request['card_id'])->delete();
+        $card = Card::findorfail($request['card_id']);
+        $card->delete();
 
         return $this->response(
             message: 'Card successfully removed.',
+            data: $card
         );
     }
 
