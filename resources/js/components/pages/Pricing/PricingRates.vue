@@ -48,7 +48,7 @@
 						{{ feature.title }}
 					</td>
 					<td
-						v-for="item in items"
+						v-for="item in tarifs"
 						:key="feature.field + item.name"
 						class="PricingRates-col text-center"
 					>
@@ -70,7 +70,7 @@
 					Оплата в месяц
 				</td>
 				<td
-					v-for="item in items"
+					v-for="item in tarifs"
 					:key="'monthly' + item.name"
 					class="PricingRates-col PricingRates-action text-center"
 					@click="$emit('update', {rate: item.monthly, period: 'monthly'})"
@@ -83,7 +83,7 @@
 					Оплата в год
 				</td>
 				<td
-					v-for="item in items"
+					v-for="item in tarifs"
 					:key="'annual' + item.name"
 					class="PricingRates-col PricingRates-action text-center"
 					@click="$emit('update', {rate: item.annual, period: 'annual'})"
@@ -96,11 +96,11 @@
 					Скидка при оплате за год
 				</td>
 				<td
-					v-for="item in items"
+					v-for="item in tarifs"
 					:key="'discount' + item.name"
 					class="PricingRates-col text-center"
 				>
-					{{ item.discount }}%
+					{{ item.discount }}
 				</td>
 			</tr>
 		</table>
@@ -164,14 +164,14 @@ export default {
 					tarifs[item.kind] = {}
 					this.features.forEach(el => {
 						tarifs[item.kind][el.field] = el.field === 'domain' && item.kind === 'free' ? '-' : '+'
-						tarifs[item.kind].name = this.name[item.kind]
+						tarifs[item.kind].name = this.names[item.kind]
 						tarifs[item.kind].space = this.space[item.kind]
 						tarifs[item.kind].discount = this.discount[item.kind]
 					})
-					tarifs[item.kind][item.validity] = item
 				}
+				tarifs[item.kind][item.validity] = item
 				return tarifs
-			}, [])
+			}, {})
 		}
 	},
 	created(){

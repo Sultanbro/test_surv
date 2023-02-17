@@ -57,6 +57,7 @@
 				class="btn"
 				:class="{'btn-success': currency === '$'}"
 				@click="currency = '$'"
+				disabled
 			>
 				$
 			</button>
@@ -150,11 +151,11 @@ export default {
 		...mapState(usePricingStore, ['rates']),
 		additionalUsers(){
 			if(!this.selectedRate) return 0
-			return this.users - this.selectedRate.users
+			return this.users - this.selectedRate.users_limit
 		},
 		total(){
 			if(!this.selectedRate) return 0
-			const total = this.period === 'monthly' ? this.selectedRate.price + (this.additionalUsers * this.userPrice) : this.selectedRate.price + (this.additionalUsers * this.userPrice * 12)
+			const total = this.period === 'monthly' ? +this.selectedRate.price + (this.additionalUsers * this.userPrice) : +this.selectedRate.price + (this.additionalUsers * this.userPrice * 12)
 			return this.promoData?.value ? total - this.promoData.value : total
 		},
 	},
@@ -184,7 +185,7 @@ export default {
 				const url = await this.postPaymentData({
 					currency: this.currencyTranslate[this.currency],
 					tariff_id: this.selectedRate.id,
-					extra_users_limit: this.additionalUsers,
+					extra_users_limit: this.additionalUsers || 0,
 					auto_payment: this.autoPayment
 				})
 				window.location.assign(url)
