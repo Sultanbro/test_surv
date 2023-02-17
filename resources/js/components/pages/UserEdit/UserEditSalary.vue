@@ -23,21 +23,38 @@ export default {
 	},
 	data(){
 		return {
-			headphonesState: this.user?.headphones_sum > 0
+			headphonesState: this.user?.headphones_sum > 0,
+			cards: []
+		}
+	},
+	watch: {
+		user(obj){
+			if(obj.cards){
+				this.cards = obj.cards
+			}
 		}
 	},
 	methods: {
 		addCard(){
-			this.user.cards.push({
+			const card = {
 				bank: '',
 				country: '',
 				cardholder: '',
 				phone: '',
 				number: '',
-			})
+			};
+			this.cards.push(card);
 		},
-		deleteCard(key){
-			this.user.cards.splice(key, 1)
+		async deleteCard(key, card){
+			this.cards.splice(key, 1);
+			if(card.hasOwnProperty('id')){
+				const response = await this.axios.post('/profile/remove/card/', {'card_id': card.id});
+				if(!response.data){
+					this.$toast.error('Ошибка при удалении карты');
+					return;
+				}
+				this.$toast.success('Карта удалена');
+			}
 		},
 		addTax(userId){
 			this.taxes.push({
@@ -288,7 +305,7 @@ export default {
 			class="cards"
 		>
 			<div
-				v-for="(card, key) in user.cards"
+				v-for="(card, key) in cards"
 				:key="card.id"
 				class="d-flex form-group m0 card-row"
 			>
@@ -331,7 +348,7 @@ export default {
 				<button
 					type="button"
 					class="btn btn-danger card-delete rounded ml-1"
-					@click="deleteCard(key)"
+					@click="deleteCard(key, card)"
 				>
 					<i class="fa fa-trash" />
 				</button>
