@@ -50,6 +50,7 @@
 				class="btn"
 				:class="{'btn-success': currency === '₸'}"
 				@click="currency = '₸'"
+				disabled
 			>
 				₸
 			</button>

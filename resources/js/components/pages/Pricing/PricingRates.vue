@@ -175,8 +175,7 @@ export default {
 		}
 	},
 	created(){
-		// this.fetchPricing()
-		setTimeout(() => { this.fetchPricing() }, 2500) // timeout for imitate net lag
+		this.fetchPricing()
 	},
 	methods: {
 		...mapActions(usePricingStore, ['fetchPricing'])
