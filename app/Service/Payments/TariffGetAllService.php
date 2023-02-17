@@ -22,7 +22,7 @@ final class TariffGetAllService
         $tariffs = Tariff::all();
 
         foreach ($tariffs as $tariff) {
-            $tariff->multiCurrencyPrice = $this->createMultiCurrencyPrice($tariff->price);
+            $tariff->multiCurrencyPrice = $this->createMultiCurrencyPrice((float) $tariff->price);
         }
 
         return $tariffs;
