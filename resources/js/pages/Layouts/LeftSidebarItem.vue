@@ -1,5 +1,8 @@
 <template>
-	<div class="header__nav-link">
+	<div
+		class="header__nav-link"
+		:class="{'header__nav-link_highlight': highlight}"
+	>
 		<router-link
 			v-if="to"
 			:to="to || ''"
@@ -64,7 +67,8 @@ export default {
 		'icon',
 		'img',
 		'menu',
-		'popover'
+		'popover',
+		'highlight'
 	],
 	mounted(){
 		this.$emit('calcsize', this.$el)
@@ -79,6 +83,16 @@ export default {
       opacity: 1;
       visibility: visible;
     }
+  }
+  &_highlight{
+	.header__nav-link-a{
+		background: #608EE9;
+		color: #fff;
+	}
+	.header__nav-icon,
+	.header__nav-name{
+		color: #fff;
+	}
   }
 }
 

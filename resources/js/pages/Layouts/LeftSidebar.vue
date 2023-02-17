@@ -110,6 +110,7 @@
 					:img="item.img"
 					:menu="item.menu"
 					:popover="item.popover"
+					:highlight="item.route === routeMenuItem"
 				/>
 			</template>
 			<template v-if="filteredItems.more.length === 1">
@@ -123,6 +124,7 @@
 					:icon="filteredItems.more[0].icon"
 					:img="filteredItems.more[0].img"
 					:menu="filteredItems.more[0].menu"
+					:highlight="filteredItems.more[0].route === routeMenuItem"
 				/>
 			</template>
 			<LeftSidebarItem
@@ -139,6 +141,7 @@
 			class="last"
 			icon="icon-nd-settings"
 			to="/timetracking/settings"
+			:highlight="routeMenuItem === 'settings'"
 		/>
 	</div>
 </template>
@@ -207,6 +210,9 @@ export default {
 		isMainProject(){
 			return this.project === 'bp' || this.project === 'test'
 		},
+		routeMenuItem(){
+			return this.$route.meta?.menuItem
+		},
 		showSettings(){
 			return this.$can('settings_view')
 				|| this.$can('users_view')
@@ -237,13 +243,15 @@ export default {
 					name: 'Профиль',
 					to: '/',
 					icon: 'icon-nd-profile',
-					height: 0
+					height: 0,
+					route: 'profile',
 				},
 				{
 					name: 'Новости',
 					to: '/news',
 					icon: 'icon-nd-news',
 					height: 0,
+					route: 'news',
 					// hide: !this.$can('news_edit')
 				},
 				{
@@ -251,18 +259,21 @@ export default {
 					// to: '/struct',
 					icon: 'icon-nd-struct',
 					popover: 'Структура - Этот функционал в разработке',
-					height: 0
+					height: 0,
+					route: 'struct',
 				},
 				{
 					name: 'База знаний',
 					to: '/kb',
 					icon: 'icon-nd-kdb',
-					height: 0
+					height: 0,
+					route: 'kb',
 				},
 				{
 					name: 'Обучение',
 					icon: 'icon-nd-education',
 					height: 0,
+					route: 'courses',
 					menu: [
 						{
 							name: 'Читать книги',
@@ -288,6 +299,7 @@ export default {
 					to: '/timetracking/reports',
 					icon: 'icon-nd-reports',
 					height: 0,
+					route: 'reports',
 					menu: [
 						{
 							name: 'ТОП',
@@ -337,13 +349,15 @@ export default {
 					name: 'Карта',
 					to: '/maps',
 					icon: 'icon-nd-map',
-					height: 0
+					height: 0,
+					route: 'maps',
 				},
 				{
 					name: 'KPI',
 					to: '/kpi',
 					icon: 'icon-nd-kpi',
 					height: 0,
+					route: 'kpi',
 					hide: !this.$can('kpi_view')
 				},
 				{
@@ -351,6 +365,7 @@ export default {
 					to: '/',
 					icon: 'icon-nd-kk',
 					height: 0,
+					route: 'kk',
 					hide: true
 				},
 				{
@@ -358,6 +373,7 @@ export default {
 					to: '/timetracking/info',
 					icon: 'icon-nd-questions',
 					height: 0,
+					route: 'faq',
 					hide: !(this.$can('faq_view') && this.isMainProject)
 				},
 				{
@@ -365,6 +381,7 @@ export default {
 					to: '/timetracking/fines',
 					icon: 'icon-nd-deduction',
 					height: 0,
+					route: 'fines',
 					hide: !(this.$can('penalties_view') && this.isMainProject)
 				},
 				{
