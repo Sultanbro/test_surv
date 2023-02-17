@@ -338,7 +338,7 @@ export default {
 	},
 	methods: {
 		...mapActions(useSettingsStore, ['updateSettings']),
-		...mapActions(useProfileStatusStore, ['updateStatus']),
+		...mapActions(useProfileStatusStore, ['updateStatus', 'resetCorpBookAnswers']),
 		/**
 		 * Загрузить лого открыть модальный окно
 		 */
@@ -480,6 +480,7 @@ export default {
 			this.showCorpBookPage = true
 			this.isBookTest = false
 			this.bookCounter()
+			this.resetCorpBookAnswers()
 			this.$toast.error('Неправильный ответ')
 		},
 

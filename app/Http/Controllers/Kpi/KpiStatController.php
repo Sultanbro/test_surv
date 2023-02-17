@@ -73,8 +73,28 @@ class KpiStatController extends Controller
      * Вытащить kpi по фильтрам
      */
     public function fetchKpis(Request $request): JsonResponse
-    {   
+    {
         $response = $this->service->fetchKpis($request);
+
+        return response()->json($response);
+    }
+
+    /**
+     * Вытащить список Групп и Пользователей для KPI
+     */
+    public function fetchKpiGroupsAndUsers(Request $request): JsonResponse
+    {
+        $response = $this->service->fetchKpiGroupsAndUsers($request);
+
+        return response()->json($response);
+    }
+
+    /**
+     * Вытащить список Пользователей с показателями KPI для указанной targetable_id
+     */
+    public function showKpiGroupAndUsers(Request $request, $targetableId): JsonResponse
+    {
+        $response = $this->service->fetchKpiGroup($request, $targetableId);
 
         return response()->json($response);
     }

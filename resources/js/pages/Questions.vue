@@ -5,27 +5,27 @@
 		@click="hideAll($event)"
 	>
 		<div
-			class="title"
 			v-if="mode == 'read' && type == 'book' || ['kb', 'video'].includes(type)"
+			class="title"
 		>
 			Проверочные вопросы
 		</div>
 		<div
-			class="question mb-3"
 			v-for="(q, q_index) in questions"
 			:key="q_index"
+			class="question mb-3"
 			:class="{'show': q.editable}"
 		>
 			<div
+				v-if="mode == 'edit'"
 				class="title d-flex jcsb"
 				@click.stop="editQuestion(q_index)"
-				v-if="mode == 'edit'"
 			>
 				<textarea
+					v-if="q.editable"
 					v-model="q.text"
 					placeholder="Текст вопроса..."
 					@keyup="changed = true"
-					v-if="q.editable"
 				/>
 				<input
 					v-else
@@ -52,27 +52,27 @@
 			</div>
 
 			<div
-				class="title d-flex jcsb aic"
 				v-if="mode == 'read'"
+				class="title d-flex jcsb aic"
 			>
 				<p class="mb-0">
 					{{ q.text }}
 				</p>
 				<i
-					class="fa fa-times-circle wrong"
 					v-if="scores && q.success == false"
+					class="fa fa-times-circle wrong"
 				/>
 				<i
-					class="fa fa-check-circle right"
 					v-if="scores && q.success == true"
+					class="fa fa-check-circle right"
 				/>
 			</div>
 
 			<div v-if="q.editable || mode == 'read'">
 				<select
+					v-if="mode == 'edit'"
 					v-model="q.type"
 					class="type mt-2"
-					v-if="mode == 'edit'"
 				>
 					<option value="0">
 						Тест
@@ -84,17 +84,17 @@
 
 
 				<div
-					class="variants"
 					v-if="q.type == 0"
+					class="variants"
 				>
 					<div
-						class="variant d-flex aic"
 						v-for="(v, v_index) in q.variants"
 						:key="v_index"
+						class="variant d-flex aic"
 					>
 						<label
-							class="d-flex  w-full"
 							v-if="mode == 'edit'"
+							class="d-flex  w-full"
 						>
 							<input
 								type="checkbox"
@@ -115,8 +115,8 @@
 						</label>
 
 						<label
-							class="d-flex w-full"
 							v-if="mode == 'read'"
+							class="d-flex w-full"
 							:class="{'right':scores && v.right == true}"
 						>
 							<input
@@ -129,17 +129,16 @@
 							<p class="mb-0">{{ v.text }}</p>
 
 							<i
-								class="fa fa-check-circle right ml-2 mt-1"
 								v-if="scores && v.right == true"
+								class="fa fa-check-circle right ml-2 mt-1"
 							/>
-
 						</label>
 					</div>
 
 					<button
+						v-if="mode == 'edit'"
 						class="btn btn-default btn-sm mt-2 mb-2"
 						@click.stop="addVariant(q_index, -1)"
-						v-if="mode == 'edit'"
 					>
 						+ вариант
 					</button>
@@ -155,8 +154,8 @@
 
 				<div class="d-flex jcsb">
 					<div
-						class="points mr-3"
 						v-if="mode == 'edit'"
+						class="points mr-3"
 					>
 						<p>
 							Бонусы
@@ -180,17 +179,17 @@
 		<template v-if="mode == 'read'">
 			<div class="d-flex">
 				<button
+					v-if="points == -1 || !scores"
 					class="btn btn-success mr-2"
 					@click.stop="checkAnswers"
-					v-if="points == -1 || !scores"
 					:disabled="timer_turned_on"
 				>
 					Проверить <span v-if="timer_turned_on">({{ timer }})</span>
 				</button>
 				<button
+					v-if="points != -1 && scores && type == 'book'"
 					class="btn btn-primary"
 					@click.stop="$emit('continueRead')"
-					v-if="points != -1 && scores && type == 'book'"
 				>
 					Читать дальше
 				</button>
@@ -205,8 +204,8 @@
 					<span v-else>Вы не набрали проходной балл...</span>
 				</p>
 				<button
-					class="net-btn btn btn-primary"
 					v-if="mode == 'read' && passed"
+					class="net-btn btn btn-primary"
 					@click="$emit('nextElement')"
 				>
 					Продолжить
