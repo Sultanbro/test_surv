@@ -19,7 +19,24 @@ export default {
 			type: Array,
 			default: () => []
 		},
-	}
+		front_valid:{
+			type: Object,
+			default: () => null
+		}
+	},
+	data() {
+		return{
+			group: null
+		}
+	},
+	methods: {
+		checkValid(event){
+			if(this.front_valid && this.front_valid.formSubmitted){
+				const val = event.target.value;
+				!val.length ? this.$emit('valid_change', false) : this.$emit('valid_change', true);
+			}
+		},
+	},
 }
 </script>
 <template>
@@ -27,9 +44,11 @@ export default {
 		id="iphones3"
 		class="mb-3 xfade none-block"
 	>
-		<div class="form-group row">
+		<div
+			class="form-group row"
+			:class="{'form-group-error': front_valid.formSubmitted && !front_valid.group}"
+		>
 			<label
-				for="position"
 				class="col-sm-4 col-form-label font-weight-bold"
 			>Отделы <span class="red">*</span></label>
 			<div class="col-sm-8">
@@ -44,8 +63,12 @@ export default {
 					name="group"
 					id="group"
 					class="form-control"
+					v-model="group"
+					@change="checkValid($event)"
 				>
-					<option>Выберите отдел</option>
+					<option :value="null">
+						Выберите отдел
+					</option>
 					<option
 						v-for="group in groups"
 						:key="group.id"

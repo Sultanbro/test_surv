@@ -15,8 +15,9 @@ import 'vue-croppie'
 
 import axios from 'axios'
 
-const DATE_YMD = 'YYYY-MM-DD'
-const DATE_DMY = 'DD.MM.YYYY'
+const DATE_YMD = 'YYYY-MM-DD';
+const DATE_DMY = 'DD.MM.YYYY';
+const re = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
 
 export default {
 	name: 'UserEditView',
@@ -81,7 +82,17 @@ export default {
 			isUploadImageModal: false,
 			filename: 'empty',
 			fileurl: this.user?.img_url || 'noavatar.png',
-			frontErrors: [],
+			frontValid:{
+				formSubmitted: false,
+				phone: true,
+				name: true,
+				lastName: true,
+				position: true,
+				birthday: true,
+				group: true,
+				email: true,
+				selectedCityInput: true,
+			},
 			counter: 0,
 			profile_errors: 0,
 			phone_errors: 0,
@@ -196,7 +207,7 @@ export default {
 			this.old_card_jysan = data.old_card_jysan
 			this.in_groups = data.in_groups
 			this.head_in_groups = data.head_in_groups
-			this.profile_contacts = data.profile_contacts
+			this.profile_contacts = data.profile_contacts ? data.profile_contacts : []
 			this.taxes = data.taxes
 		},
 		updatePageData(){
@@ -244,8 +255,13 @@ export default {
 				break;
 			}
 		},
+		addContacts(val){
+			this.profile_contacts.push(val);
+		},
+		changeContact(obj){
+			this.profile_contacts[obj.key][obj.input] = obj.value;
+		},
 		validateEmail(email) {
-			const re = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
 			return re.test(String(email).toLowerCase());
 		},
 		crop_image(){
@@ -282,7 +298,11 @@ export default {
 			reader.readAsDataURL(files[0])
 			this.isUploadImageModal = true
 		},
+		validChange(obj){
+			this.frontValid[obj.name] = obj.bool;
+		},
 		async submit(isTrainee, increment_provided, isNew){
+			this.frontValid.formSubmitted = true;
 			this.trainee = isTrainee
 			this.increment_provided = increment_provided
 
@@ -295,94 +315,64 @@ export default {
 			this.phone_errors = 0;
 			this.zarplata_errors = 0;
 
-			const phone = formData.get('phone'),
-				name = formData.get('name'),
-				last_name = formData.get('last_name'),
-				birthday = formData.get('birthday'),
-				email = formData.get('email'),
-				zarplata = formData.get('zarplata'),
-				selectedCityInput = formData.get('selectedCityInput');
+			const phone = formData.get('phone');
+			const name = formData.get('name');
+			const email = formData.get('email');
+			const lastName = formData.get('last_name');
+			const position = formData.get('position');
+			const birthday = formData.get('birthday');
+			const group = formData.get('group');
+			const selectedCityInput = formData.get('selectedCityInput');
+			const zarplata = formData.get('zarplata');
+			formData.set('zarplata', zarplata.replace(/\D/g, ''));
 
-			this.frontErrors = []
-
-			formData.set('zarplata', zarplata.replace(/\D/g, ''))
-
-			if (selectedCityInput.length < 2) {
-				this.frontErrors.push('Поиск: <b>Стран</b> <b>Город</b>')
-				this.counter++
-				this.profile_errors++
+			if (!isTrainee) {
+				if (phone.length < 11) {
+					this.frontValid.phone = false;
+					this.showBlock(4);
+				}
+			}
+			if (name.length < 3) {
+				this.frontValid.name = false;
+				this.showBlock(1);
 			}
 
-			if (name.length < 2) {
-				this.frontErrors.push('Профиль: <b>Имя</b>')
-				this.counter++;
-				this.profile_errors++
+			if (lastName.length < 3) {
+				this.frontValid.lastName = false;
+				this.showBlock(1);
 			}
 
-			if (last_name.length < 3) {
-				this.frontErrors.push('Профиль: <b>Фамилия</b>')
-				this.counter++;
-				this.profile_errors++
+			if (!birthday) {
+				this.frontValid.birthday = false;
+				this.showBlock(1);
 			}
 
 			if (!this.validateEmail(email)) {
-				this.frontErrors.push('Профиль: <b>Email </b> не корректный')
-				this.counter++;
-				this.profile_errors++
+				this.frontValid.email = false;
+				this.showBlock(1);
 			}
 
-			if (birthday.length == 0) {
-				this.frontErrors.push('Профиль: <b>День рождения</b>')
-				this.counter++;
-				this.profile_errors++
+			if(!position){
+				this.frontValid.position = false;
+				this.showBlock(1);
 			}
 
-			if(!isTrainee){
-				if (phone.length < 11) {
-					this.frontErrors.push('Контакты: <b>Мобильный</b>')
-					this.counter++;
-					this.phone_errors++
-				}
+			if(!group && isNew){
+				this.frontValid.group = false;
+				this.showBlock(1);
 			}
 
-			// if (phone_1.length < 6) {
-			// this.frontErrors.push('Контакты: <b>Домашний</b>')
-			//     this.counter++;
-			//     this.phone_errors++
-			// }
-
-			// if (phone_2.length < 11) {
-			// this.frontErrors.push('Контакты: <b>Супруга/Муж</b>')
-			//     this.counter++;
-			//     this.phone_errors++
-			// }
-
-			// if (phone_3.length < 11) {
-			// this.frontErrors.push('Контакты: <b>Друг/Брат/Сестра</b>')
-			//     this.counter++;
-			//     this.phone_errors++
-			// }
-
-
-			// if (workingCity == null) {
-			// this.frontErrors.push('Город: <b>Астана</b>')
-			//     this.counter++;
-			//     this.profile_errors++
-			// }
-
-			// if (validateCnum()) {
-			// this.frontErrors.push('Зарплата: <b>Номер карты</b>')
-			//     this.counter++;
-			//     this.zarplata_errors++;
-			// }
-
-
-			if (this.counter > 0) {
-				this.isBeforeSubmit = true
+			if(!selectedCityInput){
+				this.frontValid.selectedCityInput = false;
+				this.showBlock(1);
 			}
-			else {
-				this.sendForm(formData, isNew)
+
+			if(this.frontValid.phone && this.frontValid.email && this.frontValid.name && this.frontValid.lastName && this.frontValid.birthday && this.frontValid.position && this.frontValid.group && this.frontValid.selectedCityInput){
+				this.sendForm(formData, isNew);
+			} else {
+				this.$toast.error('Заполните обязательные поля');
 			}
+
 		},
 		sendForm(formData, isNew){
 			if(this.errors && this.errors.length) return this.$toast.error('Не удалось сохранить информацию о сотруднике');
@@ -467,417 +457,372 @@ export default {
 		class="profile-edit"
 	>
 		<div class="old__content">
-			<div class="user-page">
-				<div class="mt-3">
-					<div class="col-md-12 d-flex justify-content-between align-items-start">
-						<a
-							href="/timetracking/settings?tab=1"
-							class="btn btn-rounded"
-							style="background: #a0a6ab; color: white; font-size: 14px;"
-						>
-							<i class="fa fa-chevron-left" /> Назад
-						</a>
+			<div class="user-page py-4">
+				<div class="d-flex justify-content-between align-items-center">
+					<a
+						href="/timetracking/settings?tab=1"
+						class="btn btn-rounded"
+						style="background: #a0a6ab; color: white; font-size: 14px;"
+					>
+						<i class="fa fa-chevron-left" /> Назад
+					</a>
 
-						<div class="data-information d-flex">
-							<template v-if="user">
-								<template v-if="isTrainee">
-									<button
-										id="submit_job"
-										class="btn btn-warning mr-2 rounded"
-										@click.prevent="submit(false, true)"
-									>
-										Принять на работу
-									</button>
-									<button
-										id="submit_trainee"
-										class="btn btn-primary mr-2 rounded"
-										@click.prevent="submit(true, false)"
-									>
-										Сохранить
-									</button>
-								</template>
+					<div class="data-information d-flex">
+						<template v-if="user">
+							<template v-if="isTrainee">
 								<button
-									v-else
-									id="submitx"
+									id="submit_job"
+									class="btn btn-warning mr-2 rounded"
+									@click.prevent="submit(false, true)"
+								>
+									Принять на работу
+								</button>
+								<button
+									id="submit_trainee"
 									class="btn btn-primary mr-2 rounded"
-									@click.prevent="submit(false, false)"
+									@click.prevent="submit(true, false)"
 								>
 									Сохранить
 								</button>
 							</template>
-							<template v-else>
-								<button
-									id="submitx2"
-									class="btn btn-primary mr-2 rounded"
-									@click.prevent="submit(false, true, true)"
-								>
-									Пригласить без стажировки
-								</button>
-								<button
-									id="submit_trainee"
-									class="btn btn-warning mr-2 rounded"
-									@click.prevent="submit(true, false, true)"
-								>
-									Пригласить со стажировкой
-								</button>
-							</template>
+							<button
+								v-else
+								id="submitx"
+								class="btn btn-primary mr-2 rounded"
+								@click.prevent="submit(false, false)"
+							>
+								Сохранить
+							</button>
+						</template>
+						<template v-else>
+							<button
+								id="submitx2"
+								class="btn btn-primary mr-2 rounded"
+								@click.prevent="submit(false, true, true)"
+							>
+								Пригласить без стажировки
+							</button>
+							<button
+								id="submit_trainee"
+								class="btn btn-warning mr-2 rounded"
+								@click.prevent="submit(true, false, true)"
+							>
+								Пригласить со стажировкой
+							</button>
+						</template>
 
-							<template v-if="user">
-								<template v-if="!user.deleted_at">
+						<template v-if="user">
+							<template v-if="!user.deleted_at">
+								<button
+									v-if="isTrainee"
+									type="button"
+									id="deleteModalBtn"
+									class="btn btn-danger rounded"
+									@click.prevent="toggleDeleteConfirm(true, 0)"
+								>
+									Уволить стажера
+								</button>
+								<template v-else>
 									<button
-										v-if="isTrainee"
 										type="button"
 										id="deleteModalBtn"
-										class="btn btn-danger rounded"
+										class="btn btn-danger rounded mr-2"
 										@click.prevent="toggleDeleteConfirm(true, 0)"
 									>
-										Уволить стажера
+										Уволить без отработки
 									</button>
-									<template v-else>
-										<button
-											type="button"
-											id="deleteModalBtn"
-											class="btn btn-danger rounded mr-2"
-											@click.prevent="toggleDeleteConfirm(true, 0)"
-										>
-											Уволить без отработки
-										</button>
-										<button
-											type="button"
-											id="deleteModalBtn2"
-											class="btn btn-danger rounded"
-											@click.prevent="toggleDeleteConfirm(true, 1)"
-										>
-											Уволить с отработкой
-										</button>
-									</template>
-								</template>
-								<button
-									v-else
-									type="button"
-									class="btn btn-success rounded"
-									@click.prevent="toggleRestoreConfirm(true)"
-								>
-									Восстановить
-								</button>
-							</template>
-						</div>
-
-						<!-- <div class="bread d-flex align-items-center ml-3">
-							<a href="/timetracking/settings?tab=1">Настройки <i class="fa fa-chevron-right"></i></a>
-							<a href="/timetracking/settings?tab=1">Сотрудники</a>
-						</div> -->
-					</div>
-				</div>
-
-
-
-
-				<div class="">
-					<div class="col-md-12 p-0">
-						<div class="contact-information">
-							<form
-								ref="form"
-								:action="formAction"
-								method="post"
-								enctype="multipart/form-data"
-								class="form-horizontal"
-								id="form"
-								name="user_form"
-								@submit.prevent=""
-							>
-								<input
-									v-if="user"
-									name="id"
-									:value="user.id"
-									type="hidden"
-									class="form-control"
-								>
-								<input
-									name="is_trainee"
-									:value="trainee"
-									type="hidden"
-									id="trainee"
-									class="form-control"
-								>
-								<input
-									name="increment_provided"
-									:value="increment_provided"
-									type="hidden"
-									id="increment_provided"
-									class="form-control"
-								>
-								<template v-html="csrf" />
-								<div class="data-information mt-4 user-flex">
-									<div
-										id="list-example"
-										class="list-group user-nav sticky"
+									<button
+										type="button"
+										id="deleteModalBtn2"
+										class="btn btn-danger rounded"
+										@click.prevent="toggleDeleteConfirm(true, 1)"
 									>
-										<!-- PROFILE IMAGE -->
-										<div class="">
-											<input
-												name="image"
-												type="file"
-												accept="image/*"
-												hidden
-												id="upload_image"
-												@change="uploadImage"
-											>
-											<input
-												name="photo"
-												type="file"
-												hidden
-												id="photo"
-											>
+										Уволить с отработкой
+									</button>
+								</template>
+							</template>
+							<button
+								v-else
+								type="button"
+								class="btn btn-success rounded"
+								@click.prevent="toggleRestoreConfirm(true)"
+							>
+								Восстановить
+							</button>
+						</template>
+					</div>
 
-											<input
-												v-if="user"
-												id="user_id_img"
-												:data-auth-id="auth_identifier"
-												:value="user.id"
-												hidden
-											>
-											<input
-												v-else
-												id="user_id_img"
-												data-auth-id="new_user"
-												hidden
-												value="new_user"
-												name="user_img"
-											>
-											<input
-												name="file_name_img"
-												:value="filename"
-												id="file_name_img"
-												hidden
-											>
+					<!-- <div class="bread d-flex align-items-center ml-3">
+						<a href="/timetracking/settings?tab=1">Настройки <i class="fa fa-chevron-right"></i></a>
+						<a href="/timetracking/settings?tab=1">Сотрудники</a>
+					</div> -->
+				</div>
+				<form
+					ref="form"
+					:action="formAction"
+					method="post"
+					enctype="multipart/form-data"
+					class="form-horizontal"
+					id="form"
+					name="user_form"
+					@submit.prevent=""
+				>
+					<input
+						v-if="user"
+						name="id"
+						:value="user.id"
+						type="hidden"
+						class="form-control"
+					>
+					<input
+						name="is_trainee"
+						:value="trainee"
+						type="hidden"
+						id="trainee"
+						class="form-control"
+					>
+					<input
+						name="increment_provided"
+						:value="increment_provided"
+						type="hidden"
+						id="increment_provided"
+						class="form-control"
+					>
+					<template v-html="csrf" />
+					<div id="list-example">
+						<!-- PROFILE IMAGE -->
+						<input
+							name="image"
+							type="file"
+							accept="image/*"
+							hidden
+							id="upload_image"
+							@change="uploadImage"
+						>
+						<input
+							name="photo"
+							type="file"
+							hidden
+							id="photo"
+						>
 
-											<template v-if="user">
-												<div class="text-center">
-													<button
-														@click.prevent="onClickAward"
-														class="btn btn-success"
-													>
-														Наградить
-													</button>
-												</div>
-												<hr style="margin: 10px -10px !important;">
-											</template>
+						<input
+							v-if="user"
+							id="user_id_img"
+							:data-auth-id="auth_identifier"
+							:value="user.id"
+							hidden
+						>
+						<input
+							v-else
+							id="user_id_img"
+							data-auth-id="new_user"
+							hidden
+							value="new_user"
+							name="user_img"
+						>
+						<input
+							name="file_name_img"
+							:value="filename"
+							id="file_name_img"
+							hidden
+						>
 
+						<template v-if="user">
+							<div class="row">
+								<div class="col-12 col-md-6">
+									<div class="card-profile-edit">
+										<div class="d-flex">
 											<label
-												v-if="user"
-												class="my-label-6 img_url_md"
 												for="upload_image"
 												style="cursor:pointer;border: 1px solid #f8f8f8;background-color: unset"
 											>
 												<img
 													:id="user.img_url"
 													:src="`/users_img/${fileurl}`"
-													style="width: 200px;height: 200px; border-radius: 10px"
+													style="width: 150px;height: 150px; border-radius: 10px"
 												>
 											</label>
-
-											<div
-												class="mt-2 font-weight-bold font-sm text-center"
-												style="width:100%; font-size: 16px; margin-bottom: 10px;"
-											>
-												{{ userName }}
-											</div>
-											<div
-												class="mt-0 mb-3 font-weight-bold font-sm text-center"
-												style="width:100%"
-											>
-												{{ userPosition }}
-											</div>
-
-											<hr style="margin: 10px -10px !important;">
-											<div class="list-item profile-edit-list-item">
-												<ul class="p-0">
-													<li
-														id="bg-this-1"
-														:class="{'active': showBlocks.main && showBlocks.additional && showBlocks.groups}"
-														@click="showBlock(1)"
-													>
-														<span>Основные данные</span>
-														<span
-															v-if="showBlocks.main && showBlocks.additional && showBlocks.groups"
-															id="check-1"
-															class="fa fa-check none-check"
-														/>
-													</li>
-
-													<li
-														id="bg-this-9"
-														:class="{'active': showBlocks.documents}"
-														@click="showBlock(9)"
-													>
-														<span>Документы</span>
-														<span
-															v-if="showBlocks.documents"
-															id="check-9"
-															class="fa fa-check none-check"
-														/>
-													</li>
-													<li
-														id="bg-this-4"
-														:class="{'active': showBlocks.phones}"
-														@click="showBlock(4)"
-													>
-														<span>Контакты</span>
-														<span
-															v-if="showBlocks.phones"
-															id="check-4"
-															class="fa fa-check none-check"
-														/>
-													</li>
-													<li
-														id="bg-this-5"
-														:class="{'active': showBlocks.salary}"
-														@click="showBlock(5)"
-													>
-														<span>Оплата</span>
-														<span
-															v-if="showBlocks.salary"
-															id="check-5"
-															class="fa fa-check none-check"
-														/>
-													</li>
-													<li
-														v-if="user && tenant === 'bp'"
-														id="bg-this-7"
-														:class="{'active': showBlocks.adaptation}"
-														@click="showBlock(7)"
-													>
-														<span>Адаптационные данные</span>
-														<span
-															v-if="showBlocks.adaptation"
-															id="check-7"
-															class="fa fa-check none-check"
-														/>
-													</li>
-												</ul>
-											</div>
-										</div>
-									</div>
-
-									<div
-										id="xmyTabContent"
-										class="xtab-content card scrollspy-example bg-transparent p-30"
-										data-spy="scroll"
-										data-target="#list-example"
-									>
-										<!-- first tab -->
-										<div
-											class="xtab-pane xfade show active"
-											id="contact"
-											role="tabpanel"
-											aria-labelledby="contact-tab"
-										>
-											<!-- PROFILE INFO -->
-											<div class="d-flex row">
-												<UserEditMain
-													v-show="showBlocks.main"
-													:form-user-name="formUserName"
-													:form-user-last-name="formUserLastName"
-													:form-user-email="formUserEmail"
-													:form-user-birthday="formUserBirthday"
-													:positions="positions"
-													:groups="groups"
-													:in-progress="head_in_groups"
-													:programs="programs"
-													:working-days="workingDays"
-													:working-times="workingTimes"
-													:user="user"
-													:in_groups="in_groups"
-												/>
-
-												<div class="col-md-6 add_info">
-													<UserEditAdditional
-														v-show="showBlocks.additional"
-														:user="user"
-														:user-created="userCreated"
-														:user-applied="userApplied"
-														:user-applied-days="userAppliedDays"
-														:is-trainee="isTrainee"
-														:user-deleted="userDeleted"
-														:user-deleted-at="userDeletedAt"
-													/>
-												</div>
-												<div class="col-9 add_info">
-													<!-- documents tab -->
-													<UserEditDocuments
-														v-show="showBlocks.documents"
-														:user="user"
-													/>
-													<!-- end of documents -->
-												</div>
-												<div class="col-md-12 add_info">
-													<UserEditAdaptation
-														v-show="showBlocks.adaptation"
-														:user="user"
-													/>
-												</div>
-											</div>
-										</div>
-										<!-- second tab -->
-										<div
-											class="xtab-pane xfade"
-											id="phones"
-											role="tabpanel"
-											aria-labelledby="phones-tab"
-										>
-											<!--  -->
-											<!-- PROFILE PHONES -->
-											<div class="profile-contacts mb-3 row">
-												<UserEditPhones
-													v-show="showBlocks.phones"
-													:user="user"
-													:profile-contacts="profile_contacts"
-													:old_phone="old_phone"
-													:old_phone_1="old_phone_1"
-													:old_phone_2="old_phone_2"
-													:old_phone_3="old_phone_3"
-													:old_phone_4="old_phone_4"
-												/>
-												<!-- end of phones -->
-
-												<!-- zarplata tab -->
-												<UserEditSalary
-													v-show="showBlocks.salary"
-													:user="user"
-													:taxes="taxes"
-													:old_zarplata="old_zarplata"
-													:old_kaspi_cardholder="old_kaspi_cardholder"
-													:old_kaspi="old_kaspi"
-													:old_card_kaspi="old_card_kaspi"
-													:old_jysan_cardholder="old_jysan_cardholder"
-													:old_jysan="old_jysan"
-													:old_card_jysan="old_card_jysan"
-												/>
-
-												<!-- additional tab -->
-												<UserEditMisc
-													v-show="showBlocks.misc"
-													:user="user"
-												/>
-
-												<UserEditBitrix
-													v-show="showBlocks.bitrix"
-													:user="user"
-												/>
+											<div class="d-flex flex-column justify-content-start align-items-start ml-4">
+												<h4 class="font-weight-bold">
+													{{ userName }}
+												</h4>
+												<p class="mt-3 mb-5">
+													{{ userPosition }}
+												</p>
+												<button
+													@click.prevent="onClickAward"
+													class="btn btn-success"
+												>
+													Наградить
+												</button>
 											</div>
 										</div>
 									</div>
 								</div>
-								<UModal
-									v-if="errors && errors.length"
-									:items="errors"
-									title="Не сохранено"
+								<div class="col-12 col-md-6">
+									<div class="card-profile-edit overflow-hidden p-0">
+										<UserEditAdditional
+											:user="user"
+											:user-created="userCreated"
+											:user-applied="userApplied"
+											:user-applied-days="userAppliedDays"
+											:is-trainee="isTrainee"
+											:user-deleted="userDeleted"
+											:user-deleted-at="userDeletedAt"
+										/>
+									</div>
+								</div>
+							</div>
+						</template>
+					</div>
+
+					<hr v-if="!user">
+
+					<ul class="profile-edit-list-tabs">
+						<li
+							id="bg-this-1"
+							:class="{'active': showBlocks.main}"
+							@click="showBlock(1)"
+						>
+							<span>Основные данные <span class="red">*</span></span>
+						</li>
+
+						<li
+							id="bg-this-9"
+							:class="{'active': showBlocks.documents}"
+							@click="showBlock(9)"
+						>
+							<span>Документы</span>
+						</li>
+						<li
+							id="bg-this-4"
+							:class="{'active': showBlocks.phones}"
+							@click="showBlock(4)"
+						>
+							<span>Контакты <span class="red">*</span></span>
+						</li>
+						<li
+							id="bg-this-5"
+							:class="{'active': showBlocks.salary}"
+							@click="showBlock(5)"
+						>
+							<span>Оплата</span>
+						</li>
+						<li
+							v-if="user && tenant === 'bp'"
+							id="bg-this-7"
+							:class="{'active': showBlocks.adaptation}"
+							@click="showBlock(7)"
+						>
+							<span>Адаптационные данные</span>
+						</li>
+					</ul>
+
+					<div
+						id="xmyTabContent"
+						class="xtab-content"
+						data-spy="scroll"
+						data-target="#list-example"
+					>
+						<!-- first tab -->
+						<div
+							class="xtab-pane xfade show active"
+							id="contact"
+							role="tabpanel"
+							aria-labelledby="contact-tab"
+						>
+							<!-- PROFILE INFO -->
+							<div>
+								<UserEditMain
+									v-show="showBlocks.main"
+									:form-user-name="formUserName"
+									:form-user-last-name="formUserLastName"
+									:form-user-email="formUserEmail"
+									:form-user-birthday="formUserBirthday"
+									:positions="positions"
+									:groups="groups"
+									:in-progress="head_in_groups"
+									:programs="programs"
+									:working-days="workingDays"
+									:working-times="workingTimes"
+									:user="user"
+									:in_groups="in_groups"
+									:front_valid="frontValid"
+									@valid_change="validChange"
 								/>
-							</form>
+
+								<div class="col-9 add_info">
+									<!-- documents tab -->
+									<UserEditDocuments
+										v-show="showBlocks.documents"
+										:user="user"
+									/>
+									<!-- end of documents -->
+								</div>
+								<div class="col-md-12 add_info">
+									<UserEditAdaptation
+										v-show="showBlocks.adaptation"
+										:user="user"
+									/>
+								</div>
+							</div>
+						</div>
+						<!-- second tab -->
+						<div
+							class="xtab-pane xfade"
+							id="phones"
+							role="tabpanel"
+							aria-labelledby="phones-tab"
+						>
+							<UserEditPhones
+								v-show="showBlocks.phones"
+								:user="user"
+								:profile-contacts="profile_contacts"
+								:old_phone="old_phone"
+								:old_phone_1="old_phone_1"
+								:old_phone_2="old_phone_2"
+								:old_phone_3="old_phone_3"
+								:old_phone_4="old_phone_4"
+								:front_valid="frontValid"
+								@valid_change="validChange"
+								@add_contacts="addContacts"
+								@change_contact="changeContact"
+							/>
+							<!-- end of phones -->
+
+							<!-- zarplata tab -->
+							<UserEditSalary
+								v-show="showBlocks.salary"
+								:user="user"
+								:taxes="taxes"
+								:old_zarplata="old_zarplata"
+								:old_kaspi_cardholder="old_kaspi_cardholder"
+								:old_kaspi="old_kaspi"
+								:old_card_kaspi="old_card_kaspi"
+								:old_jysan_cardholder="old_jysan_cardholder"
+								:old_jysan="old_jysan"
+								:old_card_jysan="old_card_jysan"
+							/>
+
+							<!-- additional tab -->
+							<UserEditMisc
+								v-show="showBlocks.misc"
+								:user="user"
+							/>
+
+							<UserEditBitrix
+								v-show="showBlocks.bitrix"
+								:user="user"
+							/>
 						</div>
 					</div>
-				</div>
+					<UModal
+						v-if="errors && errors.length"
+						:items="errors"
+						title="Не сохранено"
+					/>
+				</form>
 			</div>
 		</div>
 		<template v-if="user">
@@ -1100,26 +1045,7 @@ export default {
 			tabindex="-1"
 			role="dialog"
 			@click="isBeforeSubmit = false"
-		>
-			<div
-				class="modal-dialog"
-				role="document"
-			>
-				<div class="modal-content">
-					<div class="modal-body text-left">
-						<h5>Заполните все поля</h5>
-					</div>
-					<div class="text-left mb-3 texter px-3">
-						<div
-							v-for="(error, i) in frontErrors"
-							:key="i"
-							class="beforeSubmit-error"
-							v-html="error"
-						/>
-					</div>
-				</div>
-			</div>
-		</div>
+		/>
 		<AwardUserSidebar />
 
 		<div
@@ -2171,11 +2097,7 @@ position: relative;
 .xtab-content .user-nav li {
 	border-radius: 0;
 }
- .xtab-content {
-	overflow-y: auto;
-	overflow-x: hidden;
-	flex: 100%;
-}
+
 .xtab-content .xtab-pane {
 	margin-bottom: 50px;
 }
@@ -2270,23 +2192,6 @@ background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/s
 	background: #e9ecef;
 	margin: 0 auto;
 	border-radius: 3px
-}
-#list-example{
-	flex: 0 0 290px;
-	max-width: 290px;
-	overflow-x: hidden;
-	float: left;
-	padding: 20px 10px !important;
-	background: #f8f8f8;
-	display: flex;
-	height: 100%;
-	min-height: 100vh;
-	border-right: 1px solid #dfdfdf;
-	position: -webkit-sticky;
-	position: sticky;
-	top: 0;
-	width: 290px;
-	flex-direction: column;
 }
 
 .listSearchResult{
