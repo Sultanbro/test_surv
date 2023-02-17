@@ -179,6 +179,7 @@ export default {
 	},
 	methods: {
 		setData(data){
+			console.log(data);
 			this.csrf = data.csrf
 			this.user = data.user
 			this.groups = data.groups

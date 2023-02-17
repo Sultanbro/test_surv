@@ -25,7 +25,7 @@ export default {
 	},
 	data() {
 		return{
-			mainPhone: this.user ? this.user.phone : this.old_phone
+			mainPhone: ''
 		}
 	},
 	watch: {
@@ -33,6 +33,9 @@ export default {
 			if(this.front_valid && this.front_valid.formSubmitted){
 				val.length < 17 ? this.$emit('valid_change', {name: 'phone', bool: false}) : this.$emit('valid_change', {name: 'phone', bool: true});
 			}
+		},
+		user(obj){
+			this.mainPhone = obj ? obj.phone : '';
 		}
 	},
 	methods:{
