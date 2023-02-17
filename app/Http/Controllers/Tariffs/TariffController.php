@@ -4,11 +4,20 @@ namespace App\Http\Controllers\Tariffs;
 
 use App\Http\Controllers\Controller;
 use App\Models\Tariff\Tariff;
+use App\Service\Payments\TariffGetAllService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
 class TariffController extends Controller
 {
+    /**
+     * @param TariffGetAllService $tariffGetAllService
+     */
+    public function __construct(
+        public TariffGetAllService $tariffGetAllService
+    )
+    {}
+    
     /**
      * @return JsonResponse
      */
@@ -16,7 +25,7 @@ class TariffController extends Controller
     {
         return $this->response(
             message: 'success',
-            data: Tariff::all()
+            data: $this->tariffGetAllService->handle(),
         );
     }
 }
