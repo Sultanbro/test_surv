@@ -639,10 +639,10 @@ class KpiStatisticService
 
         $kpis = Kpi::withTrashed()
             ->with([
-                'histories' => function($query) use ($last_date) {
+                'histories_latest' => function($query) use ($last_date) {
                     $query->whereDate('created_at', '<=', $last_date);
                 },
-                'items.histories' => function($query) use ($last_date) {
+                'items.histories_latest' => function($query) use ($last_date) {
                     $query->whereDate('created_at', '<=', $last_date);
                 },
                 'items' => function($query) use ($last_date) {
@@ -692,9 +692,9 @@ class KpiStatisticService
             $kpi->kpi_items = [];
 
             // remove items if it's not in history
-            if($kpi->histories->first()) {
-                $payload = json_decode($kpi->histories->first()->payload, true);
-           
+            if($kpi->histories_latest) {
+                $payload = json_decode($kpi->histories_latest->payload, true);
+
                 if(isset($payload['children'])) {
                     $kpi->items = $kpi->items->whereIn('id', $payload['children']);
                 }
@@ -794,7 +794,6 @@ class KpiStatisticService
                 $kpi_sum = $kpi_sum + $user['avg_percent'];
             }
             $kpi->avg = count($kpi->users) > 0 ? round($kpi_sum/count($kpi->users)) : 0; //AVG percent of all KPI of all USERS in GROUP
-            unset($kpis->items()[$key]['targetable']);
         }
 
         return [
@@ -843,10 +842,10 @@ class KpiStatisticService
 
         $kpi = Kpi::withTrashed()
             ->with([
-                'histories' => function($query) use ($last_date) {
+                'histories_latest' => function($query) use ($last_date) {
                     $query->whereDate('created_at', '<=', $last_date);
                 },
-                'items.histories' => function($query) use ($last_date) {
+                'items.histories_latest' => function($query) use ($last_date) {
                     $query->whereDate('created_at', '<=', $last_date);
                 },
                 'items' => function($query) use ($last_date) {
@@ -869,9 +868,8 @@ class KpiStatisticService
 
         $kpi->kpi_items = [];
 
-            // remove items if it's not in history
-        if($kpi->histories->first()) {
-            $payload = json_decode($kpi->histories->first()->payload, true);
+        if($kpi->histories_latest) {
+            $payload = json_decode($kpi->histories_latest->payload, true);
 
             if(isset($payload['children'])) {
                 $kpi->items = $kpi->items->whereIn('id', $payload['children']);
@@ -886,8 +884,8 @@ class KpiStatisticService
         $kpi->avg = count($kpi->users) > 0 ? round($kpi_sum/count($kpi->users)) : 0; //AVG percent of all KPI of all USERS in GROUP
 
         return [
-            'kpi'      => $kpi,
-            'user_id'    => auth()->user() ? auth()->id() : 1
+            'kpi' => $kpi,
+            'user_id' => auth()->user() ? auth()->id() : 1
         ];
     }
 
@@ -1018,16 +1016,16 @@ class KpiStatisticService
                 $item = $_item->toArray();
                 
                 // get last History
-                $last_history = $_item->histories->map(function($item) use ($date) {
+//                $last_history = $_item->histories->map(function($item) use ($date) {
+//
+//                    $dateOk = $date->endOfMonth()->timestamp - Carbon::parse($item->created_at)->timestamp > 0;
+//                    $item->order = $dateOk ? Carbon::parse($item->created_at)->timestamp : 0;
+//
+//                    return $item;
+//                })->sortByDesc('order')->first();
 
-                    $dateOk = $date->endOfMonth()->timestamp - Carbon::parse($item->created_at)->timestamp > 0;
-                    $item->order = $dateOk ? Carbon::parse($item->created_at)->timestamp : 0;
-
-                    return $item;
-                })->sortByDesc('order')->first();
-
-                if($last_history) {
-                    $last_history = json_decode($last_history->payload, true);
+                if($_item->histories_latest) {
+                    $last_history = json_decode($_item->histories_latest->payload, true);
 
                     if( Arr::exists($last_history,'activity_id') ) $item['activity_id'] = $last_history['activity_id'];
                     if( Arr::exists($last_history,'method') ) $item['method'] = $last_history['method'];
@@ -1133,9 +1131,9 @@ class KpiStatisticService
                 
                 // plan
                 $item['full_time'] = $user['full_time'];
-                $history = $_item->histories->first();
+                $history = $_item->histories_latest;
                 $has_edited_plan = $history ? json_decode($history->payload, true) : false;
-                
+
                 /**
                  * fields from history
                  */

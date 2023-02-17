@@ -2,21 +2,22 @@
 
 declare(strict_types=1);
 
-use Illuminate\Support\Facades\Route;
 use App\Http\Controllers as Root;
-use App\Http\Controllers\Api as Api;
-use App\Http\Controllers\Kpi as Kpi;
-use App\Http\Controllers\Auth as Auth;
-use App\Http\Controllers\User as User;
 use App\Http\Controllers\Admin as Admin;
-use App\Http\Controllers\Salary as Salary;
+use App\Http\Controllers\Analytics as Analytics;
+use App\Http\Controllers\Api as Api;
 use App\Http\Controllers\Article as Article;
+use App\Http\Controllers\Auth as Auth;
+use App\Http\Controllers\Course as Course;
+use App\Http\Controllers\Kpi as Kpi;
+use App\Http\Controllers\Lead\LeadController;
 use App\Http\Controllers\Learning as Learning;
+use App\Http\Controllers\Salary as Salary;
+use App\Http\Controllers\Services as Services;
 use App\Http\Controllers\Settings as Settings;
 use App\Http\Controllers\Timetrack as Timetrack;
-use App\Http\Controllers\Course as Course;
-use App\Http\Controllers\Analytics as Analytics;
-use App\Http\Controllers\Services as Services;
+use App\Http\Controllers\User as User;
+use Illuminate\Support\Facades\Route;
 
 Route::middleware(['web','tenant'])->group(function () {
     Route::any('/', [User\ProfileController::class, 'newprofile']);
@@ -30,6 +31,8 @@ Route::middleware(['web','tenant'])->group(function () {
     Route::post('password/reset', [Auth\ResetPasswordController::class, 'reset']);
 
     Route::get('/tariffs/get', [Root\Tariffs\TariffController::class, 'get']);
+
+    Route::post('/create_lead', [LeadController::class, 'createLead']);
 });
 
 Route::middleware(['web','tenant','not_admin_subdomain'])->group(function () {
