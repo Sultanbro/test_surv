@@ -728,6 +728,7 @@ class KpiStatisticService
     public function fetchKpiGroupsAndUsers(Request $request) : array
     {
         $filters = $request->filters;
+        $limit = $request->limit ? $request->limit : 10;
 
         if(
             isset($filters['data_from']['year'])
@@ -773,10 +774,10 @@ class KpiStatisticService
                     ->endOfMonth()
                     ->format('Y-m-d')))
             )
-            ->get()
-            ->makeHidden(['targetable', 'children']);
+            ->paginate($limit);
+        $kpis->data = $kpis->makeHidden(['targetable', 'children']);
 
-        foreach ($kpis as $kpi) {
+        foreach ($kpis->items() as $key => $kpi) {
             $kpi->kpi_items = [];
 
             if($kpi->histories_latest) {
@@ -793,10 +794,11 @@ class KpiStatisticService
                 $kpi_sum = $kpi_sum + $user['avg_percent'];
             }
             $kpi->avg = count($kpi->users) > 0 ? round($kpi_sum/count($kpi->users)) : 0; //AVG percent of all KPI of all USERS in GROUP
+            unset($kpis->items()[$key]['targetable']);
         }
 
         return [
-            'items'      => $kpis,
+            'paginator'      => $kpis,
             'groups'     => ProfileGroup::get()->pluck('name', 'id')->toArray(),
             'user_id'    => auth()->user() ? auth()->id() : 1
         ];
