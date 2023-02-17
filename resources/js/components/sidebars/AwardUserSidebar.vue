@@ -489,10 +489,6 @@ export default {
 		}
 	},
 	methods: {
-		failLoad(event){
-			console.log(event);
-			console.log('error load');
-		},
 		availableLength(available){
 			const avalFilter = available.filter(a => a.type === 'public');
 			return avalFilter.length;
