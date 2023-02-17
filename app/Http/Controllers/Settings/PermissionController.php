@@ -500,7 +500,7 @@ class PermissionController extends Controller
                 'id' => $kb->id,
                 'name' => $kb->title,
                 'type'=> 3,
-                'cat' => $cat->id,
+                'cat' => isset($cat->id) ? $cat->id : null,
                 'disabled' => false
             ]);
         }
