@@ -34,12 +34,13 @@ abstract class BasePaymentService
 
     /**
      * @param DoPaymentDTO $dto
+     * @param int $authUserId
      * @return string
      * @throws Exception
      */
-    public function pay(DoPaymentDTO $dto): string
+    public function pay(DoPaymentDTO $dto, int $authUserId): string
     {
-        $response   = $this->getPaymentProvider()->doPayment($dto);
+        $response   = $this->getPaymentProvider()->doPayment($dto, $authUserId);
         $paymentId  = $response->getId();
         $tariff     = Tariff::getTariffById($dto->tariffId);
 

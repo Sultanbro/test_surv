@@ -596,6 +596,15 @@ Route::middleware(['web','tenant','not_admin_subdomain'])->group(function () {
     Route::any('/upload/images/', [Learning\KnowBaseController::class, 'uploadimages']);
     Route::any('/upload/audio/', [Learning\KnowBaseController::class, 'uploadaudio']);
 
+
+    Route::group([
+        'prefix' => 'payment',
+        'as' => 'payment.',
+        'middleware' => 'auth'
+    ], function () {
+        Route::post('/', [Api\PaymentController::class, 'payment']);
+        Route::post('/status', [Api\PaymentController::class, 'updateToTariffPayments']);
+    });
 });
 
 /**
@@ -648,14 +657,6 @@ Route::group([
     'as'     => 'owner.'
 ], function () {
     Route::get('/manager', [Admin\Owners\OwnerController::class, 'getManager']);
-});
-
-Route::group([
-    'prefix' => 'payment',
-    'as' => 'payment.'
-], function () {
-    Route::post('/', [Api\PaymentController::class, 'payment']);
-    Route::post('/status', [Api\PaymentController::class, 'updateToTariffPayments']);
 });
 
 /**

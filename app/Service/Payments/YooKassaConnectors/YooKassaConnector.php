@@ -32,13 +32,13 @@ class YooKassaConnector implements PaymentTypeConnector
      *
      * @throws Exception
      */
-    public function doPayment(DoPaymentDTO $dto): ?CreatePaymentResponse
+    public function doPayment(DoPaymentDTO $dto, int $authUserId): ?CreatePaymentResponse
     {
         try {
             $idempotenceKey = uniqid('', true);
 
             $response =  $this->client->createPayment(
-                $this->getPaymentRequest($dto->tariffId, $dto->extraUsersLimit, $dto->autoPayment),
+                $this->getPaymentRequest($dto->tariffId, $dto->extraUsersLimit, $authUserId, $dto->autoPayment),
                 $idempotenceKey
             );
 
@@ -56,6 +56,7 @@ class YooKassaConnector implements PaymentTypeConnector
     /**
      * @param int $tariffId
      * @param int $extraUsersLimit
+     * @param int $authUserId
      * @param bool $autoPayment
      * @return array
      * @throws Exception
@@ -63,12 +64,13 @@ class YooKassaConnector implements PaymentTypeConnector
     private function getPaymentRequest(
         int $tariffId,
         int $extraUsersLimit,
+        int $authUserId,
         bool $autoPayment = false
     ): array
     {
         $tariff = Tariff::getTariffById($tariffId);
         $priceForOnePerson = env('PAYMENT_FOR_ONE_PERSON');
-        $user   = User::getAuthUser();
+        $user   = User::getAuthUser($authUserId);
         $price  = $tariff->calculateTotalPrice($tariff->id, $extraUsersLimit);
         $priceToRub = $this->converterToRub($price);
         $origin = request()->headers->get('origin');
