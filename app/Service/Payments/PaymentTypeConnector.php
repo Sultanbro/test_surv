@@ -8,5 +8,5 @@ use YooKassa\Request\Payments\CreatePaymentResponse;
 
 interface PaymentTypeConnector
 {
-    public function doPayment(DoPaymentDTO $dto): ?CreatePaymentResponse;
+    public function doPayment(DoPaymentDTO $dto, int $authUserId): ?CreatePaymentResponse;
 }
