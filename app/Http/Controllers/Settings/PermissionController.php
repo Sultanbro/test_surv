@@ -457,9 +457,9 @@ class PermissionController extends Controller
         $bookgroups = BookGroup::with('books')->get();
         $playlist_cats = VideoCategory::with('playlists')->get();
         $kbs = KnowBase::whereNull('parent_id')->get();
-        
+
         foreach($bookgroups as $group) {
-            if($group->books->count() > 0) array_push($options, [
+            if(!is_null($group->books) && $group->books->count() > 0) array_push($options, [
                     'id' => $group->id,
                     'name' => $group->name,
                     'type'=> 1,
@@ -477,7 +477,7 @@ class PermissionController extends Controller
         }
 
         foreach($playlist_cats as $cat) {
-            if($cat->playlists->count() > 0)  array_push($options, [
+            if(!is_null($cat->playlists) && $cat->playlists->count() > 0)  array_push($options, [
                     'id' => $cat->id,
                     'name' => $cat->title,
                     'type'=> 2,
