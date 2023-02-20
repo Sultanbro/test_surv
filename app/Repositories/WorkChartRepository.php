@@ -2,7 +2,7 @@
 
 namespace App\Repositories;
 
-use App\Models\WorkChartModel as Model;
+use App\Models\WorkChart\WorkChartModel as Model;
 
 /**
 * Класс для работы с Repository.

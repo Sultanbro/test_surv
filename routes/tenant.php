@@ -74,7 +74,6 @@ Route::middleware(['web','tenant','not_admin_subdomain'])->group(function () {
     Route::post('/corp_book/set-read/', [User\EmployeeController::class, 'corp_book_read']); // Прочитать страницу из корп книги @TODO при назначении книги
     Route::any('/timetracking/user/{id}', [User\EmployeeController::class, 'profile']);
     Route::any('/timetracking/get-persons', [User\EmployeeController::class, 'getpersons']);
-    Route::resource('timetracking/work-chart',Settings\WorkChart\WorkChartController::class);
     Route::get('/timetracking/create-person', [User\EmployeeController::class, 'createPerson'])->name('users.create');
     Route::post('/timetracking/person/store', [Settings\UserController::class, 'store'])->name('users.store');
     Route::get('/timetracking/edit-person', [User\EmployeeController::class, 'editperson'])->name('users.edit');
@@ -645,6 +644,16 @@ Route::middleware(['api','tenant','not_admin_subdomain'])->group(function () {
         });
     });
 });
+
+Route::resource('work-chart', Root\WorkChart\WorkChartController::class)->except(['create', 'edit']);
+Route::group([
+    'prefix' => 'work-chart',
+    'as'    => 'work-chart.'
+], function () {
+    Route::post('/user', [Root\WorkChart\UserWorkChartController::class, 'addChart']);
+    Route::post('/user/set-days', [Root\WorkChart\UserWorkChartController::class, 'attachUserWorkDays']);
+});
+
 
 Route::group([
     'prefix' => 'owner',
