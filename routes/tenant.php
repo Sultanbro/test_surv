@@ -650,7 +650,8 @@ Route::group([
     'prefix' => 'work-chart',
     'as'    => 'work-chart.'
 ], function () {
-    Route::post('/user', [Root\WorkChart\UserWorkChartController::class, 'addChart']);
+    Route::post('/user/add', [Root\WorkChart\UserWorkChartController::class, 'addChart']);
+    Route::post('/user/delete', [Root\WorkChart\UserWorkChartController::class, 'deleteChart']);
     Route::post('/user/set-days', [Root\WorkChart\UserWorkChartController::class, 'attachUserWorkDays']);
 });
 

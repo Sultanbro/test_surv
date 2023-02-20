@@ -115,7 +115,7 @@ class User extends Authenticatable implements Authorizable
      */
     public function workdays(): BelongsToMany
     {
-        return $this->belongsToMany(Workday::class, 'user_workday');
+        return $this->belongsToMany(Workday::class, 'user_workday')->withTimestamps();
     }
 
     /**

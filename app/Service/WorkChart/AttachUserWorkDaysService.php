@@ -19,14 +19,25 @@ class AttachUserWorkDaysService
      */
     public function handle(AttachUserWorkDaysDTO $dto): bool
     {
-        $user = User::getUserById($dto->userId);
-        $workdays = array_keys($dto->workdays);
+        try {
+            $user = User::getUserById($dto->userId);
+            $days = array_keys($dto->workdays);
+            $workdays = [];
 
-        if (!$user->workdays()->attach($workdays))
-        {
-            throw new Exception("При выставлений рабочих дней для пользователя $user->full_name произошла ошибка");
+            foreach ($days as $day)
+            {
+                if (!$user->workdays()->where('workday_id', $day)->exists())
+                {
+                    $workdays[] = $day;
+                }
+            }
+
+            $user->workdays()->attach($workdays);
+
+            return true;
+
+        }catch (\Throwable $exception) {
+            throw new Exception($exception->getMessage());
         }
-
-        return true;
     }
 }
