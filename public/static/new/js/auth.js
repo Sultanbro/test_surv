@@ -74,7 +74,7 @@ jQuery(function ($) {
 	const phone = $('#register-form input#phone');
 	const password = $('#register-form input#password');
 	const passwordConfirmation = $('#register-form input#password_confirmation');
-	const emailRegex = /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/;
+	const emailRegex = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
 	const validation = {
 		email: false,
 		phone: false,
@@ -85,17 +85,29 @@ jQuery(function ($) {
 	function removeHelper(el) {
 		$(`#register-form input#${el}`).parent().removeClass('error');
 		$(`#register-form .help-block.${el}`).removeClass('show');
+		if(el === 'email'){
+			$('#register-form .help-block.email').html('<span>Значение поля email должно быть действительным электронным адресом</span>');
+		}
 		validation[el] = true;
 	}
 
 	function addHelper(el) {
 		$(`#register-form input#${el}`).parent().addClass('error');
 		$(`#register-form .help-block.${el}`).addClass('show');
+		if(el === 'email'){
+			$('#register-form .help-block.email').html('<span>Значение поля email должно быть действительным электронным адресом</span>');
+		}
 		validation[el] = false;
 	}
 
 
-	email.change(({target}) => target.value.match(emailRegex) ? removeHelper('email') : addHelper('email'));
+	email.change(({target}) => {
+		if(target.value.match(emailRegex)){
+			removeHelper('email');
+		} else {
+			addHelper('email');
+		}
+	});
 
 
 	phone.on('input', ({target}) => {
@@ -129,7 +141,6 @@ jQuery(function ($) {
 			if(!validation[valid]) return;
 		}
 		$('.preloader').addClass('preloader_active');
-		$('.help-block').remove();
 
 		var form = document.querySelector('#register-form');
 
@@ -169,14 +180,15 @@ jQuery(function ($) {
 
 	function validatorFormAfter(errors) {
 		for (let inputName in errors) {
-			const errorMessage = errors[inputName];
-			$('#' + inputName)
-				.closest('.form-registration-row')
-				.after(`<span class="help-block error-${inputName}">${errorMessage}</span>`);
+			let errorMessage = errors[inputName];
+			if(errorMessage[0].includes('email')){
+				errorMessage = 'Портал на данный email уже зарегистрирован';
+			}
+			$(`.help-block.${inputName}`).html(`<span>${errorMessage}</span>`);
 			setTimeout(function () {
 				const parentDiv = $('#' + inputName).closest('.form-registration-row');
 				parentDiv.addClass('error');
-				$(`.error-${inputName}`).addClass('show');
+				$(`.help-block.${inputName}`).addClass('show');
 			}, 300);
 		}
 		if (errors.phone) {

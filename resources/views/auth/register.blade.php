@@ -16,7 +16,7 @@
                             stroke-dashoffset="125.66370614359172px"></circle>
                 </svg>
             </div>
-            <div class="preloader__status-text">Создаем портал</div>
+            <div class="preloader__status-text">Создаем Ваш портал</div>
         </div>
     </div>
     <div class="frontpage container-fluid">
@@ -64,6 +64,7 @@
                                                        name="name"
                                                        value="{{ old('name') }}" required autofocus
                                                        placeholder="Ваше имя">
+                                                <span class="req">*</span>
                                             </div>
 
                                             <div class="form-registration-row">
@@ -80,6 +81,7 @@
                                                        name="email"
                                                        value="{{ old('email') }}" required autofocus
                                                        placeholder="Ваш email">
+                                                <span class="req">*</span>
                                             </div>
                                             <div class="help-block email">
                                                 <span>Значение поля email должно быть действительным электронным адресом.</span>
@@ -91,6 +93,7 @@
                                                        name="phone"
                                                        value="{{ old('phone') }}" required autofocus
                                                        placeholder="Ваш телефон">
+                                                <span class="req">*</span>
                                             </div>
                                             <div class="help-block phone">
                                                 <span>Количество цифр в номере телефона должно быть не меньше 11.</span>
@@ -103,6 +106,7 @@
                                                        class="form-control"
                                                        name="password"
                                                        required placeholder="Введите пароль">
+                                                <span class="req">*</span>
                                             </div>
                                             <div class="help-block password">
                                                 <span>Количество символов в пароле должно быть не меньше 8.</span>
@@ -113,6 +117,7 @@
                                                        class="form-control"
                                                        name="password_confirmation"
                                                        required placeholder="Введите пароль повторно">
+                                                <span class="req">*</span>
                                             </div>
                                             <div class="help-block password_confirmation">
                                                 <span>Пароли не совпадают</span>
@@ -125,6 +130,7 @@
                                                     <option value="rub">RUB Российский рубль</option>
                                                     <option value="usd">USD Американский доллар</option>
                                                 </select>
+                                                <span class="req">*</span>
                                             </div>
 
                                             @if(config('services.recaptcha.key'))
@@ -187,6 +193,16 @@
     <script src='https://www.google.com/recaptcha/api.js'></script>
 
     <style>
+        input[name="phone"]::-webkit-outer-spin-button,
+        input[name="phone"]::-webkit-inner-spin-button {
+            -webkit-appearance: none;
+            margin: 0;
+        }
+
+        input[type=number] {
+            -moz-appearance: textfield;
+        }
+
         .help-block {
             color: red;
             display: block;
@@ -199,6 +215,18 @@
         .help-block.show {
             max-height: 200px;
             padding-bottom: 10px;
+        }
+
+        .form-registration-row{
+            position: relative;
+        }
+
+        .form-registration-row .req{
+            color: red;
+            position: absolute;
+            top: 12px;
+            left: -20px;
+            font-size: 20px;
         }
 
         .form-registration-row::before {
