@@ -69,7 +69,7 @@ class YooKassaConnector implements PaymentTypeConnector
     ): array
     {
         $tariff = Tariff::getTariffById($tariffId);
-        $priceForOnePerson = env('PAYMENT_FOR_ONE_PERSON');
+        $priceForOnePerson = config('payment')['payment_for_one_person'];
         $user   = User::getAuthUser($authUserId);
         $price  = $tariff->calculateTotalPrice($tariff->id, $extraUsersLimit);
         $priceToRub = $this->converterToRub($price);
