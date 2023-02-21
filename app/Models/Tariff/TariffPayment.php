@@ -138,6 +138,7 @@ class TariffPayment extends Model
     }
 
     /**
+     * @param int $ownerId
      * @param int $tariffId
      * @param int $extraUsersLimit
      * @param string $expireDate
@@ -148,6 +149,7 @@ class TariffPayment extends Model
      * @throws Exception
      */
     public static function createPaymentOrFail(
+        int $ownerId,
         int $tariffId,
         int $extraUsersLimit,
         string $expireDate,
@@ -158,7 +160,7 @@ class TariffPayment extends Model
     {
         try {
             return self::query()->create([
-                'owner_id'          => auth()->id() ?? 5,
+                'owner_id'          => $ownerId,
                 'tariff_id'         => $tariffId,
                 'extra_user_limit'  => $extraUsersLimit,
                 'expire_date'       => $expireDate,

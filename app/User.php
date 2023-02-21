@@ -106,9 +106,8 @@ class User extends Authenticatable implements Authorizable
     /**
      * @return Model|\Illuminate\Database\Eloquent\Collection|Builder|array|null
      */
-    public static function getAuthUser(): \Illuminate\Database\Eloquent\Model|\Illuminate\Database\Eloquent\Collection|Builder|array|null
+    public static function getAuthUser(int $id): \Illuminate\Database\Eloquent\Model|\Illuminate\Database\Eloquent\Collection|Builder|array|null
     {
-        $id = auth()->id();
         return self::query()->findOrFail($id);
     }
 
