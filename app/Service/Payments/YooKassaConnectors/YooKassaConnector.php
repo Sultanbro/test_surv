@@ -73,6 +73,7 @@ class YooKassaConnector implements PaymentTypeConnector
         $user   = User::getAuthUser($authUserId);
         $price  = $tariff->calculateTotalPrice($tariff->id, $extraUsersLimit);
         $priceToRub = $this->converterToRub($price);
+        $extraUsersLimit = $extraUsersLimit <= 0 ? $tariff->users_limit : $extraUsersLimit;
         $origin = request()->headers->get('origin');
 
         return array(
