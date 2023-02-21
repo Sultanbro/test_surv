@@ -154,10 +154,16 @@ export default {
 			if(!this.selectedRate) return 0
 			return this.users - this.selectedRate.users_limit
 		},
+		additionalPrice(){
+			return this.additionalUsers * this.userPrice * (this.selectedRate.validity === 'monthly' ? 1 : 12)
+		},
 		total(){
 			if(!this.selectedRate) return 0
-			const total = this.period === 'monthly' ? +this.selectedRate.price + (this.additionalUsers * this.userPrice) : +this.selectedRate.price + (this.additionalUsers * this.userPrice * 12)
+			const total = this.selectedRate.multiCurrencyPrice[this.currencyCode] + this.additionalPrice
 			return this.promoData?.value ? total - this.promoData.value : total
+		},
+		currencyCode(){
+			return this.currencyTranslate[this.currency]
 		},
 	},
 	methods: {
@@ -184,7 +190,7 @@ export default {
 			if(!this.selectedRate) return
 			try{
 				const url = await this.postPaymentData({
-					currency: this.currencyTranslate[this.currency],
+					currency: this.currencyCode,
 					tariff_id: this.selectedRate.id,
 					extra_users_limit: this.additionalUsers || 0,
 					auto_payment: this.autoPayment

@@ -92,7 +92,8 @@ export const usePricingStore = defineStore('pricing', {
 			}
 		},
 		async postPaymentData(params){
-			return postPaymentData(params)
+			const { data } = await postPaymentData(params)
+			return data
 		},
 	}
 })

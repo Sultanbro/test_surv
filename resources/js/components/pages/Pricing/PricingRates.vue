@@ -75,7 +75,7 @@
 					class="PricingRates-col PricingRates-action text-center"
 					@click="$emit('update', {rate: item.monthly, period: 'monthly'})"
 				>
-					{{ $separateThousands(Math.round(item.monthly.price / rates[currency])) }} {{ currency }}
+					{{ $separateThousands(Math.round(item.monthly.multiCurrencyPrice[currencyCode])) }} {{ currency }}
 				</td>
 			</tr>
 			<tr class="PricingRates-row">
@@ -88,7 +88,7 @@
 					class="PricingRates-col PricingRates-action text-center"
 					@click="$emit('update', {rate: item.annual, period: 'annual'})"
 				>
-					{{ $separateThousands(Math.round(item.annual.price / rates[currency])) }} {{ currency }}
+					{{ $separateThousands(Math.round(item.annual.multiCurrencyPrice[currencyCode])) }} {{ currency }}
 				</td>
 			</tr>
 			<tr class="PricingRates-row">
@@ -172,6 +172,13 @@ export default {
 				tarifs[item.kind][item.validity] = item
 				return tarifs
 			}, {})
+		},
+		currencyCode(){
+			return ({
+				'₽': 'rub',
+				'₸': 'kzt',
+				'$': 'dollar'
+			})[this.currency]
 		}
 	},
 	created(){
