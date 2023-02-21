@@ -1045,7 +1045,7 @@ export default {
 	},
 	computed: {
 		hasSettingsPermisstion(){
-			return this.auth_user && (Number(this.auth_user.id) == 18 || Number(this.auth_user.id) == 5)
+			return this.auth_user.is_admin === 1;
 		}
 	},
 	watch: {
