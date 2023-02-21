@@ -88,6 +88,15 @@ export default {
 	components: {
 		TariffsValute
 	},
+	data() {
+		return {
+			activeCol: -1,
+			image: require('../../assets/img/tariffs.png').default,
+			usdRate: 0,
+			kztRate: 0,
+			selectedValute: '₽'
+		}
+	},
 	computed: {
 		lang() {
 			return this.$root.$data.lang
@@ -139,16 +148,6 @@ export default {
 		},
 		getSelectedValute(selectedValute) {
 			this.selectedValute = selectedValute
-		}
-	},
-	data() {
-		return {
-			activeCol: -1,
-			image: require('../../assets/img/tariffs.png').default,
-			usdRate: 0,
-			kztRate: 0,
-			selectedValute: '₸'
-
 		}
 	},
 	async mounted() {
