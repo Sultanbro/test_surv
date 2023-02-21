@@ -12,6 +12,7 @@ use App\Filters\Users\UserFilterBuilder;
 use App\Helpers\FileHelper;
 use App\Helpers\UserHelper;
 use App\Models\Bitrix\Segment;
+use App\Models\CentralUser;
 use App\Position;
 use App\Repositories\CardRepository;
 use App\Repositories\DayTypeRepository;
@@ -21,6 +22,7 @@ use App\Repositories\TimeTrackHistoryRepository;
 use App\Repositories\UserContactRepository;
 use App\Repositories\UserDescriptionRepository;
 use App\Repositories\UserRepository;
+use App\Service\Tenancy\CabinetService;
 use App\Setting;
 use App\Support\Core\CustomException;
 use App\User;
@@ -113,6 +115,8 @@ class UserService
         }
 
         $user = $this->userRepository->updateOrCreateNewEmployee($dto);
+
+        (new CabinetService)->add(tenant('id'), $user, false);
 
         (new DepartmentUserService)->setGroup($dto->group, $user->id, 'add');
 
