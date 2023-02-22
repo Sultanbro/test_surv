@@ -6,18 +6,19 @@ namespace App\Service\Payments;
 use App\Models\Tariff\Tariff;
 use App\Traits\CurrencyTrait;
 use Exception;
-use Illuminate\Database\Eloquent\Collection;
 
 final class TariffGetAllService
 {
     use CurrencyTrait;
 
+    final private static $priceForOnePersonInKzt = (float) config('payment')['payment_for_one_person'];
+
     /**
      * @param int $ownerId
-     * @return Collection<int, Tariff>
+     * @return array
      * @throws Exception
      */
-    public function handle(): Collection
+    public function handle(): array
     {
         $tariffs = Tariff::all();
 
@@ -25,6 +26,9 @@ final class TariffGetAllService
             $tariff->multiCurrencyPrice = $this::createMultiCurrencyPrice((float) $tariff->price);
         }
 
-        return $tariffs;
+        return array(
+            'tariffs' => $tariffs,
+            'priceForOnePerson' => $this::createMultiCurrencyPrice(self::$priceForOnePersonInKzt),
+        );
     }
 }
