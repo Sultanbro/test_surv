@@ -201,18 +201,18 @@ export default {
 			this.avatar = avatar
 		},
 		logout(){
-			const res = [];
 			const formData = new FormData();
 			formData.append('_token', this.$laravel.csrfToken);
-			res.push(this.axios.post('/logout', formData));
-			if (window.location.protocol === 'https:') {
-				const hostArr = window.location.hostname.split('.');
-				const url = hostArr.length > 2 ? `${window.location.protocol}//${hostArr[1]}.${hostArr[2]}/logout` : '/logout';
-				res.push(this.axios.post(url, formData));
+
+			const protocol = window.location.protocol
+			const redirectHost = window.location.hostname.split('.')
+			if (protocol === 'https:') {
+				redirectHost.splice(0, 1)
 			}
-			Promise.all(res).then(() => {
-				window.location.href = '/';
-			});
+
+			this.axios.post('/logout', formData).then(() => {
+				window.location.assign(`${protocol}//${redirectHost.join('.')}/?logout=1`)
+			})
 		}
 	},
 	computed: {
