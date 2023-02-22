@@ -1,5 +1,5 @@
 <?php
 return [
-    'token' => 'et04jik4wazp2tst',
-    'host'  => 'https://infinitys.bitrix24.kz/rest/2/'
+    'token' => '78hjaf4p8bn1ium5',
+    'host'  => 'https://infinitys.bitrix24.kz/rest/145960/'
 ];

@@ -20,12 +20,12 @@ export default {
 		old_phone_4: String,
 		front_valid:{
 			type: Object,
-			default: () => {}
+			default: () => ({})
 		}
 	},
 	data() {
 		return{
-			mainPhone: this.user ? this.user.phone : this.old_phone
+			mainPhone: ''
 		}
 	},
 	watch: {
@@ -33,6 +33,9 @@ export default {
 			if(this.front_valid && this.front_valid.formSubmitted){
 				val.length < 17 ? this.$emit('valid_change', {name: 'phone', bool: false}) : this.$emit('valid_change', {name: 'phone', bool: true});
 			}
+		},
+		user(obj){
+			this.mainPhone = obj ? obj.phone : '';
 		}
 	},
 	methods:{
@@ -50,13 +53,8 @@ export default {
 				value: event.target.value
 			});
 		},
-		async deletePhone(key, contact){
+		async deletePhone(key){
 			this.profileContacts.splice(key, 1);
-			if(contact.hasOwnProperty('id')){
-				const response = await this.axios.post('/profile/remove/card/', {'card_id': contact.id});
-				// сделаю потом проверку, как починят
-				console.log(response);
-			}
 		}
 	}
 }
@@ -184,7 +182,7 @@ export default {
 							<button
 								type="button"
 								class="btn btn-danger btn-sm contact-delete rounded"
-								@click="deletePhone(key, contact)"
+								@click="deletePhone(key)"
 							>
 								<i class="fa fa-trash" />
 							</button>

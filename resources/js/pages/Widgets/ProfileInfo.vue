@@ -8,12 +8,12 @@
 	>
 		<template v-if="data.user !== undefined && data.user !== null">
 			<div class="profile__name">
-				{{ data.user.name + ' ' + data.user.last_name }}
+				{{ fullName }}
 			</div>
 			<div class="profile__job profile-border">
 				{{ data.position != null ? data.position.position : 'Без должности' }}
 				<router-link
-					v-if="isAdmin"
+					v-if="isAdmin && moreThanDays"
 					to="/timetracking/settings?tab=2#nav-home"
 				>
 					<span>
@@ -34,8 +34,8 @@
 			>
 				<span v-html="data.groups" />
 				<router-link
-					v-if="isAdmin"
-					to="/timetracking/settings?tab=2#nav-home"
+					v-if="isAdmin && moreThanDays"
+					to="/timetracking/settings?tab=2&tabswitch=3"
 				>
 					<span>
 						<i
@@ -81,17 +81,28 @@ export default {
 	},
 	data() {
 		return {
-			loading: false
+			loading: false,
 		}
-	},
-	created() {
 	},
 	computed: {
+		fullName(){
+			return this.data && this.data.user ? `${this.data.user.name} ${this.data.user.last_name || ''}` : '';
+		},
 		isAdmin(){
 			return this.$store.state.user.user.is_admin === 1;
+		},
+		moreThanDays(){
+			if(this.data){
+				const admission = this.$moment(this.data.user.created_at, 'YYYY-MM-DD');
+				const discharge = this.$moment(new Date(), 'YYY-MM-DD');
+				const days = discharge.diff(admission, 'days');
+				return days <= 5;
+			} else {
+				return false;
+			}
+
 		}
-	},
-	methods: {}
+	}
 }
 </script>
 

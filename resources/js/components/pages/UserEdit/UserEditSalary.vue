@@ -20,24 +20,65 @@ export default {
 		old_jysan_cardholder: String,
 		old_jysan: String,
 		old_card_jysan: String,
+		front_valid:{
+			type: Object,
+			default: () => ({})
+		}
 	},
 	data(){
 		return {
-			headphonesState: this.user?.headphones_sum > 0
+			headphonesState: this.user?.headphones_sum > 0,
+			cards: [],
+			zarplata: 0,
+			currency: null
+		}
+	},
+	watch: {
+		user(obj){
+			if(obj.cards){
+				this.cards = obj.cards
+			}
+			this.zarplata = this.user && this.user.zarplata
+				? this.user.zarplata.zarplata
+					? this.user.zarplata.zarplata - this.user.headphones_sum
+					: 0
+				: this.old_zarplata
+					? this.old_zarplata
+					: 0
+		},
+		zarplata(){
+			this.changeZp();
+		},
+		currency(){
+			this.changeZp();
 		}
 	},
 	methods: {
+		changeZp(){
+			if(this.front_valid && this.front_valid.formSubmitted){
+				this.currency && Number(this.zarplata) > 1000 ? this.$emit('valid_change', {name: 'zarplata', bool: true}) : this.$emit('valid_change', {name: 'zarplata', bool: false});
+			}
+		},
 		addCard(){
-			this.user.cards.push({
+			const card = {
 				bank: '',
 				country: '',
 				cardholder: '',
 				phone: '',
 				number: '',
-			})
+			};
+			this.cards.push(card);
 		},
-		deleteCard(key){
-			this.user.cards.splice(key, 1)
+		async deleteCard(key, card){
+			this.cards.splice(key, 1);
+			if(card.hasOwnProperty('id')){
+				const response = await this.axios.post('/profile/remove/card/', {'card_id': card.id});
+				if(!response.data){
+					this.$toast.error('Ошибка при удалении карты');
+					return;
+				}
+				this.$toast.success('Карта удалена');
+			}
 		},
 		addTax(userId){
 			this.taxes.push({
@@ -64,20 +105,17 @@ export default {
 		id="profile_salary"
 		class="col-md-12 mt-3 none-block"
 	>
-		<div class="form-group row">
+		<div
+			class="form-group row"
+			:class="{'form-group-error': front_valid.formSubmitted && front_valid.zarplata === false}"
+		>
 			<label
 				for="zarplata"
 				class="col-sm-3 col-form-label font-weight-bold"
 				:class="{'mr-3': !user}"
-			>Оклад</label>
+			>Оклад <span class="red">*</span></label>
 
-			<div
-				:class="{
-					'col-sm-3': user,
-					'col-sm-4': !user,
-					'p-0': !user,
-				}"
-			>
+			<div class="col-sm-3">
 				<input
 					class="form-control"
 					type="text"
@@ -85,31 +123,20 @@ export default {
 					id="zarplata"
 					required
 					placeholder="Оклад"
-					:value="user && user.zarplata
-						? user.zarplata.zarplata
-							? user.zarplata.zarplata - user.headphones_sum
-							: 0
-						: old_zarplata
-							? old_zarplata
-							: 0"
+					v-model="zarplata"
 				>
 			</div>
 
 
-			<div
-				:class="{
-					'col-sm-3': user,
-					'col-sm-5': !user,
-					'pl-1': !user,
-					'pr-0': !user,
-				}"
-			>
+			<div class="col-sm-3">
 				<select
 					name="currency"
 					id="currency"
 					class="form-control form-control-sm"
+					v-model="currency"
 				>
 					<option
+						value="null"
 						selected
 						disabled
 					>
@@ -288,7 +315,7 @@ export default {
 			class="cards"
 		>
 			<div
-				v-for="(card, key) in user.cards"
+				v-for="(card, key) in cards"
 				:key="card.id"
 				class="d-flex form-group m0 card-row"
 			>
@@ -331,7 +358,7 @@ export default {
 				<button
 					type="button"
 					class="btn btn-danger card-delete rounded ml-1"
-					@click="deleteCard(key)"
+					@click="deleteCard(key, card)"
 				>
 					<i class="fa fa-trash" />
 				</button>
