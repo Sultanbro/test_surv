@@ -65,9 +65,6 @@ class EventServiceProvider extends ServiceProvider
         EmailNotificationEvent::class => [
             EmailNotificationListener::class
         ],
-        DeleteUserWorkDays::class => [
-            DeleteUserWorkDaysListener::class
-        ],
         WorkdayEvent::class => [
             WorkdayListener::class
         ]
