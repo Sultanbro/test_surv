@@ -49,22 +49,4 @@ class UserWorkChartController extends Controller
             data: $response
         );
     }
-
-    /**
-     * Выставляем дни работы для пользователя.
-     *
-     * @param AttachUserWorkDaysRequest $request
-     * @param AttachUserWorkDaysService $service
-     * @return JsonResponse
-     * @throws Exception
-     */
-    public function attachUserWorkDays(AttachUserWorkDaysRequest $request, AttachUserWorkDaysService $service): JsonResponse
-    {
-        $response = $service->handle($request->toDto());
-
-        return $this->response(
-            message: 'Successfully attached',
-            data: $response
-        );
-    }
 }

@@ -9,6 +9,7 @@ use App\Events\TrackCourseItemFinishedEvent;
 use App\Events\TrackGroupChangingEvent;
 use App\Events\TrackUserFiredEvent;
 use App\Events\TransferUserInGroupEvent;
+use App\Events\WorkdayEvent;
 use App\Listeners\DeleteUserWorkDaysListener;
 use App\Listeners\EmailNotificationListener;
 use App\Listeners\TimeTrack\CreateTimeTrackHistoryListener;
@@ -16,6 +17,7 @@ use App\Listeners\TrackCourseItemFinishedListener;
 use App\Listeners\TrackGroupChangingListener;
 use App\Listeners\TrackUserFiredListener;
 use App\Listeners\TransferUserInGroupListener;
+use App\Listeners\WorkdayListener;
 use Illuminate\Support\Facades\Event;
 use Illuminate\Foundation\Support\Providers\EventServiceProvider as ServiceProvider;
 
@@ -65,6 +67,9 @@ class EventServiceProvider extends ServiceProvider
         ],
         DeleteUserWorkDays::class => [
             DeleteUserWorkDaysListener::class
+        ],
+        WorkdayEvent::class => [
+            WorkdayListener::class
         ]
     ];
 

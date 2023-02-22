@@ -2,22 +2,21 @@
 
 declare(strict_types=1);
 
+use Illuminate\Support\Facades\Route;
 use App\Http\Controllers as Root;
-use App\Http\Controllers\Admin as Admin;
-use App\Http\Controllers\Analytics as Analytics;
 use App\Http\Controllers\Api as Api;
-use App\Http\Controllers\Article as Article;
-use App\Http\Controllers\Auth as Auth;
-use App\Http\Controllers\Course as Course;
 use App\Http\Controllers\Kpi as Kpi;
-use App\Http\Controllers\Lead\LeadController;
-use App\Http\Controllers\Learning as Learning;
+use App\Http\Controllers\Auth as Auth;
+use App\Http\Controllers\User as User;
+use App\Http\Controllers\Admin as Admin;
 use App\Http\Controllers\Salary as Salary;
-use App\Http\Controllers\Services as Services;
+use App\Http\Controllers\Article as Article;
+use App\Http\Controllers\Learning as Learning;
 use App\Http\Controllers\Settings as Settings;
 use App\Http\Controllers\Timetrack as Timetrack;
-use App\Http\Controllers\User as User;
-use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\Course as Course;
+use App\Http\Controllers\Analytics as Analytics;
+use App\Http\Controllers\Services as Services;
 
 Route::middleware(['web','tenant'])->group(function () {
     Route::any('/', [User\ProfileController::class, 'newprofile']);
@@ -31,8 +30,6 @@ Route::middleware(['web','tenant'])->group(function () {
     Route::post('password/reset', [Auth\ResetPasswordController::class, 'reset']);
 
     Route::get('/tariffs/get', [Root\Tariffs\TariffController::class, 'get']);
-
-    Route::post('/create_lead', [LeadController::class, 'createLead']);
 });
 
 Route::middleware(['web','tenant','not_admin_subdomain'])->group(function () {
@@ -74,6 +71,7 @@ Route::middleware(['web','tenant','not_admin_subdomain'])->group(function () {
     Route::post('/corp_book/set-read/', [User\EmployeeController::class, 'corp_book_read']); // Прочитать страницу из корп книги @TODO при назначении книги
     Route::any('/timetracking/user/{id}', [User\EmployeeController::class, 'profile']);
     Route::any('/timetracking/get-persons', [User\EmployeeController::class, 'getpersons']);
+    Route::resource('timetracking/work-chart',Settings\WorkChart\WorkChartController::class);
     Route::get('/timetracking/create-person', [User\EmployeeController::class, 'createPerson'])->name('users.create');
     Route::post('/timetracking/person/store', [Settings\UserController::class, 'store'])->name('users.store');
     Route::get('/timetracking/edit-person', [User\EmployeeController::class, 'editperson'])->name('users.edit');
@@ -287,7 +285,7 @@ Route::middleware(['web','tenant','not_admin_subdomain'])->group(function () {
     Route::get('/timetracking/reports', [Timetrack\TimetrackingController::class, 'reports']);
     Route::post('/timetracking/reports', [Timetrack\TimetrackingController::class, 'getReports']);
     Route::post('/timetracking/reports/update/day', [Timetrack\TimetrackingController::class, 'updateTimetrackingDay']);
-    Route::any('/timetracking/starttracking', [Timetrack\TimetrackingController::class, 'timetracking']);
+
     Route::any('/timetracking/status', [Timetrack\TimetrackingController::class, 'trackerstatus']);
 
     Route::any('/timetracking/zarplata-table', [Timetrack\TimetrackingController::class, 'zarplatatable']);
@@ -652,7 +650,6 @@ Route::group([
 ], function () {
     Route::post('/user/add', [Root\WorkChart\UserWorkChartController::class, 'addChart']);
     Route::post('/user/delete', [Root\WorkChart\UserWorkChartController::class, 'deleteChart']);
-    Route::post('/user/set-days', [Root\WorkChart\UserWorkChartController::class, 'attachUserWorkDays']);
 });
 
 

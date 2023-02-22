@@ -14,9 +14,10 @@ return new class extends Migration
     public function up()
     {
         Schema::create('workdays', function (Blueprint $table) {
-            $table->id();
-            $table->string('name');
-            $table->string('short_name');
+            $table->unsignedBigInteger('user_id');
+            $table->integer('day_of_week');
+            $table->string('date');
+            $table->integer('week_number');
             $table->timestamps();
         });
     }
