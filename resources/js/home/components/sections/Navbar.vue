@@ -212,7 +212,7 @@ export default {
 		window.addEventListener('scroll', this.changeLogoSizeByScroll);
 		this.csrf = document.getElementById('csrf')?.value
 
-		const search = new URLSearchParams(location.href)
+		const search = new URLSearchParams(location.search)
 		if(search.has('logout')){
 			axios.post('/logout', {
 				_token: this.laravel.csrfToken
