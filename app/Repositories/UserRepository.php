@@ -8,6 +8,7 @@ use App\DTO\Settings\StoreUserDTO;
 use App\Enums\ErrorCode;
 use App\Enums\UserFilterEnum;
 use App\Events\EmailNotificationEvent;
+use App\Models\CentralUser;
 use App\Support\Core\CustomException;
 use App\User;
 use App\User as Model;
@@ -154,11 +155,13 @@ final class UserRepository extends CoreRepository
 
     public function updateOrCreateNewEmployee(
         StoreUserDTO $dto
-    )
+    ): User
     {
+        $centralUser = CentralUser::where('email', $dto->email)->first();
+
         $password = str_random(8);
 
-        $user =  User::query()->updateOrCreate(
+        $user = User::query()->updateOrCreate(
             [
                 'email'             => strtolower($dto->email)
             ],
@@ -166,7 +169,7 @@ final class UserRepository extends CoreRepository
                 'name'              => $dto->name,
                 'last_name'         => $dto->lastName,
                 'description'       => $dto->description,
-                'password'          => Hash::make($password),
+                'password'          => isset($centralUser) ? $centralUser->password : Hash::make($password),
                 'position_id'       => $dto->positionId,
                 'user_type'         => $dto->userType,
                 'timezone'          => 6,
@@ -188,7 +191,16 @@ final class UserRepository extends CoreRepository
             ]
         );
 
-        EmailNotificationEvent::dispatch($dto->name, $dto->email, $password);
+        $authData = null;
+
+        if (!isset($centralUser)) {
+            $authData = [
+                'email'     => $dto->email,
+                'password'  => $password,
+            ];
+        }
+
+        EmailNotificationEvent::dispatch($dto->name, $authData);
 
         return $user;
 

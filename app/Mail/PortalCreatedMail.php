@@ -3,11 +3,10 @@
 namespace App\Mail;
 
 use Illuminate\Bus\Queueable;
-use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Mail\Mailable;
 use Illuminate\Queue\SerializesModels;
 
-class PasswordReset extends Mailable
+class PortalCreatedMail extends Mailable
 {
     use Queueable, SerializesModels;
 
@@ -37,7 +36,7 @@ class PasswordReset extends Mailable
      */
     public function build()
     {
-        return $this->view('mail.password-reset')
-            ->subject('Восстановления пароля');
+        return $this->view('mail.portal-created')
+            ->subject('Портал создан');
     }
 }
