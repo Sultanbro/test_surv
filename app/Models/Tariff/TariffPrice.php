@@ -77,7 +77,7 @@ final class TariffPrice {
 
     public function kztToRub(float $v): float
     {
-        return $this->converterToRub($v);
+        return $this::converterToRub($v);
     }
 
     public function createYooKassaReceipt(User $user): Receipt

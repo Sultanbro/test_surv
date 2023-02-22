@@ -11,7 +11,7 @@ trait CurrencyTrait
      * @param float $price price in KZT
      * @throws Exception
      */
-    public function converterToRub(
+    public static function converterToRub(
         float $price
     ): float
     {
@@ -23,14 +23,14 @@ trait CurrencyTrait
      * @param float $price price in KZT
      * @throws Exception
      */
-    public function createMultiCurrencyPrice(
+    public static function createMultiCurrencyPrice(
         float $price
     ): array
     {
         //TODO make enum keys
         return [
             'kzt' => $price,
-            'rub' => $this->converterToRub($price),
+            'rub' => self::converterToRub($price),
         ];
     }
 }
