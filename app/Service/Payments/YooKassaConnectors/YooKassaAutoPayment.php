@@ -50,7 +50,7 @@ class YooKassaAutoPayment implements AutoPayment
         $price  = $tariff->calculateTotalPrice($tariff->id, $tariffPayment->extra_user_limit);
         $priceToRub = $this->converterToRub($price);
 
-        $priceForOnePerson = env('PAYMENT_FOR_ONE_PERSON');
+        $priceForOnePerson = config('payment')['payment_for_one_person'];
 
         $this->client->createPayment(
             array(

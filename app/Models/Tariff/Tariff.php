@@ -80,7 +80,7 @@ class Tariff extends Model
         int $extraUsers
     ): float
     {
-        $priceForOnePerson = (float)env('PAYMENT_FOR_ONE_PERSON');
+        $priceForOnePerson = (float) config('payment')['payment_for_one_person'];
         $price = $this->price;
 
         if ($extraUsers > 0)
