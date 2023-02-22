@@ -72,22 +72,17 @@
 					>
 					<span class="menu__item-title">Настройки</span>
 				</router-link>
-				<form
-					:action="action"
-					method="POST"
-				>
-					<button class="menu__item w-full">
+				<form @click.prevent="logout">
+					<button
+						class="menu__item w-full"
+						type="submit"
+					>
 						<img
 							src="/images/dist/icon-exit.svg"
 							alt="settings icon"
 						>
 						<span class="menu__item-title">Выход</span>
 					</button>
-					<input
-						type="hidden"
-						:value="$laravel.csrfToken"
-						name="_token"
-					>
 				</form>
 			</div>
 		</div>
@@ -204,17 +199,23 @@ export default {
 		},
 		updateAvatar(avatar){
 			this.avatar = avatar
+		},
+		logout(){
+			const res = [];
+			const formData = new FormData();
+			formData.append('_token', this.$laravel.csrfToken);
+			res.push(this.axios.post('/logout', formData));
+			if (window.location.protocol === 'https:') {
+				const hostArr = window.location.hostname.split('.');
+				const url = hostArr.length > 2 ? `${window.location.protocol}//${hostArr[1]}.${hostArr[2]}/logout` : '/logout';
+				res.push(this.axios.post(url, formData));
+			}
+			Promise.all(res).then(() => {
+				window.location.href = '/';
+			});
 		}
 	},
 	computed: {
-		action(){
-			if (window.location.protocol === 'https:') {
-				const hostArr = window.location.hostname.split('.');
-				return hostArr.length > 2 ? `${window.location.protocol}//${hostArr[1]}.${hostArr[2]}/logout` : '/logout';
-			} else {
-				return '/logout';
-			}
-		},
 		isMainProject(){
 			return this.project === 'bp' || this.project === 'test'
 		},
