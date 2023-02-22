@@ -73,7 +73,7 @@
 					<span class="menu__item-title">Настройки</span>
 				</router-link>
 				<form
-					action="/logout"
+					:action="action"
 					method="POST"
 				>
 					<button class="menu__item w-full">
@@ -168,7 +168,7 @@ export default {
 			cabinets: Laravel.cabinets,
 			tenants: Laravel.tenants,
 			isCreatingProject: false,
-			resizeObserver: null,
+			resizeObserver: null
 		};
 	},
 	methods: {
@@ -207,6 +207,14 @@ export default {
 		}
 	},
 	computed: {
+		action(){
+			if (window.location.protocol === 'https:') {
+				const hostArr = window.location.hostname.split('.');
+				return hostArr.length > 2 ? `${window.location.protocol}//${hostArr[1]}.${hostArr[2]}/logout` : '/logout';
+			} else {
+				return '/logout';
+			}
+		},
 		isMainProject(){
 			return this.project === 'bp' || this.project === 'test'
 		},
