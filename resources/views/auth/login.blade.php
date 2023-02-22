@@ -151,7 +151,7 @@ class="message">
 		                            if (window.location.pathname === '/login' && window.location.protocol === 'https:') {
 			                            const hostArr = window.location.hostname.split('.');
 			                            if(hostArr.length > 2){
-				                            window.location.href = `https://${hostArr[1]}.${hostArr[2]}/login}`;
+				                            window.location.href = `https://${hostArr[1]}.${hostArr[2]}/login`;
 			                            }
 		                            }
 	                            });
