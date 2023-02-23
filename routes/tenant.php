@@ -8,6 +8,7 @@ use App\Http\Controllers\Analytics as Analytics;
 use App\Http\Controllers\Api as Api;
 use App\Http\Controllers\Article as Article;
 use App\Http\Controllers\Auth as Auth;
+use App\Http\Controllers\Company;
 use App\Http\Controllers\Course as Course;
 use App\Http\Controllers\Kpi as Kpi;
 use App\Http\Controllers\Lead\LeadController;
@@ -614,6 +615,10 @@ Route::middleware(['web','tenant','not_admin_subdomain'])->group(function () {
             Route::post('/save', [Kpi\KpiController::class, 'save'])->name('save');
             Route::put('/update', [Kpi\KpiController::class, 'update'])->name('update');
             Route::delete('/delete/{id}', [Kpi\KpiController::class, 'delete'])->name('delete');
+        });
+
+        Route::group(['prefix' => 'company', 'as' => 'company.', 'middleware' => 'auth'], function (){
+            Route::get('/get-owner', [Company\CompanyController::class, 'getCompanyOwner'])->name('get-owner');
         });
     });
 });
