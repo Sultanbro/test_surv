@@ -11,7 +11,7 @@ final class TariffGetAllService
 {
     use CurrencyTrait;
 
-    private static $priceForOnePersonInKzt = (float) config('payment')['payment_for_one_person'];
+    private $priceForOnePersonInKzt = (float) config('payment')['payment_for_one_person'];
 
     /**
      * @param int $ownerId
@@ -28,7 +28,7 @@ final class TariffGetAllService
 
         return array(
             'tariffs' => $tariffs,
-            'priceForOnePerson' => $this::createMultiCurrencyPrice(self::$priceForOnePersonInKzt),
+            'priceForOnePerson' => $this::createMultiCurrencyPrice($this->priceForOnePersonInKzt),
         );
     }
 }

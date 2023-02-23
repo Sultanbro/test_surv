@@ -11,7 +11,7 @@ final class TariffPrice {
 
     use CurrencyTrait;
 
-    private static $priceForOnePersonInKzt = (float) config('payment')['payment_for_one_person'];
+    private $priceForOnePersonInKzt = (float) config('payment')['payment_for_one_person'];
 
     private static $currencyMap = [
         'kzt' => [
@@ -66,7 +66,7 @@ final class TariffPrice {
     private function setKztPrices(): void
     {
         $this->tariffPrice = $this->tariff->price;
-        $this->priceForOnePerson = self::$priceForOnePersonInKzt;
+        $this->priceForOnePerson = $this->priceForOnePersonInKzt;
         $this->updateExtraUsersPrice();
     }
 
