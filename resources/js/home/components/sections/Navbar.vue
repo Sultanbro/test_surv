@@ -184,7 +184,6 @@ export default {
 			if (this.active) this.active = false
 		},
 		hideUserMenu() {
-			console.log('test')
 			this.$nextTick(() => {
 				this.isUserMenuActive = false
 			})
