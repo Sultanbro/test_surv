@@ -27,6 +27,10 @@ class CheckTariff
     {
         $response = $next($request);
 
+        if(tenant('id') == 'bp') {
+            return $response;
+        }
+
         $tariffPlan = $this->tariffPayment
             ->where('status', PaymentStatusEnum::STATUS_SUCCESS)
             ->getValidTarriffPayments();
