@@ -66,13 +66,13 @@ class TariffPayment extends Model
     /**
      * Returns valid tarif for current subdomain.
      *
-     * @return \Illuminate\Database\Eloquent\Builder|Model|object
+     * @return object
      */
-    public function getValidTarriffPayments()
+    public static function getValidTariffPayments()
     {
         $today = Carbon::today();
 
-        return $this->select(
+        return self::select(
             'tariff_payment.id',
             'tariff_payment.owner_id',
             'tariff_payment.tariff_id',
@@ -87,9 +87,29 @@ class TariffPayment extends Model
         )
             ->leftJoin('tariff', 'tariff.id', 'tariff_payment.tariff_id')
             ->where('tariff_payment.expire_date', '>', $today)
+            ->where('status', PaymentStatusEnum::STATUS_SUCCESS)
             ->orderBy('tariff_payment.expire_date', 'desc')
             ->groupBy('tariff_payment.id')
             ->first();
+    }
+
+
+    /**
+     * Returns bool active payment exists.
+     *
+     * @return bool
+     */
+    public static function getActivePaymentIfExist(): bool
+    {
+        $today = Carbon::today();
+
+        return self::query()
+            ->where('expire_date', '>', $today)
+            ->where(function ($query) {
+                $query->where('status', PaymentStatusEnum::STATUS_SUCCESS)
+                      ->orWhere('status', PaymentStatusEnum::STATUS_PENDING);
+            })
+            ->exists();
     }
 
     /**

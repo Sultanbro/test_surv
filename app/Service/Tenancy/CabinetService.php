@@ -51,5 +51,15 @@ final class CabinetService
         ]);
     }
 
+    public function getOwnerByTenantId(int $tenantId): CentralUser
+    {
+        $tenantPivot = TenantPivot::where([
+            'tenant_id' => $tenantId,
+            'owner' => 1,
+        ])
+            ->firstOrFail();
+
+        return CentralUser::where('id', $tenantPivot->user_id)->firstOrFail();
+    }
     
 }

@@ -7,18 +7,17 @@ use App\DTO\Api\DoPaymentDTO;
 use App\Enums\Payments\PaymentStatusEnum;
 use App\Models\Tariff\Tariff;
 use App\Service\Payments\PaymentTypeConnector;
-use App\Traits\CurrencyTrait;
 use App\User;
 use Exception;
 use Illuminate\Database\Eloquent\Model;
-use naffiq\tenge\CurrencyRates;
 use YooKassa\Client;
+use YooKassa\Model\CurrencyCode;
+use YooKassa\Request\Payments\CreatePaymentRequestInterface;
 use YooKassa\Request\Payments\CreatePaymentResponse;
+use YooKassa\Request\Payments\CreatePaymentRequest;
 
 class YooKassaConnector implements PaymentTypeConnector
 {
-    use CurrencyTrait;
-
     /**
      * @param Client $client
      */
@@ -58,7 +57,7 @@ class YooKassaConnector implements PaymentTypeConnector
      * @param int $extraUsersLimit
      * @param int $authUserId
      * @param bool $autoPayment
-     * @return array
+     * @return CreatePaymentRequestInterface
      * @throws Exception
      */
     private function getPaymentRequest(
@@ -66,71 +65,34 @@ class YooKassaConnector implements PaymentTypeConnector
         int $extraUsersLimit,
         int $authUserId,
         bool $autoPayment = false
-    ): array
+    ): CreatePaymentRequestInterface
     {
         $tariff = Tariff::getTariffById($tariffId);
-        $priceForOnePerson = env('PAYMENT_FOR_ONE_PERSON');
         $user   = User::getAuthUser($authUserId);
-        $price  = $tariff->calculateTotalPrice($tariff->id, $extraUsersLimit);
-        $priceToRub = $this->converterToRub($price);
-        $extraUsersLimit = $extraUsersLimit <= 0 ? $tariff->users_limit : $extraUsersLimit;
+        $price  = $tariff
+            ->getPrice($extraUsersLimit)
+            ->setCurrency('rub');
         $origin = request()->headers->get('origin');
 
-        return array(
-            'amount' => array(
-                'value'     => $priceToRub,
-                'currency'  => 'RUB',
-            ),
-            'confirmation' => array(
-                'type'          => 'redirect',
-                'locale'        => 'ru_RU',
-                'return_url'    => $origin . '/pricing?status=1',
-            ),
-            'capture'           => true,
-            'description'       => 'Заказ №' . time(),
-            'save_payment_method' => $autoPayment,
-            'metadata' => array(
-                'orderNumber'   => time()
-            ),
-            'receipt' => array(
-                'customer' => array(
-                    'full_name' => $user->full_name,
-                    'email'     => $user->email,
-                    'phone'     => $user->phone
-                ),
-                'items' => array(
-                    array(
-                        'description'   =>  "Покупка тарифа $tariff->kind",
-                        'quantity'      => 1,
-                        'amount' => array(
-                            'value'     => $priceToRub,
-                            'currency'  => 'RUB'
-                        ),
-                        'vat_code' => '1',
-                        'payment_mode' => 'full_payment',
-                        'payment_subject' => 'service',
-                        'supplier' => array(
-                            'name' => 'string',
-                            'phone' => 'string'
-                        )
-                    ),
-                    array(
-                        'description'   =>  "Кол-во пользователей: $extraUsersLimit, цена за одного пользователя $priceForOnePerson." ,
-                        'quantity'      => $extraUsersLimit,
-                        'amount' => array(
-                            'value'     => $priceToRub,
-                            'currency'  => 'RUB'
-                        ),
-                        'vat_code' => '1',
-                        'payment_mode' => 'full_payment',
-                        'payment_subject' => 'service',
-                        'supplier' => array(
-                            'name' => 'string',
-                            'phone' => 'string'
-                        )
-                    ),
-                )
-            )
-        );
+        $builder = CreatePaymentRequest::builder();
+
+        $builder->setAmount(array(
+            'value' => $price->getTotal(),
+            'currency' => CurrencyCode::RUB,
+        ));
+        $builder->setConfirmation(array(
+            'type'       => 'redirect',
+            'locale'     => 'ru_RU',
+            'return_url' => $origin . '/pricing?status=1',
+        ));
+        $builder->setCapture(true);
+        $builder->setDescription('Заказ №' . time());
+        $builder->setSavePaymentMethod($autoPayment);
+        $builder->setMetadata(array(
+            'orderNumber'   => time()
+        ));
+        $builder->setReceipt($price->createYooKassaReceipt($user));
+
+        return $builder->build();
     }
 }

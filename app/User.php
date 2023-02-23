@@ -104,11 +104,13 @@ class User extends Authenticatable implements Authorizable
     const CURRENCY = ['KZT', 'RUB', 'UZS', 'KGS','BYN', 'UAH'];
 
     /**
-     * @return Model|\Illuminate\Database\Eloquent\Collection|Builder|array|null
+     * @return User
      */
-    public static function getAuthUser(int $id): \Illuminate\Database\Eloquent\Model|\Illuminate\Database\Eloquent\Collection|Builder|array|null
+    public static function getAuthUser(int $id): User
     {
-        return self::query()->findOrFail($id);
+        /** @var User $user */
+        $user = self::query()->findOrFail($id);
+        return $user;
     }
 
     public function permissions(): BelongsToMany

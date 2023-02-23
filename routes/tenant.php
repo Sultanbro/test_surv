@@ -8,6 +8,7 @@ use App\Http\Controllers\Analytics as Analytics;
 use App\Http\Controllers\Api as Api;
 use App\Http\Controllers\Article as Article;
 use App\Http\Controllers\Auth as Auth;
+use App\Http\Controllers\Company;
 use App\Http\Controllers\Course as Course;
 use App\Http\Controllers\Kpi as Kpi;
 use App\Http\Controllers\Lead\LeadController;
@@ -48,8 +49,6 @@ Route::middleware(['web','tenant','not_admin_subdomain'])->group(function () {
         Route::get('/', [User\ProfileController::class, 'newprofile']);
         Route::any('/personal-info', [User\ProfileController::class, 'personalInfo']);
         Route::any('/recruter-stats', [User\ProfileController::class, 'recruterStatsRates']);
-        Route::any('/activities', [User\ProfileController::class, 'activities']);
-        Route::any('/courses', [User\ProfileController::class, 'courses']);
         Route::any('/courses/{id}', [User\ProfileController::class, 'course']);
         Route::any('/trainee-report', [User\ProfileController::class, 'traineeReport']);
         Route::any('/payment-terms', [User\ProfileController::class, 'paymentTerms']);
@@ -523,10 +522,6 @@ Route::middleware(['web','tenant','not_admin_subdomain'])->group(function () {
 
     Route::group(['prefix' => 'kpi', 'as' => 'kpi.', 'middleware' => 'auth'], function (){
         Route::get('/', [Kpi\KpiController::class, 'index'])->name('index');
-        Route::post('/get', [Kpi\KpiController::class, 'getKpis'])->name('get');
-        Route::post('/save', [Kpi\KpiController::class, 'save'])->name('save');
-        Route::put('/update', [Kpi\KpiController::class, 'update'])->name('update');
-        Route::delete('/delete/{id}', [Kpi\KpiController::class, 'delete'])->name('delete');
     });
 
     // Intellect Recruiting
@@ -599,7 +594,6 @@ Route::middleware(['web','tenant','not_admin_subdomain'])->group(function () {
     Route::any('/upload/images/', [Learning\KnowBaseController::class, 'uploadimages']);
     Route::any('/upload/audio/', [Learning\KnowBaseController::class, 'uploadaudio']);
 
-
     Route::group([
         'prefix' => 'payment',
         'as' => 'payment.',
@@ -607,6 +601,25 @@ Route::middleware(['web','tenant','not_admin_subdomain'])->group(function () {
     ], function () {
         Route::post('/', [Api\PaymentController::class, 'payment']);
         Route::post('/status', [Api\PaymentController::class, 'updateToTariffPayments']);
+    });
+
+    Route::middleware(['check_tariff'])->group(function () {
+
+        Route::group(['prefix' => 'profile', 'as' => 'profile.'], function () {
+            Route::any('/activities', [User\ProfileController::class, 'activities']);
+            Route::any('/courses', [User\ProfileController::class, 'courses']);
+        });
+
+        Route::group(['prefix' => 'kpi', 'as' => 'kpi.', 'middleware' => 'auth'], function (){
+            Route::post('/get', [Kpi\KpiController::class, 'getKpis'])->name('get');
+            Route::post('/save', [Kpi\KpiController::class, 'save'])->name('save');
+            Route::put('/update', [Kpi\KpiController::class, 'update'])->name('update');
+            Route::delete('/delete/{id}', [Kpi\KpiController::class, 'delete'])->name('delete');
+        });
+
+        Route::group(['prefix' => 'company', 'as' => 'company.', 'middleware' => 'auth'], function (){
+            Route::get('/get-owner', [Company\CompanyController::class, 'getCompanyOwner'])->name('get-owner');
+        });
     });
 });
 

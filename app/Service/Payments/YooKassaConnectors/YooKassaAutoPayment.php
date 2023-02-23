@@ -5,7 +5,6 @@ namespace App\Service\Payments\YooKassaConnectors;
 use App\Models\Tariff\Tariff;
 use App\Models\Tariff\TariffPayment;
 use App\Service\Payments\AutoPayment;
-use App\Traits\CurrencyTrait;
 use App\User;
 use Exception;
 use YooKassa\Client;
@@ -18,10 +17,11 @@ use YooKassa\Common\Exceptions\NotFoundException;
 use YooKassa\Common\Exceptions\ResponseProcessingException;
 use YooKassa\Common\Exceptions\TooManyRequestsException;
 use YooKassa\Common\Exceptions\UnauthorizedException;
+use YooKassa\Model\CurrencyCode;
+use YooKassa\Request\Payments\CreatePaymentRequest;
 
 class YooKassaAutoPayment implements AutoPayment
 {
-    use CurrencyTrait;
 
     /**
      * @param Client $client
@@ -46,62 +46,27 @@ class YooKassaAutoPayment implements AutoPayment
     public function makeAutoPayment(TariffPayment $tariffPayment): void
     {
         $tariff = Tariff::getTariffById($tariffPayment->tariff_id);
-        $user   = User::getAuthUser();
-        $price  = $tariff->calculateTotalPrice($tariff->id, $tariffPayment->extra_user_limit);
-        $priceToRub = $this->converterToRub($price);
+        $user   = User::getAuthUser($tariffPayment->owner_id);
+        $price  = $tariff
+            ->getPrice($tariffPayment->extra_user_limit)
+            ->setCurrency('rub');
 
-        $priceForOnePerson = env('PAYMENT_FOR_ONE_PERSON');
+        $builder = CreatePaymentRequest::builder();
+
+        $builder->setAmount(array(
+            'value' => $price->getTotal(),
+            'currency' => CurrencyCode::RUB,
+        ));
+        $builder->setCapture(true);
+        $builder->setPaymentMethodId($tariffPayment->payment_id);
+        $builder->setDescription('Заказ №' . time());
+        $builder->setReceipt($price->createYooKassaReceipt($user));
+
+        $idempotenceKey = uniqid('', true);
 
         $this->client->createPayment(
-            array(
-                'amount' => array(
-                    'value' => $priceToRub,
-                    'currency' => 'RUB',
-                ),
-                'capture' => true,
-                'payment_method_id' => $tariffPayment->payment_id,
-                'description' => 'Заказ №' . time(),
-                'receipt' => array(
-                    'customer' => array(
-                        'full_name' => $user->full_name,
-                        'email'     => $user->email,
-                        'phone'     => $user->phone
-                    ),
-                    'items' => array(
-                        array(
-                            'description'   =>  "Покупка тарифа $tariff->kind",
-                            'quantity'      => 1,
-                            'amount' => array(
-                                'value'     => $priceToRub,
-                                'currency'  => 'RUB'
-                            ),
-                            'vat_code' => '1',
-                            'payment_mode' => 'full_payment',
-                            'payment_subject' => 'service',
-                            'supplier' => array(
-                                'name' => 'string',
-                                'phone' => 'string'
-                            )
-                        ),
-                        array(
-                            'description'   =>  "Кол-во пользователей: $tariffPayment->extra_user_limit, цена за одного пользователя $priceForOnePerson." ,
-                            'quantity'      => $tariffPayment->extra_user_limit,
-                            'amount' => array(
-                                'value'     => $priceToRub,
-                                'currency'  => 'RUB'
-                            ),
-                            'vat_code' => '1',
-                            'payment_mode' => 'full_payment',
-                            'payment_subject' => 'service',
-                            'supplier' => array(
-                                'name' => 'string',
-                                'phone' => 'string'
-                            )
-                        ),
-                    )
-                )
-            ),
-            uniqid('', true)
+            $builder->build(),
+            $idempotenceKey,
         );
     }
 }
