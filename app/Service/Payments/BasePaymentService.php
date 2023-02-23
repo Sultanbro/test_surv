@@ -113,6 +113,4 @@ abstract class BasePaymentService
             (bool)$payment->auto_payment
         );
     }
-
-    private
 }
