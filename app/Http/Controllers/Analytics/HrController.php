@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers\Analytics;
 
+use App\Models\CentralUser;
+use App\Service\Tenancy\CabinetService;
 use Closure;
 use DB;
 use View;
@@ -517,7 +519,9 @@ class HrController extends Controller
                     'currency' => $currency,
                     'role_id' => 1,
                     'is_admin' => 0 
-                ]); 
+                ]);
+
+                (new CabinetService)->add(tenant('id'), $user, false);
                 
                 UserDescription::make([
                     'user_id' => $user->id,
