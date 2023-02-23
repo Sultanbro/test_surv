@@ -40,6 +40,11 @@ abstract class BasePaymentService
      */
     public function pay(DoPaymentDTO $dto, int $authUserId): string
     {
+        $activePaymentIsExist = TariffPayment::checkActivePaymentIsExist();
+        if ($activePaymentIsExist) {
+            throw new Exception("activePaymentIsExist");
+        }
+
         $response   = $this->getPaymentProvider()->doPayment($dto, $authUserId);
         $paymentId  = $response->getId();
         $tariff     = Tariff::getTariffById($dto->tariffId);
@@ -108,4 +113,6 @@ abstract class BasePaymentService
             (bool)$payment->auto_payment
         );
     }
+
+    private
 }

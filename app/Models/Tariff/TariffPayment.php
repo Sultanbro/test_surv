@@ -93,6 +93,25 @@ class TariffPayment extends Model
             ->first();
     }
 
+
+    /**
+     * Returns bool active payment exists.
+     *
+     * @return bool
+     */
+    public static function getActivePaymentIfExist(): bool
+    {
+        $today = Carbon::today();
+
+        return self::query()
+            ->where('expire_date', '>', $today)
+            ->where(function ($query) {
+                $query->where('status', PaymentStatusEnum::STATUS_SUCCESS)
+                      ->orWhere('status', PaymentStatusEnum::STATUS_PENDING);
+            })
+            ->exists();
+    }
+
     /**
      * Return the tariff payments with status pending
      *
