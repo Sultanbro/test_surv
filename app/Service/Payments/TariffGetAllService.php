@@ -15,7 +15,7 @@ final class TariffGetAllService
 
     public function __construct()
     {
-        $this->priceForOnePersonInKzt = (float) config('payment')['payment_for_one_person'];
+        $this->priceForOnePersonInKzt = (float) config('payment.payment_for_one_person');
     }
 
     /**
