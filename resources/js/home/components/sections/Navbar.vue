@@ -106,7 +106,7 @@
 											>
 											<button
 												class="jNav-menu-user-menu-exit jNav-menu-link"
-												@click="$refs.formLogout.submit()"
+												type="submit"
 											>
 												{{ $lang(lang, 'logout') }}
 											</button>
@@ -145,6 +145,7 @@
 </template>
 
 <script>
+import axios from 'axios';
 import NavbarLink from '../navbar/NavbarLink.vue'
 import NavbarButton from '../navbar/NavbarButton.vue'
 import NavbarLang from '../navbar/NavbarLang.vue'
@@ -155,6 +156,16 @@ export default {
 		NavbarLink,
 		NavbarButton,
 		NavbarLang
+	},
+
+	data() {
+		return {
+			menu: false,
+			csrf: '',
+			isScroll: false,
+			active: false,
+			isUserMenuActive: false,
+		}
 	},
 
 	computed: {
@@ -169,16 +180,6 @@ export default {
 		},
 		hostname() {
 			return window.location.hostname
-		}
-	},
-
-	data() {
-		return {
-			menu: false,
-			csrf: '',
-			isScroll: false,
-			active: false,
-			isUserMenuActive: false,
 		}
 	},
 
@@ -210,6 +211,15 @@ export default {
 	mounted() {
 		window.addEventListener('scroll', this.changeLogoSizeByScroll);
 		this.csrf = document.getElementById('csrf')?.value
+
+		const search = new URLSearchParams(location.search)
+		if(search.has('logout')){
+			axios.post('/logout', {
+				_token: this.laravel.csrfToken
+			}).then(() => {
+				location.assign('/')
+			})
+		}
 	},
 
 	beforeDestroy() {

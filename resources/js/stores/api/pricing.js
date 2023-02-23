@@ -64,6 +64,16 @@ export async function postPaymentData(params){
 }
 
 /**
+ * Получение статуса оплаты
+ * @return {ApiResponse.PaymentStatusResponse} - ссылка на оплату
+ */
+export async function fetchPaymentStatus(){
+	// опять пост там где гет должен быть, АААААААА
+	const { data } = await axios.post('/payment/status')
+	return data
+}
+
+/**
  * @typedef PricingManagerResponse
  * @type {object}
  * @property {?PricingManager} data
@@ -143,4 +153,11 @@ export async function postPaymentData(params){
  * @property {number} tariff_id -
  * @property {number} extra_users_limit -
  * @property {boolean} [auto_payment] - автооплата
+ */
+
+/**
+ * @typedef PaymentStatusResponse
+ * @memberof ApiResponse
+ * @property {string} message
+ * @property {boolean} data - успешность оплаты
  */

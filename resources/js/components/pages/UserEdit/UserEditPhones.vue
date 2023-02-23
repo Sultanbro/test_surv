@@ -20,7 +20,7 @@ export default {
 		old_phone_4: String,
 		front_valid:{
 			type: Object,
-			default: () => {}
+			default: () => ({})
 		}
 	},
 	data() {

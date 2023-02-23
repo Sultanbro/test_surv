@@ -8,6 +8,7 @@ use App\Service\Payments\PaymentFactory;
 use App\Service\Payments\PaymentUpdateStatusService;
 use Exception;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Support\Facades\Auth;
 
 class PaymentController extends Controller
 {
@@ -26,11 +27,13 @@ class PaymentController extends Controller
      *
      * @param DoPaymentRequest $request
      * @return JsonResponse
+     * @throws Exception
      */
     public function payment(DoPaymentRequest $request): JsonResponse
     {
         $dto = $request->toDto();
-        $response = $this->factory->getPaymentsProviderByCurrency($dto->currency)->pay($request->toDto());
+        $authUser = Auth::id();
+        $response = $this->factory->getPaymentsProviderByCurrency($dto->currency)->pay($request->toDto(), $authUser);
 
         return $this->response(
             message: 'Success',

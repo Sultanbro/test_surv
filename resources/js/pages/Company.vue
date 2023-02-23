@@ -120,7 +120,8 @@ export default {
 		}
 	},
 	mounted() {
-		this.updatePageData()
+		this.updatePageData();
+		this.activeTab = Number(this.$route.query.tabswitch ? this.$route.query.tabswitch : 2);
 	},
 	methods: {
 		can(access) {
