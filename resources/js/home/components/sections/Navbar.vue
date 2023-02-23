@@ -93,24 +93,14 @@
 											@click="cabinetRedirect(cabinet.tenant_id)"
 											class="jNav-menu-link"
 										>{{ cabinet.tenant_id }}</div>
-										<form
-											ref="formLogout"
-											action="/logout"
-											class="jNav-menu-user-menu-item"
-											method="POST"
-										>
-											<input
-												:value="laravel.csrfToken"
-												name="_token"
-												type="hidden"
-											>
+										<div class="jNav-menu-user-menu-item">
 											<button
 												class="jNav-menu-user-menu-exit jNav-menu-link"
-												type="submit"
+												@click="logout"
 											>
 												{{ $lang(lang, 'logout') }}
 											</button>
-										</form>
+										</div>
 									</div>
 								</div>
 							</template>
@@ -194,17 +184,27 @@ export default {
 			if (this.active) this.active = false
 		},
 		hideUserMenu() {
-			if (this.isUserMenuActive) this.isUserMenuActive = false
+			console.log('test')
+			this.$nextTick(() => {
+				this.isUserMenuActive = false
+			})
 		},
 		activateMenu() {
-			this.isUserMenuActive
-				? this.isUserMenuActive = false
-				: this.isUserMenuActive = true
+			this.$nextTick(() => {
+				this.isUserMenuActive = !this.isUserMenuActive
+			})
 		},
 		cabinetRedirect(tenant_id){
 			const url = new URL(window.location.href)
 			url.hostname = `${tenant_id}.${this.hostname}`
 			window.location.assign(url.href)
+		},
+		logout(){
+			axios.post('/logout', {
+				_token: this.laravel.csrfToken
+			}).then(() => {
+				location.assign('/')
+			})
 		}
 	},
 
@@ -213,13 +213,7 @@ export default {
 		this.csrf = document.getElementById('csrf')?.value
 
 		const search = new URLSearchParams(location.search)
-		if(search.has('logout')){
-			axios.post('/logout', {
-				_token: this.laravel.csrfToken
-			}).then(() => {
-				location.assign('/')
-			})
-		}
+		if(search.has('logout')) this.logout()
 	},
 
 	beforeDestroy() {
