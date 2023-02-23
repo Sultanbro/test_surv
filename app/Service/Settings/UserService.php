@@ -13,6 +13,8 @@ use App\Helpers\FileHelper;
 use App\Helpers\UserHelper;
 use App\Models\Bitrix\Segment;
 use App\Models\CentralUser;
+use App\Models\Tariff\Tariff;
+use App\Models\Tariff\TariffPayment;
 use App\Position;
 use App\Repositories\CardRepository;
 use App\Repositories\DayTypeRepository;
@@ -107,6 +109,22 @@ class UserService
         if ($user)
         {
             new CustomException('Already exist user', ErrorCode::BAD_REQUEST, []);
+        }
+
+        $tariffPlan = TariffPayment::getValidTariffPayments();
+
+        $userLimit = Tariff::$defaultUserLimit;
+
+        if($tariffPlan){
+            $userLimit = $tariffPlan->total_user_limit;
+        }
+
+        $usersCount = User::query()->count();
+
+        if ($usersCount >= $userLimit) {
+            new CustomException('users limited by tariff', 401, [
+                'usersLimited' => true,
+            ]);
         }
 
         if ($user != null && $user->deleted_at != null)

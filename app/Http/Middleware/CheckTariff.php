@@ -10,10 +10,6 @@ use Illuminate\Http\Request;
 
 class CheckTariff
 {
-    public function __construct(
-        private $tariffPayment = new TariffPayment()
-    ){}
-
     /**
      * Handle an incoming request.
      *
@@ -30,8 +26,7 @@ class CheckTariff
             return $response;
         }
 
-        $tariffPlan = $this->tariffPayment
-            ->getValidTariffPayments();
+        $tariffPlan = TariffPayment::getValidTariffPayments();
 
         $userLimit = Tariff::$defaultUserLimit;
 
