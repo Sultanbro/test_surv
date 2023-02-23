@@ -86,5 +86,6 @@ class Kernel extends HttpKernel
         'admin_subdomain' => \App\Http\Middleware\IsAdminSubDomain::class,
         'not_admin_subdomain' => \App\Http\Middleware\IsNotAdminSubDomain::class,
         'is_admin' => CheckIsAdminMiddleware::class,
+        'check_tariff' => CheckTariff::class,
     ];
 }
