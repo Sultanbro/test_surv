@@ -66,9 +66,9 @@ class TariffPayment extends Model
     /**
      * Returns valid tarif for current subdomain.
      *
-     * @return \Illuminate\Database\Eloquent\Builder|Model|object
+     * @return object
      */
-    public function getValidTarriffPayments()
+    public function getValidTariffPayments()
     {
         $today = Carbon::today();
 
@@ -87,6 +87,7 @@ class TariffPayment extends Model
         )
             ->leftJoin('tariff', 'tariff.id', 'tariff_payment.tariff_id')
             ->where('tariff_payment.expire_date', '>', $today)
+            ->where('status', PaymentStatusEnum::STATUS_SUCCESS)
             ->orderBy('tariff_payment.expire_date', 'desc')
             ->groupBy('tariff_payment.id')
             ->first();

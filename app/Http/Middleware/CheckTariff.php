@@ -2,7 +2,6 @@
 
 namespace App\Http\Middleware;
 
-use App\Enums\Payments\PaymentStatusEnum;
 use App\Models\Tariff\Tariff;
 use App\Models\Tariff\TariffPayment;
 use App\User;
@@ -32,19 +31,24 @@ class CheckTariff
         }
 
         $tariffPlan = $this->tariffPayment
-            ->where('status', PaymentStatusEnum::STATUS_SUCCESS)
-            ->getValidTarriffPayments();
+            ->getValidTariffPayments();
 
         $userLimit = Tariff::$defaultUserLimit;
 
         if($tariffPlan){
             $userLimit = $tariffPlan->total_user_limit;
-            $response->header('IsHaveTariff', 1);
+            $response->header('X-IsHaveTariff', 1);
         }
 
-        $users = User::select('id')->skip($userLimit)->first();
+        $limitedUser = User::select('id')->skip($userLimit)->first();
 
-        if(\Auth::user()->id > $users->id) throw new \Exception('Tariff limit out of range', 401);
+        if ($limitedUser) {
+            $response->header('X-IsTariffRequired', 1);
+
+            if(\Auth::user()->id >= $limitedUser->id) {
+                throw new \Exception('Tariff limit out of range', 401);
+            }
+        }
 
         return $response;
     }
