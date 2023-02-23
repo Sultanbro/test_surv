@@ -68,11 +68,11 @@ class TariffPayment extends Model
      *
      * @return object
      */
-    public function getValidTariffPayments()
+    public static function getValidTariffPayments()
     {
         $today = Carbon::today();
 
-        return $this->select(
+        return self::select(
             'tariff_payment.id',
             'tariff_payment.owner_id',
             'tariff_payment.tariff_id',
