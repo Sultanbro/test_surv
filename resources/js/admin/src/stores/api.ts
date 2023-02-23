@@ -71,3 +71,13 @@ export const removeUserPermissions = async (id: number) => {
     return onError(error)
   }
 }
+
+export const fetchManagers = async () => {
+  try{
+    const { data } = await axios.get<FetchManagersResponse>('/managers/get')
+    return data
+  }
+  catch (error) {
+    return onError(error)
+  }
+}

@@ -1,6 +1,12 @@
 <script lang="ts" setup>
 import { useUserDataStore } from '@/stores/user-data'
 import type { UserDataKeys } from '@/stores/user-data'
+import Action from '@core/components/Action.vue'
+
+const emit = defineEmits<{
+  (e: 'manager', id: number): void
+  (e: 'scrollEnd'): void
+}>()
 
 const userDataStore = useUserDataStore()
 
@@ -32,6 +38,23 @@ function formatDateTime(dateZ: string){
   const date = new Date(dateZ)
   return `${o(date.getHours())}:${o(date.getMinutes())} ${formatDate(dateZ)}`
 }
+
+const scrollTD = ref<Element | null>(null)
+function scrollObserverCallback(entries: IntersectionObserverEntry[]){
+  entries.forEach(entry => {
+    if(entry.target === scrollTD.value && entry.isIntersecting){
+      emit('scrollEnd')
+    }
+  })
+}
+const scrollObserver = new IntersectionObserver(scrollObserverCallback)
+watchEffect(() => {
+  if (scrollTD.value) {
+    scrollObserver.observe(scrollTD.value)
+  } else {
+    // not mounted yet, or the element was unmounted (e.g. by v-if)
+  }
+})
 </script>
 
 <template>
@@ -103,6 +126,11 @@ function formatDateTime(dateZ: string){
           >
             Город{{ sortSymbol('city') }}
           </th>
+          <th
+            class="text-center"
+          >
+            Менеджер
+          </th>
         </tr>
       </thead>
       <tbody>
@@ -148,8 +176,21 @@ function formatDateTime(dateZ: string){
           <td class="text-center">
             {{ item.city }}
           </td>
+          <td class="text-center">
+            <Action @click="$emit('manager', item.id)">WIP</Action>
+          </td>
         </tr>
       </tbody>
+      <tfoot>
+        <tr>
+          <td
+            ref="scrollTD"
+            colspan="12"
+          >
+            <!-- just for scroll -->
+          </td>
+        </tr>
+      </tfoot>
     </VTable>
     <div
       v-else
