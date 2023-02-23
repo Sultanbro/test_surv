@@ -48,7 +48,6 @@ class Kernel extends HttpKernel
             \App\Http\Middleware\Admin::class,
             \App\Http\Middleware\CheckPermissions::class,
             \App\Http\Middleware\ActiveUser::class,
-            CheckTariff::class,
         ],
 
         'api' => [
