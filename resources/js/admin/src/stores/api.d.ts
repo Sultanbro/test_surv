@@ -83,3 +83,61 @@ declare interface AddUserPermissionsResponse {
     [key: string]: Array<string>
   }
 }
+
+declare interface FetchManagersResponse {
+  message: string
+  data: Manager[]
+}
+
+declare interface Manager {
+  id: number
+  email: string
+  remember_token: string
+  name: string
+  last_name: string
+  UF_ADMIN: number
+  position_id: number
+  program_id: number
+  full_time: number
+  user_type: string
+  phone: string
+  city: string
+  address: string
+  description: string
+  currency: string
+  timezone: number
+  segment: number
+  working_day_id: number
+  working_time_id: number
+  work_start?: string
+  work_end?: string
+  birthday?: string
+  last_group: string
+  read_corp_book_at: string
+  has_noti: number
+  weekdays: string
+  role_id: number
+  is_admin: number
+  created_at: string
+  updated_at: string
+  deleted_at?: string
+  groups_all: number
+  working_country?: string
+  working_city?: string
+  applied_at?: string
+  img_url?: string
+  phone_1?: string
+  phone_2?: string
+  phone_3?: string
+  phone_4?: string
+  headphones_sum?: unknown
+  notified_at?: string
+  active_status: number
+  avatar?: string
+  cropped_img_url?: string
+  pivot?: {
+    role_id: number
+    model_id: number
+    model_type: string
+  }
+}
