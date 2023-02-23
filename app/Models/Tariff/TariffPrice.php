@@ -33,7 +33,7 @@ final class TariffPrice {
         public int $extraUsers
     )
     {
-        $this->priceForOnePersonInKzt = (float) config('payment')['payment_for_one_person'];
+        $this->priceForOnePersonInKzt = (float) config('payment.payment_for_one_person');
         $this->setKztPrices();
     }
 
