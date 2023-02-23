@@ -17,6 +17,7 @@ class WorkChartSeeder extends Seeder
     {
         $charts = [
             [
+                'id'            => 1,
                 'name'          => '1-1',
                 'start_time'    => '09:00',
                 'end_time'      => '19:00',
@@ -24,6 +25,7 @@ class WorkChartSeeder extends Seeder
                 'updated_at'    => now(),
             ],
             [
+                'id'            => 2,
                 'name'          => '2-2',
                 'start_time'    => '09:00',
                 'end_time'      => '19:00',
@@ -31,6 +33,7 @@ class WorkChartSeeder extends Seeder
                 'updated_at'    => now(),
             ],
             [
+                'id'            => 3,
                 'name'          => '3-3',
                 'start_time'    => '09:00',
                 'end_time'      => '19:00',
@@ -38,6 +41,7 @@ class WorkChartSeeder extends Seeder
                 'updated_at'    => now(),
             ],
             [
+                'id'            => 4,
                 'name'          => '5-2',
                 'start_time'    => '09:00',
                 'end_time'      => '19:00',
@@ -45,6 +49,7 @@ class WorkChartSeeder extends Seeder
                 'updated_at'    => now(),
             ],
             [
+                'id'            => 5,
                 'name'          => '6-1',
                 'start_time'    => '09:00',
                 'end_time'      => '19:00',
