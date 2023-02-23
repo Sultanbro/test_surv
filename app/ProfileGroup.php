@@ -5,10 +5,12 @@ namespace App;
 use App\Helpers\FileHelper;
 use App\Models\Analytics\Activity;
 use App\Models\KnowBaseModel;
+use App\Models\WorkChart\WorkChartModel;
 use Illuminate\Database\Eloquent\Model;
 use App\Models\Books\BookGroup;
 use App\User;
 use Carbon\Carbon;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
@@ -57,8 +59,8 @@ class ProfileGroup extends Model
         'paid_internship', // оплачиваемая стажировка 1 0
         'rentability_max', // предел рентабельности для спидометра
         'show_payment_terms', // показывать в профиле условия оплаты труда,
-        'archived_date' // дата последнего архивирование
-
+        'archived_date', // дата последнего архивирование
+        'work_chart_id' // График работы группы
     ];
 
     CONST IS_ACTIVE = 1;
@@ -71,6 +73,25 @@ class ProfileGroup extends Model
     // time_address
     CONST FROM_UCALLS = -1;
     CONST NOWHERE = 0;
+
+    /**
+     * @param int $id
+     * @return Model
+     */
+    public static function getById(
+        int $id
+    ): Model
+    {
+        return self::query()->findOrFail($id);
+    }
+
+    /**
+     * @return BelongsTo
+     */
+    public function workChart(): BelongsTo
+    {
+        return $this->belongsTo(WorkChartModel::class);
+    }
 
     /**
      * @return MorphMany

@@ -3,12 +3,10 @@
 namespace App\Http\Controllers\WorkChart;
 
 use App\Http\Controllers\Controller;
-use App\Http\Requests\WorkChart\AddUserChartRequest;
-use App\Http\Requests\WorkChart\AttachUserWorkDaysRequest;
-use App\Http\Requests\WorkChart\DeleteUserChartRequest;
-use App\Service\WorkChart\AddUserChartService;
-use App\Service\WorkChart\AttachUserWorkDaysService;
-use App\Service\WorkChart\DeleteUserChartService;
+use App\Http\Requests\WorkChart\Users\AddUserChartRequest;
+use App\Http\Requests\WorkChart\Users\DeleteUserChartRequest;
+use App\Service\WorkChart\Users\AddUserChartService;
+use App\Service\WorkChart\Users\DeleteUserChartService;
 use Exception;
 use Illuminate\Http\JsonResponse;
 

@@ -1,7 +1,7 @@
 <?php
 declare(strict_types=1);
 
-namespace App\DTO\WorkChart;
+namespace App\DTO\WorkChart\User;
 
 final class DeleteUserChartDTO
 {

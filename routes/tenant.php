@@ -443,7 +443,7 @@ Route::middleware(['web','tenant','not_admin_subdomain'])->group(function () {
 
     // analytics
     Route::any('/timetracking/an', [Analytics\AnalyticsController::class, 'index']);
-    Route::any('/timetracking/analytics-page/getanalytics', [Analytics\AnalyticsController::class, 'get']);
+
     Route::get('/timetracking/analytics/activity/exportxx', [Analytics\AnalyticsController::class, 'exportActivityExcel']);
     Route::post('/timetracking/analytics/add-row', [Analytics\AnalyticsController::class, 'addRow']);
     Route::post('/timetracking/analytics/delete-row', [Analytics\AnalyticsController::class, 'deleteRow']);
@@ -650,6 +650,9 @@ Route::group([
 ], function () {
     Route::post('/user/add', [Root\WorkChart\UserWorkChartController::class, 'addChart']);
     Route::post('/user/delete', [Root\WorkChart\UserWorkChartController::class, 'deleteChart']);
+
+    Route::post('/group/add', [Root\WorkChart\GroupWorkChartController::class, 'addChart']);
+    Route::post('/group/delete', [Root\WorkChart\GroupWorkChartController::class, 'deleteChart']);
 });
 
 
@@ -667,7 +670,8 @@ Route::group([
     Route::post('/', [Api\PaymentController::class, 'payment']);
     Route::post('/status', [Api\PaymentController::class, 'updateToTariffPayments']);
 });
-
+Route::any('/timetracking/starttracking', [Timetrack\TimetrackingController::class, 'timetracking']);
+Route::any('/timetracking/analytics-page/getanalytics', [Analytics\AnalyticsController::class, 'get']);
 /**
  * Owners list
  * Admin.jobtron.org routes

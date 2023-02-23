@@ -1,8 +1,8 @@
 <?php
 
-namespace App\Http\Requests\WorkChart;
+namespace App\Http\Requests\WorkChart\Users;
 
-use App\DTO\WorkChart\AddUserChartDTO;
+use App\DTO\WorkChart\User\AddUserChartDTO;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Support\Arr;
 

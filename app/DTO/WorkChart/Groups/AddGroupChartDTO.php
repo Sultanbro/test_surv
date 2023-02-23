@@ -1,16 +1,16 @@
 <?php
 declare(strict_types=1);
 
-namespace App\DTO\WorkChart;
+namespace App\DTO\WorkChart\Groups;
 
-final class AddUserChartDTO
+final class AddGroupChartDTO
 {
     /**
-     * @param int $userId
+     * @param int $groupId
      * @param int $workChartId
      */
     public function __construct(
-        public int $userId,
+        public int $groupId,
         public int $workChartId,
     )
     {}
@@ -21,7 +21,7 @@ final class AddUserChartDTO
     public function toArray(): array
     {
         return [
-            'user_id' => $this->userId,
+            'group_id' => $this->groupId,
             'work_chart_id' => $this->workChartId,
         ];
     }

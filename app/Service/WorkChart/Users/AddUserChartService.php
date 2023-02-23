@@ -1,9 +1,9 @@
 <?php
 declare(strict_types=1);
 
-namespace App\Service\WorkChart;
+namespace App\Service\WorkChart\Users;
 
-use App\DTO\WorkChart\AddUserChartDTO;
+use App\DTO\WorkChart\User\AddUserChartDTO;
 use App\User;
 use Exception;
 

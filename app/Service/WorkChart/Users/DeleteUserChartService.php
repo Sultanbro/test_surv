@@ -1,9 +1,8 @@
 <?php
 declare(strict_types=1);
 
-namespace App\Service\WorkChart;
+namespace App\Service\WorkChart\Users;
 
-use App\Events\DeleteUserWorkDays;
 use App\User;
 use Exception;
 
@@ -24,8 +23,6 @@ class DeleteUserChartService
         $updated = $user->update([
             'work_chart_id' => 0
         ]);
-
-        DeleteUserWorkDays::dispatch($user);
 
         if (!$updated)
         {
