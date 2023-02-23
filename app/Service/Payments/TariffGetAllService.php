@@ -11,7 +11,12 @@ final class TariffGetAllService
 {
     use CurrencyTrait;
 
-    private $priceForOnePersonInKzt = (float) config('payment')['payment_for_one_person'];
+    private float $priceForOnePersonInKzt;
+
+    public function __construct()
+    {
+        $this->priceForOnePersonInKzt = (float) config('payment')['payment_for_one_person'];
+    }
 
     /**
      * @param int $ownerId
