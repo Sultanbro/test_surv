@@ -11,9 +11,9 @@ final class TariffPrice {
 
     use CurrencyTrait;
 
-    final private static $priceForOnePersonInKzt = (float) config('payment')['payment_for_one_person'];
+    private static $priceForOnePersonInKzt = (float) config('payment')['payment_for_one_person'];
 
-    final private static $currencyMap = [
+    private static $currencyMap = [
         'kzt' => [
             'rub' => 'kztToRub',
         ],
