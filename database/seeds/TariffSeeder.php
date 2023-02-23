@@ -37,6 +37,7 @@ class TariffSeeder extends Seeder
             }
         }
 
+        DB::table('tariff_payment')->delete();
         DB::table('tariff')->delete();
         DB::table('tariff')->insert($data);
     }
