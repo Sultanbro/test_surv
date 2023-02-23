@@ -35,12 +35,18 @@ class WorkdayListener
      */
     public function handle(WorkdayEvent $event): void
     {
-        $workChart = $event->user->workChart()->first();
+        $chart = $event->user->activeGroup()->workChart()->first();
+
+        if ($event->user->workChart()->exists())
+        {
+            $chart = $event->user->workChart()->first();
+        }
+
         $date = Carbon::now();
 
         $weekRecords = $this->repository->getUserWorkDaysPerWeek($event->user->id, $date->format('Y-m-d'), $date->weekNumberInMonth);
 
-        ChartFactory::make($workChart->name)->chartProcess($weekRecords);
+        ChartFactory::make($chart->name)->chartProcess($weekRecords);
 
         $exist = $this->repository->getUserWorkDaysPerWeek($event->user->id, $date->format('Y-m-d'), $date->weekNumberInMonth, $date->dayOfWeek)->exists();
 

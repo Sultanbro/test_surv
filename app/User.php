@@ -238,6 +238,16 @@ class User extends Authenticatable implements Authorizable
     }
 
     /**
+     * Получаем активную группу.
+     *
+     * @return ProfileGroup
+     */
+    public function activeGroup(): ProfileGroup
+    {
+        return $this->groups()->where('status', '=', 'active')->first();
+    }
+
+    /**
      * @return BelongsToMany
      */
     public function groups(): BelongsToMany

@@ -76,6 +76,8 @@ class WorkChartModel extends Model
     }
 
     /**
+     * Получаем рабочие дни для разных типов графика.
+     *
      * @param User $user
      * @return int
      */
@@ -84,8 +86,7 @@ class WorkChartModel extends Model
     ): int
     {
         $date = Carbon::now();
-
-        $chart = $user->groups()->where('status', 'active')->first()->workChart()->first();
+        $chart = $user->activeGroup()->workChart()->first();
 
         if($user->workChart()->exists())
         {
