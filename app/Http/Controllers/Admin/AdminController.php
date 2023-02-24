@@ -37,9 +37,12 @@ class AdminController extends Controller
      */
     public function owners(Request $request, OwnerRepository $ownerRepository): JsonResponse
     {
+        $owners = $ownerRepository->getOwnersPaginate(10, $request);
+        $ownerIds = $owners->pluck('id')->toArray();
+
         return response()->json([
             'items' => $ownerRepository->getOwnersPaginate(10, $request),
-            'manager' => $request->id ? ManagerHasOwner::getManagerByOwnerIdOrFail($request->id) : []
+            'manager' => ManagerHasOwner::getOwnersManagers($ownerIds)
         ]);
     }
 
