@@ -40,6 +40,8 @@ class AdminController extends Controller
         $owners = $ownerRepository->getOwnersPaginate(10, $request);
         $ownerIds = $owners->pluck('id')->toArray();
 
+        // TODO разделить на отдельные endpoint
+
         return response()->json([
             'items' => $ownerRepository->getOwnersPaginate(10, $request),
             'manager' => ManagerHasOwner::getOwnersManagers($ownerIds)
