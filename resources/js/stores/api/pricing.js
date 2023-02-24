@@ -24,9 +24,10 @@ export async function fetchPricingManager(){
  * @return {ApiResponse.OwnerInfoResponse}
  */
 export async function fetchOwnerInfo(id){
-	// Да почему post то, по любой нормальной логике это get должен быть
-	const { data } = await axios.post('/managers/owner-info', {
-		owner_id: id
+	const { data } = await axios.get('/managers/owner-info', {
+		params: {
+			owner_id: id
+		}
 	})
 	return data
 }
@@ -97,7 +98,9 @@ export async function fetchPaymentStatus(){
  * @memberof ApiResponse
  * @type {object}
  * @property {string} message
- * @property {PricingItem[]} data
+ * @property {object} data
+ * @property {PricingItem[]} data.tariffs
+ * @property {PricingItemMultiCurrency} data.priceForOnePerson
  */
 
 /**
@@ -136,7 +139,15 @@ export async function fetchPaymentStatus(){
  * @property {string} price - цена в рублях
  * @property {string} created_at - дата создания (DD.MM.YYYY hh:mm)
  * @property {string} updated_at - дата обновления (DD.MM.YYYY hh:mm)
+ * @property {PricingItemMultiCurrency} multiCurrencyPrice
 */
+
+/**
+ * @typedef PricingItemMultiCurrency
+ * @type {object}
+ * @property {number} kzt
+ * @property {number} rub
+ */
 
 /**
  * @typedef PricingPromo

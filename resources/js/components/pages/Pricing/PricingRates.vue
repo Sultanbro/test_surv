@@ -157,7 +157,7 @@ export default {
 		}
 	},
 	computed: {
-		...mapState(usePricingStore, ['items', 'rates']),
+		...mapState(usePricingStore, ['items']),
 		tarifs(){
 			return this.items.reduce((tarifs, item) => {
 				if(!tarifs[item.kind]){

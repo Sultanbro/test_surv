@@ -691,7 +691,6 @@ Route::middleware(['web','tenant','admin_subdomain'])->group(function () {
     ], function () {
         Route::post('/put-owner', [Admin\Managers\ManagerOwnerController::class, 'putManagerToOwner']);
         Route::get('/owner', [Admin\Managers\ManagerOwnerController::class, 'getOwner']);
-        Route::get('/owner-info', [Admin\Managers\ManagerPermissionController::class, 'getOwnerInfo']);
         Route::get('/get/{managerId?}', [Admin\Managers\ManagerController::class, 'get']);
     });
 
@@ -699,5 +698,14 @@ Route::middleware(['web','tenant','admin_subdomain'])->group(function () {
         Route::get('/', [Admin\AdminController::class, 'admins']);
         Route::post('/add', [Admin\AdminController::class, 'addAdmin']);
         Route::delete('/delete/{user}', [Admin\AdminController::class, 'deleteAdmin']);
+    });
+});
+
+Route::middleware(['web', 'tenant', 'not_admin_subdomain'])->group(function () {
+    Route::group([
+        'prefix' => 'managers',
+        'as' => 'managers.'
+    ], function () {
+        Route::get('/owner-info', [Admin\Managers\ManagerPermissionController::class, 'getOwnerInfo']);
     });
 });

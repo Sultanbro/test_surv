@@ -1,4 +1,3 @@
-/* global axios */
 import { defineStore } from 'pinia'
 import {
 	fetchPricingManager,
@@ -24,21 +23,9 @@ export const usePricingStore = defineStore('pricing', {
 		manager: null,
 		current: null,
 		items: [],
-		rates: {
-			'₽': 1,
-			'₸': 15.3915 / 100,
-			'$': 70.5991,
-		}
+		priceForUser: null,
 	}),
 	actions: {
-		async fetchRates(){
-			const rates = await axios('https://www.cbr-xml-daily.ru/daily_json.js')
-			this.rates = {
-				'₽': 1,
-				'₸': rates.data.Valute.KZT.Value / rates.data.Value.KZT.Nominal,
-				'$': rates.data.Valute.USD.Value / rates.data.Value.USD.Nominal,
-			}
-		},
 		async fetchManager(){
 			this.isLoading = true
 			try{
@@ -65,7 +52,8 @@ export const usePricingStore = defineStore('pricing', {
 			this.isLoading = true
 			try{
 				const { data } = await fetchPricing()
-				this.items = data
+				this.items = data.tariffs
+				this.priceForUser = data.priceForOnePerson
 			}
 			catch(error){
 				console.error('fetchPricing', error)
