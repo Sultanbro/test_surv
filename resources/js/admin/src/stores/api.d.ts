@@ -15,6 +15,20 @@ declare interface UserData {
   full_name?: string
 }
 
+// declare interface Manager {
+//   id: number
+//   email: string
+//   phone: string
+//   name: string
+//   last_name: string
+// }
+
+declare interface UserManagerPivot {
+  owner_id: number
+  manager_id: number
+  managers: Array<Manager>
+}
+
 declare interface UserDataRequest {
   per_page?: number
   page?: number
@@ -46,7 +60,8 @@ declare interface UserDataResponse {
     prev_page_url?: number
     to?: number
     total?: number
-  }
+  },
+  manager: Array<UserManagerPivot>
 }
 
 declare interface UserPermissions {
