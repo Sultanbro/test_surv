@@ -40,8 +40,8 @@ abstract class BasePaymentService
      */
     public function pay(DoPaymentDTO $dto, int $authUserId): string
     {
-        $activePaymentIsExist = TariffPayment::checkActivePaymentIsExist();
-        if ($activePaymentIsExist) {
+        $activePayment = TariffPayment::getActivePaymentIfExist();
+        if ($activePayment) {
             throw new Exception("activePaymentIsExist");
         }
 

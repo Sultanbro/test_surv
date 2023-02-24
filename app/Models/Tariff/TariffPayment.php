@@ -97,9 +97,9 @@ class TariffPayment extends Model
     /**
      * Returns bool active payment exists.
      *
-     * @return bool
+     * @return TariffPayment
      */
-    public static function getActivePaymentIfExist(): bool
+    public static function getActivePaymentIfExist(): TariffPayment
     {
         $today = Carbon::today();
 
@@ -109,7 +109,7 @@ class TariffPayment extends Model
                 $query->where('status', PaymentStatusEnum::STATUS_SUCCESS)
                       ->orWhere('status', PaymentStatusEnum::STATUS_PENDING);
             })
-            ->exists();
+            ->first();
     }
 
     /**
