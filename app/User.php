@@ -37,7 +37,6 @@ use Illuminate\Notifications\Notifiable;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
-use PhpParser\Node\Expr\AssignOp\Mod;
 use Spatie\Permission\Traits\HasRoles;
 
 class User extends Authenticatable implements Authorizable
@@ -140,12 +139,14 @@ class User extends Authenticatable implements Authorizable
     }
 
     /**
-     * @return Model|\Illuminate\Database\Eloquent\Collection|Builder|array|null
+     * @param int $id
+     * @return User
      */
-    public static function getAuthUser(): \Illuminate\Database\Eloquent\Model|\Illuminate\Database\Eloquent\Collection|Builder|array|null
+    public static function getAuthUser(int $id): User
     {
-        $id = auth()->id();
-        return self::query()->findOrFail($id);
+        /** @var User $user */
+        $user = self::query()->findOrFail($id);
+        return $user;
     }
 
     public function permissions(): BelongsToMany
@@ -235,16 +236,6 @@ class User extends Authenticatable implements Authorizable
     public function trainees(): HasMany
     {
         return $this->hasMany('App\Models\Attendance', 'user_id', 'id');
-    }
-
-    /**
-     * Получаем активную группу.
-     *
-     * @return ProfileGroup
-     */
-    public function activeGroup(): ProfileGroup
-    {
-        return $this->groups()->where('status', '=', 'active')->first();
     }
 
     /**

@@ -2,21 +2,23 @@
 
 declare(strict_types=1);
 
-use Illuminate\Support\Facades\Route;
 use App\Http\Controllers as Root;
-use App\Http\Controllers\Api as Api;
-use App\Http\Controllers\Kpi as Kpi;
-use App\Http\Controllers\Auth as Auth;
-use App\Http\Controllers\User as User;
 use App\Http\Controllers\Admin as Admin;
-use App\Http\Controllers\Salary as Salary;
+use App\Http\Controllers\Analytics as Analytics;
+use App\Http\Controllers\Api as Api;
 use App\Http\Controllers\Article as Article;
+use App\Http\Controllers\Auth as Auth;
+use App\Http\Controllers\Company;
+use App\Http\Controllers\Course as Course;
+use App\Http\Controllers\Kpi as Kpi;
+use App\Http\Controllers\Lead\LeadController;
 use App\Http\Controllers\Learning as Learning;
+use App\Http\Controllers\Salary as Salary;
+use App\Http\Controllers\Services as Services;
 use App\Http\Controllers\Settings as Settings;
 use App\Http\Controllers\Timetrack as Timetrack;
-use App\Http\Controllers\Course as Course;
-use App\Http\Controllers\Analytics as Analytics;
-use App\Http\Controllers\Services as Services;
+use App\Http\Controllers\User as User;
+use Illuminate\Support\Facades\Route;
 
 Route::middleware(['web','tenant'])->group(function () {
     Route::any('/', [User\ProfileController::class, 'newprofile']);
@@ -30,6 +32,8 @@ Route::middleware(['web','tenant'])->group(function () {
     Route::post('password/reset', [Auth\ResetPasswordController::class, 'reset']);
 
     Route::get('/tariffs/get', [Root\Tariffs\TariffController::class, 'get']);
+
+    Route::post('/create_lead', [LeadController::class, 'createLead']);
 });
 
 Route::middleware(['web','tenant','not_admin_subdomain'])->group(function () {
@@ -285,7 +289,7 @@ Route::middleware(['web','tenant','not_admin_subdomain'])->group(function () {
     Route::get('/timetracking/reports', [Timetrack\TimetrackingController::class, 'reports']);
     Route::post('/timetracking/reports', [Timetrack\TimetrackingController::class, 'getReports']);
     Route::post('/timetracking/reports/update/day', [Timetrack\TimetrackingController::class, 'updateTimetrackingDay']);
-
+    Route::any('/timetracking/starttracking', [Timetrack\TimetrackingController::class, 'timetracking']);
     Route::any('/timetracking/status', [Timetrack\TimetrackingController::class, 'trackerstatus']);
 
     Route::any('/timetracking/zarplata-table', [Timetrack\TimetrackingController::class, 'zarplatatable']);
@@ -443,7 +447,7 @@ Route::middleware(['web','tenant','not_admin_subdomain'])->group(function () {
 
     // analytics
     Route::any('/timetracking/an', [Analytics\AnalyticsController::class, 'index']);
-
+    Route::any('/timetracking/analytics-page/getanalytics', [Analytics\AnalyticsController::class, 'get']);
     Route::get('/timetracking/analytics/activity/exportxx', [Analytics\AnalyticsController::class, 'exportActivityExcel']);
     Route::post('/timetracking/analytics/add-row', [Analytics\AnalyticsController::class, 'addRow']);
     Route::post('/timetracking/analytics/delete-row', [Analytics\AnalyticsController::class, 'deleteRow']);
@@ -596,6 +600,33 @@ Route::middleware(['web','tenant','not_admin_subdomain'])->group(function () {
     Route::any('/upload/images/', [Learning\KnowBaseController::class, 'uploadimages']);
     Route::any('/upload/audio/', [Learning\KnowBaseController::class, 'uploadaudio']);
 
+    Route::group([
+        'prefix' => 'payment',
+        'as' => 'payment.',
+        'middleware' => 'auth'
+    ], function () {
+        Route::post('/', [Api\PaymentController::class, 'payment']);
+        Route::post('/status', [Api\PaymentController::class, 'updateToTariffPayments']);
+    });
+
+    Route::middleware(['check_tariff'])->group(function () {
+
+        Route::group(['prefix' => 'profile', 'as' => 'profile.'], function () {
+            Route::any('/activities', [User\ProfileController::class, 'activities']);
+            Route::any('/courses', [User\ProfileController::class, 'courses']);
+        });
+
+        Route::group(['prefix' => 'kpi', 'as' => 'kpi.', 'middleware' => 'auth'], function (){
+            Route::post('/get', [Kpi\KpiController::class, 'getKpis'])->name('get');
+            Route::post('/save', [Kpi\KpiController::class, 'save'])->name('save');
+            Route::put('/update', [Kpi\KpiController::class, 'update'])->name('update');
+            Route::delete('/delete/{id}', [Kpi\KpiController::class, 'delete'])->name('delete');
+        });
+
+        Route::group(['prefix' => 'company', 'as' => 'company.', 'middleware' => 'auth'], function (){
+            Route::get('/get-owner', [Company\CompanyController::class, 'getCompanyOwner'])->name('get-owner');
+        });
+    });
 });
 
 /**
@@ -663,15 +694,6 @@ Route::group([
     Route::get('/manager', [Admin\Owners\OwnerController::class, 'getManager']);
 });
 
-Route::group([
-    'prefix' => 'payment',
-    'as' => 'payment.'
-], function () {
-    Route::post('/', [Api\PaymentController::class, 'payment']);
-    Route::post('/status', [Api\PaymentController::class, 'updateToTariffPayments']);
-});
-Route::any('/timetracking/starttracking', [Timetrack\TimetrackingController::class, 'timetracking']);
-Route::any('/timetracking/analytics-page/getanalytics', [Analytics\AnalyticsController::class, 'get']);
 /**
  * Owners list
  * Admin.jobtron.org routes
@@ -688,7 +710,6 @@ Route::middleware(['web','tenant','admin_subdomain'])->group(function () {
     ], function () {
         Route::post('/put-owner', [Admin\Managers\ManagerOwnerController::class, 'putManagerToOwner']);
         Route::get('/owner', [Admin\Managers\ManagerOwnerController::class, 'getOwner']);
-        Route::get('/owner-info', [Admin\Managers\ManagerPermissionController::class, 'getOwnerInfo']);
         Route::get('/get/{managerId?}', [Admin\Managers\ManagerController::class, 'get']);
     });
 
@@ -696,5 +717,14 @@ Route::middleware(['web','tenant','admin_subdomain'])->group(function () {
         Route::get('/', [Admin\AdminController::class, 'admins']);
         Route::post('/add', [Admin\AdminController::class, 'addAdmin']);
         Route::delete('/delete/{user}', [Admin\AdminController::class, 'deleteAdmin']);
+    });
+});
+
+Route::middleware(['web', 'tenant', 'not_admin_subdomain'])->group(function () {
+    Route::group([
+        'prefix' => 'managers',
+        'as' => 'managers.'
+    ], function () {
+        Route::get('/owner-info', [Admin\Managers\ManagerPermissionController::class, 'getOwnerInfo']);
     });
 });

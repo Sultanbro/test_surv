@@ -44,6 +44,7 @@ export const useUserDataStore = defineStore('user-data', () => {
   const userData = ref<Array<UserData>>([])
   const total = ref(2)
   const onPage = ref(10)
+  const lastPage = ref(false)
   const page = ref(1)
   const sort = ref<[UserDataKeys | '', string]>(['', ''])
   const sortedData = computed(() => {
@@ -65,18 +66,34 @@ export const useUserDataStore = defineStore('user-data', () => {
     sort.value = [field, type]
   }
   function fetchUsers(filters: UserDataRequest): void {
+    page.value = 1
     const options = Object.entries(filters).reduce((opt, [key, value]) => {
-      if (value !== '')
-        opt[key] = value
-
+      if (value !== '') opt[key] = value
       return opt
     }, {
       page: page.value,
       per_page: onPage.value,
     })
     fetchUserData(options).then(data => {
-      if (data !== undefined && 'items' in data)
+      if (data !== undefined && 'items' in data) {
+        lastPage.value = data.items.last_page
         userData.value = data.items.data
+      }
+    })
+  }
+  function nextPage(filters: UserDataKeys | '', type: string): void {
+    const options = Object.entries(filters).reduce((opt, [key, value]) => {
+      if (value !== '') opt[key] = value
+      return opt
+    }, {
+      page: page.value,
+      per_page: onPage.value,
+    })
+    fetchUserData(options).then(data => {
+      if (data !== undefined && 'items' in data){
+        lastPage.value = data.items.last_page
+        userData.value = [...userData.value, ...data.items.data]
+      }
     })
   }
 
@@ -87,8 +104,10 @@ export const useUserDataStore = defineStore('user-data', () => {
     total,
     onPage,
     page,
+    lastPage,
 
     fetchUsers,
+    nextPage,
     sort,
     setSort,
   }

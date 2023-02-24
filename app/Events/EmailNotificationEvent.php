@@ -21,8 +21,7 @@ class EmailNotificationEvent
      */
     public function __construct(
         public string $name,
-        public string $email,
-        public string $password
+        public ?array $authData
     )
     {}
 

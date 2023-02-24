@@ -147,6 +147,14 @@ class="message">
 
                             @section('scripts')
                             <script>
+	                            document.addEventListener("DOMContentLoaded", () => {
+		                            if (window.location.pathname === '/login' && window.location.protocol === 'https:') {
+			                            const hostArr = window.location.hostname.split('.');
+			                            if(hostArr.length > 2){
+				                            window.location.href = `https://${hostArr[1]}.${hostArr[2]}/login`;
+			                            }
+		                            }
+	                            });
                             delete_cookie('XSRF-TOKEN', '/', '.jobtron.org');
                             function delete_cookie( name, path, domain ) {
                                 document.cookie = name + "=" +

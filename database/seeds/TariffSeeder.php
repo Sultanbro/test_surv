@@ -21,7 +21,7 @@ class TariffSeeder extends Seeder
 
         $data = array();
         $usersLimit = [5, 50, 100, 1000];
-        $price = [0, 0, 10000, 100000, 14000, 120000, 20000, 180000];
+        $price = [0, 0, 7158, 92460, 22966, 220711, 85004, 817227];
 
         $counter = 0;
         foreach ($tarifKinds as $kindKey => $tarifKind){
@@ -37,6 +37,8 @@ class TariffSeeder extends Seeder
             }
         }
 
+        DB::table('tariff_payment')->delete();
+        DB::table('tariff')->delete();
         DB::table('tariff')->insert($data);
     }
 }

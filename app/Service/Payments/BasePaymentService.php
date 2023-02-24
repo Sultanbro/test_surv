@@ -34,12 +34,18 @@ abstract class BasePaymentService
 
     /**
      * @param DoPaymentDTO $dto
+     * @param int $authUserId
      * @return string
      * @throws Exception
      */
-    public function pay(DoPaymentDTO $dto): string
+    public function pay(DoPaymentDTO $dto, int $authUserId): string
     {
-        $response   = $this->getPaymentProvider()->doPayment($dto);
+        $activePayment = TariffPayment::getActivePaymentIfExist();
+        if ($activePayment) {
+            throw new Exception("activePaymentIsExist");
+        }
+
+        $response   = $this->getPaymentProvider()->doPayment($dto, $authUserId);
         $paymentId  = $response->getId();
         $tariff     = Tariff::getTariffById($dto->tariffId);
 
@@ -49,6 +55,7 @@ abstract class BasePaymentService
         }
 
         TariffPayment::createPaymentOrFail(
+            $authUserId,
             $dto->tariffId,
             $dto->extraUsersLimit,
             $tariff->calculateExpireDate(),
@@ -97,6 +104,7 @@ abstract class BasePaymentService
         $tariff = Tariff::query()->findOrFail($payment->tariff_id);
 
         TariffPayment::createPaymentOrFail(
+            $payment->owner_id,
             $payment->tariff_id,
             $payment->extra_user_limit,
             $tariff->calculateExpireDate(),

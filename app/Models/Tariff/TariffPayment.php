@@ -66,13 +66,13 @@ class TariffPayment extends Model
     /**
      * Returns valid tarif for current subdomain.
      *
-     * @return \Illuminate\Database\Eloquent\Builder|Model|object
+     * @return object
      */
-    public function getValidTarriffPayments()
+    public static function getValidTariffPayments()
     {
         $today = Carbon::today();
 
-        return $this->select(
+        return self::select(
             'tariff_payment.id',
             'tariff_payment.owner_id',
             'tariff_payment.tariff_id',
@@ -87,8 +87,28 @@ class TariffPayment extends Model
         )
             ->leftJoin('tariff', 'tariff.id', 'tariff_payment.tariff_id')
             ->where('tariff_payment.expire_date', '>', $today)
+            ->where('status', PaymentStatusEnum::STATUS_SUCCESS)
             ->orderBy('tariff_payment.expire_date', 'desc')
             ->groupBy('tariff_payment.id')
+            ->first();
+    }
+
+
+    /**
+     * Returns bool active payment exists.
+     *
+     * @return ?TariffPayment
+     */
+    public static function getActivePaymentIfExist(): ?TariffPayment
+    {
+        $today = Carbon::today();
+
+        return self::query()
+            ->where('expire_date', '>', $today)
+            ->where(function ($query) {
+                $query->where('status', PaymentStatusEnum::STATUS_SUCCESS)
+                      ->orWhere('status', PaymentStatusEnum::STATUS_PENDING);
+            })
             ->first();
     }
 
@@ -138,6 +158,7 @@ class TariffPayment extends Model
     }
 
     /**
+     * @param int $ownerId
      * @param int $tariffId
      * @param int $extraUsersLimit
      * @param string $expireDate
@@ -148,6 +169,7 @@ class TariffPayment extends Model
      * @throws Exception
      */
     public static function createPaymentOrFail(
+        int $ownerId,
         int $tariffId,
         int $extraUsersLimit,
         string $expireDate,
@@ -158,7 +180,7 @@ class TariffPayment extends Model
     {
         try {
             return self::query()->create([
-                'owner_id'          => auth()->id() ?? 5,
+                'owner_id'          => $ownerId,
                 'tariff_id'         => $tariffId,
                 'extra_user_limit'  => $extraUsersLimit,
                 'expire_date'       => $expireDate,

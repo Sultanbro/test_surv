@@ -72,22 +72,17 @@
 					>
 					<span class="menu__item-title">Настройки</span>
 				</router-link>
-				<form
-					action="/logout"
-					method="POST"
-				>
-					<button class="menu__item w-full">
+				<form @click.prevent="logout">
+					<button
+						class="menu__item w-full"
+						type="submit"
+					>
 						<img
 							src="/images/dist/icon-exit.svg"
 							alt="settings icon"
 						>
 						<span class="menu__item-title">Выход</span>
 					</button>
-					<input
-						type="hidden"
-						:value="$laravel.csrfToken"
-						name="_token"
-					>
 				</form>
 			</div>
 		</div>
@@ -168,7 +163,7 @@ export default {
 			cabinets: Laravel.cabinets,
 			tenants: Laravel.tenants,
 			isCreatingProject: false,
-			resizeObserver: null,
+			resizeObserver: null
 		};
 	},
 	methods: {
@@ -204,6 +199,20 @@ export default {
 		},
 		updateAvatar(avatar){
 			this.avatar = avatar
+		},
+		logout(){
+			const formData = new FormData();
+			formData.append('_token', this.$laravel.csrfToken);
+
+			const protocol = window.location.protocol
+			const redirectHost = window.location.hostname.split('.')
+			if (protocol === 'https:') {
+				redirectHost.splice(0, 1)
+			}
+
+			this.axios.post('/logout', formData).then(() => {
+				window.location.assign(`${protocol}//${redirectHost.join('.')}/?logout=1`)
+			})
 		}
 	},
 	computed: {
