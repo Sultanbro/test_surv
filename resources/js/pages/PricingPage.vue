@@ -72,7 +72,7 @@
 			</b-form-checkbox>
 		</div>
 		<div class="PricingPage-total mt-4">
-			Итого к оплате: <span class="PricingPage-total-value">{{ $separateThousands(Math.round(total / rates[currency])) }} {{ currency }}</span> <button
+			Итого к оплате: <span class="PricingPage-total-value">{{ $separateThousands(Math.round(total)) }} {{ currency }}</span> <button
 				class="btn btn-success"
 				@click="submitPayment"
 				:disabled="!selectedRate"
@@ -86,7 +86,7 @@
 				v-if="promoData.code"
 				class="PricingPage-promo-active"
 			>
-				Активирован промокод {{ $separateThousands(Math.round(promoData.value / rates[currency])) }} {{ currency }}
+				Активирован промокод {{ $separateThousands(Math.round(promoData.value)) }} {{ currency }}
 			</div>
 			<template v-else>
 				<div class="PricingPage-promo-title">
@@ -134,7 +134,6 @@ export default {
 		return {
 			selectedRate: null,
 			users: 0,
-			userPrice: 200,
 			period: '',
 			autoPayment: true,
 			currency: '₽',
@@ -149,13 +148,14 @@ export default {
 		}
 	},
 	computed: {
-		...mapState(usePricingStore, ['rates']),
+		...mapState(usePricingStore, ['priceForUser']),
 		additionalUsers(){
 			if(!this.selectedRate) return 0
 			return this.users - this.selectedRate.users_limit
 		},
 		additionalPrice(){
-			return this.additionalUsers * this.userPrice * (this.selectedRate.validity === 'monthly' ? 1 : 12)
+			if(!this.priceForUser) return 0
+			return this.additionalUsers * this.priceForUser[this.currencyCode] * (this.selectedRate.validity === 'monthly' ? 1 : 12)
 		},
 		total(){
 			if(!this.selectedRate) return 0
@@ -170,7 +170,6 @@ export default {
 		...mapActions(usePricingStore, [
 			'postPaymentData',
 			'fetchPromo',
-			'fetchRates',
 			'fetchCurrent',
 			'fetchStatus',
 		]),
@@ -209,7 +208,6 @@ export default {
 		}
 	},
 	created(){
-		this.fetchRates()
 		this.fetchCurrent(Laravel.userId)
 		if(this.$route.query.status){
 			this.fetchStatus().then(status => {
