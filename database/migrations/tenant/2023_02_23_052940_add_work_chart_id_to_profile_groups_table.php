@@ -14,7 +14,11 @@ return new class extends Migration
     public function up()
     {
         Schema::table('profile_groups', function (Blueprint $table) {
-            $table->unsignedBigInteger('work_chart_id')->comment('foreign Key таблицы work_charts');
+            $table->unsignedBigInteger('work_chart_id')->default(5)->comment('По умолчанию в каждой группе график 5-2');
+            $table->foreign('work_chart_id')
+                ->references('id')
+                ->on('work_charts')
+                ->onDelete('cascade');
         });
     }
 
