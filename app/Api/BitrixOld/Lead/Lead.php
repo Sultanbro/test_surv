@@ -16,7 +16,7 @@ class Lead
     )
     {}
 
-    public function setNeedCallback(bool $isNeedCallback): self
+    final public function setNeedCallback(bool $isNeedCallback): self
     {
         $this->isNeedCallback = $isNeedCallback;
         return $this;
