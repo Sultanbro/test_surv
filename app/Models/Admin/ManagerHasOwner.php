@@ -10,6 +10,7 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Support\Collection;
 
 class ManagerHasOwner extends Model
 {
@@ -21,6 +22,21 @@ class ManagerHasOwner extends Model
         'manager_id',
         'owner_id'
     ];
+
+    /**
+     * Получаем менеджеров для переданных клиентов.
+     *
+     * @param $query
+     * @param array $ownerIds
+     * @return Collection
+     */
+    public function scopeGetOwnersManagers(
+        $query,
+        array $ownerIds
+    ): Collection
+    {
+        return $query->select('owner_id', 'manager_id')->with('managers')->whereIn('owner_id', $ownerIds)->get();
+    }
 
     /**
      * @param $query

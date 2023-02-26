@@ -1,5 +1,6 @@
 <script lang="ts" setup>
 import { useUserDataStore } from '@/stores/user-data'
+import { useManagersStore } from '@/stores/managers'
 import type { UserDataKeys } from '@/stores/user-data'
 import Action from '@core/components/Action.vue'
 
@@ -9,6 +10,7 @@ const emit = defineEmits<{
 }>()
 
 const userDataStore = useUserDataStore()
+const managersStore = useManagersStore()
 
 function sortSymbol(field: string) {
   if (field === userDataStore.sort[0])
@@ -51,10 +53,20 @@ const scrollObserver = new IntersectionObserver(scrollObserverCallback)
 watchEffect(() => {
   if (scrollTD.value) {
     scrollObserver.observe(scrollTD.value)
-  } else {
+  }
+  else {
     // not mounted yet, or the element was unmounted (e.g. by v-if)
   }
 })
+
+// function getManagerName(userId: number){
+//   console.log('getManagerName', userId)
+//   const managerId = userDataStore.userManagers[userId]
+//   const manager = managersStore.managers[managerId]
+//   console.log('getManagerName', userId, managerId, manager)
+//   if(!manager) return 'Нет'
+//   return `${manager.name} ${manager.last_name}`
+// }
 </script>
 
 <template>
@@ -177,7 +189,7 @@ watchEffect(() => {
             {{ item.city }}
           </td>
           <td class="text-center">
-            <Action @click="$emit('manager', item.id)">WIP</Action>
+            <Action @click="$emit('manager', item.id)">{{ 'WIP' /* getManagerName[item.id] */ }}</Action>
           </td>
         </tr>
       </tbody>

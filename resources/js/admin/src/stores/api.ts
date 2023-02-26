@@ -34,7 +34,6 @@ export const logout = async () => {
 export const fetchUserData = async (req: UserDataRequest) => {
   try {
     const { data, status } = await axios.get<UserDataResponse>('/admin/owners', { params: req })
-
     return data
   }
   catch (error) {
@@ -81,3 +80,17 @@ export const fetchManagers = async () => {
     return onError(error)
   }
 }
+
+export const setManager = async (owner_id: number, manager_id: number) => {
+  try{
+    const { data } = await axios.post<{}>('/managers/put-owner', {
+      owner_id,
+      manager_id,
+    })
+    return data
+  }
+  catch (error) {
+    return onError(error)
+  }
+}
+

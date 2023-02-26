@@ -20,7 +20,7 @@ class TariffSeeder extends Seeder
         $validities = TariffValidityEnum::getAllValues();
 
         $data = array();
-        $usersLimit = [5, 50, 100, 1000];
+        $usersLimit = [5, 20, 50, 100];
         $price = [0, 0, 7158, 92460, 22966, 220711, 85004, 817227];
 
         $counter = 0;

@@ -7,7 +7,7 @@ import { useUserDataStore } from '@/stores/user-data'
 import { useManagersStore } from '@/stores/managers'
 
 
-import type { UserDataRequest } from '@/stores/api'
+import type { UserDataRequest } from '@/stores/api.d'
 
 const userDataStore = useUserDataStore()
 const managersStore = useManagersStore()
@@ -54,7 +54,7 @@ function onPerPage(value: number){
 }
 
 function nextPage(){
-  if(userDataStore.lastPage > page) userDataStore.nextPage(filters.value)
+  if(userDataStore.lastPage > page.value) userDataStore.nextPage(filters.value)
 }
 
 watch(filters, value => {
@@ -67,6 +67,7 @@ const managerOverlay = computed({
   get: () => !!managerUserId.value,
   set: (v) => (managerUserId.value = 0),
 })
+const managerId = ref(0)
 const managerOptions = computed(() => {
   return [{title: '', value: 0}, ...managersStore.managers.map(manager => {
     return {
@@ -75,7 +76,12 @@ const managerOptions = computed(() => {
     }
   })]
 })
-const managerId = ref(0)
+watch(managerUserId, value => {
+  managerId.value = userDataStore.userManagers[value] || 0
+})
+function saveManager(){
+  managersStore.setManager(managerUserId.value, managerId.value)
+}
 </script>
 
 <template>
@@ -115,6 +121,9 @@ const managerId = ref(0)
         v-model="managerId"
         :items="managerOptions"
       />
+      <template #footer>
+        <VBtn @click="saveManager">Save</VBtn>
+      </template>
     </SideBar>
   </VOverlay>
 </template>

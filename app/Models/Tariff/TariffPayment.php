@@ -97,9 +97,9 @@ class TariffPayment extends Model
     /**
      * Returns bool active payment exists.
      *
-     * @return TariffPayment
+     * @return ?TariffPayment
      */
-    public static function getActivePaymentIfExist(): TariffPayment
+    public static function getActivePaymentIfExist(): ?TariffPayment
     {
         $today = Carbon::today();
 
