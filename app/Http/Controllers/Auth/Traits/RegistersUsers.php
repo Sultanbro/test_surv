@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Auth\Traits;
 
+use App\Api\BitrixOld\RegistrationLead;
 use Illuminate\Foundation\Auth\RedirectsUsers;
 use App\Http\Controllers\Auth\Traits\LoginToSubDomain;
 use App\Http\Controllers\Auth\Traits\CreateTenant;
@@ -9,6 +10,7 @@ use Illuminate\Auth\Events\Registered;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use App\User;
+use Exception;
 
 trait RegistersUsers
 {
@@ -71,6 +73,8 @@ trait RegistersUsers
         // find tenant
         $tenant = $user->tenants()->first() ?? $this->createTenant($user);
 
+        $this->createRegistrationLead($user);
+
         // link
         return response()->json([
             'link' => $this->loginLinkToSubDomain($tenant, $user->email)
@@ -87,5 +91,15 @@ trait RegistersUsers
     protected function registered(Request $request, $user)
     {
         //
+    }
+
+    private function createRegistrationLead(User $user) {
+        try {
+            (new RegistrationLead($user, null))
+                ->setNeedCallback(false)
+                ->publish();
+        } catch(Exception $err) {
+            return; //TODO add logs
+        }
     }
 }

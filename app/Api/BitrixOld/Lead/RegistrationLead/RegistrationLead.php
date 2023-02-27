@@ -7,22 +7,24 @@ use App\Api\BitrixOld\Lead\Field;
 use App\Api\BitrixOld\Lead\Field\AssignedToValeria as AssignedToValeriaField;
 use App\Api\BitrixOld\Lead\Field\Phone as PhoneField;
 use App\Api\BitrixOld\Lead\Fields;
-use App\Api\BitrixOld\PhoneLead\Data;
-use Exception;
+use App\User;
 
-final class PhoneLead extends Lead
+final class RegistrationLead extends Lead
 {
 
     public function __construct(
-        Data $data,
+        User $user,
         ?BitrixOld $bitrix,
     )
     {
         parent::__construct(new Fields(
-            new Field('TITLE', "Jobtron.org - " . $data->name . ' - ' . $data->phone),
-            new Field('NAME', $data->name),
-            new PhoneField($data->phone),
+            new Field('TITLE', "Jobtron.org - Регистрация " . $user->name),
+            new Field('NAME', $user->name),
             new AssignedToValeriaField(),
         ), $bitrix);
+
+        if ($user->phone) {
+            $this->fields->addFields(new PhoneField($user->phone));
+        }
     }
 }

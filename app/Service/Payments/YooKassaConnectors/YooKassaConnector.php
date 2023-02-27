@@ -9,7 +9,6 @@ use App\Models\Tariff\Tariff;
 use App\Service\Payments\PaymentTypeConnector;
 use App\User;
 use Exception;
-use Illuminate\Database\Eloquent\Model;
 use YooKassa\Client;
 use YooKassa\Model\CurrencyCode;
 use YooKassa\Request\Payments\CreatePaymentRequestInterface;
@@ -31,13 +30,13 @@ class YooKassaConnector implements PaymentTypeConnector
      *
      * @throws Exception
      */
-    public function doPayment(DoPaymentDTO $dto, int $authUserId): ?CreatePaymentResponse
+    public function doPayment(DoPaymentDTO $dto, User $authUser): ?CreatePaymentResponse
     {
         try {
             $idempotenceKey = uniqid('', true);
 
             $response =  $this->client->createPayment(
-                $this->getPaymentRequest($dto->tariffId, $dto->extraUsersLimit, $authUserId, $dto->autoPayment),
+                $this->getPaymentRequest($dto->tariffId, $dto->extraUsersLimit, $authUser, $dto->autoPayment),
                 $idempotenceKey
             );
 
@@ -55,7 +54,7 @@ class YooKassaConnector implements PaymentTypeConnector
     /**
      * @param int $tariffId
      * @param int $extraUsersLimit
-     * @param int $authUserId
+     * @param User $authUser
      * @param bool $autoPayment
      * @return CreatePaymentRequestInterface
      * @throws Exception
@@ -63,12 +62,11 @@ class YooKassaConnector implements PaymentTypeConnector
     private function getPaymentRequest(
         int $tariffId,
         int $extraUsersLimit,
-        int $authUserId,
+        int $authUser,
         bool $autoPayment = false
     ): CreatePaymentRequestInterface
     {
         $tariff = Tariff::getTariffById($tariffId);
-        $user   = User::getAuthUser($authUserId);
         $price  = $tariff
             ->getPrice($extraUsersLimit)
             ->setCurrency('rub');
@@ -91,7 +89,7 @@ class YooKassaConnector implements PaymentTypeConnector
         $builder->setMetadata(array(
             'orderNumber'   => time()
         ));
-        $builder->setReceipt($price->createYooKassaReceipt($user));
+        $builder->setReceipt($price->createYooKassaReceipt($authUser));
 
         return $builder->build();
     }

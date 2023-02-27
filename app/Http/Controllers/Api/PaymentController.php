@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\Api\Payment\DoPaymentRequest;
 use App\Service\Payments\PaymentFactory;
 use App\Service\Payments\PaymentUpdateStatusService;
+use App\User;
 use Exception;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Auth;
@@ -32,7 +33,8 @@ class PaymentController extends Controller
     public function payment(DoPaymentRequest $request): JsonResponse
     {
         $dto = $request->toDto();
-        $authUser = Auth::id();
+        $authUserId = Auth::id();
+        $authUser = User::getAuthUser($authUserId);
         $response = $this->factory->getPaymentsProviderByCurrency($dto->currency)->pay($request->toDto(), $authUser);
 
         return $this->response(
@@ -50,7 +52,8 @@ class PaymentController extends Controller
     public function updateToTariffPayments(): JsonResponse
     {
         $ownerId = auth()->id(); // validated by middleware guard
-        $response = $this->updateStatusService->handle($ownerId);
+        $owner = User::getAuthUser($ownerId);
+        $response = $this->updateStatusService->handle($owner);
 
         return $this->response(
             message: 'Success',
