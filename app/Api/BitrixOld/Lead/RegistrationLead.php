@@ -14,18 +14,18 @@ final class RegistrationLead extends Lead
 {
 
     public function __construct(
-        array $user,
+        User $user,
         ?BitrixOld $bitrix,
     )
     {
         parent::__construct(new Fields(
-            new Field('TITLE', "Jobtron.org - Регистрация " . $user['name']),
-            new Field('NAME', $user['name']),
+            new Field('TITLE', "Jobtron.org - Регистрация " . $user->name),
+            new Field('NAME', $user->name),
             new AssignedToValeriaField(),
         ), $bitrix);
 
-        if ($user['phone']) {
-            $this->fields->addFields(new PhoneField($user['phone']));
+        if ($user->phone) {
+            $this->fields->addFields(new PhoneField($user->phone));
         }
     }
 }
