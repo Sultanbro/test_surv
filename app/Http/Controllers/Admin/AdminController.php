@@ -2,8 +2,10 @@
 
 namespace App\Http\Controllers\Admin;
 
+use App\Http\Requests\Admin\EditAdminRequest;
 use App\Models\Admin\ManagerHasOwner;
 use App\Service\Admin\AddAdminService;
+use App\Service\Admin\UpdateAdminService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
@@ -109,5 +111,13 @@ class AdminController extends Controller
             throw new Exception($exception->getMessage());
         }
     }
-    
+
+    public function edit(EditAdminRequest $request, UpdateAdminService $service, User $user)
+    {
+
+        return $this->response(
+            message: 'Success updated',
+            data: $service->handle($user, $request->toDto())
+        );
+    }
 }
