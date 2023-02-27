@@ -11,6 +11,8 @@ use App\Support\Core\CustomException;
 use App\User;
 use Exception;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\DB;
+use Throwable;
 
 /**
 * Класс для работы с Service.
@@ -20,6 +22,7 @@ class AddAdminService
     /**
      * @param AddAdminDTO $dto
      * @return Model
+     * @throws Throwable
      */
     public function handle(
         AddAdminDTO $dto
@@ -27,13 +30,19 @@ class AddAdminService
     {
         $fileName = FileHelper::save($dto->image, 'admins/images');
 
-        return User::query()->create([
-            'name'      => $dto->name,
-            'last_name'  => $dto->lastName,
-            'email'     => $dto->email,
-            'phone'     => Phone::normalize($dto->phone),
-            'img_url'   => $fileName,
-            'password'  => bcrypt($dto->password)
-        ]);
+        return DB::transaction(function () use ($dto, $fileName) {
+            $user =  User::query()->create([
+                'name'      => $dto->name,
+                'last_name'  => $dto->lastName,
+                'email'     => $dto->email,
+                'phone'     => Phone::normalize($dto->phone),
+                'img_url'   => $fileName,
+                'password'  => bcrypt($dto->password)
+            ]);
+
+            $user->roles()->attach($dto->roleId);
+
+            return  $user;
+        });
     }
 }
