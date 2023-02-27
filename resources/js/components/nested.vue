@@ -16,7 +16,7 @@
 				:class="{'opened':opened}"
 			>
 				<div class="d-flex">
-					<div class="handles d-flex aic">
+					<div class="handles">
 						<i
 							class="fa fa-bars mover"
 							v-if="mode == 'edit'"

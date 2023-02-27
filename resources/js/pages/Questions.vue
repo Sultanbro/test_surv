@@ -1,6 +1,6 @@
 <template>
 	<div
-		class="questions"
+		class="questions mt-5"
 		:class="{'hide': mode == 'read' && (questions === undefined || questions.length == 0)}"
 		@click="hideAll($event)"
 	>
@@ -21,20 +21,7 @@
 				class="title d-flex jcsb"
 				@click.stop="editQuestion(q_index)"
 			>
-				<textarea
-					v-if="q.editable"
-					v-model="q.text"
-					placeholder="Текст вопроса..."
-					@keyup="changed = true"
-				/>
-				<input
-					v-else
-					type="text"
-					v-model="q.text"
-					disabled
-					placeholder="Текст вопроса..."
-				>
-				<div class="btns aic">
+				<div class="btns aic mr-4">
 					<i
 						v-if="q.type == 0"
 						class="fas fa-tasks"
@@ -43,9 +30,18 @@
 						v-else
 						class="fas fa-question"
 					/>
-					<span class="mx-1">{{ q.points }}</span>
+					<span class="ml-3">{{ q.points }}</span>
+				</div>
+
+				<input
+					type="text"
+					v-model="q.text"
+					disabled
+					placeholder="Текст вопроса..."
+				>
+				<div class="btns aic ml-5">
 					<i
-						class="far fa-trash-alt pointer"
+						class="far fa-trash-alt pointer text-danger"
 						@click.stop="deleteQuestion(q_index)"
 					/>
 				</div>
@@ -69,20 +65,30 @@
 			</div>
 
 			<div v-if="q.editable || mode == 'read'">
-				<select
-					v-if="mode == 'edit'"
-					v-model="q.type"
-					class="type mt-2"
-				>
-					<option value="0">
-						Тест
-					</option>
-					<option value="1">
-						Открытый вопрос
-					</option>
-				</select>
-
-
+				<template v-if="mode == 'edit'">
+					<hr>
+					<textarea
+						v-model="q.text"
+						placeholder="Текст вопроса..."
+						@keyup="changed = true"
+						class="form-control"
+					/>
+					<div class="row">
+						<div class="col-12 col-md-4">
+							<select
+								v-model="q.type"
+								class="type form-control mt-2 w-230"
+							>
+								<option value="0">
+									Тест
+								</option>
+								<option value="1">
+									Открытый вопрос
+								</option>
+							</select>
+						</div>
+					</div>
+				</template>
 				<div
 					v-if="q.type == 0"
 					class="variants"
@@ -247,9 +253,9 @@
 						/>
 					</p>
 
-					<div class="d-flex aic mb-3">
+					<div class="d-flex aic">
 						<input
-							class="form-control  mr-1"
+							class="form-control mr-2"
 							v-model="pass_grade_local"
 							type="number"
 							:min="0"

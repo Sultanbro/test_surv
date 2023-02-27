@@ -2,7 +2,7 @@
     max-height: 500px;
     max-height: calc(100vh - 180px);
     overflow: hidden;
-    overflow-y: auto; 
+    overflow-y: auto;
 }
 
 .ibtn {
@@ -61,7 +61,7 @@
     i.fa-lock {
         display: none;
     }
-    
+
     &.disabled {
 
         i.fa-lock {
@@ -80,7 +80,7 @@
 
     &:hover {
         background: #f9f9f9;
-        
+
         &.active {
             background: #6abcff;
         }
@@ -90,8 +90,8 @@
         }
     }
 
-    
-    
+
+
     h4 {
         margin-bottom: 0;
         font-size: 13px;
@@ -124,7 +124,7 @@
         position: relative;
         margin-left: auto;
         height: 100%;
-        
+
         i {
             cursor: pointer;
             display: block;
@@ -304,6 +304,7 @@
 .pass__ball {
     input {
         width: 55px;
+        padding: 0 10px!important;
         text-align: center;
     }
 }
