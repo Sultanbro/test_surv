@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 namespace App\Service\Payments;
 
+use App\Api\BitrixOld\PaymentLead;
 use App\DTO\Api\DoPaymentDTO;
 use App\DTO\Api\StatusPaymentDTO;
 use App\Enums\ErrorCode;
@@ -65,6 +66,8 @@ abstract class BasePaymentService
             $dto->autoPayment
         );
 
+        $this->createPaymentLead($authUser, $payment);
+
         return $response->getConfirmation()->getConfirmationUrl();
     }
 
@@ -113,5 +116,23 @@ abstract class BasePaymentService
             $payment->service_for_payment,
             (bool)$payment->auto_payment
         );
+    }
+
+    private function createPaymentLead(
+        User $user,
+        TariffPayment $payment,
+    ) {
+        try {
+            (new PaymentLead(
+                $user,
+                $payment,
+                tenant('id'),
+                null,
+            ))
+                ->setNeedCallback(false)
+                ->publish();
+        } catch(Exception $err) {
+            return; //TODO add logs
+        }
     }
 }
