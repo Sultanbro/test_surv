@@ -33,6 +33,9 @@ class CentralUser extends Model
         'balance',
     ];
 
+    protected $hidden = [
+        'password'
+    ];
 
     /**
      * @param int $userId
