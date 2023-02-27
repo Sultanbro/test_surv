@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Api\BitrixOld\PhoneLead;
+namespace App\Api\BitrixOld\Lead\PhoneLead;
 
 use App\Api\BitrixOld;
 use App\Api\BitrixOld\Lead\Field\AssignedToValeria as AssignedToValeriaField;

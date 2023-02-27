@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers\Auth\Traits;
 
-use App\Api\BitrixOld\RegistrationLead;
+use App\Api\BitrixOld\Lead\RegistrationLead;
 use Illuminate\Foundation\Auth\RedirectsUsers;
 use App\Http\Controllers\Auth\Traits\LoginToSubDomain;
 use App\Http\Controllers\Auth\Traits\CreateTenant;

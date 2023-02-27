@@ -1,9 +1,9 @@
 <?php
 
-namespace App\Api\BitrixOld;
+namespace App\Api\BitrixOld\Lead;
 
 use App\Api\BitrixOld;
-use App\Api\BitrixOld\Lead\Field;
+use App\Api\BitrixOld\Lead\Field\Field;
 use App\Api\BitrixOld\Lead\Field\AssignedToValeria as AssignedToValeriaField;
 use App\Api\BitrixOld\Lead\Field\Phone as PhoneField;
 use App\Api\BitrixOld\Lead\Field\PaymentInfo as PaymentInfoField;

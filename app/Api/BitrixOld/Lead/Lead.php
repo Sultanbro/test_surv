@@ -12,9 +12,11 @@ class Lead
 
     public function __construct(
         protected Fields $fields = new Fields(),
-        private readonly BitrixOld $bitrix = new BitrixOld()
+        private ?BitrixOld $bitrix,
     )
-    {}
+    {
+        $this->bitrix = $this->bitrix ?? new BitrixOld();
+    }
 
     final public function setNeedCallback(bool $isNeedCallback): self
     {
@@ -30,7 +32,7 @@ class Lead
         );
 
         if (is_array($result) && array_key_exists('error', $result)) {
-           throw new Exception('publish lead error');
+            throw new Exception('publish lead error');
         }
 
         return $result;

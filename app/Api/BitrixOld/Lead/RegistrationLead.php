@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Api\BitrixOld;
+namespace App\Api\BitrixOld\Lead;
 
 use App\Api\BitrixOld;
 use App\Api\BitrixOld\Lead\Field\AssignedToValeria as AssignedToValeriaField;
@@ -14,18 +14,18 @@ final class RegistrationLead extends Lead
 {
 
     public function __construct(
-        User $user,
+        array $user,
         ?BitrixOld $bitrix,
     )
     {
         parent::__construct(new Fields(
-            new Field('TITLE', "Jobtron.org - Регистрация " . $user->name),
-            new Field('NAME', $user->name),
+            new Field('TITLE', "Jobtron.org - Регистрация " . $user['name']),
+            new Field('NAME', $user['name']),
             new AssignedToValeriaField(),
         ), $bitrix);
 
-        if ($user->phone) {
-            $this->fields->addFields(new PhoneField($user->phone));
+        if ($user['phone']) {
+            $this->fields->addFields(new PhoneField($user['phone']));
         }
     }
 }

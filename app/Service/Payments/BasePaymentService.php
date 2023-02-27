@@ -3,13 +3,11 @@ declare(strict_types=1);
 
 namespace App\Service\Payments;
 
-use App\Api\BitrixOld\PaymentLead;
+use App\Api\BitrixOld\Lead\PaymentLead;
 use App\DTO\Api\DoPaymentDTO;
-use App\DTO\Api\StatusPaymentDTO;
 use App\Enums\ErrorCode;
 use App\Enums\Payments\PaymentEnum;
 use App\Enums\Payments\PaymentStatusEnum;
-use App\Events\PaymentIsSuccessEvent;
 use App\Models\Tariff\Tariff;
 use App\Models\Tariff\TariffPayment;
 use App\Support\Core\CustomException;

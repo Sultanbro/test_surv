@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers\Lead;
 
-use App\Api\BitrixOld\PhoneLead;
+use App\Api\BitrixOld\Lead\PhoneLead\PhoneLead;
 use App\Api\BitrixOld\PhoneLead\Data as PhoneLeadData;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
