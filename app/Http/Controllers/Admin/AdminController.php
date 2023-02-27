@@ -64,12 +64,11 @@ class AdminController extends Controller
     }
 
     /**
-     * Create new admin 
-     * Who can login to admin.jobtron.org
-     * 
-     * CreateAdminRequest
+     * Создаем админа или менеджера.
+     *
      * @param CreateAdminRequest $request
-     * @return JsonResponse 
+     * @param AddAdminService $service
+     * @return JsonResponse
      */
     public function addAdmin(CreateAdminRequest $request, AddAdminService $service): JsonResponse
     {

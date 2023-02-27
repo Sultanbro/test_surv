@@ -103,7 +103,9 @@ class User extends Authenticatable implements Authorizable
      */
     const CURRENCY = ['KZT', 'RUB', 'UZS', 'KGS','BYN', 'UAH'];
 
+
     /**
+     * @param int $id
      * @return User
      */
     public static function getAuthUser(int $id): User
