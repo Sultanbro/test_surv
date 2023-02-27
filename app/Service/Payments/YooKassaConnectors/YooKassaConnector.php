@@ -62,7 +62,7 @@ class YooKassaConnector implements PaymentTypeConnector
     private function getPaymentRequest(
         int $tariffId,
         int $extraUsersLimit,
-        int $authUser,
+        User $authUser,
         bool $autoPayment = false
     ): CreatePaymentRequestInterface
     {
