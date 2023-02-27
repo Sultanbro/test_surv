@@ -45,7 +45,6 @@
 						class="mb-0"
 					>
 						{{ el.title }}
-						<span class="long">{{ el.title }}</span>
 					</p>
 					<div
 						class="chapter-btns"
