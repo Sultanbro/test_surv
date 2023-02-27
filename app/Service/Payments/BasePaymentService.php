@@ -104,7 +104,7 @@ abstract class BasePaymentService
      */
     public function doAutoPayment(TariffPayment $payment): void
     {
-        $this->autoPayment($payment)->makeAutoPayment($payment);
+        $this->autoPayment()->makeAutoPayment($payment);
         $tariff = Tariff::query()->findOrFail($payment->tariff_id);
 
         TariffPayment::createPaymentOrFail(
