@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Models\Admin\ManagerHasOwner;
+use App\Service\Admin\AddAdminService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
@@ -15,7 +16,7 @@ class AdminController extends Controller
 {   
     public function __construct()
     {
-        $this->middleware('auth');
+//        $this->middleware('auth');
     }
 
     /**
@@ -67,21 +68,15 @@ class AdminController extends Controller
      * Who can login to admin.jobtron.org
      * 
      * CreateAdminRequest
-     * @param Request $request
+     * @param CreateAdminRequest $request
      * @return JsonResponse 
      */
-    public function addAdmin(CreateAdminRequest $request)
+    public function addAdmin(CreateAdminRequest $request, AddAdminService $service): JsonResponse
     {
-        return response()->json([
-            'user' => User::create([
-                'name' => $request->name,
-                'last_name' => $request->last_name,
-                'email' => $request->email,
-                'phone' => '000000000000',
-                'password' => \Hash::make($request->password),
-                'is_admin' => 0,
-            ])
-        ]);
+        return $this->response(
+            message: 'Success',
+            data: $service->handle($request->toDto())
+        );
     }
 
     /**
