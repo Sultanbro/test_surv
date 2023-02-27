@@ -52,7 +52,8 @@ class PaymentController extends Controller
     public function updateToTariffPayments(): JsonResponse
     {
         $ownerId = auth()->id(); // validated by middleware guard
-        $response = $this->updateStatusService->handle($ownerId);
+        $owner = User::getAuthUser($ownerId);
+        $response = $this->updateStatusService->handle($owner);
 
         return $this->response(
             message: 'Success',

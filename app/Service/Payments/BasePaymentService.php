@@ -73,23 +73,28 @@ abstract class BasePaymentService
 
     /**
      * @param TariffPayment $payment
+     * @param User $authUser
      * @return bool
      * @throws Exception
      */
-    public function updateStatusByPayment(TariffPayment $payment): bool
+    public function updateStatusByPayment(TariffPayment $payment, User $authUser): bool
     {
         try {
-            $paymentStatus = $this->getPaymentInfo($payment->payment_id)->getPaymentInfo();
+            $paymentInfo = $this->getPaymentInfo($payment->payment_id)->getPaymentInfo();
+            $paymentStatus = $paymentInfo->status;
 
-            if ($paymentStatus->status != PaymentStatusEnum::STATUS_SUCCESS)
-            {
-                //TODO save another statuses
-
-                new CustomException("Оплата по платежу $payment->payment_id еще не сделана", ErrorCode::BAD_REQUEST, []);
+            if (!PaymentStatusEnum::isInEnum($paymentStatus)) {
+                $paymentStatus = PaymentStatusEnum::STATUS_UNKNOWN;
             }
 
-            $payment->status = PaymentStatusEnum::STATUS_SUCCESS;
+            $payment->status = $paymentStatus;
             $payment->save();
+
+            if ($paymentStatus != PaymentStatusEnum::STATUS_SUCCESS)
+            {
+                $this->createPaymentLead($authUser, $payment);
+                new CustomException("Оплата по платежу $payment->payment_id еще не сделана", ErrorCode::BAD_REQUEST, []);
+            }
 
             return true;
         } catch (Exception $exception) {
