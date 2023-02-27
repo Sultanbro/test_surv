@@ -2,6 +2,8 @@
 
 namespace App\Api\BitrixOld\Lead;
 
+use App\Api\BitrixOld\Lead\Field\Field;
+
 
 class Fields 
 {

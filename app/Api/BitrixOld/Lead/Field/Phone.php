@@ -2,9 +2,6 @@
 
 namespace App\Api\BitrixOld\Lead\Field;
 
-use App\Api\BitrixOld\Lead\Field;
-
-
 final class Phone extends Field
 {
     public function __construct(

@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Api\BitrixOld;
+namespace App\Api\BitrixOld\Lead;
 
 use App\Api\BitrixOld;
 use App\Api\BitrixOld\Lead\Fields;

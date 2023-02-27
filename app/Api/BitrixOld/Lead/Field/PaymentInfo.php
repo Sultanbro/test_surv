@@ -2,9 +2,7 @@
 
 namespace App\Api\BitrixOld\Lead\Field;
 
-use App\Api\BitrixOld\Lead\Field;
 use App\Models\Tariff\TariffPayment;
-
 
 final class PaymentInfo extends Field
 {
