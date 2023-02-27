@@ -12,6 +12,7 @@ use App\Events\PaymentIsSuccessEvent;
 use App\Models\Tariff\Tariff;
 use App\Models\Tariff\TariffPayment;
 use App\Support\Core\CustomException;
+use App\User;
 use Exception;
 
 abstract class BasePaymentService
@@ -34,18 +35,18 @@ abstract class BasePaymentService
 
     /**
      * @param DoPaymentDTO $dto
-     * @param int $authUserId
+     * @param User $authUser
      * @return string
      * @throws Exception
      */
-    public function pay(DoPaymentDTO $dto, int $authUserId): string
+    public function pay(DoPaymentDTO $dto, User $authUser): string
     {
         $activePayment = TariffPayment::getActivePaymentIfExist();
         if ($activePayment) {
             throw new Exception("activePaymentIsExist");
         }
 
-        $response   = $this->getPaymentProvider()->doPayment($dto, $authUserId);
+        $response   = $this->getPaymentProvider()->doPayment($dto, $authUser);
         $paymentId  = $response->getId();
         $tariff     = Tariff::getTariffById($dto->tariffId);
 
@@ -54,8 +55,8 @@ abstract class BasePaymentService
             throw new Exception("При генераций платежа $paymentId произошла ошибка");
         }
 
-        TariffPayment::createPaymentOrFail(
-            $authUserId,
+        $payment = TariffPayment::createPaymentOrFail(
+            $authUser->id,
             $dto->tariffId,
             $dto->extraUsersLimit,
             $tariff->calculateExpireDate(),
