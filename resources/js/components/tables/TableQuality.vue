@@ -585,12 +585,14 @@
 					/>
 				</b-tab>
 
+				<!-- Статус: скрыто. Компонент: components/tables/TableQuality.vue. Дата скрытия: 27.02.2023 14:46 -->
 				<b-tab
 					title="Чек Лист"
 					:key="3"
 					type="card"
 					card
 					:active="check == 3"
+					v-if="false"
 				>
 					<b-tabs
 						type="card"
