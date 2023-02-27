@@ -29,11 +29,11 @@ class AddAdminService
 
         return User::query()->create([
             'name'      => $dto->name,
-            'lat_name'  => $dto->lastName,
+            'last_name'  => $dto->lastName,
             'email'     => $dto->email,
             'phone'     => Phone::normalize($dto->phone),
-            'img_url'     => $fileName,
-            'password'  => $dto->password
+            'img_url'   => $fileName,
+            'password'  => bcrypt($dto->password)
         ]);
     }
 }
