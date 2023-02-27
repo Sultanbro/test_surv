@@ -82,11 +82,12 @@
 			</div>
 
 			<!-- filters -->
+			<hr>
 			<div
 				class="row mb-2"
 				v-if="hasPermission"
 			>
-				<div class="col-4">
+				<div class="col-6">
 					<div>
 						<p class="mb-0 fz-08 text-black">
 							<b>Итого действующие ФОТ
@@ -118,53 +119,7 @@
 						</p>
 					</div>
 				</div>
-				<div class="col-6">
-					<b-form-group class="d-flex ddf">
-						<b-form-radio
-							v-model="user_types"
-							name="some-radios"
-							value="0"
-						>
-							Действующие
-						</b-form-radio>
-						<b-form-radio
-							v-model="user_types"
-							name="some-radios"
-							value="2"
-						>
-							Стажеры
-						</b-form-radio>
-						<b-form-radio
-							v-model="user_types"
-							name="some-radios"
-							value="1"
-						>
-							Уволенные
-						</b-form-radio>
-					</b-form-group>
-					<b-form-group class="d-flex ddf">
-						<b-form-radio
-							v-model="show_user"
-							name="some-radios2"
-							value="0"
-						>
-							Все
-						</b-form-radio>
-						<b-form-radio
-							v-model="show_user"
-							name="some-radios2"
-							value="1"
-							class="mr-0"
-						>
-							Есть начисления
-						</b-form-radio>
-					</b-form-group>
-				</div>
-				<div class="col-2">
-					<p class="text-right fz-09 text-black">
-						<span>Сотрудники:</span>
-						<b> {{ users_count }} | {{ total_resources }}</b>
-					</p>
+				<div class="col-6 text-right">
 					<b-button
 						v-if="selectedGroup.salary_approved == 0 && can_edit"
 						style="float:right"
@@ -175,24 +130,77 @@
 						Проверено и готово к выдаче
 					</b-button>
 
-					<p
+					<div
 						class="approved-text"
 						v-if="selectedGroup.salary_approved == 1"
 					>
-						<span><img
-							src="/images/double-check.png"
-							alt=""
-							style="width: 20px"
-						> Начисления утверждены</span>
-						<span>{{ selectedGroup.salary_approved_by }}</span>
-						<span>{{ selectedGroup.salary_approved_date }}</span>
+						<p class="text-success">
+							<img
+								src="/images/double-check.png"
+								style="width: 20px"
+							> Начисления утверждены
+						</p>
+						<p>{{ selectedGroup.salary_approved_by }}</p>
+						<small>{{ selectedGroup.salary_approved_date }}</small>
+					</div>
+				</div>
+			</div>
+			<hr>
+			<div class="row mt-3">
+				<div class="col-12 col-md-9">
+					<div class="d-flex">
+						<b-form-group class="d-flex ddf">
+							<b-form-radio
+								v-model="user_types"
+								name="some-radios"
+								value="0"
+							>
+								Действующие
+							</b-form-radio>
+							<b-form-radio
+								v-model="user_types"
+								name="some-radios"
+								value="2"
+							>
+								Стажеры
+							</b-form-radio>
+							<b-form-radio
+								v-model="user_types"
+								name="some-radios"
+								value="1"
+							>
+								Уволенные
+							</b-form-radio>
+						</b-form-group>
+						<b-form-group class="d-flex ddf ddf-br">
+							<b-form-radio
+								v-model="show_user"
+								name="some-radios2"
+								value="0"
+							>
+								Все
+							</b-form-radio>
+							<b-form-radio
+								v-model="show_user"
+								name="some-radios2"
+								value="1"
+								class="mr-0"
+							>
+								Есть начисления
+							</b-form-radio>
+						</b-form-group>
+					</div>
+				</div>
+				<div class="col-12 col-md-3">
+					<p class="text-right fz-09 text-black">
+						<span>Сотрудники:</span>
+						<b> {{ users_count }} | {{ total_resources }}</b>
 					</p>
 				</div>
 			</div>
-
 			<!-- table -->
 			<div
-				class="table-container"
+				class="table-container table-accrual"
 				v-if="hasPermission"
 			>
 				<b-table
@@ -1473,9 +1481,15 @@ $training: orange;
 .fine,.avans,.bonus {
 	color:#fff;
 }
-.fine {
-	background: $fine;
+.table-accrual{
+	.fine {
+		background: #f58c94;
+	}
+	.b-table-sticky-header{
+		height: 100% !important;
+	}
 }
+
 .bonus {
 	background: $bonus;
 	&.fine {background: linear-gradient(110deg, $bonus 50%, $fine 50%);}
@@ -1504,6 +1518,12 @@ $training: orange;
 .ddf .custom-control {
 	margin-right: 15px;
 }
+
+.ddf-br{
+	padding-left: 20px;
+	border-left: 1px solid #ddd;
+}
+
 .form-control.normal:disabled, .form-control.normal {
 	padding: 0 2px;
 	font-size: 11px;

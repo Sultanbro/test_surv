@@ -1552,7 +1552,7 @@ export default {
 
 		.table-day-2 {
 			color: #333;
-			background-color: #ff7981;
+			background-color: #f58c94;
 
 			input {
 				color: #333;

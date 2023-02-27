@@ -568,8 +568,7 @@ export default {
   }
 
 .weekend {
-  background-color: orange !important;
-  color: #fff;
+  background-color: #fef2cb !important;
 }
 .gauge-title {
   font-weight: bold;
