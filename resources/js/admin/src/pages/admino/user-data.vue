@@ -54,7 +54,7 @@ function onPerPage(value: number){
 }
 
 function nextPage(){
-  if(userDataStore.lastPage > page.value) userDataStore.nextPage(filters.value)
+  if(userDataStore.lastPage > userDataStore.page) userDataStore.nextPage(filters.value)
 }
 
 watch(filters, value => {
