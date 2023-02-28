@@ -668,6 +668,18 @@ Route::middleware(['api','tenant','not_admin_subdomain'])->group(function () {
     });
 });
 
+Route::resource('work-chart', Root\WorkChart\WorkChartController::class)->except(['create', 'edit']);
+Route::group([
+    'prefix' => 'work-chart',
+    'as'    => 'work-chart.'
+], function () {
+    Route::post('/user/add', [Root\WorkChart\UserWorkChartController::class, 'addChart']);
+    Route::post('/user/delete', [Root\WorkChart\UserWorkChartController::class, 'deleteChart']);
+
+    Route::post('/group/add', [Root\WorkChart\GroupWorkChartController::class, 'addChart']);
+    Route::post('/group/delete', [Root\WorkChart\GroupWorkChartController::class, 'deleteChart']);
+});
+
 /**
  * Owners list
  * Admin.jobtron.org routes
