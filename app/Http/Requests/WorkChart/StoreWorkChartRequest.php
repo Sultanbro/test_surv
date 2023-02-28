@@ -1,8 +1,8 @@
 <?php
 
-namespace App\Http\Requests\Settings\WorkChartRequest;
+namespace App\Http\Requests\WorkChart;
 
-use App\DTO\Settings\WorkChartDTO\StoreWorkChartDTO;
+use App\DTO\WorkChart\StoreWorkChartDTO;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Support\Arr;
 
@@ -13,7 +13,7 @@ class StoreWorkChartRequest extends FormRequest
      *
      * @return bool
      */
-    public function authorize()
+    public function authorize(): bool
     {
         return true;
     }
@@ -23,13 +23,12 @@ class StoreWorkChartRequest extends FormRequest
      *
      * @return array<string, mixed>
      */
-    public function rules()
+    public function rules(): array
     {
         return [
             'name'    => ['required', 'string'],
-            'time_beg' => ['required', 'string'],
-            'time_end' => ['required', 'string'],
-            'day_off'  => ['array'],
+            'start_time' => ['required', 'string'],
+            'end_time' => ['required', 'string']
         ];
     }
 
@@ -41,15 +40,13 @@ class StoreWorkChartRequest extends FormRequest
         $validated = $this->validated();
 
         $name       = Arr::get($validated, 'name');
-        $timeBeg    = Arr::get($validated, 'time_beg');
-        $timeEnd    = Arr::get($validated, 'time_end');
-        $dayOff     = Arr::get($validated, 'day_off');
+        $startTime  = Arr::get($validated, 'start_time');
+        $endTime    = Arr::get($validated, 'end_time');
 
         return new StoreWorkChartDTO(
             $name,
-            $timeBeg,
-            $timeEnd,
-            $dayOff,
+            $startTime,
+            $endTime
         );
     }
 }

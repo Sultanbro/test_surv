@@ -4,13 +4,12 @@ namespace App\Service\Timetrack\SalaryWorkChart;
 
 use App\Classes\Helpers\Currency;
 use App\DTO\TimeTrack\SalaryWorkChartDTO\SalaryWorkChartDTO;
-use App\Models\WorkChartModel;
+use App\Models\WorkChart\WorkChartModel;
 use App\Salary;
 use App\Service\Bonus\ObtainedBonusService;
 use App\Service\Bonus\TestBonusService;
 use App\Service\Fine\FineService;
 use App\Service\Salary\SalaryService;
-use App\Service\Settings\WorkChartService\WorkChartService;
 use App\Service\Timetrack\TimetrackService;
 use App\Timetracking;
 use App\User;
@@ -24,7 +23,6 @@ use Illuminate\Support\Carbon;
 class SalaryWorkChartService
 {
     public function __construct(
-        public WorkChartService $chartService,
         public TimetrackService $timetrackService,
         public FineService $fineService,
         public SalaryService $salaryService,
