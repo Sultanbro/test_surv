@@ -3,15 +3,15 @@ declare(strict_types=1);
 
 namespace App\Service\Payments;
 
+use App\Api\BitrixOld\Lead\PaymentLead;
 use App\DTO\Api\DoPaymentDTO;
-use App\DTO\Api\StatusPaymentDTO;
 use App\Enums\ErrorCode;
 use App\Enums\Payments\PaymentEnum;
 use App\Enums\Payments\PaymentStatusEnum;
-use App\Events\PaymentIsSuccessEvent;
 use App\Models\Tariff\Tariff;
 use App\Models\Tariff\TariffPayment;
 use App\Support\Core\CustomException;
+use App\User;
 use Exception;
 
 abstract class BasePaymentService
@@ -34,18 +34,18 @@ abstract class BasePaymentService
 
     /**
      * @param DoPaymentDTO $dto
-     * @param int $authUserId
+     * @param User $authUser
      * @return string
      * @throws Exception
      */
-    public function pay(DoPaymentDTO $dto, int $authUserId): string
+    public function pay(DoPaymentDTO $dto, User $authUser): string
     {
         $activePayment = TariffPayment::getActivePaymentIfExist();
         if ($activePayment) {
             throw new Exception("activePaymentIsExist");
         }
 
-        $response   = $this->getPaymentProvider()->doPayment($dto, $authUserId);
+        $response   = $this->getPaymentProvider()->doPayment($dto, $authUser);
         $paymentId  = $response->getId();
         $tariff     = Tariff::getTariffById($dto->tariffId);
 
@@ -54,8 +54,8 @@ abstract class BasePaymentService
             throw new Exception("При генераций платежа $paymentId произошла ошибка");
         }
 
-        TariffPayment::createPaymentOrFail(
-            $authUserId,
+        $payment = TariffPayment::createPaymentOrFail(
+            $authUser->id,
             $dto->tariffId,
             $dto->extraUsersLimit,
             $tariff->calculateExpireDate(),
@@ -64,28 +64,35 @@ abstract class BasePaymentService
             $dto->autoPayment
         );
 
+        $this->createPaymentLead($authUser, $payment);
+
         return $response->getConfirmation()->getConfirmationUrl();
     }
 
     /**
      * @param TariffPayment $payment
+     * @param User $authUser
      * @return bool
      * @throws Exception
      */
-    public function updateStatusByPayment(TariffPayment $payment): bool
+    public function updateStatusByPayment(TariffPayment $payment, User $authUser): bool
     {
         try {
-            $paymentStatus = $this->getPaymentInfo($payment->payment_id)->getPaymentInfo();
+            $paymentInfo = $this->getPaymentInfo($payment->payment_id)->getPaymentInfo();
+            $paymentStatus = $paymentInfo->status;
 
-            if ($paymentStatus->status != PaymentStatusEnum::STATUS_SUCCESS)
-            {
-                //TODO save another statuses
-
-                new CustomException("Оплата по платежу $payment->payment_id еще не сделана", ErrorCode::BAD_REQUEST, []);
+            if (!PaymentStatusEnum::isInEnum($paymentStatus)) {
+                $paymentStatus = PaymentStatusEnum::STATUS_UNKNOWN;
             }
 
-            $payment->status = PaymentStatusEnum::STATUS_SUCCESS;
+            $payment->status = $paymentStatus;
             $payment->save();
+
+            if ($paymentStatus != PaymentStatusEnum::STATUS_SUCCESS)
+            {
+                $this->createPaymentLead($authUser, $payment);
+                new CustomException("Оплата по платежу $payment->payment_id еще не сделана", ErrorCode::BAD_REQUEST, []);
+            }
 
             return true;
         } catch (Exception $exception) {
@@ -100,7 +107,7 @@ abstract class BasePaymentService
      */
     public function doAutoPayment(TariffPayment $payment): void
     {
-        $this->autoPayment($payment)->makeAutoPayment($payment);
+        $this->autoPayment()->makeAutoPayment($payment);
         $tariff = Tariff::query()->findOrFail($payment->tariff_id);
 
         TariffPayment::createPaymentOrFail(
@@ -112,5 +119,23 @@ abstract class BasePaymentService
             $payment->service_for_payment,
             (bool)$payment->auto_payment
         );
+    }
+
+    private function createPaymentLead(
+        User $user,
+        TariffPayment $payment,
+    ) {
+        try {
+            (new PaymentLead(
+                $user,
+                $payment,
+                tenant('id'),
+                null,
+            ))
+                ->setNeedCallback(false)
+                ->publish();
+        } catch(Exception $err) {
+            return; //TODO add logs
+        }
     }
 }

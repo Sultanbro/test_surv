@@ -165,7 +165,7 @@ class TariffPayment extends Model
      * @param string $paymentId
      * @param string $serviceForPayment
      * @param bool $autoPayment
-     * @return object
+     * @return TariffPayment
      * @throws Exception
      */
     public static function createPaymentOrFail(
@@ -176,7 +176,7 @@ class TariffPayment extends Model
         string $paymentId,
         string $serviceForPayment,
         bool $autoPayment = false
-    ): object
+    ): TariffPayment
     {
         try {
             return self::query()->create([

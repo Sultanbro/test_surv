@@ -62,21 +62,9 @@
 			</div>
 
 			<div v-if="hasPermission">
-				<div class="row mb-3">
-					<div class="col-2 p-0">
-						<div class="overflow-auto d-flex">
-							<b-pagination
-								v-model="currentPage"
-								:total-rows="totalRows"
-								:per-page="perPage"
-								align="fill"
-								size="sm"
-								class="my-0"
-							/>
-						</div>
-					</div>
+				<div class="row my-4">
 					<div class="col-6 d-flex align-items-center">
-						<b-form-group class="d-flex ddf mb-0 ml-5">
+						<b-form-group class="d-flex ddf mb-0">
 							<b-form-radio
 								v-model="user_types"
 								name="some-radios"
@@ -109,7 +97,7 @@
 							Начать отметку
 						</button>
 					</div>
-					<div class="col-4 d-flex align-items-center justify-content-end">
+					<div class="col-6 d-flex align-items-center justify-content-end">
 						<input
 							type="text"
 							:ref="'mylink' + currentGroup"
@@ -231,9 +219,21 @@
 					</b-table>
 				</div>
 
-				<p class="hovered-text">
-					{{ dayInfoText }}
-				</p>
+				<div class="d-flex align-items-start justify-content-between mt-3">
+					<p class="hovered-text">
+						{{ dayInfoText }}
+					</p>
+					<div class="overflow-auto d-flex">
+						<b-pagination
+							v-model="currentPage"
+							:total-rows="totalRows"
+							:per-page="perPage"
+							align="fill"
+							size="sm"
+							class="my-0"
+						/>
+					</div>
+				</div>
 			</div>
 
 			<div v-else>
@@ -403,10 +403,17 @@
 						>
 							<b-form-checkbox-group
 								v-model="sidebarContent.fines"
-								:options="fines"
 								name="flavour-2a"
 								stacked
-							/>
+							>
+								<b-form-checkbox
+									:value="fine.value"
+									:key="fine.value"
+									v-for="fine in fines"
+								>
+									<span v-html="fine.text" />
+								</b-form-checkbox>
+							</b-form-checkbox-group>
 						</b-form-group>
 						<b-button
 							variant="primary"
@@ -1544,11 +1551,11 @@ export default {
 		}
 
 		.table-day-2 {
-			color: #fff;
-			background-color: red;
+			color: #333;
+			background-color: #f58c94;
 
 			input {
-				color: #fff;
+				color: #333;
 			}
 		}
 
@@ -1564,7 +1571,7 @@ export default {
 
 		.table-day-5 {
 			color: rgb(0, 0, 0);
-			background-color: orange !important;
+			background-color: #ffd76d !important;
 		}
 
 		.table-day-6 {

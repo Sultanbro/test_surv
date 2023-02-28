@@ -1,4 +1,4 @@
-<template>
+'<template>
 	<div
 		v-if="user_id"
 		class="d-flex mycourse"
@@ -81,16 +81,20 @@
 					</div>
 
 					<div class="mb-4 mt-3">
-						Пройдено: {{ progress }}%
-						<progress
+						<small class="d-block mb-2">Пройдено: {{ progress }}%</small>
+						<b-progress
 							:value="progress"
+							variant="success"
 							max="100"
+							class="course-progress"
 						/>
 					</div>
 
 					<!-- <div class="mt-3 description" v-html="activeCourse.text"></div> -->
 
-					<p><b>Блоки курса</b></p>
+					<p class="mb-2">
+						<b>Блоки курса</b>
+					</p>
 					<div
 						class="course-item"
 						v-for="(item, c_index) in items"
@@ -101,7 +105,7 @@
 						}"
 						@click="selectCourseItem(c_index)"
 					>
-						<div class="title d-flex">
+						<div class="title d-flex aic">
 							<i
 								class="fa fa-arrow-right icon"
 								v-if="item.status == 2"

@@ -49,8 +49,6 @@ Route::middleware(['web','tenant','not_admin_subdomain'])->group(function () {
         Route::get('/', [User\ProfileController::class, 'newprofile']);
         Route::any('/personal-info', [User\ProfileController::class, 'personalInfo']);
         Route::any('/recruter-stats', [User\ProfileController::class, 'recruterStatsRates']);
-        Route::any('/activities', [User\ProfileController::class, 'activities']);
-        Route::any('/courses', [User\ProfileController::class, 'courses']);
         Route::any('/courses/{id}', [User\ProfileController::class, 'course']);
         Route::any('/trainee-report', [User\ProfileController::class, 'traineeReport']);
         Route::any('/payment-terms', [User\ProfileController::class, 'paymentTerms']);
@@ -524,10 +522,6 @@ Route::middleware(['web','tenant','not_admin_subdomain'])->group(function () {
 
     Route::group(['prefix' => 'kpi', 'as' => 'kpi.', 'middleware' => 'auth'], function (){
         Route::get('/', [Kpi\KpiController::class, 'index'])->name('index');
-        Route::post('/get', [Kpi\KpiController::class, 'getKpis'])->name('get');
-        Route::post('/save', [Kpi\KpiController::class, 'save'])->name('save');
-        Route::put('/update', [Kpi\KpiController::class, 'update'])->name('update');
-        Route::delete('/delete/{id}', [Kpi\KpiController::class, 'delete'])->name('delete');
     });
 
     // Intellect Recruiting
@@ -686,14 +680,6 @@ Route::group([
     Route::post('/group/delete', [Root\WorkChart\GroupWorkChartController::class, 'deleteChart']);
 });
 
-
-Route::group([
-    'prefix' => 'owner',
-    'as'     => 'owner.'
-], function () {
-    Route::get('/manager', [Admin\Owners\OwnerController::class, 'getManager']);
-});
-
 /**
  * Owners list
  * Admin.jobtron.org routes
@@ -726,5 +712,13 @@ Route::middleware(['web', 'tenant', 'not_admin_subdomain'])->group(function () {
         'as' => 'managers.'
     ], function () {
         Route::get('/owner-info', [Admin\Managers\ManagerPermissionController::class, 'getOwnerInfo']);
+    });
+
+    Route::group([
+        'prefix' => 'owner',
+        'as'     => 'owner.'
+    ], function () {
+        Route::get('/manager', [Admin\Owners\OwnerController::class, 'getManager']);
+        Route::get('/info', [Admin\OwnerController::class, 'info'])->name('info');
     });
 });

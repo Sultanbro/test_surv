@@ -321,35 +321,35 @@ export default {
 			>
 				<input
 					:name="`cards[${key}][bank]`"
-					:value="card.bank"
+					v-model="card.bank"
 					type="text"
 					class="form-control mr-1 col-sm-2"
 					placeholder="Банк/Кошелек/..."
 				>
 				<input
 					:name="`cards[${key}][country]`"
-					:value="card.country"
+					v-model="card.country"
 					type="text"
 					class="form-control mr-1 col-sm-2"
 					placeholder="Страна"
 				>
 				<input
 					:name="`cards[${key}][cardholder]`"
-					:value="card.cardholder"
+					v-model="card.cardholder"
 					type="text"
 					class="form-control mr-1 col-sm-2"
 					placeholder="Имя на карте"
 				>
 				<input
 					:name="`cards[${key}][phone]`"
-					:value="card.phone"
+					v-model="card.phone"
 					type="text"
 					class="form-control mr-1 col-sm-2"
 					placeholder="Телефон"
 				>
 				<input
 					:name="`cards[${key}][number]`"
-					:value="card.number"
+					v-model="card.number"
 					type="text"
 					v-mask="`#### #### #### ####`"
 					class="form-control mr-1 col-sm-3 card-number"

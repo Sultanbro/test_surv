@@ -85,7 +85,7 @@
 						:required="true"
 					/>
 				</b-modal>
-				<div class="table-container">
+				<div class="table-container table-coming">
 					<b-table
 						responsive
 						:sticky-header="true"
@@ -350,26 +350,36 @@ export default {
 </script>
 
 <style lang="scss">
-    .table-custom-table-coming{
-        th,td{
-            padding: 0 15px !important;
-            height: 40px;
-            vertical-align: middle !important;
-        }
-        thead{
-            th, td{
-                &:not(.b-table-sticky-column){
-                    text-align: center;
-                }
-            }
-        }
-    }
+	.table-custom-table-coming {
+		th, td {
+			padding: 0 15px !important;
+			height: 40px;
+			vertical-align: middle !important;
+		}
 
-.fine {
-    background: red;
-}
-input[type="time"]::-webkit-calendar-picker-indicator {
-    background: none;
-    display:none;
-}
+		thead {
+			th, td {
+				&:not(.b-table-sticky-column) {
+					text-align: center;
+				}
+			}
+		}
+	}
+
+	.table-coming {
+		.fine {
+			background-color: #f58c94;
+			width: calc(100% + 30px);
+			margin: 0 -15px;
+			height: 40px;
+			display: flex;
+			align-items: center;
+			justify-content: center;
+		}
+	}
+
+	input[type="time"]::-webkit-calendar-picker-indicator {
+		background: none;
+		display: none;
+	}
 </style>
