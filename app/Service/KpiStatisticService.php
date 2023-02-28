@@ -705,7 +705,7 @@ class KpiStatisticService
             foreach ($kpi->users as $user){
                 $kpi_sum = $kpi_sum + $user['avg_percent'];
             }
-            $kpi->avg = count($kpi->users) > 0 ? round($kpi_sum/count($kpi->users), 2) : 0; //AVG percent of all KPI of all USERS in GROUP
+            $kpi->avg = count($kpi->users) > 0 ? round($kpi_sum/count($kpi->users)) : 0; //AVG percent of all KPI of all USERS in GROUP
 
             $kpi['dropped'] = in_array($kpi->targetable_id, $droppedGroups) ?? true;
         }
@@ -1108,7 +1108,7 @@ class KpiStatisticService
                     $item['days']          = 0;
                     $item['registered']    = 0;
                     $item['applied']       = null;
-                }
+                }   
 
                 /**
                  * take another activity values
@@ -1126,16 +1126,8 @@ class KpiStatisticService
                     $user['id']
                 );
 
-                $item['percent'] = 0;
-                if ($item['method'] == 1 || $item['method'] == 2){
-                    $item['percent'] = round(($item['avg'] * 100)/$item['plan'], '2');
-                }elseif($item['method'] == 3 || $item['method'] == 4){
-                    $item['percent'] = $item['avg'] <= $item['plan'] ? 100 : 0;
-                }elseif($item['method'] == 5 || $item['method'] == 6){
-                    $item['percent'] = $item['avg'] >= $item['plan'] ? 100 : 0;
-                }
-
-                $sumKpiPercent = $sumKpiPercent + ($item['percent'] * $item['share'])/100;
+                $item['percent'] = round(($item['avg'] * 100)/$item['plan']);
+                $sumKpiPercent = $sumKpiPercent + $item['percent'];
                 
                 // plan
                 $item['full_time'] = $user['full_time'];
@@ -1204,7 +1196,7 @@ class KpiStatisticService
              * add user to final array
              */
             $user['items'] = $kpi_items;
-            $user['avg_percent'] = $sumKpiPercent;
+            $user['avg_percent'] = count($kpi_items) > 0 ? round($sumKpiPercent/count($kpi_items)) : 0;
             $users[] = $user;
         }
 
@@ -1229,6 +1221,7 @@ class KpiStatisticService
         $users = [];
 
         foreach ($_users as $user) {
+            $kpi_items = 0;
             $sumKpiPercent = 0;
 
             foreach ($kpi->items as $_item) {
@@ -1330,22 +1323,16 @@ class KpiStatisticService
                     $user['id']
                 );
 
-                $item['percent'] = 0;
-                if ($item['method'] == 1 || $item['method'] == 2){
-                    $item['percent'] = round(($item['avg'] * 100)/$item['plan'], '2');
-                }elseif($item['method'] == 3 || $item['method'] == 4){
-                    $item['percent'] = $item['avg'] < $item['plan'] ? 100 : 0;
-                }elseif($item['method'] == 5 || $item['method'] == 6){
-                    $item['percent'] = $item['avg'] > $item['plan'] ? 100 : 0;
-                }
+                $item['percent'] = round(($item['avg'] * 100)/$item['plan']);
+                $sumKpiPercent = $sumKpiPercent + $item['percent'];
 
-                $sumKpiPercent = $sumKpiPercent + ($item['percent'] * $item['share'])/100;
+                $kpi_items++;
             }
 
             /**
              * add user to final array
              */
-            $user['avg_percent'] = $sumKpiPercent;
+            $user['avg_percent'] = $kpi_items > 0 ? round($sumKpiPercent/$kpi_items) : 0;
             $users[] = $user;
         }
 
