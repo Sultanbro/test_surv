@@ -20,7 +20,7 @@ export const usePricingStore = defineStore('pricing', {
 	state: () => ({
 		isLoading: false,
 		// state here
-		manager: null,
+		manager: {},
 		current: null,
 		items: [],
 		priceForUser: null,
@@ -34,14 +34,37 @@ export const usePricingStore = defineStore('pricing', {
 			}
 			catch(error){
 				console.error('fetchPricingManager', error)
+				this.manager = null
 			}
 			this.isLoading = false
 		},
-		async fetchCurrent(id){
+		async fetchCurrent(){
 			this.isLoading = true
 			try{
-				const { data } = await fetchOwnerInfo(id)
-				this.current = data
+				const { data } = await fetchOwnerInfo()
+				this.current = data.tariff || {
+					id: 0,
+					owner_id: 0,
+					tariff_id: 0,
+					extra_user_limit: 0,
+					expire_date: '',
+					auto_payment: 0,
+					payment_id: '',
+					status: 'succeeded',
+					service_for_payment: '',
+					created_at: null,
+					updated_at: null,
+					tariff: {
+						id: 0,
+						kind: 'free',
+						validity: 'monthly',
+						users_limit: 5,
+						price: 0,
+						created_at: null,
+						updated_at: null
+					}
+				}
+				// ^^ костыль чтоб для бесплатного тарифа хоть что-то показывало
 			}
 			catch(error){
 				console.error('fetchOwnerInfo', error)
