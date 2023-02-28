@@ -466,13 +466,15 @@ class PermissionController extends Controller
                     'disabled' => true
                 ]);
 
-            foreach ($group->books as $book) {
-                array_push($options, [
-                    'id' => $book->id,
-                    'name' => $book->title,
-                    'type'=> 1,
-                    'disabled' => false
-                ]);
+            if($group->books){
+                foreach ($group->books as $book) {
+                    array_push($options, [
+                        'id' => $book->id,
+                        'name' => $book->title,
+                        'type'=> 1,
+                        'disabled' => false
+                    ]);
+                }
             }
         }
 
@@ -483,26 +485,29 @@ class PermissionController extends Controller
                     'type'=> 2,
                     'disabled' => true
                 ]);
-           
 
-            foreach ($cat->playlists as $pl) {
-                array_push($options, [
-                    'id' => $pl->id,
-                    'name' => $pl->title,
-                    'type'=> 2,
-                    'disabled' => false
-                ]);
+            if($cat->playlists){
+                foreach ($cat->playlists as $pl) {
+                    array_push($options, [
+                        'id' => $pl->id,
+                        'name' => $pl->title,
+                        'type'=> 2,
+                        'disabled' => false
+                    ]);
+                }
             }
         }
 
-        foreach($kbs as $kb) {
-            array_push($options, [
-                'id' => $kb->id,
-                'name' => $kb->title,
-                'type'=> 3,
-                'cat' => $cat->id,
-                'disabled' => false
-            ]);
+        if($kbs){
+            foreach($kbs as $kb) {
+                array_push($options, [
+                    'id' => $kb->id,
+                    'name' => $kb->title,
+                    'type'=> 3,
+                    'cat' => $cat->id,
+                    'disabled' => false
+                ]);
+            }
         }
 
         return [
