@@ -5,6 +5,6 @@
 
 <br>
 
-Вы успешно созадали свой портал на <a href="https://{{$mailData['host']}}/login">{{$mailData['host']}}</a>.<br>
+Вы успешно создали свой портал на <a href="https://{{$mailData['host']}}/login">{{$mailData['host']}}</a>.<br>
 
 Спасибочки за внимание !<br>
