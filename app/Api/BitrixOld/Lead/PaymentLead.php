@@ -3,6 +3,8 @@
 namespace App\Api\BitrixOld\Lead;
 
 use App\Api\BitrixOld;
+use App\Api\BitrixOld\Lead\Field\AssignedToAlina as AssignedToAlinaField;
+use App\Api\BitrixOld\Lead\Field\AssignedToValeria;
 use App\Api\BitrixOld\Lead\Field\Field;
 use App\Api\BitrixOld\Lead\Field\AssignedToValeria as AssignedToValeriaField;
 use App\Api\BitrixOld\Lead\Field\Phone as PhoneField;
@@ -25,7 +27,7 @@ final class PaymentLead extends Lead
             new Field('TITLE', "Jobtron.org - Платеж: $payment->id"),
             new Field('NAME', $user->name),
             new PaymentInfoField($payment, $tenantId),
-            new AssignedToValeriaField(),
+            new AssignedToAlinaField(),
         ), $bitrix);
 
         if ($user->phone) {
