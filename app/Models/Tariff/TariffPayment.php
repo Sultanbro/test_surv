@@ -86,7 +86,7 @@ class TariffPayment extends Model
             \DB::raw('(`tariff`.`users_limit` + `tariff_payment`.`extra_user_limit`) as total_user_limit')
         )
             ->leftJoin('tariff', 'tariff.id', 'tariff_payment.tariff_id')
-            ->whereDate('tariff_payment.expire_date', '>', $today)
+            ->whereDate('tariff_payment.expire_date', '>', $today->format('Y-m-d'))
             ->where('status', PaymentStatusEnum::STATUS_SUCCESS)
             ->orderBy('tariff_payment.expire_date', 'desc')
             ->groupBy('tariff_payment.id')
