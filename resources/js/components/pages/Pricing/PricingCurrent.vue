@@ -31,7 +31,7 @@
 </template>
 
 <script>
-import { mapActions, mapState } from 'pinia'
+import { mapState } from 'pinia'
 import { usePricingStore } from '@/stores/Pricing'
 
 export default {
@@ -40,13 +40,6 @@ export default {
 	computed: {
 		...mapState(usePricingStore, ['current']),
 	},
-	created(){
-		// this.fetchCurrent()
-		setTimeout(() => { this.fetchCurrent() }, 1000) // timeout for imitate net lag
-	},
-	methods: {
-		...mapActions(usePricingStore, ['fetchCurrent'])
-	}
 }
 </script>
 

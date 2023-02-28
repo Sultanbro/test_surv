@@ -19,7 +19,14 @@ class PasswordReset extends Mailable
      */
     public function __construct($mailData)
     {
-        $mailData['hostname'] = 'https://'. tenant('id') .'.' . config('app.domain');
+        $tenantId = tenant('id');
+
+        $mailData['host'] = $host = $tenantId
+            ? $tenantId .'.' . config('app.domain')
+            : config('app.domain');
+
+        $mailData['hostname'] = 'https://' . $host;
+
         $this->mailData = $mailData;
     }
 

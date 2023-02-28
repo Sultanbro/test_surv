@@ -48,11 +48,11 @@ class Tariff extends Model
 
     /**
      * @param int $tariffId
-     * @return ?object
+     * @return ?Tariff
      */
     public static function getTariffById(
         int $tariffId
-    ): ?object
+    ): ?Tariff
     {
         return self::query()->find($tariffId);
     }
@@ -74,20 +74,12 @@ class Tariff extends Model
 
     /**
      * @param int $extraUsers
-     * @return float
+     * @return TariffPrice
      */
-    public function calculateTotalPrice(
+    public function getPrice(
         int $extraUsers
-    ): float
+    ): TariffPrice
     {
-        $priceForOnePerson = (float)env('PAYMENT_FOR_ONE_PERSON');
-        $price = $this->price;
-
-        if ($extraUsers > 0)
-        {
-            $price += $priceForOnePerson * $extraUsers;
-        }
-
-        return $price;
+        return new TariffPrice($this, $extraUsers);
     }
 }

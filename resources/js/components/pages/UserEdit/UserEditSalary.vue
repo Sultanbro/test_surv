@@ -20,11 +20,17 @@ export default {
 		old_jysan_cardholder: String,
 		old_jysan: String,
 		old_card_jysan: String,
+		front_valid:{
+			type: Object,
+			default: () => ({})
+		}
 	},
 	data(){
 		return {
 			headphonesState: this.user?.headphones_sum > 0,
-			cards: []
+			cards: [],
+			zarplata: 0,
+			currency: null
 		}
 	},
 	watch: {
@@ -32,9 +38,27 @@ export default {
 			if(obj.cards){
 				this.cards = obj.cards
 			}
+			this.zarplata = this.user && this.user.zarplata
+				? this.user.zarplata.zarplata
+					? this.user.zarplata.zarplata - this.user.headphones_sum
+					: 0
+				: this.old_zarplata
+					? this.old_zarplata
+					: 0
+		},
+		zarplata(){
+			this.changeZp();
+		},
+		currency(){
+			this.changeZp();
 		}
 	},
 	methods: {
+		changeZp(){
+			if(this.front_valid && this.front_valid.formSubmitted){
+				this.currency && Number(this.zarplata) > 1000 ? this.$emit('valid_change', {name: 'zarplata', bool: true}) : this.$emit('valid_change', {name: 'zarplata', bool: false});
+			}
+		},
 		addCard(){
 			const card = {
 				bank: '',
@@ -81,20 +105,17 @@ export default {
 		id="profile_salary"
 		class="col-md-12 mt-3 none-block"
 	>
-		<div class="form-group row">
+		<div
+			class="form-group row"
+			:class="{'form-group-error': front_valid.formSubmitted && front_valid.zarplata === false}"
+		>
 			<label
 				for="zarplata"
 				class="col-sm-3 col-form-label font-weight-bold"
 				:class="{'mr-3': !user}"
-			>Оклад</label>
+			>Оклад <span class="red">*</span></label>
 
-			<div
-				:class="{
-					'col-sm-3': user,
-					'col-sm-4': !user,
-					'p-0': !user,
-				}"
-			>
+			<div class="col-sm-3">
 				<input
 					class="form-control"
 					type="text"
@@ -102,31 +123,20 @@ export default {
 					id="zarplata"
 					required
 					placeholder="Оклад"
-					:value="user && user.zarplata
-						? user.zarplata.zarplata
-							? user.zarplata.zarplata - user.headphones_sum
-							: 0
-						: old_zarplata
-							? old_zarplata
-							: 0"
+					v-model="zarplata"
 				>
 			</div>
 
 
-			<div
-				:class="{
-					'col-sm-3': user,
-					'col-sm-5': !user,
-					'pl-1': !user,
-					'pr-0': !user,
-				}"
-			>
+			<div class="col-sm-3">
 				<select
 					name="currency"
 					id="currency"
 					class="form-control form-control-sm"
+					v-model="currency"
 				>
 					<option
+						value="null"
 						selected
 						disabled
 					>
@@ -311,35 +321,35 @@ export default {
 			>
 				<input
 					:name="`cards[${key}][bank]`"
-					:value="card.bank"
+					v-model="card.bank"
 					type="text"
 					class="form-control mr-1 col-sm-2"
 					placeholder="Банк/Кошелек/..."
 				>
 				<input
 					:name="`cards[${key}][country]`"
-					:value="card.country"
+					v-model="card.country"
 					type="text"
 					class="form-control mr-1 col-sm-2"
 					placeholder="Страна"
 				>
 				<input
 					:name="`cards[${key}][cardholder]`"
-					:value="card.cardholder"
+					v-model="card.cardholder"
 					type="text"
 					class="form-control mr-1 col-sm-2"
 					placeholder="Имя на карте"
 				>
 				<input
 					:name="`cards[${key}][phone]`"
-					:value="card.phone"
+					v-model="card.phone"
 					type="text"
 					class="form-control mr-1 col-sm-2"
 					placeholder="Телефон"
 				>
 				<input
 					:name="`cards[${key}][number]`"
-					:value="card.number"
+					v-model="card.number"
 					type="text"
 					v-mask="`#### #### #### ####`"
 					class="form-control mr-1 col-sm-3 card-number"

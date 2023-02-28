@@ -16,7 +16,7 @@
 				:class="{'opened':opened}"
 			>
 				<div class="d-flex">
-					<div class="handles d-flex aic">
+					<div class="handles">
 						<i
 							class="fa fa-bars mover"
 							v-if="mode == 'edit'"
@@ -45,7 +45,6 @@
 						class="mb-0"
 					>
 						{{ el.title }}
-						<span class="long">{{ el.title }}</span>
 					</p>
 					<div
 						class="chapter-btns"

@@ -67,7 +67,11 @@
 						>
 					</div>
 
-					<div class="form-group">
+					<!-- Статус: скрыто. Компонент: pages/Cabinet. Дата скрытия: 21.02.2023 15:30 -->
+					<div
+						class="form-group"
+						v-if="false"
+					>
 						Часовой пояс
 						<input
 							class="form-control mt-1 input-surv"

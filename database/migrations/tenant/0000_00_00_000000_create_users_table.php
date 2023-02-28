@@ -19,7 +19,7 @@ class CreateUsersTable extends Migration
             $table->string('phone', 50);
             $table->string('password', 100);
             $table->string('name', 50);
-            $table->string('last_name', 50);
+            $table->string('last_name', 50)->nullable();
             $table->string('remember_token', 191);
             $table->integer('position_id')->nullable();
             $table->integer('program_id')->nullable();

@@ -8,6 +8,7 @@ use App\Http\Controllers\Analytics as Analytics;
 use App\Http\Controllers\Api as Api;
 use App\Http\Controllers\Article as Article;
 use App\Http\Controllers\Auth as Auth;
+use App\Http\Controllers\Company;
 use App\Http\Controllers\Course as Course;
 use App\Http\Controllers\Kpi as Kpi;
 use App\Http\Controllers\Lead\LeadController;
@@ -48,8 +49,6 @@ Route::middleware(['web','tenant','not_admin_subdomain'])->group(function () {
         Route::get('/', [User\ProfileController::class, 'newprofile']);
         Route::any('/personal-info', [User\ProfileController::class, 'personalInfo']);
         Route::any('/recruter-stats', [User\ProfileController::class, 'recruterStatsRates']);
-        Route::any('/activities', [User\ProfileController::class, 'activities']);
-        Route::any('/courses', [User\ProfileController::class, 'courses']);
         Route::any('/courses/{id}', [User\ProfileController::class, 'course']);
         Route::any('/trainee-report', [User\ProfileController::class, 'traineeReport']);
         Route::any('/payment-terms', [User\ProfileController::class, 'paymentTerms']);
@@ -523,10 +522,6 @@ Route::middleware(['web','tenant','not_admin_subdomain'])->group(function () {
 
     Route::group(['prefix' => 'kpi', 'as' => 'kpi.', 'middleware' => 'auth'], function (){
         Route::get('/', [Kpi\KpiController::class, 'index'])->name('index');
-        Route::post('/get', [Kpi\KpiController::class, 'getKpis'])->name('get');
-        Route::post('/save', [Kpi\KpiController::class, 'save'])->name('save');
-        Route::put('/update', [Kpi\KpiController::class, 'update'])->name('update');
-        Route::delete('/delete/{id}', [Kpi\KpiController::class, 'delete'])->name('delete');
     });
 
     // Intellect Recruiting
@@ -599,6 +594,33 @@ Route::middleware(['web','tenant','not_admin_subdomain'])->group(function () {
     Route::any('/upload/images/', [Learning\KnowBaseController::class, 'uploadimages']);
     Route::any('/upload/audio/', [Learning\KnowBaseController::class, 'uploadaudio']);
 
+    Route::group([
+        'prefix' => 'payment',
+        'as' => 'payment.',
+        'middleware' => 'auth'
+    ], function () {
+        Route::post('/', [Api\PaymentController::class, 'payment']);
+        Route::post('/status', [Api\PaymentController::class, 'updateToTariffPayments']);
+    });
+
+    Route::middleware(['check_tariff'])->group(function () {
+
+        Route::group(['prefix' => 'profile', 'as' => 'profile.'], function () {
+            Route::any('/activities', [User\ProfileController::class, 'activities']);
+            Route::any('/courses', [User\ProfileController::class, 'courses']);
+        });
+
+        Route::group(['prefix' => 'kpi', 'as' => 'kpi.', 'middleware' => 'auth'], function (){
+            Route::post('/get', [Kpi\KpiController::class, 'getKpis'])->name('get');
+            Route::post('/save', [Kpi\KpiController::class, 'save'])->name('save');
+            Route::put('/update', [Kpi\KpiController::class, 'update'])->name('update');
+            Route::delete('/delete/{id}', [Kpi\KpiController::class, 'delete'])->name('delete');
+        });
+
+        Route::group(['prefix' => 'company', 'as' => 'company.', 'middleware' => 'auth'], function (){
+            Route::get('/get-owner', [Company\CompanyController::class, 'getCompanyOwner'])->name('get-owner');
+        });
+    });
 });
 
 /**
@@ -646,19 +668,16 @@ Route::middleware(['api','tenant','not_admin_subdomain'])->group(function () {
     });
 });
 
+Route::resource('work-chart', Root\WorkChart\WorkChartController::class)->except(['create', 'edit']);
 Route::group([
-    'prefix' => 'owner',
-    'as'     => 'owner.'
+    'prefix' => 'work-chart',
+    'as'    => 'work-chart.'
 ], function () {
-    Route::get('/manager', [Admin\Owners\OwnerController::class, 'getManager']);
-});
+    Route::post('/user/add', [Root\WorkChart\UserWorkChartController::class, 'addChart']);
+    Route::post('/user/delete', [Root\WorkChart\UserWorkChartController::class, 'deleteChart']);
 
-Route::group([
-    'prefix' => 'payment',
-    'as' => 'payment.'
-], function () {
-    Route::post('/', [Api\PaymentController::class, 'payment']);
-    Route::post('/status', [Api\PaymentController::class, 'updateToTariffPayments']);
+    Route::post('/group/add', [Root\WorkChart\GroupWorkChartController::class, 'addChart']);
+    Route::post('/group/delete', [Root\WorkChart\GroupWorkChartController::class, 'deleteChart']);
 });
 
 /**
@@ -677,7 +696,6 @@ Route::middleware(['web','tenant','admin_subdomain'])->group(function () {
     ], function () {
         Route::post('/put-owner', [Admin\Managers\ManagerOwnerController::class, 'putManagerToOwner']);
         Route::get('/owner', [Admin\Managers\ManagerOwnerController::class, 'getOwner']);
-        Route::get('/owner-info', [Admin\Managers\ManagerPermissionController::class, 'getOwnerInfo']);
         Route::get('/get/{managerId?}', [Admin\Managers\ManagerController::class, 'get']);
     });
 
@@ -685,5 +703,22 @@ Route::middleware(['web','tenant','admin_subdomain'])->group(function () {
         Route::get('/', [Admin\AdminController::class, 'admins']);
         Route::post('/add', [Admin\AdminController::class, 'addAdmin']);
         Route::delete('/delete/{user}', [Admin\AdminController::class, 'deleteAdmin']);
+    });
+});
+
+Route::middleware(['web', 'tenant', 'not_admin_subdomain'])->group(function () {
+    Route::group([
+        'prefix' => 'managers',
+        'as' => 'managers.'
+    ], function () {
+        Route::get('/owner-info', [Admin\Managers\ManagerPermissionController::class, 'getOwnerInfo']);
+    });
+
+    Route::group([
+        'prefix' => 'owner',
+        'as'     => 'owner.'
+    ], function () {
+        Route::get('/manager', [Admin\Owners\OwnerController::class, 'getManager']);
+        Route::get('/info', [Admin\OwnerController::class, 'info'])->name('info');
     });
 });

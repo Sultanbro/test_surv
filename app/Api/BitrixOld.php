@@ -99,12 +99,18 @@ class BitrixOld
         return $result;
     }
 
-    public function createLead(array $fields)
+    public function createLead(array $fields, ?bool $isNeedCallback)
     {
-        $query = http_build_query([
+        $arrayQuery = [
             'fields' => $fields,
             'params' => ['REGISTER_SONET_EVENT' => 'Y'],
-        ]);
+        ];
+
+        if (isset($isNeedCallback)) {
+            $arrayQuery['is_need_callback'] = $isNeedCallback ? '1' : '0';
+        }
+
+        $query = http_build_query($arrayQuery);
        
         $result = $this->curl_post($this->link . 'crm.lead.add.json', $query);
         
