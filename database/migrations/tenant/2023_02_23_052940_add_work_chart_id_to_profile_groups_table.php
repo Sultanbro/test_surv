@@ -16,12 +16,8 @@ return new class extends Migration
         Schema::table('profile_groups', function (Blueprint $table) {
             $table->unsignedBigInteger('work_chart_id')
                 ->nullable()
-                ->default(5)
+                ->default(0)
                 ->comment('По умолчанию в каждой группе график 5-2');
-            $table->foreign('work_chart_id')
-                ->references('id')
-                ->on('work_charts')
-                ->onDelete('cascade');
         });
     }
 
