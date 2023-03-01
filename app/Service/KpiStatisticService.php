@@ -1126,8 +1126,15 @@ class KpiStatisticService
                     $user['id']
                 );
 
-                $item['percent'] = round(($item['avg'] * 100)/$item['plan']);
-                $sumKpiPercent = $sumKpiPercent + $item['percent'];
+                $item['percent'] = 0;
+                if ($item['method'] == 1 || $item['method'] == 2){
+                    $item['percent'] = round(($item['avg'] * 100)/$item['plan'], '2');
+                }elseif($item['method'] == 3 || $item['method'] == 4){
+                    $item['percent'] = $item['avg'] <= $item['plan'] ? 100 : 0;
+                }elseif($item['method'] == 5 || $item['method'] == 6){
+                    $item['percent'] = $item['avg'] >= $item['plan'] ? 100 : 0;
+                }
+                $sumKpiPercent = $sumKpiPercent + ($item['percent'] * $item['share'])/100;
                 
                 // plan
                 $item['full_time'] = $user['full_time'];
