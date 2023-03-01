@@ -18,7 +18,12 @@ class SendInvitation extends Mailable
      */
     public function __construct($mailData)
     {
-        $mailData['hostname'] = 'https://'. tenant('id') .'.' . config('app.domain');
+        $tenantId = tenant('id');
+
+        $mailData['hostname'] = $tenantId
+            ? 'https://' . $tenantId .'.' . config('app.domain')
+            : 'https://' . config('app.domain');
+
         $this->mailData = $mailData;
     }
 

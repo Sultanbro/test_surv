@@ -4,7 +4,7 @@
 			<span class="PricingCurrent-label">Тариф:</span>
 			<span class="PricingCurrent-value">
 				<template v-if="current">
-					{{ current.name }}
+					{{ names[current.tariff.kind] }}
 				</template>
 				<b-skeleton v-else />
 			</span>
@@ -13,7 +13,7 @@
 			<span class="PricingCurrent-label">Оплачен до:</span>
 			<span class="PricingCurrent-value">
 				<template v-if="current">
-					{{ current.paid_up_to }}
+					{{ current.expire_date }}
 				</template>
 				<b-skeleton v-else />
 			</span>
@@ -22,7 +22,7 @@
 			<span class="PricingCurrent-label">Пльзователей:</span>
 			<span class="PricingCurrent-value">
 				<template v-if="current">
-					{{ current.users }}
+					{{ totalUsers }}
 				</template>
 				<b-skeleton v-else />
 			</span>
@@ -31,22 +31,29 @@
 </template>
 
 <script>
-import { mapActions, mapState } from 'pinia'
+import { mapState } from 'pinia'
 import { usePricingStore } from '@/stores/Pricing'
 
 export default {
 	name: 'PricingCurrent',
 	components: {},
+	data(){
+		return {
+			names: {
+				free: 'Бесплатный',
+				base: 'База',
+				standard: 'Стандарт',
+				pro: 'PRO',
+			},
+		}
+	},
 	computed: {
-		...mapState(usePricingStore, ['current']),
+		...mapState(usePricingStore, ['current', 'items']),
+		totalUsers(){
+			if(!this.current) return 0
+			return (this.current.extra_user_limit || 0) + (this.current.tariff.users_limit || 0)
+		}
 	},
-	created(){
-		// this.fetchCurrent()
-		setTimeout(() => { this.fetchCurrent() }, 1000) // timeout for imitate net lag
-	},
-	methods: {
-		...mapActions(usePricingStore, ['fetchCurrent'])
-	}
 }
 </script>
 

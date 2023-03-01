@@ -1,10 +1,10 @@
 import { fetchUserData } from './api'
-import type { UserData, UserDataRequest, UserDataResponse } from './api'
+import type { UserData, UserDataRequest, UserDataResponse } from './api.d'
 
 export type UserDataKeys = keyof UserData
 
 function compareNumbers(a: number, b: number) {
-  return parseFloat(a) - parseFloat(b)
+  return parseFloat('' + a) - parseFloat('' + b)
 }
 function compareStrings(a: string, b: string) {
   if(!a) return -1
@@ -42,8 +42,10 @@ const sortFunctions: SortFunctions<UserData> = {
 
 export const useUserDataStore = defineStore('user-data', () => {
   const userData = ref<Array<UserData>>([])
+  const userManagers = ref<{[key: number]: number}>({})
   const total = ref(2)
   const onPage = ref(10)
+  const lastPage = ref(99999)
   const page = ref(1)
   const sort = ref<[UserDataKeys | '', string]>(['', ''])
   const sortedData = computed(() => {
@@ -65,30 +67,53 @@ export const useUserDataStore = defineStore('user-data', () => {
     sort.value = [field, type]
   }
   function fetchUsers(filters: UserDataRequest): void {
-    const options = Object.entries(filters).reduce((opt, [key, value]) => {
-      if (value !== '')
-        opt[key] = value
-
+    page.value = 1
+    const options = Object.entries(filters).reduce((opt: {[key: string]: unknown}, [key, value]) => {
+      if (value !== '') opt[key] = value
       return opt
     }, {
       page: page.value,
       per_page: onPage.value,
     })
     fetchUserData(options).then(data => {
-      if (data !== undefined && 'items' in data)
+      if (data !== undefined && 'items' in data) {
+        lastPage.value = data.items.last_page || 1
         userData.value = data.items.data
+        // userData.value = [...data.items.data, ...data.items.data, ...data.items.data, ...data.items.data, ...data.items.data, ...data.items.data]
+        data.manager.forEach(pivot => {
+          userManagers.value[pivot.owner_id] = pivot.manager_id
+        });
+      }
+    })
+  }
+  function nextPage(filters: UserDataRequest): void {
+    const options = Object.entries(filters).reduce((opt: {[key: string]: unknown}, [key, value]) => {
+      if (value !== '') opt[key] = value
+      return opt
+    }, {
+      page: ++page.value,
+      per_page: onPage.value,
+    })
+    fetchUserData(options).then(data => {
+      if (data !== undefined && 'items' in data){
+        lastPage.value = data.items.last_page || 1
+        userData.value = [...userData.value, ...data.items.data]
+      }
     })
   }
 
   return {
     userData,
     sortedData,
+    userManagers,
 
     total,
     onPage,
     page,
+    lastPage,
 
     fetchUsers,
+    nextPage,
     sort,
     setSort,
   }

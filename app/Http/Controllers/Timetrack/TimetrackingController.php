@@ -7,6 +7,7 @@ use App\Classes\Helpers\Phone;
 use App\DayType;
 use App\Downloads;
 use App\Api\BitrixOld as Bitrix;
+use App\Events\WorkdayEvent;
 use App\Fine;
 use App\Http\Controllers\Controller;
 use App\Kpi;
@@ -345,6 +346,8 @@ class TimetrackingController extends Controller
         $now = Carbon::now($user->timezone());
         
         $workday = $user->timetracking()->whereDate('enter', $now->format('Y-m-d'))->first();
+
+//        WorkdayEvent::dispatch($user);
 
         // Не наничал работу и Нажал "Начать день"
         if( $workday && $workday->isStarted() ) {

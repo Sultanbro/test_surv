@@ -92,6 +92,7 @@ export default {
 				group: true,
 				email: true,
 				selectedCityInput: true,
+				zarplata: true
 			},
 			counter: 0,
 			profile_errors: 0,
@@ -324,7 +325,16 @@ export default {
 			const group = formData.get('group');
 			const selectedCityInput = formData.get('selectedCityInput');
 			const zarplata = formData.get('zarplata');
-			formData.set('zarplata', zarplata.replace(/\D/g, ''));
+
+			for(let i = 1; i <= 5; i++){
+				if(formData.get(`file${i}`).size === 0) formData.delete(`file${i}`);
+			}
+			if(formData.get('file7').size === 0) formData.delete('file7');
+
+			if (zarplata <= 1) {
+				this.frontValid.zarplata = false;
+				this.showBlock(5);
+			}
 
 			if (!isTrainee) {
 				if (phone.length < 11) {
@@ -332,6 +342,7 @@ export default {
 					this.showBlock(4);
 				}
 			}
+
 			if (name.length < 3) {
 				this.frontValid.name = false;
 				this.showBlock(1);
@@ -367,7 +378,9 @@ export default {
 				this.showBlock(1);
 			}
 
-			if(this.frontValid.phone && this.frontValid.email && this.frontValid.name && this.frontValid.lastName && this.frontValid.birthday && this.frontValid.position && this.frontValid.group && this.frontValid.selectedCityInput){
+			formData.set('zarplata', zarplata.replace(/\D/g, ''));
+
+			if(this.frontValid.phone && this.frontValid.email && this.frontValid.name && this.frontValid.lastName && this.frontValid.birthday && this.frontValid.position && this.frontValid.group && this.frontValid.selectedCityInput && this.frontValid.zarplata){
 				this.sendForm(formData, isNew);
 			} else {
 				this.$toast.error('Заполните обязательные поля');
@@ -707,7 +720,7 @@ export default {
 							:class="{'active': showBlocks.salary}"
 							@click="showBlock(5)"
 						>
-							<span>Оплата</span>
+							<span>Оплата <span class="red">*</span></span>
 						</li>
 						<li
 							v-if="user && tenant === 'bp'"
@@ -803,6 +816,8 @@ export default {
 								:old_jysan_cardholder="old_jysan_cardholder"
 								:old_jysan="old_jysan"
 								:old_card_jysan="old_card_jysan"
+								:front_valid="frontValid"
+								@valid_change="validChange"
 							/>
 
 							<!-- additional tab -->

@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers\Admin;
 
+use App\Models\Admin\ManagerHasOwner;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Admin\CreateAdminRequest;
@@ -28,14 +30,21 @@ class AdminController extends Controller
 
     /**
      * Owners list
-     * 
+     *
      * @param Request $request
-     * @return JsonResponse 
+     * @param OwnerRepository $ownerRepository
+     * @return JsonResponse
      */
-    public function owners(Request $request, OwnerRepository $ownerRepository)
+    public function owners(Request $request, OwnerRepository $ownerRepository): JsonResponse
     {
+        $owners = $ownerRepository->getOwnersPaginate(10, $request);
+        $ownerIds = $owners->pluck('id')->toArray();
+
+        // TODO разделить на отдельные endpoint
+
         return response()->json([
-            'items' => $ownerRepository->getOwnersPaginate(10, $request)
+            'items' => $ownerRepository->getOwnersPaginate(10, $request),
+            'manager' => ManagerHasOwner::getOwnersManagers($ownerIds)
         ]);
     }
 

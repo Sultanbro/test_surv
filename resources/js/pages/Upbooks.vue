@@ -103,7 +103,7 @@
 					>
 						<div
 							class="left"
-							:style="'background-image: url(' + (book.img != '' ? book.img : '/images/book_cover.jpg' ) +')'"
+							:style="'background-image: url(' + (book.img != '' ? imageCrutch(book.img) : '/images/book_cover.jpg' ) +')'"
 						/>
 
 						<div class="right">
@@ -833,8 +833,9 @@ export default {
 				});
 		},
 
-
-
+		imageCrutch(url){
+			return url.substring(0, 4) === 'http' ? url : `https://storage.oblako.kz${url}`
+		}
 	},
 };
 </script>

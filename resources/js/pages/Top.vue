@@ -254,12 +254,21 @@
 					</table>
 				</div>
 			</b-tab>
-			<!--      <b-tab title="" key="6" card>-->
-			<!--      </b-tab>-->
-			<!--      <b-tab title="" key="7" card>-->
-			<!--      </b-tab>-->
-			<!--      <b-tab title="" key="8" card>-->
-			<!--      </b-tab>-->
+			<b-tab
+				title=""
+				key="6"
+				card
+			/>
+			<b-tab
+				title=""
+				key="7"
+				card
+			/>
+			<b-tab
+				title=""
+				key="8"
+				card
+			/>
 
 			<b-tab
 				title="Прогноз"
@@ -559,8 +568,7 @@ export default {
   }
 
 .weekend {
-  background-color: orange !important;
-  color: #fff;
+  background-color: #fef2cb !important;
 }
 .gauge-title {
   font-weight: bold;

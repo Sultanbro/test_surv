@@ -66,18 +66,17 @@ class TariffPayment extends Model
     /**
      * Returns valid tarif for current subdomain.
      *
-     * @return \Illuminate\Database\Eloquent\Builder|Model|object
+     * @return object
      */
-    public function getValidTarriffPayments()
+    public static function getValidTariffPayments()
     {
         $today = Carbon::today();
 
-        return $this->select(
+        return self::select(
             'tariff_payment.id',
             'tariff_payment.owner_id',
             'tariff_payment.tariff_id',
             'tariff_payment.extra_user_limit',
-            'tariff_payment.expire_date',
             'tariff_payment.expire_date',
             'tariff_payment.created_at',
             'tariff.kind',
@@ -86,9 +85,29 @@ class TariffPayment extends Model
             \DB::raw('(`tariff`.`users_limit` + `tariff_payment`.`extra_user_limit`) as total_user_limit')
         )
             ->leftJoin('tariff', 'tariff.id', 'tariff_payment.tariff_id')
-            ->where('tariff_payment.expire_date', '>', $today)
+            ->where('tariff_payment.expire_date', '>', $today->format('Y-m-d'))
+            ->where('status', PaymentStatusEnum::STATUS_SUCCESS)
             ->orderBy('tariff_payment.expire_date', 'desc')
             ->groupBy('tariff_payment.id')
+            ->first();
+    }
+
+
+    /**
+     * Returns bool active payment exists.
+     *
+     * @return ?TariffPayment
+     */
+    public static function getActivePaymentIfExist(): ?TariffPayment
+    {
+        $today = Carbon::today();
+
+        return self::query()
+            ->where('expire_date', '>', $today)
+            ->where(function ($query) {
+                $query->where('status', PaymentStatusEnum::STATUS_SUCCESS)
+                      ->orWhere('status', PaymentStatusEnum::STATUS_PENDING);
+            })
             ->first();
     }
 
@@ -138,27 +157,29 @@ class TariffPayment extends Model
     }
 
     /**
+     * @param int $ownerId
      * @param int $tariffId
      * @param int $extraUsersLimit
      * @param string $expireDate
      * @param string $paymentId
      * @param string $serviceForPayment
      * @param bool $autoPayment
-     * @return object
+     * @return TariffPayment
      * @throws Exception
      */
     public static function createPaymentOrFail(
+        int $ownerId,
         int $tariffId,
         int $extraUsersLimit,
         string $expireDate,
         string $paymentId,
         string $serviceForPayment,
         bool $autoPayment = false
-    ): object
+    ): TariffPayment
     {
         try {
             return self::query()->create([
-                'owner_id'          => auth()->id() ?? 5,
+                'owner_id'          => $ownerId,
                 'tariff_id'         => $tariffId,
                 'extra_user_limit'  => $extraUsersLimit,
                 'expire_date'       => $expireDate,

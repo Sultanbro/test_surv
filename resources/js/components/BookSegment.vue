@@ -2,12 +2,15 @@
 	<div class="test mb-3">
 		<div class="row">
 			<div class="col-3">
-				<p class="mb-0">
+				<p class="mb-2">
 					Страница
-					<i
+					<!-- <i
 						class="fa fa-save ml-1 pointer"
 						@click="saveSegment"
-					/>
+					/> -->
+					<b-btn variant="success">
+						Сохранить сегмент
+					</b-btn>
 					<i
 						class="fa fa-trash ml-1 pointer"
 						@click="deleteSegment"

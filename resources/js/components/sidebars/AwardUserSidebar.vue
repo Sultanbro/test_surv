@@ -38,7 +38,7 @@
 							:class="{'active': switchTab === 1}"
 							@click="switchTab = 1"
 						>
-							Доступные награды ({{ award.available.length }})
+							Доступные награды ({{ availableLength(award.available) }})
 						</button>
 						<button
 							class="award-user-btn-tab"
@@ -58,7 +58,7 @@
 					</button>
 				</div>
 
-				<div v-if="switchTab === 1">
+				<div v-show="switchTab === 1">
 					<b-row class="avail mt-3">
 						<template v-for="item in award.available">
 							<b-col
@@ -94,7 +94,7 @@
 						</template>
 					</b-row>
 				</div>
-				<div v-if="switchTab === 2 && award.hasOwnProperty('my')">
+				<div v-show="switchTab === 2 && award.hasOwnProperty('my')">
 					<b-row class="mt-3">
 						<b-col
 							cols="12"
@@ -113,6 +113,7 @@
 									v-if="item.format !== 'pdf'"
 								>
 								<vue-pdf-embed
+									ref="vuePdfEmbeds"
 									:source="item.tempPath"
 									v-else
 								/>
@@ -481,13 +482,17 @@ export default {
 			}
 			return this.modalSelect;
 		},
-		tabIndex() {
+		tabIndex(val) {
 			const buttons = this.$refs.tabAwardUser.$refs.buttons;
-			if (!buttons) return
-			buttons.$refs.link.$el.scrollIntoView({inline: 'end', behavior: 'smooth'});
+			if (!buttons) return;
+			buttons[val].$refs.link.$el.scrollIntoView({inline: 'end', behavior: 'smooth'});
 		}
 	},
 	methods: {
+		availableLength(available){
+			const avalFilter = available.filter(a => a.type === 'public');
+			return avalFilter.length;
+		},
 		changeTab(id) {
 			this.currentAward = id;
 			this.switchTab = 1;
