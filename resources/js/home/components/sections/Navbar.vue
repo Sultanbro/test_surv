@@ -93,24 +93,14 @@
 											@click="cabinetRedirect(cabinet.tenant_id)"
 											class="jNav-menu-link"
 										>{{ cabinet.tenant_id }}</div>
-										<form
-											ref="formLogout"
-											action="/logout"
-											class="jNav-menu-user-menu-item"
-											method="POST"
-										>
-											<input
-												:value="laravel.csrfToken"
-												name="_token"
-												type="hidden"
-											>
+										<div class="jNav-menu-user-menu-item">
 											<button
 												class="jNav-menu-user-menu-exit jNav-menu-link"
-												@click="$refs.formLogout.submit()"
+												@click="logout"
 											>
 												{{ $lang(lang, 'logout') }}
 											</button>
-										</form>
+										</div>
 									</div>
 								</div>
 							</template>
@@ -145,6 +135,7 @@
 </template>
 
 <script>
+import axios from 'axios';
 import NavbarLink from '../navbar/NavbarLink.vue'
 import NavbarButton from '../navbar/NavbarButton.vue'
 import NavbarLang from '../navbar/NavbarLang.vue'
@@ -155,6 +146,16 @@ export default {
 		NavbarLink,
 		NavbarButton,
 		NavbarLang
+	},
+
+	data() {
+		return {
+			menu: false,
+			csrf: '',
+			isScroll: false,
+			active: false,
+			isUserMenuActive: false,
+		}
 	},
 
 	computed: {
@@ -172,16 +173,6 @@ export default {
 		}
 	},
 
-	data() {
-		return {
-			menu: false,
-			csrf: '',
-			isScroll: false,
-			active: false,
-			isUserMenuActive: false,
-		}
-	},
-
 	methods: {
 		changeLogoSizeByScroll() {
 			document.body.scrollTop > 20
@@ -193,23 +184,35 @@ export default {
 			if (this.active) this.active = false
 		},
 		hideUserMenu() {
-			if (this.isUserMenuActive) this.isUserMenuActive = false
+			this.$nextTick(() => {
+				this.isUserMenuActive = false
+			})
 		},
 		activateMenu() {
-			this.isUserMenuActive
-				? this.isUserMenuActive = false
-				: this.isUserMenuActive = true
+			this.$nextTick(() => {
+				this.isUserMenuActive = !this.isUserMenuActive
+			})
 		},
 		cabinetRedirect(tenant_id){
 			const url = new URL(window.location.href)
 			url.hostname = `${tenant_id}.${this.hostname}`
 			window.location.assign(url.href)
+		},
+		logout(){
+			axios.post('/logout', {
+				_token: this.laravel.csrfToken
+			}).then(() => {
+				location.assign('/')
+			})
 		}
 	},
 
 	mounted() {
 		window.addEventListener('scroll', this.changeLogoSizeByScroll);
 		this.csrf = document.getElementById('csrf')?.value
+
+		const search = new URLSearchParams(location.search)
+		if(search.has('logout')) this.logout()
 	},
 
 	beforeDestroy() {

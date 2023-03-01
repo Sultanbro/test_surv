@@ -47,8 +47,8 @@ class YooKassa extends BasePaymentService
 
     public function __construct()
     {
-        $this->merchantId   = (int) env('YOOKASSA_MERCHANT_ID');
-        $this->secretKey    = (string) env('YOOKASSA_SECRET_KEY');
+        $this->merchantId   = (int) config('yookassa')['merchant_id'];
+        $this->secretKey    = (string) config('yookassa')['secret_key'];
         $this->client       = new Client();
 
         $this->client->setAuth($this->merchantId, $this->secretKey);

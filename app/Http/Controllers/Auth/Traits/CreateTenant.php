@@ -49,7 +49,12 @@ trait CreateTenant
             $centralUser->tenants()->attach($tenant);
 
             (new CabinetService)->add($tenant->id, $user, true);
-        }   
+        }
+
+        $mail = new \App\Mail\PortalCreatedMail([
+            'name' => $centralUser->name,
+        ]);
+        \Mail::to($centralUser->email)->send($mail);
      
         return $tenant;
     }

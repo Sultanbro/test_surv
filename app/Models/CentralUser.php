@@ -33,6 +33,9 @@ class CentralUser extends Model
         'balance',
     ];
 
+    protected $hidden = [
+        'password'
+    ];
 
     /**
      * @param int $userId
@@ -46,6 +49,11 @@ class CentralUser extends Model
         {
             new CustomException('Пользователей не создавал свой домен', ErrorCode::BAD_REQUEST, []);
         }
+    }
+
+    public function scopeGetByEmail($query, string $email)
+    {
+        return $query->where('email', $email);
     }
 
     /**

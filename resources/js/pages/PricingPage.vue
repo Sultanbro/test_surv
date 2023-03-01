@@ -50,6 +50,7 @@
 				class="btn"
 				:class="{'btn-success': currency === '₸'}"
 				@click="currency = '₸'"
+				disabled
 			>
 				₸
 			</button>
@@ -57,6 +58,7 @@
 				class="btn"
 				:class="{'btn-success': currency === '$'}"
 				@click="currency = '$'"
+				disabled
 			>
 				$
 			</button>
@@ -70,7 +72,7 @@
 			</b-form-checkbox>
 		</div>
 		<div class="PricingPage-total mt-4">
-			Итого к оплате: <span class="PricingPage-total-value">{{ $separateThousands(Math.round(total / rates[currency])) }} {{ currency }}</span> <button
+			Итого к оплате: <span class="PricingPage-total-value">{{ $separateThousands(Math.round(total)) }} {{ currency }}</span> <button
 				class="btn btn-success"
 				@click="submitPayment"
 				:disabled="!selectedRate"
@@ -84,7 +86,7 @@
 				v-if="promoData.code"
 				class="PricingPage-promo-active"
 			>
-				Активирован промокод {{ $separateThousands(Math.round(promoData.value / rates[currency])) }} {{ currency }}
+				Активирован промокод {{ $separateThousands(Math.round(promoData.value)) }} {{ currency }}
 			</div>
 			<template v-else>
 				<div class="PricingPage-promo-title">
@@ -132,7 +134,6 @@ export default {
 		return {
 			selectedRate: null,
 			users: 0,
-			userPrice: 200,
 			period: '',
 			autoPayment: true,
 			currency: '₽',
@@ -147,23 +148,30 @@ export default {
 		}
 	},
 	computed: {
-		...mapState(usePricingStore, ['rates']),
+		...mapState(usePricingStore, ['priceForUser']),
 		additionalUsers(){
 			if(!this.selectedRate) return 0
-			return this.users - this.selectedRate.users
+			return this.users - this.selectedRate.users_limit
+		},
+		additionalPrice(){
+			if(!this.priceForUser) return 0
+			return this.additionalUsers * this.priceForUser[this.currencyCode] * (this.selectedRate.validity === 'monthly' ? 1 : 12)
 		},
 		total(){
 			if(!this.selectedRate) return 0
-			const total = this.period === 'monthly' ? this.selectedRate.price + (this.additionalUsers * this.userPrice) : this.selectedRate.price + (this.additionalUsers * this.userPrice * 12)
+			const total = this.selectedRate.multiCurrencyPrice[this.currencyCode] + this.additionalPrice
 			return this.promoData?.value ? total - this.promoData.value : total
+		},
+		currencyCode(){
+			return this.currencyTranslate[this.currency]
 		},
 	},
 	methods: {
 		...mapActions(usePricingStore, [
 			'postPaymentData',
 			'fetchPromo',
-			'fetchRates',
 			'fetchCurrent',
+			'fetchStatus',
 		]),
 		updateRate(value){
 			this.selectedRate = value.rate
@@ -181,9 +189,9 @@ export default {
 			if(!this.selectedRate) return
 			try{
 				const url = await this.postPaymentData({
-					currency: this.currencyTranslate[this.currency],
+					currency: this.currencyCode,
 					tariff_id: this.selectedRate.id,
-					extra_users_limit: this.additionalUsers,
+					extra_users_limit: this.additionalUsers || 0,
 					auto_payment: this.autoPayment
 				})
 				window.location.assign(url)
@@ -200,8 +208,13 @@ export default {
 		}
 	},
 	created(){
-		this.fetchRates()
 		this.fetchCurrent(Laravel.userId)
+		if(this.$route.query.status){
+			this.fetchStatus().then(status => {
+				if(status) return this.$toast.success('Платеж прошел успешно')
+				this.$toast.error('Платеж прошел неуспешно')
+			})
+		}
 	}
 };
 </script>

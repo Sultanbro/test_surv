@@ -457,52 +457,58 @@ class PermissionController extends Controller
         $bookgroups = BookGroup::with('books')->get();
         $playlist_cats = VideoCategory::with('playlists')->get();
         $kbs = KnowBase::whereNull('parent_id')->get();
-        
+
         foreach($bookgroups as $group) {
-            if($group->books->count() > 0) array_push($options, [
+            if(!is_null($group->books) && $group->books->count() > 0) array_push($options, [
                     'id' => $group->id,
                     'name' => $group->name,
                     'type'=> 1,
                     'disabled' => true
                 ]);
 
-            foreach ($group->books as $book) {
-                array_push($options, [
-                    'id' => $book->id,
-                    'name' => $book->title,
-                    'type'=> 1,
-                    'disabled' => false
-                ]);
+            if ($group->books){
+                foreach ($group->books as $book) {
+                    array_push($options, [
+                        'id' => $book->id,
+                        'name' => $book->title,
+                        'type'=> 1,
+                        'disabled' => false
+                    ]);
+                }
             }
         }
 
         foreach($playlist_cats as $cat) {
-            if($cat->playlists->count() > 0)  array_push($options, [
+            if(!is_null($cat->playlists) && $cat->playlists->count() > 0)  array_push($options, [
                     'id' => $cat->id,
                     'name' => $cat->title,
                     'type'=> 2,
                     'disabled' => true
                 ]);
-           
 
-            foreach ($cat->playlists as $pl) {
-                array_push($options, [
-                    'id' => $pl->id,
-                    'name' => $pl->title,
-                    'type'=> 2,
-                    'disabled' => false
-                ]);
+
+            if ($cat->playlists){
+                foreach ($cat->playlists as $pl) {
+                    array_push($options, [
+                        'id' => $pl->id,
+                        'name' => $pl->title,
+                        'type'=> 2,
+                        'disabled' => false
+                    ]);
+                }
             }
         }
 
-        foreach($kbs as $kb) {
-            array_push($options, [
-                'id' => $kb->id,
-                'name' => $kb->title,
-                'type'=> 3,
-                'cat' => $cat->id,
-                'disabled' => false
-            ]);
+        if ($kbs){
+            foreach($kbs as $kb) {
+                array_push($options, [
+                    'id' => $kb->id,
+                    'name' => $kb->title,
+                    'type'=> 3,
+                    'cat' => isset($cat->id) ? $cat->id : null,
+                    'disabled' => false
+                ]);
+            }
         }
 
         return [

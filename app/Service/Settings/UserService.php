@@ -12,6 +12,9 @@ use App\Filters\Users\UserFilterBuilder;
 use App\Helpers\FileHelper;
 use App\Helpers\UserHelper;
 use App\Models\Bitrix\Segment;
+use App\Models\CentralUser;
+use App\Models\Tariff\Tariff;
+use App\Models\Tariff\TariffPayment;
 use App\Position;
 use App\Repositories\CardRepository;
 use App\Repositories\DayTypeRepository;
@@ -21,6 +24,7 @@ use App\Repositories\TimeTrackHistoryRepository;
 use App\Repositories\UserContactRepository;
 use App\Repositories\UserDescriptionRepository;
 use App\Repositories\UserRepository;
+use App\Service\Tenancy\CabinetService;
 use App\Setting;
 use App\Support\Core\CustomException;
 use App\User;
@@ -107,12 +111,30 @@ class UserService
             new CustomException('Already exist user', ErrorCode::BAD_REQUEST, []);
         }
 
+        $tariffPlan = TariffPayment::getValidTariffPayments();
+
+        $userLimit = Tariff::$defaultUserLimit;
+
+        if($tariffPlan){
+            $userLimit = $tariffPlan->total_user_limit;
+        }
+
+        $usersCount = User::query()->count();
+
+        if ($usersCount >= $userLimit) {
+            new CustomException('users limited by tariff', 401, [
+                'usersLimited' => true,
+            ]);
+        }
+
         if ($user != null && $user->deleted_at != null)
         {
             $this->userRepository->restoreUser($user);
         }
 
         $user = $this->userRepository->updateOrCreateNewEmployee($dto);
+
+        (new CabinetService)->add(tenant('id'), $user, false);
 
         (new DepartmentUserService)->setGroup($dto->group, $user->id, 'add');
 

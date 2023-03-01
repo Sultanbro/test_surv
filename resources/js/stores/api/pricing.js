@@ -6,16 +6,7 @@ import axios from 'axios'
  * @return {PricingManager}
  */
 export async function fetchPricingManager(){
-	// const { data } = await axios.get('/pricing/manager')
-	const data = {
-		name: 'Александра',
-		last_name: 'Воскресенская',
-		phone: '+7 (707) 123-45-67',
-		email: 'voskresenskaya.alex@gmail.com',
-		photo: 'https://placekitten.com/200/200',
-		title: 'Приветствую!',
-		text: 'Далеко-далеко за словесными горами в стране гласных и согласных живут рыбные тексты. Все родного, предложения осталось большой буквенных маленький дорогу семантика от всех?'
-	}
+	const { data } = await axios.get('/owner/manager')
 	return data
 }
 
@@ -23,11 +14,8 @@ export async function fetchPricingManager(){
  * Получене текущего тарифа
  * @return {ApiResponse.OwnerInfoResponse}
  */
-export async function fetchOwnerInfo(id){
-	// Да почему post то, по любой нормальной логике это get должен быть
-	const { data } = await axios.post('/managers/owner-info', {
-		owner_id: id
-	})
+export async function fetchOwnerInfo(){
+	const { data } = await axios.get('/owner/info')
 	return data
 }
 
@@ -64,6 +52,16 @@ export async function postPaymentData(params){
 }
 
 /**
+ * Получение статуса оплаты
+ * @return {ApiResponse.PaymentStatusResponse} - ссылка на оплату
+ */
+export async function fetchPaymentStatus(){
+	// опять пост там где гет должен быть, АААААААА
+	const { data } = await axios.post('/payment/status')
+	return data
+}
+
+/**
  * @typedef PricingManagerResponse
  * @type {object}
  * @property {?PricingManager} data
@@ -87,7 +85,9 @@ export async function postPaymentData(params){
  * @memberof ApiResponse
  * @type {object}
  * @property {string} message
- * @property {PricingItem[]} data
+ * @property {object} data
+ * @property {PricingItem[]} data.tariffs
+ * @property {PricingItemMultiCurrency} data.priceForOnePerson
  */
 
 /**
@@ -96,8 +96,23 @@ export async function postPaymentData(params){
  * @type {object}
  * @property {string} message
  * @property {object} data
- * @property {} data.owner
+ * @property {Owner} data.owner
  * @property {PricingCurrent} data.tariff
+ */
+
+/**
+ * @typedef Owner
+ * @type {object}
+ * @property {number} id
+ * @property {string} email
+ * @property {string} phone
+ * @property {string} name
+ * @property {string} last_name
+ * @property {string?} remember_token
+ * @property {string?} created_at
+ * @property {string?} updated_at
+ * @property {string?} deleted_at
+ * @property {string?} full_name
  */
 
 /**
@@ -109,8 +124,9 @@ export async function postPaymentData(params){
  * @property {number} extra_user_limit - дополнительные пользователи
  * @property {string} expire_date - оплачен до (DD.MM.YYYY)
  * @property {number} auto_payment - автооплата (1 - есть)
- * @property {string} service_for_payment - система оплаты
  * @property {string} payment_id - id оплаты в стистеме оплаты
+ * @property {string} status - статус оплаты
+ * @property {string} service_for_payment - система оплаты
  * @property {string} created_at - дата создания (DD.MM.YYYY hh:mm)
  * @property {string} updated_at - дата обновления (DD.MM.YYYY hh:mm)
  * @property {PricingItem} tariff - объект тарифа
@@ -126,7 +142,15 @@ export async function postPaymentData(params){
  * @property {string} price - цена в рублях
  * @property {string} created_at - дата создания (DD.MM.YYYY hh:mm)
  * @property {string} updated_at - дата обновления (DD.MM.YYYY hh:mm)
+ * @property {PricingItemMultiCurrency?} multiCurrencyPrice
 */
+
+/**
+ * @typedef PricingItemMultiCurrency
+ * @type {object}
+ * @property {number} kzt
+ * @property {number} rub
+ */
 
 /**
  * @typedef PricingPromo
@@ -143,4 +167,11 @@ export async function postPaymentData(params){
  * @property {number} tariff_id -
  * @property {number} extra_users_limit -
  * @property {boolean} [auto_payment] - автооплата
+ */
+
+/**
+ * @typedef PaymentStatusResponse
+ * @memberof ApiResponse
+ * @property {string} message
+ * @property {boolean} data - успешность оплаты
  */

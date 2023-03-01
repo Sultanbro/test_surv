@@ -40,7 +40,7 @@ export default {
 	data() {
 		return {
 			active: false,
-			valute: '₸'
+			valute: '₽'
 		}
 	},
 	computed: {

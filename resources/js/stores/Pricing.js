@@ -1,4 +1,3 @@
-/* global axios */
 import { defineStore } from 'pinia'
 import {
 	fetchPricingManager,
@@ -6,6 +5,7 @@ import {
 	fetchPricing,
 	fetchPricingPromo,
 	postPaymentData,
+	fetchPaymentStatus,
 } from '@/stores/api'
 
 function renameProps(obj, renames){
@@ -20,24 +20,12 @@ export const usePricingStore = defineStore('pricing', {
 	state: () => ({
 		isLoading: false,
 		// state here
-		manager: null,
+		manager: {},
 		current: null,
 		items: [],
-		rates: {
-			'₽': 1,
-			'₸': 15.3915 / 100,
-			'$': 70.5991,
-		}
+		priceForUser: null,
 	}),
 	actions: {
-		async fetchRates(){
-			const rates = await axios('https://www.cbr-xml-daily.ru/daily_json.js')
-			this.rates = {
-				'₽': 1,
-				'₸': rates.data.Valute.KZT.Value / rates.data.Value.KZT.Nominal,
-				'$': rates.data.Valute.USD.Value / rates.data.Value.USD.Nominal,
-			}
-		},
 		async fetchManager(){
 			this.isLoading = true
 			try{
@@ -46,14 +34,37 @@ export const usePricingStore = defineStore('pricing', {
 			}
 			catch(error){
 				console.error('fetchPricingManager', error)
+				this.manager = null
 			}
 			this.isLoading = false
 		},
-		async fetchCurrent(id){
+		async fetchCurrent(){
 			this.isLoading = true
 			try{
-				const { data } = await fetchOwnerInfo(id)
-				this.current = data
+				const { data } = await fetchOwnerInfo()
+				this.current = data.tariff || {
+					id: 0,
+					owner_id: 0,
+					tariff_id: 0,
+					extra_user_limit: 0,
+					expire_date: '',
+					auto_payment: 0,
+					payment_id: '',
+					status: 'succeeded',
+					service_for_payment: '',
+					created_at: null,
+					updated_at: null,
+					tariff: {
+						id: 0,
+						kind: 'free',
+						validity: 'monthly',
+						users_limit: 5,
+						price: 0,
+						created_at: null,
+						updated_at: null
+					}
+				}
+				// ^^ костыль чтоб для бесплатного тарифа хоть что-то показывало
 			}
 			catch(error){
 				console.error('fetchOwnerInfo', error)
@@ -64,7 +75,8 @@ export const usePricingStore = defineStore('pricing', {
 			this.isLoading = true
 			try{
 				const { data } = await fetchPricing()
-				this.items = data
+				this.items = data.tariffs
+				this.priceForUser = data.priceForOnePerson
 			}
 			catch(error){
 				console.error('fetchPricing', error)
@@ -80,8 +92,19 @@ export const usePricingStore = defineStore('pricing', {
 				return {}
 			}
 		},
+		async fetchStatus(code){
+			try{
+				const { data } = await fetchPaymentStatus(code)
+				return data
+			}
+			catch(error){
+				console.error('fetchPaymentStatus', error)
+				return {}
+			}
+		},
 		async postPaymentData(params){
-			return postPaymentData(params)
+			const { data } = await postPaymentData(params)
+			return data
 		},
 	}
 })

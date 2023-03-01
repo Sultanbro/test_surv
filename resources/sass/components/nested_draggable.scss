@@ -97,22 +97,39 @@
 // chapters
 
 .dragArea {
-  margin-left: 20px;
-  padding-left: 0;
-  min-height: 5px;
+  padding: 0;
+  margin: 0;
+  .dragArea{
+    margin-left: 10px!important;
+  }
+}
+
+.handles {
+  width: 25px;
+  min-width: 25px;
+  height: 28px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  & .shower {
+    width: 25px;
+    min-width: 25px;
+    height: 28px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+  }
 }
 
 .handles i {
-  position: relative;
-  top: 1px;
   color: #a3a3a3;
   font-size: 12px;
-  width: 25px;
 }
 
 .mover {
   cursor: move;
-  color: #d7d7d7 !important;
+  color: #1db332 !important;
 }
 
 ul {
@@ -123,45 +140,45 @@ ul {
   padding: 0;
   position: relative;
 
-  &:first-child { 
+  &:first-child {
     margin-top: 5px;
   }
   .fa-circle {
     font-size: 5px;
   }
   display: none;
-  &.opened { 
+  &.opened {
     display: block;
   }
 
   // & > .titles {
   //   p, i {
   //     color: #ccc;
-  //   } 
-  // } 
-  
+  //   }
+  // }
+
 
   &.pass {
     & > .titles {
       p, i {
         color: #000;
-      } 
+      }
       padding: 0 0 0 5px;
-    } 
-    
+    }
+
   }
 
   &.active {
     & > .titles {
       p, i {
         color: #096dd9;
-      } 
+      }
       padding: 0 0 0 5px;
-    } 
-    
+    }
+
   }
 
-  
+
 
   .chapter-btns i {
     width: 27px;
@@ -179,45 +196,33 @@ ul {
 
   .chapter-btns {
     position: absolute;
-    right: 0;
-    top: 0px;
+    right: -2px;
+    top: 2px;
     z-index: 21;
     text-align: center;
     display: none;
+    height: 24px;
+    align-items: center;
+    justify-content: center;
   }
 
  .d-flex:hover > .chapter-btns {
-    display: flex;
+    display: inline-flex;
   }
 }
 
 .chapter p {
+  width: 100%;
+  padding: 5px;
   font-size: 13px;
   word-break: break-all;
   white-space: nowrap;
   cursor: pointer;
-  background: #efefef;
- // position: relative;
-
-  span.long {
-    display: none;
-    position: absolute;
-    left: 25px;
-    margin: 0 -5px;
-    top: 0;
-    max-width: 100%;
-    z-index: 14;
-    font-size: 13px;
-    padding: 0px 5px;
-    border-radius: 5px;
-    pointer-events: none;
-  }
-
-  &:hover span.long {
-    display: block;
+  background-color: transparent;
+  &:hover{
+    background-color: #efefef;
   }
 }
-
 li.chapter:hover>div p {
   color: rgb(10, 161, 10);
 }
@@ -235,7 +240,7 @@ li.chapter:hover>div p {
 
 .chapter .handles:hover {
   &>.mover {
-    display: block;
+    display: inline-flex;
   }
 
   &>.shower {
