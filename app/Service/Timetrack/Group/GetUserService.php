@@ -64,6 +64,7 @@ final class GetUserService
             'group_id'  => $group->id,
             'timeon'    => $group->work_start,
             'timeoff'   => $group->work_end,
+            'work_chart_id' => $group->work_chart_id,
             'plan'      => $group->plan,
             'zoom_link' => $group->zoom_link,
             'bp_link'   => $group->bp_link,
@@ -83,7 +84,6 @@ final class GetUserService
             'show_payment_terms' => $group->show_payment_terms,
             'groups'            => $this->profileGroupRepository->getGroupsIdNameWithPluck(true),
             'archived_groups'   => $this->profileGroupRepository->getGroupsIdNameWithPluck(),
-
         ];
     }
 
