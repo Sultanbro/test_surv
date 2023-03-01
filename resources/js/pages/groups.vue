@@ -598,6 +598,7 @@ export default {
 					if (response.data?.data) {
 						const data = response.data.data;
 						console.log(data);
+						this.workChartId = data.work_chart_id;
 						this.new_status = data.name;
 						this.value = data.users;
 						this.options = data.users;
@@ -641,6 +642,7 @@ export default {
 		},
 		async saveusers() {
 			if (!this.new_status.length) return this.$toast.error('Введите название группы');
+			if (!this.workChartId) return this.$toast.error('Выберите график работы');
 			// save group data
 			let loader = this.$loading.show();
 			if (this.addNewGroup) {
@@ -665,6 +667,11 @@ export default {
 						}
 					});
 			}
+
+			await this.axios.post('/work-chart/group/add', {
+				group_id: this.activebtn.id,
+				work_chart_id: this.workChartId
+			})
 
 			await this.axios
 				.post('/timetracking/users/group/save-new', {
