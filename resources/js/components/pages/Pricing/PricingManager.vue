@@ -2,13 +2,14 @@
 	<b-row
 		align-v="center"
 		class="PricingManager"
+		v-if="manager"
 	>
 		<b-col
 			cols="6"
 			xl="4"
 		>
 			<div class="PricingManager-card">
-				<template v-if="manager">
+				<template v-if="manager.id">
 					<div class="PricingManager-photo">
 						<img
 							:src="manager.photo"

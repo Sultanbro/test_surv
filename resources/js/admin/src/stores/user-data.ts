@@ -79,6 +79,7 @@ export const useUserDataStore = defineStore('user-data', () => {
       if (data !== undefined && 'items' in data) {
         lastPage.value = data.items.last_page || 1
         userData.value = data.items.data
+        // userData.value = [...data.items.data, ...data.items.data, ...data.items.data, ...data.items.data, ...data.items.data, ...data.items.data]
         data.manager.forEach(pivot => {
           userManagers.value[pivot.owner_id] = pivot.manager_id
         });
@@ -90,7 +91,7 @@ export const useUserDataStore = defineStore('user-data', () => {
       if (value !== '') opt[key] = value
       return opt
     }, {
-      page: page.value,
+      page: ++page.value,
       per_page: onPage.value,
     })
     fetchUserData(options).then(data => {
