@@ -33,3 +33,4 @@ Route::get('/aggreement', [\App\Http\Controllers\PrivacyController::class, 'aggr
 Route::get('/offer', [\App\Http\Controllers\PrivacyController::class, 'offer']);
 Route::get('/terms', [\App\Http\Controllers\PrivacyController::class, 'terms']);
 
+Route::post('/create_lead', [App\Http\Controllers\Lead\LeadController::class, 'createLead']);
