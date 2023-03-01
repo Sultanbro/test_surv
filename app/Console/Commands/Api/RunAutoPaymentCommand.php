@@ -4,7 +4,6 @@ namespace App\Console\Commands\Api;
 
 use App\Models\Tariff\TariffPayment;
 use App\Service\Payments\PaymentFactory;
-use App\Service\Payments\YooKassaConnectors\YooKassa;
 use Exception;
 use Illuminate\Console\Command;
 
@@ -24,10 +23,6 @@ class RunAutoPaymentCommand extends Command
      */
     protected $description = 'Запускается для пользователей у кого включен авто-оплата';
 
-    /**
-     * @var YooKassa
-     */
-    private YooKassa $yooKassa;
 
     /**
      * @var PaymentFactory
@@ -37,7 +32,6 @@ class RunAutoPaymentCommand extends Command
     public function __construct()
     {
         parent::__construct();
-        $this->yooKassa = new YooKassa();
         $this->factory = new PaymentFactory();
     }
 
