@@ -185,7 +185,8 @@ class UserStat extends Model
 
                 $applied_from = $localUser->workdays_from_applied($date, $workDay);
 
-                $work_days = WorkChartModel::workdaysPerMonth($user) ?? 26;
+//                $work_days = WorkChartModel::workdaysPerMonth($user) ?? 26;
+                $work_days = 26;
 
                 if($applied_from > 0){
                     $work_days = $applied_from;
