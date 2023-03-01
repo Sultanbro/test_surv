@@ -29,8 +29,8 @@ return new class extends Migration
                 'last_name',
                 'password',
                 'birthday',
-                'city',
-                'country',
+                'working_city',
+                'working_country',
                 'currency',
             ])
             ->whereNotIn('email', $existCentralEmails)
