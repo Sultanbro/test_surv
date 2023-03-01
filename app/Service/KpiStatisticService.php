@@ -1199,9 +1199,6 @@ class KpiStatisticService
                 $kpi_items[] = $item;
             }
 
-            /**
-             * add user to final array
-             */
             $user['items'] = $kpi_items;
             $user['avg_percent'] = $sumKpiPercent;
             $users[] = $user;
