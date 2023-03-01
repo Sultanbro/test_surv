@@ -1134,7 +1134,6 @@ class KpiStatisticService
                 }elseif($item['method'] == 5 || $item['method'] == 6){
                     $item['percent'] = $item['avg'] >= $item['plan'] ? 100 : 0;
                 }
-
                 $sumKpiPercent = $sumKpiPercent + ($item['percent'] * $item['share'])/100;
                 
                 // plan
