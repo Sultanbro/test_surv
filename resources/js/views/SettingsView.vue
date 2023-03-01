@@ -6,7 +6,7 @@ const Company = () => import(/* webpackChunkName: "UserlistPage" */ '@/pages/Com
 const Fines = () => import(/* webpackChunkName: "FinesPage" */ '@/pages/Fines.vue')
 const Notifications = () => import(/* webpackChunkName: "NotificationsPage" */ '@/pages/Notifications.vue')
 const Permissions = () => import(/* webpackChunkName: "PermissionsPage" */ '@/pages/Permissions.vue')
-const CheckList = () => import(/* webpackChunkName: "checkListPage" */ '@/pages/checkList.vue')
+// const CheckList = () => import(/* webpackChunkName: "checkListPage" */ '@/pages/checkList.vue')
 const Awards = () => import(/* webpackChunkName: "AwardsSettingsPage" */ '@/pages/Awards/Awards.vue')
 
 export default {
@@ -18,7 +18,6 @@ export default {
 		Fines,
 		Notifications,
 		Permissions,
-		CheckList,
 		Awards,
 	},
 	data(){
@@ -59,14 +58,14 @@ export default {
 					title: 'Доступы',
 					access: ['permissions_view', 'settings_view']
 				},
-				{
-					id: '7',
-					htmlId: 'nav-checkList',
-					path: '/timetracking/settings?tab=7#nav-checkList',
-					title: 'Чек-листы',
-					access: ['checklists_view', 'settings_view'],
-					domain: 'bp'
-				},
+				// {
+				// 	id: '7',
+				// 	htmlId: 'nav-checkList',
+				// 	path: '/timetracking/settings?tab=7#nav-checkList',
+				// 	title: 'Чек-листы',
+				// 	access: ['checklists_view', 'settings_view'],
+				// 	domain: 'bp'
+				// },
 				{
 					id: '8',
 					htmlId: 'nav-integrations',
@@ -216,15 +215,15 @@ export default {
 									>
 										<Permissions />
 									</div>
-									<div
-										v-if="activeTab === '7' && can(['checklists_view', 'settings_view'])"
-										class="tab-pane fade show active py-3"
-										id="checkList"
-										role="tabpanel"
-										aria-labelledby="nav-checkList-tab"
-									>
-										<CheckList />
-									</div>
+									<!--									<div-->
+									<!--										v-if="activeTab === '7' && can(['checklists_view', 'settings_view'])"-->
+									<!--										class="tab-pane fade show active py-3"-->
+									<!--										id="checkList"-->
+									<!--										role="tabpanel"-->
+									<!--										aria-labelledby="nav-checkList-tab"-->
+									<!--									>-->
+									<!--										<CheckList />-->
+									<!--									</div>-->
 									<div
 										v-if="activeTab === '8' && can('is_admin')"
 										class="tab-pane fade show active py-3"

@@ -1,14 +1,14 @@
 <script lang="ts" setup>
 import VDateTime from '@core/components/VDateTime.vue'
 
-import type { UserDataRequest } from '@/stores/api'
+import type { UserDataRequest } from '@/stores/api.d'
 
 interface Props {
   modelValue: UserDataRequest
 }
 const props = defineProps<Props>()
 const emit = defineEmits<{
-  (e: 'update:modelValue'): void
+  (e: 'update:modelValue', data: UserDataRequest): void
 }>()
 
 const balanceFrom = ref<string | number>('')

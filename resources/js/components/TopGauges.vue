@@ -1,6 +1,6 @@
 <template>
 	<div
-		class="d-flex justify-content-start"
+		class="d-flex justify-content-start mt-3"
 		style="flex-wrap:wrap"
 		:class="{'top': page == 'top'}"
 		:key="skey"

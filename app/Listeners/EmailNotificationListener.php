@@ -34,9 +34,7 @@ class EmailNotificationListener
         try {
             Mail::to($event->email)->send(new SendInvitation([
                 'name'      => $event->name,
-                'email'     => $event->email,
-                'password'  => $event->password,
-                'subdomain' => tenant('id')
+                'authData' => $event->authData,
             ]));
         } catch (Throwable $e) {
             throw new Exception('Ошибка при отправке сообщений на email');

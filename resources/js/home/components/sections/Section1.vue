@@ -18,15 +18,15 @@
 					/>
 					<Section1Tab
 						:active-tab="activeTab"
-						tab-id="db"
-						@content="setTab('db')"
-						@popup="setPopup('db')"
-					/>
-					<Section1Tab
-						:active-tab="activeTab"
 						tab-id="kpi"
 						@content="setTab('kpi')"
 						@popup="setPopup('kpi')"
+					/>
+					<Section1Tab
+						:active-tab="activeTab"
+						tab-id="db"
+						@content="setTab('db')"
+						@popup="setPopup('db')"
 					/>
 					<Section1Tab
 						:active-tab="activeTab"
@@ -54,8 +54,8 @@
 				/>
 				<div class="jSec1-tabs-content">
 					<Section1Profile v-show="activeTab === 'profile'" />
-					<Section1DB v-show="activeTab === 'db'" />
 					<Section1KPI v-show="activeTab === 'kpi'" />
+					<Section1DB v-show="activeTab === 'db'" />
 					<Section1Courses v-show="activeTab === 'courses'" />
 					<Section1Struct v-show="activeTab === 'struct'" />
 					<Section1News v-show="activeTab === 'news'" />
@@ -72,10 +72,10 @@
 					<Section1Profile />
 				</Slide>
 				<Slide>
-					<Section1DB />
+					<Section1KPI />
 				</Slide>
 				<Slide>
-					<Section1KPI />
+					<Section1DB />
 				</Slide>
 				<Slide>
 					<Section1Courses />
@@ -251,6 +251,7 @@ export default {
 
 .jSec1-profile-title {
   //margin-top: 0;
+  margin-bottom: 0.5rem;
   color: #42b1f4;
   font-size: 1.25rem;
 }
