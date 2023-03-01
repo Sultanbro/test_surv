@@ -72,25 +72,30 @@
 						v-model="new_status"
 					/>
 				</b-form-group>
-				<div class="dialerlist">
+				<div
+					class="dialerlist"
+					v-if="workChart"
+				>
 					<div class="fl">
-						Время работы с
+						График работы
 					</div>
 					<div class="fl">
-						<input
-							type="time"
-							v-model="timeon"
-							class="form-control"
-							name="start_time"
-						>
-						<span class="before">до</span>
-						<input
-							type="time"
-							v-model="timeoff"
-							value=""
-							class="form-control"
-							name="end_time"
-						>
+						<b-form-select v-model="workChartId">
+							<b-form-select-option
+								disabled
+								value="null"
+							>
+								Выберите график работы
+							</b-form-select-option>
+							<template v-for="chart in workChart">
+								<b-form-select-option
+									:key="chart.id"
+									:value="chart.id"
+								>
+									График {{ chart.name }} (с {{ chart.start_time }} по {{ chart.end_time }})
+								</b-form-select-option>
+							</template>
+						</b-form-select>
 					</div>
 				</div>
 
@@ -425,7 +430,8 @@ export default {
 			new_status: '',
 			value: [], // selected users
 			options: [], // users options
-
+			workChart: null,
+			workChartId: null,
 			archived_groups: [],
 			payment_terms: '', // Условия оплаты труда в группе
 			timeon: '09:00',
@@ -499,6 +505,9 @@ export default {
 		}
 	},
 	created() {
+		this.axios.get('/work-chart').then(res => {
+			this.workChart = res.data.data;
+		});
 		if (this.activeuserid) {
 			this.init()
 		}
@@ -588,6 +597,7 @@ export default {
 				.then((response) => {
 					if (response.data?.data) {
 						const data = response.data.data;
+						console.log(data);
 						this.new_status = data.name;
 						this.value = data.users;
 						this.options = data.users;

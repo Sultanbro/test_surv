@@ -20,8 +20,8 @@
 				<b-thead>
 					<b-tr>
 						<b-th>№</b-th>
-						<b-th>Название</b-th>
-						<b-th>Рабочий график</b-th>
+						<b-th>График</b-th>
+						<b-th>Рабочие часы</b-th>
 						<b-th>Дата создания</b-th>
 						<b-th class="w-100px" />
 					</b-tr>
@@ -71,10 +71,25 @@
 		>
 			<b-form @submit.prevent="onSubmit">
 				<b-form-group
-					label="Название графика"
+					label="График"
 					label-cols="4"
 				>
-					<b-form-input v-model="form.name" />
+					<b-form-select v-model="form.name">
+						<b-form-select-option
+							disabled
+							value="null"
+						>
+							Выберите график работы
+						</b-form-select-option>
+						<template v-for="chart in workChartsList">
+							<b-form-select-option
+								:key="chart"
+								:value="chart"
+							>
+								График {{ chart }}
+							</b-form-select-option>
+						</template>
+					</b-form-select>
 				</b-form-group>
 				<div
 					id="workShedule"
@@ -83,7 +98,7 @@
 					<label
 						for="workStartTime"
 						class="col-sm-4 col-form-label"
-					>Рабочий график</label>
+					>Рабочие часы</label>
 					<div class="col-sm-8 form-inline">
 						<input
 							name="work_start_time"
@@ -149,20 +164,25 @@ export default {
 		return {
 			modal: false,
 			shiftsData: [],
+			workType: 1,
 			sidebarName: 'Создание новой смены',
 			showSidebar: false,
 			editShiftId: null,
 			form: {
-				name: '',
+				name: null,
 				workStartTime: null,
 				workEndTime: null,
 			},
+			workChartsList: ['1-1', '2-2', '3-3', '5-2', '6-1']
 		}
 	},
 	mounted() {
 		this.fetchData();
 	},
 	methods: {
+		toggleWeekDay(idx, day) {
+			this.$set(this.weekdays, idx, {day: day, active: this.weekdays[idx].active === 1 ? 0 : 1});
+		},
 		async fetchData() {
 			this.shiftsData = [];
 			let loader = this.$loading.show();
@@ -200,11 +220,23 @@ export default {
 		},
 		resetForm() {
 			this.editShiftId = null;
-			this.form.name = '';
+			this.form.name = null;
 			this.form.workStartTime = null;
 			this.form.workEndTime = null;
 		},
 		async onSubmit() {
+			if(!this.form.name){
+				this.$toast.error('Выберите график');
+				return;
+			}
+			if(!this.form.workStartTime){
+				this.$toast.error('Заполните рабочее время');
+				return;
+			}
+			if(!this.form.workEndTime){
+				this.$toast.error('Заполните рабочее время');
+				return;
+			}
 			let loader = this.$loading.show();
 			const formData = new FormData();
 			formData.append('name', this.form.name);
@@ -237,6 +269,10 @@ export default {
 
 
 <style lang="scss" scoped>
+	.label-style{
+		color: #8DA0C1;
+		margin-top: 5px;
+	}
 	.table-shifts {
 		tbody {
 			td, th {

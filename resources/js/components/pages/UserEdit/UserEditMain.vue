@@ -72,6 +72,7 @@ export default {
 			userBirthday: '',
 			userWork_start: '',
 			userWork_end: '',
+			workCharts: null,
 			country: this.user?.working_country || '',
 			working_city: this.user?.working_city || '',
 			cities: [],
@@ -118,6 +119,9 @@ export default {
 			if (citiesBox && !citiesBox.contains(target) && !citiesInput.contains(target)) {
 				this.isSearchResult = false;
 			}
+		});
+		this.axios.get('/work-chart').then(res => {
+			this.workCharts = res.data.data;
 		});
 	},
 	methods: {
