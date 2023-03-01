@@ -325,7 +325,12 @@ export default {
 			const group = formData.get('group');
 			const selectedCityInput = formData.get('selectedCityInput');
 			const zarplata = formData.get('zarplata');
-			console.log(zarplata);
+
+			for(let i = 1; i <= 5; i++){
+				if(formData.get(`file${i}`).size === 0) formData.delete(`file${i}`);
+			}
+			if(formData.get('file7').size === 0) formData.delete('file7');
+
 			if (zarplata <= 1) {
 				this.frontValid.zarplata = false;
 				this.showBlock(5);
