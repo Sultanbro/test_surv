@@ -8,7 +8,7 @@ use App\Api\BitrixOld\Lead\Field\Field;
 use App\Api\BitrixOld\Lead\Field\Phone as PhoneField;
 use App\Api\BitrixOld\Lead\Fields;
 use App\Api\BitrixOld\Lead\Lead;
-use App\Api\BitrixOld\PhoneLead\Data;
+use App\Api\BitrixOld\Lead\PhoneLead\Data;
 
 final class PhoneLead extends Lead
 {
