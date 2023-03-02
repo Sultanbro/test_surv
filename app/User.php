@@ -241,9 +241,9 @@ class User extends Authenticatable implements Authorizable
     /**
      * Получаем активную группу.
      *
-     * @return ProfileGroup
+     * @return ProfileGroup|null
      */
-    public function activeGroup(): ProfileGroup
+    public function activeGroup(): ?ProfileGroup
     {
         return $this->groups()->where('status', '=', 'active')->first();
     }
