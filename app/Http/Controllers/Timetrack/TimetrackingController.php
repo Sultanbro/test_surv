@@ -347,7 +347,7 @@ class TimetrackingController extends Controller
         
         $workday = $user->timetracking()->whereDate('enter', $now->format('Y-m-d'))->first();
 
-        WorkdayEvent::dispatch($user);
+//        WorkdayEvent::dispatch($user);
 
         // Не наничал работу и Нажал "Начать день"
         if( $workday && $workday->isStarted() ) {

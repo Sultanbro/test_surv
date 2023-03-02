@@ -11,7 +11,6 @@ use App\Http\Controllers\Auth as Auth;
 use App\Http\Controllers\Company;
 use App\Http\Controllers\Course as Course;
 use App\Http\Controllers\Kpi as Kpi;
-use App\Http\Controllers\Lead\LeadController;
 use App\Http\Controllers\Learning as Learning;
 use App\Http\Controllers\Salary as Salary;
 use App\Http\Controllers\Services as Services;
@@ -32,8 +31,6 @@ Route::middleware(['web','tenant'])->group(function () {
     Route::post('password/reset', [Auth\ResetPasswordController::class, 'reset']);
 
     Route::get('/tariffs/get', [Root\Tariffs\TariffController::class, 'get']);
-
-    Route::post('/create_lead', [LeadController::class, 'createLead']);
 });
 
 Route::middleware(['web','tenant','not_admin_subdomain'])->group(function () {
@@ -557,7 +554,7 @@ Route::middleware(['web','tenant','not_admin_subdomain'])->group(function () {
     Route::prefix('news')->name('articles.')->middleware(['auth'])->group(function () {
         Route::get('/', [Article\NewsController::class, 'index'])->name('index');
         Route::post('/', [Article\ArticleController::class, 'store'])->name('store');
-        Route::get('/get', [Article\ArticleController::class, 'index'])->name('index');
+        Route::get('/get', [Article\ArticleController::class, 'index'])->name('get');
         Route::get('{article_id}', [Article\ArticleController::class, 'show'])->name('show');
         Route::put('{article_id}', [Article\ArticleController::class, 'update'])->name('update');
         Route::delete('{article_id}', [Article\ArticleController::class, 'delete'])->name('delete');

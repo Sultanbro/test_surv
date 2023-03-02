@@ -5,9 +5,9 @@ export default {
 	auth: 'Кіру',
 	register: 'Тіркеу',
 	logout: 'шығу',
+	contacts: 'Контактілер',
 
-
-	's1-header': 'JOBTRON: қызметкерлерге ыңғайлы, бизнеске пайдалы',
+	's1-header': 'JOBTron: қызметкерлерге ыңғайлы, бизнеске пайдалы',
 	's1-profile': 'Жеке профиль',
 	's1-db': 'Білім базасы',
 	's1-kpi': 'KPI',

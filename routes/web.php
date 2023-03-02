@@ -27,9 +27,12 @@ Route::post('/setting/reset', [OtherSettingController::class, 'reset']);
 
 // Central App routes
 Route::get('/', [\App\Http\Controllers\PageController::class, 'home']);
+Route::get('/contacts', [\App\Http\Controllers\PageController::class, 'home'])->name('contacts');
+Route::get('/payments', [\App\Http\Controllers\PageController::class, 'home'])->name('payments');
 
 // Company documents
 Route::get('/aggreement', [\App\Http\Controllers\PrivacyController::class, 'aggreement']);
 Route::get('/offer', [\App\Http\Controllers\PrivacyController::class, 'offer']);
 Route::get('/terms', [\App\Http\Controllers\PrivacyController::class, 'terms']);
 
+Route::post('/create_lead', [App\Http\Controllers\Lead\LeadController::class, 'createLead']);

@@ -15,11 +15,8 @@ return new class extends Migration
     {
         Schema::table('users', function (Blueprint $table) {
             $table->unsignedBigInteger('work_chart_id')
-                ->default(5);
-            $table->foreign('work_chart_id')
-                ->references('id')
-                ->on('work_charts')
-                ->onDelete('cascade');
+                ->nullable()
+                ->default(0);
         });
     }
 
