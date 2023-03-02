@@ -33,7 +33,7 @@ final class UserRepository extends CoreRepository
 
     public function getUserByEmail(
         string $email
-    ): Model
+    ): ?Model
     {
         return $this->model()->where('email', strtolower($email))->first();
     }
