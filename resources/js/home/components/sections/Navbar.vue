@@ -4,16 +4,16 @@
 			:class="{'jNav-scroll': isScroll}"
 			class="jNav-content"
 		>
-			<a
+			<RouterLink
 				class="jNav-logo"
-				href=""
+				to="/"
 			>
 				<img
 					:src="require('../../assets/img/logo.svg').default"
 					alt="logo-img"
 					class="jNav-logo-img"
 				>
-			</a>
+			</RouterLink>
 			<div
 				:class="{'jNav-menu-active': menu}"
 				class="jNav-menu"

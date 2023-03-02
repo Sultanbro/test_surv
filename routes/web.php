@@ -27,6 +27,8 @@ Route::post('/setting/reset', [OtherSettingController::class, 'reset']);
 
 // Central App routes
 Route::get('/', [\App\Http\Controllers\PageController::class, 'home']);
+Route::get('/contacts', [\App\Http\Controllers\PageController::class, 'home'])->name('contacts');
+Route::get('/payments', [\App\Http\Controllers\PageController::class, 'home'])->name('payments');
 
 // Company documents
 Route::get('/aggreement', [\App\Http\Controllers\PrivacyController::class, 'aggreement']);
