@@ -179,8 +179,6 @@ final class UserRepository extends CoreRepository
                 'working_time_id'   => $dto->workTimes,
                 'phone'             => Phone::normalize($dto->phone),
                 'full_time'         => $dto->fullTime,
-                'work_start'        => $dto->workStartTime,
-                'work_end'          => $dto->workEndTime,
                 'currency'          => $dto->currency ?? 'kzt',
                 'weekdays'          => $dto->weekdays,
                 'working_country'   => $dto->workingCountry,
