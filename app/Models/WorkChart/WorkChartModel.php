@@ -86,14 +86,14 @@ class WorkChartModel extends Model
     ): int
     {
         $date = Carbon::now();
-        $chart = $user->activeGroup()->workChart()->first();
+        $chart = $user->activeGroup()?->workChart()?->first();
 
         if($user->workChart()->exists())
         {
             $chart = $user->workChart()->first();
         }
 
-        $igonore = in_array($chart->name, ['1-1', '2-2', '3-3']) ? [5, 6, 0] : [0];
+        $igonore = isset($chart->name) && in_array($chart->name, ['1-1', '2-2', '3-3']) ? [5, 6, 0] : [0];
 
         return workdays($date->year, $date->month, $igonore);
     }

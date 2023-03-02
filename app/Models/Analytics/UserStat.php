@@ -125,7 +125,7 @@ class UserStat extends Model
 
         $activity = Activity::find($activity_id);
 
-        
+
 
 
         if($activity) {
