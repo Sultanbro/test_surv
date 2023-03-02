@@ -99,7 +99,11 @@ class BitrixOld
         return $result;
     }
 
-    public function createLead(array $fields, ?bool $isNeedCallback)
+    /**
+     * @param array $fields
+     * @param ?bool $isNeedCallback
+     */
+    public function createLead(array $fields, ?bool $isNeedCallback = null): mixed
     {
         $arrayQuery = [
             'fields' => $fields,
