@@ -53,7 +53,8 @@ return new class extends Migration
             ]);
         }
 
-        DB::table('users')
+        DB::connection('mysql')
+            ->table('users')
             ->insert($newCentralUsers);
     }
 
