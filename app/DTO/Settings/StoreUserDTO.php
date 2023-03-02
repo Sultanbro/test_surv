@@ -130,8 +130,6 @@ class StoreUserDTO
             'phone_relatives'   => $this->phone,
             'phone_children'    => $this->phone,
             'full_time'         => $this->fullTime,
-            'work_start_time'   => $this->workStartTime,
-            'work_end_time'     => $this->workEndTime,
             'currency'          => $this->currency,
             'weekdays'          => $this->weekdays,
             'working_country'   => $this->workingCountry,
