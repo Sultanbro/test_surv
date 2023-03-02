@@ -507,6 +507,7 @@ export default {
 					<b-form-select
 						name="work-chart"
 						v-model="workChartId"
+						@change="$emit('selectWorkChart', workChartId)"
 					>
 						<b-form-select-option
 							disabled
@@ -566,154 +567,27 @@ export default {
 				</div>
 			</div>
 
-			<div class="form-group row">
-				<label
-					for="workingDays"
-					class="col-sm-4 col-form-label font-weight-bold"
-				>Рабочие дни <span class="red">*</span></label>
-				<div class="col-sm-8">
-					<select
-						name="working_days"
-						required
-						id="workingDays"
-						class="form-control"
-					>
-						<option
-							v-for="item in workingDays"
-							:key="item.id"
-							:value="item.id"
-							:selected="user && user.working_day_id == item.id"
-						>
-							{{ item.name }}
-						</option>
-					</select>
-				</div>
-			</div>
 
-			<div class="form-group row">
-				<label
-					for="workingTimes"
-					class="col-sm-4 col-form-label font-weight-bold"
-				>Рабочие часы</label>
-				<div class="col-sm-8">
-					<select
-						name="working_times"
-						id="workingTimes"
-						class="form-control"
-					>
-						<option
-							v-for="item in workingTimes"
-							:key="item.id"
-							:value="item.id"
-							:selected="user && user.working_time_id === item.id"
-						>
-							{{ item.name }}
-						</option>
-					</select>
-				</div>
-			</div>
-
-			<div
-				id="workShedule"
-				class="form-group row"
+			<!-- -->
+			<input
+				type="hidden"
+				name="working_days"
+				id="workingDays"
+				:value="user ? user.working_day_id : 1"
 			>
-				<label
-					for="workingTimes"
-					class="col-sm-4 col-form-label font-weight-bold"
-				>Рабочий график</label>
-				<div class="col-sm-8 form-inline">
-					<input
-						name="work_start_time"
-						v-model="userWork_start"
-						type="time"
-						id="workStartTime"
-						class="form-control mr-2 work-start-time"
-					>
-					<label for="workEndTime">До </label>
-					<input
-						name="work_start_end"
-						v-model="userWork_end"
-						type="time"
-						id="workEndTime"
-						class="form-control mx-2 work-end-time"
-					>
-				</div>
-			</div>
-
-			<div
-				class="form-group row"
-				id="weekdays"
+			<input
+				type="hidden"
+				name="working_times"
+				id="workingTimes"
+				:value="user ? user.working_time_id : 1"
 			>
-				<label
-					for="workingTimes"
-					class="col-sm-4 col-form-label font-weight-bold"
-				>Выходные</label>
-				<div class="col-sm-8 form-inline">
-					<input
-						name="weekdays"
-						v-model="weekdaysModel"
-						type="hidden"
-						id="weekdays-input"
-					>
-
-					<div
-						class="weekday"
-						:class="{active: weekdays[1] === '1'}"
-						data-id="1"
-						@click="toggleWeekDay(1)"
-					>
-						Пн
-					</div>
-					<div
-						class="weekday"
-						:class="{active: weekdays[2] === '1'}"
-						data-id="2"
-						@click="toggleWeekDay(2)"
-					>
-						Вт
-					</div>
-					<div
-						class="weekday"
-						:class="{active: weekdays[3] === '1'}"
-						data-id="3"
-						@click="toggleWeekDay(3)"
-					>
-						Ср
-					</div>
-					<div
-						class="weekday"
-						:class="{active: weekdays[4] === '1'}"
-						data-id="4"
-						@click="toggleWeekDay(4)"
-					>
-						Чт
-					</div>
-					<div
-						class="weekday"
-						:class="{active: weekdays[5] === '1'}"
-						data-id="5"
-						@click="toggleWeekDay(5)"
-					>
-						Пт
-					</div>
-					<div
-						class="weekday"
-						:class="{active: weekdays[6] === '1'}"
-						data-id="6"
-						@click="toggleWeekDay(6)"
-					>
-						Сб
-					</div>
-					<div
-						class="weekday"
-						:class="{active: weekdays[0] === '1'}"
-						data-id="0"
-						@click="toggleWeekDay(0)"
-					>
-						Вс
-					</div>
-				</div>
-			</div>
+			<input
+				type="hidden"
+				name="weekdays"
+				id="weekdays-input"
+				:value="weekdaysModel"
+			>
+			<!-- -->
 
 			<div class="form-group row">
 				<label

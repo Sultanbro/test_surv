@@ -39,6 +39,7 @@ export default {
 			activeUserId: this.$route.query.id || '',
 			csrf: '',
 			tenant: window.location.hostname.split('.')[0],
+			workChartId: null,
 			user: null,
 			groups: [],
 			positions: [],
@@ -302,6 +303,9 @@ export default {
 		validChange(obj){
 			this.frontValid[obj.name] = obj.bool;
 		},
+		selectWorkChart(val) {
+			this.workChartId = val;
+		},
 		async submit(isTrainee, increment_provided, isNew){
 			this.frontValid.formSubmitted = true;
 			this.trainee = isTrainee
@@ -385,33 +389,31 @@ export default {
 			}
 
 		},
-		sendForm(formData, isNew){
+		async sendForm(formData, isNew){
 			if(this.errors && this.errors.length) return this.$toast.error('Не удалось сохранить информацию о сотруднике');
-			axios({
-				method: 'post',
-				url: this.formAction,
-				data: formData,
-				headers: { 'Content-Type': 'multipart/form-data' },
-			}).then((res) => {
-				if(isNew){
+			try{
+				const response = await this.axios.post(this.formAction, formData, {
+					headers: { 'Content-Type': 'multipart/form-data' }
+				});
+				console.log('Данные сохранены');
+				if (this.workChartId) {
+					const userId = this.user ? this.user.id : response.data.data.id;
+					const formDataWorkChart = new FormData();
+					formDataWorkChart.append('user_id', userId);
+					formDataWorkChart.append('work_chart_id', this.workChartId);
+					await axios.post('/work-chart/user/add', formDataWorkChart);
+					console.log('график сохранен');
+				}
+				if (isNew) {
 					this.$toast.success('Информация о сотруднике сохранена');
-					// window.location = '/timetracking/settings?tab=1';
-					// this.parseResponse(data);
-					console.log(res);
-					// const workChart = formData.get('work-chart');
-					// if(workChart){
-					// 	const formDataWorkChart = new FormData();
-					// 	formDataWorkChart.append('user_id', this.user.id);
-					// 	formDataWorkChart.append('work_chart_id', workChart);
-					// 	const response = await this.axios.post('/work-chart/user/add', formData);
-					// }
+					window.location = '/timetracking/settings?tab=1';
 				} else {
 					this.$toast.success('Информация о сотруднике обновлена');
 				}
-			}).catch(err => {
-				console.error(err);
+			} catch (e){
+				console.log(e);
 				this.$toast.error('Не удалось сохранить информацию о сотруднике');
-			});
+			}
 		},
 		async deleteUser(){
 			if(this.$refs.file8.value && this.fireCause !== 'Дубликат, 2 учетки') {
@@ -769,6 +771,7 @@ export default {
 									:in_groups="in_groups"
 									:front_valid="frontValid"
 									@valid_change="validChange"
+									@selectWorkChart="selectWorkChart"
 								/>
 
 								<div class="col-9 add_info">
