@@ -325,7 +325,6 @@ export default {
 			const group = formData.get('group');
 			const selectedCityInput = formData.get('selectedCityInput');
 			const zarplata = formData.get('zarplata');
-
 			for(let i = 1; i <= 5; i++){
 				if(formData.get(`file${i}`).size === 0) formData.delete(`file${i}`);
 			}
@@ -379,7 +378,6 @@ export default {
 			}
 
 			formData.set('zarplata', zarplata.replace(/\D/g, ''));
-
 			if(this.frontValid.phone && this.frontValid.email && this.frontValid.name && this.frontValid.lastName && this.frontValid.birthday && this.frontValid.position && this.frontValid.group && this.frontValid.selectedCityInput && this.frontValid.zarplata){
 				this.sendForm(formData, isNew);
 			} else {
@@ -394,11 +392,19 @@ export default {
 				url: this.formAction,
 				data: formData,
 				headers: { 'Content-Type': 'multipart/form-data' },
-			}).then(() => {
+			}).then((res) => {
 				if(isNew){
 					this.$toast.success('Информация о сотруднике сохранена');
-					window.location = '/timetracking/settings?tab=1';
+					// window.location = '/timetracking/settings?tab=1';
 					// this.parseResponse(data);
+					console.log(res);
+					// const workChart = formData.get('work-chart');
+					// if(workChart){
+					// 	const formDataWorkChart = new FormData();
+					// 	formDataWorkChart.append('user_id', this.user.id);
+					// 	formDataWorkChart.append('work_chart_id', workChart);
+					// 	const response = await this.axios.post('/work-chart/user/add', formData);
+					// }
 				} else {
 					this.$toast.success('Информация о сотруднике обновлена');
 				}

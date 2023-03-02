@@ -72,7 +72,8 @@ export default {
 			userBirthday: '',
 			userWork_start: '',
 			userWork_end: '',
-			workCharts: null,
+			workChart: null,
+			workChartId: null,
 			country: this.user?.working_country || '',
 			working_city: this.user?.working_city || '',
 			cities: [],
@@ -104,6 +105,7 @@ export default {
 			this.userWork_start = user ? user.work_start : '';
 			this.userWork_end = user ? user.work_end : '';
 			this.position = user ? user.position_id : '';
+			this.workChartId = user ? user.work_chart_id : null;
 		},
 		position(value){
 			if(value === -1) {
@@ -121,7 +123,7 @@ export default {
 			}
 		});
 		this.axios.get('/work-chart').then(res => {
-			this.workCharts = res.data.data;
+			this.workChart = res.data.data;
 		});
 	},
 	methods: {
@@ -339,7 +341,8 @@ export default {
 				@valid_change="validChangeGroup"
 			/>
 			<!-- end of groups and books tab -->
-
+		</div>
+		<div class="col-12 col-xl-6">
 			<div class="form-group row">
 				<label
 					for="userType"
@@ -429,32 +432,6 @@ export default {
 					</select>
 				</div>
 			</div>
-		</div>
-		<div class="col-12 col-xl-6">
-			<div class="form-group row">
-				<label
-					for="workingDays"
-					class="col-sm-4 col-form-label font-weight-bold"
-				>Рабочие дни <span class="red">*</span></label>
-				<div class="col-sm-8">
-					<select
-						name="working_days"
-						required
-						id="workingDays"
-						class="form-control"
-					>
-						<option
-							v-for="item in workingDays"
-							:key="item.id"
-							:value="item.id"
-							:selected="user && user.working_day_id == item.id"
-						>
-							{{ item.name }}
-						</option>
-					</select>
-				</div>
-			</div>
-
 			<div class="form-group row">
 				<label
 					for="workingDays"
@@ -522,6 +499,32 @@ export default {
 					</div>
 				</div>
 			</div>
+			<div class="form-group row">
+				<label
+					class="col-sm-4 col-form-label font-weight-bold"
+				>Рабочий график</label>
+				<div class="col-sm-8">
+					<b-form-select
+						name="work-chart"
+						v-model="workChartId"
+					>
+						<b-form-select-option
+							disabled
+							value="null"
+						>
+							Выберите график работы
+						</b-form-select-option>
+						<template v-for="chart in workChart">
+							<b-form-select-option
+								:key="chart.id"
+								:value="chart.id"
+							>
+								График {{ chart.name }} (с {{ chart.start_time }} по {{ chart.end_time }})
+							</b-form-select-option>
+						</template>
+					</b-form-select>
+				</div>
+			</div>
 
 			<div class="form-group row">
 				<label
@@ -560,6 +563,30 @@ export default {
 							Part-Time
 						</label>
 					</div>
+				</div>
+			</div>
+
+			<div class="form-group row">
+				<label
+					for="workingDays"
+					class="col-sm-4 col-form-label font-weight-bold"
+				>Рабочие дни <span class="red">*</span></label>
+				<div class="col-sm-8">
+					<select
+						name="working_days"
+						required
+						id="workingDays"
+						class="form-control"
+					>
+						<option
+							v-for="item in workingDays"
+							:key="item.id"
+							:value="item.id"
+							:selected="user && user.working_day_id == item.id"
+						>
+							{{ item.name }}
+						</option>
+					</select>
 				</div>
 			</div>
 
