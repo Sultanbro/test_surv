@@ -700,7 +700,11 @@ Route::middleware(['web','tenant','admin_subdomain'])->group(function () {
         Route::get('/', [Admin\AdminController::class, 'admins']);
         Route::post('/add', [Admin\AdminController::class, 'addAdmin']);
         Route::delete('/delete/{user}', [Admin\AdminController::class, 'deleteAdmin']);
+        Route::post('/edit/{user}', [Admin\AdminController::class, 'edit']);
     });
+
+    Route::get('permissions/get', [Admin\AdminPermissionController::class, 'getPermissions']);
+    Route::get('roles/get', [Admin\AdminPermissionController::class, 'getRoles']);
 });
 
 Route::middleware(['web', 'tenant', 'not_admin_subdomain'])->group(function () {
