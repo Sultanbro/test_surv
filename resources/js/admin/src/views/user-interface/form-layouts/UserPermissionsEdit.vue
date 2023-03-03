@@ -3,7 +3,6 @@ import { ref } from 'vue'
 import { useUserRolesStore } from '@/stores/user-roles'
 import { VueCropper }  from 'vue-cropperjs'
 import FilePicker from '@core/components/FilePicker.vue'
-import { rejects } from 'assert';
 
 type Props = {
 	errors: {

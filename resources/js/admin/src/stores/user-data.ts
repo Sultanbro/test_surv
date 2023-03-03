@@ -1,5 +1,5 @@
 import { fetchUserData } from './api'
-import type { UserData, UserDataRequest, UserDataResponse } from './api.d'
+import type { UserData, UserDataRequest, UserDataResponse } from './api'
 
 export type UserDataKeys = keyof UserData
 

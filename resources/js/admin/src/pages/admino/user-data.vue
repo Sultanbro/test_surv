@@ -1,6 +1,6 @@
 <script lang="ts" setup>
 import UserData from '@/views/user-interface/tables/UserData.vue'
-import TableFooter from '@/views/user-interface/tables/TableFooter.vue'
+// import TableFooter from '@/views/user-interface/tables/TableFooter.vue'
 import UserDataFilters from '@/views/user-interface/form-layouts/UserDataFilters.vue'
 import SideBar from '@/layouts/components/SideBar.vue'
 import { useUserDataStore } from '@/stores/user-data'
@@ -17,11 +17,11 @@ onMounted(() => {
   managersStore.fetchManagers()
 })
 
-const page = ref(1)
-const pages = ref(1)
+// const page = ref(1)
+// const pages = ref(1)
 
-const perPage = ref(10)
-const perPageItems = [10, 20, 50, 100]
+// const perPage = ref(10)
+// const perPageItems = [10, 20, 50, 100]
 const filters = ref<UserDataRequest>({
   '>balance': '',
   '<balance': '',
@@ -37,21 +37,21 @@ const filters = ref<UserDataRequest>({
   'country': '',
 })
 
-function onPage(value: number){
-  page.value = value
-  userDataStore.$patch({
-    page: value,
-  })
-  userDataStore.fetchUsers(filters.value)
-}
+// function onPage(value: number){
+//   page.value = value
+//   userDataStore.$patch({
+//     page: value,
+//   })
+//   userDataStore.fetchUsers(filters.value)
+// }
 
-function onPerPage(value: number){
-  perPage.value = value
-  userDataStore.$patch({
-    onPage: value,
-  })
-  userDataStore.fetchUsers(filters.value)
-}
+// function onPerPage(value: number){
+//   perPage.value = value
+//   userDataStore.$patch({
+//     onPage: value,
+//   })
+//   userDataStore.fetchUsers(filters.value)
+// }
 
 function nextPage(){
   if(userDataStore.lastPage > userDataStore.page) userDataStore.nextPage(filters.value)
