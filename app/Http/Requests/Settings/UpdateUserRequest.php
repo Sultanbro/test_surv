@@ -181,8 +181,6 @@ class UpdateUserRequest extends FormRequest
             $phoneRelatives,
             $phoneChildren,
             $fullTime,
-            $workStartTime,
-            $workEndTime,
             $currency,
             $weekdays,
             $workingCountry,
