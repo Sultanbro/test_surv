@@ -75,8 +75,6 @@ class StoreUserDTO
         public ?string $phoneRelatives,
         public ?string $phoneChildren,
         public int $fullTime,
-        public ?string $workStartTime,
-        public ?string $workEndTime,
         public ?string $currency,
         public ?string $weekdays,
         public string $workingCountry,
