@@ -23,7 +23,7 @@ class SixByOneChart implements Chart
 
         if ($countOfDayPerWeek >= WorkChartEnum::COUNT_OF_WORK_DAY_FOR_SIX_BY_ONE)
         {
-            throw new Exception("Вы отработали количество рабочих дней для своего графика", ErrorCode::BAD_REQUEST, []);
+            throw new Exception("Вы отработали количество рабочих дней для своего графика");
         }
 
         return true;

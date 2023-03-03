@@ -25,7 +25,7 @@ class FiveByTwoChart implements Chart
 
         if ($today->isSunday() || $today->isSaturday())
         {
-            new CustomException("Сегодня выходные дни. Вы уже достаточно отработали, идите отдыхайте, проведите время с семьей :)", ErrorCode::BAD_REQUEST, []);
+            throw new Exception("Сегодня выходные дни. Вы уже достаточно отработали, идите отдыхайте, проведите время с семьей :)");
         }
 
         if ($countOfDayPerWeek >= WorkChartEnum::COUNT_OF_WORK_DAY_FOR_FIVE_BY_TWO)
