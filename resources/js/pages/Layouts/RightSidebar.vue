@@ -31,12 +31,12 @@
 			<a
 				href="javascript:void(0)"
 				class="header__right-icon"
-				v-b-popover.hover.left.html="'Тикеты - Этот функционал в разработке'"
 			>
 				<img
 					src="/images/dist/header-right-5.svg"
 					alt="nav icon"
 					class="header__icon-img"
+					@click.once="openChat"
 				>
 			</a>
 
@@ -94,11 +94,20 @@ export default {
 	props: {},
 	data: function () {
 		return {
-
+			isBp: window.location.hostname.split('.')[0] === 'bp',
 		};
 	},
 	methods: {
-
+		openChat(){
+			if(!this.isBp){
+				const url = 'https://cdn-ru.bitrix24.kz/b1734679/crm/site_button/loader_12_koodzo.js';
+				const s = document.createElement('script');
+				s.async = true;
+				s.src = url + '?' + (Date.now() / 60000 | 0);
+				const h = document.getElementsByTagName('script')[0];
+				h.parentNode.insertBefore(s,h);
+			}
+		}
 	}
 };
 </script>

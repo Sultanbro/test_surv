@@ -263,7 +263,7 @@ class UserService
             (new DayTypeRepository)->createNew($userId);
         }
 
-        $this->descriptionRepository->createDescription($userId,$isTrainee);
+        $this->descriptionRepository->createDescription($userId, $isTrainee);
 
         CreateTimeTrackHistoryEvent::dispatch($userId);
 
