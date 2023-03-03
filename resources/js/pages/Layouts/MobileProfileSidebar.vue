@@ -56,7 +56,7 @@ export default {
 	},
 	computed: {
 		...mapState(usePersonalInfoStore, ['user', 'position', 'groups', 'salary', 'workingDay', 'schedule', 'workingTime', 'buttonStatus']),
-		...mapState(useProfileStatusStore, ['status', 'balance', 'message']),
+		...mapState(useProfileStatusStore, ['status', 'balance']),
 		userInfo(){
 			return {
 				user: this.user,
@@ -97,7 +97,6 @@ export default {
 			profileStatusStore.buttonStatus = 'loading'
 			try{
 				await this.updateStatus(this.getParams())
-				if(this.status === 'workdone') this.$toast.info(this.message)
 				if(this.status === 'started') this.$toast.info('День начат')
 				if(this.status === 'stopped' || this.status === '') this.$toast.info('День завершен')
 				profileStatusStore.buttonStatus = 'init'

@@ -8,7 +8,6 @@ export const useProfileStatusStore = defineStore('profileStatus', {
 		isLoading: false,
 		buttonStatus: 'init',
 		status: 'stopped',
-		message: '',
 		groupsall: [],
 		orders: [],
 		zarplata: '',
@@ -42,17 +41,12 @@ export const useProfileStatusStore = defineStore('profileStatus', {
 		},
 		async updateStatus(body){
 			try{
-				const data = await updateProfileStatus(body);
-				console.log(data);
-				this.message = data.error ? data.error.message : null;
-				if(data.error){
-					this.status = 'workdone';
-				}
+				const data = await updateProfileStatus(body)
+				this.status = data.status
 				this.corp_book = data.corp_book
 				// this.corp_book = data.corp_book.page
 			}
 			catch(error){
-				this.message = error;
 				console.error('updateStatus', error)
 			}
 		},

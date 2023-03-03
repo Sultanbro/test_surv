@@ -72,8 +72,6 @@ export default {
 			userBirthday: '',
 			userWork_start: '',
 			userWork_end: '',
-			workChart: null,
-			workChartId: null,
 			country: this.user?.working_country || '',
 			working_city: this.user?.working_city || '',
 			cities: [],
@@ -105,7 +103,6 @@ export default {
 			this.userWork_start = user ? user.work_start : '';
 			this.userWork_end = user ? user.work_end : '';
 			this.position = user ? user.position_id : '';
-			this.workChartId = user ? user.work_chart_id : null;
 		},
 		position(value){
 			if(value === -1) {
@@ -121,9 +118,6 @@ export default {
 			if (citiesBox && !citiesBox.contains(target) && !citiesInput.contains(target)) {
 				this.isSearchResult = false;
 			}
-		});
-		this.axios.get('/work-chart').then(res => {
-			this.workChart = res.data.data;
 		});
 	},
 	methods: {
@@ -341,8 +335,7 @@ export default {
 				@valid_change="validChangeGroup"
 			/>
 			<!-- end of groups and books tab -->
-		</div>
-		<div class="col-12 col-xl-6">
+
 			<div class="form-group row">
 				<label
 					for="userType"
@@ -432,6 +425,32 @@ export default {
 					</select>
 				</div>
 			</div>
+		</div>
+		<div class="col-12 col-xl-6">
+			<div class="form-group row">
+				<label
+					for="workingDays"
+					class="col-sm-4 col-form-label font-weight-bold"
+				>Рабочие дни <span class="red">*</span></label>
+				<div class="col-sm-8">
+					<select
+						name="working_days"
+						required
+						id="workingDays"
+						class="form-control"
+					>
+						<option
+							v-for="item in workingDays"
+							:key="item.id"
+							:value="item.id"
+							:selected="user && user.working_day_id == item.id"
+						>
+							{{ item.name }}
+						</option>
+					</select>
+				</div>
+			</div>
+
 			<div class="form-group row">
 				<label
 					for="workingDays"
@@ -499,33 +518,6 @@ export default {
 					</div>
 				</div>
 			</div>
-			<div class="form-group row">
-				<label
-					class="col-sm-4 col-form-label font-weight-bold"
-				>Рабочий график</label>
-				<div class="col-sm-8">
-					<b-form-select
-						name="work-chart"
-						v-model="workChartId"
-						@change="$emit('selectWorkChart', workChartId)"
-					>
-						<b-form-select-option
-							disabled
-							value="null"
-						>
-							Выберите график работы
-						</b-form-select-option>
-						<template v-for="chart in workChart">
-							<b-form-select-option
-								:key="chart.id"
-								:value="chart.id"
-							>
-								График {{ chart.name }} (с {{ chart.start_time }} по {{ chart.end_time }})
-							</b-form-select-option>
-						</template>
-					</b-form-select>
-				</div>
-			</div>
 
 			<div class="form-group row">
 				<label
@@ -567,39 +559,130 @@ export default {
 				</div>
 			</div>
 
+			<div class="form-group row">
+				<label
+					for="workingTimes"
+					class="col-sm-4 col-form-label font-weight-bold"
+				>Рабочие часы</label>
+				<div class="col-sm-8">
+					<select
+						name="working_times"
+						id="workingTimes"
+						class="form-control"
+					>
+						<option
+							v-for="item in workingTimes"
+							:key="item.id"
+							:value="item.id"
+							:selected="user && user.working_time_id === item.id"
+						>
+							{{ item.name }}
+						</option>
+					</select>
+				</div>
+			</div>
 
-			<!-- -->
-			<input
-				type="hidden"
-				name="working_days"
-				id="workingDays"
-				:value="user ? user.working_day_id : 1"
+			<div
+				id="workShedule"
+				class="form-group row"
 			>
-			<input
-				type="hidden"
-				name="working_times"
-				id="workingTimes"
-				:value="user ? user.working_time_id : 1"
+				<label
+					for="workingTimes"
+					class="col-sm-4 col-form-label font-weight-bold"
+				>Рабочий график</label>
+				<div class="col-sm-8 form-inline">
+					<input
+						name="work_start_time"
+						v-model="userWork_start"
+						type="time"
+						id="workStartTime"
+						class="form-control mr-2 work-start-time"
+					>
+					<label for="workEndTime">До </label>
+					<input
+						name="work_start_end"
+						v-model="userWork_end"
+						type="time"
+						id="workEndTime"
+						class="form-control mx-2 work-end-time"
+					>
+				</div>
+			</div>
+
+			<div
+				class="form-group row"
+				id="weekdays"
 			>
-			<!--			<input-->
-			<!--				type="hidden"-->
-			<!--				name="work_start_time"-->
-			<!--				id="workStartTime"-->
-			<!--				value="09:00:00"-->
-			<!--			>-->
-			<!--			<input-->
-			<!--				type="hidden"-->
-			<!--				name="work_start_end"-->
-			<!--				id="workStartEnd"-->
-			<!--				value="18:00:00"-->
-			<!--			>-->
-			<input
-				type="hidden"
-				name="weekdays"
-				id="weekdays-input"
-				:value="weekdaysModel"
-			>
-			<!-- -->
+				<label
+					for="workingTimes"
+					class="col-sm-4 col-form-label font-weight-bold"
+				>Выходные</label>
+				<div class="col-sm-8 form-inline">
+					<input
+						name="weekdays"
+						v-model="weekdaysModel"
+						type="hidden"
+						id="weekdays-input"
+					>
+
+					<div
+						class="weekday"
+						:class="{active: weekdays[1] === '1'}"
+						data-id="1"
+						@click="toggleWeekDay(1)"
+					>
+						Пн
+					</div>
+					<div
+						class="weekday"
+						:class="{active: weekdays[2] === '1'}"
+						data-id="2"
+						@click="toggleWeekDay(2)"
+					>
+						Вт
+					</div>
+					<div
+						class="weekday"
+						:class="{active: weekdays[3] === '1'}"
+						data-id="3"
+						@click="toggleWeekDay(3)"
+					>
+						Ср
+					</div>
+					<div
+						class="weekday"
+						:class="{active: weekdays[4] === '1'}"
+						data-id="4"
+						@click="toggleWeekDay(4)"
+					>
+						Чт
+					</div>
+					<div
+						class="weekday"
+						:class="{active: weekdays[5] === '1'}"
+						data-id="5"
+						@click="toggleWeekDay(5)"
+					>
+						Пт
+					</div>
+					<div
+						class="weekday"
+						:class="{active: weekdays[6] === '1'}"
+						data-id="6"
+						@click="toggleWeekDay(6)"
+					>
+						Сб
+					</div>
+					<div
+						class="weekday"
+						:class="{active: weekdays[0] === '1'}"
+						data-id="0"
+						@click="toggleWeekDay(0)"
+					>
+						Вс
+					</div>
+				</div>
+			</div>
 
 			<div class="form-group row">
 				<label

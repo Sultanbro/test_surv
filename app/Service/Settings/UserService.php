@@ -101,7 +101,7 @@ class UserService
      */
     public function userStore(
         StoreUserDTO $dto
-    ): User
+    ): int|RedirectResponse
     {
 
         $user = $this->userRepository->getUserByEmail($dto->email);
@@ -185,7 +185,7 @@ class UserService
             $dto->salary,
         );
 
-        return $user;
+        return Response::HTTP_CREATED;
 
     }
 
