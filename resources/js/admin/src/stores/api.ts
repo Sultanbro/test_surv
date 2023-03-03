@@ -1,6 +1,6 @@
 import axios from 'axios'
 
-function onError(error: any) {
+function onError(error: AxiosError): ErrorList {
   if (axios.isAxiosError(error)) {
     console.log('error message: ', error.message)
 
@@ -52,8 +52,30 @@ export const fetchUserPermissions = async (req: UserPermissionsRequest) => {
 }
 
 export const addUserPermissions = async (req: AddUserPermissionsRequest) => {
+  const formData = new FormData()
+  Object.entries(req).forEach(([key, value]) => formData.append(key, value))
   try {
-    const { data, status } = await axios.post<AddUserPermissionsResponse>('/admins/add', req)
+    const { data, status } = await axios.post<AddUserPermissionsResponse>('/admins/add', formData, {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+      }
+    })
+    return data
+  }
+  catch (error) {
+    return onError(error)
+  }
+}
+
+export const updateUserPermissions = async (id: number, req: AddUserPermissionsRequest) => {
+  const formData = new FormData()
+  Object.entries(req).forEach(([key, value]) => formData.append(key, value))
+  try {
+    const { data, status } = await axios.post<AddUserPermissionsResponse>(`/admins/edit/${id}`, formData, {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+      }
+    })
     return data
   }
   catch (error) {
@@ -94,3 +116,12 @@ export const setManager = async (owner_id: number, manager_id: number) => {
   }
 }
 
+export const fetchUserRoles = async (): Promise<{data: Array<UserRole>} | ErrorList> => {
+  try{
+    const { data } = await axios.get<{data: Array<UserRole>}>('/roles/get')
+    return data
+  }
+  catch (error) {
+    return onError(error)
+  }
+}
