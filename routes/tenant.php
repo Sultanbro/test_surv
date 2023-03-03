@@ -681,7 +681,7 @@ Route::group([
  * Owners list
  * Admin.jobtron.org routes
  */
-Route::middleware(['web'])->group(function () {
+Route::middleware(['web','tenant','admin_subdomain'])->group(function () {
 
     Route::group(['prefix' => 'admin','as' => 'admin.'], function () {
         Route::get('/owners', [Admin\AdminController::class, 'owners']);
