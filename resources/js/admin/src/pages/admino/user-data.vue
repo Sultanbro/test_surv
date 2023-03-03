@@ -7,7 +7,7 @@ import { useUserDataStore } from '@/stores/user-data'
 import { useManagersStore } from '@/stores/managers'
 
 
-import type { UserDataRequest } from '@/stores/api.d'
+import type { UserDataRequest } from '@/stores/api'
 
 const userDataStore = useUserDataStore()
 const managersStore = useManagersStore()
