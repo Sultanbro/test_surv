@@ -12,6 +12,7 @@ import flatpickr from 'flatpickr'
 import { Russian } from 'flatpickr/dist/l10n/ru.js'
 import 'flatpickr/dist/flatpickr.css'
 import userInfo from '@/plugins/userInfo'
+import 'cropperjs/dist/cropper.css'
 
 loadFonts()
 
@@ -28,5 +29,5 @@ app.mount('#app')
 
 
 // /admins (GET)- список кто может входить на admin.jobtron.org (они не должны видеть права)
-// /admins/add  (POST) -добавить 
+// /admins/add  (POST) -добавить
 // /admins/delete/{id}  (DELETE) - удалить
