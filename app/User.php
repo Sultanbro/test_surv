@@ -35,6 +35,9 @@ use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Spatie\Permission\Traits\HasRoles;
+use App\Models\WorkChart\WorkChartModel;
+use App\Models\WorkChart\Workday;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class User extends Authenticatable implements Authorizable
 {
@@ -1201,5 +1204,38 @@ class User extends Authenticatable implements Authorizable
 
         }
         return '/user.png';
+    }
+
+
+    public function activeGroup(): ?ProfileGroup
+    {
+        return $this->groups()->where('status', '=', 'active')->first();
+    }
+
+
+    public function workdays(): BelongsToMany
+    {
+        return $this->belongsToMany(Workday::class, 'user_workday')->withTimestamps();
+    }
+
+    /**
+     * Получаем график для пользователя.
+     *
+     * @return BelongsTo
+     */
+    public function workChart(): BelongsTo
+    {
+        return $this->belongsTo(WorkChartModel::class);
+    }
+
+    /**
+     * @param int $id
+     * @return Model
+     */
+    public static function getUserById(
+        int $id
+    ): Model
+    {
+        return self::query()->findOrFail($id);
     }
 }
