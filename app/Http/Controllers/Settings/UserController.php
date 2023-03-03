@@ -71,7 +71,11 @@ class UserController extends Controller
 
         return $this->response(
             message: "User stored successfully",
-            data: $response
+            data: [
+                'id' => $response->id,
+                'name' => $response->name,
+            ],
+            code: Response::HTTP_CREATED,
         );
     }
 
