@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 namespace App\Service\Admin;
 
+use App\DTO\Admin\AddOrUpdateAdminDTO;
 use App\DTO\Admin\UpdateAdminDTO;
 use App\Enums\ErrorCode;
 use App\Support\Core\CustomException;
@@ -17,12 +18,12 @@ class UpdateAdminService
 {
     /**
      * @param User $user
-     * @param UpdateAdminDTO $dto
+     * @param AddOrUpdateAdminDTO $dto
      * @return bool
      */
     public function handle(
         User $user,
-        UpdateAdminDTO $dto
+        AddOrUpdateAdminDTO $dto
     ): bool
     {
         return $user->update($dto->toArray());

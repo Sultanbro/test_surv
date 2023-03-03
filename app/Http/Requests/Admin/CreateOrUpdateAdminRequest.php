@@ -2,12 +2,12 @@
 
 namespace App\Http\Requests\Admin;
 
-use App\DTO\Admin\AddAdminDTO;
+use App\DTO\Admin\AddOrUpdateAdminDTO;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Support\Arr;
 use Illuminate\Validation\Rule;
 
-class CreateAdminRequest extends FormRequest
+class CreateOrUpdateAdminRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -38,9 +38,9 @@ class CreateAdminRequest extends FormRequest
     }
 
     /**
-     * @return AddAdminDTO
+     * @return AddOrUpdateAdminDTO
      */
-    public function toDto(): AddAdminDTO
+    public function toDto(): AddOrUpdateAdminDTO
     {
         $validated = $this->validated();
 
@@ -52,7 +52,7 @@ class CreateAdminRequest extends FormRequest
         $image      = Arr::get($validated, 'image');
         $phone      = Arr::get($validated, 'phone');
 
-        return new AddAdminDTO(
+        return new AddOrUpdateAdminDTO(
             $name,
             $lastName,
             $email,

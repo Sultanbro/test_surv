@@ -5,7 +5,7 @@ namespace App\DTO\Admin;
 
 use Illuminate\Http\UploadedFile;
 
-final class AddAdminDTO
+final class AddOrUpdateAdminDTO
 {
     /**
      * @param string $name

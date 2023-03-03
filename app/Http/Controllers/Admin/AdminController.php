@@ -9,7 +9,7 @@ use App\Service\Admin\UpdateAdminService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
-use App\Http\Requests\Admin\CreateAdminRequest;
+use App\Http\Requests\Admin\CreateOrUpdateAdminRequest;
 use App\Models\CentralUser;
 use App\Repositories\Admin\OwnerRepository;
 use App\User;
@@ -68,11 +68,11 @@ class AdminController extends Controller
     /**
      * Создаем админа или менеджера.
      *
-     * @param CreateAdminRequest $request
+     * @param CreateOrUpdateAdminRequest $request
      * @param AddAdminService $service
      * @return JsonResponse
      */
-    public function addAdmin(CreateAdminRequest $request, AddAdminService $service): JsonResponse
+    public function addAdmin(CreateOrUpdateAdminRequest $request, AddAdminService $service): JsonResponse
     {
         return $this->response(
             message: 'Success',
@@ -112,9 +112,14 @@ class AdminController extends Controller
         }
     }
 
-    public function edit(EditAdminRequest $request, UpdateAdminService $service, User $user)
+    /**
+     * @param CreateOrUpdateAdminRequest $request
+     * @param UpdateAdminService $service
+     * @param User $user
+     * @return JsonResponse
+     */
+    public function edit(CreateOrUpdateAdminRequest $request, UpdateAdminService $service, User $user): JsonResponse
     {
-
         return $this->response(
             message: 'Success updated',
             data: $service->handle($user, $request->toDto())

@@ -4,7 +4,7 @@ declare(strict_types=1);
 namespace App\Service\Admin;
 
 use App\Classes\Helpers\Phone;
-use App\DTO\Admin\AddAdminDTO;
+use App\DTO\Admin\AddOrUpdateAdminDTO;
 use App\Enums\ErrorCode;
 use App\Helpers\FileHelper;
 use App\Support\Core\CustomException;
@@ -20,12 +20,12 @@ use Throwable;
 class AddAdminService
 {
     /**
-     * @param AddAdminDTO $dto
+     * @param AddOrUpdateAdminDTO $dto
      * @return Model
      * @throws Throwable
      */
     public function handle(
-        AddAdminDTO $dto
+        AddOrUpdateAdminDTO $dto
     ): Model
     {
         $fileName = FileHelper::save($dto->image, 'admins/images');
