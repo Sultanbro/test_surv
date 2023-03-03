@@ -16,8 +16,6 @@ use App\Models\Permission;
 use App\Models\Tax;
 use App\Models\Traits\HasTenants;
 use App\Models\User\Card;
-use App\Models\WorkChart\WorkChartModel;
-use App\Models\WorkChart\Workday;
 use App\OauthClientToken as Oauth;
 use App\Service\Department\UserService;
 use Carbon\Carbon;
@@ -25,7 +23,6 @@ use Illuminate\Contracts\Auth\Access\Authorizable;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
@@ -100,7 +97,6 @@ class User extends Authenticatable implements Authorizable
         'phone_2',
         'phone_3',
         'phone_4',
-        'work_chart_id'
     ];
     /**
      * Валюты для профиля.
@@ -108,34 +104,13 @@ class User extends Authenticatable implements Authorizable
     const CURRENCY = ['KZT', 'RUB', 'UZS', 'KGS','BYN', 'UAH'];
 
     /**
-     * Рабочие дня у пользователя.
-     *
-     * @return BelongsToMany
+     * @param Builder $query
+     * @param string $email
+     * @return Builder
      */
-    public function workdays(): BelongsToMany
+    public function scopeGetByEmail(Builder $query, string $email): Builder
     {
-        return $this->belongsToMany(Workday::class, 'user_workday')->withTimestamps();
-    }
-
-    /**
-     * Получаем график для пользователя.
-     *
-     * @return BelongsTo
-     */
-    public function workChart(): BelongsTo
-    {
-        return $this->belongsTo(WorkChartModel::class);
-    }
-
-    /**
-     * @param int $id
-     * @return Model
-     */
-    public static function getUserById(
-        int $id
-    ): Model
-    {
-        return self::query()->findOrFail($id);
+        return $query->where('email', $email);
     }
 
     /**
@@ -237,17 +212,6 @@ class User extends Authenticatable implements Authorizable
     {
         return $this->hasMany('App\Models\Attendance', 'user_id', 'id');
     }
-
-    /**
-     * Получаем активную группу.
-     *
-     * @return ProfileGroup|null
-     */
-    public function activeGroup(): ?ProfileGroup
-    {
-        return $this->groups()->where('status', '=', 'active')->first();
-    }
-
 
     /**
      * @return BelongsToMany

@@ -29,7 +29,7 @@ class CreateOrUpdateAdminRequest extends FormRequest
         return [
             'name'      => ['required', 'string', 'max:190'],
             'last_name' => ['required', 'string', 'max:190'],
-            'email'     => ['required', 'string', 'email', 'max:255', 'unique:users'],
+            'email'     => ['required', 'string', 'email', 'max:255'],
             'password'  => ['required', 'string', 'min:8', 'confirmed'],
             'role_id'   => ['required', 'integer', 'exists:roles,id'],
             'image'     => ['file', 'mimes:jpg,png', 'max:7168'],
@@ -56,7 +56,7 @@ class CreateOrUpdateAdminRequest extends FormRequest
             $name,
             $lastName,
             $email,
-            $password,
+            bcrypt($password),
             $roleId,
             $image,
             $phone

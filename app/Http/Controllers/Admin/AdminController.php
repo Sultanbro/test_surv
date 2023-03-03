@@ -18,7 +18,7 @@ class AdminController extends Controller
 {   
     public function __construct()
     {
-        $this->middleware('auth');
+//        $this->middleware('auth');
     }
 
     /**
@@ -71,6 +71,7 @@ class AdminController extends Controller
      * @param CreateOrUpdateAdminRequest $request
      * @param AddAdminService $service
      * @return JsonResponse
+     * @throws \Throwable
      */
     public function addAdmin(CreateOrUpdateAdminRequest $request, AddAdminService $service): JsonResponse
     {

@@ -29,6 +29,12 @@ class AddAdminService
     ): Model
     {
         $fileName = FileHelper::save($dto->image, 'admins/images');
+        $user = User::getByEmail($dto->email)->exists();
+
+        if ($user)
+        {
+            new CustomException("Электронная почта $dto->email уже существует", ErrorCode::BAD_REQUEST, []);
+        }
 
         return DB::transaction(function () use ($dto, $fileName) {
             $user =  User::query()->create([
@@ -37,7 +43,7 @@ class AddAdminService
                 'email'     => $dto->email,
                 'phone'     => Phone::normalize($dto->phone),
                 'img_url'   => $fileName,
-                'password'  => bcrypt($dto->password)
+                'password'  => $dto->password
             ]);
 
             $user->roles()->attach($dto->roleId);
