@@ -1,47 +1,11 @@
 <template>
 	<div class="mb-3">
 		<div
-			class="d-flex align-items-center mb-2"
+			class="d-flex align-items-center justify-content-end mb-2"
+			style="margin-top: -38px;"
 			v-if="show_headers"
 		>
-			<h4 class="mr-2">
-				{{ activity.name }} <i
-					class="fa fa-cogs show"
-					@click="editActivity()"
-				/>
-			</h4>
-
-			<div class="my-2 d-flex ml-auto mr-5">
-				<div class="d-flex mr-5">
-					<div class="mr-2">
-						<b-form-radio
-							v-model="user_types"
-							name="some-radios"
-							value="0"
-						>
-							Действующие
-						</b-form-radio>
-					</div>
-					<div class="mr-2">
-						<b-form-radio
-							v-model="user_types"
-							name="some-radios"
-							value="1"
-						>
-							Уволенные
-						</b-form-radio>
-					</div>
-					<div class="mr-2">
-						<b-form-radio
-							v-model="user_types"
-							name="some-radios"
-							value="2"
-						>
-							Стажеры
-						</b-form-radio>
-					</div>
-				</div>
-
+			<div class="d-flex mr-3">
 				<b-form-checkbox
 					v-model="filter.fulltime"
 					:value="1"
@@ -54,32 +18,46 @@
 					v-model="filter.parttime"
 					:value="1"
 					:unchecked-value="0"
-					class="mr-2"
+					class="ml-3"
 				>
 					Part-Time
 				</b-form-checkbox>
 			</div>
-
-
+			<select
+				v-model="user_types"
+				class="form-control w-200px mr-3"
+			>
+				<option value="0">
+					Действующие
+				</option>
+				<option value="1">
+					Уволенные
+				</option>
+				<option value="2">
+					Стажеры
+				</option>
+			</select>
 			<div>
 				<a
 					@click="showExcelImport = !showExcelImport"
 					v-if="group_id == 42 || group_id == 88 || (group_id == 71 && activity.id == 149) || (group_id == 71 && activity.id == 151)"
-					class="btn btn-success rounded mr-2"
+					class="btn btn-success text-white rounded"
 				>
 					<i class="fa fa-upload" />
 					Импорт</a>
-			</div>
-
-
-			<div>
 				<a
 					href="#"
 					@click="exportData()"
-					class="btn btn-success rounded"
+					class="btn btn-success ml-1 rounded"
 				>
 					<i class="far fa-file-excel" />
 					Экспорт</a>
+				<button
+					class="btn btn-info"
+					@click="editActivity()"
+				>
+					<i class="fa fa-cogs show" />
+				</button>
 			</div>
 		</div>
 
@@ -411,15 +389,21 @@
 			</div>
 
 			<div class="row">
-				<div class="col-5 d-flex align-items-center">
-					<p class="mb-0">
-						Редактируемый
-					</p>
-					<input
-						type="checkbox"
-						class="form-control form-control-sm"
-						v-model="local_activity.editable"
-					>
+				<div class="col-7 offset-5 d-flex align-items-center">
+					<div class="custom-control custom-checkbox">
+						<input
+							id="checkbox-edit"
+							type="checkbox"
+							class="custom-control-input"
+							v-model="local_activity.editable"
+						>
+						<label
+							for="checkbox-edit"
+							class="custom-control-label"
+						>
+							Редактируемый
+						</label>
+					</div>
 				</div>
 			</div>
 		</b-modal>

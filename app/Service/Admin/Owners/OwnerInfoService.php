@@ -9,6 +9,9 @@ use App\Models\CentralUser;
 use App\Models\Tenant;
 use App\Repositories\Tariffs\TariffPaymentRepository;
 use App\Support\Core\CustomException;
+use App\User;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Auth;
 
 /**
 * Класс для работы с Service.
@@ -28,15 +31,24 @@ class OwnerInfoService
      */
     public function handle(): array
     {
-        $ownerId = auth()->id() ?? 1;
-        $owner = CentralUser::getById($ownerId)->first();
+        $owner = $this->getOwner();
         $domain = $owner->tenants()->where('tenant_id', tenant('id'))->exists();
 
         abort_if(!$domain, ErrorCode::FORBIDDEN, "У вас не доступа для этого суб домена");
 
         return [
             'owner' => $owner,
-            'tariff' => $this->paymentRepository->getTariffByPayment($ownerId)
+            'tariff' => $this->paymentRepository->getTariffByPayment($owner->id)
         ];
+    }
+
+    /**
+     * @return Model
+     */
+    private function getOwner(): Model
+    {
+        $user = Auth::user();
+
+        return CentralUser::getByEmail($user->email)->first();
     }
 }

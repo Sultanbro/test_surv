@@ -155,11 +155,25 @@ class FileHelper
             $file->move("static/profiles/" . $userId . $path, $name);
         }
 
-        Downloads::query()->updateOrCreate(
-            [
-                'user_id' => $userId
-            ],
-            $downloads
-        );
+        $existedDownloads = Downloads::query()
+            ->where('user_id', $userId)
+            ->first();
+
+        if ($existedDownloads) {
+            foreach ($downloads as $key => $item) {
+                if ($item) {
+                    $existedDownloads[$key] = $item;
+                }
+            }
+            $existedDownloads->save();
+        } else {
+            Downloads::query()->create(
+                [
+                    'user_id' => $userId
+                ],
+                $downloads
+            );
+        }
+
     }
 }

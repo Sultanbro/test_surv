@@ -78,7 +78,6 @@ class TariffPayment extends Model
             'tariff_payment.tariff_id',
             'tariff_payment.extra_user_limit',
             'tariff_payment.expire_date',
-            'tariff_payment.expire_date',
             'tariff_payment.created_at',
             'tariff.kind',
             'tariff.validity',
@@ -86,7 +85,7 @@ class TariffPayment extends Model
             \DB::raw('(`tariff`.`users_limit` + `tariff_payment`.`extra_user_limit`) as total_user_limit')
         )
             ->leftJoin('tariff', 'tariff.id', 'tariff_payment.tariff_id')
-            ->where('tariff_payment.expire_date', '>', $today)
+            ->where('tariff_payment.expire_date', '>', $today->format('Y-m-d'))
             ->where('status', PaymentStatusEnum::STATUS_SUCCESS)
             ->orderBy('tariff_payment.expire_date', 'desc')
             ->groupBy('tariff_payment.id')
@@ -165,7 +164,7 @@ class TariffPayment extends Model
      * @param string $paymentId
      * @param string $serviceForPayment
      * @param bool $autoPayment
-     * @return object
+     * @return TariffPayment
      * @throws Exception
      */
     public static function createPaymentOrFail(
@@ -176,7 +175,7 @@ class TariffPayment extends Model
         string $paymentId,
         string $serviceForPayment,
         bool $autoPayment = false
-    ): object
+    ): TariffPayment
     {
         try {
             return self::query()->create([

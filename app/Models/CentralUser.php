@@ -51,6 +51,11 @@ class CentralUser extends Model
         }
     }
 
+    public function scopeGetByEmail($query, string $email)
+    {
+        return $query->where('email', $email);
+    }
+
     /**
      * @param $query
      * @param int $id

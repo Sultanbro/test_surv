@@ -81,7 +81,6 @@
 					:disabled="isButtonDisabled"
 					class="jButton"
 					type="submit"
-					@click="callMeBack"
 				>
 					{{ callMeButtonContent }}
 				</button>
@@ -94,6 +93,7 @@
 import {Hooper, Slide} from 'hooper'
 import 'hooper/dist/hooper.css'
 import InputText from '../../components/InputText'
+import axios from 'axios';
 
 export default {
 	name: 'SectionSection4',
@@ -153,9 +153,16 @@ export default {
 		this.observer.observe(this.$refs.items)
 	},
 	methods: {
-		onSubmit(e) {
+		async onSubmit(e) {
 			e.preventDefault()
 			if (this.name && this.phone) {
+				const formData = new FormData();
+				formData.append('name', this.name);
+				formData.append('phone', this.phone);
+				const response = await axios.post('/create_lead', formData);
+				if(response.data.data.result){
+					this.isButtonDisabled = true
+				}
 				alert(`${this.name}, мы Вам перезвоним в ближайшее время.`)
 			} else {
 				alert('Заполните пожалуйста все поля.')
@@ -178,11 +185,6 @@ export default {
 			await this.wait(350)
 			this.isBlock3Highlight = false
 			this.observer.disconnect()
-		},
-		callMeBack() {
-			if (this.name && this.phone) {
-				this.isButtonDisabled = true
-			}
 		}
 	}
 }

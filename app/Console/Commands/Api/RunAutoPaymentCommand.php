@@ -2,24 +2,10 @@
 
 namespace App\Console\Commands\Api;
 
-use App\Models\Tariff\Tariff;
 use App\Models\Tariff\TariffPayment;
 use App\Service\Payments\PaymentFactory;
-use App\Service\Payments\YooKassaConnectors\YooKassa;
-use App\Traits\YooKassaTrait;
 use Exception;
 use Illuminate\Console\Command;
-use naffiq\tenge\CurrencyRates;
-use YooKassa\Client;
-use YooKassa\Common\Exceptions\ApiException;
-use YooKassa\Common\Exceptions\BadApiRequestException;
-use YooKassa\Common\Exceptions\ExtensionNotFoundException;
-use YooKassa\Common\Exceptions\ForbiddenException;
-use YooKassa\Common\Exceptions\InternalServerError;
-use YooKassa\Common\Exceptions\NotFoundException;
-use YooKassa\Common\Exceptions\ResponseProcessingException;
-use YooKassa\Common\Exceptions\TooManyRequestsException;
-use YooKassa\Common\Exceptions\UnauthorizedException;
 
 class RunAutoPaymentCommand extends Command
 {
@@ -37,10 +23,6 @@ class RunAutoPaymentCommand extends Command
      */
     protected $description = 'Запускается для пользователей у кого включен авто-оплата';
 
-    /**
-     * @var YooKassa
-     */
-    private YooKassa $yooKassa;
 
     /**
      * @var PaymentFactory
@@ -50,7 +32,6 @@ class RunAutoPaymentCommand extends Command
     public function __construct()
     {
         parent::__construct();
-        $this->yooKassa = new YooKassa();
         $this->factory = new PaymentFactory();
     }
 

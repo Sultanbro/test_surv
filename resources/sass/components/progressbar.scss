@@ -15,7 +15,13 @@ $grey: #dedfe0;
       background: #98d3f5 !important;
     }
   }
-  .progress-bar {background: transparent;
+
+.course-progress{
+  border-radius: 50px;
+  overflow: hidden;
+}
+
+  .progress:not(.course-progress) .progress-bar {background: transparent;
     width: 100%;
     label {
         color: grey;
@@ -43,7 +49,7 @@ $grey: #dedfe0;
       text-align: left;
       padding: 0 10px;
     }
-  
+
     .tracker-bar {
       background: #98d3f5 ;
       height: 24px;

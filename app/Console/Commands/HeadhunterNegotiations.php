@@ -46,7 +46,7 @@ class HeadhunterNegotiations extends Command
 
     protected $date;
 
-    protected $bitrix;
+    protected Bitrix $bitrix;
 
     /**
      * Execute the console command.

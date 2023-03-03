@@ -89,17 +89,32 @@
 				</div>
 				<div class="jFooter-col">
 					<p class="jFooter-sub-pay">
-						{{ $lang(lang, 'footer-pay') }}
+						<RouterLink
+							class="jFooter-link"
+							to="/payments"
+						>
+							{{ $lang(lang, 'footer-pay') }}
+						</RouterLink>
 					</p>
 					<div class="jFooter-pay">
+						<a
+							class="jFooter-pay-link jFooter-pay-visa"
+							href="javascript:void(0)"
+						/>
+						<a
+							class="jFooter-pay-link jFooter-pay-mc"
+							href="javascript:void(0)"
+						/>
 						<a
 							class="jFooter-pay-link jFooter-pay-mir"
 							href="javascript:void(0)"
 						/>
 						<a
-							class="jFooter-pay-link jFooter-pay-visa"
+							class="jFooter-pay-link jFooter-pay-uniseller"
 							href="javascript:void(0)"
 						/>
+					</div>
+					<div class="jFooter-pay">
 						<a
 							class="jFooter-pay-link jFooter-pay-ym"
 							href="javascript:void(0)"
@@ -112,6 +127,12 @@
 		<div class="section-content">
 			<div class="jFooter-bottom">
 				<div class="jFooter-rules">
+					<RouterLink
+						class="jFooter-rules-link jFooter-link"
+						to="/contacts"
+					>
+						{{ $lang(lang, 'contacts') }}
+					</RouterLink>
 					<a
 						class="jFooter-rules-link jFooter-link"
 						href="/docs/contract-offer.pdf"
@@ -310,23 +331,42 @@ export default {
   align-items: center;
   gap: 0.75rem;
   padding-top: 0.5rem;
+  &:first-of-type{
+    margin-bottom: 3rem;
+  }
 }
 
 .jFooter-pay-link {
   display: inline-block;
   background-size: cover;
+  opacity: 0.8;
+  &:hover{
+	opacity: 1;
+  }
 }
 
 .jFooter-pay-mir {
   width: 3.4375rem;
-  height: 0.9375rem;
-  background-image: url("../../assets/img/footer-mir.svg");
+  height: 1.375rem;
+  background-image: url("../../assets/img/footer-mir.png");
 }
 
 .jFooter-pay-visa {
-  width: 2.9375rem;
-  height: 0.9375rem;
-  background-image: url("../../assets/img/footer-visa.svg");
+  width: 3.0625rem;
+  height: 1.375rem;
+  background-image: url("../../assets/img/footer-visa.png");
+}
+
+.jFooter-pay-mc {
+  width: 2.4375rem;
+  height: 1.375rem;
+  background-image: url("../../assets/img/footer-mc.png");
+}
+
+.jFooter-pay-uniseller {
+  width: 2.5rem;
+  height: 1.375rem;
+  background-image: url("../../assets/img/footer-uniseller.png");
 }
 
 .jFooter-pay-ym {
@@ -343,6 +383,7 @@ export default {
   .jFooter-cols {
     display: flex;
     //flex-flow: row;
+	width: 100%;
     justify-content: space-around;
     padding-bottom: 2rem
   }
@@ -351,7 +392,7 @@ export default {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    white-space: pre-wrap;
+    white-space: wrap;
     text-align: center;
   }
 

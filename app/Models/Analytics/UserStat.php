@@ -2,6 +2,7 @@
 
 namespace App\Models\Analytics;
 
+use App\Models\WorkChart\WorkChartModel;
 use App\Repositories\ActivityRepository;
 use App\WorkingDay;
 use Illuminate\Database\Eloquent\Model;
@@ -124,7 +125,7 @@ class UserStat extends Model
 
         $activity = Activity::find($activity_id);
 
-        
+
 
 
         if($activity) {
@@ -183,8 +184,9 @@ class UserStat extends Model
                 }
 
                 $applied_from = $localUser->workdays_from_applied($date, $workDay);
-                
-                $work_days = 26;
+
+                $work_days = $user == null ? 26 : WorkChartModel::workdaysPerMonth($user) ?? 26;
+
                 if($applied_from > 0){
                     $work_days = $applied_from;
                 }

@@ -46,15 +46,16 @@ class UserDescriptionRepository extends CoreRepository
         int $isTrainee
     ):void
     {
-       $this->model()->updateOrCreate(
+        $this->model()->updateOrCreate(
             [
                 'user_id' => $userId,
-            ]
-            ,
-            [
-                'is_trainee' => $isTrainee,
-                'applied' => now()
-            ]
+            ],
+            $isTrainee
+                ? ['is_trainee' => 1]
+                : [
+                    'is_trainee' => 0,
+                    'applied' => now()
+                ]
         );
     }
 }

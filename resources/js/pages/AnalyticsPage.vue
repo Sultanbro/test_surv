@@ -91,23 +91,6 @@
 				class="col-1"
 				v-else
 			/>
-			<div class="col-2">
-				<button
-					class="btn btn-success rounded btn-sm"
-					@click="add_activity()"
-				>
-					<i
-						class="fa fa-plus-square"
-						style="font-size:14px"
-					/>
-				</button>
-				<button
-					class="btn btn-primary rounded btn-sm"
-					@click="showOrder = true"
-				>
-					<i class="fas fa-sort-amount-down" />
-				</button>
-			</div>
 		</div>
 		<div>
 			<div v-if="!firstEnter">
@@ -117,30 +100,28 @@
 				>
 					<div v-if="dataLoaded">
 						<div class="wrap">
-							<div class="d-flex justify-content-between">
-								<div>
-									<TopGauges
-										:utility_items="data.utility"
-										:editable="false"
-										wrapper_class="d-flex"
-										:key="123"
-										page="analytics"
-									/>
-								</div>
-								<div class="p-4">
-									<p class="ap-text">
-										Процент текучки кадров за прошлый месяц: <span>{{ data.fired_percent_prev }}%</span>
-									</p>
-									<p class="ap-text">
-										Процент текучки кадров за текущий месяц: <span>{{ data.fired_percent }}%</span>
-									</p>
-									<p class="ap-text">
-										В прошлом месяце было уволено: <span>{{ data.fired_number_prev }}</span>
-									</p>
-									<p class="ap-text">
-										В текущем месяце было уволено: <span>{{ data.fired_number }}</span>
-									</p>
-								</div>
+							<div>
+								<TopGauges
+									:utility_items="data.utility"
+									:editable="false"
+									wrapper_class="d-flex"
+									:key="123"
+									page="analytics"
+								/>
+							</div>
+							<div class="p-4">
+								<p class="ap-text">
+									Процент текучки кадров за прошлый месяц: <span>{{ data.fired_percent_prev }}%</span>
+								</p>
+								<p class="ap-text">
+									Процент текучки кадров за текущий месяц: <span>{{ data.fired_percent }}%</span>
+								</p>
+								<p class="ap-text">
+									В прошлом месяце было уволено: <span>{{ data.fired_number_prev }}</span>
+								</p>
+								<p class="ap-text">
+									В текущем месяце было уволено: <span>{{ data.fired_number }}</span>
+								</p>
 							</div>
 						</div>
 
@@ -182,7 +163,25 @@
 								title="Подробная"
 								key="2"
 								card
+								class="position-relative"
 							>
+								<div class="kakieto-knopki">
+									<button
+										class="btn btn-success rounded btn-sm"
+										@click="add_activity()"
+									>
+										<i
+											class="fa fa-plus-square"
+											style="font-size:14px"
+										/>
+									</button>
+									<button
+										class="btn btn-primary rounded btn-sm"
+										@click="showOrder = true"
+									>
+										<i class="fas fa-sort-amount-down" />
+									</button>
+								</div>
 								<b-tabs
 									type="card"
 									class="mt-4"
@@ -197,13 +196,13 @@
 										>
 											<!-- Switch month and year of Activity in detailed -->
 											<button
-												class="btn btn-default rounded mt-2"
+												class="btn btn-default rounded mt-4"
 												@click="switchToMonthInActivity(index)"
 											>
 												Месяц
 											</button>
 											<button
-												class="btn btn-default rounded mt-2"
+												class="btn btn-default rounded mt-4"
 												@click="switchToYearInActivity(index)"
 											>
 												Год
@@ -1039,4 +1038,9 @@ export default {
         border: 1px solid #dde8ee;
         border-radius: 5px;
     }
+	.kakieto-knopki{
+		position: absolute;
+		top: 0;
+		right: 0;
+	}
 </style>
