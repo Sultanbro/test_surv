@@ -583,6 +583,18 @@ export default {
 			>
 			<input
 				type="hidden"
+				name="work_start_time"
+				id="workStartTime"
+				value="09:00:00"
+			>
+			<input
+				type="hidden"
+				name="work_start_end"
+				id="workStartEnd"
+				value="18:00:00"
+			>
+			<input
+				type="hidden"
 				name="weekdays"
 				id="weekdays-input"
 				:value="weekdaysModel"
