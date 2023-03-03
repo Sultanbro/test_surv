@@ -812,22 +812,31 @@ class KpiStatisticService
      */
     public function fetchKpiGroup(Request $request, int $targetableId) : array
     {
-        $filters = $request->filters;
+        $filters = [
+            'year' => $request->year,
+            'month' => $request->month,
+            'type' => $request->type ? $request->type : 1
+        ];
 
-        if(
-            isset($filters['data_from']['year'])
-            && isset($filters['data_from']['month'])
-        ) {
+        $targetableType = 'App\User';
+        switch ($filters['type']) {
+            case 2:
+                $targetableType = 'App\ProfileGroup';
+                break;
+            case 3:
+                $targetableType = 'App\Position';
+                break;
+        }
+
+        if(isset($filters['year']) && isset($filters['month'])){
             $date = Carbon::createFromDate(
-                $filters['data_from']['year'],
-                $filters['data_from']['month'],
+                $filters['year'],
+                $filters['month'],
                 1
             );
         } else {
             $date = Carbon::now()->setTimezone('Asia/Almaty')->startOfMonth();
         }
-
-        $user_id = isset($filters['user_id']) ? $filters['user_id'] : 0;
 
         $this->workdays = collect($this->userWorkdays($request));
         $this->updatedValues = UpdatedUserStat::query()
@@ -852,9 +861,7 @@ class KpiStatisticService
                     $query->withTrashed()->whereDate('created_at', '<=', $last_date);
                 },
                 'items.activity'
-            ]);
-
-        $kpi = $kpi
+            ])
             ->whereDate('created_at', '<=', Carbon::parse($date->format('Y-m-d'))
                 ->endOfMonth()
                 ->format('Y-m-d')
@@ -864,6 +871,7 @@ class KpiStatisticService
                     ->format('Y-m-d')))
             )
             ->where('targetable_id', $targetableId)
+            ->where('targetable_type', $targetableType)
             ->firstOrFail();
 
         $kpi->kpi_items = [];
@@ -876,7 +884,7 @@ class KpiStatisticService
             }
         }
 
-        $kpi->users = $this->getUsersForKpi($kpi, $date, $user_id);
+        $kpi->users = $this->getUsersForKpi($kpi, $date, 0);
         $kpi_sum = 0;
         foreach ($kpi->users as $user){
             $kpi_sum = $kpi_sum + $user['avg_percent'];
