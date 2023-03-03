@@ -347,16 +347,16 @@ class TimetrackingController extends Controller
         
         $workday = $user->timetracking()->whereDate('enter', $now->format('Y-m-d'))->first();
 
-        WorkdayEvent::dispatch($user);
+//        WorkdayEvent::dispatch($user);
 
         // Не наничал работу и Нажал "Начать день"
         if( $workday && $workday->isStarted() ) {
             throw new \Exception('Вы уже начали рабочий день!');
         }
 
-//        if ( !$user->canWorkThisDay() ) {
-//            throw new \Exception('Вы не можете работать в выходной день!');
-//        }
+        if ( !$user->canWorkThisDay() ) {
+            throw new \Exception('Вы не можете работать в выходной день!');
+        }
         
         if ( $schedule['start']->isFuture() ) {
             throw new \Exception('Вы не можете начать день до ' . $schedule['start']->format('H:i'));

@@ -277,7 +277,7 @@ export default {
 	computed: {
 		...mapState(useSettingsStore, ['logo']),
 		...mapState(usePersonalInfoStore, ['user', 'position', 'groups', 'salary', 'workingDay', 'schedule', 'workingTime', 'buttonStatus']),
-		...mapState(useProfileStatusStore, ['status', 'balance', 'corp_book', 'message']),
+		...mapState(useProfileStatusStore, ['status', 'balance', 'corp_book']),
 		...mapState(useSettingsStore, {settingsReady: 'isReady'}),
 		...mapState(useProfileStatusStore, {statusReady: 'isReady'}),
 		...mapState(useProfileSalaryStore, {salaryReady: 'isReady'}),
@@ -430,7 +430,6 @@ export default {
 			profileStatusStore.buttonStatus = 'loading'
 			try{
 				await this.updateStatus(this.getParams())
-				if(this.status === 'workdone') this.$toast.info(this.message)
 				if(this.status === 'started') this.$toast.info('День начат')
 				if(this.status === 'stopped' || this.status === '') this.$toast.info('День завершен')
 				profileStatusStore.buttonStatus = 'init'

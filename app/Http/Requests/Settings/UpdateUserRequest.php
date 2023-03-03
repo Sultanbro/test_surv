@@ -44,6 +44,8 @@ class UpdateUserRequest extends FormRequest
             'phone_relatives'   => ['string', 'numeric', 'min:10'],
             'phone_children'    => ['string', 'numeric', 'min:10'],
             'full_time'         => ['required', 'numeric'],
+            'work_start_time'   => ['string'],
+            'work_start_end'     => ['string'],
             'currency'          => ['string'],
             'weekdays'          => ['required', 'string'],
             'selectedCityInput' => ['required', 'string'],
@@ -132,6 +134,8 @@ class UpdateUserRequest extends FormRequest
         $phoneRelatives = Arr::get($validated, 'phone_relatives');
         $phoneChildren = Arr::get($validated, 'phone_children');
         $fullTime = Arr::get($validated, 'full_time');
+        $workStartTime = Arr::get($validated, 'work_start_time');
+        $workEndTime = Arr::get($validated, 'work_start_end');
         $currency = Arr::get($validated, 'currency');
         $weekdays = Arr::get($validated, 'weekdays');
         $workingCountry = Arr::get($validated, 'selectedCityInput');
@@ -181,6 +185,8 @@ class UpdateUserRequest extends FormRequest
             $phoneRelatives,
             $phoneChildren,
             $fullTime,
+            $workStartTime,
+            $workEndTime,
             $currency,
             $weekdays,
             $workingCountry,
