@@ -343,6 +343,7 @@ class TimetrackingController extends Controller
     {   
         $user = auth()->user();
         $schedule = $user->schedule();
+
         $now = Carbon::now($user->timezone());
         
         $workday = $user->timetracking()->whereDate('enter', $now->format('Y-m-d'))->first();
@@ -352,10 +353,6 @@ class TimetrackingController extends Controller
         // Не наничал работу и Нажал "Начать день"
         if( $workday && $workday->isStarted() ) {
             throw new \Exception('Вы уже начали рабочий день!');
-        }
-
-        if ( !$user->canWorkThisDay() ) {
-            throw new \Exception('Вы не можете работать в выходной день!');
         }
         
         if ( $schedule['start']->isFuture() ) {
