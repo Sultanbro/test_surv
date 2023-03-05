@@ -7,7 +7,7 @@ export default {
 	logout: 'Logout',
 	contacts: 'Contacts',
 
-	's1-header': 'JOBTron: convenient for employees, useful for business',
+	's1-header': 'Corporate portal: useful for business, convenient for employees',
 	's1-profile': 'Personal Profile',
 	's1-db': 'Knowledge base',
 	's1-kpi': 'KPI',
