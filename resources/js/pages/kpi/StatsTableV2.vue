@@ -59,14 +59,18 @@
 							:key="w"
 						>
 							<td
-								@click="wrap_item.expanded = !wrap_item.expanded"
+								@click="kpis[types[wrap_item.targetable_type]][wrap_item.targetable_id] ? closeKPI(wrap_item.targetable_id, wrap_item.targetable_type) : fetchKPI(wrap_item.targetable_id, wrap_item.targetable_type)"
 								class="pointer p-2 text-center"
 							>
 								<div class="d-flex align-items-center justify-content-center px-2">
 									<span class="mr-2">{{ w + 1 }}</span>
 									<i
 										class="fa fa-minus mt-1"
-										v-if="wrap_item.expanded"
+										v-if="kpis[types[wrap_item.targetable_type]][wrap_item.targetable_id]"
+									/>
+									<i
+										class="fa fa-circle-notch fa-spin mt-1"
+										v-else-if="loading[types[wrap_item.targetable_type]][wrap_item.targetable_id]"
 									/>
 									<i
 										class="fa fa-plus mt-1"
@@ -75,6 +79,14 @@
 								</div>
 							</td>
 							<td class="p-4">
+								<i
+									v-if="types[wrap_item.targetable_type] === 1"
+									class="fa fa-user mt-1 mr-1"
+								/>
+								<i
+									v-else
+									class="fa fa-users mt-1 mr-1"
+								/>
 								<span v-if="wrap_item.target != null">{{ wrap_item.target.name }}</span>
 								<span v-else>---</span>
 							</td>
@@ -119,13 +131,16 @@
 						<template v-if="wrap_item.users != undefined && wrap_item.users.length > 0">
 							<tr
 								class="collapsable"
-								:class="{'active': wrap_item.expanded || !editable }"
+								:class="{'active': kpis[types[wrap_item.targetable_type]][wrap_item.targetable_id] || !editable }"
 								:key="w + 'a'"
 							>
 								<td :colspan="editable ? 4 : 7">
 									<div class="table__wrapper w-100">
-										<table class="child-table">
-											<template v-for="(user, i) in wrap_item.users">
+										<table
+											v-if="kpis[types[wrap_item.targetable_type]][wrap_item.targetable_id]"
+											class="child-table"
+										>
+											<template v-for="(user, i) in kpis[types[wrap_item.targetable_type]][wrap_item.targetable_id].users">
 												<tr
 													:key="i"
 													class="child-row"
@@ -150,6 +165,9 @@
 													<td class="p-4">
 														{{ user.name }}
 													</td>
+													<td class="p-4">
+														Средний % <b>{{ user.avg_percent }}%</b>
+													</td>
 													<template v-if="user.items !== undefined">
 														<td
 															class="px-2"
@@ -160,35 +178,32 @@
 														</td>
 													</template>
 												</tr>
-												<template v-if="user.items !== undefined">
-													<tr
-														class="collapsable"
-														:class="{'active': user.expanded}"
-														:key="i + 'a'"
-													>
-														<td :colspan="fields.length + 2">
-															<div class="table__wrapper__second w-100">
-																<KpiItems
-																	:my_sum="user.full_time == 1 ? wrap_item.completed_100 : wrap_item.completed_100 / 2"
-																	:kpi_id="user.id"
-																	:items="user.items"
-																	:expanded="user.expanded"
-																	:activities="activities"
-																	:groups="groups"
-																	:completed_80="wrap_item.completed_80"
-																	:completed_100="wrap_item.completed_100"
-																	:lower_limit="wrap_item.lower_limit"
-																	:upper_limit="wrap_item.upper_limit"
-																	:editable="editable"
-																	:kpi_page="false"
-																	:date="date"
-																	@getSum="wrap_item.my_sum = $event"
-																	@recalced="countAvg"
-																/>
-															</div>
-														</td>
-													</tr>
-												</template>
+												<tr
+													v-if="user.expanded"
+													:key="i + 'a'"
+												>
+													<td :colspan="fields.length + 2">
+														<div class="table__wrapper__second w-100">
+															<KpiItemsV2
+																:my_sum="user.full_time == 1 ? wrap_item.completed_100 : wrap_item.completed_100 / 2"
+																:kpi_id="user.id"
+																:items="user.items"
+																:expanded="true"
+																:activities="activities"
+																:groups="groups"
+																:completed_80="wrap_item.completed_80"
+																:completed_100="wrap_item.completed_100"
+																:lower_limit="wrap_item.lower_limit"
+																:upper_limit="wrap_item.upper_limit"
+																:editable="editable"
+																:kpi_page="false"
+																:date="date"
+																@getSum="wrap_item.my_sum = $event"
+																@recalced="countAvg"
+															/>
+														</div>
+													</td>
+												</tr>
 											</template>
 										</table>
 									</div>
@@ -203,13 +218,13 @@
 </template>
 
 <script>
-import KpiItems from '@/pages/kpi/KpiItems'
+import KpiItemsV2 from '@/pages/kpi/KpiItemsV2'
 import {kpi_fields} from './kpis.js'
 
 export default {
-	name: 'StatsTable',
+	name: 'StatsTableV2',
 	components: {
-		KpiItems,
+		KpiItemsV2,
 	},
 	props: {
 		searchText: {
@@ -232,16 +247,6 @@ export default {
 		}
 	},
 
-	watch: {
-		show_fields: {
-			handler: function (val) {
-				localStorage.kpi_show_fields = JSON.stringify(val);
-				this.prepareFields();
-			},
-			deep: true
-		},
-	},
-
 	data() {
 		return {
 			show_fields: [],
@@ -252,8 +257,30 @@ export default {
 				'updated_at',
 				'created_by',
 				'updated_by',
-			]
+			],
+			types: {
+				'App\\User': 1,
+				'App\\ProfileGroup': 2,
+			},
+			kpis: {
+				1: {},
+				2: {},
+			},
+			loading: {
+				1: {},
+				2: {},
+			}
 		}
+	},
+
+	watch: {
+		show_fields: {
+			handler: function (val) {
+				localStorage.kpi_show_fields = JSON.stringify(val);
+				this.prepareFields();
+			},
+			deep: true
+		},
 	},
 
 	created() {
@@ -263,9 +290,25 @@ export default {
 	mounted(){
 	},
 	methods: {
-
-		expand(w) {
-			this.items[w].expanded = !this.items[w].expanded
+		async fetchKPI(id, ttype){
+			const type = this.types[ttype]
+			this.$set(this.loading[type], id, true)
+			try{
+				const { data } = await this.axios.get(`/statistics/kpi/groups-and-users/${id}`, {
+					params: {
+						type
+					}
+				})
+				this.$set(this.kpis[type], id, data?.kpi)
+			}
+			catch(error){
+				this.$toast.error('Ошибка при получении данных kpi')
+			}
+			this.$delete(this.loading[type], id)
+		},
+		closeKPI(id, ttype){
+			const type = this.types[ttype]
+			this.$delete(this.kpis[type], id)
 		},
 
 		prepareFields() {

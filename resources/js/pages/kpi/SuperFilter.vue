@@ -267,7 +267,6 @@ export default {
 		},
 
 		applyFilter() {
-			console.log(this.filters);
 			this.$emit('apply', this.filters)
 			this.show = false;
 		},

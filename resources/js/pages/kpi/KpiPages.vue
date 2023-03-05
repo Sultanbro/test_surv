@@ -46,6 +46,13 @@
 				>
 					<Indicators v-if="active == 4 && tenant === 'bp'" />
 				</b-tab>
+				<b-tab
+					title="Статистика2"
+					:key="5"
+					card
+				>
+					<StatsV2 v-if="active == 5" />
+				</b-tab>
 			</b-tabs>
 		</div>
 
@@ -81,6 +88,7 @@ import KPI from '@/pages/kpi/Kpi'
 import Bonuses from '@/pages/kpi/Bonuses.vue'
 import QuartalPremium from '@/pages/kpi/QuartalPremium'
 import Stats from '@/pages/kpi/Stats'
+import StatsV2 from '@/pages/kpi/StatsV2'
 import Indicators from '@/pages/kpi/Indicators'
 
 export default {
@@ -90,6 +98,7 @@ export default {
 		Bonuses,
 		QuartalPremium,
 		Stats,
+		StatsV2,
 		Indicators,
 	},
 	props: {
