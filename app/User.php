@@ -1139,31 +1139,37 @@ class User extends Authenticatable implements Authorizable
     }
 
     /**
-     * График работы сотрудника
-     * 
      * @return array
      */
-    public function schedule()
+    public function schedule(): array
     {
-        $tz = $this->timezone();
+        $timezone = $this->timezone();
+        $groups   = $this->activeGroup();
+        $groupChart = $groups->workChart()->first();
+        $userChart = $this->workChart()->first();
 
-        $user_groups = $this->inGroups();
-        $work_end_max = $user_groups->max('work_end');
 
-        if($work_end_max == null) {
-            $work_end_max = $this->work_end ?? Timetracking::DEFAULT_WORK_END_TIME;
+        $workEndTime    = $groupChart->end_time   ?? $groups->work_end;
+        $workStartTime  = $groupChart->start_time ?? $groups->work_start;
+
+        if($workEndTime == null)
+        {
+            $workEndTime = $userChart->end_time ?? Timetracking::DEFAULT_WORK_END_TIME;
         }
 
-        $userWorkTime = $this->work_start ?? Timetracking::DEFAULT_WORK_START_TIME;
+        if ($workStartTime == null)
+        {
+            $workStartTime = $userChart->start_time ?? Timetracking::DEFAULT_WORK_START_TIME;
+        }
 
-        $dt = Carbon::now($tz)->format('d.m.Y');
+        $date = Carbon::now($timezone)->format('Y-m-d');
 
-        $worktime_start = Carbon::parse($dt . $userWorkTime, $tz)->subMinutes(30);
-        $worktime_end   = Carbon::parse($dt . ' ' . $work_end_max, $tz);
+        $start = Carbon::parse("$date $workStartTime", $timezone)->subMinutes(30);
+        $end   = Carbon::parse("$date $workEndTime", $timezone);
 
         return [
-            'start' => $worktime_start,
-            'end'   => $worktime_end
+            'start' => $start,
+            'end'   => $end
         ];
     }
 
