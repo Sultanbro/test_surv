@@ -47,6 +47,13 @@
 						:filters="filters"
 						class="mt-4"
 					/>
+					<b-pagination
+						v-model="currentPage"
+						:total-rows="totalRows"
+						:per-page="perPage"
+						size="sm"
+						class="mt-4"
+					/>
 				</b-tab>
 				<b-tab title="Годовая">
 					<StatsTableYear class="mt-4" />
@@ -68,15 +75,6 @@
 			:groups="quartal_groups"
 			:key="quartal_users"
 			:search-text="searchText"
-		/>
-
-		<b-pagination
-			v-if="s_type_main == 1"
-			v-model="currentPage"
-			:total-rows="totalRows"
-			:per-page="perPage"
-			size="sm"
-			class="mt-4"
 		/>
 	</div>
 </template>
