@@ -166,7 +166,7 @@
 														{{ user.name }}
 													</td>
 													<td class="p-4">
-														Средний % <b>{{ user.avg_percent }}%</b>
+														Средний % <b>{{ parseFloat(user.avg_percent).toFixed(2) }}%</b>
 													</td>
 													<template v-if="user.items !== undefined">
 														<td
@@ -244,6 +244,10 @@ export default {
 		},
 		date: {
 			default: null
+		},
+		filters: {
+			type: Object,
+			default: () => ({})
 		}
 	},
 
@@ -294,7 +298,9 @@ export default {
 			const type = this.types[ttype]
 			this.$set(this.loading[type], id, true)
 			try{
-				const { data } = await this.axios.get(`/statistics/kpi/groups-and-users/${id}`, {
+				const { data } = await this.axios.post(`/statistics/kpi/groups-and-users/${id}`, {
+					filters: this.filters
+				}, {
 					params: {
 						type
 					}
