@@ -1322,8 +1322,9 @@ class KpiStatisticService
                 $item = $_item->toArray();
 
                 // Last History
-                if($_item->histories_latest) {
-                    $historyPayload = json_decode($_item->histories_latest->payload, true);
+                $histories_latest = $_item->histories_latest;
+                if($histories_latest) {
+                    $historyPayload = json_decode($histories_latest->payload, true);
 
                     if( Arr::exists($historyPayload,'activity_id') ) $item['activity_id'] = $historyPayload['activity_id'];
                     if( Arr::exists($historyPayload,'plan') ) $item['plan'] = $historyPayload['plan'];
