@@ -100,6 +100,7 @@ class User extends Authenticatable implements Authorizable
         'phone_2',
         'phone_3',
         'phone_4',
+        'work_chart_id'
     ];
     /**
      * Валюты для профиля.
@@ -1148,23 +1149,17 @@ class User extends Authenticatable implements Authorizable
         $groupChart = $groups->workChart()->first();
         $userChart = $this->workChart()->first();
 
+        $workEndTime = $userChart->end_time
+            ?? $groupChart->end_time
+            ?? Timetracking::DEFAULT_WORK_END_TIME;
 
-        $workEndTime    = $groupChart->end_time   ?? $groups->work_end;
-        $workStartTime  = $groupChart->start_time ?? $groups->work_start;
-
-        if($workEndTime == null)
-        {
-            $workEndTime = $userChart->end_time ?? Timetracking::DEFAULT_WORK_END_TIME;
-        }
-
-        if ($workStartTime == null)
-        {
-            $workStartTime = $userChart->start_time ?? Timetracking::DEFAULT_WORK_START_TIME;
-        }
+        $workStartTime  = $userChart->start_time
+            ?? $groupChart->start_time
+            ?? Timetracking::DEFAULT_WORK_START_TIME;
 
         $date = Carbon::now($timezone)->format('Y-m-d');
 
-        $start = Carbon::parse("$date $workStartTime", $timezone)->subMinutes(30);
+        $start = Carbon::parse("$date $workStartTime", $timezone)->subMinutes(30.0);
         $end   = Carbon::parse("$date $workEndTime", $timezone);
 
         return [
