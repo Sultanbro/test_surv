@@ -501,6 +501,7 @@ Route::middleware(['web','tenant','not_admin_subdomain'])->group(function () {
         Route::any('kpi/groups-and-users', [Kpi\KpiStatController::class, 'fetchKpiGroupsAndUsers'])->name('fetchKpiGroupsAndUsers');
         Route::any('kpi/groups-and-users/{targetable_id}', [Kpi\KpiStatController::class, 'showKpiGroupAndUsers'])
             ->where('targetable_id', '[0-9]+');
+        Route::get('kpi/annual-statistics', [Kpi\KpiStatController::class, 'getAnnualStatistics']);
         Route::any('bonuses', [Kpi\KpiStatController::class, 'fetchBonuses'])->name('fetchBonuses');
         Route::any('quartal-premiums', [Kpi\KpiStatController::class, 'fetchQuartalPremiums'])->name('fetchQuartalPremiums');
         Route::any('workdays', [Kpi\KpiStatController::class, 'workdays']);
