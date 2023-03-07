@@ -40,15 +40,19 @@ async function onRemove(id: number){
     alert(data.errors)
   }
 }
-async function onEdit(selected){
+function onEdit(selected){
   user.value = selected
+  editDialog.value = true
+}
+function onAdd(){
+  user.value = null
   editDialog.value = true
 }
 </script>
 
 <template>
   <VBtn
-    @click="(editDialog = true)"
+    @click="onAdd"
     class="mb-4"
   >Дать доступ</VBtn>
   <VTable
