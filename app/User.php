@@ -1162,6 +1162,10 @@ class User extends Authenticatable implements Authorizable
         $start = Carbon::parse("$date $workStartTime", $timezone)->subMinutes(30.0);
         $end   = Carbon::parse("$date $workEndTime", $timezone);
 
+        if ($start->greaterThan($end)) {
+            $end->addDay();
+        }
+
         return [
             'start' => $start,
             'end'   => $end
