@@ -3,13 +3,6 @@ import {
 	fetchKPIStatYear,
 } from '@/stores/api'
 
-// function renameProps(obj, renames){
-// 	return Object.keys(obj).reduce((result, key) => {
-// 		if(renames[key]) result[renames[key]] = obj[key]
-// 		else result[key] = obj[key]
-// 		return result
-// 	}, {})
-// }
 function initialState(){
 	const now = new Date()
 	const currentYear = now.getFullYear()
@@ -28,13 +21,13 @@ function initialState(){
 
 export const useKPIStore = defineStore('kpi', {
 	state: () => ({
-		isLoading: false,
+		isLoading: {},
 		// state here
 		...initialState()
 	}),
 	actions: {
 		async fetchStatYear(year = this.statYear.year, page = this.statYear.page, limit = this.statYear.limit){
-			this.isLoading = true
+			this.isLoading.year = true
 			try{
 				const {paginator} = await fetchKPIStatYear({
 					year,
@@ -49,7 +42,7 @@ export const useKPIStore = defineStore('kpi', {
 			catch(error){
 				console.error('fetchKPIStatYear', error)
 			}
-			this.isLoading = false
+			this.isLoading.year = false
 		},
 		setStatYearPage(page){
 			if(this.statYear.page === page) return
