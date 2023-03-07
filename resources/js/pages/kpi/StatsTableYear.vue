@@ -1,5 +1,10 @@
 <template>
-	<div class="StatsTableYear">
+	<div
+		class="StatsTableYear"
+		:class="{
+			'v-loading': isLoading.year
+		}"
+	>
 		<div class="StatsTableYear-filters row">
 			<b-col cols="3">
 				<b-form-select
@@ -82,7 +87,7 @@ export default {
 		}
 	},
 	computed: {
-		...mapState(useKPIStore, ['statYear']),
+		...mapState(useKPIStore, ['statYear', 'isLoading']),
 		stats(){
 			const table = []
 			Object.entries(this.statYear.data).forEach(([month, monthData]) => {
@@ -102,7 +107,7 @@ export default {
 					lastMonth = parseInt(month)
 					row.avg += row[month]
 				})
-				row.avg = row.avg / lastMonth
+				row.avg = (row.avg / lastMonth).toFixed(2)
 			})
 			return table
 		}
@@ -136,7 +141,8 @@ export default {
 
 <style lang=scss>
 .StatsTableYear{
-	&-filters{}
+	position: relative;
+	// &-filters{}
 	& &-table{
 		.first-column{
 			width: 20rem;
