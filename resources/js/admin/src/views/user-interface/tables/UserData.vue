@@ -59,14 +59,11 @@ watchEffect(() => {
   }
 })
 
-// function getManagerName(userId: number){
-//   console.log('getManagerName', userId)
-//   const managerId = userDataStore.userManagers[userId]
-//   const manager = managersStore.managers[managerId]
-//   console.log('getManagerName', userId, managerId, manager)
-//   if(!manager) return 'Нет'
-//   return `${manager.name} ${manager.last_name}`
-// }
+function getManagerName(userId: number){
+  const managerId = userDataStore.userManagers[userId]
+  const manager = managersStore.managers.find(manager => manager.id === managerId)
+  return manager ? `${manager.name} ${manager.last_name}` : 'Нет'
+}
 </script>
 
 <template>
@@ -189,7 +186,7 @@ watchEffect(() => {
             {{ item.city }}
           </td>
           <td class="text-center">
-            <Action @click="$emit('manager', item.id)">{{ 'WIP' /* getManagerName[item.id] */ }}</Action>
+            <Action @click="$emit('manager', item.id)">{{ getManagerName(item.id) }}</Action>
           </td>
         </tr>
       </tbody>
