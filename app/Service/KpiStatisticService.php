@@ -698,6 +698,8 @@ class KpiStatisticService
                 if(isset($payload['children'])) {
                     $kpi->items = $kpi->items->whereIn('id', $payload['children']);
                 }
+                $kpi->completed_80 = $payload['completed_80'];
+                $kpi->completed_100 = $payload['completed_100'];
             }
 
             $kpi->users = $this->getUsersForKpi($kpi, $date, $user_id);
