@@ -909,7 +909,12 @@ class KpiStatisticService
 
         for ($month = 1; $month <= 12; $month++){
 
-            $date = Carbon::createFromDate($year, $month, 1);
+            $date = Carbon::createMidnightDate($year, $month, 1);
+            $firstDayOfCurrentMonth = Carbon::now()->startOfMonth();
+
+            if ($date > $firstDayOfCurrentMonth){
+                continue;
+            }
 
             $this->workdays = collect($this->userWorkdays($request));
             $this->updatedValues = UpdatedUserStat::query()
