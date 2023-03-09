@@ -2,12 +2,14 @@
 
 namespace App\Service;
 
+use App\Helpers\KpiItemsCacheHelper;
 use App\Http\Requests\BonusesFilterRequest;
 use App\Models\Kpi\Bonus;
 use App\Models\QuartalPremium;
 use App\Position;
 use App\Service\Department\UserService;
 use App\Traits\KpiHelperTrait;
+use Cache;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Http\Request;
@@ -916,7 +918,6 @@ class KpiStatisticService
                 continue;
             }
 
-            $this->workdays = collect($this->userWorkdays($request));
             $this->updatedValues = UpdatedUserStat::query()
                 ->whereMonth('date', $date->month)
                 ->whereYear('date', $date->year)
@@ -956,6 +957,11 @@ class KpiStatisticService
             $kpisAnnual['per_page'] = $kpis->perPage();
             $kpisAnnual['total'] = $kpis->total();
 
+            if (KpiItemsCacheHelper::has('kpi_annual_'.$month)){
+                $kpisAnnual['data'][$month] = KpiItemsCacheHelper::get('kpi_annual_'.$month);
+                continue;
+            }
+
             foreach ($kpis->items() as $kpi) {
 
                 $kpi->kpi_items = [];
@@ -978,6 +984,9 @@ class KpiStatisticService
             }
 
             $kpisAnnual['data'][$month] = $kpis->items();
+            if ($date != $firstDayOfCurrentMonth){
+                KpiItemsCacheHelper::put('kpi_annual_'.$month, $kpisAnnual['data'][$month]);
+            }
         }
 
         return [
