@@ -1,11 +1,10 @@
 <script setup lang="ts">
 
 const props = defineProps<{
-  modelValue: FileList | null,
   errorMessages: Array<string> | null
 }>()
 const emit = defineEmits<{
-  (e: 'update:modelValue', files: FileList): void
+  (e: 'change', files: FileList): void
 }>()
 
 const className = computed(() => {
@@ -15,7 +14,7 @@ const className = computed(() => {
 })
 
 function onChange(event){
-  emit('update:modelValue', event.target.files)
+  emit('change', event.target.files)
 }
 </script>
 
@@ -25,7 +24,12 @@ function onChange(event){
   :class="className"
 >
   <slot />
-  <input type="file" accept=".jpg,.jpeg,.gif,.png" class="FilePicker-input" @change="onChange">
+  <input
+    type="file"
+    accept=".jpg,.jpeg,.gif,.png"
+    class="FilePicker-input"
+    @change="onChange"
+  >
   <div
     v-if="errorMessages && errorMessages.length"
     class="v-input__details"

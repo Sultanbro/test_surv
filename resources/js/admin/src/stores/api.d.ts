@@ -78,6 +78,7 @@ declare interface UserPermissions {
   email: string
   phone?: string
   role_id?: number
+  img_url?: string
   image?: string
   is_admin: number
 }
