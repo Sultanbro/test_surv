@@ -3,6 +3,8 @@
 namespace App\Console\Commands;
 
 use App\ProfileGroup;
+use App\Repositories\Timetrack\TimetrackRepository;
+use App\Repositories\TimeTrackingRepository;
 use App\Timetracking;
 use App\User;
 use Carbon\Carbon;
@@ -44,103 +46,46 @@ class CountHours extends Command
     /**
      * Execute the console command.
      *
-     * @return mixed
+     * @return void
      */
-    public function handle()
-    {   
-        $this->setDate();
-        
-        $timetrackingRecords = $this->getRecords();
+    public function handle(): void
+    {
+        $userId = (int) $this->argument('user_id') ?? null;
+        $date   = $this->argument('date') ?? now()->format('Y-m-d');
 
-        foreach($timetrackingRecords as $record) {
+        $timeTrackRecords = (new TimeTrackingRepository)->getNonUpdatedTimeTrackWithUserByDate($userId, $date)->get();
 
-            if( !$record->user || !$record->exit) {
-                continue;
+        foreach($timeTrackRecords as $record)
+        {
+            $user = $record->user;
+            if ($user)
+            {
+                $userSchedule = $user->schedule();
+                $enterTime  = $record->enter;
+                $exitTime   = $record->exit;
+                $minutes    = $this->calculateMinutes($enterTime, $exitTime);
+
+                $record->update([
+                    'total_hours' => $minutes
+                ]);
             }
-
-            $schedule = $record->user->schedule();
-
-            $workStart = $schedule['start'];
-            $workEnd   = $schedule['end'];
-            
-          
-            $timeStart = $this->countFromShiftStartTime($workStart, $record->enter);
-            $timeEnd   = Carbon::parse($record->exit->setTimezone($record->user->timezone())); // не учитываем конец дня, засчитываем как переработку
-
-            $this->line('start ' . $record->user->timezone());
-            $this->line('start ' . $timeStart->timezone);
-            $this->line('end   ' . $timeEnd->timezone);
-
-            $minutes = $timeEnd->diffInMinutes($timeStart);
-
-            $this->line('minutes ' . $timeEnd);
-
-            $minutes = $this->subtractLunchTime($minutes);
-            $minutes = $this->setMoreThanZero($minutes);
-
-            $record->update(['total_hours' => $minutes]);
         }
-
-        $this->line('Было найдено нередактированных записей: '. count($timetrackingRecords));
     }
 
-    protected function countFromShiftStartTime(
-        Carbon $workStartAt,
-        Carbon $enterAt
-    ) : Carbon
-    {      
-        // in User::schedule() subtracts 30 minutes. Here we add it to count worked hours correctly
-        $workStartAt->addMinutes(30); 
-
-        $workStartAt = $this->date->setTimeFrom($workStartAt);
-
-        if ( $workStartAt->diffInMinutes($enterAt, false) > 0 ) {
-            return $workStartAt;
-        }
-        
-        return $enterAt;
-    }
-
-    protected function subtractLunchTime(int|float $minutes) : int|float
+    /**
+     * @param Carbon $enterTime
+     * @param Carbon $exitTime
+     * @return float
+     */
+    private function calculateMinutes(
+        Carbon $enterTime,
+        Carbon $exitTime
+    ): float
     {
-        $lunch = 60 * 1;
+        $maxWorkMinutesPerDay = 480;
+        $lunchTime      = 60;
+        $diffInMinutes  = $enterTime->diffInMinutes($exitTime) - $lunchTime;
 
-        if ($minutes > 60 * 5) {
-            $minutes = $minutes - $lunch;
-        }
-             
-        return $minutes;
+        return $diffInMinutes < 480 ? $diffInMinutes : $maxWorkMinutesPerDay;
     }
-
-    protected function setDate() : void
-    {
-        $timeZone = \App\Setting::TIMEZONES[6];
-
-        if ($this->argument('date')) {
-            $this->date = Carbon::parse($this->argument('date'), $timeZone)->startOfDay();
-        } else {
-            $this->date = Carbon::now($timeZone)->startOfDay();
-        }
-    }
-
-    protected function getRecords() : Collection
-    {
-        $timetrackingRecords = Timetracking::query()
-            ->with('user')
-            ->select('id', 'enter', 'exit', 'total_hours', 'user_id')
-            ->whereDate('enter',  $this->date->format('Y-m-d'))
-            ->where('updated', 0);// non updated records
-
-        if($this->argument('user_id')) {
-            $timetrackingRecords->where('user_id', $this->argument('user_id'));
-        }
-
-        return $timetrackingRecords->get();
-    }
-
-    protected function setMoreThanZero(int|float $minutes) : int|float
-    {
-       return $minutes <= 0 ? 0 : $minutes;
-    }
-    
 }

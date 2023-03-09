@@ -2,6 +2,7 @@
 
 namespace App\Console\Commands;
 
+use Carbon\Carbon;
 use Illuminate\Console\Command;
 use App\User;
 use App\Account;
@@ -22,7 +23,7 @@ class CheckTimetrackers extends Command
      *
      * @var string
      */
-    protected $description = 'Set exit time to user if not pushed button';
+    protected $description = 'Команда при запуске завершает день для всех пользователей которые не нажали на ЗАВЕРШИТЬ ДЕНЬ';
 
     /**
      * Create a new command instance.
@@ -37,45 +38,26 @@ class CheckTimetrackers extends Command
     /**
      * Execute the console command.
      *
-     * @return mixed
+     * @return void
      */
-    public function handle()
+    public function handle(): void
     {
-        $this->line('check timetrackers');
+        $this->line('Checking for the end of the day for users');
         
-        $timetrackers = Timetracking::whereDate('enter', date('Y-m-d'))
+        $recordsFromTimeTrack = Timetracking::query()->whereDate('enter', date('Y-m-d'))
             ->whereNull('exit')
             ->get();
 
-        foreach ($timetrackers as $timetracker) {
-          
-            $groups = ProfileGroup::where('active', 1)->get();
-            $user = User::find($timetracker->user_id);
-            foreach ($groups as $key => $group) {
-                if ($group->users != null) {
-                    $users = json_decode($group->users);
-                    if (in_array($user->id, $users)) {
-                        $group_id = $group->id;
-                    }
-                }
-                
-            }
-            if (isset($group_id)) {
-                $user_group = ProfileGroup::find($group_id);
-            }
-            if (is_null($timetracker->exit)) {
-                if($user && $user->work_end) {
-                    $timetracker->exit = date('Y-m-d') . ' ' . $user->work_end;
-                } else {
-                    $timetracker->exit = date('Y-m-d') . ' ' . $user_group->work_end . ':00';
-                }
-            }
-            // // $exit = strtotime($timetracker->exit);
-            // // $enter = strtotime($timetracker->enter);
-            // // $count_hours = $exit - $enter;
-            // $timetracker->total_hours = $timetracker->total_hours + $count_hours;
+        foreach ($recordsFromTimeTrack as $recordFromTimeTrack) {
+            $user = $recordFromTimeTrack->user;
 
-            $timetracker->save();
+            if ($user)
+            {
+                $userSchedule = $user->schedule();
+                $recordFromTimeTrack->update([
+                    'exit' => $userSchedule['end']->subHours($user->timezone)->format('Y-m-d H:i:s')
+                ]);
+            }
         }
     }
 }

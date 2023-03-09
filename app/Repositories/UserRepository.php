@@ -304,4 +304,19 @@ final class UserRepository extends CoreRepository
 
         return true;
     }
+
+    /**
+     * @param string|null $date
+     * @param $isTrainee bool
+     * @return \Illuminate\Database\Eloquent\Builder
+     */
+    public function getUsersWithDescription(
+        ?string $date,
+        bool $isTrainee = false
+    ): \Illuminate\Database\Eloquent\Builder
+    {
+        return $this->model()
+            ->withWhereHas('user_description', fn($query) => $query->where('is_trainee', $isTrainee))
+            ->where(fn($query) => $query->whereNull('deleted_at')->orWhere(fn ($query) => $query->whereDate('deleted_at', '>=', $date)));
+    }
 }

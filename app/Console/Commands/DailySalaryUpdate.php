@@ -2,8 +2,11 @@
 
 namespace App\Console\Commands;
 
+use App\Repositories\UserRepository;
 use App\Salary;
+use App\User;
 use App\Zarplata;
+use Dflydev\DotAccessData\Data;
 use Illuminate\Console\Command;
 
 class DailySalaryUpdate extends Command
@@ -13,8 +16,7 @@ class DailySalaryUpdate extends Command
      *
      * @var string
      */
-    protected $signature = 'salary:update {date?}';  //php artisan salary:update  2022-04-12 
-                                                       
+    protected $signature = 'salary:update {date?}';  //php artisan salary:update  2022-04-12
 
     /**
      * The console command description.
@@ -29,7 +31,12 @@ class DailySalaryUpdate extends Command
      * @var mixed
      */
     public $date; // Дата пересчета 
-    
+
+    /**
+     * @var UserRepository
+     */
+    private UserRepository $repository;
+
     /**
      * Create a new command instance.
      *
@@ -38,45 +45,26 @@ class DailySalaryUpdate extends Command
     public function __construct()
     {
         parent::__construct();
+
+        $this->repository = new UserRepository();
     }
     
     /**
      * Execute the console command.
      *
-     * @return mixed
+     * @return void
      */
-    public function handle()
+    public function handle(): void
     {
 
-        $argDate = $this->argument('date') ?? date('Y-m-d');
-        
-        $users = \DB::table('users')
-            ->whereNull('deleted_at')
-            ->leftJoin('user_descriptions as ud', 'ud.user_id', '=', 'users.id')
-            ->select(['users.id'])
-            
-            ->where('ud.is_trainee', 0)
-            ->get()
-            ->pluck('id') 
-            ->toArray(); 
-        
-        $users2 = \DB::table('users')
-            ->whereNotNull('deleted_at')
-            ->leftJoin('user_descriptions as ud', 'ud.user_id', '=', 'users.id')
-            ->select(['users.id'])
-            ->where('ud.is_trainee', 0)
-            ->whereDate('deleted_at', '>=', $argDate)
-            ->get()
-            ->pluck('id') 
-            ->toArray();
-
-        $users = array_unique(array_merge($users, $users2));
-        
-        $salaries = Salary::where('date', $argDate)
-            ->whereIn('user_id', $users)
+        $date = $this->argument('date') ?? date('Y-m-d');
+        $users = $this->repository->getUsersWithDescription($date)->with(['salaries' => fn($query) => $query->where('date', $date)])->get();
+        $userIds = $users->pluck('id')->toArray();
+        $salaries = Salary::where('date', $date)
+            ->whereIn('user_id', $userIds)
             ->get();
 
-        foreach($users as $key => $user_id) {
+        foreach($userIds as $key => $user_id) {
             $salary = $salaries->where('user_id', $user_id)->first();
             $zarplata = Zarplata::where('user_id', $user_id)->first();
 
@@ -91,7 +79,7 @@ class DailySalaryUpdate extends Command
 
             Salary::create([
                 'user_id' => $user_id,
-                'date' => $argDate, 
+                'date' => $date,
                 'note' => '',
                 'paid' => 0,
                 'bonus' => 0,
@@ -101,9 +89,6 @@ class DailySalaryUpdate extends Command
                 'amount' => $salary_amount,
             ]);
         }
-
-
-
     }
 
 }
