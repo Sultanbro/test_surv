@@ -126,6 +126,23 @@ class Article extends Model
         return $this->belongsToMany(User::class, 'article_views_users', 'article_id', 'user_id')->withTrashed();
     }
 
+    /**
+     * @return int
+     */
+    public static function countUnviewed(int $userId): int
+    {
+        return Article::query()
+            ->leftJoin(
+                'article_views_users as views',
+                function($join) use ($userId) {
+                    $join->on('articles.id', '=', 'views.article_id');
+                    $join->on('views.user_id', '=', $userId);
+                },
+            )
+            ->whereNull('views.user_id')
+            ->count();
+    }
+
     public function favourites(): BelongsToMany
     {
         return $this->belongsToMany(User::class, 'article_favourites_users', 'article_id', 'user_id')->withTrashed();

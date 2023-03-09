@@ -556,6 +556,7 @@ Route::middleware(['web','tenant','not_admin_subdomain'])->group(function () {
         Route::get('/', [Article\NewsController::class, 'index'])->name('index');
         Route::post('/', [Article\ArticleController::class, 'store'])->name('store');
         Route::get('/get', [Article\ArticleController::class, 'index'])->name('get');
+        Route::get('/count-unviewed', [Article\ArticleController::class, 'countUnviewed'])->name('countUnviewed');
         Route::get('{article_id}', [Article\ArticleController::class, 'show'])->name('show');
         Route::put('{article_id}', [Article\ArticleController::class, 'update'])->name('update');
         Route::delete('{article_id}', [Article\ArticleController::class, 'delete'])->name('delete');

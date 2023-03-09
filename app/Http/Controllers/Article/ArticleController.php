@@ -115,4 +115,16 @@ class ArticleController extends Controller
             )
         );
     }
+
+    /**
+     * @return JsonResponse
+     */
+    public function countUnviewed(): JsonResponse
+    {
+        $userId = Auth::user()->id;
+
+        $count = Article::countUnviewed($userId);
+
+        return response()->json(['count' => $count]);
+    }
 }
