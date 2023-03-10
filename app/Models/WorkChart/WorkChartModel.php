@@ -68,12 +68,7 @@ class WorkChartModel extends Model
      */
     public static function createModel(StoreWorkChartDTO $dto): Model
     {
-        return WorkChartModel::query()->create([
-            'name' => $dto->chartWorkdays .'-'. $dto->chartDayoffs,
-            'text_name' => $dto->name,
-            'start_time' => $dto->startTime,
-            'end_time' => $dto->endTime
-        ]);
+        return WorkChartModel::query()->create($dto->toArray());
     }
 
     /**

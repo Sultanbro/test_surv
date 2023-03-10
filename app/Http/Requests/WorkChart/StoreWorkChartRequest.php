@@ -3,12 +3,9 @@
 namespace App\Http\Requests\WorkChart;
 
 use App\DTO\WorkChart\StoreWorkChartDTO;
-use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Support\Arr;
-use Illuminate\Validation\ValidationException;
-use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 
-class StoreWorkChartRequest extends FormRequest
+class StoreWorkChartRequest extends BaseWorkChartRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -34,29 +31,6 @@ class StoreWorkChartRequest extends FormRequest
             'start_time' => ['required', 'string'],
             'end_time' => ['required', 'string']
         ];
-    }
-
-    private static int $MAX_CHART_DAYS = 7;
-
-
-    /**
-     * Get the validated data from the request.
-     *
-     * @param  array|int|string|null  $key
-     * @param  mixed  $default
-     * @return mixed
-     */
-    public function validated($key = null, $default = null) {
-        $validated = parent::validated($key, $default);
-
-        $chartWorkdays  = (int) Arr::get($validated, 'chart_workdays');
-        $chartDayoffs  = (int) Arr::get($validated, 'chart_dayoffs');
-
-        if ($chartWorkdays + $chartDayoffs > self::$MAX_CHART_DAYS) {
-            throw new BadRequestHttpException('max chart days sum is '. self::$MAX_CHART_DAYS);
-        }
-
-        return $validated;
     }
 
     /**
