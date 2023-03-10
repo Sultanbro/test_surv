@@ -38,8 +38,16 @@ class StoreWorkChartRequest extends FormRequest
 
     private static int $MAX_CHART_DAYS = 7;
 
-    public function validated() {
-        $validated = parent::validated();
+
+    /**
+     * Get the validated data from the request.
+     *
+     * @param  array|int|string|null  $key
+     * @param  mixed  $default
+     * @return mixed
+     */
+    public function validated($key = null, $default = null) {
+        $validated = parent::validated($key, $default);
 
         $chartWorkdays  = (int) Arr::get($validated, 'chart_workdays');
         $chartDayoffs  = (int) Arr::get($validated, 'chart_dayoffs');
