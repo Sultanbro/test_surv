@@ -92,7 +92,7 @@
 									:key="chart.id"
 									:value="chart.id"
 								>
-									График {{ chart.name }} (с {{ chart.start_time }} по {{ chart.end_time }})
+									График {{ chart.name }} (с {{ chart.start_time }} по {{ chart.end_time }}) - {{ chart.text_name }}
 								</b-form-select-option>
 							</template>
 						</b-form-select>
