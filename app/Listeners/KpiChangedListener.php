@@ -2,10 +2,10 @@
 
 namespace App\Listeners;
 
-use App\Events\KpiChanged;
+use App\Events\KpiChangedEvent;
 use App\Helpers\KpiItemsCacheHelper;
 
-class ForgetCache
+class KpiChangedListener
 {
     /**
      * Create the event listener.
@@ -20,11 +20,11 @@ class ForgetCache
     /**
      * Handle the event.
      *
-     * @param  \App\Events\KpiChanged  $event
+     * @param  \App\Events\KpiChangedEvent  $event
      * @return void
      */
-    public function handle(KpiChanged $event)
+    public function handle(KpiChangedEvent $event)
     {
-        KpiItemsCacheHelper::flush();
+        KpiItemsCacheHelper::onKpiChanged($event);
     }
 }

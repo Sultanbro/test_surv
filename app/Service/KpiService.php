@@ -2,6 +2,7 @@
 
 namespace App\Service;
 
+use App\Events\KpiChangedEvent;
 use App\Events\TrackKpiItemEvent;
 use App\Events\TrackKpiUpdatesEvent;
 use App\Http\Requests\KpiSaveRequest;
@@ -156,6 +157,7 @@ class KpiService
             });
 
             event(new TrackKpiUpdatesEvent($kpi_id));
+            event(new KpiChangedEvent(Carbon::now()));
 
             return [
                 'id' => $kpi_id,
@@ -176,8 +178,9 @@ class KpiService
     {
             $id = $request->id;
             $kpi_item_ids = [];
+            $kpi = null;
      
-            DB::transaction(function () use ($request, $id, &$kpi_item_ids) {
+            DB::transaction(function () use ($request, $id, &$kpi_item_ids, &$kpi) {
 
                 $kpi_item_ids = $this->updateItems($id, $request->items);
                 
@@ -188,9 +191,12 @@ class KpiService
 
                 unset($all['source']);
 
-                Kpi::findOrFail($id)->update($all);
+                $kpi = Kpi::findOrFail($id);
+                $kpi->update($all);
             });
 
+            $kpiCreatedDate = Carbon::createFromFormat('Y-m-d', $kpi->created_at->format('Y-m-d'));
+            event(new KpiChangedEvent($kpiCreatedDate));
             event(new TrackKpiUpdatesEvent($id));
 
         return [

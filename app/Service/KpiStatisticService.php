@@ -957,8 +957,9 @@ class KpiStatisticService
             $kpisAnnual['per_page'] = $kpis->perPage();
             $kpisAnnual['total'] = $kpis->total();
 
-            if (KpiItemsCacheHelper::has('kpi_annual_'.$month)){
-                $kpisAnnual['data'][$month] = KpiItemsCacheHelper::get('kpi_annual_'.$month);
+            $KpiItemsCached = KpiItemsCacheHelper::getAndCheck($year . '-' . $month);
+            if ($KpiItemsCached){
+                $kpisAnnual['data'][$month] = $KpiItemsCached;
                 continue;
             }
 
@@ -985,7 +986,7 @@ class KpiStatisticService
 
             $kpisAnnual['data'][$month] = $kpis->items();
             if ($date != $firstDayOfCurrentMonth){
-                KpiItemsCacheHelper::put('kpi_annual_'.$month, $kpisAnnual['data'][$month]);
+                KpiItemsCacheHelper::put($year . '-' . $month, $kpisAnnual['data'][$month]);
             }
         }
 

@@ -3,54 +3,48 @@
 namespace App\Helpers;
 
 use Cache;
+use App\Models\Kpi\Kpi;
+use \App\Events\KpiChangedEvent;
 
 class KpiItemsCacheHelper
 {
     private static string $tag = 'KpiItems';
     private static int $ttl = 60;
+    private static string $prefix = 'kpi-annual-';
 
     /**
      * Возвращает данные из кэша.
      *
-     * @param string $key
-     * @return array
+     * @param string $date
+     * @return array|null
      */
-    public static function get(string $key): array
+    public static function getAndCheck(string $date): array|null
     {
-        return json_decode(Cache::tags(self::$tag)->get($key));
+        return json_decode(Cache::tags(self::$tag)->get(self::$prefix . $date));
     }
 
     /**
      * Записывает данные в кэш.
      *
-     * @param string $key
-     * @param array $value
+     * @param string $date
+     * @param array<Kpi> $kpiItems
      * @return bool
      */
-    public static function put(string $key, array $value): bool
+    public static function put(string $date, array $kpiItems): bool
     {
-        return Cache::tags(self::$tag)->put($key, json_encode($value), self::$ttl);
-    }
-
-    /**
-     * Проверяет данные в кэше по ключу.
-     *
-     * @param string $key
-     * @return bool
-     */
-    public static function has(string $key): bool
-    {
-        return Cache::tags(self::$tag)->has($key);
+        return Cache::tags(self::$tag)
+            ->put(self::$prefix . $date, json_encode($kpiItems), self::$ttl);
     }
 
     /**
      * Удаляет данные из кэша по ключу.
      *
-     * @param string $key
+     * @param KpiChangedEvent $event <Kpi>
      * @return bool
      */
-    public static function forget(string $key): bool
+    public static function onKpiChanged(KpiChangedEvent $event): bool
     {
+        $key = self::$prefix . $event->year . '-' .  $event->month;
         return Cache::tags(self::$tag)->forget($key);
     }
 
