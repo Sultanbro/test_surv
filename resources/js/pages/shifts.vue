@@ -20,6 +20,7 @@
 				<b-thead>
 					<b-tr>
 						<b-th>№</b-th>
+						<b-th>Название</b-th>
 						<b-th>График</b-th>
 						<b-th>Рабочие часы</b-th>
 						<b-th>Дата создания</b-th>
@@ -32,6 +33,7 @@
 						:key="index"
 					>
 						<b-td>{{ index + 1 }}</b-td>
+						<b-td>{{ shift.text_name }}</b-td>
 						<b-td>{{ shift.name }}</b-td>
 						<b-td>с {{ shift.start_time }} по {{ shift.end_time }}</b-td>
 						<b-td>{{ $moment(shift.created_at).format('YYYY-MM-DD') }}</b-td>
@@ -250,12 +252,15 @@ export default {
 			this.modal = true;
 		},
 		editShift(shift) {
-			this.showSidebar = true;
+			const splitted = shift.name.split('-')
 			this.editShiftId = shift.id;
-			this.form.name = shift.name;
+			this.form.name = shift.text_name;
+			this.form.workdays = splitted[0]
+			this.form.dayoffs = splitted[1]
 			this.form.workStartTime = shift.start_time;
 			this.form.workEndTime = shift.end_time;
 			this.sidebarName = `Редактирование ${shift.name}`;
+			this.showSidebar = true;
 		},
 		async deleteShift() {
 			let loader = this.$loading.show();
