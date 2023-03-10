@@ -36,7 +36,7 @@ class StoreWorkChartRequest extends FormRequest
         ];
     }
 
-    private static readonly int $MAX_CHART_DAYS = 7;
+    private static int $MAX_CHART_DAYS = 7;
 
     public function validated() {
         $validated = parent::validated();
