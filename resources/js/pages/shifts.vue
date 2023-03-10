@@ -70,27 +70,19 @@
 			width="600px"
 		>
 			<b-form @submit.prevent="onSubmit">
-				<b-form-group
-					label="График"
-					label-cols="4"
-				>
-					<b-form-select v-model="form.name">
-						<b-form-select-option
-							disabled
-							value="null"
+				<div class="form-group row">
+					<label
+						for="chartName"
+						class="col-sm-4 col-form-label"
+					>Название</label>
+					<div class="col-sm-8 form-inline">
+						<input
+							id="chartName"
+							v-model="form.name"
+							class="form-control"
 						>
-							Выберите график работы
-						</b-form-select-option>
-						<template v-for="chart in workChartsList">
-							<b-form-select-option
-								:key="chart"
-								:value="chart"
-							>
-								График {{ chart }}
-							</b-form-select-option>
-						</template>
-					</b-form-select>
-				</b-form-group>
+					</div>
+				</div>
 				<div
 					id="workShedule"
 					class="form-group work-schedule row"
@@ -120,6 +112,46 @@
 						>
 					</div>
 				</div>
+				<b-form-group
+					label="График"
+					label-cols="4"
+				>
+					<!-- <b-form-select v-model="form.name">
+						<b-form-select-option
+							disabled
+							value="null"
+						>
+							Выберите график работы
+						</b-form-select-option>
+						<b-form-select-option
+							v-for="chart in workChartsList"
+							:key="chart"
+							:value="chart"
+						>
+							График {{ chart }}
+						</b-form-select-option>
+					</b-form-select> -->
+					<b-row>
+						<b-col cols="5">
+							<b-form-select
+								v-model="form.workdays"
+								:options="workdays"
+							/>
+						</b-col>
+						<b-col
+							cols="2"
+							class="col-form-label"
+						>
+							на
+						</b-col>
+						<b-col cols="5">
+							<b-form-select
+								v-model="form.dayoffs"
+								:options="dayoffs"
+							/>
+						</b-col>
+					</b-row>
+				</b-form-group>
 				<hr class="my-4">
 				<b-button
 					type="submit"
@@ -170,19 +202,36 @@ export default {
 			editShiftId: null,
 			form: {
 				name: null,
+				workdays: null,
+				dayoffs: null,
 				workStartTime: null,
 				workEndTime: null,
 			},
 			workChartsList: ['1-1', '2-2', '3-3', '5-2', '6-1']
 		}
 	},
+	computed: {
+		workdays(){
+			return this.workChartsList.reduce((options, chart) => {
+				const splitted = chart.split('-')
+				if(!this.form.dayoffs || this.form.dayoffs === splitted[1])
+					options.push(splitted[0])
+				return options
+			}, [''])
+		},
+		dayoffs(){
+			return this.workChartsList.reduce((options, chart) => {
+				const splitted = chart.split('-')
+				if(!this.form.workdays || this.form.workdays === splitted[0])
+					options.push(splitted[1])
+				return options
+			}, [''])
+		},
+	},
 	mounted() {
 		this.fetchData();
 	},
 	methods: {
-		toggleWeekDay(idx, day) {
-			this.$set(this.weekdays, idx, {day: day, active: this.weekdays[idx].active === 1 ? 0 : 1});
-		},
 		async fetchData() {
 			this.shiftsData = [];
 			let loader = this.$loading.show();
@@ -210,8 +259,7 @@ export default {
 		},
 		async deleteShift() {
 			let loader = this.$loading.show();
-			const response = await this.axios.delete('/work-chart/' + this.editShiftId);
-			console.log(response.data);
+			await this.axios.delete('/work-chart/' + this.editShiftId);
 			this.modal = false;
 			loader.hide();
 			this.resetForm();
@@ -222,11 +270,13 @@ export default {
 			this.editShiftId = null;
 			this.form.name = null;
 			this.form.workStartTime = null;
+			this.form.workdays = null;
+			this.form.dayoffs = null;
 			this.form.workEndTime = null;
 		},
 		async onSubmit() {
 			if(!this.form.name){
-				this.$toast.error('Выберите график');
+				this.$toast.error('Заполните название графика');
 				return;
 			}
 			if(!this.form.workStartTime){
@@ -237,25 +287,44 @@ export default {
 				this.$toast.error('Заполните рабочее время');
 				return;
 			}
+			if(!this.form.workdays || !this.form.dayoffs){
+				this.$toast.error('Выберите график');
+				return
+			}
+			if(!~this.workChartsList.indexOf(`${this.form.workdays}-${this.form.dayoffs}`)){
+				this.$toast.error('Выберите корректный график');
+				return
+			}
+			// Оставил на будущее когда можно будет произвольно выьирать кол-во дней
+			// if(parseInt(this.form.workdays) + parseInt(this.form.dayoffs) > 7){
+			// 	this.$toast.error('Сумма рабочих и выходных дней не должна быть больше 7');
+			// 	return
+			// }
 			let loader = this.$loading.show();
 			const formData = new FormData();
 			formData.append('name', this.form.name);
 			formData.append('start_time', this.form.workStartTime);
 			formData.append('end_time', this.form.workEndTime);
-			if (this.editShiftId) {
-				formData.append('_method', 'put');
-				const response = await this.axios.post('/work-chart/' + this.editShiftId, formData);
-				if (response.data) {
-					this.fetchData();
-					this.$toast.success('Смена обновлена');
-				}
-			} else {
-				const response = await this.axios.post('/work-chart', formData);
-				if (response.data) {
-					this.shiftsData.push(response.data.data);
-					this.$toast.success('Смена добавлена');
-				}
+			formData.append('chart_workdays', this.form.workdays);
+			formData.append('chart_dayoffs', this.form.dayoffs);
+
+			if(this.editShiftId) formData.append('_method', 'put')
+			const {data} = await this.axios.post(`/work-chart/${this.editShiftId || ''}`, formData)
+			if(!data) {
+				this.$toast.error(`Не удалось ${this.editShiftId ? 'обновить' : 'добавить'} смену`)
+				loader.hide()
+				return
 			}
+
+			if(this.editShiftId){
+				this.fetchData();
+				this.$toast.success('Смена обновлена');
+			}
+			else{
+				this.shiftsData.push(data.data);
+				this.$toast.success('Смена добавлена');
+			}
+
 			loader.hide();
 			this.closeSidebar();
 		},

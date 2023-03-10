@@ -19,11 +19,7 @@ class AddWorkChartService
     public function handle(StoreWorkChartDTO $dto): \Illuminate\Database\Eloquent\Model
     {
         try {
-           return WorkChartModel::createModel(
-               $dto->name,
-               $dto->startTime,
-               $dto->endTime
-           );
+           return WorkChartModel::createModel($dto);
         } catch (Throwable $exception)
         {
             throw new Exception($exception->getMessage());
