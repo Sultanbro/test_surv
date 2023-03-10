@@ -18,7 +18,7 @@ class KpiItemsCacheHelper
      * @param string $date
      * @return array|null
      */
-    public static function getAndCheck(string $date): array|null
+    public static function get(string $date): array|null
     {
         return json_decode(Cache::tags(self::$tag)->get(self::$prefix . $date));
     }

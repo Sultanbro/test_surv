@@ -9,7 +9,6 @@ use App\Models\QuartalPremium;
 use App\Position;
 use App\Service\Department\UserService;
 use App\Traits\KpiHelperTrait;
-use Cache;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Http\Request;
@@ -957,7 +956,7 @@ class KpiStatisticService
             $kpisAnnual['per_page'] = $kpis->perPage();
             $kpisAnnual['total'] = $kpis->total();
 
-            $KpiItemsCached = KpiItemsCacheHelper::getAndCheck($year . '-' . $month);
+            $KpiItemsCached = KpiItemsCacheHelper::get($year . '-' . $month);
             if ($KpiItemsCached){
                 $kpisAnnual['data'][$month] = $KpiItemsCached;
                 continue;
