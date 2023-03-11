@@ -1,12 +1,12 @@
 <?php
 
-namespace App\Helpers;
+namespace App\CacheStorage;
 
-use Cache;
+use App\Events\KpiChangedEvent;
 use App\Models\Kpi\Kpi;
-use \App\Events\KpiChangedEvent;
+use Cache;
 
-class KpiItemsCacheHelper
+class KpiItemsCacheStorage
 {
     private static string $tag = 'KpiItems';
     private static int $ttl = 60;
@@ -20,7 +20,8 @@ class KpiItemsCacheHelper
      */
     public static function get(string $date): array|null
     {
-        return json_decode(Cache::tags(self::$tag)->get(self::$prefix . $date));
+        return json_decode(Cache::tags(self::$tag)
+            ->get(self::getKey($date)));
     }
 
     /**
@@ -33,7 +34,7 @@ class KpiItemsCacheHelper
     public static function put(string $date, array $kpiItems): bool
     {
         return Cache::tags(self::$tag)
-            ->put(self::$prefix . $date, json_encode($kpiItems), self::$ttl);
+            ->put(self::getKey($date), json_encode($kpiItems), self::$ttl);
     }
 
     /**
@@ -44,8 +45,9 @@ class KpiItemsCacheHelper
      */
     public static function onKpiChanged(KpiChangedEvent $event): bool
     {
-        $key = self::$prefix . $event->year . '-' .  $event->month;
-        return Cache::tags(self::$tag)->forget($key);
+        $key = self::getKey($event->year . '-' . $event->month);
+        return Cache::tags(self::$tag)
+            ->forget($key);
     }
 
     /**
@@ -55,6 +57,18 @@ class KpiItemsCacheHelper
      */
     public static function flush(): bool
     {
-        return Cache::tags(self::$tag)->flush();
+        return Cache::tags(self::$tag)
+            ->flush();
+    }
+
+    /**
+     * Возвращает ключ.
+     *
+     * @param string $date
+     * @return string
+     */
+    private static function getKey(string $date): string
+    {
+        return self::$prefix . request()->getHost() . '-' . $date;
     }
 }

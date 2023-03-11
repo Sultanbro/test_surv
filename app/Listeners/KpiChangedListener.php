@@ -2,8 +2,8 @@
 
 namespace App\Listeners;
 
+use App\CacheStorage\KpiItemsCacheStorage;
 use App\Events\KpiChangedEvent;
-use App\Helpers\KpiItemsCacheHelper;
 
 class KpiChangedListener
 {
@@ -20,11 +20,11 @@ class KpiChangedListener
     /**
      * Handle the event.
      *
-     * @param  \App\Events\KpiChangedEvent  $event
+     * @param KpiChangedEvent $event
      * @return void
      */
     public function handle(KpiChangedEvent $event)
     {
-        KpiItemsCacheHelper::onKpiChanged($event);
+        KpiItemsCacheStorage::onKpiChanged($event);
     }
 }
