@@ -33,6 +33,7 @@ Route::middleware(['web','tenant'])->group(function () {
     Route::get('/tariffs/get', [Root\Tariffs\TariffController::class, 'get']);
 });
 
+// Portal Api
 Route::middleware(['web','tenant','not_admin_subdomain'])->group(function () {
 
     Route::resource('work-chart', Root\WorkChart\WorkChartController::class)->except(['create', 'edit']);
@@ -52,6 +53,12 @@ Route::middleware(['web','tenant','not_admin_subdomain'])->group(function () {
     Route::get('/newprofile', [User\ProfileController::class, 'newprofile']);
     Route::get('/impersonate/{token}', function ($token) {
         return \Stancl\Tenancy\Features\UserImpersonation::makeResponse($token);
+    });
+
+    Route::middleware('auth')->get('/me', [User\UserController::class, 'me']);
+
+    Route::group(['prefix' => 'portal', 'as' => 'portal.'], function () {
+        Route::get('/current', [Root\Portal\PortalController::class, 'getCurrentPortal']);
     });
 
     Route::group(['prefix' => 'profile', 'as' => 'profile.'], function () {
@@ -580,8 +587,6 @@ Route::middleware(['web','tenant','not_admin_subdomain'])->group(function () {
             });
         });
     });
-
-    Route::middleware('auth')->get('/me', [Article\NewsController::class, 'user']);
 
     Route::prefix('dictionaries')->name('dictionaries.')->middleware(['auth'])->group(function () {
         Route::get('/', [Article\Dictionary\DictionaryController::class, 'index'])->name('index');

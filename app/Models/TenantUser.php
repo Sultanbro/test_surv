@@ -7,7 +7,7 @@ use App\Models\CourseItem;
 
 class TenantUser extends Model
 {
-    protected $table = 'tenant_users';
+    protected $table = 'tenant_user';
 
     protected $connection = 'mysql';
 
