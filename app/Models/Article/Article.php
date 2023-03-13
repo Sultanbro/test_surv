@@ -3,7 +3,6 @@
 namespace App\Models\Article;
 
 use App\Enums\ArticleAvailableForTypeEnum;
-use App\Filters\QueryFilter;
 use App\Models\Comment\Comment;
 use App\Models\File\File;
 use App\Models\Like\Like;
@@ -18,7 +17,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Carbon;
-use Illuminate\Database\Eloquent\Casts\Attribute;
+use Illuminate\Support\Facades\DB;
 
 /**
  * @property int $id
@@ -136,7 +135,7 @@ class Article extends Model
                 'article_views_users as views',
                 function($join) use ($userId) {
                     $join->on('articles.id', '=', 'views.article_id');
-                    $join->on('views.user_id', '=', $userId);
+                    $join->on('views.user_id', '=', DB::raw($userId));
                 },
             )
             ->whereNull('views.user_id')
