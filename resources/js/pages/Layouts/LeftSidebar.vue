@@ -168,7 +168,7 @@ export default {
 		};
 	},
 	methods: {
-		...mapActions(useUnviewedNewsStore, ['getUnviewedNewsCount']),
+		...mapActions(useUnviewedNewsStore, ['getUnviewedNewsCount', 'startAutoCheck']),
 		onResize(){
 			if(!this.$refs.nav) return
 			this.height = this.$refs.nav.offsetHeight
@@ -429,7 +429,7 @@ export default {
 		this.onResize()
 		this.resizeObserver = new ResizeObserver(this.onResize).observe(this.$refs.nav)
 		this.getUnviewedNewsCount();
-		setInterval(() => this.getUnviewedNewsCount(), 300000);
+		this.startAutoCheck();
 		bus.$on('user-avatar-update', this.updateAvatar)
 	},
 	beforeUnmount(){
