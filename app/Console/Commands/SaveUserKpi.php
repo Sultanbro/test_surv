@@ -2,6 +2,7 @@
 
 namespace App\Console\Commands;
 
+use App\Events\KpiChangedEvent;
 use App\Kpi;
 use App\SavedKpi;
 use App\User;
@@ -204,11 +205,19 @@ class SaveUserKpi extends Command
             ->where('date', $data['date'])
             ->first();
 
+        $date = null;
         if($sk) {
             $sk->total = $data['total'];
             $sk->save();
+            $date = $sk->date;
         } else {
             SavedKpi::create($data);
+            $date = $data['date'];
+        }
+
+        if($date){
+            $date = Carbon::createFromFormat('Y-m-d', $sk->date);
+            event(new KpiChangedEvent($date));
         }
     }
 

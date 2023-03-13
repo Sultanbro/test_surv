@@ -67,7 +67,10 @@ class EventServiceProvider extends ServiceProvider
         ],
         WorkdayEvent::class => [
             WorkdayListener::class
-        ]
+        ],
+        \App\Events\KpiChangedEvent::class => [
+            \App\Listeners\KpiChangedListener::class
+        ],
     ];
 
     /**

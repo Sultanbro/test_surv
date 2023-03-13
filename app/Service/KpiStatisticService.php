@@ -2,27 +2,28 @@
 
 namespace App\Service;
 
+use App\CacheStorage\KpiItemsCacheStorage;
 use App\Http\Requests\BonusesFilterRequest;
+use App\Models\Analytics\Activity;
+use App\Models\Analytics\AnalyticStat;
+use App\Models\Analytics\UpdatedUserStat;
+use App\Models\Analytics\UserStat;
 use App\Models\Kpi\Bonus;
+use App\Models\Kpi\Kpi;
+use App\Models\Kpi\KpiItem;
 use App\Models\QuartalPremium;
 use App\Position;
+use App\ProfileGroup;
 use App\Service\Department\UserService;
 use App\Traits\KpiHelperTrait;
+use App\User;
+use Carbon\Carbon;
+use Exception;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
-use Carbon\Carbon;
-use Exception;
-use App\User;
-use App\ProfileGroup;
-use App\Models\Kpi\KpiItem;
-use App\Models\Kpi\Kpi;
-use App\Models\Analytics\UserStat;
-use App\Models\Analytics\UpdatedUserStat;
-use App\Models\Analytics\Activity;
-use App\Models\Analytics\AnalyticStat;
 use Illuminate\Support\Arr;
+use Illuminate\Support\Facades\DB;
 
 class KpiStatisticService
 {
@@ -916,7 +917,6 @@ class KpiStatisticService
                 continue;
             }
 
-            $this->workdays = collect($this->userWorkdays($request));
             $this->updatedValues = UpdatedUserStat::query()
                 ->whereMonth('date', $date->month)
                 ->whereYear('date', $date->year)
@@ -956,6 +956,13 @@ class KpiStatisticService
             $kpisAnnual['per_page'] = $kpis->perPage();
             $kpisAnnual['total'] = $kpis->total();
 
+            $cacheKey = $year . '-' . $month;
+            $KpiItemsCached = KpiItemsCacheStorage::get($cacheKey);
+            if ($KpiItemsCached){
+                $kpisAnnual['data'][$month] = $KpiItemsCached;
+                continue;
+            }
+
             foreach ($kpis->items() as $kpi) {
 
                 $kpi->kpi_items = [];
@@ -978,6 +985,9 @@ class KpiStatisticService
             }
 
             $kpisAnnual['data'][$month] = $kpis->items();
+            if ($date != $firstDayOfCurrentMonth){
+                KpiItemsCacheStorage::put($cacheKey, $kpisAnnual['data'][$month]);
+            }
         }
 
         return [
