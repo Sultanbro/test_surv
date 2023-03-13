@@ -9,7 +9,7 @@ use Cache;
 class KpiItemsCacheStorage
 {
     private static string $tag = 'KpiItems';
-    private static int $ttl = 60;
+    private static int $ttl = 300;
     private static string $prefix = 'kpi-annual-';
 
     /**
