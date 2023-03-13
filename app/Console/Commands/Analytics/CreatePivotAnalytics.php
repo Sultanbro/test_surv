@@ -46,10 +46,10 @@ class CreatePivotAnalytics extends Command
     {
         $this->line('start creating pivot tables:');
         
-//        if(Carbon::now()->day != 1) return false;
+        if(Carbon::now()->day != 1) return false;
 
-        $newDate  = Carbon::parse('2023-04-01')->day(1)->format('Y-m-d');
-        $prevDate = Carbon::parse('2023-04-01')->subMonth()->day(1)->format('Y-m-d');
+        $newDate  = Carbon::now()->day(1)->format('Y-m-d');
+        $prevDate = Carbon::now()->subMonth()->day(1)->format('Y-m-d');
 
         $groups   = ProfileGroup::query()
                     ->where('active', 1)
