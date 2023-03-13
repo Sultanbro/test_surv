@@ -145,7 +145,8 @@
 /* global Laravel */
 import LeftSidebarItem from './LeftSidebarItem'
 import { bus } from '../../bus'
-
+import { useUnviewedNewsStore } from '@/stores/UnviewedNewsCount'
+import { mapActions } from 'pinia'
 export default {
 	name: 'LeftSidebar',
 	components: {
@@ -167,6 +168,7 @@ export default {
 		};
 	},
 	methods: {
+		...mapActions(useUnviewedNewsStore, ['getUnviewedNewsCount']),
 		onResize(){
 			if(!this.$refs.nav) return
 			this.height = this.$refs.nav.offsetHeight
@@ -426,7 +428,8 @@ export default {
 	mounted(){
 		this.onResize()
 		this.resizeObserver = new ResizeObserver(this.onResize).observe(this.$refs.nav)
-
+		this.getUnviewedNewsCount();
+		setInterval(() => this.getUnviewedNewsCount(), 300000);
 		bus.$on('user-avatar-update', this.updateAvatar)
 	},
 	beforeUnmount(){

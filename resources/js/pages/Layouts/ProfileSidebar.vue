@@ -89,6 +89,18 @@
 				<ProfileInfo :data="userInfo" />
 			</div>
 
+			<div
+				class="profile-video-image"
+				v-b-modal.modal-youtube
+				v-if="false"
+			>
+				<img
+					src="https://img.youtube.com/vi/dVFUo7x5HE0/mqdefault.jpg"
+					alt="youtube"
+				>
+				<i class="fa fa-play" />
+			</div>
+
 			<!-- Статус: скрыто. Компонент: ProfileSidebar. Дата скрытия: 27.01.2023 14:13 -->
 			<div
 				class="profile__col"
@@ -226,6 +238,23 @@
 				:dont-repat="true"
 				@passed="hideBook"
 				@failed="repeatBook"
+			/>
+		</b-modal>
+
+		<b-modal
+			id="modal-youtube"
+			modal-class="modal-youtube"
+			size="xl"
+			centered
+			hide-header
+			hide-footer
+			v-if="false"
+		>
+			<iframe
+				src="https://www.youtube.com/embed/dVFUo7x5HE0"
+				title="YouTube video player"
+				frameborder="0"
+				allowfullscreen
 			/>
 		</b-modal>
 	</div>
@@ -498,6 +527,52 @@ export default {
 </script>
 
 <style lang="scss">
+	.modal-youtube{
+		.modal-xl{
+			max-width: 900px;
+		}
+		.modal-body{
+			padding: 0;
+			position: relative;
+			padding-bottom: 56.25%;
+			iframe{
+				position: absolute;
+				width: 100%!important;
+				height: 100%!important;
+			}
+		}
+	}
+	.profile-video-image {
+		position: relative;
+		margin-top: 20px;
+		border-radius: 1rem;
+		overflow: hidden;
+		cursor: pointer;
+		.fa-play {
+			position: absolute;
+			top: 50%;
+			left: 50%;
+			transform: translate(-50%, -50%);
+			z-index: 22;
+			color: #fff;
+			font-size: 30px;
+			transition: 0.3s all ease;
+		}
+		&:hover{
+			.fa-play{
+				transform: translate(-50%, -50%) scale(1.2);
+			}
+			img{
+				filter: grayscale(0.5);
+			}
+		}
+
+		img {
+			width: 100%;
+			height: auto;
+			transition: 0.3s all ease;
+		}
+	}
 .header__profile{
 	margin: 0 auto;
 	padding: 2rem 2rem 1rem;

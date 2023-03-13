@@ -240,7 +240,8 @@
 
 <script>
 import CommentsComponent from '@/pages/News/CommentsComponent'
-
+import { useUnviewedNewsStore } from '@/stores/UnviewedNewsCount'
+import { mapActions } from 'pinia'
 export default {
 	name: 'PostComponent',
 	components: {
@@ -273,7 +274,7 @@ export default {
 		this.showFullContent = this.currentPost.is_pinned == false;
 	},
 	methods: {
-
+		...mapActions(useUnviewedNewsStore, ['getUnviewedNewsCount']),
 		getFileTypeByExtension(extension) {
 			switch (extension) {
 			case 'png': {
@@ -408,11 +409,13 @@ export default {
 		async viewsChanged() {
 			await this.axios.post('news/' + this.currentPost.id + '/views')
 				.then(res => {
+					console.log(res);
 					this.currentPost.views_count = res.data.data.views_count;
 				})
 				.catch(res => {
 					console.log(res)
 				})
+			this.getUnviewedNewsCount();
 		},
 
 		async favouritePost(id) {
