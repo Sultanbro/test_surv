@@ -161,6 +161,23 @@
 				</div>
 			</div>
 		</div>
+		<div
+			class="cookie-alert"
+			v-if="!cookieViewed"
+		>
+			<span>Мы используем файлы cookie на нашем веб-сайте для поддержки технических функций, которые улучшают ваш
+				пользовательский опыт. Мы также собираем анонимные аналитические данные, как описано в нашей
+				<a
+					href="/docs/privacy-policy.pdf"
+					target="_blank"
+				>Политике конфиденциальности</a></span>
+			<button
+				class="jButton"
+				@click="saveCookieView"
+			>
+				Понятно
+			</button>
+		</div>
 	</footer>
 </template>
 
@@ -179,7 +196,19 @@ export default {
 	},
 	data() {
 		return {
-			year: new Date().getFullYear()
+			year: new Date().getFullYear(),
+			cookieViewed: false
+		}
+	},
+	mounted(){
+		this.cookieViewed = localStorage.getItem('cookieViewed');
+	},
+	methods:{
+		saveCookieView(){
+			if(!this.cookieViewed){
+				this.cookieViewed = !this.cookieViewed;
+				localStorage.setItem('cookieViewed', true);
+			}
 		}
 	}
 }
@@ -187,6 +216,33 @@ export default {
 
 <style lang="scss">
 @import '../../assets/scss/app.variables.scss';
+
+.cookie-alert{
+	position: fixed;
+	bottom: 20px;
+	left: 20px;
+	max-width: 700px;
+	padding: 20px;
+	background-color: #43a9fe;
+	color: #fff;
+	border-radius: 10px;
+	z-index: 1001;
+	display: flex;
+	align-items: center;
+	a{
+		color: #fff;
+	}
+	.jButton{
+		margin-left: 30px;
+		background-color: #fff;
+		color: #43a9fe;
+		font-size: 14px;
+		&:hover{
+			background-color: #fafafa;
+			color: #337fc0;
+		}
+	}
+}
 
 #jFooter {
   width: 100%;
