@@ -293,12 +293,13 @@ export default {
 			this.axios
 				.get('/permissions/get', {})
 				.then((response) => {
+					if(!response.data?.roles) this.$toast.error('Не удалось загрузить данные')
 
-					this.users = response.data.users;
-					this.roles = response.data.roles;
-					this.groups = response.data.groups;
-					this.pages = response.data.pages;
-					this.items = response.data.items;
+					this.users = response.data.users || [];
+					this.roles = response.data.roles || [];
+					this.groups = response.data.groups || [];
+					this.pages = response.data.pages || [];
+					this.items = response.data.items || [];
 
 					loader.hide();
 				})
@@ -404,13 +405,10 @@ export default {
 			let loader = this.$loading.show();
 
 			this.permissions = [];
-			console.log(this.role.perms);
 
 			Object.keys(this.role.perms).forEach(key => {
 				if(this.role.perms[key]) this.permissions.push(key)
 			});
-
-			console.log(this.permissions);
 
 			this.axios
 				.post('/permissions/update-role', {
