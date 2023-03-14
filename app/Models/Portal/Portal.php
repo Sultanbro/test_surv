@@ -26,11 +26,11 @@ class Portal extends Model
     ];
 
     /**
-     * @param int $tenantId
+     * @param string $tenantId
      * @return Builder
      */
     public static function getByTenantIdOrFail(
-        int $tenantId
+        string $tenantId
     ): Builder
     {
         return self::query()
