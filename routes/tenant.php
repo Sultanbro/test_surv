@@ -89,7 +89,7 @@ Route::middleware(['web','tenant','not_admin_subdomain'])->group(function () {
     Route::post('/corp_book/set-read/', [User\EmployeeController::class, 'corp_book_read']); // Прочитать страницу из корп книги @TODO при назначении книги
     Route::any('/timetracking/user/{id}', [User\EmployeeController::class, 'profile']);
     Route::any('/timetracking/get-persons', [User\EmployeeController::class, 'getpersons']);
-    Route::resource('timetracking/work-chart',Settings\WorkChart\WorkChartController::class);
+//    Route::resource('timetracking/work-chart',Settings\WorkChart\WorkChartController::class);
     Route::get('/timetracking/create-person', [User\EmployeeController::class, 'createPerson'])->name('users.create');
     Route::post('/timetracking/person/store', [Settings\UserController::class, 'store'])->name('users.store');
     Route::get('/timetracking/edit-person', [User\EmployeeController::class, 'editperson'])->name('users.edit');
@@ -710,9 +710,8 @@ Route::middleware(['web','tenant','admin_subdomain'])->group(function () {
         Route::post('/add', [Admin\AdminController::class, 'addAdmin']);
         Route::delete('/delete/{user}', [Admin\AdminController::class, 'deleteAdmin']);
         Route::post('/edit/{user}', [Admin\AdminController::class, 'edit']);
+        Route::get('permissions/get', [Admin\AdminPermissionController::class, 'getPermissions']);
     });
-
-    Route::get('permissions/get', [Admin\AdminPermissionController::class, 'getPermissions']);
     Route::get('roles/get', [Admin\AdminPermissionController::class, 'getRoles']);
 });
 
