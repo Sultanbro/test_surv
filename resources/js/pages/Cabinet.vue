@@ -100,8 +100,8 @@
 					</div>
 
 					<div
-						v-if="false"
 						class="row video-add-content"
+						v-if="auth_role.is_admin === 1"
 					>
 						<div class="col-md-6">
 							<div class="row">
@@ -520,6 +520,7 @@ import Multiselect from 'vue-multiselect'
 import 'vue-advanced-cropper/dist/style.css'
 import { bus } from '../bus'
 
+const regex = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|v=)([^#]*).*/;
 export default {
 	name: 'PageCabinet',
 	components:{
@@ -532,8 +533,8 @@ export default {
 	data() {
 		return {
 			domain: window.location.hostname.split('.')[0],
-			videoUrl: '',
-			videoDays: '',
+			videoUrl: null,
+			videoDays: 7,
 			// my_crop_image: "",
 			crop_image: {
 				canvas: '',
@@ -589,7 +590,10 @@ export default {
 		},
 		videoYoutube() {
 			return this.videoId ? `https://www.youtube.com/watch?v=${this.videoId}` : null;
-		}
+		},
+		validateYouTubeLink() {
+			return regex.test(this.videoUrl);
+		},
 	},
 	watch: {
 		keywords() {
@@ -600,8 +604,10 @@ export default {
 		}
 	},
 	mounted() {
-		// this.drawProfile();
-		// this.hasImage = this.$root.$children[1].hasImage;
+		this.axios.get('/portal/current').then(res => {
+			this.videoUrl = res.data.data.main_page_video;
+			this.videoDays = res.data.data.main_page_video_show_days_amount;
+		})
 	},
 	created() {
 		if (this.auth_role) {
@@ -787,14 +793,9 @@ export default {
 			this.cardValidatre.error = false;
 
 
-			console.log(this.payments,'this.payments')
-
-
 			if (this.payments.length > 0){
 
 				this.payments.forEach((el) => {
-
-					console.log(el,'emasdasd')
 
 					this.cardValidatre.type = false;
 					this.cardValidatre.type = true;
@@ -883,18 +884,33 @@ export default {
 					alert(error);
 				});
 		},
-
 		save() {
-			this.axios
-				.post('/cabinet/save', {
-					admins: this.admins,
-				})
-				.then(() => {
-					this.$toast.success('Сохранено');
-				})
-				.catch((error) => {
-					alert(error, '6565');
-				});
+			try{
+				if ((this.videoDays || this.videoUrl) && this.auth_role.is_admin === 1) {
+					if(this.videoDays && this.videoUrl){
+						const formData = new FormData();
+						formData.append('mainPageVideo', this.videoUrl);
+						formData.append('mainPageVideoShowDaysAmount', this.videoDays);
+						this.validateYouTubeLink ? this.axios.post('/portal/update', formData) : this.$toast.error('Некорректная ссылка youtube');
+					} else {
+						this.$toast.error('Заполните все поля');
+					}
+				}
+				this.axios
+					.post('/cabinet/save', {
+						admins: this.admins,
+					})
+					.then(() => {
+						this.$toast.success('Сохранено');
+					})
+					.catch((error) => {
+						alert(error, '6565');
+					});
+			} catch(err){
+				console.log(err);
+				this.$toast.err('Ошибка сохранения');
+			}
+
 		},
 
 		fetch() {
@@ -938,7 +954,7 @@ export default {
 
 	}
 	.no-youtube{
-		height: 255px;
+		height: auto;
 		img{
 			width: 100%;
 			height: 100%;
