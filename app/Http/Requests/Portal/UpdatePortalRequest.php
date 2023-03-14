@@ -34,7 +34,7 @@ class UpdatePortalRequest extends FormRequest
     /**
      * @return UpdatePortalDTO
      */
-    public function toDto(int $ownerId): UpdatePortalDTO
+    public function toDto(string $tenantId): UpdatePortalDTO
     {
         $validated = $this->validated();
 
@@ -42,7 +42,7 @@ class UpdatePortalRequest extends FormRequest
         $mainPageVideoShowDaysAmount = (int) Arr::get($validated, 'mainPageVideoShowDaysAmount');
 
         return new UpdatePortalDTO(
-            $ownerId,
+            $tenantId,
             $mainPageVideo,
             $mainPageVideoShowDaysAmount,
         );

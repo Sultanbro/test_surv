@@ -23,7 +23,7 @@ class UpdatePortalService
     {
         $updated = Portal::query()
             ->get()
-            ->where('owner_id', $dto->ownerId)
+            ->where('tenant_id', $dto->tenantId)
             ->firstOrFail()
             ->update($dto->toArray());
 

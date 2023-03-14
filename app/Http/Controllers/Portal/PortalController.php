@@ -34,9 +34,11 @@ class PortalController extends Controller
      */
     public function update(UpdatePortalRequest $request, UpdatePortalService $service): JsonResponse
     {
+        //TODO is owner guard
+        $tenantId = tenant('id'); //TODO Portal refactor: portal associated with tenant for now
         $ownerId = auth()->id();
 
-        $response = $service->handle($request->toDto($ownerId));
+        $response = $service->handle($request->toDto($tenantId));
         return $this->response(
             message: 'Successfully updated',
             data: $response,

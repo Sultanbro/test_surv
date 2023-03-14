@@ -6,12 +6,12 @@ namespace App\DTO\Portal;
 final class UpdatePortalDTO
 {
     /**
-     * @param int $ownerId
+     * @param string $tenantId
      * @param ?string $mainPageVideo
      * @param ?string $mainPageVideoShowDaysAmount
      */
     public function __construct(
-        public int $ownerId,
+        public string $tenantId, //TODO Portal refactor
         public ?string $mainPageVideo,
         public ?int $mainPageVideoShowDaysAmount,
     )
