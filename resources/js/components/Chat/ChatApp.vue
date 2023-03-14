@@ -23,7 +23,7 @@
 			@close="hideGallery"
 		/>
 		<ConfirmDialog />
-		<ChatIconsDemo />
+		<!-- <ChatIconsDemo /> -->
 	</div>
 </template>
 
@@ -35,7 +35,7 @@ import InfoPanel from './InfoPanel/InfoPanel';
 import clickOutside from './directives/clickOutside.ts';
 import ImageGallery from './ImageGallery/ImageGallery.vue';
 import ConfirmDialog from './ConfirmDialog/ConfirmDialog.vue';
-import ChatIconsDemo from './icons/ChatIconsDemo.vue'
+// import ChatIconsDemo from './icons/ChatIconsDemo.vue'
 
 // noinspection JSUnusedGlobalSymbols
 export default {
@@ -46,7 +46,7 @@ export default {
 		InfoPanel,
 		ImageGallery,
 		ConfirmDialog,
-		ChatIconsDemo,
+		// ChatIconsDemo,
 	},
 	directives: {
 		clickOutside
