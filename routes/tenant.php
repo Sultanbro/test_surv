@@ -59,6 +59,7 @@ Route::middleware(['web','tenant','not_admin_subdomain'])->group(function () {
 
     Route::group(['prefix' => 'portal', 'as' => 'portal.'], function () {
         Route::get('/current', [Root\Portal\PortalController::class, 'getCurrentPortal']);
+        Route::patch('/update', [Root\Portal\PortalController::class, 'update']);
     });
 
     Route::group(['prefix' => 'profile', 'as' => 'profile.'], function () {

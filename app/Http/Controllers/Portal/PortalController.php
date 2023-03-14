@@ -3,8 +3,11 @@
 namespace App\Http\Controllers\Portal;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Portal\UpdatePortalRequest;
 use App\Models\Portal\Portal;
+use App\Service\Portal\UpdatePortalService;
 use Illuminate\Http\JsonResponse;
+use Exception;
 
 class PortalController extends Controller
 {
@@ -18,6 +21,25 @@ class PortalController extends Controller
         return $this->response(
             message: "Success",
             data: Portal::getByTenantIdOrFail($tenantId),
+        );
+    }
+
+    /**
+     * Обновление портала.
+     *
+     * @param UpdatePortalRequest $request
+     * @param UpdatePortalService $service
+     * @return JsonResponse
+     * @throws Exception
+     */
+    public function update(UpdatePortalRequest $request, UpdatePortalService $service): JsonResponse
+    {
+        $ownerId = auth()->id();
+
+        $response = $service->handle($request->toDto($ownerId));
+        return $this->response(
+            message: 'Successfully updated',
+            data: $response,
         );
     }
 }

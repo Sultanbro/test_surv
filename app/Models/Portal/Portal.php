@@ -21,6 +21,8 @@ class Portal extends Model
         'tenant_id',
         'owner_id',
         'currency',
+        'main_page_video',
+        'main_page_video_show_days_amount',
     ];
 
     /**
