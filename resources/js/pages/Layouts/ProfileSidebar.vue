@@ -92,10 +92,10 @@
 			<div
 				class="profile-video-image"
 				v-b-modal.modal-youtube
-				v-if="false"
+				v-if="videoUrl && isVideoDaysNotGone"
 			>
 				<img
-					src="https://img.youtube.com/vi/dVFUo7x5HE0/mqdefault.jpg"
+					:src="&quot;https://img.youtube.com/vi/&quot; + getYoutubeVideoId + &quot;/mqdefault.jpg&quot;"
 					alt="youtube"
 				>
 				<i class="fa fa-play" />
@@ -248,10 +248,10 @@
 			centered
 			hide-header
 			hide-footer
-			v-if="false"
+			v-if="videoUrl && isVideoDaysNotGone"
 		>
 			<iframe
-				src="https://www.youtube.com/embed/dVFUo7x5HE0"
+				:src="&quot;https://www.youtube.com/embed/&quot; + getYoutubeVideoId"
 				title="YouTube video player"
 				frameborder="0"
 				allowfullscreen
@@ -301,6 +301,8 @@ export default {
 			isRoot: false,
 			isProfile: false,
 			canvas: null,
+			videoUrl: null,
+			videoDays: null
 		};
 	},
 	computed: {
@@ -341,6 +343,18 @@ export default {
 		},
 		isVisible(){
 			return this.isReady || this.$viewportSize.width > 900
+		},
+		getYoutubeVideoId() {
+			if(this.videoUrl){
+				const urlObj = new URL(this.videoUrl);
+				if (urlObj.pathname.indexOf('embed') > -1) return urlObj.pathname.split('/')[2];
+				return urlObj.searchParams.get('v');
+			} else {
+				return null;
+			}
+		},
+		isVideoDaysNotGone(){
+			return this.$moment().diff(this.$moment(new Date(this.user.created_at)), 'days') <= this.videoDays;
 		}
 	},
 	watch: {
@@ -354,9 +368,13 @@ export default {
 		}
 		const scrollObserver = new IntersectionObserver(() => {
 			this.inViewport = true
-		})
-		scrollObserver.observe(this.$el)
-		this.initCorpBook()
+		});
+		scrollObserver.observe(this.$el);
+		this.initCorpBook();
+		this.axios.get('/portal/current').then(res => {
+			this.videoUrl = res.data.data.main_page_video;
+			this.videoDays = res.data.data.main_page_video_show_days_amount;
+		});
 	},
 	created(){
 		this.isRoot = window.location.pathname === '/'
