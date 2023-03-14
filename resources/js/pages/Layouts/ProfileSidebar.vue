@@ -95,7 +95,7 @@
 				v-if="videoUrl && isVideoDaysNotGone"
 			>
 				<img
-					:src="&quot;https://img.youtube.com/vi/&quot; + getYoutubeVideoId + &quot;/mqdefault.jpg&quot;"
+					:src="'https://img.youtube.com/vi/' + youtubeVideoId + '/mqdefault.jpg'"
 					alt="youtube"
 				>
 				<i class="fa fa-play" />
@@ -251,7 +251,7 @@
 			v-if="videoUrl && isVideoDaysNotGone"
 		>
 			<iframe
-				:src="&quot;https://www.youtube.com/embed/&quot; + getYoutubeVideoId"
+				:src="'https://www.youtube.com/embed/' + youtubeVideoId"
 				title="YouTube video player"
 				frameborder="0"
 				allowfullscreen
@@ -344,7 +344,7 @@ export default {
 		isVisible(){
 			return this.isReady || this.$viewportSize.width > 900
 		},
-		getYoutubeVideoId() {
+		youtubeVideoId() {
 			if(this.videoUrl){
 				const urlObj = new URL(this.videoUrl);
 				if (urlObj.pathname.indexOf('embed') > -1) return urlObj.pathname.split('/')[2];

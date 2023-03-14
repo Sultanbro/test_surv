@@ -586,7 +586,7 @@ export default {
 		},
 		videoId() {
 			if (!this.videoUrl) return '';
-			return this.getYoutubeVideoId(this.videoUrl)
+			return this.youtubeVideoId(this.videoUrl)
 		},
 		videoYoutube() {
 			return this.videoId ? `https://www.youtube.com/watch?v=${this.videoId}` : null;
@@ -615,7 +615,7 @@ export default {
 		}
 	},
 	methods: {
-		getYoutubeVideoId(url) {
+		youtubeVideoId(url) {
 			const urlObj = new URL(url)
 			if (urlObj.pathname.indexOf('embed') > -1) return urlObj.pathname.split('/')[2]
 			return urlObj.searchParams.get('v')
