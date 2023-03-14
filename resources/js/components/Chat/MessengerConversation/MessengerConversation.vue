@@ -31,13 +31,14 @@ export default {
 <style>
 
 .messenger__col-messages {
-  position: relative;
+  display: flex;
   height: 100%;
   flex: 1;
+  border: 1px solid #E1EBF9;
+
+  position: relative;
   overflow: hidden;
-  display: flex;
   flex-flow: column;
-  border: 1px solid #e2e2e2;
 }
 
 </style>
