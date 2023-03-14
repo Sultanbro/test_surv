@@ -788,7 +788,7 @@ export default {
 			}
 		},
 
-		async editProfileUser() {
+		editProfileUser() {
 			this.cardValidatre.type = false;
 			this.cardValidatre.error = false;
 
@@ -954,7 +954,7 @@ export default {
 
 	}
 	.no-youtube{
-		height: auto    ;
+		height: auto;
 		img{
 			width: 100%;
 			height: 100%;
