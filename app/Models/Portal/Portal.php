@@ -31,7 +31,7 @@ class Portal extends Model
      */
     public static function getByTenantIdOrFail(
         string $tenantId
-    ): Builder
+    ): Portal
     {
         return self::query()
             ->where('tenant_id', $tenantId)
