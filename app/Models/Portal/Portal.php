@@ -27,7 +27,7 @@ class Portal extends Model
 
     /**
      * @param string $tenantId
-     * @return Builder
+     * @return Portal
      */
     public static function getByTenantIdOrFail(
         string $tenantId
