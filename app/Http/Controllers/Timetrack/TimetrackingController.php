@@ -783,7 +783,7 @@ class TimetrackingController extends Controller
             $groups = $_groups;
         }
 
-        $fines = Fine::selectRaw('id as value, CONCAT(name," <span>(-", penalty_amount,")</span>") as text')->get();
+        $fines = Fine::selectRaw('id as value, CONCAT(name," - ", penalty_amount) as text')->get();
         $years = ['2020', '2021', '2022']; // TODO Временно. Нужно выяснить из какой таблицы брать динамические годы
         return view('admin.reports', compact('groups', 'fines', 'years'));
     }
