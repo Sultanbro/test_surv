@@ -21,7 +21,7 @@
 						v-model="activebtn"
 						:options="statuses"
 						@select="selectGroup"
-						placeholder="Выберите группу из списка"
+						placeholder="Выберите отдел из списка"
 						track-by="group"
 						label="group"
 						ref="groupsMultiselect"
@@ -62,7 +62,7 @@
 		>
 			<div class="col-lg-6 mb-3">
 				<b-form-group
-					label="Название группы"
+					label="Название отдела"
 					label-cols="6"
 					class="mb-4"
 				>
