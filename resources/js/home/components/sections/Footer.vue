@@ -113,47 +113,49 @@
 							class="jFooter-pay-link jFooter-pay-uniseller"
 							href="javascript:void(0)"
 						/>
-					</div>
-					<div class="jFooter-pay">
 						<a
 							class="jFooter-pay-link jFooter-pay-ym"
 							href="javascript:void(0)"
 						/>
 					</div>
+					<div class="jFooter-docs">
+						<RouterLink
+							class="jFooter-rules-link jFooter-link"
+							to="/contract-offer"
+						>
+							{{ $lang(lang, 'contract-offer') }}
+						</RouterLink>
+						<RouterLink
+							class="jFooter-rules-link jFooter-link"
+							to="/site-use-agreement"
+						>
+							{{ $lang(lang, 'site-agreement') }}
+						</RouterLink>
+						<RouterLink
+							class="jFooter-rules-link jFooter-link"
+							to="/personal-data"
+						>
+							{{ $lang(lang, 'personal-data') }}
+						</RouterLink>
+						<RouterLink
+							class="jFooter-rules-link jFooter-link"
+							to="/privacy-policy"
+						>
+							{{ $lang(lang, 'privacy-policy') }}
+						</RouterLink>
+						<RouterLink
+							class="jFooter-rules-link jFooter-link"
+							to="/contacts"
+						>
+							{{ $lang(lang, 'contacts') }}
+						</RouterLink>
+					</div>
 				</div>
 			</div>
 		</div>
 		<div class="jFooter-separator" />
-		<div class="section-content">
+		<div class="section-content final-footer">
 			<div class="jFooter-bottom">
-				<div class="jFooter-rules">
-					<RouterLink
-						class="jFooter-rules-link jFooter-link"
-						to="/contacts"
-					>
-						{{ $lang(lang, 'contacts') }}
-					</RouterLink>
-					<a
-						class="jFooter-rules-link jFooter-link"
-						href="/docs/contract-offer.pdf"
-						target="_blank"
-					>{{ $lang(lang, 'contract-offer') }}</a>
-					<a
-						class="jFooter-rules-link jFooter-link"
-						href="/docs/site-agreement.pdf"
-						target="_blank"
-					>{{ $lang(lang, 'site-agreement') }}</a>
-					<a
-						class="jFooter-rules-link jFooter-link"
-						href="/docs/personal-data.pdf"
-						target="_blank"
-					>{{ $lang(lang, 'personal-data') }}</a>
-					<a
-						class="jFooter-rules-link jFooter-link"
-						href="/docs/privacy-policy.pdf"
-						target="_blank"
-					>{{ $lang(lang, 'privacy-policy') }}</a>
-				</div>
 				<div class="jFooter-copy">
 					<p class="jFooter-copy-right">
 						{{ '© ' + year + ' ' + $lang(lang, 'footer-copy') }}
@@ -216,7 +218,29 @@ export default {
 
 <style lang="scss">
 @import '../../assets/scss/app.variables.scss';
+.docs-content{
+	max-width: 800px;
+	margin: 0 auto 50px auto;
+	width: 100%;
+	h4{
+		text-align: center;
+	}
+	ul{
+		margin-bottom: 2rem;
 
+		&.no-margin{
+			margin: 0 !important;
+			marign-block-end: 0;
+			marign-block-start: 0;
+		}
+	}
+	.mt-0{
+		margin-top: 0!important;
+	}
+	.mb-0{
+		margin-bottom: 0!important;
+	}
+}
 .cookie-alert{
 	position: fixed;
 	bottom: 20px;
@@ -251,6 +275,13 @@ export default {
   color: #fff;
 }
 
+.jFooter-docs{
+	a{
+		display: block;
+		margin-bottom: 5px;
+	}
+}
+
 .jFooter-link {
   color: #fff;
   text-decoration: none;
@@ -264,7 +295,16 @@ export default {
   border-top: 0.0625rem solid white;
 }
 
+.jFooter-copy-right{
+	margin: 10px 0;
+}
+
 @media (max-width: 850px) {
+	.jFooter-docs{
+		a{
+			text-align: center;
+		}
+	}
   .jFooter-cols {
     display: flex;
     padding-bottom: 2rem;
@@ -285,7 +325,6 @@ export default {
     display: flex;
     flex-direction: column;
     align-items: center;
-    padding-top: 1rem;
   }
 
   .jFooter-copy-right {
@@ -387,9 +426,7 @@ export default {
   align-items: center;
   gap: 0.75rem;
   padding-top: 0.5rem;
-  &:first-of-type{
-    margin-bottom: 3rem;
-  }
+	margin-bottom: 1.5rem;
 }
 
 .jFooter-pay-link {
