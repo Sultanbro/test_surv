@@ -30,6 +30,7 @@ export default {
 	's1-for-super-profile-4': 'SMART goals encourage you to complete faster',
 	's1-for-super-profile-4p': 'because there are weekly deadlines',
 	's1-for-free': 'Get free',
+	'increase-profit': 'Increase profit',
 
 	's1-for-worker-db': 'Beneficial for the employee:',
 	's1-for-worker-db-1': 'Answers to all working and working questions are available in the work',
