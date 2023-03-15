@@ -123,7 +123,7 @@ export default {
 		callMeButtonContent() {
 			if (!this.isButtonDisabled) {
 				if (this.lang === 'ru') {
-					return 'Перезвонить мне'
+					return 'Перезвоните мне'
 				}
 				if (this.lang === 'en') {
 					return 'Call me back'

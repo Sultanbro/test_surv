@@ -46,7 +46,7 @@ export default {
 			<a
 				href="/register"
 				class="jSec1-profile-button jButton"
-			>{{ $lang(lang, 's1-for-free') }}</a>
+			>{{ $lang(lang, 'increase-profit') }}</a>
 		</div>
 		<div class="jSec1-profile-banner">
 			<img
