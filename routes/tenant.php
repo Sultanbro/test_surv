@@ -503,6 +503,7 @@ Route::middleware(['web','tenant','not_admin_subdomain'])->group(function () {
         Route::post('save',[Kpi\BonusController::class,'save'])->name('save');
         Route::put('update',[Kpi\BonusController::class,'update'])->name('update');
         Route::delete('delete/{id}',[Kpi\BonusController::class,'delete'])->name('delete');
+        Route::post('/set/status', [Kpi\KpiBonusStatusController::class, 'setActive']);
     });
 
     // Редактирование квартальной премии
@@ -511,6 +512,7 @@ Route::middleware(['web','tenant','not_admin_subdomain'])->group(function () {
         Route::post('save',[Kpi\QuartalPremiumController::class,'save'])->name('quartal-premium.save');
         Route::put('update',[Kpi\QuartalPremiumController::class,'update'])->name('quartal-premium.update');
         Route::delete('delete/{id}',[Kpi\QuartalPremiumController::class,'destroy']);
+        Route::post('/set/status', [Kpi\QuartalPremiumStatusController::class, 'setActive']);
     });
 
     // Статистика для KPI

@@ -3,6 +3,8 @@
 namespace App\Models\Kpi;
 
 use App\Models\Admin\ObtainedBonus;
+use App\Models\Scopes\ActiveScope;
+use App\Traits\ActivateAbleModelTrait;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
@@ -21,7 +23,7 @@ use DB;
 
 class Bonus extends Model
 {      
-    use SoftDeletes, HasFactory, Targetable, WithCreatorAndUpdater, WithActivityFields, Expandable;
+    use SoftDeletes, HasFactory, Targetable, WithCreatorAndUpdater, WithActivityFields, Expandable, ActivateAbleModelTrait;
     
     protected $table = 'kpi_bonuses';
 
@@ -49,6 +51,7 @@ class Bonus extends Model
         'text',
         'created_by',
         'updated_by',
+        'is_active'
     ];
     
     /**
@@ -64,6 +67,17 @@ class Bonus extends Model
     CONST FULL_DAY = 0;
     CONST PERIOD = 1;
     CONST MONTH = 2;
+
+    /**
+     * Получает все активные кв-премий без доп запросов.
+     *
+     * @return void
+     */
+    protected static function boot(): void
+    {
+        parent::boot();
+        static::addGlobalScope(new ActiveScope);
+    }
 
     public function obtainedBonuses(): HasMany
     {

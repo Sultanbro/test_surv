@@ -6,13 +6,16 @@ use App\Models\Kpi\Traits\Expandable;
 use App\Models\Kpi\Traits\Targetable;
 use App\Models\Kpi\Traits\WithCreatorAndUpdater;
 use App\Models\Kpi\Traits\WithActivityFields;
+use App\Models\Scopes\ActiveScope;
+use App\Traits\ActivateAbleModelTrait;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
 class QuartalPremium extends Model
 {
-    use HasFactory, SoftDeletes, Targetable, WithCreatorAndUpdater, WithActivityFields, Expandable; 
+    use HasFactory, SoftDeletes, Targetable, WithCreatorAndUpdater, WithActivityFields, Expandable, ActivateAbleModelTrait;
 
     protected $table = 'quartal_premiums';
 
@@ -35,6 +38,7 @@ class QuartalPremium extends Model
         'sum',
         'created_by',
         'updated_by',
+        'is_active'
     ];
 
     protected $dates = [
@@ -43,9 +47,20 @@ class QuartalPremium extends Model
     ];
 
     /**
-     * 
+     * Получает все активные кв-премий без доп запросов.
+     *
+     * @return void
      */
-    public function activity()
+    protected static function boot(): void
+    {
+        parent::boot();
+        static::addGlobalScope(new ActiveScope);
+    }
+
+    /**
+     * @return BelongsTo
+     */
+    public function activity(): BelongsTo
     {
         return $this->belongsTo( 'App\Models\Analytics\Activity', 'activity_id', 'id')
             ->withTrashed();
