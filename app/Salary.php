@@ -444,38 +444,6 @@ class Salary extends Model
 
         $users = User::withTrashed();
 
-        // if($user_types == 0) { // Действующие
-        //     $users->whereNull('deleted_at');
-        // } 
-
-        // if($user_types == 1) { // Уволенные
-        //     $users->onlyTrashed();
-        // }
-
-        // if($user_types == -1 || $user_types == 3) { // one person
-        //     $users->withTrashed();
-        // }
-
-        // if($user_types == 0) { // Действующие
-        //     $users_ids = \DB::table('users')
-        //         ->leftJoin('user_descriptions as ud', 'ud.user_id', '=', 'users.id')
-        //         ->where('is_trainee', 0)
-        //         ->whereIn('users.id', $users_ids)
-        //         ->get(['users.id'])
-        //         ->pluck('id')
-        //         ->toArray();
-        // }
-
-        // if($user_types == 2) {
-        //     $users_ids = \DB::table('users')
-        //         ->leftJoin('user_descriptions as ud', 'ud.user_id', '=', 'users.id')
-        //         ->where('is_trainee', 1)
-        //         ->whereIn('users.id', $users_ids)
-        //         ->get(['users.id'])
-        //         ->pluck('id')
-        //         ->toArray();
-        // }
-
         $users->whereIn('users.id', array_unique($users_ids));
 
         $users->with([
@@ -539,6 +507,7 @@ class Salary extends Model
             'full_time',
             'users.working_day_id',
             'users.working_time_id',
+            'users.work_chart_id'
         ]);
 
         $data['users'] = [];
@@ -621,8 +590,16 @@ class Salary extends Model
                 $s = $user->salaries->where('day', $d)->first();
 
                 $zarplata = $s ? $s->amount : 70000;
-
                 $working_hours = $user->workingTime ? $user->workingTime->time : 9;
+
+                if ($user->workChart)
+                {
+                    $startTime  = Carbon::createFromTimeString($user->workChart->start_time);
+                    $endTime    = Carbon::createFromTimeString($user->workChart->end_time);
+
+                    $working_hours = $startTime->diffInHours($endTime);
+                }
+
 
                 $ignore = $user->working_day_id == 1 ? [6,0] : [0];   // Какие дни не учитывать в месяце
 
