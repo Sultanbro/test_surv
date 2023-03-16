@@ -50,12 +50,9 @@ class UserDescriptionRepository extends CoreRepository
             [
                 'user_id' => $userId,
             ],
-            $isTrainee
-                ? ['is_trainee' => 1]
-                : [
-                    'is_trainee' => 0,
-                    'applied' => now()
-                ]
+            [
+                'is_trainee' => $isTrainee
+            ]
         );
     }
 }
