@@ -126,10 +126,13 @@ class Article extends Model
     }
 
     /**
+     * @param int $userId
      * @return int
      */
     public static function countUnviewed(int $userId): int
     {
+        $user = User::getAuthUser($userId);
+
         return Article::query()
             ->leftJoin(
                 'article_views_users as views',
@@ -139,6 +142,7 @@ class Article extends Model
                 },
             )
             ->whereNull('views.user_id')
+            ->where('created_at', '>', $user->created_at)
             ->count();
     }
 
