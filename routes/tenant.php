@@ -540,6 +540,7 @@ Route::middleware(['web','tenant','not_admin_subdomain'])->group(function () {
 
     Route::group(['prefix' => 'kpi', 'as' => 'kpi.', 'middleware' => 'auth'], function (){
         Route::get('/', [Kpi\KpiController::class, 'index'])->name('index');
+        Route::post('/set/status', [Kpi\KpiStatusController::class, 'setActive']);
     });
 
     // Intellect Recruiting
