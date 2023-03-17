@@ -123,7 +123,6 @@ class StoreUserRequest extends FormRequest
         $fileName = Arr::get($validated, 'file_name');
         $headGroup = Arr::get($validated, 'head_group');
         $isTrainee = Arr::get($validated, 'is_trainee');
-        dd($isTrainee);
         $contacts = Arr::get($validated, 'contacts');
         $adaptationTalks = Arr::get($validated, 'adaptation_talks');
         $cards = Arr::get($validated, 'cards');
