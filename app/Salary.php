@@ -597,7 +597,8 @@ class Salary extends Model
                     $startTime  = Carbon::createFromTimeString($user->workChart->start_time);
                     $endTime    = Carbon::createFromTimeString($user->workChart->end_time);
 
-                    $working_hours = $startTime->diffInHours($endTime);
+                    $lunchTime = 1;
+                    $working_hours = $startTime->diffInHours($endTime) - $lunchTime;
                 }
 
 
