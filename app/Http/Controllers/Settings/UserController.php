@@ -7,7 +7,6 @@ use App\Http\Requests\Settings\SettingUserRequest;
 use App\Http\Requests\Settings\GetUserRequest;
 use App\Http\Requests\Settings\StoreUserRequest;
 use App\Http\Requests\Settings\UpdateUserRequest;
-use App\Http\Resources\Users\UserResource;
 use App\Service\Settings\UserService;
 use App\Service\Settings\UserUpdateService;
 use App\User;
@@ -72,8 +71,7 @@ class UserController extends Controller
 
         return $this->response(
             message: "User stored successfully",
-            data: new UserResource($response),
-            code: Response::HTTP_CREATED,
+            data: $response
         );
     }
 

@@ -23,7 +23,7 @@ class ThreeByThreeChart implements Chart
 
         if ($countOfDayPerWeek >= WorkChartEnum::COUNT_OF_WORK_DAY_FOR_THREE_BY_THREE)
         {
-            throw new Exception("Вы отработали количество рабочих дней для своего графика", ErrorCode::BAD_REQUEST, []);
+            throw new Exception("Вы отработали количество рабочих дней для своего графика");
         }
 
         return true;
