@@ -61,4 +61,30 @@ class SalaryRepository extends CoreRepository implements SalaryRepositoryInterfa
             })
             ->toArray();
     }
+
+    /**
+     * @param int $userId
+     * @param float $bonus
+     * @param string $date
+     * @return void
+     * @throws \Exception
+     */
+    public function updateUserBonusPerDate(
+        int $userId,
+        float $bonus,
+        string $date
+    ): void
+    {
+        try {
+            $this->model()->where('user_id', $userId)
+                ->where('date', $date)
+                ->update(
+                    [
+                        'bonus' =>$bonus
+                    ]
+                );
+        } catch (\Throwable $exception) {
+            throw new \Exception($exception->getMessage());
+        }
+    }
 }

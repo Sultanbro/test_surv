@@ -60,6 +60,7 @@ class Bonus extends Model
     CONST FOR_ONE = 'one';
     CONST FOR_ALL = 'all';
     CONST FOR_FIRST = 'first';
+    CONST PERCENT = 'percent';
 
     /**
      * Dayparts
@@ -249,6 +250,45 @@ class Bonus extends Model
 
                     ObtainedBonus::createOrUpdate($data, $bonus->daypart);
                 }
+            }
+
+            // проценты от продаж
+            if($bonus->unit == self::PERCENT) {
+
+                // nullify awards if they are not actual
+                ObtainedBonus::where('bonus_id', $bonus->id)
+                    ->where('date', $date)
+                    ->delete();
+
+                foreach ($users as $user_id) {
+
+                    dump('*              '.$user_id);
+
+                    // Если группа Рекрутинг
+                    // @TODO должна быть только у BPartners
+                    if($group_id == 48) {
+                        $val = self::fetch_value_from_activity_for_recruting($bonus, $user_id, $date);
+                    } else {
+                        $val = self::fetch_value_from_activity_new($bonus, $user_id, $date);
+                    }
+
+                    dump('HH  '. $val . ' --- ' . $bonus->quantity);
+
+                    // план выполнен
+                    if((int)$val > 0) {
+
+                        $data = [
+                            'user_id'  => $user_id,
+                            'date'     => $date,
+                            'bonus_id' => $bonus->id,
+                            'amount'   => ($val * $bonus->sum) / 100,
+                            'comment'  => $bonus->title . ' : ' . (int)$val . ';'
+                        ];
+
+                        ObtainedBonus::createOrUpdate($data, $bonus->daypart);
+                    }
+                }
+
             }
 
         }

@@ -40,12 +40,12 @@ var fields = [
 		alter_class: 'col-md-4'
 	},
 	{
-		name: 'Вознаграждение',
+		name: 'Вознаграждение, %',
 		key: 'sum',
 		visible: true,
 		type: 'number',
-		class: 'text-center',
-		alter_class: 'col-md-4'
+		class: 'text-center wsnw',
+		alter_class: 'col-md-4 wsnw'
 	},
 	{
 		name: 'Период',
