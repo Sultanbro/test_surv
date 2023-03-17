@@ -507,7 +507,8 @@ class Salary extends Model
             'full_time',
             'users.working_day_id',
             'users.working_time_id',
-            'users.work_chart_id'
+            'users.work_chart_id',
+            'users.timezone'
         ]);
 
         $data['users'] = [];
@@ -590,16 +591,10 @@ class Salary extends Model
                 $s = $user->salaries->where('day', $d)->first();
 
                 $zarplata = $s ? $s->amount : 70000;
-                $working_hours = $user->workingTime ? $user->workingTime->time : 9;
 
-                if ($user->workChart)
-                {
-                    $startTime  = Carbon::createFromTimeString($user->workChart->start_time);
-                    $endTime    = Carbon::createFromTimeString($user->workChart->end_time);
-
-                    $lunchTime = 1;
-                    $working_hours = $startTime->diffInHours($endTime) - $lunchTime;
-                }
+                $schedule = $user->schedule();
+                $lunchTime = 1;
+                $working_hours = max($schedule['start']->addMinutes(30)->diffInHours($schedule['end']) - $lunchTime, 0);
 
 
                 $ignore = $user->working_day_id == 1 ? [6,0] : [0];   // Какие дни не учитывать в месяце
