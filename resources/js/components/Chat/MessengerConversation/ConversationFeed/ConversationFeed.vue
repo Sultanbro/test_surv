@@ -12,65 +12,71 @@
 			:y="contextMenuY"
 			:parent-element="$refs.messengerContainer"
 		>
-			<a
-				href="javascript:"
-				class="messenger__context-menu_reaction"
-				@click="react(1)"
-			>
-				&#128077;
-			</a>
-			<a
-				href="javascript:"
-				class="messenger__context-menu_reaction"
-				@click="react(2)"
-			>
-				&#128078;
-			</a>
-			<a
-				href="javascript:"
-				class="messenger__context-menu_reaction"
-				@click="react(3)"
-			>
-				&#10004;
-			</a>
-			<a
-				href="javascript:"
-				class="messenger__context-menu_reaction"
-				@click="react(4)"
-			>
-				&#10006;
-			</a>
-			<a
-				href="javascript:"
-				class="messenger__context-menu_reaction"
-				@click="react(5)"
-			>
-				&#10067;
-			</a>
+			<div class="messenger__context-menu_reactions">
+				<a
+					href="javascript:"
+					class="messenger__context-menu_reaction"
+					@click="react(1)"
+				>
+					&#128077;
+				</a>
+				<a
+					href="javascript:"
+					class="messenger__context-menu_reaction"
+					@click="react(2)"
+				>
+					&#128078;
+				</a>
+				<a
+					href="javascript:"
+					class="messenger__context-menu_reaction"
+					@click="react(3)"
+				>
+					&#10004;
+				</a>
+				<a
+					href="javascript:"
+					class="messenger__context-menu_reaction"
+					@click="react(4)"
+				>
+					&#10006;
+				</a>
+				<a
+					href="javascript:"
+					class="messenger__context-menu_reaction"
+					@click="react(5)"
+				>
+					&#10067;
+				</a>
+			</div>
 
 			<a
+				v-if="contextMenuMessage && user && contextMenuMessage.sender_id === user.id"
+				class="messenger__context-item"
 				href="javascript:"
 				@click="startEditMessage(contextMenuMessage)"
-				v-if="contextMenuMessage && user && contextMenuMessage.sender_id === user.id"
 			>
 				Отредактировать
 			</a>
 			<a
+				class="messenger__context-item"
 				href="javascript:"
 				@click="citeMessage(contextMenuMessage)"
 			>
 				Цитировать
 			</a>
 			<a
+				class="messenger__context-item"
 				href="javascript:"
 				@click="pinMessage(contextMenuMessage)"
 			>
 				Закрепить
 			</a>
 			<a
+				v-if="contextMenuMessage && user && contextMenuMessage.sender_id === user.id"
+				class="messenger__context-item"
 				href="javascript:"
 				@click="remove(contextMenuMessage)"
-				v-if="contextMenuMessage && user && contextMenuMessage.sender_id === user.id"
 			>
 				Удалить
 			</a>
@@ -138,11 +144,14 @@ export default {
 	},
 	computed: {
 		...mapGetters([
-			'messagesMap', 'messages',
+			'messagesMap',
+			'messages',
 			'user',
-			'messagesOldEndReached', 'messagesNewEndReached',
+			'messagesOldEndReached',
+			'messagesNewEndReached',
 			'scrollingPosition',
-			'messagesLoading', 'isLoading'
+			'messagesLoading',
+			'isLoading',
 		]),
 	},
 	updated() {
@@ -162,9 +171,13 @@ export default {
 	},
 	methods: {
 		...mapActions([
-			'startEditMessage', 'citeMessage',
-			'deleteMessage', 'pinMessage', 'reactMessage',
-			'loadMoreNewMessages', 'loadMoreOldMessages',
+			'startEditMessage',
+			'citeMessage',
+			'deleteMessage',
+			'pinMessage',
+			'reactMessage',
+			'loadMoreNewMessages',
+			'loadMoreOldMessages',
 			'requestScroll',
 		]),
 		scroll() {
@@ -244,7 +257,7 @@ export default {
 
 <style lang="scss" scoped>
 #messenger_container{
-	background: #fff url("https://www.transparenttextures.com/patterns/inspiration-geometry.png") repeat;
+	background: url('../../../../../assets/chat/bg.jpg') repeat, #F7F8FA;
 }
 .messenger__container-scroll {
 	display: flex;
@@ -252,6 +265,10 @@ export default {
 	overflow-y: auto;
 	margin-right: 1px;
 	-webkit-overflow-scrolling: touch;
+}
+
+.messenger__message-wrapper{
+	margin-bottom: 5px;
 }
 
 .messenger__messages-container {
@@ -281,7 +298,11 @@ export default {
 .messenger__container-scroll::-webkit-scrollbar-button {
 	display: none;
 }
-
+.messenger__context-menu_reactions{
+	display: flex;
+	flex-flow: row nowrap;
+	justify-content: space-between;
+}
 .messenger__context-menu_reaction {
 	display: inline-block;
 }
@@ -294,14 +315,15 @@ export default {
 }
 .messenger__messages-date-block{
 	display: inline-block;
-	padding: 0.25rem 1rem;
-	margin: 0.25rem;
-	border-radius: 0.25rem;
+	padding: 0.8rem 2rem;
+	margin: 3rem auto;
+	border-radius: 25rem;
 	position: relative;
-	color: #a0a0a4;
+	color: #3361FF;
 	background-color: #fff;
-	box-shadow: 0 1px 0.25rem rgba(#000, 0.25);
+	box-shadow: 0px 0px 1px rgba(12, 26, 75, 0.05), 0px 10px 16px rgba(20, 37, 63, 0.05);
 	font-size: 1.1rem;
+	line-height: 1.4rem;
 }
 
 // .messenger__messages-date > span {
@@ -334,9 +356,9 @@ export default {
 	display: flex;
 	justify-content: center;
 	align-items: center;
-	position: absolute;
-	height: 100%;
 	width: 100%;
+	height: 100%;
+	position: absolute;
 	background: #f4f6fa;
 }
 
