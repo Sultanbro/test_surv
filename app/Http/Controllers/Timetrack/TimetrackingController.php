@@ -47,6 +47,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\View;
 use App\Setting;
+use App\Http\Requests\TimeTrack\StartOrStopTrackingRequest;
 
 class TimetrackingController extends Controller
 {
@@ -255,8 +256,6 @@ class TimetrackingController extends Controller
         return response()->json($data);
     }
 
-    
-
     public function addsettings(Request $request)
     {
         $position = new Position();
@@ -275,23 +274,14 @@ class TimetrackingController extends Controller
     /**
      * Handle startDay btn clicks
      */
-    public function timetracking(Request $request) : JsonResponse
+    public function timetracking(StartOrStopTrackingRequest $request) : JsonResponse
     {
-     
-
         $userClickedStart = $request->has('start');
-        $userClickedEnd   = $request->has('stop');
 
         try {
-
-           
-
             $status = $userClickedStart
                 ? $this->startDay()
                 : $this->endDay();
-
-            
-
         } catch (\Throwable $e) {
             return response()->json([
                 'error' => [
@@ -374,12 +364,16 @@ class TimetrackingController extends Controller
         }
 
         if( !$workday ) {
-            Timetracking::create([
-                'enter' => $now->setTimezone('UTC'),
-                'user_id' => $user->id,
-                'times' => [$now->setTimezone('UTC')->format('H:i')],
-                'status' => Timetracking::DAY_STARTED
-            ]);
+            Timetracking::updateOrCreate(
+                [
+                    'user_id' => $user->id,
+                    'enter' => $now->setTimezone('UTC')
+                ],
+                [
+                    'times' => [$now->setTimezone('UTC')->format('H:i')],
+                    'status' => Timetracking::DAY_STARTED
+                ]
+            );
         }   
 
         return 'started';
@@ -667,7 +661,7 @@ class TimetrackingController extends Controller
         return [
             'groups' => ProfileGroup::where('active', 1)->pluck('name', 'id')->toArray(),
             'group' => $group->id
-        ];;
+        ];
     }
 
     public function applyPerson(Request $request) {
