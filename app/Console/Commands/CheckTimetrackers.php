@@ -55,7 +55,7 @@ class CheckTimetrackers extends Command
             {
                 $userSchedule = $user->schedule();
                 $recordFromTimeTrack->update([
-                    'exit' => max($userSchedule['end']->subHours($user->timezone)->format('Y-m-d H:i:s'), 0)
+                    'exit' => $userSchedule['end']->subHours($user->timezone)->format('Y-m-d H:i:s')
                 ]);
             }
         }
