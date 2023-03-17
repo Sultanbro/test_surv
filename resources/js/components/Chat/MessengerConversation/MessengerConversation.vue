@@ -29,7 +29,6 @@ export default {
 </script>
 
 <style>
-
 .messenger__col-messages {
   display: flex;
   height: 100%;
@@ -40,5 +39,4 @@ export default {
   overflow: hidden;
   flex-flow: column;
 }
-
 </style>

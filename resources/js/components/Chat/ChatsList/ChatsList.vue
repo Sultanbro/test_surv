@@ -9,21 +9,25 @@
 			<template v-if="contextMenuChat">
 				<a
 					v-if="contextMenuChat.pinned"
+					class="messenger__context-item"
 					href="javascript:"
 					@click="contextMenuVisible = false; unpinChat(contextMenuChat)"
 				>Открепить чат</a>
 				<a
 					v-else
+					class="messenger__context-item"
 					href="javascript:"
 					@click="contextMenuVisible = false; pinChat(contextMenuChat)"
 				>Закрепить чат</a>
 				<a
 					v-if="contextMenuChat.owner_id === user.id"
+					class="messenger__context-item"
 					href="javascript:"
 					@click="contextMenuVisible = false; remove(contextMenuChat)"
 				>Удалить чат</a>
 				<a
 					v-else
+					class="messenger__context-item"
 					href="javascript:"
 					@click="contextMenuVisible = false; leftChat(contextMenuChat)"
 				>Покинуть чат</a>
@@ -160,13 +164,14 @@ export default {
 
 <style>
 .messenger__chat-item:hover {
-  background: #cbeefc;
+  background: #F5F8FC;
 }
 
 /*noinspection CssUnusedSymbol*/
 .messenger__chat-selected {
-  color: #fff !important;
-  background: #5d8ce7 !important;
+  /* color: #fff !important;
+  background: #5d8ce7 !important; */
+	background: #F5F8FC;
 }
 
 /*noinspection CssUnusedSymbol*/

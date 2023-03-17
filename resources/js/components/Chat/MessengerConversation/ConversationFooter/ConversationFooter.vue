@@ -1,13 +1,21 @@
 <template>
 	<div class="messenger__chat-footer">
 		<div class="messenger__box-footer messenger__box-footer-border">
-			<template v-if="isRecordingAudio">
-				<SpectrumAnalyser
-					class="messenger__chat-footer_spectrum"
-					:fill-style="'#5ebee9'"
-				/>
-			</template>
+			<SpectrumAnalyser
+				v-if="isRecordingAudio"
+				class="messenger__chat-footer_spectrum"
+				:fill-style="'#5ebee9'"
+			/>
 			<template v-else>
+				<label class="messenger__attachment">
+					<input
+						type="file"
+						style="display:none"
+						@change="prepareFiles"
+						multiple="multiple"
+					>
+					<ChatIconUpload />
+				</label>
 				<div class="messenger__message-input messenger__message-text-input">
 					<div
 						v-if="citedMessage"
@@ -25,6 +33,7 @@
 						id="messengerMessageInput"
 						class="messenger__textarea"
 						placeholder="Ввести сообщение"
+						rows="1"
 					/>
 					<div
 						v-for="(file, index) in files"
@@ -51,107 +60,80 @@
 					</div>
 				</div>
 			</template>
-			<div
-				class="messenger__message-input"
-				id="messengerInput"
-			>
-				<AudioDictaphone
-					class="messenger__attachment"
-					@stop="handleRecording"
-					@error="handleError"
-					@start="setRecordingAudio(true)"
-					@delete="setRecordingAudio(false)"
-				>
-					<template #default="{ isRecording, startRecording, stopRecording, deleteRecording }">
-						<template v-if="!isRecording">
-							<EmojiPopup @append="appendEmoji" />
 
-							<div
-								class="messenger__attachment-item"
-								@click="$refs.messengerFile.click()"
-							>
-								<input
-									type="file"
-									ref="messengerFile"
-									style="display:none"
-									@change="prepareFiles"
-									multiple="multiple"
+			<EmojiPopup @append="appendEmoji" />
+			<div
+				id="messengerInput"
+				class="messenger__message-input"
+			>
+				<template v-if="!isRecordingAudio">
+					<div
+						v-if="body"
+						@click="performMessage"
+						class="messenger__message-icon"
+					>
+						<ChatIconSend />
+					</div>
+					<AudioDictaphone
+						v-else
+						class="messenger__record"
+						@stop="handleRecording"
+						@error="handleError"
+						@start="setRecordingAudio(true)"
+						@delete="setRecordingAudio(false)"
+					>
+						<template #default="{ isRecording, startRecording, stopRecording, deleteRecording }">
+							<template v-if="!isRecording">
+								<div
+									class="messenger__record-item"
+									@click="startRecording"
 								>
-								<svg
-									xmlns="http://www.w3.org/2000/svg"
-									viewBox="0 0 297.126 297.126"
-								>
-									<g>
+									<svg
+										xmlns="http://www.w3.org/2000/svg"
+										viewBox="0 0 384 512"
+									>
 										<path
 											fill="#5ebee9"
-											d="m272.329,43.831c-34.802-34.802-90.486-33.062-123.549,0l-130.509,130.509c-24.362,24.362-24.362,62.644 1.42109e-14,87.006 12.181,12.181 27.842,17.401 43.503,17.401s31.322-6.96 41.763-19.141l118.328-118.328c13.921-13.921 13.921-34.802 0-48.723-13.921-13.921-34.802-13.921-48.723,0l-81.786,81.786c-3.48,3.48-3.48,8.701 0,12.181s8.701,3.48 12.181,0l81.786-81.786c6.96-6.96 17.401-6.96 24.362,0 6.96,6.96 6.96,17.401 0,24.362l-118.329,118.328c-15.661,17.401-43.503,17.401-60.904,0-17.401-15.661-17.401-43.503 0-60.904l130.509-130.51c27.842-27.842 71.345-27.842 99.187,0s27.842,71.345 0,99.187l-93.966,93.966c-3.48,3.48-3.48,8.701 0,12.181 3.48,3.48 8.701,3.48 12.181,0l93.966-93.966c33.062-34.802 33.062-90.486 0-123.549z"
+											d="M192 0C139 0 96 43 96 96V256c0 53 43 96 96 96s96-43 96-96V96c0-53-43-96-96-96zM64 216c0-13.3-10.7-24-24-24s-24 10.7-24 24v40c0 89.1 66.2 162.7 152 174.4V464H120c-13.3 0-24 10.7-24 24s10.7 24 24 24h72 72c13.3 0 24-10.7 24-24s-10.7-24-24-24H216V430.4c85.8-11.7 152-85.3 152-174.4V216c0-13.3-10.7-24-24-24s-24 10.7-24 24v40c0 70.7-57.3 128-128 128s-128-57.3-128-128V216z"
 										/>
-									</g>
-								</svg>
-							</div>
-
-							<div
-								class="messenger__attachment-item"
-								@click="startRecording"
-							>
-								<svg
-									xmlns="http://www.w3.org/2000/svg"
-									viewBox="0 0 384 512"
+									</svg>
+								</div>
+							</template>
+							<template v-else>
+								<div
+									class="messenger__record-item"
+									@click="stopRecording($event)"
 								>
-									<path
-										fill="#5ebee9"
-										d="M192 0C139 0 96 43 96 96V256c0 53 43 96 96 96s96-43 96-96V96c0-53-43-96-96-96zM64 216c0-13.3-10.7-24-24-24s-24 10.7-24 24v40c0 89.1 66.2 162.7 152 174.4V464H120c-13.3 0-24 10.7-24 24s10.7 24 24 24h72 72c13.3 0 24-10.7 24-24s-10.7-24-24-24H216V430.4c85.8-11.7 152-85.3 152-174.4V216c0-13.3-10.7-24-24-24s-24 10.7-24 24v40c0 70.7-57.3 128-128 128s-128-57.3-128-128V216z"
-									/>
-								</svg>
-							</div>
+									<svg
+										xmlns="http://www.w3.org/2000/svg"
+										viewBox="0 0 384 512"
+									>
+										<path
+											d="M0 128C0 92.7 28.7 64 64 64H320c35.3 0 64 28.7 64 64V384c0 35.3-28.7 64-64 64H64c-35.3 0-64-28.7-64-64V128z"
+										/>
+									</svg>
+								</div>
+								<div
+									class="messenger__record-item"
+									@click="deleteRecording($event)"
+								>
+									<svg
+										xmlns="http://www.w3.org/2000/svg"
+										viewBox="0 0 320 512"
+									>
+										<path
+											d="M310.6 150.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0L160 210.7 54.6 105.4c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3L114.7 256 9.4 361.4c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0L160 301.3 265.4 406.6c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L205.3 256 310.6 150.6z"
+										/>
+									</svg>
+								</div>
+							</template>
 						</template>
-						<template v-else>
-							<div
-								class="messenger__attachment-item"
-								@click="stopRecording($event)"
-							>
-								<svg
-									xmlns="http://www.w3.org/2000/svg"
-									viewBox="0 0 384 512"
-								>
-									<path
-										d="M0 128C0 92.7 28.7 64 64 64H320c35.3 0 64 28.7 64 64V384c0 35.3-28.7 64-64 64H64c-35.3 0-64-28.7-64-64V128z"
-									/>
-								</svg>
-							</div>
-							<div
-								class="messenger__attachment-item"
-								@click="deleteRecording($event)"
-							>
-								<svg
-									xmlns="http://www.w3.org/2000/svg"
-									viewBox="0 0 320 512"
-								>
-									<path
-										d="M310.6 150.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0L160 210.7 54.6 105.4c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3L114.7 256 9.4 361.4c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0L160 301.3 265.4 406.6c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L205.3 256 310.6 150.6z"
-									/>
-								</svg>
-							</div>
-						</template>
-					</template>
-				</AudioDictaphone>
-
-				<button
-					v-if="!isRecordingAudio"
-					class="messenger__message-send"
-					@click="performMessage"
-				>
-					<template v-if="editMessage">
-						Отредактировать
-					</template>
-					<template v-else>
-						Отправить
-					</template>
-				</button>
+					</AudioDictaphone>
+				</template>
 
 				<span
 					v-if="isRecordingAudio"
-					class="messenger__attachment_recording"
+					class="messenger__record_recording"
 				>
 					{{ recordingTime | countdownFormat }}
 				</span>
@@ -165,11 +147,18 @@ import {mapActions, mapGetters} from 'vuex';
 import EmojiPopup from './EmojiPopup/EmojiPopup.vue';
 import AudioDictaphone from './AudioDictaphone/AudioDictaphone.vue';
 import SpectrumAnalyser from './SpectrumAnalyser/SpectrumAnalyser.vue';
+import { ChatIconUpload, ChatIconSend } from '../../icons/chat-icons.js'
 
 
 export default {
 	name: 'ConversationFooter',
-	components: {EmojiPopup, AudioDictaphone, SpectrumAnalyser},
+	components: {
+		EmojiPopup,
+		AudioDictaphone,
+		SpectrumAnalyser,
+		ChatIconUpload,
+		ChatIconSend,
+	},
 	data() {
 		return {
 			body: '',
@@ -235,8 +224,8 @@ export default {
 			event.stopPropagation();
 			this.files = this.files.filter(f => f !== file);
 		},
-		prepareFiles() {
-			let files = this.$refs.messengerFile.files;
+		prepareFiles(event) {
+			const files = event.target.files;
 			for (let file of files) {
 				this.files.push(file);
 			}
@@ -283,7 +272,7 @@ export default {
 .messenger__chat-footer {
   width: 100%;
   border-bottom-right-radius: 4px;
-  border-top: 2px solid #e2e2e2;
+  /* border-top: 2px solid #e2e2e2; */
   max-height: 30vh;
   overflow-y: auto;
   overflow-x: hidden;
@@ -292,12 +281,19 @@ export default {
 .messenger__box-footer {
   display: flex;
   position: relative;
-  padding: 5px 8px 10px 8px;
+  padding: 5px 8px;
   background-color: #fff;
 }
 
+.messenger__attachment{
+	display: flex;
+	align-items: center;
+	padding: 0 7px;
+	margin: 0;
+}
+
 .messenger__textarea {
-  min-height: 20px;
+  /* min-height: 20px; */
   max-height: 80px;
   overflow-x: hidden !important;
   overflow-y: auto !important;
@@ -365,24 +361,24 @@ export default {
   min-width: 10px;
 }
 
-.messenger__attachment {
+.messenger__record {
   display: flex;
   align-items: center;
 }
 
-.messenger__attachment-item {
+.messenger__record-item {
   width: 35px;
   height: 35px;
   padding: 7px;
   cursor: pointer;
 }
 
-.messenger__attachment-item:hover {
+.messenger__record-item:hover {
   background: #dff2fb;
   border-radius: 50%;
 }
 
-.messenger__attachment-item svg {
+.messenger__record-item svg {
   width: 100%;
   height: 100%;
 }
@@ -398,7 +394,7 @@ export default {
   margin: 5px 0 10px 0;
 }
 
-.messenger__attachment_recording {
+.messenger__record_recording {
   align-items: center;
   justify-content: center;
   padding: 7px;
@@ -427,6 +423,20 @@ export default {
   font-size: 14px;
   color: #0a0a0a;
   cursor: pointer;
+}
+
+.messenger__message-icon{
+	display: flex;
+	align-items: center;
+  justify-content: center;
+	width: 35px;
+	height: 35px;
+	padding: 7px;
+	cursor: pointer;
+}
+.messenger__message-icon_hover:hover {
+  background: #dff2fb;
+  border-radius: 50%;
 }
 
 </style>
