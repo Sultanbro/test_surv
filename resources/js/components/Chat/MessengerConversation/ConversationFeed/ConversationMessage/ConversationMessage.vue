@@ -168,11 +168,8 @@ export default {
 		reactions() {
 			// go through each reader and if include reaction type
 			// add to reactions array
-			const reactions = [{
-				type: 1,
-				count: 1
-			}];
-			this.message.readers.forEach(reader => {
+			const reactions = []
+			this.message.readers?.forEach(reader => {
 				if (reader.pivot && reader.pivot.reaction) {
 					// increment reaction count if already in array
 					let reaction = reactions.find(reaction => reaction.type === reader.pivot.reaction);

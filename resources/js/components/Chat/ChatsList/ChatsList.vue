@@ -9,25 +9,25 @@
 			<template v-if="contextMenuChat">
 				<a
 					v-if="contextMenuChat.pinned"
-					class="messenger__context-item"
+					class="messenger__context-item wsnw"
 					href="javascript:"
 					@click="contextMenuVisible = false; unpinChat(contextMenuChat)"
 				>Открепить чат</a>
 				<a
 					v-else
-					class="messenger__context-item"
+					class="messenger__context-item wsnw"
 					href="javascript:"
 					@click="contextMenuVisible = false; pinChat(contextMenuChat)"
 				>Закрепить чат</a>
 				<a
 					v-if="contextMenuChat.owner_id === user.id"
-					class="messenger__context-item"
+					class="messenger__context-item wsnw"
 					href="javascript:"
 					@click="contextMenuVisible = false; remove(contextMenuChat)"
 				>Удалить чат</a>
 				<a
 					v-else
-					class="messenger__context-item"
+					class="messenger__context-item wsnw"
 					href="javascript:"
 					@click="contextMenuVisible = false; leftChat(contextMenuChat)"
 				>Покинуть чат</a>

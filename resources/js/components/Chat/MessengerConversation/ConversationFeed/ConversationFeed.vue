@@ -258,6 +258,7 @@ export default {
 <style lang="scss" scoped>
 #messenger_container{
 	background: url('../../../../../assets/chat/bg.jpg') repeat, #F7F8FA;
+	background-size: cover;
 }
 .messenger__container-scroll {
 	display: flex;
