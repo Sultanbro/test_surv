@@ -1,5 +1,8 @@
 <template>
-	<div class="messenger__chat-header">
+	<div
+		class="messenger__chat-header"
+		:class="{'messenger__chat-header_search': isChatSearchMode}"
+	>
 		<div class="messenger__chat-wrapper">
 			<div
 				v-if="chat"
@@ -175,7 +178,8 @@ export default {
 			'uploadChatAvatar',
 			'setChatAdmin',
 			'unsetChatAdmin',
-			'editChatTitle'
+			'editChatTitle',
+			'isChatSearchMode',
 		]),
 		changeAvatar() {
 			if (this.chat.private) {
@@ -295,6 +299,13 @@ export default {
 	white-space: nowrap;
 }
 
+.messenger__chat-header_search{
+	border-radius: 1.2rem 0 0 0;
+}
+.messenger__chat-header_search .messenger__chat-wrapper{
+
+}
+
 .messenger__info-wrapper {
 	display: flex;
 	align-items: center;
@@ -359,6 +370,11 @@ export default {
 }
 .messenger__chat-more__names{
 	margin-left: 25px;
+	color: #3361FF;
+	font-weight: 500;
+	font-size: 11px;
+	line-height: 14px;
+	letter-spacing: -0.03em;
 }
 
 .messenger__chat-name_member-admin {

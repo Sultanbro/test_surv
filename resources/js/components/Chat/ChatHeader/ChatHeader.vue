@@ -55,6 +55,10 @@ export default {
 
 		&-text{
 			flex: 1 1 100%;
+			font-weight: 600;
+			font-size: 20px;
+			line-height: 30px;
+			letter-spacing: -0.02em;
 		}
 		// &-button{}
 	}

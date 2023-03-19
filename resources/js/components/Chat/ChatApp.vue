@@ -10,7 +10,10 @@
 			v-click-outside="toggle"
 		>
 			<div class="messenger__chat-container">
-				<ChatNav :fullscreen="true" />
+				<ChatNav
+					v-show="!isChatSearchMode"
+					:fullscreen="true"
+				/>
 				<MessengerConversation />
 			</div>
 		</div>
@@ -73,7 +76,8 @@ export default {
 			'user',
 			'isOpen',
 			'galleryImages',
-			'galleryIndex'
+			'galleryIndex',
+			'isChatSearchMode',
 		]),
 	},
 	created() {
@@ -175,6 +179,16 @@ body.messenger__open {
 		}
 		.ChatIcon-shape{
 			fill: #3361FF;
+		}
+	}
+	&-parent{
+		&:hover{
+			.ChatIcon-line{
+				stroke: #3361FF;
+			}
+			.ChatIcon-shape{
+				fill: #3361FF;
+			}
 		}
 	}
 }
