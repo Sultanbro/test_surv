@@ -27,7 +27,7 @@ export default {
 <template>
 	<DefaultLayout class="no-padding">
 		<!-- <script src="/video_learning/playerjs.js" ></script> -->
-		<div class="old__content">
+		<div class="old__content my-course-content">
 			<MyCourse
 				v-show="user_id"
 				:user_id="user_id"

@@ -80,45 +80,47 @@
 						>
 					</div>
 
-					<div class="mb-4 mt-3">
-						<small class="d-block mb-2">Пройдено: {{ progress }}%</small>
+					<div class="mt-3 course-progress">
+						<small>Пройдено: <span>{{ progress }}%</span></small>
 						<b-progress
 							:value="progress"
 							variant="success"
 							max="100"
-							class="course-progress"
+							class="course-progress-bar"
 						/>
 					</div>
 
 					<!-- <div class="mt-3 description" v-html="activeCourse.text"></div> -->
 
-					<p class="mb-2">
-						<b>Блоки курса</b>
+					<p class="block-title">
+						Блоки курса
 					</p>
-					<div
-						class="course-item"
-						v-for="(item, c_index) in items"
-						:key="item.id"
-						:class="{
-							'active': activeCourseItem != null && item.id == activeCourseItem.id,
-							'pass': item.status == 1
-						}"
-						@click="selectCourseItem(c_index)"
-					>
-						<div class="title d-flex aic">
-							<i
-								class="fa fa-arrow-right icon"
-								v-if="item.status == 2"
-							/>
-							<i
-								class="fa fa-check icon"
-								v-else-if="item.status == 1"
-							/>
-							<i
-								class="fa fa-lock icon"
-								v-else
-							/>
-							<span class="ml-2">{{ item.title }}</span>
+					<div class="course-items">
+						<div
+							class="course-item"
+							v-for="(item, c_index) in items"
+							:key="item.id"
+							:class="{
+								'active': activeCourseItem != null && item.id == activeCourseItem.id,
+								'pass': item.status == 1
+							}"
+							@click="selectCourseItem(c_index)"
+						>
+							<div class="course-title d-flex align-items-start">
+								<i
+									class="fa fa-check icon"
+									v-if="item.status == 2"
+								/>
+								<i
+									class="fa fa-check-double icon"
+									v-else-if="item.status == 1"
+								/>
+								<i
+									class="fa fa-lock icon"
+									v-else
+								/>
+								<span>{{ item.title }}</span>
+							</div>
 						</div>
 					</div>
 				</div>
@@ -160,26 +162,22 @@
 								/>
 							</div>
 
-							<div
-								class="px-3 pt-3"
+							<PlaylistEdit
+								ref="playlist"
+								:id="activeCourseItem.item_id"
+								:course_item_id="activeCourseItem.id"
+								:is_course="true"
+								:myvideo="activeCourseItem.last_item"
+								:enable_url_manipulation="false"
+								:mode="'read'"
+								:all_stages="all_stages"
+								:completed_stages="completed_stages"
+								:key="activeCourseKey"
+								@nextElement="nextElement"
+								@changeProgress="completed_stages++"
+								@forGenerateCertificate="generateCertificateStart"
 								v-if="activeCourseItem.item_model == 'App\\Models\\Videos\\VideoPlaylist' || activeCourseItem.item_model == 'App\\Models\\Videos\\Video'"
-							>
-								<PlaylistEdit
-									ref="playlist"
-									:id="activeCourseItem.item_id"
-									:course_item_id="activeCourseItem.id"
-									:is_course="true"
-									:myvideo="activeCourseItem.last_item"
-									:enable_url_manipulation="false"
-									:mode="'read'"
-									:all_stages="all_stages"
-									:completed_stages="completed_stages"
-									:key="activeCourseKey"
-									@nextElement="nextElement"
-									@changeProgress="completed_stages++"
-									@forGenerateCertificate="generateCertificateStart"
-								/>
-							</div>
+							/>
 
 							<div
 								v-if="activeCourseItem.item_model == 'App\\KnowBase'"

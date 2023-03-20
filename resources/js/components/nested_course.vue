@@ -15,11 +15,11 @@
 				<div class="handles d-flex aic">
 					<div>
 						<i
-							class="fa fa-check pointer"
+							class="fa fa-check-double pointer"
 							v-if="el.item_model != null"
 						/>
 						<i
-							class="fa fa-arrow-right pointer"
+							class="fa fa-unlock pointer"
 							v-else-if="first_active == el.id"
 						/>
 						<i

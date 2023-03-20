@@ -11,8 +11,18 @@
 				Назад
 			</div>
 
-			<div class="d-flex first-block">
-				<!-- left -->
+			<div class="first-block">
+				<div class="d-flex pg-pages">
+					<i
+						class="fa fa-chevron-left"
+						@click="prevPage"
+					/>
+					<span>{{ page }} из {{ pageCount }}</span>
+					<i
+						class="fa fa-chevron-right"
+						@click="nextPage"
+					/>
+				</div>
 				<div v-if="activeBook != null">
 					<img
 						:src="activeBook.img == '' ? '/images/book_cover.jpg' : activeBook.img"
@@ -24,86 +34,54 @@
 						</p>
 					</div>
 				</div>
-
-				<!-- right -->
-				<div>
-					<div>
-						<p class="text-center">
-							<b>{{ page }} / {{ pageCount }}</b>
-						</p>
-					</div>
-
-					<div class="d-flex justify-content-center">
-						<button
-							class="btn rounded mr-2"
-							@click="prevPage"
-						>
-							<i class="fa fa-chevron-left" />
-						</button>
-						<button
-							class="btn rounded"
-							@click="nextPage"
-						>
-							<i class="fa fa-chevron-right" />
-						</button>
-					</div>
-
-					<div class="d-flex justify-content-center mt-2">
-						<button
-							class="btn rounded mr-1 p-2"
-							@click="zoomIn"
-						>
-							<i class="fa fa-search-plus" />
-						</button>
-						<button
-							class="btn rounded mr-1 p-2"
-							@click="zoom = 0"
-						>
-							<i class="fa fa-bars" />
-						</button>
-						<button
-							class="btn rounded p-2"
-							@click="zoomOut"
-						>
-							<i class="fa fa-search-minus" />
-						</button>
-					</div>
+				<div class="zoom-items">
+					<i
+						class="fa fa-search-plus"
+						@click="zoomIn"
+					/>
+					<i
+						class="fa fa-bars zero"
+						@click="zoom = 0"
+					/>
+					<i
+						class="fa fa-search-minus"
+						@click="zoomOut"
+					/>
 				</div>
 			</div>
 
 			<!-- Page numbers -->
-			<div class="chapters mt-3">
-				<div class="item font-bold mb-2">
-					<p class="mb-0">
-						Вопросы на странице:
-					</p>
-				</div>
+			<div class="chapters">
+				<p class="upbook-items-title">
+					Вопросы на странице:
+				</p>
 
-				<div
-					class="item d-flex"
-					v-for="(segment, t) in segments"
-					:key="t"
-					:class="{
-						'pass': segment.item_model !== null,
-						'active': page == segment.page
-					}"
-				>
-					<div class="mr-2">
+				<div class="upbook-items">
+					<div
+						class="item d-flex"
+						v-for="(segment, t) in segments"
+						:key="t"
+						:class="{
+							'pass': segment.item_model !== null,
+							'active': page == segment.page
+						}"
+					>
 						<i
-							class="fa fa-check pointer"
+							class="fa fa-check pointer mr-4"
 							v-if="segment.item_model !== null"
 						/>
 						<i
-							class="fa fa-lock pointer"
+							class="fa fa-lock pointer mr-4"
 							v-else
 						/>
+						<p
+							class="mb-0 item-text"
+							@click="moveTo(segment.page, segment.item_model)"
+						>
+							<span>Стр. {{ segment.page }}</span>
+							<small>{{ segment.questions.length }} вопрос (-ов)</small>
+						</p>
 					</div>
-					<p
-						class="mb-0"
-						@click="moveTo(segment.page, segment.item_model)"
-					>
-						Стр. {{ segment.page }} : {{ segment.questions.length }} вопрос (-ов)
-					</p>
 				</div>
 			</div>
 		</div>

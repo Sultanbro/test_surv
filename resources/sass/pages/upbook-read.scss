@@ -3,10 +3,10 @@
 
   position: relative;
   display: flex;
-  background: #f4f4f4;
+  background: #ffffff;
 
   .pdf {
-    height: 100vh;
+    height: calc(100vh - 65px);
     width: auto;
     overflow-y: auto;
     padding: 5px;
@@ -39,7 +39,7 @@
     &.w1500 {width: 1521px;}
     &.w1600 {width: 1621px;}
 
-    
+
   }
 
 
@@ -52,18 +52,15 @@
   }
 
   .questions {
-    height: 100vh;
-    margin: 0 auto;
+    height: calc(100vh - 64px);
+    padding: 0 20px;
+    width: 100%;
+    margin: 0;
     overflow: auto;
     border: 0;
     border-radius: 0px;
     box-shadow: none;
-   
 
-    .question {
-      background: #fff !important;
-    }
-    
     .title {
       p {
         font-size: 16px;
@@ -76,47 +73,94 @@
     flex: 0 0 290px;
     max-width: 290px;
     overflow-x: hidden;
-    min-height: 100vh;
+    min-height: calc(100vh - 65px);
     padding: 10px;
-    background: #f8f8f8;
+    background: #fff;
     border-right: 1px solid #dee7ec;
   }
 
   .first-block {
-    background: #eff2f4;
-    padding: 10px;
+    img{
+      margin: 20px 0;
+    }
+    .zoom-items{
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      i{
+        color: #8DA0C1;
+        cursor: pointer;
+      }
+      .zero{
+        margin: 0 40px;
+      }
+    }
+    .pg-pages {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+
+      span {
+        font-weight: 600;
+        color: #6D7C96;
+        font-size: 16px;
+      }
+
+      i {
+        cursor: pointer;
+        color: #C6C7C9;
+        width: 25px;
+        height: 25px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+
+        &:hover {
+          color: #3781EF;
+        }
+      }
+    }
   }
 
   .chapters {
-
+    margin-top: 40px;
+    .upbook-items-title{
+      font-size: 18px;
+      font-weight: 600;
+    }
+  .upbook-items{
+    border-top: 1px solid #EAEAEA;
+    margin-top: 20px;
+    padding-top: 20px;
+  }
     .item {
-
-      color: #d6d6d6;
-      cursor: pointer;
-      margin: 4px 0;
-      background: #eff2f4;
-      border-radius: 4px;
-      padding: 0 0 0 5px;
-      &:first-child {
+      margin-bottom: 10px;
+      color: #A6B7D4;
+      display: flex;
+      align-items: center;
+      .item-text{
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        width: 100%;
+      }
+      &.active{
         color: #000;
-
-        p {
-          color: #000;
-        }
       }
 
       p {
-        color: #d6d6d6;
+        font-weight: 500;
+        color: #A6B7D4;
       }
 
       &.active {
         color: #096dd9;
-        
+
         p {
           color: #096dd9;
         }
 
-      } 
+      }
 
       &.pass {
         color: #000000;
@@ -125,7 +169,7 @@
           color: #000000;
         }
       }
-      
+
     }
 
   }
