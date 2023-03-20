@@ -25,17 +25,24 @@
 				>
 					<i class="fa fa-bars" />
 				</div>
-				<div class="img">
-					<img
-						src="/images/author.jpg"
-						alt="text"
-					>
-				</div>
+				<!--				<div class="img">-->
+				<!--					<img-->
+				<!--						src="/images/author.jpg"-->
+				<!--						alt="text"-->
+				<!--					>-->
+				<!--				</div>-->
 				<div class="desc">
-					<h4>
-						<i class="fa fa-lock mr-1" />
-						{{ video.title }}
-					</h4>
+					<div class="d-flex align-items-start">
+						<i
+							class="fa fa-lock mr-3"
+							v-if="active != video.id && mode == 'read' && video.item_model == null"
+						/>
+						<i
+							class="fa fa-play mr-3"
+							v-if="active == video.id"
+						/>
+						<h4>{{ video.title }}</h4>
+					</div>
 					<div
 						class="text"
 						v-html="video.desc"

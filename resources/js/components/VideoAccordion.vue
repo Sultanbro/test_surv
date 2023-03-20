@@ -17,7 +17,12 @@
 					v-model="group.title"
 					:disabled="mode == 'read'"
 					@change="saveGroup(g_index)"
+					v-if="mode !== 'read'"
 				>
+				<span
+					class="g-text"
+					v-if="mode == 'read'"
+				>{{ group.title }}</span>
 				<div class="btns">
 					<i
 						class="fa fa-folder-plus"

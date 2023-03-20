@@ -68,13 +68,10 @@
 			</div>
 		</div>
 
-		<div class="row">
+		<div class="row m-0">
 			<!-- Player and test questions -->
-			<div class="col-lg-6 pr-0">
-				<div
-					class="block  br"
-					v-if="activeVideo != null"
-				>
+			<div class="col-lg-8 video-playlist-left">
+				<template v-if="activeVideo != null">
 					<VideoPlayerItem
 						:src="activeVideoLink"
 						:key="video_changed"
@@ -138,11 +135,11 @@
 							<i class="fa fa-angle-double-right ml-2" />
 						</button>
 					</div>
-				</div>
+				</template>
 			</div>
 
 			<!-- nav accordion -->
-			<div class="col-lg-6">
+			<div class="col-lg-4 p-0">
 				<VideoAccordion
 					ref="accordion"
 					:groups="playlist.groups"
