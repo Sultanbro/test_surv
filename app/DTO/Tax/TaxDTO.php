@@ -8,8 +8,7 @@ class TaxDTO extends BaseTaxDTO
         public int $id,
         string $name,
         float $value,
-        bool $isPercent,
-        public bool $isAssigned,
+        bool $isPercent
     )
     {
         parent::__construct(

@@ -4,84 +4,72 @@ namespace App\Http\Controllers\Tax;
 
 use App\DTO\Tax\GetTaxesResponseDTO;
 use App\Http\Controllers\Controller;
-use App\Http\Controllers\Tax\Response\GetTaxesResponse;
+use App\Http\Controllers\Tax\Response\TaxGetResponse;
+use App\Http\Requests\Tax\AddTaxRequest;
+use App\Http\Requests\Tax\GetTaxesRequest;
+use App\Http\Requests\Tax\TaxSetAssigneeRequest;
+use App\Http\Requests\Tax\UpdateTaxRequest;
+use App\Models\Tax;
+use App\Service\Tax\CreateTax;
+use App\Service\Tax\GetTaxes;
+use App\Service\Tax\SetAssignee;
+use App\Service\Tax\UpdateTax;
 use Exception;
+use Illuminate\Http\JsonResponse;
 
 class TaxController extends Controller
-{   
+{
     /**
-     * @return GetTaxesResponse
+     * @param GetTaxesRequest $request
+     * @param GetTaxes $service
+     * @return TaxGetResponse
      */
-    public function get(): GetTaxesResponse
+    public function get(GetTaxesRequest $request, GetTaxes $service): TaxGetResponse
     {
-        // use GetTaxesDTO
-        // to get user_tax assigns
+        $response = GetTaxesResponseDTO::fromArray($service->handle($request->toDto()->userId));
 
-        // not implemented. used mock
-        $mock = GetTaxesResponseDTO::fromArray([[
-            'id' => 1,
-            'name' => 'asd1',
-            'value' => 1,
-            'isPercent' => true,
-            'isAssigned' => true,
-        ], [
-            'id' => 2,
-            'name' => 'asd2',
-            'value' => 1000,
-            'isPercent' => false,
-            'isAssigned' => true,
-        ], [
-            'id' => 3,
-            'name' => 'asd3',
-            'value' => 5,
-            'isPercent' => true,
-            'isAssigned' => true,
-        ], [
-            'id' => 4,
-            'name' => 'aqq4',
-            'value' => 5000,
-            'isPercent' => false,
-            'isAssigned' => false,
-        ], [
-            'id' => 5,
-            'name' => 'qqw5',
-            'value' => 1111,
-            'isPercent' => false,
-            'isAssigned' => false,
-        ], [
-            'id' => 6,
-            'name' => 'wqqq6',
-            'value' => 11,
-            'isPercent' => true,
-            'isAssigned' => false,
-        ], [
-            'id' => 7,
-            'name' => 'asdqq7',
-            'value' => 1,
-            'isPercent' => true,
-            'isAssigned' => false,
-        ]]);
-
-        return GetTaxesResponse::success($mock);
+        return TaxGetResponse::success($response);
     }
 
-    public function create() {
-        // use CreateTaxDTO
-        // creates tax
-        // returns created Tax
-        throw new Exception('not implemented');
+    /**
+     * @param AddTaxRequest $request
+     * @param CreateTax $service
+     * @return JsonResponse
+     * @throws Exception
+     */
+    public function create(AddTaxRequest $request, CreateTax $service): JsonResponse
+    {
+        return $this->response(
+            message: 'Success',
+            data: $service->handle($request->toDto())
+        );
     }
 
-    public function update() {
-        // use UpdateTaxDTO
-        // returns success
-        throw new Exception('not implemented');
+    /**
+     * @param UpdateTaxRequest $request
+     * @param UpdateTax $service
+     * @return JsonResponse
+     * @throws Exception
+     */
+    public function update(UpdateTaxRequest $request, UpdateTax $service): JsonResponse
+    {
+        return $this->response(
+            message: 'Success',
+            data: $service->handle($request->toDto())
+        );
     }
 
-    public function setAssigned() {
-        // use SetAssignedTaxDTO
-        // creates user_tax connection
-        // returns success
-        throw new Exception('not implemented');
+    /**
+     * @param TaxSetAssigneeRequest $request
+     * @param SetAssignee $service
+     * @return JsonResponse
+     * @throws Exception
+     */
+    public function setAssigned(TaxSetAssigneeRequest $request, SetAssignee $service): JsonResponse
+    {
+        return $this->response(
+            message: 'Success',
+            data: $service->handle($request->toDto())
+        );
     }
 }

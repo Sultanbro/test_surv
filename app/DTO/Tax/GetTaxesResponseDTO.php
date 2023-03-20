@@ -21,13 +21,12 @@ class GetTaxesResponseDTO
         $items = [];
 
         foreach ($array as $arrItem) {
-            array_push($items, new TaxDto(
-                $arrItem->id,
-                $arrItem->name,
-                $arrItem->value,
-                $arrItem->isPercent,
-                $arrItem->isAssigned,
-            ));
+            $items[] = new TaxDto(
+                $arrItem['id'],
+                $arrItem['name'],
+                $arrItem['value'],
+                $arrItem['is_percent']
+            );
         }
 
         return new GetTaxesResponseDTO($items);
