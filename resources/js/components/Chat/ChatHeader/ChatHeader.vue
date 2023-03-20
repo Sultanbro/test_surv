@@ -47,7 +47,7 @@ export default {
 		justify-content: stretch;
 		flex-flow: row nowrap;
 
-		padding: 2rem 1.5rem;
+		padding: 1.5rem 1.5rem 0.5rem;
 		margin-bottom: 1.5rem;
 
 		position: relative;
