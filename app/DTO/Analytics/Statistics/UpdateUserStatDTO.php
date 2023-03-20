@@ -9,7 +9,7 @@ final class UpdateUserStatDTO
      * @param int $activityId
      * @param int $groupId
      * @param int $employeeId
-     * @param int $value
+     * @param string $value
      * @param int $year
      * @param string $month
      * @param int $day
@@ -18,7 +18,7 @@ final class UpdateUserStatDTO
         public int $activityId,
         public int $groupId,
         public int $employeeId,
-        public int $value,
+        public string $value,
         public int $year,
         public string $month,
         public int $day

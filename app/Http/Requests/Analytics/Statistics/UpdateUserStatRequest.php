@@ -29,7 +29,7 @@ class UpdateUserStatRequest extends FormRequest
             'id'            => 'required|integer|exists:activities,id',
             'group_id'      => 'required|integer|exists:profile_groups,id',
             'employee_id'   => 'required|integer|exists:users,id',
-            'value'     => 'integer|min:0',
+            'value'     => 'string',
             'year'      => 'required|integer',
             'month'     => 'required|integer',
             'day'       => 'required|integer'
