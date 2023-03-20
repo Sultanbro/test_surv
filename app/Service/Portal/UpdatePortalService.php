@@ -21,6 +21,8 @@ class UpdatePortalService
         UpdatePortalDTO $dto
     ): bool
     {
+        //TODO implement saving kpiBacklight as json-field in portal table
+
         $updated = Portal::query()
             ->get()
             ->where('tenant_id', $dto->tenantId)

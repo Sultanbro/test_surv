@@ -18,6 +18,8 @@ class PortalController extends Controller
     {
         $tenantId = tenant('id'); //TODO Portal refactor: portal associated with tenant for now
 
+        //TODO implement get saved kpiBacklight
+
         return $this->response(
             message: "Success",
             data: Portal::getByTenantIdOrFail($tenantId),
