@@ -18,7 +18,7 @@
 					<KPI v-if="active == 0" />
 				</b-tab>
 				<b-tab
-					title="Бонусы"
+					title="Бонусы, %"
 					:key="1"
 					card
 				>

@@ -1,6 +1,6 @@
 <template>
 	<div class="messenger__col-messages">
-		<ConversationHeader />
+		<ConversationHeader v-show="!isChatSearchMode" />
 		<ConversationFeed v-show="!isChatSearchMode" />
 		<ConversationFooter v-show="!isChatSearchMode" />
 		<ConversationSearch v-show="isChatSearchMode" />
@@ -29,16 +29,15 @@ export default {
 </script>
 
 <style>
-
 .messenger__col-messages {
   display: flex;
   height: 100%;
   flex: 1;
-  border: 1px solid #E1EBF9;
+  /* border: 1px solid #E1EBF9; */
 
   position: relative;
   overflow: hidden;
   flex-flow: column;
+  flex-flow: column;
 }
-
 </style>

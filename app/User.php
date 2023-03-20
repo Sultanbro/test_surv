@@ -1146,7 +1146,7 @@ class User extends Authenticatable implements Authorizable
     {
         $timezone = $this->timezone();
         $groups   = $this->activeGroup();
-        $groupChart = $groups->workChart()->first();
+        $groupChart = $groups?->workChart()->first();
         $userChart = $this->workChart()->first();
 
         $workEndTime = $userChart->end_time

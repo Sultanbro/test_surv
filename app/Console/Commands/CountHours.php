@@ -63,7 +63,7 @@ class CountHours extends Command
                 $userSchedule = $user->schedule();
                 $enterTime  = $record->enter;
                 $exitTime   = $record->exit;
-                $minutes    = $this->calculateMinutes($enterTime, $exitTime);
+                $minutes    = $this->calculateMinutes($userSchedule, $enterTime, $exitTime);
 
                 $record->update([
                     'total_hours' => $minutes
@@ -73,19 +73,21 @@ class CountHours extends Command
     }
 
     /**
+     * @param array $schedule
      * @param Carbon $enterTime
      * @param Carbon $exitTime
      * @return float
      */
     private function calculateMinutes(
+        array $schedule,
         Carbon $enterTime,
         Carbon $exitTime
     ): float
     {
-        $maxWorkMinutesPerDay = 480;
         $lunchTime      = 60;
+        $maxWorkMinutesPerDay= max($schedule['start']->addMinutes(30)->diffInMinutes($schedule['end']) - $lunchTime, 0);
         $diffInMinutes  = $enterTime->diffInMinutes($exitTime) - $lunchTime;
 
-        return $diffInMinutes < 480 ? $diffInMinutes : $maxWorkMinutesPerDay;
+        return min($diffInMinutes, $maxWorkMinutesPerDay);
     }
 }
