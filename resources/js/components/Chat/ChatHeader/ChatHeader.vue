@@ -9,31 +9,92 @@
 		>
 			<ChatIconPlus class="pointer" />
 		</div>
-		<AddMemberModal
+		<AccessSelect
 			v-if="showAddMemberModal"
+			v-model="selectedTargets"
+			:tabs="['Сотрудники', 'Отделы', 'Должности']"
+			submit="Создать чат"
+			:open="showAddMemberModal"
+			:access-dictionaries="accessDictionaries"
 			@close="showAddMemberModal = false"
+			@submit="submitChat"
 		/>
 	</div>
 </template>
 
 <script>
-import AddMemberModal from '../MessengerConversation/ConversationHeader/AddMemberModal/AddMemberModal.vue';
+import {mapActions, mapGetters} from 'vuex';
+import AccessSelect from '@/components/ui/AccessSelect/AccessSelect'
 import { ChatIconPlus } from '../icons/chat-icons'
 export default {
 	name: 'ChatHeader',
 	components: {
 		ChatIconPlus,
-		AddMemberModal,
+		AccessSelect,
 	},
 	data(){
 		return {
 			showAddMemberModal: false,
+			selectedTargets: []
 		}
 	},
+	computed: {
+		...mapGetters([
+			'contacts',
+			'newChatContacts',
+			'chat',
+			'user',
+			'users',
+			'profileGroups',
+			'positions',
+		]),
+		positionMap(){
+			return this.positions.reduce((result, pos) => {
+				result[pos.id] = pos.position
+				return result
+			}, {})
+		},
+		accessDictionaries(){
+			return {
+				users: this.users.map(user => ({
+					id: user.id,
+					name: `${user.name} ${user.last_name}`,
+					avatar: user.avatar,
+					position: this.positionMap[user.position_id]
+				})),
+				profile_groups: this.profileGroups,
+				positions: this.positions.map(pos => ({
+					id: pos.id,
+					name: pos.position
+				})),
+			}
+		}
+	},
+	mounted(){
+		this.loadCompany()
+	},
 	methods: {
+		...mapActions([
+			'createChat',
+			'addMembers',
+			'removeMembers',
+			'loadCompany'
+		]),
 		openAddMemberModal(e) {
 			e.stopPropagation();
 			this.showAddMemberModal = true;
+		},
+		submitChat() {
+			this.selectedTargets.push(this.user)
+			const members = this.selectedTargets.filter(item => item.type === 1)
+			const title = members.slice(0, 3).map(item => item.name).join(', ');
+			this.createChat({
+				title: title,
+				description: '',
+				members: members.map(member => member.id)
+			});
+
+			this.showAddMemberModal = false
 		},
 	}
 }
