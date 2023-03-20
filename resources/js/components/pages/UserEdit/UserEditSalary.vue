@@ -30,7 +30,11 @@ export default {
 			headphonesState: this.user?.headphones_sum > 0,
 			cards: [],
 			zarplata: 0,
-			currency: null
+			currency: null,
+			search: '',
+			searchIdx: null,
+			mockDataAll: [],
+			mockData: []
 		}
 	},
 	watch: {
@@ -51,6 +55,28 @@ export default {
 		},
 		currency(){
 			this.changeZp();
+		}
+	},
+	mounted() {
+		// this.axios.get('/')
+		// if(this.taxes) this.mockData = this.taxes;
+
+		for(let i = 0; i < 15; i++){
+			this.mockDataAll.push({
+				id: i,
+				name: 'name lorem ' + i,
+				amount: Math.floor(Math.random() * 501),
+				isPercent: i > 9,
+				isAssigned: i > 4 && i < 8
+			})
+		}
+	},
+	computed: {
+		filteredTaxes() {
+			return this.mockDataAll.filter(item => item.name.toLowerCase().includes(this.search.toLowerCase()) && !item.isAssigned)
+		},
+		mockDataFiltered(){
+			return this.mockDataAll.filter(item => item.isAssigned)
 		}
 	},
 	methods: {
@@ -80,21 +106,46 @@ export default {
 				this.$toast.success('Карта удалена');
 			}
 		},
-		addTax(userId){
-			this.taxes.push({
+		addTax(){
+			this.mockDataAll.push({
 				name: '',
 				amount: '',
-				percent: '',
-				user_id: userId,
+				isPercent: false,
+				isAssigned: true
 			})
+			this.search = '';
+			this.searchId = null;
 		},
 		deleteTax(key){
-			this.taxes.splice(key, 1)
+			this.mockDataAll.splice(key, 1)
 		},
 		changeHeadphonesState(){
 			this.headphonesState = !this.headphonesState
 			if(this.headphonesState && this.user){
 				this.user.headphones_sum = 0
+			}
+		},
+		searchMethod(tax, index){
+			this.search = tax.name;
+			this.searchIdx = index;
+		},
+		selectTax(id){
+			this.mockDataAll.pop();
+			const index = this.mockDataAll.findIndex(m => m.id === id);
+			const splicedEl = this.mockDataAll.splice(index, 1);
+			splicedEl[0].isAssigned = true;
+			this.mockDataAll.push(splicedEl[0]);
+			this.search = '';
+			this.searchIdx = null;
+		},
+		percentMod(amount, index){
+			console.log(amount);
+			if(amount > 100){
+				this.mockData[index].amount = 100;
+			} else if(amount < 0){
+				this.mockData[index].amount = 0;
+			} else {
+				this.mockData[index].amount = amount;
 			}
 		}
 	},
@@ -370,37 +421,62 @@ export default {
 			class="taxes"
 		>
 			<div
-				v-for="(tax, key) in taxes"
+				v-for="(tax, index) in mockDataFiltered"
 				:key="tax.id"
-				class="d-flex form-group m0 tax-row"
+				class="d-flex tax-row"
 			>
-				<input
-					:name="`taxes[${key}][name]`"
-					:value="tax.name"
-					type="text"
-					class="form-control mr-1 col-sm-2"
-					placeholder="Название"
+				<b-form-group>
+					<b-form-input
+						v-model="tax.name"
+						type="text"
+						class="mr-1"
+						placeholder="Название"
+						@input="searchMethod(tax, index)"
+					/>
+					<div
+						class="taxes-list-dropdown"
+						v-if="search.length && index === mockDataFiltered.length - 1"
+					>
+						<ul class="taxes-list">
+							<li
+								class="taxes-item"
+								v-for="item in filteredTaxes"
+								:key="item.id"
+								@click="selectTax(item.id)"
+							>
+								{{ item.name }}
+							</li>
+						</ul>
+					</div>
+				</b-form-group>
+				<b-form-group>
+					<b-form-input
+						v-model="tax.amount"
+						type="number"
+						class="mr-1"
+						placeholder="Сумма"
+						@change="percentMod(Number(tax.amount), index)"
+						v-if="tax.isPercent"
+					/>
+					<b-form-input
+						v-model="tax.amount"
+						type="number"
+						class="mr-1"
+						placeholder="Сумма"
+						v-else
+					/>
+				</b-form-group>
+				<b-form-group
+					class="custom-switch custom-switch-sm"
+					id="input-group-4"
 				>
-				<input
-					:name="`taxes[${key}][amount]`"
-					:value="tax.amount"
-					type="text"
-					class="form-control mr-1 col-sm-2"
-					placeholder="Сумма"
-				>
-				<input
-					:name="`taxes[${key}][percent]`"
-					:value="tax.percent"
-					type="text"
-					class="form-control mr-1 col-sm-2"
-					placeholder="Процент"
-				>
-				<input
-					:name="`tax[${key}][user_id]`"
-					:value="user.id"
-					type="hidden"
-					class="form-control mr-1 col-sm-2"
-				>
+					<b-form-checkbox
+						v-model="tax.isPercent"
+						switch
+					>
+						Значение в процентах
+					</b-form-checkbox>
+				</b-form-group>
 				<button
 					type="button"
 					class="btn btn-danger tax-delete rounded ml-1"
@@ -423,7 +499,7 @@ export default {
 			v-if="user && user.zarplata"
 			type="button"
 			class="btn btn-success btn-rounded mb-2 mt-2"
-			@click="addTax(user.id)"
+			@click="addTax"
 		>
 			<i class="fa fa-plus mr-2" /> Добавить налог
 		</button>
