@@ -2,6 +2,9 @@
 
 namespace App\Models;
 
+use App\Models\Portal\Portal;
+use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 use Stancl\Tenancy\Database\Models\Tenant as BaseTenant;
 use Stancl\Tenancy\Contracts\TenantWithDatabase;
 use Stancl\Tenancy\Database\Concerns\HasDatabase;
@@ -16,4 +19,21 @@ class Tenant extends BaseTenant implements TenantWithDatabase
         'global_id',
         'data'
     ];
+
+    /**
+     * @param string $id
+     * @return Builder
+     */
+    public static function getById(string $id): Builder
+    {
+        return self::query()->where('id', $id);
+    }
+
+    /**
+     * @return HasOne
+     */
+    public function portal(): HasOne //TODO Portal refactor: replace HasOne with HasMany
+    {
+        return $this->hasOne(Portal::class, 'tenant_id', 'id');
+    }
 }

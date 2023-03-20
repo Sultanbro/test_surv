@@ -1,8 +1,5 @@
 <template>
-	<div
-		ref="messengerChats"
-		:class="!fullscreen ? 'messenger__chats-container messenger__collapsed' : 'messenger__chats-container messenger__fullscreen'"
-	>
+	<div ref="messengerChats">
 		<ContextMenu
 			:show="contextMenuVisible"
 			:x="contextMenuX"
@@ -12,91 +9,85 @@
 			<template v-if="contextMenuChat">
 				<a
 					v-if="contextMenuChat.pinned"
+					class="messenger__context-item wsnw"
 					href="javascript:"
 					@click="contextMenuVisible = false; unpinChat(contextMenuChat)"
 				>Открепить чат</a>
 				<a
 					v-else
+					class="messenger__context-item wsnw"
 					href="javascript:"
 					@click="contextMenuVisible = false; pinChat(contextMenuChat)"
 				>Закрепить чат</a>
 				<a
 					v-if="contextMenuChat.owner_id === user.id"
+					class="messenger__context-item wsnw"
 					href="javascript:"
 					@click="contextMenuVisible = false; remove(contextMenuChat)"
 				>Удалить чат</a>
 				<a
 					v-else
+					class="messenger__context-item wsnw"
 					href="javascript:"
 					@click="contextMenuVisible = false; leftChat(contextMenuChat)"
 				>Покинуть чат</a>
 			</template>
 		</ContextMenu>
-		<SearchBox />
-		<div class="messenger__chats-list">
-			<template v-if="!isSearchMode || !fullscreen">
-				<div
-					v-for="item in sortedChats"
-					:key="item.id"
-					:class="(chat && chat.id === item.id) ? 'messenger__chat-item messenger__chat-selected' : 'messenger__chat-item'"
-					@click="openChat(item, $event)"
-					@contextmenu.prevent="showChatContextMenu($event, item)"
-				>
-					<ContactItem
-						:item="item"
-						:fullscreen="fullscreen"
-					/>
-				</div>
-			</template>
-			<template v-else-if="isSearchMode">
-				<div
-					v-for="item in contacts"
-					:key="item.id"
-					:class="(chat && chat.id === item.id) ? 'messenger__chat-item messenger__chat-selected' : 'messenger__chat-item'"
-					:data-test-id="item.id"
-					@click="openChat(item, $event)"
-					@contextmenu.prevent="showChatContextMenu($event, item)"
-				>
-					<ContactItem
-						:item="item"
-						:fullscreen="fullscreen"
-					/>
-				</div>
-				<div
-					v-for="(item, index) in searchMessagesChatsResults"
-					:key="index"
-					:class="'messenger__chat-item'"
-					@click="openChat(item, $event)"
-				>
-					<ContactItem
-						:item="item"
-						:fullscreen="fullscreen"
-					/>
-				</div>
-			</template>
-		</div>
+		<template v-if="!isSearchMode || !fullscreen">
+			<div
+				v-for="item in sortedChats"
+				:key="item.id"
+				class="messenger__chat-item"
+				:class="{'messenger__chat-selected': chat && chat.id === item.id}"
+				@click="openChat(item, $event)"
+				@contextmenu.prevent="showChatContextMenu($event, item)"
+			>
+				<ContactItem
+					:item="item"
+					:fullscreen="fullscreen"
+				/>
+			</div>
+		</template>
+		<template v-else-if="isSearchMode">
+			<div
+				v-for="item in contacts"
+				:key="item.id"
+				class="messenger__chat-item"
+				:class="{'messenger__chat-selected': chat && chat.id === item.id}"
+				:data-test-id="item.id"
+				@click="openChat(item, $event)"
+				@contextmenu.prevent="showChatContextMenu($event, item)"
+			>
+				<ContactItem
+					:item="item"
+					:fullscreen="fullscreen"
+				/>
+			</div>
+			<div
+				v-for="(item, index) in searchMessagesChatsResults"
+				:key="index"
+				class="messenger__chat-item"
+				@click="openChat(item, $event)"
+			>
+				<ContactItem
+					:item="item"
+					:fullscreen="fullscreen"
+				/>
+			</div>
+		</template>
 	</div>
 </template>
 
 <script>
-import {mapActions, mapGetters} from 'vuex';
-import SearchBox from '@/components/Chat/SearchBox/SearchBox.vue';
-import ContextMenu from '../ContextMenu/ContextMenu.vue';
-import ContactItem from './ContactItem/ContactItem.vue';
+import {mapActions, mapGetters} from 'vuex'
+import ContextMenu from '../ContextMenu/ContextMenu.vue'
+import ContactItem from './ContactItem/ContactItem.vue'
 
 export default {
 	name: 'ChatsList',
 	components: {
-		SearchBox,
 		ContextMenu,
 		ContactItem,
-	},
-	computed: {
-		...mapGetters([
-			'sortedChats', 'chat', 'user',
-			'contacts', 'searchMessagesChatsResults',
-			'isSearchMode', 'isOpen'
-		])
 	},
 	props: {
 		fullscreen: {
@@ -112,8 +103,27 @@ export default {
 			contextMenuChat: null
 		}
 	},
+	computed: {
+		...mapGetters([
+			'sortedChats',
+			'chat',
+			'user',
+			'contacts',
+			'searchMessagesChatsResults',
+			'isSearchMode',
+			'isOpen',
+		])
+	},
 	methods: {
-		...mapActions(['loadChat', 'toggleMessenger', 'leftChat', 'pinChat', 'unpinChat', 'removeChat', 'setLoading']),
+		...mapActions([
+			'loadChat',
+			'toggleMessenger',
+			'leftChat',
+			'pinChat',
+			'unpinChat',
+			'removeChat',
+			'setLoading'
+		]),
 		openChat(chat, event) {
 			event.stopPropagation();
 			this.contextMenuVisible = false;
@@ -153,55 +163,15 @@ export default {
 </script>
 
 <style>
-
-/*noinspection CssUnusedSymbol*/
-.messenger__chats-container {
-  display: flex;
-  flex-flow: column;
-  flex: 0 0 25%;
-  min-width: 240px;
-  max-width: 500px;
-  position: relative;
-  height: 100%;
-  border-top-left-radius: 4px;
-  border-bottom-left-radius: 4px;
-  background-color: #f4f6fa;
-}
-
-/*noinspection CssUnusedSymbol*/
-@media only screen and (max-width: 670px) {
-  .messenger__fullscreen {
-    display: none;
-  }
-}
-
-/*noinspection CssUnusedSymbol*/
-.messenger__collapsed {
-  min-width: auto;
-}
-
-.messenger__collapsed .messenger__chat-item {
-  padding: 4px;
-}
-
 .messenger__chat-item:hover {
-  background: #cbeefc;
-}
-
-.messenger__chats-list {
-  flex: 1;
-  position: relative;
-  max-width: 100%;
-  cursor: pointer;
-  overflow-y: auto;
-  margin: 20px 5px 0 0;
-  padding-right: 10px;
+  background: #F5F8FC;
 }
 
 /*noinspection CssUnusedSymbol*/
 .messenger__chat-selected {
-  color: #fff !important;
-  background: #5d8ce7 !important;
+  /* color: #fff !important;
+  background: #5d8ce7 !important; */
+	background: #F5F8FC;
 }
 
 /*noinspection CssUnusedSymbol*/
@@ -213,14 +183,4 @@ export default {
   position: relative;
   transition: background-color .3s cubic-bezier(.25, .8, .5, 1);
 }
-
-.messenger__collapsed .messenger__chats-list {
-  margin: 0;
-  padding-right: 0;
-}
-
-.messenger__chats-list::-webkit-scrollbar {
-  width: 0;
-}
-
 </style>

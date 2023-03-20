@@ -1251,8 +1251,8 @@ export default {
 
 					if (tt.updated === 1 || tt.updated === 2 || tt.updated === 3) dayHours[tt.date].updated = 1
 
-					let enter = this.$moment(tt.enter, 'YYYY-MM-DD HH:mm:ss').format('HH:mm')
-					let exit = this.$moment(tt.exit, 'YYYY-MM-DD HH:mm:ss').format('HH:mm')
+					let enter = this.$moment.utc(tt.enter, 'YYYY-MM-DD HH:mm:ss').local().format('HH:mm')
+					let exit = this.$moment.utc(tt.exit, 'YYYY-MM-DD HH:mm:ss').local().format('HH:mm')
 					startEnd[tt.date] += `<tr><td>${enter}</td><td>${exit}</td></td>`
 
 					if (dayHours[tt.date].updated === 1 || dayHours[tt.date].updated === 2 || dayHours[tt.date].updated === 3) {

@@ -12,6 +12,10 @@ import flatpickr from 'flatpickr'
 import { Russian } from 'flatpickr/dist/l10n/ru.js'
 import 'flatpickr/dist/flatpickr.css'
 import userInfo from '@/plugins/userInfo'
+import 'cropperjs/dist/cropper.css'
+
+import Toast from 'vue-toastification'
+import 'vue-toastification/dist/index.css'
 
 loadFonts()
 
@@ -23,10 +27,11 @@ app.use(vuetify)
 app.use(createPinia())
 app.use(userInfo)
 app.use(router)
+app.use(Toast/* , options */)
 
 app.mount('#app')
 
 
 // /admins (GET)- список кто может входить на admin.jobtron.org (они не должны видеть права)
-// /admins/add  (POST) -добавить 
+// /admins/add  (POST) -добавить
 // /admins/delete/{id}  (DELETE) - удалить

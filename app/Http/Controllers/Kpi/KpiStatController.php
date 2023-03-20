@@ -94,7 +94,17 @@ class KpiStatController extends Controller
      */
     public function showKpiGroupAndUsers(Request $request, $targetableId): JsonResponse
     {
-        $response = $this->service->fetchKpiGroup($request, $targetableId);
+        $response = $this->service->fetchKpiGroupOrUser($request, $targetableId);
+
+        return response()->json($response);
+    }
+
+    /**
+     * Возвращает процент выполнения KPI по месяцам года
+     */
+    public function getAnnualStatistics(Request $request): JsonResponse
+    {
+        $response = $this->service->fetchAnnualKPIPercent($request);
 
         return response()->json($response);
     }

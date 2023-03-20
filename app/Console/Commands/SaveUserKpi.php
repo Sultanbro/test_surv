@@ -2,6 +2,7 @@
 
 namespace App\Console\Commands;
 
+use App\Events\KpiChangedEvent;
 use App\Kpi;
 use App\SavedKpi;
 use App\User;
@@ -149,9 +150,11 @@ class SaveUserKpi extends Command
             // dd($kpi['users'][0]['items'][0]);
             foreach ($kpi['users'][0]['items'] as $item) {
 
-                $workdays = $item['activity'] && $item['activity']['weekdays'] != 0
-                    ? $this->workdays[(int) $item['activity']['weekdays']]
-                    : $this->workdays[5];
+                $itemActivityWeekdays = (int) ($item['activity']['weekdays'] ?? 5);
+
+                $workdays = $itemActivityWeekdays == 0
+                    ? $this->workdays[5]
+                    : $this->workdays[$itemActivityWeekdays];
 
                 $completed_percent = $this->calculator->getCompletePercent([
                     'fact' => $item['fact'],
@@ -202,11 +205,19 @@ class SaveUserKpi extends Command
             ->where('date', $data['date'])
             ->first();
 
+        $date = null;
         if($sk) {
             $sk->total = $data['total'];
             $sk->save();
+            $date = $sk->date;
         } else {
             SavedKpi::create($data);
+            $date = $data['date'];
+        }
+
+        if($date){
+            $date = Carbon::createFromFormat('Y-m-d', $sk->date);
+            event(new KpiChangedEvent($date));
         }
     }
 

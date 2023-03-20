@@ -89,6 +89,18 @@
 				<ProfileInfo :data="userInfo" />
 			</div>
 
+			<div
+				class="profile-video-image"
+				v-b-modal.modal-youtube
+				v-if="videoUrl && isVideoDaysNotGone"
+			>
+				<img
+					:src="'https://img.youtube.com/vi/' + youtubeVideoId + '/mqdefault.jpg'"
+					alt="youtube"
+				>
+				<i class="fa fa-play" />
+			</div>
+
 			<!-- Статус: скрыто. Компонент: ProfileSidebar. Дата скрытия: 27.01.2023 14:13 -->
 			<div
 				class="profile__col"
@@ -228,6 +240,23 @@
 				@failed="repeatBook"
 			/>
 		</b-modal>
+
+		<b-modal
+			id="modal-youtube"
+			modal-class="modal-youtube"
+			size="xl"
+			centered
+			hide-header
+			hide-footer
+			v-if="videoUrl && isVideoDaysNotGone"
+		>
+			<iframe
+				:src="'https://www.youtube.com/embed/' + youtubeVideoId"
+				title="YouTube video player"
+				frameborder="0"
+				allowfullscreen
+			/>
+		</b-modal>
 	</div>
 </template>
 
@@ -272,12 +301,14 @@ export default {
 			isRoot: false,
 			isProfile: false,
 			canvas: null,
+			videoUrl: null,
+			videoDays: null
 		};
 	},
 	computed: {
 		...mapState(useSettingsStore, ['logo']),
 		...mapState(usePersonalInfoStore, ['user', 'position', 'groups', 'salary', 'workingDay', 'schedule', 'workingTime', 'buttonStatus']),
-		...mapState(useProfileStatusStore, ['status', 'balance', 'corp_book']),
+		...mapState(useProfileStatusStore, ['status', 'balance', 'corp_book', 'message']),
 		...mapState(useSettingsStore, {settingsReady: 'isReady'}),
 		...mapState(useProfileStatusStore, {statusReady: 'isReady'}),
 		...mapState(useProfileSalaryStore, {salaryReady: 'isReady'}),
@@ -312,6 +343,18 @@ export default {
 		},
 		isVisible(){
 			return this.isReady || this.$viewportSize.width > 900
+		},
+		youtubeVideoId() {
+			if(this.videoUrl){
+				const urlObj = new URL(this.videoUrl);
+				if (urlObj.pathname.indexOf('embed') > -1) return urlObj.pathname.split('/')[2];
+				return urlObj.searchParams.get('v');
+			} else {
+				return null;
+			}
+		},
+		isVideoDaysNotGone(){
+			return this.$moment().diff(this.$moment(new Date(this.user.created_at)), 'days') <= this.videoDays;
 		}
 	},
 	watch: {
@@ -325,9 +368,13 @@ export default {
 		}
 		const scrollObserver = new IntersectionObserver(() => {
 			this.inViewport = true
-		})
-		scrollObserver.observe(this.$el)
-		this.initCorpBook()
+		});
+		scrollObserver.observe(this.$el);
+		this.initCorpBook();
+		this.axios.get('/portal/current').then(res => {
+			this.videoUrl = res.data.data.main_page_video;
+			this.videoDays = res.data.data.main_page_video_show_days_amount;
+		});
 	},
 	created(){
 		this.isRoot = window.location.pathname === '/'
@@ -430,6 +477,7 @@ export default {
 			profileStatusStore.buttonStatus = 'loading'
 			try{
 				await this.updateStatus(this.getParams())
+				if(this.status === 'workdone') this.$toast.info(this.message)
 				if(this.status === 'started') this.$toast.info('День начат')
 				if(this.status === 'stopped' || this.status === '') this.$toast.info('День завершен')
 				profileStatusStore.buttonStatus = 'init'
@@ -497,6 +545,52 @@ export default {
 </script>
 
 <style lang="scss">
+	.modal-youtube{
+		.modal-xl{
+			max-width: 900px;
+		}
+		.modal-body{
+			padding: 0;
+			position: relative;
+			padding-bottom: 56.25%;
+			iframe{
+				position: absolute;
+				width: 100%!important;
+				height: 100%!important;
+			}
+		}
+	}
+	.profile-video-image {
+		position: relative;
+		margin-top: 20px;
+		border-radius: 1rem;
+		overflow: hidden;
+		cursor: pointer;
+		.fa-play {
+			position: absolute;
+			top: 50%;
+			left: 50%;
+			transform: translate(-50%, -50%);
+			z-index: 22;
+			color: #fff;
+			font-size: 30px;
+			transition: 0.3s all ease;
+		}
+		&:hover{
+			.fa-play{
+				transform: translate(-50%, -50%) scale(1.2);
+			}
+			img{
+				filter: grayscale(0.5);
+			}
+		}
+
+		img {
+			width: 100%;
+			height: auto;
+			transition: 0.3s all ease;
+		}
+	}
 .header__profile{
 	margin: 0 auto;
 	padding: 2rem 2rem 1rem;

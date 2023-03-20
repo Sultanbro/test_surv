@@ -53,15 +53,18 @@
 			<div class="profile__salary profile-border">
 				ОКЛАД: {{ data.salary }}
 			</div>
-			<div class="profile__wrapper">
+			<div
+				class="profile__wrapper"
+				v-if="workChartUser"
+			>
 				<p class="profile-border">
-					{{ data.workingDay }}
+					{{ workChartUser.name }}
 				</p>
 				<p class="profile-border">
-					{{ data.schedule }}
+					{{ workChartUser.start_time }} - {{ workChartUser.end_time }}
 				</p>
 				<p class="profile-border">
-					{{ data.workingTime }}
+					{{ hour }} часов
 				</p>
 			</div>
 		</template>
@@ -69,7 +72,7 @@
 		<!-- <select class="select-css" v-model="data.currency">
 					<option v-for="key in Object.keys(data.currencies)" :value="key">
 						{{ key }} {{ data.currencies[key] }}
-					</option>
+					</option>ProfileStatus.jsProfileStatus.js
 			</select> -->
 	</div>
 </template>
@@ -79,12 +82,26 @@ export default {
 	props: {
 		data: Object
 	},
-	data() {
+	data: function () {
 		return {
 			loading: false,
+			workCharts: null
 		}
 	},
+	mounted() {
+		this.axios.get('/work-chart').then(res => {
+			this.workCharts = res.data.data;
+		}).catch(err => {
+			console.log(err);
+		})
+	},
 	computed: {
+		hour() {
+			return this.$moment.utc(this.$moment.duration(this.workChartUser.end_time) - this.$moment.duration(this.workChartUser.start_time)).format('H');
+		},
+		workChartUser() {
+			return this.data.user && this.workCharts ? this.workCharts.find(w => w.id === this.data.user.work_chart_id) : null;
+		},
 		fullName(){
 			return this.data && this.data.user ? `${this.data.user.name} ${this.data.user.last_name || ''}` : '';
 		},
@@ -100,11 +117,7 @@ export default {
 			} else {
 				return false;
 			}
-
-		}
+		},
 	}
 }
 </script>
-
-<style lang="scss" scoped>
-</style>

@@ -1,8 +1,11 @@
 import type Manager from './api.d.ts'
+import { useToast } from 'vue-toastification'
 import {
   fetchManagers,
   setManager,
 } from './api.ts'
+
+const toast = useToast()
 
 export const useManagersStore = defineStore('managers', () => {
   const managers = ref<Manager[]>([])
@@ -11,8 +14,8 @@ export const useManagersStore = defineStore('managers', () => {
     managers.value = data
   }
   async function _setManager(owner_id: number, manager_id: number) {
-    const { data } = await setManager(owner_id, manager_id)
-    managers.value = data
+    const { errors } = await setManager(owner_id, manager_id)
+    if(errors?.message) toast.error(errors?.message)
   }
   return {
     managers,

@@ -12,8 +12,10 @@ final class StoreWorkChartDTO
      */
     public function __construct(
         public string $name,
+        public int $chartWorkdays,
+        public int $chartDayoffs,
         public string $startTime,
-        public string $endTime
+        public string $endTime,
     )
     {}
 
@@ -23,7 +25,8 @@ final class StoreWorkChartDTO
     public function toArray(): array
     {
         return [
-            'name' => $this->name,
+            'name' => $this->chartWorkdays .'-'. $this->chartDayoffs,
+            'text_name' => $this->name,
             'start_time' => $this->startTime,
             'end_time' => $this->endTime,
         ];

@@ -2,27 +2,28 @@
 
 namespace App\Service;
 
+use App\CacheStorage\KpiItemsCacheStorage;
 use App\Http\Requests\BonusesFilterRequest;
+use App\Models\Analytics\Activity;
+use App\Models\Analytics\AnalyticStat;
+use App\Models\Analytics\UpdatedUserStat;
+use App\Models\Analytics\UserStat;
 use App\Models\Kpi\Bonus;
+use App\Models\Kpi\Kpi;
+use App\Models\Kpi\KpiItem;
 use App\Models\QuartalPremium;
 use App\Position;
+use App\ProfileGroup;
 use App\Service\Department\UserService;
 use App\Traits\KpiHelperTrait;
+use App\User;
+use Carbon\Carbon;
+use Exception;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
-use Carbon\Carbon;
-use Exception;
-use App\User;
-use App\ProfileGroup;
-use App\Models\Kpi\KpiItem;
-use App\Models\Kpi\Kpi;
-use App\Models\Analytics\UserStat;
-use App\Models\Analytics\UpdatedUserStat;
-use App\Models\Analytics\Activity;
-use App\Models\Analytics\AnalyticStat;
 use Illuminate\Support\Arr;
+use Illuminate\Support\Facades\DB;
 
 class KpiStatisticService
 {
@@ -686,6 +687,7 @@ class KpiStatisticService
                     ->endOfMonth()
                     ->format('Y-m-d')))
             )
+            ->where('is_active', true)
             ->get();
 
         foreach ($kpis as $kpi) {
@@ -698,6 +700,8 @@ class KpiStatisticService
                 if(isset($payload['children'])) {
                     $kpi->items = $kpi->items->whereIn('id', $payload['children']);
                 }
+                $kpi->completed_80 = $payload['completed_80'];
+                $kpi->completed_100 = $payload['completed_100'];
             }
 
             $kpi->users = $this->getUsersForKpi($kpi, $date, $user_id);
@@ -777,7 +781,7 @@ class KpiStatisticService
             ->paginate($limit);
         $kpis->data = $kpis->makeHidden(['targetable', 'children']);
 
-        foreach ($kpis->items() as $key => $kpi) {
+        foreach ($kpis->items() as $kpi) {
             $kpi->kpi_items = [];
 
             if($kpi->histories_latest) {
@@ -810,24 +814,33 @@ class KpiStatisticService
      * getUserStats($kpi, $_user_ids, $date)
      * connectKpiWithUserStats(Kpi $kpi, $_users)
      */
-    public function fetchKpiGroup(Request $request, int $targetableId) : array
+    public function fetchKpiGroupOrUser(Request $request, int $targetableId) : array
     {
-        $filters = $request->filters;
+        $filters = [
+            'year' => $request->year,
+            'month' => $request->month,
+            'type' => $request->type ? $request->type : 1
+        ];
 
-        if(
-            isset($filters['data_from']['year'])
-            && isset($filters['data_from']['month'])
-        ) {
+        $targetableType = 'App\User';
+        switch ($filters['type']) {
+            case 2:
+                $targetableType = 'App\ProfileGroup';
+                break;
+            case 3:
+                $targetableType = 'App\Position';
+                break;
+        }
+
+        if(isset($filters['year']) && isset($filters['month'])){
             $date = Carbon::createFromDate(
-                $filters['data_from']['year'],
-                $filters['data_from']['month'],
+                $filters['year'],
+                $filters['month'],
                 1
             );
         } else {
             $date = Carbon::now()->setTimezone('Asia/Almaty')->startOfMonth();
         }
-
-        $user_id = isset($filters['user_id']) ? $filters['user_id'] : 0;
 
         $this->workdays = collect($this->userWorkdays($request));
         $this->updatedValues = UpdatedUserStat::query()
@@ -852,9 +865,7 @@ class KpiStatisticService
                     $query->withTrashed()->whereDate('created_at', '<=', $last_date);
                 },
                 'items.activity'
-            ]);
-
-        $kpi = $kpi
+            ])
             ->whereDate('created_at', '<=', Carbon::parse($date->format('Y-m-d'))
                 ->endOfMonth()
                 ->format('Y-m-d')
@@ -864,6 +875,7 @@ class KpiStatisticService
                     ->format('Y-m-d')))
             )
             ->where('targetable_id', $targetableId)
+            ->where('targetable_type', $targetableType)
             ->firstOrFail();
 
         $kpi->kpi_items = [];
@@ -876,7 +888,7 @@ class KpiStatisticService
             }
         }
 
-        $kpi->users = $this->getUsersForKpi($kpi, $date, $user_id);
+        $kpi->users = $this->getUsersForKpi($kpi, $date, 0);
         $kpi_sum = 0;
         foreach ($kpi->users as $user){
             $kpi_sum = $kpi_sum + $user['avg_percent'];
@@ -886,6 +898,101 @@ class KpiStatisticService
         return [
             'kpi' => $kpi,
             'user_id' => auth()->user() ? auth()->id() : 1
+        ];
+    }
+
+    /**
+     * Возвращает процент выполнения KPI по месяцам года
+     */
+    public function fetchAnnualKPIPercent(Request $request) : array
+    {
+        $limit = $request->limit ? $request->limit : 10;
+        $year = $request->year ? $request->year : date("Y");
+
+        for ($month = 1; $month <= 12; $month++){
+
+            $date = Carbon::createMidnightDate($year, $month, 1);
+            $firstDayOfCurrentMonth = Carbon::now()->startOfMonth();
+
+            if ($date > $firstDayOfCurrentMonth){
+                continue;
+            }
+
+            $this->updatedValues = UpdatedUserStat::query()
+                ->whereMonth('date', $date->month)
+                ->whereYear('date', $date->year)
+                ->orderBy('date', 'desc')
+                ->get();
+
+            $last_date = Carbon::parse($date)->endOfMonth()->format('Y-m-d');
+            $kpis = Kpi::withTrashed()
+                ->with([
+                    'histories_latest' => function($query) use ($last_date) {
+                        $query->whereDate('created_at', '<=', $last_date);
+                    },
+                    'items.histories_latest' => function($query) use ($last_date) {
+                        $query->whereDate('created_at', '<=', $last_date);
+                    },
+                    'items' => function($query) use ($last_date) {
+                        $query->withTrashed()->whereDate('created_at', '<=', $last_date);
+                    },
+                    'items.activity'
+                ]);
+
+            $kpis = $kpis
+                ->whereDate('created_at', '<=', Carbon::parse($date->format('Y-m-d'))
+                    ->endOfMonth()
+                    ->format('Y-m-d')
+                )->where(fn ($query) => $query->whereNull('deleted_at')->orWhere(
+                    fn ($query) => $query->whereDate('deleted_at', '>', Carbon::parse($date->format('Y-m-d'))
+                        ->endOfMonth()
+                        ->format('Y-m-d')))
+                )
+                ->paginate($limit);
+            $kpis->data = $kpis->makeHidden(['targetable', 'children']);
+
+            $kpisAnnual['current_page'] = $kpis->currentPage();
+            $kpisAnnual['last_page'] = $kpis->LastPage();
+            $kpisAnnual['links'] = $kpis->linkCollection();
+            $kpisAnnual['per_page'] = $kpis->perPage();
+            $kpisAnnual['total'] = $kpis->total();
+
+            $cacheKey = $year . '-' . $month;
+            $KpiItemsCached = KpiItemsCacheStorage::get($cacheKey);
+            if ($KpiItemsCached){
+                $kpisAnnual['data'][$month] = $KpiItemsCached;
+                continue;
+            }
+
+            foreach ($kpis->items() as $kpi) {
+
+                $kpi->kpi_items = [];
+
+                $histories_latest = $kpi->histories_latest;
+                if($histories_latest) {
+                    $payload = json_decode($histories_latest->payload, true);
+
+                    if(isset($payload['children'])) {
+                        $kpi->items = $kpi->items->whereIn('id', $payload['children']);
+                    }
+                }
+
+                $kpi->users = $this->getAverageKpiPercent($kpi, $date);
+                $kpi_sum = 0;
+                foreach ($kpi->users as $user){
+                    $kpi_sum = $kpi_sum + $user['avg_percent'];
+                }
+                $kpi->avg = count($kpi->users) > 0 ? round($kpi_sum/count($kpi->users)) : 0; //AVG percent of all KPI of all USERS in GROUP
+            }
+
+            $kpisAnnual['data'][$month] = $kpis->items();
+            if ($date != $firstDayOfCurrentMonth){
+                KpiItemsCacheStorage::put($cacheKey, $kpisAnnual['data'][$month]);
+            }
+        }
+
+        return [
+            'paginator' => $kpisAnnual
         ];
     }
 
@@ -1233,8 +1340,9 @@ class KpiStatisticService
                 $item = $_item->toArray();
 
                 // Last History
-                if($_item->histories_latest) {
-                    $historyPayload = json_decode($_item->histories_latest->payload, true);
+                $histories_latest = $_item->histories_latest;
+                if($histories_latest) {
+                    $historyPayload = json_decode($histories_latest->payload, true);
 
                     if( Arr::exists($historyPayload,'activity_id') ) $item['activity_id'] = $historyPayload['activity_id'];
                     if( Arr::exists($historyPayload,'plan') ) $item['plan'] = $historyPayload['plan'];
@@ -1783,6 +1891,7 @@ class KpiStatisticService
             ->where('ud.is_trainee', 0)
             ->get();
     }
+
     /**
      * @param $year
      * @param $month

@@ -444,38 +444,6 @@ class Salary extends Model
 
         $users = User::withTrashed();
 
-        // if($user_types == 0) { // Действующие
-        //     $users->whereNull('deleted_at');
-        // } 
-
-        // if($user_types == 1) { // Уволенные
-        //     $users->onlyTrashed();
-        // }
-
-        // if($user_types == -1 || $user_types == 3) { // one person
-        //     $users->withTrashed();
-        // }
-
-        // if($user_types == 0) { // Действующие
-        //     $users_ids = \DB::table('users')
-        //         ->leftJoin('user_descriptions as ud', 'ud.user_id', '=', 'users.id')
-        //         ->where('is_trainee', 0)
-        //         ->whereIn('users.id', $users_ids)
-        //         ->get(['users.id'])
-        //         ->pluck('id')
-        //         ->toArray();
-        // }
-
-        // if($user_types == 2) {
-        //     $users_ids = \DB::table('users')
-        //         ->leftJoin('user_descriptions as ud', 'ud.user_id', '=', 'users.id')
-        //         ->where('is_trainee', 1)
-        //         ->whereIn('users.id', $users_ids)
-        //         ->get(['users.id'])
-        //         ->pluck('id')
-        //         ->toArray();
-        // }
-
         $users->whereIn('users.id', array_unique($users_ids));
 
         $users->with([
@@ -539,6 +507,8 @@ class Salary extends Model
             'full_time',
             'users.working_day_id',
             'users.working_time_id',
+            'users.work_chart_id',
+            'users.timezone'
         ]);
 
         $data['users'] = [];
@@ -622,7 +592,10 @@ class Salary extends Model
 
                 $zarplata = $s ? $s->amount : 70000;
 
-                $working_hours = $user->workingTime ? $user->workingTime->time : 9;
+                $schedule = $user->schedule();
+                $lunchTime = 1;
+                $working_hours = max($schedule['start']->addMinutes(30)->diffInHours($schedule['end']) - $lunchTime, 0);
+
 
                 $ignore = $user->working_day_id == 1 ? [6,0] : [0];   // Какие дни не учитывать в месяце
 

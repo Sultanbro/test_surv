@@ -16,8 +16,6 @@ use App\Models\Permission;
 use App\Models\Tax;
 use App\Models\Traits\HasTenants;
 use App\Models\User\Card;
-use App\Models\WorkChart\WorkChartModel;
-use App\Models\WorkChart\Workday;
 use App\OauthClientToken as Oauth;
 use App\Service\Department\UserService;
 use Carbon\Carbon;
@@ -25,7 +23,6 @@ use Illuminate\Contracts\Auth\Access\Authorizable;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
@@ -38,6 +35,9 @@ use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Spatie\Permission\Traits\HasRoles;
+use App\Models\WorkChart\WorkChartModel;
+use App\Models\WorkChart\Workday;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class User extends Authenticatable implements Authorizable
 {
@@ -108,34 +108,13 @@ class User extends Authenticatable implements Authorizable
     const CURRENCY = ['KZT', 'RUB', 'UZS', 'KGS','BYN', 'UAH'];
 
     /**
-     * Рабочие дня у пользователя.
-     *
-     * @return BelongsToMany
+     * @param Builder $query
+     * @param string $email
+     * @return Builder
      */
-    public function workdays(): BelongsToMany
+    public function scopeGetByEmail(Builder $query, string $email): Builder
     {
-        return $this->belongsToMany(Workday::class, 'user_workday')->withTimestamps();
-    }
-
-    /**
-     * Получаем график для пользователя.
-     *
-     * @return BelongsTo
-     */
-    public function workChart(): BelongsTo
-    {
-        return $this->belongsTo(WorkChartModel::class);
-    }
-
-    /**
-     * @param int $id
-     * @return Model
-     */
-    public static function getUserById(
-        int $id
-    ): Model
-    {
-        return self::query()->findOrFail($id);
+        return $query->where('email', $email);
     }
 
     /**
@@ -237,17 +216,6 @@ class User extends Authenticatable implements Authorizable
     {
         return $this->hasMany('App\Models\Attendance', 'user_id', 'id');
     }
-
-    /**
-     * Получаем активную группу.
-     *
-     * @return ProfileGroup|null
-     */
-    public function activeGroup(): ?ProfileGroup
-    {
-        return $this->groups()->where('status', '=', 'active')->first();
-    }
-
 
     /**
      * @return BelongsToMany
@@ -1172,31 +1140,35 @@ class User extends Authenticatable implements Authorizable
     }
 
     /**
-     * График работы сотрудника
-     * 
      * @return array
      */
-    public function schedule()
+    public function schedule(): array
     {
-        $tz = $this->timezone();
+        $timezone = $this->timezone();
+        $groups   = $this->activeGroup();
+        $groupChart = $groups?->workChart()->first();
+        $userChart = $this->workChart()->first();
 
-        $user_groups = $this->inGroups();
-        $work_end_max = $user_groups->max('work_end');
+        $workEndTime = $userChart->end_time
+            ?? $groupChart->end_time
+            ?? Timetracking::DEFAULT_WORK_END_TIME;
 
-        if($work_end_max == null) {
-            $work_end_max = $this->work_end ?? Timetracking::DEFAULT_WORK_END_TIME;
+        $workStartTime  = $userChart->start_time
+            ?? $groupChart->start_time
+            ?? Timetracking::DEFAULT_WORK_START_TIME;
+
+        $date = Carbon::now($timezone)->format('Y-m-d');
+
+        $start = Carbon::parse("$date $workStartTime", $timezone)->subMinutes(30.0);
+        $end   = Carbon::parse("$date $workEndTime", $timezone);
+
+        if ($start->greaterThan($end)) {
+            $end->addDay();
         }
 
-        $userWorkTime = $this->work_start ?? Timetracking::DEFAULT_WORK_START_TIME;
-
-        $dt = Carbon::now($tz)->format('d.m.Y');
-
-        $worktime_start = Carbon::parse($dt . $userWorkTime, $tz)->subMinutes(30);
-        $worktime_end   = Carbon::parse($dt . ' ' . $work_end_max, $tz);
-
         return [
-            'start' => $worktime_start,
-            'end'   => $worktime_end
+            'start' => $start,
+            'end'   => $end
         ];
     }
 
@@ -1237,5 +1209,38 @@ class User extends Authenticatable implements Authorizable
 
         }
         return '/user.png';
+    }
+
+
+    public function activeGroup(): ?ProfileGroup
+    {
+        return $this->groups()->where('status', '=', 'active')->first();
+    }
+
+
+    public function workdays(): BelongsToMany
+    {
+        return $this->belongsToMany(Workday::class, 'user_workday')->withTimestamps();
+    }
+
+    /**
+     * Получаем график для пользователя.
+     *
+     * @return BelongsTo
+     */
+    public function workChart(): BelongsTo
+    {
+        return $this->belongsTo(WorkChartModel::class);
+    }
+
+    /**
+     * @param int $id
+     * @return Model
+     */
+    public static function getUserById(
+        int $id
+    ): Model
+    {
+        return self::query()->findOrFail($id);
     }
 }

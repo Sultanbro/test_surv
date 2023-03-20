@@ -8,6 +8,7 @@ use App\Http\Requests\BonusUpdateRequest;
 use App\Models\Analytics\Activity;
 use App\Models\GroupUser;
 use App\Models\Kpi\Bonus;
+use App\Models\Scopes\ActiveScope;
 use App\Repositories\KpiBonusRepository;
 use App\Traits\KpiHelperTrait;
 use Exception;
@@ -69,7 +70,7 @@ class BonusService
     {   
         if($filters !== null) {} 
         
-        $bonuses = Bonus::with('creator', 'updater')->get();
+        $bonuses = Bonus::with('creator', 'updater')->withoutGlobalScope(ActiveScope::class)->get();
  
         return [
             'bonuses'    => $this->groupItems($bonuses),

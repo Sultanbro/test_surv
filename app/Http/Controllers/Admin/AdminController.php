@@ -2,11 +2,14 @@
 
 namespace App\Http\Controllers\Admin;
 
+use App\Http\Requests\Admin\EditAdminRequest;
 use App\Models\Admin\ManagerHasOwner;
+use App\Service\Admin\AddAdminService;
+use App\Service\Admin\UpdateAdminService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
-use App\Http\Requests\Admin\CreateAdminRequest;
+use App\Http\Requests\Admin\CreateOrUpdateAdminRequest;
 use App\Models\CentralUser;
 use App\Repositories\Admin\OwnerRepository;
 use App\User;
@@ -15,7 +18,7 @@ class AdminController extends Controller
 {   
     public function __construct()
     {
-        $this->middleware('auth');
+//        $this->middleware('auth');
     }
 
     /**
@@ -63,25 +66,19 @@ class AdminController extends Controller
     }
 
     /**
-     * Create new admin 
-     * Who can login to admin.jobtron.org
-     * 
-     * CreateAdminRequest
-     * @param Request $request
-     * @return JsonResponse 
+     * Создаем админа или менеджера.
+     *
+     * @param CreateOrUpdateAdminRequest $request
+     * @param AddAdminService $service
+     * @return JsonResponse
+     * @throws \Throwable
      */
-    public function addAdmin(CreateAdminRequest $request)
+    public function addAdmin(CreateOrUpdateAdminRequest $request, AddAdminService $service): JsonResponse
     {
-        return response()->json([
-            'user' => User::create([
-                'name' => $request->name,
-                'last_name' => $request->last_name,
-                'email' => $request->email,
-                'phone' => '000000000000',
-                'password' => \Hash::make($request->password),
-                'is_admin' => 0,
-            ])
-        ]);
+        return $this->response(
+            message: 'Success',
+            data: $service->handle($request->toDto())
+        );
     }
 
     /**
@@ -115,5 +112,18 @@ class AdminController extends Controller
             throw new Exception($exception->getMessage());
         }
     }
-    
+
+    /**
+     * @param CreateOrUpdateAdminRequest $request
+     * @param UpdateAdminService $service
+     * @param User $user
+     * @return JsonResponse
+     */
+    public function edit(CreateOrUpdateAdminRequest $request, UpdateAdminService $service, User $user): JsonResponse
+    {
+        return $this->response(
+            message: 'Success updated',
+            data: $service->handle($user, $request->toDto())
+        );
+    }
 }

@@ -49,12 +49,19 @@
 			v-if="menu"
 			:items="menu"
 		/>
+		<span
+			class="news-counter"
+			v-if="to === '/news' && unviewedNewsCount > 0"
+		>
+			{{ unviewedNewsCount }}
+		</span>
 	</div>
 </template>
 
 <script>
 import LeftSidebarMenu from './LeftSidebarMenu'
-
+import { useUnviewedNewsStore } from '@/stores/UnviewedNewsCount'
+import { mapState } from 'pinia'
 export default {
 	name: 'LeftSidebarItem',
 	components: {
@@ -72,11 +79,30 @@ export default {
 	],
 	mounted(){
 		this.$emit('calcsize', this.$el)
+	},
+	computed: {
+		...mapState(useUnviewedNewsStore, ['unviewedNewsCount']),
 	}
 }
 </script>
 
 <style lang="scss">
+	.news-counter{
+		position: absolute;
+		top: 5px;
+		right: 5px;
+		z-index: 12;
+		width: 17px;
+		height: 17px;
+		font-size: 9px;
+		font-weight: 600;
+		border-radius: 50%;
+		display: inline-flex;
+		align-items: center;
+		justify-content: center;
+		background-color: red;
+		color: #fff;
+	}
 .header__nav-link{
   &:hover{
     .header__nav-popover{

@@ -70,7 +70,7 @@ class WorkChartController extends Controller
      */
     public function update(UpdateWorkChartRequest $request, UpdateWorkChartService $service, int $id): JsonResponse
     {
-        $response = $service->handle($id, $request->toDto());
+        $response = $service->handle($request->toDto($id));
         return $this->response(
             message: 'Successfully updated',
             data: $response

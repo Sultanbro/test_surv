@@ -7,7 +7,7 @@ use App\User;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 
-class OwnerRepository extends CoreRepository 
+class OwnerRepository extends CoreRepository
 {
     /**
      * @return string
@@ -19,8 +19,8 @@ class OwnerRepository extends CoreRepository
 
     /**
      * List of owners
-     * 
-     * @return \Illuminate\Support\Collection 
+     *
+     * @return \Illuminate\Support\Collection
      */
     public function getOwners()
     {
@@ -36,15 +36,15 @@ class OwnerRepository extends CoreRepository
             $owner->balance = $owner->balance . ' KZT';
             unset($owner->tenants);
         }
-        
+
         return  $owners;
-    }   
+    }
 
      /**
      * List of owners
-     * 
-     * @param int $perPage 
-     * @return \Illuminate\Support\Collection 
+     *
+     * @param int $perPage
+     * @return \Illuminate\Support\Collection
      */
     public function getOwnersPaginate(int $perPage = 20, Request $request)
     {
@@ -67,17 +67,17 @@ class OwnerRepository extends CoreRepository
             $owner->balance = $owner->balance . ' KZT';
             unset($owner->tenants);
         }
-        
+
         return  $owners;
     }
 
     /**
      * Filter returns query
-     * 
+     *
      * @param Request $request
      */
     private function filter(Request $request)
-    {   
+    {
         $owners = $this->model()->has('tenants');
 
         if($request->has('id')) {
@@ -99,7 +99,7 @@ class OwnerRepository extends CoreRepository
         if($request->has('>login_at')) {
             $owners->whereDate('login_at', '>=',  Carbon::parse($request['>login_at']));
         }
- 
+
         if($request->has('<login_at')) {
             $owners->whereDate('login_at', '<=',  Carbon::parse($request['<login_at']));
         }
@@ -146,7 +146,7 @@ class OwnerRepository extends CoreRepository
     /**
      * List of admins
      * who can login to admin.jobtron.org
-     * 
+     *
      * @return \Illuminate\Support\Collection <\App\User>
      */
     public function getAdmins()
@@ -157,10 +157,13 @@ class OwnerRepository extends CoreRepository
             'name',
             'email',
             'is_admin',
+            'phone',
+            'role_id',
+            'img_url',
         ])->get();
-        
-        return $admins;
-    }   
 
-   
+        return $admins;
+    }
+
+
 }

@@ -18,7 +18,7 @@
 	</div>
 </template>
 
-<script lang="ts">
+<script>
 import emojis from './emojis.ts'
 import clickOutside from '../../../../directives/clickOutside.ts'
 

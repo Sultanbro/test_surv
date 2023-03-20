@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Auth\Traits;
 
 use App\Models\CentralUser;
+use App\Models\Portal\Portal;
 use App\Models\Tenant;
 use App\Service\Tenancy\CabinetService;
 use App\User;
@@ -33,7 +34,13 @@ trait CreateTenant
      * @return Tenant
      */
     protected function createTenantWithDomain(User $user)
-    {   
+    {
+        // attach to cabinet as owner
+        $centralUser = CentralUser::where('email', $user->email)->first();
+
+        if(!$centralUser) {
+            throw new \Exception();
+        }
         $domain = $this->generateRandomName();
         
         // create tenant
@@ -42,14 +49,14 @@ trait CreateTenant
         // create domain
         $tenant->createDomain($domain);
 
-        // attach to cabinet as owner
-        $centralUser = CentralUser::where('email', $user->email)->first();
+        $centralUser->tenants()->attach($tenant);
 
-        if($centralUser) {
-            $centralUser->tenants()->attach($tenant);
+        (new CabinetService)->add($tenant->id, $user, true);
 
-            (new CabinetService)->add($tenant->id, $user, true);
-        }
+        Portal::create([
+            'tenant_id' => $tenant->id,
+            'owner_id' => $user->id,
+        ]);
 
         $mail = new \App\Mail\PortalCreatedMail([
             'name' => $centralUser->name,

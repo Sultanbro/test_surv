@@ -4,6 +4,7 @@ namespace App\Models\Tenancy;
 
 use Illuminate\Database\Eloquent\Model;
 
+//TODO Portal refactor: replace by 'portal__user'
 class TenantPivot extends Model
 {
     protected $connection = 'mysql';

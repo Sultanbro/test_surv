@@ -6,6 +6,7 @@ use App\Events\TrackQuartalPremiumEvent;
 use App\Http\Requests\QuartalPremiumSaveRequest;
 use App\Http\Requests\QuartalPremiumUpdateRequest;
 use App\Models\QuartalPremium;
+use App\Models\Scopes\ActiveScope;
 use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response as ResponseAlias;
 use App\Models\Analytics\Activity;
@@ -37,7 +38,7 @@ class QuartalPremiumService
     {   
         if($filters !== null) {} 
         
-        $items = QuartalPremium::with('creator', 'updater')->get();
+        $items = QuartalPremium::with('creator', 'updater')->withoutGlobalScope(ActiveScope::class)->get();
 
         return [
             'items'      =>  $this->groupItems($items), 

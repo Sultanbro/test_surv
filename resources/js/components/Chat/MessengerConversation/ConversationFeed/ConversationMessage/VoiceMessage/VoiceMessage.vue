@@ -5,32 +5,8 @@
 			@click="togglePlay"
 		>
 			<div class="voice-message__button__icon">
-				<svg
-					v-if="!isPlaying"
-					width="24"
-					height="24"
-					viewBox="0 0 24 24"
-					fill="none"
-					xmlns="http://www.w3.org/2000/svg"
-				>
-					<path
-						d="M8 5V19L19 12L8 5Z"
-						fill="#5ebee9"
-					/>
-				</svg>
-				<svg
-					v-else
-					width="24"
-					height="24"
-					viewBox="0 0 24 24"
-					fill="none"
-					xmlns="http://www.w3.org/2000/svg"
-				>
-					<path
-						d="M6 19H8V5H6V19ZM16 19H18V5H16V19Z"
-						fill="#5ebee9"
-					/>
-				</svg>
+				<ChatIconPauseVoice v-if="isPlaying" />
+				<ChatIconPlayVoice v-else />
 			</div>
 		</div>
 		<div
@@ -62,8 +38,14 @@
 </template>
 
 <script>
+import { ChatIconPauseVoice, ChatIconPlayVoice } from '../../../../icons/chat-icons.js'
+
 export default {
 	name: 'VoiceMessage',
+	components: {
+		ChatIconPauseVoice,
+		ChatIconPlayVoice,
+	},
 	props: {
 		audioSource: {
 			type: String,
@@ -219,19 +201,20 @@ export default {
   display: inline-block;
   width: 2px;
   height: 10px;
-  background-color: #E5E5E5;
+  background-color: #C4CAE1;
   margin: 0 2px;
   border-radius: 2px;
 }
 
 .voice-message__bars__bar--active {
-  background-color: #5ebee9;
+  background-color: #3361FF;
 }
 
 .voice-message__duration {
   margin-left: 10px;
-  font-size: 12px;
-  color: #1A1A1A;
+  color: #A6B7D4;
+	font-size: 11px;
+	line-height: 14px;
 }
 
 .voice-message__duration::before {

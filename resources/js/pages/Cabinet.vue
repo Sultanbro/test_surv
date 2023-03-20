@@ -54,7 +54,7 @@
 				</div>
 			</div>
 
-			<div class="content mt-3 py-3">
+			<div class="mt-3">
 				<div class="p-3">
 					<div class="form-group">
 						Субдомен
@@ -99,6 +99,92 @@
 						/>
 					</div>
 
+					<div
+						class="row video-add-content"
+						v-if="auth_role.is_admin === 1"
+					>
+						<div class="col-md-6">
+							<div class="row">
+								<div class="col-12 col-md-8">
+									<div class="form-group">
+										Ссылка на youtube
+										<img
+											src="/images/dist/profit-info.svg"
+											class="img-info"
+											alt="info icon"
+											id="info1"
+										>
+										<b-popover
+											target="info1"
+											triggers="hover"
+											placement="right"
+										>
+											<p style="font-size: 15px">
+												Вставьте ссылку на youtube видео. Каждому новому зарегистрированному пользователю будет показываться вступительное видео, которое вы загрзуите.
+											</p>
+										</b-popover>
+										<input
+											class="form-control videoDays"
+											id="videoUrl"
+											type="text"
+											v-model="videoUrl"
+										>
+									</div>
+								</div>
+								<div class="col-12 col-md-4">
+									<div class="form-group">
+										Дней
+										<img
+											src="/images/dist/profit-info.svg"
+											class="img-info"
+											alt="info icon"
+											id="info2"
+										>
+										<b-popover
+											target="info2"
+											triggers="hover"
+											placement="right"
+										>
+											<p style="font-size: 15px">
+												Сколько дней с даты регистрации польозвателя отображать выбранное Вами видео в профиле
+											</p>
+										</b-popover>
+										<input
+											class="form-control"
+											id="videoTime"
+											type="number"
+											v-model="videoDays"
+										>
+									</div>
+								</div>
+							</div>
+						</div>
+						<div
+							class="col-12 col-md-6"
+							v-if="videoId"
+						>
+							<div class="youtube-content">
+								<iframe
+									:src="`https://www.youtube.com/embed/${videoId}`"
+									title="YouTube video player"
+									frameborder="0"
+									allowfullscreen
+								/>
+							</div>
+						</div>
+						<div
+							class="col-12 col-md-6"
+							v-else
+						>
+							<div class="no-youtube">
+								<img
+									src="https://www.rrcampus.com/images/no-video.jpg"
+									alt=""
+								>
+							</div>
+						</div>
+					</div>
+					<hr>
 					<div class="mt-3">
 						<button
 							class="btn btn-success"
@@ -434,6 +520,7 @@ import Multiselect from 'vue-multiselect'
 import 'vue-advanced-cropper/dist/style.css'
 import { bus } from '../bus'
 
+const regex = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|v=)([^#]*).*/;
 export default {
 	name: 'PageCabinet',
 	components:{
@@ -446,7 +533,8 @@ export default {
 	data() {
 		return {
 			domain: window.location.hostname.split('.')[0],
-			videoUrl: '',
+			videoUrl: null,
+			videoDays: 7,
 			// my_crop_image: "",
 			crop_image: {
 				canvas: '',
@@ -496,35 +584,43 @@ export default {
 		uploadedImage() {
 			return Object.keys(this.myCroppa).length !== 0;
 		},
-		// videoId(){
-		//   if(!this.videoUrl) return ''
-		//   return this.getYoutubeVideoId(this.videoUrl)
-		// }
+		videoId() {
+			if (!this.videoUrl) return '';
+			return this.getYoutubeVideoId(this.videoUrl)
+		},
+		videoYoutube() {
+			return this.videoId ? `https://www.youtube.com/watch?v=${this.videoId}` : null;
+		},
+		validateYouTubeLink() {
+			return regex.test(this.videoUrl);
+		},
 	},
 	watch: {
 		keywords() {
 			this.fetch();
 		},
-		auth_role(){
+		auth_role() {
 			this.init()
 		}
 	},
 	mounted() {
-		// this.drawProfile();
-		// this.hasImage = this.$root.$children[1].hasImage;
+		this.axios.get('/portal/current').then(res => {
+			this.videoUrl = res.data.data.main_page_video;
+			this.videoDays = res.data.data.main_page_video_show_days_amount;
+		})
 	},
 	created() {
-		if(this.auth_role){
+		if (this.auth_role) {
 			this.init()
 		}
 	},
 	methods: {
-		// getYoutubeVideoId(url){
-		//   const urlObj = new URL(url)
-		//   if(urlObj.pathname.indexOf('embed') > -1) return urlObj.pathname.split('/')[2]
-		//   return urlObj.searchParams.get('v')
-		// },
-		init(){
+		getYoutubeVideoId(url) {
+			const urlObj = new URL(url)
+			if (urlObj.pathname.indexOf('embed') > -1) return urlObj.pathname.split('/')[2]
+			return urlObj.searchParams.get('v')
+		},
+		init() {
 			this.fetchData();
 			this.user = this.auth_role;
 			this.format_date(this.user.birthday);
@@ -533,20 +629,19 @@ export default {
 				this.image = '/users_img/' + this.user.img_url;
 			}
 
-			if(this.user.cropped_img_url != null && this.user.cropped_img_url !== ''){
+			if (this.user.cropped_img_url != null && this.user.cropped_img_url !== '') {
 				this.crop_image.image = '/cropped_users_img/' + this.user.cropped_img_url;
-			}
-			else if(this.user.img_url != null && this.user.img_url !== ''){
+			} else if (this.user.img_url != null && this.user.img_url !== '') {
 				this.crop_image.image = '/users_img/' + this.user.img_url;
-			}else{
+			} else {
 				this.crop_image.hide = true;
 			}
 		},
-		drawProfile(){
+		drawProfile() {
 			// this.canvas_image.src = this.image;
 			//this.myCanvas.drawImage(this.canvas_image, 0, 0, 250, 250);
 		},
-		change({ coordinates, canvas }) {
+		change({coordinates, canvas}) {
 			this.crop_image.canvas = canvas;
 			//this.canvas = canvas;
 			//this.myCanvas.clearRect(0, 0, canvas.width, canvas.height);
@@ -698,14 +793,9 @@ export default {
 			this.cardValidatre.error = false;
 
 
-			console.log(this.payments,'this.payments')
-
-
 			if (this.payments.length > 0){
 
 				this.payments.forEach((el) => {
-
-					console.log(el,'emasdasd')
 
 					this.cardValidatre.type = false;
 					this.cardValidatre.type = true;
@@ -794,18 +884,33 @@ export default {
 					alert(error);
 				});
 		},
-
 		save() {
-			this.axios
-				.post('/cabinet/save', {
-					admins: this.admins,
-				})
-				.then(() => {
-					this.$toast.success('Сохранено');
-				})
-				.catch((error) => {
-					alert(error, '6565');
-				});
+			try{
+				if ((this.videoDays || this.videoUrl) && this.auth_role.is_admin === 1) {
+					if(this.videoDays && this.videoUrl){
+						const formData = new FormData();
+						formData.append('mainPageVideo', this.videoUrl);
+						formData.append('mainPageVideoShowDaysAmount', this.videoDays);
+						this.validateYouTubeLink ? this.axios.post('/portal/update', formData) : this.$toast.error('Некорректная ссылка youtube');
+					} else {
+						this.$toast.error('Заполните все поля');
+					}
+				}
+				this.axios
+					.post('/cabinet/save', {
+						admins: this.admins,
+					})
+					.then(() => {
+						this.$toast.success('Сохранено');
+					})
+					.catch((error) => {
+						alert(error, '6565');
+					});
+			} catch(err){
+				console.log(err);
+				this.$toast.err('Ошибка сохранения');
+			}
+
 		},
 
 		fetch() {
@@ -833,6 +938,38 @@ export default {
 </script>
 
 <style lang="scss">
+	.video-add-content{
+		.img-info{
+			margin-top: -5px;
+		}
+		input::-webkit-outer-spin-button,
+		input::-webkit-inner-spin-button {
+			-webkit-appearance: none;
+		}
+
+		/* Firefox */
+		input[type=number] {
+			-moz-appearance: textfield;
+		}
+
+	}
+	.no-youtube{
+		height: auto;
+		img{
+			width: 100%;
+			height: 100%;
+			object-fit: cover;
+		}
+	}
+	.youtube-content{
+		position: relative;
+		padding-bottom: 56.25%;
+		iframe{
+			position: absolute;
+			width: 100%!important;
+			height: 100%!important;
+		}
+	}
 .container-left-padding{
 	padding-top: 0;
 }
