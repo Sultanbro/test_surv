@@ -142,7 +142,7 @@ body.messenger__open {
 .messenger__card-window {
 	display: flex;
 	width: 90vw;
-	height: 90vh;
+	height: 100vh;
 
 	position: fixed;
 	z-index: 1000;

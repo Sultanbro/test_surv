@@ -190,8 +190,8 @@ export default {
 
 .messenger__last-message {
   align-items: center;
-  font-size: 11px;
-  line-height: 15px;
+  font-size: 12px;
+  line-height: 18px;
   color: #8b8b8b;
   display: -webkit-box;
   -webkit-line-clamp: 1;

@@ -301,7 +301,9 @@ export default {
 /*noinspection CssUnusedSymbol*/
 .messenger__message-card {
 	position: relative;
-	font-size: 12px;
+	font-weight: 500;
+	font-size: 14px;
+	line-height: 17px;
 	padding: 10px;
 	white-space: pre-line;
 	max-width: 360px;

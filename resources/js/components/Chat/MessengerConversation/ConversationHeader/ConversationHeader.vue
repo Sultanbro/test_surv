@@ -54,11 +54,11 @@
 							<span
 								v-if="chat.isOnline"
 								class="messenger__chat-name_online"
-							>Онлайн</span>
+							/>
 							<span
 								v-else
-								class="messenger__chat-name_online"
-							>Офлайн</span>
+								class="messenger__chat-name_offline"
+							/>
 							<div class="messenger__chat-name_position">
 								{{ chat.position }}
 							</div>
@@ -103,18 +103,7 @@
 					class="messenger__search-button"
 					@click="toggleChatSearchMode"
 				>
-					<svg
-						xmlns="http://www.w3.org/2000/svg"
-						width="30"
-						height="30"
-						viewBox="0 0 24 24"
-					>
-						<path
-							d="m1253.89 164.337-3.16-3.159a5.585 5.585 0 1 0-.55.547l3.16 3.16a.375.375 0 0 0 .27.115.4.4 0 0 0 .28-.115.39.39 0 0 0 0-.548Zm-12.11-6.794a4.765 4.765 0 1 1 4.76 4.768 4.763 4.763 0 0 1-4.76-4.768Z"
-							id="messenger__icon-search"
-							transform="translate(-1241 -147)"
-						/>
-					</svg>
+					<ChatIconSearchMessages />
 				</div>
 				<div class="messenger__chat-button-right">
 					<ChatIconMore />
@@ -129,7 +118,7 @@
 import {mapActions, mapGetters} from 'vuex';
 import ConversationPinned from '../ConversationPinned/ConversationPinned.vue';
 import AlternativeAvatar from '../../ChatsList/ContactItem/AlternativeAvatar/AlternativeAvatar.vue';
-import { ChatIconMore } from '../../icons/chat-icons'
+import { ChatIconMore, ChatIconSearchMessages } from '../../icons/chat-icons'
 
 export default {
 	name: 'ConversationHeader',
@@ -137,6 +126,7 @@ export default {
 		ConversationPinned,
 		AlternativeAvatar,
 		ChatIconMore,
+		ChatIconSearchMessages,
 	},
 	data() {
 		return {
@@ -336,10 +326,12 @@ export default {
 }
 
 .messenger__chat-name {
-	font-size: 14px;
-	line-height: 22px;
-	color: #3f4144;
 	margin-bottom: 2px;
+	color: #3f4144;
+	font-weight: 600;
+	font-size: 14px;
+	line-height: 16px;
+	letter-spacing: -0.02em;
 }
 
 // .messenger__chat-selected .messenger__chat-name {
@@ -350,15 +342,27 @@ export default {
 	overflow-x: auto;
 }
 
-.messenger__chat-name_online {
-	color: #a7a7a7;
+.messenger__chat-name_online,
+.messenger__chat-name_offline {
+	display: inline-block;
+	width: 1rem;
+	height: 1rem;
+	border-radius: 2rem;
 	margin-left: 5px;
+}
+.messenger__chat-name_online {
+	background-color: #3361FF;
+}
+.messenger__chat-name_offline {
+	background-color: #8BABD8;
 }
 
 .messenger__chat-name_position {
-	color: #a7a7a7;
 	margin-left: 5px;
-	font-size: 13px;
+	color: #a7a7a7;
+	font-weight: 400;
+	font-size: 11px;
+	line-height: 14px;
 }
 
 .messenger__chat-name_members {

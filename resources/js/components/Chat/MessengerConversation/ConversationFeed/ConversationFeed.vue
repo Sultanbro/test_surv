@@ -242,14 +242,15 @@ export default {
 		formatDate(date) {
 			// if today show only hour and minutes
 			if (moment(date).isSame(moment(), 'day')) {
-				return moment(date).format('HH:mm');
+				// return moment(date).format('HH:mm');
+				return 'Сегодня'
 			}
 			// if yesterday show only hour and minutes and yesterday
 			if (moment(date).isSame(moment().subtract(1, 'day'), 'day')) {
 				return 'Вчера';
 			}
 			// if older than yesterday show hour, minutes, day and month
-			return moment(date).format('DD.MM');
+			return moment(date).format('DD MMMM');
 		}
 	}
 }
@@ -325,6 +326,8 @@ export default {
 	box-shadow: 0px 0px 1px rgba(12, 26, 75, 0.05), 0px 10px 16px rgba(20, 37, 63, 0.05);
 	font-size: 1.1rem;
 	line-height: 1.4rem;
+	font-weight: 500;
+	letter-spacing: -0.03em;
 }
 
 // .messenger__messages-date > span {
