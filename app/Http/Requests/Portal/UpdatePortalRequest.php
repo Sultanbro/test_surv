@@ -45,6 +45,7 @@ class UpdatePortalRequest extends FormRequest
             $tenantId,
             $mainPageVideo,
             $mainPageVideoShowDaysAmount,
+            null, //TODO implement saving kpiBacklight
         );
     }
 }
