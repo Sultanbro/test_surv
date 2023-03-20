@@ -26,7 +26,7 @@ class TaxController extends Controller
      */
     public function get(GetTaxesRequest $request, GetTaxes $service): TaxGetResponse
     {
-        $response = GetTaxesResponseDTO::fromArray($service->handle($request->toDto()->userId));
+        $response = $service->handle($request->toDto()->userId);
 
         return TaxGetResponse::success($response);
     }

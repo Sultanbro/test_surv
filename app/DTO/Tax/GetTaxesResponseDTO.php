@@ -25,7 +25,8 @@ class GetTaxesResponseDTO
                 $arrItem['id'],
                 $arrItem['name'],
                 $arrItem['value'],
-                $arrItem['is_percent']
+                $arrItem['is_percent'],
+                $arrItem['isAssigned']
             );
         }
 

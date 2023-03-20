@@ -6,7 +6,7 @@ namespace App\Service\Tax;
 use App\DTO\Tax\CreateTaxDTO;
 use App\Models\Tax;
 use Exception;
-use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Model;
 
 /**
 * Класс для работы с Service.
@@ -15,12 +15,12 @@ class CreateTax
 {
     /**
      * @param CreateTaxDTO $dto
-     * @return Builder
+     * @return Model
      * @throws Exception
      */
     public function handle(
         CreateTaxDTO $dto
-    ): Builder
+    ): Model
     {
         try {
             return Tax::query()->create($dto->toArray());
