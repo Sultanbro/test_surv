@@ -11,7 +11,7 @@ use Throwable;
 /**
 * Класс для работы с Service.
 */
-class UpdateTax
+class UpdateTaxService
 {
     /**
      * @throws Exception
@@ -21,11 +21,7 @@ class UpdateTax
     ): bool
     {
         try {
-            return Tax::query()->findOrFail($dto->id)->update([
-                'name' => $dto->name,
-                'value' => $dto->value,
-                'is_percent' => $dto->isPercent
-            ]);
+            return Tax::query()->findOrFail($dto->id)->update($dto->toArray());
         }catch (Throwable $exception)
         {
             throw new Exception("При обновлений $dto->id произошла ошибка");

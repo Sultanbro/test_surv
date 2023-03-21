@@ -628,9 +628,9 @@ Route::middleware(['web','tenant','not_admin_subdomain'])->group(function () {
         'as'     => 'tax.'
     ], function () {
         Route::get('/', [Root\Tax\TaxController::class, 'get']);
-        Route::post('/add', [Root\Tax\TaxController::class, 'create']);
+        Route::post('/', [Root\Tax\TaxController::class, 'create']);
         Route::post('/set-assignee', [Root\Tax\TaxController::class, 'setAssigned']);
-        Route::put('/update', [Root\Tax\TaxController::class, 'update']);
+        Route::put('/', [Root\Tax\TaxController::class, 'update']);
     });
 
     Route::middleware(['check_tariff'])->group(function () {

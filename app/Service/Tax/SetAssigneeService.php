@@ -12,7 +12,7 @@ use Throwable;
 /**
 * Класс для работы с Service.
 */
-class SetAssignee
+class SetAssigneeService
 {
     /**
      * @param SetAssignedTaxDTO $dto

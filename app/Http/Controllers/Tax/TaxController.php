@@ -5,15 +5,15 @@ namespace App\Http\Controllers\Tax;
 use App\DTO\Tax\GetTaxesResponseDTO;
 use App\Http\Controllers\Controller;
 use App\Http\Controllers\Tax\Response\TaxGetResponse;
-use App\Http\Requests\Tax\AddTaxRequest;
+use App\Http\Requests\Tax\CreateTaxRequest;
 use App\Http\Requests\Tax\GetTaxesRequest;
 use App\Http\Requests\Tax\TaxSetAssigneeRequest;
 use App\Http\Requests\Tax\UpdateTaxRequest;
 use App\Models\Tax;
-use App\Service\Tax\CreateTax;
-use App\Service\Tax\GetTaxes;
-use App\Service\Tax\SetAssignee;
-use App\Service\Tax\UpdateTax;
+use App\Service\Tax\CreateTaxService;
+use App\Service\Tax\GetTaxesService;
+use App\Service\Tax\SetAssigneeService;
+use App\Service\Tax\UpdateTaxService;
 use Exception;
 use Illuminate\Http\JsonResponse;
 
@@ -21,10 +21,10 @@ class TaxController extends Controller
 {
     /**
      * @param GetTaxesRequest $request
-     * @param GetTaxes $service
+     * @param GetTaxesService $service
      * @return TaxGetResponse
      */
-    public function get(GetTaxesRequest $request, GetTaxes $service): TaxGetResponse
+    public function get(GetTaxesRequest $request, GetTaxesService $service): TaxGetResponse
     {
         $response = $service->handle($request->toDto()->userId);
 
@@ -32,12 +32,12 @@ class TaxController extends Controller
     }
 
     /**
-     * @param AddTaxRequest $request
-     * @param CreateTax $service
+     * @param CreateTaxRequest $request
+     * @param CreateTaxService $service
      * @return JsonResponse
      * @throws Exception
      */
-    public function create(AddTaxRequest $request, CreateTax $service): JsonResponse
+    public function create(CreateTaxRequest $request, CreateTaxService $service): JsonResponse
     {
         return $this->response(
             message: 'Success',
@@ -47,11 +47,11 @@ class TaxController extends Controller
 
     /**
      * @param UpdateTaxRequest $request
-     * @param UpdateTax $service
+     * @param UpdateTaxService $service
      * @return JsonResponse
      * @throws Exception
      */
-    public function update(UpdateTaxRequest $request, UpdateTax $service): JsonResponse
+    public function update(UpdateTaxRequest $request, UpdateTaxService $service): JsonResponse
     {
         return $this->response(
             message: 'Success',
@@ -61,11 +61,11 @@ class TaxController extends Controller
 
     /**
      * @param TaxSetAssigneeRequest $request
-     * @param SetAssignee $service
+     * @param SetAssigneeService $service
      * @return JsonResponse
      * @throws Exception
      */
-    public function setAssigned(TaxSetAssigneeRequest $request, SetAssignee $service): JsonResponse
+    public function setAssigned(TaxSetAssigneeRequest $request, SetAssigneeService $service): JsonResponse
     {
         return $this->response(
             message: 'Success',

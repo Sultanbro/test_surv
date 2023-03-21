@@ -4,18 +4,18 @@ declare(strict_types=1);
 namespace App\Service\Tax;
 
 use App\DTO\Tax\GetTaxesResponseDTO;
-use App\ReadModels\TaxReadModel;
+use App\Repositories\TaxRepository;
 
 /**
 * Класс для работы с Service.
 */
-class GetTaxes
+class GetTaxesService
 {
     public function handle(
         int $userId
     ): GetTaxesResponseDTO
     {
-        $taxes = TaxReadModel::getUserTaxes($userId);
+        $taxes = (new TaxRepository)->getUserTaxes($userId);
         return GetTaxesResponseDTO::fromArray($taxes);
     }
 }

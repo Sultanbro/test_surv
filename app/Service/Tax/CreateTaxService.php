@@ -11,7 +11,7 @@ use Illuminate\Database\Eloquent\Model;
 /**
 * Класс для работы с Service.
 */
-class CreateTax
+class CreateTaxService
 {
     /**
      * @param CreateTaxDTO $dto
@@ -25,7 +25,7 @@ class CreateTax
         try {
             return Tax::query()->create($dto->toArray());
         } catch (\Throwable $exception) {
-            throw new Exception('При созданий налога произошла ошибка');
+            throw new Exception($exception->getMessage());
         }
     }
 }
