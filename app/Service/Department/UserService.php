@@ -64,6 +64,7 @@ class UserService
         $last_date = Carbon::parse($date)->endOfMonth()->format('Y-m-d');
         $nextMonthFirstDay = Carbon::parse($date)->addMonth()->startOfMonth()->format('Y-m-d');
 
+        $i = 0;
         foreach ($groups as $group)
         {
             $groupUser = GroupUser::withTrashed()
@@ -73,7 +74,7 @@ class UserService
                     fn ($query) => $query->whereDate('to', '>=', $nextMonthFirstDay))
                 );
 
-            $data = $this->getGroupEmployees($groupUser->get());
+            $data = $this->getGroupEmployees($groupUser->get(), $last_date);
         }
 
         return $data;
@@ -258,16 +259,25 @@ class UserService
 
     /**
      * @param $groupUsers
+     * @param string|null $last_date - Если указана дата, то выводим список, отсекая уволенных после этой даты
      * @return array
      */
-    private function getGroupEmployees($groupUsers): array
+    private function getGroupEmployees($groupUsers, string $last_date = null): array
     {
         $userData = [];
         foreach ($groupUsers as $groupUser)
         {
             $user = User::withTrashed()->with('groups')->where('id', $groupUser->user_id)
-                ->withWhereHas('user_description', fn($description) => $description->where('is_trainee', 0))
-                ->first();
+                ->withWhereHas('user_description', fn($description) => $description->where('is_trainee', 0));
+
+            if ($last_date) {
+                $user = $user->where(function(Builder $query) use($last_date){
+                    $query->where('deleted_at', '>', $last_date)
+                        ->orWhereNull('deleted_at');
+                });
+            }
+
+            $user = $user->first();
 
             if ($user == null) {
                 continue;
