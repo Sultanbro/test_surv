@@ -594,20 +594,13 @@ class Salary extends Model
 
                 $schedule = $user->schedule();
                 $lunchTime = 1;
-                $working_hours = max($schedule['start']->addMinutes(30)->diffInHours($schedule['end']) - $lunchTime, 0);
-
-                $groupWorkChart = $user->activeGroup()?->workChart()->first()->schedule() ?? [
-                    'start_time' => Carbon::createFromTimeString(Timetracking::DEFAULT_WORK_START_TIME),
-                    'end_time'   => Carbon::createFromTimeString(Timetracking::DEFAULT_WORK_END_TIME)
-                ];
-
-                $groupWorkingHours = max($groupWorkChart['start_time']->diffInHours($groupWorkChart['end_time']) - $lunchTime, 0);
+                $working_hours = max($schedule['start']->addMinutes(30)->diffInHours($schedule['end']) - $user->full_time ? $lunchTime : 0, 0);
 
                 $ignore = $user->working_day_id == 1 ? [6,0] : [0];   // Какие дни не учитывать в месяце
 
                 $workdays = workdays($date->year, $date->month, $ignore);
             
-                $hourly_pay = $zarplata / $workdays / $groupWorkingHours;
+                $hourly_pay = $zarplata / $workdays / $working_hours;
 
                 $hourly_pays[$i] = round($hourly_pay, 2);
 
