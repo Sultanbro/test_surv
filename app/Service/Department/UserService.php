@@ -64,7 +64,6 @@ class UserService
         $last_date = Carbon::parse($date)->endOfMonth()->format('Y-m-d');
         $nextMonthFirstDay = Carbon::parse($date)->addMonth()->startOfMonth()->format('Y-m-d');
 
-        $i = 0;
         foreach ($groups as $group)
         {
             $groupUser = GroupUser::withTrashed()
