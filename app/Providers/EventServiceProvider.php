@@ -9,6 +9,7 @@ use App\Events\TrackCourseItemFinishedEvent;
 use App\Events\TrackGroupChangingEvent;
 use App\Events\TrackUserFiredEvent;
 use App\Events\TransferUserInGroupEvent;
+use App\Events\WorkdayEvent;
 use App\Listeners\UserStatUpdatedListener;
 use App\Listeners\EmailNotificationListener;
 use App\Listeners\TimeTrack\CreateTimeTrackHistoryListener;
@@ -16,6 +17,7 @@ use App\Listeners\TrackCourseItemFinishedListener;
 use App\Listeners\TrackGroupChangingListener;
 use App\Listeners\TrackUserFiredListener;
 use App\Listeners\TransferUserInGroupListener;
+use App\Listeners\WorkdayListener;
 use Illuminate\Support\Facades\Event;
 use Illuminate\Foundation\Support\Providers\EventServiceProvider as ServiceProvider;
 
@@ -63,16 +65,14 @@ class EventServiceProvider extends ServiceProvider
         EmailNotificationEvent::class => [
             EmailNotificationListener::class
         ],
-<<<<<<< HEAD
         WorkdayEvent::class => [
             WorkdayListener::class
         ],
         \App\Events\KpiChangedEvent::class => [
             \App\Listeners\KpiChangedListener::class
-=======
+        ],
         UserStatUpdatedEvent::class => [
             UserStatUpdatedListener::class
->>>>>>> 46ad7211afae7e28492fd04fe3383dad190f2ed3
         ],
     ];
 
