@@ -593,7 +593,8 @@ class Salary extends Model
                 $zarplata = $s ? $s->amount : 70000;
 
                 $schedule = $user->schedule();
-                $lunchTime = 1;
+                $lunchTime = $user->full_time ? 1 : 0;
+
                 $working_hours = max($schedule['start']->addMinutes(30)->diffInHours($schedule['end']) - $lunchTime, 0);
 
                 $groupWorkChart = $user->activeGroup()?->workChart()->first()->schedule() ?? [
