@@ -33,13 +33,33 @@ Route::middleware(['web','tenant'])->group(function () {
     Route::get('/tariffs/get', [Root\Tariffs\TariffController::class, 'get']);
 });
 
+// Portal Api
 Route::middleware(['web','tenant','not_admin_subdomain'])->group(function () {
+
+    Route::resource('work-chart', Root\WorkChart\WorkChartController::class)->except(['create', 'edit']);
+    Route::group([
+        'prefix' => 'work-chart',
+        'as'    => 'work-chart.'
+    ], function () {
+        Route::post('/user/add', [Root\WorkChart\UserWorkChartController::class, 'addChart']);
+        Route::post('/user/delete', [Root\WorkChart\UserWorkChartController::class, 'deleteChart']);
+
+        Route::post('/group/add', [Root\WorkChart\GroupWorkChartController::class, 'addChart']);
+        Route::post('/group/delete', [Root\WorkChart\GroupWorkChartController::class, 'deleteChart']);
+    });
 
     Route::get('/login/{subdomain}', [User\ProjectController::class, 'login']);
     Route::post('/projects/create', [User\ProjectController::class, 'create']);
     Route::get('/newprofile', [User\ProfileController::class, 'newprofile']);
     Route::get('/impersonate/{token}', function ($token) {
         return \Stancl\Tenancy\Features\UserImpersonation::makeResponse($token);
+    });
+
+    Route::middleware('auth')->get('/me', [User\UserController::class, 'me']);
+
+    Route::group(['prefix' => 'portal', 'as' => 'portal.'], function () {
+        Route::get('/current', [Root\Portal\PortalController::class, 'getCurrentPortal']);
+        Route::post('/update', [Root\Portal\PortalController::class, 'update']);
     });
 
     Route::group(['prefix' => 'profile', 'as' => 'profile.'], function () {
@@ -70,7 +90,7 @@ Route::middleware(['web','tenant','not_admin_subdomain'])->group(function () {
     Route::post('/corp_book/set-read/', [User\EmployeeController::class, 'corp_book_read']); // Прочитать страницу из корп книги @TODO при назначении книги
     Route::any('/timetracking/user/{id}', [User\EmployeeController::class, 'profile']);
     Route::any('/timetracking/get-persons', [User\EmployeeController::class, 'getpersons']);
-    Route::resource('timetracking/work-chart',Settings\WorkChart\WorkChartController::class);
+//    Route::resource('timetracking/work-chart',Settings\WorkChart\WorkChartController::class);
     Route::get('/timetracking/create-person', [User\EmployeeController::class, 'createPerson'])->name('users.create');
     Route::post('/timetracking/person/store', [Settings\UserController::class, 'store'])->name('users.store');
     Route::get('/timetracking/edit-person', [User\EmployeeController::class, 'editperson'])->name('users.edit');
@@ -483,6 +503,7 @@ Route::middleware(['web','tenant','not_admin_subdomain'])->group(function () {
         Route::post('save',[Kpi\BonusController::class,'save'])->name('save');
         Route::put('update',[Kpi\BonusController::class,'update'])->name('update');
         Route::delete('delete/{id}',[Kpi\BonusController::class,'delete'])->name('delete');
+        Route::post('/set/status', [Kpi\KpiBonusStatusController::class, 'setActive']);
     });
 
     // Редактирование квартальной премии
@@ -491,6 +512,7 @@ Route::middleware(['web','tenant','not_admin_subdomain'])->group(function () {
         Route::post('save',[Kpi\QuartalPremiumController::class,'save'])->name('quartal-premium.save');
         Route::put('update',[Kpi\QuartalPremiumController::class,'update'])->name('quartal-premium.update');
         Route::delete('delete/{id}',[Kpi\QuartalPremiumController::class,'destroy']);
+        Route::post('/set/status', [Kpi\QuartalPremiumStatusController::class, 'setActive']);
     });
 
     // Статистика для KPI
@@ -520,6 +542,7 @@ Route::middleware(['web','tenant','not_admin_subdomain'])->group(function () {
 
     Route::group(['prefix' => 'kpi', 'as' => 'kpi.', 'middleware' => 'auth'], function (){
         Route::get('/', [Kpi\KpiController::class, 'index'])->name('index');
+        Route::post('/set/status', [Kpi\KpiStatusController::class, 'setActive']);
     });
 
     // Intellect Recruiting
@@ -544,6 +567,7 @@ Route::middleware(['web','tenant','not_admin_subdomain'])->group(function () {
         Route::get('/', [Article\NewsController::class, 'index'])->name('index');
         Route::post('/', [Article\ArticleController::class, 'store'])->name('store');
         Route::get('/get', [Article\ArticleController::class, 'index'])->name('get');
+        Route::get('/count-unviewed', [Article\ArticleController::class, 'countUnviewed'])->name('countUnviewed');
         Route::get('{article_id}', [Article\ArticleController::class, 'show'])->name('show');
         Route::put('{article_id}', [Article\ArticleController::class, 'update'])->name('update');
         Route::delete('{article_id}', [Article\ArticleController::class, 'delete'])->name('delete');
@@ -567,8 +591,6 @@ Route::middleware(['web','tenant','not_admin_subdomain'])->group(function () {
             });
         });
     });
-
-    Route::middleware('auth')->get('/me', [Article\NewsController::class, 'user']);
 
     Route::prefix('dictionaries')->name('dictionaries.')->middleware(['auth'])->group(function () {
         Route::get('/', [Article\Dictionary\DictionaryController::class, 'index'])->name('index');
@@ -666,17 +688,7 @@ Route::middleware(['api','tenant','not_admin_subdomain'])->group(function () {
     });
 });
 
-Route::resource('work-chart', Root\WorkChart\WorkChartController::class)->except(['create', 'edit']);
-Route::group([
-    'prefix' => 'work-chart',
-    'as'    => 'work-chart.'
-], function () {
-    Route::post('/user/add', [Root\WorkChart\UserWorkChartController::class, 'addChart']);
-    Route::post('/user/delete', [Root\WorkChart\UserWorkChartController::class, 'deleteChart']);
 
-    Route::post('/group/add', [Root\WorkChart\GroupWorkChartController::class, 'addChart']);
-    Route::post('/group/delete', [Root\WorkChart\GroupWorkChartController::class, 'deleteChart']);
-});
 
 /**
  * Owners list
@@ -702,9 +714,8 @@ Route::middleware(['web','tenant','admin_subdomain'])->group(function () {
         Route::post('/add', [Admin\AdminController::class, 'addAdmin']);
         Route::delete('/delete/{user}', [Admin\AdminController::class, 'deleteAdmin']);
         Route::post('/edit/{user}', [Admin\AdminController::class, 'edit']);
+        Route::get('permissions/get', [Admin\AdminPermissionController::class, 'getPermissions']);
     });
-
-    Route::get('permissions/get', [Admin\AdminPermissionController::class, 'getPermissions']);
     Route::get('roles/get', [Admin\AdminPermissionController::class, 'getRoles']);
 });
 

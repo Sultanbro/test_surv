@@ -5,7 +5,7 @@
 	>
 		<template #emoji-invoker="{ events: { click: clickEvent } }">
 			<div
-				class="messenger__attachment-item"
+				class="messenger__message-icon messenger__message-icon_hover"
 				@click.stop="clickEvent"
 			>
 				<svg

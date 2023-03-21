@@ -18,7 +18,7 @@
 					<KPI v-if="active == 0" />
 				</b-tab>
 				<b-tab
-					title="Бонусы"
+					title="Бонусы, %"
 					:key="1"
 					card
 				>
@@ -36,7 +36,7 @@
 					:key="3"
 					card
 				>
-					<Stats v-if="active == 3" />
+					<StatsV2 v-if="active == 3" />
 				</b-tab>
 				<b-tab
 					v-if="tenant === 'bp'"
@@ -47,11 +47,12 @@
 					<Indicators v-if="active == 4 && tenant === 'bp'" />
 				</b-tab>
 				<b-tab
-					title="Статистика2"
+					v-if="false"
+					title="Статистика1"
 					:key="5"
 					card
 				>
-					<StatsV2 v-if="active == 5" />
+					<Stats v-if="active == 5" />
 				</b-tab>
 			</b-tabs>
 		</div>
@@ -68,7 +69,7 @@
 					:key="0"
 					card
 				>
-					<Stats v-if="active == 0" />
+					<StatsV2 v-if="active == 0" />
 				</b-tab>
 				<b-tab
 					v-if="tenant === 'bp'"
@@ -87,7 +88,8 @@
 import KPI from '@/pages/kpi/Kpi'
 import Bonuses from '@/pages/kpi/Bonuses.vue'
 import QuartalPremium from '@/pages/kpi/QuartalPremium'
-import Stats from '@/pages/kpi/Stats'
+const Stats = import(/* webpackChunkName: "KPIStatsV1" */ '@/pages/kpi/Stats')
+// import Stats from '@/pages/kpi/Stats'
 import StatsV2 from '@/pages/kpi/StatsV2'
 import Indicators from '@/pages/kpi/Indicators'
 

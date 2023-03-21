@@ -14,6 +14,9 @@ import 'flatpickr/dist/flatpickr.css'
 import userInfo from '@/plugins/userInfo'
 import 'cropperjs/dist/cropper.css'
 
+import Toast from 'vue-toastification'
+import 'vue-toastification/dist/index.css'
+
 loadFonts()
 
 flatpickr.localize(Russian)
@@ -24,6 +27,7 @@ app.use(vuetify)
 app.use(createPinia())
 app.use(userInfo)
 app.use(router)
+app.use(Toast/* , options */)
 
 app.mount('#app')
 

@@ -687,6 +687,7 @@ class KpiStatisticService
                     ->endOfMonth()
                     ->format('Y-m-d')))
             )
+            ->where('is_active', true)
             ->get();
 
         foreach ($kpis as $kpi) {

@@ -8,7 +8,8 @@
 			:class="{
 				'profile__button_error': status === 'error',
 				'profile__button_started': workdayStatus === 'started',
-				'profile__button_loading': status === 'loading'
+				'profile__button_loading': status === 'loading',
+				'profile__button_dayoff': workdayStatus === 'workdone'
 			}"
 		>
 			<svg
@@ -63,6 +64,10 @@
 					v-if="workdayStatus === 'started'"
 					class="profile__button-text"
 				>Завершить рабочий день</p>
+				<p
+					v-if="workdayStatus === 'workdone'"
+					class="profile__button-text"
+				>---</p>
 			</template>
 		</a>
 	</div>
@@ -120,6 +125,26 @@ export default {
   .profile__button-text::before {
     display: none;
   }
+}
+
+.profile__button_dayoff{
+	background-color: #555;
+	cursor: default;
+	justify-content: center;
+	p{
+		margin: 0 !important;
+		padding: 0 !important;
+	}
+	svg{
+		display: none!important;
+	}
+	&:hover{
+		background-color: #555 !important;
+		cursor: default !important;
+	}
+	.profile__button-text::before {
+		display: none;
+	}
 }
 
 .profile__button-text{

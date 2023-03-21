@@ -208,8 +208,6 @@ final class UserUpdateService
         $user->program_id   = $userDTO->programType;
         $user->working_day_id   = $userDTO->workingDays;
         $user->working_time_id  = $userDTO->workTimes;
-        $user->work_start   = $userDTO->workStartTime;
-        $user->work_end     = $userDTO->workEndTime;
         $user->weekdays     = $userDTO->weekdays;
 
         $this->setCountryAndCity($user, $userDTO->workingCountry);

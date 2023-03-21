@@ -3,9 +3,11 @@
 namespace App\Http\Controllers\Kpi;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Bonuses\SaveBonusesRequest;
 use App\Http\Requests\BonusSaveRequest;
 use App\Http\Requests\BonusUpdateRequest;
 use App\Models\Kpi\Bonus;
+use App\Service\Bonus\SaveBonusService;
 use App\Service\BonusService;
 use Exception;
 use Illuminate\Http\JsonResponse;
@@ -46,25 +48,20 @@ class BonusController extends Controller
 
     /**
      * Сохранение
+     *
+     * @param SaveBonusesRequest $request
+     * @param SaveBonusService $service
+     * @return JsonResponse
+     * @throws Exception
      */
-    public function save(Request $request): JsonResponse
+    public function save(SaveBonusesRequest $request, SaveBonusService $service): JsonResponse
     {
-        $data = $request->only([
-            'title',
-            'sum',
-            'group_id',
-            'activity_id',
-            'unit',
-            'quantity',
-            'daypart',
-            'text',
-            'targetable_id',
-            'targetable_type'
-        ]);
+        $response = $service->handle($request->toDto()->bonuses);
 
-        $response = $this->bonusService->save($data);
-
-        return response()->json($response);
+        return $this->response(
+            message: 'success',
+            data: $response
+        );
     }
 
     /**

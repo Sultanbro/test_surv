@@ -4,6 +4,7 @@ namespace App\Repositories;
 
 use App\Timetracking as Model;
 use Carbon\Carbon;
+use Illuminate\Database\Eloquent\Builder;
 
 /**
 * Класс для работы с Repository.
@@ -70,5 +71,24 @@ class TimeTrackingRepository extends CoreRepository
         }
 
         return $description;
+    }
+
+    /**
+     * @param ?int $userId
+     * @param string $date
+     * @return Builder
+     */
+    public function getNonUpdatedTimeTrackWithUserByDate(
+        ?int $userId,
+        string $date,
+    ): Builder
+    {
+        return $this->model()->with('user')
+            ->select('id', 'enter', 'exit', 'total_hours', 'user_id')
+            ->when($userId, fn($query) => $query->where('user_id', $userId))
+            ->where('updated', 0)
+            ->where('total_hours', 0)
+            ->whereDate('enter',  $date)
+            ->whereNotNull('exit');
     }
 }

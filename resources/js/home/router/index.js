@@ -3,6 +3,10 @@ import VueRouter from 'vue-router'
 import HomeView from '../views/HomeView'
 import ContactsView from '../views/ContactsView'
 import PaymentsView from '../views/PaymentsView'
+import ContractOffer from '../views/ContractOffer'
+import SiteUseAgreement from '../views/SiteUseAgreement'
+import PersonalData from '../views/PersonalData'
+import PrivacyPolicy from '../views/PrivacyPolicy'
 
 const router = new VueRouter({
 	mode: 'history',
@@ -19,6 +23,38 @@ const router = new VueRouter({
 			path: '/contacts',
 			name: 'ContactsView',
 			component: ContactsView,
+			meta: {
+				title: 'Jobtron',
+			},
+		},
+		{
+			path: '/contract-offer',
+			name: 'ContractOffer',
+			component: ContractOffer,
+			meta: {
+				title: 'Jobtron',
+			},
+		},
+		{
+			path: '/site-use-agreement',
+			name: 'SiteUseAgreement',
+			component: SiteUseAgreement,
+			meta: {
+				title: 'Jobtron',
+			},
+		},
+		{
+			path: '/personal-data',
+			name: 'PersonalData',
+			component: PersonalData,
+			meta: {
+				title: 'Jobtron',
+			},
+		},
+		{
+			path: '/privacy-policy',
+			name: 'PrivacyPolicy',
+			component: PrivacyPolicy,
 			meta: {
 				title: 'Jobtron',
 			},

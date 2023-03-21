@@ -10,39 +10,46 @@
 			v-click-outside="toggle"
 		>
 			<div class="messenger__chat-container">
-				<ChatsList :fullscreen="true" />
+				<ChatNav
+					v-show="!isChatSearchMode"
+					:fullscreen="true"
+				/>
 				<MessengerConversation />
-				<InfoPanel />
 			</div>
 		</div>
+		<InfoPanel />
 		<ImageGallery
-			:images="galleryImages"
 			id="messenger_gallery"
+			:images="galleryImages"
 			:index="galleryIndex"
 			@onopen="openGallery"
 			@close="hideGallery"
 		/>
 		<ConfirmDialog />
+		<!-- <ChatIconsDemo /> -->
 	</div>
 </template>
 
 <script>
 import {mapActions, mapGetters} from 'vuex';
-import ChatsList from './ChatsList/ChatsList.vue';
+import ChatNav from './ChatNav/ChatNav.vue';
 import MessengerConversation from './MessengerConversation/MessengerConversation.vue';
 import InfoPanel from './InfoPanel/InfoPanel';
 import clickOutside from './directives/clickOutside.ts';
 import ImageGallery from './ImageGallery/ImageGallery.vue';
 import ConfirmDialog from './ConfirmDialog/ConfirmDialog.vue';
+// import ChatIconsDemo from './icons/ChatIconsDemo.vue'
+
 // noinspection JSUnusedGlobalSymbols
 export default {
 	name: 'ChatApp',
 	components: {
-		ChatsList,
+		ChatNav,
 		MessengerConversation,
 		InfoPanel,
 		ImageGallery,
-		ConfirmDialog
+		ConfirmDialog,
+		// ChatIconsDemo,
 	},
 	directives: {
 		clickOutside
@@ -64,13 +71,25 @@ export default {
 		};
 	},
 	computed: {
-		...mapGetters(['isInitialized', 'user', 'isOpen', 'galleryImages', 'galleryIndex']),
+		...mapGetters([
+			'isInitialized',
+			'user',
+			'isOpen',
+			'galleryImages',
+			'galleryIndex',
+			'isChatSearchMode',
+		]),
 	},
 	created() {
 		this.boot();
 	},
 	methods: {
-		...mapActions(['boot', 'escapeChat', 'toggleMessenger', 'hideGallery']),
+		...mapActions([
+			'boot',
+			'escapeChat',
+			'toggleMessenger',
+			'hideGallery'
+		]),
 		toggle() {
 
 			if (this.galleryOpened) {
@@ -90,7 +109,7 @@ export default {
 }
 </script>
 
-<style>
+<style lang="scss">
 
 /*noinspection CssUnusedSymbol*/
 body.messenger__open {
@@ -106,7 +125,7 @@ body.messenger__open {
 	height: 100%;
 
 	position: fixed;
-	z-index: 10000;
+	z-index: 20000;
 	top: 0;
 	left: 0;
 	right: 0;
@@ -128,7 +147,11 @@ body.messenger__open {
 	position: fixed;
 	z-index: 1000;
 	right: 0;
-	bottom: 0;
+	bottom: 50%;
+
+	transform: translateY(50%);
+
+	border-radius: 1.2rem 0 0 1.2rem;
 
 	flex-direction: column;
 	background: #ffffff;
@@ -139,16 +162,45 @@ body.messenger__open {
 	-webkit-tap-highlight-color: transparent;
 }
 
+.messenger__chat-container {
+	display: flex;
+	flex: 1;
+	flex-flow: row nowrap;
+	overflow-y: hidden;
+}
+
+.ChatIcon{
+	// &-line{
+	// 	stroke: #8DA0C1;
+	// }
+	&:hover{
+		.ChatIcon-line{
+			stroke: #3361FF;
+		}
+		.ChatIcon-shape{
+			fill: #3361FF;
+		}
+	}
+	&-parent{
+		&:hover{
+			.ChatIcon-line{
+				stroke: #3361FF;
+			}
+			.ChatIcon-shape{
+				fill: #3361FF;
+			}
+		}
+	}
+}
+
 @media only screen and (max-width: 670px) {
 	.messenger__card-window {
 		width: 100vw;
 	}
 }
 
-.messenger__chat-container {
-	display: flex;
-	flex: 1;
-	overflow-y: hidden;
+// чтобы кнопка битрикса чат не загораживала
+.b24-widget-button-position-bottom-right.b24-widget-button-position-bottom-right{
+	right: 7rem;
 }
-
 </style>

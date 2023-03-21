@@ -2,11 +2,17 @@ import axios from 'axios'
 
 function onError(error: AxiosError): ErrorList {
   if (axios.isAxiosError(error)) {
-    console.log('error message: ', error.message)
+    console.log('error message: ', error.message, error.response?.data)
 
-    return error.response ? error.response.data : {
+    const errorData = error.response ? error.response.data : {
       errors: {
         system: ['An unexpected error occurred']
+      }
+    }
+
+    return errorData.errors ? errorData : {
+      errors: {
+        message: errorData.message || 'Неизвестная ошибка'
       }
     }
   }

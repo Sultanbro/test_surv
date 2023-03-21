@@ -34,15 +34,32 @@
 		</div>
 
 		<!-- table -->
-		<StatsTableV2
-			v-if="s_type_main == 1"
-			:activities="activities"
-			:groups="groups"
-			:items="page_items"
-			:editable="true"
-			:search-text="searchText"
-			:date="date"
-		/>
+		<template v-if="s_type_main == 1">
+			<b-tabs>
+				<b-tab title="Месяц">
+					<StatsTableV2
+						:activities="activities"
+						:groups="groups"
+						:items="page_items"
+						:editable="true"
+						:search-text="searchText"
+						:date="date"
+						:filters="filters"
+						class="mt-4"
+					/>
+					<b-pagination
+						v-model="currentPage"
+						:total-rows="totalRows"
+						:per-page="perPage"
+						size="sm"
+						class="mt-4"
+					/>
+				</b-tab>
+				<b-tab title="Годовая">
+					<StatsTableYear class="mt-4" />
+				</b-tab>
+			</b-tabs>
+		</template>
 
 		<StatsTableBonus
 			v-if="s_type_main == 2"
@@ -59,15 +76,6 @@
 			:key="quartal_users"
 			:search-text="searchText"
 		/>
-
-		<b-pagination
-			v-if="s_type_main == 1"
-			v-model="currentPage"
-			:total-rows="totalRows"
-			:per-page="perPage"
-			size="sm"
-			class="mt-4"
-		/>
 	</div>
 </template>
 
@@ -76,6 +84,7 @@ import SuperFilter from '@/pages/kpi/SuperFilter' // filter like bitrix
 import StatsTableV2 from '@/pages/kpi/StatsTableV2'
 import StatsTableBonus from '@/pages/kpi/StatsTableBonus'
 import StatsTableQuartal from '@/pages/kpi/StatsTableQuartal'
+import StatsTableYear from '@/pages/kpi/StatsTableYear'
 
 // import {formatDate} from './kpis.js';
 
@@ -86,6 +95,7 @@ export default {
 		StatsTableV2,
 		StatsTableBonus,
 		StatsTableQuartal,
+		StatsTableYear,
 	},
 	props: {},
 	data() {
@@ -152,23 +162,17 @@ export default {
 			this.page_items = page_items;
 		},
 
-		fetchData(filtersObject, page = 1, limit = 10) {
+		fetchData(filters, page = 1, limit = 10) {
 			let loader = this.$loading.show();
-			this.s_type_main = filtersObject.data_from ? filtersObject.data_from.s_type : 1;
-			this.month = filtersObject.data_from ? filtersObject.data_from.month : new Date().getMonth();
-			this.filters = filtersObject
-
-			const filters = {
-				group_id: filtersObject.group_id,
-				month: filtersObject.data_from?.month,
-				year: filtersObject.data_from?.year,
-				s_type: filtersObject.data_from?.s_type,
-			}
+			this.s_type_main = filters.data_from ? filters.data_from.s_type : 1;
+			this.month = filters.data_from ? filters.data_from.month : new Date().getMonth();
+			this.filters = filters
 
 			if(this.s_type_main == 1){
-				this.axios.get('/statistics/kpi/groups-and-users', {
+				this.axios.post('/statistics/kpi/groups-and-users', {
+					filters
+				}, {
 					params: {
-						...filters,
 						page,
 						limit
 					}
@@ -182,9 +186,9 @@ export default {
 					// paginate
 					this.page_items = this.items.slice(0, this.pageSize);
 
-					this.date = filtersObject.data_from != undefined
-						? new Date(filtersObject.data_from.year, filtersObject.data_from.month, 1).toISOString().substr(0, 10)
-						: new Date().toISOString().substr(0, 10);
+					this.date = filters.data_from != undefined
+						? new Date(filters.data_from.year, filters.data_from.month, 1).toISOString().substring(0, 10)
+						: new Date().toISOString().substring(0, 10);
 
 					loader.hide()
 				}).catch(error => {

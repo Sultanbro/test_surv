@@ -3,6 +3,8 @@
 namespace App\Models\Kpi;
 
 use App\Models\Admin\ObtainedBonus;
+use App\Models\Scopes\ActiveScope;
+use App\Traits\ActivateAbleModelTrait;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
@@ -21,7 +23,7 @@ use DB;
 
 class Bonus extends Model
 {      
-    use SoftDeletes, HasFactory, Targetable, WithCreatorAndUpdater, WithActivityFields, Expandable;
+    use SoftDeletes, HasFactory, Targetable, WithCreatorAndUpdater, WithActivityFields, Expandable, ActivateAbleModelTrait;
     
     protected $table = 'kpi_bonuses';
 
@@ -49,6 +51,7 @@ class Bonus extends Model
         'text',
         'created_by',
         'updated_by',
+        'is_active'
     ];
     
     /**
@@ -57,6 +60,7 @@ class Bonus extends Model
     CONST FOR_ONE = 'one';
     CONST FOR_ALL = 'all';
     CONST FOR_FIRST = 'first';
+    CONST PERCENT = 'percent';
 
     /**
      * Dayparts
@@ -64,6 +68,17 @@ class Bonus extends Model
     CONST FULL_DAY = 0;
     CONST PERIOD = 1;
     CONST MONTH = 2;
+
+    /**
+     * Получает все активные кв-премий без доп запросов.
+     *
+     * @return void
+     */
+    protected static function boot(): void
+    {
+        parent::boot();
+        static::addGlobalScope(new ActiveScope);
+    }
 
     public function obtainedBonuses(): HasMany
     {
@@ -235,6 +250,45 @@ class Bonus extends Model
 
                     ObtainedBonus::createOrUpdate($data, $bonus->daypart);
                 }
+            }
+
+            // проценты от продаж
+            if($bonus->unit == self::PERCENT) {
+
+                // nullify awards if they are not actual
+                ObtainedBonus::where('bonus_id', $bonus->id)
+                    ->where('date', $date)
+                    ->delete();
+
+                foreach ($users as $user_id) {
+
+                    dump('*              '.$user_id);
+
+                    // Если группа Рекрутинг
+                    // @TODO должна быть только у BPartners
+                    if($group_id == 48) {
+                        $val = self::fetch_value_from_activity_for_recruting($bonus, $user_id, $date);
+                    } else {
+                        $val = self::fetch_value_from_activity_new($bonus, $user_id, $date);
+                    }
+
+                    dump('HH  '. $val . ' --- ' . $bonus->quantity);
+
+                    // план выполнен
+                    if((int)$val > 0) {
+
+                        $data = [
+                            'user_id'  => $user_id,
+                            'date'     => $date,
+                            'bonus_id' => $bonus->id,
+                            'amount'   => ($val * $bonus->sum) / 100,
+                            'comment'  => $bonus->title . ' : ' . (int)$val . ';'
+                        ];
+
+                        ObtainedBonus::createOrUpdate($data, $bonus->daypart);
+                    }
+                }
+
             }
 
         }

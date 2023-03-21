@@ -2,6 +2,7 @@
 
 namespace App\Models\WorkChart;
 
+use App\DTO\WorkChart\StoreWorkChartDTO;
 use App\User;
 use Carbon\Carbon;
 use Exception;
@@ -14,8 +15,11 @@ class WorkChartModel extends Model
 
     protected $table = 'work_charts';
 
+    //TODO: refactor: replace 'text_name' with 'name'
+    // refactor name to chartWorkdays and chartDayoffs fields
     protected $fillable = [
         'name',
+        'text_name',
         'start_time',
         'end_time'
     ];
@@ -62,17 +66,9 @@ class WorkChartModel extends Model
      * @param string $endTime
      * @return Model
      */
-    public static function createModel(
-        string $name,
-        string $startTime,
-        string $endTime
-    ): Model
+    public static function createModel(StoreWorkChartDTO $dto): Model
     {
-        return WorkChartModel::query()->create([
-            'name' => $name,
-            'start_time' => $startTime,
-            'end_time' => $endTime
-        ]);
+        return WorkChartModel::query()->create($dto->toArray());
     }
 
     /**

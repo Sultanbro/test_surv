@@ -29,6 +29,10 @@ Route::post('/setting/reset', [OtherSettingController::class, 'reset']);
 Route::get('/', [\App\Http\Controllers\PageController::class, 'home']);
 Route::get('/contacts', [\App\Http\Controllers\PageController::class, 'home'])->name('contacts');
 Route::get('/payments', [\App\Http\Controllers\PageController::class, 'home'])->name('payments');
+Route::get('/contract-offer', [\App\Http\Controllers\PageController::class, 'home'])->name('contract-offer');
+Route::get('/site-use-agreement', [\App\Http\Controllers\PageController::class, 'home'])->name('site-use-agreement');
+Route::get('/personal-data', [\App\Http\Controllers\PageController::class, 'home'])->name('personal-data');
+Route::get('/privacy-policy', [\App\Http\Controllers\PageController::class, 'home'])->name('privacy-policy');
 
 // Company documents
 Route::get('/aggreement', [\App\Http\Controllers\PrivacyController::class, 'aggreement']);

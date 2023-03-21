@@ -2,6 +2,7 @@
 import { ref } from 'vue'
 import { useUserRolesStore } from '@/stores/user-roles'
 import { VueCropper }  from 'vue-cropperjs'
+import Cropper from 'cropperjs'
 import FilePicker from '@core/components/FilePicker.vue'
 
 type Props = {
@@ -64,57 +65,65 @@ function onSubmit(){
     password_confirmation: password.value,
     role_id: role_id.value,
     phone: phone.value,
-    image: srcImage.value && srcImage.value[0] ? srcImage.value[0] : null,
+    image: newImage.value ? newImage.value : null,
   })
 }
 
-// function getBase64(file: File) {
-//   return new Promise((resolve, reject) => {
-//     const reader = new FileReader()
-//     reader.readAsDataURL(file)
-//     reader.onload = function () {
-//       resolve(reader.result)
-//     }
-//     reader.onerror = function (error) {
-//       reject(error)
-//     }
-//   })
-// }
-
-const cropper = ref<InstanceType<typeof VueCropper> | null>(null)
-const srcImage = ref<FileList | null>(null)
+let cropper = null
+const cropperImage = ref<InstanceType<typeof VueCropper> | null>(null)
+const srcImage = ref<string | ArrayBuffer | null>(null)
 const newImage = ref<Blob | null>(null)
-const baseImage = ref('')
-// watch(srcImage, value => {
-//   if(!value) return
-// })
+
 watchEffect(() => {
-  if(!srcImage.value || !srcImage.value[0]) return
-  if (cropper.value && cropper.value.replace) {
-    cropper.value.replace(srcImage.value[0])
+  if(!srcImage.value) return
+  if (cropperImage.value) {
+    cropper = new Cropper(cropperImage.value, {
+      aspectRatio: 1,
+      minCropBoxWidth: 200,
+      minCropBoxHeight: 200,
+      viewMode: 1,
+      dragMode: 'move',
+      background: false,
+      cropBoxMovable: false,
+      cropBoxResizable: false,
+    })
   }
   else {
-    // not mounted yet, or the element was unmounted (e.g. by v-if)
+    cropper && cropper.destroy()
   }
 })
-// watchEffect(() => {
-//   if(!srcImage.value || !srcImage.value[0]) return
-//   getBase64(srcImage.value[0]).then(img => {
-//     baseImage.value = img
-//   })
-// })
+watch(srcImage, () => {
+  if(!cropper) return
+  cropper.replace(srcImage.value)
+}, {
+  flush: 'post'
+})
 function resetCropper(){
   srcImage.value = null
 }
 function cropImage(){
-  cropper.value.getCroppedCanvas().toBlob(blob => {
+  if(!cropper) return
+  const canvas = cropper.getCroppedCanvas()
+  image.value = canvas.toDataURL('image/jpeg', 0.8)
+  canvas.toBlob(blob => {
     newImage.value = blob
+    resetCropper()
   }, 'image/jpeg', 0.8)
+}
+function onSelectImage(files: FileList){
+  const image = files ? files[0] : null
+  if (!image) return
+  if (image.type.indexOf('image/') === -1) return alert('Выберете изображение')
+  const reader = new FileReader()
+  reader.onload = event => {
+    srcImage.value = event.target?.result || null
+  }
+  reader.readAsDataURL(image)
 }
 </script>
 
 <template>
-  <VCard>
+  <VCard class="UserPermissionsEdit">
     <VCardTitle>
       <span class="text-h5">Добавить доступ</span>
     </VCardTitle>
@@ -125,8 +134,7 @@ function cropImage(){
         @submit.prevent="onSubmit"
       >
         <FilePicker
-          v-if="true"
-          v-model="srcImage"
+          @change="onSelectImage"
           class="text-center mb-4 d-block"
           :error-messages="errors.image || []"
         >
@@ -170,6 +178,7 @@ function cropImage(){
         <VTextField
           label="Пароль"
           v-model="password"
+          type="password"
           class="mb-4"
           :error-messages="errors.password || []"
         />
@@ -190,22 +199,20 @@ function cropImage(){
       </VForm>
 
       <VDialog
-        :model-value="false && !!srcImage && !!srcImage[0]"
+        :model-value="!!srcImage"
         max-width="500"
         persistent
+        class="UserPermissionsEdit-cropper"
       >
         <VCard class="pt-6 pb-3">
           <VCardText class="pb-3">
-            <VueCropper
-              ref="cropper"
-              class="image-container"
-              :aspect-ratio="1 / 1"
-              :guides="true"
-              :background="false"
-              :view-mode="3"
-              drag-mode="move"
-              alt="Image not available"
-            />
+            <div>
+              <img
+                ref="cropperImage"
+                :src="srcImage"
+                alt=""
+              >
+            </div>
           </VCardText>
           <VCardActions class="py-0 mx-10">
             <VBtn
@@ -227,3 +234,33 @@ function cropImage(){
     </VCardText>
   </VCard>
 </template>
+
+<style lang="scss">
+.UserPermissionsEdit {
+  &-cropper{
+    .cropper-crop-box {
+      &::before,
+      &::after{
+        content: '';
+        position: absolute;
+        pointer-events: none;
+        border: 1px dashed #eee;
+        position: absolute;
+        z-index: 1;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        opacity: 0.75;
+      }
+      &::before{
+        border-radius: 50rem;
+      }
+      &::after{
+        border-radius: 2rem;
+      }
+    }
+  }
+}
+
+</style>

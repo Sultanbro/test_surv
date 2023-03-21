@@ -86,7 +86,7 @@
 									:key="index"
 								>
 									<td class="text-center">
-										{{ (new Date(item.date)).addHours(6).toLocaleString('ru-RU') }}
+										{{ $moment.utc(new Date(item.date)).local().format('DD.MM.YYYY HH:mm') }}
 									</td>
 									<td class="text-center">
 										{{ item.sum }}

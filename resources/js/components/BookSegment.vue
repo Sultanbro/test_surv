@@ -8,7 +8,10 @@
 						class="fa fa-save ml-1 pointer"
 						@click="saveSegment"
 					/> -->
-					<b-btn variant="success">
+					<b-btn
+						variant="success"
+						@click="saveSegment"
+					>
 						Сохранить сегмент
 					</b-btn>
 					<i

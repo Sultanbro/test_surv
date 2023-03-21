@@ -13,17 +13,15 @@ use Exception;
 class UpdateWorkChartService
 {
     /**
-     * @param int $id
      * @param UpdateWorkChartDTO $dto
      * @return bool
      * @throws Exception
      */
     public function handle(
-        int $id,
         UpdateWorkChartDTO $dto
     ): bool
     {
-        $updated = WorkChartModel::query()->findOrFail($id)->update($dto->toArray());
+        $updated = WorkChartModel::query()->findOrFail($dto->id)->update($dto->toArray());
 
         if (!$updated)
         {

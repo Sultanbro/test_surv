@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers\Analytics;
 
+use App\Events\UserStatUpdatedEvent;
+use App\Http\Requests\Analytics\Statistics\UpdateUserStatRequest;
 use App\Service\AnalyticService;
 use App\Service\Department\UserService;
 use DB;
@@ -470,43 +472,44 @@ class AnalyticsController extends Controller
     /**
      * Edit User Stat value
      */
-    public function updateUserStat(Request $request)
+    public function updateUserStat(UpdateUserStatRequest $request)
     {
-
-        $group = ProfileGroup::find($request->group_id);
-        $date = Carbon::createFromDate($request->year, $request->month, $request->day)->format('Y-m-d');
+        $dto = $request->toDto();
+        $group = ProfileGroup::find($dto->groupId);
+        $date = Carbon::createFromDate($dto->year, $dto->month, $dto->day)->format('Y-m-d');
 
         $us = UserStat::where('date', $date)
-            ->where('user_id', $request->employee_id)
-            ->where('activity_id', $request->id)
+            ->where('user_id', $dto->employeeId)
+            ->where('activity_id', $dto->activityId)
             ->first();
 
         if($us) {
-            $us->value = $request->value;
+            $us->value = $dto->value;
             $us->save();
         } else {
             UserStat::create([
                 'date' => $date,
-                'user_id' => $request->employee_id,
-                'activity_id' => $request->id,
-                'value' => $request->value,
+                'user_id' => $dto->employeeId,
+                'activity_id' => $dto->activityId,
+                'value' => $dto->value,
             ]);
         }
-        
-        if($group->time_address == $request->id && !in_array($request->employee_id, $group->time_exceptions)) {
-            Timetracking::updateTimes($request->employee_id, $date, $request->value * 60);
+        UserStatUpdatedEvent::dispatch($dto);
+
+        if($group->time_address == $dto->activityId && !in_array($dto->employeeId, $group->time_exceptions)) {
+            Timetracking::updateTimes($dto->employeeId, $date, $dto->value * 60);
         }
 
         if(tenant('id') != 'bp') {
             return null;
         }
         
-        if($request->group_id == 31 && $request->id == 20) { // DM and 20 колво действий
-            DM::updateTimesNew($request->employee_id, $date);
+        if($dto->groupId == 31 && $dto->activityId == 20) { // DM and 20 колво действий
+            DM::updateTimesNew($dto->employeeId, $date);
         }
 
-        if($request->group_id == 31 && $request->id == 21) {
-            DM::updateTimesByWorkHours($request->employee_id, $date, $request->day, (float)$request->value);
+        if($dto->groupId == 31 && $request->id == 21) {
+            DM::updateTimesByWorkHours($dto->employeeId, $date, $dto->day, (float)$dto->value);
         }
     }
     

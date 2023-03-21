@@ -15,7 +15,7 @@ class TwoByTwoChart implements Chart
     /**
      * @param Builder $builder
      * @return bool
-     * @throws \Exception
+     * @throws Exception
      */
     public function chartProcess(Builder $builder): bool
     {

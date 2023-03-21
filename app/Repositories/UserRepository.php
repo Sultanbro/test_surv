@@ -33,7 +33,7 @@ final class UserRepository extends CoreRepository
 
     public function getUserByEmail(
         string $email
-    )
+    ): ?Model
     {
         return $this->model()->where('email', strtolower($email))->first();
     }
@@ -179,8 +179,6 @@ final class UserRepository extends CoreRepository
                 'working_time_id'   => $dto->workTimes,
                 'phone'             => Phone::normalize($dto->phone),
                 'full_time'         => $dto->fullTime,
-                'work_start'        => $dto->workStartTime,
-                'work_end'          => $dto->workEndTime,
                 'currency'          => $dto->currency ?? 'kzt',
                 'weekdays'          => $dto->weekdays,
                 'working_country'   => $dto->workingCountry,
@@ -305,5 +303,20 @@ final class UserRepository extends CoreRepository
         }
 
         return true;
+    }
+
+    /**
+     * @param string|null $date
+     * @param $isTrainee bool
+     * @return \Illuminate\Database\Eloquent\Builder
+     */
+    public function getUsersWithDescription(
+        ?string $date,
+        bool $isTrainee = false
+    ): \Illuminate\Database\Eloquent\Builder
+    {
+        return $this->model()
+            ->withWhereHas('user_description', fn($query) => $query->where('is_trainee', $isTrainee))
+            ->where(fn($query) => $query->whereNull('deleted_at')->orWhere(fn ($query) => $query->whereDate('deleted_at', '>=', $date)));
     }
 }

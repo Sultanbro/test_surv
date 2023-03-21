@@ -21,8 +21,9 @@
 					<b-tr>
 						<b-th>№</b-th>
 						<b-th>Название</b-th>
-						<b-th>Рабочий график</b-th>
-						<b-th>Выходные</b-th>
+						<b-th>График</b-th>
+						<b-th>Рабочие часы</b-th>
+						<b-th>Дата создания</b-th>
 						<b-th class="w-100px" />
 					</b-tr>
 				</b-thead>
@@ -32,25 +33,10 @@
 						:key="index"
 					>
 						<b-td>{{ index + 1 }}</b-td>
+						<b-td>{{ shift.text_name }}</b-td>
 						<b-td>{{ shift.name }}</b-td>
-						<b-td>с {{ shift.time_beg }} по {{ shift.time_end }}</b-td>
-						<b-td>
-							<div
-								class="weekdays"
-								v-if="shift.day_off.length"
-							>
-								<div
-									class="weekday"
-									v-for="(day, idx) in shift.day_off"
-									:key="idx"
-								>
-									{{ day }}
-								</div>
-							</div>
-							<div v-else>
-								Без выходных
-							</div>
-						</b-td>
+						<b-td>с {{ shift.start_time }} по {{ shift.end_time }}</b-td>
+						<b-td>{{ $moment(shift.created_at).format('YYYY-MM-DD') }}</b-td>
 						<b-td class="td-actions">
 							<div class="d-flex mx-2">
 								<b-button
@@ -86,12 +72,19 @@
 			width="600px"
 		>
 			<b-form @submit.prevent="onSubmit">
-				<b-form-group
-					label="Название графика"
-					label-cols="4"
-				>
-					<b-form-input v-model="form.name" />
-				</b-form-group>
+				<div class="form-group row">
+					<label
+						for="chartName"
+						class="col-sm-4 col-form-label"
+					>Название</label>
+					<div class="col-sm-8 form-inline">
+						<input
+							id="chartName"
+							v-model="form.name"
+							class="form-control"
+						>
+					</div>
+				</div>
 				<div
 					id="workShedule"
 					class="form-group work-schedule row"
@@ -99,7 +92,7 @@
 					<label
 						for="workStartTime"
 						class="col-sm-4 col-form-label"
-					>Рабочий график</label>
+					>Рабочие часы</label>
 					<div class="col-sm-8 form-inline">
 						<input
 							name="work_start_time"
@@ -121,96 +114,46 @@
 						>
 					</div>
 				</div>
-				<div
-					id="weekdays"
-					class="form-group row"
+				<b-form-group
+					label="График"
+					label-cols="4"
 				>
-					<label
-						for="weekdays-input"
-						class="col-sm-4 col-form-label"
-					>Рабочие дни
-						<img
-							src="/images/dist/profit-info.svg"
-							class="img-info"
-							alt="info icon"
-							id="info1"
+					<!-- <b-form-select v-model="form.name">
+						<b-form-select-option
+							disabled
+							value="null"
 						>
-					</label>
-					<b-popover
-						target="info1"
-						triggers="hover"
-						placement="bottom"
-					>
-						<p style="font-size: 15px">
-							По умолчанию все дни - рабочие. Выбранные будут считаться выходными.
-						</p>
-					</b-popover>
-					<div class="col-sm-8 form-inline weekdays-container">
-						<input
-							name="weekdays"
-							type="hidden"
-							v-model="form.weekdaysString"
-							id="weekdays-input"
+							Выберите график работы
+						</b-form-select-option>
+						<b-form-select-option
+							v-for="chart in workChartsList"
+							:key="chart"
+							:value="chart"
 						>
-
-						<div
-							class="weekday"
-							:class="{'active': weekdays[0].active === 1}"
-							data-id="1"
-							@click="toggleWeekDay(0, 'Пн')"
+							График {{ chart }}
+						</b-form-select-option>
+					</b-form-select> -->
+					<b-row>
+						<b-col cols="5">
+							<b-form-select
+								v-model="form.workdays"
+								:options="workdays"
+							/>
+						</b-col>
+						<b-col
+							cols="2"
+							class="col-form-label"
 						>
-							Пн
-						</div>
-						<div
-							class="weekday"
-							:class="{'active': weekdays[1].active === 1}"
-							data-id="2"
-							@click="toggleWeekDay(1, 'Вт')"
-						>
-							Вт
-						</div>
-						<div
-							class="weekday"
-							:class="{'active': weekdays[2].active === 1}"
-							data-id="3"
-							@click="toggleWeekDay(2, 'Ср')"
-						>
-							Ср
-						</div>
-						<div
-							class="weekday"
-							:class="{'active': weekdays[3].active === 1}"
-							data-id="4"
-							@click="toggleWeekDay(3, 'Чт')"
-						>
-							Чт
-						</div>
-						<div
-							class="weekday"
-							:class="{'active': weekdays[4].active === 1}"
-							data-id="5"
-							@click="toggleWeekDay(4, 'Пт')"
-						>
-							Пт
-						</div>
-						<div
-							class="weekday"
-							:class="{'active': weekdays[5].active === 1}"
-							data-id="6"
-							@click="toggleWeekDay(5, 'Сб')"
-						>
-							Сб
-						</div>
-						<div
-							class="weekday"
-							:class="{'active': weekdays[6].active === 1}"
-							data-id="0"
-							@click="toggleWeekDay(6, 'Вс')"
-						>
-							Вс
-						</div>
-					</div>
-				</div>
+							на
+						</b-col>
+						<b-col cols="5">
+							<b-form-select
+								v-model="form.dayoffs"
+								:options="dayoffs"
+							/>
+						</b-col>
+					</b-row>
+				</b-form-group>
 				<hr class="my-4">
 				<b-button
 					type="submit"
@@ -255,25 +198,37 @@ export default {
 		return {
 			modal: false,
 			shiftsData: [],
+			workType: 1,
 			sidebarName: 'Создание новой смены',
 			showSidebar: false,
 			editShiftId: null,
 			form: {
-				name: '',
+				name: null,
+				workdays: null,
+				dayoffs: null,
 				workStartTime: null,
 				workEndTime: null,
-				weekdaysString: null
 			},
-			weekdays: [
-				{day: 'Пн', active: 0},
-				{day: 'Вт', active: 0},
-				{day: 'Ср', active: 0},
-				{day: 'Чт', active: 0},
-				{day: 'Пт', active: 0},
-				{day: 'Сб', active: 0},
-				{day: 'Вс', active: 0}
-			]
+			workChartsList: ['1-1', '2-2', '3-3', '5-2', '6-1']
 		}
+	},
+	computed: {
+		workdays(){
+			return this.workChartsList.reduce((options, chart) => {
+				const splitted = chart.split('-')
+				if(!this.form.dayoffs || this.form.dayoffs === splitted[1])
+					options.push(splitted[0])
+				return options
+			}, [''])
+		},
+		dayoffs(){
+			return this.workChartsList.reduce((options, chart) => {
+				const splitted = chart.split('-')
+				if(!this.form.workdays || this.form.workdays === splitted[0])
+					options.push(splitted[1])
+				return options
+			}, [''])
+		},
 	},
 	mounted() {
 		this.fetchData();
@@ -282,7 +237,7 @@ export default {
 		async fetchData() {
 			this.shiftsData = [];
 			let loader = this.$loading.show();
-			const response = await this.axios.get('/timetracking/work-chart');
+			const response = await this.axios.get('/work-chart');
 			if (response.data) {
 				this.shiftsData = response.data.data;
 				loader.hide();
@@ -297,69 +252,84 @@ export default {
 			this.modal = true;
 		},
 		editShift(shift) {
-			this.showSidebar = true;
+			const splitted = shift.name.split('-')
 			this.editShiftId = shift.id;
-			this.form.name = shift.name;
-			this.form.workStartTime = shift.time_beg;
-			this.form.workEndTime = shift.time_end;
-			shift.day_off.forEach(day => {
-				const index = this.weekdays.findIndex(d => d.day === day);
-				this.weekdays[index].active = 1;
-			});
+			this.form.name = shift.text_name;
+			this.form.workdays = splitted[0]
+			this.form.dayoffs = splitted[1]
+			this.form.workStartTime = shift.start_time;
+			this.form.workEndTime = shift.end_time;
 			this.sidebarName = `Редактирование ${shift.name}`;
+			this.showSidebar = true;
 		},
 		async deleteShift() {
 			let loader = this.$loading.show();
-			const response = await this.axios.delete('/timetracking/work-chart/' + this.editShiftId);
-			console.log(response.data);
+			await this.axios.delete('/work-chart/' + this.editShiftId);
 			this.modal = false;
 			loader.hide();
 			this.resetForm();
 			this.fetchData();
 			this.$toast.success('Смена удалена');
 		},
-		toggleWeekDay(idx, day) {
-			this.$set(this.weekdays, idx, {day: day, active: this.weekdays[idx].active === 1 ? 0 : 1});
-		},
 		resetForm() {
 			this.editShiftId = null;
-			this.form.name = '';
+			this.form.name = null;
 			this.form.workStartTime = null;
+			this.form.workdays = null;
+			this.form.dayoffs = null;
 			this.form.workEndTime = null;
-			this.weekdays = [
-				{day: 'Пн', active: 0},
-				{day: 'Вт', active: 0},
-				{day: 'Ср', active: 0},
-				{day: 'Чт', active: 0},
-				{day: 'Пт', active: 0},
-				{day: 'Сб', active: 0},
-				{day: 'Вс', active: 0}
-			]
 		},
 		async onSubmit() {
+			if(!this.form.name){
+				this.$toast.error('Заполните название графика');
+				return;
+			}
+			if(!this.form.workStartTime){
+				this.$toast.error('Заполните рабочее время');
+				return;
+			}
+			if(!this.form.workEndTime){
+				this.$toast.error('Заполните рабочее время');
+				return;
+			}
+			if(!this.form.workdays || !this.form.dayoffs){
+				this.$toast.error('Выберите график');
+				return
+			}
+			if(!~this.workChartsList.indexOf(`${this.form.workdays}-${this.form.dayoffs}`)){
+				this.$toast.error('Выберите корректный график');
+				return
+			}
+			// Оставил на будущее когда можно будет произвольно выьирать кол-во дней
+			// if(parseInt(this.form.workdays) + parseInt(this.form.dayoffs) > 7){
+			// 	this.$toast.error('Сумма рабочих и выходных дней не должна быть больше 7');
+			// 	return
+			// }
 			let loader = this.$loading.show();
 			const formData = new FormData();
 			formData.append('name', this.form.name);
-			formData.append('time_beg', this.form.workStartTime);
-			formData.append('time_end', this.form.workEndTime);
-			const activeWeekdays = this.weekdays.filter(d => d.active === 1);
-			activeWeekdays.forEach((day, idx) => {
-				formData.append(`day_off[${idx}]`, day.day);
-			});
-			if (this.editShiftId) {
-				formData.append('_method', 'put');
-				const response = await this.axios.post('/timetracking/work-chart/' + this.editShiftId, formData);
-				if (response.data) {
-					this.fetchData();
-					this.$toast.success('Смена обновлена');
-				}
-			} else {
-				const response = await this.axios.post('/timetracking/work-chart', formData);
-				if (response.data) {
-					this.shiftsData.push(response.data.data);
-					this.$toast.success('Смена добавлена');
-				}
+			formData.append('start_time', this.form.workStartTime);
+			formData.append('end_time', this.form.workEndTime);
+			formData.append('chart_workdays', this.form.workdays);
+			formData.append('chart_dayoffs', this.form.dayoffs);
+
+			if(this.editShiftId) formData.append('_method', 'put')
+			const {data} = await this.axios.post(`/work-chart/${this.editShiftId || ''}`, formData)
+			if(!data) {
+				this.$toast.error(`Не удалось ${this.editShiftId ? 'обновить' : 'добавить'} смену`)
+				loader.hide()
+				return
 			}
+
+			if(this.editShiftId){
+				this.fetchData();
+				this.$toast.success('Смена обновлена');
+			}
+			else{
+				this.shiftsData.push(data.data);
+				this.$toast.success('Смена добавлена');
+			}
+
 			loader.hide();
 			this.closeSidebar();
 		},
@@ -373,6 +343,10 @@ export default {
 
 
 <style lang="scss" scoped>
+	.label-style{
+		color: #8DA0C1;
+		margin-top: 5px;
+	}
 	.table-shifts {
 		tbody {
 			td, th {

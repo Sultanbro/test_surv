@@ -1,5 +1,9 @@
 <template>
 	<div class="messenger__meta">
+		<ConversationMessageReactions
+			class="messenger__meta-reactions"
+			:reactions="reactions"
+		/>
 		<div
 			v-if="countReaders > 1 && own"
 			class="messenger__meta-views"
@@ -12,9 +16,21 @@
 		<div
 			v-if="own"
 			class="messenger__meta-ckeck"
+		>
+			<ChatIconStatusReaded v-if="countReaders" />
+			<ChatIconStatusSended v-else />
+		</div>
+		<div
+			v-if="false"
+			class="messenger__meta-ckeck"
 			:class="{'messenger__meta-ckeck_checked': countReaders}"
 		/>
 		<div class="messenger__meta-inner">
+			<ConversationMessageReactions
+				class="messenger__meta-actual"
+				:reactions="reactions"
+				@reaction-click="$emit('reaction-click', $event)"
+			/>
 			<div
 				v-if="countReaders > 1 && own"
 				class="messenger__meta-views messenger__meta-actual"
@@ -28,6 +44,13 @@
 			<div
 				v-if="own"
 				class="messenger__meta-ckeck messenger__meta-actual"
+			>
+				<ChatIconStatusReaded v-if="countReaders" />
+				<ChatIconStatusSended v-else />
+			</div>
+			<div
+				v-if="false"
+				class="messenger__meta-ckeck messenger__meta-actual"
 				:class="{'messenger__meta-ckeck_checked': countReaders}"
 			/>
 		</div>
@@ -35,10 +58,16 @@
 </template>
 
 <script>
+import ConversationMessageReactions from './ConversationMessageReactions.vue'
+import { ChatIconStatusSended, ChatIconStatusReaded } from '../../../icons/chat-icons.js'
 
 export default {
 	name: 'ConversationMessageMeta',
-	components: {},
+	components: {
+		ConversationMessageReactions,
+		ChatIconStatusSended,
+		ChatIconStatusReaded,
+	},
 	props: {
 		readers: {
 			type: Array,
@@ -51,6 +80,10 @@ export default {
 		own: {
 			type: Boolean,
 			default: false,
+		},
+		reactions: {
+			type: Array,
+			default: () => [],
 		},
 	},
 	computed: {
@@ -74,17 +107,19 @@ export default {
 	white-space: nowrap;
 	user-select: none;
 	font-size: 1rem;
+	&-reactions,
 	&-views,
 	&-date,
 	&-ckeck{
-		display: inline-block;
+		display: inline-flex;
 		visibility: hidden;
 	}
 	&-ckeck{
 		font-size: 1.5rem;
-		&::before{
-			content: '✓';
-		}
+		align-items: center;
+		// &::before{
+		// 	content: '✓';
+		// }
 	}
 	&-views{
 		&::before{
