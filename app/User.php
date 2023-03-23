@@ -1145,16 +1145,12 @@ class User extends Authenticatable implements Authorizable
     public function schedule(): array
     {
         $timezone = $this->timezone();
-        $groups   = $this->activeGroup();
-        $groupChart = $groups?->workChart()->first();
-        $userChart = $this->workChart()->first();
+        $userChart = $this->getWorkChart();
 
         $workEndTime = $userChart->end_time
-            ?? $groupChart->end_time
             ?? Timetracking::DEFAULT_WORK_END_TIME;
 
         $workStartTime  = $userChart->start_time
-            ?? $groupChart->start_time
             ?? Timetracking::DEFAULT_WORK_START_TIME;
 
         $date = Carbon::now($timezone)->format('Y-m-d');
@@ -1231,6 +1227,19 @@ class User extends Authenticatable implements Authorizable
     public function workChart(): BelongsTo
     {
         return $this->belongsTo(WorkChartModel::class);
+    }
+
+    public function getWorkChart(): ?WorkChartModel {
+        $userChart = $this->workChart()->first();
+
+        if ($userChart) {
+            return $userChart;
+        }
+
+        $groups   = $this->activeGroup();
+        $groupChart = $groups?->workChart()->first();
+
+        return $groupChart;
     }
 
     /**
