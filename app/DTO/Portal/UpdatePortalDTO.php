@@ -8,13 +8,14 @@ final class UpdatePortalDTO
     /**
      * @param string $tenantId
      * @param ?string $mainPageVideo
-     * @param ?string $mainPageVideoShowDaysAmount
+     * @param ?int $mainPageVideoShowDaysAmount
+     * @param ?array $kpiBacklight
      */
     public function __construct(
         public string $tenantId, //TODO Portal refactor
         public ?string $mainPageVideo,
         public ?int $mainPageVideoShowDaysAmount,
-        public ?KpiBacklightDTO $kpiBacklight,
+        public ?array $kpiBacklight,
     )
     {}
 

@@ -3,6 +3,7 @@
 namespace App\Http\Requests\Portal;
 
 use App\DTO\Portal\UpdatePortalDTO;
+use App\Rules\HexColor;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Support\Arr;
 
@@ -28,6 +29,9 @@ class UpdatePortalRequest extends FormRequest
         return [
             'mainPageVideo' => 'url',
             'mainPageVideoShowDaysAmount' => 'integer',
+            'kpiBackLight' => 'array|nullable',
+            'kpiBackLight.*.start'       => 'required_with:kpiBackLight|integer',
+            'kpiBackLight.*.color'       => ['required_with:kpiBackLight', new HexColor()]
         ];
     }
 
@@ -40,12 +44,13 @@ class UpdatePortalRequest extends FormRequest
 
         $mainPageVideo = Arr::get($validated, 'mainPageVideo');
         $mainPageVideoShowDaysAmount = (int) Arr::get($validated, 'mainPageVideoShowDaysAmount');
+        $kpiBackLight = Arr::get($validated, 'kpiBackLight');
 
         return new UpdatePortalDTO(
             $tenantId,
             $mainPageVideo,
             $mainPageVideoShowDaysAmount,
-            null, //TODO implement saving kpiBacklight
+            $kpiBackLight
         );
     }
 }
