@@ -1032,33 +1032,32 @@ class User extends Authenticatable implements Authorizable
 
     /**
      * Время начала смены для юзера
-     *
-     * @return array
+     * @deprecated выпилить с рефактором граффиков
+     * @return string
      */
     public function work_starts_at()
+    { //TODO Refactor workCharts
+        return $this->workTime()['workStartTime'] .':00';
+    }
+
+    /**
+     * Время смены для юзера
+     * @return array
+     */
+    public function workTime()
     {
-        $workStart = '00:00:00';
+        $userChart = $this->getWorkChart();
 
-        if (!is_null($this->work_start)) {
+        $workStartTime  = $userChart->start_time
+            ?? Timetracking::DEFAULT_WORK_START_TIME;
 
-            $workStart = $this->work_start;
+        $workEndTime = $userChart->end_time
+            ?? Timetracking::DEFAULT_WORK_END_TIME;
 
-        } else {
-
-            $userGroups = ProfileGroup::get();
-            foreach ($userGroups as $group) {
-
-                $usersInGroup = explode(',', trim($group->users, '[]'));
-                foreach ($usersInGroup as $userIDInGroup) {
-                    if ($this->id == $userIDInGroup) {
-                        $workStart = $group->work_start;
-                        break;
-                    }
-                }
-            }
-        }
-
-        return $workStart;
+        return [
+            'workStartTime' => $workStartTime,
+            'workEndTime' => $workEndTime,
+        ];
     }
 
     /**
@@ -1145,13 +1144,10 @@ class User extends Authenticatable implements Authorizable
     public function schedule(): array
     {
         $timezone = $this->timezone();
-        $userChart = $this->getWorkChart();
 
-        $workEndTime = $userChart->end_time
-            ?? Timetracking::DEFAULT_WORK_END_TIME;
-
-        $workStartTime  = $userChart->start_time
-            ?? Timetracking::DEFAULT_WORK_START_TIME;
+        $workTime = $this->workTime();
+        $workStartTime = $workTime['workStartTime'];
+        $workEndTime = $workTime['workEndTime'];
 
         $date = Carbon::now($timezone)->format('Y-m-d');
 
