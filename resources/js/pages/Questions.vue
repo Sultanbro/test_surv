@@ -120,25 +120,29 @@
 							>
 						</label>
 
-						<label
-							v-if="mode == 'read'"
-							class="d-flex w-full"
-							:class="{'right':scores && v.right == true}"
-						>
+						<div class="question-form-group">
 							<input
 								type="checkbox"
 								v-model="v.checked"
 								class="mr-2"
 								@change="changed = true"
+								:id="'v-' + v_index + 'q' + q_index"
 								title="Отметьте галочкой, если думаете, что ответ правильный. Правильных вариантов может быть несколько"
 							>
-							<p class="mb-0">{{ v.text }}</p>
+							<label
+								v-if="mode == 'read'"
+								class="d-flex w-100 justify-content-between"
+								:class="{'right':scores && v.right == true}"
+								:for="'v-' + v_index + 'q' + q_index"
+							>
+								<p class="mb-0">{{ v.text }}</p>
 
-							<i
-								v-if="scores && v.right == true"
-								class="fa fa-check-circle right ml-2 mt-1"
-							/>
-						</label>
+								<i
+									v-if="scores && v.right == true"
+									class="fa fa-check right ml-2 mt-1"
+								/>
+							</label>
+						</div>
 					</div>
 
 					<button
@@ -182,6 +186,8 @@
 			</div>
 		</div>
 
+		<hr class="hr-question-bottom">
+
 		<template v-if="mode == 'read'">
 			<div class="d-flex">
 				<button
@@ -206,7 +212,7 @@
 					v-if="points != -1 && mode == 'read'"
 					class="mt-3 scores mr-3"
 				>
-					<span v-if="scores">Вы заработали: <b>{{ points }}</b> бонусов из <b>{{ total }}</b></span>
+					<span v-if="scores"><b>Вы заработали {{ points }} бонусов из {{ total }}</b></span>
 					<span v-else>Вы не набрали проходной балл...</span>
 				</p>
 				<button

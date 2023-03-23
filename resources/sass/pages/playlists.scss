@@ -17,8 +17,12 @@
         img {
             width: 100%;
         }
-    }   
-    
+    }
+
+}
+
+.video-playlist-left{
+    padding: 25px 20px;
 }
 
 .playlist {
@@ -28,7 +32,7 @@
     border-radius: 5px;
 
     &:hover {
-        background: aliceblue;    
+        background: aliceblue;
     }
 
     .left {
@@ -39,13 +43,13 @@
         background-size: cover;
         background-position: center;
     }
-    
+
     .right {
         padding: 15px;
         flex:1;
         border-left: 1px solid #e2e2e2;
         overflow: auto;
-        
+
         .btns i {
             padding: 5px;
             background: #ccd5dd;

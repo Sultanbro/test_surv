@@ -417,7 +417,7 @@ export default {
 					employee_id: employee_id,
 					id: this.activity.id,
 					day: key,
-					value: value,
+					value: '' + value,
 				})
 				.then(() => {
 					this.loading = false

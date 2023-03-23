@@ -348,12 +348,24 @@
 								alt="avatar icon"
 							>
 							<div class="text">
-								<p class="edited">
-									<span>Cоздано:</span> {{ activesbook.created }} {{ activesbook.author }}
-								</p>
-								<p class="edited">
-									<span>Изменено:</span> {{ activesbook.edited_at }} {{ activesbook.editor }}
-								</p>
+								<div class="edited">
+									<p class="author-time">
+										<span>Cоздан:</span> {{ activesbook.created }}
+									</p>
+									<i class="fa fa-chevron-right" />
+									<p class="author-author">
+										{{ activesbook.author }}
+									</p>
+								</div>
+								<div class="edited">
+									<p class="author-time">
+										<span>Изменен:</span> {{ activesbook.edited_at }}
+									</p>
+									<i class="fa fa-chevron-right" />
+									<p class="author-author">
+										{{ activesbook.editor }}
+									</p>
+								</div>
 							</div>
 						</div>
 						<div

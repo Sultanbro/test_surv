@@ -85,8 +85,7 @@ export default {
 		}
 	},
 	created(){
-		// this.fetchManager()
-		setTimeout(() => { this.fetchManager() }, 1500) // timeout for imitate net lag
+		this.fetchManager()
 	},
 	methods: {
 		...mapActions(usePricingStore, ['fetchManager'])
