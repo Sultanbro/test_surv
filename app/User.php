@@ -8,7 +8,6 @@ use App\Http\Controllers\Services\IntellectController as IC;
 use App\Models\Admin\ObtainedBonus;
 use App\Models\Article\Article;
 use App\Models\Award\Award;
-use App\Models\AwardUser;
 use App\Models\CentralUser;
 use App\Models\CourseResult;
 use App\Models\GroupUser;
@@ -1042,22 +1041,15 @@ class User extends Authenticatable implements Authorizable
 
     /**
      * Время смены для юзера
+     *
+     * @delegate
      * @return array
      */
     public function workTime()
     {
         $userChart = $this->getWorkChart();
 
-        $workStartTime  = $userChart->start_time
-            ?? Timetracking::DEFAULT_WORK_START_TIME;
-
-        $workEndTime = $userChart->end_time
-            ?? Timetracking::DEFAULT_WORK_END_TIME;
-
-        return [
-            'workStartTime' => $workStartTime,
-            'workEndTime' => $workEndTime,
-        ];
+        return $userChart->workTime();
     }
 
     /**

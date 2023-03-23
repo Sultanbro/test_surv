@@ -3,6 +3,7 @@
 namespace App\Models\WorkChart;
 
 use App\DTO\WorkChart\StoreWorkChartDTO;
+use App\Timetracking;
 use App\User;
 use Carbon\Carbon;
 use Exception;
@@ -95,16 +96,30 @@ class WorkChartModel extends Model
     /**
      * Получаем время работы.
      *
+     * @delegate
      * @return array
      */
     public function schedule(): array
     {
-        $startTime  = Carbon::createFromTimeString($this->start_time);
-        $endTime    = Carbon::createFromTimeString($this->end_time);
+        return $this->workTime();
+    }
+
+    /**
+     * Получаем время работы.
+     *
+     * @return array
+     */
+    public function workTime(): array
+    {
+        $workStartTime  = $this->start_time
+            ?? Timetracking::DEFAULT_WORK_START_TIME;
+
+        $workEndTime = $this->end_time
+            ?? Timetracking::DEFAULT_WORK_END_TIME;
 
         return [
-            'start_time' => $startTime,
-            'end_time'   => $endTime
+            'workStartTime' => $workStartTime,
+            'workEndTime'   => $workEndTime,
         ];
     }
 }
