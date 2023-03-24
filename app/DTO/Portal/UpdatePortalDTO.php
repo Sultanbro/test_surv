@@ -9,13 +9,13 @@ final class UpdatePortalDTO
      * @param string $tenantId
      * @param ?string $mainPageVideo
      * @param ?int $mainPageVideoShowDaysAmount
-     * @param ?array $kpiBacklight
+     * @param ?KpiBacklightDTO $kpiBacklight
      */
     public function __construct(
         public string $tenantId, //TODO Portal refactor
         public ?string $mainPageVideo,
         public ?int $mainPageVideoShowDaysAmount,
-        public ?array $kpiBacklight,
+        public ?KpiBacklightDTO $kpiBacklight,
     )
     {}
 
@@ -27,7 +27,7 @@ final class UpdatePortalDTO
         return [
             'main_page_video' => $this->mainPageVideo ?? null,
             'main_page_video_show_days_amount' => $this->mainPageVideoShowDaysAmount ?? null,
-            'kpi_backlight' => $this->kpiBacklight ?? null,
+            'kpi_backlight' => $this->kpiBacklight?->kpiBacklightItems,
         ];
     }
 }

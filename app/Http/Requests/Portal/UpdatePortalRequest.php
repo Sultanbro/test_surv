@@ -2,6 +2,8 @@
 
 namespace App\Http\Requests\Portal;
 
+use App\DTO\Portal\KpiBacklightDTO;
+use App\DTO\Portal\KpiBacklightItemDTO;
 use App\DTO\Portal\UpdatePortalDTO;
 use App\Rules\HexColor;
 use Illuminate\Foundation\Http\FormRequest;
@@ -30,7 +32,7 @@ class UpdatePortalRequest extends FormRequest
             'mainPageVideo' => 'url',
             'mainPageVideoShowDaysAmount' => 'integer',
             'kpiBackLight' => 'array|nullable',
-            'kpiBackLight.*.start'       => 'required_with:kpiBackLight|integer',
+            'kpiBackLight.*.start'       => 'required_with:kpiBackLight|integer|min:0|max:100',
             'kpiBackLight.*.color'       => ['required_with:kpiBackLight', new HexColor()]
         ];
     }
@@ -44,7 +46,17 @@ class UpdatePortalRequest extends FormRequest
 
         $mainPageVideo = Arr::get($validated, 'mainPageVideo');
         $mainPageVideoShowDaysAmount = (int) Arr::get($validated, 'mainPageVideoShowDaysAmount');
-        $kpiBackLight = Arr::get($validated, 'kpiBackLight');
+        $kpiBackLightArray = Arr::get($validated, 'kpiBackLight');
+
+        $kpiBackLightItems = array();
+        if($kpiBackLightArray){
+            foreach ($kpiBackLightArray as $kpiBackLightArrayElem){
+                $kpiBackLightItems[] = new KpiBacklightItemDTO(
+                    $kpiBackLightArrayElem['start'], $kpiBackLightArrayElem['color']
+                );
+            }
+        }
+        $kpiBackLight = $kpiBackLightItems ? new KpiBacklightDTO($kpiBackLightItems) : null;
 
         return new UpdatePortalDTO(
             $tenantId,
