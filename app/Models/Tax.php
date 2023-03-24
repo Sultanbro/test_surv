@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 
 /**
  * Класс отвечает за таблицу taxes.
@@ -32,10 +33,11 @@ class Tax extends Model
 
     /**
      * Получаем сотрудника на кого привязан налог начисления.
-     * @return BelongsTo
+     *
+     * @return BelongsToMany
      */
-    public function user(): BelongsTo
+    public function users(): BelongsToMany
     {
-        return $this->belongsTo('App\User', 'user_id');
+        return $this->BelongsToMany('App\User', 'user_tax');
     }
 }

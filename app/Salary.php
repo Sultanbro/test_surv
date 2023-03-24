@@ -763,8 +763,16 @@ class Salary extends Model
             $user->earnings    = $earnings; 
             $user->bonuses     = $bonuses; 
             $user->test_bonus  = $test_bonus; 
-            $user->awards      = $awards; 
-            
+            $user->awards      = $awards;
+            $user->taxes       = $user->taxes->map(function($tax) use ($user)
+            {
+                $salary = $user->zarplata?->zarplata;
+                $tax->amount = $tax->is_percent ? $salary * ($tax->value / 100) : $tax->value;
+
+                return $tax;
+            });
+
+
             /**
              * If user has edited Salary take it
              */

@@ -181,9 +181,13 @@ class User extends Authenticatable implements Authorizable
             'article_id'
         );
     }
-    public function taxes(): HasMany
+
+    /**
+     * @return BelongsToMany
+     */
+    public function taxes(): BelongsToMany
     {
-        return $this->hasMany(Tax::class, 'user_id');
+        return $this->belongsToMany(Tax::class, 'user_tax');
     }
     
     public function awards(): BelongsToMany
