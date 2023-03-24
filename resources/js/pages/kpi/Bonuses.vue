@@ -103,14 +103,6 @@
 									class="fa fa-save btn btn-success ml-3"
 									@click="saveNewBonusArray()"
 								/>
-								<b-form-checkbox
-									class="kpi-status-switch"
-									switch
-									:checked="!!bonus.is_active"
-									@input="changeStatus(bonus, $event)"
-								>
-									&nbsp;
-								</b-form-checkbox>
 							</div>
 						</td>
 					</tr>
@@ -346,15 +338,6 @@
 										v-if="page_item.type == 3"
 									/>
 									<span class="ml-2">{{ page_item.name }}</span>
-
-									<b-form-checkbox
-										class="kpi-status-switch"
-										switch
-										:value="page_item.is_active"
-										@input="changeStatus(page_item, $event)"
-									>
-										&nbsp;
-									</b-form-checkbox>
 								</div>
 							</td>
 						</tr>
@@ -544,8 +527,17 @@
 															>
 														</template>
 													</td>
-													<td class="ho-hover">
+													<td class="no-hover">
 														<div class="d-flex px-2">
+															<b-form-checkbox
+																class="kpi-status-switch"
+																switch
+																:checked="!!item.is_active"
+																:disabled="statusRequest"
+																@input="changeStatus(item, $event)"
+															>
+																&nbsp;
+															</b-form-checkbox>
 															<i
 																class="fa fa-save btn btn-success btn-icon"
 																@click="saveItemFromTable(p, i)"

@@ -118,6 +118,7 @@
 										class="kpi-status-switch"
 										switch
 										:checked="!!item.is_active"
+										:disabled="statusRequest"
 										@input="changeStatus(item, $event)"
 									>
 										&nbsp;
@@ -498,8 +499,9 @@ export default {
 				: this.axios.put(this.uri + '/' + method, fields);
 
 			req.then(response => {
-
-				item.id = response.data.id;
+				Object.keys(response.data).forEach(key => {
+					item[key] = response.data[key]
+				})
 				item.items.forEach((el, index) => {
 					el.id = response.data.items[index]
 				});
