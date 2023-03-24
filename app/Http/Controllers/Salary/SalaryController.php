@@ -850,9 +850,6 @@ class SalaryController extends Controller
             // В валюте
             $currency_rate = in_array($user->currency, array_keys(Currency::rates())) ? (float)Currency::rates()[$user->currency] : 0.0000001;
 
-            $on_currency = number_format((float)$total_payment * (float)$currency_rate, 0, '.', '') . strtoupper($user->currency);
-
-
 
             //Итоговые колонки для excel.
             $totalColumns = [
@@ -879,16 +876,25 @@ class SalaryController extends Controller
                 20 => 0, // в валюте
             ];
 
+            /**
+             * Расчет налогов.
+             */
+            $sumOfTax = 0;
             foreach ($taxColumns as $taxColumn)
             {
                 $employeeSalary = Zarplata::query()->where('user_id', $user->id)->first()->zarplata ?? 0;
-
+                $totalColumns["tax_$taxColumn->id"] = 0;
                 if ($taxColumn->users->contains($user->id))
                 {
-                    $totalColumns[] = $taxColumn->is_percent ? $employeeSalary * ($taxColumn->value / 100) : $taxColumn->value;
-                    $allTotal["tax_$taxColumn->id"] += $taxColumn->is_percent ? $employeeSalary * ($taxColumn->value / 100) : $taxColumn->value;
+                    $amount = $taxColumn->is_percent ? $employeeSalary * ($taxColumn->value / 100) : $taxColumn->value;;
+                    $sumOfTax += $amount;
+                    $totalColumns["tax_$taxColumn->id"] = $amount;
+                    $allTotal["tax_$taxColumn->id"] += $amount;
                 }
             }
+            $total_payment  -= $sumOfTax;
+            $on_currency = number_format((float)$total_payment * (float)$currency_rate, 0, '.', '') . strtoupper($user->currency);
+
 
             try {
                 if($edited_salary)
