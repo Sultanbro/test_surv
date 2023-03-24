@@ -269,7 +269,6 @@ export default {
 					name: 'Структура',
 					to: '/structure',
 					icon: 'icon-nd-struct',
-					popover: 'Структура - Этот функционал в разработке',
 					height: 0,
 					route: 'structure',
 				},

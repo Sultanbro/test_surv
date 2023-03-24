@@ -1,6 +1,6 @@
 <!--<template>-->
 <!--	<div class="structure-company">-->
-<!--		<template v-for="(department, index) in departments" :key="index">-->
+<!--		<template v-for="(department, index) in departments">-->
 <!--			<StructureGroup :department="department"/>-->
 <!--		</template>-->
 <!--	</div>-->
@@ -60,86 +60,40 @@
 <!--										department: 'Совет директоров',-->
 <!--										employeesCount: 9,-->
 <!--										result: resultText,-->
-<!--										director: [-->
-<!--											{-->
-<!--												fullName: 'Никита Косов',-->
-<!--												position: 'Председатель совета директоров',-->
-<!--												birthday: '10.10.1985',-->
-<!--												phone: '+7(700)5654323',-->
-<!--												email: 'test.test@gmail.com',-->
-<!--												photo: photo-->
-<!--											},-->
-<!--										],-->
-<!--										departmentChildren: [-->
-<!--											{-->
-<!--												department: 'Участники совета',-->
-<!--												employeesCount: 5,-->
-<!--												users: [-->
-<!--													{-->
-<!--														fullName: 'Никита Косов',-->
-<!--														position: 'Председатель совета директоров',-->
-<!--														birthday: '10.10.1985',-->
-<!--														phone: '+7(700)5654323',-->
-<!--														email: 'test.test@gmail.com',-->
-<!--														photo: photo-->
-<!--													},-->
-<!--													{-->
-<!--														fullName: 'Никита Косов',-->
-<!--														position: 'Председатель совета директоров',-->
-<!--														birthday: '10.10.1985',-->
-<!--														phone: '+7(700)5654323',-->
-<!--														email: 'test.test@gmail.com',-->
-<!--														photo: photo-->
-<!--													},-->
-<!--													{-->
-<!--														fullName: 'Никита Косов',-->
-<!--														position: 'Председатель совета директоров',-->
-<!--														birthday: '10.10.1985',-->
-<!--														phone: '+7(700)5654323',-->
-<!--														email: 'test.test@gmail.com',-->
-<!--														photo: photo-->
-<!--													},-->
-<!--													{-->
-<!--														fullName: 'Никита Косов',-->
-<!--														position: 'Председатель совета директоров',-->
-<!--														birthday: '10.10.1985',-->
-<!--														phone: '+7(700)5654323',-->
-<!--														email: 'test.test@gmail.com',-->
-<!--														photo: photo-->
-<!--													},-->
-<!--												],-->
-<!--											}-->
-<!--										]-->
+<!--										director: {-->
+<!--											fullName: 'Никита Косов',-->
+<!--											position: 'Председатель совета директоров',-->
+<!--											birthday: '10.10.1985',-->
+<!--											phone: '+7(700)5654323',-->
+<!--											email: 'test.test@gmail.com',-->
+<!--											photo: photo-->
+<!--										},-->
 <!--									},-->
 <!--									{-->
 <!--										department: 'Служба стратегического управления',-->
 <!--										employeesCount: 17,-->
 <!--										result: resultText,-->
-<!--										director: [-->
-<!--											{-->
-<!--												fullName: 'Григорий Квадратов',-->
-<!--												position: 'Начальник отдела',-->
-<!--												birthday: '10.10.1985',-->
-<!--												phone: '+7(700)5654323',-->
-<!--												email: 'test.test@gmail.com',-->
-<!--												photo: photo-->
-<!--											},-->
-<!--										]-->
+<!--										director: {-->
+<!--											fullName: 'Григорий Квадратов',-->
+<!--											position: 'Начальник отдела',-->
+<!--											birthday: '10.10.1985',-->
+<!--											phone: '+7(700)5654323',-->
+<!--											email: 'test.test@gmail.com',-->
+<!--											photo: photo-->
+<!--										},-->
 <!--									},-->
 <!--									{-->
 <!--										department: 'Совет руководителей',-->
 <!--										employeesCount: 17,-->
 <!--										result: resultText,-->
-<!--										director: [-->
-<!--											{-->
-<!--												fullName: 'Светлана Шу',-->
-<!--												position: 'Начальник отдела',-->
-<!--												birthday: '10.10.1985',-->
-<!--												phone: '+7(700)5654323',-->
-<!--												email: 'test.test@gmail.com',-->
-<!--												photo: photo-->
-<!--											},-->
-<!--										]-->
+<!--										director: {-->
+<!--											fullName: 'Светлана Шу',-->
+<!--											position: 'Начальник отдела',-->
+<!--											birthday: '10.10.1985',-->
+<!--											phone: '+7(700)5654323',-->
+<!--											email: 'test.test@gmail.com',-->
+<!--											photo: photo-->
+<!--										},-->
 <!--									}-->
 <!--								]-->
 <!--							}-->

@@ -1,11 +1,24 @@
 .structure-company{
   display: flex;
+  overflow: scroll;
+  height: 100vh;
+  .structure-group{
+    display: flex;
+    margin-top: 50px;
+  }
+  .structure-item{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin: 0 25px;
+  }
   .structure-card{
     width: 350px;
     border-radius: 12px;
     background-color: #EBF3FB;
     border-bottom: 2px solid rgba(162, 183, 213, 0.5);
     text-align: center;
+    margin: 0 10px;
     .structure-card-header{
       padding: 20px 20px 10px 20px;
       border-bottom: 1px dashed #D0DEF5;

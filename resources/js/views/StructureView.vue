@@ -1,12 +1,12 @@
 <!--<script>-->
 <!--	import DefaultLayout from '@/layouts/DefaultLayout';-->
-<!--	const Structure = () => import(/* webpackChunkName: "MyCoursePage" */ '@/pages/Structure/Structure.vue');-->
+<!--	const StructureComp = () => import(/* webpackChunkName: "MyCoursePage" */ '@/pages/Structure/StructureComp.vue');-->
 
 <!--	export default {-->
 <!--		name: 'StructureView',-->
 <!--		components: {-->
 <!--			DefaultLayout,-->
-<!--			Structure-->
+<!--			StructureComp-->
 <!--		},-->
 <!--	}-->
 <!--</script>-->
@@ -14,7 +14,7 @@
 <!--<template>-->
 <!--	<DefaultLayout class="no-padding">-->
 <!--		<div class="old__content">-->
-<!--			<Structure/>-->
+<!--			<StructureComp/>-->
 <!--		</div>-->
 <!--	</DefaultLayout>-->
 <!--</template>-->

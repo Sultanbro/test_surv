@@ -48,6 +48,10 @@ Route::middleware(['web','tenant','not_admin_subdomain'])->group(function () {
         Route::post('/group/delete', [Root\WorkChart\GroupWorkChartController::class, 'deleteChart']);
     });
 
+
+    Route::get('/structure', [Root\Structure\StructureController::class, 'index']);
+
+
     Route::get('/login/{subdomain}', [User\ProjectController::class, 'login']);
     Route::post('/projects/create', [User\ProjectController::class, 'create']);
     Route::get('/newprofile', [User\ProfileController::class, 'newprofile']);
