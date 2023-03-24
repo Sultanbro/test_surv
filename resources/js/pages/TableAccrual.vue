@@ -97,7 +97,7 @@
 									title="ФОТ"
 								/>
 								:</b>
-							{{ group_total }} тг.
+							{{ actualFOT }} тг.
 						</p>
 						<p class="mb-0 fz-08 text-black">
 							<b>Итого уволенные ФОТ:</b>
@@ -740,24 +740,6 @@ export default {
 		can_edit: Boolean,
 		is_admin: Boolean,
 	},
-	watch: {
-		scrollLeft(value) {
-			var container = document.querySelector('.table-responsive');
-			container.scrollLeft = value;
-		},
-		user_types() {
-			this.fetchData()
-		},
-		show_user() {
-			this.fetchData()
-		},
-		selectedGroup() {
-			this.fetchData()
-		},
-		groupss(){
-			this.init()
-		}
-	},
 	data() {
 		const now = new Date()
 		return {
@@ -838,6 +820,28 @@ export default {
 		},
 		showTotals(){
 			return this.activeuserid && [5,18,84,157].includes(Number(this.activeuserid))
+		},
+		actualFOT(){
+			if (!this.items || !this.items[0]) return 0
+			return (parseInt(this.items[0].kpi) || 0) + (parseInt(this.items[0].bonus) || 0) + (parseInt(this.items[0].total) || 0)
+		}
+	},
+	watch: {
+		scrollLeft(value) {
+			var container = document.querySelector('.table-responsive');
+			container.scrollLeft = value;
+		},
+		user_types() {
+			this.fetchData()
+		},
+		show_user() {
+			this.fetchData()
+		},
+		selectedGroup() {
+			this.fetchData()
+		},
+		groupss(){
+			this.init()
 		}
 	},
 	created() {
@@ -1213,7 +1217,6 @@ export default {
 					items.push(obj);
 					hasMoney = 0
 				}
-
 			});
 
 
