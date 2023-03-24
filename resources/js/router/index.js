@@ -23,6 +23,7 @@ import KPIView from '@/views/KPIView'
 
 // Cтраницу настроек наверное тоже разделим если нужно
 import SettingsView from '@/views/SettingsView'
+// import StructureView from '@/views/StructureView'
 
 const router = new VueRouter({
 	mode: 'history',
@@ -267,6 +268,14 @@ const router = new VueRouter({
 				title: 'PricingView',
 			},
 		},
+		// {
+		// 	path: '/structure',
+		// 	name: 'StructureView',
+		// 	component: () => import(/* webpackChunkName: "PricingView" */ '@/views/StructureView'),
+		// 	meta: {
+		// 		title: 'StructureView',
+		// 	},
+		// },
 	],
 })
 
