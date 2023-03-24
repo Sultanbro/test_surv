@@ -4,6 +4,7 @@ namespace App\Http;
 
 use App\Http\Middleware\CheckIsAdminMiddleware;
 use App\Http\Middleware\CheckTariff;
+use App\Http\Middleware\Portal\IsOwner;
 use Illuminate\Foundation\Http\Kernel as HttpKernel;
 
 class Kernel extends HttpKernel
@@ -23,7 +24,7 @@ class Kernel extends HttpKernel
         \App\Http\Middleware\TrimStrings::class,
         \Illuminate\Foundation\Http\Middleware\ConvertEmptyStringsToNull::class,
         \App\Http\Middleware\TrustProxies::class,
-        
+
         \App\Http\Middleware\PreventRequestsDuringMaintenance::class,
 
     ];
@@ -86,5 +87,6 @@ class Kernel extends HttpKernel
         'not_admin_subdomain' => \App\Http\Middleware\IsNotAdminSubDomain::class,
         'is_admin' => CheckIsAdminMiddleware::class,
         'check_tariff' => CheckTariff::class,
+        'owner' => IsOwner::class,
     ];
 }
