@@ -20,9 +20,10 @@ class Tax extends Model
     protected $table = 'taxes';
 
     protected $fillable = [
+        'user_id',
         'name',
-        'value',
-        'is_percent'
+        'amount',
+        'percent'
     ];
 
     protected $dates = [
@@ -37,17 +38,6 @@ class Tax extends Model
      */
     public function users(): BelongsToMany
     {
-        return $this->belongsToMany('App\User', 'user_tax');
-    }
-
-    /**
-     * @param int $id
-     * @return Model
-     */
-    public static function getTaxById(
-        int $id
-    ): Model
-    {
-        return self::query()->findOrFail($id);
+        return $this->BelongsToMany('App\User', 'user_tax');
     }
 }

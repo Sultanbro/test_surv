@@ -188,7 +188,7 @@ class User extends Authenticatable implements Authorizable
      */
     public function taxes(): BelongsToMany
     {
-        return $this->BelongsToMany(Tax::class, 'user_tax');
+        return $this->belongsToMany(Tax::class, 'user_tax');
     }
     
     public function awards(): BelongsToMany

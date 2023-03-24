@@ -14,6 +14,7 @@ final class UpdatePortalDTO
         public string $tenantId, //TODO Portal refactor
         public ?string $mainPageVideo,
         public ?int $mainPageVideoShowDaysAmount,
+        public ?KpiBacklightDTO $kpiBacklight,
     )
     {}
 
@@ -25,6 +26,7 @@ final class UpdatePortalDTO
         return [
             'main_page_video' => $this->mainPageVideo ?? null,
             'main_page_video_show_days_amount' => $this->mainPageVideoShowDaysAmount ?? null,
+            'kpi_backlight' => $this->kpiBacklight ?? null,
         ];
     }
 }

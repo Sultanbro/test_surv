@@ -157,23 +157,6 @@ import {mapActions, mapGetters} from 'vuex';
 
 export default {
 	name: 'AddMemberModal',
-	computed: {
-		...mapGetters([
-			'contacts', 'newChatContacts',
-			'chat', 'user',
-			'users', 'profileGroups', 'positions',
-		]),
-		accessDictionaries() {
-			return {
-				users: this.users,
-				profile_groups: this.profileGroups,
-				positions: this.positions,
-			}
-		},
-		accessCount() {
-			return this.accessList.filter(item => item.type === 1).length;
-		},
-	},
 	data() {
 		return {
 			title: 'Групповой чат',
@@ -187,6 +170,27 @@ export default {
 			availableToEveryone: false,
 			accessList: []
 		};
+	},
+	computed: {
+		...mapGetters([
+			'contacts',
+			'newChatContacts',
+			'chat',
+			'user',
+			'users',
+			'profileGroups',
+			'positions',
+		]),
+		accessDictionaries() {
+			return {
+				users: this.users,
+				profile_groups: this.profileGroups,
+				positions: this.positions,
+			}
+		},
+		accessCount() {
+			return this.accessList.filter(item => item.type === 1).length;
+		},
 	},
 	mounted() {
 		if (!this.chat.private) {

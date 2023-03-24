@@ -397,7 +397,7 @@ class Messenger {
         return MessengerChat::query()
                             ->where( 'id', $chatId )
                             ->whereHas( 'members', function ( Builder $query ) use ( $userId ) {
-                                $query->where( 'user_id', $userId )->where( 'is_admin', true );
+                                $query->where( 'user_id', $userId )->where( 'users.is_admin', true );
                             } )
                             ->exists();
     }

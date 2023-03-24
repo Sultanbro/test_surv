@@ -817,7 +817,6 @@ export default {
 							<UserEditSalary
 								v-show="showBlocks.salary"
 								:user="user"
-								:taxes="taxes"
 								:old_zarplata="old_zarplata"
 								:old_kaspi_cardholder="old_kaspi_cardholder"
 								:old_kaspi="old_kaspi"

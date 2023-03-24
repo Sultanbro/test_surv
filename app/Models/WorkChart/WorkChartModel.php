@@ -61,9 +61,7 @@ class WorkChartModel extends Model
     }
 
     /**
-     * @param string $name
-     * @param string $startTime
-     * @param string $endTime
+     * @param StoreWorkChartDTO $dto
      * @return Model
      */
     public static function createModel(StoreWorkChartDTO $dto): Model
@@ -92,5 +90,21 @@ class WorkChartModel extends Model
         $igonore = isset($chart->name) && in_array($chart->name, ['1-1', '2-2', '3-3']) ? [5, 6, 0] : [0];
 
         return workdays($date->year, $date->month, $igonore);
+    }
+
+    /**
+     * Получаем время работы.
+     *
+     * @return array
+     */
+    public function schedule(): array
+    {
+        $startTime  = Carbon::createFromTimeString($this->start_time);
+        $endTime    = Carbon::createFromTimeString($this->end_time);
+
+        return [
+            'start_time' => $startTime,
+            'end_time'   => $endTime
+        ];
     }
 }

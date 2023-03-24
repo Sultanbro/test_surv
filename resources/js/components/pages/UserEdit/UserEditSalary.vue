@@ -9,10 +9,6 @@ export default {
 			type: Object,
 			default: null,
 		},
-		taxes: {
-			type: Array,
-			default: () => {},
-		},
 		old_zarplata: String,
 		old_kaspi_cardholder: String,
 		old_kaspi: String,
@@ -33,12 +29,18 @@ export default {
 			currency: null,
 			search: '',
 			searchIdx: null,
-			mockDataAll: [],
-			mockData: []
+			taxes: []
 		}
 	},
 	watch: {
 		user(obj){
+			this.axios.get('/tax', {params: {user_id: obj.id}}).then(res => {
+				console.log(res);
+				this.taxes = res.data.items;
+			}).catch(err => {
+				console.log(err);
+			})
+
 			if(obj.cards){
 				this.cards = obj.cards
 			}
@@ -57,26 +59,15 @@ export default {
 			this.changeZp();
 		}
 	},
-	mounted() {
-		// this.axios.get('/')
-		// if(this.taxes) this.mockData = this.taxes;
-
-		for(let i = 0; i < 15; i++){
-			this.mockDataAll.push({
-				id: i,
-				name: 'name lorem ' + i,
-				amount: Math.floor(Math.random() * 501),
-				isPercent: i > 9,
-				isAssigned: i > 4 && i < 8
-			})
-		}
-	},
 	computed: {
 		filteredTaxes() {
-			return this.mockDataAll.filter(item => item.name.toLowerCase().includes(this.search.toLowerCase()) && !item.isAssigned)
+			return this.taxes.length ? this.taxes.filter(item => item.name.toLowerCase().includes(this.search.toLowerCase()) && !item.isAssigned) : [];
 		},
-		mockDataFiltered(){
-			return this.mockDataAll.filter(item => item.isAssigned)
+		taxFiltered(){
+			return this.taxes.length ? this.taxes.filter(item => item.isAssigned) : [];
+		},
+		taxNotAssignedFiltered(){
+			return this.taxes.length ? this.taxes.filter(item => !item.isAssigned) : [];
 		}
 	},
 	methods: {
@@ -107,7 +98,7 @@ export default {
 			}
 		},
 		addTax(){
-			this.mockDataAll.push({
+			this.taxes.push({
 				name: '',
 				amount: '',
 				isPercent: false,
@@ -117,7 +108,7 @@ export default {
 			this.searchId = null;
 		},
 		deleteTax(key){
-			this.mockDataAll.splice(key, 1)
+			this.taxes.splice(key, 1)
 		},
 		changeHeadphonesState(){
 			this.headphonesState = !this.headphonesState
@@ -130,23 +121,40 @@ export default {
 			this.searchIdx = index;
 		},
 		selectTax(id){
-			this.mockDataAll.pop();
-			const index = this.mockDataAll.findIndex(m => m.id === id);
-			const splicedEl = this.mockDataAll.splice(index, 1);
+			this.taxes.pop();
+			const index = this.taxes.findIndex(m => m.id === id);
+			const splicedEl = this.taxes.splice(index, 1);
 			splicedEl[0].isAssigned = true;
-			this.mockDataAll.push(splicedEl[0]);
+			this.taxes.push(splicedEl[0]);
 			this.search = '';
 			this.searchIdx = null;
 		},
 		percentMod(amount, index){
 			console.log(amount);
 			if(amount > 100){
-				this.mockData[index].amount = 100;
+				this.taxes[index].amount = 100;
 			} else if(amount < 0){
-				this.mockData[index].amount = 0;
+				this.taxes[index].amount = 0;
 			} else {
-				this.mockData[index].amount = amount;
+				this.taxes[index].amount = amount;
 			}
+		},
+		async saveTaxes(){
+			const formData = new FormData();
+			const formData2 = new FormData();
+
+			formData.append('name', 'Налог на пидараса s aa afsa fas')
+			formData.append('value', 25444)
+			formData.append('is_percent', 0)
+			const res1 = await this.axios.post('/tax', formData);
+
+
+			console.log(res1.data.data.id);
+			formData2.append('user_id', this.user.id);
+			formData2.append('tax_id', res1.data.data.id);
+			formData2.append('is_assigned', 1);
+			const res2 = await this.axios.post('/tax/set-assignee', formData2);
+			console.log(res2);
 		}
 	},
 }
@@ -361,10 +369,17 @@ export default {
 			</div>
 		</div>
 
+		<hr>
 		<div
 			v-if="user"
 			class="cards"
 		>
+			<div
+				class="no-text"
+				v-if="!cards.length"
+			>
+				Нет ни одной карты
+			</div>
 			<div
 				v-for="(card, key) in cards"
 				:key="card.id"
@@ -415,78 +430,6 @@ export default {
 				</button>
 			</div>
 		</div>
-
-		<div
-			v-if="user"
-			class="taxes"
-		>
-			<div
-				v-for="(tax, index) in mockDataFiltered"
-				:key="tax.id"
-				class="d-flex tax-row"
-			>
-				<b-form-group>
-					<b-form-input
-						v-model="tax.name"
-						type="text"
-						class="mr-1"
-						placeholder="Название"
-						@input="searchMethod(tax, index)"
-					/>
-					<div
-						class="taxes-list-dropdown"
-						v-if="search.length && index === mockDataFiltered.length - 1"
-					>
-						<ul class="taxes-list">
-							<li
-								class="taxes-item"
-								v-for="item in filteredTaxes"
-								:key="item.id"
-								@click="selectTax(item.id)"
-							>
-								{{ item.name }}
-							</li>
-						</ul>
-					</div>
-				</b-form-group>
-				<b-form-group>
-					<b-form-input
-						v-model="tax.amount"
-						type="number"
-						class="mr-1"
-						placeholder="Сумма"
-						@change="percentMod(Number(tax.amount), index)"
-						v-if="tax.isPercent"
-					/>
-					<b-form-input
-						v-model="tax.amount"
-						type="number"
-						class="mr-1"
-						placeholder="Сумма"
-						v-else
-					/>
-				</b-form-group>
-				<b-form-group
-					class="custom-switch custom-switch-sm"
-					id="input-group-4"
-				>
-					<b-form-checkbox
-						v-model="tax.isPercent"
-						switch
-					>
-						Значение в процентах
-					</b-form-checkbox>
-				</b-form-group>
-				<button
-					type="button"
-					class="btn btn-danger tax-delete rounded ml-1"
-					@click="deleteTax(key)"
-				>
-					<i class="fa fa-trash" />
-				</button>
-			</div>
-		</div>
-
 		<button
 			type="button"
 			class="btn btn-success btn-rounded mb-2 mt-2"
@@ -494,6 +437,95 @@ export default {
 		>
 			<i class="fa fa-plus mr-2" /> Добавить карту
 		</button>
+		<hr>
+
+		<div
+			v-if="user"
+			class="taxes"
+		>
+			<div
+				class="no-text"
+				v-if="!taxes.length"
+			>
+				Нет ни одного налога
+			</div>
+			<div class="row">
+				<div class="col-12 col-md-8">
+					<div
+						v-for="(tax, index) in taxFiltered"
+						:key="tax.id"
+						class="d-flex tax-row"
+					>
+						<b-form-group
+							class="custom-switch custom-switch-sm"
+							id="input-group-4"
+						>
+							<b-form-checkbox
+								v-model="tax.isPercent"
+								switch
+							>
+								В процентах
+							</b-form-checkbox>
+						</b-form-group>
+						<b-form-group class="ml-2">
+							<b-form-input
+								v-model="tax.name"
+								type="text"
+								class="mr-1"
+								placeholder="Название налога"
+								@input="searchMethod(tax, index)"
+							/>
+							<div
+								class="taxes-list-dropdown"
+								v-if="search.length && index === taxFiltered.length - 1"
+							>
+								<ul class="taxes-list">
+									<li
+										class="taxes-item"
+										v-for="item in filteredTaxes"
+										:key="item.id"
+										@click="selectTax(item.id)"
+									>
+										{{ item.name }}
+									</li>
+								</ul>
+							</div>
+						</b-form-group>
+						<b-form-group class="ml-2">
+							<b-form-input
+								v-model="tax.amount"
+								type="number"
+								class="mr-1"
+								placeholder="Процент от оклада"
+								@change="percentMod(Number(tax.amount), index)"
+								v-if="tax.isPercent"
+							/>
+							<b-form-input
+								v-model="tax.amount"
+								type="number"
+								class="mr-1"
+								placeholder="Сумма"
+								v-else
+							/>
+						</b-form-group>
+						<button
+							type="button"
+							class="btn btn-danger tax-delete rounded ml-2"
+							@click="deleteTax(key)"
+						>
+							<i class="fa fa-trash" />
+						</button>
+					</div>
+				</div>
+				<div class="col-12 col-md-4">
+					<multiselect
+						:options="taxNotAssignedFiltered"
+						track-by="name"
+						label="name"
+					/>
+				</div>
+			</div>
+		</div>
 
 		<button
 			v-if="user && user.zarplata"
@@ -503,6 +535,27 @@ export default {
 		>
 			<i class="fa fa-plus mr-2" /> Добавить налог
 		</button>
-		<!-- END OF OKLAD -->
+		<button
+			type="button"
+			class="btn btn-success btn-rounded mb-2 mt-2"
+			@click="saveTaxes"
+		>
+			<i class="fa fa-plus mr-2" /> Сохранить налоги
+		</button>
 	</div>
 </template>
+
+
+<style scoped lang="scss">
+	.no-text{
+		height: 40px;
+		color: #999;
+		font-size: 16px;
+		font-weight: 400;
+		display: flex;
+		align-items: center;
+	}
+	.tax-delete{
+		height: 35px;
+	}
+</style>

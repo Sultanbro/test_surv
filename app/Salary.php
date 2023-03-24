@@ -593,9 +593,9 @@ class Salary extends Model
                 $zarplata = $s ? $s->amount : 70000;
 
                 $schedule = $user->schedule();
-                $lunchTime = 1;
-                $working_hours = max($schedule['start']->addMinutes(30)->diffInHours($schedule['end']) - $lunchTime, 0);
+                $lunchTime = $user->full_time ? 1 : 0;
 
+                $working_hours = max($schedule['start']->addMinutes(30)->diffInHours($schedule['end']) - $lunchTime, 0);
 
                 $ignore = $user->working_day_id == 1 ? [6,0] : [0];   // Какие дни не учитывать в месяце
 
@@ -763,8 +763,16 @@ class Salary extends Model
             $user->earnings    = $earnings; 
             $user->bonuses     = $bonuses; 
             $user->test_bonus  = $test_bonus; 
-            $user->awards      = $awards; 
-            
+            $user->awards      = $awards;
+            $user->taxes       = $user->taxes->map(function($tax) use ($user)
+            {
+                $salary = $user->zarplata?->zarplata;
+                $tax->amount = $tax->is_percent ? $salary * ($tax->value / 100) : $tax->value;
+
+                return $tax;
+            });
+
+
             /**
              * If user has edited Salary take it
              */
