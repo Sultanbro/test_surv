@@ -505,6 +505,11 @@ class SalaryController extends Controller
         $fines = Fine::pluck('penalty_amount', 'id')->toArray();
         $data = [];
 
+        /**
+         * Налоги.
+         */
+        $taxColumns = Tax::query()->get();
+
         $allTotal = [
             0 => '',
             1 => '',
@@ -526,7 +531,14 @@ class SalaryController extends Controller
             17 => 0,
             18 => 0,
             19 => 0,
+            20 => 0
         ];
+
+        foreach ($taxColumns as $tax)
+        {
+            $allTotal["tax_$tax->id"] = 0;
+        }
+
         $i = 0;
         
         $data['users'] = [];
@@ -840,7 +852,7 @@ class SalaryController extends Controller
 
             $on_currency = number_format((float)$total_payment * (float)$currency_rate, 0, '.', '') . strtoupper($user->currency);
 
-            $taxColumns = Tax::query()->get();
+
 
             //Итоговые колонки для excel.
             $totalColumns = [
@@ -874,6 +886,7 @@ class SalaryController extends Controller
                 if ($taxColumn->users->contains($user->id))
                 {
                     $totalColumns[] = $taxColumn->is_percent ? $employeeSalary * ($taxColumn->value / 100) : $taxColumn->value;
+                    $allTotal["tax_$taxColumn->id"] += $taxColumn->is_percent ? $employeeSalary * ($taxColumn->value / 100) : $taxColumn->value;
                 }
             }
 
