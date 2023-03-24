@@ -182,9 +182,13 @@ class User extends Authenticatable implements Authorizable
             'article_id'
         );
     }
-    public function taxes(): HasMany
+
+    /**
+     * @return BelongsToMany
+     */
+    public function taxes(): BelongsToMany
     {
-        return $this->hasMany(Tax::class, 'user_id');
+        return $this->BelongsToMany(Tax::class, 'user_tax');
     }
     
     public function awards(): BelongsToMany
@@ -1146,7 +1150,7 @@ class User extends Authenticatable implements Authorizable
     {
         $timezone = $this->timezone();
         $groups   = $this->activeGroup();
-        $groupChart = $groups->workChart()->first();
+        $groupChart = $groups?->workChart()->first();
         $userChart = $this->workChart()->first();
 
         $workEndTime = $userChart->end_time

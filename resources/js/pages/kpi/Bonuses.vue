@@ -354,15 +354,21 @@
 												<tr>
 													<th />
 													<th
-														class="text-left"
 														v-for="(field, f) in fields"
 														:key="f"
 														:class="[
 															field.class,
-															{'b-table-sticky-column l-2 hidden' : field.key == 'target'
-															}]"
+															{'b-table-sticky-column l-2 hidden' : field.key == 'target'}
+														]"
 													>
 														{{ field.name }}
+														<img
+															v-if="field.key === 'sum'"
+															class="KPIBonuses-icon-info"
+															src="/images/dist/profit-info.svg"
+															alt="info icon"
+															v-b-popover.hover.right.html="'Укажите в количестве<br> или в процентах %'"
+														>
 													</th>
 													<th />
 												</tr>
@@ -454,6 +460,7 @@
 														<template v-else-if="field.key == 'unit'">
 															<select
 																v-model="item.unit"
+																@change="onChangeUnit(item)"
 															>
 																<option
 																	value="0"
@@ -482,6 +489,12 @@
 																	>
 																		{{ dayparts[key] }}
 																	</option>
+																	<option
+																		v-if="item.unit !== 'percent'"
+																		:value="2"
+																	>
+																		Месяц
+																	</option>
 																</select>
 																<input
 																	v-if="item.daypart == 1"
@@ -494,6 +507,17 @@
 																	v-model="item.to"
 																>
 															</div>
+														</template>
+														<template v-else-if="field.key === 'sum'">
+															<input
+																:type="field.type"
+																v-model="item[field.key]"
+																@change="validate(item[field.key], field.key)"
+															>
+															{{ item.unit === 'percent' ? '%' : '' }}
+														</template>
+														<template v-else-if="field.key === 'quantity' && item.unit === 'percent'">
+															<!-- Ничего -->
 														</template>
 														<template v-else>
 															<input
@@ -721,35 +745,6 @@ export default {
 		Sidebar,
 	},
 	props: {},
-	watch: {
-		show_fields: {
-			handler: function (val) {
-				localStorage.bonus_show_fields = JSON.stringify(val);
-				this.prepareFields();
-			},
-			deep: true
-		},
-		pageSize: {
-			handler: function (val) {
-				if (val < 1) {
-					val = 1;
-					return;
-				}
-
-				if (val > 100) {
-					val = 100;
-					return;
-				}
-				this.paginationKey++;
-			}
-		},
-		newBonusesArray(after) {
-			if (after.length == 0) {
-				this.counter = 0;
-				this.new_target = null;
-			}
-		}
-	},
 	data() {
 		return {
 			my_items: [],
@@ -780,12 +775,12 @@ export default {
 			dayparts: {
 				0: 'Полный день',
 				1: 'Период',
-				2: 'Месяц',
 			},
 			units: {
 				one: 'За каждую единицу',
 				all: 'За все',
 				first: 'Первый кто достигнет',
+				percent: '% с продаж',
 			},
 			sources: sources,
 			non_editable_fields: [
@@ -794,6 +789,35 @@ export default {
 				'created_by',
 				'updated_by',
 			]
+		}
+	},
+	watch: {
+		show_fields: {
+			handler: function (val) {
+				localStorage.bonus_show_fields = JSON.stringify(val);
+				this.prepareFields();
+			},
+			deep: true
+		},
+		pageSize: {
+			handler: function (val) {
+				if (val < 1) {
+					val = 1;
+					return;
+				}
+
+				if (val > 100) {
+					val = 100;
+					return;
+				}
+				this.paginationKey++;
+			}
+		},
+		newBonusesArray(after) {
+			if (after.length == 0) {
+				this.counter = 0;
+				this.new_target = null;
+			}
 		}
 	},
 
@@ -811,22 +835,26 @@ export default {
 
 	},
 	methods: {
+		onChangeUnit(item){
+			if(item.unit === 'percent'){
+				item.quantity = null
+			}
+		},
 		addBonusGroup(page) {
 			page.items.push(newBonus());
 			page.items[page.items.length - 1].target = {
 				id: page.id,
 				type: page.type
 			};
-
 		},
 		saveNewBonusArray() {
-			let item = this.newBonusesArray[this.newBonusesArray.length - 1];
+			const item = this.newBonusesArray[this.newBonusesArray.length - 1];
 			item.target = this.new_target;
 			/**
 				 * validate item
 				 */
 
-			let not_validated_msg = this.validateMsg(item);
+			const not_validated_msg = this.validateMsg(item);
 			if (not_validated_msg != '') {
 				this.$toast.error(not_validated_msg)
 				return;
@@ -835,17 +863,17 @@ export default {
 			/**
 				 * prepare fields
 				 */
-			let loader = this.$loading.show();
-			let method = item.id == 0 ? 'save' : 'update';
-			let titles = [];
-			let sums = [];
-			let activity_ids = [];
-			let units = [];
-			let quantities = [];
-			let dayparts = [];
-			let froms = [];
-			let tos = [];
-			let texts = [];
+			const loader = this.$loading.show();
+			const method = item.id == 0 ? 'save' : 'update';
+			const titles = [];
+			const sums = [];
+			const activity_ids = [];
+			const units = [];
+			const quantities = [];
+			const dayparts = [];
+			const froms = [];
+			const tos = [];
+			const texts = [];
 			this.newBonusesArray.forEach(bonus => {
 				titles.push(bonus.title);
 				sums.push(bonus.sum);
@@ -857,50 +885,42 @@ export default {
 				tos.push(bonus.to);
 				texts.push(bonus.text);
 			});
-			let my_item = {
-				'targetable_type': item.target.type,
-				'targetable_id': parseInt(item.target.id),
-				'group_id': item.group_id,
-				'title': titles,
-				'sum': sums,
-				'activity_id': activity_ids,
-				'unit': units,
-				'quantity': quantities,
-				'daypart': dayparts,
-				'from': froms,
-				'to': tos,
-				'text': texts
-			};
-			let fields = {
+			const fields = {
+				...item,
 				targetable_id: item.target.id,
 				targetable_type: findModel(item.target.type),
-				...item
 			};
-			let req = item.id == 0
-				? this.axios.post(this.uri + '/' + method, my_item)
+			const req = item.id == 0
+				? this.axios.post(this.uri + '/' + method, {
+					bonuses: [{
+						...fields,
+						targetable_type: item.target.type,
+					}]
+				})
 				: this.axios.put(this.uri + '/' + method, fields);
 				/**
 				 * request
 				 */
-			req.then(response => {
+			req.then(() => {
 
 				if (method == 'save') {
-					let bonus = response.data.bonus;
-					item.id = bonus.id;
+					this.fetch()
+					// const bonus = response.data.bonus;
+					// item.id = bonus.id;
 					// this.items.unshift(item);
 
-					let i = this.all_items.findIndex(el => el.type == item.target.type && el.id == item.target.id);
-					if (i != -1) {
-						this.all_items[i].items.unshift(item);
-					} else {
-						this.all_items.unshift({
-							id: item.target.id,
-							type: item.target.type,
-							name: item.target.name,
-							items: [item],
-							expanded: false
-						});
-					}
+					// const i = this.all_items.findIndex(el => el.type == item.target.type && el.id == item.target.id);
+					// if (i != -1) {
+					// 	this.all_items[i].items.unshift(item);
+					// } else {
+					// 	this.all_items.unshift({
+					// 		id: item.target.id,
+					// 		type: item.target.type,
+					// 		name: item.target.name,
+					// 		items: [item],
+					// 		expanded: false
+					// 	});
+					// }
 					this.showSidebar = false
 				}
 				this.$toast.info('Сохранено');
@@ -920,10 +940,8 @@ export default {
 		addBonus() {
 			this.newBonusesArray.unshift(newBonus());
 			this.newBonusesArray[this.newBonusArray.length - 1].bonus.target = this.new_target;
-			console.log(this.newBonusesArray);
 		},
 		addItemRow() {
-			console.log(this.counter);
 			if (this.counter == 0) {
 				this.newBonusesArray.push(newBonus());
 				this.bonus = this.newBonusesArray[0];
@@ -932,8 +950,8 @@ export default {
 			this.addNewBonus = true;
 		},
 		swapFields() {
-			let temp = this.fields[4];
-			let temp2 = this.fields[6];
+			const temp = this.fields[4];
+			const temp2 = this.fields[6];
 			this.fields[6] = temp;
 			this.fields[4] = temp2;
 		},
@@ -944,7 +962,7 @@ export default {
 			this.page_items = page_items;
 		},
 		fetch(filter = null) {
-			let loader = this.$loading.show();
+			const loader = this.$loading.show();
 			this.axios.post(this.uri + '/get', {
 				filters: filter
 			}).then(response => {
@@ -973,7 +991,7 @@ export default {
 		},
 
 		setDefaultShowFields() {
-			let obj = {}; // Какие поля показывать
+			const obj = {}; // Какие поля показывать
 			fields.forEach(field => obj[field.key] = true);
 			if (localStorage.bonus_show_fields) {
 				this.show_fields = JSON.parse(localStorage.getItem('bonus_show_fields'));
@@ -994,7 +1012,7 @@ export default {
 			});
 		},
 		prepareFields() {
-			let visible_fields = []
+			const visible_fields = []
 
 			fields.forEach(field => {
 				if (this.show_fields[field.key] != undefined
@@ -1028,7 +1046,7 @@ export default {
 				return false;
 			}
 			// another
-			if (item.quantity <= 0) msg = 'Кол-во должно быть больше нуля'
+			if (item.quantity <= 0 && item.unit !== 'percent') msg = 'Кол-во должно быть больше нуля'
 			if (item.sum <= 0) msg = 'Вознаграждение должно быть больше нуля'
 
 			return msg;
@@ -1039,7 +1057,7 @@ export default {
 				 * validate item
 				 */
 
-			let not_validated_msg = this.validateMsg(item);
+			const not_validated_msg = this.validateMsg(item);
 			if (not_validated_msg != '') {
 				this.$toast.error(not_validated_msg)
 				return;
@@ -1048,50 +1066,44 @@ export default {
 			/**
 				 * prepare fields
 				 */
-			let loader = this.$loading.show();
-			let method = item.id == 0 ? 'save' : 'update';
-			let my_item = {
-				'targetable_type': item.target.type,
-				'targetable_id': parseInt(item.target.id),
-				'group_id': item.group_id,
-				'title': [item.title],
-				'sum': [item.sum],
-				'activity_id': [item.activity_id],
-				'unit': [item.unit],
-				'quantity': [item.quantity],
-				'daypart': [item.daypart],
-				'text': [item.text]
-			};
-			let fields = {
+			const loader = this.$loading.show();
+			const method = item.id == 0 ? 'save' : 'update';
+			const fields = {
+				...item,
 				targetable_id: item.target.id,
 				targetable_type: findModel(item.target.type),
-				...item
 			};
-			let req = item.id == 0
-				? this.axios.post(this.uri + '/' + method, my_item)
+			const req = item.id == 0
+				? this.axios.post(this.uri + '/' + method, {
+					bonuses: [{
+						...fields,
+						targetable_type: item.target.type
+					}]
+				})
 				: this.axios.put(this.uri + '/' + method, fields);
 				/**
 				 * request
 				 */
-			req.then(response => {
+			req.then(() => {
 
 				if (method == 'save') {
-					let bonus = response.data.bonus;
-					item.id = bonus.id;
-					// this.items.unshift(item);
+					this.fetch()
+					// const bonus = response.data.bonus;
+					// item.id = bonus.id;
+					// // this.items.unshift(item);
 
-					let i = this.all_items.findIndex(el => el.type == item.target.type && el.id == item.target.id);
-					if (i != -1) {
-						this.all_items[i].items.unshift(item);
-					} else {
-						this.all_items.unshift({
-							id: item.target.id,
-							type: item.target.type,
-							name: item.target.name,
-							items: [item],
-							expanded: false
-						});
-					}
+					// const i = this.all_items.findIndex(el => el.type == item.target.type && el.id == item.target.id);
+					// if (i != -1) {
+					// 	this.all_items[i].items.unshift(item);
+					// } else {
+					// 	this.all_items.unshift({
+					// 		id: item.target.id,
+					// 		type: item.target.type,
+					// 		name: item.target.name,
+					// 		items: [item],
+					// 		expanded: false
+					// 	});
+					// }
 					this.showSidebar = false
 				}
 				this.$toast.info('Сохранено');
@@ -1108,7 +1120,7 @@ export default {
 			return false;
 		},
 		deletee(id, p, i) {
-			let loader = this.$loading.show();
+			const loader = this.$loading.show();
 			this.axios.delete(this.uri + '/delete/' + id).then(() => {
 				this.deleteEvery(id, p, i)
 				loader.hide()
@@ -1134,7 +1146,7 @@ export default {
 		},
 		deleteItem(p, i) {
 
-			let item = this.page_items[p].items[i]
+			const item = this.page_items[p].items[i]
 			if (!confirm('Вы уверены?')) {
 				return;
 			}
@@ -1149,7 +1161,7 @@ export default {
 		},
 
 		onSearch() {
-			let text = this.searchText;
+			const text = this.searchText;
 
 			if (this.searchText == '') {
 				this.items = this.all_items;
@@ -1181,7 +1193,7 @@ export default {
 					el.source = 0;
 					el.group_id = 0;
 					if (el.activity_id != 0) {
-						let i = this.activities.findIndex(a => a.id == el.activity_id);
+						const i = this.activities.findIndex(a => a.id == el.activity_id);
 						if (i != -1) {
 							el.source = this.activities[i].source
 							if (el.source == 1) el.group_id = this.activities[i].group_id
@@ -1223,6 +1235,11 @@ export default {
 			th,td {
 				vertical-align: middle;
 			}
+		}
+	}
+	.KPIBonuses{
+		&-icon-info{
+			width: 1.6rem;
 		}
 	}
 </style>

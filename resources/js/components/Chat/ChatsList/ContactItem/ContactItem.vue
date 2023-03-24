@@ -177,7 +177,6 @@ export default {
   display: flex;
   align-items: center;
   line-height: 25px;
-  height: 25px;
   text-overflow: ellipsis;
   white-space: nowrap;
   font-weight: 500;
@@ -191,18 +190,17 @@ export default {
 
 .messenger__last-message {
   align-items: center;
-  font-size: 11px;
-  line-height: 15px;
+  font-size: 12px;
+  line-height: 18px;
   color: #8b8b8b;
   display: -webkit-box;
-  -webkit-line-clamp: 2;
+  -webkit-line-clamp: 1;
   -webkit-box-orient: vertical;
-  height: 30px;
 }
 
-.messenger__chat-selected .messenger__last-message {
+/* .messenger__chat-selected .messenger__last-message {
   color: #fff;
-}
+} */
 
 .messenger__avatar {
    background-size: cover;

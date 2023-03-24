@@ -115,38 +115,9 @@
 					:readers="message.readers || []"
 					:time="time"
 					:own="ownMessage"
+					:reactions="reactions"
+					@reaction-click="reactMessage({message: message, emoji_id: $event})"
 				/>
-			</div>
-			<div
-				v-if="countReaders > 0"
-				class="messenger__message-reactions"
-			>
-				<!-- <template v-if="last && message.readers && message.readers.length > 0 && ownMessage">
-					<MessageReaders
-						:message="message"
-						:user="user"
-					/>
-				</template> -->
-
-				<template v-if="reactions">
-					<div
-						v-for="(reaction, index) in reactions"
-						:key="index"
-						class="messenger__message-reaction"
-						@click="reactMessage({message: message, emoji_id: reaction.type})"
-					>
-						<div class="messenger__message-reaction-icon">
-							<span v-if="reaction.type === 1">&#128077;</span>
-							<span v-else-if="reaction.type === 2">&#128078;</span>
-							<span v-else-if="reaction.type === 3">&#10004;</span>
-							<span v-else-if="reaction.type === 4">&#10006;</span>
-							<span v-else-if="reaction.type === 5">&#10067;</span>
-						</div>
-						<div class="messenger__message-reaction-count">
-							<span>{{ reaction.count }}</span>
-						</div>
-					</div>
-				</template>
 			</div>
 
 			<!-- <div class="messenger__text-timestamp">
@@ -197,8 +168,8 @@ export default {
 		reactions() {
 			// go through each reader and if include reaction type
 			// add to reactions array
-			let reactions = [];
-			this.message.readers.forEach(reader => {
+			const reactions = []
+			this.message.readers?.forEach(reader => {
 				if (reader.pivot && reader.pivot.reaction) {
 					// increment reaction count if already in array
 					let reaction = reactions.find(reaction => reaction.type === reader.pivot.reaction);
@@ -226,8 +197,14 @@ export default {
 		},
 	},
 	methods: {
-		...mapActions(['showGallery', 'reactMessage', 'loadMessages', 'loadMoreNewMessages', 'requestScroll',
-			'setLoading']),
+		...mapActions([
+			'showGallery',
+			'reactMessage',
+			'loadMessages',
+			'loadMoreNewMessages',
+			'requestScroll',
+			'setLoading'
+		]),
 		isImage(file) {
 			const ext = file.name.split('.').pop();
 			return ['jpg', 'jpeg', 'png', 'gif'].includes(ext);//todo: другой способ определения. Хранить тип файла в БД.
@@ -284,6 +261,7 @@ export default {
 .messenger__message-box-left {
 	display: flex;
 	flex: 0 0 50%;
+	align-items: flex-end;
 	line-height: 1.4;
 	margin-left: 20px;
 }
@@ -291,19 +269,25 @@ export default {
 /*noinspection CssUnusedSymbol*/
 .messenger__message-box-left {
 	justify-content: flex-start;
+	.messenger__message-card {
+		background: #FFFFFF;
+		box-shadow: 0px 10px 30px rgba(38, 51, 77, 0.03);
+		border-radius: 18px;
+	}
 }
 
 /*noinspection CssUnusedSymbol*/
 .messenger__message-box-right {
 	justify-content: flex-end;
 	.messenger__message-card{
-		background: #e1ebff;
+		background: #EDF6FF;
+		border-radius: 18px;
 	}
 }
 
 .messenger__message-container {
 	position: relative;
-	padding: 2px 10px;
+	padding: 2px 0;
 	min-width: 75px;
 	box-sizing: content-box;
 	display: flex;
@@ -317,7 +301,9 @@ export default {
 /*noinspection CssUnusedSymbol*/
 .messenger__message-card {
 	position: relative;
-	font-size: 12px;
+	font-weight: 500;
+	font-size: 14px;
+	line-height: 17px;
 	padding: 10px;
 	white-space: pre-line;
 	max-width: 360px;
@@ -325,8 +311,6 @@ export default {
 	transition-property: box-shadow, opacity;
 	transition: box-shadow .28s cubic-bezier(.4, 0, .2, 1);
 	will-change: box-shadow;
-	box-shadow: 0 1px 1px -1px #0000001a, 0 1px 1px -1px #0000001c, 0 1px 2px -1px #0000001c;
-	background: #f4f6fa;
 	color: #5f5d5d;
 }
 
@@ -463,38 +447,6 @@ audio {
 .messenger__last-column {
 	width: 100px;
 	height: 75px;
-}
-
-.messenger__message-reactions {
-	display: flex;
-	flex-direction: row;
-	align-items: center;
-	justify-content: flex-end;
-	margin-top: 5px;
-}
-
-.messenger__message-reactions .messenger__message-reaction {
-	display: flex;
-	align-items: center;
-	justify-content: center;
-	border-radius: 40%;
-	margin-left: 5px;
-	font-size: 12px;
-	cursor: pointer;
-	padding: 5px 10px;
-	background-color: #f5f5f5;
-}
-
-.messenger__message-reactions .messenger__message-reaction:hover {
-	background-color: #e0e0e0;
-}
-
-.messenger__message-reactions .messenger__message-reaction .messenger__message-reaction-count {
-	margin-left: 5px;
-}
-
-.messenger__message-reactions .messenger__message-reaction .messenger__message-reaction-count:hover {
-	background-color: transparent;
 }
 
 .messenger__format-container_parent {
