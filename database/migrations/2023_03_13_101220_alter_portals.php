@@ -28,7 +28,7 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::connection('tenant')->table('portals', function (Blueprint $table) {
+        Schema::connection('mysql')->table('portals', function (Blueprint $table) {
             $table->dropColumn('main_page_video');
             $table->dropColumn('main_page_video_show_days_amount');
         });
