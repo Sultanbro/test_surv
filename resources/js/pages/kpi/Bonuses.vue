@@ -103,6 +103,14 @@
 									class="fa fa-save btn btn-success ml-3"
 									@click="saveNewBonusArray()"
 								/>
+								<b-form-checkbox
+									class="kpi-status-switch"
+									switch
+									:checked="!!bonus.is_active"
+									@input="changeStatus(bonus, $event)"
+								>
+									&nbsp;
+								</b-form-checkbox>
 							</div>
 						</td>
 					</tr>
@@ -338,6 +346,15 @@
 										v-if="page_item.type == 3"
 									/>
 									<span class="ml-2">{{ page_item.name }}</span>
+
+									<b-form-checkbox
+										class="kpi-status-switch"
+										switch
+										:value="page_item.is_active"
+										@input="changeStatus(page_item, $event)"
+									>
+										&nbsp;
+									</b-form-checkbox>
 								</div>
 							</td>
 						</tr>
@@ -788,7 +805,8 @@ export default {
 				'updated_at',
 				'created_by',
 				'updated_by',
-			]
+			],
+			statusRequest: false
 		}
 	},
 	watch: {
@@ -835,6 +853,20 @@ export default {
 
 	},
 	methods: {
+		changeStatus(item, e){
+			if(this.statusRequest) return
+			this.statusRequest = true
+			this.axios.post('/bonus/set/status', {
+				bonus_id: item.id,
+				is_active: e
+			}).then(() => {
+				this.$toast.success('Статус изменен')
+				this.statusRequest = false
+			}).catch(() => {
+				this.$toast.error('Статус не изменен')
+				this.statusRequest = false
+			})
+		},
 		onChangeUnit(item){
 			if(item.unit === 'percent'){
 				item.quantity = null

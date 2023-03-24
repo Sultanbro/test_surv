@@ -327,6 +327,14 @@
 										v-if="page_item.type == 3"
 									/>
 									<span class="ml-2">{{ page_item.name }}</span>
+									<b-form-checkbox
+										class="kpi-status-switch"
+										switch
+										:checked="!!page_item.is_active"
+										@input="changeStatus(page_item, $event)"
+									>
+										&nbsp;
+									</b-form-checkbox>
 								</div>
 							</td>
 						</tr>
@@ -817,7 +825,8 @@ export default {
 				'updated_at',
 				'created_by',
 				'updated_by',
-			]
+			],
+			statusRequest: false
 		}
 	},
 
@@ -837,6 +846,20 @@ export default {
 	},
 
 	methods: {
+		changeStatus(item, e){
+			if(this.statusRequest) return
+			this.statusRequest = true
+			this.axios.post('/quartal-premiums/set/status', {
+				premium_id: item.id,
+				is_active: e
+			}).then(() => {
+				this.$toast.success('Статус изменен')
+				this.statusRequest = false
+			}).catch(() => {
+				this.$toast.error('Статус не изменен')
+				this.statusRequest = false
+			})
+		},
 		addPremiumGroup(page){
 			page.items.push(newQuartalPremium());
 			page.items[page.items.length - 1].target = {
