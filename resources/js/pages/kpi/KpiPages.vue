@@ -174,9 +174,9 @@ export default {
 	}
 
 	.kpi-status-switch{
-		width: 40px;
-		height: 40px;
-		margin-left: auto;
 		position: relative;
+	}
+	.kpi-pages .kpi .kpi-status-switch{
+		margin-left: auto;
 	}
 </style>
