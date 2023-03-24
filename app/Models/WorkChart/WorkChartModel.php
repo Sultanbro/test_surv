@@ -111,15 +111,32 @@ class WorkChartModel extends Model
      */
     public function workTime(): array
     {
-        $workStartTime  = $this->start_time
-            ?? Timetracking::DEFAULT_WORK_START_TIME;
-
-        $workEndTime = $this->end_time
-            ?? Timetracking::DEFAULT_WORK_END_TIME;
-
         return [
-            'workStartTime' => $workStartTime,
-            'workEndTime'   => $workEndTime,
+            'workStartTime' => $this->start_time,
+            'workEndTime'   => $this->end_time,
+        ];
+    }
+
+    /**
+     * Получаем время работы.
+     *
+     * @return array
+     */
+    public static function getWorkTime(?self $chart): array
+    {
+        return $chart ? $chart->workTime() : self::defaultWorkTime();
+    }
+
+    /**
+     * Получаем default время работы.
+     *
+     * @return array
+     */
+    public static function defaultWorkTime(): array
+    {
+        return [
+            'workStartTime' => Timetracking::DEFAULT_WORK_START_TIME,
+            'workEndTime'   => Timetracking::DEFAULT_WORK_END_TIME,
         ];
     }
 }

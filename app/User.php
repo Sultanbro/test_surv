@@ -1049,7 +1049,7 @@ class User extends Authenticatable implements Authorizable
     {
         $userChart = $this->getWorkChart();
 
-        return $userChart->workTime();
+        return WorkChartModel::getWorkTime($userChart);
     }
 
     /**
