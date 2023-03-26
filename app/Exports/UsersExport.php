@@ -2,7 +2,9 @@
 
 namespace App\Exports;
 
+use App\Models\Tax;
 use App\User;
+use Illuminate\Support\Facades\DB;
 use Maatwebsite\Excel\Concerns\WithHeadings;
 use Maatwebsite\Excel\Concerns\Exportable;
 use Maatwebsite\Excel\Concerns\ShouldAutoSize;
@@ -13,6 +15,7 @@ use Maatwebsite\Excel\Sheet;
 use Maatwebsite\Excel\Facades\Excel;
 use Maatwebsite\Excel\Concerns\RegistersEventListeners;
 use Maatwebsite\Excel\Concerns\FromCollection;
+use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
 
 
 class UsersExport implements FromCollection, WithTitle, WithHeadings, ShouldAutoSize, WithEvents
@@ -57,10 +60,16 @@ class UsersExport implements FromCollection, WithTitle, WithHeadings, ShouldAuto
 
     public function registerEvents(): array
     {
+        $countOfTaxes = DB::table('user_tax')->select(DB::raw('COUNT(DISTINCT `user_tax`.`tax_id`) as `count`'))->first()->count;
+
+        $indexOfCell = 21 + $countOfTaxes;
+        $coordinate = (new \PhpOffice\PhpSpreadsheet\Worksheet\Worksheet)->getCellByColumnAndRow($indexOfCell,0)->getParent()->getCurrentCoordinate();
+        $coordinateOfStyle = str_replace('0', '3', $coordinate);
+
         return [
-            AfterSheet::class    => function(AfterSheet $event) {
+            AfterSheet::class    => function(AfterSheet $event) use ($coordinate, $coordinateOfStyle) {
   
-                 $event->sheet->getDelegate()->getStyle('A1:U3')
+                 $event->sheet->getDelegate()->getStyle("A1:$coordinateOfStyle")
                                 ->getFont()
                                 ->setBold(true);                
 
@@ -82,7 +91,7 @@ class UsersExport implements FromCollection, WithTitle, WithHeadings, ShouldAuto
                         ->getStartColor()
                         ->setARGB('ffc000');
 
-                $event->sheet->getDelegate()->getStyle('N3:U3')
+                $event->sheet->getDelegate()->getStyle("N3:$coordinateOfStyle")
                         ->getFill()
                         ->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)
                         ->getStartColor()
@@ -101,7 +110,7 @@ class UsersExport implements FromCollection, WithTitle, WithHeadings, ShouldAuto
                         $event->sheet->setCellValue($fields[$key] . (7 + $this->counter), $item);
                }*/
 
-                $last = 'U';
+                $last = $coordinate;
 
                $totals = 'F' . (count($this->collection) + 3) . ':' . $last  . (count($this->collection) + 3);
                $totals2 = 'F' . ($this->counter + 5) . ':' . $last  . ($this->counter + 5);
@@ -145,7 +154,7 @@ class UsersExport implements FromCollection, WithTitle, WithHeadings, ShouldAuto
                         ->getStartColor()
                         ->setARGB('e0e0e0');
 
-                $event->sheet->getDelegate()->getStyle('F'.(5 + $this->counter).':U'.(5 + $this->counter))
+                $event->sheet->getDelegate()->getStyle('F'.(5 + $this->counter).":$coordinate".(5 + $this->counter))
                         ->getFill()
                         ->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)
                         ->getStartColor()
@@ -184,7 +193,7 @@ class UsersExport implements FromCollection, WithTitle, WithHeadings, ShouldAuto
                 */
 
                 $event->sheet->styleCells(
-                    'A3:U3',
+                    "A3:$coordinateOfStyle",
                     [
                         'borders' => [
                             'allBorders' => [
@@ -195,7 +204,7 @@ class UsersExport implements FromCollection, WithTitle, WithHeadings, ShouldAuto
                 );
 
                 $event->sheet->styleCells(
-                    'A5:U'. $count_fields,
+                    "A5:$coordinate". $count_fields,
                     [
                         'borders' => [
                             'allBorders' => [
@@ -206,7 +215,7 @@ class UsersExport implements FromCollection, WithTitle, WithHeadings, ShouldAuto
                 );
 
                 $event->sheet->styleCells(
-                    'F'.(5 + $this->counter).':U'.(5 + $this->counter),
+                    'F'.(5 + $this->counter).":$coordinate".(5 + $this->counter),
                     [
                         'borders' => [
                             'allBorders' => [
@@ -218,7 +227,7 @@ class UsersExport implements FromCollection, WithTitle, WithHeadings, ShouldAuto
 
                 //polya dlya uvolennyh
                 $event->sheet->styleCells(
-                    'A'.(9 + $this->counter).':U'.(count($this->collection) + 2),
+                    'A'.(9 + $this->counter).":$coordinate".(count($this->collection) + 2),
                     [
                         'borders' => [
                             'allBorders' => [
@@ -229,7 +238,7 @@ class UsersExport implements FromCollection, WithTitle, WithHeadings, ShouldAuto
                 );
 
                 $event->sheet->styleCells(
-                    'F'.(count($this->collection) + 3).':U'.(count($this->collection) + 3),
+                    'F'.(count($this->collection) + 3).":$coordinate".(count($this->collection) + 3),
                     [
                         'borders' => [
                             'allBorders' => [

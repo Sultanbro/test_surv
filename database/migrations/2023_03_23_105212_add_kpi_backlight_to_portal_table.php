@@ -14,10 +14,9 @@ return new class extends Migration
     public function up()
     {
         Schema::connection('mysql')->table('portals', function (Blueprint $table) {
-            $table->string('main_page_video')->nullable();
-            $table->integer('main_page_video_show_days_amount')
-                ->unsigned()
-                ->default(0);
+            $table->json('kpi_backlight')
+                ->comment('Цвет ячеек kpi')
+                ->nullable();
         });
     }
 
@@ -29,8 +28,7 @@ return new class extends Migration
     public function down()
     {
         Schema::connection('mysql')->table('portals', function (Blueprint $table) {
-            $table->dropColumn('main_page_video');
-            $table->dropColumn('main_page_video_show_days_amount');
+            $table->dropColumn('kpi_backlight');
         });
     }
 };

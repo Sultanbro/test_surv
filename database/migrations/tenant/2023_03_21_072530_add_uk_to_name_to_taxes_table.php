@@ -13,11 +13,9 @@ return new class extends Migration
      */
     public function up()
     {
-        if (!Schema::hasColumn('users', 'currency')) {
-            Schema::table('users', function (Blueprint $table) {
-                $table->string('currency', 3)->default('kzt');
-            });
-        }
+        Schema::table('taxes', function (Blueprint $table) {
+            $table->string('name')->unique()->change();
+        });
     }
 
     /**
@@ -27,8 +25,8 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::table('users', function (Blueprint $table) {
-            //
+        Schema::table('taxes', function (Blueprint $table) {
+            $table->string('name')->change();
         });
     }
 };

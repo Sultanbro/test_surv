@@ -169,40 +169,6 @@
 	.bp-text{
 	  margin-top: 40px;
 	}
-
-	.author{
-	  display: block !important;
-	  text-align: center;
-	  img{
-		min-width: 80px;
-		width: 80px;
-		min-height: 80px;
-		height: 80px;
-		margin-bottom: 15px;
-	  }
-	  .edited{
-		display: flex;
-		align-items: center;
-		justify-content: center;
-		font-size: 12px;
-		margin-bottom: 5px;
-		.author-time{
-		  color: #A0AEC0;
-		  span{
-			color: #A0AEC0!important;
-			text-align: right;
-		  }
-		}
-		i{
-		  color: #E4ECF7;
-		  margin: 0 15px;
-		}
-		.author-author{
-		  font-weight: 500!important;
-		  color: #156AE8;
-		}
-	  }
-	}
   }
 
   .course-name {

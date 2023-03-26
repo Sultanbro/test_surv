@@ -114,6 +114,15 @@
 										v-if="item.target.type == 3"
 									/>
 									<span class="ml-2">{{ item.target.name }}</span>
+									<b-form-checkbox
+										class="kpi-status-switch"
+										switch
+										:checked="!!item.is_active"
+										:disabled="statusRequest"
+										@input="changeStatus(item, $event)"
+									>
+										&nbsp;
+									</b-form-checkbox>
 								</div>
 							</div>
 
@@ -307,7 +316,8 @@ export default {
 				'updated_at',
 				'created_by',
 				'updated_by',
-			]
+			],
+			statusRequest: false
 		}
 	},
 
@@ -325,6 +335,20 @@ export default {
 		);
 	},
 	methods: {
+		changeStatus(item, e){
+			if(this.statusRequest) return
+			this.statusRequest = true
+			this.axios.post('/kpi/set/status', {
+				id: item.id,
+				is_active: e
+			}).then(() => {
+				this.$toast.success('Статус изменен')
+				this.statusRequest = false
+			}).catch(() => {
+				this.$toast.error('Статус не изменен')
+				this.statusRequest = false
+			})
+		},
 		expand(i) {
 			this.page_items[i].expanded = !this.page_items[i].expanded
 		},
@@ -475,8 +499,9 @@ export default {
 				: this.axios.put(this.uri + '/' + method, fields);
 
 			req.then(response => {
-
-				item.id = response.data.id;
+				Object.keys(response.data).forEach(key => {
+					item[key] = response.data[key]
+				})
 				item.items.forEach((el, index) => {
 					el.id = response.data.items[index]
 				});
