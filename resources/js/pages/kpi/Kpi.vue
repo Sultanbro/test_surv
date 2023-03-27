@@ -472,8 +472,8 @@ export default {
 			let method = this.items[i].id == 0 ? 'save' : 'update';
 
 			/**
-             * validate item
-             */
+			 * validate item
+			 */
 			let not_validated_msg = this.validateMsg(item);
 			if(not_validated_msg != '') {
 				this.$toast.error(not_validated_msg)
@@ -498,12 +498,10 @@ export default {
 				? this.axios.post(this.uri + '/' + method, fields)
 				: this.axios.put(this.uri + '/' + method, fields);
 
-			req.then(response => {
-				Object.keys(response.data).forEach(key => {
-					item[key] = response.data[key]
-				})
+			req.then(({data}) => {
+				item.id = data.id
 				item.items.forEach((el, index) => {
-					el.id = response.data.items[index]
+					el.id = data.items[index]
 				});
 
 				this.removeDeletedItems(item.items)
