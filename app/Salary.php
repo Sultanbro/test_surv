@@ -572,10 +572,14 @@ class Salary extends Model
             $hours       = []; 
             $trainings   = []; 
 
-            $lunchTime = 1;
-            $schedule = $user->schedule();
-
-            $worktime = max($schedule['end']->addMinutes(30)->diffInHours($schedule['start']) - $lunchTime, 0);
+            /**
+             * worktime hours in day
+             */
+            if($user->working_time_id == 1) {
+                $worktime = 8;
+            } else {
+                $worktime = 9;
+            }
 
             for ($i = 1; $i <= $date->daysInMonth; $i++) {
 
@@ -587,6 +591,9 @@ class Salary extends Model
                 $s = $user->salaries->where('day', $d)->first();
 
                 $zarplata = $s ? $s->amount : 70000;
+
+                $schedule = $user->schedule();
+                $lunchTime = 1;
 
                 $working_hours = max($schedule['end']->addMinutes(30)->diffInHours($schedule['start']) - $lunchTime, 0);
 
