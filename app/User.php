@@ -27,6 +27,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Database\Query;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Http\Request;
 use Illuminate\Notifications\Notifiable;
@@ -84,7 +85,6 @@ class User extends Authenticatable implements Authorizable
         'work_start',
         'work_end',
         'birthday', 
-        'last_group',
         'read_corp_book_at',
         'has_noti',
         'notified_at',
@@ -1243,5 +1243,27 @@ class User extends Authenticatable implements Authorizable
     ): Model
     {
         return self::query()->findOrFail($id);
+    }
+
+    /**
+     * @param Query\Builder $builder
+     * @param int $group_id
+     * @param ?Carbon $date
+     */
+    public static function groupeFilter(
+        Query\Builder $builder,
+        int $groupId,
+        ?Carbon $date,
+    ): Query\Builder
+    {
+        return $builder
+            ->join('group_user', function (Query\JoinClause $join) use ($groupId, $date) {
+                $join->on('group_user.group_id', '=', $groupId);
+                $join->on('group_user.user_id', '=', 'users.id');
+                if ($date) {
+                    $join->on('group_user.from', '>=', $date);
+                    $join->on('group_user.to', '<=', $date);
+                }
+            });
     }
 }

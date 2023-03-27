@@ -14,6 +14,8 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
+use Illuminate\Database\Query\Builder;
+use Illuminate\Database\Query\JoinClause;
 use Illuminate\Http\Request;
 use Spatie\Permission\Traits\HasRoles;
 
@@ -337,193 +339,101 @@ class ProfileGroup extends Model
         
     }
 
-    public static function employees($group_id, $date = null, $user_types = 0, $positions = []) {
-        $group = self::find($group_id);
-        $users = [];
-
-        if($user_types == 0 || $user_types == 1) {
-            $group_users = json_decode($group->users);
-            if($group->users == null) $group_users = [];
-            
-            $users = $group_users;
-            
-            $users = \DB::table('users')
-                ->whereNull('deleted_at')
-                ->leftJoin('user_descriptions as ud', 'ud.user_id', '=', 'users.id')
-                ->whereIn('users.id', $users)
-                ->where('is_trainee', 0)
-                ->orderBy('last_name', 'asc')
-                ->select(['users.id','users.last_name', 'users.name']);
-                
-            if(count($positions) > 0) $users->whereIn('position_id', $positions);
-            $users = $users->get()
-                ->pluck('id')
-                ->toArray();
-        }  
-        
-        if($user_types == 0 || $user_types == 2) { 
-            $fired_users = [];
-            if($date) {
-                $date = Carbon::parse($date);
-                $x_users = \DB::table('users')
-                    ->leftJoin('user_descriptions as ud', 'ud.user_id', '=', 'users.id')
-                    ->where('is_trainee', 0)
-                    ->whereDate('deleted_at', '>=', Carbon::createFromDate($date->year, $date->month, 1)->format('Y-m-d'));
-                    
-                    if(count($positions) > 0) $x_users->whereIn('position_id', $positions);
-                    $x_users = $x_users->get(['users.id','users.last_group']);
-            
-                foreach($x_users as $d_user) {
-                    if($d_user->last_group) { 
-                        $lg = json_decode($d_user->last_group);
-                        if(in_array($group_id, $lg)) {
-                            array_push($fired_users, $d_user->id);
-                        }
-                    } 
-                }
-            }
-        
-            $users = $users + $fired_users;
+    /**
+     * @param int $group_id
+     * @param ?Carbon|string $date
+     * @param ?int $user_types
+     * @param ?array<int> $positionIds
+     */
+    public static function employees(
+        int $group_id,
+        $date = null,
+        $user_types = 0,
+        $positionIds = [],
+    ) {
+        if($date) {
+            $date = Carbon::parse($date);
         }
-            
-        return array_unique($users);
 
+        return self::getUserIdsByGroup(
+            $group_id,
+            $date,
+            false,
+            $user_types,
+            $positionIds,
+        );
     }
 
     /**
-     * same as employees()
+     * @param ?Carbon|string $date
      */
     public function workers($date = null) { 
-      
-        $users = json_decode($this->users);
-
-        $users = \DB::table('users')
-            ->leftJoin('user_descriptions as ud', 'ud.user_id', '=', 'users.id')
-            ->whereIn('users.id', $users)
-            ->where('is_trainee', 0)
-            ->orderBy('last_name', 'asc')
-            ->select(['users.id','users.last_name', 'users.name'])
-            ->get()
-            ->pluck('id')
-            ->toArray();
-
-            $fired_users = [];
         if($date) {
             $date = Carbon::parse($date);
-            $x_users = \DB::table('users')
-                ->leftJoin('user_descriptions as ud', 'ud.user_id', '=', 'users.id')
-                ->where('is_trainee', 0)
-                ->whereDate('deleted_at', '>=', Carbon::createFromDate($date->year, $date->month, 1)->format('Y-m-d'))
-                ->get(['users.id','users.last_group']);
-
-          
-            foreach($x_users as $d_user) {
-                if($d_user->last_group) { 
-                    $lg = json_decode($d_user->last_group);
-                    if(in_array($this->id, $lg)) {
-                        array_push($fired_users, $d_user->id);
-                    }
-                } 
-            }
         }
-      
-        $users = $users + $fired_users;
-        return array_unique($users);
 
+        return self::getUserIdsByGroup($this->id, $date);
     }
 
     /**
-     * Temp fcuntion for count worked users on month
+     * @param ?Carbon|string $date
      */
-    public static function employees2($group_id, $date, $user_types = 0, $positions = []) {
-        $group = self::find($group_id);
-        $users = [];
-
-        $date = Carbon::parse($date);
-
-        if($user_types == 0 || $user_types == 1) {
-            $users = json_decode($group->users);
-            $users = \DB::table('users')
-                ->whereNull('deleted_at')
-                ->leftJoin('user_descriptions as ud', 'ud.user_id', '=', 'users.id')
-                ->whereIn('users.id', $users)
-                ->where('is_trainee', 0)
-                ->whereYear('ud.applied', $date->year)
-                ->whereMonth('ud.applied', $date->year)
-                ->orderBy('last_name', 'asc')
-                ->select(['users.id','users.last_name', 'users.name']);
-                
-            if(count($positions) > 0) $users->whereIn('position_id', $positions);
-            $users = $users->get()
-                ->pluck('id')
-                ->toArray();
-        }  
-        
-        if($user_types == 0 || $user_types == 2) { 
-            $fired_users = [];
-            if($date) {
-                $date = Carbon::parse($date);
-                $x_users = \DB::table('users')
-                    ->leftJoin('user_descriptions as ud', 'ud.user_id', '=', 'users.id')
-                    ->where('is_trainee', 0)
-                    ->whereDate('deleted_at', '>=', Carbon::createFromDate($date->year, $date->month, 1)->format('Y-m-d'));
-                    
-                    if(count($positions) > 0) $x_users->whereIn('position_id', $positions);
-                    $x_users = $x_users->get(['users.id','users.last_group']);
-            
-                foreach($x_users as $d_user) {
-                    if($d_user->last_group) { 
-                        $lg = json_decode($d_user->last_group);
-                        if(in_array($group_id, $lg)) {
-                            array_push($fired_users, $d_user->id);
-                        }
-                    } 
-                }
-            }
-        
-            $users = $users + $fired_users;
-        }
-            
-        return array_unique($users);
-
-    }
-
     public function trainees($date = null) 
     {
-        $users = json_decode($this->users);
+        if($date) {
+            $date = Carbon::parse($date);
+        }
 
-        $users = \DB::table('users')
+        return self::getUserIdsByGroup($this->id, $date, true);
+    }
+
+    /**
+     * @param int $groupId
+     * @param ?Carbon $date
+     * @param bool $isTrainee
+     * @param int $deleteType 0 - any 1 - normal 2 - deleted
+     * @param ?array<int> $positionIds
+     * @return array<int>
+     */
+    public static function getUserIdsByGroup(
+        int $groupId,
+        ?Carbon $date,
+        bool $isTrainee = false,
+        int $deleteType = 0,
+        array $positionIds = [],
+    ): array {
+        $deletedUsersBuilder = \DB::table('users')
+            ->select(['users.id'])
             ->leftJoin('user_descriptions as ud', 'ud.user_id', '=', 'users.id')
-            ->whereIn('users.id', $users)
-            ->where('is_trainee', 1)
-            ->orderBy('last_name', 'asc')
-            ->select(['users.id','users.last_name', 'users.name'])
+            ->where('is_trainee', $isTrainee ? 1 : 0);
+
+        if ($deleteType == 1) {
+            $deletedUsersBuilder->whereNull('deleted_at');
+        } else {
+            if ($date) {
+                $deletedUsersBuilder->where(function (Builder $query) use ($date) {
+                    $query->whereNull('deleted_at');
+                    $query->orWhereDate(
+                        'deleted_at',
+                        '>=',
+                        Carbon::createFromDate($date->year, $date->month, 1)
+                            ->format('Y-m-d'),
+                    );
+                });
+            } else if ($deleteType == 2) {
+                $deletedUsersBuilder->whereNotNull('deleted_at');
+            }
+        }
+
+        $deletedUsersBuilder = User::groupeFilter($deletedUsersBuilder, $groupId, $date);
+
+        if(count($positionIds) > 0) {
+            $deletedUsersBuilder->whereIn('position_id', $positionIds);
+        }
+
+        return $deletedUsersBuilder
             ->get()
             ->pluck('id')
             ->toArray();
-
-            $fired_users = [];
-        if($date) {
-            $date = Carbon::parse($date);
-            $x_users = \DB::table('users')
-                ->leftJoin('user_descriptions as ud', 'ud.user_id', '=', 'users.id')
-                ->where('is_trainee', 1)
-                ->whereDate('deleted_at', '>=', Carbon::createFromDate($date->year, $date->month, 1)->format('Y-m-d'))
-                ->get(['users.id','users.last_group']);
-
-
-          
-            foreach($x_users as $d_user) {
-                if($d_user->last_group) { 
-                    $lg = json_decode($d_user->last_group);
-                    if(in_array($this->id, $lg)) {
-                        array_push($fired_users, $d_user->id);
-                    }
-                } 
-            }
-        }
-      
-        $users = $users + $fired_users;
-        return array_unique($users);
     }
 }
