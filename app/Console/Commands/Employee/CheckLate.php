@@ -40,7 +40,7 @@ class CheckLate extends Command
     /**
      * 
      */
-    protected $user;
+    protected User $user;
 
     /**
      * 'Y-m-d'
@@ -87,10 +87,10 @@ class CheckLate extends Command
      
     }
 
-    public function checkLate() {
-        
+    public function checkLate()
+    {        
         $workStart = $this->user->work_starts_at(); // Время начала смены для юзера
-        
+
         dump($this->user->last_name . ' ' . $this->user->name . ' ' . $workStart);
 
         $dateTimeStart = Timetracking::where('user_id', $this->user->id) // Время начала работы, первый enter

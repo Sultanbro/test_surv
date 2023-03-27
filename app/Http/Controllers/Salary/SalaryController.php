@@ -409,7 +409,12 @@ class SalaryController extends Controller
         }
         
         $date = $request->year . '-' . $request->month . '-01';
-        $taxesColumns = Tax::query()->get()->pluck('name')->toArray();
+
+        $taxesColumns = DB::table('taxes')->whereRaw('`taxes`.`id` IN (
+                SELECT `user_tax`.`tax_id`
+                FROM `user_tax`
+                GROUP BY `user_tax`.`tax_id`
+            )')->get()->pluck('name')->toArray();
 
         $headings = [
             'ФИО', // 0
@@ -431,19 +436,14 @@ class SalaryController extends Controller
             'ИПН', // 16
             'СО + СН', // 17
             'ИТОГО расход', // 18
-            'К выдаче', // 19
-            'В валюте', // 20
         ];
 
-        foreach ($taxesColumns as $column)
-        {
-            $headings[] = $column;
-        }
+        array_push($headings, ...$taxesColumns);
+        array_push($headings, 'К выдаче', 'В валюте');
 
         $data = [];
 
         $date = Carbon::createFromDate($request->year,$request->month,1);
-
 
         $working_users = $this->getSheet($working_users, $date, $request->group_id);
         $fired_users = $this->getSheet($fired_users, $date, $request->group_id);
@@ -508,7 +508,11 @@ class SalaryController extends Controller
         /**
          * Налоги.
          */
-        $taxColumns = Tax::query()->get();
+        $taxColumns = DB::table('taxes')->whereRaw('`taxes`.`id` IN (
+                SELECT `user_tax`.`tax_id`
+                FROM `user_tax`
+                GROUP BY `user_tax`.`tax_id`
+            )')->get();
 
         $allTotal = [
             0 => '',
@@ -529,20 +533,24 @@ class SalaryController extends Controller
             15 => 0,
             16 => 0,
             17 => 0,
-            18 => 0,
-            19 => 0,
-            20 => 0
+            18 => 0
         ];
 
         foreach ($taxColumns as $tax)
         {
             $allTotal["tax_$tax->id"] = 0;
         }
+        $allTotal[] = 0;
+        $allTotal[] = 0;
 
         $i = 0;
         
         $data['users'] = [];
-        
+
+        $userIds    = $users->pluck('id')->toArray();
+        $zarplaties = Zarplata::getSalaryByUserIds($userIds);
+        $userTaxes  = DB::table('user_tax')->whereIn('user_id', $userIds)->get();
+
         foreach ($users as $user) { /** @var User $user */
 
             $_user = User::withTrashed()->find($user->id);
@@ -807,7 +815,7 @@ class SalaryController extends Controller
          
             // if($user->id == 5670) {
 
-            
+
             // dump($salary);
             // dump($bonus);
             // dump($prepaid);
@@ -850,8 +858,7 @@ class SalaryController extends Controller
             // В валюте
             $currency_rate = in_array($user->currency, array_keys(Currency::rates())) ? (float)Currency::rates()[$user->currency] : 0.0000001;
 
-
-            //Итоговые колонки для excel.
+            // Колонки для excel.
             $totalColumns = [
                 0 => $user->full_name, // Действующие
                 1 => $cardholder, // Card Holder name
@@ -867,34 +874,31 @@ class SalaryController extends Controller
                 11 => 0, //
                 12 => 0, // ИТОГО доход,
                 13 => 0, // Авансы
-                14 => 0, // Штрафы    //11 => $total, // Итого
+                14 => 0, // Штрафы
                 15 => 0, // ОПВ
                 16 => 0, // ИПН
                 17 => 0, // СО + СН
                 18 => 0, // итого расход
-                19 => 0, // к выдаче
-                20 => 0, // в валюте
             ];
 
             /**
              * Расчет налогов.
              */
-            $sumOfTax = 0;
             foreach ($taxColumns as $taxColumn)
             {
-                $employeeSalary = Zarplata::query()->where('user_id', $user->id)->first()->zarplata ?? 0;
+                $userZarplata =$zarplaties->where('user_id', $user->id)->first()->zarplata;
                 $totalColumns["tax_$taxColumn->id"] = 0;
-                if ($taxColumn->users->contains($user->id))
+                $exist = $userTaxes->where('user_id', $user->id)->where('tax_id', $taxColumn->id)->count() > 0;
+
+                if ($exist)
                 {
-                    $amount = $taxColumn->is_percent ? $employeeSalary * ($taxColumn->value / 100) : $taxColumn->value;;
-                    $sumOfTax += $amount;
+                    $amount = $taxColumn->is_percent ? $userZarplata * ($taxColumn->value / 100) : $taxColumn->value;;
+                    $total_payment -= $amount;
                     $totalColumns["tax_$taxColumn->id"] = $amount;
                     $allTotal["tax_$taxColumn->id"] += $amount;
                 }
             }
-            $total_payment  -= $sumOfTax;
             $on_currency = number_format((float)$total_payment * (float)$currency_rate, 0, '.', '') . strtoupper($user->currency);
-
 
             try {
                 if($edited_salary)

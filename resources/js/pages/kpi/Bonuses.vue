@@ -527,8 +527,17 @@
 															>
 														</template>
 													</td>
-													<td class="ho-hover">
+													<td class="no-hover">
 														<div class="d-flex px-2">
+															<b-form-checkbox
+																class="kpi-status-switch"
+																switch
+																:checked="!!item.is_active"
+																:disabled="statusRequest"
+																@input="changeStatus(item, $event)"
+															>
+																&nbsp;
+															</b-form-checkbox>
 															<i
 																class="fa fa-save btn btn-success btn-icon"
 																@click="saveItemFromTable(p, i)"
@@ -788,7 +797,8 @@ export default {
 				'updated_at',
 				'created_by',
 				'updated_by',
-			]
+			],
+			statusRequest: false
 		}
 	},
 	watch: {
@@ -835,6 +845,20 @@ export default {
 
 	},
 	methods: {
+		changeStatus(item, e){
+			if(this.statusRequest) return
+			this.statusRequest = true
+			this.axios.post('/bonus/set/status', {
+				bonus_id: item.id,
+				is_active: e
+			}).then(() => {
+				this.$toast.success('Статус изменен')
+				this.statusRequest = false
+			}).catch(() => {
+				this.$toast.error('Статус не изменен')
+				this.statusRequest = false
+			})
+		},
 		onChangeUnit(item){
 			if(item.unit === 'percent'){
 				item.quantity = null

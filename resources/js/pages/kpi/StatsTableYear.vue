@@ -16,6 +16,7 @@
 		<table class="StatsTableYear-table j-table mt-4">
 			<thead>
 				<tr class="table-heading">
+					<th />
 					<th class="first-column">
 						Сотрудник\Отдел
 					</th>
@@ -32,32 +33,66 @@
 				</tr>
 			</thead>
 			<tbody>
-				<tr
-					v-for="kpi in stats"
-					:key="kpi.id"
-				>
-					<td class="p-3">
-						<i
-							v-if="kpi.type === 1"
-							class="fa fa-user mt-1 mr-1"
-						/>
-						<i
-							v-else
-							class="fa fa-users mt-1 mr-1"
-						/>
-						{{ kpi.title }}
-					</td>
-					<td class="text-center p-3">
-						{{ kpi.avg }}
-					</td>
-					<td
-						v-for="month, key in $moment.months()"
-						:key="key"
-						class="text-center p-3"
-					>
-						{{ kpi[key+1] || '' }}
-					</td>
-				</tr>
+				<template v-for="kpi in stats">
+					<tr :key="kpi.id">
+						<td
+							class="p-3 pointer"
+							@click="toggleKPI(kpi)"
+						>
+							<i
+								v-if="kpi.expanded"
+								class="fa fa-minus mt-1"
+							/>
+							<i
+								v-else
+								class="fa fa-plus mt-1"
+							/>
+						</td>
+						<td class="p-3">
+							<i
+								v-if="kpi.type === 1"
+								class="fa fa-user mt-1 mr-1"
+							/>
+							<i
+								v-else
+								class="fa fa-users mt-1 mr-1"
+							/>
+							{{ kpi.title }}
+						</td>
+						<td class="text-center p-3">
+							{{ kpi.avg }}
+						</td>
+						<td
+							v-for="month, key in $moment.months()"
+							:key="key"
+							class="text-center p-3"
+						>
+							{{ kpi[key+1] || '' }}
+						</td>
+					</tr>
+					<template v-if="kpi.expanded">
+						<tr
+							v-for="user in kpi.users"
+							:key="`${kpi.id}-${user.id}`"
+						>
+							<td />
+							<td class="p-3">
+								<i class="fa fa-user mt-1 mr-1" />
+								{{ user.name }}
+							</td>
+							<td class="text-center p-3">
+								{{ kpi.avg || '' }}
+							</td>
+							<td
+								v-for="month, key in $moment.months()"
+								:key="key"
+								class="text-center p-3"
+							>
+								{{ user[key+1] || '' }}
+							</td>
+						</tr>
+					</template>
+				</template>
 			</tbody>
 		</table>
 		<b-pagination
@@ -96,8 +131,21 @@ export default {
 						id: `${kpi.target.type}-${kpi.target.id}`,
 						title: kpi.target.name,
 						type: kpi.target.type,
+						expanded: false,
+						users: []
 					}
 					table[index][month] = kpi.avg
+					kpi.users.forEach(user => {
+						let userIndex = table[index].users.findIndex(existsUser => existsUser.id === user.id)
+						if(!~userIndex){
+							table[index].users.push({
+								id: user.id,
+								name: `${user.name} ${user.last_name}`,
+							})
+							userIndex = table[index].users.length - 1
+						}
+						table[index].users[userIndex][month] = user.avg_percent
+					})
 				})
 			})
 			table.forEach(row => {
@@ -134,7 +182,11 @@ export default {
 			'fetchStatYear',
 			'setStatYearPage',
 			'setStatYearYear',
-		])
+		]),
+		toggleKPI(kpi){
+			this.$set(kpi, 'expanded', !kpi.expanded)
+			this.$forceUpdate()
+		}
 	}
 }
 </script>

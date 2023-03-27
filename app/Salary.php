@@ -591,11 +591,10 @@ class Salary extends Model
                 $s = $user->salaries->where('day', $d)->first();
 
                 $zarplata = $s ? $s->amount : 70000;
-
                 $schedule = $user->schedule();
-                $lunchTime = $user->full_time ? 1 : 0;
-
-                $working_hours = max($schedule['start']->addMinutes(30)->diffInHours($schedule['end']) - $lunchTime, 0);
+                $lunchTime = 1;
+                $userWorkHours = $schedule['end']->diffInHours($schedule['start']) - $lunchTime;
+                $working_hours = max($userWorkHours, 0);
 
                 $ignore = $user->working_day_id == 1 ? [6,0] : [0];   // Какие дни не учитывать в месяце
 

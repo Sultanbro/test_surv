@@ -16,6 +16,14 @@ return new class extends Migration
         Schema::create('user_tax', function (Blueprint $table) {
             $table->unsignedBigInteger('user_id');
             $table->unsignedBigInteger('tax_id');
+
+            $table->foreign('user_id')->on('users')->references('id')
+                ->cascadeOnDelete()
+                ->cascadeOnUpdate();
+
+            $table->foreign('tax_id')->on('taxes')->references('id')
+                ->cascadeOnDelete()
+                ->cascadeOnUpdate();
         });
     }
 
@@ -26,6 +34,11 @@ return new class extends Migration
      */
     public function down()
     {
+        Schema::table('user_tax', function (Blueprint $table) {
+            $table->dropForeign(['user_id']);
+            $table->dropForeign(['tax_id']);
+        });
+
         Schema::dropIfExists('user_tax');
     }
 };

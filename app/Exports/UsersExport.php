@@ -4,6 +4,7 @@ namespace App\Exports;
 
 use App\Models\Tax;
 use App\User;
+use Illuminate\Support\Facades\DB;
 use Maatwebsite\Excel\Concerns\WithHeadings;
 use Maatwebsite\Excel\Concerns\Exportable;
 use Maatwebsite\Excel\Concerns\ShouldAutoSize;
@@ -59,7 +60,8 @@ class UsersExport implements FromCollection, WithTitle, WithHeadings, ShouldAuto
 
     public function registerEvents(): array
     {
-        $countOfTaxes = Tax::query()->count();
+        $countOfTaxes = DB::table('user_tax')->select(DB::raw('COUNT(DISTINCT `user_tax`.`tax_id`) as `count`'))->first()->count;
+
         $indexOfCell = 21 + $countOfTaxes;
         $coordinate = (new \PhpOffice\PhpSpreadsheet\Worksheet\Worksheet)->getCellByColumnAndRow($indexOfCell,0)->getParent()->getCurrentCoordinate();
         $coordinateOfStyle = str_replace('0', '3', $coordinate);

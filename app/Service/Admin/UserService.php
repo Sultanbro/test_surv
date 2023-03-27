@@ -72,18 +72,22 @@ class UserService
          */
         
         $workingDay = '5-2';
-        $workingTime = '09:00 - 18:00';
+        $workingTime = '09:00 - 18:00'; //TODO fix charts
         
         if($user->workingDay) $workingDay = $user->workingDay->name;
         if($user->workingTime) $workingTime = $user->workingTime->name;
 
+        $workTime = $user->workTime();
+        $workStartTime = $workTime['workStartTime'];
+        $workEndTime = $workTime['workEndTime'];
+
         /**
          * Work schedule
          */
-        $schedule = substr($user->work_starts_at(), 0 , 5);
+        $schedule = $workStartTime;
         
-        if($user->work_end) {
-            $schedule .= ' - ' . substr($user->work_end, 0 , 5);
+        if($workEndTime) {
+            $schedule .= ' - ' . $workEndTime;
         } else {
             $schedule .= ' - 00:00';
         }

@@ -78,7 +78,7 @@
 				bordered
 				show-empty
 				stacked="md"
-				:items="itemProvider"
+				:items="filtered"
 				:fields="fields"
 				:current-page="currentPage"
 				:per-page="perPage"
@@ -655,7 +655,6 @@ export default {
 				date_deactivate: false,
 				date_applied: false,
 			},
-			filtered:[],
 			filterOn: [],
 			value: [],
 			options: [],
@@ -693,9 +692,15 @@ export default {
 					}
 				})
 		},
+		searchText(){
+			return this.filter.email.toLowerCase()
+		},
 
-		itemProvider() {
-			this.filtered = this.items.filter(el => {
+		filtered() {
+			if(!this.items) return []
+			return this.items.filter(el => {
+				if (el.FULLNAME == null)  el.FULLNAME = ''
+				if (el.FULLNAME2 == null)  el.FULLNAME2 = ''
 				if (el.fullname == null)  el.fullname = ''
 				if (el.fullname2 == null)  el.fullname2 = ''
 				if (el.last_name == null)  el.last_name = ''
@@ -703,23 +708,25 @@ export default {
 
 				if(Number(this.filter.group) !== 0) {
 					return el.groups.includes(Number(this.filter.group))
-								&& (el.email.toLowerCase().indexOf(this.filter.email.toLowerCase()) > -1
-								|| el.fullname.toLowerCase().indexOf(this.filter.email.toLowerCase()) > -1
-								|| el.fullname2.toLowerCase().indexOf(this.filter.email.toLowerCase()) > -1
-								|| el.last_name.toLowerCase().indexOf(this.filter.email.toLowerCase()) > -1
-								|| el.name.toLowerCase().indexOf(this.filter.email.toLowerCase()) > -1
-								|| el.id.toString().indexOf(this.filter.email.toLowerCase()) > -1)
+								&& (el.email.toLowerCase().indexOf(this.searchText) > -1
+								|| el.FULLNAME.toLowerCase().indexOf(this.searchText) > -1
+								|| el.FULLNAME2.toLowerCase().indexOf(this.searchText) > -1
+								|| el.fullname.toLowerCase().indexOf(this.searchText) > -1
+								|| el.fullname2.toLowerCase().indexOf(this.searchText) > -1
+								|| el.last_name.toLowerCase().indexOf(this.searchText) > -1
+								|| el.name.toLowerCase().indexOf(this.searchText) > -1
+								|| el.id.toString().indexOf(this.searchText) > -1)
 				} else {
-					return el.email.toLowerCase().indexOf(this.filter.email.toLowerCase()) > -1
-								|| el.fullname.toLowerCase().indexOf(this.filter.email.toLowerCase()) > -1
-								|| el.fullname2.toLowerCase().indexOf(this.filter.email.toLowerCase()) > -1
-								|| el.last_name.toLowerCase().indexOf(this.filter.email.toLowerCase()) > -1
-								|| el.name.toLowerCase().indexOf(this.filter.email.toLowerCase()) > -1
-								|| el.id.toString().indexOf(this.filter.email.toLowerCase()) > -1
+					return el.email.toLowerCase().indexOf(this.searchText) > -1
+								|| el.FULLNAME.toLowerCase().indexOf(this.searchText) > -1
+								|| el.FULLNAME2.toLowerCase().indexOf(this.searchText) > -1
+								|| el.fullname.toLowerCase().indexOf(this.searchText) > -1
+								|| el.fullname2.toLowerCase().indexOf(this.searchText) > -1
+								|| el.last_name.toLowerCase().indexOf(this.searchText) > -1
+								|| el.name.toLowerCase().indexOf(this.searchText) > -1
+								|| el.id.toString().indexOf(this.searchText) > -1
 				}
 			})
-
-			return  this.filtered
 		},
 		staff_res(){
 			let res = 0

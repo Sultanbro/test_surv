@@ -19,6 +19,10 @@ export default {
 		front_valid:{
 			type: Object,
 			default: () => ({})
+		},
+		taxes: {
+			type: Array,
+			default: () => ([])
 		}
 	},
 	data(){
@@ -27,20 +31,14 @@ export default {
 			cards: [],
 			zarplata: 0,
 			currency: null,
-			search: '',
-			searchIdx: null,
-			taxes: []
+			newTaxes: [],
+			editTaxes: [],
+			assignTaxes: [],
+			myTaxes: []
 		}
 	},
 	watch: {
 		user(obj){
-			this.axios.get('/tax', {params: {user_id: obj.id}}).then(res => {
-				console.log(res);
-				this.taxes = res.data.items;
-			}).catch(err => {
-				console.log(err);
-			})
-
 			if(obj.cards){
 				this.cards = obj.cards
 			}
@@ -57,15 +55,12 @@ export default {
 		},
 		currency(){
 			this.changeZp();
+		},
+		taxes(){
+			this.myTaxes = this.taxes.filter(item => item.isAssigned);
 		}
 	},
 	computed: {
-		filteredTaxes() {
-			return this.taxes.length ? this.taxes.filter(item => item.name.toLowerCase().includes(this.search.toLowerCase()) && !item.isAssigned) : [];
-		},
-		taxFiltered(){
-			return this.taxes.length ? this.taxes.filter(item => item.isAssigned) : [];
-		},
 		taxNotAssignedFiltered(){
 			return this.taxes.length ? this.taxes.filter(item => !item.isAssigned) : [];
 		}
@@ -97,53 +92,44 @@ export default {
 				this.$toast.success('Карта удалена');
 			}
 		},
-		addTax(){
-			this.taxes.push({
-				name: '',
-				amount: '',
-				isPercent: false,
-				isAssigned: true
-			})
-			this.search = '';
-			this.searchId = null;
-		},
-		deleteTax(key){
-			this.taxes.splice(key, 1)
-		},
 		changeHeadphonesState(){
 			this.headphonesState = !this.headphonesState
 			if(this.headphonesState && this.user){
 				this.user.headphones_sum = 0
 			}
 		},
-		searchMethod(tax, index){
-			this.search = tax.name;
-			this.searchIdx = index;
+		addTax(){
+			const obj = {
+				id: Date.now(),
+				name: '',
+				value: '',
+				isPercent: false,
+				isNew: true
+			};
+			this.newTaxes.push(obj);
+			this.myTaxes.push(obj);
+			this.$emit('taxes_fill', {
+				newTaxes: this.newTaxes,
+				assignTaxes: this.assignTaxes,
+				editTaxes: this.editTaxes,
+			})
 		},
-		selectTax(id){
-			this.taxes.pop();
-			const index = this.taxes.findIndex(m => m.id === id);
-			const splicedEl = this.taxes.splice(index, 1);
-			splicedEl[0].isAssigned = true;
-			this.taxes.push(splicedEl[0]);
-			this.search = '';
-			this.searchIdx = null;
-		},
-		percentMod(amount, index){
-			console.log(amount);
-			if(amount > 100){
-				this.taxes[index].amount = 100;
-			} else if(amount < 0){
-				this.taxes[index].amount = 0;
-			} else {
-				this.taxes[index].amount = amount;
+		async deleteTax(tax, idx){
+			if(!tax.isNew){
+				const formDataAssignTaxes = new FormData();
+				formDataAssignTaxes.append('user_id', this.user.id);
+				formDataAssignTaxes.append('tax_id', tax.id);
+				formDataAssignTaxes.append('is_assigned', 0);
+				await this.axios.post('/tax/set-assignee', formDataAssignTaxes);
 			}
+			this.myTaxes.splice(idx, 1);
+			this.$toast.success('Налог отменен')
 		},
 		async saveTaxes(){
 			const formData = new FormData();
 			const formData2 = new FormData();
 
-			formData.append('name', 'Налог на пидараса s aa afsa fas')
+			formData.append('name', 'Налог на fdsf')
 			formData.append('value', 25444)
 			formData.append('is_percent', 0)
 			const res1 = await this.axios.post('/tax', formData);
@@ -155,6 +141,27 @@ export default {
 			formData2.append('is_assigned', 1);
 			const res2 = await this.axios.post('/tax/set-assignee', formData2);
 			console.log(res2);
+		},
+		selectTaxNotAssigned(val){
+			this.assignTaxes.push(val.id);
+			this.myTaxes.push(val);
+			const index = this.taxes.findIndex(t => t.id === val.id);
+			this.taxes[index].isAssigned = true;
+			this.$emit('taxes_fill', {
+				newTaxes: this.newTaxes,
+				assignTaxes: this.assignTaxes,
+				editTaxes: this.editTaxes,
+			})
+		},
+		onEditTax(tax){
+			if (!tax.isNew && !this.editTaxes.includes(tax)) {
+				this.editTaxes.push(tax);
+				this.$emit('taxes_fill', {
+					newTaxes: this.newTaxes,
+					assignTaxes: this.assignTaxes,
+					editTaxes: this.editTaxes
+				})
+			}
 		}
 	},
 }
@@ -449,99 +456,87 @@ export default {
 			>
 				Нет ни одного налога
 			</div>
-			<div class="row">
-				<div class="col-12 col-md-8">
-					<div
-						v-for="(tax, index) in taxFiltered"
-						:key="tax.id"
-						class="d-flex tax-row"
+			<div
+				v-for="(tax, idx) in myTaxes"
+				:key="tax.id"
+				class="d-flex tax-row"
+			>
+				<b-form-group
+					class="custom-switch custom-switch-sm"
+					id="input-group-4"
+				>
+					<b-form-checkbox
+						v-model="tax.isPercent"
+						switch
+						@change="onEditTax(tax)"
 					>
-						<b-form-group
-							class="custom-switch custom-switch-sm"
-							id="input-group-4"
-						>
-							<b-form-checkbox
-								v-model="tax.isPercent"
-								switch
-							>
-								В процентах
-							</b-form-checkbox>
-						</b-form-group>
-						<b-form-group class="ml-2">
-							<b-form-input
-								v-model="tax.name"
-								type="text"
-								class="mr-1"
-								placeholder="Название налога"
-								@input="searchMethod(tax, index)"
-							/>
-							<div
-								class="taxes-list-dropdown"
-								v-if="search.length && index === taxFiltered.length - 1"
-							>
-								<ul class="taxes-list">
-									<li
-										class="taxes-item"
-										v-for="item in filteredTaxes"
-										:key="item.id"
-										@click="selectTax(item.id)"
-									>
-										{{ item.name }}
-									</li>
-								</ul>
-							</div>
-						</b-form-group>
-						<b-form-group class="ml-2">
-							<b-form-input
-								v-model="tax.amount"
-								type="number"
-								class="mr-1"
-								placeholder="Процент от оклада"
-								@change="percentMod(Number(tax.amount), index)"
-								v-if="tax.isPercent"
-							/>
-							<b-form-input
-								v-model="tax.amount"
-								type="number"
-								class="mr-1"
-								placeholder="Сумма"
-								v-else
-							/>
-						</b-form-group>
-						<button
-							type="button"
-							class="btn btn-danger tax-delete rounded ml-2"
-							@click="deleteTax(key)"
-						>
-							<i class="fa fa-trash" />
-						</button>
-					</div>
-				</div>
-				<div class="col-12 col-md-4">
-					<multiselect
-						:options="taxNotAssignedFiltered"
-						track-by="name"
-						label="name"
+						В процентах
+					</b-form-checkbox>
+				</b-form-group>
+				<b-form-group class="ml-2">
+					<b-form-input
+						v-model="tax.name"
+						type="text"
+						class="mr-1"
+						placeholder="Название налога"
+						@change="onEditTax(tax)"
 					/>
-				</div>
+				</b-form-group>
+				<b-form-group class="ml-2">
+					<b-form-input
+						v-model="tax.value"
+						type="number"
+						class="mr-1"
+						placeholder="Процент от оклада"
+						:class="{'is-invalid' : tax.value > 100}"
+						v-if="tax.isPercent"
+						@change="onEditTax(tax)"
+					/>
+					<b-form-input
+						v-model="tax.value"
+						type="number"
+						class="mr-1"
+						placeholder="Сумма"
+						@change="onEditTax(tax)"
+						v-else
+					/>
+				</b-form-group>
+				<b-form-input
+					:value="tax.value ? Math.round(zarplata * tax.value / 100) : 0"
+					type="text"
+					disabled
+					class="ml-2 w-200px"
+					:class="{'is-invalid' : Math.round(zarplata * tax.value / 100) > zarplata}"
+					v-if="tax.isPercent"
+				/>
+				<button
+					type="button"
+					class="btn btn-danger tax-delete rounded ml-2"
+					@click="deleteTax(tax, idx)"
+				>
+					<i class="fa fa-trash" />
+				</button>
 			</div>
 		</div>
 
-		<button
-			v-if="user && user.zarplata"
-			type="button"
-			class="btn btn-success btn-rounded mb-2 mt-2"
-			@click="addTax"
-		>
-			<i class="fa fa-plus mr-2" /> Добавить налог
-		</button>
-		<button
-			type="button"
-			class="btn btn-success btn-rounded mb-2 mt-2"
-			@click="saveTaxes"
-		>
-			<i class="fa fa-plus mr-2" /> Сохранить налоги
-		</button>
+		<div class="d-flex aic mb-2 mt-2">
+			<button
+				v-if="user && user.zarplata"
+				type="button"
+				class="btn btn-success btn-rounded mr-3"
+				@click="addTax"
+			>
+				<i class="fa fa-plus mr-2" /> Добавить налог
+			</button>
+			<multiselect
+				:options="taxNotAssignedFiltered"
+				track-by="name"
+				label="name"
+				class="w-50 pt-2"
+				placeholder="Выберите существующий"
+				@select="selectTaxNotAssigned"
+			/>
+		</div>
 	</div>
 </template>
 

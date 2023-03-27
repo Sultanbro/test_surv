@@ -23,6 +23,11 @@ class Portal extends Model
         'currency',
         'main_page_video',
         'main_page_video_show_days_amount',
+        'kpi_backlight'
+    ];
+
+    protected $casts = [
+        'kpi_backlight' => 'array',
     ];
 
     /**

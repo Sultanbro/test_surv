@@ -67,7 +67,6 @@ class NominationAwardService implements AwardInterface
                     $query->select('users.id', 'users.name', 'users.last_name', 'users.avatar')
                     ->whereNot('users.id', $user->id);
                 }, 'category'])
-                ->where('type', Award::TYPE_PUBLIC)
                 ->get();
 
         } catch (\Throwable $exception) {
