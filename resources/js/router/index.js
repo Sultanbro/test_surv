@@ -268,14 +268,14 @@ const router = new VueRouter({
 				title: 'PricingView',
 			},
 		},
-		// {
-		// 	path: '/structure',
-		// 	name: 'StructureView',
-		// 	component: () => import(/* webpackChunkName: "PricingView" */ '@/views/StructureView'),
-		// 	meta: {
-		// 		title: 'StructureView',
-		// 	},
-		// },
+		{
+			path: '/structure',
+			name: 'StructureView',
+			component: () => import(/* webpackChunkName: "PricingView" */ '@/views/StructureView'),
+			meta: {
+				title: 'StructureView',
+			},
+		},
 	],
 })
 
