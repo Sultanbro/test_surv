@@ -11,6 +11,12 @@ export async function fetchKPIStatYear(params){
 	return data
 }
 
+// mock fetchKPIStatYear
+// export async function fetchKPIStatYear(){
+// 	await new Promise(resolve => resolve())
+// 	return require('./mock/fetchKPIStatYear.json')
+// }
+
 /**
  * @typedef KPIStatYearRequest
  * @type {object}
