@@ -572,14 +572,10 @@ class Salary extends Model
             $hours       = []; 
             $trainings   = []; 
 
-            /**
-             * worktime hours in day
-             */
-            if($user->working_time_id == 1) {
-                $worktime = 8;
-            } else {
-                $worktime = 9;
-            }
+            $lunchTime = 1;
+            $schedule = $user->schedule();
+
+            $worktime = max($schedule['end']->addMinutes(30)->diffInHours($schedule['start']) - $lunchTime, 0);
 
             for ($i = 1; $i <= $date->daysInMonth; $i++) {
 
@@ -592,10 +588,7 @@ class Salary extends Model
 
                 $zarplata = $s ? $s->amount : 70000;
 
-                $schedule = $user->schedule();
-                $lunchTime = $user->full_time ? 1 : 0;
-
-                $working_hours = max($schedule['start']->addMinutes(30)->diffInHours($schedule['end']) - $lunchTime, 0);
+                $working_hours = max($schedule['end']->addMinutes(30)->diffInHours($schedule['start']) - $lunchTime, 0);
 
                 $ignore = $user->working_day_id == 1 ? [6,0] : [0];   // Какие дни не учитывать в месяце
 
