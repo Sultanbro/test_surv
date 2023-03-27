@@ -125,23 +125,6 @@ export default {
 			this.myTaxes.splice(idx, 1);
 			this.$toast.success('Налог отменен')
 		},
-		async saveTaxes(){
-			const formData = new FormData();
-			const formData2 = new FormData();
-
-			formData.append('name', 'Налог на fdsf')
-			formData.append('value', 25444)
-			formData.append('is_percent', 0)
-			const res1 = await this.axios.post('/tax', formData);
-
-
-			console.log(res1.data.data.id);
-			formData2.append('user_id', this.user.id);
-			formData2.append('tax_id', res1.data.data.id);
-			formData2.append('is_assigned', 1);
-			const res2 = await this.axios.post('/tax/set-assignee', formData2);
-			console.log(res2);
-		},
 		selectTaxNotAssigned(val){
 			this.assignTaxes.push(val.id);
 			this.myTaxes.push(val);
