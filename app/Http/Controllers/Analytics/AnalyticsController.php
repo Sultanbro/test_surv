@@ -754,13 +754,16 @@ class AnalyticsController extends Controller
         //         ->groupBy('call_account.id')
         //         ->orderBy('full_name')
         //         ->get(['id', 'email', 'name', 'surname', DB::raw("CONCAT(surname,' ',name) as full_name")]);
-        
-        $this->users = User::withTrashed()->whereIn('id', json_decode($group->users))
+
+        $date = Carbon::createFromDate($request->year, $request->month, 1);
+        $userIds = (new UserService)->getEmployeeIds($group->id, $date->format('Y-m-d'));
+
+        $this->users = User::withTrashed()->whereIn('id', $userIds)
         ->get(['ID as id', 'email as email', 'name as name', 'last_name as surname', DB::raw("CONCAT(last_name,' ',name) as full_name")]);;
 
         /****************************** */
         /******==================================== */
-        $date = Carbon::createFromDate($request->year, $request->month, 1);
+
 
 
         $title = 'Аналитика активностей ' . $request->month . ' месяц '. $request->year;
