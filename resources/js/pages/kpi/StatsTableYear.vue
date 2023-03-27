@@ -39,14 +39,16 @@
 							class="p-3 pointer"
 							@click="toggleKPI(kpi)"
 						>
-							<i
-								v-if="kpi.expanded"
-								class="fa fa-minus mt-1"
-							/>
-							<i
-								v-else
-								class="fa fa-plus mt-1"
-							/>
+							<template v-if="kpi.type !== 1 && kpi.users.length">
+								<i
+									v-if="kpi.expanded"
+									class="fa fa-minus mt-1"
+								/>
+								<i
+									v-else
+									class="fa fa-plus mt-1"
+								/>
+							</template>
 						</td>
 						<td class="p-3">
 							<i
@@ -54,8 +56,12 @@
 								class="fa fa-user mt-1 mr-1"
 							/>
 							<i
-								v-else
+								v-else-if="kpi.type === 2"
 								class="fa fa-users mt-1 mr-1"
+							/>
+							<i
+								v-else
+								class="fa fa-briefcase mt-1 mr-1"
 							/>
 							{{ kpi.title }}
 						</td>
@@ -74,6 +80,7 @@
 						<tr
 							v-for="user in kpi.users"
 							:key="`${kpi.id}-${user.id}`"
+							class="StatsTableYear-subrow"
 						>
 							<td />
 							<td class="p-3">
@@ -81,7 +88,7 @@
 								{{ user.name }}
 							</td>
 							<td class="text-center p-3">
-								{{ kpi.avg || '' }}
+								{{ user.avg || '' }}
 							</td>
 							<td
 								v-for="month, key in $moment.months()"
@@ -140,11 +147,11 @@ export default {
 						if(!~userIndex){
 							table[index].users.push({
 								id: user.id,
-								name: `${user.name} ${user.last_name}`,
+								name: `${user.last_name} ${user.name}`,
 							})
 							userIndex = table[index].users.length - 1
 						}
-						table[index].users[userIndex][month] = user.avg_percent
+						table[index].users[userIndex][month] = user.avg_percent == parseInt(user.avg_percent) ? user.avg_percent : user.avg_percent.toFixed(2)
 					})
 				})
 			})
@@ -156,6 +163,16 @@ export default {
 					row.avg += row[month]
 				})
 				row.avg = (row.avg / lastMonth).toFixed(2)
+
+				row.users.forEach(user => {
+					user.avg = 0
+					let lastUserMonth = 0
+					Object.keys(this.statYear.data).forEach(month => {
+						lastUserMonth = parseInt(month)
+						user.avg += user[month]
+					})
+					user.avg = (user.avg / lastUserMonth).toFixed(2)
+				})
 			})
 			return table
 		}
@@ -184,6 +201,7 @@ export default {
 			'setStatYearYear',
 		]),
 		toggleKPI(kpi){
+			if(kpi.type === 1 || !kpi.users.length) return
 			this.$set(kpi, 'expanded', !kpi.expanded)
 			this.$forceUpdate()
 		}
@@ -199,6 +217,9 @@ export default {
 		.first-column{
 			width: 20rem;
 		}
+	}
+	&-subrow{
+		background-color: #F7FAFC;
 	}
 }
 </style>
