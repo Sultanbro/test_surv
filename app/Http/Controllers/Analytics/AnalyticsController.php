@@ -64,7 +64,6 @@ class AnalyticsController extends Controller
 
     public function get(Request $request)
     {
-        dd('here');
         $group_id = $request->group_id;
         $month = $request->month;
         $year = $request->year;
