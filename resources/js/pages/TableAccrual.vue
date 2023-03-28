@@ -270,6 +270,9 @@
 					<template #cell(avans)="data">
 						<div>{{ data.value }}</div>
 					</template>
+					<template #cell(taxes)="data">
+						<div>{{ data.value }}</div>
+					</template>
 
 					<template #cell(final)="data">
 						<div
@@ -900,57 +903,65 @@ export default {
 		//Установка заголовока таблицы
 		setFields() {
 			let fields = [];
-			fields = [{
-				key: 'name',
-				stickyColumn: true,
-				label: 'Имя',
-				variant: 'primary',
-				sortable: true,
-				class: 'text-left px-3 t-name',
-				editable: false
-			},
-			{
-				key: 'kpi',
-				label: 'KPI',
-				sortable: true,
-				editable: false,
-				stickyColumn: true
-			},
-			{
-				key: 'bonus',
-				label: 'Бонусы',
-				sortable: true,
-				editable: false,
-				stickyColumn: true
-			},
-			{
-				key: 'total',
-				label: 'Оклад',
-				sortable: true,
-				editable: false,
-				stickyColumn: true
-			},
-			{
-				key: 'fines',
-				label: 'Штрафы',
-				sortable: true,
-				editable: false,
-				stickyColumn: true
-			},
-			{
-				key: 'avans',
-				label: 'Авансы',
-				sortable: true,
-				editable: false,
-				stickyColumn: true
-			},
-			{
-				key: 'final',
-				label: 'К выдаче',
-				sortable: true,
-				editable: false,
-				stickyColumn: true
-			}];
+			fields = [
+				{
+					key: 'name',
+					stickyColumn: true,
+					label: 'Имя',
+					variant: 'primary',
+					sortable: true,
+					class: 'text-left px-3 t-name',
+					editable: false
+				},
+				{
+					key: 'kpi',
+					label: 'KPI',
+					sortable: true,
+					editable: false,
+					stickyColumn: true
+				},
+				{
+					key: 'bonus',
+					label: 'Бонусы',
+					sortable: true,
+					editable: false,
+					stickyColumn: true
+				},
+				{
+					key: 'total',
+					label: 'Оклад',
+					sortable: true,
+					editable: false,
+					stickyColumn: true
+				},
+				{
+					key: 'fines',
+					label: 'Штрафы',
+					sortable: true,
+					editable: false,
+					stickyColumn: true
+				},
+				{
+					key: 'avans',
+					label: 'Авансы',
+					sortable: true,
+					editable: false,
+					stickyColumn: true
+				},
+				{
+					key: 'taxes',
+					label: 'Налоги',
+					sortable: true,
+					editable: false,
+					stickyColumn: true
+				},
+				{
+					key: 'final',
+					label: 'К выдаче',
+					sortable: true,
+					editable: false,
+					stickyColumn: true
+				}];
 
 			let days = this.dateInfo.daysInMonth;
 
@@ -1082,6 +1093,7 @@ export default {
 			let total_bonus = 0; // Bonus total
 			let total_fines = 0; // fines total
 			let total_avanses = 0; // Avans total
+			let total_taxes = 0; // Taxes total
 			let total_total = 0; // Начислено total
 
 			this.data.users.forEach(item => {
@@ -1092,6 +1104,7 @@ export default {
 				var personalAvanses = 0;
 				var personalFines = 0;
 				var personalBonuses = 0;
+				var personalTaxes = 0;
 
 
 				item.salaries.forEach(tt => {
@@ -1144,6 +1157,10 @@ export default {
 						: '';
 				});
 
+				item.taxes.forEach(t => {
+					personalTaxes = personalTaxes + t.amount;
+				});
+
 				let personalKpi =  Number(item.kpi);
 				if(item.edited_kpi) {
 					personalKpi = item.edited_kpi.amount
@@ -1155,7 +1172,7 @@ export default {
 
 				personalFines = Number(item.fines_total);
 
-				personalFinal = personalTotal - personalAvanses + personalBonuses - personalFines + personalKpi;
+				personalFinal = personalTotal - personalAvanses + personalBonuses - personalFines + personalKpi - personalTaxes;
 
 				if(item.edited_salary) {
 					personalFinal = item.edited_salary.amount
@@ -1165,6 +1182,7 @@ export default {
 				daySalaries['avans'] = Number(personalAvanses).toFixed(0);
 				daySalaries['fines'] = Number(personalFines).toFixed(0);
 				daySalaries['total'] = Number(personalTotal).toFixed(0);
+				daySalaries['taxes'] = Number(personalTaxes).toFixed(0);
 				daySalaries['final'] = Number(personalFinal).toFixed(0);
 
 				total_final += Number(personalFinal) >= 0 ? Number(personalFinal) : 0;
@@ -1172,6 +1190,7 @@ export default {
 				total_kpi += Number(personalFinal) >= 0 ? Number(item.kpi) : 0;
 				total_fines += Number(personalFinal) >= 0 ? Number(personalFines) : 0;
 				total_bonus += Number(personalFinal) >= 0 ? Number(personalBonuses) : 0;
+				total_taxes += Number(personalFinal) >= 0 ? Number(personalTaxes) : 0;
 				total_avanses += Number(personalFinal) >= 0 ? Number(personalAvanses) : 0;
 
 				daySalaries.forEach((amount, day) => {
@@ -1237,6 +1256,7 @@ export default {
 				bonus: total_bonus,
 				avans: total_avanses,
 				fines: total_fines,
+				taxes: total_taxes,
 				total: total_total,
 				...daySalariesSum,
 			};
@@ -1633,11 +1653,15 @@ hr {
 		&:nth-child(7) {
 			left:649px!important;
 		}
+		&:nth-child(8) {
+			left:721px!important;
+		}
 		&:nth-child(2),
 		&:nth-child(3),
 		&:nth-child(4),
 		&:nth-child(5),
-		&:nth-child(6){
+		&:nth-child(6),
+		&:nth-child(7){
 			div{
 				width: 70px;
 			}
@@ -1649,7 +1673,8 @@ hr {
 		&:nth-child(3),
 		&:nth-child(4),
 		&:nth-child(5),
-		&:nth-child(6) {
+		&:nth-child(6),
+		&:nth-child(7) {
 			background: #DDE9FF !important;
 			border-color: #b4bed2 !important;
 			div {
@@ -1658,7 +1683,7 @@ hr {
 			}
 		}
 
-		&:nth-child(7) {
+		&:nth-child(8) {
 			background: #28a745 !important;
 			border-color: #208738 !important;
 			color: #fff;

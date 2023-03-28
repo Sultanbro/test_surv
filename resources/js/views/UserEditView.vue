@@ -107,6 +107,7 @@ export default {
 			fireCause: '',
 			isDeleteConfirm: false,
 			isRestoreConfirm: false,
+			taxesFillData: null
 		}
 	},
 	computed: {
@@ -177,9 +178,12 @@ export default {
 		},
 	},
 	mounted(){
-		this.updatePageData()
+		this.updatePageData();
 	},
 	methods: {
+		taxesFill(data){
+			this.taxesFillData = data;
+		},
 		setData(data){
 			this.csrf = data.csrf
 			this.user = data.user
@@ -210,7 +214,10 @@ export default {
 			this.in_groups = data.in_groups
 			this.head_in_groups = data.head_in_groups
 			this.profile_contacts = data.profile_contacts ? data.profile_contacts : []
-			this.taxes = data.taxes
+
+			axios.get('/tax', {params: {user_id: this.user.id}}).then(res => {
+				this.taxes = res.data.items;
+			}).catch(err => console.log(err));
 		},
 		updatePageData(){
 			useAsyncPageData(`/timetracking/edit-person?id=${this.activeUserId}`).then(this.setData).catch(error => {
@@ -307,6 +314,7 @@ export default {
 			this.workChartId = val;
 		},
 		async submit(isTrainee, increment_provided, isNew){
+			const loader = this.$loading.show();
 			this.frontValid.formSubmitted = true;
 			this.trainee = isTrainee
 			this.increment_provided = increment_provided
@@ -387,14 +395,51 @@ export default {
 			} else {
 				this.$toast.error('Заполните обязательные поля');
 			}
-
+			loader.hide();
 		},
 		async sendForm(formData, isNew){
 			if(this.errors && this.errors.length) return this.$toast.error('Не удалось сохранить информацию о сотруднике');
+			const loader = this.$loading.show();
 			try{
 				const response = await this.axios.post(this.formAction, formData, {
 					headers: { 'Content-Type': 'multipart/form-data' }
 				});
+				if (this.taxesFillData) {
+					for (let i = 0; i < this.taxesFillData.newTaxes.length; i++) {
+						if(this.taxesFillData.newTaxes[i].name && this.taxesFillData.newTaxes[i].value){
+							const formDataNewTaxes = new FormData();
+							const formDataNewTaxesAssignee = new FormData();
+							formDataNewTaxes.append('name', this.taxesFillData.newTaxes[i].name);
+							formDataNewTaxes.append('value', this.taxesFillData.newTaxes[i].value);
+							formDataNewTaxes.append('is_percent', this.taxesFillData.newTaxes[i].isPercent ? 1 : 0);
+							const resNewTax = await this.axios.post('/tax', formDataNewTaxes);
+							formDataNewTaxesAssignee.append('user_id', this.user.id);
+							formDataNewTaxesAssignee.append('tax_id', resNewTax.data.data.id);
+							formDataNewTaxesAssignee.append('is_assigned', 1);
+							await this.axios.post('/tax/set-assignee', formDataNewTaxesAssignee);
+						}
+					}
+
+					for (let i = 0; i < this.taxesFillData.editTaxes.length; i++) {
+						if(this.taxesFillData.editTaxes[i].name && this.taxesFillData.editTaxes[i].value){
+							const formDataEditTaxes = new FormData();
+							formDataEditTaxes.append('_method', 'put');
+							formDataEditTaxes.append('id', this.taxesFillData.editTaxes[i].id);
+							formDataEditTaxes.append('name', this.taxesFillData.editTaxes[i].name);
+							formDataEditTaxes.append('value', this.taxesFillData.editTaxes[i].value);
+							formDataEditTaxes.append('is_percent', this.taxesFillData.editTaxes[i].isPercent ? 1 : 0);
+							await this.axios.post('/tax', formDataEditTaxes);
+						}
+					}
+
+					for (let i = 0; i < this.taxesFillData.assignTaxes.length; i++) {
+						const formDataAssignTaxes = new FormData();
+						formDataAssignTaxes.append('user_id', this.user.id);
+						formDataAssignTaxes.append('tax_id', this.taxesFillData.assignTaxes[i]);
+						formDataAssignTaxes.append('is_assigned', 1);
+						await this.axios.post('/tax/set-assignee', formDataAssignTaxes);
+					}
+				}
 				console.log('Данные сохранены');
 				if (this.workChartId) {
 					const userId = this.user ? this.user.id : response.data.data.id;
@@ -410,9 +455,11 @@ export default {
 				} else {
 					this.$toast.success('Информация о сотруднике обновлена');
 				}
+				loader.hide();
 			} catch (e){
 				console.log(e);
 				this.$toast.error('Не удалось сохранить информацию о сотруднике');
+				loader.hide();
 			}
 		},
 		async deleteUser(){
@@ -817,7 +864,6 @@ export default {
 							<UserEditSalary
 								v-show="showBlocks.salary"
 								:user="user"
-								:taxes="taxes"
 								:old_zarplata="old_zarplata"
 								:old_kaspi_cardholder="old_kaspi_cardholder"
 								:old_kaspi="old_kaspi"
@@ -826,6 +872,8 @@ export default {
 								:old_jysan="old_jysan"
 								:old_card_jysan="old_card_jysan"
 								:front_valid="frontValid"
+								:taxes="taxes"
+								@taxes_fill="taxesFill"
 								@valid_change="validChange"
 							/>
 

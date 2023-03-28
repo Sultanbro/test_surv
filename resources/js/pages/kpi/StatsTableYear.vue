@@ -33,22 +33,25 @@
 				</tr>
 			</thead>
 			<tbody>
-				<template v-for="kpi in stats">
+				<template v-for="kpi, index in stats">
 					<tr :key="kpi.id">
 						<td
 							class="p-3 pointer"
 							@click="toggleKPI(kpi)"
 						>
-							<template v-if="kpi.type !== 1 && kpi.users.length">
-								<i
-									v-if="kpi.expanded"
-									class="fa fa-minus mt-1"
-								/>
-								<i
-									v-else
-									class="fa fa-plus mt-1"
-								/>
-							</template>
+							<div class="StatsTableYear-firstCol">
+								<span>{{ index + 1 }}</span>
+								<template v-if="kpi.type !== 1 && kpi.users.length">
+									<i
+										v-if="kpi.expanded"
+										class="fa fa-minus mt-1"
+									/>
+									<i
+										v-else
+										class="fa fa-plus mt-1"
+									/>
+								</template>
+							</div>
 						</td>
 						<td class="p-3">
 							<i
@@ -66,14 +69,14 @@
 							{{ kpi.title }}
 						</td>
 						<td class="text-center p-3">
-							{{ kpi.avg }}
+							{{ kpi.avg | nonFixedFloat }}
 						</td>
 						<td
 							v-for="month, key in $moment.months()"
 							:key="key"
 							class="text-center p-3"
 						>
-							{{ kpi[key+1] || '' }}
+							{{ kpi[key+1] | nonFixedFloat }}
 						</td>
 					</tr>
 					<template v-if="kpi.expanded">
@@ -88,14 +91,14 @@
 								{{ user.name }}
 							</td>
 							<td class="text-center p-3">
-								{{ user.avg || '' }}
+								{{ user.avg | nonFixedFloat }}
 							</td>
 							<td
 								v-for="month, key in $moment.months()"
 								:key="key"
 								class="text-center p-3"
 							>
-								{{ user[key+1] || '' }}
+								{{ user[key+1] | nonFixedFloat }}
 							</td>
 						</tr>
 					</template>
@@ -133,13 +136,18 @@ export default {
 		stats(){
 			const table = []
 			Object.entries(this.statYear.data).forEach(([month, monthData]) => {
-				monthData.forEach((kpi, index) => {
-					if(!table[index]) table[index] = {
-						id: `${kpi.target.type}-${kpi.target.id}`,
-						title: kpi.target.name,
-						type: kpi.target.type,
-						expanded: false,
-						users: []
+				monthData.forEach(kpi => {
+					const id = `${kpi.target.type}-${kpi.target.id}`
+					let index = table.findIndex(existsKPI => existsKPI.id == id)
+					if(!~index) {
+						table.push({
+							id: id,
+							title: kpi.target.name,
+							type: kpi.target.type,
+							expanded: false,
+							users: []
+						})
+						index = table.length - 1
 					}
 					table[index][month] = kpi.avg
 					kpi.users.forEach(user => {
@@ -151,27 +159,33 @@ export default {
 							})
 							userIndex = table[index].users.length - 1
 						}
-						table[index].users[userIndex][month] = user.avg_percent == parseInt(user.avg_percent) ? user.avg_percent : user.avg_percent.toFixed(2)
+						table[index].users[userIndex][month] = user.avg_percent
 					})
 				})
 			})
 			table.forEach(row => {
 				row.avg = 0
-				let lastMonth = 0
-				Object.keys(this.statYear.data).forEach(month => {
-					lastMonth = parseInt(month)
+				let monthCount = 0
+				Object.keys(row).forEach(month => {
+					const intMonth = parseInt(month)
+					if(Number.isNaN(intMonth)) return
+					if(typeof row[month] === 'undefined') return
 					row.avg += row[month]
+					++monthCount
 				})
-				row.avg = (row.avg / lastMonth).toFixed(2)
+				row.avg = monthCount ? row.avg / monthCount : 0
 
 				row.users.forEach(user => {
 					user.avg = 0
-					let lastUserMonth = 0
-					Object.keys(this.statYear.data).forEach(month => {
-						lastUserMonth = parseInt(month)
+					let userMonthCount = 0
+					Object.keys(user).forEach(month => {
+						const intUserMonth = parseInt(month)
+						if(Number.isNaN(intUserMonth)) return
+						if(typeof user[month] === 'undefined') return
 						user.avg += user[month]
+						++userMonthCount
 					})
-					user.avg = (user.avg / lastUserMonth).toFixed(2)
+					user.avg = userMonthCount ? user.avg / userMonthCount : 0
 				})
 			})
 			return table
@@ -205,6 +219,12 @@ export default {
 			this.$set(kpi, 'expanded', !kpi.expanded)
 			this.$forceUpdate()
 		}
+	},
+	filters: {
+		nonFixedFloat(value){
+			if(typeof value === 'undefined') return ''
+			return parseInt(value) === value ? value : value.toFixed(2)
+		}
 	}
 }
 </script>
@@ -220,6 +240,10 @@ export default {
 	}
 	&-subrow{
 		background-color: #F7FAFC;
+	}
+	&-firstCol{
+		display: flex;
+		justify-content: space-between;
 	}
 }
 </style>

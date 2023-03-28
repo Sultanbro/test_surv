@@ -9,9 +9,9 @@
 }
 .align-center, .aic {
     align-items: center;
-} 
+}
 .align-end {
-    align-items: flex-end; 
+    align-items: flex-end;
 }
 .justify-start {
     justify-content: flex-start;
@@ -27,4 +27,27 @@
 }
 .justify-end {
     justify-content: flex-end;
+}
+.m-a{
+    margin: auto;
+}
+.mx-a{
+    margin-left: auto;
+    margin-right: auto;
+}
+.my-a{
+    margin-top: auto;
+    margin-bottom: auto;
+}
+.ml-a{
+    margin-left: auto;
+}
+.mt-a{
+    margin-top: auto;
+}
+.mr-a{
+    margin-right: auto;
+}
+.mb-a{
+    margin-bottom: auto;
 }
