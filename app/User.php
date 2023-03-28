@@ -1261,8 +1261,8 @@ class User extends Authenticatable implements Authorizable
                 $join->on('group_user.group_id', '=', DB::raw($groupId));
                 $join->on('group_user.user_id', '=', 'users.id');
                 if ($date) {
-                    $join->on('group_user.from', '>=', $date);
-                    $join->on('group_user.to', '<=', $date);
+                    $join->whereDate('group_user.from', '>=', $date);
+                    $join->whereDate('group_user.to', '<=', $date);
                 }
             });
     }
