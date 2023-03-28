@@ -3,6 +3,7 @@
 namespace App\Console\Commands\Notifications;
 
 use App\ProfileGroup;
+use App\ProfileGroup\ProfileGroupUsersQuery;
 use App\User;
 use Illuminate\Console\Command;
 use App\UserNotification;
@@ -68,17 +69,24 @@ class EstimateTrainer extends Command
     const superiorsIds = [45,55]; // Руководитель, старший специалист группы
 
     public function getUserIds() {
-        $groups = ProfileGroup::where('active', 1)->get();
-        $user_ids = [];
-      
-        foreach($groups as $group) {
-            $superiorIds = ProfileGroup::employees($group->id, null, 1, self::superiorsIds);
-            if(count($superiorIds) > 0) {
-                $user_ids = array_merge($user_ids, $superiorIds);  
-            }
-        }
+        $groupIds = ProfileGroup::where('active', 1)
+            ->get()
+            ->pluck('id')
+            ->toArray();
 
-        return array_unique($user_ids);
+        $groupIdsWithSuperiors = (new ProfileGroupUsersQuery())
+            ->whereIsTrainee(false)
+            ->deletedByMonthFilter(1, null)
+            ->groupeFilter($groupIds, null)
+            ->wherePositionIds(self::superiorsIds)
+            ->getGroupIds();
+
+        return (new ProfileGroupUsersQuery())
+                ->whereIsTrainee(false)
+                ->deletedByMonthFilter(1, null)
+                ->groupeFilter($groupIdsWithSuperiors, null)
+                ->whereNotPositionIds(self::superiorsIds)
+                ->getUserIds();
     }
 
     public function notRightDay()

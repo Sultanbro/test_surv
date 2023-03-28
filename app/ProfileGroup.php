@@ -6,6 +6,8 @@ use App\Helpers\FileHelper;
 use App\Models\Analytics\Activity;
 use App\Models\KnowBaseModel;
 use App\Models\WorkChart\WorkChartModel;
+use App\ProfileGroup\ProfileGroupUsersQuery;
+use DB;
 use Illuminate\Database\Eloquent\Model;
 use App\Models\Books\BookGroup;
 use App\User;
@@ -340,43 +342,52 @@ class ProfileGroup extends Model
     }
 
     /**
-     * @param int $group_id
+     * @param int $groupId
      * @param ?Carbon|string $date
-     * @param ?int $user_types
+     * @param ?int $deleteType
      * @param ?array<int> $positionIds
+     * @return array<int>
      */
     public static function employees(
-        int $group_id,
+        int $groupId,
         $date = null,
-        $user_types = 0,
+        $deleteType = 0,
         $positionIds = [],
     ) {
         if($date) {
             $date = Carbon::parse($date);
         }
+        $query = (new ProfileGroupUsersQuery())
+            ->whereIsTrainee(false)
+            ->deletedByMonthFilter($deleteType, $date)
+            ->groupeFilter($groupId, $date);
 
-        return self::getUserIdsByGroup(
-            $group_id,
-            $date,
-            false,
-            $user_types,
-            $positionIds,
-        );
+        if(count($positionIds) > 0) {
+            $query->wherePositionIds($positionIds);
+        }
+
+        return $query->getUserIds();
     }
 
     /**
      * @param ?Carbon|string $date
+     * @return array<int>
      */
     public function workers($date = null) { 
         if($date) {
             $date = Carbon::parse($date);
         }
 
-        return self::getUserIdsByGroup($this->id, $date);
+        return (new ProfileGroupUsersQuery())
+            ->whereIsTrainee(false)
+            ->deletedByMonthFilter(0, $date)
+            ->groupeFilter($this->id, $date)
+            ->getUserIds();
     }
 
     /**
      * @param ?Carbon|string $date
+     * @return array<int>
      */
     public function trainees($date = null) 
     {
@@ -384,58 +395,10 @@ class ProfileGroup extends Model
             $date = Carbon::parse($date);
         }
 
-        return self::getUserIdsByGroup($this->id, $date, true);
-    }
-
-    /**
-     * @param int $groupId
-     * @param ?Carbon $date
-     * @param bool $isTrainee
-     * @param int $deleteType 0 - any 1 - normal 2 - deleted
-     * @param ?array<int> $positionIds
-     * @return array<int>
-     */
-    public static function getUserIdsByGroup(
-        int $groupId,
-        ?Carbon $date,
-        bool $isTrainee = false,
-        int $deleteType = 0,
-        array $positionIds = [],
-    ): array {
-        $deletedUsersBuilder = \DB::table('users')
-            ->select(['users.id'])
-            ->leftJoin('user_descriptions as ud', 'ud.user_id', '=', 'users.id')
-            ->where('ud.is_trainee', $isTrainee ? 1 : 0);
-
-        if ($deleteType == 1) {
-            $deletedUsersBuilder->whereNull('users.deleted_at');
-        } else {
-            if ($date) {
-                $deletedUsersBuilder->where(function (Builder $query) use ($date, $deleteType) {
-                    $query->whereDate(
-                        'users.deleted_at',
-                        '>=',
-                        Carbon::createFromDate($date->year, $date->month, 1)
-                        ->format('Y-m-d'),
-                    );
-                    if ($deleteType == 0) {
-                        $query->orWhereNull('users.deleted_at');
-                    }
-                });
-            } else if ($deleteType == 2) {
-                $deletedUsersBuilder->whereNotNull('users.deleted_at');
-            }
-        }
-
-        $deletedUsersBuilder = User::groupeFilter($deletedUsersBuilder, $groupId, $date);
-
-        if(count($positionIds) > 0) {
-            $deletedUsersBuilder->whereIn('users.position_id', $positionIds);
-        }
-
-        return $deletedUsersBuilder
-            ->get()
-            ->pluck('id')
-            ->toArray();
+        return (new ProfileGroupUsersQuery())
+            ->whereIsTrainee(true)
+            ->deletedByMonthFilter(0, $date)
+            ->groupeFilter($this->id, $date)
+            ->getUserIds();
     }
 }

@@ -1244,29 +1244,4 @@ class User extends Authenticatable implements Authorizable
     {
         return self::query()->findOrFail($id);
     }
-
-    /**
-     * @param Query\Builder $builder
-     * @param int $group_id
-     * @param ?Carbon $date
-     */
-    public static function groupeFilter(
-        Query\Builder $builder,
-        int $groupId,
-        ?Carbon $date,
-    ): Query\Builder
-    {
-        return $builder
-            ->join('group_user', function (Query\JoinClause $join) use ($groupId, $date) {
-                $join->on('group_user.group_id', '=', DB::raw($groupId));
-                $join->on('group_user.user_id', '=', 'users.id');
-                if ($date) {
-                    $join->whereDate('group_user.from', '>=', $date);
-                    $join->where(function ($query) use ($date) {
-                        $query->whereNull('group_user.to');
-                        $query->orWhereDate('group_user.to', '<=', $date);
-                    });
-                }
-            });
-    }
 }
