@@ -46,7 +46,7 @@ class UpdateUserStatRequest extends FormRequest
         $activityId = Arr::get($validated, 'id');
         $groupId = Arr::get($validated, 'group_id');
         $employeeId = Arr::get($validated, 'employee_id');
-        $value = Arr::get($validated, 'value');
+        $value = Arr::get($validated, 'value') ?? 0;
         $year = Arr::get($validated, 'year');
         $month = Arr::get($validated, 'month');
         $day = Arr::get($validated, 'day');
