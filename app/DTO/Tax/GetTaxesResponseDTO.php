@@ -21,7 +21,7 @@ class GetTaxesResponseDTO
         $items = [];
 
         foreach ($array as $arrItem) {
-            $items[] = new TaxDto(
+            $items[] = new TaxDTO(
                 $arrItem['id'],
                 $arrItem['name'],
                 $arrItem['value'],
