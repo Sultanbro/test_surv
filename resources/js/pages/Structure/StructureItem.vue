@@ -2,6 +2,8 @@
 	<div
 		class="structure-item"
 		:class="[{'grouped' : department.group}, 'lvl' + level]"
+		:style="{'--half-width' : halfWidth}"
+		ref="structureItem"
 	>
 		<div
 			class="structure-card"
@@ -71,6 +73,7 @@
 					:bgc="bgColor"
 					:level="level + 1"
 					:key="index"
+					@updateLines="drawLines"
 				/>
 			</div>
 			<StructureItem
@@ -81,6 +84,7 @@
 				:level="level + 1"
 				:key="index"
 				v-else
+				@updateLines="drawLines"
 			/>
 		</template>
 		<div
@@ -113,8 +117,8 @@ export default {
 		return {
 			startLine: '1px',
 			endLine: '2px',
-			resultWidth: '0'
-
+			resultWidth: '0',
+			halfWidth: 0,
 		}
 	},
 	computed: {
@@ -132,6 +136,7 @@ export default {
 				this.resultWidth = this.$refs.group.offsetWidth - (children.length * 5);
 				this.startLine = `${(children[0].offsetWidth / 2) + 8}px`;
 				this.endLine = `${(children[children.length - 1].offsetWidth / 2) + 8}px`;
+				this.halfWidth = `${this.$refs.structureItem.offsetWidth / 2}px`;
 			}
 		},
 		addNew() {
@@ -148,7 +153,11 @@ export default {
 				}
 			};
 			this.department.departmentChildren.push(obj);
-			this.drawLines();
+			this.$nextTick(() => {
+				this.$emit('updateLines');
+				this.drawLines();
+			});
+
 		}
 	}
 }

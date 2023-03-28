@@ -39,14 +39,44 @@
 			</div>
 		</div>
 		<div
-			class="structure-company"
+			class="structure-company-area"
 			:style="{zoom: zoom / 100}"
 		>
-			<div class="structure-company-area">
-				<template v-for="(department, index) in departments">
+			<div
+				class="structure-card"
+				:style="{marginLeft: leftMarginMainCard}"
+			>
+				<div class="structure-card-header">
+					<p class="department">
+						Коммерческий департамент
+					</p>
+					<p class="count">
+						100 сотрудников
+					</p>
+				</div>
+				<div class="structure-card-body">
+					<img
+						src="https://randomuser.me/api/portraits/women/1.jpg"
+						alt="photo"
+						class="director-photo"
+					>
+					<p class="position">
+						Коммерческий директор
+					</p>
+					<p class="full-name">
+						Анастасия Гришковецкая
+					</p>
+				</div>
+				<i class="fa fa-plus-circle structure-add" />
+			</div>
+			<div
+				class="departments-area"
+				ref="departmentsArea"
+			>
+				<template v-for="department in departments">
 					<StructureItem
 						:department="department"
-						:key="index"
+						:key="department.id"
 						:level="1"
 						:bgc="''"
 					/>
@@ -139,7 +169,9 @@ export default {
 			scrollLeft: 0,
 			scrollTop: 0,
 			zoom: 100,
+			leftMarginMainCard: 0,
 			ceo: {
+				id: Math.floor(Math.random() * 10000),
 				department: 'Коммерческий департамент',
 				employeesCount: 192,
 				director: {
@@ -153,6 +185,7 @@ export default {
 			},
 			departments: [
 				{
+					id: Math.floor(Math.random() * 10000),
 					department: 'Коммерческий департамент',
 					employeesCount: 100,
 					director: {
@@ -165,6 +198,7 @@ export default {
 					},
 					departmentChildren: [
 						{
+							id: Math.floor(Math.random() * 10000),
 							department: 'Департамент персонала',
 							employeesCount: 777,
 							result: resultText,
@@ -178,6 +212,7 @@ export default {
 							},
 							departmentChildren: [
 								{
+									id: Math.floor(Math.random() * 10000),
 									department: 'Отдел найма и обучения',
 									employeesCount: 2,
 									group: true,
@@ -191,6 +226,7 @@ export default {
 									},
 									departmentChildren: [
 										{
+											id: Math.floor(Math.random() * 10000),
 											department: 'Сектор подбора персонала',
 											employeesCount: 28,
 											result: resultText,
@@ -204,6 +240,7 @@ export default {
 											},
 										},
 										{
+											id: Math.floor(Math.random() * 10000),
 											department: 'Call-центр',
 											employeesCount: 56,
 											result: resultText,
@@ -212,6 +249,7 @@ export default {
 									]
 								},
 								{
+									id: Math.floor(Math.random() * 10000),
 									department: 'Отдел заботы',
 									employeesCount: 12,
 									group: true,
@@ -225,6 +263,7 @@ export default {
 									},
 									departmentChildren: [
 										{
+											id: Math.floor(Math.random() * 10000),
 											department: 'Сектор приёмной',
 											employeesCount: 12,
 											result: resultText,
@@ -238,12 +277,14 @@ export default {
 											},
 										},
 										{
+											id: Math.floor(Math.random() * 10000),
 											department: 'IT-отдел',
 											employeesCount: 12,
 											result: resultText,
 											users: users
 										},
 										{
+											id: Math.floor(Math.random() * 10000),
 											department: 'IT-сектор',
 											employeesCount: 1,
 											director: {
@@ -260,6 +301,7 @@ export default {
 							]
 						},
 						{
+							id: Math.floor(Math.random() * 10000),
 							department: 'Коммерческий департамент',
 							employeesCount: 56,
 							result: resultText,
@@ -273,6 +315,7 @@ export default {
 							},
 							departmentChildren: [
 								{
+									id: Math.floor(Math.random() * 10000),
 									department: 'Отдел маркетинга',
 									employeesCount: 22,
 									group: true,
@@ -286,6 +329,7 @@ export default {
 									},
 									departmentChildren: [
 										{
+											id: Math.floor(Math.random() * 10000),
 											department: 'Сектор PR',
 											employeesCount: 22,
 											result: resultText,
@@ -299,12 +343,14 @@ export default {
 											},
 										},
 										{
+											id: Math.floor(Math.random() * 10000),
 											department: 'Сектор интернет-продвижения',
 											employeesCount: 22,
 											result: resultText,
 											users: users
 										},
 										{
+											id: Math.floor(Math.random() * 10000),
 											department: 'Сектор дизайна',
 											employeesCount: 22,
 											result: resultText,
@@ -320,6 +366,7 @@ export default {
 									]
 								},
 								{
+									id: Math.floor(Math.random() * 10000),
 									department: 'Отдел продаж',
 									employeesCount: 444,
 									group: true,
@@ -333,6 +380,7 @@ export default {
 									},
 									departmentChildren: [
 										{
+											id: Math.floor(Math.random() * 10000),
 											department: 'Сектор холодных продаж',
 											employeesCount: 22,
 											director: {
@@ -345,6 +393,7 @@ export default {
 											},
 										},
 										{
+											id: Math.floor(Math.random() * 10000),
 											department: 'Группа ХП-01',
 											employeesCount: 22,
 											director: {
@@ -357,6 +406,7 @@ export default {
 											},
 										},
 										{
+											id: Math.floor(Math.random() * 10000),
 											department: 'Менеджеры ХП-01',
 											employeesCount: 5,
 											result: resultText,
@@ -365,6 +415,7 @@ export default {
 									]
 								},
 								{
+									id: Math.floor(Math.random() * 10000),
 									department: 'Отдел по работе с клиентами',
 									employeesCount: 56,
 									group: true,
@@ -378,6 +429,7 @@ export default {
 									},
 									departmentChildren: [
 										{
+											id: Math.floor(Math.random() * 10000),
 											department: 'Сектор по работе с ключевыми клиентами',
 											employeesCount: 3,
 											result: resultText,
@@ -391,6 +443,7 @@ export default {
 											},
 										},
 										{
+											id: Math.floor(Math.random() * 10000),
 											department: 'Сектор сопровождения клиетов',
 											employeesCount: 4,
 											result: resultText,
@@ -408,6 +461,7 @@ export default {
 							]
 						},
 						{
+							id: Math.floor(Math.random() * 10000),
 							department: 'Финансовый департамент',
 							employeesCount: 38,
 							result: resultText,
@@ -422,6 +476,7 @@ export default {
 							},
 							departmentChildren: [
 								{
+									id: Math.floor(Math.random() * 10000),
 									department: 'Бухгалтерия',
 									employeesCount: 38,
 									director: {
@@ -434,6 +489,7 @@ export default {
 									},
 								},
 								{
+									id: Math.floor(Math.random() * 10000),
 									department: 'Материальный сектор',
 									employeesCount: 2,
 									result: resultText,
@@ -447,6 +503,7 @@ export default {
 									},
 								},
 								{
+									id: Math.floor(Math.random() * 10000),
 									department: 'Сектор заработной платы',
 									employeesCount: 22,
 									result: resultText,
@@ -460,6 +517,7 @@ export default {
 									},
 								},
 								{
+									id: Math.floor(Math.random() * 10000),
 									department: 'Сектор налогового учёта',
 									employeesCount: 5,
 									result: resultText,
@@ -475,6 +533,7 @@ export default {
 							]
 						},
 						{
+							id: Math.floor(Math.random() * 10000),
 							department: 'Производственный департамент',
 							employeesCount: 67,
 							director: {
@@ -487,6 +546,7 @@ export default {
 							},
 							departmentChildren: [
 								{
+									id: Math.floor(Math.random() * 10000),
 									department: 'Отдел закупок',
 									employeesCount: 22,
 									group: true,
@@ -500,6 +560,7 @@ export default {
 									},
 									departmentChildren: [
 										{
+											id: Math.floor(Math.random() * 10000),
 											department: 'Сектор снабжения',
 											employeesCount: 28,
 											result: resultText,
@@ -513,6 +574,7 @@ export default {
 											},
 										},
 										{
+											id: Math.floor(Math.random() * 10000),
 											department: 'Сектор обслуживания оборудования',
 											employeesCount: 56,
 											result: resultText,
@@ -529,6 +591,7 @@ export default {
 									]
 								},
 								{
+									id: Math.floor(Math.random() * 10000),
 									department: 'Отдел производства',
 									employeesCount: 0
 								}
@@ -537,6 +600,7 @@ export default {
 					]
 				},
 				{
+					id: Math.floor(Math.random() * 10000),
 					department: 'Коммерческий департамент',
 					employeesCount: 100,
 					bgc: '#F9F6FF',
@@ -550,6 +614,7 @@ export default {
 					},
 					departmentChildren: [
 						{
+							id: Math.floor(Math.random() * 10000),
 							department: 'Отдел безопасности',
 							employeesCount: 22,
 							group: true,
@@ -563,6 +628,7 @@ export default {
 							},
 							departmentChildren: [
 								{
+									id: Math.floor(Math.random() * 10000),
 									department: 'Сектор безопасности',
 									employeesCount: 8,
 									result: resultText,
@@ -576,6 +642,7 @@ export default {
 									},
 								},
 								{
+									id: Math.floor(Math.random() * 10000),
 									department: 'Сектор юристов',
 									employeesCount: 5,
 									result: resultText,
@@ -589,6 +656,7 @@ export default {
 									},
 								},
 								{
+									id: Math.floor(Math.random() * 10000),
 									department: 'Сектор охраны труда',
 									employeesCount: 2,
 									result: resultText,
@@ -604,6 +672,7 @@ export default {
 							]
 						},
 						{
+							id: Math.floor(Math.random() * 10000),
 							department: 'Административный отдел',
 							employeesCount: 19,
 							result: resultText,
@@ -618,6 +687,7 @@ export default {
 							},
 							departmentChildren: [
 								{
+									id: Math.floor(Math.random() * 10000),
 									department: 'Совет директоров',
 									employeesCount: 9,
 									result: resultText,
@@ -631,6 +701,7 @@ export default {
 									},
 									departmentChildren: [
 										{
+											id: Math.floor(Math.random() * 10000),
 											department: 'Участники совета',
 											employeesCount: 5,
 											users: users
@@ -638,6 +709,7 @@ export default {
 									]
 								},
 								{
+									id: Math.floor(Math.random() * 10000),
 									department: 'Служба стратегического управления',
 									employeesCount: 17,
 									result: resultText,
@@ -651,6 +723,7 @@ export default {
 									},
 								},
 								{
+									id: Math.floor(Math.random() * 10000),
 									department: 'Совет руководителей',
 									employeesCount: 17,
 									result: resultText,
@@ -670,7 +743,15 @@ export default {
 			]
 		}
 	},
+	mounted(){
+		this.drawLines();
+	},
 	methods: {
+		drawLines() {
+			if (this.$refs.departmentsArea) {
+				this.leftMarginMainCard = `${Math.round(this.$refs.departmentsArea.scrollWidth / 2)}px`;
+			}
+		},
 		startDrag(event) {
 			this.isDragging = true;
 			this.startX = event.clientX;
