@@ -14,7 +14,8 @@ export async function fetchKPIStatYear(params){
 // mock fetchKPIStatYear
 // export async function fetchKPIStatYear(){
 // 	await new Promise(resolve => resolve())
-// 	return require('./mock/fetchKPIStatYear.json')
+// 	const data = require('./mock/fetchKPIStatYear.json')
+// 	return data
 // }
 
 /**
