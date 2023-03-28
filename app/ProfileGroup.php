@@ -411,14 +411,16 @@ class ProfileGroup extends Model
             $deletedUsersBuilder->whereNull('users.deleted_at');
         } else {
             if ($date) {
-                $deletedUsersBuilder->where(function (Builder $query) use ($date) {
-                    $query->whereNull('users.deleted_at');
-                    $query->orWhereDate(
-                        'deleted_at',
+                $deletedUsersBuilder->where(function (Builder $query) use ($date, $deleteType) {
+                    $query->whereDate(
+                        'users.deleted_at',
                         '>=',
                         Carbon::createFromDate($date->year, $date->month, 1)
-                            ->format('Y-m-d'),
+                        ->format('Y-m-d'),
                     );
+                    if ($deleteType == 0) {
+                        $query->orWhereNull('users.deleted_at');
+                    }
                 });
             } else if ($deleteType == 2) {
                 $deletedUsersBuilder->whereNotNull('users.deleted_at');
