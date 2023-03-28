@@ -405,14 +405,14 @@ class ProfileGroup extends Model
         $deletedUsersBuilder = \DB::table('users')
             ->select(['users.id'])
             ->leftJoin('user_descriptions as ud', 'ud.user_id', '=', 'users.id')
-            ->where('is_trainee', $isTrainee ? 1 : 0);
+            ->where('ud.is_trainee', $isTrainee ? 1 : 0);
 
         if ($deleteType == 1) {
-            $deletedUsersBuilder->whereNull('deleted_at');
+            $deletedUsersBuilder->whereNull('users.deleted_at');
         } else {
             if ($date) {
                 $deletedUsersBuilder->where(function (Builder $query) use ($date) {
-                    $query->whereNull('deleted_at');
+                    $query->whereNull('users.deleted_at');
                     $query->orWhereDate(
                         'deleted_at',
                         '>=',
@@ -421,14 +421,14 @@ class ProfileGroup extends Model
                     );
                 });
             } else if ($deleteType == 2) {
-                $deletedUsersBuilder->whereNotNull('deleted_at');
+                $deletedUsersBuilder->whereNotNull('users.deleted_at');
             }
         }
 
         $deletedUsersBuilder = User::groupeFilter($deletedUsersBuilder, $groupId, $date);
 
         if(count($positionIds) > 0) {
-            $deletedUsersBuilder->whereIn('position_id', $positionIds);
+            $deletedUsersBuilder->whereIn('users.position_id', $positionIds);
         }
 
         return $deletedUsersBuilder
