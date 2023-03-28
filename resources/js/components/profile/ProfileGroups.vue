@@ -19,6 +19,7 @@
 </template>
 
 <script>
+/* eslint-disable vue/no-mutating-props */
 const MEMBER = 1;
 const HEAD = 2;
 

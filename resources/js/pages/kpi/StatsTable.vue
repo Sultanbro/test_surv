@@ -203,6 +203,7 @@
 </template>
 
 <script>
+/* eslint-disable vue/no-mutating-props */
 import KpiItems from '@/pages/kpi/KpiItems'
 import {kpi_fields} from './kpis.js'
 

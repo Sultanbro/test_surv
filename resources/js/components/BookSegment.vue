@@ -1,4 +1,5 @@
 <template>
+	<!-- eslint-disable vue/no-mutating-props -->
 	<div class="test mb-3">
 		<div class="row">
 			<div class="col-3">
@@ -44,6 +45,7 @@
 	</div>
 </template>
 <script>
+/* eslint-disable vue/no-mutating-props */
 export default {
 	props: {
 		segment: {
