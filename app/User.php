@@ -1262,7 +1262,10 @@ class User extends Authenticatable implements Authorizable
                 $join->on('group_user.user_id', '=', 'users.id');
                 if ($date) {
                     $join->whereDate('group_user.from', '>=', $date);
-                    $join->whereDate('group_user.to', '<=', $date);
+                    $join->where(function ($query) use ($date) {
+                        $query->whereNull('group_user.to');
+                        $query->orWhereDate('group_user.to', '<=', $date);
+                    });
                 }
             });
     }
