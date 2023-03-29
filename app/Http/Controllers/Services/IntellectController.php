@@ -124,9 +124,10 @@ class IntellectController extends Controller
         History::bitrix('Смена ответственного', $request->all());
 
         if($request->lead_id) {
-            $lead = Lead::where('lead_id', $request->lead_id)->first();
+//            $lead = Lead::where('lead_id', $request->lead_id);
 
-            $lead?->update([
+            Lead::query()->where('lead_id', $request->lead_id)
+                ->update([
                 'resp_id' => $request->resp_email,
                 'status'  => 'CON',
                 'deal_id' => $request->deal_id,
