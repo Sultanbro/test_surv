@@ -76,16 +76,16 @@ class TaxController extends Controller
     }
 
     /**
-     * @param Request $request
+     * @param int $id
      * @param DeleteTaxService $service
      * @return JsonResponse
      * @throws Exception
      */
-    public function delete(Request $request, DeleteTaxService $service): JsonResponse
+    public function delete(int $id, DeleteTaxService $service): JsonResponse
     {
         return $this->response(
             message: 'Success',
-            data: $service->handle($request->id)
+            data: $service->handle($id)
         );
     }
 }
