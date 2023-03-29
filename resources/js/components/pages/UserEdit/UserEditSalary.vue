@@ -115,7 +115,7 @@ export default {
 				editTaxes: this.editTaxes,
 			})
 		},
-		async deleteTax(tax, idx){
+		async unassignTax(tax, idx){
 			if(!tax.isNew){
 				const formDataAssignTaxes = new FormData();
 				formDataAssignTaxes.append('user_id', this.user.id);
@@ -495,14 +495,54 @@ export default {
 				/>
 				<button
 					type="button"
+					class="btn btn-warning tax-delete rounded ml-2"
+					@click="unassignTax(tax, idx)"
+					:id="idx + '1'"
+				>
+					<span class="close-icon-style">x</span>
+				</button>
+				<b-popover
+					:target="idx + '1'"
+					triggers="hover"
+					placement="top"
+				>
+					<p style="font-size: 15px; text-align: center;">
+						Отменить налог данному сотруднику
+					</p>
+				</b-popover>
+				<button
+					type="button"
 					class="btn btn-danger tax-delete rounded ml-2"
-					@click="deleteTax(tax, idx)"
+					v-b-modal.modal-delete-tax
 				>
 					<i class="fa fa-trash" />
 				</button>
 			</div>
 		</div>
-
+		<b-modal
+			id="modal-delete-tax"
+			centered
+			size="md"
+			title="Удалить налог"
+		>
+			<div class="text-center my-4">
+				<p>Вы уверены, что хотите удалить налог?</p>
+				<p class="mt-3">
+					Данный налог будет удален из системы и автоматичски отменен всем сотрудникам, которым он был присвоен
+				</p>
+			</div>
+			<template #modal-footer="{hide}">
+				<b-button variant="danger">
+					Удалить
+				</b-button>
+				<b-button
+					variant="light"
+					@click="hide"
+				>
+					Отмена
+				</b-button>
+			</template>
+		</b-modal>
 		<div class="d-flex aic mb-2 mt-2">
 			<button
 				v-if="user && user.zarplata"
@@ -536,5 +576,10 @@ export default {
 	}
 	.tax-delete{
 		height: 35px;
+	}
+	.close-icon-style{
+		font-size: 16px;
+		font-weight: 700;
+		line-height: 1;
 	}
 </style>
