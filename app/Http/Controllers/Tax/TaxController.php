@@ -11,11 +11,13 @@ use App\Http\Requests\Tax\TaxSetAssigneeRequest;
 use App\Http\Requests\Tax\UpdateTaxRequest;
 use App\Models\Tax;
 use App\Service\Tax\CreateTaxService;
+use App\Service\Tax\DeleteTaxService;
 use App\Service\Tax\GetTaxesService;
 use App\Service\Tax\SetAssigneeService;
 use App\Service\Tax\UpdateTaxService;
 use Exception;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Support\Facades\Request;
 
 class TaxController extends Controller
 {
@@ -70,6 +72,20 @@ class TaxController extends Controller
         return $this->response(
             message: 'Success',
             data: $service->handle($request->toDto())
+        );
+    }
+
+    /**
+     * @param Request $request
+     * @param DeleteTaxService $service
+     * @return JsonResponse
+     * @throws Exception
+     */
+    public function delete(Request $request, DeleteTaxService $service): JsonResponse
+    {
+        return $this->response(
+            message: 'Success',
+            data: $service->handle($request->id)
         );
     }
 }
