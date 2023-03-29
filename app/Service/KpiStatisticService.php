@@ -688,6 +688,16 @@ class KpiStatisticService
                     ->format('Y-m-d')))
             )
             ->where('is_active', true)
+            ->whereNot(function(Builder $query) use($date){
+                $query->where('targetable_type', 'App\\User')
+                    ->whereHas('user', function (Builder $query) use($date){
+                        $query->where('deleted_at', '<', Carbon::parse($date->format('Y-m-d'))
+                            ->endOfMonth()
+                            ->format('Y-m-d'));
+                    });
+            })
+            ->orderBy('targetable_type', 'desc')
+            ->limit(1)
             ->get();
 
         foreach ($kpis as $kpi) {
@@ -778,6 +788,15 @@ class KpiStatisticService
                     ->endOfMonth()
                     ->format('Y-m-d')))
             )
+            ->where('is_active', true)
+            ->whereNot(function(Builder $query) use($date){
+                $query->where('targetable_type', 'App\\User')
+                    ->whereHas('user', function (Builder $query) use($date){
+                        $query->where('deleted_at', '<', Carbon::parse($date->format('Y-m-d'))
+                            ->endOfMonth()
+                            ->format('Y-m-d'));
+                    });
+            })
             ->paginate($limit);
         $kpis->data = $kpis->makeHidden(['targetable', 'children']);
 
@@ -937,9 +956,7 @@ class KpiStatisticService
                         $query->withTrashed()->whereDate('created_at', '<=', $last_date);
                     },
                     'items.activity'
-                ]);
-
-            $kpis = $kpis
+                ])
                 ->whereDate('created_at', '<=', Carbon::parse($date->format('Y-m-d'))
                     ->endOfMonth()
                     ->format('Y-m-d')
@@ -948,7 +965,17 @@ class KpiStatisticService
                         ->endOfMonth()
                         ->format('Y-m-d')))
                 )
+                ->where('is_active', true)
+                ->whereNot(function(Builder $query) use($date){
+                    $query->where('targetable_type', 'App\\User')
+                        ->whereHas('user', function (Builder $query) use($date){
+                            $query->where('deleted_at', '<', Carbon::parse($date->format('Y-m-d'))
+                                ->endOfMonth()
+                                ->format('Y-m-d'));
+                        });
+                })
                 ->paginate($limit);
+
             $kpis->data = $kpis->makeHidden(['targetable', 'children']);
 
             $kpisAnnual['current_page'] = $kpis->currentPage();
@@ -1708,7 +1735,6 @@ class KpiStatisticService
         }
     }
 
-
     /**
      * take cell value from analytics
      * for kpi item
@@ -1742,7 +1768,6 @@ class KpiStatisticService
         $item['fact'] = round($item['fact'], 2);
         $item['avg'] = round($item['avg'], 2);
     }
-   
 
     /**
      * get users with user stats

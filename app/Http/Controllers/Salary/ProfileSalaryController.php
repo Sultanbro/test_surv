@@ -42,9 +42,9 @@ class ProfileSalaryController extends Controller
         $d1 = $date->format('Y-m-d');
         $kv = intval((date('m', strtotime($d1)) + 2)/3);
 
-        $quarter_bonus = QuartalBonus::on()->where('user_id',$user->id)
-            ->where('year',$date->year)
-            ->where('quartal', $kv)
+        $quarter_bonus = (string)$user->qpremium()
+            ->where('from', '<=', now()->format('Y-m-d'))
+            ->where('to', '>=', now()->format('Y-m-d'))
             ->sum('sum');
 
         /*** Группы пользователя */

@@ -1,4 +1,5 @@
 <script>
+/* eslint-disable vue/no-mutating-props */
 import {mask} from 'vue-the-mask'
 
 export default {

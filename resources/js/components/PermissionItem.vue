@@ -1,4 +1,5 @@
 <template>
+	<!-- eslint-disable vue/no-mutating-props -->
 	<b-tr>
 		<b-td class="person">
 			<superselect
@@ -57,6 +58,7 @@
 </template>
 
 <script>
+/* eslint-disable vue/no-mutating-props */
 export default {
 	props: ['item','groups', 'users', 'roles'],
 	data() {

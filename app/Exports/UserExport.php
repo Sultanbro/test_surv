@@ -4,8 +4,11 @@ namespace App\Exports;
 
 use App\Models\Bitrix\Segment;
 use App\Position;
+use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\DB;
 use Maatwebsite\Excel\Concerns\FromCollection;
 use Maatwebsite\Excel\Concerns\ShouldAutoSize;
+use Maatwebsite\Excel\Concerns\ToArray;
 use Maatwebsite\Excel\Concerns\WithEvents;
 use Maatwebsite\Excel\Concerns\WithHeadings;
 use Maatwebsite\Excel\Concerns\WithTitle;
@@ -27,32 +30,38 @@ class UserExport implements FromCollection, WithTitle, WithHeadings, ShouldAutoS
     {
         $data['records'] = [];
 
+        $userIds = (new Collection($this->users))
+            ->pluck('id')
+            ->toArray();
 
         $segments = Segment::get();
         $positions = Position::get()->pluck('position', 'id')->toArray();
+
+        $groupUsers = DB::table('group_user')
+          ->select('group_id', 'user_id')
+          ->whereIn('user_id', $userIds)
+          ->get();
+
         foreach($this->users as $user) {
             $seg = $segments->where('id', $user->segment)->first();
             $segment = $seg ? $seg->name : $user->segment;
             // dump($user->segment);
 
             $grs = '';
-            foreach($user->groups as $gr) {
+
+            $groupIds = $groupUsers
+                ->where('user_id', $user->id)
+                ->pluck('group_id')
+                ->toArray();
+
+            foreach($groupIds as $groupId) {
                 try {
-                    $grs .= $this->groups[$gr] . '  ';
+                    $grs .= $this->groups[$groupId] . '  ';
                 } catch(\Exception $e) {
-                    $grs .= $gr . '  ';
+                    $grs .= $groupId . '  ';
                 }
             }
 
-            if($user->last_group) {
-                foreach(json_decode($user->last_group) as $gr) {
-                    try {
-                        $grs .= $this->groups[$gr] . '  ';
-                    } catch(\Exception $e) {
-                        $grs .= $gr . '  ';
-                    }
-                }
-            }
             $data['records'][] = [
                 0 => $user->id,
                 1 => $user->last_name . ' ' . $user->name,

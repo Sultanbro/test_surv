@@ -1,4 +1,5 @@
 <template>
+	<!-- eslint-disable vue/no-mutating-props -->
 	<div>
 		<a
 			href="#"

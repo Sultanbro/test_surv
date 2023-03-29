@@ -114,6 +114,15 @@
 										v-if="item.target.type == 3"
 									/>
 									<span class="ml-2">{{ item.target.name }}</span>
+									<b-form-checkbox
+										class="kpi-status-switch"
+										switch
+										:checked="!!item.is_active"
+										:disabled="statusRequest"
+										@input="changeStatus(item, $event)"
+									>
+										&nbsp;
+									</b-form-checkbox>
 								</div>
 							</div>
 
@@ -307,7 +316,8 @@ export default {
 				'updated_at',
 				'created_by',
 				'updated_by',
-			]
+			],
+			statusRequest: false
 		}
 	},
 
@@ -325,6 +335,20 @@ export default {
 		);
 	},
 	methods: {
+		changeStatus(item, e){
+			if(this.statusRequest) return
+			this.statusRequest = true
+			this.axios.post('/kpi/set/status', {
+				id: item.id,
+				is_active: e
+			}).then(() => {
+				this.$toast.success('Статус изменен')
+				this.statusRequest = false
+			}).catch(() => {
+				this.$toast.error('Статус не изменен')
+				this.statusRequest = false
+			})
+		},
 		expand(i) {
 			this.page_items[i].expanded = !this.page_items[i].expanded
 		},
@@ -448,8 +472,8 @@ export default {
 			let method = this.items[i].id == 0 ? 'save' : 'update';
 
 			/**
-             * validate item
-             */
+			 * validate item
+			 */
 			let not_validated_msg = this.validateMsg(item);
 			if(not_validated_msg != '') {
 				this.$toast.error(not_validated_msg)
@@ -474,11 +498,10 @@ export default {
 				? this.axios.post(this.uri + '/' + method, fields)
 				: this.axios.put(this.uri + '/' + method, fields);
 
-			req.then(response => {
-
-				item.id = response.data.id;
+			req.then(({data}) => {
+				item.id = data.id
 				item.items.forEach((el, index) => {
-					el.id = response.data.items[index]
+					el.id = data.items[index]
 				});
 
 				this.removeDeletedItems(item.items)

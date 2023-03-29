@@ -80,7 +80,7 @@
 </template>
 
 <script>
-
+/* eslint-disable vue/no-mutating-props */
 // function send(message) {
 // 	const TOKEN = '1286740490:AAGiR2ch8MqzfP3IVee3Q0Mw4gZu6-ZbnVE';
 // 	const KAIR = '577504834';

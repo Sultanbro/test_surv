@@ -1,4 +1,5 @@
 <template>
+	<!-- eslint-disable vue/no-mutating-props -->
 	<div
 		class="flowchart-container"
 		@mousemove="handleMove"
@@ -32,6 +33,7 @@
 </template>
 
 <script>
+/* eslint-disable vue/no-mutating-props */
 import FlowchartLink from './FlowchartLink.vue';
 import FlowchartNode from './FlowchartNode.vue';
 import { getMousePosition } from '../position';

@@ -624,6 +624,16 @@ Route::middleware(['web','tenant','not_admin_subdomain'])->group(function () {
         Route::post('/status', [Api\PaymentController::class, 'updateToTariffPayments']);
     });
 
+    Route::group([
+        'prefix' => 'tax',
+        'as'     => 'tax.'
+    ], function () {
+        Route::get('/', [Root\Tax\TaxController::class, 'get']);
+        Route::post('/', [Root\Tax\TaxController::class, 'create']);
+        Route::post('/set-assignee', [Root\Tax\TaxController::class, 'setAssigned']);
+        Route::put('/', [Root\Tax\TaxController::class, 'update']);
+    });
+
     Route::middleware(['check_tariff'])->group(function () {
 
         Route::group(['prefix' => 'profile', 'as' => 'profile.'], function () {
