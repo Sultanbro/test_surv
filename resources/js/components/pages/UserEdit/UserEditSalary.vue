@@ -17,7 +17,7 @@ export default {
 		old_jysan_cardholder: String,
 		old_jysan: String,
 		old_card_jysan: String,
-		front_valid:{
+		front_valid: {
 			type: Object,
 			default: () => ({})
 		},
@@ -26,7 +26,7 @@ export default {
 			default: () => ([])
 		}
 	},
-	data(){
+	data() {
 		return {
 			headphonesState: this.user?.headphones_sum > 0,
 			cards: [],
@@ -35,12 +35,15 @@ export default {
 			newTaxes: [],
 			editTaxes: [],
 			assignTaxes: [],
-			myTaxes: []
+			myTaxes: [],
+			taxModal: false,
+			deleteTaxObj: null,
+			deleteTaxIdx: null
 		}
 	},
 	watch: {
-		user(obj){
-			if(obj.cards){
+		user(obj) {
+			if (obj.cards) {
 				this.cards = obj.cards
 			}
 			this.zarplata = this.user && this.user.zarplata
@@ -51,28 +54,31 @@ export default {
 					? this.old_zarplata
 					: 0
 		},
-		zarplata(){
+		zarplata() {
 			this.changeZp();
 		},
-		currency(){
+		currency() {
 			this.changeZp();
 		},
-		taxes(){
+		taxes() {
 			this.myTaxes = this.taxes.filter(item => item.isAssigned);
 		}
 	},
 	computed: {
-		taxNotAssignedFiltered(){
+		taxNotAssignedFiltered() {
 			return this.taxes.length ? this.taxes.filter(item => !item.isAssigned) : [];
 		}
 	},
 	methods: {
-		changeZp(){
-			if(this.front_valid && this.front_valid.formSubmitted){
-				this.currency && Number(this.zarplata) > 1000 ? this.$emit('valid_change', {name: 'zarplata', bool: true}) : this.$emit('valid_change', {name: 'zarplata', bool: false});
+		changeZp() {
+			if (this.front_valid && this.front_valid.formSubmitted) {
+				this.currency && Number(this.zarplata) > 1000 ? this.$emit('valid_change', {
+					name: 'zarplata',
+					bool: true
+				}) : this.$emit('valid_change', {name: 'zarplata', bool: false});
 			}
 		},
-		addCard(){
+		addCard() {
 			const card = {
 				bank: '',
 				country: '',
@@ -82,24 +88,24 @@ export default {
 			};
 			this.cards.push(card);
 		},
-		async deleteCard(key, card){
+		async deleteCard(key, card) {
 			this.cards.splice(key, 1);
-			if(card.hasOwnProperty('id')){
+			if (card.hasOwnProperty('id')) {
 				const response = await this.axios.post('/profile/remove/card/', {'card_id': card.id});
-				if(!response.data){
+				if (!response.data) {
 					this.$toast.error('Ошибка при удалении карты');
 					return;
 				}
 				this.$toast.success('Карта удалена');
 			}
 		},
-		changeHeadphonesState(){
+		changeHeadphonesState() {
 			this.headphonesState = !this.headphonesState
-			if(this.headphonesState && this.user){
+			if (this.headphonesState && this.user) {
 				this.user.headphones_sum = 0
 			}
 		},
-		addTax(){
+		addTax() {
 			const obj = {
 				id: Date.now(),
 				name: '',
@@ -115,8 +121,8 @@ export default {
 				editTaxes: this.editTaxes,
 			})
 		},
-		async deleteTax(tax, idx){
-			if(!tax.isNew){
+		async unassignTax(tax, idx) {
+			if (!tax.isNew) {
 				const formDataAssignTaxes = new FormData();
 				formDataAssignTaxes.append('user_id', this.user.id);
 				formDataAssignTaxes.append('tax_id', tax.id);
@@ -124,9 +130,10 @@ export default {
 				await this.axios.post('/tax/set-assignee', formDataAssignTaxes);
 			}
 			this.myTaxes.splice(idx, 1);
-			this.$toast.success('Налог отменен')
+			this.$toast.success('Налог отменен');
+			this.$emit('taxes_update')
 		},
-		selectTaxNotAssigned(val){
+		selectTaxNotAssigned(val) {
 			this.assignTaxes.push(val.id);
 			this.myTaxes.push(val);
 			const index = this.taxes.findIndex(t => t.id === val.id);
@@ -137,7 +144,7 @@ export default {
 				editTaxes: this.editTaxes,
 			})
 		},
-		onEditTax(tax){
+		onEditTax(tax) {
 			if (!tax.isNew && !this.editTaxes.includes(tax)) {
 				this.editTaxes.push(tax);
 				this.$emit('taxes_fill', {
@@ -146,6 +153,29 @@ export default {
 					editTaxes: this.editTaxes
 				})
 			}
+		},
+		openTaxModal(tax, idx) {
+			this.taxModal = true;
+			this.deleteTaxObj = tax;
+			this.deleteTaxIdx = idx;
+		},
+		async deleteTax() {
+			let loader = this.$loading.show();
+			const response = await this.axios.delete(`/tax/${this.deleteTaxObj.id}`);
+			if (!response.data) {
+				this.$toast.error('Ошибка при удалении');
+				return;
+			}
+			this.myTaxes.splice(this.deleteTaxIdx, 1);
+			this.$toast.success('Налог удален');
+			this.taxModal = false;
+			this.deleteTaxObj = null;
+			this.deleteTaxIdx = null;
+			loader.hide();
+		},
+		deleteNewTax(idx){
+			this.myTaxes.splice(idx, 1);
+			this.newTaxes.splice(idx, 1);
 		}
 	},
 }
@@ -494,15 +524,69 @@ export default {
 					v-if="tax.isPercent"
 				/>
 				<button
+					v-if="!tax.isNew"
+					type="button"
+					class="btn btn-warning tax-delete rounded ml-2"
+					@click="unassignTax(tax, idx)"
+					:id="idx + '1'"
+				>
+					<span class="close-icon-style">x</span>
+				</button>
+				<b-popover
+					:target="idx + '1'"
+					triggers="hover"
+					placement="top"
+				>
+					<p style="font-size: 15px; text-align: center;">
+						Отменить налог данному сотруднику
+					</p>
+				</b-popover>
+				<button
+					v-if="!tax.isNew"
 					type="button"
 					class="btn btn-danger tax-delete rounded ml-2"
-					@click="deleteTax(tax, idx)"
+					@click="openTaxModal(tax, idx)"
 				>
 					<i class="fa fa-trash" />
 				</button>
+				<button
+					v-else
+					type="button"
+					class="btn btn-outline-danger tax-delete rounded ml-2"
+					@click="deleteNewTax(idx)"
+				>
+					<i class="fa fa-minus" />
+				</button>
 			</div>
 		</div>
-
+		<b-modal
+			v-model="taxModal"
+			centered
+			size="md"
+			title="Удалить налог"
+		>
+			<div class="text-center my-4">
+				<p>Вы уверены, что хотите удалить налог?</p>
+				<p class="mt-3">
+					Данный налог будет удален из системы и автоматичски отменен всем сотрудникам, которым он был
+					присвоен
+				</p>
+			</div>
+			<template #modal-footer>
+				<b-button
+					variant="danger"
+					@click="deleteTax"
+				>
+					Удалить
+				</b-button>
+				<b-button
+					variant="light"
+					@click="taxModal = false"
+				>
+					Отмена
+				</b-button>
+			</template>
+		</b-modal>
 		<div class="d-flex aic mb-2 mt-2">
 			<button
 				v-if="user && user.zarplata"
@@ -526,7 +610,7 @@ export default {
 
 
 <style scoped lang="scss">
-	.no-text{
+	.no-text {
 		height: 40px;
 		color: #999;
 		font-size: 16px;
@@ -534,7 +618,14 @@ export default {
 		display: flex;
 		align-items: center;
 	}
-	.tax-delete{
+
+	.tax-delete {
 		height: 35px;
+	}
+
+	.close-icon-style {
+		font-size: 16px;
+		font-weight: 700;
+		line-height: 1;
 	}
 </style>
