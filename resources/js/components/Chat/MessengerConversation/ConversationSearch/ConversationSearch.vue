@@ -23,9 +23,22 @@
 				</div>
 				<div class="messenger__messages-search-date">
 					<input
-						type="date"
+						class="messenger__messages-search-date-input"
 						v-model="searchMessagesDate"
+						v-mask="'##.##.####'"
 					>
+					<div
+						class="messenger__messages-search-date-calendar ChatIcon-parent"
+						@click="showDatePicker = !showDatePicker"
+					>
+						<ChatIconSearchDate />
+					</div>
+					<CalendarInput
+						v-if="showDatePicker"
+						v-model="date"
+						:open="showDatePicker"
+						@close="showDatePicker = false"
+					/>
 				</div>
 			</div>
 			<div class="messenger__messages-search-results messenger__messages-search-results_bg">
@@ -75,11 +88,13 @@
 </template>
 
 <script>
+import {mask} from 'vue-the-mask'
 import {mapActions, mapGetters} from 'vuex';
 import ConversationMessage from '../ConversationFeed/ConversationMessage/ConversationMessage.vue';
 import ConversationHeader from '../ConversationHeader/ConversationHeader.vue';
 import ConversationSearchFilter from './ConversationSearchFilter.vue';
-import { ChatIconSearch, ChatIconSearchClose } from '../../icons/chat-icons.js'
+import CalendarInput from '@/components/ui/CalendarInput/CalendarInput.vue'
+import { ChatIconSearch, ChatIconSearchClose, ChatIconSearchDate } from '../../icons/chat-icons.js'
 
 export default {
 	name: 'ConversationSearch',
@@ -87,15 +102,20 @@ export default {
 		ConversationMessage,
 		ConversationHeader,
 		ConversationSearchFilter,
+		CalendarInput,
 		ChatIconSearch,
 		ChatIconSearchClose,
+		ChatIconSearchDate,
 	},
+	directives: {mask},
 	data() {
 		return {
 			searchMessagesQuery: '',
 			searchFilesQuery: '',
 			searchMessagesDate: '',
 			searchFilesFilter: '',
+			showDatePicker: false,
+			date: ['']
 		}
 	},
 	computed: {
@@ -115,6 +135,9 @@ export default {
 		searchFilesQuery() {
 			this.searchFiles();
 		},
+		date(value){
+			this.searchMessagesDate = value[0]
+		}
 	},
 	methods: {
 		...mapActions([
@@ -184,7 +207,8 @@ export default {
 .messenger__messages-search {
 	display: flex;
 	flex-flow: row;
-	padding: 10px;
+	gap: 1rem;
+	padding: 1rem;
 	border-bottom: 0.5px solid #DAE5F3;
 }
 
@@ -194,31 +218,43 @@ export default {
 	align-items: center;
 	flex: 1;
 	background: rgba(235, 242, 250, 0.5);
-	border-radius: 5px;
+	border-radius: 0.5rem;
 }
 .messenger__messages-search-input .ChatIcon{
-	margin: 0 10px;
+	margin: 0 1rem;
 }
 
 .messenger__messages-search-input input {
 	width: 100%;
-	padding: 10px;
+	padding: 1rem;
 	background-color: transparent;
 }
 
 .messenger__messages-search-date {
-	margin-left: 10px;
+	display: flex;
 	flex-flow: row nowrap;
 	align-items: center;
 	/* flex: 1; */
+	position: relative;
 	background: rgba(235, 242, 250, 0.5);
-	border-radius: 5px;
+	border-radius: 0.5rem;
 }
 
-.messenger__messages-search-date input {
+.messenger__messages-search-date-input {
 	padding: 10px;
 	border-radius: 5px;
 	background-color: transparent;
+}
+.messenger__messages-search-date-input::-webkit-inner-spin-button,
+.messenger__messages-search-date-input::-moz-inner-spin-button,
+.messenger__messages-search-date-input::-webkit-calendar-picker-indicator,
+.messenger__messages-search-date-input::-moz-calendar-picker-indicator{
+	display: none;
+	-webkit-appearance: none;
+	-moz-appearance: none;
+}
+.messenger__messages-search-date-calendar{
+	padding: 0 0.5rem;
 }
 
 .messenger__messages-search-results {
