@@ -5,7 +5,7 @@
 		@mousedown="startDrag"
 		@mouseup="stopDrag"
 		@mousemove="onDrag"
-		:class="{'is-dragging': isDragging}"
+		:class="[{'is-dragging': isDragging}, {'overflow-hidden': openEditCard}]"
 	>
 		<div
 			class="structure-company-controls"
@@ -15,59 +15,72 @@
 			<div class="actions">
 				<button
 					class="remove-demo"
-					@click="departments = []"
+					@click="deleteDemoData"
 				>
 					Удалить демо данные
 				</button>
-				<button class="icon-btn">
+				<button
+					class="icon-btn"
+					:class="{'active': editStructure}"
+					@click="editStructure = !editStructure"
+				>
 					<i class="fa fa-pen" />
 				</button>
 				<button class="icon-btn">
 					<i class="fa fa-cog" />
 				</button>
 			</div>
-			<div class="range-zoom">
-				<input
-					id="range-input"
-					class="range-input"
-					v-model="zoom"
-					min="10"
-					max="500"
-					step="1"
-					type="range"
-				>
-			</div>
+		</div>
+		<div
+			class="range-zoom"
+			mousemove.stop
+			@mousedown.stop
+		>
+			<input
+				id="range-input"
+				class="range-input"
+				v-model.number="zoom"
+				min="10"
+				max="200"
+				step="1"
+				type="range"
+			>
 		</div>
 		<div
 			class="structure-company-area"
 			:style="{zoom: zoom / 100}"
 		>
 			<div
-				class="structure-card"
+				class="structure-card ceo-card"
 				:style="{marginLeft: leftMarginMainCard}"
+				:class="{'no-result' : departments.length === 0}"
 			>
 				<div class="structure-card-header">
 					<p class="department">
 						Коммерческий департамент
 					</p>
 					<p class="count">
-						100 сотрудников
+						999 сотрудников
 					</p>
 				</div>
 				<div class="structure-card-body">
 					<img
-						src="https://randomuser.me/api/portraits/women/1.jpg"
+						src="https://randomuser.me/api/portraits/men/1.jpg"
 						alt="photo"
 						class="director-photo"
 					>
 					<p class="position">
-						Коммерческий директор
+						Генеральный директор
 					</p>
 					<p class="full-name">
-						Анастасия Гришковецкая
+						Адиль Каримов
 					</p>
 				</div>
-				<i class="fa fa-plus-circle structure-add" />
+				<i
+					class="fa fa-plus-circle structure-add"
+					v-if="editStructure"
+					@click="addDepartment"
+				/>
 			</div>
 			<div
 				class="departments-area"
@@ -78,7 +91,14 @@
 						:department="department"
 						:key="department.id"
 						:level="1"
+						:edit-structure="editStructure"
 						:bgc="''"
+						:users="users"
+						:positions="positions"
+						:departments-list="departmentsList"
+						@isOpenEditCard="isOpenEditCard"
+						@scrollToBlock="scrollToBlock"
+						@updateLines="drawLines"
 					/>
 				</template>
 			</div>
@@ -92,69 +112,125 @@ import StructureItem from './StructureItem';
 const resultText = 'Жулимэ — это суета материального мира, попытка сделать из жулимэ монету. Если у тебя ворс неблагородный, если ты делаешь монету из плохого ворса, то ты не сигмач.';
 const users = [
 	{
+		position: 'Консультант',
 		fullName: 'Елена Сидорова',
-		position: 'Менеджер по продажам',
 		birthday: '05.06.1990',
 		phone: '+7(777)1234567',
 		email: 'elena.sidorova@example.com',
 		photo: 'https://randomuser.me/api/portraits/women/1.jpg'
 	},
 	{
+		position: 'HR менеджер',
 		fullName: 'Иван Петров',
-		position: 'Разработчик',
 		birthday: '20.02.1988',
 		phone: '+7(999)9876543',
 		email: 'ivan.petrov@example.com',
 		photo: 'https://randomuser.me/api/portraits/men/2.jpg'
 	},
 	{
+		position: 'IT специалист',
 		fullName: 'Мария Иванова',
-		position: 'Дизайнер',
 		birthday: '15.09.1992',
 		phone: '+7(777)5554321',
 		email: 'maria.ivanova@example.com',
 		photo: 'https://randomuser.me/api/portraits/women/3.jpg'
 	},
 	{
+		position: 'Менеджер по продажам',
 		fullName: 'Александр Смирнов',
-		position: 'Бухгалтер',
 		birthday: '01.01.1975',
 		phone: '+7(495)5551212',
 		email: 'alexandr.smirnov@example.com',
 		photo: 'https://randomuser.me/api/portraits/men/4.jpg'
 	},
 	{
+		position: 'Таргетолог',
 		fullName: 'Ольга Васильева',
-		position: 'HR-специалист',
 		birthday: '12.12.1987',
 		phone: '+7(916)1234567',
 		email: 'olga.vasilieva@example.com',
 		photo: 'https://randomuser.me/api/portraits/women/5.jpg'
 	},
 	{
+		position: 'Младший помощник',
 		fullName: 'Павел Сергеев',
-		position: 'Маркетолог',
 		birthday: '18.03.1991',
 		phone: '+7(905)1234567',
 		email: 'pavel.sergeev@example.com',
-		photo: 'https://randomuser.me/api/portraits/men/6.jpg'
+		photo: 'https://randomuser.me/api/portraits/men/24.jpg'
 	},
 	{
+		position: 'Старший рекрутер',
 		fullName: 'Татьяна Николаева',
-		position: 'Администратор',
 		birthday: '25.05.1995',
 		phone: '+7(903)1234567',
 		email: 'tatiana.nikolaeva@example.com',
 		photo: 'https://randomuser.me/api/portraits/women/7.jpg'
 	},
 	{
+		position: 'Маркетолог',
 		fullName: 'Ирина Лагинуш',
-		position: 'Администратор',
 		birthday: '12.11.1990',
 		phone: '+7(903)1235567',
 		email: 'irina90dar@example.com',
 		photo: 'https://randomuser.me/api/portraits/women/8.jpg'
 	},
+	{
+		position: 'Программист',
+		fullName: 'Максим Иванов',
+		birthday: '05.06.1985',
+		phone: '+7(903)1236677',
+		email: 'max85@example.com',
+		photo: 'https://randomuser.me/api/portraits/men/5.jpg'
+	},
+	{
+		position: 'Дизайнер',
+		fullName: 'Екатерина Сидорова',
+		birthday: '25.01.1993',
+		phone: '+7(903)1112255',
+		email: 'kate93@example.com',
+		photo: 'https://randomuser.me/api/portraits/women/7.jpg'
+	},
+	{
+		position: 'HR-менеджер',
+		fullName: 'Дмитрий Смирнов',
+		birthday: '15.09.1987',
+		phone: '+7(903)6789900',
+		email: 'dmitry87@example.com',
+		photo: 'https://randomuser.me/api/portraits/men/7.jpg'
+	},
+	{
+		position: 'Бухгалтер',
+		fullName: 'Ольга Петрова',
+		birthday: '30.04.1980',
+		phone: '+7(903)5557788',
+		email: 'olga80@example.com',
+		photo: 'https://randomuser.me/api/portraits/women/3.jpg'
+	},
+	{
+		position: 'Менеджер по продажам',
+		fullName: 'Андрей Кузнецов',
+		birthday: '08.07.1992',
+		phone: '+7(903)2221122',
+		email: 'andrew92@example.com',
+		photo: 'https://randomuser.me/api/portraits/men/9.jpg'
+	},
+	{
+		position: 'Аналитик',
+		fullName: 'Анастасия Павлова',
+		birthday: '23.12.1988',
+		phone: '+7(903)4443322',
+		email: 'anastasia88@example.com',
+		photo: 'https://randomuser.me/api/portraits/women/2.jpg'
+	},
+	{
+		position: 'Менеджер по маркетингу',
+		fullName: 'Сергей Ковалев',
+		birthday: '01.03.1991',
+		phone: '+7(903)9994433',
+		email: 'sergey91@example.com',
+		photo: 'https://randomuser.me/api/portraits/men/8.jpg'
+	}
 ];
 export default {
 	name: 'StructureComp',
@@ -169,28 +245,195 @@ export default {
 			scrollLeft: 0,
 			scrollTop: 0,
 			zoom: 100,
+			openEditCard: false,
+			editStructure: false,
 			leftMarginMainCard: 0,
-			ceo: {
-				id: Math.floor(Math.random() * 10000),
-				department: 'Коммерческий департамент',
-				employeesCount: 192,
-				director: {
-					fullName: 'Адиль Каримов',
-					position: 'Генеральный директор',
-					birthday: '10.10.1985',
-					phone: '+7(700)5654323',
-					email: 'test.test@gmail.com',
-					photo: 'https://randomuser.me/api/portraits/men/1.jpg'
+			positions: [
+				'Менеджер по продажам',
+				'Финансовый аналитик',
+				'Дизайнер интерфейсов',
+				'Разработчик программного обеспечения',
+				'HR-специалист',
+				'Маркетолог',
+				'Инженер-конструктор',
+				'Адвокат',
+				'Преподаватель',
+				'Архитектор',
+				'Менеджер по закупкам',
+				'Менеджер по персоналу',
+				'Технический писатель',
+				'Копирайтер',
+				'Аналитик данных',
+				'Контент-менеджер',
+				'Системный администратор',
+				'Тестировщик',
+				'Директор',
+				'Программист',
+				'Редактор',
+				'Переводчик',
+				'Технический писатель',
+				'Строитель',
+				'Интернет-магазин',
+				'Директор по маркетингу',
+				'Директор по продажам',
+				'Технический писатель',
+				'Директор по развитию',
+				'Директор по управлению персоналом'
+			],
+			departmentsList: [
+				'Отдел продаж',
+				'Отдел маркетинга',
+				'Отдел разработки',
+				'Отдел тестирования',
+				'Финансовый отдел',
+				'Отдел кадров',
+				'Отдел закупок',
+				'Отдел логистики',
+				'Отдел качества',
+				'Отдел безопасности',
+				'Отдел обслуживания клиентов',
+				'Отдел PR',
+				'Отдел исследований и разработок',
+				'Отдел производства',
+				'Отдел снабжения',
+				'Отдел IT',
+				'Отдел аналитики',
+				'Отдел дизайна',
+				'Отдел технической поддержки',
+				'Отдел контроля качества',
+				'Отдел управления проектами',
+				'Отдел планирования',
+				'Отдел стратегического развития',
+				'Отдел экономического анализа',
+				'Отдел законодательного сопровождения',
+				'Отдел корпоративной безопасности',
+				'Отдел архитектуры',
+				'Отдел криптографии',
+				'Отдел научных исследований',
+				'Отдел международных отношений'
+			],
+			users: [
+				{
+					fullName: 'Елена Сидорова',
+					birthday: '05.06.1990',
+					phone: '+7(777)1234567',
+					email: 'elena.sidorova@example.com',
+					photo: 'https://randomuser.me/api/portraits/women/1.jpg'
 				},
-			},
+				{
+					fullName: 'Иван Петров',
+					birthday: '20.02.1988',
+					phone: '+7(999)9876543',
+					email: 'ivan.petrov@example.com',
+					photo: 'https://randomuser.me/api/portraits/men/2.jpg'
+				},
+				{
+					fullName: 'Мария Иванова',
+					birthday: '15.09.1992',
+					phone: '+7(777)5554321',
+					email: 'maria.ivanova@example.com',
+					photo: 'https://randomuser.me/api/portraits/women/3.jpg'
+				},
+				{
+					fullName: 'Александр Смирнов',
+					birthday: '01.01.1975',
+					phone: '+7(495)5551212',
+					email: 'alexandr.smirnov@example.com',
+					photo: 'https://randomuser.me/api/portraits/men/4.jpg'
+				},
+				{
+					fullName: 'Ольга Васильева',
+					birthday: '12.12.1987',
+					phone: '+7(916)1234567',
+					email: 'olga.vasilieva@example.com',
+					photo: 'https://randomuser.me/api/portraits/women/5.jpg'
+				},
+				{
+					fullName: 'Павел Сергеев',
+					birthday: '18.03.1991',
+					phone: '+7(905)1234567',
+					email: 'pavel.sergeev@example.com',
+					photo: 'https://randomuser.me/api/portraits/men/6.jpg'
+				},
+				{
+					fullName: 'Татьяна Николаева',
+					birthday: '25.05.1995',
+					phone: '+7(903)1234567',
+					email: 'tatiana.nikolaeva@example.com',
+					photo: 'https://randomuser.me/api/portraits/women/7.jpg'
+				},
+				{
+					fullName: 'Ирина Лагинуш',
+					birthday: '12.11.1990',
+					phone: '+7(903)1235567',
+					email: 'irina90dar@example.com',
+					photo: 'https://randomuser.me/api/portraits/women/8.jpg'
+				},
+				{
+					position: 'Программист',
+					fullName: 'Максим Иванов',
+					birthday: '05.06.1985',
+					phone: '+7(903)1236677',
+					email: 'max85@example.com',
+					photo: 'https://randomuser.me/api/portraits/men/5.jpg'
+				},
+				{
+					position: 'Дизайнер',
+					fullName: 'Екатерина Сидорова',
+					birthday: '25.01.1993',
+					phone: '+7(903)1112255',
+					email: 'kate93@example.com',
+					photo: 'https://randomuser.me/api/portraits/women/7.jpg'
+				},
+				{
+					position: 'HR-менеджер',
+					fullName: 'Дмитрий Смирнов',
+					birthday: '15.09.1987',
+					phone: '+7(903)6789900',
+					email: 'dmitry87@example.com',
+					photo: 'https://randomuser.me/api/portraits/men/7.jpg'
+				},
+				{
+					position: 'Бухгалтер',
+					fullName: 'Ольга Петрова',
+					birthday: '30.04.1980',
+					phone: '+7(903)5557788',
+					email: 'olga80@example.com',
+					photo: 'https://randomuser.me/api/portraits/women/3.jpg'
+				},
+				{
+					position: 'Менеджер по продажам',
+					fullName: 'Андрей Кузнецов',
+					birthday: '08.07.1992',
+					phone: '+7(903)2221122',
+					email: 'andrew92@example.com',
+					photo: 'https://randomuser.me/api/portraits/men/9.jpg'
+				},
+				{
+					position: 'Аналитик',
+					fullName: 'Анастасия Павлова',
+					birthday: '23.12.1988',
+					phone: '+7(903)4443322',
+					email: 'anastasia88@example.com',
+					photo: 'https://randomuser.me/api/portraits/women/2.jpg'
+				},
+				{
+					position: 'Менеджер по маркетингу',
+					fullName: 'Сергей Ковалев',
+					birthday: '01.03.1991',
+					phone: '+7(903)9994433',
+					email: 'sergey91@example.com',
+					photo: 'https://randomuser.me/api/portraits/men/8.jpg'
+				}
+			],
 			departments: [
 				{
 					id: Math.floor(Math.random() * 10000),
 					department: 'Коммерческий департамент',
+					position: 'Коммерческий директор',
 					employeesCount: 100,
 					director: {
 						fullName: 'Анастасия Гришковецкая',
-						position: 'Коммерческий директор',
 						birthday: '10.10.1985',
 						phone: '+7(700)5654323',
 						email: 'test.test@gmail.com',
@@ -200,11 +443,11 @@ export default {
 						{
 							id: Math.floor(Math.random() * 10000),
 							department: 'Департамент персонала',
+							position: 'Директор по персоналу',
 							employeesCount: 777,
 							result: resultText,
 							director: {
 								fullName: 'Лилиан Левина',
-								position: 'Директор по персоналу',
 								birthday: '10.10.1985',
 								phone: '+7(700)5654323',
 								email: 'test.test@gmail.com',
@@ -214,11 +457,11 @@ export default {
 								{
 									id: Math.floor(Math.random() * 10000),
 									department: 'Отдел найма и обучения',
+									position: 'Начальник',
 									employeesCount: 2,
 									group: true,
 									director: {
 										fullName: 'Дашики Ямшина',
-										position: 'Начальник',
 										birthday: '10.10.1985',
 										phone: '+7(700)5654323',
 										email: 'test.test@gmail.com',
@@ -228,11 +471,11 @@ export default {
 										{
 											id: Math.floor(Math.random() * 10000),
 											department: 'Сектор подбора персонала',
+											position: 'Руководитель',
 											employeesCount: 28,
 											result: resultText,
 											director: {
 												fullName: 'Кирилл Толмацкий',
-												position: 'Руководитель',
 												birthday: '10.10.1985',
 												phone: '+7(700)5654323',
 												email: 'test.test@gmail.com',
@@ -251,11 +494,11 @@ export default {
 								{
 									id: Math.floor(Math.random() * 10000),
 									department: 'Отдел заботы',
+									position: 'Начальник',
 									employeesCount: 12,
 									group: true,
 									director: {
 										fullName: 'Светлана Шу',
-										position: 'Начальник',
 										birthday: '10.10.1985',
 										phone: '+7(700)5654323',
 										email: 'test.test@gmail.com',
@@ -265,11 +508,11 @@ export default {
 										{
 											id: Math.floor(Math.random() * 10000),
 											department: 'Сектор приёмной',
+											position: 'Руководитель',
 											employeesCount: 12,
 											result: resultText,
 											director: {
 												fullName: 'Виктор Лампин',
-												position: 'Руководитель',
 												birthday: '10.10.1985',
 												phone: '+7(700)5654323',
 												email: 'test.test@gmail.com',
@@ -286,10 +529,10 @@ export default {
 										{
 											id: Math.floor(Math.random() * 10000),
 											department: 'IT-сектор',
+											position: 'Дизайнер интерфейсов, UI\\UX',
 											employeesCount: 1,
 											director: {
 												fullName: 'Иван Деловой',
-												position: 'Дизайнер интерфейсов, UI\\UX',
 												birthday: '10.10.1985',
 												phone: '+7(700)5654323',
 												email: 'test.test@gmail.com',
@@ -303,11 +546,11 @@ export default {
 						{
 							id: Math.floor(Math.random() * 10000),
 							department: 'Коммерческий департамент',
+							position: 'Коммерческий директор',
 							employeesCount: 56,
 							result: resultText,
 							director: {
 								fullName: 'Анастасия Гришковецкая',
-								position: 'Коммерческий директор',
 								birthday: '10.10.1985',
 								phone: '+7(700)5654323',
 								email: 'test.test@gmail.com',
@@ -317,11 +560,11 @@ export default {
 								{
 									id: Math.floor(Math.random() * 10000),
 									department: 'Отдел маркетинга',
+									position: 'Начальник',
 									employeesCount: 22,
 									group: true,
 									director: {
 										fullName: 'Майя Топтунова',
-										position: 'Начальник',
 										birthday: '10.10.1985',
 										phone: '+7(700)5654323',
 										email: 'test.test@gmail.com',
@@ -331,11 +574,11 @@ export default {
 										{
 											id: Math.floor(Math.random() * 10000),
 											department: 'Сектор PR',
+											position: 'Руководитель',
 											employeesCount: 22,
 											result: resultText,
 											director: {
 												fullName: 'Казанцева Ася',
-												position: 'Руководитель',
 												birthday: '10.10.1985',
 												phone: '+7(700)5654323',
 												email: 'test.test@gmail.com',
@@ -352,11 +595,11 @@ export default {
 										{
 											id: Math.floor(Math.random() * 10000),
 											department: 'Сектор дизайна',
+											position: 'Руководитель',
 											employeesCount: 22,
 											result: resultText,
 											director: {
 												fullName: 'Настя Филлипова',
-												position: 'Руководитель',
 												birthday: '10.10.1985',
 												phone: '+7(700)5654323',
 												email: 'test.test@gmail.com',
@@ -368,11 +611,11 @@ export default {
 								{
 									id: Math.floor(Math.random() * 10000),
 									department: 'Отдел продаж',
+									position: 'Начальник',
 									employeesCount: 444,
 									group: true,
 									director: {
 										fullName: 'Ефремов Максим',
-										position: 'Начальник',
 										birthday: '10.10.1985',
 										phone: '+7(700)5654323',
 										email: 'test.test@gmail.com',
@@ -382,10 +625,10 @@ export default {
 										{
 											id: Math.floor(Math.random() * 10000),
 											department: 'Сектор холодных продаж',
+											position: 'Руководитель',
 											employeesCount: 22,
 											director: {
 												fullName: 'Орест Френзенский',
-												position: 'Руководитель',
 												birthday: '10.10.1985',
 												phone: '+7(700)5654323',
 												email: 'test.test@gmail.com',
@@ -395,10 +638,10 @@ export default {
 										{
 											id: Math.floor(Math.random() * 10000),
 											department: 'Группа ХП-01',
+											position: 'Руководитель',
 											employeesCount: 22,
 											director: {
 												fullName: 'Орест Френзенский',
-												position: 'Руководитель',
 												birthday: '10.10.1985',
 												phone: '+7(700)5654323',
 												email: 'test.test@gmail.com',
@@ -417,11 +660,11 @@ export default {
 								{
 									id: Math.floor(Math.random() * 10000),
 									department: 'Отдел по работе с клиентами',
+									position: 'Начальник',
 									employeesCount: 56,
 									group: true,
 									director: {
 										fullName: 'Галина Симакина',
-										position: 'Начальник',
 										birthday: '10.10.1985',
 										phone: '+7(700)5654323',
 										email: 'test.test@gmail.com',
@@ -431,11 +674,11 @@ export default {
 										{
 											id: Math.floor(Math.random() * 10000),
 											department: 'Сектор по работе с ключевыми клиентами',
+											position: 'Руководитель',
 											employeesCount: 3,
 											result: resultText,
 											director: {
 												fullName: 'Хасан Фаримов',
-												position: 'Руководитель',
 												birthday: '10.10.1985',
 												phone: '+7(700)5654323',
 												email: 'test.test@gmail.com',
@@ -445,11 +688,11 @@ export default {
 										{
 											id: Math.floor(Math.random() * 10000),
 											department: 'Сектор сопровождения клиетов',
+											position: 'Руководитель',
 											employeesCount: 4,
 											result: resultText,
 											director: {
 												fullName: 'Василий Медведев',
-												position: 'Руководитель',
 												birthday: '10.10.1985',
 												phone: '+7(700)5654323',
 												email: 'test.test@gmail.com',
@@ -463,12 +706,12 @@ export default {
 						{
 							id: Math.floor(Math.random() * 10000),
 							department: 'Финансовый департамент',
+							position: 'Финансовый директор',
 							employeesCount: 38,
 							result: resultText,
 							group: true,
 							director: {
 								fullName: 'Ольга Залуцкая',
-								position: 'Финансовый директор',
 								birthday: '10.10.1985',
 								phone: '+7(700)5654323',
 								email: 'test.test@gmail.com',
@@ -478,10 +721,10 @@ export default {
 								{
 									id: Math.floor(Math.random() * 10000),
 									department: 'Бухгалтерия',
+									position: 'Главный бухгалтер',
 									employeesCount: 38,
 									director: {
 										fullName: 'Вера Котельникова',
-										position: 'Главный бухгалтер',
 										birthday: '10.10.1985',
 										phone: '+7(700)5654323',
 										email: 'test.test@gmail.com',
@@ -491,11 +734,11 @@ export default {
 								{
 									id: Math.floor(Math.random() * 10000),
 									department: 'Материальный сектор',
+									position: 'Руководитель',
 									employeesCount: 2,
 									result: resultText,
 									director: {
 										fullName: 'Стася Тринадцатко',
-										position: 'Руководитель',
 										birthday: '10.10.1985',
 										phone: '+7(700)5654323',
 										email: 'test.test@gmail.com',
@@ -505,11 +748,11 @@ export default {
 								{
 									id: Math.floor(Math.random() * 10000),
 									department: 'Сектор заработной платы',
+									position: 'Руководитель',
 									employeesCount: 22,
 									result: resultText,
 									director: {
 										fullName: 'Надежда Галанова',
-										position: 'Руководитель',
 										birthday: '10.10.1985',
 										phone: '+7(700)5654323',
 										email: 'test.test@gmail.com',
@@ -519,11 +762,11 @@ export default {
 								{
 									id: Math.floor(Math.random() * 10000),
 									department: 'Сектор налогового учёта',
+									position: 'Руководитель',
 									employeesCount: 5,
 									result: resultText,
 									director: {
 										fullName: 'Катерина Пачковская',
-										position: 'Руководитель',
 										birthday: '10.10.1985',
 										phone: '+7(700)5654323',
 										email: 'test.test@gmail.com',
@@ -535,10 +778,10 @@ export default {
 						{
 							id: Math.floor(Math.random() * 10000),
 							department: 'Производственный департамент',
+							position: 'Директор производства',
 							employeesCount: 67,
 							director: {
 								fullName: 'Игорь Джабраилов',
-								position: 'Директор производства',
 								birthday: '10.10.1985',
 								phone: '+7(700)5654323',
 								email: 'test.test@gmail.com',
@@ -548,11 +791,11 @@ export default {
 								{
 									id: Math.floor(Math.random() * 10000),
 									department: 'Отдел закупок',
+									position: 'Начальник',
 									employeesCount: 22,
 									group: true,
 									director: {
 										fullName: 'Дашики Ямшина',
-										position: 'Начальник',
 										birthday: '10.10.1985',
 										phone: '+7(700)5654323',
 										email: 'test.test@gmail.com',
@@ -562,11 +805,11 @@ export default {
 										{
 											id: Math.floor(Math.random() * 10000),
 											department: 'Сектор снабжения',
+											position: 'Руководитель',
 											employeesCount: 28,
 											result: resultText,
 											director: {
 												fullName: 'Кирилл Толмацкий',
-												position: 'Руководитель',
 												birthday: '10.10.1985',
 												phone: '+7(700)5654323',
 												email: 'test.test@gmail.com',
@@ -576,11 +819,11 @@ export default {
 										{
 											id: Math.floor(Math.random() * 10000),
 											department: 'Сектор обслуживания оборудования',
+											position: 'Руководитель',
 											employeesCount: 56,
 											result: resultText,
 											director: {
 												fullName: 'Надежда Галанова',
-												position: 'Руководитель',
 												birthday: '10.10.1985',
 												phone: '+7(700)5654323',
 												email: 'test.test@gmail.com',
@@ -602,11 +845,11 @@ export default {
 				{
 					id: Math.floor(Math.random() * 10000),
 					department: 'Коммерческий департамент',
+					position: 'Административный директор',
 					employeesCount: 100,
 					bgc: '#F9F6FF',
 					director: {
 						fullName: 'Идрак Мирзализаде',
-						position: 'Административный директор',
 						birthday: '10.10.1985',
 						phone: '+7(700)5654323',
 						email: 'test.test@gmail.com',
@@ -616,11 +859,11 @@ export default {
 						{
 							id: Math.floor(Math.random() * 10000),
 							department: 'Отдел безопасности',
+							position: 'Начальник отдела',
 							employeesCount: 22,
 							group: true,
 							director: {
 								fullName: 'Константин Самойлов',
-								position: 'Начальник отдела',
 								birthday: '10.10.1985',
 								phone: '+7(700)5654323',
 								email: 'test.test@gmail.com',
@@ -630,11 +873,11 @@ export default {
 								{
 									id: Math.floor(Math.random() * 10000),
 									department: 'Сектор безопасности',
+									position: 'Руководитель',
 									employeesCount: 8,
 									result: resultText,
 									director: {
 										fullName: 'Кирилл Толмацкий',
-										position: 'Руководитель',
 										birthday: '10.10.1985',
 										phone: '+7(700)5654323',
 										email: 'test.test@gmail.com',
@@ -644,11 +887,11 @@ export default {
 								{
 									id: Math.floor(Math.random() * 10000),
 									department: 'Сектор юристов',
+									position: 'Главный юрист',
 									employeesCount: 5,
 									result: resultText,
 									director: {
 										fullName: 'Вадим Пастильный',
-										position: 'Главный юрист',
 										birthday: '10.10.1985',
 										phone: '+7(700)5654323',
 										email: 'test.test@gmail.com',
@@ -658,11 +901,11 @@ export default {
 								{
 									id: Math.floor(Math.random() * 10000),
 									department: 'Сектор охраны труда',
+									position: 'Руководитель',
 									employeesCount: 2,
 									result: resultText,
 									director: {
 										fullName: 'Вадим Саликов',
-										position: 'Руководитель',
 										birthday: '10.10.1985',
 										phone: '+7(700)5654323',
 										email: 'test.test@gmail.com',
@@ -674,12 +917,12 @@ export default {
 						{
 							id: Math.floor(Math.random() * 10000),
 							department: 'Административный отдел',
+							position: 'Директор по персоналу',
 							employeesCount: 19,
 							result: resultText,
 							group: false,
 							director: {
 								fullName: 'Лилиан Левина',
-								position: 'Директор по персоналу',
 								birthday: '10.10.1985',
 								phone: '+7(700)5654323',
 								email: 'test.test@gmail.com',
@@ -689,11 +932,11 @@ export default {
 								{
 									id: Math.floor(Math.random() * 10000),
 									department: 'Совет директоров',
+									position: 'Председатель совета директоров',
 									employeesCount: 9,
 									result: resultText,
 									director: {
 										fullName: 'Никита Косов',
-										position: 'Председатель совета директоров',
 										birthday: '10.10.1985',
 										phone: '+7(700)5654323',
 										email: 'test.test@gmail.com',
@@ -711,11 +954,11 @@ export default {
 								{
 									id: Math.floor(Math.random() * 10000),
 									department: 'Служба стратегического управления',
+									position: 'Начальник отдела',
 									employeesCount: 17,
 									result: resultText,
 									director: {
 										fullName: 'Григорий Квадратов',
-										position: 'Начальник отдела',
 										birthday: '10.10.1985',
 										phone: '+7(700)5654323',
 										email: 'test.test@gmail.com',
@@ -725,11 +968,11 @@ export default {
 								{
 									id: Math.floor(Math.random() * 10000),
 									department: 'Совет руководителей',
+									position: 'Начальник отдела',
 									employeesCount: 17,
 									result: resultText,
 									director: {
 										fullName: 'Елена Губова',
-										position: 'Начальник отдела',
 										birthday: '10.10.1985',
 										phone: '+7(700)5654323',
 										email: 'test.test@gmail.com',
@@ -743,21 +986,99 @@ export default {
 			]
 		}
 	},
-	mounted(){
+	mounted() {
 		this.drawLines();
+		window.addEventListener('wheel', this.scrollArea);
 	},
-	methods: {
-		drawLines() {
-			if (this.$refs.departmentsArea) {
-				this.leftMarginMainCard = `${Math.round(this.$refs.departmentsArea.scrollWidth / 2)}px`;
+	beforeDestroy() {
+		window.removeEventListener('wheel', this.scrollArea);
+	},
+	watch: {
+		openEditCard(val) {
+			if (val) {
+				this.stopDrag();
 			}
 		},
+		departments: {
+			deep: true,
+			handler() {
+				this.$children.forEach(childComponent => {
+					this.recursiveUpdate(childComponent);
+				});
+			}
+		}
+	},
+	methods: {
+		recursiveUpdate(component) {
+			if (component.drawLines) {
+				component.drawLines();
+			}
+			if (component.$children) {
+				component.$children.forEach(childComponent => {
+					this.recursiveUpdate(childComponent);
+				});
+			}
+		},
+		addDepartment(){
+			const obj = {
+				id: Math.floor(Math.random() * 10000),
+				department: 'Новый департамент',
+				employeesCount: 0,
+				isNew: true
+			};
+			this.departments.push(obj);
+			this.scrollToBlock(obj.id);
+		},
+		scrollToBlock(id){
+			console.log(id);
+			this.$nextTick(() => {
+				const addedDepartment = document.querySelector(`#id-${id}`);
+				addedDepartment.scrollIntoView({ behavior: 'smooth', block: 'center' });
+				this.drawLines();
+			});
+
+		},
+		isOpenEditCard(bool) {
+			this.openEditCard = bool;
+		},
+		scrollArea(event) {
+			if (event.altKey) {
+				this.zoom = Math.min(Math.max(this.zoom + (event.deltaY > 0 ? -10 : 10), 10), 200);
+			}
+		},
+		deleteDemoData(){
+			this.departments = [];
+			this.$nextTick(() => {
+				this.drawLines();
+			})
+		},
+		drawLines() {
+			if (this.$refs.departmentsArea) {
+				const children = [...this.$refs.departmentsArea.children];
+				if(!children.length){
+					this.leftMarginMainCard = 0;
+					return;
+				}
+				let sumWidth = 0;
+				children.forEach(c => sumWidth += c.offsetWidth);
+				this.leftMarginMainCard = `${Math.round((sumWidth / 2) - 167)}px`;
+			}
+		},
+		updateLines() {
+			this.$nextTick(() => {
+				this.drawLines();
+			})
+			this.$forceUpdate();
+		},
 		startDrag(event) {
-			this.isDragging = true;
-			this.startX = event.clientX;
-			this.startY = event.clientY;
-			this.scrollLeft = this.$refs.container.scrollLeft;
-			this.scrollTop = this.$refs.container.scrollTop;
+			if (!this.openEditCard) {
+				this.isDragging = true;
+				this.startX = event.clientX;
+				this.startY = event.clientY;
+				this.scrollLeft = this.$refs.container.scrollLeft;
+				this.scrollTop = this.$refs.container.scrollTop;
+			}
+
 		},
 		stopDrag() {
 			this.isDragging = false;
