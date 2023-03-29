@@ -27,7 +27,7 @@ final class UpdatePortalDTO
         return [
             'main_page_video' => $this->mainPageVideo ?? null,
             'main_page_video_show_days_amount' => $this->mainPageVideoShowDaysAmount ?? null,
-            'kpi_backlight' => $this->kpiBacklight?->kpiBacklightItems,
+            'kpi_backlight' => $this->kpiBacklight?->items,
         ];
     }
 }

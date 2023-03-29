@@ -20,11 +20,16 @@ class IsOwner {
     public function handle($request, Closure $next) {
 
         $tenantId = tenant('id');
-        $ownerId = auth()->id();
+        $jobtronUserId = \DB::connection('mysql')
+            ->table('users')
+            ->where('email', auth()->user()->email)
+            ->pluck('id')
+            ->first();
 
-        $portal = Portal::where('tenant_id', $tenantId)->firstorfail();
+        $portal = Portal::where('tenant_id', $tenantId)
+            ->firstorfail();
 
-        if ($portal->owner_id != $ownerId)
+        if (!$jobtronUserId || $portal->owner_id != $jobtronUserId)
         {
             throw new Exception("Нет доступа.");
         }
