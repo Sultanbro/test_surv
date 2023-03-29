@@ -42,11 +42,11 @@ class Tax extends Model
 
     /**
      * @param int $id
-     * @return Model
+     * @return Tax
      */
     public static function getTaxById(
         int $id
-    ): Model
+    ): Tax
     {
         return self::query()->findOrFail($id);
     }
