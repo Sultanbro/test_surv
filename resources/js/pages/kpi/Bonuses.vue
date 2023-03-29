@@ -338,6 +338,10 @@
 										v-if="page_item.type == 3"
 									/>
 									<span class="ml-2">{{ page_item.name }}</span>
+									<i
+										class="fa fa-save btn btn-success btn-icon ml-a"
+										@click="saveAll(p)"
+									/>
 								</div>
 							</td>
 						</tr>
@@ -527,8 +531,17 @@
 															>
 														</template>
 													</td>
-													<td class="ho-hover">
+													<td class="no-hover">
 														<div class="d-flex px-2">
+															<b-form-checkbox
+																class="kpi-status-switch"
+																switch
+																:checked="!!item.is_active"
+																:disabled="requestInProgress"
+																@input="changeStatus(item, $event)"
+															>
+																&nbsp;
+															</b-form-checkbox>
 															<i
 																class="fa fa-save btn btn-success btn-icon"
 																@click="saveItemFromTable(p, i)"
@@ -788,7 +801,8 @@ export default {
 				'updated_at',
 				'created_by',
 				'updated_by',
-			]
+			],
+			requestInProgress: false
 		}
 	},
 	watch: {
@@ -835,6 +849,20 @@ export default {
 
 	},
 	methods: {
+		changeStatus(item, e){
+			if(this.requestInProgress) return
+			this.requestInProgress = true
+			this.axios.post('/bonus/set/status', {
+				bonus_id: item.id,
+				is_active: e
+			}).then(() => {
+				this.$toast.success('Статус изменен')
+				this.requestInProgress = false
+			}).catch(() => {
+				this.$toast.error('Статус не изменен')
+				this.requestInProgress = false
+			})
+		},
 		onChangeUnit(item){
 			if(item.unit === 'percent'){
 				item.quantity = null
@@ -1051,6 +1079,7 @@ export default {
 
 			return msg;
 		},
+
 		save(item, index) {
 
 			/**
@@ -1143,6 +1172,69 @@ export default {
 		},
 		saveItemFromTable(p, i) {
 			this.save(this.page_items[p].items[i])
+		},
+		saveAll(p){
+			/**
+			 * validate item
+			 */
+			if(this.requestInProgress) return
+			this.requestInProgress = true
+
+			const tosave = []
+			const toupdate = []
+			let not_validated_msg = ''
+			this.page_items[p].items.every(item => {
+				not_validated_msg = this.validateMsg(item)
+				if (not_validated_msg) return false
+				if(item.id){
+					toupdate.push({
+						...item,
+						targetable_id: item.target.id,
+						targetable_type: findModel(item.target.type),
+					})
+				}
+				else{
+					tosave.push({
+						...item,
+						targetable_id: item.target.id,
+						targetable_type: item.target.type
+					})
+				}
+				return true
+			})
+
+			if(not_validated_msg){
+				this.requestInProgress = false
+				return this.$toast.error(not_validated_msg)
+			}
+
+			const loader = this.$loading.show()
+			const requests = []
+			const errors = []
+			requests.push(this.axios.post(this.uri + '/save', {
+				bonuses: tosave
+			}).catch(error => {
+				const msg = error.message == 'Request failed with status code 409' ? 'Выберите другую цель "Кому"' : error
+				errors.push(msg)
+			}))
+			toupdate.forEach(item => {
+				requests.push(this.axios.put(this.uri + '/update', item).catch(error => {
+					const msg = error.message == 'Request failed with status code 409' ? 'Выберите другую цель "Кому"' : error
+					errors.push(msg)
+				}))
+			})
+			Promise.allSettled(requests).then(() => {
+				const msg = errors.length
+					?	errors.length === requests.length
+						? 'Ошибка при сохранении\n\n' + errors.join('\n')
+						: 'Частично сохранено\n\n' + errors.join('\n')
+					: 'Сохранено'
+				this.fetch()
+				this.$toast[errors.length ? 'error' : 'info'](msg)
+				this.requestInProgress = false
+				loader.hide()
+			})
+			return false;
 		},
 		deleteItem(p, i) {
 

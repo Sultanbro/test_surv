@@ -1,4 +1,5 @@
 <template>
+	<!-- eslint-disable vue/no-mutating-props -->
 	<tr
 		class="activitty"
 		v-if="!kpi_indicator.deleted"
@@ -194,6 +195,7 @@
 </template>
 
 <script>
+/* eslint-disable vue/no-mutating-props */
 export default {
 	name: 'TableKpiIndicator',
 	props:  {

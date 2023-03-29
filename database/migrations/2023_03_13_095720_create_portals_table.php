@@ -29,6 +29,6 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::connection('tenant')->dropIfExists('portals');
+        Schema::connection('mysql')->dropIfExists('portals');
     }
 };

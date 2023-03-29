@@ -8,7 +8,6 @@ use App\Http\Controllers\Services\IntellectController as IC;
 use App\Models\Admin\ObtainedBonus;
 use App\Models\Article\Article;
 use App\Models\Award\Award;
-use App\Models\AwardUser;
 use App\Models\CentralUser;
 use App\Models\CourseResult;
 use App\Models\GroupUser;
@@ -28,6 +27,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Database\Query;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Http\Request;
 use Illuminate\Notifications\Notifiable;
@@ -85,7 +85,6 @@ class User extends Authenticatable implements Authorizable
         'work_start',
         'work_end',
         'birthday', 
-        'last_group',
         'read_corp_book_at',
         'has_noti',
         'notified_at',
@@ -182,9 +181,13 @@ class User extends Authenticatable implements Authorizable
             'article_id'
         );
     }
-    public function taxes(): HasMany
+
+    /**
+     * @return BelongsToMany
+     */
+    public function taxes(): BelongsToMany
     {
-        return $this->hasMany(Tax::class, 'user_id');
+        return $this->belongsToMany(Tax::class, 'user_tax');
     }
     
     public function awards(): BelongsToMany
@@ -1042,22 +1045,15 @@ class User extends Authenticatable implements Authorizable
 
     /**
      * Время смены для юзера
+     *
+     * @delegate
      * @return array
      */
     public function workTime()
     {
         $userChart = $this->getWorkChart();
 
-        $workStartTime  = $userChart->start_time
-            ?? Timetracking::DEFAULT_WORK_START_TIME;
-
-        $workEndTime = $userChart->end_time
-            ?? Timetracking::DEFAULT_WORK_END_TIME;
-
-        return [
-            'workStartTime' => $workStartTime,
-            'workEndTime' => $workEndTime,
-        ];
+        return WorkChartModel::getWorkTime($userChart);
     }
 
     /**

@@ -15,6 +15,7 @@ use App\TimetrackingHistory;
 use App\User;
 use App\UserFine;
 use App\SalaryApproval;
+use App\Zarplata;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Http\Request;
@@ -409,6 +410,12 @@ class SalaryController extends Controller
         
         $date = $request->year . '-' . $request->month . '-01';
 
+        $taxesColumns = DB::table('taxes')->whereRaw('`taxes`.`id` IN (
+                SELECT `user_tax`.`tax_id`
+                FROM `user_tax`
+                GROUP BY `user_tax`.`tax_id`
+            )')->get()->pluck('name')->toArray();
+
         $headings = [
             'ФИО', // 0
             'На карте', // 1
@@ -429,15 +436,14 @@ class SalaryController extends Controller
             'ИПН', // 16
             'СО + СН', // 17
             'ИТОГО расход', // 18
-            'К выдаче', // 19
-            'В валюте', // 20
-            'Налоговые начисления'
         ];
+
+        array_push($headings, ...$taxesColumns);
+        array_push($headings, 'К выдаче', 'В валюте');
 
         $data = [];
 
         $date = Carbon::createFromDate($request->year,$request->month,1);
-
 
         $working_users = $this->getSheet($working_users, $date, $request->group_id);
         $fired_users = $this->getSheet($fired_users, $date, $request->group_id);
@@ -499,6 +505,15 @@ class SalaryController extends Controller
         $fines = Fine::pluck('penalty_amount', 'id')->toArray();
         $data = [];
 
+        /**
+         * Налоги.
+         */
+        $taxColumns = DB::table('taxes')->whereRaw('`taxes`.`id` IN (
+                SELECT `user_tax`.`tax_id`
+                FROM `user_tax`
+                GROUP BY `user_tax`.`tax_id`
+            )')->get();
+
         $allTotal = [
             0 => '',
             1 => '',
@@ -518,13 +533,24 @@ class SalaryController extends Controller
             15 => 0,
             16 => 0,
             17 => 0,
-            18 => 0,
-            19 => 0,
+            18 => 0
         ];
+
+        foreach ($taxColumns as $tax)
+        {
+            $allTotal["tax_$tax->id"] = 0;
+        }
+        $allTotal[] = 0;
+        $allTotal[] = 0;
+
         $i = 0;
         
         $data['users'] = [];
-        
+
+        $userIds    = $users->pluck('id')->toArray();
+        $zarplaties = Zarplata::getSalaryByUserIds($userIds);
+        $userTaxes  = DB::table('user_tax')->whereIn('user_id', $userIds)->get();
+
         foreach ($users as $user) { /** @var User $user */
 
             $_user = User::withTrashed()->find($user->id);
@@ -789,7 +815,7 @@ class SalaryController extends Controller
          
             // if($user->id == 5670) {
 
-            
+
             // dump($salary);
             // dump($bonus);
             // dump($prepaid);
@@ -832,68 +858,75 @@ class SalaryController extends Controller
             // В валюте
             $currency_rate = in_array($user->currency, array_keys(Currency::rates())) ? (float)Currency::rates()[$user->currency] : 0.0000001;
 
+            // Колонки для excel.
+            $totalColumns = [
+                0 => $user->full_name, // Действующие
+                1 => $cardholder, // Card Holder name
+                2 => $user->birthday ? floor((strtotime(now()) - strtotime($user->birthday)) / 3600 / 24 / 365) : '', // Возраст
+                3 => $user->phone ? ' +' . Phone::normalize($user->phone) : '',
+                4 => $cards, // Номер карты
+                5 => $workedDays, // отработанные дни
+                6 => $workDays, // рабочие дни
+                7 => $wage ?? 0, // ставка
+                8 => 0, // начислено
+                9 => 0, // KPI
+                10 => 0, // стажировочные
+                11 => 0, //
+                12 => 0, // ИТОГО доход,
+                13 => 0, // Авансы
+                14 => 0, // Штрафы
+                15 => 0, // ОПВ
+                16 => 0, // ИПН
+                17 => 0, // СО + СН
+                18 => 0, // итого расход
+            ];
+
+            /**
+             * Расчет налогов.
+             */
+            foreach ($taxColumns as $taxColumn)
+            {
+                $userZarplata =$zarplaties->where('user_id', $user->id)->first()->zarplata;
+                $totalColumns["tax_$taxColumn->id"] = 0;
+                $exist = $userTaxes->where('user_id', $user->id)->where('tax_id', $taxColumn->id)->count() > 0;
+
+                if ($exist)
+                {
+                    $amount = $taxColumn->is_percent ? $userZarplata * ($taxColumn->value / 100) : $taxColumn->value;;
+                    $total_payment -= $amount;
+                    $totalColumns["tax_$taxColumn->id"] = $amount;
+                    $allTotal["tax_$taxColumn->id"] += $amount;
+                }
+            }
             $on_currency = number_format((float)$total_payment * (float)$currency_rate, 0, '.', '') . strtoupper($user->currency);
 
-            $taxes = Tax::query()->select(DB::raw("SUM(amount) as total"))->where('user_id', $user->id)->first()->total ?? null;
-
-            // Строка в экселе
             try {
-                if($edited_salary) {
+                if($edited_salary)
+                {
                     $allTotal[8] += (float)$edited_salary->amount;
                     $on_currency = number_format((float)$edited_salary->amount * (float)$currency_rate, 0, '.', '') . strtoupper($user->currency);
-                    $data['users'][] = [
-                        0 => $user->full_name, // Действующие
-                        1 => $cardholder, // Card Holder name
-                        2 => $user->birthday ? floor((strtotime(now()) - strtotime($user->birthday)) / 3600 / 24 / 365) : '', // Возраст
-                        3 => $user->phone ? ' +' . Phone::normalize($user->phone) : '', 
-                        4 => $cards, // Номер карты 
-                        5 => $workedDays, // отработанные дни
-                        6 => $workDays, // рабочие дни
-                        7 => $wage ?? 0, // ставка
-                        8 => (int)$edited_salary->amount, // начислено 
-                        9 => 0, // KPI
-                        10 => 0, // стажировочные
-                        11 => 0, //
-                        12 => (int)$edited_salary->amount, // ИТОГО доход, 
-                        13 => 0, // Авансы
-                        14 => 0, // Штрафы    //11 => $total, // Итого
-                        15 => 0, // ОПВ
-                        16 => 0, // ИПН
-                        17 => 0, // СО + СН
-                        18 => 0, // итого расход
-                        19 => $this->space($edited_salary->amount, 3, true), // к выдаче
-                        20 => $this->space($on_currency, 3, true), // в валюте,
-                        21 => $taxes
-                    ];
+                    $totalColumns[8] = 15;
+                    $totalColumns[12] = (int)$edited_salary->amount;
+                    $totalColumns[19] = $this->space($edited_salary->amount, 3, true);
+                    $totalColumns[20] = $this->space($on_currency, 3, true);
+
                 } else {
-                    $data['users'][] = [
-                        0 => $user->full_name, // Действующие
-                        1 => $cardholder, // Card Holder name
-                        2 => $user->birthday ? floor((strtotime(now()) - strtotime($user->birthday)) / 3600 / 24 / 365) : '', // Возраст
-                        3 => $user->phone ? ' +' . Phone::normalize($user->phone) : '', 
-                        4 => $cards, // Номер карты 
-                        5 => $workedDays, // отработанные дни
-                        6 => $workDays, // рабочие дни
-                        7 => $wage ?? 0, // ставка
-                        8 => (int)$salary, // начислено 
-                        9 => $kpi, // KPI
-                        10 => $trainee_fees ?? 0, // стажировочные
-                        11 => $bonus,  
-                        12 => $total_income, // ИТОГО доход, 
-                        13 => $prepaid, // Авансы
-                        14 => $penalty, // Штрафы    //11 => $total, // Итого
-                        15 => 0, // ОПВ
-                        16 => 0, // ИПН
-                        17 => 0, // СО + СН
-                        18 => $expense, // итого расход
-                        19 => $this->space($total_payment, 3, true), // к выдаче
-                        20 => $this->space($on_currency, 3, true), // в валюте
-                        21 => $taxes
-                    ];
+                    $totalColumns[8] = (int)$salary;
+                    $totalColumns[9] = $kpi;
+                    $totalColumns[10] = $trainee_fees ?? 0;
+                    $totalColumns[11] = $bonus;
+                    $totalColumns[12] = $total_income;
+                    $totalColumns[13] = $prepaid;
+                    $totalColumns[14] = $penalty;
+                    $totalColumns[18] = $expense;
+                    $totalColumns[19] = $this->space($total_payment, 3, true);
+                    $totalColumns[20] = $this->space($on_currency, 3, true);
                 }
+
+                $data['users'][] = $totalColumns;
             } catch (\Exception $e) {
                 dd($e);
-                
+
             }
         }
 

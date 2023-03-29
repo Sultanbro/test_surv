@@ -13,7 +13,7 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::table('portals', function (Blueprint $table) {
+        Schema::connection('mysql')->table('portals', function (Blueprint $table) {
             $table->json('kpi_backlight')
                 ->comment('Цвет ячеек kpi')
                 ->nullable();
@@ -27,7 +27,7 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::table('portals', function (Blueprint $table) {
+        Schema::connection('mysql')->table('portals', function (Blueprint $table) {
             $table->dropColumn('kpi_backlight');
         });
     }

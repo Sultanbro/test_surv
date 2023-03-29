@@ -462,7 +462,7 @@
 </template>
 
 <script>
-
+/* eslint-disable vue/no-mutating-props */
 
 export default {
 	name: 'TableSkype', // Раньше был нужен чтобы собирать скайпы, сейчас собираются стажеры для Zoom обучения

@@ -187,7 +187,7 @@ class HeadhunterNegotiations extends Command
                 'UF_CRM_1624530730434' => config('services.intellect.contract_link') . $hash, // Ссылка для удаленных кандидатов
                 "PHONE"=> [["VALUE" => $negotiation->phone, "VALUE_TYPE" => "WORK"]],
                 "UF_CRM_1658397129" => $vac ? $vac->city : '', // город
-                "UF_CRM_1679031784" => 'https://hh.ru/resume/'. $negotiation->resume_id,
+                "UF_CRM_1679562806674" => 'https://hh.ru/resume/'. $negotiation->resume_id,
             ]);
             
             // bitrix_leads

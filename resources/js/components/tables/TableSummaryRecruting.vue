@@ -30,6 +30,7 @@
 </template>
 
 <script>
+/* eslint-disable vue/no-mutating-props */
 // const S_CREATED = 0; // Создано новых лидов за день
 // const S_CALLS_OUT = 1; // ИСХ успешные соединения
 // const S_CALLS_OUT_10 = 2; // Успешные соединения от 10 сек
