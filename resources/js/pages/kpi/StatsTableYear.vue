@@ -12,6 +12,16 @@
 					:options="yearOptions"
 				/>
 			</b-col>
+			<b-col
+				cols="9"
+				class="d-fex aic"
+			>
+				<i
+					v-if="isAdmin"
+					class="fa fa-cogs btn ml-a"
+					@click="isSettingsOpen = true"
+				/>
+			</b-col>
 		</div>
 		<table class="StatsTableYear-table j-table mt-4">
 			<thead>
@@ -68,13 +78,17 @@
 							/>
 							{{ kpi.title }}
 						</td>
-						<td class="text-center p-3">
+						<td
+							class="text-center p-3"
+							:style="`background-color: ${getBacklightForValue(kpi.avg)}`"
+						>
 							{{ kpi.avg | nonFixedFloat }}
 						</td>
 						<td
 							v-for="month, key in $moment.months()"
 							:key="key"
 							class="text-center p-3"
+							:style="`background-color: ${getBacklightForValue(kpi[key+1])}`"
 						>
 							{{ kpi[key+1] | nonFixedFloat }}
 						</td>
@@ -90,13 +104,17 @@
 								<i class="fa fa-user mt-1 mr-1" />
 								{{ user.name }}
 							</td>
-							<td class="text-center p-3">
+							<td
+								class="text-center p-3"
+								:style="`background-color: ${getBacklightForValue(user.avg)}`"
+							>
 								{{ user.avg | nonFixedFloat }}
 							</td>
 							<td
 								v-for="month, key in $moment.months()"
 								:key="key"
 								class="text-center p-3"
+								:style="`background-color: ${getBacklightForValue(user[key+1])}`"
 							>
 								{{ user[key+1] | nonFixedFloat }}
 							</td>
@@ -112,27 +130,87 @@
 			size="sm"
 			class="mt-4"
 		/>
+		<SideBar
+			:open="isSettingsOpen"
+			width="50vw"
+			title="Настройки"
+			@close="isSettingsOpen = false"
+		>
+			<h3>Подсветка ячеек</h3>
+			<div
+				v-for="item, index in colors"
+				:key="index"
+				class="KPIBacklight-row"
+			>
+				от:
+				<input
+					type="number"
+					:min="item.prevMax"
+					:max="99"
+					class="form-control input-surv KPIBacklight-input"
+					v-model="item.startValue"
+				>
+				до:
+				<input
+					type="number"
+					:min="item.prevMax + 1"
+					:max="100"
+					class="form-control input-surv KPIBacklight-input"
+					v-model="item.endValue"
+				>
+				цвет:
+				<input
+					type="color"
+					class="form-control input-surv KPIBacklight-input"
+					v-model="item.color"
+				>
+				<i
+					class="fa fa-trash btn btn-danger btn-icon"
+					@click="deleteBacklightColor(index)"
+				/>
+			</div>
+			<button
+				class="btn btn-primary"
+				@click="addBacklightColor(colors[colors.length-1])"
+			>
+				Добавить
+			</button>
+			<hr>
+			<button
+				class="btn btn-success"
+				@click="updateBacklightColors"
+			>
+				Сохранить
+			</button>
+		</SideBar>
 	</div>
 </template>
 
 <script>
+import SideBar from '@/components/ui/Sidebar'
 import { mapActions, mapState } from 'pinia'
 import { useKPIStore } from '@/stores/KPI'
+import { usePortalStore } from '@/stores/Portal'
 import { useYearOptions } from '@/composables/yearOptions'
 
 export default {
 	name: 'StatsTableYear',
-	components: {},
+	components: {
+		SideBar,
+	},
 	data(){
 		const now = new Date()
 		return {
 			yearOptions: useYearOptions(),
 			page: 1,
 			year: now.getFullYear(),
+			isSettingsOpen: false,
+			colors: [this.getBlankBacklight()]
 		}
 	},
 	computed: {
 		...mapState(useKPIStore, ['statYear', 'isLoading']),
+		...mapState(usePortalStore, ['portal']),
 		stats(){
 			const table = []
 			Object.entries(this.statYear.data).forEach(([month, monthData]) => {
@@ -189,6 +267,9 @@ export default {
 				})
 			})
 			return table
+		},
+		isAdmin(){
+			return this.$laravel.is_admin
 		}
 	},
 	watch: {
@@ -201,6 +282,9 @@ export default {
 		'statYear.year'(value){
 			this.year = value
 		},
+		'portal.kpi_backlight'(value){
+			this.syncColors(value)
+		},
 		yaer(value){
 			this.setStatYearYear(value)
 		},
@@ -208,16 +292,69 @@ export default {
 	created(){
 		this.fetchStatYear(this.statYear.year, this.statYear.page, this.statYear.limit)
 	},
+	mounted(){
+		this.syncColors(this.portal?.kpi_backlight)
+	},
 	methods: {
 		...mapActions(useKPIStore, [
 			'fetchStatYear',
 			'setStatYearPage',
 			'setStatYearYear',
 		]),
+		...mapActions(usePortalStore, [
+			'fetchPortal',
+			'updatePortal',
+		]),
 		toggleKPI(kpi){
 			if(kpi.type === 1 || !kpi.users.length) return
 			this.$set(kpi, 'expanded', !kpi.expanded)
 			this.$forceUpdate()
+		},
+		getBlankBacklight(min){
+			return {
+				startValue: min || 0,
+				endValue: min || 0,
+				prevMax: min || 0,
+				color: ''
+			}
+		},
+		getBacklightForValue(value){
+			if(!this.colors || !this.colors.length) return ''
+			const num = +value
+			const item = this.colors.findLast(item => {
+				return item.startValue <= num && num <= item.endValue
+			})
+			return item ? item.color : ''
+		},
+		addBacklightColor(prev){
+			this.colors.push(this.getBlankBacklight(prev?.endValue || 0))
+		},
+		deleteBacklightColor(index){
+			this.colors.splice(index, 1)
+			if(!this.colors.length){
+				this.addBacklightColor()
+			}
+		},
+		updateBacklightColors(){
+			this.updatePortal({
+				kpiBackLight: this.colors.map(({startValue, color}) => ({
+					start: startValue,
+					color
+				}))
+			})
+		},
+		syncColors(value){
+			if(!value || !value.length){
+				this.colors = [this.getBlankBacklight()]
+				return
+			}
+			this.colors = value.map((item, index) => {
+				return {
+					...item,
+					prevMax: item.startValue,
+					endValue: value[index + 1] ? value[index + 1].startValue : 100
+				}
+			})
 		}
 	},
 	filters: {
@@ -244,6 +381,22 @@ export default {
 	&-firstCol{
 		display: flex;
 		justify-content: space-between;
+	}
+}
+.KPIBacklight{
+	&-row{
+		display: flex;
+		align-items: center;
+		gap: 0.5rem;
+		margin-bottom: 1rem;
+	}
+	&-input{
+		display: inline-flex;
+		width: auto;
+		&[type="color"]{
+			padding: 0 !important;
+			min-width: 4rem;
+		}
 	}
 }
 </style>
