@@ -132,7 +132,7 @@ class IntellectController extends Controller
                 $lead->deal_id = $request->deal_id;
                 if($request->project) $lead->project = $request->project;
                 if($request->net) $lead->net = $request->net;
-                if($request->remote == 'Y') $lead->skyped = date('Y-m-d H:i:s', time() + 3600 * 6);
+                $lead->skyped = date('Y-m-d H:i:s', time() + 3600 * 6);
                 if($request->resp_id) $lead->net = $request->net;
                 $lead->save();
             }
