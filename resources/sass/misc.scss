@@ -227,11 +227,11 @@ tspan:last-child {
     .author{
         text-align: center;
         img{
-            min-width: 80px;
-            width: 80px;
-            min-height: 80px;
-            height: 80px;
-            margin-bottom: 15px;
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            margin-right: 10px;
+            border: 1px solid #fefefe;
         }
         .edited{
             display: flex;
