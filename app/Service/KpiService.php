@@ -53,6 +53,8 @@ class KpiService
             'items' => function($query) use ($last_date) {
                 $query->withTrashed()->whereDate('created_at', '<=', $last_date);
             },
+            'user' => fn($query) => $query->select('id'),
+            'user.groups' => fn($query) => $query->select('name')->where('status', 'active'),
             'creator',
             'updater',
             'histories' => function($query) use ($last_date) {
