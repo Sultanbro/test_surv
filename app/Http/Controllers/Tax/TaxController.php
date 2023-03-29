@@ -85,7 +85,7 @@ class TaxController extends Controller
     {
         return $this->response(
             message: 'Success',
-            data: $service->handle($request->id)
+            data: $service->handle($id)
         );
     }
 }

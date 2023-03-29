@@ -214,7 +214,9 @@ export default {
 			this.in_groups = data.in_groups
 			this.head_in_groups = data.head_in_groups
 			this.profile_contacts = data.profile_contacts ? data.profile_contacts : []
-
+			this.updateTaxes();
+		},
+		updateTaxes(){
 			axios.get('/tax', {params: {user_id: this.user.id}}).then(res => {
 				this.taxes = res.data.items;
 			}).catch(err => console.log(err));
@@ -874,6 +876,7 @@ export default {
 								:front_valid="frontValid"
 								:taxes="taxes"
 								@taxes_fill="taxesFill"
+								@taxes_update="updateTaxes"
 								@valid_change="validChange"
 							/>
 
