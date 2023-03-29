@@ -133,7 +133,6 @@ class IntellectController extends Controller
                 'project' => 'test', //$request->project ?? null,
                 'net'     => 'test', //$request->net ?? null,
                 'skyped'  => '2023-03-29 17:34:04',
-                ''
             ]);
         }
         
