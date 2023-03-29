@@ -126,16 +126,15 @@ class IntellectController extends Controller
         if($request->lead_id) {
             $lead = Lead::where('lead_id', $request->lead_id)->first();
 
-            if($lead) {
-                $lead->resp_id = $request->resp_email;
-                $lead->status = 'CON';
-                $lead->deal_id = $request->deal_id;
-                if($request->project) $lead->project = $request->project;
-                if($request->net) $lead->net = $request->net;
-                $lead->skyped = now();
-                if($request->resp_id) $lead->net = $request->net;
-                $lead->save();
-            }
+            $lead?->update([
+                'resp_id' => $request->resp_email,
+                'status'  => 'CON',
+                'deal_id' => $request->deal_id,
+                'project' => 'test', //$request->project ?? null,
+                'net'     => 'test', //$request->net ?? null,
+                'skyped'  => '2023-03-29 17:34:04',
+                ''
+            ]);
         }
         
     }
