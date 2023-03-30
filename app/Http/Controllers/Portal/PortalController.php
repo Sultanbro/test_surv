@@ -39,7 +39,7 @@ class PortalController extends Controller
         $userPermissions = auth()->user()->getAllPermissions()->pluck('name')->toArray();
 
         $role = Role::where('id', auth()->user()->role_id)->first();
-        $rolePermissions = $role->permissions->pluck('name')->toArray();
+        $rolePermissions = $role ? $role->permissions->pluck('name')->toArray() : [];
 
         if(
             !in_array('kpi_edit', $rolePermissions)

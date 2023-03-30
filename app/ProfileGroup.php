@@ -78,6 +78,8 @@ class ProfileGroup extends Model
     CONST FROM_UCALLS = -1;
     CONST NOWHERE = 0;
 
+    const IT_DEPARTMENT_ID = 26;
+
     /**
      * @param int $id
      * @return Model
