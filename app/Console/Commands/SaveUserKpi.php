@@ -216,7 +216,7 @@ class SaveUserKpi extends Command
         }
 
         if($date){
-            $date = Carbon::createFromFormat('Y-m-d', $sk->date);
+            $date = Carbon::createFromFormat('Y-m-d', $data['date']);
             event(new KpiChangedEvent($date));
         }
     }

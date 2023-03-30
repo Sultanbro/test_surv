@@ -274,6 +274,7 @@ import { useProfileSalaryStore } from '@/stores/ProfileSalary'
 import { useProfileCoursesStore } from '@/stores/ProfileCourses'
 import { usePersonalInfoStore } from '@/stores/PersonalInfo'
 import { usePaymentTermsStore } from '@/stores/PaymentTerms'
+import { usePortalStore } from '@/stores/Portal'
 
 export default {
 	name: 'ProfileSidebar',
@@ -301,8 +302,6 @@ export default {
 			isRoot: false,
 			isProfile: false,
 			canvas: null,
-			videoUrl: null,
-			videoDays: null
 		};
 	},
 	computed: {
@@ -315,6 +314,7 @@ export default {
 		...mapState(useProfileCoursesStore, {coursesReady: 'isReady'}),
 		...mapState(usePersonalInfoStore, {infoReady: 'isReady'}),
 		...mapState(usePaymentTermsStore, {termsReady: 'isReady'}),
+		...mapState(usePortalStore, ['portal']),
 		userInfo(){
 			return {
 				user: this.user,
@@ -344,6 +344,12 @@ export default {
 		isVisible(){
 			return this.isReady || this.$viewportSize.width > 900
 		},
+		videoUrl(){
+			return this.portal.main_page_video
+		},
+		videoDays(){
+			return this.portal.main_page_video_show_days_amount
+		},
 		youtubeVideoId() {
 			if(this.videoUrl){
 				const urlObj = new URL(this.videoUrl);
@@ -371,10 +377,7 @@ export default {
 		});
 		scrollObserver.observe(this.$el);
 		this.initCorpBook();
-		this.axios.get('/portal/current').then(res => {
-			this.videoUrl = res.data.data.main_page_video;
-			this.videoDays = res.data.data.main_page_video_show_days_amount;
-		});
+		this.fetchPortal()
 	},
 	created(){
 		this.isRoot = window.location.pathname === '/'
@@ -386,6 +389,7 @@ export default {
 	methods: {
 		...mapActions(useSettingsStore, ['updateSettings']),
 		...mapActions(useProfileStatusStore, ['updateStatus', 'resetCorpBookAnswers']),
+		...mapActions(usePortalStore, ['fetchPortal']),
 		/**
 		 * Загрузить лого открыть модальный окно
 		 */

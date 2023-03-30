@@ -16,7 +16,7 @@
 			submit="Создать чат"
 			:open="showAddMemberModal"
 			:access-dictionaries="accessDictionaries"
-			@close="showAddMemberModal = false"
+			@close.stop="showAddMemberModal = false"
 			@submit="submitChat"
 		/>
 	</div>
