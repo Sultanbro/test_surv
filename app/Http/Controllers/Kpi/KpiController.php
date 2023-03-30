@@ -22,7 +22,7 @@ use App\Service\GroupUserService;
 
 class KpiController extends Controller
 {
-    protected $kpiService;
+    protected KpiService $kpiService;
 
     public function __construct(KpiService $kpiService)
     {

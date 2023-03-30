@@ -75,10 +75,10 @@ class KpiService
             if($kpi->histories->first()) {
                 $payload = json_decode($kpi->histories->first()->payload, true);
                 
-                $items = $kpi->items;
+                $items = $kpi->items->whereNull('deleted_at');
 
                 if(isset($payload['children'])) {
-                    $items = $kpi->items->whereIn('id', $payload['children']);
+                    $items = $items->whereIn('id', $payload['children']);
                 } 
 
                 foreach ($items as $key => $_item) {
@@ -173,33 +173,33 @@ class KpiService
     /**
      * Обновляем данные и сохраняем в histories старые данные.
      * @param KpiUpdateRequest $request
-     * @return void
+     * @return array
      * @throws Exception
      */
     public function update(KpiUpdateRequest $request): array
     {
-            $id = $request->id;
-            $kpi_item_ids = [];
-            $kpi = null;
-     
-            DB::transaction(function () use ($request, $id, &$kpi_item_ids, &$kpi) {
+        $id = $request->id;
+        $kpi_item_ids = [];
+        $kpi = null;
+    
+        DB::transaction(function () use ($request, $id, &$kpi_item_ids, &$kpi) {
 
-                $kpi_item_ids = $this->updateItems($id, $request->items);
-                
-                $all = $request->all();
+            $kpi_item_ids = $this->updateItems($id, $request->items);
+            
+            $all = $request->all();
 
-                $all['updated_by'] = auth()->id();
-                $all['children'] = $kpi_item_ids;
+            $all['updated_by'] = auth()->id();
+            $all['children'] = $kpi_item_ids;
 
-                unset($all['source']);
+            unset($all['source']);
 
-                $kpi = Kpi::findOrFail($id);
-                $kpi->update($all);
-            });
+            $kpi = Kpi::findOrFail($id);
+            $kpi->update($all);
+        });
 
-            $kpiCreatedDate = Carbon::createFromFormat('Y-m-d', $kpi->created_at->format('Y-m-d'));
-            event(new KpiChangedEvent($kpiCreatedDate));
-            event(new TrackKpiUpdatesEvent($id));
+        $kpiCreatedDate = Carbon::createFromFormat('Y-m-d', $kpi->created_at->format('Y-m-d'));
+        event(new KpiChangedEvent($kpiCreatedDate));
+        event(new TrackKpiUpdatesEvent($id));
 
         return [
             'id' => $id,
