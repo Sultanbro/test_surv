@@ -1,4 +1,5 @@
 <template>
+	<!-- eslint-disable vue/no-mutating-props -->
 	<div
 		class="structure-item"
 		:class="[{'grouped' : department.group}, 'lvl' + level]"
@@ -8,7 +9,7 @@
 		<div
 			class="structure-card"
 			:id="'id-' + department.id"
-			:style="'background-color:' + bgColor"
+			:style="{ backgroundColor: bgColor }"
 			:class="{'no-result' : !department.hasOwnProperty('departmentChildren')}"
 		>
 			<div
@@ -168,6 +169,7 @@
 </template>
 
 <script>
+/* eslint-disable vue/no-mutating-props */
 import StructureEditCard from './StructureEditCard';
 import StructureUsersMore from './StructureUsersMore';
 
@@ -208,11 +210,12 @@ export default {
 		deleteDepartment() {
 			this.closeEditCard();
 			const parent = this.$parent.department || this.$parent;
-			const index = parent[parent.department ? 'departmentChildren' : 'departments'].findIndex(d => d.id === this.department.id);
+			const index = parent[parent.department ? 'departmentChildren' : 'structure'].findIndex(d => d.id === this.department.id);
 			if (index !== -1) {
-				parent[parent.department ? 'departmentChildren' : 'departments'].splice(index, 1);
+				parent[parent.department ? 'departmentChildren' : 'structure'].splice(index, 1);
 			}
 			this.$emit('updateLines');
+			this.$forceUpdate();
 		},
 		saveEditCard() {
 			this.closeEditCard();
@@ -247,7 +250,9 @@ export default {
 					this.startLine = `${(children[0].offsetWidth / 2) + 8}px`;
 					this.endLine = `${(children[children.length - 1].offsetWidth / 2) + 8}px`;
 				}
-				this.halfWidth = `${this.$refs.structureItem.offsetWidth / 2}px`;
+				if(this.$refs.structureItem){
+					this.halfWidth = `${this.$refs.structureItem.offsetWidth / 2}px`;
+				}
 				this.$emit('updateLines');
 			})
 		},

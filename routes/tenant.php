@@ -36,6 +36,8 @@ Route::middleware(['web','tenant'])->group(function () {
 // Portal Api
 Route::middleware(['web','tenant','not_admin_subdomain'])->group(function () {
 
+    Route::get('/structure', [Root\Structure\StructureController::class, 'index']);
+
     Route::resource('work-chart', Root\WorkChart\WorkChartController::class)->except(['create', 'edit']);
     Route::group([
         'prefix' => 'work-chart',
@@ -47,10 +49,6 @@ Route::middleware(['web','tenant','not_admin_subdomain'])->group(function () {
         Route::post('/group/add', [Root\WorkChart\GroupWorkChartController::class, 'addChart']);
         Route::post('/group/delete', [Root\WorkChart\GroupWorkChartController::class, 'deleteChart']);
     });
-
-
-    Route::get('/structure', [Root\Structure\StructureController::class, 'index']);
-
 
     Route::get('/login/{subdomain}', [User\ProjectController::class, 'login']);
     Route::post('/projects/create', [User\ProjectController::class, 'create']);
