@@ -1266,7 +1266,8 @@ class KpiStatisticService
                 }elseif($item['method'] == 5 || $item['method'] == 6){
                     $item['percent'] = $item['avg'] >= $item['plan'] ? 100 : 0;
                 }
-                $sumKpiPercent = $sumKpiPercent + ($item['percent'] * $item['share'])/100;
+//                $sumKpiPercent = $sumKpiPercent + round(($item['percent'] * $item['share'])/100, 2); //- По Удельному весу
+                $sumKpiPercent = $sumKpiPercent + $item['percent'];
 
                 // plan
                 $item['full_time'] = $user['full_time'];
@@ -1332,7 +1333,9 @@ class KpiStatisticService
             }
 
             $user['items'] = $kpi_items;
-            $user['avg_percent'] = $sumKpiPercent;
+//            $user['avg_percent'] = $sumKpiPercent; // - По Удельному весу
+            $user['avg_percent'] = round($sumKpiPercent/count($kpi_items), 2);
+
             $users[] = $user;
         }
 
@@ -1468,13 +1471,15 @@ class KpiStatisticService
                     $item['percent'] = $item['avg'] > $item['plan'] ? 100 : 0;
                 }
 
-                $sumKpiPercent = $sumKpiPercent + ($item['percent'] * $item['share'])/100;
+//                $sumKpiPercent = $sumKpiPercent + round(($item['percent'] * $item['share'])/100, 2); //- По Удельному весу
+                $sumKpiPercent = $sumKpiPercent + $item['percent'];
             }
 
             /**
              * add user to final array
              */
-            $user['avg_percent'] = $sumKpiPercent;
+//            $user['avg_percent'] = $sumKpiPercent; //- По Удельному весу
+            $user['avg_percent'] = round($sumKpiPercent/count($kpi->items), 2);
             $users[] = $user;
         }
 
