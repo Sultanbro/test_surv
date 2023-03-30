@@ -717,6 +717,7 @@ class KpiStatisticService
             foreach ($kpi->users as $user){
                 $kpi_sum = $kpi_sum + $user['avg_percent'];
             }
+
             $kpi->avg = count($kpi->users) > 0 ? round($kpi_sum/count($kpi->users), 2) : 0; //AVG percent of all KPI of all USERS in GROUP
 
             $kpi['dropped'] = in_array($kpi->targetable_id, $droppedGroups) ?? true;
@@ -1125,7 +1126,6 @@ class KpiStatisticService
         Carbon $date,
     ) : array
     {
-
         // count workdays in month
         $workdays = [];
         $workdays[5] = workdays($date->year, $date->month, [6,0]);
@@ -1259,14 +1259,15 @@ class KpiStatisticService
                 );
 
                 $item['percent'] = 0;
-                if ($item['method'] == 1 || $item['method'] == 2){
+                if ($item['method'] == 1){
+                    $item['percent'] = round(($item['fact'] * 100)/$item['plan'], '2');
+                }elseif ($item['method'] == 2){
                     $item['percent'] = round(($item['avg'] * 100)/$item['plan'], '2');
                 }elseif($item['method'] == 3 || $item['method'] == 4){
                     $item['percent'] = $item['avg'] <= $item['plan'] ? 100 : 0;
                 }elseif($item['method'] == 5 || $item['method'] == 6){
                     $item['percent'] = $item['avg'] >= $item['plan'] ? 100 : 0;
                 }
-//                $sumKpiPercent = $sumKpiPercent + round(($item['percent'] * $item['share'])/100, 2); //- По Удельному весу
                 $sumKpiPercent = $sumKpiPercent + $item['percent'];
 
                 // plan
@@ -1333,11 +1334,11 @@ class KpiStatisticService
             }
 
             $user['items'] = $kpi_items;
-//            $user['avg_percent'] = $sumKpiPercent; // - По Удельному весу
             $user['avg_percent'] = round($sumKpiPercent/count($kpi_items), 2);
 
             $users[] = $user;
         }
+
 
         return $users;
     }
@@ -1463,24 +1464,22 @@ class KpiStatisticService
                 );
 
                 $item['percent'] = 0;
-                if ($item['method'] == 1 || $item['method'] == 2){
-                    $item['percent'] = $item['plan'] == 0
-                        ? 0
-                        : round(($item['avg'] * 100) / $item['plan'], 2);
+                if ($item['method'] == 1){
+                    $item['percent'] = round(($item['fact'] * 100)/$item['plan'], '2');
+                }elseif ($item['method'] == 2){
+                    $item['percent'] = round(($item['avg'] * 100)/$item['plan'], '2');
                 }elseif($item['method'] == 3 || $item['method'] == 4){
                     $item['percent'] = $item['avg'] < $item['plan'] ? 100 : 0;
                 }elseif($item['method'] == 5 || $item['method'] == 6){
                     $item['percent'] = $item['avg'] > $item['plan'] ? 100 : 0;
                 }
 
-//                $sumKpiPercent = $sumKpiPercent + round(($item['percent'] * $item['share'])/100, 2); //- По Удельному весу
                 $sumKpiPercent = $sumKpiPercent + $item['percent'];
             }
 
             /**
              * add user to final array
              */
-//            $user['avg_percent'] = $sumKpiPercent; //- По Удельному весу
             $kpiItemsCount = count($kpi->items);
             $user['avg_percent'] = $kpiItemsCount > 0
                 ? round($sumKpiPercent / $kpiItemsCount, 2)
