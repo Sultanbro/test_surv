@@ -1481,7 +1481,10 @@ class KpiStatisticService
              * add user to final array
              */
 //            $user['avg_percent'] = $sumKpiPercent; //- По Удельному весу
-            $user['avg_percent'] = round($sumKpiPercent/count($kpi->items), 2);
+            $kpiItemsCount = count($kpi->items);
+            $user['avg_percent'] = $kpiItemsCount > 0
+                ? round($sumKpiPercent / $kpiItemsCount, 2)
+                : 0;
             $users[] = $user;
         }
 
