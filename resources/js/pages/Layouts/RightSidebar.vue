@@ -18,7 +18,7 @@
 				@click="$emit('pop', 'notifications')"
 			>
 				<img
-					src="/images/dist/header-right-2.svg"
+					:src="`/images/dist/header-right-2${unreadQuantity ? '-active' : ''}.svg`"
 					alt="nav icon"
 					class="header__icon-img"
 				>
@@ -89,6 +89,8 @@
 </template>
 
 <script>
+import { mapState, mapActions } from 'pinia'
+import { useNotificationsStore } from '@/stores/Notifications'
 export default {
 	name: 'RightSidebar',
 	props: {},
@@ -97,7 +99,14 @@ export default {
 			isBp: window.location.hostname.split('.')[0] === 'bp',
 		};
 	},
+	computed: {
+		...mapState(useNotificationsStore, ['unreadQuantity'])
+	},
+	mounted(){
+		this.fetchNotifications()
+	},
 	methods: {
+		...mapActions(useNotificationsStore, ['fetchNotifications']),
 		openChat(){
 			if(!this.isBp){
 				const url = 'https://cdn-ru.bitrix24.kz/b1734679/crm/site_button/loader_12_koodzo.js';
