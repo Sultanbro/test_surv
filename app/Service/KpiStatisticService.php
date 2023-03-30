@@ -1464,7 +1464,9 @@ class KpiStatisticService
 
                 $item['percent'] = 0;
                 if ($item['method'] == 1 || $item['method'] == 2){
-                    $item['percent'] = round(($item['avg'] * 100)/$item['plan'], '2');
+                    $item['percent'] = $item['plan'] == 0
+                        ? 0
+                        : round(($item['avg'] * 100) / $item['plan'], 2);
                 }elseif($item['method'] == 3 || $item['method'] == 4){
                     $item['percent'] = $item['avg'] < $item['plan'] ? 100 : 0;
                 }elseif($item['method'] == 5 || $item['method'] == 6){
@@ -1479,7 +1481,10 @@ class KpiStatisticService
              * add user to final array
              */
 //            $user['avg_percent'] = $sumKpiPercent; //- По Удельному весу
-            $user['avg_percent'] = round($sumKpiPercent/count($kpi->items), 2);
+            $kpiItemsCount = count($kpi->items);
+            $user['avg_percent'] = $kpiItemsCount > 0
+                ? round($sumKpiPercent / $kpiItemsCount, 2)
+                : 0;
             $users[] = $user;
         }
 

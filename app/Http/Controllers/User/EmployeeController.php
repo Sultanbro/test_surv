@@ -11,6 +11,7 @@ use App\Models\User\Card;
 use App\Models\User\NotificationTemplate;
 use App\Service\Department\UserService;
 use App\Service\TaxService;
+use App\Traits\CurrencyTrait;
 use Exception;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -337,6 +338,7 @@ class EmployeeController extends Controller
 
     /**
      * prepare user variables to settings page
+     * @throws Exception
      */
     private function preparePersonInputs($id = 0)
     {
@@ -381,7 +383,10 @@ class EmployeeController extends Controller
             if($user->weekdays == '' || $user->weekdays == null) {
                 $user->weekdays = '0000000';
                 $user->save();
-            }    
+            }
+
+            $currency = !in_array($user->currency, ['kzt', 'rub', 'usd']) ? 'usd' : $user->currency;
+            $user->zarplata->zarplata = round(CurrencyTrait::createMultiCurrencyPrice($user->zarplata->zarplata)[$currency], 2);
 
             $user->cards = Card::where('user_id', $user->id)->get();
 

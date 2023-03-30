@@ -31,7 +31,7 @@ export default {
 			headphonesState: this.user?.headphones_sum > 0,
 			cards: [],
 			zarplata: 0,
-			currency: null,
+			currency: this.user?.currency,
 			newTaxes: [],
 			editTaxes: [],
 			assignTaxes: [],
@@ -53,6 +53,7 @@ export default {
 				: this.old_zarplata
 					? this.old_zarplata
 					: 0
+			this.currency = this.user?.currency
 		},
 		zarplata() {
 			this.changeZp();

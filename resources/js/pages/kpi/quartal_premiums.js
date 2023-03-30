@@ -130,7 +130,8 @@ function newQuartalPremium() {
 		updated_at: datestring,
 		created_by: 'Вы',
 		updated_by: 'Вы',
-		expanded: false
+		expanded: false,
+		is_active: true
 	};
 }
 
