@@ -6,10 +6,10 @@ namespace App\DTO\Portal;
 final class KpiBacklightDTO
 {
     /**
-     * @param array<KpiBacklightItemDTO> $kpiBacklightItems,
+     * @param array<KpiBacklightItemDTO> $items,
      */
     public function __construct(
-        public array $kpiBacklightItems,
+        public array $items,
     )
     {}
 }
