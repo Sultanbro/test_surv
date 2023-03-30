@@ -267,11 +267,11 @@ export default {
 				},
 				{
 					name: 'Структура',
-					// to: '/struct',
+					to: '/structure',
 					icon: 'icon-nd-struct',
-					popover: 'Структура - Этот функционал в разработке',
 					height: 0,
-					route: 'struct',
+					route: 'structure',
+					hide: !(this.isAdmin && this.isMainProject)
 				},
 				{
 					name: 'База знаний',
