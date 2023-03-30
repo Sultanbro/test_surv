@@ -133,7 +133,11 @@ class Salary extends Model
                     //count hourly pay 
                     $s = $user->salaries->where('day', $d)->first();
                     $zarplata = $s ? $s->amount : 70000;
-                    $working_hours = $user->workingTime ? $user->workingTime->time : 9;
+
+                    $schedule = $user->schedule();
+                    $lunchTime = 1;
+                    $working_hours = $working_hours = max($schedule['end']->diffInHours($schedule['start']) - $lunchTime, 0);
+
                     $ignore = $user->working_day_id == 1 ? [6,0] : [0];   // Какие дни не учитывать в месяце
                     $workdays = workdays($month->year, $month->month, $ignore);
                 
