@@ -64,10 +64,10 @@ export default {
   background-position: center center;
   background-repeat: no-repeat;
   background-color: #ddd;
-  height: 42px;
-  width: 42px;
-  min-height: 42px;
-  min-width: 42px;
+  height: 50px;
+  width: 50px;
+  min-height: 50px;
+  min-width: 50px;
   margin-right: 10px;
   border-radius: 50%;
 }
@@ -89,10 +89,10 @@ export default {
 
 .messenger__avatar_container {
   border-radius: 50%;
-  height: 42px;
-  width: 42px;
-  min-height: 42px;
-  min-width: 42px;
+  height: 50px;
+  width: 50px;
+  min-height: 50px;
+  min-width: 50px;
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -102,15 +102,14 @@ export default {
 }
 
 .messenger__avatar_container--small {
-  border-radius: 50%;
+  display: block;
   height: 25px;
   width: 25px;
   min-height: 25px;
   min-width: 25px;
-  display: inline-block;
+  border-radius: 50%;
   background-color: #7ccaed;
   color: #fff;
-  transform: translateY(9px);
 }
 
 .messenger__avatar_container .messenger__avatar_name {

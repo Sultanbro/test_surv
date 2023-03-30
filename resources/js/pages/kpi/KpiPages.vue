@@ -140,6 +140,17 @@ export default {
 			let params = new URLSearchParams(uri);
 			this.active = params.get('target') ? 3 : 0;
 		},
+
+		changeStatus(item, e){
+			this.axios.post('/bonus/set/status', {
+				premium_id: item.id,
+				is_active: e
+			}).then(() => {
+				this.$toast.success('Статус изменен')
+			}).catch(() => {
+				this.$toast.error('Статус не изменен')
+			})
+		},
 		fetchData() {
 			let loader = this.$loading.show();
 
@@ -160,5 +171,12 @@ export default {
 <style lang="scss">
 	.kpi-tabs{
 		overflow: visible !important;
+	}
+
+	.kpi-status-switch{
+		position: relative;
+	}
+	.kpi-pages .kpi .kpi-status-switch{
+		margin-left: auto;
 	}
 </style>

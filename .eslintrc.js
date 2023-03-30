@@ -13,7 +13,6 @@ module.exports = {
 		'quotes': ['error', 'single'],
 		'vue/no-v-for-template-key': 'error',
 		'vue/no-v-for-template-key-on-child': 'off',
-		'vue/no-mutating-props': 'warn',
 		'vue/no-side-effects-in-computed-properties': 'warn',
 		'vue/no-child-content': 'warn',
 		'no-prototype-builtins': 'warn',

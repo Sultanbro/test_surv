@@ -3,6 +3,7 @@
 namespace App\Models\WorkChart;
 
 use App\DTO\WorkChart\StoreWorkChartDTO;
+use App\Timetracking;
 use App\User;
 use Carbon\Carbon;
 use Exception;
@@ -61,9 +62,7 @@ class WorkChartModel extends Model
     }
 
     /**
-     * @param string $name
-     * @param string $startTime
-     * @param string $endTime
+     * @param StoreWorkChartDTO $dto
      * @return Model
      */
     public static function createModel(StoreWorkChartDTO $dto): Model
@@ -92,5 +91,52 @@ class WorkChartModel extends Model
         $igonore = isset($chart->name) && in_array($chart->name, ['1-1', '2-2', '3-3']) ? [5, 6, 0] : [0];
 
         return workdays($date->year, $date->month, $igonore);
+    }
+
+    /**
+     * Получаем время работы.
+     *
+     * @delegate
+     * @return array
+     */
+    public function schedule(): array
+    {
+        return $this->workTime();
+    }
+
+    /**
+     * Получаем время работы.
+     *
+     * @return array
+     */
+    public function workTime(): array
+    {
+        return [
+            'workStartTime' => $this->start_time,
+            'workEndTime'   => $this->end_time,
+        ];
+    }
+
+    /**
+     * Получаем время работы.
+     *
+     * @return array
+     */
+    public static function getWorkTime(?self $chart): array
+    {
+        return $chart ? $chart->workTime() : self::defaultWorkTime();
+    }
+
+    /**
+     * Получаем default время работы.
+     *
+     * @return array
+     */
+    public static function defaultWorkTime(): array
+    {
+        return [
+            'workStartTime' => Timetracking::DEFAULT_WORK_START_TIME,
+            'workEndTime'   => Timetracking::DEFAULT_WORK_END_TIME,
+        ];
     }
 }

@@ -14,4 +14,15 @@ final class KpiBacklightItemDTO
         public string $color,
     )
     {}
+
+    /**
+     * @return array
+     */
+    public function toArray(): array
+    {
+        return [
+            'startValue' => $this->startValue,
+            'color' => $this->color
+        ];
+    }
 }

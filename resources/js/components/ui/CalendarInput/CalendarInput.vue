@@ -1,0 +1,205 @@
+<template>
+	<div
+		class="CalendarInput"
+		v-scroll-lock="open"
+	>
+		<div
+			class="CalendarInput-bg"
+			@click.self.stop="$emit('close')"
+		/>
+		<div class="CalendarInput-content">
+			<CalendarInputBody />
+			<CalendarInputNav :tabs="tabs" />
+		</div>
+	</div>
+</template>
+
+<script>
+import CalendarInputBody from './CalendarInputBody'
+import CalendarInputNav from './CalendarInputNav'
+
+export default {
+	name: 'CalendarInput',
+	components: {
+		CalendarInputBody,
+		CalendarInputNav,
+	},
+	provide(){
+		return {
+			getValue: () => this.value,
+			getTSValue: () => this.tsValue,
+			getFormat: () => this.format,
+			getMonth: () => this.month,
+			getYear: () => this.year,
+			getRange: () => this.range,
+			getSubmit: () => this.submit,
+			getDaysInMonth: () => this.daysInMonth,
+			setValue: this.setValue,
+			setMonth: this.setMonth,
+			prevMonth: this.prevMonth,
+			nextMonth: this.nextMonth,
+			onTabToday: this.onTabToday,
+			onTabTomorrow: this.onTabTomorrow,
+			onTabCurrentMonth: this.onTabCurrentMonth,
+			onTabPrevMonth: this.onTabPrevMonth,
+			onTabCurrentYear: this.onTabCurrentYear,
+			onTabPrevYear: this.onTabPrevYear,
+			onTabAllTime: this.onTabAllTime,
+			onTabCustom: this.onTabCustom,
+			onSubmit: this.onSubmit,
+		}
+	},
+	props: {
+		open: {
+			type: Boolean,
+			default: false,
+		},
+		range: {
+			type: Boolean,
+			default: false,
+		},
+		submit: {
+			type: Boolean,
+			default: false,
+		},
+		value: {
+			type: Array,
+			default: () => ['']
+		},
+		tabs: {
+			type: Array,
+			default: () => [
+				'Сегодня',
+				'Завтра',
+				'Текущий месяц',
+				'Прошлый месяц',
+				'Текущий год',
+				'Прошлый год',
+				'Все время',
+			]
+		},
+		format: {
+			type: String,
+			default: 'DD.MM.YYYY'
+		}
+	},
+	data(){
+		const now = new Date()
+		return {
+			month: now.getMonth(),
+			year: now.getFullYear(),
+			currentDay: now.getDate(),
+			currentMonth: now.getMonth(),
+			currentYear: now.getFullYear(),
+			tsValue: this.value.map(el => this.$moment(el, this.format).valueOf() || 0)
+		}
+	},
+	computed: {
+		daysInMonth(){
+			return this.$moment([this.year, this.month]).daysInMonth()
+		}
+	},
+	watch: {
+		value(value){
+			this.tsValue = value.map(el => this.$moment(el, this.format).valueOf() || 0)
+		}
+	},
+	methods:{
+		setValue(value){
+			this.tsValue.push(value)
+			this.tsValue.splice(0, this.tsValue.length - (this.range ? 2 : 1))
+			// this.tsValue.sort((a, b) => a - b)
+			if(!this.submit) this.$emit('input', this.tsValue.map(el => this.$moment(el).format(this.format)))
+		},
+		setMonth(month, year){
+			// валидацию бы какую-нибудь
+			this.month = month
+			if(year) this.year = year
+		},
+		prevMonth(){
+			if(this.month - 1 < 0) {
+				this.year--
+				this.month = 11
+				return
+			}
+			this.month--
+		},
+		nextMonth(){
+			if(this.month + 1 > 11) {
+				this.year++
+				this.month = 0
+				return
+			}
+			this.month++
+		},
+		onTabToday(){
+			console.log('onTabToday')
+			this.setMonth(this.currentMonth, this.currentYear)
+			this.setValue(this.$moment([this.year, this.month, this.currentDay]).valueOf())
+		},
+		onTabTomorrow(){
+			this.setMonth(this.currentMonth, this.currentYear)
+			if(this.currentDay + 1 <= this.daysInMonth) return this.setValue(this.$moment([this.year, this.month, this.currentDay + 1]).valueOf())
+			this.nextMonth()
+			this.setValue(this.$moment([this.year, this.month, 1]).valueOf())
+		},
+		onTabCurrentMonth(){
+			this.setMonth(this.currentMonth, this.currentYear)
+			this.setValue(this.$moment([this.year, this.month, this.daysInMonth]).valueOf())
+			this.setValue(this.$moment([this.year, this.month, 1]).valueOf())
+		},
+		onTabPrevMonth(){
+			this.setMonth(this.currentMonth, this.currentYear)
+			this.prevMonth()
+			this.setValue(this.$moment([this.year, this.month, this.daysInMonth]).valueOf())
+			this.setValue(this.$moment([this.year, this.month, 1]).valueOf())
+		},
+		onTabCurrentYear(){
+			this.setMonth(11, this.currentYear)
+			this.setValue(this.$moment([this.year, this.month, this.daysInMonth]).valueOf())
+			this.setValue(this.$moment([this.year, 0, 1]).valueOf())
+		},
+		onTabPrevYear(){
+			this.setMonth(11, this.currentYear - 1)
+			this.setValue(this.$moment([this.year, this.month, this.daysInMonth]).valueOf())
+			this.setValue(this.$moment([this.year, 0, 1]).valueOf())
+		},
+		onTabAllTime(){
+			this.setMonth(this.currentMonth, this.currentYear)
+			this.setValue(this.$moment([this.year, this.month, this.currentDay]).valueOf())
+			this.setValue(0)
+		},
+		onTabCustom(tab){
+			this.$emit('custom-tab', tab)
+		},
+		onSubmit(){
+			this.$emit('input', this.tsValue.map(el => this.$moment(el).format(this.format)))
+		}
+	}
+}
+</script>
+
+<style lang="scss">
+.CalendarInput{
+	&-bg{
+		position: fixed;
+		z-index: 100;
+		top: 0;
+		left: 0;
+		right: 0;
+		bottom: 0;
+		background-color: rgba(#000, 0.25);
+	}
+	&-content{
+		display: flex;
+		flex-flow: row nowrap;
+		align-items: stretch;
+		border-radius: 1.6rem;
+		position: absolute;
+		top: 100%;
+		right: 0;
+		z-index: 101;
+		background-color: #fff;
+	}
+}
+</style>

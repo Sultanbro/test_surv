@@ -227,7 +227,7 @@
                                                         <input  type="text" name="workday" disabled style="width:48%"
                                                             value="@if($user->working_day_id == 1) 5-2 @else 6-1 @endif">
                                                         <input  type="text" name="workday" disabled style="width:48%" 
-                                                            value="{{ substr($user->work_starts_at(), 0 , 5) }} @if($user->work_end)- {{ substr($user->work_end, 0 , 5) }} @endif">
+                                                            value="{{ $user->workTime()['workStartTime'] }} - {{ $user->workTime()['workEndTime'] }}">
                                                     </div>
                                                     
                                                 </td>

@@ -1,4 +1,5 @@
 <script>
+/* eslint-disable vue/no-mutating-props */
 import {mask} from 'vue-the-mask'
 
 export default {
@@ -9,10 +10,6 @@ export default {
 			type: Object,
 			default: null,
 		},
-		taxes: {
-			type: Array,
-			default: () => {},
-		},
 		old_zarplata: String,
 		old_kaspi_cardholder: String,
 		old_kaspi: String,
@@ -20,22 +17,33 @@ export default {
 		old_jysan_cardholder: String,
 		old_jysan: String,
 		old_card_jysan: String,
-		front_valid:{
+		front_valid: {
 			type: Object,
 			default: () => ({})
+		},
+		taxes: {
+			type: Array,
+			default: () => ([])
 		}
 	},
-	data(){
+	data() {
 		return {
 			headphonesState: this.user?.headphones_sum > 0,
 			cards: [],
 			zarplata: 0,
-			currency: null
+			currency: null,
+			newTaxes: [],
+			editTaxes: [],
+			assignTaxes: [],
+			myTaxes: [],
+			taxModal: false,
+			deleteTaxObj: null,
+			deleteTaxIdx: null
 		}
 	},
 	watch: {
-		user(obj){
-			if(obj.cards){
+		user(obj) {
+			if (obj.cards) {
 				this.cards = obj.cards
 			}
 			this.zarplata = this.user && this.user.zarplata
@@ -46,20 +54,31 @@ export default {
 					? this.old_zarplata
 					: 0
 		},
-		zarplata(){
+		zarplata() {
 			this.changeZp();
 		},
-		currency(){
+		currency() {
 			this.changeZp();
+		},
+		taxes() {
+			this.myTaxes = this.taxes.filter(item => item.isAssigned);
+		}
+	},
+	computed: {
+		taxNotAssignedFiltered() {
+			return this.taxes.length ? this.taxes.filter(item => !item.isAssigned) : [];
 		}
 	},
 	methods: {
-		changeZp(){
-			if(this.front_valid && this.front_valid.formSubmitted){
-				this.currency && Number(this.zarplata) > 1000 ? this.$emit('valid_change', {name: 'zarplata', bool: true}) : this.$emit('valid_change', {name: 'zarplata', bool: false});
+		changeZp() {
+			if (this.front_valid && this.front_valid.formSubmitted) {
+				this.currency && Number(this.zarplata) > 1000 ? this.$emit('valid_change', {
+					name: 'zarplata',
+					bool: true
+				}) : this.$emit('valid_change', {name: 'zarplata', bool: false});
 			}
 		},
-		addCard(){
+		addCard() {
 			const card = {
 				bank: '',
 				country: '',
@@ -69,33 +88,94 @@ export default {
 			};
 			this.cards.push(card);
 		},
-		async deleteCard(key, card){
+		async deleteCard(key, card) {
 			this.cards.splice(key, 1);
-			if(card.hasOwnProperty('id')){
+			if (card.hasOwnProperty('id')) {
 				const response = await this.axios.post('/profile/remove/card/', {'card_id': card.id});
-				if(!response.data){
+				if (!response.data) {
 					this.$toast.error('Ошибка при удалении карты');
 					return;
 				}
 				this.$toast.success('Карта удалена');
 			}
 		},
-		addTax(userId){
-			this.taxes.push({
-				name: '',
-				amount: '',
-				percent: '',
-				user_id: userId,
-			})
-		},
-		deleteTax(key){
-			this.taxes.splice(key, 1)
-		},
-		changeHeadphonesState(){
+		changeHeadphonesState() {
 			this.headphonesState = !this.headphonesState
-			if(this.headphonesState && this.user){
+			if (this.headphonesState && this.user) {
 				this.user.headphones_sum = 0
 			}
+		},
+		addTax() {
+			const obj = {
+				id: Date.now(),
+				name: '',
+				value: '',
+				isPercent: false,
+				isNew: true
+			};
+			this.newTaxes.push(obj);
+			this.myTaxes.push(obj);
+			this.$emit('taxes_fill', {
+				newTaxes: this.newTaxes,
+				assignTaxes: this.assignTaxes,
+				editTaxes: this.editTaxes,
+			})
+		},
+		async unassignTax(tax, idx) {
+			if (!tax.isNew) {
+				const formDataAssignTaxes = new FormData();
+				formDataAssignTaxes.append('user_id', this.user.id);
+				formDataAssignTaxes.append('tax_id', tax.id);
+				formDataAssignTaxes.append('is_assigned', 0);
+				await this.axios.post('/tax/set-assignee', formDataAssignTaxes);
+			}
+			this.myTaxes.splice(idx, 1);
+			this.$toast.success('Налог отменен');
+			this.$emit('taxes_update')
+		},
+		selectTaxNotAssigned(val) {
+			this.assignTaxes.push(val.id);
+			this.myTaxes.push(val);
+			const index = this.taxes.findIndex(t => t.id === val.id);
+			this.taxes[index].isAssigned = true;
+			this.$emit('taxes_fill', {
+				newTaxes: this.newTaxes,
+				assignTaxes: this.assignTaxes,
+				editTaxes: this.editTaxes,
+			})
+		},
+		onEditTax(tax) {
+			if (!tax.isNew && !this.editTaxes.includes(tax)) {
+				this.editTaxes.push(tax);
+				this.$emit('taxes_fill', {
+					newTaxes: this.newTaxes,
+					assignTaxes: this.assignTaxes,
+					editTaxes: this.editTaxes
+				})
+			}
+		},
+		openTaxModal(tax, idx) {
+			this.taxModal = true;
+			this.deleteTaxObj = tax;
+			this.deleteTaxIdx = idx;
+		},
+		async deleteTax() {
+			let loader = this.$loading.show();
+			const response = await this.axios.delete(`/tax/${this.deleteTaxObj.id}`);
+			if (!response.data) {
+				this.$toast.error('Ошибка при удалении');
+				return;
+			}
+			this.myTaxes.splice(this.deleteTaxIdx, 1);
+			this.$toast.success('Налог удален');
+			this.taxModal = false;
+			this.deleteTaxObj = null;
+			this.deleteTaxIdx = null;
+			loader.hide();
+		},
+		deleteNewTax(idx){
+			this.myTaxes.splice(idx, 1);
+			this.newTaxes.splice(idx, 1);
 		}
 	},
 }
@@ -310,10 +390,17 @@ export default {
 			</div>
 		</div>
 
+		<hr>
 		<div
 			v-if="user"
 			class="cards"
 		>
+			<div
+				class="no-text"
+				v-if="!cards.length"
+			>
+				Нет ни одной карты
+			</div>
 			<div
 				v-for="(card, key) in cards"
 				:key="card.id"
@@ -364,53 +451,6 @@ export default {
 				</button>
 			</div>
 		</div>
-
-		<div
-			v-if="user"
-			class="taxes"
-		>
-			<div
-				v-for="(tax, key) in taxes"
-				:key="tax.id"
-				class="d-flex form-group m0 tax-row"
-			>
-				<input
-					:name="`taxes[${key}][name]`"
-					:value="tax.name"
-					type="text"
-					class="form-control mr-1 col-sm-2"
-					placeholder="Название"
-				>
-				<input
-					:name="`taxes[${key}][amount]`"
-					:value="tax.amount"
-					type="text"
-					class="form-control mr-1 col-sm-2"
-					placeholder="Сумма"
-				>
-				<input
-					:name="`taxes[${key}][percent]`"
-					:value="tax.percent"
-					type="text"
-					class="form-control mr-1 col-sm-2"
-					placeholder="Процент"
-				>
-				<input
-					:name="`tax[${key}][user_id]`"
-					:value="user.id"
-					type="hidden"
-					class="form-control mr-1 col-sm-2"
-				>
-				<button
-					type="button"
-					class="btn btn-danger tax-delete rounded ml-1"
-					@click="deleteTax(key)"
-				>
-					<i class="fa fa-trash" />
-				</button>
-			</div>
-		</div>
-
 		<button
 			type="button"
 			class="btn btn-success btn-rounded mb-2 mt-2"
@@ -418,15 +458,174 @@ export default {
 		>
 			<i class="fa fa-plus mr-2" /> Добавить карту
 		</button>
+		<hr>
 
-		<button
-			v-if="user && user.zarplata"
-			type="button"
-			class="btn btn-success btn-rounded mb-2 mt-2"
-			@click="addTax(user.id)"
+		<div
+			v-if="user"
+			class="taxes"
 		>
-			<i class="fa fa-plus mr-2" /> Добавить налог
-		</button>
-		<!-- END OF OKLAD -->
+			<div
+				class="no-text"
+				v-if="!taxes.length"
+			>
+				Нет ни одного налога
+			</div>
+			<div
+				v-for="(tax, idx) in myTaxes"
+				:key="tax.id"
+				class="d-flex tax-row"
+			>
+				<b-form-group
+					class="custom-switch custom-switch-sm"
+					id="input-group-4"
+				>
+					<b-form-checkbox
+						v-model="tax.isPercent"
+						switch
+						@change="onEditTax(tax)"
+					>
+						В процентах
+					</b-form-checkbox>
+				</b-form-group>
+				<b-form-group class="ml-2">
+					<b-form-input
+						v-model="tax.name"
+						type="text"
+						class="mr-1"
+						placeholder="Название налога"
+						@change="onEditTax(tax)"
+					/>
+				</b-form-group>
+				<b-form-group class="ml-2">
+					<b-form-input
+						v-model="tax.value"
+						type="number"
+						class="mr-1"
+						placeholder="Процент от оклада"
+						:class="{'is-invalid' : tax.value > 100}"
+						v-if="tax.isPercent"
+						@change="onEditTax(tax)"
+					/>
+					<b-form-input
+						v-model="tax.value"
+						type="number"
+						class="mr-1"
+						placeholder="Сумма"
+						@change="onEditTax(tax)"
+						v-else
+					/>
+				</b-form-group>
+				<b-form-input
+					:value="tax.value ? Math.round(zarplata * tax.value / 100) : 0"
+					type="text"
+					disabled
+					class="ml-2 w-200px"
+					:class="{'is-invalid' : Math.round(zarplata * tax.value / 100) > zarplata}"
+					v-if="tax.isPercent"
+				/>
+				<button
+					v-if="!tax.isNew"
+					type="button"
+					class="btn btn-warning tax-delete rounded ml-2"
+					@click="unassignTax(tax, idx)"
+					:id="idx + '1'"
+				>
+					<span class="close-icon-style">x</span>
+				</button>
+				<b-popover
+					:target="idx + '1'"
+					triggers="hover"
+					placement="top"
+				>
+					<p style="font-size: 15px; text-align: center;">
+						Отменить налог данному сотруднику
+					</p>
+				</b-popover>
+				<button
+					v-if="!tax.isNew"
+					type="button"
+					class="btn btn-danger tax-delete rounded ml-2"
+					@click="openTaxModal(tax, idx)"
+				>
+					<i class="fa fa-trash" />
+				</button>
+				<button
+					v-else
+					type="button"
+					class="btn btn-outline-danger tax-delete rounded ml-2"
+					@click="deleteNewTax(idx)"
+				>
+					<i class="fa fa-minus" />
+				</button>
+			</div>
+		</div>
+		<b-modal
+			v-model="taxModal"
+			centered
+			size="md"
+			title="Удалить налог"
+		>
+			<div class="text-center my-4">
+				<p>Вы уверены, что хотите удалить налог?</p>
+				<p class="mt-3">
+					Данный налог будет удален из системы и автоматичски отменен всем сотрудникам, которым он был
+					присвоен
+				</p>
+			</div>
+			<template #modal-footer>
+				<b-button
+					variant="danger"
+					@click="deleteTax"
+				>
+					Удалить
+				</b-button>
+				<b-button
+					variant="light"
+					@click="taxModal = false"
+				>
+					Отмена
+				</b-button>
+			</template>
+		</b-modal>
+		<div class="d-flex aic mb-2 mt-2">
+			<button
+				v-if="user && user.zarplata"
+				type="button"
+				class="btn btn-success btn-rounded mr-3"
+				@click="addTax"
+			>
+				<i class="fa fa-plus mr-2" /> Добавить налог
+			</button>
+			<multiselect
+				:options="taxNotAssignedFiltered"
+				track-by="name"
+				label="name"
+				class="w-50 pt-2"
+				placeholder="Выберите существующий"
+				@select="selectTaxNotAssigned"
+			/>
+		</div>
 	</div>
 </template>
+
+
+<style scoped lang="scss">
+	.no-text {
+		height: 40px;
+		color: #999;
+		font-size: 16px;
+		font-weight: 400;
+		display: flex;
+		align-items: center;
+	}
+
+	.tax-delete {
+		height: 35px;
+	}
+
+	.close-icon-style {
+		font-size: 16px;
+		font-weight: 700;
+		line-height: 1;
+	}
+</style>

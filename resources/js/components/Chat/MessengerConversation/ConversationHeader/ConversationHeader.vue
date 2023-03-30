@@ -94,10 +94,9 @@
 							</span>
 						</div>
 					</div>
-					<div
-						class="messenger__chat-info"
-						v-text="chat.role"
-					/>
+					<!-- <div class="messenger__chat-info">
+						{{ chat.role }}
+					</div> -->
 				</div>
 				<div
 					class="messenger__search-button"
@@ -326,7 +325,10 @@ export default {
 }
 
 .messenger__chat-name {
-	margin-bottom: 2px;
+	display: flex;
+  flex-flow: column nowrap;
+  justify-content: space-between;
+  height: 50px;
 	color: #3f4144;
 	font-weight: 600;
 	font-size: 14px;
@@ -340,6 +342,9 @@ export default {
 
 .messenger__chat-name_overlay {
 	overflow-x: auto;
+	display: flex;
+	align-items: center;
+	height: 27px;
 }
 
 .messenger__chat-name_online,
@@ -366,6 +371,7 @@ export default {
 }
 
 .messenger__chat-name_members {
+	display: block;
 	margin-right: -15px;
 }
 .messenger__chat-name_members
@@ -379,6 +385,7 @@ export default {
 	font-size: 11px;
 	line-height: 14px;
 	letter-spacing: -0.03em;
+	margin-top: -2px;
 }
 
 .messenger__chat-name_member-admin {

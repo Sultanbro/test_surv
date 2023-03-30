@@ -222,33 +222,37 @@ tspan:last-child {
     padding: 20px;
     max-width: 1000px;
     margin: 0 auto;
-    height: 100vh;
     height: calc(100vh - 128px);
 
-    .author {
-
-        img {
+    .author{
+        text-align: center;
+        img{
             width: 48px;
             height: 48px;
             border-radius: 50%;
             margin-right: 10px;
             border: 1px solid #fefefe;
         }
-        .name {
-            font-size: 14px;
-            color:#333;
-            margin-bottom: 0;
-        }
-        .edited {
-            font-size: 14px;
-            line-height: 21px;
-            color:#656565;
-            margin-bottom: 0;
-            span {
-                width: 70px;
-                display: inline-block;
-                color: #275ba7;
-                margin-right: 5px;
+        .edited{
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            margin-bottom: 5px;
+            .author-time{
+                color: #A0AEC0;
+                span{
+                    color: #A0AEC0!important;
+                    text-align: right;
+                }
+            }
+            i{
+                color: #E4ECF7;
+                margin: 0 15px;
+            }
+            .author-author{
+                font-weight: 500!important;
+                color: #156AE8;
             }
         }
     }

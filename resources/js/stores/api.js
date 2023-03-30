@@ -5,6 +5,7 @@ export * from './api/settings.js'
 export * from './api/hr.js'
 export * from './api/pricing.js'
 export * from './api/kpi.js'
+export * from './api/portal.js'
 
 /**
  * ApiResponse

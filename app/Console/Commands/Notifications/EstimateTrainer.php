@@ -3,6 +3,7 @@
 namespace App\Console\Commands\Notifications;
 
 use App\ProfileGroup;
+use App\ProfileGroup\ProfileGroupUsersQuery;
 use App\User;
 use Illuminate\Console\Command;
 use App\UserNotification;
@@ -65,48 +66,27 @@ class EstimateTrainer extends Command
 
     }
 
-    /**
-     * Есть руководы
-     * @return int  
-     */
-    public function hasSuperiors($group)
-    {
-        $user_ids = ProfileGroup::employees($group->id);
-        $users = \DB::table('users')
-            ->whereNull('deleted_at')
-            ->leftJoin('user_descriptions as ud', 'ud.user_id', '=', 'users.id')
-            ->where('is_trainee', 0)
-            ->whereIn('users.id', $user_ids) 
-            ->whereIn('position_id', [45,55]) // Руководитель, старший специалист группы
-            ->get(['users.id'])
-            ->count();
-
-        return $users > 0;
-    }
-
+    const superiorsIds = [45,55]; // Руководитель, старший специалист группы
 
     public function getUserIds() {
-        $groups = ProfileGroup::where('active', 1)->get();
-        $user_ids = [];
-      
-        foreach($groups as $group) {
-            if($this->hasSuperiors($group)) {
-                $gr_users = ProfileGroup::employees($group->id);
-                $users = \DB::table('users')
-                    ->whereNull('deleted_at')
-                    ->leftJoin('user_descriptions as ud', 'ud.user_id', '=', 'users.id')
-                    ->where('is_trainee', 0)
-                    ->whereIn('users.id', $gr_users)
-                    ->whereNotIn('position_id', [45,55]) // Руководитель, старший специалист группы
-                    ->get(['users.id'])
-                    ->pluck('id')
-                    ->toArray();
+        $groupIds = ProfileGroup::where('active', 1)
+            ->get()
+            ->pluck('id')
+            ->toArray();
 
-                $user_ids = array_merge($user_ids, $users);  
-            }
-        }
+        $groupIdsWithSuperiors = (new ProfileGroupUsersQuery())
+            ->whereIsTrainee(false)
+            ->deletedByMonthFilter(1, null)
+            ->groupeFilter($groupIds, null)
+            ->wherePositionIds(self::superiorsIds)
+            ->getGroupIds();
 
-        return array_unique($user_ids);
+        return (new ProfileGroupUsersQuery())
+                ->whereIsTrainee(false)
+                ->deletedByMonthFilter(1, null)
+                ->groupeFilter($groupIdsWithSuperiors, null)
+                ->whereNotPositionIds(self::superiorsIds)
+                ->getUserIds();
     }
 
     public function notRightDay()

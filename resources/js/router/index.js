@@ -69,7 +69,7 @@ const router = new VueRouter({
 		//         title: 'Структура компании',
 		//     },
 		// },
-		// surv/kb.blade.php
+		// admin/books.blade.php
 		{
 			path: '/kb',
 			name: 'KnowledgeBaseView',

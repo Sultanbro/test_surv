@@ -59,7 +59,8 @@ Route::middleware(['web','tenant','not_admin_subdomain'])->group(function () {
 
     Route::group(['prefix' => 'portal', 'as' => 'portal.'], function () {
         Route::get('/current', [Root\Portal\PortalController::class, 'getCurrentPortal']);
-        Route::post('/update', [Root\Portal\PortalController::class, 'update']);
+        Route::post('/update', [Root\Portal\PortalController::class, 'update'])
+            ->middleware('owner');
     });
 
     Route::group(['prefix' => 'profile', 'as' => 'profile.'], function () {
@@ -621,6 +622,17 @@ Route::middleware(['web','tenant','not_admin_subdomain'])->group(function () {
     ], function () {
         Route::post('/', [Api\PaymentController::class, 'payment']);
         Route::post('/status', [Api\PaymentController::class, 'updateToTariffPayments']);
+    });
+
+    Route::group([
+        'prefix' => 'tax',
+        'as'     => 'tax.'
+    ], function () {
+        Route::get('/', [Root\Tax\TaxController::class, 'get']);
+        Route::post('/', [Root\Tax\TaxController::class, 'create']);
+        Route::post('/set-assignee', [Root\Tax\TaxController::class, 'setAssigned']);
+        Route::put('/', [Root\Tax\TaxController::class, 'update']);
+        Route::delete('/{id}', [Root\Tax\TaxController::class, 'delete']);
     });
 
     Route::middleware(['check_tariff'])->group(function () {

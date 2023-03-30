@@ -8,7 +8,6 @@ use App\Http\Controllers\Services\IntellectController as IC;
 use App\Models\Admin\ObtainedBonus;
 use App\Models\Article\Article;
 use App\Models\Award\Award;
-use App\Models\AwardUser;
 use App\Models\CentralUser;
 use App\Models\CourseResult;
 use App\Models\GroupUser;
@@ -28,6 +27,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Database\Query;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Http\Request;
 use Illuminate\Notifications\Notifiable;
@@ -85,7 +85,6 @@ class User extends Authenticatable implements Authorizable
         'work_start',
         'work_end',
         'birthday', 
-        'last_group',
         'read_corp_book_at',
         'has_noti',
         'notified_at',
@@ -182,9 +181,13 @@ class User extends Authenticatable implements Authorizable
             'article_id'
         );
     }
-    public function taxes(): HasMany
+
+    /**
+     * @return BelongsToMany
+     */
+    public function taxes(): BelongsToMany
     {
-        return $this->hasMany(Tax::class, 'user_id');
+        return $this->belongsToMany(Tax::class, 'user_tax');
     }
     
     public function awards(): BelongsToMany
@@ -1032,33 +1035,25 @@ class User extends Authenticatable implements Authorizable
 
     /**
      * Время начала смены для юзера
-     *
-     * @return array
+     * @deprecated выпилить с рефактором граффиков
+     * @return string
      */
     public function work_starts_at()
+    { //TODO Refactor workCharts
+        return $this->workTime()['workStartTime'] .':00';
+    }
+
+    /**
+     * Время смены для юзера
+     *
+     * @delegate
+     * @return array
+     */
+    public function workTime()
     {
-        $workStart = '00:00:00';
+        $userChart = $this->getWorkChart();
 
-        if (!is_null($this->work_start)) {
-
-            $workStart = $this->work_start;
-
-        } else {
-
-            $userGroups = ProfileGroup::get();
-            foreach ($userGroups as $group) {
-
-                $usersInGroup = explode(',', trim($group->users, '[]'));
-                foreach ($usersInGroup as $userIDInGroup) {
-                    if ($this->id == $userIDInGroup) {
-                        $workStart = $group->work_start;
-                        break;
-                    }
-                }
-            }
-        }
-
-        return $workStart;
+        return WorkChartModel::getWorkTime($userChart);
     }
 
     /**
@@ -1145,17 +1140,10 @@ class User extends Authenticatable implements Authorizable
     public function schedule(): array
     {
         $timezone = $this->timezone();
-        $groups   = $this->activeGroup();
-        $groupChart = $groups?->workChart()->first();
-        $userChart = $this->workChart()->first();
 
-        $workEndTime = $userChart->end_time
-            ?? $groupChart->end_time
-            ?? Timetracking::DEFAULT_WORK_END_TIME;
-
-        $workStartTime  = $userChart->start_time
-            ?? $groupChart->start_time
-            ?? Timetracking::DEFAULT_WORK_START_TIME;
+        $workTime = $this->workTime();
+        $workStartTime = $workTime['workStartTime'];
+        $workEndTime = $workTime['workEndTime'];
 
         $date = Carbon::now($timezone)->format('Y-m-d');
 
@@ -1231,6 +1219,19 @@ class User extends Authenticatable implements Authorizable
     public function workChart(): BelongsTo
     {
         return $this->belongsTo(WorkChartModel::class);
+    }
+
+    public function getWorkChart(): ?WorkChartModel {
+        $userChart = $this->workChart()->first();
+
+        if ($userChart) {
+            return $userChart;
+        }
+
+        $groups   = $this->activeGroup();
+        $groupChart = $groups?->workChart()->first();
+
+        return $groupChart;
     }
 
     /**

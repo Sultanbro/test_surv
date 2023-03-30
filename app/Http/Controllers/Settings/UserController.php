@@ -123,7 +123,7 @@ class UserController extends Controller
      */
     public function update(UpdateUserRequest $request): JsonResponse
     {
-        $user = auth()->user() ?? User::query()->find(5);
+        $user = auth()->user();
         abort_if(!$user, Response::HTTP_FORBIDDEN, 'Access denied');
 
         $response = $this->updateService->updateUser($request->toDto());

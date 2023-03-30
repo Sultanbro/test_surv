@@ -34,7 +34,7 @@ class SaveUsersRequest extends FormRequest
             'group_info.zoom_link'    => ['string', 'nullable'],
             'group_info.bp_link'      => ['string', 'nullable'],
             'group_info.workdays'     => ['numeric'],
-            'group_info.payment_terms'    => ['nullable', 'min:3', 'max:255'],
+            'group_info.payment_terms'    => ['nullable', 'min:3', 'max:10000'],
             'group_info.editable_time'    => ['boolean'],
             'group_info.paid_internship'  => ['boolean'],
             'group_info.quality'          => ['string', 'in:local,ucalls'],
