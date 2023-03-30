@@ -14,7 +14,7 @@ class StartDayForItDepartmentCommand extends Command
      *
      * @var string
      */
-    protected $signature = 'start_day:it_department';
+    protected $signature = 'start_day:it_department {date?}';
 
     /**
      * The console command description.
@@ -31,6 +31,7 @@ class StartDayForItDepartmentCommand extends Command
     public function handle(): void
     {
         $data = [];
+        $date = $this->argument('date');
 
         $userIds = DB::table('group_user')
             ->where([
@@ -40,6 +41,8 @@ class StartDayForItDepartmentCommand extends Command
             ->whereNotIn('user_id', [5, 24937, 25473])
             ->get()->pluck('user_id')->toArray();
 
+        $enterTime = isset($date) ? Carbon::parse($date)->setTime('02', '30', '00') : Carbon::createFromTime('02', '30', '00');
+
         foreach ($userIds as $userId)
         {
             $data[] = [
@@ -47,7 +50,7 @@ class StartDayForItDepartmentCommand extends Command
                 'total_hours'   => 0,
                 'updated'       => 0,
                 'program_id'    => null,
-                'enter'         => Carbon::createFromTime('02', '30', '00')->format('Y-m-d H:i:s'),
+                'enter'         => $enterTime->format('Y-m-d H:i:s'),
                 'created_at'    => now(),
                 'updated_at'    => now()
             ];
