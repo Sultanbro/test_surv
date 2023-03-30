@@ -42,6 +42,7 @@ class StartDayForItDepartmentCommand extends Command
             ->get()->pluck('user_id')->toArray();
 
         $enterTime = isset($date) ? Carbon::parse($date)->setTime('02', '30', '00') : Carbon::createFromTime('02', '30', '00');
+        $exitTime = isset($date) ? Carbon::parse($date)->setTime('12', '00', '00')->format('Y-m-d H:i:s') : null;
 
         foreach ($userIds as $userId)
         {
@@ -51,6 +52,7 @@ class StartDayForItDepartmentCommand extends Command
                 'updated'       => 0,
                 'program_id'    => null,
                 'enter'         => $enterTime->format('Y-m-d H:i:s'),
+                'exit'          => $exitTime,
                 'created_at'    => now(),
                 'updated_at'    => now()
             ];
