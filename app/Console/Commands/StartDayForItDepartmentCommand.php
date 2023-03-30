@@ -48,7 +48,7 @@ class StartDayForItDepartmentCommand extends Command
         {
             $data[] = [
                 'user_id'       => $userId,
-                'total_hours'   => 0,
+                'total_hours'   => isset($date) ? 480 : 0,
                 'updated'       => 0,
                 'program_id'    => null,
                 'enter'         => $enterTime->format('Y-m-d H:i:s'),
