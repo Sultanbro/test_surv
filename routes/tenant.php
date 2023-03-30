@@ -36,6 +36,8 @@ Route::middleware(['web','tenant'])->group(function () {
 // Portal Api
 Route::middleware(['web','tenant','not_admin_subdomain'])->group(function () {
 
+    Route::get('/structure', [Root\Structure\StructureController::class, 'index']);
+
     Route::resource('work-chart', Root\WorkChart\WorkChartController::class)->except(['create', 'edit']);
     Route::group([
         'prefix' => 'work-chart',
