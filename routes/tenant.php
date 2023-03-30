@@ -36,6 +36,8 @@ Route::middleware(['web','tenant'])->group(function () {
 // Portal Api
 Route::middleware(['web','tenant','not_admin_subdomain'])->group(function () {
 
+    Route::get('/structure', [Root\Structure\StructureController::class, 'index']);
+
     Route::resource('work-chart', Root\WorkChart\WorkChartController::class)->except(['create', 'edit']);
     Route::group([
         'prefix' => 'work-chart',
@@ -59,8 +61,7 @@ Route::middleware(['web','tenant','not_admin_subdomain'])->group(function () {
 
     Route::group(['prefix' => 'portal', 'as' => 'portal.'], function () {
         Route::get('/current', [Root\Portal\PortalController::class, 'getCurrentPortal']);
-        Route::post('/update', [Root\Portal\PortalController::class, 'update'])
-            ->middleware('owner');
+        Route::post('/update', [Root\Portal\PortalController::class, 'update']);
     });
 
     Route::group(['prefix' => 'profile', 'as' => 'profile.'], function () {

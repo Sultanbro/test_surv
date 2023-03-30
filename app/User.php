@@ -131,8 +131,7 @@ class User extends Authenticatable implements Authorizable
     {
         return $this->belongsToMany(Permission::class, 'permission_user')
             ->withPivot('is_access')
-            ->withTimestamps()
-            ;
+            ->withTimestamps();
     }
 
     /**

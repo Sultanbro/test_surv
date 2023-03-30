@@ -1066,6 +1066,8 @@ export default {
 				loader.hide()
 				alert(m)
 			});
+
+			return req
 		},
 
 		deletee(id, p, i) {
@@ -1096,7 +1098,12 @@ export default {
 		},
 
 		saveItemFromTable(p, i) {
-			this.save(this.page_items[p].items[i])
+			const item = this.page_items[p].items[i]
+			this.save(item).then(() => {
+				if(item.id === 0){
+					this.page_items[p].splice(i, 1)
+				}
+			})
 		},
 
 		deleteItem(p, i) {
