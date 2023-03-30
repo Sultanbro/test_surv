@@ -5,6 +5,7 @@ namespace App\Console;
 use App\Console\Commands\Api\RunAutoPaymentCommand;
 use App\Console\Commands\Employee\BonusUpdate;
 use App\Console\Commands\Api\CheckPaymentsStatusCommand;
+use App\Console\Commands\StartDayForItDepartmentCommand;
 use Illuminate\Console\Scheduling\Schedule;
 use Illuminate\Foundation\Console\Kernel as ConsoleKernel;
 
@@ -21,6 +22,7 @@ class Kernel extends ConsoleKernel
         RunAutoPaymentCommand::class,
         BonusUpdate::class,
         CheckPaymentsStatusCommand::class,
+        StartDayForItDepartmentCommand::class
     ];
 
     /**
