@@ -239,6 +239,7 @@
 </template>
 
 <script>
+/* eslint-disable vue/no-mutating-props */
 import CommentsComponent from '@/pages/News/CommentsComponent'
 import { useUnviewedNewsStore } from '@/stores/UnviewedNewsCount'
 import { mapActions } from 'pinia'

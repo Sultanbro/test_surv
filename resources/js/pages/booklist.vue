@@ -342,7 +342,7 @@
 
 				<template v-if="activesbook != null && !edit_actives_book">
 					<div class="book_page">
-						<div class="author d-flex aic mb-4 justify-end">
+						<div class="author mb-5 d-flex aic justify-end">
 							<img
 								:src="activesbook.editor_avatar"
 								alt="avatar icon"

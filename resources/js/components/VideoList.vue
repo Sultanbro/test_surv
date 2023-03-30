@@ -149,6 +149,7 @@
 </template>
 
 <script>
+/* eslint-disable vue/no-mutating-props */
 import Draggable from 'vuedraggable'
 import Sidebar from '@/components/ui/Sidebar' // сайдбар table
 

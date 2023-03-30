@@ -14,12 +14,24 @@ return new class extends Migration
     public function up()
     {
         Schema::table('users', function (Blueprint $table) {
-            $table->timestamp('login_at')->nullable();
-            $table->timestamp('birthday')->nullable();
-            $table->integer('balance');
-            $table->string('country', 50)->nullable();
-            $table->string('city', 50)->nullable();
-            $table->string('lead')->nullable();
+            if (!Schema::hasColumn('users', 'login_at')) {
+                $table->timestamp('login_at')->nullable();
+            }
+            if (!Schema::hasColumn('users', 'birthday')) {
+                $table->timestamp('birthday')->nullable();
+            }
+            if (!Schema::hasColumn('users', 'balance')) {
+                $table->integer('balance');
+            }
+            if (!Schema::hasColumn('users', 'country')) {
+                $table->string('country', 50)->nullable();
+            }
+            if (!Schema::hasColumn('users', 'city')) {
+                $table->string('city', 50)->nullable();
+            }
+            if (!Schema::hasColumn('users', 'lead')) {
+                $table->string('lead')->nullable();
+            }
         });
     }
 

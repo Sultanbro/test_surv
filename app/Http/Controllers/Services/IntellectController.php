@@ -124,18 +124,15 @@ class IntellectController extends Controller
         History::bitrix('Смена ответственного', $request->all());
 
         if($request->lead_id) {
-            $lead = Lead::where('lead_id', $request->lead_id)->first();
-
-            if($lead) {
-                $lead->resp_id = $request->resp_email;
-                $lead->status = 'CON';
-                $lead->deal_id = $request->deal_id;
-                if($request->project) $lead->project = $request->project;
-                if($request->net) $lead->net = $request->net;
-                if($request->remote == 'Y') $lead->skyped = date('Y-m-d H:i:s', time() + 3600 * 6);
-                if($request->resp_id) $lead->net = $request->net;
-                $lead->save();
-            }
+            Lead::query()->where('lead_id', $request->lead_id)
+                ->update([
+                'resp_id' => $request->resp_email,
+                'status'  => 'CON',
+                'deal_id' => $request->deal_id,
+                'project' => $request->project ?? null,
+                'net'     => $request->net ?? null,
+                'skyped'  => now()
+            ]);
         }
         
     }

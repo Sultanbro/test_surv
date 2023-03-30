@@ -1,4 +1,5 @@
 <template>
+	<!-- eslint-disable vue/no-mutating-props -->
 	<div
 		class="super-select"
 		ref="select-alt"
@@ -146,6 +147,7 @@
 </template>
 
 <script>
+/* eslint-disable vue/no-mutating-props */
 export default {
 	name: 'SuperselectAlt',
 	props: {

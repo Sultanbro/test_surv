@@ -290,6 +290,7 @@
 </template>
 
 <script>
+/* eslint-disable vue/no-mutating-props */
 import {newKpiItem, /* numberize,  */calcCompleted, calcSum} from './kpis.js';
 import {sources, methods} from './helpers.js';
 

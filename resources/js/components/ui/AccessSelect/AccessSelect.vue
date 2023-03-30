@@ -161,11 +161,11 @@ export default {
 <style>
 .AccessSelect-bg {
 	position: fixed;
+	z-index: 10;
 	top: 0;
-	bottom: 0;
 	left: 0;
 	right: 0;
-	z-index: 10;
+	bottom: 0;
 	background-color: rgba(255, 255, 255, 0.3);
 }
 

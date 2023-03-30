@@ -1,0 +1,37 @@
+<template>
+	<div class="CalendarInputBody">
+		<CalendarInputHeader />
+		<CalendarInputMain />
+		<CalendarInputFooter v-if="range" />
+	</div>
+</template>
+
+<script>
+import CalendarInputHeader from './CalendarInputHeader'
+import CalendarInputMain from './CalendarInputMain'
+import CalendarInputFooter from './CalendarInputFooter'
+export default {
+	name: 'CalendarInputBody',
+	inject: ['getRange'],
+	components: {
+		CalendarInputHeader,
+		CalendarInputMain,
+		CalendarInputFooter,
+	},
+	computed: {
+		range(){
+			return this.getRange()
+		}
+	}
+}
+</script>
+
+<style>
+	.CalendarInputBody{
+		display: flex;
+		flex-flow: column nowrap;
+		justify-content: space-between;
+		gap: 1.2px;
+		padding: 2rem;
+	}
+</style>
