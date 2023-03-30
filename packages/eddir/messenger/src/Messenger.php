@@ -82,9 +82,9 @@ class Messenger {
      * @param MessengerChat $chat
      * @param User $user
      *
-     * @return MessengerChat
+     * @return ?MessengerChat
      */
-    public function getChatAttributesForUser( MessengerChat $chat, User $user ): MessengerChat {
+    public function getChatAttributesForUser( MessengerChat $chat, User $user ): ?MessengerChat {
         $chat->unread_messages_count = $chat->getUnreadMessagesCount( $user );
         // last message with sender
         $chat->last_message = $chat->getLastMessage();
