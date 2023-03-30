@@ -59,14 +59,19 @@ class Messenger {
      * @return Collection
      */
     public function fetchChatsWithLastMessages( User $user ): Collection {
-        $chats = MessengerChat::query()
-                              ->whereHas( 'members', function ( Builder $query ) use ( $user ) {
-                                  $query->where( 'user_id', $user->id );
-                              } )
-                              ->get();
-        $chats->each( function ( MessengerChat $chat ) use ( $user ) {
-            $this->getChatAttributesForUser( $chat, $user );
-        } );
+        $chats = new Collection();
+
+        MessengerChat::query()
+            ->whereHas( 'members', function ( Builder $query ) use ( $user ) {
+                $query->where( 'user_id', $user->id );
+            } )
+            ->get()
+            ->each(function ( MessengerChat $chat ) use ( $user, $chats ) {
+                $chat = $this->getChatAttributesForUser( $chat, $user );
+                if ($chat) {
+                    $chats->add($chat);
+                }
+            });
 
         return $chats;
     }
@@ -95,17 +100,13 @@ class Messenger {
             // get second user in private chat
             $second_user = $chat->users->firstWhere( 'id', '!=', $user->id );
 
-            if ( $second_user ) {
+            if ( $second_user && !$second_user->deleted_at) {
                 $chat->second_user = $second_user;
                 $chat->title       = $second_user->name . " " . $second_user->last_name;
                 $chat->image       = $second_user->img_url;
                 $chat->isOnline    = MessengerUserOnline::query()->where( 'user_id', $second_user->id )->exists();
             } else {
-                // todo: выяснить, почему в приватном чате может не быть второго пользователя
-                $chat->second_user = null;
-                $chat->title       = "";
-                $chat->image       = "";
-                $chat->isOnline    = false;
+                return null;
             }
         }
 
