@@ -17,6 +17,7 @@ use App\Models\Traits\HasTenants;
 use App\Models\User\Card;
 use App\OauthClientToken as Oauth;
 use App\Service\Department\UserService;
+use App\Traits\CurrencyTrait;
 use Carbon\Carbon;
 use Illuminate\Contracts\Auth\Access\Authorizable;
 use Illuminate\Database\Eloquent\Builder;
@@ -833,8 +834,9 @@ class User extends Authenticatable implements Authorizable
 
     /**
      * Получить баланс сотрудника на текуший месяц
-     * 
+     *
      * @return int|float
+     * @throws \Exception
      */
     public function getCurrentSalary()
     {   
@@ -889,8 +891,10 @@ class User extends Authenticatable implements Authorizable
                 $sum = $arr->edited_salary->amount;
             }
         }
-        
-        return $sum; 
+        $userCurrency = strtolower($this->currency);
+        $currency = !in_array($userCurrency, ['kzt', 'rub', 'usd']) ? 'usd' : $userCurrency;
+
+        return round(CurrencyTrait::createMultiCurrencyPrice($sum)[$currency], 2);
     }
 
     public function getActiveCourse()
