@@ -16,15 +16,35 @@ function initialState(){
 			main_page_video: null,
 			main_page_video_show_days_amount: 0,
 			kpi_backlight: null
-		}
+		},
+		kpiBacklight: null,
 	}
+}
+
+function getBlankBacklight(min){
+	return {
+		startValue: min || 0,
+		endValue: min || 0,
+		prevMax: min || 0,
+		color: ''
+	}
+}
+function updateBacklight(value){
+	if(!value || !value.length){
+		return [getBlankBacklight()]
+	}
+	return value.map((item, index) => ({
+		...item,
+		prevMax: item.startValue,
+		endValue: value[index + 1] ? value[index + 1].startValue : 100
+	}))
 }
 
 export const usePortalStore = defineStore('portal', {
 	state: () => ({
 		isLoading: false,
 		// state here
-		...initialState()
+		...initialState(),
 	}),
 	actions: {
 		async fetchPortal(refresh){
@@ -34,6 +54,7 @@ export const usePortalStore = defineStore('portal', {
 			try{
 				const { data } = await fetchCurrentPortal()
 				this.portal = data
+				this.kpiBacklight = updateBacklight(this.portal.kpi_backlight)
 			}
 			catch(error){
 				console.error('fetchPortal', error)
@@ -45,6 +66,32 @@ export const usePortalStore = defineStore('portal', {
 				// ...this.portal,
 				...request,
 			})
-		}
+		},
+		getBlankBacklight,
+		addBacklightColor(prev){
+			this.kpiBacklight.push(getBlankBacklight(prev?.endValue || 0))
+		},
+		deleteBacklightColor(index){
+			this.kpiBacklight.splice(index, 1)
+			if(!this.kpiBacklight.length){
+				this.addBacklightColor()
+			}
+		},
+		updateBacklightColors(){
+			return this.updatePortal({
+				kpiBackLight: this.kpiBacklight.map(({startValue, color}) => ({
+					start: startValue,
+					color
+				}))
+			})
+		},
+		getBacklightForValue(value){
+			if(!this.kpiBacklight || !this.kpiBacklight.length) return ''
+			const num = +value
+			const item = this.kpiBacklight.findLast(item => {
+				return item.startValue <= num && num <= item.endValue
+			})
+			return item ? item.color : ''
+		},
 	}
 })

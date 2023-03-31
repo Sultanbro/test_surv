@@ -30,6 +30,11 @@
 				>
 					Найдено: 0
 				</span>
+				<i
+					v-if="isAdmin"
+					class="fa fa-cogs btn ml-a"
+					@click="isSettingsOpen = true"
+				/>
 			</div>
 		</div>
 
@@ -76,21 +81,79 @@
 			:key="quartal_users"
 			:search-text="searchText"
 		/>
+
+		<SideBar
+			:open="isSettingsOpen"
+			width="50vw"
+			title="Настройки"
+			@close="isSettingsOpen = false"
+		>
+			<h3>Подсветка ячеек</h3>
+			<div
+				v-for="item, index in kpiBacklight"
+				:key="index"
+				class="KPIBacklight-row"
+			>
+				от:
+				<input
+					type="number"
+					:min="item.prevMax"
+					:max="99"
+					class="form-control input-surv KPIBacklight-input"
+					v-model="item.startValue"
+				>
+				до:
+				<input
+					type="number"
+					:min="item.prevMax + 1"
+					:max="100"
+					class="form-control input-surv KPIBacklight-input"
+					v-model="item.endValue"
+				>
+				цвет:
+				<input
+					type="color"
+					class="form-control input-surv KPIBacklight-input"
+					v-model="item.color"
+				>
+				<i
+					class="fa fa-trash btn btn-danger btn-icon"
+					@click="deleteBacklightColor(index)"
+				/>
+			</div>
+			<button
+				class="btn btn-primary"
+				@click="addBacklightColor(kpiBacklight[kpiBacklight.length-1])"
+			>
+				Добавить
+			</button>
+			<hr>
+			<button
+				class="btn btn-success"
+				@click="updateBacklightColors().then(() => {isSettingsOpen = false})"
+			>
+				Сохранить
+			</button>
+		</SideBar>
 	</div>
 </template>
 
 <script>
+import { mapActions, mapState } from 'pinia'
+import SideBar from '@/components/ui/Sidebar'
 import SuperFilter from '@/pages/kpi/SuperFilter' // filter like bitrix
 import StatsTableV2 from '@/pages/kpi/StatsTableV2'
 import StatsTableBonus from '@/pages/kpi/StatsTableBonus'
 import StatsTableQuartal from '@/pages/kpi/StatsTableQuartal'
 import StatsTableYear from '@/pages/kpi/StatsTableYear'
+import { usePortalStore } from '@/stores/Portal'
 
 // import {formatDate} from './kpis.js';
 
 export default {
 	name: 'KPIStatsV2',
 	components: {
+		SideBar,
 		SuperFilter,
 		StatsTableV2,
 		StatsTableBonus,
@@ -122,8 +185,16 @@ export default {
 			perPage: 10,
 			filters: {
 				data_from: {}
-			}
+			},
+
+			isSettingsOpen: false,
 		}
+	},
+	computed: {
+		...mapState(usePortalStore, ['kpiBacklight']),
+		isAdmin(){
+			return this.$laravel.is_admin
+		},
 	},
 	watch: {
 		pageSize: {
@@ -155,8 +226,16 @@ export default {
 			'$refs.child.searchText',
 			new_value => (this.searchText = new_value)
 		);
+		this.fetchPortal()
 	},
 	methods: {
+		...mapActions(usePortalStore, [
+			'fetchPortal',
+			'updatePortal',
+			'addBacklightColor',
+			'deleteBacklightColor',
+			'updateBacklightColors',
+		]),
 
 		onChangePage(page_items) {
 			this.page_items = page_items;
@@ -222,7 +301,6 @@ export default {
 					//this.quartal_items = response.data;
 					this.quartal_users = response.data[0].map(res=> ({...res, expanded: false}));
 					this.quartal_groups = response.data[1].map(res=> ({...res, expanded: false}));
-					console.log(this.quartal_groups);
 					loader.hide();
 				}).catch(error => {
 					loader.hide();
@@ -234,7 +312,6 @@ export default {
 				alert('error!');
 			}
 		},
-
 	}
 }
 </script>

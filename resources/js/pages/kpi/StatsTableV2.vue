@@ -95,8 +95,9 @@
 								<span v-else>---</span>
 							</td>
 							<td
-								class="p-4"
 								v-if="editable"
+								class="p-4"
+								:style="`background-color: ${getBacklightForValue(wrap_item.avg)}`"
 							>
 								{{ wrap_item.avg }}%
 							</td>
@@ -222,6 +223,8 @@
 </template>
 
 <script>
+import { mapActions } from 'pinia'
+import { usePortalStore } from '@/stores/Portal'
 import KpiItemsV2 from '@/pages/kpi/KpiItemsV2'
 import {kpi_fields} from './kpis.js'
 
@@ -301,6 +304,7 @@ export default {
 	mounted(){
 	},
 	methods: {
+		...mapActions(usePortalStore, ['getBacklightForValue']),
 		async fetchKPI(id, ttype){
 			const type = this.types[ttype]
 			this.$set(this.loading[type], id, true)
