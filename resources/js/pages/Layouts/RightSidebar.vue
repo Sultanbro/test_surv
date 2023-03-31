@@ -91,12 +91,17 @@
 <script>
 import { mapState, mapActions } from 'pinia'
 import { useNotificationsStore } from '@/stores/Notifications'
+
+const NotificationsLastCheck = 'NotificationsLastCheck'
+
 export default {
 	name: 'RightSidebar',
 	props: {},
 	data: function () {
 		return {
 			isBp: window.location.hostname.split('.')[0] === 'bp',
+			notificationsInterval: null,
+			prevNotificationsCheck: +(localStorage.getItem(NotificationsLastCheck) || Date.now())
 		};
 	},
 	computed: {
@@ -104,6 +109,16 @@ export default {
 	},
 	mounted(){
 		this.fetchNotifications()
+		this.notificationsInterval = setInterval(() => {
+			this.hourlyNotifications()
+		}, 60000)
+		this.hourlyNotifications()
+		if(localStorage.getItem(NotificationsLastCheck) === null){
+			localStorage.setItem(NotificationsLastCheck, Date.now())
+		}
+	},
+	beforeUnmount(){
+		clearInterval(this.notificationsInterval)
 	},
 	methods: {
 		...mapActions(useNotificationsStore, ['fetchNotifications']),
@@ -115,6 +130,15 @@ export default {
 				s.src = url + '?' + (Date.now() / 60000 | 0);
 				const h = document.getElementsByTagName('script')[0];
 				h.parentNode.insertBefore(s,h);
+			}
+		},
+		hourlyNotifications(){
+			if(!this.unreadQuantity) return
+			const now = Date.now()
+			if(now - this.prevNotificationsCheck > 3600000){
+				this.$emit('pop', 'notifications')
+				this.prevNotificationsCheck = now
+				localStorage.setItem(NotificationsLastCheck, now)
 			}
 		}
 	}
