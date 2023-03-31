@@ -4,6 +4,7 @@ namespace App\Listeners;
 
 use App\Events\TrackQuartalPremiumEvent;
 use App\Models\QuartalPremium;
+use App\Models\Scopes\ActiveScope;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Support\Facades\DB;
@@ -23,12 +24,12 @@ class TrackQuartalPremiumListener
     /**
      * Handle the event.
      *
-     * @param  object  $event
+     * @param  TrackQuartalPremiumEvent  $event
      * @return void
      */
     public function handle(TrackQuartalPremiumEvent $event)
     {
-        $quartalPremium = QuartalPremium::query()->find($event->quartalPremiumId);
+        $quartalPremium = QuartalPremium::admin()->findOrFail($event->quartalPremiumId);
 
         DB::table('histories')->insert([
             'reference_table'   => 'App\Models\QuartalPremium',

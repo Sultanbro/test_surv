@@ -14,6 +14,8 @@ class QuartalPremiumController extends Controller
     /**
      * Получить Квартальную премию.
      *
+     * @param Request $request
+     * @param QuartalPremiumService $service
      * @return JsonResponse
      */
     public function get(Request $request, QuartalPremiumService $service): JsonResponse
@@ -42,7 +44,9 @@ class QuartalPremiumController extends Controller
      */
     public function update(QuartalPremiumUpdateRequest $request, QuartalPremiumService $service): JsonResponse
     {
-        $response = $service->update($request);
+        $dto = $request->toDto();
+
+        $response = $service->update($dto);
 
         return response()->json($response);
     }
