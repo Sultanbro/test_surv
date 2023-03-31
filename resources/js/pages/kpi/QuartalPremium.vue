@@ -328,7 +328,7 @@
 									/>
 									<span class="ml-2">{{ page_item.name }}</span>
 									<i
-										class="fa fa-save btn btn-success btn-icon"
+										class="fa fa-save btn btn-success btn-icon ml-a"
 										@click="saveAll(p)"
 									/>
 								</div>
