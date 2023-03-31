@@ -436,6 +436,7 @@ class TimetrackingController extends Controller
 
         // заработано по окладу за вычетом штрафов и авансов
         $salary = $user->getCurrentSalary();
+        $salaryByCurrency = $user->getTotalByCurrency($salary);
 
         // currency
         $currency_rate = in_array($user->currency, array_keys(Currency::rates()))
@@ -443,17 +444,18 @@ class TimetrackingController extends Controller
             : 0.0000001;
 
         // balance
-        $total_earned = number_format(round(($salary + $kpi + $bonus) * $currency_rate), 0, '.', '\'') . ' ' . strtoupper($user->currency);
+        $balance = $user->getTotalByCurrency(($salary + $kpi + $bonus));
+        $total_earned = number_format(round($balance), 0, '.', '\'') . ' ' . strtoupper($user->currency);
 
         return response()->json([
             'status'    => $user->timetracking()->running()->first() ? 'started' : 'stopped',
             'groupsall' => $user->headInGroups(),
             'orders'    => [],
-            'zarplata'  => number_format((float)$salary * $currency_rate, 0, '.', '\''). ' ' . strtoupper($user->currency),
+            'zarplata'  => number_format((float)$salaryByCurrency, 0, '.', '\''). ' ' . strtoupper($user->currency),
             'bonus'     => number_format(round((float)$bonus * $currency_rate), 0, '.', '\'') . ' ' . strtoupper($user->currency),
             'total_earned' => $total_earned,
             'balance'   => [
-                'sum' => number_format(round(($salary + $kpi + $bonus) * $currency_rate, 2), 0, '.', ','),
+                'sum' => number_format(round($balance, 2), 0, '.', ','),
                 'currency' => strtoupper($user->currency),
             ],
             'corp_book' => $user->getCorpbook()

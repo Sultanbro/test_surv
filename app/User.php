@@ -19,6 +19,7 @@ use App\OauthClientToken as Oauth;
 use App\Service\Department\UserService;
 use App\Traits\CurrencyTrait;
 use Carbon\Carbon;
+use Exception;
 use Illuminate\Contracts\Auth\Access\Authorizable;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -891,10 +892,23 @@ class User extends Authenticatable implements Authorizable
                 $sum = $arr->edited_salary->amount;
             }
         }
+        $sum = 90000;
+        return $sum;
+    }
+
+    /**
+     * Получаем итоговую сумму по курсу валюты.
+     *
+     * @throws Exception
+     */
+    public function getTotalByCurrency(
+        float $price
+    ): float
+    {
         $userCurrency = strtolower($this->currency);
         $currency = !in_array($userCurrency, ['kzt', 'rub', 'usd']) ? 'usd' : $userCurrency;
 
-        return round(CurrencyTrait::createMultiCurrencyPrice($sum)[$currency], 2);
+        return round(CurrencyTrait::createMultiCurrencyPrice($price)[$currency], 2);
     }
 
     public function getActiveCourse()

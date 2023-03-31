@@ -119,7 +119,9 @@ class ProfileSalaryController extends Controller
         }
 
         $salary = $user->getCurrentSalary();
-        
+
+        $salarySum = $user->getTotalByCurrency($salary);
+
         $potential_bonuses = '';
         if(count($gs) > 0) {
             foreach ($gs as $key => $g) {
@@ -146,7 +148,7 @@ class ProfileSalaryController extends Controller
             'kpi' => number_format((float)$kpi * $currency_rate,  0, '.', '\''). ' ' . strtoupper($user->currency),
             'kpiMax' => 30000,
             'sumKpi' => $editedKpi ? $editedKpi->amount : $kpi,
-            'sumSalary' => $salary,
+            'sumSalary' => $salarySum,
             'sumBonuses' => $editedBonus ? $editedBonus->amount : $bonus,
             'sumQuartalPremiums' => $quarter_bonus,
             'sumNominations' => 0, // кол-во номинаций
