@@ -892,7 +892,7 @@ class User extends Authenticatable implements Authorizable
                 $sum = $arr->edited_salary->amount;
             }
         }
-        $sum = 90000;
+
         return $sum;
     }
 
