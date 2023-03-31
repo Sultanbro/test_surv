@@ -1085,21 +1085,7 @@ class KpiStatisticService
         // Position::class
         if($type == 3) $_user_ids = [];
 
-        $_users = User::withTrashed()
-            ->select([
-                'users.id',
-                'users.last_name',
-                'users.name',
-                'users.full_time',
-                'ud.applied',
-                \DB::raw('datediff(CURDATE(), ud.applied) as days'),
-                \DB::raw('datediff(CURDATE(), users.created_at) as registered_days')
-            ])
-            ->leftJoin('user_descriptions as ud', 'ud.user_id', '=', 'users.id')
-            ->where('ud.is_trainee', 0)
-            ->whereIn('users.id', $_user_ids)
-            ->orderBy('last_name')
-            ->get();
+        $_users = $this->getUserStats($kpi, $_user_ids, $date);
 
         // create final users array
         $users = $this->getKpiStats(
@@ -1148,14 +1134,6 @@ class KpiStatisticService
                 $item = $_item->toArray();
 
                 // get last History
-//                $last_history = $_item->histories->map(function($item) use ($date) {
-//
-//                    $dateOk = $date->endOfMonth()->timestamp - Carbon::parse($item->created_at)->timestamp > 0;
-//                    $item->order = $dateOk ? Carbon::parse($item->created_at)->timestamp : 0;
-//
-//                    return $item;
-//                })->sortByDesc('order')->first();
-
                 if($_item->histories_latest) {
                     $last_history = json_decode($_item->histories_latest->payload, true);
 
@@ -1258,16 +1236,8 @@ class KpiStatisticService
                     $user['id']
                 );
 
-                $item['percent'] = 0;
-                if ($item['method'] == 1){
-                    $item['percent'] = round(($item['fact'] * 100)/$item['plan'], '2');
-                }elseif ($item['method'] == 2){
-                    $item['percent'] = round(($item['avg'] * 100)/$item['plan'], '2');
-                }elseif($item['method'] == 3 || $item['method'] == 4){
-                    $item['percent'] = $item['avg'] <= $item['plan'] ? 100 : 0;
-                }elseif($item['method'] == 5 || $item['method'] == 6){
-                    $item['percent'] = $item['avg'] >= $item['plan'] ? 100 : 0;
-                }
+                $item = $this->calculatePercent($item);
+
                 $sumKpiPercent = $sumKpiPercent + $item['percent'];
 
                 // plan
@@ -1328,7 +1298,6 @@ class KpiStatisticService
                      */
                     $item['plan'] = round($item['plan'] * $percent_of_plan_for_sum_method);
                 }
-
 
                 $kpi_items[] = $item;
             }
@@ -1456,6 +1425,7 @@ class KpiStatisticService
                  */
                 $item['fact'] = $item['fact'] ?? 0;
 
+                $this->takeCommonValue($_item, $date, $item);
                 $this->takeUpdatedValue($_item->id,
                     $item['activity_id'],
                     $date,
@@ -1463,16 +1433,7 @@ class KpiStatisticService
                     $user['id']
                 );
 
-                $item['percent'] = 0;
-                if ($item['method'] == 1){
-                    $item['percent'] = round(($item['fact'] * 100)/$item['plan'], '2');
-                }elseif ($item['method'] == 2){
-                    $item['percent'] = round(($item['avg'] * 100)/$item['plan'], '2');
-                }elseif($item['method'] == 3 || $item['method'] == 4){
-                    $item['percent'] = $item['avg'] < $item['plan'] ? 100 : 0;
-                }elseif($item['method'] == 5 || $item['method'] == 6){
-                    $item['percent'] = $item['avg'] > $item['plan'] ? 100 : 0;
-                }
+                $item = $this->calculatePercent($item);
 
                 $sumKpiPercent = $sumKpiPercent + $item['percent'];
             }
@@ -1488,6 +1449,21 @@ class KpiStatisticService
         }
 
         return $users;
+    }
+
+    private function calculatePercent(array $item):array
+    {
+        $item['percent'] = 0;
+        if ($item['method'] == 1){
+            $item['percent'] = round(($item['fact'] * 100)/$item['plan'], '2');
+        }elseif ($item['method'] == 2){
+            $item['percent'] = round(($item['avg'] * 100)/$item['plan'], '2');
+        }elseif($item['method'] == 3 || $item['method'] == 4){
+            $item['percent'] = $item['avg'] < $item['plan'] ? 100 : 0;
+        }elseif($item['method'] == 5 || $item['method'] == 6){
+            $item['percent'] = $item['avg'] > $item['plan'] ? 100 : 0;
+        }
+        return $item;
     }
 
     private function takeCommonValue(KpiItem $kpi_item, Carbon $date, array &$item) : void
