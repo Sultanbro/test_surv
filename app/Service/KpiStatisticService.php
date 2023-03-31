@@ -696,6 +696,8 @@ class KpiStatisticService
                             ->format('Y-m-d'));
                     });
             })
+            ->orderBy('targetable_type', 'desc')
+            ->limit(1)
             ->get();
 
         foreach ($kpis as $kpi) {
