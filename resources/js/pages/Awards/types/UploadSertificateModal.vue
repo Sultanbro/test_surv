@@ -297,6 +297,7 @@
 </template>
 
 <script>
+/* eslint-disable vue/no-side-effects-in-computed-properties */
 import interact from 'interactjs';
 import VuePdfEmbed from 'vue-pdf-embed/dist/vue2-pdf-embed';
 
