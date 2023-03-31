@@ -43,6 +43,7 @@
 							v-for="field in fields"
 							:class="{
 								'text-center': field.key != '0',
+								[field.class]: field.class !== undefined
 							}"
 							:key="field.key"
 						>
@@ -75,7 +76,8 @@
 								'day-bonus': item[field.key] !== undefined && item[field.key].hasBonus,
 								'text-center': field.key != '0',
 								'day-training': item[field.key] !== undefined && item[field.key].training,
-								'balance__table-day': parseInt(field.key) > 0
+								'balance__table-day': parseInt(field.key) > 0,
+								[field.class]: field.class !== undefined
 							}"
 						>
 							<template v-if="item[field.key] !== undefined">
@@ -419,155 +421,204 @@ export default {
 </script>
 
 <style lang="scss">
-$fine: #e84f71;
-$avans: #8bab00;
-$bonus: #8fc9ff;
-$training: #f90;
+	$fine: #e84f71;
+	$avans: #8bab00;
+	$bonus: #8fc9ff;
+	$training: #f90;
 
-.balance__content{
-  overflow-x: auto;
-  padding-bottom: 2rem;
-}
+	.balance__content {
+		overflow-x: auto;
+		padding-bottom: 2rem;
+	}
 
-.balance__table{
-    width: 100%;
-    margin: 4rem 0.1rem 0;
-    border-spacing: 0;
+	.balance__table {
+		width: 100%;
+		margin: 4rem 0.1rem 0;
+		border-spacing: 0;
 
-    td:first-child,th:first-child{
-        text-align: left;
-        padding-left: 1.5rem;
-        padding-right: 1rem;
-    }
-    th{
-        white-space: nowrap;
-        font-weight: 600;
-        max-width: 25.9rem;
-        background: #f4f6fd;
-        font-size:1.3rem;
-        height: 4rem;
-        min-width:4rem;
-        padding: 0 1rem;
-        color: #62788B;
-        border: 1px solid #EBEDF5;
-    }
-    th:first-child{
-        border-radius:1.2rem 0 0 0;
-        border: none;
-        outline: 1px solid #EBEDF5;
-    }
-    th:last-child{
-        border-radius:0 1.2rem 0 0;
-        border: none;
-        outline: 1px solid #EBEDF5;
-    }
-    td{
-        min-width:4rem;
-        max-width: 25.9rem;
-        border: 1px solid #EBEDF5;
-        height: 4rem;
-        font-size:1.2rem;
-        font-family: "Inter",sans-serif;
-        color: #62788B;
-        text-align: center;
+		td:first-child, th:first-child {
+			text-align: left;
+			padding-left: 1.5rem;
+			padding-right: 1rem;
+		}
 
-        &.yellow{
-            background: #FFEF86;
-        }
-        &.orange{
-            background: #FF9900;
-            color:#fff;
-        }
-        &.blue{
-            background: #8FC9FF;
-        }
-        &.pink{
-            background: #EC6898;
-            color:#fff;
-        }
-        &.green-pink{
-            background: linear-gradient(105deg,#8BAB00 40%, #EC6898 40%);
-        }
-    }
-}
-.balance__table-day{
-    cursor: pointer;
-}
+		th {
+			white-space: nowrap;
+			font-weight: 600;
+			max-width: 25.9rem;
+			background: #f4f6fd;
+			font-size: 1.3rem;
+			height: 4rem;
+			min-width: 4rem;
+			padding: 0 1rem;
+			color: #62788B;
+			border: 1px solid #EBEDF5;
 
-.balance__title{
-    margin-top: 0rem;
-    margin-bottom: 3rem;
-    font-family: "Open Sans",sans-serif;
-    font-size:2rem;
-    color:rgb(139 171 2);
-    font-weight: 400;
-    border-bottom: 1px solid #aebde0;
-    padding-bottom: 1rem;
+			&.Sat, &.Sun {
+				background: #fef2cb;
+			}
+		}
 
-    span {
-        display: block;
-    }
-}
+		th:first-child {
+			border-radius: 1.2rem 0 0 0;
+			border: none;
+			outline: 1px solid #EBEDF5;
+		}
 
-.balance__inner{
-    padding: 4rem 4rem;
-    margin-top: 2rem;
-    margin-bottom: 2rem;
-    // display: flex;
-    background: #F5F7FC;
-    border-radius:1.5rem;
-    justify-content: space-between;
-}
+		th:last-child {
+			border-radius: 0 1.2rem 0 0;
+			border: none;
+			outline: 1px solid #EBEDF5;
+		}
 
-.fz-09 {
-    font-size: 0.9rem;
-}
+		td {
+			min-width: 4rem;
+			max-width: 25.9rem;
+			border: 1px solid #EBEDF5;
+			height: 4rem;
+			font-size: 1.2rem;
+			font-family: "Inter", sans-serif;
+			color: #62788B;
+			text-align: center;
 
-.fine,.avans,.bonus {
-    color:#fff;
-}
+			&.yellow {
+				background: #FFEF86;
+			}
 
-.balance__table {
-    .day-fine {
-        background: $fine;
-        color: #fff;
-    }
-    .day-training {
-        background: $training;
-        color: #fff;
-        &.day-fine {background: linear-gradient(110deg, $training 50%, $fine 50%);}
-    }
-    .day-bonus {
-        background: $bonus;
-        color: #fff;
-        &.day-fine {background: linear-gradient(110deg, $bonus 50%, $fine 50%);}
-        &.day-training {background: linear-gradient(110deg, $bonus 50%, $training 50%);}
-        &.day-fine.day-training {background: linear-gradient(110deg, $bonus 33%, transparent 33%), linear-gradient(110deg, $fine 66%, $training 66%);}
-    }
-    .day-avans {
-        background:$avans;
-        color: #fff;
-        &.day-fine {background: linear-gradient(110deg, $avans 50%, $fine 50%);}
-        &.day-bonus {background: linear-gradient(110deg, $avans 50%, $bonus 50%);}
-        &.day-training {background: linear-gradient(110deg, $avans 50%, $training 50%);}
-        &.day-bonus.day-fine {background: linear-gradient(110deg, $avans 33%, transparent 33%), linear-gradient(110deg, $bonus 66%, $fine 66%);}
-        &.day-bonus.day-fine.day-training {background: linear-gradient(110deg, $avans 25%, transparent 25%), linear-gradient(110deg, $bonus 50%, $fine 50%), linear-gradient(110deg, $fine 75%, $training 75%);}
-    }
-}
+			&.Sat, &.Sun {
+				background: #fef2cb;
+			}
 
-@media(max-width:1200px){
-    .balance__inner{
-        width: 90rem;
-    }
-}
-@media(max-width:779px){
-    .balance .select-css{
-        max-width: 18rem;
-    }
-}
-@media(max-width:500px){
-    .balance__title{
-        font-size:2.7rem
-    }
-}
+			&.orange {
+				background: #FF9900;
+				color: #fff;
+			}
+
+			&.blue {
+				background: #8FC9FF;
+			}
+
+			&.pink {
+				background: #EC6898;
+				color: #fff;
+			}
+
+			&.green-pink {
+				background: linear-gradient(105deg, #8BAB00 40%, #EC6898 40%);
+			}
+		}
+	}
+
+	.balance__table-day {
+		cursor: pointer;
+	}
+
+	.balance__title {
+		margin-top: 0rem;
+		margin-bottom: 3rem;
+		font-family: "Open Sans", sans-serif;
+		font-size: 2rem;
+		color: rgb(139 171 2);
+		font-weight: 400;
+		border-bottom: 1px solid #aebde0;
+		padding-bottom: 1rem;
+
+		span {
+			display: block;
+		}
+	}
+
+	.balance__inner {
+		padding: 4rem 4rem;
+		margin-top: 2rem;
+		margin-bottom: 2rem;
+		// display: flex;
+		background: #F5F7FC;
+		border-radius: 1.5rem;
+		justify-content: space-between;
+	}
+
+	.fz-09 {
+		font-size: 0.9rem;
+	}
+
+	.fine, .avans, .bonus {
+		color: #fff;
+	}
+
+	.balance__table {
+		.day-fine {
+			background: $fine;
+			color: #fff;
+		}
+
+		.day-training {
+			background: $training;
+			color: #fff;
+
+			&.day-fine {
+				background: linear-gradient(110deg, $training 50%, $fine 50%);
+			}
+		}
+
+		.day-bonus {
+			background: $bonus;
+			color: #fff;
+
+			&.day-fine {
+				background: linear-gradient(110deg, $bonus 50%, $fine 50%);
+			}
+
+			&.day-training {
+				background: linear-gradient(110deg, $bonus 50%, $training 50%);
+			}
+
+			&.day-fine.day-training {
+				background: linear-gradient(110deg, $bonus 33%, transparent 33%), linear-gradient(110deg, $fine 66%, $training 66%);
+			}
+		}
+
+		.day-avans {
+			background: $avans;
+			color: #fff;
+
+			&.day-fine {
+				background: linear-gradient(110deg, $avans 50%, $fine 50%);
+			}
+
+			&.day-bonus {
+				background: linear-gradient(110deg, $avans 50%, $bonus 50%);
+			}
+
+			&.day-training {
+				background: linear-gradient(110deg, $avans 50%, $training 50%);
+			}
+
+			&.day-bonus.day-fine {
+				background: linear-gradient(110deg, $avans 33%, transparent 33%), linear-gradient(110deg, $bonus 66%, $fine 66%);
+			}
+
+			&.day-bonus.day-fine.day-training {
+				background: linear-gradient(110deg, $avans 25%, transparent 25%), linear-gradient(110deg, $bonus 50%, $fine 50%), linear-gradient(110deg, $fine 75%, $training 75%);
+			}
+		}
+	}
+
+	@media(max-width: 1200px) {
+		.balance__inner {
+			width: 90rem;
+		}
+	}
+
+	@media(max-width: 779px) {
+		.balance .select-css {
+			max-width: 18rem;
+		}
+	}
+
+	@media(max-width: 500px) {
+		.balance__title {
+			font-size: 2.7rem
+		}
+	}
 </style>

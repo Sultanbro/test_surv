@@ -596,27 +596,35 @@ export default {
         color: #333;
         width: 100px;
     }
-    tbody{
-        th,td{
-            padding: 0 !important;
-            & > div{
-                height: 30px;
-                width: 100px;
-                display: inline-flex;
-                align-items: center;
-                justify-content: center;
-            }
-            &:first-child{
-                & > div{
-                    width: auto;
-                }
-                input{
-                    text-align: left;
-                    width: 100%;
-                }
-            }
-        }
-    }
+
+	tbody {
+		th, td {
+			padding: 0 !important;
+
+			&:first-child {
+				padding: 0 10px !important;
+			}
+
+			& > div {
+				height: 30px;
+				width: 100px;
+				display: inline-flex;
+				align-items: center;
+				justify-content: center;
+			}
+
+			&:first-child {
+				& > div {
+					width: auto;
+				}
+
+				input {
+					text-align: left;
+					width: 100%;
+				}
+			}
+		}
+	}
 }
 
 .day-minute div {
@@ -625,9 +633,5 @@ export default {
 }
 .border-r-2 {
     border-right: 2px solid #b5c1d7 !important;
-}
-.weekend {
-    background: #FEF2CB;
-    border: 1px solid #d18700!important;
 }
 </style>

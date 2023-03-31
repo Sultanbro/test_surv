@@ -1842,6 +1842,10 @@ export default {
 }
 .quality-page.quality-page .table-container .custom-table-quality th,
 .quality-page.quality-page .table-container .custom-table-quality td{
+	&.averages{
+		background-color: #28a745;
+		color: #fff;
+	}
 	min-width: 35px;
 	padding: 0 10px !important;
 	vertical-align: middle;

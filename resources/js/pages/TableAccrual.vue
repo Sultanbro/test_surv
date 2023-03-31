@@ -149,45 +149,28 @@
 			<div class="row mt-3">
 				<div class="col-12 col-md-9">
 					<div class="d-flex">
-						<b-form-group class="d-flex ddf">
-							<b-form-radio
-								v-model="user_types"
-								name="some-radios"
-								value="0"
-							>
-								Действующие
-							</b-form-radio>
-							<b-form-radio
-								v-model="user_types"
-								name="some-radios"
-								value="2"
-							>
-								Стажеры
-							</b-form-radio>
-							<b-form-radio
-								v-model="user_types"
-								name="some-radios"
-								value="1"
-							>
-								Уволенные
-							</b-form-radio>
+						<b-form-group class="mr-3">
+							<b-form-select v-model="user_types">
+								<b-form-select-option value="0">
+									Действующие
+								</b-form-select-option>
+								<b-form-select-option value="1">
+									Уволенные
+								</b-form-select-option>
+								<b-form-select-option value="2">
+									Стажеры
+								</b-form-select-option>
+							</b-form-select>
 						</b-form-group>
-						<b-form-group class="d-flex ddf ddf-br">
-							<b-form-radio
-								v-model="show_user"
-								name="some-radios2"
-								value="0"
-							>
-								Все
-							</b-form-radio>
-							<b-form-radio
-								v-model="show_user"
-								name="some-radios2"
-								value="1"
-								class="mr-0"
-							>
-								Есть начисления
-							</b-form-radio>
+						<b-form-group>
+							<b-form-select v-model="show_user">
+								<b-form-select-option value="0">
+									Все
+								</b-form-select-option>
+								<b-form-select-option value="1">
+									Есть начисления
+								</b-form-select-option>
+							</b-form-select>
 						</b-form-group>
 					</div>
 				</div>
@@ -205,7 +188,6 @@
 			>
 				<b-table
 					responsive
-					:sticky-header="true"
 					class="text-nowrap text-right salar accrual-table"
 					:class="{'hide-special': special_fields}"
 					:small="true"

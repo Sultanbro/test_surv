@@ -80,6 +80,7 @@
 					<div
 						v-for="(gauge, g_index) in rentability"
 						:key="gauge.name"
+						class="gauge-block"
 					>
 						<div @click="gauge.editable = !gauge.editable">
 							<VGauge
@@ -560,16 +561,44 @@ export default {
 </script>
 
 <style lang="scss">
-  .table-custom-forecast{
-    .td-blue{
-      background-color: #DDE9FF;
-      border: 1px solid #bdcff1!important;
-    }
-  }
+	.table-custom-forecast {
+		table-layout: fixed;
+		width: auto;
 
-.weekend {
-  background-color: #fef2cb !important;
-}
+		.td-blue {
+			background-color: #DDE9FF;
+			border: 1px solid #bdcff1 !important;
+		}
+
+		thead {
+			th {
+				width: 20%;
+				max-width: 20%;
+
+				&:first-child {
+					width: 40%;
+					max-width: 40%;
+				}
+			}
+		}
+
+		tbody {
+			td {
+				input {
+					width: 100%;
+				}
+			}
+		}
+	}
+
+	.weekend {
+		background-color: #fef2cb !important;
+	}
+
+	.gauge-block {
+		margin-right: 10px;
+		margin-top: 10px;
+	}
 .gauge-title {
   font-weight: bold;
   display: none;
