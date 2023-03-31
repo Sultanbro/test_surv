@@ -84,8 +84,12 @@
 									class="fa fa-user mt-1 mr-1"
 								/>
 								<i
-									v-else
+									v-else-if="types[wrap_item.targetable_type] === 2"
 									class="fa fa-users mt-1 mr-1"
+								/>
+								<i
+									v-else
+									class="fa fa-briefcase mt-1 mr-1"
 								/>
 								<span v-if="wrap_item.target != null">{{ wrap_item.target.name }}</span>
 								<span v-else>---</span>
@@ -265,14 +269,17 @@ export default {
 			types: {
 				'App\\User': 1,
 				'App\\ProfileGroup': 2,
+				'App\\Position': 3,
 			},
 			kpis: {
 				1: {},
 				2: {},
+				3: {},
 			},
 			loading: {
 				1: {},
 				2: {},
+				3: {},
 			}
 		}
 	},
