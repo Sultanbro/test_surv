@@ -152,7 +152,7 @@ const MESSAGE_TYPES = {
 	TEXT: 0,
 	LINK: 1,
 };
-const urlRegExp = /https?:\/\/[^\s]*/g;
+const urlRegExp = /https?:\/\/[^\s|]*/g;
 const linkRegExp = /https?:\/\/[^\s]*|\[\s*?https?:\/\/[^\s]*\s*?\|[^\]]*\]/g;
 const linkTitleRegExp = /\|[^\]]*\]$/g;
 const maxLinkTitleLength = 50;
@@ -228,8 +228,7 @@ export default {
 			const textArr = body.split(linkRegExp);
 
 			const links = body
-				.match(linkRegExp)
-				.map(([link]) => link);
+				.match(linkRegExp);
 
 			textArr.forEach((text) => {
 				result.push({
