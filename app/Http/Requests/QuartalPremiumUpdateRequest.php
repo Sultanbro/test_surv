@@ -25,6 +25,7 @@ class QuartalPremiumUpdateRequest extends FormRequest
     public function rules()
     {
         return [
+            'id' => 'required|exists:quartal_premiums,id',
             'activity_id'       => 'integer',
             'targetable_type'    => [
                 'required',
