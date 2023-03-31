@@ -117,13 +117,28 @@
 				</template>
 			</tbody>
 		</table>
-		<b-pagination
-			v-model="page"
-			:total-rows="statYear.rows"
-			:per-page="statYear.limit"
-			size="sm"
-			class="mt-4"
-		/>
+		<b-col>
+			<b-row>
+				<b-col class="d-flex aic">
+					<b-pagination
+						v-model="page"
+						:total-rows="statYear.rows"
+						:per-page="statYear.limit"
+						size="sm"
+						class="mt-4"
+					/>
+				</b-col>
+				<b-col
+					class="d-flex aic"
+					cols="3"
+				>
+					<b-form-select
+						v-model="statYear.limit"
+						:options="[10, 20, 50, 100]"
+					/>
+				</b-col>
+			</b-row>
+		</b-col>
 	</div>
 </template>
 
@@ -216,6 +231,9 @@ export default {
 		},
 		yaer(value){
 			this.setStatYearYear(value)
+		},
+		'statYear.limit'(){
+			this.fetchStatYear()
 		},
 	},
 	created(){

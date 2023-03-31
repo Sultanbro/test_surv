@@ -30,12 +30,12 @@
 				>
 					Найдено: 0
 				</span>
-				<i
-					v-if="isAdmin"
-					class="fa fa-cogs btn ml-a"
-					@click="isSettingsOpen = true"
-				/>
 			</div>
+			<i
+				v-if="isAdmin"
+				class="fa fa-cogs btn ml-a"
+				@click="isSettingsOpen = true"
+			/>
 		</div>
 
 		<!-- table -->
@@ -52,13 +52,28 @@
 						:filters="filters"
 						class="mt-4"
 					/>
-					<b-pagination
-						v-model="currentPage"
-						:total-rows="totalRows"
-						:per-page="perPage"
-						size="sm"
-						class="mt-4"
-					/>
+					<b-col>
+						<b-row>
+							<b-col class="d-flex aic">
+								<b-pagination
+									v-model="currentPage"
+									:total-rows="totalRows"
+									:per-page="perPage"
+									size="sm"
+									class="mt-4"
+								/>
+							</b-col>
+							<b-col
+								class="d-flex aic"
+								cols="3"
+							>
+								<b-form-select
+									v-model="perPage"
+									:options="[10, 20, 50, 100]"
+								/>
+							</b-col>
+						</b-row>
+					</b-col>
 				</b-tab>
 				<b-tab title="Годовая">
 					<StatsTableYear class="mt-4" />
@@ -212,8 +227,12 @@ export default {
 				this.paginationKey++;
 			}
 		},
-		currentPage(value){
-			this.fetchData(this.filters, value, this.perPage)
+
+		perPage(){
+			this.fetchData(this.filters, 1, this.perPage)
+		},
+		currentPage(){
+			this.fetchData(this.filters, this.currentPage, this.perPage)
 		}
 	},
 
