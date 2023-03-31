@@ -113,7 +113,16 @@
 										class="fa fa-briefcase ml-2"
 										v-if="item.target.type == 3"
 									/>
-									<span class="ml-2">{{ item.target.name }}</span>
+									<span class="ml-2 kpi-name-rows">
+										{{ item.target.name }}
+										<span
+											v-if="item.user"
+											class="kpi-name-row"
+										>
+											({{ getUserGourpsString(item.user) }})
+										</span>
+									</span>
+
 									<b-form-checkbox
 										class="kpi-status-switch"
 										switch
@@ -353,6 +362,10 @@ export default {
 			this.page_items[i].expanded = !this.page_items[i].expanded
 		},
 
+		getUserGourpsString(user){
+			return user.groups.map(group => group.name).join(', ')
+		},
+
 		onChangePage(page_items) {
 			this.page_items = page_items;
 		},
@@ -363,7 +376,6 @@ export default {
 			this.axios.post(this.uri + '/' + 'get', {
 				filters: filter
 			}).then(response => {
-
 				this.items = response.data.kpis;
 				this.all_items = response.data.kpis;
 				this.activities = response.data.activities;
@@ -631,3 +643,14 @@ export default {
 	},
 }
 </script>
+
+<style>
+.kpi-name-rows{
+	display: inline-flex;
+	flex-flow: column;
+}
+.kpi-name-row{
+	font-size: 1.2rem;
+	color: #777;
+}
+</style>
