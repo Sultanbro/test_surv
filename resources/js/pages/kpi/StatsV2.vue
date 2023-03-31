@@ -229,6 +229,7 @@ export default {
 		},
 
 		perPage(){
+			this.pageSize = this.perPage
 			this.fetchData(this.filters, 1, this.perPage)
 		},
 		currentPage(){
