@@ -160,6 +160,8 @@
 </template>
 
 <script>
+/* eslint-disable vue/no-mutating-props */
+/* eslint-disable vue/no-side-effects-in-computed-properties */
 export default {
 	name: 'StructureEditCard',
 	props: {
