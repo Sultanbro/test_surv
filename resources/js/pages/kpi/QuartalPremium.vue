@@ -1058,6 +1058,9 @@ export default {
 
 					this.showSidebar = false
 				}
+				else{
+					item.updated_at = this.$moment(Date.now()).format('DD.MM.YYYY HH:mm')
+				}
 
 				this.$toast.info('Сохранено');
 				this.newPremiumArray.splice(index,1);
