@@ -293,7 +293,7 @@ export default {
 				throw new Error('wrong link');
 			}
 
-			let linkTitle = link.match(linkTitleRegExp)[0];
+			let linkTitle = link.match(linkTitleRegExp)?.[0];
 
 			if (linkTitle) {
 				return {
