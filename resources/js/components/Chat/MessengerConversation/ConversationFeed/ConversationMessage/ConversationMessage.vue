@@ -329,7 +329,8 @@ export default {
 			// if older than yesterday show hour, minutes, day and month
 			return moment(date).format('DD.MM, HH:mm');
 		},
-	}
+	},
+	data: () => ({MESSAGE_TYPES}),
 }
 </script>
 
