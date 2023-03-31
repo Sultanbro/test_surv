@@ -25,7 +25,20 @@
 						</div>
 					</div>
 					<div class="messenger__format-container">
-						<span v-text="message.body" />
+						<span>
+							<template v-for="(messagePart, key) in messageBody">
+								<template v-if="messagePart.type === MESSAGE_TYPES.TEXT">
+									{{ messagePart.text }}
+								</template>
+								<a
+									v-else
+									:href="messagePart.url"
+									:key="key"
+								>
+									{{ messagePart.title }}
+								</a>
+							</template>
+						</span>
 					</div>
 					<div
 						v-if="isGallery()"
@@ -135,6 +148,15 @@ import AlternativeAvatar from '../../../ChatsList/ContactItem/AlternativeAvatar/
 import VoiceMessage from './VoiceMessage/VoiceMessage.vue';
 import ConversationMessageMeta from '@/components/Chat/MessengerConversation/ConversationFeed/ConversationMessage/ConversationMessageMeta.vue'
 
+const MESSAGE_TYPES = {
+	TEXT: 0,
+	LINK: 1,
+};
+const urlRegExp = /https?:\/\/[^\s]*/g;
+const linkRegExp = /https?:\/\/[^\s]*|\[\s*?https?:\/\/[^\s]*\s*?\|[^\]]*\]/g;
+const linkTitleRegExp = /\|[^\]]*\]$/g;
+const maxLinkTitleLength = 50;
+
 export default {
 	name: 'ConversationMessage',
 	components: {
@@ -195,6 +217,35 @@ export default {
 		time(){
 			return this.$moment(this.message.created_at).format('HH:mm')
 		},
+		messageBody() {
+			const { body } = this.message;
+			const result = [];
+
+			if (typeof body != 'string') {
+				return result;
+			}
+
+			const textArr = body.split(linkRegExp);
+
+			const links = body
+				.match(linkRegExp)
+				.map(([link]) => link);
+
+			textArr.forEach((text) => {
+				result.push({
+					type: MESSAGE_TYPES.TEXT,
+					text,
+				});
+
+				const link = links.pop();
+
+				if (link) {
+					result.push(this.mapLink(link));
+				}
+			});
+
+			return result;
+		},
 	},
 	methods: {
 		...mapActions([
@@ -236,7 +287,34 @@ export default {
 					}, 1000);
 				}
 			});
-		}
+		},
+		mapLink(link) {
+			if (typeof link != 'string') {
+				throw new Error('wrong link');
+			}
+
+			let linkTitle = link.match(linkTitleRegExp)[0];
+
+			if (linkTitle) {
+				return {
+					type: MESSAGE_TYPES.LINK,
+					title: linkTitle.slice(1, -1),
+					url: link.match(urlRegExp)[0],
+				};
+			}
+
+			linkTitle = link;
+
+			if (linkTitle.length > maxLinkTitleLength) {
+				linkTitle = linkTitle.slice(0, maxLinkTitleLength) + '...';
+			}
+
+			return  {
+				type: MESSAGE_TYPES.LINK,
+				title: linkTitle,
+				url: link,
+			};
+		},
 	},
 	filters: {
 		moment: function (date) {
