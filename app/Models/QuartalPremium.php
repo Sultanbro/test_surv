@@ -8,6 +8,7 @@ use App\Models\Kpi\Traits\WithCreatorAndUpdater;
 use App\Models\Kpi\Traits\WithActivityFields;
 use App\Models\Scopes\ActiveScope;
 use App\Traits\ActivateAbleModelTrait;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -55,6 +56,25 @@ class QuartalPremium extends Model
     {
         parent::boot();
         static::addGlobalScope(new ActiveScope);
+    }
+
+    /**
+     * @param int $id
+     * @return Model
+     */
+    public static function getById(
+        int $id
+    ): Model
+    {
+        return self::query()->findOrFail($id);
+    }
+
+    /**
+     * @return Builder
+     */
+    public static function admin(): Builder
+    {
+        return self::with('creator')->withoutGlobalScope(ActiveScope::class);
     }
 
     /**

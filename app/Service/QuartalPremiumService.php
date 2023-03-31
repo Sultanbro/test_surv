@@ -2,6 +2,7 @@
 
 namespace App\Service;
 
+use App\DTO\Kpi\QuarterPremium\QuarterPremiumUpdateDTO;
 use App\Events\TrackQuartalPremiumEvent;
 use App\Http\Requests\QuartalPremiumSaveRequest;
 use App\Http\Requests\QuartalPremiumUpdateRequest;
@@ -101,20 +102,18 @@ class QuartalPremiumService
     }
 
     /**
-     * @param QuartalPremiumUpdateRequest $request
+     * @param QuarterPremiumUpdateDTO $dto
      * @return array
      */
-    public function update(QuartalPremiumUpdateRequest $request): array
+    public function update(QuarterPremiumUpdateDTO $dto): array
     {
         try {
 
-            $all = $request->all();
             $all['updated_by'] = auth()->id();
 
-            $id = $request->id;
-            event(new TrackQuartalPremiumEvent($id));
+            event(new TrackQuartalPremiumEvent($dto->id));
 
-            QuartalPremium::findOrFail($id)->update($all);
+            QuartalPremium::admin()->findOrFail($dto->id)?->update($dto->toArray());
 
             return [
                 'status'  => ResponseAlias::HTTP_OK,
@@ -131,6 +130,6 @@ class QuartalPremiumService
      */
     public function delete(Request $request): void
     {
-        QuartalPremium::findOrFail($request->id)->delete();
+        QuartalPremium::admin()->findOrFail($request->id)->delete();
     }
 }

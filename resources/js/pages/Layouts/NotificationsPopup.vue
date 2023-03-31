@@ -12,8 +12,8 @@
 						data-index="1"
 					>
 						Новые
-						<template v-if="data.unreadQuantity != 0">
-							(<span>{{ data.unreadQuantity }}</span>)
+						<template v-if="unreadQuantity != 0">
+							(<span>{{ unreadQuantity }}</span>)
 						</template>
 					</div>
 					<div
@@ -35,7 +35,7 @@
 					<div class="notifications__wrapper">
 						<div
 							class="notifications__item"
-							v-for="(item, i) in data.unread"
+							v-for="(item, i) in unread"
 							:key="i"
 						>
 							<div class="notifications__item-date">
@@ -55,20 +55,20 @@
 						</div>
 
 						<div
-							v-if="data.unread.length == 0"
+							v-if="unread.length == 0"
 							class="mt-5"
 						>
 							<h4>Нет новых уведомлений</h4>
 							<img
 								class="notifications_img"
-								:src="require('.//../../../assets/notification/notification.jpg').default"
+								:src="require('../../../assets/notification/notification.jpg').default"
 								alt=""
 							>
 						</div>
 					</div>
 
 					<a
-						v-if="data.unread.length > 0"
+						v-if="unread.length > 0"
 						href="javascript:void(0)"
 						class="notifications__button mt-5"
 						@click="setAllRead"
@@ -85,7 +85,7 @@
 					<div class="notifications__wrapper">
 						<div
 							class="notifications__item"
-							v-for="(item, i) in data.read"
+							v-for="(item, i) in read"
 							:key="i"
 						>
 							<div class="notifications__item-date">
@@ -104,7 +104,7 @@
 						</div>
 
 						<div
-							v-if="data.read.length == 0"
+							v-if="read.length == 0"
 							class="mt-5"
 						>
 							<h4>Нет прочитанных уведомлений</h4>
@@ -117,37 +117,36 @@
 </template>
 
 <script>
+import { mapState, mapActions } from 'pinia'
+import { useNotificationsStore } from '@/stores/Notifications'
+
 export default {
 	name: 'NotificationsPopup',
 	props: {},
 	data: function () {
 		return {
 			dateFormat: 'DD.MM.YYYY',
-			data: {
-				unreadQuantity: 0,
-				unread: [],
-				read: [],
-			},
 			loading: false,
 		};
+	},
+	computed: {
+		...mapState(useNotificationsStore, ['read', 'unread', 'unreadQuantity']),
 	},
 	created() {
 		this.fetchData();
 	},
 	methods: {
+		...mapActions(useNotificationsStore, [
+			'fetchNotifications',
+			'setNotificationsRead',
+			'setNotificationsReadAll',
+		]),
+
 		fetchData() {
 			this.loading = true;
-
-			this.axios
-				.post('/notifications', {})
-				.then(({data}) => {
-					this.data = data;
-					this.loading = false;
-				})
-				.catch(error => {
-					console.error('NotificationsPopup', error);
-					this.loading = false;
-				});
+			this.fetchNotifications().then(() => {
+				this.loading = false
+			})
 		},
 
 		/**
@@ -155,102 +154,19 @@ export default {
 		 */
 		setAllRead() {
 			this.loading = true;
-
-			this.axios
-				.post('/notifications/set-read-all/', {})
-				.then((response) => {
-					if (response.data == '1') {
-						this.data.unread.forEach((el) => {
-							this.data.read.push(el);
-						});
-
-						this.data.unread = [];
-						this.data.unreadQuantity = 0;
-
-						this.$toast.success('Все уведомления отмечены прочитанными');
-					}
-					this.loading = false;
-				})
-				.catch(error => {
-					console.error('NotificationsPopup', error);
-					this.loading = false;
-				});
+			this.setNotificationsReadAll().then(result => {
+				this.loading = false
+				if(result) this.$toast.success('Все уведомления отмечены прочитанными')
+			})
 		},
 
 		/**
 		 * set notification as read
 		 */
 		setRead(i) {
-			this.req(i, {
-				id: this.data.unread[i],
-			});
-		},
-
-		/**
-		 * Сохранить отчет
-		 */
-		saveReport(/* i */) {
-			// let payload = {
-			//     id: this.data.unread[i].id,
-			//     comment: 0,
-			//     type: 'report',
-			//     text: 'text of report'
-			// };
-			// this.req(i, payload)
-		},
-
-		/**
-		 * Перенос обучения (дня стажировки на другой день)
-		 */
-		transferTraining(/* i */) {
-			// let payload = {
-			//     user_id: user_id,
-			//     date: '2022-09-01',
-			//     time: '14:00',
-			//     id: this.data.unread[i].id,
-			//     type: 'transfer',
-			// };
-			// this.req(i, payload)
-		},
-
-		/**
-		 * Сохранить причину отсутствия и дать оценку руководителю
-		 */
-		estimateTrainer(/* i */) {
-			// let payload = {
-			//     id: this.data.unread[i].id,
-			//     comment: 'Комментарий из select',
-			// }
-			// this.req(i, payload)
-		},
-
-		/**
-		 * set Read request
-		 */
-		req(i, payload) {
-			this.loading = true;
-
-			this.axios
-				.post('/notifications/set-read', payload)
-				.then((response) => {
-					if (response.data == 1) {
-						this.data.read.unshift(this.data.unread[i]);
-						this.data.unread.splice(i, 1);
-
-						this.data.unreadQuantity--;
-						this.$toast.success('Уведомление прочитано');
-
-						// $('#setReadCommentModal').fadeOut();
-						// $('#setReadReportModal').fadeOut();
-						// nullify(dateForTransfer);
-					}
-
-					this.loading = false;
-				})
-				.catch(error => {
-					console.error('NotificationsPopup', error);
-					this.loading = false;
-				});
+			this.setNotificationsRead(this.unread[i]).then(result => {
+				if(result) this.$toast.success('Уведомление прочитано')
+			})
 		},
 	},
 };

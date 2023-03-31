@@ -165,6 +165,7 @@
 </template>
 
 <script>
+/* eslint-disable vue/no-side-effects-in-computed-properties */
 export default {
 	name: 'BooksComponent',
 	props: {
@@ -253,9 +254,7 @@ export default {
 		},
 		itemProvider() {
 			this.filtered = this.items.filter((el) => {
-				console.log(el.groups.includes(this.selectedGroup))
 				return el.title.indexOf(this.filter.title) > -1 && el.groups.includes(this.selectedGroup);
-
 			})
 
 			this.totalRows = this.filtered.length

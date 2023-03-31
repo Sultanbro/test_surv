@@ -327,6 +327,10 @@
 										v-if="page_item.type == 3"
 									/>
 									<span class="ml-2">{{ page_item.name }}</span>
+									<i
+										class="fa fa-save btn btn-success btn-icon ml-a"
+										@click="saveAll(p)"
+									/>
 								</div>
 							</td>
 						</tr>
@@ -492,10 +496,6 @@
 															<i
 																class="fa fa-save btn btn-success btn-icon"
 																@click="saveItemFromTable(p, i)"
-															/>
-															<i
-																class="fa fa-edit btn btn-primary btn-icon"
-																@click="openSidebar(p, i)"
 															/>
 															<i
 																class="fa fa-trash btn btn-danger btn-icon"
@@ -1039,7 +1039,12 @@ export default {
 
 					let i = this.all_items.findIndex(el => el.type == item.target.type && el.id == item.target.id);
 					if(i != -1) {
-						this.all_items[i].items.unshift(item);
+						let j = this.all_items[i].items.findIndex(el => el.id === item.id);
+						if (j !== -1) {
+							this.all_items[i].items.splice(j, 1, item);
+						} else {
+							this.all_items[i].items.unshift(item);
+						}
 					} else {
 						this.all_items.unshift({
 							id: item.target.id,
@@ -1103,6 +1108,12 @@ export default {
 				if(item.id === 0){
 					this.page_items[p].splice(i, 1)
 				}
+			})
+		},
+
+		saveAll(p){
+			this.page_items[p].items.forEach((item, i) => {
+				this.saveItemFromTable(p, i)
 			})
 		},
 
