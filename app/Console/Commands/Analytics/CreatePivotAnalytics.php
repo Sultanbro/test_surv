@@ -46,7 +46,7 @@ class CreatePivotAnalytics extends Command
     {
         $this->line('start creating pivot tables:');
         
-        if(Carbon::now()->day != 1) return false;
+//        if(Carbon::now()->day != 1) return false;
 
         $newDate  = Carbon::now()->day(1)->format('Y-m-d');
         $prevDate = Carbon::now()->subMonth()->day(1)->format('Y-m-d');
