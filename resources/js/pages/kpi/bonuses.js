@@ -105,7 +105,7 @@ function formatDate(d) {
 	var month = (d.getMonth() + 1) + '';
 	if(month.length == 1) month = '0' + month;
 
-	return d.getDate()  + '.' + month + '.' + d.getFullYear() + ' ' +
+	return day  + '.' + month + '.' + d.getFullYear() + ' ' +
         d.getHours() + ':' + d.getMinutes();
 }
 
@@ -131,7 +131,8 @@ function newBonus() {
 		updated_at: datestring,
 		created_by: 'Вы',
 		updated_by: 'Вы',
-		expanded: false
+		expanded: false,
+		is_active: 1,
 	};
 }
 
