@@ -183,7 +183,7 @@ export default {
 						if(!~userIndex){
 							table[index].users.push({
 								id: user.id,
-								name: `${user.last_name} ${user.name}`,
+								name: `${user.name}`,
 							})
 							userIndex = table[index].users.length - 1
 						}
