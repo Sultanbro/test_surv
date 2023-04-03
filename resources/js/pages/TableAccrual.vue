@@ -198,10 +198,7 @@
 					empty-text="Нет данных"
 				>
 					<template #cell(name)="data">
-						<div
-							class="badge_table"
-							@click="fetchKPIStatistics(data.item.user_id)"
-						>
+						<div class="badge_table">
 							{{ data.value }}
 							<b-badge
 								v-if="data.index !== 0 && data.value"
@@ -234,8 +231,9 @@
 					</template>
 
 					<template #cell(kpi)="data">
+						<!-- @click="defineClickNumber('kpi', data)" -->
 						<div
-							@click="defineClickNumber('kpi', data)"
+							@click="fetchKPIStatistics(data.item.user_id)"
 							class="pointer"
 						>
 							{{ data.value }}
@@ -301,7 +299,7 @@
 		<!-- kpi -->
 		<Sidebar
 			v-if="kpiSidebar"
-			width="400px"
+			width="80vw"
 			title="KPI Статистика"
 			:open="kpiSidebar"
 			@close="kpiSidebar = false"
@@ -311,18 +309,21 @@
 					<b>Сотрудник</b>
 					{{ kpiSidebarData.target.name }}
 				</div>
-				<div class="mb-4">
-					<b>Средний %</b>
-					{{ kpiSidebarData.avg }}
-				</div>
-				<div
-					v-for="item in kpiSidebarDataUser.items"
-					:key="item.id"
-					class="mb-4"
-				>
-					<b>{{ item.name }}</b>
-					{{ item.avg }}
-				</div>
+				<KpiItemsV2
+					:my_sum="kpiSidebarDataUser.full_time == 1 ? kpiSidebarData.completed_100 : kpiSidebarData.completed_100 / 2"
+					:kpi_id="kpiSidebarDataUser.id"
+					:items="kpiSidebarDataUser.items"
+					:expanded="true"
+					:activities="[]"
+					:groups="groups"
+					:completed_80="kpiSidebarData.completed_80"
+					:completed_100="kpiSidebarData.completed_100"
+					:lower_limit="kpiSidebarData.lower_limit"
+					:upper_limit="kpiSidebarData.upper_limit"
+					:editable="false"
+					:kpi_page="false"
+					:date="date"
+				/>
 			</div>
 		</Sidebar>
 
@@ -745,11 +746,13 @@
 <script>
 import Sidebar from '@/components/ui/Sidebar' // сайдбар table
 import { useYearOptions } from '../composables/yearOptions'
+import KpiItemsV2 from '@/pages/kpi/KpiItemsV2'
 
 export default {
 	name: 'TableAccrual',
 	components: {
 		Sidebar,
+		KpiItemsV2,
 	},
 	props: {
 		groupss: Array,
@@ -847,6 +850,9 @@ export default {
 		actualFOT(){
 			if (!this.items || !this.items[0]) return 0
 			return (parseInt(this.items[0].kpi) || 0) + (parseInt(this.items[0].bonus) || 0) + (parseInt(this.items[0].total) || 0)
+		},
+		date(){
+			return this.$moment(`${this.dateInfo.currentYear}-${this.dateInfo.currentMonth}-1`, 'YYYY-MMMM-D').format('YYYY-MM-DD')
 		}
 	},
 	watch: {
