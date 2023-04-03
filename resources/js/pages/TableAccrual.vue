@@ -19,9 +19,9 @@
 									{{ name }} : <span v-if="showAccruals">{{ accruals[id] }}</span>
 								</p>
 								<img
+									v-if="salary_approved"
 									src="/images/double-check.png"
 									alt=""
-									v-if="salary_approved"
 								>
 							</div>
 						</template>
@@ -35,8 +35,8 @@
 					>
 						<option
 							v-for="month in $moment.months()"
-							:value="month"
 							:key="month"
+							:value="month"
 						>
 							{{ month }}
 						</option>
@@ -65,9 +65,9 @@
 						<i class="fa fa-redo-alt" />
 					</a>
 					<a
+						v-if="can_edit"
 						@click="exportData()"
 						class="btn btn-success rounded text-white mr-1"
-						v-if="can_edit"
 					>
 						<i class="far fa-file-excel" />
 					</a>
@@ -84,8 +84,8 @@
 			<!-- filters -->
 			<hr>
 			<div
-				class="row mb-2"
 				v-if="hasPermission"
+				class="row mb-2"
 			>
 				<div class="col-6">
 					<div>
@@ -104,15 +104,15 @@
 							{{ group_fired }} тг.
 						</p>
 						<p
-							class="fz-08 text-black mr-1 mb-0"
 							v-if="showTotals"
+							class="fz-08 text-black mr-1 mb-0"
 						>
 							<b>Итого все ФОТ (Действующие):</b>
 							{{ allTotal }}тг.
 						</p>
 						<p
-							class="fz-08 text-black mr-1 mb-0"
 							v-if="showTotals"
+							class="fz-08 text-black mr-1 mb-0"
 						>
 							<b>Итого все ФОТ (Уволенные):</b>
 							{{ allTotalFired }}тг.
@@ -131,8 +131,8 @@
 					</b-button>
 
 					<div
-						class="approved-text"
 						v-if="selectedGroup.salary_approved == 1"
+						class="approved-text"
 					>
 						<p class="text-success">
 							<img
@@ -183,8 +183,8 @@
 			</div>
 			<!-- table -->
 			<div
-				class="table-container table-accrual"
 				v-if="hasPermission"
+				class="table-container table-accrual"
 			>
 				<b-table
 					responsive
@@ -198,7 +198,10 @@
 					empty-text="Нет данных"
 				>
 					<template #cell(name)="data">
-						<div class="badge_table">
+						<div
+							class="badge_table"
+							@click="fetchKPIStatistics(data.item.user_id)"
+						>
 							{{ data.value }}
 							<b-badge
 								v-if="data.index !== 0 && data.value"
@@ -222,9 +225,10 @@
 							@click="defineClickNumber('bonus', data)"
 							class="pointer"
 						>
-							{{ data.value }} <div
-								class="cell-border"
+							{{ data.value }}
+							<div
 								v-if="data.item.edited_bonus !== null && data.index != 0"
+								class="cell-border"
 							/>
 						</div>
 					</template>
@@ -234,9 +238,10 @@
 							@click="defineClickNumber('kpi', data)"
 							class="pointer"
 						>
-							{{ data.value }} <div
-								class="cell-border"
+							{{ data.value }}
+							<div
 								v-if="data.item.edited_kpi !== null && data.index != 0"
+								class="cell-border"
 							/>
 						</div>
 					</template>
@@ -258,13 +263,14 @@
 
 					<template #cell(final)="data">
 						<div
+							v-if="user_types == '1'"
 							@click="defineClickNumber('final', data)"
 							class="pointer"
-							v-if="user_types == '1'"
 						>
-							{{ data.value }} <div
-								class="cell-border"
+							{{ data.value }}
+							<div
 								v-if="data.item.edited_salary !== null && data.index != 0"
+								class="cell-border"
 							/>
 						</div>
 						<div v-else>
@@ -292,6 +298,33 @@
 			</div>
 		</div>
 
+		<!-- kpi -->
+		<Sidebar
+			v-if="kpiSidebar"
+			width="400px"
+			title="KPI Статистика"
+			:open="kpiSidebar"
+			@close="kpiSidebar = false"
+		>
+			<div class="px-2">
+				<div class="mb-4">
+					<b>Сотрудник</b>
+					{{ kpiSidebarData.target.name }}
+				</div>
+				<div class="mb-4">
+					<b>Средний %</b>
+					{{ kpiSidebarData.avg }}
+				</div>
+				<div
+					v-for="item in kpiSidebarDataUser.items"
+					:key="item.id"
+					class="mb-4"
+				>
+					<b>{{ item.name }}</b>
+					{{ item.avg }}
+				</div>
+			</div>
+		</Sidebar>
 
 		<!-- Premium -->
 		<Sidebar
@@ -408,8 +441,8 @@
 						:key="index"
 					>
 						<p
-							class="fz12"
 							v-if=" editedField.item.awards[item] != null"
+							class="fz12"
 						>
 							<b class="text-black">{{ item }}:</b> {{ editedField.item.awards[item] }}
 						</p>
@@ -423,8 +456,8 @@
 						:key="index"
 					>
 						<p
-							class="fz12"
 							v-if=" editedField.item.test_bonus[item] != null"
+							class="fz12"
 						>
 							<b class="text-black">{{ item }}:</b> {{ editedField.item.test_bonus[item] }}
 						</p>
@@ -439,8 +472,8 @@
 						:key="index"
 					>
 						<p
-							class="fz12"
 							v-if=" editedField.item.avanses[item] != null"
+							class="fz12"
 						>
 							<b class="text-black">{{ item }}:</b> {{ editedField.item.avanses[item] }}
 						</p>
@@ -797,6 +830,11 @@ export default {
 			clicks: 0,
 			timer: null,
 			years: useYearOptions(),
+
+			kpiSidebar: false,
+			kpiSidebarData: null,
+			kpiSidebarDataUser: null,
+			// stats:
 		};
 	},
 	computed: {
@@ -984,7 +1022,7 @@ export default {
 				.then((response) => {
 					let data = response.data;
 					if (data.error && data.error == 'access') {
-						console.log(data.error);
+						console.error(data.error);
 						this.hasPermission = false;
 						loader.hide();
 						return;
@@ -1030,7 +1068,7 @@ export default {
 					loader.hide();
 				}).catch(error => {
 					this.$toast.error('Ошибка');
-					console.log(error)
+					console.error(error)
 				});
 		},
 
@@ -1045,7 +1083,7 @@ export default {
 				.then(() => {
 					loader.hide();
 				}).catch((e) => {
-					console.log(e);
+					console.error(e);
 					loader.hide();
 				});
 		},
@@ -1263,7 +1301,6 @@ export default {
 			if(data.index == 0) {
 				return false;
 			}
-			console.log(data)
 			data.type = type;
 
 			this.fetchBonusHistory(data.item.user_id);
@@ -1318,7 +1355,7 @@ export default {
 
 				}).catch(error => {
 					this.$toast.error('Не сохранилось');
-					console.log(error)
+					console.error(error)
 				});
 		},
 
@@ -1335,7 +1372,7 @@ export default {
 					this.selectedGroup.salary_approved = 1;
 				}).catch(error => {
 					this.$toast.error('Не получилось');
-					console.log(error)
+					console.error(error)
 				});
 		},
 
@@ -1411,7 +1448,7 @@ export default {
 
 				}).catch(error => {
 					this.$toast.error('Не сохранилось');
-					console.log(error)
+					console.error(error)
 				});
 		},
 
@@ -1468,6 +1505,33 @@ export default {
 
 			this.sidebarTitle = `${data.item.name} - ${data.field.key} ${this.dateInfo.currentMonth} `
 			this.sidebarHistory = data.item.history.filter(x => parseInt(x.day) === parseInt(data.field.key))
+		},
+
+		fetchKPIStatistics(userId){
+			if(!userId) return
+			if(!this.is_admin) return
+			return this.axios.post(`/statistics/kpi/groups-and-users/${userId}`, {
+				filters: {
+					data_from: {
+						year: this.dateInfo.currentYear,
+						month: this.$moment(this.dateInfo.currentMonth, 'MMMM').format('M')
+					}
+				},
+				type: 1
+			}).then(({data}) => {
+				if(data.message) return this.$toast.error(data.message)
+				this.kpiSidebarData = data.kpi
+				try{
+					this.kpiSidebarDataUser = data.kpi.users[0]
+				}
+				catch{error => {
+					console.error(error)
+				}}
+				this.kpiSidebar = true
+			}).catch(error => {
+				console.error(error)
+				this.$toast.error('Ну удалось получить статистику')
+			})
 		},
 	},
 };
