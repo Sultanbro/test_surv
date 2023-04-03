@@ -323,6 +323,8 @@
 					:editable="false"
 					:kpi_page="false"
 					:date="date"
+					@getSum="kpiSidebarData.my_sum = $event"
+					@recalced="countAvg"
 				/>
 			</div>
 		</Sidebar>
@@ -1538,6 +1540,23 @@ export default {
 				console.error(error)
 				this.$toast.error('Ну удалось получить статистику')
 			})
+		},
+		countAvg() {
+			let count = 0;
+			let sum = 0;
+			let avg = 0;
+
+			this.kpiSidebarDataUser.items.forEach(item => {
+				sum += Number(item.percent);
+				count++;
+			});
+
+			/**
+			* count avg of user items
+			*/
+			avg = count > 0 ? Number(sum / count).toFixed(2) : 0;
+
+			this.kpiSidebarDataUser.avg = avg;
 		},
 	},
 };
