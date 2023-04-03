@@ -231,9 +231,9 @@
 					</template>
 
 					<template #cell(kpi)="data">
-						<!-- @click="defineClickNumber('kpi', data)" -->
+						<!-- @click="fetchKPIStatistics(data.item.user_id)" -->
 						<div
-							@click="fetchKPIStatistics(data.item.user_id)"
+							@click="defineClickNumber('kpi', data)"
 							class="pointer"
 						>
 							{{ data.value }}
@@ -1482,19 +1482,30 @@ export default {
 		defineClickNumber(type, data) {
 
 			//var self = this
-
 			this.clicks++;
 			if (this.clicks === 1) {
-				this.timer = setTimeout( () => {
-					this.showEditPremiumSidebar(type, data)
+				this.timer = setTimeout(() => {
+					if(type === 'kpi'){
+						this.fetchKPIStatistics(data.item.user_id)
+					}
+					else{
+						this.showEditPremiumSidebar(type, data)
+					}
 					this.clicks = 0
 				}, 350);
-			} else {
+			}
+			else {
 				clearTimeout(this.timer);
 				if(this.can_edit) {
 					this.showEditPremiumWindow(type, data);
-				} else {
-					this.showEditPremiumSidebar(type, data)
+				}
+				else {
+					if(type === 'kpi'){
+						this.fetchKPIStatistics(data.item.user_id)
+					}
+					else{
+						this.showEditPremiumSidebar(type, data)
+					}
 				}
 				this.clicks = 0;
 			}
