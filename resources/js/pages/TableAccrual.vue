@@ -1608,7 +1608,6 @@ export default {
 					}
 				}))
 				this.kpiSidebar = true
-				this.$toast.success('yay')
 			}
 			catch(error){
 				console.error(error)
