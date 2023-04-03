@@ -100,11 +100,16 @@
 								</div>
 							</template>
 
-							<template v-else>
+							<template v-else-if="field.key == 'editable'">
 								<input
-									:type="field.type"
-									v-model="item[field.key]"
+									type="checkbox"
+									:checked="item[field.key]"
+									disabled
 								>
+							</template>
+
+							<template v-else>
+								{{ item[field.key] }}
 							</template>
 						</td>
 					</tr>
@@ -375,7 +380,6 @@ export default {
 
 				let groups = this.groups;
 				let group_ids = Object.keys(groups).filter(key => groups[key].toLowerCase().indexOf(text.toLowerCase()) > -1)
-				console.log(group_ids);
 				this.items = this.all_items.filter(el => {
 					let has = false;
 
