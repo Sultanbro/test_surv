@@ -1395,8 +1395,6 @@ class KpiStatisticService
                             $count = 0;
 
                             foreach ($weeks as $key => $week) {
-                                // $val = $query->whereBetween('day', [$week[0], $week[count($week) - 1]])->avg('value');
-
                                 $val = isset($week[0]) 
                                     ? $query->whereBetween('day', [$week[0], $week[count($week) - 1]])->avg('value')
                                     : 0;
@@ -1519,7 +1517,6 @@ class KpiStatisticService
                     $count = 0;
 
                     foreach ($weeks as $key => $week) {
-                        // $val = $user->whereBetween('day', [$week[0], $week[count($week) - 1]])->avg('value');
                         $val = isset($week[0])
                             ? $user->whereBetween('day', [$week[0], $week[count($week) - 1]])->avg('value')
                             : 0;
