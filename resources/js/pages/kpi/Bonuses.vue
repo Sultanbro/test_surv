@@ -228,6 +228,12 @@
 															>
 																{{ dayparts[key] }}
 															</option>
+															<option
+																v-if="item.unit !== 'percent'"
+																:value="2"
+															>
+																Месяц
+															</option>
 														</select>
 														<input
 															v-if="item.daypart == 1"

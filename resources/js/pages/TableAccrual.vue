@@ -329,7 +329,7 @@
 				<template v-for="group in kpiSidebarDataGroups">
 					<template v-if="group.users">
 						<template v-for="user, i in group.users">
-							<template v-if="user.id === kpiSidebarData.target.id">
+							<template v-if="user.id === kpiSidebarUserId">
 								<div
 									:key="i"
 									class="mb-4"
@@ -869,6 +869,7 @@ export default {
 			timer: null,
 			years: useYearOptions(),
 
+			kpiSidebarUserId: 0,
 			kpiSidebar: false,
 			kpiSidebarData: null,
 			kpiSidebarDataUser: null,
@@ -1573,6 +1574,7 @@ export default {
 			if(!userId) return
 			if(!this.is_admin) return
 
+			this.kpiSidebarUserId = userId
 			this.kpiSidebarData = null
 			this.kpiSidebarDataUser = null
 			this.kpiSidebarDataGroups = []
