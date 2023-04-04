@@ -229,7 +229,7 @@ export default {
 		'statYear.year'(value){
 			this.year = value
 		},
-		yaer(value){
+		year(value){
 			this.setStatYearYear(value)
 		},
 		'statYear.limit'(){
