@@ -231,9 +231,9 @@
 					</template>
 
 					<template #cell(kpi)="data">
-						<!-- @click="defineClickNumber('kpi', data)" -->
+						<!-- @click="fetchKPIStatistics(data.item.user_id)" -->
 						<div
-							@click="fetchKPIStatistics(data.item.user_id)"
+							@click="defineClickNumber('kpi', data)"
 							class="pointer"
 						>
 							{{ data.value }}
@@ -326,6 +326,39 @@
 					@getSum="kpiSidebarData.my_sum = $event"
 					@recalced="countAvg"
 				/>
+				<template v-for="group in kpiSidebarDataGroups">
+					<template v-if="group.users">
+						<template v-for="user, i in group.users">
+							<template v-if="user.id === kpiSidebarData.target.id">
+								<div
+									:key="i"
+									class="mb-4"
+								>
+									<b>Группа</b>
+									{{ group.target.name }}
+								</div>
+								<KpiItemsV2
+									:key="i"
+									:my_sum="user.full_time == 1 ? group.completed_100 : group.completed_100 / 2"
+									:kpi_id="user.id"
+									:items="user.items"
+									:expanded="true"
+									:activities="[]"
+									:groups="groups"
+									:completed_80="group.completed_80"
+									:completed_100="group.completed_100"
+									:lower_limit="group.lower_limit"
+									:upper_limit="group.upper_limit"
+									:editable="false"
+									:kpi_page="false"
+									:date="date"
+									@getSum="group.my_sum = $event"
+									@recalced="countAvg"
+								/>
+							</template>
+						</template>
+					</template>
+				</template>
 			</div>
 		</Sidebar>
 
@@ -839,6 +872,7 @@ export default {
 			kpiSidebar: false,
 			kpiSidebarData: null,
 			kpiSidebarDataUser: null,
+			kpiSidebarDataGroups: [],
 			// stats:
 		};
 	},
@@ -924,8 +958,7 @@ export default {
 				[6]
 			); //Колличество выходных
 			this.dateInfo.daysInMonth = currentMonth.daysInMonth(); //Колличество дней в месяце
-			this.dateInfo.workDays =
-					this.dateInfo.daysInMonth - this.dateInfo.weekDays; //Колличество рабочих дней
+			this.dateInfo.workDays = this.dateInfo.daysInMonth - this.dateInfo.weekDays; //Колличество рабочих дней
 		},
 
 		//Установка заголовока таблицы
@@ -1482,19 +1515,30 @@ export default {
 		defineClickNumber(type, data) {
 
 			//var self = this
-
 			this.clicks++;
 			if (this.clicks === 1) {
-				this.timer = setTimeout( () => {
-					this.showEditPremiumSidebar(type, data)
+				this.timer = setTimeout(() => {
+					if(type === 'kpi'){
+						this.fetchKPIStatistics(data.item.user_id)
+					}
+					else{
+						this.showEditPremiumSidebar(type, data)
+					}
 					this.clicks = 0
 				}, 350);
-			} else {
+			}
+			else {
 				clearTimeout(this.timer);
 				if(this.can_edit) {
 					this.showEditPremiumWindow(type, data);
-				} else {
-					this.showEditPremiumSidebar(type, data)
+				}
+				else {
+					if(type === 'kpi'){
+						this.fetchKPIStatistics(data.item.user_id)
+					}
+					else{
+						this.showEditPremiumSidebar(type, data)
+					}
 				}
 				this.clicks = 0;
 			}
@@ -1515,31 +1559,61 @@ export default {
 			this.sidebarHistory = data.item.history.filter(x => parseInt(x.day) === parseInt(data.field.key))
 		},
 
-		fetchKPIStatistics(userId){
+		// Дичайший костыль, переделать при первой возможности
+		getUserGroups(userId){
+			return this.groups.reduce((result, group) => {
+				if(!group.users) return result
+				const users = JSON.parse(group.users)
+				if(~users.indexOf(userId)) result.push(group.id)
+				return result
+			}, [])
+		},
+
+		async fetchKPIStatistics(userId){
 			if(!userId) return
 			if(!this.is_admin) return
-			return this.axios.post(`/statistics/kpi/groups-and-users/${userId}`, {
-				filters: {
-					data_from: {
-						year: this.dateInfo.currentYear,
-						month: this.$moment(this.dateInfo.currentMonth, 'MMMM').format('M')
-					}
-				},
-				type: 1
-			}).then(({data}) => {
-				if(data.message) return this.$toast.error(data.message)
-				this.kpiSidebarData = data.kpi
-				try{
-					this.kpiSidebarDataUser = data.kpi.users[0]
+
+			this.kpiSidebarData = null
+			this.kpiSidebarDataUser = null
+			this.kpiSidebarDataGroups = []
+
+			const loader = this.$loading.show();
+			try{
+				const {data: userData} = await this.axios.post(`/statistics/kpi/groups-and-users/${userId}`, {
+					filters: {
+						data_from: {
+							year: this.dateInfo.currentYear,
+							month: this.$moment(this.dateInfo.currentMonth, 'MMMM').format('M')
+						}
+					},
+					type: 1
+				})
+				if(!userData.message){
+					this.kpiSidebarData = userData.kpi
+					this.kpiSidebarDataUser = userData.kpi.users[0]
 				}
-				catch{error => {
-					console.error(error)
-				}}
+				const groups = this.getUserGroups(userId)
+				await Promise.all(groups.map(async groupId => {
+					const {data: groupData} = await this.axios.post(`/statistics/kpi/groups-and-users/${groupId}`, {
+						filters: {
+							data_from: {
+								year: this.dateInfo.currentYear,
+								month: this.$moment(this.dateInfo.currentMonth, 'MMMM').format('M')
+							}
+						},
+						type: 2
+					})
+					if(!groupData.message){
+						this.kpiSidebarDataGroups.push(groupData.kpi)
+					}
+				}))
 				this.kpiSidebar = true
-			}).catch(error => {
+			}
+			catch(error){
 				console.error(error)
 				this.$toast.error('Ну удалось получить статистику')
-			})
+			}
+			loader.hide()
 		},
 		countAvg() {
 			let count = 0;
@@ -1557,6 +1631,26 @@ export default {
 			avg = count > 0 ? Number(sum / count).toFixed(2) : 0;
 
 			this.kpiSidebarDataUser.avg = avg;
+
+			this.kpiSidebarDataGroups.forEach(group => {
+				group.users?.forEach(user => {
+					let count = 0;
+					let sum = 0;
+					let avg = 0;
+
+					user.items.forEach(item => {
+						sum += Number(item.percent);
+						count++;
+					});
+
+					/**
+					* count avg of user items
+					*/
+					avg = count > 0 ? Number(sum / count).toFixed(2) : 0;
+
+					user.avg = avg;
+				})
+			})
 		},
 	},
 };
