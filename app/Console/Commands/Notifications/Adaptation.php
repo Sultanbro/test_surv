@@ -46,7 +46,7 @@ class Adaptation extends Command
      */
     public function handle()
     {   
-        if(date('w') == '6' || date('w') == '0') return ''; 
+//        if(date('w') == '6' || date('w') == '0') return '';
 
         $date = Carbon::now()->subDays(70)->format('Y-m-d');
         $leads = Lead::where('invite_at', '>', $date)->get();
