@@ -2,6 +2,8 @@
 
 namespace App;
 
+use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 use Carbon\Carbon;
 
@@ -30,4 +32,27 @@ class UserNotification extends Model
         
     }
 
+    /**
+     * @param int $id
+     * @return Model<UserNotification>
+     */
+    public static function getById(
+        int $id
+    ): Model
+    {
+        return self::query()->findOrFail($id);
+    }
+
+    /**
+     * @param array|int $userIds
+     * @return Builder
+     */
+    public static function getByUserId(
+        array|int $userIds
+    ): Builder
+    {
+        return self::query()
+            ->when(is_integer($userIds), fn($query) => $query->where('user_id', $userIds))
+            ->when(is_array($userIds), fn($query) => $query->whereIn('user_id', $userIds));
+    }
 }
