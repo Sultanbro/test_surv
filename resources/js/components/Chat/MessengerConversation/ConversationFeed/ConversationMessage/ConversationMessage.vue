@@ -179,6 +179,7 @@ export default {
 			default: false
 		},
 	},
+	data: () => ({MESSAGE_TYPES}),
 	computed: {
 		...mapGetters(['user', 'chat']),
 		messageCardClass() {
@@ -221,14 +222,10 @@ export default {
 			const { body } = this.message;
 			const result = [];
 
-			if (typeof body != 'string') {
-				return result;
-			}
+			if (typeof body != 'string') return result
 
 			const textArr = body.split(linkRegExp);
-
-			const links = body
-				.match(linkRegExp);
+			const links = body.match(linkRegExp);
 
 			textArr.forEach((text) => {
 				result.push({
@@ -236,11 +233,10 @@ export default {
 					text,
 				});
 
+				if(!links) return
 				const link = links.pop();
 
-				if (link) {
-					result.push(this.mapLink(link));
-				}
+				if (link) result.push(this.mapLink(link))
 			});
 
 			return result;
@@ -329,7 +325,6 @@ export default {
 			return moment(date).format('DD.MM, HH:mm');
 		},
 	},
-	data: () => ({MESSAGE_TYPES}),
 }
 </script>
 
@@ -383,7 +378,6 @@ export default {
 	font-size: 14px;
 	line-height: 17px;
 	padding: 10px;
-	white-space: pre-line;
 	max-width: 360px;
 	-webkit-transition-property: box-shadow, opacity;
 	transition-property: box-shadow, opacity;
