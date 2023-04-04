@@ -390,7 +390,7 @@ export default {
 				<label
 					for="programType"
 					class="col-sm-4 col-form-label font-weight-bold"
-				>Начать день <span class="red">*</span>
+				>Начать работу <span class="red">*</span>
 					<img
 						src="/images/dist/profit-info.svg"
 						class="img-info"
@@ -422,8 +422,8 @@ export default {
 							:value="program.id"
 							:selected="user && user.program_id === program.id"
 						>
-							<template v-if="program.name === 'Jobtron'">
-								Через кнопку в профиле {{ program.name }}
+							<template v-if="program.name === 'Jobtron' || program.name === 'Другая'">
+								Через кнопку в профиле Jobtron
 							</template>
 							<template v-else>
 								{{ program.name }}

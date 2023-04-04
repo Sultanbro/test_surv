@@ -93,7 +93,7 @@
 					<b-tabs
 						type="card"
 						v-if="dataLoaded"
-						class="mt-5"
+						class="mt-5 overflow-hidden"
 					>
 						<b-tab
 							title="Неделя"
@@ -227,7 +227,7 @@
 							key="3"
 							card
 						>
-							<div class="row">
+							<div class="row mt-4">
 								<div class="col-6 col-md-3">
 									<select
 										class="form-control"
@@ -312,7 +312,7 @@
 								</div>
 							</div>
 
-							<div class="table-responsive my-table">
+							<div class="table-responsive">
 								<table class="table b-table table-sm table-bordered records-table">
 									<tr>
 										<th class="b-table-sticky-column text-left t-name wd">
@@ -507,13 +507,13 @@
 											v-if="record.editable"
 										>
 											<div>
-												<input
+												<textarea
 													type="text"
 													v-model="record.comments"
 													class="form-control"
 													@focus="$event.target.select()"
 													@change="statusChanged(record)"
-												>
+												/>
 											</div>
 										</td>
 										<td
@@ -1831,6 +1831,24 @@ export default {
 </script>
 
 <style lang="scss">
+	.records-table{
+		th, td{
+			padding: 5px 10px!important;
+			input, textarea{
+				padding: 0 !important;
+				text-align: center!important;
+				border: none!important;
+				background-color: transparent !important;
+				outline: none!important;
+				box-shadow: none !important;
+				max-height: 100% !important;
+				line-height: 1.1;
+			}
+			textarea{
+				text-align: left !important;
+			}
+		}
+	}
 .check_list_mon{
 	color: #999999;
 	border: 1px solid #e8e8e8
