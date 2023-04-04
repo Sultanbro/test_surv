@@ -2,7 +2,9 @@
 
 namespace App\Service;
 
+use App\DTO\BaseDTO;
 use Exception;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 use App\ProfileGroup;
@@ -91,12 +93,35 @@ class NotificationService
     }
 
     /**
-     * Отметить уведомление прочитанным
-     * @return void
+     * Отметить уведомление прочитанным.
+     *
+     * @param int $userNotificationId
+     * @return Model<UserNotification>
      */
-    public function setRead(): void
-    {   
+    public function setRead(
+        int $userNotificationId
+    ): Model
+    {
+        $userNotification = UserNotification::getById($userNotificationId);
 
+        if (!isset($userNotification->read_at))
+        {
+            $userNotification->update([
+                'read_at' => now()
+            ]);
+        }
+
+        return $userNotification;
     }
 
+    /**
+     * @param int $userId
+     * @return int
+     */
+    public function unRead(
+        int $userId
+    ): int
+    {
+        return UserNotification::getByUserId($userId)->whereNull('read_at')->count();
+    }
 }
