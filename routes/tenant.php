@@ -561,6 +561,8 @@ Route::middleware(['web','tenant','not_admin_subdomain'])->group(function () {
 
     Route::group(['prefix' => 'notifications','as' => 'notifications.'], function () {
         Route::any('/', [Services\NotificationControlller::class, 'get']);
+        Route::any('/read', [Services\NotificationControlller::class, 'read']);
+        Route::get('/unread-count', [Services\NotificationControlller::class, 'unReadCount']);
         Route::any('/set-read/', [Services\NotificationControlller::class, 'setRead']);
         Route::any('/set-read-all/', [Services\NotificationControlller::class, 'setAllRead']);
     });

@@ -164,8 +164,10 @@ export default {
 		 * set notification as read
 		 */
 		setRead(i) {
-			this.setNotificationsRead(this.unread[i]).then(result => {
-				if(result) this.$toast.success('Уведомление прочитано')
+			if(!this.unread[i]) return
+			this.setNotificationsRead(this.unread[i].id).then(message => {
+				if(message) return this.$toast.error(message)
+				this.$toast.success('Уведомление прочитано')
 			})
 		},
 	},

@@ -3,6 +3,8 @@
 namespace App\Http\Controllers\Services;
 
 use App\Classes\Analytics\Recruiting;
+use App\Http\Requests\Notification\NotificationReadRequest;
+use App\Http\Requests\Notification\UnReadCountRequest;
 use App\Models\Admin\History;
 use App\Service\NotificationService;
 use App\Http\Controllers\Controller;
@@ -11,6 +13,7 @@ use App\UserNotification;
 use App\UserReport;
 use Carbon\Carbon;
 use Exception;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
 class NotificationControlller extends Controller
@@ -22,7 +25,7 @@ class NotificationControlller extends Controller
 
     public function __construct(NotificationService $notificationService)
     {
-        $this->middleware('auth');
+//        $this->middleware('auth');
         $this->notificationService = $notificationService;
     }
 
@@ -158,5 +161,29 @@ class NotificationControlller extends Controller
         return 1;
     }
 
+    /**
+     * @param NotificationReadRequest $request
+     * @return JsonResponse
+     */
+    public function read(NotificationReadRequest $request): JsonResponse
+    {
+        $dto = $request->toDto();
 
+        return $this->response(
+            message: 'Success',
+            data: $this->notificationService->setRead($dto->userNotificationId)
+        );
+    }
+
+    /**
+     * @param UnReadCountRequest $request
+     * @return JsonResponse
+     */
+    public function unReadCount(UnReadCountRequest $request): JsonResponse
+    {
+        return $this->response(
+            message: 'Success',
+            data: $this->notificationService->unRead($request->toDto()->userId)
+        );
+    }
 }
