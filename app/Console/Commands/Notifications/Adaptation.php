@@ -46,10 +46,10 @@ class Adaptation extends Command
      */
     public function handle()
     {   
-//        if(date('w') == '6' || date('w') == '0') return '';
+        if(date('w') == '6' || date('w') == '0') return '';
 
         $date = Carbon::now()->subDays(70)->format('Y-m-d');
-        $leads = Lead::where('invite_at', '>', $date)->get();
+        $leads = Lead::query()->where('invite_at', '>', $date)->get();
 
 
         foreach($leads as $lead) {
@@ -66,12 +66,11 @@ class Adaptation extends Command
 
             //$start_day = Carbon::parse($lead->invite_at)->startOfDay();
             $start_day = Carbon::parse($user->applied_at())->startOfDay();
-
             $send_day = $this->getDayToSend($start_day->format('Y-m-d'), $user->id);
 
             if(in_array($send_day, [4,15,30,45])) { // Отправляем в эти дни
 
-                $groups = ProfileGroup::userIn($lead->user_id, false);
+                $groups = $user->groups()->where('status', 'active')->get();
 
                 if($groups->count() == 0) continue;
 
