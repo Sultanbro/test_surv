@@ -15,7 +15,7 @@ export async function fetchNotifications(){
  * @return {ApiResponse.SetNotificationsReadResponse}
  */
 export async function setNotificationsRead(request){
-	const { data } = await axios.post('/portal/update', request)
+	const { data } = await axios.post('/notifications/set-read', request)
 	return data
 }
 
@@ -23,7 +23,7 @@ export async function setNotificationsRead(request){
  * @return {ApiResponse.SetNotificationsReadAllResponse}
  */
 export async function setNotificationsReadAll(){
-	const { data } = await axios.post('/portal/update', {})
+	const { data } = await axios.post('/notifications/set-read-all/', {})
 	return data
 }
 
