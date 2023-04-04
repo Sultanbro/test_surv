@@ -37,7 +37,8 @@ class MessengerChat extends Model {
     }
 
     public function members(): BelongsToMany {
-        return $this->belongsToMany( User::class, 'messenger_chat_users', 'chat_id', 'user_id' );
+        return $this->belongsToMany( User::class, 'messenger_chat_users', 'chat_id', 'user_id' )
+            ->whereNull('users.deleted_at');
     }
 
     public function hasMember( User $user ): bool {
