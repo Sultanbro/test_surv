@@ -15,7 +15,7 @@ export async function fetchNotifications(){
  * @return {ApiResponse.SetNotificationsReadResponse}
  */
 export async function setNotificationsRead(request){
-	const { data } = await axios.post('/notifications/set-read', request)
+	const { data } = await axios.post('/notifications/read', request)
 	return data
 }
 

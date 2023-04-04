@@ -26,24 +26,23 @@ export const useNotificationsStore = defineStore('notifications', {
 				console.error('fetchNotifications', error)
 			}
 		},
-		async setNotificationsRead(notification){
+		async setNotificationsRead(id){
 			try{
-				const { data } = await setNotificationsRead({
-					id: notification
+				const { message } = await setNotificationsRead({
+					user_notification_id: id,
 				})
-				if(data){
-					const i = this.unread.findIndex(el => el.id === notification.id)
-					this.read.unshift(this.unread[i])
-					this.unread.splice(i, 1)
+				if(message !== 'Success') return message
 
-					this.unreadQuantity--
-					return true
-				}
+				const i = this.unread.findIndex(el => el.id === id)
+				this.read.unshift(this.unread[i])
+				this.unread.splice(i, 1)
+
+				this.unreadQuantity--
 			}
 			catch(error){
 				console.error('setNotificationsRead', error)
+				return error
 			}
-			return false
 		},
 		async setNotificationsReadAll(){
 			try{
