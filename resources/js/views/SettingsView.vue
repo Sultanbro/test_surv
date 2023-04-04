@@ -78,7 +78,7 @@ export default {
 					htmlId: 'nav-awards',
 					path: '/timetracking/settings?tab=9#nav-awards',
 					title: 'Награды',
-					access: 'is_admin'
+					access: ['awards_view', 'settings_view']
 				},
 			],
 			pageData: {},
@@ -100,6 +100,7 @@ export default {
 	},
 	mounted(){
 		this.updatePageData()
+		console.log(this.$can());
 	},
 	methods:{
 		can(access){
@@ -244,7 +245,7 @@ export default {
 										</div>
 									</div>
 									<div
-										v-if="activeTab === '9' && can('is_admin')"
+										v-if="activeTab === '9' && can(['awards_view', 'settings_view'])"
 										class="tab-pane fade show active py-3"
 										id="awards"
 										role="tabpanel"
