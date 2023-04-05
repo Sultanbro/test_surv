@@ -6,7 +6,6 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\BonusesFilterRequest;
 use App\Http\Requests\ShowKpiStatisticsRequest;
 use App\Http\Requests\UpdatedUserStatUpdateRequest;
-use App\Jobs\Bitrix\RecruiterStatsJob;
 use App\Models\Analytics\Activity;
 use App\Service\KpiStatisticService;
 use App\Service\UpdatedUserStatService;
@@ -73,7 +72,6 @@ class KpiStatController extends Controller
      */
     public function fetchKpis(Request $request): JsonResponse
     {
-        RecruiterStatsJob::dispatch(1);
         $response = $this->service->fetchKpis($request);
 
         return response()->json($response);
