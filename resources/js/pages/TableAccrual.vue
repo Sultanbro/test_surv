@@ -782,6 +782,7 @@
 import Sidebar from '@/components/ui/Sidebar' // сайдбар table
 import { useYearOptions } from '../composables/yearOptions'
 import KpiItemsV2 from '@/pages/kpi/KpiItemsV2'
+import { parseKPI } from '@/pages/kpi/kpis.js'
 
 export default {
 	name: 'TableAccrual',
@@ -1591,7 +1592,7 @@ export default {
 					type: 1
 				})
 				if(!userData.message){
-					this.kpiSidebarData = userData.kpi
+					this.kpiSidebarData = parseKPI(userData.kpi)
 					this.kpiSidebarDataUser = userData.kpi.users[0]
 				}
 				const groups = this.getUserGroups(userId)
@@ -1606,7 +1607,7 @@ export default {
 						type: 2
 					})
 					if(!groupData.message){
-						this.kpiSidebarDataGroups.push(groupData.kpi)
+						this.kpiSidebarDataGroups.push(parseKPI(groupData.kpi))
 					}
 				}))
 				this.kpiSidebar = true
