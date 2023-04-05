@@ -341,11 +341,7 @@ class BitrixStats extends Command
                 $lead->invited = 3; // Чтобы указать что это сделал крон
                 $lead->save();
             }
-
-           
-
         }
-
     }
 
     public function getBitrixProjectField(int $group_id) {
