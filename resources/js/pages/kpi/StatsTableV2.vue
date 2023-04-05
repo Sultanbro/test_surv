@@ -226,7 +226,10 @@
 import { mapActions } from 'pinia'
 import { usePortalStore } from '@/stores/Portal'
 import KpiItemsV2 from '@/pages/kpi/KpiItemsV2'
-import {kpi_fields} from './kpis.js'
+import {
+	kpi_fields,
+	parseKPI,
+} from './kpis.js'
 
 export default {
 	name: 'StatsTableV2',
@@ -325,7 +328,8 @@ export default {
 						type
 					}
 				})
-				this.$set(this.kpis[type], id, data?.kpi)
+				if(!data?.kpi?.users) return this.$toast.error('Ошибка при получении данных kpi')
+				this.$set(this.kpis[type], id, parseKPI(data?.kpi))
 			}
 			catch(error){
 				this.$toast.error('Ошибка при получении данных kpi')

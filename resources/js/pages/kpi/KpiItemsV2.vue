@@ -204,16 +204,16 @@
 							{{ i + 1 }}
 						</td>
 						<td class="px-2">
-							{{ item.name }}
+							{{ item.histories_latest.payload.name }}
 						</td>
 						<td class="text-center">
 							{{ methods[item.method] }}
 						</td>
 						<td class="text-center">
-							<b>{{ item.plan }} {{ item.unit }}</b>
+							<b>{{ item.histories_latest.payload.plan }} {{ item.histories_latest.payload.unit }}</b>
 						</td>
 						<td class="text-center">
-							{{ item.share }}
+							{{ item.histories_latest.payload.share }}
 						</td>
 						<td
 							class="text-center"
@@ -250,7 +250,7 @@
 							{{ item.percent }}
 						</td>
 						<td class="text-center">
-							{{ my_sum * (parseInt(item.share)/100) }}
+							{{ my_sum * (parseInt(item.histories_latest.payload.share)/100) }}
 						</td>
 						<td class="text-center">
 							{{ item.sum }}
