@@ -83,9 +83,6 @@ class RecruiterStats extends Command
             $this->saveTotalStats();
             $this->getRecruiterStats();
         }
-        
-        
-
     }
 
     private function getRecruiterStats() {

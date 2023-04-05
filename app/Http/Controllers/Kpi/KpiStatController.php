@@ -6,14 +6,12 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\BonusesFilterRequest;
 use App\Http\Requests\ShowKpiStatisticsRequest;
 use App\Http\Requests\UpdatedUserStatUpdateRequest;
-use App\Repositories\UpdatedUserStatRepository;
+use App\Models\Analytics\Activity;
 use App\Service\KpiStatisticService;
 use App\Service\UpdatedUserStatService;
+use App\User;
 use Exception;
 use Illuminate\Http\JsonResponse;
-use App\User;
-use App\Models\Analytics\UpdatedUserStat;
-use App\Models\Analytics\Activity;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Artisan;
 
