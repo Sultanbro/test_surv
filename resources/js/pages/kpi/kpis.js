@@ -219,13 +219,31 @@ function calcSum(el, kpi, completed) {
 	return Number(Number(result).toFixed(1));
 }
 
+/**
+ * Parse kpi json payload
+ *
+ * @param {Object} kpi
+ */
+function parseKPI(kpi){
+	kpi.users.forEach(user => {
+		if(!user.items) return
+		user.items.forEach(item => {
+			if(!item.histories_latest?.payload) return
+			if(typeof item.histories_latest.payload !== 'string') return
+			item.histories_latest.payload = JSON.parse(item.histories_latest.payload)
+		})
+	})
+	return kpi
+}
+
 // eslint-disable-next-line no-undef
 module.exports = {
-	kpi_fields: kpi_fields,
-	newKpi: newKpi,
-	newKpiItem: newKpiItem,
-	numberize: numberize,
-	calcSum: calcSum,
-	formatDate: formatDate,
-	calcCompleted: calcCompleted,
+	kpi_fields,
+	newKpi,
+	newKpiItem,
+	numberize,
+	calcSum,
+	formatDate,
+	calcCompleted,
+	parseKPI,
 };
