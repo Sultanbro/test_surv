@@ -836,9 +836,11 @@ class KpiStatisticService
      */
     public function fetchKpiGroupOrUser(Request $request, int $targetableId) : array
     {
+       $all = $request->all();
+
         $filters = [
-            'year' => $request->year,
-            'month' => $request->month,
+            'year' => $all['filters']['data_from']['year'],
+            'month' => $all['filters']['data_from']['month'],
             'type' => $request->type ? $request->type : 1
         ];
 
@@ -871,7 +873,7 @@ class KpiStatisticService
         /**
          * get kpis
          */
-        $last_date = Carbon::parse($date)->endOfMonth()->format('Y-m-d');
+        $last_date = $date->endOfMonth()->format('Y-m-d');
 
         $kpi = Kpi::withTrashed()
             ->with([
