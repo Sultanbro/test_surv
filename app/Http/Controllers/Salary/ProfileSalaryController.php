@@ -132,6 +132,10 @@ class ProfileSalaryController extends Controller
         
         // check exists ind kpi
         $kpis = $user->inGroups();
+
+        $sumKpi = $editedKpi ? $editedKpi->amount : $kpi;
+        $sumBonus = $editedBonus ? $editedBonus->amount : $bonus;
+
         // prepare user_earnigs 
         $user_earnings = [
             'quarter_bonus' => $quarter_bonus.' '. strtoupper($user->currency),
@@ -147,9 +151,9 @@ class ProfileSalaryController extends Controller
             'kpi_percent' => $kpi / 400, // kpi / 40000 * 100
             'kpi' => number_format((float)$kpi * $currency_rate,  0, '.', '\''). ' ' . strtoupper($user->currency),
             'kpiMax' => 30000,
-            'sumKpi' => $editedKpi ? $editedKpi->amount : $kpi,
+            'sumKpi' => $user->getTotalByCurrency($sumKpi),
             'sumSalary' => $salarySum,
-            'sumBonuses' => $editedBonus ? $editedBonus->amount : $bonus,
+            'sumBonuses' => $user->getTotalByCurrency($sumBonus),
             'sumQuartalPremiums' => $quarter_bonus,
             'sumNominations' => 0, // кол-во номинаций
             'salary' => number_format((float)$salary * $currency_rate, 0, '.', '\''). ' ' . strtoupper($user->currency),
