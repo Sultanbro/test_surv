@@ -242,7 +242,7 @@ Route::middleware(['web','tenant','not_admin_subdomain'])->group(function () {
 
 
     // Типы наград для сотрудников
-    Route::group(['prefix' => 'award-categories', 'as' => 'award-categories.', 'middleware' => 'is_admin'], function () {
+    Route::group(['prefix' => 'award-categories', 'as' => 'award-categories.'], function () {
         Route::get('/get', [Settings\Award\AwardCategoryController::class, 'index'])->name('get');
         Route::get('/get/{awardCategory}', [Settings\Award\AwardCategoryController::class, 'show'])->name('show');
         Route::get('/get/awards/{awardCategory}', [Settings\Award\AwardCategoryController::class, 'categoryAwards'])->name('awards');
