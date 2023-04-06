@@ -62,10 +62,7 @@
 			<tbody>
 				<template v-for="(item, i) in page_items">
 					<!-- <tr v-if="item.target.name.includes(searchText) || searchText.length == 0 || (item.creator && (item.creator.last_name + ' ' + item.creator.name).includes(searchText)) || (item.updater && (item.updater.last_name + ' ' + item.updater.name).includes(searchText)) || (item.items.filter( i => { return i.name.includes(searchText)  } ).length > 0)"></tr> -->
-					<tr
-						v-if="(item.target && item.target.name.includes(searchText)) || searchText.length == 0"
-						:key="i"
-					>
+					<tr :key="i">
 						<td
 							@click="expand(i)"
 							class="pointer"
