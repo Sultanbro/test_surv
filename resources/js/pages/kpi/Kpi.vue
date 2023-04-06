@@ -270,7 +270,6 @@ import SuperSelect from '@/components/SuperSelect'
 import {kpi_fields, newKpi} from './kpis.js'
 import {findModel/* , groupBy */} from './helpers.js'
 
-
 export default {
 	name: 'KPI',
 	components: {
@@ -302,6 +301,9 @@ export default {
 
 				this.paginationKey++;
 			}
+		},
+		searchText(){
+			this.onSearchQuery()
 		}
 	},
 	data() {
@@ -326,7 +328,8 @@ export default {
 				'created_by',
 				'updated_by',
 			],
-			statusRequest: false
+			statusRequest: false,
+			timeout: null,
 		}
 	},
 
@@ -585,7 +588,7 @@ export default {
 		},
 
 		onSearch() {
-			let text = this.searchText;
+			const text = this.searchText.toLowerCase();
 
 			if(this.searchText == '') {
 				this.items = this.all_items;
@@ -593,12 +596,12 @@ export default {
 				this.items = this.all_items.filter(el => {
 					let has = false;
 
-					if (el.target != null && el.target.name.toLowerCase().indexOf(text.toLowerCase()) > -1) {
+					if (el.target != null && el.target.name.toLowerCase().indexOf(text) > -1) {
 						has = true;
 					}
 
 					if (
-						el.title.toLowerCase().indexOf(text.toLowerCase()) > -1
+						el.title.toLowerCase().indexOf(text) > -1
 					) {
 						has = true;
 					}
@@ -606,8 +609,8 @@ export default {
 					if (
 						el.creator != null
 						&& (
-							el.creator.name.toLowerCase().indexOf(text.toLowerCase()) > -1
-							|| el.creator.last_name.toLowerCase().indexOf(text.toLowerCase()) > -1
+							el.creator.name.toLowerCase().indexOf(text) > -1
+							|| el.creator.last_name.toLowerCase().indexOf(text) > -1
 						)
 					) {
 						has = true;
@@ -616,8 +619,8 @@ export default {
 					if (
 						el.updater != null
 						&& (
-							el.updater.name.toLowerCase().indexOf(text.toLowerCase()) > -1
-							|| el.updater.last_name.toLowerCase().indexOf(text.toLowerCase()) > -1
+							el.updater.name.toLowerCase().indexOf(text) > -1
+							|| el.updater.last_name.toLowerCase().indexOf(text) > -1
 						)
 					) {
 						has = true;
@@ -639,6 +642,16 @@ export default {
 			if(['lower_limit', 'upper_limit'].includes(field) && value > 100) {
 				value = 100;
 			}
+		},
+
+		onSearchQuery(){
+			if(this.timeout) clearTimeout(this.timeout)
+
+			this.timeout = setTimeout(() => {
+				this.fetchKPI({
+					query: this.searchText
+				})
+			}, 300);
 		}
 	},
 }
