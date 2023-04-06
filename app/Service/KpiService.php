@@ -50,7 +50,11 @@ class KpiService
 
         $searchWord = $filters['query'] ?? null;
 
-        $last_date = Carbon::now()->endOfMonth()->format('Y-m-d');
+        $date = $filters['date'] ?? null;
+
+        $carbon = isset($date) ? Carbon::createFromDate($date['year'], $date['month']) : Carbon::now();
+
+        $last_date = $carbon->endOfMonth()->format('Y-m-d');
 
         $kpis = Kpi::query()
             ->when($searchWord, fn() => KpiSearch::search($searchWord))
