@@ -563,7 +563,7 @@ export default {
 
 			if(item.id == 0) {
 				if(a != -1) this.all_items.splice(a, 1);
-				this.onSearch();
+				// this.onSearch();
 				this.$toast.info('KPI Удален!');
 				return;
 			}
@@ -573,7 +573,7 @@ export default {
 
 
 				if(a != -1) this.all_items.splice(a, 1);
-				this.onSearch();
+				// this.onSearch();
 
 				this.$toast.info('KPI Удален!');
 				loader.hide()
