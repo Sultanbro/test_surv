@@ -16,6 +16,7 @@
 				<SuperFilter
 					ref="child"
 					:groups="groups"
+					@apply="fetchKPI"
 				/>
 				<!--<input
                 class="searcher mr-2 input-sm"
@@ -327,6 +328,7 @@ export default {
 			],
 			statusRequest: false,
 			timeout: null,
+			filters: null,
 		}
 	},
 
@@ -373,8 +375,12 @@ export default {
 		fetchKPI(filter = null) {
 			let loader = this.$loading.show();
 
+			this.filters = filter
 			this.axios.post(this.uri + '/' + 'get', {
-				filters: filter
+				filters: {
+					...filter,
+					query: this.searchText
+				}
 			}).then(response => {
 				this.items = response.data.kpis;
 				this.all_items = response.data.kpis;
@@ -646,6 +652,7 @@ export default {
 
 			this.timeout = setTimeout(() => {
 				this.fetchKPI({
+					...this.filters,
 					query: this.searchText
 				})
 			}, 300);
