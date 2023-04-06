@@ -111,9 +111,9 @@
 												<table class="child-table">
 													<template v-for="(user, i) in wrap_item.users">
 														<tr
+															v-if="editable"
 															:key="i"
 															class="child-row"
-															v-if="editable"
 														>
 															<td
 																@click="user.expanded = !user.expanded"
@@ -127,8 +127,8 @@
 
 															<template v-if="user.items !== undefined">
 																<td
-																	class="px-2"
 																	v-for="kpi_item in user.items"
+																	class="px-2"
 																	:key="kpi_item"
 																>
 																	{{ kpi_item.name }} <b>{{ kpi_item.percent }}%</b>
@@ -189,7 +189,7 @@
 </template>
 
 <script>
-import {kpi_fields} from '../../kpi/kpis.js';
+import {kpi_fields, parseKPI} from '../../kpi/kpis.js';
 import KpiItems from '@/pages/kpi/KpiItems.vue'
 import { useYearOptions } from '@/composables/yearOptions'
 
@@ -236,8 +236,8 @@ export default {
 	},
 	methods: {
 		/**
-         * set month
-         */
+		 * set month
+		 */
 		setMonth() {
 			let year = this.$moment().format('YYYY')
 			this.dateInfo.currentMonth = this.dateInfo.currentMonth ? this.dateInfo.currentMonth : this.$moment().format('MMMM')
@@ -268,14 +268,13 @@ export default {
 
 			this.axios.post('/statistics/kpi', {
 				filters: filters
-			}).then(response => {
+			}).then(({data}) => {
 
 				// items
-				this.items = response.data.items;
-				this.items = this.items.map(res=> ({...res, my_sum: 0}))
+				this.items = data.items.map(res=> ({...parseKPI(res), my_sum: 0}))
 
-				this.activities = response.data.activities;
-				this.groups = response.data.groups;
+				this.activities = data.activities;
+				this.groups = data.groups;
 
 				this.loading = false
 			}).catch(error => {
@@ -303,8 +302,8 @@ export default {
 					});
 
 					/**
-                     * count avg of user items
-                     */
+					 * count avg of user items
+					 */
 					avg = count > 0 ? Number(sum / count).toFixed(2) : 0;
 
 					user.avg = avg;
@@ -314,22 +313,19 @@ export default {
 					kpi_count++;
 				});
 
-				console.log(kpi_count, kpi_sum);
 				/**
-                 * count avg completed percent of kpi by users
-                 */
+				 * count avg completed percent of kpi by users
+				 */
 				kpi.avg = kpi_count > 0 ? Number(Number(kpi_sum / kpi_count * 100).toFixed(2)) : 0;
 
 			});
 		},
 
 		prepareFields() {
-			let visible_fields = []
+			let visible_fields = [] // ??????
 
 			kpi_fields.forEach(field => {
-				if(this.show_fields[field.key] != undefined
-                    && this.show_fields[field.key]
-				) {
+				if(this.show_fields[field.key]) {
 					visible_fields.push(field)
 				}
 			});
