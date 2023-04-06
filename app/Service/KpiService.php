@@ -8,6 +8,7 @@ use App\Events\TrackKpiUpdatesEvent;
 use App\Http\Requests\KpiSaveRequest;
 use App\Http\Requests\KpiUpdateRequest;
 use App\Models\Analytics\Activity;
+use App\Models\Kpi\Builder\KpiSearch;
 use App\Models\Kpi\Kpi;
 use App\Models\Kpi\KpiItem;
 use App\Traits\KpiHelperTrait;
@@ -47,9 +48,13 @@ class KpiService
     {
         if($filters !== null) {}
 
+        $searchWord = $filters['query'] ?? null;
+
         $last_date = Carbon::now()->endOfMonth()->format('Y-m-d');
 
-        $kpis = Kpi::with([
+        $kpis = Kpi::query()
+            ->when($searchWord, fn() => KpiSearch::search($searchWord))
+            ->with([
             'items' => function($query) use ($last_date) {
                 $query->withTrashed()->whereDate('created_at', '<=', $last_date);
             },
@@ -113,7 +118,7 @@ class KpiService
             array_push($kpis_final, $item);
         }
         
-
+        
         return [
             'kpis'       => $kpis_final,
             'activities' => Activity::get(),
