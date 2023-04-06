@@ -4,6 +4,7 @@ namespace App\Service;
 
 use App\DTO\Kpi\QuarterPremium\QuarterPremiumUpdateDTO;
 use App\Events\TrackQuartalPremiumEvent;
+use App\Filters\Kpis\QuarterPremiumFilter;
 use App\Http\Requests\QuartalPremiumSaveRequest;
 use App\Http\Requests\QuartalPremiumUpdateRequest;
 use App\Models\QuartalPremium;
@@ -36,10 +37,12 @@ class QuartalPremiumService
      * вытащить все квартальные премии
      */
     public function fetch($filters): array
-    {   
-        if($filters !== null) {} 
-        
-        $items = QuartalPremium::with('creator', 'updater')->withoutGlobalScope(ActiveScope::class)->get();
+    {
+        $searchWord = $filters['filters']['query'] ?? null;
+
+        $items = QuartalPremium::query()
+        ->when($searchWord, fn() => (new QuarterPremiumFilter)->globalSearch($searchWord))
+        ->with('creator', 'updater')->withoutGlobalScope(ActiveScope::class)->get();
 
         return [
             'items'      =>  $this->groupItems($items), 

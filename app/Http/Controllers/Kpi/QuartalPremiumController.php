@@ -20,7 +20,7 @@ class QuartalPremiumController extends Controller
      */
     public function get(Request $request, QuartalPremiumService $service): JsonResponse
     {
-        $response = $service->fetch($request);
+        $response = $service->fetch($request->all());
 
         return response()->json($response);
     }
