@@ -746,7 +746,7 @@ class KpiStatisticService
         $filters = $request->filters;
         $limit = $request->limit ? $request->limit : 10;
 
-        $searchWord = $filters['query'];
+        $searchWord = $filters['query'] ?? null;
 
         if(
             isset($filters['data_from']['year'])
