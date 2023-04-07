@@ -422,7 +422,6 @@
 								</div>
 								<div class="col-2">
 									<input
-										type="number"
 										v-model="payment.phone"
 										class="form-control input-surv"
 										placeholder="Телефон"
@@ -430,10 +429,10 @@
 								</div>
 								<div class="col-2">
 									<input
-										type="number"
 										v-model="payment.number"
 										class="form-control card-number input-surv"
 										placeholder="Номер карты"
+										v-mask="`#### #### #### ####`"
 									>
 								</div>
 								<div class="col-2 position-relative">
@@ -519,10 +518,12 @@ import Multiselect from 'vue-multiselect'
 // import { Cropper } from 'vue-advanced-cropper'
 import 'vue-advanced-cropper/dist/style.css'
 import { bus } from '../bus'
+import {mask} from 'vue-the-mask'
 
 const regex = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|v=)([^#]*).*/;
 export default {
 	name: 'PageCabinet',
+	directives: {mask},
 	components:{
 		// Cropper,
 		Multiselect,
@@ -854,17 +855,16 @@ export default {
 		fetchData() {
 			this.axios
 				.get('/cabinet/get')
-				.then((response) => {
-					this.admins = response.data.admins;
-					this.users = response.data.users;
-					this.user = response.data.user;
-					this.keywords = response.data.user.working_country;
-					this.working_city = response.data.user.working_city;
+				.then(({data}) => {
+					this.admins = data.admins;
+					this.users = data.users;
+					this.user = data.user;
+					this.keywords = data.user.working_country;
+					this.working_city = data.user.working_city;
 
-					if (response.data.user_payment != null && response.data.user_payment != undefined) {
-
-						if (response.data.user_payment.length > 0) {
-							this.payments = response.data.user_payment;
+					if (data.user_payment) {
+						if (data.user_payment.length > 0) {
+							this.payments = data.user_payment;
 							this.payments_view = true
 						} else {
 							this.payments = [];
@@ -873,8 +873,8 @@ export default {
 
 					}
 
-					if (this.user.img_url != null && this.user.img_url != undefined) {
-						this.img = '/users_img/' + response.data.user.img_url;
+					if (this.user.img_url) {
+						this.img = '/users_img/' + data.user.img_url;
 					} else {
 						this.img = '/users_img/noavatar.png';
 					}

@@ -16,6 +16,7 @@
 				<SuperFilter
 					ref="child"
 					:groups="groups"
+					@apply="fetchKPI"
 				/>
 				<!--<input
                 class="searcher mr-2 input-sm"
@@ -276,6 +277,33 @@ export default {
 		KpiItems,
 	},
 	props: {},
+	data() {
+		return {
+			active: 1,
+			show_fields: [],
+			all_fields: kpi_fields,
+			fields: [],
+			uri: 'kpi',
+			groups: [],
+			searchText: '',
+			modalAdjustVisibleFields: false,
+			page_items: [],
+			pageSize: 100,
+			paginationKey: 1,
+			items: [],
+			all_items: [],
+			activities: [],
+			non_editable_fields: [
+				'created_at',
+				'updated_at',
+				'created_by',
+				'updated_by',
+			],
+			statusRequest: false,
+			timeout: null,
+			filters: null,
+		}
+	},
 	watch: {
 		show_fields: {
 			handler: function (val) {
@@ -301,32 +329,6 @@ export default {
 		},
 		searchText(){
 			this.onSearchQuery()
-		}
-	},
-	data() {
-		return {
-			active: 1,
-			show_fields: [],
-			all_fields: kpi_fields,
-			fields: [],
-			uri: 'kpi',
-			groups: [],
-			searchText: '',
-			modalAdjustVisibleFields: false,
-			page_items: [],
-			pageSize: 100,
-			paginationKey: 1,
-			items: [],
-			all_items: [],
-			activities: [],
-			non_editable_fields: [
-				'created_at',
-				'updated_at',
-				'created_by',
-				'updated_by',
-			],
-			statusRequest: false,
-			timeout: null,
 		}
 	},
 
@@ -373,8 +375,12 @@ export default {
 		fetchKPI(filter = null) {
 			let loader = this.$loading.show();
 
+			this.filters = filter
 			this.axios.post(this.uri + '/' + 'get', {
-				filters: filter
+				filters: {
+					...filter,
+					query: this.searchText
+				}
 			}).then(response => {
 				this.items = response.data.kpis;
 				this.all_items = response.data.kpis;
@@ -646,6 +652,7 @@ export default {
 
 			this.timeout = setTimeout(() => {
 				this.fetchKPI({
+					...this.filters,
 					query: this.searchText
 				})
 			}, 300);
