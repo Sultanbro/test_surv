@@ -76,8 +76,7 @@
 							class="text-center p-3"
 							:style="`background-color: ${getBacklightForValue(kpi.avg)}`"
 						>
-							{{ kpi.avg | nonFixedFloat }}
-							<sub>%</sub>
+							{{ kpi.avg | nonFixedFloat }}<sub v-if="typeof kpi.avg !== 'undefined'">%</sub>
 						</td>
 						<td
 							v-for="month, key in $moment.months()"
@@ -85,8 +84,7 @@
 							class="text-center p-3"
 							:style="`background-color: ${getBacklightForValue(kpi[key+1])}`"
 						>
-							{{ kpi[key+1] | nonFixedFloat }}
-							<sub>%</sub>
+							{{ kpi[key+1] | nonFixedFloat }}<sub v-if="typeof kpi[key+1] !== 'undefined'">%</sub>
 						</td>
 					</tr>
 					<template v-if="kpi.expanded">
@@ -104,8 +102,7 @@
 								class="text-center p-3"
 								:style="`background-color: ${getBacklightForValue(user.avg)}`"
 							>
-								{{ user.avg | nonFixedFloat }}
-								<sub>%</sub>
+								{{ user.avg | nonFixedFloat }}<sub v-if="typeof user[key+1] !== 'undefined'">%</sub>
 							</td>
 							<td
 								v-for="month, key in $moment.months()"
@@ -113,8 +110,7 @@
 								class="text-center p-3"
 								:style="`background-color: ${getBacklightForValue(user[key+1])}`"
 							>
-								{{ user[key+1] | nonFixedFloat }}
-								<sub>%</sub>
+								{{ user[key+1] | nonFixedFloat }}<sub v-if="typeof user[key+1] !== 'undefined'">%</sub>
 							</td>
 						</tr>
 					</template>
