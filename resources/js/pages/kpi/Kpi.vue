@@ -389,6 +389,7 @@ export default {
 
 				this.page_items = this.items.slice(0, this.pageSize);
 
+				this.addStatusToItems();
 				loader.hide()
 			}).catch(error => {
 				loader.hide()
