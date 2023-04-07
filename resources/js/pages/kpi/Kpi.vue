@@ -277,33 +277,6 @@ export default {
 		KpiItems,
 	},
 	props: {},
-	watch: {
-		show_fields: {
-			handler: function (val) {
-				localStorage.kpi_show_fields = JSON.stringify(val);
-				this.prepareFields();
-			},
-			deep: true
-		},
-		pageSize: {
-			handler: function(val) {
-				if(val < 1) {
-					val = 1;
-					return;
-				}
-
-				if(val > 100) {
-					val = 100;
-					return;
-				}
-
-				this.paginationKey++;
-			}
-		},
-		searchText(){
-			this.onSearchQuery()
-		}
-	},
 	data() {
 		return {
 			active: 1,
@@ -329,6 +302,33 @@ export default {
 			statusRequest: false,
 			timeout: null,
 			filters: null,
+		}
+	},
+	watch: {
+		show_fields: {
+			handler: function (val) {
+				localStorage.kpi_show_fields = JSON.stringify(val);
+				this.prepareFields();
+			},
+			deep: true
+		},
+		pageSize: {
+			handler: function(val) {
+				if(val < 1) {
+					val = 1;
+					return;
+				}
+
+				if(val > 100) {
+					val = 100;
+					return;
+				}
+
+				this.paginationKey++;
+			}
+		},
+		searchText(){
+			this.onSearchQuery()
 		}
 	},
 

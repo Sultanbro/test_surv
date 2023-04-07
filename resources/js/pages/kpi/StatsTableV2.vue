@@ -53,7 +53,7 @@
 			</thead>
 			<tbody>
 				<template v-for="(wrap_item, w) in reversedItems">
-					<template v-if="searchText.length == 0 || (wrap_item.target && wrap_item.target.name.includes(searchText))">
+					<template>
 						<tr
 							class="main-row"
 							:key="w"
@@ -322,7 +322,10 @@ export default {
 			this.$set(this.loading[type], id, true)
 			try{
 				const { data } = await this.axios.post(`/statistics/kpi/groups-and-users/${id}`, {
-					filters: this.filters
+					filters: {
+						...this.filters,
+						query: this.searchText,
+					}
 				}, {
 					params: {
 						type
