@@ -10,7 +10,7 @@
 				type="text"
 				placeholder="Поиск по совпадениям..."
 				@click="show = true"
-				@keyup="$emit('search-text-changed', this.searchText)"
+				@keyup="$emit('search-text-changed', searchText)"
 			>
 			<i
 				class="fa fa-search search-btn"
@@ -97,7 +97,6 @@
 					</option>
 				</select>
 			</div>
-
 
 			<!-- item -->
 			<div class="item d-flex">
