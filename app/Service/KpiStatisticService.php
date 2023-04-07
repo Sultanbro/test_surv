@@ -459,13 +459,16 @@ class KpiStatisticService
                 ];
             }
 
-            if ($quartalPremium->targetable_type == self::PROFILE_GROUP) {
-                $profileGroup = $this->getProfileGroupQp($quartalPremium);
-                if (empty($profileGroup->toArray())) {
+            if ($quartalPremium->targetable_type == self::PROFILE_GROUP)
+            {
+                $groupId = $authUser->activeGroup()->id ?? null;
+
+                if($groupId == null)
+                {
                     continue;
                 }
 
-                $profileGroups[] = $profileGroup;
+                $profileGroups[] = $quartalPremium->targetable_id == $groupId ? $quartalPremium : null;
             }
 
             if ($quartalPremium->targetable_type == self::POSITION)
