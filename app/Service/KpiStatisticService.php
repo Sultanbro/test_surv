@@ -461,14 +461,14 @@ class KpiStatisticService
 
             if ($quartalPremium->targetable_type == self::PROFILE_GROUP)
             {
-                $groupId = $authUser->activeGroup()->id ?? null;
+                $groupIds = $authUser->groups()->where('status', 'active')->get()->pluck('id')->toArray() ?? [];
 
-                if($groupId == null)
+                if(empty($groupIds))
                 {
                     continue;
                 }
 
-                $profileGroups[] = $quartalPremium->targetable_id == $groupId ? $quartalPremium : null;
+                $profileGroups[] = in_array($quartalPremium->targetable_id, $groupIds) ? $quartalPremium : null;
             }
 
             if ($quartalPremium->targetable_type == self::POSITION)
@@ -575,7 +575,7 @@ class KpiStatisticService
          * indiv or common
          */
         if($user_id != 0) {
-            $qps = QuartalPremium::withTrashed();
+            $qps = QuartalPremium::withoutTrashed();
 
             $user = User::withTrashed()->with('groups')->find($user_id);
             $position_id = $user->position_id;
@@ -598,7 +598,7 @@ class KpiStatisticService
                 });
               
         } else {
-            $qps = QuartalPremium::withTrashed()->when(isset($type) && isset($id), fn($qp) => $qp->where([
+            $qps = QuartalPremium::query()->when(isset($type) && isset($id), fn($qp) => $qp->where([
                 ['targetable_type', $type],
                 ['targetable_id', $id]
             ]));
