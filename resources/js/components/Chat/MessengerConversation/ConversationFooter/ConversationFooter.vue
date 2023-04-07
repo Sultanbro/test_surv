@@ -66,70 +66,70 @@
 				id="messengerInput"
 				class="messenger__message-input"
 			>
-				<template v-if="!isRecordingAudio">
-					<div
-						v-if="body"
-						@click="performMessage"
-						class="messenger__message-icon"
-					>
-						<ChatIconSend />
-					</div>
-					<AudioDictaphone
-						v-else
-						class="messenger__record"
-						@stop="handleRecording"
-						@error="handleError"
-						@start="setRecordingAudio(true)"
-						@delete="setRecordingAudio(false)"
-					>
-						<template #default="{ isRecording, startRecording, stopRecording, deleteRecording }">
-							<template v-if="!isRecording">
-								<div
-									class="messenger__record-item"
-									@click="startRecording"
+				<div
+					v-if="body && !isRecordingAudio"
+					@click="performMessage"
+					class="messenger__message-icon"
+				>
+					<ChatIconSend />
+				</div>
+				<AudioDictaphone
+					v-else
+					class="messenger__record"
+					@stop="handleRecording"
+					@error="handleError"
+					@start="setRecordingAudio(true)"
+					@delete="setRecordingAudio(false)"
+				>
+					<template #default="{ isRecording, startRecording, stopRecording, deleteRecording }">
+						<template v-if="!isRecording">
+							<div
+								class="messenger__record-item"
+								@click="startRecording"
+							>
+								<svg
+									xmlns="http://www.w3.org/2000/svg"
+									viewBox="0 0 384 512"
 								>
-									<svg
-										xmlns="http://www.w3.org/2000/svg"
-										viewBox="0 0 384 512"
-									>
-										<path
-											fill="#5ebee9"
-											d="M192 0C139 0 96 43 96 96V256c0 53 43 96 96 96s96-43 96-96V96c0-53-43-96-96-96zM64 216c0-13.3-10.7-24-24-24s-24 10.7-24 24v40c0 89.1 66.2 162.7 152 174.4V464H120c-13.3 0-24 10.7-24 24s10.7 24 24 24h72 72c13.3 0 24-10.7 24-24s-10.7-24-24-24H216V430.4c85.8-11.7 152-85.3 152-174.4V216c0-13.3-10.7-24-24-24s-24 10.7-24 24v40c0 70.7-57.3 128-128 128s-128-57.3-128-128V216z"
-										/>
-									</svg>
-								</div>
-							</template>
-							<template v-else>
-								<div
-									class="messenger__record-item"
-									@click="stopRecording($event)"
-								>
-									<svg
-										xmlns="http://www.w3.org/2000/svg"
-										viewBox="0 0 384 512"
-									>
-										<path
-											d="M0 128C0 92.7 28.7 64 64 64H320c35.3 0 64 28.7 64 64V384c0 35.3-28.7 64-64 64H64c-35.3 0-64-28.7-64-64V128z"
-										/>
-									</svg>
-								</div>
-								<div
-									class="messenger__record-item"
-									@click="deleteRecording($event)"
-								>
-									<svg
-										xmlns="http://www.w3.org/2000/svg"
-										viewBox="0 0 320 512"
-									>
-										<path
-											d="M310.6 150.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0L160 210.7 54.6 105.4c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3L114.7 256 9.4 361.4c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0L160 301.3 265.4 406.6c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L205.3 256 310.6 150.6z"
-										/>
-									</svg>
-								</div>
-							</template>
+									<path
+										fill="#5ebee9"
+										d="M192 0C139 0 96 43 96 96V256c0 53 43 96 96 96s96-43 96-96V96c0-53-43-96-96-96zM64 216c0-13.3-10.7-24-24-24s-24 10.7-24 24v40c0 89.1 66.2 162.7 152 174.4V464H120c-13.3 0-24 10.7-24 24s10.7 24 24 24h72 72c13.3 0 24-10.7 24-24s-10.7-24-24-24H216V430.4c85.8-11.7 152-85.3 152-174.4V216c0-13.3-10.7-24-24-24s-24 10.7-24 24v40c0 70.7-57.3 128-128 128s-128-57.3-128-128V216z"
+									/>
+								</svg>
+							</div>
 						</template>
-					</AudioDictaphone>
-				</template>
+						<template v-else>
+							<div
+								class="messenger__record-item"
+								@click="stopRecording($event)"
+							>
+								<svg
+									xmlns="http://www.w3.org/2000/svg"
+									viewBox="0 0 384 512"
+								>
+									<path
+										fill="#5ebee9"
+										d="M0 128C0 92.7 28.7 64 64 64H320c35.3 0 64 28.7 64 64V384c0 35.3-28.7 64-64 64H64c-35.3 0-64-28.7-64-64V128z"
+									/>
+								</svg>
+							</div>
+							<div
+								class="messenger__record-item"
+								@click="deleteRecording($event)"
+							>
+								<svg
+									xmlns="http://www.w3.org/2000/svg"
+									viewBox="0 0 320 512"
+								>
+									<path
+										fill="#5ebee9"
+										d="M310.6 150.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0L160 210.7 54.6 105.4c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3L114.7 256 9.4 361.4c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0L160 301.3 265.4 406.6c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L205.3 256 310.6 150.6z"
+									/>
+								</svg>
+							</div>
+						</template>
+					</template>
+				</AudioDictaphone>
 
 				<span
 					v-if="isRecordingAudio"
