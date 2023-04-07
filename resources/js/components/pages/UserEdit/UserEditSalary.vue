@@ -17,10 +17,6 @@ export default {
 		old_jysan_cardholder: String,
 		old_jysan: String,
 		old_card_jysan: String,
-		front_valid: {
-			type: Object,
-			default: () => ({})
-		},
 		taxes: {
 			type: Array,
 			default: () => ([])
@@ -31,7 +27,7 @@ export default {
 			headphonesState: this.user?.headphones_sum > 0,
 			cards: [],
 			zarplata: 0,
-			currency: this.user?.currency,
+			currency: this.user ? this.user.currency : null,
 			newTaxes: [],
 			editTaxes: [],
 			assignTaxes: [],
@@ -53,13 +49,7 @@ export default {
 				: this.old_zarplata
 					? this.old_zarplata
 					: 0
-			this.currency = this.user?.currency
-		},
-		zarplata() {
-			this.changeZp();
-		},
-		currency() {
-			this.changeZp();
+			this.currency = this.user ? this.user.currency : null
 		},
 		taxes() {
 			this.myTaxes = this.taxes.filter(item => item.isAssigned);
@@ -71,14 +61,6 @@ export default {
 		}
 	},
 	methods: {
-		changeZp() {
-			if (this.front_valid && this.front_valid.formSubmitted) {
-				this.currency && Number(this.zarplata) > 1000 ? this.$emit('valid_change', {
-					name: 'zarplata',
-					bool: true
-				}) : this.$emit('valid_change', {name: 'zarplata', bool: false});
-			}
-		},
 		addCard() {
 			const card = {
 				bank: '',
@@ -188,7 +170,6 @@ export default {
 	>
 		<div
 			class="form-group row"
-			:class="{'form-group-error': front_valid.formSubmitted && front_valid.zarplata === false}"
 		>
 			<label
 				for="zarplata"
@@ -462,7 +443,6 @@ export default {
 		<hr>
 
 		<div
-			v-if="user"
 			class="taxes"
 		>
 			<div
@@ -589,22 +569,27 @@ export default {
 			</template>
 		</b-modal>
 		<div class="d-flex aic mb-2 mt-2">
-			<button
-				v-if="user && user.zarplata"
-				type="button"
-				class="btn btn-success btn-rounded mr-3"
-				@click="addTax"
-			>
-				<i class="fa fa-plus mr-2" /> Добавить налог
-			</button>
-			<multiselect
-				:options="taxNotAssignedFiltered"
-				track-by="name"
-				label="name"
-				class="w-50 pt-2"
-				placeholder="Выберите существующий"
-				@select="selectTaxNotAssigned"
-			/>
+			<template v-if="zarplata > 0">
+				<button
+					type="button"
+					class="btn btn-success btn-rounded mr-3"
+					@click="addTax"
+				>
+					<i class="fa fa-plus mr-2" /> Добавить налог
+				</button>
+				<multiselect
+					:options="taxNotAssignedFiltered"
+					track-by="name"
+					label="name"
+					class="w-50 pt-2"
+					placeholder="Выберите существующий"
+					@select="selectTaxNotAssigned"
+				/>
+			</template>
+			<span
+				v-else
+				class="text-muted"
+			>Поле оклад должно быть больше нуля</span>
 		</div>
 	</div>
 </template>
