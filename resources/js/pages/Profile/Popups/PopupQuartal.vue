@@ -32,46 +32,138 @@
 			</select>
 		</div>
 		<div class="popup__award">
-			<template v-if="items.length">
-				<template v-for="(item, i) in items">
-					<div
-						class="award__title popup__content-title"
-						:key="i"
-					>
-						За период с {{ new Date(item.items.from).toLocaleDateString('RU') }} до {{ new Date(item.items.to).toLocaleDateString('RU') }}
-					</div>
-					<table
-						class="award__table"
-						:key="i"
-					>
-						<tr>
-							<td class="blue">
-								Сумма премии
-							</td>
-							<td>{{ item.items.sum }}</td>
-						</tr>
-						<tr v-if="item.items.activity">
-							<td class="blue">
-								План
-							</td>
-							<td>
-								<div>
-									<b>Активность: {{ item.items.activity.name }}</b>
-								</div>
-								<div>{{ item.items.plan }}</div>
-							</td>
-						</tr>
-						<tr>
-							<td class="blue">
-								Условия
-							</td>
-							<td>{{ item.items.text }}</td>
-						</tr>
-					</table>
-				</template>
-			</template>
-
-			<p v-else>
+			<b-tabs
+				class="overflow-hidden"
+				v-if="itemsUser.length || itemsGroup.length || itemsPosition.length"
+			>
+				<b-tab
+					title="Индивидуальные"
+					v-if="itemsUser.length"
+				>
+					<template v-for="(item, idxUser) in itemsUser">
+						<div
+							class="award__title popup__content-title"
+							:key="'title-' + idxUser"
+						>
+							За период с {{ new Date(item.items.from).toLocaleDateString('RU') }} до {{ new Date(item.items.to).toLocaleDateString('RU') }}
+						</div>
+						<table
+							class="award__table"
+							:key="'table-' + idxUser"
+						>
+							<tr>
+								<td class="blue">
+									Сумма премии
+								</td>
+								<td>{{ item.items.sum }}</td>
+							</tr>
+							<tr v-if="item.items.activity">
+								<td class="blue">
+									План
+								</td>
+								<td>
+									<div>
+										<b>Активность: {{ item.items.activity.name }}</b>
+									</div>
+									<div>{{ item.items.plan }}</div>
+								</td>
+							</tr>
+							<tr>
+								<td class="blue">
+									Условия
+								</td>
+								<td>{{ item.items.text }}</td>
+							</tr>
+						</table>
+					</template>
+				</b-tab>
+				<b-tab
+					title="По отделу"
+					v-if="itemsGroup.length"
+				>
+					<template v-for="(item, idxGroup) in itemsGroup">
+						<div
+							class="award__title popup__content-title"
+							:key="'title-' + idxGroup"
+						>
+							За период с {{ new Date(item.from).toLocaleDateString('RU') }} до {{ new Date(item.to).toLocaleDateString('RU') }}
+						</div>
+						<table
+							class="award__table"
+							:key="'table-' + idxGroup"
+						>
+							<tr>
+								<td class="blue">
+									Сумма премии
+								</td>
+								<td>{{ item.sum }}</td>
+							</tr>
+							<tr v-if="item.activity">
+								<td class="blue">
+									План
+								</td>
+								<td>
+									<div>
+										<b>Активность: {{ item.activity.name }}</b>
+									</div>
+									<div>{{ item.plan }}</div>
+								</td>
+							</tr>
+							<tr>
+								<td class="blue">
+									Условия
+								</td>
+								<td>{{ item.text }}</td>
+							</tr>
+						</table>
+					</template>
+				</b-tab>
+				<b-tab
+					title="По должности"
+					v-if="itemsPosition.length"
+				>
+					<template v-for="(item, idxPosition) in itemsPosition">
+						<div
+							class="award__title popup__content-title"
+							:key="'title-' + idxPosition"
+						>
+							За период с {{ new Date(item.from).toLocaleDateString('RU') }} до {{ new Date(item.to).toLocaleDateString('RU') }}
+						</div>
+						<table
+							class="award__table"
+							:key="'table-' + idxPosition"
+						>
+							<tr>
+								<td class="blue">
+									Сумма премии
+								</td>
+								<td>{{ item.sum }}</td>
+							</tr>
+							<tr v-if="item.activity">
+								<td class="blue">
+									План
+								</td>
+								<td>
+									<div>
+										<b>Активность: {{ item.activity.name }}</b>
+									</div>
+									<div>{{ item.plan }}</div>
+								</td>
+							</tr>
+							<tr>
+								<td class="blue">
+									Условия
+								</td>
+								<td>{{ item.text }}</td>
+							</tr>
+						</table>
+					</template>
+				</b-tab>
+			</b-tabs>
+			<p
+				class="font-16 text-muted mt-3"
+				v-else
+			>
 				Обратитесь к своему руководителю, если хотите чтобы вам была назначена квартальная премия
 			</p>
 		</div>
@@ -87,7 +179,9 @@ export default {
 	data: function () {
 		const now = new Date()
 		return {
-			items: [],
+			itemsUser: [],
+			itemsGroup: [],
+			itemsPosition: [],
 			activities: [],
 			groups: [],
 			currentMonth: null,
@@ -142,12 +236,14 @@ export default {
 			this.axios.post('/statistics/quartal-premiums', {
 				filters: filters
 			}).then(response => {
-
-				this.items = response.data[0];
-
+				if(response.data){
+					this.itemsUser = response.data[0];
+					this.itemsGroup = response.data[1];
+					this.itemsPosition = response.data[2];
+				}
 				// this.defineSourcesAndGroups('t');
 
-				this.items.forEach(el => el.expanded = true);
+				// this.items.forEach(el => el.expanded = true);
 
 				this.loading = false
 			}).catch(error => {
@@ -175,3 +271,40 @@ export default {
 	}
 };
 </script>
+
+<style lang="scss">
+	.popup__award{
+		.nav-tabs {
+			border-top: 1px solid #dee2e6;
+			flex-wrap: nowrap;
+			white-space: nowrap;
+			.nav-item {
+				.nav-link {
+					font-size: 2.1rem;
+					border-bottom: none;
+					margin-top: 0.1rem;
+					line-height: 2em;
+					color: #8D8D8D;
+					font-family: "Open Sans", sans-serif;
+					font-weight: 600;
+					transition: color 0.3s;
+					padding: 1.5rem 0 0 0;
+					cursor: pointer;
+					margin-right: 40px;
+					background-color: transparent;
+					border-top: 4px solid transparent;
+
+					&:hover {
+						border-color: transparent;
+						color: #ED2353;
+					}
+
+					&.active {
+						border-top: 4px solid #ED2353;
+						color: #ED2353;
+					}
+				}
+			}
+		}
+	}
+</style>

@@ -982,20 +982,19 @@ export default {
 
 		validateMsg(item) {
 			let msg = '';
-
 			if(item.target == null)    msg = 'Выберите Кому назначить'
 			if(item.title.length <= 1) msg = 'Заполните название'
 
 			// activity id
-			let a;
-			if(item.source == 1) {
-				a = this.activities.findIndex(el => el.source == item.source && el.group_id == item.group_id && el.id == item.activity_id);
-			} else {
-				a = this.activities.findIndex(el => el.source == item.source && el.id == item.activity_id);
-			}
+			// let a;
+			// if(item.source == 1) {
+			// 	a = this.activities.findIndex(el => el.source == item.source && el.group_id == item.group_id && el.id == item.activity_id);
+			// } else {
+			// 	a = this.activities.findIndex(el => el.source == item.source && el.id == item.activity_id);
+			// }
 
-			if(item.activity_id == 0 || item.activity_id == undefined || a == -1) {
-				msg = 'Выберите показатель';
+			if(item.text.length === 0) {
+				msg = 'Заполните поле Текст';
 			}
 
 			// another
