@@ -34,7 +34,7 @@ class QuartalPremiumSaveRequest extends FormRequest
                     'App\Position'
                 ]),
             ],
-            'activity_id'       => 'required|integer',
+            'activity_id'       => 'nullable',
             'title'             => 'required|max:100',
             'text'              => 'required|max:255',
             'plan'              => 'required',

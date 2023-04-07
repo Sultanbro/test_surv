@@ -86,7 +86,7 @@ class QuartalPremiumService
             $quartal_premium = QuartalPremium::query()->create([
                 'targetable_id'     => $request->targetable_id,
                 'targetable_type'   => $request->targetable_type,
-                'activity_id'       => $request->input('activity_id'),
+                'activity_id'       => $request->input('activity_id') ?? 0,
                 'title'             => $request->input('title'),
                 'text'              => $request->input('text'),
                 'plan'              => $request->input('plan'),
