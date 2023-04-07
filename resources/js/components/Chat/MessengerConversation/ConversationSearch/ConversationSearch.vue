@@ -94,7 +94,11 @@ import ConversationMessage from '../ConversationFeed/ConversationMessage/Convers
 import ConversationHeader from '../ConversationHeader/ConversationHeader.vue';
 import ConversationSearchFilter from './ConversationSearchFilter.vue';
 import CalendarInput from '@/components/ui/CalendarInput/CalendarInput.vue'
-import { ChatIconSearch, ChatIconSearchClose, ChatIconSearchDate } from '../../icons/chat-icons.js'
+import {
+	ChatIconSearch,
+	ChatIconSearchClose,
+	ChatIconSearchDate,
+} from '../../icons/chat-icons.js'
 
 export default {
 	name: 'ConversationSearch',
@@ -122,7 +126,7 @@ export default {
 		...mapGetters([
 			'chat',
 			'chatSearchMessagesResults',
-			'chatSearchFilesResults'
+			'chatSearchFilesResults',
 		]),
 	},
 	watch: {

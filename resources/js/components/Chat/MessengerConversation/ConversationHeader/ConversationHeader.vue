@@ -119,6 +119,7 @@ import ConversationPinned from '../ConversationPinned/ConversationPinned.vue';
 import AlternativeAvatar from '../../ChatsList/ContactItem/AlternativeAvatar/AlternativeAvatar.vue';
 import { ChatIconMore, ChatIconSearchMessages } from '../../icons/chat-icons'
 
+
 export default {
 	name: 'ConversationHeader',
 	components: {

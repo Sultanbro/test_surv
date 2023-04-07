@@ -1,12 +1,19 @@
 <template>
-	<div class="ChatIconsDemo">
-		<component
+	<div
+		class="ChatIconsDemo"
+		@click.self.stop.prevent="$emit('close')"
+	>
+		<div
 			v-for="comp, name in Icons"
 			:key="name"
-			:is="name"
-			v-b-popover.hover.top="name"
-			class="m-4"
-		/>
+			:title="name"
+			class="ChatIconsDemo-icon ChatIcon-parent"
+		>
+			<component
+				:is="name"
+				v-b-popover.hover.top="name"
+			/>
+		</div>
 	</div>
 </template>
 
@@ -25,19 +32,32 @@ export default {
 }
 </script>
 
-<style>
+<style lang="scss">
 .ChatIconsDemo{
 	display: flex;
 	flex-flow: row wrap;
 	align-items: center;
 	justify-content: center;
 
+	padding: 2rem;
+
 	position: fixed;
 	z-index: 30000;
-	top: 0;
-	left: 0;
-	right: 0;
-	bottom: 0;
+	top: 50%;
+	left: 50%;
+	transform: translate(-50%, -50%);
+
 	background-color: #fff;
+	box-shadow: 0 0 2px 2px rgba(#000, 0.5);
+
+	&-icon{
+		flex: 0 0 10%;
+		padding: 2rem;
+		text-align: center;
+
+		&:hover{
+			background-color: #def;
+		}
+	}
 }
 </style>

@@ -14,7 +14,9 @@
 					v-show="!isChatSearchMode"
 					:fullscreen="true"
 				/>
-				<MessengerConversation />
+				<MessengerConversation
+					v-if="isDesktop || !!chat"
+				/>
 			</div>
 		</div>
 		<InfoPanel />
@@ -26,7 +28,10 @@
 			@close="hideGallery"
 		/>
 		<ConfirmDialog />
-		<!-- <ChatIconsDemo /> -->
+		<ChatIconsDemo
+			v-if="isDemoOpen"
+			@close="isDemoOpen = false"
+		/>
 	</div>
 </template>
 
@@ -38,7 +43,7 @@ import InfoPanel from './InfoPanel/InfoPanel';
 import clickOutside from './directives/clickOutside.ts';
 import ImageGallery from './ImageGallery/ImageGallery.vue';
 import ConfirmDialog from './ConfirmDialog/ConfirmDialog.vue';
-// import ChatIconsDemo from './icons/ChatIconsDemo.vue'
+import ChatIconsDemo from './icons/ChatIconsDemo.vue'
 
 // noinspection JSUnusedGlobalSymbols
 export default {
@@ -49,7 +54,7 @@ export default {
 		InfoPanel,
 		ImageGallery,
 		ConfirmDialog,
-		// ChatIconsDemo,
+		ChatIconsDemo,
 	},
 	directives: {
 		clickOutside
@@ -59,7 +64,8 @@ export default {
 			if (val) {
 				// set div messenger__open class
 				document.body.classList.add('messenger__open');
-			} else {
+			}
+			else {
 				// remove div messenger__open class
 				document.body.classList.remove('messenger__open');
 			}
@@ -68,6 +74,7 @@ export default {
 	data() {
 		return {
 			galleryOpened: false,
+			isDemoOpen: false,
 		};
 	},
 	computed: {
@@ -78,7 +85,11 @@ export default {
 			'galleryImages',
 			'galleryIndex',
 			'isChatSearchMode',
+			'chat',
 		]),
+		isDesktop() {
+			return this.$viewportSize.width > 670
+		},
 	},
 	created() {
 		this.boot();

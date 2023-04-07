@@ -1,7 +1,7 @@
 <template>
 	<div
 		class="messenger__nav"
-		:class="!fullscreen ? 'messenger__nav-collapsed' : 'messenger__nav-fullscreen'"
+		:class="(isDesktop ? !fullscreen : !chat) ? 'messenger__nav-collapsed' : 'messenger__nav-fullscreen'"
 	>
 		<ChatHeader v-if="isOpen" />
 		<SearchBox />
@@ -37,13 +37,17 @@ export default {
 	computed: {
 		...mapGetters([
 			'isOpen',
-		])
+			'chat',
+		]),
+		isDesktop() {
+			return this.$viewportSize.width > 670
+		},
 	},
 	// methods: {}
 }
 </script>
 
-<style>
+<style lang="scss">
 /*noinspection CssUnusedSymbol*/
 .messenger__nav {
   display: flex;
@@ -63,6 +67,13 @@ export default {
   .messenger__nav-fullscreen {
     display: none;
   }
+	.messenger__nav-collapsed{
+		flex: 0 0 100%;
+		max-width: 100%;
+		.messenger__box-search__input{
+			max-width: 100%;
+		}
+	}
 }
 
 /*noinspection CssUnusedSymbol*/
