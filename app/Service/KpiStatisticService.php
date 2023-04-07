@@ -3,6 +3,7 @@
 namespace App\Service;
 
 use App\CacheStorage\KpiItemsCacheStorage;
+use App\Filters\Kpis\KpiFilter;
 use App\Http\Requests\BonusesFilterRequest;
 use App\Models\Analytics\Activity;
 use App\Models\Analytics\AnalyticStat;
@@ -745,6 +746,8 @@ class KpiStatisticService
         $filters = $request->filters;
         $limit = $request->limit ? $request->limit : 10;
 
+        $searchWord = $filters['query'];
+
         if(
             isset($filters['data_from']['year'])
             && isset($filters['data_from']['month'])
@@ -767,6 +770,7 @@ class KpiStatisticService
 
         $last_date = Carbon::parse($date)->endOfMonth()->format('Y-m-d');
         $kpis = Kpi::withTrashed()
+            ->when($searchWord, fn() => (new KpiFilter)->globalSearch($searchWord))
             ->with([
                 'histories_latest' => function($query) use ($last_date) {
                     $query->whereDate('created_at', '<=', $last_date);
@@ -781,11 +785,11 @@ class KpiStatisticService
             ]);
 
         $kpis = $kpis
-            ->whereDate('created_at', '<=', Carbon::parse($date->format('Y-m-d'))
+            ->whereDate('kpis.created_at', '<=', Carbon::parse($date->format('Y-m-d'))
                 ->endOfMonth()
                 ->format('Y-m-d')
-            )->where(fn ($query) => $query->whereNull('deleted_at')->orWhere(
-                fn ($query) => $query->whereDate('deleted_at', '>', Carbon::parse($date->format('Y-m-d'))
+            )->where(fn ($query) => $query->whereNull('kpis.deleted_at')->orWhere(
+                fn ($query) => $query->whereDate('kpis.deleted_at', '>', Carbon::parse($date->format('Y-m-d'))
                     ->endOfMonth()
                     ->format('Y-m-d')))
             )
