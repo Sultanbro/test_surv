@@ -16,6 +16,7 @@
 				<SuperFilter
 					ref="child"
 					:groups="groups"
+					@apply="fetch"
 				/>
 				<!--<input
                 class="searcher mr-2 input-sm"
@@ -287,7 +288,7 @@
 					</template>
 				</template>
 				<template v-for="(page_item, p) in page_items">
-					<template v-if="page_item.name.includes(searchText) || searchText.length == 0">
+					<template>
 						<tr :key="p">
 							<td
 								@click="expand(p)"
@@ -767,36 +768,6 @@ export default {
 		Sidebar,
 	},
 	props: {},
-	watch: {
-		show_fields: {
-			handler: function (val) {
-				localStorage.quartal_premiums_show_fields = JSON.stringify(val);
-				this.prepareFields();
-			},
-			deep: true
-		},
-		pageSize: {
-			handler: function(val) {
-				if(val < 1) {
-					val = 1;
-					return;
-				}
-
-				if(val > 100) {
-					val = 100;
-					return;
-				}
-
-				this.paginationKey++;
-			}
-		},
-		newPremiumArray(after){
-			if(after.length == 0){
-				this.counter = 0;
-				this.new_target = null;
-			}
-		}
-	},
 	data() {
 		return {
 			new_target: null,
@@ -827,7 +798,42 @@ export default {
 				'created_by',
 				'updated_by',
 			],
-			statusRequest: false
+			statusRequest: false,
+			timeout: null,
+			filters: null,
+		}
+	},
+	watch: {
+		show_fields: {
+			handler: function (val) {
+				localStorage.quartal_premiums_show_fields = JSON.stringify(val);
+				this.prepareFields();
+			},
+			deep: true
+		},
+		pageSize: {
+			handler: function(val) {
+				if(val < 1) {
+					val = 1;
+					return;
+				}
+
+				if(val > 100) {
+					val = 100;
+					return;
+				}
+
+				this.paginationKey++;
+			}
+		},
+		newPremiumArray(after){
+			if(after.length == 0){
+				this.counter = 0;
+				this.new_target = null;
+			}
+		},
+		searchText(){
+			this.onSearchQuery()
 		}
 	},
 
@@ -895,12 +901,14 @@ export default {
 
 		fetch(filter = null) {
 			let loader = this.$loading.show();
+			this.filters = filter
 
 			this.axios.post( this.uri + '/get', {
-				filters: filter
+				filters: {
+					...filter,
+					query: this.searchText,
+				}
 			}).then(response => {
-
-
 				this.all_items = response.data.items
 				this.items = response.data.items;
 				this.activities = response.data.activities;
@@ -1002,8 +1010,8 @@ export default {
 		save(item, index) {
 
 			/**
-             * validate item
-             */
+			 * validate item
+			 */
 			let not_validated_msg = this.validateMsg(item);
 			if(not_validated_msg != '') {
 				this.$toast.error(not_validated_msg)
@@ -1011,8 +1019,8 @@ export default {
 			}
 
 			/**
-             * prepare fields
-             */
+			 * prepare fields
+			 */
 			let loader = this.$loading.show();
 			let method = item.id == 0 ? 'save' : 'update';
 
@@ -1027,8 +1035,8 @@ export default {
 				: this.axios.put(this.uri + '/' + method, fields);
 
 			/**
-             * request
-             */
+			 * request
+			 */
 			req.then(response => {
 
 				if(method == 'save') {
@@ -1096,7 +1104,7 @@ export default {
 
 			this.all_items[p].items.splice(i, 1);
 			if(this.all_items[p].items.length == 0) this.all_items.splice(p, 1)
-			this.onSearch();
+			// this.onSearch();
 
 			this.$toast.info('Удалено');
 		},
@@ -1141,7 +1149,7 @@ export default {
 		},
 
 		onSearch() {
-			let text = this.searchText;
+			const text = this.searchText.toLowerCase();
 
 			if(this.searchText == '') {
 				this.items = this.all_items;
@@ -1149,9 +1157,7 @@ export default {
 				this.items = this.all_items.filter(el => {
 					let has = false;
 
-					if (
-						el.name.toLowerCase().indexOf(text.toLowerCase()) > -1
-					) {
+					if (el.name.toLowerCase().indexOf(text) > -1) {
 						has = true;
 					}
 					return has;
@@ -1197,6 +1203,15 @@ export default {
 				group_id = 0
 				return this.activities.filter(el => el.source == source);
 			}
+		},
+		onSearchQuery(){
+			if(this.timeout) clearTimeout(this.timeout)
+			this.timeout = setTimeout(() => {
+				this.fetch({
+					...this.filters,
+					query: this.searchText
+				})
+			}, 300);
 		}
 	},
 
