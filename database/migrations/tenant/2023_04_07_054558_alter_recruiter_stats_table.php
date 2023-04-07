@@ -13,10 +13,8 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::connection('mysql')->create('test', function (Blueprint $table) {
-            $table->id();
-            $table->string('name');
-            $table->timestamps();
+        Schema::table('recruiter_stats', function (Blueprint $table) {
+            $table->timestamp('created_at')->useCurrent();
         });
     }
 
@@ -27,6 +25,8 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::connection('mysql')->dropIfExists('test');
+        Schema::table('recruiter_stats', function (Blueprint $table) {
+            $table->dropColumn('created_at');
+        });
     }
 };
