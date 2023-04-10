@@ -481,8 +481,6 @@ class SalaryController extends Controller
                         users.working_time_id as working_time_id,
                         users.working_day_id as working_day_id,
                         users.birthday as birthday,
-                        wd.name as workDay,
-                        wt.time as workTime,
                         z.zarplata as salary,
                         z.card_kaspi as card_kaspi,
                         z.kaspi_cardholder as kaspi_cardholder,
