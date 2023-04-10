@@ -469,10 +469,7 @@ class SalaryController extends Controller
     }
 
     private function getSheet($users_ids, $date, $group_id) {
-        // if(in_array(17758, $users_ids)) dd($users_ids);
         $users = \DB::table('users')
-            ->join('working_times as wt', 'wt.id', '=', 'users.working_time_id')
-            ->join('working_days as wd', 'wd.id', '=', 'users.working_day_id')
             ->join('zarplata as z', 'z.user_id', '=', 'users.id')
             ->leftJoin('timetracking as t', 't.user_id', '=', 'users.id')
             ->whereIn('users.id', array_unique($users_ids))
@@ -483,8 +480,6 @@ class SalaryController extends Controller
                         users.working_time_id as working_time_id,
                         users.working_day_id as working_day_id,
                         users.birthday as birthday,
-                        wd.name as workDay,
-                        wt.time as workTime,
                         z.zarplata as salary,
                         z.card_kaspi as card_kaspi,
                         z.kaspi_cardholder as kaspi_cardholder,
@@ -495,12 +490,9 @@ class SalaryController extends Controller
                         users.currency as currency,
                         CONCAT('KASPI', '') as card
                         ")
-            ->groupBy('id', 'phone', 'full_name', 'workDay', 'working_time_id', 'workTime', 'salary',
+            ->groupBy('id', 'phone', 'full_name', 'working_time_id', 'salary',
             'card_kaspi', 'card_jysan', 'jysan', 'kaspi','kaspi_cardholder','jysan_cardholder', 'card', 'program_id', 'birthday','currency', 'working_day_id')
             ->get();
-
-            //if($users->where('id', 14073)->first()) dd($users_ids);
-       //     if($user->id == 14073) dd($users_ids);
         
         $fines = Fine::pluck('penalty_amount', 'id')->toArray();
         $data = [];
@@ -613,17 +605,11 @@ class SalaryController extends Controller
                 }
             }
 
+
             // рабочие дни
-            $ignore = $user->working_day_id == 1 ? [6,0] : [0]; // Какие дни не учитывать в месяце
+
+            $ignore = $_user->chartWorkDays(); // Какие дни не учитывать в месяце
             $workDays = workdays($date->year, $date->month, $ignore);
-                
-            if($group_id == 53 && $date->year == 2022 && $date->month == 3) {
-                $workdays = 19;
-            } else if($group_id == 57  && $date->year == 2022 && $date->month == 3) {
-                $workdays = 22;
-            } else {
-                $workdays = workdays($date->year, $date->month, $ignore);
-            }
 
             if(!$edited_salary) $allTotal[6] += intval($workDays);
 
@@ -635,7 +621,6 @@ class SalaryController extends Controller
                 ->where('user_id', $user->id)
                 ->whereYear('date', $date->year)
                 ->whereMonth('date', $date->month)
-               //->whereDate('date', '<', Carbon::parse($user_applied_at)->format('Y-m-d'))
                 ->whereIn('type', [5,6,7])
                 ->get(['day'])
                 ->pluck('day')
@@ -653,57 +638,25 @@ class SalaryController extends Controller
                 ])
                 ->whereYear('enter', $date->year)
                 ->whereMonth('enter', $date->month)
-                //->whereNotIn('day', $trainee_days)
                 ->where('user_id', $user->id)
                 ->get();
             
             
             $workedHours = $workedHours->whereNotIn('day', $trainee_days); 
-            
-            
 
-            //$workedHours = $workedHours->sum('total_hours');
             $workedHours = $workedHours->sum('total_hours') / 60;
-            
-            
-            
-           // dump($user->workTime);   
-           //dump($workedHours, $user->workTime);  
         
-            $workedDays = round($workedHours / $user->workTime, 2);
-           // dump($workedDays);  
-                // if($user->id == 10242) {
-                //     dump($user_applied_at);
-                //     dump($workedHours);
-                //     //dump($workedDays);
-                //     dump($hourly_pay);
-                // }
+            $workedDays = round($workedHours / $_user->countWorkHours(), 2);
                 
             if(!$edited_salary) $allTotal[5] += $workedDays;
             
             // проверка сданных экзаменов  
             $wage = $user->salary; // WAGE: оклад + бонус от экзамена
 
-              
-
             // ставка
             $allTotal[7] += intval($wage) ?? 0;
-            
-            
-            
-           
-
-            // if($user->id == 9975) {
-            //     dd($trainee_days);
-            // }
-
-            // начислено
-            //$salary = round($workedHours * $hourly_pay, 2);
 
             $salary_table = Salary::salariesTable(-1, $date->format('Y-m-d'), [$user->id]);
-            
-            // if($user->id == 5670) dump($salary_table);
-
 
             $salary = 0;
             $trainee_fees = 0;
@@ -720,31 +673,12 @@ class SalaryController extends Controller
                     }
                 }   
             }
-           
-           
-
-            // if($user->id == 10230) {
-            //         dump($workedHours);
-            //         dump($hourly_pay);
-            //         dd($salary);
-            // } 
-
-            // if($user->id == 11041) {
-            //     dump($trainee_days_before_apply_count);
-            //     dump($workedHours);
-            //     dump($hourly_pay);
-            //     dd($salary);
-
-            // }
 
             if(!$edited_salary) $allTotal[8] += $salary;
 
-            // $trainee_fees = round($trainee_days_count * $hourly_pay * $user->workTime * $user->internshipPayRate(), 2); // стажировочные на пол суммы
-            // //$trainee_fees = 0;
             if(!$edited_salary) $allTotal[10] += $trainee_fees;
 
-            // KPI 
-
+            // KPI
             $editedKpi = EditedKpi::where('user_id', $user->id)
                     ->whereYear('date', $date->year)
                     ->whereMonth('date', $date->month)
@@ -758,8 +692,7 @@ class SalaryController extends Controller
 
             if(!$edited_salary) $allTotal[9] += $kpi;
 
-            // Бонусы 
-
+            // Бонусы
             $editedBonus = EditedBonus::where('user_id', $user->id)
                 ->whereYear('date', $date->year)
                 ->whereMonth('date', $date->month)

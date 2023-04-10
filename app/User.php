@@ -1074,6 +1074,17 @@ class User extends Authenticatable implements Authorizable
     }
 
     /**
+     * Количество рабочих дней в неделе по графику.
+     *
+     * @return array
+     */
+    public function chartWorkDays(): array
+    {
+        $userChart = $this->getWorkChart();
+
+        return WorkChartModel::getWorkDay($userChart);
+    }
+    /**
      * Ставка стажировочных дней
      * Если стаж не оплачивается, то 0
      */
@@ -1290,5 +1301,15 @@ class User extends Authenticatable implements Authorizable
             ->sum('sum') ?? 0;
 
         return $individualQuarterPremium + $groupQuarterPremium + $positionQuarterPremium;
+    }
+
+    /**
+     * @return int
+     */
+    public function countWorkHours(): int
+    {
+        $schedule = $this->schedule();
+
+        return $schedule['end']->diffInHours($schedule['start']) - 1;
     }
 }
