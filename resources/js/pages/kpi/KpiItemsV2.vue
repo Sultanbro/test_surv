@@ -162,7 +162,7 @@
 							{{ item.sum }}
 						</td>
 						<td class="text-center">
-							0
+							{{ parseInt(item.sum * (item.percent / 100)) }}
 						</td>
 						<td class="no-hover">
 							<i
