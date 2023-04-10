@@ -471,8 +471,6 @@ class SalaryController extends Controller
     private function getSheet($users_ids, $date, $group_id) {
         // if(in_array(17758, $users_ids)) dd($users_ids);
         $users = \DB::table('users')
-            ->join('working_times as wt', 'wt.id', '=', 'users.working_time_id')
-            ->join('working_days as wd', 'wd.id', '=', 'users.working_day_id')
             ->join('zarplata as z', 'z.user_id', '=', 'users.id')
             ->leftJoin('timetracking as t', 't.user_id', '=', 'users.id')
             ->whereIn('users.id', array_unique($users_ids))
