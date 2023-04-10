@@ -5,6 +5,7 @@ namespace App\Models\Kpi;
 use App\Models\Admin\ObtainedBonus;
 use App\Models\Scopes\ActiveScope;
 use App\Traits\ActivateAbleModelTrait;
+use App\Traits\TargetJoin;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
@@ -23,7 +24,7 @@ use DB;
 
 class Bonus extends Model
 {      
-    use SoftDeletes, HasFactory, Targetable, WithCreatorAndUpdater, WithActivityFields, Expandable, ActivateAbleModelTrait;
+    use SoftDeletes, HasFactory, Targetable, WithCreatorAndUpdater, WithActivityFields, Expandable, ActivateAbleModelTrait, TargetJoin;
     
     protected $table = 'kpi_bonuses';
 

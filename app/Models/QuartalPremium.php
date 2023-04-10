@@ -8,6 +8,7 @@ use App\Models\Kpi\Traits\WithCreatorAndUpdater;
 use App\Models\Kpi\Traits\WithActivityFields;
 use App\Models\Scopes\ActiveScope;
 use App\Traits\ActivateAbleModelTrait;
+use App\Traits\TargetJoin;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -16,7 +17,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 
 class QuartalPremium extends Model
 {
-    use HasFactory, SoftDeletes, Targetable, WithCreatorAndUpdater, WithActivityFields, Expandable, ActivateAbleModelTrait;
+    use HasFactory, SoftDeletes, Targetable, WithCreatorAndUpdater, WithActivityFields, Expandable, ActivateAbleModelTrait, TargetJoin;
 
     protected $table = 'quartal_premiums';
 

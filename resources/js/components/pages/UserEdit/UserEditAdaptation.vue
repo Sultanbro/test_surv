@@ -1,4 +1,5 @@
 <script>
+const DATE_YMD = 'YYYY-MM-DD';
 export default {
 	name: 'UserEditAdaptation',
 	props: {
@@ -6,6 +7,11 @@ export default {
 			type: Object,
 			default: null
 		},
+	},
+	data(){
+		return {
+			DATE_YMD,
+		}
 	}
 }
 </script>

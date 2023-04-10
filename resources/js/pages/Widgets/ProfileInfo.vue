@@ -76,7 +76,10 @@
 			</select> -->
 	</div>
 </template>
+
 <script>
+import { mapState, mapActions } from 'pinia'
+import { useWorkChartStore } from '@/stores/WorkChart.js'
 export default {
 	name: 'ProfileInfo',
 	props: {
@@ -85,25 +88,22 @@ export default {
 	data: function () {
 		return {
 			loading: false,
-			workCharts: null
 		}
 	},
-	mounted() {
-		this.axios.get('/work-chart').then(res => {
-			this.workCharts = res.data.data;
-		}).catch(err => {
-			console.log(err);
-		})
-	},
 	computed: {
+		...mapState(useWorkChartStore, ['workChartList']),
+		...mapState(useWorkChartStore, {isWorkChartLoading: 'isLoading'}),
 		hour() {
 			return this.$moment.utc(this.$moment.duration(this.workChartUser.end_time) - this.$moment.duration(this.workChartUser.start_time)).format('H');
 		},
 		workChartUser() {
-			return this.data.user && this.workCharts ? this.workCharts.find(w => w.id === this.data.user.work_chart_id) : null;
+			if(!this.workChartList) return null
+			if(!this.data?.user) return null
+			return this.workChartList.find(w => w.id === this.data.user.work_chart_id)
 		},
 		fullName(){
-			return this.data && this.data.user ? `${this.data.user.name} ${this.data.user.last_name || ''}` : '';
+			if(!this.data?.user) return ''
+			return `${this.data.user.name} ${this.data.user.last_name || ''}`
 		},
 		isAdmin(){
 			return this.$store.state.user.user.is_admin === 1;
@@ -118,6 +118,12 @@ export default {
 				return false;
 			}
 		},
+	},
+	mounted() {
+		if(!this.workChartList && !this.isWorkChartLoading) this.fetchWorkChartList()
+	},
+	methods: {
+		...mapActions(useWorkChartStore, ['fetchWorkChartList'])
 	}
 }
 </script>
