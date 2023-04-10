@@ -207,6 +207,7 @@
 										:upper_limit="item.upper_limit"
 										:editable="true"
 										:kpi_page="true"
+										@getSum="item.my_sum = $event"
 									/>
 								</div>
 							</td>
@@ -657,7 +658,44 @@ export default {
 					query: this.searchText
 				})
 			}, 300);
-		}
+		},
+
+		countAvg() {
+
+			this.items.forEach(kpi => {
+
+				let kpi_sum = 0;
+				let kpi_count = 0;
+
+				kpi.users.forEach(user => {
+
+					let count = 0;
+					let sum = 0;
+					let avg = 0;
+
+					user.items.forEach(item => {
+						sum += Number(item.percent);
+						count++;
+					});
+
+					/**
+					* count avg of user items
+					*/
+					avg = count > 0 ? Number(sum / count).toFixed(2) : 0;
+
+					user.avg = avg;
+
+					// all kpi sum
+					kpi_sum += Number(avg);
+					kpi_count++;
+				});
+				/**
+				* count avg completed percent of kpi by users
+				*/
+				kpi.avg = kpi_count > 0 ? Number(Number(kpi_sum / kpi_count * 100).toFixed(2)) : 0;
+
+			});
+		},
 	},
 }
 </script>
