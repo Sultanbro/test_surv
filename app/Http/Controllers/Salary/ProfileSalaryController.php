@@ -28,7 +28,7 @@ class ProfileSalaryController extends Controller
         /**
          * prepare vars
          */
-        $user = User::find(auth()->id());
+        $user = User::find(5);
         $user_position = Position::find($user->position_id);
         $date = Carbon::createFromDate(date('Y'), $request->month, 1);
 
@@ -42,10 +42,22 @@ class ProfileSalaryController extends Controller
         $d1 = $date->format('Y-m-d');
         $kv = intval((date('m', strtotime($d1)) + 2)/3);
 
-        $quarter_bonus = (string)$user->qpremium()
+        $individualQuarterPremium = $user->qpremium()
             ->where('from', '<=', now()->format('Y-m-d'))
             ->where('to', '>=', now()->format('Y-m-d'))
-            ->sum('sum');
+            ->sum('sum') ?? 0;
+
+        $groupQuarterPremium = $user->activeGroup()->qpremium()
+            ->where('from', '<=', now()->format('Y-m-d'))
+            ->where('to', '>=', now()->format('Y-m-d'))
+            ->sum('sum') ?? 0;
+
+        $positionQuarterPremium = $user->currentPosition()->qpremium()
+            ->where('from', '<=', now()->format('Y-m-d'))
+            ->where('to', '>=', now()->format('Y-m-d'))
+            ->sum('sum') ?? 0;
+
+        $quarter_bonus = $individualQuarterPremium + $groupQuarterPremium + $positionQuarterPremium;
 
         /*** Группы пользователя */
         $groups = '';

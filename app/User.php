@@ -1222,6 +1222,13 @@ class User extends Authenticatable implements Authorizable
         return $this->groups()->where('status', '=', 'active')->first();
     }
 
+    /**
+     * @return Position|null
+     */
+    public function currentPosition(): ?Position
+    {
+        return $this->position()->first() ?? null;
+    }
 
     public function workdays(): BelongsToMany
     {
