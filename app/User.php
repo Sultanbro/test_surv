@@ -1268,4 +1268,27 @@ class User extends Authenticatable implements Authorizable
     {
         return self::query()->findOrFail($id);
     }
+
+    /**
+     * @return float
+     */
+    public function sumQuarterPremiums(): float
+    {
+        $individualQuarterPremium = $this->qpremium()
+            ->where('from', '<=', now()->format('Y-m-d'))
+            ->where('to', '>=', now()->format('Y-m-d'))
+            ->sum('sum') ?? 0;
+
+        $groupQuarterPremium = $this->activeGroup()->qpremium()
+            ->where('from', '<=', now()->format('Y-m-d'))
+            ->where('to', '>=', now()->format('Y-m-d'))
+            ->sum('sum') ?? 0;
+
+        $positionQuarterPremium = $this->currentPosition()->qpremium()
+            ->where('from', '<=', now()->format('Y-m-d'))
+            ->where('to', '>=', now()->format('Y-m-d'))
+            ->sum('sum') ?? 0;
+
+        return $individualQuarterPremium + $groupQuarterPremium + $positionQuarterPremium;
+    }
 }
