@@ -282,7 +282,7 @@ export default {
 				})
 				.then((response) => {
 					if (response.data.error && response.data.error == 'access') {
-						console.log(response.data.error);
+						console.error(response.data.error);
 						this.hasPremission = false;
 						loader.hide();
 						return;
@@ -294,6 +294,9 @@ export default {
 					this.setMonth();
 					this.setFields();
 					this.loadItems();
+					if(this.currentGroup === 97){
+						this.crutchYandex()
+					}
 					this.dataLoaded = true;
 					setTimeout(() => {
 						var container = document.querySelector('.table-responsive');
@@ -345,6 +348,15 @@ export default {
 			//     fine = item.selectedFines[key]
 			// }
 		},
+		// костыль для яндекс доставки
+		crutchYandex(){
+			this.items.forEach(item => {
+				Object.keys(item).forEach(key => {
+					if(!parseInt(key)) return
+					this.$set(item, key, this.$moment(item[key], 'HH:mm').subtract(6, 'H').format('HH:mm'))
+				})
+			});
+		}
 	},
 };
 </script>
