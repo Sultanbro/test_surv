@@ -616,7 +616,7 @@ class Salary extends Model
                 $hours[$i]       = null;  
                 $trainings[$i]   = null; 
 
-                $x = $tts->where('day', $i);
+                $x = $tts->where('day', $i)->orderBy('id', 'desc')->limit(1);
                 $y = $tts_before_apply->where('day', $i);
                 $t = $trainee_days->where('day', $i)->first();
                 $r = $retraining_days->where('day', $i)->first();
