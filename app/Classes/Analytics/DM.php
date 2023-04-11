@@ -198,10 +198,8 @@ class DM
             $carbon_date = Carbon::parse($date);
             
             $tt = Timetracking::where('user_id', $user_id)
-                ->whereYear('enter', $carbon_date->year)
-                ->whereMonth('enter', $carbon_date->month)
-                ->whereDay('enter', $carbon_date->day)
-                ->orderBy('id', 'desc')->first();
+                ->whereDate('enter', $carbon_date->format('Y-m-d'))
+                ->exists();
             
             if($tt) {
                 $tt->total_hours = $value_for_21 * 60;
