@@ -315,8 +315,7 @@ class DM
      */
     private static function updateOrCreateTimetracking(int $user_id, Carbon $carbon_date, int $value_for_21): void
     {
-        Timetracking::query()->where('user_id', $user_id)
-            ->whereDate('enter', $carbon_date->format('Y-m-d'))
+        Timetracking::query()
             ->updateOrCreate(
                 [
                     'user_id' => $user_id,
