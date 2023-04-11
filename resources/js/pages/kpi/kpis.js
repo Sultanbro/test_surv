@@ -153,6 +153,10 @@ function calcCompleted(el) {
 
 	// if(plan <= 0) return 0;
 
+	if(el.histories_latest?.payload?.plan){
+		plan = el.histories_latest.payload.plan
+	}
+
 	if(el.method == 1) {
 		res = (fact / plan * 100).toFixed(2);
 	}
@@ -196,6 +200,10 @@ function calcSum(el, kpi, completed) {
 	let share = el.share != undefined ? parseFloat(el.share) / 100.0 : 0
 	let completed_80 = kpi.completed_80
 	let completed_100 = kpi.completed_100
+
+	if(el.histories_latest?.payload?.share){
+		share = el.histories_latest.payload.share != undefined ? parseFloat(el.histories_latest.payload.share) / 100.0 : 0
+	}
 
 	if(el.full_time == 0) {
 		completed_80 /= 2;
