@@ -197,7 +197,32 @@ class DM
             
             $carbon_date = Carbon::parse($date);
 
-            self::updateOrCreateTimetracking($user_id, $carbon_date, $value_for_21);
+            $tt = Timetracking::where('user_id', $user_id)
+                ->whereYear('enter', $carbon_date->year)
+                ->whereMonth('enter', $carbon_date->month)
+                ->whereDay('enter', $carbon_date->day)
+                ->orderBy('id', 'desc')->first();
+
+            if($tt) {
+                $tt->total_hours = $value_for_21 * 60;
+                $tt->updated = 1;
+                $tt->save();
+            } else {
+                Timetracking::create([
+                    'enter' => $carbon_date,
+                    'user_id' => $user_id,
+                    'updated' => 1,
+                    'total_hours' => $value_for_21 * 60,
+                ]);
+            }
+
+            TimetrackingHistory::create([
+                'author_id' => Auth::user()->id,
+                'author' => Auth::user()->name.' '.Auth::user()->last_name,
+                'user_id' => $user_id,
+                'description' => 'Изменено время с Аналитики на ' . $value_for_21,
+                'date' => $carbon_date->format('Y-m-d')
+            ]);
         }
     }
 
@@ -207,7 +232,32 @@ class DM
     public static function updateTimesByWorkHours($user_id, $date, $day, $value) {
         $carbon_date = Carbon::parse($date)->day($day);
 
-        self::updateOrCreateTimetracking($user_id, $carbon_date, $value);
+        $tt = Timetracking::where('user_id', $user_id)
+            ->whereYear('enter', $carbon_date->year)
+            ->whereMonth('enter', $carbon_date->month)
+            ->whereDay('enter', $carbon_date->day)
+            ->orderBy('id', 'desc')->first();
+
+        if($tt) {
+            $tt->total_hours = $value * 60;
+            $tt->updated = 1;
+            $tt->save();
+        } else {
+            Timetracking::create([
+                'enter' => $carbon_date,
+                'user_id' => $user_id,
+                'updated' => 1,
+                'total_hours' => $value * 60,
+            ]);
+        }
+
+        TimetrackingHistory::create([
+            'author_id' => Auth::user()->id,
+            'author' => Auth::user()->name.' '.Auth::user()->last_name,
+            'user_id' => $user_id,
+            'description' => 'Изменено время с Аналитики на ' . $value,
+            'date' => $carbon_date->format('Y-m-d')
+        ]);
     }
 
     /**
@@ -305,39 +355,5 @@ class DM
         }
 
         return $value;
-    }
-
-    /**
-     * @param int $user_id
-     * @param Carbon $carbon
-     * @param int $value
-     * @return void
-     */
-    private static function updateOrCreateTimetracking(int $user_id, Carbon $carbon, int $value): void
-    {
-        $timeTrack = Timetracking::query()->where('user_id', $user_id)->whereDate('enter', $carbon->format('Y-m-d'));
-
-        if ($timeTrack->exists())
-        {
-            $timeTrack?->update([
-                'updated' => 1,
-                'total_hours' => $value * 60
-            ]);
-        } else {
-            Timetracking::query()->create([
-                'user_id' => $user_id,
-                'enter' => $carbon->format('Y-m-d'),
-                'updated' => 1,
-                'total_hours' => $value * 60
-            ]);
-        }
-
-        TimetrackingHistory::create([
-            'author_id' => Auth::user()->id,
-            'author' => Auth::user()->name . ' ' . Auth::user()->last_name,
-            'user_id' => $user_id,
-            'description' => 'Изменено время с Аналитики на ' . $value,
-            'date' => $carbon->format('Y-m-d')
-        ]);
     }
 }
