@@ -244,24 +244,17 @@ class Timetracking extends Model
 
     public static function updateTimes($employee_id, $date, $total_hours)
     {
-        $tt = self::where('user_id', $employee_id)
-            ->whereDate('enter', $date)
-            ->orderBy('id', 'desc')
-            ->first();
-
-        if($tt) {
-            $tt->total_hours = (int)$total_hours;
-            $tt->updated = 2;
-            $tt->save();
-        } else {
-            Timetracking::create([
-                'enter' => $date,
-                'exit' => $date,
-                'updated' => 2,
-                'user_id' => $employee_id,
-                'total_hours' => (int)$total_hours,
-            ]);
-        }
+        Timetracking::query()->updateOrCreate(
+            [
+                'user_id'   => $employee_id,
+                'enter'     => $date
+            ],
+            [
+                'total_hours'   => (int) $total_hours,
+                'updated'       => 2,
+                'exit'          => $date
+            ]
+        );
 
         \App\TimetrackingHistory::create([
             'user_id' => $employee_id,
