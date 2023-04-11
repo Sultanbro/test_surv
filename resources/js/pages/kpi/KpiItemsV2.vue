@@ -216,8 +216,8 @@
 							{{ item.histories_latest ? item.histories_latest.payload.share : item.share }}
 						</td>
 						<td
-							class="text-center"
 							v-if="editable"
+							class="text-center"
 						>
 							<input
 								v-if="[1,3,5].includes(item.method)"
@@ -235,8 +235,8 @@
 							>
 						</td>
 						<td
-							class="text-center"
 							v-else
+							class="text-center"
 						>
 							<!-- sum or avg by method -->
 							<div v-if="[1,3,5].includes(item.method)">

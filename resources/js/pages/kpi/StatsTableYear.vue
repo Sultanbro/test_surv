@@ -5,18 +5,6 @@
 			'v-loading': isLoading.year
 		}"
 	>
-		<div class="StatsTableYear-filters row">
-			<b-col cols="3">
-				<b-form-select
-					v-model="year"
-					:options="yearOptions"
-				/>
-			</b-col>
-			<b-col
-				cols="9"
-				class="d-fex aic"
-			/>
-		</div>
 		<table class="StatsTableYear-table j-table mt-4">
 			<thead>
 				<tr class="table-heading">
@@ -148,15 +136,21 @@ import { useKPIStore } from '@/stores/KPI'
 import { usePortalStore } from '@/stores/Portal'
 import { useYearOptions } from '@/composables/yearOptions'
 
+const now = new Date()
+
 export default {
 	name: 'StatsTableYear',
 	components: {},
+	props:{
+		year:{
+			type: Number,
+			default: now.getFullYear(),
+		}
+	},
 	data(){
-		const now = new Date()
 		return {
 			yearOptions: useYearOptions(),
 			page: 1,
-			year: now.getFullYear(),
 		}
 	},
 	computed: {
@@ -226,18 +220,15 @@ export default {
 		page(value){
 			this.setStatYearPage(value)
 		},
-		'statYear.year'(value){
-			this.year = value
-		},
-		year(value){
-			this.setStatYearYear(value)
+		year(){
+			this.fetchStatYear(this.year)
 		},
 		'statYear.limit'(){
-			this.fetchStatYear()
+			this.fetchStatYear(this.year)
 		},
 	},
 	created(){
-		this.fetchStatYear(this.statYear.year, this.statYear.page, this.statYear.limit)
+		this.fetchStatYear(this.year, this.statYear.page, this.statYear.limit)
 	},
 	mounted(){},
 	methods: {
@@ -262,7 +253,7 @@ export default {
 }
 </script>
 
-<style lang=scss>
+<style lang="scss">
 .StatsTableYear{
 	position: relative;
 	// &-filters{}
