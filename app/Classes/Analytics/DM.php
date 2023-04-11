@@ -309,30 +309,35 @@ class DM
 
     /**
      * @param int $user_id
-     * @param Carbon $carbon_date
-     * @param int $value_for_21
+     * @param Carbon $carbon
+     * @param int $value
      * @return void
      */
-    private static function updateOrCreateTimetracking(int $user_id, Carbon $carbon_date, int $value_for_21): void
+    private static function updateOrCreateTimetracking(int $user_id, Carbon $carbon, int $value): void
     {
-        Timetracking::query()
-            ->updateOrCreate(
-                [
-                    'user_id' => $user_id,
-                    'enter' => $carbon_date->format('Y-m-d')
-                ],
-                [
-                    'updated' => 1,
-                    'total_hours' => $value_for_21 * 60
-                ]
-            );
+        $timeTrack = Timetracking::query()->where('user_id', $user_id)->whereDate('enter', $carbon->format('Y-m-d'));
+
+        if ($timeTrack->exists())
+        {
+            $timeTrack?->update([
+                'updated' => 1,
+                'total_hours' => $value * 60
+            ]);
+        } else {
+            Timetracking::query()->create([
+                'user_id' => $user_id,
+                'enter' => $carbon->format('Y-m-d'),
+                'updated' => 1,
+                'total_hours' => $value * 60
+            ]);
+        }
 
         TimetrackingHistory::create([
             'author_id' => Auth::user()->id,
             'author' => Auth::user()->name . ' ' . Auth::user()->last_name,
             'user_id' => $user_id,
-            'description' => 'Изменено время с Аналитики на ' . $value_for_21,
-            'date' => $carbon_date->format('Y-m-d')
+            'description' => 'Изменено время с Аналитики на ' . $value,
+            'date' => $carbon->format('Y-m-d')
         ]);
     }
 }
