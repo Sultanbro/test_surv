@@ -4,12 +4,23 @@
 		class="d-flex"
 	>
 		<!-- left sidebar -->
-		<div class="lp">
+		<div class="lp cabinet-lp">
 			<h1 class="page-title">
 				Настройка кабинета
 			</h1>
 			<div class="settingCabinet">
 				<ul class="p-0">
+					<li class="position-relative lp-item">
+						<a
+							class="lp-link"
+							@click="page = 'profile'"
+							:class="{ active: page == 'profile' }"
+							tabindex="0"
+						>
+							<i class="fa fa-user" />
+							Настройка собственного профиля
+						</a>
+					</li>
 					<li
 						v-if="user.is_admin === 1"
 						class="lp-item"
@@ -22,18 +33,6 @@
 						>
 							<i class="fa fa-key" />
 							Административные настройки
-						</a>
-					</li>
-
-					<li class="position-relative lp-item">
-						<a
-							class="lp-link"
-							@click="page = 'profile'"
-							:class="{ active: page == 'profile' }"
-							tabindex="0"
-						>
-							<i class="fa fa-user" />
-							Настройка собственного профиля
 						</a>
 					</li>
 				</ul>
@@ -1110,20 +1109,22 @@ a.lp-link {
 	font-weight: bold;
 	font-size: 1.4rem;
 	cursor: pointer;
-	color: darken(#2459a4, 5%);
+	color: #333;
 
 	&.active {
 		cursor: default;
 		text-decoration: none;
-		color: #333;
+		color: darken(#2459a4, 5%);
+		i{
+			color: darken(#2459a4, 5%);
+		}
 		&:hover{
-			color: #333;
 			text-decoration: none;
 		}
+
 	}
 
 	&:hover{
-		color: #2459a4;
 		text-decoration: underline dotted;
 	}
 }
@@ -1157,4 +1158,7 @@ a.lp-link {
 	width: 100%;
 	max-width: 30rem;
 }
+	.cabinet-lp{
+		padding: 4px 10px 10px 10px;
+	}
 </style>
