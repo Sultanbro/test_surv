@@ -767,7 +767,14 @@ class Salary extends Model
             $user->bonuses     = $bonuses; 
             $user->test_bonus  = $test_bonus; 
             $user->awards      = $awards;
-            $user->taxes       = $user->taxes->map(function($tax) use ($user)
+
+            /**
+             * Данные для колонки Налоги.
+             */
+            $user->taxes       = $user->taxes()
+                ->wherePivot('created_at', '<=', $date->lastOfMonth()->format('Y-m-d'))
+                ->get()
+                ->map(function($tax) use ($user)
             {
                 $salary = $user->zarplata?->zarplata;
                 $tax->amount = $tax->is_percent ? $salary * ($tax->value / 100) : $tax->value;

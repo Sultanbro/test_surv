@@ -431,15 +431,11 @@ class SalaryController extends Controller
             'Бонус', // 11
             'ИТОГО', // 12
             'Авансы', // 13 
-            'Штрафы', // 14 
-            'ОПВ', // 15
-            'ИПН', // 16
-            'СО + СН', // 17
-            'ИТОГО расход', // 18
+            'Штрафы', // 14
         ];
 
         array_push($headings, ...$taxesColumns);
-        array_push($headings, 'К выдаче', 'В валюте');
+        array_push($headings, 'ИТОГО расход', 'К выдаче', 'В валюте');
 
         $data = [];
 
@@ -522,16 +518,13 @@ class SalaryController extends Controller
             12 => 0,
             13 => 0,
             14 => 0,
-            15 => 0,
-            16 => 0,
-            17 => 0,
-            18 => 0
         ];
 
         foreach ($taxColumns as $tax)
         {
             $allTotal["tax_$tax->id"] = 0;
         }
+        $allTotal[] = 0;
         $allTotal[] = 0;
         $allTotal[] = 0;
 
@@ -781,12 +774,12 @@ class SalaryController extends Controller
             
             // Итого расход
             $expense = $prepaid + $penalty;
-            if(!$edited_salary)  $allTotal[18] += $expense;
+            if(!$edited_salary)  $allTotal[15] += $expense;
 
             // К выдаче
             $total_payment = round($total_income - $expense);
 
-            if(!$edited_salary) $allTotal[19] += $total_payment >= 0 ? $total_payment : 0;
+            if(!$edited_salary) $allTotal[16] += $total_payment >= 0 ? $total_payment : 0;
             
             // В валюте
             $currency_rate = in_array($user->currency, array_keys(Currency::rates())) ? (float)Currency::rates()[$user->currency] : 0.0000001;
@@ -808,10 +801,6 @@ class SalaryController extends Controller
                 12 => 0, // ИТОГО доход,
                 13 => 0, // Авансы
                 14 => 0, // Штрафы
-                15 => 0, // ОПВ
-                16 => 0, // ИПН
-                17 => 0, // СО + СН
-                18 => 0, // итого расход
             ];
 
             /**
@@ -862,14 +851,14 @@ class SalaryController extends Controller
 
             }
         }
-
+//        dd($totalColumns);
         // сортировка по имени
         $name_asc = array_column($data['users'], 0);
         array_multisort($name_asc, SORT_ASC, $data['users']); 
 
         // К выдаче сумма форматированная
         $allTotal[9] = $this->space(round($allTotal[9]), 3, true);
-        $allTotal[19] = $this->space(round($allTotal[19]), 3, true);
+        $allTotal[16] = $this->space(round($allTotal[16]), 3, true);
         
         
         // Итоги в конце таблицы
