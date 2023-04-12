@@ -407,14 +407,15 @@ class SalaryController extends Controller
                 ];
             }
         }
-        
-        $date = $request->year . '-' . $request->month . '-01';
 
-        $taxesColumns = DB::table('taxes')->whereRaw('`taxes`.`id` IN (
+        $lastDayOfMonth = $date->lastOfMonth();
+
+        $taxesColumns = DB::table('taxes')->whereRaw("`taxes`.`id` IN (
                 SELECT `user_tax`.`tax_id`
                 FROM `user_tax`
+                WHERE DATE(`user_tax`.`created_at`) <= '$lastDayOfMonth->year-$lastDayOfMonth->month-$lastDayOfMonth->day'
                 GROUP BY `user_tax`.`tax_id`
-            )')->get()->pluck('name')->toArray();
+            )")->get()->pluck('name')->toArray();
 
         $headings = [
             'ФИО', // 0
@@ -534,7 +535,8 @@ class SalaryController extends Controller
 
         $userIds    = $users->pluck('id')->toArray();
         $zarplaties = Zarplata::getSalaryByUserIds($userIds);
-        $userTaxes  = DB::table('user_tax')->whereIn('user_id', $userIds)->get();
+
+        $userTaxes  = DB::table('user_tax')->whereDate('created_at', '<=', $date->lastOfMonth()->format('Y-m-d'))->whereIn('user_id', $userIds)->get();
 
         foreach ($users as $user) { /** @var User $user */
 
