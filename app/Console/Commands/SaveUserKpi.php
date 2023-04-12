@@ -147,7 +147,7 @@ class SaveUserKpi extends Command
         foreach ($kpis as $key => $kpi) {
             if(!isset($kpi['users'][0])) continue;
 //            dd($kpi['users'][0]['items']);
-             dd($kpi['users'][0]['items'][2]);
+//             dd($kpi['users'][0]['items'][2]);
             foreach ($kpi['users'][0]['items'] as $item) {
 
                 $itemActivityWeekdays = (int) ($item['activity']['weekdays'] ?? 5);
@@ -160,7 +160,7 @@ class SaveUserKpi extends Command
                     'fact' => $item['fact'],
                     'avg' => $item['avg'],
                     'records_count' => $item['records_count'],
-                    'daily_plan' => $item['plan'],
+                    'daily_plan' => (int)$item['daily_plan'],
                     'full_time' => $item['full_time'],
                     'days_from_user_applied' => 0,
                     'workdays' => $workdays,
