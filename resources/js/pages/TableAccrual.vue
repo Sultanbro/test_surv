@@ -305,27 +305,30 @@
 			@close="kpiSidebar = false"
 		>
 			<div class="px-2">
-				<div class="mb-4">
-					<b>Сотрудник</b>
-					{{ kpiSidebarData.target.name }}
-				</div>
-				<KpiItemsV2
-					:my_sum="kpiSidebarDataUser.full_time == 1 ? kpiSidebarData.completed_100 : kpiSidebarData.completed_100 / 2"
-					:kpi_id="kpiSidebarDataUser.id"
-					:items="kpiSidebarDataUser.items"
-					:expanded="true"
-					:activities="[]"
-					:groups="groups"
-					:completed_80="kpiSidebarData.completed_80"
-					:completed_100="kpiSidebarData.completed_100"
-					:lower_limit="kpiSidebarData.lower_limit"
-					:upper_limit="kpiSidebarData.upper_limit"
-					:editable="false"
-					:kpi_page="false"
-					:date="date"
-					@getSum="kpiSidebarData.my_sum = $event"
-					@recalced="countAvg"
-				/>
+				<template v-if="kpiSidebarData">
+					<div class="mb-4">
+						<b>Сотрудник</b>
+						{{ kpiSidebarData.target.name }}
+					</div>
+					<KpiItemsV2
+						:my_sum="kpiSidebarDataUser.full_time == 1 ? kpiSidebarData.completed_100 : kpiSidebarData.completed_100 / 2"
+						:kpi_id="kpiSidebarDataUser.id"
+						:items="kpiSidebarDataUser.items"
+						:expanded="true"
+						:activities="[]"
+						:groups="groups"
+						:completed_80="kpiSidebarData.completed_80"
+						:completed_100="kpiSidebarData.completed_100"
+						:lower_limit="kpiSidebarData.lower_limit"
+						:upper_limit="kpiSidebarData.upper_limit"
+						:editable="false"
+						:kpi_page="false"
+						:date="date"
+						@getSum="kpiSidebarData.my_sum = $event"
+						@recalced="countAvg"
+						class="mb-4"
+					/>
+				</template>
 				<template v-for="group in kpiSidebarDataGroups">
 					<template v-if="group.users">
 						<template v-for="user, i in group.users">
@@ -354,6 +357,7 @@
 									:date="date"
 									@getSum="group.my_sum = $event"
 									@recalced="countAvg"
+									class="mb-4"
 								/>
 							</template>
 						</template>
@@ -1566,9 +1570,9 @@ export default {
 			return this.groups.reduce((result, group) => {
 				if(!group.users) return result
 				const users = JSON.parse(group.users)
-				if(~users.indexOf(userId)) result.push(group.id)
+				if(~users.indexOf(userId) && !~result.indexOf(group.id)) result.push(group.id)
 				return result
-			}, [])
+			}, [this.selectedGroup.id])
 		},
 
 		async fetchKPIStatistics(userId){
