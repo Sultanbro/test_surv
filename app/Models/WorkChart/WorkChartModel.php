@@ -3,12 +3,14 @@
 namespace App\Models\WorkChart;
 
 use App\DTO\WorkChart\StoreWorkChartDTO;
+use App\Enums\WorkChart\WorkChartEnum;
 use App\Timetracking;
 use App\User;
 use Carbon\Carbon;
 use Exception;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use InvalidArgumentException;
 
 class WorkChartModel extends Model
 {
@@ -118,6 +120,22 @@ class WorkChartModel extends Model
     }
 
     /**
+     * Получаем количество рабочих дней в неделе.
+     *
+     * @return array
+     */
+    public function chartWorkDays(): array
+    {
+        $workDays = $this->name;
+
+        return match ($workDays) {
+            "1-1", "2-2", "3-3" => [5, 6, 0],
+            "5-2"   => [6, 0],
+            "6-1"   => [0],
+            default => throw new InvalidArgumentException("Invalid chart type"),
+        };
+    }
+    /**
      * Получаем время работы.
      *
      * @return array
@@ -125,6 +143,15 @@ class WorkChartModel extends Model
     public static function getWorkTime(?self $chart): array
     {
         return $chart ? $chart->workTime() : self::defaultWorkTime();
+    }
+
+    /**
+     * @param WorkChartModel|null $chart
+     * @return array
+     */
+    public static function getWorkDay(?self $chart): array
+    {
+        return $chart ? $chart->chartWorkDays() : [6, 0];
     }
 
     /**
