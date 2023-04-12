@@ -394,7 +394,7 @@ export default {
 					icon: 'icon-nd-deduction',
 					height: 0,
 					route: 'fines',
-					hide: !(this.$can('penalties_view') && this.isMainProject)
+					hide: !this.isMainProject
 				},
 				{
 					name: 'U-calls',

@@ -1074,6 +1074,17 @@ class User extends Authenticatable implements Authorizable
     }
 
     /**
+     * Количество рабочих дней в неделе по графику.
+     *
+     * @return array
+     */
+    public function chartWorkDays(): array
+    {
+        $userChart = $this->getWorkChart();
+
+        return WorkChartModel::getWorkDay($userChart);
+    }
+    /**
      * Ставка стажировочных дней
      * Если стаж не оплачивается, то 0
      */
@@ -1222,6 +1233,13 @@ class User extends Authenticatable implements Authorizable
         return $this->groups()->where('status', '=', 'active')->first();
     }
 
+    /**
+     * @return Position|null
+     */
+    public function currentPosition(): ?Position
+    {
+        return $this->position()->first() ?? null;
+    }
 
     public function workdays(): BelongsToMany
     {
@@ -1260,5 +1278,38 @@ class User extends Authenticatable implements Authorizable
     ): Model
     {
         return self::query()->findOrFail($id);
+    }
+
+    /**
+     * @return float
+     */
+    public function sumQuarterPremiums(): float
+    {
+        $individualQuarterPremium = $this->qpremium()
+            ->where('from', '<=', now()->format('Y-m-d'))
+            ->where('to', '>=', now()->format('Y-m-d'))
+            ->sum('sum') ?? 0;
+
+        $groupQuarterPremium = $this->activeGroup()->qpremium()
+            ->where('from', '<=', now()->format('Y-m-d'))
+            ->where('to', '>=', now()->format('Y-m-d'))
+            ->sum('sum') ?? 0;
+
+        $positionQuarterPremium = $this->currentPosition()->qpremium()
+            ->where('from', '<=', now()->format('Y-m-d'))
+            ->where('to', '>=', now()->format('Y-m-d'))
+            ->sum('sum') ?? 0;
+
+        return $individualQuarterPremium + $groupQuarterPremium + $positionQuarterPremium;
+    }
+
+    /**
+     * @return int
+     */
+    public function countWorkHours(): int
+    {
+        $schedule = $this->schedule();
+
+        return $schedule['end']->diffInHours($schedule['start']) - 1;
     }
 }

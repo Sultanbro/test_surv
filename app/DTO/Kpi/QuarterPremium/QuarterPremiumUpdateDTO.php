@@ -13,6 +13,7 @@ class QuarterPremiumUpdateDTO
      * @param string|null $plan
      * @param string|null $from
      * @param string|null $to
+     * @param int|null $sum
      */
     public function __construct(
         public int $id,
@@ -22,7 +23,8 @@ class QuarterPremiumUpdateDTO
         public ?string $text,
         public ?string $plan,
         public ?string $from,
-        public ?string $to
+        public ?string $to,
+        public ?int $sum
     )
     {
     }
@@ -39,7 +41,8 @@ class QuarterPremiumUpdateDTO
             'text'  => $this->text,
             'plan'  => $this->plan,
             'from'  => $this->from,
-            'to'    => $this->to
+            'to'    => $this->to,
+            'sum'   => $this->sum
         ];
     }
 }

@@ -5,12 +5,14 @@ namespace App\Service;
 use App\Events\KpiChangedEvent;
 use App\Events\TrackKpiItemEvent;
 use App\Events\TrackKpiUpdatesEvent;
+use App\Filters\Kpis\KpiFilter;
 use App\Http\Requests\KpiSaveRequest;
 use App\Http\Requests\KpiUpdateRequest;
 use App\Models\Analytics\Activity;
 use App\Models\Kpi\Builder\KpiSearch;
 use App\Models\Kpi\Kpi;
 use App\Models\Kpi\KpiItem;
+use App\ReadModels\KpiReadModel;
 use App\Traits\KpiHelperTrait;
 use Exception;
 use Illuminate\Http\Request;
@@ -57,7 +59,7 @@ class KpiService
         $last_date = $carbon->endOfMonth()->format('Y-m-d');
 
         $kpis = Kpi::query()
-            ->when($searchWord, fn() => KpiSearch::search($searchWord))
+            ->when($searchWord, fn() => (new KpiFilter)->globalSearch($searchWord))
             ->with([
             'items' => function($query) use ($last_date) {
                 $query->withTrashed()->whereDate('created_at', '<=', $last_date);

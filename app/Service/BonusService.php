@@ -3,12 +3,14 @@
 namespace App\Service;
 
 use App\Events\BonusUpdated;
+use App\Filters\Kpis\KpiBonusFilter;
 use App\Http\Requests\BonusSaveRequest;
 use App\Http\Requests\BonusUpdateRequest;
 use App\Models\Analytics\Activity;
 use App\Models\GroupUser;
 use App\Models\Kpi\Bonus;
 use App\Models\Scopes\ActiveScope;
+use App\ReadModels\KpiBonusReadModel;
 use App\Repositories\KpiBonusRepository;
 use App\Traits\KpiHelperTrait;
 use Exception;
@@ -69,8 +71,11 @@ class BonusService
     public function fetch($filters): array
     {   
         if($filters !== null) {} 
-        
-        $bonuses = Bonus::with('creator', 'updater')->withoutGlobalScope(ActiveScope::class)->get();
+        $searchWord = $filters['query'] ?? null;
+
+        $bonuses = Bonus::query()->when($searchWord,
+            fn() => (new KpiBonusFilter)->globalSearch($searchWord)
+        )->with('creator', 'updater')->withoutGlobalScope(ActiveScope::class)->get();
  
         return [
             'bonuses'    => $this->groupItems($bonuses),
@@ -87,7 +92,7 @@ class BonusService
         $arr = [];
 
         $types = $items->where('target', '!=', null)->groupBy('target.type');
- 
+
         foreach ($types as $type => $type_items) {
             foreach ($type_items->groupBy('target.name') as $name => $name_items) {
                 $arr[] = [
