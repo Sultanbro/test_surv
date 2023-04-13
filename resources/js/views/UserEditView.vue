@@ -216,10 +216,14 @@ export default {
 			this.profile_contacts = data.profile_contacts ? data.profile_contacts : []
 			this.updateTaxes();
 		},
-		updateTaxes(){
-			axios.get('/tax', {params: {user_id: this.user.id}}).then(res => {
-				this.taxes = res.data.items;
-			}).catch(err => console.log(err));
+		async updateTaxes(){
+			try {
+				const url = this.user ? `/tax?user_id=${this.user.id}` : '/tax/all';
+				const { data } = await axios.get(url);
+				this.taxes = this.user ? data.items : data.data;
+			} catch (error) {
+				console.error(error);
+			}
 		},
 		updatePageData(){
 			useAsyncPageData(`/timetracking/edit-person?id=${this.activeUserId}`).then(this.setData).catch(error => {
@@ -330,31 +334,16 @@ export default {
 			this.phone_errors = 0;
 			this.zarplata_errors = 0;
 
-			const phone = formData.get('phone');
 			const name = formData.get('name');
 			const email = formData.get('email');
 			const lastName = formData.get('last_name');
 			const position = formData.get('position');
-			const birthday = formData.get('birthday');
 			const group = formData.get('group');
-			const selectedCityInput = formData.get('selectedCityInput');
 			const zarplata = formData.get('zarplata');
 			for(let i = 1; i <= 5; i++){
 				if(formData.get(`file${i}`).size === 0) formData.delete(`file${i}`);
 			}
 			if(formData.get('file7').size === 0) formData.delete('file7');
-
-			if (zarplata <= 1) {
-				this.frontValid.zarplata = false;
-				this.showBlock(5);
-			}
-
-			if (!isTrainee) {
-				if (phone.length < 11) {
-					this.frontValid.phone = false;
-					this.showBlock(4);
-				}
-			}
 
 			if (name.length < 3) {
 				this.frontValid.name = false;
@@ -363,11 +352,6 @@ export default {
 
 			if (lastName.length < 3) {
 				this.frontValid.lastName = false;
-				this.showBlock(1);
-			}
-
-			if (!birthday) {
-				this.frontValid.birthday = false;
 				this.showBlock(1);
 			}
 
@@ -386,13 +370,8 @@ export default {
 				this.showBlock(1);
 			}
 
-			if(!selectedCityInput){
-				this.frontValid.selectedCityInput = false;
-				this.showBlock(1);
-			}
-
 			formData.set('zarplata', zarplata.replace(/\D/g, ''));
-			if(this.frontValid.phone && this.frontValid.email && this.frontValid.name && this.frontValid.lastName && this.frontValid.birthday && this.frontValid.position && this.frontValid.group && this.frontValid.selectedCityInput && this.frontValid.zarplata){
+			if(this.frontValid.email && this.frontValid.name && this.frontValid.lastName && this.frontValid.position && this.frontValid.group){
 				this.sendForm(formData, isNew);
 			} else {
 				this.$toast.error('Заполните обязательные поля');
@@ -406,6 +385,7 @@ export default {
 				const response = await this.axios.post(this.formAction, formData, {
 					headers: { 'Content-Type': 'multipart/form-data' }
 				});
+				const userId = this.user ? this.user.id : response.data.data.id;
 				if (this.taxesFillData) {
 					for (let i = 0; i < this.taxesFillData.newTaxes.length; i++) {
 						if(this.taxesFillData.newTaxes[i].name && this.taxesFillData.newTaxes[i].value){
@@ -415,7 +395,7 @@ export default {
 							formDataNewTaxes.append('value', this.taxesFillData.newTaxes[i].value);
 							formDataNewTaxes.append('is_percent', this.taxesFillData.newTaxes[i].isPercent ? 1 : 0);
 							const resNewTax = await this.axios.post('/tax', formDataNewTaxes);
-							formDataNewTaxesAssignee.append('user_id', this.user.id);
+							formDataNewTaxesAssignee.append('user_id', userId);
 							formDataNewTaxesAssignee.append('tax_id', resNewTax.data.data.id);
 							formDataNewTaxesAssignee.append('is_assigned', 1);
 							await this.axios.post('/tax/set-assignee', formDataNewTaxesAssignee);
@@ -436,7 +416,7 @@ export default {
 
 					for (let i = 0; i < this.taxesFillData.assignTaxes.length; i++) {
 						const formDataAssignTaxes = new FormData();
-						formDataAssignTaxes.append('user_id', this.user.id);
+						formDataAssignTaxes.append('user_id', userId);
 						formDataAssignTaxes.append('tax_id', this.taxesFillData.assignTaxes[i]);
 						formDataAssignTaxes.append('is_assigned', 1);
 						await this.axios.post('/tax/set-assignee', formDataAssignTaxes);
@@ -453,7 +433,7 @@ export default {
 				}
 				if (isNew) {
 					this.$toast.success('Информация о сотруднике сохранена');
-					window.location = '/timetracking/settings?tab=1';
+					// window.location = '/timetracking/settings?tab=1';
 				} else {
 					this.$toast.success('Информация о сотруднике обновлена');
 				}
@@ -770,14 +750,14 @@ export default {
 							:class="{'active': showBlocks.phones}"
 							@click="showBlock(4)"
 						>
-							<span>Контакты <span class="red">*</span></span>
+							<span>Контакты</span>
 						</li>
 						<li
 							id="bg-this-5"
 							:class="{'active': showBlocks.salary}"
 							@click="showBlock(5)"
 						>
-							<span>Оплата <span class="red">*</span></span>
+							<span>Оплата</span>
 						</li>
 						<li
 							v-if="user && tenant === 'bp'"
@@ -855,8 +835,6 @@ export default {
 								:old_phone_2="old_phone_2"
 								:old_phone_3="old_phone_3"
 								:old_phone_4="old_phone_4"
-								:front_valid="frontValid"
-								@valid_change="validChange"
 								@add_contacts="addContacts"
 								@change_contact="changeContact"
 							/>
@@ -873,11 +851,9 @@ export default {
 								:old_jysan_cardholder="old_jysan_cardholder"
 								:old_jysan="old_jysan"
 								:old_card_jysan="old_card_jysan"
-								:front_valid="frontValid"
 								:taxes="taxes"
 								@taxes_fill="taxesFill"
 								@taxes_update="updateTaxes"
-								@valid_change="validChange"
 							/>
 
 							<!-- additional tab -->

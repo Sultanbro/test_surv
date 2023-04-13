@@ -17,10 +17,6 @@ export default {
 		old_jysan_cardholder: String,
 		old_jysan: String,
 		old_card_jysan: String,
-		front_valid: {
-			type: Object,
-			default: () => ({})
-		},
 		taxes: {
 			type: Array,
 			default: () => ([])
@@ -31,7 +27,7 @@ export default {
 			headphonesState: this.user?.headphones_sum > 0,
 			cards: [],
 			zarplata: 0,
-			currency: this.user?.currency,
+			currency: this.user ? this.user.currency : null,
 			newTaxes: [],
 			editTaxes: [],
 			assignTaxes: [],
@@ -53,13 +49,7 @@ export default {
 				: this.old_zarplata
 					? this.old_zarplata
 					: 0
-			this.currency = this.user?.currency
-		},
-		zarplata() {
-			this.changeZp();
-		},
-		currency() {
-			this.changeZp();
+			this.currency = this.user ? this.user.currency : null
 		},
 		taxes() {
 			this.myTaxes = this.taxes.filter(item => item.isAssigned);
@@ -71,14 +61,6 @@ export default {
 		}
 	},
 	methods: {
-		changeZp() {
-			if (this.front_valid && this.front_valid.formSubmitted) {
-				this.currency && Number(this.zarplata) > 1000 ? this.$emit('valid_change', {
-					name: 'zarplata',
-					bool: true
-				}) : this.$emit('valid_change', {name: 'zarplata', bool: false});
-			}
-		},
 		addCard() {
 			const card = {
 				bank: '',
@@ -123,7 +105,7 @@ export default {
 			})
 		},
 		async unassignTax(tax, idx) {
-			if (!tax.isNew) {
+			if (!tax.isNew && this.user) {
 				const formDataAssignTaxes = new FormData();
 				formDataAssignTaxes.append('user_id', this.user.id);
 				formDataAssignTaxes.append('tax_id', tax.id);
@@ -177,6 +159,12 @@ export default {
 		deleteNewTax(idx){
 			this.myTaxes.splice(idx, 1);
 			this.newTaxes.splice(idx, 1);
+		},
+		checkNumber(event) {
+			const value = parseInt(event.target.value);
+			if (!isNaN(value) && Number.isInteger(value)) {
+				this.zarplata = value;
+			}
 		}
 	},
 }
@@ -186,25 +174,23 @@ export default {
 		id="profile_salary"
 		class="col-md-12 mt-3 none-block"
 	>
-		<div
-			class="form-group row"
-			:class="{'form-group-error': front_valid.formSubmitted && front_valid.zarplata === false}"
-		>
+		<div class="form-group row">
 			<label
 				for="zarplata"
 				class="col-sm-3 col-form-label font-weight-bold"
 				:class="{'mr-3': !user}"
-			>Оклад <span class="red">*</span></label>
+			>Оклад</label>
 
 			<div class="col-sm-3">
 				<input
 					class="form-control"
-					type="text"
+					type="number"
 					name="zarplata"
 					id="zarplata"
 					required
 					placeholder="Оклад"
-					v-model="zarplata"
+					@input="checkNumber"
+					v-model.number="zarplata"
 				>
 			</div>
 
@@ -462,7 +448,6 @@ export default {
 		<hr>
 
 		<div
-			v-if="user"
 			class="taxes"
 		>
 			<div
@@ -589,22 +574,27 @@ export default {
 			</template>
 		</b-modal>
 		<div class="d-flex aic mb-2 mt-2">
-			<button
-				v-if="user && user.zarplata"
-				type="button"
-				class="btn btn-success btn-rounded mr-3"
-				@click="addTax"
-			>
-				<i class="fa fa-plus mr-2" /> Добавить налог
-			</button>
-			<multiselect
-				:options="taxNotAssignedFiltered"
-				track-by="name"
-				label="name"
-				class="w-50 pt-2"
-				placeholder="Выберите существующий"
-				@select="selectTaxNotAssigned"
-			/>
+			<template v-if="zarplata > 0">
+				<button
+					type="button"
+					class="btn btn-success btn-rounded mr-3"
+					@click="addTax"
+				>
+					<i class="fa fa-plus mr-2" /> Добавить налог
+				</button>
+				<multiselect
+					:options="taxNotAssignedFiltered"
+					track-by="name"
+					label="name"
+					class="w-50 pt-2"
+					placeholder="Выберите существующий"
+					@select="selectTaxNotAssigned"
+				/>
+			</template>
+			<span
+				v-else
+				class="text-muted"
+			>Поле оклад должно быть больше нуля</span>
 		</div>
 	</div>
 </template>
