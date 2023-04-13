@@ -105,7 +105,7 @@ export default {
 			})
 		},
 		async unassignTax(tax, idx) {
-			if (!tax.isNew) {
+			if (!tax.isNew && this.user) {
 				const formDataAssignTaxes = new FormData();
 				formDataAssignTaxes.append('user_id', this.user.id);
 				formDataAssignTaxes.append('tax_id', tax.id);
@@ -159,6 +159,12 @@ export default {
 		deleteNewTax(idx){
 			this.myTaxes.splice(idx, 1);
 			this.newTaxes.splice(idx, 1);
+		},
+		checkNumber(event) {
+			const value = parseInt(event.target.value);
+			if (!isNaN(value) && Number.isInteger(value)) {
+				this.zarplata = value;
+			}
 		}
 	},
 }
@@ -178,12 +184,13 @@ export default {
 			<div class="col-sm-3">
 				<input
 					class="form-control"
-					type="text"
+					type="number"
 					name="zarplata"
 					id="zarplata"
 					required
 					placeholder="Оклад"
-					v-model="zarplata"
+					@input="checkNumber"
+					v-model.number="zarplata"
 				>
 			</div>
 

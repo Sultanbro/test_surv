@@ -216,10 +216,14 @@ export default {
 			this.profile_contacts = data.profile_contacts ? data.profile_contacts : []
 			this.updateTaxes();
 		},
-		updateTaxes(){
-			axios.get('/tax').then(res => {
-				this.taxes = res.data.items;
-			}).catch(err => console.log(err));
+		async updateTaxes(){
+			try {
+				const url = this.user ? `/tax?user_id=${this.user.id}` : '/tax/all';
+				const { data } = await axios.get(url);
+				this.taxes = this.user ? data.items : data.data;
+			} catch (error) {
+				console.error(error);
+			}
 		},
 		updatePageData(){
 			useAsyncPageData(`/timetracking/edit-person?id=${this.activeUserId}`).then(this.setData).catch(error => {
