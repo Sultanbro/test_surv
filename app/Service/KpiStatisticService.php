@@ -800,7 +800,18 @@ class KpiStatisticService
                     $query->withTrashed()->whereDate('created_at', '<=', $last_date)->whereNull('deleted_at');
                 },
                 'items.activity'
-            ]);
+            ])
+            ->whereHasMorph(
+                'kpiable',
+                '*',
+                function (Builder $query, string $type)
+                {
+                    if ($type === 'App\ProfileGroup')
+                    {
+                        $query->where('has_analytics', '!=', ProfileGroup::ARCHIVED);
+                    }
+                }
+            );
 
         $kpis = $kpis
             ->whereDate('kpis.created_at', '<=', Carbon::parse($date->format('Y-m-d'))

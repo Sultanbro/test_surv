@@ -52,6 +52,11 @@ class Kpi extends Model
         'children'    => 'array',
     ];
 
+    public function kpiable()
+    {
+        return $this->morphTo('kpiable', 'targetable_type', 'targetable_id');
+    }
+
     /**
      * One To Many отношения с users.
      * У одного kpi может быть 1 пользователь.
