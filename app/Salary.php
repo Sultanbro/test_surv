@@ -789,7 +789,8 @@ class Salary extends Model
             $user->edited_salary = null;
 
             $editedSalary = EditedSalary::where('user_id', $user->id)
-                                    ->where('date', $date)
+                                    ->whereYear('date', $date->year)
+                                    ->whereMonth('date', $date->month)
                                     ->first();
                                     
             if($editedSalary) {
