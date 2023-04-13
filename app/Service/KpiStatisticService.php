@@ -800,7 +800,18 @@ class KpiStatisticService
                     $query->withTrashed()->whereDate('created_at', '<=', $last_date)->whereNull('deleted_at');
                 },
                 'items.activity'
-            ]);
+            ])
+            ->whereHasMorph(
+                'targetable',
+                '*',
+                function (Builder $query, string $type)
+                {
+                    if ($type == ProfileGroup::class)
+                    {
+                        return $query->where('has_analytics', '!=', ProfileGroup::ARCHIVED);
+                    }
+                }
+            );
 
         $kpis = $kpis
             ->whereDate('kpis.created_at', '<=', Carbon::parse($date->format('Y-m-d'))
@@ -1105,7 +1116,7 @@ class KpiStatisticService
         // ProfileGroup::class
         if($type == 2) {
             $profileGroup = ProfileGroup::query()->findOrFail($kpi->targetable_id);
-            $_user_ids = collect((new UserService)->getEmployees($profileGroup->id, $date->toDateString()))->pluck('id')->toArray();
+            $_user_ids = collect((new UserService)->getEmployees($profileGroup->id, $date->toDateString()))->whereNull('deleted_at')->pluck('id')->toArray();
         }
 
         // Position::class

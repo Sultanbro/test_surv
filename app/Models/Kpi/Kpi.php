@@ -52,6 +52,10 @@ class Kpi extends Model
         'children'    => 'array',
     ];
 
+    public function targetable()
+    {
+        return $this->morphTo();
+    }
     /**
      * One To Many отношения с users.
      * У одного kpi может быть 1 пользователь.
