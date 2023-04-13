@@ -42,13 +42,14 @@ export default {
 			if (obj.cards) {
 				this.cards = obj.cards
 			}
-			this.zarplata = this.user && this.user.zarplata
+			const zp = this.user && this.user.zarplata
 				? this.user.zarplata.zarplata
 					? this.user.zarplata.zarplata - this.user.headphones_sum
 					: 0
 				: this.old_zarplata
 					? this.old_zarplata
-					: 0
+					: 0;
+			this.zarplata = Math.round(zp);
 			this.currency = this.user ? this.user.currency : null
 		},
 		taxes() {
