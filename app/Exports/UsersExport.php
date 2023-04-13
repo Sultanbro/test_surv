@@ -4,6 +4,7 @@ namespace App\Exports;
 
 use App\Models\Tax;
 use App\User;
+use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
 use Maatwebsite\Excel\Concerns\WithHeadings;
 use Maatwebsite\Excel\Concerns\Exportable;
@@ -21,7 +22,12 @@ use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
 class UsersExport implements FromCollection, WithTitle, WithHeadings, ShouldAutoSize, WithEvents
 {
 
-    public function __construct($title, $headings, $collection, $group, $counter)
+    /**
+     * @var Carbon
+     */
+    private Carbon $date;
+
+    public function __construct($title, $headings, $collection, $group, $counter, $date)
     {
         //dd($collection);
         //$this->last = collect(end($collection));
@@ -34,6 +40,9 @@ class UsersExport implements FromCollection, WithTitle, WithHeadings, ShouldAuto
         //dd(array_unique($users_ids));
         $this->title = $title;
        //dd($group['name']);
+
+        $this->date = $date;
+
         Sheet::macro('styleCells', function (Sheet $sheet, string $cellRange, array $style) {
             $sheet->getDelegate()->getStyle($cellRange)->applyFromArray($style);
         });
@@ -60,9 +69,13 @@ class UsersExport implements FromCollection, WithTitle, WithHeadings, ShouldAuto
 
     public function registerEvents(): array
     {
-        $countOfTaxes = DB::table('user_tax')->select(DB::raw('COUNT(DISTINCT `user_tax`.`tax_id`) as `count`'))->first()->count;
+        $lastOfMonth = $this->date->lastOfMonth()->format('Y-m-d');
 
-        $indexOfCell = 21 + $countOfTaxes;
+        $countOfTaxes = DB::table('user_tax')->select(DB::raw('COUNT(DISTINCT `user_tax`.`tax_id`) as `count`'))
+            ->whereDate('created_at', '<=', $lastOfMonth)
+            ->first()->count;
+
+        $indexOfCell = 18 + $countOfTaxes;
         $coordinate = (new \PhpOffice\PhpSpreadsheet\Worksheet\Worksheet)->getCellByColumnAndRow($indexOfCell,0)->getParent()->getCurrentCoordinate();
         $coordinateOfStyle = str_replace('0', '3', $coordinate);
 
