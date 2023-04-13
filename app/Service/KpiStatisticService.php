@@ -808,7 +808,7 @@ class KpiStatisticService
                 {
                     if ($type === 'App\ProfileGroup')
                     {
-                        $query->where('has_analytics', '!=', ProfileGroup::ARCHIVED);
+                        $query->whereNull('archived_date');
                     }
                 }
             );
@@ -1017,7 +1017,7 @@ class KpiStatisticService
                     {
                         if ($type === 'App\ProfileGroup')
                         {
-                            $query->where('has_analytics', '!=', ProfileGroup::ARCHIVED);
+                            $query->whereNull('archived_date');
                         }
                     }
                 )
