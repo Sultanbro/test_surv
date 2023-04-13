@@ -382,8 +382,8 @@ Route::middleware(['web','tenant','not_admin_subdomain'])->group(function () {
     Route::post('/timetracking/salaries', [Salary\SalaryController::class, 'salaries']);
     Route::post('/timetracking/salaries/update', [Salary\SalaryController::class, 'update']);
     Route::post('/timetracking/salaries/recalc', [Salary\SalaryController::class, 'recalc']);
-    Route::post('/timetracking/salaries/edit-premium', [Salary\SalaryController::class, 'editPremium']);
-    Route::post('/timetracking/salaries/edit-premium-new', [Salary\PremiumController::class, 'edit']);
+    Route::post('/timetracking/salaries/edit-premium-old', [Salary\SalaryController::class, 'editPremium']);
+    Route::post('/timetracking/salaries/edit-premium', [Salary\PremiumController::class, 'edit']);
     Route::post('/timetracking/salaries/approve-salary', [Salary\SalaryController::class, 'approveSalary']);
     Route::post('/timetracking/salaries/bonuses', [Salary\SalaryController::class, 'bonuses']);
     Route::post('/profile/salary/get', [Salary\ProfileSalaryController::class, 'get']);
