@@ -229,7 +229,13 @@ class User extends Authenticatable implements Authorizable
     public function groups(): BelongsToMany
     {
         return $this->belongsToMany('App\ProfileGroup', 'group_user', 'user_id', 'group_id')
-            ->withPivot(['created_at', 'updated_at', 'deleted_at'])->withTimestamps();
+            ->withPivot([
+                'created_at',
+                'updated_at',
+                'deleted_at',
+                'from',
+                'to'
+            ])->withTimestamps();
     }
     /**
      * Mutator's

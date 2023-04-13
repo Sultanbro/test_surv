@@ -531,6 +531,7 @@ Route::middleware(['web','tenant','not_admin_subdomain'])->group(function () {
         Route::any('workdays', [Kpi\KpiStatController::class, 'workdays']);
         Route::post('update-stat', [Kpi\KpiStatController::class, 'updateStat'])->name('updateStat');
         Route::get('activities',[Kpi\KpiStatController::class,'getActivities'])->name('getActivites');
+        Route::get('/kpi/user-groups', [Kpi\KpiStatController::class, 'groups']);
     });
 
     // Редактирование показателей
