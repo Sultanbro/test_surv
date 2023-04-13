@@ -168,14 +168,12 @@ export default {
 		id="profile_salary"
 		class="col-md-12 mt-3 none-block"
 	>
-		<div
-			class="form-group row"
-		>
+		<div class="form-group row">
 			<label
 				for="zarplata"
 				class="col-sm-3 col-form-label font-weight-bold"
 				:class="{'mr-3': !user}"
-			>Оклад <span class="red">*</span></label>
+			>Оклад</label>
 
 			<div class="col-sm-3">
 				<input

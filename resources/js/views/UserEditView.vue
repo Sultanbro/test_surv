@@ -217,7 +217,7 @@ export default {
 			this.updateTaxes();
 		},
 		updateTaxes(){
-			axios.get('/tax', {params: {user_id: this.user ? this.user.id : 1}}).then(res => {
+			axios.get('/tax').then(res => {
 				this.taxes = res.data.items;
 			}).catch(err => console.log(err));
 		},
@@ -831,8 +831,6 @@ export default {
 								:old_phone_2="old_phone_2"
 								:old_phone_3="old_phone_3"
 								:old_phone_4="old_phone_4"
-								:front_valid="frontValid"
-								@valid_change="validChange"
 								@add_contacts="addContacts"
 								@change_contact="changeContact"
 							/>
@@ -849,11 +847,9 @@ export default {
 								:old_jysan_cardholder="old_jysan_cardholder"
 								:old_jysan="old_jysan"
 								:old_card_jysan="old_card_jysan"
-								:front_valid="frontValid"
 								:taxes="taxes"
 								@taxes_fill="taxesFill"
 								@taxes_update="updateTaxes"
-								@valid_change="validChange"
 							/>
 
 							<!-- additional tab -->
