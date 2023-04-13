@@ -1010,6 +1010,17 @@ class KpiStatisticService
                                 ->format('Y-m-d'));
                         });
                 })
+                ->whereHasMorph(
+                    'kpiable',
+                    '*',
+                    function (Builder $query, string $type)
+                    {
+                        if ($type === 'App\ProfileGroup')
+                        {
+                            $query->where('has_analytics', '!=', ProfileGroup::ARCHIVED);
+                        }
+                    }
+                )
                 ->paginate($limit);
 
             $kpis->data = $kpis->makeHidden(['targetable', 'children']);
