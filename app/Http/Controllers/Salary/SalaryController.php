@@ -459,7 +459,7 @@ class SalaryController extends Controller
         if(ob_get_length() > 0) ob_clean(); //  ob_end_clean();
         $edate = $date->format('m.Y');
 
-        $exp = new \App\Exports\UsersExport($data[0]['name'], $data[0]['headings'],$data[0]['sheet'], $group ,$data[0]['counter']);
+        $exp = new \App\Exports\UsersExport($data[0]['name'], $data[0]['headings'],$data[0]['sheet'], $group ,$data[0]['counter'], $date);
         $exp_title = 'Начисления ' . $edate .' "'.$group->name . '".xlsx';
 
         return Excel::download($exp, $exp_title);
@@ -497,11 +497,14 @@ class SalaryController extends Controller
         /**
          * Налоги.
          */
-        $taxColumns = DB::table('taxes')->whereRaw('`taxes`.`id` IN (
+        $lastDayOfMonth = $date->lastOfMonth();
+
+        $taxColumns = DB::table('taxes')->whereRaw("`taxes`.`id` IN (
                 SELECT `user_tax`.`tax_id`
                 FROM `user_tax`
+                WHERE DATE(`user_tax`.`created_at`) <= '$lastDayOfMonth->year-$lastDayOfMonth->month-$lastDayOfMonth->day'
                 GROUP BY `user_tax`.`tax_id`
-            )')->get();
+            )")->get();
 
         $allTotal = [
             0 => '',
