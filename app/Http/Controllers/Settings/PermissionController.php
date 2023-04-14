@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use Exception;
 use Illuminate\Database\QueryException;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\View;
 use Spatie\Permission\Models\Role;
 use App\User;
@@ -165,7 +166,23 @@ class PermissionController extends Controller
 
             $pi = PermissionItem::find($request->item['id']);
 
+            $be_saved = collect($item['targets']);
+            $group_ids = [];
+            $role_ids = [];
+            $targetToArray = $be_saved->toArray();
 
+            foreach ($item['roles'] as $role_item) $role_ids[] = $role_item['id'];
+            foreach ($item['groups'] as $gr) $group_ids[] = $gr['id'];
+
+            $exists = DB::table('permission_items')
+                ->whereJsonContains('targets', $targetToArray)
+                ->whereJsonContains('roles', $role_ids)
+                ->whereJsonContains('groups', $group_ids)->exists();
+
+            if ($exists)
+            {
+                return response()->json(['error' => 'Duplicate entry for unique key.'], 400);
+            }
             if ($request->item['id'] == 0) {
                 $pi = PermissionItem::create([
                     'targets' => [],
@@ -177,17 +194,6 @@ class PermissionController extends Controller
 
 
             if ($pi) {
-
-
-                $be_saved = collect($item['targets']);
-
-
-                $group_ids = [];
-                $role_ids = [];
-                foreach ($item['roles'] as $role_item) $role_ids[] = $role_item['id'];
-                foreach ($item['groups'] as $gr) $group_ids[] = $gr['id'];
-
-
                 $removed = [];
                 foreach ($pi->targets as $key => $value) {
                     $it = $be_saved->where('id', $value['id'])->where('type', $value['type'])->first();
@@ -232,7 +238,7 @@ class PermissionController extends Controller
                 }
 
                 $pi->update([
-                    'targets' => $be_saved->toArray(),
+                    'targets' => $targetToArray,
                     'roles' => $role_ids,
                     'groups' => $group_ids,
                     'groups_all' => $item['groups_all'] ? 1 : 0
@@ -257,6 +263,7 @@ class PermissionController extends Controller
             }
 
             return $pi ? $pi->id : 0;
+
         } catch (QueryException $queryException)
         {
             if ($queryException->errorInfo[1] == 1062)
