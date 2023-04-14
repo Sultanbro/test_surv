@@ -244,6 +244,8 @@ class Timetracking extends Model
 
     public static function updateTimes($employee_id, $date, $total_hours)
     {
+        $auth = auth()->id();
+
         $timeTrack = Timetracking::query()
             ->where('user_id', $employee_id)
             ->whereDate('enter', $date);
@@ -267,7 +269,7 @@ class Timetracking extends Model
         \App\TimetrackingHistory::create([
             'user_id' => $employee_id,
             'author_id' => 5,
-            'author' => 'Ali'.' '.'',
+            'author' => User::getUserById($auth)->full_name,
             'date' => $date,
             'description' => 'Изменено время с аналитики на '.$total_hours.' минут',
         ]);
