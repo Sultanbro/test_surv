@@ -34,6 +34,8 @@
 									v-else
 									:href="messagePart.url"
 									:key="key"
+									target="_blank"
+									class="messenger__format-link"
 								>
 									{{ messagePart.title }}
 								</a>
@@ -537,4 +539,8 @@ audio {
 	text-overflow: ellipsis;
 }
 
+.messenger__format-link:hover{
+	color: #0056b3;
+	text-decoration: underline;
+}
 </style>
