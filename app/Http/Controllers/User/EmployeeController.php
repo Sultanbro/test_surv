@@ -385,8 +385,8 @@ class EmployeeController extends Controller
                 $user->save();
             }
 
-            $currency = !in_array($user->currency, ['kzt', 'rub', 'usd']) ? 'usd' : $user->currency;
-            $user->zarplata->zarplata = round(CurrencyTrait::createMultiCurrencyPrice($user->zarplata->zarplata)[$currency], 2);
+//            $currency = !in_array($user->currency, ['kzt', 'rub', 'usd']) ? 'usd' : $user->currency;
+//            $user->zarplata->zarplata = round(CurrencyTrait::createMultiCurrencyPrice($user->zarplata->zarplata)[$currency], 2);
 
             $user->cards = Card::where('user_id', $user->id)->get();
 
