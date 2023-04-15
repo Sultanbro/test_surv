@@ -153,6 +153,10 @@ function calcCompleted(el) {
 
 	// if(plan <= 0) return 0;
 
+	if(el.histories_latest?.payload?.plan){
+		plan = el.histories_latest.payload.plan
+	}
+
 	if(el.method == 1) {
 		res = (fact / plan * 100).toFixed(2);
 	}
@@ -197,6 +201,10 @@ function calcSum(el, kpi, completed) {
 	let completed_80 = kpi.completed_80
 	let completed_100 = kpi.completed_100
 
+	if(el.histories_latest?.payload?.share){
+		share = el.histories_latest.payload.share != undefined ? parseFloat(el.histories_latest.payload.share) / 100.0 : 0
+	}
+
 	if(el.full_time == 0) {
 		completed_80 /= 2;
 		completed_100 /= 2;
@@ -219,13 +227,31 @@ function calcSum(el, kpi, completed) {
 	return Number(Number(result).toFixed(1));
 }
 
+/**
+ * Parse kpi json payload
+ *
+ * @param {Object} kpi
+ */
+function parseKPI(kpi){
+	kpi.users.forEach(user => {
+		if(!user.items) return
+		user.items.forEach(item => {
+			if(!item.histories_latest?.payload) return
+			if(typeof item.histories_latest.payload !== 'string') return
+			item.histories_latest.payload = JSON.parse(item.histories_latest.payload)
+		})
+	})
+	return kpi
+}
+
 // eslint-disable-next-line no-undef
 module.exports = {
-	kpi_fields: kpi_fields,
-	newKpi: newKpi,
-	newKpiItem: newKpiItem,
-	numberize: numberize,
-	calcSum: calcSum,
-	formatDate: formatDate,
-	calcCompleted: calcCompleted,
+	kpi_fields,
+	newKpi,
+	newKpiItem,
+	numberize,
+	calcSum,
+	formatDate,
+	calcCompleted,
+	parseKPI,
 };

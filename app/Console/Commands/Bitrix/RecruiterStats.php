@@ -13,6 +13,7 @@ use App\Classes\Analytics\Recruiting;
 use App\Models\Analytics\RecruiterStat;
 use App\Models\Analytics\UserStat;
 use App\Service\Department\UserService;
+use Illuminate\Support\Facades\Storage;
 
 class RecruiterStats extends Command
 {
@@ -69,6 +70,7 @@ class RecruiterStats extends Command
         } 
 
         if($this->hour >= 0 && $this->hour <= 9) $this->hour = '0' . $this->hour;
+        Storage::append('templog.log', 'hour: ' . $this->hour); 
 
         $datex = explode("-", date("Y-m-d", strtotime($this->date)));
         $this->year = $datex[0];
@@ -83,9 +85,6 @@ class RecruiterStats extends Command
             $this->saveTotalStats();
             $this->getRecruiterStats();
         }
-        
-        
-
     }
 
     private function getRecruiterStats() {

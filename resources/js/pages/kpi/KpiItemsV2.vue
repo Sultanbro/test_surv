@@ -162,7 +162,7 @@
 							{{ item.sum }}
 						</td>
 						<td class="text-center">
-							0
+							{{ parseInt(item.sum * (item.percent / 100)) }}
 						</td>
 						<td class="no-hover">
 							<i
@@ -204,20 +204,20 @@
 							{{ i + 1 }}
 						</td>
 						<td class="px-2">
-							{{ item.name }}
+							{{ item.histories_latest ? item.histories_latest.payload.name : item.name }}
 						</td>
 						<td class="text-center">
 							{{ methods[item.method] }}
 						</td>
 						<td class="text-center">
-							<b>{{ item.plan }} {{ item.unit }}</b>
+							<b>{{ item.histories_latest ? item.histories_latest.payload.plan : item.plan }} {{ item.histories_latest ? item.histories_latest.payload.unit : item.unit }}</b>
 						</td>
 						<td class="text-center">
-							{{ item.share }}
+							{{ item.histories_latest ? item.histories_latest.payload.share : item.share }}
 						</td>
 						<td
-							class="text-center"
 							v-if="editable"
+							class="text-center"
 						>
 							<input
 								v-if="[1,3,5].includes(item.method)"
@@ -235,8 +235,8 @@
 							>
 						</td>
 						<td
-							class="text-center"
 							v-else
+							class="text-center"
 						>
 							<!-- sum or avg by method -->
 							<div v-if="[1,3,5].includes(item.method)">
@@ -250,7 +250,7 @@
 							{{ item.percent }}
 						</td>
 						<td class="text-center">
-							{{ my_sum * (parseInt(item.share)/100) }}
+							{{ my_sum * (parseInt(item.histories_latest ? item.histories_latest.payload.share : item.share)/100) }}
 						</td>
 						<td class="text-center">
 							{{ item.sum }}
@@ -521,8 +521,6 @@ export default {
 			});
 			this.$emit('getSum', sum);
 		}
-
-
 	}
 }
 </script>

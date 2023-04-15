@@ -3,7 +3,10 @@
 namespace App\Http\Controllers\Settings;
 
 use App\Http\Controllers\Controller;
+use Exception;
+use Illuminate\Database\QueryException;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\View;
 use Spatie\Permission\Models\Role;
 use App\User;
@@ -154,112 +157,120 @@ class PermissionController extends Controller
     /**
      * Save item - not user
      * Rename updateUser to updateItem
+     * @throws Exception
      */
     public function updateTarget(Request $request) {
 
-        $item = $request->item;
-        
-        $pi = PermissionItem::find($request->item['id']);
-     
-      
-        
-        if($request->item['id'] == 0) {
-            $pi = PermissionItem::create([
-                'targets' => [],
-                'roles' => [],
-                'groups' => [],
-                'groups_all' => 0
-            ]);
-        }
+        try {
+            $item = $request->item;
 
+            $pi = PermissionItem::find($request->item['id']);
 
-        if($pi) {
-
-           
             $be_saved = collect($item['targets']);
-
-       
-
             $group_ids = [];
             $role_ids = [];
+            $targetToArray = $be_saved->toArray();
+
             foreach ($item['roles'] as $role_item) $role_ids[] = $role_item['id'];
             foreach ($item['groups'] as $gr) $group_ids[] = $gr['id'];
-            
 
+            $exists = DB::table('permission_items')
+                ->whereJsonContains('targets', $targetToArray)
+                ->whereJsonContains('roles', $role_ids)
+                ->whereJsonContains('groups', $group_ids)->exists();
 
-
-            $removed = [];
-            foreach ($pi->targets as $key => $value) {
-                $it = $be_saved->where('id', $value['id'])->where('type', $value['type'])->first();
-                if($it == null) {
-                    $removed[] = $value;
-                }
+            if ($exists)
+            {
+                return response()->json(['error' => 'Duplicate entry for unique key.'], 400);
+            }
+            if ($request->item['id'] == 0) {
+                $pi = PermissionItem::create([
+                    'targets' => [],
+                    'roles' => [],
+                    'groups' => [],
+                    'groups_all' => 0
+                ]);
             }
 
-            foreach ($item['targets'] as $target) {
 
-                if($target['type'] == 1) {
-                    $user = User::withTrashed()->with('roles')->find($target['id']);
-    
-                    if($user) {
-                        $this->assignGroups($user->id, $item['groups'], $item['groups_all']);
-
-                        $newroles = Role::whereIn('id', $role_ids)->get()->pluck('name')->toArray();
-                        $user->syncRoles($newroles);
-
-                        $user->groups_all = $item['groups_all'] ? 1 : null;
-                        $user->save();
-                    } 
-                }
-
-                if($target['type'] == 2) {
-                    $group = ProfileGroup::where('active', 1)->with('roles')->find($target['id']);
-    
-                    if($group) {
-                        $newroles = Role::whereIn('id', $role_ids)->get()->pluck('name')->toArray();
-                        $group->syncRoles($newroles);
-                    } 
-                }
-
-                if($target['type'] == 3) {
-                    $pos = Position::with('roles')->find($target['id']);
-
-                    if($pos) {
-                        $newroles = Role::whereIn('id', $role_ids)->get()->pluck('name')->toArray();
-                        $pos->syncRoles($newroles);
-                    } 
-                }
-            }
-            
-            $pi->update([
-                'targets' => $be_saved->toArray(),
-                'roles' => $role_ids,
-                'groups' => $group_ids,
-                'groups_all' => $item['groups_all'] ? 1 : 0
-            ]);
-
-
-            // remove roles 
-            foreach ($removed as $key => $target) {
-
-                $item = null;
-                if($target['type'] == 1) $item = User::withTrashed()->with('roles')->find($target['id']);
-                if($target['type'] == 2) $item = ProfileGroup::with('roles')->find($target['id']);
-                if($target['type'] == 3) $item = Position::with('roles')->find($target['id']);
-
-                if($item) {
-                    foreach ($item->roles as $key => $role) {
-                        $item->removeRole($role->name);
+            if ($pi) {
+                $removed = [];
+                foreach ($pi->targets as $key => $value) {
+                    $it = $be_saved->where('id', $value['id'])->where('type', $value['type'])->first();
+                    if ($it == null) {
+                        $removed[] = $value;
                     }
-                } 
+                }
 
+                foreach ($item['targets'] as $target) {
+
+                    if ($target['type'] == 1) {
+                        $user = User::withTrashed()->with('roles')->find($target['id']);
+
+                        if ($user) {
+                            $this->assignGroups($user->id, $item['groups'], $item['groups_all']);
+
+                            $newroles = Role::whereIn('id', $role_ids)->get()->pluck('name')->toArray();
+                            $user->syncRoles($newroles);
+
+                            $user->groups_all = $item['groups_all'] ? 1 : null;
+                            $user->save();
+                        }
+                    }
+
+                    if ($target['type'] == 2) {
+                        $group = ProfileGroup::where('active', 1)->with('roles')->find($target['id']);
+
+                        if ($group) {
+                            $newroles = Role::whereIn('id', $role_ids)->get()->pluck('name')->toArray();
+                            $group->syncRoles($newroles);
+                        }
+                    }
+
+                    if ($target['type'] == 3) {
+                        $pos = Position::with('roles')->find($target['id']);
+
+                        if ($pos) {
+                            $newroles = Role::whereIn('id', $role_ids)->get()->pluck('name')->toArray();
+                            $pos->syncRoles($newroles);
+                        }
+                    }
+                }
+
+                $pi->update([
+                    'targets' => $targetToArray,
+                    'roles' => $role_ids,
+                    'groups' => $group_ids,
+                    'groups_all' => $item['groups_all'] ? 1 : 0
+                ]);
+
+
+                // remove roles
+                foreach ($removed as $key => $target) {
+
+                    $item = null;
+                    if ($target['type'] == 1) $item = User::withTrashed()->with('roles')->find($target['id']);
+                    if ($target['type'] == 2) $item = ProfileGroup::with('roles')->find($target['id']);
+                    if ($target['type'] == 3) $item = Position::with('roles')->find($target['id']);
+
+                    if ($item) {
+                        foreach ($item->roles as $key => $role) {
+                            $item->removeRole($role->name);
+                        }
+                    }
+
+                }
+            }
+
+            return $pi ? $pi->id : 0;
+
+        } catch (QueryException $queryException)
+        {
+            if ($queryException->errorInfo[1] == 1062)
+            {
+                return response()->json(['error' => 'Duplicate entry for unique key.'], 400);
             }
         }
-      
-
-        return $pi ? $pi->id : 0;
-
-       
     }
 
     private function assignGroups($user_id, $items, $full_access = false)

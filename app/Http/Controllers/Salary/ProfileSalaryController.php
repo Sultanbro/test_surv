@@ -42,10 +42,10 @@ class ProfileSalaryController extends Controller
         $d1 = $date->format('Y-m-d');
         $kv = intval((date('m', strtotime($d1)) + 2)/3);
 
-        $quarter_bonus = (string)$user->qpremium()
+        $quarter_bonus = $user->qpremium()
             ->where('from', '<=', now()->format('Y-m-d'))
             ->where('to', '>=', now()->format('Y-m-d'))
-            ->sum('sum');
+            ->sum('sum') ?? 0;
 
         /*** Группы пользователя */
         $groups = '';
@@ -119,7 +119,9 @@ class ProfileSalaryController extends Controller
         }
 
         $salary = $user->getCurrentSalary();
-        
+
+        $salarySum = $user->getTotalByCurrency($salary);
+
         $potential_bonuses = '';
         if(count($gs) > 0) {
             foreach ($gs as $key => $g) {
@@ -130,9 +132,14 @@ class ProfileSalaryController extends Controller
         
         // check exists ind kpi
         $kpis = $user->inGroups();
+
+        $sumKpi = $editedKpi ? $editedKpi->amount : $kpi;
+        $sumBonus = $editedBonus ? $editedBonus->amount : $bonus;
+        $sumQuarterPremium = $user->sumQuarterPremiums();
+
         // prepare user_earnigs 
         $user_earnings = [
-            'quarter_bonus' => $quarter_bonus.' '. strtoupper($user->currency),
+            'quarter_bonus' => $user->getTotalByCurrency($sumQuarterPremium).' '. strtoupper($user->currency),
             'oklad' => round((float)$oklad * $currency_rate, 0),
             'bonus' => number_format(round((float)$bonus * $currency_rate), 0, '.', '\'') . ' ' . strtoupper($user->currency),
             'currency' => strtoupper($user->currency) , 's',
@@ -145,10 +152,10 @@ class ProfileSalaryController extends Controller
             'kpi_percent' => $kpi / 400, // kpi / 40000 * 100
             'kpi' => number_format((float)$kpi * $currency_rate,  0, '.', '\''). ' ' . strtoupper($user->currency),
             'kpiMax' => 30000,
-            'sumKpi' => $editedKpi ? $editedKpi->amount : $kpi,
-            'sumSalary' => $salary,
-            'sumBonuses' => $editedBonus ? $editedBonus->amount : $bonus,
-            'sumQuartalPremiums' => $quarter_bonus,
+            'sumKpi' => $user->getTotalByCurrency($sumKpi),
+            'sumSalary' => $salarySum,
+            'sumBonuses' => $user->getTotalByCurrency($sumBonus),
+            'sumQuartalPremiums' => $user->getTotalByCurrency($sumQuarterPremium),
             'sumNominations' => 0, // кол-во номинаций
             'salary' => number_format((float)$salary * $currency_rate, 0, '.', '\''). ' ' . strtoupper($user->currency),
             'salary_info' => [

@@ -508,7 +508,7 @@ class AnalyticsController extends Controller
             DM::updateTimesNew($dto->employeeId, $date);
         }
 
-        if($dto->groupId == 31 && $request->id == 21) {
+        if($dto->groupId == 31 && $dto->activityId == 21) {
             DM::updateTimesByWorkHours($dto->employeeId, $date, $dto->day, (float)$dto->value);
         }
     }

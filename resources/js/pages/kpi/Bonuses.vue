@@ -16,6 +16,7 @@
 				<SuperFilter
 					ref="child"
 					:groups="groups"
+					@apply="fetch"
 				/>
 				<!--<input
                     class="searcher mr-2 input-sm"
@@ -304,7 +305,7 @@
 				</template>
 
 				<template v-for="(page_item, p) in page_items">
-					<template v-if="page_item.name.includes(searchText) || searchText.length == 0">
+					<template>
 						<tr :key="p">
 							<td
 								@click="expand(p)"
@@ -808,7 +809,9 @@ export default {
 				'created_by',
 				'updated_by',
 			],
-			requestInProgress: false
+			requestInProgress: false,
+			timeout: null,
+			filters: null,
 		}
 	},
 	watch: {
@@ -838,7 +841,10 @@ export default {
 				this.counter = 0;
 				this.new_target = null;
 			}
-		}
+		},
+		searchText(){
+			this.onSearchQuery()
+		},
 	},
 
 	created() {
@@ -997,8 +1003,13 @@ export default {
 		},
 		fetch(filter = null) {
 			const loader = this.$loading.show();
+			this.filters = filter
+
 			this.axios.post(this.uri + '/get', {
-				filters: filter
+				filters: {
+					...filter,
+					query: this.searchText,
+				}
 			}).then(response => {
 
 
@@ -1173,7 +1184,7 @@ export default {
 			// if(a != -1) this.all_items.splice(a, 1);
 			this.all_items[p].items.splice(i, 1);
 			if (this.all_items[p].items.length == 0) this.all_items.splice(p, 1)
-			this.onSearch();
+			// this.onSearch();
 			this.$toast.info('Удалено');
 		},
 		saveItem() {
@@ -1262,16 +1273,15 @@ export default {
 		},
 
 		onSearch() {
-			const text = this.searchText;
+			const text = this.searchText.toLowerCase();
 
 			if (this.searchText == '') {
 				this.items = this.all_items;
-			} else {
+			}
+			else {
 				this.items = this.all_items.filter(el => {
 					let has = false;
-					if (
-						el.name.toLowerCase().indexOf(text.toLowerCase()) > -1
-					) {
+					if ( el.name.toLowerCase().indexOf(text) > -1 ) {
 						has = true;
 					}
 					return has;
@@ -1324,6 +1334,15 @@ export default {
 			if (this.newBonusesArray.length == 0) {
 				this.counter = 0;
 			}
+		},
+		onSearchQuery(){
+			if(this.timeout) clearTimeout(this.timeout)
+			this.timeout = setTimeout(() => {
+				this.fetch({
+					...this.filters,
+					query: this.searchText
+				})
+			}, 300);
 		}
 	},
 

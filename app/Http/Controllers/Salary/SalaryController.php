@@ -407,14 +407,15 @@ class SalaryController extends Controller
                 ];
             }
         }
-        
-        $date = $request->year . '-' . $request->month . '-01';
 
-        $taxesColumns = DB::table('taxes')->whereRaw('`taxes`.`id` IN (
+        $lastDayOfMonth = $date->lastOfMonth();
+
+        $taxesColumns = DB::table('taxes')->whereRaw("`taxes`.`id` IN (
                 SELECT `user_tax`.`tax_id`
                 FROM `user_tax`
+                WHERE DATE(`user_tax`.`created_at`) <= '$lastDayOfMonth->year-$lastDayOfMonth->month-$lastDayOfMonth->day'
                 GROUP BY `user_tax`.`tax_id`
-            )')->get()->pluck('name')->toArray();
+            )")->get()->pluck('name')->toArray();
 
         $headings = [
             'ФИО', // 0
@@ -431,15 +432,11 @@ class SalaryController extends Controller
             'Бонус', // 11
             'ИТОГО', // 12
             'Авансы', // 13 
-            'Штрафы', // 14 
-            'ОПВ', // 15
-            'ИПН', // 16
-            'СО + СН', // 17
-            'ИТОГО расход', // 18
+            'Штрафы', // 14
         ];
 
         array_push($headings, ...$taxesColumns);
-        array_push($headings, 'К выдаче', 'В валюте');
+        array_push($headings, 'ИТОГО расход', 'К выдаче', 'В валюте');
 
         $data = [];
 
@@ -462,17 +459,14 @@ class SalaryController extends Controller
         if(ob_get_length() > 0) ob_clean(); //  ob_end_clean();
         $edate = $date->format('m.Y');
 
-        $exp = new \App\Exports\UsersExport($data[0]['name'], $data[0]['headings'],$data[0]['sheet'], $group ,$data[0]['counter']);
+        $exp = new \App\Exports\UsersExport($data[0]['name'], $data[0]['headings'],$data[0]['sheet'], $group ,$data[0]['counter'], $date);
         $exp_title = 'Начисления ' . $edate .' "'.$group->name . '".xlsx';
 
         return Excel::download($exp, $exp_title);
     }
 
     private function getSheet($users_ids, $date, $group_id) {
-        // if(in_array(17758, $users_ids)) dd($users_ids);
         $users = \DB::table('users')
-            ->join('working_times as wt', 'wt.id', '=', 'users.working_time_id')
-            ->join('working_days as wd', 'wd.id', '=', 'users.working_day_id')
             ->join('zarplata as z', 'z.user_id', '=', 'users.id')
             ->leftJoin('timetracking as t', 't.user_id', '=', 'users.id')
             ->whereIn('users.id', array_unique($users_ids))
@@ -483,8 +477,6 @@ class SalaryController extends Controller
                         users.working_time_id as working_time_id,
                         users.working_day_id as working_day_id,
                         users.birthday as birthday,
-                        wd.name as workDay,
-                        wt.time as workTime,
                         z.zarplata as salary,
                         z.card_kaspi as card_kaspi,
                         z.kaspi_cardholder as kaspi_cardholder,
@@ -495,12 +487,9 @@ class SalaryController extends Controller
                         users.currency as currency,
                         CONCAT('KASPI', '') as card
                         ")
-            ->groupBy('id', 'phone', 'full_name', 'workDay', 'working_time_id', 'workTime', 'salary', 
+            ->groupBy('id', 'phone', 'full_name', 'working_time_id', 'salary',
             'card_kaspi', 'card_jysan', 'jysan', 'kaspi','kaspi_cardholder','jysan_cardholder', 'card', 'program_id', 'birthday','currency', 'working_day_id')
             ->get();
-
-            //if($users->where('id', 14073)->first()) dd($users_ids);
-       //     if($user->id == 14073) dd($users_ids);
         
         $fines = Fine::pluck('penalty_amount', 'id')->toArray();
         $data = [];
@@ -508,11 +497,14 @@ class SalaryController extends Controller
         /**
          * Налоги.
          */
-        $taxColumns = DB::table('taxes')->whereRaw('`taxes`.`id` IN (
+        $lastDayOfMonth = $date->lastOfMonth();
+
+        $taxColumns = DB::table('taxes')->whereRaw("`taxes`.`id` IN (
                 SELECT `user_tax`.`tax_id`
                 FROM `user_tax`
+                WHERE DATE(`user_tax`.`created_at`) <= '$lastDayOfMonth->year-$lastDayOfMonth->month-$lastDayOfMonth->day'
                 GROUP BY `user_tax`.`tax_id`
-            )')->get();
+            )")->get();
 
         $allTotal = [
             0 => '',
@@ -530,16 +522,13 @@ class SalaryController extends Controller
             12 => 0,
             13 => 0,
             14 => 0,
-            15 => 0,
-            16 => 0,
-            17 => 0,
-            18 => 0
         ];
 
         foreach ($taxColumns as $tax)
         {
             $allTotal["tax_$tax->id"] = 0;
         }
+        $allTotal[] = 0;
         $allTotal[] = 0;
         $allTotal[] = 0;
 
@@ -549,7 +538,8 @@ class SalaryController extends Controller
 
         $userIds    = $users->pluck('id')->toArray();
         $zarplaties = Zarplata::getSalaryByUserIds($userIds);
-        $userTaxes  = DB::table('user_tax')->whereIn('user_id', $userIds)->get();
+
+        $userTaxes  = DB::table('user_tax')->whereDate('created_at', '<=', $date->lastOfMonth()->format('Y-m-d'))->whereIn('user_id', $userIds)->get();
 
         foreach ($users as $user) { /** @var User $user */
 
@@ -613,17 +603,11 @@ class SalaryController extends Controller
                 }
             }
 
+
             // рабочие дни
-            $ignore = $user->working_day_id == 1 ? [6,0] : [0]; // Какие дни не учитывать в месяце
+
+            $ignore = $_user->chartWorkDays(); // Какие дни не учитывать в месяце
             $workDays = workdays($date->year, $date->month, $ignore);
-                
-            if($group_id == 53 && $date->year == 2022 && $date->month == 3) {
-                $workdays = 19;
-            } else if($group_id == 57  && $date->year == 2022 && $date->month == 3) {
-                $workdays = 22;
-            } else {
-                $workdays = workdays($date->year, $date->month, $ignore);
-            }
 
             if(!$edited_salary) $allTotal[6] += intval($workDays);
 
@@ -635,7 +619,6 @@ class SalaryController extends Controller
                 ->where('user_id', $user->id)
                 ->whereYear('date', $date->year)
                 ->whereMonth('date', $date->month)
-               //->whereDate('date', '<', Carbon::parse($user_applied_at)->format('Y-m-d'))
                 ->whereIn('type', [5,6,7])
                 ->get(['day'])
                 ->pluck('day')
@@ -653,57 +636,25 @@ class SalaryController extends Controller
                 ])
                 ->whereYear('enter', $date->year)
                 ->whereMonth('enter', $date->month)
-                //->whereNotIn('day', $trainee_days)
                 ->where('user_id', $user->id)
                 ->get();
             
             
             $workedHours = $workedHours->whereNotIn('day', $trainee_days); 
-            
-            
 
-            //$workedHours = $workedHours->sum('total_hours');
             $workedHours = $workedHours->sum('total_hours') / 60;
-            
-            
-            
-           // dump($user->workTime);   
-           //dump($workedHours, $user->workTime);  
         
-            $workedDays = round($workedHours / $user->workTime, 2);
-           // dump($workedDays);  
-                // if($user->id == 10242) {
-                //     dump($user_applied_at);
-                //     dump($workedHours);
-                //     //dump($workedDays);
-                //     dump($hourly_pay);
-                // }
+            $workedDays = round($workedHours / $_user->countWorkHours(), 2);
                 
             if(!$edited_salary) $allTotal[5] += $workedDays;
             
             // проверка сданных экзаменов  
             $wage = $user->salary; // WAGE: оклад + бонус от экзамена
 
-              
-
             // ставка
             $allTotal[7] += intval($wage) ?? 0;
-            
-            
-            
-           
-
-            // if($user->id == 9975) {
-            //     dd($trainee_days);
-            // }
-
-            // начислено
-            //$salary = round($workedHours * $hourly_pay, 2);
 
             $salary_table = Salary::salariesTable(-1, $date->format('Y-m-d'), [$user->id]);
-            
-            // if($user->id == 5670) dump($salary_table);
-
 
             $salary = 0;
             $trainee_fees = 0;
@@ -720,31 +671,12 @@ class SalaryController extends Controller
                     }
                 }   
             }
-           
-           
-
-            // if($user->id == 10230) {
-            //         dump($workedHours);
-            //         dump($hourly_pay);
-            //         dd($salary);
-            // } 
-
-            // if($user->id == 11041) {
-            //     dump($trainee_days_before_apply_count);
-            //     dump($workedHours);
-            //     dump($hourly_pay);
-            //     dd($salary);
-
-            // }
 
             if(!$edited_salary) $allTotal[8] += $salary;
 
-            // $trainee_fees = round($trainee_days_count * $hourly_pay * $user->workTime * $user->internshipPayRate(), 2); // стажировочные на пол суммы
-            // //$trainee_fees = 0;
             if(!$edited_salary) $allTotal[10] += $trainee_fees;
 
-            // KPI 
-
+            // KPI
             $editedKpi = EditedKpi::where('user_id', $user->id)
                     ->whereYear('date', $date->year)
                     ->whereMonth('date', $date->month)
@@ -758,8 +690,7 @@ class SalaryController extends Controller
 
             if(!$edited_salary) $allTotal[9] += $kpi;
 
-            // Бонусы 
-
+            // Бонусы
             $editedBonus = EditedBonus::where('user_id', $user->id)
                 ->whereYear('date', $date->year)
                 ->whereMonth('date', $date->month)
@@ -848,12 +779,12 @@ class SalaryController extends Controller
             
             // Итого расход
             $expense = $prepaid + $penalty;
-            if(!$edited_salary)  $allTotal[18] += $expense;
+            if(!$edited_salary)  $allTotal[15] += $expense;
 
             // К выдаче
             $total_payment = round($total_income - $expense);
 
-            if(!$edited_salary) $allTotal[19] += $total_payment >= 0 ? $total_payment : 0;
+            if(!$edited_salary) $allTotal[16] += $total_payment >= 0 ? $total_payment : 0;
             
             // В валюте
             $currency_rate = in_array($user->currency, array_keys(Currency::rates())) ? (float)Currency::rates()[$user->currency] : 0.0000001;
@@ -875,10 +806,6 @@ class SalaryController extends Controller
                 12 => 0, // ИТОГО доход,
                 13 => 0, // Авансы
                 14 => 0, // Штрафы
-                15 => 0, // ОПВ
-                16 => 0, // ИПН
-                17 => 0, // СО + СН
-                18 => 0, // итого расход
             ];
 
             /**
@@ -929,14 +856,14 @@ class SalaryController extends Controller
 
             }
         }
-
+//        dd($totalColumns);
         // сортировка по имени
         $name_asc = array_column($data['users'], 0);
         array_multisort($name_asc, SORT_ASC, $data['users']); 
 
         // К выдаче сумма форматированная
         $allTotal[9] = $this->space(round($allTotal[9]), 3, true);
-        $allTotal[19] = $this->space(round($allTotal[19]), 3, true);
+        $allTotal[16] = $this->space(round($allTotal[16]), 3, true);
         
         
         // Итоги в конце таблицы

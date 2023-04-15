@@ -37,7 +37,7 @@ class Tax extends Model
      */
     public function users(): BelongsToMany
     {
-        return $this->belongsToMany('App\User', 'user_tax');
+        return $this->belongsToMany('App\User', 'user_tax')->withTimestamps();
     }
 
     /**

@@ -3,6 +3,7 @@
 namespace App\Service;
 
 use App\CacheStorage\KpiItemsCacheStorage;
+use App\Filters\Kpis\KpiFilter;
 use App\Http\Requests\BonusesFilterRequest;
 use App\Models\Analytics\Activity;
 use App\Models\Analytics\AnalyticStat;
@@ -421,10 +422,14 @@ class KpiStatisticService
      */
     public function fetchQuartalPremiums(Request $request): array
     {
+        $all = $request->all();
+        $userId = $all['filters']['user_id'];
+
         $quartalPremiums = $this->getQuartalPremiums($request);
         $users         = [];
         $profileGroups = [];
-        $positionsId     = [];
+        $positions     = [];
+        $authUser = User::getUserById($userId);
 
         foreach ($quartalPremiums as $quartalPremium)
         {
@@ -454,22 +459,36 @@ class KpiStatisticService
                 ];
             }
 
-            if ($quartalPremium->targetable_type == self::PROFILE_GROUP) {
-                $profileGroup = $this->getProfileGroupQp($quartalPremium);
-                if (empty($profileGroup->toArray())) {
+            if ($quartalPremium->targetable_type == self::PROFILE_GROUP)
+            {
+                $groupIds = $authUser->groups()->where('status', 'active')->get()->pluck('id')->toArray() ?? [];
+
+                if(empty($groupIds))
+                {
                     continue;
                 }
 
-                $profileGroups[] = $profileGroup;
+                $profileGroups[] = in_array($quartalPremium->targetable_id, $groupIds) ? $quartalPremium : null;
+            }
+
+            if ($quartalPremium->targetable_type == self::POSITION)
+            {
+                $positionId = $authUser->position->id ?? null;
+
+                if ($positionId == null)
+                {
+                    continue;
+                }
+
+                $positions[] = $quartalPremium->targetable_id == $positionId ? $quartalPremium : null;
             }
         }
 
         return [
             $users,
-            $profileGroups
+            $profileGroups,
+            $positions
         ];
-
-
     }
 
     /**
@@ -556,7 +575,7 @@ class KpiStatisticService
          * indiv or common
          */
         if($user_id != 0) {
-            $qps = QuartalPremium::withTrashed();
+            $qps = QuartalPremium::withoutTrashed();
 
             $user = User::withTrashed()->with('groups')->find($user_id);
             $position_id = $user->position_id;
@@ -579,7 +598,7 @@ class KpiStatisticService
                 });
               
         } else {
-            $qps = QuartalPremium::withTrashed()->when(isset($type) && isset($id), fn($qp) => $qp->where([
+            $qps = QuartalPremium::query()->when(isset($type) && isset($id), fn($qp) => $qp->where([
                 ['targetable_type', $type],
                 ['targetable_id', $id]
             ]));
@@ -745,6 +764,8 @@ class KpiStatisticService
         $filters = $request->filters;
         $limit = $request->limit ? $request->limit : 10;
 
+        $searchWord = $filters['query'] ?? null;
+
         if(
             isset($filters['data_from']['year'])
             && isset($filters['data_from']['month'])
@@ -767,6 +788,7 @@ class KpiStatisticService
 
         $last_date = Carbon::parse($date)->endOfMonth()->format('Y-m-d');
         $kpis = Kpi::withTrashed()
+            ->when($searchWord, fn() => (new KpiFilter)->globalSearch($searchWord))
             ->with([
                 'histories_latest' => function($query) use ($last_date) {
                     $query->whereDate('created_at', '<=', $last_date);
@@ -778,14 +800,25 @@ class KpiStatisticService
                     $query->withTrashed()->whereDate('created_at', '<=', $last_date)->whereNull('deleted_at');
                 },
                 'items.activity'
-            ]);
+            ])
+            ->whereHasMorph(
+                'kpiable',
+                '*',
+                function (Builder $query, string $type)
+                {
+                    if ($type === 'App\ProfileGroup')
+                    {
+                        $query->whereNull('archived_date');
+                    }
+                }
+            );
 
         $kpis = $kpis
-            ->whereDate('created_at', '<=', Carbon::parse($date->format('Y-m-d'))
+            ->whereDate('kpis.created_at', '<=', Carbon::parse($date->format('Y-m-d'))
                 ->endOfMonth()
                 ->format('Y-m-d')
-            )->where(fn ($query) => $query->whereNull('deleted_at')->orWhere(
-                fn ($query) => $query->whereDate('deleted_at', '>', Carbon::parse($date->format('Y-m-d'))
+            )->where(fn ($query) => $query->whereNull('kpis.deleted_at')->orWhere(
+                fn ($query) => $query->whereDate('kpis.deleted_at', '>', Carbon::parse($date->format('Y-m-d'))
                     ->endOfMonth()
                     ->format('Y-m-d')))
             )
@@ -836,9 +869,11 @@ class KpiStatisticService
      */
     public function fetchKpiGroupOrUser(Request $request, int $targetableId) : array
     {
+       $all = $request->all();
+
         $filters = [
-            'year' => $request->year,
-            'month' => $request->month,
+            'year' => $all['filters']['data_from']['year'] ?? null,
+            'month' => $all['filters']['data_from']['month'] ?? null,
             'type' => $request->type ? $request->type : 1
         ];
 
@@ -871,7 +906,7 @@ class KpiStatisticService
         /**
          * get kpis
          */
-        $last_date = Carbon::parse($date)->endOfMonth()->format('Y-m-d');
+        $last_date = $date->endOfMonth()->format('Y-m-d');
 
         $kpi = Kpi::withTrashed()
             ->with([
@@ -975,6 +1010,17 @@ class KpiStatisticService
                                 ->format('Y-m-d'));
                         });
                 })
+                ->whereHasMorph(
+                    'kpiable',
+                    '*',
+                    function (Builder $query, string $type)
+                    {
+                        if ($type === 'App\ProfileGroup')
+                        {
+                            $query->whereNull('archived_date');
+                        }
+                    }
+                )
                 ->paginate($limit);
 
             $kpis->data = $kpis->makeHidden(['targetable', 'children']);
@@ -1081,7 +1127,7 @@ class KpiStatisticService
         // ProfileGroup::class
         if($type == 2) {
             $profileGroup = ProfileGroup::query()->findOrFail($kpi->targetable_id);
-            $_user_ids = collect((new UserService)->getEmployees($profileGroup->id, $date->toDateString()))->pluck('id')->toArray();
+            $_user_ids = collect((new UserService)->getEmployees($profileGroup->id, $date->toDateString()))->whereNull('deleted_at')->pluck('id')->toArray();
         }
 
         // Position::class
@@ -1193,7 +1239,9 @@ class KpiStatisticService
                             $count = 0;
 
                             foreach ($weeks as $key => $week) {
-                                $val = $query->whereBetween('day', [$week[0], $week[count($week) - 1]])->avg('value');
+                                $val = isset($week[0])
+                                    ? $query->whereBetween('day', [$week[0], $week[count($week) - 1]])->avg('value')
+                                    : 0;
 
                                 if($val && $val > 0) {
                                     $avg += $val;
@@ -1393,8 +1441,6 @@ class KpiStatisticService
                             $count = 0;
 
                             foreach ($weeks as $key => $week) {
-                                // $val = $query->whereBetween('day', [$week[0], $week[count($week) - 1]])->avg('value');
-
                                 $val = isset($week[0]) 
                                     ? $query->whereBetween('day', [$week[0], $week[count($week) - 1]])->avg('value')
                                     : 0;
@@ -1517,7 +1563,6 @@ class KpiStatisticService
                     $count = 0;
 
                     foreach ($weeks as $key => $week) {
-                        // $val = $user->whereBetween('day', [$week[0], $week[count($week) - 1]])->avg('value');
                         $val = isset($week[0])
                             ? $user->whereBetween('day', [$week[0], $week[count($week) - 1]])->avg('value')
                             : 0;

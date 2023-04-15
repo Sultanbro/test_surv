@@ -76,7 +76,10 @@
 					</b-col>
 				</b-tab>
 				<b-tab title="Годовая">
-					<StatsTableYear class="mt-4" />
+					<StatsTableYear
+						:year="filters.data_from ? filters.data_from.year : new Date().getFullYear()"
+						class="mt-4"
+					/>
 				</b-tab>
 			</b-tabs>
 		</template>
@@ -203,6 +206,7 @@ export default {
 			},
 
 			isSettingsOpen: false,
+			timeout: null,
 		}
 	},
 	computed: {
@@ -234,7 +238,10 @@ export default {
 		},
 		currentPage(){
 			this.fetchData(this.filters, this.currentPage, this.perPage)
-		}
+		},
+		searchText(){
+			this.onSearchQuery()
+		},
 	},
 
 	created() {
@@ -269,7 +276,10 @@ export default {
 
 			if(this.s_type_main == 1){
 				this.axios.post('/statistics/kpi/groups-and-users', {
-					filters
+					filters: {
+						...filters,
+						query: this.searchText,
+					}
 				}, {
 					params: {
 						page,
@@ -331,6 +341,15 @@ export default {
 				loader.hide();
 				alert('error!');
 			}
+		},
+		onSearchQuery(){
+			if(this.timeout) clearTimeout(this.timeout)
+			this.timeout = setTimeout(() => {
+				this.fetchData({
+					...this.filters,
+					query: this.searchText
+				})
+			}, 300);
 		},
 	}
 }

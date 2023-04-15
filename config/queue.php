@@ -37,6 +37,7 @@ return [
         'database' => [
             'driver' => 'database',
             'table' => 'jobs',
+            'connection' => 'mysql',
             'queue' => 'default',
             'retry_after' => 90,
         ],
@@ -79,7 +80,7 @@ return [
 
     'failed' => [
         'database' => env('DB_CONNECTION', 'mysql'),
-        'table' => null,
+        'table' => 'failed_jobs',
         'driver' => 'database-uuids'
     ],
 

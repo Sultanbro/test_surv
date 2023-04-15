@@ -34,6 +34,17 @@ class TaxController extends Controller
     }
 
     /**
+     * @return JsonResponse
+     */
+    public function all(): JsonResponse
+    {
+        return $this->response(
+            message: 'Success',
+            data: Tax::all()
+        );
+    }
+
+    /**
      * @param CreateTaxRequest $request
      * @param CreateTaxService $service
      * @return JsonResponse

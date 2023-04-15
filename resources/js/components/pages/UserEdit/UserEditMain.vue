@@ -269,14 +269,11 @@ export default {
 				</div>
 			</div>
 
-			<div
-				class="form-group row"
-				:class="{'form-group-error': front_valid.formSubmitted && !front_valid.birthday}"
-			>
+			<div class="form-group row">
 				<label
 					for="lastName"
 					class="col-sm-4 col-form-label font-weight-bold"
-				>День рождения <span class="red">*</span></label>
+				>День рождения</label>
 				<div class="col-sm-8">
 					<input
 						name="birthday"
@@ -390,7 +387,7 @@ export default {
 				<label
 					for="programType"
 					class="col-sm-4 col-form-label font-weight-bold"
-				>Начать день <span class="red">*</span>
+				>Начать работу <span class="red">*</span>
 					<img
 						src="/images/dist/profit-info.svg"
 						class="img-info"
@@ -422,8 +419,8 @@ export default {
 							:value="program.id"
 							:selected="user && user.program_id === program.id"
 						>
-							<template v-if="program.name === 'Jobtron'">
-								Через кнопку в профиле {{ program.name }}
+							<template v-if="program.name === 'Jobtron' || program.name === 'Другая'">
+								Через кнопку в профиле Jobtron
 							</template>
 							<template v-else>
 								{{ program.name }}
@@ -436,13 +433,12 @@ export default {
 				<label
 					for="workingDays"
 					class="col-sm-4 col-form-label font-weight-bold"
-				>Найти город <span class="red">*</span></label>
+				>Найти город</label>
 				<div class="col-sm-8">
 					<div class="mb-3 xfade">
 						<div
 							id="selectedCityRU"
 							class="form-group row"
-							:class="{'form-group-error': front_valid.formSubmitted && !front_valid.selectedCityInput}"
 						>
 							<div class="col-sm-12 position-relative">
 								<input

@@ -233,6 +233,7 @@ export default {
 				|| this.$can('notifications_view')
 				|| this.$can('permissions_view')
 				|| this.$can('checklists_view')
+				|| this.$can('awards_view')
 		},
 		showReports(){
 			return (this.$can('top_view') && this.isMainProject)
@@ -393,7 +394,7 @@ export default {
 					icon: 'icon-nd-deduction',
 					height: 0,
 					route: 'fines',
-					hide: !(this.$can('penalties_view') && this.isMainProject)
+					hide: !this.isMainProject
 				},
 				{
 					name: 'U-calls',

@@ -244,17 +244,20 @@ class Timetracking extends Model
 
     public static function updateTimes($employee_id, $date, $total_hours)
     {
-        $tt = self::where('user_id', $employee_id)
-            ->whereDate('enter', $date)
-            ->orderBy('id', 'desc')
-            ->first();
+        $auth = auth()->id();
 
-        if($tt) {
-            $tt->total_hours = (int)$total_hours;
-            $tt->updated = 2;
-            $tt->save();
+        $timeTrack = Timetracking::query()
+            ->where('user_id', $employee_id)
+            ->whereDate('enter', $date);
+
+        if ($timeTrack->exists())
+        {
+            $timeTrack?->update([
+                'total_hours' => (int) $total_hours,
+                'updated' => 2
+            ]);
         } else {
-            Timetracking::create([
+            Timetracking::query()->create([
                 'enter' => $date,
                 'exit' => $date,
                 'updated' => 2,
@@ -265,8 +268,8 @@ class Timetracking extends Model
 
         \App\TimetrackingHistory::create([
             'user_id' => $employee_id,
-            'author_id' => auth()->id(),
-            'author' => auth()->user()->last_name.' '.auth()->user()->name,
+            'author_id' => 5,
+            'author' => User::getUserById($auth)->full_name,
             'date' => $date,
             'description' => 'Изменено время с аналитики на '.$total_hours.' минут',
         ]);

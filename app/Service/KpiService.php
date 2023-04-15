@@ -5,11 +5,14 @@ namespace App\Service;
 use App\Events\KpiChangedEvent;
 use App\Events\TrackKpiItemEvent;
 use App\Events\TrackKpiUpdatesEvent;
+use App\Filters\Kpis\KpiFilter;
 use App\Http\Requests\KpiSaveRequest;
 use App\Http\Requests\KpiUpdateRequest;
 use App\Models\Analytics\Activity;
+use App\Models\Kpi\Builder\KpiSearch;
 use App\Models\Kpi\Kpi;
 use App\Models\Kpi\KpiItem;
+use App\ReadModels\KpiReadModel;
 use App\Traits\KpiHelperTrait;
 use Exception;
 use Illuminate\Http\Request;
@@ -47,9 +50,17 @@ class KpiService
     {
         if($filters !== null) {}
 
-        $last_date = Carbon::now()->endOfMonth()->format('Y-m-d');
+        $searchWord = $filters['query'] ?? null;
 
-        $kpis = Kpi::with([
+        $date = $filters['date'] ?? null;
+
+        $carbon = isset($date) ? Carbon::createFromDate($date['year'], $date['month']) : Carbon::now();
+
+        $last_date = $carbon->endOfMonth()->format('Y-m-d');
+
+        $kpis = Kpi::query()
+            ->when($searchWord, fn() => (new KpiFilter)->globalSearch($searchWord))
+            ->with([
             'items' => function($query) use ($last_date) {
                 $query->withTrashed()->whereDate('created_at', '<=', $last_date);
             },
@@ -113,7 +124,7 @@ class KpiService
             array_push($kpis_final, $item);
         }
         
-
+        
         return [
             'kpis'       => $kpis_final,
             'activities' => Activity::get(),

@@ -16,6 +16,7 @@
 				<SuperFilter
 					ref="child"
 					:groups="groups"
+					@apply="fetchKPI"
 				/>
 				<!--<input
                 class="searcher mr-2 input-sm"
@@ -62,10 +63,7 @@
 			<tbody>
 				<template v-for="(item, i) in page_items">
 					<!-- <tr v-if="item.target.name.includes(searchText) || searchText.length == 0 || (item.creator && (item.creator.last_name + ' ' + item.creator.name).includes(searchText)) || (item.updater && (item.updater.last_name + ' ' + item.updater.name).includes(searchText)) || (item.items.filter( i => { return i.name.includes(searchText)  } ).length > 0)"></tr> -->
-					<tr
-						v-if="(item.target && item.target.name.includes(searchText)) || searchText.length == 0"
-						:key="i"
-					>
+					<tr :key="i">
 						<td
 							@click="expand(i)"
 							class="pointer"
@@ -209,6 +207,7 @@
 										:upper_limit="item.upper_limit"
 										:editable="true"
 										:kpi_page="true"
+										@getSum="item.my_sum = $event"
 									/>
 								</div>
 							</td>
@@ -270,7 +269,6 @@ import SuperSelect from '@/components/SuperSelect'
 import {kpi_fields, newKpi} from './kpis.js'
 import {findModel/* , groupBy */} from './helpers.js'
 
-
 export default {
 	name: 'KPI',
 	components: {
@@ -280,30 +278,6 @@ export default {
 		KpiItems,
 	},
 	props: {},
-	watch: {
-		show_fields: {
-			handler: function (val) {
-				localStorage.kpi_show_fields = JSON.stringify(val);
-				this.prepareFields();
-			},
-			deep: true
-		},
-		pageSize: {
-			handler: function(val) {
-				if(val < 1) {
-					val = 1;
-					return;
-				}
-
-				if(val > 100) {
-					val = 100;
-					return;
-				}
-
-				this.paginationKey++;
-			}
-		}
-	},
 	data() {
 		return {
 			active: 1,
@@ -326,7 +300,36 @@ export default {
 				'created_by',
 				'updated_by',
 			],
-			statusRequest: false
+			statusRequest: false,
+			timeout: null,
+			filters: null,
+		}
+	},
+	watch: {
+		show_fields: {
+			handler: function (val) {
+				localStorage.kpi_show_fields = JSON.stringify(val);
+				this.prepareFields();
+			},
+			deep: true
+		},
+		pageSize: {
+			handler: function(val) {
+				if(val < 1) {
+					val = 1;
+					return;
+				}
+
+				if(val > 100) {
+					val = 100;
+					return;
+				}
+
+				this.paginationKey++;
+			}
+		},
+		searchText(){
+			this.onSearchQuery()
 		}
 	},
 
@@ -373,8 +376,12 @@ export default {
 		fetchKPI(filter = null) {
 			let loader = this.$loading.show();
 
+			this.filters = filter
 			this.axios.post(this.uri + '/' + 'get', {
-				filters: filter
+				filters: {
+					...filter,
+					query: this.searchText
+				}
 			}).then(response => {
 				this.items = response.data.kpis;
 				this.all_items = response.data.kpis;
@@ -383,6 +390,7 @@ export default {
 
 				this.page_items = this.items.slice(0, this.pageSize);
 
+				this.addStatusToItems();
 				loader.hide()
 			}).catch(error => {
 				loader.hide()
@@ -560,7 +568,7 @@ export default {
 
 			if(item.id == 0) {
 				if(a != -1) this.all_items.splice(a, 1);
-				this.onSearch();
+				// this.onSearch();
 				this.$toast.info('KPI Удален!');
 				return;
 			}
@@ -570,7 +578,7 @@ export default {
 
 
 				if(a != -1) this.all_items.splice(a, 1);
-				this.onSearch();
+				// this.onSearch();
 
 				this.$toast.info('KPI Удален!');
 				loader.hide()
@@ -585,7 +593,7 @@ export default {
 		},
 
 		onSearch() {
-			let text = this.searchText;
+			const text = this.searchText.toLowerCase();
 
 			if(this.searchText == '') {
 				this.items = this.all_items;
@@ -593,12 +601,12 @@ export default {
 				this.items = this.all_items.filter(el => {
 					let has = false;
 
-					if (el.target != null && el.target.name.toLowerCase().indexOf(text.toLowerCase()) > -1) {
+					if (el.target != null && el.target.name.toLowerCase().indexOf(text) > -1) {
 						has = true;
 					}
 
 					if (
-						el.title.toLowerCase().indexOf(text.toLowerCase()) > -1
+						el.title.toLowerCase().indexOf(text) > -1
 					) {
 						has = true;
 					}
@@ -606,8 +614,8 @@ export default {
 					if (
 						el.creator != null
 						&& (
-							el.creator.name.toLowerCase().indexOf(text.toLowerCase()) > -1
-							|| el.creator.last_name.toLowerCase().indexOf(text.toLowerCase()) > -1
+							el.creator.name.toLowerCase().indexOf(text) > -1
+							|| el.creator.last_name.toLowerCase().indexOf(text) > -1
 						)
 					) {
 						has = true;
@@ -616,8 +624,8 @@ export default {
 					if (
 						el.updater != null
 						&& (
-							el.updater.name.toLowerCase().indexOf(text.toLowerCase()) > -1
-							|| el.updater.last_name.toLowerCase().indexOf(text.toLowerCase()) > -1
+							el.updater.name.toLowerCase().indexOf(text) > -1
+							|| el.updater.last_name.toLowerCase().indexOf(text) > -1
 						)
 					) {
 						has = true;
@@ -639,7 +647,55 @@ export default {
 			if(['lower_limit', 'upper_limit'].includes(field) && value > 100) {
 				value = 100;
 			}
-		}
+		},
+
+		onSearchQuery(){
+			if(this.timeout) clearTimeout(this.timeout)
+
+			this.timeout = setTimeout(() => {
+				this.fetchKPI({
+					...this.filters,
+					query: this.searchText
+				})
+			}, 300);
+		},
+
+		countAvg() {
+
+			this.items.forEach(kpi => {
+
+				let kpi_sum = 0;
+				let kpi_count = 0;
+
+				kpi.users.forEach(user => {
+
+					let count = 0;
+					let sum = 0;
+					let avg = 0;
+
+					user.items.forEach(item => {
+						sum += Number(item.percent);
+						count++;
+					});
+
+					/**
+					* count avg of user items
+					*/
+					avg = count > 0 ? Number(sum / count).toFixed(2) : 0;
+
+					user.avg = avg;
+
+					// all kpi sum
+					kpi_sum += Number(avg);
+					kpi_count++;
+				});
+				/**
+				* count avg completed percent of kpi by users
+				*/
+				kpi.avg = kpi_count > 0 ? Number(Number(kpi_sum / kpi_count * 100).toFixed(2)) : 0;
+
+			});
+		},
 	},
 }
 </script>

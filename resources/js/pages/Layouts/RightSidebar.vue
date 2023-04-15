@@ -91,6 +91,8 @@
 <script>
 import { mapState, mapActions } from 'pinia'
 import { useNotificationsStore } from '@/stores/Notifications'
+import { useWorkChartStore } from '@/stores/WorkChart.js'
+import { usePersonalInfoStore } from '@/stores/PersonalInfo'
 
 const NotificationsLastCheck = 'NotificationsLastCheck'
 
@@ -105,10 +107,30 @@ export default {
 		};
 	},
 	computed: {
-		...mapState(useNotificationsStore, ['unreadQuantity'])
+		...mapState(useNotificationsStore, ['unreadQuantity']),
+		...mapState(useWorkChartStore, ['workChartList']),
+		...mapState(useWorkChartStore, {isWorkChartLoading: 'isLoading'}),
+		...mapState(usePersonalInfoStore, ['user']),
+		workChart(){
+			if(!this.workChartList) return null
+			if(!this.user) return null
+			return this.workChartList.find(wc => this.user.work_chart_id === wc.id)
+		},
+		workTime(){
+			if(this.workChart) return [this.workChart.start_time, this.workChart.end_time]
+			if(this.user) return this.getOldWorkTime(this.user)
+			return null
+		},
+		workTimeTS(){
+			if(!this.workTime) return null
+			return this.workTime.map(time => {
+				return this.$moment(time, 'HH:mm').valueOf()
+			})
+		}
 	},
 	mounted(){
 		this.fetchNotifications()
+		if(!this.workChartList && !this.isWorkChartLoading) this.fetchWorkChartList()
 		this.notificationsInterval = setInterval(() => {
 			this.hourlyNotifications()
 		}, 60000)
@@ -122,6 +144,7 @@ export default {
 	},
 	methods: {
 		...mapActions(useNotificationsStore, ['fetchNotifications']),
+		...mapActions(useWorkChartStore, ['fetchWorkChartList']),
 		openChat(){
 			if(!this.isBp){
 				const url = 'https://cdn-ru.bitrix24.kz/b1734679/crm/site_button/loader_12_koodzo.js';
@@ -134,12 +157,23 @@ export default {
 		},
 		hourlyNotifications(){
 			if(!this.unreadQuantity) return
+			if(!this.workTimeTS) return
 			const now = Date.now()
-			if(now - this.prevNotificationsCheck > 3600000){
+			const inRange = this.workTimeTS[0] <= now && now <= this.workTimeTS[1]
+			if(!inRange) return
+
+			if(now - this.prevNotificationsCheck > 14400000){
 				this.$emit('pop', 'notifications')
 				this.prevNotificationsCheck = now
 				localStorage.setItem(NotificationsLastCheck, now)
 			}
+		},
+		getOldWorkTime(user){
+			if(user.work_start && user.work_end) return [
+				user.work_start.substring(0, 5),
+				user.work_end.substring(0, 5),
+			]
+			return null
 		}
 	}
 };

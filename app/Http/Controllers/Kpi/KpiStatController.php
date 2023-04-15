@@ -4,16 +4,16 @@ namespace App\Http\Controllers\Kpi;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\BonusesFilterRequest;
+use App\Http\Requests\Kpi\Statistics\UserGroupsRequest;
 use App\Http\Requests\ShowKpiStatisticsRequest;
 use App\Http\Requests\UpdatedUserStatUpdateRequest;
-use App\Repositories\UpdatedUserStatRepository;
+use App\Models\Analytics\Activity;
+use App\Service\Kpi\Statistic\UserGroupService;
 use App\Service\KpiStatisticService;
 use App\Service\UpdatedUserStatService;
+use App\User;
 use Exception;
 use Illuminate\Http\JsonResponse;
-use App\User;
-use App\Models\Analytics\UpdatedUserStat;
-use App\Models\Analytics\Activity;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Artisan;
 
@@ -187,5 +187,20 @@ class KpiStatController extends Controller
     public function getActivities()
     {
         return Activity::get()->keyBy('id');
+    }
+
+    /**
+     * @param UserGroupsRequest $request
+     * @param UserGroupService $service
+     * @return JsonResponse
+     */
+    public function groups(UserGroupsRequest $request, UserGroupService $service): JsonResponse
+    {
+        $dto = $request->toDto();
+
+        return $this->response(
+            message: 'Success',
+            data: $service->handle($dto)
+        );
     }
 }

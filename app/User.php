@@ -17,7 +17,9 @@ use App\Models\Traits\HasTenants;
 use App\Models\User\Card;
 use App\OauthClientToken as Oauth;
 use App\Service\Department\UserService;
+use App\Traits\CurrencyTrait;
 use Carbon\Carbon;
+use Exception;
 use Illuminate\Contracts\Auth\Access\Authorizable;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -186,7 +188,9 @@ class User extends Authenticatable implements Authorizable
      */
     public function taxes(): BelongsToMany
     {
-        return $this->belongsToMany(Tax::class, 'user_tax');
+        return $this->belongsToMany(Tax::class, 'user_tax')
+            ->withPivot(['created_at'])
+            ->withTimestamps();
     }
     
     public function awards(): BelongsToMany
@@ -225,7 +229,13 @@ class User extends Authenticatable implements Authorizable
     public function groups(): BelongsToMany
     {
         return $this->belongsToMany('App\ProfileGroup', 'group_user', 'user_id', 'group_id')
-            ->withPivot(['created_at', 'updated_at', 'deleted_at'])->withTimestamps();
+            ->withPivot([
+                'created_at',
+                'updated_at',
+                'deleted_at',
+                'from',
+                'to'
+            ])->withTimestamps();
     }
     /**
      * Mutator's
@@ -833,8 +843,9 @@ class User extends Authenticatable implements Authorizable
 
     /**
      * Получить баланс сотрудника на текуший месяц
-     * 
+     *
      * @return int|float
+     * @throws \Exception
      */
     public function getCurrentSalary()
     {   
@@ -889,8 +900,23 @@ class User extends Authenticatable implements Authorizable
                 $sum = $arr->edited_salary->amount;
             }
         }
-        
-        return $sum; 
+
+        return $sum;
+    }
+
+    /**
+     * Получаем итоговую сумму по курсу валюты.
+     *
+     * @throws Exception
+     */
+    public function getTotalByCurrency(
+        float $price
+    ): float
+    {
+        $userCurrency = strtolower($this->currency);
+        $currency = !in_array($userCurrency, ['kzt', 'rub', 'usd']) ? 'usd' : $userCurrency;
+
+        return round(CurrencyTrait::createMultiCurrencyPrice($price)[$currency], 2);
     }
 
     public function getActiveCourse()
@@ -1056,6 +1082,17 @@ class User extends Authenticatable implements Authorizable
     }
 
     /**
+     * Количество рабочих дней в неделе по графику.
+     *
+     * @return array
+     */
+    public function chartWorkDays(): array
+    {
+        $userChart = $this->getWorkChart();
+
+        return WorkChartModel::getWorkDay($userChart);
+    }
+    /**
      * Ставка стажировочных дней
      * Если стаж не оплачивается, то 0
      */
@@ -1204,6 +1241,13 @@ class User extends Authenticatable implements Authorizable
         return $this->groups()->where('status', '=', 'active')->first();
     }
 
+    /**
+     * @return Position|null
+     */
+    public function currentPosition(): ?Position
+    {
+        return $this->position()->first() ?? null;
+    }
 
     public function workdays(): BelongsToMany
     {
@@ -1242,5 +1286,38 @@ class User extends Authenticatable implements Authorizable
     ): Model
     {
         return self::query()->findOrFail($id);
+    }
+
+    /**
+     * @return float
+     */
+    public function sumQuarterPremiums(): float
+    {
+        $individualQuarterPremium = $this->qpremium()
+            ->where('from', '<=', now()->format('Y-m-d'))
+            ->where('to', '>=', now()->format('Y-m-d'))
+            ->sum('sum') ?? 0;
+
+        $groupQuarterPremium = $this->activeGroup()->qpremium()
+            ->where('from', '<=', now()->format('Y-m-d'))
+            ->where('to', '>=', now()->format('Y-m-d'))
+            ->sum('sum') ?? 0;
+
+        $positionQuarterPremium = $this->currentPosition()->qpremium()
+            ->where('from', '<=', now()->format('Y-m-d'))
+            ->where('to', '>=', now()->format('Y-m-d'))
+            ->sum('sum') ?? 0;
+
+        return $individualQuarterPremium + $groupQuarterPremium + $positionQuarterPremium;
+    }
+
+    /**
+     * @return int
+     */
+    public function countWorkHours(): int
+    {
+        $schedule = $this->schedule();
+
+        return $schedule['end']->diffInHours($schedule['start']) - 1;
     }
 }
