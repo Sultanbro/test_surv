@@ -92,7 +92,8 @@ class CheckLate extends Command
         /**
          * Отнимаем 6 часов так как время сервера GTM +0.
          */
-        $workStart = Carbon::createFromTimeString($this->user->work_starts_at())->subHours(6)->format('H:i:s'); // Время начала смены для юзера
+        $workStart = $this->user->user_type == 'office' ? $this->user->work_starts_at() : Carbon::createFromTimeString($this->user->work_starts_at())->subHours(6)->format('H:i:s'); // Время начала смены для юзера
+
         dump($this->user->last_name . ' ' . $this->user->name . ' ' . $workStart);
 
         $dateTimeStart = Timetracking::where('user_id', $this->user->id) // Время начала работы, первый enter
