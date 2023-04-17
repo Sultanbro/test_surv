@@ -96,7 +96,6 @@ export default {
 	display: flex;
 	flex-direction: column;
 	gap: 15px;
-	max-height: 300px;
 	overflow-y: scroll;
 }
 
@@ -105,7 +104,7 @@ export default {
 	flex-direction: row;
 	align-items: center;
 	gap: 20px;
-	padding: 5px 30px 5px 0;
+	padding: 5px 0;
 }
 .AccessSelectList-item:hover {
 	cursor: pointer;
@@ -116,7 +115,6 @@ export default {
 	width: 40px;
 	height: 40px;
 	border-radius: 50%;
-	margin-left: 20px;
 }
 .AccessSelectList-info {
 	display: flex;

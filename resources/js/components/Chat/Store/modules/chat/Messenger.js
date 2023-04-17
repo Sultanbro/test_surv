@@ -42,6 +42,12 @@ export default {
 		async toggleInfoPanel({commit}) {
 			commit('toggleInfoPanel');
 		},
+		async toggleAddUserDialog({commit}) {
+			commit('toggleAddUserDialog');
+		},
+		async toggleNewChatDialog({commit}) {
+			commit('toggleNewChatDialog');
+		},
 		async requestScroll({commit}, position) {
 			commit('setScrolling', position);
 		},
@@ -64,6 +70,12 @@ export default {
 		},
 		toggleInfoPanel(state) {
 			state.infoPanel = !state.infoPanel;
+		},
+		toggleAddUserDialog(state) {
+			state.addUserDialog = !state.addUserDialog;
+		},
+		toggleNewChatDialog(state) {
+			state.newChatDialog = !state.newChatDialog;
 		},
 		toggleMessenger(state) {
 			state.open = !state.open;
@@ -103,6 +115,8 @@ export default {
 		fullscreen: false,
 		open: false,
 		infoPanel: false,
+		addUserDialog: false,
+		newChatDialog: false,
 		debug: false,
 		searchMode: false,
 		chatSearchMode: false,
@@ -116,6 +130,8 @@ export default {
 		isInitialized: state => state.initialized,
 		isOpen: state => state.open,
 		isInfoPanel: state => state.infoPanel,
+		isAddUserDialog: state => state.addUserDialog,
+		isNewChatDialog: state => state.newChatDialog,
 		isSearchMode: state => state.searchMode,
 		isChatSearchMode: state => state.chatSearchMode,
 		scrollingPosition: state => state.scrollingPosition,

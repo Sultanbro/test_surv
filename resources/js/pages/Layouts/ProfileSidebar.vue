@@ -74,7 +74,7 @@
 						/>
 						<div class="clearfix mt-3">
 							<a
-								href="#"
+								href="javascript:"
 								class="add-btn float-right"
 								@click.prevent="uploadLogo()"
 							>
@@ -372,10 +372,12 @@ export default {
 		if(!this.isRoot && !this.isProfile){
 			this.hide = true
 		}
-		const scrollObserver = new IntersectionObserver(() => {
-			this.inViewport = true
-		});
-		scrollObserver.observe(this.$el);
+		if(this.$el && this.$el.parentNode){
+			const scrollObserver = new IntersectionObserver(() => {
+				this.inViewport = true
+			});
+			scrollObserver.observe(this.$el);
+		}
 		this.initCorpBook();
 		this.fetchPortal()
 	},

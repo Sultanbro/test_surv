@@ -1,65 +1,69 @@
 <template>
-	<div class="messenger__meta">
-		<ConversationMessageReactions
-			class="messenger__meta-reactions"
-			:reactions="reactions"
-		/>
-		<div
+	<div class="ConversationMessageMeta">
+		<!-- <div
 			v-if="countReaders > 1 && own"
-			class="messenger__meta-views"
+			class="ConversationMessageMeta-views"
 		>
 			{{ countReaders }}
-		</div>
-		<div class="messenger__meta-date">
+		</div> -->
+		<div class="ConversationMessageMeta-date">
 			{{ time }}
 		</div>
 		<div
 			v-if="own"
-			class="messenger__meta-ckeck"
+			class="ConversationMessageMeta-ckeck"
 		>
 			<ChatIconStatusReaded v-if="countReaders" />
 			<ChatIconStatusSended v-else />
 		</div>
-		<div
-			v-if="false"
-			class="messenger__meta-ckeck"
-			:class="{'messenger__meta-ckeck_checked': countReaders}"
+		<!-- <div
+			class="ConversationMessageMeta-ckeck"
+			:class="{'ConversationMessageMeta-ckeck_checked': countReaders}"
+		/> -->
+
+		<ConversationMessageReactions
+			class="ConversationMessageMeta-reactions"
+			:reactions="reactions"
 		/>
-		<div class="messenger__meta-inner">
-			<ConversationMessageReactions
-				class="messenger__meta-actual"
-				:reactions="reactions"
-				@reaction-click="$emit('reaction-click', $event)"
-			/>
-			<div
+
+		<div class="ConversationMessageMeta-inner">
+			<!-- <div
 				v-if="countReaders > 1 && own"
-				class="messenger__meta-views messenger__meta-actual"
+				class="ConversationMessageMeta-views ConversationMessageMeta-actual"
 				:title="readersString"
 			>
 				{{ countReaders }}
-			</div>
-			<div class="messenger__meta-date messenger__meta-actual">
+			</div> -->
+			<div class="ConversationMessageMeta-date ConversationMessageMeta-actual">
 				{{ time }}
 			</div>
 			<div
 				v-if="own"
-				class="messenger__meta-ckeck messenger__meta-actual"
+				class="ConversationMessageMeta-ckeck ConversationMessageMeta-actual"
 			>
 				<ChatIconStatusReaded v-if="countReaders" />
 				<ChatIconStatusSended v-else />
 			</div>
-			<div
-				v-if="false"
-				class="messenger__meta-ckeck messenger__meta-actual"
-				:class="{'messenger__meta-ckeck_checked': countReaders}"
+
+			<ConversationMessageReactions
+				class="ConversationMessageMeta-actual"
+				:reactions="reactions"
+				@reaction-click="$emit('reaction-click', $event)"
 			/>
+			<!-- <div
+				class="ConversationMessageMeta-ckeck ConversationMessageMeta-actual"
+				:class="{'ConversationMessageMeta-ckeck_checked': countReaders}"
+			/> -->
 		</div>
 	</div>
 </template>
 
 <script>
 import ConversationMessageReactions from './ConversationMessageReactions.vue'
-import { ChatIconStatusSended, ChatIconStatusReaded } from '../../../icons/chat-icons.js'
+import {
+	ChatIconStatusSended,
+	ChatIconStatusReaded,
+} from '@icons'
 
 export default {
 	name: 'ConversationMessageMeta',
@@ -101,7 +105,7 @@ export default {
 </script>
 
 <style lang="scss">
-.messenger__meta{
+.ConversationMessageMeta{
 	margin-left: 1rem;
 	float: right;
 	white-space: nowrap;
@@ -113,6 +117,13 @@ export default {
 	&-ckeck{
 		display: inline-flex;
 		visibility: hidden;
+
+		font-weight: 400;
+		font-size: 11px;
+		line-height: 14px;
+
+		letter-spacing: -0.02em;
+		color: #A6B7D4;
 	}
 	&-ckeck{
 		font-size: 1.5rem;
@@ -121,17 +132,17 @@ export default {
 		// 	content: '✓';
 		// }
 	}
-	&-views{
-		&::before{
-			content: '👁';
-		}
-	}
-	&-ckeck_checked{
-		&::after{
-			content: '✓';
-			margin-left: -0.6em;
-		}
-	}
+	// &-views{
+	// 	&::before{
+	// 		content: '👁';
+	// 	}
+	// }
+	// &-ckeck_checked{
+	// 	&::after{
+	// 		content: '✓';
+	// 		margin-left: -0.6em;
+	// 	}
+	// }
 	&-inner{
 		display: flex;
 		flex-flow: row nowrap;

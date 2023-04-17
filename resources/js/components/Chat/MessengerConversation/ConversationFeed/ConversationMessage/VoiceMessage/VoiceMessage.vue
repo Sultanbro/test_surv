@@ -38,7 +38,10 @@
 </template>
 
 <script>
-import { ChatIconPauseVoice, ChatIconPlayVoice } from '../../../../icons/chat-icons.js'
+import {
+	ChatIconPauseVoice,
+	ChatIconPlayVoice,
+} from '@icons'
 
 export default {
 	name: 'VoiceMessage',
@@ -222,5 +225,18 @@ export default {
   margin: 0 5px;
 }
 
+@media only screen and (max-width: 670px) {
+	.voice-message__bars{
+		width: 165px;
+	}
+	.voice-message__bars__bar {
+		display: inline-block;
+		width: 2px;
+		height: 10px;
+		background-color: #C4CAE1;
+		margin: 0 1px;
+		border-radius: 2px;
+	}
+}
 
 </style>

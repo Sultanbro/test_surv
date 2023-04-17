@@ -82,8 +82,8 @@
 			</a>
 		</ContextMenu>
 		<div
-			class="messenger__messages-container"
 			id="messenger__messages"
+			class="messenger__messages-container"
 		>
 			<template v-for="(d, i) in messagesMap">
 				<div
@@ -93,10 +93,10 @@
 					<span class="messenger__messages-date-block">{{ d[0].created_at | formatDate }}</span>
 				</div>
 				<div
-					v-for="(message, index) in d"
+					v-for="{message, renderHelper}, index in d"
 					:key="message.id"
-					class="messenger__message-wrapper"
 					:id="'messenger_message_' + message.id"
+					class="messenger__message-wrapper"
 					@contextmenu.prevent="!message.event && showChatContextMenu(message, ...arguments)"
 				>
 					<ConversationServiceMessage
@@ -108,6 +108,7 @@
 						:message="message"
 						@active="activeMessageId = message.id"
 						:active="activeMessageId === message.id"
+						:helper="renderHelper"
 						:last="index === d.length - 1"
 						@loadImage="index === d.length - 1 && scrollBottom"
 					/>

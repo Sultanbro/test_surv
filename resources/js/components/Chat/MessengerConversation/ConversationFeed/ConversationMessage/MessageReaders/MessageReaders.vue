@@ -2,7 +2,7 @@
 	<div class="readers-badge">
 		✔ Cообщение прочитано: {{ message.readers[0].name }}
 		<a
-			href="#"
+			href="javascript:"
 			class="readers-link"
 			@mouseover="showReadersList"
 			@mouseleave="hideReadersList"

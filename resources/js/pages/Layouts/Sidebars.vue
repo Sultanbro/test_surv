@@ -13,7 +13,7 @@
 				class="header__arrow"
 				:class="{show: isRight}"
 			>
-				<a href="#"><img
+				<a href="javascript:"><img
 					src="/images/dist/header-arrow.svg"
 					alt="arrow icon"
 				></a>
