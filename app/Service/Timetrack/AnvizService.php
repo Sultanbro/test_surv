@@ -50,13 +50,10 @@ class AnvizService
              * If user not has Timetracking record for date
              */
             if($user_records->isEmpty()) {
-
                 Timetracking::create([
                     'enter'   => Carbon::parse($last_anviz_date)->subHours(6),
                     'user_id' => $user_id
                 ]);
-
-                break;
             }
 
             /**
