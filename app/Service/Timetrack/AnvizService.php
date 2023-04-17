@@ -56,7 +56,7 @@ class AnvizService
                     'user_id' => $user_id
                 ]);
 
-                continue;
+                break;
             }
 
             /**
@@ -68,7 +68,7 @@ class AnvizService
 
             if($exit_null) {
                 $this->updateIfDiffMoreThan15Mins($last_anviz_date, $exit_null);
-            } 
+            }
 
         } 
     }
