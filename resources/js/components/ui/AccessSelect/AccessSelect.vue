@@ -6,15 +6,16 @@
 			:selected-tab="selectedTab"
 		/>
 		<AccessSelectSearch
-			v-if="searchFirst"
+			v-if="searchPosition === 'beforeTabs'"
 			v-model="accessSearch"
 		/>
 		<AccessSelectTabs
+			v-if="tabs && tabs.length"
 			:tabs="tabs"
 			v-model="selectedTab"
 		/>
 		<AccessSelectSearch
-			v-if="!searchFirst"
+			v-if="searchPosition === 'afterTabs'"
 			v-model="accessSearch"
 		/>
 
@@ -63,6 +64,7 @@
 		<AccessSelectFooter
 			:count="accessList.length"
 			:submit="submit"
+			:submit-disabled="submitDisabled"
 			@submit="$emit('submit')"
 		/>
 		<slot
@@ -100,9 +102,9 @@ export default {
 			type: String,
 			default: 'Пригласить сотрудника'
 		},
-		searchFirst: {
-			type: Boolean,
-			default: false
+		searchPosition: {
+			type: String, // beforeTabs, afterTabs
+			default: 'afterTabs'
 		},
 		accessDictionaries: {
 			type: Object,
@@ -111,6 +113,10 @@ export default {
 				profile_groups: [],
 				positions: [],
 			})
+		},
+		submitDisabled: {
+			type: Boolean,
+			default: false
 		}
 	},
 	data(){

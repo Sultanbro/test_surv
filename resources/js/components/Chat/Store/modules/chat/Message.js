@@ -178,7 +178,7 @@ export default {
 				commit('updateChat', message.chat);
 				break
 			case 'online':
-				if (getters.chat.private && getters.chat.users.find(member => member.id === message.sender.id)) {
+				if (getters.chat && getters.chat.private && getters.chat.users.find(member => member.id === message.sender.id)) {
 					commit('setChatOnline', true);
 				}
 				return true;

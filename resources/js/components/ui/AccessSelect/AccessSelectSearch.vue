@@ -12,6 +12,7 @@
 			placeholder="Быстрый поиск"
 		>
 		<div
+			v-if="value"
 			class="AccessSelectSearch-btn ChatIcon-parent"
 			@click="$emit('input', '')"
 		>

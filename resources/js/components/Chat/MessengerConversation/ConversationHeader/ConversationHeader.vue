@@ -8,10 +8,7 @@
 				v-if="chat"
 				class="messenger__info-wrapper"
 			>
-				<div
-					class="messenger__info-wrapper_avatar"
-					@click="changeAvatar"
-				>
+				<div class="messenger__info-wrapper_avatar">
 					<JobtronAvatar
 						:title="chat.title"
 						:image="chat.image"
@@ -20,13 +17,10 @@
 				</div>
 				<div class="messenger__info-wrapper_head messenger__text-ellipsis messenger__clickable">
 					<div class="messenger__chat-name">
-						<span
-							v-if="!editTitle"
-							@click="changeTitle"
-						>
+						<span>
 							{{ chat.title }}
 						</span>
-						<div
+						<!-- <div
 							v-if="editTitle"
 							@keyup.enter="saveTitle"
 							class="messenger__chat-info-title-text"
@@ -50,7 +44,7 @@
 									/>
 								</svg>
 							</div>
-						</div>
+						</div> -->
 						<div
 							v-if="chat.private"
 							class="ConversationHeader-status"

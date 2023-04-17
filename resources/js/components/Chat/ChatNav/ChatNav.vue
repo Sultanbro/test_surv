@@ -60,6 +60,7 @@ export default {
   border-top-left-radius: 4px;
   border-bottom-left-radius: 4px;
   /* background-color: #f4f6fa; */
+	border-right: 1px solid #E1EBF9;
 }
 
 /*noinspection CssUnusedSymbol*/

@@ -20,19 +20,20 @@
 			</div>
 			<ChatInfo v-if="isInfoPanel && isChatSelected" />
 			<ChatUserAdd v-if="isAddUserDialog && isChatSelected" />
-			<ImageGallery
-				id="messenger_gallery"
-				:images="galleryImages"
-				:index="galleryIndex"
-				@onopen="openGallery"
-				@close="hideGallery"
-			/>
+			<ChatNewChat v-if="isNewChatDialog" />
 			<ConfirmDialog />
 			<ChatIconsDemo
 				v-if="isDemoOpen"
 				@close="isDemoOpen = false"
 			/>
 		</div>
+		<ImageGallery
+			id="messenger_gallery"
+			:images="galleryImages"
+			:index="galleryIndex"
+			@onopen="openGallery"
+			@close="hideGallery"
+		/>
 	</div>
 </template>
 
@@ -43,6 +44,7 @@ import MessengerConversation from './MessengerConversation/MessengerConversation
 // import InfoPanel from './InfoPanel/InfoPanel';
 import ChatInfo from './ChatInfo/ChatInfo.vue'
 import ChatUserAdd from './ChatInfo/ChatUserAdd.vue'
+import ChatNewChat from './ChatNewChat/ChatNewChat'
 import clickOutside from './directives/clickOutside.ts';
 import ImageGallery from './ImageGallery/ImageGallery.vue';
 import ConfirmDialog from './ConfirmDialog/ConfirmDialog.vue';
@@ -56,6 +58,7 @@ export default {
 		MessengerConversation,
 		ChatInfo,
 		ChatUserAdd,
+		ChatNewChat,
 		ImageGallery,
 		ConfirmDialog,
 		ChatIconsDemo,
@@ -92,6 +95,7 @@ export default {
 			'chat',
 			'isInfoPanel',
 			'isAddUserDialog',
+			'isNewChatDialog',
 		]),
 		isDesktop() {
 			return this.$viewportSize.width > 670

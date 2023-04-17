@@ -5,7 +5,7 @@
 		</div>
 		<div
 			class="messenger_header-button"
-			@click="openAddMemberModal"
+			@click="toggleNewChatDialog"
 		>
 			<ChatIconPlus class="pointer" />
 		</div>
@@ -66,12 +66,10 @@ export default {
 			'createChat',
 			'addMembers',
 			'removeMembers',
-			'loadCompany'
+			'loadCompany',
+			'toggleNewChatDialog',
 		]),
-		openAddMemberModal(e) {
-			e.stopPropagation();
-			this.showAddMemberModal = true;
-		},
+
 		submitChat() {
 			this.selectedTargets.push(this.user)
 			const members = this.selectedTargets.filter(item => item.type === 1)

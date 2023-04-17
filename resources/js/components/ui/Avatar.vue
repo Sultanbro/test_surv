@@ -115,6 +115,7 @@ export default {
 	&-text{
 		color: #fff;
 		font-size: 16px;
+		font-weight: 700;
 	}
 	&-tooltip{
 		width: 120px;
@@ -158,7 +159,7 @@ export default {
 @container (min-width: 50px) {
   .JobtronAvatar{
 		&-text {
-			font-size: 20px;
+			font-size: 22px;
 		}
 	}
 }
