@@ -69,8 +69,8 @@ class RecruiterStats extends Command
             if($this->argument('count_last_hour') && $this->argument('count_last_hour') == 1) $this->hour = Carbon::now()->setTimezone('Asia/Almaty')->subHour()->format('H');
         } 
 
-        if($this->hour >= 0 && $this->hour <= 9) $this->hour = '0' . $this->hour;
-        Storage::append('templog.log', 'hour: ' . $this->hour); 
+//        if($this->hour >= 0 && $this->hour <= 9) $this->hour = '0' . $this->hour;
+        Storage::append('templog.log', 'hour: ' . $this->hour);
 
         $datex = explode("-", date("Y-m-d", strtotime($this->date)));
         $this->year = $datex[0];

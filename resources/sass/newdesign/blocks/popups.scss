@@ -8,7 +8,7 @@
   background: rgba(0, 0, 0, 0.7);
   top: 0;
   left: 0;
-  z-index: 1035;
+  z-index: 1000010;
   overflow-x:hidden;
   overflow-y:auto;
   display: flex;
@@ -1081,5 +1081,5 @@ max-width: 100%;}
     Не относится к этому для tooltip bootstrap
 */
 .popover {
-  z-index: 999999;
+  z-index: 1000020;
 }

@@ -1,0 +1,77 @@
+<template>
+	<button
+		class="JobtronButton"
+		:class="{
+			'JobtronButton_big': big,
+			'JobtronButton_success': success,
+			'JobtronButton_error': error,
+		}"
+	>
+		<slot />
+	</button>
+</template>
+
+<script>
+export default {
+	name: 'JobtronButton',
+	components: {},
+	props: {
+		big: {
+			type: Boolean
+		},
+		success: {
+			type: Boolean
+		},
+		error: {
+			type: Boolean
+		},
+	}
+}
+</script>
+
+<style lang="scss">
+.JobtronButton{
+	display: flex;
+
+	align-items: center;
+	justify-content: space-between;
+	gap: 1.5rem;
+
+	padding: 1.3rem 2.5rem;
+	margin-top: auto;
+	border: none;
+	border-radius: 0.5rem;
+
+	font-weight: 600;
+	font-size: 1.2rem;
+	line-height: 1.4rem;
+	letter-spacing: -0.03em;
+	color: #fff;
+
+	background: #3361FF;
+	cursor: pointer;
+	&:hover:not([disabled]):not(.disabled){
+		background: lighten(#3361FF, 10);
+	}
+	&[disabled]{
+		cursor: default;
+	}
+	&_big{
+		padding: 1rem 3rem;
+		border-radius: 0.6rem;
+		line-height: 3rem;
+	}
+	&_success{
+		background: #28a745;
+		&:hover:not([disabled]):not(.disabled){
+			background: #218838;
+		}
+	}
+	&_error{
+		background: #dc3545;
+		&:hover:not([disabled]):not(.disabled){
+			background: #c82333;
+		}
+	}
+}
+</style>

@@ -30,16 +30,6 @@
 
 <script>
 export default {
-	data() {
-		return {
-			imageError: false,
-		};
-	},
-	watch: {
-		imageError() {
-			console.log('imageError', this.image, this.title);
-		},
-	},
 	props: {
 		image: {
 			type: String,
@@ -53,6 +43,16 @@ export default {
 		inline: {
 			type: Boolean,
 			default: false,
+		},
+	},
+	data() {
+		return {
+			imageError: false,
+		};
+	},
+	watch: {
+		imageError() {
+			console.log('imageError', this.image, this.title);
 		},
 	},
 }

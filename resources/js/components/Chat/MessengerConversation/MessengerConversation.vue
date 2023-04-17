@@ -3,7 +3,14 @@
 		<ConversationHeader v-show="!isChatSearchMode" />
 		<ConversationFeed v-show="!isChatSearchMode" />
 		<ConversationFooter v-show="!isChatSearchMode" />
-		<ConversationSearch v-show="isChatSearchMode" />
+		<ConversationSearch
+			v-if="isDesktop"
+			v-show="isChatSearchMode"
+		/>
+		<ConversationSearchMobile
+			v-else
+			v-show="isChatSearchMode"
+		/>
 	</div>
 </template>
 
@@ -12,6 +19,7 @@ import ConversationHeader from './ConversationHeader/ConversationHeader.vue';
 import ConversationFeed from './ConversationFeed/ConversationFeed.vue';
 import ConversationFooter from './ConversationFooter/ConversationFooter.vue';
 import ConversationSearch from './ConversationSearch/ConversationSearch.vue';
+import ConversationSearchMobile from './ConversationSearch/ConversationSearchMobile.vue';
 import {mapGetters} from 'vuex';
 
 export default {
@@ -21,9 +29,13 @@ export default {
 		ConversationFeed,
 		ConversationFooter,
 		ConversationSearch,
+		ConversationSearchMobile,
 	},
 	computed: {
-		...mapGetters(['isChatSearchMode'])
+		...mapGetters(['isChatSearchMode']),
+		isDesktop() {
+			return this.$viewportSize.width > 670
+		},
 	},
 }
 </script>

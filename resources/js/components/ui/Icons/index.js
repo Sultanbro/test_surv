@@ -42,6 +42,7 @@ import ChatIconUpload from './ChatIconUpload'
 import ChatIconUserAdd from './ChatIconUserAdd'
 import ChatIconViewUser from './ChatIconViewUser'
 import ChatIconViewImage from './ChatIconViewImage'
+import IconChatNoImage from './IconChatNoImage'
 
 export {
 	ChatIconBack,
@@ -88,4 +89,5 @@ export {
 	ChatIconUserAdd,
 	ChatIconViewUser,
 	ChatIconViewImage,
+	IconChatNoImage,
 }
