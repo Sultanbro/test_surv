@@ -29,6 +29,7 @@ class RestartQueue extends Command
     public function handle(): void
     {
         Artisan::call('queue:restart');
+        exec("sudo supervisorctl stop queue-worker:*");
         exec("sudo supervisorctl reread");
         exec("sudo supervisorctl update");
         exec("sudo supervisorctl start queue-worker:*");

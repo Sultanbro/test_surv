@@ -71,6 +71,7 @@ class RecruiterStats extends Command
 
 //        if($this->hour >= 0 && $this->hour <= 9) $this->hour = '0' . $this->hour;
         Storage::append('templog.log', 'hour: ' . $this->hour);
+        
 
         $datex = explode("-", date("Y-m-d", strtotime($this->date)));
         $this->year = $datex[0];
