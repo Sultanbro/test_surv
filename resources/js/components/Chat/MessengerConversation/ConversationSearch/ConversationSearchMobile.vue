@@ -11,51 +11,21 @@
 		/>
 
 		<!-- Заголовок списка результатов -->
-		<div class="ConversationSearchMobile-header mx-5">
-			<div class="ConversationSearchMobile-title">
-				{{ title }}
-			</div>
-			<div class="ConversationSearchMobile-actions">
-				<div
-					class="ConversationSearchMobile-icon ChatIcon-parent"
-					@click="forwardFiles"
-				>
-					<ChatIconHistoryBack />
-				</div>
-				<div
-					class="ConversationSearchMobile-icon ChatIcon-parent"
-					@click="deleteFiles"
-				>
-					<ChatIconHistoryDelete />
-				</div>
-			</div>
-		</div>
+		<ConversationSearchTitle
+			:title="title"
+			class="mx-5"
+			@forward="forwardFiles"
+			@delete="deleteFiles"
+		/>
 
 		<!-- Поиск -->
-		<label
+		<JobtronSearch
 			v-if="searchFilesFilter != 'images'"
-			class="ConversationSearchMobile-search mx-5"
-		>
-			<span class="ConversationSearchMobile-icon">
-				<ChatIconSearch
-					width="23"
-					height="24"
-				/>
-			</span>
-			<input
-				class="ConversationSearchMobile-input"
-				type="text"
-				placeholder="Поиск"
-				v-model="searchMessagesQuery"
-			>
-			<span
-				v-show="searchMessagesQuery"
-				class="ConversationSearchMobile-icon ChatIcon-parent"
-				@click="searchMessagesQuery = ''"
-			>
-				<ChatIconSearchClose />
-			</span>
-		</label>
+			v-model="searchMessagesQuery"
+			class="mx-5"
+		/>
+
+		<!-- Результаты -->
 		<div class="messenger__messages-search-results mx-5">
 			<template v-if="searchFilesFilter === 'users'">
 				<div
@@ -85,13 +55,9 @@
 import {mapActions, mapGetters} from 'vuex';
 import ConversationHeaderMobile from '../ConversationHeader/ConversationHeaderMobile.vue'
 import ConversationSearchFilter from './ConversationSearchFilter.vue'
+import ConversationSearchTitle from './ConversationSearchTitle.vue'
 import ConversationMessage from '../ConversationFeed/ConversationMessage/ConversationMessage.vue'
-import {
-	ChatIconHistoryBack,
-	ChatIconHistoryDelete,
-	ChatIconSearch,
-	ChatIconSearchClose,
-} from '../../icons/chat-icons.js'
+import JobtronSearch from '@ui/Search'
 
 const titles = {
 	users: 'Пользователи',
@@ -107,11 +73,9 @@ export default {
 	components: {
 		ConversationHeaderMobile,
 		ConversationSearchFilter,
-		ChatIconHistoryBack,
-		ChatIconHistoryDelete,
-		ChatIconSearch,
-		ChatIconSearchClose,
+		ConversationSearchTitle,
 		ConversationMessage,
+		JobtronSearch,
 	},
 	data(){
 		return {
@@ -193,37 +157,6 @@ export default {
 	}
 	&-filters{
 		margin-bottom: 1rem;
-	}
-	&-header{
-		display: flex;
-		flex-flow: row nowrap;
-		align-items: center;
-		justify-content: space-between;
-
-		margin-bottom: 1rem;
-	}
-	&-title{
-		font-weight: 500;
-		font-size: 16px;
-		line-height: 16px;
-		letter-spacing: -0.02em;
-		color: #152136;
-	}
-	// &-actions{}
-	&-search{
-		display: flex;
-		gap: 1rem;
-		align-items: center;
-
-		padding: 1rem;
-		margin-bottom: 1rem;
-		border-bottom: 0.75px solid #E3EAF6;
-	}
-	&-input{
-		flex: 1;
-		background: none;
-		border: none;
-		outline: none;
 	}
 }
 </style>

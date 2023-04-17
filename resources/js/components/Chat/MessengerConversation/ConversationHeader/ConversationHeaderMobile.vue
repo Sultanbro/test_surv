@@ -1,43 +1,47 @@
 <template>
 	<div class="ConversationHeaderMobile">
-		<div class="ConversationHeaderMobile-left">
-			<slot name="left">
-				<div
-					class="ConversationHeaderMobile-icon ChatIcon-parent"
-					@click="$emit('back')"
-				>
-					<ChatIconBack />
-				</div>
-			</slot>
+		<slot name="before" />
+		<div class="ConversationHeaderMobile-cols">
+			<div class="ConversationHeaderMobile-left">
+				<slot name="left">
+					<div
+						class="ConversationHeaderMobile-icon ChatIcon-parent"
+						@click="$emit('back')"
+					>
+						<ChatIconBack />
+					</div>
+				</slot>
+			</div>
+			<div class="ConversationHeaderMobile-center">
+				<slot>
+					<div class="ConversationHeaderMobile-title">
+						{{ chat.title }}
+					</div>
+					<div class="ConversationHeaderMobile-subtitle">
+						<template v-if="chat.private">
+							{{ chat.position }}
+						</template>
+						<template v-else>
+							{{ chat.users.length }} участников
+						</template>
+					</div>
+				</slot>
+			</div>
+			<div class="ConversationHeaderMobile-right">
+				<slot name="right">
+					<div
+						class="ConversationHeaderMobile-icon ChatIcon-parent"
+						@click="$emit('close')"
+					>
+						<ChatIconSearchClose
+							width="30"
+							height="30"
+						/>
+					</div>
+				</slot>
+			</div>
 		</div>
-		<div class="ConversationHeaderMobile-center">
-			<slot>
-				<div class="ConversationHeaderMobile-title">
-					{{ chat.title }}
-				</div>
-				<div class="ConversationHeaderMobile-subtitle">
-					<template v-if="chat.private">
-						{{ chat.position }}
-					</template>
-					<template v-else>
-						{{ chat.users.length }} участников
-					</template>
-				</div>
-			</slot>
-		</div>
-		<div class="ConversationHeaderMobile-right">
-			<slot name="right">
-				<div
-					class="ConversationHeaderMobile-icon ChatIcon-parent"
-					@click="$emit('close')"
-				>
-					<ChatIconSearchClose
-						width="30"
-						height="30"
-					/>
-				</div>
-			</slot>
-		</div>
+		<slot name="after" />
 	</div>
 </template>
 
@@ -46,7 +50,7 @@ import {mapGetters} from 'vuex';
 import {
 	ChatIconSearchClose,
 	ChatIconBack,
-} from '../../icons/chat-icons.js'
+} from '@icons'
 
 export default {
 	name: 'ConversationHeaderMobile',
@@ -62,15 +66,15 @@ export default {
 
 <style lang="scss">
 .ConversationHeaderMobile{
-	display: flex;
-	flex-flow: row nowrap;
-	align-items: flex-start;
-	justify-content: space-between;
-
 	padding: 2rem;
 
 	background-color: #f5f8fc;
-
+	&-cols{
+		display: flex;
+		flex-flow: row nowrap;
+		align-items: flex-start;
+		justify-content: space-between;
+	}
 	&-icon{
 		padding: 0.5rem;
 	}

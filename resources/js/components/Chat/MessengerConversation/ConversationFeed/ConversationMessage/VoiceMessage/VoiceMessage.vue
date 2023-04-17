@@ -38,7 +38,10 @@
 </template>
 
 <script>
-import { ChatIconPauseVoice, ChatIconPlayVoice } from '../../../../icons/chat-icons.js'
+import {
+	ChatIconPauseVoice,
+	ChatIconPlayVoice,
+} from '@icons'
 
 export default {
 	name: 'VoiceMessage',

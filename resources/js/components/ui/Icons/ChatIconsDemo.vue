@@ -18,7 +18,7 @@
 </template>
 
 <script>
-import * as Icons from './chat-icons'
+import * as Icons from './index.js'
 export default {
 	name: 'ChatIconsDemo',
 	components: {

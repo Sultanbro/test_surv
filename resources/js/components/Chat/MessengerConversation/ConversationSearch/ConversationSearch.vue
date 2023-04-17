@@ -98,7 +98,7 @@ import {
 	ChatIconSearch,
 	ChatIconSearchClose,
 	ChatIconSearchDate,
-} from '../../icons/chat-icons.js'
+} from '@icons'
 
 export default {
 	name: 'ConversationSearch',

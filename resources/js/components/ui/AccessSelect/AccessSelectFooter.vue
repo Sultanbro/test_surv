@@ -3,23 +3,23 @@
 		<span class="AccessSelectFooter-count">
 			{{ strCount }}
 		</span>
-		<button
+		<JobtronButton
 			v-if="submit"
-			class="AccessSelectFooter-button hover-pointer"
 			@click="$emit('submit')"
+			class="AccessSelectFooter-button"
 		>
-			<img src="/icon/news/access-modal/plus-accent.svg">
-			<span class="AccessSelectFooter-add">
-				{{ submit }}
-			</span>
-		</button>
+			{{ submit }}
+		</JobtronButton>
 	</div>
 </template>
 
 <script>
+import JobtronButton from '@ui/Button'
 export default {
 	name: 'AccessSelectFooter',
-	components: {},
+	components: {
+		JobtronButton,
+	},
 	props: {
 		count: {
 			type: Number,
@@ -60,7 +60,6 @@ export default {
 	justify-content: space-between;
 	border-top: 1px solid #EBEBF9;
 	padding-top: 20px;
-	padding-right: 20px;
 }
 .AccessSelectFooter-count {
 	font-family: "Inter", sans-serif;
@@ -68,26 +67,10 @@ export default {
 	font-weight: 400;
 	font-size: 13px;
 	line-height: 20px;
-	padding-left: 20px;
 	letter-spacing: -0.02em;
 	color: #8DA0C1;
 }
 .AccessSelectFooter-button {
-	display: flex;
-	flex-direction: row;
-	align-items: center;
-	gap: 10px;
-	background: #F7FBFF;
-	border-radius: 6px;
-	padding: 15px 35px 15px 30px;
-}
-.AccessSelectFooter-add {
-	font-family: "Inter", sans-serif;
-	font-style: normal;
-	font-weight: 500;
-	font-size: 14px;
-	line-height: 20px;
-	letter-spacing: -0.02em;
-	color: #156AE8;
+	white-space: nowrap;
 }
 </style>

@@ -1,0 +1,38 @@
+<template>
+	<label class="InputFile">
+		<input
+			type="file"
+			:accept="accept"
+			:multiple="multiple"
+			@change="$emit('change', $event.target.files)"
+			class="InputFile-input"
+		>
+		<slot />
+	</label>
+</template>
+
+<script>
+export default {
+	name: 'InputFile',
+	components: {},
+	props: {
+		accept: {
+			type: String,
+			default: ''
+		},
+		multiple: {
+			type: Boolean,
+			default: false
+		},
+	}
+}
+</script>
+
+<style lang="scss">
+.InputFile{
+	cursor: pointer;
+	&-input{
+		display: none;
+	}
+}
+</style>

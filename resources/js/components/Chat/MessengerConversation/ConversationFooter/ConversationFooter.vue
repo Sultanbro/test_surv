@@ -147,7 +147,10 @@ import {mapActions, mapGetters} from 'vuex';
 import EmojiPopup from './EmojiPopup/EmojiPopup.vue';
 import AudioDictaphone from './AudioDictaphone/AudioDictaphone.vue';
 import SpectrumAnalyser from './SpectrumAnalyser/SpectrumAnalyser.vue';
-import { ChatIconUpload, ChatIconSend } from '../../icons/chat-icons.js'
+import {
+	ChatIconUpload,
+	ChatIconSend,
+} from '@icons'
 
 
 export default {

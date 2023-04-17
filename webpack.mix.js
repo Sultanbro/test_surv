@@ -38,6 +38,8 @@ mix.webpackConfig({
 		fallback: { timers: require.resolve('timers-browserify') },
 		alias: {
 			'@': path.resolve(__dirname, 'resources/js'),
+			'@ui': path.resolve(__dirname, 'resources/js/components/ui'),
+			'@icons': path.resolve(__dirname, 'resources/js/components/ui/Icons'),
 		},
 	},
 	output: {

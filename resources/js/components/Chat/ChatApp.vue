@@ -2,12 +2,12 @@
 	<div
 		class="messenger__wrapper"
 		v-show="isOpen"
+		@click.self="toggle"
 	>
 		<div
 			@keydown.esc="escapeChat"
-			class="messenger__card-window"
 			id="messengerWindow"
-			v-click-outside="toggle"
+			class="messenger__card-window"
 		>
 			<div class="messenger__chat-container">
 				<ChatNav
@@ -15,23 +15,24 @@
 					:fullscreen="true"
 				/>
 				<MessengerConversation
-					v-if="isDesktop || !!chat"
+					v-if="isDesktop || isChatSelected"
 				/>
 			</div>
+			<ChatInfo v-if="isInfoPanel && isChatSelected" />
+			<ChatUserAdd v-if="isAddUserDialog && isChatSelected" />
+			<ImageGallery
+				id="messenger_gallery"
+				:images="galleryImages"
+				:index="galleryIndex"
+				@onopen="openGallery"
+				@close="hideGallery"
+			/>
+			<ConfirmDialog />
+			<ChatIconsDemo
+				v-if="isDemoOpen"
+				@close="isDemoOpen = false"
+			/>
 		</div>
-		<InfoPanel />
-		<ImageGallery
-			id="messenger_gallery"
-			:images="galleryImages"
-			:index="galleryIndex"
-			@onopen="openGallery"
-			@close="hideGallery"
-		/>
-		<ConfirmDialog />
-		<ChatIconsDemo
-			v-if="isDemoOpen"
-			@close="isDemoOpen = false"
-		/>
 	</div>
 </template>
 
@@ -39,11 +40,13 @@
 import {mapActions, mapGetters} from 'vuex';
 import ChatNav from './ChatNav/ChatNav.vue';
 import MessengerConversation from './MessengerConversation/MessengerConversation.vue';
-import InfoPanel from './InfoPanel/InfoPanel';
+// import InfoPanel from './InfoPanel/InfoPanel';
+import ChatInfo from './ChatInfo/ChatInfo.vue'
+import ChatUserAdd from './ChatInfo/ChatUserAdd.vue'
 import clickOutside from './directives/clickOutside.ts';
 import ImageGallery from './ImageGallery/ImageGallery.vue';
 import ConfirmDialog from './ConfirmDialog/ConfirmDialog.vue';
-import ChatIconsDemo from './icons/ChatIconsDemo.vue'
+import ChatIconsDemo from '@icons/ChatIconsDemo.vue'
 
 // noinspection JSUnusedGlobalSymbols
 export default {
@@ -51,7 +54,8 @@ export default {
 	components: {
 		ChatNav,
 		MessengerConversation,
-		InfoPanel,
+		ChatInfo,
+		ChatUserAdd,
 		ImageGallery,
 		ConfirmDialog,
 		ChatIconsDemo,
@@ -86,10 +90,15 @@ export default {
 			'galleryIndex',
 			'isChatSearchMode',
 			'chat',
+			'isInfoPanel',
+			'isAddUserDialog',
 		]),
 		isDesktop() {
 			return this.$viewportSize.width > 670
 		},
+		isChatSelected(){
+			return !!this.chat
+		}
 	},
 	created() {
 		this.boot();
@@ -111,7 +120,6 @@ export default {
 			if (this.isOpen) {
 				this.toggleMessenger();
 			}
-
 		},
 		openGallery() {
 			this.galleryOpened = true;
@@ -136,7 +144,7 @@ body.messenger__open {
 	height: 100%;
 
 	position: fixed;
-	z-index: 20000;
+	z-index: 1000100; // чтобы перекрыть виджет битрикса с 1000000
 	top: 0;
 	left: 0;
 	right: 0;
@@ -181,10 +189,8 @@ body.messenger__open {
 }
 
 .ChatIcon{
-	// &-line{
-	// 	stroke: #8DA0C1;
-	// }
-	&:hover{
+	&-parent:hover,
+	&-active{
 		.ChatIcon-line{
 			stroke: #3361FF;
 		}
@@ -192,14 +198,14 @@ body.messenger__open {
 			fill: #3361FF;
 		}
 	}
-	&-parent{
-		&:hover{
-			.ChatIcon-line{
-				stroke: #3361FF;
-			}
-			.ChatIcon-shape{
-				fill: #3361FF;
-			}
+	&-parent_red:hover,
+	&-active_red:hover,
+	&-active_red{
+		.ChatIcon-line{
+			stroke: #F6264C;
+		}
+		.ChatIcon-shape{
+			fill: #F6264C;
 		}
 	}
 }
@@ -211,7 +217,8 @@ body.messenger__open {
 }
 
 // чтобы кнопка битрикса чат не загораживала
-.b24-widget-button-position-bottom-right.b24-widget-button-position-bottom-right{
-	right: 7rem;
+.b24-widget-button-position-bottom-right{
+	right: 7rem !important;
 }
+// bx-livechat-wrapper bx-livechat-show bx-livechat-position-bottom-right bx-livechat-logo-ru bx-livechat-custom-scroll
 </style>

@@ -1,5 +1,9 @@
 <template>
-	<div ref="messengerChats">
+	<div
+		ref="messengerChats"
+		class="ChatsList"
+		:class="{'ChatsList_full': fullscreen}"
+	>
 		<ContextMenu
 			:show="contextMenuVisible"
 			:x="contextMenuX"
@@ -45,6 +49,7 @@
 				<ContactItem
 					:item="item"
 					:fullscreen="fullscreen"
+					:current-user-id="user.id"
 				/>
 			</div>
 		</template>
@@ -61,6 +66,7 @@
 				<ContactItem
 					:item="item"
 					:fullscreen="fullscreen"
+					:current-user-id="user.id"
 				/>
 			</div>
 			<div
@@ -72,6 +78,7 @@
 				<ContactItem
 					:item="item"
 					:fullscreen="fullscreen"
+					:current-user-id="user.id"
 				/>
 			</div>
 		</template>
@@ -162,7 +169,13 @@ export default {
 }
 </script>
 
-<style>
+<style lang="scss">
+.ChatsList{
+	&_full{
+		padding: 0 0.7rem;
+	}
+}
+
 .messenger__chat-item:hover {
   background: #F5F8FC;
 }
