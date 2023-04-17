@@ -75,7 +75,10 @@ class CheckLate extends Command
                 $query->where('is_trainee', 0);
             })
             ->orderBy('last_name', 'asc')
-            ->select(['users.id','users.last_name', 'users.name', 'users.working_time_id', 'users.work_start', 'users.work_chart_id'])
+            ->select(['users.id','users.last_name', 'users.name', 'users.working_time_id', 'users.work_start',
+                'users.work_chart_id',
+                'users.user_type'
+            ])
             ->get();
 
      
