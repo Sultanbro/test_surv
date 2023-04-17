@@ -75,9 +75,9 @@ class Kernel extends ConsoleKernel
         //$schedule->command('tenants:run bitrix:funnel:stats --tenants=bp')->hourlyAt(16); // Воронка в Аналитике
 
         $schedule->command('tenants:run restart-queue --tenants=bp')->dailyAt('00:10');
-        $schedule->job(new RecruiterStatsJob(1))->hourlyAt(1);
-        $schedule->job(new RecruiterStatsJob())->hourlyAt(29);
-        $schedule->job(new RecruiterStatsJob())->hourlyAt(44);
+        $schedule->job(new RecruiterStatsJob(1))->hourlyAt(10);
+        $schedule->job(new RecruiterStatsJob())->hourlyAt(45);
+        $schedule->job(new RecruiterStatsJob())->hourlyAt(59);
 
         /*
         |--------------------------------------------------------------------------
