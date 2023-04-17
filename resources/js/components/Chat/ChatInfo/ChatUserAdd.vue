@@ -5,7 +5,7 @@
 				Добавить в группу
 			</div>
 			<div class="ChatUserAdd-limit">
-				{{ chat.users.length }}/100
+				{{ chat.users.length + selectedTargets.length }}/100
 			</div>
 			<div
 				class="ChatUserAdd-close ChatIcon-parent ml-a"
@@ -18,6 +18,7 @@
 			v-model="selectedTargets"
 			:tabs="['Сотрудники', 'Отделы', 'Должности']"
 			submit="Добавить в группу"
+			:submit-disabled="requestProcess"
 			:access-dictionaries="accessDictionaries"
 			@submit="submitChat"
 			class="ChatUserAdd-select"
@@ -26,7 +27,7 @@
 </template>
 
 <script>
-import {mapActions, mapGetters} from 'vuex';
+import {mapActions, mapGetters} from 'vuex'
 import AccessSelect from '@ui/AccessSelect/AccessSelect'
 import {
 	ChatIconSearchClose,
@@ -37,6 +38,12 @@ export default {
 	components: {
 		AccessSelect,
 		ChatIconSearchClose,
+	},
+	data(){
+		return {
+			selectedTargets: [],
+			requestProcess: false,
+		}
 	},
 	computed: {
 		...mapGetters([
@@ -82,7 +89,12 @@ export default {
 			'loadCompany',
 			'toggleAddUserDialog',
 		]),
-		submitChat(){}
+		async submitChat(){
+			this.requestProcess = true
+			await this.addMembers(this.selectedTargets)
+			this.requestProcess = false
+			this.toggleAddUserDialog()
+		}
 	}
 }
 </script>

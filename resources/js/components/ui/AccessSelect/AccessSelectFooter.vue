@@ -7,6 +7,7 @@
 			v-if="submit"
 			@click="$emit('submit')"
 			class="AccessSelectFooter-button"
+			:disabled="submitDisabled"
 		>
 			{{ submit }}
 		</JobtronButton>
@@ -28,6 +29,10 @@ export default {
 		submit: {
 			type: String,
 			default: 'Пригласить сотрудника'
+		},
+		submitDisabled: {
+			type: Boolean,
+			default: false
 		}
 	},
 	computed: {

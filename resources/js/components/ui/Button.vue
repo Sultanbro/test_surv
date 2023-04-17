@@ -55,6 +55,7 @@ export default {
 	}
 	&[disabled]{
 		cursor: default;
+		background-color: #777;
 	}
 	&_big{
 		padding: 1rem 3rem;
