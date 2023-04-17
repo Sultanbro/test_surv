@@ -4,6 +4,7 @@ namespace App\Service\Timetrack;
 
 use App\Timetracking;
 use App\Models\Anviz\Time as AnvizTime;
+use Carbon\Carbon;
 
 class AnvizService
 {   
@@ -51,7 +52,7 @@ class AnvizService
             if($user_records->isEmpty()) {
 
                 Timetracking::create([
-                    'enter'   => $last_anviz_date,
+                    'enter'   => Carbon::parse($last_anviz_date)->subHours(6),
                     'user_id' => $user_id
                 ]);
 
