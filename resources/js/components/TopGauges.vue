@@ -5,251 +5,246 @@
 		:class="{'top': page == 'top'}"
 		:key="skey"
 	>
-		<div
-			v-for="(group, group_index) in utility"
-			:key="group_index"
-			:class="wrapper_class"
-		>
+		<template v-for="(group, group_index) in utility">
 			<div
-				class="text-center font-bold mb-3 mt-2 d-flex justify-content-center"
-				v-if="editable"
+				v-if="group.gauges.length"
+				:key="group_index"
+				:class="wrapper_class"
 			>
-				<a
-					:href="'/timetracking/an?group='+ group.id + '&active=1&load=1'"
-					target="_blank"
-				>{{ group.name }}</a>
 				<div
-					class=" ml-2 pointer"
-					v-if="page == 'top' && group.gauges.length < 4"
-					@click="showAddWindow(group.id, group_index)"
+					class="text-center font-bold mb-3 mt-2 d-flex justify-content-center"
+					v-if="editable"
 				>
-					<i class="fa fa-plus-square" />
+					<a
+						:href="'/timetracking/an?group='+ group.id + '&active=1&load=1'"
+						target="_blank"
+					>{{ group.name }}</a>
+					<div
+						class=" ml-2 pointer"
+						v-if="page == 'top' && group.gauges.length < 4"
+						@click="showAddWindow(group.id, group_index)"
+					>
+						<i class="fa fa-plus-square" />
+					</div>
 				</div>
-			</div>
-			<div
-				class="d-flex justify-content-center"
-				:style="page == 'top' ? 'flex-wrap:wrap; width: 240px;' : ''"
-			>
 				<div
-					v-for="(gauge, gauge_index) in group.gauges"
-					:key="gauge.id"
-					class="text-center gauge"
-					:class="{
-						'scale': group.gauges.length > 1,
-						'scale-tl': gauge_index == 0,
-						'scale-tr': gauge_index == 1,
-						'scale-bl': gauge_index == 2,
-						'scale-br': gauge_index == 3,
-						'mr-4': page == 'analytics' && group.gauges.length - 1 != gauge_index
-					}"
+					class="d-flex justify-content-center"
+					:style="page == 'top' ? 'flex-wrap:wrap; width: 240px;' : ''"
 				>
-					<p
-						class="text-center g-title"
-						:class="{'underline': gauge.is_main == 1}"
-					>
-						{{ gauge.name }} <template v-if="page == 'analytics'">
-							{{ gauge.diff }}%
-						</template>
-						<!-- <span class="btn" @click="edit(group_index, gauge_index)"><i class="fa fa-cogs"></i></span> -->
-					</p>
-
 					<div
-						@click="edit(group_index, gauge_index)"
-						title="Нажмите, чтобы редактировать"
-						:key="gauge.key"
-						v-if="page =='top'"
+						v-for="(gauge, gauge_index) in group.gauges"
+						:key="gauge.id"
+						class="text-center gauge"
+						:class="{
+							'scale': group.gauges.length > 1,
+							'scale-tl': gauge_index == 0,
+							'scale-tr': gauge_index == 1,
+							'scale-bl': gauge_index == 2,
+							'scale-br': gauge_index == 3,
+							'mr-4': page == 'analytics' && group.gauges.length - 1 != gauge_index
+						}"
 					>
-						<VGauge
-							:value="Number(gauge.value)"
-							:height="gauge.height"
-							:options="gauge.options"
-							:width="gauge.width"
-
-							:unit="gauge.unit.toString()"
-							:min-value="Number(gauge.min_value)"
-							:max-value="Number(gauge.max_value)"
-							:top="true"
-							gauge-value-class="gauge-span"
-						/>
-					</div>
-					<div
-						@click="edit(group_index, gauge_index)"
-						title="Нажмите, чтобы редактировать"
-						:key="gauge.key + 'a'"
-						v-else
-					>
-						<VGauge
-							:value="Number(gauge.value)"
-							height="90px"
-							:options="gauge.options"
-							width="150px"
-							:unit="gauge.unit.toString()"
-							:min-value="Number(gauge.min_value)"
-							:max-value="Number(gauge.max_value)"
-							:top="true"
-							gauge-value-class="gauge-span"
-						/>
-					</div>
-
-					<p class="text-center text-14">
-						{{ Number(gauge.value) }}{{ gauge.unit }} из {{ gauge.max_value }}{{ gauge.unit }}
-					</p>
-
-					<div
-						v-show="gauge.editable"
-						class="mb-5 edit-window"
-					>
-						<div>
-							<div class="d-flex justify-content-between align-items-center">
-								<span class="pr-2 l-label">Min</span>
-								<input
-									type="text"
-									class="form-control form-control-sm w-250 wiwi"
-									v-model="gauge.min_value"
-								>
-							</div>
-							<div class="d-flex justify-content-between align-items-center">
-								<span class="pr-2 l-label">Max</span>
-								<input
-									type="text"
-									class="form-control form-control-sm w-250 wiwi"
-									v-model="gauge.max_value"
-								>
-							</div>
-							<div class="d-flex justify-content-between align-items-center">
-								<span class="pr-2 l-label">Сег</span>
-								<input
-									type="text"
-									class="form-control form-control-sm w-250 wiwi"
-									v-model="gauge.sections"
-								>
-							</div>
-							<div class="d-flex justify-content-between align-items-center">
-								<span class="pr-2 l-label">Ед.</span>
-								<input
-									type="text"
-									class="form-control form-control-sm wiwi"
-									v-model="gauge.unit"
-								>
-							</div>
-
-							<template v-if="gauge.fixed == 0">
-								<div class="d-flex justify-content-between align-items-center">
-									<span class="pr-2 l-label">Наз</span>
-									<input
-										type="text"
-										class="form-control form-control-sm wiwi"
-										v-model="gauge.name"
-									>
-								</div>
-								<div class="d-flex justify-content-between align-items-center">
-									<span class="pr-2 l-label">Окр</span>
-									<input
-										type="text"
-										class="form-control form-control-sm wiwi"
-										v-model="gauge.round"
-									>
-								</div>
-								<div class="d-flex justify-content-between align-items-center">
-									<span class="pr-2 l-label">Акт</span>
-									<select
-										v-model="gauge.activity_id"
-										class="form-control form-control-sm h-23"
-									>
-										<option
-											:value="-1"
-											:key="-1"
-										>
-											Ячейка из сводной
-										</option>
-										<option
-											:value="group_activity.id"
-											v-for="(group_activity, key) in group.group_activities"
-											:key="key"
-										>
-											{{ group_activity.name }}
-										</option>
-									</select>
-								</div>
-								<div
-									class="d-flex justify-content-between align-items-center"
-									v-if="gauge.activity_id > 0"
-								>
-									<span class="pr-2 l-label">Тип</span>
-									<select
-										v-model="gauge.value_type"
-										class="form-control form-control-sm h-23"
-									>
-										<option value="sum">
-											Сумма выполненного
-										</option>
-										<option value="avg">
-											Среднее значение
-										</option>
-									</select>
-								</div>
-								<div
-									class="d-flex justify-content-between align-items-center mt-1"
-									v-if="gauge.activity_id == -1"
-								>
-									<span class="pr-2">Ячейка</span>
-									<input
-										type="text"
-										class="form-control form-control-sm wiwi text-uppercase"
-										v-model="gauge.cell"
-									>
-								</div>
+						<p
+							class="text-center g-title"
+							:class="{'underline': gauge.is_main == 1}"
+						>
+							{{ gauge.name }} <template v-if="page == 'analytics'">
+								{{ gauge.diff }}%
 							</template>
-
-							<div>
-								<b-form-checkbox
-									v-model="gauge.reversed"
-									:value="1"
-									:unchecked-value="0"
-								>
-									Отразить цвета
-								</b-form-checkbox>
-							</div>
-							<div>
-								<b-form-checkbox
-									v-model="gauge.is_main"
-									:value="1"
-									:unchecked-value="0"
-								>
-									Ключевой
-								</b-form-checkbox>
-							</div>
-
-							<div class="d-flex justify-content-between  align-items-center">
-								<input
-									type="range"
-									class="form-control form-control-sm w-250 mr-2 wiwi"
-									v-model="gauge.angle"
-									min="-0.2"
-									max="0.2"
-									step="0.01"
-								>
-								{{ gauge.angle }}
-							</div>
+							<!-- <span class="btn" @click="edit(group_index, gauge_index)"><i class="fa fa-cogs"></i></span> -->
+						</p>
+						<div
+							@click="edit(group_index, gauge_index)"
+							title="Нажмите, чтобы редактировать"
+							:key="gauge.key"
+							v-if="page =='top'"
+						>
+							<VGauge
+								:value="Number(gauge.value)"
+								:height="gauge.height"
+								:options="gauge.options"
+								:width="gauge.width"
+								:unit="gauge.unit.toString()"
+								:min-value="Number(gauge.min_value)"
+								:max-value="Number(gauge.max_value)"
+								:top="true"
+								gauge-value-class="gauge-span"
+							/>
 						</div>
-						<div class="d-flex">
-							<button
-								@click="save(group_index, gauge_index)"
-								class="btn btn-primary btn-sm rounded mt-1 mr-2"
-							>
-								Сохранить
-							</button>
-							<button
-								@click="delete_gauge(group_index, gauge_index)"
-								class="btn btn-danger btn-sm rounded mt-1"
-							>
-								Удалить
-							</button>
+						<div
+							@click="edit(group_index, gauge_index)"
+							title="Нажмите, чтобы редактировать"
+							:key="gauge.key + 'a'"
+							v-else
+						>
+							<VGauge
+								:value="Number(gauge.value)"
+								height="90px"
+								:options="gauge.options"
+								width="150px"
+								:unit="gauge.unit.toString()"
+								:min-value="Number(gauge.min_value)"
+								:max-value="Number(gauge.max_value)"
+								:top="true"
+								gauge-value-class="gauge-span"
+							/>
+						</div>
+						<p class="text-center text-14">
+							{{ Number(gauge.value) }}{{ gauge.unit }} из {{ gauge.max_value }}{{ gauge.unit }}
+						</p>
+						<div
+							v-show="gauge.editable"
+							class="mb-5 edit-window"
+						>
+							<div>
+								<div class="d-flex justify-content-between align-items-center">
+									<span class="pr-2 l-label">Min</span>
+									<input
+										type="text"
+										class="form-control form-control-sm w-250 wiwi"
+										v-model="gauge.min_value"
+									>
+								</div>
+								<div class="d-flex justify-content-between align-items-center">
+									<span class="pr-2 l-label">Max</span>
+									<input
+										type="text"
+										class="form-control form-control-sm w-250 wiwi"
+										v-model="gauge.max_value"
+									>
+								</div>
+								<div class="d-flex justify-content-between align-items-center">
+									<span class="pr-2 l-label">Сег</span>
+									<input
+										type="text"
+										class="form-control form-control-sm w-250 wiwi"
+										v-model="gauge.sections"
+									>
+								</div>
+								<div class="d-flex justify-content-between align-items-center">
+									<span class="pr-2 l-label">Ед.</span>
+									<input
+										type="text"
+										class="form-control form-control-sm wiwi"
+										v-model="gauge.unit"
+									>
+								</div>
+								<template v-if="gauge.fixed == 0">
+									<div class="d-flex justify-content-between align-items-center">
+										<span class="pr-2 l-label">Наз</span>
+										<input
+											type="text"
+											class="form-control form-control-sm wiwi"
+											v-model="gauge.name"
+										>
+									</div>
+									<div class="d-flex justify-content-between align-items-center">
+										<span class="pr-2 l-label">Окр</span>
+										<input
+											type="text"
+											class="form-control form-control-sm wiwi"
+											v-model="gauge.round"
+										>
+									</div>
+									<div class="d-flex justify-content-between align-items-center">
+										<span class="pr-2 l-label">Акт</span>
+										<select
+											v-model="gauge.activity_id"
+											class="form-control form-control-sm h-23"
+										>
+											<option
+												:value="-1"
+												:key="-1"
+											>
+												Ячейка из сводной
+											</option>
+											<option
+												:value="group_activity.id"
+												v-for="(group_activity, key) in group.group_activities"
+												:key="key"
+											>
+												{{ group_activity.name }}
+											</option>
+										</select>
+									</div>
+									<div
+										class="d-flex justify-content-between align-items-center"
+										v-if="gauge.activity_id > 0"
+									>
+										<span class="pr-2 l-label">Тип</span>
+										<select
+											v-model="gauge.value_type"
+											class="form-control form-control-sm h-23"
+										>
+											<option value="sum">
+												Сумма выполненного
+											</option>
+											<option value="avg">
+												Среднее значение
+											</option>
+										</select>
+									</div>
+									<div
+										class="d-flex justify-content-between align-items-center mt-1"
+										v-if="gauge.activity_id == -1"
+									>
+										<span class="pr-2">Ячейка</span>
+										<input
+											type="text"
+											class="form-control form-control-sm wiwi text-uppercase"
+											v-model="gauge.cell"
+										>
+									</div>
+								</template>
+								<div>
+									<b-form-checkbox
+										v-model="gauge.reversed"
+										:value="1"
+										:unchecked-value="0"
+									>
+										Отразить цвета
+									</b-form-checkbox>
+								</div>
+								<div>
+									<b-form-checkbox
+										v-model="gauge.is_main"
+										:value="1"
+										:unchecked-value="0"
+									>
+										Ключевой
+									</b-form-checkbox>
+								</div>
+								<div class="d-flex justify-content-between  align-items-center">
+									<input
+										type="range"
+										class="form-control form-control-sm w-250 mr-2 wiwi"
+										v-model="gauge.angle"
+										min="-0.2"
+										max="0.2"
+										step="0.01"
+									>
+									{{ gauge.angle }}
+								</div>
+							</div>
+							<div class="d-flex">
+								<button
+									@click="save(group_index, gauge_index)"
+									class="btn btn-primary btn-sm rounded mt-1 mr-2"
+								>
+									Сохранить
+								</button>
+								<button
+									@click="delete_gauge(group_index, gauge_index)"
+									class="btn btn-danger btn-sm rounded mt-1"
+								>
+									Удалить
+								</button>
+							</div>
 						</div>
 					</div>
 				</div>
 			</div>
-		</div>
+		</template>
 
 
 		<!-- Modal Create activity -->
