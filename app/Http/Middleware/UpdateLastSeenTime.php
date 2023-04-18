@@ -20,7 +20,6 @@ class UpdateLastSeenTime
      */
     public function handle(Request $request, Closure $next): Response|RedirectResponse
     {
-        dd('here');
         $authId = auth()->id();
         if (Auth::check()) {
             $user = User::getUserById($authId);
