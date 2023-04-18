@@ -88,7 +88,6 @@ class Kernel extends HttpKernel
         'not_admin_subdomain' => \App\Http\Middleware\IsNotAdminSubDomain::class,
         'is_admin' => CheckIsAdminMiddleware::class,
         'check_tariff' => CheckTariff::class,
-        'owner' => IsOwner::class,
-        'last_seen' => UpdateLastSeenTime::class
+        'owner' => IsOwner::class
     ];
 }
