@@ -11,7 +11,7 @@
 				<div class="messenger__info-wrapper_avatar">
 					<JobtronAvatar
 						:title="chat.title"
-						:image="chat.image"
+						:image="chat.private ? '/users_img/' + chat.second_user.img_url : chat.image"
 						:size="50"
 					/>
 				</div>
@@ -98,6 +98,7 @@
 				</div>
 				<div
 					class="messenger__search-button ConversationHeader-icon ChatIcon-parent"
+					title="Архив"
 					@click="toggleChatSearchMode"
 				>
 					<ChatIconSearchMessages />
@@ -351,7 +352,6 @@ export default {
 // }
 
 .messenger__chat-name_overlay {
-	overflow-x: auto;
 	display: flex;
 	align-items: center;
 	height: 28px;

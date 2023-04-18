@@ -259,6 +259,7 @@ export default {
 
 <style lang="scss" scoped>
 #messenger_container{
+	align-self: stretch;
 	background: url('../../../../../assets/chat/bg.jpg') repeat, #F7F8FA;
 	background-size: cover;
 }

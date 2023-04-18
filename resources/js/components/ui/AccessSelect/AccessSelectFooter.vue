@@ -4,12 +4,12 @@
 			{{ strCount }}
 		</span>
 		<JobtronButton
-			v-if="submit"
-			@click="$emit('submit')"
+			v-if="submitButton"
+			@click="onSubmit"
 			class="AccessSelectFooter-button"
 			:disabled="submitDisabled"
 		>
-			{{ submit }}
+			{{ submitButton }}
 		</JobtronButton>
 	</div>
 </template>
@@ -26,7 +26,7 @@ export default {
 			type: Number,
 			default: 0
 		},
-		submit: {
+		submitButton: {
 			type: String,
 			default: 'Пригласить сотрудника'
 		},
@@ -53,6 +53,10 @@ export default {
 			if (num > 20) num = num % 10;
 			return num === 1 ? dec[0] : num > 1 && num < 5 ? dec[1] : dec[2];
 		},
+		onSubmit(){
+			console.log('onSubmit')
+			this.$emit('submit')
+		}
 	}
 }
 </script>

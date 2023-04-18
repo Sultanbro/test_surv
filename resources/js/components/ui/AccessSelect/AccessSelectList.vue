@@ -104,6 +104,8 @@ export default {
 	flex-direction: row;
 	align-items: center;
 	gap: 20px;
+
+	width: 100%;
 	padding: 5px 0;
 }
 .AccessSelectList-item:hover {
@@ -119,7 +121,8 @@ export default {
 .AccessSelectList-info {
 	display: flex;
 	flex-direction: column;
-	flex-grow: 1;
+	flex: 1;
+	overflow: hidden;
 }
 .AccessSelectList-sub {
 	font-family: "Inter", sans-serif;
@@ -137,6 +140,8 @@ export default {
 	line-height: 20px;
 	letter-spacing: -0.02em;
 	color: #0A1323;
+	text-overflow: ellipsis;
+	white-space: nowrap;
 }
 
 .AccessSelectList-checkbox {

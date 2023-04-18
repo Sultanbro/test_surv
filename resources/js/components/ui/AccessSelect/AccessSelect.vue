@@ -63,7 +63,7 @@
 
 		<AccessSelectFooter
 			:count="accessList.length"
-			:submit="submit"
+			:submit-button="submitButton"
 			:submit-disabled="submitDisabled"
 			@submit="$emit('submit')"
 		/>
@@ -98,7 +98,7 @@ export default {
 			type: [Array, String],
 			default: () => [],
 		},
-		submit: {
+		submitButton: {
 			type: String,
 			default: 'Пригласить сотрудника'
 		},
@@ -117,12 +117,16 @@ export default {
 		submitDisabled: {
 			type: Boolean,
 			default: false
+		},
+		single: {
+			type: Boolean,
+			default: false
 		}
 	},
 	data(){
 		return {
 			selectedTab: 'Сотрудники',
-			accessList: this.value,
+			accessList: JSON.parse(JSON.stringify(this.value)),
 			accessSearch: '',
 		}
 	},
@@ -145,12 +149,22 @@ export default {
 				this.accessList.splice(this.accessList.indexOf(el), 1)
 			}
 			else{
-				this.accessList.push({
-					id,
-					name,
-					image,
-					type,
-				})
+				if(this.single){
+					this.accessList = [{
+						id,
+						name,
+						image,
+						type,
+					}]
+				}
+				else{
+					this.accessList.push({
+						id,
+						name,
+						image,
+						type,
+					})
+				}
 			}
 
 			this.$emit('input', this.accessList)

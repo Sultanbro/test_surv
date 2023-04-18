@@ -25,9 +25,9 @@
 		<div class="ChatNewChat-content">
 			<AccessSelect
 				v-if="tab === 'chat'"
-				v-model="selectedTargets"
+				v-model="selectedPrivate"
 				:tabs="[]"
-				submit="Отправить"
+				submit-button="Отправить"
 				:submit-disabled="requestProcess"
 				:search-position="''"
 				:single="true"
@@ -45,11 +45,11 @@
 				v-if="tab === 'group'"
 				v-model="selectedTargets"
 				:tabs="['Сотрудники', 'Отделы', 'Должности']"
-				submit="Создать группу"
+				submit-button="Создать группу"
 				:submit-disabled="requestProcess"
 				:search-position="''"
 				:access-dictionaries="accessDictionaries"
-				@submit="submitChat"
+				@submit="submitGroup"
 				class="ChatNewChat-select"
 			/>
 		</div>
@@ -76,6 +76,7 @@ export default {
 	data(){
 		return {
 			title: 'Новая группа',
+			selectedPrivate: [],
 			selectedTargets: [],
 			requestProcess: false,
 			tab: 'chat',
@@ -97,6 +98,7 @@ export default {
 		accessDictionaries(){
 			return {
 				users: this.users.reduce((users, user) => {
+					if(user.deleted_at) return users
 					users.push({
 						id: user.id,
 						name: `${user.name} ${user.last_name}`,
@@ -141,6 +143,16 @@ export default {
 			'toggleNewChatDialog',
 		]),
 		async submitChat(){
+			this.requestProcess = true
+			await this.createChat({
+				title: this.title,
+				description: '',
+				members: this.selectedPrivate.map(member => member.id),
+			})
+			this.requestProcess = false
+			this.toggleNewChatDialog()
+		},
+		async submitGroup(){
 			this.requestProcess = true
 			await this.createChat({
 				title: this.title,
@@ -209,7 +221,12 @@ export default {
 	}
 
 	&-content{
+		display: flex;
+		flex-flow: column nowrap;
 		flex: 1;
+		min-height: 0;
+		overflow: scroll;
+		overflow: hidden;
 	}
 
 	&-input{
