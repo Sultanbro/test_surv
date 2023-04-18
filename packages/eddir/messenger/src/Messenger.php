@@ -105,6 +105,7 @@ class Messenger {
                 $chat->title       = $second_user->name . " " . $second_user->last_name;
                 $chat->image       = $second_user->img_url;
                 $chat->isOnline    = MessengerUserOnline::query()->where( 'user_id', $second_user->id )->exists();
+                $chat->last_seen   = \App\User::getUserById($second_user->id)->last_seen;
             } else {
                 return null;
             }
