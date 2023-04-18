@@ -34,19 +34,13 @@ export default {
 <template>
 	<DefaultLayout>
 		<div class="old__content">
-			<div class="row">
-				<div class="col-md-12 mt-4 mb-3">
-					<ReportsNav :active-tab="activeTab" />
-					<div class="col-md-12">
-						<AnalyticsPage
-							v-show="activeuserid"
-							:groups="groups"
-							:activeuserid="activeuserid"
-							:is-admin="isAdmin"
-						/>
-					</div>
-				</div>
-			</div>
+			<ReportsNav :active-tab="activeTab" />
+			<AnalyticsPage
+				v-show="activeuserid"
+				:groups="groups"
+				:activeuserid="activeuserid"
+				:is-admin="isAdmin"
+			/>
 		</div>
 	</DefaultLayout>
 </template>

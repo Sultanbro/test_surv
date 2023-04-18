@@ -4,13 +4,21 @@
 			id="left-panel"
 			class="lp"
 		>
-			<div
-				class="btn btn-search mb-3"
-				@click="showSearch = true"
-				v-if="!course_page"
-			>
+			<div class="form-search-kb">
 				<i class="fa fa-search" />
-				<span>Искать в базе...</span>
+				<input
+					type="text"
+					v-model="search.input"
+					@input="searchInput"
+					@blur="searchCheck"
+					placeholder="Искать в базе..."
+					class="form-control"
+				>
+				<i
+					class="search-clear"
+					v-if="search.input.length"
+					@click="clearSearch"
+				>x</i>
 			</div>
 			<div
 				class="btn btn-grey mb-3"
@@ -24,7 +32,7 @@
 			<div class="kb-wrap noscrollbar">
 				<div
 					class="chapter opened mb-3"
-					v-if="!course_page"
+					v-if="!course_page && !search.items.length && !search.input.length"
 				>
 					<div class="d-flex">
 						<span class="font-16 font-bold">{{ parent_title }}</span>
@@ -38,23 +46,64 @@
 					</div>
 				</div>
 
-				<NestedCourse
-					v-if="course_page"
-					:tasks="tree"
-					:active="activesbook != null ? activesbook.id : 0"
-					@showPage="showPage"
-				/>
+				<div class="search-content">
+					<template v-if="search.items.length">
+						<div
+							v-for="item in search.items"
+							:key="item.id"
+							class="search-item"
+							@click="selectSection(item.book, item.id)"
+						>
+							<p
+								v-if="item.book"
+								class="search-item-book"
+							>
+								{{ item.book.title }}
+							</p>
+							<p class="search-item-title">
+								{{ item.title }}
+							</p>
+							<div
+								class="search-item-text"
+								v-html="item.text"
+							/>
+						</div>
+					</template>
 
-				<NestedDraggable
-					v-else
-					:tasks="tree"
-					:mode="mode"
-					:auth_user_id="auth_user_id"
-					:opened="true"
-					@showPage="showPage"
-					@addPage="addPage"
-					:parent_id="id"
-				/>
+					<div
+						v-else-if="search.input.length <= 2 && search.input.length !== 0"
+						class="text-muted"
+					>
+						Введите минимум 3 символа
+					</div>
+
+					<div
+						v-else-if="search.input.length > 2"
+						class="text-muted"
+					>
+						Ничего не найдено
+					</div>
+				</div>
+				<template v-if="!search.items.length && !search.input.length">
+					<NestedCourse
+						v-if="course_page"
+						:tasks="tree"
+						:active="activesbook != null ? activesbook.id : 0"
+						@showPage="showPage"
+					/>
+
+					<NestedDraggable
+						v-else
+						:active="activesbook != null ? activesbook.id : 0"
+						:tasks="tree"
+						:mode="mode"
+						:auth_user_id="auth_user_id"
+						:opened="true"
+						@showPage="showPage"
+						@addPage="addPage"
+						:parent_id="id"
+					/>
+				</template>
 			</div>
 		</aside>
 		<!-- /#left-panel -->
@@ -95,7 +144,7 @@
 					>
 						<i
 							class="fa fa-edit"
-							@click="$emit('toggleMode')"
+							@click="toggleMode"
 							:class="{'active': mode == 'edit'}"
 						/>
 					</div>
@@ -480,62 +529,6 @@
 			</div>
 			Пока не сделано
 		</b-modal>
-
-		<b-modal
-			v-model="showSearch"
-			title="Поиск"
-			size="md"
-			dialog-class="modal-search"
-			hide-header
-			hide-footer
-		>
-			<div>
-				<div class="d-flex relative  mb-2">
-					<input
-						type="text"
-						v-model="search.input"
-						@keyup.enter="searchInput"
-						placeholder="Поиск по всей базе..."
-						class="form-control"
-					>
-					<button
-						class="search-btn btn"
-						v-if="search.input != ''"
-						@click="searchInput"
-					>
-						Искать
-					</button>
-				</div>
-
-
-				<div class="s-content">
-					<div
-						class="sss"
-						v-if="search.input.length >=3 && search.items.length == 0"
-					>
-						<p>По запросу "{{ search.input }}" ничего не найдено.</p>
-					</div>
-					<div
-						class="item"
-						v-for="(item, x) in search.items"
-						@click="showPage(item.id, true)"
-						:key="x"
-					>
-						<p
-							v-if="item.book != null"
-							class="book"
-						>
-							{{ item.book.title }}
-						</p>
-						<p>{{ item.title }}</p>
-						<div
-							class="text"
-							v-html="item.text"
-						/>
-					</div>
-				</div>
-			</div>
-		</b-modal>
 	</div>
 </template>
 
@@ -634,7 +627,21 @@ export default {
 	},
 
 	methods: {
-
+		toggleMode(){
+			this.clearSearch();
+			this.$emit('toggleMode');
+		},
+		searchCheck() {
+			if (this.search.input.length === 0) {
+				this.clearSearch();
+			}
+		},
+		clearSearch() {
+			this.search = {
+				input: '',
+				items: []
+			}
+		},
 		beforeunloadFn(e) {
 			if(this.text_was != this.activesbook.text || this.title_was != this.activesbook.title) {
 				e.returnValue = 'Are you sure you want to leave?';

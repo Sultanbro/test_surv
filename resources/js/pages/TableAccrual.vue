@@ -1,11 +1,8 @@
 <template>
-	<div
-		v-if="groupss"
-		class="mt-2 px-3"
-	>
+	<div v-if="groupss">
 		<div class="mb-0">
 			<!-- filters -->
-			<div class="row mb-3">
+			<div class="row mb-4">
 				<div class="col-3">
 					<v-select
 						:options="groups"
@@ -64,19 +61,6 @@
 					>
 						<i class="fa fa-redo-alt" />
 					</a>
-					<a
-						v-if="can_edit"
-						@click="exportData()"
-						class="btn btn-success rounded text-white mr-1"
-					>
-						<i class="far fa-file-excel" />
-					</a>
-					<a
-						@click="toggleVisible()"
-						class="btn btn-info rounded text-white mr-1"
-					>
-						<i class="fa fa-eye" />
-					</a>
 				</div>
 				<div class="col-2" />
 			</div>
@@ -85,7 +69,7 @@
 			<hr>
 			<div
 				v-if="hasPermission"
-				class="row mb-2"
+				class="row my-2"
 			>
 				<div class="col-6">
 					<div>
@@ -120,11 +104,24 @@
 					</div>
 				</div>
 				<div class="col-6 text-right">
+					<a
+						v-if="can_edit"
+						@click="exportData()"
+						class="btn btn-success rounded text-white mr-1"
+					>
+						<i class="far fa-file-excel" />
+					</a>
+					<a
+						@click="toggleVisible()"
+						class="btn btn-info rounded text-white mr-1"
+					>
+						<i class="fa fa-eye" />
+					</a>
 					<b-button
 						v-if="selectedGroup.salary_approved == 0 && can_edit"
 						style="float:right"
 						@click="showBeforeApprove = true"
-						class="rounded btn-sm mb-3 mt-1"
+						class="rounded btn-sm mb-3 ml-3"
 						variant="info"
 					>
 						Проверено и готово к выдаче
@@ -146,7 +143,7 @@
 				</div>
 			</div>
 			<hr>
-			<div class="row mt-3">
+			<div class="row mt-4">
 				<div class="col-12 col-md-9">
 					<div class="d-flex">
 						<b-form-group class="mr-3">
@@ -1836,6 +1833,23 @@ hr {
 		}
 	}
 
+	&.hide-special {
+		th,
+		td {
+			&:nth-child(2),
+			&:nth-child(3),
+			&:nth-child(4),
+			&:nth-child(5),
+			&:nth-child(6),
+			&:nth-child(7) {
+				display: none;
+			}
+			&:nth-child(8) {
+				left:290px !important;
+			}
+		}
+	}
+
 	td {
 		&:nth-child(2),
 		&:nth-child(3),
@@ -2036,24 +2050,6 @@ hr {
 		text-align: right;
 		span {
 			font-size: 11px;
-		}
-	}
-	.hide-special {
-		th,
-		td {
-			&:nth-child(2),
-			&:nth-child(3),
-			&:nth-child(4),
-			&:nth-child(5),
-			&:nth-child(6) {
-				display: none;
-			}
-			&:nth-child(7) {
-				left:278px !important;
-				div {
-					width: 60px;
-				}
-			}
 		}
 	}
 }

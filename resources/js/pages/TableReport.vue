@@ -4,7 +4,7 @@
 		class="mt-4"
 	>
 		<div class="mb-0">
-			<div class="row mb-3">
+			<div class="row mb-4">
 				<div class="col-3">
 					<select
 						class="form-control"

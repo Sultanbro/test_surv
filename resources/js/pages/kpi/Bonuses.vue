@@ -58,7 +58,7 @@
 				<template v-if="bonus && newBonusesArray.length > 0">
 					<tr>
 						<td
-							class="p-3 text-center pointer"
+							class="text-center pointer"
 							@click="bonus.expanded = !bonus.expanded"
 						>
 							<i
@@ -70,7 +70,7 @@
 								v-else
 							/>
 						</td>
-						<td class="p-3 text-left">
+						<td class="text-left">
 							<div
 								v-if="all_fields[0].key == 'target'"
 								class="d-flex align-items-center"
@@ -309,7 +309,7 @@
 						<tr :key="p">
 							<td
 								@click="expand(p)"
-								class="pointer p-3 b-table-sticky-column"
+								class="pointer b-table-sticky-column"
 							>
 								<div class="d-flex align-items-center px-2">
 									<span class="mr-2">{{ p + 1 }}</span>
@@ -323,7 +323,7 @@
 									/>
 								</div>
 							</td>
-							<td class="p-3 text-left">
+							<td class="text-left">
 								<!-- <superselect
 							v-if="item.target == null"
 							class="w-full"
@@ -331,7 +331,7 @@
 							:single="true"
 							@choose="(target) => item.target = target"
 						/>  -->
-								<div class="d-flex aic p-1">
+								<div class="d-flex aic">
 									<i
 										class="fa fa-user ml-2 color-user"
 										v-if="page_item.type == 1"
@@ -570,7 +570,7 @@
 														class="plus-item"
 													>
 														<div
-															class="p-4"
+															class="px-4 py-3"
 															@click="addBonusGroup(page_item)"
 														>
 															<i class="fa fa-plus mr-2" /> <b>Добавить бонус</b>

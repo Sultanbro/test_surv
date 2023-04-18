@@ -133,7 +133,7 @@ export default {
 	},
 	mounted() {
 		this.drawLines();
-		window.addEventListener('wheel', this.scrollArea);
+		window.addEventListener('wheel', this.scrollArea, { passive: false });
 	},
 	beforeDestroy() {
 		window.removeEventListener('wheel', this.scrollArea);
@@ -186,7 +186,8 @@ export default {
 			this.openEditCard = bool;
 		},
 		scrollArea(event) {
-			if (event.altKey) {
+			if (event.ctrlKey) {
+				event.preventDefault();
 				this.zoom = Math.min(Math.max(this.zoom + (event.deltaY > 0 ? -10 : 10), 10), 200);
 			}
 		},

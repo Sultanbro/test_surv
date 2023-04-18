@@ -44,7 +44,19 @@
         &:first-child {
           th, td {
             &:first-child {
+              position: relative;
               border-radius: 12px 0 0 0;
+              &:before{
+                content: "";
+                position: absolute;
+                top: -11px;
+                left: -13px;
+                transform: skewX(326deg);
+                background-color: #ffffff;
+                width: 20px;
+                height: 20px;
+                border-radius: 50px;
+              }
             }
 
             &:last-child {

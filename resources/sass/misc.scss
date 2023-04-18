@@ -8,6 +8,10 @@
     width: 100px;
 }
 
+.w-150px{
+    width: 150px;
+}
+
 .w-200px{
     width: 200px;
 }
@@ -628,6 +632,16 @@ span.red{
         background-color: #ffffff;
         background-image: url("https://www.transparenttextures.com/patterns/inspiration-geometry.png");
         background-repeat: repeat;
+    }
+}
+
+.pagination{
+    .page-item{
+        .page-link{
+            width: 30px;
+            height: 30px;
+            line-height: 1;
+        }
     }
 }
 
