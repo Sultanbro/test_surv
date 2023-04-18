@@ -38,8 +38,6 @@ Route::middleware(['web','tenant', 'not_admin_subdomain'])->group(function () {
 
     Route::get('/structure', [Root\Structure\StructureController::class, 'index']);
 
-    Route::post('/online', [Root\Messenger\UserStatusController::class, 'online']);
-
     Route::resource('work-chart', Root\WorkChart\WorkChartController::class)->except(['create', 'edit']);
     Route::group([
         'prefix' => 'work-chart',
@@ -704,6 +702,8 @@ Route::middleware(['api','tenant','not_admin_subdomain'])->group(function () {
             Route::get('/fired-trainees/{id?}/{date?}', [Api\DepartmentUserController::class, 'getFiredTrainees'])->name('fired-trainees');
             Route::get('/check/user/{id}', [Api\DepartmentUserController::class, 'userInGroup']);
         });
+
+        Route::post('/online', [Root\Messenger\UserStatusController::class, 'online']);
     });
 });
 
