@@ -33,8 +33,10 @@ class MessagesController {
         $startMessageId = (int) request()->input( 'start_message_id', 0 );
         $count          = (int) request()->input( 'count', $this->perPage );
         $including      = request()->boolean( 'including' );
+        $year           = (int) request()->input('year') ?? null;
+        $month          = (int) request()->input('month') ?? null;
 
-        $messages = MessengerFacade::fetchMessages( $chatId, $count, $startMessageId, $including );
+        $messages = MessengerFacade::fetchMessages( $chatId, $count, $year, $month, $startMessageId, $including);
         $messages = $messages->toArray();
 
         return response()->json( $messages );

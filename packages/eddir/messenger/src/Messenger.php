@@ -239,7 +239,7 @@ class Messenger {
      *
      * @return Collection
      */
-    public function fetchMessages( int $chatId, int $count, int $start_message_id = 0, bool $including = false ): Collection {
+    public function fetchMessages( int $chatId, int $count, int $year, int $month, int $start_message_id = 0, bool $including = false ): Collection {
         $messages = MessengerMessage::query()
                                     ->with( 'sender' )
                                     ->with( 'event' )
@@ -269,6 +269,8 @@ class Messenger {
         } else {
             $messages = $messages->orderBy( 'id', 'desc' );
         }
+
+        $messages = $messages->when($year && $month, fn($query) => $query->whereYear('created_at', $year)->whereMonth('created_at', $month));
 
         return $messages->limit( abs( $count ) )->get();
     }
