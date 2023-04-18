@@ -5,6 +5,7 @@ namespace App\Http;
 use App\Http\Middleware\CheckIsAdminMiddleware;
 use App\Http\Middleware\CheckTariff;
 use App\Http\Middleware\Portal\IsOwner;
+use App\Http\Middleware\UpdateLastSeenTime;
 use Illuminate\Foundation\Http\Kernel as HttpKernel;
 
 class Kernel extends HttpKernel
@@ -88,5 +89,6 @@ class Kernel extends HttpKernel
         'is_admin' => CheckIsAdminMiddleware::class,
         'check_tariff' => CheckTariff::class,
         'owner' => IsOwner::class,
+        'last_seen' => UpdateLastSeenTime::class
     ];
 }

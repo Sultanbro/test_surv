@@ -19,7 +19,7 @@ use App\Http\Controllers\Timetrack as Timetrack;
 use App\Http\Controllers\User as User;
 use Illuminate\Support\Facades\Route;
 
-Route::middleware(['web','tenant'])->group(function () {
+Route::middleware(['web','tenant', 'last_seen'])->group(function () {
     Route::any('/', [User\ProfileController::class, 'newprofile']);
     Route::any('/pricing', [User\ProfileController::class, 'newprofile']);
     Route::get('login', [Auth\LoginController::class, 'showLoginForm'])->name('login');
@@ -34,7 +34,7 @@ Route::middleware(['web','tenant'])->group(function () {
 });
 
 // Portal Api
-Route::middleware(['web','tenant','not_admin_subdomain'])->group(function () {
+Route::middleware(['web','tenant', 'not_admin_subdomain', 'last_seen'])->group(function () {
 
     Route::get('/structure', [Root\Structure\StructureController::class, 'index']);
 
