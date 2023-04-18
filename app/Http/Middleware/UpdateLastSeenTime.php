@@ -11,14 +11,7 @@ use Illuminate\Support\Facades\Auth;
 
 class UpdateLastSeenTime
 {
-    /**
-     * Handle an incoming request.
-     *
-     * @param Request $request
-     * @param  Closure(Request): (Response|RedirectResponse)  $next
-     * @return Response|RedirectResponse
-     */
-    public function handle(Request $request, Closure $next): Response|RedirectResponse
+    public function handle(Request $request, Closure $next)
     {
         $authId = auth()->id();
         if (Auth::check()) {
