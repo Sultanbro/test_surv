@@ -73,7 +73,7 @@ class MessengerChat extends Model {
     }
 
     public function getUsersAttribute(): Collection {
-        return $this->members()->withPivot('is_admin')->select( 'id', 'name', 'last_name', 'img_url', 'position_id' )->get();
+        return $this->members()->withPivot('is_admin')->select( 'id', 'name', 'last_name', 'img_url', 'position_id', 'last_seen')->get();
     }
 
     public function getImageAttribute( $value ): ?string {
