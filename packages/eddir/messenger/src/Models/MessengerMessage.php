@@ -33,6 +33,16 @@ class MessengerMessage extends Model {
         return $this->belongsTo( MessengerChat::class, 'chat_id' );
     }
 
+    /**
+     * Users who deleted message.
+     *
+     * @return BelongsToMany
+     */
+    public function deletedMessage(): BelongsToMany
+    {
+        return $this->belongsToMany(User::class, 'messenger_deleted_messages', 'message_id', 'user_id');
+    }
+
     // users who have been seen this message
     public function readers(): BelongsToMany {
         return $this->belongsToMany(

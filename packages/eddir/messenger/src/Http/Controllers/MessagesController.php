@@ -181,10 +181,6 @@ class MessagesController {
      * @return JsonResponse
      */
     public function deleteMessage( int $messageId ): JsonResponse {
-        // check if user is sender of message
-        if ( ! MessengerFacade::isSender( $messageId, Auth::user()->id ) ) {
-            return response()->json( [ 'message' => 'You are not sender of this message' ], 403 );
-        }
         // delete message
         $message = MessengerFacade::deleteMessage( $messageId, Auth::user() );
 
