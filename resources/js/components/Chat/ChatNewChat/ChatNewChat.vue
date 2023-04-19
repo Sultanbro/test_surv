@@ -107,7 +107,7 @@ export default {
 					})
 					return users
 				}, []),
-				profile_groups: this.profileGroups,
+				profile_groups: this.profileGroups.filter(group => !group.deleted_at),
 				positions: this.positions.map(pos => ({
 					id: pos.id,
 					name: pos.position
