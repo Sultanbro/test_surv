@@ -18,6 +18,8 @@ use GuzzleHttp\Exception\GuzzleException;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Http\JsonResponse;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Pusher\ApiErrorException;
 use Pusher\Pusher;
@@ -241,12 +243,17 @@ class Messenger {
      * @return Collection
      */
     public function fetchMessages( int $chatId, int $count, int $year, int $month, int $start_message_id = 0, bool $including = false ): Collection {
+
+        $user = Auth::user();
+
         $messages = MessengerMessage::query()
                                     ->with( 'sender' )
                                     ->with( 'event' )
                                     ->with( 'files' )
                                     ->with( 'readers' )
                                     ->with( 'parent' )
+                                    ->whereDoesntHave('deletedMessage', fn($query) => $query->where('user_id', $user->id))
+                                    ->with('deletedMessage')
                                     ->where( 'chat_id', $chatId )
                                     ->where( 'deleted', false );
 
@@ -386,6 +393,21 @@ class Messenger {
                                 $query->where( 'user_id', $userId );
                             } )
                             ->exists();
+    }
+
+    /**
+     * Check if user is already deleted message.
+     *
+     * @param MessengerMessage $message
+     * @param int $userId
+     * @return bool
+     */
+    public function isAlreadyDeleted(
+        MessengerMessage $message,
+        int $userId
+    ): bool
+    {
+        return $message->deletedMessage()->get()->contains($userId);
     }
 
     /**
@@ -567,22 +589,26 @@ class Messenger {
      * @param int $messageId
      * @param User $promote
      *
-     * @return bool
+     * @return bool|JsonResponse
      * @throws ApiErrorException
      * @throws GuzzleException
      * @throws PusherException
      */
-    public function deleteMessage( int $messageId, User $promote ): bool {
+    public function deleteMessage( int $messageId, User $promote ): bool|JsonResponse {
 
         /** @var MessengerMessage $message */
         $message = MessengerMessage::find( $messageId );
 
+        if (self::isAlreadyDeleted($message, $promote->id))
+        {
+            return response()->json([ 'message' => 'You are already delete this message.' ], 400);
+        }
+
+        $message->deletedMessage()->attach($promote->id);
+
         $this->createEvent( $message->chat, $promote, MessengerEvent::TYPE_DELETE, [
             'message_id' => $messageId,
         ] );
-
-        $message->deleted = true;
-        $message->save();
 
         return true;
     }
