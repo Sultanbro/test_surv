@@ -274,44 +274,47 @@
 
 
 		<!-- Настройки раздела -->
-		<Sidebar
+		<SimpleSidebar
 			title="Настройки базы знаний"
 			:open="showBookSettings"
 			@close="showBookSettings = false"
-			width="30%"
+			width="400px"
 		>
-			<label class="d-flex">
-				<input
-					type="checkbox"
-					v-model="send_notification_after_edit"
-					class="form- mb-2 mr-2"
+			<template #body>
+				<label class="d-flex mb-2">
+					<input
+						type="checkbox"
+						v-model="send_notification_after_edit"
+						class="form- mb-2 mr-2"
+					>
+					<p>Отправлять уведомления сотрудникам об изменениях в базе знаний</p>
+				</label>
+				<label class="d-flex mb-2">
+					<input
+						type="checkbox"
+						v-model="show_page_from_kb_everyday"
+						class="form- mb-2 mr-2"
+					>
+					<p>Показывать одну из страниц базы знаний каждый день, после нажатия на кнопку "начать рабочий день"</p>
+				</label>
+				<label class="d-flex mb-2">
+					<input
+						type="checkbox"
+						v-model="allow_save_kb_without_test"
+						class="form- mb-2 mr-2"
+					>
+					<p>Разрешить вносить изменения без тестовых вопросов в разделах базы знаний</p>
+				</label>
+			</template>
+			<template #footer>
+				<button
+					class="btn btn-primary rounded m-auto"
+					@click="save_settings()"
 				>
-				<p>Отправлять уведомления сотрудникам об изменениях в базе знаний</p>
-			</label>
-			<label class="d-flex">
-				<input
-					type="checkbox"
-					v-model="show_page_from_kb_everyday"
-					class="form- mb-2 mr-2"
-				>
-				<p>Показывать одну из страниц базы знаний каждый день, после нажатия на кнопку "начать рабочий день"</p>
-			</label>
-			<label class="d-flex">
-				<input
-					type="checkbox"
-					v-model="allow_save_kb_without_test"
-					class="form- mb-2 mr-2"
-				>
-				<p>Разрешить вносить изменения без тестовых вопросов в разделах базы знаний</p>
-			</label>
-
-			<button
-				class="btn btn-primary rounded m-auto"
-				@click="save_settings()"
-			>
-				<span>Сохранить</span>
-			</button>
-		</Sidebar>
+					Сохранить
+				</button>
+			</template>
+		</SimpleSidebar>
 
 		<!-- Редактирование раздела  -->
 		<b-modal
@@ -362,7 +365,7 @@
 import Draggable from 'vuedraggable'
 import Glossary from '../components/Glossary.vue'
 const Booklist = () => import(/* webpackChunkName: "Booklist" */ '@/pages/booklist') // база знаний разде
-import Sidebar from '@/components/ui/Sidebar' // сайдбар table
+import SimpleSidebar from '@/components/ui/SimpleSidebar' // сайдбар table
 import SuperSelect from '@/components/SuperSelect' // with User ProfileGroup and Position
 
 export default {
@@ -371,7 +374,7 @@ export default {
 		Draggable,
 		Glossary,
 		Booklist,
-		Sidebar,
+		SimpleSidebar,
 		SuperSelect,
 	},
 	props: {

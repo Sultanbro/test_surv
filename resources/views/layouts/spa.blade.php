@@ -81,32 +81,5 @@
     <script src="{{ url('/js/croppie.js') }}"></script>
     <script src="{{ url('/js/croppie.min.js') }}"></script>
     <script src="{{ mix('/js/app.js') }}"></script>
-    <script>
-        if(window.location.host === 'bp.localhost:8000'){
-	        const localInterval = setInterval(() => {
-		        const userPhotos = document.querySelectorAll('img[src^="/users_img"]');
-		        if(userPhotos.length){
-			        userPhotos.forEach(u => {
-				        u.src = 'https://randomuser.me/api/portraits/men/1.jpg';
-			        })
-		        }
-
-		        const croppedUserPhotos = document.querySelectorAll('img[src^="/cropped_users_img"]');
-		        if(userPhotos.length){
-			        userPhotos.forEach(u => {
-				        u.src = 'https://randomuser.me/api/portraits/men/1.jpg';
-			        })
-		        }
-
-		        const coursesPhoto = document.querySelectorAll('img[src^="/courses/"]');
-		        if(coursesPhoto.length){
-			        coursesPhoto.forEach(c => {
-				        c.src = 'https://images.ctfassets.net/hrltx12pl8hq/a2hkMAaruSQ8haQZ4rBL9/8ff4a6f289b9ca3f4e6474f29793a74a/nature-image-for-website.jpg?fit=fill&w=480&h=320';
-			        })
-		        }
-	        }, 10000)
-        }
-    </script>
-
 </body>
 </html>

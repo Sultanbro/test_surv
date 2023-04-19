@@ -6,84 +6,87 @@
 				:src="avatar"
 				alt="avatar image"
 			>
-
 			<!-- hover menu -->
-			<div class="header__menu">
-				<div
-					class="header__menu-project"
-					v-scroll-lock="isCreatingProject"
-				>
-					<img
-						src="/images/dist/icon-settings.svg"
-						alt="settings icon"
-					>
-					Проект: {{ project }}
-					<div class="header__submenu">
-						<a
-							v-for="cabinet in cabinets"
-							:key="cabinet.tenant_id"
-							:href="cabinet.tenant_id === project ? 'javascript:void(0)' : `/login/${cabinet.tenant_id}`"
-							class="header__submenu-item"
-							:class="{'header__submenu-item_active': cabinet.tenant_id === project}"
-						>
-							{{ cabinet.tenant_id }} <i
-								v-if="cabinet.owner === 1"
-								aria-hidden="true"
-								class="fa fa-star"
-							/>
-						</a>
-						<div class="header__submenu-divider" />
+			<div class="hover-avatar-area">
+				<div class="header_menu_avatar">
+					<div class="header__menu">
 						<div
-							v-if="isOwner"
-							@click="onNewProject"
-							class="header__submenu-item"
+							class="header__menu-project"
+							v-scroll-lock="isCreatingProject"
 						>
-							Добавить проект
+							<img
+								src="/images/dist/icon-settings.svg"
+								alt="settings icon"
+							>
+							Проект: {{ project }}
+							<div class="header__submenu">
+								<a
+									v-for="cabinet in cabinets"
+									:key="cabinet.tenant_id"
+									:href="cabinet.tenant_id === project ? 'javascript:void(0)' : `/login/${cabinet.tenant_id}`"
+									class="header__submenu-item"
+									:class="{'header__submenu-item_active': cabinet.tenant_id === project}"
+								>
+									{{ cabinet.tenant_id }} <i
+										v-if="cabinet.owner === 1"
+										aria-hidden="true"
+										class="fa fa-star"
+									/>
+								</a>
+								<div class="header__submenu-divider" />
+								<div
+									v-if="isOwner"
+									@click="onNewProject"
+									class="header__submenu-item"
+								>
+									Добавить проект
+								</div>
+							</div>
 						</div>
+						<div class="header__menu-title">
+							Пользователь <a
+								class="header__menu-userid"
+								href="javascript:void(0)"
+							>#{{ $laravel.userId }}</a>
+							<p class="header__menu-email">
+								{{ $laravel.email }}
+							</p>
+						</div>
+						<router-link
+							v-if="isOwner"
+							to="/pricing"
+							class="menu__item"
+						>
+							<img
+								src="/images/dist/icon-settings.svg"
+								alt="settings icon"
+							>
+							<span class="menu__item-title">pricing</span>
+						</router-link>
+						<router-link
+							to="/cabinet"
+							class="menu__item"
+						>
+							<img
+								src="/images/dist/icon-settings.svg"
+								alt="settings icon"
+							>
+							<span class="menu__item-title">Настройки</span>
+						</router-link>
+						<form @click.prevent="logout">
+							<button
+								class="menu__item w-full"
+								type="submit"
+							>
+								<img
+									src="/images/dist/icon-exit.svg"
+									alt="settings icon"
+								>
+								<span class="menu__item-title">Выход</span>
+							</button>
+						</form>
 					</div>
 				</div>
-				<div class="header__menu-title">
-					Пользователь <a
-						class="header__menu-userid"
-						href="javascript:void(0)"
-					>#{{ $laravel.userId }}</a>
-					<p class="header__menu-email">
-						{{ $laravel.email }}
-					</p>
-				</div>
-				<router-link
-					v-if="isOwner"
-					to="/pricing"
-					class="menu__item"
-				>
-					<img
-						src="/images/dist/icon-settings.svg"
-						alt="settings icon"
-					>
-					<span class="menu__item-title">pricing</span>
-				</router-link>
-				<router-link
-					to="/cabinet"
-					class="menu__item"
-				>
-					<img
-						src="/images/dist/icon-settings.svg"
-						alt="settings icon"
-					>
-					<span class="menu__item-title">Настройки</span>
-				</router-link>
-				<form @click.prevent="logout">
-					<button
-						class="menu__item w-full"
-						type="submit"
-					>
-						<img
-							src="/images/dist/icon-exit.svg"
-							alt="settings icon"
-						>
-						<span class="menu__item-title">Выход</span>
-					</button>
-				</form>
 			</div>
 		</div>
 
@@ -164,7 +167,7 @@ export default {
 			cabinets: Laravel.cabinets,
 			tenants: Laravel.tenants,
 			isCreatingProject: false,
-			resizeObserver: null
+			resizeObserver: null,
 		};
 	},
 	methods: {
@@ -459,7 +462,6 @@ export default {
 	}
 
 	.header__avatar{
-		cursor:pointer;
 		display: block;
 		width: 100%;
 		max-width: 100%;
@@ -468,24 +470,45 @@ export default {
 		border-radius: 10px;
 		padding: 0 5px;
 		z-index: 1003;
+		.hover-avatar-area{
+			position: absolute;
+			top: 0;
+			z-index: 2;
+			left: 0;
+			width: 50px;
+			height: 60px;
+			cursor: pointer;
+		}
+		.hover-avatar-area:hover .header_menu_avatar{
+			display: block;
+		}
+		.header_menu_avatar{
+			display: none;
+			position: fixed;
+			z-index: 1005;
+			width: 26rem;
+			padding-left: 2rem;
+			left: 5rem;
+			.header__menu{
+				visibility: visible!important;
+				opacity: 1!important;
+			}
+		}
 		.header__menu{
 			max-width: 24rem;
 			top: 0.5rem;
+			left: 0;
+			position: static;
 		}
 
-		> img{
+		> img {
 			display: block;
 			height: auto;
 			border-radius: 10px;
 			width: 100%;
-			object-fit:cover;
+			object-fit: cover;
 		}
-		&:hover{
-			.header__menu{
-				opacity: 1;
-				visibility: visible;
-			}
-		}
+
 	}
 
 	.header__menu-project{
@@ -518,7 +541,6 @@ export default {
 		box-shadow: 1rem 0 2rem rgba(0, 0, 0, 0.25);
 		opacity: 0;
 		visibility: hidden;
-		transition: .5s;
 	}
 	.header__submenu-item{
 		display: flex;
