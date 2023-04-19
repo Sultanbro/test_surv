@@ -1279,4 +1279,20 @@ class EmployeeController extends Controller
 
 
     }
+
+    /**
+     * Обновляет посещение пользователя.
+     *
+     */
+    public function online(): void
+    {
+        $authId = auth()->id();
+
+        if (Auth::check())
+        {
+            $user = User::getUserById($authId);
+            $user->last_seen = now();
+            $user->save();
+        }
+    }
 }
