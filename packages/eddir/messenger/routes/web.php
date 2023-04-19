@@ -49,6 +49,11 @@ Route::get('/v2/search/messages', 'MessagesController@searchMessages')->name('ap
 Route::get('/v2/chat/{chat_id}/messages', 'MessagesController@fetchMessages')->name('api.messages.fetch');
 
 /**
+ * Get chat media files.
+ */
+Route::get('/v2/chat/{chat_id}/files', 'FilesController@fetchFiles')->name('api.files.fetch');
+
+/**
  * Get private chat info
  */
 Route::get('/v2/private/{user_id}', 'ChatsController@getPrivateChat')->name('api.v2.getPrivateChat');

@@ -200,4 +200,23 @@ class FilesController {
 
         return true;
     }
+
+    /**
+     * @param int $chatId
+     * @return JsonResponse
+     */
+    public function fetchFiles(int $chatId): JsonResponse
+    {
+        // check if user is member of chat
+        if ( ! MessengerFacade::isMember( $chatId, Auth::user()->id ) ) {
+            return response()->json( [
+                'error' => 'You are not member of this chat'
+            ], 403 );
+        }
+
+        $messages = MessengerFacade::fetchFiles($chatId);
+        $messages = $messages->toArray();
+
+        return response()->json($messages);
+    }
 }

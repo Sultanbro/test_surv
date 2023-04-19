@@ -19,6 +19,7 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Pusher\ApiErrorException;
@@ -281,6 +282,18 @@ class Messenger {
         $messages = $messages->when($year && $month, fn($query) => $query->whereYear('created_at', $year)->whereMonth('created_at', $month));
 
         return $messages->limit( abs( $count ) )->get();
+    }
+
+    /**
+     * @param int $chatId
+     * @param int $count
+     * @return LengthAwarePaginator
+     */
+    public function fetchFiles(int $chatId, int $count = 20): LengthAwarePaginator
+    {
+        $messages = MessengerMessage::query()->withWhereHas('files')->where('chat_id', $chatId);
+
+        return $messages->orderBy('created_at', 'desc')->paginate(abs($count));
     }
 
     /**
