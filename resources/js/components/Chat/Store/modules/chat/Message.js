@@ -380,7 +380,7 @@ export default {
 	},
 	getters: {
 		messages: state => state.messages,
-		messagesMap: state => {
+		messagesMap: (state, getters) => {
 			const uniqueDates = [];
 			const messagesMap = {};
 			state.messages.forEach(message => {
@@ -396,16 +396,24 @@ export default {
 
 			Object.keys(messagesMap).forEach(dateKey => {
 				let prevMsg = null
+				let unread = false
 				messagesMap[dateKey] = messagesMap[dateKey].map((message, i) => {
 					const nextMsg = messagesMap[dateKey][i + 1]
 					const isUserFirst = !prevMsg || prevMsg.event || prevMsg.sender_id !== message.sender_id
 					const isUserLast = !nextMsg || nextMsg.event || nextMsg.sender_id !== message.sender_id
+					let isUnreadFirst = false
+					if(!unread && !~message.readers.findIndex(reader => reader.id === getters.user.id)){
+						unread = true
+						isUnreadFirst = true
+					}
 					prevMsg = message
 					return {
 						message,
 						renderHelper: {
 							isUserFirst,
 							isUserLast,
+							isUnreadFirst,
+							unread,
 						}
 					}
 				})

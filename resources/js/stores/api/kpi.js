@@ -1,4 +1,4 @@
-/** @module stores/api/лзш */
+/** @module stores/api/kpi */
 import axios from 'axios'
 
 /**

@@ -11,13 +11,30 @@
 		>
 			<div class="messenger__chat-container">
 				<ChatNav :fullscreen="true" />
-				<MessengerConversation
-					v-if="isDesktop || isChatSelected"
-				/>
+				<MessengerConversation v-if="isDesktop || isChatSelected" />
 			</div>
-			<ChatInfo v-if="isInfoPanel && isChatSelected" />
-			<ChatUserAdd v-if="isAddUserDialog && isChatSelected" />
-			<ChatNewChat v-if="isNewChatDialog" />
+
+			<JobtronOverlay
+				v-if="isInfoPanel && isChatSelected"
+				@close="toggleInfoPanel"
+			>
+				<ChatInfo />
+			</JobtronOverlay>
+
+			<JobtronOverlay
+				v-if="isAddUserDialog && isChatSelected"
+				@close="toggleAddUserDialog"
+			>
+				<ChatUserAdd />
+			</JobtronOverlay>
+
+			<JobtronOverlay
+				v-if="isNewChatDialog"
+				@close="toggleNewChatDialog"
+			>
+				<ChatNewChat />
+			</JobtronOverlay>
+
 			<ConfirmDialog />
 			<ChatIconsDemo
 				v-if="isDemoOpen"
@@ -46,6 +63,7 @@ import clickOutside from './directives/clickOutside.ts';
 import ImageGallery from './ImageGallery/ImageGallery.vue';
 import ConfirmDialog from './ConfirmDialog/ConfirmDialog.vue';
 import ChatIconsDemo from '@icons/ChatIconsDemo.vue'
+import JobtronOverlay from '@ui/Overlay'
 
 // noinspection JSUnusedGlobalSymbols
 export default {
@@ -59,6 +77,7 @@ export default {
 		ImageGallery,
 		ConfirmDialog,
 		ChatIconsDemo,
+		JobtronOverlay,
 	},
 	directives: {
 		clickOutside
@@ -109,7 +128,10 @@ export default {
 			'boot',
 			'escapeChat',
 			'toggleMessenger',
-			'hideGallery'
+			'hideGallery',
+			'toggleInfoPanel',
+			'toggleAddUserDialog',
+			'toggleNewChatDialog',
 		]),
 		toggle() {
 

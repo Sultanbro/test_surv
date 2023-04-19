@@ -72,12 +72,30 @@ export default {
 					return users
 				}, []),
 				profile_groups: this.profileGroups.filter(group => !group.deleted_at),
-				positions: this.positions.map(pos => ({
+				positions: this.positions.filter(pos => !pos.deleted_at).map(pos => ({
 					id: pos.id,
 					name: pos.position
 				})),
 			}
 		},
+		actualUsers(){
+			return this.selectedTargets.reduce((result, target) => {
+				let group
+				switch(target.type) {
+				case 1:
+					result.push(target)
+					break
+				case 2:
+					group = this.profileGroups.find(group => group.id === target.id)
+					if(group?.activeUsers) result.push(...group.activeUsers.map(id => ({id})))
+					break
+				case 3:
+					result.push(...this.users.filter(user => user.position === target.id))
+					break
+				}
+				return result
+			}, [])
+		}
 	},
 	mounted(){
 		if(!this.users.length) this.loadCompany()
@@ -92,7 +110,7 @@ export default {
 		]),
 		async submitChat(){
 			this.requestProcess = true
-			await this.addMembers(this.selectedTargets)
+			await this.addMembers(this.actualUsers)
 			this.requestProcess = false
 			this.toggleAddUserDialog()
 		}
@@ -108,7 +126,7 @@ export default {
 	width: 414px;
 	height: 720px;
 	max-width: 414px;
-	max-height: 720px;
+	max-height: 90vh;
 	min-height: 0;
 	padding: 20px;
 

@@ -60,27 +60,37 @@
 				>
 					<span class="messenger__messages-date-block">{{ d[0].message.created_at | formatDate }}</span>
 				</div>
-				<div
-					v-for="{message, renderHelper}, index in d"
-					:key="message.id"
-					:id="'messenger_message_' + message.id"
-					class="messenger__message-wrapper"
-					@contextmenu.prevent="!message.event && showChatContextMenu(message, ...arguments)"
-				>
-					<ConversationServiceMessage
-						v-if="message.event"
-						:message="message"
-					/>
-					<ConversationMessage
-						v-else
-						:message="message"
-						@active="activeMessageId = message.id"
-						:active="activeMessageId === message.id"
-						:helper="renderHelper"
-						:last="index === d.length - 1"
-						@loadImage="index === d.length - 1 && scrollBottom"
-					/>
-				</div>
+				<template v-for="{message, renderHelper}, index in d">
+					<div
+						v-if="renderHelper.isUnreadFirst"
+						:key="'unread' + message.id"
+						class="ConversationFeed-startUnread"
+					>
+						<div class="ConversationFeed-startUnread-text">
+							Непрочитанные сообщения
+						</div>
+					</div>
+					<div
+						:key="message.id"
+						:id="'messenger_message_' + message.id"
+						class="messenger__message-wrapper"
+						@contextmenu.prevent="!message.event && showChatContextMenu(message, ...arguments)"
+					>
+						<ConversationServiceMessage
+							v-if="message.event"
+							:message="message"
+						/>
+						<ConversationMessage
+							v-else
+							:message="message"
+							@active="activeMessageId = message.id"
+							:active="activeMessageId === message.id"
+							:helper="renderHelper"
+							:last="index === d.length - 1"
+							@loadImage="index === d.length - 1 && scrollBottom"
+						/>
+					</div>
+				</template>
 			</template>
 		</div>
 		<div
@@ -233,6 +243,38 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+.ConversationFeed{
+	&-startUnread{
+		display: flex;
+		flex-flow: row nowrap;
+		justify-content: stretch;
+		align-items: center;
+		align-self: stretch;
+		gap: 10px;
+
+		&:before,
+		&:after{
+			content: '';
+			flex: 1;
+			border: 0.5px solid rgba(170, 192, 222, 0.5);
+		}
+		&-text{
+			flex: 0 0 content;
+			padding: 10px 25px;
+			background: #FFFFFF;
+			opacity: 0.75;
+			box-shadow: 0px 0px 1px rgba(12, 26, 75, 0.05), 0px 10px 16px rgba(20, 37, 63, 0.05);
+			border-radius: 30px;
+
+			font-weight: 500;
+			font-size: 11px;
+			line-height: 14px;
+			letter-spacing: -0.02em;
+
+			color: #6F82A3;
+		}
+	}
+}
 #messenger_container{
 	align-self: stretch;
 	background: url('../../../../../assets/chat/bg.jpg') repeat, #F7F8FA;
