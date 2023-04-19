@@ -77,7 +77,7 @@ class UpdateUserDTO
         public ?int $fullTime,
         public ?string $currency,
         public ?string $weekdays,
-        public string $workingCountry,
+        public string | null $workingCountry,
         public ?string $workingCity,
         public ?UploadedFile $fileName,
         public ?int $headGroup,

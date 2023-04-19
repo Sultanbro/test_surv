@@ -1,16 +1,31 @@
 <template>
 	<div
-		:class="ownMessage ?
-			'messenger__message-box-right' :
-			'messenger__message-box-left'"
+		class="ConversationMessage"
+		:class="[
+			ownMessage
+				? 'messenger__message-box-right'
+				: 'messenger__message-box-left',
+			{
+				'ConversationMessage_userFirst': helper && helper.isUserFirst,
+				'ConversationMessage_userLast': helper && helper.isUserLast,
+			}
+		]"
 	>
-		<AlternativeAvatar
-			v-if="!ownMessage"
-			:title="message.sender.name"
-			:image="message.sender.img_url"
+		<JobtronAvatar
+			v-if="!ownMessage && !chat.private"
+			:title="`${message.sender.name} ${message.sender.last_name}`"
+			:image="'/users_img/' + message.sender.img_url"
+			:size="50"
 		/>
 		<div class="messenger__message-container">
 			<div :class="messageCardClass">
+				<div
+					v-if="!chat.private && !ownMessage"
+					class="ConversationMessage-name"
+					:style="`color: #${nameColor}`"
+				>
+					{{ name }}
+				</div>
 				<div class="messenger__format-message-wrapper">
 					<div
 						v-if="message.parent"
@@ -34,6 +49,8 @@
 									v-else
 									:href="messagePart.url"
 									:key="key"
+									target="_blank"
+									class="messenger__format-link"
 								>
 									{{ messagePart.title }}
 								</a>
@@ -144,9 +161,11 @@
 import {mapActions, mapGetters} from 'vuex';
 import moment from 'moment';
 // import MessageReaders from './MessageReaders/MessageReaders.vue';
-import AlternativeAvatar from '../../../ChatsList/ContactItem/AlternativeAvatar/AlternativeAvatar.vue';
+// import AlternativeAvatar from '../../../ChatsList/ContactItem/AlternativeAvatar/AlternativeAvatar.vue';
 import VoiceMessage from './VoiceMessage/VoiceMessage.vue';
 import ConversationMessageMeta from '@/components/Chat/MessengerConversation/ConversationFeed/ConversationMessage/ConversationMessageMeta.vue'
+import JobtronAvatar from '@ui/Avatar'
+import { stringToColor } from '@/composables/stringToColor'
 
 const MESSAGE_TYPES = {
 	TEXT: 0,
@@ -161,9 +180,10 @@ export default {
 	name: 'ConversationMessage',
 	components: {
 		// MessageReaders,
-		AlternativeAvatar,
+		// AlternativeAvatar,
 		VoiceMessage,
 		ConversationMessageMeta,
+		JobtronAvatar,
 	},
 	props: {
 		message: {
@@ -178,6 +198,10 @@ export default {
 			type: Boolean,
 			default: false
 		},
+		helper: {
+			type: Object,
+			default: null
+		}
 	},
 	data: () => ({MESSAGE_TYPES}),
 	computed: {
@@ -241,6 +265,12 @@ export default {
 
 			return result;
 		},
+		name() {
+			return `${this.message.sender.name} ${this.message.sender.last_name}`
+		},
+		nameColor() {
+			return stringToColor(this.name)
+		}
 	},
 	methods: {
 		...mapActions([
@@ -329,6 +359,43 @@ export default {
 </script>
 
 <style lang="scss">
+$ConversationMessage-radius: 18px;
+.ConversationMessage{
+	gap: 10px;
+	&_userFirst{
+		&.messenger__message-box-left{
+			.messenger__message-card{
+				border-top-left-radius: $ConversationMessage-radius;
+			}
+		}
+		&.messenger__message-box-right{
+			.messenger__message-card{
+				border-top-right-radius: $ConversationMessage-radius;
+			}
+		}
+	}
+	&_userLast{
+		&.messenger__message-box-left{
+			.messenger__message-card{
+				border-bottom-left-radius: $ConversationMessage-radius;
+			}
+		}
+		&.messenger__message-box-right{
+			.messenger__message-card{
+				border-bottom-right-radius: $ConversationMessage-radius;
+			}
+		}
+	}
+	&-name{
+		margin-bottom: 8px;
+
+		font-weight: 600;
+		font-size: 14px;
+		line-height: 16px;
+		letter-spacing: -0.015em;
+	}
+}
+
 /*noinspection CssUnusedSymbol*/
 .messenger__message-box-right,
 .messenger__message-box-left {
@@ -336,25 +403,28 @@ export default {
 	flex: 0 0 50%;
 	align-items: flex-end;
 	line-height: 1.4;
-	margin-left: 20px;
 }
 
 /*noinspection CssUnusedSymbol*/
 .messenger__message-box-left {
 	justify-content: flex-start;
+	margin-left: 20px;
 	.messenger__message-card {
 		background: #FFFFFF;
 		box-shadow: 0px 10px 30px rgba(38, 51, 77, 0.03);
-		border-radius: 18px;
+		border-top-right-radius: $ConversationMessage-radius;
+		border-bottom-right-radius: $ConversationMessage-radius;
 	}
 }
 
 /*noinspection CssUnusedSymbol*/
 .messenger__message-box-right {
 	justify-content: flex-end;
+	margin-right: 20px;
 	.messenger__message-card{
 		background: #EDF6FF;
-		border-radius: 18px;
+		border-top-left-radius: $ConversationMessage-radius;
+		border-bottom-left-radius: $ConversationMessage-radius;
 	}
 }
 
@@ -377,13 +447,14 @@ export default {
 	font-weight: 500;
 	font-size: 14px;
 	line-height: 17px;
-	padding: 10px;
+	padding: 12px 24px;
 	max-width: 360px;
 	-webkit-transition-property: box-shadow, opacity;
 	transition-property: box-shadow, opacity;
 	transition: box-shadow .28s cubic-bezier(.4, 0, .2, 1);
 	will-change: box-shadow;
-	color: #5f5d5d;
+	color: #152136;
+	letter-spacing: -0.02em;
 }
 
 .messenger__format-message-wrapper{
@@ -537,4 +608,8 @@ audio {
 	text-overflow: ellipsis;
 }
 
+.messenger__format-link:hover{
+	color: #0056b3;
+	text-decoration: underline;
+}
 </style>

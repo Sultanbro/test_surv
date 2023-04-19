@@ -34,7 +34,7 @@ Route::middleware(['web','tenant'])->group(function () {
 });
 
 // Portal Api
-Route::middleware(['web','tenant','not_admin_subdomain'])->group(function () {
+Route::middleware(['web','tenant', 'not_admin_subdomain'])->group(function () {
 
     Route::get('/structure', [Root\Structure\StructureController::class, 'index']);
 
@@ -382,8 +382,8 @@ Route::middleware(['web','tenant','not_admin_subdomain'])->group(function () {
     Route::post('/timetracking/salaries', [Salary\SalaryController::class, 'salaries']);
     Route::post('/timetracking/salaries/update', [Salary\SalaryController::class, 'update']);
     Route::post('/timetracking/salaries/recalc', [Salary\SalaryController::class, 'recalc']);
-    Route::post('/timetracking/salaries/edit-premium', [Salary\SalaryController::class, 'editPremium']);
-    Route::post('/timetracking/salaries/edit-premium-new', [Salary\PremiumController::class, 'edit']);
+    Route::post('/timetracking/salaries/edit-premium-old', [Salary\SalaryController::class, 'editPremium']);
+    Route::post('/timetracking/salaries/edit-premium', [Salary\PremiumController::class, 'edit']);
     Route::post('/timetracking/salaries/approve-salary', [Salary\SalaryController::class, 'approveSalary']);
     Route::post('/timetracking/salaries/bonuses', [Salary\SalaryController::class, 'bonuses']);
     Route::post('/profile/salary/get', [Salary\ProfileSalaryController::class, 'get']);
@@ -531,6 +531,7 @@ Route::middleware(['web','tenant','not_admin_subdomain'])->group(function () {
         Route::any('workdays', [Kpi\KpiStatController::class, 'workdays']);
         Route::post('update-stat', [Kpi\KpiStatController::class, 'updateStat'])->name('updateStat');
         Route::get('activities',[Kpi\KpiStatController::class,'getActivities'])->name('getActivites');
+        Route::get('/kpi/user-groups', [Kpi\KpiStatController::class, 'groups']);
     });
 
     // Редактирование показателей
@@ -632,6 +633,7 @@ Route::middleware(['web','tenant','not_admin_subdomain'])->group(function () {
         'as'     => 'tax.'
     ], function () {
         Route::get('/', [Root\Tax\TaxController::class, 'get']);
+        Route::get('/all', [Root\Tax\TaxController::class, 'all']);
         Route::post('/', [Root\Tax\TaxController::class, 'create']);
         Route::post('/set-assignee', [Root\Tax\TaxController::class, 'setAssigned']);
         Route::put('/', [Root\Tax\TaxController::class, 'update']);
@@ -700,6 +702,8 @@ Route::middleware(['api','tenant','not_admin_subdomain'])->group(function () {
             Route::get('/fired-trainees/{id?}/{date?}', [Api\DepartmentUserController::class, 'getFiredTrainees'])->name('fired-trainees');
             Route::get('/check/user/{id}', [Api\DepartmentUserController::class, 'userInGroup']);
         });
+
+        Route::post('/online', [Root\Messenger\UserStatusController::class, 'online']);
     });
 });
 

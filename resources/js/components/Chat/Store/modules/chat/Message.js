@@ -17,8 +17,9 @@ export default {
 	},
 	actions: {
 		async loadMessages({commit, getters, dispatch}, {
-			reset = false, goto = 0, callback = () => {
-			}
+			reset = false,
+			goto = 0,
+			callback = () => {}
 		} = {}) {
 			if (getters.messagesLoading) {
 				return;
@@ -42,6 +43,10 @@ export default {
 			}
 
 			return API.fetchMessages(getters.chat.id, count, startMessageId, including, messages => {
+				if (reset || goto) {
+					commit('resetMessages');
+				}
+
 				if (messages.length === 0) {
 
 					if (count < 0) {
@@ -50,14 +55,11 @@ export default {
 						commit('setMessagesOldEndReached');
 					}
 
-				} else {
+				}
+				else {
 
 					messages = Object.keys(messages).map(key => messages[key]).reverse();
 					dispatch('markMessagesAsRead', messages);
-
-					if (reset || goto) {
-						commit('resetMessages');
-					}
 
 					if (reset) {
 						commit('setMessages', messages);
@@ -176,7 +178,7 @@ export default {
 				commit('updateChat', message.chat);
 				break
 			case 'online':
-				if (getters.chat.private && getters.chat.users.find(member => member.id === message.sender.id)) {
+				if (getters.chat && getters.chat.private && getters.chat.users.find(member => member.id === message.sender.id)) {
 					commit('setChatOnline', true);
 				}
 				return true;
@@ -379,17 +381,36 @@ export default {
 	getters: {
 		messages: state => state.messages,
 		messagesMap: state => {
-			let uniqueDates = [];
-			let messagesMap = {};
+			const uniqueDates = [];
+			const messagesMap = {};
 			state.messages.forEach(message => {
-				let date = new Date(message.created_at);
-				let dateKey = date.toLocaleDateString();
+				const date = new Date(message.created_at);
+				const dateKey = date.toLocaleDateString();
 				if (!uniqueDates.includes(dateKey)) {
 					uniqueDates.push(dateKey);
 					messagesMap[dateKey] = [];
 				}
+
 				messagesMap[dateKey].push(message);
 			}, {});
+
+			Object.keys(messagesMap).forEach(dateKey => {
+				let prevMsg = null
+				messagesMap[dateKey] = messagesMap[dateKey].map((message, i) => {
+					const nextMsg = messagesMap[dateKey][i + 1]
+					const isUserFirst = !prevMsg || prevMsg.event || prevMsg.sender_id !== message.sender_id
+					const isUserLast = !nextMsg || nextMsg.event || nextMsg.sender_id !== message.sender_id
+					prevMsg = message
+					return {
+						message,
+						renderHelper: {
+							isUserFirst,
+							isUserLast,
+						}
+					}
+				})
+			})
+
 			return messagesMap;
 		},
 		editMessage: state => state.editMessage,

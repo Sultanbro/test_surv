@@ -27,7 +27,7 @@
 
 <script>
 import {mapActions, mapGetters} from 'vuex';
-import { ChatIconSearch } from '../icons/chat-icons'
+import { ChatIconSearch } from '@icons'
 
 export default {
 	name: 'SearchBox',

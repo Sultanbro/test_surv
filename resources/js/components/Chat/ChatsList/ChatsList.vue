@@ -1,36 +1,62 @@
 <template>
-	<div ref="messengerChats">
+	<div
+		ref="messengerChats"
+		class="ChatsList"
+		:class="{'ChatsList_full': fullscreen}"
+	>
 		<ContextMenu
+			v-if="fullscreen"
 			:show="contextMenuVisible"
 			:x="contextMenuX"
 			:y="contextMenuY"
 			:parent-element="$refs.messengerChats"
 		>
 			<template v-if="contextMenuChat">
-				<a
-					v-if="contextMenuChat.pinned"
-					class="messenger__context-item wsnw"
-					href="javascript:"
-					@click="contextMenuVisible = false; unpinChat(contextMenuChat)"
-				>Открепить чат</a>
-				<a
-					v-else
-					class="messenger__context-item wsnw"
-					href="javascript:"
-					@click="contextMenuVisible = false; pinChat(contextMenuChat)"
-				>Закрепить чат</a>
-				<a
-					v-if="contextMenuChat.owner_id === user.id"
-					class="messenger__context-item wsnw"
-					href="javascript:"
+				<div
+					class="ContextMenu-item wsnw ChatIcon-parent"
+					@click="contextTogglePinned"
+				>
+					<ChatIconPinChat />
+					{{ contextMenuChat.pinned ? 'Открепить чат' : 'Закрепить чат' }}
+				</div>
+				<!-- <div
+					class="ContextMenu-item wsnw ChatIcon-parent"
+					@click="contextViewProfile"
+				>
+					<ChatIconViewUser />
+					Посмотреть профиль
+				</div> -->
+				<!-- <div
+					v-if="isContextChatAdmin"
+					class="ContextMenu-item wsnw ChatIcon-parent"
+					@click="contextEdit"
+				>
+					<ChatIconEditChat />
+					Редактировать
+				</div> -->
+				<div
+					class="ContextMenu-item wsnw ChatIcon-parent"
+					@click="contextToggleMuted"
+				>
+					<ChatIconMuteChat />
+					{{ contextMenuChat.muted ? 'Включить уведомления' : 'Выключить уведомления' }}
+				</div>
+				<div
+					v-if="isContextChatAdmin"
+					class="ContextMenu-item ContextMenu-item_red wsnw "
 					@click="contextMenuVisible = false; remove(contextMenuChat)"
-				>Удалить чат</a>
-				<a
+				>
+					<ChatIconDeleteChat />
+					Удалить чат
+				</div>
+				<div
 					v-else
-					class="messenger__context-item wsnw"
-					href="javascript:"
+					class="ContextMenu-item wsnw ChatIcon-parent"
 					@click="contextMenuVisible = false; leftChat(contextMenuChat)"
-				>Покинуть чат</a>
+				>
+					<ChatIconHistoryBack />
+					Покинуть чат
+				</div>
 			</template>
 		</ContextMenu>
 		<template v-if="!isSearchMode || !fullscreen">
@@ -45,6 +71,7 @@
 				<ContactItem
 					:item="item"
 					:fullscreen="fullscreen"
+					:current-user-id="user.id"
 				/>
 			</div>
 		</template>
@@ -61,6 +88,7 @@
 				<ContactItem
 					:item="item"
 					:fullscreen="fullscreen"
+					:current-user-id="user.id"
 				/>
 			</div>
 			<div
@@ -72,6 +100,7 @@
 				<ContactItem
 					:item="item"
 					:fullscreen="fullscreen"
+					:current-user-id="user.id"
 				/>
 			</div>
 		</template>
@@ -82,12 +111,26 @@
 import {mapActions, mapGetters} from 'vuex'
 import ContextMenu from '../ContextMenu/ContextMenu.vue'
 import ContactItem from './ContactItem/ContactItem.vue'
+import {
+	ChatIconPinChat,
+	ChatIconDeleteChat,
+	ChatIconHistoryBack,
+	// ChatIconViewUser,
+	// ChatIconEditChat,
+	ChatIconMuteChat,
+} from '@icons'
 
 export default {
 	name: 'ChatsList',
 	components: {
 		ContextMenu,
 		ContactItem,
+		ChatIconPinChat,
+		ChatIconDeleteChat,
+		ChatIconHistoryBack,
+		// ChatIconViewUser,
+		// ChatIconEditChat,
+		ChatIconMuteChat,
 	},
 	props: {
 		fullscreen: {
@@ -112,7 +155,10 @@ export default {
 			'searchMessagesChatsResults',
 			'isSearchMode',
 			'isOpen',
-		])
+		]),
+		isContextChatAdmin(){
+			return this.contextMenuChat?.owner_id === this.user.id
+		}
 	},
 	methods: {
 		...mapActions([
@@ -122,7 +168,8 @@ export default {
 			'pinChat',
 			'unpinChat',
 			'removeChat',
-			'setLoading'
+			'setLoading',
+			'toggleInfoPanel',
 		]),
 		openChat(chat, event) {
 			event.stopPropagation();
@@ -157,12 +204,35 @@ export default {
 			this.contextMenuX = event.clientX;
 			this.contextMenuY = event.clientY;
 			this.contextMenuChat = chat;
+		},
+		contextTogglePinned(){
+			this.contextMenuVisible = false
+			if(this.contextMenuChat.pinned) return this.unpinChat(this.contextMenuChat)
+			this.pinChat(this.contextMenuChat)
+		},
+		contextViewProfile(){
+			this.contextMenuVisible = false
+			this.$toast('Функционал в разработке')
+		},
+		contextEdit(){
+			this.contextMenuVisible = false
+			this.toggleInfoPanel()
+		},
+		contextToggleMuted(){
+			this.contextMenuVisible = false
+			this.$toast('Функционал в разработке')
 		}
 	}
 }
 </script>
 
-<style>
+<style lang="scss">
+.ChatsList{
+	&_full{
+		padding: 0 0.7rem;
+	}
+}
+
 .messenger__chat-item:hover {
   background: #F5F8FC;
 }

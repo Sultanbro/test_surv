@@ -53,7 +53,7 @@ import {
 	ChatIconHistoryDoc,
 	ChatIconHistoryMusic,
 	ChatIconHistoryLinks,
-} from '../../icons/chat-icons.js'
+} from '@icons'
 export default {
 	name: 'ConversationSearchFilter',
 	components: {

@@ -77,7 +77,7 @@
 
 			<div>
 				<a
-					href="#"
+					href="javascript:"
 					@click="exportData()"
 					class="btn btn-success btn-sm rounded"
 				>

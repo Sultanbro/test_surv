@@ -12,6 +12,7 @@
 			placeholder="Быстрый поиск"
 		>
 		<div
+			v-if="value"
 			class="AccessSelectSearch-btn ChatIcon-parent"
 			@click="$emit('input', '')"
 		>
@@ -21,7 +22,7 @@
 </template>
 
 <script>
-import { ChatIconSearchClose } from '@/components/Chat/icons/chat-icons.js'
+import { ChatIconSearchClose } from '@icons'
 export default {
 	name: 'AccessSelectSearch',
 	components: {
@@ -43,7 +44,6 @@ export default {
 	align-items: center;
 	gap: 16px;
 	margin-top: 25px;
-	margin-right: 20px;
 	padding-left: 21px;
 	background: #F7FAFC;
 	border-radius: 8px;

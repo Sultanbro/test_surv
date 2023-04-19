@@ -5,32 +5,20 @@
 		</div>
 		<div
 			class="messenger_header-button"
-			@click="openAddMemberModal"
+			@click="toggleNewChatDialog"
 		>
 			<ChatIconPlus class="pointer" />
 		</div>
-		<AccessSelect
-			v-if="showAddMemberModal"
-			v-model="selectedTargets"
-			:tabs="['Сотрудники', 'Отделы', 'Должности']"
-			submit="Создать чат"
-			:open="showAddMemberModal"
-			:access-dictionaries="accessDictionaries"
-			@close.stop="showAddMemberModal = false"
-			@submit="submitChat"
-		/>
 	</div>
 </template>
 
 <script>
 import {mapActions, mapGetters} from 'vuex';
-import AccessSelect from '@/components/ui/AccessSelect/AccessSelect'
-import { ChatIconPlus } from '../icons/chat-icons'
+import { ChatIconPlus } from '@icons'
 export default {
 	name: 'ChatHeader',
 	components: {
 		ChatIconPlus,
-		AccessSelect,
 	},
 	data(){
 		return {
@@ -78,12 +66,10 @@ export default {
 			'createChat',
 			'addMembers',
 			'removeMembers',
-			'loadCompany'
+			'loadCompany',
+			'toggleNewChatDialog',
 		]),
-		openAddMemberModal(e) {
-			e.stopPropagation();
-			this.showAddMemberModal = true;
-		},
+
 		submitChat() {
 			this.selectedTargets.push(this.user)
 			const members = this.selectedTargets.filter(item => item.type === 1)

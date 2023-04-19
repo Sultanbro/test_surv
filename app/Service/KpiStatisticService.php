@@ -800,7 +800,18 @@ class KpiStatisticService
                     $query->withTrashed()->whereDate('created_at', '<=', $last_date)->whereNull('deleted_at');
                 },
                 'items.activity'
-            ]);
+            ])
+            ->whereHasMorph(
+                'kpiable',
+                '*',
+                function (Builder $query, string $type)
+                {
+                    if ($type === 'App\ProfileGroup')
+                    {
+                        $query->whereNull('archived_date');
+                    }
+                }
+            );
 
         $kpis = $kpis
             ->whereDate('kpis.created_at', '<=', Carbon::parse($date->format('Y-m-d'))
@@ -999,6 +1010,17 @@ class KpiStatisticService
                                 ->format('Y-m-d'));
                         });
                 })
+                ->whereHasMorph(
+                    'kpiable',
+                    '*',
+                    function (Builder $query, string $type)
+                    {
+                        if ($type === 'App\ProfileGroup')
+                        {
+                            $query->whereNull('archived_date');
+                        }
+                    }
+                )
                 ->paginate($limit);
 
             $kpis->data = $kpis->makeHidden(['targetable', 'children']);
@@ -1105,7 +1127,7 @@ class KpiStatisticService
         // ProfileGroup::class
         if($type == 2) {
             $profileGroup = ProfileGroup::query()->findOrFail($kpi->targetable_id);
-            $_user_ids = collect((new UserService)->getEmployees($profileGroup->id, $date->toDateString()))->pluck('id')->toArray();
+            $_user_ids = collect((new UserService)->getEmployees($profileGroup->id, $date->toDateString()))->whereNull('deleted_at')->pluck('id')->toArray();
         }
 
         // Position::class

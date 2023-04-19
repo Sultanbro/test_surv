@@ -1,6 +1,6 @@
 <template>
 	<a
-		href="#"
+		href="javascript:"
 		class="header__right-icon loop"
 		@click="click"
 		v-b-popover.hover.left.html="'Поиск по чату'"

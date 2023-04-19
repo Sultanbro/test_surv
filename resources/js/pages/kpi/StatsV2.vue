@@ -76,7 +76,10 @@
 					</b-col>
 				</b-tab>
 				<b-tab title="Годовая">
-					<StatsTableYear class="mt-4" />
+					<StatsTableYear
+						:year="filters.data_from ? filters.data_from.year : new Date().getFullYear()"
+						class="mt-4"
+					/>
 				</b-tab>
 			</b-tabs>
 		</template>

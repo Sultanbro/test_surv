@@ -75,7 +75,10 @@ class CheckLate extends Command
                 $query->where('is_trainee', 0);
             })
             ->orderBy('last_name', 'asc')
-            ->select(['users.id','users.last_name', 'users.name', 'users.working_time_id', 'users.work_start'])
+            ->select(['users.id','users.last_name', 'users.name', 'users.working_time_id', 'users.work_start',
+                'users.work_chart_id',
+                'users.user_type'
+            ])
             ->get();
 
      
@@ -88,8 +91,11 @@ class CheckLate extends Command
     }
 
     public function checkLate()
-    {        
-        $workStart = $this->user->work_starts_at(); // Время начала смены для юзера
+    {
+        /**
+         * Отнимаем 6 часов так как время сервера GTM +0.
+         */
+        $workStart = Carbon::createFromTimeString($this->user->work_starts_at())->subHours(6)->format('H:i:s'); // Время начала смены для юзера
 
         dump($this->user->last_name . ' ' . $this->user->name . ' ' . $workStart);
 
@@ -146,7 +152,7 @@ class CheckLate extends Command
                             $this->history('За приход на работу с опозданием до 5 минут');
                         }
                     }
-                   
+
                 } else if ($diffInMinutes > 5) { // если он не успел прийти на 5 минут раньше штраф 1000
 
                     $fineMoreFiveMinutes = $userFineModel->where([

@@ -51,6 +51,14 @@ class Position extends Model
     /**
      * @return MorphMany
      */
+    public function qpremium(): MorphMany
+    {
+        return $this->morphMany('App\Models\QuartalPremium', 'targetable', 'targetable_type', 'targetable_id');
+    }
+
+    /**
+     * @return MorphMany
+     */
     public function bonuses(): MorphMany
     {
         return $this->morphMany('App\Models\Kpi\Bonus', 'targetable', 'targetable_type', 'targetable_id');

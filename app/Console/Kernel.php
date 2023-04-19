@@ -7,6 +7,7 @@ use App\Console\Commands\Api\RunAutoPaymentCommand;
 use App\Console\Commands\Bitrix\RecruiterStats;
 use App\Console\Commands\Employee\BonusUpdate;
 use App\Console\Commands\StartDayForItDepartmentCommand;
+use App\Console\Commands\RestartQueue;
 use App\Jobs\Bitrix\RecruiterStatsJob;
 use Illuminate\Console\Scheduling\Schedule;
 use Illuminate\Foundation\Console\Kernel as ConsoleKernel;
@@ -25,7 +26,8 @@ class Kernel extends ConsoleKernel
         BonusUpdate::class,
         CheckPaymentsStatusCommand::class,
         StartDayForItDepartmentCommand::class,
-        RecruiterStats::class
+        RecruiterStats::class,
+        RestartQueue::class
     ];
 
     /**
@@ -72,10 +74,10 @@ class Kernel extends ConsoleKernel
         //$schedule->command('tenants:run recruiting:totals --tenants=bp')->hourlyAt(59); //  рекрутинг cводная
         //$schedule->command('tenants:run bitrix:funnel:stats --tenants=bp')->hourlyAt(16); // Воронка в Аналитике
 
-        $schedule->job(new RecruiterStatsJob(1))->hourlyAt(1);
-        $schedule->job(new RecruiterStatsJob())->hourlyAt(14);
-        $schedule->job(new RecruiterStatsJob())->hourlyAt(29);
-        $schedule->job(new RecruiterStatsJob())->hourlyAt(44);
+        $schedule->command('tenants:run restart-queue --tenants=bp')->dailyAt('00:10');
+        $schedule->job(new RecruiterStatsJob(1))->hourlyAt(10);
+        $schedule->job(new RecruiterStatsJob())->hourlyAt(45);
+        $schedule->job(new RecruiterStatsJob())->hourlyAt(59);
 
         /*
         |--------------------------------------------------------------------------

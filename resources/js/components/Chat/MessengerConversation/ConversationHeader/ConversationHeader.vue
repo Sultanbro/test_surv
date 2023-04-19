@@ -8,24 +8,19 @@
 				v-if="chat"
 				class="messenger__info-wrapper"
 			>
-				<div
-					class="messenger__info-wrapper_avatar"
-					@click="changeAvatar"
-				>
-					<AlternativeAvatar
+				<div class="messenger__info-wrapper_avatar">
+					<JobtronAvatar
 						:title="chat.title"
 						:image="chat.image"
+						:size="50"
 					/>
 				</div>
 				<div class="messenger__info-wrapper_head messenger__text-ellipsis messenger__clickable">
 					<div class="messenger__chat-name">
-						<span
-							v-if="!editTitle"
-							@click="changeTitle"
-						>
+						<span>
 							{{ chat.title }}
 						</span>
-						<div
+						<!-- <div
 							v-if="editTitle"
 							@keyup.enter="saveTitle"
 							class="messenger__chat-info-title-text"
@@ -49,8 +44,11 @@
 									/>
 								</svg>
 							</div>
-						</div>
-						<template v-if="chat.private">
+						</div> -->
+						<div
+							v-if="chat.private"
+							class="ConversationHeader-status"
+						>
 							<span
 								v-if="chat.isOnline"
 								class="messenger__chat-name_online"
@@ -59,10 +57,10 @@
 								v-else
 								class="messenger__chat-name_offline"
 							/>
-							<div class="messenger__chat-name_position">
+							<span class="messenger__chat-name_position">
 								{{ chat.position }}
-							</div>
-						</template>
+							</span>
+						</div>
 						<div
 							v-else
 							class="messenger__chat-name_overlay"
@@ -74,13 +72,13 @@
 								class="messenger__chat-name_members"
 								@click="changeAdmin(member)"
 							>
-								<AlternativeAvatar
+								<JobtronAvatar
+									:title="member.name"
+									:image="'/users_img/' + member.img_url"
+									:size="27"
 									:class="{
 										'messenger__chat-name_member-admin': chat.users.find(u => u.id === member.id).pivot.is_admin
 									}"
-									:inline=" true"
-									:title="member.name"
-									:image="member.img_url"
 								/>
 								<template v-if="showMembersNames">
 									{{ member.name }}
@@ -99,12 +97,15 @@
 					</div> -->
 				</div>
 				<div
-					class="messenger__search-button"
+					class="messenger__search-button ConversationHeader-icon ChatIcon-parent"
 					@click="toggleChatSearchMode"
 				>
 					<ChatIconSearchMessages />
 				</div>
-				<div class="messenger__chat-button-right">
+				<div
+					class="messenger__chat-button-right ConversationHeader-icon ChatIcon-parent"
+					@click="toggleInfoPanel"
+				>
 					<ChatIconMore />
 				</div>
 			</div>
@@ -116,14 +117,18 @@
 <script>
 import {mapActions, mapGetters} from 'vuex';
 import ConversationPinned from '../ConversationPinned/ConversationPinned.vue';
-import AlternativeAvatar from '../../ChatsList/ContactItem/AlternativeAvatar/AlternativeAvatar.vue';
-import { ChatIconMore, ChatIconSearchMessages } from '../../icons/chat-icons'
+import {
+	ChatIconMore,
+	ChatIconSearchMessages,
+} from '@icons'
+import JobtronAvatar from '@ui/Avatar'
+
 
 export default {
 	name: 'ConversationHeader',
 	components: {
 		ConversationPinned,
-		AlternativeAvatar,
+		JobtronAvatar,
 		ChatIconMore,
 		ChatIconSearchMessages,
 	},
@@ -298,6 +303,7 @@ export default {
 .messenger__info-wrapper {
 	display: flex;
 	align-items: center;
+	gap: 15px;
 	min-width: 0;
 	width: 100%;
 	height: 100%;
@@ -305,6 +311,10 @@ export default {
 
 .messenger__info-wrapper_avatar {
 	cursor: pointer;
+}
+
+.ConversationHeader-status{
+	margin-bottom: 8px;
 }
 
 .messenger__chat-info {
@@ -344,7 +354,7 @@ export default {
 	overflow-x: auto;
 	display: flex;
 	align-items: center;
-	height: 27px;
+	height: 28px;
 }
 
 .messenger__chat-name_online,
@@ -353,7 +363,7 @@ export default {
 	width: 1rem;
 	height: 1rem;
 	border-radius: 2rem;
-	margin-left: 5px;
+	margin-left: 1px;
 }
 .messenger__chat-name_online {
 	background-color: #3361FF;
@@ -372,11 +382,12 @@ export default {
 
 .messenger__chat-name_members {
 	display: block;
-	margin-right: -15px;
+	margin-right: -10px;
+	outline: 1px solid #fff;
 }
 .messenger__chat-name_members
-.messenger__avatar_container--small{
-	border: 1px solid #fff;
+.JobtronAvatar{
+	border: 1.5px solid #fff;
 }
 .messenger__chat-more__names{
 	margin-left: 25px;
@@ -403,6 +414,11 @@ export default {
 	border-radius: 50%;
 	cursor: pointer;
 	margin-left: auto;
+}
+
+.ConversationHeader-icon{
+	padding: 5px;
+	cursor: pointer;
 }
 
 .messenger__search-button {

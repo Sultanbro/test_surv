@@ -1,32 +1,32 @@
 <template>
-	<div
-		class="AccessSelect-bg"
-		@click.self="$emit('close')"
-		v-scroll-lock="open"
-	>
-		<div class="AccessSelect">
+	<div class="AccessSelect">
+		<slot
+			name="before"
+			:search="accessSearch"
+			:selected-tab="selectedTab"
+		/>
+		<AccessSelectSearch
+			v-if="searchPosition === 'beforeTabs'"
+			v-model="accessSearch"
+		/>
+		<AccessSelectTabs
+			v-if="tabs && tabs.length"
+			:tabs="tabs"
+			v-model="selectedTab"
+		/>
+		<AccessSelectSearch
+			v-if="searchPosition === 'afterTabs'"
+			v-model="accessSearch"
+		/>
+
+		<div class="AccessSelect-list">
 			<slot
-				name="before"
 				:search="accessSearch"
 				:selected-tab="selectedTab"
-			/>
-			<AccessSelectSearch
-				v-if="searchFirst"
-				v-model="accessSearch"
-			/>
-			<AccessSelectTabs
-				:tabs="tabs"
-				v-model="selectedTab"
-			/>
-			<AccessSelectSearch
-				v-if="!searchFirst"
-				v-model="accessSearch"
-			/>
-
-			<div class="AccessSelect-list">
+			>
 				<slot
+					name="users"
 					:search="accessSearch"
-					:selected-tab="selectedTab"
 				>
 					<AccessSelectList
 						v-if="selectedTab === 'Сотрудники'"
@@ -39,38 +39,39 @@
 						:type="1"
 						@change="changeAccessList($event)"
 					/>
-					<AccessSelectList
-						v-if="selectedTab === 'Отделы'"
-						:key="2"
-						:search="accessSearch"
-						:selected="value"
-						:items="accessDictionaries.profile_groups"
-						:type="2"
-						@change="changeAccessList($event)"
-					/>
-					<AccessSelectList
-						v-if="selectedTab === 'Должности'"
-						:key="3"
-						:search="accessSearch"
-						:selected="value"
-						:items="accessDictionaries.positions"
-						:type="3"
-						@change="changeAccessList($event)"
-					/>
 				</slot>
-			</div>
-
-			<AccessSelectFooter
-				:count="accessList.length"
-				:submit="submit"
-				@submit="$emit('submit')"
-			/>
-			<slot
-				name="after"
-				:search="accessSearch"
-				:selected-tab="selectedTab"
-			/>
+				<AccessSelectList
+					v-if="selectedTab === 'Отделы'"
+					:key="2"
+					:search="accessSearch"
+					:selected="value"
+					:items="accessDictionaries.profile_groups"
+					:type="2"
+					@change="changeAccessList($event)"
+				/>
+				<AccessSelectList
+					v-if="selectedTab === 'Должности'"
+					:key="3"
+					:search="accessSearch"
+					:selected="value"
+					:items="accessDictionaries.positions"
+					:type="3"
+					@change="changeAccessList($event)"
+				/>
+			</slot>
 		</div>
+
+		<AccessSelectFooter
+			:count="accessList.length"
+			:submit="submit"
+			:submit-disabled="submitDisabled"
+			@submit="$emit('submit')"
+		/>
+		<slot
+			name="after"
+			:search="accessSearch"
+			:selected-tab="selectedTab"
+		/>
 	</div>
 </template>
 
@@ -101,13 +102,9 @@ export default {
 			type: String,
 			default: 'Пригласить сотрудника'
 		},
-		open: {
-			type: Boolean,
-			default: false
-		},
-		searchFirst: {
-			type: Boolean,
-			default: false
+		searchPosition: {
+			type: String, // beforeTabs, afterTabs
+			default: 'afterTabs'
 		},
 		accessDictionaries: {
 			type: Object,
@@ -116,6 +113,10 @@ export default {
 				profile_groups: [],
 				positions: [],
 			})
+		},
+		submitDisabled: {
+			type: Boolean,
+			default: false
 		}
 	},
 	data(){
@@ -158,41 +159,24 @@ export default {
 }
 </script>
 
-<style>
-.AccessSelect-bg {
-	position: fixed;
-	z-index: 10;
-	top: 0;
-	left: 0;
-	right: 0;
-	bottom: 0;
-	background-color: rgba(255, 255, 255, 0.3);
-}
-
+<style lang="scss">
 .AccessSelect {
-	position: absolute;
-	/* top: 25%; */
-	/* left: 40%; */
-	bottom: 0;
-	left: 270px;
-	padding: 25px 20px 20px 20px;
-	background-color: #FFFFFF;
-	box-shadow: 0 0 3px rgba(0, 0, 0, 0.05), 0 15px 60px -40px rgba(45, 50, 90, 0.2);
-	border-radius: 12px;
+	display: flex;
+	flex-flow: column nowrap;
+
+	overflow: hidden;
+	&-icon {
+		filter: invert(99%) sepia(1%) saturate(1439%) hue-rotate(238deg) brightness(107%) contrast(69%);
+		cursor: pointer;
+		&:hover {
+			filter: invert(27%) sepia(73%) saturate(2928%) hue-rotate(209deg) brightness(96%) contrast(89%);
+		}
+	}
+	&-list {
+		display: flex;
+		flex-flow: column nowrap;
+		padding: 25px 0;
+		overflow: hidden;
+	}
 }
-
-.AccessSelect-icon {
-	filter: invert(99%) sepia(1%) saturate(1439%) hue-rotate(238deg) brightness(107%) contrast(69%);
-	cursor: pointer;
-}
-.AccessSelect-icon:hover {
-	filter: invert(27%) sepia(73%) saturate(2928%) hue-rotate(209deg) brightness(96%) contrast(89%);
-}
-
-
-
-.AccessSelect-list {
-	padding: 25px 0;
-}
-
 </style>

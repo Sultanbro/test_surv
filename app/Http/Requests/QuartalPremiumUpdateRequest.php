@@ -42,7 +42,7 @@ class QuartalPremiumUpdateRequest extends FormRequest
             'plan'              => 'nullable',
             'from'              => 'nullable|date',
             'to'                => 'nullable|date',
-            'sum'               => 'nullable|string'
+            'sum'               => 'nullable'
         ];
     }
 

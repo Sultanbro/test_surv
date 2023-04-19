@@ -18,11 +18,7 @@ export default {
 		old_phone_1: String,
 		old_phone_2: String,
 		old_phone_3: String,
-		old_phone_4: String,
-		front_valid:{
-			type: Object,
-			default: () => ({})
-		}
+		old_phone_4: String
 	},
 	data() {
 		return{
@@ -30,11 +26,6 @@ export default {
 		}
 	},
 	watch: {
-		mainPhone(val){
-			if(this.front_valid && this.front_valid.formSubmitted){
-				val.length < 17 ? this.$emit('valid_change', {name: 'phone', bool: false}) : this.$emit('valid_change', {name: 'phone', bool: true});
-			}
-		},
 		user(obj){
 			this.mainPhone = obj ? obj.phone : '';
 		}
@@ -67,14 +58,11 @@ export default {
 	>
 		<div class="row">
 			<div class="col-12 col-md-6">
-				<div
-					class="d-flex phone-row form-group"
-					:class="{'form-group-error': front_valid.formSubmitted && front_valid.phone === false}"
-				>
+				<div class="d-flex phone-row form-group">
 					<label
 						for="phone"
 						class="col-sm-4 col-form-label font-weight-bold"
-					>Мобильный <span class="red">*</span></label>
+					>Мобильный</label>
 					<div class="col-sm-12">
 						<input
 							name="phone"
