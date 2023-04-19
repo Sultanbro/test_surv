@@ -1,4 +1,6 @@
 /** @module stores/api */
+import axios from 'axios'
+
 export * from './api/courses.js'
 export * from './api/profile.js'
 export * from './api/settings.js'
@@ -8,6 +10,10 @@ export * from './api/kpi.js'
 export * from './api/portal.js'
 export * from './api/notifications.js'
 export * from './api/workChart.js'
+
+export async function updateOnlineStatus(){
+	await axios.post('/api/online')
+}
 
 /**
  * ApiResponse

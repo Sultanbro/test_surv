@@ -52,14 +52,6 @@
 
 <script>
 import JobtronAvatar from '@ui/Avatar'
-import { getRandomInt } from '@/composables/random'
-
-const statusList = [
-	'Онлайн',
-	'Был недавно',
-	'Был неделю назад',
-	'Был давно',
-]
 
 export default {
 	name: 'ChatUserListUser',
@@ -78,7 +70,19 @@ export default {
 	},
 	computed: {
 		status(){
-			return statusList[getRandomInt(0, statusList.length)]
+			if(!this.user) return ''
+			if(!this.user.last_seen) return 'Не посещал(а) приложение'
+			const prefix = 'Был(а) '
+			const $time = this.$moment(this.user.last_seen)
+			const $now = this.$moment()
+			const duration = this.$moment.duration($now.diff($time))
+			const hours = duration.asHours()
+			const minutes = duration.asMinutes()
+			if(minutes < 2) return 'Онлайн'
+			if(hours < 3) return prefix + $time.format('HH:mm')
+			if(hours < 24) return prefix + 'сегодня' // сделать вариант с 'вчера'
+			if(hours < 168) return prefix + 'в ' + $time.format('dddd')
+			return prefix + $time.format('DD.MM.YYYY')
 		},
 		title(){
 			if(!this.user) return ''
