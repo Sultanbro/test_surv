@@ -217,13 +217,16 @@ Vue.directive('click-outside', {
 				vnode.context[binding.expression](event);
 			}
 		};
+		el.clickOutsideEventStop = (event) => { event.stopPropagation() }
 		document.body.addEventListener('click', el.clickOutsideEvent);
+		el.addEventListener('click', el.clickOutsideEventStop)
 	},
 	unbind(el) {
 		document.body.removeEventListener('click', el.clickOutsideEvent);
+		el.removeEventListener('click', el.clickOutsideEventStop)
 	},
 
-//   stopProp(event) { event.stopPropagation() }
+	// stopProp(event) { event.stopPropagation() }
 });
 
 /**

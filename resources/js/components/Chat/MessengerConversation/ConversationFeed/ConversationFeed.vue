@@ -13,73 +13,41 @@
 			:parent-element="$refs.messengerContainer"
 		>
 			<div class="messenger__context-menu_reactions">
-				<a
-					href="javascript:"
+				<div
+					v-for="reaction, key in reactions"
+					:key="key"
 					class="messenger__context-menu_reaction"
-					@click="react(1)"
-				>
-					&#128077;
-				</a>
-				<a
-					href="javascript:"
-					class="messenger__context-menu_reaction"
-					@click="react(2)"
-				>
-					&#128078;
-				</a>
-				<a
-					href="javascript:"
-					class="messenger__context-menu_reaction"
-					@click="react(3)"
-				>
-					&#10004;
-				</a>
-				<a
-					href="javascript:"
-					class="messenger__context-menu_reaction"
-					@click="react(4)"
-				>
-					&#10006;
-				</a>
-				<a
-					href="javascript:"
-					class="messenger__context-menu_reaction"
-					@click="react(5)"
-				>
-					&#10067;
-				</a>
+					@click="react(key)"
+					v-html="reaction"
+				/>
 			</div>
 
-			<a
+			<div
 				v-if="contextMenuMessage && user && contextMenuMessage.sender_id === user.id"
-				class="messenger__context-item"
-				href="javascript:"
+				class="ContextMenu-item"
 				@click="startEditMessage(contextMenuMessage)"
 			>
 				Отредактировать
-			</a>
-			<a
-				class="messenger__context-item"
-				href="javascript:"
+			</div>
+			<div
+				class="ContextMenu-item"
 				@click="citeMessage(contextMenuMessage)"
 			>
 				Цитировать
-			</a>
-			<a
-				class="messenger__context-item"
-				href="javascript:"
+			</div>
+			<div
+				class="ContextMenu-item"
 				@click="pinMessage(contextMenuMessage)"
 			>
 				Закрепить
-			</a>
-			<a
+			</div>
+			<div
 				v-if="contextMenuMessage && user && contextMenuMessage.sender_id === user.id"
-				class="messenger__context-item"
-				href="javascript:"
+				class="ContextMenu-item"
 				@click="remove(contextMenuMessage)"
 			>
 				Удалить
-			</a>
+			</div>
 		</ContextMenu>
 		<div
 			id="messenger__messages"
@@ -90,7 +58,7 @@
 					:key="i"
 					class="messenger__messages-date"
 				>
-					<span class="messenger__messages-date-block">{{ d[0].created_at | formatDate }}</span>
+					<span class="messenger__messages-date-block">{{ d[0].message.created_at | formatDate }}</span>
 				</div>
 				<div
 					v-for="{message, renderHelper}, index in d"
@@ -143,6 +111,23 @@ export default {
 		ConversationServiceMessage,
 		ContextMenu
 	},
+	data() {
+		return {
+			contextMenuVisible: false,
+			contextMenuTarget: null,
+			contextMenuX: 0,
+			contextMenuY: 0,
+			contextMenuMessage: null,
+			activeMessageId: 0,
+			reactions: {
+				1: '&#128077;',
+				2: '&#128078;',
+				3: '&#10004;',
+				4: '&#10006;',
+				5: '&#10067;',
+			}
+		}
+	},
 	computed: {
 		...mapGetters([
 			'messagesMap',
@@ -158,16 +143,6 @@ export default {
 	updated() {
 		if (this.scrollingPosition !== -1) {
 			this.scroll();
-		}
-	},
-	data() {
-		return {
-			contextMenuVisible: false,
-			contextMenuTarget: null,
-			contextMenuX: 0,
-			contextMenuY: 0,
-			contextMenuMessage: null,
-			activeMessageId: 0
 		}
 	},
 	methods: {
@@ -306,9 +281,17 @@ export default {
 	display: flex;
 	flex-flow: row nowrap;
 	justify-content: space-between;
+	gap: 10px;
+	padding: 0 10px;
 }
 .messenger__context-menu_reaction {
+	color: #3361FF;
 	display: inline-block;
+	padding: 10px;
+	cursor: pointer;
+}
+.messenger__context-menu_reaction:hover {
+	background-color: #F6F8FF;
 }
 
 .messenger__messages-date {

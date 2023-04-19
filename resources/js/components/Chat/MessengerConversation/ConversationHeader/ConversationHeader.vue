@@ -104,10 +104,64 @@
 					<ChatIconSearchMessages />
 				</div>
 				<div
-					class="messenger__chat-button-right ConversationHeader-icon ChatIcon-parent"
-					@click="toggleInfoPanel"
+					class="messenger__chat-button-right"
 				>
-					<ChatIconMore />
+					<div
+						class="ConversationHeader-icon ChatIcon-parent"
+						@click="togglePopup"
+					>
+						<ChatIconMore />
+					</div>
+					<PopupMenu
+						v-if="isPopup"
+						v-click-outside="togglePopupIfShown"
+					>
+						<div
+							class="PopupMenu-item wsnw ChatIcon-parent"
+							@click="togglePinned"
+						>
+							<ChatIconPinChat />
+							{{ chat.pinned ? 'Открепить чат' : 'Закрепить чат' }}
+						</div>
+						<!-- <div
+							class="ContextMenu-item wsnw ChatIcon-parent"
+							@click="contextViewProfile"
+						>
+							<ChatIconViewUser />
+							Посмотреть профиль
+						</div> -->
+						<div
+							v-if="isAdmin && !chat.private"
+							class="ContextMenu-item wsnw ChatIcon-parent"
+							@click="toggleEdit"
+						>
+							<ChatIconEditChat />
+							Редактировать
+						</div>
+						<div
+							class="PopupMenu-item wsnw ChatIcon-parent"
+							@click="toggleMuted"
+						>
+							<ChatIconMuteChat />
+							{{ chat.muted ? 'Включить уведомления' : 'Выключить уведомления' }}
+						</div>
+						<div
+							v-if="isAdmin"
+							class="PopupMenu-item PopupMenu-item_red wsnw "
+							@click="isPopup = false; remove(chat)"
+						>
+							<ChatIconDeleteChat />
+							Удалить чат
+						</div>
+						<div
+							v-else
+							class="PopupMenu-item wsnw ChatIcon-parent"
+							@click="isPopup = false; leftChat(chat)"
+						>
+							<ChatIconHistoryBack />
+							Покинуть чат
+						</div>
+					</PopupMenu>
 				</div>
 			</div>
 		</div>
@@ -118,26 +172,42 @@
 <script>
 import {mapActions, mapGetters} from 'vuex';
 import ConversationPinned from '../ConversationPinned/ConversationPinned.vue';
+import PopupMenu from '../../ContextMenu/PopupMenu'
 import {
 	ChatIconMore,
 	ChatIconSearchMessages,
+	ChatIconPinChat,
+	ChatIconEditChat,
+	ChatIconMuteChat,
+	ChatIconDeleteChat,
+	ChatIconHistoryBack,
 } from '@icons'
 import JobtronAvatar from '@ui/Avatar'
+// import clickOutside from '../../directives/clickOutside.ts';
 
 
 export default {
 	name: 'ConversationHeader',
 	components: {
 		ConversationPinned,
+		PopupMenu,
 		JobtronAvatar,
 		ChatIconMore,
 		ChatIconSearchMessages,
+		ChatIconPinChat,
+		ChatIconEditChat,
+		ChatIconMuteChat,
+		ChatIconDeleteChat,
+		ChatIconHistoryBack,
 	},
+	// directives: {
+	// 	clickOutside
+	// },
 	data() {
 		return {
-			imageError: false,
 			showMembersNames: false,
-			editTitle: false
+			editTitle: false,
+			isPopup: false,
 		};
 	},
 	computed: {
@@ -175,6 +245,10 @@ export default {
 			'unsetChatAdmin',
 			'editChatTitle',
 			'isChatSearchMode',
+			'removeChat',
+			'leftChat',
+			'pinChat',
+			'unpinChat',
 		]),
 		changeAvatar() {
 			if (this.chat.private) {
@@ -258,6 +332,48 @@ export default {
 					message: 'Вы не можете изменять права администратора в этом чате'
 				});
 			}
+		},
+		togglePopup(){
+			// какой-то костыль получился, но сроки жмут нормально делать времени нет
+			if(this.isPopup) this.isPopup = false
+			else{
+				setTimeout(() => {
+					this.isPopup = !this.isPopup
+				}, 50)
+			}
+		},
+		remove(chat) {
+			this.$root.$emit('messengerConfirm', {
+				title: 'Удалить чат?',
+				message: `Вы уверены, что хотите удалить чат ${chat.title}?`,
+				button: {
+					yes: 'Удалить',
+					no: 'Отмена'
+				},
+				callback: confirm => {
+					if (confirm) {
+						this.removeChat(chat);
+					}
+				}
+			});
+		},
+		togglePinned(){
+			this.isPopup = false
+			if(this.chat.pinned) return this.unpinChat(this.chat)
+			this.pinChat(this.chat)
+		},
+		toggleMuted(){
+			this.isPopup = false
+			this.$toast('Функционал в разработке')
+		},
+		toggleEdit(){
+			this.contextMenuVisible = false
+			this.toggleInfoPanel()
+		},
+		togglePopupIfShown(){
+			console.log('togglePopupIfShown', this.isPopup)
+			if(!this.isPopup) return
+			this.isPopup = false
 		}
 	}
 }
@@ -289,17 +405,12 @@ export default {
 	width: 100%;
 	padding: 0 16px;
 	background-color: #fff;
-	text-overflow: ellipsis;
-	overflow: hidden;
-	white-space: nowrap;
 }
 
 .messenger__chat-header_search{
 	border-radius: 1.2rem 0 0 0;
 }
-.messenger__chat-header_search .messenger__chat-wrapper{
-
-}
+// .messenger__chat-header_search .messenger__chat-wrapper{}
 
 .messenger__info-wrapper {
 	display: flex;
@@ -407,18 +518,23 @@ export default {
 	display: flex;
 	align-items: center;
 	justify-content: center;
+
 	height: 32px;
 	width: 32px;
 	min-height: 32px;
 	min-width: 32px;
-	border-radius: 50%;
-	cursor: pointer;
 	margin-left: auto;
+	border-radius: 50%;
+
+	position: relative;
+
+	cursor: pointer;
 }
 
 .ConversationHeader-icon{
 	padding: 5px;
 	cursor: pointer;
+	user-select: none;
 }
 
 .messenger__search-button {
