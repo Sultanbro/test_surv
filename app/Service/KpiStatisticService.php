@@ -666,7 +666,7 @@ class KpiStatisticService
                     $query->whereDate('created_at', '<=', $last_date);
                 },
                 'items' => function($query) use ($last_date) {
-                    $query->withTrashed()->whereDate('created_at', '<=', $last_date);
+                    $query->whereDate('created_at', '<=', $last_date);
                 },
                 'items.activity'
             ]);
