@@ -1,8 +1,8 @@
 <template>
 	<div class="messenger__col-messages">
-		<ConversationHeader v-show="!isChatSearchMode" />
-		<ConversationFeed v-show="!isChatSearchMode" />
-		<ConversationFooter v-show="!isChatSearchMode" />
+		<ConversationHeader />
+		<ConversationFeed />
+		<ConversationFooter />
 		<ConversationSearch
 			v-if="isDesktop"
 			v-show="isChatSearchMode"
@@ -45,6 +45,7 @@ export default {
   display: flex;
   height: 100%;
   flex: 1;
+	align-items: flex-end;
   /* border: 1px solid #E1EBF9; */
 
   position: relative;

@@ -62,6 +62,7 @@ export default {
 			return {
 				users: this.users.reduce((users, user) => {
 					if(~this.chat.users.findIndex(u => u.id === user.id)) return users
+					if(user.deleted_at) return users
 					users.push({
 						id: user.id,
 						name: `${user.name} ${user.last_name}`,
@@ -70,7 +71,7 @@ export default {
 					})
 					return users
 				}, []),
-				profile_groups: this.profileGroups,
+				profile_groups: this.profileGroups.filter(group => !group.deleted_at),
 				positions: this.positions.map(pos => ({
 					id: pos.id,
 					name: pos.position

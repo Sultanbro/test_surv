@@ -10,10 +10,7 @@
 			class="messenger__card-window"
 		>
 			<div class="messenger__chat-container">
-				<ChatNav
-					v-show="!isChatSearchMode"
-					:fullscreen="true"
-				/>
+				<ChatNav :fullscreen="true" />
 				<MessengerConversation
 					v-if="isDesktop || isChatSelected"
 				/>

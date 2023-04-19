@@ -6,6 +6,7 @@
 			'JobtronButton_success': success,
 			'JobtronButton_error': error,
 		}"
+		@click="$emit('click')"
 	>
 		<slot />
 	</button>
@@ -52,6 +53,9 @@ export default {
 	cursor: pointer;
 	&:hover:not([disabled]):not(.disabled){
 		background: lighten(#3361FF, 10);
+	}
+	&:focus{
+		outline: none;
 	}
 	&[disabled]{
 		cursor: default;
