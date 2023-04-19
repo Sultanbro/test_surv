@@ -344,39 +344,45 @@
 
 
 		<!-- Настройки раздела -->
-		<Sidebar
+		<SimpleSidebar
 			title="Настройки видеокурсов"
 			:open="showSettings"
 			@close="showSettings = false"
-			width="30%"
+			width="400px"
 		>
-			<label class="d-flex">
-				<input
-					type="checkbox"
-					v-model="allow_save_video_without_test"
-					class="form- mb-2 mr-2"
-				>
-				<p>Разрешить сохранять видео без тестовых вопросов</p>
-			</label>
+			<template #body>
+				<label class="d-flex">
+					<input
+						type="checkbox"
+						v-model="allow_save_video_without_test"
+						class="form- mb-2 mr-2"
+					>
+					<p>Разрешить сохранять видео без тестовых вопросов</p>
+				</label>
+			</template>
 
-			<button
-				class="btn btn-primary rounded m-auto"
-				@click="save_settings()"
-			>
-				<span>Сохранить</span>
-			</button>
-		</Sidebar>
+			<template #footer>
+				<button
+					class="btn btn-primary rounded m-auto"
+					@click="save_settings()"
+				>
+					<span>Сохранить</span>
+				</button>
+			</template>
+		</SimpleSidebar>
 	</div>
 </template>
 
 <script>
 import Sidebar from '@/components/ui/Sidebar' // сайдбар table
 const PlaylistEdit = () => import(/* webpackChunkName: "PlaylistEdit" */ '@/pages/PlaylistEdit') // редактирование плейлиста
+import SimpleSidebar from '@/components/ui/SimpleSidebar'
 export default {
 	name: 'PlayLists',
 	components: {
 		Sidebar,
-		PlaylistEdit,
+		SimpleSidebar,
+		PlaylistEdit
 	},
 	props: {
 		token: String,

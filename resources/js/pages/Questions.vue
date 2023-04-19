@@ -13,7 +13,7 @@
 		<div
 			v-for="(q, q_index) in questions"
 			:key="q_index"
-			class="question mb-3"
+			class="question mb-5"
 			:class="{'show': q.editable}"
 		>
 			<div
@@ -52,7 +52,7 @@
 				class="title d-flex jcsb aic"
 			>
 				<p class="mb-0">
-					{{ q.text }}
+					{{ q_index + 1 }}. {{ q.text }}
 				</p>
 				<i
 					v-if="scores && q.success == false"

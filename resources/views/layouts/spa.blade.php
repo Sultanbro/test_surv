@@ -32,7 +32,6 @@
 </head>
 
 <body ontouchstart="">
-
     <div class="right-panel-app"></div>
     <div class="hidden">@yield('content')</div>
 
@@ -82,7 +81,5 @@
     <script src="{{ url('/js/croppie.js') }}"></script>
     <script src="{{ url('/js/croppie.min.js') }}"></script>
     <script src="{{ mix('/js/app.js') }}"></script>
-
-
 </body>
 </html>

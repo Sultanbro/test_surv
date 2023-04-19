@@ -36,6 +36,7 @@ Route::middleware(['web','tenant'])->group(function () {
 // Portal Api
 Route::middleware(['web','tenant', 'not_admin_subdomain'])->group(function () {
 
+    Route::post('/online', [User\EmployeeController::class, 'online']);
     Route::get('/structure', [Root\Structure\StructureController::class, 'index']);
 
     Route::resource('work-chart', Root\WorkChart\WorkChartController::class)->except(['create', 'edit']);
@@ -702,8 +703,6 @@ Route::middleware(['api','tenant','not_admin_subdomain'])->group(function () {
             Route::get('/fired-trainees/{id?}/{date?}', [Api\DepartmentUserController::class, 'getFiredTrainees'])->name('fired-trainees');
             Route::get('/check/user/{id}', [Api\DepartmentUserController::class, 'userInGroup']);
         });
-
-        Route::post('/online', [Root\Messenger\UserStatusController::class, 'online']);
     });
 });
 

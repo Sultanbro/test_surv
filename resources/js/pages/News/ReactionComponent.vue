@@ -5547,9 +5547,6 @@ export default {
 				const item = this.reactionsList.filter(item => {
 					return (el.reaction == item.icon);
 				})[0];
-				console.log('item');
-				console.log(item);
-				console.log(el);
 				item.value = el.reaction_count;
 				item.is_reacted = el.is_reacted;
 			});

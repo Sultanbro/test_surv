@@ -6,6 +6,9 @@
   margin: 0 -20px -20px -20px;
   width: calc(100% + 40px);
   max-width: calc(100% + 40px);
+  .title{
+    text-align: unset!important;
+  }
   .btn {
     padding: 5px 15px;
     margin: 0;
@@ -38,6 +41,9 @@
 
   .question-form-group{
     width: 100%;
+    label{
+      margin-bottom: 0;
+    }
     input{
       padding: 0;
       height: initial;
@@ -60,7 +66,6 @@
       p {
         font-size: 15px;
         width: 100%;
-        margin-top: 4px;
       }
       i{
         margin-top: 7px;
@@ -69,10 +74,10 @@
         content: '';
         display: block;
         position: absolute;
-        top: 6px;
-        left: 12px;
-        width: 6px;
-        height: 14px;
+        top: 3px;
+        left: 7px;
+        width: 5px;
+        height: 11px;
         border: solid #fff;
         border-width: 0 2px 2px 0;
         opacity: 0;
@@ -82,10 +87,10 @@
       &:before {
         content: '';
         -webkit-appearance: none;
-        width: 30px;
-        min-width: 30px;
-        height: 30px;
-        min-height: 30px;
+        width: 20px;
+        min-width: 20px;
+        height: 20px;
+        min-height: 20px;
         display: inline-flex;
         align-items: center;
         justify-content: center;
@@ -193,7 +198,7 @@
   }
 
   .variants {
-      margin-top: 15px;
+      margin-top: 10px;
   }
 }
 

@@ -1,85 +1,90 @@
 <template>
-	<div class="messenger__container-scroll">
-		<div
-			class="messenger__messages-container"
-			style="flex-grow: 3"
-		>
-			<ConversationHeader />
-			<div class="messenger__messages-search">
-				<div class="messenger__messages-search-input">
-					<ChatIconSearch />
-					<input
-						type="text"
-						placeholder="Введите текст для поиска"
-						v-model="searchMessagesQuery"
-					>
-					<div
-						v-show="searchMessagesQuery"
-						class="messenger__messages-search-clear ChatIcon-parent"
-						@click="searchMessagesQuery = ''"
-					>
-						<ChatIconSearchClose />
-					</div>
-				</div>
-				<div class="messenger__messages-search-date">
-					<input
-						class="messenger__messages-search-date-input"
-						v-model="searchMessagesDate"
-						v-mask="'##.##.####'"
-					>
-					<div
-						class="messenger__messages-search-date-calendar ChatIcon-parent"
-						@click="showDatePicker = !showDatePicker"
-					>
-						<ChatIconSearchDate />
-					</div>
-					<CalendarInput
-						v-if="showDatePicker"
-						v-model="date"
-						:open="showDatePicker"
-						@close="showDatePicker = false"
-					/>
-				</div>
-			</div>
-			<div class="messenger__messages-search-results messenger__messages-search-results_bg">
-				<div
-					v-for="(message, index) in chatSearchMessagesResults"
-					:key="index"
-					class="messenger__message-wrapper"
-					@click="goto(message, $event)"
-				>
-					<ConversationMessage :message="message" />
-				</div>
-			</div>
-		</div>
-		<div class="messenger__messages-container">
-			<ConversationSearchFilter v-model="searchFilesFilter" />
-			<div class="messenger__messages-container">
+	<div
+		class="ConversationSearch"
+		@click.self="toggleChatSearchMode"
+	>
+		<div class="messenger__container-scroll">
+			<div
+				class="messenger__messages-container"
+				style="flex-grow: 3"
+			>
+				<ConversationHeader />
 				<div class="messenger__messages-search">
 					<div class="messenger__messages-search-input">
 						<ChatIconSearch />
 						<input
 							type="text"
-							placeholder="Введите имя файла"
-							v-model="searchFilesQuery"
+							placeholder="Введите текст для поиска"
+							v-model="searchMessagesQuery"
 						>
 						<div
-							v-show="searchFilesQuery"
+							v-show="searchMessagesQuery"
 							class="messenger__messages-search-clear ChatIcon-parent"
-							@click="searchFilesQuery = ''"
+							@click="searchMessagesQuery = ''"
 						>
 							<ChatIconSearchClose />
 						</div>
 					</div>
+					<div class="messenger__messages-search-date">
+						<input
+							class="messenger__messages-search-date-input"
+							v-model="searchMessagesDate"
+							v-mask="'##.##.####'"
+						>
+						<div
+							class="messenger__messages-search-date-calendar ChatIcon-parent"
+							@click="showDatePicker = !showDatePicker"
+						>
+							<ChatIconSearchDate />
+						</div>
+						<CalendarInput
+							v-if="showDatePicker"
+							v-model="date"
+							:open="showDatePicker"
+							@close="showDatePicker = false"
+						/>
+					</div>
 				</div>
-				<div class="messenger__messages-search-results">
+				<div class="messenger__messages-search-results messenger__messages-search-results_bg">
 					<div
-						v-for="(file, index) in chatSearchFilesResults"
+						v-for="(message, index) in chatSearchMessagesResults"
 						:key="index"
 						class="messenger__message-wrapper"
-						@click="goto(file, $event)"
+						@click="goto(message, $event)"
 					>
-						<ConversationMessage :message="file" />
+						<ConversationMessage :message="message" />
+					</div>
+				</div>
+			</div>
+			<div class="messenger__messages-container">
+				<ConversationSearchFilter v-model="searchFilesFilter" />
+				<div class="messenger__messages-container">
+					<div class="messenger__messages-search">
+						<div class="messenger__messages-search-input">
+							<ChatIconSearch />
+							<input
+								type="text"
+								placeholder="Введите имя файла"
+								v-model="searchFilesQuery"
+							>
+							<div
+								v-show="searchFilesQuery"
+								class="messenger__messages-search-clear ChatIcon-parent"
+								@click="searchFilesQuery = ''"
+							>
+								<ChatIconSearchClose />
+							</div>
+						</div>
+					</div>
+					<div class="messenger__messages-search-results">
+						<div
+							v-for="(file, index) in chatSearchFilesResults"
+							:key="index"
+							class="messenger__message-wrapper"
+							@click="goto(file, $event)"
+						>
+							<ConversationMessage :message="file" />
+						</div>
 					</div>
 				</div>
 			</div>
@@ -176,9 +181,20 @@ export default {
 </script>
 
 <style scoped>
-
+.ConversationSearch{
+	width: 100vw;
+	height: 100vh;
+	position: fixed;
+	z-index: 20;
+	right: 0;
+	bottom: 0;
+	background-color: rgba(0, 0, 0, 0.25);
+}
 .messenger__container-scroll {
+	width: 50%;
 	height: 100%;
+	margin-left: auto;
+
 	display: flex;
 	flex-flow: column;
 	flex-direction: row;
@@ -187,6 +203,7 @@ export default {
 
 	position: relative;
 	overflow: auto;
+	background-color: #fff;
 }
 
 .messenger__messages-container {

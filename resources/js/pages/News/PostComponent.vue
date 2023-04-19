@@ -126,8 +126,39 @@
 			<div
 				v-show="showFullContent"
 				class="news-item__content"
+				ref="newsItemContent"
 				v-html="currentPost.content"
 			/>
+			<div
+				class="gallery-modal"
+				v-if="showModalImages"
+				@click="showModalImages = !showModalImages"
+			>
+				<div
+					class="gallery-modal-content"
+					@click.stop
+				>
+					<b-carousel
+						id="modal-carousel"
+						v-model="galleryIndex"
+						:interval="0"
+						controls
+						indicators
+					>
+						<b-carousel-slide
+							v-for="(image, indexIdx) in images"
+							:key="indexIdx"
+						>
+							<template #img>
+								<img
+									:src="image"
+									alt="Картинка"
+								>
+							</template>
+						</b-carousel-slide>
+					</b-carousel>
+				</div>
+			</div>
 			<span
 				v-show="currentPost.is_pinned"
 				class="news-item__show-full"
@@ -246,7 +277,7 @@ import { mapActions } from 'pinia'
 export default {
 	name: 'PostComponent',
 	components: {
-		CommentsComponent,
+		CommentsComponent
 	},
 	props: {
 		post: {
@@ -269,10 +300,21 @@ export default {
 
 			commentText: '',
 			parentId: null,
+			images: [],
+			galleryIndex: null,
+			showModalImages: false
 		}
 	},
 	mounted() {
 		this.showFullContent = this.currentPost.is_pinned == false;
+		const imagesPost = this.$refs.newsItemContent.querySelectorAll('img');
+		imagesPost.forEach(i => this.images.push(i.src));
+		for(let i = 0; i < imagesPost.length; i++){
+			imagesPost[i].addEventListener('click', () => {
+				this.galleryIndex = i;
+				this.showModalImages = true;
+			})
+		}
 	},
 	methods: {
 		...mapActions(useUnviewedNewsStore, ['getUnviewedNewsCount']),
@@ -410,7 +452,6 @@ export default {
 		async viewsChanged() {
 			await this.axios.post('news/' + this.currentPost.id + '/views')
 				.then(res => {
-					console.log(res);
 					this.currentPost.views_count = res.data.data.views_count;
 				})
 				.catch(res => {
@@ -490,3 +531,43 @@ export default {
 	}
 }
 </script>
+
+<style lang="scss">
+	.gallery-modal{
+		position: fixed;
+		z-index: 9999;
+		top: 0;
+		left: 0;
+		width: 100%;
+		height: 100%;
+		background-color: rgba(0,0,0,0.5);
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		.gallery-modal-content{
+			max-width: 95%;
+			max-height: calc(100vh - 100px);
+			img{
+				width: 100%;
+				height: calc(100vh - 150px);
+			}
+		}
+		.carousel-control-next, .carousel-control-prev{
+			position: fixed !important;
+			z-index: 10;
+			bottom: unset;
+			top: 50%;
+			transform: translateY(-50%);
+			width: 50px;
+			height: 50px;
+			border-radius: 50%;
+			background-color: #333;
+		}
+		.carousel-control-next{
+			right: 50px;
+		}
+		.carousel-control-prev{
+			left: 50px;
+		}
+	}
+</style>

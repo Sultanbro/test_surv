@@ -78,13 +78,6 @@
             <img src="/images/dist/header-right-avatar-6.png" alt="header avatar">
         </a>
     </div> -->
-
-		<div class="header__right-arrow">
-			<a href="javascript:void(0)"><img
-				src="/images/dist/header-arrow.svg"
-				alt="arrow icon"
-			></a>
-		</div>
 	</div>
 </template>
 
