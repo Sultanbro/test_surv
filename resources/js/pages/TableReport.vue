@@ -4,7 +4,7 @@
 		class="mt-4"
 	>
 		<div class="mb-0">
-			<div class="row mb-3">
+			<div class="row mb-4">
 				<div class="col-3">
 					<select
 						class="form-control"
@@ -253,11 +253,199 @@
 		</Sidebar>
 
 
+		<aside
+			class="table-report-sidebar"
+			v-if="openSidebar"
+		>
+			<div class="table-report-content">
+				<div class="table-report-header">
+					<img
+						data-v-8e314866=""
+						src="/images/dist/popup-close.svg"
+						class="table-report-close"
+						alt="Close icon"
+						@click.self="openSidebar = false"
+					>
+					<span class="table-report-title">{{ sidebarTitle }}</span>
+				</div>
+				<div class="table-report-body">
+					<b-tabs
+						content-class="mt-3"
+						justified
+					>
+						<b-tab
+							title="🕒 История"
+							active
+						>
+							<template v-if="sidebarHistory && sidebarHistory.length > 0">
+								<div class="history">
+									<div
+										v-for="(item,index) in sidebarHistory"
+										:key="index"
+										class="mb-3"
+									>
+										<p class="fz12">
+											<b class="text-black">Дата:</b> {{ (new
+												Date(item.created_at)).addHours(-6).toLocaleString('ru-RU') }}
+										</p>
+										<p class="fz12">
+											<b class="text-black">Автор:</b> {{ item.author }} <br>
+										</p>
+										<p
+											class="fz14 mb-0"
+											v-html="item.description"
+										/><br>
+										<hr>
+									</div>
+								</div>
+							</template>
+							<template v-else>
+								<p>История изменения отсутствует</p>
+							</template>
+						</b-tab>
+
+						<template v-if="canEdit">
+							<b-tab title="📆 Статус">
+								<!-- <div v-html="sidebarContent.history"></div>
+					<div v-html="sidebarContent.historyTotal"></div> -->
+								<template v-if="!sidebarContent.data.item.is_trainee">
+									<div class="temari">
+										<div
+											v-for="dateType in dateTypes"
+											:key="dateType.label"
+											:class="[dateType.type == 4 ? 'mt-auto' : 'mb-2']"
+										>
+											<b-button
+												block
+												@click="openModalDay(dateType)"
+												:class="'button-day_' + dateType.type"
+											>
+												{{ dateType.label }}
+											</b-button>
+										</div>
+										<div class="mt-auto">
+											<b-button
+												block
+												@click="openFiringModal({
+													label: 'Уволить без отработки',
+													color: '#d35dd3',
+													type: 4
+												}, 1)"
+												:class="'button-day_7'"
+											>
+												Уволить без отработки
+											</b-button>
+										</div>
+										<div class="mt-2">
+											<b-button
+												block
+												@click="openFiringModal({
+													label: 'Уволить с отработкой',
+													color: '#c8a2c8',
+													type: 4
+												}, 2)"
+												:class="'button-day_7'"
+											>
+												Уволить с отработкой
+											</b-button>
+										</div>
+									</div>
+								</template>
+
+								<template v-else>
+									<div class="temari">
+										<button
+											class="btn btn-warning btn-block"
+											@click="openModalAbsence({type: 2, label: 'Отсутствовал на стажировке'})"
+										>
+											Отсутствовал на стажировке
+										</button>
+										<button
+											class="btn btn-primary btn-block"
+											@click="openModalApply({type: 8, label:'Принят на работу' })"
+											v-if="sidebarContent.data.item.requested == null"
+										>
+											Принять на работу
+										</button>
+										<button
+											class="btn btn-info btn-block"
+											@click="setDayWithoutComment(7)"
+										>
+											Подключился позже
+										</button>
+
+										<div
+											class="mt-3"
+											style="color:green;text-align:center"
+										>
+											{{ apllyPersonResponse }}
+										</div>
+
+										<div
+											class="mt-3"
+											style="color:green;text-align:center"
+											v-if="sidebarContent.data.item.requested !== null"
+										>
+											Заявка на принятие на работу была подана в {{ sidebarContent.data.item.requested }}
+										</div>
+
+										<button
+											class="btn btn-danger btn-block mt-auto"
+											@click="openFiringModal({
+												label: 'Уволить',
+												color: '#c8a2c8',
+												type: 4
+											}, 0)"
+										>
+											Уволить
+										</button>
+									</div>
+								</template>
+							</b-tab>
+							<b-tab
+								title="⚠️Штрафы"
+								v-if="!sidebarContent.data.item.is_trainee"
+							>
+								<b-form-group
+									label="Система депремирования"
+									class="fines-modal"
+								>
+									<b-form-checkbox-group
+										v-model="sidebarContent.fines"
+										name="flavour-2a"
+										stacked
+									>
+										<b-form-checkbox
+											:value="fine.value"
+											:key="fine.value"
+											v-for="fine in fines"
+										>
+											<span v-html="fine.text" />
+										</b-form-checkbox>
+									</b-form-checkbox-group>
+								</b-form-group>
+								<b-button
+									variant="primary"
+									@click="openModalFine"
+								>
+									Сохранить
+								</b-button>
+							</b-tab>
+						</template>
+					</b-tabs>
+				</div>
+			</div>
+			<div
+				class="table-report-backdrop"
+				@click.self="openSidebar = false"
+			/>
+		</aside>
+
 		<Sidebar
 			:title="sidebarTitle"
 			:open="openSidebar"
 			@close="openSidebar=false"
-			v-if="openSidebar"
+			v-if="false"
 			width="350px"
 		>
 			<b-tabs
@@ -1504,6 +1692,76 @@ export default {
 </script>
 
 <style lang="scss">
+
+
+	.table-report-sidebar{
+		position: fixed;
+		top: 0;
+		right: 6rem;
+		z-index: 100;
+		width: 100%;
+		height: 100%;
+		.table-report-backdrop{
+			position: absolute;
+			top: 0;
+			left: 0;
+			z-index: 10;
+			width: 100%;
+			height: 100%;
+			background-color: #333;
+			opacity: 0.5;
+		}
+		.table-report-content{
+			position: absolute;
+			top: 0;
+			right: 0;
+			width: 400px;
+			height: 100vh;
+			border-radius: 20px 0 0 20px;
+			z-index: 15;
+			background-color: #fff;
+			.table-report-header{
+				background: #ECF0F9;
+				padding: 3rem;
+				display: flex;
+				align-items: center;
+				.table-report-title{
+					font-size: 16px;
+					font-weight: 600;
+					line-height: 1;
+				}
+				.table-report-close{
+					width: 35px;
+					height: 35px;
+					cursor: pointer;
+					margin-right: 15px;
+				}
+			}
+			.table-report-body{
+				.nav-tabs{
+					.nav-item{
+						.nav-link{
+							color: #8D8D8D;
+							font-size: 1.7rem;
+							font-weight: 600;
+							transition: color 0.3s;
+							padding-top: 1.5rem;
+							cursor: pointer;
+							margin-right: 0;
+							border-bottom: none;
+							&.active{
+								border-top: 4px solid #ED2353;
+								color: #ED2353;
+							}
+						}
+					}
+				}
+				.tab-content{
+					padding: 0 20px;
+				}
+			}
+		}
+	}
 	.hovered-text {
 		margin-top: 15px;
 		color: #62788B;
@@ -1618,7 +1876,10 @@ export default {
 
 	.fines-modal {
 		overflow-y: auto;
-		max-height: 500px;
+		max-height: calc(100vh - 225px);
+		.custom-checkbox{
+			margin-bottom: 10px;
+		}
 	}
 
 
@@ -1629,6 +1890,61 @@ export default {
 	.table-day-1 {
 		color: rgb(0, 0, 0);
 		background: #fef1cb !important;
+	}
+
+	.temari{
+		.btn {
+		}
+		.button-day{
+			&_0{
+				border: 1px solid #999;
+				color: #333;
+				background-color: #fff;
+				&:hover{
+					background-color: #d8d8d8;
+				}
+			}
+			&_1{
+				border: 1px solid #958d73;
+				background-color: #e5dab6;
+				color: #333;
+				&:hover{
+					background-color: #c7bd9e;
+				}
+			}
+			&_3{
+				border: 1px solid #4489c9;
+				background-color: #4c9ee5;
+				color: #fff;
+				&:hover{
+					background-color: #4489c9;
+				}
+			}
+			&_5{
+				border: 1px solid #e6983f;
+				background-color: #faa544;
+				color: #fff;
+				&:hover{
+					background-color: #e6983f;
+				}
+			}
+			&_6{
+				border: 1px solid #98116c;
+				background-color: #bc1585;
+				color: #fff;
+				&:hover{
+					background-color: #98116c;
+				}
+			}
+			&_7{
+				border: 1px solid #bf2216;
+				background-color: #df271a;
+				color: #fff;
+				&:hover{
+					background-color: #bf2216;
+				}
+			}
+		}
 	}
 
 
@@ -1650,7 +1966,7 @@ export default {
 	}
 
 	.temari {
-		height: calc(100vh - 155px);
+		height: calc(100vh - 180px);
 		display: flex;
 		flex-direction: column;
 	}

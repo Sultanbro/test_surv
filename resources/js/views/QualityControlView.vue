@@ -36,20 +36,14 @@ export default {
 <template>
 	<DefaultLayout>
 		<div class="old__content">
-			<div class="row">
-				<div class="col-md-12 mt-4 mb-3">
-					<ReportsNav :active-tab="activeTab" />
-				</div>
-				<div class="col-md-12">
-					<TableQuality
-						v-show="groups"
-						:groups="groups"
-						:active_group="active_group"
-						:check="check"
-						:user="user"
-					/>
-				</div>
-			</div>
+			<ReportsNav :active-tab="activeTab" />
+			<TableQuality
+				v-show="groups"
+				:groups="groups"
+				:active_group="active_group"
+				:check="check"
+				:user="user"
+			/>
 		</div>
 	</DefaultLayout>
 </template>

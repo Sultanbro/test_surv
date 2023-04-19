@@ -13,7 +13,10 @@
 				:key="el.id"
 				:id="el.id"
 				class="chapter"
-				:class="{'opened':opened}"
+				:class="{
+					'opened': opened,
+					'active': active == el.id,
+				}"
 			>
 				<div class="d-flex">
 					<div class="handles">
@@ -61,6 +64,7 @@
 					@showPage="showPage"
 					@addPage="addPage"
 					:parent_id="el.id"
+					:active="active"
 					:auth_user_id="auth_user_id"
 					:opened="el.opened"
 					:mode="mode"
@@ -89,7 +93,10 @@ const NestedDraggable = {
 		},
 		mode: {
 			type: String
-		}
+		},
+		active: {
+			default: 0
+		},
 	},
 	data() {
 		return {

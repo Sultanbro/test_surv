@@ -56,7 +56,7 @@ export default {
 }
 </script>
 <template>
-	<nav>
+	<nav class="my-4">
 		<ul
 			id="nav-tab"
 			class="nav nav-tabs"

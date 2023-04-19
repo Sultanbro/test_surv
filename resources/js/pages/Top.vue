@@ -1,6 +1,6 @@
 <template>
 	<div v-if="data">
-		<div class="row mr-4">
+		<div class="row">
 			<div class="col-3">
 				<select
 					class="form-control"

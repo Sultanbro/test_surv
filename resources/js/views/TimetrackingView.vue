@@ -40,20 +40,16 @@ export default {
 <template>
 	<DefaultLayout>
 		<div class="old__content">
-			<div class="row">
-				<div class="col-md-12 mt-4 mb-3">
-					<ReportsNav :active-tab="activeTab" />
-					<TableReport
-						v-show="activeuserid"
-						:groups="groups"
-						:fines="fines"
-						:years="years"
-						:can-edit="can_edit"
-						:activeuserid="activeuserid"
-						:activeuserpos="activeuserpos"
-					/>
-				</div>
-			</div>
+			<ReportsNav :active-tab="activeTab" />
+			<TableReport
+				v-show="activeuserid"
+				:groups="groups"
+				:fines="fines"
+				:years="years"
+				:can-edit="can_edit"
+				:activeuserid="activeuserid"
+				:activeuserpos="activeuserpos"
+			/>
 		</div>
 	</DefaultLayout>
 </template>

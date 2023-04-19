@@ -1,9 +1,9 @@
 <template>
 	<div
 		v-if="groups"
-		class="mt-2 analytics-page px-3"
+		class="analytics-page"
 	>
-		<div class="row mb-3 ">
+		<div class="row mb-4">
 			<div class="col-3">
 				<select
 					class="form-control"
@@ -99,7 +99,7 @@
 					:key="askey"
 				>
 					<div v-if="dataLoaded">
-						<div class="wrap">
+						<div class="wrap mb-4">
 							<div>
 								<TopGauges
 									:utility_items="data.utility"
