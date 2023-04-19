@@ -5,11 +5,11 @@
 				<p class="news-birthday-header__text">
 					Дни рождения
 				</p>
-				<img
-					class="news-birthday-header__menu news-icon"
-					src="/icon/news/post-actions/menu.svg"
-					alt="img"
-				>
+				<!--				<img-->
+				<!--					class="news-birthday-header__menu news-icon"-->
+				<!--					src="/icon/news/post-actions/menu.svg"-->
+				<!--					alt="img"-->
+				<!--				>-->
 			</div>
 
 

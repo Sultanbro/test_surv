@@ -10,12 +10,21 @@
 				id="left-panel"
 				class="lp"
 			>
-				<div
-					class="btn btn-search mb-3"
-					@click="showSearch = true"
-				>
+				<div class="form-search-kb">
 					<i class="fa fa-search" />
-					<span>Искать в базе...</span>
+					<input
+						type="text"
+						v-model="search.input"
+						@input="searchInput"
+						@blur="searchCheck"
+						placeholder="Искать в базе..."
+						class="form-control"
+					>
+					<i
+						class="search-clear"
+						v-if="search.input.length"
+						@click="clearSearch"
+					>x</i>
 				</div>
 
 				<div
@@ -41,6 +50,44 @@
 					v-if="!showArchive"
 					:class="{ 'expand' : mode == 'read'}"
 				>
+					<div class="search-content">
+						<template v-if="search.items.length">
+							<div
+								v-for="item in search.items"
+								:key="item.id"
+								class="search-item"
+								@click="selectSection(item.book, item.id)"
+							>
+								<p
+									v-if="item.book"
+									class="search-item-book"
+								>
+									{{ item.book.title }}
+								</p>
+								<p class="search-item-title">
+									{{ item.title }}
+								</p>
+								<div
+									class="search-item-text"
+									v-html="item.text"
+								/>
+							</div>
+						</template>
+
+						<div
+							v-else-if="search.input.length <= 2 && search.input.length !== 0"
+							class="text-muted"
+						>
+							Введите минимум 3 символа
+						</div>
+
+						<div
+							v-else-if="search.input.length > 2"
+							class="text-muted"
+						>
+							Ничего не найдено
+						</div>
+					</div>
 					<Draggable
 						class="dragArea ml-0"
 						tag="div"
@@ -50,6 +97,7 @@
 						:group="{ name: 'g1' }"
 						@start="startChangeOrder"
 						@end="saveOrder"
+						v-if="!search.items.length && !search.input.length"
 					>
 						<template v-for="(book, b_index) in books">
 							<div
@@ -226,44 +274,47 @@
 
 
 		<!-- Настройки раздела -->
-		<Sidebar
+		<SimpleSidebar
 			title="Настройки базы знаний"
 			:open="showBookSettings"
 			@close="showBookSettings = false"
-			width="30%"
+			width="400px"
 		>
-			<label class="d-flex">
-				<input
-					type="checkbox"
-					v-model="send_notification_after_edit"
-					class="form- mb-2 mr-2"
+			<template #body>
+				<label class="d-flex mb-2">
+					<input
+						type="checkbox"
+						v-model="send_notification_after_edit"
+						class="form- mb-2 mr-2"
+					>
+					<p>Отправлять уведомления сотрудникам об изменениях в базе знаний</p>
+				</label>
+				<label class="d-flex mb-2">
+					<input
+						type="checkbox"
+						v-model="show_page_from_kb_everyday"
+						class="form- mb-2 mr-2"
+					>
+					<p>Показывать одну из страниц базы знаний каждый день, после нажатия на кнопку "начать рабочий день"</p>
+				</label>
+				<label class="d-flex mb-2">
+					<input
+						type="checkbox"
+						v-model="allow_save_kb_without_test"
+						class="form- mb-2 mr-2"
+					>
+					<p>Разрешить вносить изменения без тестовых вопросов в разделах базы знаний</p>
+				</label>
+			</template>
+			<template #footer>
+				<button
+					class="btn btn-primary rounded m-auto"
+					@click="save_settings()"
 				>
-				<p>Отправлять уведомления сотрудникам об изменениях в базе знаний</p>
-			</label>
-			<label class="d-flex">
-				<input
-					type="checkbox"
-					v-model="show_page_from_kb_everyday"
-					class="form- mb-2 mr-2"
-				>
-				<p>Показывать одну из страниц базы знаний каждый день, после нажатия на кнопку "начать рабочий день"</p>
-			</label>
-			<label class="d-flex">
-				<input
-					type="checkbox"
-					v-model="allow_save_kb_without_test"
-					class="form- mb-2 mr-2"
-				>
-				<p>Разрешить вносить изменения без тестовых вопросов в разделах базы знаний</p>
-			</label>
-
-			<button
-				class="btn btn-primary rounded m-auto"
-				@click="save_settings()"
-			>
-				<span>Сохранить</span>
-			</button>
-		</Sidebar>
+					Сохранить
+				</button>
+			</template>
+		</SimpleSidebar>
 
 		<!-- Редактирование раздела  -->
 		<b-modal
@@ -307,62 +358,6 @@
 				</button>
 			</div>
 		</b-modal>
-
-		<!-- Поиск -->
-		<b-modal
-			v-model="showSearch"
-			title="Поиск"
-			size="md"
-			dialog-class="modal-search"
-			hide-header
-			hide-footer
-		>
-			<div>
-				<div class="d-flex relative  mb-2">
-					<input
-						type="text"
-						v-model="search.input"
-						@keyup.enter="searchInput"
-						placeholder="Поиск по всей базе..."
-						class="form-control"
-					>
-					<button
-						class="search-btn btn"
-						v-if="search.input != ''"
-						@click="searchInput"
-					>
-						Искать
-					</button>
-				</div>
-
-				<div class="s-content">
-					<div
-						class="sss"
-						v-if="search.input.length >=3 && search.items.length == 0"
-					>
-						<p>По запросу "{{ search.input }}" ничего не найдено.</p>
-					</div>
-					<div
-						class="item"
-						v-for="item in search.items"
-						:key="item.id"
-						@click="selectSection(item.book, item.id)"
-					>
-						<p
-							v-if="item.book != null"
-							class="book"
-						>
-							{{ item.book.title }}
-						</p>
-						<p>{{ item.title }}</p>
-						<div
-							class="text"
-							v-html="item.text"
-						/>
-					</div>
-				</div>
-			</div>
-		</b-modal>
 	</div>
 </template>
 
@@ -370,7 +365,7 @@
 import Draggable from 'vuedraggable'
 import Glossary from '../components/Glossary.vue'
 const Booklist = () => import(/* webpackChunkName: "Booklist" */ '@/pages/booklist') // база знаний разде
-import Sidebar from '@/components/ui/Sidebar' // сайдбар table
+import SimpleSidebar from '@/components/ui/SimpleSidebar' // сайдбар table
 import SuperSelect from '@/components/SuperSelect' // with User ProfileGroup and Position
 
 export default {
@@ -379,7 +374,7 @@ export default {
 		Draggable,
 		Glossary,
 		Booklist,
-		Sidebar,
+		SimpleSidebar,
 		SuperSelect,
 	},
 	props: {
@@ -434,6 +429,17 @@ export default {
 	},
 
 	methods: {
+		searchCheck() {
+			if (this.search.input.length === 0) {
+				this.clearSearch();
+			}
+		},
+		clearSearch() {
+			this.search = {
+				input: '',
+				items: []
+			}
+		},
 		init(){
 			this.fetchData();
 
@@ -688,6 +694,7 @@ export default {
 
 		toggleMode() {
 			this.mode = (this.mode == 'read') ? 'edit' : 'read';
+			this.clearSearch();
 		},
 
 		startChangeOrder(event) {
@@ -702,4 +709,57 @@ export default {
 };
 </script>
 
-<style lang="scss" scoped></style>
+<style lang="scss">
+	.form-search-kb{
+		position: relative;
+		margin-bottom: 10px;
+		.fa-search{
+			position: absolute;
+			top: 10px;
+			left: 10px;
+			color: #bdcadf;
+		}
+		input{
+			padding: 0 35px !important;
+		}
+		.search-clear{
+			position: absolute;
+			top: 8px;
+			right: 12px;
+			font-style: normal;
+			font-size: 16px;
+			line-height: 1;
+			color: red;
+			cursor: pointer;
+		}
+	}
+	.search-content{
+		.search-item{
+			margin-bottom: 10px;
+			border-bottom: 1px solid #ddd;
+			padding: 3px 5px 10px 5px;
+			font-size: 14px;
+			cursor: pointer;
+			&:hover{
+				background-color: #f2f2f2;
+			}
+			&-book{
+				color: #1272aa;
+			}
+			&-title{
+				font-size: 16px;
+				color: #666;
+				font-weight: 700;
+			}
+			&-text{
+				font-size: 12px;
+				color: #999;
+				margin-top: 5px;
+			}
+			b{
+				color: #333;
+				background-color: yellow;
+			}
+		}
+	}
+</style>

@@ -405,28 +405,32 @@
 		</Sidebar>
 
 		<!-- Настройки раздела -->
-		<Sidebar
+		<SimpleSidebar
 			title="Настройки книг"
 			:open="showSettings"
 			@close="showSettings = false"
-			width="30%"
+			width="400px"
 		>
-			<label class="d-flex">
-				<input
-					type="checkbox"
-					v-model="allow_save_book_without_test"
-					class="form- mb-2 mr-2"
-				>
-				<p>Разрешить сохранять книги без тестовых вопросов</p>
-			</label>
+			<template #body>
+				<label class="d-flex">
+					<input
+						type="checkbox"
+						v-model="allow_save_book_without_test"
+						class="form- mb-2 mr-2"
+					>
+					<p>Разрешить сохранять книги без тестовых вопросов</p>
+				</label>
+			</template>
 
-			<button
-				class="btn btn-primary rounded m-auto"
-				@click="save_settings()"
-			>
-				<span>Сохранить</span>
-			</button>
-		</Sidebar>
+			<template #footer>
+				<button
+					class="btn btn-primary rounded m-auto"
+					@click="save_settings()"
+				>
+					<span>Сохранить</span>
+				</button>
+			</template>
+		</SimpleSidebar>
 
 
 
@@ -459,7 +463,7 @@ import Sidebar from '@/components/ui/Sidebar' // сайдбар table
 const UpbooksRead = () => import(/* webpackChunkName: "UpbooksRead" */ '@/pages/UpbooksRead') // книга чтение
 import UploadFiles from '@/components/UploadFiles' // загрузка файлов
 import BookSegment from '@/components/BookSegment' // загрузка файлов
-
+import SimpleSidebar from '@/components/ui/SimpleSidebar'
 export default {
 	name: 'PageUpbooks',
 	components: {
@@ -467,6 +471,7 @@ export default {
 		UpbooksRead,
 		UploadFiles,
 		BookSegment,
+		SimpleSidebar
 	},
 	props: {
 		token: {

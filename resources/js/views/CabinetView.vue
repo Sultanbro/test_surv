@@ -25,7 +25,7 @@ export default {
 </script>
 
 <template>
-	<DefaultLayout>
+	<DefaultLayout class="no-padding">
 		<div class="old__content">
 			<Cabinet
 				v-show="auth_role"

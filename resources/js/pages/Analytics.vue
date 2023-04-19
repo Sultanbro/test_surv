@@ -1,9 +1,9 @@
 <template>
 	<div
 		v-if="groups"
-		class="mt-2 px-3 analytics-page"
+		class="analytics-page"
 	>
-		<div class="row mb-3 ">
+		<div class="row mb-4">
 			<div class="col-3">
 				<select
 					class="form-control"

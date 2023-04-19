@@ -1,7 +1,7 @@
 <template>
 	<div
 		v-if="groups"
-		class="mt-2 px-3 quality quality-page"
+		class="quality quality-page"
 	>
 		<div class="row">
 			<div
@@ -82,7 +82,7 @@
 		<div v-if="this.hasPermission">
 			<b-tabs
 				type="card"
-				class="mt-5"
+				class="mt-4"
 				:default-active-key="3"
 			>
 				<b-tab
@@ -93,7 +93,7 @@
 					<b-tabs
 						type="card"
 						v-if="dataLoaded"
-						class="mt-5 overflow-hidden"
+						class="mt-4 overflow-hidden"
 					>
 						<b-tab
 							title="Неделя"
@@ -596,7 +596,7 @@
 				>
 					<b-tabs
 						type="card"
-						class="mt-5"
+						class="mt-4"
 					>
 						<b-tab
 							title="Неделя"

@@ -4,12 +4,23 @@
 		class="d-flex"
 	>
 		<!-- left sidebar -->
-		<div class="lp">
+		<div class="lp cabinet-lp">
 			<h1 class="page-title">
 				Настройка кабинета
 			</h1>
 			<div class="settingCabinet">
 				<ul class="p-0">
+					<li class="position-relative lp-item">
+						<a
+							class="lp-link"
+							@click="page = 'profile'"
+							:class="{ active: page == 'profile' }"
+							tabindex="0"
+						>
+							<i class="fa fa-user" />
+							Настройка собственного профиля
+						</a>
+					</li>
 					<li
 						v-if="user.is_admin === 1"
 						class="lp-item"
@@ -22,18 +33,6 @@
 						>
 							<i class="fa fa-key" />
 							Административные настройки
-						</a>
-					</li>
-
-					<li class="position-relative lp-item">
-						<a
-							class="lp-link"
-							@click="page = 'profile'"
-							:class="{ active: page == 'profile' }"
-							tabindex="0"
-						>
-							<i class="fa fa-user" />
-							Настройка собственного профиля
 						</a>
 					</li>
 				</ul>
@@ -56,8 +55,8 @@
 
 			<div class="mt-3">
 				<div class="p-3">
-					<div class="form-group">
-						Субдомен
+					<div class="form-group d-flex aic">
+						<label class="mr-3 mb-0 w-200px">Субдомен</label>
 						<input
 							class="form-control mt-1 input-surv"
 							id="view_own_orders"
@@ -69,10 +68,10 @@
 
 					<!-- Статус: скрыто. Компонент: pages/Cabinet. Дата скрытия: 21.02.2023 15:30 -->
 					<div
-						class="form-group"
+						class="form-group d-flex aic"
 						v-if="false"
 					>
-						Часовой пояс
+						<label class="mb-0 mr-3 w-200px">Часовой пояс</label>
 						<input
 							class="form-control mt-1 input-surv"
 							id="view_own_orders"
@@ -80,9 +79,8 @@
 						>
 					</div>
 
-					<div class="form-group">
-						Администраторы
-
+					<div class="form-group d-flex aic">
+						<label class="mb-0 mr-3 w-200px">Администраторы</label>
 						<Multiselect
 							v-model="admins"
 							:options="users"
@@ -100,64 +98,69 @@
 					</div>
 
 					<div
-						class="row video-add-content"
+						class="d-flex aic video-add-content"
 						v-if="auth_role.is_admin === 1"
 					>
-						<div class="col-md-6">
-							<div class="row">
-								<div class="col-12 col-md-8">
-									<div class="form-group">
-										Ссылка на youtube
-										<img
-											src="/images/dist/profit-info.svg"
-											class="img-info"
-											alt="info icon"
-											id="info1"
-										>
-										<b-popover
-											target="info1"
-											triggers="hover"
-											placement="right"
-										>
-											<p style="font-size: 15px">
-												Вставьте ссылку на видео с YouTube. Каждому новому зарегистрированному пользователю будет показываться вступительное видео, которое вы загрузите.
-											</p>
-										</b-popover>
-										<input
-											class="form-control videoDays"
-											id="videoUrl"
-											type="text"
-											v-model="videoUrl"
-										>
-									</div>
-								</div>
-								<div class="col-12 col-md-4">
-									<div class="form-group">
-										Дней
-										<img
-											src="/images/dist/profit-info.svg"
-											class="img-info"
-											alt="info icon"
-											id="info2"
-										>
-										<b-popover
-											target="info2"
-											triggers="hover"
-											placement="right"
-										>
-											<p style="font-size: 15px">
-												Сколько дней с даты регистрации пользователя отображать выбранное Вами видео в профиле
-											</p>
-										</b-popover>
-										<input
-											class="form-control"
-											id="videoTime"
-											type="number"
-											v-model="videoDays"
-										>
-									</div>
-								</div>
+						<label class="w-200px mb-0 mr-3">Вводное видео</label>
+						<div class="d-flex aic w-100">
+							<div class="form-group w-100">
+								<img
+									src="/images/dist/profit-info.svg"
+									class="img-info"
+									alt="info icon"
+									id="info1"
+								>
+								<b-popover
+									target="info1"
+									triggers="hover"
+									placement="right"
+								>
+									<p style="font-size: 15px">
+										Вставьте ссылку на видео с YouTube. Каждому новому зарегистрированному пользователю будет показываться вступительное видео, которое вы загрузите.
+									</p>
+								</b-popover>
+								<input
+									class="form-control videoDays"
+									id="videoUrl"
+									type="text"
+									placeholder="Вставьте ссылку на youtube"
+									v-model="videoUrl"
+								>
 							</div>
+							<div class="form-group w-25 ml-4">
+								<img
+									src="/images/dist/profit-info.svg"
+									class="img-info"
+									alt="info icon"
+									id="info2"
+								>
+								<b-popover
+									target="info2"
+									triggers="hover"
+									placement="right"
+								>
+									<p style="font-size: 15px">
+										Сколько дней с даты регистрации пользователя отображать выбранное Вами видео в профиле
+									</p>
+								</b-popover>
+								<input
+									class="form-control"
+									id="videoTime"
+									type="number"
+									v-model="videoDays"
+								>
+							</div>
+						</div>
+					</div>
+					<hr>
+					<div class="row">
+						<div class="col-12 col-md-6">
+							<button
+								class="btn btn-success"
+								@click="save"
+							>
+								Сохранить
+							</button>
 						</div>
 						<div
 							class="col-12 col-md-6"
@@ -172,26 +175,6 @@
 								/>
 							</div>
 						</div>
-						<div
-							class="col-12 col-md-6"
-							v-else
-						>
-							<div class="no-youtube">
-								<img
-									src="https://www.rrcampus.com/images/no-video.jpg"
-									alt=""
-								>
-							</div>
-						</div>
-					</div>
-					<hr>
-					<div class="mt-3">
-						<button
-							class="btn btn-success"
-							@click="save"
-						>
-							Сохранить
-						</button>
 					</div>
 				</div>
 			</div>
@@ -939,8 +922,16 @@ export default {
 
 <style lang="scss">
 	.video-add-content{
+		.form-group{
+			position: relative;
+		}
 		.img-info{
-			margin-top: -5px;
+			position: absolute;
+			top: -9px;
+			right: -8px;
+			background: #fff;
+			border-radius: 50%;
+			z-index: 3;
 		}
 		input::-webkit-outer-spin-button,
 		input::-webkit-inner-spin-button {
@@ -1110,20 +1101,22 @@ a.lp-link {
 	font-weight: bold;
 	font-size: 1.4rem;
 	cursor: pointer;
-	color: darken(#2459a4, 5%);
+	color: #333;
 
 	&.active {
 		cursor: default;
 		text-decoration: none;
-		color: #333;
+		color: darken(#2459a4, 5%);
+		i{
+			color: darken(#2459a4, 5%);
+		}
 		&:hover{
-			color: #333;
 			text-decoration: none;
 		}
+
 	}
 
 	&:hover{
-		color: #2459a4;
 		text-decoration: underline dotted;
 	}
 }
@@ -1157,4 +1150,7 @@ a.lp-link {
 	width: 100%;
 	max-width: 30rem;
 }
+	.cabinet-lp{
+		padding: 4px 10px 10px 10px;
+	}
 </style>

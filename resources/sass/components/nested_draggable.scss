@@ -223,7 +223,8 @@ ul {
     background-color: #efefef;
   }
 }
-li.chapter:hover>div p {
+
+li.chapter:hover > div p, li.chapter.active > div p {
   color: rgb(10, 161, 10);
 }
 
