@@ -75,7 +75,10 @@ class CheckLate extends Command
                 $query->where('is_trainee', 0);
             })
             ->orderBy('last_name', 'asc')
-            ->select(['users.id','users.last_name', 'users.name', 'users.working_time_id', 'users.work_start', 'users.work_chart_id'])
+            ->select(['users.id','users.last_name', 'users.name', 'users.working_time_id', 'users.work_start',
+                'users.work_chart_id',
+                'users.user_type'
+            ])
             ->get();
 
      
@@ -93,6 +96,7 @@ class CheckLate extends Command
          * Отнимаем 6 часов так как время сервера GTM +0.
          */
         $workStart = Carbon::createFromTimeString($this->user->work_starts_at())->subHours(6)->format('H:i:s'); // Время начала смены для юзера
+
         dump($this->user->last_name . ' ' . $this->user->name . ' ' . $workStart);
 
         $dateTimeStart = Timetracking::where('user_id', $this->user->id) // Время начала работы, первый enter

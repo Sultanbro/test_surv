@@ -4,6 +4,7 @@ namespace App\Service\Timetrack;
 
 use App\Timetracking;
 use App\Models\Anviz\Time as AnvizTime;
+use Carbon\Carbon;
 
 class AnvizService
 {   
@@ -45,29 +46,27 @@ class AnvizService
                                         ->sortByDesc('CheckTime')
                                         ->first()
                                         ->CheckTime;
-            /**
-             * If user not has Timetracking record for date
-             */
-            if($user_records->isEmpty()) {
-
-                Timetracking::create([
-                    'enter'   => $last_anviz_date,
-                    'user_id' => $user_id
-                ]);
-
-                continue;
-            }
 
             /**
              * If user already has Timetracking records for date
              */
             $exit_null = $user_records->where('exit', null)
-                                    ->sortByDesc('enter')
-                                    ->first();
+                ->sortByDesc('enter')
+                ->first();
 
             if($exit_null) {
                 $this->updateIfDiffMoreThan15Mins($last_anviz_date, $exit_null);
-            } 
+            }
+
+            /**
+             * If user not has Timetracking record for date
+             */
+            if($user_records->isEmpty()) {
+                Timetracking::create([
+                    'enter'   => Carbon::parse($last_anviz_date)->subHours(6),
+                    'user_id' => $user_id
+                ]);
+            }
 
         } 
     }
