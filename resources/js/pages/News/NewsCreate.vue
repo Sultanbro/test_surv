@@ -280,6 +280,11 @@
 <script>
 import ClassicEditor from '/ckeditor5-custom/build/ckeditor';
 import DropZone from '@/pages/News/DropZone'
+import {
+	mapState,
+	mapActions,
+} from 'pinia'
+import { useCompanyStore } from '@/stores/Company'
 
 function SimpleUploadAdapterPlugin(editor) {
 	editor.plugins.get('FileRepository').createUploadAdapter = (loader) => {
@@ -362,12 +367,6 @@ export default {
 	},
 	data() {
 		return {
-			accessDictionaries: {
-				positions: [],
-				profile_groups: [],
-				users: [],
-			},
-
 			csrf: document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
 
 			editor: ClassicEditor,
@@ -404,10 +403,14 @@ export default {
 			availableError: false,
 		}
 	},
+	computed: {
+		...mapState(useCompanyStore, { accessDictionaries: 'dictionaries' })
+	},
 	mounted() {
-		this.getAccessDictionaries();
+		this.fetchDictionaries();
 	},
 	methods: {
+		...mapActions(useCompanyStore, ['fetchDictionaries']),
 
 		toggleAvailableToEveryone(value) {
 			this.accessList = [];
@@ -681,20 +684,6 @@ export default {
 				});
 			this.isEdit = false;
 		},
-
-		async getAccessDictionaries() {
-			let loader = this.$loading.show();
-
-			await this.axios.get('/dictionaries')
-				.then(res => {
-					this.accessDictionaries = res.data.data;
-					loader.hide();
-				})
-				.catch(res => {
-					console.log(res)
-				});
-		}
-
 	}
 }
 </script>

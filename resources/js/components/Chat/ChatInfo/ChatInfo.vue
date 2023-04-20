@@ -1,6 +1,6 @@
 <template>
 	<div class="ChatInfo">
-		<ConversationHeaderMobile class="ChatInfo-header">
+		<ConversationHeaderMobile class="ChatInfo-header mb-4">
 			<template #left>
 				<div
 					class="ConversationHeaderMobile-icon ChatIcon-parent"
@@ -77,11 +77,13 @@
 					{{ chat.users.length }} {{ pluralForm(chat.users.length, ['участник', 'участника', 'участников']) }}
 				</div>
 				<div
-					v-if="!isEdit"
+					v-if="false"
 					class="ChatInfo-actions"
 				>
 					<div
 						class="ChatInfo-action ChatIcon-parent"
+						:class="{'ChatIcon-active': !chat.muted}"
+						:title="chat.muted ? 'Включить уведомления' : 'Выключить уведомления'"
 						@click="toggleNotifications"
 					>
 						<ChatIconBell />
@@ -89,12 +91,14 @@
 					<div
 						class="ChatInfo-action ChatIcon-parent"
 						:class="{'ChatIcon-active': chat.pinned}"
+						:title="chat.pinned ? 'Открепить' : 'Закрепить'"
 						@click="togglePinned"
 					>
 						<ChatIconGroupPin />
 					</div>
 					<div
 						class="ChatInfo-action ChatIcon-parent"
+						title="Архив сообщений"
 						@click="gotoSearch"
 					>
 						<ChatIconSearchMessages />
@@ -102,13 +106,6 @@
 				</div>
 			</template>
 		</ConversationHeaderMobile>
-
-		<!-- филтры -->
-		<ConversationSearchFilter
-			v-if="!isEdit"
-			v-model="searchFilesFilter"
-			class="ConversationSearchMobile-filters px-5"
-		/>
 
 		<!-- удаление пользователей -->
 		<div
@@ -131,6 +128,7 @@
 			/>
 			<ChatUserList
 				:users="editUsersList"
+				:owner="isOwner"
 				:actions="{
 					remove: {
 						icon: removeIcon,
@@ -146,26 +144,22 @@
 			v-else
 			class="ChatInfo-content px-5"
 		>
-			<template v-if="searchFilesFilter === 'users'">
-				<div
-					v-if="!chat.private"
-					class="ChatInfo-userAdd ChatIcon-parent"
-					@click="onUserAdd"
-				>
-					<div class="ChatInfo-userAdd-icon">
-						<ChatIconUserAdd />
-					</div>
-					<div class="ChatInfo-userAdd-text">
-						Добавить участника
-					</div>
+			<div
+				v-if="!chat.private"
+				class="ChatInfo-userAdd ChatIcon-parent"
+				@click="onUserAdd"
+			>
+				<div class="ChatInfo-userAdd-icon">
+					<ChatIconUserAdd />
 				</div>
-				<ChatUserList :users="chat.users" />
-			</template>
-			<template v-else>
-				<div class="text-center">
-					Функционал в разработке
+				<div class="ChatInfo-userAdd-text">
+					Добавить участника
 				</div>
-			</template>
+			</div>
+			<ChatUserList
+				:users="chat.users"
+				:owner="isOwner"
+			/>
 		</div>
 
 		<!-- Действия с чатом -->
@@ -180,6 +174,7 @@
 				Сохранить
 			</JobtronButton>
 			<div
+				v-if="isAdmin"
 				class="ChatInfo-delete ChatIcon-active_red"
 				@click="updateChatTitle"
 			>
@@ -193,7 +188,7 @@
 <script>
 import {mapActions, mapGetters} from 'vuex';
 import ConversationHeaderMobile from '../MessengerConversation/ConversationHeader/ConversationHeaderMobile'
-import ConversationSearchFilter from '../MessengerConversation/ConversationSearch/ConversationSearchFilter'
+// import ConversationSearchFilter from '../MessengerConversation/ConversationSearch/ConversationSearchFilter'
 import JobtronAvatar from '@ui/Avatar'
 import JobtronButton from '@ui/Button'
 import JobtronSearch from '@ui/Search'
@@ -216,7 +211,7 @@ export default {
 	name: 'ChatInfo',
 	components: {
 		ConversationHeaderMobile,
-		ConversationSearchFilter,
+		// ConversationSearchFilter,
 		ChatIconSearchClose,
 		ChatIconBack,
 		ChatIconEdit,
@@ -257,6 +252,9 @@ export default {
 		isAdmin() {
 			return this.chat.users.find(user => user.id === this.user.id).pivot.is_admin;
 		},
+		isOwner() {
+			return this.chat.owner_id === this.user.id
+		}
 	},
 	watch: {
 		chat(){
@@ -319,7 +317,8 @@ export default {
 
 	width: 414px;
 	max-width: 414px;
-	max-height: 720px;
+	height: 720px;
+	max-height: 90vh;
 
 	position: fixed;
 	z-index: 20;
@@ -383,7 +382,6 @@ export default {
 		align-items: center;
 		justify-content: space-between;
 
-		margin-top: 2rem;
 		margin-bottom: 1rem;
 
 		font-weight: 500;

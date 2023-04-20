@@ -5,6 +5,7 @@
 			:key="user.id"
 			:user="user"
 			:actions="actions"
+			:owner="owner"
 			class="ChatUserList-user"
 			@action="onAction"
 		/>
@@ -26,6 +27,10 @@ export default {
 		actions: {
 			type: Object,
 			default: () => ({})
+		},
+		owner: {
+			type: Boolean,
+			default: false
 		}
 	},
 	methods: {

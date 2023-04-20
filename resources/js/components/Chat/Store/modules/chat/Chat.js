@@ -66,6 +66,16 @@ export default {
 		setChatOnline(state, online) {
 			state.chat.isOnline = online;
 		},
+		setChatAdmin(state, userId) {
+			const user = state.chat.users.find(user => user.id === userId)
+			if(!user) return
+			user.pivot.is_admin = 1
+		},
+		unsetChatAdmin(state, userId) {
+			const user = state.chat.users.find(user => user.id === userId)
+			if(!user) return
+			user.pivot.is_admin = 0
+		},
 	},
 	getters: {
 		chats: state => state.chats,
@@ -171,11 +181,13 @@ export default {
 			chat.pinned = false;
 			commit('updateChat', chat);
 		},
-		async setChatAdmin(context, {chat, user}) {
+		async setChatAdmin({commit}, {chat, user}) {
 			API.setChatAdmin(chat.id, user.id);
+			commit('setChatAdmin', user.id)
 		},
-		async unsetChatAdmin(context, {chat, user}) {
+		async unsetChatAdmin({commit}, {chat, user}) {
 			API.unsetChatAdmin(chat.id, user.id);
+			commit('unsetChatAdmin', user.id)
 		}
 	}
 }

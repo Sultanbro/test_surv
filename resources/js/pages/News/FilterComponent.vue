@@ -194,6 +194,12 @@ import 'vue2-datepicker/index.css';
 
 import 'vue2-datepicker/locale/ru';
 
+import {
+	mapState,
+	mapActions,
+} from 'pinia'
+import { useCompanyStore } from '@/stores/Company'
+
 const {CalendarPanel} = DatePicker;
 
 function isValidDate(date) {
@@ -228,8 +234,6 @@ export default {
 				monthBeforeYear: false,
 			},
 
-			users: [],
-
 			showFilters: false,
 
 			query: '',
@@ -238,10 +242,13 @@ export default {
 			searchFavourite: false,
 		}
 	},
-
-	created() {
-
+	computed: {
+		...mapState(useCompanyStore, ['dictionaries']),
+		users(){
+			return this.dictionaries.users
+		}
 	},
+	created() {},
 	mounted() {
 		let dateInputs = document.getElementsByClassName('mx-input');
 
@@ -253,7 +260,7 @@ export default {
 		//     el.disabled = true;
 		// });
 
-		this.getUsers();
+		this.fetchDictionaries();
 	},
 	watch: {
 		// whenever question changes, this function will run
@@ -264,6 +271,7 @@ export default {
 		},
 	},
 	methods: {
+		...mapActions(useCompanyStore, ['fetchDictionaries']),
 		clearDate() {
 			this.dateType = '';
 		},

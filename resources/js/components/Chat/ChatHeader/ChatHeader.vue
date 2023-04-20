@@ -32,56 +32,16 @@ export default {
 			'newChatContacts',
 			'chat',
 			'user',
-			'users',
-			'profileGroups',
-			'positions',
 		]),
-		positionMap(){
-			return this.positions.reduce((result, pos) => {
-				result[pos.id] = pos.position
-				return result
-			}, {})
-		},
-		accessDictionaries(){
-			return {
-				users: this.users.map(user => ({
-					id: user.id,
-					name: `${user.name} ${user.last_name}`,
-					avatar: user.avatar,
-					position: this.positionMap[user.position_id]
-				})),
-				profile_groups: this.profileGroups,
-				positions: this.positions.map(pos => ({
-					id: pos.id,
-					name: pos.position
-				})),
-			}
-		}
 	},
-	mounted(){
-		this.loadCompany()
-	},
+	mounted(){},
 	methods: {
 		...mapActions([
 			'createChat',
 			'addMembers',
 			'removeMembers',
-			'loadCompany',
 			'toggleNewChatDialog',
 		]),
-
-		submitChat() {
-			this.selectedTargets.push(this.user)
-			const members = this.selectedTargets.filter(item => item.type === 1)
-			const title = members.slice(0, 3).map(item => item.name).join(', ');
-			this.createChat({
-				title: title,
-				description: '',
-				members: members.map(member => member.id)
-			});
-
-			this.showAddMemberModal = false
-		},
 	}
 }
 </script>
