@@ -109,6 +109,7 @@ class Messenger {
                 $chat->image       = $second_user->img_url;
                 $chat->isOnline    = MessengerUserOnline::query()->where( 'user_id', $second_user->id )->exists();
                 $chat->last_seen   = $second_user->last_seen;
+                $chat->is_mute     = $chat->mute()?->where('user_id', $second_user->id)->exists();
             } else {
                 return null;
             }
@@ -175,6 +176,46 @@ class Messenger {
         return MessengerChat::query()
                             ->where( 'id', $chatId )
                             ->first();
+    }
+
+    /**
+     * @param MessengerChat $chat
+     * @return JsonResponse|bool
+     */
+    public function muteChatForUser(
+        MessengerChat $chat
+    ): JsonResponse|bool
+    {
+        $user = Auth::user();
+
+        if ($chat->mute->contains($user->id))
+        {
+            return response()->json(['message' => 'You are already muted this chat'],400);
+        }
+
+        $chat->mute()->attach($user->id);
+
+        return true;
+    }
+
+    /**
+     * @param MessengerChat $chat
+     * @return JsonResponse|bool
+     */
+    public function unmuteChatForUser(
+        MessengerChat $chat
+    ): JsonResponse|bool
+    {
+        $user = Auth::user();
+
+        if (!$chat->mute->contains($user->id))
+        {
+            return response()->json(['message' => 'Before unmute chat you should mute!'],400);
+        }
+
+        $chat->mute()->detach($user->id);
+
+        return true;
     }
 
     /**
