@@ -26,7 +26,7 @@ class DeletePositionRequest extends FormRequest
     public function rules()
     {
         return [
-            'position' => 'required|string'
+            'position' => 'required|integer|exists:position,id'
         ];
     }
 

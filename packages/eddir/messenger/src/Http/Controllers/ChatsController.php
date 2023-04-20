@@ -81,13 +81,13 @@ class ChatsController extends Controller {
         }
         try {
             // positions
-            $company['positions'] = DB::table( 'position' )->select( 'id', 'position' )->get();
+            $company['positions'] = DB::table( 'position' )->select( 'id', 'position', 'deleted_at')->get();
         } catch ( \Exception $e ) {
             $company['positions'] = [];
             $company['errors'][]  = $e->getMessage();
         }
         try {
-            $company['profile_groups'] = DB::table( 'profile_groups' )->select( 'id', 'name' )->get();
+            $company['profile_groups'] = DB::table( 'profile_groups' )->select( 'id', 'name', 'active')->get();
         } catch ( \Exception $e ) {
             $company['profile_groups'] = [];
             $company['errors'][]       = $e->getMessage();

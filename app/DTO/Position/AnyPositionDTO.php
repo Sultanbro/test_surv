@@ -5,10 +5,10 @@ namespace App\DTO\Position;
 class AnyPositionDTO
 {
     /**
-     * @param string $position
+     * @param int $position
      */
     public function __construct(
-        public string $position
+        public int $position
     )
     {}
 }

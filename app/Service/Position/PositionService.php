@@ -48,16 +48,16 @@ final class PositionService
      *  "position": "name"
      * }
      *
-     * @param string $name
+     * @param int $id
      * @return bool
      * @throws Exception
      */
     public function delete(
-        string $name
+        int $id
     )
     {
         try {
-            return $this->positionRepository->deleteById($name);
+            return $this->positionRepository->deleteById($id);
         }catch (\Throwable $exception) {
             throw new Exception($exception->getMessage());
         }
