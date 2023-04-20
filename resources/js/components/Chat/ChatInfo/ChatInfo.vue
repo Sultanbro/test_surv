@@ -129,13 +129,8 @@
 			<ChatUserList
 				:users="editUsersList"
 				:owner="isOwner"
-				:actions="{
-					remove: {
-						icon: removeIcon,
-						className: 'ChatIcon-parent_red'
-					}
-				}"
-				@action="onDelete"
+				:actions="{ remove: true }"
+				@remove="onRemove"
 			/>
 		</div>
 
@@ -164,18 +159,12 @@
 
 		<!-- Действия с чатом -->
 		<div
-			v-if="isEdit"
+			v-if="isEdit && isOwner"
 			class="ChatInfo-footer px-5 py-4"
 		>
-			<JobtronButton
-				class="ChatInfo-save"
-				@click="updateChatTitle"
-			>
-				Сохранить
-			</JobtronButton>
 			<div
-				v-if="isAdmin"
-				class="ChatInfo-delete ChatIcon-active_red"
+				v-if="isOwner"
+				class="ChatInfo-delete ChatIcon-active_red ml-a"
 				@click="updateChatTitle"
 			>
 				Удалить чат
@@ -190,7 +179,6 @@ import {mapActions, mapGetters} from 'vuex';
 import ConversationHeaderMobile from '../MessengerConversation/ConversationHeader/ConversationHeaderMobile'
 // import ConversationSearchFilter from '../MessengerConversation/ConversationSearch/ConversationSearchFilter'
 import JobtronAvatar from '@ui/Avatar'
-import JobtronButton from '@ui/Button'
 import JobtronSearch from '@ui/Search'
 import InputFile from '@ui/InputFile'
 import ChatUserList from './ChatUserList'
@@ -222,7 +210,6 @@ export default {
 		ChatIconHistoryDelete,
 		IconChatNoImage,
 		JobtronAvatar,
-		JobtronButton,
 		JobtronSearch,
 		InputFile,
 		ChatUserList,
@@ -233,7 +220,7 @@ export default {
 			searchFilesFilter: 'users',
 			editSearch: '',
 			chatTitle: this.chat?.title || '',
-			removeIcon: ChatIconHistoryDelete,
+			editTitleAntispamTimer: null,
 		}
 	},
 	computed: {
@@ -259,6 +246,12 @@ export default {
 	watch: {
 		chat(){
 			this.chatTitle = this.chat?.title || ''
+		},
+		chatTitle(){
+			clearTimeout(this.editTitleAntispamTimer)
+			this.editTitleAntispamTimer = setTimeout(() => {
+				this.updateChatTitle()
+			}, 3000)
 		}
 	},
 	methods: {
@@ -293,9 +286,9 @@ export default {
 			this.chat.title = this.chatTitle
 			this.editChatTitle()
 		},
-		onDelete(payload){
+		onRemove(userId){
 			this.removeMembers([
-				{id: payload.userId}
+				{id: userId}
 			])
 		},
 		onUserAdd(){

@@ -6,6 +6,7 @@
 		@click="contextMenuVisible = false"
 		@scroll="onScroll"
 	>
+		<!-- Контекст -->
 		<ContextMenu
 			:show="contextMenuVisible"
 			:x="contextMenuX"
@@ -42,25 +43,30 @@
 				Закрепить
 			</div>
 			<div
-				v-if="contextMenuMessage && user && contextMenuMessage.sender_id === user.id"
 				class="ContextMenu-item"
 				@click="remove(contextMenuMessage)"
 			>
 				Удалить
 			</div>
 		</ContextMenu>
+
+		<!-- Сообщения -->
 		<div
 			id="messenger__messages"
 			class="messenger__messages-container"
 		>
 			<template v-for="(d, i) in messagesMap">
+				<!-- дата -->
 				<div
 					:key="i"
 					class="messenger__messages-date"
 				>
 					<span class="messenger__messages-date-block">{{ d[0].message.created_at | formatDate }}</span>
 				</div>
+
+				<!-- сообщения -->
 				<template v-for="{message, renderHelper}, index in d">
+					<!-- маккер непрочитанных -->
 					<div
 						v-if="renderHelper.isUnreadFirst"
 						:key="'unread' + message.id"
@@ -70,6 +76,8 @@
 							Непрочитанные сообщения
 						</div>
 					</div>
+
+					<!-- сообщение -->
 					<div
 						:key="message.id"
 						:id="'messenger_message_' + message.id"
@@ -90,9 +98,18 @@
 							@loadImage="index === d.length - 1 && scrollBottom"
 						/>
 					</div>
+
+					<!-- Кто посмотрел -->
+					<ConversationFeedReaders
+						v-if="message.last && message.readers && message.readers.length"
+						:key="'readers' + message.id"
+						:message="message"
+					/>
 				</template>
 			</template>
 		</div>
+
+		<!-- Loader -->
 		<div
 			class="messenger__loader"
 			v-show="this.isLoading"
@@ -109,6 +126,7 @@
 
 <script>
 import ConversationMessage from './ConversationMessage/ConversationMessage.vue';
+import ConversationFeedReaders from './ConversationFeedReaders'
 import {mapActions, mapGetters} from 'vuex';
 import ContextMenu from '../../ContextMenu/ContextMenu.vue';
 import ConversationServiceMessage from './ConversationServiceMessage/ConversationServiceMessage.vue';
@@ -118,8 +136,9 @@ export default {
 	name: 'ConversationFeed',
 	components: {
 		ConversationMessage,
+		ConversationFeedReaders,
 		ConversationServiceMessage,
-		ContextMenu
+		ContextMenu,
 	},
 	data() {
 		return {
@@ -222,7 +241,7 @@ export default {
 		},
 		react(emoji) {
 			this.reactMessage({message: this.contextMenuMessage, emoji_id: emoji});
-		}
+		},
 	},
 	filters: {
 		formatDate(date) {
@@ -237,7 +256,7 @@ export default {
 			}
 			// if older than yesterday show hour, minutes, day and month
 			return moment(date).format('DD MMMM');
-		}
+		},
 	}
 }
 </script>
@@ -252,12 +271,15 @@ export default {
 		align-self: stretch;
 		gap: 10px;
 
+		margin-bottom: 5px;
+
 		&:before,
 		&:after{
 			content: '';
 			flex: 1;
 			border: 0.5px solid rgba(170, 192, 222, 0.5);
 		}
+
 		&-text{
 			flex: 0 0 content;
 			padding: 10px 25px;

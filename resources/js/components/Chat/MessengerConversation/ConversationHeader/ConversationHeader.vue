@@ -73,7 +73,7 @@
 								@click="changeAdmin(member)"
 							>
 								<JobtronAvatar
-									:title="member.name"
+									:title="`${member.name} ${member.last_name}`"
 									:image="'/users_img/' + member.img_url"
 									:size="27"
 									:class="{
@@ -88,7 +88,25 @@
 								v-if="members.length > firstTenUsers.length"
 								class="messenger__chat-more__names"
 							>
-								еще {{ members.length - firstTenUsers.length }}+
+								еще {{ otherUsers.length }}+
+								<span class="messenger__chat-more__names-popup">
+									<span
+										v-for="user in otherUsers"
+										:key="user.id"
+										class="messenger__chat-more__names-popup-item"
+										@click="changeAdmin(user)"
+									>
+										<JobtronAvatar
+											:title="`${user.name} ${user.last_name}`"
+											:image="'/users_img/' + user.img_url"
+											:size="24"
+											:class="{
+												'messenger__chat-name_member-admin': chat.users.find(u => u.id === user.id).pivot.is_admin
+											}"
+										/>
+										{{ `${user.name} ${user.last_name}` }}
+									</span>
+								</span>
 							</span>
 						</div>
 					</div>
@@ -219,11 +237,16 @@ export default {
 			return [];
 		},
 		isAdmin() {
+			if(!this.chat?.users) return false
 			return this.chat.users.find(user => user.id === this.user.id).pivot.is_admin;
 		},
 		firstTenUsers(){
 			if(this.members.length < 11) return this.members
 			return this.members.slice(0, 10)
+		},
+		otherUsers(){
+			if(this.members.length < 11) return []
+			return this.members.slice(10)
 		}
 	},
 	watch: {
@@ -477,10 +500,10 @@ export default {
 	margin-left: 1px;
 }
 .messenger__chat-name_online {
-	background-color: #3361FF;
+	background-color: #27AE60;
 }
 .messenger__chat-name_offline {
-	background-color: #8BABD8;
+	background-color: #F8254B;
 }
 
 .messenger__chat-name_position {
@@ -508,6 +531,41 @@ export default {
 	line-height: 14px;
 	letter-spacing: -0.03em;
 	margin-top: -2px;
+	position: relative;
+}
+.messenger__chat-more__names-popup{
+	display: none;
+	min-width: 100px;
+	max-height: 30vh;
+	border-radius: 8px;
+	padding: 10px 0;
+
+	overflow-y: auto;
+
+	position: absolute;
+	z-index: 1000;
+	top: 100%;
+	right: 0;
+
+	background-color: #fff;
+	box-shadow: 0px 0px 3px rgba(0, 0, 0, 0.05), 0px 15px 60px -40px rgba(45, 50, 90, 0.2);
+}
+.messenger__chat-more__names:hover .messenger__chat-more__names-popup{
+	display: block;
+}
+
+.messenger__chat-more__names-popup-item{
+	display: flex;
+	align-items: center;
+	justify-content: flex-start;
+	gap: 10px;
+
+	width: 100%;
+	padding: 10px 20px;
+
+	text-decoration: none;
+	color: #0a0a0a;
+	white-space: nowrap;
 }
 
 .messenger__chat-name_member-admin {

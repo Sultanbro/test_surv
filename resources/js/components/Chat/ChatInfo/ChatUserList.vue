@@ -26,7 +26,7 @@ export default {
 		},
 		actions: {
 			type: Object,
-			default: () => ({})
+			default: null
 		},
 		owner: {
 			type: Boolean,
