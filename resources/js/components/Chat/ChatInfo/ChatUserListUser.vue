@@ -15,8 +15,17 @@
 
 		<!-- Name -->
 		<div class="ChatUserListUser-info">
-			<div class="ChatUserListUser-name">
+			<div
+				class="ChatUserListUser-name"
+				@contextmenu.prevent="setAdmin"
+			>
 				{{ title }}
+				<span
+					v-if="isAdmin"
+					class="ChatUserListUser-admin ml-4"
+				>
+					Администратор
+				</span>
 			</div>
 			<div
 				class="ChatUserListUser-status"
@@ -51,6 +60,7 @@
 </template>
 
 <script>
+import { mapGetters, mapActions } from 'vuex'
 import JobtronAvatar from '@ui/Avatar'
 
 export default {
@@ -66,9 +76,14 @@ export default {
 		actions: {
 			type: Object,
 			default: null
+		},
+		owner: {
+			type: Boolean,
+			default: false
 		}
 	},
 	computed: {
+		...mapGetters(['chat']),
 		status(){
 			if(!this.user) return ''
 			if(!this.user.last_seen) return 'Не посещал(а) приложение'
@@ -90,7 +105,48 @@ export default {
 		},
 		statusClass(){
 			return this.status === 'Онлайн' ? 'ChatUserListUser-status_online' : ''
-		}
+		},
+		isOwner(){
+			if(!this.user) return false
+			return this.chat.owner_id === this.user.id
+		},
+		isAdmin(){
+			if(!this.user) return false
+			return this.user.pivot.is_admin
+		},
+	},
+	methods: {
+		...mapActions([
+			'setChatAdmin',
+			'unsetChatAdmin',
+		]),
+		setAdmin(){
+			if(!this.owner) return
+			const payload = this.user.pivot.is_admin ? {
+				method: 'unsetChatAdmin',
+				title: 'Забрать права администратора?',
+				message: `Вы уверены, что хотите забрать права администратора у пользователя ${this.user.name}?`,
+				action: 'Забрать'
+			} : {
+				method: 'setChatAdmin',
+				title: 'Выдать права администратора?',
+				message: `Вы уверены, что хотите выдать права администратора пользователю ${this.user.name}?`,
+				action: 'Выдать'
+			}
+			this.$root.$emit('messengerConfirm', {
+				title: payload.title,
+				message: payload.message,
+				button: {
+					yes: payload.action,
+					no: 'Отмена'
+				},
+				callback: confirm => {
+					if (confirm) {
+						this[payload.method]({chat: this.chat, user: this.user});
+					}
+				}
+			})
+		},
 	}
 }
 </script>
@@ -133,6 +189,15 @@ export default {
 		display: flex;
 		align-items: center;
 		justify-content: center;
+	}
+	&-admin{
+		font-weight: 400;
+		font-size: 12px;
+		line-height: 16px;
+
+		letter-spacing: -0.02em;
+
+		color: #89A9DE;
 	}
 }
 </style>

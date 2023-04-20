@@ -1,6 +1,6 @@
 <template>
 	<div class="ChatInfo">
-		<ConversationHeaderMobile class="ChatInfo-header">
+		<ConversationHeaderMobile class="ChatInfo-header mb-4">
 			<template #left>
 				<div
 					class="ConversationHeaderMobile-icon ChatIcon-parent"
@@ -128,6 +128,7 @@
 			/>
 			<ChatUserList
 				:users="editUsersList"
+				:owner="isOwner"
 				:actions="{
 					remove: {
 						icon: removeIcon,
@@ -155,7 +156,10 @@
 					Добавить участника
 				</div>
 			</div>
-			<ChatUserList :users="chat.users" />
+			<ChatUserList
+				:users="chat.users"
+				:owner="isOwner"
+			/>
 		</div>
 
 		<!-- Действия с чатом -->
@@ -378,7 +382,6 @@ export default {
 		align-items: center;
 		justify-content: space-between;
 
-		margin-top: 2rem;
 		margin-bottom: 1rem;
 
 		font-weight: 500;
