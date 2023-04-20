@@ -40,21 +40,13 @@
 			v-if="actions"
 			class="ChatUserListUser-actions ml-a"
 		>
-			<template v-for="action, name in actions">
-				<template v-if="action.icon">
-					<div
-						:key="name"
-						class="ChatUserListUser-actionIcon"
-						:class="action.className"
-						@click="$emit('action', {
-							action: name,
-							userId: user.id
-						})"
-					>
-						<component :is="action.icon" />
-					</div>
-				</template>
-			</template>
+			<div
+				v-if="actions.remove && (owner || !isAdmin) && !isOwner"
+				class="ChatUserListUser-actionIcon ChatIcon-parent_red"
+				@click="$emit('remove', user.id)"
+			>
+				<ChatIconHistoryDelete />
+			</div>
 		</div>
 	</div>
 </template>
@@ -62,11 +54,15 @@
 <script>
 import { mapGetters, mapActions } from 'vuex'
 import JobtronAvatar from '@ui/Avatar'
+import {
+	ChatIconHistoryDelete,
+} from '@icons'
 
 export default {
 	name: 'ChatUserListUser',
 	components: {
 		JobtronAvatar,
+		ChatIconHistoryDelete,
 	},
 	props: {
 		user: {

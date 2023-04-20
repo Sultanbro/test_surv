@@ -129,13 +129,8 @@
 			<ChatUserList
 				:users="editUsersList"
 				:owner="isOwner"
-				:actions="{
-					remove: {
-						icon: removeIcon,
-						className: 'ChatIcon-parent_red'
-					}
-				}"
-				@action="onDelete"
+				:actions="{ remove: true }"
+				@remove="onRemove"
 			/>
 		</div>
 
@@ -164,12 +159,12 @@
 
 		<!-- Действия с чатом -->
 		<div
-			v-if="isEdit"
+			v-if="isEdit && isOwner"
 			class="ChatInfo-footer px-5 py-4"
 		>
 			<div
-				v-if="isAdmin"
-				class="ChatInfo-delete ChatIcon-active_red"
+				v-if="isOwner"
+				class="ChatInfo-delete ChatIcon-active_red ml-a"
 				@click="updateChatTitle"
 			>
 				Удалить чат
@@ -226,7 +221,6 @@ export default {
 			editSearch: '',
 			chatTitle: this.chat?.title || '',
 			editTitleAntispamTimer: null,
-			removeIcon: ChatIconHistoryDelete,
 		}
 	},
 	computed: {
@@ -292,9 +286,9 @@ export default {
 			this.chat.title = this.chatTitle
 			this.editChatTitle()
 		},
-		onDelete(payload){
+		onRemove(userId){
 			this.removeMembers([
-				{id: payload.userId}
+				{id: userId}
 			])
 		},
 		onUserAdd(){
