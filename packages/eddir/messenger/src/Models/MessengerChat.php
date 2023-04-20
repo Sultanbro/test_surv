@@ -50,6 +50,15 @@ class MessengerChat extends Model {
     }
 
     /**
+     * @return BelongsToMany
+     */
+    public function mute(): BelongsToMany
+    {
+        return $this->belongsToMany(User::class, 'messenger_chat_mute', 'chat_id', 'user_id')
+            ->whereNull('users.deleted_at');
+    }
+
+    /**
      * @param Authenticatable|null $user
      *
      * @return int

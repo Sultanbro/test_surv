@@ -512,4 +512,45 @@ class ChatsController extends Controller {
         return response()->json( $chat );
     }
 
+    /**
+     * @param int $chatId
+     * @return JsonResponse
+     */
+    public function muteChat(int $chatId): JsonResponse
+    {
+        // check if user is authorized
+        if ( ! Auth::check() ) {
+            return response()->json( [ 'message' => 'Unauthorized' ], 401 );
+        }
+
+        $chat = MessengerChat::findOrFail($chatId);
+
+        /**
+         * Mute taken chat.
+         */
+        $chat = MessengerFacade::muteChatForUser($chat);
+
+        return response()->json($chat);
+    }
+
+    /**
+     * @param int $chatId
+     * @return JsonResponse
+     */
+    public function unmuteChat(int $chatId): JsonResponse
+    {
+        // check if user is authorized
+        if ( ! Auth::check() ) {
+            return response()->json( [ 'message' => 'Unauthorized' ], 401 );
+        }
+
+        $chat = MessengerChat::findOrFail($chatId);
+
+        /**
+         * Unmute taken chat.
+         */
+        $chat = MessengerFacade::unmuteChatForUser($chat);
+
+        return response()->json($chat);
+    }
 }

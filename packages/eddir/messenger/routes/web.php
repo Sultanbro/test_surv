@@ -74,6 +74,16 @@ Route::post('/v2/chat/{chat_id}/messages', 'MessagesController@sendMessage')->na
 Route::post('/v2/message/{message_id}', 'MessagesController@editMessage')->name('api.v2.editMessage')->whereNumber('message_id');
 
 /**
+ * Mute message.
+ */
+Route::post('/v2/chat/{chat_id}/mute', 'ChatsController@muteChat')->name('api.v2.muteChat');
+
+/**
+ * Unmute
+ */
+Route::delete('/v2/chat/{chat_id}/unmute', 'ChatsController@unmuteChat')->name('api.v2.unmuteChat');
+
+/**
  * Set emoji reaction to message
  */
 Route::post('/v2/message/{message_id}/reaction', 'MessagesController@setReaction')->name('api.v2.setReaction')->whereNumber('message_id');
