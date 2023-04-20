@@ -42,7 +42,6 @@
 				Закрепить
 			</div>
 			<div
-				v-if="contextMenuMessage && user && contextMenuMessage.sender_id === user.id"
 				class="ContextMenu-item"
 				@click="remove(contextMenuMessage)"
 			>
