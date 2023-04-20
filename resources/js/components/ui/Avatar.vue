@@ -1,5 +1,5 @@
 <template>
-	<div
+	<span
 		class="JobtronAvatar"
 		:style="style"
 	>
@@ -26,7 +26,7 @@
 			class="JobtronAvatar-status"
 			:class="statusClass"
 		/>
-	</div>
+	</span>
 </template>
 
 <script>

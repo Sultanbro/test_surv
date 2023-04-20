@@ -383,12 +383,15 @@ export default {
 		messagesMap: (state, getters) => {
 			const uniqueDates = [];
 			const messagesMap = {};
-			state.messages.forEach(message => {
+			state.messages.forEach((message, index) => {
 				const date = new Date(message.created_at);
 				const dateKey = date.toLocaleDateString();
 				if (!uniqueDates.includes(dateKey)) {
 					uniqueDates.push(dateKey);
 					messagesMap[dateKey] = [];
+				}
+				if(!state.messages[index + 1]){
+					message.last = true
 				}
 
 				messagesMap[dateKey].push(message);
@@ -416,6 +419,7 @@ export default {
 							isUnreadFirst,
 							unread,
 							own,
+							last: !nextMsg
 						}
 					}
 				})
