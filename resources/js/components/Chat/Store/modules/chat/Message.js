@@ -405,8 +405,9 @@ export default {
 					const isUserFirst = !prevMsg || !!prevMsg.event || prevMsg.sender_id !== message.sender_id
 					const isUserLast = !nextMsg || !!nextMsg.event || nextMsg.sender_id !== message.sender_id
 					const own = message.sender_id === getters.user.id
+					const isMessageRead = message.readers || ~message.readers.findIndex(reader => reader.id === getters.user.id)
 					let isUnreadFirst = false
-					if(!message.event && !own && !unread && !~message.readers.findIndex(reader => reader.id === getters.user.id)){
+					if(!message.event && !own && !unread && !isMessageRead){
 						unread = true
 						isUnreadFirst = true
 					}
