@@ -52,7 +52,7 @@
 							v-for="item in search.items"
 							:key="item.id"
 							class="search-item"
-							@click="selectSection(item.book, item.id)"
+							@click="showPage(item.id, true)"
 						>
 							<p
 								v-if="item.book"
