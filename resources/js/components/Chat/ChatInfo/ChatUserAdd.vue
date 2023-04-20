@@ -5,7 +5,7 @@
 				Добавить в группу
 			</div>
 			<div class="ChatUserAdd-limit">
-				{{ chat.users.length + selectedTargets.length }}/100
+				{{ chat.users.length + actualUsers.length }}/100
 			</div>
 			<div
 				class="ChatUserAdd-close ChatIcon-parent ml-a"
@@ -17,10 +17,9 @@
 		<AccessSelect
 			v-model="selectedTargets"
 			:tabs="['Сотрудники', 'Отделы', 'Должности']"
-			submit="Добавить в группу"
-			:submit-disabled="requestProcess"
+			:submit-button="''"
 			:access-dictionaries="accessDictionaries"
-			@submit="submitChat"
+			@input="submitChat"
 			class="ChatUserAdd-select"
 		/>
 	</div>
@@ -109,10 +108,9 @@ export default {
 			'toggleAddUserDialog',
 		]),
 		async submitChat(){
-			this.requestProcess = true
 			await this.addMembers(this.actualUsers)
-			this.requestProcess = false
-			this.toggleAddUserDialog()
+			this.selectedTargets = []
+			// this.toggleAddUserDialog()
 		}
 	}
 }

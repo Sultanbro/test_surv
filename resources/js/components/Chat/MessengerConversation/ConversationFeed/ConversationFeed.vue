@@ -252,6 +252,8 @@ export default {
 		align-self: stretch;
 		gap: 10px;
 
+		margin-bottom: 5px;
+
 		&:before,
 		&:after{
 			content: '';
