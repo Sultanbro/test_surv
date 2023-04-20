@@ -477,10 +477,10 @@ export default {
 	margin-left: 1px;
 }
 .messenger__chat-name_online {
-	background-color: #3361FF;
+	background-color: #27AE60;
 }
 .messenger__chat-name_offline {
-	background-color: #8BABD8;
+	background-color: #F8254B;
 }
 
 .messenger__chat-name_position {
