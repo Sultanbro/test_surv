@@ -128,7 +128,7 @@ export default {
   justify-content: center;
   align-items: center;
 	background: rgba(235, 242, 250, 0.5);
-
+	border-radius: 5px;
 }
 
 .messenger_search_input {
@@ -137,6 +137,14 @@ export default {
 	padding: 0 0.5rem;
   border: none;
 	background: none;
+
+	font-weight: 400;
+	font-size: 13px;
+	line-height: 15px;
+
+	letter-spacing: -0.02em;
+
+	color: #8BABD8;
 }
 
 .messenger__card-window textarea,
@@ -158,11 +166,6 @@ export default {
 .messenger__icon {
   display: flex;
   left: 30px;
-}
-
-.messenger__icon svg {
-  width: 28px;
-  height: 28px;
 }
 
 .messenger__connection-indicator {
