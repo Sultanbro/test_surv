@@ -321,7 +321,7 @@ export default {
 		async deletePosition() {
 			if (confirm('Вы уверены что хотите удалить должность?')) {
 				await this.axios.post('/timetracking/settings/positions/delete', {
-					position: this.activebtn.id,
+					position: +this.activebtn.id,
 				})
 				this.$toast.info('Удалена');
 
