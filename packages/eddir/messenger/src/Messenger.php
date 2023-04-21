@@ -98,12 +98,12 @@ class Messenger {
             }
         }
         $chat->pinned = $chat->isPinned( $user );
-
-        // get second user in private chat
-        $second_user = $chat->users->firstWhere( 'id', '!=', $user->id );
-        $chat->is_mute = $chat->mute()?->where('user_id', $second_user->id)->exists();
+        $chat->is_mute = $chat->mute()?->where('user_id', $user->id)->exists();
 
         if ( $chat->private ) {
+            // get second user in private chat
+            $second_user = $chat->users->firstWhere( 'id', '!=', $user->id );
+
             if ( $second_user && !$second_user->deleted_at) {
                 $chat->second_user = $second_user;
                 $chat->title       = $second_user->name . " " . $second_user->last_name;
