@@ -28,7 +28,7 @@ class FiveByTwoChart implements Chart
             throw new Exception("Сегодня выходные дни. Вы уже достаточно отработали, идите отдыхайте, проведите время с семьей :)");
         }
 
-        if ($countOfDayPerWeek >= WorkChartEnum::COUNT_OF_WORK_DAY_FOR_FIVE_BY_TWO)
+        if ($countOfDayPerWeek > WorkChartEnum::COUNT_OF_WORK_DAY_FOR_FIVE_BY_TWO)
         {
             throw new Exception("Вы отработали количество рабочих дней для своего графика");
         }
