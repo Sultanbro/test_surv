@@ -15,7 +15,7 @@ trait CurrencyTrait
         float $price
     ): float
     {
-        $rates = new CurrencyRates(CurrencyRates::URL_RATES_ALL);
+        $rates = new CurrencyRates(CurrencyRates::URL_RATES_ALL, 10);
         return $rates->convertFromTenge('RUB', $price);
     }
 
@@ -28,7 +28,7 @@ trait CurrencyTrait
         float $price
     ): float
     {
-        $rates = new CurrencyRates(CurrencyRates::URL_RATES_ALL);
+        $rates = new CurrencyRates(CurrencyRates::URL_RATES_ALL, 10);
         return $rates->convertFromTenge('USD', $price);
     }
 
