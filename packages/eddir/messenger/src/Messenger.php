@@ -99,22 +99,21 @@ class Messenger {
         }
         $chat->pinned = $chat->isPinned( $user );
 
-        if ( $chat->private ) {
-            // get second user in private chat
-            $second_user = $chat->users->firstWhere( 'id', '!=', $user->id );
+        // get second user in private chat
+        $second_user = $chat->users->firstWhere( 'id', '!=', $user->id );
+        $chat->is_mute = $chat->mute()?->where('user_id', $second_user->id)->exists();
 
+        if ( $chat->private ) {
             if ( $second_user && !$second_user->deleted_at) {
                 $chat->second_user = $second_user;
                 $chat->title       = $second_user->name . " " . $second_user->last_name;
                 $chat->image       = $second_user->img_url;
                 $chat->isOnline    = MessengerUserOnline::query()->where( 'user_id', $second_user->id )->exists();
                 $chat->last_seen   = $second_user->last_seen;
-                $chat->is_mute     = $chat->mute()?->where('user_id', $second_user->id)->exists();
             } else {
                 return null;
             }
         }
-
         $chat->users = $chat->users->map( function ( $user ) {
             return collect( $user->toArray() )
                 ->only( [ 'id', 'name', 'last_name' ] )
