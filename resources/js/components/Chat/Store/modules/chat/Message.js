@@ -148,7 +148,7 @@ export default {
 				});
 			}
 
-			if(!chat?.is_mute) dispatch('sendNotification', {
+			if(!chat?.is_mute && !isSender) dispatch('sendNotification', {
 				title: `${message.sender.name} ${message.sender.last_name}`,
 				body: message.body,
 				icon: `/users_img/${message.sender.img_url}`,
