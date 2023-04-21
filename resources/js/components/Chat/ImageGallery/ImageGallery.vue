@@ -151,6 +151,9 @@ export default {
 </script>
 
 <style>
+.blueimp-gallery{
+	color: #fff;
+}
 .blueimp-gallery > .description {
   position: absolute;
   top: 30px;
