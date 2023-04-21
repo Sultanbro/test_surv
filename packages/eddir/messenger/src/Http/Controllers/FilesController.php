@@ -114,14 +114,15 @@ class FilesController {
      * @return JsonResponse
      */
     public function uploadChatAvatar( Request $request, int $chat_id ): JsonResponse {
-        // check if user is authorized
-        if ( ! Auth::check() ) {
-            return response()->json( [ 'message' => 'Unauthorized' ], 401 );
-        }
-        // check if user is member of chat
-        if ( ! MessengerFacade::isMember( $chat_id, Auth::user()->id ) ) {
-            return response()->json( [ 'message' => 'You are not a member of this chat' ], 403 );
-        }
+//        // check if user is authorized
+//        if ( ! Auth::check() ) {
+//            return response()->json( [ 'message' => 'Unauthorized' ], 401 );
+//        }
+//        // check if user is member of chat
+//        if ( ! MessengerFacade::isMember( $chat_id, Auth::user()->id ) ) {
+//            return response()->json( [ 'message' => 'You are not a member of this chat' ], 403 );
+//        }
+
         // check if file is uploaded
         if ( ! $request->hasFile( 'avatar' ) ) {
             return response()->json( [ 'message' => 'File is not uploaded' ], 400 );
@@ -137,8 +138,10 @@ class FilesController {
         }
         $milliseconds = round( microtime( true ) * 1000 );
 
-        $path = public_path('messenger/');
-        $request->file()->move($path, 'chat_' . $chat_id . '_' . $milliseconds . '.jpg');
+        $realPath = public_path('messenger/');
+        $path     = 'messenger/' . 'chat_' . $chat_id . '_' . $milliseconds . '.jpg';
+
+        $request->avatar->move($realPath, 'chat_' . $chat_id . '_' . $milliseconds . '.jpg');
 
         $chat = MessengerFacade::uploadChatAvatar( $chat_id, $path );
 
