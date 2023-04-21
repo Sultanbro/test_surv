@@ -1,7 +1,7 @@
 <template>
 	<div class="messenger__chat-item-container messenger__text-ellipsis">
 		<JobtronAvatar
-			:image="item.second_user ? `/users_img/${item.second_user.img_url}` : item.image"
+			:image="avatar"
 			:title="item.title"
 			:size="fullscreen ? 50 : 40"
 			:status="item.sOnline ? 'online' : ''"
@@ -52,13 +52,13 @@
 						v-if="item.pinned"
 						class="messenger__chat-pinned"
 					>
-						<ChatIconPinChat />
+						<ChatIconPinned />
 					</div>
 					<div
-						v-if="item.muted"
+						v-if="item.is_mute"
 						class="messenger__chat-muted"
 					>
-						<ChatIconMuteChat />
+						<ChatIconStatusMuted />
 					</div>
 					<div
 						v-if="item.unread_messages_count"
@@ -78,8 +78,8 @@ import JobtronAvatar from '@ui/Avatar'
 import {
 	ChatIconStatusReaded,
 	ChatIconStatusSended,
-	ChatIconPinChat,
-	ChatIconMuteChat,
+	ChatIconPinned,
+	ChatIconStatusMuted,
 } from '@icons'
 
 export default {
@@ -88,8 +88,8 @@ export default {
 		JobtronAvatar,
 		ChatIconStatusReaded,
 		ChatIconStatusSended,
-		ChatIconPinChat,
-		ChatIconMuteChat,
+		ChatIconPinned,
+		ChatIconStatusMuted,
 	},
 	props: {
 		item: {
@@ -119,6 +119,10 @@ export default {
 			if(diff < 1) return $time.format('HH:mm')
 			if(diff < 7) return $time.format('ddd')
 			return $time.format('DD.MM.YYYY')
+		},
+		avatar(){
+			if(this.item.second_user) return `/users_img/${this.item.second_user.img_url}`
+			return this.item.image?.replace('/storage', '')
 		}
 	},
 	methods: {

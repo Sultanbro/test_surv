@@ -130,20 +130,32 @@ export default {
 			});
 		},
 		async newMessage({commit, getters, dispatch}, message) {
-			if (getters.chat.id === message.chat_id && (getters.user.id !== message.sender_id)) {
+			const isCurrentChat = getters.chat?.id === message.chat_id
+			const isSender = getters.user.id === message.sender_id
+			const chat = getters.chats.find(chat => chat.id === message.chat_id)
+
+			if ( isCurrentChat && !isSender) {
 				commit('addMessage', message);
 				dispatch('markMessagesAsRead', [message]);
 			}
-			let chat = getters.chats.find(chat => chat.id === message.chat_id);
 			// add chat if not exists
 			if (chat) {
-				const isSender = getters.user.id === message.sender_id;
 				commit('updateChatLastMessage', {chat, message, isSender});
-			} else {
+			}
+			else {
 				await API.getChatInfo(message.chat_id, chat => {
 					commit('addChat', chat);
 				});
 			}
+
+			if(!chat?.is_mute && !isSender) dispatch('sendNotification', {
+				title: `${message.sender.name} ${message.sender.last_name}`,
+				body: message.body,
+				icon: `/users_img/${message.sender.img_url}`,
+				data: {
+					chatId: message.chat_id
+				}
+			})
 		},
 		async newServiceMessage({commit, getters}, message) {
 			switch (message.event.type) {
