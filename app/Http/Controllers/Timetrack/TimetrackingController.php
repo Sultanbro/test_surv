@@ -274,6 +274,7 @@ class TimetrackingController extends Controller
 
     /**
      * Handle startDay btn clicks
+     * @throws Exception
      */
     public function timetracking(StartOrStopTrackingRequest $request) : JsonResponse
     {
@@ -285,11 +286,7 @@ class TimetrackingController extends Controller
                 : $this->endDay();
 
         } catch (\Throwable $e) {
-            return response()->json([
-                'error' => [
-                    'message' => $e->getMessage()
-                ]
-            ], 200);
+            throw new Exception($e->getMessage());
         }
 
         return response()->json([
