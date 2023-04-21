@@ -4,7 +4,7 @@ import Vue from 'vue'
 export default {
 	state: {
 		chats: [],
-		chat: null
+		chat: null,
 	},
 	mutations: {
 		setChats(state, chats) {
@@ -119,6 +119,7 @@ export default {
 				commit('setPinnedMessage', chat.pinned_message);
 				dispatch('loadMessages', {reset: true, callback: callback});
 				dispatch('cancelEditMessage');
+
 			});
 		},
 		async escapeChat({commit, dispatch}) {

@@ -44,6 +44,7 @@ export default {
 		chatSearchFilesResults: state => state.chatSearchFilesResults,
 		searchType: state => state.searchType,
 		isSearchFocus: state => state.searchFocus,
+		chatSearchFilesFiles: state => state.chatSearchFilesResults.reduce((files, message) => files.concat(message.files), [])
 	},
 	actions: {
 		async findContacts({commit}, username) {
@@ -100,7 +101,8 @@ export default {
 					commit('setChatFilesResults', files);
 				});
 			} else {
-				commit('setChatFilesResults', []);
+				const {data} = await API.allFiles(chat_id)
+				commit('setChatFilesResults', data.data);
 			}
 		},
 		async setCurrentChatContacts({commit}, contacts) {

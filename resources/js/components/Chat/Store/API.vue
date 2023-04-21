@@ -391,6 +391,10 @@ export default {
    */
 	unmuteChat(chatId){
 		return axios.delete(`${REST_URI}chat/${chatId}/unmute`)
-	}
+	},
+
+	allFiles(chatId){
+		return axios.get(`${REST_URI}chat/${chatId}/files`)
+	},
 }
 </script>
