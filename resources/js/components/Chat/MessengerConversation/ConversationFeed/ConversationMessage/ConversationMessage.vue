@@ -57,8 +57,13 @@
 							</template>
 						</span>
 					</div>
-					<div
-						v-if="isGallery()"
+					<ConversationMessageGallery
+						v-if="isGallery"
+						:files="message.files"
+						@loadImage="$emit('loadImage')"
+					/>
+					<!-- <div
+						v-if="isGallery"
 						class="messenger__message-files messenger__message-files_group"
 					>
 						<div
@@ -87,7 +92,7 @@
 								</div>
 							</div>
 						</div>
-					</div>
+					</div> -->
 					<div
 						v-else
 						class="messenger__message-files"
@@ -162,8 +167,9 @@ import {mapActions, mapGetters} from 'vuex';
 import moment from 'moment';
 // import MessageReaders from './MessageReaders/MessageReaders.vue';
 // import AlternativeAvatar from '../../../ChatsList/ContactItem/AlternativeAvatar/AlternativeAvatar.vue';
-import VoiceMessage from './VoiceMessage/VoiceMessage.vue';
-import ConversationMessageMeta from '@/components/Chat/MessengerConversation/ConversationFeed/ConversationMessage/ConversationMessageMeta.vue'
+import VoiceMessage from './VoiceMessage/VoiceMessage.vue'
+import ConversationMessageMeta from './ConversationMessageMeta.vue'
+import ConversationMessageGallery from './ConversationMessageGallery'
 import JobtronAvatar from '@ui/Avatar'
 import { stringToColor } from '@/composables/stringToColor'
 
@@ -183,6 +189,7 @@ export default {
 		// AlternativeAvatar,
 		VoiceMessage,
 		ConversationMessageMeta,
+		ConversationMessageGallery,
 		JobtronAvatar,
 	},
 	props: {
@@ -270,7 +277,10 @@ export default {
 		},
 		nameColor() {
 			return stringToColor(this.name)
-		}
+		},
+		isGallery() {
+			return this.message.files && this.message.files.length > 1 && this.message.files.every(file => this.isImage(file));
+		},
 	},
 	methods: {
 		...mapActions([
@@ -289,9 +299,7 @@ export default {
 			const ext = file.name.split('.').pop();
 			return ['mp3', 'wav', 'ogg', 'webm'].includes(ext);
 		},
-		isGallery() {
-			return this.message.files && this.message.files.length > 1 && this.message.files.every(file => this.isImage(file));
-		},
+
 		getImages() {
 			return this.message.files.filter(file => this.isImage(file)).map(file => file.file_path);
 		},
@@ -448,7 +456,7 @@ $ConversationMessage-radius: 18px;
 	font-size: 14px;
 	line-height: 17px;
 	padding: 12px 24px;
-	max-width: 360px;
+	max-width: 560px;
 	-webkit-transition-property: box-shadow, opacity;
 	transition-property: box-shadow, opacity;
 	transition: box-shadow .28s cubic-bezier(.4, 0, .2, 1);
