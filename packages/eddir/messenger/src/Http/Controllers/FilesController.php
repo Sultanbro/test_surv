@@ -136,8 +136,10 @@ class FilesController {
             return response()->json( [ 'message' => 'File is too big' ], 400 );
         }
         $milliseconds = round( microtime( true ) * 1000 );
-        $path = $request->file( 'avatar' )
-                        ->storeAs( 'messenger', 'chat_' . $chat_id . '_' . $milliseconds . '.jpg' );
+
+        $path = public_path('messenger/');
+        $request->file()->move($path, 'chat_' . $chat_id . '_' . $milliseconds . '.jpg');
+
         $chat = MessengerFacade::uploadChatAvatar( $chat_id, $path );
 
         return response()->json( $chat );
