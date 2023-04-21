@@ -248,9 +248,12 @@ export default {
   font-size: 12px;
   line-height: 18px;
   color: #8b8b8b;
-  display: -webkit-box;
+  /* display: -webkit-box; */
   -webkit-line-clamp: 1;
   -webkit-box-orient: vertical;
+	overflow: hidden;
+	white-space: nowrap;
+	text-overflow: ellipsis;
 }
 
 .messenger__chat-indicators{
