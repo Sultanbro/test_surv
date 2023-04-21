@@ -76,6 +76,14 @@ export default {
 			if(!user) return
 			user.pivot.is_admin = 0
 		},
+		muteChat(state, chatId){
+			const chat = state.chats.find(chat => chat.id === chatId)
+			chat.is_mute = true
+		},
+		unmuteChat(state, chatId){
+			const chat = state.chats.find(chat => chat.id === chatId)
+			chat.is_mute = false
+		},
 	},
 	getters: {
 		chats: state => state.chats,
@@ -180,6 +188,14 @@ export default {
 			await API.unpinChat(chat.id);
 			chat.pinned = false;
 			commit('updateChat', chat);
+		},
+		async muteChat({commit}, chatId) {
+			await API.muteChat(chatId)
+			commit('muteChat', chatId)
+		},
+		async unmuteChat({commit}, chatId) {
+			await API.unmuteChat(chatId)
+			commit('unmuteChat', chatId)
 		},
 		async setChatAdmin({commit}, {chat, user}) {
 			API.setChatAdmin(chat.id, user.id);

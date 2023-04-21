@@ -376,5 +376,21 @@ export default {
 			callback(response.data);
 		});
 	},
+
+	/**
+   * Mute chat for current user
+   * @param {Number} chatId
+   */
+	muteChat(chatId){
+		return axios.post(`${REST_URI}chat/${chatId}/mute`)
+	},
+
+	/**
+   * Unmute chat for current user
+   * @param {Number} chatId
+   */
+	unmuteChat(chatId){
+		return axios.delete(`${REST_URI}chat/${chatId}/unmute`)
+	}
 }
 </script>

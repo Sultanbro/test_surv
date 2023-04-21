@@ -37,7 +37,7 @@
 				>
 					<JobtronAvatar
 						v-if="chat.image"
-						:image="chat.image"
+						:image="avatar"
 						:title="chat.title"
 						:size="120"
 					/>
@@ -50,7 +50,7 @@
 				</InputFile>
 				<JobtronAvatar
 					v-else
-					:image="chat.image"
+					:image="avatar"
 					:title="chat.title"
 					:size="120"
 				/>
@@ -241,6 +241,10 @@ export default {
 		},
 		isOwner() {
 			return this.chat.owner_id === this.user.id
+		},
+		avatar(){
+			if(this.chat.private) return '/users_img/' + this.chat.second_user.img_url
+			return this.chat.image?.replace('/storage', '')
 		}
 	},
 	watch: {

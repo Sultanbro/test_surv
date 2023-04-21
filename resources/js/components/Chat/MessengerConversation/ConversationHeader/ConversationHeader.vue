@@ -11,7 +11,7 @@
 				<div class="messenger__info-wrapper_avatar">
 					<JobtronAvatar
 						:title="chat.title"
-						:image="chat.private ? '/users_img/' + chat.second_user.img_url : chat.image"
+						:image="avatar"
 						:size="50"
 					/>
 				</div>
@@ -161,7 +161,7 @@
 							@click="toggleMuted"
 						>
 							<ChatIconMuteChat />
-							{{ chat.muted ? 'Включить уведомления' : 'Выключить уведомления' }}
+							{{ chat.is_mute ? 'Включить уведомления' : 'Выключить уведомления' }}
 						</div>
 						<div
 							v-if="isAdmin"
@@ -247,6 +247,10 @@ export default {
 		otherUsers(){
 			if(this.members.length < 11) return []
 			return this.members.slice(10)
+		},
+		avatar(){
+			if(this.chat.private) return '/users_img/' + this.chat.second_user.img_url
+			return this.chat.image?.replace('/storage', '')
 		}
 	},
 	watch: {
@@ -272,6 +276,8 @@ export default {
 			'leftChat',
 			'pinChat',
 			'unpinChat',
+			'muteChat',
+			'unmuteChat',
 		]),
 		changeAvatar() {
 			if (this.chat.private) {
@@ -387,14 +393,14 @@ export default {
 		},
 		toggleMuted(){
 			this.isPopup = false
-			this.$toast('Функционал в разработке')
+			if(this.chat.is_mute) return this.unmuteChat(this.chat.id)
+			this.muteChat(this.chat.id)
 		},
 		toggleEdit(){
 			this.contextMenuVisible = false
 			this.toggleInfoPanel()
 		},
 		togglePopupIfShown(){
-			console.log('togglePopupIfShown', this.isPopup)
 			if(!this.isPopup) return
 			this.isPopup = false
 		}

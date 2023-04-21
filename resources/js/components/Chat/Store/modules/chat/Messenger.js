@@ -34,6 +34,10 @@ export default {
 					}
 					dispatch('requestScroll', 0);
 				});
+
+			// Запрос на уведомления браузера
+			if (Notification.permission === 'default') Notification.requestPermission()
+
 			commit('setInitialize', true);
 		},
 		async toggleMessenger({commit}) {
@@ -62,6 +66,20 @@ export default {
 		},
 		setLoading({commit}, value) {
 			commit('setLoading', value);
+		},
+		sendNotification({dispatch}, { title, body, icon, data }){
+			if (!('Notification' in window)) return
+			if (Notification.permission === 'granted') {
+				/* const notification = */ new Notification(title, { body, icon });
+				// notification.addEventListener('click', () => {
+				// 	if(data?.chatId) dispatch('loadChat', data)
+				// })
+			}
+			else if (Notification.permission !== 'denied') {
+				Notification.requestPermission().then(permission => {
+					if (permission === 'granted') dispatch('sendNotification', { title, body, icon, data })
+				})
+			}
 		}
 	},
 	mutations: {
