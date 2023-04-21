@@ -1,5 +1,9 @@
 <script>
+import { mapGetters } from 'vuex'
 import { updateOnlineStatus } from './stores/api'
+
+const DEFAULT_TITLE = 'Jobtron.org';
+
 export default {
 	name: 'JobtronApp',
 	data(){
@@ -7,6 +11,17 @@ export default {
 			sendStatusTimer: null,
 			sendStatusDelay: 30000,
 			sendStatusDelayed: false
+		}
+	},
+	computed: {
+		...mapGetters(['unreadCount'])
+	},
+	watch: {
+		$route(){
+			this.updateTitle()
+		},
+		unreadCount(){
+			this.updateTitle()
 		}
 	},
 	mounted(){
@@ -43,6 +58,14 @@ export default {
 			document.body.removeEventListener('click', this.sendStatus)
 			document.body.removeEventListener('keyup', this.sendStatus)
 		},
+		updateTitle(){
+			// Use next tick to handle router history correctly
+			// see: https://github.com/vuejs/vue-router/issues/914#issuecomment-384477609
+			this.$nextTick(() => {
+				document.title = (this.unreadCount ? `(${this.unreadCount}) ` : '')  + this.$route.meta.title || DEFAULT_TITLE
+				document.body.className = this.$route.meta.bodyClass || ''
+			})
+		}
 	}
 }
 </script>

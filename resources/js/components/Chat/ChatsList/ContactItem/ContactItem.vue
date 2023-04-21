@@ -122,6 +122,7 @@ export default {
 		},
 		avatar(){
 			if(this.item.second_user) return `/users_img/${this.item.second_user.img_url}`
+			if(this.item.img_url) return `/users_img/${this.item.img_url}`
 			return this.item.image?.replace('/storage', '')
 		}
 	},

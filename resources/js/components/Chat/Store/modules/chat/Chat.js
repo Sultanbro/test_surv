@@ -103,7 +103,7 @@ export default {
 				return new Date(date2) - new Date(date1);
 			});
 		},
-		chat: state => state.chat
+		chat: state => state.chat,
 	},
 	actions: {
 		async loadChats({commit, dispatch}) {
