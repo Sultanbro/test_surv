@@ -280,14 +280,9 @@ class TimetrackingController extends Controller
     {
         $userClickedStart = $request->has('start');
 
-        try {
-            $status = $userClickedStart
-                ? $this->startDay()
-                : $this->endDay();
-
-        } catch (\Throwable $e) {
-            throw new Exception($e->getMessage());
-        }
+        $status = $userClickedStart
+            ? $this->startDay()
+            : $this->endDay();
 
         return response()->json([
 
