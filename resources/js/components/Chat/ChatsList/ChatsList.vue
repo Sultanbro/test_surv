@@ -39,7 +39,7 @@
 					@click="contextToggleMuted"
 				>
 					<ChatIconMuteChat />
-					{{ contextMenuChat.muted ? 'Включить уведомления' : 'Выключить уведомления' }}
+					{{ contextMenuChat.is_mute ? 'Включить уведомления' : 'Выключить уведомления' }}
 				</div>
 				<div
 					v-if="isContextChatAdmin"
