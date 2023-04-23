@@ -1,16 +1,40 @@
 <template>
 	<div
 		class="PopupMenu"
+		:class="['PopupMenu_'+position]"
 		@mousedown.stop
 		@contextmenu.prevent
 	>
-		<slot />
+		<div
+			v-if="maxHeight"
+			class="PopupMenu-scroll"
+			:style="`max-height: ${maxHeight};`"
+		>
+			<slot />
+		</div>
+		<template v-else>
+			<slot />
+		</template>
 	</div>
 </template>
 
 <script>
 export default {
 	name: 'PopupMenu',
+	props: {
+		position: {
+			type: String,
+			default: 'bottomRight',
+			validator(value) {
+				// The value must match one of these strings
+				return ['bottomRight', 'bottomLeft', 'topRight', 'topLeft'].includes(value)
+			}
+		},
+		maxHeight: {
+			type: String,
+			default: ''
+		}
+	}
 }
 </script>
 
@@ -23,11 +47,30 @@ export default {
 
 	position: absolute;
 	z-index: 1000;
-	top: 100%;
-	right: 0;
 
 	background-color: #fff;
 	box-shadow: 0px 0px 3px rgba(0, 0, 0, 0.05), 0px 15px 60px -40px rgba(45, 50, 90, 0.2);
+
+	&_bottomRight{
+		top: 100%;
+		right: 0;
+	}
+	&_bottomLeft{
+		top: 100%;
+		left: 0;
+	}
+	&_topRight{
+		right: 0;
+		bottom: 100%;
+	}
+	&_topRight{
+		left: 0;
+		bottom: 100%;
+	}
+
+	&-scroll{
+		overflow-y: auto;
+	}
 
 	&-item{
 		display: flex;

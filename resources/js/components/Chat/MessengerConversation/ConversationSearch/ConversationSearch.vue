@@ -42,6 +42,7 @@
 							v-model="date"
 							:open="showDatePicker"
 							@close="showDatePicker = false"
+							:tabs="['Текущий месяц', 'Прошлый месяц']"
 						/>
 					</div>
 				</div>
@@ -145,7 +146,8 @@ export default {
 			this.searchFiles();
 		},
 		chat(){
-			this.searchFiles();
+			this.searchFiles()
+			this.searchMessages()
 		},
 		date(value){
 			this.searchMessagesDate = value[0]
@@ -168,10 +170,13 @@ export default {
 		},
 		searchMessages() {
 			if(!this.chat) return
+			const mement = this.$moment(this.searchMessagesDate, 'DD.MM.YYYY')
 			this.findMessagesInChat({
 				text: this.searchMessagesQuery,
 				chat_id: this.chat.id,
-				date: this.searchMessagesDate,
+				// date: this.searchMessagesDate,
+				month: +mement.format('M'),
+				year: +mement.format('YYYY'),
 			});
 		},
 		searchFiles() {
@@ -181,7 +186,7 @@ export default {
 				chat_id: this.chat.id,
 			});
 		},
-	}
+	},
 }
 </script>
 
@@ -195,9 +200,13 @@ export default {
 	bottom: 0;
 	background-color: rgba(0, 0, 0, 0.25);
 }
-.ConversationSearch-files .ConversationSearch-file{
-	padding: 10px 30px;
+.ConversationSearch-files{
+	padding: 10px 0;
+	overflow-y: auto;
 }
+/* .ConversationSearch-files .ConversationSearchFile{
+	padding: 10px 30px;
+} */
 
 .messenger__container-scroll {
 	width: 50%;

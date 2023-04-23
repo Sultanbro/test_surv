@@ -86,14 +86,17 @@ export default {
 				commit('clearMessagesSearchResults');
 			}
 		},
-		async findMessagesInChat({commit}, {text, chat_id, date}) {
-			if (text.length > 1) {
-				await API.searchMessages(text, chat_id, date, false, messages => {
-					commit('setChatMessagesResults', messages);
-				});
-			} else {
-				commit('setChatMessagesResults', []);
-			}
+		async findMessagesInChat({commit}, {text, chat_id, date, year, month}) {
+			await API.searchMessages({
+				search: text,
+				chatId: chat_id,
+				date,
+				onlyFiles: false,
+				year,
+				month,
+			}, messages => {
+				commit('setChatMessagesResults', messages);
+			});
 		},
 		async findFilesInChat({commit}, {text, chat_id}) {
 			if (text.length > 1) {
