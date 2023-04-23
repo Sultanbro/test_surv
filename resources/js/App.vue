@@ -32,6 +32,7 @@ export default {
 			})(window,document,'https://cdn-ru.bitrix24.kz/b1734679/crm/site_button/loader_8_dzfbjh.js');
 		}
 		this.startOlineTracking()
+		this.updateTitle()
 	},
 	beforeUnmount(){
 		const scriptTag = document.getElementById('bitrix-loader')
