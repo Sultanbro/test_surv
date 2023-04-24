@@ -362,7 +362,7 @@ class FetchActivities extends Command
             } 
         } else {
             Timetracking::create([
-                'enter' => Carbon::parse($date),
+                'enter' => Carbon::parse($date)->subHours(6),
                 'exit' => Carbon::parse($date),
                 'total_hours' => $minutes,
                 'updated' => 2,
