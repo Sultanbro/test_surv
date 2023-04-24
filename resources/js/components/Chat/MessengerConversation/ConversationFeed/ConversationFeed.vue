@@ -169,6 +169,11 @@ export default {
 			'isLoading',
 		]),
 	},
+	watch: {
+		messages(){
+			this.scrollBottom()
+		}
+	},
 	updated() {
 		if (this.scrollingPosition !== -1) {
 			this.scroll();
