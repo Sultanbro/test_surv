@@ -108,7 +108,7 @@ export default {
 		},
 		isAdmin(){
 			if(!this.user) return false
-			return this.user.pivot.is_admin
+			return this.user.pivot?.is_admin
 		},
 	},
 	methods: {
@@ -118,7 +118,7 @@ export default {
 		]),
 		setAdmin(){
 			if(!this.owner) return
-			const payload = this.user.pivot.is_admin ? {
+			const payload = this.isAdmin ? {
 				method: 'unsetChatAdmin',
 				title: 'Забрать права администратора?',
 				message: `Вы уверены, что хотите забрать права администратора у пользователя ${this.user.name}?`,

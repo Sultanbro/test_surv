@@ -237,7 +237,7 @@ export default {
 			})
 		},
 		isAdmin() {
-			return this.chat.users.find(user => user.id === this.user.id).pivot.is_admin;
+			return this.chat.users.find(user => user.id === this.user.id).pivot?.is_admin;
 		},
 		isOwner() {
 			return this.chat.owner_id === this.user.id

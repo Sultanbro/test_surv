@@ -66,7 +66,8 @@ export default {
 						id: user.id,
 						name: `${user.name} ${user.last_name}`,
 						avatar: `/users_img/${user.img_url}`,
-						position: this.positionMap[user.position_id]
+						img_url: user.img_url,
+						position: this.positionMap[user.position_id],
 					})
 					return users
 				}, []),

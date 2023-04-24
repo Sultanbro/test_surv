@@ -80,7 +80,7 @@
 									:image="'/users_img/' + member.img_url"
 									:size="27"
 									:class="{
-										'messenger__chat-name_member-admin': chat.users.find(u => u.id === member.id).pivot.is_admin
+										'messenger__chat-name_member-admin': chat.users.find(u => u.id === member.id).pivot ? chat.users.find(u => u.id === member.id).pivot.is_admin : false
 									}"
 								/>
 								<template v-if="showMembersNames">
@@ -104,7 +104,7 @@
 											:image="'/users_img/' + user.img_url"
 											:size="24"
 											:class="{
-												'messenger__chat-name_member-admin': chat.users.find(u => u.id === user.id).pivot.is_admin
+												'messenger__chat-name_member-admin': chat.users.find(u => u.id === user.id).pivot ? chat.users.find(u => u.id === user.id).pivot.is_admin : false
 											}"
 										/>
 										{{ `${user.name} ${user.last_name}` }}
@@ -241,7 +241,8 @@ export default {
 		},
 		isAdmin() {
 			if(!this.chat?.users) return false
-			return this.chat.users.find(user => user.id === this.user.id).pivot.is_admin;
+			const user = this.chat.users.find(user => user.id === this.user.id)
+			return user.pivot?.is_admin
 		},
 		firstTenUsers(){
 			if(this.members.length < 11) return this.members
@@ -329,7 +330,7 @@ export default {
 				return;
 			}
 			if (this.isAdmin) {
-				if (user.pivot.is_admin) {
+				if (user.pivot?.is_admin) {
 					this.$root.$emit('messengerConfirm', {
 						title: 'Забрать права администратора?',
 						message: 'Вы уверены, что хотите забрать права администратора у пользователя ' + user.name + '?',

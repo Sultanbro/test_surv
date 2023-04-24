@@ -69,11 +69,13 @@ export default {
 		setChatAdmin(state, userId) {
 			const user = state.chat.users.find(user => user.id === userId)
 			if(!user) return
+			if(!user.pivot) user.pivot = {}
 			user.pivot.is_admin = 1
 		},
 		unsetChatAdmin(state, userId) {
 			const user = state.chat.users.find(user => user.id === userId)
 			if(!user) return
+			if(!user.pivot) user.pivot = {}
 			user.pivot.is_admin = 0
 		},
 		muteChat(state, chatId){
@@ -165,7 +167,7 @@ export default {
 			for (let member of members) {
 				await API.addUserToChat(getters.chat.id, member.id);
 			}
-			commit('addMembers', members);
+			commit('addMembers', members.map(member => getters.users.find(user => user.id === member.id)));
 		},
 		async removeMembers({commit, getters}, members) {
 			for (let member of members) {
