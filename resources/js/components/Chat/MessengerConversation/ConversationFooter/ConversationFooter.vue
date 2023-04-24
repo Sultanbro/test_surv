@@ -45,29 +45,6 @@
 							placeholder="Ввести сообщение"
 							rows="1"
 						/>
-						<div
-							v-for="(file, index) in files"
-							:key="index"
-							class="messenger__input_file-attachment"
-						>
-							<div>
-								<div>{{ file.name }}</div>
-								<div>{{ file.size | fileSizeFormat }}</div>
-							</div>
-							<div
-								class="messenger__input_file-attachment_remove"
-								@click="removeFile(file, $event)"
-							>
-								<svg
-									xmlns="http://www.w3.org/2000/svg"
-									viewBox="0 0 320 512"
-								>
-									<path
-										d="M310.6 150.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0L160 210.7 54.6 105.4c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3L114.7 256 9.4 361.4c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0L160 301.3 265.4 406.6c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L205.3 256 310.6 150.6z"
-									/>
-								</svg>
-							</div>
-						</div>
 					</div>
 				</template>
 				<EmojiPopup @append="appendEmoji" />
@@ -148,6 +125,37 @@
 				</div>
 			</div>
 		</vue-draggable-resizable>
+		<template v-if="files && files.length">
+			<div
+				v-for="({file, preview}, index) in files"
+				:key="index"
+				class="messenger__input_file-attachment"
+			>
+				<div
+					class="messenger__input_file-attachment-preview"
+					:style="preview ? `background-image: url(${preview})` : ''"
+				>
+					<ChatIconHistoryDoc v-if="!preview" />
+				</div>
+				<div>
+					<div>{{ file.name }}</div>
+					<div>{{ file.size | fileSizeFormat }}</div>
+				</div>
+				<div
+					class="messenger__input_file-attachment_remove"
+					@click="removeFile(file, $event)"
+				>
+					<svg
+						xmlns="http://www.w3.org/2000/svg"
+						viewBox="0 0 320 512"
+					>
+						<path
+							d="M310.6 150.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0L160 210.7 54.6 105.4c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3L114.7 256 9.4 361.4c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0L160 301.3 265.4 406.6c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L205.3 256 310.6 150.6z"
+						/>
+					</svg>
+				</div>
+			</div>
+		</template>
 	</div>
 </template>
 
@@ -160,6 +168,7 @@ import SpectrumAnalyser from './SpectrumAnalyser/SpectrumAnalyser.vue';
 import {
 	ChatIconUpload,
 	ChatIconSend,
+	ChatIconHistoryDoc,
 } from '@icons'
 
 
@@ -171,6 +180,7 @@ export default {
 		SpectrumAnalyser,
 		ChatIconUpload,
 		ChatIconSend,
+		ChatIconHistoryDoc,
 		VueDraggableResizable,
 	},
 	inject: [
@@ -213,7 +223,7 @@ export default {
 				} else {
 					e.preventDefault();
 					if (this.files.length > 0) {
-						this.uploadFiles({'files': this.files, 'caption': text});
+						this.uploadFiles({'files': this.files.map(f => f.file), 'caption': text});
 						this.files = [];
 					} else {
 						this.sendMessage(text)
@@ -233,18 +243,24 @@ export default {
 			for (let index in items) {
 				let item = items[index];
 				if (item.kind === 'file') {
-					this.files.push(item.getAsFile());
+					this.files.push(this.getPreview({
+						file: item.getAsFile(),
+						preview: null
+					}));
 				}
 			}
 		},
 		removeFile(file, event) {
 			event.stopPropagation();
-			this.files = this.files.filter(f => f !== file);
+			this.files = this.files.filter(f => f.file !== file);
 		},
 		prepareFiles(event) {
 			const files = event.target.files;
 			for (let file of files) {
-				this.files.push(file);
+				this.files.push(this.getPreview({
+					file,
+					preview: null
+				}));
 			}
 		},
 		handleRecording({blob}) {
@@ -264,6 +280,16 @@ export default {
 		},
 		handleError(error) {
 			console.error('ConversationFooter', error)
+		},
+		getPreview(fileObj){
+			if(fileObj.file.type && fileObj.file.type.substring(0, 5) === 'image'){
+				const reader = new FileReader()
+				reader.addEventListener('load', () => {
+					fileObj.preview = reader.result
+				}, false);
+				reader.readAsDataURL(fileObj.file)
+			}
+			return fileObj
 		}
 	},
 	filters: {
@@ -320,7 +346,7 @@ export default {
   width: 100%;
   border-bottom-right-radius: 4px;
   /* border-top: 2px solid #e2e2e2; */
-  max-height: 30vh;
+  // max-height: 30vh;
   // overflow-y: auto;
   // overflow-x: hidden;
 }
@@ -393,21 +419,35 @@ export default {
 }
 
 .messenger__input_file-attachment {
-  margin: 5px;
-  line-height: 1.5;
   display: flex;
   flex-direction: row;
   align-items: center;
-  justify-content: space-between;
+  justify-content: flex-start;
+	gap: 10px;
+
+  padding: 0 10px;
+  line-height: 1.5;
   width: 100%;
 }
+.messenger__input_file-attachment-preview{
+	display: flex;
+	align-items: center;
+	justify-content: center;
 
+	width: 30px;
+	height: 30px;
+	background-size: cover;
+}
 .messenger__input_file-attachment_remove {
-  width: 10px;
-  height: 10px;
+  width: 30px;
+  height: 36px;
   cursor: pointer;
-  margin: 10px;
+  padding: 10px;
   min-width: 10px;
+	margin-left: auto;
+}
+.messenger__input_file-attachment_remove:hover{
+	fill: red;
 }
 
 .messenger__record {
