@@ -17,7 +17,7 @@
 		<div class="ChatUserListUser-info">
 			<div
 				class="ChatUserListUser-name"
-				@contextmenu.prevent="setAdmin"
+				@click="setAdmin"
 			>
 				{{ title }}
 				<span
@@ -154,6 +154,8 @@ export default {
 	justify-content: flex-start;
 	align-items: stretch;
 	gap: 15px;
+
+	user-select: none;
 	/* &-avatar{} */
 	&-info{
 		display: flex;
