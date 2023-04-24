@@ -1270,7 +1270,7 @@ class User extends Authenticatable implements Authorizable
      */
     public function getCountWorkDays(): array
     {
-        $type = $this->getWorkChart()->name;
+        $type = $this->getWorkChart()?->name;
 
         return match ($type) {
             "6-1" => [0],
