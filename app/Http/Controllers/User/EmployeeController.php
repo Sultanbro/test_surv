@@ -221,17 +221,17 @@ class EmployeeController extends Controller
             }
 
 
-            if ($request['start_date_applied'] != null &&
-                Carbon::parse($user->applied)->timestamp - Carbon::parse($request['start_date_applied'])->timestamp < 0) {
-                $users->forget($key);
-                continue;
-            } 
-
-            if ($request['end_date_applied'] != null &&
-                Carbon::parse($user->applied)->timestamp - Carbon::parse($request['end_date_applied'])->timestamp > 0) {
-                $users->forget($key);
-                continue;
-            } 
+//            if ($request['start_date_applied'] != null &&
+//                Carbon::parse($user->applied)->timestamp - Carbon::parse($request['start_date_applied'])->timestamp < 0) {
+//                $users->forget($key);
+//                continue;
+//            }
+//
+//            if ($request['end_date_applied'] != null &&
+//                Carbon::parse($user->applied)->timestamp - Carbon::parse($request['end_date_applied'])->timestamp > 0) {
+//                $users->forget($key);
+//                continue;
+//            }
             
 
             $user->created_at = Carbon::parse($user->created_at)->addHours(6)->format('Y-m-d H:i:s');
@@ -261,7 +261,7 @@ class EmployeeController extends Controller
 
 
         }
-        dd($users);
+
 
         ////////////////////////
        
