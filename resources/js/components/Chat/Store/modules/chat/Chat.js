@@ -11,6 +11,8 @@ export default {
 			state.chats = chats;
 		},
 		addChat(state, chat) {
+			const exists = state.chats.find(c => c.id === chat.id)
+			if(exists) return
 			state.chats.push(chat);
 		},
 		setChat(state, chat) {
