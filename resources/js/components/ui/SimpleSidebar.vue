@@ -90,8 +90,8 @@ export default {
 
 		.ui-simple-sidebar-body {
 			overflow: auto;
-			max-height: calc(100vh - 180px);
-			min-height: 350px;
+			max-height: calc(100vh - 135px);
+			min-height: calc(100vh - 135px);
 			padding: 15px 25px 25px 25px;
 		}
 		.ui-simple-sidebar-footer{

@@ -190,7 +190,7 @@
 <script>
 import {mapActions, mapGetters} from 'vuex';
 import ConversationPinned from '../ConversationPinned/ConversationPinned.vue';
-import PopupMenu from '../../ContextMenu/PopupMenu'
+import PopupMenu from '@ui/PopupMenu'
 import {
 	ChatIconMore,
 	ChatIconSearchMessages,

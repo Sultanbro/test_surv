@@ -42,6 +42,7 @@
 							v-model="date"
 							:open="showDatePicker"
 							@close="showDatePicker = false"
+							:tabs="['Текущий месяц', 'Прошлый месяц']"
 						/>
 					</div>
 				</div>
@@ -76,15 +77,12 @@
 							</div>
 						</div>
 					</div>
-					<div class="messenger__messages-search-results">
-						<div
-							v-for="(file, index) in chatSearchFilesResults"
+					<div class="ConversationSearch-files">
+						<ConversationSearchFile
+							v-for="(file, index) in chatSearchFilesFiles"
 							:key="index"
-							class="messenger__message-wrapper"
-							@click="goto(file, $event)"
-						>
-							<ConversationMessage :message="file" />
-						</div>
+							:file="file"
+						/>
 					</div>
 				</div>
 			</div>
@@ -98,6 +96,7 @@ import {mapActions, mapGetters} from 'vuex';
 import ConversationMessage from '../ConversationFeed/ConversationMessage/ConversationMessage.vue';
 import ConversationHeader from '../ConversationHeader/ConversationHeader.vue';
 import ConversationSearchFilter from './ConversationSearchFilter.vue';
+import ConversationSearchFile from './ConversationSearchFile.vue';
 import CalendarInput from '@/components/ui/CalendarInput/CalendarInput.vue'
 import {
 	ChatIconSearch,
@@ -111,6 +110,7 @@ export default {
 		ConversationMessage,
 		ConversationHeader,
 		ConversationSearchFilter,
+		ConversationSearchFile,
 		CalendarInput,
 		ChatIconSearch,
 		ChatIconSearchClose,
@@ -132,6 +132,7 @@ export default {
 			'chat',
 			'chatSearchMessagesResults',
 			'chatSearchFilesResults',
+			'chatSearchFilesFiles',
 		]),
 	},
 	watch: {
@@ -144,16 +145,20 @@ export default {
 		searchFilesQuery() {
 			this.searchFiles();
 		},
+		chat(){
+			this.searchFiles()
+			this.searchMessages()
+		},
 		date(value){
 			this.searchMessagesDate = value[0]
-		}
+		},
 	},
 	methods: {
 		...mapActions([
 			'findMessagesInChat',
 			'findFilesInChat',
 			'loadMessages',
-			'toggleChatSearchMode'
+			'toggleChatSearchMode',
 		]),
 		goto(message, event) {
 			event.stopPropagation();
@@ -164,19 +169,24 @@ export default {
 			this.toggleChatSearchMode();
 		},
 		searchMessages() {
+			if(!this.chat) return
+			const mement = this.$moment(this.searchMessagesDate, 'DD.MM.YYYY')
 			this.findMessagesInChat({
 				text: this.searchMessagesQuery,
 				chat_id: this.chat.id,
-				date: this.searchMessagesDate,
+				// date: this.searchMessagesDate,
+				month: +mement.format('M'),
+				year: +mement.format('YYYY'),
 			});
 		},
 		searchFiles() {
+			if(!this.chat) return
 			this.findFilesInChat({
 				text: this.searchFilesQuery,
 				chat_id: this.chat.id,
 			});
 		},
-	}
+	},
 }
 </script>
 
@@ -190,6 +200,14 @@ export default {
 	bottom: 0;
 	background-color: rgba(0, 0, 0, 0.25);
 }
+.ConversationSearch-files{
+	padding: 10px 0;
+	overflow-y: auto;
+}
+/* .ConversationSearch-files .ConversationSearchFile{
+	padding: 10px 30px;
+} */
+
 .messenger__container-scroll {
 	width: 50%;
 	height: 100%;
