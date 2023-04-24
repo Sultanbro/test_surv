@@ -86,6 +86,13 @@ export default {
 			const chat = state.chats.find(chat => chat.id === chatId)
 			chat.is_mute = false
 		},
+		changeChatAvatar(state, {chatId, image}){
+			const chat = state.chats.find(chat => chat.id === chatId)
+			if(chat) chat.image = image
+			if(state.chat){
+				state.chat.image = image
+			}
+		}
 	},
 	getters: {
 		chats: state => state.chats,
@@ -179,8 +186,12 @@ export default {
 			await API.editChat(getters.chat.id, getters.chat.title, getters.chat.description);
 			commit('updateChat', getters.chat);
 		},
-		async uploadChatAvatar({getters}, file) {
-			await API.uploadChatAvatar(getters.chat.id, file);
+		async uploadChatAvatar({commit, getters}, file) {
+			const { data } = await API.uploadChatAvatar(getters.chat.id, file);
+			commit('changeChatAvatar', {
+				chatId: getters.chat.id,
+				image: data.image,
+			})
 		},
 		async pinChat({commit}, chat) {
 			await API.pinChat(chat.id);
