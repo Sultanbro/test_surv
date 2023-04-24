@@ -317,6 +317,11 @@ export default {
 	background-size: cover;
 	padding-bottom: 20px;
 }
+#messenger__messages{
+	> div:last-of-type{
+		margin-bottom: 25px;
+	}
+}
 .messenger__container-scroll {
 	display: flex;
 	flex: 1;
