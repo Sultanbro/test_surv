@@ -233,7 +233,7 @@ class EmployeeController extends Controller
                 continue;
             } 
             
-            dd($users);
+
             $user->created_at = Carbon::parse($user->created_at)->addHours(6)->format('Y-m-d H:i:s');
     
             if($user->applied) {
@@ -273,7 +273,7 @@ class EmployeeController extends Controller
             return Excel::download($export, $title);
         }   
             
-        
+        dd($users);
             
         $users = $users->values();
         
