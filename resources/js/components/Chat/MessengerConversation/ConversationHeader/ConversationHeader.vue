@@ -8,7 +8,10 @@
 				v-if="chat"
 				class="messenger__info-wrapper"
 			>
-				<div class="messenger__info-wrapper_avatar">
+				<div
+					class="messenger__info-wrapper_avatar"
+					@click="changeAvatar"
+				>
 					<JobtronAvatar
 						:title="chat.title"
 						:image="avatar"

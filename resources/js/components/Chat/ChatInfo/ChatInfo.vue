@@ -31,12 +31,12 @@
 			<!-- Аватар -->
 			<div class="ChatInfo-logo">
 				<InputFile
-					v-if="isEdit && !chat.private"
+					v-if="!chat.private"
 					accept="image/*"
 					@change="onChangeAvatar"
 				>
 					<JobtronAvatar
-						v-if="chat.image"
+						v-if="!isEdit || avatar"
 						:image="avatar"
 						:title="chat.title"
 						:size="120"
