@@ -203,7 +203,7 @@ class EmployeeController extends Controller
             'ud.fire_cause',
             'ud.applied',
         ]);
-
+        dd($users);
         foreach ($users as $key => $user) {
 
             $_user = User::withTrashed()->find($user->id);
