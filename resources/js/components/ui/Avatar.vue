@@ -102,6 +102,7 @@ export default {
 	justify-content: center;
 	border-radius: 50%;
 	position: relative;
+	user-select: none;
 	&-text,
 	&-img{
 		display: flex;

@@ -51,6 +51,7 @@ export default {
 
 	background: #3361FF;
 	cursor: pointer;
+	user-select: none;
 	&:hover:not([disabled]):not(.disabled){
 		background: lighten(#3361FF, 10);
 	}

@@ -165,7 +165,7 @@
 			<div
 				v-if="isOwner"
 				class="ChatInfo-delete ChatIcon-active_red ml-a"
-				@click="updateChatTitle"
+				@click="onDeleteChat"
 			>
 				Удалить чат
 				<ChatIconHistoryDelete />
@@ -266,6 +266,7 @@ export default {
 			'toggleChatSearchMode',
 			'editChatTitle',
 			'removeMembers',
+			'removeChat',
 			'uploadChatAvatar',
 			'toggleAddUserDialog',
 		]),
@@ -302,6 +303,10 @@ export default {
 			if(files && files[0]){
 				this.uploadChatAvatar(files[0])
 			}
+		},
+		onDeleteChat(){
+			if(!confirm('Вы действительно хотите удалить чат?')) return
+			this.removeChat(this.chat)
 		}
 	}
 }
@@ -477,6 +482,7 @@ export default {
 		gap: 20px;
 		color: #FF2C52;
 		cursor: pointer;
+		user-select: none;
 	}
 }
 @media only screen and (max-width: 670px) {
