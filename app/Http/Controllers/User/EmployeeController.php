@@ -203,7 +203,7 @@ class EmployeeController extends Controller
             'ud.fire_cause',
             'ud.applied',
         ]);
-        dd($users);
+
         foreach ($users as $key => $user) {
 
             $_user = User::withTrashed()->find($user->id);
@@ -233,7 +233,7 @@ class EmployeeController extends Controller
                 continue;
             } 
             
-
+            dd($users);
             $user->created_at = Carbon::parse($user->created_at)->addHours(6)->format('Y-m-d H:i:s');
     
             if($user->applied) {
