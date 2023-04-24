@@ -70,7 +70,7 @@ export default {
 					})
 					return users
 				}, []),
-				profile_groups: this.profileGroups.filter(group => !group.deleted_at),
+				profile_groups: this.profileGroups.filter(group => group.active),
 				positions: this.positions.filter(pos => !pos.deleted_at).map(pos => ({
 					id: pos.id,
 					name: pos.position

@@ -2,7 +2,7 @@
 	<div class="ChatNewChat">
 		<div class="ChatNewChat-header mb-4">
 			<div class="ChatNewChat-title">
-				Новое сообщение
+				Новый чат
 			</div>
 			<div
 				class="ChatNewChat-close ChatIcon-parent ml-a"
@@ -12,43 +12,27 @@
 			</div>
 		</div>
 
+		<input
+			type="text"
+			v-model="title"
+			class="ChatNewChat-input mb-5"
+			placeholder="Название группы"
+		>
+
 		<JobtronSearch
 			class="mb-5"
 			v-model="search"
 		/>
 
-		<ChatNewChatTabs
-			class="mb-5"
-			v-model="tab"
-		/>
-
 		<div class="ChatNewChat-content">
 			<AccessSelect
-				v-if="tab === 'chat'"
-				v-model="selectedPrivate"
-				:tabs="[]"
-				submit-button="Отправить"
-				:submit-disabled="requestProcess"
-				:search-position="''"
-				:single="true"
-				:access-dictionaries="accessDictionaries"
-				@submit="submitChat"
-				class="ChatNewChat-select"
-			/>
-			<input
-				v-if="tab === 'group'"
-				type="text"
-				v-model="title"
-				class="ChatNewChat-input mb-5"
-			>
-			<AccessSelect
-				v-if="tab === 'group'"
 				v-model="selectedTargets"
 				:tabs="['Сотрудники', 'Отделы', 'Должности']"
 				submit-button="Создать группу"
 				:submit-disabled="requestProcess"
 				:search-position="''"
 				:access-dictionaries="accessDictionaries"
+				:search="search"
 				@submit="submitGroup"
 				class="ChatNewChat-select"
 			/>
@@ -58,7 +42,6 @@
 
 <script>
 import {mapActions, mapGetters} from 'vuex'
-import ChatNewChatTabs from './ChatNewChatTabs'
 import JobtronSearch from '@ui/Search'
 import AccessSelect from '@ui/AccessSelect/AccessSelect'
 import {
@@ -69,13 +52,12 @@ export default {
 	name: 'ChatNewChat',
 	components: {
 		JobtronSearch,
-		ChatNewChatTabs,
 		AccessSelect,
 		ChatIconSearchClose,
 	},
 	data(){
 		return {
-			title: 'Новая группа',
+			title: '',
 			selectedPrivate: [],
 			selectedTargets: [],
 			requestProcess: false,
@@ -107,7 +89,7 @@ export default {
 					})
 					return users
 				}, []),
-				profile_groups: this.profileGroups.filter(group => !group.deleted_at),
+				profile_groups: this.profileGroups.filter(group => group.active),
 				positions: this.positions.filter(pos => !pos.deleted_at).map(pos => ({
 					id: pos.id,
 					name: pos.position
