@@ -167,6 +167,8 @@ export default {
 			'leftChat',
 			'pinChat',
 			'unpinChat',
+			'muteChat',
+			'unmuteChat',
 			'removeChat',
 			'setLoading',
 			'toggleInfoPanel',
@@ -220,7 +222,8 @@ export default {
 		},
 		contextToggleMuted(){
 			this.contextMenuVisible = false
-			this.$toast('Функционал в разработке')
+			if(this.contextMenuChat.is_mute) return this.unmuteChat(this.contextMenuChat.id)
+			this.muteChat(this.contextMenuChat.id)
 		}
 	}
 }
