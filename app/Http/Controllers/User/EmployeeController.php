@@ -261,7 +261,7 @@ class EmployeeController extends Controller
 
 
         }
-
+        dd($users);
 
         ////////////////////////
        
@@ -272,8 +272,7 @@ class EmployeeController extends Controller
             $title = 'Сотрудники: ' . date('Y-m-d') . '.xlsx';
             return Excel::download($export, $title);
         }   
-            
-        dd($users);
+
             
         $users = $users->values();
         
