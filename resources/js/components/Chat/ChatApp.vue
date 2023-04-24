@@ -82,16 +82,9 @@ export default {
 	directives: {
 		clickOutside
 	},
-	watch: {
-		isOpen: function (val) {
-			if (val) {
-				// set div messenger__open class
-				document.body.classList.add('messenger__open');
-			}
-			else {
-				// remove div messenger__open class
-				document.body.classList.remove('messenger__open');
-			}
+	provide(){
+		return {
+			ChatApp: this
 		}
 	},
 	data() {
@@ -118,6 +111,18 @@ export default {
 		},
 		isChatSelected(){
 			return !!this.chat
+		}
+	},
+	watch: {
+		isOpen: function (val) {
+			if (val) {
+				// set div messenger__open class
+				document.body.classList.add('messenger__open');
+			}
+			else {
+				// remove div messenger__open class
+				document.body.classList.remove('messenger__open');
+			}
 		}
 	},
 	created() {

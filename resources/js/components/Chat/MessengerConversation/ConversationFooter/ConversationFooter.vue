@@ -8,6 +8,7 @@
 			:handles="['tm']"
 			:draggable="false"
 			:prevent-deactivation="true"
+			@resizestop="onResizeStop"
 		>
 			<div class="messenger__box-footer messenger__box-footer-border">
 				<SpectrumAnalyser
@@ -172,6 +173,9 @@ export default {
 		ChatIconSend,
 		VueDraggableResizable,
 	},
+	inject: [
+		'ChatApp'
+	],
 	data() {
 		return {
 			body: '',
@@ -254,6 +258,9 @@ export default {
 		closeCitation(event) {
 			event.stopPropagation();
 			this.citeMessage(null);
+		},
+		onResizeStop(){
+			this.ChatApp.$emit('FooterResized')
 		},
 		handleError(error) {
 			console.error('ConversationFooter', error)
