@@ -48,10 +48,10 @@
 		<Popup
 			v-if="popFAQ"
 			title="Вопросы и ответы"
-			desc="Дополнительное поле с описанием функционала данного окна"
+			desc="Часто задаваемые вопрпосы и ГИД по системе jobjtron"
 			:open="popFAQ"
 			@close="popFAQ=false"
-			width="50%"
+			width="80%"
 		>
 			<popup-faq />
 		</Popup>
