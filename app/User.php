@@ -36,6 +36,7 @@ use Illuminate\Notifications\Notifiable;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use InvalidArgumentException;
 use Spatie\Permission\Traits\HasRoles;
 use App\Models\WorkChart\WorkChartModel;
 use App\Models\WorkChart\Workday;
@@ -1262,6 +1263,21 @@ class User extends Authenticatable implements Authorizable
     public function workChart(): BelongsTo
     {
         return $this->belongsTo(WorkChartModel::class);
+    }
+
+    /**
+     * @return int[]
+     */
+    public function getCountWorkDays(): array
+    {
+        $type = $this->getWorkChart()->name;
+
+        return match ($type) {
+            "6-1" => [6,0],
+            "5-2" => [0],
+            "1-1", "2-2", "3-3" => [5,6,0],
+            default => throw new InvalidArgumentException("Invalid chart type"),
+        };
     }
 
     public function getWorkChart(): ?WorkChartModel {
