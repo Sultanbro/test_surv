@@ -1268,10 +1268,10 @@ class User extends Authenticatable implements Authorizable
     /**
      * @return int[]
      */
-    public function getCountWorkDays(): array
+    public function getCountWorkDays(
+        string $type
+    ): array
     {
-        $type = $this->getWorkChart()?->name;
-
         return match ($type) {
             "6-1" => [0],
             "5-2" => [6,0],
