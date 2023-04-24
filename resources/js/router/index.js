@@ -1,4 +1,3 @@
-import Vue from 'vue'
 import VueRouter from 'vue-router'
 
 import ProfileView from '@/views/ProfileView'
@@ -61,15 +60,6 @@ const router = new VueRouter({
 				menuItem: 'news',
 			},
 		},
-		// ???.blade.php
-		// {
-		//     path: '/structure',
-		//     name: 'StructureView',
-		//     component: StructureView,
-		//     meta: {
-		//         title: 'Структура компании',
-		//     },
-		// },
 		// admin/books.blade.php
 		{
 			path: '/kb',
@@ -280,7 +270,7 @@ const router = new VueRouter({
 	],
 })
 
-const DEFAULT_TITLE = 'Jobtron.org';
+
 const viewport = document.querySelector('meta[name="viewport"]');
 router.beforeEach((to, from, next) => {
 	viewport.content = ' ';
@@ -289,13 +279,4 @@ router.beforeEach((to, from, next) => {
 	}
 	next();
 });
-router.afterEach(to => {
-	// Use next tick to handle router history correctly
-	// see: https://github.com/vuejs/vue-router/issues/914#issuecomment-384477609
-	Vue.nextTick(() => {
-		document.title = to.meta.title || DEFAULT_TITLE
-		document.body.className = to.meta.bodyClass || ''
-	})
-});
-
 export default router

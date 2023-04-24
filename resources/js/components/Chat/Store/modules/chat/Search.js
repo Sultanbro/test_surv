@@ -44,6 +44,7 @@ export default {
 		chatSearchFilesResults: state => state.chatSearchFilesResults,
 		searchType: state => state.searchType,
 		isSearchFocus: state => state.searchFocus,
+		chatSearchFilesFiles: state => state.chatSearchFilesResults.reduce((files, message) => files.concat(message.files), [])
 	},
 	actions: {
 		async findContacts({commit}, username) {
@@ -85,14 +86,17 @@ export default {
 				commit('clearMessagesSearchResults');
 			}
 		},
-		async findMessagesInChat({commit}, {text, chat_id, date}) {
-			if (text.length > 1) {
-				await API.searchMessages(text, chat_id, date, false, messages => {
-					commit('setChatMessagesResults', messages);
-				});
-			} else {
-				commit('setChatMessagesResults', []);
-			}
+		async findMessagesInChat({commit}, {text, chat_id, date, year, month}) {
+			await API.searchMessages({
+				search: text,
+				chatId: chat_id,
+				date,
+				onlyFiles: false,
+				year,
+				month,
+			}, messages => {
+				commit('setChatMessagesResults', messages);
+			});
 		},
 		async findFilesInChat({commit}, {text, chat_id}) {
 			if (text.length > 1) {
@@ -100,7 +104,8 @@ export default {
 					commit('setChatFilesResults', files);
 				});
 			} else {
-				commit('setChatFilesResults', []);
+				const {data} = await API.allFiles(chat_id)
+				commit('setChatFilesResults', data.data);
 			}
 		},
 		async setCurrentChatContacts({commit}, contacts) {
