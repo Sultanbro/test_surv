@@ -157,7 +157,11 @@ export default {
 </script>
 
 <style lang="scss">
-
+#messenger_gallery{
+	.slides{
+		padding: 50px 0;
+	}
+}
 /*noinspection CssUnusedSymbol*/
 body.messenger__open {
 	overflow: hidden;
