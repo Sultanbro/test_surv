@@ -121,6 +121,10 @@ export default {
 		single: {
 			type: Boolean,
 			default: false
+		},
+		search: {
+			type: String,
+			default: ''
 		}
 	},
 	data(){
@@ -133,6 +137,9 @@ export default {
 	watch: {
 		value(value){
 			this.accessList = typeof value === 'string' ? value : JSON.parse(JSON.stringify(value))
+		},
+		search(value){
+			this.accessSearch = value
 		},
 		selectedTab(value){
 			if(value === 'Все') return this.$emit('input', 'all')

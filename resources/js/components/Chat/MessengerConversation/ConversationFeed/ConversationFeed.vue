@@ -140,6 +140,9 @@ export default {
 		ConversationServiceMessage,
 		ContextMenu,
 	},
+	inject: [
+		'ChatApp'
+	],
 	data() {
 		return {
 			contextMenuVisible: false,
@@ -169,10 +172,21 @@ export default {
 			'isLoading',
 		]),
 	},
+	watch: {
+		messages(){
+			this.scrollBottom()
+		}
+	},
+	mounted(){
+		this.ChatApp.$on('FooterResized', this.scrollBottom)
+	},
 	updated() {
 		if (this.scrollingPosition !== -1) {
 			this.scroll();
 		}
+	},
+	beforeUnmount(){
+		this.ChatApp.$off('FooterResized', this.scrollBottom)
 	},
 	methods: {
 		...mapActions([
@@ -301,6 +315,12 @@ export default {
 	align-self: stretch;
 	background: url('../../../../../assets/chat/bg.jpg') repeat, #F7F8FA;
 	background-size: cover;
+	padding-bottom: 20px;
+}
+#messenger__messages{
+	> div:last-of-type{
+		margin-bottom: 25px;
+	}
 }
 .messenger__container-scroll {
 	display: flex;

@@ -17,7 +17,7 @@
 		<div class="ChatUserListUser-info">
 			<div
 				class="ChatUserListUser-name"
-				@contextmenu.prevent="setAdmin"
+				@click="setAdmin"
 			>
 				{{ title }}
 				<span
@@ -108,7 +108,7 @@ export default {
 		},
 		isAdmin(){
 			if(!this.user) return false
-			return this.user.pivot.is_admin
+			return this.user.pivot?.is_admin
 		},
 	},
 	methods: {
@@ -118,7 +118,7 @@ export default {
 		]),
 		setAdmin(){
 			if(!this.owner) return
-			const payload = this.user.pivot.is_admin ? {
+			const payload = this.isAdmin ? {
 				method: 'unsetChatAdmin',
 				title: 'Забрать права администратора?',
 				message: `Вы уверены, что хотите забрать права администратора у пользователя ${this.user.name}?`,
@@ -154,6 +154,8 @@ export default {
 	justify-content: flex-start;
 	align-items: stretch;
 	gap: 15px;
+
+	user-select: none;
 	/* &-avatar{} */
 	&-info{
 		display: flex;

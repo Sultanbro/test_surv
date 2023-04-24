@@ -7,7 +7,7 @@
 			:actions="actions"
 			:owner="owner"
 			class="ChatUserList-user"
-			@action="onAction"
+			@remove="onRemove"
 		/>
 	</div>
 </template>
@@ -34,8 +34,8 @@ export default {
 		}
 	},
 	methods: {
-		onAction(payload){
-			this.$emit('action', payload)
+		onRemove(payload){
+			this.$emit('remove', payload)
 		}
 	}
 }

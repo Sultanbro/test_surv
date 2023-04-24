@@ -8,7 +8,10 @@
 				v-if="chat"
 				class="messenger__info-wrapper"
 			>
-				<div class="messenger__info-wrapper_avatar">
+				<div
+					class="messenger__info-wrapper_avatar"
+					@click="changeAvatar"
+				>
 					<JobtronAvatar
 						:title="chat.title"
 						:image="avatar"
@@ -66,46 +69,103 @@
 							class="messenger__chat-name_overlay"
 							ref="messengerChatNameUsers"
 						>
-							<span
+							<div
 								v-for="member in firstTenUsers"
 								:key="member.id"
 								class="messenger__chat-name_members"
-								@click="changeAdmin(member)"
+								@click="showUserPopup(member)"
 							>
 								<JobtronAvatar
 									:title="`${member.name} ${member.last_name}`"
 									:image="'/users_img/' + member.img_url"
 									:size="27"
 									:class="{
-										'messenger__chat-name_member-admin': chat.users.find(u => u.id === member.id).pivot.is_admin
+										'messenger__chat-name_member-admin': chat.users.find(u => u.id === member.id).pivot ? chat.users.find(u => u.id === member.id).pivot.is_admin : false
 									}"
 								/>
 								<template v-if="showMembersNames">
 									{{ member.name }}
 								</template>
-							</span>
+								<PopupMenu
+									v-if="userPopup === member.id"
+									v-click-outside="toggleUserPopupIfShown"
+									position="bottomLeft"
+								>
+									<div
+										v-if="isAdmin"
+										class="PopupMenu-item wsnw ChatIcon-parent"
+										@click="userPopup === 0; changeAdmin(member)"
+									>
+										{{ (chat.users.find(u => u.id === member.id).pivot ? chat.users.find(u => u.id === member.id).pivot.is_admin : false) ? 'Забрать права админа' : 'Сделать админом' }}
+									</div>
+									<div
+										class="PopupMenu-item wsnw ChatIcon-parent"
+										@click="userPopup === 0; openChat(member)"
+									>
+										Написать сообщение
+									</div>
+									<div
+										v-if="isAdmin"
+										class="PopupMenu-item wsnw ChatIcon-parent"
+										@click="userPopup === 0; removeFromChat(member)"
+									>
+										Удалить из чата
+									</div>
+								</PopupMenu>
+							</div>
 							<span
 								v-if="members.length > firstTenUsers.length"
 								class="messenger__chat-more__names"
 							>
 								еще {{ otherUsers.length }}+
 								<span class="messenger__chat-more__names-popup">
-									<span
-										v-for="user in otherUsers"
-										:key="user.id"
-										class="messenger__chat-more__names-popup-item"
-										@click="changeAdmin(user)"
-									>
-										<JobtronAvatar
-											:title="`${user.name} ${user.last_name}`"
-											:image="'/users_img/' + user.img_url"
-											:size="24"
-											:class="{
-												'messenger__chat-name_member-admin': chat.users.find(u => u.id === user.id).pivot.is_admin
-											}"
-										/>
-										{{ `${user.name} ${user.last_name}` }}
-									</span>
+									<div class="messenger__chat-more__names-popup-scroll">
+										<span
+											v-for="user in otherUsers"
+											:key="user.id"
+											class="messenger__chat-more__names-popup-item"
+											@click="showUserPopup(user)"
+										>
+											<JobtronAvatar
+												:title="`${user.name} ${user.last_name}`"
+												:image="'/users_img/' + user.img_url"
+												:size="24"
+												:class="{
+													'messenger__chat-name_member-admin': chat.users.find(u => u.id === user.id).pivot ? chat.users.find(u => u.id === user.id).pivot.is_admin : false
+												}"
+											/>
+											{{ `${user.name} ${user.last_name}` }}
+										</span>
+									</div>
+									<template v-for="user in otherUsers">
+										<PopupMenu
+											v-if="userPopup === user.id"
+											:key="user.id"
+											v-click-outside="toggleUserPopupIfShown"
+											position="bottomLeft"
+										>
+											<div
+												v-if="isAdmin"
+												class="PopupMenu-item wsnw ChatIcon-parent"
+												@click="userPopup === 0; changeAdmin(user)"
+											>
+												{{ (chat.users.find(u => u.id === user.id).pivot ? chat.users.find(u => u.id === user.id).pivot.is_admin : false) ? 'Забрать права админа' : 'Сделать админом' }}
+											</div>
+											<div
+												class="PopupMenu-item wsnw ChatIcon-parent"
+												@click="userPopup === 0; openChat(user)"
+											>
+												Написать сообщение
+											</div>
+											<div
+												v-if="isAdmin"
+												class="PopupMenu-item wsnw ChatIcon-parent"
+												@click="userPopup === 0; removeFromChat(user)"
+											>
+												Удалить из чата
+											</div>
+										</PopupMenu>
+									</template>
 								</span>
 							</span>
 						</div>
@@ -226,6 +286,7 @@ export default {
 			showMembersNames: false,
 			editTitle: false,
 			isPopup: false,
+			userPopup: 0,
 		};
 	},
 	computed: {
@@ -238,7 +299,8 @@ export default {
 		},
 		isAdmin() {
 			if(!this.chat?.users) return false
-			return this.chat.users.find(user => user.id === this.user.id).pivot.is_admin;
+			const user = this.chat.users.find(user => user.id === this.user.id)
+			return user.pivot?.is_admin
 		},
 		firstTenUsers(){
 			if(this.members.length < 11) return this.members
@@ -278,6 +340,8 @@ export default {
 			'unpinChat',
 			'muteChat',
 			'unmuteChat',
+			'loadChat',
+			'removeMembers',
 		]),
 		changeAvatar() {
 			if (this.chat.private) {
@@ -326,7 +390,7 @@ export default {
 				return;
 			}
 			if (this.isAdmin) {
-				if (user.pivot.is_admin) {
+				if (user.pivot?.is_admin) {
 					this.$root.$emit('messengerConfirm', {
 						title: 'Забрать права администратора?',
 						message: 'Вы уверены, что хотите забрать права администратора у пользователя ' + user.name + '?',
@@ -403,6 +467,23 @@ export default {
 		togglePopupIfShown(){
 			if(!this.isPopup) return
 			this.isPopup = false
+		},
+		toggleUserPopupIfShown(){
+			if(!this.userPopup) return
+			this.userPopup = 0
+		},
+		showUserPopup(user){
+			setTimeout(() => {
+				this.userPopup = user.id
+			}, 100)
+		},
+		openChat(user){
+			this.loadChat({chatId: 'user' + user.id})
+		},
+		removeFromChat(user){
+			this.removeMembers([
+				user
+			])
 		}
 	}
 }
@@ -523,7 +604,7 @@ export default {
 .messenger__chat-name_members {
 	display: block;
 	margin-right: -10px;
-	outline: 1px solid #fff;
+	position: relative;
 }
 .messenger__chat-name_members
 .JobtronAvatar{
@@ -542,11 +623,8 @@ export default {
 .messenger__chat-more__names-popup{
 	display: none;
 	min-width: 100px;
-	max-height: 30vh;
 	border-radius: 8px;
 	padding: 10px 0;
-
-	overflow-y: auto;
 
 	position: absolute;
 	z-index: 1000;
@@ -558,6 +636,11 @@ export default {
 }
 .messenger__chat-more__names:hover .messenger__chat-more__names-popup{
 	display: block;
+}
+
+.messenger__chat-more__names-popup-scroll{
+	max-height: 30vh;
+	overflow-y: auto;
 }
 
 .messenger__chat-more__names-popup-item{

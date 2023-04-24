@@ -31,12 +31,12 @@
 			<!-- Аватар -->
 			<div class="ChatInfo-logo">
 				<InputFile
-					v-if="isEdit && !chat.private"
+					v-if="!chat.private"
 					accept="image/*"
 					@change="onChangeAvatar"
 				>
 					<JobtronAvatar
-						v-if="chat.image"
+						v-if="!isEdit || avatar"
 						:image="avatar"
 						:title="chat.title"
 						:size="120"
@@ -165,7 +165,7 @@
 			<div
 				v-if="isOwner"
 				class="ChatInfo-delete ChatIcon-active_red ml-a"
-				@click="updateChatTitle"
+				@click="onDeleteChat"
 			>
 				Удалить чат
 				<ChatIconHistoryDelete />
@@ -237,7 +237,7 @@ export default {
 			})
 		},
 		isAdmin() {
-			return this.chat.users.find(user => user.id === this.user.id).pivot.is_admin;
+			return this.chat.users.find(user => user.id === this.user.id).pivot?.is_admin;
 		},
 		isOwner() {
 			return this.chat.owner_id === this.user.id
@@ -266,6 +266,7 @@ export default {
 			'toggleChatSearchMode',
 			'editChatTitle',
 			'removeMembers',
+			'removeChat',
 			'uploadChatAvatar',
 			'toggleAddUserDialog',
 		]),
@@ -302,6 +303,10 @@ export default {
 			if(files && files[0]){
 				this.uploadChatAvatar(files[0])
 			}
+		},
+		onDeleteChat(){
+			if(!confirm('Вы действительно хотите удалить чат?')) return
+			this.removeChat(this.chat)
 		}
 	}
 }
@@ -477,6 +482,7 @@ export default {
 		gap: 20px;
 		color: #FF2C52;
 		cursor: pointer;
+		user-select: none;
 	}
 }
 @media only screen and (max-width: 670px) {

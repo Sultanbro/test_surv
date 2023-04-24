@@ -69,11 +69,13 @@ export default {
 		setChatAdmin(state, userId) {
 			const user = state.chat.users.find(user => user.id === userId)
 			if(!user) return
+			if(!user.pivot) user.pivot = {}
 			user.pivot.is_admin = 1
 		},
 		unsetChatAdmin(state, userId) {
 			const user = state.chat.users.find(user => user.id === userId)
 			if(!user) return
+			if(!user.pivot) user.pivot = {}
 			user.pivot.is_admin = 0
 		},
 		muteChat(state, chatId){
@@ -84,6 +86,13 @@ export default {
 			const chat = state.chats.find(chat => chat.id === chatId)
 			chat.is_mute = false
 		},
+		changeChatAvatar(state, {chatId, image}){
+			const chat = state.chats.find(chat => chat.id === chatId)
+			if(chat) chat.image = image
+			if(state.chat){
+				state.chat.image = image
+			}
+		}
 	},
 	getters: {
 		chats: state => state.chats,
@@ -165,7 +174,7 @@ export default {
 			for (let member of members) {
 				await API.addUserToChat(getters.chat.id, member.id);
 			}
-			commit('addMembers', members);
+			commit('addMembers', members.map(member => getters.users.find(user => user.id === member.id)));
 		},
 		async removeMembers({commit, getters}, members) {
 			for (let member of members) {
@@ -177,8 +186,12 @@ export default {
 			await API.editChat(getters.chat.id, getters.chat.title, getters.chat.description);
 			commit('updateChat', getters.chat);
 		},
-		async uploadChatAvatar({getters}, file) {
-			await API.uploadChatAvatar(getters.chat.id, file);
+		async uploadChatAvatar({commit, getters}, file) {
+			const { data } = await API.uploadChatAvatar(getters.chat.id, file);
+			commit('changeChatAvatar', {
+				chatId: getters.chat.id,
+				image: data.image,
+			})
 		},
 		async pinChat({commit}, chat) {
 			await API.pinChat(chat.id);

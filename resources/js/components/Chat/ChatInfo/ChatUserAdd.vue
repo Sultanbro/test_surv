@@ -66,11 +66,12 @@ export default {
 						id: user.id,
 						name: `${user.name} ${user.last_name}`,
 						avatar: `/users_img/${user.img_url}`,
-						position: this.positionMap[user.position_id]
+						img_url: user.img_url,
+						position: this.positionMap[user.position_id],
 					})
 					return users
 				}, []),
-				profile_groups: this.profileGroups.filter(group => !group.deleted_at),
+				profile_groups: this.profileGroups.filter(group => group.active),
 				positions: this.positions.filter(pos => !pos.deleted_at).map(pos => ({
 					id: pos.id,
 					name: pos.position
