@@ -49,7 +49,6 @@ class CheckLate extends Command
 
         $users = User::query()->withWhereHas('user_description', fn ($query) => $query->where('is_trainee', 0))
             ->orderBy('last_name', 'asc')
-            ->where('id', 6293)
             ->get();
      
         foreach($users as $user)
