@@ -600,7 +600,7 @@ class Salary extends Model
                 $userWorkHours = $schedule['end']->diffInHours($schedule['start']) - $lunchTime;
                 $working_hours = max($userWorkHours, 0);
 
-                $ignore = $user->getCountWorkDays($user->getWorkChart()->name);   // Какие дни не учитывать в месяце
+                $ignore = $user->getCountWorkDays();   // Какие дни не учитывать в месяце
 
                 $workdays = workdays($date->year, $date->month, $ignore);
             
