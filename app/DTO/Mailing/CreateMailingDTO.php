@@ -8,6 +8,7 @@ use App\DTO\BaseDTO;
 final class CreateMailingDTO extends BaseDTO
 {
     /**
+     * @param string $name
      * @param string $title
      * @param array $recipients
      * @param array $date
@@ -15,6 +16,7 @@ final class CreateMailingDTO extends BaseDTO
      * @param array<string> $typeOfMailing
      */
     public function __construct(
+        public string $name,
         public string $title,
         public array $recipients,
         public array $date,
@@ -29,6 +31,7 @@ final class CreateMailingDTO extends BaseDTO
     public function toArray(): array
     {
         return [
+            'name'       => $this->name,
             'title'      => $this->title,
             'recipients' => $this->recipients,
             'days'       => $this->date,

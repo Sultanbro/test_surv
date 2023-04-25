@@ -30,6 +30,7 @@ class CreateMailingRequest extends BaseFormRequest
     public function rules(): array
     {
         return [
+            'name'              => 'required|string',
             'title'             => 'required|min:3|max:244',
             'recipients'        => ['required', 'array', new ValidateByType],
             'recipients.*.id'   => 'required|integer',
@@ -59,6 +60,7 @@ class CreateMailingRequest extends BaseFormRequest
     {
         $validated  = $this->validated();
 
+        $name       = Arr::get($validated, 'name');
         $title      = Arr::get($validated, 'title');
         $recipients = Arr::get($validated, 'recipients');
         $date       = Arr::get($validated, 'date');
@@ -66,6 +68,7 @@ class CreateMailingRequest extends BaseFormRequest
         $typeOfMailing  = Arr::get($validated, 'type_of_mailing');
 
         return new CreateMailingDTO(
+            $name,
             $title,
             $recipients,
             $date,

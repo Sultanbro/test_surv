@@ -15,6 +15,7 @@ return new class extends Migration
     {
         Schema::create('mailing_notifications', function (Blueprint $table) {
             $table->id();
+            $table->string('name')->nullable();
             $table->string('title')->nullable();
             $table->unsignedBigInteger('created_by');
 

@@ -10,6 +10,7 @@ use Illuminate\Support\Carbon;
 
 /**
  * @property int $id
+ * @property string $name
  * @property string $title
  * @property string $type_of_mailing
  * @property string $frequency
@@ -26,6 +27,7 @@ class MailingNotification extends Model
     use HasFactory;
 
     protected $fillable = [
+        'name',
         'title',
         'type_of_mailing',
         'frequency',

@@ -24,7 +24,13 @@ class CreateMailingService
     ): bool
     {
         DB::transaction(function () use ($dto){
-            $notification =MailingFacade::createNotification($dto->title, $dto->typeOfMailing, $dto->date['frequency'], $dto->time);
+            $notification =MailingFacade::createNotification(
+                $dto->name,
+                $dto->title,
+                $dto->typeOfMailing,
+                $dto->date['frequency'],
+                $dto->time
+            );
 
             foreach ($dto->recipients as $recipient)
             {

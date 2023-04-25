@@ -64,9 +64,9 @@ class MailingController extends Controller
      */
     public function delete(int $id): JsonResponse
     {
-        $userId = \Auth::id() ?? 5;
+        $ownerId = \Auth::id() ?? 5;
 
-        if (!MailingFacade::isOwner($id, $userId))
+        if (!MailingFacade::isOwner($id, $ownerId))
         {
             return $this->response(message: "You don't have permission", data: 403);
         }

@@ -12,13 +12,15 @@ use Illuminate\Support\Collection;
 class Mailing
 {
     /**
+     * @param string $name
      * @param string $title
      * @param array $typeOfMailing
      * @param string $frequency
      * @param string $time
-     * @return Model<MailingNotification>
+     * @return Model
      */
     public function createNotification(
+        string $name,
         string $title,
         array $typeOfMailing,
         string $frequency,
@@ -26,11 +28,12 @@ class Mailing
     ): Model
     {
         return MailingNotification::query()->create([
-            'title' => $title,
-            'type_of_mailing' => json_encode($typeOfMailing),
-            'frequency' => $frequency,
-            'time' => $time,
-            'created_by' => \Auth::id() ?? 5
+            'name'              => $name,
+            'title'             => $title,
+            'type_of_mailing'   => json_encode($typeOfMailing),
+            'frequency'         => $frequency,
+            'time'              => $time,
+            'created_by'        => \Auth::id() ?? 5
         ]);
     }
 
@@ -70,8 +73,8 @@ class Mailing
      * @return bool
      */
     public function isOwner(
-        int $ownerId,
-        int $id
+        int $id,
+        int $ownerId
     ): bool
     {
         return MailingNotification::query()->where('id', $id)->where('created_by', $ownerId)->exists();
