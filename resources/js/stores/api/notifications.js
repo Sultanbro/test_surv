@@ -1,4 +1,5 @@
 /** @module stores/api/partal */
+/// <reference path="./notifications.d.ts" />
 import axios from 'axios'
 
 /**
@@ -25,6 +26,44 @@ export async function setNotificationsRead(request){
 export async function setNotificationsReadAll(){
 	const { data } = await axios.post('/notifications/set-read-all/', {})
 	return data
+}
+
+/**
+ * Получение вариантов уведомлений для настроек
+ */
+export async function fetchNotificationVariants(){
+	return [{
+		id: 1,
+		title: 'Lorem ipsum dolor, sit amet consectetur adipisicing elit. Tempore laboriosam nisi, quia repudiandae quaerat accusamus modi itaque repellendus odio consectetur qui voluptas id mollitia. Ipsum omnis sed repudiandae eum optio!',
+		recipients: [
+			{
+				id: 5,
+				type: 1
+			},
+			{
+				id: 26,
+				type: 2
+			},
+			{
+				id: 47,
+				type: 3
+			}
+		],
+		date: {
+			days: [1, 7],
+			frequency: 'weekly'
+		},
+		time: '10:00',
+		type_of_mailing: ['jobtron', 'bitrix'],
+		created_at: '2023-04-25T04:26:22.302Z',
+		updated_at: '2023-04-25T04:26:22.302Z',
+		// deleted_at: '2023-04-25T04:26:22.302Z',
+		created_by: {
+			id: 5,
+			name: 'Василий',
+			last_name: 'Пупкин'
+		}
+	}]
 }
 
 /**
