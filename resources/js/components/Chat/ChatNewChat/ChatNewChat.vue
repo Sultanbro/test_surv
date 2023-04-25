@@ -67,6 +67,7 @@ export default {
 	},
 	computed: {
 		...mapGetters([
+			'user',
 			'users',
 			'positions',
 			'profileGroups',
@@ -81,6 +82,7 @@ export default {
 			return {
 				users: this.users.reduce((users, user) => {
 					if(user.deleted_at) return users
+					if(user.id === this.user.id) return users
 					users.push({
 						id: user.id,
 						name: `${user.name} ${user.last_name}`,
@@ -111,7 +113,10 @@ export default {
 					result.push(...this.users.filter(user => user.position === target.id))
 					break
 				}
-				return result
+
+				return result.filter((user, index, array) => {
+					return array.findIndex(u => u.id === user.id) === index;
+				})
 			}, [])
 		}
 	},

@@ -9,7 +9,7 @@ export default {
 				dispatch('init', true);
 			}
 		},
-		async loadCompany({commit}) {
+		async loadCompany({commit, getters}) {
 			await API.fetchCompany(company => {
 				const companyStore = useCompanyStore()
 				commit('setUsers', company.users);
@@ -19,6 +19,7 @@ export default {
 						activeUsers: companyStore.dictionaries.users.reduce((users, user) => {
 							// serchForUserGroups in news dictionaries
 							if(user.deleted_at) return users
+							if(user.id === getters.user.id) return users
 							if(user.profile_group && user.profile_group.id === group.id){
 								users.push(user.id)
 							}
