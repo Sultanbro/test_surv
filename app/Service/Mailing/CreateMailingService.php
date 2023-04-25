@@ -15,12 +15,12 @@ use Throwable;
 class CreateMailingService
 {
     /**
-     * @param CreateMailingDTO $dto
+     * @param BaseDTO<CreateMailingDTO> $dto
      * @return bool
      * @throws Throwable
      */
     public function handle(
-        CreateMailingDTO $dto
+        BaseDTO $dto
     ): bool
     {
         DB::transaction(function () use ($dto){
@@ -28,25 +28,16 @@ class CreateMailingService
 
             foreach ($dto->recipients as $recipient)
             {
-                /**
-                 * User
-                 */
                 if ($recipient['type'] == 1)
                 {
                     MailingFacade::createSchedule($recipient['id'], 'App/User', $notification->id, $dto->date['days']);
                 }
 
-                /**
-                 * ProfileGroup
-                 */
                 if ($recipient['type'] == 2)
                 {
                     MailingFacade::createSchedule($recipient['id'], 'App/ProfileGroup', $notification->id, $dto->date['days']);
                 }
 
-                /**
-                 * Position
-                 */
                 if ($recipient['type'] == 3)
                 {
                     MailingFacade::createSchedule($recipient['id'], 'App/Position', $notification->id, $dto->date['days']);

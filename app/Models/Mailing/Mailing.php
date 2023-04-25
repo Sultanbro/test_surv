@@ -7,6 +7,7 @@ use App\Service\Mailing\Types\PositionNotify;
 use App\Service\Mailing\Types\ProfileGroupNotify;
 use App\Service\Mailing\Types\UserNotify;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Collection;
 
 class Mailing
 {
@@ -28,7 +29,8 @@ class Mailing
             'title' => $title,
             'type_of_mailing' => json_encode($typeOfMailing),
             'frequency' => $frequency,
-            'time' => $time
+            'time' => $time,
+            'created_by' => \Auth::id() ?? 5
         ]);
     }
 
@@ -46,13 +48,43 @@ class Mailing
         array $days
     ): void
     {
-
         MailingNotificationSchedule::query()->create([
             'notificationable_id'   => $notificationableId,
             'notificationable_type' => $notificationableType,
             'notification_id'       => $notificationId,
             'days'                  => json_encode($days)
         ]);
+    }
 
+    /**
+     * @return Collection|null
+     */
+    public function fetchNotifications(): ?Collection
+    {
+        return MailingNotification::with('schedules')->get();
+    }
+
+    /**
+     * @param int $ownerId
+     * @param int $id
+     * @return bool
+     */
+    public function isOwner(
+        int $ownerId,
+        int $id
+    ): bool
+    {
+        return MailingNotification::query()->where('id', $id)->where('created_by', $ownerId)->exists();
+    }
+
+    /**
+     * @param int $id
+     * @return bool
+     */
+    public function deleteNotification(
+        int $id
+    ): bool
+    {
+        return MailingNotification::query()->where('id', $id)->delete();
     }
 }
