@@ -51,7 +51,8 @@ export default {
 					htmlId: 'nav-notifications',
 					path: '/timetracking/settings?tab=5',
 					title: 'Уведомления',
-					access: ['notifications_view', 'settings_view']
+					access: ['notifications_view', 'settings_view'],
+					domain: 'bp'
 				},
 				{
 					id: '10',
