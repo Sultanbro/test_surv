@@ -6,6 +6,7 @@ use App\DTO\BaseDTO;
 use App\DTO\Mailing\CreateMailingDTO;
 use App\Http\Requests\BaseFormRequest;
 use App\Rules\Mailing\ValidateByType;
+use App\Rules\Mailing\ValidateDays;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Support\Arr;
 
@@ -37,7 +38,16 @@ class CreateMailingRequest extends BaseFormRequest
              * Передаваемые типы User => 1, ProfileGroup => 2, Position => 3
              */
             'recipients.*.type' => 'required|integer',
-            'frequency' => 'required|string|in:daily,weekly,monthly'
+
+            /**
+             * Есть разные виды рассылки Bitrix24, u-marketing utc.
+             */
+            'type_of_mailing'   => 'required|array',
+
+            'date'              => ['required', 'array', new ValidateDays],
+            'date.days'         => 'required|array',
+            'date.frequency'    => 'required|string|in:weekly,monthly',
+            'time'              => 'required|string'
 
         ];
     }
@@ -51,12 +61,16 @@ class CreateMailingRequest extends BaseFormRequest
 
         $title      = Arr::get($validated, 'title');
         $recipients = Arr::get($validated, 'recipients');
-        $frequency  = Arr::get($validated, 'frequency');
+        $date       = Arr::get($validated, 'date');
+        $time       = Arr::get($validated, 'time');
+        $typeOfMailing  = Arr::get($validated, 'type_of_mailing');
 
         return new CreateMailingDTO(
             $title,
             $recipients,
-            $frequency
+            $date,
+            $time,
+            $typeOfMailing
         );
     }
 }

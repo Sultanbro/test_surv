@@ -11,6 +11,9 @@ class MailingController extends Controller
 {
     public function create(CreateMailingRequest $request, CreateMailingService $service)
     {
-
+        return $this->response(
+            message: 'Success created',
+            data: $service->handle($request->toDto())
+        );
     }
 }

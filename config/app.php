@@ -220,7 +220,7 @@ return [
         App\Providers\RepositoryServiceProvider::class, // <-- here
         Eddir\Messenger\MessengerServiceProvider::class,
         App\Providers\ObserverServiceProvider::class,
-
+        \App\Providers\MailingNotificationProvider::class
        // Spatie\Permission\PermissionServiceProvider::class,
 
     ],
