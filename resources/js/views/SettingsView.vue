@@ -5,6 +5,7 @@ const Userlist = () => import(/* webpackChunkName: "UserlistPage" */ '@/pages/us
 const Company = () => import(/* webpackChunkName: "UserlistPage" */ '@/pages/Company.vue')
 const Fines = () => import(/* webpackChunkName: "FinesPage" */ '@/pages/Fines.vue')
 const Notifications = () => import(/* webpackChunkName: "NotificationsPage" */ '@/pages/Notifications.vue')
+const NotificationsV2 = () => import(/* webpackChunkName: "NotificationsPageV2" */ '@/pages/NotificationsV2.vue')
 const Permissions = () => import(/* webpackChunkName: "PermissionsPage" */ '@/pages/Permissions.vue')
 // const CheckList = () => import(/* webpackChunkName: "checkListPage" */ '@/pages/checkList.vue')
 const Awards = () => import(/* webpackChunkName: "AwardsSettingsPage" */ '@/pages/Awards/Awards.vue')
@@ -17,6 +18,7 @@ export default {
 		Company,
 		Fines,
 		Notifications,
+		NotificationsV2,
 		Permissions,
 		Awards,
 	},
@@ -50,6 +52,14 @@ export default {
 					path: '/timetracking/settings?tab=5',
 					title: 'Уведомления',
 					access: ['notifications_view', 'settings_view']
+				},
+				{
+					id: '10',
+					htmlId: 'nav-notifications-v2',
+					path: '/timetracking/settings?tab=10',
+					title: 'Уведомления',
+					access: ['notifications_view', 'settings_view'],
+					beta: true
 				},
 				{
 					id: '6',
@@ -153,6 +163,12 @@ export default {
 													:class="{active: tab.id === activeTab}"
 												>
 													{{ tab.title }}
+													<b-badge
+														v-if="tab.beta"
+														variant="success"
+													>
+														beta
+													</b-badge>
 												</router-link>
 											</li>
 										</template>
@@ -206,6 +222,15 @@ export default {
 											:users="pageData.users"
 											:positions="pageData.positions"
 										/>
+									</div>
+									<div
+										v-if="activeTab === '10' && can(['notification_view', 'settings_view'])"
+										class="tab-pane fade show active py-3"
+										id="nav-notifications-v2"
+										role="tabpanel"
+										aria-labelledby="nav-notifications-v2-tab"
+									>
+										<NotificationsV2 />
 									</div>
 									<div
 										v-if="activeTab === '6' && can(['permissions_view', 'settings_view'])"
