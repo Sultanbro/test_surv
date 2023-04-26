@@ -1,20 +1,22 @@
 <template>
 	<div class="WeekdaysCheck">
-		<div
-			v-for="weekday, key in weekdays"
-			:key="key"
-			class="WeekdaysCheck-item ChatIcon-parent"
-			:class="{'ChatIcon-active': value.includes(key)}"
-			@click="onChange(key)"
-		>
-			<!-- ChatIconMassReaded -->
-			<div class="WeekdaysCheck-check">
-				<ChatIconMassReaded v-if="value.includes(key)" />
+		<template v-for="weekday, key in weekdays">
+			<div
+				v-if="key"
+				:key="key"
+				class="WeekdaysCheck-item ChatIcon-parent"
+				:class="{'ChatIcon-active': value.includes(key)}"
+				@click="onChange(key)"
+			>
+				<!-- ChatIconMassReaded -->
+				<div class="WeekdaysCheck-check">
+					<ChatIconMassReaded v-if="value.includes(key)" />
+				</div>
+				<div class="WeekdaysCheck-text">
+					{{ weekday }}
+				</div>
 			</div>
-			<div class="WeekdaysCheck-text">
-				{{ weekday }}
-			</div>
-		</div>
+		</template>
 	</div>
 </template>
 
@@ -36,7 +38,7 @@ export default {
 	data(){
 		return {
 			// localValue: JSON.parse(JSON.stringify(this.value)),
-			weekdays: [ 'Пн', 'Вт', 'Ср', 'Чт', 'Пт', 'Сб', 'Вс' ]
+			weekdays: [ '', 'Пн', 'Вт', 'Ср', 'Чт', 'Пт', 'Сб', 'Вс' ]
 		}
 	},
 	methods: {
@@ -57,11 +59,19 @@ export default {
 
 <style lang="scss">
 .WeekdaysCheck{
+	display: flex;
+	flex-flow: row wrap;
+	align-items: center;
+	justify-content: flex-start;
+	gap: 10px;
+
 	&-item{
 		display: flex;
 		align-items: center;
 		justify-content: flex-start;
 		gap: 8px;
+
+		cursor: pointer;
 	}
 	&-check{
 		display: flex;
@@ -74,6 +84,7 @@ export default {
 		border-radius: 3px;
 	}
 	&-text{
+		width: 2em;
 		font-weight: 600;
 		font-size: 11px;
 		line-height: 1.3;

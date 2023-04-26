@@ -3,7 +3,7 @@
 		<b-button
 			variant="success"
 			class="mb-2"
-			@click="onCreate"
+			@click="openEditSidebar()"
 		>
 			Создать уведомление
 		</b-button>
@@ -28,6 +28,7 @@
 					<b-tr
 						v-for="notification, key in notifications"
 						:key="key"
+						@click="openEditSidebar(notification)"
 					>
 						<b-td>
 							{{ key + 1 }}
@@ -55,7 +56,7 @@
 						<b-td>
 							<b-button
 								class="btn btn-danger btn-icon"
-								@click="remove(notification)"
+								@click.stop="remove(notification)"
 							>
 								<i class="fa fa-trash" />
 							</b-button>
@@ -64,52 +65,67 @@
 				</b-tbody>
 			</b-table-simple>
 		</div>
+		<SideBar
+			v-if="selectedNotification"
+			:title="selectedNotification.title || 'Новое уведомление'"
+			width="50%"
+			:open="!!selectedNotification"
+			@close="selectedNotification = null"
+		>
+			<NotificationsEditForm
+				:notification="selectedNotification"
+				@save="onSave"
+			/>
+		</SideBar>
 	</div>
 </template>
 
 <script>
-import { mapState, mapActions } from 'pinia'
-import { useCompanyStore } from '@/stores/Company'
+import { mapGetters, mapActions } from 'vuex'
 import { fetchNotificationVariants } from '@/stores/api/notifications'
+import NotificationsEditForm from '@/components/pages/Notifications/NotificationsEditForm'
+import SideBar from '@ui/Sidebar'
 
 export default {
 	name: 'NotificationsV2',
-	components: {},
+	components: {
+		SideBar,
+		NotificationsEditForm,
+	},
 	data(){
 		return {
 			notifications: null,
 			periodNames: {
 				monthly: 'по дням месяца',
 				weekly: 'по дням недели'
-			}
+			},
+			selectedNotification: null,
 		}
 	},
 	computed: {
-		...mapState(useCompanyStore, ['dictionaries', 'isReady']),
-		...mapState(useCompanyStore, {isDictionariesReady: 'isReady'}),
-		users(){
-			return this.dictionaries.users
-		},
+		...mapGetters([
+			'user',
+			'users',
+			'positions',
+			'profileGroups',
+		]),
 		groups(){
-			return this.dictionaries.profile_groups
+			return this.profileGroups
 		},
-		positions(){
-			return this.dictionaries.positions
-		}
 	},
 	watch: {
-		isDictionariesReady(){
+		users(){
 			this.fetchNotifications()
 		}
 	},
 	created(){
-		this.fetchDictionaries()
+		if(!this.users.length) this.loadCompany()
 	},
 	mounted(){
-		if(this.isDictionariesReady) this.fetchNotifications()
+		if(this.users.length) this.fetchNotifications()
 	},
 	methods: {
-		...mapActions(useCompanyStore, ['fetchDictionaries']),
+		...mapActions(['loadCompany']),
 		async fetchNotifications(){
 			const notifications = await fetchNotificationVariants()
 			this.addRecipientNames(notifications)
@@ -135,11 +151,50 @@ export default {
 		},
 		addPositionName(recipient){
 			const position = this.positions.find(position => position.id === recipient.id)
-			if(position) recipient.name = position.name
+			if(position) recipient.name = position.position
 		},
 		remove(/* notification */){
 			// this.removeNotificationVariants
-		}
+		},
+		openEditSidebar(notification){
+			if(!notification) this.selectedNotification = this.getBlankNotification()
+			else this.selectedNotification = JSON.parse(JSON.stringify(notification))
+		},
+		getBlankNotification(){
+			return {
+				id: 0,
+				title: '',
+				text: '',
+				recipients: [],
+				date: {
+					days: [],
+					frequency: 'weekly'
+				},
+				time: '10:00',
+				type_of_mailing: ['jobtron'],
+			}
+		},
+		onSave(notification){
+			if(notification.id) this.updateNotification(notification)
+			else this.createNotification(notification)
+			this.selectedNotification = null
+		},
+		createNotification(notification){
+			// call api
+			const now = new Date().toISOString()
+			this.notifications.push({
+				...notification,
+				created_at: now,
+				updated_at: now,
+				created_by: JSON.parse(JSON.stringify(this.user))
+			})
+		},
+		updateNotification(notification){
+			// call api
+			const index = this.notifications.findIndex(n => n.id === notification.id)
+			if(!~index) return
+			this.$set(this.notifications, index, notification)
+		},
 	}
 }
 </script>
@@ -152,5 +207,11 @@ export default {
 		overflow: hidden;
 		text-overflow: ellipsis;
 	}
+	.ui-sidebar.is-open{
+		.ui-sidebar__body{
+			right: 60px;
+		}
+	}
+
 }
 </style>

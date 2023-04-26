@@ -53,5 +53,45 @@ export default {
 }
 </script>
 
-<style>
+<style lang="scss">
+.DaysCheck{
+	display: flex;
+	flex-flow: row wrap;
+	align-items: center;
+	justify-content: flex-start;
+	gap: 10px;
+
+	&-item{
+		display: flex;
+		align-items: center;
+		justify-content: flex-start;
+		gap: 8px;
+
+		padding: 4px;
+
+		cursor: pointer;
+		&:hover{
+			background-color: #fff;
+		}
+	}
+	&-check{
+		display: flex;
+		align-items: center;
+		justify-content: center;
+
+		width: 15px;
+		height: 15px;
+		border: 1px solid #777;
+		border-radius: 3px;
+	}
+	&-text{
+		width: 2em;
+		font-weight: 600;
+		font-size: 11px;
+		line-height: 1.3;
+		letter-spacing: -0.04em;
+
+		color: #6181B8;
+	}
+}
 </style>

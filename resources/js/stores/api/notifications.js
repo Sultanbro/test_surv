@@ -34,7 +34,8 @@ export async function setNotificationsReadAll(){
 export async function fetchNotificationVariants(){
 	return [{
 		id: 1,
-		title: 'Lorem ipsum dolor, sit amet consectetur adipisicing elit. Tempore laboriosam nisi, quia repudiandae quaerat accusamus modi itaque repellendus odio consectetur qui voluptas id mollitia. Ipsum omnis sed repudiandae eum optio!',
+		title: 'Lorem ipsum dolor',
+		text: 'Lorem ipsum dolor, sit amet consectetur adipisicing elit. Tempore laboriosam nisi, quia repudiandae quaerat accusamus modi itaque repellendus odio consectetur qui voluptas id mollitia. Ipsum omnis sed repudiandae eum optio!',
 		recipients: [
 			{
 				id: 5,

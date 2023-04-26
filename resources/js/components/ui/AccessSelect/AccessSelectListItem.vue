@@ -75,8 +75,8 @@ export default {
 	},
 	computed: {
 		show(){
-			const inName = this.item.name.toLowerCase().includes(this.search)
-			const inPosition = this.position && this.item.position && this.item.position.toLowerCase().includes(this.search)
+			const inName = this.item?.name?.toLowerCase().includes(this.search)
+			const inPosition = this.position && this.item?.position?.toLowerCase().includes(this.search)
 			return inName || inPosition
 		}
 	}
@@ -146,11 +146,11 @@ export default {
 		opacity: 0;
 		cursor: pointer;
 
-		&:checked ~ .AccessSelectList-checkmark {
+		&:checked ~ .AccessSelectListItem-checkmark {
 			transition: all 0.3s ease;
 			background-color: #3781EF;
 		}
-		&:checked ~ .AccessSelectList-checkmark:after {
+		&:checked ~ .AccessSelectListItem-checkmark:after {
 			content: url("/icon/news/access-modal/checked.svg");
 			display: block;
 			position: absolute;
