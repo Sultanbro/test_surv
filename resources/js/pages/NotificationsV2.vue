@@ -1,12 +1,17 @@
 <template>
 	<div class="NotificationsV2">
-		<b-button
-			variant="success"
-			class="mb-2"
-			@click="openEditSidebar()"
-		>
-			Создать уведомление
-		</b-button>
+		<div class="NotificationsV2-header">
+			<b-button
+				variant="success"
+				@click="openEditSidebar()"
+			>
+				Создать уведомление
+			</b-button>
+			<b-form-input
+				v-model="search"
+				placeholder="Поиск"
+			/>
+		</div>
 
 		<div class="table-container">
 			<b-table-simple striped>
@@ -26,7 +31,7 @@
 				</b-thead>
 				<b-tbody>
 					<b-tr
-						v-for="notification, key in notifications"
+						v-for="notification, key in filteredNotifications"
 						:key="key"
 						@click="openEditSidebar(notification)"
 					>
@@ -103,6 +108,7 @@ export default {
 				weekly: 'по дням недели'
 			},
 			selectedNotification: null,
+			search: ''
 		}
 	},
 	computed: {
@@ -115,6 +121,32 @@ export default {
 		groups(){
 			return this.profileGroups
 		},
+		filteredNotifications(){
+			if(!this.search) return this.notifications
+			const lowerSearch = this.search.toLowerCase()
+			return this.notifications.filter(notification => {
+				// in name
+				if(~notification.name.toLowerCase().indexOf(lowerSearch)) return true
+
+				// in text
+				if(~notification.title.toLowerCase().indexOf(lowerSearch)) return true
+
+				// in date
+				if(~notification.created_at.toLowerCase().substring(0, 10).indexOf(lowerSearch)) return true
+
+				// in creator
+				const creator = notification.created_by
+				if(~(`${creator.name} ${creator.last_name}`.toLowerCase()).indexOf(lowerSearch)) return true
+
+				// in services
+				if(~notification.type_of_mailing.join(', ').toLowerCase().indexOf(lowerSearch)) return true
+
+				// in targets
+				if(notification.recipients.filter(rec => ~rec.name.toLowerCase().indexOf(lowerSearch)).length) return true
+
+				return false
+			})
+		}
 	},
 	watch: {
 		users(){
@@ -204,6 +236,14 @@ export default {
 
 <style lang="scss">
 .NotificationsV2{
+	&-header{
+		display: flex;
+		flex-flow: row nowrap;
+		align-items: center;
+		gap: 20px;
+
+		margin-bottom: 10px;
+	}
 	&-text{
 		max-width: 300px;
 		white-space: nowrap;
