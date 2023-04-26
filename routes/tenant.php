@@ -659,6 +659,18 @@ Route::middleware(['web','tenant', 'not_admin_subdomain'])->group(function () {
             Route::get('/get-owner', [Company\CompanyController::class, 'getCompanyOwner'])->name('get-owner');
         });
     });
+
+    Route::group([
+        'prefix' => 'mailing',
+        'as'    => 'mailing.'
+    ], function () {
+        Route::get('/', [Root\Mailing\MailingController::class, 'get']);
+        Route::get('/', [Root\Mailing\MailingController::class, 'get']);
+        Route::get('/find/{id}', [Root\Mailing\MailingController::class, 'find']);
+
+        Route::post('/', [Root\Mailing\MailingController::class, 'create']);
+        Route::delete('/{id}', [Root\Mailing\MailingController::class, 'delete']);
+    });
 });
 
 /**
