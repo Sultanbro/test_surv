@@ -67,7 +67,7 @@
 		</div>
 		<SideBar
 			v-if="selectedNotification"
-			:title="selectedNotification.title || 'Новое уведомление'"
+			:title="selectedNotification.name || 'Новое уведомление'"
 			width="50%"
 			:open="!!selectedNotification"
 			@close="selectedNotification = null"
@@ -82,7 +82,10 @@
 
 <script>
 import { mapGetters, mapActions } from 'vuex'
-import { fetchNotificationVariants } from '@/stores/api/notifications'
+import {
+	fetchNotificationVariants,
+	createNotification,
+} from '@/stores/api/notifications'
 import NotificationsEditForm from '@/components/pages/Notifications/NotificationsEditForm'
 import SideBar from '@ui/Sidebar'
 
@@ -163,8 +166,8 @@ export default {
 		getBlankNotification(){
 			return {
 				id: 0,
+				name: '',
 				title: '',
-				text: '',
 				recipients: [],
 				date: {
 					days: [],
@@ -179,8 +182,8 @@ export default {
 			else this.createNotification(notification)
 			this.selectedNotification = null
 		},
-		createNotification(notification){
-			// call api
+		async createNotification(notification){
+			await createNotification(notification)
 			const now = new Date().toISOString()
 			this.notifications.push({
 				...notification,

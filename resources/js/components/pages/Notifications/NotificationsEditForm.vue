@@ -16,7 +16,7 @@
 			</div>
 			<b-form-input
 				class="NotificationsEditForm-control"
-				v-model="value.title"
+				v-model="value.name"
 				type="text"
 				placeholder="Название"
 				required
@@ -60,7 +60,7 @@
 			</div>
 			<b-form-textarea
 				class="NotificationsEditForm-control"
-				v-model="value.text"
+				v-model="value.title"
 				placeholder="Текст уведомления"
 				rows="3"
 				max-rows="6"
@@ -200,7 +200,7 @@ export default {
 			},
 		]
 		return {
-			value: this.notification,
+			value: JSON.parse(JSON.stringify(this.notification)),
 			isRecipientsOpen: false,
 			selectedServices: this.notification.type_of_mailing.map(value => services.find(service => service.value === value)),
 			services,
@@ -253,8 +253,8 @@ export default {
 	},
 	watch: {
 		notification(){
-			this.value = this.notification
-			this.selectedServices = this.notification.type_of_mailing.map(value => this.services.find(service => service.value === value))
+			this.value = JSON.parse(JSON.stringify(this.notification))
+			this.selectedServices = this.value.type_of_mailing.map(value => this.services.find(service => service.value === value))
 		},
 		'value.date.frequency'(){
 			this.value.date.days = []
