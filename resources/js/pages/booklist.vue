@@ -4,7 +4,10 @@
 			id="left-panel"
 			class="lp"
 		>
-			<div class="form-search-kb">
+			<div
+				class="form-search-kb"
+				v-if="can_edit"
+			>
 				<i class="fa fa-search" />
 				<input
 					type="text"
