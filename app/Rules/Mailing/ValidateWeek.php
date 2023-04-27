@@ -5,7 +5,7 @@ namespace App\Rules\Mailing;
 use Carbon\Carbon;
 use Illuminate\Contracts\Validation\Rule;
 
-class ValidateDays implements Rule
+class ValidateWeek implements Rule
 {
     /**
      * Create a new rule instance.

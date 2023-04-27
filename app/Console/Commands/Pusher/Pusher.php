@@ -30,7 +30,7 @@ class Pusher extends Command
      */
     public function handle()
     {
-        $notifications = MailingNotification::with('schedules')->where('frequency', 'monthly')->get();
+        $notifications = MailingNotification::with('schedules')->where('frequency', 'daily')->get();
 
         foreach ($notifications as $notification)
         {

@@ -48,6 +48,22 @@ trait Notificationable
     }
 
     /**
+     * Метод отвечает за ежедневное уведомление.
+     *
+     * @return void
+     */
+    public function daily(): void
+    {
+        $notification = $this->mailingNotification()->first();
+        $time = now()->toTimeString();
+
+        if ($time == $notification->time)
+        {
+            $this->mailing($notification, $this);
+        }
+    }
+
+    /**
      * @param Model<MailingNotification> $notification
      * @param Model<MailingNotificationSchedule> $schedule
      * @return bool
