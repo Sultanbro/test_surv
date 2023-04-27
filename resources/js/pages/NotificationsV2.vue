@@ -156,7 +156,8 @@ export default {
 			notifications: null,
 			periodNames: {
 				monthly: 'по дням месяца',
-				weekly: 'по дням недели'
+				weekly: 'по дням недели',
+				daily: 'каждый день',
 			},
 			selectedNotification: null,
 			search: '',

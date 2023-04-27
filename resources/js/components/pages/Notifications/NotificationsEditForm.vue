@@ -206,6 +206,10 @@ export default {
 			services,
 			periods: [
 				{
+					value: 'daily',
+					text: 'Каждый жень'
+				},
+				{
 					value: 'weekly',
 					text: 'По дням недели'
 				},
