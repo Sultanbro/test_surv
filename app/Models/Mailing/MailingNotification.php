@@ -36,6 +36,9 @@ class MailingNotification extends Model
         'created_by'
     ];
 
+    const WEEKLY = 'weekly';
+    const MONTHLY = 'monthly';
+
     /**
      * @return HasMany
      */

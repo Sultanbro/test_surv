@@ -55,4 +55,26 @@ class UserNotification extends Model
             ->when(is_integer($userIds), fn($query) => $query->where('user_id', $userIds))
             ->when(is_array($userIds), fn($query) => $query->whereIn('user_id', $userIds));
     }
+
+    /**
+     * @param string $title
+     * @param string $message
+     * @param int $userId
+     * @param int $aboutId
+     * @return Model|Builder
+     */
+    public static function createNotification(
+        string $title,
+        string $message,
+        int $userId,
+        int $aboutId = 0
+    ): Model|Builder
+    {
+        return self::query()->create([
+            'title'     => $title,
+            'message'   => $message,
+            'user_id'   => $userId,
+            'about_id'  => $aboutId
+        ]);
+    }
 }

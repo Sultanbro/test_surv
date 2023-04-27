@@ -19,6 +19,7 @@ use Illuminate\Database\Eloquent\Relations\MorphMany;
 use Illuminate\Database\Query\Builder;
 use Illuminate\Database\Query\JoinClause;
 use Illuminate\Http\Request;
+use Illuminate\Support\Collection;
 use Spatie\Permission\Traits\HasRoles;
 
 class ProfileGroup extends Model
@@ -134,7 +135,7 @@ class ProfileGroup extends Model
     public function users()
     {
         return $this->belongsToMany('App\User', 'group_user', 'group_id', 'user_id')
-            ->withPivot(['from', 'to'])
+            ->withPivot(['from', 'to', 'status'])
             ->withTimestamps();
     }
 
@@ -402,5 +403,13 @@ class ProfileGroup extends Model
             ->deletedByMonthFilter(0, $date)
             ->groupeFilter($this->id, $date)
             ->getUserIds();
+    }
+
+    /**
+     * @return Collection
+     */
+    public function activeUsers(): Collection
+    {
+        return $this->users()->wherePivot('status', 'active')->get();
     }
 }

@@ -2,8 +2,11 @@
 
 namespace App\Models\Mailing;
 
+use App\Traits\Notificationable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\MorphTo;
 use Illuminate\Support\Carbon;
 
 /**
@@ -18,7 +21,7 @@ use Illuminate\Support\Carbon;
  */
 class MailingNotificationSchedule extends Model
 {
-    use HasFactory;
+    use HasFactory, Notificationable;
 
     protected $fillable = [
         'notificationable_id',
@@ -26,4 +29,17 @@ class MailingNotificationSchedule extends Model
         'notification_id',
         'days'
     ];
+
+    /**
+     * @return BelongsTo
+     */
+    public function mailingNotification(): BelongsTo
+    {
+        return $this->belongsTo(MailingNotification::class, 'notification_id');
+    }
+
+    public function notificationable(): MorphTo
+    {
+        return $this->morphTo();
+    }
 }

@@ -5,6 +5,7 @@ namespace App\Service\Mailing;
 
 use App\DTO\BaseDTO;
 use App\DTO\Mailing\CreateMailingDTO;
+use App\Enums\Mailing\MailingEnum;
 use App\Facade\MailingFacade;
 use Illuminate\Support\Facades\DB;
 use Throwable;
@@ -36,17 +37,17 @@ class CreateMailingService
             {
                 if ($recipient['type'] == 1)
                 {
-                    MailingFacade::createSchedule($recipient['id'], 'App/User', $notification->id, $dto->date['days']);
+                    MailingFacade::createSchedule($recipient['id'], MailingEnum::USER, $notification->id, $dto->date['days']);
                 }
 
                 if ($recipient['type'] == 2)
                 {
-                    MailingFacade::createSchedule($recipient['id'], 'App/ProfileGroup', $notification->id, $dto->date['days']);
+                    MailingFacade::createSchedule($recipient['id'], MailingEnum::GROUP, $notification->id, $dto->date['days']);
                 }
 
                 if ($recipient['type'] == 3)
                 {
-                    MailingFacade::createSchedule($recipient['id'], 'App/Position', $notification->id, $dto->date['days']);
+                    MailingFacade::createSchedule($recipient['id'], MailingEnum::POSITION, $notification->id, $dto->date['days']);
                 }
             }
         });

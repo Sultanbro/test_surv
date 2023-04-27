@@ -2,10 +2,6 @@
 
 namespace App\Models\Mailing;
 
-use App\Service\Mailing\Types\NotifyManager;
-use App\Service\Mailing\Types\PositionNotify;
-use App\Service\Mailing\Types\ProfileGroupNotify;
-use App\Service\Mailing\Types\UserNotify;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Collection;
 
