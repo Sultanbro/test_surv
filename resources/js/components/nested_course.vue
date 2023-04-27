@@ -2,7 +2,7 @@
 	<ul class="dragArea">
 		<li
 			v-for="el in tasks"
-			class="chapter"
+			class="chapter opened"
 			:class="{
 				'pass' : el.item_model !== null,
 				'active': active == el.id,
