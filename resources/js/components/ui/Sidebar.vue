@@ -9,10 +9,10 @@
 			:style="`width:${width}`"
 		>
 			<div class="ui-sidebar__header d-flexy">
-				<span style="color:aliceblue;background: transparent; font-size: 14px">{{ title }}</span>
+				<span class="ui-sidebar__header-text">{{ title }}</span>
 				<span
+					class="ui-sidebar__header-link"
 					v-html="link"
-					style="color:aliceblue"
 				/>
 			</div>
 			<div class="ui-sidebar__content">
@@ -42,6 +42,14 @@ export default {
 <style lang="scss" scoped>
 .ui-sidebar__header {
     padding: 13px 27px  !important;
+		&-text{
+			color:aliceblue;
+			background: transparent;
+			font-size: 14px;
+		}
+		&-link{
+			color:aliceblue;
+		}
 }
 .ui-sidebar__content {
     .custom-checkbox {

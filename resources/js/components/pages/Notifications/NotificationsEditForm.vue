@@ -39,7 +39,7 @@
 			</div>
 			<div class="NotificationsEditForm-control NotificationsEditForm-badges form-control">
 				<b-badge
-					v-for="recipient, index in notification.recipients"
+					v-for="recipient, index in value.recipients"
 					:key="index"
 				>
 					{{ recipient.name }}

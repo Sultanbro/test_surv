@@ -1,5 +1,6 @@
 <template>
 	<div class="NotificationsV2">
+		<!-- Шапка -->
 		<div class="NotificationsV2-header">
 			<b-button
 				variant="success"
@@ -11,8 +12,15 @@
 				v-model="search"
 				placeholder="Поиск"
 			/>
+			<b-button
+				class="btn btn-icon"
+				@click="isSettings = true"
+			>
+				<i class="icon-nd-settings" />
+			</b-button>
 		</div>
 
+		<!-- Таблица -->
 		<div class="table-container">
 			<b-table-simple striped>
 				<b-thead>
@@ -44,7 +52,12 @@
 							</template>
 						</b-td>
 						<b-td class="NotificationsV2-text">
-							{{ notification.title }}
+							<div class="NotificationsV2-shortText">
+								{{ notification.title }}
+							</div>
+							<div class="NotificationsV2-fullText">
+								{{ notification.title }}
+							</div>
 						</b-td>
 						<b-td>
 							{{ notification.type_of_mailing.join(', ') }}
@@ -70,6 +83,8 @@
 				</b-tbody>
 			</b-table-simple>
 		</div>
+
+		<!-- Редактирование уведомлений -->
 		<SideBar
 			v-if="selectedNotification"
 			:title="selectedNotification.name || 'Новое уведомление'"
@@ -81,6 +96,42 @@
 				:notification="selectedNotification"
 				@save="onSave"
 			/>
+		</SideBar>
+
+		<!-- Настройки -->
+		<SideBar
+			v-if="isSettings"
+			title="Настройки"
+			width="50%"
+			:open="isSettings"
+			@close="isSettings = false"
+		>
+			<b-container>
+				<b-row>
+					<b-col cols="4">
+						<span class="NotificationsV2-label">Количество напоминаний в день</span>
+						<img
+							src="/images/dist/profit-info.svg"
+							class="img-info"
+							alt="info icon"
+							v-b-popover.hover="'Указаное кол-во раз, в течение рабочего дня будет показан попап с уведомлениями'"
+						>
+					</b-col>
+					<b-col cols="8">
+						<b-form-input
+							v-model="settings.showCount"
+							type="number"
+						/>
+					</b-col>
+				</b-row>
+			</b-container>
+			<hr class="mb-4">
+			<b-button
+				variant="primary"
+				@click="onSaveSettings"
+			>
+				Сохранить
+			</b-button>
 		</SideBar>
 	</div>
 </template>
@@ -108,7 +159,11 @@ export default {
 				weekly: 'по дням недели'
 			},
 			selectedNotification: null,
-			search: ''
+			search: '',
+			isSettings: '',
+			settings: {
+				showCount: 0
+			}
 		}
 	},
 	computed: {
@@ -230,6 +285,10 @@ export default {
 			if(!~index) return
 			this.$set(this.notifications, index, notification)
 		},
+		onSaveSettings(){
+			// call api
+			this.isSettings = false
+		}
 	}
 }
 </script>
@@ -245,16 +304,73 @@ export default {
 		margin-bottom: 10px;
 	}
 	&-text{
+		position: relative;
+		&:hover{
+			.NotificationsV2-fullText{
+				z-index: 11;
+				top: 40px;
+
+				visibility: visible;
+				opacity: 1;
+			}
+		}
+	}
+	&-shortText{
 		max-width: 300px;
 		white-space: nowrap;
 		overflow: hidden;
 		text-overflow: ellipsis;
 	}
-	.ui-sidebar.is-open{
-		.ui-sidebar__body{
-			right: 60px;
-		}
+	&-fullText{
+    max-width: 400px;
+    padding: 10px 20px;
+    border: 1px solid #999;
+
+		position: absolute;
+    top: 20px;
+    left: 10px;
+
+    visibility: hidden;
+    opacity: 0;
+
+    font-size: 14px;
+    line-height: 1.3;
+    text-align: left;
+
+    box-shadow: rgba(0, 0, 0, 0.1) 0px 10px 15px -3px, rgba(0, 0, 0, 0.05) 0px 4px 6px -2px;
+    transition: 0.2s all ease;
+    border-radius: 10px;
+    background-color: #fff;
+	}
+	&-label{
+		font-size: 1.4rem;
+    line-height: 2rem;
 	}
 
+	.ui-sidebar{
+		&.is-open{
+			.ui-sidebar__body{
+				right: 60px;
+			}
+		}
+		.ui-sidebar__header {
+			padding: 20px 25px;
+			background: #fff;
+			border-bottom: 1px solid #ddd;
+
+			&-text{
+				font-size: 14px;
+				color: #333;
+				font-weight: 700;
+			}
+		}
+		.ui-sidebar__body {
+			border-radius: 20px 0 0 20px;
+			// overflow: hidden !important;
+		}
+	}
+	.container{
+		padding: 0 15px;
+	}
 }
 </style>
