@@ -8,8 +8,6 @@
 				<h1 class="page-title">
 					Темы видео
 				</h1>
-
-
 				<div
 					class="section d-flex aic jcsb my-2"
 					v-for="(cat, index) in categories"
@@ -28,7 +26,7 @@
 							@click.stop="editCat(index)"
 						/>
 						<i
-							class="fa fa-trash ml-2"
+							class="fa fa-trash text-danger ml-2"
 							v-if="cat.id != 0 && mode == 'edit'"
 							@click.stop="deleteCat(index)"
 						/>
@@ -46,10 +44,7 @@
 			</div>
 
 
-			<div
-				class="rp"
-				style="flex: 1 1 0%;overflow:auto;"
-			>
+			<div class="rp">
 				<div class="hat">
 					<div class="d-flex jsutify-content-between hat-top">
 						<div class="bc">
@@ -125,47 +120,35 @@
 				</div>
 
 
-				<div class="content mt-3">
-					<div
-						v-if="activeCat != null"
-						class="p-3 "
-					>
-						<div
+				<div class="rp-content">
+					<div v-if="activeCat != null">
+						<PlaylistEdit
+							ref="playlist"
+							@back="back"
+							:token="token"
+							:id="activePlaylist.id"
+							:is_course="false"
+							:auth_user_id="user_id"
+							:mode="mode"
+							:myvideo="myvideo"
 							v-if="activePlaylist != null"
-							class=""
-						>
-							<PlaylistEdit
-								ref="playlist"
-								@back="back"
-								:token="token"
-								:id="activePlaylist.id"
-								:is_course="false"
-								:auth_user_id="user_id"
-								:mode="mode"
-								:myvideo="myvideo"
-							/>
-						</div>
-
+						/>
 						<div v-else>
 							<!-- playlists -->
-							<div class="els">
+							<div class="video-container">
 								<div
-									class="playlist mb-3"
+									class="playlist mb-4"
 									v-for="(playlist, p_index) in activeCat.playlists"
 									:key="playlist.id"
 									@click="selectPl(p_index)"
 								>
-									<div
-										class="left"
-										:style="'background-image: url(' + (playlist.img == '' || playlist.img == null ? '/images/author.jpg' : playlist.img ) + ')'"
-									/>
-
-									<div class="right">
-										<div class="title">
-											{{ playlist.title }}
-										</div>
+									<div class="left">
+										<img
+											:src="playlist.img == '' || playlist.img == null ? '/images/author.jpg' : playlist.img"
+											alt="image"
+										>
 										<div
-											class="d-flex btns mb-2"
+											class="d-flex btns"
 											v-if="mode == 'edit'"
 										>
 											<i
@@ -175,10 +158,16 @@
 												@click.stop="movePl(p_index)"
 											/>
 											<i
-												class="fa fa-trash ml-2"
+												class="fa fa-trash text-danger ml-2"
 												v-if="playlist.id != 0"
 												@click.stop="deletePl(p_index)"
 											/>
+										</div>
+									</div>
+
+									<div class="right">
+										<div class="title">
+											{{ playlist.title }}
 										</div>
 										<div class="text">
 											{{ playlist.text }}
@@ -260,87 +249,89 @@
 		</b-modal>
 
 		<!-- Редактировать плейлист -->
-		<Sidebar
+		<SimpleSidebar
 			title="Редактировать плейлист"
 			:open="showEditPlaylist"
 			@close="showEditPlaylist = false"
 			width="50%"
 		>
-			<div
-				v-if="editingPlaylist != null"
-				class="p-3"
-			>
-				<div class="d-flex">
-					<div class="left f-70">
-						<div class="d-flex mb-2">
-							<p class="mb-2 font-bold">
-								Название
-							</p>
-							<input
-								type="text"
-								v-model="editingPlaylist.title"
-								placeholder="Название плейлиста..."
-								class="form-control mb-2"
-							>
+			<template #body>
+				<div
+					v-if="editingPlaylist != null"
+					class="p-3"
+				>
+					<div class="d-flex">
+						<div class="left f-70">
+							<div class="d-flex mb-2">
+								<p class="mb-2 font-bold">
+									Название
+								</p>
+								<input
+									type="text"
+									v-model="editingPlaylist.title"
+									placeholder="Название плейлиста..."
+									class="form-control mb-2"
+								>
+							</div>
+
+							<div class="d-flex mb-2">
+								<p class="mb-0 mr-2">
+									Описание
+								</p>
+								<textarea
+									v-model="editingPlaylist.text"
+									placeholder="Описание плейлиста..."
+									class="form-control"
+								/>
+							</div>
+
+							<div class="d-flex mb-2">
+								<p class="mb-0 mr-2">
+									Категория
+								</p>
+								<select
+									class="form-control"
+									v-model="editingPlaylist.category_id"
+								>
+									<option
+										v-for="cat in categories"
+										:value="cat.id"
+										:key="cat.id"
+									>
+										{{ cat.title }}
+									</option>
+								</select>
+							</div>
 						</div>
 
-						<div class="d-flex mb-2">
-							<p class="mb-0 mr-2">
-								Описание
-							</p>
-							<textarea
-								v-model="editingPlaylist.text"
-								placeholder="Описание плейлиста..."
-								class="form-control"
+						<div class="right f-30 pl-4">
+							<img
+								class="book-img mb-5"
+								v-if="editingPlaylist.img != ''"
+								:src="editingPlaylist.img"
+							>
+							<b-form-file
+								ref="edit_img"
+								v-model="file_img"
+								:state="Boolean(file_img)"
+								placeholder="Выберите или перетащите файл сюда..."
+								drop-placeholder="Перетащите файл сюда..."
+								class="mt-3"
 							/>
 						</div>
-
-						<div class="d-flex mb-2">
-							<p class="mb-0 mr-2">
-								Категория
-							</p>
-							<select
-								class="form-control"
-								v-model="editingPlaylist.category_id"
-							>
-								<option
-									v-for="cat in categories"
-									:value="cat.id"
-									:key="cat.id"
-								>
-									{{ cat.title }}
-								</option>
-							</select>
-						</div>
-					</div>
-
-					<div class="right f-30 pl-4">
-						<img
-							class="book-img mb-5"
-							v-if="editingPlaylist.img != ''"
-							:src="editingPlaylist.img"
-						>
-						<b-form-file
-							ref="edit_img"
-							v-model="file_img"
-							:state="Boolean(file_img)"
-							placeholder="Выберите или перетащите файл сюда..."
-							drop-placeholder="Перетащите файл сюда..."
-							class="mt-3"
-						/>
 					</div>
 				</div>
-
-				<div class="d-flex">
-					<button
-						class="btn btn-success mr-2 rounded"
-						@click="savePlaylist"
-					>
-						<span>Сохранить</span>
-					</button>
-				</div>
-			</div>
-		</Sidebar>
+			</template>
+			<template #footer>
+				<button
+					v-if="editingPlaylist != null"
+					class="btn btn-success mr-2 rounded"
+					@click="savePlaylist"
+				>
+					<span>Сохранить</span>
+				</button>
+			</template>
+		</SimpleSidebar>
 
 
 		<!-- Настройки раздела -->
@@ -374,13 +365,11 @@
 </template>
 
 <script>
-import Sidebar from '@/components/ui/Sidebar' // сайдбар table
 const PlaylistEdit = () => import(/* webpackChunkName: "PlaylistEdit" */ '@/pages/PlaylistEdit') // редактирование плейлиста
 import SimpleSidebar from '@/components/ui/SimpleSidebar'
 export default {
 	name: 'PlayLists',
 	components: {
-		Sidebar,
 		SimpleSidebar,
 		PlaylistEdit
 	},

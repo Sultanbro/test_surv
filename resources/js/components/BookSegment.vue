@@ -1,33 +1,35 @@
 <template>
 	<!-- eslint-disable vue/no-mutating-props -->
-	<div class="test mb-3">
+	<div class="test">
 		<div class="row">
 			<div class="col-3">
-				<p class="mb-2">
-					Страница
-					<!-- <i
-						class="fa fa-save ml-1 pointer"
-						@click="saveSegment"
-					/> -->
-					<b-btn
-						variant="success"
-						@click="saveSegment"
+				<div class="form-group">
+					<label>Страница</label>
+					<input
+						type="number"
+						min="1"
+						max="9999"
+						v-model="segment.page_start"
+						placeholder="Страница"
+						class="form-control mb-2"
 					>
-						Сохранить сегмент
-					</b-btn>
-					<i
-						class="fa fa-trash ml-1 pointer"
-						@click="deleteSegment"
-					/>
-				</p>
-				<input
-					type="number"
-					min="1"
-					max="9999"
-					v-model="segment.page_start"
-					placeholder="Страница"
-					class="form-control mb-2"
+				</div>
+				<!-- <i
+					class="fa fa-save ml-1 pointer"
+					@click="saveSegment"
+				/> -->
+				<b-btn
+					variant="success"
+					@click="saveSegment"
 				>
+					Сохранить сегмент
+				</b-btn>
+				<b-btn
+					variant="danger"
+					@click="deleteSegment"
+				>
+					<i class="fa fa-trash ml-1 pointer" />
+				</b-btn>
 			</div>
 			<div class="col-9">
 				<questions
