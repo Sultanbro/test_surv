@@ -95,6 +95,7 @@ export default {
 			padding: 15px 25px 25px 25px;
 		}
 		.ui-simple-sidebar-footer{
+			min-height: 65px;
 			padding: 15px 25px;
 			border-top: 1px solid #ddd;
 		}

@@ -1,4 +1,9 @@
 .video-playlists {
+    border-radius: 12px;
+    overflow: hidden;
+    position: relative;
+    border: 1px solid #EBEBF9;
+    background-color: #fff;
     .section {
         &.active * {
             color: #096dd9;
@@ -7,6 +12,31 @@
 
     .content {
         overflow: visible;
+    }
+
+    .lp{
+        padding: 9px 20px 10px 20px;
+        background-color: #fff !important;
+        min-height: calc(100vh - 65px) !important;
+        max-height: calc(100vh - 65px) !important;
+    }
+
+    .rp{
+        width: 100%;
+        .rp-content{
+            padding: 20px 10px 0 10px;
+            min-height: calc(100vh - 110px) !important;
+            max-height: calc(100vh - 110px) !important;
+            overflow: auto;
+        }
+    }
+}
+
+.sidebar-video-edit{
+    .questions{
+        margin: 0!important;
+        width: 100%;
+        max-width: 100%;
     }
 }
 
@@ -22,7 +52,7 @@
 }
 
 .video-playlist-left{
-    padding: 25px 20px;
+    padding: 0 20px 25px 20px;
 }
 
 .playlist {
@@ -30,34 +60,48 @@
     height: 140px;
     border: 1px solid #e2e2ea;
     border-radius: 5px;
-
+    cursor: pointer;
+    transition: 0.15s all ease;
     &:hover {
         background: aliceblue;
+        .left{
+            img{
+                transform: scale(1.1);
+            }
+        }
     }
 
     .left {
         width: 250px;
-        flex: 0 0 250px;
-
+        min-width: 250px;
         border-radius: 5px 0 0 5px;
-        background-size: cover;
-        background-position: center;
+        position: relative;
+        overflow: hidden;
+        img{
+            width: 250px;
+            height: auto;
+            object-fit: cover;
+            transition: 0.15s all ease;
+        }
+        .btns {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            z-index: 2;
+            i {
+                padding: 5px;
+                background: #ccd5dd;
+                border-radius: 3px;
+                width: 25px;
+                text-align: center;
+                cursor: pointer;
+            }
+        }
     }
 
     .right {
         padding: 15px;
-        flex:1;
         border-left: 1px solid #e2e2e2;
-        overflow: auto;
-
-        .btns i {
-            padding: 5px;
-            background: #ccd5dd;
-            border-radius: 3px;
-            width: 25px;
-            text-align: center;
-            cursor: pointer;
-        }
     }
     .title {
         font-size: 19px;
@@ -69,7 +113,6 @@
     .text {
         font-size: 12px;
         text-align: left;
-        margin-bottom: 15px;
     }
 
 }

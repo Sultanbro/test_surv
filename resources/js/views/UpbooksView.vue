@@ -28,7 +28,7 @@ export default {
 
 <template>
 	<DefaultLayout class="no-padding">
-		<div class="old__content">
+		<div class="old__content my-course-content">
 			<Upbooks
 				v-show="token"
 				:token="token"

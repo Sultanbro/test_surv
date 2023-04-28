@@ -11,6 +11,7 @@
 
 				<div
 					class="section d-flex aic jcsb"
+					:class="{'active': selectedCategory === c_index}"
 					:style="'position:relative;'"
 					v-for="(cat, c_index) in categories"
 					:key="cat.id"
@@ -92,45 +93,48 @@
 				</div>
 
 				<div
-					class="d-flex flex-wrap p-3"
+					class="boxes"
 					v-if="activeCategory != null"
 				>
 					<div
-						class="box"
+						class="box-content"
+						@click="go(book)"
 						v-for="(book, b_index) in activeCategory.books"
 						:key="book.id"
-						@click="go(book)"
 					>
-						<div
-							class="left"
-							:style="'background-image: url(' + (book.img != '' ? imageCrutch(book.img) : '/images/book_cover.jpg' ) +')'"
-						/>
-
-						<div class="right">
-							<p class="title">
-								{{ book.title }}
-							</p>
-							<p class="author">
-								{{ book.author }}
-							</p>
-							<div class="buttons">
-								<i
-									v-if="mode == 'edit'"
-									class="fa fa-trash mr-1"
-									@click.stop="deleteBook(b_index)"
-								/>
-								<i
-									class="fa fa-edit mr-1"
-									@click.stop="editBook(book)"
-									v-if="mode == 'edit'"
-								/>
-								<i
-									class="fa fa-info"
-									@click.stop="showDetails(book)"
-								/>
+						<div class="box">
+							<div class="left">
+								<img
+									:src="book.img != '' ? imageCrutch(book.img) : '/images/book_cover.jpg'"
+									alt="book"
+								>
+								<div class="buttons">
+									<i
+										v-if="mode == 'edit'"
+										class="fa fa-trash mr-1"
+										@click.stop="deleteBook(b_index)"
+									/>
+									<i
+										class="fa fa-edit mr-1"
+										@click.stop="editBook(book)"
+										v-if="mode == 'edit'"
+									/>
+									<i
+										class="fa fa-info"
+										@click.stop="showDetails(book)"
+									/>
+								</div>
 							</div>
-							<div class="text">
-								{{ book.description }}
+							<div class="right">
+								<p class="title">
+									{{ book.title }}
+								</p>
+								<p class="author">
+									{{ book.author }}
+								</p>
+								<div class="text">
+									{{ book.description }}
+								</div>
 							</div>
 						</div>
 					</div>
@@ -170,47 +174,47 @@
 		</b-modal>
 
 		<!-- Загрузить книгу -->
-		<Sidebar
+		<SimpleSidebar
 			title="Загрузить книгу"
 			:open="modals.upload_book.show"
 			@close="modals.upload_book.show = false"
-			width="70%"
+			width="50%"
 		>
-			<UploadFiles
-				:token="token"
-				type="book"
-				:id="0"
-				:file_types="['pdf']"
-				@onupload="onupload"
-			/>
+			<template #body>
+				<UploadFiles
+					:token="token"
+					type="book"
+					:id="0"
+					:file_types="['pdf']"
+					@onupload="onupload"
+				/>
 
-			<!-- after upload -->
-			<div v-if="modals.upload_book.file">
-				<div class="d-flex">
-					<div class="left f-70">
-						<p class="mb-2 font-bold">
-							Название книги
-						</p>
+				<!-- after upload -->
+				<div v-if="modals.upload_book.file">
+					<br>
+					<hr>
+					<div class="form-group">
+						<label>Название книги</label>
 						<input
 							type="text"
 							v-model="modals.upload_book.file.model.title"
 							placeholder="Название книги..."
-							class="form-control mt-2 mb-2"
+							class="form-control"
 						>
-						<p class="mb-2 font-bold">
-							Название автора
-						</p>
+					</div>
+					<div class="form-group">
+						<label>Название автора</label>
 						<input
 							type="text"
 							v-model="modals.upload_book.file.model.author"
 							placeholder="Название автора..."
-							class="form-control mt-2 mb-2"
+							class="form-control"
 						>
-						<p class="mb-2 font-bold">
-							Категория
-						</p>
+					</div>
+					<div class="form-group">
+						<label>Категория</label>
 						<select
-							class="form-control mb-2"
+							class="form-control"
 							v-model="modals.upload_book.file.model.group_id"
 						>
 							<option
@@ -221,188 +225,192 @@
 								{{ cat.name }}
 							</option>
 						</select>
-
-						<p class="mb-2 font-bold">
-							Описание книги
-						</p>
+					</div>
+					<div class="form-group">
+						<label>Описание книги</label>
 						<textarea
 							class="form-control mt-2 mb-2"
 							placeholder="Описание..."
 							v-model="modals.upload_book.file.model.description"
 						/>
 					</div>
-
-					<div class="right pl-3">
+					<div class="form-group">
+						<label>Обложка книги</label>
+						<b-form-file
+							v-if="modals.upload_book.file.model.img == ''"
+							v-model="file_img"
+							:state="Boolean(file_img)"
+							placeholder="Выберите или перетащите файл сюда..."
+							drop-placeholder="Перетащите файл сюда..."
+							class="mt-3"
+						/>
+					</div>
+					<div class="img-preview">
 						<img
 							class="book-img"
 							v-if="modals.upload_book.file.model.img != ''"
 							:src="modals.upload_book.file.model.img"
 						>
-						<b-form-file
-							v-else
-							v-model="file_img"
-							:state="Boolean(file_img)"
-							placeholder="Выберите или перетащите файл сюда..."
-							drop-placeholder="Перетащите файл сюда..."
-							class="mt-3"
-						/>
 					</div>
 				</div>
+			</template>
 
-
+			<template #footer>
 				<button
 					class="btn btn-primary rounded m-auto"
 					@click="saveBook"
+					v-if="modals.upload_book.file"
 				>
 					<span>Сохранить</span>
 				</button>
-			</div>
-		</Sidebar>
+			</template>
+		</SimpleSidebar>
 
 		<!-- Details -->
-		<Sidebar
+		<SimpleSidebar
 			title="О книге"
 			:open="details != null"
 			@close="details = null"
 			width="40%"
 		>
-			<div
-				class="d-flex"
-				v-if="details != null"
-			>
-				<div class="left f-70">
-					<p class="mb-2 font-bold">
-						{{ details.title }}
-					</p>
-					<div class="text">
-						{{ details.description }}
+			<template #body>
+				<div
+					class="d-flex"
+					v-if="details != null"
+				>
+					<div class="left f-70">
+						<p class="mb-2 font-bold">
+							{{ details.title }}
+						</p>
+						<div class="text">
+							{{ details.description }}
+						</div>
+					</div>
+					<div class="right f-30 pl-4">
+						<img
+							class="book-img mb-5"
+							v-if="details.img != ''"
+							:src="details.img"
+						>
 					</div>
 				</div>
-				<div class="right f-30 pl-4">
-					<img
-						class="book-img mb-5"
-						v-if="details.img != ''"
-						:src="details.img"
-					>
-				</div>
-			</div>
-		</Sidebar>
+			</template>
+		</SimpleSidebar>
 
 
 		<!-- Edit book -->
-		<Sidebar
+		<SimpleSidebar
 			title="Редактировать книгу"
 			:open="modals.edit_book.show"
 			@close="modals.edit_book.show = false"
 			width="70%"
+			class="upbook-edit-book"
 		>
-			<div
-				v-if="modals.edit_book.item != null"
-				class="p-3"
-			>
-				<div class="d-flex">
-					<div class="left f-70">
-						<p class="mb-2 font-bold">
-							Название книги
-						</p>
-						<input
-							type="text"
-							v-model="modals.edit_book.item.title"
-							placeholder="Название книги..."
-							class="form-control mt-2 mb-2"
-						>
-						<p class="mb-2 font-bold">
-							Название автора
-						</p>
-						<input
-							type="text"
-							v-model="modals.edit_book.item.author"
-							placeholder="Название автора..."
-							class="form-control mt-2 mb-2"
-						>
-						<p class="mb-2 font-bold">
-							Описание книги
-						</p>
-						<textarea
-							class="form-control mt-2 mb-2"
-							placeholder="Описание..."
-							v-model="modals.edit_book.item.description"
-						/>
-						<p class="mb-2 font-bold">
-							Категория
-						</p>
-						<select
-							class="form-control mb-2"
-							v-model="modals.edit_book.item.group_id"
-						>
-							<option
-								v-for="cat in categories"
-								:value="cat.id"
-								:key="cat.id"
+			<template #body>
+				<div v-if="modals.edit_book.item != null">
+					<div class="d-flex">
+						<div class="left f-70">
+							<p class="mb-2 font-bold">
+								Название книги
+							</p>
+							<input
+								type="text"
+								v-model="modals.edit_book.item.title"
+								placeholder="Название книги..."
+								class="form-control mt-2 mb-2"
 							>
-								{{ cat.name }}
-							</option>
-						</select>
+							<p class="mb-2 font-bold">
+								Название автора
+							</p>
+							<input
+								type="text"
+								v-model="modals.edit_book.item.author"
+								placeholder="Название автора..."
+								class="form-control mt-2 mb-2"
+							>
+							<p class="mb-2 font-bold">
+								Описание книги
+							</p>
+							<textarea
+								class="form-control mt-2 mb-2"
+								placeholder="Описание..."
+								v-model="modals.edit_book.item.description"
+							/>
+							<p class="mb-2 font-bold">
+								Категория
+							</p>
+							<select
+								class="form-control mb-2"
+								v-model="modals.edit_book.item.group_id"
+							>
+								<option
+									v-for="cat in categories"
+									:value="cat.id"
+									:key="cat.id"
+								>
+									{{ cat.name }}
+								</option>
+							</select>
+						</div>
 
-						<button
-							class="btn btn-success mr-2 rounded"
-							@click="saveSegments"
-						>
-							<span>Сохранить книгу</span>
-						</button>
+						<div class="right f-30 pl-4">
+							<img
+								class="book-img mb-5"
+								v-if="modals.edit_book.item.img != ''"
+								:src="modals.edit_book.item.img"
+							>
+							<b-form-file
+								ref="edit_img"
+								v-model="file_img"
+								:state="Boolean(file_img)"
+								placeholder="Выберите или перетащите файл сюда..."
+								drop-placeholder="Перетащите файл сюда..."
+								class="mt-3"
+							/>
+						</div>
 					</div>
 
-					<div class="right f-30 pl-4">
-						<img
-							class="book-img mb-5"
-							v-if="modals.edit_book.item.img != ''"
-							:src="modals.edit_book.item.img"
-						>
-						<b-form-file
-							ref="edit_img"
-							v-model="file_img"
-							:state="Boolean(file_img)"
-							placeholder="Выберите или перетащите файл сюда..."
-							drop-placeholder="Перетащите файл сюда..."
-							class="mt-3"
+					<div
+						class="segments mt-4"
+						v-if="modals.edit_book.segments.length > 0"
+					>
+						<div class="row mb-3">
+							<div class="col-3">
+								<b>Страница книги</b>
+							</div>
+							<div class="col-9">
+								<b>Вопросы</b>
+							</div>
+						</div>
+
+						<BookSegment
+							:segment="segment"
+							:book_id="modals.edit_book.item.id"
+							@deleteSegment="deleteSegment(s)"
+							v-for="(segment, s) in modals.edit_book.segments"
+							:key="s"
 						/>
 					</div>
 				</div>
-
-
-				<div
-					class="segments mb-2"
-					v-if="modals.edit_book.segments.length > 0"
+			</template>
+			<template
+				v-if="modals.edit_book.item != null"
+				#footer
+			>
+				<button
+					class="btn btn-success mr-2 rounded"
+					@click="saveSegments"
 				>
-					<div class="row mb-3">
-						<div class="col-3">
-							<b>Страница книги</b>
-						</div>
-						<div class="col-9">
-							<b>Вопросы</b>
-						</div>
-					</div>
-
-					<BookSegment
-						class="mb-3"
-						:segment="segment"
-						:book_id="modals.edit_book.item.id"
-						@deleteSegment="deleteSegment(s)"
-						v-for="(segment, s) in modals.edit_book.segments"
-						:key="s"
-					/>
-				</div>
-
-				<div class="d-flex">
-					<button
-						class="btn rounded"
-						@click="addSegment"
-					>
-						<span>Добавить тест</span>
-					</button>
-				</div>
-			</div>
-		</Sidebar>
+					<span>Сохранить книгу</span>
+				</button>
+				<button
+					class="btn rounded"
+					@click="addSegment"
+				>
+					<span>Добавить тест</span>
+				</button>
+			</template>
+		</SimpleSidebar>
 
 		<!-- Настройки раздела -->
 		<SimpleSidebar
@@ -459,7 +467,6 @@
 </template>
 
 <script>
-import Sidebar from '@/components/ui/Sidebar' // сайдбар table
 const UpbooksRead = () => import(/* webpackChunkName: "UpbooksRead" */ '@/pages/UpbooksRead') // книга чтение
 import UploadFiles from '@/components/UploadFiles' // загрузка файлов
 import BookSegment from '@/components/BookSegment' // загрузка файлов
@@ -467,7 +474,6 @@ import SimpleSidebar from '@/components/ui/SimpleSidebar'
 export default {
 	name: 'PageUpbooks',
 	components: {
-		Sidebar,
 		UpbooksRead,
 		UploadFiles,
 		BookSegment,
@@ -484,6 +490,7 @@ export default {
 	},
 	data() {
 		return {
+			selectedCategory: 0,
 			activeBook: null,
 			editcat_name: '',
 			editcat_id: '',
@@ -531,6 +538,7 @@ export default {
 		},
 
 		selectCategory(index) {
+			this.selectedCategory = index;
 			this.activeCategory = this.categories[index];
 		},
 

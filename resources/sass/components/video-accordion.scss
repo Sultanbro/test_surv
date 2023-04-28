@@ -129,7 +129,7 @@
                 z-index: 99999;
                 top: -21px;
                 display: none;
-                width: 150px;
+                width: 200px;
                 padding: 2px 5px;
                 border: 1px solid #efefef;
                 border-radius: 3px;
@@ -146,8 +146,9 @@
             .el {
                 display: flex;
                 align-items: center;
-                font-size: 11px;
-                color: #000;
+                font-size: 16px;
+                color: #666;
+                padding: 6px 10px;
 
                 i {
                     width: 15px;
