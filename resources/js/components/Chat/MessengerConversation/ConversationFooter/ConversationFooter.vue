@@ -43,7 +43,6 @@
 							id="messengerMessageInput"
 							class="messenger__textarea"
 							placeholder="Ввести сообщение"
-							rows="1"
 						/>
 					</div>
 				</template>
@@ -216,6 +215,19 @@ export default {
 	methods: {
 		...mapActions(['sendMessage', 'editMessageAction', 'uploadFiles', 'citeMessage']),
 		performMessage(e) {
+			if(e.ctrlKey) {
+				if(e.target.selectionStart || e.target.selectionStart === 0){
+					const start = e.target.selectionStart
+					const end = e.target.selectionEnd
+					const text = this.body
+					this.body = text.substring(0, start) + '\n' + text.substring(end, text.length)
+					e.target.selectionStart = start + 1
+				}
+				else{
+					this.body += '\n'
+				}
+				return true
+			}
 			let text = this.body.trim();
 			if ((text || this.files.length > 0) && this.chat) {
 				if (this.editMessage) {
