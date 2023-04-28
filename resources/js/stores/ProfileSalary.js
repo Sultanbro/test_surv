@@ -1,5 +1,12 @@
 import { defineStore } from 'pinia'
-import { fetchProfileSalary } from '@/stores/api'
+import moment from 'moment'
+import {
+	fetchProfileSalary,
+	fetchProfileBalance,
+	fetchProfileKpi,
+	fetchProfilePremiums,
+} from '@/stores/api'
+import { calcSum } from '@/pages/kpi/kpis.js'
 
 
 export const useProfileSalaryStore = defineStore('profileSalary', {
@@ -29,5 +36,39 @@ export const useProfileSalaryStore = defineStore('profileSalary', {
 			}
 			this.isLoading = false
 		},
+		async fitchSalaryCrutch(year, month){
+			if(this.isLoading) return
+			this.isLoading = true
+			try{
+				const { data } = await fetchProfileBalance(year, month)
+				const { items } = await fetchProfileKpi(year, month)
+				const premiums = await fetchProfilePremiums(year, month)
+
+				console.log('data', data)
+				console.log('items', items)
+				console.log('premiums', premiums)
+
+				this.user_earnings.sumSalary = Object.values(data.salaries).reduce((result, day) => result + parseInt(day.value), 0)
+				this.user_earnings.sumKpi = items.reduce((result, kpi) => {
+					kpi.users.forEach(user => {
+						user.items.forEach(userItem => {
+							result += calcSum(userItem, kpi, userItem.percent)
+						})
+					});
+					return result
+				}, 0)
+				this.user_earnings.sumBonuses = 0
+				this.user_earnings.sumQuartalPremiums = premiums.reduce((result, premium) => {
+					premium.forEach(el => {
+						if(el.items?.sum && el.items?.to?.substring(0, 7) === moment(Date.now()).format('YYYY-MM')) result += el.items.sum
+					})
+					return result
+				}, 0)
+			}
+			catch(error){
+				console.error('fitchSalaryCrutch', error)
+			}
+			this.isLoading = false
+		}
 	}
 })
