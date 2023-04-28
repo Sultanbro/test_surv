@@ -183,35 +183,8 @@ export default {
 			'users',
 			'positions',
 			'profileGroups',
+			'accessDictionaries',
 		]),
-		groups(){
-			return this.profileGroups
-		},
-		positionMap(){
-			return this.positions.reduce((result, pos) => {
-				result[pos.id] = pos.position
-				return result
-			}, {})
-		},
-		accessDictionaries(){
-			return {
-				users: this.users.reduce((users, user) => {
-					if(user.deleted_at) return users
-					users.push({
-						id: user.id,
-						name: `${user.name} ${user.last_name}`,
-						avatar: `/users_img/${user.img_url}`,
-						position: this.positionMap[user.position_id]
-					})
-					return users
-				}, []),
-				profile_groups: this.groups.filter(group => group.active),
-				positions: this.positions.filter(pos => !pos.deleted_at).map(pos => ({
-					id: pos.id,
-					name: pos.position
-				})),
-			}
-		},
 	},
 	watch: {
 		template(){
