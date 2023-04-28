@@ -6,6 +6,8 @@ use App\Console\Commands\Api\CheckPaymentsStatusCommand;
 use App\Console\Commands\Api\RunAutoPaymentCommand;
 use App\Console\Commands\Bitrix\RecruiterStats;
 use App\Console\Commands\Employee\BonusUpdate;
+use App\Console\Commands\Employee\CheckLate;
+use App\Console\Commands\Pusher\Pusher;
 use App\Console\Commands\StartDayForItDepartmentCommand;
 use App\Console\Commands\RestartQueue;
 use App\Jobs\Bitrix\RecruiterStatsJob;
@@ -27,7 +29,9 @@ class Kernel extends ConsoleKernel
         CheckPaymentsStatusCommand::class,
         StartDayForItDepartmentCommand::class,
         RecruiterStats::class,
-        RestartQueue::class
+        RestartQueue::class,
+        CheckLate::class,
+        Pusher::class
     ];
 
     /**
@@ -62,7 +66,7 @@ class Kernel extends ConsoleKernel
         $schedule->command('tenants:run callibro:grades --tenants=bp')->dailyAt('17:12'); // Сохранить недельные Оценки диалогов с Callibro
         $schedule->command('tenants:run usernotification:report --tenants=bp')->weekly()->fridays()->at('11:00'); // Уведомление о заполнении отчета в 17:00 в пятницу
         $schedule->command('tenants:run usernotification:foreigner --tenants=bp')->weekly()->mondays()->at('02:00'); // Уведомление руководителей групп об оплате иностранным стажерам. Запускается каждый понедельник
-        $schedule->command('tenants:run start_day:it_department --tenants:bp')->dailyAt('02:30'); // Запускается каждый день в 08:30 и начинает день для IT отдела
+        $schedule->command('tenants:run start_day:it_department --tenants:bp')->daily(); // Запускается каждый день начинает день для IT отдела
         /**
          * BITRIX24 crons
          */

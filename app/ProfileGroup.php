@@ -406,10 +406,10 @@ class ProfileGroup extends Model
     }
 
     /**
-     * @return Collection
+     * @return BelongsToMany
      */
-    public function activeUsers(): Collection
+    public function activeUsers(): BelongsToMany
     {
-        return $this->users()->wherePivot('status', 'active')->get();
+        return $this->users()->wherePivot('status', 'active');
     }
 }

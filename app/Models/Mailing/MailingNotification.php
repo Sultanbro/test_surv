@@ -42,7 +42,7 @@ class MailingNotification extends Model
     /**
      * @return HasMany
      */
-    public function schedules(): HasMany
+    public function recipients(): HasMany
     {
         return $this->hasMany(MailingNotificationSchedule::class, 'notification_id');
     }

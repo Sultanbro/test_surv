@@ -3,10 +3,15 @@ declare(strict_types=1);
 
 namespace App\Service\Mailing\Notifiers;
 
+use DB;
 use InvalidArgumentException;
+use Throwable;
 
 class NotificationFactory
 {
+    /**
+     * @throws Throwable
+     */
     public static function createNotification(
         string $type
     ): Notification

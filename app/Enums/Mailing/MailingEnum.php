@@ -11,4 +11,10 @@ enum MailingEnum
     const GROUP     = 'App\ProfileGroup';
     const USER      = 'App\User';
     const POSITION  = 'App\Position';
+
+    const TYPES = [
+        'App\ProfileGroup'  => 'group',
+        'App\User'          => 'individual',
+        'App\Position'      => 'position'
+    ];
 }
