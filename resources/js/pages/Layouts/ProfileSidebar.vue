@@ -57,6 +57,14 @@
 						{{ balance.sum }} <span class="profile__balance-currecy">{{ balance.currency }}</span>
 					</p>
 				</div>
+
+				<b-form-select
+					v-model="selectedDate"
+					:options="monthOptions"
+					:disabled="salaryLoading"
+					class="mt-4"
+				/>
+
 				<b-modal
 					:header-class="{'border-radius':'1rem'}"
 					id="modal-sm"
@@ -262,6 +270,7 @@
 
 <script>
 import axios from 'axios'
+import { mapGetters } from 'vuex'
 import { mapState, mapActions } from 'pinia'
 import { Cropper } from 'vue-advanced-cropper'
 import 'vue-advanced-cropper/dist/style.css'
@@ -275,6 +284,7 @@ import { useProfileCoursesStore } from '@/stores/ProfileCourses'
 import { usePersonalInfoStore } from '@/stores/PersonalInfo'
 import { usePaymentTermsStore } from '@/stores/PaymentTerms'
 import { usePortalStore } from '@/stores/Portal'
+import { useYearOptions, useMonthOptions } from '@/composables/yearOptions'
 
 export default {
 	name: 'ProfileSidebar',
@@ -286,6 +296,9 @@ export default {
 	},
 	props: {},
 	data: function () {
+		const now = new Date()
+		const currentYear = now.getFullYear()
+		const currentMonth = now.getMonth()
 		return {
 			fields: [],
 			file: '',
@@ -302,6 +315,10 @@ export default {
 			isRoot: false,
 			isProfile: false,
 			canvas: null,
+			selectedDate: {
+				year: currentYear,
+				month: currentMonth,
+			}
 		};
 	},
 	computed: {
@@ -310,11 +327,12 @@ export default {
 		...mapState(useProfileStatusStore, ['status', 'balance', 'corp_book', 'message']),
 		...mapState(useSettingsStore, {settingsReady: 'isReady'}),
 		...mapState(useProfileStatusStore, {statusReady: 'isReady'}),
-		...mapState(useProfileSalaryStore, {salaryReady: 'isReady'}),
+		...mapState(useProfileSalaryStore, {salaryReady: 'isReady', salaryLoading: 'isLoading'}),
 		...mapState(useProfileCoursesStore, {coursesReady: 'isReady'}),
 		...mapState(usePersonalInfoStore, {infoReady: 'isReady'}),
 		...mapState(usePaymentTermsStore, {termsReady: 'isReady'}),
 		...mapState(usePortalStore, ['portal']),
+		...mapGetters(['user']),
 		userInfo(){
 			return {
 				user: this.user,
@@ -361,11 +379,33 @@ export default {
 		},
 		isVideoDaysNotGone(){
 			return this.$moment().diff(this.$moment(new Date(this.user.created_at)), 'days') <= this.videoDays;
-		}
+		},
+		monthOptions(){
+			if(!this.user) return []
+			const monthOptions = useMonthOptions()
+			const monthOptionsReversed = useMonthOptions().reverse()
+			const monthNames = monthOptions.map(month => this.$moment([0, month]).format('MMMM'))
+			const now = new Date()
+			const currentYear = now.getFullYear()
+			const currentMonth = now.getMonth()
+
+			const createdYear = Math.max(new Date(this.user.created_at).getFullYear(), 2020)
+
+			return useYearOptions(createdYear).reverse().reduce((options, year) => {
+				options.push(...monthOptionsReversed.map(month => ({
+					value: { year, month },
+					text: `${year} ${monthNames[month]}`
+				})))
+				return options
+			}, []).filter(({value}) => !(value.year === currentYear && value.month > currentMonth))
+		},
 	},
 	watch: {
 		corp_book(){
 			this.initCorpBook()
+		},
+		selectedDate({year, month}){
+			this.fitchSalaryCrutch(year, month)
 		}
 	},
 	mounted(){
@@ -392,6 +432,7 @@ export default {
 		...mapActions(useSettingsStore, ['updateSettings']),
 		...mapActions(useProfileStatusStore, ['updateStatus', 'resetCorpBookAnswers']),
 		...mapActions(usePortalStore, ['fetchPortal']),
+		...mapActions(useProfileSalaryStore, ['fitchSalaryCrutch']),
 		/**
 		 * Загрузить лого открыть модальный окно
 		 */

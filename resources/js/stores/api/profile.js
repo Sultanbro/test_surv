@@ -1,4 +1,5 @@
 /** @module stores/api/profile */
+/* global Laravel */
 import axios from 'axios'
 
 /**
@@ -76,6 +77,59 @@ export async function fetchProfileActivities(){
 	return data
 }
 
+/**
+ * Получение баланса за месяц
+ */
+export async function fetchProfileBalance(year, month){
+	const { data } = await axios.post('/timetracking/zarplata-table-new', {
+		month: month + 1,
+		year,
+	})
+	return data
+}
+
+/**
+ * Получение kpi за месяц
+ */
+export async function fetchProfileKpi(year, month){
+	const { data } = await axios.post('/statistics/kpi', {
+		filters: {
+			data_from: {
+				month: month + 1,
+				year,
+			},
+			user_id: Laravel.userId
+		}
+	})
+	return data
+}
+
+/**
+ * Получение премий за месяц
+ */
+export async function fetchProfilePremiums(year, month){
+	const { data } = await axios.post('/statistics/quartal-premiums', {
+		filters: {
+			data_from: {
+				month: month + 1,
+				year,
+			},
+			user_id: Laravel.userId
+		}
+	})
+	return data
+}
+
+/**
+ * Получение бонусов за месяц
+ */
+export async function fetchProfileBonuses(year, month){
+	const { data } = await axios.post('/bonuses', {
+		month: month + 1,
+		year,
+	})
+	return data
+}
 
 /**
  * @typedef ProfilePersonalInfoResponse
