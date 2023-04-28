@@ -9,11 +9,13 @@
 			:style="`width:${width}`"
 		>
 			<div class="ui-sidebar__header d-flexy">
-				<span class="ui-sidebar__header-text">{{ title }}</span>
-				<span
-					class="ui-sidebar__header-link"
-					v-html="link"
-				/>
+				<slot name="header">
+					<span class="ui-sidebar__header-text">{{ title }}</span>
+					<span
+						class="ui-sidebar__header-link"
+						v-html="link"
+					/>
+				</slot>
 			</div>
 			<div class="ui-sidebar__content">
 				<slot />

@@ -13,7 +13,7 @@
 				placeholder="Поиск"
 			/>
 			<b-button
-				class="btn btn-icon"
+				class="NotificationsV2-settings"
 				@click="isSettings = true"
 			>
 				<i class="icon-nd-settings" />
@@ -107,7 +107,7 @@
 			@close="isSettings = false"
 		>
 			<b-container>
-				<b-row>
+				<b-row class="mb-4">
 					<b-col cols="4">
 						<span class="NotificationsV2-label">Количество напоминаний в день</span>
 						<img
@@ -124,6 +124,21 @@
 						/>
 					</b-col>
 				</b-row>
+				<b-row class="mb-4">
+					<b-col>
+						<JobtronButton
+							fade
+							@click="isTemplate = true"
+						>
+							<ChatIconPlus
+								class="ChatIcon-active"
+								width="11"
+								height="11"
+							/>
+							Шаблонное уведомление
+						</JobtronButton>
+					</b-col>
+				</b-row>
 			</b-container>
 			<hr class="mb-4">
 			<b-button
@@ -133,6 +148,12 @@
 				Сохранить
 			</b-button>
 		</SideBar>
+
+		<!-- Шаблонные уведомления -->
+		<NotificationsTemplates
+			v-if="isTemplate"
+			@close="isTemplate = false"
+		/>
 	</div>
 </template>
 
@@ -143,13 +164,21 @@ import {
 	createNotification,
 } from '@/stores/api/notifications'
 import NotificationsEditForm from '@/components/pages/Notifications/NotificationsEditForm'
+import NotificationsTemplates from '@/components/pages/Notifications/NotificationsTemplates'
 import SideBar from '@ui/Sidebar'
+import JobtronButton from '@ui/Button'
+import {
+	ChatIconPlus,
+} from '@icons'
 
 export default {
 	name: 'NotificationsV2',
 	components: {
 		SideBar,
 		NotificationsEditForm,
+		NotificationsTemplates,
+		JobtronButton,
+		ChatIconPlus,
 	},
 	data(){
 		return {
@@ -161,10 +190,13 @@ export default {
 			},
 			selectedNotification: null,
 			search: '',
+
 			isSettings: '',
 			settings: {
 				showCount: 0
-			}
+			},
+
+			isTemplate: false,
 		}
 	},
 	computed: {
@@ -304,6 +336,13 @@ export default {
 
 		margin-bottom: 10px;
 	}
+	&-settings{
+		&.btn-secondary{
+			background: #F7FAFC;
+			border-color: #F7FAFC;
+			color: #868e96;
+		}
+	}
 	&-text{
 		position: relative;
 		&:hover{
@@ -372,6 +411,41 @@ export default {
 	}
 	.container{
 		padding: 0 15px;
+	}
+
+	.form-control {
+		min-height: 35px;
+		background-color: #F7FAFC;
+		padding: 0 20px;
+		font-size: 14px;
+		border-radius: 6px;
+		border: 1px solid #e8e8e8;
+
+		&::placeholder {
+			color: #BDCADF;
+		}
+
+		&:active,
+		&:focus-within,
+		&:focus {
+			border: 1px solid #ddd;
+			background-color: #fff;
+			box-shadow: rgba(50, 50, 93, 0.25) 0px 2px 5px -1px, rgba(0, 0, 0, 0.3) 0px 1px 3px -1px;
+		}
+
+		&:disabled {
+			background-color: #eff2f4;
+			color: #BDCADF;
+			box-shadow: none;
+
+			&:active,
+			&:focus-within,
+			&:focus {
+				border: 1px solid #eff2f4;
+				background-color: #eff2f4;
+				box-shadow: none;
+			}
+		}
 	}
 }
 </style>

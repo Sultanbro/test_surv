@@ -44,6 +44,7 @@
 				>
 					{{ recipient.name }}
 				</b-badge>
+				&nbsp;
 			</div>
 		</div>
 
@@ -159,6 +160,10 @@ import AccessSelect from '@ui/AccessSelect/AccessSelect'
 import Multiselect from 'vue-multiselect'
 import DaysCheck from '@ui/Checkers/DaysCheck'
 import WeekdaysCheck from '@ui/Checkers/WeekdaysCheck'
+import {
+	services,
+	periods,
+} from './helper'
 
 
 export default {
@@ -177,47 +182,13 @@ export default {
 		}
 	},
 	data(){
-		const services = [
-			{
-				value: 'jobtron',
-				title: 'Jobtron'
-			},
-			{
-				value: 'mail',
-				title: 'Почта'
-			},
-			{
-				value: 'sms',
-				title: 'SMS'
-			},
-			{
-				value: 'telegram',
-				title: 'Telegram'
-			},
-			{
-				value: 'bitrix',
-				title: 'bitrix'
-			},
-		]
+
 		return {
 			value: JSON.parse(JSON.stringify(this.notification)),
 			isRecipientsOpen: false,
 			selectedServices: this.notification.type_of_mailing.map(value => services.find(service => service.value === value)),
 			services,
-			periods: [
-				{
-					value: 'daily',
-					text: 'Каждый жень'
-				},
-				{
-					value: 'weekly',
-					text: 'По дням недели'
-				},
-				{
-					value: 'monthly',
-					text: 'По числам месяца'
-				}
-			]
+			periods,
 		}
 	},
 	computed: {
