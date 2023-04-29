@@ -3,6 +3,10 @@
 namespace App\Http\Controllers\Salary;
 
 use App\Repositories\SavedKpiRepository;
+use App\Service\Bonus\ObtainedBonusService;
+use App\Service\Bonus\TestBonusService;
+use App\Service\Fine\FineService;
+use App\Service\Salary\SalaryService;
 use Illuminate\Http\Request;
 use Carbon\Carbon;
 use App\User;
@@ -22,6 +26,14 @@ use App\Http\Controllers\Controller;
 
 class ProfileSalaryController extends Controller
 {
+    public function __construct(
+        public SalaryService        $salaryService,
+        public FineService          $fineService,
+        public ObtainedBonusService $obtainedBonusesService,
+        public TestBonusService     $testBonusService,
+    )
+    {
+    }
 
     public function get(Request $request)
     {
@@ -136,6 +148,16 @@ class ProfileSalaryController extends Controller
         $sumKpi = $editedKpi ? $editedKpi->amount : $kpi;
         $sumBonus = $editedBonus ? $editedBonus->amount : $bonus;
         $sumQuarterPremium = $user->sumQuarterPremiums();
+
+        $currency_rate = (float)(Currency::rates()[$user->currency] ??  0.00001);
+
+        $userFinesInformation = $this->fineService->getUserFines($date->month, $user, $currency_rate);
+        $salaryBonuses = $this->salaryService->getUserBonuses($date, $user);
+        $obtainedBonuses = $this->obtainedBonusesService->getUserBonuses($date,$user);
+        $testBonuses =  $this->testBonusService->getUserBonuses($date,$user);
+        $advances = $this->salaryService->getUserAdvances($date, $user);
+
+        $salarySum = $user->getTotalByCurrency($userFinesInformation + $salaryBonuses + $obtainedBonuses + $testBonuses + $advances);
 
         // prepare user_earnigs 
         $user_earnings = [
