@@ -134,13 +134,8 @@ class ProfileSalaryController extends Controller
         $kpis = $user->inGroups();
 
         $sumKpi = $editedKpi ? $editedKpi->amount : $kpi;
-        $sumKpi =$user->getTotalByCurrency($sumKpi);
-
         $sumBonus = $editedBonus ? $editedBonus->amount : $bonus;
-        $sumBonus = $user->getTotalByCurrency($sumBonus);
-
         $sumQuarterPremium = $user->sumQuarterPremiums();
-        $sumQuarterPremium = $user->getTotalByCurrency($sumQuarterPremium);
 
         // prepare user_earnigs 
         $user_earnings = [
@@ -157,10 +152,10 @@ class ProfileSalaryController extends Controller
             'kpi_percent' => $kpi / 400, // kpi / 40000 * 100
             'kpi' => number_format((float)$kpi * $currency_rate,  0, '.', '\''). ' ' . strtoupper($user->currency),
             'kpiMax' => 30000,
-            'sumKpi' => $sumKpi,
-            'sumSalary' => $salarySum + $sumBonus,
-            'sumBonuses' => $sumBonus,
-            'sumQuartalPremiums' => $sumQuarterPremium,
+            'sumKpi' => $user->getTotalByCurrency($sumKpi),
+            'sumSalary' => $salarySum,
+            'sumBonuses' => $user->getTotalByCurrency($sumBonus),
+            'sumQuartalPremiums' => $user->getTotalByCurrency($sumQuarterPremium),
             'sumNominations' => 0, // кол-во номинаций
             'salary' => number_format((float)$salary * $currency_rate, 0, '.', '\''). ' ' . strtoupper($user->currency),
             'salary_info' => [
