@@ -872,29 +872,29 @@ class User extends Authenticatable implements Authorizable
                 // subtract avans
                 $sum -= $arr->avanses[$i] ?? 0;
 
-                // // if user bonus not edited for month on salary page
-                // if($arr->edited_bonus == null) {
-                //     // bonuses added on salary page for days
-                //     $sum += $arr->bonuses[$i] ?? 0;
+                 // if user bonus not edited for month on salary page
+                 if($arr->edited_bonus == null) {
+                     // bonuses added on salary page for days
+                     $sum += $arr->bonuses[$i] ?? 0;
 
-                //     // bonuses by Department activities
-                //     $sum += $arr->awards[$i] ?? 0;
+                     // bonuses by Department activities
+                     $sum += $arr->awards[$i] ?? 0;
 
-                //     // bonuses for answers in Courses and tests
-                //     $sum += $arr->test_bonuses[$i] ?? 0;
+                     // bonuses for answers in Courses and tests
+                     $sum += $arr->test_bonuses[$i] ?? 0;
 
-                // } else {
-                //     $sum += $arr->edited_bonus->amount;
-                // }
+                 } else {
+                     $sum += $arr->edited_bonus->amount;
+                 }
                 
             }   
 
             // kpi
-            // if($arr->edited_kpi == null) {
-            //     $sum += $arr->kpi;
-            // } else {
-            //     $sum += $arr->edited_kpi->amount;
-            // }  
+             if($arr->edited_kpi == null) {
+                 $sum += $arr->kpi;
+             } else {
+                 $sum += $arr->edited_kpi->amount;
+             }
 
             // if salary for month edited on salary page
             if($arr->edited_salary) {
