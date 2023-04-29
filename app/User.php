@@ -894,7 +894,7 @@ class User extends Authenticatable implements Authorizable
             //     $sum += $arr->kpi;
             // } else {
             //     $sum += $arr->edited_kpi->amount;
-            // }  
+            // }
 
             // if salary for month edited on salary page
             if($arr->edited_salary) {

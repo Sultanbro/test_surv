@@ -3,10 +3,10 @@
 		<!-- Header -->
 
 		<div
-			class="d-flex mb-3"
+			class="mb-4 m-0 row"
 			v-if="!is_course"
 		>
-			<div class="d-flex jcsb mb-1 left f-70">
+			<div class="col-12 col-md-8">
 				<div class="s w-full">
 					<div class="d-flex flex-column">
 						<input
@@ -50,7 +50,7 @@
 					</div>
 				</div>
 			</div>
-			<div class="right f-30 pl-4">
+			<div class="col-12 col-md-4">
 				<img
 					class="book-img mb-2"
 					v-if="playlist.img != ''"
@@ -156,70 +156,62 @@
 		</div>
 
 		<!-- edit tests -->
-		<Sidebar
+		<SimpleSidebar
 			title="Редактировать вопросы к видео"
 			:open="show_tests && activeVideo != null"
 			@close="show_tests = false"
-			width="70%"
+			width="50%"
+			class="sidebar-video-edit"
 		>
-			<div
-				class="p-3"
-				v-if="activeVideo != null"
-			>
-				<div class=" mb-3">
-					<p class="mt-2 font-bold">
-						Название видео
-					</p>
-					<input
-						type="text"
-						class="form-control"
-						v-model="activeVideo.title"
-						ref="activevideo_input"
-					>
-				</div>
-				<div
-					class="row mb-2"
-					v-if="mode == 'edit'"
-				>
-					<div class="col-md-12">
-						<button
-							class="btn btn-primary"
-							@click="saveActiveVideoFast"
+			<template #body>
+				<div v-if="activeVideo != null">
+					<div class="form-group">
+						<label>Название видео</label>
+						<input
+							type="text"
+							class="form-control"
+							v-model="activeVideo.title"
+							ref="activevideo_input"
 						>
-							Сохранить
-						</button>
 					</div>
+					<Questions
+						:questions="activeVideo.questions"
+						:id="activeVideo.id"
+						:pass_grade="activeVideo.pass_grade"
+						type="video"
+						:key="refreshTest"
+						@changePassGrade="changePassGrade"
+						:mode="'edit'"
+					/>
 				</div>
-
-
-				<Questions
-					:questions="activeVideo.questions"
-					:id="activeVideo.id"
-					:pass_grade="activeVideo.pass_grade"
-					type="video"
-					:key="refreshTest"
-					@changePassGrade="changePassGrade"
-					:mode="'edit'"
-				/>
-			</div>
-		</Sidebar>
+			</template>
+			<template #footer>
+				<button
+					v-if="activeVideo != null && mode == 'edit'"
+					class="btn btn-primary"
+					@click="saveActiveVideoFast"
+				>
+					Сохранить
+				</button>
+			</template>
+		</SimpleSidebar>
 	</div>
 </template>
 
 <script>
-import Sidebar from '@/components/ui/Sidebar' // сайдбар table
 import VideoPlayerItem from '@/components/VideoPlayerItem' // плеер
 import Questions from '@/pages/Questions' // вопросы тестов
+import SimpleSidebar from '@/components/ui/SimpleSidebar'
 import VideoAccordion from '@/components/VideoAccordion'
 
 import 'videojs-hotkeys'
 export default {
 	name: 'PlaylistEdit',
 	components: {
-		Sidebar,
 		VideoPlayerItem,
 		Questions,
 		VideoAccordion,
+		SimpleSidebar
 	},
 	props: {
 		token: String,

@@ -34,7 +34,7 @@ export default {
 
 <template>
 	<DefaultLayout class="no-padding">
-		<div class="old__content">
+		<div class="old__content my-course-content">
 			<Playlists
 				v-show="token"
 				:token="token"

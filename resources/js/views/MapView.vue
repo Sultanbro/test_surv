@@ -1,94 +1,84 @@
 <script>
-/* global DG */
-
 import DefaultLayout from '@/layouts/DefaultLayout'
-import { useAsyncPageData } from '@/composables/asyncPageData'
+import {useAsyncPageData} from '@/composables/asyncPageData'
+import {LMap, LTileLayer, LMarker, LIcon} from 'vue2-leaflet';
+import 'leaflet/dist/leaflet.css';
 
 export default {
 	name: 'MapView',
 	components: {
 		DefaultLayout,
+		LMap,
+		LTileLayer,
+		LMarker,
+		LIcon
 	},
-	data(){
+	data() {
 		return {
-			json: '',
+			url: 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
+			attribution: '&copy; <a target="_blank" href="http://osm.org/copyright">OpenStreetMap</a> contributors',
+			zoom: 6,
+			center: [50.416,69.258],
+			markers: []
 		}
 	},
-	methods:{
-		createMap(){
-			const scriptTag = document.createElement('script')
-			scriptTag.src = 'https://maps.api.2gis.ru/2.0/loader.js?pkg=full'
-			scriptTag.id = 'map-script'
-			scriptTag.addEventListener('load', () => {
-				const kis = this.json;
-
-				DG.then(function() {
-					const map = DG.map('map', {
-						center: [42.885933,71.369987],
-						zoom: 4.5
-					})
-
-					Object.keys(kis).forEach(i => {
-						const count = kis[i]['count']
-						const myDivIcon = DG.divIcon({
-							iconSize: [30,30],
-							html: `<b>${count}</b>`,
-						})
-
-						DG.marker([
-							kis[i]['geo_lat'],
-							kis[i]['geo_lon']
-						], {
-							icon: myDivIcon,
-						}).addTo(map)
-					});
-				})
-			})
-			scriptTag.addEventListener('error', console.error)
-			document.body.appendChild(scriptTag)
-		},
-		destroyMap(){
-			const scriptTag = document.getElementById('map-script')
-			if(!scriptTag) return
-			scriptTag.remove()
-			// remove map from coordinates-maps
-		}
-	},
-	mounted(){
+	methods: {},
+	mounted() {
 		useAsyncPageData('/maps').then(data => {
-			this.json = data.json
-
-			this.createMap()
+			const markers = [];
+			for (const key in data.json) {
+				markers.push({
+					count: data.json[key].count,
+					latLng: [data.json[key].geo_lat, data.json[key].geo_lon]
+				});
+			}
+			this.markers = markers;
 		}).catch(error => {
 			console.error('useAsyncPageData', error)
 		})
-	},
-	beforeUnmount(){
-		this.destroyMap()
 	}
 }
 </script>
 
 <template>
 	<DefaultLayout class="no-padding">
-		<!-- <script src="https://maps.api.2gis.ru/2.0/loader.js?pkg=full"></script> -->
 		<div class="old__content">
-			<div
-				id="map"
-				style="width:100%;height:1500px;"
-			/>
+			<l-map
+				style="height: 100vh"
+				:zoom="zoom"
+				:center="center"
+			>
+				<l-tile-layer
+					:url="url"
+					:attribution="attribution"
+				/>
+				<l-marker
+					v-for="(marker, index) in markers"
+					:key="index"
+					:lat-lng="marker.latLng"
+				>
+					<l-icon>
+						<span>{{ marker.count }}</span>
+					</l-icon>
+				</l-marker>
+			</l-map>
 		</div>
 	</DefaultLayout>
 </template>
 
 <style lang="scss">
-    #map{
-        .leaflet-marker-icon{
-            display: inline-flex;
-            justify-content: center;
-            align-items: center;
-            z-index: 264!important;
-            border-radius: 50%;
-        }
-    }
+	.leaflet-marker-icon {
+		span{
+			border-radius: 50%;
+			width: 35px;
+			height: 35px;
+			background-color: #fff;
+			border: 2px solid #666;
+			font-size: 14px;
+			font-weight: 700;
+			display: inline-flex;
+			align-items: center;
+			justify-content: center;
+		}
+	}
 </style>
