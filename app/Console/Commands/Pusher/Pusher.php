@@ -47,6 +47,32 @@ class Pusher extends Command
      * @return void
      * @throws Throwable
      */
+    private function daily(
+        MailingNotification $notification
+    ): void
+    {
+        $mailingSystems = json_decode($notification->type_of_mailing);
+
+        foreach ($notification->recipients as $recipient)
+        {
+            $notification = $this->mailingNotification()->first();
+            $time = now()->toTimeString();
+
+            if ($time == $notification->time)
+            {
+                foreach ($mailingSystems as $mailingSystem)
+                {
+                    NotificationFactory::createNotification($mailingSystem)->send($notification, $recipient);
+                }
+            }
+        }
+    }
+
+    /**
+     * @param MailingNotification $notification
+     * @return void
+     * @throws Throwable
+     */
     private function weekly(
         MailingNotification $notification
     ): void
@@ -87,32 +113,6 @@ class Pusher extends Command
             $time   = now()->toTimeString();
 
             if (in_array($today, $days) and $time == $notification->time)
-            {
-                foreach ($mailingSystems as $mailingSystem)
-                {
-                    NotificationFactory::createNotification($mailingSystem)->send($notification, $recipient);
-                }
-            }
-        }
-    }
-
-    /**
-     * @param MailingNotification $notification
-     * @return void
-     * @throws Throwable
-     */
-    private function daily(
-        MailingNotification $notification
-    ): void
-    {
-        $mailingSystems = json_decode($notification->type_of_mailing);
-
-        foreach ($notification->recipients as $recipient)
-        {
-            $notification = $this->mailingNotification()->first();
-            $time = now()->toTimeString();
-
-            if ($time == $notification->time)
             {
                 foreach ($mailingSystems as $mailingSystem)
                 {
