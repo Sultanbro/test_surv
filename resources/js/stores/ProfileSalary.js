@@ -22,8 +22,10 @@ export const useProfileSalaryStore = defineStore('profileSalary', {
 			this.isLoading = true
 			try{
 				const data = await fetchProfileSalary(year, month)
+				const { data: balance } = await fetchProfileBalance(year, month)
 				this.user_earnings = data.user_earnings
-				this.user_earnings.sumSalary = parseInt(this.user_earnings.sumSalary)
+				// this.user_earnings.sumSalary = parseInt(this.user_earnings.sumSalary)
+				this.user_earnings.sumSalary = Object.values(balance.salaries).reduce((result, day) => result + parseInt(day.value), 0)
 				this.user_earnings.sumKpi = parseInt(this.user_earnings.sumKpi)
 				this.user_earnings.sumBonuses = parseInt(this.user_earnings.sumBonuses)
 				this.user_earnings.sumQuartalPremiums = parseInt(this.user_earnings.sumQuartalPremiums)
@@ -43,10 +45,6 @@ export const useProfileSalaryStore = defineStore('profileSalary', {
 				const { data } = await fetchProfileBalance(year, month)
 				const { items } = await fetchProfileKpi(year, month)
 				const premiums = await fetchProfilePremiums(year, month)
-
-				console.log('data', data)
-				console.log('items', items)
-				console.log('premiums', premiums)
 
 				this.user_earnings.sumSalary = Object.values(data.salaries).reduce((result, day) => result + parseInt(day.value), 0)
 				this.user_earnings.sumKpi = items.reduce((result, kpi) => {
