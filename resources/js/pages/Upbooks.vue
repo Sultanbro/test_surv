@@ -23,7 +23,7 @@
 						:style="'position:absolute; right: 0; z-index: 2'"
 					>
 						<i
-							class="fa fa-edit"
+							class="fa fa-pen"
 							v-if="cat.id != 0 && mode == 'edit'"
 							@click.stop="editCat(c_index)"
 						/>
@@ -72,7 +72,7 @@
 								v-if="can_edit"
 							>
 								<i
-									class="fa fa-edit"
+									class="fa fa-pen"
 									@click="toggleMode"
 									:class="{'active': mode == 'edit'}"
 								/>
@@ -83,7 +83,7 @@
 								v-if="can_edit"
 							>
 								<i
-									class="fa fa-cogs"
+									class="fa fa-cog"
 									@click="get_settings()"
 								/>
 							</div>
@@ -115,7 +115,7 @@
 										@click.stop="deleteBook(b_index)"
 									/>
 									<i
-										class="fa fa-edit mr-1"
+										class="fa fa-pen mr-1"
 										@click.stop="editBook(book)"
 										v-if="mode == 'edit'"
 									/>

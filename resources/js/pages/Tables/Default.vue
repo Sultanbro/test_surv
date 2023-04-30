@@ -9,7 +9,7 @@
 		>
 			<h4 class="mr-2">
 				{{ activity.name }} <i
-					class="fa fa-cogs show"
+					class="fa fa-cog show"
 					@click="editActivity()"
 				/>
 			</h4>

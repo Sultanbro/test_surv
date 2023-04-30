@@ -123,7 +123,7 @@
 										@click.stop="deleteSection(b_index)"
 									/>
 									<i
-										class="fa fa-cogs "
+										class="fa fa-cog "
 										@click.stop="editAccess(book)"
 									/>
 								</div>
@@ -200,7 +200,7 @@
 								v-if="can_edit"
 							>
 								<i
-									class="fa fa-edit"
+									class="fa fa-pen"
 									@click="toggleMode"
 									:class="{'active': mode == 'edit'}"
 								/>
@@ -210,7 +210,7 @@
 								v-if="can_edit"
 							>
 								<i
-									class="fa fa-cogs"
+									class="fa fa-cog"
 									@click="get_settings()"
 								/>
 							</div>

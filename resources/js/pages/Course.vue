@@ -8,7 +8,7 @@
 					class="mb-3 name"
 					placeholder="Название курса"
 				>
-				<i class="fa fa-edit" />
+				<i class="fa fa-pen" />
 			</div>
 			<button
 				class="btn btn-success ml-3"

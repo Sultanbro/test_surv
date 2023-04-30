@@ -106,7 +106,7 @@
 					<div class="fl">
 						Подтягивать время
 						<i
-							class="fa fa-cogs ml-2"
+							class="fa fa-cog ml-2"
 							@click="editTimeAddress()"
 						/>
 					</div>

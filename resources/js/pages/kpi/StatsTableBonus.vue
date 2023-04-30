@@ -4,7 +4,7 @@
 			<tr>
 				<th class="b-table-sticky-column text-center px-1">
 					<i
-						class="fa fa-cogs"
+						class="fa fa-cog"
 						@click="adjustFields"
 					/>
 				</th>

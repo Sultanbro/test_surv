@@ -32,7 +32,7 @@
 				<tr>
 					<th class="b-table-sticky-column text-center">
 						<i
-							class="fa fa-cogs"
+							class="fa fa-cog"
 							@click="adjustFields"
 						/>
 					</th>

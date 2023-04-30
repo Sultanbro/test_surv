@@ -45,7 +45,7 @@
 				<tr>
 					<th class="text-center pointer">
 						<i
-							class="fa fa-cogs"
+							class="fa fa-cog"
 							@click="adjustFields"
 						/>
 					</th>

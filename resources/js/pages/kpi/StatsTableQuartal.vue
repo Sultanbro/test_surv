@@ -3,7 +3,7 @@
 		<table class="table j-table table-bordered table-sm mb-3 collapse-table">
 			<tr>
 				<th class="b-table-sticky-column text-center px-1">
-					<i class="fa fa-cogs" />
+					<i class="fa fa-cog" />
 				</th>
 				<th class="text-left">
 					Квартальные премии
