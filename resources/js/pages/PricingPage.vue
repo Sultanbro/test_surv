@@ -90,7 +90,7 @@
 			</div>
 			<template v-else>
 				<div class="PricingPage-promo-title">
-					Есть бонусный код?
+					Есть бонусный код? <span class="price-beta">beta</span>
 				</div>
 				<div class="PricingPage-promo-text">
 					Активируйте его чтобы получить бонус на первую оплату
@@ -220,6 +220,21 @@ export default {
 </script>
 
 <style lang="scss">
+	.PricingPage-promo-title{
+		position: relative;
+	}
+	.price-beta{
+		position: absolute;
+		top: 5px;
+		left: 205px;
+		padding: 3px 6px;
+		border-radius: 4px;
+		font-size: 12px;
+		background-color: #cd2525;
+		color: #fff;
+		font-weight: 600;
+		text-transform: uppercase;
+	}
 .PricingPage{
 	line-height: 1.3;
 	&-total,

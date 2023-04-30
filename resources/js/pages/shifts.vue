@@ -43,7 +43,7 @@
 									class="btn btn-primary btn-icon"
 									@click="editShift(shift)"
 								>
-									<i class="fa fa-edit" />
+									<i class="fa fa-pen" />
 								</b-button>
 								<b-button
 									class="btn btn-danger btn-icon"

@@ -146,7 +146,7 @@
 						v-if="can_edit"
 					>
 						<i
-							class="fa fa-edit"
+							class="fa fa-pen"
 							@click="toggleMode"
 							:class="{'active': mode == 'edit'}"
 						/>
@@ -172,7 +172,7 @@
 								class="form-control btn-action btn-medium ml-2"
 								@click="showPermissionModal = true"
 							>
-								<i class="fa fa-cogs" />
+								<i class="fa fa-cog" />
 							</button>
 
 							<template v-if="edit_actives_book">
