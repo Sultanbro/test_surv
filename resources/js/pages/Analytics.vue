@@ -3,6 +3,7 @@
 		v-if="groups"
 		class="analytics-page"
 	>
+		<!-- header -->
 		<div class="row mb-4">
 			<div class="col-3">
 				<select
@@ -42,6 +43,8 @@
 			</div>
 			<div class="col-3" />
 		</div>
+
+		<!-- tabs -->
 		<div>
 			<div v-if="isReady">
 				<div v-if="hasPremission">

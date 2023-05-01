@@ -1092,7 +1092,11 @@ export default {
 
 </style>
 <style lang="scss" scoped>
-
+a{
+	&:hover{
+		color: #0056b3;
+	}
+}
 .skypo .btn {
     padding: 0.375rem .75rem;
     margin: 0;

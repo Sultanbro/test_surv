@@ -1,44 +1,46 @@
 <template>
-	<div class="recruting-analytics mb-4">
-		<div class="border shadow p-3 aliceblue mb-5 rounded">
-			<div>
-				<div class="plan mb-4">
-					<div class="d-flex justify-content-between abv">
-						<p>Принятые сотрудники в этом месяце</p>
-						<p class="text ml-2">
-							{{ info.applied }} приняты /  {{ info.applied_plan }} требуется
-						</p>
-					</div>
-					<div class="progress">
-						<div
-							class="indicator"
-							:style="'width: ' + widthRemain + '%'"
-						/>
-						<div class="text">
-							Осталось {{ info.remain_days }} дней
-						</div>
-					</div>
-					<div class="relative">
-						<div class="line line1" />
-						<div
-							class="line line2"
-							:style="'left: calc(' + widthRemain + '% - 1.95%);'"
-							v-if="month == (new Date().getMonth() + 1)"
-						>
-							{{ today }} <br>{{ months[month] }}
-						</div>
-						<div class="line line3">
-							{{ maxdays[month] }}  {{ months[month] }}
-						</div>
-					</div>
+	<div class="recruting-analytics mb-4 AnalyticsRecruting">
+		<div class="AnalyticsRecruting-content mb-5">
+			<div class="d-flex justify-content-between abv">
+				<p>Принятые сотрудники в этом месяце</p>
+				<p class="text ml-2">
+					{{ info.applied }} приняты / {{ info.applied_plan }} требуется
+				</p>
+			</div>
+			<ProgressBar
+				:progress="widthRemain + '%'"
+				class="mt-2"
+			/>
+			<div class="AnalyticsRecruting-remainDdays">
+				Осталось {{ info.remain_days }} дней
+			</div>
+			<!-- <div class="AnalyticsRecruting-progress">
+				<div
+					class="AnalyticsRecruting-progress-indicator"
+					:style="'width: ' + widthRemain + '%'"
+				/>
+				<div class="AnalyticsRecruting-progress-text">
+					Осталось {{ info.remain_days }} дней
+				</div>
+			</div> -->
+			<div class="AnalyticsRecruting-days">
+				<div class="AnalyticsRecruting-line AnalyticsRecruting-line1" />
+				<div
+					v-if="month == (new Date().getMonth() + 1)"
+					class="AnalyticsRecruting-line AnalyticsRecruting-line2"
+					:style="'left: calc(' + widthRemain + '% - 1.95%);'"
+				>
+					{{ today }} <br>{{ months[month] }}
+				</div>
+				<div class="AnalyticsRecruting-line AnalyticsRecruting-line3">
+					{{ maxdays[month] }} <br>{{ months[month] }}
 				</div>
 			</div>
 		</div>
 
-
 		<div
-			class="row align-items-center my-3"
 			v-if="isAnalyticsPage"
+			class="row my-3"
 		>
 			<div class="col-md-8">
 				<h3 class="mb-3 text-center">
@@ -56,7 +58,6 @@
 						</p>
 						<p>{{ info.working }}</p>
 					</div>
-
 					<div class="lbox yellow  shadow">
 						<p>
 							<span>Осталось принять</span>
@@ -68,8 +69,6 @@
 						</p>
 						<p>{{ info.remain_apply }}</p>
 					</div>
-
-
 					<div class="lbox blue   shadow">
 						<p>
 							<span>Стажеры</span>
@@ -81,10 +80,6 @@
 						</p>
 						<p>{{ info.training }}</p>
 					</div>
-
-
-
-
 					<div class="lbox green  shadow">
 						<p>
 							<span>Осталось рабочих дней</span>
@@ -96,7 +91,6 @@
 						</p>
 						<p>{{ info.remain_days }}</p>
 					</div>
-
 					<div class="lbox yellow  shadow">
 						<p>
 							<span>Уволены</span>
@@ -108,8 +102,6 @@
 						</p>
 						<p>{{ info.fired }}</p>
 					</div>
-
-
 					<div class="lbox blue  shadow">
 						<p>
 							<span>Принято</span>
@@ -123,7 +115,8 @@
 					</div>
 				</div>
 			</div>
-			<div class="col-md-4">
+			<!-- воронка -->
+			<div class="col-md-4 static">
 				<div>
 					<h3 class="mb-3 text-center">
 						Воронка соискателей
@@ -132,9 +125,6 @@
 				</div>
 			</div>
 		</div>
-
-
-
 
 		<div
 			v-if="orderVisible"
@@ -172,13 +162,9 @@
 				<h3 class="mb-0">
 					Результаты остальных сотрудников
 				</h3>
-				<button
-					class="btn btn-primary btn-sm rounded"
-					@click="showPlans = !showPlans"
-				>
-					<span v-if="showPlans">Скрыть</span>
-					<span v-else>Раскрыть</span>
-				</button>
+				<JobtronButton @click="showPlans = !showPlans">
+					{{ showPlans ? 'Скрыть' : 'Раскрыть' }}
+				</JobtronButton>
 			</div>
 
 
@@ -187,9 +173,9 @@
 				class="mt-5"
 			>
 				<div
-					class="plan"
 					v-for="user in recruiters"
 					:key="user.id"
+					class="plan"
 				>
 					<div class="mb-2 d-flex justify-content-between">
 						<p class="name">
@@ -257,9 +243,15 @@
 
 <script>
 import D3Funnel from 'd3-funnel';
+import ProgressBar from '@ui/ProgressBar'
+import JobtronButton from '@ui/Button'
 
 export default {
 	name: 'AnalyticsRecruting',
+	components: {
+		ProgressBar,
+		JobtronButton,
+	},
 	props: {
 		records: Object,
 		isAnalyticsPage: Boolean,
@@ -482,59 +474,86 @@ export default {
 
 <style lang="scss">
 .d3-funnel-tooltip{
-    left: 0 !important;
-    bottom: 0 !important;
+	// position: fixed !important;
+	// left: 0 !important;
+	// bottom: 0 !important;
+}
+.AnalyticsRecruting{
+	&-content{
+    display: flex;
+    flex-flow: column wrap;
+    align-items: stretch;
+    justify-content: center;
 
+    padding: 15px;
+    margin-bottom: 15px;
+
+    position: relative;
+
+    background: #F8FBFF;
+    border-radius: 12px;
+	}
+	&-remainDdays{
+		text-align: right;
+		font-size: 1rem;
+	}
+	&-days{
+		position: relative;
+		height: 55px;
+	}
+	&-line{
+    padding-top: 15px;
+		position: absolute;
+    top: 8px;
+    text-align: center;
+		&:before {
+			content: '';
+			display: block;
+			width: 2px;
+			height: 15px;
+
+			position: absolute;
+			top: 0px;
+
+			background: #ccc;
+		}
+	}
+	&-line1 {
+		left: 0;
+		&:before {
+			left: 0;
+		}
+	}
+	&-line2 {
+		left: 82%;
+		&:before {
+			left: 50%;
+		}
+	}
+	&-line3 {
+		right: 0;
+		&:before {
+			right: 0;
+		}
+	}
 }
 </style>
 <style lang="scss" scoped>
-.relative {
-    position: relative;
-    height: 30px;
+.row{
+	display: flex;
+	flex-flow: row nowrap;
+	gap: 15px;
+	margin-left: 0;
+	margin-right: 0;
 }
-
-.line {
-    position: absolute;
-    top: 8px;
-
-
-    padding-top: 15px;
-
-    text-align: center;
+.col-md-4,
+.col-md-8{
+	padding-left: 0;
+	padding-right: 0;
+	flex-shrink: 1 !important;
 }
-.line:before {
-    content: "";
-    width: 2px;
-    background: #ccc;
-    position: relative;
-    height: 15px;
-    position: absolute;
-    display: block;
-        top: 0px;
-}
-.line1 {
-    left: 0;
-}
-.line1:before {
-    left: 0;
-}
-.line2 {
-    left: 82%;
-}
-.line2:before {
-    left: 50%;
-}
-.line3 {
-    right: 0;
-}
-.line3:before {
-    right: 0;
-}
-
-
-
 .border {
-    border: 1px solid #fafafa;
+	border: 1px solid #fafafa;
 }
 // .shadow {
 //     box-shadow: 0 3px 15px #d3d6da;
@@ -544,184 +563,182 @@ export default {
 //     }
 // }
 .p-2 {
-    padding: 15px;
+	padding: 15px;
 }
 
 .plan p.name {
-    flex: 0 0 25%;
-    font-weight: 400;
-    color: #111;
-    margin-top: 15px;
-        font-size: 0.9rem;
+	flex: 0 0 25%;
+	font-weight: 400;
+	color: #111;
+	margin-top: 15px;
+	font-size: 0.9rem;
 }
 .progress {
-    flex: 0 0 75%;
-    position: relative;
-    border: 1px solid #fafafa;
-    height: 1.8rem;
-    font-size: 0.9rem;
-    border-radius: 0;
+	flex: 0 0 75%;
+	position: relative;
+	border: 1px solid #fafafa;
+	height: 1.8rem;
+	font-size: 0.9rem;
+	border-radius: 0;
 }
 .progress .indicator{
-    background: #2dad4a;
-    color: #fff;
-    font-weight: 700;
-    //background: repeating-linear-gradient(45deg, #008eff, #0b92fc 10px, #33a1f8 10px, #52adf4 20px);
-    position: absolute;
-    height: 100%;
-    padding: 0 15px;
-    width: 0;
-    border-radius: 0;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    max-width: 100%;
-    min-width: 5px;
-    &:hover {
-        background: #41c7e4;
-    }
-    &.green {
-        background: #8bc34a;
-        &:hover {
-            background: #99da4c;
-        }
-    }
-    &.yellow {
-        background: #5fd3ec;
-        &:hover {
-            background: #55d8f5;
-        }
-    }
-    &.bluish {
-        background: #045e92;
-        &:hover {
-            background: #055583;
-        }
-    }
-
-
+	background: #2dad4a;
+	color: #fff;
+	font-weight: 700;
+	//background: repeating-linear-gradient(45deg, #008eff, #0b92fc 10px, #33a1f8 10px, #52adf4 20px);
+	position: absolute;
+	height: 100%;
+	padding: 0 15px;
+	width: 0;
+	border-radius: 0;
+	cursor: pointer;
+	display: flex;
+	align-items: center;
+	max-width: 100%;
+	min-width: 5px;
+	&:hover {
+		background: #41c7e4;
+	}
+	&.green {
+		background: #8bc34a;
+		&:hover {
+			background: #99da4c;
+		}
+	}
+	&.yellow {
+		background: #5fd3ec;
+		&:hover {
+			background: #55d8f5;
+		}
+	}
+	&.bluish {
+		background: #045e92;
+		&:hover {
+			background: #055583;
+		}
+	}
 }
 .recruting-analytics h3 {
-    font-size: 1.1rem;
-    margin-bottom: 15px;
+	font-size: 1.1rem;
+	margin-bottom: 15px;
 }
 .recruting-analytics h3.mb-0 {
-    margin-bottom: 0;
+	margin-bottom: 0;
 }
 .lboxes {
-    display: flex;
-    justify-content: space-between;
-    flex-wrap:wrap;
-    .lbox {
-        align-items: unset;
-    }
+	display: flex;
+	justify-content: space-between;
+	flex-wrap:wrap;
+	.lbox {
+		align-items: unset;
+	}
 }
 .lbox {
-    flex: 0 0 48%;
-    padding: 15px 0;
-    flex-wrap: wrap;
-    border-left-width: 0px !important;
-    border-left-style: solid;
-    background: #e1f3e5;
-    margin-bottom: 15px;
-    padding: 15px;
-    align-items: self-end;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    position: relative;
-    border-radius: 7px;
-    p:first-child {
-        font-weight: 400;
-        color: #000;
-    }
-    i.fa {
-    color: #000000;
-    cursor: pointer;
-    display: inline-block;
-        &:hover {
-            color: #000;
-        }
-    }
-    p:last-child {
-        font-weight: 600;
-        color: #000;
-        font-size: 1.5rem;
-        margin-bottom: 0;
-    }
+	flex: 0 0 48%;
+	padding: 15px 0;
+	flex-wrap: wrap;
+	border-left-width: 0px !important;
+	border-left-style: solid;
+	background: #F8FBFF;
+	margin-bottom: 15px;
+	padding: 15px;
+	align-items: self-end;
+	display: flex;
+	flex-direction: column;
+	justify-content: center;
+	position: relative;
+	border-radius: 12px;
+	p:first-child {
+		font-weight: 400;
+		color: #000;
+	}
+	i.fa {
+		color: #000000;
+		cursor: pointer;
+		display: inline-block;
+		&:hover {
+			color: #000;
+		}
+	}
+	p:last-child {
+		font-weight: 600;
+		color: #000;
+		font-size: 1.5rem;
+		margin-bottom: 0;
+	}
 }
 .lboxes2 {
-    display: flex;
-    flex-wrap: wrap;
-    align-items: flex-start;
-    justify-content: space-between;
+	display: flex;
+	flex-wrap: wrap;
+	align-items: flex-start;
+	justify-content: space-between;
 }
 .lboxes2 .lbox {
-    flex: 0 0 47%;
+	flex: 0 0 47%;
 }
 @media(max-width: 768px) {
-    .lbox {
-        flex: 0 0 47%;
-    }
-    .lboxes2 .lbox {
-        flex: 0 0 100%;
-    }
+	.lbox {
+		flex: 0 0 47%;
+	}
+	.lboxes2 .lbox {
+		flex: 0 0 100%;
+	}
 }
 .table td, .table th {
-    padding: 0.5rem;
-    border: 1px solid #dee2e6;
+	padding: 0.5rem;
+	border: 1px solid #dee2e6;
 }
 .ind {
-    display: flex;
-    align-items: center;
-    margin-left: 15px;
-    p {
-        margin-bottom: 0;
-        font-size: 0.8rem;
-    }
-    .circle {
-        width: 6px;
-        height: 6px;
-        margin-right: 7px;
-        border-radius: 6px;
-        &.blue {background: #76b5ec;}
-        &.bluish {background: #045e92;}
-        &.green {background: #8bc34a;}
-        &.yellow {background: #5fd3ec;}
-    }
-}
-.aliceblue {
-    background:#e1f3e5;
+	display: flex;
+	align-items: center;
+	margin-left: 15px;
+	p {
+		margin-bottom: 0;
+		font-size: 0.8rem;
+	}
+	.circle {
+		width: 6px;
+		height: 6px;
+		margin-right: 7px;
+		border-radius: 6px;
+		&.blue {background: #76b5ec;}
+		&.bluish {background: #045e92;}
+		&.green {background: #8bc34a;}
+		&.yellow {background: #5fd3ec;}
+	}
 }
 .plan .progress .indicator {
-    min-width: max-content;
+	min-width: max-content;
 }
 .progress .text {
-width: 100%;
-    text-align: right;
-    position: absolute;
-    height: 100%;
-    display: flex;
-    justify-content: flex-end;
-    padding-right: 10px;
-    align-items: center;
+	width: 100%;
+	text-align: right;
+	position: absolute;
+	height: 100%;
+	display: flex;
+	justify-content: flex-end;
+	padding-right: 10px;
+	align-items: center;
 }
 .abv p {
-    font-size: 1.2rem;
-    font-weight: 600;
-    color: #000;
+	font-size: 1.2rem;
+	font-weight: 600;
+	color: #000;
 }
 .pointer {
-    cursor: pointer;
-    &:hover {
+	cursor: pointer;
+	&:hover {
 
-        filter: grayscale(1)
-    }
+		filter: grayscale(1)
+	}
 }
 #funnel {
-    max-width: 335px;
-    display: block;
-    margin: 0 auto;
-    height: 330px;
+	max-width: 335px;
+	display: block;
+	margin: 0 auto;
+	height: 330px;
+}
+.static{
+	position: static;
 }
 </style>

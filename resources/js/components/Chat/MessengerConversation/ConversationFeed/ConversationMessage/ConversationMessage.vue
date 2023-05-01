@@ -140,6 +140,7 @@
 									<a
 										:href="file.file_path"
 										download
+										target="_blank"
 									>{{ file.name }}</a>
 								</div>
 							</template>
