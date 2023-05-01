@@ -290,6 +290,8 @@ class CreatePivotAnalytics extends Command
             ->where('group_id', $group_id)
             ->get();
 
+        $lastColumnId = 0;
+
         foreach ($stats as $stat) {
 
             $existsRowAndCol = array_key_exists($stat->row_id, $newRows)
@@ -299,6 +301,7 @@ class CreatePivotAnalytics extends Command
 
             $value      = $this->getValue($stat, $newRows, $newCols, $colsWithValue);
             $show_value = $this->getShowValue($stat, $newRows, $newCols, $colsWithValue);
+            $lastColumnId = $newCols[$stat->column_id];
 
             AnalyticStat::create([
                 'group_id'    => $stat->group_id,
@@ -315,6 +318,50 @@ class CreatePivotAnalytics extends Command
                 'decimals'    => $stat->decimals,
             ]);
             
+        }
+
+        $lastColumnStats = AnalyticStat::query()
+            ->where('column_id', $lastColumnId)
+            ->where('group_id', $group_id)
+            ->where('date', $newDate)
+            ->get();
+
+        /**
+         * Дни в этом и в прошлом месяце.
+         */
+        $daysInMonth     = Carbon::parse($newDate)->daysInMonth;
+        $daysInPrevMonth = Carbon::parse($prevDate)->daysInMonth;
+
+        /**
+         * Скрипт запускается если дни текущего месяца больше чем прошлый.
+         */
+        $analyticStats = [];
+
+        if ($daysInMonth > $daysInPrevMonth)
+        {
+            $diffDays = array_diff($this->getCurrentMonthDayToArray($daysInMonth), $this->getPrevMonthDayToArray($daysInPrevMonth));
+            foreach ($diffDays as $diffDay)
+            {
+                foreach ($lastColumnStats as $key => $columnStat)
+                {
+                    $analyticStats[] = [
+                        'group_id'    => $columnStat->group_id,
+                        'date'        => $newDate,
+                        'row_id'      => $columnStat->row_id,
+                        'column_id'   => ++$columnStat->column_id,
+                        'value'       => '',
+                        'show_value'  => $key == 0 ? $diffDay : '',
+                        'activity_id' => null,
+                        'editable'    => $columnStat->editable,
+                        'class'       => $columnStat->class,
+                        'type'        => $columnStat->type,
+                        'comment'     => $columnStat->comment,
+                        'decimals'    => $columnStat->decimals
+                    ];
+                }
+            }
+
+            DB::table('analytic_stats')->insert($analyticStats);
         }
     }
 
