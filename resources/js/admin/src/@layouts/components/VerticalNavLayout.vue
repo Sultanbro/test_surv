@@ -11,6 +11,7 @@ const drawer = ref(lgAndUp.value)
     app
     floating
     sticky
+    rail
     :absolute="false"
     style="background: rgb(var(--v-theme-background))"
     class="layout-vertical-nav position-fixed"

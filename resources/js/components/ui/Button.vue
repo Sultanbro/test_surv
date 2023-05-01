@@ -32,7 +32,7 @@ export default {
 
 <style lang="scss">
 .JobtronButton{
-	display: flex;
+	display: inline-flex;
 
 	align-items: center;
 	justify-content: space-between;

@@ -19,7 +19,7 @@
 			</span>
 		</div>
 		<div class="PricingCurrent-row">
-			<span class="PricingCurrent-label">Пльзователей:</span>
+			<span class="PricingCurrent-label">Пользователей:</span>
 			<span class="PricingCurrent-value">
 				<template v-if="current">
 					{{ totalUsers }}

@@ -126,10 +126,10 @@ export default {
 	// &-phone{}
 	// &-email{}
 	&-link{
-		color: green;
+		color: #3361FF;
 		text-decoration: none;
 		&:hover{
-			color: lightgreen;
+			color: lighten(#3361FF, 10);
 		}
 	}
 }
