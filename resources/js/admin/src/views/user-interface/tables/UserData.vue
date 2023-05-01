@@ -41,23 +41,23 @@ function formatDateTime(dateZ: string){
   return `${o(date.getHours())}:${o(date.getMinutes())} ${formatDate(dateZ)}`
 }
 
-const scrollTD = ref<Element | null>(null)
-function scrollObserverCallback(entries: IntersectionObserverEntry[]){
-  entries.forEach(entry => {
-    if(entry.target === scrollTD.value && entry.isIntersecting){
-      emit('scrollEnd')
-    }
-  })
-}
-const scrollObserver = new IntersectionObserver(scrollObserverCallback)
-watchEffect(() => {
-  if (scrollTD.value) {
-    scrollObserver.observe(scrollTD.value)
-  }
-  else {
-    // not mounted yet, or the element was unmounted (e.g. by v-if)
-  }
-})
+// const scrollTD = ref<Element | null>(null)
+// function scrollObserverCallback(entries: IntersectionObserverEntry[]){
+//   entries.forEach(entry => {
+//     if(entry.target === scrollTD.value && entry.isIntersecting){
+//       emit('scrollEnd')
+//     }
+//   })
+// }
+// const scrollObserver = new IntersectionObserver(scrollObserverCallback)
+// watchEffect(() => {
+//   if (scrollTD.value) {
+//     scrollObserver.observe(scrollTD.value)
+//   }
+//   else {
+//     // not mounted yet, or the element was unmounted (e.g. by v-if)
+//   }
+// })
 
 function getManagerName(userId: number){
   const managerId = userDataStore.userManagers[userId]
@@ -67,7 +67,7 @@ function getManagerName(userId: number){
 </script>
 
 <template>
-  <VContainer>
+  <VContainer class="UserData">
     <VTable
       v-if="userDataStore.userData.length"
       height="250"
@@ -195,8 +195,12 @@ function getManagerName(userId: number){
           <td
             ref="scrollTD"
             colspan="12"
+            class="text-center"
           >
             <!-- just for scroll -->
+            <VBtn @click="emit('scrollEnd')">
+              Загрузить еще
+            </VBtn>
           </td>
         </tr>
       </tfoot>
@@ -212,3 +216,9 @@ function getManagerName(userId: number){
     </div>
   </VContainer>
 </template>
+
+<style lang="scss">
+.UserData{
+  margin-top: -16px;
+}
+</style>
