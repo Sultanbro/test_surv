@@ -43,7 +43,6 @@ export default {
 	flex-flow: row nowrap;
 	align-items: center;
 	gap: 16px;
-	margin-top: 25px;
 	padding-left: 21px;
 	background: #F7FAFC;
 	border-radius: 8px;

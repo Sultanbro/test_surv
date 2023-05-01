@@ -5,6 +5,7 @@
 			'JobtronButton_big': big,
 			'JobtronButton_success': success,
 			'JobtronButton_error': error,
+			'JobtronButton_fade': fade,
 		}"
 		@click="$emit('click')"
 	>
@@ -24,6 +25,9 @@ export default {
 			type: Boolean
 		},
 		error: {
+			type: Boolean
+		},
+		fade: {
 			type: Boolean
 		},
 	}
@@ -77,6 +81,14 @@ export default {
 		background: #dc3545;
 		&:hover:not([disabled]):not(.disabled){
 			background: #c82333;
+		}
+	}
+	&_fade{
+		background: #F7FBFF;
+		color: #156AE8;
+		&:hover:not([disabled]):not(.disabled){
+			background: darken(#F7FBFF, 10);
+			color: #156AE8;
 		}
 	}
 }

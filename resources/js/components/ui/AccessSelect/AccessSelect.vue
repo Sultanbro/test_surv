@@ -8,15 +8,18 @@
 		<AccessSelectSearch
 			v-if="searchPosition === 'beforeTabs'"
 			v-model="accessSearch"
+			class="AccessSelect-search"
 		/>
 		<AccessSelectTabs
 			v-if="tabs && tabs.length"
 			:tabs="tabs"
 			v-model="selectedTab"
+			class="AccessSelect-tabs"
 		/>
 		<AccessSelectSearch
 			v-if="searchPosition === 'afterTabs'"
 			v-model="accessSearch"
+			class="AccessSelect-search"
 		/>
 
 		<div class="AccessSelect-list">
@@ -66,6 +69,7 @@
 			:submit-button="submitButton"
 			:submit-disabled="submitDisabled"
 			@submit="$emit('submit')"
+			class="AccessSelect-footer"
 		/>
 		<slot
 			name="after"
@@ -193,10 +197,14 @@ export default {
 			filter: invert(27%) sepia(73%) saturate(2928%) hue-rotate(209deg) brightness(96%) contrast(89%);
 		}
 	}
+	&-search,
+	&-tabs,
+	&-list{
+		margin-bottom: 20px;
+	}
 	&-list {
 		display: flex;
 		flex-flow: column nowrap;
-		padding: 25px 0;
 		overflow: hidden;
 	}
 }
