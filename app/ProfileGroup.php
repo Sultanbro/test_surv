@@ -403,4 +403,25 @@ class ProfileGroup extends Model
             ->groupeFilter($this->id, $date)
             ->getUserIds();
     }
+
+    /**
+     * Возвращает группы, которые берут данные о звонках с ucalls.
+     *
+     * @return self
+     */
+    public static function getUcallsConnectedGroups()
+    {
+        return self::select('profile_groups.id', 'callibro_dialers.dialer_id', 'profile_groups.time_exceptions')
+            ->where('profile_groups.active', 1)
+            ->where('profile_groups.is_ucalls', 1)
+            ->leftJoin('callibro_dialers', 'callibro_dialers.group_id', 'profile_groups.id')
+            ->get()->each(function ($group){
+                $group['activities'] = Activity::select('id')
+                    ->where('group_id', $group->id)
+                    ->where('is_ucalls', 1)
+                    ->get()
+                    ->pluck('id')
+                    ->toArray();
+            });
+    }
 }
