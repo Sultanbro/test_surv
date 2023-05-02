@@ -18,7 +18,7 @@
 			v-model="selectedTargets"
 			:tabs="['Сотрудники', 'Отделы', 'Должности']"
 			:submit-button="''"
-			:access-dictionaries="accessDictionaries"
+			:access-dictionaries="notInChat"
 			@input="submitChat"
 			class="ChatUserAdd-select"
 		/>
@@ -46,36 +46,17 @@ export default {
 	},
 	computed: {
 		...mapGetters([
+			'user',
 			'users',
 			'positions',
 			'profileGroups',
 			'chat',
+			'accessDictionaries',
 		]),
-		positionMap(){
-			return this.positions.reduce((result, pos) => {
-				result[pos.id] = pos.position
-				return result
-			}, {})
-		},
-		accessDictionaries(){
+		notInChat(){
 			return {
-				users: this.users.reduce((users, user) => {
-					if(~this.chat.users.findIndex(u => u.id === user.id)) return users
-					if(user.deleted_at) return users
-					users.push({
-						id: user.id,
-						name: `${user.name} ${user.last_name}`,
-						avatar: `/users_img/${user.img_url}`,
-						img_url: user.img_url,
-						position: this.positionMap[user.position_id],
-					})
-					return users
-				}, []),
-				profile_groups: this.profileGroups.filter(group => group.active),
-				positions: this.positions.filter(pos => !pos.deleted_at).map(pos => ({
-					id: pos.id,
-					name: pos.position
-				})),
+				...this.accessDictionaries,
+				users: this.accessDictionaries.users.filter(user => !~this.chat.users.findIndex(u => u.id === user.id))
 			}
 		},
 		actualUsers(){
@@ -83,7 +64,7 @@ export default {
 				let group
 				switch(target.type) {
 				case 1:
-					result.push(target)
+					if(target.id !== this.user.id) result.push(target)
 					break
 				case 2:
 					group = this.profileGroups.find(group => group.id === target.id)

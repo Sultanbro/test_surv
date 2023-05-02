@@ -2,7 +2,7 @@
 	<div v-if="positions">
 		<b-tabs
 			type="card"
-			:default-active-key="&quot;1&quot;"
+			:default-active-key="'1'"
 			class="specialtab pt-4"
 		>
 			<!-- user notis -->
