@@ -2190,14 +2190,15 @@ class TimetrackingController extends Controller
 
     public function saveTimeAddresses(Request $request)
     {
-        $group = ProfileGroup::find($request->group_id);
+        $group = ProfileGroup::where('id', $request->group_id)
+            ->first();
 
         if($group) {
             $group->time_address = $request->time_address;
 
             $users = [];
-            foreach ($request->time_exceptions as $key => $te) {
-                array_push($users, $te['id']);
+            foreach ($request->time_exceptions as $time_exception) {
+                $users[] = $time_exception['id'];
             }
             $group->time_exceptions = $users;
             $group->save();
