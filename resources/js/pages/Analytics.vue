@@ -109,67 +109,10 @@
 										key="1"
 										card
 									>
-										<table
-											class="table b-table table-striped table-bordered table-sm"
-											style="width:900px"
-										>
-											<thead>
-												<th
-													class="text-left t-name table-title"
-													style="background:#90d3ff;width:250px;"
-												>
-													Отдел
-												</th>
-												<th class="text-center t-name table-title">
-													Требуется нанять
-												</th>
-												<th class="text-center t-name table-title">
-													Кол-во <br>переданных <br> стажеров
-												</th>
-												<th class="text-center t-name table-title">
-													Кол-во <br>приступивших <br>к работе
-												</th>
-												<th class="text-center t-name table-title">
-													Процент <br>прохождения<br> стажировки
-												</th>
-												<th class="text-center t-name table-title">
-													Кол-во<br> стажирующихся активных
-													<i
-														class="fa fa-info-circle"
-														v-b-popover.hover.right.html="'Стажеры, которые присутстовали на сегодня. В табели у них есть оранжевая отметка.'"
-														title="Активные стажеры"
-													/>
-												</th>
-											</thead>
-											<tbody
-												v-for="(ocenka, index) in ocenkaSvod"
-												:key="index"
-											>
-												<tr>
-													<td
-														class="text-left t-name table-title align-middle"
-														style="background:#90d3ff"
-													>
-														{{ ocenka.name }}
-													</td>
-													<td class="text-center t-name table-title align-middle">
-														{{ ocenka.required }}
-													</td>
-													<td class="text-center t-name table-title align-middle">
-														{{ ocenka.sent }}
-													</td>
-													<td class="text-center t-name table-title align-middle">
-														{{ ocenka.working }}
-													</td>
-													<td class="text-center t-name table-title align-middle">
-														{{ ocenka.percent }}
-													</td>
-													<td class="text-center t-name table-title align-middle">
-														{{ ocenka.active }}
-													</td>
-												</tr>
-											</tbody>
-										</table>
+										<TableTraineeSage2
+											:ocenka-svod="ocenkaSvod"
+											class="pt-4"
+										/>
 									</b-tab>
 
 									<!--<b-tab title="Оценка тренера" key="2">
@@ -194,81 +137,24 @@
 										key="4"
 										card
 									>
-										<div class="row">
+										<div class="row pt-4">
 											<div class="col-md-4">
-												<table class="table b-table table-striped table-bordered table-sm">
-													<thead>
-														<th
-															class="text-left t-name table-title"
-															colspan="2"
-														>
-															Первый день
-														</th>
-													</thead>
-													<tbody>
-														<tr
-															v-for="absent in absentsFirst"
-															:key="absent.id"
-														>
-															<td class="text-left t-name table-title">
-																{{ absent.cause }}
-															</td>
-															<td class="text-center t-name table-title mw30">
-																{{ absent.count }}
-															</td>
-														</tr>
-													</tbody>
-												</table>
+												<JobtronTable
+													:fields="[{key: 'cause', label: 'Первый день', colspan: 2, thClass: 'text-left', tdClass: 'text-left'}, {key: 'count', hide: true, tdClass:'text-center'}]"
+													:items="absentsFirst"
+												/>
 											</div>
 											<div class="col-md-4">
-												<table class="table b-table table-striped table-bordered table-sm">
-													<thead>
-														<th
-															class="text-left t-name table-title"
-															colspan="2"
-														>
-															Второй день
-														</th>
-													</thead>
-													<tbody>
-														<tr
-															v-for="absent in absentsSecond"
-															:key="absent.id"
-														>
-															<td class="text-left t-name table-title">
-																{{ absent.cause }}
-															</td>
-															<td class="text-center t-name table-title">
-																{{ absent.count }}
-															</td>
-														</tr>
-													</tbody>
-												</table>
+												<JobtronTable
+													:fields="[{key: 'cause', label: 'Второй день', colspan: 2, thClass: 'text-left', tdClass: 'text-left'}, {key: 'count', hide: true, tdClass:'text-center'}]"
+													:items="absentsSecond"
+												/>
 											</div>
 											<div class="col-md-4">
-												<table class="table b-table table-striped table-bordered table-sm">
-													<thead>
-														<th
-															class="text-left t-name table-title"
-															colspan="2"
-														>
-															После третьего дня
-														</th>
-													</thead>
-													<tbody>
-														<tr
-															v-for="absent in absentsThird"
-															:key="absent.id"
-														>
-															<td class="text-left t-name table-title">
-																{{ absent.cause }}
-															</td>
-															<td class="text-center t-name table-title">
-																{{ absent.count }}
-															</td>
-														</tr>
-													</tbody>
-												</table>
+												<JobtronTable
+													:fields="[{key: 'cause', label: 'После третьего дня', colspan: 2, thClass: 'text-left', tdClass: 'text-left'}, {key: 'count', hide: true, tdClass:'text-center'}]"
+													:items="absentsSecond"
+												/>
 											</div>
 										</div>
 									</b-tab>
@@ -290,7 +176,7 @@
 										key="0"
 										card
 									>
-										<div class="row">
+										<div class="row pt-4">
 											<div class="col-8">
 												<TableFunnel
 													class="mb-5"
@@ -333,24 +219,26 @@
 										:title="month.month"
 										card
 									>
-										<TableFunnel
-											class="mb-5"
-											:table="funnels['month'][i]['hh']"
-											title="hh.ru"
-											segment="hh"
-											type="week"
-											:date="month.date"
-											:key="5 * 1000 * (Number(i) + 10 * Number(i))"
-										/>
-										<TableFunnel
-											class="mb-5"
-											:table="funnels['month'][i]['insta']"
-											title="Job.bpartners.kz"
-											segment="insta"
-											type="week"
-											:date="month.date"
-											:key="6 * 1000 * (Number(i) + 10 * Number(i))"
-										/>
+										<div class="pt-4">
+											<TableFunnel
+												class="mb-5"
+												:table="funnels['month'][i]['hh']"
+												title="hh.ru"
+												segment="hh"
+												type="week"
+												:date="month.date"
+												:key="5 * 1000 * (Number(i) + 10 * Number(i))"
+											/>
+											<TableFunnel
+												class="mb-5"
+												:table="funnels['month'][i]['insta']"
+												title="Job.bpartners.kz"
+												segment="insta"
+												type="week"
+												:date="month.date"
+												:key="6 * 1000 * (Number(i) + 10 * Number(i))"
+											/>
+										</div>
 									</b-tab>
 								</b-tabs>
 							</b-tab>
@@ -373,12 +261,14 @@
 										key="1"
 										card
 									>
-										<TableStaffTurnover
-											:staff="staff"
-											:causes="causes"
-											:staff_longevity="staffLongevity"
-											:staff_by_group="staffByGroup"
-										/>
+										<div class="pt-4">
+											<TableStaffTurnover
+												:staff="staff"
+												:causes="causes"
+												:staff_longevity="staffLongevity"
+												:staff_by_group="staffByGroup"
+											/>
+										</div>
 									</b-tab>
 
 
@@ -387,7 +277,7 @@
 										key="2"
 										card
 									>
-										<div class="d-flex flex-wrap">
+										<div class="d-flex flex-wrap pt-4">
 											<div
 												v-for="(quizz, key) in quiz"
 												:key="key"
@@ -409,13 +299,19 @@
 													<div
 														v-for="answer in quizz['answers']"
 														:key="answer.id"
-														class="d-flex"
+														class="row"
 													>
-														<ProgressBar
-															:percentage="Number(answer.percent)"
-															:label="answer.text + ' (' + answer.count + ')'"
-															:class="'active'"
-														/>
+														<div class="col-6">
+															{{ answer.text + ' (' + answer.count + ')' }}
+														</div>
+														<div class="col-6">
+															<div class="PageAnalytics-progress">
+																<div class="PageAnalytics-progressPercent">
+																	{{ Number(answer.percent) || 0 }}%
+																</div>
+																<ProgressBar :progress="(Number(answer.percent) || 0) + '%'" />
+															</div>
+														</div>
 													</div>
 												</div>
 
@@ -443,30 +339,11 @@
 										key="3"
 										card
 									>
-										<div class="col-md-12 col-lg-6 d-flex align-items-center">
-											<table class="table b-table table-striped table-bordered table-sm">
-												<thead>
-													<th
-														class="text-left t-name table-title"
-														colspan="2"
-													>
-														Причины увольнения
-													</th>
-												</thead>
-												<tbody>
-													<tr
-														v-for="cause in causes"
-														:key="cause.id"
-													>
-														<td class="text-left t-name table-title">
-															{{ cause.cause }}
-														</td>
-														<td class="text-center t-name table-title">
-															{{ cause.count }}
-														</td>
-													</tr>
-												</tbody>
-											</table>
+										<div class="col-md-12 col-lg-6 d-flex align-items-center pt-4">
+											<JobtronTable
+												:fields="[{key: 'cause', label: 'Причины увольнения', colspan: 2, thClass: 'text-left', tdClass: 'text-left'}, {key: 'count', hide: true, tdClass:'text-center'}]"
+												:items="absentsFirst"
+											/>
 										</div>
 									</b-tab>
 								</b-tabs>
@@ -498,12 +375,14 @@ import Rating from '@/components/ui/Rating.vue'
 import TableRecruiterStats from '@/components/analytics/TableRecruiterStats' // Почасовая таблица рекрутинга
 import Recruting from '@/components/analytics/Recruting' // сводная информация рекрутинг
 import TableSkype from '@/components/tables/TableSkype' // Стажеры
+import TableTraineeSage2 from '@/components/tables/TableTraineeSage2' // Стажеры
 import SvodTable from '@/components/SvodTable' //сводная таблица для аналитики
 import TableFunnel from '@/components/tables/TableFunnel' // Воронка
-import ProgressBar from '@/components/ProgressBar' // в ответах quiz
+import ProgressBar from '@ui/ProgressBar'
 import { useYearOptions } from '@/composables/yearOptions'
 import { useHRStore } from '@/stores/ReportsHR.js'
 import { mapActions, mapState } from 'pinia'
+import JobtronTable from '@ui/Table'
 
 export default {
 	name: 'PageAnalytics',
@@ -517,6 +396,8 @@ export default {
 		SvodTable,
 		TableFunnel,
 		ProgressBar,
+		TableTraineeSage2,
+		JobtronTable,
 	},
 	props: {
 		groups: {
@@ -731,7 +612,26 @@ export default {
 }
 </script>
 
-<style>
+<style lang="scss">
+.PageAnalytics{
+	&-progress{
+		display: flex;
+		align-items: center;
+		justify-content: flex-start;
+		gap: 10px;
+		.ProgressBar{
+			flex: 1;
+		}
+	}
+	&-progressPercent{
+		flex: 0 0 3em;
+	}
+}
+.analytics-page {
+	.tab-pane{
+		overflow-x: hidden;
+	}
+}
 .mw30 {
     min-width: 30px;
 }

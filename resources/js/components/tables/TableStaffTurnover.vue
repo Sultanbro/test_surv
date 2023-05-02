@@ -3,290 +3,35 @@
 		<div class="staff-turnover">
 			<div class="row mb-2">
 				<div class="col-12 d-flex align-items-center">
-					<div class="my-table table-responsive">
-						<table class="table b-table table-striped table-bordered table-sm">
-							<thead>
-								<tr>
-									<th class="text-left t-name table-title first-width" />
-									<th class="text-center t-name table-title">
-										Январь
-									</th>
-									<th class="text-center t-name table-title">
-										Февраль
-									</th>
-									<th class="text-center t-name table-title">
-										Март
-									</th>
-									<th class="text-center t-name table-title">
-										Апрель
-									</th>
-									<th class="text-center t-name table-title">
-										Май
-									</th>
-									<th class="text-center t-name table-title">
-										Июнь
-									</th>
-									<th class="text-center t-name table-title">
-										Июль
-									</th>
-									<th class="text-center t-name table-title">
-										Август
-									</th>
-									<th class="text-center t-name table-title">
-										Сентябрь
-									</th>
-									<th class="text-center t-name table-title">
-										Октябрь
-									</th>
-									<th class="text-center t-name table-title">
-										Ноябрь
-									</th>
-									<th class="text-center t-name table-title">
-										Декабрь
-									</th>
-								</tr>
-							</thead>
-							<tbody>
-								<tr
-									v-for="stat in staff"
-									:key="stat.id"
-								>
-									<td class="text-left t-name table-title">
-										{{ stat.name }}
-									</td>
-									<td class="text-center t-name table-title">
-										{{ stat.m1 }}
-									</td>
-									<td class="text-center t-name table-title">
-										{{ stat.m2 }}
-									</td>
-									<td class="text-center t-name table-title">
-										{{ stat.m3 }}
-									</td>
-									<td class="text-center t-name table-title">
-										{{ stat.m4 }}
-									</td>
-									<td class="text-center t-name table-title">
-										{{ stat.m5 }}
-									</td>
-									<td class="text-center t-name table-title">
-										{{ stat.m6 }}
-									</td>
-									<td class="text-center t-name table-title">
-										{{ stat.m7 }}
-									</td>
-									<td class="text-center t-name table-title">
-										{{ stat.m8 }}
-									</td>
-									<td class="text-center t-name table-title">
-										{{ stat.m9 }}
-									</td>
-									<td class="text-center t-name table-title">
-										{{ stat.m10 }}
-									</td>
-									<td class="text-center t-name table-title">
-										{{ stat.m11 }}
-									</td>
-									<td class="text-center t-name table-title">
-										{{ stat.m12 }}
-									</td>
-								</tr>
-							</tbody>
-						</table>
+					<div class="table-responsive">
+						<JobtronTable
+							:fields="fields"
+							:items="staff"
+						/>
 					</div>
 				</div>
-            
+
 				<div class="col-12 align-items-center mb-5 mt-5">
 					<h4 class="mb-5 text-center">
 						Текучка по отделам
 					</h4>
-					<div class="my-table table-responsive">
-						<table class="table b-table table-striped table-bordered table-sm">
-							<thead>
-								<tr>
-									<th class="text-left t-name table-title  first-width" />
-									<th class="text-center t-name table-title">
-										Январь
-									</th>
-									<th class="text-center t-name table-title">
-										Февраль
-									</th>
-									<th class="text-center t-name table-title">
-										Март
-									</th>
-									<th class="text-center t-name table-title">
-										Апрель
-									</th>
-									<th class="text-center t-name table-title">
-										Май
-									</th>
-									<th class="text-center t-name table-title">
-										Июнь
-									</th>
-									<th class="text-center t-name table-title">
-										Июль
-									</th>
-									<th class="text-center t-name table-title">
-										Август
-									</th>
-									<th class="text-center t-name table-title">
-										Сентябрь
-									</th>
-									<th class="text-center t-name table-title">
-										Октябрь
-									</th>
-									<th class="text-center t-name table-title">
-										Ноябрь
-									</th>
-									<th class="text-center t-name table-title">
-										Декабрь
-									</th>
-								</tr>
-							</thead>
-							<tbody>
-								<tr
-									v-for="stat in staff_by_group"
-									:key="stat.id"
-								>
-									<td class="text-left t-name table-title">
-										{{ stat.name }}
-									</td>
-									<td class="text-center t-name table-title">
-										{{ stat.m1 }}
-									</td>
-									<td class="text-center t-name table-title">
-										{{ stat.m2 }}
-									</td>
-									<td class="text-center t-name table-title">
-										{{ stat.m3 }}
-									</td>
-									<td class="text-center t-name table-title">
-										{{ stat.m4 }}
-									</td>
-									<td class="text-center t-name table-title">
-										{{ stat.m5 }}
-									</td>
-									<td class="text-center t-name table-title">
-										{{ stat.m6 }}
-									</td>
-									<td class="text-center t-name table-title">
-										{{ stat.m7 }}
-									</td>
-									<td class="text-center t-name table-title">
-										{{ stat.m8 }}
-									</td>
-									<td class="text-center t-name table-title">
-										{{ stat.m9 }}
-									</td>
-									<td class="text-center t-name table-title">
-										{{ stat.m10 }}
-									</td>
-									<td class="text-center t-name table-title">
-										{{ stat.m11 }}
-									</td>
-									<td class="text-center t-name table-title">
-										{{ stat.m12 }}
-									</td>
-								</tr>
-							</tbody>
-						</table>
+					<div class="table-responsive">
+						<JobtronTable
+							:fields="fields"
+							:items="staff_by_group"
+						/>
 					</div>
 				</div>
 
-				<div class="col-12  align-items-center mb-5 mt-5">
+				<div class="col-12 align-items-center mb-5 mt-5">
 					<h4 class="mb-5 text-center">
 						Продолжительность работы до 1 мес/ до 3 мес/ более 3 мес
 					</h4>
-					<div class="my-table table-responsive">
-						<table class="table b-table table-striped table-bordered table-sm">
-							<thead>
-								<tr>
-									<th class="text-left t-name table-title  first-width" />
-									<th class="text-center t-name table-title">
-										Январь
-									</th>
-									<th class="text-center t-name table-title">
-										Февраль
-									</th>
-									<th class="text-center t-name table-title">
-										Март
-									</th>
-									<th class="text-center t-name table-title">
-										Апрель
-									</th>
-									<th class="text-center t-name table-title">
-										Май
-									</th>
-									<th class="text-center t-name table-title">
-										Июнь
-									</th>
-									<th class="text-center t-name table-title">
-										Июль
-									</th>
-									<th class="text-center t-name table-title">
-										Август
-									</th>
-									<th class="text-center t-name table-title">
-										Сентябрь
-									</th>
-									<th class="text-center t-name table-title">
-										Октябрь
-									</th>
-									<th class="text-center t-name table-title">
-										Ноябрь
-									</th>
-									<th class="text-center t-name table-title">
-										Декабрь
-									</th>
-								</tr>
-							</thead>
-							<tbody>
-								<tr
-									v-for="stat in staff_longevity"
-									:key="stat.id"
-								>
-									<td class="text-left t-name table-title">
-										{{ stat.name }}
-									</td>
-									<td class="text-center t-name table-title">
-										{{ stat.m1 }}
-									</td>
-									<td class="text-center t-name table-title">
-										{{ stat.m2 }}
-									</td>
-									<td class="text-center t-name table-title">
-										{{ stat.m3 }}
-									</td>
-									<td class="text-center t-name table-title">
-										{{ stat.m4 }}
-									</td>
-									<td class="text-center t-name table-title">
-										{{ stat.m5 }}
-									</td>
-									<td class="text-center t-name table-title">
-										{{ stat.m6 }}
-									</td>
-									<td class="text-center t-name table-title">
-										{{ stat.m7 }}
-									</td>
-									<td class="text-center t-name table-title">
-										{{ stat.m8 }}
-									</td>
-									<td class="text-center t-name table-title">
-										{{ stat.m9 }}
-									</td>
-									<td class="text-center t-name table-title">
-										{{ stat.m10 }}
-									</td>
-									<td class="text-center t-name table-title">
-										{{ stat.m11 }}
-									</td>
-									<td class="text-center t-name table-title">
-										{{ stat.m12 }}
-									</td>
-								</tr>
-							</tbody>
-						</table>
+					<div class="table-responsive">
+						<JobtronTable
+							:fields="fields"
+							:items="staff_longevity"
+						/>
 					</div>
 				</div>
 			</div>
@@ -295,10 +40,13 @@
 </template>
 
 <script>
-
+import JobtronTable from '@ui/Table'
 
 export default {
 	name: 'TableStaffTurnover', // Раньше был нужен чтобы собирать скайпы, сейчас собираются стажеры для Zoom обучения
+	components: {
+		JobtronTable,
+	},
 	props: {
 		staff: Array,
 		staff_by_group: Array,
@@ -306,8 +54,40 @@ export default {
 		causes: Array,
 	},
 	data: function () {
+		const headerClass = 'text-left first-width'
+		const cellClass = 'text-center'
+		const months = [
+			'Январь',
+			'Февраль',
+			'Март',
+			'Апрель',
+			'Май',
+			'Июнь',
+			'Июль',
+			'Август',
+			'Сентябрь',
+			'Октябрь',
+			'Ноябрь',
+			'Декабрь',
+		]
+		const fields = [
+			{
+				key: 'name',
+				label: '',
+				thClass: headerClass,
+				tdClass: headerClass,
+			}
+		]
+		for(let i = 1; i < 13; ++i){
+			fields.push({
+				key: 'm' + i,
+				label: months[i - 1],
+				thClass: cellClass,
+				tdClass: cellClass
+			})
+		}
 		return {
-			fields: [], // поля таблицы
+			fields, // поля таблицы
 		};
 	},
 	watch: {
@@ -319,13 +99,13 @@ export default {
 		//     }
 		// },
 	},
-    
+
 	mounted() {
-        
+
 	},
 
 	methods: {
-        
+
 
 	}
 };
