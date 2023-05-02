@@ -1,20 +1,20 @@
 <template>
-	<div class="course-results mt-4">
+	<div class="course-results mt-4 CourseResults">
 		<div class="d-flex mb-2">
-			<button
-				class="btn mr-2 rounded"
-				:class="[type == BY_USER ? 'btn-primary' : 'btn-default']"
+			<JobtronButton
+				class="mr-3"
 				@click="type = BY_USER"
+				:fade="type !== BY_USER"
 			>
-				<span>По сотрудникам</span>
-			</button>
-			<button
-				class="btn mr-2 rounded"
-				:class="[type == BY_GROUP ? 'btn-primary' : 'btn-default']"
+				По сотрудникам
+			</JobtronButton>
+			<JobtronButton
+				class="mr-3"
 				@click="type = BY_GROUP"
+				:fade="type !== BY_GROUP"
 			>
-				<span>По отделам</span>
-			</button>
+				По отделам
+			</JobtronButton>
 		</div>
 
 		<div
@@ -22,8 +22,8 @@
 			class="by_user"
 		>
 			<div
-				class="table-responsive table-container"
 				v-if="users.items.length > 0"
+				class="table-responsive table-container"
 			>
 				<table class="table table-bordered">
 					<thead>
@@ -54,14 +54,13 @@
 								>
 									<div
 										v-if="field.key == 'progress'"
-										class="d-flex jcc aic"
+										class="d-flex jcc aic gap-2"
 									>
-										<p class="mb-0 mr-1">
+										<p class="mb-0 CourseResults-progress">
 											{{ item[field.key] }}
 										</p>
-										<progress
-											:value="item[field.key].slice(0, -1)"
-											max="100"
+										<ProgressBar
+											:progress="item[field.key]"
 										/>
 									</div>
 									<div v-else>
@@ -72,8 +71,8 @@
 
 							<template v-for="(course, c) in item.courses">
 								<tr
-									:key="'c' + c"
 									v-if="item.expanded"
+									:key="'c' + c"
 									class="expanded"
 								>
 									<td
@@ -84,14 +83,13 @@
 									>
 										<div
 											v-if="field.key == 'progress'"
-											class="d-flex jcc aic"
+											class="d-flex jcc aic gap-2"
 										>
-											<p class="mb-0 mr-1">
+											<p class="mb-0 CourseResults-progress">
 												{{ course[field.key] }}
 											</p>
-											<progress
-												:value="course[field.key].slice(0, -1)"
-												max="100"
+											<ProgressBar
+												:progress="course[field.key]"
 											/>
 										</div>
 										<div
@@ -136,14 +134,13 @@
 												</div>
 												<div
 													v-else-if="field.key === 'progress'"
-													class="d-flex jcc aic"
+													class="d-flex jcc aic gap-2"
 												>
-													<p class="mb-0 mr-1">
+													<p class="mb-0 CourseResults-progress">
 														{{ courseItemsTable[item.user_id][courseItem.item_id][course2item[field.key]] }}%
 													</p>
-													<progress
-														:value="courseItemsTable[item.user_id][courseItem.item_id][course2item[field.key]]"
-														max="100"
+													<ProgressBar
+														:progress="courseItemsTable[item.user_id][courseItem.item_id][course2item[field.key]] + '%'"
 													/>
 												</div>
 												<div v-else-if="field.key === 'progress_on_week'">
@@ -206,6 +203,8 @@
 </template>
 
 <script>
+import JobtronButton from '@ui/Button'
+import ProgressBar from '@ui/ProgressBar'
 const BY_USER = 1;
 const BY_GROUP = 2;
 
@@ -215,31 +214,9 @@ function formatProgress(num, precision = 2){
 
 export default {
 	name: 'CourseResults',
-	watch: {
-		monthInfo() {
-			this.first = true;
-			if(this.type == this.BY_GROUP) {
-				this.fetchData('groups');
-				this.first = false;
-			} else {
-				this.fetchData('users');
-			}
-		},
-		currentGroup() {
-			this.first = true;
-			if(this.type == this.BY_GROUP) {
-				this.fetchData('groups');
-				this.first = false;
-			} else {
-				this.fetchData('users');
-			}
-		},
-		type(val) {
-			if(val == this.BY_GROUP && this.first) {
-				this.fetchData('groups');
-				this.first = false;
-			}
-		},
+	components: {
+		ProgressBar,
+		JobtronButton,
 	},
 	props: {
 		monthInfo: {
@@ -318,6 +295,32 @@ export default {
 			}
 			return result
 		}
+	},
+	watch: {
+		monthInfo() {
+			this.first = true;
+			if(this.type == this.BY_GROUP) {
+				this.fetchData('groups');
+				this.first = false;
+			} else {
+				this.fetchData('users');
+			}
+		},
+		currentGroup() {
+			this.first = true;
+			if(this.type == this.BY_GROUP) {
+				this.fetchData('groups');
+				this.first = false;
+			} else {
+				this.fetchData('users');
+			}
+		},
+		type(val) {
+			if(val == this.BY_GROUP && this.first) {
+				this.fetchData('groups');
+				this.first = false;
+			}
+		},
 	},
 	created() {
 		this.fetchData();
@@ -432,7 +435,7 @@ export default {
 				.then((response) => {
 					callback(response);
 				})
-				.catch(e => console.log(e));
+				.catch(e => console.error(e));
 
 			loader.hide();
 		},
@@ -449,7 +452,7 @@ export default {
 			}).then(() => {
 				this.fetchCourseItems(user_id, course_id)
 				this.$toast.success('Прогресс по разделу курса обнулен')
-			}).catch(e => console.log(e))
+			}).catch(e => console.error(e))
 
 			loader.hide()
 		},
@@ -457,6 +460,18 @@ export default {
 }
 </script>
 
+<style lang="scss">
+.CourseResults{
+	&-progress{
+		width: 3em;
+		text-align: right;
+	}
+	.ProgressBar{
+		flex: 1;
+		min-width: 100px;
+	}
+}
+</style>
 
 <style scoped lang="scss">
 .nullify {

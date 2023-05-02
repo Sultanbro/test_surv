@@ -34,12 +34,12 @@
 				</select>
 			</div>
 			<div class="col-1">
-				<div
-					class="btn btn-primary rounded"
+				<JobtronButton
+					small
 					@click="onChangeTab(activeTab)"
 				>
 					<i class="fa fa-redo-alt" />
-				</div>
+				</JobtronButton>
 			</div>
 			<div class="col-3" />
 		</div>
@@ -383,6 +383,7 @@ import { useYearOptions } from '@/composables/yearOptions'
 import { useHRStore } from '@/stores/ReportsHR.js'
 import { mapActions, mapState } from 'pinia'
 import JobtronTable from '@ui/Table'
+import JobtronButton from '@ui/Button'
 
 export default {
 	name: 'PageAnalytics',
@@ -398,6 +399,7 @@ export default {
 		ProgressBar,
 		TableTraineeSage2,
 		JobtronTable,
+		JobtronButton,
 	},
 	props: {
 		groups: {
