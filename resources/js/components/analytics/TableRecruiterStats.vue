@@ -1,63 +1,63 @@
 <template>
-	<div>
-		<div class="d-flex">
-			<b-table
-				responsive
-				striped
-				class="text-nowrap text-right my-table  my-table-ma mb-3 recruiter_stats"
-				id="recruiter_stats"
-				:small="true"
-				:bordered="true"
-				:items="items"
-				:fields="fields"
-				primary-key="a"
-				:key="componentKey"
-			>
-				<template #cell()="data">
-					<div>{{ data.value }}</div>
-				</template>
-
-				<template #cell(name)="data">
-					<div class="d-flex justify-between aic pl-2 bg-white TableRecruiterStats-colTitle">
+	<div class="TableRecruiterStats">
+		<div class="d-flex pt-4">
+			<div class="TableRecruiterStats-table">
+				<JobtronTable
+					responsive
+					striped
+					class="text-nowrap mb-3"
+					:small="true"
+					:bordered="true"
+					:items="items"
+					:fields="fields"
+					primary-key="a"
+					:key="componentKey"
+				>
+					<template #cell()="data">
 						<div>{{ data.value }}</div>
-						<select
-							v-if="data.value != 'ИТОГО' && ![9974,9975,5263,7372].includes(data.item.user_id)"
-							class="form-control form-control-sm special-select"
-							v-model="data.item.profile"
-							@change="changeProfile(data.index)"
-						>
-							<option value="0">
-								кз
-							</option>
-							<option value="1">
-								все удаленные
-							</option>
-							<option value="2">
-								вацап
-							</option>
-							<option value="3">
-								уведомления
-							</option>
-							<option value="4">
-								inhouse
-							</option>
-							<option value="5">
-								иностранные
-							</option>
-							<option value="6">
-								hh
-							</option>
-							<option value="7">
-								чаты
-							</option>
-						</select>
-					</div>
-				</template>
+					</template>
+					<template #cell(name)="data">
+						<div class="d-flex justify-between aic pl-2 bg-white TableRecruiterStats-colTitle">
+							<div>{{ data.value }}</div>
+							<select
+								v-if="data.value != 'ИТОГО' && ![9974,9975,5263,7372].includes(data.item.user_id)"
+								class="form-control form-control-sm special-select"
+								v-model="data.item.profile"
+								@change="changeProfile(data.index)"
+							>
+								<option value="0">
+									кз
+								</option>
+								<option value="1">
+									все удаленные
+								</option>
+								<option value="2">
+									вацап
+								</option>
+								<option value="3">
+									уведомления
+								</option>
+								<option value="4">
+									inhouse
+								</option>
+								<option value="5">
+									иностранные
+								</option>
+								<option value="6">
+									hh
+								</option>
+								<option value="7">
+									чаты
+								</option>
+							</select>
+						</div>
+					</template>
+					<template #cell(agrees)="{value}">
+						<div v-html="value" />
+					</template>
+				</JobtronTable>
+			</div>
 
-				<template #cell(agrees)="data">
-					<div v-html="data.value" />
-				</template>
-			</b-table>
 
 			<div class="ml-3 f-200">
 				<JobtronButton
@@ -113,10 +113,13 @@
 
 <script>
 import JobtronButton from '@ui/Button'
+import JobtronTable from '@ui/Table'
+
 export default {
 	name: 'TableRecruiterStats',
 	components: {
 		JobtronButton,
+		JobtronTable,
 	},
 	props: {
 		data: {
@@ -160,13 +163,15 @@ export default {
 					key: 'name',
 					label: 'Сотрудники',
 					variant: 'title',
-					class: 'text-left rownumber b-table-sticky-column'
+					tdClass: 'text-left rownumber JobtronTable-sticky',
+					thClass: 'text-left JobtronTable-sticky',
 				},
 				{
 					key: 'agrees',
 					label: 'Согласия',
 					variant: 'title',
-					class: 'text-center t-name'
+					tdClass: 'text-center t-name',
+					thClass: 'text-center',
 				},
 			],
 			showModal: false
@@ -215,7 +220,7 @@ export default {
 				this.fields.push({
 					key: `${key}`,
 					label: times[key],
-					class: 'day'
+					tdClass: 'day'
 				});
 			})
 		},
@@ -241,6 +246,11 @@ export default {
 </script>
 
 <style lang="scss">
+.TableRecruiterStats{
+	&-table{
+		overflow-y: auto;
+	}
+}
 .recruiter_stats {
 	&.my-table .day {
 		min-width: 63px;
@@ -248,39 +258,42 @@ export default {
 	&::-webkit-scrollbar-track {
 		background: #ffffff;
 	}
-	table{
-		max-width: 100px;
-	}
-	.day{
-		> div{
-			width: 100%;
-			height: 100%;
-			padding: 0 0.5rem;
-		}
-	}
+	// table{
+	// 	max-width: 100px;
+	// }
+	// .day{
+	// 	> div{
+	// 		width: 100%;
+	// 		height: 100%;
+	// 		padding: 0 0.5rem;
+	// 	}
+	// }
 
-	th {
-		background: #1176b0!important;
-		color: #fff !important;
-		font-weight: 400;
-		&:first-of-type{
-			vertical-align: middle;
-			div{
-				padding: 0 0.5rem;
-			}
-		}
-		&.day{
-			div{
-				&:hover{
-					background-color: none;
-				}
-			}
-		}
-	}
+	// th {
+	// 	background: #1176b0!important;
+	// 	color: #fff !important;
+	// 	font-weight: 400;
+	// 	&:first-of-type{
+	// 		vertical-align: middle;
+	// 		div{
+	// 			padding: 0 0.5rem;
+	// 		}
+	// 	}
+	// 	&.day{
+	// 		div{
+	// 			&:hover{
+	// 				background-color: none;
+	// 			}
+	// 		}
+	// 	}
+	// }
 }
 .TableRecruiterStats{
 	&-colTitle{
 		height: 100%;
+	}
+	.b-table-sticky-column{
+		left: 0;
 	}
 }
 

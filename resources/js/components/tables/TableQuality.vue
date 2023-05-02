@@ -53,24 +53,25 @@
 				</select>
 			</div>
 			<div class="col-3 d-flex align-items-start">
-				<div
-					class="btn btn-primary rounded mr-2"
+				<JobtronButton
+					small
 					@click="fetchData()"
 				>
 					<i class="fa fa-redo-alt" />
-				</div>
+				</JobtronButton>
 			</div>
 			<div
 				v-if="hasSettingsPermisstion"
-				class="col-2"
+				class="col-2 text-right"
 			>
-				<button
-					class="btn btn-primary d-block ml-auto"
+				<JobtronButton
+					small
+					class="ml-a"
 					@click="showSettings = true"
 				>
 					<i class="fa fa-cogs mr-2" />
 					Настройки
-				</button>
+				</JobtronButton>
 			</div>
 		</div>
 
@@ -815,7 +816,7 @@
 								title="Диалер в U-Calls"
 							/>
 						</div>
-						<div class="fl d-flex mt-1">
+						<div class="fl d-flex mt-1 gap-3">
 							<input
 								type="text"
 								v-model="dialer_id"
@@ -927,12 +928,14 @@
 import Sidebar from '@/components/ui/Sidebar' // сайдбар table
 import CourseResults from '@/pages/CourseResults' // результаты по курсам
 import { useYearOptions } from '../../composables/yearOptions'
+import JobtronButton from '@ui/Button'
 // import Template from "../../../../public/static/partner/templates/template.html";
 export default {
 	name: 'TableQuality',
 	components: {
 		Sidebar,
 		CourseResults,
+		JobtronButton,
 	},
 	props: {
 		groups: Array,

@@ -3,6 +3,7 @@
 		class="JobtronButton"
 		:class="{
 			'JobtronButton_big': big,
+			'JobtronButton_small': small,
 			'JobtronButton_success': success,
 			'JobtronButton_error': error,
 			'JobtronButton_fade': fade,
@@ -19,6 +20,9 @@ export default {
 	components: {},
 	props: {
 		big: {
+			type: Boolean
+		},
+		small: {
 			type: Boolean
 		},
 		success: {
@@ -49,7 +53,8 @@ export default {
 
 	font-weight: 600;
 	font-size: 1.2rem;
-	line-height: 1.4rem;
+	// line-height: 1.4rem;
+	line-height: 1;
 	letter-spacing: -0.03em;
 	color: #fff;
 
@@ -67,9 +72,15 @@ export default {
 		background-color: #777;
 	}
 	&_big{
-		padding: 1rem 3rem;
+		padding: 2.3rem 3rem;
 		border-radius: 0.6rem;
-		line-height: 3rem;
+		// line-height: 3rem;
+	}
+	&_small{
+		gap: 1rem;
+		padding: 1.1rem 2rem;
+		border-radius: 0.5rem;
+		// line-height: 3rem;
 	}
 	&_success{
 		background: #28a745;

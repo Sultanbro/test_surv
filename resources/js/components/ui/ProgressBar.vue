@@ -32,7 +32,7 @@ export default {
 	border-radius: 999rem;
 	background: linear-gradient(243.47deg, #F1F1F5 33.3%, #E9F2FF 100%);
 	&-bar{
-		min-width: 20px;
+		min-width: 10px;
 		max-width: 100%;
 		height: 10px;
 		border-radius: 999rem;

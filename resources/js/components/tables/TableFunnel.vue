@@ -5,10 +5,10 @@
             <div :id="'funnel-' + id" class="funnel"></div>
         </div> -->
 			<div class="col-12">
-				<b-table
+				<JobtronTable
 					responsive
 					striped
-					class="text-nowrap text-right my-table my-table-ma mb-3 table-funnel"
+					class="text-nowrap mb-3 table-funnel"
 					:small="true"
 					:bordered="true"
 					:items="items"
@@ -16,7 +16,7 @@
 					:key="tableKey"
 					primary-key="a"
 				>
-					<template #head(name)="data">
+					<template #header(name)="data">
 						<input
 							type="text"
 							:ref="'mylink' + segment"
@@ -37,8 +37,11 @@
 						</div>
 					</template>
 
-					<template #cell()="data">
-						<div v-if="data.item.show == 1 && type == 'week'">
+					<template #cell="data">
+						<div
+							v-if="data.item.show == 1 && type == 'week'"
+							class="TableFunnel-input"
+						>
 							<input
 								type="number"
 								v-model="data.value"
@@ -50,17 +53,21 @@
 							{{ data.value }}
 						</div>
 					</template>
-				</b-table>
+				</JobtronTable>
 			</div>
 		</div>
 	</div>
 </template>
 
 <script>
+import JobtronTable from '@ui/Table'
 // import D3Funnel from 'd3-funnel';
 
 export default {
 	name: 'TableFunnel',
+	components: {
+		JobtronTable,
+	},
 	props: {
 		table: Array,
 		title: String,
@@ -116,8 +123,8 @@ export default {
 					},
 					events :{
 						click: {
-							block: function(data) {
-								console.log(data.target)
+							block: function(/* data */) {
+
 							}
 						}
 					}
@@ -127,8 +134,7 @@ export default {
 		};
 	},
 	watch: {
-		date: function(newVal) { // watch it
-			console.log('date is ' + newVal);
+		date: function() { // watch it
 			this.tableKey++;
 			this.setFields()
 			this.items = this.table
@@ -161,7 +167,7 @@ export default {
 					key: 'name',
 					label: 'Показатели',
 					variant: 'title',
-					class: 'text-left rownumber b-table-sticky-column'
+					class: 'text-left rownumber JobtronTable-sticky'
 				},
 			];
 
@@ -278,9 +284,7 @@ export default {
 				this.items[7][key] = this.percentage(this.items[8][key], this.items[2][key]);// Конверсия 2
 				this.items[5][key] = this.divide(this.items[0][key], this.items[1][key]); // CPL Затраты / Создано лидов
 
-				console.log(this.items[8][key])
 				this.items[9][key] = this.divide(this.items[0][key], this.items[8][key]); // CAC (Стоимость привлечения оператора) Затраты / Принято
-				console.log(this.items[9][key])
 			}
 
 			if(this.segment == 'segments') {
@@ -324,44 +328,52 @@ export default {
 };
 </script>
 <style lang="scss">
+.TableFunnel{
+	&-input{
+		margin: -12px -15px;
+	}
+}
 .funnel {
-    max-width: 100%;
-    width: 330px;
-    display: block;
-    margin: 0 auto;
-    height: 330px;
+	max-width: 100%;
+	width: 330px;
+	display: block;
+	margin: 0 auto;
+	height: 330px;
 }
 .table-funnel {
-    max-width: 960px;
-    .b-table-sticky-column {
-        width: 310px;
-        font-weight: 700;
-    }
-    // table {
-    //     max-width: 100px;
-    // }
-    td:first-child {
-        background: #28a745;
-    }
-    .day {
-        text-align: center;
-    }
-    .form-control {
-        border: 1px solid transparent;
-        text-align: center;
-        padding-left: 21px;
-    }
+	max-width: 960px;
+	.JobtronTable-sticky {
+		width: 310px;
+		font-weight: 700;
+	}
+	// table {
+	//     max-width: 100px;
+	// }
+	td:first-child {
+		background: #67F1C8;
+	}
+	.day {
+		text-align: center;
+	}
+	.form-control {
+		height: auto !important;
+		padding: 12px 15px !important;
+
+		border: 0px solid transparent;
+		border-radius: 0 !important;
+		text-align: center;
+	}
 }
 .hider {
-    position: absolute;
-    left: -10px;
-    width: 10px;
-    height: 10px;
-    opacity: 0;
-    display: block;
+	position: absolute;
+	left: -10px;
+	width: 10px;
+	height: 10px;
+	opacity: 0;
+	display: block;
 }
 .ff.pointer {
-    margin-top: 2px;
-    cursor: pointer;
+	margin-top: 2px;
+	cursor: pointer;
 }
 </style>

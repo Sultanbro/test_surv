@@ -1,12 +1,12 @@
 <template>
-	<div>
+	<div class="TableSkype">
 		<div class="skypo">
-			<div class="row mb-2 align-items-center">
+			<div class="row my-4 align-items-center">
 				<div class="col-4 col-md-4 d-flex align-items-right">
 					<!-- <select class="form-control" v-model="currentDay">
-                    0">Все дни</option>
-                    <option v-for="day in this.month.daysInMonth" :value="day" :key="day">{{ day }}</option>
-                </select>    -->
+								0">Все дни</option>
+								<option v-for="day in this.month.daysInMonth" :value="day" :key="day">{{ day }}</option>
+						</select>    -->
 					<div class="p-o pl-3">
 						<!-- как это вобще работает?????? -->
 						<date-picker
@@ -20,7 +20,7 @@
 						<!-- <m-date-picker v-model="filter.dates" lang="ru" :multi="true" :always-display="false" :format="formatDate"></m-date-picker> -->
 					</div>
 				</div>
-				<div class="col-md-2 mb-2">
+				<div class="col-md-2 mb-4">
 					<select
 						class="form-control form-control-sm mt-2"
 						v-model="filter.currentInviteGroup"
@@ -34,7 +34,7 @@
 						</option>
 					</select>
 				</div>
-				<div class="col-md-2 mb-2">
+				<div class="col-md-2 mb-4">
 					<select
 						class="form-control form-control-sm mt-2"
 						v-model="filter.user_type"
@@ -48,7 +48,7 @@
 						</option>
 					</select>
 				</div>
-				<div class="col-md-2 mb-2">
+				<div class="col-md-2 mb-4">
 					<select
 						class="form-control form-control-sm mt-2"
 						v-model="filter.lang"
@@ -62,7 +62,7 @@
 						</option>
 					</select>
 				</div>
-				<div class="col-md-2 mb-2">
+				<div class="col-md-2 mb-4">
 					<select
 						class="form-control form-control-sm mt-2"
 						v-model="filter.wishtime"
@@ -103,32 +103,30 @@
                         <div class="circle bg-green-4"></div>
                         <div>Не найдена сделка</div>
                     </div> -->
-						<b-button
+						<JobtronButton
+							class="ml-4"
 							@click="showModal = !showModal"
-							class="btn btn-primary btn-sm rounded py-1"
 						>
 							+ Добавить
-						</b-button>
-						<b-button
+						</JobtronButton>
+						<JobtronButton
+							class="ml-4"
 							@click="showSkypeFieldsModal = !showSkypeFieldsModal"
-							class="btn-primary btn-sm rounded ml-1"
 							title="Показывать поля"
 						>
 							<i
 								class="fa fa-cogs"
 								aria-hidden="true"
 							/>
-						</b-button>
+						</JobtronButton>
 					</div>
 				</div>
 			</div>
 		</div>
 
-		<div class="mb-5">
-			<b-table
-				responsive
-				striped
-				class="text-nowrap text-right my-table my-table-max mb-3 skypes-table"
+		<div class="TableSkype-table mb-5">
+			<JobtronTable
+				class="text-nowrap mb-3 skypes-table"
 				:small="true"
 				:bordered="true"
 				:items="records"
@@ -157,10 +155,6 @@
 				<!-- <template #head(checked)>
                 <input type="checkbox" v-model="checker" :value="false">
             </template> -->
-
-				<template #cell()="data">
-					<div>{{ data.value }}</div>
-				</template>
 
 				<template #cell(checked)="data">
 					<input
@@ -288,7 +282,7 @@
 						</a>
 					</div>
 				</template>
-			</b-table>
+			</JobtronTable>
 		</div>
 
 		<div class="mb-2">
@@ -396,7 +390,7 @@
 				:required="true"
 				class="form-control form-control-sm mb-2"
 			/>
-			<div class="d-flex">
+			<div class="d-flex gap-3">
 				<select
 					required="required"
 					v-model="lead.lang"
@@ -463,9 +457,15 @@
 
 <script>
 /* eslint-disable vue/no-mutating-props */
+import JobtronTable from '@ui/Table'
+import JobtronButton from '@ui/Button'
 
 export default {
 	name: 'TableSkype', // Раньше был нужен чтобы собирать скайпы, сейчас собираются стажеры для Zoom обучения
+	components: {
+		JobtronTable,
+		JobtronButton,
+	},
 	props: {
 		skypes: Array,
 		segments: Object,
@@ -883,8 +883,6 @@ export default {
 				time: this.selected.time,
 			})
 				.then(response => {
-
-					console.log(response)
 					if(response.data.code == 201) {
 						this.$toast.error('Отдел не найден. Обратитесь к разработчику')
 					}
@@ -1043,13 +1041,19 @@ export default {
 </script>
 
 <style lang="scss">
+.TableSkype{
+	&-table{
+		overflow-x: auto;
+	}
+}
+
 .skypo .fa-cog {
-    display: block;
-    color: #fff;
+	display: block;
+	color: #fff;
 }
 .resp_user {
-    font-size: 0.6rem;
-    line-height: 1em;
+	font-size: 0.6rem;
+	line-height: 1em;
 }
 @for $i from 2 through 15 {
  .hide-#{$i} {
@@ -1060,34 +1064,34 @@ export default {
  }
 }
 .skypes-table {
-    th:first-child,
-    td:first-child {
-        width: 15px;
-    }
+	th:first-child,
+	td:first-child {
+		width: 15px;
+	}
 }
 
 .analytics-page .b-form-datepicker .btn {
-    padding: 0 11px;
-    margin: 0;
-    margin-right: 5px;
+	padding: 0 11px;
+	margin: 0;
+	margin-right: 5px;
 }
 .analytics-page .pick-panel .btn {
-    padding: 1px;
+	padding: 1px;
 }
 
 .skypes-table {
-    .country {
-        font-size: 20px;
-    }
+	.country {
+		font-size: 20px;
+	}
 
-    td:nth-child(7), th:nth-child(7) {
-        color: #000;
-        font-size: 0.7rem;
-        word-break: break-all;
-        max-width: 140px;
-        width: 45px !important;
-        overflow: hidden;
-    }
+	// td:nth-child(7), th:nth-child(7) {
+	// 	color: #000;
+	// 	font-size: 0.7rem;
+	// 	word-break: break-all;
+	// 	max-width: 140px;
+	// 	width: 45px !important;
+	// 	overflow: hidden;
+	// }
 }
 
 </style>
@@ -1098,140 +1102,136 @@ a{
 	}
 }
 .skypo .btn {
-    padding: 0.375rem .75rem;
-    margin: 0;
+	padding: 0.375rem .75rem;
+	margin: 0;
 }
 .my-table-max {
-    max-height: inherit !important;
+	max-height: inherit !important;
+	.day {
+		padding: 0 !important;
+		text-align: center;
 
-    .day {
-        padding: 0 !important;
-        text-align: center;
+		&.table-success {
+			background-color: #29dc29 !important;
+		}
 
-        &.table-success {
-            background-color: #29dc29 !important;
-        }
+		&.table-danger {
+			background-color: #e4585f !important;
+		}
 
-        &.table-danger {
-            background-color: #e4585f !important;
-        }
-
-        &.Sat,
-        &.Sun {
-            background-color: #FEF2CB;
-        }
-
-    }
-
+		&.Sat,
+		&.Sun {
+			background-color: #FEF2CB;
+		}
+	}
 }
 
 
 
 .cell-input {
-    background: none;
-    border: none;
-    text-align: center;
-    -moz-appearance: textfield;
-    font-size: .8rem;
-    font-weight: normal;
-    padding: 0;
-    color: #000;
-    border-radius: 0;
+	background: none;
+	border: none;
+	text-align: center;
+	-moz-appearance: textfield;
+	font-size: .8rem;
+	font-weight: normal;
+	padding: 0;
+	color: #000;
+	border-radius: 0;
 
-    &:focus {
-        outline: none;
-    }
+	&:focus {
+		outline: none;
+	}
 
-    &::-webkit-outer-spin-button,
-    &::-webkit-inner-spin-button {
-        -webkit-appearance: none;
-        margin: 0;
-    }
+	&::-webkit-outer-spin-button,
+	&::-webkit-inner-spin-button {
+		-webkit-appearance: none;
+		margin: 0;
+	}
 }
 .my-table td div {
-    position: relative !important;
-    padding: 0;
-    // user-select: none;
-    // width: min-content;
-    // white-space: pre-line;
+	position: relative !important;
+	padding: 0;
+	// user-select: none;
+	// width: min-content;
+	// white-space: pre-line;
 }
 
 .my-table-max .day.Sat, .my-table-max .day.Sun {
-    background-color: #cedaeb;
-    border-color: #dfecfe;
+	background-color: #cedaeb;
+	border-color: #dfecfe;
 }
 
 input[type="time"]::-webkit-calendar-picker-indicator {
-    background: none;
-    display:none;
+	background: none;
+	display:none;
 }
 .nett {
-    opacity: 0;
-    transition: 0.3 ease all;
-    font-size: 20px;
-    font-weight: 600;
+	opacity: 0;
+	transition: 0.3 ease all;
+	font-size: 20px;
+	font-weight: 600;
 }
 .nett.copied {
-    opacity: 1;
-    color:#007bff;
+	opacity: 1;
+	color:#007bff;
 }
 .imagy {
-
-    cursor: pointer;
+	cursor: pointer;
 }
 .imagy img {
-    display:block;
-    width: 400px;
-    box-shadow: 0 0 15px #ddd;
-    position:fixed;
-    max-width: 400px;
-    top: 20px;
-    left: 300px;
-    display: none;
-    border-radius: 5px;
-    z-index: 999;
-    pointer-events: none;
+	display:block;
+	width: 400px;
+	box-shadow: 0 0 15px #ddd;
+	position:fixed;
+	max-width: 400px;
+	top: 20px;
+	left: 300px;
+	display: none;
+	border-radius: 5px;
+	z-index: 999;
+	pointer-events: none;
 }
 .imagy2 img{
-    transform: rotate(-90deg);
+	transform: rotate(-90deg);
 }
 .imagy3 img{
-    transform: rotate(90deg);
+	transform: rotate(90deg);
 }
 .imagy4 img{
-    transform: rotate(180deg);
+	transform: rotate(180deg);
 }
 .imagy:hover img {
-    display:block;
+	display:block;
 }
 .bottomvars {
-    position: fixed;
-    bottom: 0;
-    width: calc(100vw - 127px);
-    left: 70px;
-    z-index: 999;
-    background: #d6dfe5;
-    border-top: 1px solid #e9e9e9;
-    padding: 7px 30px;
+	position: fixed;
+	bottom: 0;
+	width: calc(100vw - 127px);
+	left: 70px;
+	z-index: 999;
+	background: #d6dfe5;
+	border-top: 1px solid #e9e9e9;
+	padding: 7px 30px;
 }
 .blues div {
-    color: #2196f3;
-    cursor: pointer;
+	color: #2196f3;
+	cursor: pointer;
 }
 .p-o {
-    margin: 0 -15px;
-    width: 100%;
+	margin: 0 -10px;
+	width: 100%;
 }
 .circle {
-    width: 9px;
-    height: 9px;
-    border-radius: 10px;
-    margin-right: 5px;
+	width: 9px;
+	height: 9px;
+	border-radius: 10px;
+	margin-right: 5px;
 }
 .my-table tr .badge {
-    opacity: 1;
+	opacity: 1;
 }
 input.timer {
-    width: 58px;
+	width: 58px;
 }
 </style>
