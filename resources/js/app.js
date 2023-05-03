@@ -132,7 +132,6 @@ Vue.component('ProgressBar', require('./components/ProgressBar.vue').default) //
 // Vue.component('ProfileQuarterButton', require('./components/ProfileQuarterButton.vue').default); // кнопка Индивид Quarter в настройках Users
 // Vue.component('auth-check-list', require('./components/auth_check_list.vue').default); // кнопка у кого есть Чек Лист список Чек Листов (Fixed)
 // Vue.component('selected-modal-checkList', require('./components/selectedModalCheckList.vue').default); // чек лист selected modal
-Vue.component('RefLinker', require('./components/RefLinker.vue').default); // рефералки
 
 // Chat components
 Vue.component('ChatApp', require('./components/Chat/ChatApp.vue').default); //

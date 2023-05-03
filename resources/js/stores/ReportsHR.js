@@ -8,7 +8,7 @@ import {
 	fetchHRDismiss,
 } from '@/stores/api'
 
-// import skypesMock from './skypes.json'
+import skypesMock from './skypes.json'
 
 
 export const useHRStore = defineStore('hr', {
@@ -84,7 +84,7 @@ export const useHRStore = defineStore('hr', {
 				this.segments = data.segments
 				this.sgroups = data.sgroups
 				this.skypes = data.skypes
-				// this.skypes = skypesMock
+				this.skypes = skypesMock
 				this.isReady = true
 			}
 			catch(error){

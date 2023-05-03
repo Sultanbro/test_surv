@@ -1,6 +1,6 @@
 <template>
 	<div>
-		<p>
+		<p class="mb-4">
 			<b>Генерация реферальных ссылок <i
 				class="fa fa-redo-alt"
 				@click="get"
@@ -20,9 +20,9 @@
 
 		<div v-else>
 			<div
-				class="d-flex mb-2"
 				v-for="(item, i) in items"
 				:key="i"
+				class="d-flex mb-3 gap-4"
 			>
 				<div class="ws-100 mr-2">
 					<input v-model="item.name">
@@ -36,31 +36,36 @@
 
 				<div class="d-flex">
 					<i
-						class="btn px-1 fa fa-copy"
+						class="btn px-3 fa fa-copy RefLinker-green"
 						@click="copyLink(i)"
 					/>
 					<i
-						class="btn px-1 fa fa-save"
+						class="btn px-3 fa fa-save RefLinker-blue"
 						@click="save(i)"
 					/>
 					<i
-						class="btn px-1 fa fa-trash"
+						class="btn px-3 fa fa-trash RefLinker-red"
 						@click="deletes(i)"
 					/>
 				</div>
 			</div>
-			<button
-				class="btn btn-primary rounded"
+			<JobtronButton
 				@click="add"
+				class="mt-4"
 			>
 				Добавить
-			</button>
+			</JobtronButton>
 		</div>
 	</div>
 </template>
+
 <script>
+import JobtronButton from '@ui/Button'
 export default {
 	name: 'RefLinker',
+	components: {
+		JobtronButton,
+	},
 	props: {},
 	data() {
 		return {
@@ -79,7 +84,8 @@ export default {
 					this.items = response.data
 					this.loading = false;
 				})
-				.catch(() => console.log('Error'))
+				.catch(() => console.error('Error'))
+			this.items = [{'id':1,'name':'marina','info':'для марины какой'},{'id':4,'name':'abik','info':'тестовый'},{'id':5,'name':'jjkz080322fb','info':'ФБ мой кабинет'},{'id':10,'name':'bpjkz080722fb','info':'ФБ мой кабинет'},{'id':11,'name':'bpjkg120722fb','info':'ФБ мой кабинет'},{'id':12,'name':'juz261121fb','info':'ФБ мой кабинет'},{'id':13,'name':'ds1fb','info':'ФБ Диас'},{'id':14,'name':'ds2fb','info':'ФБ Диас'},{'id':15,'name':'ds3fb','info':'ФБ Диас'},{'id':16,'name':'ds4fb','info':'ФБ Диас'},{'id':17,'name':'ds5fb','info':'ФБ Диас'},{'id':18,'name':'ds6fb','info':'ФБ Диас'},{'id':19,'name':'vk','info':'ВК, разбросали посты'},{'id':20,'name':'fb','info':'ФБ, разбросали посты'},{'id':21,'name':'fb','info':'ФБ, разбросали посты'},{'id':22,'name':'tg','info':'телеграмм, разбросали посты'},{'id':23,'name':'ok','info':'одноклассники, разбросали посты'},{'id':24,'name':'ds7fb','info':'ФБ Диас'},{'id':25,'name':'ds8fb','info':'ФБ Диас'},{'id':26,'name':'ds9fb','info':'ФБ Диас'},{'id':27,'name':'ds12fb','info':'ФБ Диас'},{'id':28,'name':'ds11fb','info':'ФБ Диас'},{'id':29,'name':'ds10fb','info':'ФБ Диас'},{'id':30,'name':'ds13fb','info':'ФБ Диас'}]
 		},
 
 		save(i) {
@@ -94,7 +100,7 @@ export default {
 					this.items[i].id = response.data;
 					this.$toast.success('Сохранено')
 				})
-				.catch(() => console.log('Error'))
+				.catch(() => console.error('Error'))
 		},
 
 		deletes(i) {
@@ -111,7 +117,7 @@ export default {
 					this.items.splice(i,1)
 					this.$toast.success('Удалено')
 				})
-				.catch(() => console.log('Error'))
+				.catch(() => console.error('Error'))
 		},
 
 		add() {
@@ -135,7 +141,19 @@ export default {
 	},
 };
 </script>
-<style>
+
+<style lang="scss">
+.RefLinker{
+	&-red{
+		color: red;
+	}
+	&-blue{
+		color: blue;
+	}
+	&-green{
+		color: green;
+	}
+}
 .ws-100 {
   width:100px;
 }

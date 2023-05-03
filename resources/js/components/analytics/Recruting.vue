@@ -9,9 +9,9 @@
 			</div>
 			<ProgressBar
 				:progress="widthRemain + '%'"
-				class="mt-2"
+				class="mt-4"
 			/>
-			<div class="AnalyticsRecruting-remainDdays">
+			<div class="AnalyticsRecruting-remainDdays mt-3">
 				Осталось {{ info.remain_days }} дней
 			</div>
 			<!-- <div class="AnalyticsRecruting-progress">
@@ -40,10 +40,10 @@
 
 		<div
 			v-if="isAnalyticsPage"
-			class="row my-3"
+			class="row my-5"
 		>
 			<div class="col-md-8">
-				<h3 class="mb-3 text-center">
+				<h3 class="mb-4 text-center">
 					Основные показатели
 				</h3>
 				<div class="lboxes">
@@ -118,7 +118,7 @@
 			<!-- воронка -->
 			<div class="col-md-4 static">
 				<div>
-					<h3 class="mb-3 text-center">
+					<h3 class="mb-4 text-center">
 						Воронка соискателей
 					</h3>
 					<div id="funnel" />
@@ -308,8 +308,8 @@ export default {
 					},
 					events :{
 						click: {
-							block: function(data) {
-								console.log(data.target)
+							block: function(/* data */) {
+
 							}
 						}
 					}
@@ -542,7 +542,7 @@ export default {
 .row{
 	display: flex;
 	flex-flow: row nowrap;
-	gap: 15px;
+	gap: 1rem;
 	margin-left: 0;
 	margin-right: 0;
 }
@@ -619,8 +619,8 @@ export default {
 	}
 }
 .recruting-analytics h3 {
-	font-size: 1.1rem;
-	margin-bottom: 15px;
+	font-size: 1.8rem;
+	margin-bottom: 20px;
 }
 .recruting-analytics h3.mb-0 {
 	margin-bottom: 0;
@@ -629,6 +629,7 @@ export default {
 	display: flex;
 	justify-content: space-between;
 	flex-wrap:wrap;
+	gap: 30px;
 	.lbox {
 		align-items: unset;
 	}
@@ -640,7 +641,6 @@ export default {
 	border-left-width: 0px !important;
 	border-left-style: solid;
 	background: #F8FBFF;
-	margin-bottom: 15px;
 	padding: 15px;
 	align-items: self-end;
 	display: flex;
