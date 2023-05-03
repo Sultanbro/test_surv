@@ -47,7 +47,6 @@ export default {
 	gap: 1.5rem;
 
 	padding: 1.3rem 2.5rem;
-	margin-top: auto;
 	border: none;
 	border-radius: 0.5rem;
 

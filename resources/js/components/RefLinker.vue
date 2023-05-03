@@ -85,7 +85,6 @@ export default {
 					this.loading = false;
 				})
 				.catch(() => console.error('Error'))
-			this.items = [{'id':1,'name':'marina','info':'для марины какой'},{'id':4,'name':'abik','info':'тестовый'},{'id':5,'name':'jjkz080322fb','info':'ФБ мой кабинет'},{'id':10,'name':'bpjkz080722fb','info':'ФБ мой кабинет'},{'id':11,'name':'bpjkg120722fb','info':'ФБ мой кабинет'},{'id':12,'name':'juz261121fb','info':'ФБ мой кабинет'},{'id':13,'name':'ds1fb','info':'ФБ Диас'},{'id':14,'name':'ds2fb','info':'ФБ Диас'},{'id':15,'name':'ds3fb','info':'ФБ Диас'},{'id':16,'name':'ds4fb','info':'ФБ Диас'},{'id':17,'name':'ds5fb','info':'ФБ Диас'},{'id':18,'name':'ds6fb','info':'ФБ Диас'},{'id':19,'name':'vk','info':'ВК, разбросали посты'},{'id':20,'name':'fb','info':'ФБ, разбросали посты'},{'id':21,'name':'fb','info':'ФБ, разбросали посты'},{'id':22,'name':'tg','info':'телеграмм, разбросали посты'},{'id':23,'name':'ok','info':'одноклассники, разбросали посты'},{'id':24,'name':'ds7fb','info':'ФБ Диас'},{'id':25,'name':'ds8fb','info':'ФБ Диас'},{'id':26,'name':'ds9fb','info':'ФБ Диас'},{'id':27,'name':'ds12fb','info':'ФБ Диас'},{'id':28,'name':'ds11fb','info':'ФБ Диас'},{'id':29,'name':'ds10fb','info':'ФБ Диас'},{'id':30,'name':'ds13fb','info':'ФБ Диас'}]
 		},
 
 		save(i) {
