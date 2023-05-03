@@ -25,7 +25,13 @@
 					Баланс оклада
 				</div>
 				<div class="stat__value">
-					<span>{{ user_earnings.sumSalary }}</span> {{ user_earnings.currency }}
+					<span
+						v-show="!animated"
+						class="IntroStats-value"
+					>{{ balance }}</span> <span
+						v-show="animated"
+						class="IntroStats-fake"
+					>{{ balance }}</span> {{ user_earnings.currency }}
 				</div>
 			</div>
 		</div>
@@ -54,7 +60,13 @@
 					KPI
 				</div>
 				<div class="stat__value">
-					<span>{{ user_earnings.sumKpi }}</span> {{ user_earnings.currency }}
+					<span
+						v-show="!animated"
+						class="IntroStats-value"
+					>{{ kpi }}</span> <span
+						v-show="animated"
+						class="IntroStats-fake"
+					>{{ kpi }}</span> {{ user_earnings.currency }}
 				</div>
 			</div>
 		</div>
@@ -83,7 +95,13 @@
 					Бонусы
 				</div>
 				<div class="stat__value">
-					<span>{{ user_earnings.sumBonuses }}</span> {{ user_earnings.currency }}
+					<span
+						v-show="!animated"
+						class="IntroStats-value"
+					>{{ bonus }}</span> <span
+						v-show="animated"
+						class="IntroStats-fake"
+					>{{ bonus }}</span> {{ user_earnings.currency }}
 				</div>
 			</div>
 		</div>
@@ -112,7 +130,13 @@
 					Квартальный
 				</div>
 				<div class="stat__value">
-					<span>{{ user_earnings.sumQuartalPremiums }}</span> {{ user_earnings.currency }}
+					<span
+						v-show="!animated"
+						class="IntroStats-value"
+					>{{ premium }}</span> <span
+						v-show="animated"
+						class="IntroStats-fake"
+					>{{ premium }}</span> {{ user_earnings.currency }}
 				</div>
 			</div>
 		</div>
@@ -141,7 +165,14 @@
 					Награды
 				</div>
 				<div class="stat__value">
-					<span>{{ user_earnings.sumNominations }}</span>
+					<span
+						v-show="!animated"
+						class="IntroStats-value"
+					>{{ nominations }}</span>
+					<span
+						v-show="animated"
+						class="IntroStats-fake"
+					>{{ nominations }}</span>
 				</div>
 			</div>
 		</div>
@@ -156,13 +187,30 @@ export default {
 	name: 'IntroStats',
 	props: {},
 	data: function () {
-		return {}
+		return {
+			animated: false
+		}
 	},
 	computed: {
-		...mapState(useProfileSalaryStore, ['user_earnings', 'has_qp'])
+		...mapState(useProfileSalaryStore, ['user_earnings', 'has_qp']),
+		balance(){
+			return this.separateNumber(this.user_earnings.sumSalary)
+		},
+		kpi(){
+			return this.separateNumber(this.user_earnings.sumKpi)
+		},
+		bonus(){
+			return this.separateNumber(this.user_earnings.sumBonuses)
+		},
+		premium(){
+			return this.separateNumber(this.user_earnings.sumQuartalPremiums)
+		},
+		nominations(){
+			return this.separateNumber(this.user_earnings.sumNominations)
+		},
 	},
 	watch:{
-		user_earnings(){
+		balance(){
 			this.$nextTick(() => this.OpacityStats())
 		}
 	},
@@ -219,9 +267,10 @@ export default {
 				});
 			}
 
-			VJQuery('.stat__value').each(function(){
-				let n = VJQuery(this).children('span').text().replace(/\D/g,'');
-				let element = VJQuery(this);
+			this.animated = true
+			VJQuery('.stat__value').each((key, el) => {
+				let element = VJQuery(el);
+				let n = element.children('.IntroStats-value').text().replace(/\D/g,'');
 
 				function separateNumber(x) {
 					return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
@@ -231,15 +280,19 @@ export default {
 				VJQuery({numberValue: 0}).animate({numberValue: n}, {
 					duration: 4000,
 					easing: 'swing',
-					step: function(val) {
-						element.children('span').text(separateNumber(Math.round(val)));
+					step: val => {
+						element.children('.IntroStats-fake').text(separateNumber(Math.round(val)));
 					},
-					complete: function(){
-						element.children('span').text(separateNumber(Math.round(n)));
+					complete: () => {
+						element.children('.IntroStats-fake').text(separateNumber(Math.round(n)));
+						this.animated = false
 					}
 				});
 			})
 		}, // end of opacity
+		separateNumber(x){
+			return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+		}
 	},
 	created(){},
 	mounted(){

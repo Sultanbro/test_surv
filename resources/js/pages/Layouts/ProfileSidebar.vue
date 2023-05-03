@@ -1,7 +1,7 @@
 <template>
 	<div
 		v-if="isVisible"
-		class="header__profile _anim _anim-no-hide custom-scroll-y"
+		class="ProfileSidebar header__profile _anim _anim-no-hide custom-scroll-y"
 		:class="{
 			'v-loading': loading,
 			hidden: hide,
@@ -54,13 +54,19 @@
 						v-if="!balance.loading"
 						class="profile__balance-value"
 					>
-						{{ balance.sum }} <span class="profile__balance-currecy">{{ balance.currency }}</span>
+						{{ separateNumber(user_earnings.sumSalary || 0) }} <span class="profile__balance-currecy">{{ balance.currency }}</span>
 					</p>
 				</div>
 
-				<b-form-select
+				<!-- <b-form-select
 					v-model="selectedDate"
 					:options="monthOptions"
+					:disabled="salaryLoading"
+					class="mt-4"
+				/> -->
+
+				<DateSelect
+					v-model="selectedDate"
 					:disabled="salaryLoading"
 					class="mt-4"
 				/>
@@ -285,6 +291,7 @@ import { usePersonalInfoStore } from '@/stores/PersonalInfo'
 import { usePaymentTermsStore } from '@/stores/PaymentTerms'
 import { usePortalStore } from '@/stores/Portal'
 import { useYearOptions, useMonthOptions } from '@/composables/yearOptions'
+import DateSelect from '../Profile/DateSelect'
 
 export default {
 	name: 'ProfileSidebar',
@@ -293,12 +300,10 @@ export default {
 		StartDayBtn,
 		Questions,
 		Cropper,
+		DateSelect,
 	},
 	props: {},
 	data: function () {
-		const now = new Date()
-		const currentYear = now.getFullYear()
-		const currentMonth = now.getMonth()
 		return {
 			fields: [],
 			file: '',
@@ -315,10 +320,8 @@ export default {
 			isRoot: false,
 			isProfile: false,
 			canvas: null,
-			selectedDate: {
-				year: currentYear,
-				month: currentMonth,
-			}
+			selectedDate: this.$moment(Date.now()).format('DD.MM.YYYY'),
+			isDatePicker: false,
 		};
 	},
 	computed: {
@@ -332,6 +335,7 @@ export default {
 		...mapState(usePersonalInfoStore, {infoReady: 'isReady'}),
 		...mapState(usePaymentTermsStore, {termsReady: 'isReady'}),
 		...mapState(usePortalStore, ['portal']),
+		...mapState(useProfileSalaryStore, ['user_earnings']),
 		...mapGetters(['user']),
 		userInfo(){
 			return {
@@ -399,13 +403,17 @@ export default {
 				return options
 			}, []).filter(({value}) => !(value.year === currentYear && value.month > currentMonth))
 		},
+		selectedMonth(){
+			return this.$moment(this.selectedDate, 'DD.MM.YYYY').format('MM.YYYY')
+		},
 	},
 	watch: {
 		corp_book(){
 			this.initCorpBook()
 		},
-		selectedDate({year, month}){
-			this.fitchSalaryCrutch(year, month)
+		selectedMonth(){
+			const splited = this.selectedDate.split('.')
+			this.fitchSalaryCrutch(+splited[2], +splited[1] - 1)
 		}
 	},
 	mounted(){
@@ -568,7 +576,7 @@ export default {
 			axios.post('/corp_book/set-read/', {}).then(() => {
 				this.showCorpBookPage = false
 				this.isBookTest = false
-			}).catch(error => console.log(error))
+			}).catch(error => console.error(error))
 		},
 
 		repeatBook(){
@@ -587,6 +595,9 @@ export default {
 			this.isBookTest = true
 			this.showCorpBookPage = false
 		},
+		separateNumber(x){
+			return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+		}
 	}
 };
 </script>
