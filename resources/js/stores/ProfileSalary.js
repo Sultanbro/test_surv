@@ -5,6 +5,7 @@ import {
 	fetchProfileBalance,
 	fetchProfileKpi,
 	fetchProfilePremiums,
+	fetchProfileBonuses,
 } from '@/stores/api'
 import { calcSum } from '@/pages/kpi/kpis.js'
 
@@ -48,6 +49,7 @@ export const useProfileSalaryStore = defineStore('profileSalary', {
 				const { data } = await fetchProfileBalance(year, month)
 				const { items } = await fetchProfileKpi(year, month)
 				const premiums = await fetchProfilePremiums(year, month)
+				const { data: bonuses } = await fetchProfileBonuses(year, month)
 
 				this.user_earnings.sumSalary = Object.values(data.salaries).reduce((result, day) => result + (parseInt(day.value) || 0), 0)
 				this.user_earnings.sumKpi = items.reduce((result, kpi) => {
@@ -58,7 +60,7 @@ export const useProfileSalaryStore = defineStore('profileSalary', {
 					});
 					return result
 				}, 0)
-				this.user_earnings.sumBonuses = 0
+				this.user_earnings.sumBonuses = bonuses.history.reduce((result, bonus) => result + (parseInt(bonus.sum) || 0), 0)
 				this.user_earnings.sumQuartalPremiums = premiums.reduce((result, premium) => {
 					premium.forEach(el => {
 						if(el.items?.sum && el.items?.to?.substring(0, 7) === moment(Date.now()).format('YYYY-MM')) result += el.items.sum
