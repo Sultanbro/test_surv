@@ -455,7 +455,7 @@
 													v-model="item['param' + pk]"
 													class="form-control text-center"
 													@focus="$event.target.select()"
-													@change="statusChanged(item)"
+													@change="changeStat(item)"
 												>
 											</div>
 											<div
