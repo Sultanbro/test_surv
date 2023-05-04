@@ -494,9 +494,7 @@ class SalaryController extends Controller
         $fines = Fine::pluck('penalty_amount', 'id')->toArray();
         $data = [];
 
-        /**
-         * Налоги.
-         */
+        // Налоги
         $lastDayOfMonth = $date->lastOfMonth();
 
         $taxColumns = DB::table('taxes')->whereRaw("`taxes`.`id` IN (
@@ -524,16 +522,13 @@ class SalaryController extends Controller
             14 => 0,
         ];
 
-        foreach ($taxColumns as $tax)
-        {
+        foreach ($taxColumns as $tax){
             $allTotal["tax_$tax->id"] = 0;
         }
         $allTotal[] = 0;
         $allTotal[] = 0;
         $allTotal[] = 0;
 
-        $i = 0;
-        
         $data['users'] = [];
 
         $userIds    = $users->pluck('id')->toArray();
@@ -545,19 +540,12 @@ class SalaryController extends Controller
 
             $_user = User::withTrashed()->find($user->id);
 
-            // Вычисление даты принятия
-            $user_applied_at = $_user->applied_at();
-
             $ud = UserDescription::where('user_id', $user->id)->first();
 
             if($ud && $ud->is_trainee != 0) {
                 continue;
-            } 
+            }
 
-       
-            // delete not applied 
-       
-            
             // Суммы на месяц 
             $month_salary = Salary::where('user_id', $user->id)
                 ->whereYear('date', $date->year)
@@ -568,17 +556,13 @@ class SalaryController extends Controller
                 ])
                 ->first();
             
-            // edited salary 
-
+            // edited salary
             $edited_salary =  EditedSalary::where('user_id', $user->id)
                 ->whereYear('date', $date->year)
                 ->whereMonth('date', $date->month)
                 ->first();
             $edited_salary_amount = $edited_salary ? $edited_salary->amount : 0;
 
-            // Почасовая оплата
-            $hourly_pay = $_user->hourly_pay($date->format('Y-m-d'));
-            
             // Карты и держатели карт
             $cards = '';
             $cardholder = '';
@@ -603,16 +587,13 @@ class SalaryController extends Controller
                 }
             }
 
-
             // рабочие дни
-
             $ignore = $_user->chartWorkDays(); // Какие дни не учитывать в месяце
             $workDays = workdays($date->year, $date->month, $ignore);
 
             if(!$edited_salary) $allTotal[6] += intval($workDays);
 
-            // стажировочные    
-
+            // стажировочные
             $trainee_days = DayType::select([
                     DB::raw('DAY(date) as day')
                 ])
@@ -623,13 +604,8 @@ class SalaryController extends Controller
                 ->get(['day'])
                 ->pluck('day')
                 ->toArray();
-            
-            $trainee_days_count = count($trainee_days);
-            
-          
 
             // отработанные дни
-            $yearAndMonth = $date->year . "-" . $date->month;
             $workedHours = Timetracking::select([
                     'total_hours', 
                     DB::raw('DAY(enter) as day')
@@ -638,12 +614,8 @@ class SalaryController extends Controller
                 ->whereMonth('enter', $date->month)
                 ->where('user_id', $user->id)
                 ->get();
-            
-            
-            $workedHours = $workedHours->whereNotIn('day', $trainee_days); 
 
-            $workedHours = $workedHours->sum('total_hours') / 60;
-        
+            $workedHours = $workedHours->whereNotIn('day', $trainee_days)->sum('total_hours') / 60;
             $workedDays = round($workedHours / $_user->countWorkHours(), 2);
                 
             if(!$edited_salary) $allTotal[5] += $workedDays;
@@ -658,8 +630,7 @@ class SalaryController extends Controller
 
             $salary = 0;
             $trainee_fees = 0;
-           
-            
+
             if(count($salary_table['users']) > 0) {
                 $arrs = $salary_table['users'][0];
                 for($i =1;$i<=$date->daysInMonth;$i++) {
@@ -667,14 +638,9 @@ class SalaryController extends Controller
                         $trainee_fees += $arrs->earnings[$i] ?? 0;
                     } else {
                         $salary += $arrs->earnings[$i] ?? 0;
-                        
                     }
                 }   
             }
-
-            if(!$edited_salary) $allTotal[8] += $salary;
-
-            if(!$edited_salary) $allTotal[10] += $trainee_fees;
 
             // KPI
             $editedKpi = EditedKpi::where('user_id', $user->id)
@@ -682,13 +648,17 @@ class SalaryController extends Controller
                     ->whereMonth('date', $date->month)
                     ->first();
 
-            if($editedKpi) {
+            if($editedKpi){
                 $kpi = $editedKpi->amount;
             } else {
                 $kpi = Kpi::userKpi($user->id, $date->format('Y-m-d'));
-            }   
+            }
 
-            if(!$edited_salary) $allTotal[9] += $kpi;
+            if(!$edited_salary) {
+                $allTotal[8] += $salary;
+                $allTotal[9] += $kpi;
+                $allTotal[10] += $trainee_fees;
+            }
 
             // Бонусы
             $editedBonus = EditedBonus::where('user_id', $user->id)
@@ -718,49 +688,28 @@ class SalaryController extends Controller
 
             if(!$edited_salary) $allTotal[12] += $total_income;
 
-            // Авансы
-
-                    // headphone price minus
-                    $headphones_amount = 0;
-                    if($ud) {
-                        $headphones_date = Carbon::parse($ud->headphones_date);
-                        if($ud->headphones_amount > 0 &&
-                            $headphones_date->year == $date->year &&
-                            $headphones_date->month == $date->month) {
-                            $headphones_amount = $ud->headphones_amount;
-                        }
-
-                    }
+            // headphone price minus
+            $headphones_amount = 0;
+            if($ud) {
+                $headphones_date = Carbon::parse($ud->headphones_date);
+                if($ud->headphones_amount > 0 &&
+                    $headphones_date->year == $date->year &&
+                    $headphones_date->month == $date->month) {
+                    $headphones_amount = $ud->headphones_amount;
+                }
+            }
                     
             $prepaid = round($month_salary->avans) + $headphones_amount;
             if(!$edited_salary) $allTotal[13] += $prepaid;
-            
-            
-                    
-            
+
             // Не показывать если все по нулям
-            
             if($edited_salary && $edited_salary->amount == 0) {
                 continue;
             }
-         
-            // if($user->id == 5670) {
 
-
-            // dump($salary);
-            // dump($bonus);
-            // dump($prepaid);
-            // dump($trainee_fees);
-            // dump($edited_salary_amount);
-            // dd($user->id);
-            // }
             if($salary == 0 && $bonus == 0 && $prepaid == 0 && $trainee_fees == 0 && $edited_salary_amount == 0) {
                 continue;
             }
-
-            // if($user->id == 10242) {
-            //     dd($salary);
-            // }
 
             // Штрафы
             $penalty = 0;
@@ -828,14 +777,12 @@ class SalaryController extends Controller
             $on_currency = number_format((float)$total_payment * (float)$currency_rate, 0, '.', '') . strtoupper($user->currency);
 
             try {
-                if($edited_salary)
-                {
+                if($edited_salary){
                     $allTotal[8] += (float)$edited_salary->amount;
                     $on_currency = number_format((float)$edited_salary->amount * (float)$currency_rate, 0, '.', '') . strtoupper($user->currency);
                     $totalColumns[8] = 15;
                     $totalColumns[12] = (int)$edited_salary->amount;
                     $totalColumns[19] = $this->space($edited_salary->amount, 3, true);
-                    $totalColumns[20] = $this->space($on_currency, 3, true);
 
                 } else {
                     $totalColumns[8] = (int)$salary;
@@ -847,16 +794,14 @@ class SalaryController extends Controller
                     $totalColumns[14] = $penalty;
                     $totalColumns[18] = $expense;
                     $totalColumns[19] = $this->space($total_payment, 3, true);
-                    $totalColumns[20] = $this->space($on_currency, 3, true);
                 }
+                $totalColumns[20] = $this->space($on_currency, 3, true);
 
                 $data['users'][] = $totalColumns;
             } catch (\Exception $e) {
                 dd($e);
-
             }
         }
-//        dd($totalColumns);
         // сортировка по имени
         $name_asc = array_column($data['users'], 0);
         array_multisort($name_asc, SORT_ASC, $data['users']); 
@@ -864,10 +809,9 @@ class SalaryController extends Controller
         // К выдаче сумма форматированная
         $allTotal[9] = $this->space(round($allTotal[9]), 3, true);
         $allTotal[16] = $this->space(round($allTotal[16]), 3, true);
-        
-        
+
         // Итоги в конце таблицы
-        array_push($data['users'], $allTotal);
+        $data['users'][] = $allTotal;
 
         return $data;
     }
