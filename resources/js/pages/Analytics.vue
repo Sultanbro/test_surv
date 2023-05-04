@@ -388,6 +388,7 @@ import { useHRStore } from '@/stores/ReportsHR.js'
 import { mapActions, mapState } from 'pinia'
 import JobtronTable from '@ui/Table'
 import JobtronButton from '@ui/Button'
+import { usePortalStore } from '@/stores/Portal'
 import RefLinker from '@/components/RefLinker' // рефералки
 
 export default {
