@@ -648,11 +648,7 @@ class SalaryController extends Controller
                     ->whereMonth('date', $date->month)
                     ->first();
 
-            if($editedKpi){
-                $kpi = $editedKpi->amount;
-            } else {
-                $kpi = Kpi::userKpi($user->id, $date->format('Y-m-d'));
-            }
+            $kpi = $editedKpi ? $editedKpi->amount : $kpi = Kpi::userKpi($user->id, $date->format('Y-m-d'));
 
             if(!$edited_salary) {
                 $allTotal[8] += $salary;
