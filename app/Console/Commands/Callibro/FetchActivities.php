@@ -84,9 +84,9 @@ class FetchActivities extends Command
     {
         $this->setDate();
 
-//        $groups = $this->getGroupsWithConfig();
-        $groups = ProfileGroup::getUcallsConnectedGroups()
-            ->toArray();
+        $groups = $this->getGroupsWithConfig();
+//        $groups = ProfileGroup::getUcallsConnectedGroups()
+//            ->toArray();
 
         foreach($groups as $group) {
 
