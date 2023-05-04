@@ -39,6 +39,7 @@
 				v-for="row, rowIndex in items"
 				:key="rowIndex"
 				class="JobtronTable-row"
+				:class="[trClassFn(row)]"
 			>
 				<td
 					v-for="field in fields"
@@ -87,6 +88,10 @@ export default {
 		stickyHeader: {
 			type: Boolean,
 			default: false
+		},
+		trClassFn: {
+			type: Function,
+			default: () => ''
 		}
 	}
 }

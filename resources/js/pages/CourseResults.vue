@@ -1,15 +1,13 @@
 <template>
-	<div class="course-results mt-4 CourseResults">
-		<div class="d-flex mb-2">
+	<div class="course-results mt-5 CourseResults">
+		<div class="d-flex mb-5 gap-5">
 			<JobtronButton
-				class="mr-3"
 				@click="type = BY_USER"
 				:fade="type !== BY_USER"
 			>
 				По сотрудникам
 			</JobtronButton>
 			<JobtronButton
-				class="mr-3"
 				@click="type = BY_GROUP"
 				:fade="type !== BY_GROUP"
 			>

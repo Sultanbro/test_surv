@@ -1,6 +1,6 @@
 <template>
 	<div class="TableRecruiterStats">
-		<div class="d-flex pt-4">
+		<div class="d-flex pt-5 gap-5">
 			<div class="TableRecruiterStats-table">
 				<JobtronTable
 					responsive
@@ -59,16 +59,16 @@
 			</div>
 
 
-			<div class="ml-3 f-200">
+			<div class="f-200">
 				<JobtronButton
 					v-if="editable"
 					@click="showModal = !showModal"
-					class="mb-4"
+					class="mb-5"
 				>
 					Кол-во лидов
 				</JobtronButton>
 				<select
-					class="form-control form-control-sm mb-4"
+					class="form-control form-control-sm mb-5"
 					v-model="currentDay"
 				>
 					<option
@@ -79,7 +79,7 @@
 						{{ day }}
 					</option>
 				</select>
-				<p class="mt-2 mb-2 text-black fz-14">
+				<p class="my-5 text-black fz-14">
 					<b>Стандарт звонков:</b><br>
 					<span class="aaa fz-12 text-red mb-2">20 звонков от 10 секунд (чтобы их сделать, нужно просто делать больше наборов в час)</span>
 					<span class="aaa fz-12 text-red">30 минут диалога</span>

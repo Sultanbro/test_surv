@@ -4,7 +4,7 @@
 		class="analytics-page"
 	>
 		<!-- header -->
-		<div class="row mb-4">
+		<div class="row my-5">
 			<div class="col-3">
 				<select
 					class="form-control"
@@ -103,62 +103,64 @@
 								</template>
 
 
-								<b-tabs type="card">
-									<b-tab
-										title="Сводная"
-										key="1"
-										card
-									>
-										<TableTraineeSage2
-											:ocenka-svod="ocenkaSvod"
-											class="pt-4"
-										/>
-									</b-tab>
-
-									<!--<b-tab title="Оценка тренера" key="2">
-
-
-                                    <trainee-report :trainee_report="recruiting.trainee_report" :groups="groups"></trainee-report>
+								<div class="pt-5">
+									<b-tabs type="card">
+										<b-tab
+											title="Сводная"
+											key="1"
+											card
+										>
+											<TableTraineeSage2
+												:ocenka-svod="ocenkaSvod"
+												class="pt-5"
+											/>
+										</b-tab>
+										<!--<b-tab title="Оценка тренера" key="2">
 
 
-                                </b-tab>-->
-									<b-tab
-										title="Оценка тренера"
-										key="2"
-										card
-									>
-										<SvodTable
-											:trainee_report="traineeReport"
-											:groups="groups"
-										/>
-									</b-tab>
-									<b-tab
-										title="Отсутствие стажеров"
-										key="4"
-										card
-									>
-										<div class="row pt-4">
-											<div class="col-md-4">
-												<JobtronTable
-													:fields="[{key: 'cause', label: 'Первый день', colspan: 2, thClass: 'text-left', tdClass: 'text-left'}, {key: 'count', hide: true, tdClass:'text-center'}]"
-													:items="absentsFirst"
-												/>
+																											<trainee-report :trainee_report="recruiting.trainee_report" :groups="groups"></trainee-report>
+
+
+																									</b-tab>-->
+										<b-tab
+											title="Оценка тренера"
+											key="2"
+											card
+										>
+											<SvodTable
+												:trainee_report="traineeReport"
+												:groups="groups"
+												class="pt-5"
+											/>
+										</b-tab>
+										<b-tab
+											title="Отсутствие стажеров"
+											key="4"
+											card
+										>
+											<div class="row pt-5">
+												<div class="col-md-4">
+													<JobtronTable
+														:fields="[{key: 'cause', label: 'Первый день', colspan: 2, thClass: 'text-left', tdClass: 'text-left'}, {key: 'count', hide: true, tdClass:'text-center'}]"
+														:items="absentsFirst"
+													/>
+												</div>
+												<div class="col-md-4">
+													<JobtronTable
+														:fields="[{key: 'cause', label: 'Второй день', colspan: 2, thClass: 'text-left', tdClass: 'text-left'}, {key: 'count', hide: true, tdClass:'text-center'}]"
+														:items="absentsSecond"
+													/>
+												</div>
+												<div class="col-md-4">
+													<JobtronTable
+														:fields="[{key: 'cause', label: 'После третьего дня', colspan: 2, thClass: 'text-left', tdClass: 'text-left'}, {key: 'count', hide: true, tdClass:'text-center'}]"
+														:items="absentsSecond"
+													/>
+												</div>
 											</div>
-											<div class="col-md-4">
-												<JobtronTable
-													:fields="[{key: 'cause', label: 'Второй день', colspan: 2, thClass: 'text-left', tdClass: 'text-left'}, {key: 'count', hide: true, tdClass:'text-center'}]"
-													:items="absentsSecond"
-												/>
-											</div>
-											<div class="col-md-4">
-												<JobtronTable
-													:fields="[{key: 'cause', label: 'После третьего дня', colspan: 2, thClass: 'text-left', tdClass: 'text-left'}, {key: 'count', hide: true, tdClass:'text-center'}]"
-													:items="absentsSecond"
-												/>
-											</div>
-										</div>
-									</b-tab>
-								</b-tabs>
+										</b-tab>
+									</b-tabs>
+								</div>
 							</b-tab>
 
 							<b-tab
@@ -166,81 +168,84 @@
 								key="7"
 								card
 							>
-								<b-tabs
-									type="card"
-									v-if="funnels.all"
-									default-active-key="0"
-								>
-									<b-tab
-										title="Сводная"
-										key="0"
-										card
+								<div class="pt-5">
+									<b-tabs
+										v-if="funnels.all"
+										type="card"
+										default-active-key="0"
 									>
-										<div class="row pt-4">
-											<div class="col-8">
+										<b-tab
+											title="Сводная"
+											key="0"
+											card
+										>
+											<div class="row pt-5">
+												<div class="col-8">
+													<div class="PageAnalytics-funnels">
+														<TableFunnel
+															class="mb-5"
+															:id="0"
+															:table="funnels['all']['all']"
+															title="Сводная таблица"
+															segment="segments"
+															type="month"
+															:date="date"
+														/>
+														<TableFunnel
+															class="mb-5"
+															:id="1"
+															:table="funnels['all']['hh']"
+															title="hh.ru"
+															segment="hh"
+															type="month"
+															:date="date"
+														/>
+														<TableFunnel
+															class="mb-5"
+															:id="2"
+															:table="funnels['all']['insta']"
+															title="Job.bpartners.kz"
+															segment="insta"
+															type="month"
+															:date="date"
+														/>
+													</div>
+												</div>
+												<!-- partner link creator -->
+												<div class="col-4">
+													<RefLinker />
+												</div>
+											</div>
+										</b-tab>
+										<b-tab
+											v-for="(month, i) in months"
+											:key="i"
+											:title="month.month"
+											card
+										>
+											<div class="pt-5">
 												<TableFunnel
 													class="mb-5"
-													:id="0"
-													:table="funnels['all']['all']"
-													title="Сводная таблица"
-													segment="segments"
-													type="month"
-													:date="date"
-												/>
-												<TableFunnel
-													class="mb-5"
-													:id="1"
-													:table="funnels['all']['hh']"
+													:table="funnels['month'][i]['hh']"
 													title="hh.ru"
 													segment="hh"
-													type="month"
-													:date="date"
+													type="week"
+													:date="month.date"
+													:key="5 * 1000 * (Number(i) + 10 * Number(i))"
 												/>
 												<TableFunnel
 													class="mb-5"
-													:id="2"
-													:table="funnels['all']['insta']"
+													:table="funnels['month'][i]['insta']"
 													title="Job.bpartners.kz"
 													segment="insta"
-													type="month"
-													:date="date"
+													type="week"
+													:date="month.date"
+													:key="6 * 1000 * (Number(i) + 10 * Number(i))"
 												/>
 											</div>
-
-											<!-- partner link creator -->
-											<div class="col-4">
-												<ref-linker />
-											</div>
-										</div>
-									</b-tab>
-									<b-tab
-										v-for="(month, i) in months"
-										:key="i"
-										:title="month.month"
-										card
-									>
-										<div class="pt-4">
-											<TableFunnel
-												class="mb-5"
-												:table="funnels['month'][i]['hh']"
-												title="hh.ru"
-												segment="hh"
-												type="week"
-												:date="month.date"
-												:key="5 * 1000 * (Number(i) + 10 * Number(i))"
-											/>
-											<TableFunnel
-												class="mb-5"
-												:table="funnels['month'][i]['insta']"
-												title="Job.bpartners.kz"
-												segment="insta"
-												type="week"
-												:date="month.date"
-												:key="6 * 1000 * (Number(i) + 10 * Number(i))"
-											/>
-										</div>
-									</b-tab>
-								</b-tabs>
+										</b-tab>
+									</b-tabs>
+								</div>
 							</b-tab>
 
 							<b-tab
@@ -255,98 +260,97 @@
 								</template>
 
 
-								<b-tabs>
-									<b-tab
-										title="Причины и процент текучки"
-										key="1"
-										card
-									>
-										<div class="pt-4">
-											<TableStaffTurnover
-												:staff="staff"
-												:causes="causes"
-												:staff_longevity="staffLongevity"
-												:staff_by_group="staffByGroup"
-											/>
-										</div>
-									</b-tab>
-
-
-									<b-tab
-										title="Причины: Бот"
-										key="2"
-										card
-									>
-										<div class="d-flex flex-wrap pt-4">
-											<div
-												v-for="(quizz, key) in quiz"
-												:key="key"
-												class="question-wrap"
-											>
-												<p> {{ quizz['q'] }}</p>
-												<div v-if="quizz['type'] == 'answer'">
-													<div
-														v-for="answer in quizz['answers']"
-														:key="answer.id"
-														class="d-flex"
-													>
-														<p class="fz12">
-															{{ answer.text }}
-														</p>
-													</div>
-												</div>
-												<div v-if="quizz['type'] == 'variant'">
-													<div
-														v-for="answer in quizz['answers']"
-														:key="answer.id"
-														class="row"
-													>
-														<div class="col-6">
-															{{ answer.text + ' (' + answer.count + ')' }}
+								<div class="pt-5">
+									<b-tabs>
+										<b-tab
+											title="Причины и процент текучки"
+											key="1"
+											card
+										>
+											<div class="pt-5">
+												<TableStaffTurnover
+													:staff="staff"
+													:causes="causes"
+													:staff_longevity="staffLongevity"
+													:staff_by_group="staffByGroup"
+												/>
+											</div>
+										</b-tab>
+										<b-tab
+											title="Причины: Бот"
+											key="2"
+											card
+										>
+											<div class="d-flex flex-wrap pt-5">
+												<div
+													v-for="(quizz, key) in quiz"
+													:key="key"
+													class="question-wrap"
+												>
+													<p> {{ quizz['q'] }}</p>
+													<div v-if="quizz['type'] == 'answer'">
+														<div
+															v-for="answer in quizz['answers']"
+															:key="answer.id"
+															class="d-flex"
+														>
+															<p class="fz12">
+																{{ answer.text }}
+															</p>
 														</div>
-														<div class="col-6">
-															<div class="PageAnalytics-progress">
-																<div class="PageAnalytics-progressPercent">
-																	{{ Number(answer.percent) || 0 }}%
+													</div>
+													<div v-if="quizz['type'] == 'variant'">
+														<div
+															v-for="answer in quizz['answers']"
+															:key="answer.id"
+															class="row"
+														>
+															<div class="col-6">
+																{{ answer.text + ' (' + answer.count + ')' }}
+															</div>
+															<div class="col-6">
+																<div class="PageAnalytics-progress">
+																	<div class="PageAnalytics-progressPercent">
+																		{{ Number(answer.percent) || 0 }}%
+																	</div>
+																	<ProgressBar :progress="(Number(answer.percent) || 0) + '%'" />
 																</div>
-																<ProgressBar :progress="(Number(answer.percent) || 0) + '%'" />
 															</div>
 														</div>
 													</div>
-												</div>
-
-												<div v-if="quizz['type'] == 'star'">
-													<div
-														v-for="answer in quizz['answers']"
-														:key="answer.id"
-														class="d-flex"
-													>
-														<Rating
-															:grade="Number(answer.text).toFixed(0)"
-															:max-stars="10"
-															:has-counter="false"
-														/>
-														<p class="mb-0">
-															{{ answer.text + ' (' + answer.count + ')' }}
-														</p>
+													<div v-if="quizz['type'] == 'star'">
+														<div
+															v-for="answer in quizz['answers']"
+															:key="answer.id"
+															class="d-flex"
+														>
+															<Rating
+																:grade="Number(answer.text).toFixed(0)"
+																:max-stars="10"
+																:has-counter="false"
+															/>
+															<p class="mb-0">
+																{{ answer.text + ' (' + answer.count + ')' }}
+															</p>
+														</div>
 													</div>
 												</div>
 											</div>
-										</div>
-									</b-tab>
-									<b-tab
-										title="Причины увольнения"
-										key="3"
-										card
-									>
-										<div class="col-md-12 col-lg-6 d-flex align-items-center pt-4">
-											<JobtronTable
-												:fields="[{key: 'cause', label: 'Причины увольнения', colspan: 2, thClass: 'text-left', tdClass: 'text-left'}, {key: 'count', hide: true, tdClass:'text-center'}]"
-												:items="absentsFirst"
-											/>
-										</div>
-									</b-tab>
-								</b-tabs>
+										</b-tab>
+										<b-tab
+											title="Причины увольнения"
+											key="3"
+											card
+										>
+											<div class="col-md-12 col-lg-6 d-flex align-items-center pt-4">
+												<JobtronTable
+													:fields="[{key: 'cause', label: 'Причины увольнения', colspan: 2, thClass: 'text-left', tdClass: 'text-left'}, {key: 'count', hide: true, tdClass:'text-center'}]"
+													:items="absentsFirst"
+												/>
+											</div>
+										</b-tab>
+									</b-tabs>
+								</div>
 							</b-tab>
 						</template>
 					</b-tabs>
@@ -384,7 +388,7 @@ import { useHRStore } from '@/stores/ReportsHR.js'
 import { mapActions, mapState } from 'pinia'
 import JobtronTable from '@ui/Table'
 import JobtronButton from '@ui/Button'
-import { usePortalStore } from '@/stores/Portal'
+import RefLinker from '@/components/RefLinker' // рефералки
 
 export default {
 	name: 'PageAnalytics',
@@ -401,6 +405,7 @@ export default {
 		TableTraineeSage2,
 		JobtronTable,
 		JobtronButton,
+		RefLinker,
 	},
 	props: {
 		groups: {
@@ -632,6 +637,9 @@ export default {
 	}
 	&-progressPercent{
 		flex: 0 0 3em;
+	}
+	&-funnels{
+		overflow-x: auto;
 	}
 }
 .analytics-page {

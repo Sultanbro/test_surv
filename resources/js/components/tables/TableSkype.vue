@@ -1,8 +1,8 @@
 <template>
 	<div class="TableSkype">
 		<div class="skypo">
-			<div class="row my-4 align-items-center">
-				<div class="col-4 col-md-4 d-flex align-items-right">
+			<div class="row mt-5 align-items-center">
+				<div class="col-4 col-md-4 d-flex align-items-right mb-5">
 					<!-- <select class="form-control" v-model="currentDay">
 								0">Все дни</option>
 								<option v-for="day in this.month.daysInMonth" :value="day" :key="day">{{ day }}</option>
@@ -20,7 +20,7 @@
 						<!-- <m-date-picker v-model="filter.dates" lang="ru" :multi="true" :always-display="false" :format="formatDate"></m-date-picker> -->
 					</div>
 				</div>
-				<div class="col-md-2 mb-4">
+				<div class="col-md-2 mb-5">
 					<select
 						class="form-control form-control-sm mt-2"
 						v-model="filter.currentInviteGroup"
@@ -34,7 +34,7 @@
 						</option>
 					</select>
 				</div>
-				<div class="col-md-2 mb-4">
+				<div class="col-md-2 mb-5">
 					<select
 						class="form-control form-control-sm mt-2"
 						v-model="filter.user_type"
@@ -48,7 +48,7 @@
 						</option>
 					</select>
 				</div>
-				<div class="col-md-2 mb-4">
+				<div class="col-md-2 mb-5">
 					<select
 						class="form-control form-control-sm mt-2"
 						v-model="filter.lang"
@@ -62,7 +62,7 @@
 						</option>
 					</select>
 				</div>
-				<div class="col-md-2 mb-4">
+				<div class="col-md-2 mb-5">
 					<select
 						class="form-control form-control-sm mt-2"
 						v-model="filter.wishtime"
@@ -81,11 +81,11 @@
                     <option v-for="(segment, index) in segments" :key="index" :value="index">{{ segment }}</option>
                 </select>
             </div> -->
-				<div class="col-md-4">
+				<div class="col-md-4 mb-5">
 					<b>Кол-во:</b> {{ records.length }}
 				</div>
-				<div class="col-md-4" />
-				<div class="col-md-4">
+				<div class="col-md-4 mb-5" />
+				<div class="col-md-4 mb-5">
 					<div class="d-flex justify-content-end">
 						<!-- <div class="d-flex mr-3 align-items-center">
                         <div class="circle bg-green"></div>
@@ -134,7 +134,7 @@
 				primary-key="a"
 				:current-page="currentPage"
 				:per-page="perPage"
-				:tbody-tr-class="detailsClassFn"
+				:tr-class-fn="detailsClassFn"
 				:class="{
 					'hide-2': !showSkypeFields.lead_id,
 					'hide-3': !showSkypeFields.skyped,
@@ -1044,6 +1044,16 @@ export default {
 .TableSkype{
 	&-table{
 		overflow-x: auto;
+	}
+	.JobtronTable-td{
+		background-color: transparent;
+	}
+	.pagination{
+		padding: 0;
+		.page-item .page-link{
+			width: 40px;
+			height: 40px;
+		}
 	}
 }
 

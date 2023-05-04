@@ -2,7 +2,7 @@
 	<div>
 		<div class="staff-turnover">
 			<div class="row mb-2">
-				<div class="col-12 d-flex align-items-center">
+				<div class="col-12 d-flex align-items-center mb-5">
 					<div class="table-responsive">
 						<JobtronTable
 							:fields="fields"
