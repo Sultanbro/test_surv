@@ -812,6 +812,8 @@
 </template>
 
 <script>
+import { mapState } from 'pinia'
+import { usePortalStore } from '@/stores/Portal'
 import Sidebar from '@/components/ui/Sidebar' // сайдбар table
 import GroupExcelImport from '@/components/imports/GroupExcelImport' // импорт в табели
 import {useYearOptions} from '../composables/yearOptions'
@@ -842,18 +844,6 @@ export default {
 		canEdit: {
 			type: Boolean,
 			default: () => false
-		}
-	},
-	watch: {
-		scrollLeft(value) {
-			var container = document.querySelector('.table-responsive')
-			container.scrollLeft = value
-		},
-		user_types() {
-			this.fetchData()
-		},
-		groups() {
-			this.init()
 		}
 	},
 	data() {
@@ -957,7 +947,25 @@ export default {
 				schedule: '',
 			},
 			fire_causes: [],
-			years: useYearOptions(),
+		}
+	},
+	computed: {
+		...mapState(usePortalStore, ['portal']),
+		years(){
+			if(!this.portal.created_at) return [new Date().getFullYear()]
+			return useYearOptions(new Date(this.portal.created_at).getFullYear())
+		},
+	},
+	watch: {
+		scrollLeft(value) {
+			var container = document.querySelector('.table-responsive')
+			container.scrollLeft = value
+		},
+		user_types() {
+			this.fetchData()
+		},
+		groups() {
+			this.init()
 		}
 	},
 	created() {
@@ -1547,8 +1555,7 @@ export default {
 			try {
 				this.$toast.info('Вы редактируете ' + this.currentEditingCell.field.key + ' число  у ' + this.currentEditingCell.item.name);
 			} catch (err) {
-				console.log('it is here')
-				console.log(this.currentEditingCell)
+				console.error('editDay')
 			}
 
 			this.currentEditingCell = data
@@ -1560,7 +1567,6 @@ export default {
 				return;
 			}
 
-			console.log(this.currentEditingCell.item)
 			if (this.comment.length > 0) {
 				let loader = this.$loading.show();
 				this.axios.post('/timetracking/reports/update/day', {

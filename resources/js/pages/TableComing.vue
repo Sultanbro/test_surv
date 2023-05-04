@@ -139,6 +139,8 @@
 </template>
 
 <script>
+import { mapState } from 'pinia'
+import { usePortalStore } from '@/stores/Portal'
 import { useYearOptions } from '../composables/yearOptions'
 
 export default {
@@ -146,21 +148,6 @@ export default {
 	props: {
 		groups: Array,
 		activeuserid: String,
-	},
-	watch: {
-		// эта функция запускается при любом изменении данных
-		data(newData, oldData) {
-			if (oldData) {
-				this.loadItems();
-			}
-		},
-		scrollLeft(value) {
-			var container = document.querySelector('.table-responsive');
-			container.scrollLeft = value;
-		},
-		groups(){
-			this.init()
-		}
 	},
 	data() {
 		return {
@@ -189,8 +176,29 @@ export default {
 			currentEditingCell: null,
 			scrollLeft: 0,
 			modalVisible: false,
-			years: useYearOptions()
 		};
+	},
+	computed: {
+		...mapState(usePortalStore, ['portal']),
+		years(){
+			if(!this.portal.created_at) return [new Date().getFullYear()]
+			return useYearOptions(new Date(this.portal.created_at).getFullYear())
+		},
+	},
+	watch: {
+		// эта функция запускается при любом изменении данных
+		data(newData, oldData) {
+			if (oldData) {
+				this.loadItems();
+			}
+		},
+		scrollLeft(value) {
+			var container = document.querySelector('.table-responsive');
+			container.scrollLeft = value;
+		},
+		groups(){
+			this.init()
+		}
 	},
 	created() {
 		if(this.groups){

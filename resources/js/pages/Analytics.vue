@@ -384,6 +384,7 @@ import { useHRStore } from '@/stores/ReportsHR.js'
 import { mapActions, mapState } from 'pinia'
 import JobtronTable from '@ui/Table'
 import JobtronButton from '@ui/Button'
+import { usePortalStore } from '@/stores/Portal'
 
 export default {
 	name: 'PageAnalytics',
@@ -419,7 +420,6 @@ export default {
 			// totals: [],
 			data: [],
 			active: '1',
-			years: useYearOptions(),
 			currentYear: now.getFullYear(),
 			currentMonth: now.getMonth(),
 			currentDay: now.getDate(),
@@ -478,6 +478,11 @@ export default {
 			'staffByGroup',
 			'staffLongevity',
 		]),
+		...mapState(usePortalStore, ['portal']),
+		years(){
+			if(!this.portal.created_at) return [new Date().getFullYear()]
+			return useYearOptions(new Date(this.portal.created_at).getFullYear())
+		},
 		months(){
 			const months = {
 				1: {month:'Январь', date: null},

@@ -494,6 +494,8 @@ import TableActivityCollection from '@/components/tables/TableActivityCollection
 import TableQualityWeekly from '@/components/tables/TableQualityWeekly'
 const TopGauges = () => import(/* webpackChunkName: "TopGauges" */ '@/components/TopGauges')  // TOП спидометры, есть и в аналитике
 import { useYearOptions } from '../composables/yearOptions'
+import { mapState } from 'pinia'
+import { usePortalStore } from '@/stores/Portal'
 
 export default {
 	name: 'AnalyticsPage',
@@ -514,7 +516,6 @@ export default {
 			ggroups: [],
 			active: '1',
 			hasPremission: false, // доступ
-			years: useYearOptions(),
 			yearActivityTableFields: [],
 			yearActivityTable: [],
 			activityStates: {},
@@ -557,6 +558,13 @@ export default {
 			statistics: [] // year table of activity
 		}
 	},
+	computed: {
+		...mapState(usePortalStore, ['portal']),
+		years(){
+			if(!this.portal.created_at) return [new Date().getFullYear()]
+			return useYearOptions(new Date(this.portal.created_at).getFullYear())
+		},
+	},
 	watch: {
 		groups(){
 			this.init()
@@ -595,7 +603,6 @@ export default {
              */
 		switchToMonthInActivity(index) {
 			this.activityStates[index] = 'month'
-			console.log(index)
 		},
 
 		/**
@@ -603,7 +610,6 @@ export default {
              */
 		switchToYearInActivity(index) {
 			this.activityStates[index] = 'year'
-			console.log(index)
 
 			this.fetchYearTableOfActivity(this.data.activities[index].id);
 		},
@@ -712,7 +718,7 @@ export default {
 		},
 
 		onTabClick() {
-			console.log('horay')
+			//
 		},
 
 		setMonth() {
@@ -735,7 +741,6 @@ export default {
 		},
 
 		onTabChange(active) {
-			console.log(active)
 			this.active = active;
 			window.history.replaceState({ id: '100' }, 'Аналитика групп', '/timetracking/an?group=' + this.currentGroup + '&active=' + this.active);
 		},
@@ -767,14 +772,11 @@ export default {
 				let active = urlParamss.get('active');
 				this.active = (active == null) ? '1' : active
 
-				console.log(active, this.active)
-
 				if(response.data.error !== undefined) {
 					this.dataLoaded = false
 					this.noan = true;
 					this.archived_groups = response.data.archived_groups
 					this.ggroups = response.data.groups
-					console.log('error')
 				} else {
 					this.dataLoaded = true
 					this.data = response.data
@@ -882,8 +884,8 @@ export default {
 			});
 		},
 
-		onEndSortcat(test) {
-			console.log(test)
+		onEndSortcat(/* test */) {
+
 		},
 
 		save_order() {

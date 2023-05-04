@@ -780,6 +780,8 @@
 </template>
 
 <script>
+import { mapState } from 'pinia'
+import { usePortalStore } from '@/stores/Portal'
 import Sidebar from '@/components/ui/Sidebar' // сайдбар table
 import { useYearOptions } from '../composables/yearOptions'
 import KpiItemsV2 from '@/pages/kpi/KpiItemsV2'
@@ -869,7 +871,6 @@ export default {
 			delay: 700,
 			clicks: 0,
 			timer: null,
-			years: useYearOptions(),
 
 			kpiSidebarUserId: 0,
 			kpiSidebar: false,
@@ -880,6 +881,11 @@ export default {
 		};
 	},
 	computed: {
+		...mapState(usePortalStore, ['portal']),
+		years(){
+			if(!this.portal.created_at) return [new Date().getFullYear()]
+			return useYearOptions(new Date(this.portal.created_at).getFullYear())
+		},
 		showAccruals(){
 			return this.activeuserid && [5,18,84,157].includes(Number(this.activeuserid))
 		},
