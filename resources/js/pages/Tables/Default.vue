@@ -190,11 +190,6 @@
 			<tr
 				v-for="(item, index) in filtered"
 				:key="index"
-				:class="{
-					'prize first-place': item.show_cup == 1,
-					'prize second-place': item.show_cup == 2,
-					'prize third-place': item.show_cup == 3,
-				}"
 			>
 				<td
 					v-if="item.name == 'SPECIAL_BTN'"
@@ -211,12 +206,27 @@
 
 				<td
 					v-else
-					class="indicators-table-fixed-name text-left max-content"
+					class="indicators-table-fixed-name text-left max-content position-relative"
 					:class="{'sticky-left': isDesktop}"
 					:title="item.id + ' ' + item.email"
 				>
 					<div class="d-flex max-content">
 						{{ item.lastname }} {{ item.name }}
+						<img
+							src="images/dist/first-place.png"
+							alt="icon"
+							v-if="item.show_cup == 1"
+						>
+						<img
+							src="images/dist/second-place.png"
+							alt="icon"
+							v-if="item.show_cup == 2"
+						>
+						<img
+							src="images/dist/third-place.png"
+							alt="icon"
+							v-if="item.show_cup == 3"
+						>
 					</div>
 				</td>
 
