@@ -3,33 +3,11 @@
 		class="popup__content mt-3"
 		:class="{'v-loading': loading}"
 	>
-		<div class="popup__filter">
-			<select
-				class="select-css"
-				v-model="currentMonth"
-				@change="fetchBefore()"
-			>
-				<option
-					v-for="month in $moment.months()"
-					:value="month"
-					:key="month"
-				>
-					{{ month }}
-				</option>
-			</select>
-			<select
-				class="select-css ml-2"
-				v-model="currentYear"
-				@change="fetchBefore()"
-			>
-				<option
-					v-for="year in years"
-					:value="year"
-					:key="year"
-				>
-					{{ year }}
-				</option>
-			</select>
+		<div class="popup__filter pb-4">
+			<DateSelect
+				v-model="selectedDate"
+				class="ml-a Balance-datePicker"
+			/>
 		</div>
 		<div class="popup__award">
 			<b-tabs
@@ -171,22 +149,24 @@
 </template>
 
 <script>
+import { mapState } from 'pinia'
+import { usePortalStore } from '@/stores/Portal'
 import { useYearOptions } from '@/composables/yearOptions'
+import DateSelect from '../DateSelect'
 
 export default {
 	name: 'PopupQuartal',
+	components: {
+		DateSelect,
+	},
 	props: {},
 	data: function () {
-		const now = new Date()
 		return {
 			itemsUser: [],
 			itemsGroup: [],
 			itemsPosition: [],
 			activities: [],
 			groups: [],
-			currentMonth: null,
-			currentYear: now.getFullYear(),
-			years: useYearOptions(),
 			dateInfo: {
 				currentMonth: null,
 				monthEnd: 0,
@@ -194,8 +174,29 @@ export default {
 				weekDays: 0,
 				daysInMonth: 0
 			},
-			loading: false
+			loading: false,
+			selectedDate: this.$moment().format('DD.MM.YYYY'),
 		};
+	},
+	computed: {
+		...mapState(usePortalStore, ['portal']),
+		currentMonth(){
+			return this.$moment(this.selectedDate, 'DD.MM.YYYY').format('MMMM')
+		},
+		currentYear(){
+			return this.$moment(this.selectedDate, 'DD.MM.YYYY').format('YYYY')
+		},
+		years(){
+			if(!this.portal.created_at) return [new Date().getFullYear()]
+			return useYearOptions(new Date(this.portal.created_at).getFullYear())
+		},
+	},
+	watch: {
+		selectedDate(){
+			this.$nextTick(() => {
+				this.fetchBefore()
+			})
+		}
 	},
 	created(){
 		this.setMonth()

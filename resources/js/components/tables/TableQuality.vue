@@ -876,6 +876,8 @@
 </template>
 
 <script>
+import { mapState } from 'pinia'
+import { usePortalStore } from '@/stores/Portal'
 import Sidebar from '@/components/ui/Sidebar' // сайдбар table
 import CourseResults from '@/pages/CourseResults' // результаты по курсам
 import { useYearOptions } from '../../composables/yearOptions'
@@ -957,7 +959,6 @@ export default {
 			groupName: 'Контроль качества',
 			monthInfo: {},
 			user_ids: {},
-			years: useYearOptions(),
 			currentYear: now.getFullYear(),
 			hasPermission: false,
 			dataLoaded: true,
@@ -1002,6 +1003,11 @@ export default {
 		}
 	},
 	computed: {
+		...mapState(usePortalStore, ['portal']),
+		years(){
+			if(!this.portal.created_at) return [new Date().getFullYear()]
+			return useYearOptions(new Date(this.portal.created_at).getFullYear())
+		},
 		hasSettingsPermisstion(){
 			return this.auth_user.is_admin === 1;
 		},

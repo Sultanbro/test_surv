@@ -363,6 +363,8 @@
 </template>
 
 <script>
+import { mapState } from 'pinia'
+import { usePortalStore } from '@/stores/Portal'
 const VGauge = () => import(/* webpackChunkName: "TopGauges" */ 'vgauge')
 const TopGauges = () => import(/* webpackChunkName: "TopGauges" */ '@/components/TopGauges')  // TOП спидометры, есть и в аналитике
 import TableRentability from '@/components/tables/TableRentability' // ТОП рентабельность
@@ -386,7 +388,6 @@ export default {
 			utility: [], // вторая
 			proceeds: [], // третья
 			prognoz_groups: [], //
-			years: useYearOptions(),
 			currentYear: now.getFullYear(),
 			monthInfo: {
 				currentMonth: null,
@@ -430,6 +431,13 @@ export default {
 		data(){
 			this.init()
 		}
+	},
+	computed: {
+		...mapState(usePortalStore, ['portal']),
+		years(){
+			if(!this.portal.created_at) return [new Date().getFullYear()]
+			return useYearOptions(new Date(this.portal.created_at).getFullYear())
+		},
 	},
 	created() {
 		if(this.data){
@@ -475,7 +483,6 @@ export default {
 				this.proceeds = response.data.proceeds;
 
 				this.ukey++;
-				console.log(response.data);
 
 				loader.hide()
 			}).catch(error => {

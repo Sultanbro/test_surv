@@ -425,7 +425,6 @@ export default {
 			// totals: [],
 			data: [],
 			active: '1',
-			years: useYearOptions(),
 			currentYear: now.getFullYear(),
 			currentMonth: now.getMonth(),
 			currentDay: now.getDate(),
@@ -484,6 +483,11 @@ export default {
 			'staffByGroup',
 			'staffLongevity',
 		]),
+		...mapState(usePortalStore, ['portal']),
+		years(){
+			if(!this.portal.created_at) return [new Date().getFullYear()]
+			return useYearOptions(new Date(this.portal.created_at).getFullYear())
+		},
 		months(){
 			const months = {
 				1: {month:'Январь', date: null},
