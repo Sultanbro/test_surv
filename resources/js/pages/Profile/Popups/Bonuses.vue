@@ -133,8 +133,9 @@
 </template>
 
 <script>
-import { mapState } from 'pinia'
+import { mapState, mapActions } from 'pinia'
 import { usePortalStore } from '@/stores/Portal'
+import { useProfileSalaryStore } from '@/stores/ProfileSalary'
 import { useYearOptions } from '@/composables/yearOptions'
 import DateSelect from '../DateSelect'
 
@@ -187,6 +188,7 @@ export default {
 		this.fetchBonuses()
 	},
 	methods: {
+		...mapActions(useProfileSalaryStore, ['setReadedBonuses']),
 		/**
          * set month
          */
@@ -227,7 +229,7 @@ export default {
 				.post('/bonus/user')
 				.then((response) => {
 					_this.bonuses = response.data.bonuses
-
+					this.setReadedBonuses()
 					this.loading = false
 				});
 		}

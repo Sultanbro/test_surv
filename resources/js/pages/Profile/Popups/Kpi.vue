@@ -167,8 +167,9 @@
 </template>
 
 <script>
-import { mapState } from 'pinia'
+import { mapState, mapActions } from 'pinia'
 import { usePortalStore } from '@/stores/Portal'
+import { useProfileSalaryStore } from '@/stores/ProfileSalary'
 import {kpi_fields, parseKPI} from '../../kpi/kpis.js';
 import KpiItemsV2 from '@/pages/kpi/KpiItemsV2.vue'
 import { useYearOptions } from '@/composables/yearOptions'
@@ -234,6 +235,7 @@ export default {
 		this.fetchBefore()
 	},
 	methods: {
+		...mapActions(useProfileSalaryStore, ['setReadedKpis']),
 		/**
 		 * set month
 		 */
@@ -274,6 +276,8 @@ export default {
 
 				this.activities = data.activities;
 				this.groups = data.groups;
+
+				this.setReadedKpis()
 
 				this.loading = false
 			}).catch(error => {

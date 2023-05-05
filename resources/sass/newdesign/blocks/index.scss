@@ -312,6 +312,9 @@
     justify-content: unset;
     gap:3rem;
   }
+  .IntroStats .FlipCard{
+    flex: 0 0 24rem;
+  }
   .stat__item{
     min-height: 30rem;
     flex: 0 1 24rem;

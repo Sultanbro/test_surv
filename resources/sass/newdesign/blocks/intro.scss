@@ -52,7 +52,7 @@
   }
 }
 .intro__stats{
-  margin-top: 3rem;
+  padding-top: 3rem;
   display: flex;
   width: 100%;
   justify-content: space-between;
@@ -62,6 +62,9 @@
   opacity:1;
   transform:translateY(0);
   visibility: visible;
+}
+.IntroStats .FlipCard{
+  flex: 0 0 19rem;
 }
 .stat__item{
   cursor:pointer;
@@ -285,6 +288,9 @@
     justify-content: center;
 
   }
+  .IntroStats .FlipCard{
+    flex: 0 0 25rem;
+  }
   .stat__item{
     flex: 0 0 25rem;
 
@@ -337,6 +343,9 @@
 
 
 @media(max-width:800px){
+  .IntroStats .FlipCard{
+    flex: 0 0 13rem;
+  }
   .stat__item{
     min-height: 16rem;
     flex: 0 0 13rem;
@@ -360,7 +369,7 @@
 @media(max-width:440px){
   .intro__stats{
     gap:1rem;
-    margin-top: 2rem;
+    padding-top: 2rem;
   }
   .intro.content{
     margin-top: 2rem;
@@ -447,6 +456,9 @@
 @media(min-width:1360px) and (max-width: 1639px) {
   .intro__stats {
     gap: 2.5%;
+  }
+  .IntroStats .FlipCard{
+    flex: 0 0 17.5%;
   }
   .stat__item {
     flex: 0 0 17.5%;
