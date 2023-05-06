@@ -1782,7 +1782,15 @@ hr {
 	z-index: 2;
 }
 .accrual-table {
-	th,td{
+	.b-table{
+		table-layout: fixed;
+	}
+	.cell-border {
+		border-left-color: red !important;
+	}
+	th,
+	td {
+		width: 72px;
 		padding: 0 !important;
 		& > div{
 			padding: 0 15px;
@@ -1797,13 +1805,8 @@ hr {
 				justify-content: space-between;
 			}
 		}
-	}
-	.cell-border {
-		border-left-color: red !important;
-	}
-	th,
-	td {
 		&:nth-child(1) {
+			width: 290px;
 			left:0 !important;
 			div {
 				width: 288px;
@@ -1814,22 +1817,23 @@ hr {
 			left:290px !important;
 		}
 		&:nth-child(3) {
-			left:361px!important;
+			left:362px!important;
 		}
 		&:nth-child(4) {
-			left:433px!important;
+			left:434px!important;
 		}
 		&:nth-child(5) {
-			left:505px!important;
+			left:506px!important;
 		}
 		&:nth-child(6) {
-			left:577px!important;
+			left:578px!important;
 		}
 		&:nth-child(7) {
-			left:649px!important;
+			left:650px!important;
 		}
 		&:nth-child(8) {
-			left:721px!important;
+			width: 98px;
+			left:722px!important;
 		}
 		&:nth-child(2),
 		&:nth-child(3),
