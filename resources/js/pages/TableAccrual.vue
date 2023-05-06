@@ -301,65 +301,13 @@
 			:open="kpiSidebar"
 			@close="kpiSidebar = false"
 		>
-			<div class="px-2">
-				<template v-if="kpiSidebarData">
-					<div class="mb-4">
-						<b>Сотрудник</b>
-						{{ kpiSidebarData.target.name }}
-					</div>
-					<KpiItemsV2
-						:my_sum="kpiSidebarDataUser.full_time == 1 ? kpiSidebarData.completed_100 : kpiSidebarData.completed_100 / 2"
-						:kpi_id="kpiSidebarDataUser.id"
-						:items="kpiSidebarDataUser.items"
-						:expanded="true"
-						:activities="[]"
-						:groups="groups"
-						:completed_80="kpiSidebarData.completed_80"
-						:completed_100="kpiSidebarData.completed_100"
-						:lower_limit="kpiSidebarData.lower_limit"
-						:upper_limit="kpiSidebarData.upper_limit"
-						:editable="false"
-						:kpi_page="false"
-						:date="date"
-						@getSum="kpiSidebarData.my_sum = $event"
-						@recalced="countAvg"
-						class="mb-4"
-					/>
-				</template>
-				<template v-for="group in kpiSidebarDataGroups">
-					<template v-if="group.users">
-						<template v-for="user, i in group.users">
-							<template v-if="user.id === kpiSidebarUserId">
-								<div
-									:key="i"
-									class="mb-4"
-								>
-									<b>Группа</b>
-									{{ group.target.name }}
-								</div>
-								<KpiItemsV2
-									:key="i"
-									:my_sum="user.full_time == 1 ? group.completed_100 : group.completed_100 / 2"
-									:kpi_id="user.id"
-									:items="user.items"
-									:expanded="true"
-									:activities="[]"
-									:groups="groups"
-									:completed_80="group.completed_80"
-									:completed_100="group.completed_100"
-									:lower_limit="group.lower_limit"
-									:upper_limit="group.upper_limit"
-									:editable="false"
-									:kpi_page="false"
-									:date="date"
-									@getSum="group.my_sum = $event"
-									@recalced="countAvg"
-									class="mb-4"
-								/>
-							</template>
-						</template>
-					</template>
-				</template>
+			<div class="px-2 pt-5">
+				<KpiContent
+					class="px-4 TableAccrual-kpi"
+					:items="kpiItems"
+					:groups="groups"
+					:fields="kpiFields"
+				/>
 			</div>
 		</Sidebar>
 
@@ -784,14 +732,16 @@ import { mapState } from 'pinia'
 import { usePortalStore } from '@/stores/Portal'
 import Sidebar from '@/components/ui/Sidebar' // сайдбар table
 import { useYearOptions } from '../composables/yearOptions'
-import KpiItemsV2 from '@/pages/kpi/KpiItemsV2'
-import { parseKPI } from '@/pages/kpi/kpis.js'
+// import KpiItemsV2 from '@/pages/kpi/KpiItemsV2'
+import { kpi_fields, parseKPI } from '@/pages/kpi/kpis.js'
+import KpiContent from '@/pages/Profile/Popups/KpiContent.vue'
 
 export default {
 	name: 'TableAccrual',
 	components: {
 		Sidebar,
-		KpiItemsV2,
+		// KpiItemsV2,
+		KpiContent,
 	},
 	props: {
 		groupss: Array,
@@ -874,9 +824,8 @@ export default {
 
 			kpiSidebarUserId: 0,
 			kpiSidebar: false,
-			kpiSidebarData: null,
-			kpiSidebarDataUser: null,
-			kpiSidebarDataGroups: [],
+			kpiFields: kpi_fields,
+			kpiItems: [],
 			// stats:
 		};
 	},
@@ -1583,9 +1532,7 @@ export default {
 			if(!this.is_admin) return
 
 			this.kpiSidebarUserId = userId
-			this.kpiSidebarData = null
-			this.kpiSidebarDataUser = null
-			this.kpiSidebarDataGroups = []
+			this.kpiItems = []
 
 			const loader = this.$loading.show();
 			try{
@@ -1599,8 +1546,7 @@ export default {
 					type: 1
 				})
 				if(!userData.message){
-					this.kpiSidebarData = parseKPI(userData.kpi)
-					this.kpiSidebarDataUser = userData.kpi.users[0]
+					this.kpiItems.push(parseKPI(userData.kpi))
 				}
 				const groups = this.getUserGroups(userId)
 				await Promise.all(groups.map(async groupId => {
@@ -1614,7 +1560,8 @@ export default {
 						type: 2
 					})
 					if(!groupData.message){
-						this.kpiSidebarDataGroups.push(parseKPI(groupData.kpi))
+						groupData.kpi.users = groupData.kpi.users.filter(user => user.id === userId)
+						this.kpiItems.push(parseKPI(groupData.kpi))
 					}
 				}))
 				this.kpiSidebar = true
@@ -1624,43 +1571,6 @@ export default {
 				this.$toast.error('Ну удалось получить статистику')
 			}
 			loader.hide()
-		},
-		countAvg() {
-			let count = 0;
-			let sum = 0;
-			let avg = 0;
-
-			this.kpiSidebarDataUser.items.forEach(item => {
-				sum += Number(item.percent);
-				count++;
-			});
-
-			/**
-			* count avg of user items
-			*/
-			avg = count > 0 ? Number(sum / count).toFixed(2) : 0;
-
-			this.kpiSidebarDataUser.avg = avg;
-
-			this.kpiSidebarDataGroups.forEach(group => {
-				group.users?.forEach(user => {
-					let count = 0;
-					let sum = 0;
-					let avg = 0;
-
-					user.items.forEach(item => {
-						sum += Number(item.percent);
-						count++;
-					});
-
-					/**
-					* count avg of user items
-					*/
-					avg = count > 0 ? Number(sum / count).toFixed(2) : 0;
-
-					user.avg = avg;
-				})
-			})
 		},
 	},
 };
@@ -1678,6 +1588,12 @@ $training: orange;
 
 .fine,.avans,.bonus {
 	color:#fff;
+}
+
+.TableAccrual{
+	&-kpi{
+		font-size: 10px;
+	}
 }
 .table-accrual{
 	.fine {
