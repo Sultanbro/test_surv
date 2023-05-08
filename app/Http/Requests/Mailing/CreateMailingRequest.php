@@ -4,9 +4,11 @@ namespace App\Http\Requests\Mailing;
 
 use App\DTO\BaseDTO;
 use App\DTO\Mailing\CreateMailingDTO;
+use App\Enums\Mailing\MailingEnum;
 use App\Http\Requests\BaseFormRequest;
 use App\Rules\Mailing\ValidateByType;
-use App\Rules\Mailing\ValidateDays;
+use App\Rules\Mailing\ValidateDaily;
+use App\Rules\Mailing\ValidateWeek;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Support\Arr;
 
@@ -45,9 +47,9 @@ class CreateMailingRequest extends BaseFormRequest
              */
             'type_of_mailing'   => 'required|array',
 
-            'date'              => ['required', 'array', new ValidateDays],
-            'date.days'         => 'required|array',
-            'date.frequency'    => 'required|string|in:weekly,monthly',
+            'date'              => ['required', 'array', new ValidateWeek, new ValidateDaily],
+            'date.days'         => [in_array($this->date['frequency'], [MailingEnum::WEEKLY, MailingEnum::MONTHLY]) ? 'required' : '', 'array'],
+            'date.frequency'    => 'required|string|in:weekly,monthly,daily',
             'time'              => 'required|string'
 
         ];

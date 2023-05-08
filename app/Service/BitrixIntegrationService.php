@@ -4,22 +4,20 @@ namespace App\Service;
 
 use App\Position;
 use App\Support\Response\JsonApiResponse;
+use Illuminate\Http\Client\HttpClientException;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
+use Symfony\Component\HttpFoundation\Response;
 
 class BitrixIntegrationService
 {
-    public Http $client;
     public string  $host;
     public string $token;
     private $user;
 
-    public function __construct(
-        Http $client
-    ){
+    public function __construct(){
         $this->user   = Auth::user();
-        $this->client = $client;
         $this->host   = config('bitrix')['host'];
         $this->token  = config('bitrix')['token'];
     }
@@ -34,7 +32,7 @@ class BitrixIntegrationService
             $bitrixUser  = $this->checkCurrentUserBitrix();
 
             $link        = $this->host . $this->token . '/' . 'tasks.task.list';
-            $apiResponse = $this->client::get($link, [
+            $apiResponse = Http::get($link, [
                 'filter' => [
                     'RESPONSIBLE_ID' => (int) $bitrixUser['ID'],
                     'CLOSED_DATE'    => ''
@@ -62,7 +60,7 @@ class BitrixIntegrationService
 
             $link = $this->host . $this->token . 'crm.lead.list';
 
-            $apiResponse = $this->client::get($link, [
+            $apiResponse = Http::get($link, [
                 'filter' => [
                     'CREATED_BY_ID' => 38
                 ],
@@ -76,6 +74,33 @@ class BitrixIntegrationService
         {
             throw new \DomainException($exception);
         }
+    }
+
+    /**
+     * @param int $userId
+     * @param string $message
+     * @return bool
+     * @throws HttpClientException
+     */
+    public function addNotification(
+        int $userId,
+        string $message
+    ): bool
+    {
+        $host   = config('bitrix')['notification']['host'];
+        $token  = config('bitrix')['notification']['token'];
+
+        $response = Http::post($host . $token . '/im.notify.system.add.json', [
+            'USER_ID' => $userId, //ID пользователя, которому нужно отправить уведомление
+            'message' => $message // замените на текст уведомления
+        ]);
+
+        if ($response->status() != Response::HTTP_OK)
+        {
+            throw new HttpClientException($response->reason());
+        }
+
+        return true;
     }
 
     /**

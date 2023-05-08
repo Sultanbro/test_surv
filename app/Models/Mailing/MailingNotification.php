@@ -36,10 +36,13 @@ class MailingNotification extends Model
         'created_by'
     ];
 
+    const WEEKLY = 'weekly';
+    const MONTHLY = 'monthly';
+
     /**
      * @return HasMany
      */
-    public function schedules(): HasMany
+    public function recipients(): HasMany
     {
         return $this->hasMany(MailingNotificationSchedule::class, 'notification_id');
     }

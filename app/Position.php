@@ -2,6 +2,8 @@
 
 namespace App;
 
+use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
@@ -79,5 +81,16 @@ class Position extends Model
     public function descriptions(): HasMany
     {
         return $this->hasMany(PositionDescription::class, 'position_id');
+    }
+
+    /**
+     * @param int $id
+     * @return Model|Collection|Builder|array|null
+     */
+    public static function getById(
+        int $id
+    ): Model|Collection|Builder|array|null
+    {
+        return self::query()->findOrFail($id);
     }
 }
