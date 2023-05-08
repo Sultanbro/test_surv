@@ -19,7 +19,6 @@ use Illuminate\Database\Eloquent\Relations\MorphMany;
 use Illuminate\Database\Query\Builder;
 use Illuminate\Database\Query\JoinClause;
 use Illuminate\Http\Request;
-use Illuminate\Support\Collection;
 use Spatie\Permission\Traits\HasRoles;
 
 class ProfileGroup extends Model
@@ -135,7 +134,7 @@ class ProfileGroup extends Model
     public function users()
     {
         return $this->belongsToMany('App\User', 'group_user', 'group_id', 'user_id')
-            ->withPivot(['from', 'to', 'status'])
+            ->withPivot(['from', 'to'])
             ->withTimestamps();
     }
 
@@ -411,5 +410,26 @@ class ProfileGroup extends Model
     public function activeUsers(): BelongsToMany
     {
         return $this->users()->wherePivot('status', 'active');
+    }
+
+    /**
+     * Возвращает группы, которые берут данные о звонках с ucalls.
+     *
+     * @return self
+     */
+    public static function getUcallsConnectedGroups()
+    {
+        return self::select('profile_groups.id', 'callibro_dialers.dialer_id', 'profile_groups.time_exceptions')
+            ->where('profile_groups.active', 1)
+            ->where('profile_groups.is_ucalls', 1)
+            ->leftJoin('callibro_dialers', 'callibro_dialers.group_id', 'profile_groups.id')
+            ->get()->each(function ($group){
+                $group['activities'] = Activity::select('id')
+                    ->where('group_id', $group->id)
+                    ->where('is_ucalls', 1)
+                    ->get()
+                    ->pluck('id')
+                    ->toArray();
+            });
     }
 }

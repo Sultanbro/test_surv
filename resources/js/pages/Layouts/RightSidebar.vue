@@ -2,10 +2,10 @@
 	<div class="header__right">
 		<div class="header__right-nav">
 			<a
+				v-if="isBp && user.is_admin === 1"
 				href="javascript:void(0)"
 				class="header__right-icon"
 				@click="$emit('pop', 'faq')"
-				v-if="isBp && user.is_admin === 1"
 			>
 				<img
 					src="/images/dist/header-right-1.svg"
@@ -14,10 +14,10 @@
 				>
 			</a>
 			<a
+				v-if="isBp && user.is_admin !== 1"
 				href="javascript:void(0)"
 				class="header__right-icon"
 				v-b-popover.hover.left.html="'Вопросы и ответы - Этот функционал в разработке'"
-				v-if="!isBp && user.is_admin !== 1"
 			>
 				<img
 					src="/images/dist/header-right-1.svg"
@@ -55,10 +55,10 @@
 
 			<!-- Статус: скрыто. Компонент: RightSidebar. Дата скрытия: 27.01.2023 14:15 -->
 			<a
+				v-if="false"
 				href="javascript:void(0)"
 				class="header__right-icon check"
 				@click="$emit('pop', 'checklist')"
-				v-if="false"
 			>
 				<img
 					src="/images/dist/header-right-6.svg"

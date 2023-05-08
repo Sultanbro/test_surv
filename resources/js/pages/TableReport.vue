@@ -133,6 +133,7 @@
 						empty-text="Нет данных"
 						:current-page="currentPage"
 						:per-page="perPage"
+						:sort-compare="sortCompare"
 					>
 						<template #cell(name)="name">
 							<div>
@@ -812,6 +813,8 @@
 </template>
 
 <script>
+import { mapState } from 'pinia'
+import { usePortalStore } from '@/stores/Portal'
 import Sidebar from '@/components/ui/Sidebar' // сайдбар table
 import GroupExcelImport from '@/components/imports/GroupExcelImport' // импорт в табели
 import {useYearOptions} from '../composables/yearOptions'
@@ -842,18 +845,6 @@ export default {
 		canEdit: {
 			type: Boolean,
 			default: () => false
-		}
-	},
-	watch: {
-		scrollLeft(value) {
-			var container = document.querySelector('.table-responsive')
-			container.scrollLeft = value
-		},
-		user_types() {
-			this.fetchData()
-		},
-		groups() {
-			this.init()
 		}
 	},
 	data() {
@@ -957,7 +948,25 @@ export default {
 				schedule: '',
 			},
 			fire_causes: [],
-			years: useYearOptions(),
+		}
+	},
+	computed: {
+		...mapState(usePortalStore, ['portal']),
+		years(){
+			if(!this.portal.created_at) return [new Date().getFullYear()]
+			return useYearOptions(new Date(this.portal.created_at).getFullYear())
+		},
+	},
+	watch: {
+		scrollLeft(value) {
+			var container = document.querySelector('.table-responsive')
+			container.scrollLeft = value
+		},
+		user_types() {
+			this.fetchData()
+		},
+		groups() {
+			this.init()
 		}
 	},
 	created() {
@@ -1547,8 +1556,7 @@ export default {
 			try {
 				this.$toast.info('Вы редактируете ' + this.currentEditingCell.field.key + ' число  у ' + this.currentEditingCell.item.name);
 			} catch (err) {
-				console.log('it is here')
-				console.log(this.currentEditingCell)
+				console.error('editDay')
 			}
 
 			this.currentEditingCell = data
@@ -1560,7 +1568,6 @@ export default {
 				return;
 			}
 
-			console.log(this.currentEditingCell.item)
 			if (this.comment.length > 0) {
 				let loader = this.$loading.show();
 				this.axios.post('/timetracking/reports/update/day', {
@@ -1686,7 +1693,24 @@ export default {
 				this.openDay(data);
 			}
 
-		}
+		},
+
+		sortCompare(aRow, bRow, key, sortDesc, formatter, compareOptions, compareLocale) {
+			const a = aRow[key] // or use Lodash `_.get()`
+			const b = bRow[key]
+			if(!aRow.id) { return sortDesc ? 1 : -1 }
+			if(!bRow.id) { return sortDesc ? -1 : 1 }
+			if (
+				(typeof a === 'number' && typeof b === 'number') ||
+				(a instanceof Date && b instanceof Date)
+			) {
+				// If both compared fields are native numbers or both are native dates
+				return a < b ? -1 : a > b ? 1 : 0
+			} else {
+				// Otherwise stringify the field data and use String.prototype.localeCompare
+				return (b || '').toString().localeCompare((a || '').toString(), compareLocale, compareOptions)
+			}
+		},
 	}
 }
 </script>

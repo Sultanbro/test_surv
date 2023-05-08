@@ -47,7 +47,7 @@
 						class="first-column text-center pointer"
 						@click="adjustFields"
 					>
-						<i class="fa fa-cogs" />
+						<i class="fa fa-cog" />
 					</th>
 					<th
 						v-for="(field, i) in fields"

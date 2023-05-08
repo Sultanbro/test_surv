@@ -21,7 +21,7 @@
 
 					<div class="d-flex">
 						<i
-							class="fa fa-edit ml-2"
+							class="fa fa-pen ml-2"
 							v-if="cat.id != 0 && mode == 'edit'"
 							@click.stop="editCat(index)"
 						/>
@@ -71,7 +71,7 @@
 								v-if="can_edit"
 							>
 								<i
-									class="fa fa-edit"
+									class="fa fa-pen"
 									@click="toggleMode"
 									:class="{'active': mode == 'edit'}"
 								/>
@@ -82,7 +82,7 @@
 								v-if="activePlaylist == null && mode == 'edit'"
 							>
 								<i
-									class="fa fa-cogs"
+									class="fa fa-cog"
 									@click="get_settings()"
 								/>
 							</div>
@@ -152,7 +152,7 @@
 											v-if="mode == 'edit'"
 										>
 											<i
-												class="fa fa-edit"
+												class="fa fa-pen"
 												v-if="playlist.id != 0"
 												title="Переместить"
 												@click.stop="movePl(p_index)"

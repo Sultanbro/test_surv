@@ -1,9 +1,9 @@
 <template>
 	<div
 		v-if="groups"
-		class="quality quality-page"
+		class="quality quality-page TableQuality"
 	>
-		<div class="row">
+		<div class="row my-5">
 			<div
 				class="col-3"
 				v-if="individual_request"
@@ -53,24 +53,25 @@
 				</select>
 			</div>
 			<div class="col-3 d-flex align-items-start">
-				<div
-					class="btn btn-primary rounded mr-2"
+				<JobtronButton
+					small
 					@click="fetchData()"
 				>
 					<i class="fa fa-redo-alt" />
-				</div>
+				</JobtronButton>
 			</div>
 			<div
 				v-if="hasSettingsPermisstion"
-				class="col-2"
+				class="col-2 text-right"
 			>
-				<button
-					class="btn btn-primary d-block ml-auto"
+				<JobtronButton
+					small
+					class="ml-a"
 					@click="showSettings = true"
 				>
 					<i class="fa fa-cogs mr-2" />
 					Настройки
-				</button>
+				</JobtronButton>
 			</div>
 		</div>
 
@@ -90,489 +91,440 @@
 					:key="1"
 					card
 				>
-					<b-tabs
-						type="card"
-						v-if="dataLoaded"
-						class="mt-4 overflow-hidden"
-					>
-						<b-tab
-							title="Неделя"
-							:key="1"
-							card
+					<div class="pt-5">
+						<b-tabs
+							type="card"
+							v-if="dataLoaded"
+							class="mt-4 overflow-hidden"
 						>
-							<div class="table-responsive table-container mt-4">
-								<table class="table table-bordered custom-table-quality">
-									<thead>
-										<tr>
-											<th class="b-table-sticky-column text-left t-name wd">
-												<div>Сотрудник</div>
-											</th>
-											<th
-												v-for="(field, key) in fields"
-												:key="key"
-												:class="field.klass"
-											>
-												<div>{{ field.name }}</div>
-											</th>
-										</tr>
-									</thead>
-									<tbody>
-										<tr
-											v-for="(item, index) in items"
-											:key="index"
-										>
-											<td class="b-table-sticky-column text-left t-name wd">
-												<div>
-													{{ item.name }}
-													<template v-if="item.groupName">
-														<b-badge
-															v-if="item.groupName == 'Просрочники'"
-															variant="success"
-														>
-															{{ item.groupName }}
-														</b-badge>
-														<b-badge
-															variant="primary"
-															v-else
-														>
-															{{ item.groupName }}
-														</b-badge>
-													</template>
-												</div>
-											</td>
-											<td
-												:class="field.klass"
-												v-for="(field, key) in fields"
-												:key="key"
-											>
-												<input
-													v-if="field.type == 'day' && can_add_records"
-													type="number"
-													:title="field.key + ' :' + item.name"
-													@change="updateWeekValue(item, field.key)"
-													v-model="item.weeks[field.key]"
+							<b-tab
+								title="Неделя"
+								:key="1"
+								card
+							>
+								<div class="table-responsive table-container mt-5">
+									<table class="table table-bordered custom-table-quality">
+										<thead>
+											<tr>
+												<th class="b-table-sticky-column text-left t-name wd">
+													<div>Сотрудник</div>
+												</th>
+												<th
+													v-for="(field, key) in fields"
+													:key="key"
+													:class="field.klass"
 												>
-												<div v-else>
-													<div v-if="item.weeks[field.key] != 0">
-														{{ item.weeks[field.key] }}
+													<div>{{ field.name }}</div>
+												</th>
+											</tr>
+										</thead>
+										<tbody>
+											<tr
+												v-for="(item, index) in items"
+												:key="index"
+											>
+												<td class="b-table-sticky-column text-left t-name wd">
+													<div>
+														{{ item.name }}
+														<template v-if="item.groupName">
+															<b-badge
+																v-if="item.groupName == 'Просрочники'"
+																variant="success"
+															>
+																{{ item.groupName }}
+															</b-badge>
+															<b-badge
+																variant="primary"
+																v-else
+															>
+																{{ item.groupName }}
+															</b-badge>
+														</template>
 													</div>
-												</div>
-											</td>
-										</tr>
-									</tbody>
-								</table>
-							</div>
-						</b-tab>
-						<b-tab
-							title="Месяц"
-							:key="2"
-							card
-						>
-							<div class="table-responsive table-container mt-4">
-								<table class="table table-bordered custom-table-quality">
-									<thead>
-										<tr>
-											<th class="b-table-sticky-column text-left t-name wd">
-												<div>Сотрудник</div>
-											</th>
-											<th
-												v-for="(field, key) in monthFields"
-												:key="key"
-												:class="field.klass"
-											>
-												<div>{{ field.name }}</div>
-											</th>
-										</tr>
-									</thead>
-									<tbody>
-										<tr
-											v-for="(item, index) in items"
-											:key="index"
-										>
-											<td class="b-table-sticky-column text-left t-name wd">
-												<div>
-													{{ item.name }}
-													<template v-if="item.groupName">
-														<b-badge
-															variant="success"
-															v-if="item.groupName == 'Просрочники'"
-														>
-															{{ item.groupName }}
-														</b-badge>
-														<b-badge
-															variant="primary"
-															v-else
-														>
-															{{ item.groupName }}
-														</b-badge>
-													</template>
-												</div>
-											</td>
-
-											<td
-												v-for="(field, key) in monthFields"
-												:key="key"
-												:class="field.klass"
-											>
-												<div>{{ item.months[field.key] }}</div>
-											</td>
-										</tr>
-									</tbody>
-								</table>
-							</div>
-						</b-tab>
-						<b-tab
-							v-if="can_add_records"
-							title="Оценка переговоров"
-							key="3"
-							card
-						>
-							<div class="row mt-4">
-								<div class="col-6 col-md-3">
-									<select
-										class="form-control"
-										v-model="filters.currentEmployee"
-										@change="filterRecords"
-									>
-										<option :value="0">
-											Выберите сотрудника
-										</option>
-										<option
-											v-for="item in items"
-											:value="item.id"
-											:key="item.id"
-										>
-											{{ item.name }}
-										</option>
-									</select>
-								</div>
-								<div class="col-2 col-md-1 d-flex align-items-center">
-									<select
-										class="form-control"
-										v-model="currentDay"
-										@change="fetchData"
-									>
-										<option value="0">
-											Все дни
-										</option>
-										<option
-											v-for="day in this.monthInfo.daysInMonth"
-											:value="day"
-											:key="day"
-										>
-											{{ day }}
-										</option>
-									</select>
-								</div>
-								<div class="col-4 col-md-8 d-flex align-items-center">
-									<b-button
-										variant="primary"
-										@click="addRecord"
-										class="mr-1"
-									>
-										<i class="fa fa-plus" /> Добавить запись
-									</b-button>
-									<b-button
-										variant="success"
-										@click="exportData()"
-										class="mr-1"
-									>
-										<i class="far fa-file-excel" /> 20
-									</b-button>
-									<b-button
-										variant="success"
-										@click="exportAll()"
-									>
-										<i class="far fa-file-excel" /> Экспорт
-									</b-button>
-								</div>
-								<div class="col-12 col-md-12 d-flex mt-2 mb-2">
-									<p class="mb-0">
-										Найдено записей: <b class="bluish">{{ records.total }}</b>
-									</p>
-									<p
-										class="ml-3 mb-0"
-										v-if="records_unique != 0"
-									>
-										Кол-во сотрудников:
-										<b class="bluish">{{ records_unique }}</b>
-									</p>
-									<p
-										class="ml-3 mb-0"
-										v-if="avgMonth != 0"
-									>
-										Среднее за месяц: <b class="bluish">{{ avgMonth }}</b>
-									</p>
-									<p
-										class="ml-3 mb-0"
-										v-if="avgDay != 0"
-									>
-										Среднее за день: <b class="bluish">{{ avgDay }}</b>
-									</p>
-								</div>
-							</div>
-
-							<div class="table-responsive">
-								<table class="table b-table table-sm table-bordered records-table">
-									<tr>
-										<th class="b-table-sticky-column text-left t-name wd">
-											<div>Сотрудник</div>
-										</th>
-										<th
-											v-for="(field, key) in recordFields"
-											:key="key"
-											:class="field.klass"
-										>
-											<div>{{ field.name }}</div>
-										</th>
-										<th class="actions" />
-										<th class="actions" />
-									</tr>
-
-									<!-- RECORDS -->
-									<tr
-										v-for="(record, index) in records.data"
-										:key="index"
-										:class="{
-											selected: record.editable,
-											changed: record.changed,
-										}"
-									>
-										<td class="b-table-sticky-column text-left t-name wd">
-											<div @click="editMode(record)">
-												{{ record["name"] }}
-											</div>
-										</td>
-
-										<template v-if="currentGroup == 42">
-											<td
-												class="text-left segment-width"
-												v-if="record.editable"
-											>
-												<div>
-													<select
-														v-model="record.segment_id"
-														class="form-control text-center sg"
-														@change="statusChanged(record)"
-													>
-														<option
-															:value="index"
-															v-for="(segm, index) in segment"
-															:key="index"
-														>
-															{{ segm }}
-														</option>
-													</select>
-												</div>
-											</td>
-											<td
-												v-else
-												class="text-center segment-width"
-												@click="editMode(record)"
-											>
-												<div>
-													{{ segment[record.segment_id] }}
-												</div>
-											</td>
-										</template>
-
-										<td
-											v-if="record.editable"
-											class="text-center phoner"
-										>
-											<div>
-												<input
-													type="text"
-													v-model="record.phone"
-													class="form-control text-center"
-													@focus="$event.target.select()"
-													@change="statusChanged(record)"
+												</td>
+												<td
+													:class="field.klass"
+													v-for="(field, key) in fields"
+													:key="key"
 												>
-											</div>
-										</td>
-										<td
-											v-else
-											class="text-center phoner"
-											@click="editMode(record)"
-										>
-											<div>
-												{{ record.phone }}
-											</div>
-										</td>
-
-										<template v-if="currentGroup == 42">
-											<td
-												class="text-center"
-												v-if="record.editable"
-											>
-												<div>
 													<input
-														type="text"
-														v-model="record.dayOfDelay"
-														class="form-control text-center"
-														@focus="$event.target.select()"
-														@change="statusChanged(record)"
+														v-if="field.type == 'day' && can_add_records"
+														type="number"
+														:title="field.key + ' :' + item.name"
+														@change="updateWeekValue(item, field.key)"
+														v-model="item.weeks[field.key]"
 													>
-												</div>
-											</td>
-											<td
-												v-else
-												class="text-center"
-												@click="editMode(record)"
+													<div v-else>
+														<div v-if="item.weeks[field.key] != 0">
+															{{ item.weeks[field.key] }}
+														</div>
+													</div>
+												</td>
+											</tr>
+										</tbody>
+									</table>
+								</div>
+							</b-tab>
+							<b-tab
+								title="Месяц"
+								:key="2"
+								card
+							>
+								<div class="table-responsive table-container mt-5">
+									<table class="table table-bordered custom-table-quality">
+										<thead>
+											<tr>
+												<th class="b-table-sticky-column text-left t-name wd">
+													<div>Сотрудник</div>
+												</th>
+												<th
+													v-for="(field, key) in monthFields"
+													:key="key"
+													:class="field.klass"
+												>
+													<div>{{ field.name }}</div>
+												</th>
+											</tr>
+										</thead>
+										<tbody>
+											<tr
+												v-for="(item, index) in items"
+												:key="index"
 											>
-												<div>{{ record.dayOfDelay }}</div>
-											</td>
+												<td class="b-table-sticky-column text-left t-name wd">
+													<div>
+														{{ item.name }}
+														<template v-if="item.groupName">
+															<b-badge
+																variant="success"
+																v-if="item.groupName == 'Просрочники'"
+															>
+																{{ item.groupName }}
+															</b-badge>
+															<b-badge
+																variant="primary"
+																v-else
+															>
+																{{ item.groupName }}
+															</b-badge>
+														</template>
+													</div>
+												</td>
+												<td
+													v-for="(field, key) in monthFields"
+													:key="key"
+													:class="field.klass"
+												>
+													<div>{{ item.months[field.key] }}</div>
+												</td>
+											</tr>
+										</tbody>
+									</table>
+								</div>
+							</b-tab>
+							<b-tab
+								v-if="can_add_records"
+								title="Оценка переговоров"
+								key="3"
+								card
+							>
+								<div class="row mt-5">
+									<div class="col-6 col-md-3 mb-5">
+										<select
+											class="form-control"
+											v-model="filters.currentEmployee"
+											@change="filterRecords"
+										>
+											<option :value="0">
+												Выберите сотрудника
+											</option>
+											<option
+												v-for="item in items"
+												:value="item.id"
+												:key="item.id"
+											>
+												{{ item.name }}
+											</option>
+										</select>
+									</div>
+									<div class="col-2 col-md-1 d-flex align-items-center mb-5">
+										<select
+											class="form-control"
+											v-model="currentDay"
+											@change="fetchData"
+										>
+											<option value="0">
+												Все дни
+											</option>
+											<option
+												v-for="day in this.monthInfo.daysInMonth"
+												:value="day"
+												:key="day"
+											>
+												{{ day }}
+											</option>
+										</select>
+									</div>
+									<div class="col-4 col-md-8 d-flex align-items-center gap-5 mb-5">
+										<JobtronButton
+											@click="addRecord"
+										>
+											<i class="fa fa-plus" /> Добавить запись
+										</JobtronButton>
+										<JobtronButton
+											success
+											@click="exportData()"
+										>
+											<i class="far fa-file-excel" /> 20
+										</JobtronButton>
+										<JobtronButton
+											success
+											@click="exportAll()"
+										>
+											<i class="far fa-file-excel" /> Экспорт
+										</JobtronButton>
+									</div>
+									<div class="col-12 col-md-12 d-flex mb-5 gap-5">
+										<p class="mb-0">
+											Найдено записей: <b class="bluish">{{ records.total }}</b>
+										</p>
+										<p
+											v-if="records_unique != 0"
+											class="mb-0"
+										>
+											Кол-во сотрудников:
+											<b class="bluish">{{ records_unique }}</b>
+										</p>
+										<p
+											v-if="avgMonth != 0"
+											class="mb-0"
+										>
+											Среднее за месяц: <b class="bluish">{{ avgMonth }}</b>
+										</p>
+										<p
+											v-if="avgDay != 0"
+											class="mb-0"
+										>
+											Среднее за день: <b class="bluish">{{ avgDay }}</b>
+										</p>
+									</div>
+								</div>
+								<div class="table-responsive">
+									<JobtronTable
+										:fields="recordFieldsFull"
+										:items="records.data"
+									>
+										<template #cell(name)="{value, item}">
+											<div
+												@click="editMode(item)"
+												class="TableQuality-padding TableQuality-input"
+											>
+												{{ value }}
+											</div>
 										</template>
 
-										<td
-											class="text-center"
-											v-if="record.editable"
-										>
-											<div>
+										<template #cell(segment)="{value, item}">
+											<div
+												v-if="item.editable"
+												class="TableQuality-input"
+											>
+												<select
+													v-model="item.segment_id"
+													class="form-control text-center sg"
+													@change="statusChanged(item)"
+												>
+													<option
+														v-for="(segm, index) in segment"
+														:key="index"
+														:value="index"
+													>
+														{{ segm }}
+													</option>
+												</select>
+											</div>
+											<div
+												v-else
+												@click="editMode(item)"
+												class="TableQuality-padding TableQuality-input"
+											>
+												{{ value }}
+											</div>
+										</template>
+
+										<template #cell(phone)="{value, item}">
+											<div
+												v-if="item.editable"
+												class="TableQuality-input"
+											>
 												<input
 													type="text"
-													v-model="record.interlocutor"
+													v-model="item.phone"
 													class="form-control text-center"
 													@focus="$event.target.select()"
-													@change="statusChanged(record)"
+													@change="statusChanged(item)"
 												>
 											</div>
-										</td>
-										<td
-											class="text-center"
-											v-else
-											@click="editMode(record)"
-										>
-											<div>
-												{{ record.interlocutor }}
+											<div
+												v-else
+												@click="editMode(item)"
+												class="TableQuality-padding TableQuality-input"
+											>
+												{{ value }}
 											</div>
-										</td>
+										</template>
 
-										<td
-											class="text-center"
-											v-if="record.editable"
-										>
-											<div>
+										<template #cell(dayOfDelay)="{value, item}">
+											<div
+												v-if="item.editable"
+												class="TableQuality-input"
+											>
+												<input
+													type="text"
+													v-model="item.dayOfDelay"
+													class="form-control text-center"
+													@focus="$event.target.select()"
+													@change="statusChanged(item)"
+												>
+											</div>
+											<div
+												v-else
+												@click="editMode(item)"
+												class="TableQuality-padding TableQuality-input"
+											>
+												{{ value }}
+											</div>
+										</template>
+
+										<template #cell(interlocutor)="{value, item}">
+											<div
+												v-if="item.editable"
+												class="TableQuality-input"
+											>
+												<input
+													type="text"
+													v-model="item.interlocutor"
+													class="form-control text-center"
+													@focus="$event.target.select()"
+													@change="statusChanged(item)"
+												>
+											</div>
+											<div
+												v-else
+												@click="editMode(item)"
+												class="TableQuality-padding TableQuality-input"
+											>
+												{{ value }}
+											</div>
+										</template>
+
+										<template #cell(date)="{value, item}">
+											<div
+												v-if="item.editable"
+												class="TableQuality-input"
+											>
 												<input
 													type="date"
-													v-model="record.date"
+													v-model="item.date"
 													class="form-control text-center"
 													placeholder="dd-mm-yyyy"
 													min="1997-01-01"
 													max="2030-12-31"
-													@change="statusChanged(record)"
+													@change="statusChanged(date)"
 												>
 											</div>
-										</td>
-										<td
-											class="text-center"
-											v-else
-											@click="editMode(record)"
-										>
-											<div>{{ record.date }}</div>
-										</td>
-
-										<template v-for="(param, pk) in params">
-											<td
-												:key="pk"
-												class="text-center params"
-												v-if="record.editable"
-											>
-												<div>
-													<input
-														type="number"
-														v-model="record['param' + pk]"
-														class="form-control text-center"
-														@change="changeStat(record)"
-														@focus="$event.target.select()"
-													>
-												</div>
-											</td>
-											<td
-												:key="pk + 'a'"
-												class="text-center params"
+											<div
 												v-else
-												@click="editMode(record)"
+												@click="editMode(item)"
+												class="TableQuality-padding TableQuality-input"
 											>
-												<div>{{ record["param" + pk] }}</div>
-											</td>
+												{{ value }}
+											</div>
 										</template>
 
-										<td class="text-center">
-											<div>{{ record.total }}</div>
-										</td>
-
-										<td
-											class="text-left"
-											v-if="record.editable"
+										<template
+											v-for="(param, pk) in params"
+											#[`cell(param${pk})`]="{value, item}"
 										>
-											<div>
+											<div
+												v-if="item.editable"
+												:key="pk"
+												class="TableQuality-input"
+											>
+												<input
+													type="text"
+													v-model="item['param' + pk]"
+													class="form-control text-center"
+													@focus="$event.target.select()"
+													@change="changeStat(item)"
+												>
+											</div>
+											<div
+												v-else
+												:key="'e' + pk"
+												@click="editMode(item)"
+												class="TableQuality-padding TableQuality-input"
+											>
+												{{ value }}
+											</div>
+										</template>
+
+										<template #cell(comments)="{value, item}">
+											<div
+												v-if="item.editable"
+												class="TableQuality-input"
+											>
 												<textarea
 													type="text"
-													v-model="record.comments"
+													v-model="item.comments"
 													class="form-control"
 													@focus="$event.target.select()"
-													@change="statusChanged(record)"
+													@change="statusChanged(item)"
 												/>
 											</div>
-										</td>
-										<td
-											class="text-left"
-											v-else
-											@click="editMode(record)"
-										>
-											<div class="pl2">
-												{{ record.comments }}
+											<div
+												v-else
+												@click="editMode(item)"
+												class="TableQuality-padding TableQuality-input"
+											>
+												{{ value }}
 											</div>
-										</td>
+										</template>
 
-										<td
-											class="actions"
-											@click="editMode(record)"
-										>
-											<div>
-												<b-button
-													v-if="record.editable"
-													variant="success"
-													size="sm"
-													@click="saveRecord(record)"
-												>
-													<i class="fa fa-save" />
-												</b-button>
-											</div>
-										</td>
-										<td
-											class="actions"
-											@click="editMode(record)"
-										>
-											<div>
-												<b-button
-													variant="danger"
-													size="sm"
-													@click="deleteRecordModal(record, index)"
-												>
-													<i class="fa fa-trash" />
-												</b-button>
-											</div>
-										</td>
-									</tr>
-								</table>
-							</div>
-							<div>
-								<!-- <pagination
-									:data="records"
-									@pagination-change-page="getResults"
-									:limit="3"
-								></pagination> -->
+										<template #cell(save)="{item}">
+											<JobtronButton
+												v-if="item.editable"
+												success
+												@click="saveRecord(item)"
+											>
+												<i class="fa fa-save" />
+											</JobtronButton>
+										</template>
 
-								<b-pagination
-									@change="getResults"
-									:limit="3"
-									:total-rows="records.total"
-								/>
-							</div>
-						</b-tab>
-					</b-tabs>
+										<template #cell(remove)="{item, index}">
+											<JobtronButton
+												error
+												@click="deleteRecordModal(item, index)"
+											>
+												<i class="fa fa-trash" />
+											</JobtronButton>
+										</template>
+									</JobtronTable>
+								</div>
+								<div class="mt-5">
+									<!-- <pagination
+										:data="records"
+										@pagination-change-page="getResults"
+										:limit="3"
+									></pagination> -->
+									<b-pagination
+										@change="getResults"
+										:limit="3"
+										:total-rows="records.total"
+									/>
+								</div>
+							</b-tab>
+						</b-tabs>
+					</div>
 				</b-tab>
 				<b-tab
 					title="Прогресс по курсам"
@@ -815,7 +767,7 @@
 								title="Диалер в U-Calls"
 							/>
 						</div>
-						<div class="fl d-flex mt-1">
+						<div class="fl d-flex mt-1 gap-3">
 							<input
 								type="text"
 								v-model="dialer_id"
@@ -924,15 +876,21 @@
 </template>
 
 <script>
+import { mapState } from 'pinia'
+import { usePortalStore } from '@/stores/Portal'
 import Sidebar from '@/components/ui/Sidebar' // сайдбар table
 import CourseResults from '@/pages/CourseResults' // результаты по курсам
 import { useYearOptions } from '../../composables/yearOptions'
+import JobtronButton from '@ui/Button'
+import JobtronTable from '@ui/Table'
 // import Template from "../../../../public/static/partner/templates/template.html";
 export default {
 	name: 'TableQuality',
 	components: {
 		Sidebar,
 		CourseResults,
+		JobtronButton,
+		JobtronTable,
 	},
 	props: {
 		groups: Array,
@@ -1001,7 +959,6 @@ export default {
 			groupName: 'Контроль качества',
 			monthInfo: {},
 			user_ids: {},
-			years: useYearOptions(),
 			currentYear: now.getFullYear(),
 			hasPermission: false,
 			dataLoaded: true,
@@ -1046,8 +1003,36 @@ export default {
 		}
 	},
 	computed: {
+		...mapState(usePortalStore, ['portal']),
+		years(){
+			if(!this.portal.created_at) return [new Date().getFullYear()]
+			return useYearOptions(new Date(this.portal.created_at).getFullYear())
+		},
 		hasSettingsPermisstion(){
 			return this.auth_user.is_admin === 1;
+		},
+		recordFieldsFull(){
+			return [
+				{
+					key: 'name',
+					label: 'Сотрудник',
+					tdClass: 'b-table-sticky-column text-left t-name wd',
+					thClass: 'b-table-sticky-column text-left t-name',
+				},
+				...this.recordFields,
+				{
+					key: 'save',
+					label: '',
+					tdClass: 'actions',
+					thClass: 'actions',
+				},
+				{
+					key: 'remove',
+					label: '',
+					tdClass: 'actions',
+					thClass: 'actions',
+				},
+			]
 		}
 	},
 	watch: {
@@ -1444,71 +1429,79 @@ export default {
 			if (this.currentGroup == 42) {
 				fieldsArray.push({
 					key: 'segment',
-					name: 'Сегмент',
+					label: 'Сегмент',
 					type: 'select',
 					order: order++,
-					klass: ' text-center px-1 segment-width',
+					tdClass: 'TableQuality-input text-center segment-width',
+					thClass: 'TableQuality-input text-center segment-width',
 				});
 			}
 
 			fieldsArray.push({
 				key: 'phone',
-				name: 'Номер',
+				label: 'Номер',
 				typ: 'text',
 				order: order++,
-				klass: ' text-center px-1 phoner',
+				tdClass: 'TableQuality-input text-center phoner',
+				thClass: 'TableQuality-input text-center phoner',
 			});
 
 			if (this.currentGroup == 42) {
 				fieldsArray.push({
 					key: 'dayOfDelay',
-					name: 'День просрочки',
+					label: 'День просрочки',
 					type: 'date',
 					order: order++,
-					klass: ' text-center px-1 ',
+					tdClass: ' text-center ',
+					thClass: ' text-center ',
 				});
 			}
 
 			fieldsArray.push({
 				key: 'interlocutor',
-				name: 'Собеседник',
+				label: 'Собеседник',
 				type: 'text',
 				order: order++,
-				klass: ' text-center px-1 ',
+				tdClass: ' text-center ',
+				thClass: ' text-center ',
 			});
 
 			fieldsArray.push({
 				key: 'date',
-				name: 'Дата прослушки',
+				label: 'Дата прослушки',
 				type: 'date',
 				order: order++,
-				klass: ' text-center px-1 ',
+				tdClass: ' text-center ',
+				thClass: ' text-center ',
 			});
 
 			this.params.forEach((param, k) => {
 				fieldsArray.push({
 					key: 'param' + k,
-					name: param.name,
+					label: param.name,
 					type: 'number',
 					order: order++,
-					klass: 'text-center px-1 arg number',
+					tdClass: 'text-center arg number',
+					thClass: 'text-center arg number',
 				});
 			});
 
 			fieldsArray.push({
 				key: 'total',
-				name: 'Сумма оценки',
+				label: 'Сумма оценки',
 				type: 'auto',
 				order: order++,
-				klass: ' text-center px-1 number',
+				tdClass: ' text-center number',
+				thClass: ' text-center number',
 			});
 
 			fieldsArray.push({
 				key: 'comments',
-				name: 'Совет',
+				label: 'Совет',
 				type: 'text',
 				order: order++,
-				klass: ' text-center px-1 comments',
+				tdClass: ' text-center comments',
+				thClass: ' text-center comments',
 			});
 
 			this.recordFields = fieldsArray;
@@ -1831,6 +1824,14 @@ export default {
 </script>
 
 <style lang="scss">
+	.TableQuality{
+		&-input {
+			margin: -12px -15px;
+		}
+		&-padding{
+			padding: 12px 15px;
+		}
+	}
 	.records-table{
 		th, td{
 			padding: 5px 10px!important;

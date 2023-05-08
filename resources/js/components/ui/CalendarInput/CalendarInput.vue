@@ -1,15 +1,23 @@
 <template>
 	<div
 		class="CalendarInput"
-		v-scroll-lock="open"
+		v-scroll-lock="open && !popup"
 	>
 		<div
+			v-if="!popup"
 			class="CalendarInput-bg"
 			@click.self.stop="$emit('close')"
 		/>
-		<div class="CalendarInput-content">
+		<div
+			class="CalendarInput-content"
+			:class="{'CalendarInput-content_popup': popup}"
+			v-click-outside="onClickOutside"
+		>
 			<CalendarInputBody />
-			<CalendarInputNav :tabs="tabs" />
+			<CalendarInputNav
+				v-if="hasTabs"
+				:tabs="tabs"
+			/>
 		</div>
 	</div>
 </template>
@@ -81,6 +89,10 @@ export default {
 		format: {
 			type: String,
 			default: 'DD.MM.YYYY'
+		},
+		popup: {
+			type: Boolean,
+			default: false
 		}
 	},
 	data(){
@@ -97,6 +109,9 @@ export default {
 	computed: {
 		daysInMonth(){
 			return this.$moment([this.year, this.month]).daysInMonth()
+		},
+		hasTabs(){
+			return this.tabs && this.tabs.length
 		}
 	},
 	watch: {
@@ -105,6 +120,9 @@ export default {
 		}
 	},
 	methods:{
+		onClickOutside(e){
+			this.$emit('close', e)
+		},
 		setValue(value){
 			this.tsValue.push(value)
 			this.tsValue.splice(0, this.tsValue.length - (this.range ? 2 : 1))
@@ -133,7 +151,6 @@ export default {
 			this.month++
 		},
 		onTabToday(){
-			console.log('onTabToday')
 			this.setMonth(this.currentMonth, this.currentYear)
 			this.setValue(this.$moment([this.year, this.month, this.currentDay]).valueOf())
 		},
@@ -200,6 +217,9 @@ export default {
 		right: 0;
 		z-index: 101;
 		background-color: #fff;
+		&_popup{
+			box-shadow: 0px 0px 3px rgba(0, 0, 0, 0.05), 0px 15px 60px -40px rgba(45, 50, 90, 0.2);
+		}
 	}
 }
 </style>

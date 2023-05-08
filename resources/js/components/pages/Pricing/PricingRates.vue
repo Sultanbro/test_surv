@@ -1,119 +1,136 @@
 <template>
 	<div class="PricingRates mt-4">
-		<h3 class="PricingRates-title">
-			Сменить тариф:
-		</h3>
-		<table class="PricingRates-table">
-			<tr class="PricingRates-headers">
-				<th class="PricingRates-header" />
-				<th
-					v-for="item in tarifs"
-					:key="item.name"
-					class="PricingRates-header text-center"
-				>
-					{{ item.name }}
-				</th>
-			</tr>
-			<tr class="PricingRates-row">
-				<td class="PricingRates-col">
-					Количество пользователей
-				</td>
-				<td
-					v-for="item in tarifs"
-					:key="item.name"
-					class="PricingRates-col text-center"
-				>
-					{{ item.monthly.users_limit }}
-				</td>
-			</tr>
-			<tr class="PricingRates-row">
-				<td class="PricingRates-col">
-					Место
-				</td>
-				<td
-					v-for="item in tarifs"
-					:key="item.name"
-					class="PricingRates-col text-center"
-				>
-					{{ item.space }}
-				</td>
-			</tr>
-			<template v-if="showFeatures">
-				<tr
-					v-for="feature in features"
-					:key="feature.field"
-					class="PricingRates-row"
-				>
+		<template v-if="items && items.length">
+			<h3 class="PricingRates-title">
+				Сменить тариф:
+			</h3>
+			<table class="PricingRates-table">
+				<tr class="PricingRates-headers">
+					<th class="PricingRates-header PricingRates-header_empty" />
+					<th
+						v-for="item in tarifs"
+						:key="item.name"
+						class="PricingRates-header text-center"
+					>
+						{{ item.name }}
+					</th>
+				</tr>
+				<tr class="PricingRates-row">
 					<td class="PricingRates-col">
-						{{ feature.title }}
+						Количество пользователей
 					</td>
 					<td
 						v-for="item in tarifs"
-						:key="feature.field + item.name"
+						:key="item.name"
 						class="PricingRates-col text-center"
 					>
-						{{ item[feature.field] }}
+						{{ item.monthly.users_limit }}
 					</td>
 				</tr>
-			</template>
-			<tr class="PricingRates-row">
-				<td
-					class="PricingRates-col PricingRates-action"
-					@click="showFeatures = !showFeatures"
-					:colspan="items.length + 1"
-				>
-					Все возможности
-				</td>
-			</tr>
-			<tr class="PricingRates-row">
-				<td class="PricingRates-col">
-					Оплата в месяц
-				</td>
-				<td
-					v-for="item in tarifs"
-					:key="'monthly' + item.name"
-					class="PricingRates-col PricingRates-action text-center"
-					@click="$emit('update', {rate: item.monthly, period: 'monthly'})"
-				>
-					{{ $separateThousands(Math.round(item.monthly.multiCurrencyPrice[currencyCode])) }} {{ currency }}
-				</td>
-			</tr>
-			<tr class="PricingRates-row">
-				<td class="PricingRates-col">
-					Оплата в год
-				</td>
-				<td
-					v-for="item in tarifs"
-					:key="'annual' + item.name"
-					class="PricingRates-col PricingRates-action text-center"
-					@click="$emit('update', {rate: item.annual, period: 'annual'})"
-				>
-					{{ $separateThousands(Math.round(item.annual.multiCurrencyPrice[currencyCode])) }} {{ currency }}
-				</td>
-			</tr>
-			<tr class="PricingRates-row">
-				<td class="PricingRates-col">
-					Скидка при оплате за год
-				</td>
-				<td
-					v-for="item in tarifs"
-					:key="'discount' + item.name"
-					class="PricingRates-col text-center"
-				>
-					{{ item.discount }}
-				</td>
-			</tr>
-		</table>
+				<tr class="PricingRates-row">
+					<td class="PricingRates-col">
+						Место
+					</td>
+					<td
+						v-for="item in tarifs"
+						:key="item.name"
+						class="PricingRates-col text-center"
+					>
+						{{ item.space }}
+					</td>
+				</tr>
+				<template v-if="showFeatures">
+					<tr
+						v-for="feature in features"
+						:key="feature.field"
+						class="PricingRates-row"
+					>
+						<td class="PricingRates-col">
+							{{ feature.title }}
+						</td>
+						<td
+							v-for="item in tarifs"
+							:key="feature.field + item.name"
+							class="PricingRates-col text-center"
+						>
+							<ChatIconMassReaded v-if="item[feature.field] === '+'" />
+							<template v-else-if="item[feature.field] !== '-'">
+								{{ item[feature.field] }}
+							</template>
+						</td>
+					</tr>
+				</template>
+				<tr class="PricingRates-row">
+					<td
+						class="PricingRates-col PricingRates-action"
+						@click="showFeatures = !showFeatures"
+						:colspan="items.length + 1"
+					>
+						Все возможности
+					</td>
+				</tr>
+				<tr class="PricingRates-row">
+					<td class="PricingRates-col">
+						Оплата в месяц
+					</td>
+					<td
+						v-for="item in tarifs"
+						:key="'monthly' + item.name"
+						class="PricingRates-col PricingRates-action text-center"
+						@click="$emit('update', {rate: item.monthly, period: 'monthly'})"
+					>
+						{{ $separateThousands(Math.round(item.monthly.multiCurrencyPrice[currencyCode])) }} {{ currency }}
+					</td>
+				</tr>
+				<tr class="PricingRates-row">
+					<td class="PricingRates-col">
+						Оплата в год
+					</td>
+					<td
+						v-for="item in tarifs"
+						:key="'annual' + item.name"
+						class="PricingRates-col PricingRates-action text-center"
+						@click="$emit('update', {rate: item.annual, period: 'annual'})"
+					>
+						{{ $separateThousands(Math.round(item.annual.multiCurrencyPrice[currencyCode])) }} {{ currency }}
+					</td>
+				</tr>
+				<tr class="PricingRates-row">
+					<td class="PricingRates-col">
+						Скидка при оплате за год
+					</td>
+					<td
+						v-for="item in tarifs"
+						:key="'discount' + item.name"
+						class="PricingRates-col text-center"
+					>
+						{{ item.discount }}
+					</td>
+				</tr>
+			</table>
+		</template>
+		<template v-else>
+			<b-skeleton-table
+				:rows="6"
+				:columns="5"
+				:table-props="{ bordered: true, striped: true }"
+			/>
+		</template>
 	</div>
 </template>
 
 <script>
 import { mapActions, mapState } from 'pinia'
 import { usePricingStore } from '@/stores/Pricing'
+import {
+	ChatIconMassReaded,
+} from '@icons'
 
 export default {
 	name: 'PricingRates',
-	components: {},
+	components: {
+		ChatIconMassReaded,
+	},
 	props: {
 		currency: {
 			type: String,
@@ -192,6 +209,35 @@ export default {
 
 <style lang="scss">
 .PricingRates{
+	&-header,
+	&-col{
+		padding: 10px;
+		border: 1px solid #fff;
+	}
+	&-header{
+		color: #fff;
+		background-color: #3361FF;
+		&_empty{
+			background-color: transparent;
+			color: #394863;
+		}
+		&:nth-child(2){
+			border-radius: 8px 0 0 0;
+		}
+		&:last-of-type{
+			border-radius: 0 8px 0 0;
+		}
+	}
+	&-row{
+		&:nth-child(even){
+			.PricingRates-col{
+				background-color: #F7FBFF;
+			}
+		}
+	}
+	&-col{
+		background-color: #EBEBF9;
+	}
 	&-title{
 		font-size: 1.5em;
 	}
@@ -201,9 +247,9 @@ export default {
 	&-action{
 		text-decoration: dotted underline;
 		cursor: pointer;
-		color: green;
+		color: #3361FF;
 		&:hover{
-			color: lightgreen;
+			color: lighten(#3361FF, 10);
 		}
 	}
 }

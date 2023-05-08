@@ -28,18 +28,28 @@
 				<tr
 					v-for="(item, index) in users"
 					:key="index"
-					:class="{
-						'prize first-place': item.show_cup == 1,
-						'prize second-place':item.show_cup == 2,
-						'prize third-place': item.show_cup == 3,
-					}"
 				>
 					<td
-						class="indicators-table-fixed-name text-left"
+						class="indicators-table-fixed-name text-left position-relative"
 						:class="{'sticky-left': isDesktop}"
 					>
 						<div class="d-flex max-content">
 							{{ item.name }}
+							<img
+								src="images/dist/first-place.png"
+								alt="icon"
+								v-if="item.show_cup == 1"
+							>
+							<img
+								src="images/dist/second-place.png"
+								alt="icon"
+								v-if="item.show_cup == 2"
+							>
+							<img
+								src="images/dist/third-place.png"
+								alt="icon"
+								v-if="item.show_cup == 3"
+							>
 						</div>
 					</td>
 					<template v-for="(field, key) in fields">

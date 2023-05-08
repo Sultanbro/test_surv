@@ -7,111 +7,114 @@
 			@update="updateRate"
 		/>
 
-		<div class="PricingPage-users mt-4">
-			<div class="PricingPage-users-title">
-				Количество пользователей:
+		<template v-if="items && items.length">
+			<div class="PricingPage-currency mt-4">
+				Валюта:
+				<JobtronButton
+					@click="currency = '₽'"
+					:fade="currency !== '₽'"
+				>
+					₽
+				</JobtronButton>
+				<JobtronButton
+					@click="currency = '₸'"
+					:fade="currency !== '₸'"
+					disabled
+				>
+					₸
+				</JobtronButton>
+				<JobtronButton
+					@click="currency = '$'"
+					:fade="currency !== '$'"
+					disabled
+				>
+					$
+				</JobtronButton>
 			</div>
-			<div class="PricingPage-users-form">
-				<button
-					class="PricingPage-users-less"
-					:disabled="users <= (selectedRate ? selectedRate.users_limit : 0)"
-					@click="decreseUsers"
-				>
-					-
-				</button>
-				<input
-					v-model="users"
-					type="number"
-					class="PricingPage-users-input"
-				>
-				<button
-					class="PricingPage-users-more"
-					@click="increseUsers"
-				>
-					+
-				</button>
-			</div>
-			<img
-				v-b-popover.hover.right="'Далеко-далеко за словесными горами в стране.'"
-				src="/images/dist/profit-info.svg"
-				alt=""
-			>
-		</div>
-		<div class="PricingPage-currency mt-4">
-			Валюта:
-			<button
-				class="btn"
-				:class="{'btn-success': currency === '₽'}"
-				@click="currency = '₽'"
-			>
-				₽
-			</button>
-			<button
-				class="btn"
-				:class="{'btn-success': currency === '₸'}"
-				@click="currency = '₸'"
-				disabled
-			>
-				₸
-			</button>
-			<button
-				class="btn"
-				:class="{'btn-success': currency === '$'}"
-				@click="currency = '$'"
-				disabled
-			>
-				$
-			</button>
-		</div>
-		<div class="PricingPage-auto mt-4">
-			<b-form-checkbox
-				v-model="autoPayment"
-				switch
-			>
-				Автооплата
-			</b-form-checkbox>
-		</div>
-		<div class="PricingPage-total mt-4">
-			Итого к оплате: <span class="PricingPage-total-value">{{ $separateThousands(Math.round(total)) }} {{ currency }}</span> <button
-				class="btn btn-success"
-				@click="submitPayment"
-				:disabled="!selectedRate"
-			>
-				Оплатить
-			</button>
-		</div>
-		<hr>
-		<div class="PricingPage-promo mt-4">
 			<div
-				v-if="promoData.code"
-				class="PricingPage-promo-active"
+				v-if="selectedRate"
+				class="PricingPage-users mt-4"
 			>
-				Активирован промокод {{ $separateThousands(Math.round(promoData.value)) }} {{ currency }}
-			</div>
-			<template v-else>
-				<div class="PricingPage-promo-title">
-					Есть бонусный код?
+				<div class="PricingPage-users-title">
+					Количество пользователей:
 				</div>
-				<div class="PricingPage-promo-text">
-					Активируйте его чтобы получить бонус на первую оплату
-				</div>
-				<div class="PricingPage-promo-form mt-2">
+				<div class="PricingPage-users-form">
+					<JobtronButton
+						class="PricingPage-users-less"
+						:disabled="users <= (selectedRate ? selectedRate.users_limit : 0)"
+						@click="decreseUsers"
+					>
+						-
+					</JobtronButton>
 					<input
-						v-model="promo"
-						type="text"
-						class="PricingPage-promo-input form-control"
-						placeholder="Код купона"
+						v-model="users"
+						type="number"
+						class="PricingPage-users-input"
 					>
-					<button
-						class="btn btn-success"
-						:disabled="!promo || isPromoLoading"
-						@click="activatePromo"
+					<JobtronButton
+						class="PricingPage-users-more"
+						@click="increseUsers"
 					>
-						{{ isPromoLoading ? 'Активирую' : 'Активировать' }}
-					</button>
+						+
+					</JobtronButton>
 				</div>
-			</template>
-		</div>
+				<img
+					v-b-popover.hover.right="'Далеко-далеко за словесными горами в стране.'"
+					src="/images/dist/profit-info.svg"
+					alt=""
+				>
+			</div>
+			<div
+				v-if="selectedRate"
+				class="PricingPage-auto mt-4"
+			>
+				<b-form-checkbox
+					v-model="autoPayment"
+					switch
+				>
+					Авто оплата
+				</b-form-checkbox>
+			</div>
+			<div
+				v-if="selectedRate"
+				class="PricingPage-total mt-4"
+			>
+				Итого к оплате: <span class="PricingPage-total-value">{{ $separateThousands(Math.round(total)) }} {{ currency }}</span> <JobtronButton @click="submitPayment">
+					Оплатить
+				</JobtronButton>
+			</div>
+			<hr class="my-4">
+			<div class="PricingPage-promo mt-4">
+				<div
+					v-if="promoData.code"
+					class="PricingPage-promo-active"
+				>
+					Активирован промокод {{ $separateThousands(Math.round(promoData.value)) }} {{ currency }}
+				</div>
+				<template v-else>
+					<div class="PricingPage-promo-title">
+						Есть бонусный код? <span class="price-beta">beta</span>
+					</div>
+					<div class="PricingPage-promo-text">
+						Активируйте его, чтобы получить бонус на первую оплату
+					</div>
+					<div class="PricingPage-promo-form mt-4">
+						<input
+							v-model="promo"
+							type="text"
+							class="PricingPage-promo-input form-control"
+							placeholder="Код купона"
+						>
+						<JobtronButton
+							:disabled="!promo || isPromoLoading"
+							@click="activatePromo"
+						>
+							{{ isPromoLoading ? 'Активирую' : 'Активировать' }}
+						</JobtronButton>
+					</div>
+				</template>
+			</div>
+		</template>
 	</div>
 </template>
 
@@ -122,6 +125,7 @@ import { usePricingStore } from '@/stores/Pricing'
 import PricingManager from '@/components/pages/Pricing/PricingManager'
 import PricingCurrent from '@/components/pages/Pricing/PricingCurrent'
 import PricingRates from '@/components/pages/Pricing/PricingRates'
+import JobtronButton from '@ui/Button'
 
 export default {
 	name: 'PricingPage',
@@ -129,6 +133,7 @@ export default {
 		PricingManager,
 		PricingCurrent,
 		PricingRates,
+		JobtronButton,
 	},
 	data(){
 		return {
@@ -148,7 +153,7 @@ export default {
 		}
 	},
 	computed: {
-		...mapState(usePricingStore, ['priceForUser']),
+		...mapState(usePricingStore, ['priceForUser', 'items']),
 		additionalUsers(){
 			if(!this.selectedRate) return 0
 			return this.users - this.selectedRate.users_limit
@@ -220,6 +225,21 @@ export default {
 </script>
 
 <style lang="scss">
+	.PricingPage-promo-title{
+		position: relative;
+	}
+	.price-beta{
+		position: absolute;
+		top: 5px;
+		left: 205px;
+		padding: 3px 6px;
+		border-radius: 4px;
+		font-size: 12px;
+		background-color: #cd2525;
+		color: #fff;
+		font-weight: 600;
+		text-transform: uppercase;
+	}
 .PricingPage{
 	line-height: 1.3;
 	&-total,
@@ -251,29 +271,36 @@ export default {
 			margin: 0;
 		}
 	}
-	&-users-less,
-	&-users-more{
-		width: 4rem;
-		flex: 0 0 4rem;
-		padding: 0.5rem 1rem;
-		border: none;
-		background-color: #b6c2d6;
-		color: #777;
-		text-align: center;
-		font-weight: 700;
-		font-size: 1.3em;
-		&:disabled{
-			background-color: #aaa;
-		}
-		&:focus{
-			outline: none;
-		}
-	}
-	&-users-less{
-		border-radius: 0.6rem 0 0 0.6rem;
-	}
-	&-users-more{
-		border-radius: 0 0.6rem 0.6rem 0;
+	// &-users-less,
+	// &-users-more{
+	// 	width: 4rem;
+	// 	flex: 0 0 4rem;
+	// 	padding: 0.5rem 1rem;
+	// 	border: none;
+	// 	background-color: #b6c2d6;
+	// 	color: #777;
+	// 	text-align: center;
+	// 	font-weight: 700;
+	// 	font-size: 1.3em;
+	// 	&:disabled{
+	// 		background-color: #aaa;
+	// 	}
+	// 	&:focus{
+	// 		outline: none;
+	// 	}
+	// }
+	// &-users-less{
+	// 	border-radius: 0.6rem 0 0 0.6rem;
+	// }
+	// &-users-more{
+	// 	border-radius: 0 0.6rem 0.6rem 0;
+	// }
+
+	&-currency{
+		display: flex;
+		align-items: center;
+		justify-content: flex-start;
+		gap: 10px;
 	}
 	&-total-value{
 		font-size: 1.3em;

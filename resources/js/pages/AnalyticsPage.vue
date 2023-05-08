@@ -280,6 +280,8 @@
 																		v-for="(field, key) in yearActivityTableFields"
 																		:key="key"
 																		:class="field.classes"
+																		:style="field.key === 'name' || !row[field.key] ? '' : `background: ${getCellColor(row[field.key])};`"
+																		:data-key="field.key"
 																	>
 																		<div>{{ row[field.key] }}</div>
 																	</td>
@@ -494,6 +496,12 @@ import TableActivityCollection from '@/components/tables/TableActivityCollection
 import TableQualityWeekly from '@/components/tables/TableQualityWeekly'
 const TopGauges = () => import(/* webpackChunkName: "TopGauges" */ '@/components/TopGauges')  // TOП спидометры, есть и в аналитике
 import { useYearOptions } from '../composables/yearOptions'
+import { mapState } from 'pinia'
+import { usePortalStore } from '@/stores/Portal'
+
+function percentMinMax(value, min, max){
+	return (value - min) / (max - min)
+}
 
 export default {
 	name: 'AnalyticsPage',
@@ -514,9 +522,10 @@ export default {
 			ggroups: [],
 			active: '1',
 			hasPremission: false, // доступ
-			years: useYearOptions(),
 			yearActivityTableFields: [],
 			yearActivityTable: [],
+			yearMin: 0,
+			yearMax: 0,
 			activityStates: {},
 			currentYear: new Date().getFullYear(),
 			monthInfo: {},
@@ -557,6 +566,13 @@ export default {
 			statistics: [] // year table of activity
 		}
 	},
+	computed: {
+		...mapState(usePortalStore, ['portal']),
+		years(){
+			if(!this.portal.created_at) return [new Date().getFullYear()]
+			return useYearOptions(new Date(this.portal.created_at).getFullYear())
+		},
+	},
 	watch: {
 		groups(){
 			this.init()
@@ -595,7 +611,6 @@ export default {
              */
 		switchToMonthInActivity(index) {
 			this.activityStates[index] = 'month'
-			console.log(index)
 		},
 
 		/**
@@ -603,7 +618,6 @@ export default {
              */
 		switchToYearInActivity(index) {
 			this.activityStates[index] = 'year'
-			console.log(index)
 
 			this.fetchYearTableOfActivity(this.data.activities[index].id);
 		},
@@ -652,11 +666,41 @@ export default {
 			});
 
 			this.yearActivityTable = res;
+			this.yearCalcMinMax()
+		},
+
+		yearCalcMinMax(){
+			let min = 9999999999
+			let max = 0
+			this.yearActivityTable.forEach(row => {
+				Object.keys(row).forEach(key => {
+					if(key === 'name') return
+					const value = parseFloat(row[key])
+					if(value < min) min = value
+					if(value > max) max = value
+				})
+			})
+			this.yearMin = min
+			this.yearMax = max
+		},
+		getCellColor(value) {
+			const perc = percentMinMax(value, this.yearMin, this.yearMax) * 100
+			let r, g, b = 0;
+			if(perc < 50) {
+				r = 255;
+				g = Math.round(5.1 * perc);
+			}
+			else {
+				g = 255;
+				r = Math.round(510 - 5.10 * perc);
+			}
+			const h = r * 0x10000 + g * 0x100 + b * 0x1;
+			return '#' + ('000000' + h.toString(16)).slice(-6);
 		},
 
 		/**
-             * ACTIVITY YEAR
-             */
+			 * ACTIVITY YEAR
+			 */
 		fetchYearTableOfActivity(activity_id) {
 			let loader = this.$loading.show();
 
@@ -712,7 +756,7 @@ export default {
 		},
 
 		onTabClick() {
-			console.log('horay')
+			//
 		},
 
 		setMonth() {
@@ -735,7 +779,6 @@ export default {
 		},
 
 		onTabChange(active) {
-			console.log(active)
 			this.active = active;
 			window.history.replaceState({ id: '100' }, 'Аналитика групп', '/timetracking/an?group=' + this.currentGroup + '&active=' + this.active);
 		},
@@ -767,14 +810,11 @@ export default {
 				let active = urlParamss.get('active');
 				this.active = (active == null) ? '1' : active
 
-				console.log(active, this.active)
-
 				if(response.data.error !== undefined) {
 					this.dataLoaded = false
 					this.noan = true;
 					this.archived_groups = response.data.archived_groups
 					this.ggroups = response.data.groups
-					console.log('error')
 				} else {
 					this.dataLoaded = true
 					this.data = response.data
@@ -882,8 +922,8 @@ export default {
 			});
 		},
 
-		onEndSortcat(test) {
-			console.log(test)
+		onEndSortcat(/* test */) {
+
 		},
 
 		save_order() {
@@ -977,67 +1017,67 @@ export default {
 </script>
 
 <style>
-    .mw30 {
-        min-width: 30px;
-    }
-    .rating {
-      display: inline-block;
-      unicode-bidi: bidi-override;
-      color: #888888;
-      font-size: 25px;
-      height: 25px;
-      width: auto;
-      margin: 0;
-      position: relative;
-      padding: 0;
-    }
+	.mw30 {
+		min-width: 30px;
+	}
+	.rating {
+		display: inline-block;
+		unicode-bidi: bidi-override;
+		color: #888888;
+		font-size: 25px;
+		height: 25px;
+		width: auto;
+		margin: 0;
+		position: relative;
+		padding: 0;
+	}
 
-    .rating-upper {
-      color: #c52b2f;
-      padding: 0;
-      position: absolute;
-      z-index: 1;
-      display: flex;
-      top: 0;
-      left: 0;
-      overflow: hidden;
-    }
+	.rating-upper {
+		color: #c52b2f;
+		padding: 0;
+		position: absolute;
+		z-index: 1;
+		display: flex;
+		top: 0;
+		left: 0;
+		overflow: hidden;
+	}
 
-    .rating-lower {
-      padding: 0;
-      display: flex;
-      z-index: 0;
-    }
-    .ap-text {
-        margin: 0;
-        display: flex;
-        font-size: 12px;
-        align-items: center;
-    }
-    .ap-text span {
-        font-size: 16px;
-        font-weight: 700;
-        margin-left: 5px;
-    }
-    .analytics-page .btn {
-        padding: .375rem .75rem;
-    }
-    .analytics-page .btn.btn-sm {
-        padding: 0.15rem 0.5rem;
-    }
-    .fz12 {
-        font-size: 12px;
-        margin-bottom: 0;
-        line-height: 20px;
-        color: #000 !important;
-    }
-    .wrap {
-        background: #f3f7f9;
-        margin-bottom: 15px;
-        padding-top: 15px;
-        border: 1px solid #dde8ee;
-        border-radius: 5px;
-    }
+	.rating-lower {
+		padding: 0;
+		display: flex;
+		z-index: 0;
+	}
+	.ap-text {
+		margin: 0;
+		display: flex;
+		font-size: 12px;
+		align-items: center;
+	}
+	.ap-text span {
+		font-size: 16px;
+		font-weight: 700;
+		margin-left: 5px;
+	}
+	.analytics-page .btn {
+		padding: .375rem .75rem;
+	}
+	.analytics-page .btn.btn-sm {
+		padding: 0.15rem 0.5rem;
+	}
+	.fz12 {
+		font-size: 12px;
+		margin-bottom: 0;
+		line-height: 20px;
+		color: #000 !important;
+	}
+	.wrap {
+		background: #f3f7f9;
+		margin-bottom: 15px;
+		padding-top: 15px;
+		border: 1px solid #dde8ee;
+		border-radius: 5px;
+	}
 	.kakieto-knopki{
 		position: absolute;
 		top: 0;

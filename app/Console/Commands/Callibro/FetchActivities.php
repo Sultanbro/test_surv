@@ -85,6 +85,8 @@ class FetchActivities extends Command
         $this->setDate();
 
         $groups = $this->getGroupsWithConfig();
+//        $groups = ProfileGroup::getUcallsConnectedGroups()
+//            ->toArray();
 
         foreach($groups as $group) {
 
@@ -118,7 +120,7 @@ class FetchActivities extends Command
 
             //  Евразийский банк
             [
-                'id' => 53, 
+                'id' => 53,
                 'activities' => [
                     'minutes' => 16,
                     'aggrees' => 18,
@@ -152,9 +154,9 @@ class FetchActivities extends Command
                 'time_exceptions' => []
             ],
 
-            // Яндекс доставка 
+            // Яндекс доставка
             [
-                'id' => 97, 
+                'id' => 97,
                 'activities' => [
                     'minutes' => 217,
                     'aggrees' => 219,
@@ -191,8 +193,8 @@ class FetchActivities extends Command
                 $this->date,
                 [
                     'dialer_id'           => $this->group['dialer_id'],
-                    'aggrees_scripts'     => $this->group['aggrees_scripts'],
-                    'closed_card_scripts' => $this->group['closed_card_scripts'],
+                    'aggrees_scripts'     => $this->group['aggrees_scripts'] ?? [],
+                    'closed_card_scripts' => $this->group['closed_card_scripts'] ?? [],
                 ]
             ]);
 

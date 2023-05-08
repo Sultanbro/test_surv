@@ -5,9 +5,11 @@ const Userlist = () => import(/* webpackChunkName: "UserlistPage" */ '@/pages/us
 const Company = () => import(/* webpackChunkName: "UserlistPage" */ '@/pages/Company.vue')
 const Fines = () => import(/* webpackChunkName: "FinesPage" */ '@/pages/Fines.vue')
 const Notifications = () => import(/* webpackChunkName: "NotificationsPage" */ '@/pages/Notifications.vue')
+const NotificationsV2 = () => import(/* webpackChunkName: "NotificationsPageV2" */ '@/pages/NotificationsV2.vue')
 const Permissions = () => import(/* webpackChunkName: "PermissionsPage" */ '@/pages/Permissions.vue')
 // const CheckList = () => import(/* webpackChunkName: "checkListPage" */ '@/pages/checkList.vue')
 const Awards = () => import(/* webpackChunkName: "AwardsSettingsPage" */ '@/pages/Awards/Awards.vue')
+const IntegrationsPage = () => import(/* webpackChunkName: "IntegrationsPage" */ '@/pages/Integrations.vue')
 
 export default {
 	name: 'SettingsView',
@@ -17,8 +19,10 @@ export default {
 		Company,
 		Fines,
 		Notifications,
+		NotificationsV2,
 		Permissions,
 		Awards,
+		IntegrationsPage,
 	},
 	data(){
 		return {
@@ -49,7 +53,16 @@ export default {
 					htmlId: 'nav-notifications',
 					path: '/timetracking/settings?tab=5',
 					title: 'Уведомления',
-					access: ['notifications_view', 'settings_view']
+					access: ['notifications_view', 'settings_view'],
+					domain: 'bp'
+				},
+				{
+					id: '10',
+					htmlId: 'nav-notifications-v2',
+					path: '/timetracking/settings?tab=10',
+					title: 'Уведомления',
+					access: ['notifications_view', 'settings_view'],
+					beta: true
 				},
 				{
 					id: '6',
@@ -153,6 +166,12 @@ export default {
 													:class="{active: tab.id === activeTab}"
 												>
 													{{ tab.title }}
+													<b-badge
+														v-if="tab.beta"
+														variant="success"
+													>
+														beta
+													</b-badge>
 												</router-link>
 											</li>
 										</template>
@@ -208,6 +227,15 @@ export default {
 										/>
 									</div>
 									<div
+										v-if="activeTab === '10' && can(['notification_view', 'settings_view'])"
+										class="tab-pane fade show active py-3"
+										id="nav-notifications-v2"
+										role="tabpanel"
+										aria-labelledby="nav-notifications-v2-tab"
+									>
+										<NotificationsV2 />
+									</div>
+									<div
 										v-if="activeTab === '6' && can(['permissions_view', 'settings_view'])"
 										class="tab-pane fade show active py-3"
 										id="nav-bookgroups"
@@ -232,17 +260,7 @@ export default {
 										role="tabpanel"
 										aria-labelledby="nav-integrations-tab"
 									>
-										<div class="d-flex">
-											<div class="d-flex jcc aic mr-2 flex-column integrations-item">
-												Bitrix24 <span class="integrations-status">Не настроен</span>
-											</div>
-											<div class="d-flex jcc aic mr-2 flex-column integrations-item">
-												AmoCRM <span class="integrations-status">Не подключен</span>
-											</div>
-											<div class="d-flex jcc aic mr-2 flex-column integrations-item">
-												Callibro <span class="integrations-status">Не настроен</span>
-											</div>
-										</div>
+										<IntegrationsPage />
 									</div>
 									<div
 										v-if="activeTab === '9' && can(['awards_view', 'settings_view'])"
@@ -264,17 +282,7 @@ export default {
 </template>
 
 <style scoped>
-.integrations-item{
-    width: 150px;
-    height: 120px;
-    padding: 7.5px 10px;
-    background: #f8fcfe;
-    border: 1px solid #daecf5;
-}
-.integrations-status{
-    color: red;
-    font-size: 8px;
-}
+
 .header__profile {
     display:none !important;
 }

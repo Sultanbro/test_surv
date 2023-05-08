@@ -249,7 +249,23 @@ export default {
 				</select>
 			</div>
 
-			<div class="col-sm-3 pl-0" />
+			<div class="col-sm-3 pl-0">
+				<img
+					src="/images/dist/profit-info.svg"
+					class="img-info mt-2"
+					alt="info icon"
+					id="user-currency"
+				>
+				<b-popover
+					target="user-currency"
+					triggers="hover"
+					placement="right"
+				>
+					<p class="fz-15">
+						Выберите валюту в которой будет отображаться вся оплата на странице профиля данного сотрудника
+					</p>
+				</b-popover>
+			</div>
 		</div>
 		<template v-if="user">
 			<template v-if="user.zarplata && user.zarplata.kaspi_cardholder">
@@ -341,7 +357,6 @@ export default {
 			v-if="user"
 			class="form-group row"
 		>
-			<div class="col-sm-3" />
 			<div class="col-sm-3">
 				<div class="custom-control custom-checkbox">
 					<input
@@ -366,7 +381,7 @@ export default {
 					class="font-weight-bold"
 				>На сумму</label>
 			</div>
-			<div class="col-sm-3 pl-0">
+			<div class="col-sm-3">
 				<input
 					name="headphones_amount"
 					class="form-control"
@@ -376,6 +391,7 @@ export default {
 					:disabled="!headphonesState"
 				>
 			</div>
+			<div class="col-sm-3" />
 		</div>
 
 		<hr>

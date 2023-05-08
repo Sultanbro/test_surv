@@ -3,37 +3,15 @@
 		class="popup__content  mt-3"
 		:class="{'v-loading': loading}"
 	>
-		<div class="popup__filter">
+		<div class="popup__filter pb-4">
 			<div class="popup__filter-title">
 				Ваши начисления за период работы
 			</div>
 
-			<select
-				class="select-css"
-				v-model="currentMonth"
-				@change="fetchData()"
-			>
-				<option
-					v-for="month in $moment.months()"
-					:value="month"
-					:key="month"
-				>
-					{{ month }}
-				</option>
-			</select>
-			<select
-				class="select-css ml-2"
-				v-model="currentYear"
-				@change="fetchData()"
-			>
-				<option
-					v-for="year in years"
-					:value="year"
-					:key="year"
-				>
-					{{ year }}
-				</option>
-			</select>
+			<DateSelect
+				v-model="selectedDate"
+				class="ml-a Balance-datePicker"
+			/>
 		</div>
 		<div class="balance__content custom-scroll">
 			<table class="balance__table">
@@ -205,13 +183,17 @@
 </template>
 
 <script>
+import { mapState } from 'pinia'
+import { usePortalStore } from '@/stores/Portal'
 import BalanceItem from './BalanceItem'
 import { useYearOptions } from '@/composables/yearOptions'
+import DateSelect from '../DateSelect'
 
 export default {
 	name: 'PopupBalance',
 	components: {
-		BalanceItem
+		BalanceItem,
+		DateSelect,
 	},
 	props: {},
 	data: function () {
@@ -221,15 +203,24 @@ export default {
 			items: [],
 			totalFines: null,
 			total_avanses: null,
-			currentMonth: this.$moment().format('MMMM'),
-			currentYear: now.getFullYear(),
+			selectedDate: this.$moment().format('DD.MM.YYYY'),
 			currentDay: now.getDate(),
-			years: useYearOptions(),
 			history: null,
 			loading: false
 		};
 	},
 	computed: {
+		...mapState(usePortalStore, ['portal']),
+		currentMonth(){
+			return this.$moment(this.selectedDate, 'DD.MM.YYYY').format('MMMM')
+		},
+		currentYear(){
+			return this.$moment(this.selectedDate, 'DD.MM.YYYY').format('YYYY')
+		},
+		years(){
+			if(!this.portal.created_at) return [new Date().getFullYear()]
+			return useYearOptions(new Date(this.portal.created_at).getFullYear())
+		},
 		fields(){
 			const fields = [
 				{
@@ -273,6 +264,13 @@ export default {
 		},
 		daysInMonth(){
 			return this.$moment(`${this.currentMonth} ${this.currentYear}`, 'MMMM YYYY').daysInMonth()
+		}
+	},
+	watch: {
+		selectedDate(){
+			this.$nextTick(() => {
+				this.fetchData()
+			})
 		}
 	},
 	created() {
@@ -330,7 +328,7 @@ export default {
 
 				this.showHistory()
 				this.loading = false
-			}).catch(e => console.log(e))
+			}).catch(e => console.error(e))
 		},
 
 		loadItems() {
@@ -425,6 +423,12 @@ export default {
 	$avans: #8bab00;
 	$bonus: #8fc9ff;
 	$training: #f90;
+
+	.Balance{
+		&-datePicker{
+			min-width: 200px;
+		}
+	}
 
 	.balance__content {
 		overflow-x: auto;

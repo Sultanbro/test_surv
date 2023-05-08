@@ -149,12 +149,16 @@ export default {
 	},
 	data(){
 		return {
-			yearOptions: useYearOptions(),
 			page: 1,
 		}
 	},
 	computed: {
 		...mapState(useKPIStore, ['statYear', 'isLoading']),
+		...mapState(usePortalStore, ['portal']),
+		yearOptions(){
+			if(!this.portal.created_at) return [new Date().getFullYear()]
+			return useYearOptions(new Date(this.portal.created_at).getFullYear())
+		},
 		stats(){
 			const table = []
 			Object.entries(this.statYear.data).forEach(([month, monthData]) => {

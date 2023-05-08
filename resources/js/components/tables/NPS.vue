@@ -101,6 +101,8 @@
 </template>
 
 <script>
+import { mapState } from 'pinia'
+import { usePortalStore } from '@/stores/Portal'
 import { useYearOptions } from '@/composables/yearOptions'
 
 export default {
@@ -119,7 +121,6 @@ export default {
 		return {
 			users: [],
 			fields: [],
-			years: useYearOptions(),
 			currentYear: new Date().getFullYear(),
 			monthInfo: {
 				currentMonth: null,
@@ -129,6 +130,13 @@ export default {
 				daysInMonth: 0
 			},
 			ukey: 1
+		}
+	},
+	computed: {
+		...mapState(usePortalStore, ['portal']),
+		years(){
+			if(!this.portal.created_at) return [new Date().getFullYear()]
+			return useYearOptions(new Date(this.portal.created_at).getFullYear())
 		}
 	},
 	created() {

@@ -47,7 +47,7 @@
 						class="text-center pointer"
 						@click="adjustFields"
 					>
-						<i class="fa fa-cogs" />
+						<i class="fa fa-cog" />
 					</th>
 					<th class="text-left w-100">
 						Кому
@@ -554,7 +554,7 @@
 																@click="saveItemFromTable(p, i)"
 															/>
 															<!--													<i-->
-															<!--															class="fa fa-edit btn btn-primary btn-icon"-->
+															<!--															class="fa fa-pen btn btn-primary btn-icon"-->
 															<!--															@click="openSidebar(p, i)"-->
 															<!--													/>-->
 															<i

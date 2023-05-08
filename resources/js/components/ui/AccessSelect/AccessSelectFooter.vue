@@ -63,11 +63,11 @@ export default {
 
 <style>
 .AccessSelectFooter {
-	display: flex;
+	display: inline-flex;
 	flex-direction: row;
 	align-items: center;
 	justify-content: space-between;
-	border-top: 1px solid #EBEBF9;
+	border-top: 1px solid #35354a;
 	padding-top: 20px;
 }
 .AccessSelectFooter-count {

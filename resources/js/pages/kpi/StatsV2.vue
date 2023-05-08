@@ -33,7 +33,7 @@
 			</div>
 			<i
 				v-if="isAdmin"
-				class="fa fa-cogs btn ml-a"
+				class="fa fa-cog btn ml-a"
 				@click="isSettingsOpen = true"
 			/>
 		</div>

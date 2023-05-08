@@ -101,7 +101,7 @@
 
 					<!-- Кто посмотрел -->
 					<ConversationFeedReaders
-						v-if="message.last && message.readers && message.readers.length"
+						v-if="renderHelper.last && message.readers && message.readers.length"
 						:key="'readers' + message.id"
 						:message="message"
 					/>
@@ -162,7 +162,6 @@ export default {
 	},
 	computed: {
 		...mapGetters([
-			'messagesMap',
 			'messages',
 			'user',
 			'messagesOldEndReached',
@@ -171,6 +170,55 @@ export default {
 			'messagesLoading',
 			'isLoading',
 		]),
+		messagesMap(){
+			const uniqueDates = [];
+			const messagesMap = {};
+			this.messages.forEach((message, index) => {
+				const date = new Date(message.created_at);
+				const dateKey = date.toLocaleDateString();
+				if (!uniqueDates.includes(dateKey)) {
+					uniqueDates.push(dateKey);
+					messagesMap[dateKey] = [];
+				}
+				if(!this.messages[index + 1]){
+					message.last = true
+				}
+
+				messagesMap[dateKey].push(message);
+			}, {});
+
+
+			let unread = false
+			Object.keys(messagesMap).forEach(dateKey => {
+				let prevMsg = null
+				messagesMap[dateKey] = messagesMap[dateKey].map((message, i) => {
+					const nextMsg = messagesMap[dateKey][i + 1]
+					const isUserFirst = !prevMsg || !!prevMsg.event || prevMsg.sender_id !== message.sender_id
+					const isUserLast = !nextMsg || !!nextMsg.event || nextMsg.sender_id !== message.sender_id
+					const own = message.sender_id === this.user.id
+					const isMessageRead = message.readers && ~message.readers.findIndex(reader => reader.id === this.user.id)
+					let isUnreadFirst = false
+					if(!message.event && !own && !unread && !isMessageRead){
+						unread = true
+						isUnreadFirst = true
+					}
+					prevMsg = message
+					return {
+						message,
+						renderHelper: {
+							isUserFirst,
+							isUserLast,
+							isUnreadFirst,
+							unread,
+							own,
+							last: !nextMsg
+						}
+					}
+				})
+			})
+
+			return messagesMap;
+		}
 	},
 	watch: {
 		messages(){

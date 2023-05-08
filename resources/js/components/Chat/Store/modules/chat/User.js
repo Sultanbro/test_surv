@@ -56,5 +56,30 @@ export default {
 		users: state => state.users,
 		profileGroups: state => state.profile_groups,
 		positions: state => state.positions,
+		positionNames(state, getters){
+			return getters.positions.reduce((result, pos) => {
+				result[pos.id] = pos.position
+				return result
+			}, {})
+		},
+		accessDictionaries(state, getters){
+			return {
+				users: getters.users.reduce((users, user) => {
+					if(user.deleted_at) return users
+					users.push({
+						id: user.id,
+						name: `${user.name} ${user.last_name}`,
+						avatar: `/users_img/${user.img_url}`,
+						position: getters.positionNames[user.position_id]
+					})
+					return users
+				}, []),
+				profile_groups: getters.profileGroups.filter(group => group.active),
+				positions: getters.positions.filter(pos => !pos.deleted_at).map(pos => ({
+					id: pos.id,
+					name: pos.position
+				})),
+			}
+		},
 	}
 }

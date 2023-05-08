@@ -1,1 +1,6 @@
 // Write your overrides
+.v-card{
+  .v-container{
+    max-width: none;
+  }
+}
