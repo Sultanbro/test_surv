@@ -133,6 +133,7 @@
 						empty-text="Нет данных"
 						:current-page="currentPage"
 						:per-page="perPage"
+						:sort-compare="sortCompare"
 					>
 						<template #cell(name)="name">
 							<div>
@@ -1692,7 +1693,24 @@ export default {
 				this.openDay(data);
 			}
 
-		}
+		},
+
+		sortCompare(aRow, bRow, key, sortDesc, formatter, compareOptions, compareLocale) {
+			const a = aRow[key] // or use Lodash `_.get()`
+			const b = bRow[key]
+			if(!aRow.id) { return sortDesc ? 1 : -1 }
+			if(!bRow.id) { return sortDesc ? -1 : 1 }
+			if (
+				(typeof a === 'number' && typeof b === 'number') ||
+				(a instanceof Date && b instanceof Date)
+			) {
+				// If both compared fields are native numbers or both are native dates
+				return a < b ? -1 : a > b ? 1 : 0
+			} else {
+				// Otherwise stringify the field data and use String.prototype.localeCompare
+				return (b || '').toString().localeCompare((a || '').toString(), compareLocale, compareOptions)
+			}
+		},
 	}
 }
 </script>
