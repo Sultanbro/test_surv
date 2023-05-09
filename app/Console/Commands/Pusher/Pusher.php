@@ -4,6 +4,7 @@ namespace App\Console\Commands\Pusher;
 
 use App\Models\Mailing\MailingNotification;
 use App\Service\Mailing\Notifiers\NotificationFactory;
+use Exception;
 use Illuminate\Console\Command;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
@@ -23,12 +24,13 @@ class Pusher extends Command
      *
      * @var string
      */
-    protected $description = 'Command notifies the marked systems';
+    protected $description = 'Команда уведомляет пользователей через JT или другой сервис с которым мы интегрированы.';
 
     /**
      * Execute the console command.
      *
      * @return ?bool
+     * @throws Exception
      */
     public function handle(): ?bool
     {
@@ -37,6 +39,11 @@ class Pusher extends Command
         foreach ($notifications as $notification)
         {
             $frequency = $notification->frequency;
+
+            if (!method_exists($this, $frequency))
+            {
+                throw new Exception("Method $frequency does not exist");
+            }
 
             return $this->{$frequency}($notification);
         }
@@ -56,7 +63,7 @@ class Pusher extends Command
         foreach ($notification->recipients as $recipient)
         {
             $notification = $this->mailingNotification()->first();
-            $time = now()->toTimeString();
+            $time   = now()->addHours(6)->setSeconds('00')->format('H:i:s');
 
             if ($time == $notification->time)
             {
@@ -83,7 +90,7 @@ class Pusher extends Command
         {
             $days = json_decode($recipient->days);
             $today  = Carbon::now()->dayOfWeekIso;
-            $time   = now()->toTimeString();
+            $time   = now()->addHours(6)->setSeconds('00')->format('H:i:s');
 
             if (in_array($today, $days) && $time == $notification->time)
             {
@@ -110,9 +117,9 @@ class Pusher extends Command
         {
             $days   = json_decode($recipient->days);
             $today  = Carbon::now()->day;
-            $time   = now()->toTimeString();
+            $time   = now()->addHours(6)->setSeconds('00')->format('H:i:s');
 
-            if (in_array($today, $days) and $time == $notification->time)
+            if (in_array($today, $days) && $time == $notification->time)
             {
                 foreach ($mailingSystems as $mailingSystem)
                 {
