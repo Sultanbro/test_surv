@@ -10,7 +10,8 @@ export default {
 		return {
 			sendStatusTimer: null,
 			sendStatusDelay: 30000,
-			sendStatusDelayed: false
+			sendStatusDelayed: false,
+			favicon: null,
 		}
 	},
 	computed: {
@@ -22,6 +23,7 @@ export default {
 		},
 		unreadCount(){
 			this.updateTitle()
+			this.updateIcon()
 		}
 	},
 	mounted(){
@@ -33,6 +35,7 @@ export default {
 		}
 		this.startOlineTracking()
 		this.updateTitle()
+		this.updateIcon()
 	},
 	beforeUnmount(){
 		const scriptTag = document.getElementById('bitrix-loader')
@@ -66,6 +69,49 @@ export default {
 				document.title = (this.unreadCount ? `(${this.unreadCount}) ` : '')  + this.$route.meta.title || DEFAULT_TITLE
 				document.body.className = this.$route.meta.bodyClass || ''
 			})
+		},
+		loadIcon(){
+			return new Promise((resolve) => {
+				const img = document.createElement('img');
+				img.addEventListener('load', () => {
+					resolve(img)
+				})
+				img.src = '/favicon.ico?ver1.2'
+			})
+		},
+		async updateIcon(){
+			const img = await this.loadIcon()
+			const iconNode = document.querySelector('link[rel="icon"][type="image/x-icon"]')
+
+			if(this.unreadCount === 0){
+				iconNode.href = '/favicon.ico?ver1.2'
+				return
+			}
+			const size = 48
+			const canvas = document.createElement('canvas')
+			canvas.width = size
+			canvas.height = size
+			const context = canvas.getContext('2d')
+
+			context.drawImage(img, 0, 0, size, size)
+			context.beginPath()
+			context.arc(
+				size - size / 2.5,
+				size / 2.5,
+				size / 2.5,
+				0,
+				2 * Math.PI
+			)
+			context.fillStyle = '#FF0000'
+			context.fill()
+
+			context.font = '700 32px "helvetica", sans-serif'
+			context.textAlign = 'center'
+			context.textBaseline = 'middle'
+			context.fillStyle = '#FFFFFF'
+			context.fillText(Math.min(this.unreadCount, 99), size - size / 2.5, size / 2.5)
+
+			iconNode.href = canvas.toDataURL('image/png')
 		}
 	}
 }
