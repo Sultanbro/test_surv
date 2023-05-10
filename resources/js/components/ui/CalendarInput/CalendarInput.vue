@@ -174,24 +174,32 @@ export default {
 			if(year) this.year = year
 			if(this.onlyMonth){
 				this.$emit('input', ['01.' + this.$moment([year, month]).format('MM.YYYY')])
-				// this.$emit('close')
+				this.$emit('close')
 			}
 		},
 		prevMonth(){
 			if(this.month - 1 < 0) {
 				this.year--
 				this.month = 11
-				return
 			}
-			this.month--
+			else{
+				this.month--
+			}
+			if(this.onlyMonth){
+				this.$emit('input', ['01.' + this.$moment([this.year, this.month]).format('MM.YYYY')])
+			}
 		},
 		nextMonth(){
 			if(this.month + 1 > 11) {
 				this.year++
 				this.month = 0
-				return
 			}
-			this.month++
+			else{
+				this.month++
+			}
+			if(this.onlyMonth){
+				this.$emit('input', ['01.' + this.$moment([this.year, this.month]).format('MM.YYYY')])
+			}
 		},
 		onTabToday(){
 			this.setMonth(this.currentMonth, this.currentYear)

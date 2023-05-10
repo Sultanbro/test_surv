@@ -66,7 +66,7 @@ export default {
 	methods: {
 		onInput(value){
 			this.$emit('input', value[0])
-			this.isDatePicker = false
+			// this.isDatePicker = false
 		},
 		capitalized(str) {
 			const capitalizedFirst = str[0].toUpperCase();
