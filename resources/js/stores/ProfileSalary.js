@@ -109,13 +109,23 @@ export const useProfileSalaryStore = defineStore('profileSalary', {
 				const maxSalary = parseInt(this.profile.salary.replace(/\s/g, '')) || 0
 
 				// set current values
-				this.user_earnings.sumSalary = sumSalary
-				this.user_earnings.sumKpi = sumKpi
-				this.user_earnings.sumBonuses = sumBonuses
-				this.user_earnings.sumQuartalPremiums = sumQuartalPremiums
-				this.user_earnings.sumNominations = 0
-				this.user_earnings.kpiMax = maxKpi
-				this.user_earnings.oklad = maxSalary
+				const earnings = {
+					sumSalary,
+					sumKpi,
+					sumBonuses,
+					sumQuartalPremiums,
+					sumNominations: sumAwards,
+					kpiMax: maxKpi,
+					oklad: maxSalary
+				}
+				this.user_earnings = earnings
+				// this.user_earnings.sumSalary = sumSalary
+				// this.user_earnings.sumKpi = sumKpi
+				// this.user_earnings.sumBonuses = sumBonuses
+				// this.user_earnings.sumQuartalPremiums = sumQuartalPremiums
+				// this.user_earnings.sumNominations = 0
+				// this.user_earnings.kpiMax = maxKpi
+				// this.user_earnings.oklad = maxSalary
 
 				// save for month
 				const key = `${year}-${month}`
