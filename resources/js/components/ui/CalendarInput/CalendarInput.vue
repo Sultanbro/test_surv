@@ -130,7 +130,7 @@ export default {
 	},
 	data(){
 		const now = new Date()
-		return {
+		const data = {
 			month: now.getMonth(),
 			year: now.getFullYear(),
 			currentDay: now.getDate(),
@@ -138,6 +138,12 @@ export default {
 			currentYear: now.getFullYear(),
 			tsValue: this.value.map(el => this.$moment(el, this.format).valueOf() || 0)
 		}
+		if(data.tsValue.length && data.tsValue[data.tsValue.length - 1]){
+			const selected = new Date(data.tsValue[data.tsValue.length - 1])
+			data.month = selected.getMonth()
+			data.year = selected.getFullYear()
+		}
+		return data
 	},
 	computed: {
 		daysInMonth(){
