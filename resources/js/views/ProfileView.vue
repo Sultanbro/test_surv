@@ -23,18 +23,21 @@ export default {
 		ProfilePage,
 	},
 	mounted(){
+		const now = new Date()
+		// const month = `${now.getFullYear()}-${now.getMonth() + 1}`
 		// подготовка данных для страницы профиля
+		this.loadReadedPremiums()
 		this.fetchSettings('company')
 		this.fetchStatus()
 		this.fetchPersonalInfo()
 		this.fetchCourses(false)
-		this.fetchSalary()
+		this.fitchSalaryCrutch(now.getFullYear(), now.getMonth() + 1)
 		this.fetchPaymentTerms()
 	},
 	methods:{
 		...mapActions(usePersonalInfoStore, ['fetchPersonalInfo']),
 		...mapActions(useProfileCoursesStore, ['fetchCourses']),
-		...mapActions(useProfileSalaryStore, ['fetchSalary']),
+		...mapActions(useProfileSalaryStore, ['fitchSalaryCrutch', 'loadReadedPremiums']),
 		...mapActions(useProfileStatusStore, ['fetchStatus']),
 		...mapActions(useSettingsStore, ['fetchSettings']),
 		...mapActions(usePaymentTermsStore, ['fetchPaymentTerms']),

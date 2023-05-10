@@ -326,8 +326,8 @@ export default {
 	},
 	computed: {
 		...mapState(useSettingsStore, ['logo']),
-		...mapState(usePersonalInfoStore, ['user', 'position', 'groups', 'salary', 'workingDay', 'schedule', 'workingTime', 'buttonStatus']),
-		...mapState(useProfileStatusStore, ['status', 'balance', 'corp_book', 'message']),
+		...mapState(usePersonalInfoStore, ['user', 'position', 'groups', 'salary', 'workingDay', 'schedule', 'workingTime']),
+		...mapState(useProfileStatusStore, ['status', 'balance', 'corp_book', 'message', 'buttonStatus']),
 		...mapState(useSettingsStore, {settingsReady: 'isReady'}),
 		...mapState(useProfileStatusStore, {statusReady: 'isReady'}),
 		...mapState(useProfileSalaryStore, {salaryReady: 'isReady', salaryLoading: 'isLoading'}),
