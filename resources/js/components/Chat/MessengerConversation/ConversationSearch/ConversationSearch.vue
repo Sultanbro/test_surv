@@ -33,7 +33,7 @@
 						>
 						<div
 							class="messenger__messages-search-date-calendar ChatIcon-parent"
-							@click="showDatePicker = !showDatePicker"
+							@click.stop="showDatePicker = !showDatePicker"
 						>
 							<ChatIconSearchDate />
 						</div>
