@@ -671,6 +671,13 @@ Route::middleware(['web','tenant', 'not_admin_subdomain'])->group(function () {
         Route::post('/', [Root\Mailing\MailingController::class, 'create']);
         Route::delete('/{id}', [Root\Mailing\MailingController::class, 'delete']);
     });
+
+    Route::group([
+        'prefix' => 'notification-template',
+        'as'     => 'notification-template.'
+    ], function (){
+        Route::post('/apply-employee', [Root\Mailing\TriggerController::class, 'applyEmployee']);
+    });
 });
 
 /**

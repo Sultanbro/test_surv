@@ -3,6 +3,7 @@
 namespace App\Models\Mailing;
 
 use App\User;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
@@ -33,7 +34,8 @@ class MailingNotification extends Model
         'frequency',
         'time',
         'status',
-        'created_by'
+        'created_by',
+        'is_template'
     ];
 
     const WEEKLY = 'weekly';
@@ -46,4 +48,17 @@ class MailingNotification extends Model
     {
         return $this->hasMany(MailingNotificationSchedule::class, 'notification_id');
     }
+
+    /**
+     * Получить шаблонные уведомления.
+     *
+     * @param Builder $query
+     * @return Builder
+     */
+    public function scopeGetTemplates(Builder $query)
+    {
+        return $query->where('is_template', 1);
+    }
+
+
 }

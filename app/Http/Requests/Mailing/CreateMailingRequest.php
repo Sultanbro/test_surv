@@ -11,6 +11,7 @@ use App\Rules\Mailing\ValidateDaily;
 use App\Rules\Mailing\ValidateWeek;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Support\Arr;
+use Illuminate\Validation\Rule;
 
 class CreateMailingRequest extends BaseFormRequest
 {
@@ -49,9 +50,9 @@ class CreateMailingRequest extends BaseFormRequest
 
             'date'              => ['required', 'array', new ValidateWeek, new ValidateDaily],
             'date.days'         => [in_array($this->date['frequency'], [MailingEnum::WEEKLY, MailingEnum::MONTHLY]) ? 'required' : '', 'array'],
-            'date.frequency'    => 'required|string|in:weekly,monthly,daily',
-            'time'              => 'required|string'
-
+            'date.frequency'    => ['required', 'string', Rule::in(MailingEnum::FREQUENCIES)],
+            'time'              => 'required|string',
+            'is_template'       => 'boolean'
         ];
     }
 
@@ -68,6 +69,7 @@ class CreateMailingRequest extends BaseFormRequest
         $date       = Arr::get($validated, 'date');
         $time       = Arr::get($validated, 'time');
         $typeOfMailing  = Arr::get($validated, 'type_of_mailing');
+        $isTemplate = Arr::get($validated, 'is_template') ?? 0;
 
         return new CreateMailingDTO(
             $name,
@@ -75,7 +77,8 @@ class CreateMailingRequest extends BaseFormRequest
             $recipients,
             $date,
             $time,
-            $typeOfMailing
+            $typeOfMailing,
+            $isTemplate
         );
     }
 }

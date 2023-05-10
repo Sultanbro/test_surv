@@ -2,6 +2,10 @@
 
 namespace App\Models\Mailing;
 
+use App\Position;
+use App\ProfileGroup;
+use App\User;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Collection;
 
@@ -13,6 +17,7 @@ class Mailing
      * @param array $typeOfMailing
      * @param string $frequency
      * @param string $time
+     * @param bool|null $isTemplate
      * @return Model
      */
     public function createNotification(
@@ -20,7 +25,8 @@ class Mailing
         string $title,
         array $typeOfMailing,
         string $frequency,
-        string $time
+        string $time,
+        ?bool $isTemplate
     ): Model
     {
         return MailingNotification::query()->create([
@@ -29,6 +35,7 @@ class Mailing
             'type_of_mailing'   => json_encode($typeOfMailing),
             'frequency'         => $frequency,
             'time'              => $time,
+            'is_template'       => $isTemplate,
             'created_by'        => \Auth::id() ?? 5
         ]);
     }
@@ -85,5 +92,28 @@ class Mailing
     ): bool
     {
         return MailingNotification::query()->where('id', $id)->delete();
+    }
+
+    /**
+     * @param int $templateId
+     * @return Builder|\Illuminate\Database\Eloquent\Collection
+     */
+    public function getRecipients(
+        int $templateId
+    ): Builder|\Illuminate\Database\Eloquent\Collection
+    {
+        $recipients = MailingNotificationSchedule::query()->where('notification_id', $templateId)->get();
+
+        foreach ($recipients as $recipient)
+        {
+            switch ($recipient['notificationable_type']){
+                case 'App\User';
+                    return User::query()->where('id', $recipient['notificationable_id']);
+                case 'App\ProfileGroup';
+                    return ProfileGroup::getById($recipient['notificationable_id'])->activeUsers();
+                case 'App\Position';
+                    return Position::getById($recipient['notificationable_id'])->users()->whereNull('deleted_at');
+            }
+        }
     }
 }
