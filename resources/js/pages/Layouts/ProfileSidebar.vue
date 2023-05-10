@@ -324,6 +324,7 @@ export default {
 			canvas: null,
 			selectedDate: this.$moment(Date.now()).format('DD.MM.YYYY'),
 			isDatePicker: false,
+			needUpdateSalary: false,
 		};
 	},
 	computed: {
@@ -413,9 +414,15 @@ export default {
 		corp_book(){
 			this.initCorpBook()
 		},
-		selectedMonth(){
-			const splited = this.selectedDate.split('.')
-			this.fitchSalaryCrutch(+splited[2], +splited[1] - 1)
+		async selectedMonth(){
+			if(this.salaryLoading) {
+				this.needUpdateSalary = true
+				return
+			}
+			await this.updateSalary()
+			if(this.needUpdateSalary){
+				await this.updateSalary()
+			}
 		}
 	},
 	mounted(){
@@ -599,6 +606,10 @@ export default {
 		},
 		separateNumber(x){
 			return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+		},
+		async updateSalary(){
+			const splited = this.selectedDate.split('.')
+			await this.fitchSalaryCrutch(+splited[2], +splited[1] - 1)
 		}
 	}
 };
