@@ -17,6 +17,8 @@
 			:open="isDatePicker"
 			@close="onCloseDatePicker"
 			@input="onInput"
+			:only-month="true"
+			:start-year="Math.max(new Date(user.created_at).getFullYear(), 2020)"
 			:tabs="[]"
 			popup
 		/>
@@ -24,6 +26,7 @@
 </template>
 
 <script>
+import { mapGetters } from 'vuex'
 import CalendarInput from '@ui/CalendarInput/CalendarInput'
 const now = new Date()
 const date = `${now.getDate()}.${now.getMonth() + 1}.${now.getFullYear()}`
@@ -51,6 +54,9 @@ export default {
 			isDatePicker: false,
 			localValue: [this.value]
 		}
+	},
+	computed: {
+		...mapGetters(['user']),
 	},
 	watch: {
 		value(){
@@ -102,7 +108,17 @@ export default {
 	cursor: pointer;
 
 	.CalendarInput{
+		min-width: 100%;
 		margin-left: -1rem;
+		&-content{
+			min-width: 100%;
+		}
+	}
+	.CalendarInputBody{
+		flex: 1;
+	}
+	.CalendarInputHeader{
+		margin-bottom: 0;
 	}
 
 	&_disabled{

@@ -1,25 +1,71 @@
 <template>
 	<div class="CalendarInputHeader">
 		<div class="CalendarInputHeader-title">
-			<span
-				class="CalendarInputHeader-text"
-				@click="selectMonth"
-			>{{ year }} {{ monthName | capitalize }}</span>
-			<PopupMenu
-				v-show="isPopup"
-				:max-height="'30vh'"
-				position="bottomLeft"
-				v-click-outside="togglePopupIfShown"
-			>
-				<div
-					v-for="opt, i in monthOptions"
-					:key="i"
-					class="PopupMenu-item"
-					@click="onSelectMonth(opt)"
+			<template v-if="separateMonthYear">
+				<span class="CalendarInputHeader-text">
+					<span
+						class="CalendarInputHeader-year"
+						@click.stop="selectYear"
+					>{{ year }}</span>
+					<span
+						class="CalendarInputHeader-month"
+						@click.stop="selectMonth"
+					>
+						{{ monthName | capitalize }}
+					</span>
+				</span>
+				<PopupMenu
+					v-show="isPopupYear"
+					:max-height="'30vh'"
+					position="bottomLeft"
+					v-click-out="togglePopup"
 				>
-					{{ opt.year }} {{ monthNames[opt.month] }}
-				</div>
-			</PopupMenu>
+					<div
+						v-for="opt, i in yearOptions"
+						:key="i"
+						class="PopupMenu-item"
+						@click="onSelectYear(opt)"
+					>
+						{{ opt }}
+					</div>
+				</PopupMenu>
+				<PopupMenu
+					v-show="isPopupMonth"
+					:max-height="'30vh'"
+					position="bottomLeft"
+					v-click-out="togglePopup"
+				>
+					<div
+						v-for="opt, i in monthOptions"
+						:key="i"
+						class="PopupMenu-item"
+						@click="onSelectMonth(opt)"
+					>
+						{{ monthNames[opt] }}
+					</div>
+				</PopupMenu>
+			</template>
+			<template v-else>
+				<span
+					class="CalendarInputHeader-text"
+					@click.stop="selectYearMonth"
+				>{{ year }} {{ monthName | capitalize }}</span>
+				<PopupMenu
+					v-show="isPopup"
+					:max-height="'30vh'"
+					position="bottomLeft"
+					v-click-outside="togglePopup"
+				>
+					<div
+						v-for="opt, i in monthYearOptions"
+						:key="i"
+						class="PopupMenu-item"
+						@click="onSelectYearMonth(opt)"
+					>
+						{{ opt.year }} {{ monthNames[opt.month] }}
+					</div>
+				</PopupMenu>
+			</template>
 		</div>
 		<div class="CalendarInputHeader-buttons">
 			<button
@@ -50,23 +96,54 @@ export default {
 		CalendarIconDown,
 		PopupMenu,
 	},
+	directives: {
+		'click-out': {
+			bind(el, binding, vnode) {
+				el.clickOutsideEvent = (event) => {
+					if (!(el === event.target || el.contains(event.target))) {
+						vnode.context[binding.expression](event);
+					}
+				};
+				el.clickOutsideEventStop = (event) => { event.stopPropagation() }
+				document.body.addEventListener('click', el.clickOutsideEvent);
+				// el.addEventListener('click', el.clickOutsideEventStop)
+			},
+			unbind(el) {
+				document.body.removeEventListener('click', el.clickOutsideEvent);
+				// el.removeEventListener('click', el.clickOutsideEventStop)
+			},
+		}
+	},
 	inject: [
 		'getMonth',
 		'getYear',
 		'prevMonth',
 		'nextMonth',
 		'setMonth',
+		'getStartYear',
+		'getSeparateMonthYear',
 	],
 	data() {
+		const now = new Date()
+		const currentYear = now.getFullYear()
+		const currentMonth = now.getMonth()
+
 		const monthOptions = useMonthOptions()
 		const monthOptionsReversed = useMonthOptions().reverse()
+
 		return {
+			isPopupMonth: false,
+			isPopupYear: false,
 			isPopup: false,
-			monthOptions: useYearOptions().reverse().reduce((options, year) => {
-				options.push(...monthOptionsReversed.map(month => ({year, month})))
+			monthYearOptions: useYearOptions().reverse().reduce((options, year) => {
+				options.push(...monthOptionsReversed.reduce((result, month) => {
+					if(year === currentYear && month > currentMonth) return result
+					result.push({year, month})
+					return result
+				}, []))
 				return options
 			}, []),
-			monthNames: monthOptions.map(month => this.$moment([0, month]).format('MMMM'))
+			monthNames: monthOptions.map(month => this.$moment([0, month]).format('MMMM')),
 		}
 	},
 	computed: {
@@ -78,19 +155,46 @@ export default {
 		},
 		monthName(){
 			return this.$moment([this.year, this.month]).format('MMMM')
+		},
+		yearOptions(){
+			return useYearOptions(this.getStartYear())
+		},
+		monthOptions(){
+			return useMonthOptions()
+		},
+		separateMonthYear(){
+			return this.getSeparateMonthYear()
 		}
 	},
 	methods: {
 		selectMonth(){
 			setTimeout(() => {
-				this.isPopup = true
+				this.isPopupMonth = true
+				this.isPopupYear = false
 			}, 100)
 		},
-		onSelectMonth({month, year}){
-			this.setMonth(month, year)
+		selectYear(){
+			this.isPopupYear = true
+			this.isPopupMonth = false
 		},
-		togglePopupIfShown(){
-			if(!this.isPopup) return
+		selectYearMonth(){
+			this.isPopup = true
+		},
+		onSelectMonth(month){
+			this.setMonth(month)
+			this.isPopupMonth = false
+		},
+		onSelectYear(year){
+			this.setMonth(this.month, year)
+			this.isPopupYear = false
+		},
+		onSelectYearMonth({year, month}){
+			this.setMonth(month, year)
+			this.isPopup = false
+		},
+		togglePopup(){
+			this.isPopupMonth = false
+			this.isPopupYear = false
 			this.isPopup = false
 		}
 	},
@@ -124,6 +228,15 @@ export default {
 		&-text{
 			cursor: pointer;
 			user-select: none;
+		}
+		&-year,
+		&-month{
+			display: inline-block;
+			padding: 2px 4px;
+			border-radius: 4px;
+			&:hover{
+				background-color: #eee;
+			}
 		}
 		&-buttons{
 			display: flex;

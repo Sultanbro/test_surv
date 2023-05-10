@@ -68,7 +68,9 @@
 				<DateSelect
 					v-model="selectedDate"
 					:disabled="salaryLoading"
-					class="mt-4"
+					:only-month="true"
+					:start-year="Math.max(new Date(user.created_at).getFullYear(), 2020)"
+					class="ProfileSidebar-date mt-4"
 				/>
 
 				<b-modal
@@ -326,7 +328,7 @@ export default {
 	},
 	computed: {
 		...mapState(useSettingsStore, ['logo']),
-		...mapState(usePersonalInfoStore, ['user', 'position', 'groups', 'salary', 'workingDay', 'schedule', 'workingTime']),
+		...mapState(usePersonalInfoStore, ['position', 'groups', 'salary', 'workingDay', 'schedule', 'workingTime']),
 		...mapState(useProfileStatusStore, ['status', 'balance', 'corp_book', 'message', 'buttonStatus']),
 		...mapState(useSettingsStore, {settingsReady: 'isReady'}),
 		...mapState(useProfileStatusStore, {statusReady: 'isReady'}),
@@ -603,6 +605,11 @@ export default {
 </script>
 
 <style lang="scss">
+.ProfileSidebar{
+	&-date{
+		width: 100%;
+	}
+}
 	.modal-youtube{
 		.modal-xl{
 			max-width: 900px;
