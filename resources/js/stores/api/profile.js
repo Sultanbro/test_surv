@@ -132,6 +132,23 @@ export async function fetchProfileBonuses(year, month){
 }
 
 /**
+ * Получение возможных бонусов
+ */
+export async function fetchPosibleBonuses(){
+	const { data } = await axios.post('/bonus/user')
+	return data.bonuses
+}
+
+/**
+ * Получение наград текущего пользователя
+ * @param {string} type - nomination | certificate | accrual
+ */
+export async function fetchProfileAwards(type){
+	const { data } = await axios.get(`/awards/type?key=${type}`)
+	return data.data
+}
+
+/**
  * @typedef ProfilePersonalInfoResponse
  * @type {object}
  * @memberof ApiResponse

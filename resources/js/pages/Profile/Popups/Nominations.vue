@@ -423,6 +423,8 @@
 
 
 <script>
+import { mapActions } from 'pinia'
+import { useProfileSalaryStore } from '@/stores/ProfileSalary'
 import VuePdfEmbed from 'vue-pdf-embed/dist/vue2-pdf-embed';
 export default {
 	name: 'PopupNominations',
@@ -482,6 +484,10 @@ export default {
 			.catch(error => {
 				console.log(error);
 			});
+
+		// установить награды как виденные
+		this.setReadedAwards()
+
 		this.loading = false;
 		if (this.nominations.length > 0) {
 			let text = this.nominations[0].description;
@@ -497,6 +503,7 @@ export default {
 		}
 	},
 	methods: {
+		...mapActions(useProfileSalaryStore, ['setReadedAwards']),
 		nominationPublic(array){
 			return array.filter(a => a.type === 'public');
 		},

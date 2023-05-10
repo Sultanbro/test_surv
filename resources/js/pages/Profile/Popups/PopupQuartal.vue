@@ -149,8 +149,9 @@
 </template>
 
 <script>
-import { mapState } from 'pinia'
+import { mapState, mapActions } from 'pinia'
 import { usePortalStore } from '@/stores/Portal'
+import { useProfileSalaryStore } from '@/stores/ProfileSalary'
 import { useYearOptions } from '@/composables/yearOptions'
 import DateSelect from '../DateSelect'
 
@@ -203,6 +204,7 @@ export default {
 		this.fetchBefore()
 	},
 	methods: {
+		...mapActions(useProfileSalaryStore, ['setReadedPremiums']),
 		/**
          * set month
          */
@@ -246,6 +248,7 @@ export default {
 
 				// this.items.forEach(el => el.expanded = true);
 
+				this.setReadedPremiums()
 				this.loading = false
 			}).catch(error => {
 				this.loading = false
