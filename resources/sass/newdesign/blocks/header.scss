@@ -47,10 +47,8 @@
 .header__right-messages{
   display: flex;
   flex-direction: column;
-  align-items: center;
+  align-items: flex-start;
   gap: 1.4rem;
-
-
 }
 
 .header__message-item{
