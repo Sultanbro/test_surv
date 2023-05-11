@@ -1,6 +1,6 @@
 <template>
 	<div
-		class="messenger__container-scroll"
+		class="ConversationFeed messenger__container-scroll"
 		ref="messengerContainer"
 		id="messenger_container"
 		@click="contextMenuVisible = false"
@@ -356,6 +356,13 @@ export default {
 			letter-spacing: -0.02em;
 
 			color: #6F82A3;
+		}
+	}
+
+	.ConversationFeedReaders{
+		display: none;
+		&:last-child{
+			display: flex;
 		}
 	}
 }
