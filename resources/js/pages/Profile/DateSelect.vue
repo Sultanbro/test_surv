@@ -117,6 +117,7 @@ export default {
 		margin-left: -1rem;
 		&-content{
 			min-width: 100%;
+			margin-top: 10px;
 		}
 	}
 	.CalendarInputBody{
