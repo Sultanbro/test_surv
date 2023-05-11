@@ -2,7 +2,7 @@
 	<div class="messenger__chat-footer ConversationFooter">
 		<vue-draggable-resizable
 			:w="'auto'"
-			:h="48"
+			:h="localState.height"
 			:max-height="250"
 			:min-height="48"
 			:handles="['tm']"
@@ -170,7 +170,6 @@ import {
 	ChatIconHistoryDoc,
 } from '@icons'
 
-
 export default {
 	name: 'ConversationFooter',
 	components: {
@@ -191,6 +190,7 @@ export default {
 			files: [],
 			isRecordingAudio: false,
 			recordingTime: 0,
+			localState: this.defaultLocalState()
 		};
 	},
 	computed: {
@@ -211,6 +211,9 @@ export default {
 				}, 10);
 			}
 		},
+	},
+	created(){
+		this.loadLocalState()
 	},
 	methods: {
 		...mapActions(['sendMessage', 'editMessageAction', 'uploadFiles', 'citeMessage']),
@@ -287,8 +290,10 @@ export default {
 			event.stopPropagation();
 			this.citeMessage(null);
 		},
-		onResizeStop(){
+		onResizeStop(left, top, width, height){
 			this.ChatApp.$emit('FooterResized')
+			this.localState.height = height
+			this.saveLocalState()
 		},
 		handleError(error) {
 			console.error('ConversationFooter', error)
@@ -302,7 +307,23 @@ export default {
 				reader.readAsDataURL(fileObj.file)
 			}
 			return fileObj
-		}
+		},
+		defaultLocalState(){
+			return {
+				height: 48
+			}
+		},
+		loadLocalState(){
+			const local = localStorage.getItem('ConversationFooter')
+			if(local){
+				this.localState = JSON.parse(local)
+				return
+			}
+			this.localState = this.defaultLocalState()
+		},
+		saveLocalState(){
+			localStorage.setItem('ConversationFooter', JSON.stringify(this.localState))
+		},
 	},
 	filters: {
 		countdownFormat(value) {
