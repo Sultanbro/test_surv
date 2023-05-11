@@ -11,6 +11,7 @@ use App\Service\Mailing\Notifiers\NotificationFactory;
 use App\User;
 use Illuminate\Http\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
+use Throwable;
 
 /**
 * Класс для работы с Service.
@@ -20,6 +21,7 @@ class AbsentInternshipService
     /**
      * @param BaseDTO $dto
      * @return JsonResponse|bool
+     * @throws Throwable
      */
     public function handle(BaseDTO $dto): JsonResponse|bool
     {
@@ -39,7 +41,6 @@ class AbsentInternshipService
         }
 
         $link = route('users.edit') . "?id=$dto->userId";
-
         $message = $notificationTemplate->title;
         $message .= '<br> <a href="' . $link . '" target="_blank"> ' . $user->full_name . ' </a> <br>';
 
@@ -47,7 +48,9 @@ class AbsentInternshipService
 
         foreach ($mailings as $mailing)
         {
-            NotificationFactory::createNotification($mailing)->send();
+            NotificationFactory::createNotification($mailing)->send($notificationTemplate, $message);
         }
+
+        return true;
     }
 }

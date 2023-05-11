@@ -7,9 +7,11 @@ use App\DTO\BaseDTO;
 use App\Enums\Mailing\MailingEnum;
 use App\Facade\MailingFacade;
 use App\Models\Mailing\MailingNotification;
+use App\Service\Mailing\Notifiers\NotificationFactory;
 use App\User;
 use App\UserNotification;
 use Symfony\Component\HttpFoundation\Response;
+use Throwable;
 
 /**
 * Класс для работы с Service.
@@ -19,6 +21,7 @@ class ApplyEmployeeService
     /**
      * @param BaseDTO $dto
      * @return bool
+     * @throws Throwable
      */
     public function handle(
         BaseDTO $dto
@@ -31,21 +34,17 @@ class ApplyEmployeeService
             ->getTemplates()
             ->where('frequency', MailingEnum::TRIGGER_APPLIED)->first();
 
+        $types = json_decode($notificationTemplate->type_of_mailing);
+
         $link = route('users.edit') . "?id=$dto->userId";
 
         $message = $notificationTemplate->title;
         $message .= '<br> <a href="' . $link . '" target="_blank"> ' . $user->full_name . ' </a> <br>';
         $message .= 'Рабочий график: ' . $chart->start_time . '-' . $chart->end_time;
 
-        $recipientIds = MailingFacade::getRecipients($notificationTemplate->id)->pluck('id')->toArray();
-
-        foreach ($recipientIds as $recipientId)
+        foreach ($types as $type)
         {
-            UserNotification::createNotification(
-                $notificationTemplate->name,
-                $message,
-                $recipientId
-            );
+            NotificationFactory::createNotification($type)->send($notificationTemplate, $message);
         }
 
         return true;

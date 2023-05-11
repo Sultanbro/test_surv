@@ -11,6 +11,7 @@ use App\Service\Trigger\AbsentInternshipService;
 use App\Service\Trigger\ApplyEmployeeService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Throwable;
 
 class TriggerController extends Controller
 {
@@ -18,6 +19,7 @@ class TriggerController extends Controller
      * @param ApplyEmployeeRequest $request
      * @param ApplyEmployeeService $service
      * @return JsonResponse
+     * @throws Throwable
      */
     public function applyEmployee(ApplyEmployeeRequest $request, ApplyEmployeeService $service): JsonResponse
     {
@@ -31,6 +33,7 @@ class TriggerController extends Controller
      * @param AbsentInternshipRequest $request
      * @param AbsentInternshipService $service
      * @return JsonResponse
+     * @throws Throwable
      */
     public function absentInternship(AbsentInternshipRequest $request, AbsentInternshipService $service): JsonResponse
     {

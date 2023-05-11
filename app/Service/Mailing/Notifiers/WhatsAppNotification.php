@@ -65,7 +65,9 @@ class WhatsAppNotification implements Notification
         $response = Http::withHeaders([
             "Content-Type"  => "application/json",
             "Authorization" => "Bearer $this->token"
-        ])->post("https://api.wazzup24.com/v3/message", [
+        ])
+            ->timeout(10000)
+            ->post("https://api.wazzup24.com/v3/message", [
             'channelId' => $channelId,
             'chatId'    => $phone,
             'text'      => $message,
