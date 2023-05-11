@@ -156,6 +156,13 @@
 				/>
 			</div>
 
+			<div
+				class="ConversationMessage-context"
+				@click.stop="$emit('contextbutton', $event)"
+			>
+				<i class="fa fa-chevron-down mt-1" />
+			</div>
+
 			<!-- <div class="messenger__text-timestamp">
 				<span>{{ message.created_at | moment }}</span>
 			</div> -->
@@ -374,6 +381,7 @@ export default {
 $ConversationMessage-radius: 18px;
 .ConversationMessage{
 	gap: 10px;
+	position: relative;
 	&_userFirst{
 		&.messenger__message-box-left{
 			.messenger__message-card{
@@ -405,6 +413,33 @@ $ConversationMessage-radius: 18px;
 		font-size: 14px;
 		line-height: 16px;
 		letter-spacing: -0.015em;
+	}
+	&-context{
+		display: none;
+		align-items: center;
+		justify-content: center;
+
+		width: 16px;
+		height: 16px;
+		border-radius: 16px;
+
+		position: absolute;
+		top: 4px;
+		right: -24px;
+
+		font-size: 12px;
+		color: #fff;
+		background-color: #6986B8;
+		cursor: pointer;
+		&:hover{
+			background-color: #3361FF;
+		}
+	}
+
+	&:hover{
+		.ConversationMessage-context{
+			display: flex;
+		}
 	}
 }
 

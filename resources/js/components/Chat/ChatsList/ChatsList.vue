@@ -6,10 +6,14 @@
 	>
 		<ContextMenu
 			v-if="fullscreen"
-			:show="contextMenuVisible"
+			:show="true"
 			:x="contextMenuX"
 			:y="contextMenuY"
 			:parent-element="$refs.messengerChats"
+			:class="{
+				'ContextMenu_visible': contextMenuVisible
+			}"
+			v-click-outside="onClickOutside"
 		>
 			<template v-if="contextMenuChat">
 				<div
@@ -202,10 +206,12 @@ export default {
 			});
 		},
 		showChatContextMenu(event, chat) {
-			this.contextMenuVisible = true;
-			this.contextMenuX = event.clientX;
-			this.contextMenuY = event.clientY;
 			this.contextMenuChat = chat;
+			this.$nextTick(() => {
+				this.contextMenuX = event.clientX;
+				this.contextMenuY = event.clientY;
+				this.contextMenuVisible = true;
+			})
 		},
 		contextTogglePinned(){
 			this.contextMenuVisible = false
@@ -224,6 +230,9 @@ export default {
 			this.contextMenuVisible = false
 			if(this.contextMenuChat.is_mute) return this.unmuteChat(this.contextMenuChat.id)
 			this.muteChat(this.contextMenuChat.id)
+		},
+		onClickOutside(){
+			this.contextMenuVisible = false
 		}
 	}
 }
