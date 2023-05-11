@@ -211,6 +211,10 @@ export default {
 				}, 10);
 			}
 		},
+		citedMessage(){
+			const input = document.getElementById('messengerMessageInput')
+			if(input) input.focus()
+		}
 	},
 	created(){
 		this.loadLocalState()
@@ -288,6 +292,7 @@ export default {
 		},
 		closeCitation(event) {
 			event.stopPropagation();
+			this.body = ''
 			this.citeMessage(null);
 		},
 		onResizeStop(left, top, width, height){
