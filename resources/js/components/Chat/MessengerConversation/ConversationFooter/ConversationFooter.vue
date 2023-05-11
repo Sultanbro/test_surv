@@ -194,7 +194,7 @@ export default {
 		};
 	},
 	computed: {
-		...mapGetters(['chat', 'editMessage', 'citedMessage'])
+		...mapGetters(['chat', 'editMessage', 'citedMessage', 'messageSending'])
 	},
 	watch: {
 		editMessage(message) {
@@ -212,8 +212,7 @@ export default {
 			}
 		},
 		citedMessage(){
-			const input = document.getElementById('messengerMessageInput')
-			if(input) input.focus()
+			this.focusInput()
 		}
 	},
 	created(){
@@ -235,6 +234,7 @@ export default {
 				}
 				return true
 			}
+			if(this.messageSending) return true
 			let text = this.body.trim();
 			if ((text || this.files.length > 0) && this.chat) {
 				if (this.editMessage) {
@@ -249,10 +249,14 @@ export default {
 					}
 					this.body = '';
 					this.$nextTick(() => {
-						document.getElementById('messengerMessageInput').focus();
+						this.focusInput()
 					});
 				}
 			}
+		},
+		focusInput(){
+			const input = document.getElementById('messengerMessageInput')
+			if(input) input.focus()
 		},
 		appendEmoji(emoji) {
 			this.body += emoji;

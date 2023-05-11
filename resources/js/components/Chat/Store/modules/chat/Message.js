@@ -13,7 +13,8 @@ export default {
 		startMessageId: null,
 		messagesOldEndReached: false,
 		messagesNewEndReached: false,
-		messagesLoading: false
+		messagesLoading: false,
+		messageSending: false,
 	},
 	actions: {
 		async loadMessages({commit, getters, dispatch}, {
@@ -99,6 +100,8 @@ export default {
 			dispatch('loadMessages');
 		},
 		async sendMessage({commit, getters, dispatch}, message) {
+			if(this.messageSending) return
+			this.messageSending = true
 			let citedMessageId = getters.citedMessage ? getters.citedMessage.id : null;
 			const guid = Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
 			let newMessage = {
@@ -112,7 +115,7 @@ export default {
 			commit('addMessage', newMessage);
 			dispatch('requestScroll', 0);
 			commit('setCitedMessage', null);
-			return API.sendMessage(getters.chat.id, message, citedMessageId, response => {
+			const result = await API.sendMessage(getters.chat.id, message, citedMessageId, response => {
 				response.new_id = response.id;
 				response.id = guid;
 				commit('updateMessage', response);
@@ -121,6 +124,8 @@ export default {
 				newMessage.failed = true;
 				commit('updateMessage', newMessage);
 			});
+			this.messageSending = false
+			return result
 		},
 		async editMessageAction({commit, getters, dispatch}, text) {
 			return API.editMessage(getters.editMessage.id, text, response => {
@@ -448,6 +453,7 @@ export default {
 		startMessageId: state => state.startMessageId,
 		messagesOldEndReached: state => state.messagesOldEndReached,
 		messagesNewEndReached: state => state.messagesNewEndReached,
-		messagesLoading: state => state.messagesLoading
+		messagesLoading: state => state.messagesLoading,
+		messageSending: state => state.messageSending,
 	}
 }
