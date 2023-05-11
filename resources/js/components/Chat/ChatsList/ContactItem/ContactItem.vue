@@ -1,5 +1,5 @@
 <template>
-	<div class="messenger__chat-item-container messenger__text-ellipsis">
+	<div class="messenger__chat-item-container">
 		<JobtronAvatar
 			:image="avatar"
 			:title="item.title"
