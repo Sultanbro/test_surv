@@ -2,7 +2,7 @@
 	<div class="ChatNewChat">
 		<div class="ChatNewChat-header mb-4">
 			<div class="ChatNewChat-title">
-				Новый чат
+				Создание нового чата
 			</div>
 			<div
 				class="ChatNewChat-close ChatIcon-parent ml-a"
