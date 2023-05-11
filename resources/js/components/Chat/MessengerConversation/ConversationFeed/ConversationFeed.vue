@@ -367,7 +367,7 @@ export default {
 }
 #messenger__messages{
 	> div:last-of-type{
-		margin-bottom: 25px;
+		padding-bottom: 25px;
 	}
 }
 .messenger__container-scroll {

@@ -43,7 +43,7 @@
 						<span>
 							<template v-for="(messagePart, key) in messageBody">
 								<template v-if="messagePart.type === MESSAGE_TYPES.TEXT">
-									{{ messagePart.text }}
+									<template>{{ messagePart.text }}</template>
 								</template>
 								<a
 									v-else
@@ -349,6 +349,9 @@ export default {
 				url: link,
 			};
 		},
+		trim(value){
+			return ('' + value).trim()
+		}
 	},
 	filters: {
 		moment: function (date) {
@@ -601,6 +604,9 @@ audio {
 	height: 75px;
 }
 
+.messenger__format-container{
+	white-space: pre-line;
+}
 .messenger__format-container_parent {
 	border-left: 2px solid #5ebee9;
 	cursor: pointer;
