@@ -4,6 +4,7 @@ namespace App\Service\Mailing\Notifiers;
 
 use App\Classes\Helpers\Phone;
 use App\Enums\Mailing\MailingEnum;
+use App\Facade\MailingFacade;
 use App\Models\Mailing\MailingNotification;
 use App\Models\Mailing\MailingNotificationSchedule;
 use App\ProfileGroup;
@@ -28,85 +29,34 @@ class WhatsAppNotification implements Notification
         $this->token = config('wazzup')['token'];
     }
 
-    public function send(Model $notification, MailingNotificationSchedule $recipient): ?bool
-    {
-        $type = MailingEnum::TYPES[$recipient->notificationable_type] . 'Mailing';
-
-        if (!method_exists($this, $type))
-        {
-            throw new InvalidArgumentException("Method $type is not defined");
-        }
-
-        return $this->{$type}($notification, $recipient->notificationable_id);
-    }
-
     /**
-     * @param MailingNotification $notification
-     * @param int $groupId
-     * @return void
-     * @throws HttpClientException
+     * @param Model $notification
+     * @param string $message
+     * @return bool|null
      * @throws Exception
      */
-    private function groupMailing(MailingNotification $notification, int $groupId): void
+    public function send(Model $notification, string $message = ''): ?bool
     {
-        $userIds = ProfileGroup::getById($groupId)->activeUsers()
-            ->where('phone', '!=', '')
-            ->withWhereHas('user_description', fn($user) => $user->where('bitrix_id', '!=', 0))
-            ->get();
+        $recipients = MailingFacade::getRecipients($notification->id)
+            ->where('phone', '!=', '')->get();
 
-        foreach ($userIds as $userId)
+        foreach ($recipients as $recipient)
         {
-            $this->sendNotification($userId, $notification);
+            $this->sendNotification($recipient, $message);
         }
-    }
 
-    /**
-     * @param MailingNotification $notification
-     * @param int $userId
-     * @return void
-     * @throws HttpClientException
-     * @throws Exception
-     */
-    private function individualMailing(MailingNotification $notification, int $userId): void
-    {
-        $user = User::query()
-            ->where('phone', '!=', '')
-            ->withWhereHas('user_description', fn($user) => $user->where('bitrix_id', '!=', 0))->findOrFail($userId);
-
-        $this->sendNotification($user, $notification);
-    }
-
-    /**
-     * @param MailingNotification $notification
-     * @param int $positionId
-     * @return void
-     * @throws HttpClientException
-     * @throws Exception
-     */
-    private function positionMailing(MailingNotification $notification, int $positionId): void
-    {
-        $users = User::query()
-            ->where('phone', '!=', '')
-            ->where('position_id', $positionId)
-            ->withWhereHas('user_description', fn($user) => $user->where('bitrix_id', '!=', 0))
-            ->get();
-
-
-        foreach ($users as $user)
-        {
-            $this->sendNotification($user, $notification);
-        }
+        return true;
     }
 
     /**
      * @param User $user
-     * @param MailingNotification $notification
+     * @param string $message
      * @return void
      * @throws Exception
      */
     private function sendNotification(
         User $user,
-        MailingNotification $notification
+        string $message
     ): void
     {
         $phone      = Phone::normalize($user->phone);
@@ -118,7 +68,7 @@ class WhatsAppNotification implements Notification
         ])->post("https://api.wazzup24.com/v3/message", [
             'channelId' => $channelId,
             'chatId'    => $phone,
-            'text'      => $notification->title,
+            'text'      => $message,
             'chatType'  => 'whatsapp',
         ]);
 

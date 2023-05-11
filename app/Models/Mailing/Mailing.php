@@ -7,6 +7,8 @@ use App\ProfileGroup;
 use App\User;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Relations\Relation;
 use Illuminate\Support\Collection;
 
 class Mailing
@@ -94,13 +96,14 @@ class Mailing
         return MailingNotification::query()->where('id', $id)->delete();
     }
 
+
     /**
      * @param int $templateId
-     * @return Builder|\Illuminate\Database\Eloquent\Collection
+     * @return Relation|Builder
      */
     public function getRecipients(
         int $templateId
-    ): Builder|\Illuminate\Database\Eloquent\Collection
+    ): Relation|Builder
     {
         $recipients = MailingNotificationSchedule::query()->where('notification_id', $templateId)->get();
 

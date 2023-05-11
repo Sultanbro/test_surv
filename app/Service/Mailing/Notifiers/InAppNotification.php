@@ -15,17 +15,20 @@ use Illuminate\Database\Eloquent\Model;
 class InAppNotification implements Notification
 {
     /**
+     * @param Model $notification
+     * @param string $message
+     * @return bool|null
      * @throws Exception
      */
-    public function send(Model $notification, MailingNotificationSchedule $recipient): ?bool
+    public function send(Model $notification, string $message = ''): ?bool
     {
-        $recipientType = MailingEnum::TYPES[$recipient->notificationable_type] . 'Notify';
+        $recipients = MailingFacade::getRecipients($notification->id)->pluck('id')->toArray();
 
-        if (!method_exists(MailingNotificationSchedule::class, $recipientType))
+        foreach ($recipients as $recipient)
         {
-            throw new Exception("Method $recipientType does not exist");
+            UserNotification::createNotification($notification->name, $message, $recipient);
         }
 
-        return (new MailingNotificationSchedule)->{$recipientType}($notification, $recipient);
+        return true;
     }
 }

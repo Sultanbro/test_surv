@@ -2,6 +2,7 @@
 
 namespace App\Console\Commands\Pusher;
 
+use App\Enums\Mailing\MailingEnum;
 use App\Models\Mailing\MailingNotification;
 use App\Service\Mailing\Notifiers\NotificationFactory;
 use Exception;
@@ -34,7 +35,9 @@ class Pusher extends Command
      */
     public function handle(): ?bool
     {
-        $notifications = MailingNotification::with('recipients')->where('status', 1)->get();
+        $notifications = MailingNotification::with('recipients')
+            ->whereIn('frequency', [MailingEnum::DAILY, MailingEnum::WEEKLY, MailingEnum::MONTHLY])
+            ->where('status', 1)->get();
 
         foreach ($notifications as $notification)
         {
@@ -60,18 +63,9 @@ class Pusher extends Command
     {
         $mailingSystems = json_decode($notification->type_of_mailing);
 
-        foreach ($notification->recipients as $recipient)
+        foreach ($mailingSystems as $mailingSystem)
         {
-            $notification = $this->mailingNotification()->first();
-            $time   = now()->addHours(6)->setSeconds('00')->format('H:i:s');
-
-            if ($time == $notification->time)
-            {
-                foreach ($mailingSystems as $mailingSystem)
-                {
-                    NotificationFactory::createNotification($mailingSystem)->send($notification, $recipient);
-                }
-            }
+            NotificationFactory::createNotification($mailingSystem)->send($notification, $notification->title);
         }
     }
 
@@ -85,19 +79,14 @@ class Pusher extends Command
     ): void
     {
         $mailingSystems = json_decode($notification->type_of_mailing);
+        $days   =  json_decode($notification->recipients()->first()->days);
+        $today  = Carbon::now()->dayOfWeekIso;
 
-        foreach ($notification->recipients as $recipient)
+        if (in_array($today, $days))
         {
-            $days = json_decode($recipient->days);
-            $today  = Carbon::now()->dayOfWeekIso;
-            $time   = now()->addHours(6)->setSeconds('00')->format('H:i:s');
-
-            if (in_array($today, $days) && $time == $notification->time)
+            foreach ($mailingSystems as $mailingSystem)
             {
-                foreach ($mailingSystems as $mailingSystem)
-                {
-                    NotificationFactory::createNotification($mailingSystem)->send($notification, $recipient);
-                }
+                NotificationFactory::createNotification($mailingSystem)->send($notification, $notification->title, $notification->name);
             }
         }
     }
@@ -112,20 +101,16 @@ class Pusher extends Command
     ): void
     {
         $mailingSystems = json_decode($notification->type_of_mailing);
+        $days   =  json_decode($notification->recipients()->first()->days);
+        $today  = Carbon::now()->day;
 
-        foreach ($notification->recipients as $recipient)
+        if (in_array($today, $days))
         {
-            $days   = json_decode($recipient->days);
-            $today  = Carbon::now()->day;
-            $time   = now()->addHours(6)->setSeconds('00')->format('H:i:s');
-
-            if (in_array($today, $days) && $time == $notification->time)
+            foreach ($mailingSystems as $mailingSystem)
             {
-                foreach ($mailingSystems as $mailingSystem)
-                {
-                    NotificationFactory::createNotification($mailingSystem)->send($notification, $recipient);
-                }
+                NotificationFactory::createNotification($mailingSystem)->send($notification, $notification->title);
             }
         }
+
     }
 }

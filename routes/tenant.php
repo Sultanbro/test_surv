@@ -677,6 +677,7 @@ Route::middleware(['web','tenant', 'not_admin_subdomain'])->group(function () {
         'as'     => 'notification-template.'
     ], function (){
         Route::post('/apply-employee', [Root\Mailing\TriggerController::class, 'applyEmployee']);
+        Route::post('/absent-internship', [Root\Mailing\TriggerController::class, 'absentInternship']);
     });
 });
 

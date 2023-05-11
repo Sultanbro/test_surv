@@ -7,5 +7,5 @@ use Illuminate\Database\Eloquent\Model;
 
 interface Notification
 {
-    public function send(Model $notification, MailingNotificationSchedule $recipient): ?bool;
+    public function send(Model $notification, string $message = ''): ?bool;
 }

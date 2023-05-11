@@ -38,7 +38,7 @@ class ApplyEmployeeService
         $message .= 'Рабочий график: ' . $chart->start_time . '-' . $chart->end_time;
 
         $recipientIds = MailingFacade::getRecipients($notificationTemplate->id)->pluck('id')->toArray();
-        dd($recipientIds);
+
         foreach ($recipientIds as $recipientId)
         {
             UserNotification::createNotification(
