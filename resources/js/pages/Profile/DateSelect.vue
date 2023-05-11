@@ -81,7 +81,7 @@ export default {
 			this.isDatePicker = !this.isDatePicker
 		},
 		onCloseDatePicker(e){
-			if(this.$el.contains(e.target)) return
+			if(e?.target && this.$el.contains(e.target)) return
 			this.isDatePicker = false
 		},
 	}
