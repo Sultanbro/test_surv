@@ -32,8 +32,7 @@
   >
     <v-card>
       <v-card-text>
-        Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore
-        magna aliqua.
+       Вы уверены, что хотите удалить вопрос? Если в нем есть воженные вопросы, они так же будут удалены!
       </v-card-text>
       <v-card-actions class="justify-end">
         <v-btn color="red-darken-1" @click="deleteElement()">Удалить</v-btn>
