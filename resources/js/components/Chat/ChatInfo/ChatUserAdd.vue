@@ -9,7 +9,7 @@
 			</div>
 			<div
 				class="ChatUserAdd-close ChatIcon-parent ml-a"
-				@click="toggleAddUserDialog"
+				@click="requestProcess ? () => {} : toggleAddUserDialog()"
 			>
 				<ChatIconSearchClose />
 			</div>
@@ -17,10 +17,11 @@
 		<AccessSelect
 			v-model="selectedTargets"
 			:tabs="['Сотрудники', 'Отделы', 'Должности']"
-			:submit-button="''"
+			:submit-button="'Добавить в группу'"
+			:submit-disabled="requestProcess"
 			:access-dictionaries="notInChat"
 			:search-position="'beforeTabs'"
-			@input="submitChat"
+			@submit="submitChat"
 			class="ChatUserAdd-select"
 		/>
 	</div>
@@ -91,9 +92,11 @@ export default {
 			'toggleAddUserDialog',
 		]),
 		async submitChat(){
+			this.requestProcess = true
+			this.toggleAddUserDialog()
 			await this.addMembers(this.actualUsers)
 			this.selectedTargets = []
-			// this.toggleAddUserDialog()
+			this.requestProcess = false
 		}
 	}
 }
