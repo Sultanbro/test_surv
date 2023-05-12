@@ -238,7 +238,6 @@ class HeadhunterNegotiations extends Command
             $negotiations = $this->hh->getNegotiations($vacancy->vacancy_id, $this->date);
         } catch (\Throwable $e) {
             if($e->getCode() == 403) {
-                dd('here');
                 $this->hh->refresh();
                 $negotiations = $this->hh->getNegotiations($vacancy->vacancy_id, $this->date);
             }
