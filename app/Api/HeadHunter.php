@@ -278,7 +278,6 @@ class HeadHunter {
     public function getVacancy($id) {
         $response = $this->get('/vacancies/' . $id);
         $arr = $this->toArray($response);
-        dd($arr);
         return !in_array($arr->manager->id, self::MANAGERS) ? null : $arr;
     }
 
