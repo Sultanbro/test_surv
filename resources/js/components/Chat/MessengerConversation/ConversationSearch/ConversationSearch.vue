@@ -47,14 +47,16 @@
 					</div>
 				</div>
 				<div class="messenger__messages-search-results messenger__messages-search-results_bg">
-					<div
-						v-for="(message, index) in chatSearchMessagesResults"
-						:key="index"
-						class="messenger__message-wrapper"
-						@click="goto(message, $event)"
-					>
-						<ConversationMessage :message="message" />
-					</div>
+					<template v-for="(message, index) in chatSearchMessagesResults">
+						<div
+							v-if="message.body !== 'Event'"
+							:key="index"
+							class="messenger__message-wrapper"
+							@click="goto(message, $event)"
+						>
+							<ConversationMessage :message="message" />
+						</div>
+					</template>
 				</div>
 			</div>
 			<div class="messenger__messages-container">
@@ -297,9 +299,12 @@ export default {
 }
 
 .messenger__messages-search-results {
+	flex: 1;
+
 	max-width: 100%;
-	flex-grow: 1;
 	padding: 10px;
+
+	overflow-y: auto;
 }
 .messenger__messages-search-results_bg{
 	background: url('../../../../../assets/chat/bg.jpg') repeat, #F7F8FA;

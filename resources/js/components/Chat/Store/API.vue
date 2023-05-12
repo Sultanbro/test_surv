@@ -62,15 +62,20 @@ export default {
    * @return {Promise}
    */
 	searchMessages(payload, callback = () => {}) {
+		const params = {
+			q: payload.search,
+			chat_id: payload.chatId,
+			only_files: payload.onlyFiles,
+			date: payload.date,
+		}
+		if(payload.month){
+			params.month = payload.month
+		}
+		if(payload.year){
+			params.year = payload.year
+		}
 		return axios.get(REST_URI + 'search/messages', {
-			params: {
-				q: payload.search,
-				chat_id: payload.chatId,
-				only_files: payload.onlyFiles,
-				date: payload.date,
-				month: payload.month,
-				year: payload.year,
-			}
+			params
 		}).then(response => {
 			callback(response.data);
 		});
