@@ -8,7 +8,9 @@
 				class="messenger__messages-container"
 				style="flex-grow: 3"
 			>
-				<ConversationHeader />
+				<ConversationHeader
+					:actions="false"
+				/>
 				<div class="messenger__messages-search">
 					<div class="messenger__messages-search-input">
 						<ChatIconSearch />
