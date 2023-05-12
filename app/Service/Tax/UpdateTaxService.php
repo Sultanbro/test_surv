@@ -21,7 +21,14 @@ class UpdateTaxService
     ): bool
     {
         try {
-            return Tax::query()->findOrFail($dto->id)->update($dto->toArray());
+            Tax::getTaxById($dto->id)?->users()
+                ->where('user_id', $dto->userId)
+                ->update([
+                    'value' => $dto->value
+                ]);
+
+            return true;
+
         }catch (Throwable $exception)
         {
             throw new Exception("При обновлений $dto->id произошла ошибка");
