@@ -91,7 +91,7 @@ export default {
 	gap: 20px;
 
 	width: 100%;
-	padding: 5px 0;
+	padding: 3px 0;
 	&:hover {
 		cursor: pointer;
 		background: rgba(21, 106, 232, 0.031372549);

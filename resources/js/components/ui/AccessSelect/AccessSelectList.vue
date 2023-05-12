@@ -66,7 +66,10 @@ export default {
 .AccessSelectList {
 	display: flex;
 	flex-direction: column;
-	gap: 15px;
+	gap: 5px;
+
+	padding: 2px 0;
+
 	overflow-y: scroll;
 }
 </style>

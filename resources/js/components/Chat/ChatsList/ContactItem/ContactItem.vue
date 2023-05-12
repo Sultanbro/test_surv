@@ -264,6 +264,7 @@ export default {
 .messenger__chat-indicators{
 	display: flex;
 	flex-flow: row nowrap;
+	gap: 5px;
 }
 
 .messenger__chat-unread{

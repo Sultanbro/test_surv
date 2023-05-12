@@ -200,7 +200,7 @@ export default {
 	&-search,
 	&-tabs,
 	&-list{
-		margin-bottom: 20px;
+
 	}
 	&-list {
 		display: flex;

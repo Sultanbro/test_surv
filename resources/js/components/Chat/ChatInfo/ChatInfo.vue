@@ -336,7 +336,7 @@ export default {
 		border-radius: 20px 20px 0 0;
 	}
 	&-logo{
-		margin-top: 60px;
+		margin-top: 10px;
 		margin-bottom: 30px;
 	}
 	&-nologo{
@@ -395,7 +395,7 @@ export default {
 		color: #152136;
 	}
 	&-users{
-		margin-bottom: 25px;
+		// margin-bottom: 25px;
 		font-weight: 400;
 		font-size: 13px;
 		line-height: 14px;
@@ -435,7 +435,7 @@ export default {
 		justify-content: flex-start;
 		gap: 15px;
 
-		margin-bottom: 20px;
+		margin-bottom: 5px;
 
 		cursor: pointer;
 		user-select: none;
