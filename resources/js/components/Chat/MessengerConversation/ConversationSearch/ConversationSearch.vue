@@ -186,7 +186,7 @@ export default {
 		searchFiles() {
 			if(!this.chat) return
 			this.findFilesInChat({
-				text: this.searchFilesQuery,
+				text: '' + this.searchFilesQuery,
 				chat_id: this.chat.id,
 			});
 		},
