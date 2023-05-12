@@ -61,14 +61,16 @@
 				<div
 					v-if="!isEdit"
 					class="ChatInfo-title"
+					@dblclick="onDoubleTitle"
 				>
 					{{ chat.title }}
 				</div>
 				<input
 					v-else
 					type="text"
-					class="ChatInfo-titleInput"
 					v-model="chatTitle"
+					id="ChatInfo-inputTitle"
+					class="ChatInfo-titleInput"
 				>
 				<div
 					v-if="!isEdit && !chat.private"
@@ -307,6 +309,14 @@ export default {
 		onDeleteChat(){
 			if(!confirm('Вы действительно хотите удалить чат?')) return
 			this.removeChat(this.chat)
+		},
+		onDoubleTitle(){
+			this.chatTitle = this.chat?.title || ''
+			this.isEdit = true
+			this.$nextTick(() => {
+				const input = document.getElementById('ChatInfo-inputTitle')
+				if(input) input.focus()
+			})
 		}
 	}
 }
@@ -361,6 +371,7 @@ export default {
 		letter-spacing: -0.01em;
 
 		color: #13223F;
+		user-select: none;
 	}
 	&-titleInput{
 		display: block;
