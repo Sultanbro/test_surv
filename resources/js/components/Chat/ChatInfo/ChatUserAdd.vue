@@ -19,6 +19,7 @@
 			:tabs="['Сотрудники', 'Отделы', 'Должности']"
 			:submit-button="''"
 			:access-dictionaries="notInChat"
+			:search-position="'beforeTabs'"
 			@input="submitChat"
 			class="ChatUserAdd-select"
 		/>
@@ -104,9 +105,9 @@ export default {
 	flex-flow: column nowrap;
 
 	width: 414px;
-	height: 720px;
+	// height: 720px;
 	max-width: 414px;
-	max-height: 90vh;
+	max-height: min(90vh, 720px);
 	min-height: 0;
 	padding: 20px;
 

@@ -111,11 +111,11 @@ export default {
 
 		border-radius: 50%;
 		color: #fff;
-		font-size: 16px;
+		font-size: 12px;
 	}
 	&-text{
 		color: #fff;
-		font-size: 16px;
+		font-size: 12px;
 		font-weight: 700;
 	}
 	&-tooltip{
@@ -156,7 +156,13 @@ export default {
 		}
 	}
 }
-
+@container (min-width: 32px) {
+  .JobtronAvatar{
+		&-text {
+			font-size: 16px;
+		}
+	}
+}
 @container (min-width: 50px) {
   .JobtronAvatar{
 		&-text {

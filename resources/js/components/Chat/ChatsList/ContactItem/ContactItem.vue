@@ -1,5 +1,5 @@
 <template>
-	<div class="messenger__chat-item-container messenger__text-ellipsis">
+	<div class="messenger__chat-item-container">
 		<JobtronAvatar
 			:image="avatar"
 			:title="item.title"
@@ -264,6 +264,7 @@ export default {
 .messenger__chat-indicators{
 	display: flex;
 	flex-flow: row nowrap;
+	gap: 5px;
 }
 
 .messenger__chat-unread{

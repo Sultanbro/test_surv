@@ -8,10 +8,13 @@
 	>
 		<!-- Контекст -->
 		<ContextMenu
-			:show="contextMenuVisible"
+			:show="true"
 			:x="contextMenuX"
 			:y="contextMenuY"
 			:parent-element="$refs.messengerContainer"
+			:class="{
+				'ContextMenu_visible': contextMenuVisible
+			}"
 		>
 			<div class="messenger__context-menu_reactions">
 				<div
@@ -96,6 +99,7 @@
 							:helper="renderHelper"
 							:last="index === d.length - 1"
 							@loadImage="index === d.length - 1 && scrollBottom"
+							@contextbutton="showChatContextMenu(message, ...arguments)"
 						/>
 					</div>
 
@@ -281,10 +285,12 @@ export default {
 			}
 		},
 		showChatContextMenu(message, event) {
-			this.contextMenuVisible = true;
-			this.contextMenuX = event.clientX;
-			this.contextMenuY = event.clientY;
 			this.contextMenuMessage = message;
+			this.$nextTick(() => {
+				this.contextMenuX = event.clientX;
+				this.contextMenuY = event.clientY;
+				this.contextMenuVisible = true;
+			})
 		},
 		remove(message) {
 			// ask for confirmation
@@ -322,6 +328,16 @@ export default {
 	}
 }
 </script>
+
+<style lang="scss">
+.messenger__message-wrapper{
+	&:hover{
+		.ConversationMessage-context{
+			display: flex;
+		}
+	}
+}
+</style>
 
 <style lang="scss" scoped>
 .ConversationFeed{
@@ -367,7 +383,7 @@ export default {
 }
 #messenger__messages{
 	> div:last-of-type{
-		margin-bottom: 25px;
+		padding-bottom: 25px;
 	}
 }
 .messenger__container-scroll {
