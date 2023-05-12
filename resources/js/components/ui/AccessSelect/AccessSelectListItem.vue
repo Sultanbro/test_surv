@@ -15,6 +15,16 @@
 			:src="item.avatar || null"
 			class="AccessSelectListItem-avatar"
 		>
+		<template v-else>
+			<i
+				v-if="type === 2"
+				class="fa fa-users"
+			/>
+			<i
+				v-if="type === 3"
+				class="fa fa-briefcase"
+			/>
+		</template>
 		<div class="AccessSelectListItem-info">
 			<div
 				v-if="position"
@@ -75,6 +85,7 @@ export default {
 	},
 	computed: {
 		show(){
+			if(!this.search) return true
 			const inName = this.item?.name?.toLowerCase().includes(this.search)
 			const inPosition = this.position && this.item?.position?.toLowerCase().includes(this.search)
 			return inName || inPosition

@@ -4,11 +4,11 @@
 			v-for="item in items"
 			:key="item.id"
 			:item="item"
-			:type="type"
-			:position="position"
-			:avatar="avatar"
+			:type="type ? type : item.type"
+			:position="type ? position : item.type === 1"
+			:avatar="type ? avatar : item.type === 1"
 			:search="lowerSearch"
-			:checked="checked(item, type)"
+			:checked="checked(item, type ? type : item.type)"
 			@change="$emit('change', $event)"
 		/>
 	</div>
