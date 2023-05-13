@@ -534,7 +534,10 @@ class SalaryController extends Controller
         $userIds    = $users->pluck('id')->toArray();
         $zarplaties = Zarplata::getSalaryByUserIds($userIds);
 
-        $userTaxes  = DB::table('user_tax')->whereDate('created_at', '<=', $date->lastOfMonth()->format('Y-m-d'))->whereIn('user_id', $userIds)->get();
+        $userTaxes  = DB::table('user_tax')
+            ->whereDate('created_at', '<=', $date->lastOfMonth()->format('Y-m-d'))
+            ->whereIn('user_id', $userIds)->get();
+
 
         foreach ($users as $user) { /** @var User $user */
 
@@ -758,16 +761,19 @@ class SalaryController extends Controller
              */
             foreach ($taxColumns as $taxColumn)
             {
-                $userZarplata =$zarplaties->where('user_id', $user->id)->first()->zarplata;
+                $userZarplata = $zarplaties->where('user_id', $user->id)->first()->zarplata;
                 $totalColumns["tax_$taxColumn->id"] = 0;
                 $exist = $userTaxes->where('user_id', $user->id)->where('tax_id', $taxColumn->id)->count() > 0;
 
+                $tax    = $userTaxes->where('user_id', $user->id)->where('tax_id', $taxColumn->id)->first();
+                $value  = $tax?->value > 0 ? $tax?->value : $taxColumn?->value;
+
                 if ($exist)
                 {
-                    $amount = $taxColumn->is_percent ? $userZarplata * ($taxColumn->value / 100) : $taxColumn->value;;
+                    $amount         = $taxColumn->is_percent ? $userZarplata * ($value / 100) : $value;
                     $total_payment -= $amount;
-                    $totalColumns["tax_$taxColumn->id"] = $amount;
-                    $allTotal["tax_$taxColumn->id"] += $amount;
+                    $totalColumns["tax_$taxColumn->id"]  = $amount;
+                    $allTotal["tax_$taxColumn->id"]     += $amount;
                 }
             }
             $on_currency = number_format((float)$total_payment * (float)$currency_rate, 0, '.', '') . strtoupper($user->currency);
