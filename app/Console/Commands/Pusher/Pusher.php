@@ -50,6 +50,8 @@ class Pusher extends Command
 
             return $this->{$frequency}($notification);
         }
+
+        return true;
     }
 
     /**
@@ -79,7 +81,7 @@ class Pusher extends Command
     ): void
     {
         $mailingSystems = json_decode($notification->type_of_mailing);
-        $days   =  json_decode($notification->recipients()->first()->days);
+        $days   =  json_decode($notification->days);
         $today  = Carbon::now()->dayOfWeekIso;
 
         if (in_array($today, $days))
@@ -101,7 +103,7 @@ class Pusher extends Command
     ): void
     {
         $mailingSystems = json_decode($notification->type_of_mailing);
-        $days   =  json_decode($notification->recipients()->first()->days);
+        $days   =  json_decode($notification->days);
         $today  = Carbon::now()->day;
 
         if (in_array($today, $days))

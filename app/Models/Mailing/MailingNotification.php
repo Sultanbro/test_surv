@@ -15,7 +15,6 @@ use Illuminate\Support\Carbon;
  * @property string $title
  * @property string $type_of_mailing
  * @property string $frequency
- * @property string $time
  * @property int $status
  *
  * @property Carbon|null $created_at
@@ -31,8 +30,8 @@ class MailingNotification extends Model
         'name',
         'title',
         'type_of_mailing',
+        'days',
         'frequency',
-        'time',
         'status',
         'created_by',
         'is_template'
@@ -60,5 +59,11 @@ class MailingNotification extends Model
         return $query->where('is_template', 1);
     }
 
-
+    /**
+     * @return array
+     */
+    public function mailings(): array
+    {
+        return json_decode($this->type_of_mailing);
+    }
 }

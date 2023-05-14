@@ -17,8 +17,8 @@ class Mailing
      * @param string $name
      * @param string $title
      * @param array $typeOfMailing
+     * @param array $days
      * @param string $frequency
-     * @param string $time
      * @param bool|null $isTemplate
      * @return Model
      */
@@ -26,8 +26,8 @@ class Mailing
         string $name,
         string $title,
         array $typeOfMailing,
+        array $days,
         string $frequency,
-        string $time,
         ?bool $isTemplate
     ): Model
     {
@@ -35,8 +35,8 @@ class Mailing
             'name'              => $name,
             'title'             => $title,
             'type_of_mailing'   => json_encode($typeOfMailing),
+            'days'              => json_encode($days),
             'frequency'         => $frequency,
-            'time'              => $time,
             'is_template'       => $isTemplate,
             'created_by'        => \Auth::id() ?? 5
         ]);
@@ -46,21 +46,18 @@ class Mailing
      * @param int $notificationableId
      * @param string $notificationableType
      * @param int $notificationId
-     * @param array $days
      * @return void
      */
     public function createSchedule(
         int $notificationableId,
         string $notificationableType,
-        int $notificationId,
-        array $days
+        int $notificationId
     ): void
     {
         MailingNotificationSchedule::query()->create([
             'notificationable_id'   => $notificationableId,
             'notificationable_type' => $notificationableType,
-            'notification_id'       => $notificationId,
-            'days'                  => json_encode($days)
+            'notification_id'       => $notificationId
         ]);
     }
 

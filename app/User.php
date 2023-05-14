@@ -1336,4 +1336,12 @@ class User extends Authenticatable implements Authorizable
 
         return $schedule['end']->diffInHours($schedule['start']) - 1;
     }
+
+    /**
+     * @return bool
+     */
+    public function isFired(): bool
+    {
+        return !($this->deleted_at == null);
+    }
 }

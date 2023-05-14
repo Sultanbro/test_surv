@@ -29,17 +29,17 @@ class CreateMailingService
                 $dto->name,
                 $dto->title,
                 $dto->typeOfMailing,
+                $dto->date['days'],
                 $dto->date['frequency'],
-                $dto->time,
                 $dto->isTemplate
             );
 
             foreach ($dto->recipients as $recipient)
             {
                 match ($recipient['type']) {
-                    1 => MailingFacade::createSchedule($recipient['id'], MailingEnum::USER, $notification->id, $dto->date['days']),
-                    2 => MailingFacade::createSchedule($recipient['id'], MailingEnum::GROUP, $notification->id, $dto->date['days']),
-                    3 => MailingFacade::createSchedule($recipient['id'], MailingEnum::POSITION, $notification->id, $dto->date['days'])
+                    1 => MailingFacade::createSchedule($recipient['id'], MailingEnum::USER, $notification->id),
+                    2 => MailingFacade::createSchedule($recipient['id'], MailingEnum::GROUP, $notification->id),
+                    3 => MailingFacade::createSchedule($recipient['id'], MailingEnum::POSITION, $notification->id)
                 };
             }
         });
