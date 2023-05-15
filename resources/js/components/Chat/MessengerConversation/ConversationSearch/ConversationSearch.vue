@@ -137,6 +137,7 @@ export default {
 			'chatSearchMessagesResults',
 			'chatSearchFilesResults',
 			'chatSearchFilesFiles',
+			'isChatSearchMode',
 		]),
 	},
 	watch: {
@@ -149,13 +150,21 @@ export default {
 		searchFilesQuery() {
 			this.searchFiles();
 		},
-		chat(){
-			this.searchFiles()
-			this.searchMessages()
+		chat(value){
+			if(value){
+				this.searchFiles()
+				this.searchMessages()
+			}
 		},
 		date(value){
 			this.searchMessagesDate = value[0]
 		},
+		isChatSearchMode(value){
+			if(value){
+				this.searchFiles()
+				this.searchMessages()
+			}
+		}
 	},
 	methods: {
 		...mapActions([
