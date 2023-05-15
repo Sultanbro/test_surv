@@ -117,7 +117,7 @@ class HeadHunter {
             ],
         ];
         $response = $this->client->request('GET', $url, $params);
-        dd($response);
+
         return $response;
     }
 
