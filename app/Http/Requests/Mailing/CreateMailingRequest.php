@@ -9,6 +9,7 @@ use App\Http\Requests\BaseFormRequest;
 use App\Rules\Mailing\ValidateByType;
 use App\Rules\Mailing\ValidateDaily;
 use App\Rules\Mailing\ValidateWeek;
+use App\Rules\ValidationFrequency;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Support\Arr;
 use Illuminate\Validation\Rule;
@@ -35,13 +36,13 @@ class CreateMailingRequest extends BaseFormRequest
         return [
             'name'              => 'required|string',
             'title'             => 'required|min:3|max:244',
-            'recipients'        => ['required', 'array', new ValidateByType],
+            'recipients'        => ['array', new ValidateByType, new ValidationFrequency($this->date['frequency'])],
             'recipients.*.id'   => 'required|integer',
 
             /**
              * Передаваемые типы User => 1, ProfileGroup => 2, Position => 3
              */
-            'recipients.*.type' => 'required|integer',
+            'recipients.*.type' => ['required', 'integer', new ValidationFrequency($this->date['frequency'])],
 
             /**
              * Есть разные виды рассылки Bitrix24, u-marketing utc.
@@ -51,7 +52,6 @@ class CreateMailingRequest extends BaseFormRequest
             'date'              => ['required', 'array', new ValidateWeek, new ValidateDaily],
             'date.days'         => [in_array($this->date['frequency'], [MailingEnum::WEEKLY, MailingEnum::MONTHLY]) ? 'required' : '', 'array'],
             'date.frequency'    => ['required', 'string', Rule::in(MailingEnum::FREQUENCIES)],
-            'time'              => 'required|string',
             'is_template'       => 'boolean'
         ];
     }
@@ -65,9 +65,8 @@ class CreateMailingRequest extends BaseFormRequest
 
         $name       = Arr::get($validated, 'name');
         $title      = Arr::get($validated, 'title');
-        $recipients = Arr::get($validated, 'recipients');
+        $recipients = Arr::get($validated, 'recipients') ?? [];
         $date       = Arr::get($validated, 'date');
-        $time       = Arr::get($validated, 'time');
         $typeOfMailing  = Arr::get($validated, 'type_of_mailing');
         $isTemplate = Arr::get($validated, 'is_template') ?? 0;
 
@@ -76,7 +75,6 @@ class CreateMailingRequest extends BaseFormRequest
             $title,
             $recipients,
             $date,
-            $time,
             $typeOfMailing,
             $isTemplate
         );

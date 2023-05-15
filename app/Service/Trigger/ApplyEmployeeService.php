@@ -34,6 +34,11 @@ class ApplyEmployeeService
             ->getTemplates()
             ->where('frequency', MailingEnum::TRIGGER_APPLIED)->where('days', '[]')->first();
 
+        if (!(bool)$notificationTemplate)
+        {
+            throw new \Exception("Trigger by type " . MailingEnum::TRIGGER_APPLIED . " does not exist");
+        }
+
         $types = json_decode($notificationTemplate->type_of_mailing);
 
         $link = route('users.edit') . "?id=$dto->userId";
