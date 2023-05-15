@@ -72,8 +72,8 @@ class Kernel extends ConsoleKernel
          */
         //$schedule->command('tenants:run bitrix:stats --tenants=bp')->hourlyAt(57); // Данные статистики из битрикса для рекрутинга
         //$schedule->command('tenants:run recruiter:stats --tenants=bp --argument="count_last_hour=1"')->hourlyAt(1); // Данные почасовой таблицы рекрутинга из битрикса
-	    //$schedule->command('tenants:run recruiter:stats --tenants=bp')->hourlyAt(14); // Данные почасовой таблицы рекрутинга из битрикса
-	    //$schedule->command('tenants:run recruiter:stats --tenants=bp')->hourlyAt(29); // Данные почасовой таблицы рекрутинга из битрикса
+	    //$schedule->command('tenants:run recruiter:stats --tenants=bp')->hourlyAt(14); // Данные почасовой таблицы рекрутинга из битрикса  
+	    //$schedule->command('tenants:run recruiter:stats --tenants=bp')->hourlyAt(29); // Данные почасовой таблицы рекрутинга из битрикса 
 	    //$schedule->command('tenants:run recruiter:stats --tenants=bp')->hourlyAt(44); // Данные почасовой таблицы рекрутинга из битрикса
         //$schedule->command('tenants:run recruiting:totals --tenants=bp')->hourlyAt(59); //  рекрутинг cводная
         //$schedule->command('tenants:run bitrix:funnel:stats --tenants=bp')->hourlyAt(16); // Воронка в Аналитике
@@ -97,7 +97,7 @@ class Kernel extends ConsoleKernel
         $schedule->command('tenants:run salary:group')->everyTenMinutes(55); // Сохранить заработанное группой без вычета шт и ав
         $schedule->command('tenants:run salary:update')->hourly(); // обновление зарплаты: за текущий день
         $schedule->command('tenants:run count:hours')->hourly(); // обновление минут
-        // $schedule->command('tenants:run check:late')->hourly(); // Опоздание
+        $schedule->command('tenants:run check:late')->hourly(); // Опоздание
         $schedule->command('tenants:run bonus:update')->hourly(); // Бонусы сотрудников
         $schedule->command('tenants:run user:save_kpi')->hourlyAt(50); // Сохранить kpi для быстрой загрузки аналитики
         $schedule->command('tenants:run quality:totals')->hourly(); // Расчет недельных и месячных средних значений по контролю качества в Каспи
@@ -133,7 +133,7 @@ class Kernel extends ConsoleKernel
                 tenancy()->initialize( $tenant);
             };
         }
-
+        
         require base_path('routes/console.php');
     }
 }
