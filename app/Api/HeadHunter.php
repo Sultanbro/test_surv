@@ -313,7 +313,7 @@ class HeadHunter {
      */
     public function getNegotiations($vacancy_id, $date_from = '', $date_to = '') {
         
-        $url = '/negotiations/response?vacancy_id='.$vacancy_id . '&order_by=created_at&has_updates=true';
+        $url = '/negotiations/response?employer_id=2520517?vacancy_id='.$vacancy_id . '&order_by=created_at&has_updates=true';
         if($date_from != '') $url .= '&date_from=' . $date_from;
         if($date_to != '') $url .= '&date_to=' . $date_to;
        
