@@ -6,6 +6,7 @@ namespace App\Service\Tax;
 use App\DTO\Tax\UpdateTaxDTO;
 use App\Models\Tax;
 use Exception;
+use Illuminate\Support\Facades\DB;
 use Throwable;
 
 /**
@@ -21,7 +22,24 @@ class UpdateTaxService
     ): bool
     {
         try {
-            return Tax::query()->findOrFail($dto->id)->update($dto->toArray());
+            $tax = Tax::getTaxById($dto->id);
+
+            DB::transaction(function () use ($tax, $dto){
+
+                $tax?->update([
+                    'name'       => $dto->name,
+                    'is_percent' => $dto->isPercent
+                ]);
+
+                $tax?->users()
+                    ->where('user_id', $dto->userId)
+                    ->update([
+                        'value' => $dto->value
+                    ]);
+            });
+
+            return true;
+
         }catch (Throwable $exception)
         {
             throw new Exception("При обновлений $dto->id произошла ошибка");

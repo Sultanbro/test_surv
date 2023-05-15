@@ -596,9 +596,9 @@
 								stacked
 							>
 								<b-form-checkbox
+									v-for="fine, key in fines"
 									:value="fine.value"
-									:key="fine.value"
-									v-for="fine in fines"
+									:key="key"
 								>
 									<span v-html="fine.text" />
 								</b-form-checkbox>
@@ -1138,7 +1138,7 @@ export default {
 				historyTotal: `Итого: ${data.value.hour} ч.`.replace('undefined', '0.0'),
 				day: data.field.key,
 				user_id: data.item.user_id,
-				fines: data.item.fines[data.field.key]
+				fines: (data.item.fines[data.field.key] || []).filter((value, index, array) => array.indexOf(value) === index)
 			}
 			this.sidebarHistory = data.item.history.filter(x => parseInt(x.day) === parseInt(data.field.key))
 		},

@@ -29,7 +29,8 @@ class UpdateTaxRequest extends FormRequest
             'id'         => 'required|integer|exists:taxes,id',
             'name'       => 'string',
             'value'      => 'regex:/^\d*(\.\d{2})?$/',
-            'is_percent' => 'bool'
+            'is_percent' => 'bool',
+            'user_id'    => 'required|integer|exists:users,id'
         ];
     }
 
@@ -44,12 +45,14 @@ class UpdateTaxRequest extends FormRequest
         $name       = Arr::get($validated, 'name');
         $value      = Arr::get($validated, 'value');
         $isPercent  = Arr::get($validated, 'is_percent');
+        $userId     = Arr::get($validated, 'user_id');
 
         return new UpdateTaxDTO(
             $id,
             $name,
             $value,
-            $isPercent
+            $isPercent,
+            $userId
         );
     }
 }
