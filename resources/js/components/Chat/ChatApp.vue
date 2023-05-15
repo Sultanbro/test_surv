@@ -194,6 +194,7 @@ body.messenger__open {
 	display: flex;
 	width: 90vw;
 	height: 100vh;
+	height: 100dvh;
 
 	position: fixed;
 	z-index: 1000;

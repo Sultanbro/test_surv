@@ -73,6 +73,7 @@ export default {
 	gap: 10px;
 
 	width: 510px;
+	max-width: 100%;
 	margin-top: 15px;
 
 	&-item{
@@ -118,6 +119,12 @@ export default {
 		.ChatIcon-line{
 			stroke: #fff;
 		}
+	}
+}
+@media only screen and (max-width: 670px) {
+	.ConversationMessageGallery{
+		flex-flow: column nowrap;
+		width: auto;
 	}
 }
 </style>
