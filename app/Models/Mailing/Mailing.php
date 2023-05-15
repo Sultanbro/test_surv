@@ -104,12 +104,7 @@ class Mailing
     ): Relation|Builder
     {
         $schedules  = MailingNotificationSchedule::query()->where('notification_id', $templateId)->get();
-        $notification = MailingNotification::getById($templateId);
-
-        $recipients = User::query()->orderBy('last_name', 'asc')
-            ->when('manager_assessment' == MailingEnum::TRIGGER_MANAGER_ASSESSMENT, fn (Builder $query) => $query->withWhereHas('user_description', fn ($query) => $query->where('is_trainee', 0)))
-            ->when('coach_assessment' == MailingEnum::TRIGGER_MANAGER_ASSESSMENT, fn (Builder $query) => $query->withWhereHas('user_description', fn ($query) => $query->where('is_trainee', 1)))
-            ->get();
+        $recipients = User::query()->orderBy('last_name', 'asc')->withWhereHas('user_description', fn ($query) => $query->where('is_trainee', 0))->get();
 
         foreach ($schedules as $schedule)
         {
