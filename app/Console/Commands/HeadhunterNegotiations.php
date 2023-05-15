@@ -235,9 +235,7 @@ class HeadhunterNegotiations extends Command
     private function updateNegotiationsOnVacancy($vacancy) : void
     {
 
-            $negotiations = $this->hh->getNegotiations($vacancy->vacancy_id, $this->date);
-            dd($negotiations);
-
+        $negotiations = $this->hh->getNegotiations($vacancy->vacancy_id, $this->date);
 
         $this->line('updateNegotiationsOnVacancy: '. count($negotiations));
 
