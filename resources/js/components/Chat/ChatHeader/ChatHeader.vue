@@ -6,6 +6,7 @@
 		<div
 			class="messenger_header-button"
 			@click="toggleNewChatDialog"
+			title="Создание нового чата"
 		>
 			<ChatIconPlus class="pointer" />
 		</div>

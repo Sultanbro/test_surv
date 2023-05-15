@@ -5,17 +5,19 @@
 	>
 		ещё {{ readers.length }}
 		<span class="ConversationFeedMoreReaders-popup">
-			<span
-				v-for="reader in readers"
-				:key="reader.id"
-				class="ConversationFeedMoreReaders-popupItem"
-			>
-				<JobtronAvatar
-					:image="'/users_img/' + reader.img_url"
-					:title="`${reader.name} ${reader.last_name}`"
-					:size="24"
-				/>
-				{{ `${reader.name} ${reader.last_name}` }}
+			<span class="ConversationFeedMoreReaders-scroll">
+				<span
+					v-for="reader in readers"
+					:key="reader.id"
+					class="ConversationFeedMoreReaders-popupItem"
+				>
+					<JobtronAvatar
+						:image="'/users_img/' + reader.img_url"
+						:title="`${reader.name} ${reader.last_name}`"
+						:size="24"
+					/>
+					{{ `${reader.name} ${reader.last_name}` }}
+				</span>
 			</span>
 		</span>
 	</span>
@@ -61,7 +63,7 @@ export default {
 		border-radius: 8px;
 		padding: 10px 0;
 
-    overflow-y: auto;
+    overflow: hidden;
 
 		position: absolute;
 		z-index: 1000;
@@ -71,15 +73,26 @@ export default {
 		background-color: #fff;
 		box-shadow: 0px 0px 3px rgba(0, 0, 0, 0.05), 0px 15px 60px -40px rgba(45, 50, 90, 0.2);
 	}
+	&-scroll{
+		display: block;
+		width: 100%;
+		height: 100%;
+		max-height: calc(30vh - 20px);
+		padding-right: 30px;
+
+		box-sizing: content-box;
+		overflow-y: auto;
+	}
 	&-popupItem{
 		display: flex;
 		align-items: center;
 		justify-content: flex-start;
-		gap: 10px;
+		gap: 5px;
 
 		width: 100%;
-		padding: 10px 20px;
+		padding: 2px 10px;
 
+		font-weight: 400;
 		text-decoration: none;
 		color: #0a0a0a;
 		white-space: nowrap;

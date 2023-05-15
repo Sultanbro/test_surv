@@ -4,19 +4,23 @@
 		:class="{'DateSelect_disabled': disabled}"
 		@click.self="showDatePicker"
 	>
-		{{ yearPosition === 'before' ? $moment(value, 'DD.MM.YYYY').format('YYYY') : '' }}
-		{{ capitalized($moment(value, 'DD.MM.YYYY').format('MMMM')) }}
-		{{ yearPosition === 'after' ? $moment(value, 'DD.MM.YYYY').format('YYYY') : '' }}
-		<i
-			class="fa fa-chevron-down ml-a"
-			@click.self="showDatePicker"
-		/>
+		<div class="DateSelect-header">
+			{{ yearPosition === 'before' ? $moment(value, 'DD.MM.YYYY').format('YYYY') : '' }}
+			{{ capitalized($moment(value, 'DD.MM.YYYY').format('MMMM')) }}
+			{{ yearPosition === 'after' ? $moment(value, 'DD.MM.YYYY').format('YYYY') : '' }}
+			<i
+				class="fa fa-chevron-down ml-a"
+				@click.self="showDatePicker"
+			/>
+		</div>
 		<CalendarInput
 			v-if="isDatePicker"
 			:value="localValue"
 			:open="isDatePicker"
 			@close="onCloseDatePicker"
 			@input="onInput"
+			:only-month="true"
+			:start-year="Math.max(new Date(user.created_at).getFullYear(), 2020)"
 			:tabs="[]"
 			popup
 		/>
@@ -24,6 +28,7 @@
 </template>
 
 <script>
+import { mapGetters } from 'vuex'
 import CalendarInput from '@ui/CalendarInput/CalendarInput'
 const now = new Date()
 const date = `${now.getDate()}.${now.getMonth() + 1}.${now.getFullYear()}`
@@ -52,6 +57,9 @@ export default {
 			localValue: [this.value]
 		}
 	},
+	computed: {
+		...mapGetters(['user']),
+	},
 	watch: {
 		value(){
 			this.localValue = [this.value]
@@ -60,7 +68,7 @@ export default {
 	methods: {
 		onInput(value){
 			this.$emit('input', value[0])
-			this.isDatePicker = false
+			// this.isDatePicker = false
 		},
 		capitalized(str) {
 			const capitalizedFirst = str[0].toUpperCase();
@@ -73,7 +81,7 @@ export default {
 			this.isDatePicker = !this.isDatePicker
 		},
 		onCloseDatePicker(e){
-			if(this.$el.contains(e.target)) return
+			if(e?.target && this.$el.contains(e.target)) return
 			this.isDatePicker = false
 		},
 	}
@@ -82,12 +90,6 @@ export default {
 
 <style lang="scss">
 .DateSelect{
-	display: flex;
-	flex-flow: row nowrap;
-	align-items: center;
-	justify-content: flex-start;
-	gap: 1rem;
-
 	padding: 1.5rem 2rem;
 	border: 1px solid #E7EAEA;
 	border-radius: 1.5rem;
@@ -101,8 +103,28 @@ export default {
 	background-color: #fff;
 	cursor: pointer;
 
+	&-header{
+		display: flex;
+		flex-flow: row nowrap;
+		align-items: center;
+		justify-content: flex-start;
+		gap: 1rem;
+		pointer-events: none;
+	}
+
 	.CalendarInput{
+		min-width: 100%;
 		margin-left: -1rem;
+		&-content{
+			min-width: 100%;
+			margin-top: 10px;
+		}
+	}
+	.CalendarInputBody{
+		flex: 1;
+	}
+	.CalendarInputHeader{
+		margin-bottom: 0;
 	}
 
 	&_disabled{

@@ -1,7 +1,7 @@
 <template>
 	<div class="CalendarInputBody">
 		<CalendarInputHeader />
-		<CalendarInputMain />
+		<CalendarInputMain v-if="!onlyMonth" />
 		<CalendarInputFooter v-if="range" />
 	</div>
 </template>
@@ -12,7 +12,7 @@ import CalendarInputMain from './CalendarInputMain'
 import CalendarInputFooter from './CalendarInputFooter'
 export default {
 	name: 'CalendarInputBody',
-	inject: ['getRange'],
+	inject: ['getRange', 'getOnlyMonth'],
 	components: {
 		CalendarInputHeader,
 		CalendarInputMain,
@@ -21,6 +21,9 @@ export default {
 	computed: {
 		range(){
 			return this.getRange()
+		},
+		onlyMonth(){
+			return this.getOnlyMonth()
 		}
 	}
 }

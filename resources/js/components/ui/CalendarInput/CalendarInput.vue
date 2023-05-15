@@ -11,7 +11,7 @@
 		<div
 			class="CalendarInput-content"
 			:class="{'CalendarInput-content_popup': popup}"
-			v-click-outside="onClickOutside"
+			v-click-out="onClickOutside"
 		>
 			<CalendarInputBody />
 			<CalendarInputNav
@@ -32,6 +32,24 @@ export default {
 		CalendarInputBody,
 		CalendarInputNav,
 	},
+	directives: {
+		'click-out': {
+			bind(el, binding, vnode) {
+				el.clickOutsideEvent = (event) => {
+					if (!(el === event.target || el.contains(event.target))) {
+						vnode.context[binding.expression](event);
+					}
+				};
+				el.clickOutsideEventStop = (event) => { event.stopPropagation() }
+				document.body.addEventListener('click', el.clickOutsideEvent);
+				// el.addEventListener('click', el.clickOutsideEventStop)
+			},
+			unbind(el) {
+				document.body.removeEventListener('click', el.clickOutsideEvent);
+				// el.removeEventListener('click', el.clickOutsideEventStop)
+			},
+		}
+	},
 	provide(){
 		return {
 			getValue: () => this.value,
@@ -42,6 +60,9 @@ export default {
 			getRange: () => this.range,
 			getSubmit: () => this.submit,
 			getDaysInMonth: () => this.daysInMonth,
+			getStartYear: () => this.startYear,
+			getSeparateMonthYear: () => this.separateMonthYear,
+			getOnlyMonth: () => this.onlyMonth,
 			setValue: this.setValue,
 			setMonth: this.setMonth,
 			prevMonth: this.prevMonth,
@@ -93,11 +114,23 @@ export default {
 		popup: {
 			type: Boolean,
 			default: false
+		},
+		startYear: {
+			type: Number,
+			default: 2020
+		},
+		onlyMonth: {
+			type: Boolean,
+			default: false
+		},
+		separateMonthYear: {
+			type: Boolean,
+			default: false
 		}
 	},
 	data(){
 		const now = new Date()
-		return {
+		const data = {
 			month: now.getMonth(),
 			year: now.getFullYear(),
 			currentDay: now.getDate(),
@@ -105,6 +138,12 @@ export default {
 			currentYear: now.getFullYear(),
 			tsValue: this.value.map(el => this.$moment(el, this.format).valueOf() || 0)
 		}
+		if(data.tsValue.length && data.tsValue[data.tsValue.length - 1]){
+			const selected = new Date(data.tsValue[data.tsValue.length - 1])
+			data.month = selected.getMonth()
+			data.year = selected.getFullYear()
+		}
+		return data
 	},
 	computed: {
 		daysInMonth(){
@@ -133,22 +172,34 @@ export default {
 			// валидацию бы какую-нибудь
 			this.month = month
 			if(year) this.year = year
+			if(this.onlyMonth){
+				this.$emit('input', ['01.' + this.$moment([year, month]).format('MM.YYYY')])
+				this.$emit('close')
+			}
 		},
 		prevMonth(){
 			if(this.month - 1 < 0) {
 				this.year--
 				this.month = 11
-				return
 			}
-			this.month--
+			else{
+				this.month--
+			}
+			if(this.onlyMonth){
+				this.$emit('input', ['01.' + this.$moment([this.year, this.month]).format('MM.YYYY')])
+			}
 		},
 		nextMonth(){
 			if(this.month + 1 > 11) {
 				this.year++
 				this.month = 0
-				return
 			}
-			this.month++
+			else{
+				this.month++
+			}
+			if(this.onlyMonth){
+				this.$emit('input', ['01.' + this.$moment([this.year, this.month]).format('MM.YYYY')])
+			}
 		},
 		onTabToday(){
 			this.setMonth(this.currentMonth, this.currentYear)
@@ -218,7 +269,7 @@ export default {
 		z-index: 101;
 		background-color: #fff;
 		&_popup{
-			box-shadow: 0px 0px 3px rgba(0, 0, 0, 0.05), 0px 15px 60px -40px rgba(45, 50, 90, 0.2);
+			box-shadow: 0px 0px 3px rgba(0, 0, 0, 0.15), 0px 15px 60px -40px rgba(45, 50, 90, 0.2);
 		}
 	}
 }

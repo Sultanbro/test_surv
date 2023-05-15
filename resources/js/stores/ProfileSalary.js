@@ -29,7 +29,7 @@ export const useProfileSalaryStore = defineStore('profileSalary', {
 			awards: null
 		},
 		possibleBonuses: null,
-		currentKey: `${now.getFullYear()}-${now.getMonth() + 1}`,
+		currentKey: `${now.getFullYear()}-${now.getMonth()}`,
 		unreadCount: {
 			kpis: 0,
 			bonuses: 0,
@@ -109,13 +109,23 @@ export const useProfileSalaryStore = defineStore('profileSalary', {
 				const maxSalary = parseInt(this.profile.salary.replace(/\s/g, '')) || 0
 
 				// set current values
-				this.user_earnings.sumSalary = sumSalary
-				this.user_earnings.sumKpi = sumKpi
-				this.user_earnings.sumBonuses = sumBonuses
-				this.user_earnings.sumQuartalPremiums = sumQuartalPremiums
-				this.user_earnings.sumNominations = 0
-				this.user_earnings.kpiMax = maxKpi
-				this.user_earnings.oklad = maxSalary
+				const earnings = {
+					sumSalary,
+					sumKpi,
+					sumBonuses,
+					sumQuartalPremiums,
+					sumNominations: sumAwards,
+					kpiMax: maxKpi,
+					oklad: maxSalary
+				}
+				this.user_earnings = earnings
+				// this.user_earnings.sumSalary = sumSalary
+				// this.user_earnings.sumKpi = sumKpi
+				// this.user_earnings.sumBonuses = sumBonuses
+				// this.user_earnings.sumQuartalPremiums = sumQuartalPremiums
+				// this.user_earnings.sumNominations = 0
+				// this.user_earnings.kpiMax = maxKpi
+				// this.user_earnings.oklad = maxSalary
 
 				// save for month
 				const key = `${year}-${month}`
@@ -180,6 +190,7 @@ export const useProfileSalaryStore = defineStore('profileSalary', {
 			// premiums
 			this.unreadCount.premiums = data.premiums.reduce((result, type) => {
 				type.forEach(premium => {
+					if(!premium?.items) return
 					const readed = this.readed.premiums.find(r => r.id === premium.items.activity_id)
 					if(!readed) return ++result
 				})
@@ -262,6 +273,7 @@ export const useProfileSalaryStore = defineStore('profileSalary', {
 
 			data.premiums.forEach(type => {
 				type.forEach(premium => {
+					if(!premium?.items) return
 					const readed = this.readed.premiums.find(r => r.id === premium.items.activity_id)
 					if(!readed) return this.readed.premiums.push({
 						id: premium.items.activity_id,
@@ -282,6 +294,7 @@ export const useProfileSalaryStore = defineStore('profileSalary', {
 						const readed = this.readed.awards.find(r => r.id === available.id)
 						if(!readed) return this.readed.awards.push({
 							id: available.id,
+							updated_at: available.updated_at || available.created_at
 						})
 						if(readed.updated_at !== (available.updated_at || available.created_at)){
 							readed.updated_at = available.updated_at || available.created_at

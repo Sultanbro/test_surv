@@ -68,7 +68,9 @@
 				<DateSelect
 					v-model="selectedDate"
 					:disabled="salaryLoading"
-					class="mt-4"
+					:only-month="true"
+					:start-year="Math.max(new Date(user.created_at).getFullYear(), 2020)"
+					class="ProfileSidebar-date mt-4"
 				/>
 
 				<b-modal
@@ -322,11 +324,12 @@ export default {
 			canvas: null,
 			selectedDate: this.$moment(Date.now()).format('DD.MM.YYYY'),
 			isDatePicker: false,
+			needUpdateSalary: false,
 		};
 	},
 	computed: {
 		...mapState(useSettingsStore, ['logo']),
-		...mapState(usePersonalInfoStore, ['user', 'position', 'groups', 'salary', 'workingDay', 'schedule', 'workingTime']),
+		...mapState(usePersonalInfoStore, ['position', 'groups', 'salary', 'workingDay', 'schedule', 'workingTime']),
 		...mapState(useProfileStatusStore, ['status', 'balance', 'corp_book', 'message', 'buttonStatus']),
 		...mapState(useSettingsStore, {settingsReady: 'isReady'}),
 		...mapState(useProfileStatusStore, {statusReady: 'isReady'}),
@@ -411,9 +414,15 @@ export default {
 		corp_book(){
 			this.initCorpBook()
 		},
-		selectedMonth(){
-			const splited = this.selectedDate.split('.')
-			this.fitchSalaryCrutch(+splited[2], +splited[1] - 1)
+		async selectedMonth(){
+			if(this.salaryLoading) {
+				this.needUpdateSalary = true
+				return
+			}
+			await this.updateSalary()
+			if(this.needUpdateSalary){
+				await this.updateSalary()
+			}
 		}
 	},
 	mounted(){
@@ -597,12 +606,21 @@ export default {
 		},
 		separateNumber(x){
 			return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+		},
+		async updateSalary(){
+			const splited = this.selectedDate.split('.')
+			await this.fitchSalaryCrutch(+splited[2], +splited[1] - 1)
 		}
 	}
 };
 </script>
 
 <style lang="scss">
+.ProfileSidebar{
+	&-date{
+		width: 100%;
+	}
+}
 	.modal-youtube{
 		.modal-xl{
 			max-width: 900px;

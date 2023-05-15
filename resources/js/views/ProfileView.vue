@@ -31,7 +31,7 @@ export default {
 		this.fetchStatus()
 		this.fetchPersonalInfo()
 		this.fetchCourses(false)
-		this.fitchSalaryCrutch(now.getFullYear(), now.getMonth() + 1)
+		this.fitchSalaryCrutch(now.getFullYear(), now.getMonth())
 		this.fetchPaymentTerms()
 	},
 	methods:{

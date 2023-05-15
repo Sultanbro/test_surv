@@ -2,7 +2,7 @@
 	<div class="messenger__chat-footer ConversationFooter">
 		<vue-draggable-resizable
 			:w="'auto'"
-			:h="48"
+			:h="localState.height"
 			:max-height="250"
 			:min-height="48"
 			:handles="['tm']"
@@ -170,7 +170,6 @@ import {
 	ChatIconHistoryDoc,
 } from '@icons'
 
-
 export default {
 	name: 'ConversationFooter',
 	components: {
@@ -191,10 +190,11 @@ export default {
 			files: [],
 			isRecordingAudio: false,
 			recordingTime: 0,
+			localState: this.defaultLocalState()
 		};
 	},
 	computed: {
-		...mapGetters(['chat', 'editMessage', 'citedMessage'])
+		...mapGetters(['chat', 'editMessage', 'citedMessage', 'messageSending'])
 	},
 	watch: {
 		editMessage(message) {
@@ -211,6 +211,12 @@ export default {
 				}, 10);
 			}
 		},
+		citedMessage(){
+			this.focusInput()
+		}
+	},
+	created(){
+		this.loadLocalState()
 	},
 	methods: {
 		...mapActions(['sendMessage', 'editMessageAction', 'uploadFiles', 'citeMessage']),
@@ -228,6 +234,7 @@ export default {
 				}
 				return true
 			}
+			if(this.messageSending) return true
 			let text = this.body.trim();
 			if ((text || this.files.length > 0) && this.chat) {
 				if (this.editMessage) {
@@ -242,10 +249,14 @@ export default {
 					}
 					this.body = '';
 					this.$nextTick(() => {
-						document.getElementById('messengerMessageInput').focus();
+						this.focusInput()
 					});
 				}
 			}
+		},
+		focusInput(){
+			const input = document.getElementById('messengerMessageInput')
+			if(input) input.focus()
 		},
 		appendEmoji(emoji) {
 			this.body += emoji;
@@ -285,10 +296,13 @@ export default {
 		},
 		closeCitation(event) {
 			event.stopPropagation();
+			this.body = ''
 			this.citeMessage(null);
 		},
-		onResizeStop(){
+		onResizeStop(left, top, width, height){
 			this.ChatApp.$emit('FooterResized')
+			this.localState.height = height
+			this.saveLocalState()
 		},
 		handleError(error) {
 			console.error('ConversationFooter', error)
@@ -302,7 +316,23 @@ export default {
 				reader.readAsDataURL(fileObj.file)
 			}
 			return fileObj
-		}
+		},
+		defaultLocalState(){
+			return {
+				height: 48
+			}
+		},
+		loadLocalState(){
+			const local = localStorage.getItem('ConversationFooter')
+			if(local){
+				this.localState = JSON.parse(local)
+				return
+			}
+			this.localState = this.defaultLocalState()
+		},
+		saveLocalState(){
+			localStorage.setItem('ConversationFooter', JSON.stringify(this.localState))
+		},
 	},
 	filters: {
 		countdownFormat(value) {
@@ -508,7 +538,7 @@ export default {
   justify-content: space-between;
   width: 100%;
   max-height: 40px;
-  padding: 5px 10px 0 5px;
+  padding: 7px 10px 0 5px;
   background: #fff;
   border-radius: 4px;
   margin-bottom: 5px;
