@@ -290,7 +290,7 @@ class HeadhunterNegotiations extends Command
             $vac = Vacancy::where('vacancy_id', $vacancy->id)->first();
             
             $hh_vacancy = $this->hh->getVacancy($vacancy->id);
-
+            dd($hh_vacancy);
             $this->line('vacancy: '. $vacancy->id);
 
             if($hh_vacancy) {
