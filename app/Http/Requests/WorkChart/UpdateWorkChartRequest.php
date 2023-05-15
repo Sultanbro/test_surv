@@ -4,6 +4,7 @@ namespace App\Http\Requests\WorkChart;
 
 use App\DTO\WorkChart\UpdateWorkChartDTO;
 use Illuminate\Support\Arr;
+use Illuminate\Validation\ValidationException;
 
 class UpdateWorkChartRequest extends BaseWorkChartRequest
 {
@@ -24,13 +25,40 @@ class UpdateWorkChartRequest extends BaseWorkChartRequest
      */
     public function rules(): array
     {
-        return [
+        $rules = [
             'name' => ['string'],
-            'chart_workdays' => ['required_with:chart_dayoffs', 'integer', 'min:1', 'max:6'],
-            'chart_dayoffs' => ['required_with:chart_workdays', 'integer', 'min:1', 'max:6'],
             'start_time' => ['string'],
             'end_time' => ['string'],
+            'work_charts_type' => 'integer|exists:work_chart_type_rbs,id',
         ];
+
+        if($this->input('work_charts_type') === 1){
+            $rules += [
+                'chart_workdays' => ['required', 'integer', 'min:1', 'max:6'],
+                'chart_dayoffs' => ['required', 'integer', 'min:1', 'max:6'],
+            ];
+
+            if ($this->input('chart_workdays') + $this->input('chart_dayoffs') > 7){
+                throw ValidationException::withMessages(['work_charts_type_error' => 'Сумма work_chart_work и wor_chart_rest должна быть равна 7']);
+            }
+        }
+        else if($this->input('work_charts_type') === 2){
+            $rules += [
+                'chart_workdays' => ['required', 'integer', 'min:1', 'max:30'],
+                'chart_dayoffs' => ['required', 'integer', 'min:1', 'max:30'],
+            ];
+
+            if ($this->input('chart_workdays') + $this->input('chart_dayoffs') > 30){
+                throw ValidationException::withMessages(['work_charts_type_error' => 'Сумма work_chart_work и wor_chart_rest должна быть равна 30']);
+            }
+        }
+        else {
+            $rules += [
+                'chart_workdays' => ['required_with:chart_dayoffs', 'integer', 'min:1', 'max:6'],
+                'chart_dayoffs' => ['required_with:chart_workdays', 'integer', 'min:1', 'max:6'],
+            ];
+        }
+        return $rules;
     }
 
     /**
@@ -45,6 +73,7 @@ class UpdateWorkChartRequest extends BaseWorkChartRequest
         $chartDayoffs  = (int) Arr::get($validated, 'chart_dayoffs');
         $startTime    = Arr::get($validated, 'start_time');
         $endTime    = Arr::get($validated, 'end_time');
+        $chartWorkType  = (int) Arr::get($validated, 'work_charts_type');
 
         return new UpdateWorkChartDTO(
             $id,
@@ -53,6 +82,7 @@ class UpdateWorkChartRequest extends BaseWorkChartRequest
             $chartDayoffs,
             $startTime,
             $endTime,
+            $chartWorkType
         );
     }
 }

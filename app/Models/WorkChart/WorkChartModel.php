@@ -10,6 +10,7 @@ use Carbon\Carbon;
 use Exception;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use InvalidArgumentException;
 
 class WorkChartModel extends Model
@@ -24,7 +25,8 @@ class WorkChartModel extends Model
         'name',
         'text_name',
         'start_time',
-        'end_time'
+        'end_time',
+        'work_charts_type'
     ];
 
     /**
@@ -165,5 +167,10 @@ class WorkChartModel extends Model
             'workStartTime' => Timetracking::DEFAULT_WORK_START_TIME,
             'workEndTime'   => Timetracking::DEFAULT_WORK_END_TIME,
         ];
+    }
+
+    public function workChartType(): BelongsTo
+    {
+        return $this->belongsTo(WorkChartTypeRb::class, 'work_charts_type', 'id');
     }
 }

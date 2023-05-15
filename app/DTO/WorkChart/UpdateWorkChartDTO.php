@@ -17,6 +17,8 @@ final class UpdateWorkChartDTO
         public ?int $chartDayoffs,
         public ?string $startTime,
         public ?string $endTime,
+        public ?int $chartWorkType,
+
     )
     {}
 
@@ -29,7 +31,8 @@ final class UpdateWorkChartDTO
             'name' => null,
             'text_name' => $this->name ?? null,
             'start_time' => $this->startTime ?? null,
-            'end_time' => $this->endTime ?? null
+            'end_time' => $this->endTime ?? null,
+            'work_charts_type' => $this->chartWorkType ?? null,
         ];
 
         if (isset($this->chartWorkdays, $this->chartDayoffs)) {

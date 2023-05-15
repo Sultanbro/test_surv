@@ -5,6 +5,7 @@ namespace App\Http\Controllers\WorkChart;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\WorkChart\StoreWorkChartRequest;
 use App\Http\Requests\WorkChart\UpdateWorkChartRequest;
+use App\Http\Resources\WorkChart\WorkChartResource;
 use App\Models\WorkChart\WorkChartModel;
 use App\Service\WorkChart\AddWorkChartService;
 use App\Service\WorkChart\UpdateWorkChartService;
@@ -23,7 +24,7 @@ class WorkChartController extends Controller
     {
         return $this->response(
             message: 'Success',
-            data: WorkChartModel::all()
+            data: WorkChartResource::collection(WorkChartModel::with('workChartType')->get())
         );
     }
 

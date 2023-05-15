@@ -16,6 +16,7 @@ final class StoreWorkChartDTO
         public int $chartDayoffs,
         public string $startTime,
         public string $endTime,
+        public int $chartWorkType,
     )
     {}
 
@@ -29,6 +30,7 @@ final class StoreWorkChartDTO
             'text_name' => $this->name,
             'start_time' => $this->startTime,
             'end_time' => $this->endTime,
+            'work_charts_type' => $this->chartWorkType,
         ];
     }
 }
