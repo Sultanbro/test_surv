@@ -117,7 +117,7 @@ class HeadHunter {
             ],
         ];
         $response = $this->client->request('GET', $url, $params);
-
+        dd($response);
         return $response;
     }
 
@@ -312,7 +312,7 @@ class HeadHunter {
      * date в формате 2021-01-01
      */
     public function getNegotiations($vacancy_id, $date_from = '', $date_to = '') {
-        dd($this->oauth->access_token);
+
         $url = '/negotiations/response?vacancy_id='.$vacancy_id . '&order_by=created_at&has_updates=true';
         if($date_from != '') $url .= '&date_from=' . $date_from;
         if($date_to != '') $url .= '&date_to=' . $date_to;
