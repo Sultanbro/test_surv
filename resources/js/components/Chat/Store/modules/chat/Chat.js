@@ -133,6 +133,9 @@ export default {
 
 			});
 		},
+		unloadChat({commit}){
+			commit('setChat', null);
+		},
 		async escapeChat({commit, dispatch}) {
 			commit('setChat', null);
 			commit('setMessages', []);

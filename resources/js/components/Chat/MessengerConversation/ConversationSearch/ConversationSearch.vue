@@ -224,7 +224,6 @@ export default {
 	flex: 1;
 
 	position: relative;
-	overflow: auto;
 	background-color: #fff;
 }
 

@@ -1,10 +1,10 @@
 <template>
-	<div class="ConversationSearchTitle mx-5">
+	<div class="ConversationSearchTitle">
 		<div class="ConversationSearchTitle-title">
 			{{ title }}
 		</div>
 		<div class="ConversationSearchTitle-actions">
-			<div
+			<!-- <div
 				class="ConversationSearchTitle-icon ChatIcon-parent"
 				@click="$emit('forward')"
 			>
@@ -15,22 +15,22 @@
 				@click="$emit('delete')"
 			>
 				<ChatIconHistoryDelete />
-			</div>
+			</div> -->
 		</div>
 	</div>
 </template>
 
 <script>
-import {
-	ChatIconHistoryBack,
-	ChatIconHistoryDelete,
-} from '@icons'
+// import {
+// 	ChatIconHistoryBack,
+// 	ChatIconHistoryDelete,
+// } from '@icons'
 
 export default {
-	name: 'MyComp',
+	name: 'ConversationSearchTitle',
 	components: {
-		ChatIconHistoryBack,
-		ChatIconHistoryDelete,
+		// ChatIconHistoryBack,
+		// ChatIconHistoryDelete,
 	},
 	props: {
 		title: {

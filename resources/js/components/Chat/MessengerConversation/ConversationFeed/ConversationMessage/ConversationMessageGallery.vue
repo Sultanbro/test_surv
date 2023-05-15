@@ -125,6 +125,14 @@ export default {
 	.ConversationMessageGallery{
 		flex-flow: column nowrap;
 		width: auto;
+		&-item{
+			width: 225px;
+			height: 135px;
+		}
+		&-image{
+			width: 225px;
+			height: 135px;
+		}
 	}
 }
 </style>

@@ -20,12 +20,22 @@ import { mapActions, mapGetters } from 'vuex';
 export default {
 	computed: {
 		...mapGetters(['isOpen']),
+		isDesktop() {
+			return this.$viewportSize.width > 670
+		},
 	},
 	methods: {
-		...mapActions(['toggleMessenger', 'setSearchFocus']),
+		...mapActions([
+			'toggleMessenger',
+			'setSearchFocus',
+			'unloadChat',
+		]),
 		click(event) {
 			if (!this.isOpen) {
 				this.setSearchFocus(true);
+			}
+			if(!this.isDesktop){
+				this.unloadChat()
 			}
 			event.stopPropagation();
 			this.toggleMessenger();

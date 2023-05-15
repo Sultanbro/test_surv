@@ -48,6 +48,12 @@
 			@onopen="openGallery"
 			@close="hideGallery"
 		/>
+		<div
+			v-if="!isDesktop"
+			class="ChatApp-close"
+		>
+			<ChatIconSearchClose />
+		</div>
 	</div>
 </template>
 
@@ -64,6 +70,7 @@ import ImageGallery from './ImageGallery/ImageGallery.vue';
 import ConfirmDialog from './ConfirmDialog/ConfirmDialog.vue';
 import ChatIconsDemo from '@icons/ChatIconsDemo.vue'
 import JobtronOverlay from '@ui/Overlay'
+import { ChatIconSearchClose } from '@icons'
 
 // noinspection JSUnusedGlobalSymbols
 export default {
@@ -78,6 +85,7 @@ export default {
 		ConfirmDialog,
 		ChatIconsDemo,
 		JobtronOverlay,
+		ChatIconSearchClose,
 	},
 	directives: {
 		clickOutside
@@ -157,6 +165,25 @@ export default {
 </script>
 
 <style lang="scss">
+.ChatApp{
+	&-close{
+		display: flex;
+		align-items: center;
+		justify-content: center;
+
+		width: 28px;
+		height: 28px;
+
+		position: absolute;
+		z-index: 5;
+		top: 37px;
+		right: calc(100vw - 32px);
+
+		border-radius: 14px 0 0 14px;
+		background-color: #EDF6FF;
+		pointer-events: none;
+	}
+}
 #messenger_gallery{
 	.slides{
 		padding: 50px 0;
@@ -245,7 +272,7 @@ body.messenger__open {
 
 @media only screen and (max-width: 670px) {
 	.messenger__card-window {
-		width: 100vw;
+		width: calc(100vw - 32px);
 	}
 }
 
