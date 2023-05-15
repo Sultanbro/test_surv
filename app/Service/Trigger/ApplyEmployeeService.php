@@ -32,7 +32,7 @@ class ApplyEmployeeService
 
         $notificationTemplate = MailingNotification::with('recipients')
             ->getTemplates()
-            ->where('frequency', MailingEnum::TRIGGER_APPLIED)->first();
+            ->where('frequency', MailingEnum::TRIGGER_APPLIED)->where('days', '[]')->first();
 
         $types = json_decode($notificationTemplate->type_of_mailing);
 

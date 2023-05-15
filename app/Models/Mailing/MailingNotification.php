@@ -66,4 +66,15 @@ class MailingNotification extends Model
     {
         return json_decode($this->type_of_mailing);
     }
+
+    /**
+     * @param int $id
+     * @return Model|null
+     */
+    public static function getById(
+        int $id
+    ): ?Model
+    {
+        return self::query()->findOrFail($id);
+    }
 }

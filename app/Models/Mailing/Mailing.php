@@ -2,6 +2,7 @@
 
 namespace App\Models\Mailing;
 
+use App\Enums\Mailing\MailingEnum;
 use App\Position;
 use App\ProfileGroup;
 use App\User;
@@ -102,18 +103,28 @@ class Mailing
         int $templateId
     ): Relation|Builder
     {
-        $recipients = MailingNotificationSchedule::query()->where('notification_id', $templateId)->get();
+        $schedules  = MailingNotificationSchedule::query()->where('notification_id', $templateId)->get();
+        $notification = MailingNotification::getById($templateId);
 
-        foreach ($recipients as $recipient)
+        $recipients = User::query()->orderBy('last_name', 'asc')
+            ->when('manager_assessment' == MailingEnum::TRIGGER_MANAGER_ASSESSMENT, fn (Builder $query) => $query->withWhereHas('user_description', fn ($query) => $query->where('is_trainee', 0)))
+            ->when('coach_assessment' == MailingEnum::TRIGGER_MANAGER_ASSESSMENT, fn (Builder $query) => $query->withWhereHas('user_description', fn ($query) => $query->where('is_trainee', 1)))
+            ->get();
+
+        foreach ($schedules as $schedule)
         {
-            switch ($recipient['notificationable_type']){
+            switch ($schedule['notificationable_type']){
                 case 'App\User';
-                    return User::query()->where('id', $recipient['notificationable_id']);
+                    $recipients = User::query()->where('id', $schedule['notificationable_id']);
+                    break;
                 case 'App\ProfileGroup';
-                    return ProfileGroup::getById($recipient['notificationable_id'])->activeUsers();
+                    $recipients = ProfileGroup::getById($schedule['notificationable_id'])->activeUsers();
+                    break;
                 case 'App\Position';
-                    return Position::getById($recipient['notificationable_id'])->users()->whereNull('deleted_at');
+                    $recipients = Position::getById($schedule['notificationable_id'])->users()->whereNull('deleted_at');
+                    break;
             }
         }
+        return $recipients;
     }
 }
