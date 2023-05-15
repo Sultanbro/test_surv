@@ -295,7 +295,7 @@ class HeadhunterNegotiations extends Command
 
             if($hh_vacancy) {
                 try {
-                    $manager_id = $hh_vacancy->manager->id;
+                    $manager_id = 7792661;
                 } catch(\Exception $e) {
                     // save logs
                 }
