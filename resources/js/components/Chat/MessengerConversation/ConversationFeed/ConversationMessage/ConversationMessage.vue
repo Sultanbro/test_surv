@@ -641,6 +641,7 @@ audio {
 
 .messenger__format-container{
 	white-space: pre-line;
+	line-break: anywhere;
 }
 .messenger__format-container_parent {
 	border-left: 2px solid #5ebee9;
@@ -661,5 +662,23 @@ audio {
 .messenger__format-link:hover{
 	color: #0056b3;
 	text-decoration: underline;
+}
+
+
+@media only screen and (max-width: 670px) {
+	.ConversationMessage{
+		&-context{}
+		&:hover{
+			.ConversationMessage-context{
+				display: none !important;
+			}
+		}
+	}
+	.messenger__message-box-right{
+		margin-right: 0;
+	}
+	.messenger__message-box-left{
+		margin-left: 0;
+	}
 }
 </style>
