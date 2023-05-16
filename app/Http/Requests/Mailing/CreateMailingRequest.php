@@ -36,7 +36,8 @@ class CreateMailingRequest extends BaseFormRequest
         return [
             'name'              => 'required|string',
             'title'             => 'required|min:3|max:244',
-            'recipients'        => ['array', new ValidateByType, dd(new ValidationFrequency($this->date['frequency']))],
+            'recipients'        => ['array', new ValidateByType, new ValidationFrequency($this->date['frequency']),
+                !in_array($this->date['frequency'], [MailingEnum::TRIGGER_MANAGER_ASSESSMENT, MailingEnum::TRIGGER_FIRED, MailingEnum::TRIGGER_COACH_ASSESSMENT]) ? 'required' : '',],
             'recipients.*.id'   => 'required|integer',
 
             /**
