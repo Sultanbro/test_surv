@@ -36,7 +36,7 @@ class CreateMailingRequest extends BaseFormRequest
         return [
             'name'              => 'required|string',
             'title'             => 'required|min:3|max:244',
-            'recipients'        => ['array', new ValidateByType, new ValidationFrequency($this->date['frequency']) ? 'required' : ''],
+            'recipients'        => ['array', new ValidateByType, dd(new ValidationFrequency($this->date['frequency']))],
             'recipients.*.id'   => 'required|integer',
 
             /**
