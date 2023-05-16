@@ -20,6 +20,7 @@ class VerifyCsrfToken extends Middleware
         '/profile/upload/edit',
         '/course-results/get',
         '/mailing',
-        '/mailing/*'
+        '/mailing/*',
+        '/notification-template/*'
     ];
 }
