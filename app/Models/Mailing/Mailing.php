@@ -107,16 +107,12 @@ class Mailing
 
         foreach ($schedules as $schedule)
         {
-            switch ($schedule->notificationable_type){
-                case 'App\User';
-                    return User::query()->where('id', $schedule->notificationable_id);
-                case 'App\ProfileGroup';
-                    return ProfileGroup::getById($schedule->notificationable_id)->activeUsers();
-                case 'App\Position';
-                    return Position::getById($schedule->notificationable_id)->users()->whereNull('deleted_at');
-                default:
-                    return User::query()->orderBy('last_name', 'asc')->withWhereHas('user_description', fn ($query) => $query->where('is_trainee', 0));
-            }
+            return match ($schedule->notificationable_type) {
+                'App\User' => User::query()->where('id', $schedule->notificationable_id),
+                'App\ProfileGroup' => ProfileGroup::getById($schedule->notificationable_id)->activeUsers(),
+                'App\Position' => Position::getById($schedule->notificationable_id)->users()->whereNull('deleted_at'),
+                default => User::query()->orderBy('last_name', 'asc')->withWhereHas('user_description', fn($query) => $query->where('is_trainee', 0)),
+            };
         }
     }
 }
