@@ -111,13 +111,10 @@ class Mailing
             switch ($schedule['notificationable_type']){
                 case 'App\User';
                     $recipients = User::query()->where('id', $schedule['notificationable_id']);
-                    break;
                 case 'App\ProfileGroup';
                     $recipients = ProfileGroup::getById($schedule['notificationable_id'])->activeUsers();
-                    break;
                 case 'App\Position';
                     $recipients = Position::getById($schedule['notificationable_id'])->users()->whereNull('deleted_at');
-                    break;
             }
         }
         return $recipients;
