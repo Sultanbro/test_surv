@@ -32,8 +32,8 @@ class ApplyEmployeeService
 
         $notificationTemplate = MailingNotification::with('recipients')
             ->getTemplates()
-            ->where('frequency', MailingEnum::TRIGGER_APPLIED)->where('days', '[]')->first();
-        dd($notificationTemplate);
+            ->where('frequency', MailingEnum::TRIGGER_APPLIED)->first();
+
         if (!(bool)$notificationTemplate)
         {
             throw new \Exception("Trigger by type " . MailingEnum::TRIGGER_APPLIED . " does not exist");
