@@ -104,7 +104,7 @@ class Mailing
     ): Relation|Builder
     {
         $schedules  = MailingNotificationSchedule::query()->where('notification_id', $templateId)->get();
-
+        dd($schedules);
         foreach ($schedules as $schedule)
         {
             switch ($schedule['notificationable_type']){
