@@ -92,7 +92,14 @@
 					<label
 						for="workStartTime"
 						class="col-sm-4 col-form-label"
-					>Рабочие часы</label>
+					>
+						Рабочие часы
+						<img
+							src="/images/dist/profit-info.svg"
+							class="img-info"
+							v-b-popover.hover.left="'Укажите во сколько начинается и заканчивается рабочий день всей группы по умолчанию (индивидуально устанавливается в профиле сотрудника)'"
+						>
+					</label>
 					<div class="col-sm-8 form-inline">
 						<input
 							name="work_start_time"

@@ -203,6 +203,7 @@
 									class="fa fa-pen"
 									@click="toggleMode"
 									:class="{'active': mode == 'edit'}"
+									v-b-popover.hover.top="'Включить редактирование Базы знаний'"
 								/>
 							</div>
 							<div
