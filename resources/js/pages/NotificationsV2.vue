@@ -69,7 +69,7 @@
 							{{ $moment(notification.created_at).format('YYYY-MM-DD') }}
 						</b-td>
 						<b-td>
-							{{ notification.created_by.name }} {{ notification.created_by.last_name }}
+							{{ notification.creator.name }} {{ notification.creator.last_name }}
 						</b-td>
 						<b-td>
 							<b-button
@@ -162,6 +162,7 @@ import { mapGetters, mapActions } from 'vuex'
 import {
 	fetchNotificationVariants,
 	createNotification,
+	deleteNotification,
 } from '@/stores/api/notifications'
 import NotificationsEditForm from '@/components/pages/Notifications/NotificationsEditForm'
 import NotificationsTemplates from '@/components/pages/Notifications/NotificationsTemplates'
@@ -170,6 +171,17 @@ import JobtronButton from '@ui/Button'
 import {
 	ChatIconPlus,
 } from '@icons'
+
+const getNamesMethods = {
+	'App\\User': 'getUserName',
+	'App\\ProfileGroup': 'getGroupName',
+	'App\\Position': 'getPositionName',
+}
+const typeToNumber = {
+	'App\\User': 1,
+	'App\\ProfileGroup': 2,
+	'App\\Position': 3,
+}
 
 export default {
 	name: 'NotificationsV2',
@@ -223,8 +235,9 @@ export default {
 				if(~notification.created_at.toLowerCase().substring(0, 10).indexOf(lowerSearch)) return true
 
 				// in creator
-				const creator = notification.created_by
-				if(~(`${creator.name} ${creator.last_name}`.toLowerCase()).indexOf(lowerSearch)) return true
+				if(notification.creator){
+					if(~(`${notification.creator.name} ${notification.creator.last_name}`.toLowerCase()).indexOf(lowerSearch)) return true
+				}
 
 				// in services
 				if(~notification.type_of_mailing.join(', ').toLowerCase().indexOf(lowerSearch)) return true
@@ -251,33 +264,57 @@ export default {
 		...mapActions(['loadCompany']),
 		async fetchNotifications(){
 			const notifications = await fetchNotificationVariants()
-			this.addRecipientNames(notifications)
-			this.notifications = notifications
+			this.notifications = this.parseNotifications(notifications)
 		},
-		addRecipientNames(notifications){
-			notifications.forEach(notification => {
-				notification.recipients.forEach(recipient => {
-					this.addRecipientName(recipient)
-				})
+		parseNotifications(notifications){
+			return notifications.map(notification => {
+				return {
+					...notification,
+					type_of_mailing: JSON.parse(notification.type_of_mailing),
+					recipients: notification.recipients ? notification.recipients.map(recipient => {
+						return {
+							...recipient,
+							id: recipient.notificationable_id,
+							type: typeToNumber[recipient.notificationable_type],
+							name: this[getNamesMethods[recipient.notificationable_type]](recipient)
+						}
+					}) : [],
+					date: {
+						frequency: notification.frequency,
+						days: notification.recipients ? JSON.parse((notification.recipients.find(() => true) || {days: '[]'}).days) : []
+					},
+					creator: this.getCreator(notification)
+				}
 			})
 		},
-		addRecipientName(recipient){
-			this[(['', 'addUserName', 'addGroupName', 'addPositionName'][recipient.type])](recipient)
+		getCreator(notification){
+			return this.users.find(user => user.id === notification.created_by)
 		},
-		addUserName(recipient){
-			const user = this.users.find(user => user.id === recipient.id)
-			if(user) recipient.name = `${user.name} ${user.last_name}`
+		getUserName(recipient){
+			const user = this.users.find(user => user.id === recipient.notificationable_id)
+			if(user) return `${user.name} ${user.last_name}`
+			return ''
 		},
-		addGroupName(recipient){
-			const group = this.groups.find(group => group.id === recipient.id)
-			if(group) recipient.name = group.name
+		getGroupName(recipient){
+			const group = this.groups.find(group => group.id === recipient.notificationable_id)
+			if(group) return group.name
+			return ''
 		},
-		addPositionName(recipient){
-			const position = this.positions.find(position => position.id === recipient.id)
-			if(position) recipient.name = position.position
+		getPositionName(recipient){
+			const position = this.positions.find(position => position.id === recipient.notificationable_id)
+			if(position) return position.position
+			return ''
 		},
-		remove(/* notification */){
-			// this.removeNotificationVariants
+		async remove(notification){
+			const {data} = await deleteNotification(notification.id)
+			if(data) {
+				this.$toast.success('Уведомление удалено')
+				const index = this.notifications.findIndex(noti => noti.id === notification.id)
+				this.notifications.splice(index, 1)
+			}
+			else{
+				this.$toast.error('Ошибка при удалении уведомления, попробуйте позже')
+			}
 		},
 		openEditSidebar(notification){
 			if(!notification) this.selectedNotification = this.getBlankNotification()
@@ -298,28 +335,43 @@ export default {
 			}
 		},
 		onSave(notification){
+			const errors = this.validate(notification)
+			if(errors.length){
+				this.$toast.error(errors.join('\n'))
+				return
+			}
 			if(notification.id) this.updateNotification(notification)
 			else this.createNotification(notification)
 			this.selectedNotification = null
 		},
+		validate(notification){
+			const errors = []
+			if(!notification.name) errors.push({field: 'name', error: 'Название уведомления должно быть заполнено'})
+			if(!notification.title) errors.push({field: 'title', error: 'Текст уведомления должен быть заполнен'})
+			if(!notification.recipients.length) errors.push({field: 'recipients', error: 'Укажите минимум одного получателя'})
+			if(notification.date.frequency !== 'daily' && !notification.date.frequency.days.length) errors.push({field: 'days', error: 'Укажите минимум один день отправки'})
+			return errors
+		},
 		async createNotification(notification){
-			await createNotification(notification)
-			const now = new Date().toISOString()
-			this.notifications.push({
-				...notification,
-				created_at: now,
-				updated_at: now,
-				created_by: JSON.parse(JSON.stringify(this.user))
-			})
+			const {message} = await createNotification(notification)
+			if(message === 'Success created'){
+				this.$toast.success('Уведомление успешно создано')
+			}
+			else{
+				this.$toast.error(message)
+			}
+			this.fetchNotifications()
 		},
 		updateNotification(notification){
 			// call api
+			this.$toast.warning('В разработке')
 			const index = this.notifications.findIndex(n => n.id === notification.id)
 			if(!~index) return
 			this.$set(this.notifications, index, notification)
 		},
 		onSaveSettings(){
 			// call api
+			this.$toast.warning('В разработке')
 			this.isSettings = false
 		}
 	}

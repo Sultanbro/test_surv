@@ -60,7 +60,7 @@ class Mailing
      */
     public function fetchNotifications(): ?Collection
     {
-        return MailingNotification::with('schedules')->get();
+        return MailingNotification::with('recipients')->get();
     }
 
     /**
