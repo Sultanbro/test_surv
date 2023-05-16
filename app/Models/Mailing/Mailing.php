@@ -104,15 +104,12 @@ class Mailing
     {
         $schedules  = MailingNotificationSchedule::query()->where('notification_id', $templateId)->get();
         $recipients = collect();
-        $users      = User::query()->withWhereHas('user_description', fn ($query) => $query->where('is_trainee', 0))
-            ->orderBy('last_name', 'asc')
-            ->get();
 
         foreach ($schedules as $schedule)
         {
             if ($schedule->notificationable_type == MailingEnum::USER)
             {
-                $users = User::query()->where('id', $schedule['notificationable_id'])->get();
+                $users = User::withTrashed()->where('id', $schedule['notificationable_id'])->get();
                 $recipients = $users->merge($recipients);
             }
 
@@ -129,6 +126,6 @@ class Mailing
             }
         }
 
-        return $recipients->count() > 0 ? $recipients->unique() : $users;
+        return $recipients->unique();
     }
 }

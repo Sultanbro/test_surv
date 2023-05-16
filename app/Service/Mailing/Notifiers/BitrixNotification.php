@@ -12,6 +12,7 @@ use App\User;
 use http\Exception\InvalidArgumentException;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\Client\HttpClientException;
+use Illuminate\Support\Collection;
 
 class BitrixNotification implements Notification
 {
@@ -25,13 +26,14 @@ class BitrixNotification implements Notification
     /**
      * @param Model $notification
      * @param string $message
+     * @param Collection|null $recipients
      * @return ?bool
      * @throws HttpClientException
      */
-    public function send(Model $notification, string $message = ''): ?bool
+    public function send(Model $notification, string $message = '', Collection $recipients = null): ?bool
     {
-        $recipientIds = MailingFacade::getRecipients($notification->id)->pluck('id')->toArray();
-        $recipients = User::query()->whereIn('id', $recipientIds)
+        $recipientIds = $recipients ?? MailingFacade::getRecipients($notification->id);
+        $recipients   = User::query()->whereIn('id', $recipientIds->pluck('id')->toArray())
             ->withWhereHas('user_description', fn($user) => $user->where('bitrix_id', '!=', 0))->get();
 
         foreach ($recipients as $recipient)

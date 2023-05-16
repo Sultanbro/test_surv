@@ -88,7 +88,7 @@ class Pusher extends Command
         {
             foreach ($mailingSystems as $mailingSystem)
             {
-                NotificationFactory::createNotification($mailingSystem)->send($notification, $notification->title, $notification->name);
+                NotificationFactory::createNotification($mailingSystem)->send($notification, $notification->title);
             }
         }
     }
