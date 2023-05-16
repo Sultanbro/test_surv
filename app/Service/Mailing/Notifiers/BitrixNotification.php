@@ -30,9 +30,9 @@ class BitrixNotification implements Notification
      */
     public function send(Model $notification, string $message = ''): ?bool
     {
-        $recipients = MailingFacade::getRecipients($notification->id)
-            ->withWhereHas('user_description', fn($user) => $user->where('bitrix_id', '!=', 0))
-            ->get();
+        $recipientIds = MailingFacade::getRecipients($notification->id)->pluck('id')->toArray();
+        $recipients = User::query()->whereIn('id', $recipientIds)
+            ->withWhereHas('user_description', fn($user) => $user->where('bitrix_id', '!=', 0))->get();
 
         foreach ($recipients as $recipient)
         {

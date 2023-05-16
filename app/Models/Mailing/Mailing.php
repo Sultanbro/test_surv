@@ -96,35 +96,39 @@ class Mailing
 
     /**
      * @param int $templateId
-     * @return Relation|Builder
+     * @return Collection
      */
     public function getRecipients(
         int $templateId
-    ): Relation|Builder
+    ): Collection
     {
         $schedules  = MailingNotificationSchedule::query()->where('notification_id', $templateId)->get();
-
-        if ($schedules->count() == 0)
-        {
-            return User::query()->orderBy('last_name', 'asc')->withWhereHas('user_description', fn ($query) => $query->where('is_trainee', 0));
-        }
+        $recipients = collect();
+        $users      = User::query()->withWhereHas('user_description', fn ($query) => $query->where('is_trainee', 0))
+            ->orderBy('last_name', 'asc')
+            ->get();
 
         foreach ($schedules as $schedule)
         {
             if ($schedule->notificationable_type == MailingEnum::USER)
             {
-                return User::query()->where('id', $schedule['notificationable_id']);
+                $users = User::query()->where('id', $schedule['notificationable_id'])->get();
+                $recipients = $users->merge($recipients);
             }
 
             if ($schedule->notificationable_type == MailingEnum::GROUP)
             {
-                return ProfileGroup::getById($schedule['notificationable_id'])->activeUsers();
+                $groupUsers = ProfileGroup::getById($schedule['notificationable_id'])->activeUsers()->get();
+                $recipients = $groupUsers->merge($recipients);
             }
 
             if ($schedule->notificationable_type == MailingEnum::POSITION)
             {
-                return Position::getById($schedule['notificationable_id'])->users()->whereNull('deleted_at');
+                $positionUsers = Position::getById($schedule['notificationable_id'])->users()->whereNull('deleted_at')->get();
+                $recipients = $positionUsers->merge($recipients);
             }
         }
+
+        return $recipients->count() > 0 ? $recipients->unique() : $users;
     }
 }
