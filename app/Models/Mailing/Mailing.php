@@ -94,7 +94,6 @@ class Mailing
         return MailingNotification::query()->where('id', $id)->delete();
     }
 
-
     /**
      * @param int $templateId
      * @return Relation|Builder
@@ -105,16 +104,26 @@ class Mailing
     {
         $schedules  = MailingNotificationSchedule::query()->where('notification_id', $templateId)->get();
 
+        if ($schedules->count() == 0)
+        {
+            return User::query()->orderBy('last_name', 'asc')->withWhereHas('user_description', fn ($query) => $query->where('is_trainee', 0));
+        }
+
         foreach ($schedules as $schedule)
         {
-            switch ($schedule['notificationable_type']){
-                case 'App\User';
-                    return User::query()->where('id', $schedule['notificationable_id']);
-                case 'App\ProfileGroup';
-                    return ProfileGroup::getById($schedule['notificationable_id'])->activeUsers();
-                case 'App\Position';
-                    return Position::getById($schedule['notificationable_id'])->users()->whereNull('deleted_at');
+            if ($schedule->notificationable_type == MailingEnum::USER)
+            {
+                return User::query()->where('id', $schedule['notificationable_id']);
+            }
 
+            if ($schedule->notificationable_type == MailingEnum::GROUP)
+            {
+                return ProfileGroup::getById($schedule['notificationable_id'])->activeUsers();
+            }
+
+            if ($schedule->notificationable_type == MailingEnum::POSITION)
+            {
+                return Position::getById($schedule['notificationable_id'])->users()->whereNull('deleted_at');
             }
         }
     }
