@@ -104,19 +104,19 @@ class Mailing
     ): Relation|Builder
     {
         $schedules  = MailingNotificationSchedule::query()->where('notification_id', $templateId)->get();
-        $recipients = User::query()->orderBy('last_name', 'asc')->withWhereHas('user_description', fn ($query) => $query->where('is_trainee', 0))->get();
 
         foreach ($schedules as $schedule)
         {
             switch ($schedule['notificationable_type']){
                 case 'App\User';
-                    $recipients = User::query()->where('id', $schedule['notificationable_id']);
+                    return User::query()->where('id', $schedule['notificationable_id']);
                 case 'App\ProfileGroup';
-                    $recipients = ProfileGroup::getById($schedule['notificationable_id'])->activeUsers();
+                    return ProfileGroup::getById($schedule['notificationable_id'])->activeUsers();
                 case 'App\Position';
-                    $recipients = Position::getById($schedule['notificationable_id'])->users()->whereNull('deleted_at');
+                    return Position::getById($schedule['notificationable_id'])->users()->whereNull('deleted_at');
+                default:
+                    return User::query()->orderBy('last_name', 'asc')->withWhereHas('user_description', fn ($query) => $query->where('is_trainee', 0));
             }
         }
-        return $recipients;
     }
 }
