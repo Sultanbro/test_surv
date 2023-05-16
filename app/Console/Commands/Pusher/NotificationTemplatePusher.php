@@ -66,8 +66,8 @@ class NotificationTemplatePusher extends Command
         MailingNotification $notification
     ): void
     {
-        $user = MailingFacade::getRecipients($notification->id)->first();
-        dd($user);
+        $user = MailingFacade::getRecipients($notification->id);
+
         $mailings = $notification->mailings();
 
         if (!$user->isFired())
