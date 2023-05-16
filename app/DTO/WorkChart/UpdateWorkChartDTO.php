@@ -12,12 +12,13 @@ final class UpdateWorkChartDTO
      */
     public function __construct(
         public int $id,
-        public ?string $name,
-        public ?int $chartWorkdays,
-        public ?int $chartDayoffs,
-        public ?string $startTime,
-        public ?string $endTime,
-        public ?int $chartWorkType,
+        public string $name,
+        public string $startTime,
+        public string $endTime,
+        public int $chartWorkType,
+        public int $chartWorkdays,
+        public int $chartDayoffs,
+        public int $usualSchedule,
 
     )
     {}
@@ -27,18 +28,19 @@ final class UpdateWorkChartDTO
      */
     public function toArray(): array
     {
-        $array = [
-            'name' => null,
+        $data = [
             'text_name' => $this->name ?? null,
             'start_time' => $this->startTime ?? null,
             'end_time' => $this->endTime ?? null,
             'work_charts_type' => $this->chartWorkType ?? null,
         ];
 
-        if (isset($this->chartWorkdays, $this->chartDayoffs)) {
-            $array['name'] = $this->chartWorkdays .'-'. $this->chartDayoffs;
+        if ($this->chartWorkType === 1) {
+            $data['name'] = $this->usualSchedule;
         }
-
-        return $array;
+        else{
+            $data['name'] = $this->chartWorkdays .'-'. $this->chartDayoffs;
+        }
+        return $data;
     }
 }

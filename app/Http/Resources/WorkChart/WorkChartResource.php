@@ -3,6 +3,7 @@
 namespace App\Http\Resources\WorkChart;
 
 use Illuminate\Http\Resources\Json\JsonResource;
+use function PHPUnit\Framework\stringContains;
 
 class WorkChartResource extends JsonResource
 {
@@ -16,7 +17,7 @@ class WorkChartResource extends JsonResource
     {
         return [
             'id' => $this->id,
-            'name' => $this->name,
+            'name' => decbin((int)$this->name),
             'start_time' => $this->start_time,
             'end_time' => $this->end_time,
             'text_name' => $this->text_name,

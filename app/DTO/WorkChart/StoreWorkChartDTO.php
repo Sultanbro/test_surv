@@ -12,11 +12,12 @@ final class StoreWorkChartDTO
      */
     public function __construct(
         public string $name,
-        public int $chartWorkdays,
-        public int $chartDayoffs,
         public string $startTime,
         public string $endTime,
         public int $chartWorkType,
+        public int $chartWorkdays,
+        public int $chartDayoffs,
+        public int $usualSchedule,
     )
     {}
 
@@ -25,12 +26,19 @@ final class StoreWorkChartDTO
      */
     public function toArray(): array
     {
-        return [
-            'name' => $this->chartWorkdays .'-'. $this->chartDayoffs,
+        $data = [
             'text_name' => $this->name,
             'start_time' => $this->startTime,
             'end_time' => $this->endTime,
             'work_charts_type' => $this->chartWorkType,
         ];
+
+        if ($this->chartWorkType === 1) {
+            $data['name'] = $this->usualSchedule;
+        }
+        else{
+            $data['name'] = $this->chartWorkdays .'-'. $this->chartDayoffs;
+        }
+        return $data;
     }
 }
