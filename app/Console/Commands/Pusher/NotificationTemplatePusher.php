@@ -72,6 +72,9 @@ class NotificationTemplatePusher extends Command
         $lastDayOfMonth = Carbon::now()->daysInMonth;
         $daysRemaining  = $lastDayOfMonth - $currentDay;
         $mailings       = $notification->mailings();
+        $recipients     = User::query()->withWhereHas('user_description', fn ($query) => $query->where('is_trainee', 0))
+            ->orderBy('last_name', 'asc')
+            ->get();
 
         $link       = 'Ссылка на опрос <br>';
         $message    = $notification->title;
@@ -81,7 +84,7 @@ class NotificationTemplatePusher extends Command
         {
             foreach ($mailings as $mailing)
             {
-                NotificationFactory::createNotification($mailing)->send($notification, $message);
+                NotificationFactory::createNotification($mailing)->send($notification, $message, $recipients);
             }
         }
     }
