@@ -36,20 +36,6 @@ export default {
 			const y = this.y - messengerWindowRect.top
 			const offsetHeight = this.$el.offsetHeight
 			const offsetWidth = this.$el.offsetWidth
-			console.log('ContextMenu')
-			console.log('messengerWindowRect', messengerWindowRect)
-			console.log('this.x', this.x)
-			console.log('this.y', this.y)
-			console.log('x', x)
-			console.log('y', y)
-			console.log('offsetHeight', this.$el.offsetHeight)
-			console.log('offsetWidth', this.$el.offsetWidth)
-			console.log('top', (y + offsetHeight > messengerWindowRect.height
-				? messengerWindowRect.height - offsetHeight
-				: y))
-			console.log('left', (x + offsetWidth + 50 > messengerWindowRect.width
-				? messengerWindowRect.width - offsetWidth
-				: x))
 
 			return {
 				top: (y + offsetHeight > messengerWindowRect.height

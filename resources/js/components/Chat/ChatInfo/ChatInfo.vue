@@ -156,6 +156,8 @@
 			<ChatUserList
 				:users="chat.users"
 				:owner="isOwner"
+				:actions="{ remove: true }"
+				@remove="onRemove"
 			/>
 		</div>
 

@@ -448,7 +448,7 @@ export default {
 		editMessage: state => state.editMessage,
 		citedMessage: state => state.citedMessage,
 		pinnedMessage: state => state.pinnedMessage,
-		unreadCount: (state, getters) => getters.chats.reduce((sum, chat) => sum + chat.unread_messages_count, 0),
+		unreadCount: (state, getters) => getters.chats.reduce((sum, chat) => sum + (chat.is_mute ? 0 : chat.unread_messages_count), 0),
 		messagesLoadMoreCount: state => state.messagesLoadMoreCount,
 		startMessageId: state => state.startMessageId,
 		messagesOldEndReached: state => state.messagesOldEndReached,
