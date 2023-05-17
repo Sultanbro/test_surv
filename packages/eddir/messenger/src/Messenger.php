@@ -103,7 +103,7 @@ class Messenger {
         if ( $chat->private ) {
             // get second user in private chat
 
-            $second_user = $chat->users->firstWhere( 'id', '=', $user->id );
+            $second_user = $chat->users->firstWhere( 'id', '!=', $user->id );
 
             if ( $second_user && !$second_user->deleted_at) {
                 $chat->second_user = $second_user;
