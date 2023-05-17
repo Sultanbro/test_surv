@@ -204,7 +204,7 @@ export default {
 .messenger__chat-name-label {
   position: absolute;
   top: 0;
-  right: 0;
+  right: 30px;
   padding: 5px;
 }
 
