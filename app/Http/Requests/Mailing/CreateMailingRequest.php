@@ -48,7 +48,7 @@ class CreateMailingRequest extends BaseFormRequest
             /**
              * Есть разные виды рассылки Bitrix24, u-marketing utc.
              */
-            'type_of_mailing'   => 'required|array',
+            'type_of_mailing'   => ['required', 'array', Rule::in(['in-app', 'whatsapp', 'bitrix'])],
 
             'date'              => ['required', 'array', new ValidateWeek, new ValidateDaily],
             'date.days'         => [in_array($this->date['frequency'], [MailingEnum::WEEKLY, MailingEnum::MONTHLY]) ? 'required' : '', 'array'],
