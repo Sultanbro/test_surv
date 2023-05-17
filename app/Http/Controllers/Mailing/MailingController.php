@@ -5,8 +5,10 @@ namespace App\Http\Controllers\Mailing;
 use App\Facade\MailingFacade;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Mailing\CreateMailingRequest;
+use App\Http\Requests\Mailing\UpdateMailingRequest;
 use App\Models\Mailing\MailingNotification;
 use App\Service\Mailing\CreateMailingService;
+use App\Service\Mailing\UpdateMailingService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Throwable;
@@ -27,6 +29,19 @@ class MailingController extends Controller
         );
     }
 
+    /**
+     * @param UpdateMailingRequest $request
+     * @param UpdateMailingService $service
+     * @return JsonResponse
+     */
+    public function update(UpdateMailingRequest $request, UpdateMailingService $service): JsonResponse
+    {
+        return $this->response(
+            message: 'Success',
+            data: $service->handle($request->toDto())
+        );
+    }
+    
     /**
      * @return JsonResponse
      */
