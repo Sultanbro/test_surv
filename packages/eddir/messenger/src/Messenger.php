@@ -268,9 +268,13 @@ class Messenger {
                              ] );
 
         // attach each user
-        $chat->members()->attach( $userId, [ 'is_admin' => true ] );
-        $chat->members()->attach( $otherUserId, [ 'is_admin' => true ] );
-        $chat->save();
+
+        if (!$chat->members()->contains($userId) && !$chat->members()->contains($otherUserId))
+        {
+            $chat->members()->attach( $userId, [ 'is_admin' => true ] );
+            $chat->members()->attach( $otherUserId, [ 'is_admin' => true ] );
+            $chat->save();
+        }
 
         return $chat;
     }
