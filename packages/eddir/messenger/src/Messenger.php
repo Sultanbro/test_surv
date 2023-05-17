@@ -102,7 +102,8 @@ class Messenger {
 
         if ( $chat->private ) {
             // get second user in private chat
-            $second_user = $chat->users->firstWhere( 'id', '!=', $user->id );
+
+            $second_user = $chat->users->firstWhere( 'id', '=', $user->id );
 
             if ( $second_user && !$second_user->deleted_at) {
                 $chat->second_user = $second_user;
@@ -241,6 +242,7 @@ class Messenger {
      * @return Builder|Model|null
      */
     public function getPrivateChat( int $userId, int $otherUserId, bool $create = true ): Builder|Model|null {
+
         // get chat when has user userId
         $chat = MessengerChat::query()
                              ->where( 'private', true )
@@ -251,6 +253,7 @@ class Messenger {
                                  $query->where( 'user_id', $otherUserId );
                              } )
                              ->first();
+
         if ( $chat ) {
             return $chat;
         } else if ( ! $create ) {
