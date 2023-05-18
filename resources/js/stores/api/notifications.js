@@ -46,6 +46,11 @@ export async function fetchNotification(id){
 	return data
 }
 
+export async function updateNotification(notification){
+	const { data } = await axios.put('/mailing', notification)
+	return data
+}
+
 export async function deleteNotification(id){
 	const { data } = await axios.delete(`/mailing/${id}`)
 	return data

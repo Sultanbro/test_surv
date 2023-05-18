@@ -163,6 +163,7 @@ import {
 	fetchNotificationVariants,
 	createNotification,
 	deleteNotification,
+	updateNotification,
 } from '@/stores/api/notifications'
 import NotificationsEditForm from '@/components/pages/Notifications/NotificationsEditForm'
 import NotificationsTemplates from '@/components/pages/Notifications/NotificationsTemplates'
@@ -362,9 +363,14 @@ export default {
 			}
 			this.fetchNotifications()
 		},
-		updateNotification(notification){
-			// call api
-			this.$toast.warning('В разработке')
+		async updateNotification(notification){
+			const {message} = await updateNotification(notification)
+			if(message === 'Success created'){
+				this.$toast.success('Уведомление успешно создано')
+			}
+			else{
+				this.$toast.error(message)
+			}
 			const index = this.notifications.findIndex(n => n.id === notification.id)
 			if(!~index) return
 			this.$set(this.notifications, index, notification)

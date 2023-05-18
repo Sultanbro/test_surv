@@ -26,7 +26,7 @@
 		<!-- Получатели -->
 		<div
 			class="NotificationsEditForm-row"
-			@click="isRecipientsOpen = true"
+			@click="onClickRecipments"
 		>
 			<div class="NotificationsEditForm-label">
 				Кого уведомляем
@@ -210,6 +210,11 @@ export default {
 	methods: {
 		onSave(){
 			this.$emit('save', this.value)
+		},
+		onClickRecipments(){
+			if(!this.value.id){
+				this.isRecipientsOpen = true
+			}
 		}
 	}
 }
