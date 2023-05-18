@@ -8,6 +8,8 @@
 
 namespace Eddir\Messenger\Http\Controllers;
 
+use App\Position;
+use App\ProfileGroup;
 use Eddir\Messenger\Models\MessengerChat;
 use Illuminate\Foundation\Auth\User;
 use Eddir\Messenger\Facades\MessengerFacade;
@@ -81,13 +83,17 @@ class ChatsController extends Controller {
         }
         try {
             // positions
-            $company['positions'] = DB::table( 'position' )->select( 'id', 'position', 'deleted_at')->get();
+            $company['positions'] = Position::with(['activeUsers' => fn($query) => $query->select('id', 'name', 'position_id')])->get();
         } catch ( \Exception $e ) {
             $company['positions'] = [];
             $company['errors'][]  = $e->getMessage();
         }
         try {
-            $company['profile_groups'] = DB::table( 'profile_groups' )->select( 'id', 'name', 'active')->get();
+            $company['profile_groups'] = ProfileGroup::with(['users' => fn($query) => $query
+                ->select('id')
+                ->wherePivot('status', 'active')
+                ->where('users.deleted_at', null)])
+                ->get();
         } catch ( \Exception $e ) {
             $company['profile_groups'] = [];
             $company['errors'][]       = $e->getMessage();
