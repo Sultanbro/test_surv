@@ -90,7 +90,7 @@ class ChatsController extends Controller {
         }
         try {
             $company['profile_groups'] = ProfileGroup::with(['users' => fn($query) => $query
-                ->select('id')
+                ->select('id', 'name')
                 ->wherePivot('status', 'active')
                 ->where('users.deleted_at', null)])
                 ->get();
