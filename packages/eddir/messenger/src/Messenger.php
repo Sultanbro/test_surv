@@ -246,12 +246,12 @@ class Messenger {
         // get chat when has user userId
         $chat = MessengerChat::query()
                              ->where( 'private', true )
-                             ->whereHas( 'members', function ( Builder $query ) use ( $userId ) {
+                             ->withWhereHas( 'members', function (  $query ) use ( $userId ) {
                                  $query->where( 'user_id', $userId );
                              } )
-                             ->whereHas( 'members', function ( Builder $query ) use ( $otherUserId ) {
+                             ->withWhereHas( 'members', function (  $query ) use ( $otherUserId ) {
                                  $query->where( 'user_id', $otherUserId );
-                             } )
+                             } )->orderBy('id', 'desc')
                              ->first();
 
         if ( $chat ) {
