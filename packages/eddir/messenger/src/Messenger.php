@@ -269,7 +269,6 @@ class Messenger {
         // create new chat if it doesn't exist
         $chat = MessengerChat::query()
                              ->create( [
-                                 'is_yourself_chat' => $userId == $otherUserId,
                                  'owner_id' => $userId,
                                  'title'    => '',
                                  'private'  => true,
@@ -277,7 +276,7 @@ class Messenger {
 
         // attach each user
 
-        $chat->members()->attach( $userId, [ 'is_admin' => true ] );
+        $chat->members()->attach( $userId, [ 'is_admin' => true , 'is_yourself_chat' => $userId == $otherUserId] );
 
         if ($userId != $otherUserId)
         {
