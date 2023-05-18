@@ -102,7 +102,8 @@ class Messenger {
 
         if ( $chat->private ) {
             // get second user in private chat
-            $second_user = $chat->users->firstWhere( 'id', '!=', $user->id );
+            $users =  $chat->users;
+            $second_user = $users->count() >= 2 ? $users->firstWhere( 'id', '!=', $user->id ) : $users->firstWhere( 'id', '=', $user->id );
 
             if ( $second_user && !$second_user->deleted_at) {
                 $chat->second_user = $second_user;
@@ -241,16 +242,18 @@ class Messenger {
      * @return Builder|Model|null
      */
     public function getPrivateChat( int $userId, int $otherUserId, bool $create = true ): Builder|Model|null {
+
         // get chat when has user userId
         $chat = MessengerChat::query()
                              ->where( 'private', true )
-                             ->whereHas( 'members', function ( Builder $query ) use ( $userId ) {
+                             ->withWhereHas( 'members', function (  $query ) use ( $userId ) {
                                  $query->where( 'user_id', $userId );
                              } )
-                             ->whereHas( 'members', function ( Builder $query ) use ( $otherUserId ) {
+                             ->withWhereHas( 'members', function (  $query ) use ( $otherUserId ) {
                                  $query->where( 'user_id', $otherUserId );
-                             } )
+                             } )->orderBy('id', 'desc')
                              ->first();
+
         if ( $chat ) {
             return $chat;
         } else if ( ! $create ) {
@@ -265,9 +268,18 @@ class Messenger {
                              ] );
 
         // attach each user
-        $chat->members()->attach( $userId, [ 'is_admin' => true ] );
-        $chat->members()->attach( $otherUserId, [ 'is_admin' => true ] );
+
+        if ($userId == $otherUserId)
+        {
+            $chat->members()->attach( $userId, [ 'is_admin' => true ] );
+        } else
+        {
+            $chat->members()->attach( $userId, [ 'is_admin' => true ] );
+            $chat->members()->attach( $otherUserId, [ 'is_admin' => true ] );
+        }
+
         $chat->save();
+
 
         return $chat;
     }

@@ -337,6 +337,36 @@ export default {
 		}
 	}
 }
+.messenger__container-scroll {
+	display: flex;
+	flex: 1;
+	overflow-y: auto;
+	overflow-x: hidden;
+	margin-right: 1px;
+	-webkit-overflow-scrolling: touch;
+}
+/* total width */
+.messenger__container-scroll::-webkit-scrollbar {
+	background-color: #fff;
+	width: 8px;
+}
+
+/* background of the scrollbar except button or resizer */
+.messenger__container-scroll::-webkit-scrollbar-track {
+	background-color: #bcbcbd;
+	border-radius: 24px;
+}
+
+/* scrollbar itself */
+.messenger__container-scroll::-webkit-scrollbar-thumb {
+	background-color: #7e7e81;
+	border-radius: 24px;
+}
+
+/* set button(top and bottom of the scrollbar) */
+.messenger__container-scroll::-webkit-scrollbar-button {
+	display: none;
+}
 </style>
 
 <style lang="scss" scoped>
@@ -393,13 +423,6 @@ export default {
 		padding-bottom: 25px;
 	}
 }
-.messenger__container-scroll {
-	display: flex;
-	flex: 1;
-	overflow-y: auto;
-	margin-right: 1px;
-	-webkit-overflow-scrolling: touch;
-}
 
 .messenger__message-wrapper{
 	margin-bottom: 5px;
@@ -410,28 +433,7 @@ export default {
 	flex: 1;
 }
 
-/* total width */
-.messenger__container-scroll::-webkit-scrollbar {
-	background-color: #fff;
-	width: 8px;
-}
 
-/* background of the scrollbar except button or resizer */
-.messenger__container-scroll::-webkit-scrollbar-track {
-	background-color: #bcbcbd;
-	border-radius: 24px;
-}
-
-/* scrollbar itself */
-.messenger__container-scroll::-webkit-scrollbar-thumb {
-	background-color: #7e7e81;
-	border-radius: 24px;
-}
-
-/* set button(top and bottom of the scrollbar) */
-.messenger__container-scroll::-webkit-scrollbar-button {
-	display: none;
-}
 .messenger__context-menu_reactions{
 	display: flex;
 	flex-flow: row nowrap;

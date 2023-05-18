@@ -1301,7 +1301,7 @@ class User extends Authenticatable implements Authorizable
         int $id
     ): Model
     {
-        return self::query()->findOrFail($id);
+        return self::withTrashed()->findOrFail($id);
     }
 
     /**
@@ -1335,5 +1335,14 @@ class User extends Authenticatable implements Authorizable
         $schedule = $this->schedule();
 
         return $schedule['end']->diffInHours($schedule['start']) - 1;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isFired(): bool
+    {
+        dd($this);
+        return !($this->deleted_at == null);
     }
 }

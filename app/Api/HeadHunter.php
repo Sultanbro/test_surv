@@ -20,7 +20,7 @@ class HeadHunter {
     
     CONST CLIENT_ID = 'LPAJVTT5AU6U3CJBC1M8RL0KQ5CR2N5OBBEBCHKDK5EJ8V450919BEOMSQOTHNTI';
 	CONST CLIENT_SECRET = 'U417PFE80B6VFG39NJHP5M286FEM5SMUOLVLCDQ0UGRALDSTL61HUUAUS9G4FRQK';
-	CONST ACCESS_TOKEN = 'OJ9KDUFVAOMP1S011H8O8V70G8BLVE46F78PGGB74KE7LLIMUR2MG4N80OO9MBFE'; // Костыль, менять при новом токене
+	CONST ACCESS_TOKEN = 'KDSCMGCUGJ6B3SA16KI7ML2RHO6P6J7NNE2HO495J9A9CKTRQJ23MA45OHVEQNIT'; // Костыль, менять при новом токене
 	CONST BASE_URL = 'https://api.hh.ru/'; 
 	CONST REDIRECT_URI = 'https://bpartners.kz/token';  
 
@@ -206,7 +206,7 @@ class HeadHunter {
                 'refresh_token' => $this->refreshToken
             ];
         }
-
+       // dd($params);
         try {
 			$response = $this->client->request('POST', 'https://hh.ru/oauth/token', [
                 'form_params' => $params

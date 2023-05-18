@@ -5,8 +5,8 @@
 			class="lp"
 		>
 			<div
-				class="form-search-kb"
 				v-if="can_edit"
+				class="form-search-kb"
 			>
 				<i class="fa fa-search" />
 				<input
@@ -18,15 +18,15 @@
 					class="form-control"
 				>
 				<i
-					class="search-clear"
 					v-if="search.input.length"
+					class="search-clear"
 					@click="clearSearch"
 				>x</i>
 			</div>
 			<div
+				v-if="!course_page"
 				class="btn btn-grey mb-3"
 				@click="$emit('back')"
-				v-if="!course_page"
 			>
 				<i class="fa fa-arrow-left" />
 				<span>Вернуться к разделам</span>
@@ -34,15 +34,15 @@
 
 			<div class="kb-wrap noscrollbar">
 				<div
-					class="chapter opened mb-3"
 					v-if="!course_page && !search.items.length && !search.input.length"
+					class="chapter opened mb-3"
 				>
 					<div class="d-flex">
 						<span class="font-16 font-bold">{{ parent_title }}</span>
 						<div class="chapter-btns">
 							<i
-								class="fa fa-plus"
 								v-if="mode =='edit'"
+								class="fa fa-plus"
 								@click="addPageToTree"
 							/>
 						</div>
@@ -120,8 +120,8 @@
 		>
 			<div class="hat">
 				<div
-					class="d-flex jsutify-content-between hat-top"
 					v-if="!course_page"
+					class="d-flex jsutify-content-between hat-top"
 				>
 					<div class="bc">
 						<a
@@ -130,20 +130,20 @@
 						>База знаний</a>
 						<template v-for="(bc, bc_index) in breadcrumbs">
 							<i
-								class="fa fa-chevron-right"
 								:key="bc_index"
+								class="fa fa-chevron-right"
 							/>
 							<a
+								:key="'a' + bc_index"
 								href="#"
 								@click="showPage(bc.id)"
-								:key="'a' + bc_index"
 							>{{ bc.title }}</a>
 						</template>
 					</div>
 
 					<div
-						class="mode_changer"
 						v-if="can_edit"
+						class="mode_changer"
 					>
 						<i
 							class="fa fa-pen"
@@ -153,13 +153,13 @@
 					</div>
 
 					<div
-						class="control-btns"
 						v-if="can_edit"
+						class="control-btns"
 					>
 						<div
+							v-if="activesbook != null"
 							class="d-flex justify-content-end"
 							:asd="auth_user_id"
-							v-if="activesbook != null"
 						>
 							<input
 								type="text"
@@ -443,8 +443,8 @@
 
 
 						<button
-							class="next-btn btn btn-primary"
 							v-if="course_page && activesbook.questions.length == 0"
+							class="next-btn btn btn-primary"
 							@click="nextElement()"
 						>
 							Продолжить курс
@@ -536,6 +536,7 @@
 </template>
 
 <script>
+import { mapGetters } from 'vuex'
 import NestedDraggable from '@/components/nested'
 import NestedCourse from '@/components/nested_course'
 import Editor from '@tinymce/tinymce-vue'
@@ -616,6 +617,9 @@ export default {
 			item_models: []
 		}
 	},
+	computed: {
+		...mapGetters(['user'])
+	},
 
 	created() {
 		this.getTree();
@@ -652,11 +656,7 @@ export default {
 		},
 
 		nextElement() {
-
-
 			this.setSegmentPassed();
-
-
 
 			// find next element
 			let index2 = this.ids.findIndex(el => el.id == this.activesbook.id);
@@ -678,15 +678,12 @@ export default {
 		},
 
 		passed() {
-
 			this.passedTest = true;
 
 			// find element
-
 			let index = this.ids.findIndex(el => el.id == this.activesbook.id);
 
 			if(index != -1 && this.ids.length - 1 > index) {
-
 				let el = this.findItem(this.ids[index + 1]);
 
 				// pass if its not course.  cos there not nextElement button
@@ -694,7 +691,6 @@ export default {
 					this.setSegmentPassed();
 				}
 			}
-
 
 			//test
 			let i = this.item_models.findIndex(im => im.item_id == this.activesbook.id);
@@ -704,11 +700,9 @@ export default {
 			});
 
 			this.connectItemModels(this.tree)
-
 		},
 
 		setSegmentPassed() {
-
 			let el = null;
 			// find element
 			let index = this.ids.findIndex(el => el.id == this.activesbook.id);
@@ -770,7 +764,6 @@ export default {
 					this.returnArray(this.tree);
 
 					if(this.course_page) {
-
 						book_id = this.show_page_id
 
 						if(this.show_page_id == 0 || this.show_page_id == null) {
@@ -784,29 +777,21 @@ export default {
 								this.showPage(el.id);
 							}
 						}
-
-
 					} else { // not course page
-
-
 						let result = null
 						this.tree.every(obj => {
 							result = this.deepSearchId(obj, book_id)
 
-
 							if (result != null) {
-
 								this.showPage(book_id, false, true);
 								return false;
 							}
 							return true;
 						});
-
 					}
 
 					// passed steps
 					this.connectItemModels(this.tree)
-
 				})
 				.catch((error) => {
 					alert(error);
@@ -827,7 +812,6 @@ export default {
 
 		connectItemModels(tree) {
 			tree.forEach(el => {
-
 				let i = this.item_models.findIndex(im => im.item_id == el.id);
 				if(i != -1) {
 					el.item_model = this.item_models[i];
@@ -848,10 +832,8 @@ export default {
 					text: this.search.input,
 				})
 				.then((response) => {
-
 					this.search.items = response.data.items;
 					this.emphasizeTexts();
-
 				})
 				.catch((error) => {
 					alert(error);
@@ -893,23 +875,27 @@ export default {
 		addPage(book) {
 			this.axios.post('/kb/page/create', {
 				id: book.id
-			}).then((response) => {
-				this.activesbook = response.data;
-				this.edit_actives_book = true;
-				book.children.push(this.activesbook);
-				this.$toast.info('Добавлена страница');
-			});
+			}).then(({data}) => this.addPageHandler(data, book.children));
 		},
 
 		addPageToTree() {
 			this.axios.post('/kb/page/create', {
 				id: this.id
-			}).then((response) => {
-				this.activesbook = response.data;
-				this.edit_actives_book = true;
-				this.tree.push(this.activesbook);
-				this.$toast.info('Добавлена страница');
-			});
+			}).then(({data}) => this.addPageHandler(data, this.tree));
+		},
+
+		addPageHandler(book, parent){
+			book.created = this.$moment.utc(book.created_at).local().format('DD.MM.YYYY HH:mm')
+			book.edited_at = this.$moment.utc(book.updated_at).local().format('DD.MM.YYYY HH:mm')
+			book.editor_avatar = this.$laravel.avatar
+			const name = `${this.user.last_name} ${this.user.name}`
+			book.author = name
+			book.editor = name
+
+			this.activesbook = book;
+			this.edit_actives_book = true;
+			parent.push(this.activesbook);
+			this.$toast.info('Добавлена страница');
 		},
 
 		deletePage() {
@@ -933,7 +919,6 @@ export default {
 		},
 
 		deepSearchId(obj, targetId) {
-
 			if (obj.id == targetId) {
 				return obj
 			}
@@ -989,8 +974,6 @@ export default {
 				// @TODO
 				this.activesbook = response.data.book;
 
-
-
 				this.questions_key++
 				this.text_was = this.activesbook.text;
 				this.title_was = this.activesbook.title;
@@ -1018,8 +1001,6 @@ export default {
 				if(this.enable_url_manipulation) {
 					window.history.replaceState({ id: '100' }, 'База знаний', '/kb?s=' + this.id + '&b=' + id);
 				}
-
-
 			})
 				.catch(() => {loader.hide()})
 
@@ -1029,20 +1010,16 @@ export default {
 			let item = null;
 
 			this.breadcrumbs.forEach(bc => {
-
 				let s_index = this.tree.findIndex(t => t.id == bc.id);
 
 				if(s_index != -1) {
-
 					if(item != null) {
 						item = item.children[s_index];
 					} else {
 						item = this.tree[s_index]
 					}
 					item.opened = true;
-
 				}
-
 			});
 		},
 
@@ -1051,7 +1028,6 @@ export default {
 				var links = document.querySelectorAll('.bp-text a');
 				links.forEach(l => l.setAttribute('target', '_blank'));
 			})
-
 		},
 
 		editorSave() {},
@@ -1110,7 +1086,6 @@ export default {
 			this.axios
 				.post('/upload/images/', formData, config)
 				.then((response) => {
-
 					this.addimage(response.data.location);
 
 					if(this.myprogress >= 100){

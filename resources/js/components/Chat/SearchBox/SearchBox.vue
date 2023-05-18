@@ -108,8 +108,6 @@ export default {
 .messenger__box-search {
   display: flex;
   height: 45px;
-  padding: 0 1.5rem;
-	margin-bottom: 1.5rem;
 
   align-items: center;
 

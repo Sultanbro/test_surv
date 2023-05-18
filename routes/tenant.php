@@ -665,11 +665,20 @@ Route::middleware(['web','tenant', 'not_admin_subdomain'])->group(function () {
         'as'    => 'mailing.'
     ], function () {
         Route::get('/', [Root\Mailing\MailingController::class, 'get']);
-        Route::get('/', [Root\Mailing\MailingController::class, 'get']);
         Route::get('/find/{id}', [Root\Mailing\MailingController::class, 'find']);
 
         Route::post('/', [Root\Mailing\MailingController::class, 'create']);
+        Route::put('/', [Root\Mailing\MailingController::class, 'update']);
         Route::delete('/{id}', [Root\Mailing\MailingController::class, 'delete']);
+    });
+
+    Route::group([
+        'prefix' => 'notification-template',
+        'as'     => 'notification-template.'
+    ], function (){
+        Route::post('/apply-employee', [Root\Mailing\TriggerController::class, 'applyEmployee']);
+        Route::post('/absent-internship', [Root\Mailing\TriggerController::class, 'absentInternship']);
+        Route::post('/fired-employee/{id}', [Root\Mailing\TriggerController::class, 'firedEmployee']);
     });
 });
 

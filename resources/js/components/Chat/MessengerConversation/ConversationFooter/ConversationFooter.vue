@@ -380,6 +380,7 @@ export default {
 		flex-flow: column nowrap;
 		justify-content: stretch;
 		flex: 0 1 content;
+		width: 100% !important;
 		min-height: 45px;
 		transform: none !important;
 	}
