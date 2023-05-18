@@ -245,14 +245,21 @@ class Messenger {
 
         // get chat when has user userId
         $chat = MessengerChat::query()
-                             ->where( 'private', true )
-                             ->withWhereHas( 'members', function (  $query ) use ( $userId ) {
-                                 $query->where( 'user_id', $userId );
-                             } )
-                             ->withWhereHas( 'members', function (  $query ) use ( $otherUserId ) {
-                                 $query->where( 'user_id', $otherUserId );
-                             } )->orderBy('id', 'desc')
-                             ->first();
+            ->where( 'private', true )
+            ->when($userId != $otherUserId, function ($query) use ($userId, $otherUserId) {
+                $query->withWhereHas( 'members', function (  $query ) use ( $userId ) {
+                    $query->where( 'user_id', $userId );
+                } )
+                    ->withWhereHas( 'members', function (  $query ) use ( $otherUserId ) {
+                        $query->where( 'user_id', $otherUserId );
+                    } );
+            })
+            ->when($userId == $otherUserId, function ($query) use ($userId) {
+                $query->withWhereHas( 'members', function (  $query ) use ( $userId ) {
+                    $query->where( 'user_id', $userId )->where('is_yourself_chat', true);
+                } );
+            })
+            ->first();
 
         if ( $chat ) {
             return $chat;
@@ -262,6 +269,7 @@ class Messenger {
         // create new chat if it doesn't exist
         $chat = MessengerChat::query()
                              ->create( [
+                                 'is_yourself_chat' => $userId == $otherUserId,
                                  'owner_id' => $userId,
                                  'title'    => '',
                                  'private'  => true,
@@ -269,12 +277,10 @@ class Messenger {
 
         // attach each user
 
-        if ($userId == $otherUserId)
+        $chat->members()->attach( $userId, [ 'is_admin' => true ] );
+
+        if ($userId != $otherUserId)
         {
-            $chat->members()->attach( $userId, [ 'is_admin' => true ] );
-        } else
-        {
-            $chat->members()->attach( $userId, [ 'is_admin' => true ] );
             $chat->members()->attach( $otherUserId, [ 'is_admin' => true ] );
         }
 
