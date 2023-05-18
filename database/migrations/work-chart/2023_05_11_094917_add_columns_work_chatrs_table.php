@@ -16,6 +16,7 @@ return new class extends Migration
         if (!Schema::hasColumn('work_charts', 'work_charts_type')) {
             Schema::table('work_charts', function (Blueprint $table) {
                 $table->integer('work_charts_type')->default(1);
+                $table->integer('workdays')->nullable();
             });
         }
     }
@@ -30,6 +31,7 @@ return new class extends Migration
         if (Schema::hasColumn('work_charts', 'work_charts_type')) {
             Schema::table('work_charts', function (Blueprint $table) {
                 $table->dropColumn('work_charts_type');
+                $table->dropColumn('workdays');
             });
         }
     }

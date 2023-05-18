@@ -3,6 +3,7 @@
 namespace App\Models\WorkChart;
 
 use App\DTO\WorkChart\StoreWorkChartDTO;
+use App\DTO\WorkChart\UpdateWorkChartDTO;
 use App\Enums\WorkChart\WorkChartEnum;
 use App\Timetracking;
 use App\User;
@@ -26,7 +27,8 @@ class WorkChartModel extends Model
         'text_name',
         'start_time',
         'end_time',
-        'work_charts_type'
+        'work_charts_type',
+        'workdays'
     ];
 
     /**
@@ -172,5 +174,16 @@ class WorkChartModel extends Model
     public function workChartType(): BelongsTo
     {
         return $this->belongsTo(WorkChartTypeRb::class, 'work_charts_type', 'id');
+    }
+
+    public static function checkDuplicate(StoreWorkChartDTO | UpdateWorkChartDTO $dto): bool {
+        $data = $dto->toArray();
+        return self::where('name', $data['name'])
+            ->where('start_time', $data['start_time'])
+            ->where('end_time', $data['end_time'])
+            ->where('text_name', $data['text_name'])
+            ->where('work_charts_type', $data['work_charts_type'])
+            ->where('workdays', $data['workdays'])
+            ->exists();
     }
 }

@@ -17,7 +17,8 @@ class WorkChartResource extends JsonResource
     {
         return [
             'id' => $this->id,
-            'name' => decbin((int)$this->name),
+            'name' => $this->name,
+            'workdays' => (string)$this->workdays,
             'start_time' => $this->start_time,
             'end_time' => $this->end_time,
             'text_name' => $this->text_name,

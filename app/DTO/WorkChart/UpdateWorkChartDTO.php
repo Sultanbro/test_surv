@@ -36,7 +36,8 @@ final class UpdateWorkChartDTO
         ];
 
         if ($this->chartWorkType === 1) {
-            $data['name'] = $this->usualSchedule;
+            $data['workdays'] = $this->usualSchedule;
+            $data['name'] = $this->chartWorkdays .'-'. $this->chartDayoffs;
         }
         else{
             $data['name'] = $this->chartWorkdays .'-'. $this->chartDayoffs;
