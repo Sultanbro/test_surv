@@ -12,6 +12,10 @@ import { useAsyncPageData, useDataFromResponse } from '@/composables/asyncPageDa
 import UModal from '@/components/ui/UModal' // модалка НАДО УБРАТЬ
 import AwardUserSidebar from '@/components/sidebars/AwardUserSidebar' // сайдбар для награждения пользователя
 import 'vue-croppie'
+import {
+	triggerApplyEmployee,
+	triggerFiredEmployee,
+} from '@/stores/api.js'
 
 import axios from 'axios'
 
@@ -107,7 +111,9 @@ export default {
 			fireCause: '',
 			isDeleteConfirm: false,
 			isRestoreConfirm: false,
-			taxesFillData: null
+			taxesFillData: null,
+
+			test: null,
 		}
 	},
 	computed: {
@@ -371,6 +377,7 @@ export default {
 			}
 
 			formData.set('zarplata', zarplata.replace(/\D/g, ''));
+
 			if(this.frontValid.email && this.frontValid.name && this.frontValid.lastName && this.frontValid.position && this.frontValid.group){
 				this.sendForm(formData, isNew);
 			} else {
@@ -433,6 +440,14 @@ export default {
 					await axios.post('/work-chart/user/add', formDataWorkChart);
 					console.log('график сохранен');
 				}
+
+				const isApplyTrainee = this.user?.user_description?.is_trainee && formData.get('is_trainee') === 'false'
+				const isNewEmployee = !this.user && formData.get('is_trainee') === 'false'
+
+				if(isApplyTrainee || isNewEmployee){
+					triggerApplyEmployee(userId)
+				}
+
 				if (isNew) {
 					this.$toast.success('Информация о сотруднике сохранена');
 					// window.location = '/timetracking/settings?tab=1';
@@ -461,6 +476,7 @@ export default {
 					data: formData,
 					headers: { 'Content-Type': 'multipart/form-data' },
 				})
+				triggerFiredEmployee(this.user.id)
 				this.parseResponse(data)
 				this.$toast.success('Сотрудник уволен')
 			}

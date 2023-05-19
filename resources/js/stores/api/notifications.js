@@ -55,6 +55,25 @@ export async function deleteNotification(id){
 	const { data } = await axios.delete(`/mailing/${id}`)
 	return data
 }
+
+export async function triggerApplyEmployee(user_id){
+	const { data } = await axios.post('/notification-template/apply-employee', {
+		user_id,
+	})
+	return data
+}
+
+export async function triggerAbsentInternship(user_id){
+	const { data } = await axios.post('/notification-template/absent-internship', {
+		user_id,
+	})
+	return data
+}
+
+export async function triggerFiredEmployee(user_id){
+	const { data } = await axios.post(`/notification-template/fired-employee/${user_id}`)
+	return data
+}
 /**
  * @typedef FetchNotificationsResponse
  * @memberof ApiResponse
