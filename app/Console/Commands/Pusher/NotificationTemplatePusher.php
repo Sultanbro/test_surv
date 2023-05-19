@@ -41,7 +41,7 @@ class NotificationTemplatePusher extends Command
     public function handle()
     {
         $notifications = MailingNotification::getTemplates()->isActive()
-            ->whereIn('frequency', [MailingEnum::TRIGGER_MANAGER_ASSESSMENT, MailingEnum::TRIGGER_COACH_ASSESSMENT])
+            ->whereIn('frequency', [MailingEnum::TRIGGER_MANAGER_ASSESSMENT, MailingEnum::TRIGGER_COACH_ASSESSMENT, MailingEnum::TRIGGER_FIRED])
             ->get();
 
         foreach ($notifications as $notification)
@@ -57,6 +57,28 @@ class NotificationTemplatePusher extends Command
         }
 
         return true;
+    }
+
+    /**
+     * @throws Throwable
+     */
+    private function fired_employee_pusher(
+        MailingNotification $notification
+    )
+    {
+        $date     = Carbon::now()->subDay()->format('Y-m-d');
+        $users    = DB::table('users')->whereNotNull('deleted_at')->whereDate('deleted_at', $date)->get();
+
+        $mailings = $notification?->mailings();
+
+        $link       = "https://bp.jobtron.org/";
+        $message    = $notification?->title . ' <br> ';
+        $message   .= $link;
+
+        foreach ($mailings as $mailing)
+        {
+            NotificationFactory::createNotification($mailing)->send($notification, $message, $users);
+        }
     }
 
     /**
