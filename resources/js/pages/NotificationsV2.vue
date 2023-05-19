@@ -60,7 +60,7 @@
 							</div>
 						</b-td>
 						<b-td>
-							{{ notification.type_of_mailing.join(', ') }}
+							{{ notification.type_of_mailing.map(type => services.find(service => service.value === type).title).join(', ') }}
 						</b-td>
 						<b-td>
 							{{ periodNames[notification.date.frequency] }} {{ notification.date.days.join(', ') }}
@@ -128,7 +128,7 @@
 					<b-col>
 						<JobtronButton
 							fade
-							@click="isTemplate = true"
+							@click="onNewTemplate"
 						>
 							<ChatIconPlus
 								class="ChatIcon-active"
@@ -151,8 +151,10 @@
 
 		<!-- Шаблонные уведомления -->
 		<NotificationsTemplates
-			v-if="isTemplate"
-			@close="isTemplate = false"
+			v-if="selectedTemplate"
+			:edit="selectedTemplate"
+			@close="selectedTemplate = null"
+			@save="onSave"
 		/>
 	</div>
 </template>
@@ -167,6 +169,10 @@ import {
 } from '@/stores/api/notifications'
 import NotificationsEditForm from '@/components/pages/Notifications/NotificationsEditForm'
 import NotificationsTemplates from '@/components/pages/Notifications/NotificationsTemplates'
+import {
+	templateFrequency,
+	services,
+} from '@/components/pages/Notifications/helper'
 import SideBar from '@ui/Sidebar'
 import JobtronButton from '@ui/Button'
 import {
@@ -200,16 +206,22 @@ export default {
 				monthly: 'по дням месяца',
 				weekly: 'по дням недели',
 				daily: 'каждый день',
+				apply_employee: 'Уведомлять в момент принятия (триггер)',
+				fired_employee: 'Через день после отметки об увольнении (триггер)',
+				absent_internship: 'В момент отметки в табеле об отсутствии (триггер)',
+				manager_assessment: 'За 2 дня до окончания календарного месяца (триггер)',
+				coach_assessment: 'В период 17:00 - 19:00 в первый день обучения стажера, если он не отмечен, как отсутствовал (триггер)',
 			},
 			selectedNotification: null,
 			search: '',
+			services,
 
 			isSettings: '',
 			settings: {
 				showCount: 0
 			},
 
-			isTemplate: false,
+			selectedTemplate: null,
 		}
 	},
 	computed: {
@@ -282,7 +294,7 @@ export default {
 					}) : [],
 					date: {
 						frequency: notification.frequency,
-						days: notification.recipients ? JSON.parse((notification.recipients.find(() => true) || {days: '[]'}).days) : []
+						days: JSON.parse(notification.days || '[]') || []
 					},
 					creator: this.getCreator(notification)
 				}
@@ -318,8 +330,19 @@ export default {
 			}
 		},
 		openEditSidebar(notification){
-			if(!notification) this.selectedNotification = this.getBlankNotification()
-			else this.selectedNotification = JSON.parse(JSON.stringify(notification))
+			if(!notification) {
+				this.selectedNotification = this.getBlankNotification()
+				return
+			}
+			if(!notification.is_template){
+				this.selectedNotification = JSON.parse(JSON.stringify(notification))
+				return
+			}
+			const template = templateFrequency.includes(notification.date.frequency) ? notification.date.frequency : 'apply_employee'
+			this.selectedTemplate = {
+				template,
+				...notification
+			}
 		},
 		getBlankNotification(){
 			return {
@@ -332,13 +355,14 @@ export default {
 					frequency: 'weekly'
 				},
 				time: '10:00',
-				type_of_mailing: ['jobtron'],
+				type_of_mailing: ['in-app'],
+				is_template: true,
 			}
 		},
 		onSave(notification){
 			const errors = this.validate(notification)
 			if(errors.length){
-				this.$toast.error(errors.join('\n'))
+				this.$toast.error(errors.map(err => err.error).join('\n'))
 				return
 			}
 			if(notification.id) this.updateNotification(notification)
@@ -350,7 +374,7 @@ export default {
 			if(!notification.name) errors.push({field: 'name', error: 'Название уведомления должно быть заполнено'})
 			if(!notification.title) errors.push({field: 'title', error: 'Текст уведомления должен быть заполнен'})
 			if(!notification.recipients.length) errors.push({field: 'recipients', error: 'Укажите минимум одного получателя'})
-			if(notification.date.frequency !== 'daily' && !notification.date.frequency.days.length) errors.push({field: 'days', error: 'Укажите минимум один день отправки'})
+			if((notification.date.frequency === 'weekly' || notification.date.frequency === 'monthly') && !notification.date.days.length) errors.push({field: 'days', error: 'Укажите минимум один день отправки'})
 			return errors
 		},
 		async createNotification(notification){
@@ -379,6 +403,22 @@ export default {
 			// call api
 			this.$toast.warning('В разработке')
 			this.isSettings = false
+		},
+		onNewTemplate(){
+			this.selectedTemplate = {
+				template: '',
+				id: 0,
+				name: '',
+				title: '',
+				recipients: [],
+				date: {
+					days: [],
+					frequency: 'weekly'
+				},
+				time: '10:00',
+				type_of_mailing: ['in-app'],
+				is_template: true,
+			}
 		}
 	}
 }
