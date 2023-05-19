@@ -26,10 +26,14 @@ class FiredEmployeeService
         $notification = MailingNotification::query()->where('frequency', MailingEnum::TRIGGER_FIRED)->first();
         $mailings = $notification?->mailings();
         $recipient = User::withTrashed()->where('id', $employeeId)->get();
-
         $link       = "https://bp.jobtron.org/";
         $message    = $notification->title . ' <br> ';
         $message   .= $link;
+
+        if (!(bool)$notification)
+        {
+            throw new \Exception("Trigger by type " . MailingEnum::TRIGGER_APPLIED . " does not exist");
+        }
 
         if (!$notification)
         {
