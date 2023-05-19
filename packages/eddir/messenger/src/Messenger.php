@@ -156,8 +156,7 @@ class Messenger {
     public function searchUsers( string $name, int $limit = 100 ): Collection {
         return User::query()
                    ->whereNull( 'deleted_at' )
-                   ->where( 'name', 'like', "%$name%" )
-                   ->orWhere( 'last_name', 'like', "%$name%" )
+                   ->where(fn($query) => $query->where('name', 'like', "%$name%")->orWhere( 'last_name', 'like', "%$name%" ))
                    ->limit( $limit )
                    ->get()->map(function($item) { 
                     $item->image = 'https://'.\request()->getHost().'/users_img/' . $item->img_url;   
