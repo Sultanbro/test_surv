@@ -92,6 +92,7 @@
 					placeholder="Выберите"
 					:taggable="true"
 					class="multiselect-surv"
+					track-by="value"
 				/>
 			</div>
 		</div>
@@ -209,6 +210,7 @@ export default {
 	},
 	methods: {
 		onSave(){
+			this.value.type_of_mailing = this.selectedServices.map(service => service.value)
 			this.$emit('save', this.value)
 		},
 		onClickRecipments(){
