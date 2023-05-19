@@ -29,7 +29,7 @@ class FiredEmployeeService
 
         if (!(bool)$notification)
         {
-            throw new InvalidArgumentException('Вы не создали шаблонное уведомление по типу "Анкета уволенного"');
+            throw new \Exception('Вы не создали шаблонное уведомление по типу "Анкета уволенного"');
         }
 
         $mailings = $notification?->mailings();
