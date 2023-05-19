@@ -72,6 +72,7 @@
 			width="600px"
 		>
 			<b-form @submit.prevent="onSubmit">
+				<!-- Название -->
 				<div class="form-group row">
 					<label
 						for="chartName"
@@ -85,6 +86,8 @@
 						>
 					</div>
 				</div>
+
+				<!-- Часы -->
 				<div
 					id="workShedule"
 					class="form-group work-schedule row"
@@ -92,7 +95,7 @@
 					<label
 						for="workStartTime"
 						class="col-sm-4 col-form-label"
-					>Рабочие часы</label>
+					>Рабочий график</label>
 					<div class="col-sm-8 form-inline">
 						<input
 							name="work_start_time"
@@ -114,7 +117,24 @@
 						>
 					</div>
 				</div>
+
+				<!-- Тип -->
+				<div class="form-group row">
+					<label
+						for="workStartTime"
+						class="col-sm-4 col-form-label"
+					>Смены или дни</label>
+					<div class="col-sm-8">
+						<b-select
+							v-model="form.type"
+							:options="typeOptions"
+						/>
+					</div>
+				</div>
+
+				<!-- Смена -->
 				<b-form-group
+					v-if="form.type === 2"
 					label="График"
 					label-cols="4"
 				>
@@ -154,6 +174,24 @@
 						</b-col>
 					</b-row>
 				</b-form-group>
+
+				<!-- Дни -->
+				<div
+					v-if="form.type === 1"
+					class="form-group row"
+				>
+					<label
+						for="workStartTime"
+						class="col-sm-4 col-form-label"
+					>Отметьте выходные дни</label>
+					<div class="col-sm-8">
+						<BitMaskCheckGroup
+							v-model="form.usualSchedule"
+							red
+						/>
+					</div>
+				</div>
+
 				<hr class="my-4">
 				<b-button
 					type="submit"
@@ -192,8 +230,12 @@
 
 
 <script>
+import BitMaskCheckGroup from '@ui/BitMaskCheckGroup'
 export default {
 	name: 'CompanyShifts',
+	components: {
+		BitMaskCheckGroup,
+	},
 	data() {
 		return {
 			modal: false,
@@ -204,12 +246,24 @@ export default {
 			editShiftId: null,
 			form: {
 				name: null,
-				workdays: null,
-				dayoffs: null,
 				workStartTime: null,
 				workEndTime: null,
+				type: 1,
+				workdays: 0,
+				dayoffs: 0,
+				usualSchedule: 0
 			},
-			workChartsList: ['1-1', '2-2', '3-3', '5-2', '6-1']
+			workChartsList: ['1-1', '2-2', '3-3', '5-2', '6-1'],
+			typeOptions: [
+				{
+					value: 1,
+					text: 'Обычная рабочая неделя'
+				},
+				{
+					value: 2,
+					text: 'Смены'
+				}
+			]
 		}
 	},
 	computed: {
@@ -255,10 +309,12 @@ export default {
 			const splitted = shift.name.split('-')
 			this.editShiftId = shift.id;
 			this.form.name = shift.text_name;
-			this.form.workdays = splitted[0]
-			this.form.dayoffs = splitted[1]
 			this.form.workStartTime = shift.start_time;
 			this.form.workEndTime = shift.end_time;
+			this.form.type = shift.work_charts_type || 2
+			this.form.workdays = splitted[0]
+			this.form.dayoffs = splitted[1]
+			this.form.usualSchedule = parseInt(shift.name, 2)
 			this.sidebarName = `Редактирование ${shift.name}`;
 			this.showSidebar = true;
 		},
@@ -275,9 +331,11 @@ export default {
 			this.editShiftId = null;
 			this.form.name = null;
 			this.form.workStartTime = null;
-			this.form.workdays = null;
-			this.form.dayoffs = null;
 			this.form.workEndTime = null;
+			this.form.type = 1;
+			this.form.workdays = 0;
+			this.form.dayoffs = 0;
+			this.form.usualSchedule = 0
 		},
 		async onSubmit() {
 			if(!this.form.name){
@@ -292,14 +350,14 @@ export default {
 				this.$toast.error('Заполните рабочее время');
 				return;
 			}
-			if(!this.form.workdays || !this.form.dayoffs){
+			if(this.form.type == 2 && (!this.form.workdays || !this.form.dayoffs)){
 				this.$toast.error('Выберите график');
 				return
 			}
-			if(!~this.workChartsList.indexOf(`${this.form.workdays}-${this.form.dayoffs}`)){
-				this.$toast.error('Выберите корректный график');
-				return
-			}
+			// if(!~this.workChartsList.indexOf(`${this.form.workdays}-${this.form.dayoffs}`)){
+			// 	this.$toast.error('Выберите корректный график');
+			// 	return
+			// }
 			// Оставил на будущее когда можно будет произвольно выьирать кол-во дней
 			// if(parseInt(this.form.workdays) + parseInt(this.form.dayoffs) > 7){
 			// 	this.$toast.error('Сумма рабочих и выходных дней не должна быть больше 7');
@@ -310,8 +368,10 @@ export default {
 			formData.append('name', this.form.name);
 			formData.append('start_time', this.form.workStartTime);
 			formData.append('end_time', this.form.workEndTime);
+			formData.append('work_charts_type', '' + this.form.type);
 			formData.append('chart_workdays', this.form.workdays);
 			formData.append('chart_dayoffs', this.form.dayoffs);
+			formData.append('usual_schedule', this.form.usualSchedule.toString(2));
 
 			if(this.editShiftId) formData.append('_method', 'put')
 			const {data} = await this.axios.post(`/work-chart/${this.editShiftId || ''}`, formData)
