@@ -23,22 +23,21 @@ class FiredEmployeeService
      */
     public function handle(int $employeeId): bool
     {
-        $notification = MailingNotification::query()->where('frequency', MailingEnum::TRIGGER_FIRED)->first();
-        $mailings = $notification?->mailings();
-        $recipient = User::withTrashed()->where('id', $employeeId)->get();
-        $link       = "https://bp.jobtron.org/";
-        $message    = $notification->title . ' <br> ';
-        $message   .= $link;
+        $notification = MailingNotification::getTemplates()
+            ->isActive()
+            ->where('frequency', MailingEnum::TRIGGER_FIRED)->first();
 
         if (!(bool)$notification)
         {
-            throw new \Exception("Trigger by type " . MailingEnum::TRIGGER_APPLIED . " does not exist");
-        }
-
-        if (!$notification)
-        {
             throw new InvalidArgumentException('Вы не создали шаблонное уведомление по типу "Анкета уволенного"');
         }
+
+        $mailings = $notification?->mailings();
+        $recipient = User::withTrashed()->where('id', $employeeId)->get();
+
+        $link       = "https://bp.jobtron.org/";
+        $message    = $notification->title . ' <br> ';
+        $message   .= $link;
 
         foreach ($mailings as $mailing)
         {
