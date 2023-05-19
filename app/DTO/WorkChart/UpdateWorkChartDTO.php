@@ -3,6 +3,8 @@ declare(strict_types=1);
 
 namespace App\DTO\WorkChart;
 
+use App\Models\WorkChart\WorkChartModel;
+
 final class UpdateWorkChartDTO
 {
     /**
@@ -28,20 +30,13 @@ final class UpdateWorkChartDTO
      */
     public function toArray(): array
     {
-        $data = [
-            'text_name' => $this->name ?? null,
-            'start_time' => $this->startTime ?? null,
-            'end_time' => $this->endTime ?? null,
-            'work_charts_type' => $this->chartWorkType ?? null,
+        return [
+            'text_name' => $this->name,
+            'start_time' => $this->startTime,
+            'end_time' => $this->endTime,
+            'work_charts_type' => $this->chartWorkType,
+            'name' => $this->chartWorkdays .'-'. $this->chartDayoffs,
+            'workdays' => $this->chartWorkType == WorkChartModel::WORK_CHART_TYPE_USUAL ? $this->usualSchedule : null
         ];
-
-        if ($this->chartWorkType === 1) {
-            $data['workdays'] = $this->usualSchedule;
-            $data['name'] = $this->chartWorkdays .'-'. $this->chartDayoffs;
-        }
-        else{
-            $data['name'] = $this->chartWorkdays .'-'. $this->chartDayoffs;
-        }
-        return $data;
     }
 }

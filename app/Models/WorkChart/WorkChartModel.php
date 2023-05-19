@@ -31,6 +31,10 @@ class WorkChartModel extends Model
         'workdays'
     ];
 
+    const WORK_CHART_TYPE_USUAL = 1;
+    const WORK_CHART_TYPE_REPLACEABLE = 2;
+    const MAX_CHART_DAYS_REPLACEABLE = 30;
+
     /**
      * @param string $name
      * @return Model
@@ -171,11 +175,20 @@ class WorkChartModel extends Model
         ];
     }
 
+    /**
+     * Получает название типы смен
+     * @return BelongsTo
+     */
     public function workChartType(): BelongsTo
     {
         return $this->belongsTo(WorkChartTypeRb::class, 'work_charts_type', 'id');
     }
 
+    /**
+     * Проверяем смену на дубликат.
+     * @param StoreWorkChartDTO|UpdateWorkChartDTO $dto
+     * @return bool
+     */
     public static function checkDuplicate(StoreWorkChartDTO | UpdateWorkChartDTO $dto): bool {
         $data = $dto->toArray();
         return self::where('name', $data['name'])
