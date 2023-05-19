@@ -221,6 +221,7 @@ export default {
 		loadEdit(){
 			this.template = this.edit.template
 			this.$nextTick(() => {
+				if(!this.value) this.value = {}
 				this.value.recipients = this.edit.recipients
 				this.value.title = this.edit.title
 				this.selectedServices = this.edit.type_of_mailing.map(value => services.find(service => service.value === value))
@@ -240,7 +241,7 @@ export default {
 				id: this.value.id,
 				name,
 				title: this.value.title,
-				recipients: this.value.recipients,
+				recipients: Array.isArray(this.value.targets) ? this.value.recipients : undefined,
 				date: {
 					days: this.days,
 					frequency: this.when === 'period' ? this.frequency : this.when
