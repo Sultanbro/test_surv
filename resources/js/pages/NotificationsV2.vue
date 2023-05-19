@@ -356,7 +356,7 @@ export default {
 				},
 				time: '10:00',
 				type_of_mailing: ['in-app'],
-				is_template: true,
+				is_template: false,
 			}
 		},
 		onSave(notification){
