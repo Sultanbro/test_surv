@@ -54,16 +54,47 @@
 				card
 			>
 				<div
-					class="d-flex"
+					class="d-flex flex-column"
 					style="margin-bottom: 350px"
 				>
 					<TopGauges
-						:utility_items="utility"
+						:utility_items="activeUtility"
 						:editable="true"
 						wrapper_class="  br-1"
 						:key="ukey"
 						page="top"
+						@archive="onArchiveUtility"
 					/>
+					<div class="d-flex jcfe">
+						<JobtronButton
+							v-if="archiveUtility.length"
+							@click="isArchiveOpen = true"
+							title="Открыть архив"
+						>
+							Архив
+						</JobtronButton>
+					</div>
+					<SideBar
+						title="Архив"
+						width="35%"
+						:open="isArchiveOpen"
+						@close="isArchiveOpen = false"
+					>
+						<div
+							v-for="util in archiveUtility"
+							:key="util.id"
+							class="TopArchive-item"
+						>
+							<div class="TopArchive-title">
+								{{ util.name }}
+							</div>
+							<i
+								class="fa fa-trash-restore TopArchive-button"
+								title="Восстановить из архива"
+								@click="onRestoreUtility(util.id)"
+							/>
+						</div>
+					</SideBar>
 				</div>
 			</b-tab>
 
@@ -227,9 +258,9 @@
 									<template v-else>
 										<template v-if="field == 'Отдел'">
 											<a
+												v-if="record['group_id'] >= 0"
 												:href="'/timetracking/an?group='+ record['group_id'] + '&active=1&load=1'"
 												target="_blank"
-												v-if="record['group_id'] >= 0"
 											>
 												{{ record[field] }}
 											</a>
@@ -370,6 +401,8 @@ const TopGauges = () => import(/* webpackChunkName: "TopGauges" */ '@/components
 import TableRentability from '@/components/tables/TableRentability' // ТОП рентабельность
 import NPS from '@/components/tables/NPS' // Оценка руководителей
 import { useYearOptions } from '@/composables/yearOptions'
+import JobtronButton from '@ui/Button'
+import SideBar from '@ui/Sidebar'
 
 export default {
 	name: 'PageTop',
@@ -378,6 +411,8 @@ export default {
 		VGauge,
 		TableRentability,
 		NPS,
+		JobtronButton,
+		SideBar,
 	},
 	props: ['data', 'activeuserid'],
 	data() {
@@ -424,7 +459,8 @@ export default {
 				generateGradient: true,
 				highDpiSupport: true,
 			},
-			ukey: 1
+			ukey: 1,
+			isArchiveOpen: false,
 		}
 	},
 	watch: {
@@ -438,6 +474,12 @@ export default {
 			if(!this.portal.created_at) return [new Date().getFullYear()]
 			return useYearOptions(new Date(this.portal.created_at).getFullYear())
 		},
+		activeUtility(){
+			return this.utility.filter(util => !util.deleted_at)
+		},
+		archiveUtility(){
+			return this.utility.filter(util => util.deleted_at && util.gauges.length)
+		}
 	},
 	created() {
 		if(this.data){
@@ -561,13 +603,63 @@ export default {
 			obj['group_id'] = this.proceeds.lowest_id - 1;
 
 			this.proceeds.records.splice(length - 1, 0, obj);
-		}
+		},
 
+		async onArchiveUtility(groupId){
+			if(!confirm('Убрать полезность в архив?')) return
+			try{
+				const {data} = await this.axios.delete(`/timetracking/top/${groupId}`)
+				if(data.message === 'Success'){
+					const utility = this.utility.find(util => util.id === groupId)
+					if(utility){
+						utility.deleted_at = new Date().toISOString()
+					}
+				}
+			}
+			catch{
+				this.$toast.error('Не удалось отправить полезность в архив')
+			}
+		},
+
+		async onRestoreUtility(groupId){
+			if(!confirm('Восстановить полезность?')) return
+			try{
+				const {data} = await this.axios.post(`/timetracking/top/${groupId}`)
+				if(data.message === 'Success'){
+					const utility = this.utility.find(util => util.id === groupId)
+					if(utility){
+						utility.deleted_at = null
+					}
+				}
+			}
+			catch{
+				this.$toast.error('Не удалось восстановить полезность')
+			}
+		},
 	}
 }
 </script>
 
 <style lang="scss">
+	.TopArchive{
+		&-item{
+			display: flex;
+			align-items: center;
+			gap: 10px;
+			&:hover{
+				background-color: #DDE9FF;
+			}
+		}
+		&-title{
+			flex: 1;
+			white-space: nowrap;
+			overflow: hidden;
+			text-overflow: ellipsis;
+		}
+		&-button{
+			cursor: pointer;
+		}
+	}
 	.table-custom-forecast {
 		table-layout: fixed;
 		width: auto;
