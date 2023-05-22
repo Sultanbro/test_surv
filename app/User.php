@@ -1364,7 +1364,6 @@ class User extends Authenticatable implements Authorizable
      */
     public function isFired(): bool
     {
-        dd($this);
         return !($this->deleted_at == null);
     }
 }
