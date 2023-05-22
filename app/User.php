@@ -1358,7 +1358,8 @@ class User extends Authenticatable implements Authorizable
             return false;
         }
         return true;
-
+    
+     /**
      * @return bool
      */
     public function isFired(): bool
