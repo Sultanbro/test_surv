@@ -4,7 +4,7 @@
  * building robust, powerful web applications using Vue and Laravel.
  */
 
-/* global Laravel */
+/* global Laravel, process */
 /* eslint-disable vue/multi-word-component-names */
 
 require('./bootstrap').default;
@@ -240,6 +240,12 @@ Vue.prototype.$can = function (permission/* , authorId = false */) {
 		return true;
 	}
 }
+
+if(process.env.NODE_ENV === 'production') {
+	(() => import(/* webpackChunkName: "Firebase" */ './firebase.js'))()
+}
+
+
 
 import App from '@/App.vue'
 

@@ -102,7 +102,8 @@ class Messenger {
 
         if ( $chat->private ) {
             // get second user in private chat
-            $second_user = $chat->users->firstWhere( 'id', '!=', $user->id );
+            $users =  $chat->users;
+            $second_user = $users->count() >= 2 ? $users->firstWhere( 'id', '!=', $user->id ) : $users->firstWhere( 'id', '=', $user->id );
 
             if ( $second_user && !$second_user->deleted_at) {
                 $chat->second_user = $second_user;
@@ -155,8 +156,7 @@ class Messenger {
     public function searchUsers( string $name, int $limit = 100 ): Collection {
         return User::query()
                    ->whereNull( 'deleted_at' )
-                   ->where( 'name', 'like', "%$name%" )
-                   ->orWhere( 'last_name', 'like', "%$name%" )
+                   ->where(fn($query) => $query->where('name', 'like', "%$name%")->orWhere( 'last_name', 'like', "%$name%" ))
                    ->limit( $limit )
                    ->get()->map(function($item) { 
                     $item->image = 'https://'.\request()->getHost().'/users_img/' . $item->img_url;   
@@ -241,16 +241,25 @@ class Messenger {
      * @return Builder|Model|null
      */
     public function getPrivateChat( int $userId, int $otherUserId, bool $create = true ): Builder|Model|null {
+
         // get chat when has user userId
         $chat = MessengerChat::query()
-                             ->where( 'private', true )
-                             ->whereHas( 'members', function ( Builder $query ) use ( $userId ) {
-                                 $query->where( 'user_id', $userId );
-                             } )
-                             ->whereHas( 'members', function ( Builder $query ) use ( $otherUserId ) {
-                                 $query->where( 'user_id', $otherUserId );
-                             } )
-                             ->first();
+            ->where( 'private', true )
+            ->when($userId != $otherUserId, function ($query) use ($userId, $otherUserId) {
+                $query->withWhereHas( 'members', function (  $query ) use ( $userId ) {
+                    $query->where( 'user_id', $userId );
+                } )
+                    ->withWhereHas( 'members', function (  $query ) use ( $otherUserId ) {
+                        $query->where( 'user_id', $otherUserId );
+                    } );
+            })
+            ->when($userId == $otherUserId, function ($query) use ($userId) {
+                $query->withWhereHas( 'members', function (  $query ) use ( $userId ) {
+                    $query->where( 'user_id', $userId )->where('is_yourself_chat', true);
+                } );
+            })
+            ->first();
+
         if ( $chat ) {
             return $chat;
         } else if ( ! $create ) {
@@ -265,9 +274,16 @@ class Messenger {
                              ] );
 
         // attach each user
-        $chat->members()->attach( $userId, [ 'is_admin' => true ] );
-        $chat->members()->attach( $otherUserId, [ 'is_admin' => true ] );
+
+        $chat->members()->attach( $userId, [ 'is_admin' => true , 'is_yourself_chat' => $userId == $otherUserId] );
+
+        if ($userId != $otherUserId)
+        {
+            $chat->members()->attach( $otherUserId, [ 'is_admin' => true ] );
+        }
+
         $chat->save();
+
 
         return $chat;
     }

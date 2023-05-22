@@ -44,7 +44,7 @@ export default {
 <style lang="scss">
 	.ChatUserList{
 		&-user{
-			margin-bottom: 20px;
+			margin-bottom: 7px;
 		}
 	}
 </style>

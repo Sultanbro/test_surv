@@ -234,14 +234,8 @@ class HeadhunterNegotiations extends Command
 
     private function updateNegotiationsOnVacancy($vacancy) : void
     {
-        try {
-            $negotiations = $this->hh->getNegotiations($vacancy->vacancy_id, $this->date);
-        } catch (\Throwable $e) {
-            if($e->getCode() == 403) {
-                $this->hh->refresh();
-                $negotiations = $this->hh->getNegotiations($vacancy->vacancy_id, $this->date);
-            }
-        }
+
+        $negotiations = $this->hh->getNegotiations($vacancy->vacancy_id, $this->date);
 
         $this->line('updateNegotiationsOnVacancy: '. count($negotiations));
 
@@ -295,7 +289,7 @@ class HeadhunterNegotiations extends Command
 
             if($hh_vacancy) {
                 try {
-                    $manager_id = $hh_vacancy->manager->id;
+                    $manager_id = 7792661;
                 } catch(\Exception $e) {
                     // save logs
                 }

@@ -7,6 +7,7 @@ use App\Console\Commands\Api\RunAutoPaymentCommand;
 use App\Console\Commands\Bitrix\RecruiterStats;
 use App\Console\Commands\Employee\BonusUpdate;
 use App\Console\Commands\Employee\CheckLate;
+use App\Console\Commands\Pusher\NotificationTemplatePusher;
 use App\Console\Commands\Pusher\Pusher;
 use App\Console\Commands\StartDayForItDepartmentCommand;
 use App\Console\Commands\RestartQueue;
@@ -31,7 +32,8 @@ class Kernel extends ConsoleKernel
         RecruiterStats::class,
         RestartQueue::class,
         CheckLate::class,
-        Pusher::class
+        Pusher::class,
+        NotificationTemplatePusher::class
     ];
 
     /**
@@ -116,6 +118,8 @@ class Kernel extends ConsoleKernel
 
         $schedule->command('auto-payment:run')->daily(); // Команда для авто-оплаты запускается каждый день.
         $schedule->command('check-payments-status:run')->everyFiveMinutes();
+        $schedule->command('run:pusher')->dailyAt('03:00');
+        $schedule->command('run:pusher:template')->dailyAt('03:00');
     }
 
     /**

@@ -7,6 +7,7 @@ use App\DTO\BaseDTO;
 use App\DTO\Mailing\CreateMailingDTO;
 use App\Enums\Mailing\MailingEnum;
 use App\Facade\MailingFacade;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\DB;
 use Throwable;
 
@@ -22,33 +23,26 @@ class CreateMailingService
      */
     public function handle(
         BaseDTO $dto
-    ): bool
+    ): JsonResponse|bool
     {
         DB::transaction(function () use ($dto){
             $notification =MailingFacade::createNotification(
                 $dto->name,
                 $dto->title,
                 $dto->typeOfMailing,
+                $dto->date['days'],
                 $dto->date['frequency'],
-                $dto->time
+                $dto->isTemplate,
+                $dto->count
             );
 
             foreach ($dto->recipients as $recipient)
             {
-                if ($recipient['type'] == 1)
-                {
-                    MailingFacade::createSchedule($recipient['id'], MailingEnum::USER, $notification->id, $dto->date['days']);
-                }
-
-                if ($recipient['type'] == 2)
-                {
-                    MailingFacade::createSchedule($recipient['id'], MailingEnum::GROUP, $notification->id, $dto->date['days']);
-                }
-
-                if ($recipient['type'] == 3)
-                {
-                    MailingFacade::createSchedule($recipient['id'], MailingEnum::POSITION, $notification->id, $dto->date['days']);
-                }
+                match ($recipient['type']) {
+                    1 => MailingFacade::createSchedule($recipient['id'], MailingEnum::USER, $notification->id),
+                    2 => MailingFacade::createSchedule($recipient['id'], MailingEnum::GROUP, $notification->id),
+                    3 => MailingFacade::createSchedule($recipient['id'], MailingEnum::POSITION, $notification->id)
+                };
             }
         });
 

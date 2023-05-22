@@ -1,13 +1,18 @@
 <template>
 	<div class="messenger_header">
 		<div class="messenger_header-text">
-			Сообщения
+			<SearchBox />
 		</div>
 		<div
 			class="messenger_header-button"
 			@click="toggleNewChatDialog"
+			title="Создание нового чата"
 		>
-			<ChatIconPlus class="pointer" />
+			<ChatIconPlus
+				class="pointer"
+				width="15"
+				height="15"
+			/>
 		</div>
 	</div>
 </template>
@@ -15,10 +20,13 @@
 <script>
 import {mapActions, mapGetters} from 'vuex';
 import { ChatIconPlus } from '@icons'
+import SearchBox from '../SearchBox/SearchBox.vue'
+
 export default {
 	name: 'ChatHeader',
 	components: {
 		ChatIconPlus,
+		SearchBox,
 	},
 	data(){
 		return {
@@ -53,9 +61,9 @@ export default {
 		align-items: center;
 		justify-content: stretch;
 		flex-flow: row nowrap;
+		gap: 1.5rem;
 
 		padding: 1.5rem 1.5rem 0.5rem;
-		margin-bottom: 1.5rem;
 
 		position: relative;
 		z-index: 20;
