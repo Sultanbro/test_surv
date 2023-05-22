@@ -21,6 +21,10 @@ class UpdateWorkChartService
         UpdateWorkChartDTO $dto
     ): bool
     {
+        $check_duplicate_data = WorkChartModel::checkDuplicate($dto);
+        if ($check_duplicate_data) {
+            throw new Exception('Данная запись уже существует');
+        }
         $updated = WorkChartModel::query()->findOrFail($dto->id)->update($dto->toArray());
 
         if (!$updated)
