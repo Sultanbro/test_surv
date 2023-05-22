@@ -1682,8 +1682,6 @@ export default {
 		},
 
 		updateWeekValue(item, key) {
-
-
 			let loader = this.$loading.show();
 
 			this.axios
@@ -1696,9 +1694,9 @@ export default {
 					group_id: this.currentGroup,
 				})
 				.then(() => {
-
-					this.$toast.success('Сохранено');
 					loader.hide();
+					this.fetchData()
+					this.$toast.success('Сохранено');
 				})
 				.catch(function (e) {
 					loader.hide();
@@ -1872,7 +1870,7 @@ export default {
 	vertical-align: middle;
 	input{
 		min-width: 35px;
-		padding: 0 10px !important;
+		// padding: 0 10px !important;
 	}
 	input::-webkit-outer-spin-button,
 	input::-webkit-inner-spin-button {
