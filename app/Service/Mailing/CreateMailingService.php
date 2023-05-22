@@ -7,6 +7,7 @@ use App\DTO\BaseDTO;
 use App\DTO\Mailing\CreateMailingDTO;
 use App\Enums\Mailing\MailingEnum;
 use App\Facade\MailingFacade;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\DB;
 use Throwable;
 
@@ -22,7 +23,7 @@ class CreateMailingService
      */
     public function handle(
         BaseDTO $dto
-    ): bool
+    ): JsonResponse|bool
     {
         DB::transaction(function () use ($dto){
             $notification =MailingFacade::createNotification(
@@ -31,7 +32,8 @@ class CreateMailingService
                 $dto->typeOfMailing,
                 $dto->date['days'],
                 $dto->date['frequency'],
-                $dto->isTemplate
+                $dto->isTemplate,
+                $dto->count
             );
 
             foreach ($dto->recipients as $recipient)

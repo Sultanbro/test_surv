@@ -47,7 +47,8 @@ class UpdateMailingRequest extends BaseFormRequest
             'date.days'         => [in_array($this->date['frequency'], [MailingEnum::WEEKLY, MailingEnum::MONTHLY]) ? 'required' : '', 'array'],
             'date.frequency'    => ['required', 'string', Rule::in(MailingEnum::FREQUENCIES)],
             'is_template'       => 'boolean',
-            'status'            => 'integer'
+            'status'            => 'integer',
+            'count'             => 'integer'
         ];
     }
 
@@ -65,6 +66,7 @@ class UpdateMailingRequest extends BaseFormRequest
         $typeOfMailing  = Arr::get($validated, 'type_of_mailing');
         $isTemplate = Arr::get($validated, 'is_template') ?? 0;
         $status     = Arr::get($validated, 'status') ?? 0;
+        $count     = Arr::get($validated, 'count') ?? 1;
 
         return new UpdateMailingDTO(
             $id,
@@ -73,7 +75,8 @@ class UpdateMailingRequest extends BaseFormRequest
             $date,
             $typeOfMailing,
             $isTemplate,
-            $status
+            $status,
+            $count
         );
     }
 }

@@ -15,6 +15,7 @@ final class UpdateMailingDTO extends BaseDTO
      * @param ?array<string> $typeOfMailing
      * @param ?bool $isTemplate
      * @param bool|null $status
+     * @param int $count
      */
     public function __construct(
         public int $id,
@@ -23,7 +24,8 @@ final class UpdateMailingDTO extends BaseDTO
         public ?array $date,
         public ?array $typeOfMailing,
         public ?bool $isTemplate,
-        public ?bool $status
+        public ?bool $status,
+        public int $count
     )
     {}
 
@@ -38,7 +40,8 @@ final class UpdateMailingDTO extends BaseDTO
             'days'       => $this->date,
             'type_of_mailing' => $this->typeOfMailing,
             'is_template' => $this->isTemplate,
-            'status'    => $this->status
+            'status'    => $this->status,
+            'count'     => $this->count
         ];
     }
 }

@@ -29,7 +29,8 @@ class UpdateMailingService
             'frequency'         => $dto->date['frequency'],
             'type_of_mailing'   => $dto->typeOfMailing,
             'is_template'       => $dto->isTemplate,
-            'status'            => $dto->status
+            'status'            => $dto->status,
+            'count'             => $dto->count
         ]);
     }
 }

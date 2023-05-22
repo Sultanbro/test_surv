@@ -21,6 +21,7 @@ class Mailing
      * @param array $days
      * @param string $frequency
      * @param bool|null $isTemplate
+     * @param int $count
      * @return Model
      */
     public function createNotification(
@@ -29,7 +30,8 @@ class Mailing
         array $typeOfMailing,
         array $days,
         string $frequency,
-        ?bool $isTemplate
+        ?bool $isTemplate,
+        int $count
     ): Model
     {
         return MailingNotification::query()->create([
@@ -39,6 +41,7 @@ class Mailing
             'days'              => json_encode($days),
             'frequency'         => $frequency,
             'is_template'       => $isTemplate,
+            'count'             => $count,
             'created_by'        => \Auth::id() ?? 5
         ]);
     }

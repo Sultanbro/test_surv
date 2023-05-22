@@ -53,7 +53,8 @@ class CreateMailingRequest extends BaseFormRequest
             'date'              => ['required', 'array', new ValidateWeek, new ValidateDaily],
             'date.days'         => [in_array($this->date['frequency'], [MailingEnum::WEEKLY, MailingEnum::MONTHLY]) ? 'required' : '', 'array'],
             'date.frequency'    => ['required', 'string', Rule::in(MailingEnum::FREQUENCIES)],
-            'is_template'       => 'boolean'
+            'is_template'       => 'boolean',
+            'count'             => 'integer'
         ];
     }
 
@@ -70,6 +71,7 @@ class CreateMailingRequest extends BaseFormRequest
         $date       = Arr::get($validated, 'date');
         $typeOfMailing  = Arr::get($validated, 'type_of_mailing');
         $isTemplate = Arr::get($validated, 'is_template') ?? 0;
+        $count      = Arr::get($validated, 'count') ?? 1;
 
         return new CreateMailingDTO(
             $name,
@@ -77,7 +79,8 @@ class CreateMailingRequest extends BaseFormRequest
             $recipients,
             $date,
             $typeOfMailing,
-            $isTemplate
+            $isTemplate,
+            $count
         );
     }
 }

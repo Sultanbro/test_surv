@@ -33,6 +33,7 @@ class MailingController extends Controller
      * @param UpdateMailingRequest $request
      * @param UpdateMailingService $service
      * @return JsonResponse
+     * @throws Throwable
      */
     public function update(UpdateMailingRequest $request, UpdateMailingService $service): JsonResponse
     {
@@ -62,7 +63,7 @@ class MailingController extends Controller
     {
         $userId = \Auth::id() ?? 5;
 
-        if (MailingFacade::isOwner($id, $userId))
+        if (!MailingFacade::isOwner($id, $userId))
         {
             return $this->response(message: "You don't have permission", data: 403);
         }
