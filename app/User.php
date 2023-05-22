@@ -1287,7 +1287,7 @@ class User extends Authenticatable implements Authorizable
             return $userChart;
         }
 
-        $groups   = $this->activeGroup();
+        $groups = $this->activeGroup();
         $groupChart = $groups?->workChart()->first();
 
         return $groupChart;
@@ -1335,5 +1335,28 @@ class User extends Authenticatable implements Authorizable
         $schedule = $this->schedule();
 
         return $schedule['end']->diffInHours($schedule['start']) - 1;
+    }
+
+    /**
+     * Проверка время и даты, для того чтобы нажать "НАЧАТЬ РАБОЧИЙ ДЕНЬ"
+     * @return bool
+     */
+    public function checkWorkdaysForStartTracking(): bool
+    {
+        $work_chart = $this->getWorkChart();
+
+        if ($work_chart->work_charts_type === WorkChartModel::WORK_CHART_TYPE_USUAL || $work_chart->workdays !== null){
+            $day = strrev(decbin($work_chart->workdays));
+
+            $num_week = Carbon::today()->dayOfWeek;
+            if ($num_week === 0) $num_week = 7;
+
+            $day_num = $day[$num_week-1] ?? null;
+            if ($day_num == 1){
+                return true;
+            }
+            return false;
+        }
+        return true;
     }
 }

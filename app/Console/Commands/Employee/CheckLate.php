@@ -45,7 +45,8 @@ class CheckLate extends Command
      */
     public function handle(): void
     {
-        $this->date = $this->argument('date') ? Carbon::parse($this->argument('date')) : Carbon::now();
+        $this->date = $this->argument('date') ? Carbon::parse($this->argument('date')) : Carbon::parse("2023-05-17 10:00:00");
+//        $this->date = $this->argument('date') ? Carbon::parse($this->argument('date')) : Carbon::now();
 
         $users = User::query()->withWhereHas('user_description', fn ($query) => $query->where('is_trainee', 0))
             ->orderBy('last_name', 'asc')
@@ -53,111 +54,111 @@ class CheckLate extends Command
      
         foreach($users as $user)
         {
-            $userFine = new UserFine;
+            if ($user->id === 13303) {
 
-            /**
-             * Отнимаем 6 часов так как время сервера GTM +0.
-             * Время начала смены для сотрудника.
-             */
-            $workStart = Carbon::createFromTimeString($user->work_starts_at())->subHours(6)->subMinutes(10)->format('Y-m-d H:i:s');
-
-            /**
-             * Получаем запись из timetracking таблицы.
-             */
-            $startDay = Timetracking::query()->where('user_id', $user->id)->whereDate('enter', $this->date);
-
-            /**
-             * Был ли штраф на ту дату, которую передаем.
-             */
-            $fines = UserFine::query()->whereDate('day', $this->date)->where('user_id', $user->id)->get();
-
-            if ($startDay->exists())
-            {
-                $startDayInTimestamp = strtotime($startDay->min('enter'));
-                $workStartTimeStamp  = strtotime($workStart);
+                $userFine = new UserFine;
 
                 /**
-                 * Разница в минутах.
+                 * Отнимаем 6 часов так как время сервера GTM +0.
+                 * Время начала смены для сотрудника.
                  */
-                $diffInMinutes = round(($startDayInTimestamp - $workStartTimeStamp) / 60);
+//                $workStart = Carbon::createFromTimeString($user->work_starts_at())->subHours(6)->subMinutes(10)->format('Y-m-d H:i:s');
+                $workStart = Carbon::createFromTimeString($user->work_starts_at())->subHours(6)->subMinutes(10)->format('2023-05-17 04:50:00');
 
                 /**
-                 * Если минута 0 или меньше 0, то сотрудник пришел вовремя.
+                 * Получаем запись из timetracking таблицы.
                  */
-                if ($diffInMinutes <= 0)
-                {
-                    continue;
-                }
+                $startDay = Timetracking::query()->where('user_id', $user->id)->whereDate('enter', $this->date);
 
                 /**
-                 * Штраф до 5 минут.
+                 * Был ли штраф на ту дату, которую передаем.
                  */
-                if ($diffInMinutes <= 5)
-                {
-                    $existActive = $fines->where([
-                        'fine_id'   => Fine::TYPE_LATE_LESS_5,
-                        'status'    => UserFine::STATUS_ACTIVE
-                        ])->count() > 0;
+                $fines = UserFine::query()->whereDate('day', $this->date)->where('user_id', $user->id)->get();
 
-                    $existInActive = $fines->where([
-                        'fine_id'   => Fine::TYPE_LATE_LESS_5,
-                        'status'    => UserFine::STATUS_INACTIVE
-                        ])->count() > 0;
+                if ($startDay->exists()) {
+                    $startDayInTimestamp = strtotime($startDay->min('enter'));
+                    $workStartTimeStamp = strtotime($workStart);
 
-                    if (!$existActive || !$existInActive)
-                    {
-                        /**
-                         * Создаем штраф менее 5 минут.
-                         */
-                        $userFine->addUserFine([
-                            'user_id'   => (int) $user->id,
-                            'fine_id'   => Fine::TYPE_LATE_LESS_5,
-                            'day'       => $this->date,
-                            'status'    => UserFine::STATUS_ACTIVE,
-                            'note'      => null
-                        ]);
+                    /**
+                     * Разница в минутах.
+                     */
+                    $diffInMinutes = round(($startDayInTimestamp - $workStartTimeStamp) / 60);
+                    echo "workDay: ".$workStart."\n";
+                    dd($startDayInTimestamp, $workStartTimeStamp, $diffInMinutes);
 
-                        /**
-                         * Создаем новую запись в истории Timetracking.
-                         */
-                        $this->history($user->id, 'За приход на работу с опозданием до 5 минут');
+                    /**
+                     * Если минута 0 или меньше 0, то сотрудник пришел вовремя.
+                     */
+                    if ($diffInMinutes <= 0) {
+                        continue;
                     }
-                }
 
-                /**
-                 * Штраф после 5 минут.
-                 */
-                if ($diffInMinutes > 5)
-                {
+                    /**
+                     * Штраф до 5 минут.
+                     */
+                    if ($diffInMinutes <= 5) {
+                        $existActive = $fines->where([
+                                'fine_id' => Fine::TYPE_LATE_LESS_5,
+                                'status' => UserFine::STATUS_ACTIVE
+                            ])->count() > 0;
 
-                    $existActive = $fines->where([
-                            'fine_id'   => Fine::TYPE_LATE_MORE_5,
-                            'status'    => UserFine::STATUS_ACTIVE
-                        ])->count() > 0;
+                        $existInActive = $fines->where([
+                                'fine_id' => Fine::TYPE_LATE_LESS_5,
+                                'status' => UserFine::STATUS_INACTIVE
+                            ])->count() > 0;
 
-                    $existInActive = $fines->where([
-                            'fine_id'   => Fine::TYPE_LATE_MORE_5,
-                            'status'    => UserFine::STATUS_INACTIVE
-                        ])->count() > 0;
+                        if (!$existActive || !$existInActive) {
+                            /**
+                             * Создаем штраф менее 5 минут.
+                             */
+                            $userFine->addUserFine([
+                                'user_id' => (int)$user->id,
+                                'fine_id' => Fine::TYPE_LATE_LESS_5,
+                                'day' => $this->date,
+                                'status' => UserFine::STATUS_ACTIVE,
+                                'note' => null
+                            ]);
 
-                    if (!$existActive || !$existInActive)
-                    {
+                            /**
+                             * Создаем новую запись в истории Timetracking.
+                             */
+                            $this->history($user->id, 'За приход на работу с опозданием до 5 минут');
+                        }
+                    }
 
-                        /**
-                         * Создаем штраф более 5 минут.
-                         */
-                        $userFine->addUserFine([
-                            'user_id'   => (int) $user->id,
-                            'fine_id'   => Fine::TYPE_LATE_MORE_5,
-                            'day'       => $this->date,
-                            'status'    => UserFine::STATUS_ACTIVE,
-                            'note'      => null
-                        ]);
+                    /**
+                     * Штраф после 5 минут.
+                     */
+                    if ($diffInMinutes > 5) {
 
-                        /**
-                         * Создаем новую запись в истории Timetracking.
-                         */
-                        $this->history($user->id, 'За приход на работу с опозданием от 5 минут и более');
+                        $existActive = $fines->where([
+                                'fine_id' => Fine::TYPE_LATE_MORE_5,
+                                'status' => UserFine::STATUS_ACTIVE
+                            ])->count() > 0;
+
+                        $existInActive = $fines->where([
+                                'fine_id' => Fine::TYPE_LATE_MORE_5,
+                                'status' => UserFine::STATUS_INACTIVE
+                            ])->count() > 0;
+
+                        if (!$existActive || !$existInActive) {
+
+                            /**
+                             * Создаем штраф более 5 минут.
+                             */
+                            $userFine->addUserFine([
+                                'user_id' => (int)$user->id,
+                                'fine_id' => Fine::TYPE_LATE_MORE_5,
+                                'day' => $this->date,
+                                'status' => UserFine::STATUS_ACTIVE,
+                                'note' => null
+                            ]);
+
+                            /**
+                             * Создаем новую запись в истории Timetracking.
+                             */
+                            $this->history($user->id, 'За приход на работу с опозданием от 5 минут и более');
+                        }
                     }
                 }
             }
