@@ -1343,16 +1343,16 @@ class User extends Authenticatable implements Authorizable
      */
     public function checkWorkdaysForStartTracking(): bool
     {
-        $work_chart = $this->getWorkChart();
+        $workChart = $this->getWorkChart();
 
-        if ($work_chart->work_charts_type === WorkChartModel::WORK_CHART_TYPE_USUAL || $work_chart->workdays !== null){
-            $day = strrev(decbin($work_chart->workdays));
+        if ($workChart->work_charts_type === WorkChartModel::WORK_CHART_TYPE_USUAL || $workChart->workdays !== null){
+            $day = strrev(decbin($workChart->workdays));
 
-            $num_week = Carbon::today()->dayOfWeek;
-            if ($num_week === 0) $num_week = 7;
+            $numWeek = Carbon::today()->dayOfWeek;
+            $numWeek = $numWeek === 0 ? 7 : $numWeek;
 
-            $day_num = $day[$num_week-1] ?? null;
-            if ($day_num == 1){
+            $dayNum = $day[$numWeek-1] ?? null;
+            if ($dayNum == 1){
                 return true;
             }
             return false;
