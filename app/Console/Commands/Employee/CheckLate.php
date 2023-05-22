@@ -50,7 +50,7 @@ class CheckLate extends Command
         $users = User::query()->withWhereHas('user_description', fn ($query) => $query->where('is_trainee', 0))
             ->orderBy('last_name', 'asc')
             ->get();
-     
+
         foreach($users as $user)
         {
             $userFine = new UserFine;
@@ -94,17 +94,10 @@ class CheckLate extends Command
                  */
                 if ($diffInMinutes <= 5)
                 {
-                    $existActive = $fines->where([
-                        'fine_id'   => Fine::TYPE_LATE_LESS_5,
-                        'status'    => UserFine::STATUS_ACTIVE
-                        ])->count() > 0;
+                    $existActive = $fines->where('fine_id', Fine::TYPE_LATE_LESS_5)->where('status',UserFine::STATUS_ACTIVE)->count() > 0;
+                    $existInActive = $fines->where('fine_id', Fine::TYPE_LATE_LESS_5)->where('status',UserFine::STATUS_INACTIVE)->count() > 0;
 
-                    $existInActive = $fines->where([
-                        'fine_id'   => Fine::TYPE_LATE_LESS_5,
-                        'status'    => UserFine::STATUS_INACTIVE
-                        ])->count() > 0;
-
-                    if (!$existActive || !$existInActive)
+                    if (!$existActive && !$existInActive)
                     {
                         /**
                          * Создаем штраф менее 5 минут.
@@ -130,17 +123,10 @@ class CheckLate extends Command
                 if ($diffInMinutes > 5)
                 {
 
-                    $existActive = $fines->where([
-                            'fine_id'   => Fine::TYPE_LATE_MORE_5,
-                            'status'    => UserFine::STATUS_ACTIVE
-                        ])->count() > 0;
+                    $existActive = $fines->where('fine_id', Fine::TYPE_LATE_MORE_5)->where('status',UserFine::STATUS_ACTIVE)->count() > 0;
+                    $existInActive = $fines->where('fine_id', Fine::TYPE_LATE_MORE_5)->where('status',UserFine::STATUS_INACTIVE)->count() > 0;
 
-                    $existInActive = $fines->where([
-                            'fine_id'   => Fine::TYPE_LATE_MORE_5,
-                            'status'    => UserFine::STATUS_INACTIVE
-                        ])->count() > 0;
-
-                    if (!$existActive || !$existInActive)
+                    if (!$existActive && !$existInActive)
                     {
 
                         /**
