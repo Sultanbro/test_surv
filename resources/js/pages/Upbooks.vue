@@ -83,7 +83,7 @@
 								v-if="can_edit"
 							>
 								<i
-									class="fa fa-cog"
+									class="icon-nd-settings"
 									@click="get_settings()"
 								/>
 							</div>

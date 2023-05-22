@@ -110,12 +110,13 @@
 							+ Добавить
 						</JobtronButton>
 						<JobtronButton
-							class="ml-4"
+							class="ml-4 fz14"
 							@click="showSkypeFieldsModal = !showSkypeFieldsModal"
 							title="Показывать поля"
+							fade
 						>
 							<i
-								class="fa fa-cogs"
+								class="icon-nd-settings"
 								aria-hidden="true"
 							/>
 						</JobtronButton>

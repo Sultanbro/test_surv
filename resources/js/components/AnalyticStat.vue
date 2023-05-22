@@ -41,7 +41,7 @@
 								class="in-cell inner-div "
 								@click="editMode()"
 							>
-								<i class="fa fa-cogs" />
+								<i class="icon-nd-settings" />
 							</div>
 						</td>
 						<td

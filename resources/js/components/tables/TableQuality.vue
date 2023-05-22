@@ -61,16 +61,16 @@
 				</JobtronButton>
 			</div>
 			<div
-				v-if="hasSettingsPermisstion"
+				v-if="hasSettingsPermisstion && !tabIndex"
 				class="col-2 text-right"
 			>
 				<JobtronButton
 					small
+					secondary
 					class="ml-a"
 					@click="showSettings = true"
 				>
-					<i class="fa fa-cogs mr-2" />
-					Настройки
+					<i class="icon-nd-settings" />
 				</JobtronButton>
 			</div>
 		</div>
@@ -82,6 +82,7 @@
 		<!--    </h4>-->
 		<div v-if="this.hasPermission">
 			<b-tabs
+				v-model="tabIndex"
 				type="card"
 				class="mt-4"
 				:default-active-key="3"
@@ -1000,6 +1001,7 @@ export default {
 			selected_active: 1,
 			flagGroup: 'index',
 			checklist_tab: false,
+			tabIndex: 0,
 		}
 	},
 	computed: {

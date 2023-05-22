@@ -7,6 +7,7 @@
 			'JobtronButton_success': success,
 			'JobtronButton_error': error,
 			'JobtronButton_fade': fade,
+			'JobtronButton_secondary': secondary,
 		}"
 		@click="$emit('click')"
 	>
@@ -32,6 +33,9 @@ export default {
 			type: Boolean
 		},
 		fade: {
+			type: Boolean
+		},
+		secondary: {
 			type: Boolean
 		},
 	}
@@ -99,6 +103,14 @@ export default {
 		&:hover:not([disabled]):not(.disabled){
 			background: darken(#F7FBFF, 10);
 			color: #156AE8;
+		}
+	}
+	&_secondary{
+		background: #F7FAFC;
+		color: #868e96;
+		&:hover:not([disabled]):not(.disabled){
+			background: darken(#F7FAFC, 10);
+			color: #868e96;
 		}
 	}
 }
