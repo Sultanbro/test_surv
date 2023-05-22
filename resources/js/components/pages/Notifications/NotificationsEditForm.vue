@@ -26,7 +26,7 @@
 		<!-- Получатели -->
 		<div
 			class="NotificationsEditForm-row"
-			@click="isRecipientsOpen = true"
+			@click="onClickRecipments"
 		>
 			<div class="NotificationsEditForm-label">
 				Кого уведомляем
@@ -92,6 +92,7 @@
 					placeholder="Выберите"
 					:taggable="true"
 					class="multiselect-surv"
+					track-by="value"
 				/>
 			</div>
 		</div>
@@ -209,7 +210,13 @@ export default {
 	},
 	methods: {
 		onSave(){
+			this.value.type_of_mailing = this.selectedServices.map(service => service.value)
 			this.$emit('save', this.value)
+		},
+		onClickRecipments(){
+			if(!this.value.id){
+				this.isRecipientsOpen = true
+			}
 		}
 	}
 }

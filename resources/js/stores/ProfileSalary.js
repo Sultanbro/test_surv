@@ -29,7 +29,7 @@ export const useProfileSalaryStore = defineStore('profileSalary', {
 			awards: null
 		},
 		possibleBonuses: null,
-		currentKey: `${now.getFullYear()}-${now.getMonth() + 1}`,
+		currentKey: `${now.getFullYear()}-${now.getMonth()}`,
 		unreadCount: {
 			kpis: 0,
 			bonuses: 0,

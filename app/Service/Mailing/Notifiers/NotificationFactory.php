@@ -10,6 +10,9 @@ use Throwable;
 class NotificationFactory
 {
     /**
+     * Для того чтоб создать новую интеграцию с сервисом создайте новый класс по пути
+     * App\Service\Mailing\Notifiers и пишем там всю логику.
+     *
      * @throws Throwable
      */
     public static function createNotification(
@@ -17,9 +20,10 @@ class NotificationFactory
     ): Notification
     {
         return match ($type) {
-            'in-app' => new InAppNotification(),
-            'bitrix' => new BitrixNotification(),
-            default => throw new InvalidArgumentException("Invalid notification type"),
+            'in-app'    => new InAppNotification(),
+            'bitrix'    => new BitrixNotification(),
+            'whatsapp'  => new WhatsAppNotification(),
+            default     => throw new InvalidArgumentException("Invalid notification type"),
         };
     }
 }

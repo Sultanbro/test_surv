@@ -61,6 +61,15 @@ const isAdmin = userInfo.is_admin
         icon: { icon: 'mdi-account-lock-open-outline' },
       }"
     />
+    <VerticalNavLink
+      v-if="isAdmin"
+      key="admino-user-faq"
+      :item="{
+        title: 'FAQ',
+        to: 'admino-user-faq',
+        icon: { icon: 'mdi-frequently-asked-questions' },
+      }"
+    />
     <!-- 👉 Pages -->
     <!--
       <VerticalNavSectionTitle :item="{ heading: 'Pages' }" />

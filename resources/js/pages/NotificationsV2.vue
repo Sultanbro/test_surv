@@ -60,7 +60,7 @@
 							</div>
 						</b-td>
 						<b-td>
-							{{ notification.type_of_mailing.join(', ') }}
+							{{ notification.type_of_mailing.map(type => services.find(service => service.value === type).title).join(', ') }}
 						</b-td>
 						<b-td>
 							{{ periodNames[notification.date.frequency] }} {{ notification.date.days.join(', ') }}
@@ -69,7 +69,7 @@
 							{{ $moment(notification.created_at).format('YYYY-MM-DD') }}
 						</b-td>
 						<b-td>
-							{{ notification.created_by.name }} {{ notification.created_by.last_name }}
+							{{ notification.creator.name }} {{ notification.creator.last_name }}
 						</b-td>
 						<b-td>
 							<b-button
@@ -128,7 +128,7 @@
 					<b-col>
 						<JobtronButton
 							fade
-							@click="isTemplate = true"
+							@click="onNewTemplate"
 						>
 							<ChatIconPlus
 								class="ChatIcon-active"
@@ -151,8 +151,10 @@
 
 		<!-- Шаблонные уведомления -->
 		<NotificationsTemplates
-			v-if="isTemplate"
-			@close="isTemplate = false"
+			v-if="selectedTemplate"
+			:edit="selectedTemplate"
+			@close="selectedTemplate = null"
+			@save="onSave"
 		/>
 	</div>
 </template>
@@ -162,14 +164,31 @@ import { mapGetters, mapActions } from 'vuex'
 import {
 	fetchNotificationVariants,
 	createNotification,
+	deleteNotification,
+	updateNotification,
 } from '@/stores/api/notifications'
 import NotificationsEditForm from '@/components/pages/Notifications/NotificationsEditForm'
 import NotificationsTemplates from '@/components/pages/Notifications/NotificationsTemplates'
+import {
+	templateFrequency,
+	services,
+} from '@/components/pages/Notifications/helper'
 import SideBar from '@ui/Sidebar'
 import JobtronButton from '@ui/Button'
 import {
 	ChatIconPlus,
 } from '@icons'
+
+const getNamesMethods = {
+	'App\\User': 'getUserName',
+	'App\\ProfileGroup': 'getGroupName',
+	'App\\Position': 'getPositionName',
+}
+const typeToNumber = {
+	'App\\User': 1,
+	'App\\ProfileGroup': 2,
+	'App\\Position': 3,
+}
 
 export default {
 	name: 'NotificationsV2',
@@ -187,16 +206,22 @@ export default {
 				monthly: 'по дням месяца',
 				weekly: 'по дням недели',
 				daily: 'каждый день',
+				apply_employee: 'Уведомлять в момент принятия (триггер)',
+				fired_employee: 'Через день после отметки об увольнении (триггер)',
+				absent_internship: 'В момент отметки в табеле об отсутствии (триггер)',
+				manager_assessment: 'За 2 дня до окончания календарного месяца (триггер)',
+				coach_assessment: 'В период 17:00 - 19:00 в первый день обучения стажера, если он не отмечен, как отсутствовал (триггер)',
 			},
 			selectedNotification: null,
 			search: '',
+			services,
 
 			isSettings: '',
 			settings: {
 				showCount: 0
 			},
 
-			isTemplate: false,
+			selectedTemplate: null,
 		}
 	},
 	computed: {
@@ -223,8 +248,9 @@ export default {
 				if(~notification.created_at.toLowerCase().substring(0, 10).indexOf(lowerSearch)) return true
 
 				// in creator
-				const creator = notification.created_by
-				if(~(`${creator.name} ${creator.last_name}`.toLowerCase()).indexOf(lowerSearch)) return true
+				if(notification.creator){
+					if(~(`${notification.creator.name} ${notification.creator.last_name}`.toLowerCase()).indexOf(lowerSearch)) return true
+				}
 
 				// in services
 				if(~notification.type_of_mailing.join(', ').toLowerCase().indexOf(lowerSearch)) return true
@@ -251,37 +277,72 @@ export default {
 		...mapActions(['loadCompany']),
 		async fetchNotifications(){
 			const notifications = await fetchNotificationVariants()
-			this.addRecipientNames(notifications)
-			this.notifications = notifications
+			this.notifications = this.parseNotifications(notifications)
 		},
-		addRecipientNames(notifications){
-			notifications.forEach(notification => {
-				notification.recipients.forEach(recipient => {
-					this.addRecipientName(recipient)
-				})
+		parseNotifications(notifications){
+			return notifications.map(notification => {
+				return {
+					...notification,
+					type_of_mailing: JSON.parse(notification.type_of_mailing),
+					recipients: notification.recipients ? notification.recipients.map(recipient => {
+						return {
+							...recipient,
+							id: recipient.notificationable_id,
+							type: typeToNumber[recipient.notificationable_type],
+							name: this[getNamesMethods[recipient.notificationable_type]](recipient)
+						}
+					}) : [],
+					date: {
+						frequency: notification.frequency,
+						days: JSON.parse(notification.days || '[]') || []
+					},
+					creator: this.getCreator(notification)
+				}
 			})
 		},
-		addRecipientName(recipient){
-			this[(['', 'addUserName', 'addGroupName', 'addPositionName'][recipient.type])](recipient)
+		getCreator(notification){
+			return this.users.find(user => user.id === notification.created_by)
 		},
-		addUserName(recipient){
-			const user = this.users.find(user => user.id === recipient.id)
-			if(user) recipient.name = `${user.name} ${user.last_name}`
+		getUserName(recipient){
+			const user = this.users.find(user => user.id === recipient.notificationable_id)
+			if(user) return `${user.name} ${user.last_name}`
+			return ''
 		},
-		addGroupName(recipient){
-			const group = this.groups.find(group => group.id === recipient.id)
-			if(group) recipient.name = group.name
+		getGroupName(recipient){
+			const group = this.groups.find(group => group.id === recipient.notificationable_id)
+			if(group) return group.name
+			return ''
 		},
-		addPositionName(recipient){
-			const position = this.positions.find(position => position.id === recipient.id)
-			if(position) recipient.name = position.position
+		getPositionName(recipient){
+			const position = this.positions.find(position => position.id === recipient.notificationable_id)
+			if(position) return position.position
+			return ''
 		},
-		remove(/* notification */){
-			// this.removeNotificationVariants
+		async remove(notification){
+			const {data} = await deleteNotification(notification.id)
+			if(data) {
+				this.$toast.success('Уведомление удалено')
+				const index = this.notifications.findIndex(noti => noti.id === notification.id)
+				this.notifications.splice(index, 1)
+			}
+			else{
+				this.$toast.error('Ошибка при удалении уведомления, попробуйте позже')
+			}
 		},
 		openEditSidebar(notification){
-			if(!notification) this.selectedNotification = this.getBlankNotification()
-			else this.selectedNotification = JSON.parse(JSON.stringify(notification))
+			if(!notification) {
+				this.selectedNotification = this.getBlankNotification()
+				return
+			}
+			if(!notification.is_template){
+				this.selectedNotification = JSON.parse(JSON.stringify(notification))
+				return
+			}
+			const template = templateFrequency.includes(notification.date.frequency) ? notification.date.frequency : 'apply_employee'
+			this.selectedTemplate = {
+				template,
+				...notification
+			}
 		},
 		getBlankNotification(){
 			return {
@@ -294,33 +355,70 @@ export default {
 					frequency: 'weekly'
 				},
 				time: '10:00',
-				type_of_mailing: ['jobtron'],
+				type_of_mailing: ['in-app'],
+				is_template: false,
 			}
 		},
 		onSave(notification){
+			const errors = this.validate(notification)
+			if(errors.length){
+				this.$toast.error(errors.map(err => err.error).join('\n'))
+				return
+			}
 			if(notification.id) this.updateNotification(notification)
 			else this.createNotification(notification)
 			this.selectedNotification = null
 		},
-		async createNotification(notification){
-			await createNotification(notification)
-			const now = new Date().toISOString()
-			this.notifications.push({
-				...notification,
-				created_at: now,
-				updated_at: now,
-				created_by: JSON.parse(JSON.stringify(this.user))
-			})
+		validate(notification){
+			const errors = []
+			if(!notification.name) errors.push({field: 'name', error: 'Название уведомления должно быть заполнено'})
+			if(!notification.title) errors.push({field: 'title', error: 'Текст уведомления должен быть заполнен'})
+			if(!notification.recipients.length) errors.push({field: 'recipients', error: 'Укажите минимум одного получателя'})
+			if((notification.date.frequency === 'weekly' || notification.date.frequency === 'monthly') && !notification.date.days.length) errors.push({field: 'days', error: 'Укажите минимум один день отправки'})
+			return errors
 		},
-		updateNotification(notification){
-			// call api
+		async createNotification(notification){
+			const {message} = await createNotification(notification)
+			if(message === 'Success created'){
+				this.$toast.success('Уведомление успешно создано')
+			}
+			else{
+				this.$toast.error(message)
+			}
+			this.fetchNotifications()
+		},
+		async updateNotification(notification){
+			const {message} = await updateNotification(notification)
+			if(message === 'Success created'){
+				this.$toast.success('Уведомление успешно создано')
+			}
+			else{
+				this.$toast.error(message)
+			}
 			const index = this.notifications.findIndex(n => n.id === notification.id)
 			if(!~index) return
 			this.$set(this.notifications, index, notification)
 		},
 		onSaveSettings(){
 			// call api
+			this.$toast.warning('В разработке')
 			this.isSettings = false
+		},
+		onNewTemplate(){
+			this.selectedTemplate = {
+				template: '',
+				id: 0,
+				name: '',
+				title: '',
+				recipients: [],
+				date: {
+					days: [],
+					frequency: 'weekly'
+				},
+				time: '10:00',
+				type_of_mailing: ['in-app'],
+				is_template: true,
+			}
 		}
 	}
 }

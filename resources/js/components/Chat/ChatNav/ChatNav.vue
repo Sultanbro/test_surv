@@ -4,7 +4,6 @@
 		:class="(isDesktop ? !fullscreen : !chat) ? 'messenger__nav-collapsed' : 'messenger__nav-fullscreen'"
 	>
 		<ChatHeader v-if="isOpen" />
-		<SearchBox />
 		<ChatsList
 			class="messenger__nav-chats"
 			:fullscreen="fullscreen"
@@ -16,13 +15,11 @@
 import {mapGetters} from 'vuex'
 import ChatHeader from '../ChatHeader/ChatHeader.vue'
 import ChatsList from '../ChatsList/ChatsList.vue'
-import SearchBox from '../SearchBox/SearchBox.vue'
 
 export default {
 	name: 'ChatNav',
 	components: {
 		ChatHeader,
-		SearchBox,
 		ChatsList,
 	},
 	props: {

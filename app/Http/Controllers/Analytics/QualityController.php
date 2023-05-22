@@ -436,12 +436,16 @@ class QualityController extends Controller
             else if($total >= 40 && $total < 60){$color = '#e3ff00';}
             else if($total >= 60 && $total < 80){$color = '#00ff04';}
             else if($total >= 80 && $total <= 100){$color = '#0051ff';}
-            UserNotification::create([
-                                'user_id' => $request->employee_id,
-                                'about_id' => 0,
-                                'title' => 'Оценка переговоров',
-                                'message' => $request->comments.' Общая оценка: '.$total.' <div style="background-color:'.$color.';width:20px;height:20px;display: inline-block;"></div>'
-                            ]);
+
+            if ($request->is_send_notification)
+            {
+                UserNotification::create([
+                    'user_id' => $request->employee_id,
+                    'about_id' => 0,
+                    'title' => 'Оценка переговоров',
+                    'message' => $request->comments.' Общая оценка: '.$total.' <div style="background-color:'.$color.';width:20px;height:20px;display: inline-block;"></div>'
+                ]);
+            }
 
             return response()->json([
                 'method' => 'update',

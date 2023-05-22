@@ -68,7 +68,7 @@ export default {
 	align-items: center;
 	justify-content: space-between;
 	border-top: 1px solid #35354a;
-	padding-top: 20px;
+	padding-top: 10px;
 }
 .AccessSelectFooter-count {
 	font-family: "Inter", sans-serif;

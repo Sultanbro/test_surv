@@ -105,11 +105,15 @@ export default {
 			context.fillStyle = '#FF0000'
 			context.fill()
 
+
 			context.font = '700 32px "helvetica", sans-serif'
+			if(this.unreadCount > 99){
+				context.font = '700 20px "helvetica", sans-serif'
+			}
 			context.textAlign = 'center'
 			context.textBaseline = 'middle'
 			context.fillStyle = '#FFFFFF'
-			context.fillText(Math.min(this.unreadCount, 99), size - size / 2.5, size / 2.5)
+			context.fillText(this.unreadCount > 99 ? '99+' : this.unreadCount, size - size / 2.5, size / 2.5)
 
 			iconNode.href = canvas.toDataURL('image/png')
 		}

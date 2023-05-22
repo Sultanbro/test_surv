@@ -2,8 +2,10 @@
 
 namespace App\Console\Commands\Pusher;
 
+use App\Enums\Mailing\MailingEnum;
 use App\Models\Mailing\MailingNotification;
 use App\Service\Mailing\Notifiers\NotificationFactory;
+use Exception;
 use Illuminate\Console\Command;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
@@ -23,23 +25,33 @@ class Pusher extends Command
      *
      * @var string
      */
-    protected $description = 'Command notifies the marked systems';
+    protected $description = 'Команда уведомляет пользователей через JT или другой сервис с которым мы интегрированы.';
 
     /**
      * Execute the console command.
      *
      * @return ?bool
+     * @throws Exception
      */
     public function handle(): ?bool
     {
-        $notifications = MailingNotification::with('recipients')->where('status', 1)->get();
+        $notifications = MailingNotification::with('recipients')
+            ->whereIn('frequency', [MailingEnum::DAILY, MailingEnum::WEEKLY, MailingEnum::MONTHLY])
+            ->where('status', 1)->get();
 
         foreach ($notifications as $notification)
         {
             $frequency = $notification->frequency;
 
+            if (!method_exists($this, $frequency))
+            {
+                throw new Exception("Method $frequency does not exist");
+            }
+
             return $this->{$frequency}($notification);
         }
+
+        return true;
     }
 
     /**
@@ -53,18 +65,9 @@ class Pusher extends Command
     {
         $mailingSystems = json_decode($notification->type_of_mailing);
 
-        foreach ($notification->recipients as $recipient)
+        foreach ($mailingSystems as $mailingSystem)
         {
-            $notification = $this->mailingNotification()->first();
-            $time = now()->toTimeString();
-
-            if ($time == $notification->time)
-            {
-                foreach ($mailingSystems as $mailingSystem)
-                {
-                    NotificationFactory::createNotification($mailingSystem)->send($notification, $recipient);
-                }
-            }
+            NotificationFactory::createNotification($mailingSystem)->send($notification, $notification->title);
         }
     }
 
@@ -78,19 +81,14 @@ class Pusher extends Command
     ): void
     {
         $mailingSystems = json_decode($notification->type_of_mailing);
+        $days   =  json_decode($notification->days);
+        $today  = Carbon::now()->dayOfWeekIso;
 
-        foreach ($notification->recipients as $recipient)
+        if (in_array($today, $days))
         {
-            $days = json_decode($recipient->days);
-            $today  = Carbon::now()->dayOfWeekIso;
-            $time   = now()->toTimeString();
-
-            if (in_array($today, $days) && $time == $notification->time)
+            foreach ($mailingSystems as $mailingSystem)
             {
-                foreach ($mailingSystems as $mailingSystem)
-                {
-                    NotificationFactory::createNotification($mailingSystem)->send($notification, $recipient);
-                }
+                NotificationFactory::createNotification($mailingSystem)->send($notification, $notification->title);
             }
         }
     }
@@ -105,20 +103,16 @@ class Pusher extends Command
     ): void
     {
         $mailingSystems = json_decode($notification->type_of_mailing);
+        $days   =  json_decode($notification->days);
+        $today  = Carbon::now()->day;
 
-        foreach ($notification->recipients as $recipient)
+        if (in_array($today, $days))
         {
-            $days   = json_decode($recipient->days);
-            $today  = Carbon::now()->day;
-            $time   = now()->toTimeString();
-
-            if (in_array($today, $days) and $time == $notification->time)
+            foreach ($mailingSystems as $mailingSystem)
             {
-                foreach ($mailingSystems as $mailingSystem)
-                {
-                    NotificationFactory::createNotification($mailingSystem)->send($notification, $recipient);
-                }
+                NotificationFactory::createNotification($mailingSystem)->send($notification, $notification->title);
             }
         }
+
     }
 }

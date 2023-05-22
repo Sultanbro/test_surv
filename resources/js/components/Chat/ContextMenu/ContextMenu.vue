@@ -63,6 +63,14 @@ export default {
 	background-color: #fff;
 	box-shadow: 0px 0px 3px rgba(0, 0, 0, 0.05), 0px 15px 60px -40px rgba(45, 50, 90, 0.2);
 
+	visibility: hidden;
+	opacity: 0;
+
+	&_visible{
+		visibility: visible;
+		opacity: 1;
+	}
+
 	&-item{
 		display: flex;
 		align-items: center;

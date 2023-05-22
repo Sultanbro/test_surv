@@ -16,6 +16,7 @@
 			:title="`${message.sender.name} ${message.sender.last_name}`"
 			:image="'/users_img/' + message.sender.img_url"
 			:size="50"
+			class="ConversationMessage-avatar"
 		/>
 		<div class="messenger__message-container">
 			<div :class="messageCardClass">
@@ -43,7 +44,7 @@
 						<span>
 							<template v-for="(messagePart, key) in messageBody">
 								<template v-if="messagePart.type === MESSAGE_TYPES.TEXT">
-									{{ messagePart.text }}
+									<template>{{ messagePart.text }}</template>
 								</template>
 								<a
 									v-else
@@ -154,6 +155,13 @@
 					:reactions="reactions"
 					@reaction-click="reactMessage({message: message, emoji_id: $event})"
 				/>
+			</div>
+
+			<div
+				class="ConversationMessage-context"
+				@click.stop="$emit('contextbutton', $event)"
+			>
+				<i class="fa fa-chevron-down mt-1" />
 			</div>
 
 			<!-- <div class="messenger__text-timestamp">
@@ -349,6 +357,9 @@ export default {
 				url: link,
 			};
 		},
+		trim(value){
+			return ('' + value).trim()
+		}
 	},
 	filters: {
 		moment: function (date) {
@@ -371,6 +382,7 @@ export default {
 $ConversationMessage-radius: 18px;
 .ConversationMessage{
 	gap: 10px;
+	position: relative;
 	&_userFirst{
 		&.messenger__message-box-left{
 			.messenger__message-card{
@@ -395,6 +407,9 @@ $ConversationMessage-radius: 18px;
 			}
 		}
 	}
+	&-avatar{
+		flex: 0 0 auto;
+	}
 	&-name{
 		margin-bottom: 8px;
 
@@ -402,6 +417,33 @@ $ConversationMessage-radius: 18px;
 		font-size: 14px;
 		line-height: 16px;
 		letter-spacing: -0.015em;
+	}
+	&-context{
+		display: none;
+		align-items: center;
+		justify-content: center;
+
+		width: 16px;
+		height: 16px;
+		border-radius: 16px;
+
+		position: absolute;
+		top: 4px;
+		right: -24px;
+
+		font-size: 12px;
+		color: #fff;
+		background-color: #6986B8;
+		cursor: pointer;
+		&:hover{
+			background-color: #3361FF;
+		}
+	}
+
+	&:hover{
+		.ConversationMessage-context{
+			display: flex;
+		}
 	}
 }
 
@@ -601,6 +643,10 @@ audio {
 	height: 75px;
 }
 
+.messenger__format-container{
+	white-space: pre-line;
+	line-break: anywhere;
+}
 .messenger__format-container_parent {
 	border-left: 2px solid #5ebee9;
 	cursor: pointer;
@@ -620,5 +666,26 @@ audio {
 .messenger__format-link:hover{
 	color: #0056b3;
 	text-decoration: underline;
+}
+
+
+@media only screen and (max-width: 670px) {
+	.ConversationMessage{
+		&-context{}
+		&:hover{
+			.ConversationMessage-context{
+				display: none !important;
+			}
+		}
+	}
+	.messenger__message-card{
+		max-width: 100%;
+	}
+	.messenger__message-box-right{
+		margin-right: 0;
+	}
+	.messenger__message-box-left{
+		margin-left: 0;
+	}
 }
 </style>

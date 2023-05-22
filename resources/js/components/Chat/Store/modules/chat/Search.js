@@ -8,7 +8,8 @@ export default {
 		searchMessagesResults: [],
 		chatSearchMessagesResults: [],
 		chatSearchFilesResults: [],
-		searchType: 'messages'
+		searchType: 'messages',
+		searchFilesQueryId: 0,
 	},
 	mutations: {
 		setContacts(state, contacts) {
@@ -98,14 +99,20 @@ export default {
 				commit('setChatMessagesResults', messages);
 			});
 		},
-		async findFilesInChat({commit}, {text, chat_id}) {
+		async findFilesInChat({commit, state}, {text, chat_id}) {
+			const queryId = ++state.searchFilesQueryId;
 			if (text.length > 1) {
-				await API.searchMessages(text, chat_id, null, true, files => {
-					commit('setChatFilesResults', files);
+				await API.searchMessages({
+					search: text,
+					chatId: chat_id,
+					onlyFiles: true,
+				}, files => {
+					if(queryId === state.searchFilesQueryId) commit('setChatFilesResults', files)
 				});
-			} else {
+			}
+			else {
 				const {data} = await API.allFiles(chat_id)
-				commit('setChatFilesResults', data.data);
+				if(queryId === state.searchFilesQueryId) commit('setChatFilesResults', data.data)
 			}
 		},
 		async setCurrentChatContacts({commit}, contacts) {

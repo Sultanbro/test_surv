@@ -195,7 +195,7 @@ export default {
 		setMonth() {
 			let year = this.$moment().format('YYYY')
 			this.dateInfo.currentMonth = this.dateInfo.currentMonth ? this.dateInfo.currentMonth : this.$moment().format('MMMM')
-			this.currentMonth = this.dateInfo.currentMonth;
+			// this.currentMonth = this.dateInfo.currentMonth;
 			this.dateInfo.date = `${this.dateInfo.currentMonth} ${year}`
 
 			let currentMonth = this.$moment(this.dateInfo.currentMonth, 'MMMM')

@@ -7,35 +7,36 @@
 
 		<ConversationSearchFilter
 			v-model="searchFilesFilter"
-			class="ConversationSearchMobile-filters mx-5"
+			class="ConversationSearchMobile-filters"
 		/>
 
 		<!-- Заголовок списка результатов -->
 		<ConversationSearchTitle
 			:title="title"
-			class="mx-5"
 			@forward="forwardFiles"
 			@delete="deleteFiles"
+			class="px-2"
 		/>
 
 		<!-- Поиск -->
 		<JobtronSearch
 			v-if="searchFilesFilter != 'images'"
 			v-model="searchMessagesQuery"
-			class="mx-5"
 		/>
 
 		<!-- Результаты -->
-		<div class="messenger__messages-search-results mx-5">
+		<div class="ConversationSearchMobile-results messenger__messages-search-results px-2">
 			<template v-if="searchFilesFilter === 'users'">
-				<div
-					v-for="(msg, index) in chatSearchMessagesResults"
-					:key="index"
-					class="messenger__message-wrapper mb-4"
-					@click="goto(msg, $event)"
-				>
-					<ConversationMessage :message="msg" />
-				</div>
+				<template v-for="(msg, index) in chatSearchMessagesResults">
+					<div
+						v-if="msg.body !== 'Event'"
+						:key="index"
+						class="messenger__message-wrapper mb-4"
+						@click="goto(msg, $event)"
+					>
+						<ConversationMessage :message="msg" />
+					</div>
+				</template>
 			</template>
 			<template v-else>
 				<div
@@ -104,6 +105,9 @@ export default {
 			this.search()
 		}
 	},
+	mounted(){
+		this.search()
+	},
 	methods: {
 		...mapActions([
 			'findFilesInChat',
@@ -148,6 +152,16 @@ export default {
 	display: flex;
 	flex-flow: column nowrap;
 	align-items: stretch;
+
+	position: fixed;
+	z-index: 100;
+	top: 0;
+	left: 0;
+	right: 0;
+	bottom: 0;
+
+	background-color: #fff;
+
 	&-icon{
 		display: inline-flex;
 		align-items: center;
@@ -157,6 +171,9 @@ export default {
 	}
 	&-filters{
 		margin-bottom: 1rem;
+	}
+	&-results{
+		overflow-y: auto;
 	}
 }
 </style>

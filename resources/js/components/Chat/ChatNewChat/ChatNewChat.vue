@@ -2,7 +2,7 @@
 	<div class="ChatNewChat">
 		<div class="ChatNewChat-header mb-4">
 			<div class="ChatNewChat-title">
-				Новый чат
+				Создание нового чата
 			</div>
 			<div
 				class="ChatNewChat-close ChatIcon-parent ml-a"
@@ -15,12 +15,12 @@
 		<input
 			type="text"
 			v-model="title"
-			class="ChatNewChat-input mb-5"
-			placeholder="Название группы"
+			class="ChatNewChat-input"
+			placeholder="Название чата"
 		>
 
 		<JobtronSearch
-			class="mb-5"
+			class="mb-3"
 			v-model="search"
 		/>
 
@@ -109,7 +109,7 @@ export default {
 		async submitChat(){
 			this.requestProcess = true
 			await this.createChat({
-				title: this.title,
+				title: this.title || 'Новый чат',
 				description: '',
 				members: this.selectedPrivate.map(member => member.id),
 			})
@@ -119,7 +119,7 @@ export default {
 		async submitGroup(){
 			this.requestProcess = true
 			await this.createChat({
-				title: this.title,
+				title: this.title || 'Новый чат',
 				description: '',
 				members: this.actualUsers.map(member => member.id),
 			})
@@ -136,9 +136,9 @@ export default {
 	flex-flow: column nowrap;
 
 	width: 414px;
-	height: 720px;
+	// height: 720px;
 	max-width: 414px;
-	max-height: 90vh;
+	max-height: min(90vh, 720px);
 	min-height: 0;
 	padding: 20px;
 
@@ -205,7 +205,7 @@ export default {
 		font-weight: 400;
 		font-size: 14px;
 		line-height: 20px;
-		color: #A6B7D4;
+		// color: #A6B7D4;
 
 		text-align: center;
 		letter-spacing: -0.02em;

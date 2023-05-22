@@ -18,7 +18,16 @@ export default {
 <style>
 
 .header__right-messages {
-  overflow-y: auto;
+	width: 60px;
+  overflow: hidden;
 }
-
+.header__right-messages .ChatsList{
+	height: 100%;
+	width: 90px;
+	padding-right: 30px;
+	overflow-y: auto;
+	padding-left: 0px;
+	box-sizing: content-box;
+	padding-left: 3px;
+}
 </style>
