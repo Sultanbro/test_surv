@@ -138,21 +138,6 @@
 					label="График"
 					label-cols="4"
 				>
-					<!-- <b-form-select v-model="form.name">
-						<b-form-select-option
-							disabled
-							value="null"
-						>
-							Выберите график работы
-						</b-form-select-option>
-						<b-form-select-option
-							v-for="chart in workChartsList"
-							:key="chart"
-							:value="chart"
-						>
-							График {{ chart }}
-						</b-form-select-option>
-					</b-form-select> -->
 					<b-row>
 						<b-col cols="5">
 							<b-form-select
@@ -253,7 +238,6 @@ export default {
 				dayoffs: 0,
 				usualSchedule: 0
 			},
-			workChartsList: ['1-1', '2-2', '3-3', '5-2', '6-1'],
 			typeOptions: [
 				{
 					value: 1,
@@ -268,20 +252,16 @@ export default {
 	},
 	computed: {
 		workdays(){
-			return this.workChartsList.reduce((options, chart) => {
-				const splitted = chart.split('-')
-				if(!this.form.dayoffs || this.form.dayoffs === splitted[1])
-					options.push(splitted[0])
-				return options
-			}, [''])
+			const filled = +this.form.dayoffs || 0
+			return Array(30 - filled).fill(0).map((value, index) => {
+				return index + 1
+			})
 		},
 		dayoffs(){
-			return this.workChartsList.reduce((options, chart) => {
-				const splitted = chart.split('-')
-				if(!this.form.workdays || this.form.workdays === splitted[0])
-					options.push(splitted[1])
-				return options
-			}, [''])
+			const filled = +this.form.workdays || 0
+			return Array(30 - filled).fill(0).map((value, index) => {
+				return index + 1
+			})
 		},
 	},
 	mounted() {
@@ -354,15 +334,6 @@ export default {
 				this.$toast.error('Выберите график');
 				return
 			}
-			// if(!~this.workChartsList.indexOf(`${this.form.workdays}-${this.form.dayoffs}`)){
-			// 	this.$toast.error('Выберите корректный график');
-			// 	return
-			// }
-			// Оставил на будущее когда можно будет произвольно выьирать кол-во дней
-			// if(parseInt(this.form.workdays) + parseInt(this.form.dayoffs) > 7){
-			// 	this.$toast.error('Сумма рабочих и выходных дней не должна быть больше 7');
-			// 	return
-			// }
 			let loader = this.$loading.show();
 			const formData = new FormData();
 			formData.append('name', this.form.name);
