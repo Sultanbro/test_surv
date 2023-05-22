@@ -1345,20 +1345,22 @@ class User extends Authenticatable implements Authorizable
     {
         $workChart = $this->getWorkChart();
 
-        if ($workChart->work_charts_type === WorkChartModel::WORK_CHART_TYPE_USUAL || $workChart->workdays !== null){
+        if ($workChart->work_charts_type === WorkChartModel::WORK_CHART_TYPE_USUAL && $workChart->workdays !== null) {
             $day = strrev(decbin($workChart->workdays));
 
             $numWeek = Carbon::today()->dayOfWeek;
             $numWeek = $numWeek === 0 ? 7 : $numWeek;
 
-            $dayNum = $day[$numWeek-1] ?? null;
-            if ($dayNum == 1){
+            $dayNum = $day[$numWeek - 1] ?? null;
+            if ($dayNum == 1) {
                 return true;
             }
             return false;
         }
         return true;
+    }
 
+     /**
      * @return bool
      */
     public function isFired(): bool
