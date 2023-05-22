@@ -398,19 +398,6 @@
 
 										<template #cell(interlocutor)="{value, item}">
 											<div
-												v-if="item.editable"
-												class="TableQuality-input"
-											>
-												<input
-													type="text"
-													v-model="item.interlocutor"
-													class="form-control text-center"
-													@focus="$event.target.select()"
-													@change="statusChanged(item)"
-												>
-											</div>
-											<div
-												v-else
 												@click="editMode(item)"
 												class="TableQuality-padding TableQuality-input"
 											>
@@ -878,6 +865,7 @@
 
 <script>
 import { mapState } from 'pinia'
+import { mapGetters } from 'vuex'
 import { usePortalStore } from '@/stores/Portal'
 import Sidebar from '@/components/ui/Sidebar' // сайдбар table
 import CourseResults from '@/pages/CourseResults' // результаты по курсам
@@ -1006,6 +994,7 @@ export default {
 	},
 	computed: {
 		...mapState(usePortalStore, ['portal']),
+		...mapGetters(['user']),
 		years(){
 			if(!this.portal.created_at) return [new Date().getFullYear()]
 			return useYearOptions(new Date(this.portal.created_at).getFullYear())
@@ -1296,7 +1285,7 @@ export default {
 				name: this.user_ids[this.filters.currentEmployee],
 				segment_id: 1,
 				phone: '',
-				interlocutor: 'Клиент',
+				interlocutor: `${this.user.last_name} ${this.user.name}`,
 				dayOfDelay: 0,
 				date: this.$moment().format('YYYY-MM-DD'),
 			};
@@ -1441,7 +1430,7 @@ export default {
 
 			fieldsArray.push({
 				key: 'phone',
-				label: 'Номер',
+				label: 'Номер телефона',
 				typ: 'text',
 				order: order++,
 				tdClass: 'TableQuality-input text-center phoner',
@@ -1458,15 +1447,6 @@ export default {
 					thClass: ' text-center ',
 				});
 			}
-
-			fieldsArray.push({
-				key: 'interlocutor',
-				label: 'Собеседник',
-				type: 'text',
-				order: order++,
-				tdClass: ' text-center ',
-				thClass: ' text-center ',
-			});
 
 			fieldsArray.push({
 				key: 'date',
@@ -1504,6 +1484,15 @@ export default {
 				order: order++,
 				tdClass: ' text-center comments',
 				thClass: ' text-center comments',
+			});
+
+			fieldsArray.push({
+				key: 'interlocutor',
+				label: 'оценил',
+				type: 'text',
+				order: order++,
+				tdClass: ' text-center ',
+				thClass: ' text-center ',
 			});
 
 			this.recordFields = fieldsArray;
