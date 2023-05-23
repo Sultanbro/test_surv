@@ -386,6 +386,7 @@ export default {
 			}
 			if(notification.id) this.updateNotification(notification)
 			else this.createNotification(notification)
+			this.selectedTemplate = null
 			this.selectedNotification = null
 		},
 		validate(notification){
