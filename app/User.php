@@ -104,6 +104,11 @@ class User extends Authenticatable implements Authorizable
         'phone_4',
         'work_chart_id'
     ];
+
+    protected $casts = [
+        'timezone' => 'float',
+    ];
+
     /**
      * Валюты для профиля.
      */

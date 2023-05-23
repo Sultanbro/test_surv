@@ -36,6 +36,7 @@ class StoreUserRequest extends FormRequest
             'program_type'      => ['required', 'numeric'],
             'working_days'      => ['required', 'numeric'],
             'working_times'     => ['required', 'numeric'],
+            'timezone'          => ['numeric'],
             'phone'             => ['nullable', 'string', 'min:10'],
             'phone_home'        => ['string', 'numeric', 'min:10'],
             'phone_husband'     => ['string', 'numeric', 'min:10'],
@@ -146,6 +147,7 @@ class StoreUserRequest extends FormRequest
         $tax = Arr::get($validated, 'tax');
         $taxes = Arr::get($validated, 'taxes');
         $bitrixId = Arr::get($validated, 'bitrix_id');
+        $timezone = Arr::get($validated, 'timezone');
 
         return new StoreUserDTO(
             $id,
@@ -194,7 +196,8 @@ class StoreUserRequest extends FormRequest
             $newPassword,
             $tax,
             $taxes,
-            $bitrixId
+            $bitrixId,
+            $timezone,
         );
     }
 }
