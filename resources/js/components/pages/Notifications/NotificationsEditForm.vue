@@ -109,11 +109,11 @@
 				>
 			</div>
 			<div class="NotificationsEditForm-control">
-				<b-form-timepicker
+				<!-- <b-form-timepicker
 					v-model="value.time"
 					:hour12="false"
 					class="mb-4"
-				/>
+				/> -->
 				<b-form-select
 					v-model="value.date.frequency"
 					:options="periods"

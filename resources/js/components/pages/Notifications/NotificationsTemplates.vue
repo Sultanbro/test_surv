@@ -116,11 +116,11 @@
 							class="mb-4"
 						/>
 						<template v-if="when === 'period'">
-							<b-form-timepicker
+							<!-- <b-form-timepicker
 								v-model="time"
 								:hour12="false"
 								class="mb-4"
-							/>
+							/> -->
 							<b-form-select
 								v-model="frequency"
 								:options="periods"
