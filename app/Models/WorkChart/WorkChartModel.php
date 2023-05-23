@@ -3,6 +3,7 @@
 namespace App\Models\WorkChart;
 
 use App\DTO\WorkChart\StoreWorkChartDTO;
+use App\DTO\WorkChart\UpdateWorkChartDTO;
 use App\Enums\WorkChart\WorkChartEnum;
 use App\Timetracking;
 use App\User;
@@ -10,6 +11,7 @@ use Carbon\Carbon;
 use Exception;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use InvalidArgumentException;
 
 class WorkChartModel extends Model
@@ -24,8 +26,14 @@ class WorkChartModel extends Model
         'name',
         'text_name',
         'start_time',
-        'end_time'
+        'end_time',
+        'work_charts_type',
+        'workdays'
     ];
+
+    const WORK_CHART_TYPE_USUAL = 1;
+    const WORK_CHART_TYPE_REPLACEABLE = 2;
+    const MAX_CHART_DAYS_REPLACEABLE = 30;
 
     /**
      * @param string $name
@@ -165,5 +173,30 @@ class WorkChartModel extends Model
             'workStartTime' => Timetracking::DEFAULT_WORK_START_TIME,
             'workEndTime'   => Timetracking::DEFAULT_WORK_END_TIME,
         ];
+    }
+
+    /**
+     * Получает название типы смен
+     * @return BelongsTo
+     */
+    public function workChartType(): BelongsTo
+    {
+        return $this->belongsTo(WorkChartTypeRb::class, 'work_charts_type', 'id');
+    }
+
+    /**
+     * Проверяем смену на дубликат.
+     * @param StoreWorkChartDTO|UpdateWorkChartDTO $dto
+     * @return bool
+     */
+    public static function checkDuplicate(StoreWorkChartDTO | UpdateWorkChartDTO $dto): bool {
+        $data = $dto->toArray();
+        return self::where('name', $data['name'])
+            ->where('start_time', $data['start_time'])
+            ->where('end_time', $data['end_time'])
+            ->where('text_name', $data['text_name'])
+            ->where('work_charts_type', $data['work_charts_type'])
+            ->where('workdays', $data['workdays'])
+            ->exists();
     }
 }

@@ -34,7 +34,8 @@ class MailingNotification extends Model
         'frequency',
         'status',
         'created_by',
-        'is_template'
+        'is_template',
+        'count'
     ];
 
     const WEEKLY = 'weekly';
@@ -54,9 +55,18 @@ class MailingNotification extends Model
      * @param Builder $query
      * @return Builder
      */
-    public function scopeGetTemplates(Builder $query)
+    public function scopeGetTemplates(Builder $query): Builder
     {
         return $query->where('is_template', 1);
+    }
+
+    /**
+     * @param Builder $query
+     * @return Builder
+     */
+    public function scopeIsActive(Builder $query): Builder
+    {
+        return $query->where('status', 1);
     }
 
     /**

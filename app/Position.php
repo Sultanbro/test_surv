@@ -78,6 +78,14 @@ class Position extends Model
     /**
      * @return HasMany
      */
+    public function activeUsers(): HasMany
+    {
+        return $this->hasMany(User::class)->whereNull('users.deleted_at');
+    }
+
+    /**
+     * @return HasMany
+     */
     public function descriptions(): HasMany
     {
         return $this->hasMany(PositionDescription::class, 'position_id');

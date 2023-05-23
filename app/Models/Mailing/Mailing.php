@@ -21,6 +21,7 @@ class Mailing
      * @param array $days
      * @param string $frequency
      * @param bool|null $isTemplate
+     * @param int $count
      * @return Model
      */
     public function createNotification(
@@ -29,7 +30,8 @@ class Mailing
         array $typeOfMailing,
         array $days,
         string $frequency,
-        ?bool $isTemplate
+        ?bool $isTemplate,
+        int $count
     ): Model
     {
         return MailingNotification::query()->create([
@@ -39,6 +41,7 @@ class Mailing
             'days'              => json_encode($days),
             'frequency'         => $frequency,
             'is_template'       => $isTemplate,
+            'count'             => $count,
             'created_by'        => \Auth::id() ?? 5
         ]);
     }
@@ -94,36 +97,38 @@ class Mailing
         return MailingNotification::query()->where('id', $id)->delete();
     }
 
-
     /**
      * @param int $templateId
-     * @return Relation|Builder
+     * @return Collection
      */
     public function getRecipients(
         int $templateId
-    ): Relation|Builder
+    ): Collection
     {
         $schedules  = MailingNotificationSchedule::query()->where('notification_id', $templateId)->get();
-        $recipients = User::query()->orderBy('last_name', 'asc')->withWhereHas('user_description', fn ($query) => $query->where('is_trainee', 0))->get();
+        $recipients = collect();
 
         foreach ($schedules as $schedule)
         {
             if ($schedule->notificationable_type == MailingEnum::USER)
             {
-                $recipients = User::query()->where('id', $schedule['notificationable_id']);
+                $users = User::withTrashed()->where('id', $schedule['notificationable_id'])->get();
+                $recipients = $users->merge($recipients);
             }
 
             if ($schedule->notificationable_type == MailingEnum::GROUP)
             {
-                $recipients = ProfileGroup::getById($schedule['notificationable_id'])->activeUsers();
+                $groupUsers = ProfileGroup::getById($schedule['notificationable_id'])->activeUsers()->get();
+                $recipients = $groupUsers->merge($recipients);
             }
 
             if ($schedule->notificationable_type == MailingEnum::POSITION)
             {
-                $recipients = Position::getById($schedule['notificationable_id'])->users()->whereNull('deleted_at');
+                $positionUsers = Position::getById($schedule['notificationable_id'])->users()->whereNull('deleted_at')->get();
+                $recipients = $positionUsers->merge($recipients);
             }
         }
 
-        return $recipients;
+        return $recipients->unique();
     }
 }

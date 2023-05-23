@@ -3,6 +3,7 @@
 namespace App\Http\Requests\WorkChart;
 
 use App\DTO\WorkChart\UpdateWorkChartDTO;
+use App\Models\WorkChart\WorkChartModel;
 use Illuminate\Support\Arr;
 
 class UpdateWorkChartRequest extends BaseWorkChartRequest
@@ -25,11 +26,13 @@ class UpdateWorkChartRequest extends BaseWorkChartRequest
     public function rules(): array
     {
         return [
-            'name' => ['string'],
-            'chart_workdays' => ['required_with:chart_dayoffs', 'integer', 'min:1', 'max:6'],
-            'chart_dayoffs' => ['required_with:chart_workdays', 'integer', 'min:1', 'max:6'],
-            'start_time' => ['string'],
-            'end_time' => ['string'],
+            'name' => ['required', 'string'],
+            'start_time' => ['required', 'string'],
+            'end_time' => ['required', 'string'],
+            'work_charts_type' => $this->getWorkChartTypeRule(),
+            'usual_schedule' => $this->getUsualScheduleRule(),
+            'chart_workdays' => $this->getChartWorkdaysRule(),
+            'chart_dayoffs' => $this->getChartDayoffsRule(),
         ];
     }
 
@@ -39,20 +42,23 @@ class UpdateWorkChartRequest extends BaseWorkChartRequest
     public function toDto(int $id): UpdateWorkChartDTO
     {
         $validated = $this->validated();
-
         $name       = Arr::get($validated, 'name');
-        $chartWorkdays  = (int) Arr::get($validated, 'chart_workdays');
-        $chartDayoffs  = (int) Arr::get($validated, 'chart_dayoffs');
         $startTime    = Arr::get($validated, 'start_time');
         $endTime    = Arr::get($validated, 'end_time');
+        $chartWorkType  = (int) Arr::get($validated, 'work_charts_type');
+        $usualSchedule = Arr::get($validated, 'usual_schedule');
+        $chartWorkdays  = (int) Arr::get($validated, 'chart_workdays');
+        $chartDayoffs  = (int) Arr::get($validated, 'chart_dayoffs');
 
         return new UpdateWorkChartDTO(
-            $id,
-            $name,
-            $chartWorkdays,
-            $chartDayoffs,
-            $startTime,
-            $endTime,
+            id: $id,
+            name:$name,
+            startTime: $startTime,
+            endTime: $endTime,
+            chartWorkType: $chartWorkType,
+            chartWorkdays: $chartWorkType === WorkChartModel::WORK_CHART_TYPE_USUAL ? substr_count($usualSchedule, 1): $chartWorkdays,
+            chartDayoffs: $chartWorkType === WorkChartModel::WORK_CHART_TYPE_USUAL ? substr_count($usualSchedule, 0) : $chartDayoffs,
+            usualSchedule: bindec((string)$usualSchedule),
         );
     }
 }

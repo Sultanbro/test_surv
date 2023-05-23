@@ -49,6 +49,17 @@ class MailingNotificationSchedule extends Model
     }
 
     /**
+     * @param int $id
+     * @return Builder
+     */
+    public static function getByNotification(
+        int $id
+    ): Builder
+    {
+        return self::query()->where('notification_id', '=', $id);
+    }
+
+    /**
      * @param string $type
      * @param int $id
      * @param int $notificationId

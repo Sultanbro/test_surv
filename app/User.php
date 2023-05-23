@@ -1301,7 +1301,7 @@ class User extends Authenticatable implements Authorizable
         int $id
     ): Model
     {
-        return self::query()->findOrFail($id);
+        return self::withTrashed()->findOrFail($id);
     }
 
     /**
@@ -1338,10 +1338,34 @@ class User extends Authenticatable implements Authorizable
     }
 
     /**
+     * Проверка время и даты, для того чтобы нажать "НАЧАТЬ РАБОЧИЙ ДЕНЬ"
+     * @return bool
+     */
+    public function checkWorkdaysForStartTracking(): bool
+    {
+        $workChart = $this->getWorkChart();
+
+        if ($workChart->work_charts_type === WorkChartModel::WORK_CHART_TYPE_USUAL && $workChart->workdays !== null) {
+            $day = strrev(decbin($workChart->workdays));
+
+            $numWeek = Carbon::today()->dayOfWeek;
+            $numWeek = $numWeek === 0 ? 7 : $numWeek;
+
+            $dayNum = $day[$numWeek - 1] ?? null;
+            if ($dayNum == 1) {
+                return true;
+            }
+            return false;
+        }
+        return true;
+    }
+
+     /**
      * @return bool
      */
     public function isFired(): bool
     {
+        dd($this);
         return !($this->deleted_at == null);
     }
 }

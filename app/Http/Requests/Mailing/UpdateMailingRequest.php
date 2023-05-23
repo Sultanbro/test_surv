@@ -3,7 +3,7 @@
 namespace App\Http\Requests\Mailing;
 
 use App\DTO\BaseDTO;
-use App\DTO\Mailing\CreateMailingDTO;
+use App\DTO\Mailing\UpdateMailingDTO;
 use App\Enums\Mailing\MailingEnum;
 use App\Http\Requests\BaseFormRequest;
 use App\Rules\Mailing\ValidateByType;
@@ -14,7 +14,7 @@ use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Support\Arr;
 use Illuminate\Validation\Rule;
 
-class CreateMailingRequest extends BaseFormRequest
+class UpdateMailingRequest extends BaseFormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -34,52 +34,48 @@ class CreateMailingRequest extends BaseFormRequest
     public function rules(): array
     {
         return [
-            'name'              => 'required|string',
-            'title'             => 'required|min:3|max:244',
-            'recipients'        => ['array', new ValidateByType, new ValidationFrequency($this->date['frequency']),
-                !in_array($this->date['frequency'], [MailingEnum::TRIGGER_MANAGER_ASSESSMENT, MailingEnum::TRIGGER_FIRED, MailingEnum::TRIGGER_COACH_ASSESSMENT]) ? 'required' : '',],
-            'recipients.*.id'   => 'required|integer',
-
-            /**
-             * Передаваемые типы User => 1, ProfileGroup => 2, Position => 3
-             */
-            'recipients.*.type' => ['required', 'integer', new ValidationFrequency($this->date['frequency'])],
+            'id'                => 'required|integer|exists:mailing_notifications,id',
+            'name'              => 'string',
+            'title'             => 'min:3|max:244',
 
             /**
              * Есть разные виды рассылки Bitrix24, u-marketing utc.
              */
-            'type_of_mailing'   => ['required', 'array', Rule::in(['in-app', 'whatsapp', 'bitrix'])],
+            'type_of_mailing'   => 'array',
 
             'date'              => ['required', 'array', new ValidateWeek, new ValidateDaily],
             'date.days'         => [in_array($this->date['frequency'], [MailingEnum::WEEKLY, MailingEnum::MONTHLY]) ? 'required' : '', 'array'],
             'date.frequency'    => ['required', 'string', Rule::in(MailingEnum::FREQUENCIES)],
             'is_template'       => 'boolean',
+            'status'            => 'integer',
             'count'             => 'integer'
         ];
     }
 
     /**
-     * @return BaseDTO<CreateMailingDTO>
+     * @return BaseDTO<UpdateMailingDTO>
      */
     public function toDto(): BaseDTO
     {
         $validated  = $this->validated();
 
+        $id         = Arr::get($validated, 'id');
         $name       = Arr::get($validated, 'name');
         $title      = Arr::get($validated, 'title');
-        $recipients = Arr::get($validated, 'recipients') ?? [];
         $date       = Arr::get($validated, 'date');
         $typeOfMailing  = Arr::get($validated, 'type_of_mailing');
         $isTemplate = Arr::get($validated, 'is_template') ?? 0;
-        $count      = Arr::get($validated, 'count') ?? 1;
+        $status     = Arr::get($validated, 'status') ?? 0;
+        $count     = Arr::get($validated, 'count') ?? 1;
 
-        return new CreateMailingDTO(
+        return new UpdateMailingDTO(
+            $id,
             $name,
             $title,
-            $recipients,
             $date,
             $typeOfMailing,
             $isTemplate,
+            $status,
             $count
         );
     }

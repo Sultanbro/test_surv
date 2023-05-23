@@ -668,6 +668,7 @@ Route::middleware(['web','tenant', 'not_admin_subdomain'])->group(function () {
         Route::get('/find/{id}', [Root\Mailing\MailingController::class, 'find']);
 
         Route::post('/', [Root\Mailing\MailingController::class, 'create']);
+        Route::put('/', [Root\Mailing\MailingController::class, 'update']);
         Route::delete('/{id}', [Root\Mailing\MailingController::class, 'delete']);
     });
 
@@ -677,6 +678,10 @@ Route::middleware(['web','tenant', 'not_admin_subdomain'])->group(function () {
     ], function (){
         Route::post('/apply-employee', [Root\Mailing\TriggerController::class, 'applyEmployee']);
         Route::post('/absent-internship', [Root\Mailing\TriggerController::class, 'absentInternship']);
+
+        /**
+         * API не используется так как перешли на крон. Но оставлю в списке
+         */
         Route::post('/fired-employee/{id}', [Root\Mailing\TriggerController::class, 'firedEmployee']);
     });
 });

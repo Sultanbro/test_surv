@@ -14,8 +14,10 @@ use http\Exception\InvalidArgumentException;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\Client\HttpClientException;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Str;
+use stdClass;
 
 class WhatsAppNotification implements Notification
 {
@@ -32,13 +34,14 @@ class WhatsAppNotification implements Notification
     /**
      * @param Model $notification
      * @param string $message
+     * @param Collection|null $recipients
      * @return bool|null
      * @throws Exception
      */
-    public function send(Model $notification, string $message = ''): ?bool
+    public function send(Model $notification, string $message = '', Collection $recipients = null): ?bool
     {
-        $recipients = MailingFacade::getRecipients($notification->id)
-            ->where('phone', '!=', '')->get();
+        $recipients = $recipients ?? MailingFacade::getRecipients($notification->id);
+        $recipients = $recipients->where('phone', '!=', '');
 
         foreach ($recipients as $recipient)
         {
@@ -49,13 +52,13 @@ class WhatsAppNotification implements Notification
     }
 
     /**
-     * @param User $user
+     * @param User|stdClass $user
      * @param string $message
      * @return void
-     * @throws Exception
+     * @throws HttpClientException
      */
     private function sendNotification(
-        User $user,
+        User|stdClass $user,
         string $message
     ): void
     {

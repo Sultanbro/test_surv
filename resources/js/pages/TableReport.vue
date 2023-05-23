@@ -846,6 +846,10 @@ import { usePortalStore } from '@/stores/Portal'
 import Sidebar from '@/components/ui/Sidebar' // сайдбар table
 import GroupExcelImport from '@/components/imports/GroupExcelImport' // импорт в табели
 import {useYearOptions} from '../composables/yearOptions'
+import {
+	triggerApplyEmployee,
+	triggerAbsentInternship,
+} from '@/stores/api.js'
 
 export default {
 	name: 'TableReport',
@@ -1657,6 +1661,9 @@ export default {
 				this.apllyPersonResponse = response.data.msg
 				this.sidebarContent.data.item.requested = this.$moment().format('DD.MM.Y HH:mm')
 				this.modalVisibleApply = false
+
+				triggerApplyEmployee(this.sidebarContent.user_id)
+
 				setTimeout(() => {
 					this.apllyPersonResponse = ''
 				}, 2000);
@@ -1678,6 +1685,8 @@ export default {
 				group_id: this.currentGroup,
 				comment: this.commentAbsent
 			}).then(response => {
+
+				triggerAbsentInternship(this.sidebarContent.user_id)
 
 				let v = this.items[this.sidebarContent.data.index]['_cellVariants'];
 				[day] = `day-${this.currentDayType.type}`

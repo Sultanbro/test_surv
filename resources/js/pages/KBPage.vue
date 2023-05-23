@@ -2,8 +2,8 @@
 	<div v-if="auth_user_id">
 		<!-- PAGE -->
 		<div
-			class="kb-sections d-flex"
 			v-if="activeBook === null"
+			class="kb-sections d-flex"
 		>
 			<!-- Левая часть -->
 			<aside
@@ -21,24 +21,24 @@
 						class="form-control"
 					>
 					<i
-						class="search-clear"
 						v-if="search.input.length"
+						class="search-clear"
 						@click="clearSearch"
 					>x</i>
 				</div>
 
 				<div
-					class="btn btn-grey mb-3"
 					v-if="activeBook === null"
+					class="btn btn-grey mb-3"
 					@click="openGlossary"
 				>
 					<span>Глоссарий</span>
 				</div>
 
 				<div
+					v-if="showArchive"
 					class="btn btn-grey mb-3"
 					@click="showArchive = false"
-					v-if="showArchive"
 				>
 					<i class="fa fa-arrow-left" />
 					<span>Выйти из архива</span>
@@ -46,8 +46,8 @@
 
 				<!-- Существующие разделы -->
 				<div
-					class="sections-wrap noscrollbar"
 					v-if="!showArchive"
+					class="sections-wrap noscrollbar"
 					:class="{ 'expand' : mode == 'read'}"
 				>
 					<div class="search-content">
@@ -89,6 +89,7 @@
 						</div>
 					</div>
 					<Draggable
+						v-if="!search.items.length && !search.input.length"
 						class="dragArea ml-0"
 						tag="div"
 						handle=".fa-bars"
@@ -97,7 +98,6 @@
 						:group="{ name: 'g1' }"
 						@start="startChangeOrder"
 						@end="saveOrder"
-						v-if="!search.items.length && !search.input.length"
 					>
 						<template v-for="(book, b_index) in books">
 							<div
@@ -108,15 +108,15 @@
 							>
 								<div class="d-flex aic">
 									<i
-										class="fa fa-bars mover mr-2"
 										v-if="mode == 'edit'"
+										class="fa fa-bars mover mr-2"
 									/>
 									<p>{{ book.title }}</p>
 								</div>
 
 								<div
-									class="section-btns"
 									v-if="mode == 'edit'"
+									class="section-btns"
 								>
 									<i
 										class="fa fa-trash mr-1"
@@ -134,14 +134,14 @@
 
 				<!-- Архивные разделы -->
 				<div
-					class="sections-wrap noscrollbar"
 					v-else
+					class="sections-wrap noscrollbar"
 				>
 					<template v-for="(book, b_index) in archived_books">
 						<div
+							v-if="can_edit"
 							:key="b_index"
 							class="section d-flex aic jcsb"
-							v-if="can_edit"
 							@click.stop="selectSection(book)"
 						>
 							<p>{{ book.title }}</p>
@@ -158,22 +158,22 @@
 				<!-- Кнопки внизу сайдбара -->
 				<div v-if="mode == 'edit'">
 					<div
-						class="d-flex jscb"
 						v-if="!showArchive"
+						class="d-flex jscb"
 					>
 						<div
+							v-if="can_edit"
 							class="btn btn-grey w-full mr-1"
 							@click="showCreate = true"
-							v-if="can_edit"
 						>
 							<i class="fa fa-plus" />
 							<span>Добавить</span>
 						</div>
 						<div
+							v-if="can_edit"
 							class="btn btn-grey"
 							title="Архив"
 							@click="getArchivedBooks"
-							v-if="can_edit"
 						>
 							<i class="fa fa-box" />
 						</div>
@@ -196,8 +196,8 @@
 						<!-- Кнопки на правом верхнем углу -->
 						<div class="control-btns d-flex">
 							<div
-								class="mode_changer mr-2"
 								v-if="can_edit"
+								class="mode_changer mr-2"
 							>
 								<i
 									class="fa fa-pen"
@@ -207,8 +207,8 @@
 								/>
 							</div>
 							<div
-								class="mode_changer"
 								v-if="can_edit"
+								class="mode_changer"
 							>
 								<i
 									class="fa fa-cog"
@@ -580,8 +580,6 @@ export default {
 		},
 
 		editAccess(book) {
-
-
 			this.showEdit = true;
 
 			this.update_book = book;

@@ -6,12 +6,14 @@ use App\Enums\Mailing\MailingEnum;
 use App\Facade\MailingFacade;
 use App\Models\Mailing\Mailing;
 use App\Models\Mailing\MailingNotification;
+use App\Models\Mailing\MailingNotificationSchedule;
 use App\Service\Mailing\Notifiers\NotificationFactory;
 use App\User;
 use Carbon\Carbon;
 use Exception;
 use http\Exception\InvalidArgumentException;
 use Illuminate\Console\Command;
+use Illuminate\Support\Facades\DB;
 use Throwable;
 
 class NotificationTemplatePusher extends Command
@@ -38,8 +40,8 @@ class NotificationTemplatePusher extends Command
      */
     public function handle()
     {
-        $notifications = MailingNotification::getTemplates()
-            ->whereIn('frequency', [MailingEnum::TRIGGER_MANAGER_ASSESSMENT])
+        $notifications = MailingNotification::getTemplates()->isActive()
+            ->whereIn('frequency', [MailingEnum::TRIGGER_MANAGER_ASSESSMENT, MailingEnum::TRIGGER_COACH_ASSESSMENT, MailingEnum::TRIGGER_FIRED])
             ->get();
 
         foreach ($notifications as $notification)
@@ -58,29 +60,24 @@ class NotificationTemplatePusher extends Command
     }
 
     /**
-     * @param MailingNotification $notification
-     * @return void
      * @throws Throwable
      */
     private function fired_employee_pusher(
         MailingNotification $notification
-    ): void
+    )
     {
-        $user = MailingFacade::getRecipients($notification->id)->first();
-        $mailings = $notification->mailings();
+        $date     = Carbon::now()->subDay()->format('Y-m-d');
+        $users    = DB::table('users')->whereNotNull('deleted_at')->whereDate('deleted_at', $date)->get();
 
-        if (!$user->isFired())
-        {
-            throw new Exception("$user->full_name is not fired");
-        }
+        $mailings = $notification?->mailings();
 
         $link       = "https://bp.jobtron.org/";
-        $message    = $notification->title . ' <br> ';
+        $message    = $notification?->title . ' <br> ';
         $message   .= $link;
 
         foreach ($mailings as $mailing)
         {
-            NotificationFactory::createNotification($mailing)->send($notification, $message);
+            NotificationFactory::createNotification($mailing)->send($notification, $message, $users);
         }
     }
 
@@ -97,6 +94,9 @@ class NotificationTemplatePusher extends Command
         $lastDayOfMonth = Carbon::now()->daysInMonth;
         $daysRemaining  = $lastDayOfMonth - $currentDay;
         $mailings       = $notification->mailings();
+        $recipients     = User::query()->withWhereHas('user_description', fn ($query) => $query->where('is_trainee', 0))
+            ->orderBy('last_name', 'asc')
+            ->get();
 
         $link       = 'Ссылка на опрос <br>';
         $message    = $notification->title;
@@ -106,7 +106,7 @@ class NotificationTemplatePusher extends Command
         {
             foreach ($mailings as $mailing)
             {
-                NotificationFactory::createNotification($mailing)->send($notification, $message);
+                NotificationFactory::createNotification($mailing)->send($notification, $message, $recipients);
             }
         }
     }
