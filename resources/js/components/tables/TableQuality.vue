@@ -479,22 +479,18 @@
 										</template>
 
 										<template #cell(save)="{item}">
-											<JobtronButton
+											<i
 												v-if="item.editable"
-												success
+												class="fa fa-save btn btn-success btn-icon"
 												@click="saveRecord(item)"
-											>
-												<i class="fa fa-save" />
-											</JobtronButton>
+											/>
 										</template>
 
 										<template #cell(remove)="{item, index}">
-											<JobtronButton
-												error
+											<i
+												class="fa fa-trash btn btn-danger btn-icon"
 												@click="deleteRecordModal(item, index)"
-											>
-												<i class="fa fa-trash" />
-											</JobtronButton>
+											/>
 										</template>
 									</JobtronTable>
 								</div>
@@ -1488,7 +1484,7 @@ export default {
 
 			fieldsArray.push({
 				key: 'interlocutor',
-				label: 'оценил',
+				label: 'Оценил',
 				type: 'text',
 				order: order++,
 				tdClass: ' text-center ',
