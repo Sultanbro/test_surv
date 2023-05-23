@@ -310,7 +310,7 @@
 										</p>
 									</div>
 								</div>
-								<div class="table-responsive">
+								<div class="TableQuality-dialogs table-responsive">
 									<JobtronTable
 										:fields="recordFieldsFull"
 										:items="records.data"
@@ -360,7 +360,7 @@
 												<input
 													type="text"
 													v-model="item.phone"
-													class="text-center"
+													class="TableQuality-inputPhone text-center"
 													@focus="$event.target.select()"
 													@change="statusChanged(item)"
 												>
@@ -382,7 +382,7 @@
 												<input
 													type="text"
 													v-model="item.dayOfDelay"
-													class="text-center"
+													class="TableQuality-inputNumber text-center"
 													@focus="$event.target.select()"
 													@change="statusChanged(item)"
 												>
@@ -426,7 +426,7 @@
 												<input
 													type="text"
 													v-model="item['param' + pk]"
-													class="text-center"
+													class="TableQuality-inputNumber text-center"
 													@focus="$event.target.select()"
 													@change="changeStat(item)"
 												>
@@ -449,7 +449,7 @@
 												<textarea
 													type="text"
 													v-model="item.comments"
-													class="form-control"
+													class="TableQuality-inputComment form-control"
 													@focus="$event.target.select()"
 													@change="statusChanged(item)"
 												/>
@@ -1800,10 +1800,27 @@ export default {
 <style lang="scss">
 	.TableQuality{
 		&-input {
-			margin: -12px -15px;
+			margin: -5px;
 		}
 		&-padding{
-			padding: 12px 15px;
+			padding: 5px;
+		}
+		&-dialogs{
+			.JobtronTable-th,
+			.JobtronTable-td{
+				padding: 5px;
+			}
+		}
+		&-inputNumber{
+			width: 40px;
+			margin: 0 auto;
+		}
+		&-inputPhone{
+			width: 110px;
+			margin: 0 auto;
+		}
+		&-inputComment{
+			min-width: 100px;
 		}
 	}
 	.records-table{
