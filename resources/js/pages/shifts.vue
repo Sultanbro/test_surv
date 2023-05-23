@@ -344,17 +344,19 @@ export default {
 				return
 			}
 			let loader = this.$loading.show();
-			const formData = new FormData();
-			formData.append('name', this.form.name);
-			formData.append('start_time', this.form.workStartTime);
-			formData.append('end_time', this.form.workEndTime);
-			formData.append('work_charts_type', this.form.type);
-			formData.append('chart_workdays', this.form.workdays);
-			formData.append('chart_dayoffs', this.form.dayoffs);
-			formData.append('usual_schedule', flipbits(this.form.usualSchedule, 7).toString(2).padStart(7, '0'));
 
-			if(this.editShiftId) formData.append('_method', 'put')
-			const {data} = await this.axios.post(`/work-chart/${this.editShiftId || ''}`, formData)
+			const request = {
+				name: this.form.name,
+				start_time: this.form.workStartTime,
+				end_time: this.form.workEndTime,
+				work_charts_type: this.form.type,
+				chart_workdays: this.form.workdays,
+				chart_dayoffs: this.form.dayoffs,
+				usual_schedule: flipbits(this.form.usualSchedule, 7).toString(2).padStart(7, '0')
+			}
+
+			if(this.editShiftId) request._method = 'put'
+			const {data} = await this.axios.post(`/work-chart/${this.editShiftId || ''}`, request)
 			if(!data) {
 				this.$toast.error(`Не удалось ${this.editShiftId ? 'обновить' : 'добавить'} смену`)
 				loader.hide()
