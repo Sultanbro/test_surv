@@ -413,15 +413,15 @@ export default {
 			}
 		},
 		async fetchSettings(){
-			const {settings} = await fetchSettings('profile_notifications_remind_count')
-			if(settings.profile_notifications_remind_count){
-				this.settings.showCount = parseInt(settings.profile_notifications_remind_count) || 0
+			const {settings} = await fetchSettings('notifications_remind_count')
+			if(settings.custom_notifications_remind_count){
+				this.settings.showCount = parseInt(settings.custom_notifications_remind_count) || 0
 			}
 		},
 		async onSaveSettings(){
 			await updateSettings({
-				type: 'profile_notifications_remind_count',
-				profile_notifications_remind_count: this.settings.showCount
+				type: 'notifications_remind_count',
+				custom_notifications_remind_count: this.settings.showCount
 			})
 			this.$toast.success('Настройки сохранены')
 			this.isSettings = false
