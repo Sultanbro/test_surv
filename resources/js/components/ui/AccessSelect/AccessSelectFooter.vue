@@ -54,7 +54,6 @@ export default {
 			return num === 1 ? dec[0] : num > 1 && num < 5 ? dec[1] : dec[2];
 		},
 		onSubmit(){
-			console.log('onSubmit')
 			this.$emit('submit')
 		}
 	}

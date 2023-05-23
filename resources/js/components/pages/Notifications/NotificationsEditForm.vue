@@ -143,11 +143,12 @@
 			@close="isRecipientsOpen = false"
 		>
 			<AccessSelect
-				v-model="value.recipients"
+				:value="value.recipients"
 				:tabs="['Сотрудники', 'Отделы', 'Должности']"
 				:access-dictionaries="accessDictionaries"
 				search-position="beforeTabs"
-				:submit-button="''"
+				:submit-button="'Применить'"
+				@submit="onSubmitAccess"
 				class="NotificationsEditForm-accessSelect"
 			/>
 		</JobtronOverlay>
@@ -217,6 +218,10 @@ export default {
 			if(!this.value.id){
 				this.isRecipientsOpen = true
 			}
+		},
+		onSubmitAccess(value){
+			this.value.recipients = value
+			this.isRecipientsOpen = false
 		}
 	}
 }

@@ -50,11 +50,12 @@
 								@close="isRecipientsOpen = false"
 							>
 								<AccessSelect
-									v-model="value.recipients"
+									:value="value.recipients"
 									:tabs="value.targets"
 									:access-dictionaries="accessDictionaries"
 									search-position="beforeTabs"
-									:submit-button="''"
+									:submit-button="'Применить'"
+									@submit="onSubmitAccess"
 									class="NotificationsEditForm-accessSelect"
 								/>
 							</JobtronOverlay>
@@ -189,7 +190,7 @@ export default {
 			template: '',
 			templates,
 			templateSettings,
-			value: null,
+			value: {},
 			services,
 			periods,
 			selectedServices: [],
@@ -226,14 +227,14 @@ export default {
 	},
 	methods: {
 		loadEdit(){
+			if(!this.value) this.value = {}
 			this.template = this.edit.template
 			this.$nextTick(() => {
-				if(!this.value) this.value = {}
+				this.value.id = this.edit.id
 				this.value.recipients = this.edit.recipients
 				this.value.title = this.edit.title
 				this.selectedServices = this.edit.type_of_mailing.map(value => services.find(service => service.value === value))
 				this.frequency = this.edit.date.frequency
-				this.value.id = this.edit.id
 				if(!templateFrequency.includes(this.edit.date.frequency)){
 					this.when = 'period'
 				}
@@ -241,6 +242,10 @@ export default {
 		},
 		onClickRecipments(){
 			if(!this.value.id) this.isRecipientsOpen = true
+		},
+		onSubmitAccess(value){
+			this.value.recipients = value
+			this.isRecipientsOpen = false
 		},
 		onSave(){
 			const name = templates.find(template => template.value === this.template).text
