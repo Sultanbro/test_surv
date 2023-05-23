@@ -283,5 +283,12 @@ export default {
 
 		background-color: #F7FAFC;
 	}
+	&-fixed{
+		font-style: italic;
+	}
+	&-tip{
+		font-style: italic;
+		color: #F8254B;
+	}
 }
 </style>
