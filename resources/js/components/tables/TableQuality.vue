@@ -360,7 +360,7 @@
 												<input
 													type="text"
 													v-model="item.phone"
-													class="form-control text-center"
+													class="text-center"
 													@focus="$event.target.select()"
 													@change="statusChanged(item)"
 												>
@@ -382,7 +382,7 @@
 												<input
 													type="text"
 													v-model="item.dayOfDelay"
-													class="form-control text-center"
+													class="text-center"
 													@focus="$event.target.select()"
 													@change="statusChanged(item)"
 												>
@@ -407,21 +407,6 @@
 
 										<template #cell(date)="{value, item}">
 											<div
-												v-if="item.editable"
-												class="TableQuality-input"
-											>
-												<input
-													type="date"
-													v-model="item.date"
-													class="form-control text-center"
-													placeholder="dd-mm-yyyy"
-													min="1997-01-01"
-													max="2030-12-31"
-													@change="statusChanged(date)"
-												>
-											</div>
-											<div
-												v-else
 												@click="editMode(item)"
 												class="TableQuality-padding TableQuality-input"
 											>
@@ -441,7 +426,7 @@
 												<input
 													type="text"
 													v-model="item['param' + pk]"
-													class="form-control text-center"
+													class="text-center"
 													@focus="$event.target.select()"
 													@change="changeStat(item)"
 												>
@@ -479,18 +464,22 @@
 										</template>
 
 										<template #cell(save)="{item}">
-											<i
-												v-if="item.editable"
-												class="fa fa-save btn btn-success btn-icon"
-												@click="saveRecord(item)"
-											/>
+											<div class="TableQuality-input">
+												<i
+													v-if="item.editable"
+													class="fa fa-save btn btn-success btn-icon"
+													@click="saveRecord(item)"
+												/>
+											</div>
 										</template>
 
 										<template #cell(remove)="{item, index}">
-											<i
-												class="fa fa-trash btn btn-danger btn-icon"
-												@click="deleteRecordModal(item, index)"
-											/>
+											<div class="TableQuality-input">
+												<i
+													class="fa fa-trash btn btn-danger btn-icon"
+													@click="deleteRecordModal(item, index)"
+												/>
+											</div>
 										</template>
 									</JobtronTable>
 								</div>
