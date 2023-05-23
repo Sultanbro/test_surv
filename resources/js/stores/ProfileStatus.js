@@ -43,14 +43,14 @@ export const useProfileStatusStore = defineStore('profileStatus', {
 		async updateStatus(body){
 			try{
 				const data = await updateProfileStatus(body);
-				if(!data.status){
-					data.status = 'workdone'
-					data.error = {
-						message: 'Вы не можете начать рабочий день в выходной'
-					}
+				if(data.status){
+					this.status = data.status;
+					this.message = data.error ? data.error.message : null;
 				}
-				this.status = data.status;
-				this.message = data.error ? data.error.message : null;
+				else{
+					this.status = 'workdone'
+					this.message = 'Вы не можете начать рабочий день в выходной'
+				}
 				if(data.error){
 					this.status = 'workdone';
 				}
