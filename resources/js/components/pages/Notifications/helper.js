@@ -133,7 +133,7 @@ if(location.hostname.split('.')[0] === 'bp') templates.push(
 export const periods = [
 	{
 		value: 'daily',
-		text: 'Каждый жень'
+		text: 'Каждый день'
 	},
 	{
 		value: 'weekly',
