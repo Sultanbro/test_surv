@@ -99,6 +99,7 @@ import { mapState, mapActions } from 'pinia'
 import { useNotificationsStore } from '@/stores/Notifications'
 import { useWorkChartStore } from '@/stores/WorkChart.js'
 import { usePersonalInfoStore } from '@/stores/PersonalInfo'
+import { fetchSettings } from '@/stores/api.js'
 
 const NotificationsLastCheck = 'NotificationsLastCheck'
 
@@ -109,7 +110,8 @@ export default {
 		return {
 			isBp: window.location.hostname.split('.')[0] === 'bp',
 			notificationsInterval: null,
-			prevNotificationsCheck: +(localStorage.getItem(NotificationsLastCheck) || Date.now())
+			prevNotificationsCheck: +(localStorage.getItem(NotificationsLastCheck) || Date.now()),
+			showCount: 0,
 		};
 	},
 	computed: {
@@ -134,8 +136,12 @@ export default {
 			})
 		}
 	},
-	mounted(){
+	async mounted(){
 		this.fetchNotifications()
+		const {settings} = await fetchSettings('notifications_remind_count')
+		if(settings.custom_notifications_remind_count){
+			this.showCount = parseInt(settings.custom_notifications_remind_count) || 0
+		}
 		if(!this.workChartList && !this.isWorkChartLoading) this.fetchWorkChartList()
 		this.notificationsInterval = setInterval(() => {
 			this.hourlyNotifications()
@@ -164,11 +170,13 @@ export default {
 		hourlyNotifications(){
 			if(!this.unreadQuantity) return
 			if(!this.workTimeTS) return
+			if(!this.showCount) return
 			const now = Date.now()
 			const inRange = this.workTimeTS[0] <= now && now <= this.workTimeTS[1]
 			if(!inRange) return
+			const timeBetween = parseInt((this.workTimeTS[1] - this.workTimeTS[0]) / (this.showCount + 1))
 
-			if(now - this.prevNotificationsCheck > 14400000){
+			if(now - this.prevNotificationsCheck > timeBetween){
 				this.$emit('pop', 'notifications')
 				this.prevNotificationsCheck = now
 				localStorage.setItem(NotificationsLastCheck, now)

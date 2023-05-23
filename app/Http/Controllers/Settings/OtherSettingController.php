@@ -14,7 +14,7 @@ class OtherSettingController extends Controller
         //$this->middleware('auth');
     }
 
-    protected function password_generate($chars) 
+    protected function password_generate($chars)
     {
       $data = '1234567890ABCDEFGHIJKLMNOPQRSTUVWXYZabcefghijklmnopqrstuvwxyz';
       return substr(str_shuffle($data), 0, $chars);
@@ -27,7 +27,7 @@ class OtherSettingController extends Controller
         if(!$accountUser) {
             return response()->json( ['success'=>false] );
         }
-        
+
 
         $pass = $this->password_generate(7);
         $accountUser->password = \Hash::make($pass);
@@ -39,25 +39,25 @@ class OtherSettingController extends Controller
         ];
 
         $mail = new \App\Mail\PasswordReset($mailData);
-        
+
         \Mail::to($request->email)->send($mail);
-        
+
 
         return response()->json(['success'=>true]);
     }
 
     /**
-     * 
+     *
      * @param Request $request
-     * 
+     *
      * @return array
-     * 
+     *
      * 'settings' => [
      *     'send_notification_after_edit' => true,
      *     'show_page_from_kb_everyday' => false,
      *     'allow_save_kb_without_test' => true,
      *  ]
-     * 
+     *
      */
     public function getSettings(Request $request)
     {
@@ -71,11 +71,15 @@ class OtherSettingController extends Controller
 
             if ($setting){
                 $settings[$key] = $setting->value == 1;
-               
+
                 if ($request->type == 'company' && $setting->value){
                     $settings['logo'] = $disk->temporaryUrl(
                         $setting->value, now()->addMinutes(360)
                     );
+                }
+
+                if(substr($key, 0, 7) == 'custom_'){
+                    $settings[$key] = $setting->value;
                 }
             }
 
@@ -85,8 +89,8 @@ class OtherSettingController extends Controller
                     'value' => false,
                     'description' => $value
                 ]);
-            } 
-            
+            }
+
         }
 
         return [
@@ -140,6 +144,10 @@ class OtherSettingController extends Controller
         ];
         if($type == 'company') $arr = [
             'logo' => 'Логотип компании',
+        ];
+
+        if(empty($arr)) $arr = [
+            'custom_'.$type => '',
         ];
 
         return $arr;

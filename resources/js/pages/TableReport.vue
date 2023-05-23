@@ -821,7 +821,6 @@ import {useYearOptions} from '../composables/yearOptions'
 import {
 	triggerApplyEmployee,
 	triggerAbsentInternship,
-	triggerFiredEmployee,
 } from '@/stores/api.js'
 
 export default {
@@ -1182,8 +1181,6 @@ export default {
 					'Content-Type': 'multipart/form-data'
 				}
 			}).then(response => {
-
-				triggerFiredEmployee(this.sidebarContent.user_id)
 
 				let v = this.items[this.sidebarContent.data.index]['_cellVariants'];
 				[this.sidebarContent.day] = `day-${this.currentDayType.type}`
