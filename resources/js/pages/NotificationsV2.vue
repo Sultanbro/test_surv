@@ -70,10 +70,10 @@
 						<b-td>
 							{{ periodNames[notification.date.frequency] }} {{ notification.date.days.join(', ') }}
 						</b-td>
-						<b-td>
-							{{ $moment(notification.created_at).format('YYYY-MM-DD') }}
+						<b-td class="wsnw">
+							{{ $moment(notification.created_at).format('DD.MM.YYYY') }}
 						</b-td>
-						<b-td>
+						<b-td class="wsnw">
 							{{ notification.creator.name }} {{ notification.creator.last_name }}
 						</b-td>
 						<b-td>
