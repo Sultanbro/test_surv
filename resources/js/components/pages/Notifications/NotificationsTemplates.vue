@@ -6,7 +6,14 @@
 		class="NotificationsTemplates"
 	>
 		<template #header>
+			<div
+				v-if="value.id"
+				class="ui-sidebar__header-text"
+			>
+				{{ templates.find(tpl => tpl.value === template).text }}
+			</div>
 			<b-form-select
+				v-else
 				v-model="template"
 				:options="templates"
 			/>
