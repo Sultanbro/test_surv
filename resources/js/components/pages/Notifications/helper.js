@@ -1,7 +1,8 @@
 export const services = [
 	{
 		value: 'in-app',
-		title: 'Отправить уведомление в личный кабинет'
+		title: 'Отправить уведомление в личный кабинет',
+		short: 'Личный кабинет',
 	},
 	// {
 	// 	value: 'mail',
@@ -9,7 +10,8 @@ export const services = [
 	// },
 	// {
 	// 	value: 'sms',
-	// 	title: 'Отправить смс'
+	// 	title: 'Отправить смс',
+	// 	short: 'sms',
 	// },
 	// {
 	// 	value: 'telegram',
@@ -17,12 +19,13 @@ export const services = [
 	// },
 	{
 		value: 'whatsapp',
-		title: 'Отправить сообщение в вацап'
+		title: 'Отправить сообщение в вацап',
+		short: 'Whatsapp',
 	},
-	{
-		value: 'bitrix',
-		title: 'Отправить сообщение в битрикс'
-	},
+	// {
+	// 	value: 'bitrix',
+	// 	title: 'Отправить сообщение в битрикс'
+	// },
 ]
 
 
