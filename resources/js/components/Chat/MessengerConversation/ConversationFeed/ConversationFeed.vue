@@ -429,8 +429,9 @@ export default {
 }
 
 .messenger__messages-container {
-	padding: 0 5px 5px;
 	flex: 1;
+	max-width: 100%;
+	padding: 0 5px 5px;
 }
 
 

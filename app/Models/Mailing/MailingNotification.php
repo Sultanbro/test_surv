@@ -34,7 +34,8 @@ class MailingNotification extends Model
         'frequency',
         'status',
         'created_by',
-        'is_template'
+        'is_template',
+        'count'
     ];
 
     const WEEKLY = 'weekly';

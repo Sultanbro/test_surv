@@ -102,8 +102,10 @@ class Messenger {
 
         if ( $chat->private ) {
             // get second user in private chat
-            $users =  $chat->users;
-            $second_user = $users->count() >= 2 ? $users->firstWhere( 'id', '!=', $user->id ) : $users->firstWhere( 'id', '=', $user->id );
+            $users =  $chat->recipients;
+
+            $second_user = $users->count() >= 2 ? $users->firstWhere('id', '!=', $user->id) :
+                ($users->wherePivot('is_yourself_chat', true)->exists() ? $users->firstWhere('id', '=', $user->id) : []);
 
             if ( $second_user && !$second_user->deleted_at) {
                 $chat->second_user = $second_user;
@@ -156,8 +158,7 @@ class Messenger {
     public function searchUsers( string $name, int $limit = 100 ): Collection {
         return User::query()
                    ->whereNull( 'deleted_at' )
-                   ->where( 'name', 'like', "%$name%" )
-                   ->orWhere( 'last_name', 'like', "%$name%" )
+                   ->where(fn($query) => $query->where('name', 'like', "%$name%")->orWhere( 'last_name', 'like', "%$name%" ))
                    ->limit( $limit )
                    ->get()->map(function($item) { 
                     $item->image = 'https://'.\request()->getHost().'/users_img/' . $item->img_url;   
@@ -245,14 +246,21 @@ class Messenger {
 
         // get chat when has user userId
         $chat = MessengerChat::query()
-                             ->where( 'private', true )
-                             ->withWhereHas( 'members', function (  $query ) use ( $userId ) {
-                                 $query->where( 'user_id', $userId );
-                             } )
-                             ->withWhereHas( 'members', function (  $query ) use ( $otherUserId ) {
-                                 $query->where( 'user_id', $otherUserId );
-                             } )->orderBy('id', 'desc')
-                             ->first();
+            ->where( 'private', true )
+            ->when($userId != $otherUserId, function ($query) use ($userId, $otherUserId) {
+                $query->withWhereHas( 'members', function (  $query ) use ( $userId ) {
+                    $query->where( 'user_id', $userId );
+                } )
+                    ->withWhereHas( 'members', function (  $query ) use ( $otherUserId ) {
+                        $query->where( 'user_id', $otherUserId );
+                    } );
+            })
+            ->when($userId == $otherUserId, function ($query) use ($userId) {
+                $query->withWhereHas( 'members', function (  $query ) use ( $userId ) {
+                    $query->where( 'user_id', $userId )->where('is_yourself_chat', true);
+                } );
+            })
+            ->first();
 
         if ( $chat ) {
             return $chat;
@@ -269,12 +277,10 @@ class Messenger {
 
         // attach each user
 
-        if ($userId == $otherUserId)
+        $chat->members()->attach( $userId, [ 'is_admin' => true , 'is_yourself_chat' => $userId == $otherUserId] );
+
+        if ($userId != $otherUserId)
         {
-            $chat->members()->attach( $userId, [ 'is_admin' => true ] );
-        } else
-        {
-            $chat->members()->attach( $userId, [ 'is_admin' => true ] );
             $chat->members()->attach( $otherUserId, [ 'is_admin' => true ] );
         }
 

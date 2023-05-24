@@ -50,10 +50,11 @@ final class GetUserService
     {
         $group = $this->profileGroupRepository->getGroup($id);
 
-        $users = collect((new UserService)->getUsers($id, date('Y-m-d')))->map(function ($user) {
+        $users = collect((new UserService)->getActualUsers($id, date('Y-m-d')))->map(function ($user) {
             $user->email = "$user->last_name $user->name $user->email";
             return $user;
         });
+
         $books = $this->profileGroupRepository->knowBasesBook($id);
         $corpBooks = $this->knowBaseRepository->getCorpBooks($books);
 

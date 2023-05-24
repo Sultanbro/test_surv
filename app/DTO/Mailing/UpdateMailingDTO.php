@@ -11,19 +11,23 @@ final class UpdateMailingDTO extends BaseDTO
      * @param int $id
      * @param ?string $name
      * @param ?string $title
+     * @param array|null $recipients
      * @param ?array $date
      * @param ?array<string> $typeOfMailing
      * @param ?bool $isTemplate
      * @param bool|null $status
+     * @param int $count
      */
     public function __construct(
         public int $id,
         public ?string $name,
         public ?string $title,
+        public ?array $recipients,
         public ?array $date,
         public ?array $typeOfMailing,
         public ?bool $isTemplate,
-        public ?bool $status
+        public ?bool $status,
+        public int $count
     )
     {}
 
@@ -35,10 +39,12 @@ final class UpdateMailingDTO extends BaseDTO
         return [
             'name'       => $this->name,
             'title'      => $this->title,
+            'recipients' => $this->recipients,
             'days'       => $this->date,
             'type_of_mailing' => $this->typeOfMailing,
             'is_template' => $this->isTemplate,
-            'status'    => $this->status
+            'status'    => $this->status,
+            'count'     => $this->count
         ];
     }
 }

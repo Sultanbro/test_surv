@@ -14,6 +14,7 @@ final class CreateMailingDTO extends BaseDTO
      * @param array $date
      * @param array<string> $typeOfMailing
      * @param ?bool $isTemplate
+     * @param int $count
      */
     public function __construct(
         public string $name,
@@ -21,7 +22,8 @@ final class CreateMailingDTO extends BaseDTO
         public array $recipients,
         public array $date,
         public array $typeOfMailing,
-        public ?bool $isTemplate
+        public ?bool $isTemplate,
+        public int $count
     )
     {}
 
@@ -36,7 +38,8 @@ final class CreateMailingDTO extends BaseDTO
             'recipients' => $this->recipients,
             'days'       => $this->date,
             'type_of_mailing' => $this->typeOfMailing,
-            'is_template' => $this->isTemplate
+            'is_template' => $this->isTemplate,
+            'count'      => $this->count
         ];
     }
 }

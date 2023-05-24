@@ -49,6 +49,7 @@ class TriggerController extends Controller
      * @param int $userId
      * @param FiredEmployeeService $service
      * @return JsonResponse
+     * @throws Throwable
      */
     public function firedEmployee(int $userId, FiredEmployeeService $service): JsonResponse
     {

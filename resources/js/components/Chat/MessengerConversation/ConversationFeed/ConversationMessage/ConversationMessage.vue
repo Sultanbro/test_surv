@@ -16,6 +16,7 @@
 			:title="`${message.sender.name} ${message.sender.last_name}`"
 			:image="'/users_img/' + message.sender.img_url"
 			:size="50"
+			class="ConversationMessage-avatar"
 		/>
 		<div class="messenger__message-container">
 			<div :class="messageCardClass">
@@ -406,6 +407,9 @@ $ConversationMessage-radius: 18px;
 			}
 		}
 	}
+	&-avatar{
+		flex: 0 0 auto;
+	}
 	&-name{
 		margin-bottom: 8px;
 
@@ -673,6 +677,9 @@ audio {
 				display: none !important;
 			}
 		}
+	}
+	.messenger__message-card{
+		max-width: 100%;
 	}
 	.messenger__message-box-right{
 		margin-right: 0;

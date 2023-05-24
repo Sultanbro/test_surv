@@ -2,13 +2,13 @@
 
 namespace App\Http\Requests\WorkChart;
 
+use App\Models\WorkChart\WorkChartModel;
 use Illuminate\Foundation\Http\FormRequest;
-use Illuminate\Support\Arr;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 
 abstract class BaseWorkChartRequest extends FormRequest
 { 
-    private static int $MAX_CHART_DAYS = 7;
+    private static int $MAX_CHART_DAYS_USUAL = 7;
 
     /**
      * Get the validated data from the request.
@@ -18,19 +18,29 @@ abstract class BaseWorkChartRequest extends FormRequest
      * @return mixed
      */
     public function validated($key = null, $default = null) {
-        $validated = parent::validated($key, $default);
+        return parent::validated($key, $default);
+    }
 
-        $chartWorkdays  = (int) Arr::get($validated, 'chart_workdays');
-        $chartDayoffs  = (int) Arr::get($validated, 'chart_dayoffs');
 
-        if (!$chartWorkdays || !$chartDayoffs) {
-            return $validated;
+    protected function getUsualScheduleRule()
+    {
+        return $this->input('work_charts_type') == WorkChartModel::WORK_CHART_TYPE_USUAL ? 'required|string|max:7' : 'nullable';
+    }
+
+    protected function getChartWorkdaysRule()
+    {
+        return $this->input('work_charts_type') == WorkChartModel::WORK_CHART_TYPE_REPLACEABLE ? 'required' : 'nullable';
+    }
+
+    protected function getChartDayoffsRule()
+    {
+        return $this->input('work_charts_type') == WorkChartModel::WORK_CHART_TYPE_REPLACEABLE ? 'required' : 'nullable';
+    }
+
+    protected function getWorkChartTypeRule(){
+        if ($this->input('chart_workdays') + $this->input('chart_dayoffs') > WorkChartModel::MAX_CHART_DAYS_REPLACEABLE){
+            throw new BadRequestHttpException('Количество не может быть больше ' . WorkChartModel::MAX_CHART_DAYS_REPLACEABLE . ' дней');
         }
-
-        if ($chartWorkdays + $chartDayoffs > self::$MAX_CHART_DAYS) {
-            throw new BadRequestHttpException('max chart days sum is '. self::$MAX_CHART_DAYS);
-        }
-
-        return $validated;
+        return 'integer|exists:work_chart_type_rbs,id|in:1,2';
     }
 }

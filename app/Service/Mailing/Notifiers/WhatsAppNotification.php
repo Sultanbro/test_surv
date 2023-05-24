@@ -17,6 +17,7 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Str;
+use stdClass;
 
 class WhatsAppNotification implements Notification
 {
@@ -51,13 +52,13 @@ class WhatsAppNotification implements Notification
     }
 
     /**
-     * @param User $user
+     * @param User|stdClass $user
      * @param string $message
      * @return void
-     * @throws Exception
+     * @throws HttpClientException
      */
     private function sendNotification(
-        User $user,
+        User|stdClass $user,
         string $message
     ): void
     {
