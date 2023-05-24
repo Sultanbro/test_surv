@@ -3,7 +3,7 @@
 		v-if="groups"
 		class="quality quality-page TableQuality"
 	>
-		<div class="row my-5">
+		<div class="row">
 			<div
 				class="col-3"
 				v-if="individual_request"
@@ -92,7 +92,7 @@
 					:key="1"
 					card
 				>
-					<div class="pt-5">
+					<div>
 						<b-tabs
 							type="card"
 							v-if="dataLoaded"
@@ -103,7 +103,7 @@
 								:key="1"
 								card
 							>
-								<div class="table-responsive table-container mt-5">
+								<div class="table-responsive table-container mt-4">
 									<table class="table table-bordered custom-table-quality">
 										<thead>
 											<tr>
@@ -171,7 +171,7 @@
 								:key="2"
 								card
 							>
-								<div class="table-responsive table-container mt-5">
+								<div class="table-responsive table-container mt-4">
 									<table class="table table-bordered custom-table-quality">
 										<thead>
 											<tr>
@@ -229,8 +229,8 @@
 								key="3"
 								card
 							>
-								<div class="row mt-5">
-									<div class="col-6 col-md-3 mb-5">
+								<div class="row mt-4">
+									<div class="col-6 col-md-3 mb-4">
 										<select
 											class="form-control"
 											v-model="filters.currentEmployee"
@@ -248,7 +248,7 @@
 											</option>
 										</select>
 									</div>
-									<div class="col-2 col-md-1 d-flex align-items-center mb-5">
+									<div class="col-2 col-md-1 d-flex align-items-center mb-4">
 										<select
 											class="form-control"
 											v-model="currentDay"
@@ -266,7 +266,7 @@
 											</option>
 										</select>
 									</div>
-									<div class="col-4 col-md-8 d-flex align-items-center gap-5 mb-5">
+									<div class="col-4 col-md-8 d-flex align-items-center gap-5 mb-4">
 										<JobtronButton
 											@click="addRecord"
 										>
@@ -285,7 +285,7 @@
 											<i class="far fa-file-excel" /> Экспорт
 										</JobtronButton>
 									</div>
-									<div class="col-12 col-md-12 d-flex mb-5 gap-5">
+									<div class="col-12 col-md-12 d-flex mb-4 gap-5">
 										<p class="mb-0">
 											Найдено записей: <b class="bluish">{{ records.total }}</b>
 										</p>
@@ -483,7 +483,7 @@
 										</template>
 									</JobtronTable>
 								</div>
-								<div class="mt-5">
+								<div class="mt-4">
 									<!-- <pagination
 										:data="records"
 										@pagination-change-page="getResults"
