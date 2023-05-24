@@ -61,7 +61,7 @@
 				</JobtronButton>
 			</div>
 			<div
-				v-if="hasSettingsPermisstion && !tabIndex"
+				v-if="hasSettingsPermisstion && tabIndex === 0"
 				class="col-2 text-right"
 			>
 				<JobtronButton
@@ -691,15 +691,15 @@
 		</b-modal>
 
 
-
-		<b-modal
-			v-model="showSettings"
+		<!-- Настройки -->
+		<Sidebar
 			title="Настройки"
-			:width="400"
-			hide-footer
+			:open="showSettings"
+			@close="showSettings = false"
+			width="50%"
 		>
-			<div class="row">
-				<div class="col-12 d-flex mb-3">
+			<div class="row pr-4">
+				<div class="col-4 d-flex mb-3">
 					<div class="fl">
 						Источник оценок
 						<i
@@ -708,6 +708,8 @@
 							title="Оценки контроля качества"
 						/>
 					</div>
+				</div>
+				<div class="col-8 d-flex mb-3">
 					<div class="fl d-flex ml-3">
 						<b-form-radio
 							v-model="can_add_records"
@@ -728,11 +730,11 @@
 				</div>
 
 				<div
-					class="col-12"
 					v-if="!can_add_records"
+					class="col-12"
 				>
-					<div class="bg mb-2">
-						<div class="fl">
+					<div class="row mb-4">
+						<div class="col-4">
 							ID диалера
 							<i
 								class="fa fa-info-circle ml-2"
@@ -740,13 +742,20 @@
 								title="Диалер в U-Calls"
 							/>
 						</div>
-						<div class="fl d-flex mt-1 gap-3">
+						<div class="col-8">
 							<input
 								type="text"
 								v-model="dialer_id"
 								placeholder="ID"
 								class="form-control form-control-sm"
 							>
+						</div>
+					</div>
+					<div class="row mb-4">
+						<div class="col-4">
+							ID скрипта
+						</div>
+						<div class="col-8">
 							<input
 								type="number"
 								v-model="script_id"
@@ -758,27 +767,30 @@
 				</div>
 
 				<div
-					class="col-12"
 					v-if="can_add_records"
+					class="col-12"
 				>
-					<div class="row">
-						<div
-							class="col-12 d-flex mb-1"
-							v-for="crit in params"
-							:key="crit.name"
-						>
+					<div
+						v-for="crit in params"
+						:key="crit.name"
+						class="row"
+					>
+						<div class="col-4 d-flex mb-3">
 							<b-form-checkbox
 								v-model="crit.active"
 								:value="1"
 								:unchecked-value="0"
 							/>
+						</div>
+						<div class="col-8 mb-3">
 							<input
 								type="text"
 								v-model="crit.name"
 								class="form-control form-control-sm"
 							>
 						</div>
-
+					</div>
+					<div class="row">
 						<div class="col-12">
 							<button
 								class="btn btn-sm btn-default rounded"
@@ -791,7 +803,11 @@
 					</div>
 				</div>
 
-				<div class="col-12 mt-3">
+				<div class="col-12">
+					<hr class="mb-4">
+				</div>
+
+				<div class="col-12">
 					<button
 						class="btn btn-sm btn-primary rounded"
 						@click="saveSettings"
@@ -800,7 +816,9 @@
 					</button>
 				</div>
 			</div>
-		</b-modal>
+		</Sidebar>
+
+		<!-- Чеклист -->
 		<Sidebar
 			title="Индивидуальный чек лист"
 			:open="showChecklist"
@@ -985,7 +1003,7 @@ export default {
 			return useYearOptions(new Date(this.portal.created_at).getFullYear())
 		},
 		hasSettingsPermisstion(){
-			return this.auth_user.is_admin === 1;
+			return this.user.is_admin === 1;
 		},
 		recordFieldsFull(){
 			return [
