@@ -52,7 +52,7 @@ export const templateSettings = {
 		recipients: [],
 		title: 'Уважаемый коллега! Какими бы ни были причины расставания, мы благодарим Вас за время, силы, знания и энергию, которые Вы отдали для успешной работы и развития нашей организации, и просим заполнить эту небольшую анкету.',
 		titleFixed: '',
-		titleTip: '* дополнительно укажите тут коротку ссылку на имеющийся у вас опросник',
+		titleTip: '* к уведомлению будет автоматически прикреплена ссылка на опросник',
 		when: [
 			{
 				value: 'fired_employee',
@@ -77,8 +77,8 @@ export const templateSettings = {
 		targets: 'Все сотрудники отделов',
 		recipients: [],
 		title: 'Оцените работу Вашего руководителя и старшего специалиста за текущий месяц.',
-		titleFixed: '"Ссылка на опрос"',
-		titleTip: '',
+		titleFixed: '',
+		titleTip: '* к уведомлению будет автоматически прикреплена ссылка на опросник',
 		when: [
 			{
 				value: 'manager_assessment',
@@ -90,8 +90,8 @@ export const templateSettings = {
 		targets: 'Стажеры первого дня',
 		recipients: [],
 		title: 'Добрый день!\nПройдите небольшой опрос, чтобы оценить Вашего тренера.\nБыстро. Анонимно. Для Дела.',
-		titleFixed: '"Ссылка на опрос"',
-		titleTip: '',
+		titleFixed: '',
+		titleTip: '* к уведомлению будет автоматически прикреплена ссылка на опросник',
 		when: [
 			{
 				value: 'coach_assessment',
@@ -133,7 +133,7 @@ if(location.hostname.split('.')[0] === 'bp') templates.push(
 export const periods = [
 	{
 		value: 'daily',
-		text: 'Каждый жень'
+		text: 'Каждый день'
 	},
 	{
 		value: 'weekly',

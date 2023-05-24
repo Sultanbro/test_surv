@@ -2,7 +2,7 @@
 	<div class="AccessSelectList">
 		<AccessSelectListItem
 			v-for="item in items"
-			:key="item.id"
+			:key="(type ? type : item.type) + '' + item.id"
 			:item="item"
 			:type="type ? type : item.type"
 			:position="type ? position : item.type === 1"
@@ -50,7 +50,7 @@ export default {
 	computed: {
 		lowerSearch(){
 			return this.search.toLowerCase()
-		}
+		},
 	},
 	methods: {
 		checked(item, type) {

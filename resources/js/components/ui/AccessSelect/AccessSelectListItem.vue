@@ -39,7 +39,7 @@
 		<label class="AccessSelectListItem-checkbox">
 			<input
 				type="checkbox"
-				:checked="checked ? 'checked' : ''"
+				:checked="checked"
 				class="AccessSelectListItem-input"
 				@click="$emit('change', {
 					id: item.id,
