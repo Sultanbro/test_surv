@@ -710,7 +710,7 @@
 					</div>
 				</div>
 				<div class="col-8 d-flex mb-3">
-					<div class="fl d-flex ml-3">
+					<div class="fl d-flex">
 						<b-form-radio
 							v-model="can_add_records"
 							name="some-radios"
@@ -790,7 +790,7 @@
 							>
 						</div>
 					</div>
-					<div class="row">
+					<div class="row mb-3">
 						<div class="col-12">
 							<button
 								class="btn btn-sm btn-default rounded"
@@ -804,16 +804,26 @@
 				</div>
 
 				<div class="col-12">
-					<hr class="mb-4">
+					<div class="row mb-3">
+						<div class="col-4">
+							Показывать советы в&nbsp;уведомлениях?
+						</div>
+						<div class="col-8">
+							<JobtronSwitch
+								v-model="sendNotifications"
+							/>
+						</div>
+					</div>
 				</div>
 
 				<div class="col-12">
-					<button
-						class="btn btn-sm btn-primary rounded"
-						@click="saveSettings"
-					>
+					<hr class="mb-4 mt-0">
+				</div>
+
+				<div class="col-12">
+					<JobtronButton @click="saveSettings">
 						Сохранить
-					</button>
+					</JobtronButton>
 				</div>
 			</div>
 		</Sidebar>
@@ -875,6 +885,13 @@ import CourseResults from '@/pages/CourseResults' // результаты по �
 import { useYearOptions } from '../../composables/yearOptions'
 import JobtronButton from '@ui/Button'
 import JobtronTable from '@ui/Table'
+import JobtronSwitch from '@ui/Switch'
+
+import {
+	fetchSettings,
+	updateSettings,
+} from '@/stores/api.js'
+
 // import Template from "../../../../public/static/partner/templates/template.html";
 export default {
 	name: 'TableQuality',
@@ -883,6 +900,7 @@ export default {
 		CourseResults,
 		JobtronButton,
 		JobtronTable,
+		JobtronSwitch,
 	},
 	props: {
 		groups: Array,
@@ -894,14 +912,11 @@ export default {
 		},
 		active_group: String,
 		check: String,
-		user: {
-			type: Object,
-			default: () => ({})
-		}
 	},
 	data() {
 		const now = new Date()
 		return {
+			sendNotifications: false,
 			auth_user: this.user,
 			currentGroup: this.active_group,
 			showChecklist: false,
@@ -1041,10 +1056,12 @@ export default {
 	},
 	methods: {
 		init(){
-			this.$nextTick(() => {
+			this.$nextTick(async () => {
 				this.currentGroup = this.active_group
 				this.auth_user = this.user
 				this.fetchData()
+				const {settings} = await fetchSettings('okk_send_notifications')
+				this.sendNotifications = settings.custom_okk_send_notifications === '1'
 			})
 		},
 		saveChecklist(){
@@ -1135,31 +1152,28 @@ export default {
 			});
 		},
 
-		saveSettings() {
-			let loader = this.$loading.show();
-
-			// if (this.individual_type != null  &&  this.individual_type_id != null) {
-			//
-			// }
-
-			this.axios
-				.post('/timetracking/quality-control/crits/save', {
+		async saveSettings() {
+			let loader = this.$loading.show()
+			try{
+				await this.axios.post('/timetracking/quality-control/crits/save', {
 					crits: this.params,
 					can_add_records: this.can_add_records,
 					script_id: this.script_id,
 					dialer_id: this.dialer_id,
 					group_id: this.currentGroup,
 				})
-				.then(() => {
-					this.$toast.success('Сохранено!!');
-					this.showSettings = false;
-					this.fetchData();
-					loader.hide();
+				await updateSettings({
+					type: 'okk_send_notifications',
+					custom_okk_send_notifications: this.sendNotifications,
 				})
-				.catch(function (e) {
-					loader.hide();
-					alert(e);
-				});
+				this.$toast.success('Сохранено!!');
+				this.showSettings = false;
+				this.fetchData();
+			}
+			catch(e){
+				alert(e);
+			}
+			loader.hide()
 		},
 
 		fetchItems($url = '/timetracking/quality-control/records') {
@@ -1328,6 +1342,7 @@ export default {
 				dayOfDelay: record.dayOfDelay,
 				date: record.date,
 				param_values: record.param_values,
+				is_send_notification: this.sendNotifications,
 			};
 
 			// this.params.forEach((param, key) => {
