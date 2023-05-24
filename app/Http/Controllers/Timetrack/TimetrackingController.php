@@ -280,6 +280,15 @@ class TimetrackingController extends Controller
     {
         $userClickedStart = $request->has('start');
 
+        $user = Auth::user();
+        $check_workdays = $user->checkWorkdaysForStartTracking();
+
+        if(!$check_workdays) {              // если сегодня не рабочий день, то не реагирует на нажатие и выйдет уведомления о том что сегодня выходной
+            return response()->json([
+                'status' => false
+            ]);
+        }
+
         $status = $userClickedStart
             ? $this->startDay()
             : $this->endDay();

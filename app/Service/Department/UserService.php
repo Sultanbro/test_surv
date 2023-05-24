@@ -51,6 +51,36 @@ class UserService
     }
 
     /**
+     * Все пользователи отдела который работает в настоящий время.
+     * @param int $groupId
+     * @param string $date
+     * @return array
+     */
+    public function getActualUsers(int $groupId, string $date): array
+    {
+        $groups = $this->getGroups($groupId);
+
+        $data = [];
+        foreach ($groups as $group)
+        {
+            $groupUser = GroupUser::withTrashed()
+                ->select('user_id')
+                ->where('group_id','=',$group->id)
+                ->where(fn ($query) => $query->whereYear('from','<=', $this->getYear($date))->orWhereMonth('from','<=',$this->getMonth($date)))
+                ->where(fn ($query) => $query->whereNull('to')->orWhere(
+                    fn ($query) => $query->whereYear('to','<=',$this->getYear($date))->whereMonth('to','>',$this->getMonth($date)))
+                )
+                ->where("status", "active")
+                ->groupBy(['user_id'])
+                ->havingRaw('count(user_id) >= ?',[1]);
+
+            $data = $this->getGroupUsers($groupUser->get(), $date);
+        }
+
+        return $data;
+    }
+
+    /**
      * Все сотрудники из отдела.
      * @param int $groupId
      * @param string $date

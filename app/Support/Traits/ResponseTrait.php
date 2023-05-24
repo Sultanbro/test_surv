@@ -15,9 +15,10 @@ trait ResponseTrait
      * @param int $code
      * @return JsonResponse
      */
-    public function response(string $message, mixed $data = '', int $code = Response::HTTP_OK): JsonResponse
+    public function response(string $message, mixed $data = '', int $code = Response::HTTP_OK, $status = true): JsonResponse
     {
         return response()->json([
+            'status' => $status,
             'message'       =>  $message,
             'data'          =>  $data,
         ], $code);
@@ -28,9 +29,10 @@ trait ResponseTrait
      * @param int $code
      * @return JsonResponse
      */
-    public function jsonApiErrorResponse(array $errors, int $code = Response::HTTP_BAD_REQUEST): JsonResponse
+    public function jsonApiErrorResponse(array $errors, int $code = Response::HTTP_BAD_REQUEST, $status = false): JsonResponse
     {
         return response()->json([
+            'status' => $status,
             'errors'    =>  $errors,
         ], $code);
     }
@@ -43,6 +45,7 @@ trait ResponseTrait
     public function defaultErrorResponse(string $message, int $code = Response::HTTP_BAD_REQUEST): JsonResponse
     {
         return response()->json([
+            'status' => false,
             'message' => $message,
             'data' => [],
         ], $code);
