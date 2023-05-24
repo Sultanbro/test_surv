@@ -22,6 +22,10 @@ export const useProfileCoursesStore = defineStore('profileCourses', {
 		async fetchCourses(/* progress = false */){
 			if(this.isLoading) return
 			this.isLoading = true
+			if(this.hasLocal()){
+				this.loadLocal()
+				this.isReady = true
+			}
 			try{
 				const data = await fetchProfileCourses(false)
 				this.courses = data
@@ -29,6 +33,7 @@ export const useProfileCoursesStore = defineStore('profileCourses', {
 				data2?.forEach(course => {
 					this.results[course.id] = course.course_results
 				});
+				this.saveLocal()
 				this.isReady = true
 			}
 			catch(error){
@@ -48,6 +53,55 @@ export const useProfileCoursesStore = defineStore('profileCourses', {
 				console.error(error)
 			}
 			delete this.isLoadingCourse[id]
-		}
+		},
+		hasLocal(){
+			return !!localStorage.getItem('profileCourses')
+		},
+		loadLocal(){
+			let json = localStorage.getItem('profileCourses')
+			if(!json){
+				json = JSON.stringify({
+					courses: [],
+					courseInfo: {},
+					results: {},
+				})
+				localStorage.setItem('profileCourses', json)
+			}
+			const local = JSON.parse(json)
+			this.courses = local.courses
+			this.courseInfo = local.courseInfo
+			this.results = local.results
+		},
+		saveLocal(){
+			localStorage.setItem('profileCourses', JSON.stringify({
+				courses: this.courses.map(course => {
+					return {
+						id: course.id,
+						img: course.img,
+						name: course.name,
+					}
+				}),
+				courseInfo: Object.keys(this.courseInfo).reduce((info, key) => {
+					info[key] = {
+						progress: this.courseInfo[key].progress,
+						items: this.courseInfo[key].items.map(item => ({
+							status: item.status,
+							item_model: item.item_model,
+							completed_stages: item.completed_stages,
+							all_stages: item.all_stages,
+							title: item.title,
+						})),
+					}
+					return info
+				}, {}),
+				results: Object.keys(this.results).reduce((results, key) => {
+					if(!this.results[key][0]) return results
+					results[key] = [{
+						is_regressed: this.results[key][0].is_regressed
+					}]
+					return results
+				}, {}),
+			}))
+		},
 	}
 })
