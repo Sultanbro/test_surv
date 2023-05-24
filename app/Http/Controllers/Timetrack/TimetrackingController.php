@@ -388,66 +388,9 @@ class TimetrackingController extends Controller
     {
         $user = auth()->user();
 
-        // count bonuses
-        $bonuses = Salary::where('user_id', $user->id)
-            ->whereYear('date',  date('Y'))
-            ->whereMonth('date', date('m'))
-            ->where(function($query) {
-                $query->where('award', '!=', 0)
-                    ->orWhere('bonus', '!=', 0);
-            })
-            ->orderBy('id','desc')
-            ->get();
-
-        $bonus = $bonuses->sum('bonus');
-        $bonus += ObtainedBonus::onMonth($user->id, date('Y-m-d'));
-        $bonus += TestBonus::where('user_id', $user->id)
-            ->whereYear('date', date('Y'))
-            ->whereMonth('date', date('m'))
-            ->get()
-            ->sum('amount');
-
-        $editedBonus = EditedBonus::where('user_id', $user->id)
-                ->whereYear('date',  date('Y'))
-                ->whereMonth('date',  date('m'))
-                ->first();
-        $bonus = $editedBonus ? $editedBonus->amount : $bonus;
-
-        // count kpi
-        $editedKpi = EditedKpi::where('user_id', $user->id)
-            ->whereYear('date', date('Y'))
-            ->whereMonth('date', date('m'))
-            ->first();
-
-        if($editedKpi) {
-            $kpi = $editedKpi->amount;
-        } else {
-            // @TODO here should be SavedKpi::class
-            $kpi = Kpi::userKpi($user->id);
-        }
-
-        // заработано по окладу за вычетом штрафов и авансов
-        $salary = $user->getCurrentSalary();
-        $salaryByCurrency = $user->getTotalByCurrency($salary);
-
-        // currency
-        $currency_rate = in_array($user->currency, array_keys(Currency::rates()))
-            ? (float)Currency::rates()[$user->currency]
-            : 0.0000001;
-
-        // balance
-        $balance = $user->getTotalByCurrency(($salary + $kpi + $bonus));
-        $total_earned = number_format(round($balance), 0, '.', '\'') . ' ' . strtoupper($user->currency);
-
         return response()->json([
             'status'    => $user->timetracking()->running()->first() ? 'started' : 'stopped',
-            'groupsall' => $user->headInGroups(),
-            'orders'    => [],
-            'zarplata'  => number_format((float)$salaryByCurrency, 0, '.', '\''). ' ' . strtoupper($user->currency),
-            'bonus'     => number_format(round((float)$bonus * $currency_rate), 0, '.', '\'') . ' ' . strtoupper($user->currency),
-            'total_earned' => $total_earned,
             'balance'   => [
-                'sum' => number_format(round($balance, 2), 0, '.', ','),
                 'currency' => strtoupper($user->currency),
             ],
             'corp_book' => $user->getCorpbook()
