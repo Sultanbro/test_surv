@@ -210,7 +210,7 @@
 								class="mode_changer"
 							>
 								<i
-									class="fa fa-cog"
+									class="icon-nd-settings"
 									@click="get_settings()"
 								/>
 							</div>

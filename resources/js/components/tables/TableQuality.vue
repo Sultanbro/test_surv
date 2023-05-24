@@ -3,7 +3,7 @@
 		v-if="groups"
 		class="quality quality-page TableQuality"
 	>
-		<div class="row my-5">
+		<div class="row">
 			<div
 				class="col-3"
 				v-if="individual_request"
@@ -61,16 +61,16 @@
 				</JobtronButton>
 			</div>
 			<div
-				v-if="hasSettingsPermisstion"
+				v-if="hasSettingsPermisstion && tabIndex === 0"
 				class="col-2 text-right"
 			>
 				<JobtronButton
 					small
+					secondary
 					class="ml-a"
 					@click="showSettings = true"
 				>
-					<i class="fa fa-cogs mr-2" />
-					Настройки
+					<i class="icon-nd-settings" />
 				</JobtronButton>
 			</div>
 		</div>
@@ -82,6 +82,7 @@
 		<!--    </h4>-->
 		<div v-if="this.hasPermission">
 			<b-tabs
+				v-model="tabIndex"
 				type="card"
 				class="mt-4"
 				:default-active-key="3"
@@ -91,7 +92,7 @@
 					:key="1"
 					card
 				>
-					<div class="pt-5">
+					<div>
 						<b-tabs
 							type="card"
 							v-if="dataLoaded"
@@ -102,7 +103,7 @@
 								:key="1"
 								card
 							>
-								<div class="table-responsive table-container mt-5">
+								<div class="table-responsive table-container mt-4">
 									<table class="table table-bordered custom-table-quality">
 										<thead>
 											<tr>
@@ -170,7 +171,7 @@
 								:key="2"
 								card
 							>
-								<div class="table-responsive table-container mt-5">
+								<div class="table-responsive table-container mt-4">
 									<table class="table table-bordered custom-table-quality">
 										<thead>
 											<tr>
@@ -228,8 +229,8 @@
 								key="3"
 								card
 							>
-								<div class="row mt-5">
-									<div class="col-6 col-md-3 mb-5">
+								<div class="row mt-4">
+									<div class="col-6 col-md-3 mb-4">
 										<select
 											class="form-control"
 											v-model="filters.currentEmployee"
@@ -247,7 +248,7 @@
 											</option>
 										</select>
 									</div>
-									<div class="col-2 col-md-1 d-flex align-items-center mb-5">
+									<div class="col-2 col-md-1 d-flex align-items-center mb-4">
 										<select
 											class="form-control"
 											v-model="currentDay"
@@ -265,7 +266,7 @@
 											</option>
 										</select>
 									</div>
-									<div class="col-4 col-md-8 d-flex align-items-center gap-5 mb-5">
+									<div class="col-4 col-md-8 d-flex align-items-center gap-5 mb-4">
 										<JobtronButton
 											@click="addRecord"
 										>
@@ -284,7 +285,7 @@
 											<i class="far fa-file-excel" /> Экспорт
 										</JobtronButton>
 									</div>
-									<div class="col-12 col-md-12 d-flex mb-5 gap-5">
+									<div class="col-12 col-md-12 d-flex mb-4 gap-5">
 										<p class="mb-0">
 											Найдено записей: <b class="bluish">{{ records.total }}</b>
 										</p>
@@ -309,7 +310,7 @@
 										</p>
 									</div>
 								</div>
-								<div class="table-responsive">
+								<div class="TableQuality-dialogs table-responsive">
 									<JobtronTable
 										:fields="recordFieldsFull"
 										:items="records.data"
@@ -359,7 +360,7 @@
 												<input
 													type="text"
 													v-model="item.phone"
-													class="form-control text-center"
+													class="TableQuality-inputPhone text-center"
 													@focus="$event.target.select()"
 													@change="statusChanged(item)"
 												>
@@ -381,7 +382,7 @@
 												<input
 													type="text"
 													v-model="item.dayOfDelay"
-													class="form-control text-center"
+													class="TableQuality-inputNumber text-center"
 													@focus="$event.target.select()"
 													@change="statusChanged(item)"
 												>
@@ -397,19 +398,6 @@
 
 										<template #cell(interlocutor)="{value, item}">
 											<div
-												v-if="item.editable"
-												class="TableQuality-input"
-											>
-												<input
-													type="text"
-													v-model="item.interlocutor"
-													class="form-control text-center"
-													@focus="$event.target.select()"
-													@change="statusChanged(item)"
-												>
-											</div>
-											<div
-												v-else
 												@click="editMode(item)"
 												class="TableQuality-padding TableQuality-input"
 											>
@@ -419,21 +407,6 @@
 
 										<template #cell(date)="{value, item}">
 											<div
-												v-if="item.editable"
-												class="TableQuality-input"
-											>
-												<input
-													type="date"
-													v-model="item.date"
-													class="form-control text-center"
-													placeholder="dd-mm-yyyy"
-													min="1997-01-01"
-													max="2030-12-31"
-													@change="statusChanged(date)"
-												>
-											</div>
-											<div
-												v-else
 												@click="editMode(item)"
 												class="TableQuality-padding TableQuality-input"
 											>
@@ -453,7 +426,7 @@
 												<input
 													type="text"
 													v-model="item['param' + pk]"
-													class="form-control text-center"
+													class="TableQuality-inputNumber text-center"
 													@focus="$event.target.select()"
 													@change="changeStat(item)"
 												>
@@ -476,7 +449,7 @@
 												<textarea
 													type="text"
 													v-model="item.comments"
-													class="form-control"
+													class="TableQuality-inputComment form-control"
 													@focus="$event.target.select()"
 													@change="statusChanged(item)"
 												/>
@@ -491,26 +464,26 @@
 										</template>
 
 										<template #cell(save)="{item}">
-											<JobtronButton
-												v-if="item.editable"
-												success
-												@click="saveRecord(item)"
-											>
-												<i class="fa fa-save" />
-											</JobtronButton>
+											<div class="TableQuality-input">
+												<i
+													v-if="item.editable"
+													class="fa fa-save btn btn-success btn-icon"
+													@click="saveRecord(item)"
+												/>
+											</div>
 										</template>
 
 										<template #cell(remove)="{item, index}">
-											<JobtronButton
-												error
-												@click="deleteRecordModal(item, index)"
-											>
-												<i class="fa fa-trash" />
-											</JobtronButton>
+											<div class="TableQuality-input">
+												<i
+													class="fa fa-trash btn btn-danger btn-icon"
+													@click="deleteRecordModal(item, index)"
+												/>
+											</div>
 										</template>
 									</JobtronTable>
 								</div>
-								<div class="mt-5">
+								<div class="mt-4">
 									<!-- <pagination
 										:data="records"
 										@pagination-change-page="getResults"
@@ -718,15 +691,15 @@
 		</b-modal>
 
 
-
-		<b-modal
-			v-model="showSettings"
+		<!-- Настройки -->
+		<Sidebar
 			title="Настройки"
-			:width="400"
-			hide-footer
+			:open="showSettings"
+			@close="showSettings = false"
+			width="50%"
 		>
-			<div class="row">
-				<div class="col-12 d-flex mb-3">
+			<div class="row pr-4">
+				<div class="col-4 d-flex mb-3">
 					<div class="fl">
 						Источник оценок
 						<i
@@ -735,7 +708,9 @@
 							title="Оценки контроля качества"
 						/>
 					</div>
-					<div class="fl d-flex ml-3">
+				</div>
+				<div class="col-8 d-flex mb-3">
+					<div class="fl d-flex">
 						<b-form-radio
 							v-model="can_add_records"
 							name="some-radios"
@@ -755,11 +730,11 @@
 				</div>
 
 				<div
-					class="col-12"
 					v-if="!can_add_records"
+					class="col-12"
 				>
-					<div class="bg mb-2">
-						<div class="fl">
+					<div class="row mb-4">
+						<div class="col-4">
 							ID диалера
 							<i
 								class="fa fa-info-circle ml-2"
@@ -767,13 +742,20 @@
 								title="Диалер в U-Calls"
 							/>
 						</div>
-						<div class="fl d-flex mt-1 gap-3">
+						<div class="col-8">
 							<input
 								type="text"
 								v-model="dialer_id"
 								placeholder="ID"
 								class="form-control form-control-sm"
 							>
+						</div>
+					</div>
+					<div class="row mb-4">
+						<div class="col-4">
+							ID скрипта
+						</div>
+						<div class="col-8">
 							<input
 								type="number"
 								v-model="script_id"
@@ -785,27 +767,30 @@
 				</div>
 
 				<div
-					class="col-12"
 					v-if="can_add_records"
+					class="col-12"
 				>
-					<div class="row">
-						<div
-							class="col-12 d-flex mb-1"
-							v-for="crit in params"
-							:key="crit.name"
-						>
+					<div
+						v-for="crit in params"
+						:key="crit.name"
+						class="row"
+					>
+						<div class="col-4 d-flex mb-3">
 							<b-form-checkbox
 								v-model="crit.active"
 								:value="1"
 								:unchecked-value="0"
 							/>
+						</div>
+						<div class="col-8 mb-3">
 							<input
 								type="text"
 								v-model="crit.name"
 								class="form-control form-control-sm"
 							>
 						</div>
-
+					</div>
+					<div class="row mb-3">
 						<div class="col-12">
 							<button
 								class="btn btn-sm btn-default rounded"
@@ -818,16 +803,32 @@
 					</div>
 				</div>
 
-				<div class="col-12 mt-3">
-					<button
-						class="btn btn-sm btn-primary rounded"
-						@click="saveSettings"
-					>
+				<div class="col-12">
+					<div class="row mb-3">
+						<div class="col-4">
+							Показывать советы в&nbsp;уведомлениях?
+						</div>
+						<div class="col-8">
+							<JobtronSwitch
+								v-model="sendNotifications"
+							/>
+						</div>
+					</div>
+				</div>
+
+				<div class="col-12">
+					<hr class="mb-4 mt-0">
+				</div>
+
+				<div class="col-12">
+					<JobtronButton @click="saveSettings">
 						Сохранить
-					</button>
+					</JobtronButton>
 				</div>
 			</div>
-		</b-modal>
+		</Sidebar>
+
+		<!-- Чеклист -->
 		<Sidebar
 			title="Индивидуальный чек лист"
 			:open="showChecklist"
@@ -877,12 +878,20 @@
 
 <script>
 import { mapState } from 'pinia'
+import { mapGetters } from 'vuex'
 import { usePortalStore } from '@/stores/Portal'
 import Sidebar from '@/components/ui/Sidebar' // сайдбар table
 import CourseResults from '@/pages/CourseResults' // результаты по курсам
 import { useYearOptions } from '../../composables/yearOptions'
 import JobtronButton from '@ui/Button'
 import JobtronTable from '@ui/Table'
+import JobtronSwitch from '@ui/Switch'
+
+import {
+	fetchSettings,
+	updateSettings,
+} from '@/stores/api.js'
+
 // import Template from "../../../../public/static/partner/templates/template.html";
 export default {
 	name: 'TableQuality',
@@ -891,6 +900,7 @@ export default {
 		CourseResults,
 		JobtronButton,
 		JobtronTable,
+		JobtronSwitch,
 	},
 	props: {
 		groups: Array,
@@ -902,14 +912,11 @@ export default {
 		},
 		active_group: String,
 		check: String,
-		user: {
-			type: Object,
-			default: () => ({})
-		}
 	},
 	data() {
 		const now = new Date()
 		return {
+			sendNotifications: false,
 			auth_user: this.user,
 			currentGroup: this.active_group,
 			showChecklist: false,
@@ -1000,16 +1007,18 @@ export default {
 			selected_active: 1,
 			flagGroup: 'index',
 			checklist_tab: false,
+			tabIndex: 0,
 		}
 	},
 	computed: {
 		...mapState(usePortalStore, ['portal']),
+		...mapGetters(['user']),
 		years(){
 			if(!this.portal.created_at) return [new Date().getFullYear()]
 			return useYearOptions(new Date(this.portal.created_at).getFullYear())
 		},
 		hasSettingsPermisstion(){
-			return this.auth_user.is_admin === 1;
+			return this.user.is_admin === 1;
 		},
 		recordFieldsFull(){
 			return [
@@ -1047,10 +1056,12 @@ export default {
 	},
 	methods: {
 		init(){
-			this.$nextTick(() => {
+			this.$nextTick(async () => {
 				this.currentGroup = this.active_group
 				this.auth_user = this.user
 				this.fetchData()
+				const {settings} = await fetchSettings('okk_send_notifications')
+				this.sendNotifications = settings.custom_okk_send_notifications === '1'
 			})
 		},
 		saveChecklist(){
@@ -1141,31 +1152,28 @@ export default {
 			});
 		},
 
-		saveSettings() {
-			let loader = this.$loading.show();
-
-			// if (this.individual_type != null  &&  this.individual_type_id != null) {
-			//
-			// }
-
-			this.axios
-				.post('/timetracking/quality-control/crits/save', {
+		async saveSettings() {
+			let loader = this.$loading.show()
+			try{
+				await this.axios.post('/timetracking/quality-control/crits/save', {
 					crits: this.params,
 					can_add_records: this.can_add_records,
 					script_id: this.script_id,
 					dialer_id: this.dialer_id,
 					group_id: this.currentGroup,
 				})
-				.then(() => {
-					this.$toast.success('Сохранено!!');
-					this.showSettings = false;
-					this.fetchData();
-					loader.hide();
+				await updateSettings({
+					type: 'okk_send_notifications',
+					custom_okk_send_notifications: this.sendNotifications,
 				})
-				.catch(function (e) {
-					loader.hide();
-					alert(e);
-				});
+				this.$toast.success('Сохранено!!');
+				this.showSettings = false;
+				this.fetchData();
+			}
+			catch(e){
+				alert(e);
+			}
+			loader.hide()
 		},
 
 		fetchItems($url = '/timetracking/quality-control/records') {
@@ -1294,7 +1302,7 @@ export default {
 				name: this.user_ids[this.filters.currentEmployee],
 				segment_id: 1,
 				phone: '',
-				interlocutor: 'Клиент',
+				interlocutor: `${this.user.last_name} ${this.user.name}`,
 				dayOfDelay: 0,
 				date: this.$moment().format('YYYY-MM-DD'),
 			};
@@ -1334,6 +1342,7 @@ export default {
 				dayOfDelay: record.dayOfDelay,
 				date: record.date,
 				param_values: record.param_values,
+				is_send_notification: this.sendNotifications,
 			};
 
 			// this.params.forEach((param, key) => {
@@ -1439,7 +1448,7 @@ export default {
 
 			fieldsArray.push({
 				key: 'phone',
-				label: 'Номер',
+				label: 'Номер телефона',
 				typ: 'text',
 				order: order++,
 				tdClass: 'TableQuality-input text-center phoner',
@@ -1456,15 +1465,6 @@ export default {
 					thClass: ' text-center ',
 				});
 			}
-
-			fieldsArray.push({
-				key: 'interlocutor',
-				label: 'Собеседник',
-				type: 'text',
-				order: order++,
-				tdClass: ' text-center ',
-				thClass: ' text-center ',
-			});
 
 			fieldsArray.push({
 				key: 'date',
@@ -1502,6 +1502,15 @@ export default {
 				order: order++,
 				tdClass: ' text-center comments',
 				thClass: ' text-center comments',
+			});
+
+			fieldsArray.push({
+				key: 'interlocutor',
+				label: 'Оценил',
+				type: 'text',
+				order: order++,
+				tdClass: ' text-center ',
+				thClass: ' text-center ',
 			});
 
 			this.recordFields = fieldsArray;
@@ -1680,8 +1689,6 @@ export default {
 		},
 
 		updateWeekValue(item, key) {
-
-
 			let loader = this.$loading.show();
 
 			this.axios
@@ -1694,9 +1701,9 @@ export default {
 					group_id: this.currentGroup,
 				})
 				.then(() => {
-
-					this.$toast.success('Сохранено');
 					loader.hide();
+					this.fetchData()
+					this.$toast.success('Сохранено');
 				})
 				.catch(function (e) {
 					loader.hide();
@@ -1826,10 +1833,27 @@ export default {
 <style lang="scss">
 	.TableQuality{
 		&-input {
-			margin: -12px -15px;
+			margin: -5px;
 		}
 		&-padding{
-			padding: 12px 15px;
+			padding: 5px;
+		}
+		&-dialogs{
+			.JobtronTable-th,
+			.JobtronTable-td{
+				padding: 5px;
+			}
+		}
+		&-inputNumber{
+			width: 40px;
+			margin: 0 auto;
+		}
+		&-inputPhone{
+			width: 110px;
+			margin: 0 auto;
+		}
+		&-inputComment{
+			min-width: 100px;
 		}
 	}
 	.records-table{
@@ -1862,15 +1886,15 @@ export default {
 .quality-page.quality-page .table-container .custom-table-quality th,
 .quality-page.quality-page .table-container .custom-table-quality td{
 	&.averages{
-		background-color: #28a745;
-		color: #fff;
+		background-color: #fef2cb;
+		// color: #fff;
 	}
 	min-width: 35px;
 	padding: 0 10px !important;
 	vertical-align: middle;
 	input{
 		min-width: 35px;
-		padding: 0 10px !important;
+		// padding: 0 10px !important;
 	}
 	input::-webkit-outer-spin-button,
 	input::-webkit-inner-spin-button {
