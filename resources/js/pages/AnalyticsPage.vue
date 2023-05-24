@@ -131,10 +131,12 @@
 							@change="onTabChange"
 						>
 							<b-tab
-								title="Сводная"
 								key="1"
 								card
 							>
+								<template #title>
+									<span v-b-popover.hover.top="'таблица продаж'">Сводная</span>
+								</template>
 								<div class="mb-5 mt-4">
 									<AnalyticStat
 										:table="data.table"
@@ -160,11 +162,13 @@
 							</b-tab>
 
 							<b-tab
-								title="Подробная"
 								key="2"
 								card
 								class="position-relative"
 							>
+								<template #title>
+									<span v-b-popover.hover.top="'данные по показателям'">Подробная</span>
+								</template>
 								<div class="kakieto-knopki">
 									<button
 										class="btn btn-success rounded btn-sm"

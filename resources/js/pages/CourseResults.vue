@@ -390,7 +390,7 @@ export default {
 
 		nullify(i, c) {
 
-			if(!confirm('Вы уверены? Потом прогресс не восстановить')) {
+			if(!confirm('При обнулении курса все заработанные бонусы исчезнут и курс необходимо пройти еще раз')) {
 				return;
 			}
 
@@ -439,7 +439,7 @@ export default {
 		},
 
 		regress(user_id, course_id, courseItem){
-			if(!confirm('Вы уверены? Потом прогресс не восстановить')) return
+			if(!confirm('При обнулении курса все заработанные бонусы исчезнут и курс необходимо пройти еще раз')) return
 
 			const loader = this.$loading.show()
 

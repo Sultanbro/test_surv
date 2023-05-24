@@ -194,6 +194,11 @@
 						<div class="roles">
 							<div class="contrast role-title">
 								<b>Список ролей</b>
+								<img
+									src="/images/dist/profit-info.svg"
+									class="img-info"
+									v-b-popover.hover.bottom="'В Роли указывается что доступно для просмотра и Редактирования'"
+								>
 							</div>
 							<div class="role-body">
 								<div
@@ -234,6 +239,7 @@
 		</section>
 	</div>
 </template>
+
 <script>
 export default {
 	name: 'PagePermissions',
@@ -492,16 +498,21 @@ export default {
 </script>
 
 <style lang="scss">
-    .custom-table-permissions {
-        table-layout: fixed;
-        thead{
-            tr{
-                th,td {
-                    &:last-child{
-                        width: 100px;
-                    }
-                }
-            }
-        }
-    }
+.permissions{
+	.img-info{
+		vertical-align: middle;
+	}
+}
+.custom-table-permissions {
+	table-layout: fixed;
+	thead{
+		tr{
+			th,td {
+				&:last-child{
+					width: 100px;
+				}
+			}
+		}
+	}
+}
 </style>

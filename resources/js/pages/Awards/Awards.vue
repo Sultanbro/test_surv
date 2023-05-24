@@ -7,6 +7,11 @@
 		>
 			Создать награду
 		</BButton>
+		<img
+			src="/images/dist/profit-info.svg"
+			class="img-info"
+			v-b-popover.hover.right="'Нематериальная мотивация в виде сертификатов, грамот, отметок, которые будут доступны в профиле сотрудника'"
+		>
 
 		<!--        <BButton variant="danger" class="mb-2" @click="modalRegenerate = !modalRegenerate">Регенерация</BButton>-->
 		<!--        <b-modal hide-footer no-close-on-backdrop no-close-on-esc no-enforce-focus v-model="modalRegenerate" size="lg" centered title="Принудительно обновление всех сертификатов по курсу">-->
@@ -199,6 +204,9 @@ export default {
 
 <style lang="scss">
     #awards-page {
+			.img-info{
+				vertical-align: middle;
+			}
         #edit-award-sidebar{
             .ui-sidebar__body{
                 transform: translateX(100%);
