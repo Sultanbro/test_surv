@@ -215,9 +215,7 @@ export default {
 			this.$emit('save', this.value)
 		},
 		onClickRecipments(){
-			if(!this.value.id){
-				this.isRecipientsOpen = true
-			}
+			this.isRecipientsOpen = true
 		},
 		onSubmitAccess(value){
 			this.value.recipients = value

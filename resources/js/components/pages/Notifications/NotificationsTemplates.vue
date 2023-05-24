@@ -241,7 +241,7 @@ export default {
 			})
 		},
 		onClickRecipments(){
-			if(!this.value.id) this.isRecipientsOpen = true
+			this.isRecipientsOpen = true
 		},
 		onSubmitAccess(value){
 			this.value.recipients = value
