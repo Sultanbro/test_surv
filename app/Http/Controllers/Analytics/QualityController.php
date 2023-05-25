@@ -346,6 +346,7 @@ class QualityController extends Controller
                 'group_id' => $request->group_id
             ]);
 
+
             
             ////// total count 
             $total = 0;
@@ -365,6 +366,15 @@ class QualityController extends Controller
             $rec->total = $total;
             $rec->save();
 
+            if ($request->is_send_notification)
+            {
+                UserNotification::create([
+                    'user_id' => $request->employee_id,
+                    'about_id' => 0,
+                    'title' => 'Оценка переговоров',
+                    'message' => $request->comments.' Общая оценка: '.$total.' <div style="background-color:'.$color.';width:20px;height:20px;display: inline-block;"></div>'
+                ]);
+            }
             return response()->json([
                 'method' => 'save',
                 'id' => $rec->id,
