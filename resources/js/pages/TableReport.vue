@@ -135,6 +135,13 @@
 						:per-page="perPage"
 						:sort-compare="sortCompare"
 					>
+						<template #head(total)>
+							<img
+								src="/images/dist/profit-info.svg"
+								class="img-info"
+								v-b-popover.hover.right="'Общее количество часов по строке'"
+							>
+						</template>
 						<template #cell(name)="name">
 							<div>
 								<span v-if="activeuserpos == 46">
@@ -322,6 +329,12 @@
 												:class="'button-day_' + dateType.type"
 											>
 												{{ dateType.label }}
+												<img
+													v-if="dateType.popover"
+													src="/images/dist/profit-info.svg"
+													class="img-info"
+													v-b-popover.hover.bottom="dateType.popover"
+												>
 											</b-button>
 										</div>
 										<div class="mt-auto">
@@ -335,6 +348,11 @@
 												:class="'button-day_7'"
 											>
 												Уволить без отработки
+												<img
+													src="/images/dist/profit-info.svg"
+													class="img-info"
+													v-b-popover.hover.top="'У сотрудника сразу закроется доступ к профилю'"
+												>
 											</b-button>
 										</div>
 										<div class="mt-2">
@@ -348,6 +366,11 @@
 												:class="'button-day_7'"
 											>
 												Уволить с отработкой
+												<img
+													src="/images/dist/profit-info.svg"
+													class="img-info"
+													v-b-popover.hover.top="'Доступ к профилю закроется через 14 календарных дней'"
+												>
 											</b-button>
 										</div>
 									</div>
@@ -407,10 +430,15 @@
 								title="⚠️Штрафы"
 								v-if="!sidebarContent.data.item.is_trainee"
 							>
-								<b-form-group
-									label="Система депремирования"
-									class="fines-modal"
-								>
+								<b-form-group class="fines-modal">
+									<template #label>
+										Система депремирования
+										<img
+											src="/images/dist/profit-info.svg"
+											class="img-info"
+											v-b-popover.hover.bottom="'При активации, от окладной части будет вычитаться соответственные суммы депремирований'"
+										>
+									</template>
 									<b-form-checkbox-group
 										v-model="sidebarContent.fines"
 										name="flavour-2a"
@@ -896,32 +924,37 @@ export default {
 			dateTypes: [{
 				label: 'Обычный',
 				color: '#fff',
-				type: 0
+				type: 0,
 			},
 			{
 				label: 'Выходной',
 				color: '#ccc',
-				type: 1
+				type: 1,
+				popover: 'Выходной – без начислений',
 			},
 			{
 				label: 'Прогул',
 				color: 'red',
-				type: 2
+				type: 2,
+				popover: 'Прогул – будет отмечен красным цветом, без начислений',
 			},
 			{
 				label: 'Больничный',
 				color: 'aqua',
-				type: 3
+				type: 3,
+				popover: 'Больничный – будет отмечен голубым цветом, без начислений',
 			},
 			{
 				label: 'Стажер',
 				color: 'orange',
-				type: 5
+				type: 5,
+				popover: 'Если оплачиваемая стажировка – 50% от дневного оклада, не оплачивая – без начислений',
 			},
 			{
 				label: 'Переобучение',
 				color: 'pink',
 				type: 6,
+				popover: 'Будет начислено 50% от дневного оклада',
 			},
 			],
 			numClicks: 0,
@@ -1945,12 +1978,20 @@ export default {
 					background-color: #c7bd9e;
 				}
 			}
+			&_2{
+				.img-info{
+					filter: contrast(100);
+				}
+			}
 			&_3{
 				border: 1px solid #4489c9;
 				background-color: #4c9ee5;
 				color: #fff;
 				&:hover{
 					background-color: #4489c9;
+				}
+				.img-info{
+					filter: contrast(100);
 				}
 			}
 			&_5{
@@ -1960,6 +2001,9 @@ export default {
 				&:hover{
 					background-color: #e6983f;
 				}
+				.img-info{
+					filter: contrast(100);
+				}
 			}
 			&_6{
 				border: 1px solid #98116c;
@@ -1968,6 +2012,9 @@ export default {
 				&:hover{
 					background-color: #98116c;
 				}
+				.img-info{
+					filter: contrast(100);
+				}
 			}
 			&_7{
 				border: 1px solid #bf2216;
@@ -1975,6 +2022,9 @@ export default {
 				color: #fff;
 				&:hover{
 					background-color: #bf2216;
+				}
+				.img-info{
+					filter: contrast(100);
 				}
 			}
 		}

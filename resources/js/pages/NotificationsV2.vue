@@ -27,13 +27,21 @@
 					<b-tr>
 						<b-th>№</b-th>
 						<b-th>Кого уведомляем</b-th>
-						<b-th class="text-left">
+						<b-th class="text-center">
 							Текст уведомления
 						</b-th>
-						<b-th>Куда отправлять</b-th>
-						<b-th>Периодичность отправки</b-th>
-						<b-th>Дата создания</b-th>
-						<b-th>Создатель</b-th>
+						<b-th class="text-center">
+							Куда отправлять
+						</b-th>
+						<b-th class="text-center">
+							Периодичность отправки
+						</b-th>
+						<b-th class="text-center">
+							Дата создания
+						</b-th>
+						<b-th class="text-center">
+							Создатель
+						</b-th>
 						<b-th />
 					</b-tr>
 				</b-thead>
@@ -51,12 +59,10 @@
 								{{ recipientsNames[notification.date.frequency] }}
 							</template>
 							<template v-else>
-								<template v-for="recipient in notification.recipients">
-									{{ recipient.name }},
-								</template>
+								{{ notification.recipients.map(recipient => recipient.name).join(', ') }}
 							</template>
 						</b-td>
-						<b-td class="NotificationsV2-text">
+						<b-td class="NotificationsV2-text text-center">
 							<div class="NotificationsV2-shortText">
 								{{ notification.title }}
 							</div>
@@ -64,19 +70,19 @@
 								{{ notification.title }}
 							</div>
 						</b-td>
-						<b-td>
+						<b-td class="text-center">
 							{{ notification.type_of_mailing.map(type => services.find(service => service.value === type).title).join(', ') }}
 						</b-td>
-						<b-td>
+						<b-td class="text-center">
 							{{ periodNames[notification.date.frequency] }} {{ notification.date.days.join(', ') }}
 						</b-td>
-						<b-td>
-							{{ $moment(notification.created_at).format('YYYY-MM-DD') }}
+						<b-td class="text-center wsnw">
+							{{ $moment(notification.created_at).format('DD.MM.YYYY') }}
 						</b-td>
-						<b-td>
+						<b-td class="text-center wsnw">
 							{{ notification.creator.name }} {{ notification.creator.last_name }}
 						</b-td>
-						<b-td>
+						<b-td class="text-center">
 							<b-button
 								class="btn btn-danger btn-icon"
 								@click.stop="remove(notification)"
@@ -380,6 +386,7 @@ export default {
 			}
 			if(notification.id) this.updateNotification(notification)
 			else this.createNotification(notification)
+			this.selectedTemplate = null
 			this.selectedNotification = null
 		},
 		validate(notification){

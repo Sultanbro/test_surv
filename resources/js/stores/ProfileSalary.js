@@ -66,22 +66,26 @@ export const useProfileSalaryStore = defineStore('profileSalary', {
 			if(this.isLoading) return
 			this.isLoading = true
 			try{
-				// fetch data
+				// salary
 				const { data: salary } = await fetchProfileBalance(year, month)
-				const { items: kpis } = await fetchProfileKpi(year, month)
-				const premiums = await fetchProfilePremiums(year, month)
-				const { data: bonuses } = await fetchProfileBonuses(year, month)
+				const sumSalary = Object.values(salary.salaries).reduce((result, day) => result + (parseInt(day.value) || 0), 0)
 				if(!this.profile){
 					this.profile = await fetchProfilePersonalInfo()
 				}
-				const awards = {
-					nominations: await fetchProfileAwards('nomination'),
-					certificates: await fetchProfileAwards('certificate'),
-					accrual: await fetchProfileAwards('accrual'),
+				const maxSalary = parseInt(this.profile.salary.replace(/\s/g, '')) || 0
+				this.user_earnings.sumSalary = sumSalary
+				this.user_earnings.oklad = maxSalary
+
+				// local
+				if(this.hasLocal()){
+					this.loadLocal()
+					this.user_earnings.sumSalary = sumSalary
+					this.user_earnings.oklad = maxSalary
+					this.isReady = true
 				}
 
-				// calc values
-				const sumSalary = Object.values(salary.salaries).reduce((result, day) => result + (parseInt(day.value) || 0), 0)
+				// kpi
+				const { items: kpis } = await fetchProfileKpi(year, month)
 				const sumKpi = kpis.reduce((result, kpi) => {
 					kpi.users.forEach(user => {
 						user.items.forEach(userItem => {
@@ -90,23 +94,33 @@ export const useProfileSalaryStore = defineStore('profileSalary', {
 					});
 					return result
 				}, 0)
+				const maxKpi = kpis.reduce((result, kpi) => result + (parseInt(kpi.completed_100) || 0), 0)
+
+				// bonus
+				const { data: bonuses } = await fetchProfileBonuses(year, month)
 				const sumBonuses = bonuses.history.reduce((result, bonus) => result + (parseInt(bonus.sum) || 0), 0)
+
+				// premium
+				const premiums = await fetchProfilePremiums(year, month)
 				const sumQuartalPremiums = premiums.reduce((result, premium) => {
 					premium.forEach(el => {
 						if(el.items?.sum && el.items?.to?.substring(0, 7) === moment(Date.now()).format('YYYY-MM')) result += el.items.sum
 					})
 					return result
 				}, 0)
+
+				// awards
+				const awards = {
+					nominations: await fetchProfileAwards('nomination'),
+					certificates: await fetchProfileAwards('certificate'),
+					accrual: await fetchProfileAwards('accrual'),
+				}
 				const sumAwards = Object.values(awards).reduce((result, type) => {
 					type.forEach(award => {
 						if(award.my && award.my.length) return result + award.my.length
 					})
 					return result
 				}, 0)
-
-				// calc max
-				const maxKpi = kpis.reduce((result, kpi) => result + (parseInt(kpi.completed_100) || 0), 0)
-				const maxSalary = parseInt(this.profile.salary.replace(/\s/g, '')) || 0
 
 				// set current values
 				const earnings = {
@@ -145,6 +159,7 @@ export const useProfileSalaryStore = defineStore('profileSalary', {
 				}
 
 				this.isReady = true
+				this.saveLocal()
 
 				// Можно запрышивать уже после основных данных т.к. нужны только для проверки
 				if(!this.possibleBonuses){
@@ -305,6 +320,28 @@ export const useProfileSalaryStore = defineStore('profileSalary', {
 
 			this.unreadCount.awards = 0
 			this.saveReadedPremiums()
-		}
+		},
+		hasLocal(){
+			return !!localStorage.getItem('profileSalary')
+		},
+		loadLocal(){
+			let json = localStorage.getItem('profileSalary')
+			if(!json){
+				json = JSON.stringify({
+					profile: null,
+					user_earnings: {},
+				})
+				localStorage.setItem('profileSalary', json)
+			}
+			const local = JSON.parse(json)
+			this.profile = local.profile
+			this.user_earnings = local.user_earnings
+		},
+		saveLocal(){
+			localStorage.setItem('profileSalary', JSON.stringify({
+				profile: this.profile,
+				user_earnings: this.user_earnings,
+			}))
+		},
 	}
 })

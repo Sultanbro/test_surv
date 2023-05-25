@@ -56,7 +56,7 @@
 					class="btn btn-info"
 					@click="editActivity()"
 				>
-					<i class="fa fa-cogs show" />
+					<i class="icon-nd-settings" />
 				</button>
 			</div>
 		</div>

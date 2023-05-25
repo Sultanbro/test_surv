@@ -42,7 +42,6 @@ export default {
 				:groups="groups"
 				:active_group="active_group"
 				:check="check"
-				:user="user"
 			/>
 		</div>
 	</DefaultLayout>

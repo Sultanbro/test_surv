@@ -8,6 +8,11 @@
 					class="btn btn-success"
 					style="color: white"
 				>Создать чек лист</a>
+				<img
+					src="/images/dist/profit-info.svg"
+					class="img-info"
+					v-b-popover.hover.right="'Для сотрудников, ежедневно выполняющих повторяющиеся действия.'"
+				>
 			</div>
 
 			<div class="col-md-3">
@@ -1254,7 +1259,9 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-
+	.img-info{
+		vertical-align: middle;
+	}
   .table td {
     padding: 2px;
   }

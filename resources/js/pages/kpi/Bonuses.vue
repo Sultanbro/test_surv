@@ -47,7 +47,7 @@
 						class="text-center pointer"
 						@click="adjustFields"
 					>
-						<i class="fa fa-cog" />
+						<i class="icon-nd-settings" />
 					</th>
 					<th class="text-left w-100">
 						Кому

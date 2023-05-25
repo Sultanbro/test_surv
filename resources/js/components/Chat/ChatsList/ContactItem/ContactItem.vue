@@ -13,11 +13,11 @@
 			class="messenger__chat-name-label"
 		>
 			<div
-				v-if="item.muted"
+				v-if="item.is_mute"
 				class="messenger__chat-muted hidden"
 			/>
 			<div
-				v-if="item.unread_messages_count"
+				v-if="!item.is_mute && item.unread_messages_count"
 				class="messenger__chat-unread"
 			>
 				{{ item.unread_messages_count }}

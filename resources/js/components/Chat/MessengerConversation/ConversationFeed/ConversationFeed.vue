@@ -225,8 +225,8 @@ export default {
 		}
 	},
 	watch: {
-		messages(){
-			this.scrollBottom()
+		messages(value, old){
+			if(!old.length) this.scrollBottom()
 		}
 	},
 	mounted(){

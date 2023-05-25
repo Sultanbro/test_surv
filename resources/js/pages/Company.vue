@@ -1,5 +1,5 @@
 <template>
-	<div class="default-tab">
+	<div class="default-tab PageCompany">
 		<nav class="normal mt-4">
 			<ul
 				id="nav-tab"
@@ -141,6 +141,13 @@ export default {
 }
 </script>
 
+<style lang="scss">
+.PageCompany{
+	.img-info{
+		vertical-align: middle;
+	}
+}
+</style>
 <style lang="scss" scoped>
 	.nav-item{
 		position: relative;
