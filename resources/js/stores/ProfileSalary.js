@@ -89,7 +89,7 @@ export const useProfileSalaryStore = defineStore('profileSalary', {
 				const sumKpi = kpis.reduce((result, kpi) => {
 					kpi.users.forEach(user => {
 						user.items.forEach(userItem => {
-							result += calcSum(userItem, kpi, userItem.percent)
+							result += calcSum(userItem, kpi, userItem.percent / 100)
 						})
 					});
 					return result
