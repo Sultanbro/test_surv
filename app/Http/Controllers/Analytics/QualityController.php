@@ -366,6 +366,16 @@ class QualityController extends Controller
             $rec->total = $total;
             $rec->save();
 
+            if ($request->is_send_notification)
+            {
+                UserNotification::create([
+                    'user_id' => $request->employee_id,
+                    'about_id' => 0,
+                    'title' => 'Оценка переговоров',
+                    'message' => 'Оценил(а): '.$request->interlocutor.'<br>Совет: '.$request->comments.'<br>Общая оценка: '.$total.' <div class="Notification-score" data-score="'.$total.'" data-score-rank="'.$rank.'"></div>'
+                ]);
+            }
+
             return response()->json([
                 'method' => 'save',
                 'id' => $rec->id,
