@@ -23,12 +23,10 @@ class NotificationFactory
         if ($type == MailingEnum::IN_APP)
         {
             return new InAppNotification();
-        } elseif ($type == MailingEnum::WHATSAPP)
+        }
+        if ($type == MailingEnum::WHATSAPP)
         {
             return new WhatsAppNotification();
-        } else
-        {
-            throw new InvalidArgumentException("Invalid notification type");
         }
     }
 }
