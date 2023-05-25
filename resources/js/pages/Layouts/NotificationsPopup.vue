@@ -177,6 +177,9 @@ export default {
 <style lang="scss">
 .Notification{
 	&-score{
+		display: inline-block;
+		width: 20px;
+		height: 20px;
 		background-color: #ff1a00;
 		&[data-score-rank=1]{
 			background-color: #ff8d00;
