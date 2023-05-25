@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 namespace App\Service\Mailing\Notifiers;
 
+use App\Enums\Mailing\MailingEnum;
 use DB;
 use InvalidArgumentException;
 use Throwable;
@@ -19,11 +20,15 @@ class NotificationFactory
         string $type
     ): Notification
     {
-        return match ($type) {
-            'in-app'    => new InAppNotification(),
-            'bitrix'    => new BitrixNotification(),
-            'whatsapp'  => new WhatsAppNotification(),
-            default     => throw new InvalidArgumentException("Invalid notification type"),
-        };
+        if ($type == MailingEnum::IN_APP)
+        {
+            return new InAppNotification();
+        } elseif ($type == MailingEnum::WHATSAPP)
+        {
+            return new WhatsAppNotification();
+        } else
+        {
+            throw new InvalidArgumentException("Invalid notification type");
+        }
     }
 }
