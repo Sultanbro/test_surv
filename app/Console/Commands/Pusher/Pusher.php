@@ -30,10 +30,10 @@ class Pusher extends Command
     /**
      * Execute the console command.
      *
-     * @return ?bool
+     * @return void
      * @throws Exception
      */
-    public function handle(): ?bool
+    public function handle(): void
     {
         $notifications = MailingNotification::with('recipients')
             ->whereIn('frequency', [MailingEnum::DAILY, MailingEnum::WEEKLY, MailingEnum::MONTHLY])
@@ -48,7 +48,7 @@ class Pusher extends Command
                 throw new Exception("Method $frequency does not exist");
             }
 
-            return $this->{$frequency}($notification);
+            $this->{$frequency}($notification);
         }
     }
 
