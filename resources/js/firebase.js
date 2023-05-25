@@ -20,10 +20,10 @@ const firebaseConfig = {
 const FireApp = initializeApp(firebaseConfig)
 const db = getFirestore(FireApp)
 
-const date = new Date().toISOString().substring(0,10)
 const originalHandler = window.onerror
 
 function weblog(msg, cause){
+	const date = new Date().toISOString().substring(0,10)
 	const logdoc = doc(db, 'weblog', date);
 	setDoc(logdoc, {
 		[Date.now()]: {
