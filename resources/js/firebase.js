@@ -38,7 +38,7 @@ function weblog(msg, cause){
 }
 
 window.onerror = function(msg, url, line, col, error){
-	weblog(msg, error.cause)
+	weblog(msg, error?.cause)
 	if(originalHandler) originalHandler(msg, url, line)
 }
 
