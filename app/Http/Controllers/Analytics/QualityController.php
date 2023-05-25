@@ -366,15 +366,7 @@ class QualityController extends Controller
             $rec->total = $total;
             $rec->save();
 
-            if ($request->is_send_notification)
-            {
-                UserNotification::create([
-                    'user_id' => $request->employee_id,
-                    'about_id' => 0,
-                    'title' => 'Оценка переговоров',
-                    'message' => 'Оценил(а): '.$request->interlocutor.'<br>Совет: '.$request->comments.'<br>Общая оценка: '.$total.' <div class="Notification-score" data-score="'.$total.'" data-score-rank="'.$rank.'"></div>'
-                ]);
-            }
+            $this->getRank($total, $request);
 
             return response()->json([
                 'method' => 'save',
@@ -442,21 +434,7 @@ class QualityController extends Controller
                 ]);
                 $id = $record->id;
             }
-            $rank = 0;
-            if($total >= 20 && $total < 40){$rank = 1;}
-            else if($total >= 40 && $total < 60){$rank = 2;}
-            else if($total >= 60 && $total < 80){$rank = 3;}
-            else if($total >= 80 && $total <= 100){$rank = 4;}
-
-            if ($request->is_send_notification)
-            {
-                UserNotification::create([
-                    'user_id' => $request->employee_id,
-                    'about_id' => 0,
-                    'title' => 'Оценка переговоров',
-                    'message' => 'Оценил(а): '.$request->interlocutor.'<br>Совет: '.$request->comments.'<br>Общая оценка: '.$total.' <div class="Notification-score" data-score="'.$total.'" data-score-rank="'.$rank.'"></div>'
-                ]);
-            }
+            $this->getRank($total, $request);
 
             return response()->json([
                 'method' => 'update',
@@ -746,5 +724,33 @@ class QualityController extends Controller
 
         $group->quality = $request->can_add_records ? 'local' : 'ucalls';
         $group->save();
+    }
+
+    /**
+     * @param int $total
+     * @param Request $request
+     * @return void
+     */
+    private function getRank(int $total, Request $request): void
+    {
+        $rank = 0;
+        if ($total >= 20 && $total < 40) {
+            $rank = 1;
+        } else if ($total >= 40 && $total < 60) {
+            $rank = 2;
+        } else if ($total >= 60 && $total < 80) {
+            $rank = 3;
+        } else if ($total >= 80 && $total <= 100) {
+            $rank = 4;
+        }
+
+        if ($request->is_send_notification) {
+            UserNotification::create([
+                'user_id' => $request->employee_id,
+                'about_id' => 0,
+                'title' => 'Оценка переговоров',
+                'message' => 'Оценил(а): ' . $request->interlocutor . '<br>Совет: ' . $request->comments . '<br>Общая оценка: ' . $total . ' <div class="Notification-score" data-score="' . $total . '" data-score-rank="' . $rank . '"></div>'
+            ]);
+        }
     }
 }
