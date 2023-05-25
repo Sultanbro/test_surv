@@ -181,16 +181,16 @@ export default {
 		width: 20px;
 		height: 20px;
 		background-color: #ff1a00;
-		&[data-score-rank=1]{
+		&[data-score-rank="1"]{
 			background-color: #ff8d00;
 		}
-		&[data-score-rank=2]{
+		&[data-score-rank="2"]{
 			background-color: #e3ff00;
 		}
-		&[data-score-rank=3]{
+		&[data-score-rank="3"]{
 			background-color: #00ff04;
 		}
-		&[data-score-rank=4]{
+		&[data-score-rank="4"]{
 			background-color: #0051ff;
 		}
 	}
