@@ -1343,6 +1343,7 @@ class User extends Authenticatable implements Authorizable
     /**
      * Проверка время и даты, для того чтобы нажать "НАЧАТЬ РАБОЧИЙ ДЕНЬ"
      * @return bool
+     * @throws Exception
      */
     public function checkWorkdaysForStartTracking(): bool
     {
@@ -1359,6 +1360,22 @@ class User extends Authenticatable implements Authorizable
                 return true;
             }
             return false;
+        }
+        elseif ($workChart->work_charts_type === WorkChartModel::WORK_CHART_TYPE_REPLACEABLE && $this->first_work_day !== null) {
+            $days = explode('-', $workChart->name);
+            $workingDay = array_key_exists(0, $days) ? intval($days[0]) : throw new Exception(message: 'Проверьте график работы');
+            $dayOff = array_key_exists(1, $days) ? intval($days[1]) : throw new Exception(message: 'Проверьте график работы');
+
+            $differBetweenFirstAndLastDay = Carbon::today()->diffInDays($this->first_work_day);  // получаем разницу между датами начального и последнего дня
+            $total = $workingDay + $dayOff;
+            $remains = $differBetweenFirstAndLastDay % $total;
+
+            if ($remains < $workingDay) {
+                return true;
+            }
+            elseif ($remains < $total) {
+                return false;
+            }
         }
         return true;
     }
