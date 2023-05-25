@@ -200,7 +200,7 @@ class UserFine extends Model
         if($fine) {
             $description = $fine->name;
         } else {
-            $description = 'Штраф id = '.$id.' не найден';
+            $description = 'Штраф id = '.$fine_id.' не найден';
         }
         
         return $description;
