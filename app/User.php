@@ -42,6 +42,9 @@ use App\Models\WorkChart\WorkChartModel;
 use App\Models\WorkChart\Workday;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
+/**
+ * @mixin Builder
+ */
 class User extends Authenticatable implements Authorizable
 {
     use Notifiable,

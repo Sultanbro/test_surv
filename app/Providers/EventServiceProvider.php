@@ -18,6 +18,12 @@ use App\Listeners\TrackGroupChangingListener;
 use App\Listeners\TrackUserFiredListener;
 use App\Listeners\TransferUserInGroupListener;
 use App\Listeners\WorkdayListener;
+use App\Models\WorkChart\WorkChartModel;
+use App\Observers\Timetracking\TimetrackingObserver;
+use App\Observers\UserObserver;
+use App\Observers\WorkChart\WorkChartObserver;
+use App\Timetracking;
+use App\User;
 use Illuminate\Support\Facades\Event;
 use Illuminate\Foundation\Support\Providers\EventServiceProvider as ServiceProvider;
 
@@ -84,7 +90,8 @@ class EventServiceProvider extends ServiceProvider
     public function boot()
     {
         parent::boot();
-
-        //
+        User::observe(UserObserver::class);
+        Timetracking::observe(TimetrackingObserver::class);
+        WorkChartModel::observe(WorkChartObserver::class);
     }
 }
