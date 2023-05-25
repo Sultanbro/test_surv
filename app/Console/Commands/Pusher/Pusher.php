@@ -50,8 +50,6 @@ class Pusher extends Command
 
             return $this->{$frequency}($notification);
         }
-
-        return true;
     }
 
     /**
