@@ -432,11 +432,11 @@ class QualityController extends Controller
                 ]);
                 $id = $record->id;
             }
-            $color = '#ff1a00';
-            if($total >= 20 && $total < 40){$color = '#ff8d00';}
-            else if($total >= 40 && $total < 60){$color = '#e3ff00';}
-            else if($total >= 60 && $total < 80){$color = '#00ff04';}
-            else if($total >= 80 && $total <= 100){$color = '#0051ff';}
+            $rank = 0;
+            if($total >= 20 && $total < 40){$rank = 1;}
+            else if($total >= 40 && $total < 60){$rank = 2;}
+            else if($total >= 60 && $total < 80){$rank = 3;}
+            else if($total >= 80 && $total <= 100){$rank = 4;}
 
             if ($request->is_send_notification)
             {
@@ -444,7 +444,7 @@ class QualityController extends Controller
                     'user_id' => $request->employee_id,
                     'about_id' => 0,
                     'title' => 'Оценка переговоров',
-                    'message' => $request->comments.' Общая оценка: '.$total.' <div style="background-color:'.$color.';width:20px;height:20px;display: inline-block;"></div>'
+                    'message' => 'Оценил(а): '.$request->interlocutor.'<br>Совет: '.$request->comments.'<br>Общая оценка: '.$total.' <div class="Notification-score" data-score="'.$total.'" data-score-rank="'.$rank.'"></div>'
                 ]);
             }
 
