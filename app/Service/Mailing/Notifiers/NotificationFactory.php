@@ -20,13 +20,11 @@ class NotificationFactory
         string $type
     ): Notification
     {
-        if ($type == MailingEnum::IN_APP)
-        {
-            return new InAppNotification();
-        }
-        if ($type == MailingEnum::WHATSAPP)
-        {
-            return new WhatsAppNotification();
-        }
+        return match ($type) {
+            'in-app'    => new InAppNotification(),
+            'bitrix'    => new BitrixNotification(),
+            'whatsapp'  => new WhatsAppNotification(),
+            default     => throw new InvalidArgumentException("Invalid notification type"),
+        };
     }
 }
