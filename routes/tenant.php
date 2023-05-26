@@ -143,6 +143,7 @@ Route::middleware(['web','tenant', 'not_admin_subdomain'])->group(function () {
     Route::post('/course-results/get', [Course\CourseResultController::class, 'get']);
     Route::post('/course-results/nullify', [Course\CourseResultController::class, 'nullify']);
 
+    Route::get('course/item-result', [Course\CourseResultController::class, 'getCourseItemAndResult']);
     // glossary
     Route::get('/glossary/get', [Learning\GlossaryController::class, 'get']);
     Route::post('/glossary/save', [Learning\GlossaryController::class, 'save']);
