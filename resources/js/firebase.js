@@ -20,10 +20,10 @@ const firebaseConfig = {
 const FireApp = initializeApp(firebaseConfig)
 const db = getFirestore(FireApp)
 
-const date = new Date().toISOString().substring(0,10)
 const originalHandler = window.onerror
 
 function weblog(msg, cause){
+	const date = new Date().toISOString().substring(0,10)
 	const logdoc = doc(db, 'weblog', date);
 	setDoc(logdoc, {
 		[Date.now()]: {
@@ -38,12 +38,15 @@ function weblog(msg, cause){
 }
 
 window.onerror = function(msg, url, line, col, error){
-	weblog(msg, error.cause)
+	weblog(msg, error?.cause)
 	if(originalHandler) originalHandler(msg, url, line)
 }
 
+const AXIOS_SEPARATOR = '#️⃣'
+
 axios.interceptors.response.use((response) => response, (error) => {
 	const msg = error?.response?.data?.message
-	weblog('axios: ' + msg, error.response.config.url + ' ' + error.response.config.data)
+	if(msg === 'Unauthenticated.') return location.reload()
+	weblog('axios: ' + msg, error.response.config.method + AXIOS_SEPARATOR + error.response.config.url + AXIOS_SEPARATOR + error.response.config.data)
 	throw error;
 });
