@@ -1333,6 +1333,8 @@ export default {
 				return;
 			}
 
+
+
 			let obj = {
 				id: record.id,
 				employee_id: record.employee_id,
@@ -1341,7 +1343,12 @@ export default {
 				interlocutor: record.interlocutor,
 				dayOfDelay: record.dayOfDelay,
 				date: record.date,
-				param_values: record.param_values,
+				param_values: record.param_values.map(param => {
+					return {
+						...param,
+						value: param.value || 0,
+					}
+				}),
 				is_send_notification: this.sendNotifications,
 			};
 
@@ -1371,6 +1378,7 @@ export default {
 					record.changed = false;
 					this.$bvModal.hide('bv-modal');
 					loader.hide();
+					this.fetchItems()
 				})
 				.catch(function (e) {
 					loader.hide();
