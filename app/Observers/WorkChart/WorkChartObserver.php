@@ -17,7 +17,7 @@ class WorkChartObserver
     public function updated(WorkChartModel $workChartModel)
     {
         if ($workChartModel->isDirty('work_charts_type')){
-            if ($workChartModel->work_charts_type === 1){
+            if ($workChartModel->work_charts_type === WorkChartModel::WORK_CHART_TYPE_USUAL){
                 User::where('work_chart_id', $workChartModel->id)
                 ->update([
                    'first_work_day' => null

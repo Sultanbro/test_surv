@@ -2,6 +2,7 @@
 
 namespace App\Observers;
 
+use App\Models\WorkChart\WorkChartModel;
 use App\User;
 
 class UserObserver
@@ -16,7 +17,7 @@ class UserObserver
     {
         if ($user->isDirty('work_chart_id')) {
             $workChar = $user->getWorkChart();
-            if ($workChar->work_charts_type === 1){
+            if ($workChar->work_charts_type === WorkChartModel::WORK_CHART_TYPE_USUAL){
                 $user->first_work_day = null;
                 $user->save();
             }
