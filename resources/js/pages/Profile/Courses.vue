@@ -233,7 +233,8 @@ export default {
 			window.addEventListener('resize', this.resizeCarousel)
 		},
 		resizeCarousel(){
-			VJQuery('.courses__content__wrapper').slick('slickSetOption', 'slidesToShow', this.slidesToShow, true)
+			const $coursesWrapper = VJQuery('.courses__content__wrapper')
+			if($coursesWrapper[0] && $coursesWrapper[0].slick) $coursesWrapper.slick('slickSetOption', 'slidesToShow', this.slidesToShow, true)
 		},
 		isRegressed(course){
 			if(!this.results[course.id] || !this.results[course.id][0]) return false
