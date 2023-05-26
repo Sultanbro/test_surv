@@ -142,17 +142,17 @@ Vue.component('ChatSearchButton', require('./components/Chat/ChatSearchButton/Ch
  * Components
  */
 // Vue.component('t-kpi-indicator', require('./components/tables/TableKpiIndicator.vue').default); // ряд активности в таблице KPI
-Vue.component('Selectgroup', require('./components/selectgroup.vue').default); // booklist
+// Vue.component('Selectgroup', require('./components/selectgroup.vue').default); // booklist
 // Vue.component('selectgroupbook', require('./components/selectgroupbook.vue').default); // booklist
 Vue.component('ActivityExcelImport', require('./components/imports/ActivityExcelImport.vue').default); // импорт в активности
-Vue.component('TraineeReport', require('./components/TraineeReport.vue').default);
+// Vue.component('TraineeReport', require('./components/TraineeReport.vue').default);
 // Vue.component('profile', require('./components/profile/Profile.vue').default); // шапка
 // Vue.component('UserEarnings', require('./components/profile/UserEarnings/UserEarnings.vue').default); // Блок начислений в профиле
 
 /**
  * Tables
  */
-Vue.component('TQuarter', require('./components/tables/TableQuarter.vue').default); // Quarter
+// Vue.component('TQuarter', require('./components/tables/TableQuarter.vue').default); // Quarter
 // Vue.component('t-user-analytics', require('./components/tables/TableUserAnalytics.vue').default); // Ваши показатели
 // Vue.component('t-summary-recruting', require('./components/tables/TableSummaryRecruting.vue').default); // Сводная рекрутинг
 // Vue.component('t-recruting-user', require('./components/tables/TableRecrutingUser.vue').default); // Таблица рекрутера
@@ -164,7 +164,6 @@ Vue.component('TQuarter', require('./components/tables/TableQuarter.vue').defaul
 // Vue.component('TUsersalary', require('./components/tables/TableUserSalary.vue').default); // таблица начислений
 Vue.component('Questions', require('./pages/Questions.vue').default); // вопросы тестов
 
-Vue.component('PermissionItem', require('./components/PermissionItem.vue').default); //
 
 
 
