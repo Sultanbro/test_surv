@@ -1052,18 +1052,6 @@ export default {
 					this.loadItems();
 					this.dataLoaded = true;
 
-					// maybe scroll table to right
-					setTimeout(() => {
-						var container = document.querySelector('.table-responsive');
-						this.maxScrollWidth = container.scrollWidth - container.offsetWidth;
-						if (this.dayPercentage > 50) {
-							// this.scrollLeft =
-							//     (this.maxScrollWidth * this.dayPercentage) / 100;
-							// this.defaultScrollValue = this.scrollLeft;
-						}
-
-					}, 1000);
-
 					loader.hide();
 				}).catch(error => {
 					this.$toast.error('Ошибка');
