@@ -147,7 +147,7 @@ Vue.component('Selectgroup', require('./components/selectgroup.vue').default); /
 Vue.component('ActivityExcelImport', require('./components/imports/ActivityExcelImport.vue').default); // импорт в активности
 Vue.component('TraineeReport', require('./components/TraineeReport.vue').default);
 // Vue.component('profile', require('./components/profile/Profile.vue').default); // шапка
-Vue.component('UserEarnings', require('./components/profile/UserEarnings/UserEarnings.vue').default); // Блок начислений в профиле
+// Vue.component('UserEarnings', require('./components/profile/UserEarnings/UserEarnings.vue').default); // Блок начислений в профиле
 
 /**
  * Tables
@@ -161,7 +161,7 @@ Vue.component('TQuarter', require('./components/tables/TableQuarter.vue').defaul
 // Vue.component('t-activity-new', require('./components/tables/TableActivityNew.vue').default); // Активность
 // Vue.component('t-activity-collection', require('./components/tables/TableActivityCollection.vue').default); // Сборы
 // Vue.component('t-quality-weekly', require('./components/tables/TableQualityWeekly.vue').default); // Недельные оценки качества
-Vue.component('TUsersalary', require('./components/tables/TableUserSalary.vue').default); // таблица начислений
+// Vue.component('TUsersalary', require('./components/tables/TableUserSalary.vue').default); // таблица начислений
 Vue.component('Questions', require('./pages/Questions.vue').default); // вопросы тестов
 
 Vue.component('PermissionItem', require('./components/PermissionItem.vue').default); //
@@ -187,7 +187,7 @@ Vue.component('Superselect', require('./components/SuperSelect.vue').default); /
 
 
 // temp
-Vue.component('ProfileSalaryInfo', require('./pages/ProfileSalaryInfo.vue').default);
+// Vue.component('ProfileSalaryInfo', require('./pages/ProfileSalaryInfo.vue').default);
 
 
 /**
