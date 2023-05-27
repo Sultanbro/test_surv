@@ -88,7 +88,14 @@ class CreatePivotAnalytics extends Command
                 ->get();
 
         foreach($rows as $row) {
-            $newRow = AnalyticRow::create([
+            $newRow = AnalyticRow::query()->where([
+                ['group_id', $row->group_id],
+                ['name'    , $row->name],
+                ['date'    , $newDate],
+                ['order'   , $row->order],
+                ['depend_id', $row->depend_id]
+            ])->first()
+                ?: AnalyticRow::query()->create([
                 'group_id'     => $row->group_id,
                 'name'         => $row->name,
                 'date'         => $newDate,
@@ -96,7 +103,7 @@ class CreatePivotAnalytics extends Command
                 'depend_id'    => $row->depend_id,
             ]);
 
-            $newRows[$row->id] = $newRow->id;
+            $newRows[$row->id] = $newRow?->id;
         }
 
         /**
@@ -150,7 +157,13 @@ class CreatePivotAnalytics extends Command
         $analyticColumns = [];
 
         foreach($cols as $col) {
-            $analyticColumn = AnalyticColumn::query()->create([
+            $analyticColumn = AnalyticColumn::query()->where([
+                ['group_id' , $col->group_id],
+                ['name'     , $col->name],
+                ['date'     , $newDate],
+                ['order'    , $col->order]
+            ])->first()
+                ?: AnalyticColumn::query()->create([
                 'group_id' => $col->group_id,
                 'name'     => $col->name,
                 'date'     => $newDate,
@@ -165,7 +178,7 @@ class CreatePivotAnalytics extends Command
             /**
              * Сохраняем ID новой колонки в массиве.
              */
-            $newColumns[$col->id] = $analyticColumn->id;
+            $newColumns[$col->id] = $analyticColumn?->id;
         }
 
         /**
@@ -303,7 +316,13 @@ class CreatePivotAnalytics extends Command
             $show_value = $this->getShowValue($stat, $newRows, $newCols, $colsWithValue);
             $lastColumnId = $newCols[$stat->column_id];
 
-            AnalyticStat::create([
+            AnalyticStat::query()->where([
+                ['group_id' , $stat->group_id],
+                ['date'     , $newDate],
+                ['row_id'   , $newRows[$stat->row_id]],
+                ['column_id' , $newCols[$stat->column_id]]
+            ])->exists()
+                ?: AnalyticStat::query()->create([
                 'group_id'    => $stat->group_id,
                 'date'        => $newDate,
                 'row_id'      => $newRows[$stat->row_id],
