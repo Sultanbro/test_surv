@@ -506,20 +506,16 @@ class CourseResult extends Model
         $user = User::withTrashed()->find($user_id);
         $position_id = $user->position_id;
 
-        $groups = $user->inGroups();
-        $group_ids = [];
-        foreach ($groups as $key => $group) {
-            $group_ids[] = $group->id;
-        }
+        $groups = $user->inGroups()->pluck('id')->toArray();
 
         // find course
         $courses = CourseModel::where(function($query) use ($user_id) {
                 $query->where('item_model', 'App\\User')
                     ->where('item_id', $user_id);
             })
-            ->orWhere(function($query) use ($group_ids) {
+            ->orWhere(function($query) use ($groups) {
                 $query->where('item_model', 'App\\ProfileGroup')
-                    ->whereIn('item_id', $group_ids);
+                    ->whereIn('item_id', $groups);
             })
             ->orWhere(function($query) use ($position_id) {
                 $query->where('item_model', 'App\\Position')
@@ -545,7 +541,7 @@ class CourseResult extends Model
      */
     public static function activeCourses($user_id = null) : array
     {
-        $user_id = $user_id ??  auth()->id();
+        $user_id = $user_id ?? auth()->id();
 
         $courseIds = self::notFinishedCourses($user_id);
         
@@ -553,52 +549,23 @@ class CourseResult extends Model
          * Has active courses
          */
         $active_courses = [];
+        $disk = \Storage::disk('s3');
 
         if(count($courseIds) > 0) {
             $active_courses = Course::whereIn('id', $courseIds)
                 ->orderBy('order', 'asc')
-                ->get();
-            
-            $disk = \Storage::disk('s3');
+                ->get()->each(function ($course) use ($disk){
+                    $course->text = $course->text != '' || $course->text != null ? trim($course->text) : 'Нет описания';
 
-            foreach ($active_courses as $key => $course) {
-
-                /**
-                 * text manipulations
-                 */
-                $text = trim($course->text);
-                
-                if($text == '') $text = 'Нет описания';
-
-                // cut text if too long
-                // $text = strlen($text) >= 100
-                //     ? mb_substr($text, 0, 100) . '...'
-                //     : $text;
-
-                $course->text = $text;
-
-
-                /**
-                 * get image from S3 Cloud
-                 */
-                try {
                     if($course->img != null && $disk->exists($course->img)) {
                         $course->img = $disk->temporaryUrl(
                             $course->img, now()->addMinutes(360)
                         );
                     }
-                } catch (\Throwable $e) {
-                    // League \ Flysystem \ UnableToCheckDirectoryExistence
-                }
-
-            }
+                });
         }
 
-        if(is_array($active_courses)){
-            return $active_courses;
-        } else {
-            return $active_courses->toArray();
-        }
+        return $active_courses->toArray();
     }
 
     /**
