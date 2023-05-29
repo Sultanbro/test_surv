@@ -66,6 +66,7 @@ export default {
 			return {
 				users: getters.users.reduce((users, user) => {
 					if(user.deleted_at) return users
+					if(!user.last_seen) return users
 					users.push({
 						id: user.id,
 						name: `${user.name} ${user.last_name}`,

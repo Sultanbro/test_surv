@@ -11,21 +11,26 @@ use Carbon\Carbon;
 use Exception;
 use http\Exception\InvalidArgumentException;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Collection;
 
 class InAppNotification implements Notification
 {
     /**
-     * @throws Exception
+     * @param Model $notification
+     * @param string $message
+     * @param Collection|null $recipients
+     * @return bool|null
      */
-    public function send(Model $notification, MailingNotificationSchedule $recipient): ?bool
+    public function send(Model $notification, string $message = '', Collection $recipients = null): ?bool
     {
-        $recipientType = MailingEnum::TYPES[$recipient->notificationable_type] . 'Notify';
+        $recipients = $recipients ?? MailingFacade::getRecipients($notification->id);
+        $recipients = $recipients->pluck('id')->toArray();
 
-        if (!method_exists(MailingNotificationSchedule::class, $recipientType))
+        foreach ($recipients as $recipient)
         {
-            throw new Exception("Method $recipientType does not exist");
+            UserNotification::createNotification($notification->name, $message, $recipient);
         }
 
-        return (new MailingNotificationSchedule)->{$recipientType}($notification, $recipient);
+        return true;
     }
 }

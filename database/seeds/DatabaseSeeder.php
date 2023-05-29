@@ -22,7 +22,7 @@ class DatabaseSeeder extends Seeder
             WorkingTimeSeeder::class,
             SettingSeeder::class,
             TariffSeeder::class,
-
+            MailingTemplateSeeder::class
             // KpiSeeder::class,
             //KpiItemSeeder::class,
             //QuartalPremiumSeeder::class,

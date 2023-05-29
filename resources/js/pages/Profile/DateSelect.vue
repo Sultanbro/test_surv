@@ -4,13 +4,15 @@
 		:class="{'DateSelect_disabled': disabled}"
 		@click.self="showDatePicker"
 	>
-		{{ yearPosition === 'before' ? $moment(value, 'DD.MM.YYYY').format('YYYY') : '' }}
-		{{ capitalized($moment(value, 'DD.MM.YYYY').format('MMMM')) }}
-		{{ yearPosition === 'after' ? $moment(value, 'DD.MM.YYYY').format('YYYY') : '' }}
-		<i
-			class="fa fa-chevron-down ml-a"
-			@click.self="showDatePicker"
-		/>
+		<div class="DateSelect-header">
+			{{ yearPosition === 'before' ? $moment(value, 'DD.MM.YYYY').format('YYYY') : '' }}
+			{{ capitalized($moment(value, 'DD.MM.YYYY').format('MMMM')) }}
+			{{ yearPosition === 'after' ? $moment(value, 'DD.MM.YYYY').format('YYYY') : '' }}
+			<i
+				class="fa fa-chevron-down ml-a"
+				@click.self="showDatePicker"
+			/>
+		</div>
 		<CalendarInput
 			v-if="isDatePicker"
 			:value="localValue"
@@ -79,7 +81,7 @@ export default {
 			this.isDatePicker = !this.isDatePicker
 		},
 		onCloseDatePicker(e){
-			if(this.$el.contains(e.target)) return
+			if(e?.target && this.$el.contains(e.target)) return
 			this.isDatePicker = false
 		},
 	}
@@ -88,12 +90,6 @@ export default {
 
 <style lang="scss">
 .DateSelect{
-	display: flex;
-	flex-flow: row nowrap;
-	align-items: center;
-	justify-content: flex-start;
-	gap: 1rem;
-
 	padding: 1.5rem 2rem;
 	border: 1px solid #E7EAEA;
 	border-radius: 1.5rem;
@@ -107,11 +103,21 @@ export default {
 	background-color: #fff;
 	cursor: pointer;
 
+	&-header{
+		display: flex;
+		flex-flow: row nowrap;
+		align-items: center;
+		justify-content: flex-start;
+		gap: 1rem;
+		pointer-events: none;
+	}
+
 	.CalendarInput{
 		min-width: 100%;
 		margin-left: -1rem;
 		&-content{
 			min-width: 100%;
+			margin-top: 10px;
 		}
 	}
 	.CalendarInputBody{

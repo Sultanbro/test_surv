@@ -130,8 +130,10 @@ export default {
 				commit('setPinnedMessage', chat.pinned_message);
 				dispatch('loadMessages', {reset: true, callback: callback});
 				dispatch('cancelEditMessage');
-
 			});
+		},
+		unloadChat({commit}){
+			commit('setChat', null);
 		},
 		async escapeChat({commit, dispatch}) {
 			commit('setChat', null);

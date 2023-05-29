@@ -6,7 +6,14 @@
 		class="NotificationsTemplates"
 	>
 		<template #header>
+			<div
+				v-if="value.id"
+				class="ui-sidebar__header-text"
+			>
+				{{ templates.find(tpl => tpl.value === template).text }}
+			</div>
 			<b-form-select
+				v-else
 				v-model="template"
 				:options="templates"
 			/>
@@ -28,7 +35,7 @@
 						<template v-else>
 							<div
 								class="form-control NotificationsTemplates-badges"
-								@click="isRecipientsOpen = true"
+								@click="onClickRecipments"
 							>
 								<b-badge
 									v-for="recipient, index in value.recipients"
@@ -43,11 +50,12 @@
 								@close="isRecipientsOpen = false"
 							>
 								<AccessSelect
-									v-model="value.recipients"
+									:value="value.recipients"
 									:tabs="value.targets"
 									:access-dictionaries="accessDictionaries"
 									search-position="beforeTabs"
-									:submit-button="''"
+									:submit-button="'Применить'"
+									@submit="onSubmitAccess"
 									class="NotificationsEditForm-accessSelect"
 								/>
 							</JobtronOverlay>
@@ -109,6 +117,11 @@
 							class="mb-4"
 						/>
 						<template v-if="when === 'period'">
+							<!-- <b-form-timepicker
+								v-model="time"
+								:hour12="false"
+								class="mb-4"
+							/> -->
 							<b-form-select
 								v-model="frequency"
 								:options="periods"
@@ -128,7 +141,10 @@
 			</b-container>
 
 			<hr class="mb-4">
-			<b-button variant="primary">
+			<b-button
+				variant="primary"
+				@click="onSave"
+			>
 				Активировать уведомление
 			</b-button>
 		</template>
@@ -149,6 +165,7 @@ import {
 	periods,
 	templates,
 	templateSettings,
+	templateFrequency,
 } from './helper'
 
 export default {
@@ -162,19 +179,25 @@ export default {
 		WeekdaysCheck,
 		JobtronTextarea,
 	},
+	props: {
+		edit: {
+			type: Object,
+			default: null
+		}
+	},
 	data(){
 		return {
 			template: '',
 			templates,
 			templateSettings,
-			value: null,
+			value: {},
 			services,
 			periods,
 			selectedServices: [],
 			when: 'trigger',
 			frequency: 'weekly',
 			days: [],
-
+			time: '10:00',
 			isRecipientsOpen: false,
 		}
 	},
@@ -193,6 +216,52 @@ export default {
 				return
 			}
 			this.value = JSON.parse(JSON.stringify(this.templateSettings[this.template]))
+			this.when = this.template
+		},
+		edit(){
+			this.loadEdit()
+		},
+	},
+	mounted(){
+		this.loadEdit()
+	},
+	methods: {
+		loadEdit(){
+			if(!this.value) this.value = {}
+			this.template = this.edit.template
+			this.$nextTick(() => {
+				this.value.id = this.edit.id
+				this.value.recipients = this.edit.recipients
+				this.value.title = this.edit.title
+				this.selectedServices = this.edit.type_of_mailing.map(value => services.find(service => service.value === value))
+				this.frequency = this.edit.date.frequency
+				if(!templateFrequency.includes(this.edit.date.frequency)){
+					this.when = 'period'
+				}
+			})
+		},
+		onClickRecipments(){
+			this.isRecipientsOpen = true
+		},
+		onSubmitAccess(value){
+			this.value.recipients = value
+			this.isRecipientsOpen = false
+		},
+		onSave(){
+			const name = templates.find(template => template.value === this.template).text
+			this.$emit('save', {
+				id: this.value.id,
+				name,
+				title: this.value.title,
+				recipients: Array.isArray(this.value.targets) ? this.value.recipients : undefined,
+				date: {
+					days: this.days,
+					frequency: this.when === 'period' ? this.frequency : this.when
+				},
+				time: this.time,
+				type_of_mailing: this.selectedServices.map(service => service.value),
+				is_template: true,
+			})
 		}
 	}
 }
@@ -218,6 +287,13 @@ export default {
 		line-height: 1.3;
 
 		background-color: #F7FAFC;
+	}
+	&-fixed{
+		font-style: italic;
+	}
+	&-tip{
+		font-style: italic;
+		color: #F8254B;
 	}
 }
 </style>

@@ -131,12 +131,6 @@
 							style="font-size: 14px;margin-bottom: 0;"
 						>
 							<a
-								v-if="[42].includes(gauge.group_id)"
-								:href="'/timetracking/analytics?group='+ gauge.group_id + '&active=1&load=1'"
-								target="_blank"
-							>{{ gauge.name }}</a>
-							<a
-								v-else
 								:href="'/timetracking/an?group='+ gauge.group_id + '&active=1&load=1'"
 								target="_blank"
 							>{{ gauge.name }}</a>

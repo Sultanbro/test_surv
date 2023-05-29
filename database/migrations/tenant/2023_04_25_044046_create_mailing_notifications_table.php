@@ -24,8 +24,8 @@ return new class extends Migration
                 ->cascadeOnUpdate();
 
             $table->jsonb('type_of_mailing');
+            $table->jsonb('days');
             $table->string('frequency')->default('weekly');
-            $table->time('time');
             $table->boolean('status')->default(1)->comment('Выкл/Вкл');
             $table->timestamps();
         });

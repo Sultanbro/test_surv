@@ -5,6 +5,7 @@
 	>
 		<div class="ConversationSearchFile-preview">
 			<img
+				v-if="file.thumbnail_path"
 				:src="file.thumbnail_path"
 				alt=""
 				class="ConversationSearchFile-image"
@@ -63,7 +64,7 @@ export default {
 		border-radius: 3px;
 		background-color: #E9F0FB;
 	}
-	&-img{
+	&-image{
 		width: 75px;
 		height: 75px;
 		border-radius: 3px;

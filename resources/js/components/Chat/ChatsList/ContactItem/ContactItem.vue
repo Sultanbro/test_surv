@@ -1,5 +1,5 @@
 <template>
-	<div class="messenger__chat-item-container messenger__text-ellipsis">
+	<div class="messenger__chat-item-container">
 		<JobtronAvatar
 			:image="avatar"
 			:title="item.title"
@@ -13,11 +13,11 @@
 			class="messenger__chat-name-label"
 		>
 			<div
-				v-if="item.muted"
+				v-if="item.is_mute"
 				class="messenger__chat-muted hidden"
 			/>
 			<div
-				v-if="item.unread_messages_count"
+				v-if="!item.is_mute && item.unread_messages_count"
 				class="messenger__chat-unread"
 			>
 				{{ item.unread_messages_count }}
@@ -204,7 +204,7 @@ export default {
 .messenger__chat-name-label {
   position: absolute;
   top: 0;
-  right: 0;
+  right: 30px;
   padding: 5px;
 }
 
@@ -264,6 +264,7 @@ export default {
 .messenger__chat-indicators{
 	display: flex;
 	flex-flow: row nowrap;
+	gap: 5px;
 }
 
 .messenger__chat-unread{

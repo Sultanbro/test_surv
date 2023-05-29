@@ -1,6 +1,6 @@
 <template>
 	<div
-		class="messenger__container-scroll"
+		class="ConversationFeed messenger__container-scroll"
 		ref="messengerContainer"
 		id="messenger_container"
 		@click="contextMenuVisible = false"
@@ -8,10 +8,13 @@
 	>
 		<!-- Контекст -->
 		<ContextMenu
-			:show="contextMenuVisible"
+			:show="true"
 			:x="contextMenuX"
 			:y="contextMenuY"
 			:parent-element="$refs.messengerContainer"
+			:class="{
+				'ContextMenu_visible': contextMenuVisible
+			}"
 		>
 			<div class="messenger__context-menu_reactions">
 				<div
@@ -96,6 +99,7 @@
 							:helper="renderHelper"
 							:last="index === d.length - 1"
 							@loadImage="index === d.length - 1 && scrollBottom"
+							@contextbutton="showChatContextMenu(message, ...arguments)"
 						/>
 					</div>
 
@@ -221,8 +225,8 @@ export default {
 		}
 	},
 	watch: {
-		messages(){
-			this.scrollBottom()
+		messages(value, old){
+			if(!old.length) this.scrollBottom()
 		}
 	},
 	mounted(){
@@ -281,10 +285,12 @@ export default {
 			}
 		},
 		showChatContextMenu(message, event) {
-			this.contextMenuVisible = true;
-			this.contextMenuX = event.clientX;
-			this.contextMenuY = event.clientY;
 			this.contextMenuMessage = message;
+			this.$nextTick(() => {
+				this.contextMenuX = event.clientX;
+				this.contextMenuY = event.clientY;
+				this.contextMenuVisible = true;
+			})
 		},
 		remove(message) {
 			// ask for confirmation
@@ -323,6 +329,46 @@ export default {
 }
 </script>
 
+<style lang="scss">
+.messenger__message-wrapper{
+	&:hover{
+		.ConversationMessage-context{
+			display: flex;
+		}
+	}
+}
+.messenger__container-scroll {
+	display: flex;
+	flex: 1;
+	overflow-y: auto;
+	overflow-x: hidden;
+	margin-right: 1px;
+	-webkit-overflow-scrolling: touch;
+}
+/* total width */
+.messenger__container-scroll::-webkit-scrollbar {
+	background-color: #fff;
+	width: 8px;
+}
+
+/* background of the scrollbar except button or resizer */
+.messenger__container-scroll::-webkit-scrollbar-track {
+	background-color: #bcbcbd;
+	border-radius: 24px;
+}
+
+/* scrollbar itself */
+.messenger__container-scroll::-webkit-scrollbar-thumb {
+	background-color: #7e7e81;
+	border-radius: 24px;
+}
+
+/* set button(top and bottom of the scrollbar) */
+.messenger__container-scroll::-webkit-scrollbar-button {
+	display: none;
+}
+</style>
+
 <style lang="scss" scoped>
 .ConversationFeed{
 	&-startUnread{
@@ -358,6 +404,13 @@ export default {
 			color: #6F82A3;
 		}
 	}
+
+	.ConversationFeedReaders{
+		display: none;
+		&:last-child{
+			display: flex;
+		}
+	}
 }
 #messenger_container{
 	align-self: stretch;
@@ -367,15 +420,8 @@ export default {
 }
 #messenger__messages{
 	> div:last-of-type{
-		margin-bottom: 25px;
+		padding-bottom: 25px;
 	}
-}
-.messenger__container-scroll {
-	display: flex;
-	flex: 1;
-	overflow-y: auto;
-	margin-right: 1px;
-	-webkit-overflow-scrolling: touch;
 }
 
 .messenger__message-wrapper{
@@ -383,32 +429,12 @@ export default {
 }
 
 .messenger__messages-container {
-	padding: 0 5px 5px;
 	flex: 1;
+	max-width: 100%;
+	padding: 0 5px 5px;
 }
 
-/* total width */
-.messenger__container-scroll::-webkit-scrollbar {
-	background-color: #fff;
-	width: 8px;
-}
 
-/* background of the scrollbar except button or resizer */
-.messenger__container-scroll::-webkit-scrollbar-track {
-	background-color: #bcbcbd;
-	border-radius: 24px;
-}
-
-/* scrollbar itself */
-.messenger__container-scroll::-webkit-scrollbar-thumb {
-	background-color: #7e7e81;
-	border-radius: 24px;
-}
-
-/* set button(top and bottom of the scrollbar) */
-.messenger__container-scroll::-webkit-scrollbar-button {
-	display: none;
-}
 .messenger__context-menu_reactions{
 	display: flex;
 	flex-flow: row nowrap;

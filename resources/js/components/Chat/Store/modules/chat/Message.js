@@ -1,7 +1,17 @@
 import API from '../../API.vue';
 import Vue from 'vue';
 
-import {MESSAGES_MAX_COUNT, MESSAGES_LOAD_COUNT, MESSAGES_LOAD_COUNT_ON_RESET} from './constants.js';
+import {
+	MESSAGES_MAX_COUNT,
+	MESSAGES_LOAD_COUNT,
+	MESSAGES_LOAD_COUNT_ON_RESET,
+} from './constants.js';
+
+import {
+	hasLocal,
+	loadLocal,
+	saveLocal,
+} from './local'
 
 export default {
 	state: {
@@ -13,7 +23,8 @@ export default {
 		startMessageId: null,
 		messagesOldEndReached: false,
 		messagesNewEndReached: false,
-		messagesLoading: false
+		messagesLoading: false,
+		messageSending: false,
 	},
 	actions: {
 		async loadMessages({commit, getters, dispatch}, {
@@ -23,6 +34,12 @@ export default {
 		} = {}) {
 			if (getters.messagesLoading) {
 				return;
+			}
+			const chatId = getters.chat.id
+			if(reset && hasLocal(chatId)){
+				commit('setMessages', loadLocal(chatId))
+				dispatch('setLoading', false)
+				console.log('hasLocal')
 			}
 			commit('setMessagesLoading', true);
 
@@ -42,7 +59,7 @@ export default {
 				including = false;
 			}
 
-			return API.fetchMessages(getters.chat.id, count, startMessageId, including, messages => {
+			return API.fetchMessages(chatId, count, startMessageId, including, messages => {
 				if (reset || goto) {
 					commit('resetMessages');
 				}
@@ -63,6 +80,7 @@ export default {
 
 					if (reset) {
 						commit('setMessages', messages);
+						saveLocal(chatId, messages)
 						dispatch('requestScroll', 0);
 					} else if (count > 0) {
 						commit('prependMessages', messages);
@@ -99,6 +117,8 @@ export default {
 			dispatch('loadMessages');
 		},
 		async sendMessage({commit, getters, dispatch}, message) {
+			if(this.messageSending) return
+			this.messageSending = true
 			let citedMessageId = getters.citedMessage ? getters.citedMessage.id : null;
 			const guid = Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
 			let newMessage = {
@@ -112,7 +132,7 @@ export default {
 			commit('addMessage', newMessage);
 			dispatch('requestScroll', 0);
 			commit('setCitedMessage', null);
-			return API.sendMessage(getters.chat.id, message, citedMessageId, response => {
+			const result = await API.sendMessage(getters.chat.id, message, citedMessageId, response => {
 				response.new_id = response.id;
 				response.id = guid;
 				commit('updateMessage', response);
@@ -121,6 +141,8 @@ export default {
 				newMessage.failed = true;
 				commit('updateMessage', newMessage);
 			});
+			this.messageSending = false
+			return result
 		},
 		async editMessageAction({commit, getters, dispatch}, text) {
 			return API.editMessage(getters.editMessage.id, text, response => {
@@ -443,11 +465,12 @@ export default {
 		editMessage: state => state.editMessage,
 		citedMessage: state => state.citedMessage,
 		pinnedMessage: state => state.pinnedMessage,
-		unreadCount: (state, getters) => getters.chats.reduce((sum, chat) => sum + chat.unread_messages_count, 0),
+		unreadCount: (state, getters) => getters.chats.reduce((sum, chat) => sum + (chat.is_mute ? 0 : chat.unread_messages_count), 0),
 		messagesLoadMoreCount: state => state.messagesLoadMoreCount,
 		startMessageId: state => state.startMessageId,
 		messagesOldEndReached: state => state.messagesOldEndReached,
 		messagesNewEndReached: state => state.messagesNewEndReached,
-		messagesLoading: state => state.messagesLoading
+		messagesLoading: state => state.messagesLoading,
+		messageSending: state => state.messageSending,
 	}
 }

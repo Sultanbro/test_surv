@@ -12,6 +12,9 @@ import { useAsyncPageData, useDataFromResponse } from '@/composables/asyncPageDa
 import UModal from '@/components/ui/UModal' // модалка НАДО УБРАТЬ
 import AwardUserSidebar from '@/components/sidebars/AwardUserSidebar' // сайдбар для награждения пользователя
 import 'vue-croppie'
+import {
+	triggerApplyEmployee,
+} from '@/stores/api.js'
 
 import axios from 'axios'
 
@@ -107,7 +110,9 @@ export default {
 			fireCause: '',
 			isDeleteConfirm: false,
 			isRestoreConfirm: false,
-			taxesFillData: null
+			taxesFillData: null,
+
+			test: null,
 		}
 	},
 	computed: {
@@ -371,6 +376,7 @@ export default {
 			}
 
 			formData.set('zarplata', zarplata.replace(/\D/g, ''));
+
 			if(this.frontValid.email && this.frontValid.name && this.frontValid.lastName && this.frontValid.position && this.frontValid.group){
 				this.sendForm(formData, isNew);
 			} else {
@@ -391,6 +397,7 @@ export default {
 						if(this.taxesFillData.newTaxes[i].name && this.taxesFillData.newTaxes[i].value){
 							const formDataNewTaxes = new FormData();
 							const formDataNewTaxesAssignee = new FormData();
+							formDataNewTaxes.append('user_id', userId);
 							formDataNewTaxes.append('name', this.taxesFillData.newTaxes[i].name);
 							formDataNewTaxes.append('value', this.taxesFillData.newTaxes[i].value);
 							formDataNewTaxes.append('is_percent', this.taxesFillData.newTaxes[i].isPercent ? 1 : 0);
@@ -406,6 +413,7 @@ export default {
 						if(this.taxesFillData.editTaxes[i].name && this.taxesFillData.editTaxes[i].value){
 							const formDataEditTaxes = new FormData();
 							formDataEditTaxes.append('_method', 'put');
+							formDataEditTaxes.append('user_id', userId);
 							formDataEditTaxes.append('id', this.taxesFillData.editTaxes[i].id);
 							formDataEditTaxes.append('name', this.taxesFillData.editTaxes[i].name);
 							formDataEditTaxes.append('value', this.taxesFillData.editTaxes[i].value);
@@ -431,6 +439,14 @@ export default {
 					await axios.post('/work-chart/user/add', formDataWorkChart);
 					console.log('график сохранен');
 				}
+
+				const isApplyTrainee = this.user?.user_description?.is_trainee && formData.get('is_trainee') === 'false'
+				const isNewEmployee = !this.user && formData.get('is_trainee') === 'false'
+
+				if(isApplyTrainee || isNewEmployee){
+					triggerApplyEmployee(userId)
+				}
+
 				if (isNew) {
 					this.$toast.success('Информация о сотруднике сохранена');
 					// window.location = '/timetracking/settings?tab=1';

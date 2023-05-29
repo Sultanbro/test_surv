@@ -26,7 +26,7 @@
 		<!-- Получатели -->
 		<div
 			class="NotificationsEditForm-row"
-			@click="isRecipientsOpen = true"
+			@click="onClickRecipments"
 		>
 			<div class="NotificationsEditForm-label">
 				Кого уведомляем
@@ -92,6 +92,7 @@
 					placeholder="Выберите"
 					:taggable="true"
 					class="multiselect-surv"
+					track-by="value"
 				/>
 			</div>
 		</div>
@@ -108,11 +109,11 @@
 				>
 			</div>
 			<div class="NotificationsEditForm-control">
-				<b-form-timepicker
+				<!-- <b-form-timepicker
 					v-model="value.time"
 					:hour12="false"
 					class="mb-4"
-				/>
+				/> -->
 				<b-form-select
 					v-model="value.date.frequency"
 					:options="periods"
@@ -142,11 +143,12 @@
 			@close="isRecipientsOpen = false"
 		>
 			<AccessSelect
-				v-model="value.recipients"
+				:value="value.recipients"
 				:tabs="['Сотрудники', 'Отделы', 'Должности']"
 				:access-dictionaries="accessDictionaries"
 				search-position="beforeTabs"
-				:submit-button="''"
+				:submit-button="'Применить'"
+				@submit="onSubmitAccess"
 				class="NotificationsEditForm-accessSelect"
 			/>
 		</JobtronOverlay>
@@ -209,7 +211,15 @@ export default {
 	},
 	methods: {
 		onSave(){
+			this.value.type_of_mailing = this.selectedServices.map(service => service.value)
 			this.$emit('save', this.value)
+		},
+		onClickRecipments(){
+			this.isRecipientsOpen = true
+		},
+		onSubmitAccess(value){
+			this.value.recipients = value
+			this.isRecipientsOpen = false
 		}
 	}
 }

@@ -20,7 +20,7 @@
 				</div>
 				<div class="messenger__info-wrapper_head messenger__text-ellipsis messenger__clickable">
 					<div class="messenger__chat-name">
-						<span>
+						<span class="ConversationHeader-title">
 							{{ chat.title }}
 						</span>
 						<!-- <div
@@ -175,6 +175,7 @@
 					</div> -->
 				</div>
 				<div
+					v-if="actions"
 					class="messenger__search-button ConversationHeader-icon ChatIcon-parent"
 					title="Архив"
 					@click="toggleChatSearchMode"
@@ -182,6 +183,7 @@
 					<ChatIconSearchMessages />
 				</div>
 				<div
+					v-if="actions"
 					class="messenger__chat-button-right"
 				>
 					<div
@@ -281,6 +283,12 @@ export default {
 	// directives: {
 	// 	clickOutside
 	// },
+	props: {
+		actions: {
+			type: Boolean,
+			default: true
+		}
+	},
 	data() {
 		return {
 			showMembersNames: false,
@@ -303,17 +311,22 @@ export default {
 			return user.pivot?.is_admin
 		},
 		firstTenUsers(){
+			if(!this.isDesktop) return this.members.slice(0, 3)
 			if(this.members.length < 11) return this.members
 			return this.members.slice(0, 10)
 		},
 		otherUsers(){
+			if(!this.isDesktop) return this.members.slice(3)
 			if(this.members.length < 11) return []
 			return this.members.slice(10)
 		},
 		avatar(){
 			if(this.chat.private) return '/users_img/' + this.chat.second_user.img_url
 			return this.chat.image?.replace('/storage', '')
-		}
+		},
+		isDesktop() {
+			return this.$viewportSize.width > 670
+		},
 	},
 	watch: {
 		// members() {
@@ -490,7 +503,13 @@ export default {
 </script>
 
 <style lang="scss">
-
+.ConversationHeader{
+	&-title{
+		white-space: nowrap;
+		overflow: hidden;
+		text-overflow: ellipsis;
+	}
+}
 .messenger__chat-header {
 	display: flex;
 	align-items: center;

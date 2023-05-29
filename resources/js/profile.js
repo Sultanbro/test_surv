@@ -19,12 +19,12 @@ moment.locale('ru')
 require('moment-weekday-calc')
 
 import Notifications from 'vue-notification'
- 
+
 /*
 or for SSR:
 import Notifications from 'vue-notification/dist/ssr.js'
 */
- 
+
 Vue.use(Notifications)
 
 
@@ -35,7 +35,7 @@ Vue.prototype.$moment = moment
 // import Antd from 'ant-design-vue'
 // Vue.use(Antd)
 
- 
+
 // Import loading component
 import Loading from 'vue-loading-overlay'
 import 'vue-loading-overlay/dist/vue-loading.css'
@@ -48,13 +48,13 @@ Date.prototype.addHours = function(h) {
 	this.setTime(this.getTime() + (h*60*60*1000));
 	return this;
 }
- 
+
 /**
   * Next, we will create a fresh Vue application instance and attach it to
   * the page. Then, you may begin adding components to this application
   * or customize the JavaScript scaffolding to fit your unique needs.
   */
-Vue.component('profile', require('./components/profile/Profile.vue')); 
+Vue.component('profile', require('./components/profile/Profile.vue'));
 Vue.component('timetracking', require('./components/timetracking.vue'));
 Vue.component('user-earnings', require('./components/profile/UserEarnings/UserEarnings.vue'));
 Vue.component('trainee-report', require('./components/TraineeReport.vue'));
@@ -109,4 +109,4 @@ import { store } from './store';
 const app = new Vue({
 	store,
 	el: '.right-panel-app'
-}); 
+});

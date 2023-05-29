@@ -74,6 +74,7 @@
 									class="fa fa-pen"
 									@click="toggleMode"
 									:class="{'active': mode == 'edit'}"
+									v-b-popover.hover.top="'Включить редактирование видео'"
 								/>
 							</div>
 
@@ -82,7 +83,7 @@
 								v-if="activePlaylist == null && mode == 'edit'"
 							>
 								<i
-									class="fa fa-cog"
+									class="icon-nd-settings"
 									@click="get_settings()"
 								/>
 							</div>

@@ -582,10 +582,12 @@ export default {
 		 * Set read corp book page
 		 */
 		hideBook() {
-			axios.post('/corp_book/set-read/', {}).then(() => {
-				this.showCorpBookPage = false
-				this.isBookTest = false
-			}).catch(error => console.error(error))
+			this.showCorpBookPage = false
+			this.isBookTest = false
+			axios.post('/corp_book/set-read/', {}).catch(error => {
+				this.$toast.error('Не удолось отметить страницу базы занний как прочитанную')
+				console.error(error)
+			})
 		},
 
 		repeatBook(){
@@ -933,4 +935,12 @@ export default {
 // @media(max-width:1909px){
 //   .header__profile{}
 // }
+
+.profile-page{
+	.corpbook{
+		ol, ul{
+			margin-left: 2rem;
+		}
+	}
+}
 </style>

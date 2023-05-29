@@ -11,7 +11,7 @@
 			class="AccessSelect-search"
 		/>
 		<AccessSelectTabs
-			v-if="tabs && tabs.length"
+			v-if="tabs && tabs.length && !accessSearch"
 			:tabs="tabs"
 			v-model="selectedTab"
 			class="AccessSelect-tabs"
@@ -27,40 +27,51 @@
 				:search="accessSearch"
 				:selected-tab="selectedTab"
 			>
-				<slot
-					name="users"
-					:search="accessSearch"
-				>
-					<AccessSelectList
-						v-if="selectedTab === 'Сотрудники'"
-						:key="1"
+				<AccessSelectList
+					v-if="accessSearch"
+					:key="99"
+					:search="''"
+					:selected="accessList"
+					:items="searchResults"
+					:type="0"
+					@change="changeAccessList($event)"
+				/>
+				<template v-else>
+					<slot
+						name="users"
 						:search="accessSearch"
-						:selected="value"
-						:items="accessDictionaries.users"
-						:avatar="true"
-						:position="true"
-						:type="1"
+					>
+						<AccessSelectList
+							v-if="selectedTab === 'Сотрудники'"
+							:key="1"
+							:search="accessSearch"
+							:selected="accessList"
+							:items="accessDictionaries.users"
+							:avatar="true"
+							:position="true"
+							:type="1"
+							@change="changeAccessList($event)"
+						/>
+					</slot>
+					<AccessSelectList
+						v-if="selectedTab === 'Отделы'"
+						:key="2"
+						:search="accessSearch"
+						:selected="accessList"
+						:items="accessDictionaries.profile_groups"
+						:type="2"
 						@change="changeAccessList($event)"
 					/>
-				</slot>
-				<AccessSelectList
-					v-if="selectedTab === 'Отделы'"
-					:key="2"
-					:search="accessSearch"
-					:selected="value"
-					:items="accessDictionaries.profile_groups"
-					:type="2"
-					@change="changeAccessList($event)"
-				/>
-				<AccessSelectList
-					v-if="selectedTab === 'Должности'"
-					:key="3"
-					:search="accessSearch"
-					:selected="value"
-					:items="accessDictionaries.positions"
-					:type="3"
-					@change="changeAccessList($event)"
-				/>
+					<AccessSelectList
+						v-if="selectedTab === 'Должности'"
+						:key="3"
+						:search="accessSearch"
+						:selected="accessList"
+						:items="accessDictionaries.positions"
+						:type="3"
+						@change="changeAccessList($event)"
+					/>
+				</template>
 			</slot>
 		</div>
 
@@ -68,7 +79,7 @@
 			:count="accessList.length"
 			:submit-button="submitButton"
 			:submit-disabled="submitDisabled"
-			@submit="$emit('submit')"
+			@submit="$emit('submit', accessList)"
 			class="AccessSelect-footer"
 		/>
 		<slot
@@ -138,6 +149,41 @@ export default {
 			accessSearch: '',
 		}
 	},
+	computed: {
+		searchResults(){
+			const lowerSearch = this.accessSearch.toLowerCase()
+			const result = []
+
+			// Пользователи
+			this.accessDictionaries.users.forEach(user => {
+				if(user.name?.toLowerCase().includes(lowerSearch)) return result.push({
+					...user,
+					type: 1
+				})
+				if(user.position?.toLowerCase().includes(lowerSearch)) return result.push({
+					...user,
+					type: 1
+				})
+			})
+
+			// Отделы
+			this.accessDictionaries.profile_groups.forEach(group => {
+				if(group.name?.toLowerCase().includes(lowerSearch)) return result.push({
+					...group,
+					type: 2
+				})
+			})
+
+			// Должности
+			this.accessDictionaries.positions.forEach(position => {
+				if(position.name?.toLowerCase().includes(lowerSearch)) return result.push({
+					...position,
+					type: 3
+				})
+			})
+			return result
+		}
+	},
 	watch: {
 		value(value){
 			this.accessList = typeof value === 'string' ? value : JSON.parse(JSON.stringify(value))
@@ -200,7 +246,7 @@ export default {
 	&-search,
 	&-tabs,
 	&-list{
-		margin-bottom: 20px;
+
 	}
 	&-list {
 		display: flex;

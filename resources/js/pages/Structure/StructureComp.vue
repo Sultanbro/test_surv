@@ -27,7 +27,7 @@
 					<i class="fa fa-pen" />
 				</button>
 				<button class="icon-btn">
-					<i class="fa fa-cog" />
+					<i class="icon-nd-settings" />
 				</button>
 			</div>
 		</div>

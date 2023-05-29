@@ -143,6 +143,7 @@ Route::middleware(['web','tenant', 'not_admin_subdomain'])->group(function () {
     Route::post('/course-results/get', [Course\CourseResultController::class, 'get']);
     Route::post('/course-results/nullify', [Course\CourseResultController::class, 'nullify']);
 
+    Route::get('course/item-result', [Course\CourseResultController::class, 'getCourseItemAndResult']);
     // glossary
     Route::get('/glossary/get', [Learning\GlossaryController::class, 'get']);
     Route::post('/glossary/save', [Learning\GlossaryController::class, 'save']);
@@ -435,6 +436,8 @@ Route::middleware(['web','tenant', 'not_admin_subdomain'])->group(function () {
     Route::post('/timetracking/top/top_edited_value/update', [Analytics\TopController::class, 'updateTopEditedValue']);
     Route::post('/timetracking/top/proceeds/update', [Analytics\TopController::class, 'updateProceeds']);
 
+    Route::post('/top/utility-archive', [Root\Top\TopValueController::class, 'archiveUtility']);
+
     // HR analytics
     Route::any('/timetracking/analytics/save-call-base', [Analytics\HrController::class, 'saveCallBase']);
     Route::any('/timetracking/analytics', [Analytics\HrController::class, 'index']);
@@ -665,11 +668,24 @@ Route::middleware(['web','tenant', 'not_admin_subdomain'])->group(function () {
         'as'    => 'mailing.'
     ], function () {
         Route::get('/', [Root\Mailing\MailingController::class, 'get']);
-        Route::get('/', [Root\Mailing\MailingController::class, 'get']);
         Route::get('/find/{id}', [Root\Mailing\MailingController::class, 'find']);
 
         Route::post('/', [Root\Mailing\MailingController::class, 'create']);
+        Route::put('/', [Root\Mailing\MailingController::class, 'update']);
         Route::delete('/{id}', [Root\Mailing\MailingController::class, 'delete']);
+    });
+
+    Route::group([
+        'prefix' => 'notification-template',
+        'as'     => 'notification-template.'
+    ], function (){
+        Route::post('/apply-employee', [Root\Mailing\TriggerController::class, 'applyEmployee']);
+        Route::post('/absent-internship', [Root\Mailing\TriggerController::class, 'absentInternship']);
+
+        /**
+         * API не используется так как перешли на крон. Но оставлю в списке
+         */
+        Route::post('/fired-employee/{id}', [Root\Mailing\TriggerController::class, 'firedEmployee']);
     });
 });
 

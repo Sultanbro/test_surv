@@ -50,16 +50,16 @@ class CheckLate extends Command
         $users = User::query()->withWhereHas('user_description', fn ($query) => $query->where('is_trainee', 0))
             ->orderBy('last_name', 'asc')
             ->get();
-     
+
         foreach($users as $user)
         {
             $userFine = new UserFine;
 
             /**
-             * Отнимаем 6 часов так как время сервера GTM +0.
+             * Отнимаем $user->timezone часов так как время сервера GTM +0.
              * Время начала смены для сотрудника.
              */
-            $workStart = Carbon::createFromTimeString($user->work_starts_at())->subHours(6)->subMinutes(10)->format('Y-m-d H:i:s');
+            $workStart = Carbon::createFromTimeString($user->work_starts_at())->subMinutes($user->timezone * 60 + 10)->format('Y-m-d H:i:s');
 
             /**
              * Получаем запись из timetracking таблицы.
@@ -94,17 +94,10 @@ class CheckLate extends Command
                  */
                 if ($diffInMinutes <= 5)
                 {
-                    $existActive = $fines->where([
-                        'fine_id'   => Fine::TYPE_LATE_LESS_5,
-                        'status'    => UserFine::STATUS_ACTIVE
-                        ])->count() > 0;
+                    $existActive = $fines->where('fine_id', Fine::TYPE_LATE_LESS_5)->where('status',UserFine::STATUS_ACTIVE)->count() > 0;
+                    $existInActive = $fines->where('fine_id', Fine::TYPE_LATE_LESS_5)->where('status',UserFine::STATUS_INACTIVE)->count() > 0;
 
-                    $existInActive = $fines->where([
-                        'fine_id'   => Fine::TYPE_LATE_LESS_5,
-                        'status'    => UserFine::STATUS_INACTIVE
-                        ])->count() > 0;
-
-                    if (!$existActive || !$existInActive)
+                    if (!$existActive && !$existInActive)
                     {
                         /**
                          * Создаем штраф менее 5 минут.
@@ -130,17 +123,10 @@ class CheckLate extends Command
                 if ($diffInMinutes > 5)
                 {
 
-                    $existActive = $fines->where([
-                            'fine_id'   => Fine::TYPE_LATE_MORE_5,
-                            'status'    => UserFine::STATUS_ACTIVE
-                        ])->count() > 0;
+                    $existActive = $fines->where('fine_id', Fine::TYPE_LATE_MORE_5)->where('status',UserFine::STATUS_ACTIVE)->count() > 0;
+                    $existInActive = $fines->where('fine_id', Fine::TYPE_LATE_MORE_5)->where('status',UserFine::STATUS_INACTIVE)->count() > 0;
 
-                    $existInActive = $fines->where([
-                            'fine_id'   => Fine::TYPE_LATE_MORE_5,
-                            'status'    => UserFine::STATUS_INACTIVE
-                        ])->count() > 0;
-
-                    if (!$existActive || !$existInActive)
+                    if (!$existActive && !$existInActive)
                     {
 
                         /**

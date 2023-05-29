@@ -56,6 +56,7 @@ class UpdateUserDTO
      * @param array|null $tax
      * @param array|null $taxes
      * @param int|null $bitrixId
+     * @param float|null $timezone
      */
     public function __construct(
         public int $userId,
@@ -104,7 +105,8 @@ class UpdateUserDTO
         public ?string $newPassword,
         public ?array $tax,
         public ?array $taxes,
-        public ?int $bitrixId
+        public ?int $bitrixId,
+        public ?float $timezone,
     )
     {}
 
@@ -157,7 +159,8 @@ class UpdateUserDTO
             'new_password'      => $this->newPassword,
             'tax'               => $this->tax,
             'taxes'             => $this->taxes,
-            'bitrix_id'         => $this->bitrixId
+            'bitrix_id'         => $this->bitrixId,
+            'timezone'          => $this->timezone,
         ];
     }
 }

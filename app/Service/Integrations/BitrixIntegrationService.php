@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Service;
+namespace App\Service\Integrations;
 
 use App\Position;
 use App\Support\Response\JsonApiResponse;

@@ -95,7 +95,14 @@
 					<label
 						for="workStartTime"
 						class="col-sm-4 col-form-label"
-					>Рабочий график</label>
+					>
+						Рабочий график
+						<img
+							src="/images/dist/profit-info.svg"
+							class="img-info"
+							v-b-popover.hover.left="'Укажите во сколько начинается и заканчивается рабочий день всей группы по умолчанию (индивидуально устанавливается в профиле сотрудника)'"
+						>
+					</label>
 					<div class="col-sm-8 form-inline">
 						<input
 							name="work_start_time"
@@ -168,7 +175,14 @@
 					<label
 						for="workStartTime"
 						class="col-sm-4 col-form-label"
-					>Отметьте выходные дни</label>
+					>
+						Отметьте выходные дни
+						<img
+							src="/images/dist/profit-info.svg"
+							class="img-info"
+							v-b-popover.hover.left="'Отметив выходные дни сотрудник не сможет начать рабочй день в эти дни'"
+						>
+					</label>
 					<div class="col-sm-8">
 						<BitMaskCheckGroup
 							v-model="form.usualSchedule"
@@ -216,6 +230,11 @@
 
 <script>
 import BitMaskCheckGroup from '@ui/BitMaskCheckGroup'
+
+function flipbits(v, digits) {
+	return ~v & (Math.pow(2, digits) - 1);
+}
+
 export default {
 	name: 'CompanyShifts',
 	components: {
@@ -273,11 +292,15 @@ export default {
 			let loader = this.$loading.show();
 			const response = await this.axios.get('/work-chart');
 			if (response.data) {
-				this.shiftsData = response.data.data;
+				this.shiftsData = response.data.data || [];
+				this.shiftsData.forEach(shift => {
+					shift.workdays = flipbits(+shift.workdays, 7)
+				})
 				loader.hide();
 			}
 		},
 		createNewShift() {
+			this.resetForm()
 			this.showSidebar = true;
 			this.sidebarName = 'Создание новой смены';
 		},
@@ -294,7 +317,7 @@ export default {
 			this.form.type = shift.work_charts_type || 2
 			this.form.workdays = splitted[0]
 			this.form.dayoffs = splitted[1]
-			this.form.usualSchedule = parseInt(shift.name, 2)
+			this.form.usualSchedule = shift.workdays
 			this.sidebarName = `Редактирование ${shift.name}`;
 			this.showSidebar = true;
 		},
@@ -335,17 +358,19 @@ export default {
 				return
 			}
 			let loader = this.$loading.show();
-			const formData = new FormData();
-			formData.append('name', this.form.name);
-			formData.append('start_time', this.form.workStartTime);
-			formData.append('end_time', this.form.workEndTime);
-			formData.append('work_charts_type', '' + this.form.type);
-			formData.append('chart_workdays', this.form.workdays);
-			formData.append('chart_dayoffs', this.form.dayoffs);
-			formData.append('usual_schedule', this.form.usualSchedule.toString(2));
 
-			if(this.editShiftId) formData.append('_method', 'put')
-			const {data} = await this.axios.post(`/work-chart/${this.editShiftId || ''}`, formData)
+			const request = {
+				name: this.form.name,
+				start_time: this.form.workStartTime,
+				end_time: this.form.workEndTime,
+				work_charts_type: this.form.type,
+				chart_workdays: this.form.workdays,
+				chart_dayoffs: this.form.dayoffs,
+				usual_schedule: flipbits(this.form.usualSchedule, 7).toString(2).padStart(7, '0')
+			}
+
+			if(this.editShiftId) request._method = 'put'
+			const {data} = await this.axios.post(`/work-chart/${this.editShiftId || ''}`, request)
 			if(!data) {
 				this.$toast.error(`Не удалось ${this.editShiftId ? 'обновить' : 'добавить'} смену`)
 				loader.hide()
@@ -357,7 +382,10 @@ export default {
 				this.$toast.success('Смена обновлена');
 			}
 			else{
-				this.shiftsData.push(data.data);
+				this.shiftsData.push({
+					...data.data,
+					workdays: flipbits(+data.data.weekdays, 7),
+				});
 				this.$toast.success('Смена добавлена');
 			}
 

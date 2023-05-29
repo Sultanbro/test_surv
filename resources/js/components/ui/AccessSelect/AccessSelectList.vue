@@ -2,13 +2,13 @@
 	<div class="AccessSelectList">
 		<AccessSelectListItem
 			v-for="item in items"
-			:key="item.id"
+			:key="(type ? type : item.type) + '' + item.id"
 			:item="item"
-			:type="type"
-			:position="position"
-			:avatar="avatar"
+			:type="type ? type : item.type"
+			:position="type ? position : item.type === 1"
+			:avatar="type ? avatar : item.type === 1"
 			:search="lowerSearch"
-			:checked="checked(item, type)"
+			:checked="checked(item, type ? type : item.type)"
 			@change="$emit('change', $event)"
 		/>
 	</div>
@@ -50,7 +50,7 @@ export default {
 	computed: {
 		lowerSearch(){
 			return this.search.toLowerCase()
-		}
+		},
 	},
 	methods: {
 		checked(item, type) {
@@ -66,7 +66,10 @@ export default {
 .AccessSelectList {
 	display: flex;
 	flex-direction: column;
-	gap: 15px;
+	gap: 5px;
+
+	padding: 2px 0;
+
 	overflow-y: scroll;
 }
 </style>

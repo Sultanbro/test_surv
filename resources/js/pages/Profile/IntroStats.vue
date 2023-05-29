@@ -34,7 +34,7 @@
 							>{{ balance }}</span> <span
 								v-show="animated"
 								class="IntroStats-fake"
-							>{{ balance }}</span> {{ profile.currency }}
+							>{{ balance }}</span> {{ currency }}
 						</div>
 					</div>
 				</div>
@@ -81,7 +81,7 @@
 							>{{ kpi }}</span> <span
 								v-show="animated"
 								class="IntroStats-fake"
-							>{{ kpi }}</span> {{ profile.currency }}
+							>{{ kpi }}</span> {{ currency }}
 						</div>
 					</div>
 				</div>
@@ -131,7 +131,7 @@
 							>{{ bonus }}</span> <span
 								v-show="animated"
 								class="IntroStats-fake"
-							>{{ bonus }}</span> {{ profile.currency }}
+							>{{ bonus }}</span> {{ currency }}
 						</div>
 					</div>
 				</div>
@@ -181,7 +181,7 @@
 							>{{ premium }}</span> <span
 								v-show="animated"
 								class="IntroStats-fake"
-							>{{ premium }}</span> {{ profile.currency }}
+							>{{ premium }}</span> {{ currency }}
 						</div>
 					</div>
 				</div>
@@ -253,6 +253,7 @@
 <script>
 import { mapState } from 'pinia'
 import { useProfileSalaryStore } from '@/stores/ProfileSalary'
+import { usePersonalInfoStore } from '@/stores/PersonalInfo'
 import FlipCard from '@ui/FlipCard'
 import PulseCard from '@ui/PulseCard'
 
@@ -269,7 +270,8 @@ export default {
 		}
 	},
 	computed: {
-		...mapState(useProfileSalaryStore, ['user_earnings', 'profile', 'unreadCount']),
+		...mapState(useProfileSalaryStore, ['user_earnings', 'unreadCount']),
+		...mapState(usePersonalInfoStore, ['salary', 'currency']),
 		balance(){
 			return this.separateNumber(this.user_earnings.sumSalary)
 		},
@@ -328,7 +330,7 @@ export default {
          */
 		OpacityStats() {
 			/* global VJQuery */
-			let MAXBALANCE = this.user_earnings.oklad,
+			let MAXBALANCE = parseInt(this.salary.replace(/\s/g, '')) || 0,
 				MAXKPI = this.user_earnings.kpiMax,
 				MAXBONUSES = 1,
 				MAXKVARTAL = 1,
@@ -400,6 +402,7 @@ export default {
 
 		padding: 2rem;
 		background-image: url("data:image/svg+xml,%3csvg width='100%25' height='100%25' xmlns='http://www.w3.org/2000/svg'%3e%3crect width='100%25' height='100%25' fill='none' rx='25' ry='25' stroke='%23DADADAFF' stroke-width='4' stroke-dasharray='6%2c 14' stroke-dashoffset='0' stroke-linecap='square'/%3e%3c/svg%3e");
+		background-color: #fff;
 		border-radius: 2.5rem;
 
 		position: absolute;

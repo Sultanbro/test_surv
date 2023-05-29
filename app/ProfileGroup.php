@@ -21,6 +21,9 @@ use Illuminate\Database\Query\JoinClause;
 use Illuminate\Http\Request;
 use Spatie\Permission\Traits\HasRoles;
 
+/**
+ * @property bool $archive_utility
+ */
 class ProfileGroup extends Model
 {
     use HasRoles;
@@ -64,7 +67,8 @@ class ProfileGroup extends Model
         'rentability_max', // предел рентабельности для спидометра
         'show_payment_terms', // показывать в профиле условия оплаты труда,
         'archived_date', // дата последнего архивирование
-        'work_chart_id' // График работы группы
+        'work_chart_id', // График работы группы,
+        'archive_utility',
     ];
 
     CONST IS_ACTIVE = 1;

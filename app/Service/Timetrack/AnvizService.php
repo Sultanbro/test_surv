@@ -47,16 +47,16 @@ class AnvizService
                                         ->first()
                                         ->CheckTime;
 
-            /**
-             * If user already has Timetracking records for date
-             */
-            $exit_null = $user_records->where('exit', null)
-                ->sortByDesc('enter')
-                ->first();
-
-            if($exit_null) {
-                $this->updateIfDiffMoreThan15Mins($last_anviz_date, $exit_null);
-            }
+//            /**
+//             * If user already has Timetracking records for date
+//             */
+//            $exit_null = $user_records->where('exit', null)
+//                ->sortByDesc('enter')
+//                ->first();
+//
+//            if($exit_null) {
+//                $this->updateIfDiffMoreThan15Mins($last_anviz_date, $exit_null);
+//            }
 
             /**
              * If user not has Timetracking record for date

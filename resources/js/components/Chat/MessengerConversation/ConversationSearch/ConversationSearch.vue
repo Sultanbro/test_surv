@@ -8,7 +8,9 @@
 				class="messenger__messages-container"
 				style="flex-grow: 3"
 			>
-				<ConversationHeader />
+				<ConversationHeader
+					:actions="false"
+				/>
 				<div class="messenger__messages-search">
 					<div class="messenger__messages-search-input">
 						<ChatIconSearch />
@@ -47,14 +49,16 @@
 					</div>
 				</div>
 				<div class="messenger__messages-search-results messenger__messages-search-results_bg">
-					<div
-						v-for="(message, index) in chatSearchMessagesResults"
-						:key="index"
-						class="messenger__message-wrapper"
-						@click="goto(message, $event)"
-					>
-						<ConversationMessage :message="message" />
-					</div>
+					<template v-for="(message, index) in chatSearchMessagesResults">
+						<div
+							v-if="message.body !== 'Event'"
+							:key="index"
+							class="messenger__message-wrapper"
+							@click="goto(message, $event)"
+						>
+							<ConversationMessage :message="message" />
+						</div>
+					</template>
 				</div>
 			</div>
 			<div class="messenger__messages-container">
@@ -133,6 +137,7 @@ export default {
 			'chatSearchMessagesResults',
 			'chatSearchFilesResults',
 			'chatSearchFilesFiles',
+			'isChatSearchMode',
 		]),
 	},
 	watch: {
@@ -145,13 +150,21 @@ export default {
 		searchFilesQuery() {
 			this.searchFiles();
 		},
-		chat(){
-			this.searchFiles()
-			this.searchMessages()
+		chat(value){
+			if(value){
+				this.searchFiles()
+				this.searchMessages()
+			}
 		},
 		date(value){
 			this.searchMessagesDate = value[0]
 		},
+		isChatSearchMode(value){
+			if(value){
+				this.searchFiles()
+				this.searchMessages()
+			}
+		}
 	},
 	methods: {
 		...mapActions([
@@ -182,7 +195,7 @@ export default {
 		searchFiles() {
 			if(!this.chat) return
 			this.findFilesInChat({
-				text: this.searchFilesQuery,
+				text: '' + this.searchFilesQuery,
 				chat_id: this.chat.id,
 			});
 		},
@@ -220,7 +233,6 @@ export default {
 	flex: 1;
 
 	position: relative;
-	overflow: auto;
 	background-color: #fff;
 }
 
@@ -297,9 +309,12 @@ export default {
 }
 
 .messenger__messages-search-results {
+	flex: 1;
+
 	max-width: 100%;
-	flex-grow: 1;
 	padding: 10px;
+
+	overflow-y: auto;
 }
 .messenger__messages-search-results_bg{
 	background: url('../../../../../assets/chat/bg.jpg') repeat, #F7F8FA;
