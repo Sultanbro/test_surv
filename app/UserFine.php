@@ -3,6 +3,7 @@
 namespace App;
 
 use App\Fine;
+use App\Repositories\UserFineRepository;
 use App\UserNotification;
 use App\TimetrackingHistory;
 use Carbon\Carbon;
@@ -98,30 +99,28 @@ class UserFine extends Model
     }
 
     /**
-     * @param int $user_id
+     * @param int $userId
      * @param string $date
      * @return mixed
      */
-    public function getAmountUserFines(int $user_id, string $date)
+    public function getAmountUserFines(int $userId, string $date)
     {
         $fines = UserFine::whereDate('day', $date)
-            ->where('user_id', $user_id)
+            ->where('user_id', $userId)
             ->count();
         return $fines;
     }
 
     /**
-     * @param int $user_id
-     * @param int $fine_id
+     * @param int $userId
+     * @param int $fineId
      * @param string $date
      * @return void
      */
-    public static function turnOffFine(int $user_id, int $fine_id, string $date)
+    public static function turnOffFine(int $userId, int $fineId, string $date)
     {
-        $fine = UserFine::whereDate('day', $date)
-            ->where('user_id', '=',  $user_id)
-            ->where('fine_id','=',  $fine_id)
-            ->where('status','=',  1)
+        $fine = (new UserFineRepository)->getUserFine($userId, $fineId, $date)
+            ->where('status', self::STATUS_ACTIVE)
             ->first();
 
         if (!is_null($fine)) {
@@ -129,40 +128,38 @@ class UserFine extends Model
             $fine->save();
 
             $title = 'Удален штраф на '. Carbon::parse($date)->format('d.m.Y');
-            self::setNotificationAboutFine($user_id, $fine_id, $title);
+            self::setNotificationAboutFine($userId, $fineId, $title);
         }
     }
 
     /**
-     * @param int $user_id
-     * @param int $fine_id
+     * @param int $userId
+     * @param int $fineId
      * @param string $date
      * @return void
      */
-    public static function turnOnFine(int $user_id, int $fine_id, string $date)
+    public static function turnOnFine(int $userId, int $fineId, string $date)
     {
-        $fine = UserFine::whereDate('day', $date)
-            ->where('user_id', '=',  $user_id)
-            ->where('fine_id','=',  $fine_id)
-            ->where('status','=',  2)
+        $fine = (new UserFineRepository)->getUserFine($userId, $fineId, $date)
+            ->where('status', self::STATUS_INACTIVE)
             ->first();
 
         if (!is_null($fine)) {
             $fine->status = UserFine::STATUS_ACTIVE;
             $fine->save();
-            UserFine::updateTimetracking($user_id, $date);
+            UserFine::updateTimetracking($userId, $date);
 
             $title = 'Добавлен штраф на '. Carbon::parse($date)->format('d.m.Y');
-            self::setNotificationAboutFine($user_id, $fine_id, $title);
+            self::setNotificationAboutFine($userId, $fineId, $title);
         }
     }
 
     /**
-     * @param int $user_id
+     * @param int $userId
      * @param string $date
      * @return void
      */
-    public static function updateTimetracking(int $user_id, string $date)
+    public static function updateTimetracking(int $userId, string $date)
     {
         // сохраняем признак что были выполнены изменения, возможно надо будет код закоментировать
         $date = explode("-", $date);
@@ -170,7 +167,7 @@ class UserFine extends Model
         $month = $date[1];
         $day = $date[2];
         // вот здесь надо обновлять ячейку TimeTracking
-        $timeTrackingDay = Timetracking::where('user_id', $user_id)
+        $timeTrackingDay = Timetracking::where('user_id', $userId)
             ->whereYear('enter', intval($year))
             ->whereMonth('enter', intval($month))
             ->whereDay('enter', $day)
@@ -185,24 +182,24 @@ class UserFine extends Model
         $timeTrackingDay->save();
     }
 
-    public static function setNotificationAboutFine($user_id, $fine_id, $title, $data = [])
+    public static function setNotificationAboutFine($userId, $fineId, $title, $data = [])
     {   
-        $message = self::getFineDescription($fine_id);
+        $message = self::getFineDescription($fineId);
         
-        if($fine_id == 53 && array_key_exists("date", $data))  {
+        if($fineId == 53 && array_key_exists("date", $data))  {
             $title = $message;
         	$message = self::getTemplate('2500', $data['date']);
         }
 
         UserNotification::create([
-            'user_id' => $user_id,
+            'user_id' => $userId,
             'title' => $title,
             'message' => $message,
         ]);
         
         if(array_key_exists("date", $data)) {
             TimetrackingHistory::create([
-                'user_id' => $user_id,
+                'user_id' => $userId,
                 'author_id' => 5,
                 'author' => 'Система',
                 'date' => $data['date'],
@@ -212,13 +209,13 @@ class UserFine extends Model
         
     }
 
-    private static function getFineDescription($fine_id)
+    private static function getFineDescription($fineId)
     {   
-        $fine = Fine::find($fine_id);
+        $fine = Fine::find($fineId);
         if($fine) {
             $description = $fine->name;
         } else {
-            $description = 'Штраф id = '.$fine_id.' не найден';
+            $description = 'Штраф id = '.$fineId.' не найден';
         }
         
         return $description;
@@ -227,7 +224,7 @@ class UserFine extends Model
     public static function getTemplate($sum, $date)
     {   
         
-        $fine_id = 53; // штраф за невыход на работу
+        $fineId = 53; // штраф за невыход на работу
         $notification_template = DB::table('notification_templates')
 		    ->find(1); // шаблон штрафа 
 

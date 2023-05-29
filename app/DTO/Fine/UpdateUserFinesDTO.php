@@ -8,13 +8,13 @@ use App\DTO\BaseDTO;
 final class UpdateUserFinesDTO extends BaseDTO
 {
     /**
-     * @param int $user_id
+     * @param int $userId
      * @param array $fines
      * @param string $date
      * @param string $comment
      */
     public function __construct(
-        public int $user_id,
+        public int $userId,
         public array $fines,
         public string $date,
         public string $comment,
@@ -27,10 +27,10 @@ final class UpdateUserFinesDTO extends BaseDTO
     public function toArray(): array
     {
         return [
-            'user_id'   => $this->user_id,
-            'fines'      => $this->fines,
+            'userId'  => $this->userId,
+            'fines'    => $this->fines,
             'date'     => $this->date,
-            'comment'     => $this->comment,
+            'comment'  => $this->comment,
         ];
     }
 }

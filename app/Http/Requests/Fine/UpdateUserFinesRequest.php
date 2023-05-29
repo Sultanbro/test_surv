@@ -41,13 +41,13 @@ class UpdateUserFinesRequest extends BaseFormRequest
     {
         $validated = $this->validated();
 
-        $user_id = Arr::get($validated, 'user_id');
+        $userId = Arr::get($validated, 'user_id');
         $date = Arr::get($validated, 'date');
         $comment = Arr::get($validated, 'comment');
         $fines = Arr::get($validated, 'fines');
 
         return new UpdateUserFinesDTO(
-            $user_id,
+            $userId,
             $fines,
             $date,
             $comment
