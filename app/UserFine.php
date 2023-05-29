@@ -98,22 +98,29 @@ class UserFine extends Model
     }
 
     /**
-     * @param $request
+     * @param int $user_id
+     * @param string $date
      * @return mixed
      */
-    public function getAmountUserFines($request)
+    public function getAmountUserFines(int $user_id, string $date)
     {
-        $fines = UserFine::whereDate('day', $request['date'])
-            ->where('user_id', $request['user_id'])
+        $fines = UserFine::whereDate('day', $date)
+            ->where('user_id', $user_id)
             ->count();
         return $fines;
     }
 
-    public static function turnOffFine($request, $fineId)
+    /**
+     * @param int $user_id
+     * @param int $fine_id
+     * @param string $date
+     * @return void
+     */
+    public static function turnOffFine(int $user_id, int $fine_id, string $date)
     {
-        $fine = UserFine::where('day', '=', $request['date'])
-            ->where('user_id', '=',  $request['user_id'])
-            ->where('fine_id','=',  $fineId)
+        $fine = UserFine::whereDate('day', $date)
+            ->where('user_id', '=',  $user_id)
+            ->where('fine_id','=',  $fine_id)
             ->where('status','=',  1)
             ->first();
 
@@ -121,38 +128,49 @@ class UserFine extends Model
             $fine->status = UserFine::STATUS_INACTIVE;
             $fine->save();
 
-            $title = 'Удален штраф на '. Carbon::parse($request['date'])->format('d.m.Y');
-            self::setNotificationAboutFine($request['user_id'], $fineId, $title);
+            $title = 'Удален штраф на '. Carbon::parse($date)->format('d.m.Y');
+            self::setNotificationAboutFine($user_id, $fine_id, $title);
         }
     }
 
-    public static function turnOnFine($request, $fineId)
+    /**
+     * @param int $user_id
+     * @param int $fine_id
+     * @param string $date
+     * @return void
+     */
+    public static function turnOnFine(int $user_id, int $fine_id, string $date)
     {
-        $fine = UserFine::where('day', '=', $request['date'])
-            ->where('user_id', '=',  $request['user_id'])
-            ->where('fine_id','=',  $fineId)
+        $fine = UserFine::whereDate('day', $date)
+            ->where('user_id', '=',  $user_id)
+            ->where('fine_id','=',  $fine_id)
             ->where('status','=',  2)
             ->first();
 
         if (!is_null($fine)) {
             $fine->status = UserFine::STATUS_ACTIVE;
             $fine->save();
-            UserFine::updateTimetracking($request);
+            UserFine::updateTimetracking($user_id, $date);
 
-            $title = 'Добавлен штраф на '. Carbon::parse($request['date'])->format('d.m.Y');
-            self::setNotificationAboutFine($request['user_id'], $fineId, $title);
+            $title = 'Добавлен штраф на '. Carbon::parse($date)->format('d.m.Y');
+            self::setNotificationAboutFine($user_id, $fine_id, $title);
         }
     }
 
-    public static function updateTimetracking(Request $request)
+    /**
+     * @param int $user_id
+     * @param string $date
+     * @return void
+     */
+    public static function updateTimetracking(int $user_id, string $date)
     {
         // сохраняем признак что были выполнены изменения, возможно надо будет код закоментировать
-        $date = explode("-", $request['date']);
+        $date = explode("-", $date);
         $year = $date[0];
         $month = $date[1];
         $day = $date[2];
         // вот здесь надо обновлять ячейку TimeTracking
-        $timeTrackingDay = Timetracking::where('user_id', intval($request['user_id']))
+        $timeTrackingDay = Timetracking::where('user_id', $user_id)
             ->whereYear('enter', intval($year))
             ->whereMonth('enter', intval($month))
             ->whereDay('enter', $day)

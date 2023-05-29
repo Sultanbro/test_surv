@@ -796,7 +796,9 @@ class TimetrackingController extends Controller
             ];
 
             for ($i = 1; $i <= $date->daysInMonth; $i++) {
-                $fines[$i] = $user->fines->where('date', $i)->where('status', 1)->pluck('fine_id') ?? [];
+                $fines[$i] = $user->fines->filter(
+                    fn($f) => $date->setUnitNoOverflow('day', $i, 'month')->isSameDay($f->pivot->day) && $f->pivot->status == UserFine::STATUS_ACTIVE
+                )->pluck('fine_id') ?? [];
 
                 $x = $user->daytypes->where('day', $i)->first();
                 $daytypes[$i] = $x->type ?? null;
