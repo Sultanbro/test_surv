@@ -6,7 +6,7 @@ import {
 	fetchProfileKpi,
 	fetchProfilePremiums,
 	fetchProfileBonuses,
-	fetchProfilePersonalInfo,
+	// fetchProfilePersonalInfo,
 	fetchPosibleBonuses,
 	fetchProfileAwards,
 } from '@/stores/api'
@@ -69,18 +69,18 @@ export const useProfileSalaryStore = defineStore('profileSalary', {
 				// salary
 				const { data: salary } = await fetchProfileBalance(year, month)
 				const sumSalary = Object.values(salary.salaries).reduce((result, day) => result + (parseInt(day.value) || 0), 0)
-				if(!this.profile){
-					this.profile = await fetchProfilePersonalInfo()
-				}
-				const maxSalary = parseInt(this.profile.salary.replace(/\s/g, '')) || 0
+				// if(!this.profile){
+				// 	this.profile = await fetchProfilePersonalInfo()
+				// }
+				// const maxSalary = parseInt(this.profile.salary.replace(/\s/g, '')) || 0
 				this.user_earnings.sumSalary = sumSalary
-				this.user_earnings.oklad = maxSalary
+				// this.user_earnings.oklad = maxSalary
 
 				// local
 				if(this.hasLocal()){
 					this.loadLocal()
 					this.user_earnings.sumSalary = sumSalary
-					this.user_earnings.oklad = maxSalary
+					// this.user_earnings.oklad = maxSalary
 					this.isReady = true
 				}
 
@@ -130,7 +130,7 @@ export const useProfileSalaryStore = defineStore('profileSalary', {
 					sumQuartalPremiums,
 					sumNominations: sumAwards,
 					kpiMax: maxKpi,
-					oklad: maxSalary
+					// oklad: maxSalary
 				}
 				this.user_earnings = earnings
 				// this.user_earnings.sumSalary = sumSalary
@@ -155,7 +155,7 @@ export const useProfileSalaryStore = defineStore('profileSalary', {
 					sumQuartalPremiums,
 					sumAwards,
 					maxKpi,
-					maxSalary,
+					// maxSalary,
 				}
 
 				this.isReady = true

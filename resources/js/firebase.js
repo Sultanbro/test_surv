@@ -4,7 +4,8 @@ import axios from 'axios'
 
 const hostparts = location.hostname.split('.')
 const tenant = hostparts.shift()
-// const domain = hostparts.join('.')
+const domain = hostparts.join('.')
+
 import { initializeApp } from 'firebase/app'
 import { getFirestore, doc, setDoc } from 'firebase/firestore'
 
@@ -23,6 +24,7 @@ const db = getFirestore(FireApp)
 const originalHandler = window.onerror
 
 function weblog(msg, cause){
+	if(domain !== 'jobtron.org') return
 	const date = new Date().toISOString().substring(0,10)
 	const logdoc = doc(db, 'weblog', date);
 	setDoc(logdoc, {

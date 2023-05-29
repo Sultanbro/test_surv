@@ -51,7 +51,7 @@
 								</b-tr>
 							</b-thead>
 							<b-tbody>
-								<permission-item
+								<PermissionItem
 									v-for="(item, i) in filtered_items"
 									:key="item.id"
 									@deleteItem="deleteItem(i)"
@@ -241,8 +241,12 @@
 </template>
 
 <script>
+import PermissionItem from '@/components/PermissionItem.vue'
 export default {
 	name: 'PagePermissions',
+	components: {
+		PermissionItem,
+	},
 	data() {
 		return {
 			role: null,
