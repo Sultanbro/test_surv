@@ -119,7 +119,14 @@ class TopValue extends Model
 
         foreach($group_ids as $group_id) {
             $group = ProfileGroup::find($group_id);
-            
+
+            if ($group->archive_utility)
+            {
+                continue;
+            }
+
+
+
             $top_values = TopValue::where([
                 'group_id' => $group_id,
                 'date' => $date,
