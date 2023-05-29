@@ -436,6 +436,8 @@ Route::middleware(['web','tenant', 'not_admin_subdomain'])->group(function () {
     Route::post('/timetracking/top/top_edited_value/update', [Analytics\TopController::class, 'updateTopEditedValue']);
     Route::post('/timetracking/top/proceeds/update', [Analytics\TopController::class, 'updateProceeds']);
 
+    Route::post('/top/utility-archive', [Root\Top\TopValueController::class, 'archiveUtility']);
+
     // HR analytics
     Route::any('/timetracking/analytics/save-call-base', [Analytics\HrController::class, 'saveCallBase']);
     Route::any('/timetracking/analytics', [Analytics\HrController::class, 'index']);
