@@ -27,7 +27,7 @@ final class UpdateUserFinesDTO extends BaseDTO
     public function toArray(): array
     {
         return [
-            'userId'  => $this->userId,
+            'userId'   => $this->userId,
             'fines'    => $this->fines,
             'date'     => $this->date,
             'comment'  => $this->comment,
