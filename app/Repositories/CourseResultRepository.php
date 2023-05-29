@@ -3,6 +3,8 @@
 namespace App\Repositories;
 
 use App\Models\CourseResult as Model;
+use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Support\Collection;
 
 class CourseResultRepository extends CoreRepository
 {
@@ -81,5 +83,24 @@ class CourseResultRepository extends CoreRepository
             'is_regressed' => 1
             ]
         );
+    }
+
+    /**
+     * Метод получает и массив id или один id и ищет по нему совпадение.
+     *
+     * @param int|array $ids
+     * @param int $userId
+     * @return Builder
+     */
+    public function getResultByCourseIds(
+        int|array $ids,
+        int $userId
+    ): Builder
+    {
+        return $this->model()
+            ->when(is_array($ids), fn($courseResults) => $courseResults->whereIn('course_id', $ids))
+            ->when(is_int($ids), fn($courseResults) => $courseResults->where('course_id', $ids))
+            ->where('user_id', $userId)
+            ->orderBy('status', 'desc');
     }
 }
