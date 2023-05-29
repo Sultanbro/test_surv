@@ -55,7 +55,6 @@
 
 <script>
 export default {
-
 	name: 'LayoutsPopup',
 	props: {
 		title: {},
@@ -74,6 +73,10 @@ export default {
 }
 </script>
 
-<style lang="scss" scoped>
-
+<style lang="scss">
+@media only screen and (max-width: 670px) {
+	.popup{
+		width: 100% !important;
+	}
+}
 </style>
