@@ -219,7 +219,8 @@ class SalaryController extends Controller
         //////
         $groups = ProfileGroup::query()->where('active', true)
             ->orWhere(fn ($query) => $query->where('active', false)->where(
-                fn ($query) => $query->whereNull('archived_date')->orWhere('archived_date', '<=', $date->lastOfMonth()->format('Y-m-d'))))
+                fn ($query) => $query->whereNotNull('archived_date')->where(fn($query) =>
+                $query->whereDate('archived_date', '>=', $date->format('Y-m-d')))))
             ->get();
 
         $salary_approved = []; // костыль
