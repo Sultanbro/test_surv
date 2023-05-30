@@ -424,7 +424,7 @@
 												class="TableQuality-input"
 											>
 												<input
-													type="text"
+													type="number"
 													v-model="item['param' + pk]"
 													class="TableQuality-inputNumber text-center"
 													@focus="$event.target.select()"
@@ -1855,6 +1855,12 @@ export default {
 		&-inputNumber{
 			width: 40px;
 			margin: 0 auto;
+			&::-webkit-outer-spin-button,
+			&::-webkit-inner-spin-button {
+				-webkit-appearance: none;
+				margin: 0;
+			}
+			-moz-appearance: textfield;
 		}
 		&-inputPhone{
 			width: 110px;
