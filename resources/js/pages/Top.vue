@@ -67,34 +67,13 @@
 					/>
 					<div class="d-flex jcfe">
 						<JobtronButton
-							v-if="archiveUtility.length"
+							v-if="archiveUtilityWithGauges.length"
 							@click="isArchiveOpen = true"
 							title="Открыть архив"
 						>
 							Архив
 						</JobtronButton>
 					</div>
-					<SideBar
-						title="Архив"
-						width="35%"
-						:open="isArchiveOpen"
-						@close="isArchiveOpen = false"
-					>
-						<div
-							v-for="util in archiveUtility"
-							:key="util.id"
-							class="TopArchive-item"
-						>
-							<div class="TopArchive-title">
-								{{ util.name }}
-							</div>
-							<i
-								class="fa fa-trash-restore TopArchive-button"
-								title="Восстановить из архива"
-								@click="onRestoreUtility(util.id)"
-							/>
-						</div>
-					</SideBar>
 				</div>
 			</b-tab>
 
@@ -108,62 +87,78 @@
 					class="d-flex flex-wrap mb-5"
 					:key="ukey"
 				>
-					<div
-						v-for="(gauge, g_index) in rentability"
-						:key="gauge.name"
-						class="gauge-block"
-					>
-						<div @click="gauge.editable = !gauge.editable">
-							<VGauge
-								:value="gauge.value"
-								unit="%"
-								:options="gauge.options"
-								:max-value="Number(gauge.max_value)"
-								:top="true"
-								height="75px"
-								width="125px"
-								gauge-value-class="gauge-span"
-							/>
-						</div>
-
-						<p
-							class="text-center font-bold"
-							style="font-size: 14px;margin-bottom: 0;"
-						>
-							<a
-								:href="'/timetracking/an?group='+ gauge.group_id + '&active=1&load=1'"
-								target="_blank"
-							>{{ gauge.name }}</a>
-						</p>
-						<p class="text-center font-bold text-14">
-							{{ gauge.value }}%
-						</p>
-
-
+					<template v-for="(gauge, g_index) in rentability">
 						<div
-							v-if="gauge.editable"
-							class="mb-5 edt-window"
-							style="width: 125px;"
+							v-if="isActiveRentability(gauge.group_id)"
+							:key="gauge.name"
+							class="gauge-block"
 						>
-							<div>
-								<div class="d-flex justify-content-between align-items-center">
-									<span class="pr-2 l-label">Max</span>
-									<input
-										type="text"
-										class="form-control form-control-sm w-250 wiwi"
-										v-model="gauge.max_value"
+							<div @click="gauge.editable = !gauge.editable">
+								<VGauge
+									:value="gauge.value"
+									unit="%"
+									:options="gauge.options"
+									:max-value="Number(gauge.max_value)"
+									:top="true"
+									height="75px"
+									width="125px"
+									gauge-value-class="gauge-span"
+								/>
+							</div>
+							<p
+								class="text-center font-bold"
+								style="font-size: 14px;margin-bottom: 0;"
+							>
+								<a
+									:href="'/timetracking/an?group='+ gauge.group_id + '&active=1&load=1'"
+									target="_blank"
+								>{{ gauge.name }}</a>
+								<span
+									class=" ml-2 pointer"
+									title="Отправить в архив"
+									@click="onArchiveUtility(gauge.group_id)"
+								>
+									<i class="fa fa-trash" />
+								</span>
+							</p>
+							<p class="text-center font-bold text-14">
+								{{ gauge.value }}%
+							</p>
+							<div
+								v-if="gauge.editable"
+								class="mb-5 edt-window"
+								style="width: 125px;"
+							>
+								<div>
+									<div class="d-flex justify-content-between align-items-center">
+										<span class="pr-2 l-label">Max</span>
+										<input
+											type="text"
+											class="form-control form-control-sm w-250 wiwi"
+											v-model="gauge.max_value"
+										>
+									</div>
+								</div>
+								<div class="d-flex">
+									<button
+										@click="saveRentGauge(g_index)"
+										class="btn btn-primary btn-sm rounded mt-1 mr-2"
 									>
+										Сохранить
+									</button>
 								</div>
 							</div>
-							<div class="d-flex">
-								<button
-									@click="saveRentGauge(g_index)"
-									class="btn btn-primary btn-sm rounded mt-1 mr-2"
-								>
-									Сохранить
-								</button>
-							</div>
 						</div>
+					</template>
+
+					<div class="ml-a pt-4">
+						<JobtronButton
+							v-if="archiveUtility.length"
+							@click="isArchiveOpen = true"
+							title="Открыть архив"
+						>
+							Архив
+						</JobtronButton>
 					</div>
 				</div>
 
@@ -382,6 +377,28 @@
 			</b-tab>
 		</b-tabs>
 
+		<SideBar
+			title="Архив"
+			width="35%"
+			:open="isArchiveOpen"
+			@close="isArchiveOpen = false"
+			class="TopArchive"
+		>
+			<div
+				v-for="util in archiveUtility"
+				:key="util.id"
+				class="TopArchive-item"
+			>
+				<div class="TopArchive-title">
+					{{ util.name }}
+				</div>
+				<i
+					class="fa fa-trash-restore TopArchive-button"
+					title="Восстановить из архива"
+					@click="onRestoreUtility(util.id)"
+				/>
+			</div>
+		</SideBar>
 
 		<div class="empty-space" />
 	</div>
@@ -397,6 +414,7 @@ import NPS from '@/components/tables/NPS' // Оценка руководител
 import { useYearOptions } from '@/composables/yearOptions'
 import JobtronButton from '@ui/Button'
 import SideBar from '@ui/Sidebar'
+import { topArchiveUtility } from '@/stores/api'
 
 export default {
 	name: 'PageTop',
@@ -469,10 +487,13 @@ export default {
 			return useYearOptions(new Date(this.portal.created_at).getFullYear())
 		},
 		activeUtility(){
-			return this.utility.filter(util => !util.deleted_at)
+			return this.utility.filter(util => !util.archive_utility)
 		},
 		archiveUtility(){
-			return this.utility.filter(util => util.deleted_at && util.gauges.length)
+			return this.utility.filter(util => util.archive_utility)
+		},
+		archiveUtilityWithGauges(){
+			return this.archiveUtility.filter(util => util.gauges.length)
 		}
 	},
 	created() {
@@ -602,11 +623,15 @@ export default {
 		async onArchiveUtility(groupId){
 			if(!confirm('Убрать полезность в архив?')) return
 			try{
-				const {data} = await this.axios.delete(`/timetracking/top/${groupId}`)
-				if(data.message === 'Success'){
+				const {message} = await topArchiveUtility({
+					group_id: groupId,
+					is_archive: true,
+				})
+				if(message === 'Success'){
 					const utility = this.utility.find(util => util.id === groupId)
 					if(utility){
-						utility.deleted_at = new Date().toISOString()
+						utility.archive_utility = true
+						this.$forceUpdate()
 					}
 				}
 			}
@@ -618,11 +643,16 @@ export default {
 		async onRestoreUtility(groupId){
 			if(!confirm('Восстановить полезность?')) return
 			try{
-				const {data} = await this.axios.post(`/timetracking/top/${groupId}`)
-				if(data.message === 'Success'){
+				const {message} = await topArchiveUtility({
+					group_id: groupId,
+					is_archive: false,
+				})
+				if(message === 'Success'){
 					const utility = this.utility.find(util => util.id === groupId)
 					if(utility){
-						utility.deleted_at = null
+						utility.archive_utility = false
+						this.$forceUpdate()
+						if(!this.archiveUtility.length) this.isArchiveOpen = false
 					}
 				}
 			}
@@ -630,16 +660,32 @@ export default {
 				this.$toast.error('Не удалось восстановить полезность')
 			}
 		},
+
+		isActiveRentability(groupId){
+			const utility = this.utility.find(util => util.id === groupId)
+			if(!utility) return true
+			return !utility.archive_utility
+		},
 	}
 }
 </script>
 
 <style lang="scss">
 	.TopArchive{
+		&.ui-sidebar{
+			&.is-open{
+				.ui-sidebar__body{
+					right: 60px;
+				}
+			}
+		}
+
 		&-item{
 			display: flex;
 			align-items: center;
 			gap: 10px;
+
+			padding: 10px;
 			&:hover{
 				background-color: #DDE9FF;
 			}
