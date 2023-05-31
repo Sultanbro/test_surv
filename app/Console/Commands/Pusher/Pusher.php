@@ -80,9 +80,8 @@ class Pusher extends Command
     {
         $mailingSystems = json_decode($notification->type_of_mailing);
         $days   =  json_decode($notification->days);
-        dd($days);
         $today  = Carbon::now()->dayOfWeekIso;
-
+        dd($today);
         if (in_array($today, $days))
         {
             foreach ($mailingSystems as $mailingSystem)
