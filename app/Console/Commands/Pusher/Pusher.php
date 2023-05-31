@@ -84,6 +84,7 @@ class Pusher extends Command
 
         if (in_array($today, $days))
         {
+            dd('weekly');
             foreach ($mailingSystems as $mailingSystem)
             {
                 NotificationFactory::createNotification($mailingSystem)->send($notification, $notification->title);
