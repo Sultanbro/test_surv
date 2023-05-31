@@ -12,19 +12,28 @@
 				:class="wrapper_class"
 			>
 				<div
-					class="text-center font-bold mb-3 mt-2 d-flex justify-content-center"
 					v-if="editable"
+					class="text-center font-bold mb-3 mt-2 d-flex justify-content-center"
 				>
 					<a
 						:href="'/timetracking/an?group='+ group.id + '&active=1&load=1'"
 						target="_blank"
 					>{{ group.name }}</a>
 					<div
-						class=" ml-2 pointer"
 						v-if="page == 'top' && group.gauges.length < 4"
+						class=" ml-2 pointer"
+						title="Добавить новый спидометр"
 						@click="showAddWindow(group.id, group_index)"
 					>
 						<i class="fa fa-plus-square" />
+					</div>
+					<div
+						v-if="page == 'top'"
+						class=" ml-2 pointer"
+						title="Отправить в архив"
+						@click="$emit('archive', group.id)"
+					>
+						<i class="fa fa-trash" />
 					</div>
 				</div>
 				<div
@@ -349,11 +358,6 @@ export default {
 		VGauge,
 	},
 	props: ['utility_items', 'editable', 'wrapper_class', 'page'],
-	watch: {
-		utility_items() {
-			//vm.$forceUpdate()
-		},
-	},
 	data() {
 		return {
 			utility: [],
@@ -386,6 +390,14 @@ export default {
 				'#ca0013': 7, // red
 			},
 		}
+	},
+
+	watch: {
+		utility_items() {
+			this.utility = this.utility_items;
+			this.normalize();
+			//vm.$forceUpdate()
+		},
 	},
 	created() {
 		this.utility = this.utility_items;
