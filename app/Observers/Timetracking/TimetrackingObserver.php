@@ -18,7 +18,7 @@ class TimetrackingObserver
     public function created(Timetracking $timetracking)
     {
         $user = User::findOrFail($timetracking->user_id);
-        if ($user && empty($user->first_work_day)) {
+        if (empty($user->first_work_day)) {
             $workChart = $user->getWorkChart();
             if ($workChart->work_charts_type === WorkChartModel::WORK_CHART_TYPE_REPLACEABLE) {
                 $user->first_work_day = Carbon::now();
