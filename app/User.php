@@ -1269,11 +1269,17 @@ class User extends Authenticatable implements Authorizable
     }
 
     /**
+     * Получаем дни работы для пользователя за неделю.
      * @return int[]
      */
     public function getCountWorkDays(): array
     {
-        $type = $this->getWorkChart()?->name ?? "6-1";
+        $work_chart = $this->getWorkChart();
+        if ($work_chart && $work_chart->workdays !== null){
+            return WorkChartModel::convertWorkDays($work_chart->workdays);
+        }
+
+        $type = $work_chart?->name ?? "6-1";
 
         return match ($type) {
             "6-1" => [0],
@@ -1281,6 +1287,35 @@ class User extends Authenticatable implements Authorizable
             "1-1", "2-2", "3-3" => [5,6,0],
             default => throw new InvalidArgumentException("Invalid chart type"),
         };
+    }
+
+    /**
+     * Получаем дни работы для пользователя за месяц
+     * @return void
+     */
+    public function getCountWorkDaysMonth() {
+        $firstWorkDay = Carbon::parse($this->first_work_day)->format('Y-m-d') ?? Carbon::now()->format('Y-m-d');
+        $workChartName = $this->workChart->name;
+        $days = explode('-', $workChartName);
+        $workingDay = (int)$days[0];
+        $dayOff = (int)$days[1];
+        $total = $workingDay + $dayOff;
+
+        $year = Carbon::now()->year;
+        $month = Carbon::now()->month;
+        $daysInMonth = Carbon::createFromDate($year, $month)->daysInMonth;
+
+        $workDayInMonth = 0;
+        for ($i = 1; $i <= $daysInMonth; $i++) {
+            $dayInMonth = Carbon::createFromDate($year, $month)->setDay($i);
+            $differBetweenFirstAndLastDay = $dayInMonth->diffInDays($firstWorkDay);  // получаем разницу между датами начального и последнего дня
+            $remains = $differBetweenFirstAndLastDay % $total;
+
+            if ($remains < $total) {
+                $workDayInMonth++;
+            }
+        }
+        return $workDayInMonth;
     }
 
     public function getWorkChart(): ?WorkChartModel {
@@ -1363,8 +1398,8 @@ class User extends Authenticatable implements Authorizable
         }
         elseif ($workChart->work_charts_type === WorkChartModel::WORK_CHART_TYPE_REPLACEABLE && $this->first_work_day !== null) {
             $days = explode('-', $workChart->name);
-            $workingDay = array_key_exists(0, $days) ? intval($days[0]) : throw new Exception(message: 'Проверьте график работы');
-            $dayOff = array_key_exists(1, $days) ? intval($days[1]) : throw new Exception(message: 'Проверьте график работы');
+            $workingDay = array_key_exists(0, $days) ? (int)$days[0] : throw new Exception(message: 'Проверьте график работы', code: 400);
+            $dayOff = array_key_exists(1, $days) ? (int)$days[1] : throw new Exception(message: 'Проверьте график работы', code: 400);
 
             $differBetweenFirstAndLastDay = Carbon::today()->diffInDays($this->first_work_day);  // получаем разницу между датами начального и последнего дня
             $total = $workingDay + $dayOff;
