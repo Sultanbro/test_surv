@@ -19,6 +19,10 @@ class BitrixOld
         if($line == 'intellect') {
             $this->link = 'https://infinitys.bitrix24.kz/rest/2/dnd7yenlqg9mhbnj/';
         }
+
+        if($line == 'common') {
+            $this->link = 'https://infinitys.bitrix24.kz/rest/146740/np2apenisqt13qzo/';
+        }
         
     }
 
