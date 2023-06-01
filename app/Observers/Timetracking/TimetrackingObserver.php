@@ -21,7 +21,7 @@ class TimetrackingObserver
         if (empty($user->first_work_day)) {
             $workChart = $user->getWorkChart();
             if ($workChart->work_charts_type === WorkChartModel::WORK_CHART_TYPE_REPLACEABLE) {
-                $user->first_work_day = Carbon::now();
+                $user->first_work_day = Carbon::now()->format("Y-m-d 00:00:00");
                 $user->save();
             }
         }

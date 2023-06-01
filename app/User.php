@@ -1311,7 +1311,7 @@ class User extends Authenticatable implements Authorizable
             $differBetweenFirstAndLastDay = $dayInMonth->diffInDays($firstWorkDay);  // получаем разницу между датами начального и последнего дня
             $remains = $differBetweenFirstAndLastDay % $total;
 
-            if ($remains < $total) {
+            if ($remains < $workingDay) {
                 $workDayInMonth++;
             }
         }
@@ -1401,16 +1401,22 @@ class User extends Authenticatable implements Authorizable
             $workingDay = array_key_exists(0, $days) ? (int)$days[0] : throw new Exception(message: 'Проверьте график работы', code: 400);
             $dayOff = array_key_exists(1, $days) ? (int)$days[1] : throw new Exception(message: 'Проверьте график работы', code: 400);
 
-            $differBetweenFirstAndLastDay = Carbon::today()->diffInDays($this->first_work_day);  // получаем разницу между датами начального и последнего дня
+            $differBetweenFirstAndLastDay = Carbon::now()->diffInDays($this->first_work_day);  // получаем разницу между датами начального и последнего дня
             $total = $workingDay + $dayOff;
-            $remains = $differBetweenFirstAndLastDay % $total;
 
+            if ($workingDay === 1){
+                $remains = $differBetweenFirstAndLastDay % $total;
+                if ($remains === 0) {
+                    return true;
+                }
+                return false;
+            }
+
+            $remains = ($differBetweenFirstAndLastDay + 1) % $total;
             if ($remains < $workingDay) {
                 return true;
             }
-            elseif ($remains < $total) {
-                return false;
-            }
+            return false;
         }
         return true;
     }
