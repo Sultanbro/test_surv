@@ -25,4 +25,15 @@ class WorkChartObserver
             }
         }
     }
+
+    /**
+     * При удалении смены мы обновляем work_chart_id для всех пользователей, которые выбрали эту смену
+     * @param WorkChartModel $workChartModel
+     * @return void
+     */
+    public function deleted(WorkChartModel $workChartModel){
+        User::where('work_chart_id', $workChartModel->id)->update([
+           'work_chart_id' => 0
+        ]);
+    }
 }

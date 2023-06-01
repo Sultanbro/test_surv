@@ -16,8 +16,8 @@ class UserObserver
     public function updated(User $user)
     {
         if ($user->isDirty('work_chart_id')) {
-            $workChar = $user->getWorkChart();
-            if ($workChar->work_charts_type === WorkChartModel::WORK_CHART_TYPE_USUAL){
+            $workChart = $user->getWorkChart();
+            if ($workChart->work_charts_type === WorkChartModel::WORK_CHART_TYPE_USUAL){
                 $user->first_work_day = null;
                 $user->save();
             }
