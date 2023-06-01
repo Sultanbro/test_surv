@@ -604,7 +604,7 @@ class Salary extends Model
                 $working_hours = max($userWorkHours, 0);
 
                 $workChartType = $user->workChart->work_charts_type ?? 0;
-                if ($workChartType === WorkChartModel::WORK_CHART_TYPE_USUAL){
+                if ($workChartType === 0 || $workChartType === WorkChartModel::WORK_CHART_TYPE_USUAL){
                     $ignore = $user->getCountWorkDays();   // Какие дни не учитывать в месяце
                     $workdays = workdays($date->year, $date->month, $ignore);
                 }
