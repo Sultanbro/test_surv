@@ -142,7 +142,7 @@
 					@click="$emit('pop', 'bonus')"
 				>
 					<!-- У вас {{ unreadCount.bonuses }} новых бонусов! -->
-					Установлен новый бонус
+					Доступен новый бонус
 				</PulseCard>
 			</template>
 		</FlipCard>
@@ -243,7 +243,7 @@
 					@click="$emit('pop', 'nominations')"
 				>
 					<!-- У вас {{ unreadCount.awards }} новых наград! -->
-					Установлена новая награда
+					Доступна новая награда
 				</PulseCard>
 			</template>
 		</FlipCard>
