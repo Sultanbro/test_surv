@@ -376,7 +376,7 @@ export default {
 					if(index != -1) this.items.id = response.data.id;
 
 					loader.hide();
-
+					this.$toast.success('Цели сохранены!');
 				})
 				.catch((error) => {
 					loader.hide();
