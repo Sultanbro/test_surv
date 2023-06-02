@@ -376,11 +376,16 @@ export default {
 					if(index != -1) this.items.id = response.data.id;
 
 					loader.hide();
-					this.$toast.success('Цели сохранены!');
+
 				})
 				.catch((error) => {
 					loader.hide();
-					alert(error);
+					if(error.response?.data?.error === 'Duplicate entry for unique key.') {
+						this.$toast.success('Цели сохранены!');
+					}
+					else{
+						alert(error);
+					}
 				});
 		},
 
