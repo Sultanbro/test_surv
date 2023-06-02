@@ -380,7 +380,12 @@ export default {
 				})
 				.catch((error) => {
 					loader.hide();
-					alert(error);
+					if(error.response?.data?.error === 'Duplicate entry for unique key.') {
+						this.$toast.success('Внесите изменения перед сохранением');
+					}
+					else{
+						alert(error);
+					}
 				});
 		},
 
