@@ -217,6 +217,7 @@ export default {
 	},
 	created(){
 		this.loadLocalState()
+		this.ChatApp.$on('addQuote', this.onQuote)
 	},
 	methods: {
 		...mapActions(['sendMessage', 'editMessageAction', 'uploadFiles', 'citeMessage']),
@@ -333,6 +334,10 @@ export default {
 		saveLocalState(){
 			localStorage.setItem('ConversationFooter', JSON.stringify(this.localState))
 		},
+		onQuote(text){
+			if(this.body.trim()) this.body += '\n> ' + text.split('\n').join('\n> ') + '\n'
+			else this.body = '> ' + text.split('\n').join('\n> ') + '\n'
+		}
 	},
 	filters: {
 		countdownFormat(value) {
