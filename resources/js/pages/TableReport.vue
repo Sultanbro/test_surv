@@ -795,14 +795,6 @@
 				</option>
 			</select>
 
-			<b-form-input
-				v-if="firingItems.type == 0"
-				class="mt-3"
-				v-model="commentFiring"
-				placeholder="Свой вариант"
-				:required="true"
-			/>
-
 			<b-form-file
 				v-if="firingItems.type == 2"
 				v-model="firingItems.file"
