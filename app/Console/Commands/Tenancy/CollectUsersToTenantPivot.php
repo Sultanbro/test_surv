@@ -40,7 +40,7 @@ class CollectUsersToTenantPivot extends Command
      */
     public function handle()
     {   
-        dd('STOOOOOP');
+        // dd('STOOOOOP');
         $this->line('start collect');
 
         $tenant_pivot = \DB::connection('mysql')->table('tenant_pivot')->get();
@@ -49,13 +49,13 @@ class CollectUsersToTenantPivot extends Command
             throw new \Exception('Can\'t collect users to non-empty tenant_pivot table');
         }
 
-        
         $users = \App\User::withTrashed()->get();
 
         $all = $users->count();
 
         $this->line('ALL USERS: ' . $all);
 
+        $rows = [];
         $start = 1;
         foreach ($users as $user) {
             $this->line('Progress '  . round($start / $all, 3) . '%');  
@@ -74,19 +74,21 @@ class CollectUsersToTenantPivot extends Command
                     'country' => $user->working_country,
                     'currency' => $user->currency,
                 ]);
-            }
 
-            \DB::connection('mysql')->table('tenant_pivot')->insert([
-                'user_id' => $centralUser->id,
-                'tenant_id' => 'bp',
-                'owner' => $centralUser->id == 1 ? 1 : 0
-            ]);
+                $rows[] = [
+                    'user_id' => $centralUser->id,
+                    'tenant_id' => 'bp',
+                    'owner' => $centralUser->id == 1 ? 1 : 0
+                ];
+            }
 
             $start++;
         }
 
+        $this->line('NEW USERS: ' . count($rows));
 
+        \DB::connection('mysql')->table('tenant_pivot')->insert($rows);
 
-
+        $this->line('SUCCESS');
     }
 }
