@@ -49,7 +49,12 @@ class CollectUsersToTenantPivot extends Command
             throw new \Exception('Can\'t collect users to non-empty tenant_pivot table');
         }
 
-        $users = \App\User::withTrashed()->get();
+        $users = \App\User::withTrashed()->get()->filter(
+            fn($u) => $tenant_pivot
+                ->where('tenant_id', 'bp')
+                ->where('user_id', $u->getKey())
+                ->isNotEmpty()
+        );
 
         $all = $users->count();
 
