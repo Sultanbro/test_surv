@@ -8,6 +8,7 @@
 			{
 				'ConversationMessage_userFirst': helper && helper.isUserFirst,
 				'ConversationMessage_userLast': helper && helper.isUserLast,
+				'ConversationMessage_textSelected': selectedBox,
 			}
 		]"
 	>
@@ -27,7 +28,10 @@
 				>
 					{{ name }}
 				</div>
-				<div class="messenger__format-message-wrapper">
+				<div
+					class="messenger__format-message-wrapper"
+					@mouseup.stop="onTextSelect"
+				>
 					<div
 						v-if="message.parent"
 						class="messenger__format-container_parent"
@@ -40,24 +44,10 @@
 							{{ message.parent.body }}
 						</div>
 					</div>
-					<div class="messenger__format-container">
-						<span>
-							<template v-for="(messagePart, key) in messageBody">
-								<template v-if="messagePart.type === MESSAGE_TYPES.TEXT">
-									<template>{{ messagePart.text }}</template>
-								</template>
-								<a
-									v-else
-									:href="messagePart.url"
-									:key="key"
-									target="_blank"
-									class="messenger__format-link"
-								>
-									{{ messagePart.title }}
-								</a>
-							</template>
-						</span>
-					</div>
+					<div
+						class="messenger__format-container"
+						v-html="messageBody"
+					/>
 					<ConversationMessageGallery
 						v-if="isGallery"
 						:files="message.files"
@@ -155,6 +145,12 @@
 					:reactions="reactions"
 					@reaction-click="reactMessage({message: message, emoji_id: $event})"
 				/>
+				<i
+					class="ConversationMessage-quoteButton fa fa-chevron-right"
+					@click.stop="onClickQuote"
+					v-click-outside="onClickOutsideQuote"
+					:style="selectedBox || ''"
+				/>
 			</div>
 
 			<div
@@ -182,14 +178,7 @@ import ConversationMessageGallery from './ConversationMessageGallery'
 import JobtronAvatar from '@ui/Avatar'
 import { stringToColor } from '@/composables/stringToColor'
 
-const MESSAGE_TYPES = {
-	TEXT: 0,
-	LINK: 1,
-};
-const urlRegExp = /https?:\/\/[^\s|]*/g;
 const linkRegExp = /https?:\/\/[^\s]*|\[\s*?https?:\/\/[^\s]*\s*?\|[^\]]*\]/g;
-const linkTitleRegExp = /\|[^\]]*\]$/g;
-const maxLinkTitleLength = 50;
 
 export default {
 	name: 'ConversationMessage',
@@ -201,6 +190,9 @@ export default {
 		ConversationMessageGallery,
 		JobtronAvatar,
 	},
+	inject: [
+		'ChatApp'
+	],
 	props: {
 		message: {
 			type: Object,
@@ -219,7 +211,11 @@ export default {
 			default: null
 		}
 	},
-	data: () => ({MESSAGE_TYPES}),
+	data(){
+		return {
+			selectedBox: null
+		}
+	},
 	computed: {
 		...mapGetters(['user', 'chat']),
 		messageCardClass() {
@@ -260,26 +256,13 @@ export default {
 		},
 		messageBody() {
 			const { body } = this.message;
-			const result = [];
-
-			if (typeof body != 'string') return result
-
-			const textArr = body.split(linkRegExp);
-			const links = body.match(linkRegExp);
-
-			textArr.forEach((text) => {
-				result.push({
-					type: MESSAGE_TYPES.TEXT,
-					text,
-				});
-
-				if(!links) return
-				const link = links.pop();
-
-				if (link) result.push(this.mapLink(link))
-			});
-
-			return result;
+			if (typeof body != 'string') return ''
+			return body
+				.split('\n')
+				.map(line => line[0] === '>' ? `<div class="ConversationMessage-quote">${line.slice(1).trim()}</div>` : line + '\n')
+				.join('')
+				.trim()
+				.replace(linkRegExp, '<a href="$&" target="_blank" class="ConversationMessage-link">$&</a>')
 		},
 		name() {
 			return `${this.message.sender.name} ${this.message.sender.last_name}`
@@ -289,7 +272,7 @@ export default {
 		},
 		isGallery() {
 			return this.message.files && this.message.files.length > 1 && this.message.files.every(file => this.isImage(file));
-		},
+		}
 	},
 	methods: {
 		...mapActions([
@@ -330,36 +313,48 @@ export default {
 				}
 			});
 		},
-		mapLink(link) {
-			if (typeof link != 'string') {
-				throw new Error('wrong link');
-			}
-
-			let linkTitle = link.match(linkTitleRegExp)?.[0];
-
-			if (linkTitle) {
-				return {
-					type: MESSAGE_TYPES.LINK,
-					title: linkTitle.slice(1, -1),
-					url: link.match(urlRegExp)[0],
-				};
-			}
-
-			linkTitle = link;
-
-			if (linkTitle.length > maxLinkTitleLength) {
-				linkTitle = linkTitle.slice(0, maxLinkTitleLength) + '...';
-			}
-
-			return  {
-				type: MESSAGE_TYPES.LINK,
-				title: linkTitle,
-				url: link,
-			};
-		},
 		trim(value){
 			return ('' + value).trim()
-		}
+		},
+		onTextSelect(event){
+			setTimeout(() => {
+				if(!window.getSelection) return
+				const selection = window.getSelection()
+				if(!selection){
+					this.selectedBox = null
+					return console.error('no selection')
+				}
+				const range = selection.getRangeAt(0)
+				if(!range.toString()){
+					this.selectedBox = null
+					return console.error('no text')
+				}
+				const card = range.startContainer?.parentElement?.offsetParent
+				if(!card) return console.error('no card')
+				const cardRect = card.getBoundingClientRect()
+				this.selectedBox = [
+					`top: ${event.clientY - cardRect.top - 4 }px`,
+					`left: ${event.clientX - cardRect.left + 10 }px`,
+				].join(';')
+			}, 100)
+		},
+		onClickOutsideQuote(){
+			this.selectedBox = null
+		},
+		onClickQuote(){
+			if(!window.getSelection){
+				this.selectedBox = null
+				return
+			}
+
+			const selection = window.getSelection()
+			if(selection){
+				const text = selection.getRangeAt(0).toString()
+				this.ChatApp.$emit('addQuote', text)
+			}
+
+			this.selectedBox = null
+		},
 	},
 	filters: {
 		moment: function (date) {
@@ -383,6 +378,11 @@ $ConversationMessage-radius: 18px;
 .ConversationMessage{
 	gap: 10px;
 	position: relative;
+	&_textSelected{
+		.ConversationMessage-quoteButton{
+			display: flex;
+		}
+	}
 	&_userFirst{
 		&.messenger__message-box-left{
 			.messenger__message-card{
@@ -434,6 +434,37 @@ $ConversationMessage-radius: 18px;
 		font-size: 12px;
 		color: #fff;
 		background-color: #6986B8;
+		cursor: pointer;
+		&:hover{
+			background-color: #3361FF;
+		}
+	}
+	&-link{
+		color: #007bff;
+		&:hover{
+			color: #007bff;
+			text-decoration: underline;
+		}
+	}
+	&-quote{
+		padding-left: 0.5rem;
+		border-left: 2px solid #828c94;
+	}
+	&-quoteButton{
+		display: none;
+		align-items: center;
+		justify-content: center;
+
+		width: 16px;
+		height: 16px;
+		position: absolute;
+
+		color: #fff;
+		border-radius: 50em;
+		background-color: #8BABD8;
+		box-shadow: 0px 0px 3px 1px rgba(0, 0, 0, 0.05), 0px 15px 60px -40px rgba(45, 50, 90, 0.2);
+		outline: 1px solid #fff;
+		user-select: none;
 		cursor: pointer;
 		&:hover{
 			background-color: #3361FF;
@@ -668,6 +699,9 @@ audio {
 	text-decoration: underline;
 }
 
+.messenger__message-card{
+
+}
 
 @media only screen and (max-width: 670px) {
 	.ConversationMessage{
