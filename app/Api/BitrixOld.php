@@ -18,8 +18,7 @@ class BitrixOld
         // Intellect dialog
         if($line == 'intellect') {
             $this->link = 'https://infinitys.bitrix24.kz/rest/2/dnd7yenlqg9mhbnj/';
-        }
-        
+        }  
     }
 
     public function updateLead(int $lead_id, array $lead_fields)
