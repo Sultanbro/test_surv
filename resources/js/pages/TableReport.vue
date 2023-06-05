@@ -795,14 +795,6 @@
 				</option>
 			</select>
 
-			<b-form-input
-				v-if="firingItems.type == 0"
-				class="mt-3"
-				v-model="commentFiring"
-				placeholder="Свой вариант"
-				:required="true"
-			/>
-
 			<b-form-file
 				v-if="firingItems.type == 2"
 				v-model="firingItems.file"
@@ -1146,6 +1138,7 @@ export default {
 		},
 
 		openModalFine() {
+			this.errors = []
 			this.modalVisibleFines = true
 		},
 
@@ -1181,23 +1174,15 @@ export default {
 		},
 
 		setUserFired() {
+			this.errors = []
 			if (this.firingItems.type == 2 && this.firingItems.file == undefined) {
-				this.errors = ['Заявление об увольнении обязательно!']
-
+				this.errors.push('Заявление об увольнении обязательно!')
 			}
 
-			let comment = '';
-			if (this.commentFiring.length == 0) {
+			const comment = this.commentFiring || this.commentFiring2;
+			if(!comment) this.errors.push('Причина увольнения обязательна')
 
-				if (this.commentFiring2.length == 0) {
-					this.errors = ['Комментарий обязателен']
-					return null
-				} else {
-					comment = this.commentFiring2;
-				}
-			} else {
-				comment = this.commentFiring;
-			}
+			if(this.errors.length) return
 
 			let formData = new FormData();
 			formData.append('month', this.$moment(this.dateInfo.currentMonth, 'MMMM').format('M'));
@@ -1232,6 +1217,8 @@ export default {
 					this.commentFiring = ''
 					this.commentFiring2 = ''
 					this.currentDayType = {}
+
+					this.errors = []
 				}
 			}).catch(error => {
 				alert(error)
@@ -1673,6 +1660,8 @@ export default {
 		},
 
 		setUserAbsent() {
+			if(!this.commentAbsent) return alert('Укажите причину отсутвия')
+
 			let day = this.sidebarContent.day;
 			let loader = this.$loading.show();
 			this.axios.post('/timetracking/set-day', {
