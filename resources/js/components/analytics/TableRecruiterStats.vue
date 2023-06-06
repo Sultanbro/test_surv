@@ -81,6 +81,7 @@
 				</select>
 				<p class="my-5 text-black fz-14">
 					<b>Стандарт звонков:</b><br>
+					<span class="aaa fz-12 text-red mb-2">кол-во наборов: 30 наборов</span>
 					<span class="aaa fz-12 text-red mb-2">20 звонков от 10 секунд (чтобы их сделать, нужно просто делать больше наборов в час)</span>
 					<span class="aaa fz-12 text-red">30 минут диалога</span>
 					<span class="aaa fz-12 text-red">2 согласия</span>

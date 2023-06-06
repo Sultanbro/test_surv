@@ -1,8 +1,9 @@
 <template>
 	<div
 		v-if="groups"
-		class="analytics-page"
+		class="PageAnalytics"
 	>
+		<!-- HR -->
 		<!-- header -->
 		<div class="row my-4">
 			<div class="col-3">
@@ -115,13 +116,6 @@
 												class="pt-4"
 											/>
 										</b-tab>
-										<!--<b-tab title="Оценка тренера" key="2">
-
-
-																											<trainee-report :trainee_report="recruiting.trainee_report" :groups="groups"></trainee-report>
-
-
-																									</b-tab>-->
 										<b-tab
 											title="Оценка тренера"
 											key="2"
@@ -281,61 +275,7 @@
 											key="2"
 											card
 										>
-											<div class="d-flex flex-wrap pt-4">
-												<div
-													v-for="(quizz, key) in quiz"
-													:key="key"
-													class="question-wrap"
-												>
-													<p> {{ quizz['q'] }}</p>
-													<div v-if="quizz['type'] == 'answer'">
-														<div
-															v-for="answer in quizz['answers']"
-															:key="answer.id"
-															class="d-flex"
-														>
-															<p class="fz12">
-																{{ answer.text }}
-															</p>
-														</div>
-													</div>
-													<div v-if="quizz['type'] == 'variant'">
-														<div
-															v-for="answer in quizz['answers']"
-															:key="answer.id"
-															class="row"
-														>
-															<div class="col-6">
-																{{ answer.text + ' (' + answer.count + ')' }}
-															</div>
-															<div class="col-6">
-																<div class="PageAnalytics-progress">
-																	<div class="PageAnalytics-progressPercent">
-																		{{ Number(answer.percent) || 0 }}%
-																	</div>
-																	<ProgressBar :progress="(Number(answer.percent) || 0) + '%'" />
-																</div>
-															</div>
-														</div>
-													</div>
-													<div v-if="quizz['type'] == 'star'">
-														<div
-															v-for="answer in quizz['answers']"
-															:key="answer.id"
-															class="d-flex"
-														>
-															<Rating
-																:grade="Number(answer.text).toFixed(0)"
-																:max-stars="10"
-																:has-counter="false"
-															/>
-															<p class="mb-0">
-																{{ answer.text + ' (' + answer.count + ')' }}
-															</p>
-														</div>
-													</div>
-												</div>
-											</div>
+											<ReasonsBot :quiz="quiz" />
 										</b-tab>
 										<b-tab
 											title="Причины увольнения"
@@ -377,14 +317,12 @@
 <script>
 import Loading from 'vue-loading-overlay'
 import TableStaffTurnover from '@/components/tables/TableStaffTurnover.vue'
-import Rating from '@/components/ui/Rating.vue'
 import TableRecruiterStats from '@/components/analytics/TableRecruiterStats' // Почасовая таблица рекрутинга
 import Recruting from '@/components/analytics/Recruting' // сводная информация рекрутинг
 import TableSkype from '@/components/tables/TableSkype' // Стажеры
 import TableTraineeSage2 from '@/components/tables/TableTraineeSage2' // Стажеры
 import SvodTable from '@/components/SvodTable' //сводная таблица для аналитики
 import TableFunnel from '@/components/tables/TableFunnel' // Воронка
-import ProgressBar from '@ui/ProgressBar'
 import { useYearOptions } from '@/composables/yearOptions'
 import { useHRStore } from '@/stores/ReportsHR.js'
 import { mapActions, mapState } from 'pinia'
@@ -392,23 +330,23 @@ import JobtronTable from '@ui/Table'
 import JobtronButton from '@ui/Button'
 import { usePortalStore } from '@/stores/Portal'
 import RefLinker from '@/components/RefLinker' // рефералки
+import ReasonsBot from '@/components/pages/Analytics/ReasonsBot'
 
 export default {
 	name: 'PageAnalytics',
 	components: {
 		Loading,
 		TableStaffTurnover,
-		Rating,
 		TableRecruiterStats,
 		Recruting,
 		TableSkype,
 		SvodTable,
 		TableFunnel,
-		ProgressBar,
 		TableTraineeSage2,
 		JobtronTable,
 		JobtronButton,
 		RefLinker,
+		ReasonsBot,
 	},
 	props: {
 		groups: {
@@ -629,29 +567,36 @@ export default {
 
 <style lang="scss">
 .PageAnalytics{
-	&-progress{
-		display: flex;
-		align-items: center;
-		justify-content: flex-start;
-		gap: 10px;
-		.ProgressBar{
-			flex: 1;
-		}
-	}
-	&-progressPercent{
-		flex: 0 0 3em;
-	}
 	&-funnels{
 		overflow-x: auto;
 	}
-}
-.analytics-page {
+
 	.tab-pane{
 		overflow-x: hidden;
 	}
+
+	.btn {
+		padding: .375rem .75rem;
+		&.btn-sm {
+			padding: 0.15rem 0.5rem;
+		}
+	}
+	.pick-panel .btn {
+		padding: 1px;
+	}
+	.b-form-datepicker .btn {
+		padding: 0 11px;
+		margin: 0;
+		margin-right: 5px;
+	}
+
+	.cell-input{
+		padding: 0 !important;
+	}
 }
+
 .mw30 {
-    min-width: 30px;
+	min-width: 30px;
 }
 .rating {
   display: inline-block;
@@ -682,12 +627,6 @@ export default {
   z-index: 0;
 }
 
-.analytics-page .btn {
-    padding: .375rem .75rem;
-}
-.analytics-page .btn.btn-sm {
-    padding: 0.15rem 0.5rem;
-}
 .fz12 {
     font-size: 12px;
     margin-bottom: 0;
