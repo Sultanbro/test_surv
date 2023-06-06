@@ -251,6 +251,20 @@ export default {
 	&-table{
 		overflow-y: auto;
 	}
+	&-colTitle{
+		height: 100%;
+	}
+	.b-table-sticky-column{
+		left: 0;
+	}
+	.special-select{
+		margin-top: -5px;
+		margin-bottom: -5px;
+	}
+	.JobtronTable-th,
+	.JobtronTable-td{
+		padding: 5px;
+	}
 }
 .recruiter_stats {
 	&.my-table .day {
@@ -288,14 +302,6 @@ export default {
 	// 		}
 	// 	}
 	// }
-}
-.TableRecruiterStats{
-	&-colTitle{
-		height: 100%;
-	}
-	.b-table-sticky-column{
-		left: 0;
-	}
 }
 
 
