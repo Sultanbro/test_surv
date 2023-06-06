@@ -175,12 +175,12 @@ class PermissionController extends Controller
             foreach ($item['groups'] as $gr) $group_ids[] = $gr['id'];
 
             $exists = DB::table('permission_items')
-                ->whereRaw('JSON_CONTAINS(targets, ?)', [json_encode($targetToArray)])
-                ->whereRaw('JSON_CONTAINS(roles, ?)', [json_encode($role_ids)])
-                ->whereRaw('JSON_CONTAINS(groups, ?)', [json_encode($group_ids)])
-                ->whereRaw('JSON_LENGTH(targets) = ' . count($targetToArray))
-                ->whereRaw('JSON_LENGTH(roles) = ' . count($role_ids))
-                ->whereRaw('JSON_LENGTH(groups) = ' . count($group_ids))
+                ->whereJsonContains('targets', $targetToArray)
+                ->whereJsonContains('roles', $role_ids)
+                ->whereJsonContains('groups', $group_ids)
+                ->whereJsonLength('targets', '=', count($targetToArray))
+                ->whereJsonLength('roles', '=', count($role_ids))
+                ->whereJsonLength('groups', '=', count($group_ids))
                 ->exists();
 
             if ($exists)
