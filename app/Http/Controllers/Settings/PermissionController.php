@@ -174,6 +174,7 @@ class PermissionController extends Controller
             foreach ($item['roles'] as $role_item) $role_ids[] = $role_item['id'];
             foreach ($item['groups'] as $gr) $group_ids[] = $gr['id'];
 
+
             $exists = DB::table('permission_items')
                 ->whereJsonContains('targets', $targetToArray)
                 ->whereJsonContains('roles', $role_ids)
