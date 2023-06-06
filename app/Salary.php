@@ -2,6 +2,7 @@
 
 namespace App;
 
+use App\Models\WorkChart\WorkChartModel;
 use App\User;
 use Illuminate\Database\Eloquent\Model;
 use Carbon\Carbon;
@@ -13,6 +14,7 @@ use App\Models\Admin\EditedKpi;
 use App\Models\Admin\EditedBonus;
 use App\Models\Admin\EditedSalary;
 use App\Service\Department\UserService;
+use Exception;
 
 class Salary extends Model
 {
@@ -512,7 +514,8 @@ class Salary extends Model
             'users.working_day_id',
             'users.working_time_id',
             'users.work_chart_id',
-            'users.timezone'
+            'users.first_work_day',
+            'users.timezone',
         ]);
 
         $data['users'] = [];
@@ -600,10 +603,18 @@ class Salary extends Model
                 $userWorkHours = $schedule['end']->diffInHours($schedule['start']) - $lunchTime;
                 $working_hours = max($userWorkHours, 0);
 
-                $ignore = $user->getCountWorkDays();   // Какие дни не учитывать в месяце
+                $workChartType = $user->workChart->work_charts_type ?? 0;
+                if ($workChartType === 0 || $workChartType === WorkChartModel::WORK_CHART_TYPE_USUAL){
+                    $ignore = $user->getCountWorkDays();   // Какие дни не учитывать в месяце
+                    $workdays = workdays($date->year, $date->month, $ignore);
+                }
+                elseif ($workChartType === WorkChartModel::WORK_CHART_TYPE_REPLACEABLE) {
+                    $workdays = $user->getCountWorkDaysMonth();
+                }
+                else {
+                    throw new Exception(message: 'Проверьте график работы', code: 400);
+                }
 
-                $workdays = workdays($date->year, $date->month, $ignore);
-            
                 $hourly_pay = $zarplata / $workdays / $working_hours;
 
                 $hourly_pays[$i] = round($hourly_pay, 2);
@@ -839,7 +850,7 @@ class Salary extends Model
             } 
             
             // add to array
-            $data['users'][] = $user; 
+            $data['users'][] = $user;
             $data['total_resources'] += $user->full_time == 1 ? 1 : 0.5;  
         }
 

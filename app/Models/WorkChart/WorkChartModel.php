@@ -199,4 +199,18 @@ class WorkChartModel extends Model
             ->where('workdays', $data['workdays'])
             ->exists();
     }
+
+    public static function convertWorkDays(int $workdays): array
+    {
+        $hexDay = strrev(decbin($workdays));
+        $days = str_pad($hexDay, 7, "0", STR_PAD_RIGHT);
+
+        $offDays = [];
+        for ($i = 0; $i < strlen($days); $i++) {
+            if ( $days[$i] === '0'){
+                $offDays[] = $i === 6 ? 0 : $i+1;
+            }
+        }
+        return $offDays;
+    }
 }

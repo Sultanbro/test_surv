@@ -8,6 +8,7 @@ use App\Repositories\WorkChart\WorkdayRepository;
 use App\Service\WorkChart\ChartFactory;
 use Exception;
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\Log;
 
 class WorkdayListener
 {
@@ -46,7 +47,7 @@ class WorkdayListener
 
         $weekRecords = $this->repository->getUserWorkDaysPerWeek($event->user->id, $date->format('Y-m-d'), $date->weekNumberInMonth);
 
-        ChartFactory::make($chart->name)->chartProcess($weekRecords);
+//        ChartFactory::make($chart->name)->chartProcess($weekRecords);     Проверить логику
 
         $exist = $this->repository->getUserWorkDaysPerWeek($event->user->id, $date->format('Y-m-d'), $date->weekNumberInMonth, $date->dayOfWeek)->exists();
 
