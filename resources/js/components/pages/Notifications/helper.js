@@ -1,3 +1,6 @@
+const tenant = location.hostname.split('.')[0]
+const titleTip = ['bp', 'test'].includes(tenant) ? '* к уведомлению будет автоматически прикреплена ссылка на опросник' : '* вставьте в сообщение ссылку на опросник которая будет отправляться'
+
 export const services = [
 	{
 		value: 'in-app',
@@ -7,6 +10,7 @@ export const services = [
 	// {
 	// 	value: 'mail',
 	// 	title: 'Отправить письмо на почту'
+	// 	short: 'email',
 	// },
 	// {
 	// 	value: 'sms',
@@ -16,6 +20,7 @@ export const services = [
 	// {
 	// 	value: 'telegram',
 	// 	title: 'Отправить сообщение в телеграм'
+	// 	short: 'telegram',
 	// },
 	{
 		value: 'whatsapp',
@@ -25,6 +30,7 @@ export const services = [
 	// {
 	// 	value: 'bitrix',
 	// 	title: 'Отправить сообщение в битрикс'
+	// 	short: 'bitrix',
 	// },
 ]
 
@@ -52,7 +58,7 @@ export const templateSettings = {
 		recipients: [],
 		title: 'Уважаемый коллега! Какими бы ни были причины расставания, мы благодарим Вас за время, силы, знания и энергию, которые Вы отдали для успешной работы и развития нашей организации, и просим заполнить эту небольшую анкету.',
 		titleFixed: '',
-		titleTip: '* к уведомлению будет автоматически прикреплена ссылка на опросник',
+		titleTip,
 		when: [
 			{
 				value: 'fired_employee',
@@ -78,7 +84,7 @@ export const templateSettings = {
 		recipients: [],
 		title: 'Оцените работу Вашего руководителя и старшего специалиста за текущий месяц.',
 		titleFixed: '',
-		titleTip: '* к уведомлению будет автоматически прикреплена ссылка на опросник',
+		titleTip,
 		when: [
 			{
 				value: 'manager_assessment',
@@ -91,7 +97,7 @@ export const templateSettings = {
 		recipients: [],
 		title: 'Добрый день!\nПройдите небольшой опрос, чтобы оценить Вашего тренера.\nБыстро. Анонимно. Для Дела.',
 		titleFixed: '',
-		titleTip: '* к уведомлению будет автоматически прикреплена ссылка на опросник',
+		titleTip,
 		when: [
 			{
 				value: 'coach_assessment',
