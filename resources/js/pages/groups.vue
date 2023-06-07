@@ -92,7 +92,7 @@
 									:key="chart.id"
 									:value="chart.id"
 								>
-									График {{ chart.name }} (с {{ chart.start_time }} по {{ chart.end_time }}) - {{ chart.text_name }}
+									{{ getShiftDays(chart) }} (с {{ chart.start_time }} по {{ chart.end_time }}) - {{ chart.text_name }}
 								</b-form-select-option>
 							</template>
 						</b-form-select>
@@ -411,6 +411,8 @@
 </template>
 
 <script>
+import { getShiftDays } from '@/composables/shifts'
+
 export default {
 	name: 'CompanyGroups',
 	props: [
@@ -789,7 +791,8 @@ export default {
 				this.time_address_text = this.time_variants !== undefined ? this.time_variants[this.time_address] : 'Не выбран';
 			}).catch(error => alert(error));
 			this.showEditTimeAddress = false;
-		}
+		},
+		getShiftDays,
 	},
 };
 </script>
