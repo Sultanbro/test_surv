@@ -2,6 +2,7 @@
 import axios from 'axios'
 import ProfileGroups from '@/components/profile/ProfileGroups' // настройки user
 import UserEditGroups from '@/components/pages/UserEdit/UserEditGroups'
+import { getShiftDays } from '@/composables/shifts'
 const re = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
 
 export default {
@@ -179,6 +180,7 @@ export default {
 		toggleWeekDay(id){
 			this.$set(this.weekdays, id, this.weekdays[id] === '1' ? '0' : '1')
 		},
+		getShiftDays,
 		getTimezoneString(timezone) {
 			let absolute_value = Math.abs(timezone);
 			let decimal_portion = absolute_value - Math.floor(absolute_value);
@@ -525,7 +527,7 @@ export default {
 								:key="chart.id"
 								:value="chart.id"
 							>
-								График {{ chart.name }} (с {{ chart.start_time }} по {{ chart.end_time }})
+								{{ getShiftDays(chart) }} (с {{ chart.start_time }} по {{ chart.end_time }}) - {{ chart.text_name }}
 							</b-form-select-option>
 						</template>
 					</b-form-select>
