@@ -378,7 +378,7 @@ export default {
 					frequency: 'weekly'
 				},
 				time: '10:00',
-				type_of_mailing: ['in-app'],
+				type_of_mailing: [],
 				is_template: false,
 			}
 		},
@@ -398,6 +398,7 @@ export default {
 			if(!notification.name) errors.push({field: 'name', error: 'Название уведомления должно быть заполнено'})
 			if(!notification.title) errors.push({field: 'title', error: 'Текст уведомления должен быть заполнен'})
 			if(!notification.is_template && !notification.recipients.length) errors.push({field: 'recipients', error: 'Укажите минимум одного получателя'})
+			if(!notification.type_of_mailing && !notification.type_of_mailing.length) errors.push({field: 'type_of_mailing', error: 'Укажите минимум однин способ отправки'})
 			if((notification.date.frequency === 'weekly' || notification.date.frequency === 'monthly') && !notification.date.days.length) errors.push({field: 'days', error: 'Укажите минимум один день отправки'})
 			return errors
 		},
@@ -449,7 +450,7 @@ export default {
 					frequency: 'weekly'
 				},
 				time: '10:00',
-				type_of_mailing: ['in-app'],
+				type_of_mailing: [],
 				is_template: true,
 			}
 		}
