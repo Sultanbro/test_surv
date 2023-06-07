@@ -1,8 +1,10 @@
 export function getShiftDays(shift){
 	if(!shift.work_charts_type) return 'Смена: ' + shift.name
-	if(shift.work_charts_type.id === 2) return 'Смена: ' + shift.name
-	const dayoffs = getBitCount(+shift.workdays)
-	return `Неделя: ${7 - dayoffs}-${dayoffs}`
+	const type = typeof shift.work_charts_type === 'number' ? shift.work_charts_type : shift.work_charts_type.id
+	if(type === 2) return 'Смена: ' + shift.name
+	// const dayoffs = getBitCount(+shift.workdays)
+	// return `Неделя: ${7 - dayoffs}-${dayoffs}`
+	return `Неделя: ${shift.name}`
 }
 
 export function getBitCount(num, size = 7){
