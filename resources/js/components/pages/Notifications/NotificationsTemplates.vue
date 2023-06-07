@@ -101,6 +101,7 @@
 							placeholder="Выберите"
 							:taggable="true"
 							class="multiselect-surv"
+							track-by="value"
 						/>
 					</b-col>
 				</b-row>

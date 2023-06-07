@@ -26,9 +26,11 @@
 				<b-thead>
 					<b-tr>
 						<b-th>№</b-th>
-						<b-th>Кого уведомляем</b-th>
-						<b-th class="text-center">
+						<b-th>
 							Текст уведомления
+						</b-th>
+						<b-th class="text-center">
+							Кого уведомляем
 						</b-th>
 						<b-th class="text-center">
 							Куда отправлять
@@ -54,24 +56,23 @@
 						<b-td>
 							{{ key + 1 }}
 						</b-td>
-						<b-td>
-							<template v-if="recipientsNames[notification.date.frequency]">
-								{{ recipientsNames[notification.date.frequency] }}
-							</template>
-							<template v-else>
-								{{ notification.recipients.map(recipient => recipient.name).join(', ') }}
-							</template>
+						<b-td class="NotificationsV2-text">
+							<TextClip>
+								{{ notification.title }}
+							</TextClip>
 						</b-td>
 						<b-td class="NotificationsV2-text text-center">
-							<div class="NotificationsV2-shortText">
-								{{ notification.title }}
-							</div>
-							<div class="NotificationsV2-fullText">
-								{{ notification.title }}
-							</div>
+							<TextClip>
+								<template v-if="recipientsNames[notification.date.frequency]">
+									{{ recipientsNames[notification.date.frequency] }}
+								</template>
+								<template v-else>
+									{{ notification.recipients.map(recipient => recipient.name).join(', ') }}
+								</template>
+							</TextClip>
 						</b-td>
-						<b-td class="text-center">
-							{{ notification.type_of_mailing.map(type => services.find(service => service.value === type).title).join(', ') }}
+						<b-td class="NotificationsV2-text text-center">
+							{{ notification.type_of_mailing.map(type => services.find(service => service.value === type).short).join(', ') }}
 						</b-td>
 						<b-td class="text-center">
 							{{ periodNames[notification.date.frequency] }} {{ notification.date.days.join(', ') }}
@@ -188,6 +189,7 @@ import {
 } from '@/components/pages/Notifications/helper'
 import SideBar from '@ui/Sidebar'
 import JobtronButton from '@ui/Button'
+import TextClip from '@ui/TextClip'
 import {
 	ChatIconPlus,
 } from '@icons'
@@ -211,6 +213,7 @@ export default {
 		NotificationsTemplates,
 		JobtronButton,
 		ChatIconPlus,
+		TextClip,
 	},
 	data(){
 		return {
@@ -471,44 +474,9 @@ export default {
 		}
 	}
 	&-text{
-		position: relative;
-		&:hover{
-			.NotificationsV2-fullText{
-				z-index: 11;
-				top: 40px;
-
-				visibility: visible;
-				opacity: 1;
-			}
-		}
-	}
-	&-shortText{
 		max-width: 300px;
-		white-space: nowrap;
-		overflow: hidden;
-		text-overflow: ellipsis;
 	}
-	&-fullText{
-    max-width: 400px;
-    padding: 10px 20px;
-    border: 1px solid #999;
 
-		position: absolute;
-    top: 20px;
-    left: 10px;
-
-    visibility: hidden;
-    opacity: 0;
-
-    font-size: 14px;
-    line-height: 1.3;
-    text-align: left;
-
-    box-shadow: rgba(0, 0, 0, 0.1) 0px 10px 15px -3px, rgba(0, 0, 0, 0.05) 0px 4px 6px -2px;
-    transition: 0.2s all ease;
-    border-radius: 10px;
-    background-color: #fff;
-	}
 	&-label{
 		font-size: 1.4rem;
     line-height: 2rem;
