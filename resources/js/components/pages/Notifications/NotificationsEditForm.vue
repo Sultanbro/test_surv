@@ -242,6 +242,10 @@ export default {
 
 		font-size: 1.4rem;
     line-height: 2rem;
+		.img-info{
+			width: 20px;
+			vertical-align: middle;
+		}
 	}
 
 	&-control{
