@@ -289,5 +289,12 @@ export default {
 			margin-left: -20px;
 		}
 	}
+	.multiselect-surv .multiselect__tags{
+		padding: 0.9rem 4rem 0.9rem 2rem;
+		border: 1px solid #e8e8e8;
+	}
+	.multiselect-surv .multiselect__select{
+		top: 0.25rem;
+	}
 }
 </style>
