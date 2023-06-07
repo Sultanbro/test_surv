@@ -341,6 +341,7 @@ export default {
 			return ''
 		},
 		async remove(notification){
+			if(!confirm('Удалить уведомление?')) return
 			const {data} = await deleteNotification(notification.id)
 			if(data) {
 				this.$toast.success('Уведомление удалено')
