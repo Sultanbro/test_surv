@@ -15,6 +15,12 @@
 				{{ day }}
 			</div>
 		</div>
+		<img
+			src="/images/dist/profit-info.svg"
+			alt="info icon"
+			class="img-info"
+			v-b-popover.hover="'Если в месяце нет 31 числа то сообщение придет 30'"
+		>
 	</div>
 </template>
 
@@ -92,6 +98,10 @@ export default {
 		letter-spacing: -0.04em;
 
 		color: #6181B8;
+	}
+	.img-info{
+		width: 20px;
+		vertical-align: middle;
 	}
 }
 </style>

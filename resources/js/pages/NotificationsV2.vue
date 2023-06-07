@@ -118,7 +118,7 @@
 			:open="isSettings"
 			@close="isSettings = false"
 		>
-			<b-container>
+			<b-container class="NotificationsV2-settingsDialog">
 				<b-row class="mb-4">
 					<b-col cols="4">
 						<span class="NotificationsV2-label">Количество напоминаний в день</span>
@@ -482,6 +482,12 @@ export default {
 	&-label{
 		font-size: 1.4rem;
     line-height: 2rem;
+	}
+	&-settingsDialog{
+		.img-info{
+			width: 20px;
+			vertical-align: middle;
+		}
 	}
 
 	.ui-sidebar{
