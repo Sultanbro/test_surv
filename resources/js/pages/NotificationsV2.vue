@@ -140,7 +140,7 @@
 					<b-col>
 						<JobtronButton
 							fade
-							@click="onNewTemplate"
+							class="relative"
 						>
 							<ChatIconPlus
 								class="ChatIcon-active"
@@ -148,24 +148,37 @@
 								height="11"
 							/>
 							Шаблонное уведомление
+							<select
+								class="NotificationsV2-hiddenSelect custom-select"
+								v-model="template"
+							>
+								<option
+									v-for="tpl in templates"
+									:key="tpl.value"
+									:class="tpl.class"
+									:value="tpl.value"
+								>
+									{{ tpl.text }}
+								</option>
+							</select>
 						</JobtronButton>
 					</b-col>
 				</b-row>
 			</b-container>
 			<hr class="mb-4">
-			<b-button
-				variant="primary"
+			<JobtronButton
+				small
 				@click="onSaveSettings"
 			>
 				Сохранить
-			</b-button>
+			</JobtronButton>
 		</SideBar>
 
 		<!-- Шаблонные уведомления -->
 		<NotificationsTemplates
 			v-if="selectedTemplate"
 			:edit="selectedTemplate"
-			@close="selectedTemplate = null"
+			@close="onCloseTemplate"
 			@save="onSave"
 		/>
 	</div>
@@ -186,6 +199,7 @@ import NotificationsTemplates from '@/components/pages/Notifications/Notificatio
 import {
 	templateFrequency,
 	services,
+	templates,
 } from '@/components/pages/Notifications/helper'
 import SideBar from '@ui/Sidebar'
 import JobtronButton from '@ui/Button'
@@ -236,6 +250,8 @@ export default {
 			selectedNotification: null,
 			search: '',
 			services,
+			templates,
+			template: '',
 
 			isSettings: '',
 			settings: {
@@ -286,6 +302,9 @@ export default {
 	watch: {
 		users(){
 			this.fetchNotifications()
+		},
+		template(){
+			if(this.template) this.onNewTemplate(this.template)
 		}
 	},
 	created(){
@@ -390,6 +409,7 @@ export default {
 			}
 			if(notification.id) this.updateNotification(notification)
 			else this.createNotification(notification)
+			this.template = ''
 			this.selectedTemplate = null
 			this.selectedNotification = null
 		},
@@ -438,9 +458,9 @@ export default {
 			this.$toast.success('Настройки сохранены')
 			this.isSettings = false
 		},
-		onNewTemplate(){
+		onNewTemplate(template = ''){
 			this.selectedTemplate = {
-				template: '',
+				template,
 				id: 0,
 				name: '',
 				title: '',
@@ -453,6 +473,10 @@ export default {
 				type_of_mailing: [],
 				is_template: true,
 			}
+		},
+		onCloseTemplate(){
+			this.template = ''
+			this.selectedTemplate = null
 		}
 	}
 }
@@ -460,6 +484,15 @@ export default {
 
 <style lang="scss">
 .NotificationsV2{
+	&-hiddenSelect{
+		opacity: 0;
+		position: absolute;
+		z-index: 1;
+		top: 0;
+		left: 0;
+		right: 0;
+		bottom: 0;
+	}
 	&-header{
 		display: flex;
 		flex-flow: row nowrap;

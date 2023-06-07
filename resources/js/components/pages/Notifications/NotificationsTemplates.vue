@@ -6,19 +6,11 @@
 		class="NotificationsTemplates"
 	>
 		<template #header>
-			<div
-				v-if="value.id"
-				class="ui-sidebar__header-text"
-			>
+			<div class="ui-sidebar__header-text">
 				{{ templates.find(tpl => tpl.value === template).text }}
 			</div>
-			<b-form-select
-				v-else
-				v-model="template"
-				:options="templates"
-			/>
 		</template>
-		<template v-if="template">
+		<template v-if="value">
 			<b-container>
 				<!-- Кого уведомляем -->
 				<b-row class="mb-4">
@@ -228,9 +220,11 @@ export default {
 	},
 	methods: {
 		loadEdit(){
+			if(!this.edit) return
 			if(!this.value) this.value = {}
 			this.template = this.edit.template
 			this.$nextTick(() => {
+				if(!this.edit.id) return
 				this.value.id = this.edit.id
 				this.value.recipients = this.edit.recipients
 				this.value.title = this.edit.title

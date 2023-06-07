@@ -110,29 +110,35 @@ export const templateSettings = {
 export const templates = [
 	{
 		value: '',
-		text: 'Выберите шаблон'
+		text: 'Выберите шаблон',
+		class: 'hidden',
 	},
 	{
 		value: 'apply_employee',
-		text: 'Оформление нового сотрудника'
+		text: 'Оформление нового сотрудника',
+		class: '',
 	},
 	{
 		value: 'fired_employee',
-		text: 'Анкета уволенного'
+		text: 'Анкета уволенного',
+		class: '',
 	},
 	{
 		value: 'absent_internship',
-		text: 'Не присутствовал на стажировке'
+		text: 'Не присутствовал на стажировке',
+		class: '',
 	},
 ]
-if(location.hostname.split('.')[0] === 'bp') templates.push(
+if(['bp', 'test'].includes(tenant)) templates.push(
 	{
 		value: 'manager_assessment',
-		text: 'Оцените вашего руководителя'
+		text: 'Оцените вашего руководителя',
+		class: '',
 	},
 	{
 		value: 'coach_assessment',
-		text: 'Оцените вашего тренера'
+		text: 'Оцените вашего тренера',
+		class: '',
 	},
 )
 
