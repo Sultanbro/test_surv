@@ -311,11 +311,12 @@ export default {
 		},
 		editShift(shift) {
 			const splitted = shift.name.split('-')
+			const type = typeof shift.work_charts_type === 'number' ? shift.work_charts_type : shift.work_charts_type.id
 			this.editShiftId = shift.id;
 			this.form.name = shift.text_name;
 			this.form.workStartTime = shift.start_time;
 			this.form.workEndTime = shift.end_time;
-			this.form.type = shift.work_charts_type ? shift.work_charts_type.name === 'обычный' ? 1 : 2 : 2
+			this.form.type = type
 			this.form.workdays = splitted[0]
 			this.form.dayoffs = splitted[1]
 			this.form.usualSchedule = shift.workdays
@@ -385,7 +386,7 @@ export default {
 			else{
 				this.shiftsData.push({
 					...data.data,
-					workdays: flipbits(+data.data.weekdays, 7),
+					workdays: flipbits(+data.data.workdays, 7),
 				});
 				this.$toast.success('Смена добавлена');
 			}
