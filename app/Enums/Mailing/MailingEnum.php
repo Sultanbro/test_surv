@@ -17,6 +17,9 @@ enum MailingEnum
     const USER      = 'App\User';
     const POSITION  = 'App\Position';
 
+    const IN_APP = 'in-app';
+    const WHATSAPP = 'whatsapp';
+
     const FREQUENCIES = [
         self::DAILY,
         self::WEEKLY,

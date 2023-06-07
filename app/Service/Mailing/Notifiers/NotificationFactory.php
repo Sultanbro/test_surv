@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 namespace App\Service\Mailing\Notifiers;
 
+use App\Enums\Mailing\MailingEnum;
 use DB;
 use InvalidArgumentException;
 use Throwable;

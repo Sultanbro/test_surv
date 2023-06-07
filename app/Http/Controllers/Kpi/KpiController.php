@@ -27,7 +27,7 @@ class KpiController extends Controller
     public function __construct(KpiService $kpiService)
     {
         $this->kpiService = $kpiService;
-//        $this->middleware('auth');
+        $this->middleware('auth');
     }
 
     public function index(Request $request)

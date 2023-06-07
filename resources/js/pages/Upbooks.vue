@@ -75,6 +75,7 @@
 									class="fa fa-pen"
 									@click="toggleMode"
 									:class="{'active': mode == 'edit'}"
+									v-b-popover.hover.top="'Включить редактирование книг'"
 								/>
 							</div>
 
@@ -83,7 +84,7 @@
 								v-if="can_edit"
 							>
 								<i
-									class="fa fa-cog"
+									class="icon-nd-settings"
 									@click="get_settings()"
 								/>
 							</div>

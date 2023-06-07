@@ -107,6 +107,11 @@ class User extends Authenticatable implements Authorizable
         'phone_4',
         'work_chart_id'
     ];
+
+    protected $casts = [
+        'timezone' => 'float',
+    ];
+
     /**
      * Валюты для профиля.
      */
@@ -800,7 +805,7 @@ class User extends Authenticatable implements Authorizable
 
     public function fines()
     {
-        return $this->belongsToMany('App\Fine', 'user_fines')->withPivot('day');
+        return $this->belongsToMany('App\Fine', 'user_fines')->withPivot(['day', 'status']);
     }
 
     public function daytypes()

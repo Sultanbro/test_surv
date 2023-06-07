@@ -1,7 +1,17 @@
 import API from '../../API.vue';
 import Vue from 'vue';
 
-import {MESSAGES_MAX_COUNT, MESSAGES_LOAD_COUNT, MESSAGES_LOAD_COUNT_ON_RESET} from './constants.js';
+import {
+	MESSAGES_MAX_COUNT,
+	MESSAGES_LOAD_COUNT,
+	MESSAGES_LOAD_COUNT_ON_RESET,
+} from './constants.js';
+
+import {
+	hasLocal,
+	loadLocal,
+	saveLocal,
+} from './local'
 
 export default {
 	state: {
@@ -25,6 +35,12 @@ export default {
 			if (getters.messagesLoading) {
 				return;
 			}
+			const chatId = getters.chat.id
+			if(reset && hasLocal(chatId)){
+				commit('setMessages', loadLocal(chatId))
+				dispatch('setLoading', false)
+				console.log('hasLocal')
+			}
 			commit('setMessagesLoading', true);
 
 			let count, startMessageId, including;
@@ -43,7 +59,7 @@ export default {
 				including = false;
 			}
 
-			return API.fetchMessages(getters.chat.id, count, startMessageId, including, messages => {
+			return API.fetchMessages(chatId, count, startMessageId, including, messages => {
 				if (reset || goto) {
 					commit('resetMessages');
 				}
@@ -64,6 +80,7 @@ export default {
 
 					if (reset) {
 						commit('setMessages', messages);
+						saveLocal(chatId, messages)
 						dispatch('requestScroll', 0);
 					} else if (count > 0) {
 						commit('prependMessages', messages);

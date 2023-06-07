@@ -7,6 +7,7 @@ use App\UserFine as Model;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
 use function Aws\map;
+use Illuminate\Database\Eloquent\Builder;
 
 /**
 * Класс для работы с Repository.
@@ -43,5 +44,23 @@ class UserFineRepository extends CoreRepository
         ->where('status', Fine::STATUS_FIRST)
         ->whereIn('fine_id', [1, 2])
         ->get();
+    }
+
+    /**
+     * @param int $userId
+     * @param int $fineId
+     * @param string $day
+     * @return Builder
+     */
+    public function getUserFine(
+        int $userId,
+        int $fineId,
+        string $day,
+    ): Builder
+    {
+        return $this->model()
+            ->whereDate('day', $day)
+            ->where('user_id', $userId)
+            ->where('fine_id', $fineId);
     }
 }

@@ -4,7 +4,7 @@
 		class="analytics-page"
 	>
 		<!-- header -->
-		<div class="row my-5">
+		<div class="row my-4">
 			<div class="col-3">
 				<select
 					class="form-control"
@@ -103,7 +103,7 @@
 								</template>
 
 
-								<div class="pt-5">
+								<div class="pt-4">
 									<b-tabs type="card">
 										<b-tab
 											title="Сводная"
@@ -112,7 +112,7 @@
 										>
 											<TableTraineeSage2
 												:ocenka-svod="ocenkaSvod"
-												class="pt-5"
+												class="pt-4"
 											/>
 										</b-tab>
 										<!--<b-tab title="Оценка тренера" key="2">
@@ -138,7 +138,7 @@
 											key="4"
 											card
 										>
-											<div class="row pt-5">
+											<div class="row pt-4">
 												<div class="col-md-4">
 													<JobtronTable
 														:fields="[{key: 'cause', label: 'Первый день', colspan: 2, thClass: 'text-left', tdClass: 'text-left'}, {key: 'count', hide: true, tdClass:'text-center'}]"
@@ -168,7 +168,7 @@
 								key="7"
 								card
 							>
-								<div class="pt-5">
+								<div class="pt-4">
 									<b-tabs
 										v-if="funnels.all"
 										type="card"
@@ -179,11 +179,11 @@
 											key="0"
 											card
 										>
-											<div class="row pt-5">
+											<div class="row pt-4">
 												<div class="col-8">
 													<div class="PageAnalytics-funnels">
 														<TableFunnel
-															class="mb-5"
+															class="mb-4"
 															:id="0"
 															:table="funnels['all']['all']"
 															title="Сводная таблица"
@@ -192,7 +192,7 @@
 															:date="date"
 														/>
 														<TableFunnel
-															class="mb-5"
+															class="mb-4"
 															:id="1"
 															:table="funnels['all']['hh']"
 															title="hh.ru"
@@ -201,7 +201,7 @@
 															:date="date"
 														/>
 														<TableFunnel
-															class="mb-5"
+															class="mb-4"
 															:id="2"
 															:table="funnels['all']['insta']"
 															title="Job.bpartners.kz"
@@ -223,9 +223,9 @@
 											:title="month.month"
 											card
 										>
-											<div class="pt-5">
+											<div class="pt-4">
 												<TableFunnel
-													class="mb-5"
+													class="mb-4"
 													:table="funnels['month'][i]['hh']"
 													title="hh.ru"
 													segment="hh"
@@ -234,7 +234,7 @@
 													:key="5 * 1000 * (Number(i) + 10 * Number(i))"
 												/>
 												<TableFunnel
-													class="mb-5"
+													class="mb-4"
 													:table="funnels['month'][i]['insta']"
 													title="Job.bpartners.kz"
 													segment="insta"
@@ -260,14 +260,14 @@
 								</template>
 
 
-								<div class="pt-5">
+								<div class="pt-4">
 									<b-tabs>
 										<b-tab
 											title="Причины и процент текучки"
 											key="1"
 											card
 										>
-											<div class="pt-5">
+											<div class="pt-4">
 												<TableStaffTurnover
 													:staff="staff"
 													:causes="causes"
@@ -281,7 +281,7 @@
 											key="2"
 											card
 										>
-											<div class="d-flex flex-wrap pt-5">
+											<div class="d-flex flex-wrap pt-4">
 												<div
 													v-for="(quizz, key) in quiz"
 													:key="key"
@@ -342,11 +342,13 @@
 											key="3"
 											card
 										>
-											<div class="col-md-12 col-lg-6 d-flex align-items-center pt-4">
-												<JobtronTable
-													:fields="[{key: 'cause', label: 'Причины увольнения', colspan: 2, thClass: 'text-left', tdClass: 'text-left'}, {key: 'count', hide: true, tdClass:'text-center'}]"
-													:items="absentsFirst"
-												/>
+											<div class="row">
+												<div class="col-md-12 col-lg-6 d-flex align-items-center pt-4">
+													<JobtronTable
+														:fields="[{key: 'cause', label: 'Причины увольнения', colspan: 2, thClass: 'text-left', tdClass: 'text-left'}, {key: 'count', hide: true, tdClass:'text-center'}]"
+														:items="absentsFirst"
+													/>
+												</div>
 											</div>
 										</b-tab>
 									</b-tabs>

@@ -4,7 +4,7 @@ import { useAsyncPageData } from '@/composables/asyncPageData'
 const Userlist = () => import(/* webpackChunkName: "UserlistPage" */ '@/pages/userlist.vue')
 const Company = () => import(/* webpackChunkName: "UserlistPage" */ '@/pages/Company.vue')
 const Fines = () => import(/* webpackChunkName: "FinesPage" */ '@/pages/Fines.vue')
-const Notifications = () => import(/* webpackChunkName: "NotificationsPage" */ '@/pages/Notifications.vue')
+// const Notifications = () => import(/* webpackChunkName: "NotificationsPage" */ '@/pages/Notifications.vue')
 const NotificationsV2 = () => import(/* webpackChunkName: "NotificationsPageV2" */ '@/pages/NotificationsV2.vue')
 const Permissions = () => import(/* webpackChunkName: "PermissionsPage" */ '@/pages/Permissions.vue')
 // const CheckList = () => import(/* webpackChunkName: "checkListPage" */ '@/pages/checkList.vue')
@@ -18,11 +18,12 @@ export default {
 		Userlist,
 		Company,
 		Fines,
-		Notifications,
+		// Notifications,
 		NotificationsV2,
 		Permissions,
 		Awards,
 		IntegrationsPage,
+		// CheckList,
 	},
 	data(){
 		return {
@@ -48,14 +49,14 @@ export default {
 					title: 'Депремирования',
 					access: ['fines_view', 'settings_view']
 				},
-				{
-					id: '5',
-					htmlId: 'nav-notifications',
-					path: '/timetracking/settings?tab=5',
-					title: 'Уведомления',
-					access: ['notifications_view', 'settings_view'],
-					domain: 'bp'
-				},
+				// {
+				// 	id: '5',
+				// 	htmlId: 'nav-notifications',
+				// 	path: '/timetracking/settings?tab=5',
+				// 	title: 'Уведомления',
+				// 	access: ['notifications_view', 'settings_view'],
+				// 	domain: 'bp'
+				// },
 				{
 					id: '10',
 					htmlId: 'nav-notifications-v2',
@@ -213,7 +214,7 @@ export default {
 									>
 										<Fines />
 									</div>
-									<div
+									<!-- <div
 										v-if="activeTab === '5' && can(['notification_view', 'settings_view'])"
 										class="tab-pane fade show active py-3"
 										id="nav-notifications"
@@ -225,7 +226,7 @@ export default {
 											:users="pageData.users"
 											:positions="pageData.positions"
 										/>
-									</div>
+									</div> -->
 									<div
 										v-if="activeTab === '10' && can(['notification_view', 'settings_view'])"
 										class="tab-pane fade show active py-3"
@@ -244,15 +245,15 @@ export default {
 									>
 										<Permissions />
 									</div>
-									<!--									<div-->
-									<!--										v-if="activeTab === '7' && can(['checklists_view', 'settings_view'])"-->
-									<!--										class="tab-pane fade show active py-3"-->
-									<!--										id="checkList"-->
-									<!--										role="tabpanel"-->
-									<!--										aria-labelledby="nav-checkList-tab"-->
-									<!--									>-->
-									<!--										<CheckList />-->
-									<!--									</div>-->
+									<!-- <div
+										v-if="activeTab === '7' && can(['checklists_view', 'settings_view'])"
+										class="tab-pane fade show active py-3"
+										id="checkList"
+										role="tabpanel"
+										aria-labelledby="nav-checkList-tab"
+									>
+										<CheckList />
+									</div> -->
 									<div
 										v-if="activeTab === '8' && can('is_admin')"
 										class="tab-pane fade show active py-3"

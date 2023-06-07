@@ -95,7 +95,14 @@
 					<label
 						for="workStartTime"
 						class="col-sm-4 col-form-label"
-					>Рабочий график</label>
+					>
+						Рабочий график
+						<img
+							src="/images/dist/profit-info.svg"
+							class="img-info"
+							v-b-popover.hover.left="'Укажите во сколько начинается и заканчивается рабочий день всей группы по умолчанию (индивидуально устанавливается в профиле сотрудника)'"
+						>
+					</label>
 					<div class="col-sm-8 form-inline">
 						<input
 							name="work_start_time"
@@ -168,7 +175,14 @@
 					<label
 						for="workStartTime"
 						class="col-sm-4 col-form-label"
-					>Отметьте выходные дни</label>
+					>
+						Отметьте выходные дни
+						<img
+							src="/images/dist/profit-info.svg"
+							class="img-info"
+							v-b-popover.hover.left="'Отметив выходные дни сотрудник не сможет начать рабочй день в эти дни'"
+						>
+					</label>
 					<div class="col-sm-8">
 						<BitMaskCheckGroup
 							v-model="form.usualSchedule"

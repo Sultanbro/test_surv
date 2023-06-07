@@ -155,19 +155,19 @@ class FetchActivities extends Command
             ],
 
             // Яндекс доставка
-            [
-                'id' => 97,
-                'activities' => [
-                    'minutes' => 217,
-                    'aggrees' => 219,
-                    'correct_minutes' => 222,
-                    'conversion' => 224,
-                ],
-                'dialer_id' => 448,
-                'aggrees_scripts' => [],
-                'closed_card_scripts' => [],
-                'time_exceptions' => [],
-            ],
+            // [
+            //     'id' => 97,
+            //     'activities' => [
+            //         'minutes' => 217,
+            //         'aggrees' => 219,
+            //         'correct_minutes' => 222, 
+            //         'conversion' => 224,
+            //     ],
+            //     'dialer_id' => 448,
+            //     'aggrees_scripts' => [],
+            //     'closed_card_scripts' => [],
+            //     'time_exceptions' => [],
+            // ],
         ];
     }
 

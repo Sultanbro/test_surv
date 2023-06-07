@@ -81,6 +81,8 @@ export default {
 			isSearchResult: false,
 			weekdays: (this.user?.weekdays || '0000000').split(''),
 			position: this.user ? this.user.position_id : '',
+			userTimezone: null,
+			timezones: [-11, -10, -9.5, -9, -8, -7, -6, -5, -4, -3.5, -3, -2, -1, 0, 1, 2, 3, 3.5, 4, 4.5, 5, 5.5, 5.75, 6, 6.5, 7, 8, 8.75, 9, 9.5, 10, 10.5, 11, 12, 12.75, 13, 14],
 		}
 	},
 	computed:{
@@ -107,6 +109,7 @@ export default {
 			this.userWork_end = user ? user.work_end : '';
 			this.position = user ? user.position_id : '';
 			this.workChartId = user ? user.work_chart_id : null;
+			this.userTimezone = user ? user.timezone : 6;
 		},
 		position(value){
 			if(value === -1) {
@@ -178,6 +181,12 @@ export default {
 			this.$set(this.weekdays, id, this.weekdays[id] === '1' ? '0' : '1')
 		},
 		getShiftDays,
+		getTimezoneString(timezone) {
+			let absolute_value = Math.abs(timezone);
+			let decimal_portion = absolute_value - Math.floor(absolute_value);
+			let str = 'UTC'  + (timezone >= 0 ? '+' : '-') + String(Math.floor(absolute_value)) + (decimal_portion == 0 ? '' : ':') + (decimal_portion * 60 || '');
+			return str;
+		}
 	}
 }
 </script>
@@ -524,7 +533,33 @@ export default {
 					</b-form-select>
 				</div>
 			</div>
-
+			<div class="form-group row">
+				<label
+					class="col-sm-4 col-form-label font-weight-bold"
+				>Часовой пояс</label>
+				<div class="col-sm-8">
+					<b-form-select
+						name="timezone"
+						v-model="userTimezone"
+						@change="$emit('selectWorkChart', workChartId)"
+					>
+						<b-form-select-option
+							disabled
+							value="null"
+						>
+							Выберите часовой пояс
+						</b-form-select-option>
+						<template v-for="t in timezones">
+							<b-form-select-option
+								:key="t"
+								:value="t"
+							>
+								{{ getTimezoneString(t) }}
+							</b-form-select-option>
+						</template>
+					</b-form-select>
+				</div>
+			</div>
 			<div class="form-group row">
 				<label
 					class="col-sm-4 col-form-label font-weight-bold"

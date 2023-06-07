@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\User;
 
+use App\DTO\Fine\UpdateUserFinesDTO;
 use App\TimetrackingHistory;
 use Carbon\Carbon;
 use Illuminate\Http\JsonResponse;
@@ -10,6 +11,8 @@ use App\Http\Controllers\Controller;
 use App\UserDescription;
 use App\UserFine;
 use App\Fine;
+use App\Http\Requests\Fine\UpdateUserFinesRequest;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 
@@ -21,38 +24,39 @@ class FineController extends Controller
      * @param Request $request
      * @return JsonResponse
      */
-    public function update(Request $request)
+    public function update(UpdateUserFinesRequest $request)
     {
-        $can_delete = in_array(Auth::user()->id, [5, 11741, 157, 3423]);
+        $data = $request->toDto();
+
+        $can_delete = Auth::user()->hasPermissionTo('fines_edit');
         
-        $ud = UserDescription::where('user_id', $request->user_id)->first();
+        $ud = UserDescription::where('user_id', $data->userId)->first();
 
         if($ud && $ud->is_trainee == 1) return response()->json([
-                                        "message" => 'Не удалось сохранить изменения. Стажеру нельзя ставить штрафы'
-                                    ]);
+            "message" => 'Не удалось сохранить изменения. Стажеру нельзя ставить штрафы'
+        ]);
 
-        $resultTransaction = false;
         $fines = Fine::pluck('id')->toArray();
-        $currentUserFines = UserFine::whereDate('day', $request['date'])
-            ->where('user_id', $request['user_id'])
+
+        $currentUserFines = UserFine::whereDate('day', $data->date)
+            ->where('user_id', $data->userId)
             ->where('status', UserFine::STATUS_ACTIVE)
             ->pluck('fine_id')
             ->toArray();
-        $deleteFines = array_diff($fines, $request['fines']);
 
-      
-        DB::transaction(function () use (&$resultTransaction, $request, $currentUserFines, $deleteFines, $can_delete) {
-            $this->addUserFines($request, $currentUserFines, $request['comment']);
+        $deleteFines = array_diff($currentUserFines, $data->fines);
+        $newFines = array_diff($data->fines, $currentUserFines);
+        
+        $resultTransaction = false;
+        DB::transaction(function () use (&$resultTransaction, $data, $newFines, $deleteFines, $can_delete) {
+            $this->addUserFines($data, $newFines, $data->comment);
 
             if($can_delete) {
-                $this->deleteUserFines($deleteFines, $request);
+                $this->deleteUserFines($deleteFines, $data);
             } 
 
             $resultTransaction = true;
         }, 5);
-
-
-
 
         $message = $resultTransaction ? 'Данные успешно сохранены!' : 'Не удалось сохранить изменения. Попробуйте еще раз!';
 
@@ -64,85 +68,68 @@ class FineController extends Controller
     /**
      * Добавление штрафов пользователю
      *
-     * @param  $request
-     * @param  $currentUserFines
-     * @param  $comment
+     * @param  UpdateUserFinesDTO $request
+     * @param  array $currentUserFines
+     * @param  string|null $comment
      */
-    protected function addUserFines($request, $currentUserFines, $comment = null)
+    protected function addUserFines(UpdateUserFinesDTO $dto, array $newFines, string $comment = null)
     {
-        $nowFines = $request['fines'];
-        $userFineModel = new UserFine;
-        $wasFines = $userFineModel->getAmountUserFines($request);
+        foreach ($newFines as $fineId) {
+            $data = [
+                'user_id' => $dto->userId,
+                'fine_id' => $fineId,
+                'day' => $dto->date,
+                'note' => null
+            ];
 
-        // для сценария когда штрафы только удаляют
-        if ($wasFines > count($nowFines)) {
-            $result = array_diff($currentUserFines, $request['fines']);
-            foreach ($result as $item) {
-                $fine = Fine::find($item);
-                $history = [
-                    'user_id' => $request['user_id'],
-                    'author' => Auth::user()->name.' '.Auth::user()->last_name,
-                    'author_id' => Auth::user()->id,
-                    'date' => $request['date'],
-                    'description' => isset($comment) ? 'Удален штраф №'.$item." ".$fine->name.', причина: '.$comment : 'Штраф',
-                    'created_at' => Carbon::now(Auth::user()->timezone()),
-                    'updated_at' => Carbon::now(Auth::user()->timezone())
-                ];
-                TimetrackingHistory::create($history);
+            $fine = UserFine::whereDate('day', $dto->date)
+                ->where('user_id', $dto->userId)
+                ->where('status', UserFine::STATUS_INACTIVE)
+                ->where('fine_id', $fineId)
+                ->first();
+            
+            if (is_null($fine)) {
+                (new UserFine)->addUserFine($data);
+            } else {
+                UserFine::turnOnFine($dto->userId, $fineId, $dto->date);
             }
-        }
 
+            $history = [
+                'user_id' => $dto->userId,
+                'author' => Auth::user()->name.' '.Auth::user()->last_name,
+                'author_id' => Auth::user()->id,
+                'date' => $dto->date,
+                'description' => isset($comment) ? 'Штраф, причина: '.$comment : 'Штраф'
+            ];
+            TimetrackingHistory::create($history);
 
-        foreach ($request['fines'] as $fineId) {
-            if(!in_array($fineId, $currentUserFines)) {
-                $data = [
-                    'user_id' => $request['user_id'],
-                    'fine_id' => $fineId,
-                    'day' => $request['date'],
-                    'note' => Null
-                ];
-                $fine = UserFine::where('day', '=', $request['date'])
-                    ->where('user_id', '=',  $request['user_id'])
-                    ->where('fine_id','=',  $fineId)
-                    ->where('status','=',  2)
-                    ->first();
-                if (is_null($fine)) {
-                    $userFineModel->addUserFine($data);
-                } else {
-                    UserFine::turnOnFine($request, $fineId);
-                }
-
-
-                $history = [
-                    'user_id' => $request['user_id'],
-                    'author' => Auth::user()->name.' '.Auth::user()->last_name,
-                    'author_id' => Auth::user()->id,
-                    'date' => $request['date'],
-                    'description' => isset($comment) ? 'Штраф, причина: '.$comment : 'Штраф'
-                ];
-                TimetrackingHistory::create($history);
-
-                UserFine::updateTimetracking($request);
-
-            }
+            UserFine::updateTimetracking($dto->userId, $dto->date);
         }
     }
 
     /**
      * Удаление штрафов пользователя
      *
-     * @param $deleteFines
-     * @param $request
+     * @param array $deleteFines
+     * @param UpdateUserFinesDTO $dto
      */
-    protected function deleteUserFines($deleteFines, $request)
+    protected function deleteUserFines($deleteFines, UpdateUserFinesDTO $dto)
     {
         foreach ($deleteFines as $fineId) {
+            $fine = Fine::find($fineId);
+            
+            $history = [
+                'user_id' => $dto->userId,
+                'author' => Auth::user()->name.' '.Auth::user()->last_name,
+                'author_id' => Auth::user()->id,
+                'date' => $dto->date,
+                'description' => isset($dto->comment) ? 'Удален штраф №' . $fineId . " " . $fine->name . ', причина: ' . $dto->comment : 'Штраф',
+                'created_at' => Carbon::now(Auth::user()->timezone()),
+                'updated_at' => Carbon::now(Auth::user()->timezone())
+            ];
+            TimetrackingHistory::create($history);
 
-          UserFine::turnOffFine($request, $fineId);
+          UserFine::turnOffFine($dto->userId, $fineId, $dto->date);
         }
     }
-
-
-
-
 }

@@ -11,6 +11,7 @@ export * from './api/portal.js'
 export * from './api/notifications.js'
 export * from './api/workChart.js'
 export * from './api/company.js'
+export * from './api/top.js'
 
 export async function updateOnlineStatus(){
 	await axios.post('/online')

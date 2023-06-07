@@ -29,15 +29,15 @@ class TopValue extends Model
         'options',
         'min_value',
         'max_value',
-        'cell', // cell from pivot table 
+        'cell', // cell from pivot table
         'activity_id',
         'round', // округление
         'is_main', // ключевой, по которому будет сортировка
         'fixed', // некоторые поля не редактируются
         'value_type', // avg  или sum с активности
-        'reversed', // 
+        'reversed', //
     ];
-    
+
     public function getOptions()
     {
 
@@ -71,7 +71,7 @@ class TopValue extends Model
             'highDpiSupport' => true,
             'key' => $this->id * 1000,
         ];
-        
+
         if(array_key_exists('angle', $arr)) $result['angle'] = $arr['angle'];
         if(array_key_exists('staticLabels', $arr)) $result['staticLabels'] = $arr['staticLabels'];
         if(array_key_exists('staticZones', $arr)) $result['staticZones'] = $arr['staticZones'];
@@ -88,7 +88,7 @@ class TopValue extends Model
         $result['maxValue'] = $this->max_value;
         $result['unit'] = $this->unit;
         $result['name'] = $this->name;
-        
+
         if($this->unit == 'место') {
             $result['staticZones'] = [
                 [ 'strokeStyle' => "#F03E3E", 'min' => 1, 'max' => 2 ], // Red
@@ -119,17 +119,17 @@ class TopValue extends Model
 
         foreach($group_ids as $group_id) {
             $group = ProfileGroup::find($group_id);
-            
+
             $top_values = TopValue::where([
                 'group_id' => $group_id,
                 'date' => $date,
             ])->get();
-            
-            if($group) { 
-               
+
+            if($group) {
+
                 $gauges = [];
 
-                
+
                 $percento = 0;
                 foreach($top_values as $index => $top_value) {
                     $gauge = [
@@ -148,15 +148,15 @@ class TopValue extends Model
                         'value_type' => $top_value->value_type,
                         'key' => $top_value->id * 1000,
                     ] + self::getDynamicValue($group_id, $date, $top_value);
-                        
+
                     $gauges[] = $gauge;
 
                     if((float)$top_value->max_value - (float)$top_value->min_value != 0 && ($top_value->is_main == 1 || $index == 0)) {
                         $percento = ((float)$top_value->value - (float)$top_value->min_value) / ((float)$top_value->max_value - (float)$top_value->min_value);
                     }
-                    
+
                 }
-                
+
 
 
                 $values = array_column($gauges, 'is_main');
@@ -167,18 +167,19 @@ class TopValue extends Model
                     'name' => $group->name,
                     'gauges' => $gauges,
                     'group_activities' => $activities->where('group_id', $group->id),
-                    'percento' => $percento
+                    'percento' => $percento,
+                    'archive_utility' => $group->archive_utility,
                 ];
             }
         }
-        
+
         $values_asc = array_column($gauge_groups, 'percento');
-        array_multisort($values_asc, SORT_ASC, $gauge_groups); 
-        
+        array_multisort($values_asc, SORT_ASC, $gauge_groups);
+
 
         return $gauge_groups;
-    } 
-    
+    }
+
     public static function getDynamicValue($group_id, $date, $top_value)
     {
         $value = (float)$top_value->value;
@@ -209,7 +210,7 @@ class TopValue extends Model
             $options = $top_value->getOptions();
             $sections = $options['staticLabels']['labels']; // Уязвимый
         }
-         
+
         $gauge_sections = self::getGaugeSections([
             'value' => $value,
             'min_value' => $min_value,
@@ -224,20 +225,20 @@ class TopValue extends Model
         $options = $gauge_sections['options'];
 
         if($top_value->activity_id != 0) {
-         
+
             if($top_value->activity_id == -1) {
                 $value = AnalyticStat::getCellValue($top_value->group_id, $top_value->cell, $date, $top_value->round);
-                
+
             } else {
 
                 $activity = Activity::withTrashed()->find($top_value->activity_id);
 
-             
+
                 if($activity && $activity->type == 'quality') {
 
                     $carbon = Carbon::parse($date);
                     $value = \App\QualityRecordMonthlyStat::where([
-                            'month' => $carbon->month, 
+                            'month' => $carbon->month,
                             'year' => $carbon->year,
                             'group_id' => $top_value->group_id
                         ])
@@ -248,7 +249,7 @@ class TopValue extends Model
                 } else {
                     $value = UserStat::total_for_month($top_value->activity_id, $date, $top_value->value_type);
                 }
-              
+
             }
 
             $min_value = $top_value->min_value;
@@ -266,13 +267,13 @@ class TopValue extends Model
 
             $sections = $gauge_sections['sections'];
             $options = $gauge_sections['options'];
-        } 
-    
+        }
+
         if($group_id == 53) {
 
-          
+
             if($top_value->value_type == 'pcb') {
-              
+
                 $dd = Carbon::parse($date)->subMonth();
                 $alter_name = 'Полезность(' . $months[(int)$dd->format('m')] . ')';
                 $сallBaseTotal = CallBaseTotal::where('date', $dd->format('Y-m-d'))
@@ -301,7 +302,7 @@ class TopValue extends Model
                     ->first();
 
                 $dd = Carbon::parse($date);
-                
+
                 $alter_name = 'Полезность(' . $months[(int)$dd->format('m')] . ')';
                 $value = $сallBaseTotal ? $сallBaseTotal->value : 0;
 
@@ -319,8 +320,8 @@ class TopValue extends Model
                 $sections = $gauge_sections['sections'];
                 $options = $gauge_sections['options'];
             }
-        
-            
+
+
         }
 
         $top_value->value = $value;
@@ -328,7 +329,7 @@ class TopValue extends Model
         $top_value->max_value = $max_value;
         $top_value->options = $options;
         $top_value->save();
-        
+
         if($alter_name != '') {
             $top_value->name = $alter_name;
         }
@@ -343,7 +344,7 @@ class TopValue extends Model
            'sections' => json_encode($sections),
             'angle' =>$options['angle'],
         ];
-    
+
     }
 
     public static function getGaugeSections($args)
@@ -355,10 +356,10 @@ class TopValue extends Model
         $options = $args['options'];
         $reverse = array_key_exists('reverse', $args) ? $args['reverse'] : false;
 
-        
-        $sections = $options['staticLabels']['labels']; //  
-      
-      
+
+        $sections = $options['staticLabels']['labels']; //
+
+
             $sections = [
                 round($min, $round),
                 round((($max - $min) * 0.2) + $min, $round),
@@ -367,14 +368,14 @@ class TopValue extends Model
                 round((($max - $min) * 0.8) + $min, $round),
                 round($max, $round),
             ];
-     
+
 
        // dump((($max - $min) * 0.2) + $min);
-        
+
         $options['staticLabels']['labels'] = $sections;
 
         if($reverse) {
-        
+
             $options['staticZones'] = [
                 [ 'strokeStyle' => "#30B32D", 'min' => $sections[0], 'max' => $sections[1] ], // Red
                 [ 'strokeStyle' => "#42e467", 'min' => $sections[1], 'max' => $sections[2] ], // Orange
@@ -390,10 +391,10 @@ class TopValue extends Model
                 [ 'strokeStyle' => "#42e467", 'min' => $sections[3], 'max' => $sections[4] ], // Green light
                 [ 'strokeStyle' => "#30B32D", 'min' => $sections[4], 'max' => $sections[5] ], // Green
             ];
-        } 
+        }
 
-        
-        
+
+
         return [
             'options' => $options,
             'sections' => $sections,
@@ -411,14 +412,14 @@ class TopValue extends Model
         if(!$date) {
             $date = Carbon::now()->startOfMOnth()->format('Y-m-d');
         }
-        
+
         foreach($groups as $group_id) {
-            $gauges[] = self::getRentabilityGauge($date, $group_id, $common_name);    
+            $gauges[] = self::getRentabilityGauge($date, $group_id, $common_name);
         }
 
         $values_asc = array_column($gauges, 'value');
-        array_multisort($values_asc, SORT_ASC, $gauges); 
-        
+        array_multisort($values_asc, SORT_ASC, $gauges);
+
 
         return $gauges;
     }
@@ -426,25 +427,25 @@ class TopValue extends Model
     public static function getRentabilityGaugesOfGroup($date, $group_id, $common_name = '')
     {
         $gauges = [];
-     
+
         if(!$date) {
             $date = Carbon::now()->startOfMOnth()->format('Y-m-d');
         }
-        
+
         $gauges[] = self::getRentabilityGauge($date, $group_id, $common_name);
-        
+
         return $gauges;
     }
 
     private static function getRentabilityGauge($date, $group_id, $common_name)
     {
         $group = ProfileGroup::find($group_id);
-            
+
         $tv = new TopValue();
         $tv->options = '[]';
-        
+
         $options = $tv->getOptions();
-        
+
         if(Carbon::parse($date)->month  == date('m') && Carbon::parse($date)->year  == date('Y')) {
             $tdate = Carbon::parse($date)->day(date('d'))->format('Y-m-d');
         } else {
@@ -478,11 +479,11 @@ class TopValue extends Model
             'is_main' => 0,
             'fixed' => 0,
             'value_type' => 'sum',
-            'sections' => $options['staticLabels']['labels'], 
+            'sections' => $options['staticLabels']['labels'],
             'options' => $options,
             'diff' =>  AnalyticStat::getRentabilityDiff($group_id, $tdate)
         ];
-        
+
         return $gauge;
     }
 
@@ -512,7 +513,7 @@ class TopValue extends Model
             $r_counts[$i] = 0;
         }
 
-        
+
         $edited_proceeds = TopEditedValue::whereYear('date', $year)->get();
 
         foreach ($groups as $key => $group) {
@@ -523,11 +524,11 @@ class TopValue extends Model
 
             $row['date'] = $group->created_at->diffInDays();
             $row['date_formatted'] = $group->created_at->format('d.m.Y');
-            
+
             for($i=1;$i<=12;$i++) {
 
                 $xdate = $date->month($i)->format('Y-m-d');
-                
+
                 /**
                  * get salary
                  */
@@ -542,7 +543,7 @@ class TopValue extends Model
 
                     $data = Salary::salariesTable(0, $xdate, $group->users()->pluck('id')->toArray(), 93);
                     $sum = 0;
-        
+
                     foreach( $data['users'] as $user) {
                         $sum += array_sum(array_values($user['earnings']));
                         if($user['edited_bonus']) {
@@ -557,17 +558,17 @@ class TopValue extends Model
                             ? $user['edited_kpi']->amount
                             : $user['kpi'];
                     }
-        
+
                     $salary = $sum;
                 }
 
                 // TEMP
                 $rentability = 0;
                 $proceeds = 0;
-                
+
                 $proceeds = AnalyticStat::getProceedsSum($group->id, $xdate);
-               
-                
+
+
                 $edited_proceed = $edited_proceeds->where('date', $xdate)
                     ->where('group_id', $group->id)
                     ->first();
@@ -578,7 +579,7 @@ class TopValue extends Model
                 } else {
                     $row['ed' . $i] = false;
                 }
-                
+
                 $rentability = $proceeds > 0 ?  ($proceeds - $salary) / $proceeds : 0;
                 if($rentability > 0) $r_counts[$i]++;
                 $row['l' . $i] = $proceeds > 0 ? round($proceeds) : '';
@@ -596,16 +597,16 @@ class TopValue extends Model
         }
 
 
-        
-        for($i=1;$i<=12;$i++) { 
+
+        for($i=1;$i<=12;$i++) {
             $total_row['l' . $i] = round($total_row['l' . $i]);
             $total_row['c' . $i] = round($total_row['c' . $i]);
             $total_row['r' . $i] = $r_counts[$i] > 0 ? round($total_row['r' . $i] / $r_counts[$i], 1) . '%' : '';
-        } 
+        }
 
         array_unshift($table, $total_row);
 
-       
+
         return $table;
     }
 
@@ -615,7 +616,7 @@ class TopValue extends Model
 
         $date = Carbon::createFromDate($year, $month, 1);
         $groups = ProfileGroup::whereNotIn('id', [34,58,26])->where('active', 1)->get();
-        
+
         $edited_proceeds = TopEditedValue::whereYear('date', $year)->get();
 
         foreach ($groups as $key => $group) {
@@ -626,10 +627,10 @@ class TopValue extends Model
 
             $row['date'] = $group->created_at->diffInDays();
             $row['date_formatted'] = $group->created_at->format('d.m.Y');
-            
-           
+
+
                 $xdate = $date->format('Y-m-d');
-                
+
                 /**
                  * get salary
                  */
@@ -644,7 +645,7 @@ class TopValue extends Model
 
                     $data = Salary::salariesTable(0, $xdate, $group->users()->pluck('id')->toArray(), 93);
                     $sum = 0;
-        
+
                     foreach( $data['users'] as $user) {
                         $sum += array_sum(array_values($user['earnings']));
                         if($user['edited_bonus']) {
@@ -656,36 +657,36 @@ class TopValue extends Model
                         }
                         $sum += $user['edited_kpi'] ? $user['edited_kpi'] : $user['kpi'];
                     }
-        
+
                     $salary =  $sum;
                 }
 
                 // TEMP
                 $rentability = 0;
                 $proceeds = 0;
-                
+
                 $proceeds = AnalyticStat::getProceedsSum($group->id, $xdate);
-               
+
                 $edited_proceed = $edited_proceeds->where('date', $xdate)
                     ->where('group_id', $group->id)
                     ->first();
 
                 if($edited_proceed) {
                     $proceeds = (int)$edited_proceed->value;
-                } 
-                
+                }
+
                 $rentability = $proceeds > 0 ?  ($proceeds - $salary) / $proceeds : 0;
                 //if($rentability > 0) $r_counts[$i]++;
 
                 $row['proceeds'] = $proceeds > 0 ? round($proceeds) : '';
                 $row['salary'] = $salary > 0 ? round($salary) : '';
                 $row['margin'] = $rentability > 0 ? round($rentability, 1) . '%' : '';
-              
+
                 $table[] = $row;
-            
+
 
         }
-       
+
         return $table;
     }
 }

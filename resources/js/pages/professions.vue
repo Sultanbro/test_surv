@@ -93,6 +93,11 @@
 							switch
 						>
 							Индексация зарплаты
+							<img
+								src="/images/dist/profit-info.svg"
+								class="img-info"
+								v-b-popover.hover.right="'Каждые 90 дней оклад сотрудника будет увеличиваться сумму индексации'"
+							>
 						</b-form-checkbox>
 					</b-form-group>
 				</b-col>
@@ -106,6 +111,11 @@
 						:unchecked-value="0"
 					>
 						Показывать в профиле
+						<img
+							src="/images/dist/profit-info.svg"
+							class="img-info"
+							v-b-popover.hover.right="'Активировав эту функцию, у сотрудников данной должности в профиле будет показан данный блок'"
+						>
 					</b-form-checkbox>
 				</div>
 				<div class="card-body">

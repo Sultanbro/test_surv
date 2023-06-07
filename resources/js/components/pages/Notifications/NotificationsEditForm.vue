@@ -109,11 +109,11 @@
 				>
 			</div>
 			<div class="NotificationsEditForm-control">
-				<b-form-timepicker
+				<!-- <b-form-timepicker
 					v-model="value.time"
 					:hour12="false"
 					class="mb-4"
-				/>
+				/> -->
 				<b-form-select
 					v-model="value.date.frequency"
 					:options="periods"
@@ -143,11 +143,12 @@
 			@close="isRecipientsOpen = false"
 		>
 			<AccessSelect
-				v-model="value.recipients"
+				:value="value.recipients"
 				:tabs="['Сотрудники', 'Отделы', 'Должности']"
 				:access-dictionaries="accessDictionaries"
 				search-position="beforeTabs"
-				:submit-button="''"
+				:submit-button="'Применить'"
+				@submit="onSubmitAccess"
 				class="NotificationsEditForm-accessSelect"
 			/>
 		</JobtronOverlay>
@@ -214,9 +215,11 @@ export default {
 			this.$emit('save', this.value)
 		},
 		onClickRecipments(){
-			if(!this.value.id){
-				this.isRecipientsOpen = true
-			}
+			this.isRecipientsOpen = true
+		},
+		onSubmitAccess(value){
+			this.value.recipients = value
+			this.isRecipientsOpen = false
 		}
 	}
 }
