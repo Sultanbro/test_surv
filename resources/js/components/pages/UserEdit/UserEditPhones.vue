@@ -62,7 +62,15 @@ export default {
 					<label
 						for="phone"
 						class="col-sm-4 col-form-label font-weight-bold"
-					>Мобильный</label>
+					>
+						Мобильный
+						<img
+							src="/images/dist/profit-info.svg"
+							class="img-info"
+							alt="info icon"
+							v-b-popover.hover="'Только на этот номер могут отправляться сообщения васап'"
+						>
+					</label>
 					<div class="col-sm-12">
 						<input
 							name="phone"
