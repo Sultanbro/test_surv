@@ -14,12 +14,14 @@ class BitrixIntegrationService
 {
     public string  $host;
     public string $token;
+    public string $url;
     private $user;
 
     public function __construct(){
         $this->user   = Auth::user();
         $this->host   = config('bitrix')['host'];
         $this->token  = config('bitrix')['token'];
+        $this->url    = $this->host . $this->token . '/';
     }
 
     /**
@@ -102,6 +104,74 @@ class BitrixIntegrationService
 
         return true;
     }
+
+    /**
+     * @param int $deal_id
+     * @return array
+     * @throws HttpClientException
+     */
+    public function getDeal(int $deal_id)
+    {
+        $response = Http::get($this->url . 'crm.deal.get.json', ['id' => $deal_id]);
+
+        if (!$response->successful()) {
+            throw new HttpClientException($response->reason());
+        }
+
+        return $response->json()['result'];
+    }
+
+    /**
+     * @return array
+     * @throws HttpClientException
+     */
+    public function getDeals(array $data)
+    {
+        $response = Http::get($this->url . 'crm.deal.list.json', $data);
+
+        if (!$response->successful()) {
+            throw new HttpClientException($response->reason());
+        }
+
+        return $response->json()['result'];
+    }
+
+    /**
+     * 
+     */
+    public function getUser(string $search_by, $search)
+    {
+        $response = Http::get($this->url . 'user.get', [
+            'FILTER' => [
+                $search_by => $search,
+            ]
+        ]);
+
+        if (!$response->successful()) {
+            throw new HttpClientException($response->reason());
+        }
+
+        return $response->json('result');
+    }
+
+    /**
+     * 
+     */
+    public function getContact(int $contact_id)
+    {
+        $response = Http::get($this->url . 'contact.get', [
+            'ID' => $contact_id
+        ]);
+
+        if (!$response->successful()) {
+            throw new HttpClientException($response->reason());
+        }
+
+        return $response->json('result');
+    }
+
+    
+
 
     /**
      * Получем текущего пользователя в Bitrix24
