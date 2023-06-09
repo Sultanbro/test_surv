@@ -5,6 +5,7 @@ namespace App\Jobs\Bitrix;
 use App\Api\HeadHunter;
 use App\DTO\Courses\UpdateDealDTO;
 use App\Models\Bitrix\Lead;
+use App\Models\Bitrix\Segment;
 use App\Service\Department\UserService;
 use App\Service\Integrations\BitrixIntegrationService;
 use Illuminate\Bus\Queueable;
@@ -87,15 +88,30 @@ class UpdateDealJob implements ShouldQueue
                         'invited' => 0,
                     ]);
                 } else {
-                    $lead = Lead::create([
+                    $lead_data = [
+                        'user_id' => $user->getKey(),
                         'invited' => 0,
                         'deal_id' => $deal['ID'],
                         'name' => $user->full_name,
                         'phone' => $user->phone,
                         'status' => 'LOSE',
-                        'segment' => Lead::getSegmentAlt(Headhunter::SEGMENT),
+                        'segment' => Segment::where('name', 'like', '%Уволенные%')->first()?->getKey(),
                         'hash' => md5(uniqid().mt_rand())
-                    ]);
+                    ];
+
+                    switch ($user->user_type) {
+                        case User::USER_TYPE_OFFICE: {
+                            $lead_data['inhouse'] = now();
+                            break;
+                        }
+                        default:
+                        case User::USER_TYPE_REMOTE: {
+                            $lead_data['skyped'] = now();
+                            break;
+                        }
+                    }
+
+                    $lead = Lead::create($lead_data);
                 }
                 break;
             }
