@@ -81,6 +81,7 @@ class UpdateDealJob implements ShouldQueue
                 break;
             }
             case $deal['CLOSED'] == 'Y': { # Если не C4:WON значит увольнение
+                $group = $user->groups->first();
                 $lead = $user->lead;
                 if($lead) {
                     $lead->update([
@@ -96,7 +97,7 @@ class UpdateDealJob implements ShouldQueue
                         'phone' => $user->phone,
                         'status' => 'LOSE',
                         'segment' => Segment::where('name', 'like', '%Уволенные%')->first()?->getKey(),
-                        'hash' => md5(uniqid().mt_rand())
+                        'hash' => md5(uniqid().mt_rand()),
                     ];
 
                     switch ($user->user_type) {
@@ -109,6 +110,12 @@ class UpdateDealJob implements ShouldQueue
                             $lead_data['skyped'] = now();
                             break;
                         }
+                    }
+
+                    if ($group) {
+                        $lead_data['project'] = $group->name;
+                        $lead_data['invite_at'] = $group->pivot->created_at;
+                        $lead_data['invite_group_id'] = $group->getKey();   
                     }
 
                     $lead = Lead::create($lead_data);
