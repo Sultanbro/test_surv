@@ -15,6 +15,10 @@ import 'vue-croppie'
 import {
 	triggerApplyEmployee,
 } from '@/stores/api.js'
+import {
+	fire_trainee_causes,
+	fire_employee_causes,
+} from '@/composables/fire_causes'
 
 import axios from 'axios'
 
@@ -198,7 +202,6 @@ export default {
 			this.workingDays = data.workingDays
 			this.workingTimes = data.workingTimes
 			this.errors = data.errors
-			this.fire_causes = data.fire_causes
 			this.auth_identifier = data.auth_identifier
 			this.old_name = data.old_name
 			this.old_last_name = data.old_last_name
@@ -507,6 +510,7 @@ export default {
 			this.setData(data)
 		},
 		toggleDeleteConfirm(state, delay){
+			this.fire_causes = this.isTrainee ? fire_trainee_causes : fire_employee_causes
 			this.delay = delay
 			this.isDeleteConfirm = state
 		},
