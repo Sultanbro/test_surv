@@ -44,9 +44,10 @@ class UpdateDealJob implements ShouldQueue
         $contact = $bitrix->getContact($deal['CONTACT_ID']);
         
         $user = User::where(match (true) {
-            isset($contact['EMAIL']) => [['email' => $contact['EMAIL']['VALUE']]],
-            isset($contact['PHONE']) => [['phone' => $contact['PHONE']['VALUE']]],
+            isset($contact['EMAIL']) => [['email', $contact['EMAIL'][0]['VALUE']]],
+            isset($contact['PHONE']) => [['phone', $contact['PHONE'][0]['VALUE']]],
         })->first();
+
 
         if (is_null($user)) {
             return;
@@ -54,14 +55,14 @@ class UpdateDealJob implements ShouldQueue
         
         $stage_id = $deal['STAGE_ID'];
         $now = now()->setTimezone('Asia/Almaty')->toDateString();
-
+        
         switch (true) {
             case $stage_id == 'C4:WON': { # Поступил на работу
                 break;
             }
             case array_key_exists($stage_id, DayType::STAGE_TO_STATUS): { # Обучается или пропал
                 $day = DayType::where('user_id', $user->getKey())
-                    ->where('created_at', $now)
+                    ->whereDate('date', $now)
                     ->first();
 
                 if ($day == null) {

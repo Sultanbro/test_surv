@@ -734,7 +734,6 @@ Route::middleware(['api','tenant','not_admin_subdomain'])->group(function () {
         });
 
         Route::group(['prefix' => 'deals', 'as' => 'deals.'], function () {
-            Route::any('/added', [Deal\DealController::class, 'dealAddedWebhook']);
             Route::any('/updated', [Deal\DealController::class, 'dealUpdatedWebhook']);
         });
     });

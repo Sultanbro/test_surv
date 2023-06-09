@@ -159,7 +159,7 @@ class BitrixIntegrationService
      */
     public function getContact(int $contact_id)
     {
-        $response = Http::get($this->url . 'contact.get', [
+        $response = Http::get($this->url . 'crm.contact.get', [
             'ID' => $contact_id
         ]);
 
