@@ -1081,14 +1081,6 @@ export default {
 	}
 }
 
-.analytics-page .b-form-datepicker .btn {
-	padding: 0 11px;
-	margin: 0;
-	margin-right: 5px;
-}
-.analytics-page .pick-panel .btn {
-	padding: 1px;
-}
 
 .skypes-table {
 	.country {

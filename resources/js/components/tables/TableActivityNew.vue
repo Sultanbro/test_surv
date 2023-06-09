@@ -1149,11 +1149,6 @@ export default {
         margin: 0;
     }
 }
-.analytics-page{
-	.cell-input{
-		padding: 0 !important;
-	}
-}
 .bg-white {
     background: white;
 }
