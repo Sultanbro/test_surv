@@ -16,8 +16,8 @@ class DealController extends Controller
     public function dealUpdatedWebhook(Request $request, BitrixIntegrationService $bitrix, UserService $user_service)
     {
         info('Test228Test', $request->all());
-        
-        $deal_id = $request->input('FIELDS')['ID'];
+
+        $deal_id = $request->input('data')['FIELDS']['ID'];
         $deal = $bitrix->getDeal($deal_id);
 
         UpdateDealJob::dispatch($deal)->delay(now()->addSeconds(2));
