@@ -428,17 +428,22 @@
 </template>
 
 <script>
-// import ProgressBar from '@/components/ProgressBar' // в ответах quiz
+import ProgressBar from '@/components/ProgressBar' // в ответах quiz
 import Rating from './ui/Rating.vue'
 
 export default {
 	name: 'TraineeReport',
-	components: { Rating },
+	components: { Rating, ProgressBar },
 	props: ['groups', 'trainee_report'],
 	data() {
 		return {
 			report_group_id: 0,
 			all_groups: [],
+		}
+	},
+	watch: {
+		trainee_report(){
+			this.extractUniqueGroups()
 		}
 	},
 	created() {
@@ -449,13 +454,13 @@ export default {
 			var groups = [];
 			var items =[];
 			var helper = [];
-			this.trainee_report.forEach(function(item){
-
+			this.trainee_report.forEach(item => {
 				if(!groups.includes(item.group)){
 					groups.push(item.group);
 					helper.push({group : item.group, repeated : 1});
 					items.push(structuredClone(item));
-				}else{
+				}
+				else{
 					if(item['quiz'][4]['avg'] > 0){
 						helper[groups.indexOf(item.group)].repeated++;
 						for(let i = 1; i < 4; i++){
@@ -471,24 +476,22 @@ export default {
 						for(let i = 1; i < 8; i++){
 							items.filter(my_item => my_item.group == item.group)[0]['presence'][i] += item['presence'][i];
 						}
-					}else{
+					}
+					else{
 						items.filter(my_item => my_item.group == item.group)[0]['presence'][0] += item['presence'][0];
 						for(let i = 1; i < 8; i++){
 							items.filter(my_item => my_item.group == item.group)[0]['presence'][i] += item['presence'][i];
 						}
 					}
-
-
 					/*sorted_array.forEach(function(answer, index){
-                        answer.percent += item['quiz'][1][index].percent;
-                        answer.count += item['quiz'][1][index].count;
-                    });*/
+						answer.percent += item['quiz'][1][index].percent;
+						answer.count += item['quiz'][1][index].count;
+					});*/
 				}
 			});
 			this.all_groups = items;
 
 			this.setAverageData(helper);
-
 		},
 		setAverageData(helper){
 			let counter = 0;
