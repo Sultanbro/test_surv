@@ -110,7 +110,7 @@ class TopValue extends Model
         if(count($group_ids) == 0) {
             $carbon = Carbon::createFromFormat('Y-m-d', $date);
 
-            $group_ids = ProfileGroup::profileGroupsWithArchived($carbon->year, $carbon->month);
+            $group_ids = ProfileGroup::profileGroupsWithArchived($carbon->year, $carbon->month, false);
         }
 
         $gauge_groups = [];
@@ -420,7 +420,6 @@ class TopValue extends Model
         $values_asc = array_column($gauges, 'value');
         array_multisort($values_asc, SORT_ASC, $gauges);
 
-
         return $gauges;
     }
 
@@ -496,13 +495,13 @@ class TopValue extends Model
 
         $date = Carbon::createFromDate($year,$month,1);
 
-        $groups = ProfileGroup::whereNotIn('id', [34,58,26])->where([
-            ['has_analytics','=',1],
-            ['active','=',1]
-        ])->orWhere(fn ($query) => $query
-            ->whereYear('archived_date','<=', $year)
-            ->whereMonth('archived_date','>=', $date->month)
-        )->get();
+        $groups = ProfileGroup::whereNotIn('id', [34,58,26])
+            ->where('has_analytics','=',1)
+            ->where('active','=',1)
+            ->orWhere(fn ($query) => $query->whereYear('archived_date','<=', $year)
+                ->whereMonth('archived_date','>=', $date->month)
+            )
+            ->get();
 
         $r_counts = []; // for count avg rentability on every monht
         $total_row = []; // first row
@@ -605,7 +604,6 @@ class TopValue extends Model
         }
 
         array_unshift($table, $total_row);
-
 
         return $table;
     }

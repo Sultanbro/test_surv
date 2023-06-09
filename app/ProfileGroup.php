@@ -177,15 +177,27 @@ class ProfileGroup extends Model
      * @param $month
      * @return array
      */
-    public function scopeProfileGroupsWithArchived($query, $year, $month): array
+    public function scopeProfileGroupsWithArchived($query, $year, $month, $withArchive = true,  $archivedThisMonth = false): array
     {
         $date = Carbon::create($year, $month)->lastOfMonth()->format('Y-m-d');
 
-        return $this->where('active', self::IS_ACTIVE)
+        $profileGroups = $this->where('active', self::IS_ACTIVE)
             ->whereDate('created_at', '<=', $date)
-            ->where(fn($q) => $q->whereNull('archived_date')->orWhere(fn($q) => $q->whereYear('archived_date', '>=', $year)->whereMonth('archived_date', '>=', $month)))
-            ->whereIn('has_analytics', [self::HAS_ANALYTICS, self::ARCHIVED])
-            ->where(fn($group) => $group->whereNull('archived_date')->orWhere(
+            ->where(fn($q) => $q->whereNull('archived_date')->orWhere(fn($q) => $q->whereYear('archived_date', '>=', $year)->whereMonth('archived_date', '>=', $month)));
+
+        if($archivedThisMonth){
+            $firstDayMonth = Carbon::create($year, $month)->firstOfMonth()->format('Y-m-d');
+            $profileGroups->where('has_analytics', self::HAS_ANALYTICS)
+                ->orWhere('archived_date', '>=', $firstDayMonth);
+        }
+        else if ($withArchive){
+            $profileGroups->whereIn('has_analytics', [self::HAS_ANALYTICS, self::ARCHIVED]);
+        }
+        else{
+            $profileGroups->where('has_analytics', self::HAS_ANALYTICS);
+        }
+
+        $profileGroups->where(fn($group) => $group->whereNull('archived_date')->orWhere(
             fn($q) => $q->whereYear('archived_date', '>=', $year)->whereMonth('archived_date', '>=', $month))
         )->get()->reject(function ($group) {
             if ($group->has_analytics == self::HAS_ANALYTICS && $group->archived_date != null)
@@ -196,7 +208,9 @@ class ProfileGroup extends Model
             {
                 return $group;
             }
-        })->pluck('id')->toArray();
+        });
+
+        return $profileGroups->pluck('id')->toArray();
     }
 
     /**
