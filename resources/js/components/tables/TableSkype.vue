@@ -175,16 +175,16 @@
 				</template>
 
 				<template #cell(name)="data">
-					<div>
+					<div class="text-left">
+						{{ data.value }}
 						<span
-							class="badge badge-success badge-pill"
 							v-if="data.item.user_type == 'office'"
 							pill
 							variant="success"
+							class="badge badge-success badge-pill"
 						>
 							office
 						</span>
-						{{ data.value }}
 					</div>
 				</template>
 
@@ -952,6 +952,10 @@ export default {
 				}
 
 				return a && ld
+			}).sort((a, b) => {
+				const aTS = this.$moment(a.skyped, 'DD.MM.YYYY HH:mm')
+				const bTS = this.$moment(b.skyped, 'DD.MM.YYYY HH:mm')
+				return aTS - bTS
 			})
 
 			this.totalRows =  this.filtered.length
