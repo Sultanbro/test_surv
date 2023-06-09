@@ -1022,6 +1022,7 @@ export default {
 			// rowType: a string describing the `<tr>` type
 
 
+			if (item.invited == 0) return 'bg-red-2'
 			if (item.invited == 1) return 'bg-green'
 			if (item.invited == 2) return 'bg-green-2'
 			if (item.invited == 3) {
