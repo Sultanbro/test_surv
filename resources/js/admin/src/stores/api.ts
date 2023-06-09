@@ -1,31 +1,7 @@
 import axios from 'axios'
+import { onError } from './api/error'
 
-function onError(error: AxiosError): ErrorList {
-  if (axios.isAxiosError(error)) {
-    console.log('error message: ', error.message, error.response?.data)
-
-    const errorData = error.response ? error.response.data : {
-      errors: {
-        system: ['An unexpected error occurred']
-      }
-    }
-
-    return errorData.errors ? errorData : {
-      errors: {
-        message: errorData.message || 'Неизвестная ошибка'
-      }
-    }
-  }
-  else {
-    console.log('unexpected error: ', error)
-
-    return {
-      errors: {
-        system: ['An unexpected error occurred']
-      }
-    }
-  }
-}
+export * from './api/reflinker'
 
 export const logout = async () => {
   try {
