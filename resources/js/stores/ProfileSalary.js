@@ -1,3 +1,4 @@
+/* global Laravel */
 import { defineStore } from 'pinia'
 import moment from 'moment'
 import {
@@ -347,24 +348,26 @@ export const useProfileSalaryStore = defineStore('profileSalary', {
 			this.saveReadedPremiums()
 		},
 		hasLocal(){
-			return !!localStorage.getItem('profileSalary')
+			const json = localStorage.getItem('profileSalary')
+			if(!json) return false
+			const local = JSON.parse(json)
+			return local.userId === Laravel.userId
 		},
 		loadLocal(){
 			let json = localStorage.getItem('profileSalary')
 			if(!json){
 				json = JSON.stringify({
-					profile: null,
+					userId: Laravel.userId,
 					user_earnings: {},
 				})
 				localStorage.setItem('profileSalary', json)
 			}
 			const local = JSON.parse(json)
-			this.profile = local.profile
 			this.user_earnings = local.user_earnings
 		},
 		saveLocal(){
 			localStorage.setItem('profileSalary', JSON.stringify({
-				profile: this.profile,
+				userId: Laravel.userId,
 				user_earnings: this.user_earnings,
 			}))
 		},
