@@ -261,6 +261,11 @@
 													@change="updateProceed(record, field, 'name')"
 												>
 											</div>
+											<i
+												v-if="record.deleted_at"
+												class="fa fa-info-circle"
+												v-b-popover.hover.right.html="'Аналитика архвирована ' + $moment(record.deleted_at, 'YYYY-MM-DD').format('DD.MM.YYYY')"
+											/>
 										</template>
 
 										<template v-else>
@@ -535,6 +540,7 @@ export default {
 				if(this.afterCreated){
 					this.rentability = response.data.rentability;
 				}
+
 				this.afterCreated = true;
 				this.utility = response.data.utility;
 				this.proceeds = response.data.proceeds;
