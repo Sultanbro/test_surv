@@ -68,7 +68,7 @@
 					/>
 					<div class="d-flex jcfe">
 						<JobtronButton
-							v-if="archiveUtilityWithGauges.length"
+							v-if="activeUtility.length"
 							@click="isArchiveOpen = true"
 							title="Открыть архив"
 						>
