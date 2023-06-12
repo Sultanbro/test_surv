@@ -7,7 +7,6 @@
 	>
 		<template v-for="(group, group_index) in utility">
 			<div
-				v-if="group.gauges.length"
 				:key="group_index"
 				:class="wrapper_class"
 			>
@@ -37,6 +36,7 @@
 					</div>
 				</div>
 				<div
+					v-if="group.gauges.length"
 					class="d-flex justify-content-center"
 					:style="page == 'top' ? 'flex-wrap:wrap; width: 240px;' : ''"
 				>
