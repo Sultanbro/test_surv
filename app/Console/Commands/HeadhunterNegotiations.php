@@ -297,7 +297,7 @@ class HeadhunterNegotiations extends Command
                 
                 if($this->vacancyNameHasNotWords($hh_vacancy->name, [
                     'оператор', 
-                ]) continue;
+                ])) continue;
                 
                 $status = $hh_vacancy->type->id == 'open' ? Vacancy::OPEN : Vacancy::CLOSED;
                 $city = $hh_vacancy->area->name ? $hh_vacancy->area->name : 'Не указан';
