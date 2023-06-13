@@ -742,6 +742,26 @@ export default {
   margin-top: 2rem;
 }
 
+.profile__point,
+.profile__active{
+  min-width:25rem;
+}
+
+.profile__active{
+  margin-top: 2rem;
+  background: #fff;
+  border-radius:1rem;
+  padding: 1.5rem 1.5rem 1.2rem 1.5rem;
+  position:relative;
+
+  .profile__title{
+    padding-left: .5rem;
+  }
+  .tab__content-include{
+    padding-left: .5rem;
+  }
+}
+
 .logo-img-wrap{
 	width: 100%;
 	max-width: 30rem;
@@ -805,7 +825,7 @@ export default {
 		padding: 2rem 7rem 1rem;
 		justify-content: space-evenly;
 	}
-	.profile__about{
+	.ProfileInfo{
 		margin-top: 0;
 	}
 	.profile__col{
@@ -896,17 +916,7 @@ export default {
 			visibility: visible;
 			transform:translateY(0);
 		}
-		.profile__about{
-			opacity:1;
-			visibility: visible;
-			transform:translateY(0);
-		}
-		.profile-select{
-			opacity:1;
-			visibility: visible;
-			transform:translateY(0);
-		}
-		.profile__point{
+		.ProfileInfo{
 			opacity:1;
 			visibility: visible;
 			transform:translateY(0);
@@ -923,6 +933,12 @@ export default {
 		transform:translateY(10px);
 		transition:1s;
 	}
+	.profile__active{
+    transition: all 1s .8s;
+    opacity:0;
+    visibility: hidden;
+    transform:translateY(10px);
+  }
 
 
 	.profile__balance{
