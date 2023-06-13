@@ -140,77 +140,13 @@
 
 
 
-.profile__about{
-  background: #fff;
-  border-radius:1rem;
-  padding: 1.7rem 1rem;
-  margin-top: 20px;
-  position: relative;
 
-  .select-css{
-    margin-top: 0;
-    margin-bottom: 0;
-  }
-}
-.profile__name{
-  color:#5B6166;
-  font-size:1.8rem;
-  font-weight: 600;
-  margin-bottom: 1rem;
-  text-align: center;
-}
-.profile-border{
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 0 1.5rem;
-  font-size:1.2rem;
-  width: 100%;
-  min-height: 4rem;
-  color:#62788B;
-  margin-bottom: 1rem;
-  border: 1px solid #E7EAEA;
-  border-radius:1rem;
-  i{
-    font-size: 12px;
-    transition: 0.15s all ease;
-    cursor: pointer;
-    width: 30px;
-	height: 30px;
-    border-radius: 50%;
-    text-align: center;
-    color: rgb(72,145,243);
-    line-height: 30px;
-    &:hover{
-      background-color: rgba(72,145,243, 0.2);
-    }
-  }
-}
 
-.pulse-anim {
-  animation: pulse-animation 2s infinite;
-}
 
-@keyframes pulse-animation {
-  0% {
-    box-shadow: 0 0 0 0px rgba(0, 0, 0, 0.2);
-  }
-  100% {
-    box-shadow: 0 0 0 20px rgba(0, 0, 0, 0);
-  }
-}
 
-.profile__wrapper{
-  display: flex;
-  justify-content: space-between;
-  width: 100%;
-  text-align: center;
 
-  p{
-    width: unset;
-    padding: 0 1.5rem;
-  }
-}
+
+
 .profile__point{
   margin-top: 2rem;
   background: #fff;
@@ -304,20 +240,7 @@
   cursor:pointer;
 }
 
-.profile__active{
-  margin-top: 2rem;
-  background: #fff;
-  border-radius:1rem;
-  padding: 1.5rem 1.5rem 1.2rem 1.5rem;
-  position:relative;
 
-  .profile__title{
-    padding-left: .5rem;
-  }
-  .tab__content-include{
-    padding-left: .5rem;
-  }
-}
 
 
 
@@ -586,10 +509,6 @@
   }
 
 }
-.profile__point,
-.profile__active{
-  min-width:25rem;
-}
 
 
 
@@ -634,39 +553,5 @@
   .header__right-nav{
     gap:1rem;
     margin-bottom: 1rem;
-  }
-}
-@media(min-width:1360px){
-  .profile-select{
-    transition: all 1s .6s;
-    opacity:0;
-    visibility: hidden;
-    transform:translateY(10px);
-  }
-
-  .profile__about{
-    transition: all 1s .6s;
-    opacity:0;
-    visibility: hidden;
-    transform:translateY(10px);
-  }
-
-
-
-  .profile__point{
-    transition: all 1s .6s;
-    opacity:0;
-    visibility: hidden;
-    transform:translateY(10px);
-
-  }
-
-
-  .profile__active{
-    transition: all 1s .8s;
-    opacity:0;
-    visibility: hidden;
-    transform:translateY(10px);
-
   }
 }
