@@ -322,7 +322,7 @@ class HeadhunterNegotiations extends Command
         }
     }
                    
-    private function vacancyNameHasWords(String $name, array $words) : bool
+    private function vacancyNameHasNotWords(String $name, array $words) : bool
     {
         $nameWords = explode(' ', $name);
         foreach($nameWords as $key => $word) {
