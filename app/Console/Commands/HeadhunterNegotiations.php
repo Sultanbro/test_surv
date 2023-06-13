@@ -290,8 +290,6 @@ class HeadhunterNegotiations extends Command
             
             if($hh_vacancy) {
 
-                $this->line('vacancy: #'. $vacancy->id .  ' - ' . $hh_vacancy->name);
-
                 try {
                     $manager_id = 7792661;
                 } catch(\Exception $e) {
@@ -301,6 +299,8 @@ class HeadhunterNegotiations extends Command
                 if($this->vacancyNameHasNotWords($hh_vacancy->name, [
                     'оператор', 
                 ])) continue;
+
+                $this->line('vacancy: #'. $vacancy->id .  ' - ' . $hh_vacancy->name);
                 
                 $status = $hh_vacancy->type->id == 'open' ? Vacancy::OPEN : Vacancy::CLOSED;
                 $city = $hh_vacancy->area->name ? $hh_vacancy->area->name : 'Не указан';
