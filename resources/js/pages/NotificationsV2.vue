@@ -363,9 +363,9 @@ export default {
 			if(!confirm('Удалить уведомление?')) return
 			const {data} = await deleteNotification(notification.id)
 			if(data) {
-				this.$toast.success('Уведомление удалено')
 				const index = this.notifications.findIndex(noti => noti.id === notification.id)
 				this.notifications.splice(index, 1)
+				this.$toast.success('Уведомление удалено')
 			}
 			else{
 				this.$toast.error('Ошибка при удалении уведомления, попробуйте позже')

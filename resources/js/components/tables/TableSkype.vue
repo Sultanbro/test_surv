@@ -955,7 +955,7 @@ export default {
 			}).sort((a, b) => {
 				const aTS = this.$moment(a.skyped, 'DD.MM.YYYY HH:mm')
 				const bTS = this.$moment(b.skyped, 'DD.MM.YYYY HH:mm')
-				return aTS - bTS
+				return bTS - aTS
 			})
 
 			this.totalRows =  this.filtered.length
