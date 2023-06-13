@@ -38,7 +38,8 @@ class Kpi extends Model
         'created_by',
         'updated_by',
         'children',
-        'is_active'
+        'is_active',
+        'read_by',
     ];
 
     protected $dates = [
@@ -50,6 +51,7 @@ class Kpi extends Model
         'created_at'  => 'date:d.m.Y H:i',
         'updated_at'  => 'date:d.m.Y H:i',
         'children'    => 'array',
+        'read_by'     => 'array', 
     ];
 
     public function kpiable()

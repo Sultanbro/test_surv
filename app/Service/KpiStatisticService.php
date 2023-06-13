@@ -25,6 +25,7 @@ use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Http\Request;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\DB;
+use Symfony\Component\HttpKernel\Exception\HttpException;
 
 class KpiStatisticService
 {
@@ -431,6 +432,8 @@ class KpiStatisticService
         $positions     = [];
         $authUser = User::getUserById($userId);
 
+        $read = $quartalPremiums->contains(fn($q) => in_array($userId, $q->read_by ?? []));
+
         foreach ($quartalPremiums as $quartalPremium)
         {
             if ($quartalPremium->targetable_type == self::USER) {
@@ -485,9 +488,12 @@ class KpiStatisticService
         }
 
         return [
-            $users,
-            $profileGroups,
-            $positions
+            'data' => [
+                $users,
+                $profileGroups,
+                $positions
+            ],
+            'read' => $read,
         ];
     }
 
@@ -719,6 +725,8 @@ class KpiStatisticService
             ->limit(1)
             ->get();
 
+        $read = $kpis->contains(fn($k) => in_array($user_id, $k->read_by ?? []));
+
         foreach ($kpis as $kpi) {
             $kpi->kpi_items = [];
 
@@ -748,7 +756,8 @@ class KpiStatisticService
             'items'      => $kpis,
             'activities' => Activity::get(),
             'groups'     => ProfileGroup::get()->pluck('name', 'id')->toArray(),
-            'user_id'    => auth()->user() ? auth()->id() : 1
+            'user_id'    => auth()->user() ? auth()->id() : 1,
+            'read'       => $read,
         ];
     }
 
@@ -1936,6 +1945,85 @@ class KpiStatisticService
         }
 
         return $result;
+    }
+
+    /**
+     * @param int $user_id
+     * @return void
+     */
+    public function readKpis(int $user_id)
+    {
+        $user = User::find($user_id);
+
+        if (is_null($user)) {
+            throw new HttpException("Пользователь не найден");
+        }
+
+        $position_id = $user->position_id;
+        $groups = $user->groups->pluck('id')->toArray();
+
+        $kpis = Kpi::withTrashed()->where(function($query) use ($user_id, $groups, $position_id) {
+            $query->where(function($q) use ($user_id) {
+                    $q->where('targetable_id', $user_id)
+                        ->where('targetable_type', self::USER);
+                })
+                ->orWhere(function($q) use ($groups) {
+                    $q->whereIn('targetable_id', $groups)
+                        ->where('targetable_type', self::PROFILE_GROUP);
+                })
+                ->orWhere(function($q) use ($position_id) {
+                    $q->where('targetable_id', $position_id)
+                        ->where('targetable_type', self::POSITION);
+                });
+        })->get();
+
+        foreach ($kpis as $kpi) {
+            $read_by = $kpi->read_by ?? [];
+            if (in_array($user_id, $read_by)) {
+                $read_by[] = $user_id;
+                $kpi->update(['read_by' => $read_by]);
+            }
+        }
+    }
+
+
+    /**
+     * @param int $user_id
+     * @return void
+     */
+    public function readQuartalPremiums(int $user_id)
+    {
+        $user = User::find($user_id);
+
+        if (is_null($user)) {
+            throw new HttpException("Пользователь не найден");
+        }
+
+        $position_id = $user->position_id;
+        $groups = $user->groups->pluck('id')->toArray();
+
+        $qps = QuartalPremium::withTrashed()->with('activity')->where(function($query) use ($user_id, $groups, $position_id) {
+            $query->where(function($q) use ($user_id) {
+                    $q->where('targetable_id', $user_id)
+                      ->where('targetable_type', 'App\User');
+                })
+                ->orWhere(function($q) use ($groups) {
+                    $q->whereIn('targetable_id', $groups)
+                      ->where('targetable_type', 'App\ProfileGroup');
+                })
+                ->orWhere(function($q) use ($position_id) {
+                    $q->where('targetable_id', $position_id)
+                      ->where('targetable_type', 'App\Position');
+                });
+        })->get();
+
+        foreach ($qps as $qp) {
+            $read_by = $qp->read_by ?? [];
+            if (in_array($user_id, $read_by)) {
+                $read_by[] = $user_id;
+                $qp->update(['read_by' => $read_by]);
+            }
+        }
     }
 
     /**

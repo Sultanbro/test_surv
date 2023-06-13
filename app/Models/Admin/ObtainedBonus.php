@@ -20,7 +20,8 @@ class ObtainedBonus extends Model
         'bonus_id',
         'date',
         'amount',
-        'comment'
+        'comment',
+        'read',
     ];
 
     /**

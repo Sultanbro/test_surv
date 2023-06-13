@@ -116,10 +116,12 @@ class AccrualAwardService implements AwardInterface
             })
             ->get();
 
+        $read = false;
         foreach ($awardCategories as $awardCategory){
             $award = $awardCategory['awards'][0];
             $targetable_type = $award['targetable_type'];
             $targetable_id = $award['targetable_id'];
+            $read = $read ? $read : $awardCategory['awards']->contains(fn($a) => $a->read);
 
             if ($targetable_type == self::GROUP){
                 $user_ids = collect( (new UserService)
@@ -149,7 +151,7 @@ class AccrualAwardService implements AwardInterface
             }
         }
 
-        return $result;
+        return ['data' => $result, 'read' => $read];
     }
 
     public function getTopSalaryEmployees($user_ids,Carbon $date){

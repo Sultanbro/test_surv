@@ -16,6 +16,7 @@ use Exception;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Artisan;
+use Illuminate\Support\Facades\Auth;
 
 class KpiStatController extends Controller
 {
@@ -143,6 +144,30 @@ class KpiStatController extends Controller
         $response = $this->service->fetchQuartalPremiums($request);
 
         return response()->json($response);
+    }
+
+    /**
+     * @return JsonResponse
+     */
+    public function readKpis(Request $request): JsonResponse
+    {
+        $this->service->readKpis(Auth::id());
+
+        return response()->json([
+            'status' => 'success',
+        ]);
+    }
+
+    /**
+     * @return JsonResponse
+     */
+    public function readQuartalPremiums(Request $request): JsonResponse
+    {
+        $this->service->readQuartalPremiums(Auth::id());
+
+        return response()->json([
+            'status' => 'success',
+        ]);
     }
 
     /**
