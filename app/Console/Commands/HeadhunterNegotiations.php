@@ -286,9 +286,12 @@ class HeadhunterNegotiations extends Command
             
             $hh_vacancy = $this->hh->getVacancy($vacancy->id);
 
-            $this->line('vacancy: '. $vacancy->id);
+           
             
             if($hh_vacancy) {
+
+                $this->line('vacancy: #'. $vacancy->id .  ' - ' . $hh_vacancy->name);
+
                 try {
                     $manager_id = 7792661;
                 } catch(\Exception $e) {
