@@ -270,7 +270,7 @@ export default {
 		}
 	},
 	computed: {
-		...mapState(useProfileSalaryStore, ['user_earnings', 'unreadCount']),
+		...mapState(useProfileSalaryStore, ['user_earnings', 'readed']),
 		...mapState(usePersonalInfoStore, ['salary', 'currency']),
 		balance(){
 			return this.separateNumber(this.user_earnings.sumSalary)
@@ -279,25 +279,25 @@ export default {
 			return this.separateNumber(this.user_earnings.sumKpi)
 		},
 		kpiUnread(){
-			return !!this.unreadCount.kpis
+			return !this.readed.kpis
 		},
 		bonus(){
 			return this.separateNumber(this.user_earnings.sumBonuses)
 		},
 		bonusUnread(){
-			return !!this.unreadCount.bonuses
+			return !this.readed.bonuses
 		},
 		premium(){
 			return this.separateNumber(this.user_earnings.sumQuartalPremiums)
 		},
 		premiumUnread(){
-			return !!this.unreadCount.premiums
+			return !this.readed.premiums
 		},
 		nominations(){
 			return this.separateNumber(this.user_earnings.sumNominations)
 		},
 		nominationsUnread(){
-			return !!this.unreadCount.awards
+			return !this.readed.awards
 		},
 	},
 	watch:{
