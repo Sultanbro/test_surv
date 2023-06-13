@@ -161,7 +161,7 @@ export async function setReadedPremium(){
 	return data
 }
 export async function setReadedAward(){
-	const { data } = await axios.put('/awards/read')
+	const { data } = await axios.get('/awards/read')
 	return data
 }
 
