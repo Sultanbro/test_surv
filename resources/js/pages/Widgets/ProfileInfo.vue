@@ -75,7 +75,10 @@ import { useWorkChartStore } from '@/stores/WorkChart.js'
 export default {
 	name: 'ProfileInfo',
 	props: {
-		data: Object
+		data: {
+			type: Object,
+			default: () => ({}),
+		},
 	},
 	data: function () {
 		return {
