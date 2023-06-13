@@ -238,11 +238,11 @@ export default {
 
 			this.axios.post('/statistics/quartal-premiums', {
 				filters: filters
-			}).then(response => {
-				if(response.data){
-					this.itemsUser = response.data[0];
-					this.itemsGroup = response.data[1];
-					this.itemsPosition = response.data[2];
+			}).then(({ data }) => {
+				if(data.data){
+					this.itemsUser = data.data[0];
+					this.itemsGroup = data.data[1];
+					this.itemsPosition = data.data[2];
 				}
 				// this.defineSourcesAndGroups('t');
 
