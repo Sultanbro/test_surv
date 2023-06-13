@@ -297,7 +297,7 @@ class HeadhunterNegotiations extends Command
                 }
                 
                 if($this->vacancyNameHasNotWords($hh_vacancy->name, [
-                    'оператор', 
+                    'Оператор',
                 ])) continue;
 
                 $this->line('vacancy: #'. $vacancy->id .  ' - ' . $hh_vacancy->name);
@@ -324,14 +324,20 @@ class HeadhunterNegotiations extends Command
             
         }
     }
-                   
+
     private function vacancyNameHasNotWords(String $name, array $words) : bool
     {
         $nameWords = explode(' ', $name);
+
+        $arr = [];
         foreach($nameWords as $key => $word) {
-            $nameWords[$key] = strtolower($word);
+            $arr[] = strtolower($word);
         }
-        
-        return !in_array([$words], $nameWords);
+
+        $has = false;
+        foreach($arr as $key => $word) {
+            if(in_array($word, $words)) $has = true;
+        }
+        return !$has;
     }
 }               
