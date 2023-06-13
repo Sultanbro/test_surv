@@ -281,19 +281,24 @@ class HeadhunterNegotiations extends Command
         $this->line('updateVacancies: '. count($vacancies));
        
         foreach($vacancies as $vacancy) {
+           
             $vac = Vacancy::where('vacancy_id', $vacancy->id)->first();
             
             $hh_vacancy = $this->hh->getVacancy($vacancy->id);
 
             $this->line('vacancy: '. $vacancy->id);
-
+            
             if($hh_vacancy) {
                 try {
                     $manager_id = 7792661;
                 } catch(\Exception $e) {
                     // save logs
                 }
-
+                
+                if($this->vacancyNameHasNotWords($hh_vacancy->name, [
+                    'оператор', 
+                ]) continue;
+                
                 $status = $hh_vacancy->type->id == 'open' ? Vacancy::OPEN : Vacancy::CLOSED;
                 $city = $hh_vacancy->area->name ? $hh_vacancy->area->name : 'Не указан';
 
@@ -316,4 +321,14 @@ class HeadhunterNegotiations extends Command
             
         }
     }
-}
+                   
+    private function vacancyNameHasWords(String $name, array $words) : bool
+    {
+        $nameWords = explode(' ', $name);
+        foreach($nameWords as $key => $word) {
+            $nameWords[$key] = strtolower($word);
+        }
+        
+        return !in_array([$words], $nameWords);
+    }
+}               
