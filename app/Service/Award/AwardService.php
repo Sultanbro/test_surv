@@ -318,7 +318,7 @@ class AwardService
                     ->where('targetable_type', self::GROUP);
             })
             ->orWhere(function ($qu) use ($user) {
-                $qu->whereIn('targetable_id', $user->getKey())
+                $qu->where('targetable_id', $user->getKey())
                     ->where('targetable_type', $user::class);
             });
         });

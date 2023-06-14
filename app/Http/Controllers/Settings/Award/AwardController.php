@@ -194,7 +194,7 @@ class AwardController extends Controller
      */
     public function read()
     {
-        $user = Auth::user();
+        $user = User::find(Auth::id());
 
         if (is_null($user)) {
             throw new HttpException("Такого пользователя не существует");

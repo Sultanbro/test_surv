@@ -1979,7 +1979,7 @@ class KpiStatisticService
 
         foreach ($kpis as $kpi) {
             $read_by = $kpi->read_by ?? [];
-            if (in_array($user_id, $read_by)) {
+            if (!in_array($user_id, $read_by)) {
                 $read_by[] = $user_id;
                 $kpi->update(['read_by' => $read_by]);
             }
@@ -2019,7 +2019,7 @@ class KpiStatisticService
 
         foreach ($qps as $qp) {
             $read_by = $qp->read_by ?? [];
-            if (in_array($user_id, $read_by)) {
+            if (!in_array($user_id, $read_by)) {
                 $read_by[] = $user_id;
                 $qp->update(['read_by' => $read_by]);
             }

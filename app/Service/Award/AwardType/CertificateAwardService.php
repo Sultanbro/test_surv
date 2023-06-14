@@ -205,7 +205,7 @@ class CertificateAwardService implements AwardInterface
         $availableAwards = $data['available'];
         $otherAwards = $data['other'];
 
-        $myAwardsRead = $myAwards->contains(fn($a) => $a->read);
+        $myAwardsRead = $myAwards->isEmpty() || !$myAwards->contains(fn($a) => !$a->read);
 
         foreach ($myAwards as $item) {
             $category = $item->category;

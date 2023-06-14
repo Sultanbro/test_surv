@@ -116,12 +116,12 @@ class AccrualAwardService implements AwardInterface
             })
             ->get();
 
-        $read = false;
+        $read = true;
         foreach ($awardCategories as $awardCategory){
             $award = $awardCategory['awards'][0];
             $targetable_type = $award['targetable_type'];
             $targetable_id = $award['targetable_id'];
-            $read = $read ? $read : $awardCategory['awards']->contains(fn($a) => $a->read);
+            $read = $read ? $awardCategory['awards']->isEmpty() || !$awardCategory['awards']->contains(fn($a) => !$a->read) : $read;
 
             if ($targetable_type == self::GROUP){
                 $user_ids = collect( (new UserService)
