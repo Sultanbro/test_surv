@@ -16,6 +16,7 @@ use App\Http\Controllers\Salary as Salary;
 use App\Http\Controllers\Services as Services;
 use App\Http\Controllers\Settings as Settings;
 use App\Http\Controllers\Timetrack as Timetrack;
+use App\Http\Controllers\Top\TopValueController;
 use App\Http\Controllers\User as User;
 use Illuminate\Support\Facades\Route;
 
@@ -436,7 +437,11 @@ Route::middleware(['web','tenant', 'not_admin_subdomain'])->group(function () {
     Route::post('/timetracking/top/top_edited_value/update', [Analytics\TopController::class, 'updateTopEditedValue']);
     Route::post('/timetracking/top/proceeds/update', [Analytics\TopController::class, 'updateProceeds']);
 
-    Route::post('/top/utility-archive', [Root\Top\TopValueController::class, 'archiveUtility']);
+    Route::post('/top/utility-archive', [TopValueController::class, 'archiveUtility']);
+    Route::get('/top/utility/list', [TopValueController::class, 'listUtility']);
+    Route::get('/top/rentability/list', [TopValueController::class, 'listRentability']);
+    Route::get('/top/proceeds/list', [TopValueController::class, 'listProceeds']);
+    Route::post('/top/switch', [TopValueController::class, 'switch']);
 
     // HR analytics
     Route::any('/timetracking/analytics/save-call-base', [Analytics\HrController::class, 'saveCallBase']);

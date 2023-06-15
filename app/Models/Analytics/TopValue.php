@@ -2,6 +2,7 @@
 
 namespace App\Models\Analytics;
 
+use Aws\ApplicationCostProfiler\Exception\ApplicationCostProfilerException;
 use Illuminate\Database\Eloquent\Model;
 use Carbon\Carbon;
 use App\ProfileGroup;
@@ -110,8 +111,9 @@ class TopValue extends Model
         if(count($group_ids) == 0) {
             $carbon = Carbon::createFromFormat('Y-m-d', $date);
 
-            $group_ids = ProfileGroup::profileGroupsWithArchived($carbon->year, $carbon->month, false);
+            $group_ids = ProfileGroup::profileGroupsWithArchived($carbon->year, $carbon->month, false, false, ProfileGroup::SWITCH_UTILITY);
         }
+        dd($group_ids);
 
         $gauge_groups = [];
 
@@ -407,7 +409,7 @@ class TopValue extends Model
         $gauges = [];
         $carbon = Carbon::createFromFormat('Y-m-d', $date);
 
-        $groups = ProfileGroup::profileGroupsWithArchived($carbon->year, $carbon->month);
+        $groups = ProfileGroup::profileGroupsWithArchived($carbon->year, $carbon->month, true, false, ProfileGroup::SWITCH_RENTABILITY);
 
         if(!$date) {
             $date = Carbon::now()->startOfMOnth()->format('Y-m-d');
