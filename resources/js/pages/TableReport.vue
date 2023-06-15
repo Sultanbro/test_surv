@@ -88,8 +88,8 @@
 							</b-form-radio>
 						</b-form-group>
 						<button
-							class="btn btn-sm rounded btn-primary ml-2"
 							v-if="currentGroup != 23 && user_types == 2 && isBp"
+							class="btn btn-sm rounded btn-primary ml-2"
 							@click="copy()"
 							:style="{'padding': '2px 8px'}"
 						>
@@ -144,7 +144,7 @@
 						</template>
 						<template #cell(name)="name">
 							<div>
-								<span v-if="activeuserpos == 46">
+								<span v-if="$can('users_view')">
 									<a
 										:href="'/timetracking/edit-person?id=' + name.item.id"
 										target="_blank"
@@ -207,15 +207,15 @@
 								</template>
 
 								<div
+									v-if="dataItem.value.tooltip"
 									class="cell-border"
 									:id="`cell-border-${dataItem.item.id}-${dataItem.field.key}`"
-									v-if="dataItem.value.tooltip"
 								/>
 								<b-popover
+									v-if="dataItem.value.tooltip"
 									:target="`cell-border-${dataItem.item.id}-${dataItem.field.key}`"
 									triggers="hover"
 									placement="top"
-									v-if="dataItem.value.tooltip"
 								>
 									<template #title>
 										Время работы
@@ -262,8 +262,8 @@
 
 
 		<aside
-			class="table-report-sidebar"
 			v-if="openSidebar"
+			class="table-report-sidebar"
 		>
 			<div class="table-report-content">
 				<div class="table-report-header">
@@ -385,9 +385,9 @@
 											Отсутствовал на стажировке
 										</button>
 										<button
+											v-if="sidebarContent.data.item.requested == null"
 											class="btn btn-primary btn-block"
 											@click="openModalApply({type: 8, label:'Принят на работу' })"
-											v-if="sidebarContent.data.item.requested == null"
 										>
 											Принять на работу
 										</button>
@@ -406,9 +406,9 @@
 										</div>
 
 										<div
+											v-if="sidebarContent.data.item.requested !== null"
 											class="mt-3"
 											style="color:green;text-align:center"
-											v-if="sidebarContent.data.item.requested !== null"
 										>
 											Заявка на принятие на работу была подана в {{ sidebarContent.data.item.requested }}
 										</div>
@@ -427,8 +427,8 @@
 								</template>
 							</b-tab>
 							<b-tab
-								title="⚠️Штрафы"
 								v-if="!sidebarContent.data.item.is_trainee"
+								title="⚠️Штрафы"
 							>
 								<b-form-group class="fines-modal">
 									<template #label>
@@ -445,9 +445,9 @@
 										stacked
 									>
 										<b-form-checkbox
+											v-for="fine in fines"
 											:value="fine.value"
 											:key="fine.value"
-											v-for="fine in fines"
 										>
 											<span v-html="fine.text" />
 										</b-form-checkbox>
@@ -471,10 +471,10 @@
 		</aside>
 
 		<Sidebar
+			v-if="false"
 			:title="sidebarTitle"
 			:open="openSidebar"
 			@close="openSidebar=false"
-			v-if="false"
 			width="350px"
 		>
 			<b-tabs
@@ -569,9 +569,9 @@
 									Отсутствовал на стажировке
 								</button>
 								<button
+									v-if="sidebarContent.data.item.requested == null"
 									class="btn btn-primary btn-block"
 									@click="openModalApply({type: 8, label:'Принят на работу' })"
-									v-if="sidebarContent.data.item.requested == null"
 								>
 									Принять на работу
 								</button>
@@ -590,9 +590,9 @@
 								</div>
 
 								<div
+									v-if="sidebarContent.data.item.requested !== null"
 									class="mt-3"
 									style="color:green;text-align:center"
-									v-if="sidebarContent.data.item.requested !== null"
 								>
 									Заявка на принятие на работу была подана в {{ sidebarContent.data.item.requested }}
 								</div>
@@ -611,8 +611,8 @@
 						</template>
 					</b-tab>
 					<b-tab
-						title="⚠️Штрафы"
 						v-if="!sidebarContent.data.item.is_trainee"
+						title="⚠️Штрафы"
 					>
 						<b-form-group
 							label="Система депремирования"
