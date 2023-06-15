@@ -1,21 +1,11 @@
 <template>
 	<div class="kpi__content">
-		<div class="tabs">
-			<div class="tabs__wrapper custom-scroll">
+		<ProfileTabs :tabs="items.slice().reverse().map(kpi => (kpi.target && kpi.target.name) || '---')">
+			<template
+				v-for="(wrap_item, w) in items.slice().reverse()"
+				#[`tab(${w})`]
+			>
 				<div
-					v-for="(wrap_item, w) in items.slice().reverse()"
-					:key="w"
-					onclick="switchTabs(this)"
-					:data-index="w"
-					class="tab__item"
-					:class="{'is-active': w == 0}"
-				>
-					{{ wrap_item.target === null ? '---' : wrap_item.target.name }}
-				</div>
-			</div>
-			<div class="tab__content">
-				<div
-					v-for="(wrap_item, w) in items.slice().reverse()"
 					:key="w"
 					:data-content="w"
 					class="tab__content-item"
@@ -148,18 +138,20 @@
 						</div>
 					</div>
 				</div>
-			</div>
-		</div>
+			</template>
+		</ProfileTabs>
 	</div>
 </template>
 
 <script>
 import KpiItemsV2 from '@/pages/kpi/KpiItemsV2.vue'
+import ProfileTabs from '@ui/ProfileTabs'
 
 export default {
 	name: 'KpiContent',
 	components: {
 		KpiItemsV2,
+		ProfileTabs,
 	},
 	props: {
 		items: {
