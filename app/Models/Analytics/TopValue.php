@@ -113,7 +113,6 @@ class TopValue extends Model
 
             $group_ids = ProfileGroup::profileGroupsWithArchived($carbon->year, $carbon->month, false, false, ProfileGroup::SWITCH_UTILITY);
         }
-        dd($group_ids);
 
         $gauge_groups = [];
 
