@@ -1427,12 +1427,12 @@ export default {
 						}
 
 
-						// var maxHour = item.working_time_id === 1 ? 8 : 9;
+						var maxHour = item.working_time_id === 1 ? 8 : 9;
 
-						// if (dayHours[tt.date].hour > maxHour && tt.updated === 0) {
-						// 	dayHours[tt.date].hour = maxHour;
-						// 	tt_hours = maxHour;
-						// }
+						if (dayHours[tt.date].hour > maxHour && tt.updated === 0) {
+							dayHours[tt.date].hour = maxHour;
+							tt_hours = maxHour;
+						}
 					}
 
 					if (Number(tt.date) >= Number(item.applied_at)) {
