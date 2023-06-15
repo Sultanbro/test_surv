@@ -143,6 +143,7 @@ Route::middleware(['web','tenant', 'not_admin_subdomain'])->group(function () {
     Route::post('/course-results/get', [Course\CourseResultController::class, 'get']);
     Route::post('/course-results/nullify', [Course\CourseResultController::class, 'nullify']);
 
+    Route::get('course/item-result', [Course\CourseResultController::class, 'getCourseItemAndResult']);
     // glossary
     Route::get('/glossary/get', [Learning\GlossaryController::class, 'get']);
     Route::post('/glossary/save', [Learning\GlossaryController::class, 'save']);
@@ -434,6 +435,8 @@ Route::middleware(['web','tenant', 'not_admin_subdomain'])->group(function () {
     Route::post('/timetracking/top/save_group_plan', [Analytics\TopController::class, 'saveGroupPlan']);
     Route::post('/timetracking/top/top_edited_value/update', [Analytics\TopController::class, 'updateTopEditedValue']);
     Route::post('/timetracking/top/proceeds/update', [Analytics\TopController::class, 'updateProceeds']);
+
+    Route::post('/top/utility-archive', [Root\Top\TopValueController::class, 'archiveUtility']);
 
     // HR analytics
     Route::any('/timetracking/analytics/save-call-base', [Analytics\HrController::class, 'saveCallBase']);

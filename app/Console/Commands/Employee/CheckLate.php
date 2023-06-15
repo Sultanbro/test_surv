@@ -56,10 +56,10 @@ class CheckLate extends Command
             $userFine = new UserFine;
 
             /**
-             * Отнимаем 6 часов так как время сервера GTM +0.
+             * Отнимаем $user->timezone часов так как время сервера GTM +0.
              * Время начала смены для сотрудника.
              */
-            $workStart = Carbon::createFromTimeString($user->work_starts_at())->subHours(6)->subMinutes(10)->format('Y-m-d H:i:s');
+            $workStart = Carbon::createFromTimeString($user->work_starts_at())->subMinutes($user->timezone * 60 + 10)->format('Y-m-d H:i:s');
 
             /**
              * Получаем запись из timetracking таблицы.

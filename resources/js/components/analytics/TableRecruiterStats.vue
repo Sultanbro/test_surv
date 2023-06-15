@@ -1,6 +1,6 @@
 <template>
 	<div class="TableRecruiterStats">
-		<div class="d-flex pt-5 gap-5">
+		<div class="d-flex pt-4 gap-5">
 			<div class="TableRecruiterStats-table">
 				<JobtronTable
 					responsive

@@ -204,7 +204,7 @@ final class UserUpdateService
         $user->currency     = $userDTO->currency ?? 'kzt';
         $user->position_id  = $userDTO->positionId ?? 0;
         $user->user_type    = $userDTO->userType;
-        $user->timezone     = 6;
+        $user->timezone     = $userDTO->timezone;
         $user->program_id   = $userDTO->programType;
         $user->working_day_id   = $userDTO->workingDays;
         $user->working_time_id  = $userDTO->workTimes;

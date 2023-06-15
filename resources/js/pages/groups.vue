@@ -78,6 +78,11 @@
 				>
 					<div class="fl">
 						График работы
+						<img
+							src="/images/dist/profit-info.svg"
+							class="img-info"
+							v-b-popover.hover.right="'Начало и окончание рабочего дня всего отдела, индивидуальное время выставляется в профиле'"
+						>
 					</div>
 					<div class="fl">
 						<b-form-select v-model="workChartId">
@@ -92,7 +97,7 @@
 									:key="chart.id"
 									:value="chart.id"
 								>
-									График {{ chart.name }} (с {{ chart.start_time }} по {{ chart.end_time }}) - {{ chart.text_name }}
+									{{ getShiftDays(chart) }} (с {{ chart.start_time }} по {{ chart.end_time }}) - {{ chart.text_name }}
 								</b-form-select-option>
 							</template>
 						</b-form-select>
@@ -106,7 +111,7 @@
 					<div class="fl">
 						Подтягивать время
 						<i
-							class="fa fa-cog ml-2"
+							class="icon-nd-settings ml-2"
 							@click="editTimeAddress()"
 						/>
 					</div>
@@ -176,6 +181,11 @@
 						switch
 					>
 						Оплачиваемая стажировка
+						<img
+							src="/images/dist/profit-info.svg"
+							class="img-info"
+							v-b-popover.hover.right="'Стажировочные дни будут оплачиваться в размере 50% от дневного оклада'"
+						>
 					</b-form-checkbox>
 				</div>
 				<div class="card groups-card mt-4">
@@ -411,6 +421,8 @@
 </template>
 
 <script>
+import { getShiftDays } from '@/composables/shifts'
+
 export default {
 	name: 'CompanyGroups',
 	props: [
@@ -789,7 +801,8 @@ export default {
 				this.time_address_text = this.time_variants !== undefined ? this.time_variants[this.time_address] : 'Не выбран';
 			}).catch(error => alert(error));
 			this.showEditTimeAddress = false;
-		}
+		},
+		getShiftDays,
 	},
 };
 </script>

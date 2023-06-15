@@ -3,6 +3,7 @@
 namespace Eddir\Messenger\Models;
 
 use Illuminate\Contracts\Auth\Authenticatable;
+use Illuminate\Contracts\Database\Query\Builder;
 use Illuminate\Foundation\Auth\User;
 use Eloquent;
 use Illuminate\Database\Eloquent\Collection;
@@ -83,6 +84,14 @@ class MessengerChat extends Model {
 
     public function getUsersAttribute(): Collection {
         return $this->members()->withPivot('is_admin')->select( 'id', 'name', 'last_name', 'img_url', 'position_id', 'last_seen')->get();
+    }
+
+    /**
+     * @return Builder
+     */
+    public function getRecipientsAttribute(): Builder
+    {
+        return $this->members()->withPivot('is_admin', 'is_yourself_chat')->select( 'id', 'name', 'last_name', 'img_url', 'position_id', 'last_seen');
     }
 
     public function getImageAttribute( $value ): ?string {

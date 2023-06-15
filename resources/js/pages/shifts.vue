@@ -34,7 +34,7 @@
 					>
 						<b-td>{{ index + 1 }}</b-td>
 						<b-td>{{ shift.text_name }}</b-td>
-						<b-td>{{ shift.name }}</b-td>
+						<b-td>{{ getShiftDays(shift) }}</b-td>
 						<b-td>с {{ shift.start_time }} по {{ shift.end_time }}</b-td>
 						<b-td>{{ $moment(shift.created_at).format('YYYY-MM-DD') }}</b-td>
 						<b-td class="td-actions">
@@ -95,7 +95,14 @@
 					<label
 						for="workStartTime"
 						class="col-sm-4 col-form-label"
-					>Рабочий график</label>
+					>
+						Рабочий график
+						<img
+							src="/images/dist/profit-info.svg"
+							class="img-info"
+							v-b-popover.hover.left="'Укажите во сколько начинается и заканчивается рабочий день всей группы по умолчанию (индивидуально устанавливается в профиле сотрудника)'"
+						>
+					</label>
 					<div class="col-sm-8 form-inline">
 						<input
 							name="work_start_time"
@@ -168,7 +175,14 @@
 					<label
 						for="workStartTime"
 						class="col-sm-4 col-form-label"
-					>Отметьте выходные дни</label>
+					>
+						Отметьте выходные дни
+						<img
+							src="/images/dist/profit-info.svg"
+							class="img-info"
+							v-b-popover.hover.left="'Отметив выходные дни сотрудник не сможет начать рабочй день в эти дни'"
+						>
+					</label>
 					<div class="col-sm-8">
 						<BitMaskCheckGroup
 							v-model="form.usualSchedule"
@@ -216,6 +230,7 @@
 
 <script>
 import BitMaskCheckGroup from '@ui/BitMaskCheckGroup'
+import { getShiftDays } from '@/composables/shifts'
 
 function flipbits(v, digits) {
 	return ~v & (Math.pow(2, digits) - 1);
@@ -296,11 +311,12 @@ export default {
 		},
 		editShift(shift) {
 			const splitted = shift.name.split('-')
+			const type = typeof shift.work_charts_type === 'number' ? shift.work_charts_type : shift.work_charts_type.id
 			this.editShiftId = shift.id;
 			this.form.name = shift.text_name;
 			this.form.workStartTime = shift.start_time;
 			this.form.workEndTime = shift.end_time;
-			this.form.type = shift.work_charts_type || 2
+			this.form.type = type
 			this.form.workdays = splitted[0]
 			this.form.dayoffs = splitted[1]
 			this.form.usualSchedule = shift.workdays
@@ -370,7 +386,7 @@ export default {
 			else{
 				this.shiftsData.push({
 					...data.data,
-					workdays: flipbits(+data.data.weekdays, 7),
+					workdays: flipbits(+data.data.workdays, 7),
 				});
 				this.$toast.success('Смена добавлена');
 			}
@@ -381,7 +397,8 @@ export default {
 		closeSidebar() {
 			this.showSidebar = false;
 			this.resetForm();
-		}
+		},
+		getShiftDays,
 	}
 }
 </script>

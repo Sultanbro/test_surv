@@ -70,7 +70,7 @@ export default {
 					break
 				case 2:
 					group = this.profileGroups.find(group => group.id === target.id)
-					if(group?.activeUsers) result.push(...group.activeUsers.map(id => ({id})))
+					if(group?.users) result.push(...group.users.map(id => ({id})))
 					break
 				case 3:
 					result.push(...this.users.filter(user => user.position === target.id))

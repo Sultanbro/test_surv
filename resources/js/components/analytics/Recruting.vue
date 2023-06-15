@@ -1,6 +1,6 @@
 <template>
 	<div class="recruting-analytics mb-4 AnalyticsRecruting">
-		<div class="AnalyticsRecruting-content mb-5">
+		<div class="AnalyticsRecruting-content mb-4">
 			<div class="d-flex justify-content-between abv">
 				<p>Принятые сотрудники в этом месяце</p>
 				<p class="text ml-2">

@@ -1,6 +1,6 @@
 <template>
-	<div class="course-results mt-5 CourseResults">
-		<div class="d-flex mb-5 gap-5">
+	<div class="course-results mt-4 CourseResults">
+		<div class="d-flex mb-4 gap-5">
 			<JobtronButton
 				@click="type = BY_USER"
 				:fade="type !== BY_USER"
@@ -390,7 +390,7 @@ export default {
 
 		nullify(i, c) {
 
-			if(!confirm('Вы уверены? Потом прогресс не восстановить')) {
+			if(!confirm('При обнулении курса все заработанные бонусы исчезнут и курс необходимо пройти еще раз')) {
 				return;
 			}
 
@@ -439,7 +439,7 @@ export default {
 		},
 
 		regress(user_id, course_id, courseItem){
-			if(!confirm('Вы уверены? Потом прогресс не восстановить')) return
+			if(!confirm('При обнулении курса все заработанные бонусы исчезнут и курс необходимо пройти еще раз')) return
 
 			const loader = this.$loading.show()
 

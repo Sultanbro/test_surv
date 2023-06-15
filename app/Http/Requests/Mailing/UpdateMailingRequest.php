@@ -37,7 +37,14 @@ class UpdateMailingRequest extends BaseFormRequest
             'id'                => 'required|integer|exists:mailing_notifications,id',
             'name'              => 'string',
             'title'             => 'min:3|max:244',
+            'recipients'        => ['array', new ValidateByType, new ValidationFrequency($this->date['frequency']),
+                !in_array($this->date['frequency'], [MailingEnum::TRIGGER_MANAGER_ASSESSMENT, MailingEnum::TRIGGER_FIRED, MailingEnum::TRIGGER_COACH_ASSESSMENT]) ? 'required' : '',],
+            'recipients.*.id'   => 'required|integer',
 
+            /**
+             * Передаваемые типы User => 1, ProfileGroup => 2, Position => 3
+             */
+            'recipients.*.type' => ['required', 'integer', new ValidationFrequency($this->date['frequency'])],
             /**
              * Есть разные виды рассылки Bitrix24, u-marketing utc.
              */
@@ -62,6 +69,7 @@ class UpdateMailingRequest extends BaseFormRequest
         $id         = Arr::get($validated, 'id');
         $name       = Arr::get($validated, 'name');
         $title      = Arr::get($validated, 'title');
+        $recipients = Arr::get($validated, 'recipients') ?? [];
         $date       = Arr::get($validated, 'date');
         $typeOfMailing  = Arr::get($validated, 'type_of_mailing');
         $isTemplate = Arr::get($validated, 'is_template') ?? 0;
@@ -72,6 +80,7 @@ class UpdateMailingRequest extends BaseFormRequest
             $id,
             $name,
             $title,
+            $recipients,
             $date,
             $typeOfMailing,
             $isTemplate,

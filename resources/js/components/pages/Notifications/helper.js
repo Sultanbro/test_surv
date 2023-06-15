@@ -1,7 +1,8 @@
 export const services = [
 	{
 		value: 'in-app',
-		title: 'Отправить уведомление в личный кабинет'
+		title: 'Отправить уведомление в личный кабинет',
+		short: 'Личный кабинет',
 	},
 	// {
 	// 	value: 'mail',
@@ -9,7 +10,8 @@ export const services = [
 	// },
 	// {
 	// 	value: 'sms',
-	// 	title: 'Отправить смс'
+	// 	title: 'Отправить смс',
+	// 	short: 'sms',
 	// },
 	// {
 	// 	value: 'telegram',
@@ -17,12 +19,13 @@ export const services = [
 	// },
 	{
 		value: 'whatsapp',
-		title: 'Отправить сообщение в вацап'
+		title: 'Отправить сообщение в вацап',
+		short: 'Whatsapp',
 	},
-	{
-		value: 'bitrix',
-		title: 'Отправить сообщение в битрикс'
-	},
+	// {
+	// 	value: 'bitrix',
+	// 	title: 'Отправить сообщение в битрикс'
+	// },
 ]
 
 
@@ -46,9 +49,10 @@ export const templateSettings = {
 	},
 	fired_employee: {
 		targets: 'Статус сотрудника "Уволенный"',
+		recipients: [],
 		title: 'Уважаемый коллега! Какими бы ни были причины расставания, мы благодарим Вас за время, силы, знания и энергию, которые Вы отдали для успешной работы и развития нашей организации, и просим заполнить эту небольшую анкету.',
 		titleFixed: '',
-		titleTip: '* дополнительно укажите тут коротку ссылку на имеющийся у вас опросник',
+		titleTip: '* к уведомлению будет автоматически прикреплена ссылка на опросник',
 		when: [
 			{
 				value: 'fired_employee',
@@ -58,6 +62,7 @@ export const templateSettings = {
 	},
 	absent_internship: {
 		targets: ['Сотрудники', 'Отделы', 'Должности'],
+		recipients: [],
 		title: 'Стажер отстутствовал на обучении. Созвонитсь и верните его на стажировку',
 		titleFixed: '"Имя и Фамилия указанные в профиле сотрудника"',
 		titleTip: '',
@@ -70,9 +75,10 @@ export const templateSettings = {
 	},
 	manager_assessment: {
 		targets: 'Все сотрудники отделов',
+		recipients: [],
 		title: 'Оцените работу Вашего руководителя и старшего специалиста за текущий месяц.',
-		titleFixed: '"Ссылка на опрос"',
-		titleTip: '',
+		titleFixed: '',
+		titleTip: '* к уведомлению будет автоматически прикреплена ссылка на опросник',
 		when: [
 			{
 				value: 'manager_assessment',
@@ -82,9 +88,10 @@ export const templateSettings = {
 	},
 	coach_assessment: {
 		targets: 'Стажеры первого дня',
+		recipients: [],
 		title: 'Добрый день!\nПройдите небольшой опрос, чтобы оценить Вашего тренера.\nБыстро. Анонимно. Для Дела.',
-		titleFixed: '"Ссылка на опрос"',
-		titleTip: '',
+		titleFixed: '',
+		titleTip: '* к уведомлению будет автоматически прикреплена ссылка на опросник',
 		when: [
 			{
 				value: 'coach_assessment',
@@ -126,7 +133,7 @@ if(location.hostname.split('.')[0] === 'bp') templates.push(
 export const periods = [
 	{
 		value: 'daily',
-		text: 'Каждый жень'
+		text: 'Каждый день'
 	},
 	{
 		value: 'weekly',

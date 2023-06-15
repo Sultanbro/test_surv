@@ -27,13 +27,21 @@
 					<b-tr>
 						<b-th>№</b-th>
 						<b-th>Кого уведомляем</b-th>
-						<b-th class="text-left">
+						<b-th class="text-center">
 							Текст уведомления
 						</b-th>
-						<b-th>Куда отправлять</b-th>
-						<b-th>Периодичность отправки</b-th>
-						<b-th>Дата создания</b-th>
-						<b-th>Создатель</b-th>
+						<b-th class="text-center">
+							Куда отправлять
+						</b-th>
+						<b-th class="text-center">
+							Периодичность отправки
+						</b-th>
+						<b-th class="text-center">
+							Дата создания
+						</b-th>
+						<b-th class="text-center">
+							Создатель
+						</b-th>
 						<b-th />
 					</b-tr>
 				</b-thead>
@@ -47,11 +55,14 @@
 							{{ key + 1 }}
 						</b-td>
 						<b-td>
-							<template v-for="recipient in notification.recipients">
-								{{ recipient.name }},
+							<template v-if="recipientsNames[notification.date.frequency]">
+								{{ recipientsNames[notification.date.frequency] }}
+							</template>
+							<template v-else>
+								{{ notification.recipients.map(recipient => recipient.name).join(', ') }}
 							</template>
 						</b-td>
-						<b-td class="NotificationsV2-text">
+						<b-td class="NotificationsV2-text text-center">
 							<div class="NotificationsV2-shortText">
 								{{ notification.title }}
 							</div>
@@ -59,19 +70,19 @@
 								{{ notification.title }}
 							</div>
 						</b-td>
-						<b-td>
+						<b-td class="text-center">
 							{{ notification.type_of_mailing.map(type => services.find(service => service.value === type).title).join(', ') }}
 						</b-td>
-						<b-td>
+						<b-td class="text-center">
 							{{ periodNames[notification.date.frequency] }} {{ notification.date.days.join(', ') }}
 						</b-td>
-						<b-td>
-							{{ $moment(notification.created_at).format('YYYY-MM-DD') }}
+						<b-td class="text-center wsnw">
+							{{ $moment(notification.created_at).format('DD.MM.YYYY') }}
 						</b-td>
-						<b-td>
+						<b-td class="text-center wsnw">
 							{{ notification.creator.name }} {{ notification.creator.last_name }}
 						</b-td>
-						<b-td>
+						<b-td class="text-center">
 							<b-button
 								class="btn btn-danger btn-icon"
 								@click.stop="remove(notification)"
@@ -166,7 +177,9 @@ import {
 	createNotification,
 	deleteNotification,
 	updateNotification,
-} from '@/stores/api/notifications'
+	fetchSettings,
+	updateSettings,
+} from '@/stores/api.js'
 import NotificationsEditForm from '@/components/pages/Notifications/NotificationsEditForm'
 import NotificationsTemplates from '@/components/pages/Notifications/NotificationsTemplates'
 import {
@@ -211,6 +224,11 @@ export default {
 				absent_internship: 'В момент отметки в табеле об отсутствии (триггер)',
 				manager_assessment: 'За 2 дня до окончания календарного месяца (триггер)',
 				coach_assessment: 'В период 17:00 - 19:00 в первый день обучения стажера, если он не отмечен, как отсутствовал (триггер)',
+			},
+			recipientsNames: {
+				fired_employee: 'Статус сотрудника "Уволенный"',
+				manager_assessment: 'Все сотрудники отделов',
+				coach_assessment: 'Стажеры первого дня',
 			},
 			selectedNotification: null,
 			search: '',
@@ -269,6 +287,7 @@ export default {
 	},
 	created(){
 		if(!this.users.length) this.loadCompany()
+		this.fetchSettings()
 	},
 	mounted(){
 		if(this.users.length) this.fetchNotifications()
@@ -367,13 +386,14 @@ export default {
 			}
 			if(notification.id) this.updateNotification(notification)
 			else this.createNotification(notification)
+			this.selectedTemplate = null
 			this.selectedNotification = null
 		},
 		validate(notification){
 			const errors = []
 			if(!notification.name) errors.push({field: 'name', error: 'Название уведомления должно быть заполнено'})
 			if(!notification.title) errors.push({field: 'title', error: 'Текст уведомления должен быть заполнен'})
-			if(!notification.recipients.length) errors.push({field: 'recipients', error: 'Укажите минимум одного получателя'})
+			if(!notification.is_template && !notification.recipients.length) errors.push({field: 'recipients', error: 'Укажите минимум одного получателя'})
 			if((notification.date.frequency === 'weekly' || notification.date.frequency === 'monthly') && !notification.date.days.length) errors.push({field: 'days', error: 'Укажите минимум один день отправки'})
 			return errors
 		},
@@ -389,19 +409,28 @@ export default {
 		},
 		async updateNotification(notification){
 			const {message} = await updateNotification(notification)
-			if(message === 'Success created'){
+			if(message === 'Success'){
 				this.$toast.success('Уведомление успешно создано')
+				const index = this.notifications.findIndex(n => n.id === notification.id)
+				if(!~index) return
+				this.$set(this.notifications, index, notification)
 			}
 			else{
 				this.$toast.error(message)
 			}
-			const index = this.notifications.findIndex(n => n.id === notification.id)
-			if(!~index) return
-			this.$set(this.notifications, index, notification)
 		},
-		onSaveSettings(){
-			// call api
-			this.$toast.warning('В разработке')
+		async fetchSettings(){
+			const {settings} = await fetchSettings('notifications_remind_count')
+			if(settings.custom_notifications_remind_count){
+				this.settings.showCount = parseInt(settings.custom_notifications_remind_count) || 0
+			}
+		},
+		async onSaveSettings(){
+			await updateSettings({
+				type: 'notifications_remind_count',
+				custom_notifications_remind_count: this.settings.showCount
+			})
+			this.$toast.success('Настройки сохранены')
 			this.isSettings = false
 		},
 		onNewTemplate(){

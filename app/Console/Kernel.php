@@ -9,6 +9,7 @@ use App\Console\Commands\Employee\BonusUpdate;
 use App\Console\Commands\Employee\CheckLate;
 use App\Console\Commands\Pusher\NotificationTemplatePusher;
 use App\Console\Commands\Pusher\Pusher;
+use App\Console\Commands\SetExitTimetracking;
 use App\Console\Commands\StartDayForItDepartmentCommand;
 use App\Console\Commands\RestartQueue;
 use App\Jobs\Bitrix\RecruiterStatsJob;
@@ -33,7 +34,8 @@ class Kernel extends ConsoleKernel
         RestartQueue::class,
         CheckLate::class,
         Pusher::class,
-        NotificationTemplatePusher::class
+        NotificationTemplatePusher::class,
+        SetExitTimetracking::class
     ];
 
     /**

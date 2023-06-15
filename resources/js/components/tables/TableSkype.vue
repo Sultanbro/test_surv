@@ -1,8 +1,8 @@
 <template>
 	<div class="TableSkype">
 		<div class="skypo">
-			<div class="row mt-5 align-items-center">
-				<div class="col-4 col-md-4 d-flex align-items-right mb-5">
+			<div class="row mt-4 align-items-center">
+				<div class="col-4 col-md-4 d-flex align-items-right mb-4">
 					<!-- <select class="form-control" v-model="currentDay">
 								0">Все дни</option>
 								<option v-for="day in this.month.daysInMonth" :value="day" :key="day">{{ day }}</option>
@@ -20,7 +20,7 @@
 						<!-- <m-date-picker v-model="filter.dates" lang="ru" :multi="true" :always-display="false" :format="formatDate"></m-date-picker> -->
 					</div>
 				</div>
-				<div class="col-md-2 mb-5">
+				<div class="col-md-2 mb-4">
 					<select
 						class="form-control form-control-sm mt-2"
 						v-model="filter.currentInviteGroup"
@@ -34,7 +34,7 @@
 						</option>
 					</select>
 				</div>
-				<div class="col-md-2 mb-5">
+				<div class="col-md-2 mb-4">
 					<select
 						class="form-control form-control-sm mt-2"
 						v-model="filter.user_type"
@@ -48,7 +48,7 @@
 						</option>
 					</select>
 				</div>
-				<div class="col-md-2 mb-5">
+				<div class="col-md-2 mb-4">
 					<select
 						class="form-control form-control-sm mt-2"
 						v-model="filter.lang"
@@ -62,7 +62,7 @@
 						</option>
 					</select>
 				</div>
-				<div class="col-md-2 mb-5">
+				<div class="col-md-2 mb-4">
 					<select
 						class="form-control form-control-sm mt-2"
 						v-model="filter.wishtime"
@@ -81,11 +81,11 @@
                     <option v-for="(segment, index) in segments" :key="index" :value="index">{{ segment }}</option>
                 </select>
             </div> -->
-				<div class="col-md-4 mb-5">
+				<div class="col-md-4 mb-4">
 					<b>Кол-во:</b> {{ records.length }}
 				</div>
-				<div class="col-md-4 mb-5" />
-				<div class="col-md-4 mb-5">
+				<div class="col-md-4 mb-4" />
+				<div class="col-md-4 mb-4">
 					<div class="d-flex justify-content-end">
 						<!-- <div class="d-flex mr-3 align-items-center">
                         <div class="circle bg-green"></div>
@@ -110,12 +110,13 @@
 							+ Добавить
 						</JobtronButton>
 						<JobtronButton
-							class="ml-4"
+							class="ml-4 fz14"
 							@click="showSkypeFieldsModal = !showSkypeFieldsModal"
 							title="Показывать поля"
+							fade
 						>
 							<i
-								class="fa fa-cogs"
+								class="icon-nd-settings"
 								aria-hidden="true"
 							/>
 						</JobtronButton>
@@ -124,7 +125,7 @@
 			</div>
 		</div>
 
-		<div class="TableSkype-table mb-5">
+		<div class="TableSkype-table mb-4">
 			<JobtronTable
 				class="text-nowrap mb-3 skypes-table"
 				:small="true"

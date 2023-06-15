@@ -135,6 +135,13 @@
 						:per-page="perPage"
 						:sort-compare="sortCompare"
 					>
+						<template #head(total)>
+							<img
+								src="/images/dist/profit-info.svg"
+								class="img-info"
+								v-b-popover.hover.right="'Общее количество часов по строке'"
+							>
+						</template>
 						<template #cell(name)="name">
 							<div>
 								<span v-if="activeuserpos == 46">
@@ -322,6 +329,12 @@
 												:class="'button-day_' + dateType.type"
 											>
 												{{ dateType.label }}
+												<img
+													v-if="dateType.popover"
+													src="/images/dist/profit-info.svg"
+													class="img-info"
+													v-b-popover.hover.bottom="dateType.popover"
+												>
 											</b-button>
 										</div>
 										<div class="mt-auto">
@@ -335,6 +348,11 @@
 												:class="'button-day_7'"
 											>
 												Уволить без отработки
+												<img
+													src="/images/dist/profit-info.svg"
+													class="img-info"
+													v-b-popover.hover.top="'У сотрудника сразу закроется доступ к профилю'"
+												>
 											</b-button>
 										</div>
 										<div class="mt-2">
@@ -348,6 +366,11 @@
 												:class="'button-day_7'"
 											>
 												Уволить с отработкой
+												<img
+													src="/images/dist/profit-info.svg"
+													class="img-info"
+													v-b-popover.hover.top="'Доступ к профилю закроется через 14 календарных дней'"
+												>
 											</b-button>
 										</div>
 									</div>
@@ -407,10 +430,15 @@
 								title="⚠️Штрафы"
 								v-if="!sidebarContent.data.item.is_trainee"
 							>
-								<b-form-group
-									label="Система депремирования"
-									class="fines-modal"
-								>
+								<b-form-group class="fines-modal">
+									<template #label>
+										Система депремирования
+										<img
+											src="/images/dist/profit-info.svg"
+											class="img-info"
+											v-b-popover.hover.bottom="'При активации, от окладной части будет вычитаться соответственные суммы депремирований'"
+										>
+									</template>
 									<b-form-checkbox-group
 										v-model="sidebarContent.fines"
 										name="flavour-2a"
@@ -767,14 +795,6 @@
 				</option>
 			</select>
 
-			<b-form-input
-				v-if="firingItems.type == 0"
-				class="mt-3"
-				v-model="commentFiring"
-				placeholder="Свой вариант"
-				:required="true"
-			/>
-
 			<b-form-file
 				v-if="firingItems.type == 2"
 				v-model="firingItems.file"
@@ -821,7 +841,6 @@ import {useYearOptions} from '../composables/yearOptions'
 import {
 	triggerApplyEmployee,
 	triggerAbsentInternship,
-	triggerFiredEmployee,
 } from '@/stores/api.js'
 
 export default {
@@ -897,32 +916,37 @@ export default {
 			dateTypes: [{
 				label: 'Обычный',
 				color: '#fff',
-				type: 0
+				type: 0,
 			},
 			{
 				label: 'Выходной',
 				color: '#ccc',
-				type: 1
+				type: 1,
+				popover: 'Выходной – без начислений',
 			},
 			{
 				label: 'Прогул',
 				color: 'red',
-				type: 2
+				type: 2,
+				popover: 'Прогул – будет отмечен красным цветом, без начислений',
 			},
 			{
 				label: 'Больничный',
 				color: 'aqua',
-				type: 3
+				type: 3,
+				popover: 'Больничный – будет отмечен голубым цветом, без начислений',
 			},
 			{
 				label: 'Стажер',
 				color: 'orange',
-				type: 5
+				type: 5,
+				popover: 'Если оплачиваемая стажировка – 50% от дневного оклада, не оплачивая – без начислений',
 			},
 			{
 				label: 'Переобучение',
 				color: 'pink',
 				type: 6,
+				popover: 'Будет начислено 50% от дневного оклада',
 			},
 			],
 			numClicks: 0,
@@ -1114,6 +1138,7 @@ export default {
 		},
 
 		openModalFine() {
+			this.errors = []
 			this.modalVisibleFines = true
 		},
 
@@ -1149,23 +1174,15 @@ export default {
 		},
 
 		setUserFired() {
+			this.errors = []
 			if (this.firingItems.type == 2 && this.firingItems.file == undefined) {
-				this.errors = ['Заявление об увольнении обязательно!']
-
+				this.errors.push('Заявление об увольнении обязательно!')
 			}
 
-			let comment = '';
-			if (this.commentFiring.length == 0) {
+			const comment = this.commentFiring || this.commentFiring2;
+			if(!comment) this.errors.push('Причина увольнения обязательна')
 
-				if (this.commentFiring2.length == 0) {
-					this.errors = ['Комментарий обязателен']
-					return null
-				} else {
-					comment = this.commentFiring2;
-				}
-			} else {
-				comment = this.commentFiring;
-			}
+			if(this.errors.length) return
 
 			let formData = new FormData();
 			formData.append('month', this.$moment(this.dateInfo.currentMonth, 'MMMM').format('M'));
@@ -1182,8 +1199,6 @@ export default {
 					'Content-Type': 'multipart/form-data'
 				}
 			}).then(response => {
-
-				triggerFiredEmployee(this.sidebarContent.user_id)
 
 				let v = this.items[this.sidebarContent.data.index]['_cellVariants'];
 				[this.sidebarContent.day] = `day-${this.currentDayType.type}`
@@ -1202,6 +1217,8 @@ export default {
 					this.commentFiring = ''
 					this.commentFiring2 = ''
 					this.currentDayType = {}
+
+					this.errors = []
 				}
 			}).catch(error => {
 				alert(error)
@@ -1643,6 +1660,8 @@ export default {
 		},
 
 		setUserAbsent() {
+			if(!this.commentAbsent) return alert('Укажите причину отсутвия')
+
 			let day = this.sidebarContent.day;
 			let loader = this.$loading.show();
 			this.axios.post('/timetracking/set-day', {
@@ -1948,12 +1967,20 @@ export default {
 					background-color: #c7bd9e;
 				}
 			}
+			&_2{
+				.img-info{
+					filter: contrast(100);
+				}
+			}
 			&_3{
 				border: 1px solid #4489c9;
 				background-color: #4c9ee5;
 				color: #fff;
 				&:hover{
 					background-color: #4489c9;
+				}
+				.img-info{
+					filter: contrast(100);
 				}
 			}
 			&_5{
@@ -1963,6 +1990,9 @@ export default {
 				&:hover{
 					background-color: #e6983f;
 				}
+				.img-info{
+					filter: contrast(100);
+				}
 			}
 			&_6{
 				border: 1px solid #98116c;
@@ -1971,6 +2001,9 @@ export default {
 				&:hover{
 					background-color: #98116c;
 				}
+				.img-info{
+					filter: contrast(100);
+				}
 			}
 			&_7{
 				border: 1px solid #bf2216;
@@ -1978,6 +2011,9 @@ export default {
 				color: #fff;
 				&:hover{
 					background-color: #bf2216;
+				}
+				.img-info{
+					filter: contrast(100);
 				}
 			}
 		}
