@@ -38,6 +38,7 @@ class UpdateUserRequest extends FormRequest
             'program_type'      => ['numeric'],
             'working_days'      => ['numeric'],
             'working_times'     => ['numeric'],
+            'timezone'          => ['numeric'],
             'phone'             => ['string', 'min:10' , 'nullable'],
             'phone_home'        => ['string', 'numeric', 'min:10'],
             'phone_husband'     => ['string', 'numeric', 'min:10'],
@@ -107,7 +108,8 @@ class UpdateUserRequest extends FormRequest
             'taxes.*.percent'   => ['numeric'],
             'taxes.*.user_id'   => ['numeric', 'exists:users,id'],
             'taxes.*.name'      => ['string'],
-            'bitrix_id'         => ['numeric']
+            'bitrix_id'         => ['numeric'],
+            'first_work_day'    => ['date']
         ];
     }
 
@@ -126,6 +128,7 @@ class UpdateUserRequest extends FormRequest
         $programType = Arr::get($validated, 'program_type');
         $workingDays = Arr::get($validated, 'working_days');
         $workTimes = Arr::get($validated, 'working_times');
+        $timezone = Arr::get($validated, 'timezone');
         $phone = Arr::get($validated, 'phone');
         $phoneHome = Arr::get($validated, 'phone_home');
         $phoneHusband = Arr::get($validated, 'phone_husband');
@@ -162,6 +165,7 @@ class UpdateUserRequest extends FormRequest
         $tax = Arr::get($validated, 'tax');
         $taxes = Arr::get($validated, 'taxes');
         $bitrixId = Arr::get($validated, 'bitrix_id');
+        $firstWorkDay = Arr::get($validated, 'first_work_day');
 
         return new UpdateUserDTO(
             $id,
@@ -210,7 +214,9 @@ class UpdateUserRequest extends FormRequest
             $newPassword,
             $tax,
             $taxes,
-            $bitrixId
+            $bitrixId,
+            $timezone,
+            $firstWorkDay
         );
     }
 }
