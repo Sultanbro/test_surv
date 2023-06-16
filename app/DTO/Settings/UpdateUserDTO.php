@@ -107,6 +107,7 @@ class UpdateUserDTO
         public ?array $taxes,
         public ?int $bitrixId,
         public ?float $timezone,
+        public ?string $firstWorkDay
     )
     {}
 
@@ -161,6 +162,7 @@ class UpdateUserDTO
             'taxes'             => $this->taxes,
             'bitrix_id'         => $this->bitrixId,
             'timezone'          => $this->timezone,
+            'first_work_day'    => $this->firstWorkDay,
         ];
     }
 }
