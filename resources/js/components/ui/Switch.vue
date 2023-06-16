@@ -25,13 +25,12 @@ export default {
 <style lang="scss">
 .JobtronSwitch{
 	display: inline-block;
+	position: relative;
 
 	&-switch{
 		display: block;
 		width: 48px;
 		height: 30px;
-
-		position: relative;
 
 		background: #8BABD8;
 		border-radius: 20px;
