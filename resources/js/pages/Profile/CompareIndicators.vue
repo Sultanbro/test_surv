@@ -21,74 +21,37 @@
 					:key="itemIndex"
 					:title="item.group.name"
 				>
-					<div class="tabs">
-						<div class="index__tabs tabs__wrapper">
-							<div
-								v-for="(act, index) in item.activities"
-								:key="index"
-								onclick="switchTabs(this)"
-								class="index__tab tab__item"
-								:class="{'is-active': index == 0}"
-								:data-index="index"
-							>
-								{{ act.name }}
-							</div>
-						</div>
-						<select class="select-css trainee-select mobile-select">
-							<option
-								v-for="(act, index) in item.activities"
-								:value="index"
-								:key="index"
-							>
-								{{ act.name }}
-							</option>
-						</select>
-						<div class="tab__content">
-							<div
-								v-for="(act, index) in item.activities"
-								class="tab__content-item index__content"
-								:class="{'is-active': index == 0}"
-								:data-content="index"
-								:key="index"
-							>
-								<Collection
-									v-if="act.type == 'collection'"
-									:key="act.id"
-									:month="monthInfo"
-									:activity="act"
-									:is_admin="false"
-									:price="act.price"
-								/>
-								<Default
-									v-else-if="act.type == 'default'"
-									:key="'d'+act.id"
-									:month="monthInfo"
-									:activity="act"
-									:group_id="act.group_id"
-									:work_days="act.workdays"
-									:editable="false"
-									:show_headers="false"
-								/>
-								<Quality
-									v-else-if="act.type == 'quality'"
-									:key="'q'+act.id"
-									:month-info="monthInfo"
-									:items="act.records"
-								/>
-
-								<!-- <tr class="prize first-place">
-                            <tr class="prize second-place" >
-                            <tr class="prize third-place">
-                            <td><div class="large">Аппазова Карлыгаш</div></td>
-                            <td><div class="medium">233</div></td>
-                            <td><div class="medium">7020</div></td>
-                            <td><div class="small">43.11</div></td>
-                            <td class="red"><div>3026.00</div></td>
-                            <td class="green"><div>3026.00</div></td>
-                            <td class="blue"><div>3026.00</div></td> -->
-							</div>
-						</div>
-					</div>
+					<ProfileTabs :tabs="item.activities.map(act => act.name)">
+						<template
+							v-for="(act, index) in item.activities"
+							#[`tab(${index})`]
+						>
+							<Collection
+								v-if="act.type == 'collection'"
+								:key="act.id"
+								:month="monthInfo"
+								:activity="act"
+								:is_admin="false"
+								:price="act.price"
+							/>
+							<Default
+								v-else-if="act.type == 'default'"
+								:key="'d'+act.id"
+								:month="monthInfo"
+								:activity="act"
+								:group_id="act.group_id"
+								:work_days="act.workdays"
+								:editable="false"
+								:show_headers="false"
+							/>
+							<Quality
+								v-else-if="act.type == 'quality'"
+								:key="'q'+act.id"
+								:month-info="monthInfo"
+								:items="act.records"
+							/>
+						</template>
+					</ProfileTabs>
 				</b-tab>
 			</b-tabs>
 		</div>
@@ -99,6 +62,7 @@
 import Collection from '@/pages/Tables/Collection.vue'
 import Default from '@/pages/Tables/Default.vue'
 import Quality from '@/pages/Tables/Quality.vue'
+import ProfileTabs from '@ui/ProfileTabs'
 
 export default {
 	name: 'CompareIndicators',
@@ -106,6 +70,7 @@ export default {
 		Collection,
 		Default,
 		Quality,
+		ProfileTabs,
 	},
 	props: {},
 	data: function () {
