@@ -1192,7 +1192,9 @@ class User extends Authenticatable implements Authorizable
 
         $date = Carbon::now($timezone)->format('Y-m-d');
 
-        $start = Carbon::parse("$date $workStartTime", $timezone)->subMinutes(30.0);
+        //TODO: проверить логику, раньше не было число с *.30
+//        $start = Carbon::parse("$date $workStartTime", $timezone)->subMinutes(30.0);
+        $start = Carbon::parse("$date $workStartTime", $timezone);
         $end   = Carbon::parse("$date $workEndTime", $timezone);
 
         if ($start->greaterThan($end)) {
@@ -1312,8 +1314,10 @@ class User extends Authenticatable implements Authorizable
 
         $workDayInMonth = 0;
         for ($i = 1; $i <= $daysInMonth; $i++) {
-            $dayInMonth = Carbon::createFromDate($year, $month)->setDay($i);
-            $differBetweenFirstAndLastDay = $dayInMonth->diffInDays($firstWorkDay);  // получаем разницу между датами начального и последнего дня
+            $dayInMonth = Carbon::createFromDate($year, $month)->setDay($i)->format('Y-m-d');
+            $date1 = date_create($dayInMonth);
+            $date2 = date_create($firstWorkDay);
+            $differBetweenFirstAndLastDay = date_diff($date1, $date2)->days;
             $remains = $differBetweenFirstAndLastDay % $total;
 
             if ($remains < $workingDay) {
