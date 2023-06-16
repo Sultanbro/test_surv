@@ -25,29 +25,12 @@
 								v-model="data.item.profile"
 								@change="changeProfile(data.index)"
 							>
-								<option value="0">
-									кз
-								</option>
-								<option value="1">
-									все удаленные
-								</option>
-								<option value="2">
-									вацап
-								</option>
-								<option value="3">
-									уведомления
-								</option>
-								<option value="4">
-									inhouse
-								</option>
-								<option value="5">
-									иностранные
-								</option>
-								<option value="6">
-									hh
-								</option>
-								<option value="7">
-									чаты
+								<option
+									v-for="prof, index in profiles"
+									:key="index"
+									:value="index"
+								>
+									{{ prof }}
 								</option>
 							</select>
 						</div>
@@ -175,7 +158,17 @@ export default {
 					thClass: 'text-center',
 				},
 			],
-			showModal: false
+			showModal: false,
+			profiles: [
+				'kz',
+				'все удаленные',
+				'вацап',
+				'уведомления',
+				'inhouse',
+				'иностранные',
+				'hh',
+				'чаты',
+			]
 		};
 	},
 	watch: {
@@ -229,8 +222,8 @@ export default {
 		changeProfile(index) {
 			if(!this.editable) return '';
 			this.axios.post('/timetracking/analytics/recruting/change-profile', {
-				user_id: this.items[this.currentDay][index]['user_id'],
-				profile: this.items[this.currentDay][index]['profile'],
+				user_id: this.items[index]['user_id'],
+				profile: this.items[index]['profile'],
 				day: this.currentDay,
 				month: this.month,
 				year: this.year,
@@ -238,10 +231,8 @@ export default {
 				this.$toast.success('Успешно!');
 			}).catch(() => {
 				this.$toast.error('Ошибка!');
-				//alert(error)
 			});
 		}
-
 	}
 };
 </script>
@@ -258,6 +249,7 @@ export default {
 		left: 0;
 	}
 	.special-select{
+		padding: 0 0 0 5px !important;
 		margin-top: -5px;
 		margin-bottom: -5px;
 	}
@@ -327,7 +319,7 @@ p.heading {
 	color:red
 }
 .special-select {
-	width: 45px;
+	width: 90px;
 	height: 20px !important;
 	padding: 0;
 	margin-left: 9px;

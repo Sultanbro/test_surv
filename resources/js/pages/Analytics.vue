@@ -55,10 +55,12 @@
 					v-model="activeTab"
 				>
 					<b-tab
-						title="Рекрутинг"
 						key="1"
 						card
 					>
+						<template #title>
+							<b class="roman">I</b> Рекрутинг
+						</template>
 						<b-tabs
 							type="card"
 							lazy
@@ -94,10 +96,12 @@
 						/>
 					</b-tab>
 					<b-tab
-						title="Отдел заботы"
 						key="3"
 						card
 					>
+						<template #title>
+							<b class="roman">III</b> Отдел заботы
+						</template>
 						<!-- Пока пусто -->
 					</b-tab>
 					<b-tab
@@ -114,10 +118,12 @@
 						/>
 					</b-tab>
 					<b-tab
-						title="Маркетинг"
 						key="5"
 						card
 					>
+						<template #title>
+							<b class="roman">V</b> Маркетинг
+						</template>
 						<TabMarketing
 							:year="currentYear"
 							:month="currentMonth"
