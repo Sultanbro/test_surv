@@ -1,3 +1,4 @@
+/* global Laravel */
 import { defineStore } from 'pinia'
 import moment from 'moment'
 import {
@@ -65,115 +66,140 @@ export const useProfileSalaryStore = defineStore('profileSalary', {
 		async fitchSalaryCrutch(year, month){
 			if(this.isLoading) return
 			this.isLoading = true
-			try{
-				// salary
-				const { data: salary } = await fetchProfileBalance(year, month)
-				const sumSalary = Object.values(salary.salaries).reduce((result, day) => result + (parseInt(day.value) || 0), 0)
-				// if(!this.profile){
-				// 	this.profile = await fetchProfilePersonalInfo()
-				// }
-				// const maxSalary = parseInt(this.profile.salary.replace(/\s/g, '')) || 0
-				this.user_earnings.sumSalary = sumSalary
-				// this.user_earnings.oklad = maxSalary
 
-				// local
-				if(this.hasLocal()){
-					this.loadLocal()
-					this.user_earnings.sumSalary = sumSalary
-					// this.user_earnings.oklad = maxSalary
-					this.isReady = true
-				}
+			// local
+			if(this.hasLocal()){
+				this.loadLocal()
+				this.isReady = true
+			}
 
-				// kpi
-				const { items: kpis } = await fetchProfileKpi(year, month)
-				const sumKpi = kpis.reduce((result, kpi) => {
-					kpi.users.forEach(user => {
-						user.items.forEach(userItem => {
-							result += calcSum(userItem, kpi, userItem.percent / 100)
-						})
-					});
-					return result
-				}, 0)
-				const maxKpi = kpis.reduce((result, kpi) => result + (parseInt(kpi.completed_100) || 0), 0)
+			// salary
+			let salary = {
+				salaries: {}
+			}
+			try {
+				const { data } = await fetchProfileBalance(year, month)
+				salary = data
+			}
+			catch (error) {
+				console.error('fitchSalaryCrutch', error)
+			}
+			const sumSalary = Object.values(salary.salaries).reduce((result, day) => result + (parseInt(day.value) || 0), 0)
+			this.user_earnings.sumSalary = sumSalary
 
-				// bonus
-				const { data: bonuses } = await fetchProfileBonuses(year, month)
-				const sumBonuses = bonuses.history.reduce((result, bonus) => result + (parseInt(bonus.sum) || 0), 0)
-
-				// premium
-				const premiums = await fetchProfilePremiums(year, month)
-				const sumQuartalPremiums = premiums.reduce((result, premium) => {
-					premium.forEach(el => {
-						if(el.items?.sum && el.items?.to?.substring(0, 7) === moment(Date.now()).format('YYYY-MM')) result += el.items.sum
+			// kpi
+			let kpis = []
+			try {
+				const { items } = await fetchProfileKpi(year, month)
+				kpis = items
+			}
+			catch (error) {
+				console.error('fitchSalaryCrutch', error)
+			}
+			const sumKpi = kpis.reduce((result, kpi) => {
+				kpi.users.forEach(user => {
+					user.items.forEach(userItem => {
+						result += calcSum(userItem, kpi, userItem.percent / 100)
 					})
-					return result
-				}, 0)
+				});
+				return result
+			}, 0)
+			const maxKpi = kpis.reduce((result, kpi) => result + (parseInt(kpi.completed_100) || 0), 0)
 
-				// awards
-				const awards = {
+			// bonus
+			let bonuses = {
+				history: []
+			}
+			try {
+				const { data } = await fetchProfileBonuses(year, month)
+				bonuses = data
+			}
+			catch (error) {
+				console.error('fitchSalaryCrutch', error)
+			}
+			const sumBonuses = bonuses.history.reduce((result, bonus) => result + (parseInt(bonus.sum) || 0), 0)
+
+			// premium
+			let premiums = []
+			try {
+				const data = await fetchProfilePremiums(year, month)
+				premiums = data
+			}
+			catch (error) {
+				console.error('fitchSalaryCrutch', error)
+			}
+			const sumQuartalPremiums = premiums.reduce((result, premium) => {
+				premium.forEach(el => {
+					if(el.items?.sum && el.items?.to?.substring(0, 7) === moment(Date.now()).format('YYYY-MM')) result += el.items.sum
+				})
+				return result
+			}, 0)
+
+			// awards
+			let awards = {}
+			try {
+				const data = {
 					nominations: await fetchProfileAwards('nomination'),
 					certificates: await fetchProfileAwards('certificate'),
 					accrual: await fetchProfileAwards('accrual'),
 				}
-				const sumAwards = Object.values(awards).reduce((result, type) => {
-					type.forEach(award => {
-						if(award.my && award.my.length) return result + award.my.length
-					})
-					return result
-				}, 0)
-
-				// set current values
-				const earnings = {
-					sumSalary,
-					sumKpi,
-					sumBonuses,
-					sumQuartalPremiums,
-					sumNominations: sumAwards,
-					kpiMax: maxKpi,
-					// oklad: maxSalary
-				}
-				this.user_earnings = earnings
-				// this.user_earnings.sumSalary = sumSalary
-				// this.user_earnings.sumKpi = sumKpi
-				// this.user_earnings.sumBonuses = sumBonuses
-				// this.user_earnings.sumQuartalPremiums = sumQuartalPremiums
-				// this.user_earnings.sumNominations = 0
-				// this.user_earnings.kpiMax = maxKpi
-				// this.user_earnings.oklad = maxSalary
-
-				// save for month
-				const key = `${year}-${month}`
-				this.monthly[key] = {
-					salary,
-					kpis,
-					premiums,
-					awards,
-
-					sumSalary,
-					sumKpi,
-					sumBonuses,
-					sumQuartalPremiums,
-					sumAwards,
-					maxKpi,
-					// maxSalary,
-				}
-
-				this.isReady = true
-				this.saveLocal()
-
-				// Можно запрышивать уже после основных данных т.к. нужны только для проверки
-				if(!this.possibleBonuses){
-					this.possibleBonuses = await fetchPosibleBonuses()
-				}
-
-				// check new premiums
-				if(this.currentKey === key){
-					this.checkReaded()
-				}
+				awards = data
 			}
-			catch(error){
+			catch (error) {
 				console.error('fitchSalaryCrutch', error)
 			}
+			const sumAwards = Object.values(awards).reduce((result, type) => {
+				type.forEach(award => {
+					if(award.my && award.my.length) return result + award.my.length
+				})
+				return result
+			}, 0)
+
+			// set current values
+			const earnings = {
+				sumSalary,
+				sumKpi,
+				sumBonuses,
+				sumQuartalPremiums,
+				sumNominations: sumAwards,
+				kpiMax: maxKpi,
+			}
+			this.user_earnings = earnings
+
+			// save for month
+			const key = `${year}-${month}`
+			this.monthly[key] = {
+				salary,
+				kpis,
+				premiums,
+				awards,
+
+				sumSalary,
+				sumKpi,
+				sumBonuses,
+				sumQuartalPremiums,
+				sumAwards,
+				maxKpi,
+			}
+
+			this.isReady = true
+			this.saveLocal()
+
+			// Можно запрышивать уже после основных данных т.к. нужны только для проверки
+			if(!this.possibleBonuses){
+				try {
+					this.possibleBonuses = await fetchPosibleBonuses()
+				}
+				catch (error) {
+					console.error('fitchSalaryCrutch', error)
+				}
+			}
+
+			// check new premiums
+			if(this.currentKey === key){
+				this.checkReaded()
+			}
+
 			this.isLoading = false
 		},
 		checkReaded(){
@@ -322,24 +348,26 @@ export const useProfileSalaryStore = defineStore('profileSalary', {
 			this.saveReadedPremiums()
 		},
 		hasLocal(){
-			return !!localStorage.getItem('profileSalary')
+			const json = localStorage.getItem('profileSalary')
+			if(!json) return false
+			const local = JSON.parse(json)
+			return local.userId === Laravel.userId
 		},
 		loadLocal(){
 			let json = localStorage.getItem('profileSalary')
 			if(!json){
 				json = JSON.stringify({
-					profile: null,
+					userId: Laravel.userId,
 					user_earnings: {},
 				})
 				localStorage.setItem('profileSalary', json)
 			}
 			const local = JSON.parse(json)
-			this.profile = local.profile
 			this.user_earnings = local.user_earnings
 		},
 		saveLocal(){
 			localStorage.setItem('profileSalary', JSON.stringify({
-				profile: this.profile,
+				userId: Laravel.userId,
 				user_earnings: this.user_earnings,
 			}))
 		},

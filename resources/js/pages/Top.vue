@@ -48,6 +48,7 @@
 			class="mt-4"
 			default-active-key="1"
 		>
+			<!-- Полезность -->
 			<b-tab
 				title="Полезность"
 				key="1"
@@ -67,7 +68,7 @@
 					/>
 					<div class="d-flex jcfe">
 						<JobtronButton
-							v-if="archiveUtilityWithGauges.length"
+							v-if="activeUtility.length"
 							@click="isArchiveOpen = true"
 							title="Открыть архив"
 						>
@@ -77,6 +78,7 @@
 				</div>
 			</b-tab>
 
+			<!-- Рентабельность операторов -->
 			<b-tab
 				title="Рентабельность операторов"
 				key="2"
@@ -169,7 +171,7 @@
 				/>
 			</b-tab>
 
-
+			<!-- Выручка -->
 			<b-tab
 				title="Выручка"
 				key="3"
@@ -296,6 +298,7 @@
 				card
 			/>
 
+			<!-- Прогноз -->
 			<b-tab
 				title="Прогноз"
 				key="4"
@@ -370,6 +373,7 @@
 				</b-row>
 			</b-tab>
 
+			<!-- NPS -->
 			<b-tab
 				title="NPS"
 				key="5"
@@ -579,14 +583,14 @@ export default {
 		},
 
 		saveGroupPlan(index) {
-			let loader = this.$loading.show();
+			const loader = this.$loading.show();
+			const prognozGroup = this.prognoz_groups[index]
 			this.axios.post('/timetracking/top/save_group_plan', {
-				group_id: this.prognoz_groups[index].id,
-				plan: this.prognoz_groups[index].plan,
+				group_id: prognozGroup.id,
+				plan: prognozGroup.plan,
 			}).then(() => {
-
 				this.$toast.success('Успешно сохранено!')
-				this.prognoz_groups[index].left_to_apply = Number(this.prognoz_groups[index].plan) - Number(this.prognoz_groups[index].fired);
+				prognozGroup.left_to_apply = Number(prognozGroup.plan || 0) - Number(prognozGroup.fired || 0);
 				loader.hide()
 			}).catch(error => {
 				alert(error)

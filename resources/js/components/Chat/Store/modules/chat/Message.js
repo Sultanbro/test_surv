@@ -158,7 +158,7 @@ export default {
 
 			if ( isCurrentChat && !isSender) {
 				commit('addMessage', message);
-				dispatch('markMessagesAsRead', [message]);
+				if(getters.isOpen) dispatch('markMessagesAsRead', [message]);
 			}
 			// add chat if not exists
 			if (chat) {

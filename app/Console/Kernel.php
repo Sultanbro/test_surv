@@ -75,7 +75,7 @@ class Kernel extends ConsoleKernel
          * BITRIX24 crons
          */
         //$schedule->command('tenants:run bitrix:stats --tenants=bp')->hourlyAt(57); // Данные статистики из битрикса для рекрутинга
-        //$schedule->command('tenants:run recruiter:stats --tenants=bp --argument="count_last_hour=1"')->hourlyAt(1); // Данные почасовой таблицы рекрутинга из битрикса
+        // $schedule->command('tenants:run recruiter:stats --tenants=bp --argument="count_last_hour=1"')->hourlyAt(1); // Данные почасовой таблицы рекрутинга из битрикса
 	    //$schedule->command('tenants:run recruiter:stats --tenants=bp')->hourlyAt(14); // Данные почасовой таблицы рекрутинга из битрикса  
 	    //$schedule->command('tenants:run recruiter:stats --tenants=bp')->hourlyAt(29); // Данные почасовой таблицы рекрутинга из битрикса 
 	    //$schedule->command('tenants:run recruiter:stats --tenants=bp')->hourlyAt(44); // Данные почасовой таблицы рекрутинга из битрикса
@@ -122,6 +122,8 @@ class Kernel extends ConsoleKernel
         $schedule->command('check-payments-status:run')->everyFiveMinutes();
         $schedule->command('run:pusher')->dailyAt('03:00');
         $schedule->command('run:pusher:template')->dailyAt('03:00');
+
+        $schedule->command('bitrix:trainees:move')->dailyAt('06:00');
     }
 
     /**

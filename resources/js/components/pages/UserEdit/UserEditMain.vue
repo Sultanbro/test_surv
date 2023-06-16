@@ -2,6 +2,7 @@
 import axios from 'axios'
 import ProfileGroups from '@/components/profile/ProfileGroups' // настройки user
 import UserEditGroups from '@/components/pages/UserEdit/UserEditGroups'
+import { getShiftDays } from '@/composables/shifts'
 const re = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
 
 export default {
@@ -81,6 +82,7 @@ export default {
 			weekdays: (this.user?.weekdays || '0000000').split(''),
 			position: this.user ? this.user.position_id : '',
 			userTimezone: null,
+			first_work_day: null,
 			timezones: [-11, -10, -9.5, -9, -8, -7, -6, -5, -4, -3.5, -3, -2, -1, 0, 1, 2, 3, 3.5, 4, 4.5, 5, 5.5, 5.75, 6, 6.5, 7, 8, 8.75, 9, 9.5, 10, 10.5, 11, 12, 12.75, 13, 14],
 		}
 	},
@@ -109,6 +111,7 @@ export default {
 			this.position = user ? user.position_id : '';
 			this.workChartId = user ? user.work_chart_id : null;
 			this.userTimezone = user ? user.timezone : 6;
+			this.first_work_day = user ? user.first_work_day : null;
 		},
 		position(value){
 			if(value === -1) {
@@ -179,6 +182,7 @@ export default {
 		toggleWeekDay(id){
 			this.$set(this.weekdays, id, this.weekdays[id] === '1' ? '0' : '1')
 		},
+		getShiftDays,
 		getTimezoneString(timezone) {
 			let absolute_value = Math.abs(timezone);
 			let decimal_portion = absolute_value - Math.floor(absolute_value);
@@ -525,7 +529,7 @@ export default {
 								:key="chart.id"
 								:value="chart.id"
 							>
-								График {{ chart.name }} (с {{ chart.start_time }} по {{ chart.end_time }})
+								{{ getShiftDays(chart) }} (с {{ chart.start_time }} по {{ chart.end_time }}) - {{ chart.text_name }}
 							</b-form-select-option>
 						</template>
 					</b-form-select>
@@ -598,6 +602,22 @@ export default {
 				</div>
 			</div>
 
+			<div
+				v-if="user && user.first_work_day"
+				class="form-group row"
+			>
+				<label class="col-sm-4 col-form-label font-weight-bold">
+					Первый рабочий день
+				</label>
+				<div class="col-sm-8 d-flex">
+					<input
+						name="first_work_day"
+						v-model="first_work_day"
+						type="date"
+						class="form-control"
+					>
+				</div>
+			</div>
 
 			<!-- -->
 			<input

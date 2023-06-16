@@ -18,6 +18,7 @@ use App\Http\Controllers\Settings as Settings;
 use App\Http\Controllers\Timetrack as Timetrack;
 use App\Http\Controllers\Top\TopValueController;
 use App\Http\Controllers\User as User;
+use App\Http\Controllers\Deal as Deal;
 use Illuminate\Support\Facades\Route;
 
 Route::middleware(['web','tenant'])->group(function () {
@@ -735,6 +736,10 @@ Route::middleware(['api','tenant','not_admin_subdomain'])->group(function () {
             Route::get('/fired-users/{id?}/{date?}', [Api\DepartmentUserController::class, 'getFiredUsers'])->name('fired-users');
             Route::get('/fired-trainees/{id?}/{date?}', [Api\DepartmentUserController::class, 'getFiredTrainees'])->name('fired-trainees');
             Route::get('/check/user/{id}', [Api\DepartmentUserController::class, 'userInGroup']);
+        });
+
+        Route::group(['prefix' => 'deals', 'as' => 'deals.'], function () {
+            Route::any('/updated', [Deal\DealController::class, 'dealUpdatedWebhook']);
         });
     });
 });

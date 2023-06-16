@@ -1,7 +1,7 @@
 <template>
 	<div
 		v-if="groups"
-		class="analytics-page"
+		class="AnalyticsPage"
 	>
 		<div class="row mb-4">
 			<div class="col-3">
@@ -1063,11 +1063,14 @@ export default {
 		font-weight: 700;
 		margin-left: 5px;
 	}
-	.analytics-page .btn {
+	.AnalyticsPage .btn {
 		padding: .375rem .75rem;
 	}
-	.analytics-page .btn.btn-sm {
+	.AnalyticsPage .btn.btn-sm {
 		padding: 0.15rem 0.5rem;
+	}
+	.AnalyticsPage .cell-input{
+		padding: 0 !important;
 	}
 	.fz12 {
 		font-size: 12px;

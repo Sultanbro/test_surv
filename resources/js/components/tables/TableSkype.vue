@@ -175,16 +175,16 @@
 				</template>
 
 				<template #cell(name)="data">
-					<div>
+					<div class="text-left">
+						{{ data.value }}
 						<span
-							class="badge badge-success badge-pill"
 							v-if="data.item.user_type == 'office'"
 							pill
 							variant="success"
+							class="badge badge-success badge-pill"
 						>
 							office
 						</span>
-						{{ data.value }}
 					</div>
 				</template>
 
@@ -952,6 +952,10 @@ export default {
 				}
 
 				return a && ld
+			}).sort((a, b) => {
+				const aTS = this.$moment(a.skyped, 'DD.MM.YYYY HH:mm')
+				const bTS = this.$moment(b.skyped, 'DD.MM.YYYY HH:mm')
+				return bTS - aTS
 			})
 
 			this.totalRows =  this.filtered.length
@@ -1022,6 +1026,7 @@ export default {
 			// rowType: a string describing the `<tr>` type
 
 
+			if (item.invited == 0) return 'bg-red'
 			if (item.invited == 1) return 'bg-green'
 			if (item.invited == 2) return 'bg-green-2'
 			if (item.invited == 3) {
@@ -1081,14 +1086,6 @@ export default {
 	}
 }
 
-.analytics-page .b-form-datepicker .btn {
-	padding: 0 11px;
-	margin: 0;
-	margin-right: 5px;
-}
-.analytics-page .pick-panel .btn {
-	padding: 1px;
-}
 
 .skypes-table {
 	.country {

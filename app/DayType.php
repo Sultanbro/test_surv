@@ -49,5 +49,9 @@ class DayType extends Model
         9 => 'отсутствовал на обучении',
     ];
 
+    const STAGE_TO_STATUS = [
+        'C4:18' => self::DAY_TYPES['TRAINEE'],
+        'C4:21' => self::DAY_TYPES['ABCENSE'],
+    ];
     
 }
