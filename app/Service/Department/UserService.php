@@ -89,12 +89,12 @@ class UserService
     public function getEmployees(int $groupId, string $date): array
     {
         $groups = $this->getGroups($groupId);
-        $data = [];
+        $data = collect();
 
         $last_date = Carbon::parse($date)->endOfMonth()->format('Y-m-d');
         $nextMonthFirstDay = Carbon::parse($date)->addMonth()->startOfMonth()->format('Y-m-d');
 
-        foreach ($groups as $group)
+        foreach ($groups as $group) 
         {
             $groupUser = GroupUser::withTrashed()
                 ->where('group_id','=',$group->id)
@@ -103,10 +103,10 @@ class UserService
                     fn ($query) => $query->whereDate('to', '>=', $nextMonthFirstDay))
                 );
 
-            $data = $this->getGroupEmployees($groupUser->get(), $last_date);
+            $data = $data->merge($this->getGroupEmployees($groupUser->get(), $last_date));
         }
 
-        return $data;
+        return $data->unique(fn($u) => $u->id)->toArray();
     }
 
     /**
