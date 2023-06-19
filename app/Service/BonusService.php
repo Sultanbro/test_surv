@@ -52,7 +52,7 @@ class BonusService
             ->where('targetable_type', 'App\ProfileGroup')->get();
         return [
             'bonuses'    => $this->groupItems($bonuses),
-            'read'       => $user->obtainedBonuses->where('read', true)->isNotEmpty(),
+            'read'       => $user->obtainedBonuses->isEmpty() || $user->obtainedBonuses->where('read', true)->isNotEmpty(),
         ];
     }
 
