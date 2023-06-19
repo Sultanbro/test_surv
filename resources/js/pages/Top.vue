@@ -627,8 +627,6 @@ export default {
 					}
 					return result
 				}, {})
-
-				console.log('[fetchArchiveUtility]', this.rentabilitySwitch)
 			}
 			catch (error) {
 				console.error('[fetchSwitches]', error)
@@ -758,6 +756,12 @@ export default {
 				switch_column,
 				switch_value: value ? 1 : 0
 			})
+			const name = ['utilitySwitch', 'rentabilitySwitch', 'proceedsSwitch'][this.activeTab]
+			const item = this[name][id]
+			if(item){
+				item.value = !item.value
+				item.switch = item.value ? 1 : 0
+			}
 		}
 	}
 }
