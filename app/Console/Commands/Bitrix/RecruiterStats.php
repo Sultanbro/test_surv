@@ -91,10 +91,15 @@ class RecruiterStats extends Command
         
         $group = ProfileGroup::find(Recruiting::GROUP_ID);
        // $users = json_decode($group->users);
-        
-        $users = (new UserService)->getEmployees(Recruiting::GROUP_ID, Carbon::parse($this->date)->startOfMonth()->format('Y-m-d')); 
-        $users = collect($users)->pluck('id')->toArray();
 
+        $startOfMonth = Carbon::parse($this->date)->startOfMonth()->format('Y-m-d');
+
+        $users = collect();
+        foreach (Recruiting::GROUPS_IDS as $group_id) {
+            $users = $users->merge((new UserService)->getEmployees($group_id, $startOfMonth));
+        }
+
+        $users = $users->pluck('id')->toArray();
     
         if($this->argument('user')) $users = [(int)$this->argument('user')];
         
