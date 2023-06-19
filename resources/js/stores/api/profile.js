@@ -148,6 +148,28 @@ export async function fetchProfileAwards(type){
 	return data.data
 }
 
+export async function setReadedKPI(){
+	const { data } = await axios.put('/statistics/kpi/read')
+	return data
+}
+export async function setReadedBonus(){
+	const { data } = await axios.put('/bonus/read')
+	return data
+}
+export async function setReadedPremium(){
+	const { data } = await axios.put('/statistics/quartal-premiums/read')
+	return data
+}
+export async function setReadedAward(){
+	const { data } = await axios.get('/awards/read')
+	return data
+}
+
+export async function fetchAvailableBonuses(){
+	const { data } = await axios.post('/bonus/user')
+	return data
+}
+
 /**
  * @typedef ProfilePersonalInfoResponse
  * @type {object}

@@ -20,6 +20,7 @@ use Exception;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 use Symfony\Component\HttpFoundation\StreamedResponse;
+use Symfony\Component\HttpKernel\Exception\HttpException;
 
 class AwardController extends Controller
 {
@@ -181,7 +182,6 @@ class AwardController extends Controller
         $params = $request->validated();
         $params['user_id'] = $request->get('user_id', Auth::id() ?? 5);
 
-
         $response = $this->awardBuilder->handle($params['key'])->fetch($params);
 
         return \response()->success($response);
@@ -189,5 +189,22 @@ class AwardController extends Controller
 
 
 
+    /**
+     * 
+     */
+    public function read()
+    {
+        $user = User::find(Auth::id());
+
+        if (is_null($user)) {
+            throw new HttpException("Такого пользователя не существует");
+        }
+
+        $this->awardService->read($user);
+
+        return \response()->success([
+            'status' => 'success',
+        ]);
+    }
 
 }

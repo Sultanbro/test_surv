@@ -7,12 +7,17 @@ import {
 	fetchProfileKpi,
 	fetchProfilePremiums,
 	fetchProfileBonuses,
-	// fetchProfilePersonalInfo,
 	fetchPosibleBonuses,
 	fetchProfileAwards,
+	setReadedKPI,
+	setReadedBonus,
+	setReadedPremium,
+	setReadedAward,
+	fetchAvailableBonuses,
 } from '@/stores/api'
 import { calcSum } from '@/pages/kpi/kpis.js'
 
+const STORAGE_READED_KEY = 'profileSalaryReadedV2'
 
 const now = new Date()
 export const useProfileSalaryStore = defineStore('profileSalary', {
@@ -24,19 +29,13 @@ export const useProfileSalaryStore = defineStore('profileSalary', {
 		monthly: {},
 		profile: null,
 		readed: {
-			kpis: null,
-			bonuses: null,
-			premiums: null,
-			awards: null
+			kpis: true,
+			bonuses: true,
+			premiums: true,
+			awards: true
 		},
 		possibleBonuses: null,
 		currentKey: `${now.getFullYear()}-${now.getMonth()}`,
-		unreadCount: {
-			kpis: 0,
-			bonuses: 0,
-			premiums: 0,
-			awards: 0
-		}
 	}),
 	actions: {
 		async fetchSalary(year, month){
@@ -48,7 +47,6 @@ export const useProfileSalaryStore = defineStore('profileSalary', {
 				this.user_earnings = data.user_earnings
 				// this.user_earnings.sumSalary = parseInt(this.user_earnings.sumSalary)
 				this.user_earnings.sumSalary = Object.values(balance.salaries).reduce((result, day) => {
-					// console.log('data', day)
 					return result + (parseInt(day.value) || 0)
 				}, 0)
 				this.user_earnings.sumKpi = parseInt(this.user_earnings.sumKpi)
@@ -90,8 +88,9 @@ export const useProfileSalaryStore = defineStore('profileSalary', {
 			// kpi
 			let kpis = []
 			try {
-				const { items } = await fetchProfileKpi(year, month)
+				const { items, read } = await fetchProfileKpi(year, month)
 				kpis = items
+				this.readed.kpis = read
 			}
 			catch (error) {
 				console.error('fitchSalaryCrutch', error)
@@ -118,12 +117,14 @@ export const useProfileSalaryStore = defineStore('profileSalary', {
 				console.error('fitchSalaryCrutch', error)
 			}
 			const sumBonuses = bonuses.history.reduce((result, bonus) => result + (parseInt(bonus.sum) || 0), 0)
+			this.checkReadedBonuses()
 
 			// premium
 			let premiums = []
 			try {
-				const data = await fetchProfilePremiums(year, month)
+				const { data, read } = await fetchProfilePremiums(year, month)
 				premiums = data
+				this.readed.premiums = read
 			}
 			catch (error) {
 				console.error('fitchSalaryCrutch', error)
@@ -144,12 +145,13 @@ export const useProfileSalaryStore = defineStore('profileSalary', {
 					accrual: await fetchProfileAwards('accrual'),
 				}
 				awards = data
+				this.readed.awards = data.nominations.data.read
 			}
 			catch (error) {
 				console.error('fitchSalaryCrutch', error)
 			}
 			const sumAwards = Object.values(awards).reduce((result, type) => {
-				type.forEach(award => {
+				type.data.forEach(award => {
 					if(award.my && award.my.length) return result + award.my.length
 				})
 				return result
@@ -195,156 +197,51 @@ export const useProfileSalaryStore = defineStore('profileSalary', {
 				}
 			}
 
-			// check new premiums
-			if(this.currentKey === key){
-				this.checkReaded()
-			}
-
 			this.isLoading = false
 		},
-		checkReaded(){
-			const data = this.monthly[this.currentKey]
-			if(!data) return
-
-			// kpi
-			this.unreadCount.kpis = data.kpis.reduce((result, kpi) => {
-				kpi.users.forEach(user => {
-					user.items.forEach(userKpi => {
-						const readed = this.readed.kpis.find(r => r.id === userKpi.id)
-						if(!readed) return ++result
-						if(readed.updated_at !== (userKpi.updated_at || userKpi.created_at)) return ++result
-					})
-				})
-				return result
-			}, 0)
-
-			// bonuses
-			this.unreadCount.bonuses = this.possibleBonuses.reduce((result, group) => {
-				group.items.forEach(bonus => {
-					const readed = this.readed.bonuses.find(r => r.id === bonus.id)
-					if(!readed) return ++result
-					if(readed.updated_at !== (bonus.updated_at || bonus.created_at)) return ++result
-				})
-				return result
-			}, 0)
-
-			// premiums
-			this.unreadCount.premiums = data.premiums.reduce((result, type) => {
-				type.forEach(premium => {
-					if(!premium?.items) return
-					const readed = this.readed.premiums.find(r => r.id === premium.items.activity_id)
-					if(!readed) return ++result
-				})
-				return result
-			}, 0)
-
-			// awards
-			this.unreadCount.awards = Object.keys(data.awards).reduce((result, type) => {
-				data.awards[type].forEach(award => {
-					award.available.forEach(available => {
-						const readed = this.readed.awards.find(r => r.id === available.id)
-						if(!readed) return ++result
-						if(readed.updated_at !== (available.updated_at || available.created_at)) return ++result
-					})
-				})
-				return result
-			}, 0)
+		async checkReadedBonuses(){
+			try {
+				const { read } = await fetchAvailableBonuses()
+				this.readed.bonuses = read
+			}
+			catch (error) {
+				console.error('checkReadedBonuses', error)
+			}
 		},
 		loadReadedPremiums(){
-			let readedJSON = localStorage.getItem('profileSalaryReaded')
+			let readedJSON = localStorage.getItem(STORAGE_READED_KEY)
 			if(!readedJSON){
 				readedJSON = JSON.stringify({
-					kpis: [],
-					bonuses: [],
-					premiums: [],
-					awards: [],
+					kpis: true,
+					bonuses: true,
+					premiums: true,
+					awards: true,
 				})
-				localStorage.setItem('profileSalaryReaded', readedJSON)
+				localStorage.setItem(STORAGE_READED_KEY, readedJSON)
 			}
 			this.readed = JSON.parse(readedJSON)
 		},
 		saveReadedPremiums(){
-			localStorage.setItem('profileSalaryReaded', JSON.stringify(this.readed))
+			localStorage.setItem(STORAGE_READED_KEY, JSON.stringify(this.readed))
 		},
 		setReadedKpis(){
-			const data = this.monthly[this.currentKey]
-			if(!data) return
-
-			data.kpis.forEach(kpi => {
-				kpi.users.forEach(user => {
-					user.items.forEach(userKpi => {
-						const readed = this.readed.kpis.find(r => r.id === userKpi.id)
-						if(!readed) return this.readed.kpis.push({
-							id: userKpi.id,
-							updated_at: userKpi.updated_at || userKpi.created_at
-						})
-						if(readed.updated_at !== (userKpi.updated_at || userKpi.created_at)){
-							readed.updated_at = userKpi.updated_at || userKpi.created_at
-						}
-					})
-				})
-			})
-
-			this.unreadCount.kpis = 0
+			setReadedKPI()
+			this.readed.kpis = true
 			this.saveReadedPremiums()
 		},
 		setReadedBonuses(){
-			const data = this.monthly[this.currentKey]
-			if(!data) return
-
-			this.possibleBonuses.forEach(group => {
-				group.items.forEach(bonus => {
-					const readed = this.readed.bonuses.find(r => r.id === bonus.id)
-					if(!readed) return this.readed.bonuses.push({
-						id: bonus.id,
-						updated_at: bonus.updated_at || bonus.created_at
-					})
-					if(readed.updated_at !== (bonus.updated_at || bonus.created_at)){
-						readed.updated_at = bonus.updated_at || bonus.created_at
-					}
-				})
-			})
-
-			this.unreadCount.bonuses = 0
+			setReadedBonus()
+			this.readed.bonuses = true
 			this.saveReadedPremiums()
 		},
 		setReadedPremiums(){
-			const data = this.monthly[this.currentKey]
-			if(!data) return
-
-			data.premiums.forEach(type => {
-				type.forEach(premium => {
-					if(!premium?.items) return
-					const readed = this.readed.premiums.find(r => r.id === premium.items.activity_id)
-					if(!readed) return this.readed.premiums.push({
-						id: premium.items.activity_id,
-					})
-				})
-			})
-
-			this.unreadCount.premiums = 0
+			setReadedPremium()
+			this.readed.premiums = true
 			this.saveReadedPremiums()
 		},
 		setReadedAwards(){
-			const data = this.monthly[this.currentKey]
-			if(!data) return
-
-			Object.keys(data.awards).forEach(type => {
-				data.awards[type].forEach(award => {
-					award.available.forEach(available => {
-						const readed = this.readed.awards.find(r => r.id === available.id)
-						if(!readed) return this.readed.awards.push({
-							id: available.id,
-							updated_at: available.updated_at || available.created_at
-						})
-						if(readed.updated_at !== (available.updated_at || available.created_at)){
-							readed.updated_at = available.updated_at || available.created_at
-						}
-					})
-				})
-			})
-
-			this.unreadCount.awards = 0
+			setReadedAward()
+			this.readed.awards = true
 			this.saveReadedPremiums()
 		},
 		hasLocal(){

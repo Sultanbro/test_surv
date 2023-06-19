@@ -299,4 +299,31 @@ class AwardService
         return AwardTypeEnum::VALUES[$type];
 
     }
+
+    /**
+     * @param User $user
+     * @return void
+     */
+    public function read(User $user): void
+    {
+        $groups = $user->groups->pluck('id')->toArray();
+
+        $awards = Award::where(function ($q) use ($user, $groups) {
+            $q->orWhere(function ($qu) use ($user) {
+                $qu->where('targetable_id',$user->position_id)
+                    ->where('targetable_type', self::POSITION);
+            })
+            ->orWhere(function ($qu) use ($groups) {
+                $qu->whereIn('targetable_id', $groups)
+                    ->where('targetable_type', self::GROUP);
+            })
+            ->orWhere(function ($qu) use ($user) {
+                $qu->where('targetable_id', $user->getKey())
+                    ->where('targetable_type', $user::class);
+            });
+        });
+
+        $awards_ids = $awards->pluck('id')->toArray();
+        Award::whereIn('id', $awards_ids)->update(['read' => true]);
+    }
  }

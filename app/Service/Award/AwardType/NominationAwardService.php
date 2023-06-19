@@ -44,7 +44,6 @@ class NominationAwardService implements AwardInterface
                 }, 'category'])
                 ->get();
 
-
             $result['available'] = AwardCategory::query()
                 ->where('type', $type)
                 ->with('awards', function ($query) use ($user) {
@@ -150,6 +149,8 @@ class NominationAwardService implements AwardInterface
         $availableAwards = $data['available'];
         $otherAwards = $data['other'];
 
+        $myAwardsRead = $myAwards->isEmpty() || !$myAwards->contains(fn($a) => !$a->read);
+
         foreach ($myAwards as $item) {
             if (!isset($result[$item->category->id])) {
                 $result[$item->category->id] = [
@@ -206,7 +207,7 @@ class NominationAwardService implements AwardInterface
             }
         }
 
-        return array_values($result);
+        return ['data' => array_values($result), 'read' => $myAwardsRead];
     }
 
 }
