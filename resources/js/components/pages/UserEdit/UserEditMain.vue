@@ -336,7 +336,7 @@ export default {
 						id="position_group"
 						:groups="groups"
 						:user_id="user ? user.id : '0'"
-						:in-progress="inProgress"
+						:in_groups="inProgress"
 						:user_role="2"
 					/>
 				</div>
