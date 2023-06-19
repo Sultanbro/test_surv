@@ -107,7 +107,7 @@
 				>
 					<td
 						:title="item.id + ' ' + item.email"
-						class="indicators-table-fixed-name text-left position-relative"
+						class="indicators-table-fixed-name text-left"
 						:class="{'sticky-left': isDesktop}"
 					>
 						<div class="d-flex align-items-center max-content">
