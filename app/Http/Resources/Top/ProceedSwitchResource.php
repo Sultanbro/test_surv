@@ -4,7 +4,7 @@ namespace App\Http\Resources\Top;
 
 use Illuminate\Http\Resources\Json\JsonResource;
 
-class SwitchListResource extends JsonResource
+class ProceedSwitchResource extends JsonResource
 {
     /**
      * Transform the resource into an array.
@@ -14,19 +14,10 @@ class SwitchListResource extends JsonResource
      */
     public function toArray($request)
     {
-        $switch = '';
-        if (object_get($this, 'switch_utilist')){
-            $switch = 'switch_utilist';
-        }elseif (object_get($this, 'switch_rentability')){
-            $switch = 'switch_rentability';
-        }else{
-            $switch = 'switch_proceeds';
-        }
-
         return [
             'id' => $this->id,
             'name' => $this->name,
-            'switch' => $this->{$switch}
+            'switch' => $this->switch_proceeds
         ];
     }
 }

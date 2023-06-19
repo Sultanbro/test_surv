@@ -5,7 +5,9 @@ namespace App\Http\Controllers\Top;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Top\ArchiveUtilityRequest;
 use App\Http\Requests\Top\SwitchRequest;
-use App\Http\Resources\Top\SwitchListResource;
+use App\Http\Resources\Top\ProceedSwitchResource;
+use App\Http\Resources\Top\RentabilitySwitchResource;
+use App\Http\Resources\Top\UtilitySwitchResource;
 use App\ProfileGroup;
 use App\Service\Top\ArchiveUtilityForGroupService;
 use Illuminate\Http\JsonResponse;
@@ -35,7 +37,7 @@ class TopValueController extends Controller
     public function listUtility(): JsonResponse {
         return $this->response(
             message: 'Success',
-            data: SwitchListResource::collection(ProfileGroup::getActiveProfileGroupsAnyAnalytics(ProfileGroup::SWITCH_UTILITY))
+            data: UtilitySwitchResource::collection(ProfileGroup::getActiveProfileGroupsAnyAnalytics())
         );
     }
     /**
@@ -45,7 +47,7 @@ class TopValueController extends Controller
     public function listRentability(): JsonResponse {
         return $this->response(
             message: 'Success',
-            data: SwitchListResource::collection(ProfileGroup::getActiveProfileGroupsAnyAnalytics(ProfileGroup::SWITCH_RENTABILITY))
+            data: RentabilitySwitchResource::collection(ProfileGroup::getActiveProfileGroupsAnyAnalytics())
         );
     }
 
@@ -56,7 +58,7 @@ class TopValueController extends Controller
     public function listProceeds(): JsonResponse {
         return $this->response(
             message: 'Success',
-            data: SwitchListResource::collection(ProfileGroup::getActiveProfileGroupsAnyAnalytics(ProfileGroup::SWITCH_PROCEEDS))
+            data: ProceedSwitchResource::collection(ProfileGroup::getActiveProfileGroupsAnyAnalytics())
         );
     }
 

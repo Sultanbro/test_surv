@@ -469,11 +469,10 @@ class ProfileGroup extends Model
      * Получаем список активных группы с аналитикой в зависимости от switch_******
      * @return self
      */
-    public static function getActiveProfileGroupsAnyAnalytics($switch)
+    public static function getActiveProfileGroupsAnyAnalytics()
     {
         return self::where('active', 1)
             ->where('has_analytics',self::HAS_ANALYTICS)
-            ->where('active', 1)
             ->get();
     }
 
