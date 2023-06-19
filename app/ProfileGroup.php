@@ -473,7 +473,7 @@ class ProfileGroup extends Model
     {
         return self::where('active', 1)
             ->where('has_analytics',self::HAS_ANALYTICS)
-            ->where($switch, 1)
+            ->where('active', 1)
             ->get();
     }
 
