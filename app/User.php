@@ -1182,7 +1182,7 @@ class User extends Authenticatable implements Authorizable
     /**
      * @return array
      */
-    public function schedule(): array
+    public function schedule($withOutHalf = false): array
     {
         $timezone = $this->timezone();
 
@@ -1193,7 +1193,11 @@ class User extends Authenticatable implements Authorizable
         $date = Carbon::now($timezone)->format('Y-m-d');
 
         //TODO: проверить логику, раньше не было число с *.30
-        $start = Carbon::parse("$date $workStartTime", $timezone)->subMinutes(30.0);
+        if ($withOutHalf){
+            $start = Carbon::parse("$date $workStartTime", $timezone);
+        } else {
+            $start = Carbon::parse("$date $workStartTime", $timezone)->subMinutes(30.0);
+        }
         $end   = Carbon::parse("$date $workEndTime", $timezone);
 
         if ($start->greaterThan($end)) {

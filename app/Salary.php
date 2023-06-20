@@ -598,7 +598,7 @@ class Salary extends Model
                 $s = $user->salaries->where('day', $d)->first();
 
                 $zarplata = $s ? $s->amount : 70000;
-                $schedule = $user->schedule();
+                $schedule = $user->schedule(true);
                 $lunchTime = 1;
                 $userWorkHours = max($schedule['end']->diffInSeconds($schedule['start']), 0);
                 $working_hours = round($userWorkHours / 3600, 1) - $lunchTime;
