@@ -326,8 +326,8 @@ export default {
 		},
 
 		/**
-         * animate opacity in blocks
-         */
+		 * animate opacity in blocks
+		 */
 		OpacityStats() {
 			/* global VJQuery */
 			let MAXBALANCE = parseInt(this.salary.replace(/\s/g, '')) || 0,
@@ -335,7 +335,9 @@ export default {
 				MAXBONUSES = 1,
 				MAXKVARTAL = 1,
 				MAXNOMINATIONS = 1,
-				maxArray = [MAXBALANCE, MAXKPI,MAXBONUSES, MAXKVARTAL, MAXNOMINATIONS];
+				maxArray = [MAXBALANCE, MAXKPI, MAXBONUSES, MAXKVARTAL, MAXNOMINATIONS];
+			console.log('maxArray', JSON.parse(JSON.stringify(maxArray)))
+			console.log('user_earnings', JSON.parse(JSON.stringify(this.user_earnings)))
 
 			let values = VJQuery('.stat__value span');
 			for(let i=0;i<values.length;i++){
