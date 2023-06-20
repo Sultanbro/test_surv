@@ -3,7 +3,7 @@
 		v-if="groups"
 		class="AnalyticsPage"
 	>
-		<div class="row mb-4">
+		<div class="AnalyticsPage-filters row mb-4">
 			<div class="col-3">
 				<select
 					class="form-control"
@@ -92,233 +92,228 @@
 				v-else
 			/>
 		</div>
-		<div>
-			<div v-if="!firstEnter">
-				<div
-					v-if="this.hasPremission"
-					:key="askey"
-				>
-					<div v-if="dataLoaded">
-						<div class="wrap mb-4">
-							<div>
-								<TopGauges
-									:utility_items="data.utility"
-									:editable="false"
-									wrapper_class="d-flex"
-									:key="123"
-									page="analytics"
-								/>
-							</div>
-							<div class="p-4">
-								<p class="ap-text">
-									Процент текучки кадров за прошлый месяц: <span>{{ data.fired_percent_prev }}%</span>
-								</p>
-								<p class="ap-text">
-									Процент текучки кадров за текущий месяц: <span>{{ data.fired_percent }}%</span>
-								</p>
-								<p class="ap-text">
-									В прошлом месяце было уволено: <span>{{ data.fired_number_prev }}</span>
-								</p>
-								<p class="ap-text">
-									В текущем месяце было уволено: <span>{{ data.fired_number }}</span>
-								</p>
-							</div>
+		<template v-if="!firstEnter">
+			<template v-if="hasPremission">
+				<template v-if="dataLoaded">
+					<div class="AnalyticsPage-header wrap mb-4">
+						<TopGauges
+							:utility_items="data.utility"
+							:editable="false"
+							wrapper_class="d-flex"
+							:key="123"
+							page="analytics"
+							class="AnalyticsPage-gauges"
+						/>
+
+						<div class="p-4">
+							<p class="ap-text">
+								Процент текучки кадров за прошлый месяц: <span>{{ data.fired_percent_prev }}%</span>
+							</p>
+							<p class="ap-text">
+								Процент текучки кадров за текущий месяц: <span>{{ data.fired_percent }}%</span>
+							</p>
+							<p class="ap-text">
+								В прошлом месяце было уволено: <span>{{ data.fired_number_prev }}</span>
+							</p>
+							<p class="ap-text">
+								В текущем месяце было уволено: <span>{{ data.fired_number }}</span>
+							</p>
 						</div>
+					</div>
 
-						<b-tabs
-							type="card"
-							:default-active-key="active"
-							@change="onTabChange"
+					<b-tabs
+						type="card"
+						:default-active-key="active"
+						@change="onTabChange"
+					>
+						<b-tab
+							key="1"
+							card
 						>
-							<b-tab
-								key="1"
-								card
-							>
-								<template #title>
-									<span v-b-popover.hover.top="'таблица продаж'">Сводная</span>
-								</template>
-								<div class="mb-5 mt-4">
-									<AnalyticStat
-										:table="data.table"
-										:fields="data.columns"
-										:activeuserid="activeuserid"
-										:is-admin="isAdmin"
-										:month-info="monthInfo"
-										:group_id="currentGroup"
-										:activities="activity_select"
-									/>
-								</div>
-
-								<CallBase
-									v-if="currentGroup == 53"
-									:data="call_bases"
+							<template #title>
+								<span v-b-popover.hover.top="'таблица продаж'">Сводная</span>
+							</template>
+							<div class="mb-5 mt-4">
+								<AnalyticStat
+									:table="data.table"
+									:fields="data.columns"
+									:activeuserid="activeuserid"
+									:is-admin="isAdmin"
 									:month-info="monthInfo"
+									:group_id="currentGroup"
+									:activities="activity_select"
 								/>
+							</div>
 
-								<TableDecomposition
-									:month="monthInfo"
-									:data="data.decomposition"
-								/>
-							</b-tab>
+							<CallBase
+								v-if="currentGroup == 53"
+								:data="call_bases"
+								:month-info="monthInfo"
+							/>
 
-							<b-tab
-								key="2"
-								card
-								class="position-relative"
-							>
-								<template #title>
-									<span v-b-popover.hover.top="'данные по показателям'">Подробная</span>
-								</template>
-								<div class="kakieto-knopki">
-									<button
-										class="btn btn-success rounded btn-sm"
-										@click="add_activity()"
-									>
-										<i
-											class="fa fa-plus-square"
-											style="font-size:14px"
-										/>
-									</button>
-									<button
-										class="btn btn-primary rounded btn-sm"
-										@click="showOrder = true"
-									>
-										<i class="fas fa-sort-amount-down" />
-									</button>
-								</div>
-								<b-tabs
-									type="card"
-									class="mt-4"
-									@change="showSubTab"
-									:default-active-key="active_sub_tab"
+							<TableDecomposition
+								:month="monthInfo"
+								:data="data.decomposition"
+							/>
+						</b-tab>
+
+						<b-tab
+							key="2"
+							card
+							class="position-relative"
+						>
+							<template #title>
+								<span v-b-popover.hover.top="'данные по показателям'">Подробная</span>
+							</template>
+							<div class="kakieto-knopki">
+								<button
+									class="btn btn-success rounded btn-sm"
+									@click="add_activity()"
 								>
-									<template v-for="(activity, index) in data.activities">
-										<b-tab
-											:title="activity.name"
-											:key="index"
-											@change="showcubTab(index)"
+									<i
+										class="fa fa-plus-square"
+										style="font-size:14px"
+									/>
+								</button>
+								<button
+									class="btn btn-primary rounded btn-sm"
+									@click="showOrder = true"
+								>
+									<i class="fas fa-sort-amount-down" />
+								</button>
+							</div>
+							<b-tabs
+								type="card"
+								class="mt-4"
+								@change="showSubTab"
+								:default-active-key="active_sub_tab"
+							>
+								<template v-for="(activity, index) in data.activities">
+									<b-tab
+										:title="activity.name"
+										:key="index"
+										@change="showcubTab(index)"
+									>
+										<!-- Switch month and year of Activity in detailed -->
+										<button
+											class="btn btn-default rounded mt-4"
+											@click="switchToMonthInActivity(index)"
 										>
-											<!-- Switch month and year of Activity in detailed -->
-											<button
-												class="btn btn-default rounded mt-4"
-												@click="switchToMonthInActivity(index)"
-											>
-												Месяц
-											</button>
-											<button
-												class="btn btn-default rounded mt-4"
-												@click="switchToYearInActivity(index)"
-											>
-												Год
-											</button>
+											Месяц
+										</button>
+										<button
+											class="btn btn-default rounded mt-4"
+											@click="switchToYearInActivity(index)"
+										>
+											Год
+										</button>
 
-											<!-- tabs -->
+										<!-- tabs -->
+										<div
+											v-if="activityStates[index] !== undefined"
+											class="mt-2"
+										>
+											<!-- Month tab of activity in detailed -->
 											<div
-												v-if="activityStates[index] !== undefined"
-												class="mt-2"
+												:class="{
+													'hidden' : activityStates[index] == 'year'
+												}"
 											>
-												<!-- Month tab of activity in detailed -->
-												<div
-													:class="{
-														'hidden' : activityStates[index] == 'year'
-													}"
-												>
-													<TableActivityNew
-														v-if="activity.type == 'default'"
-														:key="activity.id"
-														:month="monthInfo"
-														:activity="activity"
-														:group_id="currentGroup"
-														:work_days="monthInfo.workDays"
-														:editable="activity.editable == 1 ? true : false"
-													/>
+												<TableActivityNew
+													v-if="activity.type == 'default'"
+													:key="activity.id"
+													:month="monthInfo"
+													:activity="activity"
+													:group_id="currentGroup"
+													:work_days="monthInfo.workDays"
+													:editable="activity.editable == 1 ? true : false"
+												/>
 
-													<TableActivityCollection
-														v-if="activity.type == 'collection'"
-														:key="activity.id"
-														:month="monthInfo"
-														:activity="activity"
-														:is_admin="true"
-														:price="activity.price"
-													/>
+												<TableActivityCollection
+													v-if="activity.type == 'collection'"
+													:key="activity.id"
+													:month="monthInfo"
+													:activity="activity"
+													:is_admin="true"
+													:price="activity.price"
+												/>
 
-													<TableQualityWeekly
-														v-if="activity.type == 'quality'"
-														:key="activity.id"
-														:month-info="monthInfo"
-														:items="activity.records"
-														:editable="activity.editable == 1 ? true : false"
-													/>
-												</div>
+												<TableQualityWeekly
+													v-if="activity.type == 'quality'"
+													:key="activity.id"
+													:month-info="monthInfo"
+													:items="activity.records"
+													:editable="activity.editable == 1 ? true : false"
+												/>
+											</div>
 
-												<!-- Year tab of activity in detailed -->
-												<div
-													:class="{
-														'hidden' : activityStates[index] == 'month'
-													}"
-												>
-													<h4 class="mb-2">
-														{{ activity.name }}
-													</h4>
+											<!-- Year tab of activity in detailed -->
+											<div
+												:class="{
+													'hidden' : activityStates[index] == 'month'
+												}"
+											>
+												<h4 class="mb-2">
+													{{ activity.name }}
+												</h4>
 
-													<!-- Year table -->
-													<div class="table-container table-responsive">
-														<table class="table table-bordered">
-															<thead>
-																<tr>
-																	<th
-																		v-for="(field, key) in yearActivityTableFields"
-																		:key="key"
-																		:class="field.classes"
-																	>
-																		<div>{{ field.name }}</div>
-																	</th>
-																</tr>
-															</thead>
-															<tbody>
-																<tr
-																	v-for="( row, index ) in yearActivityTable"
-																	:key="index"
+												<!-- Year table -->
+												<div class="table-container table-responsive">
+													<table class="table table-bordered">
+														<thead>
+															<tr>
+																<th
+																	v-for="(field, key) in yearActivityTableFields"
+																	:key="key"
+																	:class="field.classes"
 																>
-																	<td
-																		v-for="(field, key) in yearActivityTableFields"
-																		:key="key"
-																		:class="field.classes"
-																		:style="field.key === 'name' || !row[field.key] ? '' : `background: ${getCellColor(row[field.key])};`"
-																		:data-key="field.key"
-																	>
-																		<div>{{ row[field.key] }}</div>
-																	</td>
-																</tr>
-															</tbody>
-														</table>
-													</div>
+																	<div>{{ field.name }}</div>
+																</th>
+															</tr>
+														</thead>
+														<tbody>
+															<tr
+																v-for="( row, index ) in yearActivityTable"
+																:key="index"
+															>
+																<td
+																	v-for="(field, key) in yearActivityTableFields"
+																	:key="key"
+																	:class="field.classes"
+																	:style="field.key === 'name' || !row[field.key] ? '' : `background: ${getCellColor(row[field.key])};`"
+																	:data-key="field.key"
+																>
+																	<div>{{ row[field.key] }}</div>
+																</td>
+															</tr>
+														</tbody>
+													</table>
 												</div>
 											</div>
-										</b-tab>
-									</template>
-								</b-tabs>
-							</b-tab>
-						</b-tabs>
-					</div>
+										</div>
+									</b-tab>
+								</template>
+							</b-tabs>
+						</b-tab>
+					</b-tabs>
+				</template>
 
-					<div v-else>
-						<p class="no-info">
-							Аналитика для группы еще не создана
-						</p>
-					</div>
-				</div>
-
-				<div v-else>
+				<template v-else>
 					<p class="no-info">
-						У вас нет доступа к этой группе
+						Аналитика для группы еще не создана
 					</p>
-				</div>
-			</div>
+				</template>
+			</template>
+
+			<template v-else>
+				<p class="no-info">
+					У вас нет доступа к этой группе
+				</p>
+			</template>
+		</template>
 
 
-			<div class="empty-space" />
-		</div>
+		<div class="empty-space" />
 
 
 
@@ -511,7 +506,7 @@ import {
 	archiveAnalyticsGroup,
 	restoreAnalyticsGroup,
 	updateAnalyticsOrder,
-} from '@/stores/api'
+} from '@/stores/api.mock'
 
 const API = {
 	fetchAnalyticsMonthlyStats,
@@ -632,15 +627,15 @@ export default {
 			}
 		},
 		/**
-             * ACTIVITY YEAR
-             */
+		 * ACTIVITY YEAR
+		 */
 		switchToMonthInActivity(index) {
 			this.activityStates[index] = 'month'
 		},
 
 		/**
-             * ACTIVITY YEAR
-             */
+		 * ACTIVITY YEAR
+		 */
 		switchToYearInActivity(index) {
 			this.activityStates[index] = 'year'
 
@@ -648,9 +643,9 @@ export default {
 		},
 
 		/**
-             * ACTIVITY YEAR
-             * full name
-             */
+		 * ACTIVITY YEAR
+		 * full name
+		 */
 		fullNameOfUser(user) {
 			return user.last_name !== '' || user.last_name !== null
 				? user.last_name + ' ' + user.name
@@ -658,10 +653,10 @@ export default {
 		},
 
 		/**
-             * ACTIVITY YEAR
-             * server returns total key
-             * and if there is no result not returns total key
-             */
+		 * ACTIVITY YEAR
+		 * server returns total key
+		 * and if there is no result not returns total key
+		 */
 		normalizeStat(obj) {
 			let res = {}
 
@@ -675,8 +670,8 @@ export default {
 		},
 
 		/**
-             * ACTIVITY YEAR
-             */
+		 * ACTIVITY YEAR
+		 */
 		formYearActivityTable(stats) {
 			let res = [];
 
@@ -725,8 +720,8 @@ export default {
 		},
 
 		/**
-			 * ACTIVITY YEAR
-			 */
+		 * ACTIVITY YEAR
+		 */
 		fetchYearTableOfActivity(activity_id) {
 			let loader = this.$loading.show();
 
@@ -748,8 +743,8 @@ export default {
 		},
 
 		/**
-             * ACTIVITY YEAR
-             */
+		 * ACTIVITY YEAR
+		 */
 		setActivityYearTableFields() {
 			let fieldsArray = [];
 			let order = 1;
@@ -1036,7 +1031,34 @@ export default {
 }
 </script>
 
-<style>
+<style lang="scss">
+.AnalyticsPage{
+	&-gauges{
+		flex: 1;
+		.TopGauges-group,
+		.TopGauges-gauges{
+			flex: 1;
+			justify-content: flex-start !important;
+			align-items: flex-end;
+		}
+		.TopGauges-gauge{
+			flex: 0 0 content;
+			&:last-of-type{
+				margin-left: auto;
+			}
+		}
+	}
+
+	.btn {
+		padding: .375rem .75rem;
+		&.btn-sm {
+			padding: 0.15rem 0.5rem;
+		}
+	}
+	.cell-input{
+		padding: 0 !important;
+	}
+}
 	.mw30 {
 		min-width: 30px;
 	}
@@ -1078,15 +1100,6 @@ export default {
 		font-size: 16px;
 		font-weight: 700;
 		margin-left: 5px;
-	}
-	.AnalyticsPage .btn {
-		padding: .375rem .75rem;
-	}
-	.AnalyticsPage .btn.btn-sm {
-		padding: 0.15rem 0.5rem;
-	}
-	.AnalyticsPage .cell-input{
-		padding: 0 !important;
 	}
 	.fz12 {
 		font-size: 12px;
