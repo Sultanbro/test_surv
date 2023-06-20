@@ -502,6 +502,27 @@ const TopGauges = () => import(/* webpackChunkName: "TopGauges" */ '@/components
 import { useYearOptions } from '../composables/yearOptions'
 import { mapState } from 'pinia'
 import { usePortalStore } from '@/stores/Portal'
+import {
+	fetchAnalyticsMonthlyStats,
+	fetchAnalytics,
+	createAnalyticsActivity,
+	deleteAnalyticsActivity,
+	createAnalyticsGroup,
+	archiveAnalyticsGroup,
+	restoreAnalyticsGroup,
+	updateAnalyticsOrder,
+} from '@/stores/api'
+
+const API = {
+	fetchAnalyticsMonthlyStats,
+	fetchAnalytics,
+	createAnalyticsActivity,
+	deleteAnalyticsActivity,
+	createAnalyticsGroup,
+	archiveAnalyticsGroup,
+	restoreAnalyticsGroup,
+	updateAnalyticsOrder,
+}
 
 function percentMinMax(value, min, max){
 	return (value - min) / (max - min)
@@ -709,20 +730,16 @@ export default {
 		fetchYearTableOfActivity(activity_id) {
 			let loader = this.$loading.show();
 
-
-			this.axios.post('/timetracking/user-statistics-by-month', {
+			API.fetchAnalyticsMonthlyStats({
 				group_id: this.currentGroup,
 				date: {
 					year: this.currentYear,
 					month: this.monthInfo.month
 				},
 				activity_id: activity_id
-			}).then(response => {
-
-				this.users = response.data.data.users
-
-				this.formYearActivityTable(response.data.data.statistics)
-
+			}).then(({data}) => {
+				this.users = data.users
+				this.formYearActivityTable(data.statistics)
 				loader.hide()
 			}).catch(error => {
 				loader.hide()
@@ -792,12 +809,12 @@ export default {
 			let loader = this.$loading.show();
 
 
-			this.axios.post('/timetracking/analytics-page/getanalytics', {
+			API.fetchAnalytics({
 				month: this.$moment(this.monthInfo.currentMonth, 'MMMM').format('M'),
 				year: this.currentYear,
 				group_id: this.currentGroup
-			}).then(response => {
-				if (response.data.error && response.data.error == 'access') {
+			}).then(data => {
+				if (data.error && data.error == 'access') {
 					this.hasPremission = false
 					loader.hide();
 					return;
@@ -815,14 +832,14 @@ export default {
 				let active = urlParamss.get('active');
 				this.active = (active == null) ? '1' : active
 
-				if(response.data.error !== undefined) {
+				if(data.error !== undefined) {
 					this.dataLoaded = false
 					this.noan = true;
-					this.archived_groups = response.data.archived_groups
-					this.ggroups = response.data.groups
+					this.archived_groups = data.archived_groups
+					this.ggroups = data.groups
 				} else {
 					this.dataLoaded = true
-					this.data = response.data
+					this.data = data
 					this.noan = false;
 
 					this.activity_select = [];
@@ -839,14 +856,14 @@ export default {
 
 					this.activityStates = activityStatesObj;
 
-					this.call_bases = response.data.call_bases;
-					this.archived_groups = response.data.archived_groups;
-					this.ggroups = response.data.groups;
+					this.call_bases = data.call_bases;
+					this.archived_groups = data.archived_groups;
+					this.ggroups = data.groups;
 				}
 
 				this.askey++;
 				window.history.replaceState({ id: '100' }, 'Аналитика групп', '/timetracking/an?group=' + this.currentGroup + '&active=' + this.active);
-				this.monthInfo.workDays = this.work_days = this.getBusinessDateCount(this.monthInfo.month,this.monthInfo.currentYear, response.data.workdays)
+				this.monthInfo.workDays = this.work_days = this.getBusinessDateCount(this.monthInfo.month,this.monthInfo.currentYear, data.workdays)
 				loader.hide()
 			}).catch(error => {
 				loader.hide()
@@ -882,12 +899,12 @@ export default {
 
 		create_activity() {
 			let loader = this.$loading.show();
-			this.axios.post('/timetracking/analytics/create-activity', {
+			API.createAnalyticsActivity({
 				month: this.$moment(this.monthInfo.currentMonth, 'MMMM').format('M'),
 				year: this.currentYear,
 				activity: this.activity,
 				group_id: this.currentGroup
-			}).then(response => {
+			}).then(data => {
 				this.$toast.success('Активность для группы добавлена!')
 				this.fetchData();
 
@@ -900,7 +917,7 @@ export default {
 					weekdays: 6,
 				};
 
-				this.data.activities = response.data;
+				this.data.activities = data;
 				this.showActivityModal = false
 				loader.hide()
 			}).catch(error => {
@@ -912,13 +929,13 @@ export default {
 
 		add_analytics() {
 			let loader = this.$loading.show();
-			this.axios.post('/timetracking/analytics/new-group', {
+			API.createAnalyticsGroup({
 				month: this.$moment(this.monthInfo.currentMonth, 'MMMM').format('M'),
 				year: this.currentYear,
 				group_id: this.currentGroup
 			}).then(() => {
 				this.$toast.success('Аналитика для группы добавлена!')
-				this.fetchData();
+				this.fetchData()
 				loader.hide()
 			}).catch(error => {
 				loader.hide()
@@ -933,7 +950,7 @@ export default {
 
 		save_order() {
 			let loader = this.$loading.show();
-			this.axios.post('/timetracking/analytics/change_order', {
+			API.updateAnalyticsOrder({
 				activities: this.activity_select
 			}).then(() => {
 				this.$toast.success('Порядок сохранен!');
@@ -954,7 +971,7 @@ export default {
 			}
 
 			let loader = this.$loading.show();
-			this.axios.post('/timetracking/analytics/delete_activity', {
+			API.deleteAnalyticsActivity({
 				id: act.id
 			}).then(() => {
 				this.$toast.success('Удален!');
@@ -974,12 +991,12 @@ export default {
 			}
 
 			let loader = this.$loading.show();
-			this.axios.post('/timetracking/analytics/restore_analytics', {
+			API.restoreAnalyticsGroup({
 				id: this.restore_group
-			}).then(response => {
+			}).then(data => {
 				this.$toast.success('Восстановлен!');
 				this.currentGroup = this.restore_group
-				this.ggroups = response.data.groups
+				this.ggroups =data.groups
 				this.fetchData();
 				this.restore_group = null
 				this.showArchive = false
@@ -998,7 +1015,7 @@ export default {
 			}
 
 			let loader = this.$loading.show();
-			this.axios.post('/timetracking/analytics/archive_analytics', {
+			API.archiveAnalyticsGroup({
 				id: this.currentGroup
 			}).then(() => {
 				this.$toast.success('Архивирован!');
@@ -1015,8 +1032,6 @@ export default {
 		showSubTab(tab) {
 			this.active_sub_tab = tab
 		},
-
-
 	}
 }
 </script>
