@@ -61,7 +61,8 @@
 								<input
 									type="text"
 									v-model="item.name"
-									class=" w-250 text-left"
+									class="TableDecomposition-inputName w-250 text-left"
+									placeholder="напишите название активности"
 									@change="updateSettings($event, item, index, 'name')"
 								>
 								<i
@@ -269,7 +270,7 @@ export default {
 
 		addRecord() {
 			let cells = {
-				name:'test',
+				name:'',
 				plan: 0,
 				editable: false,
 			};
@@ -492,6 +493,14 @@ export default {
 </script>
 
 <style lang="scss">
+.TableDecomposition{
+	&-inputName{
+		&::placeholder{
+			font-style: italic;
+		}
+	}
+}
+
 .bg-white {background:white}
 .my-table.m2 tr .badge {
     opacity: 1;
