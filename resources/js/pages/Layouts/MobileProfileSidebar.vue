@@ -18,10 +18,10 @@
 				<div class="profile__balance">
 					Текущий баланс
 					<p
-						v-if="!balance.loading"
+						v-if="!isSalaryReady"
 						class="profile__balance-value"
 					>
-						{{ balance.sum }} <span class="profile__balance-currecy">{{ balance.currency }}</span>
+						{{ totalBalance }} <span class="profile__balance-currecy">{{ balance.currency }}</span>
 					</p>
 				</div>
 			</div>
@@ -38,6 +38,7 @@ import ProfileInfo from '@/pages/Widgets/ProfileInfo'
 import StartDayBtn from '@/pages/Widgets/StartDayBtn'
 import { usePersonalInfoStore } from '@/stores/PersonalInfo'
 import { useProfileStatusStore } from '@/stores/ProfileStatus'
+import { useProfileSalaryStore } from '@/stores/ProfileSalary'
 import { mapState, mapActions } from 'pinia'
 
 export default {
@@ -56,7 +57,13 @@ export default {
 	},
 	computed: {
 		...mapState(usePersonalInfoStore, ['user', 'position', 'groups', 'salary', 'workingDay', 'schedule', 'workingTime', 'buttonStatus']),
-		...mapState(useProfileStatusStore, ['status', 'balance', 'message']),
+		...mapState(useProfileStatusStore, ['status', 'message']),
+		...mapState(useProfileSalaryStore, ['user_earnings']),
+		...mapState(useProfileSalaryStore, {isSalaryReady: 'isReady'}),
+		totalBalance(){
+			if(!this.user_earnings) return 0
+			return (this.user_earnings.sumSalary || 0) + (this.user_earnings.sumKpi || 0) + (this.user_earnings.sumBonuses || 0)
+		},
 		userInfo(){
 			return {
 				user: this.user,

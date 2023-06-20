@@ -54,7 +54,7 @@
 						v-if="!balance.loading"
 						class="profile__balance-value"
 					>
-						{{ separateNumber(user_earnings.sumSalary || 0) }} <span class="profile__balance-currecy">{{ balance.currency }}</span>
+						{{ separateNumber(totalBalance) }} <span class="profile__balance-currecy">{{ balance.currency }}</span>
 					</p>
 				</div>
 
@@ -340,6 +340,10 @@ export default {
 		...mapState(usePortalStore, ['portal']),
 		...mapState(useProfileSalaryStore, ['user_earnings']),
 		...mapGetters(['user']),
+		totalBalance(){
+			if(!this.user_earnings) return 0
+			return (this.user_earnings.sumSalary || 0) + (this.user_earnings.sumKpi || 0) + (this.user_earnings.sumBonuses || 0)
+		},
 		userInfo(){
 			return {
 				user: this.user,
