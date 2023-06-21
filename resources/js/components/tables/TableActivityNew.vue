@@ -1149,9 +1149,6 @@ export default {
         margin: 0;
     }
 }
-.bg-white {
-    background: white;
-}
 .text-white {
     color:#fff;
 }

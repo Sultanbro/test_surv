@@ -582,109 +582,108 @@ export default {
 </script>
 
 <style lang="scss">
-.bg-white {background:white}
 .my-table.m2 tr .badge {
-    opacity: 1;
+	opacity: 1;
 }
 
-    .day-minute {
-        padding: 0 !important;
-        text-align: center;
-        vertical-align: middle;
+.day-minute {
+	padding: 0 !important;
+	text-align: center;
+	vertical-align: middle;
 
-        div {
-            font-size: 0.8rem;
-        }
-        &.table-success {
-            background-color: #01c601 !important;
-        }
+	div {
+		font-size: 0.8rem;
+	}
+	&.table-success {
+		background-color: #01c601 !important;
+	}
 
-        &.table-danger {
-            background-color: #fd1600 !important;
-        }
-    }
+	&.table-danger {
+		background-color: #fd1600 !important;
+	}
+}
 
 .table td, .table th, .table thead th{
-    vertical-align: middle;
-    min-width: 42px;
-    text-align: center;
+	vertical-align: middle;
+	min-width: 42px;
+	text-align: center;
 }
 .table.b-table.table-sm>thead>tr>[aria-sort]:not(.b-table-sort-icon-left),
 .table.b-table.table-sm>tfoot>tr>[aria-sort]:not(.b-table-sort-icon-left) {
-    background-image: none !important;
-    min-width: 32px;
+	background-image: none !important;
+	min-width: 32px;
 }
 .table .stat {
-    background: #d9edff;
+	background: #d9edff;
 }
 .table {
-    position: relative;
+	position: relative;
 }
 .b-table-sticky-column{
-    position: sticky;
-    left: 0;
-    z-index: 2;
+	position: sticky;
+	left: 0;
+	z-index: 2;
 }
 .wd {
-    font-size: 0.75rem;
-    width: max-content;
-    font-weight: 500;
+	font-size: 0.75rem;
+	width: max-content;
+	font-weight: 500;
 }
 .table .stat.plan{
-    background: #007bff;
-    color: #fff;
+	background: #007bff;
+	color: #fff;
 }
 
 .cell-input {
-    background: none;
-    border: none;
-    text-align: center;
-    -moz-appearance: textfield;
-    font-size: .8rem;
-    font-weight: normal;
-    padding: 0;
-    color: #000;
-    border-radius: 0;
+	background: none;
+	border: none;
+	text-align: center;
+	-moz-appearance: textfield;
+	font-size: .8rem;
+	font-weight: normal;
+	padding: 0;
+	color: #000;
+	border-radius: 0;
 
-    &:focus {
-        outline: none;
-    }
+	&:focus {
+		outline: none;
+	}
 
-    &::-webkit-outer-spin-button,
-    &::-webkit-inner-spin-button {
-        -webkit-appearance: none;
-        margin: 0;
-    }
+	&::-webkit-outer-spin-button,
+	&::-webkit-inner-spin-button {
+		-webkit-appearance: none;
+		margin: 0;
+	}
 }
 .z2233 {
-    z-index: 3 !important;
+	z-index: 3 !important;
 }
 .r-to .wd .badge-success {
-    display: none;
+	display: none;
 }
 .r-to tr:hover td.wdf  {
-    background: #51a5ff;
+	background: #51a5ff;
 }
 .r-to tr:hover td {
-    background: #eaf3ff;
+	background: #eaf3ff;
 }
 .lb {
-        border-left: 1px solid #aaa !important;
+	border-left: 1px solid #aaa !important;
 }
 .rb {
-    border-right: 1px solid #aaa !important;
-        background: whitesmoke;
+	border-right: 1px solid #aaa !important;
+	background: whitesmoke;
 }
 .sticky-h1 {
-    position: sticky;
-    top: 0;
-    z-index: 2;
-    outline: 1px solid #ddd!important;
+	position: sticky;
+	top: 0;
+	z-index: 2;
+	outline: 1px solid #ddd!important;
 }
 .sticky-h2 {
-    position: sticky;
-    top: 31px;
-    z-index: 2;
-    outline: 1px solid #ddd!important;
+	position: sticky;
+	top: 31px;
+	z-index: 2;
+	outline: 1px solid #ddd!important;
 }
 </style>
