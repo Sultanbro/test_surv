@@ -514,144 +514,95 @@ export default {
 	}
 }
 
-
-.bg-white {background:white}
-
 .day-minute {
-		padding: 0 !important;
-		text-align: center;
-		vertical-align: middle;
+	padding: 0 !important;
+	text-align: center;
+	vertical-align: middle;
 
-		div {
-				font-size: 0.8rem;
-		}
-		&.table-success {
-				background-color: #01c601 !important;
-		}
-
-		&.table-danger {
-				background-color: #fd1600 !important;
-		}
+	div {
+		font-size: 0.8rem;
+	}
+	&.table-success {
+		background-color: #01c601 !important;
+	}
+	&.table-danger {
+		background-color: #fd1600 !important;
+	}
 }
 
-.table td, .table th, .table thead th{
-    vertical-align: middle;
-    min-width: 42px;
-    text-align: center;
+.table td,
+.table th,
+.table thead th{
+	vertical-align: middle;
+	min-width: 42px;
+	text-align: center;
 }
 .table.b-table.table-sm>thead>tr>[aria-sort]:not(.b-table-sort-icon-left),
 .table.b-table.table-sm>tfoot>tr>[aria-sort]:not(.b-table-sort-icon-left) {
-    background-image: none !important;
-    min-width: 32px;
+	background-image: none !important;
+	min-width: 32px;
 }
 .table .stat {
-    background: #d9edff;
+	background: #d9edff;
 }
 .table {
-    position: relative;
+	position: relative;
 }
 .b-table-sticky-column{
-    position: sticky;
-    left: 0;
-    z-index: 2;
+	position: sticky;
+	left: 0;
+	z-index: 2;
 }
 .wd {
-    font-size: 0.75rem;
-    width: max-content;
-    font-weight: 500;
+	font-size: 0.75rem;
+	width: max-content;
+	font-weight: 500;
 }
 .table .stat.plan{
-    background: #007bff;
-    color: #fff;
+	background: #007bff;
+	color: #fff;
 }
 
 .cell-input {
-    background: none;
-    border: none;
-    text-align: center;
-    -moz-appearance: textfield;
-    font-size: .8rem;
-    font-weight: normal;
-    padding: 0;
-    color: #000;
-    border-radius: 0;
+	background: none;
+	border: none;
+	text-align: center;
+	-moz-appearance: textfield;
+	font-size: .8rem;
+	font-weight: normal;
+	padding: 0;
+	color: #000;
+	border-radius: 0;
 
-    &:focus {
-        outline: none;
-    }
+	&:focus {
+		outline: none;
+	}
 
-    &::-webkit-outer-spin-button,
-    &::-webkit-inner-spin-button {
-        -webkit-appearance: none;
-        margin: 0;
-    }
+	&::-webkit-outer-spin-button,
+	&::-webkit-inner-spin-button {
+		-webkit-appearance: none;
+		margin: 0;
+	}
 }
 .w-250 {
-    min-width: 250px;
+	min-width: 250px;
 }
 .wd {
-    .fa {
-        opacity: 0;
-    }
-    &:hover {
-        .fa {
-            opacity: 1;
-        }
-    }
-}
-
-.strt tr:nth-child(2) th {
-    background-color: #DDE9FF !important;
-    text-align: center !important;
-    border-top: 1px solid #b5c1d7 !important;
-    border-left: 1px solid #b5c1d7 !important;
-    border-bottom: 1px solid #b5c1d7 !important;
-    border-right: 2px solid #b5c1d7 !important;
-}
-
-.strt{
-    input{
-        height: 30px;
-        text-align: center;
-        color: #333;
-        width: 100px;
-    }
-
-	tbody {
-		th, td {
-			padding: 0 !important;
-
-			&:first-child {
-				padding: 0 10px !important;
-			}
-
-			& > div {
-				height: 30px;
-				width: 100px;
-				display: inline-flex;
-				align-items: center;
-				justify-content: center;
-			}
-
-			&:first-child {
-				& > div {
-					width: auto;
-				}
-
-				input {
-					text-align: left;
-					width: 100%;
-				}
-			}
+	.fa {
+		opacity: 0;
+	}
+	&:hover {
+		.fa {
+			opacity: 1;
 		}
 	}
 }
 
 .day-minute div {
-    font-size: 0.8rem;
-    font-weight: 500;
+	font-size: 0.8rem;
+	font-weight: 500;
 }
 .border-r-2 {
-    border-right: 2px solid #b5c1d7 !important;
+	border-right: 2px solid #b5c1d7 !important;
 }
 </style>

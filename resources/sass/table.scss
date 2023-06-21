@@ -5,7 +5,7 @@ $top_angle: orange;
 $red: #ff7669;
 $yellow: #fef1ca;
 $blue: #5b99d5;
-$green: #56ea56; 
+$green: #56ea56;
 $violet: #ff68b4;
 $grey: #ece8e8;
 
@@ -59,20 +59,20 @@ $grey: #ece8e8;
             &:nth-child(1) {
                 min-width: 68px;
             }
-    
+
             &:nth-child(2) {
                 min-width: 190px;
             }
-    
+
             &:nth-child(3),
             &:nth-child(4)
             {
                 input {
                     width: 80px;
-                }   
-            } 
+                }
+            }
         }
-       
+
     }
 
     .two-letter {
@@ -82,9 +82,9 @@ $grey: #ece8e8;
         }
     }
     .t-cell {
-        
-   
-        
+
+
+
 
         &.text-left {
             input {
@@ -141,18 +141,18 @@ $grey: #ece8e8;
                 font-weight: 600;
             }
         }
-      
+
         &.font-italic {
             input {
                 font-style: italic;
             }
         }
 
-        
-        .in-cell{ 
+
+        .in-cell{
             padding: 5px 10px;
         }
-       
+
         input.in-cell {
             border: 0;
             position: relative;
@@ -164,33 +164,33 @@ $grey: #ece8e8;
             &.invisible {
                 opacity: 0;
             }
-        }   
+        }
 
-       
-       
 
-        
-  
+
+
+
+
             input {
                 width: 50px;
-            }   
-            
-       
+            }
+
+
         .inner-div {
             position: relative;
             padding: 1px;
-            
+
             &.less {
                 input.in-cell {
-                    background: $red; 
+                    background: $red;
                 }
-                
+
             }
             &.more {
                 input.in-cell {
-                    background: $green; 
+                    background: $green;
                 }
-                
+
             }
 
             &.halfy {
@@ -203,7 +203,7 @@ $grey: #ece8e8;
                 &:last-child input {
                     text-align: center !important;
                 }
-            }   
+            }
 
             &.disabled .disabled {
                 position: absolute;
@@ -233,7 +233,7 @@ $grey: #ece8e8;
                     border: 1px solid $focused;
                     z-index: 23;
                 }
-               
+
                 .bottom-angle {
                     background: $focused;
                         display: block;
@@ -276,19 +276,19 @@ $grey: #ece8e8;
                     display: block;
                     border-right: 8px solid #10bb10;
                 }
-                
+
             }
         }
 
-        
+
         &.weekday {
             input {
-                background: $yellow; 
+                background: $yellow;
             }
-            
+
         }
-       
-    } 
+
+    }
 }
 
 .table-header {
@@ -302,7 +302,7 @@ $grey: #ece8e8;
         flex: 0 0 63px;
          max-width: 63px;
         margin-right: 5px;
-        
+
     }
     .cell-type {
         padding: 5px 10px;
@@ -385,7 +385,7 @@ $grey: #ece8e8;
                 input {
                     border: 0;
                     background: #fff;
-                    margin-left: 10px;    
+                    margin-left: 10px;
                 }
             }
         }
@@ -412,7 +412,7 @@ $grey: #ece8e8;
             &.bg-blue {background: $blue;}
             &.bg-violet {background: $violet;}
         }
-        
+
     }
 }
 
@@ -447,19 +447,3 @@ $grey: #ece8e8;
     }
 }
 
-
-/** 
-draggable 
-*/
-
-.drag_item {
-    transform: translateZ(0px);
-    padding: 5px 8px;
-    margin-bottom: 5px;
-    background: white;
-    cursor: pointer;
-    border: 1px solid #eee;
-    border-radius: 5px;
-    display: flex;
-    justify-content: space-between;
-}

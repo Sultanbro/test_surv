@@ -165,135 +165,15 @@
 							<template #title>
 								<span v-b-popover.hover.top="'данные по показателям'">Подробная</span>
 							</template>
-							<div class="kakieto-knopki">
-								<button
-									class="btn btn-success rounded btn-sm"
-									@click="add_activity()"
-								>
-									<i
-										class="fa fa-plus-square"
-										style="font-size:14px"
-									/>
-								</button>
-								<button
-									class="btn btn-primary rounded btn-sm"
-									@click="showOrder = true"
-								>
-									<i class="fas fa-sort-amount-down" />
-								</button>
-							</div>
-							<b-tabs
-								type="card"
-								class="mt-4"
-								@change="showSubTab"
-								:default-active-key="active_sub_tab"
-							>
-								<template v-for="(activity, index) in data.activities">
-									<b-tab
-										:title="activity.name"
-										:key="index"
-										@change="showcubTab(index)"
-									>
-										<!-- Switch month and year of Activity in detailed -->
-										<button
-											class="btn btn-default rounded mt-4"
-											@click="switchToMonthInActivity(index)"
-										>
-											Месяц
-										</button>
-										<button
-											class="btn btn-default rounded mt-4"
-											@click="switchToYearInActivity(index)"
-										>
-											Год
-										</button>
-
-										<!-- tabs -->
-										<div
-											v-if="activityStates[index] !== undefined"
-											class="mt-2"
-										>
-											<!-- Month tab of activity in detailed -->
-											<div
-												:class="{
-													'hidden' : activityStates[index] == 'year'
-												}"
-											>
-												<TableActivityNew
-													v-if="activity.type == 'default'"
-													:key="activity.id"
-													:month="monthInfo"
-													:activity="activity"
-													:group_id="currentGroup"
-													:work_days="monthInfo.workDays"
-													:editable="activity.editable == 1 ? true : false"
-												/>
-
-												<TableActivityCollection
-													v-if="activity.type == 'collection'"
-													:key="activity.id"
-													:month="monthInfo"
-													:activity="activity"
-													:is_admin="true"
-													:price="activity.price"
-												/>
-
-												<TableQualityWeekly
-													v-if="activity.type == 'quality'"
-													:key="activity.id"
-													:month-info="monthInfo"
-													:items="activity.records"
-													:editable="activity.editable == 1 ? true : false"
-												/>
-											</div>
-
-											<!-- Year tab of activity in detailed -->
-											<div
-												:class="{
-													'hidden' : activityStates[index] == 'month'
-												}"
-											>
-												<h4 class="mb-2">
-													{{ activity.name }}
-												</h4>
-
-												<!-- Year table -->
-												<div class="table-container table-responsive">
-													<table class="table table-bordered">
-														<thead>
-															<tr>
-																<th
-																	v-for="(field, key) in yearActivityTableFields"
-																	:key="key"
-																	:class="field.classes"
-																>
-																	<div>{{ field.name }}</div>
-																</th>
-															</tr>
-														</thead>
-														<tbody>
-															<tr
-																v-for="( row, index ) in yearActivityTable"
-																:key="index"
-															>
-																<td
-																	v-for="(field, key) in yearActivityTableFields"
-																	:key="key"
-																	:class="field.classes"
-																	:style="field.key === 'name' || !row[field.key] ? '' : `background: ${getCellColor(row[field.key])};`"
-																	:data-key="field.key"
-																>
-																	<div>{{ row[field.key] }}</div>
-																</td>
-															</tr>
-														</tbody>
-													</table>
-												</div>
-											</div>
-										</div>
-									</b-tab>
-								</template>
-							</b-tabs>
+							<AnalyticsDetailes
+								:activities="data.activities"
+								:current-group="currentGroup"
+								:month-info="monthInfo"
+								:activity-select="activity_select"
+								@updateActivity="onUpdateActivity"
+								@deleteActivity="onDeleteActivity"
+								@orderActivity="onOrderActivity"
+							/>
 						</b-tab>
 					</b-tabs>
 				</template>
@@ -311,12 +191,7 @@
 				</p>
 			</template>
 		</template>
-
-
 		<div class="empty-space" />
-
-
-
 
 		<!-- Modal restore archived group -->
 		<b-modal
@@ -348,192 +223,40 @@
 				</div>
 			</div>
 		</b-modal>
-
-		<!-- Modal Create activity -->
-		<b-modal
-			v-model="showOrder"
-			title="Порядок активностей"
-			@ok="save_order()"
-			size="md"
-		>
-			<div :key="askey">
-				<Draggable
-					:list="activity_select"
-					@end="onEndSortcat('test')"
-				>
-					<div
-						v-for="act in activity_select"
-						:key="act.id"
-						class="drag_item"
-					>
-						<span>{{ act.name }}</span>
-						<i
-							@click="delete_activity(act)"
-							class="fa fa-trash pointer"
-						/>
-					</div>
-				</Draggable>
-			</div>
-		</b-modal>
-
-
-		<!-- Modal Create activity -->
-		<b-modal
-			v-model="showActivityModal"
-			title="Добавить активность"
-			@ok="create_activity()"
-			size="lg"
-			class="modalle"
-		>
-			<div class="row">
-				<div class="col-5">
-					<p class="">
-						Название активности
-					</p>
-				</div>
-				<div class="col-7">
-					<input
-						type="text"
-						class="form-control form-control-sm"
-						v-model="activity.name"
-					>
-				</div>
-			</div>
-
-			<div class="row">
-				<div class="col-5">
-					<p class="">
-						Метод
-					</p>
-				</div>
-				<div class="col-7">
-					<select
-						v-model="activity.plan_unit"
-						class="form-control form-control-sm"
-					>
-						<option
-							:value="key"
-							v-for="(value, key) in plan_units"
-							:key="key"
-						>
-							{{ value }}
-						</option>
-					</select>
-				</div>
-			</div>
-
-			<div class="row">
-				<div class="col-5">
-					<p class="">
-						План (Если сумма, на день)
-					</p>
-				</div>
-				<div class="col-7">
-					<input
-						type="number"
-						class="form-control form-control-sm"
-						v-model="activity.daily_plan"
-					>
-				</div>
-			</div>
-
-			<div class="row">
-				<div class="col-5">
-					<p class="">
-						Кол-во рабочих дней в неделе
-					</p>
-				</div>
-				<div class="col-7">
-					<input
-						type="number"
-						class="form-control form-control-sm"
-						v-model="activity.weekdays"
-						min="1"
-						max="7"
-					>
-				</div>
-			</div>
-
-			<div class="row">
-				<div class="col-5">
-					<p class="">
-						Ед. измерения (Символ в конце показателя)
-					</p>
-				</div>
-				<div class="col-7">
-					<input
-						type="text"
-						class="form-control form-control-sm"
-						v-model="activity.unit"
-					>
-				</div>
-			</div>
-
-			<div class="row">
-				<div class="col-5 d-flex align-items-center">
-					<p class="mb-0">
-						Редактируемый
-					</p>
-					<input
-						type="checkbox"
-						class="form-control form-control-sm"
-						v-model="activity.editable"
-					>
-				</div>
-			</div>
-		</b-modal>
 	</div>
 </template>
 
 <script>
-import Draggable from 'vuedraggable'
 import AnalyticStat from '@/components/AnalyticStat'
 import CallBase from '@/components/CallBase'
-import TableDecomposition from '@/components/tables/TableDecomposition'
-const TableActivityNew = () => import(/* webpackChunkName: "TableActivityNew" */ '@/components/tables/TableActivityNew')
-import TableActivityCollection from '@/components/tables/TableActivityCollection'
-import TableQualityWeekly from '@/components/tables/TableQualityWeekly'
 const TopGauges = () => import(/* webpackChunkName: "TopGauges" */ '@/components/TopGauges')  // TOП спидометры, есть и в аналитике
+import TableDecomposition from '@/components/tables/TableDecomposition'
+import AnalyticsDetailes from '@/components/pages/AnalyticsPage/AnalyticsDetailes'
 import { useYearOptions } from '../composables/yearOptions'
 import { mapState } from 'pinia'
 import { usePortalStore } from '@/stores/Portal'
 import {
-	fetchAnalyticsMonthlyStats,
 	fetchAnalytics,
-	createAnalyticsActivity,
-	deleteAnalyticsActivity,
 	createAnalyticsGroup,
 	archiveAnalyticsGroup,
 	restoreAnalyticsGroup,
-	updateAnalyticsOrder,
 } from '@/stores/api.mock'
 
 const API = {
-	fetchAnalyticsMonthlyStats,
 	fetchAnalytics,
-	createAnalyticsActivity,
-	deleteAnalyticsActivity,
 	createAnalyticsGroup,
 	archiveAnalyticsGroup,
 	restoreAnalyticsGroup,
-	updateAnalyticsOrder,
-}
-
-function percentMinMax(value, min, max){
-	return (value - min) / (max - min)
 }
 
 export default {
 	name: 'AnalyticsPage',
 	components: {
-		Draggable,
 		AnalyticStat,
 		CallBase,
 		TableDecomposition,
-		TableActivityNew,
-		TableActivityCollection,
-		TableQualityWeekly,
 		TopGauges,
+		AnalyticsDetailes,
 	},
 	props: ['groups', 'activeuserid', 'isAdmin'],
 	data() {
@@ -543,15 +266,12 @@ export default {
 			active: '1',
 			hasPremission: false, // доступ
 			yearActivityTableFields: [],
-			yearActivityTable: [],
 			yearMin: 0,
 			yearMax: 0,
-			activityStates: {},
 			currentYear: new Date().getFullYear(),
 			monthInfo: {},
 			currentGroup: null,
 			loader: null,
-			showOrder: false,
 			firstEnter: true,
 			showArchive: false,
 			askey: 1,
@@ -560,30 +280,12 @@ export default {
 			call_bases: [], // euras call base unique table
 			restore_group: null,
 			noan: false, // нет аналитики
-			showActivityModal:false, // activity
 			dataLoaded: false,
-			active_sub_tab: 0,
-			activity: {// activity
-				name: null,
-				daily_plan: null,
-				plan_unit: null,
-				unit: null,
-				editable: 1,
-				weekdays: 6,
-			},
-			plan_units: {// activity
-				minutes: 'Сумма показателей',
-				percent: 'Среднее значение',
-				less_sum: 'Не более, сумма',
-				less_avg: 'Не более, сред. зн.',
-			},
 			list: [
 				{ name: 'John', id: 0 },
 				{ name: 'Joao', id: 1 },
 				{ name: 'Jean', id: 2 }
 			],
-			users: [], // year table of activity
-			statistics: [] // year table of activity
 		}
 	},
 	computed: {
@@ -605,7 +307,6 @@ export default {
 	},
 	methods: {
 		init(){
-
 			// выбор группы
 			// переделать на роуты
 			const urlParams = new URLSearchParams(window.location.search);
@@ -625,121 +326,6 @@ export default {
 			if(load != null) {
 				this.fetchData()
 			}
-		},
-		/**
-		 * ACTIVITY YEAR
-		 */
-		switchToMonthInActivity(index) {
-			this.activityStates[index] = 'month'
-		},
-
-		/**
-		 * ACTIVITY YEAR
-		 */
-		switchToYearInActivity(index) {
-			this.activityStates[index] = 'year'
-
-			this.fetchYearTableOfActivity(this.data.activities[index].id);
-		},
-
-		/**
-		 * ACTIVITY YEAR
-		 * full name
-		 */
-		fullNameOfUser(user) {
-			return user.last_name !== '' || user.last_name !== null
-				? user.last_name + ' ' + user.name
-				: user.last_name
-		},
-
-		/**
-		 * ACTIVITY YEAR
-		 * server returns total key
-		 * and if there is no result not returns total key
-		 */
-		normalizeStat(obj) {
-			let res = {}
-
-			Object.keys(obj).forEach((key) => {
-				res[key] = obj[key] == 0
-					? 0
-					: Number(obj[key].total).toFixed(2);
-			});
-
-			return res
-		},
-
-		/**
-		 * ACTIVITY YEAR
-		 */
-		formYearActivityTable(stats) {
-			let res = [];
-
-			this.users.forEach((user) => {
-
-				if(stats[user.id] !== undefined) {
-					res.push({
-						name: this.fullNameOfUser(user),
-						...this.normalizeStat(stats[user.id]),
-					});
-				}
-			});
-
-			this.yearActivityTable = res;
-			this.yearCalcMinMax()
-		},
-
-		yearCalcMinMax(){
-			let min = 9999999999
-			let max = 0
-			this.yearActivityTable.forEach(row => {
-				Object.keys(row).forEach(key => {
-					if(key === 'name') return
-					const value = parseFloat(row[key])
-					if(value < min) min = value
-					if(value > max) max = value
-				})
-			})
-			this.yearMin = min
-			this.yearMax = max
-		},
-		getCellColor(value) {
-			const perc = percentMinMax(value, this.yearMin, this.yearMax) * 100
-			let r, g, b = 0;
-			if(perc < 50) {
-				r = 235;
-				g = Math.round(5.1 * perc);
-				b = Math.round(113 - 1.13 * perc);
-			}
-			else {
-				g = 225;
-				r = Math.round(510 - 5.1 * perc);
-			}
-			const h = r * 0x10000 + g * 0x100 + b * 0x1;
-			return '#' + ('000000' + h.toString(16)).slice(-6);
-		},
-
-		/**
-		 * ACTIVITY YEAR
-		 */
-		fetchYearTableOfActivity(activity_id) {
-			let loader = this.$loading.show();
-
-			API.fetchAnalyticsMonthlyStats({
-				group_id: this.currentGroup,
-				date: {
-					year: this.currentYear,
-					month: this.monthInfo.month
-				},
-				activity_id: activity_id
-			}).then(({data}) => {
-				this.users = data.users
-				this.formYearActivityTable(data.statistics)
-				loader.hide()
-			}).catch(error => {
-				loader.hide()
-				alert(error)
-			});
 		},
 
 		/**
@@ -768,12 +354,6 @@ export default {
 			}
 
 			this.yearActivityTableFields = fieldsArray;
-
-
-		},
-
-		onTabClick() {
-			//
 		},
 
 		setMonth() {
@@ -803,7 +383,6 @@ export default {
 		fetchData() {
 			let loader = this.$loading.show();
 
-
 			API.fetchAnalytics({
 				month: this.$moment(this.monthInfo.currentMonth, 'MMMM').format('M'),
 				year: this.currentYear,
@@ -823,7 +402,6 @@ export default {
 
 				this.firstEnter = false
 
-
 				let active = urlParamss.get('active');
 				this.active = (active == null) ? '1' : active
 
@@ -832,24 +410,20 @@ export default {
 					this.noan = true;
 					this.archived_groups = data.archived_groups
 					this.ggroups = data.groups
-				} else {
+				}
+				else {
 					this.dataLoaded = true
 					this.data = data
 					this.noan = false;
 
 					this.activity_select = [];
 
-					let activityStatesObj = {};
-					this.data.activities.forEach((a, index) => {
+					this.data.activities.forEach(act => {
 						this.activity_select.push({
-							'name':a.name,
-							'id':a.id,
+							'name':act.name,
+							'id':act.id,
 						});
-
-						activityStatesObj[index] = 'month';
 					})
-
-					this.activityStates = activityStatesObj;
 
 					this.call_bases = data.call_bases;
 					this.archived_groups = data.archived_groups;
@@ -867,7 +441,6 @@ export default {
 		},
 
 		getBusinessDateCount(month, year, workdays) {
-
 			month = month - 1;
 			let next_month = (month + 1) == 12 ? 0 : month + 1;
 			let next_year = (month + 1) == 12 ? year + 1 : year;
@@ -888,40 +461,6 @@ export default {
 			return business_days;
 		},
 
-		add_activity() {
-			this.showActivityModal = true;
-		},
-
-		create_activity() {
-			let loader = this.$loading.show();
-			API.createAnalyticsActivity({
-				month: this.$moment(this.monthInfo.currentMonth, 'MMMM').format('M'),
-				year: this.currentYear,
-				activity: this.activity,
-				group_id: this.currentGroup
-			}).then(data => {
-				this.$toast.success('Активность для группы добавлена!')
-				this.fetchData();
-
-				this.activity = {
-					name: null,
-					daily_plan: null,
-					plan_unit: null,
-					unit: null,
-					editable: 1,
-					weekdays: 6,
-				};
-
-				this.data.activities = data;
-				this.showActivityModal = false
-				loader.hide()
-			}).catch(error => {
-				loader.hide()
-				this.$toast.error('Активность для группы не добавлена!')
-				alert(error)
-			});
-		},
-
 		add_analytics() {
 			let loader = this.$loading.show();
 			API.createAnalyticsGroup({
@@ -939,51 +478,8 @@ export default {
 			});
 		},
 
-		onEndSortcat(/* test */) {
-
-		},
-
-		save_order() {
-			let loader = this.$loading.show();
-			API.updateAnalyticsOrder({
-				activities: this.activity_select
-			}).then(() => {
-				this.$toast.success('Порядок сохранен!');
-				this.showOrder = false;
-				this.fetchData();
-				loader.hide()
-			}).catch(error => {
-				loader.hide()
-				this.$toast.error('Ошибка!');
-				alert(error)
-			});
-		},
-
-		delete_activity(act) {
-
-			if (!confirm('Вы уверены что хотите удалить активность \'' + act.name + '\' ?')) {
-				return '';
-			}
-
-			let loader = this.$loading.show();
-			API.deleteAnalyticsActivity({
-				id: act.id
-			}).then(() => {
-				this.$toast.success('Удален!');
-				this.fetchData();
-				loader.hide()
-			}).catch(error => {
-				loader.hide()
-				this.$toast.error('Ошибка!');
-				alert(error)
-			});
-		},
-
 		restore_analytics() {
-
-			if (!confirm('Вы уверены что хотите восстановить аналитику группы?')) {
-				return '';
-			}
+			if (!confirm('Вы уверены что хотите восстановить аналитику группы?')) return
 
 			let loader = this.$loading.show();
 			API.restoreAnalyticsGroup({
@@ -1001,13 +497,10 @@ export default {
 				this.$toast.error('Ошибка!');
 				alert(error)
 			});
-
 		},
 
 		archive() {
-			if (!confirm('Вы уверены что хотите архивировать аналитику группы ?')) {
-				return '';
-			}
+			if (!confirm('Вы уверены что хотите архивировать аналитику группы ?')) return
 
 			let loader = this.$loading.show();
 			API.archiveAnalyticsGroup({
@@ -1023,9 +516,15 @@ export default {
 				alert(error)
 			});
 		},
-
-		showSubTab(tab) {
-			this.active_sub_tab = tab
+		onUpdateActivity(activities){
+			this.data.activities = activities
+			this.fetchData()
+		},
+		onDeleteActivity(){
+			this.fetchData()
+		},
+		onOrderActivity(){
+			this.fetchData()
 		},
 	}
 }
@@ -1059,64 +558,59 @@ export default {
 		padding: 0 !important;
 	}
 }
-	.mw30 {
-		min-width: 30px;
-	}
-	.rating {
-		display: inline-block;
-		unicode-bidi: bidi-override;
-		color: #888888;
-		font-size: 25px;
-		height: 25px;
-		width: auto;
-		margin: 0;
-		position: relative;
-		padding: 0;
-	}
+.mw30 {
+	min-width: 30px;
+}
+.rating {
+	display: inline-block;
+	unicode-bidi: bidi-override;
+	color: #888888;
+	font-size: 25px;
+	height: 25px;
+	width: auto;
+	margin: 0;
+	position: relative;
+	padding: 0;
+}
 
-	.rating-upper {
-		color: #c52b2f;
-		padding: 0;
-		position: absolute;
-		z-index: 1;
-		display: flex;
-		top: 0;
-		left: 0;
-		overflow: hidden;
-	}
+.rating-upper {
+	color: #c52b2f;
+	padding: 0;
+	position: absolute;
+	z-index: 1;
+	display: flex;
+	top: 0;
+	left: 0;
+	overflow: hidden;
+}
 
-	.rating-lower {
-		padding: 0;
-		display: flex;
-		z-index: 0;
-	}
-	.ap-text {
-		margin: 0;
-		display: flex;
-		font-size: 12px;
-		align-items: center;
-	}
-	.ap-text span {
-		font-size: 16px;
-		font-weight: 700;
-		margin-left: 5px;
-	}
-	.fz12 {
-		font-size: 12px;
-		margin-bottom: 0;
-		line-height: 20px;
-		color: #000 !important;
-	}
-	.wrap {
-		background: #f3f7f9;
-		margin-bottom: 15px;
-		padding-top: 15px;
-		border: 1px solid #dde8ee;
-		border-radius: 5px;
-	}
-	.kakieto-knopki{
-		position: absolute;
-		top: 0;
-		right: 0;
-	}
+.rating-lower {
+	padding: 0;
+	display: flex;
+	z-index: 0;
+}
+.ap-text {
+	margin: 0;
+	display: flex;
+	font-size: 12px;
+	align-items: center;
+}
+.ap-text span {
+	font-size: 16px;
+	font-weight: 700;
+	margin-left: 5px;
+}
+.fz12 {
+	font-size: 12px;
+	margin-bottom: 0;
+	line-height: 20px;
+	color: #000 !important;
+}
+.wrap {
+	background: #f3f7f9;
+	margin-bottom: 15px;
+	padding-top: 15px;
+	border: 1px solid #dde8ee;
+	border-radius: 5px;
+}
 </style>
