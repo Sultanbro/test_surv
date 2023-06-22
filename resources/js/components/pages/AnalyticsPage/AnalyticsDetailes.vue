@@ -103,11 +103,6 @@
 
 					<!-- Year tab of activity in detailed -->
 					<div v-else>
-						<h4 class="mb-2">
-							{{ activity.name }}
-						</h4>
-
-						<!-- Year table -->
 						<div class="table-container table-responsive">
 							<table class="table table-bordered">
 								<thead>
