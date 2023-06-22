@@ -15,7 +15,7 @@
 						class="ChatIcon-parent"
 						fade
 						small
-						@click.stop="onClickPopup"
+						@click="onClickPopup"
 					>
 						<i
 							class="fa fa-bars"
@@ -78,6 +78,7 @@
 							:group_id="currentGroup"
 							:work_days="monthInfo.workDays"
 							:editable="activity.editable == 1 ? true : false"
+							class="AnalyticsDetailes-monthTable"
 						/>
 
 						<TableActivityCollection
@@ -87,6 +88,7 @@
 							:activity="activity"
 							:is_admin="true"
 							:price="activity.price"
+							class="AnalyticsDetailes-monthTable"
 						/>
 
 						<TableQualityWeekly
@@ -95,6 +97,7 @@
 							:month-info="monthInfo"
 							:items="activity.records"
 							:editable="activity.editable == 1 ? true : false"
+							class="AnalyticsDetailes-monthTable"
 						/>
 					</div>
 
@@ -543,6 +546,9 @@ export default {
 .AnalyticsDetailes{
 	&-controls{
 		position: relative;
+	}
+	&-monthTable{
+		margin-top: -38px;
 	}
 }
 
