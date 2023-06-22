@@ -9,7 +9,7 @@
 			'JobtronButton_fade': fade,
 			'JobtronButton_secondary': secondary,
 		}"
-		@click="$emit('click')"
+		@click="$emit('click', $event)"
 	>
 		<slot />
 	</button>

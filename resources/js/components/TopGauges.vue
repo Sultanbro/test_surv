@@ -1,6 +1,6 @@
 <template>
 	<div
-		class="d-flex justify-content-start mt-3"
+		class="TopGauges d-flex justify-content-start mt-3"
 		style="flex-wrap:wrap"
 		:class="{'top': page == 'top'}"
 		:key="skey"
@@ -9,10 +9,11 @@
 			<div
 				:key="group_index"
 				:class="wrapper_class"
+				class="TopGauges-group"
 			>
 				<div
 					v-if="editable"
-					class="text-center font-bold mb-3 mt-2 d-flex justify-content-center"
+					class="TopGauges-title text-center font-bold mb-3 mt-2 d-flex justify-content-center"
 				>
 					<a
 						:href="'/timetracking/an?group='+ group.id + '&active=1&load=1'"
@@ -37,13 +38,13 @@
 				</div>
 				<div
 					v-if="group.gauges.length"
-					class="d-flex justify-content-center"
+					class="TopGauges-gauges d-flex justify-content-center"
 					:style="page == 'top' ? 'flex-wrap:wrap; width: 240px;' : ''"
 				>
 					<div
 						v-for="(gauge, gauge_index) in group.gauges"
 						:key="gauge.id"
-						class="text-center gauge"
+						class="TopGauges-gauge text-center gauge"
 						:class="{
 							'scale': group.gauges.length > 1,
 							'scale-tl': gauge_index == 0,

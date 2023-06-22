@@ -1,67 +1,72 @@
 <template>
-	<div class="mb-3">
-		<h4 class="d-flex align-items-center justify-content-between">
-			<div class="mr-2">
-				Декомпозиция на месяц
-			</div>
-		</h4>
-
+	<div class="TableDecomposition mb-3">
 		<div class="table-container">
-			<table class="table table-bordered table-responsive strt">
-				<thead>
-					<tr>
-						<th class="b-table-sticky-column text-left">
-							<div class="wd" />
+			<table class="TableDecomposition-table table table-bordered table-responsive">
+				<thead class="TableDecomposition-thead">
+					<tr class="TableDecomposition-tr">
+						<th class="TableDecomposition-th b-table-sticky-column text-left">
+							<div class="wd TableDecomposition-header">
+								Декомпозиция на месяц
+							</div>
 						</th>
 						<th
-							class="text-center px-1 border-r-2"
+							class="TableDecomposition-th text-center px-1 border-r-2"
 							colspan="2"
 						>
 							<b>Итого</b>
 						</th>
 						<th
-							class="text-center px-1 border-r-2"
+							v-for="day in month.daysInMonth"
+							:key="day"
+							class="TableDecomposition-th text-center px-1 border-r-2"
 							:class="{
 								'weekend' : is_weekday[day],
 							}"
 							colspan="2"
-							v-for="day in month.daysInMonth"
-							:key="day"
 						>
 							<div>{{ day }}</div>
 						</th>
 					</tr>
-					<tr>
-						<th class="b-table-sticky-column text-left" />
-						<th>план</th>
-						<th>факт</th>
+					<tr class="TableDecomposition-tr TableDecomposition-subhead">
+						<th class="TableDecomposition-th b-table-sticky-column text-left" />
+						<th class="TableDecomposition-th">
+							план
+						</th>
+						<th class="TableDecomposition-th">
+							факт
+						</th>
 						<template v-for="day in month.daysInMonth">
-							<th :key="day">
+							<th
+								:key="day"
+								class="TableDecomposition-th"
+							>
 								план
 							</th>
 							<th
 								:key="day + 'a'"
-								class="border-r-2"
+								class="TableDecomposition-th border-r-2"
 							>
 								факт
 							</th>
 						</template>
 					</tr>
 				</thead>
-				<tbody>
+				<tbody class="TableDecomposition-tbody">
 					<tr
 						v-for="(item, index) in items"
 						:key="index"
+						class="TableDecomposition-tr"
 					>
 						<td
-							class="b-table-sticky-column text-left px-2 t-name"
+							class="TableDecomposition-td b-table-sticky-column text-left px-2 t-name"
 							:title="item.id"
 						>
 							<div class="wd d-flex align-items-center">
 								<input
-									type="text"
 									v-model="item.name"
-									class=" w-250 text-left"
+									type="text"
+									class="TableDecomposition-inputName w-250 text-left"
+									placeholder="напишите название активности"
 									@change="updateSettings($event, item, index, 'name')"
 								>
 								<i
@@ -76,23 +81,25 @@
 								/>
 							</div>
 						</td>
-						<td>{{ Number(item.total_plan).toFixed(0) }}</td>
-						<td class="border-r-2">
+						<td class="TableDecomposition-td">
+							{{ Number(item.total_plan).toFixed(0) }}
+						</td>
+						<td class="TableDecomposition-td border-r-2">
 							{{ Number(item.total_fact).toFixed(0) }}
 						</td>
 						<template v-for="day in month.daysInMonth">
 							<td
 								v-if="item.editable"
 								:key="day"
-								class="px-0 day-minute text-center"
+								class="TableDecomposition-td px-0 day-minute text-center"
 								:class="{
 									'weekend' : is_weekday[day],
 								}"
 							>
 								<div>
 									<input
-										type="number"
 										v-model="item[day].plan"
+										type="number"
 										@change="updateSettings($event, item, index, day)"
 									>
 								</div>
@@ -101,7 +108,7 @@
 								v-else
 								:key="day + 'a'"
 								@click="editMode(item)"
-								class="px-0 day-minute text-center"
+								class="TableDecomposition-td px-0 day-minute text-center"
 								:class="{
 									'weekend' : is_weekday[day],
 								}"
@@ -111,7 +118,7 @@
 							<td
 								v-if="item.editable"
 								:key="day + 'b'"
-								class="px-0 day-minute text-center border-r-2"
+								class="TableDecomposition-td px-0 day-minute text-center border-r-2"
 								:class="{
 									'table-danger': Number(item[day].fact) != 0 && Number(item[day].plan) > Number(item[day].fact),
 									'table-success': Number(item[day].fact) != 0 && Number(item[day].plan) <= Number(item[day].fact),
@@ -120,8 +127,8 @@
 							>
 								<div>
 									<input
-										type="number"
 										v-model="item[day].fact"
+										type="number"
 										@change="updateSettings($event, item, index, day)"
 									>
 								</div>
@@ -130,7 +137,7 @@
 								v-else
 								:key="day + 'c'"
 								@click="editMode(item)"
-								class="px-0 day-minute text-center border-r-2"
+								class="TableDecomposition-td px-0 day-minute text-center border-r-2"
 								:class="{
 									'table-danger': Number(item[day].fact) != 0 && Number(item[day].plan) > Number(item[day].fact),
 									'table-success': Number(item[day].fact) != 0 && Number(item[day].plan) <= Number(item[day].fact),
@@ -151,8 +158,6 @@
 			+ Добавить
 		</button>
 
-
-
 		<b-modal
 			ref="change-plan-modal"
 			hide-footer
@@ -162,8 +167,8 @@
 				<div class="col-6">
 					<label for="">С:</label>
 					<input
-						type="number"
 						v-model.number="planner.from"
+						type="number"
 						class="form-control form-control-sm mb-2"
 						min="1"
 						max="31"
@@ -172,8 +177,8 @@
 				<div class="col-6">
 					<label for="">По:</label>
 					<input
-						type="number"
 						v-model.number="planner.to"
+						type="number"
 						class="form-control form-control-sm mb-2"
 						min="1"
 						max="31"
@@ -182,8 +187,8 @@
 				<div class="col-6">
 					<label for="">План:</label>
 					<input
-						type="number"
 						v-model.number="planner.value"
+						type="number"
 						class="form-control form-control-sm mb-2"
 						placeholder="План"
 						min="1"
@@ -208,8 +213,14 @@
 export default {
 	name: 'TableDecomposition',
 	props: {
-		month: Object,
-		data: Object,
+		month: {
+			type: Object,
+			default: () => ({})
+		},
+		data: {
+			type: Object,
+			default: () => ({})
+		},
 	},
 	data() {
 		return {
@@ -239,16 +250,15 @@ export default {
 	},
 
 	methods: {
-
 		getWeekdays() {
-
 			for (let i = 1; i <= this.month.daysInMonth; i++) {
 				let day = i > 9 ? i : '0' + i;
 				let month = Number(this.month.month) > 9 ? this.month.month : '0' + this.month.month;
 				let date = new Date(this.month.currentYear + '-' + month  + '-' + day)
 				if(date.getDay() == 0 || date.getDay() == 6) {
 					this.is_weekday[i] = true
-				} else {
+				}
+				else {
 					this.is_weekday[i] = false
 				}
 			}
@@ -269,7 +279,7 @@ export default {
 
 		addRecord() {
 			let cells = {
-				name:'test',
+				name:'',
 				plan: 0,
 				editable: false,
 			};
@@ -312,15 +322,13 @@ export default {
 				'MMMM YYYY'
 			).format('YYYY-MM-DD');
 
-			this.axios.post(url, post_data)
-				.then((response) => {
-					if(post_data.id === undefined) {
-						self[post_data.index].id = response.data.id
-					}
-				})
-				.catch(error => {
-					alert(error)
-				});
+			this.axios.post(url, post_data).then((response) => {
+				if(post_data.id === undefined) {
+					self[post_data.index].id = response.data.id
+				}
+			}).catch(error => {
+				alert(error)
+			});
 			loader.hide();
 		},
 
@@ -330,7 +338,6 @@ export default {
 		},
 
 		changePlan() {
-
 			if (this.planner.value != null && this.planner.value != '') {
 
 				// Set plans from to
@@ -367,12 +374,8 @@ export default {
 				this.$toast.info('План проставлен')
 			}
 
-
-
-
 			// Hide modal
 			this.$refs['change-plan-modal'].hide();
-
 		},
 
 		deleteRecord(id, index) {
@@ -381,7 +384,6 @@ export default {
 			}
 
 			if(id != 0) {
-
 				let url = '/timetracking/analytics/decomposition/delete';
 
 				this.axios.delete(url, {
@@ -389,17 +391,14 @@ export default {
 					data: {
 						id: id
 					}
-				})
-					.then(() => {
-						this.$toast.info('Пункт удален')
-					})
-					.catch(error => {
-						alert(error)
-					});
+				}).then(() => {
+					this.$toast.info('Пункт удален')
+				}).catch(error => {
+					alert(error)
+				});
 			}
 
 			this.items.splice(index, 1);
-
 		},
 
 		calculateRecordsValues() {
@@ -412,9 +411,7 @@ export default {
 					totalPlan = 0,
 					totalFact = 0;
 
-
 				for (let i = 1; i <= this.month.daysInMonth; i++) {
-
 					cellValues[i] = item[i];
 
 					if(item[i] === undefined) {
@@ -431,7 +428,6 @@ export default {
 					if(item[i].fact !== undefined) {
 						totalFact += Number(item[i].fact)
 					}
-
 				}
 
 				this.itemsArray.push({
@@ -443,7 +439,6 @@ export default {
 					group_id: this.data.group_id,
 					...cellValues,
 				});
-
 			});
 		},
 
@@ -492,146 +487,122 @@ export default {
 </script>
 
 <style lang="scss">
-.bg-white {background:white}
-.my-table.m2 tr .badge {
-    opacity: 1;
+.TableDecomposition{
+	&-inputName{
+		&::placeholder{
+			font-style: italic;
+		}
+	}
+	// &-table{}
+	// &-thead{}
+	&-header{
+		font-size: 14px !important;
+		font-weight: 700 !important;
+	}
+	&-subhead{
+		.TableDecomposition-th{
+			background-color: #dde9ff !important;
+			border-color: #b5c1d7 !important;
+		}
+	}
+	&-th{
+		padding: 5px !important;
+		font-size: 12px !important;
+	}
+	&-td{
+		padding: 5px !important;
+	}
 }
 
-    .day-minute {
-        padding: 0 !important;
-        text-align: center;
-        vertical-align: middle;
+.day-minute {
+	padding: 0 !important;
+	text-align: center;
+	vertical-align: middle;
 
-        div {
-            font-size: 0.8rem;
-        }
-        &.table-success {
-            background-color: #01c601 !important;
-        }
+	div {
+		font-size: 0.8rem;
+	}
+	&.table-success {
+		background-color: #01c601 !important;
+	}
+	&.table-danger {
+		background-color: #fd1600 !important;
+	}
+}
 
-        &.table-danger {
-            background-color: #fd1600 !important;
-        }
-    }
-
-.table td, .table th, .table thead th{
-    vertical-align: middle;
-    min-width: 42px;
-    text-align: center;
+.table td,
+.table th,
+.table thead th{
+	vertical-align: middle;
+	min-width: 42px;
+	text-align: center;
 }
 .table.b-table.table-sm>thead>tr>[aria-sort]:not(.b-table-sort-icon-left),
 .table.b-table.table-sm>tfoot>tr>[aria-sort]:not(.b-table-sort-icon-left) {
-    background-image: none !important;
-    min-width: 32px;
+	background-image: none !important;
+	min-width: 32px;
 }
 .table .stat {
-    background: #d9edff;
+	background: #d9edff;
 }
 .table {
-    position: relative;
+	position: relative;
 }
 .b-table-sticky-column{
-    position: sticky;
-    left: 0;
-    z-index: 2;
+	position: sticky;
+	left: 0;
+	z-index: 2;
 }
 .wd {
-    font-size: 0.75rem;
-    width: max-content;
-    font-weight: 500;
+	font-size: 0.75rem;
+	width: max-content;
+	font-weight: 500;
 }
 .table .stat.plan{
-    background: #007bff;
-    color: #fff;
+	background: #007bff;
+	color: #fff;
 }
 
 .cell-input {
-    background: none;
-    border: none;
-    text-align: center;
-    -moz-appearance: textfield;
-    font-size: .8rem;
-    font-weight: normal;
-    padding: 0;
-    color: #000;
-    border-radius: 0;
+	background: none;
+	border: none;
+	text-align: center;
+	-moz-appearance: textfield;
+	font-size: .8rem;
+	font-weight: normal;
+	padding: 0;
+	color: #000;
+	border-radius: 0;
 
-    &:focus {
-        outline: none;
-    }
+	&:focus {
+		outline: none;
+	}
 
-    &::-webkit-outer-spin-button,
-    &::-webkit-inner-spin-button {
-        -webkit-appearance: none;
-        margin: 0;
-    }
+	&::-webkit-outer-spin-button,
+	&::-webkit-inner-spin-button {
+		-webkit-appearance: none;
+		margin: 0;
+	}
 }
 .w-250 {
-    min-width: 250px;
+	min-width: 250px;
 }
 .wd {
-    .fa {
-        opacity: 0;
-    }
-    &:hover {
-        .fa {
-            opacity: 1;
-        }
-    }
-}
-
-.strt tr:nth-child(2) th {
-    background-color: #DDE9FF !important;
-    text-align: center !important;
-    border-top: 1px solid #b5c1d7 !important;
-    border-left: 1px solid #b5c1d7 !important;
-    border-bottom: 1px solid #b5c1d7 !important;
-    border-right: 2px solid #b5c1d7 !important;
-}
-
-.strt{
-    input{
-        height: 30px;
-        text-align: center;
-        color: #333;
-        width: 100px;
-    }
-
-	tbody {
-		th, td {
-			padding: 0 !important;
-
-			&:first-child {
-				padding: 0 10px !important;
-			}
-
-			& > div {
-				height: 30px;
-				width: 100px;
-				display: inline-flex;
-				align-items: center;
-				justify-content: center;
-			}
-
-			&:first-child {
-				& > div {
-					width: auto;
-				}
-
-				input {
-					text-align: left;
-					width: 100%;
-				}
-			}
+	.fa {
+		opacity: 0;
+	}
+	&:hover {
+		.fa {
+			opacity: 1;
 		}
 	}
 }
 
 .day-minute div {
-    font-size: 0.8rem;
-    font-weight: 500;
+	font-size: 0.8rem;
+	font-weight: 500;
 }
 .border-r-2 {
-    border-right: 2px solid #b5c1d7 !important;
+	border-right: 2px solid #b5c1d7 !important;
 }
 </style>

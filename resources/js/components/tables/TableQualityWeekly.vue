@@ -246,21 +246,21 @@ export default {
 <style lang="scss">
 .table {
 
-    th.averages,
-    td.averages {
-        background-color:#28a745 !important;
-        color: #fff;
-    }
-    .t-total {
-        background-color: #28a745 !important;
-        color: #fff;
-    }
+	th.averages,
+	td.averages {
+		background-color:#28a745 !important;
+		color: #fff;
+	}
+	.t-total {
+		background-color: #28a745 !important;
+		color: #fff;
+	}
 
-   .bg-white {
-       background: white;
-   }
+	.bg-white {
+		background: white;
+	}
 }
 .quality .t-name {
-    min-width: 200px;
+	min-width: 200px;
 }
 </style>
