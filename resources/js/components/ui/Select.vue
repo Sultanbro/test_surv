@@ -7,7 +7,7 @@
 	>
 		<select
 			:value="value"
-			@change="$emit('input', $event)"
+			@change="$emit('input', $event.target.value)"
 			class="JobtronSelect-select"
 		>
 			<option

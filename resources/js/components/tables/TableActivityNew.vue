@@ -4,6 +4,7 @@
 			v-if="show_headers"
 			class="d-flex align-items-center justify-content-end mb-2"
 		>
+			<!-- Filtees -->
 			<div
 				class="TableActivityNew-filters ml-3"
 				v-click-outside="onClickFiltersOutside"
@@ -44,6 +45,8 @@
 					</JobtronButton>
 				</PopupMenu>
 			</div>
+
+			<!-- Controls -->
 			<div
 				class="TableActivityNew-contlors ml-3"
 				v-click-outside="onClickControlsOutside"
@@ -77,7 +80,7 @@
 					<div
 						v-if="isImportable"
 						class="PopupMenu-item wsnw"
-						@click="showExcelImport = !showExcelImport"
+						@click="onClickImport"
 					>
 						<i class="fa fa-upload" />
 						Импорт
@@ -903,6 +906,7 @@ export default {
 		},
 
 		exportData() {
+			this.isControls = false
 			var link = '/timetracking/analytics/activity/exportxx';
 			link += '?month=' + this.$moment(
 				`${this.month.currentMonth}`,
@@ -1081,6 +1085,7 @@ export default {
 		},
 
 		editActivity() {
+			this.isControls = false
 			this.showEditModal = true;
 		},
 
@@ -1132,6 +1137,11 @@ export default {
 			this.items.unshift(item);
 		},
 
+		onClickImport(){
+			this.isControls = false
+			this.showExcelImport = !this.showExcelImport
+		},
+
 		onClickFilters(){
 			this.isFilters = true
 			this.isControls = false
@@ -1147,7 +1157,9 @@ export default {
 			this.isControls = false
 		},
 		onClickFilter(){
-			switch(this.userShift){
+			this.isFilters = false
+			this.fetchData()
+			switch(+this.userShift){
 			case 0:
 				this.filter.fulltime = 0
 				this.filter.parttime = 0
@@ -1161,7 +1173,6 @@ export default {
 				this.filter.parttime = 1
 				break
 			}
-			this.fetchData()
 			this.filterTable()
 		}
 	},
