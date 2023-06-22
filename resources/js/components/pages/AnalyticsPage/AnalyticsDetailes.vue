@@ -289,7 +289,7 @@ import {
 	createAnalyticsActivity,
 	deleteAnalyticsActivity,
 	updateAnalyticsOrder,
-} from '@/stores/api.mock'
+} from '@/stores/api'
 
 const API = {
 	fetchAnalyticsMonthlyStats,

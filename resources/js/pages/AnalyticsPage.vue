@@ -240,7 +240,7 @@ import {
 	createAnalyticsGroup,
 	archiveAnalyticsGroup,
 	restoreAnalyticsGroup,
-} from '@/stores/api.mock'
+} from '@/stores/api'
 
 const API = {
 	fetchAnalytics,
