@@ -486,8 +486,8 @@ export default {
 			Object.keys(obj).forEach((key) => {
 				res[key] = obj[key] == 0
 					? 0
-					: parseInt(obj[key]) === parseFloat(obj[key])
-						? parseInt(obj[key])
+					: parseInt(obj[key].total) === parseFloat(obj[key].total)
+						? parseInt(obj[key].total)
 						: Number(obj[key].total).toFixed(2);
 			});
 
