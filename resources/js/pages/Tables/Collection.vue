@@ -28,7 +28,7 @@
 					<th
 						rowspan="2"
 						class="indicators-table-fixed-name"
-						:class="{'sticky-left': isDesktop}"
+						:class="[ isDesktop ? 'sticky-left' : 'relative' ]"
 					>
 						<div class="text-left pl-4">
 							ФИО
@@ -43,7 +43,7 @@
 					<th
 						rowspan="2"
 						class="indicators-table-fixed-hmonth"
-						:class="{'sticky-left': isDesktop}"
+						:class="[ isDesktop ? 'sticky-left' : 'relative' ]"
 					>
 						<div
 							class="text-left pl-4"
@@ -65,7 +65,7 @@
 						v-if="is_admin"
 						rowspan="2"
 						class="indicators-table-fixed-hplan"
-						:class="{'sticky-left': isDesktop}"
+						:class="[ isDesktop ? 'sticky-left' : 'relative' ]"
 					>
 						<div class="text-left pl-4">
 							Сборы
@@ -108,7 +108,7 @@
 					<td
 						:title="item.id + ' ' + item.email"
 						class="indicators-table-fixed-name text-left"
-						:class="{'sticky-left': isDesktop}"
+						:class="[ isDesktop ? 'sticky-left' : 'relative' ]"
 					>
 						<div class="d-flex align-items-center max-content">
 							{{ item.lastname }} {{ item.name }}
@@ -131,14 +131,14 @@
 					</td>
 					<td
 						class="indicators-table-fixed-hmonth px-2"
-						:class="{'sticky-left': isDesktop}"
+						:class="[ isDesktop ? 'sticky-left' : 'relative' ]"
 					>
 						{{ item.plan }}
 					</td>
 					<td
 						v-if="is_admin"
 						class="indicators-table-fixed-hplan px-2"
-						:class="{'sticky-left': isDesktop}"
+						:class="[ isDesktop ? 'sticky-left' : 'relative' ]"
 					>
 						{{ item.count }}
 					</td>

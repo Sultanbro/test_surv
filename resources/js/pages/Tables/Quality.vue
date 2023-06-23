@@ -10,7 +10,7 @@
 				<tr>
 					<th
 						class="indicators-table-fixed-name text-left pl-4"
-						:class="{'sticky-left': isDesktop}"
+						:class="[ isDesktop ? 'sticky-left' : 'relative' ]"
 					>
 						<div class="max-content">
 							Сотрудник
@@ -19,7 +19,10 @@
 					<template v-for="(field, key) in fields">
 						<th
 							:key="key"
-							:class="field.class"
+							:class="[
+								field.class,
+								field.key === 'total' && isDesktop ? 'sticky-left' : ''
+							]"
 						>
 							<div>{{ field.name }}</div>
 						</th>
@@ -31,7 +34,7 @@
 				>
 					<td
 						class="indicators-table-fixed-name text-left"
-						:class="{'sticky-left': isDesktop}"
+						:class="[ isDesktop ? 'sticky-left' : 'relative' ]"
 					>
 						<div class="d-flex max-content">
 							{{ item.name }}
@@ -143,7 +146,7 @@ export default {
 				key: 'total',
 				name: 'Итог',
 				order: order++,
-				class: 'indicators-table-fixed-hmonth sticky-left text-center t-total'
+				class: 'indicators-table-fixed-hmonth text-center t-total'
 			})
 
 			for(let i = 1; i <= this.monthInfo.daysInMonth; i++) {
