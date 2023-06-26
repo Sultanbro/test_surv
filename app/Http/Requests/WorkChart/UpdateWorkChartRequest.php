@@ -33,6 +33,7 @@ class UpdateWorkChartRequest extends BaseWorkChartRequest
             'usual_schedule' => $this->getUsualScheduleRule(),
             'chart_workdays' => $this->getChartWorkdaysRule(),
             'chart_dayoffs' => $this->getChartDayoffsRule(),
+            'rest_time' => ['nullable', 'integer', 'max:10000']
         ];
     }
 
@@ -49,6 +50,7 @@ class UpdateWorkChartRequest extends BaseWorkChartRequest
         $usualSchedule = Arr::get($validated, 'usual_schedule');
         $chartWorkdays  = (int) Arr::get($validated, 'chart_workdays');
         $chartDayoffs  = (int) Arr::get($validated, 'chart_dayoffs');
+        $rest_time  = (int) Arr::get($validated, 'rest_time');
 
         return new UpdateWorkChartDTO(
             id: $id,
@@ -59,6 +61,7 @@ class UpdateWorkChartRequest extends BaseWorkChartRequest
             chartWorkdays: $chartWorkType === WorkChartModel::WORK_CHART_TYPE_USUAL ? substr_count($usualSchedule, 1): $chartWorkdays,
             chartDayoffs: $chartWorkType === WorkChartModel::WORK_CHART_TYPE_USUAL ? substr_count($usualSchedule, 0) : $chartDayoffs,
             usualSchedule: bindec((string)$usualSchedule),
+            restTime: $rest_time
         );
     }
 }

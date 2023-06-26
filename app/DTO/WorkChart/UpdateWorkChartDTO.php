@@ -21,6 +21,7 @@ final class UpdateWorkChartDTO
         public int $chartWorkdays,
         public int $chartDayoffs,
         public int $usualSchedule,
+        public int $restTime,
 
     )
     {}
@@ -36,7 +37,8 @@ final class UpdateWorkChartDTO
             'end_time' => $this->endTime,
             'work_charts_type' => $this->chartWorkType,
             'name' => $this->chartWorkdays .'-'. $this->chartDayoffs,
-            'workdays' => $this->chartWorkType == WorkChartModel::WORK_CHART_TYPE_USUAL ? $this->usualSchedule : null
+            'workdays' => $this->chartWorkType == WorkChartModel::WORK_CHART_TYPE_USUAL ? $this->usualSchedule : null,
+            'rest_time' => $this->restTime
         ];
     }
 }
