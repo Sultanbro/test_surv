@@ -22,6 +22,7 @@ class WorkChartResource extends JsonResource
             'start_time' => $this->start_time,
             'end_time' => $this->end_time,
             'text_name' => $this->text_name,
+            'rest_time' => $this->rest_time,
             'work_charts_type' => $this->workChartType,
             'created_at' => $this->created_at,
         ];
