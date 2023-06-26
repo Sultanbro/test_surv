@@ -23,7 +23,6 @@
 						<b-th>Название</b-th>
 						<b-th>График</b-th>
 						<b-th>Рабочие часы</b-th>
-						<b-th>Время отдыха</b-th>
 						<b-th>Дата создания</b-th>
 						<b-th class="w-100px" />
 					</b-tr>
@@ -37,7 +36,6 @@
 						<b-td>{{ shift.text_name }}</b-td>
 						<b-td>{{ getShiftDays(shift) }}</b-td>
 						<b-td>с {{ shift.start_time }} по {{ shift.end_time }}</b-td>
-						<b-td>{{ shift.rest_time || 0 }} минут</b-td>
 						<b-td>{{ $moment(shift.created_at).format('YYYY-MM-DD') }}</b-td>
 						<b-td class="td-actions">
 							<div class="d-flex mx-2">
@@ -123,29 +121,6 @@
 							type="time"
 							id="workEndTime"
 							class="form-control mx-2 work-end-time"
-						>
-					</div>
-				</div>
-
-				<!-- Отдых -->
-				<div class="form-group row">
-					<label
-						for="chartRest"
-						class="col-sm-4 col-form-label"
-					>
-						Время отдыха
-						<img
-							src="/images/dist/profit-info.svg"
-							class="img-info"
-							v-b-popover.hover.left="'Укажите сколько времени в минутах положено отдыха'"
-						>
-					</label>
-					<div class="col-sm-8 form-inline">
-						<input
-							id="chartRest"
-							v-model="form.restTime"
-							type="number"
-							class="form-control"
 						>
 					</div>
 				</div>
@@ -279,7 +254,6 @@ export default {
 				workStartTime: null,
 				workEndTime: null,
 				type: 1,
-				restTime: 0,
 				workdays: 0,
 				dayoffs: 0,
 				usualSchedule: 0
@@ -342,7 +316,6 @@ export default {
 			this.form.name = shift.text_name;
 			this.form.workStartTime = shift.start_time;
 			this.form.workEndTime = shift.end_time;
-			this.form.restTime = shift.rest_time || 0;
 			this.form.type = type
 			this.form.workdays = splitted[0]
 			this.form.dayoffs = splitted[1]
@@ -365,7 +338,6 @@ export default {
 			this.form.workStartTime = null;
 			this.form.workEndTime = null;
 			this.form.type = 1;
-			this.form.restTime = 0;
 			this.form.workdays = 0;
 			this.form.dayoffs = 0;
 			this.form.usualSchedule = 0
@@ -393,7 +365,6 @@ export default {
 				name: this.form.name,
 				start_time: this.form.workStartTime,
 				end_time: this.form.workEndTime,
-				rest_time: this.form.restTime,
 				work_charts_type: this.form.type,
 				chart_workdays: this.form.workdays,
 				chart_dayoffs: this.form.dayoffs,

@@ -28,8 +28,7 @@ class WorkChartModel extends Model
         'start_time',
         'end_time',
         'work_charts_type',
-        'workdays',
-        'rest_time'
+        'workdays'
     ];
 
     const WORK_CHART_TYPE_USUAL = 1;
@@ -198,7 +197,6 @@ class WorkChartModel extends Model
             ->where('text_name', $data['text_name'])
             ->where('work_charts_type', $data['work_charts_type'])
             ->where('workdays', $data['workdays'])
-            ->where('rest_time', $data['rest_time'])
             ->exists();
     }
 
