@@ -210,7 +210,7 @@
 						<tbody>
 							<template v-for="(record, rindex) in proceeds.records">
 								<tr
-									v-if="proceedsSwitch[record.id] && proceedsSwitch[record.id].value"
+									v-if="proceedsSwitch[record.group_id] && proceedsSwitch[record.group_id].value"
 									:key="rindex"
 								>
 									<td
