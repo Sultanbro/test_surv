@@ -137,7 +137,7 @@
 						<img
 							src="/images/dist/profit-info.svg"
 							class="img-info"
-							v-b-popover.hover.left="'Укажите сколько времени в минутах положено отдыха'"
+							v-b-popover.hover.left="'Укажите сколько времени в минутах положено отдыха (обед и т.п.). Это время будут не оплачиваемым'"
 						>
 					</label>
 					<div class="col-sm-8 form-inline">
