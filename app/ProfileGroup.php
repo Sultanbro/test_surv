@@ -2,6 +2,7 @@
 
 namespace App;
 
+use App\DTO\Top\SwitchTopDTO;
 use App\Helpers\FileHelper;
 use App\Models\Analytics\Activity;
 use App\Models\KnowBaseModel;
@@ -69,6 +70,9 @@ class ProfileGroup extends Model
         'archived_date', // дата последнего архивирование
         'work_chart_id', // График работы группы,
         'archive_utility',
+        'switch_utility',
+        'switch_proceeds',
+        'switch_rentability'
     ];
 
     CONST IS_ACTIVE = 1;
@@ -83,6 +87,13 @@ class ProfileGroup extends Model
     CONST NOWHERE = 0;
 
     const IT_DEPARTMENT_ID = 26;
+
+    const SWITCH_UTILITY = 'switch_utility';
+    const SWITCH_PROCEEDS = 'switch_proceeds';
+    const SWITCH_RENTABILITY = 'switch_rentability';
+
+    const SWITCH_ON = 1;
+    const SWITCH_OFF = 0;
 
     /**
      * @param int $id
@@ -177,15 +188,30 @@ class ProfileGroup extends Model
      * @param $month
      * @return array
      */
-    public function scopeProfileGroupsWithArchived($query, $year, $month): array
+    public function scopeProfileGroupsWithArchived($query, $year, $month, $withArchive = true,  $archivedThisMonth = false, string $switchColumn = ''): array
     {
         $date = Carbon::create($year, $month)->lastOfMonth()->format('Y-m-d');
 
-        return $this->where('active', self::IS_ACTIVE)
+        $profileGroups = $this->where('active', self::IS_ACTIVE)
             ->whereDate('created_at', '<=', $date)
-            ->where(fn($q) => $q->whereNull('archived_date')->orWhere(fn($q) => $q->whereYear('archived_date', '>=', $year)->whereMonth('archived_date', '>=', $month)))
-            ->whereIn('has_analytics', [self::HAS_ANALYTICS, self::ARCHIVED])
-            ->where(fn($group) => $group->whereNull('archived_date')->orWhere(
+            ->where(fn($q) => $q->whereNull('archived_date')->orWhere(fn($q) => $q->whereYear('archived_date', '>=', $year)->whereMonth('archived_date', '>=', $month)));
+        if ($switchColumn !== ''){
+            $profileGroups->where($switchColumn, 1); // написано так, чтобы не сломать работающий код
+        }
+
+        if($archivedThisMonth){
+            $firstDayMonth = Carbon::create($year, $month)->firstOfMonth()->format('Y-m-d');
+            $profileGroups->where('has_analytics', self::HAS_ANALYTICS)
+                ->orWhere('archived_date', '>=', $firstDayMonth);
+        }
+        else if ($withArchive){
+            $profileGroups->whereIn('has_analytics', [self::HAS_ANALYTICS, self::ARCHIVED]);
+        }
+        else{
+            $profileGroups->where('has_analytics', self::HAS_ANALYTICS);
+        }
+
+        $profileGroups->where(fn($group) => $group->whereNull('archived_date')->orWhere(
             fn($q) => $q->whereYear('archived_date', '>=', $year)->whereMonth('archived_date', '>=', $month))
         )->get()->reject(function ($group) {
             if ($group->has_analytics == self::HAS_ANALYTICS && $group->archived_date != null)
@@ -196,7 +222,9 @@ class ProfileGroup extends Model
             {
                 return $group;
             }
-        })->pluck('id')->toArray();
+        });
+
+        return $profileGroups->pluck('id')->toArray();
     }
 
     /**
@@ -435,5 +463,23 @@ class ProfileGroup extends Model
                     ->pluck('id')
                     ->toArray();
             });
+    }
+
+    /**
+     * Получаем список активных группы с аналитикой в зависимости от switch_******
+     * @return self
+     */
+    public static function getActiveProfileGroupsAnyAnalytics()
+    {
+        return self::where('active', 1)
+            ->where('has_analytics',self::HAS_ANALYTICS)
+            ->get();
+    }
+
+    public static function updateSwitch(SwitchTopDTO $dto){
+        return self::findOrFail($dto->id)
+            ->update([
+                $dto->switchColumn => $dto->switchValue
+            ]);
     }
 }

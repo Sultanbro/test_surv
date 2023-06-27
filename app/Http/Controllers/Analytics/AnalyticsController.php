@@ -86,12 +86,25 @@ class AnalyticsController extends Controller
             }
         }
 
+        $groups = ProfileGroup::whereIn('has_analytics', [0,1])->where('active', 1)->get();
+
+        if(auth()->user()->is_admin != 1) {
+            $_groups = [];
+            foreach ($groups as $key => $group) {
+                $editors_id = json_decode($group->editors_id);
+                if ($group->editors_id == null) $editors_id = [];
+                if(!in_array(auth()->id(), $editors_id))  continue;
+                $_groups[] = $group;
+            }
+            $groups = $_groups;
+        }
+
         $ac = AnalyticColumn::where('group_id', $group_id)->first();
         $ar = AnalyticRow::where('group_id', $group_id)->first();
         if(!$ac || !$ar) return [
             'error' => 'No analytics',
             'archived_groups' => ProfileGroup::where('has_analytics', -1)->where('active', 1)->get(),
-            'groups' => ProfileGroup::whereIn('has_analytics', [0,1])->where('active', 1)->get(),
+            'groups' => $groups,
         ];
 
         // utility and rentability
@@ -111,19 +124,6 @@ class AnalyticsController extends Controller
         $fired_percent = $analyticService->getFiredUsersPerMonthPercent($group, $date->addMonth());
         $fired_number_prev = $analyticService->getFiredUsersPerMonth($group, $date->subMonth());
         $fired_number = $analyticService->getFiredUsersPerMonth($group, $date->addMonth());
-
-        $groups = ProfileGroup::whereIn('has_analytics', [0,1])->where('active', 1)->get();
-
-        if(auth()->user()->is_admin != 1) {
-            $_groups = [];
-            foreach ($groups as $key => $group) {
-                $editors_id = json_decode($group->editors_id); 
-                if ($group->editors_id == null) $editors_id = [];
-                if(!in_array(auth()->id(), $editors_id))  continue;
-                $_groups[] = $group;
-            }
-            $groups = $_groups;
-        }
 
         return [
             'decomposition' => DecompositionValue::table($group_id, $date->format('Y-m-d')),
