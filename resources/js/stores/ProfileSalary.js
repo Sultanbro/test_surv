@@ -145,7 +145,7 @@ export const useProfileSalaryStore = defineStore('profileSalary', {
 					accrual: await fetchProfileAwards('accrual'),
 				}
 				awards = data
-				this.readed.awards = data.nominations.data.read
+				this.readed.awards = data.nominations.read && data.certificates.read && data.accrual.read
 			}
 			catch (error) {
 				console.error('fitchSalaryCrutch', error)
