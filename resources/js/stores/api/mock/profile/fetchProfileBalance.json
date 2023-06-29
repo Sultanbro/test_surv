@@ -1,0 +1,612 @@
+{
+	"data": {
+		"salaries": {
+			"1": {
+				"fines": [],
+				"bonuses": [],
+				"awards": [],
+				"test_bonus": [],
+				"avanses": [],
+				"value": "",
+				"training": false,
+				"calculated": "0 * 2136.75"
+			},
+			"2": {
+				"fines": [],
+				"bonuses": [],
+				"awards": [],
+				"test_bonus": [],
+				"avanses": [],
+				"value": "",
+				"training": false,
+				"calculated": "0 * 2136.75"
+			},
+			"3": {
+				"fines": [],
+				"bonuses": [],
+				"awards": [],
+				"test_bonus": [],
+				"avanses": [],
+				"value": "",
+				"training": false,
+				"calculated": "0 * 2136.75"
+			},
+			"4": {
+				"fines": [],
+				"bonuses": [],
+				"awards": [],
+				"test_bonus": [],
+				"avanses": [],
+				"value": "",
+				"training": false,
+				"calculated": "0 * 2136.75"
+			},
+			"5": {
+				"fines": [],
+				"bonuses": [],
+				"awards": [],
+				"test_bonus": [],
+				"avanses": [],
+				"value": "17806",
+				"training": false,
+				"calculated": "8.33 * 2136.75"
+			},
+			"6": {
+				"fines": [],
+				"bonuses": [],
+				"awards": [],
+				"test_bonus": [],
+				"avanses": [],
+				"value": "",
+				"training": false,
+				"calculated": "0 * 2136.75"
+			},
+			"7": {
+				"fines": [],
+				"bonuses": [],
+				"awards": [],
+				"test_bonus": [],
+				"avanses": [],
+				"value": "",
+				"training": false,
+				"calculated": "0 * 2136.75"
+			},
+			"8": {
+				"fines": [],
+				"bonuses": [],
+				"awards": [],
+				"test_bonus": [],
+				"avanses": [],
+				"value": "7407",
+				"training": false,
+				"calculated": "3.47 * 2136.75"
+			},
+			"9": {
+				"fines": [],
+				"bonuses": [],
+				"awards": [],
+				"test_bonus": [],
+				"avanses": [],
+				"value": "",
+				"training": false,
+				"calculated": "0 * 2136.75"
+			},
+			"10": {
+				"fines": [],
+				"bonuses": [],
+				"awards": [],
+				"test_bonus": [],
+				"avanses": [],
+				"value": "6660",
+				"training": false,
+				"calculated": "3.12 * 2136.75"
+			},
+			"11": {
+				"fines": [],
+				"bonuses": [],
+				"awards": [],
+				"test_bonus": [],
+				"avanses": [],
+				"value": "",
+				"training": false,
+				"calculated": "0 * 2136.75"
+			},
+			"12": {
+				"fines": [],
+				"bonuses": [],
+				"awards": [],
+				"test_bonus": [],
+				"avanses": [],
+				"value": "",
+				"training": false,
+				"calculated": "0 * 2136.75"
+			},
+			"13": {
+				"fines": [],
+				"bonuses": [],
+				"awards": [],
+				"test_bonus": [],
+				"avanses": [],
+				"value": "",
+				"training": false,
+				"calculated": "0 * 2136.75"
+			},
+			"14": {
+				"fines": [],
+				"bonuses": [],
+				"awards": [],
+				"test_bonus": [],
+				"avanses": [],
+				"value": "",
+				"training": false,
+				"calculated": "0 * 2136.75"
+			},
+			"15": {
+				"fines": [],
+				"bonuses": [],
+				"awards": [],
+				"test_bonus": [],
+				"avanses": [],
+				"value": "",
+				"training": false,
+				"calculated": "0 * 2136.75"
+			},
+			"16": {
+				"fines": [],
+				"bonuses": [],
+				"awards": [],
+				"test_bonus": [],
+				"avanses": [],
+				"value": "",
+				"training": false,
+				"calculated": "0 * 2136.75"
+			},
+			"17": {
+				"fines": [],
+				"bonuses": [],
+				"awards": [],
+				"test_bonus": [],
+				"avanses": [],
+				"value": "",
+				"training": false,
+				"calculated": "0 * 2136.75"
+			},
+			"18": {
+				"fines": [],
+				"bonuses": [],
+				"awards": [],
+				"test_bonus": [],
+				"avanses": [],
+				"value": "",
+				"training": false,
+				"calculated": "0 * 2136.75"
+			},
+			"19": {
+				"fines": [],
+				"bonuses": [],
+				"awards": [],
+				"test_bonus": [],
+				"avanses": [],
+				"value": "18162",
+				"training": false,
+				"calculated": "8.5 * 2136.75"
+			},
+			"20": {
+				"fines": [],
+				"bonuses": [],
+				"awards": [],
+				"test_bonus": [],
+				"avanses": [],
+				"value": "",
+				"training": false,
+				"calculated": "0 * 2136.75"
+			},
+			"21": {
+				"fines": [],
+				"bonuses": [],
+				"awards": [],
+				"test_bonus": [],
+				"avanses": [],
+				"value": "",
+				"training": false,
+				"calculated": "0 * 2136.75"
+			},
+			"22": {
+				"fines": [],
+				"bonuses": [],
+				"awards": [],
+				"test_bonus": [],
+				"avanses": [],
+				"value": "",
+				"training": false,
+				"calculated": "0 * 2136.75"
+			},
+			"23": {
+				"fines": [],
+				"bonuses": [],
+				"awards": [],
+				"test_bonus": [],
+				"avanses": [],
+				"value": "17236",
+				"training": false,
+				"calculated": "8.07 * 2136.75"
+			},
+			"24": {
+				"fines": [],
+				"bonuses": [],
+				"awards": [],
+				"test_bonus": [],
+				"avanses": [],
+				"value": "",
+				"training": false,
+				"calculated": "0 * 2136.75"
+			},
+			"25": {
+				"fines": [],
+				"bonuses": [],
+				"awards": [],
+				"test_bonus": [],
+				"avanses": [],
+				"value": "",
+				"training": false,
+				"calculated": "0 * 2136.75"
+			},
+			"26": {
+				"fines": [],
+				"bonuses": [],
+				"awards": [],
+				"test_bonus": [],
+				"avanses": [],
+				"value": "",
+				"training": false,
+				"calculated": "0 * 2136.75"
+			},
+			"27": {
+				"fines": [],
+				"bonuses": [],
+				"awards": [],
+				"test_bonus": [],
+				"avanses": [],
+				"value": "",
+				"training": false,
+				"calculated": "0 * 2136.75"
+			},
+			"28": {
+				"fines": [],
+				"bonuses": [],
+				"awards": [],
+				"test_bonus": [],
+				"avanses": [],
+				"value": "",
+				"training": false,
+				"calculated": "0 * 299.15"
+			},
+			"29": {
+				"fines": [],
+				"bonuses": [],
+				"awards": [],
+				"test_bonus": [],
+				"avanses": [],
+				"value": "",
+				"training": false,
+				"calculated": "0 * 299.15"
+			},
+			"30": {
+				"fines": [],
+				"bonuses": [],
+				"awards": [],
+				"test_bonus": [],
+				"avanses": [],
+				"value": "",
+				"training": false,
+				"calculated": "0 * 299.15"
+			}
+		},
+		"times": {
+			"1": {
+				"value": "",
+				"fines": [],
+				"training": false
+			},
+			"2": {
+				"value": "",
+				"fines": [],
+				"training": false
+			},
+			"3": {
+				"value": "",
+				"fines": [],
+				"training": false
+			},
+			"4": {
+				"value": "",
+				"fines": [],
+				"training": false
+			},
+			"5": {
+				"value": "03:39",
+				"fines": [],
+				"training": false
+			},
+			"6": {
+				"value": "",
+				"fines": [],
+				"training": false
+			},
+			"7": {
+				"value": "",
+				"fines": [],
+				"training": false
+			},
+			"8": {
+				"value": "08:31",
+				"fines": [],
+				"training": false
+			},
+			"9": {
+				"value": "",
+				"fines": [],
+				"training": false
+			},
+			"10": {
+				"value": "08:52",
+				"fines": [],
+				"training": false
+			},
+			"11": {
+				"value": "",
+				"fines": [],
+				"training": false
+			},
+			"12": {
+				"value": "",
+				"fines": [],
+				"training": false
+			},
+			"13": {
+				"value": "",
+				"fines": [],
+				"training": false
+			},
+			"14": {
+				"value": "",
+				"fines": [],
+				"training": false
+			},
+			"15": {
+				"value": "",
+				"fines": [],
+				"training": false
+			},
+			"16": {
+				"value": "",
+				"fines": [],
+				"training": false
+			},
+			"17": {
+				"value": "",
+				"fines": [],
+				"training": false
+			},
+			"18": {
+				"value": "",
+				"fines": [],
+				"training": false
+			},
+			"19": {
+				"value": "03:20",
+				"fines": [],
+				"training": false
+			},
+			"20": {
+				"value": "",
+				"fines": [],
+				"training": false
+			},
+			"21": {
+				"value": "",
+				"fines": [],
+				"training": false
+			},
+			"22": {
+				"value": "",
+				"fines": [],
+				"training": false
+			},
+			"23": {
+				"value": "03:55",
+				"fines": [],
+				"training": false
+			},
+			"24": {
+				"value": "",
+				"fines": [],
+				"training": false
+			},
+			"25": {
+				"value": "",
+				"fines": [],
+				"training": false
+			},
+			"26": {
+				"value": "",
+				"fines": [],
+				"training": false
+			},
+			"27": {
+				"value": "",
+				"fines": [],
+				"training": false
+			},
+			"28": {
+				"value": "",
+				"fines": [],
+				"training": false
+			},
+			"29": {
+				"value": "",
+				"fines": [],
+				"training": false
+			},
+			"30": {
+				"value": "",
+				"fines": [],
+				"training": false
+			}
+		},
+		"hours": {
+			"1": {
+				"value": "",
+				"fines": [],
+				"training": false
+			},
+			"2": {
+				"value": "",
+				"fines": [],
+				"training": false
+			},
+			"3": {
+				"value": "",
+				"fines": [],
+				"training": false
+			},
+			"4": {
+				"value": "",
+				"fines": [],
+				"training": false
+			},
+			"5": {
+				"value": 8.33,
+				"fines": [],
+				"training": false
+			},
+			"6": {
+				"value": "",
+				"fines": [],
+				"training": false
+			},
+			"7": {
+				"value": "",
+				"fines": [],
+				"training": false
+			},
+			"8": {
+				"value": 3.47,
+				"fines": [],
+				"training": false
+			},
+			"9": {
+				"value": "",
+				"fines": [],
+				"training": false
+			},
+			"10": {
+				"value": 3.12,
+				"fines": [],
+				"training": false
+			},
+			"11": {
+				"value": "",
+				"fines": [],
+				"training": false
+			},
+			"12": {
+				"value": "",
+				"fines": [],
+				"training": false
+			},
+			"13": {
+				"value": "",
+				"fines": [],
+				"training": false
+			},
+			"14": {
+				"value": "",
+				"fines": [],
+				"training": false
+			},
+			"15": {
+				"value": "",
+				"fines": [],
+				"training": false
+			},
+			"16": {
+				"value": "",
+				"fines": [],
+				"training": false
+			},
+			"17": {
+				"value": "",
+				"fines": [],
+				"training": false
+			},
+			"18": {
+				"value": "",
+				"fines": [],
+				"training": false
+			},
+			"19": {
+				"value": 8.5,
+				"fines": [],
+				"training": false
+			},
+			"20": {
+				"value": "",
+				"fines": [],
+				"training": false
+			},
+			"21": {
+				"value": "",
+				"fines": [],
+				"training": false
+			},
+			"22": {
+				"value": "",
+				"fines": [],
+				"training": false
+			},
+			"23": {
+				"value": 8.07,
+				"fines": [],
+				"training": false
+			},
+			"24": {
+				"value": "",
+				"fines": [],
+				"training": false
+			},
+			"25": {
+				"value": "",
+				"fines": [],
+				"training": false
+			},
+			"26": {
+				"value": "",
+				"fines": [],
+				"training": false
+			},
+			"27": {
+				"value": "",
+				"fines": [],
+				"training": false
+			},
+			"28": {
+				"value": "",
+				"fines": [],
+				"training": false
+			},
+			"29": {
+				"value": "",
+				"fines": [],
+				"training": false
+			},
+			"30": {
+				"value": "",
+				"fines": [],
+				"training": false
+			}
+		}
+	},
+	"totalFines": 5000,
+	"total_avanses": 0
+}
