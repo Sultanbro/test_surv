@@ -2177,6 +2177,11 @@
     min-width: 15em;
 }
 
+.news-item__content ol,
+.news-item__content ul{
+    padding-left: 20px;
+}
+
 @media screen and (max-width: 1360px){
     .news-birthday-card__gift {
         width: 40px;
