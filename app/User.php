@@ -1328,7 +1328,7 @@ class User extends Authenticatable implements Authorizable
             $differBetweenFirstAndLastDay = date_diff($date1, $date2)->days;
             $remains = $differBetweenFirstAndLastDay % $total;
 
-            if ($remains < $workingDay && $dayInMonth->format('Y-m-d') != Carbon::parse($firstWorkDay)->subDay()->toDateString()) {
+            if ($remains < $workingDay && $dayInMonth != Carbon::parse($firstWorkDay)->subDay()->toDateString()) {
                 $workDayInMonth++;
             }
         }
