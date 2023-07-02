@@ -17,7 +17,6 @@ use App\UserFine;
 use App\SalaryApproval;
 use App\Zarplata;
 use Carbon\Carbon;
-use Exception;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\View;
@@ -470,9 +469,6 @@ class SalaryController extends Controller
         return Excel::download($exp, $exp_title);
     }
 
-    /**
-     * @throws Exception
-     */
     private function getSheet($users_ids, $date, $group_id) {
         $users = \DB::table('users')
             ->join('zarplata as z', 'z.user_id', '=', 'users.id')
@@ -600,10 +596,7 @@ class SalaryController extends Controller
 
             // рабочие дни
             $ignore = $_user->chartWorkDays(); // Какие дни не учитывать в месяце
-            $userModel = User::where('id', $user->id)->first();
-
-            if ($userModel) $workDays = $userModel->getWorkDays($date);
-            else $workDays = workdays($date->year, $date->month, $ignore);
+            $workDays = workdays($date->year, $date->month, $ignore);
 
             if(!$edited_salary) $allTotal[6] += intval($workDays);
 

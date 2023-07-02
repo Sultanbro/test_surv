@@ -1301,16 +1301,11 @@ class User extends Authenticatable implements Authorizable
 
     /**
      * Получаем дни работы для пользователя за месяц
-     * @return int
+     * @return void
      */
-    public function getCountWorkDaysMonth(): int {
-        $firstWorkDay = $this->first_work_day ? Carbon::parse($this->first_work_day)->format('Y-m-d') : Carbon::now()->format('Y-m-d');
+    public function getCountWorkDaysMonth() {
+        $firstWorkDay = Carbon::parse($this->first_work_day)->format('Y-m-d') ?? Carbon::now()->format('Y-m-d');
         $workChartName = $this->workChart->name;
-
-        if ($workChartName == "2-2"){
-            return WorkChartModel::WORK_DAYS_PER_MONTH_DEFAULT_REPLACEABLE;
-        }
-
         $days = explode('-', $workChartName);
         $workingDay = (int)$days[0];
         $dayOff = (int)$days[1];
@@ -1328,7 +1323,7 @@ class User extends Authenticatable implements Authorizable
             $differBetweenFirstAndLastDay = date_diff($date1, $date2)->days;
             $remains = $differBetweenFirstAndLastDay % $total;
 
-            if ($remains < $workingDay && $dayInMonth->format('Y-m-d') != Carbon::parse($firstWorkDay)->subDay()->toDateString()) {
+            if ($remains < $workingDay) {
                 $workDayInMonth++;
             }
         }
@@ -1387,23 +1382,9 @@ class User extends Authenticatable implements Authorizable
      */
     public function countWorkHours(): int
     {
-        $schedule = $this->schedule(true);
-        $workChart = $this->workChart;
-        if ($workChart && $workChart->rest_time != null){
-            $lunchTime = $workChart->rest_time;
-            $hour = intval($lunchTime / 60);
-            $minute = $lunchTime % 60;
-            $totalHour = floatval($hour.".".$minute);
-            $userWorkHours = max($schedule['end']->diffInSeconds($schedule['start']), 0);
-            $working_hours = round($userWorkHours / 3600, 1) - $totalHour;
-        }else{
-            $lunchTime = 1;
-            $userWorkHours = max($schedule['end']->diffInSeconds($schedule['start']), 0);
-            $working_hours = round($userWorkHours / 3600, 1) - $lunchTime;
-        }
+        $schedule = $this->schedule();
 
-
-        return $working_hours;
+        return $schedule['end']->diffInHours($schedule['start']) - 1;
     }
 
     /**
@@ -1459,26 +1440,5 @@ class User extends Authenticatable implements Authorizable
     {
         dd($this);
         return !($this->deleted_at == null);
-    }
-
-    /**
-     * Получаем дни работы для пользователя за месяц
-     * @param $date
-     * @return int
-     * @throws Exception
-     */
-    public function getWorkDays($date): int{
-        $workChartType = $this->workChart->work_charts_type ?? 0;
-        if ($workChartType == 0 || $workChartType == WorkChartModel::WORK_CHART_TYPE_USUAL){
-            $ignore = $this->getCountWorkDays();   // Какие дни не учитывать в месяце
-            $workDays = workdays($date->year, $date->month, $ignore);
-        }
-        elseif ($workChartType == WorkChartModel::WORK_CHART_TYPE_REPLACEABLE) {
-            $workDays = $this->getCountWorkDaysMonth();
-        }
-        else {
-            throw new Exception(message: 'Проверьте график работы', code: 400);
-        }
-        return $workDays;
     }
 }
