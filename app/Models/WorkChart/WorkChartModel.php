@@ -34,6 +34,7 @@ class WorkChartModel extends Model
     const WORK_CHART_TYPE_USUAL = 1;
     const WORK_CHART_TYPE_REPLACEABLE = 2;
     const MAX_CHART_DAYS_REPLACEABLE = 30;
+    const WORK_DAYS_PER_MONTH_DEFAULT_REPLACEABLE = 15;
 
     /**
      * @param string $name
