@@ -15,7 +15,10 @@
 								class="stat__front"
 							>
 						</div>
-						<div class="front">
+						<div
+							class="front"
+							:style="`height: ${animateValues.balance.height}%`"
+						>
 							<img
 								src="/images/dist/image-1.svg"
 								alt="stat image"
@@ -27,14 +30,17 @@
 						<div class="stat__name">
 							Баланс оклада
 						</div>
-						<div class="stat__value">
+						<div
+							class="stat__value"
+							:class="{active: user_earnings.sumSalary}"
+						>
 							<span
 								v-show="!animated"
 								class="IntroStats-value"
 							>{{ balance }}</span> <span
 								v-show="animated"
 								class="IntroStats-fake"
-							>{{ balance }}</span> {{ currency }}
+							>{{ animateValues.balance.value }}</span> {{ currency }}
 						</div>
 					</div>
 				</div>
@@ -62,7 +68,10 @@
 								class="stat__back"
 							>
 						</div>
-						<div class="front">
+						<div
+							class="front"
+							:style="`height: ${animateValues.kpi.height}%`"
+						>
 							<img
 								src="/images/dist/image-2.svg"
 								alt="stat image"
@@ -74,14 +83,17 @@
 						<div class="stat__name">
 							KPI
 						</div>
-						<div class="stat__value">
+						<div
+							class="stat__value"
+							:class="{active: user_earnings.sumKpi}"
+						>
 							<span
 								v-show="!animated"
 								class="IntroStats-value"
 							>{{ kpi }}</span> <span
 								v-show="animated"
 								class="IntroStats-fake"
-							>{{ kpi }}</span> {{ currency }}
+							>{{ animateValues.kpi.value }}</span> {{ currency }}
 						</div>
 					</div>
 				</div>
@@ -112,7 +124,10 @@
 								class="stat__back"
 							>
 						</div>
-						<div class="front">
+						<div
+							class="front"
+							:style="`height: ${animateValues.bonus.height}%`"
+						>
 							<img
 								src="/images/dist/image-3.svg"
 								alt="stat image"
@@ -124,14 +139,17 @@
 						<div class="stat__name">
 							Бонусы
 						</div>
-						<div class="stat__value">
+						<div
+							class="stat__value"
+							:class="{active: user_earnings.sumBonuses}"
+						>
 							<span
 								v-show="!animated"
 								class="IntroStats-value"
 							>{{ bonus }}</span> <span
 								v-show="animated"
 								class="IntroStats-fake"
-							>{{ bonus }}</span> {{ currency }}
+							>{{ animateValues.bonus.value }}</span> {{ currency }}
 						</div>
 					</div>
 				</div>
@@ -162,7 +180,10 @@
 								class="stat__back"
 							>
 						</div>
-						<div class="front">
+						<div
+							class="front"
+							:style="`height: ${animateValues.premium.height}%`"
+						>
 							<img
 								src="/images/dist/image-4.svg"
 								alt="stat image"
@@ -174,14 +195,17 @@
 						<div class="stat__name">
 							Квартальный
 						</div>
-						<div class="stat__value">
+						<div
+							class="stat__value"
+							:class="{active: user_earnings.sumQuartalPremiums}"
+						>
 							<span
 								v-show="!animated"
 								class="IntroStats-value"
 							>{{ premium }}</span> <span
 								v-show="animated"
 								class="IntroStats-fake"
-							>{{ premium }}</span> {{ currency }}
+							>{{ animateValues.premium.value }}</span> {{ currency }}
 						</div>
 					</div>
 				</div>
@@ -212,7 +236,10 @@
 								class="stat__back"
 							>
 						</div>
-						<div class="front">
+						<div
+							class="front"
+							:style="`height: ${animateValues.nominations.height}%`"
+						>
 							<img
 								src="/images/dist/image-5.svg"
 								alt="stat image"
@@ -224,7 +251,10 @@
 						<div class="stat__name">
 							Награды
 						</div>
-						<div class="stat__value">
+						<div
+							class="stat__value"
+							:class="{active: user_earnings.sumNominations}"
+						>
 							<span
 								v-show="!animated"
 								class="IntroStats-value"
@@ -232,7 +262,7 @@
 							<span
 								v-show="animated"
 								class="IntroStats-fake"
-							>{{ nominations }}</span>
+							>{{ animateValues.nominations.value }}</span>
 						</div>
 					</div>
 				</div>
@@ -267,10 +297,32 @@ export default {
 	data: function () {
 		return {
 			animated: false,
+			animateValues: {
+				balance: {
+					value: '0',
+					height: 0,
+				},
+				kpi: {
+					value: '0',
+					height: 0,
+				},
+				bonus: {
+					value: '0',
+					height: 0,
+				},
+				premium: {
+					value: '0',
+					height: 0,
+				},
+				nominations: {
+					value: '0',
+					height: 0,
+				},
+			}
 		}
 	},
 	computed: {
-		...mapState(useProfileSalaryStore, ['user_earnings', 'unreadCount']),
+		...mapState(useProfileSalaryStore, ['user_earnings', 'readed']),
 		...mapState(usePersonalInfoStore, ['salary', 'currency']),
 		balance(){
 			return this.separateNumber(this.user_earnings.sumSalary)
@@ -279,116 +331,73 @@ export default {
 			return this.separateNumber(this.user_earnings.sumKpi)
 		},
 		kpiUnread(){
-			return !!this.unreadCount.kpis
+			return !this.readed.kpis
 		},
 		bonus(){
 			return this.separateNumber(this.user_earnings.sumBonuses)
 		},
 		bonusUnread(){
-			return !!this.unreadCount.bonuses
+			return !this.readed.bonuses
 		},
 		premium(){
 			return this.separateNumber(this.user_earnings.sumQuartalPremiums)
 		},
 		premiumUnread(){
-			return !!this.unreadCount.premiums
+			return !this.readed.premiums
 		},
 		nominations(){
 			return this.separateNumber(this.user_earnings.sumNominations)
 		},
 		nominationsUnread(){
-			return !!this.unreadCount.awards
+			return !this.readed.awards
 		},
 	},
 	watch:{
 		balance(){
-			this.$nextTick(() => this.OpacityStats())
-		},
-	},
-	methods: {
-		fetch() {
-			this.loading = true
-
-			this.axios.post('/profile/salary/get', {
-				month: new Date().getMonth() + 1,
-				year: new Date().getFullYear()
-			}).then(response => {
-				this.data = response.data.user_earnings
-				this.has_quartal_premiums = response.data.has_qp
-
-				this.$nextTick(() => this.OpacityStats())
-
-				this.loading = false
-			}).catch(error => {
-				this.loading = false
-				alert(error)
-			});
-		},
-
-		/**
-         * animate opacity in blocks
-         */
-		OpacityStats() {
-			/* global VJQuery */
-			let MAXBALANCE = parseInt(this.salary.replace(/\s/g, '')) || 0,
-				MAXKPI = this.user_earnings.kpiMax,
-				MAXBONUSES = 1,
-				MAXKVARTAL = 1,
-				MAXNOMINATIONS = 1,
-				maxArray = [MAXBALANCE, MAXKPI,MAXBONUSES, MAXKVARTAL, MAXNOMINATIONS];
-
-			let values = VJQuery('.stat__value span');
-			for(let i=0;i<values.length;i++){
-				let value = values[i].textContent.replace(/,/g,'')
-				if(value !== '0'){
-					VJQuery(values[i]).closest('.stat__value').addClass('active')
-				} else {
-					VJQuery(values[i]).closest('.stat__item').find('.front').css('height', 0)
-				}
-
-				VJQuery({numberValue: 0}).animate({numberValue: value/maxArray[i] * 100}, {
-					duration: 4000,
-					easing: 'swing',
-					step: function(val) {
-						VJQuery(values[i]).closest('.stat__item').find('.front').css('height',val+'%')
-					},
-					complete: function(){
-						VJQuery(values[i]).closest('.stat__item').find('.front').css('height',value/maxArray[i] * 100 + '%')
-					}
-				});
-			}
-
-			this.animated = true
-			VJQuery('.stat__value').each((key, el) => {
-				let element = VJQuery(el);
-				let n = element.children('.IntroStats-value').text().replace(/\D/g,'');
-
-				function separateNumber(x) {
-					return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
-					//разделитель можно задать тут вторым аргументом для метода replace. Сейчас, как видно, пробел
-				}
-
-				VJQuery({numberValue: 0}).animate({numberValue: n}, {
-					duration: 4000,
-					easing: 'swing',
-					step: val => {
-						element.children('.IntroStats-fake').text(separateNumber(Math.round(val)));
-					},
-					complete: () => {
-						element.children('.IntroStats-fake').text(separateNumber(Math.round(n)));
-						this.animated = false
-					}
-				});
-			})
-		}, // end of opacity
-		separateNumber(x){
-			return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+			this.$nextTick(() => this.animateStats())
 		},
 	},
 	created(){},
 	mounted(){
-		if(this.user_earnings) this.$nextTick(() => this.OpacityStats())
-	}
+		if(this.user_earnings) this.$nextTick(() => this.animateStats())
+	},
+	methods: {
+		animateStat(prop, value, max, duration = 4000, easing = 'swing'){
+			/* global VJQuery */
+			return new Promise(resolve => {
+				VJQuery({a: 0}).animate({a: 1}, {
+					duration,
+					easing,
+					step: step => {
+						this.animateValues[prop].value = this.separateNumber(parseInt(value * step))
+						this.animateValues[prop].height = value / max * 100 * step
+					},
+					complete: resolve
+				})
+			})
+		},
+
+		async animateStats(){
+			const MAXBALANCE = parseInt(this.salary.replace(/\s/g, '')) || 0
+			const MAXKPI = this.user_earnings.kpiMax
+			const MAXBONUSES = 1
+			const MAXKVARTAL = 1
+			const MAXNOMINATIONS = 1
+
+			this.animated = true
+			await Promise.allSettled([
+				this.animateStat('balance', this.user_earnings.sumSalary, MAXBALANCE),
+				this.animateStat('kpi', this.user_earnings.sumKpi, MAXKPI),
+				this.animateStat('bonus', this.user_earnings.sumBonuses, MAXBONUSES),
+				this.animateStat('premium', this.user_earnings.sumQuartalPremiums, MAXKVARTAL),
+				this.animateStat('nominations', this.user_earnings.sumNominations, MAXNOMINATIONS),
+			]);
+			this.animated = false
+		},
+		separateNumber(x){
+			return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+		},
+	},
 };
 </script>
 

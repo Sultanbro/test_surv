@@ -28,12 +28,14 @@ class WorkChartModel extends Model
         'start_time',
         'end_time',
         'work_charts_type',
-        'workdays'
+        'workdays',
+        'rest_time'
     ];
 
     const WORK_CHART_TYPE_USUAL = 1;
     const WORK_CHART_TYPE_REPLACEABLE = 2;
     const MAX_CHART_DAYS_REPLACEABLE = 30;
+    const WORK_DAYS_PER_MONTH_DEFAULT_REPLACEABLE = 15;
 
     /**
      * @param string $name
@@ -197,6 +199,7 @@ class WorkChartModel extends Model
             ->where('text_name', $data['text_name'])
             ->where('work_charts_type', $data['work_charts_type'])
             ->where('workdays', $data['workdays'])
+            ->where('rest_time', $data['rest_time'])
             ->exists();
     }
 

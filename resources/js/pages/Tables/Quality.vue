@@ -30,7 +30,7 @@
 					:key="index"
 				>
 					<td
-						class="indicators-table-fixed-name text-left position-relative"
+						class="indicators-table-fixed-name text-left"
 						:class="{'sticky-left': isDesktop}"
 					>
 						<div class="d-flex max-content">

@@ -10,11 +10,11 @@
 			placeholder="Выберите"
 			label="name"
 			track-by="name"
-			:taggable="true"
-			@tag="addTag"
 			@remove="removeGroup"
 			@select="selectGroup"
 		/>
+		<!-- :taggable="true" -->
+		<!-- @tag="addTag" -->
 	</div>
 </template>
 
@@ -36,6 +36,7 @@ export default {
 			default: []
 		},
 		user_role: {
+			type: Number,
 			default: MEMBER
 		},
 	},
@@ -48,7 +49,6 @@ export default {
 	},
 	created() {
 		this.value = this.in_groups;
-		console.log(this.url);
 
 		if(this.user_role === HEAD) {
 			this.url = '/timetracking/edit-person/head_in_groups';
@@ -63,8 +63,6 @@ export default {
 			}
 			this.groups.push(tag)
 			this.value.push(tag)
-
-
 		},
 		messageoff() {
 			setTimeout(() => {
@@ -107,7 +105,7 @@ export default {
 					this.messageoff()
 				})
 				.catch(error => {
-					console.log(error.response)
+					console.error(error.response)
 					this.$toast.info(error.response);
 				});
 		},
@@ -118,4 +116,4 @@ export default {
 </script>
 
 <style src="vue-multiselect/dist/vue-multiselect.min.css"></style>
-<style lang="scss" scoped></style>
+<style lang="scss"></style>

@@ -1,14 +1,12 @@
 <template>
 	<div class="mb-3">
 		<h4 class="d-flex align-items-center justify-content-between">
-			<div class="mr-2">
-				{{ activity.name }}
-			</div>
+			<div class="mr-2" />
 			<div>
 				<!-- <a href="#" @click="exportData()" class="btn btn-success btn-sm">
                 <i class="far fa-file-excel"></i>
                 Экспорт</a> -->
-				<div v-if="is_admin">
+				<div v-if="is_admin && tenant === 'bp'">
 					<!-- Ozon -->
 					<a
 						@click="showExcelImport = !showExcelImport"
@@ -23,15 +21,14 @@
 
 		<div class="table-container">
 			<table
-				class="table table-bordered table-responsive r-to"
 				:id="'sticky-'+ activity.id"
+				class="table table-bordered table-responsive r-to"
 			>
 				<thead>
 					<tr>
 						<th class="b-table-sticky-column text-left px-1 t-name bg-white sticky-h1 z2233">
 							<div class="wd">
 								ФИО
-
 								<i
 									v-if="is_admin"
 									class="fa fa-sort ml-2"
@@ -46,11 +43,10 @@
 							rowspan="2"
 						>
 							<div
-								class="wd"
 								v-if="is_admin"
+								class="wd"
 							>
 								Итог к выдаче
-
 								<i
 									v-if="is_admin"
 									class="fa fa-sort ml-2"
@@ -64,14 +60,12 @@
 						</th>
 
 						<th
-							class="text-left px-1 sticky-h1"
 							v-if="is_admin"
+							class="text-left px-1 sticky-h1"
 							rowspan="2"
 						>
 							<div class="wd">
 								Сборы
-
-
 								<i
 									class="fa fa-sort ml-2"
 									@click="sort('count')"
@@ -80,10 +74,10 @@
 						</th>
 
 						<th
-							class="text-center px-1 sticky-h1"
-							colspan="2"
 							v-for="day in month.daysInMonth"
 							:key="day"
+							class="text-center px-1 sticky-h1"
+							colspan="2"
 						>
 							<div>{{ day }}</div>
 						</th>
@@ -95,13 +89,13 @@
 						/>
 						<template v-for="day in month.daysInMonth">
 							<th
-								:key="day"
+								:key="'a' + day"
 								class="sticky-h2"
 							>
 								сборы
 							</th>
 							<th
-								:key="day"
+								:key="'b' + day"
 								class="sticky-h2"
 							>
 								тенге
@@ -159,8 +153,8 @@
 							>
 								<div>
 									<input
-										type="number"
 										v-model="item[day]"
+										type="number"
 										@change="updateSettings($event, item, index, day)"
 										class="form-control cell-input"
 									>
@@ -214,7 +208,7 @@
 </template>
 
 <script>
-import Sidebar from '@/components/ui/Sidebar' // сайдбар table
+import Sidebar from '@/components/ui/Sidebar'
 import ActivityExcelImport from '@/components/imports/ActivityExcelImport' // импорт в активности
 
 export default {
@@ -245,17 +239,16 @@ export default {
 			records: [],
 			totalRowName: '',
 			accountsNumber: 0,
+			tenant: location.hostname.split('.')[0]
 		};
 	},
 	watch: {
-		activity: function() { // watch it
+		activity() {
 			this.fetchData();
 		},
 	},
 	created() {
 		this.fetchData();
-
-
 	},
 	mounted() {
 		document.getElementById('sticky-' + this.activity.id).style.height = window.innerHeight + 'px';
@@ -310,7 +303,6 @@ export default {
 
 			this.items = this.itemsArray;
 
-
 			this.addCellVariantsArrayToRecords();
 			this.setCellVariants();
 			loader.hide();
@@ -321,10 +313,11 @@ export default {
 
 			// let first_item = this.itemsArray[0];
 			//this.itemsArray.shift();
-
-
-			arr.sort((a, b) => Number(a.plan) < Number(b.plan)  ?
-				1 : Number(a.plan) > Number(b.plan) ? -1 : 0);
+			arr.sort((a, b) => Number(a.plan) < Number(b.plan)
+				? 1
+				: Number(a.plan) > Number(b.plan)
+					? -1
+					: 0);
 
 			if(this.itemsArray.length > 3) {
 				arr[0].show_cup = 1;
@@ -340,7 +333,6 @@ export default {
 			this.itemsArray.forEach(account => {
 				if(parseFloat(account['plan']) != 0 && account['plan'] != undefined) {
 					row0_avg += parseFloat(account['plan']);
-					console.log(account['plan'])
 				}
 			})
 
@@ -353,25 +345,19 @@ export default {
 
 
 		calculateTotalsRow() {
-
-
 			let total = 0
 			// вот здесь я считаю итоговые суммы минут по всем сотрудникам, и мне их видимо придется сохранить в бд
 			for (let key in this.sum) {
 				if (this.sum.hasOwnProperty(key)) {
 					this.itemsArray[0][key] = parseFloat(this.sum[key]).toFixed(0);
 					total += parseFloat(this.sum[key])
-				} else {
+				}
+				else {
 					this.itemsArray[0][key] = 0;
 				}
-
-
-
 			}
 
 			if(this.is_admin) this.itemsArray[0]['plan'] = parseFloat(total) * this.price
-
-
 		},
 
 		setCellVariants() {
@@ -383,15 +369,16 @@ export default {
 						for (let key in account) {
 							if (key >= 1 && key <= 31) {
 								if (
-									account[key] >= SPECIAL_VALUE &&
-                                    account[key] !== undefined &&
-                                    account[key] !== null
+									account[key] >= SPECIAL_VALUE
+									&& account[key] !== undefined
+									&& account[key] !== null
 								) {
 									this.items[index]._cellVariants[key] = 'success';
-								} else if (
-									account[key] < SPECIAL_VALUE &&
-                                    account[key] !== undefined &&
-                                    account[key] !== null
+								}
+								else if (
+									account[key] < SPECIAL_VALUE
+									&& account[key] !== undefined
+									&& account[key] !== null
 								) {
 									this.items[index]._cellVariants[key] = 'danger';
 								}
@@ -400,7 +387,6 @@ export default {
 					}
 				});
 			}
-
 		},
 
 		editMode(item) {
@@ -412,7 +398,6 @@ export default {
 		},
 
 		updateSettings(e, data, index, key) {
-
 			data.editable = false
 
 			//var index = data.index;
@@ -440,20 +425,17 @@ export default {
 
 			this.updateTable(items);
 
-			this.axios
-				.post('/timetracking/analytics/update-stat', {
-					month: this.month.month,
-					year: this.month.currentYear,
-					group_id: this.activity.group_id,
-					employee_id: employee_id,
-					id: this.activity.id,
-					day: key,
-					value: '' + (value || 0),
-				})
-				.then(() => {
-					loader.hide();
-				});
-
+			this.axios.post('/timetracking/analytics/update-stat', {
+				month: this.month.month,
+				year: this.month.currentYear,
+				group_id: this.activity.group_id,
+				employee_id: employee_id,
+				id: this.activity.id,
+				day: key,
+				value: '' + (value || 0),
+			}).then(() => {
+				loader.hide();
+			});
 		},
 
 		exportData() {
@@ -480,8 +462,6 @@ export default {
 				// let countWorkedDays = 0;
 				let cellValues = [];
 
-
-
 				if (account.name != this.totalRowName) {
 					let sumForOne = 0;
 					for (let key in account) {
@@ -496,37 +476,22 @@ export default {
 
 							this.sum[key] = this.sum[key] + account[key]; // vertical sum
 
-
-
-
-
 							if(account[key] > 0) {
 								this.percentage[key] = this.percentage[key] + 1;
 							}
-
 
 							if (account[key] > 0) {
 								sumForOne += account[key]; // horizontal sum
 								// countWorkedDays++;
 								this.totalCountDays++;
-
-
 							}
 						}
 					}
 
-
-
 					cellValues['plan_unit'] = this.activity.plan_unit;
 					cellValues['plan'] = sumForOne * this.price;
 					cellValues['count'] = sumForOne;
-
-
-
 				}
-
-
-
 
 				this.itemsArray.push({
 					name: account.name,
@@ -539,10 +504,7 @@ export default {
 					show_cup: 0,
 					...cellValues,
 				});
-
 			});
-
-
 		},
 
 		toFloat(number) {
@@ -550,7 +512,6 @@ export default {
 		},
 
 		sort(field) {
-
 			if(this.sorts[field] === undefined) {
 				this.sorts[field] = 'asc';
 			}
@@ -561,15 +522,18 @@ export default {
 			if(this.sorts[field] === 'desc') {
 				if(field == 'name') {
 					this.items.sort((a, b) => (a[field] > b[field]) ? 1 : -1);
-				} else {
+				}
+				else {
 					this.items.sort((a, b) => (Number(a[field]) > Number(b[field])) ? 1 : -1);
 				}
 
 				this.sorts[field] = 'asc';
-			} else {
+			}
+			else {
 				if(field == 'name') {
 					this.items.sort((a, b) => (a[field] < b[field]) ? 1 : -1);
-				} else {
+				}
+				else {
 					this.items.sort((a, b) => (Number(a[field]) < Number(b[field])) ? 1 : -1);
 				}
 				this.sorts[field] = 'desc';
@@ -582,109 +546,108 @@ export default {
 </script>
 
 <style lang="scss">
-.bg-white {background:white}
 .my-table.m2 tr .badge {
-    opacity: 1;
+	opacity: 1;
 }
 
-    .day-minute {
-        padding: 0 !important;
-        text-align: center;
-        vertical-align: middle;
+.day-minute {
+	padding: 0 !important;
+	text-align: center;
+	vertical-align: middle;
 
-        div {
-            font-size: 0.8rem;
-        }
-        &.table-success {
-            background-color: #01c601 !important;
-        }
+	div {
+		font-size: 0.8rem;
+	}
+	&.table-success {
+		background-color: #01c601 !important;
+	}
 
-        &.table-danger {
-            background-color: #fd1600 !important;
-        }
-    }
+	&.table-danger {
+		background-color: #fd1600 !important;
+	}
+}
 
 .table td, .table th, .table thead th{
-    vertical-align: middle;
-    min-width: 42px;
-    text-align: center;
+	vertical-align: middle;
+	min-width: 42px;
+	text-align: center;
 }
 .table.b-table.table-sm>thead>tr>[aria-sort]:not(.b-table-sort-icon-left),
 .table.b-table.table-sm>tfoot>tr>[aria-sort]:not(.b-table-sort-icon-left) {
-    background-image: none !important;
-    min-width: 32px;
+	background-image: none !important;
+	min-width: 32px;
 }
 .table .stat {
-    background: #d9edff;
+	background: #d9edff;
 }
 .table {
-    position: relative;
+	position: relative;
 }
 .b-table-sticky-column{
-    position: sticky;
-    left: 0;
-    z-index: 2;
+	position: sticky;
+	left: 0;
+	z-index: 2;
 }
 .wd {
-    font-size: 0.75rem;
-    width: max-content;
-    font-weight: 500;
+	font-size: 0.75rem;
+	width: max-content;
+	font-weight: 500;
 }
 .table .stat.plan{
-    background: #007bff;
-    color: #fff;
+	background: #007bff;
+	color: #fff;
 }
 
 .cell-input {
-    background: none;
-    border: none;
-    text-align: center;
-    -moz-appearance: textfield;
-    font-size: .8rem;
-    font-weight: normal;
-    padding: 0;
-    color: #000;
-    border-radius: 0;
+	background: none;
+	border: none;
+	text-align: center;
+	-moz-appearance: textfield;
+	font-size: .8rem;
+	font-weight: normal;
+	padding: 0;
+	color: #000;
+	border-radius: 0;
 
-    &:focus {
-        outline: none;
-    }
+	&:focus {
+		outline: none;
+	}
 
-    &::-webkit-outer-spin-button,
-    &::-webkit-inner-spin-button {
-        -webkit-appearance: none;
-        margin: 0;
-    }
+	&::-webkit-outer-spin-button,
+	&::-webkit-inner-spin-button {
+		-webkit-appearance: none;
+		margin: 0;
+	}
 }
 .z2233 {
-    z-index: 3 !important;
+	z-index: 3 !important;
 }
 .r-to .wd .badge-success {
-    display: none;
+	display: none;
 }
 .r-to tr:hover td.wdf  {
-    background: #51a5ff;
+	background: #51a5ff;
 }
 .r-to tr:hover td {
-    background: #eaf3ff;
+	background: #eaf3ff;
 }
 .lb {
-        border-left: 1px solid #aaa !important;
+	border-left: 1px solid #aaa !important;
 }
 .rb {
-    border-right: 1px solid #aaa !important;
-        background: whitesmoke;
+	border-right: 1px solid #aaa !important;
+	background: whitesmoke;
 }
 .sticky-h1 {
-    position: sticky;
-    top: 0;
-    z-index: 2;
-    outline: 1px solid #ddd!important;
+	position: sticky;
+	top: 0;
+	z-index: 2;
+	outline: 1px solid #ddd!important;
 }
 .sticky-h2 {
-    position: sticky;
-    top: 31px;
-    z-index: 2;
-    outline: 1px solid #ddd!important;
+	position: sticky;
+	top: 31px;
+	z-index: 2;
+	outline: 1px solid #ddd!important;
 }
 </style>

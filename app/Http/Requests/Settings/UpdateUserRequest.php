@@ -108,7 +108,8 @@ class UpdateUserRequest extends FormRequest
             'taxes.*.percent'   => ['numeric'],
             'taxes.*.user_id'   => ['numeric', 'exists:users,id'],
             'taxes.*.name'      => ['string'],
-            'bitrix_id'         => ['numeric']
+            'bitrix_id'         => ['numeric'],
+            'first_work_day'    => ['date']
         ];
     }
 
@@ -164,6 +165,7 @@ class UpdateUserRequest extends FormRequest
         $tax = Arr::get($validated, 'tax');
         $taxes = Arr::get($validated, 'taxes');
         $bitrixId = Arr::get($validated, 'bitrix_id');
+        $firstWorkDay = Arr::get($validated, 'first_work_day');
 
         return new UpdateUserDTO(
             $id,
@@ -214,6 +216,7 @@ class UpdateUserRequest extends FormRequest
             $taxes,
             $bitrixId,
             $timezone,
+            $firstWorkDay
         );
     }
 }

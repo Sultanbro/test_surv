@@ -1,11 +1,96 @@
 <template>
-	<div class="mb-3">
+	<div class="TableActivityNew mb-3">
 		<div
-			class="d-flex align-items-center justify-content-end mb-2"
-			style="margin-top: -38px;"
 			v-if="show_headers"
+			class="d-flex align-items-center justify-content-end mb-2"
 		>
-			<div class="d-flex mr-3">
+			<!-- Filtees -->
+			<div
+				class="TableActivityNew-filters ml-3"
+				v-click-outside="onClickFiltersOutside"
+			>
+				<JobtronButton
+					class="ChatIcon-parent"
+					fade
+					small
+					@click="onClickFilters"
+				>
+					<img
+						src="/icon/news/filter/filter.svg"
+						alt="filters"
+						class="TableActivityNew-filtersIcon"
+					>
+				</JobtronButton>
+				<PopupMenu
+					v-if="isFilters"
+					class="TableActivityNew-filtersPopup"
+				>
+					<JobtronSelect
+						v-model="user_types"
+						:options="userTypeOptions"
+						compact
+						class="mb-3"
+					/>
+					<JobtronSelect
+						v-model="userShift"
+						:options="userShiftOptions"
+						compact
+						class="mb-3"
+					/>
+					<JobtronButton
+						small
+						@click="onClickFilter"
+					>
+						Найти
+					</JobtronButton>
+				</PopupMenu>
+			</div>
+
+			<!-- Controls -->
+			<div
+				class="TableActivityNew-contlors ml-3"
+				v-click-outside="onClickControlsOutside"
+			>
+				<JobtronButton
+					class="ChatIcon-parent"
+					fade
+					small
+					@click="onClickControls"
+				>
+					<i
+						class="fa fa-bars"
+						style="font-size:14px"
+					/>
+				</JobtronButton>
+				<PopupMenu v-if="isControls">
+					<div
+						class="PopupMenu-item wsnw"
+						@click="editActivity()"
+					>
+						<i class="icon-nd-settings" />
+						Настройка таблицы
+					</div>
+					<div
+						class="PopupMenu-item wsnw"
+						@click="exportData()"
+					>
+						<i class="far fa-file-excel" />
+						Экспорт
+					</div>
+					<div
+						v-if="isImportable"
+						class="PopupMenu-item wsnw"
+						@click="onClickImport"
+					>
+						<i class="fa fa-upload" />
+						Импорт
+					</div>
+				</PopupMenu>
+			</div>
+			<div
+				v-if="false"
+				class="d-flex mr-3"
+			>
 				<b-form-checkbox
 					v-model="filter.fulltime"
 					:value="1"
@@ -24,6 +109,7 @@
 				</b-form-checkbox>
 			</div>
 			<select
+				v-if="false"
 				v-model="user_types"
 				class="form-control w-200px mr-3"
 			>
@@ -37,21 +123,23 @@
 					Стажеры
 				</option>
 			</select>
-			<div>
+			<div v-if="false">
 				<a
+					v-if="isImportable"
 					@click="showExcelImport = !showExcelImport"
-					v-if="group_id == 42 || group_id == 88 || (group_id == 71 && activity.id == 149) || (group_id == 71 && activity.id == 151)"
 					class="btn btn-success text-white rounded"
 				>
 					<i class="fa fa-upload" />
-					Импорт</a>
+					Импорт
+				</a>
 				<a
 					href="#"
 					@click="exportData()"
 					class="btn btn-success ml-1 rounded"
 				>
 					<i class="far fa-file-excel" />
-					Экспорт</a>
+					Экспорт
+				</a>
 				<button
 					class="btn btn-info"
 					@click="editActivity()"
@@ -133,9 +221,9 @@
 						</template>
 
 						<th
-							class="text-center px-1"
 							v-for="day in month.daysInMonth"
 							:key="day"
+							class="text-center px-1"
 						>
 							{{ day }}
 						</th>
@@ -159,21 +247,21 @@
 						</td>
 
 						<td
+							v-else
 							class="table-primary b-table-sticky-column text-left px-2 t-name"
 							:title="item.id + ' ' + item.email"
-							v-else
 						>
 							<div class="wd d-flex">
 								{{ item.lastname }} {{ item.name }}
 								<b-badge
-									variant="success"
 									v-if="item.group == 'Просрочники'"
+									variant="success"
 								>
 									{{ item.group }}
 								</b-badge>
 								<b-badge
-									variant="primary"
 									v-else
+									variant="primary"
 								>
 									{{ item.group }}
 								</b-badge>
@@ -237,8 +325,8 @@
 							>
 								<div>
 									<input
-										type="number"
 										v-model="item[day]"
+										type="number"
 										@change="updateSettings($event, item, index, day)"
 										@focusout="viewMode(item)"
 										class="form-control cell-input"
@@ -257,8 +345,8 @@
 							</td>
 							<td
 								v-else-if="holidays.includes(day)"
-								@click="editMode(item)"
 								:key="day + 'b'"
+								@click="editMode(item)"
 								:class="'px-0 day-minute text-center Fri mywarning'"
 							>
 								<div v-if="item[day]">
@@ -331,9 +419,9 @@
 						class="form-control form-control-sm"
 					>
 						<option
-							:value="key"
 							v-for="(value, key) in plan_units"
 							:key="key"
+							:value="key"
 						>
 							{{ value }}
 						</option>
@@ -349,9 +437,9 @@
 				</div>
 				<div class="col-7">
 					<input
+						v-model="local_activity.daily_plan"
 						type="number"
 						class="form-control form-control-sm"
-						v-model="local_activity.daily_plan"
 					>
 				</div>
 			</div>
@@ -364,9 +452,9 @@
 				</div>
 				<div class="col-7">
 					<input
+						v-model="local_activity.weekdays"
 						type="number"
 						class="form-control form-control-sm"
-						v-model="local_activity.weekdays"
 						min="1"
 						max="7"
 					>
@@ -381,9 +469,9 @@
 				</div>
 				<div class="col-7">
 					<input
+						v-model="local_activity.unit"
 						type="text"
 						class="form-control form-control-sm"
-						v-model="local_activity.unit"
 					>
 				</div>
 			</div>
@@ -392,10 +480,10 @@
 				<div class="col-7 offset-5 d-flex align-items-center">
 					<div class="custom-control custom-checkbox">
 						<input
+							v-model="local_activity.editable"
 							id="checkbox-edit"
 							type="checkbox"
 							class="custom-control-input"
-							v-model="local_activity.editable"
 						>
 						<label
 							for="checkbox-edit"
@@ -411,13 +499,19 @@
 </template>
 
 <script>
-import Sidebar from '@/components/ui/Sidebar' // сайдбар table
+import Sidebar from '@/components/ui/Sidebar'
+import PopupMenu from '@ui/PopupMenu'
+import JobtronSelect from '@ui/Select'
+import JobtronButton from '@ui/Button'
 import ActivityExcelImport from '@/components/imports/ActivityExcelImport' // импорт в активности
 
 export default {
 	name: 'TableActivityNew',
 	components: {
 		Sidebar,
+		PopupMenu,
+		JobtronSelect,
+		JobtronButton,
 		ActivityExcelImport,
 	},
 	props: {
@@ -458,6 +552,17 @@ export default {
 			totalRowName: '',
 			accountsNumber: 0,
 			user_types: 0,
+			userTypeOptions: [
+				{value: 0, title: 'Действующие'},
+				{value: 1, title: 'Уволенные'},
+				{value: 2, title: 'Стажеры'},
+			],
+			userShift: 0,
+			userShiftOptions: [
+				{value: 0, title: 'Все'},
+				{value: 1, title: 'Full-Time'},
+				{value: 2, title: 'Part-Time'},
+			],
 			filter: {
 				group1: 0,
 				group2: 0,
@@ -471,8 +576,20 @@ export default {
 				less_avg: 'Не более, сред. зн.',
 			},
 			showEditModal: false,
-			showExcelImport: false
+			showExcelImport: false,
+			tenant: location.hostname.split('.')[0],
+			isFilters: false,
+			isControls: false,
 		};
+	},
+	computed: {
+		isImportable(){
+			if(this.tenant !== 'bp') return false
+			return this.group_id == 42
+				|| this.group_id == 88
+				|| (this.group_id == 71 && this.activity.id == 149)
+				|| (this.group_id == 71 && this.activity.id == 151)
+		}
 	},
 	watch: {
 		activity: function() { // watch it
@@ -484,9 +601,9 @@ export default {
 			},
 			deep: true
 		},
-		user_types() {
-			this.fetchData()
-		},
+		// user_types() {
+		// 	this.fetchData()
+		// },
 	},
 	created() {
 		this.getWeekends();
@@ -525,7 +642,6 @@ export default {
 			}
 		},
 		setFirstRowAsTotals() {
-
 			this.totalRowName = 'Итого'
 
 			this.records.unshift({
@@ -548,12 +664,10 @@ export default {
 					this.itemsArray[index]['avg'] = account.avg;
 					this.itemsArray[index]['month'] = account.month;
 				}
-
 			});
 		},
 
 		setLeaders() {
-
 			let arr = this.itemsArray;
 
 			// let first_item = this.itemsArray[0];
@@ -567,8 +681,6 @@ export default {
 				arr[1].show_cup = 2;
 				arr[2].show_cup = 3;
 			}
-
-
 			//this.itemsArray.unshift(first_item);
 		},
 
@@ -590,8 +702,6 @@ export default {
 			this.addButtonToFirstItem();
 
 			loader.hide();
-
-
 		},
 
 		switchAction() {
@@ -603,9 +713,8 @@ export default {
 				Object.keys(this.sum).forEach((key) => {
 					this.items[0][key] = this.sum[key];
 				});
-
-			} else if(this.currentAction == 'sum') {
-
+			}
+			else if(this.currentAction == 'sum') {
 				this.currentAction = 'avg'
 
 				Object.keys(this.sum).forEach((key) => {
@@ -632,7 +741,6 @@ export default {
 			if(this.show_headers)  this.calculateTotalsRow();
 			this.updateAvgValuesOfRecords();
 
-
 			this.items = this.itemsArray;
 
 			this.addCellVariantsArrayToRecords();
@@ -643,7 +751,6 @@ export default {
 
 		filterTable() {
 			this.filtered = this.items.filter(el => {
-
 				let a = true
 				let b = false
 				let pass_b = true
@@ -679,8 +786,6 @@ export default {
 		},
 
 		calculateTotalsRow() {
-
-
 			// вот здесь я считаю итоговые суммы минут по всем сотрудникам, и мне их видимо придется сохранить в бд
 
 			let total = 0
@@ -696,21 +801,19 @@ export default {
 							total += sum;
 							// quantity++;
 						}
-					} else {
+					}
+					else {
 						this.itemsArray[0][key] = parseFloat(sum / percentage).toFixed(1);
 						if(percentage != 0 && sum != 0) {
 							total += parseFloat(sum / percentage);
 							// quantity++;
 						}
 					}
-				} else {
+				}
+				else {
 					this.itemsArray[0][key] = 0;
 				}
 			}
-
-			console.log('TOTAL ' + total)
-
-
 
 			if(this.activity.plan_unit == 'minutes') {
 				this.itemsArray[0]['plan'] = Number(total).toFixed(0);
@@ -719,19 +822,13 @@ export default {
 			if(this.activity.plan_unit == 'less_sum') {
 				this.itemsArray[0]['plan'] = Number(total).toFixed(0);
 			}
-
-
-
-
 		},
 
 		setCellVariants() {
 			if (typeof this.activity === 'object') {
-
 				let minutes = this.filtered;
 
 				if(this.activity.plan_unit != 'less_sum') {
-
 					minutes.forEach((account, index) => {
 						if (index > 0 || !this.show_headers) {
 							for (let key in account) {
@@ -739,15 +836,18 @@ export default {
 									if (key >= 1 && key <= 31 && account[key] !== undefined && account[key] !== null) {
 										if (account[key] >= this.activity.daily_plan) {
 											this.filtered[index]._cellVariants[key] = 'success';
-										} else {
+										}
+										else {
 											this.filtered[index]._cellVariants[key] = 'danger';
 										}
 									}
-								} else {
+								}
+								else {
 									if (key >= 1 && key <= 31 && account[key] !== undefined && account[key] !== null) {
 										if (account[key] > this.activity.daily_plan) {
 											this.filtered[index]._cellVariants[key] = 'danger';
-										} else {
+										}
+										else {
 											this.filtered[index]._cellVariants[key] = 'success';
 										}
 									}
@@ -755,10 +855,8 @@ export default {
 							}
 						}
 					});
-
 				}
 			}
-
 		},
 
 		editMode(item) {
@@ -769,26 +867,20 @@ export default {
 			item.editable = item.name == 'Итого' ? false : true;
 		},
 		viewMode(item){
-			console.log('viewMode', item)
 			item.editable = false
 		},
 
 		updateSettings(e, data, index, key) {
 			data.editable = false
-			console.log(key);
 			var clearedValue = e.target.value.replace(',', '.');
 			var value = null;
 			if(this.activity.plan_unit == 'minutes') value = parseFloat(clearedValue);
 			if(this.activity.plan_unit == 'less_sum') value = parseFloat(clearedValue);
 			if(this.activity.plan_unit == 'percent') value = parseFloat(clearedValue).toFixed(1);
 			if(this.activity.plan_unit == 'less_avg') value = parseFloat(clearedValue).toFixed(1);
-			if(value < 0) {
-				this.filtered[index][key] = 0;
-			}
+			if(value < 0) this.filtered[index][key] = 0;
 
-			if(value > 999) {
-				this.filtered[index][key] = 999;
-			}
+			if(value > 999) this.filtered[index][key] = 999;
 
 			this.filtered[index][key] = Number(this.filtered[index][key])
 			let employee_id = data.id;
@@ -800,25 +892,21 @@ export default {
 
 			this.updateTable(filtered);
 
-
-
-			this.axios
-				.post('/timetracking/analytics/update-stat', {
-					month: this.month.month,
-					year: this.month.currentYear,
-					group_id: this.activity.group_id,
-					employee_id: employee_id,
-					id: this.activity.id,
-					day: key,
-					value: '' + (value || 0)
-				})
-				.then(() => {
-					loader.hide();
-				});
-
+			this.axios.post('/timetracking/analytics/update-stat', {
+				month: this.month.month,
+				year: this.month.currentYear,
+				group_id: this.activity.group_id,
+				employee_id: employee_id,
+				id: this.activity.id,
+				day: key,
+				value: '' + (value || 0)
+			}).then(() => {
+				loader.hide();
+			});
 		},
 
 		exportData() {
+			this.isControls = false
 			var link = '/timetracking/analytics/activity/exportxx';
 			link += '?month=' + this.$moment(
 				`${this.month.currentMonth}`,
@@ -842,7 +930,8 @@ export default {
 					'plan': '',
 					'avg': '',
 				}];
-			} else {
+			}
+			else {
 				this.itemsArray = [];
 			}
 
@@ -859,8 +948,6 @@ export default {
 			this.records.forEach(account => {
 				let countWorkedDays = 0;
 				let cellValues = [];
-
-
 
 				if (account.name != this.totalRowName) {
 					let sumForOne = 0;
@@ -883,15 +970,12 @@ export default {
 								countWorkedDays++;
 								this.totalCountDays++;
 							}
-
 						}
 					}
 
 					cellValues['plan_unit'] = this.activity.plan_unit;
 
 					let daily_plan = Number(this.activity.daily_plan);
-
-
 
 					if(this.activity.plan_unit == 'minutes') {
 						if(account.full_time == 0)  daily_plan = Number(daily_plan / 2);
@@ -906,7 +990,6 @@ export default {
 							quan_of_column++;
 							avg_of_column += Number(finishAverage);
 						}
-
 
 						let wd = Number(this.activity.workdays);
 						cellValues['month'] = account.applied_from != 0 ? Number(account.applied_from) * daily_plan : Number(wd) * daily_plan;
@@ -937,7 +1020,6 @@ export default {
 						}
 
 						this.avgOfAverage = parseFloat(this.avgOfAverage) + parseFloat(finishAverage);
-
 					}
 
 					if(this.activity.plan_unit == 'less_avg') {
@@ -945,8 +1027,6 @@ export default {
 						let finishAverage = !isNaN(average) ? average : 0;
 						cellValues['month'] = daily_plan;
 						cellValues['plan'] = finishAverage;
-
-
 						this.avgOfAverage = parseFloat(this.avgOfAverage) + parseFloat(finishAverage);
 
 						if(finishAverage != 0) {
@@ -960,7 +1040,6 @@ export default {
 						cellValues['plan'] =  Number(sumForOne).toFixed(0);
 
 						this.avgOfAverage = parseFloat(this.avgOfAverage) + Number(sumForOne);
-
 					}
 				}
 
@@ -980,7 +1059,6 @@ export default {
 						...cellValues,
 					});
 				}
-
 			});
 
 			let avg = quan_of_column > 0 ? avg_of_column / quan_of_column : '';
@@ -988,11 +1066,11 @@ export default {
 			if(this.show_headers)  {
 				if(this.activity.plan_unit == 'minutes') {
 					this.itemsArray[0]['avg'] = Number(avg).toFixed(0);
-				} else {
+				}
+				else {
 					this.itemsArray[0]['plan'] = Number(avg).toFixed(2);
 				}
 			}
-
 			// this.records.forEach(account => {
 			// 	if(parseFloat(account['plan']) != 0 && account['plan'] != undefined) {
 
@@ -1000,10 +1078,6 @@ export default {
 			// 		row0_avg_items++;
 			// 	}
 			// })
-
-
-
-
 		},
 
 		toFloat(number) {
@@ -1011,6 +1085,7 @@ export default {
 		},
 
 		editActivity() {
+			this.isControls = false
 			this.showEditModal = true;
 		},
 
@@ -1032,7 +1107,6 @@ export default {
 		},
 
 		sort(field) {
-
 			if(this.sorts[field] === undefined) {
 				this.sorts[field] = 'asc';
 			}
@@ -1043,15 +1117,18 @@ export default {
 			if(this.sorts[field] === 'desc') {
 				if(field == 'name') {
 					this.items.sort((a, b) => (a[field] > b[field]) ? 1 : -1);
-				} else {
+				}
+				else {
 					this.items.sort((a, b) => (Number(a[field]) > Number(b[field])) ? 1 : -1);
 				}
 
 				this.sorts[field] = 'asc';
-			} else {
+			}
+			else {
 				if(field == 'name') {
 					this.items.sort((a, b) => (a[field] < b[field]) ? 1 : -1);
-				} else {
+				}
+				else {
 					this.items.sort((a, b) => (Number(a[field]) < Number(b[field])) ? 1 : -1);
 				}
 				this.sorts[field] = 'desc';
@@ -1059,106 +1136,160 @@ export default {
 
 			this.items.unshift(item);
 		},
+
+		onClickImport(){
+			this.isControls = false
+			this.showExcelImport = !this.showExcelImport
+		},
+
+		onClickFilters(){
+			this.isFilters = true
+			this.isControls = false
+		},
+		onClickFiltersOutside(){
+			this.isFilters = false
+		},
+		onClickControls(){
+			this.isControls = true
+			this.isFilters = false
+		},
+		onClickControlsOutside(){
+			this.isControls = false
+		},
+		onClickFilter(){
+			this.isFilters = false
+			this.fetchData()
+			switch(+this.userShift){
+			case 0:
+				this.filter.fulltime = 0
+				this.filter.parttime = 0
+				break
+			case 1:
+				this.filter.fulltime = 1
+				this.filter.parttime = 0
+				break
+			case 2:
+				this.filter.fulltime = 0
+				this.filter.parttime = 1
+				break
+			}
+			this.filterTable()
+		}
 	},
 };
 </script>
 
 <style lang="scss">
+.TableActivityNew{
+	&-contlors{
+		position: relative;
+	}
+	&-filters{
+		position: relative;
+	}
+	&-filtersPopup{
+		width: 250px;
+		padding: 10px;
+	}
+	&-filtersIcon{
+		width: 14px;
+		filter: invert(27%) sepia(73%) saturate(2928%) hue-rotate(209deg) brightness(96%) contrast(89%);
+	}
+}
 .my-table.m2 tr .badge {
-    opacity: 1;
+	opacity: 1;
 }
 
 .day-minute {
-    padding: 0 10px!important;
-    text-align: center;
-    vertical-align: middle;
+	padding: 0 10px!important;
+	text-align: center;
+	vertical-align: middle;
 
-    div {
-        font-size: 0.8rem;
-    }
-    &.table-success {
-        background-color: #01c601 !important;
-    }
+	div {
+		font-size: 0.8rem;
+	}
+	&.table-success {
+		background-color: #01c601 !important;
+	}
 
-    &.table-danger {
-        background-color: #ff7669  !important;
-    }
+	&.table-danger {
+		background-color: #ff7669  !important;
+	}
 }
 
 .inverted {
-    .day-minute {
-        &.table-success {
-            background-color: #ff7669  !important;
-        }
+	.day-minute {
+		&.table-success {
+			background-color: #ff7669  !important;
+		}
 
-        &.table-danger {
-            background-color: #01c601 !important;
-        }
-    }
+		&.table-danger {
+			background-color: #01c601 !important;
+		}
+	}
 }
-.table td, .table th, .table thead th{
-    vertical-align: middle;
-    min-width: 42px;
-    text-align: center;
+.table td,
+.table th,
+.table thead th{
+	vertical-align: middle;
+	min-width: 42px;
+	text-align: center;
 }
 .table.b-table.table-sm>thead>tr>[aria-sort]:not(.b-table-sort-icon-left),
 .table.b-table.table-sm>tfoot>tr>[aria-sort]:not(.b-table-sort-icon-left) {
-    background-image: none !important;
-    min-width: 32px;
+	background-image: none !important;
+	min-width: 32px;
 }
 .table .stat {
-    background-color: #d9edff;
-    border: 1px solid #bbd3e9!important;
+	background-color: #d9edff;
+	border: 1px solid #bbd3e9!important;
 }
 .table {
-    position: relative;
+	position: relative;
 }
 .b-table-sticky-column{
-    position: sticky;
-    left: 0;
-    z-index: 2;
+	position: sticky;
+	left: 0;
+	z-index: 2;
 }
 .wd {
-    font-size: 0.75rem;
-    width: max-content;
-    font-weight: 500;
+	font-size: 0.75rem;
+	width: max-content;
+	font-weight: 500;
 }
 .table .stat.plan{
-    background-color: #779bbb;
-    color: #fff;
+	background-color: #779bbb;
+	color: #fff;
 }
 
 .cell-input {
-    background: none;
-    border: none;
-    text-align: center;
-    -moz-appearance: textfield;
-    font-size: .8rem;
-    font-weight: normal;
-    padding: 0;
-    color: #000;
-    border-radius: 0;
+	background: none;
+	border: none;
+	text-align: center;
+	-moz-appearance: textfield;
+	font-size: .8rem;
+	font-weight: normal;
+	padding: 0;
+	color: #000;
+	border-radius: 0;
 
-    &:focus {
-        outline: none;
-    }
+	&:focus {
+			outline: none;
+	}
 
-    &::-webkit-outer-spin-button,
-    &::-webkit-inner-spin-button {
-        -webkit-appearance: none;
-        margin: 0;
-    }
-}
-.bg-white {
-    background: white;
+	&::-webkit-outer-spin-button,
+	&::-webkit-inner-spin-button {
+		-webkit-appearance: none;
+		margin: 0;
+	}
 }
 .text-white {
-    color:#fff;
+	color:#fff;
 }
 .table-primary, .table-primary>td, .table-primary>th {
-    background-color: #dddfe5;
+	background-color: #dddfe5;
 }
 .mywarning{
-    background-color: #f7f2a6;
+	background-color: #f7f2a6;
 }
 </style>

@@ -1182,7 +1182,7 @@ class User extends Authenticatable implements Authorizable
     /**
      * @return array
      */
-    public function schedule(): array
+    public function schedule($withOutHalf = false): array
     {
         $timezone = $this->timezone();
 
@@ -1192,8 +1192,13 @@ class User extends Authenticatable implements Authorizable
 
         $date = Carbon::now($timezone)->format('Y-m-d');
 
-        $start = Carbon::parse("$date $workStartTime", $timezone)->subMinutes(30.0);
-        $end   = Carbon::parse("$date $workEndTime", $timezone);
+        //TODO: проверить логику, раньше не было число с *.30
+        if ($withOutHalf){
+            $start = Carbon::parse("$date $workStartTime", $timezone);
+        } else {
+            $start = Carbon::parse("$date $workStartTime", $timezone)->subMinutes(30.0);
+        }
+        $end = Carbon::parse("$date $workEndTime", $timezone);
 
         if ($start->greaterThan($end)) {
             $end->addDay();
@@ -1296,11 +1301,16 @@ class User extends Authenticatable implements Authorizable
 
     /**
      * Получаем дни работы для пользователя за месяц
-     * @return void
+     * @return int
      */
-    public function getCountWorkDaysMonth() {
-        $firstWorkDay = Carbon::parse($this->first_work_day)->format('Y-m-d') ?? Carbon::now()->format('Y-m-d');
+    public function getCountWorkDaysMonth(): int {
+        $firstWorkDay = $this->first_work_day ? Carbon::parse($this->first_work_day)->format('Y-m-d') : Carbon::now()->format('Y-m-d');
         $workChartName = $this->workChart->name;
+
+        if ($workChartName == "2-2"){
+            return WorkChartModel::WORK_DAYS_PER_MONTH_DEFAULT_REPLACEABLE;
+        }
+
         $days = explode('-', $workChartName);
         $workingDay = (int)$days[0];
         $dayOff = (int)$days[1];
@@ -1312,11 +1322,13 @@ class User extends Authenticatable implements Authorizable
 
         $workDayInMonth = 0;
         for ($i = 1; $i <= $daysInMonth; $i++) {
-            $dayInMonth = Carbon::createFromDate($year, $month)->setDay($i);
-            $differBetweenFirstAndLastDay = $dayInMonth->diffInDays($firstWorkDay);  // получаем разницу между датами начального и последнего дня
+            $dayInMonth = Carbon::createFromDate($year, $month)->setDay($i)->format('Y-m-d');
+            $date1 = date_create($dayInMonth);
+            $date2 = date_create($firstWorkDay);
+            $differBetweenFirstAndLastDay = date_diff($date1, $date2)->days;
             $remains = $differBetweenFirstAndLastDay % $total;
 
-            if ($remains < $workingDay) {
+            if ($remains < $workingDay && $dayInMonth != Carbon::parse($firstWorkDay)->subDay()->toDateString()) {
                 $workDayInMonth++;
             }
         }
@@ -1375,9 +1387,23 @@ class User extends Authenticatable implements Authorizable
      */
     public function countWorkHours(): int
     {
-        $schedule = $this->schedule();
+        $schedule = $this->schedule(true);
+        $workChart = $this->workChart;
+        if ($workChart && $workChart->rest_time != null){
+            $lunchTime = $workChart->rest_time;
+            $hour = intval($lunchTime / 60);
+            $minute = $lunchTime % 60;
+            $totalHour = floatval($hour.".".$minute);
+            $userWorkHours = max($schedule['end']->diffInSeconds($schedule['start']), 0);
+            $working_hours = round($userWorkHours / 3600, 1) - $totalHour;
+        }else{
+            $lunchTime = 1;
+            $userWorkHours = max($schedule['end']->diffInSeconds($schedule['start']), 0);
+            $working_hours = round($userWorkHours / 3600, 1) - $lunchTime;
+        }
 
-        return $schedule['end']->diffInHours($schedule['start']) - 1;
+
+        return $working_hours;
     }
 
     /**

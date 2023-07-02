@@ -1,44 +1,44 @@
 <template>
-	<div class="z-12 relative">
+	<div class="AnalyticStat z-12 relative">
 		<div class="table-header">
 			<input
+				v-model="coords"
 				type="text"
 				class="cell-coords"
-				v-model="coords"
 			>
 			<input
+				v-model="cell_type"
 				type="text"
 				class="cell-type"
-				v-model="cell_type"
 			>
 			<input
+				v-model="cell_show_value"
 				type="text"
 				class="cell-show-value"
-				v-model="cell_show_value"
 			>
 			<input
+				v-model="cell_value"
 				type="text"
 				class="cell-value"
-				v-model="cell_value"
 			>
 			<input
+				v-model="cell_comment"
 				type="text"
 				class="cell-comment"
-				v-model="cell_comment"
 			>
 		</div>
 
 		<div class="d-flex">
 			<div
-				class="relative   w551"
 				id="wow-table"
+				class="relative w551"
 			>
 				<!-- table -->
 				<table class="as-table left-side">
 					<tr>
 						<td class="ruler-cells t-cell text-center">
 							<div
-								class="in-cell inner-div "
+								class="AnalyticStat-settings in-cell inner-div "
 								@click="editMode()"
 							>
 								<i class="icon-nd-settings" />
@@ -50,15 +50,15 @@
 							class="ruler-cells t-cell text-center"
 						>
 							<div
-								class="in-cell inner-div d-flex"
 								v-if="index == 0"
+								class="in-cell inner-div d-flex"
 							>
 								<span class="two-letter">A</span>
 								<span class="two-letter">B</span>
 							</div>
 							<div
-								class="in-cell inner-div"
 								v-else
+								class="in-cell inner-div"
 							>
 								{{ letter }}
 							</div>
@@ -70,29 +70,31 @@
 						:key="i_index"
 					>
 						<td class="t-cell rownumber ruler-cells">
-							<div class="in-cell inner-div text-center">
-								<span
+							<div class="AnalyticStat-rowControls in-cell inner-div text-center">
+								<IconDelete
 									v-if="editTableMode && i_index > 3"
+									width="14"
+									height="14"
+									class="pointer"
 									@click="deleteRow(i_index)"
-								>
-									<i class="fa fa-trash pointer" />
-								</span>
-								<span
+								/>
+								<ChatIconPlus
 									v-if="editTableMode && i_index > 2"
+									width="14"
+									height="14"
+									class="pointer ChatIcon-parent"
 									@click="add_row(i_index)"
-								>
-									<i class="fa fa-plus-square pointer" />
-								</span>
+								/>
 								<span>{{ i_index + 1 }}</span>
 							</div>
 						</td>
 
-						<template v-for="(field,f_index) in fields.slice(0, 4)">
+						<template v-for="(field, f_index) in fields.slice(0, 4)">
 							<td
-								class="t-cell font-bold"
-								:key="f_index"
-								@click="focus(i_index, f_index)"
 								v-if="field.key != 'plan'"
+								:key="f_index"
+								class="t-cell font-bold"
+								@click="focus(i_index, f_index)"
 								:class="item[field.key].class"
 							>
 								<template v-if="field.key == 'name' && [1,2,3].includes(i_index)">
@@ -110,8 +112,8 @@
 											<div class="disabled" />
 
 											<div
-												class="contextor"
 												v-if="item[field.key].context"
+												class="contextor"
 											>
 												<ul class="types">
 													<li @click="add_formula_1_31(item[field.key])">
@@ -121,10 +123,10 @@
 											</div>
 
 											<input
-												type="text"
-												class="in-cell"
 												v-if="focused_item === i_index && focused_field === f_index && focused_subfield == 1"
 												v-model="item['name'].value"
+												type="text"
+												class="in-cell"
 												@change="change_stat(i_index, 'name')"
 											>
 
@@ -135,10 +137,9 @@
 												:value="item['name'].show_value"
 											>
 
-
 											<div
-												class="bottom-angle"
 												v-if="focused_item === i_index && focused_field === f_index && focused_subfield == 1"
+												class="bottom-angle"
 											>
 												<div class="angler" />
 											</div>
@@ -161,10 +162,10 @@
 											<div class="disabled" />
 
 											<input
-												type="text"
-												class="in-cell"
 												v-if="focused_item === i_index && focused_field === f_index && focused_subfield == 2"
 												v-model="item['plan'].value"
+												type="text"
+												class="in-cell"
 												@change="change_stat(i_index, 'plan')"
 											>
 											<input
@@ -175,8 +176,8 @@
 											>
 
 											<div
-												class="bottom-angle"
 												v-if="focused_item === i_index && focused_field === f_index && focused_subfield == 2"
+												class="bottom-angle"
 											>
 												<div class="angler" />
 											</div>
@@ -201,12 +202,12 @@
 									>
 										<div class="disabled" />
 										<div
-											class="contextor"
 											v-if="item[field.key].context"
+											class="contextor"
 										>
 											<div
-												class="fonter d-flex justify-content-between"
 												v-if="activeuserid == 5"
+												class="fonter d-flex justify-content-between"
 											>
 												<div @click="add_class(item[field.key], 'font-bold')">
 													Ж
@@ -248,74 +249,74 @@
 											</div>
 											<ul class="types">
 												<li
-													@click="change_type('initial', i_index, field.key)"
 													v-if="activeuserid == 5 || ['sum', 'avg'].includes(field.key)"
+													@click="change_type('initial', i_index, field.key)"
 												>
 													Обычный
 												</li>
 												<li
-													@click="change_type('formula', i_index, field.key)"
 													v-if="activeuserid == 5"
+													@click="change_type('formula', i_index, field.key)"
 												>
 													Формула
 												</li>
 												<li
-													@click="change_type('time', i_index, field.key)"
 													v-if="['name'].includes(field.key)"
+													@click="change_type('time', i_index, field.key)"
 												>
 													Часы из табеля
 												</li>
 												<li
-													@click="change_type('stat', i_index, field.key)"
 													v-if="['name'].includes(field.key)"
+													@click="change_type('stat', i_index, field.key)"
 												>
 													Показатели
 												</li>
 												<li
-													@click="change_type('avg', i_index, field.key)"
 													v-if="['avg'].includes(field.key)"
+													@click="change_type('avg', i_index, field.key)"
 												>
 													Среднее за месяц
 												</li>
 												<li
-													@click="change_type('sum', i_index, field.key)"
 													v-if="['sum'].includes(field.key)"
+													@click="change_type('sum', i_index, field.key)"
 												>
 													Сумма за месяц
 												</li>
 												<li
-													@click="selectDepend(item[field.key])"
 													v-if="['name'].includes(field.key) && item[field.key].depend_id === null"
+													@click="selectDepend(item[field.key])"
 												>
 													Зависимость от ряда
 												</li>
 												<li
-													@click="removeDependency(item[field.key])"
 													v-else-if="['name'].includes(field.key)"
+													@click="removeDependency(item[field.key])"
 												>
 													Убрать зависимость
 												</li>
 												<li
-													@click="add_formula_1_31(item[field.key])"
 													v-if="['name'].includes(field.key)"
+													@click="add_formula_1_31(item[field.key])"
 												>
 													Формула с 1 по 31
 												</li>
 												<li
-													@click="add_inhouse(item[field.key])"
 													v-if="['name'].includes(field.key)"
+													@click="add_inhouse(item[field.key])"
 												>
 													Отсутствие минут inhouse
 												</li>
 												<li
-													@click="add_remote(item[field.key])"
 													v-if="['name'].includes(field.key)"
+													@click="add_remote(item[field.key])"
 												>
 													Отсутствие минут remote
 												</li>
 												<li
-													@click="add_salary(item[field.key])"
 													v-if="['name'].includes(field.key)"
+													@click="add_salary(item[field.key])"
 												>
 													Начисления отдела
 												</li>
@@ -332,12 +333,11 @@
 											</ul>
 										</div>
 
-
 										<input
-											type="text"
-											class="in-cell"
 											v-if="focused_item === i_index && focused_field === f_index"
 											v-model="item[field.key].value"
+											type="text"
+											class="in-cell"
 											@change="change_stat(i_index, field.key)"
 										>
 										<input
@@ -347,11 +347,9 @@
 											:value="item[field.key].show_value ? item[field.key].show_value : '' + (i_index == 2 && field.key == 'sum' ? '%' : '')"
 										>
 
-
-
 										<div
-											class="bottom-angle"
 											v-if="focused_item === i_index && focused_field === f_index"
+											class="bottom-angle"
 										>
 											<div class="angler" />
 										</div>
@@ -370,7 +368,7 @@
 
 			<div class="table-responsive">
 				<!-- table 2 -->
-				<table class="as-table mr150">
+				<table class="as-table">
 					<tr>
 						<td
 							v-for="(letter, index) in letter_cells.slice(4, letter_cells.length)"
@@ -389,11 +387,11 @@
 					>
 						<template v-for="(field,f_index) in fields">
 							<td
-								class="t-cell font-bold"
+								v-if="f_index > 3"
 								:key="f_index"
+								class="t-cell font-bold"
 								@click="focus(i_index, f_index)"
 								:class="item[field.key].class"
-								v-if="f_index > 3"
 							>
 								<div
 									class="inner-div"
@@ -408,8 +406,8 @@
 								>
 									<div class="disabled" />
 									<div
-										class="contextor"
 										v-if="item[field.key].context"
+										class="contextor"
 									>
 										<ul class="types">
 											<li>
@@ -435,10 +433,10 @@
 									</div>
 
 									<input
-										type="text"
-										class="in-cell"
 										v-if="focused_item === i_index && focused_field === f_index"
 										v-model="item[field.key].value"
+										type="text"
+										class="in-cell"
 										@change="change_stat(i_index, field.key)"
 									>
 
@@ -456,8 +454,8 @@
 									>
 
 									<div
-										class="bottom-angle"
 										v-if="focused_item === i_index && focused_field === f_index"
+										class="bottom-angle"
 									>
 										<div class="angler" />
 									</div>
@@ -500,9 +498,9 @@
 						class="form-control form-control-sm"
 					>
 						<option
-							:value="dep.row_id"
 							v-for="(dep, key) in dependencies"
 							:key="key"
+							:value="dep.row_id"
 						>
 							{{ dep.index }} {{ dep.name }}
 						</option>
@@ -531,9 +529,9 @@
 						class="form-control form-control-sm"
 					>
 						<option
-							:value="activity.id"
 							v-for="(activity, key) in activities"
 							:key="key"
+							:value="activity.id"
 						>
 							{{ activity.name }}
 						</option>
@@ -558,9 +556,9 @@
 				</div>
 				<div class="col-12 mb-3">
 					<input
+						v-model="formula_1_31"
 						type="text"
 						class="form-control form-control-sm"
-						v-model="formula_1_31"
 					>
 				</div>
 				<div class="col-4">
@@ -568,9 +566,9 @@
 				</div>
 				<div class="col-8">
 					<input
+						v-model="formula_1_31_decimals"
 						type="text"
 						class="form-control form-control-sm"
-						v-model="formula_1_31_decimals"
 					>
 				</div>
 			</div>
@@ -590,9 +588,9 @@
 				</div>
 				<div class="col-12">
 					<input
+						v-model="comment"
 						type="text"
 						class="form-control form-control-sm"
-						v-model="comment"
 					>
 				</div>
 			</div>
@@ -601,10 +599,18 @@
 </template>
 
 <script>
+import {
+	IconDelete,
+	ChatIconPlus,
+} from '@icons'
 const Parser = require('expr-eval').Parser;
+
 export default {
-	components: {},
 	name: 'AnalyticStat',
+	components: {
+		IconDelete,
+		ChatIconPlus,
+	},
 	props: ['monthInfo', 'activeuserid', 'isAdmin', 'table', 'group_id', 'fields', 'activities'],
 	data() {
 		return {
@@ -665,7 +671,6 @@ export default {
 		this.setDependencies();
 
 		//this.fields = this.columns
-
 	},
 
 	mounted () {
@@ -678,7 +683,6 @@ export default {
 			let arr = [];
 
 			this.items.forEach((item, index) => {
-
 				if(![0,1,2,3].includes(index)) {
 					arr.push({
 						'row_id': item['name']['row_id'],
@@ -686,22 +690,15 @@ export default {
 						'index': item['name']['value'],
 					});
 				}
-
-
 			});
 			this.dependencies  = arr
 
-
 			let depender = {};
 			this.items.forEach((item, index) => {
-
 				depender[item['name']['row_id']] = index;
-
 			});
 
-
 			this.depender = depender
-
 		},
 
 		editMode() {
@@ -722,15 +719,14 @@ export default {
 
 		calc(combinations) {
 			let expression = this.getExpression(combinations);
-
 			let result = 0;
 
 			if(expression !== null && expression.length > 0) {
 				try {
 					result = Parser.evaluate(expression);
-				} catch (e) {
-					console.log(e)
-					console.log(result, 'result')
+				}
+				catch (error) {
+					console.log(error)
 				}
 			}
 
@@ -792,7 +788,8 @@ export default {
 
 			if(c !== null && c.includes(clasxs)) {
 				item.class = item.class.replace(clasxs, '');
-			} else {
+			}
+			else {
 				item.class = item.class + ' ' + clasxs;
 			}
 
@@ -821,8 +818,6 @@ export default {
 
 			if(type == 'local') { // для vue
 				combinations.forEach(item => {
-
-
 					if(item.type == 'formula') {
 						let inner_combinations = this.combinator(item.value);
 						let inner_calc = 0;
@@ -830,9 +825,11 @@ export default {
 						inner_calc = this.calc(inner_combinations);
 						inner_item.show_value = inner_calc;
 						expression += inner_calc;
-					} else if(item.type == 'action'){
+					}
+					else if(item.type == 'action'){
 						expression += item.text;
-					} else {
+					}
+					else {
 						item.value = Number(item.value);
 						expression += !isNaN(item.value) ?  item.value : 0;
 					}
@@ -852,8 +849,6 @@ export default {
 		},
 
 		add_row(i_index) {
-
-
 			let loader = this.$loading.show();
 			this.axios.post('/timetracking/analytics/add-row', {
 				group_id: this.group_id,
@@ -862,20 +857,17 @@ export default {
 					'MMMM YYYY'
 				).format('YYYY-MM-DD'),
 				after_row_id: this.items[i_index]['name']['row_id'],
-			})
-				.then((response) => {
-					this.$toast.success('Добавлено');
+			}).then((response) => {
+				this.$toast.success('Добавлено');
 
-
-					this.items.splice(i_index + 1, 0, response.data);
-					//this.setDependencies();
-					loader.hide()
-				}).catch(error => {
-					this.$toast.error('Не получилось');
-					console.log(error)
-					loader.hide()
-				});
-
+				this.items.splice(i_index + 1, 0, response.data);
+				//this.setDependencies();
+				loader.hide()
+			}).catch(error => {
+				this.$toast.error('Не получилось');
+				console.log(error)
+				loader.hide()
+			});
 		},
 
 
@@ -891,18 +883,17 @@ export default {
 						'MMMM YYYY'
 					).format('YYYY-MM-DD'),
 					item: this.items[index]
-				})
-					.then(() => {
-						this.$toast.success('Удалено');
-						// Delete item from items
-						this.items.splice(index, 1);
-						this.setDependencies();
-						loader.hide()
-					}).catch(error => {
-						this.$toast.error('Не получилось');
-						console.log(error)
-						loader.hide()
-					});
+				}).then(() => {
+					this.$toast.success('Удалено');
+					// Delete item from items
+					this.items.splice(index, 1);
+					this.setDependencies();
+					loader.hide()
+				}).catch(error => {
+					this.$toast.error('Не получилось');
+					console.log(error)
+					loader.hide()
+				});
 			}
 		},
 
@@ -911,38 +902,31 @@ export default {
 			this.axios.post('/timetracking/analytics/add-depend', {
 				id: this.itemy['row_id'],
 				depend_id: this.depend_id
-			})
-				.then(() => {
-					this.$toast.success('Обновите, чтобы подтянуть данные!');
+			}).then(() => {
+				this.$toast.success('Обновите, чтобы подтянуть данные!');
 
-					this.showDependy = false;
-					this.depend_id = null;
-					this.itemy = null
-				}).catch(error => {
-					this.$toast.error('Не получилось');
-					console.log(error)
-				});
-
+				this.showDependy = false;
+				this.depend_id = null;
+				this.itemy = null
+			}).catch(error => {
+				this.$toast.error('Не получилось');
+				console.log(error)
+			});
 		},
 
 		removeDependency(item) {
 			this.axios.post('/timetracking/analytics/dependency/remove', {
 				id: item.row_id,
-			})
-				.then(() => {
-					this.$toast.success('Обновите, чтобы подтянуть данные!');
-				}).catch(error => {
-					this.$toast.error('Не получилось');
-					console.log(error)
-				});
-
+			}).then(() => {
+				this.$toast.success('Обновите, чтобы подтянуть данные!');
+			}).catch(error => {
+				this.$toast.error('Не получилось');
+				console.log(error)
+			});
 		},
 
 		focus(i,f) {
-
 			if([1,2,3].includes(i) && f == 0) return ''
-
-
 
 			if(!(this.focused_item == i && this.focused_field == f)) {
 				this.hideContextMenu();
@@ -960,11 +944,9 @@ export default {
 			this.cell_type = this.cell_types[item.type]
 			this.cell_show_value = item.show_value
 			this.coords = item.cell
-
 		},
 
 		focusName(i,f, s) {
-
 			this.hideContextMenu();
 			// indexes
 			this.focused_item = i
@@ -1001,7 +983,6 @@ export default {
 			//if(item.editable == 1) {
 			item.context = true;
 			//}
-
 		},
 
 		editQuery(i_index, f_index) {
@@ -1021,19 +1002,16 @@ export default {
 				class: item.class,
 				formula: item.formula,
 				comment: this.comment,
-			})
-				.then(() => {
-					this.showCommentWindow = false;
-					this.comment_i = '';
-					this.comment_f = '';
-					this.$toast.success('Сохранено');
-				}).catch(error => {
-					this.$toast.error('Не сохранено');
-					console.log(error)
-				});
+			}).then(() => {
+				this.showCommentWindow = false;
+				this.comment_i = '';
+				this.comment_f = '';
+				this.$toast.success('Сохранено');
+			}).catch(error => {
+				this.$toast.error('Не сохранено');
+				console.log(error)
+			});
 		},
-
-
 
 		save_cell_time() {
 			let loader = this.$loading.show();
@@ -1071,7 +1049,6 @@ export default {
 			}).then(response => {
 				this.$toast.success('Сумма подтянута!')
 
-
 				this.item.value = response.data
 				this.item.show_value = response.data
 				this.item = null;
@@ -1107,7 +1084,6 @@ export default {
 			});
 		},
 
-
 		save_cell_activity() {
 			let loader = this.$loading.show();
 			let item = this.item
@@ -1126,7 +1102,6 @@ export default {
 			}).then(() => {
 				this.$toast.success('Обновите чтобы подтянуть данные!')
 
-
 				this.item = null;
 
 				this.showVariants = false
@@ -1139,7 +1114,6 @@ export default {
 		},
 
 		editQueryItem(item) {
-
 			this.axios.post('/timetracking/analytics/edit-stat', {
 				date: this.$moment(
 					`${this.monthInfo.currentMonth} ${this.monthInfo.currentYear}`,
@@ -1153,13 +1127,12 @@ export default {
 				class: item.class,
 				formula: item.formula,
 				group_id: this.group_id,
-			})
-				.then(() => {
-					this.$toast.success('Сохранено');
-				}).catch(error => {
-					this.$toast.error('Не сохранено');
-					console.log(error)
-				});
+			}).then(() => {
+				this.$toast.success('Сохранено');
+			}).catch(error => {
+				this.$toast.error('Не сохранено');
+				console.log(error)
+			});
 		},
 
 		change_type(type, i_index, f_index) {
@@ -1171,7 +1144,6 @@ export default {
 
 				this.calcGlobal()
 				this.editQuery(i_index, f_index);
-
 			}
 
 			if(item.type == 'formula') {
@@ -1207,10 +1179,6 @@ export default {
 				this.item = item;
 				this.showVariants = true;
 			}
-
-
-
-
 		},
 
 		selectDepend(item) {
@@ -1232,14 +1200,13 @@ export default {
 				).format('YYYY-MM-DD'),
 				row_id: this.itemy.row_id,
 				type: 'inhouse'
-			})
-				.then(() => {
-					this.$toast.success('Обновите для сохранения');
-					this.itemy = null;
-				}).catch(error => {
-					this.$toast.error('Не сохранено');
-					console.log(error)
-				});
+			}).then(() => {
+				this.$toast.success('Обновите для сохранения');
+				this.itemy = null;
+			}).catch(error => {
+				this.$toast.error('Не сохранено');
+				console.log(error)
+			});
 		},
 
 		add_remote(item) {
@@ -1251,14 +1218,13 @@ export default {
 				).format('YYYY-MM-DD'),
 				row_id: this.itemy.row_id,
 				type: 'remote'
-			})
-				.then(() => {
-					this.$toast.success('Обновите для сохранения');
-					this.itemy = null;
-				}).catch(error => {
-					this.$toast.error('Не сохранено');
-					console.log(error)
-				});
+			}).then(() => {
+				this.$toast.success('Обновите для сохранения');
+				this.itemy = null;
+			}).catch(error => {
+				this.$toast.error('Не сохранено');
+				console.log(error)
+			});
 		},
 
 		add_salary(item) {
@@ -1269,18 +1235,16 @@ export default {
 					'MMMM YYYY'
 				).format('YYYY-MM-DD'),
 				row_id: this.itemy.row_id
-			})
-				.then(() => {
-					this.$toast.success('Обновите для сохранения');
-					this.itemy = null;
-				}).catch(error => {
-					this.$toast.error('Не сохранено');
-					console.log(error)
-				});
+			}).then(() => {
+				this.$toast.success('Обновите для сохранения');
+				this.itemy = null;
+			}).catch(error => {
+				this.$toast.error('Не сохранено');
+				console.log(error)
+			});
 		},
 
 		setDecimals(item) {
-
 			this.axios.post('/timetracking/analytics/set-decimals', {
 				date: this.$moment(
 					`${this.monthInfo.currentMonth} ${this.monthInfo.currentYear}`,
@@ -1289,19 +1253,17 @@ export default {
 				row_id: item.row_id,
 				column_id: item.column_id,
 				decimals: item.decimals
-			})
-				.then(() => {
-					this.$toast.success('Сохранено!');
-					this.hideContextMenu();
-				}).catch(error => {
-					this.$toast.error('Не сохранено');
-					console.log(error)
-				});
+			}).then(() => {
+				this.$toast.success('Сохранено!');
+				this.hideContextMenu();
+			}).catch(error => {
+				this.$toast.error('Не сохранено');
+				console.log(error)
+			});
 		},
 
 		save_formula_1_31() {
 			// let rows = [];
-
 			let text =  this.formula_1_31
 
 			this.items.forEach((item, index) => {
@@ -1314,7 +1276,8 @@ export default {
 			if(regExp.test(text)){
 				/* do something if letters are found in your string */
 				this.$toast.error('Вы не правильно ввели формулу');
-			} else {
+			}
+			else {
 				this.axios.post('/timetracking/analytics/add-formula-1-31', {
 					date: this.$moment(
 						`${this.monthInfo.currentMonth} ${this.monthInfo.currentYear}`,
@@ -1323,20 +1286,17 @@ export default {
 					formula: text,
 					row_id: this.itemy.row_id,
 					decimals: this.formula_1_31_decimals
-				})
-					.then(() => {
-						this.$toast.success('Обновите для сохранения');
-						this.showFormula1_31 = false
-						this.formula_1_31 = '';
-						this.formula_1_31_decimals = 9;
-						this.itemy = null;
-					}).catch(error => {
-						this.$toast.error('Не сохранено');
-						console.log(error)
-					});
+				}).then(() => {
+					this.$toast.success('Обновите для сохранения');
+					this.showFormula1_31 = false
+					this.formula_1_31 = '';
+					this.formula_1_31_decimals = 9;
+					this.itemy = null;
+				}).catch(error => {
+					this.$toast.error('Не сохранено');
+					console.log(error)
+				});
 			}
-
-
 		},
 
 		change_stat(i_index, f_index) {
@@ -1371,7 +1331,6 @@ export default {
 			}
 
 			this.editQuery(i_index, f_index);
-
 		},
 
 		saveComment() { // for remote/inhouse add hours
@@ -1379,7 +1338,8 @@ export default {
 				this.editQuery(this.comment_i, this.comment_f);
 				this.items[this.comment_i][this.comment_f].comment = this.comment;
 				this.showCommentWindow = false;
-			} else {
+			}
+			else {
 				this.$toast.info('Пожалуйста, напишите подробнее');
 			}
 		},
@@ -1431,12 +1391,11 @@ export default {
 
 				if(sl_pos >= 0) {
 					this.letter_cells.push(letters[sl_pos] + letters[fl_pos]);
-				} else {
+				}
+				else {
 					this.letter_cells.push(letters[fl_pos]);
 				}
-
 			}
-
 		},
 
 		handleClick (event, item) { // for context menu
@@ -1576,7 +1535,6 @@ export default {
 		},
 
 		searcher(cell){
-
 			let res;
 			for (var i=0; i < this.items.length; i++) {
 				Object.values(this.items[i]).forEach(item => {
@@ -1589,7 +1547,6 @@ export default {
 		},
 
 		formula_searcher(){
-
 			let items = [];
 			for (var i=0; i < this.items.length; i++) {
 				Object.values(this.items[i]).forEach(item => {
@@ -1604,8 +1561,20 @@ export default {
 }
 </script>
 
-    <style scoped>
-    .z-12 {
-        z-index: 12
-    }
-    </style>
+<style lang="scss">
+.AnalyticStat{
+	&-settings{
+		font-size: 0.8em;
+	}
+	&-rowControls{
+		display: flex;
+		flex-flow: row nowrap;
+		align-items: center;
+		justify-content: center;
+		gap: 0.4rem;
+	}
+}
+.z-12 {
+	z-index: 12
+}
+</style>

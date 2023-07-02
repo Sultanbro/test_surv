@@ -248,28 +248,6 @@ body.messenger__open {
 	overflow-y: hidden;
 }
 
-.ChatIcon{
-	&-parent:hover,
-	&-active{
-		.ChatIcon-line{
-			stroke: #3361FF;
-		}
-		.ChatIcon-shape{
-			fill: #3361FF;
-		}
-	}
-	&-parent_red:hover,
-	&-active_red:hover,
-	&-active_red{
-		.ChatIcon-line{
-			stroke: #F6264C;
-		}
-		.ChatIcon-shape{
-			fill: #F6264C;
-		}
-	}
-}
-
 @media only screen and (max-width: 670px) {
 	.messenger__card-window {
 		width: calc(100vw - 32px);

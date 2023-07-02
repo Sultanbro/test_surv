@@ -6,6 +6,7 @@ use App\Events\BonusUpdated;
 use App\Filters\Kpis\KpiBonusFilter;
 use App\Http\Requests\BonusSaveRequest;
 use App\Http\Requests\BonusUpdateRequest;
+use App\Models\Admin\ObtainedBonus;
 use App\Models\Analytics\Activity;
 use App\Models\GroupUser;
 use App\Models\Kpi\Bonus;
@@ -13,6 +14,7 @@ use App\Models\Scopes\ActiveScope;
 use App\ReadModels\KpiBonusReadModel;
 use App\Repositories\KpiBonusRepository;
 use App\Traits\KpiHelperTrait;
+use App\User;
 use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -44,11 +46,23 @@ class BonusService
             ->pluck('group_id')
             ->toArray();
 
+        $user = User::find($user_id);
+
         $bonuses = Bonus::whereIn('targetable_id', $groups)
             ->where('targetable_type', 'App\ProfileGroup')->get();
         return [
             'bonuses'    => $this->groupItems($bonuses),
+            'read'       => $user->obtainedBonuses->isEmpty() || $user->obtainedBonuses->where('read', true)->isNotEmpty(),
         ];
+    }
+
+    /**
+     * @param int $user_id
+     * @return int
+     */
+    public function read(int $user_id): int
+    {
+        return ObtainedBonus::where('user_id', $user_id)->update(['read' => true]);
     }
 
     /**

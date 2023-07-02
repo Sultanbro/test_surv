@@ -3,132 +3,97 @@
 		class="popup__content  mt-5"
 		:class="{'v-loading': loading}"
 	>
-		<div class="tabs">
-			<div class="popup__filter pb-4">
-				<DateSelect
-					v-model="selectedDate"
-					class="ml-a Balance-datePicker"
-				/>
-			</div>
-
-			<div class="tabs">
-				<div class="tabs__wrapper custom-scroll">
-					<div class="trainee__tabs tabs__wrapper">
-						<div
-							class="trainee__tab tab__item is-active"
-							onclick="switchTabs(this)"
-							data-index="1"
-						>
-							Заработанные бонусы
-						</div>
-						<div
-							class="trainee__tab tab__item"
-							onclick="switchTabs(this)"
-							data-index="2"
-						>
-							Можно заработать
-						</div>
-					</div>
-					<select class="select-css trainee-select mobile-select">
-						<option value="1">
-							Заработанные бонусы
-						</option>
-						<option value="2">
-							Можно заработать
-						</option>
-					</select>
-				</div>
-
-				<div class="tab__content">
-					<div
-						class="kaspi__content custom-scroll-y tab__content-item is-active"
-						data-content="1"
-					>
-						<table>
-							<thead>
-								<tr>
-									<th class="text-center">
-										Дата
-									</th>
-									<th class="text-center">
-										Сумма
-									</th>
-									<th class="text-center">
-										Комментарии
-									</th>
-								</tr>
-							</thead>
-							<tbody>
-								<tr
-									v-for="(item, index) in history"
-									:key="index"
-								>
-									<td class="text-center">
-										{{ $moment.utc(new Date(item.date)).local().format('DD.MM.YYYY HH:mm') }}
-									</td>
-									<td class="text-center">
-										{{ item.sum }}
-									</td>
-									<td>
-										<p class="kaspi__content-comment fz14 mb-0">
-											{{ item.comment }}
-										</p>
-									</td>
-								</tr>
-							</tbody>
-						</table>
-					</div>
-					<div
-						class="kaspi__content custom-scroll-y tab__content-item"
-						data-content="2"
-					>
-						<!--                <div class="kaspi__wrapper">-->
-						<!--                    -->
-						<!--                    <div v-html="potential_bonuses"></div>-->
-						<!--                </div>-->
-						<b-tabs>
-							<b-tab
-								v-for=" (bonus, i) in bonuses"
-								:key="i"
-								:title="bonus.name"
-							>
-								<table>
-									<thead>
-										<tr>
-											<th class="text-center">
-												Название
-											</th>
-											<th class="text-center">
-												За что
-											</th>
-											<th class="text-center">
-												Сумма
-											</th>
-										</tr>
-									</thead>
-									<tbody>
-										<tr
-											v-for="(item, index) in bonus.items"
-											:key="index"
-										>
-											<td class="text-center">
-												{{ item.title }}
-											</td>
-											<td class="text-center">
-												{{ item.text }}
-											</td>
-											<td class="text-center">
-												{{ item.sum }}
-											</td>
-										</tr>
-									</tbody>
-								</table>
-							</b-tab>
-						</b-tabs>
-					</div>
-				</div>
-			</div>
+		<div class="popup__filter pb-4">
+			<DateSelect
+				v-model="selectedDate"
+				class="ml-a Balance-datePicker"
+			/>
 		</div>
+		<ProfileTabs :tabs="['Заработанные бонусы', 'Можно заработать']">
+			<template #tab(0)>
+				<div
+					class="kaspi__content custom-scroll-y"
+					data-content="1"
+				>
+					<table>
+						<thead>
+							<tr>
+								<th class="text-center">
+									Дата
+								</th>
+								<th class="text-center">
+									Сумма
+								</th>
+								<th class="text-center">
+									Комментарии
+								</th>
+							</tr>
+						</thead>
+						<tbody>
+							<tr
+								v-for="(item, index) in history"
+								:key="index"
+							>
+								<td class="text-center">
+									{{ $moment.utc(new Date(item.date)).local().format('DD.MM.YYYY HH:mm') }}
+								</td>
+								<td class="text-center">
+									{{ item.sum }}
+								</td>
+								<td>
+									<p class="kaspi__content-comment fz14 mb-0">
+										{{ item.comment }}
+									</p>
+								</td>
+							</tr>
+						</tbody>
+					</table>
+				</div>
+			</template>
+			<template #tab(1)>
+				<div class="kaspi__content custom-scroll-y">
+					<b-tabs>
+						<b-tab
+							v-for=" (bonus, i) in bonuses"
+							:key="i"
+							:title="bonus.name"
+						>
+							<table>
+								<thead>
+									<tr>
+										<th class="text-center">
+											Название
+										</th>
+										<th class="text-center">
+											За что
+										</th>
+										<th class="text-center">
+											Сумма
+										</th>
+									</tr>
+								</thead>
+								<tbody>
+									<tr
+										v-for="(item, index) in bonus.items"
+										:key="index"
+									>
+										<td class="text-center">
+											{{ item.title }}
+										</td>
+										<td class="text-center">
+											{{ item.text }}
+										</td>
+										<td class="text-center">
+											{{ item.sum }}
+										</td>
+									</tr>
+								</tbody>
+							</table>
+						</b-tab>
+					</b-tabs>
+				</div>
+			</template>
+		</ProfileTabs>
 	</div>
 </template>
 
@@ -138,11 +103,13 @@ import { usePortalStore } from '@/stores/Portal'
 import { useProfileSalaryStore } from '@/stores/ProfileSalary'
 import { useYearOptions } from '@/composables/yearOptions'
 import DateSelect from '../DateSelect'
+import ProfileTabs from '@ui/ProfileTabs'
 
 export default {
 	name: 'PopupBonuses',
 	components: {
 		DateSelect,
+		ProfileTabs,
 	},
 	props: {},
 	data: function () {

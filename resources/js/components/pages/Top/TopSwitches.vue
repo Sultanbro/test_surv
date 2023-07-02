@@ -1,8 +1,8 @@
 <template>
 	<div class="TopSwitches">
 		<label
-			v-for="item, index in items"
-			:key="index"
+			v-for="item, id in items"
+			:key="id"
 			class="TopSwitches-row"
 		>
 			<JobtronSwitch
@@ -26,8 +26,8 @@ export default {
 	},
 	props: {
 		items: {
-			type: Array,
-			default: () => []
+			type: Object,
+			default: () => ({})
 		}
 	},
 }
