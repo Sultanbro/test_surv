@@ -1434,4 +1434,25 @@ class User extends Authenticatable implements Authorizable
         dd($this);
         return !($this->deleted_at == null);
     }
+
+    /**
+     * Получаем дни работы для пользователя за месяц
+     * @param $date
+     * @return int
+     * @throws Exception
+     */
+    public function getWorkDays($date): int{
+        $workChartType = $this->workChart->work_charts_type ?? 0;
+        if ($workChartType == 0 || $workChartType == WorkChartModel::WORK_CHART_TYPE_USUAL){
+            $ignore = $this->getCountWorkDays();   // Какие дни не учитывать в месяце
+            $workDays = workdays($date->year, $date->month, $ignore);
+        }
+        elseif ($workChartType == WorkChartModel::WORK_CHART_TYPE_REPLACEABLE) {
+            $workDays = $this->getCountWorkDaysMonth();
+        }
+        else {
+            throw new Exception(message: 'Проверьте график работы', code: 400);
+        }
+        return $workDays;
+    }
 }
