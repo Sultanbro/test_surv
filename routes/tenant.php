@@ -486,6 +486,8 @@ Route::middleware(['web','tenant', 'not_admin_subdomain'])->group(function () {
     Route::post('/timetracking/analytics/create-activity', [Analytics\AnalyticsController::class, 'createActivity']);
     Route::post('/timetracking/analytics/edit-activity', [Analytics\AnalyticsController::class, 'editActivity']);
     Route::post('/timetracking/analytics/update-stat', [Analytics\AnalyticsController::class, 'updateUserStat']);
+    Route::get('/timetracking/analytics/activity/removed/users/{id}', [Analytics\AnalyticsController::class, 'getRemovedUsers']);
+    Route::post('/timetracking/analytics/activity/remove/group', [Analytics\AnalyticsController::class, 'removeActivityGroup']);
 
     Route::post('/timetracking/analytics/save-cell-activity', [Analytics\AnalyticsController::class, 'saveCellActivity']);
     Route::post('/timetracking/analytics/save-cell-activity-new', [Analytics\CellController::class, 'saveCellActivity']);
