@@ -331,25 +331,29 @@ export default {
 			return this.separateNumber(this.user_earnings.sumKpi)
 		},
 		kpiUnread(){
-			return !this.readed.kpis
+			return false
+			// return !this.readed.kpis
 		},
 		bonus(){
 			return this.separateNumber(this.user_earnings.sumBonuses)
 		},
 		bonusUnread(){
-			return !this.readed.bonuses
+			return false
+			// return !this.readed.bonuses
 		},
 		premium(){
 			return this.separateNumber(this.user_earnings.sumQuartalPremiums)
 		},
 		premiumUnread(){
-			return !this.readed.premiums
+			return false
+			// return !this.readed.premiums
 		},
 		nominations(){
 			return this.separateNumber(this.user_earnings.sumNominations)
 		},
 		nominationsUnread(){
-			return !this.readed.awards
+			return false
+			// return !this.readed.awards
 		},
 	},
 	watch:{
