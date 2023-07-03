@@ -552,11 +552,14 @@
 					</template>
 				</div>
 				<div
+					v-if="can_edit"
 					class="mb-2"
-					v-if="(user_types == '0' || user_types == '1') && can_edit"
 				>
 					<div class="d-flex row">
-						<div class="col-6">
+						<div
+							v-if="(user_types == '0' || user_types == '1')"
+							class="col-6"
+						>
 							<b-button
 								@click="toggleTab('avans')"
 								class="btn-sm rounded btn-primary w-full d-block"
@@ -1399,15 +1402,16 @@ export default {
 				amount = this.bonus.sum;
 			}
 
-			this.axios.post('/timetracking/salaries/update', {
-				month: this.$moment(this.dateInfo.currentMonth, 'MMMM').format('M'),
-				year: this.dateInfo.currentYear,
-				day: this.selectedCell.field.key,
-				user_id: this.selectedCell.item.user_id,
-				amount: amount,
-				comment: comment,
-				type: type
-			})
+			this.axios
+				.post('/timetracking/salaries/update', {
+					month: this.$moment(this.dateInfo.currentMonth, 'MMMM').format('M'),
+					year: this.dateInfo.currentYear,
+					day: this.selectedCell.field.key,
+					user_id: this.selectedCell.item.user_id,
+					amount: amount,
+					comment: comment,
+					type: type
+				})
 				.then((response) => {
 
 					if(type == 'avans') {
