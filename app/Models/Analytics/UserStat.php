@@ -2,6 +2,7 @@
 
 namespace App\Models\Analytics;
 
+use App\Models\AnalyticsActivitiesSetting;
 use App\Models\WorkChart\WorkChartModel;
 use App\Repositories\ActivityRepository;
 use App\WorkingDay;
@@ -18,6 +19,7 @@ use App\Models\Analytics\IndividualKpiIndicator;
 use App\Models\Kpi\Bonus;
 use App\Service\Department\UserService;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Support\Facades\Schema;
 
 class UserStat extends Model
 {
@@ -80,11 +82,11 @@ class UserStat extends Model
                 ];
 
                 if($activity->type == 'default') {
-                    $item['records'] = self::form_table($activity->id, $date);
+                    $item['records'] = self::form_table($activity->id, $date, $group_id);
                 }
 
                 if($activity->type == 'collection') {
-                    $item['records'] = self::form_table($activity->id, $date); 
+                    $item['records'] = self::form_table($activity->id, $date, $group_id);
                 }
 
                 if($activity->type == 'quality') {
@@ -120,7 +122,7 @@ class UserStat extends Model
     /**
      * Form activity table
      */
-    public static function form_table($activity_id, $date) {
+    public static function form_table($activity_id, $date, $groupId = null) {
         $table = [];
 
         $activity = Activity::find($activity_id);
@@ -156,6 +158,15 @@ class UserStat extends Model
 
             $users = array_merge($users_ids, $has_records_on_user_stats);
             $users = array_unique($users);
+
+            if (Schema::hasColumn((new AnalyticsActivitiesSetting)->getTable(), AnalyticsActivitiesSetting::COLUMN_PREFIX.$activity_id)){
+                $removeIds = AnalyticsActivitiesSetting::where('group_id', $groupId)->select(AnalyticsActivitiesSetting::COLUMN_PREFIX.$activity_id)
+                    ->first()->toArray() ?? null;
+                if ($removeIds){
+                    $removeIdsArray = json_decode($removeIds[AnalyticsActivitiesSetting::COLUMN_PREFIX.$activity_id]);
+                    $users = array_diff($users, $removeIdsArray);
+                }
+            }
 
             /**
              * form table row

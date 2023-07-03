@@ -5,6 +5,7 @@ namespace App;
 use App\DTO\Top\SwitchTopDTO;
 use App\Helpers\FileHelper;
 use App\Models\Analytics\Activity;
+use App\Models\AnalyticsActivitiesSetting;
 use App\Models\KnowBaseModel;
 use App\Models\WorkChart\WorkChartModel;
 use App\ProfileGroup\ProfileGroupUsersQuery;
@@ -389,7 +390,7 @@ class ProfileGroup extends Model
         $positionIds = [],
     ) {
         if($date) {
-            $date = Carbon::parse($date);
+            $date = Carbon::parse($date)->subMonth();
         }
         $query = (new ProfileGroupUsersQuery())
             ->whereIsTrainee(false)
@@ -481,5 +482,9 @@ class ProfileGroup extends Model
             ->update([
                 $dto->switchColumn => $dto->switchValue
             ]);
+    }
+
+    public function activitiesSetting(){
+        return $this->belongsTo(AnalyticsActivitiesSetting::class,  'activities_setting_id', 'id');
     }
 }
