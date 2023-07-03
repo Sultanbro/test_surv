@@ -103,11 +103,6 @@
 
 					<!-- Year tab of activity in detailed -->
 					<div v-else>
-						<h4 class="mb-2">
-							{{ activity.name }}
-						</h4>
-
-						<!-- Year table -->
 						<div class="table-container table-responsive">
 							<table class="table table-bordered">
 								<thead>
@@ -363,7 +358,7 @@ export default {
 					classes: ' b-table-sticky-column text-left t-name wd',
 				},
 				...this.$moment.months().map((name, index)  => ({
-					key: index,
+					key: index + 1,
 					name,
 					classes: 'text-center px-1 month',
 				}))
@@ -473,6 +468,7 @@ export default {
 			const res = [];
 
 			this.users.forEach((user) => {
+				if(user.deleted_at) return
 				if(stats[user.id] !== undefined) {
 					res.push({
 						name: this.fullNameOfUser(user),
@@ -490,7 +486,9 @@ export default {
 			Object.keys(obj).forEach((key) => {
 				res[key] = obj[key] == 0
 					? 0
-					: Number(obj[key].total).toFixed(2);
+					: parseInt(obj[key].total) === parseFloat(obj[key].total)
+						? parseInt(obj[key].total)
+						: Number(obj[key].total).toFixed(2);
 			});
 
 			return res
@@ -529,7 +527,7 @@ export default {
 		fullNameOfUser(user) {
 			return user.last_name
 				? user.last_name + ' ' + user.name
-				: user.last_name
+				: user.name
 		},
 
 		onClickPopup(){

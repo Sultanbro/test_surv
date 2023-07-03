@@ -93,7 +93,7 @@
 			<tr>
 				<th
 					class="indicators-table-fixed-name text-left max-content pl-4"
-					:class="{'sticky-left': isDesktop}"
+					:class="[ isDesktop ? 'sticky-left' : 'relative' ]"
 				>
 					<div class="max-content">
 						Сотрудник
@@ -108,7 +108,7 @@
 				<template v-if="activity.plan_unit == 'minutes'">
 					<th
 						class="indicators-table-fixed-avg text-center"
-						:class="{'sticky-left': isDesktop}"
+						:class="[ isDesktop ? 'sticky-left' : 'relative' ]"
 					>
 						<div>Ср.</div>
 						<i
@@ -119,7 +119,7 @@
 					</th>
 					<th
 						class="indicators-table-fixed-month text-center"
-						:class="{'sticky-left': isDesktop}"
+						:class="[ isDesktop ? 'sticky-left' : 'relative' ]"
 					>
 						<div>План</div>
 						<i
@@ -130,7 +130,7 @@
 					</th>
 					<th
 						class="indicators-table-fixed-plan text-center plan"
-						:class="{'sticky-left': isDesktop}"
+						:class="[ isDesktop ? 'sticky-left' : 'relative' ]"
 					>
 						<div>Вып.</div>
 						<i
@@ -141,7 +141,7 @@
 					</th>
 					<th
 						class="indicators-table-fixed-percent text-center"
-						:class="{'sticky-left': isDesktop}"
+						:class="[ isDesktop ? 'sticky-left' : 'relative' ]"
 					>
 						<div>%</div>
 						<i
@@ -155,7 +155,7 @@
 				<template v-else>
 					<th
 						class="indicators-table-fixed-hmonth text-center"
-						:class="{'sticky-left': isDesktop}"
+						:class="[ isDesktop ? 'sticky-left' : 'relative' ]"
 					>
 						<div>План</div>
 						<i
@@ -166,7 +166,7 @@
 					</th>
 					<th
 						class="indicators-table-fixed-hplan text-center"
-						:class="{'sticky-left': isDesktop}"
+						:class="[ isDesktop ? 'sticky-left' : 'relative' ]"
 					>
 						<div>Вып.</div>
 						<i
@@ -194,7 +194,7 @@
 				<td
 					v-if="item.name == 'SPECIAL_BTN'"
 					class="indicators-table-fixed-name"
-					:class="{'sticky-left': isDesktop}"
+					:class="[ isDesktop ? 'sticky-left' : 'relative' ]"
 				>
 					<button
 						class="btn btn-light rounded btn-sm"
@@ -207,7 +207,7 @@
 				<td
 					v-else
 					class="indicators-table-fixed-name text-left max-content"
-					:class="{'sticky-left': isDesktop}"
+					:class="[ isDesktop ? 'sticky-left' : 'relative' ]"
 					:title="item.id + ' ' + item.email"
 				>
 					<div class="d-flex max-content">
@@ -233,13 +233,13 @@
 				<template v-if="activity.plan_unit == 'minutes'">
 					<td
 						class="indicators-table-fixed-avg class blue"
-						:class="{'sticky-left': isDesktop}"
+						:class="[ isDesktop ? 'sticky-left' : 'relative' ]"
 					>
 						<div>{{ item.avg }}</div>
 					</td>
 					<td
 						class="indicators-table-fixed-month class blue"
-						:class="{'sticky-left': isDesktop}"
+						:class="[ isDesktop ? 'sticky-left' : 'relative' ]"
 					>
 						<div :title="activity.daily_plan + ' * ' + item.applied_from">
 							{{ item.month }}
@@ -247,13 +247,13 @@
 					</td>
 					<td
 						class="indicators-table-fixed-plan class blue plan"
-						:class="{'sticky-left': isDesktop}"
+						:class="[ isDesktop ? 'sticky-left' : 'relative' ]"
 					>
 						<div>{{ item.plan }}</div>
 					</td>
 					<td
 						class="indicators-table-fixed-percent class blue"
-						:class="{'sticky-left': isDesktop}"
+						:class="[ isDesktop ? 'sticky-left' : 'relative' ]"
 					>
 						<div>{{ item.percent }}</div>
 					</td>
@@ -262,13 +262,13 @@
 				<template v-else>
 					<td
 						class="indicators-table-fixed-hmonth class blue"
-						:class="{'sticky-left': isDesktop}"
+						:class="[ isDesktop ? 'sticky-left' : 'relative' ]"
 					>
 						<div>{{ item.month }}</div>
 					</td>
 					<td
 						class="indicators-table-fixed-hplan class blue"
-						:class="{'sticky-left': isDesktop}"
+						:class="[ isDesktop ? 'sticky-left' : 'relative' ]"
 					>
 						<div>{{ item.plan }}</div>
 					</td>

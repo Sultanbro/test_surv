@@ -28,27 +28,10 @@
 							<div class="d-flex">
 								{{ item.name }}
 
-								<div v-if="item.show_cup == 1">
-									<img
-										src="/images/goldencup.png"
-										class="goldencup ml-2"
-										alt=""
-									>
-								</div>
-								<div v-if="item.show_cup == 2">
-									<img
-										src="/images/silvercup.png"
-										class="goldencup ml-2"
-										alt=""
-									>
-								</div>
-								<div v-if="item.show_cup == 3">
-									<img
-										src="/images/bronzecup.png"
-										class="goldencup ml-2"
-										alt=""
-									>
-								</div>
+								<JobtronCup
+									:place="item.show_cup"
+									rotate
+								/>
 							</div>
 						</td>
 						<template v-for="(field, key) in fields">
@@ -69,8 +52,13 @@
 </template>
 
 <script>
+import JobtronCup from '@ui/Cup'
+
 export default {
 	name: 'TableQualityWeekly',
+	components: {
+		JobtronCup,
+	},
 	props: {
 		monthInfo: Object,
 		items: Array,

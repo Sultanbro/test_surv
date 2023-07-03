@@ -1,6 +1,6 @@
 <template>
-	<div class="mb-3">
-		<h4 class="d-flex align-items-center justify-content-between">
+	<div class="TableActivityCollection mb-3">
+		<h4 class="d-flex align-items-center justify-content-between mb-3">
 			<div class="mr-2" />
 			<div>
 				<!-- <a href="#" @click="exportData()" class="btn btn-success btn-sm">
@@ -38,7 +38,7 @@
 						</th>
 
 						<th
-							class="text-left px-1 sticky-h1"
+							class="text-center px-1 sticky-h1"
 							style="z-index: 5;"
 							rowspan="2"
 						>
@@ -61,7 +61,7 @@
 
 						<th
 							v-if="is_admin"
-							class="text-left px-1 sticky-h1"
+							class="text-center px-1 sticky-h1"
 							rowspan="2"
 						>
 							<div class="wd">
@@ -118,27 +118,10 @@
 									Office
 								</b-badge>
 
-								<div v-if="item.show_cup == 1">
-									<img
-										src="/images/goldencup.png"
-										class="goldencup ml-2"
-										alt=""
-									>
-								</div>
-								<div v-if="item.show_cup == 2">
-									<img
-										src="/images/silvercup.png"
-										class="goldencup ml-2"
-										alt=""
-									>
-								</div>
-								<div v-if="item.show_cup == 3">
-									<img
-										src="/images/bronzecup.png"
-										class="goldencup ml-2"
-										alt=""
-									>
-								</div>
+								<JobtronCup
+									:place="sortDir === 'asc' ? index : items.length - index"
+									rotate
+								/>
 							</div>
 						</td>
 
@@ -148,7 +131,8 @@
 							<td
 								v-if="item.editable"
 								:key="day"
-								:class="'lb px-0 day-minute text-center Fri table-' + item._cellVariants[day]"
+								:class="'table-' + item._cellVariants[day]"
+								class="TableActivityCollection-data lb px-0 day-minute text-center Fri"
 								:title="day + ': сборы'"
 							>
 								<div>
@@ -165,7 +149,8 @@
 								:key="day + 'a'"
 								:title="day + ': сборы'"
 								@click="editMode(item)"
-								:class="'lb px-0 day-minute text-center Fri table-' + item._cellVariants[day]"
+								:class="'table-' + item._cellVariants[day]"
+								class="TableActivityCollection-data lb px-0 day-minute text-center Fri"
 							>
 								<div>{{ item[day] }}</div>
 							</td>
@@ -174,7 +159,7 @@
 								v-if="!isNaN(Number(item[day]) * price)"
 								:key="day + 'b'"
 								:title="day + ': тенге'"
-								class="rb"
+								class="TableActivityCollection-data rb"
 							>
 								{{ Number(item[day]) * price }}
 							</td>
@@ -182,7 +167,7 @@
 								v-else
 								:key="day + 'c'"
 								:title="day + ': тенге'"
-								class="rb"
+								class="TableActivityCollection-data rb"
 							/>
 						</template>
 					</tr>
@@ -210,11 +195,13 @@
 <script>
 import Sidebar from '@/components/ui/Sidebar'
 import ActivityExcelImport from '@/components/imports/ActivityExcelImport' // импорт в активности
+import JobtronCup from '@ui/Cup'
 
 export default {
 	name: 'TActivityCollection',
 	components: {
 		Sidebar,
+		JobtronCup,
 		ActivityExcelImport,
 	},
 	props: {
@@ -229,6 +216,8 @@ export default {
 		return {
 			items: [],
 			sorts: {},
+			sortField: '',
+			sortDir: 'asc',
 			fields: [],
 			itemsArray: [],
 			avgOfAverage: 0,
@@ -516,6 +505,9 @@ export default {
 				this.sorts[field] = 'asc';
 			}
 
+			this.sortField = field
+			this.sortDir = this.sorts[field]
+
 			let item = this.items[0];
 
 			this.items.shift();
@@ -646,8 +638,48 @@ export default {
 }
 .sticky-h2 {
 	position: sticky;
-	top: 31px;
+	top: 39px;
 	z-index: 2;
 	outline: 1px solid #ddd!important;
+}
+.TableActivityCollection{
+	.sticky-h1,
+	.sticky-h2{
+		&:last-child{
+			position: sticky !important;
+			font-size: 12px !important;
+		}
+		&.b-table-sticky-column{
+			z-index: 10 !important;
+		}
+	}
+	thead{
+		tr{
+			z-index: 99999 !important;
+			// &:first-child{
+			// 	.sticky-h1,
+			// 	.sticky-h2{
+			// 		&:first-child{
+			// 			z-index: 99999 !important;
+			// 		}
+			// 	}
+			// }
+		}
+	}
+	&-data{
+		width: 76px !important;
+		max-width: 76px !important;
+		padding: 0 !important;
+		.cell-input{
+			width: 76px !important;
+			border: none !important;
+			background-color: transparent !important;
+			&:focus{
+				border: none !important;
+				background-color: transparent !important;
+				box-shadow: none !important;
+			}
+		}
+	}
 }
 </style>
