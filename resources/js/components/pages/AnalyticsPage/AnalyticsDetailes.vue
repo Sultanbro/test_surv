@@ -78,6 +78,7 @@
 							:group_id="currentGroup"
 							:work_days="monthInfo.workDays"
 							:editable="activity.editable == 1 ? true : false"
+							:hidden-users="activityHiddenUsers[activity.id] || []"
 							class="AnalyticsDetailes-monthTable"
 						/>
 
@@ -284,6 +285,7 @@ import {
 	createAnalyticsActivity,
 	deleteAnalyticsActivity,
 	updateAnalyticsOrder,
+	getAnalyticsActivityHiddenUsers,
 } from '@/stores/api'
 
 const API = {
@@ -291,6 +293,7 @@ const API = {
 	createAnalyticsActivity,
 	deleteAnalyticsActivity,
 	updateAnalyticsOrder,
+	getAnalyticsActivityHiddenUsers,
 }
 
 function percentMinMax(value, min, max){
@@ -362,7 +365,8 @@ export default {
 					name,
 					classes: 'text-center px-1 month',
 				}))
-			]
+			],
+			activityHiddenUsers: {},
 		}
 	},
 	watch: {
@@ -370,7 +374,15 @@ export default {
 			this.activityStates = this.activities.map(() => 'month')
 		}
 	},
+	created(){
+		this.init()
+	},
 	methods: {
+		init(){
+			API.getAnalyticsActivityHiddenUsers(this.currentGroup).then(hidden => {
+				this.activityHiddenUsers = hidden
+			})
+		},
 		showSubTab(tab) {
 			this.active_sub_tab = tab
 		},

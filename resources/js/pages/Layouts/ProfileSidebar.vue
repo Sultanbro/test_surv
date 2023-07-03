@@ -202,6 +202,7 @@
 			hide-footer
 			hide-header
 			no-close-on-backdrop
+			scrollable
 		>
 			<div
 				v-if="corp_book !== undefined && corp_book !== null"

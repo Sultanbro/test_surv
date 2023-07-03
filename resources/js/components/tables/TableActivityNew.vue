@@ -310,6 +310,7 @@
 			@ok="saveActivity()"
 			size="lg"
 			class="modalle"
+			no-enforce-focus
 		>
 			<div class="row mb-3">
 				<div class="col-5">
@@ -395,6 +396,28 @@
 				</div>
 			</div>
 
+			<div
+				class="row mb-3"
+				@click="showHideUsersOverlay = true"
+			>
+				<div class="col-5">
+					<p class="">
+						Кого не&nbsp;показывать в&nbsp;таблице
+					</p>
+				</div>
+				<div class="col-7">
+					<div class="TableActivityNew-toHide form-control">
+						<b-badge
+							v-for="user, index in usersToHide"
+							:key="index"
+						>
+							{{ user.name }}
+						</b-badge>
+						&nbsp;
+					</div>
+				</div>
+			</div>
+
 			<div class="row">
 				<div class="col-7 offset-5 d-flex align-items-center">
 					<div class="custom-control custom-checkbox">
@@ -414,6 +437,22 @@
 				</div>
 			</div>
 		</b-modal>
+		<JobtronOverlay
+			v-if="showHideUsersOverlay"
+			@close="showHideUsersOverlay = false"
+			:z="10000"
+		>
+			<AccessSelect
+				:value="activityUsersToShowForm"
+				:tabs="['Сотрудники']"
+				search-position="beforeTabs"
+				:submit-button="'Сохранить'"
+				:access-dictionaries="accessDictionaries"
+				@submit="onSubmitHideUsers"
+				absolute
+				class="TableActivityNew-accessSelect"
+			/>
+		</JobtronOverlay>
 	</div>
 </template>
 
@@ -423,7 +462,13 @@ import PopupMenu from '@ui/PopupMenu'
 import JobtronSelect from '@ui/Select'
 import JobtronButton from '@ui/Button'
 import JobtronCup from '@ui/Cup'
+import JobtronOverlay from '@ui/Overlay'
+import AccessSelect from '@ui/AccessSelect/AccessSelect.vue'
 import ActivityExcelImport from '@/components/imports/ActivityExcelImport' // импорт в активности
+
+import {
+	hideAnalyticsActivityUsers,
+} from '@/stores/api'
 
 export default {
 	name: 'TableActivityNew',
@@ -433,6 +478,8 @@ export default {
 		JobtronSelect,
 		JobtronButton,
 		JobtronCup,
+		AccessSelect,
+		JobtronOverlay,
 		ActivityExcelImport,
 	},
 	props: {
@@ -452,6 +499,10 @@ export default {
 			type: Boolean,
 			default: true
 		},
+		hiddenUsers: {
+			type: Array,
+			default: () => {},
+		}
 	},
 	data() {
 		return {
@@ -503,6 +554,9 @@ export default {
 			tenant: location.hostname.split('.')[0],
 			isFilters: false,
 			isControls: false,
+
+			showHideUsersOverlay: false,
+			activityUsersToShowForm: [],
 		};
 	},
 	computed: {
@@ -512,6 +566,27 @@ export default {
 				|| this.group_id == 88
 				|| (this.group_id == 71 && this.activity.id == 149)
 				|| (this.group_id == 71 && this.activity.id == 151)
+		},
+		accessDictionaries(){
+			return {
+				users: this.activity.records.reduce((result, user) => {
+					if(!user.email) return result
+					result.push({
+						id: user.id,
+						name: user.fullname,
+						position: ''
+					})
+					return result
+				}, []),
+				profile_groups: [],
+				positions: [],
+			}
+		},
+		usersToHide(){
+			return this.accessDictionaries.users.filter(user => {
+				const isShowed = this.activityUsersToShowForm.find(u => u.id === user.id)
+				return !isShowed
+			})
 		}
 	},
 	watch: {
@@ -583,8 +658,17 @@ export default {
 			}
 		},
 
-		fetchData() {
+		async fetchData() {
 			let loader = this.$loading.show();
+
+			this.activityUsersToShowForm = this.accessDictionaries.users.reduce((result, user) => {
+				const isHidden = this.hiddenUsers.find(id =>  id === user.id)
+				if(!isHidden) result.push({
+					type: 1,
+					...user,
+				})
+				return result
+			}, [])
 
 			this.records = this.activity.records;
 			this.accountsNumber = this.activity.records.length
@@ -845,6 +929,7 @@ export default {
 			let quan_of_column = 0;
 
 			this.records.forEach(account => {
+				if(this.hiddenUsers.includes(account.id)) return
 				let countWorkedDays = 0;
 				let cellValues = [];
 
@@ -988,21 +1073,30 @@ export default {
 			this.showEditModal = true;
 		},
 
-		saveActivity() {
-			let loader = this.$loading.show();
-			this.axios.post('/timetracking/analytics/edit-activity', {
-				month: this.month.month,
-				year: this.month.currentYear,
-				activity: this.local_activity,
-			}).then(() => {
+		async saveActivity() {
+			const loader = this.$loading.show();
+
+			try {
+				await this.axios.post('/timetracking/analytics/edit-activity', {
+					month: this.month.month,
+					year: this.month.currentYear,
+					activity: this.local_activity,
+				})
+
+				await hideAnalyticsActivityUsers({
+					group_id: this.group_id,
+					groups: {
+						[this.activity.id]: this.usersToHide.map(user => user.id)
+					}
+				})
+
 				this.$toast.success('Обновите, чтобы посмотреть новую таблицу!')
-				this.showEditModal = false
-				loader.hide()
-			}).catch(error => {
-				loader.hide()
+			}
+			catch (error) {
 				this.$toast.error('Ошибка!')
 				alert(error)
-			});
+			}
+			loader.hide()
 		},
 
 		sort(field) {
@@ -1076,6 +1170,10 @@ export default {
 				break
 			}
 			this.filterTable()
+		},
+		async onSubmitHideUsers(users){
+			this.activityUsersToShowForm = users
+			this.showHideUsersOverlay = false
 		}
 	},
 };
@@ -1212,5 +1310,21 @@ export default {
 		}
 	}
 	// --- костылище
+	&-toHide{
+		display: flex;
+		flex-flow: row wrap;
+		align-items: center;
+		justify-content: flex-start;
+		gap: 5px;
+
+		min-height: 35px;
+		padding: 0 20px;
+
+		border: 1px solid #e8e8e8;
+		border-radius: 6px;
+		font-size: 14px;
+		line-height: 1.3;
+		background-color: #F7FAFC;
+	}
 }
 </style>
