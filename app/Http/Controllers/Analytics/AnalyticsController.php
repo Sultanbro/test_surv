@@ -4,9 +4,12 @@ namespace App\Http\Controllers\Analytics;
 
 use App\Events\UserStatUpdatedEvent;
 use App\Http\Requests\Analytics\Statistics\UpdateUserStatRequest;
+use App\Models\AnalyticsActivitiesSetting;
 use App\Service\AnalyticService;
 use App\Service\Department\UserService;
 use DB;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Schema;
 use View;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
@@ -838,5 +841,34 @@ class AnalyticsController extends Controller
 
         return response()->success($response);
     }
+
+    /**
+     * @param Request $request
+     * @return void
+     */
+    public function removeActivityGroup(Request $request){
+        $groupId = $request->group_id;
+        $groups = $request->groups;
+        $tableName = (new AnalyticsActivitiesSetting())->getTable();
+
+        $data = [];
+        foreach ($groups as $key => $value){
+            $data[AnalyticsActivitiesSetting::COLUMN_PREFIX.$key] = json_encode($value);
+        }
+        $columns = array_keys($data);
+        $data['group_id'] = $groupId;
+
+        foreach ($columns as $column){
+            if(!Schema::hasColumn($tableName, $column)){
+                Schema::table($tableName, function (Blueprint $table) use($column){
+                    $table->text($column)->nullable()->comment("activities.id && activities.name");
+                });
+            }
+        }
+
+        $analyticSetting = AnalyticsActivitiesSetting::updateOrCreate(['group_id' => $groupId], $data);
+        return $analyticSetting;
+    }
 }
+
 
