@@ -331,25 +331,29 @@ export default {
 			return this.separateNumber(this.user_earnings.sumKpi)
 		},
 		kpiUnread(){
-			return !this.readed.kpis
+			return false
+			// return !this.readed.kpis
 		},
 		bonus(){
 			return this.separateNumber(this.user_earnings.sumBonuses)
 		},
 		bonusUnread(){
-			return !this.readed.bonuses
+			return false
+			// return !this.readed.bonuses
 		},
 		premium(){
 			return this.separateNumber(this.user_earnings.sumQuartalPremiums)
 		},
 		premiumUnread(){
-			return !this.readed.premiums
+			return false
+			// return !this.readed.premiums
 		},
 		nominations(){
 			return this.separateNumber(this.user_earnings.sumNominations)
 		},
 		nominationsUnread(){
-			return !this.readed.awards
+			return false
+			// return !this.readed.awards
 		},
 	},
 	watch:{
@@ -376,6 +380,10 @@ export default {
 				})
 			})
 		},
+		fixStat(prop, value, max = 1){
+			this.animateValues[prop].value = this.separateNumber(parseInt(value))
+			this.animateValues[prop].height = value / max * 100
+		},
 
 		async animateStats(){
 			const MAXBALANCE = parseInt(this.salary.replace(/\s/g, '')) || 0
@@ -392,6 +400,11 @@ export default {
 				this.animateStat('premium', this.user_earnings.sumQuartalPremiums, MAXKVARTAL),
 				this.animateStat('nominations', this.user_earnings.sumNominations, MAXNOMINATIONS),
 			]);
+			this.fixStat('balance', this.user_earnings.sumSalary, parseInt(this.salary.replace(/\s/g, '')) || 0)
+			this.fixStat('kpi', this.user_earnings.sumKpi, this.user_earnings.kpiMax)
+			this.fixStat('bonus', this.user_earnings.sumBonuses)
+			this.fixStat('premium', this.user_earnings.sumQuartalPremiums)
+			this.fixStat('nominations', this.user_earnings.sumNominations)
 			this.animated = false
 		},
 		separateNumber(x){
