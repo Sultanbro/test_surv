@@ -867,7 +867,12 @@ class AnalyticsController extends Controller
         }
 
         $analyticSetting = AnalyticsActivitiesSetting::updateOrCreate(['group_id' => $groupId], $data);
-        return $analyticSetting;
+        return response()->success($analyticSetting);
+    }
+
+    public function getRemovedUsers($id){
+        $removedUsers = AnalyticsActivitiesSetting::where('group_id', $id)->first();
+        return response()->success($removedUsers);
     }
 }
 

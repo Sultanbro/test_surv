@@ -390,7 +390,7 @@ class ProfileGroup extends Model
         $positionIds = [],
     ) {
         if($date) {
-            $date = Carbon::parse($date);
+            $date = Carbon::parse($date)->subMonth();
         }
         $query = (new ProfileGroupUsersQuery())
             ->whereIsTrainee(false)
