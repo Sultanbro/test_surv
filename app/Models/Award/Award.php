@@ -24,7 +24,8 @@ class Award extends Model
         'award_category_id',
         'targetable_type',
         'targetable_id',
-        'type'
+        'type',
+        'read',
     ];
     protected $appends = ['tempPath'];
 
@@ -73,7 +74,7 @@ class Award extends Model
     public function users(): BelongsToMany
     {
         return $this->belongsToMany(User::class, 'award_user', 'award_id','user_id')
-            ->withPivot('path', 'format')
+            ->withPivot(['path', 'format'])
             ->withTimestamps();
 
     }

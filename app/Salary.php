@@ -598,10 +598,20 @@ class Salary extends Model
                 $s = $user->salaries->where('day', $d)->first();
 
                 $zarplata = $s ? $s->amount : 70000;
-                $schedule = $user->schedule();
-                $lunchTime = 1;
-                $userWorkHours = max($schedule['end']->diffInSeconds($schedule['start']), 0);
-                $working_hours = round($userWorkHours / 3600, 1) - $lunchTime;
+                $schedule = $user->schedule(true);
+                $workChart = $user->workChart;
+                if ($workChart && $workChart->rest_time != null){
+                    $lunchTime = $workChart->rest_time;
+                    $hour = intval($lunchTime / 60);
+                    $minute = $lunchTime % 60;
+                    $totalHour = floatval($hour.".".$minute);
+                    $userWorkHours = max($schedule['end']->diffInSeconds($schedule['start']), 0);
+                    $working_hours = round($userWorkHours / 3600, 1) - $totalHour;
+                }else{
+                    $lunchTime = 1;
+                    $userWorkHours = max($schedule['end']->diffInSeconds($schedule['start']), 0);
+                    $working_hours = round($userWorkHours / 3600, 1) - $lunchTime;
+                }
 
                 $workChartType = $user->workChart->work_charts_type ?? 0;
                 if ($workChartType === 0 || $workChartType === WorkChartModel::WORK_CHART_TYPE_USUAL){
@@ -616,9 +626,7 @@ class Salary extends Model
                 }
 
                 $hourly_pay = $zarplata / $workdays / $working_hours;
-
                 $hourly_pays[$i] = round($hourly_pay, 2);
-
 
                 // add to array
 

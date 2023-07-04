@@ -40,7 +40,10 @@ export default {
 
 			commit('setInitialize', true);
 		},
-		async toggleMessenger({commit}) {
+		async toggleMessenger({dispatch, commit, getters}) {
+			if(!getters.isOpen && getters.chat && getters.messages){
+				dispatch('markMessagesAsRead', getters.messages)
+			}
 			commit('toggleMessenger');
 		},
 		async toggleInfoPanel({commit}) {

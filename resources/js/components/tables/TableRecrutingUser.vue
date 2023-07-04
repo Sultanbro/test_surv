@@ -374,7 +374,4 @@ input[type="time"]::-webkit-calendar-picker-indicator {
     font-size: 15px;
     border-bottom: 1px solid #1076b0;
 }
-.analytics-page .btn.btn-sm {
-    padding: 0.075rem 0.95rem;
-}
 </style>

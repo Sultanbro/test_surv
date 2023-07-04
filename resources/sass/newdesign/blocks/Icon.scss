@@ -1,0 +1,44 @@
+// old chat icons
+.ChatIcon{
+	&-parent:hover,
+	&-active{
+		.ChatIcon-line{
+			stroke: #3361FF;
+		}
+		.ChatIcon-shape{
+			fill: #3361FF;
+		}
+	}
+	&-parent_red:hover,
+	&-active_red:hover,
+	&-active_red{
+		.ChatIcon-line{
+			stroke: #F6264C;
+		}
+		.ChatIcon-shape{
+			fill: #F6264C;
+		}
+	}
+}
+// new app icons
+.AppIcon{
+	&-parent:hover,
+	&-active{
+		.AppIcon-line{
+			stroke: #3361FF;
+		}
+		.AppIcon-shape{
+			fill: #3361FF;
+		}
+	}
+	&-parent_red:hover,
+	&-active_red:hover,
+	&-active_red{
+		.AppIcon-line{
+			stroke: #F6264C;
+		}
+		.AppIcon-shape{
+			fill: #F6264C;
+		}
+	}
+}

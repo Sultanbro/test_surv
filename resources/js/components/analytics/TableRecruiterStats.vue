@@ -25,29 +25,12 @@
 								v-model="data.item.profile"
 								@change="changeProfile(data.index)"
 							>
-								<option value="0">
-									кз
-								</option>
-								<option value="1">
-									все удаленные
-								</option>
-								<option value="2">
-									вацап
-								</option>
-								<option value="3">
-									уведомления
-								</option>
-								<option value="4">
-									inhouse
-								</option>
-								<option value="5">
-									иностранные
-								</option>
-								<option value="6">
-									hh
-								</option>
-								<option value="7">
-									чаты
+								<option
+									v-for="prof, index in profiles"
+									:key="index"
+									:value="index"
+								>
+									{{ prof }}
 								</option>
 							</select>
 						</div>
@@ -81,6 +64,7 @@
 				</select>
 				<p class="my-5 text-black fz-14">
 					<b>Стандарт звонков:</b><br>
+					<span class="aaa fz-12 text-red mb-2">кол-во наборов: 30 наборов</span>
 					<span class="aaa fz-12 text-red mb-2">20 звонков от 10 секунд (чтобы их сделать, нужно просто делать больше наборов в час)</span>
 					<span class="aaa fz-12 text-red">30 минут диалога</span>
 					<span class="aaa fz-12 text-red">2 согласия</span>
@@ -174,7 +158,17 @@ export default {
 					thClass: 'text-center',
 				},
 			],
-			showModal: false
+			showModal: false,
+			profiles: [
+				'kz',
+				'все удаленные',
+				'вацап',
+				'уведомления',
+				'inhouse',
+				'иностранные',
+				'hh',
+				'чаты',
+			]
 		};
 	},
 	watch: {
@@ -228,8 +222,8 @@ export default {
 		changeProfile(index) {
 			if(!this.editable) return '';
 			this.axios.post('/timetracking/analytics/recruting/change-profile', {
-				user_id: this.items[this.currentDay][index]['user_id'],
-				profile: this.items[this.currentDay][index]['profile'],
+				user_id: this.items[index]['user_id'],
+				profile: this.items[index]['profile'],
 				day: this.currentDay,
 				month: this.month,
 				year: this.year,
@@ -237,10 +231,8 @@ export default {
 				this.$toast.success('Успешно!');
 			}).catch(() => {
 				this.$toast.error('Ошибка!');
-				//alert(error)
 			});
 		}
-
 	}
 };
 </script>
@@ -249,6 +241,21 @@ export default {
 .TableRecruiterStats{
 	&-table{
 		overflow-y: auto;
+	}
+	&-colTitle{
+		height: 100%;
+	}
+	.b-table-sticky-column{
+		left: 0;
+	}
+	.special-select{
+		padding: 0 0 0 5px !important;
+		margin-top: -5px;
+		margin-bottom: -5px;
+	}
+	.JobtronTable-th,
+	.JobtronTable-td{
+		padding: 5px;
 	}
 }
 .recruiter_stats {
@@ -288,14 +295,6 @@ export default {
 	// 	}
 	// }
 }
-.TableRecruiterStats{
-	&-colTitle{
-		height: 100%;
-	}
-	.b-table-sticky-column{
-		left: 0;
-	}
-}
 
 
 
@@ -320,7 +319,7 @@ p.heading {
 	color:red
 }
 .special-select {
-	width: 45px;
+	width: 90px;
 	height: 20px !important;
 	padding: 0;
 	margin-left: 9px;

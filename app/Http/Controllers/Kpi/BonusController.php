@@ -46,6 +46,15 @@ class BonusController extends Controller
         return response()->json($response);
     }
 
+    public function read()
+    {
+        $this->bonusService->read(Auth::id());
+
+        return response()->json([
+            'status' => 'success',
+        ]);
+    }
+
     /**
      * Сохранение
      *

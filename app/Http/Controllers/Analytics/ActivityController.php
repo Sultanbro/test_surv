@@ -285,7 +285,7 @@ class ActivityController extends Controller
                 return $user->name == $name || $user->last_name == $last_name;
             })->first();
         } catch (\Exception $e) {
-            dd($fullname);
+            return $e;
         }
 
         

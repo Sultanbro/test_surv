@@ -37,10 +37,13 @@ class CertificateAwardService implements AwardInterface
                 ->whereHas('category', function ($query) use ($type) {
                     $query->where('type', $type);
                 })
-                ->with(['courseUsers' => function ($query) use($user) {
-                    $query->select('users.id', 'users.name', 'users.last_name', 'users.avatar')
-                        ->where('users.id', $user->id);
-                }, 'category'])
+                ->with([
+                    'courseUsers' => function ($query) use($user) {
+                        $query->select('users.id', 'users.name', 'users.last_name', 'users.avatar')
+                            ->where('users.id', $user->id);
+                        }, 
+                    'category',
+                ])
                 ->get();
 
             $courseIds = collect(CourseResult::activeCourses($user->id))->pluck('id')->toArray();
@@ -202,6 +205,8 @@ class CertificateAwardService implements AwardInterface
         $availableAwards = $data['available'];
         $otherAwards = $data['other'];
 
+        $myAwardsRead = $myAwards->isEmpty() || !$myAwards->contains(fn($a) => !$a->read);
+
         foreach ($myAwards as $item) {
             $category = $item->category;
             if (!isset($result[$category->id])) {
@@ -274,9 +279,7 @@ class CertificateAwardService implements AwardInterface
 
         }
 
-
-
-        return array_values($result);
+        return ['data' => array_values($result), 'read' => $myAwardsRead];
     }
 
 

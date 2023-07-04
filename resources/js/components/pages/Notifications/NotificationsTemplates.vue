@@ -6,19 +6,11 @@
 		class="NotificationsTemplates"
 	>
 		<template #header>
-			<div
-				v-if="value.id"
-				class="ui-sidebar__header-text"
-			>
+			<div class="ui-sidebar__header-text">
 				{{ templates.find(tpl => tpl.value === template).text }}
 			</div>
-			<b-form-select
-				v-else
-				v-model="template"
-				:options="templates"
-			/>
 		</template>
-		<template v-if="template">
+		<template v-if="value">
 			<b-container>
 				<!-- Кого уведомляем -->
 				<b-row class="mb-4">
@@ -101,6 +93,7 @@
 							placeholder="Выберите"
 							:taggable="true"
 							class="multiselect-surv"
+							track-by="value"
 						/>
 					</b-col>
 				</b-row>
@@ -227,9 +220,11 @@ export default {
 	},
 	methods: {
 		loadEdit(){
+			if(!this.edit) return
 			if(!this.value) this.value = {}
 			this.template = this.edit.template
 			this.$nextTick(() => {
+				if(!this.edit.id) return
 				this.value.id = this.edit.id
 				this.value.recipients = this.edit.recipients
 				this.value.title = this.edit.title
@@ -294,6 +289,14 @@ export default {
 	&-tip{
 		font-style: italic;
 		color: #F8254B;
+	}
+
+	.multiselect-surv .multiselect__tags{
+		padding: 0.9rem 4rem 0.9rem 2rem;
+		border: 1px solid #e8e8e8;
+	}
+	.multiselect-surv .multiselect__select{
+		top: 0.25rem;
 	}
 }
 </style>

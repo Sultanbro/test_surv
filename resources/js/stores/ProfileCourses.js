@@ -34,12 +34,12 @@ export const useProfileCoursesStore = defineStore('profileCourses', {
 					this.results[course.id] = course.course_results
 				});
 				this.saveLocal()
-				this.isReady = true
 			}
 			catch(error){
 				console.error('fetchCourses', error)
 			}
 			this.isLoading = false
+			this.isReady = true
 		},
 		async fetchCourseInfo(id){
 			if(this.isLoadingCourse[id]) return

@@ -1,10 +1,4 @@
 
-declare interface AxiosError {
-  response?: {data: ErrorList}
-}
-declare interface ErrorList {
-  errors: {[key: string]: Array<string>}
-}
 
 declare interface UserData {
   id: number

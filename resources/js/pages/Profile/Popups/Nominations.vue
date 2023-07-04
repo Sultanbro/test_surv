@@ -459,9 +459,9 @@ export default {
 	async mounted() {
 		await this.axios
 			.get('/awards/type?key=nomination')
-			.then(response => {
-				if (response.data.data) {
-					this.nominations = response.data.data;
+			.then(({data}) => {
+				if (data.data.data) {
+					this.nominations = data.data.data;
 				}
 			})
 			.catch(error => {
@@ -470,16 +470,16 @@ export default {
 
 		await this.axios
 			.get('/awards/type?key=certificate')
-			.then(response => {
-				this.certificates = response.data.data;
+			.then(({data}) => {
+				this.certificates = data.data.data;
 			})
 			.catch(error => {
 				console.log(error);
 			});
 		await this.axios
 			.get('/awards/type?key=accrual')
-			.then(response => {
-				this.accrual = response.data.data;
+			.then(({data}) => {
+				this.accrual = data.data.data;
 			})
 			.catch(error => {
 				console.log(error);

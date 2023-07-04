@@ -209,7 +209,7 @@ class GroupsController extends Controller
                     $possible_user = $gusers->where('name' , $_fv['Имя сотрудника'])->where('last_name',$_fv['Фамилия сотрудника'])->first();
                     
                     if($possible_user) {
-                        $item['id'] = $possible_user->id;
+                        $item['id'] = $possible_user->id ?? $possible_user['id'];
                     }
                 }
                 

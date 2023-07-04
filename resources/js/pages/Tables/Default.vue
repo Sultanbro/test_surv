@@ -206,7 +206,7 @@
 
 				<td
 					v-else
-					class="indicators-table-fixed-name text-left max-content position-relative"
+					class="indicators-table-fixed-name text-left max-content"
 					:class="{'sticky-left': isDesktop}"
 					:title="item.id + ' ' + item.email"
 				>

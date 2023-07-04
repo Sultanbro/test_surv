@@ -46,8 +46,9 @@
 		<b-tabs
 			type="card"
 			class="mt-4"
-			default-active-key="1"
+			v-model="activeTab"
 		>
+			<!-- Полезность -->
 			<b-tab
 				title="Полезность"
 				key="1"
@@ -60,23 +61,15 @@
 					<TopGauges
 						:utility_items="activeUtility"
 						:editable="true"
-						wrapper_class="  br-1"
+						wrapper_class=" br-1"
 						:key="ukey"
 						page="top"
 						@archive="onArchiveUtility"
 					/>
-					<div class="d-flex jcfe">
-						<JobtronButton
-							v-if="archiveUtilityWithGauges.length"
-							@click="isArchiveOpen = true"
-							title="Открыть архив"
-						>
-							Архив
-						</JobtronButton>
-					</div>
 				</div>
 			</b-tab>
 
+			<!-- Рентабельность операторов -->
 			<b-tab
 				title="Рентабельность операторов"
 				key="2"
@@ -169,7 +162,7 @@
 				/>
 			</b-tab>
 
-
+			<!-- Выручка -->
 			<b-tab
 				title="Выручка"
 				key="3"
@@ -215,66 +208,72 @@
 							</tr>
 						</thead>
 						<tbody>
-							<tr
-								v-for="(record, rindex) in proceeds.records"
-								:key="rindex"
-							>
-								<td
-									v-for="(field, findex) in proceeds.fields"
-									:key="findex"
-									class="t-name table-title"
-									:class="{
-										'bg-grey': ['w1', 'w2', 'w3', 'w4', 'w5', 'w6'].includes(field),
-										'weekend': isWeekend(field),
-										'text-left b-table-sticky-column': ['Отдел'].includes(field)
-									}"
+							<template v-for="(record, rindex) in proceeds.records">
+								<tr
+									v-if="(proceedsSwitch[record.group_id] && proceedsSwitch[record.group_id].value) || !record.group_id"
+									:key="rindex"
 								>
-									<template v-if="!['%', 'План', 'Итого', '+/-', 'Отдел'].includes(field)">
-										<div v-if="record['group_id'] < 0">
-											<input
-												type="number"
-												class="input"
-												v-model="record[field]"
-												@change="updateProceed(record, field, 'day')"
-											>
-										</div>
-										<div v-else>
-											<span v-if="record[field] != 0">{{ record[field] }}</span>
-											<span v-else />
-										</div>
-									</template>
-
-									<template v-else>
-										<template v-if="field == 'Отдел'">
-											<a
-												v-if="record['group_id'] >= 0"
-												:href="'/timetracking/an?group='+ record['group_id'] + '&active=1&load=1'"
-												target="_blank"
-											>
-												{{ record[field] }}
-											</a>
-											<div v-else>
+									<td
+										v-for="(field, findex) in proceeds.fields"
+										:key="findex"
+										class="t-name table-title"
+										:class="{
+											'bg-grey': ['w1', 'w2', 'w3', 'w4', 'w5', 'w6'].includes(field),
+											'weekend': isWeekend(field),
+											'text-left b-table-sticky-column': ['Отдел'].includes(field)
+										}"
+									>
+										<template v-if="!['%', 'План', 'Итого', '+/-', 'Отдел'].includes(field)">
+											<div v-if="record['group_id'] < 0">
 												<input
-													type="text"
-													class="input-2"
+													type="number"
+													class="input"
 													v-model="record[field]"
-													@change="updateProceed(record, field, 'name')"
+													@change="updateProceed(record, field, 'day')"
 												>
 											</div>
-										</template>
-
-										<template v-else>
-											<div>
-												{{ record[field] }}
+											<div v-else>
+												<span v-if="record[field] != 0">{{ record[field] }}</span>
+												<span v-else />
 											</div>
 										</template>
-									</template>
-								</td>
-							</tr>
+										<template v-else>
+											<template v-if="field == 'Отдел'">
+												<a
+													v-if="record['group_id'] >= 0"
+													:href="'/timetracking/an?group='+ record['group_id'] + '&active=1&load=1'"
+													target="_blank"
+												>
+													{{ record[field] }}
+												</a>
+												<div v-else>
+													<input
+														type="text"
+														class="input-2"
+														v-model="record[field]"
+														@change="updateProceed(record, field, 'name')"
+													>
+												</div>
+												<i
+													v-if="record.deleted_at"
+													class="fa fa-info-circle"
+													v-b-popover.hover.right.html="'Аналитика архвирована ' + $moment(record.deleted_at, 'YYYY-MM-DD').format('DD.MM.YYYY')"
+												/>
+											</template>
+											<template v-else>
+												<div>
+													{{ record[field] }}
+												</div>
+											</template>
+										</template>
+									</td>
+								</tr>
+							</template>
 						</tbody>
 					</table>
 				</div>
 			</b-tab>
+
 			<b-tab
 				title=""
 				key="6"
@@ -291,6 +290,7 @@
 				card
 			/>
 
+			<!-- Прогноз -->
 			<b-tab
 				title="Прогноз"
 				key="4"
@@ -365,6 +365,7 @@
 				</b-row>
 			</b-tab>
 
+			<!-- NPS -->
 			<b-tab
 				title="NPS"
 				key="5"
@@ -375,12 +376,24 @@
 					:show_header="false"
 				/>
 			</b-tab>
+
+			<template #tabs-end>
+				<JobtronButton
+					v-if="activeTab < 3"
+					small
+					secondary
+					class="ml-a"
+					@click="isArchiveOpen = true"
+				>
+					<i class="icon-nd-settings" />
+				</JobtronButton>
+			</template>
 		</b-tabs>
 
 		<SideBar
 			title="Архив"
 			width="35%"
-			:open="isArchiveOpen"
+			:open="false"
 			@close="isArchiveOpen = false"
 			class="TopArchive"
 		>
@@ -400,6 +413,18 @@
 			</div>
 		</SideBar>
 
+		<SideBar
+			title="Активные спидометры"
+			width="35%"
+			:open="isArchiveOpen"
+			@close="isArchiveOpen = false"
+		>
+			<TopSwitches
+				:items="switches"
+				@change="onChangeSwitch"
+			/>
+		</SideBar>
+
 		<div class="empty-space" />
 	</div>
 </template>
@@ -411,10 +436,18 @@ const VGauge = () => import(/* webpackChunkName: "TopGauges" */ 'vgauge')
 const TopGauges = () => import(/* webpackChunkName: "TopGauges" */ '@/components/TopGauges')  // TOП спидометры, есть и в аналитике
 import TableRentability from '@/components/tables/TableRentability' // ТОП рентабельность
 import NPS from '@/components/tables/NPS' // Оценка руководителей
+import TopSwitches from '@/components/pages/Top/TopSwitches'
 import { useYearOptions } from '@/composables/yearOptions'
 import JobtronButton from '@ui/Button'
 import SideBar from '@ui/Sidebar'
-import { topArchiveUtility } from '@/stores/api'
+import {
+	topArchiveUtility,
+	fetchTop,
+	fetchArchiveUtility,
+	fetchArchiveRentability,
+	fetchArchiveProceeds,
+	switchArchiveTop,
+} from '@/stores/api'
 
 export default {
 	name: 'PageTop',
@@ -423,6 +456,7 @@ export default {
 		VGauge,
 		TableRentability,
 		NPS,
+		TopSwitches,
 		JobtronButton,
 		SideBar,
 	},
@@ -431,9 +465,15 @@ export default {
 		const now = new Date()
 		return {
 			afterCreated: false,
-			rentability: [], // первая вкладка
-			utility: [], // вторая
+			activeTab: 0,
+			utility: [], // первая вкладка
+			rentability: [], // вторая
 			proceeds: [], // третья
+
+			utilitySwitch: {},
+			rentabilitySwitch: {},
+			proceedsSwitch: {},
+
 			prognoz_groups: [], //
 			currentYear: now.getFullYear(),
 			monthInfo: {
@@ -487,13 +527,19 @@ export default {
 			return useYearOptions(new Date(this.portal.created_at).getFullYear())
 		},
 		activeUtility(){
-			return this.utility.filter(util => !util.archive_utility)
+			return this.utility.filter(util => this.utilitySwitch[util.id] && this.utilitySwitch[util.id].value)
 		},
 		archiveUtility(){
-			return this.utility.filter(util => util.archive_utility)
+			return this.utility.filter(util => !(this.utilitySwitch[util.id] && this.utilitySwitch[util.id].value))
 		},
-		archiveUtilityWithGauges(){
-			return this.archiveUtility.filter(util => util.gauges.length)
+		switches(){
+			switch(this.activeTab){
+			case 1:
+				return this.rentabilitySwitch
+			case 2:
+				return this.proceedsSwitch
+			}
+			return this.utilitySwitch
 		}
 	},
 	created() {
@@ -508,6 +554,7 @@ export default {
 			this.prognoz_groups = this.data.prognoz_groups
 			this.setMonth()
 			this.fetchData()
+			this.fetchSwitches()
 		},
 		showIcons(){
 			this.rentability = this.data.rentability;
@@ -523,29 +570,67 @@ export default {
 			this.monthInfo.workDays = this.monthInfo.daysInMonth - this.monthInfo.weekDays //Колличество рабочих дней
 		},
 
-		fetchData() {
-			let loader = this.$loading.show();
+		async fetchData() {
+			const loader = this.$loading.show()
 
-			this.axios.post('/timetracking/top', {
-				month: this.$moment(this.monthInfo.currentMonth, 'MMMM').format('M'),
-				year: this.currentYear,
-			}).then(response => {
+			try {
+				const {
+					rentability,
+					utility,
+					proceeds,
+				} = await fetchTop({
+					month: this.$moment(this.monthInfo.currentMonth, 'MMMM').format('M'),
+					year: this.currentYear,
+				})
 
 				this.setMonth()
-				if(this.afterCreated){
-					this.rentability = response.data.rentability;
-				}
+
+				if(this.afterCreated) this.rentability = rentability
 				this.afterCreated = true;
-				this.utility = response.data.utility;
-				this.proceeds = response.data.proceeds;
+				this.utility = utility;
+				this.proceeds = proceeds;
 
 				this.ukey++;
-
-				loader.hide()
-			}).catch(error => {
-				loader.hide()
+			}
+			catch (error) {
 				alert(error)
-			});
+			}
+
+			loader.hide()
+		},
+
+		async fetchSwitches(){
+			try {
+				const { data: utility } = await fetchArchiveUtility()
+				this.utilitySwitch = utility.reduce((result, group) => {
+					result[group.id] = {
+						...group,
+						value: !!group.switch
+					}
+					return result
+				}, {})
+
+				const { data: rentability } = await fetchArchiveRentability()
+				this.rentabilitySwitch = rentability.reduce((result, group) => {
+					result[group.id] = {
+						...group,
+						value: !!group.switch
+					}
+					return result
+				}, {})
+
+				const { data: proceeds } = await fetchArchiveProceeds()
+				this.proceedsSwitch = proceeds.reduce((result, group) => {
+					result[group.id] = {
+						...group,
+						value: !!group.switch
+					}
+					return result
+				}, {})
+			}
+			catch (error) {
+				console.error('[fetchSwitches]', error)
+			}
 		},
 
 		isWeekend(field) {
@@ -573,14 +658,14 @@ export default {
 		},
 
 		saveGroupPlan(index) {
-			let loader = this.$loading.show();
+			const loader = this.$loading.show();
+			const prognozGroup = this.prognoz_groups[index]
 			this.axios.post('/timetracking/top/save_group_plan', {
-				group_id: this.prognoz_groups[index].id,
-				plan: this.prognoz_groups[index].plan,
+				group_id: prognozGroup.id,
+				plan: prognozGroup.plan,
 			}).then(() => {
-
 				this.$toast.success('Успешно сохранено!')
-				this.prognoz_groups[index].left_to_apply = Number(this.prognoz_groups[index].plan) - Number(this.prognoz_groups[index].fired);
+				prognozGroup.left_to_apply = Number(prognozGroup.plan || 0) - Number(prognozGroup.fired || 0);
 				loader.hide()
 			}).catch(error => {
 				alert(error)
@@ -662,10 +747,22 @@ export default {
 		},
 
 		isActiveRentability(groupId){
-			const utility = this.utility.find(util => util.id === groupId)
-			if(!utility) return true
-			return !utility.archive_utility
+			return this.rentabilitySwitch[groupId] && this.rentabilitySwitch[groupId].value
 		},
+		onChangeSwitch({id, value}){
+			const switch_column = ['switch_utility', 'switch_rentability', 'switch_proceeds'][this.activeTab]
+			switchArchiveTop({
+				id,
+				switch_column,
+				switch_value: value ? 1 : 0
+			})
+			const name = ['utilitySwitch', 'rentabilitySwitch', 'proceedsSwitch'][this.activeTab]
+			const item = this[name][id]
+			if(item){
+				item.value = !item.value
+				item.switch = item.value ? 1 : 0
+			}
+		}
 	}
 }
 </script>

@@ -51,6 +51,15 @@ $card-spacer-content: 16px;
 .text-white {
   color: #fff !important;
 }
+.text-green {
+  color: #080;
+}
+.text-blue {
+  color: #00f;
+}
+.text-red {
+  color: #f00;
+}
 
 .bg-var-theme-background {
   background-color: rgba(var(--v-theme-on-surface), var(--v-hover-opacity)) !important;

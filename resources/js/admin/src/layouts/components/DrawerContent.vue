@@ -70,6 +70,15 @@ const isAdmin = userInfo.is_admin
         icon: { icon: 'mdi-frequently-asked-questions' },
       }"
     />
+    <VerticalNavLink
+      v-if="isAdmin"
+      key="admino-ref-linker"
+      :item="{
+        title: 'RefLinker',
+        to: 'admino-ref-linker',
+        icon: { icon: 'mdi-link' },
+      }"
+    />
     <!-- 👉 Pages -->
     <!--
       <VerticalNavSectionTitle :item="{ heading: 'Pages' }" />

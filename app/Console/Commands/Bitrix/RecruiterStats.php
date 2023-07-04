@@ -91,10 +91,15 @@ class RecruiterStats extends Command
         
         $group = ProfileGroup::find(Recruiting::GROUP_ID);
        // $users = json_decode($group->users);
-        
-        $users = (new UserService)->getEmployees(Recruiting::GROUP_ID, Carbon::parse($this->date)->startOfMonth()->format('Y-m-d')); 
-        $users = collect($users)->pluck('id')->toArray();
 
+        $startOfMonth = Carbon::parse($this->date)->startOfMonth()->format('Y-m-d');
+
+        $users = collect();
+        foreach (Recruiting::GROUPS_IDS as $group_id) {
+            $users = $users->merge((new UserService)->getEmployees($group_id, $startOfMonth));
+        }
+
+        $users = $users->pluck('id')->toArray();
     
         if($this->argument('user')) $users = [(int)$this->argument('user')];
         
@@ -153,7 +158,11 @@ class RecruiterStats extends Command
             $hourly_converted =  $this->bitrix->getDeals($this->bitrix_user, '', 'ASC', $start_hour . '+06:00', $end_hour . '+06:00', 'DATE_CREATE'); // 
             usleep(1000000); // 1 sec
             
-            $hourly_leads = $this->bitrix->getLeads($this->bitrix_user, '', 'P', 'ASC', '2010-01-01T00:00:00+06:00', '2050-01-01T00:00:00+06:00', 'DATE_CREATE', 0, 'segment');
+            $carbon_date = Carbon::parse($this->date)->setTimezone('Asia/Almaty');
+            $start_date = $carbon_date->startOfDay()->toIso8601String();
+            $end_date = $carbon_date->endOfDay()->toIso8601String();
+
+            $hourly_leads = $this->bitrix->getLeads($this->bitrix_user, '', 'ALL', 'ASC', $start_date, $end_date, 'DATE_CREATE', 0, 'segment');
             usleep(1000000); // 1 sec
             
             $this->saveRecruiterStats($admin_user, $hourly_dials, $hourly_calls , $hourly_converted, $hourly_leads);
@@ -172,13 +181,14 @@ class RecruiterStats extends Command
      * save total values to 0 user
      * @return void
      */
-    private function saveTotalStats() {
-        
-        $start_hour = '2010-01-01T00:00:00';
-        $end_hour = '2050-01-01T23:59:59';
+    private function saveTotalStats()
+    {    
+        $date = Carbon::parse($this->date)->setTimezone('Asia/Almaty');
+        $start_hour = $date->startOfDay()->toIso8601String();
+        $end_hour = $date->endOfDay()->toIso8601String();
 
-        $hourly_leads_all = $this->bitrix->getLeads(0, '', 'P', 'ASC', $start_hour . '+06:00', $end_hour . '+06:00', 'DATE_CREATE', 0, 'segment');
-        usleep(1000000); 
+        $hourly_leads_all = $this->bitrix->getLeads(0, '', 'ALL', 'ASC', $start_hour , $end_hour, 'DATE_CREATE', 0, 'segment');
+        usleep(1000000);
 
         $rs = RecruiterStat::where('user_id', 0)
                 ->where('date', $this->date)
@@ -190,7 +200,7 @@ class RecruiterStats extends Command
 
         $leads = 0;
 		if(array_key_exists('result', $hourly_leads_all)) {
-			$leads = (int)$hourly_leads_all['total']; 
+			$leads = (int)$hourly_leads_all['total'];
 		} 
 
         RecruiterStat::create([
@@ -217,8 +227,6 @@ class RecruiterStats extends Command
 		$total = 0;
 		$total_minutes = 0;  
         
-
-
 		if(array_key_exists('result', $hourly_calls)) {
 			$total_seconds = 0;
 			$calls = $hourly_calls['result'];
@@ -243,6 +251,7 @@ class RecruiterStats extends Command
         $leads = 0;
 		if(array_key_exists('result', $hourly_leads)) {
 			$leads = (int)$hourly_leads['total']; 
+            // $leads = count(array_filter($hourly_leads['result'], fn($l) => Carbon::parse($l['DATE_CREATE'])->isSameDay($this->date)));
 		} 
 
         $rs = RecruiterStat::where('user_id', $admin_user->id)
@@ -254,7 +263,6 @@ class RecruiterStats extends Command
             $rs->delete();
         }
 
-     
         if($total == 0 && (int)$total_minutes == 0 && $converted == 0 && $leads == 0 && $dials == 0) {
             
         } else {

@@ -26,9 +26,11 @@
 				<b-thead>
 					<b-tr>
 						<b-th>№</b-th>
-						<b-th>Кого уведомляем</b-th>
-						<b-th class="text-center">
+						<b-th>
 							Текст уведомления
+						</b-th>
+						<b-th class="text-center">
+							Кого уведомляем
 						</b-th>
 						<b-th class="text-center">
 							Куда отправлять
@@ -54,24 +56,23 @@
 						<b-td>
 							{{ key + 1 }}
 						</b-td>
-						<b-td>
-							<template v-if="recipientsNames[notification.date.frequency]">
-								{{ recipientsNames[notification.date.frequency] }}
-							</template>
-							<template v-else>
-								{{ notification.recipients.map(recipient => recipient.name).join(', ') }}
-							</template>
+						<b-td class="NotificationsV2-text">
+							<TextClip>
+								{{ notification.title }}
+							</TextClip>
 						</b-td>
 						<b-td class="NotificationsV2-text text-center">
-							<div class="NotificationsV2-shortText">
-								{{ notification.title }}
-							</div>
-							<div class="NotificationsV2-fullText">
-								{{ notification.title }}
-							</div>
+							<TextClip>
+								<template v-if="recipientsNames[notification.date.frequency]">
+									{{ recipientsNames[notification.date.frequency] }}
+								</template>
+								<template v-else>
+									{{ notification.recipients.map(recipient => recipient.name).join(', ') }}
+								</template>
+							</TextClip>
 						</b-td>
-						<b-td class="text-center">
-							{{ notification.type_of_mailing.map(type => services.find(service => service.value === type).title).join(', ') }}
+						<b-td class="NotificationsV2-text text-center">
+							{{ notification.type_of_mailing.map(type => services.find(service => service.value === type).short).join(', ') }}
 						</b-td>
 						<b-td class="text-center">
 							{{ periodNames[notification.date.frequency] }} {{ notification.date.days.join(', ') }}
@@ -117,7 +118,7 @@
 			:open="isSettings"
 			@close="isSettings = false"
 		>
-			<b-container>
+			<b-container class="NotificationsV2-settingsDialog">
 				<b-row class="mb-4">
 					<b-col cols="4">
 						<span class="NotificationsV2-label">Количество напоминаний в день</span>
@@ -139,7 +140,7 @@
 					<b-col>
 						<JobtronButton
 							fade
-							@click="onNewTemplate"
+							class="relative"
 						>
 							<ChatIconPlus
 								class="ChatIcon-active"
@@ -147,24 +148,37 @@
 								height="11"
 							/>
 							Шаблонное уведомление
+							<select
+								class="NotificationsV2-hiddenSelect custom-select"
+								v-model="template"
+							>
+								<option
+									v-for="tpl in templates"
+									:key="tpl.value"
+									:class="tpl.class"
+									:value="tpl.value"
+								>
+									{{ tpl.text }}
+								</option>
+							</select>
 						</JobtronButton>
 					</b-col>
 				</b-row>
 			</b-container>
 			<hr class="mb-4">
-			<b-button
-				variant="primary"
+			<JobtronButton
+				small
 				@click="onSaveSettings"
 			>
 				Сохранить
-			</b-button>
+			</JobtronButton>
 		</SideBar>
 
 		<!-- Шаблонные уведомления -->
 		<NotificationsTemplates
 			v-if="selectedTemplate"
 			:edit="selectedTemplate"
-			@close="selectedTemplate = null"
+			@close="onCloseTemplate"
 			@save="onSave"
 		/>
 	</div>
@@ -185,9 +199,11 @@ import NotificationsTemplates from '@/components/pages/Notifications/Notificatio
 import {
 	templateFrequency,
 	services,
+	templates,
 } from '@/components/pages/Notifications/helper'
 import SideBar from '@ui/Sidebar'
 import JobtronButton from '@ui/Button'
+import TextClip from '@ui/TextClip'
 import {
 	ChatIconPlus,
 } from '@icons'
@@ -211,6 +227,7 @@ export default {
 		NotificationsTemplates,
 		JobtronButton,
 		ChatIconPlus,
+		TextClip,
 	},
 	data(){
 		return {
@@ -233,6 +250,8 @@ export default {
 			selectedNotification: null,
 			search: '',
 			services,
+			templates,
+			template: '',
 
 			isSettings: '',
 			settings: {
@@ -283,6 +302,9 @@ export default {
 	watch: {
 		users(){
 			this.fetchNotifications()
+		},
+		template(){
+			if(this.template) this.onNewTemplate(this.template)
 		}
 	},
 	created(){
@@ -338,11 +360,12 @@ export default {
 			return ''
 		},
 		async remove(notification){
+			if(!confirm('Удалить уведомление?')) return
 			const {data} = await deleteNotification(notification.id)
 			if(data) {
-				this.$toast.success('Уведомление удалено')
 				const index = this.notifications.findIndex(noti => noti.id === notification.id)
 				this.notifications.splice(index, 1)
+				this.$toast.success('Уведомление удалено')
 			}
 			else{
 				this.$toast.error('Ошибка при удалении уведомления, попробуйте позже')
@@ -374,7 +397,7 @@ export default {
 					frequency: 'weekly'
 				},
 				time: '10:00',
-				type_of_mailing: ['in-app'],
+				type_of_mailing: [],
 				is_template: false,
 			}
 		},
@@ -386,6 +409,7 @@ export default {
 			}
 			if(notification.id) this.updateNotification(notification)
 			else this.createNotification(notification)
+			this.template = ''
 			this.selectedTemplate = null
 			this.selectedNotification = null
 		},
@@ -394,6 +418,7 @@ export default {
 			if(!notification.name) errors.push({field: 'name', error: 'Название уведомления должно быть заполнено'})
 			if(!notification.title) errors.push({field: 'title', error: 'Текст уведомления должен быть заполнен'})
 			if(!notification.is_template && !notification.recipients.length) errors.push({field: 'recipients', error: 'Укажите минимум одного получателя'})
+			if(!notification.type_of_mailing && !notification.type_of_mailing.length) errors.push({field: 'type_of_mailing', error: 'Укажите минимум однин способ отправки'})
 			if((notification.date.frequency === 'weekly' || notification.date.frequency === 'monthly') && !notification.date.days.length) errors.push({field: 'days', error: 'Укажите минимум один день отправки'})
 			return errors
 		},
@@ -433,9 +458,9 @@ export default {
 			this.$toast.success('Настройки сохранены')
 			this.isSettings = false
 		},
-		onNewTemplate(){
+		onNewTemplate(template = ''){
 			this.selectedTemplate = {
-				template: '',
+				template,
 				id: 0,
 				name: '',
 				title: '',
@@ -445,9 +470,13 @@ export default {
 					frequency: 'weekly'
 				},
 				time: '10:00',
-				type_of_mailing: ['in-app'],
+				type_of_mailing: [],
 				is_template: true,
 			}
+		},
+		onCloseTemplate(){
+			this.template = ''
+			this.selectedTemplate = null
 		}
 	}
 }
@@ -455,6 +484,15 @@ export default {
 
 <style lang="scss">
 .NotificationsV2{
+	&-hiddenSelect{
+		opacity: 0;
+		position: absolute;
+		z-index: 1;
+		top: 0;
+		left: 0;
+		right: 0;
+		bottom: 0;
+	}
 	&-header{
 		display: flex;
 		flex-flow: row nowrap;
@@ -471,47 +509,18 @@ export default {
 		}
 	}
 	&-text{
-		position: relative;
-		&:hover{
-			.NotificationsV2-fullText{
-				z-index: 11;
-				top: 40px;
-
-				visibility: visible;
-				opacity: 1;
-			}
-		}
-	}
-	&-shortText{
 		max-width: 300px;
-		white-space: nowrap;
-		overflow: hidden;
-		text-overflow: ellipsis;
 	}
-	&-fullText{
-    max-width: 400px;
-    padding: 10px 20px;
-    border: 1px solid #999;
 
-		position: absolute;
-    top: 20px;
-    left: 10px;
-
-    visibility: hidden;
-    opacity: 0;
-
-    font-size: 14px;
-    line-height: 1.3;
-    text-align: left;
-
-    box-shadow: rgba(0, 0, 0, 0.1) 0px 10px 15px -3px, rgba(0, 0, 0, 0.05) 0px 4px 6px -2px;
-    transition: 0.2s all ease;
-    border-radius: 10px;
-    background-color: #fff;
-	}
 	&-label{
 		font-size: 1.4rem;
     line-height: 2rem;
+	}
+	&-settingsDialog{
+		.img-info{
+			width: 20px;
+			vertical-align: middle;
+		}
 	}
 
 	.ui-sidebar{

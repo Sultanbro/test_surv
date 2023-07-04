@@ -79,6 +79,7 @@ class BitrixOld
                 'id' => $lead_id
             ];
             $query = http_build_query($fields);
+
             $result = $this->curl_post($this->link . 'crm.lead.get.json', $query);
             return $result;
         } else {
@@ -87,9 +88,6 @@ class BitrixOld
                 'ORDER' => [$date_type => $sort], 
             ];
         }
- 
-        
-        
 
         $query = http_build_query($fields);
         

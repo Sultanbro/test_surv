@@ -1,0 +1,191 @@
+{
+	"data": [
+		{
+			"id": 29,
+			"name": "Сертификаты за курсы",
+			"description": "Сертификаты выдаются каждому сотруднику за курсы",
+			"type": 2,
+			"available": [
+				{
+					"award_id": 57,
+					"award_category_id": 29,
+					"format": "pdf",
+					"course_id": 14,
+					"course_name": "Знакомство с нашей компанией",
+					"tempPath": "https://storage.oblako.kz/tenantbp/awards/FiTlKqOF6R9XyhWcb01miYaUGpwMZHXOULO7HXSu.pdf?X-Amz-Content-Sha256=UNSIGNED-PAYLOAD&X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=O4493_admin%2F20230627%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Date=20230627T054556Z&X-Amz-SignedHeaders=host&X-Amz-Expires=21600&X-Amz-Signature=4849a112ad166cc2776f5993332d18cf3b7e5b63197a38be522ad257f788d192"
+				},
+				{
+					"award_id": 57,
+					"award_category_id": 29,
+					"format": "pdf",
+					"course_id": 27,
+					"course_name": "Зачем и как учиться",
+					"tempPath": "https://storage.oblako.kz/tenantbp/awards/FiTlKqOF6R9XyhWcb01miYaUGpwMZHXOULO7HXSu.pdf?X-Amz-Content-Sha256=UNSIGNED-PAYLOAD&X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=O4493_admin%2F20230627%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Date=20230627T054556Z&X-Amz-SignedHeaders=host&X-Amz-Expires=21600&X-Amz-Signature=4849a112ad166cc2776f5993332d18cf3b7e5b63197a38be522ad257f788d192"
+				}
+			],
+			"other": [
+				{
+					"award_id": 57,
+					"award_category_id": 29,
+					"format": "pdf",
+					"name": "Елена",
+					"last_name": "Полякова",
+					"user_id": 10118,
+					"course_id": 17,
+					"tempPath": "https://storage.oblako.kz/tenantbp/awards/46YquyPQ8QE6YVu0rk3RUcCo9W5DynzbQWl5ydOc.pdf?X-Amz-Content-Sha256=UNSIGNED-PAYLOAD&X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=O4493_admin%2F20230627%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Date=20230627T054556Z&X-Amz-SignedHeaders=host&X-Amz-Expires=21600&X-Amz-Signature=58782be12196955be1cc5c14069978d860518b2b56c1d7839680c6664bd3ba4f"
+				},
+				{
+					"award_id": 57,
+					"award_category_id": 29,
+					"format": "pdf",
+					"name": "Елена",
+					"last_name": "Полякова",
+					"user_id": 10118,
+					"course_id": 31,
+					"tempPath": "https://storage.oblako.kz/tenantbp/awards/NmW5bnbM1YPBmsz5sjM4LjAIovuZyDcKok5LVZqC.pdf?X-Amz-Content-Sha256=UNSIGNED-PAYLOAD&X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=O4493_admin%2F20230627%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Date=20230627T054556Z&X-Amz-SignedHeaders=host&X-Amz-Expires=21600&X-Amz-Signature=7ff3d0c5dafac5983bdd4cf8dc3c8f94f192bd001398b507df7289c025309527"
+				},
+				{
+					"award_id": 57,
+					"award_category_id": 29,
+					"format": "pdf",
+					"name": "Александра",
+					"last_name": "Панькова",
+					"user_id": 20779,
+					"course_id": 17,
+					"tempPath": "https://storage.oblako.kz/tenantbp/awards/kQZlyYowBW8DaMuw2KWWZgm4fjFuzCUzI0sBYKDD.pdf?X-Amz-Content-Sha256=UNSIGNED-PAYLOAD&X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=O4493_admin%2F20230627%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Date=20230627T054556Z&X-Amz-SignedHeaders=host&X-Amz-Expires=21600&X-Amz-Signature=5acddc23b330098c8a5ba97b1a84fba1838334bb5dcbbcaaf730de6424252963"
+				},
+				{
+					"award_id": 57,
+					"award_category_id": 29,
+					"format": "pdf",
+					"name": "Александра",
+					"last_name": "Панькова",
+					"user_id": 20779,
+					"course_id": 31,
+					"tempPath": "https://storage.oblako.kz/tenantbp/awards/cNeesj6yhXTOeI9UWewQPhRalXuZ2o5eADh9aWwL.pdf?X-Amz-Content-Sha256=UNSIGNED-PAYLOAD&X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=O4493_admin%2F20230627%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Date=20230627T054556Z&X-Amz-SignedHeaders=host&X-Amz-Expires=21600&X-Amz-Signature=84454e284d954388da6c447e49525ddfe963e982e19ad9e975307a35ea478ca0"
+				},
+				{
+					"award_id": 57,
+					"award_category_id": 29,
+					"format": "pdf",
+					"name": "Румиля",
+					"last_name": "Абдрахманова",
+					"user_id": 21852,
+					"course_id": 14,
+					"tempPath": "https://storage.oblako.kz/tenantbp/awards/3RRHWPKBSMzMLZGotFdsUlxdLMUtVrlbQGTlExjC.pdf?X-Amz-Content-Sha256=UNSIGNED-PAYLOAD&X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=O4493_admin%2F20230627%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Date=20230627T054556Z&X-Amz-SignedHeaders=host&X-Amz-Expires=21600&X-Amz-Signature=0e74f2cebd10ace0ecbf7f7f77321f37261a3e719941d314ffe1a438c1fb727c"
+				},
+				{
+					"award_id": 57,
+					"award_category_id": 29,
+					"format": "pdf",
+					"name": "Индира",
+					"last_name": "Нуралина",
+					"user_id": 10147,
+					"course_id": 15,
+					"tempPath": "https://storage.oblako.kz/tenantbp/awards/Jr29gekpwz7D06bu9ucdouPuQnn4dRFP7Sb4Y2k8.pdf?X-Amz-Content-Sha256=UNSIGNED-PAYLOAD&X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=O4493_admin%2F20230627%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Date=20230627T054556Z&X-Amz-SignedHeaders=host&X-Amz-Expires=21600&X-Amz-Signature=0371aa59d954033fd1c1c36339d8e0cc609d7447d72e8a95c991069731bba83c"
+				},
+				{
+					"award_id": 57,
+					"award_category_id": 29,
+					"format": "pdf",
+					"name": "Ксения",
+					"last_name": "Дугнистова",
+					"user_id": 19733,
+					"course_id": 17,
+					"tempPath": "https://storage.oblako.kz/tenantbp/awards/ZkuU5738o8R9y81XElq4GLffEFvaIK7SwXh9ddiN.pdf?X-Amz-Content-Sha256=UNSIGNED-PAYLOAD&X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=O4493_admin%2F20230627%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Date=20230627T054556Z&X-Amz-SignedHeaders=host&X-Amz-Expires=21600&X-Amz-Signature=31a031757d43416ba02e0b51513bfaa644adcfc061217841b253a7baebf3a20f"
+				},
+				{
+					"award_id": 57,
+					"award_category_id": 29,
+					"format": "pdf",
+					"name": "Шынар",
+					"last_name": "Ахмедова",
+					"user_id": 13303,
+					"course_id": 15,
+					"tempPath": "https://storage.oblako.kz/tenantbp/awards/aa6PxHC9sAos8vo04jNw8AXvFceafJKf22l7DP94.pdf?X-Amz-Content-Sha256=UNSIGNED-PAYLOAD&X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=O4493_admin%2F20230627%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Date=20230627T054556Z&X-Amz-SignedHeaders=host&X-Amz-Expires=21600&X-Amz-Signature=2aa9c30304fdb51f8deb48eee8512827141396a39713d58fd8867d60eb4beb0b"
+				},
+				{
+					"award_id": 57,
+					"award_category_id": 29,
+					"format": "pdf",
+					"name": "Елена",
+					"last_name": "Керн",
+					"user_id": 2966,
+					"course_id": 17,
+					"tempPath": "https://storage.oblako.kz/tenantbp/awards/XXbesm1qh6SE7BINaz7SmFnuePBCm89pemHN0201.pdf?X-Amz-Content-Sha256=UNSIGNED-PAYLOAD&X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=O4493_admin%2F20230627%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Date=20230627T054556Z&X-Amz-SignedHeaders=host&X-Amz-Expires=21600&X-Amz-Signature=cb5017c278d61197206746f4970f261a5787ed192e53bc1c5cef837cfdde12c5"
+				},
+				{
+					"award_id": 57,
+					"award_category_id": 29,
+					"format": "pdf",
+					"name": "Елена",
+					"last_name": "Керн",
+					"user_id": 2966,
+					"course_id": 28,
+					"tempPath": "https://storage.oblako.kz/tenantbp/awards/T76kdOb8t1Yd543eknFYuvLwi5CkDNtGH2wo7g8s.pdf?X-Amz-Content-Sha256=UNSIGNED-PAYLOAD&X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=O4493_admin%2F20230627%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Date=20230627T054556Z&X-Amz-SignedHeaders=host&X-Amz-Expires=21600&X-Amz-Signature=6e69ed1ac08c3f1fe1f3544c88781d7f6eec7f38be4c8f611a449b1d032789c0"
+				},
+				{
+					"award_id": 57,
+					"award_category_id": 29,
+					"format": "pdf",
+					"name": "Дилноза",
+					"last_name": "Эргашбаева",
+					"user_id": 23592,
+					"course_id": 35,
+					"tempPath": "https://storage.oblako.kz/tenantbp/awards/s6GMowrVtGssBvMFUDhso9LFlne5ebwJjEtKxzh5.pdf?X-Amz-Content-Sha256=UNSIGNED-PAYLOAD&X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=O4493_admin%2F20230627%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Date=20230627T054556Z&X-Amz-SignedHeaders=host&X-Amz-Expires=21600&X-Amz-Signature=b47d919030eaf2cb3f79f72997dcaae4d3931d910fa179097a85b999b53cb9f2"
+				},
+				{
+					"award_id": 57,
+					"award_category_id": 29,
+					"format": "pdf",
+					"name": "Дарья",
+					"last_name": "Сарсенова",
+					"user_id": 16530,
+					"course_id": 14,
+					"tempPath": "https://storage.oblako.kz/tenantbp/awards/x70CGV3veFTutSuxKYqNnEY0czmuESGEwNTVOpDc.pdf?X-Amz-Content-Sha256=UNSIGNED-PAYLOAD&X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=O4493_admin%2F20230627%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Date=20230627T054556Z&X-Amz-SignedHeaders=host&X-Amz-Expires=21600&X-Amz-Signature=e7fdf926becea7906a8a13ca25d0111fdd01ebff8078b037a9ab8d2f6b17988d"
+				},
+				{
+					"award_id": 57,
+					"award_category_id": 29,
+					"format": "pdf",
+					"name": "Руслан",
+					"last_name": "Шыганбаев",
+					"user_id": 23475,
+					"course_id": 35,
+					"tempPath": "https://storage.oblako.kz/tenantbp/awards/zSiWrqnY6OoBnkprIBQVUjZzKRFZv7QGhaYA6i3q.pdf?X-Amz-Content-Sha256=UNSIGNED-PAYLOAD&X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=O4493_admin%2F20230627%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Date=20230627T054556Z&X-Amz-SignedHeaders=host&X-Amz-Expires=21600&X-Amz-Signature=d5373cf0cb6c3de9f0e6d589c888bd04a03e245f1b56471474f4171739899a9a"
+				},
+				{
+					"award_id": 57,
+					"award_category_id": 29,
+					"format": "pdf",
+					"name": "Ксения",
+					"last_name": "Дугнистова",
+					"user_id": 19733,
+					"course_id": 14,
+					"tempPath": "https://storage.oblako.kz/tenantbp/awards/kO5RdVHxDAUGDfuBTXqSnjtuVVe8bKr2uisYRlgk.pdf?X-Amz-Content-Sha256=UNSIGNED-PAYLOAD&X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=O4493_admin%2F20230627%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Date=20230627T054556Z&X-Amz-SignedHeaders=host&X-Amz-Expires=21600&X-Amz-Signature=75ba31a8550d3a5af4b4be20c19da6173c65fa67601c349fed73a3b62a0e7e39"
+				},
+				{
+					"award_id": 57,
+					"award_category_id": 29,
+					"format": "pdf",
+					"name": "Рахат",
+					"last_name": "Сулейменов",
+					"user_id": 21279,
+					"course_id": 14,
+					"tempPath": "https://storage.oblako.kz/tenantbp/awards/TfMfGhgflVSIYab6CdTQAvffpNjqcAmIHfqrfYN8.pdf?X-Amz-Content-Sha256=UNSIGNED-PAYLOAD&X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=O4493_admin%2F20230627%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Date=20230627T054556Z&X-Amz-SignedHeaders=host&X-Amz-Expires=21600&X-Amz-Signature=621a38783781642722c67b109bee4aded2c0a378187dbed8417003405e1b121a"
+				},
+				{
+					"award_id": 57,
+					"award_category_id": 29,
+					"format": "pdf",
+					"name": "Тажбам",
+					"last_name": "Джуманова",
+					"user_id": 5602,
+					"course_id": 35,
+					"tempPath": "https://storage.oblako.kz/tenantbp/awards/Hew4rdzYbjpVtErpkW4Vw8oaC368DgnLnPJv8HEn.pdf?X-Amz-Content-Sha256=UNSIGNED-PAYLOAD&X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=O4493_admin%2F20230627%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Date=20230627T054556Z&X-Amz-SignedHeaders=host&X-Amz-Expires=21600&X-Amz-Signature=48968b72a9f81393ea21b7da2cac6d13b009a623181c038e61066e74285146d3"
+				}
+			]
+		}
+	],
+	"read": true
+}

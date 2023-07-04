@@ -16,7 +16,9 @@ use App\Http\Controllers\Salary as Salary;
 use App\Http\Controllers\Services as Services;
 use App\Http\Controllers\Settings as Settings;
 use App\Http\Controllers\Timetrack as Timetrack;
+use App\Http\Controllers\Top\TopValueController;
 use App\Http\Controllers\User as User;
+use App\Http\Controllers\Deal as Deal;
 use Illuminate\Support\Facades\Route;
 
 Route::middleware(['web','tenant'])->group(function () {
@@ -262,6 +264,7 @@ Route::middleware(['web','tenant', 'not_admin_subdomain'])->group(function () {
         Route::get('/courses', [Settings\Award\AwardController::class, 'coursesAward'])->name('courses-awards');
         Route::post('/courses/store/{award}', [Settings\Award\AwardController::class, 'storeCoursesAward'])->name('courses-awards-store');
         Route::get('/type', [Settings\Award\AwardController::class, 'awardsByType'])->name('type-awards');
+        Route::get('/read', [Settings\Award\AwardController::class, 'read'])->name('read-awards');
         Route::get('/get', [Settings\Award\AwardController::class, 'index'])->middleware('is_admin')->name('get');
         Route::post('/store', [Settings\Award\AwardController::class, 'store'])->name('store');
         Route::put('/update/{award}', [Settings\Award\AwardController::class, 'update'])->middleware('is_admin')->name('update');
@@ -436,7 +439,11 @@ Route::middleware(['web','tenant', 'not_admin_subdomain'])->group(function () {
     Route::post('/timetracking/top/top_edited_value/update', [Analytics\TopController::class, 'updateTopEditedValue']);
     Route::post('/timetracking/top/proceeds/update', [Analytics\TopController::class, 'updateProceeds']);
 
-    Route::post('/top/utility-archive', [Root\Top\TopValueController::class, 'archiveUtility']);
+    Route::post('/top/utility-archive', [TopValueController::class, 'archiveUtility']);
+    Route::get('/top/utility/list', [TopValueController::class, 'listUtility']);
+    Route::get('/top/rentability/list', [TopValueController::class, 'listRentability']);
+    Route::get('/top/proceeds/list', [TopValueController::class, 'listProceeds']);
+    Route::post('/top/switch', [TopValueController::class, 'switch']);
 
     // HR analytics
     Route::any('/timetracking/analytics/save-call-base', [Analytics\HrController::class, 'saveCallBase']);
@@ -510,6 +517,7 @@ Route::middleware(['web','tenant', 'not_admin_subdomain'])->group(function () {
         Route::put('update',[Kpi\BonusController::class,'update'])->name('update');
         Route::delete('delete/{id}',[Kpi\BonusController::class,'delete'])->name('delete');
         Route::post('/set/status', [Kpi\KpiBonusStatusController::class, 'setActive']);
+        Route::put('read',[Kpi\BonusController::class,'read'])->name('read');
     });
 
     // Редактирование квартальной премии
@@ -526,12 +534,14 @@ Route::middleware(['web','tenant', 'not_admin_subdomain'])->group(function () {
         Route::get('kpi/user/{id}', [Kpi\KpiStatController::class, 'show'])->name('index');
         Route::get('kpi/users/', [Kpi\KpiStatController::class, 'fetchGroups'])->name('fetch');
         Route::any('kpi', [Kpi\KpiStatController::class, 'fetchKpis'])->name('fetchKpis');
+        Route::any('kpi/read', [Kpi\KpiStatController::class, 'readKpis'])->name('readKpis');
         Route::any('kpi/groups-and-users', [Kpi\KpiStatController::class, 'fetchKpiGroupsAndUsers'])->name('fetchKpiGroupsAndUsers');
         Route::any('kpi/groups-and-users/{targetable_id}', [Kpi\KpiStatController::class, 'showKpiGroupAndUsers'])
             ->where('targetable_id', '[0-9]+');
         Route::get('kpi/annual-statistics', [Kpi\KpiStatController::class, 'getAnnualStatistics']);
         Route::any('bonuses', [Kpi\KpiStatController::class, 'fetchBonuses'])->name('fetchBonuses');
         Route::any('quartal-premiums', [Kpi\KpiStatController::class, 'fetchQuartalPremiums'])->name('fetchQuartalPremiums');
+        Route::any('quartal-premiums/read', [Kpi\KpiStatController::class, 'readQuartalPremiums'])->name('quartal-premium.read');
         Route::any('workdays', [Kpi\KpiStatController::class, 'workdays']);
         Route::post('update-stat', [Kpi\KpiStatController::class, 'updateStat'])->name('updateStat');
         Route::get('activities',[Kpi\KpiStatController::class,'getActivities'])->name('getActivites');
@@ -730,6 +740,10 @@ Route::middleware(['api','tenant','not_admin_subdomain'])->group(function () {
             Route::get('/fired-users/{id?}/{date?}', [Api\DepartmentUserController::class, 'getFiredUsers'])->name('fired-users');
             Route::get('/fired-trainees/{id?}/{date?}', [Api\DepartmentUserController::class, 'getFiredTrainees'])->name('fired-trainees');
             Route::get('/check/user/{id}', [Api\DepartmentUserController::class, 'userInGroup']);
+        });
+
+        Route::group(['prefix' => 'deals', 'as' => 'deals.'], function () {
+            Route::any('/updated', [Deal\DealController::class, 'dealUpdatedWebhook']);
         });
     });
 });

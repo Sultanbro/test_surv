@@ -3,35 +3,10 @@
 		class="popup__con"
 		:class="{ 'v-loading': loading }"
 	>
-		<div class="tabs">
-			<div class="popup__filter">
-				<div class="trainee__tabs tabs__wrapper">
-					<div
-						class="trainee__tab tab__item is-active"
-						onclick="switchTabs(this)"
-						data-index="1"
-					>
-						Новые
-						<template v-if="unreadQuantity != 0">
-							(<span>{{ unreadQuantity }}</span>)
-						</template>
-					</div>
-					<div
-						class="trainee__tab tab__item"
-						onclick="switchTabs(this)"
-						data-index="2"
-					>
-						Прочитанные
-					</div>
-				</div>
-			</div>
-
-			<div class="tab__content">
+		<ProfileTabs :tabs="[`Новые${unreadQuantity ? ` (${unreadQuantity})` : ''}`, 'Прочитанные']">
+			<template #tab(0)>
 				<!-- Unread notifications -->
-				<div
-					class="kaspi__content custom-scroll-y tab__content-item is-active"
-					data-content="1"
-				>
+				<div class="kaspi__content custom-scroll-y">
 					<div class="notifications__wrapper">
 						<div
 							class="notifications__item"
@@ -76,12 +51,10 @@
 						Отметить все как прочитанное
 					</a>
 				</div>
-
+			</template>
+			<template #tab(1)>
 				<!-- Read notifications -->
-				<div
-					class="kaspi__content custom-scroll-y tab__content-item"
-					data-content="2"
-				>
+				<div class="kaspi__content custom-scroll-y">
 					<div class="notifications__wrapper">
 						<div
 							class="notifications__item"
@@ -111,17 +84,21 @@
 						</div>
 					</div>
 				</div>
-			</div>
-		</div>
+			</template>
+		</ProfileTabs>
 	</div>
 </template>
 
 <script>
 import { mapState, mapActions } from 'pinia'
 import { useNotificationsStore } from '@/stores/Notifications'
+import ProfileTabs from '@ui/ProfileTabs'
 
 export default {
 	name: 'NotificationsPopup',
+	components: {
+		ProfileTabs,
+	},
 	props: {},
 	data: function () {
 		return {

@@ -213,6 +213,7 @@ export default {
 			filename: '',
 			showStepTwo: false,
 			errors: [],
+			users: [],
 		}
 	},
 	created() {
@@ -289,14 +290,17 @@ export default {
 					loader.hide()
 					return;
 				}
-				_this.items = response.data.items;
+				_this.items = response.data.items.map(item => {
+					if(typeof item.id === 'object') item.id = 0
+					return item
+				});
 
 				_this.items.sort((a, b) => (a.name > b.name) ? 1 : -1);
 
 				_this.errors = []
 				if(response.data.items.length > 0) _this.showStepTwo = true;
 				_this.users = response.data.users
-				_this.users.push({
+				_this.users.unshift({
 					id: 0,
 					name: '',
 					last_name: '',

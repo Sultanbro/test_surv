@@ -63,7 +63,7 @@ export default {
 					path: '/timetracking/settings?tab=10',
 					title: 'Уведомления',
 					access: ['notifications_view', 'settings_view'],
-					beta: true
+					beta: false
 				},
 				{
 					id: '6',
