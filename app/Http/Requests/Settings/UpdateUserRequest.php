@@ -109,7 +109,7 @@ class UpdateUserRequest extends FormRequest
             'taxes.*.user_id'   => ['numeric', 'exists:users,id'],
             'taxes.*.name'      => ['string'],
             'bitrix_id'         => ['numeric'],
-            'first_work_day'    => ['date']
+            'first_work_day'    => ['date', 'nullable']
         ];
     }
 
