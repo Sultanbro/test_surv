@@ -1432,7 +1432,10 @@ class User extends Authenticatable implements Authorizable
             $workingDay = array_key_exists(0, $days) ? (int)$days[0] : throw new Exception(message: 'Проверьте график работы', code: 400);
             $dayOff = array_key_exists(1, $days) ? (int)$days[1] : throw new Exception(message: 'Проверьте график работы', code: 400);
 
-            $differBetweenFirstAndLastDay = Carbon::now()->diffInDays($this->first_work_day);  // получаем разницу между датами начального и последнего дня
+            $date1 = date_create(now()->format('Y-m-d'));
+            $date2 = date_create($this->first_work_day);
+            $differBetweenFirstAndLastDay = date_diff($date1, $date2)->days;
+
             $total = $workingDay + $dayOff;
 
             if ($workingDay === 1){
@@ -1443,7 +1446,7 @@ class User extends Authenticatable implements Authorizable
                 return false;
             }
 
-            $remains = ($differBetweenFirstAndLastDay + 1) % $total;
+            $remains = $differBetweenFirstAndLastDay % $total;
             if ($remains < $workingDay) {
                 return true;
             }
