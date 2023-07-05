@@ -41,7 +41,7 @@ class HeadHunterApi2 {
      * Ссылка авторизации вручную, нужно войти в hh аккаунт, потом перейти по ссылке
      * Получает код авторизации
      */
-    CONST AUTH_CODE_LINK = 'https://hh.ru/oauth/authorize?response_type=code&client_id=NL6B2359LP0DPG8GHQ6GDDDOTUQTHRKIDS6J660EVLOONDTI7ESJLSJ96RATH2L6&state=um_state&redirect_uri=https://jobtron.org/test2';
+    CONST AUTH_CODE_LINK = 'https://hh.ru/oauth/authorize?response_type=code&client_id=JH1OG3FTG39IU46MANMM3U6UV4U72IBJVMLCQFT9BM35U1DJ8Q6UI85KC95CUNKG&state=um_state&redirect_uri=https://jobtron.org/test2';
     
     /**
      * OauthClientToken $oauth
