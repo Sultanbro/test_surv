@@ -87,66 +87,6 @@
 					</div>
 				</PopupMenu>
 			</div>
-			<div
-				v-if="false"
-				class="d-flex mr-3"
-			>
-				<b-form-checkbox
-					v-model="filter.fulltime"
-					:value="1"
-					:unchecked-value="0"
-					class="mr-2"
-				>
-					Full-Time
-				</b-form-checkbox>
-				<b-form-checkbox
-					v-model="filter.parttime"
-					:value="1"
-					:unchecked-value="0"
-					class="ml-3"
-				>
-					Part-Time
-				</b-form-checkbox>
-			</div>
-			<select
-				v-if="false"
-				v-model="user_types"
-				class="form-control w-200px mr-3"
-			>
-				<option value="0">
-					Действующие
-				</option>
-				<option value="1">
-					Уволенные
-				</option>
-				<option value="2">
-					Стажеры
-				</option>
-			</select>
-			<div v-if="false">
-				<a
-					v-if="isImportable"
-					@click="showExcelImport = !showExcelImport"
-					class="btn btn-success text-white rounded"
-				>
-					<i class="fa fa-upload" />
-					Импорт
-				</a>
-				<a
-					href="#"
-					@click="exportData()"
-					class="btn btn-success ml-1 rounded"
-				>
-					<i class="far fa-file-excel" />
-					Экспорт
-				</a>
-				<button
-					class="btn btn-info"
-					@click="editActivity()"
-				>
-					<i class="icon-nd-settings" />
-				</button>
-			</div>
 		</div>
 
 		<div class="table-container whitespace-no-wrap">
@@ -254,39 +194,16 @@
 							<div class="wd d-flex">
 								{{ item.lastname }} {{ item.name }}
 								<b-badge
-									v-if="item.group == 'Просрочники'"
-									variant="success"
-								>
-									{{ item.group }}
-								</b-badge>
-								<b-badge
-									v-else
-									variant="primary"
+									v-if="item.group"
+									:variant="item.group == 'Просрочники' ? 'success' : 'primary'"
 								>
 									{{ item.group }}
 								</b-badge>
 
-								<div v-if="item.show_cup == 1">
-									<img
-										src="/images/goldencup.png"
-										class="goldencup ml-2"
-										alt=""
-									>
-								</div>
-								<div v-if="item.show_cup == 2">
-									<img
-										src="/images/silvercup.png"
-										class="goldencup ml-2"
-										alt=""
-									>
-								</div>
-								<div v-if="item.show_cup == 3">
-									<img
-										src="/images/bronzecup.png"
-										class="goldencup ml-2"
-										alt=""
-									>
-								</div>
+								<JobtronCup
+									:place="sortDir === 'asc' ? index : filtered.length - index"
+									rotate
+								/>
 							</div>
 						</td>
 
@@ -316,12 +233,12 @@
 							</td>
 						</template>
 
-
 						<template v-for="day in month.daysInMonth">
 							<td
 								v-if="item.editable && editable"
 								:key="day"
-								:class="'px-0 day-minute text-center Fri table-' + item._cellVariants[day]"
+								class="TableActivityNew-data px-0 day-minute text-center Fri"
+								:class="'table-' + item._cellVariants[day]"
 							>
 								<div>
 									<input
@@ -337,7 +254,8 @@
 								v-else-if="holidays.includes(day) && item[day] > 0"
 								:key="day + 'a'"
 								@click="editMode(item)"
-								:class="'px-0 day-minute text-center Fri table-' + item._cellVariants[day]"
+								class="TableActivityNew-data px-0 day-minute text-center Fri"
+								:class="'table-' + item._cellVariants[day]"
 							>
 								<div v-if="item[day]">
 									{{ item[day] }}{{ activity.unit }}
@@ -347,7 +265,7 @@
 								v-else-if="holidays.includes(day)"
 								:key="day + 'b'"
 								@click="editMode(item)"
-								:class="'px-0 day-minute text-center Fri mywarning'"
+								class="TableActivityNew-data day-minute text-center Fri mywarning"
 							>
 								<div v-if="item[day]">
 									{{ item[day] }}{{ activity.unit }}
@@ -357,7 +275,8 @@
 								v-else
 								:key="day + 'c'"
 								@click="editMode(item)"
-								:class="[item[day] > 0 || holidays.includes(day) ? 'px-0 day-minute text-center Fri table-' + item._cellVariants[day] : 'px-0 day-minute text-center Fri table-text-center']"
+								class="TableActivityNew-data px-0 day-minute text-center Fri"
+								:class="[item[day] > 0 || holidays.includes(day) ? ' table-' + item._cellVariants[day] : 'table-text-center']"
 							>
 								<div v-if="item[day]">
 									{{ item[day] }}{{ activity.unit }}
@@ -391,6 +310,7 @@
 			@ok="saveActivity()"
 			size="lg"
 			class="modalle"
+			no-enforce-focus
 		>
 			<div class="row mb-3">
 				<div class="col-5">
@@ -476,6 +396,28 @@
 				</div>
 			</div>
 
+			<div
+				class="row mb-3"
+				@click="showHideUsersOverlay = true"
+			>
+				<div class="col-5">
+					<p class="">
+						Кого не&nbsp;показывать в&nbsp;таблице
+					</p>
+				</div>
+				<div class="col-7">
+					<div class="TableActivityNew-toHide form-control">
+						<b-badge
+							v-for="user, index in usersToHide"
+							:key="index"
+						>
+							{{ user.name }}
+						</b-badge>
+						&nbsp;
+					</div>
+				</div>
+			</div>
+
 			<div class="row">
 				<div class="col-7 offset-5 d-flex align-items-center">
 					<div class="custom-control custom-checkbox">
@@ -495,6 +437,22 @@
 				</div>
 			</div>
 		</b-modal>
+		<JobtronOverlay
+			v-if="showHideUsersOverlay"
+			@close="showHideUsersOverlay = false"
+			:z="10000"
+		>
+			<AccessSelect
+				:value="activityUsersToShowForm"
+				:tabs="['Сотрудники']"
+				search-position="beforeTabs"
+				:submit-button="'Сохранить'"
+				:access-dictionaries="accessDictionaries"
+				@submit="onSubmitHideUsers"
+				absolute
+				class="TableActivityNew-accessSelect"
+			/>
+		</JobtronOverlay>
 	</div>
 </template>
 
@@ -503,7 +461,14 @@ import Sidebar from '@/components/ui/Sidebar'
 import PopupMenu from '@ui/PopupMenu'
 import JobtronSelect from '@ui/Select'
 import JobtronButton from '@ui/Button'
+import JobtronCup from '@ui/Cup'
+import JobtronOverlay from '@ui/Overlay'
+import AccessSelect from '@ui/AccessSelect/AccessSelect.vue'
 import ActivityExcelImport from '@/components/imports/ActivityExcelImport' // импорт в активности
+
+import {
+	hideAnalyticsActivityUsers,
+} from '@/stores/api'
 
 export default {
 	name: 'TableActivityNew',
@@ -512,6 +477,9 @@ export default {
 		PopupMenu,
 		JobtronSelect,
 		JobtronButton,
+		JobtronCup,
+		AccessSelect,
+		JobtronOverlay,
 		ActivityExcelImport,
 	},
 	props: {
@@ -531,12 +499,18 @@ export default {
 			type: Boolean,
 			default: true
 		},
+		hiddenUsers: {
+			type: Array,
+			default: () => {},
+		}
 	},
 	data() {
 		return {
 			holidays: [],
 			items: [],
 			sorts: {},
+			sortField: '',
+			sortDir: 'asc',
 			filtered: [],
 			local_activity: {},
 			fields: [],
@@ -580,6 +554,9 @@ export default {
 			tenant: location.hostname.split('.')[0],
 			isFilters: false,
 			isControls: false,
+
+			showHideUsersOverlay: false,
+			activityUsersToShowForm: [],
 		};
 	},
 	computed: {
@@ -589,10 +566,31 @@ export default {
 				|| this.group_id == 88
 				|| (this.group_id == 71 && this.activity.id == 149)
 				|| (this.group_id == 71 && this.activity.id == 151)
+		},
+		accessDictionaries(){
+			return {
+				users: this.activity.records.reduce((result, user) => {
+					if(!user.email) return result
+					result.push({
+						id: user.id,
+						name: user.fullname,
+						position: ''
+					})
+					return result
+				}, []),
+				profile_groups: [],
+				positions: [],
+			}
+		},
+		usersToHide(){
+			return this.accessDictionaries.users.filter(user => {
+				const isShowed = this.activityUsersToShowForm.find(u => u.id === user.id)
+				return !isShowed
+			})
 		}
 	},
 	watch: {
-		activity: function() { // watch it
+		activity: function() {
 			this.fetchData();
 		},
 		filter: {
@@ -612,23 +610,6 @@ export default {
 	},
 	methods: {
 		getWeekends(){
-			/*
-            var d = new Date();
-            var getTot = daysInMonth(d.getMonth(),d.getFullYear()); //Get total days in a month
-            var sat = new Array();   //Declaring array for inserting Saturdays
-            var sun = new Array();   //Declaring array for inserting Sundays
-
-            for(var i=1;i<=getTot;i++){    //looping through days in month
-                var newDate = new Date(d.getFullYear(),d.getMonth(),i)
-                if(newDate.getDay()==0){   //if Sunday
-                    sun.push(i);
-                }
-                if(newDate.getDay()==6){   //if Saturday
-                    sat.push(i);
-                }
-
-            }
-            console.log(sat);*/
 			var d = new Date(this.month.currentYear +'-'+ this.month.month +'-01');
 
 			for(var i = 1;i <= this.month.daysInMonth; i++){
@@ -668,24 +649,26 @@ export default {
 		},
 
 		setLeaders() {
-			let arr = this.itemsArray;
+			const arr = this.filtered;
 
-			// let first_item = this.itemsArray[0];
-			//this.itemsArray.shift();
-
-			arr.sort((a, b) => Number(a.plan) < Number(b.plan)  ?
-				1 : Number(a.plan) > Number(b.plan) ? -1 : 0);
-
-			if(this.itemsArray.length > 3) {
-				arr[0].show_cup = 1;
-				arr[1].show_cup = 2;
-				arr[2].show_cup = 3;
+			if(arr > 4) {
+				arr[1].show_cup = 1;
+				arr[2].show_cup = 2;
+				arr[3].show_cup = 3;
 			}
-			//this.itemsArray.unshift(first_item);
 		},
 
-		fetchData() {
+		async fetchData() {
 			let loader = this.$loading.show();
+
+			this.activityUsersToShowForm = this.accessDictionaries.users.reduce((result, user) => {
+				const isHidden = this.hiddenUsers.find(id =>  id === user.id)
+				if(!isHidden) result.push({
+					type: 1,
+					...user,
+				})
+				return result
+			}, [])
 
 			this.records = this.activity.records;
 			this.accountsNumber = this.activity.records.length
@@ -693,7 +676,7 @@ export default {
 			if(this.show_headers) this.setFirstRowAsTotals()
 			this.calculateRecordsValues()
 			if(this.show_headers) this.calculateTotalsRow()
-			if(!this.show_headers) this.setLeaders();
+			this.setLeaders();
 			this.items = this.itemsArray;
 			this.filtered = this.itemsArray;
 			this.addCellVariantsArrayToRecords();
@@ -711,7 +694,7 @@ export default {
 				this.currentAction = 'sum'
 
 				Object.keys(this.sum).forEach((key) => {
-					this.items[0][key] = this.sum[key];
+					this.items[0][key] = parseFloat(this.sum[key]) === parseInt(this.sum[key]) ? parseInt(this.sum[key]) : parseFloat(this.sum[key]).toFixed(2);
 				});
 			}
 			else if(this.currentAction == 'sum') {
@@ -946,6 +929,7 @@ export default {
 			let quan_of_column = 0;
 
 			this.records.forEach(account => {
+				if(this.hiddenUsers.includes(account.id)) return
 				let countWorkedDays = 0;
 				let cellValues = [];
 
@@ -1089,27 +1073,39 @@ export default {
 			this.showEditModal = true;
 		},
 
-		saveActivity() {
-			let loader = this.$loading.show();
-			this.axios.post('/timetracking/analytics/edit-activity', {
-				month: this.month.month,
-				year: this.month.currentYear,
-				activity: this.local_activity,
-			}).then(() => {
+		async saveActivity() {
+			const loader = this.$loading.show();
+
+			try {
+				await this.axios.post('/timetracking/analytics/edit-activity', {
+					month: this.month.month,
+					year: this.month.currentYear,
+					activity: this.local_activity,
+				})
+
+				await hideAnalyticsActivityUsers({
+					group_id: this.group_id,
+					groups: {
+						[this.activity.id]: this.usersToHide.map(user => user.id)
+					}
+				})
+
 				this.$toast.success('Обновите, чтобы посмотреть новую таблицу!')
-				this.showEditModal = false
-				loader.hide()
-			}).catch(error => {
-				loader.hide()
+			}
+			catch (error) {
 				this.$toast.error('Ошибка!')
 				alert(error)
-			});
+			}
+			loader.hide()
 		},
 
 		sort(field) {
 			if(this.sorts[field] === undefined) {
 				this.sorts[field] = 'asc';
 			}
+
+			this.sortField = field
+			this.sortDir = this.sorts[field]
 
 			let item = this.items[0];
 
@@ -1174,28 +1170,16 @@ export default {
 				break
 			}
 			this.filterTable()
+		},
+		async onSubmitHideUsers(users){
+			this.activityUsersToShowForm = users
+			this.showHideUsersOverlay = false
 		}
 	},
 };
 </script>
 
 <style lang="scss">
-.TableActivityNew{
-	&-contlors{
-		position: relative;
-	}
-	&-filters{
-		position: relative;
-	}
-	&-filtersPopup{
-		width: 250px;
-		padding: 10px;
-	}
-	&-filtersIcon{
-		width: 14px;
-		filter: invert(27%) sepia(73%) saturate(2928%) hue-rotate(209deg) brightness(96%) contrast(89%);
-	}
-}
 .my-table.m2 tr .badge {
 	opacity: 1;
 }
@@ -1291,5 +1275,56 @@ export default {
 }
 .mywarning{
 	background-color: #f7f2a6;
+}
+
+.TableActivityNew{
+	min-height: 300px;
+	&-contlors{
+		position: relative;
+	}
+	&-filters{
+		position: relative;
+	}
+	&-filtersPopup{
+		width: 250px;
+		padding: 10px;
+	}
+	&-filtersIcon{
+		width: 14px;
+		filter: invert(27%) sepia(73%) saturate(2928%) hue-rotate(209deg) brightness(96%) contrast(89%);
+	}
+	// --- костылище
+	&-data{
+		width: 42px !important;
+		max-width: 42px !important;
+		padding: 0 !important;
+		.cell-input{
+			width: 42px !important;
+			border: none !important;
+			background-color: transparent !important;
+			&:focus{
+				border: none !important;
+				background-color: transparent !important;
+				box-shadow: none !important;
+			}
+		}
+	}
+	// --- костылище
+	&-toHide{
+		display: flex;
+		flex-flow: row wrap;
+		align-items: center;
+		justify-content: flex-start;
+		gap: 5px;
+
+		min-height: 35px;
+		padding: 0 20px;
+
+		border: 1px solid #e8e8e8;
+		border-radius: 6px;
+		font-size: 14px;
+		line-height: 1.3;
+		background-color: #F7FAFC;
+	}
 }
 </style>
