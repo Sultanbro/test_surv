@@ -202,10 +202,11 @@
 			hide-footer
 			hide-header
 			no-close-on-backdrop
+			scrollable
 		>
 			<div
-				class="corpbook"
 				v-if="corp_book !== undefined && corp_book !== null"
+				class="corpbook"
 			>
 				<div class="inner">
 					<h5 class="text-center aet mb-3">
@@ -960,6 +961,9 @@ export default {
 	.corpbook{
 		ol, ul{
 			margin-left: 2rem;
+		}
+		table{
+			table-layout: auto !important;
 		}
 	}
 }

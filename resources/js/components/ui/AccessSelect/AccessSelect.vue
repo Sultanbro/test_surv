@@ -1,5 +1,10 @@
 <template>
-	<div class="AccessSelect">
+	<div
+		class="AccessSelect"
+		:class="{
+			'AccessSelect_absolute': absolute
+		}"
+	>
 		<slot
 			name="before"
 			:search="accessSearch"
@@ -137,6 +142,10 @@ export default {
 			type: Boolean,
 			default: false
 		},
+		absolute: {
+			type: Boolean,
+			default: false
+		},
 		search: {
 			type: String,
 			default: ''
@@ -252,6 +261,21 @@ export default {
 		display: flex;
 		flex-flow: column nowrap;
 		overflow: hidden;
+	}
+
+	&_absolute{
+		width: 420px;
+		height: 720px;
+		max-height: 80vh;
+		padding: 20px;
+		border-radius: 15px;
+
+		position: fixed;
+		top: 50%;
+		left: 50%;
+		transform: translate(-50%, -50%);
+
+		background-color: #fff;
 	}
 }
 </style>

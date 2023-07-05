@@ -46,17 +46,6 @@ export default {
 <style lang="scss">
 .JobtronSelect{
 	position: relative;
-	&_compact{
-		.JobtronSelect{
-			&-select{
-				padding: 5px 15px 5px 10px;
-				line-height: 18px;
-			}
-			&:after{
-				right: 0.5rem;
-			}
-		}
-	}
 	&-select{
 		display: block;
     width: 100%;
@@ -109,6 +98,18 @@ export default {
     z-index: 1;
     top: 50%;
     right: 1.5rem;
+	}
+
+	&_compact{
+		.JobtronSelect{
+			&-select{
+				padding: 5px 15px 5px 10px;
+				line-height: 18px;
+			}
+		}
+		&:after{
+			right: 0.5rem;
+		}
 	}
 }
 </style>

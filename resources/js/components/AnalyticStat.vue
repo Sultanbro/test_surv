@@ -28,7 +28,7 @@
 			>
 		</div>
 
-		<div class="d-flex">
+		<div class="AnalyticStat-tables d-flex relative">
 			<div
 				id="wow-table"
 				class="relative w551"
@@ -366,7 +366,10 @@
 				</table>
 			</div>
 
-			<div class="table-responsive">
+			<div
+				class="table-responsive"
+				@scroll="hideContextMenu"
+			>
 				<!-- table 2 -->
 				<table class="as-table">
 					<tr>
@@ -389,9 +392,10 @@
 							<td
 								v-if="f_index > 3"
 								:key="f_index"
+								:data-an-cell="i_index + '-' + f_index"
 								class="t-cell font-bold"
-								@click="focus(i_index, f_index)"
 								:class="item[field.key].class"
+								@click="focus(i_index, f_index)"
 							>
 								<div
 									class="inner-div"
@@ -405,32 +409,6 @@
 									@contextmenu.prevent.stop="openContextMenu(item[field.key], i_index, f_index)"
 								>
 									<div class="disabled" />
-									<div
-										v-if="item[field.key].context"
-										class="contextor"
-									>
-										<ul class="types">
-											<li>
-												<div class="d-flex decimals">
-													<p>Дробные</p>
-													<input
-														v-model="item[field.key].decimals"
-														type="number"
-														@change="setDecimals(item[field.key])"
-													>
-												</div>
-											</li>
-											<li @click="change_type('initial', i_index, field.key)">
-												Обычный
-											</li>
-											<li @click="change_type('formula', i_index, field.key)">
-												Формула
-											</li>
-											<li @click="add_formula_1_31(item[field.key])">
-												Формула с 1 по 31
-											</li>
-										</ul>
-									</div>
 
 									<input
 										v-if="focused_item === i_index && focused_field === f_index"
@@ -470,10 +448,42 @@
 					</tr>
 				</table>
 			</div>
+
+			<div class="AnalyticStat-contexts">
+				<template v-for="(item, i_index) in items">
+					<template v-for="(field,f_index) in fields">
+						<div
+							v-if="f_index > 3 && item[field.key].context"
+							:key="i_index + '-' + f_index"
+							:data-an-context="i_index + '-' + f_index"
+							class="contextor"
+						>
+							<ul class="types">
+								<li>
+									<div class="d-flex decimals">
+										<p>Дробные</p>
+										<input
+											v-model="item[field.key].decimals"
+											type="number"
+											@change="setDecimals(item[field.key])"
+										>
+									</div>
+								</li>
+								<li @click="change_type('initial', i_index, field.key)">
+									Обычный
+								</li>
+								<li @click="change_type('formula', i_index, field.key)">
+									Формула
+								</li>
+								<li @click="add_formula_1_31(item[field.key])">
+									Формула с 1 по 31
+								</li>
+							</ul>
+						</div>
+					</template>
+				</template>
+			</div>
 		</div>
-
-
-
 
 		<!-- Modal Create activity -->
 		<b-modal
@@ -726,7 +736,7 @@ export default {
 					result = Parser.evaluate(expression);
 				}
 				catch (error) {
-					console.log(error)
+					console.error(error)
 				}
 			}
 
@@ -865,7 +875,7 @@ export default {
 				loader.hide()
 			}).catch(error => {
 				this.$toast.error('Не получилось');
-				console.log(error)
+				console.error(error)
 				loader.hide()
 			});
 		},
@@ -891,14 +901,13 @@ export default {
 					loader.hide()
 				}).catch(error => {
 					this.$toast.error('Не получилось');
-					console.log(error)
+					console.error(error)
 					loader.hide()
 				});
 			}
 		},
 
 		save_depend() {
-
 			this.axios.post('/timetracking/analytics/add-depend', {
 				id: this.itemy['row_id'],
 				depend_id: this.depend_id
@@ -910,7 +919,7 @@ export default {
 				this.itemy = null
 			}).catch(error => {
 				this.$toast.error('Не получилось');
-				console.log(error)
+				console.error(error)
 			});
 		},
 
@@ -921,7 +930,7 @@ export default {
 				this.$toast.success('Обновите, чтобы подтянуть данные!');
 			}).catch(error => {
 				this.$toast.error('Не получилось');
-				console.log(error)
+				console.error(error)
 			});
 		},
 
@@ -974,15 +983,40 @@ export default {
 		},
 
 		openContextMenu(item, i_index, f_index) {
-			if(!this.isAdmin) {
-				return '';
-			}
+			if(!this.isAdmin) return
 			this.focus(i_index, f_index);
 			this.hideContextMenu();
 
-			//if(item.editable == 1) {
 			item.context = true;
-			//}
+
+			this.$nextTick(() => {
+				const cellName = i_index + '-' + f_index
+				const cell = document.querySelector(`[data-an-cell="${cellName}"]`)
+				const context = document.querySelector(`[data-an-context="${cellName}"]`)
+
+				if(!cell) return
+				if(!context) return
+
+				const parent = cell.closest('.AnalyticStat-tables')
+
+				if(!parent) return
+
+				const cellRect = cell.getBoundingClientRect()
+				const parentRect = parent.getBoundingClientRect()
+
+				const pos = {
+					top: cellRect.top - parentRect.top + parseInt(cell.clientHeight / 2),
+					left: cellRect.left - parentRect.left + parseInt(cell.clientWidth / 2),
+				}
+
+				// корректировка left если уходит за предели предка
+				if(pos.left + context.clientWidth > parent.clientWidth) {
+					pos.left -= context.clientWidth
+				}
+
+				context.style.top = pos.top + 'px'
+				context.style.left = pos.left + 'px'
+			})
 		},
 
 		editQuery(i_index, f_index) {
@@ -1009,7 +1043,7 @@ export default {
 				this.$toast.success('Сохранено');
 			}).catch(error => {
 				this.$toast.error('Не сохранено');
-				console.log(error)
+				console.error(error)
 			});
 		},
 
@@ -1131,7 +1165,7 @@ export default {
 				this.$toast.success('Сохранено');
 			}).catch(error => {
 				this.$toast.error('Не сохранено');
-				console.log(error)
+				console.error(error)
 			});
 		},
 
@@ -1205,7 +1239,7 @@ export default {
 				this.itemy = null;
 			}).catch(error => {
 				this.$toast.error('Не сохранено');
-				console.log(error)
+				console.error(error)
 			});
 		},
 
@@ -1223,7 +1257,7 @@ export default {
 				this.itemy = null;
 			}).catch(error => {
 				this.$toast.error('Не сохранено');
-				console.log(error)
+				console.error(error)
 			});
 		},
 
@@ -1240,7 +1274,7 @@ export default {
 				this.itemy = null;
 			}).catch(error => {
 				this.$toast.error('Не сохранено');
-				console.log(error)
+				console.error(error)
 			});
 		},
 
@@ -1258,7 +1292,7 @@ export default {
 				this.hideContextMenu();
 			}).catch(error => {
 				this.$toast.error('Не сохранено');
-				console.log(error)
+				console.error(error)
 			});
 		},
 
@@ -1294,7 +1328,7 @@ export default {
 					this.itemy = null;
 				}).catch(error => {
 					this.$toast.error('Не сохранено');
-					console.log(error)
+					console.error(error)
 				});
 			}
 		},
@@ -1572,6 +1606,11 @@ export default {
 		align-items: center;
 		justify-content: center;
 		gap: 0.4rem;
+	}
+	&-contexts{
+		input{
+			width: 50px;
+		}
 	}
 }
 .z-12 {

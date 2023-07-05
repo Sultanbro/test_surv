@@ -39,3 +39,24 @@ export async function updateAnalyticsOrder(request){
 	const {data} = await axios.post('/timetracking/analytics/change_order', request)
 	return data
 }
+
+export async function hideAnalyticsActivityUsers(request){
+	const {data} = await axios.post('/timetracking/analytics/activity/remove/group', request)
+	return data
+}
+
+export async function getAnalyticsActivityHiddenUsers(groupId){
+	const {data} = await axios.get(`/timetracking/analytics/activity/removed/users/${groupId}`)
+	const result = {}
+	if(data.data){
+		result.groupId = data.data.group_id
+		delete data.data.group_id
+		Object.keys(data.data).forEach(key => {
+			const splitKey = key.split('_')
+			if(splitKey[0] === 'group' && parseInt(splitKey[1])){
+				result[parseInt(splitKey[1])] = JSON.parse(data.data[key])
+			}
+		})
+	}
+	return result
+}

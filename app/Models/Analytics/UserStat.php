@@ -2,6 +2,7 @@
 
 namespace App\Models\Analytics;
 
+use App\Models\AnalyticsActivitiesSetting;
 use App\Models\WorkChart\WorkChartModel;
 use App\Repositories\ActivityRepository;
 use App\WorkingDay;
@@ -18,6 +19,7 @@ use App\Models\Analytics\IndividualKpiIndicator;
 use App\Models\Kpi\Bonus;
 use App\Service\Department\UserService;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Support\Facades\Schema;
 
 class UserStat extends Model
 {
@@ -74,17 +76,17 @@ class UserStat extends Model
                     'type' => $activity->type,
                     'view' => $activity->view,
                     'unit' => $activity->unit == '%' ? '%' : '',
-                    'table' => 1, 
+                    'table' => 1,
                     'records' => [],
                     'price' => $price
                 ];
 
                 if($activity->type == 'default') {
-                    $item['records'] = self::form_table($activity->id, $date);
+                    $item['records'] = self::form_table($activity->id, $date, $group_id);
                 }
 
                 if($activity->type == 'collection') {
-                    $item['records'] = self::form_table($activity->id, $date); 
+                    $item['records'] = self::form_table($activity->id, $date, $group_id);
                 }
 
                 if($activity->type == 'quality') {
@@ -103,24 +105,24 @@ class UserStat extends Model
                         ->where('group_id', $group_id)
                         ->select('user_id')
                         ->pluck('user_id')
-                        ->toArray(); 
+                        ->toArray();
 
                     $users_ids = array_unique(array_merge($users_ids, $hasRecords));
 
                     $item['records'] = QualityRecordWeeklyStat::table($users_ids, $date);
-                }    
-                    
+                }
+
                 array_push($activities, $item);
-            } 
+            }
         }
 
-        return $activities;                     
+        return $activities;
     }
 
     /**
      * Form activity table
      */
-    public static function form_table($activity_id, $date) {
+    public static function form_table($activity_id, $date, $groupId = null) {
         $table = [];
 
         $activity = Activity::find($activity_id);
@@ -129,7 +131,7 @@ class UserStat extends Model
 
 
         if($activity) {
-            
+
             $c_date = Carbon::parse($date)->format('Y-m');
 
             $has_records_on_user_stats =  self::where('date', 'like', $c_date . '%')
@@ -157,12 +159,21 @@ class UserStat extends Model
             $users = array_merge($users_ids, $has_records_on_user_stats);
             $users = array_unique($users);
 
+            // if (Schema::hasColumn((new AnalyticsActivitiesSetting)->getTable(), AnalyticsActivitiesSetting::COLUMN_PREFIX.$activity_id)){
+            //     $removeIds = AnalyticsActivitiesSetting::where('group_id', $groupId)->select(AnalyticsActivitiesSetting::COLUMN_PREFIX.$activity_id)
+            //         ->first()->toArray() ?? null;
+            //     if ($removeIds){
+            //         $removeIdsArray = json_decode($removeIds[AnalyticsActivitiesSetting::COLUMN_PREFIX.$activity_id]);
+            //         $users = array_diff($users, $removeIdsArray);
+            //     }
+            // }
+
             /**
              * form table row
              */
             foreach($users as $user_id) {
                 $item = [];
-                
+
                 $localUser = User::withTrashed()->find($user_id);
                 if(!$localUser) continue;
 
@@ -218,7 +229,7 @@ class UserStat extends Model
                     foreach($stats as $stat) {
                         $item[$stat->day] = (float)$stat->value;
                     }
-                
+
                 array_push($table, $item);
             }
         }
@@ -243,7 +254,7 @@ class UserStat extends Model
             $total += (float)$item->value;
             if((float)$item->value > 0) $count++;
         }
-        
+
 
         if($method == 'avg') {
             if($count > 0) {
@@ -267,19 +278,19 @@ class UserStat extends Model
         }  else {
             $method = 'avg';
         }
-        
-        
+
+
         if($act && $act->plan_unit == 'minutes' && $type == 'avg') {
-            $method = 'avg';    
+            $method = 'avg';
         }
-        
+
         $total = 0;
         $count = 0;
         foreach($items as $item) {
             $total += (float)$item->value;
             if((float)$item->value > 0) $count++;
         }
-        
+
 
         if($method == 'avg') {
             if($count > 0) {
@@ -315,14 +326,14 @@ class UserStat extends Model
         if($user_id == $test_id)  $date = '2022-07-01';
         if($date == '') {
             $date = Carbon::now()->day(1)->format('Y-m-d');
-        } 
+        }
 
-    
+
         $carbon = Carbon::parse($date);
         $user = User::withTrashed()->find($user_id);
-        
-        
- 
+
+
+
         if($group_id == 0) {
             $ignore = [0];
             $applied_from = $user->workdays_from_applied($date, 6);
@@ -332,8 +343,8 @@ class UserStat extends Model
             $applied_from = $user->workdays_from_applied($date, $g ? $g->workdays : 6);
         }
 
-        
-        
+
+
         // count workdays for plan
         $ignore = [0,6,5,4,3,2,1];
         for($i=0;$i<$activity->weekdays;$i++) array_pop($ignore);  // Какие дни не учитывать в месяце
@@ -342,15 +353,15 @@ class UserStat extends Model
         // records
         $records = self::where([
             'user_id' => $user_id,
-            'activity_id' => $activity->id 
+            'activity_id' => $activity->id
         ])
         ->where('date', 'like', Carbon::parse($date)->format('Y-m') . '%')->get();
-        
+
         /////////////////////////
         if($activity->type == 'quality') {
-           
+
             $act = Activity::find($activity->id);
-           
+
             $at = QualityRecordMonthlyStat::where([
                 'month' => date('m', strtotime($date)),
                 'year' => date('Y', strtotime($date)),
@@ -362,15 +373,15 @@ class UserStat extends Model
             if($at) {
                 $total = $at->total;
                 $result = $at->total / $act->daily_plan * 100;
-                
+
             } else {
                 $result = 0;
             }
-           
-            if($user_id == $test_id) dump($activity->daily_plan); 
-            if($user_id == $test_id)  dump($workdays); 
-            if($user_id == $test_id)  dump($total); 
-            if($user_id == $test_id)  dump($result); 
+
+            if($user_id == $test_id) dump($activity->daily_plan);
+            if($user_id == $test_id)  dump($workdays);
+            if($user_id == $test_id)  dump($total);
+            if($user_id == $test_id)  dump($result);
 
             if($return_value_and_percent) {
                 return [
@@ -387,31 +398,31 @@ class UserStat extends Model
 
         $total = 0;
         if($records->count() > 0) {
-            $count = 0;    
+            $count = 0;
             foreach($records as $record) {
                 $total += (float)$record->value;
                 if((float)$record->value > 0) {
                     $count++;
                 }
             }
-            
+
             if((float)$activity->daily_plan != 0) {
-                
+
                 if($activity->plan_unit == 'minutes') {
                     $_plan = (float)$activity->daily_plan;
                     if($user->full_time == 0) {
                         $_plan =  (float)$activity->daily_plan / 2;
                     }
-                    
+
                     if($applied_from != 0) {
                         $result = $total / ($_plan * $applied_from) * 100;
-                        // if($user_id == 15551)  dump($total); 
+                        // if($user_id == 15551)  dump($total);
                     } else {
                         $result = $total / ($_plan * $workdays) * 100;
-                    } 
-                    
-                   
-                } 
+                    }
+
+
+                }
 
                 if($activity->plan_unit == 'less_sum') {
                     if($activity->daily_plan - $total > 0) {
@@ -421,7 +432,7 @@ class UserStat extends Model
                     }
                    // $result = ($activity->daily_plan - $total) / $activity->daily_plan * 100;
                 }
-                
+
                 if($activity->plan_unit == 'less_avg') {
                     if($count > 0) {
                         $avg = $total / $count;
@@ -452,7 +463,7 @@ class UserStat extends Model
 
                     $total = $avg;
                 }
-                
+
                 $result =(float)$result;
 
             } else {
@@ -467,12 +478,12 @@ class UserStat extends Model
                 $result = 100;
             }
         }
-        if($user_id == $test_id) dump($activity->daily_plan); 
-        if($user_id == $test_id)  dump($workdays); 
-        if($user_id == $test_id)  dump($total); 
-        if($user_id == $test_id)  dump($result); 
+        if($user_id == $test_id) dump($activity->daily_plan);
+        if($user_id == $test_id)  dump($workdays);
+        if($user_id == $test_id)  dump($total);
+        if($user_id == $test_id)  dump($result);
 
-        
+
         if($return_value_and_percent) {
             return [
                 'value' => $total - (int)$total > 0 ? number_format($total, 2) : (int)$total,
@@ -491,11 +502,11 @@ class UserStat extends Model
     {
         if($date == '') {
             $date = Carbon::now()->day(1)->format('Y-m-d');
-        } 
-        
+        }
+
         //get users
         $user_ids = self::where([
-                'activity_id' => $activity->id 
+                'activity_id' => $activity->id
             ])
             ->where('date', 'like', Carbon::parse($date)->format('Y-m') . '%')
             ->get(['user_id'])
@@ -503,11 +514,11 @@ class UserStat extends Model
             ->toArray();
         //foreach users
 
-            
+
 
         $total = 0;
         $count = 0;
-        
+
         foreach ($user_ids as $key => $_user_id) {
             $_total = self::getActivityProgress($_user_id, 0, $activity, $date, true);
             //memp($_total);
@@ -517,9 +528,9 @@ class UserStat extends Model
                 $count++;
             }
         }
-        
 
-        
+
+
         // get kpi indicators
 
         // formulas on plan unit
@@ -527,38 +538,38 @@ class UserStat extends Model
         $result = 0;
         $workdays = self::workdays(Carbon::parse($date)->year, Carbon::parse($date)->month, [0]);
 
-        // ind kpi 
+        // ind kpi
         $ind_kpi = IndividualKpiIndicator::where('user_id', $user_id)
             ->where('activity_id', $activity->id)
             ->first();
 
-            
+
 
         $daily_plan = 0;
         $plan_unit = $activity->plan_unit;
         if($ind_kpi) {
             $daily_plan = $ind_kpi->plan;
         }
-        
+
         // memp($plan_unit);
         // memp($daily_plan);
         // me($total);
 
-        // calc 
+        // calc
         if((float)$daily_plan != 0) {
-                
+
             if($plan_unit == 'minutes') {
                 // memp($total);
                 // memp($daily_plan);
                 // memp($workdays);
                 // memp($daily_plan * $workdays);
                 $result = $total / ((float)$daily_plan) * 100;
-            } 
+            }
 
             if($plan_unit == 'less_sum') {
                 $result = ($daily_plan - $total) / $daily_plan * 100;
             }
-            
+
             if($plan_unit == 'less_avg') {
                 if($count > 0) {
                     $avg = $total / $count;
@@ -579,7 +590,7 @@ class UserStat extends Model
                 }
                 $total = $avg;
             }
-            
+
             if($plan_unit == 'more_sum') {
                 if($total > (float)$daily_plan) {
                     $result = 100;
@@ -596,8 +607,8 @@ class UserStat extends Model
                 $result = 100;
             }
         }
-        
-        
+
+
         return $return_value_and_percent ? [
             'value' => (int)$total > 0 ? number_format($total, 2) : (int)$total,
             'percent' => number_format($result, 2),
@@ -621,7 +632,7 @@ class UserStat extends Model
 
     /**
      * Сохранить UserStat по quality
-     * 
+     *
      * date
      * user_id
      * value
@@ -630,7 +641,7 @@ class UserStat extends Model
     public static function saveQuality(array $data) : void
     {
         $data['activity_id'] = Activity::qualityId($data['group_id']);
-        
+
         $us = UserStat::where([
             'date'        => $data['date'],
             'user_id'     => $data['user_id'],
