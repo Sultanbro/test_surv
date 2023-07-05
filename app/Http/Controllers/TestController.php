@@ -16,7 +16,7 @@ class TestController extends Controller
 	}
 
     public function test2() {
-        $auth_code = 'JH1OG3FTG39IU46MANMM3U6UV4U72IBJVMLCQFT9BM35U1DJ8Q6UI85KC95CUNKG';
+        $auth_code = 'J0KPR11O9UGENJRRO0CBGN451QFMMTQ1QPNH8J8UT1309OH3D2FRQ2T3MTT6L3JR';
         dd((new \App\Api\HeadHunterApi2())->refresh($auth_code));
     }
 }
