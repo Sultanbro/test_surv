@@ -16,20 +16,20 @@ use GuzzleHttp\Client as Guzzle;
 use App\OauthClientToken;
 use Carbon\Carbon;
 
-class HeadHunter {
+class HeadHunterApi2 {
     
-    CONST CLIENT_ID = 'LPAJVTT5AU6U3CJBC1M8RL0KQ5CR2N5OBBEBCHKDK5EJ8V450919BEOMSQOTHNTI';
-	CONST CLIENT_SECRET = 'U417PFE80B6VFG39NJHP5M286FEM5SMUOLVLCDQ0UGRALDSTL61HUUAUS9G4FRQK';
+    CONST CLIENT_ID = 'NL6B2359LP0DPG8GHQ6GDDDOTUQTHRKIDS6J660EVLOONDTI7ESJLSJ96RATH2L6';
+	CONST CLIENT_SECRET = 'R56TG1NIHT5OKN82CRU4FDTBE1F3PLNUEQGG2DC9JGD1S2NP3MBFOK17SA51K34L';
 	CONST ACCESS_TOKEN = 'KDSCMGCUGJ6B3SA16KI7ML2RHO6P6J7NNE2HO495J9A9CKTRQJ23MA45OHVEQNIT'; // Костыль, менять при новом токене
 	CONST BASE_URL = 'https://api.hh.ru/'; 
-	CONST REDIRECT_URI = 'https://bpartners.kz/token';  
+	CONST REDIRECT_URI = 'https://jobtron.org/test2';
 
-	CONST COMPANY_ID = 2520517;   // TOO OKtrening  ID в HeadHuntere
-	CONST MANAGER_ID = 7618556;   // Искомый менеджер. Амиров Олжас o_amir4@mail.ru. Подтягиваем только его вакансии
-	CONST MANAGER_ID_2 = 7700035;   // Искомый менеджер. Денис Тастемиров
+	CONST COMPANY_ID = 9846767;   // TOO OKtrening  ID в HeadHuntere
+	CONST MANAGER_ID = 12241072;   // Искомый менеджер. Амиров Олжас o_amir4@mail.ru. Подтягиваем только его вакансии
+	CONST MANAGER_ID_2 = 23107020;   // Искомый менеджер. Денис Тастемиров
 
-    CONST MANAGERS = [7618556, 7700035, 7792661];
-    CONST SEGMENT = '1462'; // Сегмент в битриксе
+    CONST MANAGERS = [12241072, 23107020, 152926258];
+    CONST SEGMENT = '3452'; // Сегмент в битриксе
 
     /**
      * Grant types
@@ -41,7 +41,7 @@ class HeadHunter {
      * Ссылка авторизации вручную, нужно войти в hh аккаунт, потом перейти по ссылке
      * Получает код авторизации
      */
-    CONST AUTH_CODE_LINK = 'https://hh.ru/oauth/authorize?response_type=code&client_id=LPAJVTT5AU6U3CJBC1M8RL0KQ5CR2N5OBBEBCHKDK5EJ8V450919BEOMSQOTHNTI&state=um_state&redirect_uri=https://bpartners.kz/token'; 
+    CONST AUTH_CODE_LINK = 'https://hh.ru/oauth/authorize?response_type=code&client_id=NL6B2359LP0DPG8GHQ6GDDDOTUQTHRKIDS6J660EVLOONDTI7ESJLSJ96RATH2L6&state=um_state&redirect_uri=https://jobtron.org/test2';
     
     /**
      * OauthClientToken $oauth
@@ -68,7 +68,7 @@ class HeadHunter {
     /**
      * BP
      */
-    protected $company_id = 2520517;
+    protected $company_id = 9846767;
 
     /**
      * _construct
@@ -88,7 +88,7 @@ class HeadHunter {
      */
     public function getActualToken() { 
         $oauth = OauthClientToken::where([
-            'server' => 'hh'
+            'server' => 'hh2'
         ])->first();
 
         if($oauth && strtotime($oauth->expires_at) - time() < 0) { 
@@ -173,7 +173,7 @@ class HeadHunter {
      */
     public function refresh($auth_code = '') 
     {
-        $record = OauthClientToken::where('server', 'hh')->first();
+        $record = OauthClientToken::where('server', 'hh2')->first();
 
         if($record) {
             $this->auth_code    = $auth_code;
@@ -246,14 +246,14 @@ class HeadHunter {
             'auth_code'    => $this->auth_code,
             'access_token' => $data->access_token,
             'refresh_token'=> $data->refresh_token,
-            'server'       => 'hh', 
+            'server'       => 'hh2',
             'grant_type'   => $this->auth_code == null ? self::REFRESH_TOKEN : self::AUTH_CODE, 
             'scope'        => 'bearer', 
             'domain'       => 'api.hh.ru', 
             'expires_at'   => Carbon::createFromTimestamp(time() + $data->expires_in), 
         ];
 
-        $token = OauthClientToken::where('server', 'hh')->first();
+        $token = OauthClientToken::where('server', 'hh2')->first();
         
         if($token) {
             $token->update($data);
@@ -324,7 +324,7 @@ class HeadHunter {
      * Получить вакансии 
      */
     public function getVacancies($date_from = '', $date_to = '') {
-        $url = '/vacancies?employer_id=2520517&archived=false&per_page=20';
+        $url = '/vacancies?employer_id='.self::COMPANY_ID.'&archived=false&per_page=20';
         if($date_from != '') $url .= '&date_from=' . $date_from;
         if($date_to != '') $url .= '&date_to=' . $date_to;
 
