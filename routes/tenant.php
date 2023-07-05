@@ -118,6 +118,7 @@ Route::middleware(['web','tenant', 'not_admin_subdomain'])->group(function () {
     Route::get('/quiz_after_fire', [Root\PageController::class, 'quiz_after_fire']); // анкета
     Route::get('/estimate_trainer', [Root\PageController::class, 'estimate_trainer']);  // анкета
     Route::get('/test', [Root\TestController::class, 'test'])->name('test');
+    Route::get('/test2', [Root\TestController::class, 'test2'])->name('test2');
 
     // courses
     Route::group([
