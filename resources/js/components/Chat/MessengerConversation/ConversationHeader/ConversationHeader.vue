@@ -249,9 +249,7 @@
 
 		<JobtronOverlay
 			v-if="isCropModal"
-			title="Изображение чата"
-			size="lg"
-			@ok="saveAvatar"
+			@close="isCropModal = false"
 		>
 			<div class="ConversationHeader-cropper">
 				<div id="chat-croppie" />
