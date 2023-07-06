@@ -645,9 +645,18 @@
 					v-if="selectedCell.item.fine[sidebarContent.field.key].length > 0"
 				>
 					<p><b>Штрафы</b></p>
-					<p class="mb-0 mt-0">
-						{{ selectedCell.item.fine[sidebarContent.field.key] }}
-					</p>
+					<div
+						v-for="fine, fineIndex in selectedCell.item.fine[sidebarContent.field.key]"
+						:key="fineIndex"
+					>
+						<p
+							v-for="value, name in fine"
+							:key="name"
+							class="mb-0 mt-0"
+						>
+							{{ name }}: {{ value }}
+						</p>
+					</div>
 				</div>
 				<div>
 					<p class="text-black">
