@@ -1,5 +1,6 @@
 import { defineStore } from 'pinia'
 import {
+	fetchNotificationsUnreadCount,
 	fetchNotifications,
 	setNotificationsRead,
 	setNotificationsReadAll,
@@ -14,6 +15,11 @@ export const useNotificationsStore = defineStore('notifications', {
 		unreadQuantity: 0
 	}),
 	actions: {
+		async fetchUnreadCount(){
+			/* global Laravel */
+			const count = await fetchNotificationsUnreadCount(Laravel.userId)
+			this.unreadQuantity = count
+		},
 		async fetchNotifications(){
 			this.isLoading = true
 			try {
