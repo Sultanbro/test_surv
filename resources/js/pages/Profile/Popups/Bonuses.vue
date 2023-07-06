@@ -15,7 +15,7 @@
 					class="kaspi__content custom-scroll-y"
 					data-content="1"
 				>
-					<table>
+					<table class="PopupBonuses-table">
 						<thead>
 							<tr>
 								<th class="text-center">
@@ -67,7 +67,7 @@
 							:key="i"
 							:title="bonus.name"
 						>
-							<table>
+							<table class="PopupBonuses-table">
 								<thead>
 									<tr>
 										<th class="text-center">
@@ -207,8 +207,12 @@ export default {
 
 <style lang="scss">
 .PopupBonuses{
-	&-reasons{
-		white-space: pre-wrap;
+	&-table{
+		width: auto !important;
+		th,
+		td{
+			padding: 0 10px;
+		}
 	}
 }
 </style>
