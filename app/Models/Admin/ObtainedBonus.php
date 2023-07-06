@@ -126,7 +126,7 @@ class ObtainedBonus extends Model
             ->whereMonth('date', $month->month)
             ->get();
 
-       
+
 
         for ($i = $month->daysInMonth; $i > 0; $i--) {
 
@@ -139,7 +139,7 @@ class ObtainedBonus extends Model
             $sum = 0;
             $comment = '';
 
-            
+
             if($manual_bonus) {
                 $item['date'] = $manual_bonus->date->format('Y-m-d') ?? '';
                 $sum += $manual_bonus->bonus * $currency_rate;
@@ -176,9 +176,81 @@ class ObtainedBonus extends Model
             if($sum > 0) {
                 array_push($bonusHistory, $item);
             }
-            
+
         }
 
+
+        return $bonusHistory;
+    }
+
+    public static function getHistoryJSON($user_id, $date, $currency_rate = 1){
+        $bonusHistory = [];
+
+        $month = Carbon::parse($date);
+
+        $bonuses_all = self::where('user_id', $user_id)
+            ->whereYear('date', $month->year)
+            ->whereMonth('date', $month->month)
+            ->get();
+
+        $test_bonuses_all = TestBonus::where('user_id', $user_id)
+            ->whereYear('date', $month->year)
+            ->whereMonth('date', $month->month)
+            ->get();
+
+        $manual_bonus_all = Salary::where('user_id', $user_id)
+            ->selectRaw('date, bonus, comment_bonus, day(date) as day')
+            ->whereYear('date', $month->year)
+            ->whereMonth('date', $month->month)
+            ->get();
+
+        for ($i = $month->daysInMonth; $i > 0; $i--) {
+            $bonuses = $bonuses_all->where('date', $month->day($i)->format('Y-m-d'));
+            $test_bonuses = $test_bonuses_all->where('date', $month->day($i)->format('Y-m-d'));
+            $manual_bonus = $manual_bonus_all->where('day', $i)->first();
+
+            $item = [];
+            $sum = 0;
+
+            if($manual_bonus) {
+                $item['date'] = $manual_bonus->date->format('Y-m-d') ?? '';
+                $item['manual'] = [
+                    'sum' => $manual_bonus->bonus * $currency_rate,
+                    'comment' => $manual_bonus->comment_bonus,
+                ];
+                $sum += $manual_bonus->bonus * $currency_rate;
+            }
+
+            if($bonuses->count() > 0) {
+                $item['bonuses'] = [];
+                foreach ($bonuses as $key => $bon) {
+                    $item['date'] = $bon->date;
+                    array_push($item['bonuses'], [
+                        'sum' => $bon->amount * $currency_rate,
+                        'comment' => $bon->comment ? $bon->comment : '',
+                    ]);
+                    $sum += $bon->amount * $currency_rate;
+                }
+            }
+
+            if($test_bonuses->count() > 0) {
+                $item['test'] = [];
+                foreach ($test_bonuses as $key => $bon) {
+                    $item['date'] = $bon->date;
+                    $sum += $bon->amount * $currency_rate;
+                    array_push($item['test'], [
+                        'sum' => $bon->amount * $currency_rate,
+                        'comment' => $bon->comment ? $bon->comment : '',
+                    ]);
+                }
+            }
+
+            $item['sum'] = $sum;
+
+            if($sum > 0) {
+                array_push($bonusHistory, $item);
+            }
+        }
 
         return $bonusHistory;
     }
