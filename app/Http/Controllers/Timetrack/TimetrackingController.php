@@ -1522,15 +1522,25 @@ class TimetrackingController extends Controller
         $user = auth()->user() ?? User::find(5);
 
         $date = Carbon::createFromDate($request->input('year', date('Y')), $request->input('month'), 1);
-        $currency_rate = (float)(Currency::rates()[$user->currency] ??  0.00001);
+        $currency_rate = (float)(Currency::rates()[$user->currency] ?? 0.00001);
 
         $userFinesInformation = $this->fineService->getUserFines($date->month, $user, $currency_rate);
         $salaryBonuses = $this->salaryService->getUserBonuses($date, $user);
-        $obtainedBonuses = $this->obtainedBonusesService->getUserBonuses($date,$user);
-        $testBonuses =  $this->testBonusService->getUserBonuses($date,$user);
+        $obtainedBonuses = $this->obtainedBonusesService->getUserBonuses($date, $user);
+        $testBonuses =  $this->testBonusService->getUserBonuses($date, $user);
         $advances = $this->salaryService->getUserAdvances($date, $user);
 
-        return (new TimetrackService())->getUserFinalSalary($salaryBonuses, $obtainedBonuses, $testBonuses, $userFinesInformation['fines'],$userFinesInformation['total'], $advances,  $user, $date, $currency_rate);
+        return (new TimetrackService())->getUserFinalSalary(
+            $salaryBonuses,
+            $obtainedBonuses,
+            $testBonuses,
+            $userFinesInformation['fines'],
+            $userFinesInformation['total'],
+            $advances,
+            $user,
+            $date,
+            $currency_rate
+        );
     }
 
     public function setDay(Request $request)

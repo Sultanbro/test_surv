@@ -24,11 +24,18 @@ class TimetrackService
      * @param $currencyRate
      * @return array
      */
-    public function getUserFinalSalary(array $salaryBonuses,array $obtainedBonuses,array $testBonuses,  $userFines, int $finesSum, array $advances,  User $user, Carbon $date, $currencyRate): array{
-
-
+    public function getUserFinalSalary(
+        array $salaryBonuses,
+        array $obtainedBonuses,
+        array $testBonuses,
+        $userFines,
+        int $finesSum,
+        array $advances,
+        User $user,
+        Carbon $date,
+        $currencyRate
+    ): array {
         $advancesSum = collect($advances)->sum('paid');
-
 
         // Вычисление даты принятия
         $userAppliedAt = $user->applied_at();
@@ -37,7 +44,19 @@ class TimetrackService
         $traineeDays = $this->getDateTypes($date, $user);
         $timeTrackingBeforeApply =$this->getUserTimetracking($user, $date->year, $date->month, $userAppliedAt, '<');
 
-        $data = $this->collectSalaryData($date, $user, $timeTracking, $timeTrackingBeforeApply, $traineeDays, $currencyRate);
+        $data = $this->collectSalaryData(
+            $date,
+            $user,
+            $timeTracking,
+            $timeTrackingBeforeApply,
+            $traineeDays,
+            $currencyRate,
+            $userFines,
+            $salaryBonuses,
+            $obtainedBonuses,
+            $testBonuses,
+            $advances
+        );
 
         return [
             'data' => [
@@ -59,7 +78,19 @@ class TimetrackService
      * @param $currencyRate
      * @return array[]
      */
-    private function collectSalaryData(Carbon $date, User $user, Collection $timeTracking, Collection $timeTrackingBeforeApply, Collection $traineeDays, $currencyRate): array{
+    private function collectSalaryData(
+        Carbon $date,
+        User $user,
+        Collection $timeTracking,
+        Collection $timeTrackingBeforeApply,
+        Collection $traineeDays,
+        $currencyRate,
+        $userFines,
+        $salaryBonuses,
+        $obtainedBonuses,
+        $testBonuses,
+        $avanses
+    ): array{
         $data = [
             'salaries' => [],
             'times' => [],
@@ -74,10 +105,9 @@ class TimetrackService
             $data['salaries'][$i]['awards'] = isset($obtainedBonuses[$m]) ? $obtainedBonuses[$m]: [];
             $data['salaries'][$i]['test_bonus'] = isset($testBonuses[$m]) ? $testBonuses[$m]: [];
             $data['salaries'][$i]['avanses'] = isset($avanses[$m]) ? $avanses[$m]: [];
-
         }
 
-        for( $day = 1;$day <= $date->daysInMonth; $day++) {
+        for($day = 1; $day <= $date->daysInMonth; $day++) {
 
             $s = Salary::where('user_Id', $user->id)
                 ->where('date', $date->day($day)->format('Y-m-d'))
@@ -90,12 +120,8 @@ class TimetrackService
 
             $hourlyPay = round($zarplata / $workdays / $workingHours, 2);
 
-
             // count
             $data['times'][$day]['value'] = $timeTracking->where('date', $day)->count() > 0 ? $timeTracking->where('date', $day)->first()->enter->format('H:i') : '';
-            $data['times'][$day]['fines'] = [];
-            $data['times'][$day]['training'] = false;
-
 
             $hour = $timeTracking->where('date', $day)->count() > 0 ? $timeTracking->where('date', $day)->first()->total_hours / 60 : '';
             if ($hour < 0 || $hour == '') {
@@ -120,9 +146,6 @@ class TimetrackService
             if ($data['salaries'][$day]['value'] == 0) $data['salaries'][$day]['value'] = '';
 
             $data['salaries'][$day]['calculated'] = round($hour, 2) . ' * ' . ($traineeDays->where('datex', $day)->first() ? $hourlyPay * $user->internshipPayRate() : $hourlyPay);
-
-            $data['hours'][$day]['fines'] = [];
-            $data['hours'][$day]['training'] = false;
         }
         return $data;
     }
