@@ -305,10 +305,6 @@ class HeadhunterNegotiationsApi2 extends Command
                 } catch(\Exception $e) {
                     // save logs
                 }
-                
-                if($this->vacancyNameHasNotWords($hh_vacancy->name, [
-                    'Оператор',
-                ])) continue;
 
                 $this->line('vacancy: #'. $vacancy->id .  ' - ' . $hh_vacancy->name);
                 
