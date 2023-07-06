@@ -45,23 +45,15 @@ export const useNotificationsStore = defineStore('notifications', {
 			}
 		},
 		async setNotificationsReadAll(){
-			try{
-				const { data } = await setNotificationsReadAll()
-				if (data) {
-					this.unread.forEach(el => {
-						this.read.push(el)
-					})
+			await setNotificationsReadAll()
+			this.unread.forEach(el => {
+				this.read.push(el)
+			})
 
-					this.unread = []
-					this.unreadQuantity = 0
+			this.unread = []
+			this.unreadQuantity = 0
 
-					return true
-				}
-			}
-			catch(error){
-				console.error('setNotificationsReadAll', error)
-			}
-			return false
+			return true
 		},
 	}
 })

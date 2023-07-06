@@ -133,7 +133,9 @@ export default {
 			this.loading = true;
 			this.setNotificationsReadAll().then(result => {
 				this.loading = false
-				if(result) this.$toast.success('Все уведомления отмечены прочитанными')
+				if(result){
+					this.$toast.success('Все уведомления отмечены прочитанными')
+				}
 			})
 		},
 
