@@ -2,7 +2,7 @@
 
 namespace App\Console\Commands;
 
-use App\Api\HeadHunter;
+use App\Api\HeadHunterApi2;
 use App\Models\Admin\Headhunter\Negotiation;
 use App\Models\Admin\Headhunter\Vacancy;
 use Illuminate\Console\Command;
@@ -12,14 +12,14 @@ use App\Classes\Helpers\Phone;
 use App\Models\Bitrix\Lead;
 use App\Models\Admin\History;
 
-class HeadhunterNegotiations extends Command
+class HeadhunterNegotiationsApi2 extends Command
 {
     /**
      * The name and signature of the console command.
      *
      * @var string
      */
-    protected $signature = 'headhunter:fetch {stage?}';
+    protected $signature = 'headhunterApi2:fetch {stage?}';
 
     /**
      * The console command description.
@@ -38,7 +38,7 @@ class HeadhunterNegotiations extends Command
         parent::__construct();
 
         $this->bitrix = new Bitrix('hh');
-        $this->hh = new HeadHunter();
+        $this->hh = new HeadHunterApi2();
         $this->date = Carbon::now()->subDays(7)->format('Y-m-d');
     }
 
@@ -64,7 +64,6 @@ class HeadhunterNegotiations extends Command
         if($stage == 2) $this->getPhonesByResume();
         if($stage == 3) $this->createLeadsOnBitrix();
     }
-
     public function createLeadsOnBitrix() : void
     {
         $vacancyIds = $this->getVacancyIds();
@@ -87,12 +86,12 @@ class HeadhunterNegotiations extends Command
                 ->whereNotIn('status', ['LOSE'])
                 ->get();
                 
-            if($leads->count() > 0) {
+            if($leads->count() > 0) { 
                 if($n->lead_id == 0) {
                     $n->lead_id = $leads->first()->lead_id; 
                     $n->save();
 
-                    History::system('Дубликат hh.ru', [
+                    History::system('Дубликат hh2.ru', [
                         'lead_id' => $leads->first()->lead_id,
                         'phone' => $n->phone, 
                         'negotiation_id' => $n->negotiation_id,
@@ -102,7 +101,7 @@ class HeadhunterNegotiations extends Command
                 $lead_id = $this->createLead($n);
                 $this->line('Lead created: '. $lead_id);
 
-                History::system('Создание лида hh.ru', [
+                History::system('Создание лида hh2.ru', [
                     'lead_id' => $lead_id,
                     'phone' => $n->phone,
                     'negotiation_id' => $n->negotiation_id,
@@ -114,7 +113,7 @@ class HeadhunterNegotiations extends Command
             try {
                 $this->hh->put('/negotiations/consider/'. $n->negotiation_id);
             } catch(\Exception $e) {
-                History::system($e->getCode() == 403 ? 'Отклик архивирован hh.ru' : 'Ошибка hh.ru', [
+                History::system($e->getCode() == 403 ? 'Отклик архивирован hh2.ru' : 'Ошибка hh2.ru', [
                     'lead_id' => $leads->first()->lead_id,
                     'phone' => $n->phone, 
                     'negotiation_id' => $n->negotiation_id,
@@ -144,7 +143,7 @@ class HeadhunterNegotiations extends Command
             try {
                 $resume = $this->hh->getResume($n->resume_id);
             } catch (\Exception $e) {
-                History::system('Ошибка hh.ru: резюме', [
+                History::system('Ошибка hh2.ru: резюме', [
                     'error' => $e,
                     'resume' => $n->resume_id,
                 ]);
@@ -182,15 +181,15 @@ class HeadhunterNegotiations extends Command
 
             $vac = Vacancy::where('vacancy_id', $negotiation->vacancy_id)->first();
             
-            $title = "Удаленный " . $negotiation->name . ' : hh.ru';
+            $title = "Удаленный " . $negotiation->name . ' : hh2.ru';
             if($vac && $vac->city == 'Шымкент') {
-                $title = "inhouse " . $negotiation->name . ' : hh.ru';
+                $title = "inhouse " . $negotiation->name . ' : hh2.ru';
             }
             
             $lead_id = $this->bitrix->createLead([
                 "TITLE" => $title, 
                 "NAME" => $negotiation->name,  
-                'UF_CRM_1498210379' => HeadHunter::SEGMENT, // сегмент
+                'UF_CRM_1498210379' => HeadHunterApi2::SEGMENT, // сегмент
                 "UF_CRM_1635442762" => $countries[Phone::getCountry($negotiation->phone)], //страна
                 "ASSIGNED_BY_ID" => 23900, // Валерия Сидоренко
                 "UF_CRM_1635487718862" => 'https://wa.me/+' . Phone::normalize($negotiation->phone), // Ватсап линк 
@@ -208,7 +207,7 @@ class HeadhunterNegotiations extends Command
                     'name' => $negotiation->name,
                     'phone' => $negotiation->phone,
                     'status' => 'NEW',
-                    'segment' => Lead::getSegmentAlt(Headhunter::SEGMENT),
+                    'segment' => Lead::getSegmentAlt(HeadHunterApi2::SEGMENT),
                     'hash' => $hash
                 ]);
             } else {
@@ -217,7 +216,7 @@ class HeadhunterNegotiations extends Command
                     'name' => $negotiation->name,
                     'phone' => $negotiation->phone,
                     'status' => 'NEW',
-                    'segment' => Lead::getSegmentAlt(Headhunter::SEGMENT),
+                    'segment' => Lead::getSegmentAlt(HeadHunterApi2::SEGMENT),
                     'hash' => $hash
                 ]);
             }
@@ -235,7 +234,7 @@ class HeadhunterNegotiations extends Command
     public function updateNegotiations() : void
     {
         $vacancies = Vacancy::where('status', Vacancy::OPEN)
-            ->whereIn('manager_id', HeadHunter::MANAGERS)
+            ->whereIn('manager_id', HeadHunterApi2::MANAGERS)
             ->get();
 
         foreach($vacancies as $vacancy) {
@@ -302,7 +301,7 @@ class HeadhunterNegotiations extends Command
             if($hh_vacancy) {
 
                 try {
-                    $manager_id = 7792661;
+                    $manager_id = 23107020;
                 } catch(\Exception $e) {
                     // save logs
                 }
