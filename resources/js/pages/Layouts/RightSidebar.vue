@@ -41,6 +41,9 @@
 						alt="nav icon"
 						class="header__icon-img"
 					>
+					<div class="RightSidebar-unread">
+						{{ unreadQuantity }}
+					</div>
 				</PulseCard>
 				<img
 					v-else
@@ -190,6 +193,24 @@ export default {
 .RightSidebar{
 	&-pulseIcon{
 		border-radius: 12px;
+	}
+	&-unread{
+		display: flex;
+		align-items: center;
+		justify-content: center;
+
+		width: 14px;
+		height: 14px;
+
+		position: absolute;
+		top: 4px;
+		right: 4px;
+
+		font-size: 10px;
+		color: #ed2353;
+
+		border-radius: 50rem;
+		background-color: #fff;
 	}
 }
 </style>
