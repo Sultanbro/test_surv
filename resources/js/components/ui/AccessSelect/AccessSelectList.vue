@@ -5,8 +5,8 @@
 			:key="(type ? type : item.type) + '' + item.id"
 			:item="item"
 			:type="type ? type : item.type"
-			:position="type ? position : item.type === 1"
-			:avatar="type ? avatar : item.type === 1"
+			:position="type ? position : item.type === types.USER"
+			:avatar="type ? avatar : item.type === types.USER"
 			:search="lowerSearch"
 			:checked="checked(item, type ? type : item.type)"
 			@change="$emit('change', $event)"
@@ -16,6 +16,8 @@
 
 <script>
 import AccessSelectListItem from './AccessSelectListItem'
+import {types} from './types.js'
+
 export default {
 	name: 'AccessSelectList',
 	components: {
@@ -46,6 +48,11 @@ export default {
 			type: Number,
 			default: 2
 		},
+	},
+	data(){
+		return {
+			types
+		}
 	},
 	computed: {
 		lowerSearch(){

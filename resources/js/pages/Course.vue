@@ -1,120 +1,81 @@
 <template>
-	<div class="p-3 course">
-		<div class="d-flex relative align-items-start">
+	<div class="PageCourse p-3">
+		<div class="d-flex relative align-items-start gap-3">
 			<div class="w-full namer">
 				<input
-					type="text"
 					v-model="course.name"
-					class="mb-3 name"
+					type="text"
+					class="PageCourse-title mb-3"
 					placeholder="Название курса"
 				>
-				<i class="fa fa-pen" />
 			</div>
 			<button
-				class="btn btn-success ml-3"
+				class="btn btn-success"
 				@click="saveCourse"
 			>
 				Сохранить
 			</button>
 		</div>
 
-		<div class="info mb-3">
-			<div class="d-flex">
+		<div class="PageCourse-meta mb-3 fz-12">
+			<div class="d-flex gap-3 mb-2">
 				<b>Автор:</b>
-				<p>{{ course.author }}</p>
+				<span>{{ course.author }}</span>
 			</div>
-			<div class="d-flex">
+			<div class="d-flex gap-3">
 				<b>Создано:</b>
-				<p>{{ course.created }}</p>
+				<span>{{ course.created }}</span>
 			</div>
 		</div>
-		<div class="d-flex mb-3">
-			<div class="w-full">
-				<textarea
-					v-model="course.text"
-					:style="'height:285px'"
-					class="form-control"
-					placeholder="Описание курса"
-				/>
-			</div>
+
+		<div class="PageCourse-description d-flex gap-3 mb-3">
+			<textarea
+				v-model="course.text"
+				class="PageCourse-desc form-control"
+				placeholder="Описание курса"
+			/>
 
 			<!-- profile image -->
-			<div class="ml-3">
-				<croppa
-					v-model="myCroppa"
-					:width="250"
-					:height="250"
-					:canvas-color="'default'"
-					:placeholder="'Выберите изображение'"
-					:placeholder-font-size="0"
-					:placeholder-color="'default'"
-					:accept="'image/*'"
-					:file-size-limit="0"
-					:quality="2"
-					:zoom-speed="20"
-					:initial-image="image"
-					:key="croppa_key"
-				/>
-
-				<button
-					style="width: 250px; display: block"
-					class="btn btn-success"
-					@click="saveCropped"
+			<div>
+				<img
+					width="250px"
+					height="250px"
+					:src="course.img"
+					alt=""
+					@click="onImage"
 				>
-					Обрезать и сохранить
-				</button>
 			</div>
 		</div>
 
-		<div class="items">
-			<div class="d-flex ">
-				<p class="title mr-3">
-					Курс состоит из ({{ course.elements.length }}):
-				</p>
-				<div class="btns w-50 pr-5">
-					<div class="d-flex mb-2">
-						<SuperSelectAlt
-							:key="1"
-							:values="course.elements"
-							class="w-full mb-4"
-							:hide_selected="true"
-						/>
-					</div>
-				</div>
-			</div>
+		<div class="PageCourse-items">
+			<p class="PageCourse-itemsTitle">
+				Курс состоит из ({{ course.elements.length }}):
+			</p>
 
-			<Draggable
-				class="dragArea ml-0 mr-5"
-				tag="ul"
-				handle=".fa-bars"
-				:list="course.elements"
-				:group="{ name: 'g1' }"
-				@end="saveOrder"
-			>
-				<template v-for="(el, e_index) in course.elements">
-					<li
-						:key="e_index"
-						class="chapter opened"
-						:id="el.id"
-						:class="{'deleted' : el.deleted != undefined && el.deleted}"
-					>
-						<div class="d-flex aic mb-2">
+			<div class="PageCourse-itemsArea">
+				<Draggable
+					class="ml-0 mr-5"
+					tag="ul"
+					handle=".fa-bars"
+					:list="course.elements"
+					:group="{ name: 'g1' }"
+					@end="saveOrder"
+				>
+					<template v-for="(el, e_index) in course.elements">
+						<li
+							:key="e_index"
+							:id="el.id"
+							class="PageCourse-item chapter opened d-flex aic mb-2"
+							:class="{'deleted' : el.deleted}"
+						>
 							<div class="handles">
 								<i class="fa fa-bars mover" />
 								<i class="fa fa-caret-right pointer shower" />
 							</div>
 							<div>
 								<i
-									class="fa fa-book pointer mr-2"
-									v-if="el.type == 1"
-								/>
-								<i
-									class="fa fa-play pointer mr-2"
-									v-if="el.type == 2"
-								/>
-								<i
-									class="fa fa-database pointer mr-2"
-									v-if="el.type == 3"
+									class="fa pointer mr-2"
+									:class="[`fa-${['book', 'play', 'database'][el.type - 1]}`]"
 								/>
 							</div>
 							<p
@@ -123,120 +84,156 @@
 							>
 								{{ el.name }}
 								<i
+									v-if="el.deleted"
 									class="fa fa-info-circle pointer ml-2"
-									v-if="el.deleted != undefined && el.deleted"
 									v-b-popover.hover.right.html="'Элемент был удален'"
 									title="Не найдено"
 								/>
 							</p>
 							<i
-								class="fa fa-trash pointer ml-2"
+								class="fa fa-trash btn btn-danger btn-icon btn-sm pointer ml-2"
 								@click.stop="deleteItem(e_index)"
 							/>
-						</div>
-					</li>
-				</template>
-			</Draggable>
+						</li>
+					</template>
+				</Draggable>
+				<SuperSelectAlt
+					:key="1"
+					:values="course.elements"
+					:hide_selected="true"
+					class="PageCourse-itemsAdd w-full"
+				>
+					<template #beforeSelected>
+						<button
+							class="btn btn-success btn-sm"
+							@click="saveCourse"
+						>
+							+ Добавить
+						</button>
+					</template>
+				</SuperSelectAlt>
+			</div>
 
-
-			<div class="mt-3 pr-5">
+			<div class="mt-4 pr-5">
 				Курс проходят:
-
-				<SuperSelect
-					:key="superselectKey"
-					:values="course.targets"
-					class="w-50 mb-4"
-					:select_all_btn="true"
+				<AccessSelectFormControl
+					:items="course.targets"
+					@click="isAccessOverlay = true"
+					class="mt-3"
 				/>
 			</div>
 		</div>
+
+		<JobtronCropper
+			v-if="isCropper"
+			:image="image"
+			:options="{
+				viewport: {
+					width: 250,
+					height: 250,
+					type: 'square'
+				}
+			}"
+			@result="onCrop"
+			@close="isCropper = false"
+		/>
+
+		<JobtronOverlay
+			v-if="isAccessOverlay"
+			@close="isAccessOverlay = false"
+		>
+			<AccessSelect
+				v-model="course.targets"
+				:access-dictionaries="accessDictionaries"
+				submit-button=""
+				absolute
+			/>
+		</JobtronOverlay>
 	</div>
 </template>
 
 <script>
+import { mapGetters, mapActions } from 'vuex'
 import Draggable from 'vuedraggable'
 import SuperSelectAlt from '@/components/SuperSelectAlt'
-import SuperSelect from '@/components/SuperSelect'
+// import SuperSelect from '@/components/SuperSelect'
+import JobtronCropper from '@ui/Cropper.vue'
+import AccessSelect from '@ui/AccessSelect/AccessSelect.vue'
+import AccessSelectFormControl from '@ui/AccessSelect/AccessSelectFormControl.vue'
+import JobtronOverlay from '@ui/Overlay.vue'
 
 export default {
 	name: 'PageCourse',
 	components: {
 		Draggable,
 		SuperSelectAlt,
-		SuperSelect,
+		// SuperSelect,
+		JobtronCropper,
+		AccessSelect,
+		AccessSelectFormControl,
+		JobtronOverlay,
 	},
-	props: ['id'],
+	props: {
+		id: {
+			type: Number,
+			default: 0
+		}
+	},
 	data() {
 		return {
 			test: 'dsa',
 			hover: false,
 			file: null,
-			myCroppa: {},
 			newItem: null,
-			users: [],
 			course: {
 				id: 0,
 				elements: [],
-				img: ''
+				img: '/users_img/noavatar.png'
 			},
-			image: '/users_img/noavatar.png',
-			croppa_key: 1,
-			superselectKey: 1
+			superselectKey: 1,
+
+			isCropper: false,
+			image: null,
+			isAccessOverlay: false,
 		};
 	},
-	created() {
-		this.get();
+	computed: {
+		...mapGetters([
+			'users',
+			'accessDictionaries',
+		])
 	},
 	watch: {
 		id() {
 			this.get();
 		},
 	},
+	created() {
+		this.get();
+		if(!this.users.length){
+			this.loadCompany()
+		}
+	},
 	mounted() {},
 	methods: {
-		get() {
-			let loader = this.$loading.show()
-			this.axios
-				.post('/admin/courses/get-item', {
+		...mapActions([
+			'loadCompany',
+		]),
+		async get() {
+			const loader = this.$loading.show()
+
+			try {
+				const {data} = await this.axios.post('/admin/courses/get-item', {
 					id: this.id,
 				})
-				.then((response) => {
-					loader.hide()
-					this.course = response.data.course;
-					this.image = this.course.img;
-					this.croppa_key++;
-					this.superselectKey++;
-				})
-				.catch((error) => {
-					loader.hide()
-					alert(error);
-				});
-		},
+				this.course = data.course
+				this.superselectKey++
+			}
+			catch (error) {
+				alert(error);
+			}
 
-		saveCropped() {
-			let loader = this.$loading.show();
-			const formData = new FormData();
-
-			let _this = this;
-			this.myCroppa.generateBlob(
-				(blob) => {
-					formData.append('file', blob);
-					formData.append('course_id', _this.course.id);
-					this.axios
-						.post('/admin/courses/upload-image', formData)
-						.then(function (res) {
-							_this.course.img = res.data.img;
-							_this.$toast.success('Сохранено');
-							loader.hide();
-						})
-						.catch(function (err) {
-							console.log(err, 'error');
-							loader.hide();
-						});
-				},
-				'image/jpeg',
-				0.8
-			); // 80% compressed jpeg file
+			loader.hide()
 		},
 
 		toggleOpen(/* el */) {},
@@ -244,38 +241,135 @@ export default {
 		saveOrder(/* e */) {},
 
 		deleteItem(i) {
-			this.course.elements.splice(i, 1);
+			this.course.elements.splice(i, 1)
 		},
 
+		async saveCourse() {
+			const loader = this.$loading.show()
 
-
-		addTag(newTag) {
-			const tag = {
-				email: newTag,
-				ID: newTag,
-			};
-			this.users.push(tag);
-		},
-
-		saveCourse() {
-			let loader = this.$loading.show();
-			this.axios
-				.post('/admin/courses/save', {
+			try {
+				await this.axios.post('/admin/courses/save', {
 					course: this.course,
 				})
-				.then(() => {
-					this.$toast.success('Успешно сохранено!');
-					loader.hide();
-				})
-				.catch((error) => {
-					loader.hide();
-					alert(error);
-				});
+				this.$toast.success('Успешно сохранено!')
+			}
+			catch (error) {
+				alert(error)
+			}
+
+			loader.hide()
 		},
 
 		limitText(count) {
 			return `и еще ${count}`
+		},
+
+		onImage(){
+			const input = document.createElement('input')
+			input.type = 'file'
+			input.accept = 'image/*'
+
+			input.onchange = e => {
+				const file = e.target.files[0]
+				if (file) {
+					this.image = file
+					this.isCropper = true
+				}
+			}
+			input.click()
+		},
+
+		async onCrop(blob){
+			this.isCropper = false
+			const loader = this.$loading.show()
+			const formData = new FormData()
+			formData.append('file', blob);
+			formData.append('course_id', this.course.id);
+
+			try {
+				const {data} = await this.axios.post('/admin/courses/upload-image', formData)
+				this.course.img = data.img;
+				this.$toast.success('Сохранено');
+			}
+			catch (error) {
+				this.$toast.error('Изображение не сохранено');
+			}
+
+			loader.hide();
 		}
 	},
 };
 </script>
+
+<style lang="scss">
+.PageCourse {
+	&-title {
+		width: 100%;
+		padding: 3px 0;
+		border:none;
+
+		font-size: 20px;
+		font-weight: 600;
+		color: #262626;
+	}
+
+	&-desc{
+		border: none;
+		resize: none;
+	}
+
+	// &-items {}
+	&-itemsTitle {
+		margin-bottom: 10px;
+		font-size: 16px;
+		font-weight: 600;
+	}
+
+	&-itemsArea {
+		padding: 15px 30px;
+		border: 1px dashed #ccc;
+
+		border-radius: 5px;
+		background: #f8f8f8;
+	}
+
+	&-item{
+		// min-height: 35px;
+		.btn.btn-icon{
+			$size: 28px;
+			width: $size;
+			height: $size;
+			min-width: $size;
+		}
+	}
+
+	&-itemsAdd{
+		&.super-select{
+			min-height: 16px;
+			border: none;
+			background: none;
+			.selected-items{
+				min-height: 16px;
+				padding: 0;
+			}
+		}
+	}
+
+	.chapter {
+		.fa-trash {
+			display: none;
+		}
+		&:hover {
+			.fa-trash {
+				display: inline-flex;
+			}
+		}
+	}
+
+	.deleted {
+		p {
+			color: red !important;
+		}
+	}
+}
+</style>

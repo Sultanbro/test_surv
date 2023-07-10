@@ -10,6 +10,7 @@
 			class="selected-items flex-wrap noscrollbar"
 			@click="toggleShow"
 		>
+			<slot name="beforeSelected" />
 			<template v-if="!hide_selected">
 				<div
 					v-for="(value, i) in values"

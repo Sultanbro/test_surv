@@ -174,7 +174,7 @@
 				<div class="col-12 col-md-3">
 					<p class="text-right fz-09 text-black">
 						<span>Сотрудники:</span>
-						<b> {{ users_count }} | {{ total_resources }}</b>
+						<b>{{ users_count }} | {{ total_resources }}</b>
 					</p>
 				</div>
 			</div>
@@ -276,12 +276,12 @@
 					<template #cell()="data">
 						<div
 							@click="detectClick(data)"
-							:class="{
-								'fine': data.item.fine !== undefined && data.item.fine[data.field.key.toString()].length > 0,
-								'avans': data.item.avanses !== undefined && data.item.avanses[data.field.key.toString()] !== null,
-								'bonus': (data.item.bonuses !== undefined && data.item.bonuses[data.field.key.toString()] !== null) || data.item.awards !== undefined && data.item.awards[data.field.key.toString()] !== null,
-								'training': data.item.trainings !== undefined && data.item.trainings[data.field.key.toString()] !== null,
-							}"
+							:class="[
+								{
+									'SalaryCell': data.item.dayType && data.item.dayType[data.field.key],
+								},
+								data.item.dayType ? `SalaryCell${data.field.weekend ? '-weekend' : ''}-${data.item.dayType[data.field.key] || '0'}` : '',
+							]"
 						>
 							{{ data.value }}
 						</div>
@@ -552,11 +552,14 @@
 					</template>
 				</div>
 				<div
+					v-if="can_edit"
 					class="mb-2"
-					v-if="(user_types == '0' || user_types == '1') && can_edit"
 				>
 					<div class="d-flex row">
-						<div class="col-6">
+						<div
+							v-if="(user_types == '0' || user_types == '1')"
+							class="col-6"
+						>
 							<b-button
 								@click="toggleTab('avans')"
 								class="btn-sm rounded btn-primary w-full d-block"
@@ -642,9 +645,18 @@
 					v-if="selectedCell.item.fine[sidebarContent.field.key].length > 0"
 				>
 					<p><b>Штрафы</b></p>
-					<p class="mb-0 mt-0">
-						{{ selectedCell.item.fine[sidebarContent.field.key] }}
-					</p>
+					<div
+						v-for="fine, fineIndex in selectedCell.item.fine[sidebarContent.field.key]"
+						:key="fineIndex"
+					>
+						<p
+							v-for="value, name in fine"
+							:key="name"
+							class="mb-0 mt-0"
+						>
+							{{ name }}: {{ value }}
+						</p>
+					</div>
 				</div>
 				<div>
 					<p class="text-black">
@@ -735,6 +747,7 @@ import { useYearOptions } from '../composables/yearOptions'
 // import KpiItemsV2 from '@/pages/kpi/KpiItemsV2'
 import { kpi_fields, parseKPI } from '@/pages/kpi/kpis.js'
 import KpiContent from '@/pages/Profile/Popups/KpiContent.vue'
+import salaryCellType from '@/composables/salaryCellType'
 
 export default {
 	name: 'TableAccrual',
@@ -874,9 +887,9 @@ export default {
 	},
 	methods: {
 		init(){
-			this.dateInfo.currentMonth = this.dateInfo.currentMonth ?
-				this.dateInfo.currentMonth :
-				this.$moment().format('MMMM');
+			this.dateInfo.currentMonth = this.dateInfo.currentMonth
+				? this.dateInfo.currentMonth
+				: this.$moment().format('MMMM');
 			const currentMonth = this.$moment(`${this.dateInfo.currentYear}-${this.dateInfo.currentMonth}`, 'YYYY-MMMM')
 
 			//Расчет выходных дней
@@ -890,20 +903,20 @@ export default {
 		},
 		//Установка выбранного года
 		setYear() {
-			this.dateInfo.currentYear = this.dateInfo.currentYear ?
-				this.dateInfo.currentYear :
-				this.$moment().format('YYYY');
+			this.dateInfo.currentYear = this.dateInfo.currentYear
+				? this.dateInfo.currentYear
+				: this.$moment().format('YYYY');
 		},
 
 		//Установка выбранного месяца
 		setMonth() {
 			let year = this.dateInfo.currentYear;
-			this.dateInfo.currentMonth = this.dateInfo.currentMonth ?
-				this.dateInfo.currentMonth :
-				this.$moment().format('MMMM');
-			this.dateInfo.month = this.dateInfo.month ?
-				this.dateInfo.month :
-				this.$moment().format('M');
+			this.dateInfo.currentMonth = this.dateInfo.currentMonth
+				? this.dateInfo.currentMonth
+				: this.$moment().format('MMMM');
+			this.dateInfo.month = this.dateInfo.month
+				? this.dateInfo.month
+				: this.$moment().format('M');
 			this.dateInfo.year = year;
 
 			this.dateInfo.date = `${this.dateInfo.currentMonth} ${year}`;
@@ -980,7 +993,8 @@ export default {
 					sortable: true,
 					editable: false,
 					stickyColumn: true
-				}];
+				}
+			];
 
 			let days = this.dateInfo.daysInMonth;
 
@@ -993,8 +1007,8 @@ export default {
 					key: `${i}`,
 					label: `${i}`,
 					sortable: true,
-					class: `day ${dayName}`,
-					editable: true
+					editable: true,
+					weekend: dayName === 'Sat' || dayName === 'Sun',
 				};
 
 				fields.push(field);
@@ -1012,12 +1026,13 @@ export default {
 				'MMMM'
 			).format('M');
 
-			this.axios.post('/timetracking/salaries', {
-				month: this.$moment(this.dateInfo.currentMonth, 'MMMM').format('M'),
-				year: this.dateInfo.currentYear,
-				group_id: this.selectedGroup.id,
-				user_types: this.user_types,
-			})
+			this.axios
+				.post('/timetracking/salaries', {
+					month: this.$moment(this.dateInfo.currentMonth, 'MMMM').format('M'),
+					year: this.dateInfo.currentYear,
+					group_id: this.selectedGroup.id,
+					user_types: this.user_types,
+				})
 				.then((response) => {
 					let data = response.data;
 					if (data.error && data.error == 'access') {
@@ -1063,10 +1078,11 @@ export default {
 		getTotals() {
 			const  loader = this.$loading.show();
 			const currentMonth = this.$moment(`${this.dateInfo.currentYear}-${this.dateInfo.currentMonth}`, 'YYYY-MMMM')
-			this.axios.post('/timetracking/salaries/get-total', {
-				month: currentMonth.format('M'),
-				year: this.dateInfo.currentYear,
-			})
+			this.axios
+				.post('/timetracking/salaries/get-total', {
+					month: currentMonth.format('M'),
+					year: this.dateInfo.currentYear,
+				})
 				.then(() => {
 					loader.hide();
 				}).catch((e) => {
@@ -1079,7 +1095,8 @@ export default {
 			if(type == 'avans') {
 				this.bonus.visible = false
 				this.avans.visible = !this.avans.visible
-			} else {
+			}
+			else {
 				this.avans.visible = false
 				this.bonus.visible = !this.bonus.visible
 			}
@@ -1113,9 +1130,8 @@ export default {
 				var personalBonuses = 0;
 				var personalTaxes = 0;
 
-
+				item.dayType = []
 				item.salaries.forEach(tt => {
-
 					let salary = 0;
 					let total = 0;
 
@@ -1162,6 +1178,12 @@ export default {
 					daySalariesOnly[tt.day] = Number(salary) != 0
 						? Number(salary).toFixed(0)
 						: '';
+
+					const isFine = item.fine[tt.day] && item.fine[tt.day].length ? salaryCellType.FINE : 0
+					const isTraining = item.trainings[tt.day] ? salaryCellType.TRAINING : 0
+					const isBonus = item.bonuses[tt.day] || item.awards[tt.day] || item.test_bonus[tt.day] ? salaryCellType.BONUS : 0
+					const isAvans = item.avanses[tt.day] ? salaryCellType.AVANS : 0
+					item.dayType[tt.day] = isFine | isTraining | isBonus | isAvans
 				});
 
 				item.taxes.forEach(t => {
@@ -1178,19 +1200,18 @@ export default {
 				}
 
 				personalFines = Number(item.fines_total);
-
 				personalFinal = personalTotal - personalAvanses + personalBonuses - personalFines + personalKpi - personalTaxes;
 
 				if(item.edited_salary) {
 					personalFinal = item.edited_salary.amount
 				}
 
-				daySalaries['bonus'] = Number(personalBonuses).toFixed(0);
-				daySalaries['avans'] = Number(personalAvanses).toFixed(0);
-				daySalaries['fines'] = Number(personalFines).toFixed(0);
-				daySalaries['total'] = Number(personalTotal).toFixed(0);
-				daySalaries['taxes'] = Number(personalTaxes).toFixed(0);
-				daySalaries['final'] = Number(personalFinal).toFixed(0);
+				daySalaries.bonus = Number(personalBonuses).toFixed(0);
+				daySalaries.avans = Number(personalAvanses).toFixed(0);
+				daySalaries.fines = Number(personalFines).toFixed(0);
+				daySalaries.total = Number(personalTotal).toFixed(0);
+				daySalaries.taxes = Number(personalTaxes).toFixed(0);
+				daySalaries.final = Number(personalFinal).toFixed(0);
 
 				total_final += Number(personalFinal) >= 0 ? Number(personalFinal) : 0;
 				total_total += Number(personalFinal) >= 0 ? Number(personalTotal) : 0;
@@ -1233,13 +1254,15 @@ export default {
 					hourly_pays: item.hourly_pays,
 					edited_bonus: item.edited_bonus,
 					edited_salary: item.edited_salary,
+					dayType: item.dayType,
 					salaries: daySalariesOnly,
 					...daySalaries,
 				};
 
 				if(this.show_user == 0) {
 					items.push(obj);
-				} else if(hasMoney > 0) { // show if has salary records
+				}
+				else if(hasMoney > 0) { // show if has salary records
 					items.push(obj);
 					hasMoney = 0
 				}
@@ -1317,13 +1340,14 @@ export default {
 				return '';
 			}
 
-			this.axios.post('/timetracking/salaries/edit-premium', {
-				date: currentMonth.startOf('month').format('YYYY-MM-DD'),
-				user_id: this.editedField.item.user_id,
-				amount: this.amountEdit,
-				comment: this.commentEdit,
-				type: this.editedField.type
-			})
+			this.axios
+				.post('/timetracking/salaries/edit-premium', {
+					date: currentMonth.startOf('month').format('YYYY-MM-DD'),
+					user_id: this.editedField.item.user_id,
+					amount: this.amountEdit,
+					comment: this.commentEdit,
+					type: this.editedField.type
+				})
 				.then(() => {
 
 					if(this.editedField.type == 'kpi') {
@@ -1348,11 +1372,12 @@ export default {
 
 		// утверждено к выдаче
 		approveSalary() {
-			this.axios.post('/timetracking/salaries/approve-salary', {
-				group_id: this.selectedGroup.id,
-				month: this.$moment(this.dateInfo.currentMonth, 'MMMM').format('M'),
-				year: this.dateInfo.currentYear,
-			})
+			this.axios
+				.post('/timetracking/salaries/approve-salary', {
+					group_id: this.selectedGroup.id,
+					month: this.$moment(this.dateInfo.currentMonth, 'MMMM').format('M'),
+					year: this.dateInfo.currentYear,
+				})
 				.then(() => {
 					this.$toast.success('Сохранено');
 					this.showBeforeApprove = false
@@ -1372,12 +1397,12 @@ export default {
 			if(type == 'avans') {
 				if(this.avans.comment.length < 3) {
 					this.avans.require = 'Комментарии обязательны!'
-					return '';
+					return this.$toast.error('Комментарии обязательны!');
 				}
 
 				if(this.avans.sum == 0 || this.avans.sum == null) {
 					this.avans.require = 'Напишите сумму аванса!'
-					return '';
+					return this.$toast.error('Напишите сумму аванса!');
 				}
 
 				comment = this.avans.comment;
@@ -1387,27 +1412,28 @@ export default {
 			if(type == 'bonus') {
 				if(this.bonus.comment.length < 3) {
 					this.bonus.require = 'Комментарии обязательны!'
-					return '';
+					return this.$toast.error('Комментарии обязательны!');
 				}
 
 				if(this.bonus.sum == 0 || this.bonus.sum == null) {
 					this.bonus.require = 'Напишите сумму бонуса!'
-					return '';
+					return this.$toast.error('Напишите сумму бонуса!');
 				}
 
 				comment = this.bonus.comment;
 				amount = this.bonus.sum;
 			}
 
-			this.axios.post('/timetracking/salaries/update', {
-				month: this.$moment(this.dateInfo.currentMonth, 'MMMM').format('M'),
-				year: this.dateInfo.currentYear,
-				day: this.selectedCell.field.key,
-				user_id: this.selectedCell.item.user_id,
-				amount: amount,
-				comment: comment,
-				type: type
-			})
+			this.axios
+				.post('/timetracking/salaries/update', {
+					month: this.$moment(this.dateInfo.currentMonth, 'MMMM').format('M'),
+					year: this.dateInfo.currentYear,
+					day: this.selectedCell.field.key,
+					user_id: this.selectedCell.item.user_id,
+					amount: amount,
+					comment: comment,
+					type: type
+				})
 				.then((response) => {
 
 					if(type == 'avans') {
@@ -1459,7 +1485,6 @@ export default {
 		},
 
 		defineClickNumber(type, data) {
-
 			//var self = this
 			this.clicks++;
 			if (this.clicks === 1) {
@@ -1497,7 +1522,8 @@ export default {
 			if(this.hasPermission) {
 				this.profile_link = '<a href="https://test.jobtron.org/login-as-employee/' + data.item.user_id + '?auth=' + this.auth_token + '" target="_blank">';
 				this.profile_link += '<i class="fa fa-link pointer ml-2 mr-2"></i></a>';
-			} else {
+			}
+			else {
 				this.profile_link = '';
 			}
 
@@ -1565,17 +1591,9 @@ export default {
 </script>
 
 <style lang="scss">
-$fine: red;
-$avans: #28a761;
-$bonus: #007bff;
-$training: orange;
 
 .fz-09 {
 	font-size: 0.9rem;
-}
-
-.fine,.avans,.bonus {
-	color:#fff;
 }
 
 .TableAccrual{
@@ -1584,34 +1602,9 @@ $training: orange;
 	}
 }
 .table-accrual{
-	.fine {
-		background: #f58c94;
-	}
 	.b-table-sticky-header{
 		height: 100% !important;
 	}
-}
-
-.bonus {
-	background: $bonus;
-	&.fine {background: linear-gradient(110deg, $bonus 50%, $fine 50%);}
-	&.training {background: linear-gradient(110deg, $bonus 50%, $training 50%);}
-	&.fine.training {background: linear-gradient(110deg, $bonus 33%, transparent 33%), linear-gradient(110deg, $fine 66%, $training 66%);}
-}
-
-.avans {
-	background:$avans;
-	&.fine {background: linear-gradient(110deg, $avans 50%, $fine 50%);}
-	&.bonus {background: linear-gradient(110deg, $avans 50%, $bonus 50%);}
-	&.training {background: linear-gradient(110deg, $avans 50%, $training 50%);}
-	&.bonus.fine {background: linear-gradient(110deg, $avans 33%, transparent 33%), linear-gradient(110deg, $bonus 66%, $fine 66%);}
-	&.bonus.fine.training {background: linear-gradient(110deg, $avans 25%, transparent 25%), linear-gradient(110deg, $bonus 50%, $fine 50%), linear-gradient(110deg, $fine 75%, $training 75%);}
-}
-
-.training {
-	background: $training;
-	color: #fff;
-	&.fine {background: linear-gradient(110deg, $training 50%, $fine 50%);}
 }
 
 .ddf div {
@@ -1784,8 +1777,8 @@ hr {
 		}
 
 		&:nth-child(8) {
-			background: #28a745 !important;
-			border-color: #208738 !important;
+			background: #8bab00 !important;
+			border-color: darken(#8bab00, 10) !important;
 			color: #fff;
 		}
 	}
@@ -1935,8 +1928,8 @@ hr {
 			}
 
 			&:nth-child(7) {
-				background: #28a745 !important;
-				outline-color: #228f3b !important;
+				background: #8bab00 !important;
+				outline-color: darken(#8bab00, 10) !important;
 				color: #fff;
 			}
 

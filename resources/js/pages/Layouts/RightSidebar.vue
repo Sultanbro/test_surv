@@ -30,16 +30,28 @@
 				class="header__right-icon bell red"
 				@click="$emit('pop', 'notifications')"
 			>
+				<PulseCard
+					v-if="unreadQuantity"
+					color="#ed2353"
+					:size="2"
+					class="RightSidebar-pulseIcon"
+				>
+					<img
+						:src="`/images/dist/header-right-2-active.svg`"
+						alt="nav icon"
+						class="header__icon-img"
+					>
+					<div class="RightSidebar-unread">
+						{{ unreadQuantity }}
+					</div>
+				</PulseCard>
 				<img
-					:src="`/images/dist/header-right-2${unreadQuantity ? '-active' : ''}.svg`"
+					v-else
+					:src="`/images/dist/header-right-2.svg`"
 					alt="nav icon"
 					class="header__icon-img"
 				>
 			</a>
-
-			<!-- <a href="javascript:void(0)" class="header__right-icon loop" v-b-popover.hover.left.html="'Поиск по чату - Этот функционал в разработке'">
-            <img src="/images/dist/header-right-3.svg" alt="nav icon" class="header__icon-img">
-        </a> -->
 
 			<a
 				href="javascript:void(0)"
@@ -71,26 +83,6 @@
 		</div>
 
 		<chat-sidepanel />
-		<!-- <div class="header__right-messages">
-        <a href="javascript:void(0)" class="header__message-item new">
-            <img src="/images/dist/header-right-avatar-1.png" alt="header avatar">
-        </a>
-        <a href="javascript:void(0)" class="header__message-item new">
-            <img src="/images/dist/header-right-avatar-2.png" alt="header avatar">
-        </a>
-        <a href="javascript:void(0)" class="header__message-item new">
-            <img src="/images/dist/header-right-avatar-3.png" alt="header avatar">
-        </a>
-        <a href="javascript:void(0)" class="header__message-item read">
-            <img src="/images/dist/header-right-avatar-4.png" alt="header avatar">
-        </a>
-        <a href="javascript:void(0)" class="header__message-item read">
-            <img src="/images/dist/header-right-avatar-5.png" alt="header avatar">
-        </a>
-        <a href="javascript:void(0)" class="header__message-item read">
-            <img src="/images/dist/header-right-avatar-6.png" alt="header avatar">
-        </a>
-    </div> -->
 	</div>
 </template>
 
@@ -100,11 +92,15 @@ import { useNotificationsStore } from '@/stores/Notifications'
 import { useWorkChartStore } from '@/stores/WorkChart.js'
 import { usePersonalInfoStore } from '@/stores/PersonalInfo'
 import { fetchSettings } from '@/stores/api.js'
+import PulseCard from '@ui/PulseCard.vue'
 
 const NotificationsLastCheck = 'NotificationsLastCheck'
 
 export default {
 	name: 'RightSidebar',
+	components: {
+		PulseCard,
+	},
 	props: {},
 	data: function () {
 		return {
@@ -137,7 +133,7 @@ export default {
 		}
 	},
 	async mounted(){
-		this.fetchNotifications()
+		this.fetchUnreadCount()
 		const {settings} = await fetchSettings('notifications_remind_count')
 		if(settings.custom_notifications_remind_count){
 			this.showCount = parseInt(settings.custom_notifications_remind_count) || 0
@@ -155,7 +151,7 @@ export default {
 		clearInterval(this.notificationsInterval)
 	},
 	methods: {
-		...mapActions(useNotificationsStore, ['fetchNotifications']),
+		...mapActions(useNotificationsStore, ['fetchUnreadCount']),
 		...mapActions(useWorkChartStore, ['fetchWorkChartList']),
 		openChat(){
 			if(!this.isBp){
@@ -192,3 +188,29 @@ export default {
 	}
 };
 </script>
+
+<style lang="scss">
+.RightSidebar{
+	&-pulseIcon{
+		border-radius: 12px;
+	}
+	&-unread{
+		display: flex;
+		align-items: center;
+		justify-content: center;
+
+		width: 14px;
+		height: 14px;
+
+		position: absolute;
+		top: 4px;
+		right: 4px;
+
+		font-size: 10px;
+		color: #ed2353;
+
+		border-radius: 50rem;
+		background-color: #fff;
+	}
+}
+</style>

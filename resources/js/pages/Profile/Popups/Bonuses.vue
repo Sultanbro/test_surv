@@ -1,6 +1,6 @@
 <template>
 	<div
-		class="popup__content  mt-5"
+		class="PopupBonuses popup__content mt-5"
 		:class="{'v-loading': loading}"
 	>
 		<div class="popup__filter pb-4">
@@ -15,7 +15,7 @@
 					class="kaspi__content custom-scroll-y"
 					data-content="1"
 				>
-					<table>
+					<table class="PopupBonuses-table">
 						<thead>
 							<tr>
 								<th class="text-center">
@@ -35,15 +35,24 @@
 								:key="index"
 							>
 								<td class="text-center">
-									{{ $moment.utc(new Date(item.date)).local().format('DD.MM.YYYY HH:mm') }}
+									{{ $moment.utc(new Date(item.date)).local().format('DD.MM.YYYY') }}
 								</td>
 								<td class="text-center">
 									{{ item.sum }}
 								</td>
-								<td>
-									<p class="kaspi__content-comment fz14 mb-0">
-										{{ item.comment }}
-									</p>
+								<td class="fz14">
+									<BonusComments
+										v-if="item.manual"
+										:items="[item.manual]"
+									/>
+									<BonusComments
+										v-if="item.bonuses"
+										:items="item.bonuses"
+									/>
+									<BonusComments
+										v-if="item.test"
+										:items="item.test"
+									/>
 								</td>
 							</tr>
 						</tbody>
@@ -58,7 +67,7 @@
 							:key="i"
 							:title="bonus.name"
 						>
-							<table>
+							<table class="PopupBonuses-table">
 								<thead>
 									<tr>
 										<th class="text-center">
@@ -104,17 +113,18 @@ import { useProfileSalaryStore } from '@/stores/ProfileSalary'
 import { useYearOptions } from '@/composables/yearOptions'
 import DateSelect from '../DateSelect'
 import ProfileTabs from '@ui/ProfileTabs'
+import BonusComments from './BonusComments.vue'
 
 export default {
 	name: 'PopupBonuses',
 	components: {
 		DateSelect,
 		ProfileTabs,
+		BonusComments,
 	},
 	props: {},
 	data: function () {
 		return {
-			fields: [],
 			bonuses: [],
 			dateInfo: {
 				currentMonth: null,
@@ -123,7 +133,6 @@ export default {
 				weekDays: 0,
 				daysInMonth: 0
 			},
-			potential_bonuses: '',
 			history: [],
 			loading: false,
 			selectedDate: this.$moment().format('DD.MM.YYYY'),
@@ -156,13 +165,10 @@ export default {
 	},
 	methods: {
 		...mapActions(useProfileSalaryStore, ['setReadedBonuses']),
-		/**
-         * set month
-         */
+
 		setMonth() {
 			let year = this.$moment().format('YYYY')
 			this.dateInfo.currentMonth = this.dateInfo.currentMonth ? this.dateInfo.currentMonth : this.$moment().format('MMMM')
-			// this.currentMonth = this.dateInfo.currentMonth;
 			this.dateInfo.date = `${this.dateInfo.currentMonth} ${year}`
 
 			let currentMonth = this.$moment(this.dateInfo.currentMonth, 'MMMM')
@@ -174,44 +180,39 @@ export default {
 			this.dateInfo.workDays = this.dateInfo.daysInMonth - this.dateInfo.weekDays //Колличество рабочих дней
 		},
 
-		fetchData() {
+		// Заработанные бонусы
+		async fetchData() {
 			this.loading = true
 
-			this.axios
-				.post('/bonuses', {
-					month: this.$moment(this.currentMonth, 'MMMM').format('M'),
-					year: this.currentYear,
-				})
-				.then((response) => {
-					// this.potential_bonuses = response.data.data.potential_bonuses
-					this.history = response.data.data.history
+			const {data} = await this.axios.post('/bonuses', {
+				month: this.$moment(this.currentMonth, 'MMMM').format('M'),
+				year: this.currentYear,
+			})
 
-					this.loading = false
-				});
+			this.history = data.data.history
+			this.loading = false
 		},
-		fetchBonuses(){
+
+		// Можно заработать
+		async fetchBonuses(){
 			this.loading = true
-			const _this = this;
-			this.axios
-				.post('/bonus/user')
-				.then((response) => {
-					_this.bonuses = response.data.bonuses
-					this.setReadedBonuses()
-					this.loading = false
-				});
+			const {data} = await this.axios.post('/bonus/user')
+			this.bonuses = data.bonuses
+			this.setReadedBonuses()
+			this.loading = false
 		}
 	}
 };
 </script>
 
 <style lang="scss">
-.kaspi__content-comment{
-    white-space: pre-wrap;
-}
-.kaspi__content-subtitle{
-    padding-top: 2rem;
-    font-size: 1.6rem;
-    color: #3a3a3a;
-    line-height: normal;
+.PopupBonuses{
+	&-table{
+		width: auto !important;
+		th,
+		td{
+			padding: 0 10px;
+		}
+	}
 }
 </style>

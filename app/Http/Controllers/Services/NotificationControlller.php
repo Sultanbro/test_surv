@@ -43,7 +43,7 @@ class NotificationControlller extends Controller
 
     /**
      * Отметить прочитанным
-     * 
+     *
      * Нужно разделить логику:
      * пропал с обучения
      * просто отметка прочитано
@@ -51,7 +51,7 @@ class NotificationControlller extends Controller
      * сохранение отчета
      */
     public function setRead(Request $request)
-    {   
+    {
         $user_id = auth()->id();
 
         $noti = UserNotification::where('user_id', $user_id)
@@ -93,9 +93,9 @@ class NotificationControlller extends Controller
             /**
              * Отметить прочитанными похожие сообщения
              * но только отправленные другим
-             * 
+             *
              * Пример: Пропал с обучения
-             * 
+             *
              * Рекрутер решает конфликт,
              * после этого у других рекрутеров исчезает смысл в их обработке
              */
@@ -107,12 +107,12 @@ class NotificationControlller extends Controller
                     $copy->save();
                 }
             }
-            
+
             /**
              * Transfer training to another date
              * перенос стажировки
              */
-            if($request->type && $request->type == 'transfer') { 
+            if($request->type && $request->type == 'transfer') {
 
                 $result = Recruiting::transferTraining($request->user_id, $request->date, $request->time);
 
@@ -140,9 +140,9 @@ class NotificationControlller extends Controller
                     'text'    => $request->text
                 ]);
             }
-            
+
             return 1; // ok
-        } 
+        }
 
         return 0; // not found
     }
@@ -181,9 +181,10 @@ class NotificationControlller extends Controller
      */
     public function unReadCount(UnReadCountRequest $request): JsonResponse
     {
+        $userId = (int) $request->query('user_id', 0);
         return $this->response(
             message: 'Success',
-            data: $this->notificationService->unRead($request->toDto()->userId)
+            data: $this->notificationService->unRead($userId)
         );
     }
 }

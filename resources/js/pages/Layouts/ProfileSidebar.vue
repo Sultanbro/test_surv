@@ -548,7 +548,7 @@ export default {
 				await this.updateStatus(this.getParams())
 				if(this.status === 'workdone') this.$toast.info(this.message)
 				if(this.status === 'started') this.$toast.info('День начат')
-				if(this.status === 'stopped' || this.status === '') this.$toast.info('День завершен')
+				if(this.status === 'stopped' || this.status === '') this.$toast.info('Установленный вам график не позволяет в текущее время начать рабочий день')
 				profileStatusStore.buttonStatus = 'init'
 			}
 			catch(error){

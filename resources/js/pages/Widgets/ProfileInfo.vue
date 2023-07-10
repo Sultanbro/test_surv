@@ -49,7 +49,7 @@
 				</router-link>
 			</div>
 			<div class="ProfileInfo-salary ProfileInfo-border">
-				ОКЛАД: {{ data.salary }}
+				ОКЛАД: {{ data.salary }} {{ currency }}
 			</div>
 			<div
 				class="ProfileInfo-worktime"
@@ -108,6 +108,10 @@ export default {
 		},
 		isAdmin(){
 			return this.$store.state.user.user.is_admin === 1;
+		},
+		currency(){
+			if(!this.data?.user) return ''
+			return this.data.user.currency?.toUpperCase() || ''
 		},
 		moreThanDays(){
 			if(this.data){

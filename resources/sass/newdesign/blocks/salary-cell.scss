@@ -1,0 +1,123 @@
+.SalaryCell{
+  $fine: #e84f71;
+	$training: #f90;
+	$bonus: #8fc9ff;
+	$avans: #8bab00;
+
+  $weekend: #fef2cb;
+  $weekend-fine: lighten($fine, 10);
+  $weekend-training: lighten($training, 10);
+  $weekend-bonus: lighten($bonus, 10);
+  $weekend-avans: lighten($avans, 10);
+
+  color: #fff;
+  &-1{
+    background: $fine;
+  }
+  &-2{
+    background: $training;
+  }
+  &-4{
+    background: $bonus;
+  }
+  &-8{
+    background: $avans;
+  }
+
+  // 2 элемента
+  &-3{
+    background: linear-gradient(110deg, $training 50%, $fine 50%);
+  }
+  &-5{
+    background: linear-gradient(110deg, $bonus 50%, $fine 50%);
+  }
+  &-9{
+    background: linear-gradient(110deg, $avans 50%, $fine 50%);
+  }
+  &-6{
+    background: linear-gradient(110deg, $bonus 50%, $training 50%);
+  }
+  &-10{
+    background: linear-gradient(110deg, $avans 50%, $training 50%);
+  }
+  &-12{
+    background: linear-gradient(110deg, $avans 50%, $bonus 50%);
+  }
+
+  // 3 элемента
+  &-7{
+    background: linear-gradient(110deg, $bonus 33%, $fine 33.3%, $fine 66.6%, $training 66.6%);
+  }
+  &-11{
+    background: linear-gradient(110deg, $avans 33%, $fine 33.3%, $fine 66.6%, $training 66.6%);
+  }
+  &-13{
+    background: linear-gradient(110deg, $avans 33%, $bonus 33.3%, $bonus 66.6%, $fine 66.6%);
+  }
+  &-14{
+    background: linear-gradient(110deg, $bonus 33%, $fine 33.3%, $fine 66.6%, $training 66.6%);
+  }
+
+  // 4 элемента
+  &-15{
+    background: linear-gradient(110deg, $avans 25%, $bonus 25%, $bonus 50%, $fine 50%, $fine 75%, $training 75%);
+  }
+
+  &-weekend{
+    &-0{
+      background: $weekend;
+    }
+
+    &-1{
+      background: $weekend-fine;
+    }
+    &-2{
+      background: $weekend-training;
+    }
+    &-4{
+      background: $weekend-bonus;
+    }
+    &-8{
+      background: $weekend-avans;
+    }
+
+    // 2 элемента
+    &-3{
+      background: linear-gradient(110deg, $weekend-training 50%, $weekend-fine 50%);
+    }
+    &-5{
+      background: linear-gradient(110deg, $weekend-training 50%, $weekend-fine 50%);
+    }
+    &-9{
+      background: linear-gradient(110deg, $weekend-avans 50%, $weekend-fine 50%);
+    }
+    &-6{
+      background: linear-gradient(110deg, $weekend-bonus 50%, $weekend-training 50%);
+    }
+    &-10{
+      background: linear-gradient(110deg, $weekend-avans 50%, $weekend-training 50%);
+    }
+    &-12{
+      background: linear-gradient(110deg, $weekend-avans 50%, $weekend-bonus 50%);
+    }
+
+    // 3 элемента
+    &-7{
+      background: linear-gradient(110deg, $weekend-bonus 33%, $weekend-fine 33.3%, $weekend-fine 66.6%, $weekend-training 66.6%);
+    }
+    &-11{
+      background: linear-gradient(110deg, $weekend-avans 33%, $weekend-fine 33.3%, $weekend-fine 66.6%, $weekend-training 66.6%);
+    }
+    &-13{
+      background: linear-gradient(110deg, $weekend-avans 33%, $weekend-bonus 33.3%, $weekend-bonus 66.6%, $weekend-fine 66.6%);
+    }
+    &-14{
+      background: linear-gradient(110deg, $weekend-bonus 33%, $weekend-fine 33.3%, $weekend-fine 66.6%, $weekend-training 66.6%);
+    }
+
+    // 4 элемента
+    &-15{
+      background: linear-gradient(110deg, $weekend-avans 25%, $weekend-bonus 25%, $weekend-bonus 50%, $weekend-fine 50%, $weekend-fine 75%, $weekend-training 75%);
+    }
+  }
+}

@@ -82,25 +82,14 @@ class ProfileController extends Controller
     {
         $date = Carbon::createFromDate($request->year, $request->month, 1)->format('Y-m-d');
 
-        $potential_bonuses = '';
-
         $user = auth()->user() ? User::find(auth()->id()) : null;
-        
-        if($user && count($user->inGroups()) > 0 ) {
-            foreach ($user->inGroups() as $g) {
-                $potential_bonuses .= Bonus::getPotentialBonusesHtml($g->id);
-                $potential_bonuses .= '<br>';
-            }
-        }
 
         $currency_rate = $user && in_array($user->currency, array_keys(Currency::rates()))
             ? (float)Currency::rates()[$user->currency]
             : 0.0000001;
-            
-        
+
         return response()->success([
-            'history' => ObtainedBonus::getHistory($user->id, $date, $currency_rate),
-            'potential_bonuses' => $potential_bonuses
+            'history' => ObtainedBonus::getHistoryJSON($user->id, $date, $currency_rate),
         ]);
     }
 
@@ -165,7 +154,7 @@ class ProfileController extends Controller
 
     /**
      * Get course by id
-     * 
+     *
      * @return JsonResponse
      */
     public function course(Request $request, CourseResultService $service): JsonResponse
@@ -208,7 +197,7 @@ class ProfileController extends Controller
             $rec_group = ProfileGroup::find(48);
 
             if($rec_group) {
-                $working  = (new UserService)->getEmployees(48, date('Y-m-d')); 
+                $working  = (new UserService)->getEmployees(48, date('Y-m-d'));
                 $rg_users = collect($working)->pluck('id')->toArray();
             }
 
@@ -381,7 +370,7 @@ class ProfileController extends Controller
     /**
      * Recruiting temp function
      * Only for BP
-     * 
+     *
      * @return String|false
      */
     private function recruiting_temp() : String|false
@@ -391,7 +380,7 @@ class ProfileController extends Controller
         $group = ProfileGroup::find(48);
 
         $indicators = []; // Для визуальных данных под сводной таблицей
-      
+
         // AGAIN USERS
         $trainees = (new UserService)->getEmployees($group->id, date('Y-m-d'));
         $user_ids = collect($trainees)->pluck('id')->toArray();
@@ -402,7 +391,7 @@ class ProfileController extends Controller
 
         /// Заказы руководителей
         $orders = [];
-        $orderGroups = ProfileGroup::where('active', 1)->get(); 
+        $orderGroups = ProfileGroup::where('active', 1)->get();
         foreach ($orderGroups as $group) {
             $orders[] = [
                 'group'    => $group->name,
@@ -410,14 +399,14 @@ class ProfileController extends Controller
                 'fact'     => $group->provided . ' ',
             ];
         }
-        
+
         $indicators['orders'] = $orders;
 
         // Count remain days
         $start = Carbon::now();
         $end = Carbon::now()->setDate(date('Y'), date('m'), 1)->endOfMonth();
 
-        
+
         if($end->timestamp - $start->timestamp >= 0 && $end->month >= date('m')) {
             $remain_days = $start->diffInDaysFiltered(function (Carbon $date) use ($holidays) {
                 return !$date->isDayOfWeek(Carbon::SUNDAY); //&& !in_array($date, $holidays);
@@ -434,7 +423,7 @@ class ProfileController extends Controller
 
     /**
      * Условия оплаты из отделов и должности
-     * 
+     *
      * @return JsonResponse
      */
     public function paymentTerms(Request $request): JsonResponse

@@ -52,7 +52,7 @@ class FineService
         });
         return [
             'fines' => $userFines,
-            'total' =>$totalFines
+            'total' => $totalFines
         ];
     }
 }

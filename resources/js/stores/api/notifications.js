@@ -28,6 +28,15 @@ export async function setNotificationsReadAll(){
 	return data
 }
 
+export async function fetchNotificationsUnreadCount(userId){
+	const { data } = await axios.get('/notifications/unread-count', {
+		params: {
+			user_id: userId
+		}
+	})
+	return data.data
+}
+
 /**
  * Получение вариантов уведомлений для настроек
  */
