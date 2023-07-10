@@ -64,7 +64,6 @@
 						wrapper_class=" br-1"
 						:key="ukey"
 						page="top"
-						@archive="onArchiveUtility"
 					/>
 				</div>
 			</b-tab>
@@ -106,13 +105,6 @@
 									:href="'/timetracking/an?group='+ gauge.group_id + '&active=1&load=1'"
 									target="_blank"
 								>{{ gauge.name }}</a>
-								<span
-									class=" ml-2 pointer"
-									title="Отправить в архив"
-									@click="onArchiveUtility(gauge.group_id)"
-								>
-									<i class="fa fa-trash" />
-								</span>
 							</p>
 							<p class="text-center font-bold text-14">
 								{{ gauge.value }}%
@@ -391,29 +383,6 @@
 		</b-tabs>
 
 		<SideBar
-			title="Архив"
-			width="35%"
-			:open="false"
-			@close="isArchiveOpen = false"
-			class="TopArchive"
-		>
-			<div
-				v-for="util in archiveUtility"
-				:key="util.id"
-				class="TopArchive-item"
-			>
-				<div class="TopArchive-title">
-					{{ util.name }}
-				</div>
-				<i
-					class="fa fa-trash-restore TopArchive-button"
-					title="Восстановить из архива"
-					@click="onRestoreUtility(util.id)"
-				/>
-			</div>
-		</SideBar>
-
-		<SideBar
 			title="Активные спидометры"
 			width="35%"
 			:open="isArchiveOpen"
@@ -441,7 +410,6 @@ import { useYearOptions } from '@/composables/yearOptions'
 import JobtronButton from '@ui/Button'
 import SideBar from '@ui/Sidebar'
 import {
-	topArchiveUtility,
 	fetchTop,
 	fetchArchiveUtility,
 	fetchArchiveRentability,
@@ -705,47 +673,6 @@ export default {
 			this.proceeds.records.splice(length - 1, 0, obj);
 		},
 
-		async onArchiveUtility(groupId){
-			if(!confirm('Убрать полезность в архив?')) return
-			try{
-				const {message} = await topArchiveUtility({
-					group_id: groupId,
-					is_archive: true,
-				})
-				if(message === 'Success'){
-					const utility = this.utility.find(util => util.id === groupId)
-					if(utility){
-						utility.archive_utility = true
-						this.$forceUpdate()
-					}
-				}
-			}
-			catch{
-				this.$toast.error('Не удалось отправить полезность в архив')
-			}
-		},
-
-		async onRestoreUtility(groupId){
-			if(!confirm('Восстановить полезность?')) return
-			try{
-				const {message} = await topArchiveUtility({
-					group_id: groupId,
-					is_archive: false,
-				})
-				if(message === 'Success'){
-					const utility = this.utility.find(util => util.id === groupId)
-					if(utility){
-						utility.archive_utility = false
-						this.$forceUpdate()
-						if(!this.archiveUtility.length) this.isArchiveOpen = false
-					}
-				}
-			}
-			catch{
-				this.$toast.error('Не удалось восстановить полезность')
-			}
-		},
-
 		isActiveRentability(groupId){
 			return this.rentabilitySwitch[groupId] && this.rentabilitySwitch[groupId].value
 		},
@@ -768,209 +695,182 @@ export default {
 </script>
 
 <style lang="scss">
-	.TopArchive{
-		&.ui-sidebar{
-			&.is-open{
-				.ui-sidebar__body{
-					right: 60px;
-				}
-			}
-		}
+.table-custom-forecast {
+	table-layout: fixed;
+	width: auto;
 
-		&-item{
-			display: flex;
-			align-items: center;
-			gap: 10px;
-
-			padding: 10px;
-			&:hover{
-				background-color: #DDE9FF;
-			}
-		}
-		&-title{
-			flex: 1;
-			white-space: nowrap;
-			overflow: hidden;
-			text-overflow: ellipsis;
-		}
-		&-button{
-			cursor: pointer;
-		}
+	.td-blue {
+		background-color: #DDE9FF;
+		border: 1px solid #bdcff1 !important;
 	}
-	.table-custom-forecast {
-		table-layout: fixed;
-		width: auto;
 
-		.td-blue {
-			background-color: #DDE9FF;
-			border: 1px solid #bdcff1 !important;
-		}
+	thead {
+		th {
+			width: 20%;
+			max-width: 20%;
 
-		thead {
-			th {
-				width: 20%;
-				max-width: 20%;
-
-				&:first-child {
-					width: 40%;
-					max-width: 40%;
-				}
-			}
-		}
-
-		tbody {
-			td {
-				input {
-					width: 100%;
-				}
+			&:first-child {
+				width: 40%;
+				max-width: 40%;
 			}
 		}
 	}
 
-	.weekend {
-		background-color: #fef2cb !important;
+	tbody {
+		td {
+			input {
+				width: 100%;
+			}
+		}
 	}
+}
 
-	.gauge-block {
-		margin-right: 10px;
-		margin-top: 10px;
-	}
+.weekend {
+	background-color: #fef2cb !important;
+}
+
+.gauge-block {
+	margin-right: 10px;
+	margin-top: 10px;
+}
 .gauge-title {
-  font-weight: bold;
-  display: none;
-  text-align: center;
-  font-size: 20px;
+	font-weight: bold;
+	display: none;
+	text-align: center;
+	font-size: 20px;
 }
 
 .w-250 {
-  width: 200px;
+	width: 200px;
 }
 
 .w-300 {
-  width: 220px;
+	width: 220px;
 }
 
 .w-full {
-  width: 100%;
+	width: 100%;
 }
 
 .w-295 {
-  width: 295px;
-  min-width: 295px !important;
+	width: 295px;
+	min-width: 295px !important;
 }
 
 .w-80 {
-  width: 80px;
-  min-width: 80px !important;
+	width: 80px;
+	min-width: 80px !important;
 }
 
 .w-125 {
-  width: 125px;
-  min-width: 125px !important;
+	width: 125px;
+	min-width: 125px !important;
 }
 
 .w-60 {
-  width: 60px;
-  min-width: 60px !important;
+	width: 60px;
+	min-width: 60px !important;
 }
 .bg-grey {
-    background: #f0f0f0;
-}
-.fa-cog {
-  display: none;
-  font-size: 12px;
-  position: relative;
-  top: -2px;
-  color: #1076b0;
-  cursor: pointer;
+		background: #f0f0f0;
 }
 
-.gauge:hover .fa-cog {
-  display: block;
+.fa-cog {
+	display: none;
+	font-size: 12px;
+	position: relative;
+	top: -2px;
+	color: #1076b0;
+	cursor: pointer;
 }
 
 .gauge {
-  cursor: pointer;
-
-
-  &:last-child {
-    border-bottom: none;
-  }
+	cursor: pointer;
+	&:last-child {
+		border-bottom: none;
+	}
+	&:hover{
+		.fa-cog {
+			display: block;
+		}
+	}
 }
 
 .br-1 {
-  border-right: 1px solid #f3f3f3;
-  border-bottom: 1px solid #f3f3f3;
+	border-right: 1px solid #f3f3f3;
+	border-bottom: 1px solid #f3f3f3;
 }
 
 .text-20 {
-  font-size: 20px;
+	font-size: 20px;
 }
 
-table.tops th:first-child,
-table.tops td:first-child {
-  background: #ebedf5;
-  font-weight: bold;
-  min-width: 200px;
-  text-align: left !important;
-  position: sticky;
-  left: 0;
-  border-right: 2px solid #a1b7cc !important;
-  border-left: 2px solid #a1b7cc !important;
-}
+table.tops{
+	th:first-child,
+	td:first-child {
+		background: #ebedf5;
+		font-weight: bold;
+		min-width: 200px;
+		text-align: left !important;
+		position: sticky;
+		left: 0;
+		border-right: 2px solid #a1b7cc !important;
+		border-left: 2px solid #a1b7cc !important;
+	}
 
-table.tops thead td,
-table.tops thead th{
-  border-left: 1px solid #cccccc!important;
+	thead{
+		td,
+		th{
+			border-left: 1px solid #cccccc!important;
+		}
+	}
 }
-
 
 table.proceed tr:last-child td {
-  font-weight: 700;
-  color: #045e92;
+	font-weight: 700;
+	color: #045e92;
 }
 
 input.form-control.form-control-sm.wiwi {
-  padding: 0 10px;
-  margin-bottom: 4px;
-  width: 100%;
+	padding: 0 10px;
+	margin-bottom: 4px;
+	width: 100%;
 }
 
 .link-btn {
-  border-radius: 3px;
-  text-align: center;
-  cursor: pointer;
-  position: absolute;
-  right: 5px;
-  top: 76px;
+	border-radius: 3px;
+	text-align: center;
+	cursor: pointer;
+	position: absolute;
+	right: 5px;
+	top: 76px;
 }
 
 .w-700 {
-  width: 700px;
+	width: 700px;
 }
 
 .w-700 input {
-  border: 0;
-  text-align: center;
-  width: 43px;
+	border: 0;
+	text-align: center;
+	width: 43px;
 }
 .input {
-    border: 0;
-    text-align: center;
-    margin-bottom: 0;
-    padding-left: 19px;
-    width: 100px;
-    background: transparent;
+	border: 0;
+	text-align: center;
+	margin-bottom: 0;
+	padding-left: 19px;
+	width: 100px;
+	background: transparent;
 }
 .input-2 {
-      text-align: left;
-    width: 100%;
-    border: 0;
-    margin-bottom: 0;
-    background: transparent;
-
+	text-align: left;
+	width: 100%;
+	border: 0;
+	margin-bottom: 0;
+	background: transparent;
 }
 .no-table {
-    width: auto !important;
+	width: auto !important;
 }
 </style>

@@ -540,6 +540,9 @@ export default {
 			justify-content: flex-start !important;
 			align-items: flex-end;
 		}
+		.TopGauges-gauges{
+			gap: 1.5rem;
+		}
 		.TopGauges-gauge{
 			flex: 0 0 content;
 			&:last-of-type{

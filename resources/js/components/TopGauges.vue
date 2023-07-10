@@ -1,9 +1,9 @@
 <template>
 	<div
+		:key="skey"
 		class="TopGauges d-flex justify-content-start mt-3"
 		style="flex-wrap:wrap"
 		:class="{'top': page == 'top'}"
-		:key="skey"
 	>
 		<template v-for="(group, group_index) in utility">
 			<div
@@ -27,14 +27,6 @@
 					>
 						<i class="fa fa-plus-square" />
 					</div>
-					<div
-						v-if="page == 'top'"
-						class=" ml-2 pointer"
-						title="Отправить в архив"
-						@click="$emit('archive', group.id)"
-					>
-						<i class="fa fa-trash" />
-					</div>
 				</div>
 				<div
 					v-if="group.gauges.length"
@@ -46,62 +38,67 @@
 						:key="gauge.id"
 						class="TopGauges-gauge text-center gauge"
 						:class="{
-							'scale': group.gauges.length > 1,
-							'scale-tl': gauge_index == 0,
-							'scale-tr': gauge_index == 1,
-							'scale-bl': gauge_index == 2,
-							'scale-br': gauge_index == 3,
-							'mr-4': page == 'analytics' && group.gauges.length - 1 != gauge_index
+							'TopGauges-gauge_single': group.gauges.length === 1,
 						}"
 					>
-						<p
-							class="text-center g-title"
-							:class="{'underline': gauge.is_main == 1}"
-						>
-							{{ gauge.name }} <template v-if="page == 'analytics'">
-								{{ gauge.diff }}%
-							</template>
-							<!-- <span class="btn" @click="edit(group_index, gauge_index)"><i class="fa fa-cogs"></i></span> -->
-						</p>
 						<div
-							@click="edit(group_index, gauge_index)"
-							title="Нажмите, чтобы редактировать"
-							:key="gauge.key"
-							v-if="page =='top'"
+							:data-test="gauge_index"
+							:class="['scale', {
+								'scale-bl': +gauge_index === 0,
+								'scale-br': +gauge_index === 1,
+								'scale-bl': +gauge_index === 2,
+								'scale-br': +gauge_index === 3,
+							}]"
 						>
-							<VGauge
-								:value="Number(gauge.value)"
-								:height="gauge.height"
-								:options="gauge.options"
-								:width="gauge.width"
-								:unit="gauge.unit.toString()"
-								:min-value="Number(gauge.min_value)"
-								:max-value="Number(gauge.max_value)"
-								:top="true"
-								gauge-value-class="gauge-span"
-							/>
+							<p
+								class="text-center g-title"
+								:class="{'underline': gauge.is_main == 1}"
+							>
+								{{ gauge.name }} <template v-if="page == 'analytics'">
+									{{ gauge.diff }}%
+								</template>
+								<!-- <span class="btn" @click="edit(group_index, gauge_index)"><i class="fa fa-cogs"></i></span> -->
+							</p>
+							<div
+								v-if="page == 'top'"
+								:key="gauge.key"
+								@click="edit(group_index, gauge_index)"
+								title="Нажмите, чтобы редактировать"
+							>
+								<VGauge
+									:value="Number(gauge.value)"
+									:height="gauge.height"
+									:options="gauge.options"
+									:width="gauge.width"
+									:unit="gauge.unit.toString()"
+									:min-value="Number(gauge.min_value)"
+									:max-value="Number(gauge.max_value)"
+									:top="true"
+									gauge-value-class="gauge-span"
+								/>
+							</div>
+							<div
+								v-else
+								:key="gauge.key + 'a'"
+								@click="edit(group_index, gauge_index)"
+								title="Нажмите, чтобы редактировать"
+							>
+								<VGauge
+									:value="Number(gauge.value)"
+									height="90px"
+									:options="gauge.options"
+									width="150px"
+									:unit="gauge.unit.toString()"
+									:min-value="Number(gauge.min_value)"
+									:max-value="Number(gauge.max_value)"
+									:top="true"
+									gauge-value-class="gauge-span"
+								/>
+							</div>
+							<p class="text-center text-14">
+								{{ Number(gauge.value) }}{{ gauge.unit }} из {{ gauge.max_value }}{{ gauge.unit }}
+							</p>
 						</div>
-						<div
-							@click="edit(group_index, gauge_index)"
-							title="Нажмите, чтобы редактировать"
-							:key="gauge.key + 'a'"
-							v-else
-						>
-							<VGauge
-								:value="Number(gauge.value)"
-								height="90px"
-								:options="gauge.options"
-								width="150px"
-								:unit="gauge.unit.toString()"
-								:min-value="Number(gauge.min_value)"
-								:max-value="Number(gauge.max_value)"
-								:top="true"
-								gauge-value-class="gauge-span"
-							/>
-						</div>
-						<p class="text-center text-14">
-							{{ Number(gauge.value) }}{{ gauge.unit }} из {{ gauge.max_value }}{{ gauge.unit }}
-						</p>
 						<div
 							v-show="gauge.editable"
 							class="mb-5 edit-window"
@@ -169,17 +166,17 @@
 												Ячейка из сводной
 											</option>
 											<option
-												:value="group_activity.id"
 												v-for="(group_activity, key) in group.group_activities"
 												:key="key"
+												:value="group_activity.id"
 											>
 												{{ group_activity.name }}
 											</option>
 										</select>
 									</div>
 									<div
-										class="d-flex justify-content-between align-items-center"
 										v-if="gauge.activity_id > 0"
+										class="d-flex justify-content-between align-items-center"
 									>
 										<span class="pr-2 l-label">Тип</span>
 										<select
@@ -195,8 +192,8 @@
 										</select>
 									</div>
 									<div
-										class="d-flex justify-content-between align-items-center mt-1"
 										v-if="gauge.activity_id == -1"
+										class="d-flex justify-content-between align-items-center mt-1"
 									>
 										<span class="pr-2">Ячейка</span>
 										<input
@@ -224,7 +221,7 @@
 										Ключевой
 									</b-form-checkbox>
 								</div>
-								<div class="d-flex justify-content-between  align-items-center">
+								<div class="d-flex justify-content-between align-items-center">
 									<input
 										type="range"
 										class="form-control form-control-sm w-250 mr-2 wiwi"
@@ -255,7 +252,6 @@
 				</div>
 			</div>
 		</template>
-
 
 		<!-- Modal Create activity -->
 		<b-modal
@@ -406,7 +402,6 @@ export default {
 	},
 
 	methods: {
-
 		normalize() {
 			if(this.page == 'top') {
 				this.utility.forEach(group => {
@@ -417,7 +412,8 @@ export default {
 							if(gauge.options.staticLabels !== undefined) {
 								gauge.options.staticLabels.font = '7px sans-serif';
 							}
-						} else {
+						}
+						else {
 							gauge.height = '90px';
 							gauge.width = '150px';
 							if(gauge.options.staticLabels !== undefined) {
@@ -426,7 +422,8 @@ export default {
 						}
 					});
 				});
-			} else {
+			}
+			else {
 				this.utility.forEach(group => {
 					group.gauges.forEach(gauge => {
 						gauge.height = '90px';
@@ -437,7 +434,6 @@ export default {
 					});
 				});
 			}
-
 		},
 
 		save(group, gauge) {
@@ -458,50 +454,41 @@ export default {
 
 			this.axios.post('/timetracking/top/delete_gauge', {
 				gauge: this.utility[group].gauges[gauge]
-			})
-				.then(() => {
-					this.$toast.success('Успешно удален!')
-
-
-					this.utility[group].gauges.splice(gauge, 1);
-
-				}).catch(error => {
-					alert(error)
-				});
+			}).then(() => {
+				this.$toast.success('Успешно удален!')
+				this.utility[group].gauges.splice(gauge, 1);
+			}).catch(error => {
+				alert(error)
+			});
 		},
 
 		saveDB(group, gauge_index) {
 			this.axios.post('/timetracking/top/save_top_value', {
 				gauge: this.utility[group].gauges[gauge_index]
-			})
-				.then(response => {
-					if(response.data.code == 200) {
-						this.$toast.success('Успешно сохранено!')
+			}).then(response => {
+				if(response.data.code == 200) {
+					this.$toast.success('Успешно сохранено!')
 
-						let this_gauge = this.utility[group].gauges[gauge_index];
+					let this_gauge = this.utility[group].gauges[gauge_index];
 
-						this_gauge.value = response.data.value;
-						this_gauge.options = response.data.options;
-						if(this.utility[group].gauges[gauge_index].is_main == 1) {
-							this.utility[group].gauges.splice(gauge_index, 1);
-							this.utility[group].gauges.forEach(item =>  {
-								item.is_main = 0;
-							});
-							this.utility[group].gauges.unshift(this_gauge);
-
-
-
-
-						}
-
-						this.skey++
-
-					} else {
-						this.$toast.error('Попробуйте нажать еще раз')
+					this_gauge.value = response.data.value;
+					this_gauge.options = response.data.options;
+					if(this.utility[group].gauges[gauge_index].is_main == 1) {
+						this.utility[group].gauges.splice(gauge_index, 1);
+						this.utility[group].gauges.forEach(item =>  {
+							item.is_main = 0;
+						});
+						this.utility[group].gauges.unshift(this_gauge);
 					}
-				}).catch(error => {
-					alert(error)
-				});
+
+					this.skey++
+				}
+				else {
+					this.$toast.error('Попробуйте нажать еще раз')
+				}
+			}).catch(error => {
+				alert(error)
+			});
 		},
 
 		edit(group, gauge) {
@@ -515,7 +502,8 @@ export default {
 			if(this.utility[group].gauges[gauge].editable) {
 				this.visible_gauge_group_index = group;
 				this.visible_gauge_index = gauge;
-			} else {
+			}
+			else {
 				this.visible_gauge_group_index = null;
 				this.visible_gauge_index = null;
 			}
@@ -532,8 +520,6 @@ export default {
 			}
 
 			Object.keys(colors).forEach(function (key) {
-
-
 				if(Number(colors[key]) + 1 <= points.length) {
 					staticZones.push({
 						strokeStyle: key,
@@ -554,12 +540,11 @@ export default {
 
 			this.axios.post('/timetracking/top/get_activities', {
 				group_id: group_id,
-			})
-				.then(response => {
-					this.group_activities = response.data;
-				}).catch(error => {
-					alert(error)
-				});
+			}).then(response => {
+				this.group_activities = response.data;
+			}).catch(error => {
+				alert(error)
+			});
 
 			this.showNewGaugeWindow = true
 		},
@@ -571,27 +556,25 @@ export default {
 				name: this.newGauge.name,
 				value_type: this.newGauge.value_type,
 				cell: this.newGauge.cell,
-			})
-				.then(response => {
+			}).then(response => {
+				this.utility[this.newGauge.group_index].gauges.push(response.data);
 
-					this.utility[this.newGauge.group_index].gauges.push(response.data);
+				this.newGauge = {
+					activity_id: null,
+					group_id: null,
+					name: null,
+					cell:'',
+					value_type: 'sum'
+				};
 
-					this.newGauge = {
-						activity_id: null,
-						group_id: null,
-						name: null,
-						cell:'',
-						value_type: 'sum'
-					};
+				this.skey++
+				this.normalize();
 
-					this.skey++
-					this.normalize();
-
-					this.showNewGaugeWindow = false;
-					this.$toast.success('Успешно сохранено!')
-				}).catch(error => {
-					alert(error)
-				});
+				this.showNewGaugeWindow = false;
+				this.$toast.success('Успешно сохранено!')
+			}).catch(error => {
+				alert(error)
+			});
 		}
 	}
 }
@@ -599,112 +582,108 @@ export default {
 
 <style lang="scss">
 .l-label {
-    width: 39px;
-    text-align: left;
+	width: 39px;
+	text-align: left;
 }
 .gauge-title {
-  font-weight: bold;
-  display: none;
-  text-align: center;
-    font-size: 20px;
+	font-weight: bold;
+	display: none;
+	text-align: center;
+	font-size: 20px;
 }
 .h-23 {
-    height: 23px !important;
-    padding: 0 !important;
+	height: 23px !important;
+	padding: 0 !important;
 }
 .w-250 {
-    width: 200px;
+	width: 200px;
 }
-.w-300 {
-    width: 220px;
-    &.scale {
-        width: 50%;
-    }
-}
-.scale {
-        width: 50%;
-    }
 .w-full {
-    width: 100%;
+	width: 100%;
 }
 
 .gauge:hover .fa-cog {
-    display: block;
+	display: block;
 }
 .gauge {
-    cursor: pointer;
+	cursor: pointer;
 
-    &:last-child {
-        border-bottom: none;
-    }
+	&:last-child {
+		border-bottom: none;
+	}
 }
 .br-1 {
-    border-right: 1px solid #f3f3f3;
-    border-bottom: 1px solid #f3f3f3;
-}
-.text-20 {
-    font-size: 20px;
+	border-right: 1px solid #f3f3f3;
+	border-bottom: 1px solid #f3f3f3;
 }
 .text-14 {
-    font-size: 14px;
-    line-height: 14px;
-}
-.ml-150 {
-    margin-left: 150px;
+	font-size: 14px;
+	line-height: 14px;
 }
 input.form-control.form-control-sm.wiwi {
-    padding: 0 10px;
-    margin-bottom: 4px;
-    width: 100%;
+	padding: 0 10px;
+	margin-bottom: 4px;
+	width: 100%;
 }
 .scale {
-    transition: 0.3s ease all;
+	transition: 0.3s ease all;
+	transform-origin: bottom left;
 }
 .top .scale:hover {
-    transform: scale(1.5);
-    background: #ffffff;
-    box-shadow: 0 0 15px 15px #efefef;
+	transform: scale(1.5);
+	background: #ffffff;
+	box-shadow: 0 0 15px 15px #efefef;
 
-    .edit-window {
-        transform: scale(0.66);
-        transform-origin: top left;
-    }
+	// .edit-window {
+	// 	transform: scale(0.66);
+	// 	transform-origin: top left;
+	// }
 }
 
 .scale-tl {
-    transform-origin: top left;
+	transform-origin: top left;
 }
 .underline {
-    text-decoration: underline;
+	text-decoration: underline;
 }
 .scale-tr {
-    transform-origin: top right;
+	transform-origin: top right;
 }
 .scale-bl {
-    transform-origin: bottom left;
+	transform-origin: bottom left;
 }
 .scale-br {
-    transform-origin: bottom right;
+	transform-origin: bottom right;
 }
 .w-50 {
-    width: 50%;
+	width: 50%;
 }
 .g-title {
-    font-size: 13px;
-    line-height: 16px;
-    font-weight: 600;
-    width: 160px;
+	font-size: 13px;
+	line-height: 16px;
+	font-weight: 600;
+	// width: 160px;
 }
 .edit-window {
-    width: 300px;
-    position: absolute;
-    background: aliceblue;
-    padding: 15px;
-    border: 1px solid #ddd;
-    border-radius: 3px;
-    z-index: 222222;
+	width: 300px;
+	position: absolute;
+	background: aliceblue;
+	padding: 15px;
+	border: 1px solid #ddd;
+	border-radius: 3px;
+	z-index: 222222;
 }
 .custom-control {
-    display: flex;
+	display: flex;
+}
+
+.TopGauges{
+	&-gauges{}
+	&-gauge{
+		width: 50%;
+		// &_single{
+		// 	width: 100%;
+		// }
+	}
 }
 </style>
