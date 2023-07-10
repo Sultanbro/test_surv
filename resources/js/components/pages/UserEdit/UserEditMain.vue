@@ -82,7 +82,7 @@ export default {
 			weekdays: (this.user?.weekdays || '0000000').split(''),
 			position: this.user ? this.user.position_id : '',
 			userTimezone: null,
-			first_work_day: null,
+			first_work_day: '',
 			timezones: [-11, -10, -9.5, -9, -8, -7, -6, -5, -4, -3.5, -3, -2, -1, 0, 1, 2, 3, 3.5, 4, 4.5, 5, 5.5, 5.75, 6, 6.5, 7, 8, 8.75, 9, 9.5, 10, 10.5, 11, 12, 12.75, 13, 14],
 		}
 	},
@@ -111,7 +111,7 @@ export default {
 			this.position = user ? user.position_id : '';
 			this.workChartId = user ? user.work_chart_id : null;
 			this.userTimezone = user ? user.timezone : 6;
-			this.first_work_day = user ? user.first_work_day.substring(0, 10) : null;
+			this.first_work_day = user ? user.first_work_day.substring(0, 10) : '';
 		},
 		position(value){
 			if(value === -1) {
@@ -602,10 +602,7 @@ export default {
 				</div>
 			</div>
 
-			<div
-				v-if="user && user.first_work_day"
-				class="form-group row"
-			>
+			<div class="form-group row">
 				<label class="col-sm-4 col-form-label font-weight-bold">
 					Первый рабочий день
 				</label>
