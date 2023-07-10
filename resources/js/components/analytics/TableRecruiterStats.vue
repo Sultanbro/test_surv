@@ -13,8 +13,11 @@
 					primary-key="a"
 					:key="componentKey"
 				>
-					<template #cell()="data">
-						<div>{{ data.value }}</div>
+					<template #cell="data">
+						<div v-html="getCellHtml(data.value)" />
+					</template>
+					<template #cell(totals)="data">
+						<div>{{ totals[data.index] ? totals[data.index].join('/') : '' }}</div>
 					</template>
 					<template #cell(name)="data">
 						<div class="d-flex justify-between aic pl-2 bg-white TableRecruiterStats-colTitle">
@@ -66,7 +69,7 @@
 					<b>Стандарт звонков:</b><br>
 					<span class="aaa fz-12 text-red mb-2">кол-во наборов: 30 наборов</span>
 					<span class="aaa fz-12 text-red mb-2">20 звонков от 10 секунд (чтобы их сделать, нужно просто делать больше наборов в час)</span>
-					<span class="aaa fz-12 text-red">30 минут диалога</span>
+					<span class="aaa fz-12 text-red">25 минут диалога</span>
 					<span class="aaa fz-12 text-red">2 согласия</span>
 				</p>
 			</div>
@@ -157,6 +160,13 @@ export default {
 					tdClass: 'text-center t-name',
 					thClass: 'text-center',
 				},
+				{
+					key: 'totals',
+					label: 'Итого',
+					variant: 'title',
+					tdClass: 'text-center t-name',
+					thClass: 'text-center',
+				},
 			],
 			showModal: false,
 			profiles: [
@@ -168,8 +178,34 @@ export default {
 				'иностранные',
 				'hh',
 				'чаты',
+			],
+			times: {
+				9: '09-10',
+				10: '10-11',
+				11: '11-12',
+				12: '12-13',
+				13: '13-14',
+				14: '14-15',
+				15: '15-16',
+				16: '16-17',
+				17: '17-18',
+				18: '18-19',
+			},
+			expectations: [
+				30,
+				20,
+				25,
+				2
 			]
 		};
+	},
+	computed: {
+		totals(){
+			return this.data.map(row => {
+				if(row.user_id) return this.getUserTotals(row)
+				return this.getTotalTotals(row)
+			})
+		}
 	},
 	watch: {
 		data: {
@@ -197,23 +233,10 @@ export default {
 	},
 	methods: {
 		setFields() {
-			let times = {
-				9: '09-10',
-				10: '10-11',
-				11: '11-12',
-				12: '12-13',
-				13: '13-14',
-				14: '14-15',
-				15: '15-16',
-				16: '16-17',
-				17: '17-18',
-				18: '18-19',
-			};
-
-			Object.keys(times).forEach(key => {
+			Object.keys(this.times).forEach(key => {
 				this.fields.push({
 					key: `${key}`,
-					label: times[key],
+					label: this.times[key],
 					tdClass: 'day'
 				});
 			})
@@ -232,32 +255,36 @@ export default {
 			}).catch(() => {
 				this.$toast.error('Ошибка!');
 			});
+		},
+		getUserTotals(row){
+			return Object.keys(this.times).reduce((result, key) => {
+				if(!row[key]) return result
+				const items = row[key].split('/')
+				return result.map((res, index) => {
+					return res + (Number(items[index]) || 0)
+				})
+			}, [0, 0, 0, 0])
+		},
+		getTotalTotals(row){
+			Object.keys(this.times).reduce((result, key) => {
+				if(!row[key]) return result
+				return result + (Number(row[key]) || 0)
+			}, 0)
+		},
+		getCellHtml(cell){
+			if(!cell) return ''
+			if(~('' + cell).indexOf('/')) return cell.split('/').map((value, index) => {
+				if((Number(value) || 0) >= this.expectations[index])
+					return `<span class="TableRecruiterStats-complete">${value}</span>`
+				return value
+			}).join('/')
+			return cell
 		}
 	}
 };
 </script>
 
 <style lang="scss">
-.TableRecruiterStats{
-	&-table{
-		overflow-y: auto;
-	}
-	&-colTitle{
-		height: 100%;
-	}
-	.b-table-sticky-column{
-		left: 0;
-	}
-	.special-select{
-		padding: 0 0 0 5px !important;
-		margin-top: -5px;
-		margin-bottom: -5px;
-	}
-	.JobtronTable-th,
-	.JobtronTable-td{
-		padding: 5px;
-	}
-}
 .recruiter_stats {
 	&.my-table .day {
 		min-width: 63px;
@@ -348,5 +375,31 @@ span.aaa {
 	margin-bottom: 12px !important;
 	line-height: 15px;
 	display: block;
+}
+
+
+
+.TableRecruiterStats{
+	&-table{
+		overflow-y: auto;
+	}
+	&-colTitle{
+		height: 100%;
+	}
+	&-complete{
+		color: #8bab00;
+	}
+	.b-table-sticky-column{
+		left: 0;
+	}
+	.special-select{
+		padding: 0 0 0 5px !important;
+		margin-top: -5px;
+		margin-bottom: -5px;
+	}
+	.JobtronTable-th,
+	.JobtronTable-td{
+		padding: 5px;
+	}
 }
 </style>
