@@ -111,7 +111,7 @@ export default {
 		},
 		currency(){
 			if(!this.data?.user) return ''
-			return this.data.user.currency.toUpperCase()
+			return this.data.user.currency?.toUpperCase() || ''
 		},
 		moreThanDays(){
 			if(this.data){
