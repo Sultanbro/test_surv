@@ -388,8 +388,7 @@
     display: flex;
     flex-direction: row;
     align-items: center;
-    padding: 15px 20px 15px 15px;
-    gap: 40px;
+    padding: 15px;
     background: #FFFFFF;
     border: 0.5px solid #EBEBF9;
     box-shadow: 0 8px 16px 4px rgba(131, 178, 233, 0.18);
@@ -1472,7 +1471,7 @@
     width: 100%;
     display: flex;
     flex-direction: column;
-    padding: 30px 0;
+    padding: 20px 0;
     background-color: #FFFFFF;
     box-shadow: 0 0 3px rgba(0, 0, 0, 0.05), 0 15px 60px -40px rgba(45, 50, 90, 0.2);
     border-radius: 12px;
@@ -1481,7 +1480,7 @@
     display: flex;
     flex-direction: column;
     gap: 15px;
-    padding: 0 25px;
+    padding: 0 20px;
 }
 .news-filter-modal select {
     cursor: pointer;
@@ -1491,15 +1490,15 @@
     flex-direction: row;
     align-items: center;
     justify-content: start;
-    padding: 15px 25px 20px 25px;
+    padding: 15px 20px 20px 20px;
 }
 .news-filter-modal__footer {
     border-top: 2px solid #EBEBEB;
-    padding: 20px 25px 0 25px;
+    padding: 20px 20px 0 20px;
     display: flex;
     flex-direction: row;
     align-items: center;
-    justify-content: start;
+    justify-content: flex-end;
 }
 .news-filter-modal__favourite {
     display: flex;
@@ -1515,47 +1514,6 @@
     flex-direction: row;
     align-items: center;
     justify-content: space-between;
-}
-.news-filter-modal__add-field {
-    cursor: pointer;
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-    gap: 10px;
-    padding: 15px 28px 15px 22px;
-    border-radius: 6px;
-    background-color: #F7FBFF;
-}
-.news-filter-modal__add-field span {
-    font-family: "Inter", sans-serif;
-    font-style: normal;
-    font-weight: 500;
-    font-size: 14px;
-    line-height: 20px;
-    letter-spacing: -0.02em;
-    color: #156AE8;
-}
-.news-filter-modal__submit {
-    cursor: pointer;
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-    gap: 15px;
-    padding: 15px 30px 15px 25px;
-    border-radius: 6px;
-    background-color: #156AE8;
-}
-.news-filter-modal__submit img {
-    filter: invert(100%) sepia(100%) saturate(38%) hue-rotate(254deg) brightness(110%) contrast(110%);
-}
-.news-filter-modal__submit span {
-    font-family: "Inter", sans-serif;
-    font-style: normal;
-    font-weight: 600;
-    font-size: 14px;
-    line-height: 30px;
-    letter-spacing: -0.02em;
-    color: #FFFFFF;
 }
 
 .mx-calendar {

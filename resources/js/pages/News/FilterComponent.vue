@@ -6,14 +6,11 @@
 		>
 			<div class="news-filter__left">
 				<img
+					v-show="showFilters"
 					src="/icon/news/filter/filter.svg"
 					:class="'news-filter__img ' + (showFilters ? 'news-filter__img--active' : '')"
 					alt="img"
 				>
-				<span
-					v-show="!showFilters"
-					class="news-filter__text"
-				>Фильтр и поиск</span>
 				<input
 					v-show="showFilters"
 					type="text"
@@ -147,7 +144,7 @@
 					</select>
 				</div>
 
-				<div class="news-filter-modal__favourite">
+				<div class="news-filter-modal__favourite mb-4">
 					<span
 						v-html="'Избранное'"
 						@click="searchFavourite = !searchFavourite"
@@ -162,27 +159,19 @@
 					</label>
 				</div>
 			</div>
-			<div class="news-filter-modal__buttons">
-				<a class="news-filter-modal__add-field">
-					<img
-						alt="img"
-						src="/icon/news/access-modal/plus-accent.svg"
-					>
-					<span v-html="'Добавить поле'" />
-				</a>
-			</div>
 
 			<div class="news-filter-modal__footer">
-				<a
-					class="news-filter-modal__submit"
+				<JobtronButton
+					small
 					@click="filterNews"
 				>
 					<img
 						alt="img"
+						class="news-filter-modal__footer-img"
 						src="/icon/news/filter/search.svg"
 					>
-					<span v-html="'Найти новость'" />
-				</a>
+					Найти новость
+				</JobtronButton>
 			</div>
 		</div>
 	</div>
@@ -191,8 +180,8 @@
 <script>
 import DatePicker from 'vue2-datepicker';
 import 'vue2-datepicker/index.css';
-
 import 'vue2-datepicker/locale/ru';
+const {CalendarPanel} = DatePicker;
 
 import {
 	mapState,
@@ -200,7 +189,8 @@ import {
 } from 'pinia'
 import { useCompanyStore } from '@/stores/Company'
 
-const {CalendarPanel} = DatePicker;
+import JobtronButton from '@ui/Button'
+
 
 function isValidDate(date) {
 	return date instanceof Date && !isNaN(date);
@@ -213,6 +203,7 @@ export default {
 	components: {
 		DatePicker,
 		CalendarPanel,
+		JobtronButton,
 	},
 	data() {
 		return {
@@ -418,3 +409,20 @@ export default {
 	}
 }
 </script>
+
+<style lang="scss">
+.news-filter-modal__footer{
+	&-img{
+		filter: invert(100%) sepia(100%) saturate(38%) hue-rotate(254deg) brightness(110%) contrast(110%);
+	}
+}
+.news-filter-modal__range{
+	.mx-input{
+		height: 22px;
+		padding: 0;
+	}
+	.mx-icon-calendar{
+		right: 16px !important;
+	}
+}
+</style>
