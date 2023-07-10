@@ -705,7 +705,7 @@ class Salary extends Model
                     } else if ($x->count() > 0) { // отработанное врея есть
                         $earning = $statTotalHour * $hourly_pay;
                         $earnings[$i] = round($earning);
-                        $hours[$i] = round($statTotalHour, 1);
+                        $hours[$i] = round($statTotalHour, 2);
 
                     } else if ($y->count() > 0) { // отработанное врея есть до принятия на работу
                         $earning = $statTotalHour * $hourly_pay;
