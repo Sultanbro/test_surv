@@ -1397,12 +1397,12 @@ export default {
 			if(type == 'avans') {
 				if(this.avans.comment.length < 3) {
 					this.avans.require = 'Комментарии обязательны!'
-					return '';
+					return this.$toast.error('Комментарии обязательны!');
 				}
 
 				if(this.avans.sum == 0 || this.avans.sum == null) {
 					this.avans.require = 'Напишите сумму аванса!'
-					return '';
+					return this.$toast.error('Напишите сумму аванса!');
 				}
 
 				comment = this.avans.comment;
@@ -1412,12 +1412,12 @@ export default {
 			if(type == 'bonus') {
 				if(this.bonus.comment.length < 3) {
 					this.bonus.require = 'Комментарии обязательны!'
-					return '';
+					return this.$toast.error('Комментарии обязательны!');
 				}
 
 				if(this.bonus.sum == 0 || this.bonus.sum == null) {
 					this.bonus.require = 'Напишите сумму бонуса!'
-					return '';
+					return this.$toast.error('Напишите сумму бонуса!');
 				}
 
 				comment = this.bonus.comment;
