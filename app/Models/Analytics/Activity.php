@@ -12,6 +12,8 @@ class Activity extends Model
 {
     use SoftDeletes, WithCreatorAndUpdater;
 
+    const ACTIVITY_UCHET_TIME = 21;
+
     protected $table = 'activities';
 
     public $timestamps = true;
