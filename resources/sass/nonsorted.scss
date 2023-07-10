@@ -82,7 +82,7 @@
 
 ::-webkit-scrollbar {width: 7px;height: 7px;cursor: pointer;}
 ::-webkit-scrollbar-track {background: #f9f9f9; cursor: pointer;}
-::-webkit-scrollbar-thumb {border-radius: 0px;background: #888; } 
+::-webkit-scrollbar-thumb {border-radius: 0px;background: #888; }
 ::-webkit-scrollbar-thumb:hover {background: #007bff; cursor: pointer;}
 
 /**/
@@ -133,7 +133,7 @@ body {
 }
 @media (max-width: 1023px) {
   .navbar-collapse.show {
-    left: 0;  
+    left: 0;
   }
   .rightblock .col-lg-4 {
     padding-left: 15px;
@@ -163,7 +163,7 @@ body {
 @media (min-width: 1700px) {
   .container {
     max-width: 1440px;
-  } 
+  }
 }
 @media (min-width: 1900px) {
   .container {
@@ -186,7 +186,7 @@ body {
     text-decoration: none !important;
 }
 .videolink:hover span {
-  color: #1076b0; 
+  color: #1076b0;
 }
 .videolink span:last-child {
   font-weight: 700
@@ -250,7 +250,7 @@ body {
   display: none;
   transition: 0.5s ease all;
   padding-top: 15px;
-  padding-left: 0; 
+  padding-left: 0;
   list-style: none;
 }
 .droplink:hover .droplink-menu {
@@ -431,18 +431,18 @@ h1.title {
     flex-direction: column;
   }
   .wrap .leftblock {
-    width: 100%; 
+    width: 100%;
     width: 100vw;
     position: static;
     margin: 0;
   }
   .wrap .rightblock {
     width: 100%;
- 
+
     margin: 0;
     padding: 15px 0;
   }
-  
+
 }
 @media(max-width: 576px) {
   .article {
@@ -503,7 +503,7 @@ body.admin {
   min-height: calc(100vh - 60px);
 }
 .table-admin {
-  padding: 30px 0; 
+  padding: 30px 0;
   font-size: 13px;
   border-left: 1px solid #dee2e6;
     border-right: 1px solid #dee2e6;
@@ -561,7 +561,7 @@ body.admin {
   background: aliceblue;
   &.w65 {
     width: 65%;
-  } 
+  }
 }
 .admin label {
   font-weight: 700;
@@ -619,13 +619,13 @@ body {
 }
 .user img {
     width: 100%;
-    background: #aec3e0; 
+    background: #aec3e0;
 }
 
 .zarplata img {
     filter: grayscale(1);
 }
-.content-wrap { 
+.content-wrap {
     flex-grow: 1;
 }
 
@@ -650,17 +650,17 @@ body {
 
 /* Track */
 .noscrollbar::-webkit-scrollbar-track {
-  background: #f1f1f1; 
+  background: #f1f1f1;
 }
 
 /* Handle */
 .noscrollbar::-webkit-scrollbar-thumb {
-  background: #888; 
+  background: #888;
 }
 
 /* Handle on hover */
 .noscrollbar::-webkit-scrollbar-thumb:hover {
-  background: #136a9c; 
+  background: #136a9c;
 }
 
 
@@ -714,7 +714,7 @@ body {
   i.active {
     color: #007bff;
     background: #bbd6ff;
-    
+
   }
 }
 
@@ -764,7 +764,7 @@ body::-webkit-scrollbar {
 
 /**
 misc
-*/ 
+*/
 
 .jcfe {
   justify-content: flex-end;
@@ -777,64 +777,64 @@ misc
     height: auto;
     font-family: "PingFang SC","Helvetica Neue","Hiragino Sans GB","Segoe UI","Microsoft YaHei","微软雅黑",sans-serif;
   }
-  
+
   .vjs-custom-skin > .video-js .vjs-menu-button-inline.vjs-slider-active,.vjs-custom-skin > .video-js .vjs-menu-button-inline:focus,.vjs-custom-skin > .video-js .vjs-menu-button-inline:hover,.video-js.vjs-no-flex .vjs-menu-button-inline {
     width: 10em
   }
-  
+
   .vjs-custom-skin > .video-js .vjs-controls-disabled .vjs-big-play-button {
     display: none!important
   }
-  
+
   .vjs-custom-skin > .video-js .vjs-control {
     width: 3em
   }
-  
+
   .vjs-custom-skin > .video-js .vjs-control.vjs-live-control{
     width: auto;
     padding-left: .5em;
     letter-spacing: .1em;
   }
-  
+
   .vjs-custom-skin > .video-js .vjs-menu-button-inline:before {
     width: 1.5em
   }
-  
+
   .vjs-menu-button-inline .vjs-menu {
     left: 3em
   }
-  
+
   .vjs-paused.vjs-has-started.vjs-custom-skin > .video-js .vjs-big-play-button,.video-js.vjs-ended .vjs-big-play-button,.video-js.vjs-paused .vjs-big-play-button {
     display: block
   }
-  
+
   .vjs-custom-skin > .video-js .vjs-load-progress div,.vjs-seeking .vjs-big-play-button,.vjs-waiting .vjs-big-play-button {
     display: none!important
   }
-  
+
   .vjs-custom-skin > .video-js .vjs-mouse-display:after,.vjs-custom-skin > .video-js .vjs-play-progress:after {
     padding: 0 .4em .3em
   }
-  
+
   .video-js.vjs-ended .vjs-loading-spinner {
     display: none;
   }
-  
+
   .video-js.vjs-ended .vjs-big-play-button {
     display: block !important;
   }
-  
+
   .video-js.vjs-ended .vjs-big-play-button,.video-js.vjs-paused .vjs-big-play-button,.vjs-paused.vjs-has-started.vjs-custom-skin > .video-js .vjs-big-play-button {
     display: block
   }
-  
+
   .vjs-custom-skin > .video-js .vjs-big-play-button {
     top: 50%;
     left: 50%;
     margin-left: -1.5em;
     margin-top: -1em
   }
-  
+
   .vjs-custom-skin > .video-js .vjs-big-play-button {
     background-color: rgba(0,0,0,0.45);
     font-size: 3.5em;
@@ -843,50 +843,50 @@ misc
     line-height: 2em !important;
     margin-top: -1em !important
   }
-  
+
   .video-js:hover .vjs-big-play-button,.vjs-custom-skin > .video-js .vjs-big-play-button:focus,.vjs-custom-skin > .video-js .vjs-big-play-button:active {
     background-color: rgba(36,131,213,0.9)
   }
-  
+
   .vjs-custom-skin > .video-js .vjs-loading-spinner {
     border-color: rgba(36,131,213,0.8)
   }
-  
+
   .vjs-custom-skin > .video-js .vjs-control-bar2 {
     background-color: #000000
   }
-  
+
   .vjs-custom-skin > .video-js .vjs-control-bar {
      /*background-color: rgba(0,0,0,0.3) !important;*/
     color: #ffffff;
     font-size: 14px
   }
-  
+
   .vjs-custom-skin > .video-js .vjs-play-progress,.vjs-custom-skin > .video-js  .vjs-volume-level {
     background-color: #2483d5
   }
-  
+
   .vjs-custom-skin > .video-js .vjs-play-progress:before {
     top: -0.3em;
   }
-  
+
   .vjs-custom-skin > .video-js .vjs-progress-control:hover .vjs-progress-holder {
     font-size: 1.3em;
   }
-  
+
   .vjs-menu-button-popup.vjs-volume-menu-button-vertical .vjs-menu {
     left: 0em;
   }
-  
+
   .vjs-custom-skin > .video-js .vjs-menu li {
     padding: 0;
     line-height: 2em;
     font-size: 1.1em;
     font-family: "PingFang SC","Helvetica Neue","Hiragino Sans GB","Segoe UI","Microsoft YaHei","微软雅黑",sans-serif;
   }
-  
+
   .vjs-custom-skin > .video-js .vjs-time-tooltip,
-  .vjs-custom-skin > .video-js .vjs-mouse-display:after, 
+  .vjs-custom-skin > .video-js .vjs-mouse-display:after,
   .vjs-custom-skin > .video-js .vjs-play-progress:after {
     border-radius: 0;
     font-size: 1em;
@@ -896,25 +896,25 @@ misc
     line-height: 1.5em;
     top: -3em;
   }
-  
+
   .vjs-custom-skin > .video-js .vjs-menu-button-popup .vjs-menu {
     width: 5em;
     left: -1em;
   }
-  
+
   .vjs-custom-skin > .video-js .vjs-menu-button-popup.vjs-volume-menu-button-vertical .vjs-menu {
     left: 0;
   }
-  
+
   .vjs-custom-skin > .video-js .vjs-control-bar .vjs-resolution-button .vjs-menu {
      /*order: 4;*/
   }
-  
+
    /*排序顺序*/
   .vjs-custom-skin > .video-js .vjs-control-bar .vjs-play-control {
     order: 0;
   }
-  
+
   .vjs-custom-skin > .video-js .vjs-control-bar .vjs-time-control {
     min-width: 1em;
     padding: 0;
@@ -923,33 +923,33 @@ misc
     display: block;
     order: 1;
   }
-  
+
   .vjs-custom-skin > .video-js .vjs-control-bar .vjs-playback-rate .vjs-playback-rate-value{
     font-size: 1.2em;
     line-height: 2.4;
   }
-  
+
   .vjs-custom-skin > .video-js .vjs-progress-control.vjs-control {
     order: 2;
   }
-  
+
   .vjs-custom-skin > .video-js .vjs-control-bar .vjs-volume-menu-button {
     order: 3;
   }
-  
+
   .vjs-custom-skin > .video-js .vjs-control-bar .vjs-resolution-button {
     order: 4;
   }
-  
+
   .vjs-custom-skin > .video-js .vjs-control-bar .vjs-resolution-button .vjs-resolution-button-label {
     display: block;
     line-height: 3em;
   }
-  
+
   .vjs-custom-skin > .video-js .vjs-control-bar .vjs-playback-rate {
     order: 5;
   }
-  
+
   .vjs-custom-skin > .video-js .vjs-control-bar .vjs-fullscreen-control {
     order: 6;
   }
@@ -961,7 +961,7 @@ misc
   }
 
 
-/******/ 
+/******/
 
 .kolokolchik .panel {
   width: 480px;
@@ -1048,17 +1048,17 @@ misc
 
 /* Track */
 .kolokolchik .panel .panel_body::-webkit-scrollbar-track {
-  background: #f1f1f1; 
+  background: #f1f1f1;
 }
- 
+
 /* Handle */
 .kolokolchik .panel .panel_body::-webkit-scrollbar-thumb {
-  background: rgba(33,169,229,.58); 
+  background: rgba(33,169,229,.58);
 }
 
 /* Handle on hover */
 .kolokolchik .panel .panel_body::-webkit-scrollbar-thumb:hover {
-  background: #21a9e5; 
+  background: #21a9e5;
 }
 
 .kolokolchik .panel .panel_body .panel_out {
@@ -1204,17 +1204,17 @@ misc
 
 /* Track */
 .kolokolchik .panel .panel_body::-webkit-scrollbar-track {
-  background: #f1f1f1; 
+  background: #f1f1f1;
 }
- 
+
 /* Handle */
 .kolokolchik .panel .panel_body::-webkit-scrollbar-thumb {
-  background: rgba(33,169,229,.58); 
+  background: rgba(33,169,229,.58);
 }
 
 /* Handle on hover */
 .kolokolchik .panel .panel_body::-webkit-scrollbar-thumb:hover {
-  background: #21a9e5; 
+  background: #21a9e5;
 }
 
 .kolokolchik .panel .panel_body .panel_out {
@@ -1373,7 +1373,7 @@ misc
 }
 .right-panel .header {
   border-bottom: 1px solid #dee7ec;
-  
+
 }
 .linksa {
     color: #1890ff !important;
@@ -1555,7 +1555,7 @@ misc
 }
 .right-panel .header {
   border-bottom: 1px solid #dee7ec;
-  
+
 }
 .linksa {
     color: #1890ff !important;
@@ -1600,4 +1600,12 @@ misc
 .video-playlist .block {
   opacity: 1;
   visibility: visible;
+}
+
+
+.btn-sm{
+  padding: 2px 8px;
+  font-size: 13px;
+  line-height: 1.3;
+  border-radius: 4px;
 }

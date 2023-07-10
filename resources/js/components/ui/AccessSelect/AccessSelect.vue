@@ -48,32 +48,32 @@
 					>
 						<AccessSelectList
 							v-if="selectedTab === 'Сотрудники'"
-							:key="1"
+							:key="types.USER"
 							:search="accessSearch"
 							:selected="accessList"
 							:items="accessDictionaries.users"
 							:avatar="true"
 							:position="true"
-							:type="1"
+							:type="types.USER"
 							@change="changeAccessList($event)"
 						/>
 					</slot>
 					<AccessSelectList
 						v-if="selectedTab === 'Отделы'"
-						:key="2"
+						:key="types.GROUP"
 						:search="accessSearch"
 						:selected="accessList"
 						:items="accessDictionaries.profile_groups"
-						:type="2"
+						:type="types.GROUP"
 						@change="changeAccessList($event)"
 					/>
 					<AccessSelectList
 						v-if="selectedTab === 'Должности'"
-						:key="3"
+						:key="types.POSITION"
 						:search="accessSearch"
 						:selected="accessList"
 						:items="accessDictionaries.positions"
-						:type="3"
+						:type="types.POSITION"
 						@change="changeAccessList($event)"
 					/>
 				</template>
@@ -100,6 +100,9 @@ import AccessSelectTabs from './AccessSelectTabs.vue'
 import AccessSelectSearch from './AccessSelectSearch.vue'
 import AccessSelectFooter from './AccessSelectFooter.vue'
 import AccessSelectList from './AccessSelectList.vue'
+import {types} from './types.js'
+
+const ALL = [{id: 0, type: 0, name: 'Все'}]
 
 export default {
 	name: 'AccessSelect',
@@ -124,7 +127,7 @@ export default {
 		},
 		searchPosition: {
 			type: String, // beforeTabs, afterTabs
-			default: 'afterTabs'
+			default: 'beforeTabs'
 		},
 		accessDictionaries: {
 			type: Object,
@@ -156,6 +159,7 @@ export default {
 			selectedTab: 'Сотрудники',
 			accessList: JSON.parse(JSON.stringify(this.value)),
 			accessSearch: '',
+			types,
 		}
 	},
 	computed: {
@@ -195,20 +199,23 @@ export default {
 	},
 	watch: {
 		value(value){
-			this.accessList = typeof value === 'string' ? value : JSON.parse(JSON.stringify(value))
+			this.accessList = typeof value === 'string' ? ALL : JSON.parse(JSON.stringify(value))
 		},
 		search(value){
 			this.accessSearch = value
 		},
 		selectedTab(value){
-			if(value === 'Все') return this.$emit('input', 'all')
-			if(typeof this.accessList === 'string') this.accessList = []
+			if(value === 'Все') return this.$emit('input', ALL)
+			if(typeof this.accessList === 'string') this.accessList = ALL
 		}
 	},
 	methods: {
 		changeAccessList({id, name, type, image = null}) {
-			if(typeof this.accessList === 'string') this.accessList = []
+			if(typeof this.accessList === 'string') this.accessList = ALL
 			const filtered = this.accessList.filter(item => (item.id == id) && (item.type == type))
+
+			const isAll = this.accessList.length && this.accessList[0].type === 0
+			if(isAll) this.accessList = []
 
 			if (filtered.length) {
 				const el = filtered[0]
@@ -252,11 +259,9 @@ export default {
 			filter: invert(27%) sepia(73%) saturate(2928%) hue-rotate(209deg) brightness(96%) contrast(89%);
 		}
 	}
-	&-search,
-	&-tabs,
-	&-list{
-
-	}
+	// &-search,
+	// &-tabs,
+	// &-list{}
 	&-list {
 		display: flex;
 		flex-flow: column nowrap;

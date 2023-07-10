@@ -17,11 +17,11 @@
 		>
 		<template v-else>
 			<i
-				v-if="type === 2"
+				v-if="type === types.GROUP"
 				class="fa fa-users"
 			/>
 			<i
-				v-if="type === 3"
+				v-if="type === types.POSITION"
 				class="fa fa-briefcase"
 			/>
 		</template>
@@ -54,6 +54,8 @@
 </template>
 
 <script>
+import {types} from './types.js'
+
 export default {
 	name: 'AccessSelectListItem',
 	components: {},
@@ -81,6 +83,11 @@ export default {
 		checked: {
 			type: Boolean,
 			default: false
+		}
+	},
+	data(){
+		return {
+			types
 		}
 	},
 	computed: {

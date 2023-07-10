@@ -35,7 +35,7 @@ export default {
 	flex-direction: row;
 	align-items: center;
 	justify-content: flex-start;
-	gap: 50px;
+	gap: 20px;
 	padding-right: 20px;
 	border-bottom: 1px solid #EBEBF9;
 }
